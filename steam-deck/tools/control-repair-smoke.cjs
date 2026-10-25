@@ -39,6 +39,15 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
    assert.ok(Math.abs(looked.yaw-moved.yaw)>.03,source+' right axes turn the actual camera');assert.ok(Math.abs(looked.pitch-moved.pitch)>.01,source+' right axes tilt the actual camera');
    await tap(11);assert.ok(Math.abs((await pose()).pitch)<.01,'Right click centres the camera');
   }
+  // Steam Input can stop providing standard mapping while the device entry is
+  // still present. That is an input loss, not a reason to keep the island running.
+  await page.evaluate(()=>{window.__pad.mapping='';});await frames();await frames();
+  assert.equal(await page.evaluate(()=>window.johanssonDesktopInput.read(navigator.getGamepads()).connected),false,'Raw mapping is not guessed');
+  assert.equal((await state()).menu,true,'Loss of usable Steam Input pauses even when its device entry remains');assert.equal((await state()).page,'controls');
+  await page.evaluate(()=>{window.__pad.mapping='standard';window.__pad.buttons[9]={pressed:true,value:1};});await frames();await frames();
+  assert.equal((await state()).menu,true,'Held Menu on the returning virtual pad cannot resume the game');
+  await page.evaluate(()=>{window.__pad.buttons[9]={pressed:false,value:0};});await frames();await tap(9);assert.equal((await state()).menu,false,'Release then a fresh Menu resumes');
+  console.log('DECK_FIXED_PROFILE_MOVEMENT_CAMERA_RECONNECT_OK');
   const saved=await page.evaluate(()=>localStorage.getItem('johansson-desktop-controller-v1'));assert.deepEqual(JSON.parse(saved).lookAxes,[5,6],'Legacy preferences are preserved without affecting Deck controls');
   await tap(3);await page.waitForFunction(()=>document.getElementById('activityTitle').textContent==='Bag');await page.evaluate(()=>document.querySelector('#activityActions button').focus());const first=await page.evaluate(()=>document.activeElement.textContent);await tap(15);assert.notEqual(await page.evaluate(()=>document.activeElement.textContent),first,'Right selects the next action in the actual Bag');await tap(1);assert.equal(await page.locator('#activity').isVisible(),false,'Back closes Bag');
   await tap(8);await page.waitForFunction(()=>!document.getElementById('directory').classList.contains('hidden'));await page.evaluate(()=>{const items=[...document.querySelectorAll('#directory button')].filter(e=>e.getClientRects().length);const first=items.find(e=>items.some(other=>other.getBoundingClientRect().top>e.getBoundingClientRect().bottom));first.focus();});const bookFocus=await page.evaluate(()=>document.activeElement.outerHTML);await tap(13);assert.notEqual(await page.evaluate(()=>document.activeElement.outerHTML),bookFocus,'Physical Down navigates the actual Town book');await tap(1);assert.equal((await state()).hudHidden,false,'Navigating a list never toggles the gameplay HUD');

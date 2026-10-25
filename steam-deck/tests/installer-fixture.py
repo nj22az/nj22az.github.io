@@ -66,9 +66,9 @@ with tempfile.TemporaryDirectory() as folder:
   mapping=g['steam_text_read'](template.read_text())[0][1]
   groups={dict(v)['id']:dict(v) for k,v in mapping if k=='group'}
   bindings=dict(dict(next(v for k,v in mapping if k=='preset'))['group_source_bindings'])
-  for i,input_source,out,mode in [('2','joystick','1','joystick_move'),('3','right_joystick','2','joystick_move'),('7','left_trackpad','1','joystick_move'),('8','right_trackpad','2','mouse_joystick')]:
+  for i,input_source,out,source_mode in [('2','joystick','1','joystick_move'),('3','right_joystick','2','joystick_move'),('7','left_trackpad','1','joystick_move'),('8','right_trackpad','2','mouse_joystick')]:
    assert bindings[i]==input_source+' active'
-   assert groups[i]['mode']==mode and dict(groups[i]['settings'])['output_joystick']==out
+   assert groups[i]['mode']==source_mode and dict(groups[i]['settings'])['output_joystick']==out
   assert dict(groups['4']['settings'])['output_trigger']=='1' and dict(groups['5']['settings'])['output_trigger']=='2'
   assert len(bindings)==9 and dict(mapping)['controller_type']=='controller_neptune'
   template_before=template.read_text()

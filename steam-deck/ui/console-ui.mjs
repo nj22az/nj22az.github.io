@@ -227,7 +227,7 @@ function initialise() {
     const key=frame.connected ? frame.pad.index+':'+frame.pad.id : '';
     if (key !== lastPadKey) {
       // Changing to another pad that is in use is not a loss: only a pad that went away pauses.
-      if (lastPadKey && !Array.from(pads).some(p => p?.connected && p.index + ':' + p.id === lastPadKey)) controllerLost();
+      if (lastPadKey && (!frame.connected || !Array.from(pads).some(p => p?.connected && p.index + ':' + p.id === lastPadKey))) controllerLost();
       lastPadKey=key; input.suspend();
       // A held confirm, back or Menu on the returning/replacement controller
       // must be released before it can act. Reconnection never resumes play.
