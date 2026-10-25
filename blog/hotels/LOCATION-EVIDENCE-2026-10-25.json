@@ -1,0 +1,277 @@
+{
+  "checkedOn": "2026-10-25",
+  "properties": [
+    {
+      "hotelId": "scandic-bollnas",
+      "name": "Scandic Bollnäs",
+      "address": "Stenbomsgatan 8",
+      "postalCode": "821 42",
+      "city": "Bollnäs",
+      "officialPropertyId": "873",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 61.350258,
+        "longitude": 16.401857,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-bollnas/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "0960870f3d602973cd64d9a8b0c2687749f670f84a3725b42c07c40852629d68",
+      "markerEvidence": "\"hotelName\":\"Scandic Bollnäs\",\"markerInfo\":{\"hotelId\":\"873\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":61.350258,\"lng\":16.401857}"
+    },
+    {
+      "hotelId": "scandic-gallivare",
+      "name": "Scandic Gällivare",
+      "address": "Klockljungsvägen 2",
+      "postalCode": "98235",
+      "city": "Gällivare",
+      "officialPropertyId": "891",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 67.13749,
+        "longitude": 20.66633,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-gallivare/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "cb5e62ec22a401c8fc915015b5787a5fe9fdd01a4e23aafb4eae6e3ebea4ea5c",
+      "markerEvidence": "\"hotelName\":\"Scandic Gällivare\",\"markerInfo\":{\"hotelId\":\"891\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":67.13749,\"lng\":20.66633}"
+    },
+    {
+      "hotelId": "scandic-gavle-vast",
+      "name": "Scandic Gävle Väst",
+      "address": "Johanneslötsvägen 6",
+      "postalCode": "806 28",
+      "city": "Gävle",
+      "officialPropertyId": "871",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 60.67116,
+        "longitude": 17.0875,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-gavle-vast/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "a9839a167a4646b463a0b56d5efb7cca1d8f190bb2b7c3747e94147527f37593",
+      "markerEvidence": "\"hotelName\":\"Scandic Gävle Väst\",\"markerInfo\":{\"hotelId\":\"871\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.67116,\"lng\":17.0875}"
+    },
+    {
+      "hotelId": "scandic-helsingborg-nord",
+      "name": "Scandic Helsingborg Nord",
+      "address": "Florettgatan 41",
+      "postalCode": "25467",
+      "city": "Helsingborg",
+      "officialPropertyId": "855",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 56.077744,
+        "longitude": 12.729295,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-helsingborg-nord/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "2c8f72499208d158048c4ad997a150f7bd8358977ec0173f4475895dfc319745",
+      "markerEvidence": "\"hotelName\":\"Scandic Helsingborg Nord\",\"markerInfo\":{\"hotelId\":\"855\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":56.077744,\"lng\":12.729295}"
+    },
+    {
+      "hotelId": "scandic-kalmar-vast",
+      "name": "Scandic Kalmar Väst",
+      "address": "Dragonvägen 7",
+      "postalCode": "392 39",
+      "city": "Kalmar",
+      "officialPropertyId": "847",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 56.67363,
+        "longitude": 16.319256,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-kalmar-vast/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "782c05d7b5c48c72da9a7961a9f19888a70164b69e6bb78afa99cc9a9d6611ab",
+      "markerEvidence": "\"hotelName\":\"Scandic Kalmar Väst\",\"markerInfo\":{\"hotelId\":\"847\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":56.67363,\"lng\":16.319256}"
+    },
+    {
+      "hotelId": "scandic-klaralven",
+      "name": "Scandic Klarälven",
+      "address": "Sandbäcksgatan 6",
+      "postalCode": "653 40",
+      "city": "Karlstad",
+      "officialPropertyId": "848",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 59.39127,
+        "longitude": 13.495586,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-klaralven/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "39bee8b3a63aeafb9e5f95f8c1dcb641a946e5c67a3729d5f8b73d1e1cacd659",
+      "markerEvidence": "\"hotelName\":\"Scandic Klarälven\",\"markerInfo\":{\"hotelId\":\"848\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.39127,\"lng\":13.495586}"
+    },
+    {
+      "hotelId": "scandic-lugnet-falun",
+      "name": "Scandic Lugnet Falun",
+      "address": "Svärdsjögatan 51",
+      "postalCode": "791 31",
+      "city": "Falun",
+      "officialPropertyId": "844",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 60.613064,
+        "longitude": 15.65553,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-lugnet-falun/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "58dac8c254111388aaf5bc609369e6867d242889082be794b8cf858e3e66d5d2",
+      "markerEvidence": "\"hotelName\":\"Scandic Lugnet Falun\",\"markerInfo\":{\"hotelId\":\"844\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.613064,\"lng\":15.65553}"
+    },
+    {
+      "hotelId": "scandic-lulea",
+      "name": "Scandic Luleå",
+      "address": "Banvägen 3",
+      "postalCode": "97346",
+      "city": "Luleå",
+      "officialPropertyId": "868",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 65.60351,
+        "longitude": 22.132322,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-lulea/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "dfe5226798d815ea99eb0579b0869050c476599b6cde5fad31d42e722b319fe9",
+      "markerEvidence": "\"hotelName\":\"Scandic Luleå\",\"markerInfo\":{\"hotelId\":\"868\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":65.60351,\"lng\":22.132322}"
+    },
+    {
+      "hotelId": "scandic-norrkoping-nord",
+      "name": "Scandic Norrköping Nord",
+      "address": "Järngatan 17",
+      "postalCode": "602 23",
+      "city": "Norrköping",
+      "officialPropertyId": "852",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 58.617435,
+        "longitude": 16.162386,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-norrkoping-nord/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "d58242d2e8cf5f07d9bb651d55338ab0b459d16ce8a6830dbb38ac3c68c0e507",
+      "markerEvidence": "\"hotelName\":\"Scandic Norrköping Nord\",\"markerInfo\":{\"hotelId\":\"852\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":58.617435,\"lng\":16.162386}"
+    },
+    {
+      "hotelId": "scandic-segevang",
+      "name": "Scandic Segevång",
+      "address": "Segesvängen",
+      "postalCode": "212 27",
+      "city": "Malmö",
+      "officialPropertyId": "849",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 55.617195,
+        "longitude": 13.063056,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-segevang/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "b0ef18d1c7eb9ac7343a20f6f1c1f262b3ce40cb0ee3c12efd82ad00470a7d48",
+      "markerEvidence": "\"hotelName\":\"Scandic Segevång\",\"markerInfo\":{\"hotelId\":\"849\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.617195,\"lng\":13.063056}"
+    },
+    {
+      "hotelId": "scandic-skelleftea",
+      "name": "Scandic Skellefteå",
+      "address": "Kanalgatan 75",
+      "postalCode": "931 78",
+      "city": "Skellefteå",
+      "officialPropertyId": "823",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 64.75125,
+        "longitude": 20.963367,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-skelleftea/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "902eef629a0e7ff8acd54f3061b74e5fd9b71e1a5d8c93dbebba024cd1768fbc",
+      "markerEvidence": "\"hotelName\":\"Scandic Skellefteå\",\"markerInfo\":{\"hotelId\":\"823\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":64.75125,\"lng\":20.963367}"
+    },
+    {
+      "hotelId": "scandic-umea-syd",
+      "name": "Scandic Umeå Syd",
+      "address": "Yrkesvägen 8",
+      "postalCode": "904 20",
+      "city": "Umeå",
+      "officialPropertyId": "870",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 63.81595,
+        "longitude": 20.251059,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-umea-syd/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "d979ab12906f65117bb89ed0a5d3cdb3146d53c40a9e8fa7cbd59690e0684260",
+      "markerEvidence": "\"hotelName\":\"Scandic Umeå Syd\",\"markerInfo\":{\"hotelId\":\"870\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":63.81595,\"lng\":20.251059}"
+    },
+    {
+      "hotelId": "scandic-uppsala-nord",
+      "name": "Scandic Uppsala Nord",
+      "address": "Gamla Uppsalagatan 50",
+      "postalCode": "754 25",
+      "city": "Uppsala",
+      "officialPropertyId": "861",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 59.875683,
+        "longitude": 17.640682,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-uppsala-nord/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "0bfc45f603c723818251d353f06eed4287e3ecd48d72aa8725a8d5554374e763",
+      "markerEvidence": "\"hotelName\":\"Scandic Uppsala Nord\",\"markerInfo\":{\"hotelId\":\"861\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.875683,\"lng\":17.640682}"
+    },
+    {
+      "hotelId": "scandic-vasteras",
+      "name": "Scandic Västerås",
+      "address": "Pilgatan 33",
+      "postalCode": "721 30",
+      "city": "Västerås",
+      "officialPropertyId": "866",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 59.61489,
+        "longitude": 16.569048,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-vasteras/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "e2d6ecf590d5ad0f256aa709e9efe0ec4edf8334e70e4c876ea58927fe191ebb",
+      "markerEvidence": "\"hotelName\":\"Scandic Västerås\",\"markerInfo\":{\"hotelId\":\"866\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.61489,\"lng\":16.569048}"
+    },
+    {
+      "hotelId": "scandic-vaxjo",
+      "name": "Scandic Växjö",
+      "address": "Hejaregatan 19",
+      "postalCode": "352 46",
+      "city": "Växjö",
+      "officialPropertyId": "860",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 56.884792,
+        "longitude": 14.761273,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-vaxjo/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "eec48badc99846101de4d769587846be61a4c8dbcf333a4b4aaa9ccdb2b737d9",
+      "markerEvidence": "\"hotelName\":\"Scandic Växjö\",\"markerInfo\":{\"hotelId\":\"860\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":56.884792,\"lng\":14.761273}"
+    },
+    {
+      "hotelId": "scandic-orebro-vast",
+      "name": "Scandic Örebro Väst",
+      "address": "Västhagagatan 1B",
+      "postalCode": "703 46",
+      "city": "Örebro",
+      "officialPropertyId": "869",
+      "checkedOn": "2026-10-25",
+      "coordinates": {
+        "latitude": 59.274174,
+        "longitude": 15.176955,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-orebro-vast/map-view"
+      },
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and map viewport centre. Identity/address matched to existing official property record.",
+      "responseSha256": "57be391fb36e393893e0b632a853a2c4be78777e61308778f9c07ee1baf1f67e",
+      "markerEvidence": "\"hotelName\":\"Scandic Örebro Väst\",\"markerInfo\":{\"hotelId\":\"869\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.274174,\"lng\":15.176955}"
+    }
+  ]
+}

@@ -73,7 +73,10 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  await page.locator('#titleLoad').click();await tap(1);assert.equal(await page.locator('#titleSlots').isVisible(),false,'B closes the title save list');
  // A begins the actual world without needing a mouse.
  await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.frozen=false;});await tap(0);await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__===true,null,{timeout:120000});
- await page.waitForTimeout(500);assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
+ // World RUNNING precedes the asynchronous desktop first-entry guide. Wait for
+ // its real ready state, as control-repair-smoke does, rather than a fixed delay.
+ await page.waitForFunction(()=>{const ui=window.johanssonDesktopUI?.snapshot();return ui?.page==='help'&&ui.menu;});
+ assert.equal((await state()).page,'help');assert.equal((await state()).menu,true,'First entry explains what to do');
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_STABILITY__?.ok),true,'Real world startup checks pass');
  await page.screenshot({path:path.join(out,'03-first-steps-1280.png')});await click('resume');
  await outdoors();

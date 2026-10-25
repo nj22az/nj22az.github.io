@@ -14,6 +14,7 @@ import {beginPowerPlan} from './okinawa/props.js';
 import {buildDocklandsLife} from './docklands-life.js';
 import {addSakuraFlyer} from './sakura-flyers.js';
 import {buildHarbourNoticeboard,FLYER_PLACE} from './harbour-noticeboard.js';
+import {addSakuraStreetPoster} from './sakura-street-poster.js';
 import {addWoodlandPoster,WOODLAND_POSTER} from './woodland-poster.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
@@ -218,6 +219,8 @@ function addStreetLife(world,options,factory){
   addWithCollider(group,colliders,buildHarbourNoticeboard());
   addSakuraFlyer(group,{position:FLYER_PLACE.position,width:FLYER_PLACE.width});
   addWoodlandPoster(group,{register:options.register,onAction:options.onAction});interactions++;
+  // Sakura's street poster on the ice-cream shop's south wall (sakura-street-poster.js, drawing SP-NK-001).
+  addSakuraStreetPoster(group);
   anchor(group,[5.5,1,-32.5],WOODLAND_POSTER.prompt,()=>options.onAction?.('harbour-notice-board'),options.register);interactions++;
 
   addWithCollider(group,colliders,factory.utilityCabinet(.5,13.2,0));

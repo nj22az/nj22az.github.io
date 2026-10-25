@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Acceptance checks for the confirmed-parking publication rule."""
 import copy
+import csv
 import datetime as dt
 import importlib.util
 import json
@@ -98,6 +99,45 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertIn('href="' + builder.e(verification['sourceUrl']) + '">Checked', html)
         self.assertIn('datetime="' + verification['checkedOn'] + '"', html)
         self.assertIn(builder.e(self.free['parkingSummary']), html)
+
+    def test_verified_locations_match_official_marker_evidence_and_csv(self):
+        evidence = json.loads((ROOT / 'blog/hotels/LOCATION-EVIDENCE-2026-10-25.json').read_text())['properties']
+        self.assertEqual(len(evidence), 16)
+        by_id = {row['hotelId']: row for row in self.records}
+        for item in evidence:
+            row = by_id[item['hotelId']]
+            self.assertEqual(row['coordinates'], item['coordinates'])
+            marker = json.loads('{' + item['markerEvidence'] + '}')
+            self.assertEqual(marker['hotelName'], row['name'])
+            self.assertEqual(marker['markerInfo']['hotelId'], item['officialPropertyId'])
+            self.assertEqual(marker['coordinates']['lat'], row['coordinates']['latitude'])
+            self.assertEqual(marker['coordinates']['lng'], row['coordinates']['longitude'])
+        with (ROOT / 'blog/hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = list(csv.DictReader(stream))
+        self.assertEqual(len(exported), len(self.records))
+        for item in exported:
+            row = next(r for r in self.records if r['name'] == item['Hotel'])
+            self.assertEqual(float(item['Latitude']), row['coordinates']['latitude'])
+            self.assertEqual(float(item['Longitude']), row['coordinates']['longitude'])
+            self.assertEqual(item['Coordinate source'], row['coordinates']['sourceUrl'])
+
+    def test_unmapped_hotel_keeps_card_and_address_without_a_marker(self):
+        row = copy.deepcopy(self.free)
+        row['coordinates'] = None
+        html = builder.build([row])
+        self.assertIn('Map location awaiting verification', html)
+        self.assertIn(builder.e(row['address']), html)
+        self.assertIn('id="hotel-map-data" type="application/json">[]', html)
+        self.assertIn('0 of 1 hotels have verified locations', html)
+
+    def test_feed_preserves_unknown_registration_and_paid_garage(self):
+        row = next(r for r in self.records if r['hotelId'] == 'scandic-skelleftea')
+        html = builder.render_review(row)
+        self.assertIn('requirements may be unstated', html)
+        self.assertIn(builder.e(row['parkingSummary']), html)
+        self.assertIn('<details', html)
+        row = next(r for r in self.records if r['hotelId'] == 'scandic-vasteras')
+        self.assertIn('Register at reception', builder.render_review(row))
 
 
 if __name__ == '__main__':
