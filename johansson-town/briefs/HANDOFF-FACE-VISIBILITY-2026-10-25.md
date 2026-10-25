@@ -39,8 +39,16 @@ Built-game run: [game report](../docs/qa/face-visibility/game-report.json).
 
 Software Chromium **153 / SwiftShader**, emulated widths. Physical iPad/iPhone Safari, hardware FPS and every combination of expression/camera/distance have not been verified.
 Pixel/print filters retain their intended coarse patterns; this does not promise readability below their sampling resolution.
-No new Linux package or release; the next normal package must include this shared-source fix.
+At the original browser delivery no new Linux package was released. The follow-up below records its verified inclusion in Linux 0.2.20.
 
 After main promotion, confirm the Pages deployment and public boot graph before calling it live.
 Check the owner's reported view on physical iPad Safari when available.
 Keep this regression and the earlier conversation-expression tests; do not merge the two causes or reintroduce the closed-eye greeting.
+
+## Linux follow-up — 25 October 2026
+
+The correction is now included in [published Linux 0.2.20](https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20), release merge `a56db3686b853907f08335c88e0197b96b972b47` through PR #397. Final source is frozen from production main `aa792244`; candidate/release tree `156956a70be12d3f49026df6615a982ca8bd5167` is identical. No new geometry, animation or controller changes.
+
+The final package passes the same **92 WebGL cases across 19 Looks**, with minimum contrast **0.0646**; four dim captures are byte-identical to the reviewed candidate. The public archive's shared-avatar/filter sources and all **32 runtime modules** match production; all **1,621 archive files** match its inventory. Complete Linux controller/layout/resident/save acceptance, native startup/disk saves, offline operation and public installer/checksum verification pass. [Release evidence, checksums and screenshots](../../linux-port/acceptance-0.2.20.md).
+
+Physical Steam Deck, 8BitDo Bluetooth and Safari acceptance remain unverified. Existing coarse pixel/print sampling limits remain. Later concurrent main changes are not folded into this immutable package.
