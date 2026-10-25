@@ -12,6 +12,7 @@ import {normalizeRecipe,DRESS_BOTTOMS} from './recipe.js';
 import {drawFace,faceLayout,INK_NOSES,BEARD_SHELL,drawBeardShell} from './face.js';
 import {buildFaceObjects} from './face-objects.js';
 import {buildEyes3d,eyes3dOn} from './eyes3d.js';
+import {cosyFaceOn,cosyEarColour,COSY} from './cosy-face.js';
 import {beardSpec} from './beard-mesh.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
@@ -1625,7 +1626,7 @@ function addOutline(parent,mesh,skinned){
 }
 
 /** The face texture and the head it lives on. */
-function buildHead(recipe,m,faceSize){
+function buildHead(recipe,m,faceSize,cosy=false){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=faceSize;
  const ctx=canvas.getContext('2d');
  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
@@ -1672,6 +1673,7 @@ function buildHead(recipe,m,faceSize){
  const head=new THREE.Mesh(g,material);head.name='Shimanchu head';
  head.position.y=m.headCentre-m.headY;
  if(INK_NOSES[recipe.nose.style])head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}));
+ else if(cosy&&recipe.nose.style!=='none')head.add(inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH},cosyNoseShape(recipe,m)));
  // The scruffy beard is painted on a shell (the other beards are built: beard-mesh.js).
  const beard=recipe.facial?.paint==='scruff'?beardShell(m,faceSize):null;if(beard)head.add(beard.mesh);
  return {head,canvas,ctx,texture,beard};
@@ -1706,17 +1708,23 @@ function beardShell(m,faceSize){
  * line, so the nose stands off the face in profile and catches the light, as a Mii's does. It wears the face's own canvas,
  * its points mapped onto it the way the head's are, so the line drawn on the face runs over the bump unbroken.
  */
-function inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH}){
+function inkNoseBump(recipe,m,material,{PHI0,PHI,TH0,TH},shape=null){
  const L=faceLayout(recipe),k=.7+recipe.nose.size*.7;
- const theta=TH0+(L.noseY-7*k)/256*TH,phi=PHI0+L.noseX/256*PHI;   // centred a little above the tip, where the bridge rises
+ // centred a little above the tip, where the bridge rises (the cosy face's ball noses give their own centre and size)
+ const theta=TH0+(shape?L.noseY+shape.dy:L.noseY-7*k)/256*TH,phi=PHI0+L.noseX/256*PHI;
  const at=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
- const S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],w=m.Rh*(.08+recipe.nose.size*.05),h=w*1.4,d=m.Rh*(.11+recipe.nose.size*.07);
+ const S=[m.Rh*m.headSX,m.Rh*m.headSY,m.Rh*.98],w=shape?.w??m.Rh*(.08+recipe.nose.size*.05),h=shape?.h??w*1.4,d=shape?.d??m.Rh*(.11+recipe.nose.size*.07);
  const g=new THREE.SphereGeometry(1,24,16,0,Math.PI*2,0,Math.PI*.5);g.rotateX(Math.PI/2);   // a dome, its top facing +z
  const pos=g.attributes.position,uv=g.attributes.uv,v=new THREE.Vector3(),centre=new THREE.Vector3(at.x*S[0],at.y*S[1],at.z*S[2]);
  const out=centre.clone().divide(new THREE.Vector3(S[0]*S[0],S[1]*S[1],S[2]*S[2])).normalize();   // the face's normal there
  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),out);
  for(let i=0;i<pos.count;i++){
-  v.fromBufferAttribute(pos,i);v.set(v.x*w,v.y*h,v.z*d-d*.3).applyQuaternion(q).add(centre);pos.setXYZ(i,v.x,v.y,v.z);
+  v.fromBufferAttribute(pos,i);
+  // The cosy nose rises out of the face with no edge where it meets it (a smooth bump, wider at its foot), so the ink pass
+  // finds nothing to outline; the ink noses keep their dome.
+  if(shape){const r2=Math.min(1,v.x*v.x+v.y*v.y),f=COSY.noseFoot;v.set(v.x*w*f,v.y*h*f,Math.pow(1-r2,COSY.noseProfile)*d-d*.04);}
+  else v.set(v.x*w,v.y*h,v.z*d-d*.3);
+  v.applyQuaternion(q).add(centre);pos.setXYZ(i,v.x,v.y,v.z);
   // Where this point falls on the face's canvas: back through the head's scale to the sphere, then the head's own mapping.
   const n=v.clone().set(v.x/S[0],v.y/S[1],v.z/S[2]).normalize(),p=Math.atan2(n.z,-n.x),t=Math.acos(THREE.MathUtils.clamp(n.y,-1,1));
   uv.setXY(i,THREE.MathUtils.clamp((p-PHI0)/PHI,.002,.998),THREE.MathUtils.clamp(1-(t-TH0)/TH,.002,.998));
@@ -1744,9 +1752,17 @@ function addBeard(parts,recipe,m){
  for(let k=0;k<I.count;k++)piece.attributes.ink.setX(k,ink[I.getX(k)]);
 }
 
-function addNose(parts,recipe,m){
+/**
+ * The cosy face's nose (cosy-face.js): the ball nose's size and shape, but a smooth rise of the face wearing the face's own
+ * canvas (inkNoseBump), so no outline is inked round it; the painter puts only a small shadow under it.
+ */
+function cosyNoseShape(recipe,m){
+ const style=recipe.nose.style,r=m.Rh*(.065+recipe.nose.size*.055),hook=style==='hook',wide=style==='wide';
+ return {dy:hook?-3:0,w:r*(wide?1.45:.95),h:r*(hook?1.55:.95),d:r*(hook?1.65:1.25)};
+}
+function addNose(parts,recipe,m,cosy=false){
  addBeard(parts,recipe,m);   // (every body that has a nose has the beard too)
- if(recipe.nose.style==='none'||INK_NOSES[recipe.nose.style])return;   // an ink nose is all drawn on the face
+ if(recipe.nose.style==='none'||INK_NOSES[recipe.nose.style]||cosy)return;   // an ink nose is all drawn on the face; a cosy one is the head's (buildHead)
  const layout=faceLayout(recipe),theta=Math.PI*.28+layout.noseY/256*Math.PI*.58,phi=Math.PI/2-.95+layout.noseX/256*1.9;
  const v=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
  const hook=recipe.nose.style==='hook',wide=recipe.nose.style==='wide';
@@ -1790,9 +1806,10 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
 
 /**
  * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean}} [options] eyes3d: rigged eyes (eyes3d.js), off with `?eyes3d=0`
+ * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean,cosy?:boolean}} [options] eyes3d: rigged eyes (eyes3d.js), off with
+ *   `?eyes3d=0`; cosy: the cosy face (cosy-face.js), on with `?cosy=1`
  */
-export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}={}){
+export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn(),cosy=cosyFaceOn()}={}){
  const recipe=normalizeRecipe(input),m=measure(recipe);
  const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
  for(const name of BONES){
@@ -1807,14 +1824,19 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
   for(let i=0;i<4;i++)part(parts,new THREE.CapsuleGeometry(m.hand*.105,m.hand*(i===0||i===3?.40:.60),3,6),'hand'+side,recipe.body.skin,M(x+(i-1.5)*m.hand*.37,y-m.hand*(i===0||i===3?1.65:1.85),m.hand*.04,0,0,(i-1.5)*.16));
  }
  const fingerEnd=parts.reduce((n,g)=>n+g.attributes.position.count,0);
- addNose(parts,recipe,m);
- // Ears.
+ addNose(parts,recipe,m,cosy);
+ // Ears. The cosy face's stand out from the head, the back edge further than the front, and blush a little.
  const ears=list=>{
   const visible=recipe.hair.style==='braids';
   for(const s of [-1,1]){
    const at=[s*m.Rh*m.headSX*(visible?1.025:.97),m.headCentre-m.Rh*(visible?.025:.08),m.Rh*(visible?.08:-.05)];
-   ball(list,m.Rh*(visible?.22:.2),at,'head',recipe.body.skin,[.55,1,.8],10,8);
-   if(visible)ball(list,m.Rh*.105,[at[0]+s*m.Rh*.018,at[1],at[2]+m.Rh*.145],'head',new THREE.Color(recipe.body.skin).multiplyScalar(.91).getStyle(),[.55,1,.22],8,6);
+   if(cosy){const flare=s*COSY.earFlare*Math.PI/180;at[0]+=s*m.Rh*.03;part(list,new THREE.SphereGeometry(m.Rh*(visible?.22:.2),10,8),'head',cosyEarColour(recipe.body.skin),M(at[0],at[1],at[2],0,-flare,0,.55,1,.8));}
+   else ball(list,m.Rh*(visible?.22:.2),at,'head',recipe.body.skin,[.55,1,.8],10,8);
+   if(visible){
+    // The bowl of the ear, turned with it when the cosy ear flares.
+    const ry=cosy?-s*COSY.earFlare*Math.PI/180:0,ox=s*m.Rh*.018,oz=m.Rh*.145,c=Math.cos(ry),n=Math.sin(ry);
+    part(list,new THREE.SphereGeometry(m.Rh*.105,8,6),'head',new THREE.Color(cosy?cosyEarColour(recipe.body.skin):recipe.body.skin).multiplyScalar(.91).getStyle(),M(at[0]+c*ox+n*oz,at[1],at[2]-n*ox+c*oz,0,ry,0,.55,1,.22));
+   }
   }
  };
  ears(parts);
@@ -1842,10 +1864,10 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
  // Swimwear, the bath wrap and the lobby's after-bath clothes are further bodies, swapped in at the onsen.
  let swimBody=null,towelBody=null,towelOutline=null,alternativeBody=null,alternativeOutline=null,alternativeKey=null,afterbathBody=null,afterbathOutline=null;
  let swimOutline=null;
- const face=buildHead(recipe,m,faceSize);
+ const face=buildHead(recipe,m,faceSize,cosy);
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
- const faceObjects=buildFaceObjects(recipe,m,{shadows});bones.head.add(faceObjects);
+ const faceObjects=buildFaceObjects(recipe,m,{shadows,cosy});bones.head.add(faceObjects);
  const eyes=eyes3d?buildEyes3d(recipe,m):null;if(eyes)bones.head.add(eyes.mesh);
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
@@ -1950,7 +1972,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
  }
 
  const avatar={
-  recipe,measure:m,root,body,bones,face,eyes3d:eyes,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
+  recipe,measure:m,root,body,bones,face,eyes3d:eyes,cosy,height:m.H,outfit:'clothes',hasHat,garment:material.userData.garment,springSetup:swing,springs:null,
   setOpenHands(on){on=!!on;if(handsOpen===on)return;handsOpen=on;geometry.attributes.position.array.set(on?openFingerPositions:closedFingerPositions,fingerStart*3);geometry.attributes.position.needsUpdate=true;},
   /** Hat on or off. Off, it is somebody else's job to show where it went (buildHatProp). */
   setHat(on){if(seeThrough)seeThrough.visible=!!on;geometry.setDrawRange(0,on||!hasHat?Infinity:hatStart);if(hairCovered!==!!on){hairCovered=!!on;if(hatHairRanges.length)applyHair(mainHair);}},
@@ -1980,7 +2002,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
    if(skipEyes)Object.assign(s,n);
    if(key===avatar.faceKey)return false;
    avatar.faceKey=key;Object.assign(s,n);
-   drawFace(face.ctx,recipe,{...n,size:face.canvas.width,objects:true,skipEyes});face.texture.needsUpdate=true;
+   drawFace(face.ctx,recipe,{...n,size:face.canvas.width,objects:true,skipEyes,cosy});face.texture.needsUpdate=true;
    if(face.beard){drawBeardShell(face.beard.ctx,recipe,n);face.beard.texture.needsUpdate=true;}
    return true;
   },

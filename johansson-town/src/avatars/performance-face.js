@@ -23,7 +23,7 @@ export function createPerformancePainter(avatar,recipe){
   for(let i=0;i<3;i++){
    if(weights[i]<=0)continue;
    const layer=layers[i],g=layer.getContext('2d');
-   drawFace(g,recipe,{...s,expression:moods[i],size,objects:true,skipEyes:!!avatar.eyes3d?.showing});
+   drawFace(g,recipe,{...s,expression:moods[i],size,objects:true,skipEyes:!!avatar.eyes3d?.showing,cosy:!!avatar.cosy});
    ctx.globalAlpha=weights[i];ctx.drawImage(layer,0,0);
   }
   ctx.restore();avatar.face.texture.needsUpdate=true;return true;

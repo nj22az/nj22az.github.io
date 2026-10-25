@@ -12,7 +12,7 @@ export function faceObjectPoint(m,x,y,lift=0){
 }
 
 /** Separate head-bound meshes; no accessory is baked into the face texture. */
-export function buildFaceObjects(recipe,m,{shadows=false}={}){
+export function buildFaceObjects(recipe,m,{shadows=false,cosy=false}={}){
  const group=new THREE.Group();group.name='Face objects';const L=faceLayout(recipe);
  const at=(x,y,lift=.045)=>faceObjectPoint(m,x,y,lift);
  function mesh(name,parts,material){
@@ -73,7 +73,7 @@ export function buildFaceObjects(recipe,m,{shadows=false}={}){
   const path=Array.from({length:21},(_,i)=>{const a=i/20*Math.PI;return [128+Math.cos(a)*42*k,L.noseY+8+Math.sin(a)*(L.mouthY-L.noseY+31)*k+dy];});
   tube(beard,path.map(([x,y])=>at(x,y,.035)),(f.beard==='beard'?.095:.032)*k);
   if(f.beard==='beard')for(let i=1;i<path.length-1;i+=2){const [x,y]=path[i];tuft(beard,x,y,.072*k,.09*k,.055*k);}
- }else if(f.beard==='stubble'){
+ }else if(f.beard==='stubble'&&!cosy){   // (the cosy face paints its stubble as a soft tint: face.js)
   // Deterministic short raised bristles, distributed below the nose and around the lips.
   for(let i=0;i<120;i++){const x=128+((i*37)%101-50)*.85*k,y=L.noseY+10+((i*53)%71)*.7*k+dy;
    if(Math.abs(x-L.mouthX)<26*L.mouthW&&Math.abs(y-L.mouthY)<14)continue;
