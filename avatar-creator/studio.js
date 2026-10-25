@@ -1,8 +1,9 @@
+import {withThuanSwimsuit} from '../johansson-town/src/avatars/wardrobe.js';
 import {openFabricEditor} from '../johansson-town/src/avatars/fabric-editor.js';
 import {readSceneLink} from './scene-links.mjs?v=20261023-creator-mark';
 import {createActingPanel} from './acting/panel.js?v=20261016-1';
 import {createPerformancePanel} from './performance-panel.js?v=20261017-1';
-import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261025-wardrobe';
+import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261025-swimwear-motion';
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
@@ -29,11 +30,19 @@ const designs=templates.slice(1),residents=RESIDENT_NAMES.map(n=>[n,recipeFor(n)
 const initialNote='';
 const status=document.createElement('span');status.className='studio-status';status.setAttribute('role','status');status.textContent=initialNote;
 let restored=null;
-try{const stored=JSON.parse(localStorage.getItem(SAVE_KEY));if(stored?.format==='nj-avatar-studio'&&stored.recipe){restored=normalizeRecipe(stored.recipe);if(restored.name==='Vy'&&!(stored.appearanceRevision>=1)){restored=normalizeRecipe({...recipeFor('Vy'),profile:restored.profile});localStorage.setItem(SAVE_KEY,JSON.stringify({...stored,recipe:restored,appearanceRevision:1}));}}}catch{}
+try{
+ const stored=JSON.parse(localStorage.getItem(SAVE_KEY));
+ if(stored?.format==='nj-avatar-studio'&&stored.recipe){
+  restored=normalizeRecipe(stored.recipe);let changed=false;const revisions={};
+  if(restored.name==='Vy'&&!(stored.appearanceRevision>=1)){restored=normalizeRecipe({...recipeFor('Vy'),profile:restored.profile});revisions.appearanceRevision=1;changed=true;}
+  if(restored.name==='Thuan'&&!(stored.swimwearRevision>=1)){restored=withThuanSwimsuit(restored);revisions.swimwearRevision=1;changed=true;}
+  if(changed)localStorage.setItem(SAVE_KEY,JSON.stringify({...stored,recipe:restored,...revisions}));
+ }
+}catch{}
 const code=new URLSearchParams(location.search).get('r');
 const shared=code?decodeRecipe(code):null;
 function save(recipe){
- try{localStorage.setItem(SAVE_KEY,JSON.stringify({format:'nj-avatar-studio',version:1,recipe,...(recipe.name==='Vy'?{appearanceRevision:1}:{})}));status.textContent='Character saved in this browser. Download a design for a portable copy.';}
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify({format:'nj-avatar-studio',version:1,recipe,...(recipe.name==='Vy'?{appearanceRevision:1}:{}),...(recipe.name==='Thuan'?{swimwearRevision:1}:{})}));status.textContent='Character saved in this browser. Download a design for a portable copy.';}
  catch{status.textContent='Browser storage is unavailable. Use Download design to save your character.';}
 }
 

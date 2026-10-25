@@ -1,0 +1,13 @@
+✔ automatic swimwear gives male bodies trunks and female bodies a swimsuit regardless of hair or facial features (4.100197ms)
+✔ swimwear choice and colour survive designs/share codes, with an automatic default for old saves (2.753232ms)
+✔ every resident has the correct visible swimming garment, chest coverage and bare lower legs (15154.636873ms)
+✔ all swimwear cuts fit body extremes without non-finite geometry or an unbounded mesh (16998.154986ms)
+✔ Thuan explicitly wears a one-piece; old resident/player looks retain their identity during the swimwear-only upgrade (3.518587ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32548.976514

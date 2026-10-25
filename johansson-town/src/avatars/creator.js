@@ -80,7 +80,7 @@ export function previewOutfits(recipe){
 const LABEL={
  ...Object.fromEntries(Object.entries(INK_NOSES).map(([id,n])=>[id,n.label])),   // the ink noses, named where they are drawn
  ...PAINTED_MOUSTACHES,...PAINTED_BEARDS,
- towel:'Bath towel',swimwear:'Swimwear',
+ towel:'Bath towel',swimwear:'Swimwear',auto:'Automatic',trunks:'Swimming trunks',onepiece:'One-piece swimsuit',skirted:'Skirted swimsuit',
  inkoval:'Ink ovals',studio:'Studio proportions',sculpted:'Soft sculpted',panel:'Panel skirt',pressed:'Pressed pleats',classic:'Classic',
  crop:'Crop',sidepart:'Side part',bob:'Bob',long:'Long',longfringe:'Long with fringe',sweptponytail:'Swept low ponytail',ponytail:'Ponytail',braids:'Original Thuận braids',longbraids:'Twin braids · Thuan',bun:'Bun',spiky:'Spiky',perm:'Perm',buzz:'Buzz',afro:'Afro',horseshoe:'Horseshoe',bald:'Bald',
  pixie:'Pixie',shoulder:'Shoulder',curtains:'Centre part',slick:'Slicked back',mullet:'Mullet',topknot:'Topknot',pigtails:'Pigtails',twinbuns:'Twin buns',
@@ -200,6 +200,7 @@ export const TABS=[
   {kind:'colours',page:'colour',at:'swim.colour',label:'Swimwear, for the onsen',palette:PALETTE.cloth,cloth:true},
   // What they wear behind Umi-no-yu's noren: grown-ups choose; children wear swimwear. (Past the bath doors, in the shared
   // bath, everybody wears swimwear.)
+  {kind:'chips',page:'style',at:'swim.style',list:['auto','trunks','onepiece','skirted'],label:'Swimwear'},
   {kind:'chips',page:'style',at:'swim.bath',list:['towel','swimwear'],label:'Behind the noren at Umi-no-yu',when:r=>wearsBathTowel(r)},
   {kind:'note',page:'style',text:BATH_CHILD_NOTE,when:r=>!wearsBathTowel(r)}]},
  {id:'shoes',name:'Shoes',wardrobe:true,controls:[
@@ -1029,7 +1030,7 @@ export function openCreator({recipe:start=CAST_RECIPES.Johansson,onSave=()=>{},o
     body.append(b);
    }else if(control.kind==='chips'){
     const row=el('div',{className:'shm-chips'});
-    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);if(control.at==='swim.bath')showIn(value==='towel'?'towel':'swim');};row.append(b);}
+    for(const value of control.list.filter(v=>!control.at.startsWith('outfit')||outfitAllowedFor(wardrobeOwner,{...recipe.outfit,[control.at.split('.')[1]]:v}))){const b=el('button',{type:'button',textContent:LABEL[value]||value[0].toUpperCase()+value.slice(1)});b.setAttribute('aria-pressed',String(get(recipe,control.at)===value));b.onclick=()=>{change(control.at,value);pressed(row,b);if(control.at==='swim.bath')showIn(value==='towel'?'towel':'swim');if(control.at==='swim.style')showIn('swim');};row.append(b);}
     body.append(row);
    }else if(control.kind==='fabric'){
     const b=el('button',{type:'button',className:'shm-pill',textContent:'Design fabric'});

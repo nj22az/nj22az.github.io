@@ -19,6 +19,9 @@ import * as THREE from '../../vendor/three.module.js';
  * It runs in the vertex shader, on the bones' pose this frame, so it costs nothing on the
  * CPU and never lags a frame behind. `fitPoint` is the same sum in JavaScript, for tests.
  */
+/** Stride stays continuous across the whole skirt; its waist stays on the hips.
+ * Longer skirts need less angular pull to travel the same distance at the hem. */
+export const SKIRT_FOLLOW=Object.freeze({stride:.35,shear:.06,lateral:.28,spread:.18,release:.75});
 const GLSL=`
 attribute float towelFit;
 uniform vec3 uLegA[4];
@@ -30,6 +33,7 @@ uniform vec3 uTorso;
 uniform vec3 uTorsoY;
 uniform float uSeat;
 uniform vec4 uSkirt;
+uniform vec4 uSkirtMotion;
 vec3 towelCapsule(vec3 p,vec3 a,vec3 b,vec2 r){
  vec3 ab=b-a;float u=clamp(dot(p-a,ab)/max(dot(ab,ab),1e-8),0.,1.);
  vec3 q=a+ab*u,d=p-q;float l=length(d),rad=mix(r.x,r.y,u);
@@ -53,16 +57,18 @@ vec3 towelFitPoint(vec3 p){
 vec3 skirtSurfacePoint(vec3 p,vec3 rest){
  vec3 la=(uHips*vec4(uLegA[0],1.)).xyz,lb=(uHips*vec4(uLegB[0],1.)).xyz;
  vec3 ra=(uHips*vec4(uLegA[1],1.)).xyz,rb=(uHips*vec4(uLegB[1],1.)).xyz;
- vec3 axis=((lb-la)+(rb-ra))*.5;
- float angle=clamp(atan(axis.z,-axis.y),-.35,2.);
+ float angle=uSkirtMotion.x;
  float down=clamp((uSkirt.x-rest.y)/uSkirt.y,0.,1.);
- float bend=angle*smoothstep(0.,.65,down),c=cos(bend),s=sin(bend);
+ float side=clamp(rest.x/max(uTorso.x,1e-6),-1.,1.);
+ float loose=clamp((uTorsoY.y-rest.y)/max(uSkirt.y-uSkirt.x+uTorsoY.y,1e-6),0.,1.);
+ float walking=1.-smoothstep(.6,1.3,angle);
+ float bend=angle*smoothstep(0.,.65,down)+uSkirtMotion.y*${SKIRT_FOLLOW.stride}*side*smoothstep(0.,${SKIRT_FOLLOW.release},loose)*walking,c=cos(bend),s=sin(bend);
  vec3 h=rest;float y=rest.y-uTorsoY.y;
  h.y=uTorsoY.y+y*c+rest.z*s*mix(1.,.4,smoothstep(.3,1.3,angle));
  h.z=rest.z*c-y*s;
  // A broad, gentle shear follows the leading leg without scissoring panels.
- float side=clamp(rest.x/max(uTorso.x,1e-6),-1.,1.);
- h.z+=side*((lb.z-la.z)-(rb.z-ra.z))*.22*down*down;
+ h.z+=side*((lb.z-la.z)-(rb.z-ra.z))*${SKIRT_FOLLOW.shear}*down*down;
+ h.x+=(uSkirtMotion.z*${SKIRT_FOLLOW.lateral}+uSkirtMotion.w*${SKIRT_FOLLOW.spread}*side)*loose*loose*walking;
  // Seated cloth spans from the fixed waistband to a smooth hem over the
  // knees in front and the seat behind, rather than rotating a whole hoop.
  float radial=max(length(vec2(rest.x*uTorso.y/uTorso.x,rest.z)),1e-6);
@@ -76,10 +82,12 @@ vec3 skirtSurfacePoint(vec3 p,vec3 rest){
  return mix(h,p,.06*down);
 }
 vec3 skirtSurfaceNormal(vec3 n,vec3 rest){
- vec3 axis=(mat3(uHips)*((uLegB[0]-uLegA[0])+(uLegB[1]-uLegA[1])))*.5;
- float angle=clamp(atan(axis.z,-axis.y),-.35,2.);
+ float angle=uSkirtMotion.x;
  float down=clamp((uSkirt.x-rest.y)/uSkirt.y,0.,1.);
- float bend=angle*smoothstep(0.,.65,down),c=cos(bend),s=sin(bend);
+ float side=clamp(rest.x/max(uTorso.x,1e-6),-1.,1.);
+ float loose=clamp((uTorsoY.y-rest.y)/max(uSkirt.y-uSkirt.x+uTorsoY.y,1e-6),0.,1.);
+ float walking=1.-smoothstep(.6,1.3,angle);
+ float bend=angle*smoothstep(0.,.65,down)+uSkirtMotion.y*${SKIRT_FOLLOW.stride}*side*smoothstep(0.,${SKIRT_FOLLOW.release},loose)*walking,c=cos(bend),s=sin(bend);
  return normalize(mat3(uHipsInv)*vec3(n.x,n.y*c+n.z*s,n.z*c-n.y*s));
 }
 
@@ -87,8 +95,9 @@ vec3 skirtSurfaceNormal(vec3 n,vec3 rest){
 const NO_SEAT=-1e6;
 
 /** The fit for one avatar: its uniforms, refreshed from the bones, the shader patch and the JS twin. */
-export function createTowelFit(avatar,mesh){
+export function createTowelFit(avatar,mesh,garmentRecipe=avatar.recipe){
  const m=avatar.measure,clear=.004*m.k,bones=avatar.bones;
+ const spec=skirtSpec({...m,panelSkirt:garmentRecipe.outfit.bottom==='skirt'&&garmentRecipe.outfit.skirtCut==='panel'},garmentRecipe.outfit.bottom);
  // The legs as addBody makes them: radius legR*1.02 at the hip tapering to .86 at the ankle.
  const legLength=m.hipY-m.foot,legR=down=>m.legR*(1.02-.16*down/legLength)+clear;
  const hipRatio=m.hips/m.width;
@@ -102,7 +111,8 @@ export function createTowelFit(avatar,mesh){
   uTorso:{value:new THREE.Vector3(m.width/2*hipRatio,m.depth/2*hipRatio,clear)},
   uTorsoY:{value:new THREE.Vector3(m.hipY-m.torso*.08,m.hipY+m.torso*.05,m.hipY+m.torso*.15)},
   uSeat:{value:NO_SEAT},
-  uSkirt:{value:new THREE.Vector4(skirtSpec(m,avatar.recipe.outfit.bottom).waist,skirtSpec(m,avatar.recipe.outfit.bottom).length,clear,m.depth)},
+  uSkirt:{value:new THREE.Vector4(spec.waist,spec.length,clear,m.depth)},
+  uSkirtMotion:{value:new THREE.Vector4()},
  };
  const hipsIndex=mesh.skeleton.bones.indexOf(bones.hips),inverse=new THREE.Matrix4(),a=new THREE.Vector3(),b=new THREE.Vector3(),down=new THREE.Vector3();
  const legs=[['thighL','kneeL'],['thighR','kneeR'],['kneeL','footL'],['kneeR','footR']];
@@ -114,12 +124,17 @@ export function createTowelFit(avatar,mesh){
   uniforms.uHips.value.copy(posed).invert();
   // Seated (on a chair, a wash stool or a bath step) when both thighs are raised well
   // forward of the hips: the cloth under them rests on the seat, level with their underside.
-  let seated=true,lowest=Infinity;
+  let seated=true,lowest=Infinity,axisY=0,axisZ=0,angleL=0,angleR=0,dxL=0,dxR=0;
   for(let i=0;i<2;i++){
    a.copy(uniforms.uLegA.value[i]).applyMatrix4(uniforms.uHips.value);b.copy(uniforms.uLegB.value[i]).applyMatrix4(uniforms.uHips.value);
-   if(down.subVectors(b,a).normalize().y<-Math.cos(1.1))seated=false;
+   down.subVectors(b,a);axisY+=down.y;axisZ+=down.z;
+   const angle=THREE.MathUtils.clamp(Math.atan2(down.z,-down.y),-.8,2);
+   if(i===0){angleL=angle;dxL=down.x;}else{angleR=angle;dxR=down.x;}
+   if(down.normalize().y<-Math.cos(1.1))seated=false;
    lowest=Math.min(lowest,uniforms.uLegA.value[i].y);
   }
+  // Read once per drawn mesh/frame; no per-vertex trigonometric pose extraction.
+  uniforms.uSkirtMotion.value.set(THREE.MathUtils.clamp(Math.atan2(axisZ,-axisY),-.35,2),(angleL-angleR)*Math.min(1,m.thigh/spec.length),(dxL+dxR)*.5,(dxL-dxR)*.5);
   uniforms.uSeat.value=seated?Math.max(lowest-legR(0),Number.isFinite(avatar.seatLevel)?avatar.seatLevel:-Infinity):NO_SEAT;
   return uniforms;
  }
@@ -131,10 +146,11 @@ export function createTowelFit(avatar,mesh){
    const S=u.uSkirt.value;
    a.copy(u.uLegA.value[0]).applyMatrix4(u.uHips.value);b.copy(u.uLegB.value[0]).applyMatrix4(u.uHips.value);ab.subVectors(b,a);
    q.copy(u.uLegA.value[1]).applyMatrix4(u.uHips.value);d.copy(u.uLegB.value[1]).applyMatrix4(u.uHips.value).sub(q);
-   const angle=THREE.MathUtils.clamp(Math.atan2((ab.z+d.z)*.5,-(ab.y+d.y)*.5),-.35,2);
-   const down=THREE.MathUtils.clamp((S.x-rest.y)/S.y,0,1),bend=angle*THREE.MathUtils.smoothstep(down,0,.65),c=Math.cos(bend),sn=Math.sin(bend),y=rest.y-u.uTorsoY.value.y;
-   const side=THREE.MathUtils.clamp(rest.x/Math.max(u.uTorso.value.x,1e-6),-1,1),hip=(a.y+q.y)*.5;
-   h.set(rest.x,u.uTorsoY.value.y+y*c+rest.z*sn*THREE.MathUtils.lerp(1,.4,THREE.MathUtils.smoothstep(angle,.3,1.3)),rest.z*c-y*sn+side*(ab.z-d.z)*.22*down*down);
+   const motion=u.uSkirtMotion.value,angle=motion.x;
+   const down=THREE.MathUtils.clamp((S.x-rest.y)/S.y,0,1),side=THREE.MathUtils.clamp(rest.x/Math.max(u.uTorso.value.x,1e-6),-1,1);
+   const loose=THREE.MathUtils.clamp((u.uTorsoY.value.y-rest.y)/Math.max(S.y-S.x+u.uTorsoY.value.y,1e-6),0,1),walking=1-THREE.MathUtils.smoothstep(angle,.6,1.3);
+   const bend=angle*THREE.MathUtils.smoothstep(down,0,.65)+motion.y*SKIRT_FOLLOW.stride*side*THREE.MathUtils.smoothstep(loose,0,SKIRT_FOLLOW.release)*walking,c=Math.cos(bend),sn=Math.sin(bend),y=rest.y-u.uTorsoY.value.y,hip=(a.y+q.y)*.5;
+   h.set(rest.x+(motion.z*SKIRT_FOLLOW.lateral+motion.w*SKIRT_FOLLOW.spread*side)*loose*loose*walking,u.uTorsoY.value.y+y*c+rest.z*sn*THREE.MathUtils.lerp(1,.4,THREE.MathUtils.smoothstep(angle,.3,1.3)),rest.z*c-y*sn+side*(ab.z-d.z)*SKIRT_FOLLOW.shear*down*down);
    const radial=Math.max(Math.hypot(rest.x*u.uTorso.value.y/u.uTorso.value.x,rest.z),1e-6),face=THREE.MathUtils.clamp(rest.z/radial,-1,1);
    const reach=S.y*down*1.12,knee=Math.max((b.z+d.z+q.z)*.5,0)+u.uLegR.value[0].x,over=Math.max(reach-knee,0);
    q.set(rest.x,THREE.MathUtils.lerp(S.x,hip+u.uLegR.value[0].x*face-S.y*.14*Math.max(face,0),down)-over*Math.max(face,0),rest.z*(1-.75*down*Math.max(face,0))+Math.min(reach,knee)*Math.max(face,0));

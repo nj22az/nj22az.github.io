@@ -3,7 +3,6 @@
 # When a known-failing test is fixed, add it here. Run locally: node tools/ci-guard.mjs
 runtime-package.test.mjs
 edition.test.mjs
-tree-rebuild.test.mjs
 english-language.test.mjs
 sign-backs.test.mjs
 ground-standard.test.mjs
@@ -98,3 +97,11 @@ face-lighting.test.mjs
 
 # Portable fabric data and opt-in pressed-pleat fit/motion.
 fabric.test.mjs
+
+# Per-leg skirt follow, waist anchors and alternate wardrobe fitting.
+skirt-motion.test.mjs
+
+# Shared swimsuit/trunks selection, coverage, fit and saved garment choice.
+swimwear.test.mjs
+
+tree-rebuild.test.mjs

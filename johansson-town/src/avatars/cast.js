@@ -28,7 +28,7 @@ export const ORIGINAL_THUAN_RECIPE=R({name:'Thuan',
  brows:{style:'arched',colour:'#2a1d16',size:.42,height:.55,tilt:.5},
  nose:{style:'dot',size:.35,height:.5},mouth:{style:'smile',colour:'#cc3d52',size:.42,height:.5},
  glasses:{style:'round',colour:'#e06a7a'},blush:.65,
- outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6'}});
+ outfit:HARBOUR_POLO_OUTFIT,swim:{colour:'#e98aa6',style:'onepiece'}});
 const FEMALE_NEIGHBOURS=new Set(['Thuan','Miss Higa','Grandmother Higa','Grandmother Chinen','Mrs Nakamura','Mrs Kinjō']);
 /** The birthday the town keeps (people/birthdays.js) is the one the profile shows, in World and in Studio. */
 function withBirthday(recipe,name){
@@ -71,7 +71,7 @@ export const CAST_RECIPES=castSet({
  // The creator's own design for her, approved in Johansson Studio on 18 October 2026 (thuan-studio-design.js). Its
  // body silhouette is Studio's unset 'neutral', which the town resolves by who she is, as for everyone (castSet above):
  // the bath side, the swimwear and the after-bath clothes all follow it.
- Thuan:R(THUAN_STUDIO_DESIGN),
+ Thuan:R({...THUAN_STUDIO_DESIGN,swim:{...THUAN_STUDIO_DESIGN.swim,style:'onepiece'}}),
  // Thuan's middle sister: slim, a high ponytail, a plain white tee and blue shorts.
  // Stubborn but friendly: the flat set mouth and straight brows, and the grin under them.
  Thao:R({name:'Thao',body:{height:.44,build:.3,silhouette:'feminine',skin:'#ecc6a0'},head:{size:.46,shape:.4,form:'oval',jaw:.3,cheeks:.4},
@@ -175,7 +175,7 @@ const aged=(recipe,name)=>{const age=ageClass(AGE_OF.get(name)),named=name&&!rec
 export function recipeFor(name='',{looks=LOOKS}={}){
  const look=Object.hasOwn(looks,name)?looks[name]:null;
  const canonical=look?.set?normalizeRecipe(applyLook(baseRecipe(name),look.set)):baseRecipe(name);
- return name==='Vy'?adoptResidentAppearance(name,canonical):residentRecipe(name)||canonical;
+ return ['Vy','Thuan'].includes(name)?adoptResidentAppearance(name,canonical):residentRecipe(name)||canonical;
 }
 
 

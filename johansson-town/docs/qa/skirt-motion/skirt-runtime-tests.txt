@@ -1,0 +1,24 @@
+✔ panel skirt, controls, sculpted head and studio proportions round-trip; old recipes stay classic (3.872811ms)
+✔ authored topology keeps the 1472-triangle budget and fits actual upper torso surfaces across wearers (188.202819ms)
+✔ panel mesh uses shared bones, safe support weights, fitted waist, outfit switching and continuous poses (1876.664308ms)
+✔ published runtime matches the current source rather than an older build (521.76868ms)
+✔ published page uses one compiled audio/boot graph with local hashed dependencies (124.10936ms)
+✔ every stylesheet link carries a hash of the file it points at (18.039073ms)
+✔ delivered chunks contain no retired combat handlers, menus, damage simulation or rewards (115.781492ms)
+✔ original Thuận has no earrings or necklace (0.905637ms)
+✔ skirt front follows the thighs while the rear keeps hip support (175.670685ms)
+✔ seated front hem is supported continuously across the lap and stays finite (248.485325ms)
+✔ side hem follows its own leg through an alternating stride (159.823435ms)
+✔ walking cloth does not stretch adjoining panels into sharp spikes (232.715481ms)
+✔ alternating legs move the corresponding sides of the actual shared skirt instead of cancelling to a stationary hoop (173.420535ms)
+✔ the waistband stays attached to the hips through strides and a body turn, for every shared skirt construction (351.163582ms)
+✔ short, panel, pleated, pressed and long skirts retain finite continuous fitted edges through a moving stride across wearers (1217.410631ms)
+✔ temporary sailor and shopping skirts use their own dimensions, continuous cloth fit, fitted ink and shadow (748.779958ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2732.127789

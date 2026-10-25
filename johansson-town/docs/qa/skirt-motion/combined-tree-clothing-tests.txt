@@ -1,0 +1,33 @@
+✔ the MCP-reproduced police-box approach stays open in both directions (1.379543ms)
+✔ the retired lawn treeline adds neither meshes nor invisible trunk collision (0.193479ms)
+✔ the visible school-gate clearing is not closed by tree collision (0.204967ms)
+✔ Kitano-jima at startup: its ground, airport, sites and a distant view, none of its plants, district or houses (3157.774903ms)
+✔ built on demand, it is the same island the full build makes: colliders, prompts and meshes (2499.011746ms)
+✔ prepared on the way: a step at a time, and a placement in the middle finishes it at once (1122.671641ms)
+✔ published runtime matches the current source rather than an older build (412.182972ms)
+✔ published page uses one compiled audio/boot graph with local hashed dependencies (156.499874ms)
+✔ every stylesheet link carries a hash of the file it points at (8.7899ms)
+✔ delivered chunks contain no retired combat handlers, menus, damage simulation or rewards (98.850015ms)
+✔ alternating legs move the corresponding sides of the actual shared skirt instead of cancelling to a stationary hoop (188.891643ms)
+✔ the waistband stays attached to the hips through strides and a body turn, for every shared skirt construction (324.474247ms)
+✔ short, panel, pleated, pressed and long skirts retain finite continuous fitted edges through a moving stride across wearers (1289.187106ms)
+✔ temporary sailor and shopping skirts use their own dimensions, continuous cloth fit, fitted ink and shadow (719.240517ms)
+✔ automatic swimwear gives male bodies trunks and female bodies a swimsuit regardless of hair or facial features (5.789275ms)
+✔ swimwear choice and colour survive designs/share codes, with an automatic default for old saves (4.106458ms)
+✔ every resident has the correct visible swimming garment, chest coverage and bare lower legs (15609.073162ms)
+✔ all swimwear cuts fit body extremes without non-finite geometry or an unbounded mesh (16380.067851ms)
+✔ Thuan explicitly wears a one-piece; old resident/player looks retain their identity during the swimwear-only upgrade (3.134961ms)
+✔ seven CAD families have finite, opaque indexed geometry at three progressively smaller LODs (98.670207ms)
+✔ every palm and forest variant retains its size and crown centre in the distant model (13.249587ms)
+✔ near and distant tropical trees use the same positions, variant partition and palm lean (138.860619ms)
+✔ trunk envelopes use bark and retain a positive standing footprint without making the crown solid (9.609576ms)
+✔ the accepted cherry builder and its seasonal geometry are unchanged (57.740259ms)
+✔ full preview keeps the island populations and typed tropical trunks while retaining the cherry and town routes (2656.597704ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32505.487432
