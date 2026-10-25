@@ -28,3 +28,13 @@ After the reviewed release-branch merge, the release workflow must pass the same
 ## Physical acceptance
 
 Physical Steam Deck and 8BitDo Bluetooth acceptance remain **unverified**. Simulated Gamepad and Steam shortcut/layout fixtures do not establish success on the owner's hardware. Preserve the existing installer configuration and do not claim a new hardware controller correction.
+
+## Frozen-candidate follow-up — 25 October
+
+PR #396 was superseded by [#397](https://github.com/nj22az/nj22az.github.io/pull/397), using the existing `claude/peaceful-johnson-103tja` Linux preparation branch. Concurrent hotel-page updates on main cancelled the first run; no new branch or release was created. Frozen source `affe63e4` equals production main `aa792244` exactly; its World source is unchanged from the earlier tested candidate.
+
+Both predecessor World guards and the frozen World guard passed **413/413**. The isolated local z-fighting run with an 8 GB heap passed **13/13**; a default 2 GB run exhausted its heap.
+
+Frozen Linux run [40160734741](https://github.com/nj22az/nj22az.github.io/actions/runs/40160734741) passed packaging, all **92 WebGL cases / 19 Looks**, controller recovery, real native startup/disk saves and offline startup. Minimum eye contrast **0.0646** against **0.045**. Its full-console check failed at first-entry help readiness: the fixed 500 ms delay observed `controls`, while the subsequent diagnostic already showed `help` and an open menu. No game crash was visible. The fixture now waits for the actual help/menu state before the same unchanged assertions, matching the existing focused controller-repair fixture. Complete acceptance must pass again before merging.
+
+Four dim Natural/Sketchbook/Cartoon/Oil captures from the predecessor package were visually inspected; painted features remain readable. These do not replace final frozen/release evidence. Published Linux and website downloads remain 0.2.19. Physical Steam Deck/8BitDo acceptance remains unverified.
