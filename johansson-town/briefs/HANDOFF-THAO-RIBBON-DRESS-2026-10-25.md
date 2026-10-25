@@ -75,3 +75,11 @@ Final style-focused checks **14/14 pass** ([log](../docs/qa/thao-dress/rigged-ey
 Final **462/462 World guard checks pass, 91 files, 333 seconds**, including runtime integrity, the rigged eyes, expression caching, garment fitting, paired poses and the existing World guard. Command: `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs --test-concurrency=2`. [Full current log](../docs/qa/thao-dress/rigged-eyes-full-guard.txt). No guard skips or failures. This result supersedes the earlier painted-eye 452-check delivery result for the final candidate. `git diff --cached --check` passes.
 
 Signed off: Codex — final elegant Thao styling, shared rigged eyes, Blender source refresh, actual avatar/room screenshots, visual comparison and full combined regression complete. Development publication verification follows; no main/Pages or Linux publication and no physical-device acceptance is claimed.
+
+## Published development verification
+
+**Published and verified:** `development` implementation commit **[`4bd0eb74ecfb63e49e0e6b0018e637c2b10702cf`](https://github.com/nj22az/nj22az.github.io/commit/4bd0eb74ecfb63e49e0e6b0018e637c2b10702cf)**, parent `1ac0ad6e4646bf75130dce9d1c90978f2cb38f6d`. Connected GitHub publication used a non-forced expected-head update. A fresh branch-ref read returns that exact commit, and a fresh Git commit read returns tree **`cd8e269ce3592da5f879bff6da81f2a39dbcfddb`**, exactly equal to the staged tree tested above. Every uploaded blob was checked against its local Git SHA. This includes the final 462-check log, refreshed editable Blender model and actual screenshots.
+
+The following documentation-only commit records this verification and updates the handover index; it does not change the tested runtime or assets. Work remains a development review. The next concrete step is the owner's aesthetic review of the saved images; any later main promotion must select this character work without promoting the branch's unrelated architecture prototypes.
+
+Signed off: Codex — requested Thao continuation complete and published to development; rigged-eye and appearance follow-ups incorporated. Physical iPad/Deck, continuous motion and main/Pages/Linux publication remain unclaimed.
