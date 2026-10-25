@@ -171,6 +171,18 @@ def render_row(review):
           </tr>'''
 
 
+def icon(name):
+    paths = {
+        'hotel': '<path d="M4 21V3h16v18M2 21h20M8 7h2m4 0h2M8 11h2m4 0h2M10 21v-6h4v6"/>',
+        'pin': '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+        'parking': '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+        'note': '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/>',
+        'check': '<path d="m5 12 4 4L19 6"/>',
+        'arrow': '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+    }
+    return '<svg class="hotel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths[name] + '</svg>'
+
+
 def render_review(review):
     paragraphs = '\n'.join('        <p>' + e(paragraph) + '</p>' for paragraph in review['review'])
     category = parking_category(review)
@@ -183,12 +195,36 @@ def render_review(review):
         links += f'<a href="{e(review["parkingUrl"])}">Parking information</a>'
     if review['coordinates'] and review['coordinates']['sourceUrl'] not in (review['hotelUrl'], review['parkingUrl']):
         links += f'<a href="{e(review["coordinates"]["sourceUrl"])}">Hotel map location</a>'
+    verification = review['parkingVerification']
+    registration = review.get('parkingDetails', {}).get('registrationAtReception')
+    registration_note = ('Register at reception' if registration is True else
+                         'No reception registration required' if registration is False else
+                         'Registration: see notes; requirements may be unstated')
+    # Older entries describe registration in their summary; retain that wording verbatim.
+    if 'parkingDetails' not in review:
+        registration_note = 'Check the parking instructions below'
+    map_action = (f'<a href="#hotel-map" data-hotel-focus="{e(review["id"])}" hidden>{icon("pin")}Show on map</a>'
+                  if review['coordinates'] else '<span class="hotel-unmapped">Map location awaiting verification</span>')
+    paid_total = total_paid(review)
+    nights = review.get('nights')
+    duration = f'{nights} ' + ('night' if nights == 1 else 'nights') if nights else 'Nights not recorded'
+    price = (f'<p class="hotel-card-price">Stay paid <strong>{e(review["currency"] or review.get("currencyLabel") or "")} {money(paid_total)}</strong> · {e(duration)}</p>'
+             if paid_total is not None else '')
     return f'''      <article class="hotel-review" id="review-{e(review['id'])}" data-hotel-note="{e(review['id'])}" aria-labelledby="title-{e(review['id'])}">
-        <h3 id="title-{e(review['id'])}">{e(review['name'])} — {e(review['city'])}</h3>
+        <header class="hotel-card-header"><span class="hotel-card-avatar">{icon('hotel')}</span><div><p class="hotel-card-place">{e(review['city'])} · {e(review['country'])}</p><h3 id="title-{e(review['id'])}">{e(review['name'])}</h3></div></header>
+        <p class="hotel-card-parking hotel-parking-{category}">{icon('parking')}<strong>{e(PARKING_CATEGORIES[category])}</strong></p>
+        <p class="hotel-card-summary">{e(review['parkingSummary'])}</p>
+        <p class="hotel-card-condition">{icon('note')}{e(registration_note)}</p>
+{price}
+        <p class="hotel-card-checked">{icon('check')}Parking checked <time datetime="{e(verification['checkedOn'])}">{date_label(verification['checkedOn'])}</time></p>
+        <div class="hotel-card-actions">{map_action}<a href="{e(review['hotelUrl'])}">{icon('arrow')}Hotel website</a></div>
+        <details class="hotel-card-details"><summary>{icon('note')}Full notes, prices &amp; sources</summary>
         <p class="hotel-review-meta">{e(full_address(review))}<br>Recorded <time datetime="{e(review['recordedOn'])}">{date_label(review['recordedOn'])}</time></p>
+        <p>{e(review['priceNote'])}</p>
 {paragraphs}
         <ul class="hotel-review-tags" aria-label="Country and parking tags">{tag_list}</ul>
         <p class="hotel-source">{e(review['sourceNote'])}<br>{links}</p>
+        </details>
       </article>'''
 
 
@@ -228,20 +264,20 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotels-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=4">
+  <link rel="stylesheet" href="/css/hotels.css?v=5">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=2">
 </head>
-<body>
+<body class="hotel-site">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav id="site-nav" class="site-nav"></nav>
   <main id="main-content" class="hotel-page">
     <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
     <header>
-      <p class="hotel-eyebrow">The travel register</p>
+      <p class="hotel-eyebrow">Field notes · Hotels &amp; parking</p>
       <h1>Hotels &amp; Parking</h1>
-      <p class="hotel-intro">Find hotels with confirmed free guest parking in Sweden, Denmark, Norway and Finland. Compare parking arrangements and use the map to see the hotels that match your filters.</p>
-      <p class="hotel-findings-note"><strong>Swedish Scandic update: 18 reviewed hotels with a free outdoor option on weekdays and weekends.</strong> This is a verified subset, not the complete chain. The free-parking label applies to the named area only. Registration instructions and paid garages are stated in each entry. <a href="/blog/hotels/scandic-sweden-findings-2026-10-24.json">View the dated evidence records</a>.</p>
+      <p class="hotel-intro">A growing collection of places to stay, with parking checked before you arrive. Browse the hotel feed or find your next stop on the map.</p>
+      <p class="hotel-findings-note"><strong>{count} hotels · {sum(r['freeParking'] for r in reviews)} free-parking options · {len(map_records)} verified map locations.</strong> Free applies to the specified parking area. Registration and paid alternatives remain in each entry. <a href="#hotel-method-title">How the register works</a>.</p>
     </header>
     <section aria-labelledby="hotel-register-title">
       <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
@@ -254,18 +290,27 @@ def build(reviews):
         <button type="reset" class="hotel-reset">Reset filters</button>
       </form>
       <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
+      <nav class="hotel-view-links" aria-label="Hotel views"><a href="#hotel-notes-title">{icon('hotel')}Hotel feed</a><a href="#hotel-map-title">{icon('pin')}Map</a></nav>
+      <div class="hotel-discovery">
+      <section class="hotel-notes" data-hotel-notes aria-labelledby="hotel-notes-title">
+        <h2 id="hotel-notes-title">Hotel feed</h2>
+        <p class="hotel-feed-intro">Parking facts and travel notes. Open an entry for its full conditions and sources.</p>
+{notes}
+      </section>
       <section class="hotel-map-section" aria-labelledby="hotel-map-title">
-        <h3 id="hotel-map-title">Map of selected hotels</h3>
-        <p class="hotel-map-intro">The map follows the filters above. Verified map locations are available for {len(map_records)} of {count} hotels. Other hotels remain in the table with their addresses; approximate pins are not used. Select a marker to read its parking notes.</p>
+        <h3 id="hotel-map-title">{icon('pin')}Map of selected hotels</h3>
+        <p class="hotel-map-intro">{len(map_records)} of {count} hotels have verified locations. The map follows your filters. Select a marker for parking details.</p>
         <div class="hotel-map-controls" data-hotel-map-controls hidden>
           <button type="button" id="hotel-locate">Show my location</button>
           <button type="button" id="hotel-fit-map">Fit selected hotels</button>
           <button type="button" id="hotel-clear-location" hidden>Clear my location</button>
         </div>
-        <div id="hotel-map" class="hotel-map" role="region" aria-label="Filtered hotels and your location" hidden></div>
+        <div id="hotel-map" class="hotel-map" role="region" tabindex="-1" aria-label="Filtered hotels and your location" hidden></div>
         <p id="hotel-map-status" class="hotel-map-status" role="status" aria-live="polite">Enable JavaScript to use the map. All hotel addresses are listed below.</p>
         <p class="hotel-map-privacy">Show my location asks your browser for permission. Your position is used for this map view and is not saved in the register. Map tiles are provided by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
       </section>
+      </div>
+      <details class="hotel-table-details"><summary>{icon('note')}Compare the full register</summary>
       <table class="hotel-table" data-hotel-table role="table">
         <caption>Room and stay totals cover the stated number of nights, not a nightly rate. Stay total = room + parking. Unknown prices remain unrecorded; these are not current advertised rates.</caption>
         <colgroup><col style="width:18%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:19%"><col style="width:23%"><col style="width:16%"></colgroup>
@@ -274,12 +319,9 @@ def build(reviews):
 {rows}
         </tbody>
       </table>
+      </details>
       <div class="hotel-empty" data-hotel-empty hidden><strong>No hotels match these filters.</strong><p>Change a filter or choose All parking to see the other options. Reset filters returns to free parking.</p></div>
       <p class="hotel-price-note">The spreadsheet contains every hotel in the register. Free-parking tags refer to the specified guest parking option; charging a vehicle or choosing a paid garage can cost extra.</p>
-    </section>
-    <section class="hotel-notes" data-hotel-notes aria-labelledby="hotel-notes-title">
-      <h2 id="hotel-notes-title">Reviews &amp; parking notes</h2>
-{notes}
     </section>
     <section class="hotel-method" aria-labelledby="hotel-method-title">
       <h2 id="hotel-method-title">What this register records</h2>
@@ -294,7 +336,7 @@ def build(reviews):
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script src="/blog/hotels/hotels.js?v=3"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=3"></script>
+  <script src="/blog/hotels/hotels-map.js?v=4"></script>
 </body>
 </html>
 '''

@@ -1,6 +1,7 @@
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSakuraHotFood} from './sakura-counter-detail.js';
+import {SAKURA_BAND_DESIGN,runLength,boards,alongRun} from './sakura-band.js';
 
 /**
  * The cheerful half of a real konbini, and Thuan's back office.
@@ -104,43 +105,65 @@ export function buildSakuraCheer(room,{anchor,action}){
 }
 
 /**
- * Inner faces of the shop-floor walls, the band's height, and the counter's customer face.
- * Everything stops short of the shop window, which is at local z 3.61: past it, the
- * interior shows on the street side of the glass.
+ * The wall band (sakura-band.js, drawings SK-WB-001..003 rev A): its heights and runs in metres for the stripe under
+ * it (sakura-surfaces.js), and the counter's customer face. `y0` is the bead's bottom, under which the stripe hangs.
  */
-export const SAKURA_BAND=Object.freeze({y0:2.56,y1:2.86,runs:Object.freeze([
- // Both runs stop at the restroom (x < -4.02, z < -2.42), which has its own tiles; the back wall's stops at the small
- // office's west wall (x 4.56), so the shop's lettering does not run on inside the office.
- {x:-6.8,z0:-2.42,z1:3.2,yaw:Math.PI/2},
- {z:-3.93,x0:-4.02,x1:4.56,yaw:0},
- {x:6.8,z0:-1.1,z1:3.52,yaw:-Math.PI/2},
-]),counter:{x:4.52,z0:.1,z1:3.52,y0:.08,y1:FURNITURE_HEIGHTS.serviceCounter-.08}});
-export function buildSakuraBand(room){
- const B=SAKURA_BAND,h=B.y1-B.y0;
- // A family shop's boards rather than a chain's band: planed wood round the top of the
- // walls, lettered by hand with what the shop has always sold.
- const tex=sign(1024,128,(ctx,w,H)=>{
-  ctx.fillStyle='#d9b27a';ctx.fillRect(0,0,w,H);
-  for(let i=0;i<14;i++){ctx.strokeStyle=i%2?'rgba(120,80,40,.18)':'rgba(255,240,210,.18)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,8+i*8.5);ctx.bezierCurveTo(w*.3,4+i*8.5,w*.6,14+i*8.5,w,8+i*8.5);ctx.stroke();}
-  ctx.fillStyle='#7c5230';ctx.fillRect(0,0,w,6);ctx.fillRect(0,H-6,w,6);
-  ctx.fillStyle='#3a2414';ctx.font=`bold 50px ${MARU}`;ctx.textBaseline='middle';ctx.textAlign='left';ctx.fillText("Sakura Shop",28,H*.5);
-  // The list starts where the name ends and stops short of the crest, at whatever size fits.
-  // Two lines, so the letters stay big enough to read from the aisle.
-  const from=28+ctx.measureText("Sakura Shop").width+34,room=w-52-30-24-from,lines=["Groceries · Daily miscellaneous goods","Stamp · Ship ticket"];
-  let size=28;const widest=()=>Math.max(...lines.map(l=>ctx.measureText(l).width));ctx.font=`bold ${size}px ${MARU}`;
-  while(size>14&&widest()>room){size-=1;ctx.font=`bold ${size}px ${MARU}`;}
-  lines.forEach((l,i)=>ctx.fillText(l,from,H*.5+(i-.5)*size*1.15));
-  ctx.fillStyle='#b8332c';ctx.beginPath();ctx.arc(w-52,H*.5,30,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6e6';ctx.font=`bold 18px ${MARU}`;ctx.textAlign='center';ctx.fillText("Sakura",w-52,H*.52,52);
+const BD=SAKURA_BAND_DESIGN,mm=v=>v/1000;
+export const SAKURA_BAND=Object.freeze({y0:mm(BD.bead.y0),y1:mm(BD.cap.y1),runs:Object.freeze(BD.runs.map(r=>Object.freeze(
+ r.wall==='x'?{x:r.at,z0:Math.min(r.from,r.to),z1:Math.max(r.from,r.to),yaw:r.yaw}:{z:r.at,x0:Math.min(r.from,r.to),x1:Math.max(r.from,r.to),yaw:r.yaw}))),
+ counter:{x:4.52,z0:.1,z1:3.52,y0:.08,y1:FURNITURE_HEIGHTS.serviceCounter-.08}});
+
+/** One run's signwritten face: its planed boards, their joints, and its own lettering, laid out for this wall. */
+function bandFace(run){
+ const L=runLength(run),H=BD.board.y1-BD.board.y0,k=Math.min(.58,4096/L),C=BD.colours;
+ return sign(Math.round(L*k),Math.round(H*k),(ctx,w,h)=>{
+  ctx.scale(k,k);
+  ctx.fillStyle=C.board;ctx.fillRect(0,0,L,H);
+  for(let y=4;y<H;y+=9){ctx.strokeStyle=(y/9)%2<1?'rgba(185,138,82,.45)':'rgba(255,240,210,.25)';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(0,y);ctx.bezierCurveTo(L*.3,y-2,L*.6,y+3,L,y+1);ctx.stroke();}
+  ctx.fillStyle='#6e4c2c';for(const [a] of boards(run).slice(1))ctx.fillRect(a-BD.board.joint/2,0,BD.board.joint,H);
+  for(const it of run.items){
+   if(it.text){ctx.fillStyle=C.ink;ctx.font=`bold ${it.size}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(it.text,it.u,H/2+4,it.w);}
+   else if(it.kind==='crest'){
+    const r=it.size/2,cx=it.u,cy=H/2;
+    ctx.fillStyle=C.red;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=C.cream;ctx.beginPath();ctx.arc(cx,cy,r*.86,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#f2a6b8';for(let q=0;q<5;q++){const a=q*Math.PI*2/5-Math.PI/2;ctx.beginPath();ctx.arc(cx+Math.cos(a)*r*.3,cy-r*.12+Math.sin(a)*r*.3,r*.17,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#f2c21a';ctx.beginPath();ctx.arc(cx,cy-r*.12,r*.1,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=C.red;ctx.font=`bold ${Math.round(r*.36)}px ${MARU}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Sakura',cx,cy+r*.5,r*1.4);
+   }else if(it.kind==='leaf'){
+    ctx.fillStyle='#5c8046';
+    for(const sx of [-1,1]){ctx.beginPath();ctx.moveTo(it.u+sx*6,H/2);ctx.quadraticCurveTo(it.u+sx*36,H/2-40,it.u+sx*66,H/2+10);ctx.quadraticCurveTo(it.u+sx*30,H/2+16,it.u+sx*6,H/2);ctx.fill();}
+   }
+  }
  });
- tex.wrapS=THREE.RepeatWrapping;
- const make=(length,x,z,yaw)=>{
-  const t=tex.clone();t.needsUpdate=true;t.repeat.set(Math.max(1,Math.round(length/3.2)),1);
-  const m=add(room,new THREE.PlaneGeometry(length,h),new THREE.MeshBasicMaterial({map:t,toneMapped:false}),x,(B.y0+B.y1)/2,z,'Sakura wall band');m.rotation.y=yaw;return m;
- };
- for(const r of B.runs){
-  if(r.x!=null)make(r.z1-r.z0,r.x,(r.z0+r.z1)/2,r.yaw);
-  else make(r.x1-r.x0,(r.x0+r.x1)/2,r.z,r.yaw);
+}
+
+/**
+ * The band in wood: on each wall, a stripe rail and the board (one solid each, from the wall to the board's face, its face
+ * signwritten), a bead between them and a cap on top. Seen from inside the shop, no word repeats and none is cut.
+ */
+function buildBand(room){
+ const C=BD.colours,wood=new THREE.MeshStandardMaterial({color:C.board,roughness:.75}),cap=new THREE.MeshStandardMaterial({color:C.cap,roughness:.6});
+ for(const run of BD.runs){
+  const L=mm(runLength(run)),mid=alongRun(run,runLength(run)/2),wallFace=run.wall==='x'?(run.at<0?-6.86:6.86):-3.99;
+  // Out from the wall: the run's own normal (into the shop).
+  const out=run.wall==='x'?(run.at<0?1:-1):1;
+  const piece=(name,y0,y1,depth,face)=>{
+   const g=new THREE.BoxGeometry(L,mm(y1-y0),mm(depth)),mats=face?[wood,wood,wood,wood,face,wood]:cap;
+   const m=new THREE.Mesh(g,mats);m.name=name;m.rotation.y=run.yaw;
+   const n=wallFace+out*mm(depth)/2;
+   if(run.wall==='x')m.position.set(n,mm(y0+y1)/2,mid.z);else m.position.set(mid.x,mm(y0+y1)/2,n);
+   room.add(m);return m;
+  };
+  const faceMat=new THREE.MeshBasicMaterial({map:bandFace(run),toneMapped:false});
+  piece('Sakura wall band',BD.board.y0,BD.board.y1,BD.board.face,faceMat);
+  piece('Sakura wall band stripe rail',BD.stripe.y0,BD.bead.y0,BD.board.face,wood);
+  piece('Sakura wall band bead',BD.bead.y0,BD.bead.y1,BD.board.face+BD.bead.project);
+  piece('Sakura wall band cap',BD.cap.y0,BD.cap.y1,BD.board.face+BD.cap.project);
  }
+}
+export function buildSakuraBand(room){
+ buildBand(room);
  // The shop's crest now rides on the till canopy, once, rather than on the counter too.
  buildTillCanopy(room);buildCigaretteRack(room);buildTillFloor(room);
 }
@@ -186,7 +209,8 @@ function buildTillCanopy(room){
  * counter. Drawn on one board, so it costs one draw.
  */
 function buildCigaretteRack(room){
- const z0=.6,z1=3.5,y0=2.14,y1=2.52,x=6.8;
+ // Its top stays under the wall band's stripe (sakura-band.js wallClear 2470).
+ const z0=.6,z1=3.5,y0=2.14,y1=2.43,x=6.8;
  const packs=['#f4f1ea|#1e3c8c','#ffffff|#c8102e','#1d1d1d|#d4af37','#f4f1ea|#2e7d32','#2a4a8a|#f4f1ea','#f2e6c8|#7a3b1a','#e8e8e8|#5b6dc1','#c8102e|#ffffff','#f4f1ea|#e07a10','#0f5132|#f4f1ea','#ffffff|#3a7fc0','#3b2b6a|#e8d48a'];
  const tex=sign(2048,256,(ctx,w,H)=>{
   ctx.fillStyle='#ece6d8';ctx.fillRect(0,0,w,H);

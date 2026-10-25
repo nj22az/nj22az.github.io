@@ -86,3 +86,44 @@
 .hotel-findings-note{margin:18px 0 0;padding:14px 16px;border-left:3px solid #15803d;background:var(--surface-raised);font-size:14px;line-height:1.7;color:var(--ink-light)}
 .hotel-findings-note strong{color:var(--ink)}
 .hotel-findings-note a{text-decoration:underline;text-underline-offset:3px}
+
+/* An icon-led feed, with evidence in native disclosure controls. */
+body.hotel-site{min-width:0}
+.hotel-view-links{display:flex;gap:12px;margin:16px 0}
+.hotel-view-links a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border:1px solid var(--border-hover);border-radius:8px;font-size:14px;font-weight:600}
+#hotel-notes-title,#hotel-map-title{scroll-margin-top:100px}
+.hotel-icon{width:22px;height:22px;flex:0 0 22px;vertical-align:middle}
+.hotel-discovery{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:start;margin:26px 0}
+.hotel-discovery .hotel-notes{margin:0;min-width:0}
+.hotel-feed-intro{font-size:14px;line-height:1.6;color:var(--ink-light);margin:10px 0 22px}
+.hotel-discovery .hotel-map-section{position:sticky;top:92px;margin:0;min-width:0;padding:22px;border:1px solid var(--border);border-radius:16px;background:var(--surface-card)}
+.hotel-map-section h3{display:flex;align-items:center;gap:8px}
+.hotel-review{max-width:none;margin:0 0 20px;padding:24px;border:1px solid var(--border);border-radius:16px;background:var(--surface-card);box-shadow:0 3px 16px #00000005}
+.hotel-card-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.hotel-card-header>div{min-width:0}
+.hotel-card-avatar{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;border-radius:12px;background:var(--surface-raised);color:var(--ink)}
+.hotel-card-avatar .hotel-icon{width:28px;height:28px}
+.hotel-review .hotel-card-header h3{font-size:23px;margin:3px 0 0;line-height:1.25;letter-spacing:-.02em}
+.hotel-review p.hotel-card-place{font-size:13px;line-height:1.4;color:var(--ink-light);margin:0}
+.hotel-review p.hotel-card-parking{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:8px;font-size:15px;line-height:1.5;margin:0 0 14px}
+.hotel-card-parking.hotel-parking-free{color:#14532d;background:#dcfce7}
+.hotel-card-parking.hotel-parking-easy{color:#713f12;background:#fef08a}
+.hotel-card-parking.hotel-parking-avoid{color:#7f1d1d;background:#fee2e2}
+.hotel-review p.hotel-card-summary{font-size:17px;line-height:1.65;margin:14px 0}
+.hotel-review p.hotel-card-condition,.hotel-review p.hotel-card-checked{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.65;color:var(--ink-light);margin:12px 0}
+.hotel-review p.hotel-card-checked{flex-wrap:wrap;gap:4px 6px}
+.hotel-card-condition .hotel-icon,.hotel-card-checked .hotel-icon{width:18px;height:18px;flex-basis:18px;margin-top:2px}
+.hotel-review p.hotel-card-price{font-size:14px;line-height:1.6}
+.hotel-card-actions{display:flex;flex-wrap:wrap;gap:8px 22px;border-top:1px solid var(--border);padding-top:10px;margin-top:18px}
+.hotel-card-actions a{display:inline-flex;align-items:center;gap:7px;min-height:44px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:4px}
+.hotel-card-details>summary,.hotel-table-details>summary{display:flex;align-items:center;gap:8px;min-height:48px;cursor:pointer;font-size:14px;font-weight:600;list-style:none}
+.hotel-card-details>summary::after,.hotel-table-details>summary::after{content:'+';margin-left:auto;font-size:22px;font-weight:400}
+.hotel-card-details[open]>summary::after,.hotel-table-details[open]>summary::after{content:'−'}
+.hotel-card-details>summary::-webkit-details-marker,.hotel-table-details>summary::-webkit-details-marker{display:none}
+.hotel-card-details[open]>summary{margin-bottom:16px}
+.hotel-table-details{padding:12px 0;border-block:1px solid var(--border);margin:28px 0}
+.hotel-map{scroll-margin-top:100px}
+.hotel-page summary:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+@media(max-width:1000px){.hotel-discovery{grid-template-columns:minmax(0,1fr)}.hotel-discovery .hotel-map-section{position:static;grid-row:1}.hotel-review{max-width:760px;margin-inline:auto}.hotel-discovery .hotel-notes{width:100%}}
+@media(max-width:600px){.hotel-page{padding-inline:16px}.hotel-review{padding:20px 16px;border-radius:12px}.hotel-discovery{gap:24px}.hotel-discovery .hotel-map-section{padding:16px}.hotel-review .hotel-card-header h3{font-size:21px}.hotel-card-header{gap:10px}.hotel-card-avatar{width:42px;height:42px;flex-basis:42px}.hotel-review p.hotel-card-summary{font-size:16px}}
+@media print{.hotel-discovery{display:block}.hotel-card-actions{display:none}.hotel-review{box-shadow:none}}
