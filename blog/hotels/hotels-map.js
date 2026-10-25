@@ -78,6 +78,11 @@
       var link = document.createElement('a');
       link.href = '#' + reviewId;
       link.textContent = 'Read hotel notes';
+      link.addEventListener('click', function () {
+        var article = document.getElementById(reviewId);
+        var details = article && article.querySelector('details');
+        if (details) details.open = true;
+      });
       box.appendChild(link);
     }
     return box;
@@ -96,6 +101,20 @@
       if (element) element.setAttribute('aria-label', label);
     });
     markers.set(hotel.id, marker);
+  });
+
+  document.querySelectorAll('[data-hotel-focus]').forEach(function (link) {
+    var id = link.dataset.hotelFocus;
+    if (!markers.has(id)) return;
+    link.hidden = false;
+    link.addEventListener('click', function () {
+      if (!visibleIds.has(id)) return;
+      var hotel = hotels.find(function (item) { return item.id === id; });
+      map.invalidateSize();
+      map.setView([hotel.latitude, hotel.longitude], 15, { animate: false });
+      markers.get(id).openPopup();
+      container.focus({ preventScroll: true });
+    });
   });
 
   function selected() {

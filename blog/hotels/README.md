@@ -1,5 +1,17 @@
 # Hotels & Parking
 
+## Map and feed update — 25 October 2026
+
+All 32 hotel records now have verified coordinates. The 16 previously unmapped
+Swedish Scandics use the named hotel marker from their official `/map-view` data;
+see [location evidence](LOCATION-EVIDENCE-2026-10-25.json) and the
+[current handover](HANDOVER-MAP-FEED-2026-10-25.md).
+The icon-led hotel feed and comparison table share filters with the map.
+Cards retain full conditions and sources in native expandable notes. Missing
+points, should a future record lack verification, are excluded from the map and
+counted explicitly. Parking facts and the 37-column CSV conventions are preserved.
+Historical counts and older CSV descriptions below refer to their earlier releases.
+
 ## Current Swedish publication — 24 October 2026
 
 The latest owner instruction is to establish confirmed free guest-parking fees first.
