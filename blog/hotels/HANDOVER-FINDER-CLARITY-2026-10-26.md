@@ -3,9 +3,14 @@
 ## Request and state
 
 The owner: "my hotels database on the blog page needs more clarity it's not so easy to
-find the right information." Implemented on branch `claude/peaceful-clarke-fprqk3`
-(pushed; see the commit on that branch). **Not merged to main and not published.**
-GitHub Pages deploys only from main. Publishing needs the owner's word.
+find the right information." Implemented on branch `claude/peaceful-clarke-fprqk3`.
+**Published to main on the owner's word ("Yes push") as
+[`330717e9`](https://github.com/nj22az/nj22az.github.io/commit/330717e9d1e264e9d5641e30611480421a410e9d)**,
+a fast-forward from `a098bbe5`.
+[Pages run 40394630944](https://github.com/nj22az/nj22az.github.io/actions/runs/40394630944)
+succeeded. Seven live files match the commit byte for byte: `index.html`,
+`hotels.js`, `hotels-map.js`, `css/hotels.css`, `hotels.json`, `hotel-reviews.csv`
+and this note. The 33 browser checks also pass against the live page.
 
 No hotel record, parking fact, category rule, CSV cell or evidence file changed.
 This is a presentation change to the generated page, its filter script and its styles.
@@ -100,8 +105,7 @@ removed elements dropped), `tools/build-hotels.test.py` (one assertion; see Chec
 
 ## Next
 
-1. The owner reviews the branch and decides on publishing. To publish, merge
-   `claude/peaceful-clarke-fprqk3` into main, then verify the Pages run and the live
-   `blog/hotels/index.html`, `css/hotels.css`, `hotels.js` and `hotels-map.js`.
+1. Published and verified; nothing pending. Safari and physical phones remain
+   untested.
 2. Possible follow-up, not built: sort by distance once "Show my location" has a
    position (nearest free-parking hotel first).

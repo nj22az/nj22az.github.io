@@ -8,7 +8,7 @@ The page is reorganised so a reader finds a place quickly:
 - compact cards with one facts row;
 - list first on phones, with a List/Map switch.
 
-No records or rules changed. Not yet published to main. See the
+No records or rules changed. Published as `330717e9`; see the
 [handover](HANDOVER-FINDER-CLARITY-2026-10-26.md).
 
 ## Swedish Scandic audit — 25 October 2026
