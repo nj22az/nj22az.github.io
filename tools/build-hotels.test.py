@@ -216,7 +216,9 @@ class ParkingAdmissionTests(unittest.TestCase):
     def test_feed_preserves_unknown_registration_and_paid_garage(self):
         row = next(r for r in self.records if r['hotelId'] == 'scandic-skelleftea')
         html = builder.render_review(row)
-        self.assertIn('requirements may be unstated', html)
+        # Unknown registration stays visible as unknown, never turned into "not required".
+        self.assertIn('<dt>Registration</dt><dd>Not stated by the hotel</dd>', html)
+        self.assertNotIn('Not required', html)
         self.assertIn(builder.e(row['parkingSummary']), html)
         self.assertIn('<details', html)
         row = next(r for r in self.records if r['hotelId'] == 'scandic-vasteras')

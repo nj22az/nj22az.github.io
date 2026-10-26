@@ -1,5 +1,16 @@
 # Hotels & Parking
 
+## Finder clarity — 26 October 2026
+
+The page is reorganised so a reader finds a place quickly:
+- grouped by country and sorted by city;
+- parking chosen with labelled chips showing live counts;
+- compact cards with one facts row;
+- list first on phones, with a List/Map switch.
+
+No records or rules changed. Not yet published to main. See the
+[handover](HANDOVER-FINDER-CLARITY-2026-10-26.md).
+
 ## Swedish Scandic audit — 25 October 2026
 
 91 Swedish catalogue-linked property pages reviewed: **72 Avoid, 19 with verified
