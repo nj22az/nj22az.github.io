@@ -36,7 +36,7 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'0b96507346'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'f998ce50ac'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -47,6 +47,15 @@ export function pixarWanted(name,search=globalThis.location?.search||''){
 
 const loaded=new Map();
 
+/**
+ * A body's clothes, each its own mesh over a body of its own (jojo `3d/cast/clothes_apart.py`; the creator, 26 October
+ * 2026: "Make a nude rig with underwear for Johansson then rig the Hawaii shirt"): the shirt and the shorts on the body's
+ * own bones and weights, and the trunk under them (`torso`) left out while they are worn, so nothing of him shows through
+ * them. `?pixarClothes=0` on a page undresses every Pixar body (his boxer briefs), to look at the body under them.
+ */
+export const CLOTHES_PARTS=Object.freeze(['shirt','shorts']);
+export function pixarDressed(search=globalThis.location?.search||''){return new URLSearchParams(search).get('pixarClothes')!=='0';}
+
 /** The parsed body of one resident: its card and its meshes (geometry shared by every avatar that wears it). */
 export function preparePixarBody(card,scene){
  const parts=[],features={};
@@ -55,7 +64,7 @@ export function preparePixarBody(card,scene){
   if(!o.isSkinnedMesh)return;
   const joints=o.skeleton.bones.map(b=>b.name),name=o.material?.name||'';
   if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
-  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':'body',map:o.material?.map||null});
+  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
  });
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
@@ -127,7 +136,8 @@ const EYE_AT=Object.freeze(Object.fromEntries(EYE_PARAMS.map((n,i)=>[n,i])));
 // What a body's acting does to the eye as drawn (face-acting.js eyes): scales of its size and iris, its lids.
 const EYE_SCALE=Object.freeze({rx:'rx',ry:'ry',topAmp:'ry',botAmp:'ry',irx:'iris',iry:'iris'}),EYE_SET=Object.freeze(['pupil','cut','slant','smile','squeeze']);
 // Where the face's numbers may go, a spring's overshoot included: the brows' [lift, tilt, arch, pinch] and the mouth.
-const BROW_RANGE=Object.freeze([[-3.2,11],[-9.5,10.6],[-1.6,3],[0,3.2]]);
+// (face-features.js BROW_KEYS: lift, tilt, arch, pinch, outer, straight, bunch; an evil brow's inner end comes down a long way)
+const BROW_RANGE=Object.freeze([[-3.2,11],[-9.5,24],[-1.6,3],[0,3.6],[-4,10],[0,1],[0,.8]]);
 const FEATURE_RANGE=Object.freeze({open:[0,15],width:[.3,1.5],round:[0,1.2],box:[0,1.2],upper:[.05,.95],teeth:[0,1.2],lowTeeth:[0,1.2],
  tongue:[0,1.2],pucker:[0,1.2],thin:[0,1.2],pout:[0,1.5]});
 
@@ -184,14 +194,21 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
   const source=part.kind==='hands'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
   const material=pixarSkin(celFrom(source,{bands:'soft3'}));source.dispose();material.gradientMap=smoothRamp();
+  // (the clothes are one surface of cloth: their insides show, at the sleeves, the collar and the hems)
+  if(CLOTHES_PARTS.includes(part.kind))material.side=THREE.DoubleSide;
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);
   const mesh=skinned(inOrder(body,part,names),material);
-  mesh.name='Pixar '+body.name+' · '+part.kind;mesh.castShadow=shadows;mesh.receiveShadow=true;return mesh;
+  mesh.name='Pixar '+body.name+' · '+part.kind;mesh.castShadow=shadows;mesh.receiveShadow=true;mesh.userData.pixarPart=part.kind;return mesh;
  });
+ const clothes=meshes.filter(m=>CLOTHES_PARTS.includes(m.userData.pixarPart)),torso=meshes.filter(m=>m.userData.pixarPart==='torso');
+ // Dressed: the clothes drawn and the trunk under them not; undressed, the other way round (a body without clothes
+ // drawn dressed is itself).
+ const dress=on=>{const wear=!!on&&clothes.length>0;for(const m of clothes)m.visible=wear;for(const m of torso)m.visible=!wear||!clothes.length;return wear;};
+ let dressed=dress(pixarDressed());
  // Her eye (the studio's measures of the painted one, her lashes) drawn as World draws every rigged eye, on the town's ramp.
  const F=body.features,E=body.card.eyes,mid=E.centres?(E.centres[0][0]+E.centres[1][0])/2:0;
  const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes},make:skinned,stand:STAND_IN,nearer:.0018});
- const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0}):null;
+ const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||0}):null;
  const mouth=F.mouth&&body.card.mouth?rigMouth(smoothJaw(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal',mid),names),body.card.mouth,{make:skinned,lines:actingOf(body.name)?.lines||0}):null;
  // (the features shaded on the same blended ramp as her skin: stepped bands cut a lip or an eye into two tones)
  for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])if(m?.material?.isMeshToonMaterial)m.material.gradientMap=smoothRamp();
@@ -219,6 +236,10 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
   if(e.tremble&&api.smooth){const t=now/1000;P[EYE_AT.lookX]+=e.tremble*Math.sin(t*69.1);P[EYE_AT.lookY]+=e.tremble*.6*Math.sin(t*81.7+1);}
  };
  const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh].filter(Boolean),eyes,brows,mouth,bones:face,smooth:true,acting,card:body.card,
+  /** Dress or undress the body (its clothes on, the trunk under them left out; or the body in its underwear). */
+  dress(on){dressed=dress(on);return dressed;},
+  get dressed(){return dressed;},
+  get clothes(){return clothes.map(m=>m.userData.pixarPart);},
   /** Follow the face: the eyes (gaze, blink, the feeling's lids), the brows, the mouth and the face's bones. */
   update(state){
    const act=feelings?.[state.expression]||null;

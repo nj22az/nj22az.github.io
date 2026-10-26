@@ -131,10 +131,30 @@ const JOHANSSON=Object.freeze({
   cheeks:[0,0],spring:{f:1.2,z:1}},
  worried:{brows:{left:[3,-5.5,-.3,1.8],right:[2.4,-4.8,-.2,1.6]},mouth:{smile:-1.4,width:.9,wobble:.4,shift:-.6},
   eyes:{ry:1.08,slant:-.2,look:[-.3,.1]},spring:{f:2,z:.8}},
- angry:{brows:{left:[-2.6,8,-1,2.6],right:[-2,7.4,-.9,2.4]},mouth:{smile:-2.6,width:.92,thin:.8,open:1.2,upper:.6,teeth:.8,box:.6},
+ // His anger in the brows (the creator, 26 October 2026: "Eyebrows need rigging , he should be able to do "evil " angry
+ // eyebrows"): his brows slope down to the outside at rest, so the inner ends come a long way down and in, the outer ends
+ // go up, the line between them straight (a V), the inner hair bunched.
+ angry:{brows:{left:[-2.4,20,-1.2,3,7,1,.35],right:[-2,19,-1.1,2.8,6.4,.95,.3]},
+  mouth:{smile:-2.6,width:.92,thin:.8,open:1.2,upper:.6,teeth:.8,box:.6},
   eyes:{cut:.34,slant:.5,smile:.25,iris:.92},scrunch:.7,cheeks:[.3,.3],spring:{f:3.4,z:.7}},
- grumpy:{brows:{left:[-1.6,4.2,-.6,1.6],right:[-.8,3.4,-.5,1.2]},mouth:{smile:-2.2,width:.9,thin:.6,shift:-1},eyes:{cut:.44,look:[-.4,.05]},
-  spring:{f:2.2,z:.95}},
+ grumpy:{brows:{left:[-1.6,11,-.8,1.8,3,.6,.15],right:[-.8,9.6,-.6,1.5,2.4,.5,.1]},mouth:{smile:-2.2,width:.9,thin:.6,shift:-1},
+  eyes:{cut:.44,look:[-.4,.05]},spring:{f:2.2,z:.95}},
+ fuming:{brows:{left:[-2.8,21,-1.4,3.2,7.5,1,.4],right:[-2.6,20.4,-1.3,3,7,1,.35]},
+  mouth:{smile:-2,width:1.12,open:2.2,box:1,upper:.5,teeth:1,lowTeeth:1,thin:.4},eyes:{cut:.3,slant:.55,iris:.9},scrunch:.9,
+  cheeks:[.4,.4],spring:{f:3.6,z:.6}},
+ raging:{brows:{left:[-3,22,-1.5,3.4,8,1,.45],right:[-2.8,21.6,-1.4,3.2,7.6,1,.4]},
+  mouth:{smile:-2,width:1.18,open:11,box:.9,upper:.45,teeth:1,lowTeeth:1,tongue:.3},eyes:{cut:.18,slant:.6,iris:.86},scrunch:1,
+  cheeks:[.5,.5],jaw:.9,spring:{f:3.8,z:.55}},
+ // (a slow boil: clenched teeth in a tight grin under the V)
+ seething:{brows:{left:[-2.2,18,-1,2.8,6,1,.3],right:[-2.4,18.6,-1,3,6.4,1,.3]},
+  mouth:{smile:1.6,width:1.12,open:2,upper:.5,teeth:1,lowTeeth:1,box:.7,thin:.2},eyes:{as:'angry',cut:.4,slant:.5},scrunch:.6,
+  spring:{f:1.6,z:.95}},
+ // The evil grin: the V with the outer ends high (his left the higher), a sly look aside, the grin wide and lopsided.
+ scheme:{brows:{left:[-1,19,-.6,2.6,9.5,1,.25],right:[-1.4,18,-.8,2.4,8,1,.2]},
+  mouth:{smile:2.6,width:1.16,open:2.2,upper:.25,teeth:1,asym:1.4,box:.2},eyes:{cut:.36,slant:.55,look:[.5,0]},cheeks:[.7,.5],
+  spring:{f:2.4,z:.8}},
+ focus:{brows:{left:[-1.2,8,-.6,1.8,2,.5,.1],right:[-1.6,8.6,-.7,2,2.2,.5,.1]},mouth:{smile:-.6,width:.86,thin:.6,asym:-.4,shift:-.8},
+  eyes:{cut:.22,slant:.3,iris:.94}},
  shy:{brows:{left:[2,-2.4,.3,.6],right:[1.6,-2,.3,.5]},mouth:{smile:1.6,width:.86,shift:1.4,asym:.6},eyes:{cut:.3,look:[.6,.5],smile:.3},
   cheeks:[.6,.6],spring:{f:2,z:.85}},
  embarrassed:{brows:{left:[2.6,-3.6,.2,1],right:[2,-3,.2,.8]},mouth:{smile:.6,width:.92,wobble:.6,shift:-1},eyes:{cut:.3,look:[-.6,.45],smile:.3},
@@ -164,7 +184,8 @@ const JOHANSSON=Object.freeze({
 export const ACTING=Object.freeze({
  Thuan:Object.freeze({feelings:THUAN,talkBrows:1.3}),
  // (lines: an older face's forehead lines, frown creases and crow's feet, face-features.js and eyes3d.js)
- Johansson:Object.freeze({feelings:JOHANSSON,talkBrows:.7,lines:1}),
+ // (browTaper: his brows thin to a tail at the outer end)
+ Johansson:Object.freeze({feelings:JOHANSSON,talkBrows:.7,lines:1,browTaper:.4}),
 });
 
 /** A body's acting, or null. */

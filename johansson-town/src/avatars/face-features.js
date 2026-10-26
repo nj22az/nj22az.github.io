@@ -16,36 +16,44 @@ const HEAD='attribute vec3 featureLocal;\nvarying vec3 vFeature;\n';
 
 const BROWS=`varying vec3 vFeature;
 uniform float uBrowShapeL[8],uBrowShapeR[8];
-uniform vec4 uBrowL,uBrowR;
+uniform vec4 uBrowL,uBrowR,uBrowL2,uBrowR2;
 uniform vec3 uBrowInk;
-uniform float uBrowLines;
+uniform float uBrowLines,uBrowTaper;
 float B[8];
 float browLine(float x){return B[2]*x*x+B[3]*x+B[4];}
 float browHalf(float x){return max(.25,B[5]*x*x+B[6]*x+B[7]);}
 // A brow: its own painted arc (x0 inner .. x1 outer, its middle line and half thickness: each side its own, not mirrored),
 // lifted (lift), turned at the inner end (tilt: + down, a frown; - up, a worry), arched and pinched toward the nose, as
-// uBrowL/R say for each side. browInside: how far p is inside it (its units; < 0 outside), and its middle line there.
-float browInside(vec2 p,vec4 e,out float y){
- float x0=B[0],x1=B[1],inner=x0-e.w,s=clamp((p.x-inner)/(x1-inner),0.,1.),xr=x0+s*(x1-x0);
- y=browLine(xr)+e.x-e.y*(1.-s)*(1.-s)+e.y*.3*s*s+e.z*4.*s*(1.-s);
+// uBrowL/R say for each side; and (uBrowL2/R2) its outer end lifted on its own (outer), the turn made a straight line
+// rather than a curve at the inner end (straight: an evil brow's V), and the inner end bunched thicker (bunch: a hard
+// frown pushes the brow's hair together). browInside: how far p is inside it (its units; < 0 outside), its middle line.
+float browY(float s,vec4 e,vec4 f){
+ float xr=B[0]+s*(B[1]-B[0]),drop=mix((1.-s)*(1.-s),1.-s,f.y);
+ return browLine(xr)+e.x-e.y*drop+e.y*.3*s*s*(1.-f.y)+f.x*s*s+e.z*4.*s*(1.-s);
+}
+// (uBrowTaper, a body's own: the outer end thinning to a tail)
+float browHalfAt(float s,vec4 f){return browHalf(B[0]+s*(B[1]-B[0]))*(1.+f.z*(1.-s)*(1.-s))*(1.-uBrowTaper*smoothstep(.55,1.,s));}
+float browInside(vec2 p,vec4 e,vec4 f,out float y){
+ float x0=B[0],x1=B[1],inner=x0-e.w,s=clamp((p.x-inner)/(x1-inner),0.,1.);
+ y=browY(s,e,f);
  // (round ends)
- if(p.x<inner)return browHalf(x0)-length(p-vec2(inner,browLine(x0)+e.x-e.y));
- if(p.x>x1)return browHalf(x1)-length(p-vec2(x1,browLine(x1)+e.x+e.y*.3));
- return browHalf(xr)-abs(p.y-y);
+ if(p.x<inner)return browHalfAt(0.,f)-length(p-vec2(inner,browY(0.,e,f)));
+ if(p.x>x1)return browHalfAt(1.,f)-length(p-vec2(x1,browY(1.,e,f)));
+ return browHalfAt(s,f)-abs(p.y-y);
 }
 vec4 browsPaint(){
- vec2 p=vFeature.xy;bool left=vFeature.z>0.;vec4 e=left?uBrowL:uBrowR;
+ vec2 p=vFeature.xy;bool left=vFeature.z>0.;vec4 e=left?uBrowL:uBrowR,f=left?uBrowL2:uBrowR2;
  for(int i=0;i<8;i++)B[i]=left?uBrowShapeL[i]:uBrowShapeR[i];
  float x0=B[0],x1=B[1],w=.8*max(length(fwidth(p)),1e-3),inner=x0-e.w;
  float s=clamp((p.x-inner)/(x1-inner),0.,1.),xr=x0+s*(x1-x0),y,ys;
- float d=browInside(p,e,y);
+ float d=browInside(p,e,f,y);
  // A brow has volume: the hairs catch the light along its top and darken toward its underside, and it lays a soft
  // warm shadow on the skin under it (the brow seen as hair on a brow ridge, not ink on the skin).
- float v=clamp((p.y-y)/browHalf(xr),-1.,1.);
+ float v=clamp((p.y-y)/browHalfAt(s,f),-1.,1.);
  vec3 hair=mix(uBrowInk*.72,uBrowInk*1.22+.03,smoothstep(-.9,.75,v));
  hair+=(uBrowInk*.6+.05)*.35*smoothstep(.2,.55,v)*smoothstep(1.,.7,v);
  vec4 col=vec4(hair,.96*smoothstep(-w,w,d));
- float dropped=browInside(p+vec2(0.,1.15),e,ys)+.45;
+ float dropped=browInside(p+vec2(0.,1.15),e,f,ys)+.45;
  float shade=.2*smoothstep(-1.4,1.,dropped)*step(p.y,y);
  col=vec4((col.rgb*col.a+vec3(.46,.27,.21)*shade*(1.-col.a))/max(col.a+shade*(1.-col.a),1e-4),col.a+shade*(1.-col.a));
  // An older face's lines (uBrowLines, a body's own): two or three across the forehead as the brow rises, following its
@@ -192,22 +200,26 @@ function featureMaterial(name,shaderHead,paint,uniforms){
    .replace('#include <color_fragment>',`#include <color_fragment>\n diffuseColor = ${paint}();\n if ( diffuseColor.a < 0.004 ) discard;`)
    .replace('#include <emissivemap_fragment>','totalEmissiveRadiance *= diffuseColor.rgb;')
    .replace('#include <opaque_fragment>','outgoingLight = max( outgoingLight, diffuseColor.rgb * 0.5 );\n#include <opaque_fragment>');};
- material.customProgramCacheKey=()=>baseKey()+':'+name+'-v7';
+ material.customProgramCacheKey=()=>baseKey()+':'+name+'-v8';
  return {material,dispose(){material.dispose();source.dispose();}};
 }
 
 const colour=hex=>new THREE.Color(hex);
 
 /** Brows on their decal, each its own ({left, right}: x0, x1, line, half; colour). `make(geometry, material)` makes the mesh
- *  (a skinned one for a skinned face); `lines` (0..1) draws an older face's forehead lines and frown creases. */
-export function rigBrows(geometry,brows,{make=(g,m)=>new THREE.Mesh(g,m),lines=0}={}){
+ *  (a skinned one for a skinned face); `lines` (0..1) draws an older face's forehead lines and frown creases; `taper`
+ *  (0..1) thins the outer end to a tail. */
+export function rigBrows(geometry,brows,{make=(g,m)=>new THREE.Mesh(g,m),lines=0,taper=0}={}){
  const shape=b=>new Float32Array([b.x0,b.x1,...b.line,...b.half]);
- const uniforms={uBrowShapeL:{value:shape(brows.left)},uBrowShapeR:{value:shape(brows.right)},uBrowL:{value:new THREE.Vector4()},uBrowR:{value:new THREE.Vector4()},uBrowInk:{value:colour(brows.colour)},uBrowLines:{value:lines}};
+ const uniforms={uBrowShapeL:{value:shape(brows.left)},uBrowShapeR:{value:shape(brows.right)},uBrowL:{value:new THREE.Vector4()},uBrowR:{value:new THREE.Vector4()},
+  uBrowL2:{value:new THREE.Vector4()},uBrowR2:{value:new THREE.Vector4()},uBrowInk:{value:colour(brows.colour)},uBrowLines:{value:lines},uBrowTaper:{value:taper}};
  const {material,dispose}=featureMaterial('Shimanchu brows',BROWS,'browsPaint',uniforms);
  const mesh=make(geometry,material);mesh.name='Shimanchu brows';mesh.castShadow=false;mesh.receiveShadow=true;mesh.renderOrder=-1;
  return {mesh,uniforms,
-  /** Each side's [lift, tilt, arch, pinch] in the brow's units. */
-  set(left,right){uniforms.uBrowL.value.set(...left);uniforms.uBrowR.value.set(...right);},
+  /** Each side's [lift, tilt, arch, pinch, outer, straight, bunch] in the brow's units (BROW_KEYS; the last three 0 if left
+   *  out). */
+  set(left,right){for(const [b,u,u2] of [[left,uniforms.uBrowL,uniforms.uBrowL2],[right,uniforms.uBrowR,uniforms.uBrowR2]]){
+   u.value.set(b[0],b[1],b[2],b[3]);u2.value.set(b[4]||0,b[5]||0,b[6]||0,0);}},
   dispose};
 }
 
@@ -257,7 +269,7 @@ const LEAN=Object.freeze({
 
 /**
  * What the face's features do in a face state ({expression, talk, blinkLeft, blinkRight}): the brows' [lift, tilt, arch,
- * pinch] each side, the mouth, and how far the cheeks rise, the nose scrunches and the jaw drops (pixar.js moves those
+ * pinch, outer, straight, bunch] each side (BROW_KEYS), the mouth, and how far the cheeks rise, the nose scrunches and the jaw drops (pixar.js moves those
  * bones). `acting`, a character's own performance (face-acting.js), plays a feeling its own way: its brows, mouth, cheeks,
  * nose and jaw replace the painter's where it says; `base`, the body's own mouth under every feeling's. Pure, for tests.
  */
@@ -290,12 +302,18 @@ export function featuresOf(state={},acting=null,base=null){
  if(smileBy)mouth.smile+=smileBy;
  // The jaw drops with the mouth: the chin comes down and back, lengthening the face.
  const jaw=Math.min(1,act?.jaw!=null?Math.max(act.jaw,talk*.42):mouth.open/10);
- const f={brows:{left,right},mouth,cheeks,scrunch,jaw};
+ // (every feeling's brows as all seven numbers, BROW_KEYS: those a feeling leaves out are 0, so springs and mixes line up)
+ const f={brows:{left:fullBrow(left),right:fullBrow(right)},mouth,cheeks,scrunch,jaw};
  // ...and plays the feeling at its strength (performance.js): part of the way from her resting face
  const strength=THREE.MathUtils.clamp(state.expressionStrength??1,0,1);
  if(strength<1&&state.expression!=='neutral')return mixFeatures(featuresOf({...state,expression:'neutral',expressionStrength:1},acting,base),f,strength);
  return f;
 }
+
+/** A brow's numbers, in order: [lift, tilt, arch, pinch] (the painter's four) and [outer, straight, bunch] (an evil brow's:
+ *  the outer end up on its own, the turn a straight line, the inner end bunched thicker). */
+export const BROW_KEYS=Object.freeze(['lift','tilt','arch','pinch','outer','straight','bunch']);
+const fullBrow=b=>BROW_KEYS.map((k,i)=>+b[i]||0);
 
 /** a + (b - a) k, through the features' arrays and objects. */
 export function mixFeatures(a,b,k){
