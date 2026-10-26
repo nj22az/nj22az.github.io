@@ -77,6 +77,17 @@ test('the body under his clothes has no face turned inside out (World leaves tho
   // (no more creases than the sculpt had before it was undressed, or Thuận's has: three)
   assert.ok(slight<=3,`${name}: ${slight} faces folded at creases`);
  }
+ // where the body and the trunk under his clothes meet, one normal: no shading line round him undressed (set before the
+ // cut, Blender's custom normals came out up to 129 degrees apart there)
+ const at={},key=(P,i)=>[0,1,2].map(k=>Math.round(P[3*i+k]*1e4)).join();
+ const part=name=>{const p=j.meshes.flatMap(m=>m.primitives).find(p=>j.materials[p.material].name===name);return [read(p.attributes.POSITION),read(p.attributes.NORMAL)];};
+ const [Pb,Nb]=part('body'),[Pt,Nt]=part('torso');
+ for(let i=0;i<Pb.length/3;i++)at[key(Pb,i)]=i;
+ let seam=0,worst=0;
+ for(let i=0;i<Pt.length/3;i++){const b=at[key(Pt,i)];if(b===undefined)continue;seam++;
+  worst=Math.max(worst,Math.acos(Math.min(1,[0,1,2].reduce((s,k)=>s+Nt[3*i+k]*Nb[3*b+k],0)))*180/Math.PI);}
+ assert.ok(seam>100,`${seam} vertices where the body meets the trunk`);
+ assert.ok(worst<1,`their normals up to ${worst.toFixed(1)} degrees apart`);
 });
 
 test('he is skinned to World\'s own bones (and the face\'s), with no braids',()=>{
@@ -127,7 +138,7 @@ test('he acts his feelings his own way, inside his decals, never as a mirror',()
   const sp=springOf(acting,expression);assert.ok(sp.f>0&&sp.z>0);
   for(const talk of [0,1]){
    const f=featuresOf({expression,talk},A);
-   const range=[[-3.2,11],[-9.5,24],[-1.6,3],[0,3.6],[-4,10],[0,1],[0,.8]];   // (pixar.js BROW_RANGE)
+   const range=acting.browRange;   // (his own, wider than pixar.js BROW_RANGE: his brow decal holds the evil V)
    for(const b of [f.brows.left,f.brows.right]){assert.equal(b.length,BROW_KEYS.length);range.forEach(([lo,hi],i)=>assert.ok(b[i]>=lo&&b[i]<=hi,expression+' brow '+BROW_KEYS[i]));}
    assert.ok(f.mouth.open>=0&&f.mouth.open<=14,expression);
   }

@@ -184,8 +184,10 @@ const JOHANSSON=Object.freeze({
 export const ACTING=Object.freeze({
  Thuan:Object.freeze({feelings:THUAN,talkBrows:1.3}),
  // (lines: an older face's forehead lines, frown creases and crow's feet, face-features.js and eyes3d.js)
- // (browTaper: his brows thin to a tail at the outer end)
- Johansson:Object.freeze({feelings:JOHANSSON,talkBrows:.7,lines:1,browTaper:.4}),
+ // (browTaper: his brows thin to a tail at the outer end; browRange: where his brows may go, pixar.js BROW_RANGE's order,
+ // wider than hers for the evil V: his brow decal was made wider to hold it, jojo game_johansson.py face_decals)
+ Johansson:Object.freeze({feelings:JOHANSSON,talkBrows:.7,lines:1,browTaper:.4,
+  browRange:Object.freeze([[-3.2,11],[-9.5,24],[-1.6,3],[0,3.6],[-4,10],[0,1],[0,.8]])}),
 });
 
 /** A body's acting, or null. */

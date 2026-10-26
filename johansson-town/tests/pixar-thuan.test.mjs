@@ -7,7 +7,7 @@ import {EXPRESSION_NAMES,moodOf} from '../src/avatars/face.js';
 import {eyeShape,EYES_3D_STATES} from '../src/avatars/eyes3d.js';
 import {featuresOf,MOUTH_KEYS} from '../src/avatars/face-features.js';
 import {ACTING,actingOf,springOf} from '../src/avatars/face-acting.js';
-import {PIXAR_BODIES,pixarWanted} from '../src/avatars/pixar.js';
+import {PIXAR_BODIES,pixarWanted,BROW_RANGE} from '../src/avatars/pixar.js';
 
 // Pixar Thuan in World (src/avatars/pixar.js; the owner, 26 October 2026: "Replace her in the live game and studio now").
 // Her model and card come from the studio repo (jojo 3d/cast/game_thuan.py) into assets/avatars/pixar/.
@@ -106,6 +106,9 @@ test('she acts every feeling her own way, inside her decals, never as a mirror',
   }
   if(expression!=='neutral'&&act.brows)assert.notDeepEqual(act.brows.left,act.brows.right,expression+' is not twinned');
  }
+ // (and her springs' overshoot held where her decal holds her brows: Johansson's wider evil-brow range is his alone)
+ const held=actingOf('Thuan').browRange||BROW_RANGE;
+ assert.ok(held[0][1]<=11&&held[1][1]<=10.6&&held[3][1]<=3.2,'her brows held inside her decal: '+JSON.stringify(held.slice(0,4)));
  const F=e=>featuresOf({expression:e},A);
  // shock is not surprise: the brows higher, the mouth far more open, the pupils pinpricks that shiver, a take that overshoots
  assert.ok(F('shock').brows.left[0]>F('surprised').brows.left[0]&&F('shock').mouth.open>F('surprised').mouth.open+4);

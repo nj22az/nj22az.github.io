@@ -36,7 +36,7 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'f998ce50ac'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'b928ed68d2'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -136,8 +136,10 @@ const EYE_AT=Object.freeze(Object.fromEntries(EYE_PARAMS.map((n,i)=>[n,i])));
 // What a body's acting does to the eye as drawn (face-acting.js eyes): scales of its size and iris, its lids.
 const EYE_SCALE=Object.freeze({rx:'rx',ry:'ry',topAmp:'ry',botAmp:'ry',irx:'iris',iry:'iris'}),EYE_SET=Object.freeze(['pupil','cut','slant','smile','squeeze']);
 // Where the face's numbers may go, a spring's overshoot included: the brows' [lift, tilt, arch, pinch] and the mouth.
-// (face-features.js BROW_KEYS: lift, tilt, arch, pinch, outer, straight, bunch; an evil brow's inner end comes down a long way)
-const BROW_RANGE=Object.freeze([[-3.2,11],[-9.5,24],[-1.6,3],[0,3.6],[-4,10],[0,1],[0,.8]]);
+// (face-features.js BROW_KEYS: lift, tilt, arch, pinch, outer, straight, bunch.) This is what Thuận's brow decal holds; a
+// body whose decal the studio made wider gives its own (face-acting.js browRange: his evil brow's inner end comes down a
+// long way). Shared, his wider range let her springs' overshoot cut her brows' inner ends flat.
+export const BROW_RANGE=Object.freeze([[-3.2,11],[-9.5,10.6],[-1.6,3],[0,3.2],[-4,10],[0,1],[0,.8]]);
 const FEATURE_RANGE=Object.freeze({open:[0,15],width:[.3,1.5],round:[0,1.2],box:[0,1.2],upper:[.05,.95],teeth:[0,1.2],lowTeeth:[0,1.2],
  tongue:[0,1.2],pucker:[0,1.2],thin:[0,1.2],pout:[0,1.5]});
 
@@ -253,7 +255,7 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
    const f=springs.settle('face',target,dt,sp);
    for(const [k,[lo,hi]] of Object.entries(FEATURE_RANGE))f.mouth[k]=THREE.MathUtils.clamp(f.mouth[k],lo,hi);
    // (a brow stays on its decal, the spring's overshoot included: the studio left it room to rise, drop and pinch)
-   for(const b of [f.brows.left,f.brows.right])BROW_RANGE.forEach(([lo,hi],i)=>{b[i]=THREE.MathUtils.clamp(b[i],lo,hi);});
+   for(const b of [f.brows.left,f.brows.right])(acting?.browRange||BROW_RANGE).forEach(([lo,hi],i)=>{b[i]=THREE.MathUtils.clamp(b[i],lo,hi);});
    f.jaw=THREE.MathUtils.clamp(f.jaw,0,1.15);f.cheeks=f.cheeks.map(v=>THREE.MathUtils.clamp(v,0,1.2));f.scrunch=THREE.MathUtils.clamp(f.scrunch,0,1.2);
    if(eyes.showing)actEyes(state,act,dt,sp,now,f.cheeks);
    brows?.set(f.brows.left,f.brows.right);mouth?.set(f.mouth);
@@ -261,7 +263,8 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
    for(const [i,s,x] of [[0,'L',1],[1,'R',-1]])if(face['cheek'+s])face['cheek'+s].position.copy(restOf['cheek'+s]).add(new THREE.Vector3(x*FACE_REACH.cheek[2]*f.cheeks[i],FACE_REACH.cheek[0]*f.cheeks[i],FACE_REACH.cheek[1]*f.cheeks[i]));
    if(face.nose)face.nose.position.copy(restOf.nose).add(new THREE.Vector3(0,FACE_REACH.nose[0]*f.scrunch,FACE_REACH.nose[1]*f.scrunch));
   },
-  set visible(on){for(const m of meshes)m.visible=on;},
+  // (shown again, dressed as he was: the trunk under his clothes stays out while he wears them)
+  set visible(on){for(const m of meshes)m.visible=on;if(on)dress(dressed);},
   dispose(){for(const m of materials)m.dispose();eyes.dispose();brows?.dispose();mouth?.dispose();},
  };
  return api;

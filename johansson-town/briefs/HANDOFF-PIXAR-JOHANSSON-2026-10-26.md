@@ -60,16 +60,19 @@ sloping shoulders, relax the shoulders and fingers, an A-pose, cloth thickness, 
   (`tools/pixar-sheet.mjs Johansson OUT --undressed --cells neutral --frame chest|hips [--turn 3.14]`), the first
   version had a patchwork on the arms, a ring at the elbow, a toothed waistband and a hole between the legs; all fixed in
   the studio exporter (jojo `3d/cast/CLOTHES.md`), and his arms and legs are now one even skin, dressed too (the grey
-  shadow-side legs are gone). `tests/pixar-johansson.test.mjs` fails on any face of his body turned inside out.
+  shadow-side legs are gone). `tests/pixar-johansson.test.mjs` fails on any face of his body turned inside out, and on
+  a shading seam where the body meets the trunk under his clothes (the review found one, up to 129 degrees: fixed).
 - **Evil brows** (`face-features.js` brows, `face-acting.js`): each brow has three more controls, `outer` (the outer end up
   on its own), `straight` (the turn a straight line: a V) and `bunch` (the inner end thicker), and his brows taper to a
   tail (`browTaper`). His brows slope down to the outside at rest, so angry, fuming, raging, seething and the evil grin
-  (`scheme`) bring the inner ends a long way down to the lids and the outer ends up; the brow decal is wider to hold it.
+  (`scheme`) bring the inner ends a long way down to the lids and the outer ends up; the brow decal is wider to hold it,
+  and so are his brows' limits (`face-acting.js` `browRange`); Thuận keeps hers (`pixar.js` `BROW_RANGE`), which her
+  decal holds (shared, the wider limits let her springs' overshoot cut her brows' inner ends flat: found in review).
 
 ## Checks (26 October 2026)
 
-- Full guard `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs`: **456/456 pass**, 88 files (578 s), on the final source
-  with the rebuilt runtime (`runtime/boot-CrcWUgdh.js`). New in it: `pixar-johansson` (7), `pixar-skin` (4),
+- Full guard `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs`: **456/456 pass**, 88 files (321 s), on the final source
+  with the rebuilt runtime (`runtime/boot-BOgKw6Vp.js`). New in it: `pixar-johansson` (7), `pixar-skin` (4),
   `wave-gesture` (1).
 - `node tools/pixar-shots.mjs --name Johansson` on the built runtime (again with his clothes: 6 meshes, dressed): island
   ready, playing, Johansson found on Main Street drawn as his Pixar body, front, three-quarter and five face frames,
