@@ -304,7 +304,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // The ferry's shore line hand (people/ferry-shore-crew.js) walks this body to the bitts and back; the street yields it,
    // and whatever it was using (a bench, the phone) is given up first.
    if(g.userData.ferryShoreTask){activities?.release?.(p,minutes);routes.delete(g);continue;}
-   const phase=commuterMode(v)?townPhase(v,minutes,rain):'town';
+   const scheduled=residentPlan(v,minutes,rain,state(),transit);
+   // The calendar can keep a commuter home for a whole weekend, even during their
+   // ordinary shift hours. Their actual presence must follow that plan too.
+   const phase=commuterMode(v)?scheduled.place==='away'?'away':townPhase(v,minutes,rain):'town';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
@@ -316,8 +319,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // 'away' is the far end of the bus road -- and stand in a clump at the mouth of the
    // tunnel until the next service, which is now as much as two and a half hours.
    if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
-   const holdForBus=transit&&phase==='away'&&!boarded(g);
-   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace(v.profile?.name);g.userData.commuterAwayDay=day;routes.delete(g);continue;}
+   const holdForBus=transit&&phase==='away'&&initialised.has(g)&&!boarded(g);
+   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace(v.name);g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
    // bus they would have been on is at it.
    if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){
@@ -326,7 +329,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     g.position.set(step[0],groundHeight(step[0],step[1]),step[1]);g.visible=true;
     aboard.delete(g);delete g.userData.commuterAwayDay;routes.delete(g);
    }
-   const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=clearOfTunnelMouth(plan.target),tag=plan.place;
+   const plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=clearOfTunnelMouth(plan.target),tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.

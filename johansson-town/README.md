@@ -1,6 +1,6 @@
 # Johansson Town
 
-A small harbour town in Okinawa in 1997 (Heisei 9), on today's date: the town clock is your clock. Walk the streets, shop at
+A small harbour town in Okinawa with a 1990s way of life. Its calendar follows your device's actual date, year and weekday; the town clock is your clock. Walk the streets, shop at
 Sakura Shōten, meet Thuan, Thao and the neighbours, and settle into daily life. It runs in
 the browser with Three.js and no framework: <https://nj22az.github.io/johansson-town/>.
 

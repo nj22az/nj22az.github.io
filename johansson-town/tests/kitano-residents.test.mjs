@@ -10,8 +10,9 @@ import {airportWorld} from '../src/world/airport-ground.js';
 import {townCalendarAt} from '../src/town-clock.js';
 import {PLACES,castMember} from '../src/people/cast.js';
 
-// Day 0 is Wednesday 1 January 1997 (town-clock.js): Friday is day 2, Saturday 3, Sunday 4, Monday 5.
-const at=(day,minute)=>day*1440+minute,profile=name=>RESIDENTS.find(p=>p.name===name);
+// Explicit Wednesday 1 January 1997 fixture: Friday is day 2, Saturday 3, Sunday 4, Monday 5.
+const firstDay=Date.UTC(1997,0,1)/60000;
+const at=(day,minute)=>firstDay+day*1440+minute,profile=name=>RESIDENTS.find(p=>p.name===name);
 assert.equal(townCalendarAt(at(2,0)).weekday,5);
 
 test('Thuan spends the weekend at home on Kitano-jima: the Friday 22:00 boat out, the Monday 08:30 boat back',()=>{

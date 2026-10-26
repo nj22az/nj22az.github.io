@@ -113,7 +113,7 @@ test('the whole day runs commute, shop, noodles, break, beer and home without a 
   for(let m=510;m<1350;m+=5){const p=plan(m);if(seen.at(-1)?.place!==p.place)seen.push({m,place:p.place});}
   const order=seen.map(s=>s.place);
   // Arrives on the morning boat, opens up, takes her walk, comes back, has a beer, waits for the last boat and is gone on it.
-  assert.deepEqual(order,['bus','market','ramen','market','nap','park','stroll','market','stroll','izakaya','bus','away']);
+  assert.deepEqual(order,['bus','doorstep','market','ramen','market','nap','park','stroll','market','stroll','izakaya','bus','away']);
   // and every one of those is somewhere she can actually stand.
   for(const {m} of seen){const p=plan(m);assert.ok(Array.isArray(p.target)&&p.target.length===2,'No target at '+m);}
  }finally{izakayaPlot();}

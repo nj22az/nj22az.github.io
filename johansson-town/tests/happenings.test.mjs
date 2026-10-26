@@ -6,8 +6,8 @@ import {tomorrowItems} from '../src/feed/evening-news.js';
 import {residentPlan} from '../src/people/social.js';
 import {RESIDENTS} from '../src/people/residents.js';
 
-/** Town minutes for a month, day and time; the town reads any year's date as 1997's. */
-const on=(month,day,h=12,m=0)=>realTownMinutes(new Date(2026,month-1,day,h,m));
+/** Explicit historical dates for the authored festival stories; no calendar remapping. */
+const on=(month,day,h=12,m=0)=>realTownMinutes(new Date(1997,month-1,day,h,m));
 const who=name=>RESIDENTS.find(p=>p.name===name);
 
 test('the calendar: 1997 dates and weekdays, Okinawa’s seasons, the parts of the day',()=>{
