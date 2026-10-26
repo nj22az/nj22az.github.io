@@ -6,6 +6,14 @@ import {PRODUCT_BY_ID,PRINTS} from './products-data.js';
 // Twelve sides: a shelf of round packs at arm's length reads as round under the cel ramp, at
 // under two thirds of the triangles twenty cost.
 const SIDES=12;
+/** Drinks cans: their lid has the drinking opening cut through it. */
+const DRINK_CANS=new Set(['coffee','beer']);
+/** A geometry turned inside out (its faces seen from within): the inner wall of a can's rim. */
+function inward(g){
+ const index=g.index.array;for(let i=0;i<index.length;i+=3){const t=index[i+1];index[i+1]=index[i+2];index[i+2]=t;}
+ const n=g.attributes.normal.array;for(let i=0;i<n.length;i++)n[i]=-n[i];
+ return g;
+}
 const templates=new Map(),bodyMaterial=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62});
 /** A box of this size is what anything without a pack of its own is built as. */
 const PLAIN={shape:'box',size:[.15,.18,.025]};
@@ -41,11 +49,20 @@ export function shopProductTemplate(target,{sides=SIDES}={}){
   if(marble){cyl(.031,.026,.185,0xc4e1dc,.034);cyl(.025,.006,.242,0xe9e8d8);}
   label(new THREE.CylinderGeometry(r+.001,r+.001,.123,sides,1,true,-Math.PI*.76,Math.PI*1.52),.085);
  }else if(pack.shape==='can'){
-  const r=W/2,h=H;
-  // The body runs between the two seamed beads, which close it, rather than through them: a bead round the body put
-  // its faces 1.5 mm off the body's (the Sakura surface audit, SK-ZF rev A).
-  cyl(r,h-.008,(h+.004)/2,brand.paper);cyl(r+.0015,.006,.003,0xa8b3ad);cyl(r+.0015,.004,h,0xcad0c8);
-  part(new THREE.TorusGeometry(r*.79,.0014,3,sides).rotateX(Math.PI/2),0x88958c,[0,h+.002,0]);
+  // Built as a can is (the Sakura surface audit, SK-ZF rev A): the body runs from the base bead to the lid, which lies
+  // 4 mm down inside the seamed rim; nothing lies in another part's plane. A drinks can's lid has its opening cut
+  // through it, over a dark well 2.5 mm below.
+  const r=W/2,h=H,lid=h-.002,rim=h+.002,ri=r*.82,drink=DRINK_CANS.has(id);
+  part(new THREE.CylinderGeometry(r,r,lid-.006,sides,1,true),brand.paper,[0,(lid+.006)/2,0]);
+  cyl(r+.0015,.006,.003,0xa8b3ad);
+  part(new THREE.CylinderGeometry(r+.0015,r+.0015,rim-lid,sides,1,true),0xcad0c8,[0,(lid+rim)/2,0]);
+  part(new THREE.RingGeometry(ri,r+.0015,sides).rotateX(-Math.PI/2),0xcad0c8,[0,rim,0]);
+  part(new THREE.RingGeometry(r,r+.0015,sides).rotateX(Math.PI/2),0xcad0c8,[0,lid,0]);
+  part(inward(new THREE.CylinderGeometry(ri,ri,rim-lid,sides,1,true)),0xcad0c8,[0,(lid+rim)/2,0]);
+  {const top=new THREE.Shape().absarc(0,0,ri+.001,0,Math.PI*2);if(drink)top.holes.push(new THREE.Path().absarc(0,.010,.007,0,Math.PI*2,true));
+   part(new THREE.ShapeGeometry(top,sides).rotateX(-Math.PI/2),0xcad0c8,[0,lid,0]);}
+  if(drink)cyl(.02,.002,lid-.0035,0x505850);// the well under the opening
+  part(new THREE.TorusGeometry(r*.79,.0014,3,sides).rotateX(Math.PI/2),0x88958c,[0,lid+.0014,0]);
   label(new THREE.CylinderGeometry(r+.001,r+.001,h*.87,sides,1,true,-Math.PI*.8,Math.PI*1.6),h/2);
  }else if(pack.shape==='cup'){
   const r=W/2,h=H;

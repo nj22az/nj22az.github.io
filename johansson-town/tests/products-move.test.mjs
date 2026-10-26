@@ -8,7 +8,9 @@ import {productSnapshot} from '../tools/studio/products-snapshot.mjs';
 // tests/fixtures/products-legacy.json is what those modules exported before the move; the views over the data must
 // give back every value, in the same order where order means something (the atlas, the flavours, the floor walk, the
 // catalogue, the stock), and build every pack's geometry to the same bytes. tools/studio/baselines.mjs checks the
-// pixels in Chromium.
+// pixels in Chromium. The geometry of 17 packs was re-recorded on 26 October 2026, when they were rebuilt so that none of
+// their faces share a plane (the Sakura surface audit, docs/qa/sakura-surfaces/); their envelopes moved by at most
+// 1.2 mm (the cans are that much lower, their lids now inside the rim) and the stock is unchanged.
 installDOM();
 const legacy=JSON.parse(await readFile(new URL('./fixtures/products-legacy.json',import.meta.url),'utf8'));
 const now=await productSnapshot();

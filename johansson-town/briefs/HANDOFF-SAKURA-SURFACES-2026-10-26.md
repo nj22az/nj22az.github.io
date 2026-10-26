@@ -28,8 +28,10 @@ On main the audit found **242 pairs of faces within 2 mm of one plane, 44 m² ov
 - **Packs rebuilt so none of their own faces share a plane**: the can (body between its beads), the marble bottle neck and
   collar, the bag's crimp seal, the notebook/postcard page band, the tissue slot (`shop-product.js`); onigiri, bento,
   sandwich (crust is a ring round the crumb), bun, ramen lid (foil inside the rim flange) and clear film without an
-  underside (`sakura-food-products.js`). The cans' flat opening disc and rivet were removed; the pull ring stays (the
-  original envelope leaves no room to raise them clear).
+  underside (`sakura-food-products.js`). Every can is now built as a can is: the body up to a lid 4 mm down inside the
+  seamed rim. On the drinks cans (coffee, beer) the opening is cut through the lid over a dark well 2.5 mm below; it used
+  to be a disc 0.5 mm over the lid. The pull ring rests on the lid. The old rivet is gone. The cans' envelope is 1.2 mm
+  lower; `tests/fixtures/products-legacy.json` re-records the geometry of the 17 rebuilt packs (nothing else in it).
 - **Joinery**: gondola price rails and chiller rails 3 mm proud; chiller well, lip, back and canopy between its end
   panels; medicine boards between their sides; wainscot courses butt at 880; shopfront posts 5 mm proud; till cabinet,
   cold cabinet, fridge, daisha tray, letter tray, pen can, nageshi rail, basket rims and rack boards rebuilt the same way.
@@ -46,10 +48,13 @@ On main the audit found **242 pairs of faces within 2 mm of one plane, 44 m² ov
 
 - `tests/sakura-surfaces.test.mjs`: 7/7 pass. The same audit on untouched main: 240 + 2 pairs (`audit-before.json`).
 - `build_cad.py`: 11/11 checks pass, the DXF reopens with no audit errors, all three PDF sheets inspected.
-- Full `npm test` locally (see the final status in the commit): every failure was re-run on untouched `main` in the same
-  container and fails the same way there (architect-masterplan, avatar-expressions, building-stairs, continuous-life,
-  countryside, diary, drink-grip, drunk, dual-controls, ferry-design-book, avatar-wardrobe-sets: one failure each,
-  identical on main). They come from this container (the hosted guard passed 455/455 on main), not from this change.
+- 89 Sakura, shop, product, interior, studio, stair and draw-call test files, on this branch and on untouched `main` in
+  the same container: here 460 pass, 7 fail; main 453 pass, 7 fail, **the same 7 tests**. The full `npm test` was
+  stopped about two-thirds through on this machine (load ~10). Every failure it had reached was re-run on `main` and
+  fails there too: architect-masterplan, avatar-expressions, building-stairs, continuous-life, countryside, diary,
+  drink-grip, drunk, dual-controls, ferry-design-book and avatar-wardrobe-sets, one each. They come from this container
+  (the hosted guard passed 455/455 on main), not from this change. The hosted guard has not been run on this branch.
+- Close-up render of the rebuilt cans, ramen cup and sandwich (SwiftShader): recessed lids, openings and rings read.
 - Real-game photographs, desktop Chromium/SwiftShader, before and after: nine shop views and the upper office.
   SwiftShader's depth buffer does not reproduce a phone's flicker, so the photographs show nothing missing or out of
   place. They do not prove the flicker has gone on the owner's devices.

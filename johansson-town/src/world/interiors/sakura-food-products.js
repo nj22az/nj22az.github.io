@@ -145,13 +145,12 @@ export function sakuraProductTemplate(id){
   topLabel(.065,.1315,'ramen lid print');
   box(.010,.003,.011,[.062,.1325,-.022],brand.ink,'ramen pull tab');
  }else{
-  // Existing can art and silhouette remain; the pull ring sits on the lid inside its raised rim, rather than creating a
-  // new outer can size. The flat opening and rivet that lay half a millimetre over the lid went (they flickered with it,
-  // the Sakura surface audit, SK-ZF rev A): the original envelope leaves no room to raise them clear.
-  const h=.135;
+  // Existing can art and silhouette remain, with the opening cut through the lid (shop-product.js); the pull ring rests
+  // on the recessed lid inside the raised rim, rather than creating a new outer can size.
+  const lid=.135-.002;
   append(parts,original.body.clone(),'original can body',null);
   const ring=new THREE.TorusGeometry(.006,.00085,3,8).rotateX(Math.PI/2);
-  part(ring,0xd6d9cd,[0,h+.00235,.006],'can pull ring');
+  part(ring,0xd6d9cd,[0,lid+.0009,.006],'can pull ring');
   const print=original.art.clone();prints.push(print.toNonIndexed());print.dispose();
  }
  function merged(list){if(!list.length)return null;const g=mergeGeometries(list);list.forEach(p=>p.dispose());g.computeBoundingBox();g.computeBoundingSphere();return g;}
