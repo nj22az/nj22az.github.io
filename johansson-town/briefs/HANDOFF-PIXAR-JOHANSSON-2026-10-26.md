@@ -206,6 +206,35 @@ too"; "Here it's almost good what happened how did we stray so far?"
 - `tools/pixar-shots.mjs --name Johansson` on the built runtime: island ready, playing, Johansson on Main Street drawn dressed, no page errors (jojo `renders/game/johansson-in-game-night.jpg`).
 - Not checked: a physical phone, a GPU browser, the Linux edition.
 
+## 27 October 2026, early: dressed only, and his neck
+
+The owner: "Ok stop the nude character, only do him dressed for now with the Hawaii shirt, check his neck there is an
+error there", with the neck's base circled on the raised arm's side of the wave.
+
+- **The nude is parked.** Nothing more is done to the body under the clothes; `?pixarClothes=0` still shows it but it
+  is not maintained; the plan's stages (jojo `3d/cast/AUDIT-JOHANSSON-BODY.md`) wait. Every check from here is of him
+  dressed.
+- **The neck** (jojo `AUDIT-JOHANSSON-BODY.md` section 6): a line drawn round the base of his neck above the collar, at
+  rest and in every move, was a ledge where the implicit body's neck (12 mm fatter at the collar, the shoulder girdle's
+  capsule starting under the jaw) met the sculpt's own neck; the girdle now starts at the neck's base and the band is
+  relaxed along the surface after the fit. In the wave the collar's point lifted off the neck with the arm: the collar
+  and yoke give their arm weight to the chest. Also: the 8 mm lips take the rim's UVs (light flecks before), two
+  half-metre holes in the shirt's sides where the forearms fused into the sculpt are closed (a garment's openings are
+  counted), and the collar's back is repainted plain (a smear of stretched hibiscus). GLB `9f8fd79deb`
+  (`PIXAR_BODIES.Johansson.version`).
+- **The sheet tool** (`tools/pixar-sheet.mjs`): `--frame neck` (the neck and collar from 0.6 m) and `--pose
+  move:seconds` (a gesture held in a face cell, e.g. `--pose Wave:0.9`), for close looks at a move.
+
+### Checks (27 October, early)
+
+- `node --test tests/pixar-johansson.test.mjs tests/pixar-thuan.test.mjs tests/pixar-skin.test.mjs`: 18/18.
+- Full guard on the rebuilt runtime: **457/457 pass**, 88 files, 292 s.
+- `tools/pixar-sheet.mjs Johansson --frame neck` at rest (front, his right, back) and `--pose Wave:0.9` (front, his
+  right), each cell looked at; the dressed body sheet in six views and moves. jojo
+  `renders/game/johansson-neck-before-after.jpg`, `johansson-neck-fixed-sheet.jpg`.
+- `tools/pixar-shots.mjs --name Johansson` on the built runtime: island ready, playing, Johansson on Main Street drawn dressed, no page errors (jojo `renders/game/johansson-in-game-neck.jpg`).
+- Not checked: a physical phone, a GPU browser, the Linux edition.
+
 ## For the next session (written 26 October 2026, end of the session)
 
 **Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (the
@@ -214,7 +243,7 @@ morning's work: this one `8a73aafe`, jojo `978dd15`; the evening's audit, plan a
 game draws him dressed with no page errors, and a separate review's two real findings (the seam's normals, Thuận's brow
 limits) are fixed and tested. Nothing of his is on `main`.
 
-**Waiting on the owner.**
+**Waiting on the owner.** (27 October: the nude is parked on the owner's word; he is worked on dressed only.)
 1. **Publish?** Pixar Johansson is the player, so he replaces the cartoon for everyone the moment this branch merges
    (AGENTS.md, "Except Thuan"). The wave fix (`src/avatars/animate.js`) is on the same branch and Thuận, who is live,
    uses the wave. If the owner wants the wave alone on `main`, cherry-pick `animate.js` and `tests/wave-gesture.test.mjs`

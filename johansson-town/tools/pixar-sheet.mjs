@@ -27,6 +27,9 @@ const turnBy=+(opt('--turn')||0);
 const motion=opt('--motion');
 // --body a,b: only these body cells (their labels), and no face cells unless --cells asks for some
 const bodyOnly=opt('--body');
+// --pose move:seconds: every face cell's body in this gesture (animate.js) so many seconds in (Wave:0.9), for the close
+// frames: --frame neck looks at the neck and collar from 0.6 m
+const pose=opt('--pose');
 // --undressed: the body without its clothes (its underwear), as ?pixarClothes=0 shows it
 const undressed=argv.includes('--undressed');if(undressed)argv.splice(argv.indexOf('--undressed'),1);
 const name=argv[0]||'Thuan',out=resolve(argv[1]||'output/pixar');mkdirSync(out,{recursive:true});
@@ -76,7 +79,7 @@ try{
  const page=await browser.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto(server.url+'src/avatars/face.js?pixar='+name.toLowerCase());
- const result=await page.evaluate(async({name,undressed,eyes,body,cellSize,frame,moving,turnBy})=>{
+ const result=await page.evaluate(async({name,undressed,eyes,body,cellSize,frame,moving,turnBy,pose})=>{
   const T=await import('/johansson-town/vendor/three.module.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js');
   const {createInkPipeline}=await import('/johansson-town/src/render/ink-pipeline.js'),{loadPixarBodies}=await import('/johansson-town/src/avatars/pixar.js'),{createAvatarAnimator:createAnimator}=await import('/johansson-town/src/avatars/animate.js');
   // assets/ resolve against the page (assets.js): the game's folder, as on its own page
@@ -103,9 +106,11 @@ try{
   };
   const show=a=>{pixar.root.visible=a===pixar;cartoon.root.visible=a===cartoon;};
   const headAt=a=>{a.root.updateMatrixWorld(true);return a.bones.head.getWorldPosition(new T.Vector3());};
+  const animFace=createAnimator(pixar);
   const eyesPng=!eyes.length?null:sheet(eyes,[cellSize,cellSize],Math.min(6,Math.max(1,Math.floor(1920/cellSize))),(cell,camera)=>{const [label,state,turn,old]=cell;
    const a=old?cartoon:pixar;show(a);a.root.rotation.y=turn+turnBy;if(moving)clock+=cell[4]||0;
    for(const b of Object.values(a.bones))b.rotation.set(0,0,0);
+   if(pose&&!old){const [move,secs='.9']=pose.split(':');a.root.position.set(0,0,0);animFace.play?.(move);for(let k=0;k<Math.round(+secs*60);k++)animFace.update(1/60,{});a.root.position.set(0,0,0);}
    a.paintFace({blink:0,talk:0,look:[0,0],gaze:null,blinkLeft:undefined,blinkRight:undefined,...state});
    // (a Pixar body's face at its own eyes' height, a little below: its card says where they are)
    const h=headAt(a),eyeY=a.pixar?.card?.eyes?.centres?.[0]?.[1],up=old?a.measure.headCentre-a.measure.headY:eyeY!=null?eyeY-a.pixar.card.rest.head[1]-.012:.075;
@@ -115,6 +120,7 @@ try{
    else if(frame==='nose'&&!old){const c=a.pixar?.card?.eyes?.centres,y=(c?.[0]?.[1]??h.y+up)-.05,x=c?(c[0][0]+c[1][0])/2:0,t=turn||0;camera.position.set(h.x+x+Math.sin(t)*.5,y+.02,h.z+Math.cos(t)*.5);camera.lookAt(h.x+x,y,h.z+.06);}
    else if(frame==='eyes'&&!old){const c=a.pixar?.card?.eyes?.centres,y=c?.[0]?.[1]??h.y+up,x=c?(c[0][0]+c[1][0])/2:h.x;camera.position.set(h.x+x,y+.005,h.z+.42);camera.lookAt(h.x+x,y,h.z);}
    else if((frame==='chest'||frame==='hips')&&!old){const dy=frame==='hips'?.74:.36;camera.position.set(h.x,h.y-dy+.04,h.z+1.25);camera.lookAt(h.x,h.y-dy,h.z);}
+   else if(frame==='neck'&&!old){const y=h.y-.1,t=turn||0;camera.position.set(h.x+Math.sin(t)*.6,y+.03,h.z+Math.cos(t)*.6);camera.lookAt(h.x,y,h.z);}
    else if(frame==='mouth'&&!old){const y=a.pixar.card?.eyes?.centres?.[0]?.[1]??h.y+up,my=y-.085;camera.position.set(h.x,my+.01,h.z+.42);camera.lookAt(h.x,my,h.z);}
    else{camera.position.set(h.x,h.y+up+.01,h.z+(old?1.55:.95));camera.lookAt(h.x,h.y+up,h.z);}
    report.cells.push({label,showing:a.pixar?a.pixar.eyes.showing:null});
@@ -131,7 +137,7 @@ try{
   });
   pixar.dispose();cartoon.dispose();
   return {report,eyesPng,bodyPng};
- },{name,undressed,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion,turnBy});
+ },{name,undressed,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion,turnBy,pose});
  if(result.eyesPng)writeFileSync(resolve(out,name+tag+'-eyes.png'),Buffer.from(result.eyesPng.split(',')[1],'base64'));
  if(result.bodyPng)writeFileSync(resolve(out,name+tag+'-body.png'),Buffer.from(result.bodyPng.split(',')[1],'base64'));
  writeFileSync(resolve(out,name+tag+'.json'),JSON.stringify(result.report,null,1)+'\n');
