@@ -122,6 +122,48 @@ sloping shoulders, relax the shoulders and fingers, an A-pose, cloth thickness, 
 face|mouth|eyes|nose|hand|chest|hips, `--turn`, `--motion`, `--body`, `--undressed`; a second wave frame), `runtime/`
 (rebuilt).
 
+## Evening, 26 October 2026: the nude body audited, a plan to rebuild it, and the neck, shoulders and legs fixed
+
+The owner, in order: "Johansson with clothes looks pretty ok but nude is abhorrent we need to be able to dress him be
+Hayao Miyazaki pls audit and make a plan to correct the Johansson model in blender"; "The neck and shoulders look off
+fix it pls"; "Look at the legs they are not ok he is supposed to be nude under the underwear now it looks like he is
+deformed".
+
+- **The audit and the plan**: jojo `3d/cast/AUDIT-JOHANSSON-BODY.md`. Thirteen findings, measured on the GLB and seen in
+  Blender clay, as triangles, in the atlas and in World's close frames (jojo `renders/game/johansson-nude-audit-*.jpg`):
+  undressed he was a shrunk shirt (epaulette shoulders, a groove from the armpit to the waist, a neck in a flat top, a
+  slab-and-sack trunk, a forearm thicker than the upper arm, knee lumps, boxers as a box, random 5–178 mm triangles
+  with 1,598 creases over 30°, an atlas of hundreds of islands each its own tone, 38 mm of asymmetry). The plan: a base
+  body built in Blender from code in Miyazaki's manner (five or six clean volumes, one S-curve from the ear down the arm,
+  no anatomy that is not a story, flat colour), his head and hands grafted on, one flat skin, World's bones bound in an
+  A-pose, the shirt and shorts (kept) and every later outfit as layers over it; five stages, four checkpoints, and five
+  decisions for the owner (nipples; bare feet with the sandals as a garment; the hands; nothing of the nude published;
+  publishing him and stubble, still open). It absorbs the handover's "next work" (the A-pose binding, the fingers, the
+  arms' density): those come with the new body, not before it.
+- **Fixed now, in the current export** (jojo `clothes_apart.py`; `AUDIT-JOHANSSON-BODY.md` section 4): a shoulder
+  girdle (the trapezius), a round deltoid on each joint, the trunk's section a dome above the shoulders, the neck
+  flaring into the girdle below the neckline (the collar hugs it at the neckline: 2 mm, measured), all fitted under the
+  shirt (8 mm near the neck where he is drawn dressed, 2 mm under the yoke and sleeve which hide it); the thigh a lean
+  taper inside the hips (its capsule had stood 2 cm outside them: the boxers bulged, the thigh below was a stick), a
+  soft knee into a two-capsule shin, the shin refitted and repainted, the boxers 7 mm off and eased onto the skin over
+  25 mm, the thighs joined solidly under the boxers down to the leg openings. A bug found on the way: the forearm's ease
+  back to the sculpt ran on down the arm's line past the hand and reset the outer thigh and shin vertices (fins); bounded.
+  Dressed he is unchanged (the dressed chest and hips frames before and after).
+- **His model**: `assets/avatars/pixar/johansson.glb` version `10de7fcf72` (`PIXAR_BODIES.Johansson.version`), ~2.0 MB,
+  the same parts and budgets; the card as before.
+
+### Checks (evening)
+
+- `node --test tests/pixar-johansson.test.mjs tests/pixar-thuan.test.mjs`: 13/13 on the final GLB.
+- Full guard `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs` on the rebuilt runtime: **456/456 pass**, 88 files, 287 s.
+- `tools/pixar-sheet.mjs Johansson --undressed` (body in six views and moves; `--frame chest|hips`, front and back,
+  `--size 700`) and dressed (body; `--frame chest`, `--frame hips`), each cell looked at: jojo
+  `renders/game/johansson-nude-fixed.jpg`, `johansson-nude-fix-before-after.jpg`. Found and fixed on the way: fins down
+  the shins (the forearm-ease bug), a see-through web and notch at the crotch (the thighs' join).
+- `tools/pixar-shots.mjs --name Johansson` on the built runtime: island ready, playing, Johansson found on Main Street drawn dressed, 11 steps, **no page errors** (jojo `renders/game/johansson-in-game-evening.jpg`).
+- Blender clay tries between exports (`scratchpad/work/jg/t1..t5`), and the export's own `nude.png`.
+- Not checked: a physical phone, a GPU browser, the Linux edition.
+
 ## For the next session (written 26 October 2026, end of the session)
 
 **Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (this one
@@ -141,7 +183,9 @@ limits) are fixed and tested. Nothing of his is on `main`.
    word. Where it would go: jojo `game_johansson.py` `paint_face`, a texel field over the jaw and upper lip below the
    mouth decal, grey-brown, at low alpha, before `SKIN_FLATTEN`.
 
-**Next work, in order of value.**
+**Next work, in order of value (evening update: the plan in jojo `3d/cast/AUDIT-JOHANSSON-BODY.md` comes first; the
+items below are absorbed into it and are kept for their detail).**
+- **The body rebuilt** (the plan): the owner's five decisions, then stage 0 (a clay body for their yes), stages 1–5.
 - **A-pose binding** (the critique; the biggest visible gain for the wave and every raised arm). World binds Pixar bodies
   in their rest (`src/avatars/pixar.js` `dressPixar`: the skeleton's rest from the card's `rest`, `bindMatrix` from
   the bones as placed). The plan: the studio exports the body posed with the upper arms out ~35° (jojo `game_johansson.py`
