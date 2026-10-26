@@ -1,0 +1,42 @@
+{
+  "revision": "C1 fuel-only design-review addendum",
+  "issueDate": "2026-10-17",
+  "status": "FOR DESIGN REVIEW - CONSTRUCTION NOT APPROVED",
+  "referenceRevision": "B, 2026-10-13; immutable package",
+  "sourceHashes": {
+    "src/world/ferry-fuel-design.js": "62f573f2892911b51265666c6a765549a018e1fa230b57a26ef4025a07a99521",
+    "src/world/ferry-fuel-spools.js": "369cebb3f60e329104c904d97adb0f8b313bed21cf1950f10182dfd113f80182",
+    "src/world/ferry-pipe-routes.js": "3ba4ae0e215b7f3b76c6280438c8184a034391e2c4ae66db80e07bf52e98dea7",
+    "src/world/ferry-interior.js": "262f3efcfd498b9aaaf0b344d9db75150569ce8f2bdfd6cca4362f403e846fc0",
+    "src/world/ferry-piping.js": "a649fc213c481f18513a400c09a5d05b3eac3eb2bbe672fd9db61b58d51665eb",
+    "src/world/ferry-ship.js": "29f5b8ca038e593dcbf1b916de3a721910b8003e1a555db9a359e0dcc1268688",
+    "tools/ferry-fuel-export.mjs": "6d3e9ff0c9637c6c2e9e29f0dfeaaa890cc975c70fd793a3453a74518eb2bcd3",
+    "tools/ferry-fuel-cad.py": "595a0b81cee740ad6dc5715af4e43ff1d591e828fbd05c2a6cb31c324ee02534",
+    "tools/ferry-fuel-validate.py": "ba6045ab269f62a6427756db789077acd87b3f9698fc473ff17fdb3c30f8714a",
+    "tools/ferry-fuel-search.mjs": "8c684566eba5429b8a543c97d99a654fdc66658688c0fafa71485ae219305b41",
+    "tools/ferry-fuel-simplify.mjs": "8776ede73e286ad31562c79ae38e992f2c4f0e16c5288d8451a58afb80b9b465",
+    "tools/ferry-drawings.mjs": "f1f1551c729309dbab515fc8a0851a1e0aba957cb0c20af45c791f3c85386346",
+    "tools/ferry-status.mjs": "10c9980ce2054c9faaa518c34a4ecf757eb1e5958105a6d1abf19514e3fa30f0"
+  },
+  "counts": {
+    "fuelLines": 22,
+    "fuelGeometryClear": 22,
+    "fuelUnresolved": 0,
+    "previousFuelGeometryClear": 10,
+    "previousFuelUnresolved": 12,
+    "allGeometryClear": 67,
+    "allUnresolved": 139,
+    "geometricIssuesResolved": 12
+  },
+  "holds": [
+    "Select equipment and confirm nozzle sizes, directions, flange envelopes and pump suction/discharge manifolds.",
+    "Design individual storage/sludge tank partitions, roof plating, penetrations, dip pipes, vents, sounding and overflow arrangements; the source defines only a shared tank reservation.",
+    "Select pipe class, actual ID/OD, wall, corrosion allowance, insulation, bend radius, flange/valve access and supports; current radii are geometric reservations.",
+    "Confirm pump curves, viscosity/temperature, NPSH, pressure losses, purifier feed regulation/bypass and return/overflow capacity. A 2 m3/h pump is not demonstrated compatible with a 0.25 m3/h purifier.",
+    "Confirm gravity head at minimum service-tank level, engine inlet/return pressure and generator return arrangements. The old 1.8 m gravity-head claim is unsupported.",
+    "Engineer and approve tank/deck/watertight bulkhead sleeves, fire protection and fuel containment. Proposed penetrations confer no structural or fire approval.",
+    "Coordinate unvalidated service routes, cables, ventilation, removal and escape envelopes; this check only reserves stated access boxes and existing accepted pipes."
+  ],
+  "coordinates": "Game metres: x port; y above laden waterline; z forward of amidships. CAD mm: X=1000*(z+LOA/2), Y=1000*x, Z=1000*(y+draft).",
+  "acceptance": "External connection polylines against source equipment AABBs, proposed access/structure reservations and existing accepted services. All interfaces proposed; internal compound assemblies and unvalidated services remain holds. Not a fabrication or hydraulic acceptance."
+}

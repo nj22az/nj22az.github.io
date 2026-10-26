@@ -1,0 +1,21 @@
+{
+  "status": "internal independent-language checks only; construction not approved",
+  "fuelRoutes": 22,
+  "minimumOtherPipeSurfaceGap_mm": 10.999999999999934,
+  "DXFSheets": 6,
+  "PDFPages": 6,
+  "PDFPaper_mm": [
+    420,
+    297
+  ],
+  "lockedPhysicalViewScale": "1:50",
+  "sourceReferencePreserved": true,
+  "checks": [
+    "Python endpoint/topology/orthogonality",
+    "radius-expanded equipment and access AABBs",
+    "all fuel vs fuel and retained-service swept-radius separations",
+    "DXF parser/auditor, units and locked view scales",
+    "PDF paper sizes and approval labels",
+    "all Revision B reference hashes"
+  ]
+}

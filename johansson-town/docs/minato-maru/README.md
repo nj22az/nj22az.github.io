@@ -48,6 +48,10 @@ her are in `docs/FERRY-AUDIT.md`.
 | Fuel, fresh water | 15 m³ fuel storage: 9.23 days at 20 crossings/day and 90% usable storage, excluding idle/weather allowance; 12 m³ fresh water, narrative refill every fifth morning |
 | Metacentric height | 1.6 m game-motion parameter only; intact/damage stability unverified |
 
+## C1 fuel-only addendum (17 October 2026)
+
+The [C1 fuel correction](fuel-c1/README.md) provides 22 rechecked external fuel routes, 44 proposed interfaces, updated registers, six CAD sheets and swept-envelope 3D models. It resolves the 12 fuel geometric issues in the Revision B register; 139 positive-bore connections remain unresolved vessel-wide. All supplier, internal assembly, tank, hydraulic and construction holds remain open. The published Revision B package is unchanged. **For design review; construction not approved.**
+
 ## The sheets
 
 | Sheet | File | What it is |
@@ -116,8 +120,8 @@ thruster, windlasses), allocated under X (heavy machinery, not main machine sets
    plating plans are what a yard cuts steel from; they need rule scantlings (NK rules for steel ships under 90 m) in the
    data first (`FERRY_STRUCTURE`, open).
 3. **Drawing coverage and physical design are separate.** The generated SVG set and Revision B CAD set now cover
-   the machinery arrangement, system diagrams and electrical records. The source has 55 accepted engineering pipe
-   routes and 151 unresolved positive-bore connections; illustrative preview pipes remain explicitly unverified.
+   the machinery arrangement, system diagrams and electrical records. The C1 source has 67 geometry-clear engineering pipe
+   routes and 139 unresolved positive-bore connections; illustrative preview pipes remain explicitly unverified.
    Final pipe classes, hydraulic sizing, supports, penetrations, fire boundaries, equipment interfaces, lifting,
    removal and escape arrangements remain construction holds in the engineering review and work register.
 5. **The hold forward of the engine room was empty.** Between Fr 28 and Fr 55 (z 14–27.5) the general arrangement had
