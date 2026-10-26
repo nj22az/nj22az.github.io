@@ -256,7 +256,7 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
   box([R.maxX-R.minX-T,R.ceiling,.01],[(R.minX+R.maxX)/2,R.ceiling/2,R.minZ+T/2+.005],SAND,'Rest room wall lining');
   for(const [z0b,z1b,y0,y1] of [[R.minZ,K.minZ,0,R.ceiling],[K.maxZ,R.maxZ-.06,0,R.ceiling],[K.minZ,K.maxZ,K.head,R.ceiling]])box([.01,y1-y0,z1b-z0b],[R.minX+T/2+.005,(y0+y1)/2,(z0b+z1b)/2],SAND,'Rest room wall lining');
   const S=D.restRoom;for(const [z0b,z1b,y0,y1] of [[R.minZ,S.from,0,R.ceiling],[S.to,R.maxZ-.06,0,R.ceiling],[S.from,S.to,S.head,R.ceiling]])box([.01,y1-y0,z1b-z0b],[R.maxX-T/2-.005,(y0+y1)/2,(z0b+z1b)/2],SAND,'Rest room wall lining');
-  box([.03,.08,R.maxZ-R.minZ-T-.006],[R.minX+T/2+.02,S.head+.044,(R.minZ+R.maxZ)/2],TIMBER,'Nageshi rail');
+  box([.03,.08,R.maxZ-R.minZ-T-.006],[R.minX+T/2+.025,S.head+.044,(R.minZ+R.maxZ)/2],TIMBER,'Nageshi rail');// on the lining's face, not 5 mm into it
   // Shoji over the street glass: daylight and privacy over Main Street, no outlook.
   const paper=paint(128,256,(ctx,w,h)=>{ctx.fillStyle='#f3eedf';ctx.fillRect(0,0,w,h);ctx.fillStyle='#b8a074';for(let i=1;i<3;i++)ctx.fillRect(i*w/3-1.5,0,3,h);for(let j=1;j<6;j++)ctx.fillRect(0,j*h/6-1.5,w,3);});
   const shoji=new THREE.MeshStandardMaterial({color:paper?0xffffff:0xf3eedf,map:paper,roughness:.95,emissive:0x2a251a});

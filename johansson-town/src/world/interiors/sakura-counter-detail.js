@@ -40,7 +40,7 @@ const materialForPrints=()=>{
   texture=new THREE.CanvasTexture(canvas);
   refreshSakuraPrint(texture,drawSakuraDetailPrints,SAKURA_DETAIL_PRINTS.map(p=>p.title+p.line+p.foot).join(''));texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;
  }
- printMaterial=new THREE.MeshBasicMaterial({map:texture,color:texture?0xffffff:0xf4ead4,toneMapped:false});
+ printMaterial=new THREE.MeshBasicMaterial({map:texture,color:texture?0xffffff:0xf4ead4,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
  printMaterial.name='Sakura equipment and category print atlas';return printMaterial;
 };
 /** Separate baselines, fixed gutters and bounded text widths survive small displays. */

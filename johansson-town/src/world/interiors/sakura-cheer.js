@@ -2,6 +2,7 @@ import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSakuraHotFood} from './sakura-counter-detail.js';
 import {SAKURA_BAND_DESIGN,runLength,boards,alongRun} from './sakura-band.js';
+import {SAKURA_TILL_FLOOR} from './sakura-layout.js';
 
 /**
  * The cheerful half of a real konbini, and Thuan's back office.
@@ -85,16 +86,16 @@ function buildCheer(room){
  }
  // Welcome mat inside the door, and paw-print stickers from the door to the till.
  const matTex=sign(512,256,(ctx,w,h)=>{ctx.fillStyle='#2a8fcc';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#ffffff';ctx.lineWidth=12;ctx.strokeRect(14,14,w-28,h-28);signText(ctx,"Welcome",w/2,h*.45,62,'#ffffff');signText(ctx,'SAKURA SHOP',w/2,h*.75,30,'#ffe28a');});
- const welcome=add(room,new THREE.PlaneGeometry(1.5,.75),new THREE.MeshStandardMaterial({map:matTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),0,.006,3.35,'Sakura welcome mat');welcome.rotation.x=-Math.PI/2;
+ const welcome=add(room,new THREE.PlaneGeometry(1.5,.75),new THREE.MeshStandardMaterial({map:matTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}),0,.010,3.35,'Sakura welcome mat');welcome.rotation.x=-Math.PI/2;
  const paw=sign(128,128,(ctx,w,h)=>{ctx.fillStyle='#f06ba8';ctx.beginPath();ctx.ellipse(w/2,h*.62,26,22,0,0,Math.PI*2);ctx.fill();for(const [dx,dy] of [[-30,-14],[-11,-30],[11,-30],[30,-14]]){ctx.beginPath();ctx.arc(w/2+dx,h*.5+dy,10,0,Math.PI*2);ctx.fill();}});
- const pawMat=new THREE.MeshStandardMaterial({map:paw,transparent:true,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,depthWrite:false});
+ const pawMat=new THREE.MeshStandardMaterial({map:paw,transparent:true,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4,depthWrite:false});
  const steps=[[1.1,2.7],[1.6,2.3],[2.1,1.95],[2.6,1.6],[3.1,1.3],[3.6,1.05]];
  steps.forEach(([x,z],i)=>{const m=add(room,new THREE.PlaneGeometry(.2,.2),pawMat,x+(i%2?.08:-.08),.007,z,'Sakura floor sticker');m.rotation.set(-Math.PI/2,0,Math.atan2(3.6-1.1,1.05-2.7)+Math.PI);});
  const tillTex=sign(256,96,(ctx,w,h)=>{ctx.fillStyle='#ffc93c';ctx.fillRect(0,0,w,h);
   // Sized to the sticker: at a fixed 54 px the words ran off both ends.
   const label="Cash register ▶";let size=54;ctx.font=`bold ${size}px ${MARU}`;while(size>18&&ctx.measureText(label).width>w-24){size-=2;ctx.font=`bold ${size}px ${MARU}`;}
   signText(ctx,label,w/2,h/2,size,'#3b3f55');});
- const till=add(room,new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tillTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2}),3.95,.007,.85,'Sakura till sticker');till.rotation.set(-Math.PI/2,0,-Math.PI/2);
+ const till=add(room,new THREE.PlaneGeometry(.5,.19),new THREE.MeshStandardMaterial({map:tillTex,roughness:1,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}),3.95,.007,.85,'Sakura till sticker');till.rotation.set(-Math.PI/2,0,-Math.PI/2);
 }
 
 // The small office behind the till is its own module now (sakura-small-office.js, sakura-small-office-build.js).
@@ -239,9 +240,10 @@ function buildTillFloor(room){
   ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(10,10,40,6);ctx.fillRect(138,138,40,6);
  });
  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
- for(const [x0,x1] of [[3.05,4.54],[5.06,6.67]]){
-  const z0=.0,z1=3.56,t=tex.clone();t.needsUpdate=true;t.repeat.set((x1-x0)/(tile*2),(z1-z0)/(tile*2));
-  const floor=add(room,new THREE.PlaneGeometry(x1-x0,z1-z0),new THREE.MeshStandardMaterial({map:t,roughness:.35}),(x0+x1)/2,.006,(z0+z1)/2,'Sakura till floor');
+ // Flush in the floor (y 0), which is cut round them: laid 6 mm above it, the two floors fought over 11 m².
+ for(const {x0,x1,z0,z1} of SAKURA_TILL_FLOOR){
+  const t=tex.clone();t.needsUpdate=true;t.repeat.set((x1-x0)/(tile*2),(z1-z0)/(tile*2));
+  const floor=add(room,new THREE.PlaneGeometry(x1-x0,z1-z0),new THREE.MeshStandardMaterial({map:t,roughness:.35}),(x0+x1)/2,0,(z0+z1)/2,'Sakura till floor');
   floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;
  }
 }

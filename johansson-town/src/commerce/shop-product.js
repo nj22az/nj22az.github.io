@@ -35,12 +35,16 @@ export function shopProductTemplate(target,{sides=SIDES}={}){
  if(pack.shape==='bottle'){
   // The bottle's own tint (the tea's green, the cola's brown), its shoulder and neck, and the cap in the brand's ink.
   const color=pack.colour,r=W/2;
-  cyl(r,.16,.08,color);cyl(.023,.035,.1775,color,r);cyl(.023,.05,.22,color);cyl(.025,.018,.254,brand.ink);
-  if(pack.detail==='marble'){cyl(.031,.026,.185,0xc4e1dc,.034);cyl(.025,.012,.245,0xe9e8d8);}
+  // A marble bottle's neck stops at the collar, which stops at the cap: one surface each, none inside another.
+  const marble=pack.detail==='marble';
+  cyl(r,.16,.08,color);cyl(.023,.035,.1775,color,r);if(marble)cyl(.023,.044,.217,color);else cyl(.023,.05,.22,color);cyl(.025,.018,.254,brand.ink);
+  if(marble){cyl(.031,.026,.185,0xc4e1dc,.034);cyl(.025,.006,.242,0xe9e8d8);}
   label(new THREE.CylinderGeometry(r+.001,r+.001,.123,sides,1,true,-Math.PI*.76,Math.PI*1.52),.085);
  }else if(pack.shape==='can'){
   const r=W/2,h=H;
-  cyl(r,h,h/2,brand.paper);cyl(r+.0015,.004,.004,0xa8b3ad);cyl(r+.0015,.004,h,0xcad0c8);
+  // The body runs between the two seamed beads, which close it, rather than through them: a bead round the body put
+  // its faces 1.5 mm off the body's (the Sakura surface audit, SK-ZF rev A).
+  cyl(r,h-.008,(h+.004)/2,brand.paper);cyl(r+.0015,.006,.003,0xa8b3ad);cyl(r+.0015,.004,h,0xcad0c8);
   part(new THREE.TorusGeometry(r*.79,.0014,3,sides).rotateX(Math.PI/2),0x88958c,[0,h+.002,0]);
   label(new THREE.CylinderGeometry(r+.001,r+.001,h*.87,sides,1,true,-Math.PI*.8,Math.PI*1.6),h/2);
  }else if(pack.shape==='cup'){
@@ -80,12 +84,20 @@ export function shopProductTemplate(target,{sides=SIDES}={}){
   const w=W,h=H,d=D;
   const g=new THREE.BoxGeometry(w,h,d,1,4,1),p=g.attributes.position;
   for(let i=0;i<p.count;i++){const t=Math.abs(p.getY(i))/(h/2);p.setX(i,p.getX(i)*(1-.08*t));p.setZ(i,p.getZ(i)*(1-.60*t**4));}g.computeVertexNormals();part(g,brand.paper,[0,h/2,0]);
-  box(w*.90,.009,d*.42,h-.002,brand.accent);box(w*.90,.009,d*.42,.004,brand.accent);fronts(w*.88,h*.72,d,h/2);
+  // The crimp seals: the bottom one 2.5 mm up, clear of the bag's base.
+  box(w*.90,.009,d*.42,h-.002,brand.accent);box(w*.90,.009,d*.42,.007,brand.accent);fronts(w*.88,h*.72,d,h/2);
  }else{
   const [w,h,d]=[W,H,D];
-  box(w,h,d,h/2,brand.paper);fronts(w*.95,h*.89,d,h*.5);
-  if(pack.detail==='pages')box(w*.92,.004,d+.001,h*.92,0xeee8d7);
-  if(pack.detail==='tissue-slot')box(.105,.002,.018,h+.001,0xf9f7ec);
+  // The page edges show as a band round the pack: the band is cut into the body, which is built round it, so the band
+  // and the cover never lie one in front of the other.
+  if(pack.detail==='pages'){const y0=h*.92-.002,y1=h*.92+.002,bw=w*.92,side=(w-bw)/2;
+   box(w,y0,d,y0/2,brand.paper);box(w,h-y1,d,(h+y1)/2,brand.paper);
+   for(const s of [-1,1])part(new THREE.BoxGeometry(side,y1-y0,d),brand.paper,[s*(bw+side)/2,h*.92,0]);
+   box(bw,y1-y0,d+.001,h*.92,0xeee8d7);
+  }else box(w,h,d,h/2,brand.paper);
+  fronts(w*.95,h*.89,d,h*.5);
+  // The tissue stands 2.2 mm proud of the slot.
+  if(pack.detail==='tissue-slot')box(.105,.0022,.018,h+.0011,0xf9f7ec);
  }
  const body=mergeGeometries(parts),art=mergeGeometries(labels);[...parts,...labels].forEach(g=>g.dispose());body.computeBoundingBox();art.computeBoundingBox();
  const bounds=body.boundingBox.clone().union(art.boundingBox),result={body,art,bounds};if(!draft)templates.set(key,result);return result;

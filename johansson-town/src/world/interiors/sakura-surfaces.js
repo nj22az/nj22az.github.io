@@ -1,6 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
-import {SAKURA_SHELL} from './sakura-shell.js';
+import {SAKURA_SHELL,SAKURA_FLOOR_INSETS,floorWithout} from './sakura-shell.js';
 import {SAKURA_BAND} from './sakura-cheer.js';
 
 /**
@@ -46,8 +46,9 @@ const glow=(map,opacity)=>new THREE.MeshBasicMaterial({map,transparent:true,opac
 export function buildSakuraSurfaces(room){
  const group=new THREE.Group();group.name='Sakura surfaces';room.add(group);
  // The floor's sheen, over the whole shop floor at once.
- const floor=new THREE.Mesh(new THREE.PlaneGeometry(FLOOR.x1-FLOOR.x0,FLOOR.z1-FLOOR.z0),glow(sheenTexture(),.42));
- floor.rotation.x=-Math.PI/2;floor.position.set((FLOOR.x0+FLOOR.x1)/2,.004,(FLOOR.z0+FLOOR.z1)/2);floor.name='Sakura floor sheen';floor.renderOrder=1;
+ // The till's tiles and the restroom's mosaic have no terrazzo sheen: it is cut round them as the floor is.
+ const floor=new THREE.Mesh(floorWithout(FLOOR.x0,FLOOR.x1,FLOOR.z0,FLOOR.z1,SAKURA_FLOOR_INSETS,.004),glow(sheenTexture(),.42));
+ floor.name='Sakura floor sheen';floor.renderOrder=1;
  group.add(floor);
  // Sakura's stripe under the wall band.
  const stripes=[],y=SAKURA_BAND.y0;

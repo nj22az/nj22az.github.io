@@ -11,6 +11,17 @@ const FOODS=new Set(['rice','bento','sandwich','bun','pudding','yogurt','noodles
  * Bounds intentionally retain the original envelope: stocking and reach positions
  * must not change when a packet gains visible food inside it.
  */
+/** A geometry without its downward faces at its lowest level (within 4 mm of it). */
+function withoutBase(g){
+ const p=g.attributes.position,keep=[],a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),n=new THREE.Vector3();
+ let low=Infinity;for(let i=0;i<p.count;i++)low=Math.min(low,p.getY(i));
+ for(let i=0;i<p.count;i+=3){a.fromBufferAttribute(p,i);b.fromBufferAttribute(p,i+1);c.fromBufferAttribute(p,i+2);
+  n.subVectors(b,a).cross(c.clone().sub(a)).normalize();if(!(n.y<-.9&&Math.max(a.y,b.y,c.y)<low+.004))keep.push(i);}
+ const out=new THREE.BufferGeometry();
+ for(const [name,attr] of Object.entries(g.attributes)){const s=attr.itemSize,v=new attr.array.constructor(keep.length*3*s);
+  keep.forEach((i,k)=>{for(let j=0;j<3*s;j++)v[k*3*s+j]=attr.array[i*s+j];});out.setAttribute(name,new THREE.BufferAttribute(v,s));}
+ g.dispose();return out;
+}
 export function sakuraProductTemplate(id){
  if(cache.has(id))return cache.get(id);
  const original=shopProductTemplate(id);
@@ -38,7 +49,9 @@ export function sakuraProductTemplate(id){
  }
  const topLabel=(r,y,name)=>label(new THREE.CircleGeometry(r,8).rotateX(-Math.PI/2),[0,y,0],name);
  const frontLabel=(w,h,pos,name)=>label(new THREE.PlaneGeometry(w,h),pos,name);
- const wrap=(g,pos=[0,0,0])=>append(wrappers,g,'clear wrapping',null,pos);
+ // The clear film has no underside: it rests on the shelf with the pack, where its base lay a millimetre or two off the
+ // pack's own and fought it, and nobody sees under a pack on a shelf (the Sakura surface audit, SK-ZF rev A).
+ const wrap=(g,pos=[0,0,0])=>append(wrappers,withoutBase(g.index?g.toNonIndexed():g),'clear wrapping',null,pos);
  function band(topRadius,bottomRadius,height,centre,fullHeight,start=-Math.PI*.48,length=Math.PI*.96){
   const radiusAt=y=>bottomRadius+(topRadius-bottomRadius)*y/fullHeight;
   label(new THREE.CylinderGeometry(radiusAt(centre+height/2)+.0008,radiusAt(centre-height/2)+.0008,height,8,1,true,start,length),[0,centre,0],'brand cup band');
@@ -54,14 +67,15 @@ export function sakuraProductTemplate(id){
   }
   box(.063,.057,.004,[0,.031,.031],0x293d2e,'nori front');
   box(.063,.057,.004,[0,.031,-.031],0x293d2e,'nori back');
-  box(.063,.003,.066,[0,.0015,0],0x293d2e,'folded nori base');
-  box(.052,.022,.001,[0,.029,.0335],brand.paper,'rice paper label');
-  frontLabel(.050,.020,[0,.029,.0345],'onigiri front label');
+  // The folded base runs between the two nori sheets, not under them; the label is printed straight on the film.
+  box(.063,.003,.058,[0,.0015,0],0x293d2e,'folded nori base');
+  frontLabel(.052,.022,[0,.029,.0335],'onigiri front label');
   wrap(triangle([[-.069,.001],[.069,.001],[0,.118]],.074));
   box(.008,.003,.004,[0,.119,0],brand.accent,'wrapper tear tab');
  }else if(id==='bento'){
   box(.190,.008,.132,[0,.004,0],0x292b26,'bento tray base');
-  for(const z of [-.064,.064])box(.192,.030,.004,[0,.023,z],0x32372c,'bento tray rim');
+  // The long rims stop at the end rims (butt joints): crossing them, their ends lay in the end rims' faces.
+  for(const z of [-.064,.064])box(.184,.030,.004,[0,.023,z],0x32372c,'bento tray rim');
   for(const x of [-.094,.094])box(.004,.030,.132,[x,.023,0],0x32372c,'bento tray rim');
   box(.004,.023,.122,[0,.020,0],0x32372c,'compartment divider');
   box(.086,.023,.004,[.047,.020,.010],0x32372c,'compartment divider');
@@ -70,7 +84,7 @@ export function sakuraProductTemplate(id){
   ellipsoid([.010,.005,.010],[-.046,.029,.001],0xb84440,'plum pickle');
   for(const z of [-.040,-.014]){
    box(.059,.014,.021,[.047,.020,z],0x9d6236,'grilled protein');
-   for(const x of [.028,.047,.066])box(.003,.002,.019,[x,.028,z],0x5d3a28,'grill mark');
+   for(const x of [.028,.047,.066])box(.003,.003,.019,[x,.028,z],0x5d3a28,'grill mark');
   }
   for(const z of [.024,.043])box(.029,.018,.015,[.065,.022,z],0xe6c359,'rolled egg');
   for(const x of [.018,.031])ellipsoid([.007,.006,.014],[x,.021,.036],0x668643,'greens',6,3);
@@ -78,19 +92,21 @@ export function sakuraProductTemplate(id){
   // A narrow sleeve identifies the meal without hiding the compartments.
   box(.042,.003,.128,[.005,.052,0],brand.paper,'bento paper sleeve');
   label(new THREE.PlaneGeometry(.124,.040).rotateX(-Math.PI/2).rotateY(Math.PI/2),[.005,.0545,0],'bento lid sleeve');
-  wrap(new THREE.BoxGeometry(.192,.010,.134),[0,.045,0]);
+  wrap(new THREE.BoxGeometry(.192,.008,.134),[0,.044,0]);// the film 2.5 mm under the sleeve
  }else if(id==='sandwich'){
   const crust=[[-.064,.012],[.064,.012],[0,.125]],crumb=[[-.057,.018],[.057,.018],[0,.116]];
+  // The crust is a ring round the crumb, the two flush on the cut face: a crumb laid over the crust fought it 0.4 mm away.
+  const ring=new THREE.Shape(crust.map(p=>new THREE.Vector2(...p))),hole=new THREE.Path(crumb.map(p=>new THREE.Vector2(...p)));ring.holes.push(hole);
   for(const z of [-.0175,.0175]){
-   part(triangle(crust,.010),0xb9834b,[0,0,z],'bread crust');
-   part(triangle(crumb,.0108),0xf7edd2,[0,0,z],'bread crumb');
+   part(new THREE.ExtrudeGeometry(ring,{depth:.010,bevelEnabled:false,steps:1}).translate(0,0,-.005),0xb9834b,[0,0,z],'bread crust');
+   part(triangle(crumb,.010),0xf7edd2,[0,0,z],'bread crumb');
   }
   part(triangle([[-.059,.015],[.059,.015],[0,.117]],.019),0xecd274,[0,0,0],'egg filling');
   for(const z of [-.011,.011])part(triangle([[-.058,.015],[.058,.015],[0,.115]],.002),0x769451,[0,0,z],'lettuce filling');
-  for(const z of [-.0255,.0255])box(.040,.025,.001,[0,.035,z],brand.paper,'sandwich paper label');
-  frontLabel(.038,.023,[0,.035,.0265],'sandwich front label');
-  label(new THREE.PlaneGeometry(.038,.023).rotateY(Math.PI),[0,.035,-.0265],'sandwich back label');
-  wrap(triangle([[-.069,.0105],[.069,.0105],[0,.130]],.052));
+  // Labels are printed on the film itself, front and back.
+  frontLabel(.040,.025,[0,.035,.0262],'sandwich front label');
+  label(new THREE.PlaneGeometry(.040,.025).rotateY(Math.PI),[0,.035,-.0262],'sandwich back label');
+  wrap(triangle([[-.0705,.010],[.0705,.010],[0,.1315]],.052));// over 3 mm clear of the crust all round
  }else if(id==='bun'){
   box(.105,.002,.086,[0,.001,0],0xf1ead7,'steamer paper square');
   part(new THREE.CylinderGeometry(.053,.049,.019,10).scale(1,1,.79),0xeee0bd,[0,.0115,0],'bun base');
@@ -100,8 +116,7 @@ export function sakuraProductTemplate(id){
    const ridge=new THREE.CylinderGeometry(.0011,.0018,delta.length(),3);ridge.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.clone().normalize()));
    part(ridge,0xdfcfaa,start.clone().add(end).multiplyScalar(.5).toArray(),'bun pleat');
   }
-  box(.062,.018,.001,[0,.010,.043],brand.paper,'bun paper label');
-  frontLabel(.060,.016,[0,.010,.044],'bun base label');
+  frontLabel(.062,.018,[0,.010,.0435],'bun base label');
  }else if(id==='pudding'||id==='yogurt'){
   const yogurt=id==='yogurt',r=yogurt?.048:.038,h=yogurt?.078:.062,rb=r*.76;
   if(yogurt){
@@ -118,22 +133,25 @@ export function sakuraProductTemplate(id){
   band(r,rb,yogurt?.032:.020,yogurt?.039:.034,h);
   wrap(new THREE.CylinderGeometry(r+.0002,rb+.0002,h,8,1,true),[0,h/2,0]);
  }else if(id==='noodles'){
-  cylinder(.067,.052,.128,[0,.064,0],brand.paper,'tapered ramen cup');
+  // Built in courses, each starting where the last ends: the foot, the cup on it, the rim flange on the cup and the
+  // foil inside the flange, flush with it; the tab lifts 3 mm off the foil (the Sakura surface audit, SK-ZF rev A).
   cylinder(.053,.053,.004,[0,.002,0],0xbbb8a3,'cup foot');
-  cylinder(.070,.070,.003,[0,.1315,0],brand.accent,'ramen lid rim');
-  cylinder(.0675,.0675,.0015,[0,.132,0],0xf2dfb5,'foil lid');
+  cylinder(.067,.0525,.124,[0,.066,0],brand.paper,'tapered ramen cup');
+  part(new THREE.CylinderGeometry(.070,.070,.003,8,1,true),brand.accent,[0,.1295,0],'ramen lid rim');
+  part(new THREE.RingGeometry(.0675,.070,8).rotateX(-Math.PI/2),brand.accent,[0,.131,0],'ramen lid rim');
+  part(new THREE.RingGeometry(.067,.070,8).rotateX(Math.PI/2),brand.accent,[0,.128,0],'ramen lid rim');
+  part(new THREE.CircleGeometry(.0675,8).rotateX(-Math.PI/2),0xf2dfb5,[0,.131,0],'foil lid');
   band(.067,.052,.105,.065,.128);
-  topLabel(.065,.134,'ramen lid print');
-  box(.010,.001,.011,[.062,.132,-.022],brand.ink,'ramen pull tab');
+  topLabel(.065,.1315,'ramen lid print');
+  box(.010,.003,.011,[.062,.1325,-.022],brand.ink,'ramen pull tab');
  }else{
-  // Existing can art and silhouette remain; a dark opening and ring sit above the
-  // lid inside its raised rim, rather than creating a new outer can size.
+  // Existing can art and silhouette remain; the pull ring sits on the lid inside its raised rim, rather than creating a
+  // new outer can size. The flat opening and rivet that lay half a millimetre over the lid went (they flickered with it,
+  // the Sakura surface audit, SK-ZF rev A): the original envelope leaves no room to raise them clear.
   const h=.135;
   append(parts,original.body.clone(),'original can body',null);
-  cylinder(.007,.007,.0005,[0,h+.00225,-.010],0x505850,'can opening');
   const ring=new THREE.TorusGeometry(.006,.00085,3,8).rotateX(Math.PI/2);
   part(ring,0xd6d9cd,[0,h+.00235,.006],'can pull ring');
-  box(.005,.0006,.005,[0,h+.0024,0],0xb6bdb3,'pull tab rivet');
   const print=original.art.clone();prints.push(print.toNonIndexed());print.dispose();
  }
  function merged(list){if(!list.length)return null;const g=mergeGeometries(list);list.forEach(p=>p.dispose());g.computeBoundingBox();g.computeBoundingSphere();return g;}

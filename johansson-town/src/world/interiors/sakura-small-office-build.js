@@ -231,7 +231,7 @@ export function buildSakuraSmallOffice(room,{anchor=()=>null,action=()=>{},budge
  mesh('Sakura mug',new THREE.TorusGeometry(.022,.007,6,12,Math.PI),flat(0xf06ba8),[M[0]+.04,M[1]+.05,M[2]],group,[0,0,-Math.PI/2]);
  const T=I.tray.at;[[0xd7263d,.0],[0xffc93c,.075],[0x2a8fcc,.15]].forEach(([c,y])=>{box('Sakura letter tray',[.25,.012,.33],[T[0],T[1]+y+.006,T[2]],c);box('Sakura letter tray',[.25,.04,.012],[T[0],T[1]+y+.02,T[2]-.16],c);box('Sakura letter tray',[.012,.035,.33],[T[0]+.12,T[1]+y+.018,T[2]],c);
   box('Sakura letter tray papers',[.21,.006,.29],[T[0]-.01,T[1]+y+.015,T[2]],0xfbf8ef);});
- for(const [ox,oz] of [[-.11,-.15],[.11,-.15],[-.11,.15],[.11,.15]])box('Sakura letter tray post',[.012,.15,.012],[T[0]+ox,T[1]+.087,T[2]+oz],0x9aa0a6);
+ for(const [ox,oz] of [[-.11,-.15],[.11,-.15],[-.11,.15],[.11,.15]])box('Sakura letter tray post',[.012,.138,.012],[T[0]+ox,T[1]+.081,T[2]+oz],0x9aa0a6);
  {const pl=I.plush.at,body=sphere('Plush Jaga-bo',.055,[pl[0],pl[1]+.065,pl[2]],0xe8b95c,group,[1,1.2,.9]);void body;
   for(const [oz,oy,r] of [[-.02,.085,.016],[.022,.09,.011]]){sphere('Plush Jaga-bo eye',r,[pl[0]-.048,pl[1]+oy,pl[2]+oz],0xffffff);sphere('Plush Jaga-bo eye',r*.5,[pl[0]-.06,pl[1]+oy-.003,pl[2]+oz],0x1a1a1a);}}
  {const C=I.cactus.at;cyl('Sakura office cactus',.035,.03,.055,[C[0],C[1]+.0275,C[2]],0xf06ba8);mesh('Sakura office cactus',new THREE.CapsuleGeometry(.021,.05,4,8),flat(0x57a52f),[C[0],C[1]+.09,C[2]]);
@@ -250,14 +250,15 @@ export function buildSakuraSmallOffice(room,{anchor=()=>null,action=()=>{},budge
  box('Sakura office chair',[.42,.36,.07],[0,seatY+.29,-.25],BLUE,swivel,[-.1,0,0]);
 
  // ---- the rug, under the castors ----
- {const R=I.rug,g=region(new THREE.CircleGeometry(R.size[0]/2,40),P.rug);mesh('Sakura office rug',g,printMat,[R.at[0],.004,R.at[2]],group,[-Math.PI/2,0,0]);}
+ {const R=I.rug,g=region(new THREE.CircleGeometry(R.size[0]/2,40),P.rug);mesh('Sakura office rug',g,printMat,[R.at[0],.010,R.at[2]],group,[-Math.PI/2,0,0]);/* 10 mm: a rug's pile, clear of the floor's sheen (4 mm) */}
 
  // ---- the fridge: hollow, so its door opens on a lit inside ----
  const F=I.fridge,[fx,,fz]=F.at,[fw,fh,fd]=F.size,WHITE=0xeef1ef,x0=fx-fw/2,z1=fz+fd/2;
  box('Sakura office fridge',[fw,.04,fd-.03],[fx,.02,fz-.015],0x4a4f52);
- box('Sakura office fridge',[.03,fh-.04,fd-.03],[x0+.015,(fh+.04)/2,fz-.015],WHITE);box('Sakura office fridge',[.03,fh-.04,fd-.03],[fx+fw/2-.015,(fh+.04)/2,fz-.015],WHITE);
+ // The sides and the back stop under the top (it lies on them): run up into it, their tops shared its plane.
+ box('Sakura office fridge',[.03,fh-.07,fd-.03],[x0+.015,(fh+.01)/2,fz-.015],WHITE);box('Sakura office fridge',[.03,fh-.07,fd-.03],[fx+fw/2-.015,(fh+.01)/2,fz-.015],WHITE);
  box('Sakura office fridge',[fw,.03,fd-.03],[fx,fh-.015,fz-.015],WHITE);box('Sakura office fridge',[fw-.06,.03,fd-.03],[fx,.055,fz-.015],0xdfe7e8);
- box('Sakura office fridge',[fw-.06,fh-.07,.03],[fx,(fh+.07)/2,fz-fd/2+.015],0xdfe7e8);
+ box('Sakura office fridge',[fw-.06,fh-.10,.03],[fx,(fh+.04)/2,fz-fd/2+.015],0xdfe7e8);
  box('Sakura office fridge freezer',[fw-.08,.14,.3],[fx,fh-.11,fz-.07],0xcfd8db);box('Sakura office fridge freezer',[fw-.1,.012,.006],[fx,fh-.13,fz+.081],0x9aa6aa);
  box('Sakura office fridge shelf',[fw-.07,.012,fd-.12],[fx,.42,fz-.03],0xd9e1e2);
  const door=new THREE.Group();door.name='Sakura office fridge door';door.position.set(x0+.005,0,z1-.03+.0175);door.userData.live=true;group.add(door);
@@ -284,7 +285,7 @@ export function buildSakuraSmallOffice(room,{anchor=()=>null,action=()=>{},budge
  for(const s of [-1,1]){const rod=cyl('Sakura office TV aerial',.004,.003,.32,[s*.06,.01+th+.14,-.08],0x9aa0a6,tv,[0,0,s*-.45],6);void rod;}
  const screenCanvas=canPaint()?document.createElement('canvas'):null;if(screenCanvas){screenCanvas.width=256;screenCanvas.height=192;}
  const screenTex=screenCanvas?new THREE.CanvasTexture(screenCanvas):null;if(screenTex){screenTex.colorSpace=THREE.SRGBColorSpace;disposables.push(screenTex);}
- const screenMat=new THREE.MeshBasicMaterial({map:screenTex,color:screenTex?0xffffff:0x1d2422,toneMapped:false});disposables.push(screenMat);
+ const screenMat=new THREE.MeshBasicMaterial({map:screenTex,color:screenTex?0xffffff:0x1d2422,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});disposables.push(screenMat);
  const screen=mesh('Sakura office TV screen',new THREE.PlaneGeometry(.25,.185),screenMat,[0,.185,td/2+.002],tv);screen.userData.keep=true;
  const CO=I.console;box('Sakura office console',[.24,.06,.18],[0,.01+th+.03,-.02],0xc9ccd0,tv);box('Sakura office console',[.08,.008,.05],[-.05,.01+th+.064,0],0x8a8f96,tv);
  box('Sakura office console button',[.025,.01,.025],[.07,.01+th+.065,.03],0xd7263d,tv);box('Sakura office console pad',[.11,.022,.05],[.02,.01+th+.071,.06],0x8a8f96,tv,[0,.3,0]);void CO;

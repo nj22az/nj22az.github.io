@@ -35,7 +35,7 @@ function kit(parent,name){
  const group=new THREE.Group();group.name=name;parent.add(group);
  const mesh=(geometry,material,x,y,z,label=name)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.name=label;group.add(m);return m;};
  const box=(w,h,d,x,y,z,color,label)=>mesh(new THREE.BoxGeometry(w,h,d),typeof color==='number'?std(color):color,x,y,z,label);
- const print=(tex,w,h,x,y,z,yaw=0,label=name+' print')=>{const m=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tex,roughness:.9,side:THREE.DoubleSide,transparent:true,alphaTest:.05}),x,y,z,label);m.rotation.y=yaw;return m;};
+ const print=(tex,w,h,x,y,z,yaw=0,label=name+' print')=>{const m=mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tex,roughness:.9,side:THREE.DoubleSide,transparent:true,alphaTest:.05,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}),x,y,z,label);m.rotation.y=yaw;return m;};
  return {group,mesh,box,print};
 }
 
@@ -137,7 +137,8 @@ function buildShopFloor(parent,anchor,action){
     const t=i/(count-1||1),y=.5+(height-.5)*t,a=turn+i*2.4,size=1.25-t*.45;
     const pivot=new THREE.Group();pivot.position.set(x0,y,z0);pivot.rotation.y=a;group.add(pivot);
     const leaf=new THREE.Mesh(leafGeometry,i===count-1?young:leafMat);leaf.name='Assistant manager leaf';leaf.scale.setScalar(size);leaf.rotation.x=.25+t*.55;pivot.add(leaf);
-    const vein=new THREE.Mesh(new THREE.BoxGeometry(.006,.004,.25*size),rib);vein.position.set(0,.003,-.125*size);leaf.add(vein);
+    // The midrib stands through the blade, proud of it on both faces (resting 1 mm on it, it flickered with the blade).
+    const vein=new THREE.Mesh(new THREE.BoxGeometry(.006,.006,.25*size),rib);vein.position.set(0,.0005,-.125*size);leaf.add(vein);
    }
    // The new leaf comes wrapped in a red sheath at the top of the stem.
    const bud=mesh(new THREE.ConeGeometry(.014,.08,6),sheath,x0,height+.04,z0,'Assistant manager sheath');bud.rotation.z=.15;
@@ -269,7 +270,7 @@ function buildStorage(parent){
   const strut=box(.02,h*.6,.3,x,h*.3,z-.14,cardboard,'Cardboard stand-up strut');strut.rotation.y=tilt;
  }
  // A hand truck against the east wall, a mop in a yellow bucket, crates and a ladder.
- box(.05,1.1,.05,5.45,.55,-5.2,0x3b3f55,'Hand truck');box(.05,1.1,.05,5.45,.55,-4.8,0x3b3f55,'Hand truck');box(.3,.03,.45,5.3,.02,-5.0,0x8a969a,'Hand truck plate');
+ box(.05,1.1,.05,5.45,.55,-5.2,0x3b3f55,'Hand truck');box(.05,1.1,.05,5.45,.55,-4.8,0x3b3f55,'Hand truck');box(.3,.03,.44,5.3,.02,-5.0,0x8a969a,'Hand truck plate');
  for(const s of [-1,1])mesh(new THREE.CylinderGeometry(.08,.08,.05,12),std(0x222222),5.5,.08,-5+s*.24,'Hand truck wheel').rotation.x=Math.PI/2;
  mesh(new THREE.CylinderGeometry(.16,.14,.3,14,1,true),std(0xffc93c,{side:THREE.DoubleSide}),5.45,.15,-6.2,'Mop bucket');
  const mop=mesh(new THREE.CylinderGeometry(.012,.012,1.3,6),std(0x9b7650),5.47,.75,-6.22,'Mop');mop.rotation.z=.18;
