@@ -2,6 +2,7 @@ import {createLookBuffers} from './look-buffers.js';
 import {drawWithLookMaterials} from './look-materials.js';
 import * as THREE from '../../vendor/three.module.js';
 import {lookFragment,lookNormals,lookSurfaceStrokes} from './looks.js';
+import {SKIN_MARK,markSkin} from '../avatars/pixar-skin.js';
 
 /**
  * The 3D-to-2D pass: what turns a lit 3D town into a drawn one.
@@ -41,6 +42,8 @@ export const INK_DEFAULTS={
 
 export const GRADE_DEFAULTS={
  shadowTint:0xada8d0,
+ // (the split tone's dark end on a modelled character's skin: about the violet's brightness, warm)
+ skinShadowTint:0xd6ab9c,
  lightTint:0xfff7e8,
  saturation:1.12,
  lift:0.032,
@@ -62,6 +65,11 @@ uniform float uNear,uFar,uInkEnabled;
 uniform vec3 uInk;
 uniform float uThickness,uSens,uConcave,uConcaveAmount;
 uniform float uFadeStart,uFadeEnd,uStrength,uSkyDepth;
+// A modelled character's skin marks itself in the scene's alpha (SKIN_MARK, avatars/pixar-skin.js): its soft curves get no
+// inside-corner ink (which on a face draws grey smudges under the cheekbones and beside the nose), and its darks are
+// toned warm rather than violet (the grade's split tone): skin in shadow is light under the skin, not a bruise.
+float gSkin=0.;
+float skinMark(float a){return 1.0-smoothstep(0.004,0.008,abs(a-${SKIN_MARK.toFixed(4)}));}
 
 float linearDepth(vec2 uv){
  float d=texture2D(tDepth,uv).x;
@@ -86,8 +94,9 @@ vec3 inkColour(vec2 uv){
  float convex=max(0.0,sx)+max(0.0,sy);
  float concave=max(0.0,-sx)+max(0.0,-sy);
 
- float edge=smoothstep(uSens*0.32,uSens,convex);
- edge=max(edge,smoothstep(uConcave,uConcave*3.4,concave)*uConcaveAmount);
+ // (on skin only a firm edge inks: a faint one, where a nose's underside meets the lip, breaks up into scratches)
+ float edge=smoothstep(uSens*mix(0.32,0.7,gSkin),uSens*mix(1.0,1.6,gSkin),convex);
+ edge=max(edge,smoothstep(uConcave,uConcave*3.4,concave)*uConcaveAmount*(1.0-0.9*gSkin));
  edge*=1.0-smoothstep(uFadeStart,uFadeEnd,dc);
  edge*=uStrength;
 
@@ -98,7 +107,7 @@ vec3 inkColour(vec2 uv){
 `;
 
 const GRADE_FUNCTIONS=`
-uniform vec3 uShadowTint,uLightTint;
+uniform vec3 uShadowTint,uLightTint,uSkinShadowTint;
 uniform float uSaturation,uLift,uVignette,uWarmth,uAmount,uExposure;
 
 vec3 linearToSRGB(vec3 c){
@@ -123,7 +132,7 @@ vec3 gradeColour(vec3 source,vec2 uv){
 
  // Split tone: cool violet in the darks, warm paper white in the lights.
  float k=smoothstep(0.02,0.55,l);
- c*=mix(uShadowTint,uLightTint,k);
+ c*=mix(mix(uShadowTint,uSkinShadowTint,gSkin),uLightTint,k);
 
  c+=vec3(uWarmth,uWarmth*0.45,0.0)*l*0.35;
  // Shadows stay readable. An anime background never crushes to black.
@@ -148,7 +157,7 @@ const COMPOSITE_FRAGMENT=`
 varying vec2 vUv;
 ${INK_FUNCTIONS}
 ${GRADE_FUNCTIONS}
-void main(){gl_FragColor=vec4(gradeColour(inkColour(vUv),vUv),1.0);}
+void main(){gSkin=skinMark(texture2D(tDiffuse,vUv).a);gl_FragColor=vec4(gradeColour(inkColour(vUv),vUv),1.0);}
 `;
 
 const FXAA_FRAGMENT=`
@@ -252,6 +261,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   uSkyDepth:{value:settings.skyDepth},
   uShadowTint:{value:new THREE.Color(grading.shadowTint)},
   uLightTint:{value:new THREE.Color(grading.lightTint)},
+  uSkinShadowTint:{value:new THREE.Color(grading.skinShadowTint)},
   uSaturation:{value:grading.saturation},
   uLift:{value:grading.lift},
   uVignette:{value:grading.vignette},
@@ -339,7 +349,9 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
    try{
     renderer.setRenderTarget(rtScene);
     renderer.clear();
-    drawWithLookMaterials(renderer,state.look,draw);
+    // (a modelled character's skin marks itself only here, where this pass reads the mark: SKIN_MARK)
+    markSkin(true);
+    try{drawWithLookMaterials(renderer,state.look,draw);}finally{markSkin(false);}
     if(view&&lookNormals(state.look))auxiliary.render(draw,width,height);
 
     // Ink and grade share one draw and one sample of the scene colour. A

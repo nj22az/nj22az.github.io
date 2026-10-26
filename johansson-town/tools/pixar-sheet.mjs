@@ -16,7 +16,16 @@ import {serveGame} from './mcp/static-server.mjs';
 
 const require=createRequire(import.meta.url);
 let playwright;try{playwright=require('playwright');}catch{playwright=createRequire(new URL('../../steam-deck/package.json',import.meta.url))('playwright');}
-const name=process.argv[2]||'Thuan',out=resolve(process.argv[3]||'output/pixar');mkdirSync(out,{recursive:true});
+const argv=process.argv.slice(2),opt=k=>{const i=argv.indexOf(k);return i<0?null:argv.splice(i,2)[1];};
+// --cells a,b,c: only these face cells (their labels, or any expression of the painter's by name), --size: a cell's pixels,
+// --tag: a suffix for the files (a before and after kept side by side)
+const only=opt('--cells'),cellSize=+(opt('--size')||320),tag=opt('--tag')||'',frame=opt('--frame')||'face';
+// --motion from:to[:seconds]: the face going from one feeling to the next on its springs, a frame every 50 ms (a clock of
+// the tool's own, so the frames are the same every run)
+const motion=opt('--motion');
+// --body a,b: only these body cells (their labels), and no face cells unless --cells asks for some
+const bodyOnly=opt('--body');
+const name=argv[0]||'Thuan',out=resolve(argv[1]||'output/pixar');mkdirSync(out,{recursive:true});
 
 // [label, face state, turn of the body (radians, + to her left)]
 const EYES=[
@@ -52,7 +61,10 @@ const EYES=[
  ['cartoon today',{expression:'neutral'},0,true],
 ];
 // [label, turn, move (animate.js gesture) or null, seconds into it]
-const BODY=[['front',0],['three-quarter',.7],['side',Math.PI/2],['back',Math.PI],['walking',.5,'walk',.4],['wave',0,'Wave',.9],['think',.35,'Think',1.2],['cartoon today',0,null,0,true]];
+if(only){const want=only.split(','),known=new Map(EYES.map(c=>[c[0],c]));EYES.splice(0,EYES.length,...want.map(w=>known.get(w)||[w,{expression:w},0]));}
+if(motion){const [from,to,secs=.8]=motion.split(':');EYES.splice(0,EYES.length,[from,{expression:from},0,false,0],
+ ...Array.from({length:Math.round(+secs*20)},(_,i)=>[`${to} +${(i+1)*50} ms`,{expression:to},0,false,50]));}
+const BODY=[['front',0],['three-quarter',.7],['side',Math.PI/2],['back',Math.PI],['walking',.5,'walk',.4],['wave',0,'Wave',.9],['wave later',.35,'Wave',1.15],['think',.35,'Think',1.2],['cartoon today',0,null,0,true]];
 
 const server=await serveGame(resolve(new URL('..',import.meta.url).pathname));
 const browser=await playwright.chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PATH,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
@@ -60,7 +72,7 @@ try{
  const page=await browser.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto(server.url+'src/avatars/face.js?pixar='+name.toLowerCase());
- const result=await page.evaluate(async({name,eyes,body})=>{
+ const result=await page.evaluate(async({name,eyes,body,cellSize,frame,moving})=>{
   const T=await import('/johansson-town/vendor/three.module.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js');
   const {createInkPipeline}=await import('/johansson-town/src/render/ink-pipeline.js'),{loadPixarBodies}=await import('/johansson-town/src/avatars/pixar.js'),{createAvatarAnimator:createAnimator}=await import('/johansson-town/src/avatars/animate.js');
   // assets/ resolve against the page (assets.js): the game's folder, as on its own page
@@ -70,7 +82,8 @@ try{
   const fill=new T.HemisphereLight(0xffffff,0x887766,1.5),sun=new T.DirectionalLight(0xffffff,2);sun.position.set(2,5,4);scene.add(fill,sun);
   const pixar=buildAvatar(recipeFor(name),{shadows:false}),cartoon=buildAvatar(recipeFor(name),{shadows:false,pixar:null});
   for(const a of [pixar,cartoon]){a.root.rotation.y=0;scene.add(a.root);}
-  pixar.pixar.smooth=false;   // each cell its feeling at once (the game eases between them)
+  pixar.pixar.smooth=moving;   // each cell its feeling at once (the game eases between them), unless it is a motion strip
+  let clock=1000;if(moving)performance.now=()=>clock;
   const report={name,triangles:0,cells:[]};pixar.root.traverse(o=>{if(o.isMesh&&o.visible&&o.geometry.index)report.triangles+=o.geometry.index.count/3;});
   const sheet=(cells,size,cols,draw)=>{
    const renderer=new T.WebGLRenderer({preserveDrawingBuffer:true});renderer.setSize(size[0],size[1]);
@@ -85,16 +98,22 @@ try{
   };
   const show=a=>{pixar.root.visible=a===pixar;cartoon.root.visible=a===cartoon;};
   const headAt=a=>{a.root.updateMatrixWorld(true);return a.bones.head.getWorldPosition(new T.Vector3());};
-  const eyesPng=sheet(eyes,[320,320],6,([label,state,turn,old],camera)=>{
-   const a=old?cartoon:pixar;show(a);a.root.rotation.y=turn;
+  const eyesPng=!eyes.length?null:sheet(eyes,[cellSize,cellSize],Math.min(6,Math.max(1,Math.floor(1920/cellSize))),(cell,camera)=>{const [label,state,turn,old]=cell;
+   const a=old?cartoon:pixar;show(a);a.root.rotation.y=turn;if(moving)clock+=cell[4]||0;
    for(const b of Object.values(a.bones))b.rotation.set(0,0,0);
    a.paintFace({blink:0,talk:0,look:[0,0],gaze:null,blinkLeft:undefined,blinkRight:undefined,...state});
-   const h=headAt(a),up=old?a.measure.headCentre-a.measure.headY:.075;
-   camera.position.set(h.x,h.y+up+.01,h.z+(old?1.55:.95));camera.lookAt(h.x,h.y+up,h.z);
+   // (a Pixar body's face at its own eyes' height, a little below: its card says where they are)
+   const h=headAt(a),eyeY=a.pixar?.card?.eyes?.centres?.[0]?.[1],up=old?a.measure.headCentre-a.measure.headY:eyeY!=null?eyeY-a.pixar.card.rest.head[1]-.012:.075;
+   // (--frame mouth: close on the mouth, a little below the eyes; --frame eyes: close on the eyes; --frame nose)
+   if(frame==='hand'&&!old){a.root.updateMatrixWorld(true);const q=a.bones.handL.getWorldPosition(new T.Vector3()),t=turn||0;camera.position.set(q.x+Math.sin(t)*.42,q.y-.02,q.z+Math.cos(t)*.42);camera.lookAt(q.x,q.y-.04,q.z);}
+   else if(frame==='nose'&&!old){const c=a.pixar?.card?.eyes?.centres,y=(c?.[0]?.[1]??h.y+up)-.05,x=c?(c[0][0]+c[1][0])/2:0,t=turn||0;camera.position.set(h.x+x+Math.sin(t)*.5,y+.02,h.z+Math.cos(t)*.5);camera.lookAt(h.x+x,y,h.z+.06);}
+   else if(frame==='eyes'&&!old){const c=a.pixar?.card?.eyes?.centres,y=c?.[0]?.[1]??h.y+up,x=c?(c[0][0]+c[1][0])/2:h.x;camera.position.set(h.x+x,y+.005,h.z+.42);camera.lookAt(h.x+x,y,h.z);}
+   else if(frame==='mouth'&&!old){const y=a.pixar.card?.eyes?.centres?.[0]?.[1]??h.y+up,my=y-.085;camera.position.set(h.x,my+.01,h.z+.42);camera.lookAt(h.x,my,h.z);}
+   else{camera.position.set(h.x,h.y+up+.01,h.z+(old?1.55:.95));camera.lookAt(h.x,h.y+up,h.z);}
    report.cells.push({label,showing:a.pixar?a.pixar.eyes.showing:null});
   });
   const anim=createAnimator(pixar),animOld=createAnimator(cartoon);
-  const bodyPng=sheet(body,[300,520],8,([label,turn,move,t,old],camera)=>{
+  const bodyPng=!body.length?null:sheet(body,[300,520],8,([label,turn,move,t,old],camera)=>{
    const a=old?cartoon:pixar,an=old?animOld:anim;show(a);a.root.rotation.y=turn;a.root.position.set(0,0,0);
    for(const b of Object.values(a.bones))b.rotation.set(0,0,0);
    if(move==='walk'){for(let k=0;k<Math.round(t*60)+30;k++)an.update(1/60,{speed:1.4});}
@@ -105,10 +124,10 @@ try{
   });
   pixar.dispose();cartoon.dispose();
   return {report,eyesPng,bodyPng};
- },{name,eyes:EYES,body:BODY});
- writeFileSync(resolve(out,name+'-eyes.png'),Buffer.from(result.eyesPng.split(',')[1],'base64'));
- writeFileSync(resolve(out,name+'-body.png'),Buffer.from(result.bodyPng.split(',')[1],'base64'));
- writeFileSync(resolve(out,name+'.json'),JSON.stringify(result.report,null,1)+'\n');
+ },{name,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion});
+ if(result.eyesPng)writeFileSync(resolve(out,name+tag+'-eyes.png'),Buffer.from(result.eyesPng.split(',')[1],'base64'));
+ if(result.bodyPng)writeFileSync(resolve(out,name+tag+'-body.png'),Buffer.from(result.bodyPng.split(',')[1],'base64'));
+ writeFileSync(resolve(out,name+tag+'.json'),JSON.stringify(result.report,null,1)+'\n');
  console.log(name,result.report.triangles,'triangles ->',out);
  if(errors.length){console.error(errors.join('\n'));process.exitCode=1;}
 }finally{await browser.close();await server.close();}

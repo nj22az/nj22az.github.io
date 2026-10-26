@@ -1,8 +1,10 @@
 import * as THREE from '../../vendor/three.module.js';
 import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
-import {rigEyes} from './eyes3d.js';
+import {rigEyes,EYE_PARAMS} from './eyes3d.js';
+import {pixarSkin} from './pixar-skin.js';
 import {rigBrows,rigMouth,featuresOf} from './face-features.js';
+import {actingOf,springOf} from './face-acting.js';
 import {celFrom} from '../render/cel.js';
 
 /**
@@ -21,11 +23,20 @@ import {celFrom} from '../render/cel.js';
  * her brows and mouth are drawn on decals of their own (face-features.js), shaped by every feeling and by talking; her
  * jaw, nose and cheeks are bones that move her skin (the jaw opens with the mouth, the cheeks rise with a smile, the nose
  * scrunches in anger). Not drawn: the cartoon's other outfits (swimwear, the bath towel, the sailor and shopping outfits).
+ *
+ * Each body acts its feelings its own way (face-acting.js; the creator, 26 October 2026: "Thuans expressions need some work
+ * too, she needs more personality when she is shocked and the different expressions, now she comes off as Generic"), and
+ * its face gets from one feeling to the next on springs of the feeling's own timing (a shock pops and settles, sadness
+ * sinks in). The same day, "Fix Johansson's blockers and bring him into the game": Pixar Johansson (jojo
+ * `3d/cast/game_johansson.py`), the player's own body in the third person: clean-shaven and bald, his mouth drawn as hers
+ * is, and an older face's lines (face-acting.js `lines`). Both are lit as skin (pixar-skin.js: the creator's rendering
+ * brief of 26 October 2026).
  */
 
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
-export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'})});
+export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'0b96507346'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -48,8 +59,9 @@ export function preparePixarBody(card,scene){
  });
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
- // World's measures for her (build.js measure()), and her braids as the springs hang them (springs.js springRest).
- const measure={...card.measure,braids:Object.fromEntries(['L','R'].map(s=>[s,[rest['braid'+s+'1'],rest['braid'+s+'2'],rest['braid'+s+'Tip']]]))};
+ // World's measures for the body (build.js measure()), and its braids as the springs hang them (springs.js springRest).
+ const measure={...card.measure};
+ if(rest.braidL1)measure.braids=Object.fromEntries(['L','R'].map(s=>[s,[rest['braid'+s+'1'],rest['braid'+s+'2'],rest['braid'+s+'Tip']]]));
  return {name:card.name,card,rest,measure,parts,features,remapped:new Map()};
 }
 
@@ -111,11 +123,52 @@ const FACE_REACH=Object.freeze({jaw:.22,cheek:[.005,.0016,.0012],nose:[.0018,-.0
 // Eyes only the painter draws, and what a face without painted eyes shows instead (eyes3d.js rigEyes `stand`).
 const STAND_IN=Object.freeze({star:'wide',heart:'happy',spiral:'daze',pain:'happy',smug:'shy',droop:'shy',dreamy:'content',bawl:'sad',blank:'wide'});
 
-// A decal's own units, as the studio wrote them into its first UV (x/100, y/100; glTF turns v over), and its side (hers).
-function withLocal(g,name){
+const EYE_AT=Object.freeze(Object.fromEntries(EYE_PARAMS.map((n,i)=>[n,i])));
+// What a body's acting does to the eye as drawn (face-acting.js eyes): scales of its size and iris, its lids.
+const EYE_SCALE=Object.freeze({rx:'rx',ry:'ry',topAmp:'ry',botAmp:'ry',irx:'iris',iry:'iris'}),EYE_SET=Object.freeze(['pupil','cut','slant','smile','squeeze']);
+// Where the face's numbers may go, a spring's overshoot included: the brows' [lift, tilt, arch, pinch] and the mouth.
+const BROW_RANGE=Object.freeze([[-3.2,11],[-9.5,10.6],[-1.6,3],[0,3.2]]);
+const FEATURE_RANGE=Object.freeze({open:[0,15],width:[.3,1.5],round:[0,1.2],box:[0,1.2],upper:[.05,.95],teeth:[0,1.2],lowTeeth:[0,1.2],
+ tongue:[0,1.2],pucker:[0,1.2],thin:[0,1.2],pout:[0,1.5]});
+
+/**
+ * Springs for a face: every number of it moves toward its feeling's as a damped spring of the feeling's own timing
+ * (face-acting.js: {f Hz, z}); under critical damping it overshoots and settles (a take), over it sinks in. A tree of
+ * numbers (arrays and objects) in, the same tree out. `sp` null: there at once.
+ */
+function faceSprings(){
+ const state=new Map();
+ const step=(key,target,dt,sp)=>{
+  let s=state.get(key);
+  if(!s||!sp||dt>=.5){state.set(key,{x:target,v:0});return target;}
+  const w=2*Math.PI*sp.f,n=Math.max(1,Math.ceil(dt*240)),h=dt/n;
+  for(let i=0;i<n;i++){s.v+=(w*w*(target-s.x)-2*sp.z*w*s.v)*h;s.x+=s.v*h;}
+  return s.x;
+ };
+ const walk=(key,value,dt,sp)=>typeof value==='number'?step(key,value,dt,sp)
+  :Array.isArray(value)?value.map((v,i)=>walk(key+'.'+i,v,dt,sp))
+  :Object.fromEntries(Object.entries(value).map(([k,v])=>[k,walk(key+'.'+k,v,dt,sp)]));
+ return {settle:walk,forget(prefix){for(const k of [...state.keys()])if(k.startsWith(prefix))state.delete(k);}};
+}
+
+// A decal's own units, as the studio wrote them into its first UV (x/100, y/100; glTF turns v over), and its side: of the
+// face's middle `mid` (between the eyes: a face is not always centred on the body's own middle).
+function withLocal(g,name,mid=0){
  const P=g.attributes.position,UV=g.attributes.uv,n=P.count,local=new Float32Array(n*3);
- for(let i=0;i<n;i++){local[i*3]=UV.getX(i)*100;local[i*3+1]=(1-UV.getY(i))*100;local[i*3+2]=Math.sign(P.getX(i));}
+ for(let i=0;i<n;i++){local[i*3]=UV.getX(i)*100;local[i*3+1]=(1-UV.getY(i))*100;local[i*3+2]=Math.sign(P.getX(i)-mid)||1;}
  g.setAttribute(name,new THREE.BufferAttribute(local,3));return g;
+}
+
+// The mouth's decal rides the jaw below the line between the lips and the head above it, smoothly by its own height (in
+// its units): the export copies each point's jaw weight from the skin's nearest vertex, which is noisy, and an opening
+// jaw then kinks the drawn lips at every vertex of the decal.
+function smoothJaw(g,names){
+ const head=names.indexOf('head'),jaw=names.indexOf('jaw'),UV=g.attributes.uv,n=UV.count;
+ if(head<0||jaw<0)return g;
+ const idx=new Uint16Array(n*4),w=new Float32Array(n*4);
+ for(let i=0;i<n;i++){const y=(1-UV.getY(i))*100,k=THREE.MathUtils.smoothstep(-y,-1.5,3.5);idx[i*4]=head;idx[i*4+1]=jaw;w[i*4]=1-k;w[i*4+1]=k;}
+ g.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(idx,4));g.setAttribute('skinWeight',new THREE.BufferAttribute(w,4));
+ return g;
 }
 
 export function dressPixar(body,{root,bones,order,shadows=true}){
@@ -130,27 +183,58 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  const materials=[],meshes=body.parts.map(part=>{
   const source=part.kind==='hands'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
-  const material=celFrom(source,{bands:'soft3'});source.dispose();material.gradientMap=smoothRamp();
+  const material=pixarSkin(celFrom(source,{bands:'soft3'}));source.dispose();material.gradientMap=smoothRamp();
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);
   const mesh=skinned(inOrder(body,part,names),material);
   mesh.name='Pixar '+body.name+' · '+part.kind;mesh.castShadow=shadows;mesh.receiveShadow=true;return mesh;
  });
  // Her eye (the studio's measures of the painted one, her lashes) drawn as World draws every rigged eye, on the town's ramp.
- const F=body.features,E=body.card.eyes;
- const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal'),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes},make:skinned,stand:STAND_IN});
- const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal'),body.card.brows,{make:skinned}):null;
- const mouth=F.mouth&&body.card.mouth?rigMouth(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal'),body.card.mouth,{make:skinned}):null;
- // The features ease from one feeling to the next (a tenth of a second), not jump: a wall clock, as paintFace has no step.
- let eased=null,last=0;
- const ease=(to,k)=>{if(!eased){eased=structuredClone(to);return eased;}
-  const mix=(a,b)=>typeof b==='number'?a+(b-a)*k:Array.isArray(b)?b.map((v,i)=>mix(a[i],v)):Object.fromEntries(Object.entries(b).map(([n,v])=>[n,mix(a[n],v)]));
-  eased=mix(eased,to);return eased;};
- const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh].filter(Boolean),eyes,brows,mouth,bones:face,smooth:true,
+ const F=body.features,E=body.card.eyes,mid=E.centres?(E.centres[0][0]+E.centres[1][0])/2:0;
+ const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes},make:skinned,stand:STAND_IN,nearer:.0018});
+ const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0}):null;
+ const mouth=F.mouth&&body.card.mouth?rigMouth(smoothJaw(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal',mid),names),body.card.mouth,{make:skinned,lines:actingOf(body.name)?.lines||0}):null;
+ // (the features shaded on the same blended ramp as her skin: stepped bands cut a lip or an eye into two tones)
+ for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])if(m?.material?.isMeshToonMaterial)m.material.gradientMap=smoothRamp();
+ // Each body acts its feelings its own way (face-acting.js), and gets from one to the next on springs of the feeling's own
+ // timing: a wall clock, as paintFace has no step.
+ const acting=actingOf(body.name),feelings=acting?.feelings||null,springs=faceSprings();
+ let last=0,kind=-1;
+ // The eye as the feeling draws it, then as she acts it: its size and iris scaled, the lids set (and squeezed), where she
+ // looks (unless she is made to look somewhere: gaze), and in fright the irises shivering.
+ const actEyes=(state,act,dt,sp,now,cheeks)=>{
+  const P=eyes.params,e=act?.eyes||{};
+  if(P[EYE_AT.kind]!==kind){kind=P[EYE_AT.kind];springs.forget('eye.');}
+  const want={};
+  for(const [k,by] of Object.entries(EYE_SCALE))want[k]=P[EYE_AT[k]]*(e[by]??1);
+  for(const k of EYE_SET)want[k]=e[k]??P[EYE_AT[k]];
+  if(Number.isFinite(e.tear))want.tear=e.tear;
+  const got=springs.settle('eye',want,dt,sp);
+  // (the overshoot of a take stays inside the eye's disc: the studio laid it 21 units below the eye's middle and 24
+  // above, room for the lid and lash lines round the widest eye)
+  for(const [k,v] of Object.entries(got))P[EYE_AT[k]]=k==='irx'||k==='iry'?Math.max(1,v):k==='pupil'?THREE.MathUtils.clamp(v,.1,1)
+   :k==='ry'||k==='botAmp'?Math.min(v,14.5):k==='topAmp'?Math.min(v,16.5):k==='rx'?Math.min(v,14.5):v;
+  // (an older face's crow's feet as the cheeks rise: a body's acting says it has the lines)
+  if(acting?.lines)P[EYE_AT.crow]=acting.lines*THREE.MathUtils.smoothstep((cheeks[0]+cheeks[1])/2,.35,.9);
+  if(e.look&&!state.gaze){P[EYE_AT.lookX]=e.look[0];P[EYE_AT.lookY]=e.look[1];}
+  if(e.tremble&&api.smooth){const t=now/1000;P[EYE_AT.lookX]+=e.tremble*Math.sin(t*69.1);P[EYE_AT.lookY]+=e.tremble*.6*Math.sin(t*81.7+1);}
+ };
+ const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh].filter(Boolean),eyes,brows,mouth,bones:face,smooth:true,acting,card:body.card,
   /** Follow the face: the eyes (gaze, blink, the feeling's lids), the brows, the mouth and the face's bones. */
   update(state){
-   eyes.update(state);
+   const act=feelings?.[state.expression]||null;
+   eyes.update(act?.eyes?.as?{...state,eyesAs:act.eyes.as}:state);
    const now=globalThis.performance?.now?.()??0,dt=last?Math.min(.25,(now-last)/1000):1;last=now;
-   const f=ease(featuresOf(state),api.smooth?1-Math.exp(-dt/.08):1);
+   const sp=api.smooth?springOf(acting,state.expression):null,target=featuresOf(state,feelings,acting?.mouth);
+   // while she talks her brows rise and fall with it, one side a beat behind the other
+   const talk=+state.talk||0;
+   if(acting?.talkBrows&&talk>0&&api.smooth){const t=now/1000,a=acting.talkBrows*talk;
+    target.brows.left[0]+=a*(.5+.5*Math.sin(t*10.7));target.brows.right[0]+=.8*a*(.5+.5*Math.sin(t*10.7-.6));}
+   const f=springs.settle('face',target,dt,sp);
+   for(const [k,[lo,hi]] of Object.entries(FEATURE_RANGE))f.mouth[k]=THREE.MathUtils.clamp(f.mouth[k],lo,hi);
+   // (a brow stays on its decal, the spring's overshoot included: the studio left it room to rise, drop and pinch)
+   for(const b of [f.brows.left,f.brows.right])BROW_RANGE.forEach(([lo,hi],i)=>{b[i]=THREE.MathUtils.clamp(b[i],lo,hi);});
+   f.jaw=THREE.MathUtils.clamp(f.jaw,0,1.15);f.cheeks=f.cheeks.map(v=>THREE.MathUtils.clamp(v,0,1.2));f.scrunch=THREE.MathUtils.clamp(f.scrunch,0,1.2);
+   if(eyes.showing)actEyes(state,act,dt,sp,now,f.cheeks);
    brows?.set(f.brows.left,f.brows.right);mouth?.set(f.mouth);
    if(face.jaw)face.jaw.rotation.x=f.jaw*FACE_REACH.jaw;
    for(const [i,s,x] of [[0,'L',1],[1,'R',-1]])if(face['cheek'+s])face['cheek'+s].position.copy(restOf['cheek'+s]).add(new THREE.Vector3(x*FACE_REACH.cheek[2]*f.cheeks[i],FACE_REACH.cheek[0]*f.cheeks[i],FACE_REACH.cheek[1]*f.cheeks[i]));

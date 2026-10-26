@@ -1275,7 +1275,10 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const raw=g.ramp!==undefined?g.ramp:THREE.MathUtils.clamp(Math.min(t/.5,d===Infinity?1:(d-t)/.5),0,1);
   const w=g.ramp!==undefined?smooth(g.ramp):inOut(t,d,...[RAMP_TIME[g.name]||FUN_POSES[g.name]?.ramp||PAIR_ROLES[g.name]?.ramp||.5].flat()),soak=s.seat==='Soak'||s.pose==='Soak';
   switch(g.name){
-   case 'Wave':set('shoulderR',-.2,0,-2.55*q);set('elbowR',0,0,-.45+Math.sin(t*10)*.45*q);add('head',0,0,.08*q);break;
+   // A friendly wave: the upper arm out a little above the shoulder, the forearm up beside the head, swaying from the
+   // elbow, the palm turned to the front. (A straight arm raised high and forward, the hand flat, reads as a salute: the
+   // owner, 26 October 2026: "He shouldn't do the Hitler salute".)
+   case 'Wave':set('shoulderR',-.22*q,0,-1.72*q);set('elbowR',0,0,-1.45*q+Math.sin(t*9)*.32*q);set('handR',0,-.95*q,0);add('head',0,0,.08*q);break;
    case 'Bow':add('chest',.95*e*bowDepth);add('spine',.25*e*bowDepth);add('head',.2*e*bowDepth);set('shoulderL',.1,0,clear?.13+clear:.05);set('shoulderR',.1,0,clear?-.13-clear:-.05);break;
    case 'Nod':add('head',Math.sin(t*9)*.28*e);break;
    case 'ScratchHead':set('shoulderR',-1.55*q,0,-1.15*q);set('elbowR',-2.2*q+Math.sin(t*16)*.12*q);add('head',.06*q,0,-.14*q);break;

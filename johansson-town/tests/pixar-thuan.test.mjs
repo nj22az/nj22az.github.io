@@ -5,7 +5,8 @@ import {createHash} from 'node:crypto';
 import {BONES} from '../src/avatars/build.js';
 import {EXPRESSION_NAMES,moodOf} from '../src/avatars/face.js';
 import {eyeShape,EYES_3D_STATES} from '../src/avatars/eyes3d.js';
-import {featuresOf} from '../src/avatars/face-features.js';
+import {featuresOf,MOUTH_KEYS} from '../src/avatars/face-features.js';
+import {ACTING,actingOf,springOf} from '../src/avatars/face-acting.js';
 import {PIXAR_BODIES,pixarWanted} from '../src/avatars/pixar.js';
 
 // Pixar Thuan in World (src/avatars/pixar.js; the owner, 26 October 2026: "Replace her in the live game and studio now").
@@ -81,4 +82,44 @@ test('her eyes are her own; the cartoon eyes are as they were',()=>{
  // her wide eyes open in her own socket, not to the cartoon's painted size
  const wide=eyeShape('pixar','wide',own);
  assert.ok(wide.rx<own.rx*1.1&&wide.ry<own.ry*1.5);
+});
+
+// Her own acting (face-acting.js; the creator, 26 October 2026: "she needs more personality when she is shocked and the
+// different expressions, now she comes off as Generic").
+test('she acts every feeling her own way, inside her decals, never as a mirror',()=>{
+ const acting=actingOf('Thuan'),A=acting.feelings;
+ assert.ok(acting&&A,'Thuan has her acting');
+ const eyeKeys=new Set(['ry','rx','iris','pupil','cut','slant','smile','look','tremble','tear','squeeze','as']);
+ for(const [expression,act] of Object.entries(A)){
+  assert.ok(EXPRESSION_NAMES.includes(expression),'a feeling of the painter: '+expression);
+  for(const k of Object.keys(act.mouth||{}))assert.ok(MOUTH_KEYS.includes(k),expression+' mouth '+k);
+  for(const k of Object.keys(act.eyes||{}))assert.ok(eyeKeys.has(k),expression+' eyes '+k);
+  const sp=springOf(acting,expression);assert.ok(sp.f>0&&sp.z>0,expression+' spring');
+  for(const talk of [0,1]){
+   const f=featuresOf({expression,talk},A);
+   for(const v of [...f.brows.left,...f.brows.right,...Object.values(f.mouth),...f.cheeks,f.scrunch,f.jaw])assert.ok(Number.isFinite(v),expression);
+   // (the studio's decals: the brows' room to rise, drop and pinch; the mouth's to open)
+   for(const b of [f.brows.left,f.brows.right]){
+    assert.ok(b[0]>=-3.2&&b[0]<=11&&b[1]>=-9.5&&b[1]<=10.6&&b[2]>=-1.6&&b[2]<=3&&b[3]>=0&&b[3]<=3.2,expression+' brow '+b);
+   }
+   assert.ok(f.mouth.open>=0&&f.mouth.open<=14,expression+' open');
+  }
+  if(expression!=='neutral'&&act.brows)assert.notDeepEqual(act.brows.left,act.brows.right,expression+' is not twinned');
+ }
+ const F=e=>featuresOf({expression:e},A);
+ // shock is not surprise: the brows higher, the mouth far more open, the pupils pinpricks that shiver, a take that overshoots
+ assert.ok(F('shock').brows.left[0]>F('surprised').brows.left[0]&&F('shock').mouth.open>F('surprised').mouth.open+4);
+ assert.ok(A.shock.eyes.iris<.6&&A.surprised.eyes.iris>=1&&A.shock.eyes.tremble>0&&springOf(acting,'shock').z<.5);
+ // anger knits the brows down at the nose (a V); sadness and worry lift them there; sadness sinks in rather than pops
+ for(const b of [F('angry').brows.left,F('angry').brows.right])assert.ok(b[1]>6&&b[3]>2,'angry V');
+ for(const e of ['sad','worried'])for(const b of [F(e).brows.left,F(e).brows.right])assert.ok(b[1]<-5,e+' inner brows up');
+ assert.ok(springOf(acting,'sad').z>=.9);
+ // the main feelings are each a different face
+ const main=['neutral','smile','happy','laugh','sad','worried','angry','grumpy','shy','surprised','shock','scared','smug','pain','thinking','kiss'];
+ const seen=new Set(main.map(e=>JSON.stringify(F(e))));
+ assert.equal(seen.size,main.length,'every main feeling looks different');
+ // a body without acting plays the painter's feelings, as before
+ assert.equal(actingOf('Nobody'),null);
+ assert.deepEqual(featuresOf({expression:'angry'},null),featuresOf({expression:'angry'}));
+ assert.ok(Object.keys(ACTING).includes('Thuan'));
 });
