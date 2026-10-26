@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="./context-rail.css?h=a4e11923">
 <link rel="stylesheet" href="./line-ui.css?h=c9fe9f5f">
 <link rel="stylesheet" href="./quiet-hud.css?h=e0b5f153">
-<link rel="stylesheet" href="./title-screen.css?h=d00ff286">
+<link rel="stylesheet" href="./title-screen.css?h=24e80986">
 <link rel="stylesheet" href="./town-directory.css?h=5fef277a">
 <link rel="stylesheet" href="./ferry-operations.css?h=1625ed17">
 <link rel="stylesheet" href="./town-book.css?h=74d6f099">
@@ -77,7 +77,7 @@
     </div></details>
     <div class="title-center">
       <h1 id="titleLogo" class="title-logo"><span class="logo-main">JOHANSSON</span><span class="logo-town">WORLD</span></h1>
-      <p class="title-tag">A little island life · the 1990s</p><p id="worldEdition" style="font:600 13px system-ui"><a href="/johansson-world/">Browser showcase · Download the offline Steam Deck edition</a></p>
+      <p class="title-tag">A little island life · the 1990s</p>
       <p class="title-wip" aria-label="Work in progress">WORK IN PROGRESS</p>
       <div class="title-world-space" aria-hidden="true"></div>
       <div class="title-menu">
@@ -137,7 +137,7 @@
 
 
 
-      <section class="island-brochure-hero" aria-label="Welcome to the island"><img src="./assets/images/town-street.webp" width="1200" height="760" alt="Minato Machi’s island shopping street"><div><p class="board-tiny">KITANO-JIMA VISITOR BUREAU · 1997 EDITION</p><h2>Take the long way home.</h2><p>Step off the boat into a town with time for you. Meet Thuan at Sakura, follow the harbour deliveries, browse a book, or spend the afternoon walking through the garden.</p><a href="#roll-heading">Meet your neighbours</a></div></section>
+      <section class="island-brochure-hero" aria-label="Welcome to the island"><img src="./assets/images/title/sakura-current-119667983af8.webp" width="1600" height="1000" alt="The current Sakura Shōten shop and its upstairs office, captured from the published game"><div><p class="board-tiny">KITANO-JIMA VISITOR BUREAU · 1997 EDITION</p><h2>Take the long way home.</h2><p>Step off the boat into a town with time for you. Meet Thuan at Sakura, follow the harbour deliveries, browse a book, or spend the afternoon walking through the garden.</p><a href="#roll-heading">Meet your neighbours</a></div></section>
       <section aria-labelledby="dir-heading">
         <div class="section-bar paper">
           <div>
@@ -628,7 +628,7 @@ import {unlockTownAudio} from './runtime/audio-_BhPKpfT.js';
     }
   }
 
-  if(window.johanssonDesktop){document.getElementById('worldEdition').textContent='Offline Linux edition · Start: pause menu · L3: hide HUD';document.getElementById('installTown').hidden=true;}
+  if(window.johanssonDesktop)document.getElementById('installTown').hidden=true;
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
     try { await import('./runtime/boot-BtVMaWEU.js'); } catch (error) {

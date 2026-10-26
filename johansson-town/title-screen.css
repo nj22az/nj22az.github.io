@@ -42,14 +42,12 @@
 #start .title-slots-card :is(button,input){border-radius:12px;color:var(--title-text)}
 #start .title-new button{background:var(--title-green);border-color:var(--title-green);color:white}
 
-/* While the town is built there is no live view yet: the title's own view as a still (by day or by night, index.html
-   sets data-title-light by the hour), which fades into the live view when the town is ready. */
-#start .title-backdrop{position:absolute;inset:0;z-index:-2;background:#cfd9d2 url(assets/images/title/title-day-landscape.webp) center/cover no-repeat;transition:opacity 1.2s ease;pointer-events:none}
-:root[data-title-light=night] #start .title-backdrop{background-color:#1d2a36;background-image:url(assets/images/title/title-night-landscape.webp)}
-@media (orientation:portrait){
- #start .title-backdrop{background-image:url(assets/images/title/title-day-portrait.webp)}
- :root[data-title-light=night] #start .title-backdrop{background-image:url(assets/images/title/title-night-portrait.webp)}
-}
+/* The canonical current-game Sakura capture also used on the World page. Keep it local to the game so the
+   offline package has the same title. The content hash changes its URL when the capture changes. Day/night
+   shading and cover cropping share this one verified view; the current live world replaces it when ready. */
+#start .title-backdrop{position:absolute;inset:0;z-index:-2;background:#cfd9d2 url(assets/images/title/sakura-current-119667983af8.webp) center/cover no-repeat;transition:opacity 1.2s ease;pointer-events:none}
+:root[data-title-light=night] #start .title-backdrop{background-color:#1d2a36;background-image:linear-gradient(#13243b88,#101e3066),url(assets/images/title/sakura-current-119667983af8.webp)}
+@media (orientation:portrait){#start .title-backdrop{background-position:50% center}}
 #start .title-screen[data-scene=ready] .title-backdrop{opacity:0}
 /* The footer and the work-in-progress stamp sit on the scenery at every hour: a light backing keeps them readable at night. */
 #start .title-foot>:is(span,a){padding:2px 10px;border-radius:999px;background:#f5f5ecd9}
