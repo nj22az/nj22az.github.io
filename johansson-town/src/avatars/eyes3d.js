@@ -40,7 +40,8 @@ const SHINE={dot:1.22,bright:1.67,inkoval:0,narrow:0};
 /** The numbers the shader reads, in this order (uEye[i]). */
 export const EYE_PARAMS=Object.freeze(['kind','rx','ry','topAmp','botAmp','pTop','pBot','corner','off',
  'cut','slant','smile','arch','closed','irx','iry','iy','pupil','highlight','star','lash','flick','lower','lidLine',
- 'bright','tired','lashes','tear','dryLine','ovalX','ovalY','gainX','gainY','lookX','lookY','blinkA','blinkB']);
+ 'bright','tired','lashes','tear','dryLine','ovalX','ovalY','gainX','gainY','lookX','lookY','blinkA','blinkB',
+ 'follow','still','depth','caruncle']);
 
 /**
  * The eye of this style in this state, in the painter's units (x to the outer corner, y up, both before the eye's size,
@@ -48,17 +49,24 @@ export const EYE_PARAMS=Object.freeze(['kind','rx','ry','topAmp','botAmp','pTop'
  * (0 none, .5 to the middle), `slant` tips it (+ down to the nose: cross; - down to the outside: sad), `smile` lifts the
  * lower lid, `closed` shuts both onto the closed line (`arch` 0: the ∪ of a shut eye, 1: the ∩ of a happy one).
  */
-export function eyeShape(style,eyes){
+export function eyeShape(style,eyes,own=null){
  const s={kind:0,rx:11.5,ry:13.5,topAmp:13.5,botAmp:13.5,pTop:.5,pBot:.5,corner:0,off:0,cut:0,slant:0,smile:0,arch:0,closed:0,
   irx:7.4,iry:7.4,iy:-1,pupil:.5,highlight:1,star:0,lash:3.4,flick:3,lower:1,lidLine:0,bright:0,tired:0,lashes:0,tear:0,dryLine:0,
-  ovalX:0,ovalY:0,gainX:4,gainY:3};
+  ovalX:0,ovalY:0,gainX:4,gainY:3,follow:0,still:0,depth:0,caruncle:0};
  const dark=DARK[style];
  if(dark){
   Object.assign(s,{kind:1,rx:dark[0],ry:dark[1],topAmp:dark[1],botAmp:dark[1],irx:0,iry:0,iy:0,lash:3.2,flick:0,lower:0,gainX:2,gainY:2,
    highlight:SHINE[style]??1,star:style==='starry'?1:0,bright:style==='bright'?1:0,tired:style==='tired'?1:0,lashes:style==='lashes'?1:0});
  }else{
-  const [rx,ry,ir]=WHITE[style]||[11.5,13.5,7.4];
+  // (own: a body that brings its own eye, {rx, ry, iris} and its lashes {lash, flick, lashes}, as Pixar Thuan does: pixar.js)
+  const [rx,ry,ir]=own?[own.rx,own.ry,own.iris]:WHITE[style]||[11.5,13.5,7.4];
   Object.assign(s,{rx,ry,topAmp:ry,botAmp:ry,irx:ir,iry:ir});
+  if(own)for(const k of ['lash','flick','lashes'])if(Number.isFinite(own[k]))s[k]=own[k];
+  // A modelled face's eye (own) is a wet ball in a socket: the lids follow the gaze a third of the way, the light's
+  // highlight stays where the light is while the iris slides under it, and the iris lies under the cornea, so it shifts
+  // against the eye's surface as the head turns (parallax) rather than lying on it like a sticker.
+  // (and it travels further in its socket, with the pink of the inner corner, the caruncle, showing)
+  if(own)Object.assign(s,{follow:.32,still:1,depth:2.4,caruncle:.8,gainX:5.5,gainY:4});
   // Almond and cat eyes come to points (the painter's two quadratic curves); a cat's outer corner lifts.
   if(style==='almond'||style==='cat')Object.assign(s,{topAmp:.75*ry,botAmp:.65*ry,pTop:1,pBot:1});
   if(style==='cat')Object.assign(s,{corner:3,off:1,flick:7});
@@ -66,11 +74,14 @@ export function eyeShape(style,eyes){
   if(style==='droopy')Object.assign(s,{cut:.21,slant:-.43});
  }
  // The big reaction eyes are the same for every style, as painted: wide whites, a coloured iris (shock: a dot of a pupil).
- const big={wide:[15,19,8.7,11.8,.62],worry:[13,16,7.5,9.9,.62],shock:[14,18,3.2,3.2,1]}[eyes];
+ const big=own?{wide:[own.rx*1.06,own.ry*1.4,own.iris*.97,own.iris*.97,.46],worry:[own.rx*1.03,own.ry*1.22,own.iris,own.iris,.52],
+  shock:[own.rx*1.08,own.ry*1.45,own.iris*.9,own.iris*.9,.2]}[eyes]
+  :{wide:[15,19,8.7,11.8,.62],worry:[13,16,7.5,9.9,.62],shock:[14,18,3.2,3.2,1]}[eyes];
  if(big){
+  // (a modelled face's eye opens wider in its own socket: the lids part, the corners stay, its own lashes frame it)
   const [rx,ry,irx,iry,pupil]=big;
-  Object.assign(s,{kind:0,rx,ry,topAmp:ry,botAmp:ry,pTop:.5,pBot:.5,corner:0,off:0,cut:0,slant:0,irx,iry,iy:0,pupil,lash:3.4,flick:3,lower:1,
-   highlight:eyes==='shock'?0:1,star:0,bright:0,tired:0,gainX:3,gainY:3});
+  Object.assign(s,{kind:0,rx,ry,topAmp:ry,botAmp:ry,pTop:.5,pBot:.5,corner:0,off:0,cut:0,slant:0,irx,iry,iy:0,pupil,lash:own?.lash??3.4,flick:own?.flick??3,lower:1,
+   highlight:eyes==='shock'&&!own?0:1,star:0,bright:0,tired:0,gainX:own?5:3,gainY:own?3.6:3});
  }
  const darkKind=s.kind===1;
  if(eyes==='angry')Object.assign(s,darkKind?{cut:.25,slant:.5,highlight:0}:{cut:.2375,slant:.475});
@@ -116,12 +127,25 @@ float eyeSegment(vec2 p,vec2 a,vec2 b,float r0,float r1){
 float eyeEllipse(vec2 p,vec2 c,vec2 r){
  vec2 q=(p-c)/r;float e=length(q),g=length(q/r)/max(e,1e-4);return (1.-e)/max(g,1e-4);
 }
-vec4 eyesPaint(){
+// How far the iris, E_depth under the eye's surface, is seen shifted from the surface at this point (eye units), from
+// where the camera is: the eye's frame from the derivatives of its units and of the view position (vp: vViewPosition).
+vec2 eyeParallax(vec3 vp){
+ if(E_depth<=0.)return vec2(0.);
+ vec2 p=vEye.xy,px=dFdx(p),py=dFdy(p);vec3 fx=dFdx(-vp),fy=dFdy(-vp);
+ float det=px.x*py.y-px.y*py.x;if(abs(det)<1e-9)return vec2(0.);
+ vec3 tu=(fx*py.y-fy*px.y)/det,tv=(fy*px.x-fx*py.x)/det,V=normalize(vp),N=normalize(cross(tu,tv));
+ if(dot(N,V)<0.)N=-N;
+ float vn=max(dot(V,N),.3);vec3 vt=V-vn*N;
+ return clamp(vec2(dot(vt,normalize(tu)),dot(vt,normalize(tv)))*E_depth/vn,-4.,4.);
+}
+vec4 eyesPaint(vec2 deep){
  vec2 p=vEye.xy;float side=vEye.z,w=.8*max(length(fwidth(p)),1e-3);
  float c=max(E_closed,side<0.?E_blinkA:E_blinkB),h=.3;
- vec2 L0=eyeLids(p.x-h,c),L=eyeLids(p.x,c),L2=eyeLids(p.x+h,c),sl=(L2-L0)/(2.*h);
- float dTop=(L.x-p.y)/sqrt(1.+sl.x*sl.x),dBot=(p.y-L.y)/sqrt(1.+sl.y*sl.y);
  vec2 look=vec2(E_lookX*side,-E_lookY);
+ // A fleshy lid follows the eye (E_follow): the upper lid rides up into the brow and droops over the iris, the lower a little.
+ vec2 follow=E_follow*(1.-c)*look.y*vec2(look.y<0.?.75:.5,.35)*E_ry;
+ vec2 L0=eyeLids(p.x-h,c)+follow,L=eyeLids(p.x,c)+follow,L2=eyeLids(p.x+h,c)+follow,sl=(L2-L0)/(2.*h);
+ float dTop=(L.x-p.y)/sqrt(1.+sl.x*sl.x),dBot=(p.y-L.y)/sqrt(1.+sl.y*sl.y);
  vec4 col=vec4(0.);
  // Under the eye: a soft warm line on the outer third of the lower lid, a tired bag, a tear.
  if(E_lower>0.){
@@ -138,16 +162,20 @@ vec4 eyesPaint(){
   vec2 ic=vec2(look.x*E_gainX,E_iy+look.y*E_gainY),ir=vec2(E_irx,E_iry);
   // The white, shaded under the upper lid as a drawn eye is.
   inside=mix(uEyeWhite,uEyeLidShade,.55*smoothstep(L.x-E_ry*.5,L.x,p.y));
+  inside=mix(inside,vec3(.95,.72,.72),E_caruncle*.75*smoothstep(-.62,-.92,p.x/E_rx));
   if(ir.x>0.){
-   float di=length((p-ic)/ir),g=clamp((p.y-ic.y)/ir.y*.5+.5,0.,1.);
+   // (the iris under the cornea: seen at the point deep away, eyeParallax)
+   vec2 q=p-deep;
+   float di=length((q-ic)/ir),g=clamp((q.y-ic.y)/ir.y*.5+.5,0.,1.);
    vec3 iris=mix(uEyeIris*1.3+.05,uEyeIris*.5,smoothstep(.15,.95,g));
    iris=mix(iris,uEyeIris*.4,smoothstep(.8,.97,di));
    iris=mix(iris,uEyeInk*.55,eyeCover((E_pupil-di)*min(ir.x,ir.y),w));
-   inside=mix(inside,iris,eyeCover(eyeEllipse(p,ic,ir),w));
+   inside=mix(inside,iris,eyeCover(eyeEllipse(q,ic,ir),w));
    if(E_highlight>0.){
-    float r=min(ir.x,ir.y);
-    inside=mix(inside,vec3(1.),eyeCover(.3*r-length(p-ic-vec2(.38*ir.x*side,.4*ir.y)),w));
-    inside=mix(inside,vec3(1.),eyeCover(.14*r-length(p-ic-vec2(-.35*ir.x*side,-.45*ir.y)),w));
+    // the highlights are on the eye's wet surface: with E_still they stay where the light is and the iris slides under them
+    float r=min(ir.x,ir.y);vec2 hc=mix(ic,vec2(0.,E_iy),E_still);
+    inside=mix(inside,vec3(1.),eyeCover(.3*r-length(p-hc-vec2(.38*ir.x*side,.4*ir.y)),w));
+    inside=mix(inside,vec3(1.),eyeCover(.14*r-length(p-hc-vec2(-.35*ir.x*side,-.45*ir.y)),w));
    }
   }
  }else{
@@ -177,7 +205,7 @@ vec4 eyesPaint(){
  eyeOver(col,uEyeInk,eyeCover(lash,w));
  // The flick at the outer corner, and the painted lashes of a lashes eye.
  if(E_flick>0.){
-  vec2 a=vec2(E_rx-1.5,eyeLids(E_rx-1.5,c).x+th*.35);
+  vec2 a=vec2(E_rx-1.5,eyeLids(E_rx-1.5,c).x+follow.x+th*.35);
   eyeOver(col,uEyeInk,eyeCover(eyeSegment(p,a,a+vec2(E_flick,E_flick*.6),th*.5,.35),w));
  }
  if(E_lashes>0.)for(int i=0;i<2;i++){float f=float(i);eyeOver(col,uEyeInk,(1.-c)*eyeCover(eyeSegment(p,vec2(5.,5.+3.*f),vec2(11.+2.*f,8.+4.*f),1.4,1.4),w));}
@@ -229,37 +257,51 @@ export function buildEyes3d(recipe,m){
  geometry.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(nrm,3));
  geometry.setAttribute('eyeLocal',new THREE.Float32BufferAttribute(local,3));
  geometry.setIndex(index);geometry.computeBoundingSphere();
+ return rigEyes(geometry,{iris:recipe.eyes.colour,style:recipe.eyes.style});
+}
+
+/**
+ * The eye shader on a disc mesh (position, normal and `eyeLocal`: x toward the outer corner and y up in the painter's
+ * units, then the side, -1 or 1), and its controller. `style` is the painter's eye style; `own` an eye of the body's
+ * own ({rx, ry, iris, lash?, flick?, lashes?}, eyeShape); `cel` false for a smoothly lit body, true (the town's ramp) for
+ * every head the town draws, the cartoon's and a Pixar body's (pixar.js). `make(geometry, material)` makes the mesh (a
+ * skinned one for a skinned face); `stand` names drawn eyes to stand in for the ones only the painter draws (a face with
+ * no painted eyes under it: {star: 'wide', …}; a wink is the open eyes with her left one shut).
+ */
+export function rigEyes(geometry,{iris,style,own=null,cel=true,make=(g,m)=>new THREE.Mesh(g,m),stand=null}){
  // Lit as the face is (build.js buildHead: cel, high-key, a little self-lit, a floor on dim light). Blended onto the skin
  // and writing no depth: the ink, which reads depth, and the Looks' normals (look-buffers.js) see the head as it was.
- const params=new Float32Array(EYE_PARAMS.length),uniforms={...shared,uEye:{value:params},uEyeIris:{value:new THREE.Color(recipe.eyes.colour)}};
+ const params=new Float32Array(EYE_PARAMS.length),uniforms={...shared,uEye:{value:params},uEyeIris:{value:new THREE.Color(iris)}};
  const source=new THREE.MeshStandardMaterial({roughness:.82,emissive:0xffffff,emissiveIntensity:.05,transparent:true,depthWrite:false});
- const material=celFrom(source,{bands:'soft3'}),cel=material.onBeforeCompile,celKey=material.customProgramCacheKey.bind(material);
+ const material=cel?celFrom(source,{bands:'soft3'}):source,base=material.onBeforeCompile,baseKey=material.customProgramCacheKey.bind(material);
  material.name='Shimanchu eyes';
- material.onBeforeCompile=(shader,renderer)=>{cel.call(material,shader,renderer);
+ material.onBeforeCompile=(shader,renderer)=>{base.call(material,shader,renderer);
   Object.assign(shader.uniforms,uniforms);
   shader.vertexShader=VERTEX_HEAD+shader.vertexShader.replace('#include <uv_vertex>','#include <uv_vertex>\n vEye = eyeLocal;');
   shader.fragmentShader=FRAGMENT_HEAD+shader.fragmentShader
-   .replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor = eyesPaint();\n if ( diffuseColor.a < 0.004 ) discard;')
+   .replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor = eyesPaint( eyeParallax( vViewPosition ) );\n if ( diffuseColor.a < 0.004 ) discard;')
    .replace('#include <emissivemap_fragment>','totalEmissiveRadiance *= diffuseColor.rgb;')
    .replace('#include <opaque_fragment>','outgoingLight = max( outgoingLight, diffuseColor.rgb * 0.5 );\n#include <opaque_fragment>');
  };
- material.customProgramCacheKey=()=>celKey()+':eyes3d-v1';
+ material.customProgramCacheKey=cel?()=>baseKey()+':eyes3d-v2':()=>'eyes3d-v2:smooth';
  // First of the see-through things, so glasses' lenses (and a painted beard) are drawn over the eyes, not under them.
- const mesh=new THREE.Mesh(geometry,material);mesh.name='Shimanchu eyes';mesh.castShadow=false;mesh.receiveShadow=true;mesh.visible=false;mesh.renderOrder=-1;
+ const mesh=make(geometry,material);mesh.name='Shimanchu eyes';mesh.castShadow=false;mesh.receiveShadow=true;mesh.visible=false;mesh.renderOrder=-1;
  const shapes=new Map();
  const eyes3d={mesh,showing:false,
   /** Follow a face state ({expression, blink, look, gaze, blinkLeft, blinkRight}); true while the discs draw the eyes. */
   update(state){
-   const {eyes,look}=eyesOf(state),show=eyesShow(recipe.eyes.style,eyes);
+   let {eyes,look}=eyesOf(state),wink=false;
+   if(stand&&!eyesShow(style,eyes)){wink=eyes==='wink';eyes=stand[eyes]||'open';}
+   const show=eyesShow(style,eyes);
    mesh.visible=eyes3d.showing=show;
    if(!show)return false;
-   if(!shapes.has(eyes))shapes.set(eyes,eyeShape(recipe.eyes.style,eyes));
+   if(!shapes.has(eyes))shapes.set(eyes,eyeShape(style,eyes,own));
    const s=shapes.get(eyes),blink=THREE.MathUtils.clamp(+state.blink||0,0,1);
    EYE_PARAMS.forEach((name,i)=>{params[i]=s[name]??0;});
    params[EYE_PARAMS.indexOf('lookX')]=THREE.MathUtils.clamp(+look[0]||0,-1,1);params[EYE_PARAMS.indexOf('lookY')]=THREE.MathUtils.clamp(+look[1]||0,-1,1);
    // A captured blink (a performance's own, per eye) is that eye's; otherwise both blink together.
    params[EYE_PARAMS.indexOf('blinkA')]=Number.isFinite(state.blinkLeft)?THREE.MathUtils.clamp(state.blinkLeft,0,1):blink;
-   params[EYE_PARAMS.indexOf('blinkB')]=Number.isFinite(state.blinkRight)?THREE.MathUtils.clamp(state.blinkRight,0,1):blink;
+   params[EYE_PARAMS.indexOf('blinkB')]=wink?1:Number.isFinite(state.blinkRight)?THREE.MathUtils.clamp(state.blinkRight,0,1):blink;
    return true;
   },
   dispose(){geometry.dispose();material.dispose();source.dispose();},

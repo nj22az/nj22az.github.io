@@ -12,10 +12,14 @@ import {createModelWorkspace} from './model.js?v=20261020-workshop';
 import {createWorldLibrary} from './world-library.js?v=20261020-2';
 import {createRoomWorkspace} from './room-editor.js?v=20261020-integrated';
 import {loadHatModels} from '../johansson-town/src/catalog/hat-models.js';
+import {loadPixarBodies} from '../johansson-town/src/avatars/pixar.js';
 
 // The hats that are models in World's asset catalogue (Johansson's trucker cap, sold at Sakura Shōten) are in hand before anyone
 // is drawn, so the maker's pictures, its preview, scenes and portraits show them and not their stand-in.
 await loadHatModels();
+// Thuan is her Pixar body in Studio as in World (the owner, 26 October 2026: "Replace her in the live game and studio now";
+// ?pixar=0 shows the cartoon). Her model is in hand before anyone is drawn.
+await loadPixarBodies();
 
 // Studio's own working copy of the character. What goes into Johansson World is sent with "Use in Johansson World",
 // which writes World's own keys (../johansson-town/src/studio-handoff.js): all customisation is Studio's.

@@ -64,9 +64,10 @@ export function springRest(recipe,m){
  if(style==='ponytail'||style==='sweptponytail'||style==='long'||style==='longfringe')chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
  // Braids: from behind each ear to the shoulders.
  for(const [s,side] of [[1,'L'],[-1,'R']]){
-  const x=s*R*.85;
-  rest['braid'+side+'1']=[x,H(-R*.3),-R*.35];rest['braid'+side+'2']=[x,H(-R*1.05),-R*.2];
-  if(style==='braids')chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:[x,H(-R*1.98),-R*.05],...SWING.braid,kind:'braid'});
+  const x=s*R*.85,own=m.braids?.[side];
+  rest['braid'+side+'1']=own?own[0]:[x,H(-R*.3),-R*.35];rest['braid'+side+'2']=own?own[1]:[x,H(-R*1.05),-R*.2];
+  // (own: a body's own braids, root, joint and end: a Pixar body's, pixar.js)
+  if(style==='braids')chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:own?own[2]:[x,H(-R*1.98),-R*.05],...SWING.braid,kind:'braid'});
   if(style==='longbraids'){
    const points=longBraidPoints(m,s,recipe.hair);rest['braid'+side+'1']=points[0];rest['braid'+side+'2']=points[1];
    chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:points[2],...SWING.braid,kind:'braid'});

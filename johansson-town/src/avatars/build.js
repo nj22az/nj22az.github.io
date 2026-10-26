@@ -12,6 +12,7 @@ import {normalizeRecipe,DRESS_BOTTOMS} from './recipe.js';
 import {drawFace,faceLayout,INK_NOSES,BEARD_SHELL,drawBeardShell} from './face.js';
 import {buildFaceObjects} from './face-objects.js';
 import {buildEyes3d,eyes3dOn} from './eyes3d.js';
+import {pixarBody,dressPixar} from './pixar.js';
 import {beardSpec} from './beard-mesh.js';
 import {headProfile,shapeHeadPoint} from './head-profile.js';
 import {longBraidPoints} from './braid-path.js';
@@ -1790,11 +1791,12 @@ function fitFlags(parts){const flags=new Float32Array(vertexCount(parts));let at
 
 /**
  * @param {object} input recipe (anything; it is normalized)
- * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean}} [options] eyes3d: rigged eyes (eyes3d.js), off with `?eyes3d=0`
+ * @param {{shadows?:boolean,faceSize?:number,eyes3d?:boolean,pixar?:object|null}} [options] eyes3d: rigged eyes (eyes3d.js), off
+ * with `?eyes3d=0`; pixar: a Pixar body to wear (pixar.js, `?pixar`), its joints and measures in place of the cartoon's
  */
-export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}={}){
- const recipe=normalizeRecipe(input),m=measure(recipe);
- const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
+export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn(),pixar=pixarBody(input)}={}){
+ const recipe=normalizeRecipe(input),m=pixar?{...measure(recipe),...pixar.measure}:measure(recipe);
+ const swing=springRest(recipe,m),rest={...restPositions(m),...swing.rest,...pixar?.rest},bones={},list=BONES.map(name=>{const b=new THREE.Bone();b.name=name;bones[name]=b;return b;});
  for(const name of BONES){
   const b=bones[name],p=rest[name],parent=PARENT[name];
   if(parent){const q=rest[parent];b.position.set(p[0]-q[0],p[1]-q[1],p[2]-q[2]);bones[parent].add(b);}else b.position.set(...p);
@@ -1846,12 +1848,14 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
  face.head.castShadow=shadows;face.head.receiveShadow=true;
  bones.head.add(face.head);
  const faceObjects=buildFaceObjects(recipe,m,{shadows});bones.head.add(faceObjects);
- const eyes=eyes3d?buildEyes3d(recipe,m):null;if(eyes)bones.head.add(eyes.mesh);
+ const eyes=eyes3d&&!pixar?buildEyes3d(recipe,m):null;if(eyes)bones.head.add(eyes.mesh);
  const root=new THREE.Group();root.name='Shimanchu · '+(recipe.name||'resident');
  // Keep the skeleton and face visible when a clothing mesh is swapped out.
  root.add(body,bones.root);root.rotation.y=Math.PI;
  let panelBody=null,panelOutline=null;
  let outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
+ // A Pixar body (pixar.js) on the same bones; the cartoon stays built underneath and hidden (hideCartoon).
+ const pixarSkin=pixar?dressPixar(pixar,{root,bones,order:BONES,shadows}):null;
  const openFingerPositions=geometry.attributes.position.array.slice(fingerStart*3,fingerEnd*3),closedFingerPositions=openFingerPositions.slice();
  for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
  geometry.attributes.position.array.set(closedFingerPositions,fingerStart*3);let handsOpen=false;
@@ -1974,6 +1978,8 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
   /** Repaint the face if what it is doing has changed. */
   paintFace(state){
    const s=avatar.faceState,n={...s,...state};
+   // A Pixar body has no painted face: its rigged eyes and jaw follow every call.
+   if(pixarSkin){Object.assign(s,n);pixarSkin.update(n);return false;}
    // Rigged eyes follow every call (a gaze, a blink: no repaint); the canvas leaves out the eyes they draw.
    const skipEyes=!!eyes?.update(n);
    const key=skipEyes?n.expression+'|3d|'+(n.talk>.5?1:0):n.expression+'|'+(n.blink>.5?1:0)+'|'+(n.talk>.5?1:0)+'|'+Math.round(n.look[0]*2)+','+Math.round(n.look[1]*2);
@@ -2092,9 +2098,11 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
    if(swimBody){swimBody.visible=outfit==='swim';swimOutline.visible=swimBody.visible;}
    if(towelBody){towelBody.visible=outfit==='towel';towelOutline.visible=towelBody.visible;}
    if(afterbathBody){afterbathBody.visible=outfit==='afterbath';afterbathOutline.visible=afterbathBody.visible;}
+   hideCartoon();
    return outfit;
   },
   dispose(){
+   pixarSkin?.dispose();
    seeThrough?.userData.dispose();
    if(panelBody){panelBody.geometry.dispose();panelBody.material.map?.dispose();panelBody.material.dispose();panelBody.customDepthMaterial?.dispose();panelOutline.material.dispose();}
    faceObjects.userData.dispose();
@@ -2111,6 +2119,12 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn()}=
   const g=part(pieces,authoredSkirtGeometry(m,bodyVolume(recipe,m)),quarterShare(hemSpec(recipe,m),drape),recipe.outfit.bottomColour);g.attributes.ink.array.fill(.12);g.setAttribute('towelFit',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(2),1));
   panelBody=new THREE.SkinnedMesh(g,authoredSkirtMaterial(recipe.outfit));panelBody.name='Authored panel skirt';panelBody.bind(body.skeleton,body.bindMatrix);panelBody.castShadow=shadows;panelBody.receiveShadow=true;panelBody.frustumCulled=false;root.add(panelBody);panelOutline=fitCloth(panelBody);avatar.skirt=panelBody;
  }
+ /** Under a Pixar body, every cartoon mesh stays hidden, whatever is worn (the Pixar body has its own clothes only). */
+ function hideCartoon(){
+  if(!pixarSkin)return;
+  for(const o of [body,outline,panelBody,panelOutline,alternativeBody,alternativeOutline,swimBody,swimOutline,towelBody,towelOutline,afterbathBody,afterbathOutline,face.head,faceObjects])if(o)o.visible=false;
+ }
+ avatar.pixar=pixarSkin;hideCartoon();
  avatar.springs=createSprings(avatar);
  avatar.paintFace({});
  return avatar;

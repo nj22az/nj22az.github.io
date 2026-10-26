@@ -1,5 +1,8 @@
 # Handover: the Pixar world, from 24 October 2026 (for any coding agent)
 
+> **26 October 2026:** Pixar Thuận is in World and on the live site, replacing the cartoon Thuan (the owner's word):
+> [HANDOFF-PIXAR-THUAN-2026-10-26.md](HANDOFF-PIXAR-THUAN-2026-10-26.md). How to bring Pixar Johansson: jojo `3d/cast/GAME.md`.
+
 > **Branches, 24 October evening (the owner's choice: "main , and the Pixar branch , and a development branch").**
 > Done in both repos: `main`, `development`, `pixar`, and `archive-2026-10-24`, whose single commit has every older
 > branch's last commit as a parent (each name and commit listed in its message: `git checkout -b <name> <commit>`

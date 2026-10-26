@@ -21,6 +21,10 @@ we have a perfect Pixar world".
   on the `pixar` branch, reading the prototype's CAD and data rather than copying it.
 - **`main` keeps the simplified, cute and relatable cartoon three.js** World until the Pixar world is complete; its
   fixes and small features merge as before.
+- **Except Thuan** (the owner, 26 October 2026: "Replace her in the live game and studio now"): her Pixar body (made in
+  the studio repo, `3d/cast/game_thuan.py`; World `src/avatars/pixar.js`) is Thuan on every World and Studio page;
+  `?pixar=0` shows the cartoon. Further residents follow only on the owner's word
+  (`johansson-town/briefs/HANDOFF-PIXAR-THUAN-2026-10-26.md`).
 - **Three branches only** (the owner, 24 October 2026: "I basically want main , and the Pixar branch , and a development
   branch"): `main`, `development`, `pixar`, in both repos. Every older branch is kept as a tag `archive/<name>`
   (`git checkout -b <name> archive/<name>` restores one). The survey before the clean-up: `docs/BRANCHES-2026-10-24.md`.

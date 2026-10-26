@@ -130,6 +130,10 @@ export const EXPRESSION_GLYPHS=Object.freeze({neutral:'•ᴗ•',happy:'◠ᴗ�
  dismay:'•_•;',calm:'•‿•',daze:'◔_◔',dry:'－_－',hope:'•̀ᴗ•́',focus:'•̀_•́',relieved:'˘◡˘',gobsmacked:'⊙Д⊙',smug:'¬‿¬',bawling:'ToT',starstruck:'★ᴗ★',
  sweatdrop:'^^;',blank:'○_○',pouting:'(•3•)',bleh:'^ڡ^',drowsy:'＝o＝',lovestruck:'♥ᴗ♥',fuming:'>д<',drooling:'¯﹃¯',wink:'•ᴗ<',raging:'>口<',seething:'^_^#',eyeroll:'◑_◑',scared:'°Д°;',kiss:'˘3˘',flustered:'⊙﹏⊙;'});
 
+/** A feeling's face as the painter draws it (eyes, brow angle and lift, mouth, blush): for heads that draw their own
+ *  brows and mouth (pixar.js's modelled faces). */
+export function moodOf(expression){return MOOD[expression]||MOOD.neutral;}
+
 /** What the eyes are doing in a face state, as drawFace reads it: the mood's eyes and where they look. */
 export function eyesOf(state={}){
  const mood=MOOD[state.expression]||MOOD.neutral;

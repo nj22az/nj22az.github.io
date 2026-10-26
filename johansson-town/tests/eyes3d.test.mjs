@@ -105,7 +105,7 @@ test('gaze and blinks move the rigged eyes without repainting the face',()=>{
  // The uniforms the shader reads, found through the compile hook (the program would get the same object).
  const shader={uniforms:{},vertexShader:'#include <uv_vertex>',fragmentShader:'#include <color_fragment>#include <emissivemap_fragment>#include <opaque_fragment>'};
  a.eyes3d.mesh.material.onBeforeCompile(shader,null);const params=shader.uniforms.uEye.value;
- assert.match(shader.fragmentShader,/eyesPaint\(\)/);assert.match(shader.vertexShader,/vEye = eyeLocal/);
+ assert.match(shader.fragmentShader,/diffuseColor = eyesPaint\( eyeParallax\( vViewPosition \) \)/);assert.match(shader.vertexShader,/vEye = eyeLocal/);
  const at=name=>params[EYE_PARAMS.indexOf(name)];
  a.paintFace({expression:'neutral',blink:0,look:[0,0]});const key=a.faceKey;
  a.paintFace({look:[1,-.5]});assert.equal(at('lookX'),1);assert.equal(at('lookY'),-.5);
