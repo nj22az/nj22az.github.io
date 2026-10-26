@@ -166,8 +166,9 @@ deformed".
 
 ## For the next session (written 26 October 2026, end of the session)
 
-**Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (this one
-`8a73aafe`, jojo `978dd15`); both working trees clean. The guard is green (456/456) on the rebuilt runtime, the booted
+**Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (the
+morning's work: this one `8a73aafe`, jojo `978dd15`; the evening's audit, plan and fix: this one `a52b6880`, jojo
+`e3d2bbf`); both working trees clean. The guard is green (456/456) on the rebuilt runtime, the booted
 game draws him dressed with no page errors, and a separate review's two real findings (the seam's normals, Thuận's brow
 limits) are fixed and tested. Nothing of his is on `main`.
 
