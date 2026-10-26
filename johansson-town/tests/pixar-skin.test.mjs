@@ -53,3 +53,14 @@ test('a modelled eye\'s warm lid shadow and iris rings; the cartoon\'s eyes unch
  assert.equal(cartoon.lidShadow,0);assert.equal(cartoon.warmIris,0);
  for(const k of ['lidShadow','warmIris'])assert.ok(EYE_PARAMS.includes(k),k+' has a place in the shader');
 });
+
+test('a sharper sheen on what stands out of the head (nose, ears), from the card\'s measures; none without them',()=>{
+ // (the owner's spec of 26 October 2026, night: roughness about .45 on the nose tip and ears, .65 on the body)
+ const m=pixarSkin(celFrom(new THREE.MeshStandardMaterial({color:0xffffff})),{head:{y:1.3,x:0,z:.01,r:.15}}),sh=compile(m);
+ assert.equal(sh.uniforms.uHeadR.value,.15);assert.equal(sh.uniforms.uHeadY.value,1.3);assert.equal(sh.uniforms.uHeadXZ.value.y,.01);
+ assert.match(sh.fragmentShader,/mix\( 28\., 64\., prot \)/,'the sheen sharpens with the protrusion');
+ assert.match(sh.vertexShader,/varying vec3 vPixarPos/,'the position in the body\'s frame reaches the fragment');
+ assert.equal(compile(skinned()).uniforms.uHeadR.value,0,'no head: the body\'s sheen everywhere');
+ assert.notEqual(m.customProgramCacheKey(),skinned().customProgramCacheKey());
+ assert.equal(compile(skinned()).uniforms.uSkinTerminator.value.getHexString(),'e06a4b','the terminator\'s red-orange (the spec)');
+});

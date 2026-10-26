@@ -17,11 +17,13 @@ import * as THREE from '../../vendor/three.module.js';
  *  panel) gets no mark. */
 export const SKIN_MARK=.98;
 export function markSkin(on){SKIN_UNIFORMS.uSkinMark.value=on?1:0;}
-const SKIN_UNIFORMS=Object.freeze({uSkinShadow:{value:new THREE.Color('#f0b39c')},uSkinTerminator:{value:new THREE.Color('#ffb092')},
+const SKIN_UNIFORMS=Object.freeze({uSkinShadow:{value:new THREE.Color('#f0b39c')},uSkinTerminator:{value:new THREE.Color('#e06a4b')},
  uSkinAmbient:{value:new THREE.Vector3(1.12,.96,.86)},uRimWarm:{value:new THREE.Color('#fff3d6')},uRimCool:{value:new THREE.Color('#8ab4f8')},
  uRim:{value:.2},uSheen:{value:.07},uSkinMark:{value:0}});
 const SKIN_HEAD=`uniform vec3 uSkinShadow,uSkinTerminator,uSkinAmbient,uRimWarm,uRimCool;
-uniform float uRim,uSheen,uSkinMark;
+uniform float uRim,uSheen,uSkinMark,uHeadY,uHeadR;
+uniform vec2 uHeadXZ;
+varying vec3 vPixarPos;
 float pixarSkinW=0.;
 float pixarRamp(float x,float a,float b){return clamp((x-a)/(b-a),0.,1.);}
 `;
@@ -47,22 +49,30 @@ const sheenAndRim=rim=>`{ vec3 Vv = normalize( vViewPosition ), Nn = normalize( 
 	  #if NUM_DIR_LIGHTS > 0
 	   sunSide = dot( Nn, directionalLights[ 0 ].direction );
 	   vec3 Hh = normalize( directionalLights[ 0 ].direction + Vv );
-	   outgoingLight += directionalLights[ 0 ].color * pow( max( dot( Nn, Hh ), 0. ), 28. ) * uSheen * pixarSkinW;
+	   float prot = uHeadR > 0. ? step( uHeadY, vPixarPos.y ) * smoothstep( uHeadR * .8, uHeadR * 1., length( vPixarPos.xz - uHeadXZ ) ) : 0.;
+	   outgoingLight += directionalLights[ 0 ].color * pow( max( dot( Nn, Hh ), 0. ), mix( 28., 64., prot ) ) * uSheen * mix( .8, 2.2, prot ) * pixarSkinW;
 	  #endif
 	  ${rim?'outgoingLight += mix( uRimCool, uRimWarm, smoothstep( -.25, .35, sunSide ) ) * fr * uRim * ( .6 + .4 * pixarSkinW );':''} }
 	#include <opaque_fragment>
 	${rim?`gl_FragColor.a = mix( gl_FragColor.a, ${SKIN_MARK.toFixed(4)}, uSkinMark * step( .5, pixarSkinW ) * step( .999, gl_FragColor.a ) );`:''}`;
-export function pixarSkin(material,{rim=true}={}){   // (rim: false for a feature's decal, which lies on skin that has it)
+/** Pixar skin on a cel material. rim: false for a feature's decal, which lies on skin that has it. head: {y, x, z, r},
+ * the neck's height, the head's axis and its radius (the card's measures): what stands out of the head beyond its radius
+ * (the nose, the ears) takes a sharper, stronger sheen (roughness about .45 against the body's .65: the owner's spec
+ * of 26 October 2026, night); without it the sheen is the body's everywhere. */
+export function pixarSkin(material,{rim=true,head=null}={}){
  const base=material.onBeforeCompile,baseKey=material.customProgramCacheKey.bind(material);
+ const headUniforms={uHeadY:{value:head?.y??0},uHeadR:{value:head?.r??0},uHeadXZ:{value:new THREE.Vector2(head?.x??0,head?.z??0)}};
  material.onBeforeCompile=(shader,renderer)=>{
   base?.call(material,shader,renderer);
-  Object.assign(shader.uniforms,SKIN_UNIFORMS);
+  Object.assign(shader.uniforms,SKIN_UNIFORMS,headUniforms);
+  // (the position in the body's own frame, after skinning: the head's measures are in it)
+  shader.vertexShader=('varying vec3 vPixarPos;\n'+shader.vertexShader).replace('#include <skinning_vertex>','#include <skinning_vertex>\n\tvPixarPos = transformed;');
   let f=SKIN_HEAD+shader.fragmentShader;
   // (the town's cel patch, cel.js, is the irradiance line this replaces; without it the skin keeps the plain ramp)
   if(f.includes(CEL_LINE))f=f.replace(CEL_LINE,SKIN_IRRADIANCE);
   shader.fragmentShader=f.replace('#include <normal_fragment_begin>',SKIN_MASK).replace('#include <lights_fragment_end>',SKIN_AMBIENT)
    .replace('#include <opaque_fragment>',sheenAndRim(rim));
  };
- material.customProgramCacheKey=()=>baseKey()+':pixar-skin-v3'+(rim?'':'-norim');
+ material.customProgramCacheKey=()=>baseKey()+':pixar-skin-v4'+(rim?'':'-norim')+(head?'-head':'');
  return material;
 }

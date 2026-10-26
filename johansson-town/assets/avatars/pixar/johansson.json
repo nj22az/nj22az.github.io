@@ -113,9 +113,9 @@
  },
  "measure": {
   "H": 1.67639,
-  "Rh": 0.15106,
-  "headSX": 0.75152,
-  "headSY": 1.06164,
+  "Rh": 0.15109,
+  "headSX": 0.75168,
+  "headSY": 1.06161,
   "headCentre": 1.51439,
   "neck": 0.07452,
   "torso": 0.54962,
@@ -123,12 +123,12 @@
   "foot": 0.09551,
   "thigh": 0.32799,
   "shin": 0.34037,
-  "legR": 0.10614,
-  "armR": 0.0734,
-  "width": 0.30066,
-  "hips": 0.39256,
-  "waistRatio": 1.17193,
-  "depth": 0.29628,
+  "legR": 0.10617,
+  "armR": 0.07355,
+  "width": 0.29986,
+  "hips": 0.3918,
+  "waistRatio": 1.1923,
+  "depth": 0.29151,
   "upper": 0.22353,
   "fore": 0.19771,
   "hand": 0.1317,
@@ -139,7 +139,7 @@
   "shoulderX": 0.177,
   "shoulderY": 1.23897,
   "hipX": 0.09316,
-  "seatDrop": 0.10083,
+  "seatDrop": 0.10086,
   "k": 1.04774
  },
  "eyes": {
@@ -224,10 +224,10 @@
  },
  "skin": "#b77468",
  "triangles": {
-  "pixar": 15955,
-  "torso": 2939,
-  "shirt": 4254,
-  "shorts": 1694,
+  "pixar": 16313,
+  "torso": 2581,
+  "shirt": 4279,
+  "shorts": 1707,
   "eyes": 480,
   "brows": 768,
   "mouth": 448
@@ -240,5 +240,5 @@
   "hidden": "torso",
   "underwear": "#35373c"
  },
- "glb_bytes": 2004616
+ "glb_bytes": 2008476
 }

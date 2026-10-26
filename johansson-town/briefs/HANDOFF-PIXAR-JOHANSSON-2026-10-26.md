@@ -164,6 +164,48 @@ deformed".
 - Blender clay tries between exports (`scratchpad/work/jg/t1..t5`), and the export's own `nude.png`.
 - Not checked: a physical phone, a GPU browser, the Linux edition.
 
+## Night, 26 October 2026: the pasted spec, and "how did we stray so far?"
+
+The owner pasted a structured spec ("Refactor Character Proportions, Joint Topology, and Clothing Offset": the spine's
+S, a chest and waist taper, a cone forearm and larger curled hands, a placed calf and narrowed ankle, toe-out, the shirt
+pushed out with thick flared hems, warm wrap lighting and a sharper sheen on the nose and ears, AO). Then, with the
+morning's wave sheet of him dressed: "It's slowly getting better but his legs look deformed and his arms and hands
+too"; "Here it's almost good what happened how did we stray so far?"
+
+- **What stayed** (GLB `2bf5d5e3ba`, `PIXAR_BODIES.Johansson.version`): the spine's S in profile and the waist drawn
+  in, under the shirt; the sleeve openings made clean rings, every opening flared and 8 mm thick; the feet turned out
+  9° at rest (baked in the pose stage); in World, the terminator's red-orange (#e06a4b) and a sharper, stronger sheen on
+  what stands out of the head beyond its radius (the nose, the ears), from the card's neck height and head radius, for
+  every Pixar body (`src/avatars/pixar-skin.js` `head`, passed in `pixar.js`; Thuận checked: her skin as before,
+  warmer at the terminator; `tests/pixar-skin.test.mjs` has a new test). One skin from the trunk to the fingertips:
+  the hands take the trunk's tone at the export (the sculpt's pink wrists are gone).
+- **Tried and rolled back on the owner's word**: the forearm as a cone to the wrist, the hands scaled, the shin refitted
+  with a placed calf and a narrowed ankle, the thigh refitted through the knee. **The sculpt's own forearms, hands,
+  knees, shins and ankles are kept wherever they show** (jojo `clothes_apart.py` `SCULPT_LIMBS`); the body is built
+  only where it was covered. How we strayed, for the record: every fix since the clothes came off reached further out
+  of the covered region, replacing sculpted anatomy with capsule unions, which World's toon ramp shows as tubes with
+  bands; the spec's numbers pushed the same way. jojo `3d/cast/AUDIT-JOHANSSON-BODY.md` section 5 has the item-by-item
+  outcome and the reasons for what was set aside (the shoulder pivot is World's skeleton; the finger curl waits for the
+  A-pose binding; the stance width is World's; the chest cannot widen with the arms hanging beside it; the shirt is not
+  pushed out because, measured, the arm is inside the sleeve at rest; a baked AO would darken the nude under phantom
+  hems).
+- **Bugs found and fixed on the way** (they bit three exports): the painting rules keyed on "covered" regions misread
+  a refitted forearm (black wrist bands, mottled arms, teeth on the boxers' edge); the arm's vertices now carry an
+  attribute set from where they lie after the fit, and the boxers and their edges keep off them; the forearm's refit
+  once took the boxers' side with it (refitted faces only); the armpit's own skin faces, never covered, kept the
+  concept's painted shadow (evened with the arm by position).
+
+### Checks (night)
+
+- `node --test tests/pixar-johansson.test.mjs tests/pixar-thuan.test.mjs tests/pixar-skin.test.mjs`: 18/18 on the
+  final GLB.
+- Full guard on the rebuilt runtime: **457/457 pass**, 88 files, 278 s (the skin test adds one).
+- `tools/pixar-sheet.mjs Johansson` undressed and dressed (the body in six views and moves; `--frame chest|hips|hand`),
+  each cell looked at; Thuận's and his face frames with the new terminator. jojo `renders/game/johansson-night-after.jpg`:
+  the owner's reference, then dressed and undressed at the night's end.
+- `tools/pixar-shots.mjs --name Johansson` on the built runtime: island ready, playing, Johansson on Main Street drawn dressed, no page errors (jojo `renders/game/johansson-in-game-night.jpg`).
+- Not checked: a physical phone, a GPU browser, the Linux edition.
+
 ## For the next session (written 26 October 2026, end of the session)
 
 **Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (the
@@ -187,6 +229,8 @@ limits) are fixed and tested. Nothing of his is on `main`.
 **Next work, in order of value (evening update: the plan in jojo `3d/cast/AUDIT-JOHANSSON-BODY.md` comes first; the
 items below are absorbed into it and are kept for their detail).**
 - **The body rebuilt** (the plan): the owner's five decisions, then stage 0 (a clay body for their yes), stages 1–5.
+  **The night's lesson goes into it**: the spec's numbers (a tapered forearm, chunky hands, a placed calf, a narrow ankle,
+  a relaxed curl) belong in the base body, built once with clean topology, never as refits of the sculpt's skin.
 - **A-pose binding** (the critique; the biggest visible gain for the wave and every raised arm). World binds Pixar bodies
   in their rest (`src/avatars/pixar.js` `dressPixar`: the skeleton's rest from the card's `rest`, `bindMatrix` from
   the bones as placed). The plan: the studio exports the body posed with the upper arms out ~35° (jojo `game_johansson.py`
