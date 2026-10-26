@@ -121,3 +121,61 @@ sloping shoulders, relax the shoulders and fingers, an A-pose, cloth thickness, 
 `tests/pixar-thuan.test.mjs`, `tests/ci-guard.txt`, `tools/pixar-sheet.mjs` (`--cells`, `--size`, `--tag`, `--frame`
 face|mouth|eyes|nose|hand|chest|hips, `--turn`, `--motion`, `--body`, `--undressed`; a second wave frame), `runtime/`
 (rebuilt).
+
+## For the next session (written 26 October 2026, end of the session)
+
+**Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (this one
+`8a73aafe`, jojo `978dd15`); both working trees clean. The guard is green (456/456) on the rebuilt runtime, the booted
+game draws him dressed with no page errors, and a separate review's two real findings (the seam's normals, Thuận's brow
+limits) are fixed and tested. Nothing of his is on `main`.
+
+**Waiting on the owner.**
+1. **Publish?** Pixar Johansson is the player, so he replaces the cartoon for everyone the moment this branch merges
+   (AGENTS.md, "Except Thuan"). The wave fix (`src/avatars/animate.js`) is on the same branch and Thuận, who is live,
+   uses the wave. If the owner wants the wave alone on `main`, cherry-pick `animate.js` and `tests/wave-gesture.test.mjs`
+   (plus `ci-guard.txt`'s line) into a branch off `main`, run the guard, publish, and verify the live files as the
+   Thuận handover did. If the owner wants him published, merge the branch into `main` (the runtime is already rebuilt),
+   watch GitHub's guard run and Pages deploy, and compare the live `assets/avatars/pixar/johansson.glb` hash with
+   `PIXAR_BODIES.Johansson.version`.
+2. **Stubble** (the critique asked for painted stubble; the owner had the goatee and moustache removed): only on their
+   word. Where it would go: jojo `game_johansson.py` `paint_face`, a texel field over the jaw and upper lip below the
+   mouth decal, grey-brown, at low alpha, before `SKIN_FLATTEN`.
+
+**Next work, in order of value.**
+- **A-pose binding** (the critique; the biggest visible gain for the wave and every raised arm). World binds Pixar bodies
+  in their rest (`src/avatars/pixar.js` `dressPixar`: the skeleton's rest from the card's `rest`, `bindMatrix` from
+  the bones as placed). The plan: the studio exports the body posed with the upper arms out ~35° (jojo `game_johansson.py`
+  `G.world_rest` / `G.bake_pose`: pose the shoulders before baking) and writes that bind pose into the card (`bind`
+  per bone, beside `rest`); World builds the skeleton in the card's `rest` but computes each bone's inverse bind matrix
+  from `bind` (three.js `Skeleton` takes `boneInverses`), so animation still turns from arms-down rest while the skin
+  was bound with room under the arms. Test: `tests/pixar-johansson.test.mjs` checks the card's `bind` exists and that a
+  shoulder-raised pose (`Wave` at 0.9 s) keeps the armpit's vertices further apart than the arms-down bind did.
+  `tools/pixar-sheet.mjs Johansson OUT --body wave,"wave later" --size 900` to look. Thuận keeps her binding until hers
+  is re-exported the same way.
+- **Fingers**: once the A-pose binding is in, the hands clear the thighs and jojo's `relaxed` curl can be baked
+  (`game_johansson.py`, the comment at `G.bake_pose`).
+- **The backs of his arms** show lighting bands on ~2 cm triangles when undressed and in shadow. Options: give the
+  decimation a denser budget on the arms (jojo `game_johansson.py` `G.decimate(body, BODY_TRIS, face)`: pass an
+  arms mask like `face`), inside the test's 26,000 dressed / 32,000 total triangle limits.
+- **Face volume, ears' cartilage, chunky 3D brows, cloth creases, hand-painted textures**: sculpting and painting in
+  the studio's Pixar track (jojo `3d/cast/PLAN-PIXAR.md`), not a World change.
+
+**How to resume the studio export** (jojo `3d/cast/GAME.md` "Pixar Johansson: step by step"). The inputs live in a
+session scratchpad, so a new session makes them again (about 15 minutes in all):
+```bash
+cd jojo/3d/cast
+python3 concept_paint.py back models/johansson-concept.png /tmp/back.png johansson_ai
+python3 concept_paint.py paint models/johansson-hunyuan.glb models/johansson-concept.png /tmp/back.png /tmp/joh/johansson.glb johansson_ai
+CAST_CACHE=/tmp/cast-cache python3.11 -u game_johansson.py /tmp/joh/johansson.glb /tmp/jg          # ~10 min, saves johansson-face.blend
+CAST_CACHE=/tmp/cast-cache python3.11 -u game_johansson.py /tmp/joh/johansson.glb /tmp/jg --from-face   # ~4 min, the clothes alone
+cp /tmp/jg/johansson.glb /tmp/jg/johansson.json ../../../nj22az.github.io/johansson-town/assets/avatars/pixar/
+sha256sum ../../../nj22az.github.io/johansson-town/assets/avatars/pixar/johansson.glb | cut -c1-10   # into PIXAR_BODIES.Johansson.version
+```
+Then in World: `node --test tests/pixar-johansson.test.mjs tests/pixar-thuan.test.mjs`, the sheets
+(`tools/pixar-sheet.mjs`, `TOWN_CHROMIUM_PATH=/opt/pw-browsers/chromium` in the cloud), `npm run build:runtime`, the
+full guard, `tools/pixar-shots.mjs --name Johansson`. Look at every sheet cell by cell before calling anything done;
+the full-body sheet is too small to show the faults the `--frame chest|hips` views show.
+
+**Rules that bit this session** (keep): pad the atlas before lifting colours; set custom normals after a mesh is cut,
+never before; a face is "folded" only against its own corners' normals; brow limits are per body; World's weights for a
+garment, never nearest-vertex copies; never curl the fingers in the arms-down rest; check the undressed body up close.
