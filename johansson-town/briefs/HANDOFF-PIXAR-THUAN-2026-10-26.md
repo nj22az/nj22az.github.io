@@ -18,6 +18,24 @@ the cartoon. `?pixar=0` on any World or Studio page shows the cartoon Thuan, to 
 section "Publication" below. Studio repo: branch `claude/vibrant-brown-0udpq3` of `nj22az/jojo` (the export script,
 `3d/cast/GAME.md`, review images in `3d/cast/renders/game/`), not merged into jojo's `main`.
 
+## Publication (verified 26 October 2026)
+
+- `main` fast-forwarded `9c7db3e8..b427c89e` ("Pixar Thuận replaces the cartoon Thuan in World and Studio").
+- GitHub **Johansson World guard run 253: success** on `b427c89e`; **Pages build and deployment run 1438: success**.
+- Live: 8 of 8 files checked on `https://nj22az.github.io/` match the commit byte for byte (the model and card, World's
+  `index.html` and `runtime/boot-BPtKRZQl.js`, `src/avatars/pixar.js` and `face-features.js`, Studio's `studio.js` and
+  `index.html`); the live game page loads `runtime/boot-BPtKRZQl.js`. Not looked at in a browser on the live site itself
+  (the booted-game screenshots are of the same files served locally).
+
+## Then: Pixar Johansson audited (not started as a game model)
+
+The owner: "Audit him thoroughly use what you learned from Thuan". Studio repo `3d/cast/AUDIT-JOHANSSON-GAME.md`
+(`audit_game.py`, evidence `3d/cast/renders/game/johansson-audit-*.jpg`): **not ready**. His arms turn 45° to World's rest
+and push through his fused sleeves; the hand graft shows (a jagged, darker wrist); his texture is the concept projected
+from front and back (seams down the sides of his face, the shirt's blue on his neck); the sculpt has a fold from nose to
+jaw; his skin is far darker than his film render; the speck cleaner would take his stubble; Thuận's face windows find
+nothing on him. Order of work and the step-by-step: `AUDIT-JOHANSSON-GAME.md`, `GAME.md`. Nothing in World changed for him.
+
 ## What it is
 
 - **The model** (`assets/avatars/pixar/thuan.glb`, 1.39 MB; card `thuan.json`): her film model (studio repo `nj22az/jojo`,
