@@ -209,7 +209,8 @@
       "view": "onsen/wide",
       "time": "18:00",
       "back": 1.2,
-      "note": "Hotel stay candidate (trial)"
+      "note": "Hotel stay candidate (trial)",
+      "room": "onsen"
     },
     {
       "name": "stay-onsen-push",
@@ -217,7 +218,8 @@
       "view": "onsen/push",
       "time": "18:00",
       "back": 1.2,
-      "note": "Hotel stay candidate (trial)"
+      "note": "Hotel stay candidate (trial)",
+      "room": "onsen"
     },
     {
       "name": "stay-sakura-wide",
@@ -225,7 +227,8 @@
       "view": "sakura/wide",
       "time": "15:00",
       "back": 1.2,
-      "note": "Hotel stay candidate (trial)"
+      "note": "Hotel stay candidate (trial)",
+      "room": "market"
     },
     {
       "name": "stay-sakura-push",
@@ -233,7 +236,8 @@
       "view": "sakura/push",
       "time": "15:00",
       "back": 1.2,
-      "note": "Hotel stay candidate (trial)"
+      "note": "Hotel stay candidate (trial)",
+      "room": "market"
     },
     {
       "name": "stay-pier-wide",

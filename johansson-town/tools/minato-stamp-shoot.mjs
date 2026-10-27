@@ -8,6 +8,7 @@
  *   resident  framed on a resident wherever she is at that time: {"resident":{"name":"Thuan","dist":2.4,"side":.8,"y":1.45}}
  * Every shot parks the ferry alongside in town, sets the time ("17:40"), hides the HUD and keeps Johansson out of frame.
  * "lights": true turns her navigation lights on; "clear" (metres, default 2.2) hides the people that close to the lens;
+ * "room" (an interior's id, e.g. "market" for Sakura, "onsen") enters it first, with its "view" camera.
  * "back" (metres) is how far behind the lens Johansson stands: keep it small indoors, where a room is drawn only near him.
  */
 import {chromium} from 'playwright';
@@ -47,11 +48,14 @@ try{
   for(const s of list){
    const [h,m]=(s.time||'17:40').split(':').map(Number);
    const fixed=s.view?fromView(s.view):null;
+   // An interior is its own room, drawn only once entered (as tools/render-feed-backdrops.mjs does it).
+   if(s.room){await page.evaluate(async([id,minutes])=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.setTime(10002*1440+minutes);await a.enter(id);a.render();},[s.room,h*60+m]);
+    await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading);await page.waitForTimeout(1500);}
    const view=await page.evaluate(({s,fixed,minutes,HALF,DRAFT})=>{
     const a=window.__JOHANSSON_AUDIT__,run=a.world.ferry,f=run.ferry;
-    a.setTime(10002*1440+minutes);a.step(200);
+    if(!s.room){a.setTime(10002*1440+minutes);a.step(200);
     // She lies alongside in town for every picture, so the harbour shots show her and her rooms are in port.
-    run.parkAt('town');run.update(.1,minutes,0);f.userData.lights?.(!!s.lights);f.updateMatrixWorld(true);
+    run.parkAt('town');run.update(.1,minutes,0);f.userData.lights?.(!!s.lights);f.updateMatrixWorld(true);}
     const V=f.position.constructor;let pos,at;
     if(fixed){pos=fixed.pos;at=fixed.at;}
     else if(s.ship){const w=v=>f.localToWorld(new V(v[0],v[1]-DRAFT,v[2]-HALF)).toArray();pos=w(s.ship.pos);at=w(s.ship.at);}
@@ -69,7 +73,7 @@ try{
     else {pos=s.world.pos;at=s.world.at;}
     // Johansson stands far behind the lens, on the ground, out of every picture.
     // (For a resident, only a few metres behind: a room may only be drawn while the player is near it.)
-    const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1,back=s.back??(s.resident?2.5:40);a.teleport(pos[0]+dx/d*back,pos[2]+dz/d*back,0,0);a.step(30);
+    const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1,back=s.back??(s.resident?2.5:40);if(!s.room){a.teleport(pos[0]+dx/d*back,pos[2]+dz/d*back,0,0);a.step(30);}
     // People right against the lens (an engineer at the board, a head at the camera's shoulder) step out of the picture;
     // the ones further off stay, so the place keeps its life. Skinned bodies, and what they carry on their bones.
     const clear=s.clear??2.2,hidden=[],q=new V();
@@ -80,6 +84,7 @@ try{
    },{s,fixed,minutes:h*60+m,HALF,DRAFT});
    await page.waitForTimeout(500);
    const file=`${s.name}--${look}.png`;await canvas.screenshot({path:resolve(out,file)});
+   if(s.room){await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.leave();});await page.waitForTimeout(1000);}
    report.shots[file]={...view,time:s.time||'17:40',note:s.note};console.log('shot',file);
   }
  }
