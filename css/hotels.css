@@ -223,8 +223,9 @@ body.hotel-site{min-width:0}
   .hotel-trip-buttons .hotel-primary{flex:1}
 }
 @media(max-width:600px){
-  .hotel-post-head{flex-wrap:wrap}
-  .hotel-post-head .hotel-country-tag{order:3;margin:4px 0 0 50px}
+  .hotel-post-head{flex-wrap:wrap;row-gap:0}
+  .hotel-post-head::after{content:'';order:2;flex-basis:100%;height:0}
+  .hotel-post-head .hotel-country-tag{order:3;min-height:28px;margin:6px 0 0 50px}
   .hotel-post{padding:12px 12px 4px}
   .hotel-avatar{flex-basis:38px;width:38px;height:38px;font-size:17px}
   .hotel-discovery .hotel-map-section{padding:12px}
