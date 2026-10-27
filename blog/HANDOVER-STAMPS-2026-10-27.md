@@ -84,5 +84,5 @@ hotel, so each post has the Minato place that matches its story, shot in World's
 The shoot tool can now enter an interior first (`"room"`, as `render-feed-backdrops.mjs` does; without it an interior
 camera photographs the street outside) and keeps Johansson `"back"` metres behind the lens, with his hands hidden.
 Tried and dropped: the empty pier (`pier/wide`, `pier/low`), the sea from Fumoto square, Rainflower Lane. Each post's
-link preview is now its stamp (Laajavuori's was its entrance photo; the photos stay in the post). **On the branch;
-awaiting the owner's word.**
+link preview is now its stamp (Laajavuori's was its entrance photo; the photos stay in the post). **Published on the owner's "Yes publish" as `2260eb46`;
+all changed files match live, and every one of the 13 articles in the blog list now has its stamp.**
