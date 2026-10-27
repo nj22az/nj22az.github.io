@@ -6,8 +6,7 @@ The owner, 27 October 2026: "Scandic Rosendahl in Finland should be yellow as it
 park there and I know you can pay for parking at the hotel by them. Can you search for
 more hotels in Finland with confirmed free parking?"
 
-On branch `claude/peaceful-clarke-fprqk3`; **not on main and not published** until the
-owner says so. Evidence: [FINLAND-EVIDENCE-2026-10-27.json](FINLAND-EVIDENCE-2026-10-27.json).
+Published to main on the owner's word ("Push to main when it's done") as [`f559293b`](https://github.com/nj22az/nj22az.github.io/commit/f559293b51090721959d0f33eaa490966dbe3f48); [Pages run 40469053879](https://github.com/nj22az/nj22az.github.io/actions/runs/40469053879) succeeded, together with the favicons. Live `hotels.json`, CSV, page and evidence match the commit; both browser harnesses pass live. Evidence: [FINLAND-EVIDENCE-2026-10-27.json](FINLAND-EVIDENCE-2026-10-27.json).
 
 ## Scandic Rosendahl, Tampere: Avoid → Easy (yellow)
 

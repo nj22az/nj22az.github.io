@@ -35,7 +35,7 @@ light and dark tabs plus a grayscale row; that view was reviewed for the final s
 
 ## State and checks
 
-On branch `claude/peaceful-clarke-fprqk3`; published state is recorded in HANDOVER.md.
+Published to main on the owner's word ("Push to main when it's done") as [`f559293b`](https://github.com/nj22az/nj22az.github.io/commit/f559293b51090721959d0f33eaa490966dbe3f48); [Pages run 40469053879](https://github.com/nj22az/nj22az.github.io/actions/runs/40469053879) succeeded; all seven icon files and `world/index.html` match the commit live. World guard [run 40469054295](https://github.com/nj22az/nj22az.github.io/actions/runs/40469054295) was started by the icon change; see HANDOVER.md for its result.
 Checks: `draw-favicons.py` runs clean (its geometry asserts pass); true-pixel and tab-strip
 renders reviewed; hotel unit tests and page `--check` pass. Installed copies of the World
 app keep the old icon until the next service-worker version; browser tabs pick the new one
