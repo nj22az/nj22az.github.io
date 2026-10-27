@@ -14,6 +14,19 @@ window.OFFICE_BLOG_POSTS = [
     }
   },
   {
+    "id": "scandic-elmia-jonkoping",
+    "title": "Scandic Elmia, Jönköping: a fair price, with parking and a card hold on the side",
+    "excerpt": "A fair room price, but parking was paid separately through Pair Parking, and at check-in they still asked to reserve my credit card.",
+    "url": "/blog/scandic-elmia-jonkoping/",
+    "date": "2026-10-25",
+    "topic": "Hotel stay",
+    "hotel": "scandic-elmia-2026-10-24",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/stay-elmia-thumb.webp",
+      "alt": "The front desk of a Japanese bathhouse with its attendant and price board, printed as a rubber stamp."
+    }
+  },
+  {
     "id": "scandic-rosendahl-tampere",
     "title": "Scandic Rosendahl, Tampere: paid parking on one bill",
     "excerpt": "Parking at Scandic Rosendahl is not free, but you pay for it at the hotel and it goes on the hotel bill. One receipt for the stay makes it Easy.",

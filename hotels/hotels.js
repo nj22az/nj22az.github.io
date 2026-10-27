@@ -21,6 +21,7 @@
   var chain = form.elements.namedItem('chain');
   var parking = form.elements.namedItem('parking');
   var receipt = form.elements.namedItem('receipt');
+  var cardHold = form.elements.namedItem('cardhold');
   var parkingNames = { free: 'with free parking', easy: 'with easy parking', avoid: 'to avoid', saved: 'saved', '': '' };
   var categoryOf = {};
   rows.forEach(function (row) { categoryOf[row.dataset.hotelRow] = row.dataset.parkingCategory; });
@@ -49,12 +50,14 @@
       var anywhere = terms.every(function (term) { return text.includes(term); }) &&
         (!chain.value || row.dataset.chain === chain.value) &&
         (!receipt.value || row.dataset.hotelReceipt === receipt.value) &&
+        (!cardHold.value || row.dataset.cardHold === cardHold.value) &&
         (parking.value === 'saved' ? saved.has(id) : !parking.value || row.dataset.parkingCategory === parking.value);
       if (anywhere) byCountry[row.dataset.country] = (byCountry[row.dataset.country] || 0) + 1;
       var place = terms.every(function (term) { return text.includes(term); }) &&
         (!country.value || row.dataset.country === country.value) &&
         (!chain.value || row.dataset.chain === chain.value) &&
-        (!receipt.value || row.dataset.hotelReceipt === receipt.value);
+        (!receipt.value || row.dataset.hotelReceipt === receipt.value) &&
+        (!cardHold.value || row.dataset.cardHold === cardHold.value);
       if (place) { tally[row.dataset.parkingCategory] += 1; tally.all += 1; if (saved.has(id)) tally.saved += 1; }
       var show = place && (parking.value === 'saved' ? saved.has(id) : !parking.value || row.dataset.parkingCategory === parking.value);
       row.hidden = !show;
@@ -65,7 +68,7 @@
     countryCounts.forEach(function (badge) { badge.textContent = byCountry[badge.dataset.countryCount] || 0; });
     countryTags.forEach(function (tag) { tag.setAttribute('aria-pressed', String(!!country.value && tag.dataset.hotelCountry === country.value)); });
     if (savedOption) savedOption.hidden = saved.size === 0 && parking.value !== 'saved';
-    var active = [country.value, chain.value, receipt.value].filter(Boolean).length;
+    var active = [country.value, chain.value, receipt.value, cardHold.value].filter(Boolean).length;
     if (filterCount) { filterCount.hidden = active === 0; filterCount.textContent = active; }
     var description = parkingNames[parking.value] || '';
     count.textContent = visible.size + ' ' + plural(visible.size) + (description ? ' ' + description : '');
@@ -210,7 +213,7 @@
     var post = match && document.getElementById('review-' + match[1]);
     if (!post) return;
     if (post.hidden) {
-      query.value = ''; country.value = ''; chain.value = ''; receipt.value = '';
+      query.value = ''; country.value = ''; chain.value = ''; receipt.value = ''; cardHold.value = '';
       var option = form.querySelector('input[name=parking][value="' + categoryOf[match[1]] + '"]');
       if (option) option.checked = true;
       filter();

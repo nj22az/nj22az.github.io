@@ -306,6 +306,7 @@
       "review": [
         "Scandic Elmia provided a satisfactory overnight stay at a fair room price of SEK 1,107. Parking cost a further SEK 105, bringing the recorded total for the room and parking to SEK 1,212.",
         "Parking was paid separately through Pair Parking’s website, where the parking receipt was also available. On this stay, the parking charge could not be included on the hotel receipt.",
+        "Owner stay report, 27 October 2026: at check-in the hotel asked to reserve the credit card, even though the room was already paid and no voucher was wanted.",
         "The room price was reasonable. The additional parking cost and separate receipt should be taken into account when comparing alternatives, particularly for business travel. This stay does not qualify for the free-parking shortlist."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-elmia",
@@ -322,6 +323,12 @@
         "status": "confirmed-paid",
         "checkedOn": "2026-10-24",
         "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-elmia"
+      },
+      "cardHold": {
+        "asked": true,
+        "reportedOn": "2026-10-27",
+        "source": "owner stay report",
+        "note": "At check-in they asked to reserve my credit card, even though I had already paid for the room and said I did not want a voucher."
       }
     },
     {
@@ -726,7 +733,13 @@
           "caption": "The Standard room",
           "alt": "A Standard room at Scandic Laajavuori in lamplight: two made-up beds side by side with folded bathrobes, a desk and a wall-mounted television."
         }
-      ]
+      ],
+      "cardHold": {
+        "asked": false,
+        "reportedOn": "2026-10-27",
+        "source": "owner stay report",
+        "note": "They did not ask to reserve anything on my card. Some hotels always ask for a card for a deposit, or in case you order something to the room."
+      }
     },
     {
       "id": "scandic-waskia-2026-10-24",

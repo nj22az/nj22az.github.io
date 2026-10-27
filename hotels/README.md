@@ -1,5 +1,26 @@
 # Hotels & Parking
 
+## Card at check-in: a new tag — 27 October 2026
+
+The owner: "At my stay at Scandic Elmia they asked to reserve my credit card even though I had paid for the room and
+said I did not want a voucher, this should be logged and become another tag to sort hotels with".
+
+- **The fact:** a record may carry `cardHold` = `{asked: true|false, reportedOn, note, source: "owner stay report"}`,
+  only from the owner's own stays (no hotel page is read for it; a missing field is "Not reported"). The builder
+  refuses one without the owner's note and source. Today: Scandic Elmia asked (27 October), Scandic Laajavuori did
+  not (the owner's note of the same day).
+- **Shown:** a fact chip on the post ("Card hold asked at check-in" / "No card hold at check-in"), the owner's words
+  first among the notes, `data-card-hold` on the table row, and a **Card at check-in** filter in Filters (Any, No card
+  hold, Card hold asked, Not reported) that counts towards the Filters badge and clears with Reset. The CSV gains a
+  last column, "Card hold at check-in" ("Asked (owner report)", "Not asked (owner report)" or empty).
+- **Stay post (the standing rule):** `/blog/scandic-elmia-jonkoping/`, from the Elmia record and this note, with the
+  bathhouse front-desk stamp (`stay-elmia`). Dated 25 October 2026, invented as before so the stay posts stay
+  chronological; not a stay date (none recorded).
+- Checks: build `--check`; 21 unit tests (new: the chip, the row tag, validation, the CSV agreeing with the records);
+  `blog-feed.test.cjs` (updated for the new post); `flags.cjs` 19/19; `feed.cjs` 46/46, its "actions on one row" now
+  counting rows rather than height (phones stack icon over label since the folding cards). Assets `hotels.js?v=10`.
+  **On the branch; awaiting the owner's word.**
+
 ## Laajavuori: no card hold — 27 October 2026
 
 The owner, at Scandic Laajavuori today: "add that as an extra good thing ... that they didnt ask me to reserve anything

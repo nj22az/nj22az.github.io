@@ -62,6 +62,26 @@ class ParkingAdmissionTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             builder.validate([broken])
 
+    def test_card_hold_at_check_in_is_an_owner_report_with_its_own_filter(self):
+        held = [r for r in self.records if r.get('cardHold')]
+        self.assertEqual({r['hotelId']: r['cardHold']['asked'] for r in held}, {'scandic-elmia': True, 'scandic-laajavuori': False})
+        elmia = next(r for r in held if r['cardHold']['asked'])
+        html = builder.render_review(elmia) + builder.render_row(elmia)
+        self.assertIn('Card hold asked at check-in', html)
+        self.assertIn('data-card-hold="asked"', html)
+        self.assertIn('card at check-in', html)
+        self.assertIn('data-card-hold="unknown"', builder.render_row(self.free if not self.free.get('cardHold') else self.records[-1]))
+        self.assertIn('name="cardhold"', builder.build(self.records))
+        broken = copy.deepcopy(elmia)
+        broken['cardHold']['source'] = 'a guess'
+        with self.assertRaises(AssertionError):
+            builder.validate([broken])
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = {row['Hotel']: row['Card hold at check-in'] for row in csv.DictReader(stream)}
+        for row in self.records:
+            hold = row.get('cardHold')
+            self.assertEqual(exported[row['name']], '' if hold is None else 'Asked (owner report)' if hold['asked'] else 'Not asked (owner report)')
+
     def test_easy_requires_hotel_payment_and_confirmed_hotel_receipt(self):
         row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
         row['name'] = 'Synthetic hotel-payment test fixture'

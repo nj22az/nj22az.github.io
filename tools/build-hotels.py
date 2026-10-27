@@ -158,6 +158,11 @@ def validate(reviews):
         ids.add(review['id'])
         dt.date.fromisoformat(review['recordedOn'])
         validate_photos(review)
+        hold = review.get('cardHold')
+        if hold is not None:
+            assert isinstance(hold.get('asked'), bool) and hold.get('source') == 'owner stay report' and hold.get('note', '').strip(), \
+                f'{review["name"]}: a card hold needs asked (true or false), the owner\'s note and its source'
+            dt.date.fromisoformat(hold['reportedOn'])
         warning = review.get('parkingAccessWarning')
         if warning is not None:
             assert warning.get('status') == 'avoid' and warning.get('source') == 'owner stay report', 'Access overrides need an attributed owner report'
@@ -197,7 +202,7 @@ def render_row(review):
     if review['freeParking'] is not True and review['parkingPaid'] is not None and review['parkingUrl']:
         receipt_note = f'On this stay. <a href="{e(review["parkingUrl"])}">{receipt_note}</a>.'
     place = ', '.join((review['address'], ' '.join(value for value in (review.get('postalCode'), review['city']) if value)))
-    return f'''          <tr role="row" data-hotel-row="{e(review['id'])}" data-search="{e(search)}" data-country="{e(review['countryCode'])}" data-chain="{e(hotel_chain(review))}" data-free-parking="{state(review['freeParking'])}" data-parking-category="{category}" data-parking-type="{e(review['parkingType'])}" data-hotel-receipt="{receipt_state(review)}">
+    return f'''          <tr role="row" data-hotel-row="{e(review['id'])}" data-search="{e(search)}" data-country="{e(review['countryCode'])}" data-chain="{e(hotel_chain(review))}" data-free-parking="{state(review['freeParking'])}" data-parking-category="{category}" data-parking-type="{e(review['parkingType'])}" data-hotel-receipt="{receipt_state(review)}" data-card-hold="{card_hold_state(review)}">
             <th scope="row" role="rowheader" data-label="Hotel"><a class="hotel-name" href="#review-{e(review['id'])}">{e(review['name'])}</a><span class="hotel-place">{e(place)}</span><span class="hotel-tag hotel-country">{e(review['country'])}</span><span class="hotel-recorded">Recorded <time datetime="{e(review['recordedOn'])}">{date_label(review['recordedOn'])}</time></span></th>
             <td role="cell" data-label="Room total" class="hotel-money">{price_cell(review['roomPaid'], review, include_nights=True)}</td>
             <td role="cell" data-label="Parking" class="hotel-money">{price_cell(review['parkingPaid'], review, free=review['freeParking'] is True)}</td>
@@ -273,6 +278,12 @@ def place_key(review):
     return (review['country'].casefold(), review['city'].casefold(), review['name'].casefold())
 
 
+def card_hold_state(review):
+    """Whether the hotel asked to hold a card at check-in, from the owner's own stays: asked, none, or not reported."""
+    hold = review.get('cardHold')
+    return 'unknown' if hold is None else 'asked' if hold['asked'] else 'none'
+
+
 def post_chips(review):
     """Short icon facts from the record itself; unknown stays visibly unknown."""
     chips = []
@@ -292,6 +303,9 @@ def post_chips(review):
         registration = details.get('registrationAtReception')
         chips.append(('clipboard', 'Register at reception' if registration is True else
                       'No registration needed' if registration is False else 'Registration not stated'))
+    hold = card_hold_state(review)
+    if hold != 'unknown':
+        chips.append(('card', 'Card hold asked at check-in' if hold == 'asked' else 'No card hold at check-in'))
     paid_total = total_paid(review)
     if paid_total is not None:
         nights = review.get('nights')
@@ -354,6 +368,10 @@ def post_thread(review, posts=()):
     if warning:
         items.append(comment('warning', f'Owner’s report · <time datetime="{e(warning["reportedOn"])}">{date_label(warning["reportedOn"])}</time>',
                              f'<p>{e(warning["reason"])}</p>'))
+    hold = review.get('cardHold')
+    if hold:
+        items.append(comment('card', f'Owner’s report · card at check-in · <time datetime="{e(hold["reportedOn"])}">{date_label(hold["reportedOn"])}</time>',
+                             f'<p>{e(hold["note"])}</p>'))
     items.append(comment('wallet', 'Price paid' if review['roomPaid'] is not None else 'Price', f'<p>{e(review["priceNote"])}</p>'))
     items.append(comment('note', 'Register notes', ''.join(f'<p>{e(paragraph)}</p>' for paragraph in review['review'])))
     links = f'<a href="{e(review["hotelUrl"])}">Official hotel information</a>'
@@ -508,6 +526,7 @@ def build(reviews, posts=None):
               <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option>{country_options}</select></div>
               <div class="hotel-field"><label for="hotel-chain">Hotel chain</label><select id="hotel-chain" name="chain"><option value="">All chains</option>{chain_options}</select></div>
               <div class="hotel-field"><label for="hotel-receipt">Parking receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">On the hotel receipt</option><option value="false">Separate receipt</option><option value="unknown">Not confirmed</option></select></div>
+              <div class="hotel-field"><label for="hotel-card-hold">Card at check-in</label><select id="hotel-card-hold" name="cardhold"><option value="">Any</option><option value="none">No card hold</option><option value="asked">Card hold asked</option><option value="unknown">Not reported</option></select></div>
               <button type="reset" class="hotel-reset">Reset filters</button>
             </div>
           </details>
@@ -562,7 +581,7 @@ def build(reviews, posts=None):
   <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/hotels/hotels.js?v=9"></script>
+  <script src="/hotels/hotels.js?v=10"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/hotels/hotels-map.js?v=6"></script>
   <script src="/hotels/hotels-trip.js?v=1"></script>

@@ -244,6 +244,17 @@
       "note": "Hotel stay post, shot in the Rubber stamp Look",
       "alt": "The front desk of a Japanese bathhouse with its price board and a red curtain, printed as a rubber stamp.",
       "caption": "The front desk of Umi-no-yu, Minato's bathhouse, in Johansson World."
+    },
+    {
+      "name": "stay-elmia",
+      "article": "scandic-elmia-jonkoping",
+      "room": "onsen",
+      "view": "onsen/push",
+      "time": "18:00",
+      "back": 1.2,
+      "note": "Hotel stay post (the check-in desk), shot in the Rubber stamp Look",
+      "alt": "The front desk of a Japanese bathhouse with its attendant and price board, printed as a rubber stamp.",
+      "caption": "Check-in at the front desk: Umi-no-yu, in Johansson World."
     }
   ]
 }
