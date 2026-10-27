@@ -120,5 +120,29 @@
   "surfaces": [],
   "floors": [],
   "finishes": []
+ },
+ "strictRules": {
+  "tolerance": 0.002,
+  "minArea": 0.00001,
+  "wideTolerance": 0.01,
+  "wideMinArea": 0.05
+ },
+ "zones": {
+  "stockroom": {
+   "close": [],
+   "wide": []
+  },
+  "stair foot": {
+   "close": [],
+   "wide": []
+  },
+  "stair head": {
+   "close": [],
+   "wide": []
+  },
+  "upper stores": {
+   "close": [],
+   "wide": []
+  }
  }
 }

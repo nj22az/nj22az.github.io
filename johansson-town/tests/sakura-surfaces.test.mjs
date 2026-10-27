@@ -64,3 +64,10 @@ test('the ceiling tubes end within their runs, never through a wall',async()=>{
   assert.ok(v.z>=run[1]-1e-6&&v.z<=run[2]+1e-6,`a tube on x ${run[0]} reaches z ${v.z.toFixed(3)}, outside its run ${run[1]}..${run[2]}`);
  }
 });
+
+// The stockroom and the staircase to the stricter rules of SK-ZF-004/005 (the owner, 27 October 2026: "audit the storage
+// room and the stair case, Cad it first remove all Z fighting").
+for(const [zone,{close,wide}] of Object.entries(report.zones)){
+ test(`${zone}: no two faces within 2 mm of one plane over 0.1 cm², even of one colour`,()=>assert.deepEqual(close.map(where),[]));
+ test(`${zone}: nothing within 10 mm of another face over 0.05 m² but a decal or clear glazing`,()=>assert.deepEqual(wide.map(where),[]));
+}
