@@ -29,3 +29,13 @@ This is staging in the selected existing World location, with the existing ±12 
 Implementation is a scoped Studio feature on `main`, based on source `74dac7d82a4a38e6340d2793b9fac52ec49ffa7a`, integrated onto newer main `a2f5c85191ae0b7acac539218ef6e4483c24e00c` (the intervening change only concerns hotel cards). No prototype geometry or development/Pixar content is promoted. No additional branch or PR is created.
 
 Publication verification and implementation commit are recorded below after publishing. Re-run the browser check with `CHROMIUM_EXECUTABLE` pointing to Chromium; optional `STUDIO_FLIGHT_SHOTS` writes screenshots. Physical Safari/iPad validation is the remaining acceptance check.
+
+## Published and verified
+
+Implementation commit: `26f20d54f9691ee68452d17f605e116d27ae8882`, on `main`.
+Its first Pages run (40504219197) was superseded by a concurrent Pixar-character merge, which preserved every Studio implementation file and this handover index entry.
+The combined main `7451699faf801c7a749de3edc26c8532248dc963` deployed successfully in [Pages run 40504307809](https://github.com/nj22az/nj22az.github.io/actions/runs/40504307809).
+All six public implementation files (Studio index, studio.js, scene.js, scene-flight.js, scene.css and scene-model.mjs) were downloaded from the live site and matched the tested local files byte-for-byte.
+Live entry: https://nj22az.github.io/avatar-creator/ — select **Free camera**.
+The separate unchanged Node scene-world suite result is 10 passes / 5 failures, with the causes recorded above; no passing full-suite claim is made.
+The later Pixar-character changes were outside this task and were not included in the earlier Studio browser image review.
