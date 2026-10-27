@@ -80,11 +80,23 @@ def place(page, shot):
     return text
 
 
+def place_header(page, shot):
+    """The blog page's own header picture: the harbour, wide, under the title."""
+    text = page.read_text(encoding='utf-8')
+    text = re.sub(rf'<span class="blog-head-stamp" {MARK}="[^"]*"[^>]*></span>', '', text)
+    assert text.count('</header>') == 1, f'{page}: expected one page header'
+    src = f'/assets/images/blog/stamps/{shot["name"]}.webp'
+    text = text.replace('</header>', f'</header><span class="blog-head-stamp" {MARK}="{shot["name"]}" role="img" aria-label="{html.escape(shot["alt"])}" style="--stamp:url({src})"></span>', 1)
+    if 'blog-stamps.css' not in text:
+        text = text.replace('</head>', '<link rel="stylesheet" href="/css/blog-stamps.css?v=1"></head>', 1)
+    return text
+
+
 def catalogue(shots):
     source = CATALOGUE.read_text(encoding='utf-8')
     start = source.index('[')
     items = json.loads(source[start:source.rindex(']') + 1])
-    by_slug = {s['article']: s for s in shots}
+    by_slug = {s['article']: s for s in shots if s.get('article')}
     for item in items:
         slug = item['url'].rstrip('/').split('/')[-1]
         shot = by_slug.get(slug)
@@ -98,6 +110,16 @@ def run(check):
     shots = json.loads(SHOTS.read_text(encoding='utf-8'))['shots']
     stale = []
     for shot in shots:
+        if not shot.get('article'):
+            continue
+        if shot['article'] == '/blog/':
+            page = ROOT / 'blog/index.html'
+            new = place_header(page, shot)
+            if page.read_text(encoding='utf-8') != new:
+                stale.append(page)
+                if not check:
+                    page.write_text(new, encoding='utf-8')
+            continue
         for page in pages_for(shot):
             new = place(page, shot)
             if page.read_text(encoding='utf-8') != new:

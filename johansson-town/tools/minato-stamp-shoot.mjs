@@ -6,7 +6,7 @@
  *   near   metres from the ferry's position in the world (as tools/ferry-look.mjs frames her from the quay)
  *   world  plain world coordinates
  * Every shot parks the ferry alongside in town, sets the time ("17:40"), hides the HUD and keeps Johansson out of frame.
- * "lights": true turns her navigation lights on.
+ * "lights": true turns her navigation lights on; "clear" (metres, default 2.2) hides the people that close to the lens.
  */
 import {chromium} from 'playwright';
 import {createServer} from 'node:http';
@@ -57,7 +57,12 @@ try{
     else {pos=s.world.pos;at=s.world.at;}
     // Johansson stands far behind the lens, on the ground, out of every picture.
     const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1;a.teleport(pos[0]+dx/d*40,pos[2]+dz/d*40,0,0);a.step(30);
-    a.hud.photo(true);a.camera={pos,at,...(s.fov?{fov:s.fov}:{})};a.render();a.render();return {pos,at};
+    // People right against the lens (an engineer at the board, a head at the camera's shoulder) step out of the picture;
+    // the ones further off stay, so the place keeps its life. Skinned bodies, and what they carry on their bones.
+    const clear=s.clear??2.2,hidden=[],q=new V();
+    a.scene.traverse(o=>{if(!o.isSkinnedMesh)return;o.getWorldPosition(q);if(Math.hypot(q.x-pos[0],q.z-pos[2])>=clear)return;
+     o.visible=false;hidden.push(o.name||'resident');for(const b of o.skeleton?.bones||[])b.traverse(c=>{if(c.isMesh)c.visible=false;});});
+    a.hud.photo(true);a.camera={pos,at,...(s.fov?{fov:s.fov}:{})};a.render();a.render();return {pos,at,hidden};
    },{s,fixed,minutes:h*60+m,HALF,DRAFT});
    await page.waitForTimeout(500);
    const file=`${s.name}--${look}.png`;await canvas.screenshot({path:resolve(out,file)});
