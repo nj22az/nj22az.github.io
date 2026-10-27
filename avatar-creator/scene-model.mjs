@@ -26,7 +26,7 @@ export function normalizeScene(raw,normalizeRecipe=r=>structuredClone(r)){
  if(raw.exitLabel!==undefined)out.exitLabel=text(raw.exitLabel).slice(0,24);
  out.time=clamp(raw.time,0,60,0);if(['paper','hero'].includes(raw.backdrop))out.backdrop=raw.backdrop;if(raw.television==='football')out.television='football';
  out.top=text(raw.top);out.bottom=text(raw.bottom);
- if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=30))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
+ if([raw.camera?.position,raw.camera?.target].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&Math.abs(n)<=10000))){out.camera.position=[...raw.camera.position];out.camera.target=[...raw.camera.target];out.camera.fov=clamp(raw.camera.fov,25,75,43);}
  if(['dash','chaos','escape'].includes(raw.effect))out.effect=raw.effect;
  if(raw.furniture&&typeof raw.furniture==='object'){out.furniture={};for(const id of ['desk','chair']){const r=raw.furniture[id];if(!r||typeof r!=='object')continue;const o={visible:r.visible!==false,size:clamp(r.size,.5,1.5,1)};for(const k of ['position','rotation'])if(Array.isArray(r[k])&&r[k].length===3&&r[k].every(Number.isFinite))o[k]=r[k].map(n=>clamp(n,k==='position'?-4:-Math.PI,k==='position'?4:Math.PI,0));out.furniture[id]=o;}}
 

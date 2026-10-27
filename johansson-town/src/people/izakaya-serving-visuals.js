@@ -166,8 +166,10 @@ export function buildServingDrink(kind,{held=false}={}){
   if(foam){head=new THREE.Mesh(new THREE.CylinderGeometry(r+.001,r+.001,.013,24),new THREE.MeshStandardMaterial({color:0xeee1c5,roughness:.75}));head.name='Live beer foam';head.position.set(x,y+h/2+.006,0);level.add(head);height=h;radius=r*.86;}
  };
  if(kind==='draft'){
-  hollowGlass(glass,.045,.15);glass.add(new THREE.TorusGeometry(.029,.006,6,20,Math.PI).rotateZ(-Math.PI/2),0xd6e0d6,.044,.079);for(const y of [.05,.107])glass.ball(.007,0xd6e0d6,.044,y,0,1,.7,1);
-  fill(.039,.12,.068,0,0xc18c36,true);rimHeight=.15;
+  // (a big jug, 大ジョッキ: 9.6 cm across, 18 cm tall, its handle wide enough for four fingers, so a hand with fingers of
+  // its own (the Pixar bodies) wraps it: the owner, 27 October 2026, "if the jug is too small make it bigger")
+  hollowGlass(glass,.048,.18);glass.add(new THREE.TorusGeometry(.038,.008,6,20,Math.PI).rotateZ(-Math.PI/2),0xd6e0d6,.047,.092);for(const y of [.054,.13])glass.ball(.009,0xd6e0d6,.047,y,0,1,.7,1);
+  fill(.042,.145,.0825,0,0xc18c36,true);rimHeight=.18;
  }else if(kind==='bottle'){
   if(!held){
    const bottle=pieces(group,'Brown beer bottle');bottle.lathe([[0,0],[.03,0],[.037,.005],[.038,.032],[.037,.203],[.03,.22],[.014,.254],[.013,.278],[0,.278]],0x604128,-.06);bottle.finish();
@@ -189,7 +191,7 @@ export function buildServingDrink(kind,{held=false}={}){
  }
  // Where a hand takes hold (avatars/consume.js drinkGrip): a mug or cup by the outside of
  // its handle, anything else round its body, so the fingers close on the glass itself.
- group.userData.grip=kind==='draft'?{handle:.073,height:.079}:kind==='coffee'?{handle:.055,height:.04}:kind==='bottle'?{radius:.03,height:.04}
+ group.userData.grip=kind==='draft'?{handle:.085,height:.092}:kind==='coffee'?{handle:.055,height:.04}:kind==='bottle'?{radius:.03,height:.04}
   :kind==='can'?{radius:.033,height:.06}:kind==='sake'?{radius:.029,height:.02}:{radius:kind==='awamori'?.038:.036,height:(kind==='awamori'?.085:.115)*.45};
  glass.finish();china.finish();metal.finish();group.userData.portion=1;group.userData.targetPortion=1;group.userData.consumable='drink';group.userData.rimHeight=rimHeight;group.userData.vessel='hollow';
  return {group,level,liquid,head,height,radius};
