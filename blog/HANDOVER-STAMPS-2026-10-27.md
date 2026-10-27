@@ -49,3 +49,11 @@ the Hotels banner). Each article picture also becomes its link preview (`og:imag
   English words anywhere ("Thu ận"). Now `word-break: normal` (Japanese still breaks between characters on its own);
   `styles.css` imports `themes.css?v=mossy-words-1`, and the blog-only workaround in `css/blog-stamps.css` is removed
   (`CSS_VERSION` 5). Checked in Mossy at 390 px: home, blog, an article, World: whole words, no overflow.
+
+## Published
+
+On the owner's word ("Yes publish and fix Mossy everywhere") as
+[`d4b3b5a4`](https://github.com/nj22az/nj22az.github.io/commit/d4b3b5a47feaebe8115d20054a2dec718eba224a) (main merged in
+first: World work only, no conflicts). Live: the 14 changed pages and scripts and all 27 stamp images match the commit
+byte for byte; every article shows its picture with no errors and no overflow at 1440 and 390 px; Mossy breaks between
+words on the home page, the blog, an article and World.
