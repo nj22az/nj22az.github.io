@@ -35,7 +35,8 @@
       "time": "15:00",
       "note": "Sakura Shōten's front, where Thuận's sale poster hangs",
       "alt": "Sakura Shōten on Minato's main street, printed as a rubber stamp.",
-      "caption": "Sakura Shōten, where Thuận's sale poster hangs, in Johansson World."
+      "caption": "Sakura Shōten, where Thuận's sale poster hangs, in Johansson World.",
+      "place": false
     },
     {
       "name": "navigation-light",
@@ -99,7 +100,6 @@
       },
       "time": "12:00",
       "note": "The engine control booth: the main switchboard and the engine console",
-      "fov": 70,
       "alt": "A ship's engine control room with the main switchboard and the engine console, printed as a rubber stamp.",
       "caption": "The engine control room on the Minato Maru: the main switchboard and the engine console.",
       "alt_sv": "Kontrollrummet på ett fartyg med huvudtavlan och maskinpulpeten, tryckt som en gummistämpel.",
@@ -148,7 +148,12 @@
       "caption": "The fire pumps in the Minato Maru's engine room.",
       "alt_sv": "Brandpumparna i ett fartygs maskinrum, tryckta som en gummistämpel.",
       "caption_sv": "Brandpumparna i maskinrummet på Minato Maru.",
-      "fov": 48
+      "crop": [
+        0.27,
+        0.15,
+        1.0,
+        0.88
+      ]
     },
     {
       "name": "bridge",
