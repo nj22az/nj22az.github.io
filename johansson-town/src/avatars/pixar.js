@@ -36,8 +36,8 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'a9b404b7e3'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'1ec248fabf'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'dae59dce26'}),
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'8929092308'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -70,7 +70,7 @@ export function preparePixarBody(card,scene){
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
  // World's measures for the body (build.js measure()), and its braids as the springs hang them (springs.js springRest).
- const measure={...card.measure};
+ const measure={...card.measure,realHand:true};   // (a hand of its own, fingers and all: grips close on a glass, consume.js drinkGrip)
  if(rest.braidL1)measure.braids=Object.fromEntries(['L','R'].map(s=>[s,[rest['braid'+s+'1'],rest['braid'+s+'2'],rest['braid'+s+'Tip']]]));
  return {name:card.name,card,rest,measure,parts,features,remapped:new Map()};
 }

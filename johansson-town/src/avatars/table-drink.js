@@ -59,7 +59,7 @@ function setWorld(object,position,quaternion){
  */
 function tableGrip(prop,m,profile){
  const grip=drinkGrip(prop,m);
- if(prop.userData.grip?.handle==null)return grip;
+ if(prop.userData.grip?.handle==null||m.realHand)return grip;   // (a real hand's clearance is drinkGrip's own)
  const shell=prop.getObjectByName('Hollow '+prop.userData.drinkKind+' glass');
  shell?.geometry?.computeBoundingBox();
  const bounds=shell?.geometry?.boundingBox;
@@ -93,7 +93,11 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   const q=restQ.clone().multiply(new THREE.Quaternion().setFromAxisAngle(X,tilt));
   return {q,p:mouth.clone().addScaledVector(forward,away).sub(rim.clone().applyQuaternion(q))};
  };
- const wrist=(p,q)=>{const handQ=q.clone().multiply(HALF_TURN);return {p:p.clone().sub(gripOffset.clone().applyQuaternion(handQ)),q:handQ};};
+ // (a real hand holds a mug's handle with the fingers hanging down through it, a little toward the glass, and the palm
+ // toward the glass and a little up; the mitten is turned half round, its palm being an ellipsoid either way)
+ const realHandQ=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-.87,.5,0),new THREE.Vector3(.5,.87,0),new THREE.Vector3(0,0,1)));
+ const wrist=(p,q)=>{if(m.realHand){const handQ=q.clone().multiply(realHandQ);const palm=p.clone().add(tableGrip(prop,m,profile).applyQuaternion(q));return {p:palm.sub(new THREE.Vector3(0,-m.hand*.55,0).applyQuaternion(handQ)),q:handQ};}
+  const handQ=q.clone().multiply(HALF_TURN);return {p:p.clone().sub(gripOffset.clone().applyQuaternion(handQ)),q:handQ};};
  const tableHand=wrist(restP,restQ);
  let reachLean=.26;
  // Fit the same reach to each existing cast recipe. The pelvis stays on its seat;

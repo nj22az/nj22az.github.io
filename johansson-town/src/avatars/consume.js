@@ -36,7 +36,9 @@ export function drinkHeadTilt(prop,lift,food=false){
 export function drinkGrip(prop,m,side='R'){
  const g=prop?.userData?.grip,s=side==='R'?1:-1;
  if(!g)return new THREE.Vector3(s*.10*m.k,-.08*m.k+m.hand*.55,.015*m.k);
- const out=g.handle!=null?g.handle+m.hand*.25:g.radius+m.hand*.70;
+ // (a real hand, a Pixar body's: the fingers through a handle with a finger's clearance, or the palm against a glass's
+ // body; the mitten's offsets put a Pixar hand a span from the glass: the owner, 27 October 2026, "this is wrong")
+ const out=m.realHand?(g.handle!=null?g.handle+.02:g.radius+.012):g.handle!=null?g.handle+m.hand*.25:g.radius+m.hand*.70;
  return new THREE.Vector3(s*out,-g.height,0);
 }
 /** Keep the palm upright while holding or sipping, including idle holds. */
