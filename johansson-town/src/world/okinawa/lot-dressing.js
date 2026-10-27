@@ -125,7 +125,8 @@ export function lotPaint(){
   out.push({minX:x0,maxX:x1,minZ:z0,maxZ:z1,colour:P.paint,name:'The hoop\'s key'});
  return out;
 }
-export const PARKING=Object.freeze({lines:Object.freeze([30.8,33.4,36.0,38.6,41.2]),bays:Object.freeze([32.1,34.7,37.3,39.9]),stopZ:66.75,lineZ:Object.freeze([62.5,67.1]),pad:PAD_TOP});
+// Three bays since 27 October 2026: Johansson Mart (okinawa/kitahama-shop.js) took the east end, and the to-let bay went.
+export const PARKING=Object.freeze({lines:Object.freeze([28.1,30.5,32.9,35.3]),bays:Object.freeze([29.3,31.7,34.1]),stopZ:66.75,lineZ:Object.freeze([62.5,67.1]),pad:PAD_TOP});
 export const PARKED_CARS=Object.freeze([
  Object.freeze({prop:'bay-1-truck',bay:1,kind:'kei truck',colour:0xf2f0ea,owner:'Kōji',load:'ice chest and rope'}),
  Object.freeze({prop:'bay-2-car',bay:2,kind:'kei car',colour:0xb8d0d8,owner:'Nhung'}),
@@ -210,14 +211,13 @@ function northBlock({kit,solid,read},lot,put){
  // Mac's toolbox on the gravel by his front wheel, inside his bay.
  {const [x,z]=mid(put(lot,'mac-toolbox').rect);kit.box(.2,.2,.42,x,PAD_TOP+.1,z,0xc8432f,{finish:'metal'});kit.box(.21,.012,.43,x,PAD_TOP+.2,z,0x9e3326,{finish:'metal'});
   kit.box(.03,.04,.26,x,PAD_TOP+.226,z,P.black);for(const k of [-1,1])kit.box(.03,.03,.03,x,PAD_TOP+.215,z+k*.13,P.black);}
- put(lot,'bay-4-stops');
  const sign=put(lot,'parking-sign').rect;
- postSign(kit,poster({title:'Monthly parking',lines:['空き 1台','契約車以外駐車禁止','北浜自治会'],bg:'#f4f1e6',band:'#2f5f9a'}),{x:(sign.minX+sign.maxX)/2,z:sign.minZ+.05,ry:Math.PI,w:1.2,h:.8,y:1.45,name:D.signs[0].name});
+ postSign(kit,poster({title:'Monthly parking',lines:['空きなし','契約車以外駐車禁止','北浜自治会'],bg:'#f4f1e6',band:'#2f5f9a'}),{x:(sign.minX+sign.maxX)/2,z:sign.minZ+.05,ry:Math.PI,w:1.2,h:.8,y:1.45,name:D.signs[0].name});
  read(24.0,61.8,'Look at the lane garden','The lane garden',
   'Four beds of red earth and a gōyā curtain, on the ground where 4 Kitahama stood. Thao’s herbs by the lane: lemongrass, rau răm and purple perilla, which nobody on the island sells. Mrs Sato’s spring onions next to them, for her own kitchen. Nhung’s handama behind, and Riku’s sunflowers, measured every Sunday against the shed. The standpipe is turned on at six.');
- read(36.0,63.2,'Read the monthly parking sign','Kitahama monthly parking',
-  'Monthly parking. One bay free. Contract holders only. Kitahama residents’ association.\n\nBay 1 is Kōji’s white kei truck, for the outboard and the ice chests. Bay 2 is Nhung’s little car, the doctor’s, for house calls at the far end of the island. Bay 3 is Mac’s old yellow hatchback. Bay 4 is free: ask the association.','read');
- read(37.3,62.2,'Look under Mac’s bonnet','Mac’s hatchback',
+ read(31.7,62.0,'Read the monthly parking sign','Kitahama monthly parking',
+  'Monthly parking. No bays free. Contract holders only. Kitahama residents’ association.\n\nBay 1 is Kōji’s white kei truck, for the outboard and the ice chests. Bay 2 is Nhung’s little car, the doctor’s, for house calls at the far end of the island. Bay 3 is Mac’s old yellow hatchback. The bay that was to let is under Johansson Mart now.','read');
+ read(34.1,62.2,'Look under Mac’s bonnet','Mac’s hatchback',
   'An old yellow hatchback with its bonnet up on the stay and a red toolbox by the front wheel. Mac keeps it running for the pleasure of it, and it is opened more often than it is driven. The air cleaner on top of the engine is new; the battery is not.');
 }
 

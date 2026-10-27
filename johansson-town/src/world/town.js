@@ -18,6 +18,8 @@ import {addSakuraStreetPoster} from './sakura-street-poster.js';
 import {addWoodlandPoster,WOODLAND_POSTER} from './woodland-poster.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
+import {buildKitahamaShop} from './kitahama-shop-build.js';
+import {kitahamaShopOpen} from './okinawa/kitahama-shop.js';
 import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
@@ -345,7 +347,7 @@ export function createTown(options){
    shadows:options.shadows,register:options.register,onAction:options.onAction});
   const originalSites=[...options.sites],districts=buildDistricts(world,options);
   world.islandLandscape=buildIslandLandscape({world,register:options.register,onAction:options.onAction,mobile:options.mobile});addCoastalRoadPaint(world);world.powerNetwork=buildTownPower(world,{fast:options.desktop,register:options.register,onAction:options.onAction,shadows:options.shadows});world.quietLife=buildQuietLife(world);
-  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
+  const isOpen=(site,minutes)=>{if(!site)return false;if(['office','warehouse','bus-station','ferry-terminal'].includes(site.id))return true;const h=((minutes%1440)+1440)%1440;if(site.id==='izakaya')return izakayaOpen(h);if(site.industrialWorkshop)return h>=540&&h<1140;if(site.id==='market')return true;if(site.id==='kitahama-shop')return kitahamaShopOpen(minutes);if(site.id==='frontrow'&&isWeekend(minutes))return false;const close=site.id==='frontrow'?1110:site.id==='sento'||site.id==='ramen'?1260:1140;return h>=540&&h<close;};
   for(const profile of WORLD_CAST){
    const spawn=profile.work;
    let p=world.people.find(p=>p.g.userData.name===profile.name);if(!p){const g=new THREE.Group();g.userData.name=profile.name;g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);world.group.add(g);p={g,x:g.position.x,z:g.position.z,index:world.people.length,legs:[],arms:[]};world.people.push(p);options.register(g,'Talk to '+profile.name,()=>options.onAction('resident',profile.name));}p.profile=profile;p.g.position.set(spawn[0],groundHeight(...spawn),spawn[1]);
@@ -364,6 +366,9 @@ export function createTown(options){
   buildIzakaya(world,options);
   buildPark(world,options);
   world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites,shadows:options.shadows});
+  // Johansson Mart at the entrance to Kitahama (okinawa/kitahama-shop.js; the owner, 27 October 2026), Grandmother Higa's
+  // corner shop: standing and solid in this batch, walked into in the next.
+  world.kitahamaShop=buildKitahamaShop({world,group:world.group,register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;
@@ -411,7 +416,7 @@ export function createTown(options){
     world.updateLife(dt,time,day,minutes);
     world.updateHours(minutes);world.updateDiningStreet?.(day);
     world.quietLife?.update(time);world.eastLawn?.tick?.(time,minutes);world.beachLife?.tick(dt,options.getPlayerPosition?.(),time);world.beachCorner?.tick(dt,options.getPlayerPosition?.());world.portShed?.tick(dt,minutes,{advanceLife:false});world.homeLights?.update(minutes);world.onsen?.tick(time);world.school?.tick(time,minutes,options.getPlayerPosition?.());
-    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.blueCoral?.update(minutes);world.park?.update(time);
+    world.docklandsLife?.update(time,minutes);world.shoppingLane?.update(world.weather,minutes);world.blueCoral?.update(minutes);world.kitahamaShop?.update(minutes);world.park?.update(time);
     world.busStation?.update(minutes,day);world.tunnel?.update?.(day);
     // The shop doors open for whoever walks up to them. Everybody who is outdoors
     // counts, so a customer arriving is a door opening rather than a person ending.
