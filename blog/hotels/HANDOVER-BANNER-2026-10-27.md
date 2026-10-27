@@ -53,3 +53,10 @@ posters or social images. The owner chose Rubber stamp.
   19/19. `feed.cjs` with OSRM blocked: 42/46 + the raised threshold. The three remaining failures need road routing
   (road total, stop times, numbered picks); OSRM's `table` endpoint reset every connection from this sandbox at the
   time (curl too), while its `route` endpoint answered 200. Not a page change: no script was touched.
+
+**Published to main on the owner's word ("Rubber stamp") as
+[`61d468b3`](https://github.com/nj22az/nj22az.github.io/commit/61d468b3886b71acf082dc9b585420e363fedd23)**
+(main merged in first, no conflicts). [Pages run 40488317540](https://github.com/nj22az/nj22az.github.io/actions/runs/40488317540)
+deployed it; 7/7 live files (page, stylesheet, four banner files, this note) match the commit byte for byte. Live:
+the right file loads at 1440, 834 and 390 px with no overflow, and `flags.cjs` passes 19/19. Still to check: the
+routing-dependent feed checks once OSRM's `table` endpoint answers again, and a look on a real phone.
