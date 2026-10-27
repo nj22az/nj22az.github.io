@@ -11,7 +11,7 @@ the repository's `CLAUDE.md` and `AGENTS.md`, "Hotels & Parking".
 Published to main as `98dd96b4`. A `#review-<id>` link (Share, a blog post) now switches the parking choice to that
 hotel's, opens its notes and scrolls to it; before, an Avoid or Easy hotel's link landed on a hidden post.
 
-**First stay posts (drafts on branch `claude/peaceful-clarke-fprqk3`, not on main until the owner approves):**
+**First stay posts, published on the owner's word ("Yes publish") as `43801da1`; 7/7 live files match and the links work both ways on the live site:**
 `/blog/hotel-marina-vedbaek/`, `/blog/best-western-plus-hotel-odense/`, `/blog/scandic-rosendahl-tampere/`. Written
 only from these records' owner notes, receipt and checked sources; the Rosendahl quote is the owner's message of
 27 October, lightly trimmed. **Post dates 13, 18 and 23 October 2026 are invented on the owner's instruction ("make
