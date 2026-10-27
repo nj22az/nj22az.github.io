@@ -104,7 +104,7 @@ import {createHomeCustomization} from './world/interiors/home-customization.js';
 import {buildCityRestaurant,CITY_RESTAURANT} from './world/interiors/city-restaurant.js';
 import {buildUpperHome} from './world/interiors/upper-home.js';
 import {stepInside} from './world/room-arrival.js';
-import {SAKURA_STAIR_PASSAGE,onSakuraStairFoot,onSakuraStairHead} from './world/interiors/sakura-stairs.js';
+import {SAKURA_STAIR_PASSAGE,SAKURA_STAIR_CLIMB,toOffice,onSakuraStairFoot,onSakuraStairHead} from './world/interiors/sakura-stairs.js';
 import {buildSakuraOfficeRoom} from './world/interiors/sakura-office-room.js';
 import {SAKURA_BACK} from './world/okinawa/old-town.js';
 import {buildFamilyHome} from './world/interiors/family-home.js';
@@ -1355,62 +1355,67 @@ async function crossThreshold(run,{chime=true}={}){
 
 let roomLoading=false;
 /**
- * Sakura's stair is a passage (the owner, 20 October 2026: "I want the stairs to lead up to a black hole and we disappear
- * into there and when it loads we come up on the upper floor"; sakura-stairs.js). Stepping onto it, or "Go upstairs" /
- * "Go downstairs", walks him a few treads into the dark while the picture goes black; the other room opens with him at
- * the stair's other end, and the picture comes back. Nobody walks the flights.
+ * Sakura's stair is a climb you watch (the owner, 27 October 2026: "The black part should not be shown it should be like a
+ * loading screen when you up the stairs the loading starts for the top Floor"; "No the loading screen is walking up the
+ * stairs"; "Camera should lock from below we just see him go up"; drawing SK-ST-001). Stepping onto it, or "Go upstairs"
+ * / "Go downstairs", walks him the whole stair at a walking pace in this storey (it draws the whole stairwell), seen from
+ * its locked stairwell camera, while the other storey loads; then the picture cuts and he arrives at the other end.
+ * Nobody walks the flights by hand (the owner, 20 October 2026: "I don't want the stairs to be traversable").
  */
 let stairPassage=null,stairArmed=true,sakuraStairArrival=false;
 function takeSakuraStair(direction){
  const up=direction==='up';
  if(stairPassage||roomLoading||(up?current?.id!=='market':current?.id!=='sakura-office'))return false;
- const P=SAKURA_STAIR_PASSAGE[up?'foot':'head'];
  replayInterrupted();resetInput();pointWalk.cancel();seated=false;parkSeat=null;
- const path=[player.position.clone(),...P.walk.map(v=>new THREE.Vector3(...v))],lengths=path.slice(1).map((v,i)=>v.distanceTo(path[i]));
- stairPassage={up,path,lengths,total:lengths.reduce((a,b)=>a+b,0),t:0,switching:false};
- const veil=$('#threshold');veil.style.transition=`opacity ${SAKURA_STAIR_PASSAGE.fade}s ease-in`;veil.classList.add('on');
+ const v=p=>new THREE.Vector3(...p),path=[player.position.clone(),...(up?SAKURA_STAIR_CLIMB.up.map(v):SAKURA_STAIR_CLIMB.down.map(p=>v(toOffice(p))))];
+ const lengths=path.slice(1).map((p,i)=>p.distanceTo(path[i]));
+ // The other storey starts loading now, while he climbs: the walk is the loading screen.
+ const target=up?SAKURA_OFFICE_SITE:SITES.find(s=>s.id==='market');
+ stairPassage={up,target,path,lengths,total:lengths.reduce((a,b)=>a+b,0),t:0,switching:false,cutting:false,look:null,
+  camera:up?SAKURA_STAIR_CLIMB.camera.shop:{...SAKURA_STAIR_CLIMB.camera.office,at:toOffice(SAKURA_STAIR_CLIMB.camera.office.at),aim:toOffice(SAKURA_STAIR_CLIMB.camera.office.aim)},ready:(up?loadRoomAssets(target):sakuraShop.ready()).catch(()=>false)};
  return true;
 }
-/** One step of the walk into the dark: along the path at a walking pace, facing the way he goes. */
-/**
- * His walk off the Minato Maru (island/play.js: Go ashore, or off her gangway or ramp as it closes): along her own crew
- * routes aboard, ladders at a climb, then over the gangway or the ramp to the landing, at walking pace, facing his way.
- */
-function stepFerryWalk(dt){
- const t=islandPlay.walkTarget();if(!t){playerSpeed=0;return;}
- // Walking, he is on her floors (or the ground): the way is measured on the level and his feet take the floor's
- // height, as the physics would put them; only on a ladder does he move up or down the rungs.
- const p=player.position,dx=t.at.x-p.x,dz=t.at.z-p.z,dy=t.at.y-p.y,d=t.climb?Math.hypot(dx,dy,dz):Math.hypot(dx,dz),rate=t.climb?.55:1.18,step=Math.min(d,Math.max(0,dt)*rate);
- if(d<1e-3){if(t.climb)p.y=t.at.y;islandPlay.walkReached();return;}
- p.x+=dx/d*step;p.z+=dz/d*step;
- if(t.climb)p.y+=dy/d*step;
- else{const deck=shipWalk()?.floorBelow(p.x,p.z,Math.max(p.y,t.at.y)+.3);p.y=deck?deck.y:t.shore?groundHeight(p.x,p.z):p.y+(dy*step/Math.max(d,1e-6));}
- if(!t.climb&&Math.hypot(dx,dz)>.01){yaw=Math.atan2(-dx,-dz);player.quaternion.setFromAxisAngle(yAxis,yaw);}
- playerSpeed=rate;
- if(step>=d-1e-6){islandPlay.walkReached();if(!islandPlay.walking)playerSpeed=0;}
-}
+/** One step of the climb: along the path at a walking pace, facing the way he goes. */
 function stepStairPassage(dt){
- // Once the walk is done the other room is opening and he stands where it put him: the walk must not move him again.
- if(stairPassage.switching){playerSpeed=0;return;}
- const S=stairPassage,seconds=SAKURA_STAIR_PASSAGE.seconds;S.t=Math.min(seconds,S.t+dt);
- let d=S.total*S.t/seconds,i=0;while(i<S.lengths.length-1&&d>S.lengths[i]){d-=S.lengths[i];i++;}
+ // While the other storey opens he stands where the walk ended: it must not move him.
+ if(stairPassage.switching){playerSpeed=0;placePassageView(dt);return;}
+ const S=stairPassage,seconds=S.total/SAKURA_STAIR_CLIMB.speed;S.t=Math.min(seconds,S.t+dt);
+ let d=S.total*(seconds?S.t/seconds:1),i=0;while(i<S.lengths.length-1&&d>S.lengths[i]){d-=S.lengths[i];i++;}
  const a=S.path[i],b=S.path[i+1],k=S.lengths[i]?Math.min(1,d/S.lengths[i]):1;
  player.position.lerpVectors(a,b,k);
  const dx=b.x-a.x,dz=b.z-a.z;if(Math.hypot(dx,dz)>.01){yaw=Math.atan2(-dx,-dz);player.quaternion.setFromAxisAngle(yAxis,yaw);}
- playerSpeed=S.total/seconds;
+ playerSpeed=SAKURA_STAIR_CLIMB.speed;
+ placePassageView(dt);
  if(S.t>=seconds&&!S.switching){S.switching=true;finishStairPassage();}
 }
+/** The view while he climbs: the storey's locked stairwell camera in third person, his own eyes in the first. */
+function placePassageView(dt){
+ if(stairPassage.cutting)return;
+ if(thirdPerson){player.visible=false;placeStairCamera(dt);return;}
+ camera.position.set(player.position.x,player.position.y+1.6,player.position.z);camera.rotation.order='YXZ';camera.rotation.set(stairPassage.up?.18:-.28,yaw,0);
+}
+/** At the end of the walk: if the other storey is still loading he waits there, in view; then the cut and his arrival. */
 async function finishStairPassage(){
- const up=stairPassage.up,veil=$('#threshold'),end=SAKURA_STAIR_PASSAGE[up?'head':'foot'].arrive;
+ const S=stairPassage,up=S.up,veil=$('#threshold'),end=SAKURA_STAIR_PASSAGE[up?'head':'foot'].arrive;
+ await S.ready;S.cutting=true;
+ veil.style.transition=`opacity ${SAKURA_STAIR_CLIMB.cut/2}s linear`;veil.classList.add('on');
+ await new Promise(r=>setTimeout(r,SAKURA_STAIR_CLIMB.cut*500));
  try{
   sakuraStairArrival=!up;leaveRoom();
-  await enterRoom(up?SAKURA_OFFICE_SITE:SITES.find(s=>s.id==='market'),{at:[...end.at],yaw:end.yaw});
+  await enterRoom(S.target,{at:[...end.at],yaw:end.yaw});
+  // His own camera behind him at once, level: the stair camera's aim must not carry into the first frame upstairs.
+  pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);if(thirdPerson){thirdDistance=2.2;placeThirdPerson(1);}
   say(up?'Sakura · the office upstairs.':'Sakura · the stockroom.',2);
  }finally{
   sakuraStairArrival=false;stairPassage=null;stairArmed=false;playerSpeed=0;
-  await new Promise(r=>setTimeout(r,120));veil.style.transition='opacity .45s ease-out';veil.classList.remove('on');
-  setTimeout(()=>{veil.style.transition='';},500);
+  veil.style.transition=`opacity ${SAKURA_STAIR_CLIMB.cut/2}s linear`;veil.classList.remove('on');setTimeout(()=>{veil.style.transition='';},400);
  }
+}
+/** The locked stairwell camera: it stands still, aimed up (or down) its flight, and turns only a little after him (SK-ST-001). */
+function placeStairCamera(dt){
+ const S=stairPassage,C=S.camera,aim=new THREE.Vector3(...C.aim),target=aim.lerp(new THREE.Vector3(player.position.x,player.position.y+1.1,player.position.z),C.follow);
+ S.look=S.look?S.look.lerp(target,1-Math.exp(-4*dt)):target.clone();
+ camera.position.set(...C.at);camera.lookAt(S.look);
 }
 /** Stepping onto the stair at either end starts the passage, once he has stepped off it since he arrived. */
 function checkSakuraStair(){

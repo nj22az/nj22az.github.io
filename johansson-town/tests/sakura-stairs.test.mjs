@@ -6,7 +6,8 @@ import {installDOM} from './fixtures.mjs';
 import {standingHitsRect} from '../physics.js';
 
 /**
- * Sakura's inside stair is a passage into darkness, not a flight anyone walks (the owner, 20 October 2026, on his iPhone:
+ * Sakura's inside stair is a climb you watch, not a flight anyone walks by hand (the owner, 27 October 2026: "The black part
+ * should not be shown ... No the loading screen is walking up the stairs"; drawing SK-ST-001). Before it, a passage into darkness (the owner, 20 October 2026, on his iPhone:
  * "I don't want the stairs to be traversable it's too much errors when running up the stairs, I want the stairs to lead up
  * to a black hole and we disappear into there and when it loads we come up on the upper floor"). The shop and the office
  * storey are two rooms; sakura-stairs.js draws each end and says where the passage starts, goes and arrives; game.js
@@ -53,80 +54,76 @@ function sees(room,from,yaw,pitch){
 }
 const dark=h=>!!h?.object.material?.userData?.darkness;
 
-test('the passage, as data: where each end starts, where he goes into the dark, and where he comes out',()=>{
- for(const [end,on,dark] of [['foot',onSakuraStairFoot,P.foot.dark],['head',onSakuraStairHead,P.head.dark]]){
-  const E=P[end],last=E.walk.at(-1);
-  // He walks into the dark: at the end of the walk his body is in it.
-  assert.ok(dark.some(b=>inBox([last[0]-R,Math.max(last[1],b[4]+.1),last[2]],b)),`${end}: the walk ends with him in the dark`);
-  // He arrives a step off the stair at the other end, so he does not go straight back.
-  const other=end==='foot'?P.head:P.foot,at=other.arrive.at,onOther=end==='foot'?onSakuraStairHead:onSakuraStairFoot;
-  assert.ok(!onOther({x:at[0],y:at[1],z:at[2]}),`arriving by the ${end==='foot'?'head':'foot'}, he is not on the stair`);
-  assert.ok(on({x:(E.trigger.x[0]+E.trigger.x[1])/2,y:0,z:(E.trigger.z[0]+E.trigger.z[1])/2}));
+/** Every mesh's material is lit and coloured: nothing black, nothing unlit standing in for a void. */
+const blackMeshes=room=>{const out=[];room.traverse(o=>{if(!o.isMesh||o.visible===false)return;const m=[o.material].flat();if(m.some(x=>x?.userData?.darkness||x?.color&&x.color.getHex()===0&&!x.map))out.push(o.name);});return out;};
+const {SAKURA_STAIR_CLIMB:C,SAKURA_STAIRWELL:W,toOffice,SAKURA_STAIR}=await import('../src/world/interiors/sakura-stairs.js');const SAKURA_STAIR_HEIGHT=SAKURA_STAIR.height;
+
+test('the climb, as data: the whole stair walked in the storey he starts in, seen from its locked camera, each end clear',()=>{
+ for(const dir of ['up','down']){
+  const path=C[dir],len=path.slice(1).reduce((s,p,i)=>s+Math.hypot(p[0]-path[i][0],p[1]-path[i][1],p[2]-path[i][2]),0),t=len/C.speed;
+  assert.ok(t>=2.5&&t<=8,`${dir}: the climb takes ${t.toFixed(1)} s`);
+  assert.ok(path.some(p=>Math.abs(p[1]-W.landing.y)<1e-9),`${dir}: round the turning landing`);
  }
- assert.ok(P.seconds>=.8&&P.seconds<=1.6&&P.fade<P.seconds,'a few steps, the picture black before the room changes');
- // Facing: at the foot, into the stockroom (east, +x); at the head, up the hall (+z). game.js: forward = (-sin yaw, -cos yaw).
- const fwd=yaw=>[-Math.sin(yaw),-Math.cos(yaw)];
- assert.ok(fwd(P.foot.arrive.yaw)[0]>.99);assert.ok(fwd(P.head.arrive.yaw)[1]>.99);
- assert.match(P.why,/20 October 2026/);
+ // Each walk ends on the turning landing, as he turns out of his camera's sight; the cut takes him to the other storey.
+ for(const dir of ['up','down']){const e=C[dir].at(-1);assert.equal(e[1],W.landing.y);assert.ok(e[0]>W.landing.x0&&e[0]<W.landing.x1&&e[2]>W.landing.z0&&e[2]<W.landing.z1,`${dir} ends on the landing`);}
+ const at=P.head.arrive.at,foot=P.foot.arrive.at;
+ assert.ok(!onSakuraStairHead({x:at[0],y:at[1],z:at[2]}),'arriving upstairs he is not on the stair');
+ assert.ok(!onSakuraStairFoot({x:foot[0],y:foot[1],z:foot[2]}),'arriving downstairs he is not on the stair');
+ // Every point of the walk is on a tread, a landing or a floor: its height is a whole number of rises.
+ for(const half of [C.up,C.down])for(const [x,y,z] of half)assert.ok(Math.abs(y/W.rise-Math.round(y/W.rise))<1e-6,`a step at ${x},${y},${z}`);
+ // The cameras: below, at the stair's foot (the owner: "Camera should lock from below we just see him go up"); above.
+ assert.ok(C.camera.shop.at[1]<W.landing.y,'the shop camera is below the turning landing');assert.ok(C.camera.office.at[1]>SAKURA_STAIR_HEIGHT,'the office camera is over the top landing');
+ for(const c of Object.values(C.camera))assert.ok(c.follow>0&&c.follow<=.5,'locked: it turns only a little after him');
+ assert.ok(C.cut>0&&C.cut<=.3,'the cut is a blink, not a loading screen');
 });
 
-test('the shop: five treads up from the stockroom into a black that is solid, the stair walkable only onto its first treads',async()=>{
- const {room,prompts,blocked,colliders,taken}=await shop(),names=[];room.traverse(o=>names.push(o.name));
- assert.equal(names.filter(n=>n==='Sakura lower stair tread').length,P.foot.treads);
- assert.equal(names.filter(n=>n==='Sakura upper stair tread').length,0,'no upper flight in the shop');
- assert.ok(!names.some(n=>/landing lens|stair landing|top landing/i.test(n)),'no walked landing');
- const black=[];room.traverse(o=>{if(o.isMesh&&o.material?.userData?.darkness)black.push(o);});
- assert.equal(black.length,P.foot.dark.length);
- for(const o of black){assert.ok(o.material.isMeshBasicMaterial,'unlit: never shaded by the cel pass');assert.equal(o.material.color.getHex(),0x000000);}
- // The prompt takes the passage up.
+test('the shop: the whole stairwell built, nothing black, the stair walkable only onto its first treads',async()=>{
+ const {room,prompts,blocked,taken}=await shop(),names=[];room.traverse(o=>names.push(o.name));
+ for(const n of ['Sakura stairwell wood','Sakura stairwell plaster','Sakura stairwell timber','Sakura stairwell ceiling'])assert.ok(names.includes(n),n);
+ assert.deepEqual(blackMeshes(room),[],'nothing black');
  const go=prompts.find(p=>p.label==='Go upstairs');assert.ok(go,'a Go upstairs prompt');go.fn();assert.equal(taken(),'up');
- // From the stockroom he walks to the stair's foot and onto its first tread, never into the dark.
  const r=reach(blocked,[-.2,-5.6],{minX:-6,maxX:1,minZ:-6.9,maxZ:-4});
  assert.ok(r.has(...[P.foot.arrive.at[0],P.foot.arrive.at[2]]),'the foot, where he arrives coming down, is reachable');
  assert.ok(r.cells().some(([x,z])=>onSakuraStairFoot({x,y:0,z})),'he can step onto the stair');
  const into=(x,z,b)=>Math.hypot(x-Math.max(b[0],Math.min(x,b[1])),z-Math.max(b[2],Math.min(z,b[3])))<R-.02;
- for(const [x,z] of r.cells())assert.ok(!P.foot.dark.some(b=>b[4]<1&&into(x,z,b)),`walked into the dark at ${x.toFixed(2)},${z.toFixed(2)}`);
- assert.ok(colliders.filter(c=>c.minY>=0).length>0);
+ for(const [x,z] of r.cells())assert.ok(!P.foot.dark.some(b=>b[4]<1&&into(x,z,b)),`walked up the flights by hand at ${x.toFixed(2)},${z.toFixed(2)}`);
 });
 
-test('from the stockroom the stair goes into darkness: no sky, no stairwell beyond, nothing that could flicker',async()=>{
- // The eye and the lens behind him, from the stockroom floor and the foot of the stair, every way up and along the stair.
- const {room}=await shop(),bad=[];
- for(const x of [-1.6,-1.1,-.5,.2])for(const z of [-6.2,-5.5,-4.6])for(const y of [1.6,2.3]){
-  for(let k=-6;k<=6;k++)for(const pitch of [-.25,0,.3,.6,.9,1.2]){
-   const yaw=Math.PI/2+k*.15,h=sees(room,[x,y,z],yaw,pitch);
-   if(!h){bad.push(`sky from ${x},${y},${z} yaw ${yaw.toFixed(2)} pitch ${pitch}`);continue;}
-   const p=h.point,beyond=p.x<-2.94&&p.z<-4.08||p.y>3.0&&p.x<-.62&&p.z<-4.08;
-   if(beyond&&!dark(h))bad.push(`${h.object.name} at ${p.toArray().map(v=>v.toFixed(2))} from ${x},${y},${z}`);
-  }
+/** From each point, every way up and round: the first thing seen is built (never the sky), and inside the building. */
+function looksClosed(room,points,inside){
+ const bad=[];
+ for(const p of points)for(let k=0;k<24;k++)for(const pitch of [-1.1,-.6,-.25,0,.3,.7,1.1]){
+  const h=sees(room,p,k*Math.PI/12,pitch);
+  if(!h){bad.push(`nothing from ${p} yaw ${k} pitch ${pitch}`);continue;}
+  if(!inside(h.point))bad.push(`${h.object.name} at ${h.point.toArray().map(v=>v.toFixed(2))} from ${p}`);
  }
- assert.deepEqual(bad.slice(0,8),[],`${bad.length} views past the dark`);
+ return bad;
+}
+test('from the stockroom, the foot and the climb camera, the stairwell is closed: no sky, no void',async()=>{
+ const {room}=await shop();
+ const pts=[[-1.1,1.6,-4.6],[-.4,1.6,-5.6],[-2.2,1.2,-4.6],[...C.camera.shop.at],[W.landing.x0+.6,W.landing.y+1.5,-5.4],[-3.3,2.9,-6.15],[-2.2,5.4,-6.15]];
+ const bad=looksClosed(room,pts,q=>q.x>-6.95&&q.x<6.95&&q.z>-6.95&&q.z<3.95&&q.y>-.25&&q.y<W.walls.ceiling+.2);
+ assert.deepEqual(bad.slice(0,8),[],`${bad.length} views into nothing`);
 });
 
-test('the office: the stair head goes down four treads into the dark, a rail and a solid pit, and nobody walks out over it',()=>{
+test('the office: the stair head opens on the whole stair, nothing black, a rail, nobody walks out over the well',()=>{
  const {room,prompts,blocked,layout}=office(),names=[];room.traverse(o=>names.push(o.name));
- assert.equal(names.filter(n=>n==='Sakura upper stair tread').length,P.head.treads);
- assert.ok(names.includes('Stair rail'));
+ assert.ok(names.includes('Stair rail'));assert.ok(names.includes('Sakura stairwell wood'));
+ assert.deepEqual(blackMeshes(room),[],'nothing black');
  assert.deepEqual(layout.spawn,[...P.head.arrive.at]);assert.equal(layout.yaw,P.head.arrive.yaw);
  assert.ok(prompts.some(p=>p.label==='Go downstairs'));
  const r=reach(blocked,[P.head.arrive.at[0],P.head.arrive.at[2]],{minX:-6.4,maxX:6.4,minZ:-6.2,maxZ:4.5});
- assert.ok(r.has(P.head.arrive.at[0],P.head.arrive.at[2]),'he arrives on the floor, clear of everything');
  assert.ok(r.cells().some(([x,z])=>onSakuraStairHead({x,y:0,z})),'he can step onto the stair head');
- for(const [x,z] of r.cells())assert.ok(!P.head.dark.slice(0,2).some(b=>x>b[0]&&x<b[1]&&z>b[2]&&z<b[3]),`over the pit at ${x.toFixed(2)},${z.toFixed(2)}`);
- // From the hall and the stair head, below the floor are only the stair's first treads and black.
- const bad=[];
- for(const [x,z] of [[-1.2,-4.15],[-.8,-3.4],[-1.2,-2.6],[-2.3,-5.5],[0,-5.2]])for(let k=0;k<16;k++)for(const pitch of [-1.2,-.8,-.5,-.25]){
-  const h=sees(room,[x,1.6,z],k*Math.PI/8,pitch);
-  if(!h){bad.push(`nothing from ${x},${z}`);continue;}
-  if(h.point.y<-.035&&!dark(h)&&h.object.name!=='Sakura upper stair tread')bad.push(`${h.object.name} at ${h.point.toArray().map(v=>v.toFixed(2))}`);
- }
- assert.deepEqual(bad.slice(0,8),[],`${bad.length} views into the pit that are not dark`);
+ for(const [x,z] of r.cells())assert.ok(!P.head.dark.slice(0,2).some(b=>x>b[0]&&x<b[1]&&z>b[2]&&z<b[3]),`over the well at ${x.toFixed(2)},${z.toFixed(2)}`);
+ // The hall, the stair head and the climb's camera (whose every view the climb uses; the landing below is seen from it).
+ const pts=[[-1.2,1.6,-4.15],[-2.3,1.6,-5.0],toOffice(C.camera.office.at),[-1.0,1.6,-5.8]];
+ const bad=looksClosed(room,pts,q=>q.x>-6.5&&q.x<6.5&&q.z>-6.3&&q.z<4.6&&q.y>-4.3&&q.y<3.0);
+ assert.deepEqual(bad.slice(0,8),[],`${bad.length} views into nothing`);
 });
 
-test('game.js runs the passage and walks no flight: the fade, the other room, the arrival; the old stair code is gone',()=>{
- for(const s of ['function takeSakuraStair','function stepStairPassage','if(stairPassage.switching){playerSpeed=0;return;}','function finishStairPassage','function checkSakuraStair',"veil.classList.add('on')",'enterRoom(up?SAKURA_OFFICE_SITE','{at:[...end.at],yaw:end.yaw}','if(stairPassage)stepStairPassage(dt);else{updatePlayer(dt);checkSakuraStair();}'])
-  assert.ok(GAME.includes(s),s);
- for(const s of ['placeLandingLens','stairLens','sakuraBoundsAt','STAIR_LENS_EASE','storeys:','officeEntry'])assert.ok(!GAME.includes(s),'gone: '+s);
- // In the office, the exit button is the way down, not a door to the street.
+test('game.js walks the climb in this storey from its locked camera, the other storey loading, then the cut',()=>{
+ for(const s of ['function takeSakuraStair','function stepStairPassage','function finishStairPassage','function placeStairCamera','function placePassageView',
+  'function checkSakuraStair','SAKURA_STAIR_CLIMB','await S.ready'])assert.ok(GAME.includes(s),s);
+ for(const s of ['placeLandingLens','stairLens','sakuraBoundsAt','STAIR_LENS_EASE','storeys:','officeEntry','SAKURA_STAIR_PASSAGE.fade'])assert.ok(!GAME.includes(s),'gone: '+s);
  assert.match(GAME,/#exitRoomButton'\)\.onclick=\(\)=>\{if\(current\?\.id==='sakura-office'\)\{takeSakuraStair\('down'\)/);
 });
