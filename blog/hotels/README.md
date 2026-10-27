@@ -1,5 +1,13 @@
 # Hotels & Parking
 
+## Finland follow-up — 27 October 2026
+
+Scandic Rosendahl is now **Easy (yellow)** on the owner's report that parking is paid
+at the hotel and on the hotel bill. Eight Finnish hotels with free parking confirmed
+on their own pages were added (four Scandics, two Break Sokos, Hotel Kauppi, Hotel
+Kajanus). Register: **136 hotels: 42 green, 1 Easy, 93 Avoid; all mapped.** See the
+[handover](HANDOVER-FINLAND-2026-10-27.md) and [evidence](FINLAND-EVIDENCE-2026-10-27.json).
+
 ## Feed and trip planner — 27 October 2026
 
 The page now reads like a feed:
