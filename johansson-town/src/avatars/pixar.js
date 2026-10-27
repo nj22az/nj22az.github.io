@@ -36,8 +36,8 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'c6316db476'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'84cb40dc0f'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'fe63936c90'}),
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'9a06e45225'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -129,6 +129,21 @@ function smoothRamp(){
  ramp.minFilter=ramp.magFilter=THREE.LinearFilter;ramp.generateMipmaps=false;ramp.needsUpdate=true;return ramp;
 }
 
+const _axis=new THREE.Vector3();
+/** A card's mouth curves (the seam's line, the lips' thickness: polynomials in the eye's units across the mouth) if they
+ * hold across the mouth's width; else a plain mouth of the same width (a gentle smile, thin lips). The studio fits the
+ * curves to the painted lips, and Johansson's were a sliver under a moustache: the fit shot off past 5 units and his
+ * mouth drew as a dot under the nose (the owner, 27 October 2026: "his mouth needs to show"). */
+function saneMouth(m){
+ const at=(c,x)=>c.reduce((y,k)=>y*x+k,0),half=m.half||18;
+ const ok=['line','upper','lower'].every(k=>Array.isArray(m[k])&&[half*.5,half].every(x=>Math.abs(at(m[k],x)-at(m[k],0))<8));
+ if(ok)return m;
+ return {...m,line:[0,0,.003,0,.2],upper:[0,0,-.003,0,2.1],lower:[0,0,-.0045,0,2.9]};
+}
+/** A mouth's ink dark enough to read (luminance under .22), from the painted lips' colour, kept warm. */
+function inkFor(hex){const c=new THREE.Color(hex),l=.299*c.r+.587*c.g+.114*c.b;if(l<=.22)return '#'+c.getHexString();const dark=new THREE.Color('#4a2420');return '#'+c.lerp(dark,THREE.MathUtils.clamp((l-.22)/.5,.6,.95)).getHexString();}
+/** Lips a shade deeper than the skin they sit in, so they show in every look. */
+function lipFor(hex){const c=new THREE.Color(hex);const hsl={};c.getHSL(hsl);return '#'+c.setHSL(hsl.h,Math.min(1,hsl.s*1.25+.08),hsl.l*.86).getHexString();}
 /** The face's own bones (children of the head): the jaw (talking, an open mouth), the nose and the cheeks. */
 const FACE_BONES=Object.freeze(['jaw','nose','cheekL','cheekR']);
 /** How far each moves at full: the jaw's drop (radians), a cheek's rise (up, forward and out: the mid-face widens) and the
@@ -188,9 +203,23 @@ function smoothJaw(g,names){
  return g;
 }
 
+/** A finger bone's name: thumb, index, middle, ring or pinky, the side, the joint (1 at the knuckle or the thumb's root). */
+const FINGER_NAME=/^(thumb|index|middle|ring|pinky)([LR])([123])$/;
+/** How far each joint turns at a full grip (radians), per finger: the thumb's root a little, its two joints more; the
+ *  fingers' three joints as a fist closes (the index least, so a held thing shows). */
+const GRIP_TURN=Object.freeze({thumb:[.35,.55,.6],index:[1.05,1.15,.8],middle:[1.2,1.3,.9],ring:[1.25,1.35,.95],pinky:[1.3,1.4,1.0]});
+
 export function dressPixar(body,{root,bones,order,shadows=true}){
- const rest=body.rest,face={};
+ const rest=body.rest,face={},fingers={};
  for(const name of FACE_BONES){if(!rest[name])continue;const b=new THREE.Bone();b.name=name;b.position.set(...rest[name]).sub(new THREE.Vector3(...rest.head));bones.head.add(b);face[name]=b;}
+ // The finger bones (a body whose card has them: the studio's game_meshy.py finger_rig), children of the hand bone in
+ // chains, each at its joint; they have no turn at rest, so their frame is the hand's and the card's bend axes apply
+ // as they are.
+ for(const name of Object.keys(rest).filter(n=>FINGER_NAME.test(n)).sort()){
+  const [,finger,side,k]=name.match(FINGER_NAME),parentName=k==='1'?'hand'+side:finger+side+(k-1),parent=k==='1'?bones[parentName]:fingers[parentName];
+  if(!parent)continue;
+  const b=new THREE.Bone();b.name=name;b.position.set(...rest[name]).sub(new THREE.Vector3(...rest[parentName]));parent.add(b);fingers[name]=b;
+ }
  const restOf=Object.fromEntries(Object.entries(face).map(([k,b])=>[k,b.position.clone()]));
  // The pose his skin was bound in (the card's `bind`: a turn per bone, Euler radians; the studio bakes his arms out
  // 35 degrees, the owner, 27 October 2026): the skeleton takes its inverses with those turns on, so a raised arm
@@ -198,7 +227,7 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  const bind=body.card.bind||null;
  for(const [n,e] of Object.entries(bind||{}))bones[n]?.rotation.set(e[0],e[1],e[2]);
  root.updateMatrixWorld(true);
- const names=[...order,...Object.keys(face)],skeleton=new THREE.Skeleton(names.map(n=>bones[n]||face[n]));
+ const names=[...order,...Object.keys(face),...Object.keys(fingers)],skeleton=new THREE.Skeleton(names.map(n=>bones[n]||face[n]||fingers[n]));
  if(bind){for(const n of Object.keys(bind))bones[n]?.rotation.set(0,0,0);root.updateMatrixWorld(true);}
  // (bound with its own matrix given: three.js's bind() without one recalculates the skeleton's inverses from the bones as
  // they stand now, at rest, and would undo the bind pose above)
@@ -224,7 +253,11 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  const F=body.features,E=body.card.eyes,mid=E.centres?(E.centres[0][0]+E.centres[1][0])/2:0;
  const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes},make:skinned,stand:STAND_IN,nearer:.0018});
  const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||0}):null;
- const mouth=F.mouth&&body.card.mouth?rigMouth(smoothJaw(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal',mid),names),body.card.mouth,{make:skinned,lines:actingOf(body.name)?.lines||0}):null;
+ // (the line between the lips in a dark ink whatever the painted lips were: the studio measured his as his own skin's
+ // pink, and the seam vanished in the halftone looks and was faint in the plain one; the owner, 27 October 2026: "his
+ // mouth needs to show in all shaders and even normal")
+ const mouthStyle=body.card.mouth?{...saneMouth(body.card.mouth),ink:inkFor(body.card.mouth.ink),lip:lipFor(body.card.mouth.lip),lowerLip:lipFor(body.card.mouth.lowerLip||body.card.mouth.lip)}:null;
+ const mouth=F.mouth&&mouthStyle?rigMouth(smoothJaw(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal',mid),names),mouthStyle,{make:skinned,lines:actingOf(body.name)?.lines||0,seam:2.2}):null;
  // (the features shaded on the same blended ramp as her skin: stepped bands cut a lip or an eye into two tones)
  for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])if(m?.material?.isMeshToonMaterial)m.material.gradientMap=smoothRamp();
  // Each body acts its feelings its own way (face-acting.js), and gets from one to the next on springs of the feeling's own
@@ -261,7 +294,24 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
   get lipsLocal(){return lips?lips.clone():null;},
   /** Close a hand round what it holds, 0 open to 1 a fist (the body's `gripL`/`gripR` morph targets, the studio's
    * game_meshy.py grip_keys: the fingers curled toward the palm). A body without them keeps its hands as sculpted. */
-  grip(side,v){let any=false;for(const m of meshes){const i=m.morphTargetDictionary?.['grip'+side];if(i==null)continue;m.morphTargetInfluences[i]=THREE.MathUtils.clamp(v,0,1);any=true;}return any;},
+  grip(side,v,shape=null){
+   v=THREE.MathUtils.clamp(v,0,1);
+   const bend=body.card.fingers?.[side]?.bend;
+   if(bend){
+    // (finger bones: each joint turns about its bend axis, so far at a full grip; `shape` scales a finger's turn, e.g.
+    // {thumb:.5,index:.6} for a can held lightly, or 0 for a finger that points)
+    let any=false;
+    for(const [name,b] of Object.entries(fingers)){const [,finger,s,k]=name.match(FINGER_NAME);if(s!==side)continue;
+     const axis=bend[name];if(!axis)continue;const amount=v*GRIP_TURN[finger][k-1]*(shape?.[finger]??1);
+     b.quaternion.setFromAxisAngle(_axis.set(axis[0],axis[1],axis[2]).normalize(),amount);any=true;}
+    return any;
+   }
+   let any=false;for(const m of meshes){const i=m.morphTargetDictionary?.['grip'+side];if(i==null)continue;m.morphTargetInfluences[i]=v;any=true;}return any;},
+  /** The finger bones by name (empty for a body without them). */
+  get fingers(){return fingers;},
+  /** The seat of the body rounded out as it sits, 0 standing to 1 sat (the body's `seat` morph target, the studio's
+   * game_meshy.py sculpt_seat: the owner, 27 October 2026, "the butt should come when he sits"). */
+  seat(v){let any=false;for(const m of meshes){const i=m.morphTargetDictionary?.seat;if(i==null)continue;m.morphTargetInfluences[i]=THREE.MathUtils.clamp(v,0,1);any=true;}return any;},
   /** Dress or undress the body (its clothes on, the trunk under them left out; or the body in its underwear). */
   dress(on){dressed=dress(on);return dressed;},
   get dressed(){return dressed;},

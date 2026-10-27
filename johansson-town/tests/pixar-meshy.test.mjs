@@ -32,7 +32,11 @@ for(const name of Object.keys(HEIGHTS)){
  });
  test(`${name}: skinned to World's own bones, bound with the arms out, as tall as the cartoon`,()=>{
   const j=gltfJSON(glb),known=new Set([...BONES,'jaw','nose','cheekL','cheekR']),joints=new Set(j.skins[0].joints.map(i=>j.nodes[i].name));
-  for(const n of joints)assert.ok(known.has(n),'unknown bone '+n);
+  // (and the finger bones of a hand sculpted with fingers: thumb, index, middle, ring, pinky, a side, three joints)
+  const finger=/^(thumb|index|middle|ring|pinky)[LR][123]$/;
+  for(const n of joints)assert.ok(known.has(n)||finger.test(n),'unknown bone '+n);
+  const fingers=[...joints].filter(n=>finger.test(n));
+  if(fingers.length){assert.equal(fingers.length,30,'fifteen finger bones a hand');for(const n of fingers)assert.ok(card.rest[n],'the card rests '+n);assert.ok(card.fingers?.L?.bend&&card.fingers?.R?.bend,'the card gives the fingers\' bend axes');}
   for(const n of ['hips','spine','chest','neck','head','shoulderL','elbowL','handL','thighR','kneeR','footR','jaw'])assert.ok(joints.has(n),'no '+n);
   for(const n of joints)assert.ok(!n.startsWith('braid'),'a braid bone: '+n);
   assert.ok(Math.abs(card.measure.H-HEIGHTS[name])<.01,`height ${card.measure.H}`);

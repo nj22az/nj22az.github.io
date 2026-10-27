@@ -44,7 +44,11 @@ window.OFFICE_BLOG_POSTS = [
     "date": "2026-09-23",
     "topic": "Engineering",
     "part": 1,
-    "svUrl": "/blog/elteknik/lanternan-som-lyser-svagt/sv/"
+    "svUrl": "/blog/elteknik/lanternan-som-lyser-svagt/sv/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/navigation-light-thumb.webp",
+      "alt": "The ferry Minato Maru at dusk, printed as a rubber stamp."
+    }
   },
   {
     "id": "trefas-440-v-60-hz",
@@ -54,7 +58,11 @@ window.OFFICE_BLOG_POSTS = [
     "date": "2026-09-23",
     "topic": "Engineering",
     "part": 2,
-    "svUrl": "/blog/elteknik/trefas-440-v-60-hz/sv/"
+    "svUrl": "/blog/elteknik/trefas-440-v-60-hz/sv/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/three-phase-thumb.webp",
+      "alt": "The generator panels of a ship's main switchboard, with their meters, printed as a rubber stamp."
+    }
   },
   {
     "id": "fem-sakerhetsregler",
@@ -64,7 +72,11 @@ window.OFFICE_BLOG_POSTS = [
     "date": "2026-09-23",
     "topic": "Engineering",
     "part": 3,
-    "svUrl": "/blog/elteknik/fem-sakerhetsregler/sv/"
+    "svUrl": "/blog/elteknik/fem-sakerhetsregler/sv/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/switchboard-thumb.webp",
+      "alt": "A ship's engine control room with the main switchboard and the engine console, printed as a rubber stamp."
+    }
   },
   {
     "id": "isolationslarmet",
@@ -74,7 +86,11 @@ window.OFFICE_BLOG_POSTS = [
     "date": "2026-09-23",
     "topic": "Engineering",
     "part": 4,
-    "svUrl": "/blog/elteknik/isolationslarmet/sv/"
+    "svUrl": "/blog/elteknik/isolationslarmet/sv/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/insulation-alarm-thumb.webp",
+      "alt": "The synchronising and feeder panels of a main switchboard, with the three earth lamps, printed as a rubber stamp."
+    }
   },
   {
     "id": "pumpen-som-inte-startar",
@@ -84,7 +100,11 @@ window.OFFICE_BLOG_POSTS = [
     "date": "2026-09-23",
     "topic": "Engineering",
     "part": 5,
-    "svUrl": "/blog/elteknik/pumpen-som-inte-startar/sv/"
+    "svUrl": "/blog/elteknik/pumpen-som-inte-startar/sv/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/pump-thumb.webp",
+      "alt": "The fire pumps in a ship's engine room, printed as a rubber stamp."
+    }
   },
   {
     "id": "wp-81",
@@ -94,7 +114,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/",
     "date": "2025-11-17",
     "topic": "Reflections",
-    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/17/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/"
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/17/more-survivor-than-tyrant-the-captain-bligh-you-dont-know/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/bridge-thumb.webp",
+      "alt": "A ferry's bridge, looking out over the bow, printed as a rubber stamp."
+    }
   },
   {
     "id": "wp-76",
@@ -104,7 +128,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/the-discipline-of-building-something-that-lasts/",
     "date": "2025-11-16",
     "topic": "Reflections",
-    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/16/the-discipline-of-building-something-that-lasts/"
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/16/the-discipline-of-building-something-that-lasts/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/workshop-thumb.webp",
+      "alt": "An electrical workbench on board a ship, printed as a rubber stamp."
+    }
   },
   {
     "id": "wp-71",
@@ -114,7 +142,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/vietnam/",
     "date": "2025-11-10",
     "topic": "Reflections",
-    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/10/vietnam/"
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/10/vietnam/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/vietnam-thumb.webp",
+      "alt": "Thuan, a young woman with long dark hair in a braid, waving and making a peace sign, printed as a rubber stamp."
+    }
   },
   {
     "id": "the-torn-poster",
@@ -123,6 +155,10 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/the-torn-poster/",
     "date": "2026-10-09",
     "topic": "Stories",
-    "publishedAt": "2026-10-08T22:44:25Z"
+    "publishedAt": "2026-10-08T22:44:25Z",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/torn-poster-thumb.webp",
+      "alt": "Sakura Shōten on Minato's main street, printed as a rubber stamp."
+    }
   }
 ];

@@ -134,6 +134,40 @@ is a MediaPipe webcam demo (Python, no model); `jperedadnr/RiggedHand` is a Java
 download. None gives a rigged hand mesh for World; the route stays our own: finger bones on World's skeleton from the
 Meshy hands (the next step below).
 
+## Night, 27 October 2026: finger bones; the owner's faults from play, fixed
+
+The owner: "Can you build finger bones"; then, playing the published game: "the butt should come when he sits, this
+looks too crappy, and his mouth needs to show in all shaders and even normal"; "His feet should point forward when he
+is running too, now they point outwards"; "risograph really captures the hand drawn comic feel"; "I just want you to
+fix my issues"; "You can't be happy with what the face looks like, align it properly and the hand too so he can drink
+beer"; "Audit your screenshots ... as you are Akira Kurosawa or Miyazaki or Disney yourself".
+
+- **Finger bones** (studio `game_meshy.py finger_joints`, `finger_weights`, `finger_rest`; World `pixar.js`): fifteen
+  a hand on World's skeleton under the hand bone, thumb (root in the palm) and four fingers, three joints each. Found
+  on the full mesh before it is lightened: past the knuckle line the Meshy hand is one block of four fingers (cut into
+  four bands across its width, the index nearest the thumb) and the thumb apart; the joints at the knuckle, 40 and 70
+  per cent of the way to the tip. The hand's weight past the knuckles goes onto them with a band at every joint. The
+  card carries each bone's rest and bend axis (`fingers.L/R.bend`, World's frame, a positive turn curls toward the
+  palm). World builds them as children of the hand (no turn at rest, so the card's axes apply as they are) and
+  `grip(side, v, shape)` turns each joint (`GRIP_TURN`, the index least). The grip morph is gone; the first-person arm
+  keeps the finger bones. Both bodies. `johansson-meshy-hand-grip.jpg` (open above, closed below), `thao-meshy-fingers.jpg`.
+- **The hold** (`table-drink.js`): a real hand holds the jug as a person does: the wrist beside the handle, the palm
+  toward the glass, the fingers through the handle's hole to curl round its bar, the thumb on top (`HOLD_Q`,
+  `holdOffset`); the jug is turned in the hand as it is lifted so its handle is at his right (`heldQ`), and stays so
+  when set down. The sip still validates (rim error 0, wrist error 0).
+- **The seat only when he sits**: the sculpt is a shape key `seat` now (`sculpt_seat(..., key='seat')`, 4 cm), and
+  World brings it in with `chairBlend` (`pixar.seat(v)`, animate.js); standing he is the sculpt as it came (the back
+  view the owner sent, the lumpy shorts, is gone).
+- **The mouth in every look**: the seam between the lips in a dark warm ink (`inkFor`) and twice as thick
+  (`rigMouth({seam})`, `uSeam`), the lips a shade deeper than the skin; and **placed from the landmark**
+  (`johansson_meshy.py mouth_at=1.545, mouth_half=0.033`; `plain_mouth`): the painted lips were a sliver under the
+  moustache, found on the nose and fitted into curves that shot off past five units, so his mouth drew as a dot under
+  his nose. World also guards a card's curves (`saneMouth`). `johansson-meshy-face.jpg`.
+- **Feet forward**: the sculpt stands toes-out 12.3 degrees (Thao 4.4); `a_pose(rig, L)` turns each foot to point
+  forward in the bind, so the walk and run swing straight feet.
+- `tests/pixar-meshy.test.mjs` accepts and checks the finger bones (30, each rested, bend axes in the card).
+- Risograph: the owner likes it; nothing changed there, the mouth now reads in it.
+
 ## Open
 
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril
@@ -152,7 +186,8 @@ Meshy hands (the next step below).
    draught served at his seat is drunk by the game's own performance with the rim at his lips (`report.json`
    `sip.moments`: `valid` at the sip). The hand stays open around the mug: a holding hand shape is the next step
    (World's skeleton has no finger bones; a closed-hand shape key on the Meshy hand, driven by `heldProp`, is the
-   likely route). The stools fit him (feet on the rail, knees at the counter); then the izakaya redrawn in CAD.
+   likely route) — done at night: finger bones, above. The stools fit him (feet on the rail, knees at the counter);
+   then the izakaya redrawn in CAD.
 4. Thuận is still on her Tripo model; the same route takes a Meshy Thuận when the owner gives one.
 5. The earlier Pixar Johansson route (the free sculpt, separate shirt and shorts) is kept in the studio repo out of the
    game; its last fixes of the morning (the wrist graft, the hand straight at rest, a wrist weight ramp) live in the

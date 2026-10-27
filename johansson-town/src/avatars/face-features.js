@@ -79,6 +79,7 @@ uniform float uMouthRest[16];
 uniform float uMouth[16];
 uniform vec3 uLip,uLipLow,uLipInk,uMouthIn,uTeeth,uTongue;
 uniform float uMouthLines;
+uniform float uSeam;   // the line between the lips, this many times its usual thickness (a comic's firmer mouth: 2 for the Pixar bodies)
 float mouthPoly(int o,float x){return (((uMouthRest[o]*x+uMouthRest[o+1])*x+uMouthRest[o+2])*x+uMouthRest[o+3])*x+uMouthRest[o+4];}
 void mouthOver(inout vec4 acc,vec3 c,float k){acc=vec4(c*k+acc.rgb*(1.-k),k+acc.a*(1.-k));}
 #define M_smile uMouth[0]
@@ -162,7 +163,7 @@ vec4 mouthPaint(){
  // when she smiles (deeper on a smirk's side), down when the corners drop
  float closed=1.-smoothstep(.4,2.,g);
  float lineLen=mix(1.,smoothstep(.9,.35,abs(t)),clamp(M_pucker,0.,1.));   // (a pucker's lips meet only in the middle)
- mouthOver(col,uLipInk*(1.-.3*M_thin),.85*closed*lineLen*smoothstep(-w,w,min((.42+.3*M_thin)-abs(p.y-mid),ends+.6)));
+ mouthOver(col,uLipInk*(1.-.3*M_thin),min(1.,.85*uSeam)*closed*lineLen*smoothstep(-w,w,min(uSeam*(.42+.3*M_thin)-abs(p.y-mid),ends+.6)));
  for(int i=0;i<2;i++){
   float sx=i==0?-1.:1.,lift=M_smile+(sx>0.?M_asym:0.),k2=clamp(lift/2.6,0.,1.),k3=clamp(-lift/2.6-.4,0.,1.);
   vec2 a=vec2(sx*(W-.3),mouthEdges(sx*W).x);
@@ -224,10 +225,10 @@ export function rigBrows(geometry,brows,{make=(g,m)=>new THREE.Mesh(g,m),lines=0
 }
 
 /** A mouth on its decal; `lines` (0..1) draws an older face's smile lines. */
-export function rigMouth(geometry,mouth,{make=(g,m)=>new THREE.Mesh(g,m),lines=0}={}){
+export function rigMouth(geometry,mouth,{make=(g,m)=>new THREE.Mesh(g,m),lines=0,seam=1}={}){
  const rest=new Float32Array([mouth.half,...mouth.line,...mouth.upper,...mouth.lower]),params=new Float32Array(16);
  const uniforms={uMouthRest:{value:rest},uMouth:{value:params},uLip:{value:colour(mouth.lip)},uLipLow:{value:colour(mouth.lowerLip)},
-  uLipInk:{value:colour(mouth.ink).multiplyScalar(.62)},uMouthIn:{value:colour('#4a151b')},uTeeth:{value:colour('#f4efe6')},uTongue:{value:colour('#d96b70')},uMouthLines:{value:lines}};
+  uLipInk:{value:colour(mouth.ink).multiplyScalar(.62)},uMouthIn:{value:colour('#4a151b')},uTeeth:{value:colour('#f4efe6')},uTongue:{value:colour('#d96b70')},uMouthLines:{value:lines},uSeam:{value:seam}};
  const {material,dispose}=featureMaterial('Shimanchu mouth',MOUTH,'mouthPaint',uniforms);
  const mesh=make(geometry,material);mesh.name='Shimanchu mouth';mesh.castShadow=false;mesh.receiveShadow=true;mesh.renderOrder=-1;
  return {mesh,uniforms,

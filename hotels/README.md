@@ -1,5 +1,12 @@
 # Hotels & Parking
 
+## Laajavuori: no card hold — 27 October 2026
+
+The owner, at Scandic Laajavuori today: "add that as an extra good thing ... that they didnt ask me to reserve anything
+on my card, this is a bonus ... some hotels always ask you to add your card for a deposit or if you want to order on
+the room". Added to the record's notes (owner stay report) and as "A bonus at check-in" in the stay post. **Published
+as `9cbb9761`; live on the record and the post.**
+
 ## Folding cards — 27 October 2026
 
 The owner: "the notes on a hotel shouldn't show by standard it needs to be opened and the photos too, so make it sort
@@ -11,7 +18,7 @@ still opens its card. Phones stack each action's icon over its label so five act
 off, or in print, everything shows. Assets `hotels.css?v=12`, `hotels.js?v=9`. Checked: `feed.cjs` 46/46 (updated to
 measure the fold-out instead of the thread's visibility), `flags.cjs` 19/19, the Laajavuori card closed on load,
 opened by a tap and by Photos, closed again, not opened by Website, opened by its link; no card wider than the screen
-at 320, 390, 834 and 1440 px. **On branch `claude/peaceful-clarke-fprqk3`; not yet on main.**
+at 320, 390, 834 and 1440 px. **Published to main as `a2f5c851` after the owner's "The photos shouldn't show automatically either"; live files match, and on the live page no photo or note shows until a card is opened.**
 
 ## Photos and the Scandic Laajavuori stay — 27 October 2026
 

@@ -89,15 +89,23 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
  let elapsed=0,active=true,last=null,maxWristError=0,lastFlow=0;
  const restHead=b.head.rotation.x,restSpine=b.spine.rotation.x,restChest=b.chest.rotation.x;
  const restShoulder=b.shoulderR.position.clone();
+ const realHand=!!m.realHand,g=prop.userData.grip||{};
  const contact=(mouth,tilt,away=0)=>{
-  const q=restQ.clone().multiply(new THREE.Quaternion().setFromAxisAngle(X,tilt));
+  const q=heldQ.clone().multiply(new THREE.Quaternion().setFromAxisAngle(X,tilt));
   return {q,p:mouth.clone().addScaledVector(forward,away).sub(rim.clone().applyQuaternion(q))};
  };
- // (a real hand holds a mug's handle with the fingers hanging down through it, a little toward the glass, and the palm
- // toward the glass and a little up; the mitten is turned half round, its palm being an ellipsoid either way)
- const realHandQ=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-.87,.5,0),new THREE.Vector3(.5,.87,0),new THREE.Vector3(0,0,1)));
- const wrist=(p,q)=>{if(m.realHand){const handQ=q.clone().multiply(realHandQ);const palm=p.clone().add(tableGrip(prop,m,profile).applyQuaternion(q));return {p:palm.sub(new THREE.Vector3(0,-m.hand*.55,0).applyQuaternion(handQ)),q:handQ};}
+ // A real hand (a Pixar body's, with finger bones) holds a jug by its handle as a person does: the wrist beside the
+ // handle, the palm toward the glass, the fingers through the handle's hole (toward the glass's +z) to curl round its
+ // bar, the thumb on top; a glass without a handle the same way round its body. The hand bone is the wrist; the
+ // knuckles come half a hand along, in the plane of the handle. (The mitten is turned half round instead, its palm
+ // being an ellipsoid either way.) The owner, 27 October 2026: "align ... the hand too so he can drink beer".
+ const holdOffset=g.handle!=null?new THREE.Vector3(g.handle+.02,(g.height??.06)-.02,-.085):new THREE.Vector3((g.radius??.04)+.02,(g.height??.06)-.02,-.06);
+ const HOLD_Q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,-1,0)));
+ const wrist=(p,q)=>{if(realHand)return {p:p.clone().add(holdOffset.clone().applyQuaternion(q)),q:q.clone().multiply(HOLD_Q)};
   const handQ=q.clone().multiply(HALF_TURN);return {p:p.clone().sub(gripOffset.clone().applyQuaternion(handQ)),q:handQ};};
+ // (and the jug turned in the hand as it is lifted, so its handle is at his right and he drinks from the far side; it
+ // stays so when it is set down)
+ const rightDir=new THREE.Vector3(-1,0,0).transformDirection(body.matrixWorld),heldQ=realHand&&g.handle!=null?new THREE.Quaternion().setFromAxisAngle(Y,Math.atan2(-rightDir.z,rightDir.x)):restQ.clone();
  const tableHand=wrist(restP,restQ);
  let reachLean=.26;
  // Fit the same reach to each existing cast recipe. The pelvis stays on its seat;
@@ -148,20 +156,20 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   body.updateWorldMatrix(true,true);
   const mouth=avatarMouth(avatar),pre=contact(mouth,.12,.027),at=contact(mouth,.12),hold=contact(mouth,tip);
   let glassP=restP.clone(),glassQ=restQ.clone(),handP=restHand.clone(),handQ=restHandQ.clone(),controller='TABLE';
-  const liftQ=restQ.clone();
+  const liftQ=heldQ.clone();
   switch(phase.id){
    case 'PREPARE':break;
    case 'REACH':handP=point(restHand,tableHand.p,s,.035);handQ.slerp(tableHand.q,s);break;
    case 'GRASP':handP.copy(tableHand.p);handQ.copy(tableHand.q);break;
-   case 'LIFT':glassP.lerp(liftP,s);controller='TRAJECTORY';break;
+   case 'LIFT':glassP.lerp(liftP,s);glassQ.copy(restQ).slerp(heldQ,s);controller='TRAJECTORY';break;
    case 'APPROACH':glassP=point(liftP,pre.p,s,.045);glassQ.copy(liftQ).slerp(pre.q,s);controller='TRAJECTORY';break;
    case 'CONTACT':{const k=contact(mouth,.12,.027*(1-s));glassP=k.p;glassQ=k.q;controller='MOUTH';break;}
    case 'SIP':glassP=hold.p;glassQ=hold.q;controller='MOUTH';break;
    case 'SWALLOW':{const k=contact(mouth,mix(requiredTilt(profile,Math.max(.0001,volume)),.12,s));glassP=k.p;glassQ=k.q;controller='MOUTH';break;}
    case 'RECOVER':glassP=point(at.p,liftP,s,.025);glassQ.copy(at.q).slerp(liftQ,s);controller='TRAJECTORY';break;
-   case 'SET_DOWN':glassP=point(liftP,restP,s);glassQ.copy(liftQ).slerp(restQ,s);controller='TRAJECTORY';break;
-   case 'RELEASE':handP.copy(tableHand.p);handQ.copy(tableHand.q);break;
-   case 'RETURN':handP=point(tableHand.p,restHand,s,.035);handQ.copy(tableHand.q).slerp(restHandQ,s);break;
+   case 'SET_DOWN':glassP=point(liftP,restP,s);glassQ.copy(liftQ).slerp(realHand?heldQ:restQ,s);controller='TRAJECTORY';break;
+   case 'RELEASE':{const h=realHand?wrist(restP,heldQ):tableHand;handP.copy(h.p);handQ.copy(h.q);glassQ.copy(realHand?heldQ:restQ);break;}
+   case 'RETURN':{const h=realHand?wrist(restP,heldQ):tableHand;handP=point(h.p,restHand,s,.035);handQ.copy(h.q).slerp(restHandQ,s);glassQ.copy(realHand?heldQ:restQ);break;}
   }
   if(phase.index>=4&&phase.index<=10){const h=wrist(glassP,glassQ);handP=h.p;handQ=h.q;}
   setWorld(prop,glassP,glassQ);
@@ -189,7 +197,7 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
  function finish(cancelled=false){
   if(!active)return;active=false;
   b.shoulderR.position.copy(restShoulder);avatar.pixar?.grip?.('R',0);
-  if(prop.parent===originalParent){setWorld(prop,restP,restQ);fluid.update(prop.userData.portion??lease.startFraction);}
+  if(prop.parent===originalParent){setWorld(prop,restP,realHand&&!cancelled?heldQ:restQ);fluid.update(prop.userData.portion??lease.startFraction);}
   const result={...(cancelled?lease.cancel():lease.finish()),volumeConsumedMl:Math.max(0,lease.startFraction-(prop.userData.portion??lease.startFraction))*fluid.startingVolumeMl};
   (cancelled?onCancel:onComplete)(result);return result;
  }
@@ -214,7 +222,8 @@ export function createFirstPersonDrinkingArm(avatar){
  for(const [source] of originals){
   if(!source.isSkinnedMesh)continue;
   const g=source.geometry,si=g.attributes.skinIndex,sw=g.attributes.skinWeight;if(!si||!sw)continue;
-  const ids=new Set(source.skeleton.bones.map((bone,i)=>['shoulderR','elbowR','handR'].includes(bone.name)?i:-1));ids.delete(-1);
+  // (the arm's bones, the right hand's finger bones with them: a body with fingers keeps them in the first-person arm)
+  const ids=new Set(source.skeleton.bones.map((bone,i)=>['shoulderR','elbowR','handR'].includes(bone.name)||/^(thumb|index|middle|ring|pinky)R[123]$/.test(bone.name)?i:-1));ids.delete(-1);
   const count=g.index?.count||g.attributes.position.count,index=[],groups=[];
   const armAt=i=>{let w=0;for(let k=0;k<4;k++)if(ids.has(si.getComponent(i,k)))w+=sw.getComponent(i,k);return w>.95;};
   for(let i=0;i<count;i+=3){const a=g.index?g.index.getX(i):i,c=g.index?g.index.getX(i+1):i+1,d=g.index?g.index.getX(i+2):i+2;
