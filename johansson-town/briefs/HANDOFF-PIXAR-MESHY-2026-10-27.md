@@ -292,8 +292,47 @@ bit smaller"; "they are Vietnamese women, her eyes should be rigged but a bit mo
   corner lifted 1.2 (`eyes3d.js` takes `own.shape`/`own.corner`); a first try at 0.84 and a narrower opening squinted.
 - GLB `thao` 2.1 MB, 25,423 triangles; tests 33/33 with `pixar-meshy` knowing a rigged hairstyle (its bones, its texture).
 
+## Tetsuo and Mr Fujita: clones of Meshy Johansson, palette-swapped and reshaped
+
+The owner, 27 October 2026: "for Tetsuo can you clone Johansson, and make his head more egg shaped? and give him
+Tetsuos clothes instead? and glasses? and for Fujita, clone Johansson and make him shorter and fatter with square
+glasses, start by cloning and palette swap the outfit and skin tone"; then "the glasses are not right", "Tetsuo should
+be totally bald with some strands of hair look at his cartoon avatar", "Give Fujita a walrus moustache", "Fujitas head
+is rounder too", "Look where the mouth is".
+
+- **The route** (jojo `3d/cast/tetsuo_meshy.py`, `fujita_meshy.py`; `game_meshy.py tetsuo|fujita
+  models/johansson-meshy.glb <out>`): Johansson's sculpt and landmarks, loaded at his own 1.80 m (`sculpt_height`), then
+  reshaped before rigging (`reshape`: Tetsuo's `egg`, the crown 35 mm up from the sculpt's own crown and the jaw 10%
+  narrower, 1.835 m; Fujita's `round` crown 20 mm down and the head 7% wider, and `fatten`: belly, waist, thighs, jowls,
+  1.78 m). World's heights: Tetsuo 1.6328 m, Mr Fujita 1.5505 m (`WORLD_HEIGHTS`, `pixar-meshy` test).
+- **The mouth, fixed tonight**: Tetsuo had been loaded at his `height` 1.835, 2% bigger than the landmarks he borrows,
+  so his mouth, the jaw's split, the eye zone and the face window all sat 2–3 cm low on his face (his mouth on his chin,
+  his brows cut by the window's top) and he stood 3 cm too tall. Now loaded at 1.80; his brows are found whole (the egg
+  stretches them past 2 cm: `face_zones.brow_max` 0.032, the window to 1.77). A mouth sliver with no upper lip takes
+  its lip colour from the lips it has (it was NaN and stopped the card).
+- **The clothes painted on** (`texture_paint` rules in each landmark module): the trousers from the ankle to the waist
+  first (the khaki shorts and the legs under them alike, not the hands or the sleeves; the shorts had read as skin and
+  stayed light over dark legs), then the jacket or polo over the shirt (blues, whites, its flowers), Tetsuo's long
+  sleeves on the arm, the shoes. Every painted colour is bled 8 texels into the margin round its UV island (the margins
+  kept the shirt's blue and the skin, and the texture's smaller copies drew them as streaks along the seams).
+- **Tetsuo bald**: the grey horseshoe round the ears closed (`close` 10 texels: the pink between the strands passed as
+  skin and the patch stayed striped) and painted in the skin of the ring round it (`around`); the tops of the brow ridges
+  and a mark by the nose, which the front's paint-out cannot see, painted out too (`what='face'`); three grey strands
+  over the crown and round wire glasses (1.22 of the eye wide: at 1.02 the rims lay on the eyes' outline and vanished).
+- **Fujita**: his side hair `#d2ccba` (closed the same way), square glasses, a walrus moustache over the upper lip.
+- Evidence: jojo `3d/cast/renders/game/clones-tetsuo-*.png`, `clones-fujita-*.png`; tests 39/39.
+
 ## Open
 
+0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use
+   this head for Tetsuo", pointing at Hi3D v1.0, <https://github.com/hi3d-official/Hi3Dv1.0>). Hi3D refines a coarse mesh
+   to fine geometry from the picture; it makes no colours and needs an NVIDIA GPU (no CPU path). The Space
+   `hugging-apps/hi3dv1` runs it (Hunyuan3D-2mini coarse mesh, then Hi3D), but this container's free GPU quota is spent and
+   the Hugging Face connector here cannot run Spaces: a read-only `HF_TOKEN` in the environment, or the owner running the
+   Space and handing over the GLB, unblocks it. The picture, cropped: scratchpad `tetsuo-head/input.png` (copy in
+   jojo `3d/cast/models/tetsuo/reference.jpg`). Then: the head cut at the neck, fitted on the clone's neck, the picture
+   projected on its front and the rest painted his skin, the glasses taken off the mesh (World draws its own), the face
+   run through `paint_out_face` for rigged eyes, brows and mouth.
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril
    remnants under the dilation); his hair at the temples is the texture's painted streaks (the side view). His iris
    decal's seam at its edge. (The brows' remnants and his blotched skin: done this afternoon, above.)

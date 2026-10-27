@@ -44,20 +44,20 @@
 <link rel="modulepreload" data-town-runtime href="./runtime/shopping-lane-plan-D0DhEU8_.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/fish-BgfpElQq.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-DwOyILp6.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-BqCtv4Dh.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-DfeBIm6m.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-Dlmdr5ku.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/halloween-DUE28Um3.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/hat-models-C7pfpN3Y.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/actors-DpYHLmU-.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/animate-DOUFqD8h.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/pixar-Dz3TEjUW.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/onsen-CofA2c9g.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/catalog-CIT_OeLk.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-B2bf-koc.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-Cj-Bj64z.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-DmPQk8d5.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-CHJwizZD.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/halloween-CfYPoE4C.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/hat-models-MOtzW9Ro.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/actors-qaXgJI_A.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/animate-BNSsCgI-.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/pixar-B5vgYdg2.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-BsLYvVQS.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/catalog-DiXe1QoJ.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-DqfKwuaX.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-B-IsW1DW.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-CSsdgb8K.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-BQ3U6ryY.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/thuan-voice-Dz-XGNqd.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/storyteller-u1zBTmhg.js">
@@ -402,8 +402,8 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=96d26787"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-DjcrbbM2.js";</script>
-<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-BRAEEaea.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-DCZqvZAF.js";</script>
+<script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-BQfCYPwi.js";</script>
 <script src="./landing.js?h=ee7b1d7f"></script>
 <script>
 // Title screen: the Johansson Co. splash, the START menu, and the town guide page
@@ -631,7 +631,7 @@ import {unlockTownAudio} from './runtime/audio-B-C5SRPF.js';
   if(window.johanssonDesktop)document.getElementById('installTown').hidden=true;
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
-    try { await import('./runtime/boot-DwOyILp6.js'); } catch (error) {
+    try { await import('./runtime/boot-BqCtv4Dh.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

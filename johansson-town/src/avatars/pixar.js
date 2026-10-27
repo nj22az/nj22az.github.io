@@ -37,7 +37,10 @@ import {celFrom} from '../render/cel.js';
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'})});
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'}),
+ // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
+ Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'c44da688c7'}),
+ 'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'42043f44aa'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -71,7 +74,7 @@ export function preparePixarBody(card,scene){
   if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
   // (a rigged hairstyle is a part of its own, 'hair': Thao's bob, off her head so her face could be cleaned and put back
   // on bones that swing; the owner, 27 October 2026, "add it back as a rigged hairstyle")
-  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
+  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':name==='glasses'?'glasses':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
  });
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
@@ -239,10 +242,11 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  // Shaded as every resident's face is (build.js buildHead): the town's high-key ramp, a little self-lit, so her pale skin
  // stays the pale skin of her film model and does not go brown in a shadow.
  const materials=[],meshes=body.parts.map(part=>{
-  const source=part.kind==='hands'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,emissive:0xffffff,emissiveIntensity:.05})
+  // (the hands and a pair of glasses (the clones' frames, jojo game_meshy.build_glasses) carry their colour per vertex)
+  const source=part.kind==='hands'||part.kind==='glasses'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:part.kind==='glasses'?.4:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
   // (hair is not skin: the town's cel ramp alone, no warmth under it)
-  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
+  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'||part.kind==='glasses'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
   // (the clothes are one surface of cloth: their insides show, at the sleeves, the collar and the hems)
   if(CLOTHES_PARTS.includes(part.kind))material.side=THREE.DoubleSide;
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);

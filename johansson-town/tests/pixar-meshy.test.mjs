@@ -11,7 +11,7 @@ import {PIXAR_BODIES,pixarWanted} from '../src/avatars/pixar.js';
 // skeleton, bound with the arms out, World's rigged eyes, brows and mouth over the painted-out ones. The cartoon
 // characters stay beside them (the owner: "don't delete the old simple characters").
 
-const HEIGHTS={Johansson:1.6768,Thao:1.5536};
+const HEIGHTS={Johansson:1.6768,Thao:1.5536,Tetsuo:1.6328,'Mr Fujita':1.5505};   // (Tetsuo and Mr Fujita: clones of Meshy Johansson)
 const root=new URL('../assets/',import.meta.url);
 function gltfJSON(bytes){
  assert.equal(bytes.toString('ascii',0,4),'glTF');
