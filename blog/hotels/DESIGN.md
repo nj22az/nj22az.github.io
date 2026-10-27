@@ -40,16 +40,29 @@ ownership. Do not offer absent chains or silently infer additional affiliations.
 Country, chain, search, parking and receipt filters intersect and drive the same
 table rows, feed cards and map markers. Reset returns to all chains/free parking.
 
-## Finder layout — 26 October 2026
+## Feed and trip planner — 27 October 2026
 
-The owner found the register hard to search. Layout rules since then
-([handover](HANDOVER-FINDER-CLARITY-2026-10-26.md)):
+The owner wanted a social-feed feel: icon-led, much less text, notes to read like
+comments, an easier map, and "I'm in Örebro, driving to Malmö: which hotel?" on green
+criteria, with time and distance ([handover](HANDOVER-FEED-TRIP-2026-10-27.md)).
+These rules replace the 26 October finder layout:
 
-- Cards are grouped by country and sorted by city, then hotel (`place_key`). Never
-  sort by recording date again.
-- Parking is chosen with labelled radio chips that show live counts. The chips
-  are also the colour legend. Do not add a separate legend.
-- A card shows city, name, street, verdict, parking summary and one facts row.
-  Everything else stays in its notes. No icon that is the same on every card.
-- Below 1000 px the list comes first, with a floating List/Map switch. Above
-  1000 px the list and the sticky map sit side by side.
+- **Post layout:**
+  - a verdict avatar (one "P" circle in the category colour), name, and the verdict
+    in words with city and country;
+  - a two-line caption, fact chips, and an action bar (Notes, Map, Website, Share);
+  - a Save bookmark in the corner.
+- **Comments are the record's own notes:** owner's report, price, register notes,
+  sources. Never invent people, ratings or activity.
+- **Organise:** search, a Filters button, and chips with live counts (Free, Easy,
+  Avoid, All, Saved). The chips are the legend; the definitions sit in one
+  disclosure.
+- **Trip planner:** green hotels only, real drive times (OSRM).
+  - The best match is the closest by road to the destination.
+  - A stop on the way needs a drive of 2.5 h or more, at least 40% of the drive
+    behind it, and a detour of 20 min or less.
+  - Every suggestion states its time, distance and reason. Never offer a stop that
+    sends a driver backwards or stops them early.
+- **Map:** round pins (Avoid small and behind), a legend, the route with A/B and
+  numbered picks matching the trip card. Popups are short and lead back to the post.
+- Below 1000 px the feed comes first, with a floating Feed/Map switch.

@@ -1,5 +1,16 @@
 # Hotels & Parking
 
+## Feed and trip planner — 27 October 2026
+
+The page now reads like a feed:
+- icon-led posts;
+- notes that open as a comment thread;
+- Save and Share;
+- a From/To planner that picks green-parking hotels by real drive time;
+- a clearer map.
+
+Data and rules are unchanged. Published as `3254716b`. See the [handover](HANDOVER-FEED-TRIP-2026-10-27.md).
+
 ## Finder clarity — 26 October 2026
 
 The page is reorganised so a reader finds a place quickly:
