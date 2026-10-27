@@ -102,6 +102,9 @@ export const SAKURA_STAIR_TRIM=Object.freeze({
   Object.freeze({at:Object.freeze([-5.65,Ly+1.5,-4.65]),face:'+x',why:'On the landing’s back wall, straight ahead at the top of the lower flight.'}),
  ]),
  poster:Object.freeze({w:.515,h:.728,asset:SAKURA_STREET_POSTER.asset}),
+ // The stair head's balustrade in the office hall (office frame): along the opening's east edge from the upper flight's
+ // side to the store wall; 950 mm high, balusters 30 mm with gaps under 110 mm (a child's head does not pass).
+ guard:Object.freeze({x:-2.05,z:Object.freeze([-4.91,-3.41]),height:.95,post:.09,top:Object.freeze([.06,.045]),bottom:Object.freeze([.045,.045,.05]),baluster:.03,gap:.1}),
  // Plates: [text, x, y, z, normal axis]; the alarm, light and switches likewise, each with the wall it is on.
  plates:Object.freeze([Object.freeze({text:'1F',sub:'売場',at:Object.freeze([-1.97,1.58,-4.07]),face:'-z'}),Object.freeze({text:'2F',sub:'事務所',at:Object.freeze([-.68,SAKURA_STAIR.height+1.5,-6.42]),face:'-x'})]),
  alarm:Object.freeze({at:Object.freeze([-5.65,Ly+1.45,-5.4]),face:'+x'}),
@@ -366,8 +369,15 @@ export function buildSakuraStairHead({room,box,collider=()=>{},reg=()=>{},go=()=
  buildSakuraStairwell(room,{storey:'office'});
  box([-.6+5.65,.12,.56],[(-.6-5.65)/2,2.86,-5.78],0xf1eadb,'Stairwell ceiling');
  for(const [x,z,w,d] of [[(-.6-5.65)/2,-6.1,5.05,.08],[-.64,-5.78,.08,.56],[-5.69,-5.78,.08,.56]])collider(x,z,w,d,2.8);
- // The rail along the hole's east edge, between the hall and the pit.
- box([.06,1,1.5],[-2.05,.5,-4.16],TIMBER,'Stair rail',true);
+ // The balustrade along the opening's edge, between the hall and the stairwell (SAKURA_STAIR_TRIM.guard; until rev B a
+ // solid 1.5 m board, put up when the well was a black pit, and from the stair it read as a slab of wall).
+ const Gd=SAKURA_STAIR_TRIM.guard,[gz0,gz1]=Gd.z,P2=Gd.post/2,run0=gz0+Gd.post,run1=gz1-Gd.post,len=run1-run0;
+ collider(Gd.x,(gz0+gz1)/2,.08,gz1-gz0,Gd.height);
+ for(const z of [gz0+P2,gz1-P2])box([Gd.post,Gd.height+.04,Gd.post],[Gd.x,(Gd.height+.04)/2,z],TIMBER,'Stair head newel post');
+ box([Gd.top[0],Gd.top[1],len],[Gd.x,Gd.height-Gd.top[1]/2,(run0+run1)/2],TIMBER,'Stair head handrail');
+ box([Gd.bottom[0],Gd.bottom[1],len],[Gd.x,Gd.bottom[2]+Gd.bottom[1]/2,(run0+run1)/2],TIMBER,'Stair head bottom rail');
+ const n=Math.ceil((len+Gd.gap)/(Gd.baluster+Gd.gap))-1,pitch=len/(n+1),by0=Gd.bottom[2]+Gd.bottom[1],by1=Gd.height-Gd.top[1];
+ for(let i=1;i<=n;i++)box([Gd.baluster,by1-by0,Gd.baluster],[Gd.x,(by0+by1)/2,run0+i*pitch],TIMBER,'Stair head baluster');
  const solid=(x,z,w,d,height,minY)=>collider(x,z,w,d,height,minY);
  // The pit is solid to a grown-up's height, so nobody walks out over it; under the treads it is only the dark.
  addDark(room,P.dark.slice(0,2),solid,'Sakura stairwell darkness',{over:1.5});addDark(room,P.dark.slice(2),solid,'Sakura stairwell darkness');

@@ -110,6 +110,16 @@
   "detail": ""
  },
  {
+  "check": "stair-head balustrade at least 900 mm high",
+  "ok": true,
+  "detail": "950 mm"
+ },
+ {
+  "check": "balustrade gaps under 110 mm (a child's head does not pass)",
+  "ok": true,
+  "detail": "90 mm, 10 balusters"
+ },
+ {
   "check": "no two faces in one plane: shop, office and the strict zones",
   "ok": true,
   "detail": "{\"shop\": 0, \"office\": 0, \"zones\": 0}"

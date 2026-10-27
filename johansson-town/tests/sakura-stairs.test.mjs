@@ -108,7 +108,10 @@ test('from the stockroom, the foot and the climb camera, the stairwell is closed
 
 test('the office: the stair head opens on the whole stair, nothing black, a rail, nobody walks out over the well',()=>{
  const {room,prompts,blocked,layout}=office(),names=[];room.traverse(o=>names.push(o.name));
- assert.ok(names.includes('Stair rail'));assert.ok(names.includes('Sakura stairwell wood'));
+ for(const n of ['Stair head newel post','Stair head handrail','Stair head bottom rail','Stair head baluster'])assert.ok(names.includes(n),n);
+ // A balustrade, not a board: balusters with gaps under 110 mm (the owner circled the old solid board: "What's this wall or door?").
+ const zs=[];room.traverse(o=>{if(o.name==='Stair head baluster')zs.push(o.position.z);});zs.sort((a,b)=>a-b);
+ assert.ok(zs.length>=10);for(let i=1;i<zs.length;i++)assert.ok(zs[i]-zs[i-1]-.03<.11,'baluster gap');assert.ok(names.includes('Sakura stairwell wood'));
  assert.deepEqual(blackMeshes(room),[],'nothing black');
  assert.deepEqual(layout.spawn,[...P.head.arrive.at]);assert.equal(layout.yaw,P.head.arrive.yaw);
  assert.ok(prompts.some(p=>p.label==='Go downstairs'));

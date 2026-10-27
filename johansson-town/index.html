@@ -44,20 +44,20 @@
 <link rel="modulepreload" data-town-runtime href="./runtime/shopping-lane-plan-D0DhEU8_.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/preload-helper-PPVm8Dsz.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/fish-BrZMbD8I.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/boot-RyKUtoIF.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/boot-DGe49O49.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/icons-DfeBIm6m.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/touch-ui-D34cMzo7.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/game-CIQ8S7S4.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/halloween-Ck9C73d-.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/game-hlSfStIy.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/halloween-CZMjFsEg.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/hat-models-C2tO8GIs.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/actors-1AeEK-03.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/animate-BFZFRXeu.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/pixar-JvpsKZzO.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/onsen-wQhXcBHm.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/onsen-DbLayFfG.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/catalog-B6XsPfcw.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-BVDIJS89.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-D16Uzovs.js">
-<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-BziIeA6g.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sakura-interior-CgN4xy-f.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/sato-ramen-D8SfsTms.js">
+<link rel="modulepreload" data-town-runtime href="./runtime/town-hall-IERdBQa6.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/studio-handoff-Dl9PfhOk.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/thuan-voice-Dz-XGNqd.js">
 <link rel="modulepreload" data-town-runtime href="./runtime/storyteller-Bb32A5YH.js">
@@ -402,7 +402,7 @@
 <div id="fatal" class="modal hidden"><div class="modal-card"><h2>JOHANSSON WORLD</h2><p>Unable to start the graphics engine.</p><button id="retry">RETRY</button></div></div>
 <div id="iosFullscreen" class="modal hidden"><div class="modal-card"><h2>INSTALL JOHANSSON WORLD</h2><p>On iPhone or iPad, open this page in Safari. Tap Share, then Add to Home Screen, and turn on Open as Web App if offered. Open the town from its new icon. Your save stays on this device; installed apps and Safari may have separate saves. Reopen while online to get the latest town updates. Previously visited content can load offline.</p><button id="closeFullscreenHelp">CLOSE</button></div></div>
 <script src="./resident-guide.js?h=96d26787"></script>
-<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-DnVih2Q6.js";</script>
+<script>window.JOHANSSON_FEED_MODULE="./runtime/feed-DVfiyWFM.js";</script>
 <script>window.JOHANSSON_PORTRAIT_MODULE="./runtime/portraits-Dbl8Z5-V.js";</script>
 <script src="./landing.js?h=ee7b1d7f"></script>
 <script>
@@ -631,7 +631,7 @@ import {unlockTownAudio} from './runtime/audio-B-C5SRPF.js';
   if(window.johanssonDesktop)document.getElementById('installTown').hidden=true;
   window.__JOHANSSON_TITLE_PREVIEW__=true;
   async function loadPreview(){
-    try { await import('./runtime/boot-RyKUtoIF.js'); } catch (error) {
+    try { await import('./runtime/boot-DGe49O49.js'); } catch (error) {
         if (!/fetch|module|import|404/i.test(error.message||'')) throw error;
         const response=await fetch('./index.html',{cache:'no-store'});
         if(!response.ok)throw error;

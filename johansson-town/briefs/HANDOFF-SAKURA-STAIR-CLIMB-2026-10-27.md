@@ -64,6 +64,13 @@ on the lower flight (the foot camera sees it), and straight ahead on the landing
 camera sees it). The paper is a decal 1 mm off the wall. `build_trim_cad.py` passes 24/24 checks (clear of the rail, on
 its wall). Sheet: `docs/qa/sakura-surfaces/stair-posters.jpg`.
 
+## The stair head's balustrade
+
+The owner circled a brown slab beside the top of the stair: "What's this wall or door?". It was the stair head's guard in
+the office hall, a solid 1.5 m × 1 m board put up when the stairwell was a black pit. It is now a balustrade: newel posts,
+a handrail at 950 mm, a bottom rail, and 30 mm balusters with gaps under 110 mm (`SAKURA_STAIR_TRIM.guard`). It keeps
+the same collider. `build_trim_cad.py` passes 26/26 checks.
+
 ## Checks
 
 - `tests/sakura-stairs.test.mjs`, `sakura-back`, `sakura-surfaces`: pass.

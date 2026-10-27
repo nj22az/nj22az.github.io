@@ -84,6 +84,11 @@ for i, p in enumerate(T['posters']):
         check(f'poster {i + 1} wholly on the wall between the flights, under the upper flight', y + Q['h'] / 2 < under - .2, f"top {y + Q['h'] / 2:.2f} m, flight above {under:.2f} m")
     else:
         check(f'poster {i + 1} on the landing wall, clear of the alarm', abs(z - T['alarm']['at'][2]) > Q['w'] / 2 + .11 + .05)
+Gd = T['guard']
+run = Gd['z'][1] - Gd['z'][0] - 2 * Gd['post']
+nb = math.ceil((run + Gd['gap']) / (Gd['baluster'] + Gd['gap'])) - 1
+check('stair-head balustrade at least 900 mm high', Gd['height'] >= .9, f"{Gd['height'] * 1000:.0f} mm")
+check('balustrade gaps under 110 mm (a child\'s head does not pass)', run / (nb + 1) - Gd['baluster'] < .11, f"{(run / (nb + 1) - Gd['baluster']) * 1000:.0f} mm, {nb} balusters")
 check('no two faces in one plane: shop, office and the strict zones', all(v == 0 for v in D['pairs'].values()), json.dumps(D['pairs']))
 
 # Drawings: plan (x, z) and section looking north (x, y), 1:40, in mm on the sheet.
@@ -153,6 +158,7 @@ for txt in ['Why each piece is there:',
             '- Skirting where the landings meet the walls; non-slip nosing on all 22 treads.',
             '- Rev B: no door in the stair (rev A\'s cupboard door opened onto the 450 mm well). Instead the shop\'s campaign',
             '  poster with Pixar Thuan (SP-NK-001\'s print, B2) is pinned up twice: between the flights and on the landing.',
+            '- The stair head in the office hall: a balustrade (newel posts, handrail, balusters) for the solid board.',
             '- 1F and 2F plates where each floor starts; the stair light on the landing wall and a switch at each end;',
             '  the fire alarm (lamp, bell, button) on the landing: the office\'s way out is down this stair.',
             '- Office storey: the stairwell\'s west wall now runs to the ceiling (the office floor west of it showed',
