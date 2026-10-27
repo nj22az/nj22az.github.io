@@ -30,6 +30,29 @@ Drawing SK-ST-001 rev B (`docs/qa/sakura-surfaces/build_climb_cad.py`, 8/8 check
 - Film: `node tools/sakura-climb-review.mjs <dir>` (after `npm run build:runtime`). The sheet sent to the owner:
   `docs/qa/sakura-surfaces/climb-locked-camera.jpg`.
 
+## The stairwell trim (SK-ST-002 rev A, after the owner's review notes)
+
+The owner sent a review of the climb frames (blank walls; a "dashed line" on the wall; a stray brown board; Blender
+lighting and shader notes) and asked "But we are drawing in blender aren't you?". Answer given: both. World (`main`, these
+frames) is three.js; the Pixar Sakura is Blender (`jojo`, `pixar`, `3d/sakura/`). The structural notes were built in World
+now (`SAKURA_STAIR_TRIM` and `buildStairTrim` in `sakura-stairs.js`, `docs/qa/sakura-surfaces/build_trim_cad.py`, 20/20 checks).
+The shader, AO, noise and light-pool notes belong to the Blender konbini, and the same trim data should be used there.
+
+- The "dashed line" was the upper flight's stepped side, and the brown board was the under-stair cupboard door with no
+  frame. There are now closed strings each side of each flight, with the treads housed in them, and the door is in a
+  casing with a knob.
+- One continuous wall handrail: 40 mm, 65 mm off the wall, 850 mm over the nosing line, on brackets at most 1 m apart.
+- Skirting on both landings; non-slip nosing on all 22 treads.
+- 1F 売場 and 2F 事務所 plates; the stair light with a switch at each end; the fire alarm (lamp, bell, button) on the landing.
+- A fault found on the way: in the office storey the stairwell's west wall stopped at the office floor, so a dead strip of
+  office floor (x -6.4..-5.65) showed as a slab floating on the landing wall. The wall now runs to the ceiling, and the
+  office floor strip and rear wall end under it (`sakura-office-room.js`).
+- Cost: 10 draws and about 2,000 triangles (shop fixture 727 draws, budget 813). The scanner shows 0 coplanar pairs on both
+  storeys and in the strict zones.
+- Not done from the notes: random box rotations (World places nothing at random), lighting pools and the 1F/2F colour
+  shift (they change World's shared lighting), and Blender modifiers. Stockroom tape and the hand truck already exist.
+- Sheet: `docs/qa/sakura-surfaces/stair-trim.jpg`. Test: the trim test in `tests/sakura-stairs.test.mjs`.
+
 ## Checks
 
 - `tests/sakura-stairs.test.mjs`, `sakura-back`, `sakura-surfaces`: pass.

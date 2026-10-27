@@ -127,3 +127,19 @@ test('game.js walks the climb in this storey from its locked camera, the other s
  for(const s of ['placeLandingLens','stairLens','sakuraBoundsAt','STAIR_LENS_EASE','storeys:','officeEntry','SAKURA_STAIR_PASSAGE.fade'])assert.ok(!GAME.includes(s),'gone: '+s);
  assert.match(GAME,/#exitRoomButton'\)\.onclick=\(\)=>\{if\(current\?\.id==='sakura-office'\)\{takeSakuraStair\('down'\)/);
 });
+
+test('the stairwell trim (SK-ST-002): strings, a continuous handrail on brackets, nosing, a framed cupboard door, the fittings',async()=>{
+ const {SAKURA_STAIR_TRIM:T,buildSakuraStairwell}=await import('../src/world/interiors/sakura-stairs.js');
+ for(const storey of ['shop','office']){
+  const root=new THREE.Group(),g=buildSakuraStairwell(root,{storey}),names=[];g.traverse(o=>{if(o.isMesh)names.push(o.name);});
+  for(const k of ['string','rail','metal','nosing','red','lamp','glow','fitting','door'])assert.ok(names.includes('Sakura stairwell '+k),`${storey}: ${k}`);
+  for(const p of ['1F','2F'])assert.ok(names.includes('Stair plate '+p),`${storey}: the ${p} plate`);
+  // The cupboard door is a leaf inside its casing, not a board standing proud of the stair.
+  const door=g.getObjectByName('Sakura stairwell door');door.geometry.computeBoundingBox();const b=door.geometry.boundingBox,C=T.cupboard;
+  assert.ok(b.min.x>C.x[0]&&b.max.x<C.x[1]&&b.max.y-b.min.y<C.y,`${storey}: the door leaf sits in its opening`);
+ }
+ // One rail from the foot to the top landing, 850 mm over the nosing line, a hand's width off the wall.
+ const path=T.rail.path;assert.ok(path.length>=6&&T.rail.off-T.rail.radius>=.04);
+ for(let i=1;i<path.length;i++)assert.ok(Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1],path[i][2]-path[i-1][2])>0,'no zero-length piece');
+ assert.equal(T.strings.length,4,'a string each side of each flight');
+});

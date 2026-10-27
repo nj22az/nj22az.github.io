@@ -48,6 +48,54 @@ export const SAKURA_STAIRWELL=Object.freeze({
  top:Object.freeze({x0:-1.8,x1:-.6,z0:-6.70,z1:-6.14,y:SAKURA_STAIR.height}),
  walls:Object.freeze({west:-5.65,south:-6.70,north:-4.07,east:-.6,ceiling:SAKURA_STAIR.height+2.8,thick:.08}),
 });
+/**
+ * The stairwell's trim (drawing SK-ST-002 rev A, after the owner's review of the climb frames, 27 October 2026: the walls
+ * were blank planes, the step ends showed as a sawtooth and the cupboard door read as a loose board). Each piece is there
+ * for a reason a builder would give:
+ * - strings: a closed string each side of each flight, the treads housed in it, so no step end shows;
+ * - the handrail: one continuous wall rail, a 40 mm tube on brackets 65 mm off the wall, 850 mm over the nosing line, from
+ *   the foot round the landing to the top (a stair must have one; staff carry stock up it);
+ * - skirting where the landings meet the walls (mops and boots); non-slip nosing on every tread (stock in both hands);
+ * - the cupboard door in a casing, with a knob; 1F and 2F plates where each floor starts; the stair light and a switch at
+ *   each end, so it can be lit from either; the fire alarm on the landing, the office's way out (evacuateSakuraOffice).
+ * In the shop's frame. Strings and rails follow the nosing line (each tread's nose), `noseLine`.
+ */
+const K=RISE/TREAD,NOSE_OUT=.02;
+// The nosing lines: lower flight rising west from its first nose (x -1.78 at one rise), upper rising east from its first
+// nose over the landing (x -4.295 at thirteen rises).
+const lowerLine=x=>RISE+(-1.8+NOSE_OUT-x)*K,upperLine=x=>13*RISE+(x-(-1.8-11*TREAD-NOSE_OUT))*K;
+const string=(line,xa,xb,z0,z1,{above=.07,depth=.28}={})=>Object.freeze({x:Object.freeze([xa,xb]),z:Object.freeze([z0,z1]),
+ top:Object.freeze([line(xa)+above,line(xb)+above]),bottom:Object.freeze([Math.max(0,line(xa)+above-depth),line(xb)+above-depth])});
+const RAIL_H=.85,RAIL_OFF=.065,LZ=-4.07-RAIL_OFF,SZ=-6.70+RAIL_OFF,WX=-5.65+RAIL_OFF,Ly=12*RISE;
+export const SAKURA_STAIR_TRIM=Object.freeze({
+ lineSlope:K,
+ // Treads stop at the strings' faces (SAKURA_STAIRWELL's flights are the strings' outer lines).
+ strings:Object.freeze([
+  // The lower strings run 20 mm past the first nose at the foot, as a string does (and off the carriage's end face).
+  string(lowerLine,-1.76,-1.8-11*TREAD,-4.095,-4.07),string(lowerLine,-1.76,-1.8-11*TREAD,-5.175,-5.15),
+  // The upper strings start 5 mm east of the flight's end (its carriage's face), the inner one 5 mm into its carriage.
+  string(upperLine,-1.8-11*TREAD+.005,-1.8,-6.70,-6.675),string(upperLine,-1.8-11*TREAD+.005,-1.795,-5.605,-5.58),
+ ]),
+ treadZ:Object.freeze({lower:Object.freeze([-5.15,-4.095]),upper:Object.freeze([-6.675,-5.60])}),
+ // [x0, x1, y0, y1, z0, z1]: the landing's north, west and south walls; the top landing's south and end walls.
+ skirting:Object.freeze([[-5.635,-4.275,Ly,Ly+.09,-4.085,-4.07],[-5.65,-5.635,Ly,Ly+.09,-6.70,-4.07],[-5.635,-4.27,Ly,Ly+.09,-6.70,-6.685],
+  // The top landing's end wall's face is at x -0.68 (the wall is 80 mm thick inside x -0.6).
+  [-1.8,-.695,SAKURA_STAIR.height,SAKURA_STAIR.height+.09,-6.70,-6.685],[-.695,-.68,SAKURA_STAIR.height,SAKURA_STAIR.height+.09,-6.70,-6.145]].map(Object.freeze)),
+ rail:Object.freeze({radius:.02,height:RAIL_H,off:RAIL_OFF,
+  // The rail's centre line: up the lower flight on the north wall, round the landing on the west wall, up the upper flight
+  // on the south wall (from one going before the landing's edge, on the flight's own line), over the top landing.
+  path:Object.freeze([[-1.8,lowerLine(-1.8)+RAIL_H,LZ],[-1.8-11*TREAD,lowerLine(-1.8-11*TREAD)+RAIL_H,LZ],[WX,lowerLine(-1.8-11*TREAD)+RAIL_H,LZ],
+   [WX,lowerLine(-1.8-11*TREAD)+RAIL_H,SZ],[-1.8-12*TREAD,upperLine(-1.8-12*TREAD)+RAIL_H,SZ],[-1.8,upperLine(-1.8)+RAIL_H,SZ],[-.95,upperLine(-1.8)+RAIL_H,SZ]].map(Object.freeze)),
+  // The most a bracket may be from the next.
+  bracketsEvery:1.0}),
+ nosing:Object.freeze({depth:.035,height:.004,back:.012,end:.03}),
+ cupboard:Object.freeze({x:Object.freeze([-3.2,-2.4]),y:1.8,casing:.05,proud:.03,leaf:.015}),
+ // Plates: [text, x, y, z, normal axis]; the alarm, light and switches likewise, each with the wall it is on.
+ plates:Object.freeze([Object.freeze({text:'1F',sub:'売場',at:Object.freeze([-1.97,1.58,-4.07]),face:'-z'}),Object.freeze({text:'2F',sub:'事務所',at:Object.freeze([-.68,SAKURA_STAIR.height+1.5,-6.42]),face:'-x'})]),
+ alarm:Object.freeze({at:Object.freeze([-5.65,Ly+1.45,-5.4]),face:'+x'}),
+ light:Object.freeze({at:Object.freeze([-5.65,Ly+2.15,-5.4]),face:'+x'}),
+ switches:Object.freeze([Object.freeze({at:Object.freeze([-1.6,1.2,-4.07]),face:'-z'}),Object.freeze({at:Object.freeze([-.68,SAKURA_STAIR.height+1.2,-6.25]),face:'-x'})]),
+});
 /** A point of the shop's frame in the office storey's. */
 export const toOffice=([x,y,z])=>[x,y-SAKURA_STAIR.height,z-SAKURA_STAIR.officeZ];
 
@@ -129,13 +177,12 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
  // Lower flight: tread i (1..11) i goings west of x -1.8, its top at i rises.
  const lower=[];for(let i=1;i<=11;i++){const x1=S.lower.x0-(i-1)*TREAD,x0=x1-TREAD;lower.push([x1,x0,i*RISE]);}
  carriage(lower,S.lower.z0,S.lower.z1);
- for(const [x1,x0,top] of lower)span('wood',x0,x1+NOSE,top-BOARD,top,S.lower.z0-.01,S.lower.z1);
+ const TZ=SAKURA_STAIR_TRIM.treadZ;
+ for(const [x1,x0,top] of lower)span('wood',x0,x1+NOSE,top-BOARD,top,TZ.lower[0],TZ.lower[1]);
  // Upper flight: tread i (1..11) i goings west of x -1.8, its top at 24 - i rises; its carriage is the under-stair cupboard.
  const upper=[];for(let i=11;i>=1;i--){const x1=S.upper.x1-(i-1)*TREAD,x0=x1-TREAD;upper.push([x0,x1,(24-i)*RISE]);}
  carriage(upper,S.upper.z0,S.upper.z1);
- for(const [x0,x1,top] of upper)span('wood',x0-NOSE,x1,top-BOARD,top,S.upper.z0,S.upper.z1+.01);
- // The under-stair cupboard's door, on its face to the well between the flights.
- span('door',-3.2,-2.4,.0,1.8,S.upper.z1+.01,S.upper.z1+.03);
+ for(const [x0,x1,top] of upper)span('wood',x0-NOSE,x1,top-BOARD,top,TZ.upper[0],TZ.upper[1]);
  // The turning landing on its block; the top landing on its block over the stockroom's ceiling.
  const Lg=S.landing;span('plaster',Lg.x0,Lg.x1,0,Lg.y-BOARD,Lg.z0,Lg.z1);span('wood',Lg.x0,Lg.x1,Lg.y-BOARD,Lg.y,Lg.z0,Lg.z1);
  const Tp=S.top,CEIL=2.98;span('plaster',Tp.x0,Tp.x1,CEIL,H-.12,Tp.z0,Tp.z1);
@@ -144,10 +191,10 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
  const t=W.thick;
  if(shop){span('plaster',W.west-t,W.west,0,W.ceiling,W.south,W.north);span('plaster',W.west,W.east,0,W.ceiling,W.north,W.north+.04);}
  else{
-  // In the office storey the walls meet its own: the west wall stops under its floor where the floor and the rear wall
-  // (office z -5.56, shop -6.20) run up to it, and the north wall under the hall's floor east of the hole (x -2.05).
-  const rear=-6.20;
-  span('plaster',W.west-t,W.west,0,H-.12,W.south,W.north);span('plaster',W.west-t,W.west,H-.12,W.ceiling,W.south,rear);
+  // In the office storey the walls meet its own: the north wall stops under the hall's floor east of the hole (x -2.05).
+  // Its west wall runs to the ceiling: west of it, between it and the building's wall (office x -6.4), is a strip of the
+  // office floor that is no room, and from the stair it showed as a slab floating on the landing's wall (SK-ST-002).
+  span('plaster',W.west-t,W.west,0,W.ceiling,W.south,W.north);
   span('plaster',W.west,-2.05,0,H,W.north,W.north+.04);span('plaster',-2.05,W.east,0,H-.12,W.north,W.north+.04);
  }
  span('plaster',W.west-t,W.east,-.19,W.ceiling,W.south-t,W.south);
@@ -166,12 +213,91 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
   // The stockroom's floor at the stair's foot, seen from the office storey looking down the flights.
   span('floor',W.west,W.east,-.12,0,W.south,W.north);
  }
- const colour={plaster:0xece1ca,wood:0x8d7458,timber:0x947354,door:0xb08a5e,ceiling:0xf1eadb,floor:0xb4b1a8};
+ buildStairTrim(add,span);
+ const colour={plaster:0xece1ca,wood:0x8d7458,timber:0x947354,door:0xb08a5e,ceiling:0xf1eadb,floor:0xb4b1a8,string:0x7f6750,rail:0x8a6a48,
+  metal:0xb9b6ae,nosing:0x5d625b,red:0xc23a2e,fitting:0xf2efe6,lamp:0xff5a44,glow:0xfff1d2};
+ const lit={lamp:true,glow:true},shine={metal:{metalness:.6,roughness:.35},rail:{roughness:.55},red:{roughness:.45}};
  for(const [key,list] of lists){
-  const m=new THREE.Mesh(mergeGeometries(list),new THREE.MeshStandardMaterial({color:colour[key],roughness:.88}));list.forEach(g=>g.dispose());
+  const material=lit[key]?new THREE.MeshBasicMaterial({color:colour[key],toneMapped:false}):new THREE.MeshStandardMaterial({color:colour[key],roughness:.88,...shine[key]});
+  const m=new THREE.Mesh(mergeGeometries(list),material);list.forEach(g=>g.dispose());
   m.name='Sakura stairwell '+key;m.receiveShadow=true;group.add(m);
  }
+ if(typeof document!=='undefined'&&document.createElement)group.add(...stairPlates(dy,dz));
  return group;
+}
+
+/** The trim (SAKURA_STAIR_TRIM, SK-ST-002): strings, rail and brackets, skirting, nosing, the cupboard door, the fittings. */
+function buildStairTrim(add,span){
+ const T=SAKURA_STAIR_TRIM,S=SAKURA_STAIRWELL;
+ // Strings: their side profile between the nosing line's offsets, extruded across their thickness.
+ for(const g of T.strings){
+  const sh=new THREE.Shape(),[xa,xb]=g.x;sh.moveTo(xa,g.bottom[0]);sh.lineTo(xa,g.top[0]);sh.lineTo(xb,g.top[1]);sh.lineTo(xb,g.bottom[1]);
+  // At the foot the string stands on the floor: its lower edge meets y 0 where the line crosses it.
+  if(g.bottom[0]===0&&g.top[0]-.28<0){const x0=xa+(xa<xb?1:-1)*(.28-g.top[0])/T.lineSlope;sh.lineTo(x0,0);}
+  sh.closePath();add('string',new THREE.ExtrudeGeometry(sh,{depth:g.z[1]-g.z[0],bevelEnabled:false}).translate(0,0,g.z[0]));
+ }
+ for(const [x0,x1,y0,y1,z0,z1] of T.skirting)span('string',x0,x1,y0,y1,z0,z1);
+ // Non-slip nosing: a 4 mm strip set back 12 mm from each nose, 30 mm short of the strings.
+ const N=T.nosing,tz=T.treadZ;
+ for(let i=1;i<=11;i++){
+  const nose=S.lower.x0-(i-1)*TREAD+NOSE_OUT,top=i*RISE;span('nosing',nose-N.back-N.depth,nose-N.back,top,top+N.height,tz.lower[0]+N.end,tz.lower[1]-N.end);
+  const unose=S.upper.x1-i*TREAD-NOSE_OUT,utop=(24-i)*RISE;span('nosing',unose+N.back,unose+N.back+N.depth,utop,utop+N.height,tz.upper[0]+N.end,tz.upper[1]-N.end);
+ }
+ // The handrail: a tube along the path, a ball at each bend and end, a bracket from the wall about every metre.
+ const R=T.rail,v=p=>new THREE.Vector3(...p),up=new THREE.Vector3(0,1,0);
+ const tube=(a,b,r,key,seg=8)=>{const d=b.clone().sub(a),g=new THREE.CylinderGeometry(r,r,d.length(),seg,1,true);
+  g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up,d.clone().normalize()));g.translate(...a.clone().add(b).multiplyScalar(.5).toArray());add(key,g);};
+ const pts=R.path.map(v);
+ for(let i=1;i<pts.length;i++){
+  tube(pts[i-1],pts[i],R.radius,'rail');
+  const len=pts[i].distanceTo(pts[i-1]),n=Math.max(1,Math.ceil(len/R.bracketsEvery));
+  for(let k=0;k<n;k++){
+   const p=pts[i-1].clone().lerp(pts[i],(k+.5)/n),wall=wallBehind(p),stem=p.clone().addScaledVector(wall,R.off-.008);
+   tube(p.clone().addScaledVector(new THREE.Vector3(0,-1,0),R.radius*.6),stem.clone().setY(p.y-R.radius*.6),.007,'metal',6);
+   const rose=new THREE.CylinderGeometry(.03,.03,.008,10);rose.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up,wall));
+   rose.translate(...stem.clone().setY(p.y-R.radius*.6).addScaledVector(wall,.004).toArray());add('metal',rose);
+  }
+ }
+ for(const p of pts){const g=new THREE.SphereGeometry(R.radius*1.04,8,6);g.translate(p.x,p.y,p.z);add('rail',g);}
+ // The under-stair cupboard: its door in a casing on the carriage's face to the well, and a knob.
+ const C=T.cupboard,face=S.upper.z1,[cx0,cx1]=C.x,c=C.casing;
+ span('string',cx0-c,cx0,0,C.y+c,face,face+C.proud);span('string',cx1,cx1+c,0,C.y+c,face,face+C.proud);span('string',cx0,cx1,C.y,C.y+c,face,face+C.proud);
+ span('door',cx0+.003,cx1-.003,.01,C.y-.003,face,face+C.leaf);
+ const knob=new THREE.SphereGeometry(.024,10,8);knob.scale(1,1,.8).translate(cx1-.09,.95,face+C.leaf+.02);add('metal',knob);
+ tube(new THREE.Vector3(cx1-.09,.95,face+C.leaf),new THREE.Vector3(cx1-.09,.95,face+C.leaf+.016),.007,'metal',6);
+ // The fittings, each a box out from its wall: [width, height, depth] along the wall, up, out.
+ // `from`: how far out from the wall it starts (on the face of what it is mounted on, never in the same plane).
+ const fit=(at,face,w,h,d,key,lift=0,from=0)=>{const [x,y,z]=at,sg=face[0]==='-'?-1:1,a=sg*from,b=sg*(from+d);
+  if(face[1]==='x')span(key,x+Math.min(a,b),x+Math.max(a,b),y+lift-h/2,y+lift+h/2,z-w/2,z+w/2);else span(key,x-w/2,x+w/2,y+lift-h/2,y+lift+h/2,z+Math.min(a,b),z+Math.max(a,b));};
+ // The fire alarm (a red lamp always lit, the bell, the push-button box) on the landing's west wall.
+ const A=T.alarm;fit(A.at,A.face,.22,.34,.012,'red');fit(A.at,A.face,.05,.05,.02,'lamp',.13,.012);
+ const bell=new THREE.CylinderGeometry(.075,.08,.045,14);bell.rotateZ(Math.PI/2).translate(A.at[0]+.012+.0225,A.at[1]+.01,A.at[2]);add('red',bell);
+ fit(A.at,A.face,.1,.1,.04,'fitting',-.14,.012);fit(A.at,A.face,.05,.05,.012,'red',-.14,.052);
+ // The stair light: a bracket fitting over the alarm, its glass lit.
+ const L=T.light;fit(L.at,L.face,.32,.1,.025,'fitting');fit(L.at,L.face,.28,.07,.06,'glow',-.005,.025);
+ // A switch at each end, the stair light's two-way pair.
+ for(const sw of T.switches){fit(sw.at,sw.face,.07,.12,.01,'fitting');fit(sw.at,sw.face,.03,.05,.006,'metal',0,.01);}
+ // The 1F and 2F plates' boards (their lettering is a decal, stairPlates).
+ for(const p of T.plates)fit(p.at,p.face,.3,.2,.01,'fitting');
+}
+/** The direction from a rail point to the wall it is fixed to. */
+function wallBehind(p){
+ const W=SAKURA_STAIRWELL.walls,d=[[W.north-p.z,new THREE.Vector3(0,0,1)],[p.z-W.south,new THREE.Vector3(0,0,-1)],[p.x-W.west,new THREE.Vector3(-1,0,0)]];
+ return d.reduce((a,b)=>b[0]<a[0]?b:a)[1];
+}
+/** The 1F and 2F plates' lettering: decals on their boards (polygon offset, SK-ZF rules). */
+function stairPlates(dy,dz){
+ return SAKURA_STAIR_TRIM.plates.map(p=>{
+  const c=document.createElement('canvas');c.width=192;c.height=128;const g=c.getContext('2d');
+  g.fillStyle='#f2efe6';g.fillRect(0,0,192,128);g.fillStyle='#2f6b5e';g.fillRect(0,0,192,10);
+  g.fillStyle='#24302c';g.font='bold 64px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(p.text,96,60);
+  g.font='22px sans-serif';g.fillText(p.sub,96,104);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(.29,.19),new THREE.MeshStandardMaterial({map:t,roughness:.8,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}));
+  const [x,y,z]=p.at,out=.0105;
+  if(p.face==='-x'){m.position.set(x-out,y+dy,z+dz);m.rotation.y=-Math.PI/2;}else{m.position.set(x,y+dy,z-out+dz);m.rotation.y=Math.PI;}
+  m.name=`Stair plate ${p.text}`;return m;
+ });
 }
 
 const inside=(p,{x,z})=>p.x>=x[0]&&p.x<=x[1]&&p.z>=z[0]&&p.z<=z[1];
