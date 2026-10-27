@@ -4,8 +4,8 @@
 
 The owner, at Scandic Laajavuori today: "add that as an extra good thing ... that they didnt ask me to reserve anything
 on my card, this is a bonus ... some hotels always ask you to add your card for a deposit or if you want to order on
-the room". Added to the record's notes (owner stay report) and as "A bonus at check-in" in the stay post. **On the
-branch; awaiting the owner's word.**
+the room". Added to the record's notes (owner stay report) and as "A bonus at check-in" in the stay post. **Published
+as `9cbb9761`; live on the record and the post.**
 
 ## Folding cards — 27 October 2026
 

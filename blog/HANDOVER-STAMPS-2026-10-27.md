@@ -67,4 +67,4 @@ print of any colour render, solid grainy darks, a speckle in the mid-tones, inke
 `--crop 0.12,0.12,0.88,0.50`, then placed by `build-blog-stamps.py` like the others (shot `vietnam`, its `source`
 recorded in the shot list). Tried and dropped: the PORT 88 coffee render in Sakura's cold-cabinet corner (the busy,
 blurred shelves printed as heavy blobs; weighting ink by focus made the whole print pale). A World shoot of the
-game's Thuan was started and stopped when the owner asked for Pixar Thuan. **On the branch; awaiting the owner's word.**
+game's Thuan was started and stopped when the owner asked for Pixar Thuan. **Published on the owner's "Yes" as `9cbb9761`; live files match and the stamp shows on the post and in the blog list.**
