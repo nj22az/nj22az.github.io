@@ -163,8 +163,15 @@ export function createSakuraShop({world,scene,state,ledger,register,action,exit,
    const fit=WINDOW_FIT;
    group.scale.setScalar(fit);
    group.rotation.set(0,frontage.yaw,0);
+   // The outdoor storefront has an 18 cm slab whose top is exactly the
+   // entrance anchor's Y. Mounting the interior terrazzo there put two large
+   // horizontal surfaces in the same depth plane, causing severe flicker when
+   // looking through the windows from Main Street. Treat the terrazzo as a
+   // 25 mm finish above the structural slab, rather than using polygonOffset
+   // (which would only conceal the coincident geometry).
+   const STREET_FLOOR_FINISH=.025;
    group.position.set(...frontage.position)
-    .add(new THREE.Vector3(0,0,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
+    .add(new THREE.Vector3(0,STREET_FLOOR_FINISH,-fit*(layout.frontZ??3.91)).applyAxisAngle(UP,frontage.yaw));
    const frame=frontFrame();if(frame)frame.visible=false;
    lit(true);backRooms(false);
    group.visible=true;showPeople(true);
