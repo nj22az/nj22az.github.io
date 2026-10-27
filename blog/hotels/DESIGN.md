@@ -39,3 +39,17 @@ and `Other hotels`. The last is a residual group, not a claim of independent
 ownership. Do not offer absent chains or silently infer additional affiliations.
 Country, chain, search, parking and receipt filters intersect and drive the same
 table rows, feed cards and map markers. Reset returns to all chains/free parking.
+
+## Finder layout — 26 October 2026
+
+The owner found the register hard to search. Layout rules since then
+([handover](HANDOVER-FINDER-CLARITY-2026-10-26.md)):
+
+- Cards are grouped by country and sorted by city, then hotel (`place_key`). Never
+  sort by recording date again.
+- Parking is chosen with labelled radio chips that show live counts. The chips
+  are also the colour legend. Do not add a separate legend.
+- A card shows city, name, street, verdict, parking summary and one facts row.
+  Everything else stays in its notes. No icon that is the same on every card.
+- Below 1000 px the list comes first, with a floating List/Map switch. Above
+  1000 px the list and the sticky map sit side by side.

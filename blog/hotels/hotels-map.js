@@ -163,6 +163,14 @@
   });
   if (fit) fit.addEventListener('click', fitSelection);
 
+  // Narrow screens hide the map behind the List/Map switch; a map drawn while hidden has no size.
+  // Show on map runs after this and zooms to its hotel.
+  document.addEventListener('hotel-view-change', function (event) {
+    if (!event.detail || event.detail.view !== 'map') return;
+    map.invalidateSize({ animate: false });
+    fitSelection();
+  });
+
   function removeLocation() {
     if (positionMarker) map.removeLayer(positionMarker);
     if (accuracyCircle) map.removeLayer(accuracyCircle);

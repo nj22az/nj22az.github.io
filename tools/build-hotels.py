@@ -4,6 +4,7 @@ import argparse
 import datetime as dt
 from decimal import Decimal
 from html import escape
+import itertools
 import json
 from pathlib import Path
 import re
@@ -214,8 +215,41 @@ def icon(name):
         'note': '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/>',
         'check': '<path d="m5 12 4 4L19 6"/>',
         'arrow': '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+        'list': '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
     }
     return '<svg class="hotel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths[name] + '</svg>'
+
+
+def place_key(review):
+    """List order: country, then city, then hotel, so a reader can find a place by eye."""
+    return (review['country'].casefold(), review['city'].casefold(), review['name'].casefold())
+
+
+def card_facts(review):
+    """The few facts a driver needs before arriving; unknown stays visibly unknown."""
+    facts = []
+    if review['freeParking'] is not True:
+        operator = review.get('parkingOperator')
+        facts.append(('Payment', {True: 'At the hotel',
+                                  False: 'Separately' + (f' ({operator})' if operator else ''),
+                                  None: 'Not confirmed'}[review['parkingPaymentAtHotel']]))
+        facts.append(('Receipt', {True: 'On the hotel receipt', False: 'Separate receipt',
+                                  None: 'Not confirmed'}[review['parkingOnHotelReceipt']]))
+    # Older entries give registration in their parking instructions, shown above the facts.
+    if 'parkingDetails' in review:
+        registration = review['parkingDetails'].get('registrationAtReception')
+        facts.append(('Registration', 'Register at reception' if registration is True else
+                      'Not required' if registration is False else 'Not stated by the hotel'))
+    paid_total = total_paid(review)
+    if paid_total is not None:
+        nights = review.get('nights')
+        duration = f'{nights} ' + ('night' if nights == 1 else 'nights') if nights else 'nights not recorded'
+        facts.append(('Stay paid', f'{review["currency"] or review.get("currencyLabel") or ""} {money(paid_total)} · {duration}'))
+    verification = review['parkingVerification']
+    checked = (f'<a href="{e(verification["sourceUrl"])}"><time datetime="{e(verification["checkedOn"])}">'
+               f'{date_label(verification["checkedOn"])}</time></a>')
+    return ''.join(f'<div><dt>{e(term)}</dt><dd>{e(value)}</dd></div>' for term, value in facts) + \
+        f'<div><dt>Checked</dt><dd>{checked}</dd></div>'
 
 
 def render_review(review):
@@ -230,29 +264,13 @@ def render_review(review):
         links += f'<a href="{e(review["parkingUrl"])}">Parking information</a>'
     if review['coordinates'] and review['coordinates']['sourceUrl'] not in (review['hotelUrl'], review['parkingUrl']):
         links += f'<a href="{e(review["coordinates"]["sourceUrl"])}">Hotel map location</a>'
-    verification = review['parkingVerification']
-    registration = review.get('parkingDetails', {}).get('registrationAtReception')
-    registration_note = ('Register at reception' if registration is True else
-                         'No reception registration required' if registration is False else
-                         'Registration: see notes; requirements may be unstated')
-    # Older entries describe registration in their summary; retain that wording verbatim.
-    if 'parkingDetails' not in review:
-        registration_note = 'Check the parking instructions below'
     map_action = (f'<a href="#hotel-map" data-hotel-focus="{e(review["id"])}" hidden>{icon("pin")}Show on map</a>'
                   if review['coordinates'] else '<span class="hotel-unmapped">Map location awaiting verification</span>')
-    paid_total = total_paid(review)
-    nights = review.get('nights')
-    duration = f'{nights} ' + ('night' if nights == 1 else 'nights') if nights else 'Nights not recorded'
-    price = (f'<p class="hotel-card-price">Stay paid <strong>{e(review["currency"] or review.get("currencyLabel") or "")} {money(paid_total)}</strong> · {e(duration)}</p>'
-             if paid_total is not None else '')
     return f'''      <article class="hotel-review" id="review-{e(review['id'])}" data-hotel-note="{e(review['id'])}" aria-labelledby="title-{e(review['id'])}">
-        <header class="hotel-card-header"><span class="hotel-card-avatar">{icon('hotel')}</span><div><p class="hotel-card-place">{e(review['city'])} · {e(review['country'])}</p><h3 id="title-{e(review['id'])}">{e(review['name'])}</h3></div></header>
+        <header class="hotel-card-header"><p class="hotel-card-place">{e(review['city'])}</p><h4 id="title-{e(review['id'])}">{e(review['name'])}</h4><p class="hotel-card-address">{e(review['address'])}</p></header>
         <p class="hotel-card-parking hotel-parking-{category}">{icon('parking')}<strong>{e(parking_category_label(review))}</strong></p>
         <p class="hotel-card-summary">{e(review['parkingSummary'])}</p>
-        <p class="hotel-card-condition">{icon('note')}{e(registration_note)}</p>
-        <p class="hotel-card-condition">{icon('note')}{e(receipt_label(review))}</p>
-{price}
-        <p class="hotel-card-checked">{icon('check')}Parking checked <time datetime="{e(verification['checkedOn'])}">{date_label(verification['checkedOn'])}</time></p>
+        <dl class="hotel-card-facts">{card_facts(review)}</dl>
         <div class="hotel-card-actions">{map_action}<a href="{e(review['hotelUrl'])}">{icon('arrow')}Hotel website</a></div>
         <details class="hotel-card-details"><summary>{icon('note')}Full notes, prices &amp; sources</summary>
         <p class="hotel-review-meta">{e(full_address(review))}<br>Recorded <time datetime="{e(review['recordedOn'])}">{date_label(review['recordedOn'])}</time></p>
@@ -264,12 +282,40 @@ def render_review(review):
       </article>'''
 
 
+def render_groups(reviews):
+    groups = []
+    for country, members in itertools.groupby(reviews, key=lambda review: review['country']):
+        members = list(members)
+        slug = re.sub(r'[^a-z0-9]+', '-', country.casefold()).strip('-')
+        cards = '\n'.join(render_review(review) for review in members)
+        groups.append(f'''      <section class="hotel-group" data-hotel-group aria-labelledby="group-{slug}">
+        <h3 class="hotel-group-title" id="group-{slug}">{e(country)} <span class="hotel-group-count" data-hotel-group-count>{len(members)} {'hotel' if len(members) == 1 else 'hotels'}</span></h3>
+{cards}
+      </section>''')
+    return '\n'.join(groups)
+
+
+def render_parking_choice(reviews):
+    counts = {key: sum(parking_category(review) == key for review in reviews) for key in PARKING_CATEGORIES}
+    options = (('free', 'Free parking'), ('easy', 'Easy · one receipt'), ('avoid', 'Avoid'), ('', 'All hotels'))
+    labels = ''.join(
+        f'<label class="hotel-option hotel-option-{value or "all"}"><input type="radio" name="parking" value="{value}"'
+        f'{" checked" if value == "free" else ""}><span>{text} <span class="hotel-option-count" data-parking-count="{value or "all"}">'
+        f'{counts[value] if value else len(reviews)}</span><span class="hotel-sr"> hotels</span></span></label>'
+        for value, text in options)
+    return f'''<fieldset class="hotel-choice" aria-describedby="hotel-parking-hint"><legend>Parking</legend><div class="hotel-choice-options">{labels}</div>
+          <p id="hotel-parking-hint" class="hotel-hint"><strong>Easy:</strong> paid, but you pay at the hotel and it is on the hotel receipt. <strong>Avoid:</strong> paid parking that is not confirmed as easy, or difficult access.</p></fieldset>'''
+
+
 def build(reviews):
+    reviews = sorted(reviews, key=place_key)
     rows = '\n'.join(render_row(review) for review in reviews)
-    notes = '\n'.join(render_review(review) for review in reviews)
+    notes = render_groups(reviews)
     count = len(reviews)
     countries = sorted({(review['countryCode'], review['country']) for review in reviews}, key=lambda item: item[1])
     country_options = ''.join(f'<option value="{e(code)}">{e(name)}</option>' for code, name in countries)
+    names = [name for _, name in countries]
+    country_list = ', '.join(names[:-1]) + ' and ' + names[-1] if len(names) > 1 else names[0]
     chains = sorted({hotel_chain(review) for review in reviews}, key=lambda name: (name == 'Other hotels', name))
     chain_options = ''.join(f'<option value="{e(name)}">{e(name)}</option>' for name in chains)
     map_records = [{
@@ -302,7 +348,7 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=6">
+  <link rel="stylesheet" href="/css/hotels.css?v=7">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=2">
 </head>
@@ -312,32 +358,30 @@ def build(reviews):
   <main id="main-content" class="hotel-page">
     <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
     <header>
-      <p class="hotel-eyebrow">Field notes · Hotels &amp; parking</p>
       <h1>Hotels &amp; Parking</h1>
       <p class="hotel-intro">Straightforward overnight stops for field service engineers. Find free parking, check how to pay and avoid extra receipt admin before you arrive.</p>
-      <p class="hotel-findings-note"><strong>{count} hotels · {sum(r['freeParking'] for r in reviews)} free-parking options · {len(map_records)} verified map locations.</strong> Free applies to the specified parking area; an access warning can still make a free hotel Avoid. Registration and paid alternatives remain in each entry. <a href="#hotel-method-title">How the register works</a>.</p>
+      <p class="hotel-scope">{count} {'hotel' if count == 1 else 'hotels'} in {e(country_list)}. Each entry links to the hotel’s own parking information and the date it was checked. <a href="#hotel-method-title">How the register works</a></p>
     </header>
     <section aria-labelledby="hotel-register-title">
-      <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
-      <ul class="hotel-parking-legend" aria-label="Parking categories"><li class="hotel-tag hotel-parking-free">Green · Free parking</li><li class="hotel-tag hotel-parking-easy">Yellow · Easy — hotel payment &amp; receipt</li><li class="hotel-tag hotel-parking-avoid">Red · Avoid — payment or access concerns</li></ul>
-      <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotel reviews">
-        <div class="hotel-field hotel-search"><label for="hotel-search">Hotel or place</label><input id="hotel-search" type="search" name="search" placeholder="Search hotel, city or country" autocomplete="off"></div>
+      <div class="hotel-register-heading"><h2 id="hotel-register-title">Find a hotel</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
+      <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotels">
+        <div class="hotel-field hotel-search"><label for="hotel-search">City, hotel or street</label><input id="hotel-search" type="search" name="search" placeholder="For example Göteborg, Kista or Strandvej" autocomplete="off"></div>
         <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option>{country_options}</select></div>
         <div class="hotel-field"><label for="hotel-chain">Hotel chain</label><select id="hotel-chain" name="chain"><option value="">All chains</option>{chain_options}</select></div>
-        <div class="hotel-field"><label for="hotel-parking">Parking</label><select id="hotel-parking" name="parking"><option value="free" selected>Green — Free parking</option><option value="easy">Yellow — Easy / one hotel receipt</option><option value="avoid">Red — Avoid / payment or access</option><option value="">All parking</option></select></div>
-        <div class="hotel-field"><label for="hotel-receipt">Parking on hotel receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">Yes</option><option value="false">No — separate receipt</option><option value="unknown">Not confirmed</option></select></div>
+        <div class="hotel-field"><label for="hotel-receipt">Parking receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">On the hotel receipt</option><option value="false">Separate receipt</option><option value="unknown">Not confirmed</option></select></div>
         <button type="reset" class="hotel-reset">Reset filters</button>
+        {render_parking_choice(reviews)}
       </form>
-      <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
-      <nav class="hotel-view-links" aria-label="Hotel views"><a href="#hotel-notes-title">{icon('hotel')}Hotel feed</a><a href="#hotel-map-title">{icon('pin')}Map</a></nav>
-      <div class="hotel-discovery">
-      <section class="hotel-notes" data-hotel-notes aria-labelledby="hotel-notes-title">
-        <h2 id="hotel-notes-title">Hotel feed</h2>
-        <p class="hotel-feed-intro">Parking, payment and receipt facts for working on the road. Easy requires confirmed hotel payment and inclusion on the hotel receipt. Unconfirmed paid arrangements are Avoid. Open an entry for full instructions and sources.</p>
+      <div class="hotel-results-bar">
+        <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
+        <div class="hotel-view-switch" role="group" aria-label="Show hotels as" data-hotel-view-switch hidden><button type="button" data-hotel-view="list" aria-pressed="true">{icon('list')}List</button><button type="button" data-hotel-view="map" aria-pressed="false">{icon('pin')}Map</button></div>
+      </div>
+      <div class="hotel-discovery" data-hotel-discovery>
+      <section class="hotel-notes" data-hotel-notes aria-label="Hotel list">
 {notes}
       </section>
       <section class="hotel-map-section" aria-labelledby="hotel-map-title">
-        <h3 id="hotel-map-title">{icon('pin')}Map of selected hotels</h3>
+        <h3 id="hotel-map-title">{icon('pin')}Map</h3>
         <p class="hotel-map-intro">{len(map_records)} of {count} hotels have verified locations. The map follows your filters. Select a marker for parking details.</p>
         <div class="hotel-map-controls" data-hotel-map-controls hidden>
           <button type="button" id="hotel-locate">Show my location</button>
@@ -373,9 +417,9 @@ def build(reviews):
   <script src="/config.js?v=blog-1"></script>
   <script src="/shared.js?v=hotel-fixed-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
-  <script src="/blog/hotels/hotels.js?v=4"></script>
+  <script src="/blog/hotels/hotels.js?v=5"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=4"></script>
+  <script src="/blog/hotels/hotels-map.js?v=5"></script>
 </body>
 </html>
 '''
@@ -387,7 +431,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     records = json.loads(DATA.read_text(encoding='utf-8'))['reviews']
     validate(records)
-    records.sort(key=lambda review: review['recordedOn'], reverse=True)
     html = build(records)
     if args.check:
         assert OUTPUT.read_text(encoding='utf-8') == html, 'Run python3 tools/build-hotels.py to refresh the page'
