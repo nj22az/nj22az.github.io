@@ -1,0 +1,17 @@
+/* The blog's rubber-stamp pictures of Minato (tools/build-blog-stamps.py): one ink, printed in the page's own theme
+   colour (a mask over the accent, darkened with the text colour so pale themes stay legible), on the page itself. */
+.blog-stamp{margin:4px 0 34px}
+.blog-stamp-art,.blog-feed-stamp,.blog-head-stamp{display:block;background:color-mix(in srgb,var(--accent,#7d2433) 70%,var(--ink,#1a1a1a));-webkit-mask:var(--stamp) center/cover no-repeat;mask:var(--stamp) center/cover no-repeat}
+.blog-stamp-art{width:100%;aspect-ratio:2/1}
+.blog-stamp figcaption{font-size:13px;line-height:1.6;color:var(--ink-light,#52606a);margin-top:10px}
+.blog-head-stamp{width:100%;aspect-ratio:3/1;margin:0 0 28px}
+/* The list: a small print beside each article that has one. */
+.blog-feed-item.has-stamp{display:grid;grid-template-columns:minmax(0,1fr) 200px;column-gap:28px;align-items:start}
+.blog-feed-item.has-stamp>*{grid-column:1}
+.blog-feed-item.has-stamp>.blog-feed-stamp{grid-column:2;grid-row:1/span 4;width:200px;aspect-ratio:2/1;margin-top:4px}
+@media(max-width:600px){
+  .blog-head-stamp{aspect-ratio:2/1;margin-bottom:20px}
+  .blog-feed-item.has-stamp{grid-template-columns:minmax(0,1fr) 112px;column-gap:16px}
+  .blog-feed-item.has-stamp>.blog-feed-stamp{width:112px}
+}
+@media (forced-colors:active){.blog-stamp-art,.blog-feed-stamp,.blog-head-stamp{background:CanvasText}}
