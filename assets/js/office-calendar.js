@@ -7,14 +7,13 @@
     var nav = document.querySelector('.office-home .nav-links');
     var paths = {
       projects:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
-      world:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c-4 5-4 13 0 18M12 3c4 5 4 13 0 18',
-      course:'M13 2 3 14h9l-1 8 10-12h-9l1-8Z'
+      world:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c-4 5-4 13 0 18M12 3c4 5 4 13 0 18'
     };
     var shortcuts = [
       ['Projects',location.pathname==='/'||location.pathname==='/index.html'?'#projects':'/#projects','Projects',paths.projects],
       ['Johansson World','/world/','World',paths.world],
       ['Blog','/blog/','Blog',CONFIG.icons.notebook],
-      ['Sjöskolan — electronics course','/sjoskolan/','Sjöskolan',paths.course]
+      ['Hotels & Parking','/hotels/','Hotels',CONFIG.icons.bed]
     ];
     nav.classList.add('office-quick-links');
     nav.setAttribute('aria-label','Quick access');nav.setAttribute('role','group');

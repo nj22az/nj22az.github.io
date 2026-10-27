@@ -36,7 +36,9 @@ export function drinkHeadTilt(prop,lift,food=false){
 export function drinkGrip(prop,m,side='R'){
  const g=prop?.userData?.grip,s=side==='R'?1:-1;
  if(!g)return new THREE.Vector3(s*.10*m.k,-.08*m.k+m.hand*.55,.015*m.k);
- const out=g.handle!=null?g.handle+m.hand*.25:g.radius+m.hand*.70;
+ // (a real hand, a Pixar body's: the fingers through a handle with a finger's clearance, or the palm against a glass's
+ // body; the mitten's offsets put a Pixar hand a span from the glass: the owner, 27 October 2026, "this is wrong")
+ const out=m.realHand?(g.handle!=null?g.handle+.02:g.radius+.012):g.handle!=null?g.handle+m.hand*.25:g.radius+m.hand*.70;
  return new THREE.Vector3(s*out,-g.height,0);
 }
 /** Keep the palm upright while holding or sipping, including idle holds. */
@@ -89,10 +91,14 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  const L=faceLayout(avatar.recipe),head=b.head;
  const theta=Math.PI*.28+L.mouthY/256*Math.PI*.58,phi=Math.PI/2-.95+L.mouthX/256*1.9;
  const v=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
- const lips=new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k);
+ const lips=avatar.pixar?.lipsLocal||new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k);   // (a Pixar body's own lips, pixar.js)
  const rest=root.localToWorld(new THREE.Vector3(-m.shoulderX-m.hand*.4,m.shoulderY-m.upper-m.fore*.55,m.depth*.75));
  const q=root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
- const contact=(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,0))).applyQuaternion(q);
+ // (what meets the lips: the cartoon's rim at its centre (its lips point stands off its big head); a Pixar body's lips are
+ // its own skin, so the rim's near edge comes to them and the glass stands in front of the face, not through the cheek
+ // and chin: the owner, 27 October 2026, "the arm gets stuck in his head")
+ const rimNear=avatar.pixar&&!food?(prop?.userData.grip?.radius??.039)*.9:0;
+ const contact=(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,rimNear))).applyQuaternion(q);
  // Short arms and large custom heads still meet the drink. Start from a
  // reachable resting hand, then lean gently; any remaining reach is met by
  // bringing the head towards the hand instead of turning it through a right angle.
@@ -119,7 +125,8 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
   head.updateWorldMatrix(true,false);
   target=rest.clone().lerp(head.localToWorld(lips.clone()).sub(contact),lift);
  }
- reach(avatar,target,'R');
+ // (a Pixar body's elbow hangs below the shoulder as it drinks, the cartoon's short arm goes out to the side)
+ reach(avatar,target,'R',avatar.pixar?[-.45,-1,.25]:-.25);
  // The vessel sits inside the hand, where the thumb can close on it, rather
  // than hanging outside the wrist. Keep the palm level throughout the sip.
  if(!food)alignDrinkHand(avatar,q);
@@ -128,6 +135,7 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
 /** A drink is gripped in the palm (drinkGrip), clear of the arm; its base remains upright. */
 export function fitAvatarHeldProp(avatar,prop,lift=0,side='R'){
  const food=!!prop.userData.food,m=avatar.measure,hand=avatar.bones['hand'+side];
+ avatar.pixar?.grip?.(side,food?.35:1);   // (a hand with fingers closes on a glass, half on a morsel's sticks)
  avatar.root.updateWorldMatrix(true,true);
  const q=avatar.root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
  if(!food)alignDrinkHand(avatar,q,side);

@@ -11,7 +11,7 @@ The frame comes from Johansson World itself (johansson-town/tools/tetsuo-banner-
 --style stamp / riso set the title as printed matter for the Rubber stamp and Risograph Looks: a stamped
 burgundy label or a two-plate riso tag on the frame's own paper colour.
 
-  python3 tools/build-hotel-banner.py <frame.png> [--style stamp] [--site] [--out blog/hotels/banner]
+  python3 tools/build-hotel-banner.py <frame.png> [--style stamp] [--site] [--out hotels/banner]
 
 Colours are the hotel page's own: ink #08131a, white, free-parking green #22c55e for the rule.
 """
@@ -194,7 +194,7 @@ def build(frame, out, truck_x, style='ink', site=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('frame', type=Path)
-    parser.add_argument('--out', type=Path, default=ROOT / 'blog/hotels/banner')
+    parser.add_argument('--out', type=Path, default=ROOT / 'hotels/banner')
     parser.add_argument('--style', choices=['ink', *PRINT], default='ink', help='ink: white title on an ink gradient; stamp or riso: a printed label for those Looks')
     parser.add_argument('--site', action='store_true', help='Write only what the page serves: banner-* as WebP plus a JPEG fallback (no PNG, no art-*)')
     parser.add_argument('--truck-x', type=float, default=0.47, help='Tetsuo cab position across the frame (0-1) for the phone crop')

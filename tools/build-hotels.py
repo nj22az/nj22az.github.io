@@ -10,8 +10,9 @@ import re
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / 'blog/hotels/hotels.json'
-OUTPUT = ROOT / 'blog/hotels/index.html'
+DATA = ROOT / 'hotels/hotels.json'
+OUTPUT = ROOT / 'hotels/index.html'
+BLOG_POSTS = ROOT / 'assets/js/blog-posts.js'
 PARKING = {
     'external-paid': 'External paid parking',
     'hotel-paid': 'Hotel paid parking',
@@ -156,6 +157,7 @@ def validate(reviews):
         assert review['id'] not in ids, 'Duplicate review id'
         ids.add(review['id'])
         dt.date.fromisoformat(review['recordedOn'])
+        validate_photos(review)
         warning = review.get('parkingAccessWarning')
         if warning is not None:
             assert warning.get('status') == 'avoid' and warning.get('source') == 'owner stay report', 'Access overrides need an attributed owner report'
@@ -218,6 +220,7 @@ ICONS = {
     'car': '<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><path d="M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/>',
     'wallet': '<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3z"/><path d="M3 7l12-4v4M16 13.5h2"/>',
     'message': '<path d="M4 5h16v11H10l-5 4v-4H4z"/>',
+    'camera': '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
     'bookmark': '<path d="M7 3h10v18l-5-4-5 4z"/>',
     'share': '<path d="M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8"/>',
     'globe': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
@@ -297,14 +300,56 @@ def post_chips(review):
     return ''.join(f'<li>{icon(name)}{e(text)}</li>' for name, text in chips)
 
 
+def date_stamp(value):
+    """The date as an old film camera printed it in the corner of a photo: '26 10 27."""
+    day = dt.date.fromisoformat(value)
+    return f"’{day:%y} {day.month:2d} {day.day:2d}"
+
+
+def post_photos(review):
+    """The owner's own photos of the stay, small, each with the date it was taken; nothing when there are none."""
+    photos = review.get('photos') or []
+    if not photos:
+        return ''
+    figures = ''.join(
+        f'<figure><a href="{e(photo["src"])}"><img src="{e(photo["thumb"])}" width="480" height="{round(480 * photo["height"] / photo["width"])}" '
+        f'loading="lazy" decoding="async" alt="{e(photo["alt"])}"><time class="hotel-photo-stamp" datetime="{e(photo["takenOn"])}" '
+        f'aria-label="Taken {date_label(photo["takenOn"])}">{date_stamp(photo["takenOn"])}</time></a><figcaption>{e(photo["caption"])}</figcaption></figure>'
+        for photo in photos)
+    return f'\n        <div class="hotel-photos" aria-label="Photos of {e(review["name"])}">{figures}</div>'
+
+
+def validate_photos(review):
+    for photo in review.get('photos') or []:
+        for key in ('src', 'thumb'):
+            assert photo[key].startswith('/hotels/photos/') and (ROOT / photo[key].lstrip('/')).is_file(), f'{review["name"]}: missing photo {photo[key]}'
+        assert photo['alt'].strip() and photo['caption'].strip(), f'{review["name"]}: a photo needs a caption and alt text'
+        dt.date.fromisoformat(photo['takenOn'])
+        assert photo['width'] > 0 and photo['height'] > 0
+
+
 def comment(kind, who, body):
     return (f'<li class="hotel-comment hotel-comment-{kind}"><span class="hotel-comment-icon">{icon(kind)}</span>'
             f'<div class="hotel-comment-body"><p class="hotel-comment-who">{who}</p>{body}</div></li>')
 
 
-def post_thread(review):
-    """Comments are the record's own notes: an owner report, the price paid, the register notes and its sources."""
-    items = []
+def hotel_posts(path=BLOG_POSTS):
+    """Blog posts written from the owner's notes on a stay: catalogue entries carrying "hotel": <record id>."""
+    source = path.read_text(encoding='utf-8')
+    catalogue = json.loads(source[source.index('['):source.rindex(']') + 1])
+    posts = {}
+    for post in catalogue:
+        if post.get('hotel'):
+            posts.setdefault(post['hotel'], []).append(post)
+    return {hotel: sorted(items, key=lambda post: post['date'], reverse=True) for hotel, items in posts.items()}
+
+
+def post_thread(review, posts=()):
+    """Comments are the record's own notes: blog posts about the stay, an owner report, the price paid, the register
+    notes and its sources."""
+    items = [comment('note', f'Blog post · <time datetime="{e(post["date"])}">{date_label(post["date"])}</time>',
+                     f'<p><a href="{e(post["url"])}">{e(post["title"])}</a></p><p>{e(post["excerpt"])}</p>')
+             for post in posts]
     warning = review.get('parkingAccessWarning')
     if warning:
         items.append(comment('warning', f'Owner’s report · <time datetime="{e(warning["reportedOn"])}">{date_label(warning["reportedOn"])}</time>',
@@ -323,20 +368,24 @@ def post_thread(review):
     return items
 
 
-def render_review(review):
+def render_review(review, posts=()):
     category = parking_category(review)
     rid = e(review['id'])
-    thread = post_thread(review)
+    thread = post_thread(review, posts)
     map_action = (f'<a href="#hotel-map" data-hotel-focus="{rid}" hidden>{icon("pin")}Map</a>' if review['coordinates']
                   else '<span class="hotel-unmapped">Map location awaiting verification</span>')
     checked = review['parkingVerification']['checkedOn']
+    photo_count = len(review.get('photos') or [])
+    photos_action = (f'<button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="more-{rid}" hidden>{icon("camera")}Photos <span class="hotel-action-count">{photo_count}</span></button>'
+                     if photo_count else '')
     return f'''      <article class="hotel-review hotel-post" id="review-{rid}" data-hotel-note="{rid}" data-checked="{e(checked)}" aria-labelledby="title-{rid}">
         <header class="hotel-post-head"><span class="hotel-avatar hotel-avatar-{category}" aria-hidden="true">P</span><div class="hotel-post-who"><h4 id="title-{rid}">{e(review['name'])}</h4><p class="hotel-post-meta"><strong class="hotel-verdict hotel-verdict-{category}">{e(parking_category_label(review))}</strong> · {e(review['city'])}</p></div>{country_tag(review)}<button type="button" class="hotel-save" data-hotel-save="{rid}" aria-pressed="false" aria-label="Save {e(review['name'])}" hidden>{icon('bookmark')}</button></header>
         <p class="hotel-trip-line" data-hotel-trip-line hidden></p>
         <p class="hotel-post-caption">{e(review['parkingSummary'])}</p>
         <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>
-        <div class="hotel-post-actions"><button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="notes-{rid}" hidden>{icon('message')}Notes <span class="hotel-action-count">{len(thread)}</span></button>{map_action}<a href="{e(review['hotelUrl'])}">{icon('globe')}Website</a><button type="button" data-hotel-share="{rid}" hidden>{icon('share')}Share</button></div>
-        <ol class="hotel-thread" id="notes-{rid}" aria-label="Notes on {e(review['name'])}">{''.join(thread)}</ol>
+        <div class="hotel-post-actions"><button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="more-{rid}" hidden>{icon('message')}Notes <span class="hotel-action-count">{len(thread)}</span></button>{photos_action}{map_action}<a href="{e(review['hotelUrl'])}">{icon('globe')}Website</a><button type="button" data-hotel-share="{rid}" hidden>{icon('share')}Share</button></div>
+        <div class="hotel-post-more" id="more-{rid}"><div class="hotel-post-more-inner">{post_photos(review)}
+        <ol class="hotel-thread" id="notes-{rid}" aria-label="Notes on {e(review['name'])}">{''.join(thread)}</ol></div></div>
       </article>'''
 
 
@@ -366,10 +415,16 @@ def gazetteer(reviews):
             for (town, code), points in sorted(towns.items(), key=lambda item: item[0][0].casefold())]
 
 
-def build(reviews):
+def check_posts(reviews, posts):
+    unknown = sorted(set(posts) - {review['id'] for review in reviews})
+    assert not unknown, f'Blog posts name hotels that are not in the register: {unknown}'
+
+
+def build(reviews, posts=None):
+    posts = hotel_posts() if posts is None else posts
     reviews = sorted(reviews, key=place_key)
     rows = '\n'.join(render_row(review) for review in reviews)
-    notes = '\n'.join(render_review(review) for review in reviews)
+    notes = '\n'.join(render_review(review, posts.get(review['id'], ())) for review in reviews)
     count = len(reviews)
     countries = sorted({(review['countryCode'], review['country']) for review in reviews}, key=lambda item: item[1])
     country_options = ''.join(f'<option value="{e(code)}">{e(name)}</option>' for code, name in countries)
@@ -394,14 +449,14 @@ def build(reviews):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotels &amp; Parking | Blog – The Office of Nils Johansson</title>
+  <title>Hotels &amp; Parking – The Office of Nils Johansson</title>
   <meta name="description" content="Hotels for field service engineers: verified free parking, a trip planner with drive times, payment and receipt facts, and a map across Denmark, Sweden, Norway and Finland.">
-  <link rel="canonical" href="https://nj22az.github.io/blog/hotels/">
+  <link rel="canonical" href="https://nj22az.github.io/hotels/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Hotels &amp; Parking – The Office of Nils Johansson">
   <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, a trip planner, a filtered map and prices paid.">
-  <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
-  <meta property="og:image" content="https://nj22az.github.io/blog/hotels/banner/banner-desktop.jpg">
+  <meta property="og:url" content="https://nj22az.github.io/hotels/">
+  <meta property="og:image" content="https://nj22az.github.io/hotels/banner/banner-desktop.jpg">
   <meta property="og:image:width" content="2400">
   <meta property="og:image:height" content="800">
   <meta property="og:image:alt" content="Tetsuo drives his kei truck past Sakura Shōten, printed as a rubber stamp.">
@@ -414,7 +469,7 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=10">
+  <link rel="stylesheet" href="/css/hotels.css?v=12">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=3">
 </head>
@@ -422,14 +477,13 @@ def build(reviews):
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav id="site-nav" class="site-nav"></nav>
   <main id="main-content" class="hotel-page">
-    <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
     <header class="hotel-page-head">
       <h1 class="hotel-sr">Hotels &amp; Parking: free parking for field service trips</h1>
       <picture class="hotel-banner">
-        <source media="(max-width: 600px)" type="image/webp" srcset="/blog/hotels/banner/banner-phone.webp" width="1200" height="900">
-        <source media="(max-width: 600px)" srcset="/blog/hotels/banner/banner-phone.jpg" width="1200" height="900">
-        <source type="image/webp" srcset="/blog/hotels/banner/banner-desktop.webp">
-        <img src="/blog/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
+        <source media="(max-width: 600px)" type="image/webp" srcset="/hotels/banner/banner-phone.webp" width="1200" height="900">
+        <source media="(max-width: 600px)" srcset="/hotels/banner/banner-phone.jpg" width="1200" height="900">
+        <source type="image/webp" srcset="/hotels/banner/banner-desktop.webp">
+        <img src="/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
       </picture>
       <p class="hotel-intro">{count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
     </header>
@@ -492,26 +546,26 @@ def build(reviews):
 {rows}
         </tbody>
       </table>
-      <p class="hotel-price-note"><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download the spreadsheet (CSV)</a>. Free parking refers to the stated guest parking; charging or a paid garage can cost extra.</p>
+      <p class="hotel-price-note"><a class="hotel-download" href="/hotels/hotel-reviews.csv" download>Download the spreadsheet (CSV)</a>. Free parking refers to the stated guest parking; charging or a paid garage can cost extra.</p>
       </details>
     </section>
     <details class="hotel-method">
       <summary><h2 id="hotel-method-title">How the register works</h2></summary>
-      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/blog/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/blog/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
       <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but both payment at the hotel and inclusion on the hotel receipt are confirmed. Red means Avoid: paid parking with external payment, separate receipts or either fact unconfirmed, or a documented difficult-access report even when parking is free. An unconfirmed route stays labelled unknown; it is not a claim that hotel payment is impossible. Avoid is a parking preference, not a judgement of hotel quality. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
       <p>The trip planner only suggests green hotels. It asks OpenStreetMap routing for driving times, suggests the closest green hotel to where you are going, and lists overnight stops only where they fall in the second half of the drive and add little time. Notes under each hotel are the register’s own records: owner reports, prices paid, notes and sources.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
     </details>
   </main>
   <footer id="site-footer" class="site-footer"></footer>
-  <script src="/config.js?v=blog-1"></script>
-  <script src="/shared.js?v=hotel-fixed-1"></script>
+  <script src="/config.js?v=20261027-hotels"></script>
+  <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/blog/hotels/hotels.js?v=7"></script>
+  <script src="/hotels/hotels.js?v=9"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=6"></script>
-  <script src="/blog/hotels/hotels-trip.js?v=1"></script>
+  <script src="/hotels/hotels-map.js?v=6"></script>
+  <script src="/hotels/hotels-trip.js?v=1"></script>
 </body>
 </html>
 '''
@@ -522,6 +576,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     records = json.loads(DATA.read_text(encoding='utf-8'))['reviews']
     validate(records)
+    check_posts(records, hotel_posts())
     html = build(records)
     if args.check:
         assert OUTPUT.read_text(encoding='utf-8') == html, 'Run python3 tools/build-hotels.py to refresh the page'

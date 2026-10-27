@@ -50,6 +50,7 @@ const CONFIG = {
     { id: "world", label: "Johansson World", url: "/world/" },
     { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
     { id: "blog", label: "Blog", url: "/blog/" },
+    { id: "hotels", label: "Hotels & Parking", url: "/hotels/" },
     { id: "about", label: "About" },
     { id: "locations", label: "Locations" },
   ],
@@ -220,6 +221,7 @@ const CONFIG = {
     user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
     leaf: "M12 22V8M12 8C12 8 7 3 2 3c0 5 4 9 10 13M12 8c0 0 5-5 10-5 0 5-4 9-10 13",
     plus: "M12 5v14M5 12h14",
+    bed: "M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9",
     mappin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0ZM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
     calculator:
       "M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM6 6h12v4H6ZM6 14h2M6 18h2M10 14h2M10 18h2M14 14h4v4h-4Z",

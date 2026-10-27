@@ -123,3 +123,14 @@ body.standalone-studio .studio-file-menu button{width:100%}
 
 /* Keep every workspace reachable when the mode bar exceeds a phone width. */
 @media(max-width:800px){.studio-modes{justify-content:flex-start;overflow-x:auto}.studio-modes button{flex:0 0 auto;min-width:84px}}
+
+.scene-look-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;max-height:310px;overflow:auto;padding:4px}
+.scene-look-grid button{display:grid;gap:6px;justify-items:center;font-size:12px}
+.scene-look-grid :is(svg,img){width:100%;height:72px;object-fit:cover;border-radius:5px}
+.scene-look-grid [aria-pressed=true]{border:2px solid var(--line-green);background:#e5f2eb}
+.scene-look-grid [hidden]{display:none!important}
+.scene-camera [data-action=flight][aria-pressed=true]{background:var(--line-green);color:white}
+.scene-look-browser{border-top:1px solid var(--line-border);margin-top:10px;padding-top:8px}
+
+.scene-camera-box .scene-camera{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.scene-camera-box .scene-camera button{grid-column:auto}

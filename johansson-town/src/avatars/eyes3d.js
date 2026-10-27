@@ -41,7 +41,7 @@ const SHINE={dot:1.22,bright:1.67,inkoval:0,narrow:0};
 export const EYE_PARAMS=Object.freeze(['kind','rx','ry','topAmp','botAmp','pTop','pBot','corner','off',
  'cut','slant','smile','arch','closed','irx','iry','iy','pupil','highlight','star','lash','flick','lower','lidLine',
  'bright','tired','lashes','tear','dryLine','ovalX','ovalY','gainX','gainY','lookX','lookY','blinkA','blinkB',
- 'follow','still','depth','caruncle']);
+ 'follow','still','depth','caruncle','squeeze','crow','lidShadow','warmIris']);
 
 /**
  * The eye of this style in this state, in the painter's units (x to the outer corner, y up, both before the eye's size,
@@ -52,7 +52,7 @@ export const EYE_PARAMS=Object.freeze(['kind','rx','ry','topAmp','botAmp','pTop'
 export function eyeShape(style,eyes,own=null){
  const s={kind:0,rx:11.5,ry:13.5,topAmp:13.5,botAmp:13.5,pTop:.5,pBot:.5,corner:0,off:0,cut:0,slant:0,smile:0,arch:0,closed:0,
   irx:7.4,iry:7.4,iy:-1,pupil:.5,highlight:1,star:0,lash:3.4,flick:3,lower:1,lidLine:0,bright:0,tired:0,lashes:0,tear:0,dryLine:0,
-  ovalX:0,ovalY:0,gainX:4,gainY:3,follow:0,still:0,depth:0,caruncle:0};
+  ovalX:0,ovalY:0,gainX:4,gainY:3,follow:0,still:0,depth:0,caruncle:0,squeeze:0,crow:0,lidShadow:0,warmIris:0};
  const dark=DARK[style];
  if(dark){
   Object.assign(s,{kind:1,rx:dark[0],ry:dark[1],topAmp:dark[1],botAmp:dark[1],irx:0,iry:0,iy:0,lash:3.2,flick:0,lower:0,gainX:2,gainY:2,
@@ -65,8 +65,10 @@ export function eyeShape(style,eyes,own=null){
   // A modelled face's eye (own) is a wet ball in a socket: the lids follow the gaze a third of the way, the light's
   // highlight stays where the light is while the iris slides under it, and the iris lies under the cornea, so it shifts
   // against the eye's surface as the head turns (parallax) rather than lying on it like a sticker.
-  // (and it travels further in its socket, with the pink of the inner corner, the caruncle, showing)
-  if(own)Object.assign(s,{follow:.32,still:1,depth:2.4,caruncle:.8,gainX:5.5,gainY:4});
+  // (and it travels further in its socket, with the pink of the inner corner, the caruncle, showing). The upper lid lays a
+  // warm shadow over the top quarter of the eye, the iris with the white (the cartoon's cool shade under the lid is
+  // drawn on the white alone), and the iris warms round the pupil inside a darker rim (the creator's brief, 26 October).
+  if(own)Object.assign(s,{follow:.32,still:1,depth:2.4,caruncle:.8,gainX:5.5,gainY:4,lidShadow:1,warmIris:1});
   // Almond and cat eyes come to points (the painter's two quadratic curves); a cat's outer corner lifts.
   if(style==='almond'||style==='cat')Object.assign(s,{topAmp:.75*ry,botAmp:.65*ry,pTop:1,pBot:1});
   if(style==='cat')Object.assign(s,{corner:3,off:1,flick:7});
@@ -161,7 +163,7 @@ vec4 eyesPaint(vec2 deep){
   open=min(min(dTop,dBot),E_rx-abs(p.x));
   vec2 ic=vec2(look.x*E_gainX,E_iy+look.y*E_gainY),ir=vec2(E_irx,E_iry);
   // The white, shaded under the upper lid as a drawn eye is.
-  inside=mix(uEyeWhite,uEyeLidShade,.55*smoothstep(L.x-E_ry*.5,L.x,p.y));
+  inside=mix(uEyeWhite,uEyeLidShade,.55*(1.-E_lidShadow)*smoothstep(L.x-E_ry*.5,L.x,p.y));
   inside=mix(inside,vec3(.95,.72,.72),E_caruncle*.75*smoothstep(-.62,-.92,p.x/E_rx));
   if(ir.x>0.){
    // (the iris under the cornea: seen at the point deep away, eyeParallax)
@@ -169,8 +171,11 @@ vec4 eyesPaint(vec2 deep){
    float di=length((q-ic)/ir),g=clamp((q.y-ic.y)/ir.y*.5+.5,0.,1.);
    vec3 iris=mix(uEyeIris*1.3+.05,uEyeIris*.5,smoothstep(.15,.95,g));
    iris=mix(iris,uEyeIris*.4,smoothstep(.8,.97,di));
+   iris=mix(iris,uEyeIris*.45+vec3(.3,.19,.06),E_warmIris*.55*(1.-smoothstep(E_pupil,E_pupil+.3,di)));
+   iris=mix(iris,uEyeInk*.7,E_warmIris*.45*smoothstep(.84,1.,di));
    iris=mix(iris,uEyeInk*.55,eyeCover((E_pupil-di)*min(ir.x,ir.y),w));
    inside=mix(inside,iris,eyeCover(eyeEllipse(q,ic,ir),w));
+   if(E_lidShadow>0.)inside*=mix(vec3(1.),vec3(.8,.65,.6),E_lidShadow*smoothstep(L.x-E_ry*.5,L.x-.3,p.y));
    if(E_highlight>0.){
     // the highlights are on the eye's wet surface: with E_still they stay where the light is and the iris slides under them
     float r=min(ir.x,ir.y);vec2 hc=mix(ic,vec2(0.,E_iy),E_still);
@@ -191,6 +196,14 @@ vec4 eyesPaint(vec2 deep){
   }
  }
  eyeOver(col,inside,eyeCover(open,w));
+ // Crow's feet (E_crow: an older face's smile, its cheeks up): three fine creases fanning out from the outer corner.
+ if(E_crow>0.){vec2 a=vec2(E_rx*1.06,-.15*E_ry);float k=0.;
+  for(int i=0;i<3;i++){float an=(float(i)-1.)*.42-.12;vec2 b=a+vec2(cos(an),sin(an))*(3.8-abs(float(i)-1.)*.8);k=max(k,eyeCover(eyeSegment(p,a+(b-a)*.12,b,.42,.16),w));}
+  eyeOver(col,mix(uEyeLidShade,uEyeInk,.55),.8*clamp(E_crow,0.,1.)*k);}
+ // Squeezed shut (E_squeeze: pain, a sneeze): the creases fanning out from the outer corner of the shut eye, a ">".
+ if(E_squeeze>0.&&c>.5){vec2 a=vec2(E_rx*.98,-.4*E_ry);
+  float k=max(eyeCover(eyeSegment(p,a,a+vec2(4.2,3.4),.9,.45),w),eyeCover(eyeSegment(p,a,a+vec2(4.4,-2.2),.9,.45),w));
+  eyeOver(col,uEyeInk,.9*min(E_squeeze,1.)*smoothstep(.5,.9,c)*k);}
  // The upper lash line along the lid: thin at the inner corner, thick to the outer one (a dark oval has a line only
  // where a lid has come down over it, or, dazed and deadpan, the wide lid line).
  float th=E_kind<.5?E_lash*mix(.4,1.,smoothstep(-1.,-.25,p.x/E_rx)):E_lash;
@@ -268,7 +281,7 @@ export function buildEyes3d(recipe,m){
  * skinned one for a skinned face); `stand` names drawn eyes to stand in for the ones only the painter draws (a face with
  * no painted eyes under it: {star: 'wide', …}; a wink is the open eyes with her left one shut).
  */
-export function rigEyes(geometry,{iris,style,own=null,cel=true,make=(g,m)=>new THREE.Mesh(g,m),stand=null}){
+export function rigEyes(geometry,{iris,style,own=null,cel=true,make=(g,m)=>new THREE.Mesh(g,m),stand=null,nearer=0}){
  // Lit as the face is (build.js buildHead: cel, high-key, a little self-lit, a floor on dim light). Blended onto the skin
  // and writing no depth: the ink, which reads depth, and the Looks' normals (look-buffers.js) see the head as it was.
  const params=new Float32Array(EYE_PARAMS.length),uniforms={...shared,uEye:{value:params},uEyeIris:{value:new THREE.Color(iris)}};
@@ -278,12 +291,14 @@ export function rigEyes(geometry,{iris,style,own=null,cel=true,make=(g,m)=>new T
  material.onBeforeCompile=(shader,renderer)=>{base.call(material,shader,renderer);
   Object.assign(shader.uniforms,uniforms);
   shader.vertexShader=VERTEX_HEAD+shader.vertexShader.replace('#include <uv_vertex>','#include <uv_vertex>\n vEye = eyeLocal;');
+  // (a modelled face's discs drawn `nearer` the camera than they lie: its cheeks rise under them; pixar.js)
+  if(nearer)shader.vertexShader=shader.vertexShader.replace('#include <project_vertex>',`#include <project_vertex>\n gl_Position = projectionMatrix * ( mvPosition + vec4( 0., 0., ${nearer.toFixed(4)}, 0. ) );`);
   shader.fragmentShader=FRAGMENT_HEAD+shader.fragmentShader
    .replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor = eyesPaint( eyeParallax( vViewPosition ) );\n if ( diffuseColor.a < 0.004 ) discard;')
    .replace('#include <emissivemap_fragment>','totalEmissiveRadiance *= diffuseColor.rgb;')
    .replace('#include <opaque_fragment>','outgoingLight = max( outgoingLight, diffuseColor.rgb * 0.5 );\n#include <opaque_fragment>');
  };
- material.customProgramCacheKey=cel?()=>baseKey()+':eyes3d-v2':()=>'eyes3d-v2:smooth';
+ material.customProgramCacheKey=cel?()=>baseKey()+':eyes3d-v5:'+nearer:()=>'eyes3d-v4:smooth:'+nearer;
  // First of the see-through things, so glasses' lenses (and a painted beard) are drawn over the eyes, not under them.
  const mesh=make(geometry,material);mesh.name='Shimanchu eyes';mesh.castShadow=false;mesh.receiveShadow=true;mesh.visible=false;mesh.renderOrder=-1;
  const shapes=new Map();
@@ -291,6 +306,7 @@ export function rigEyes(geometry,{iris,style,own=null,cel=true,make=(g,m)=>new T
   /** Follow a face state ({expression, blink, look, gaze, blinkLeft, blinkRight}); true while the discs draw the eyes. */
   update(state){
    let {eyes,look}=eyesOf(state),wink=false;
+   if(state.eyesAs)eyes=state.eyesAs;   // a body's own acting can draw a feeling with another eye (face-acting.js)
    if(stand&&!eyesShow(style,eyes)){wink=eyes==='wink';eyes=stand[eyes]||'open';}
    const show=eyesShow(style,eyes);
    mesh.visible=eyes3d.showing=show;
@@ -305,6 +321,8 @@ export function rigEyes(geometry,{iris,style,own=null,cel=true,make=(g,m)=>new T
    return true;
   },
   dispose(){geometry.dispose();material.dispose();source.dispose();},
+  /** The shader's parameters as last drawn (EYE_PARAMS order), for a body that acts on them after update (pixar.js). */
+  params,
  };
  return eyes3d;
 }

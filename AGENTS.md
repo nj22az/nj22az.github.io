@@ -24,7 +24,9 @@ we have a perfect Pixar world".
 - **Except Thuan** (the owner, 26 October 2026: "Replace her in the live game and studio now"): her Pixar body (made in
   the studio repo, `3d/cast/game_thuan.py`; World `src/avatars/pixar.js`) is Thuan on every World and Studio page;
   `?pixar=0` shows the cartoon. Further residents follow only on the owner's word
-  (`johansson-town/briefs/HANDOFF-PIXAR-THUAN-2026-10-26.md`).
+  (`johansson-town/briefs/HANDOFF-PIXAR-THUAN-2026-10-26.md`). **Pixar Johansson** (`3d/cast/game_johansson.py`, in
+  `PIXAR_BODIES`) is made and on the branch `claude/vibrant-brown-0udpq3`, **not on `main`**: he is the player, and his
+  publication waits for the owner's word (`johansson-town/briefs/HANDOFF-PIXAR-JOHANSSON-2026-10-26.md`).
 - **Three branches only** (the owner, 24 October 2026: "I basically want main , and the Pixar branch , and a development
   branch"): `main`, `development`, `pixar`, in both repos. Every older branch is kept as a tag `archive/<name>`
   (`git checkout -b <name> archive/<name>` restores one). The survey before the clean-up: `docs/BRANCHES-2026-10-24.md`.
@@ -45,6 +47,22 @@ applications, .NET assemblies and websites, with the evidence for each conclusio
 - **Study, measure, never copy** (as for New Yokosuka): REA's own disclaimer is the boundary. No DRM, licence-check or
   anti-cheat circumvention, no cheats, no reproducing another product's code or assets. Learn how a feature works,
   then build our own. Record what was inspected and why with the work.
+
+## Hotels & Parking
+
+The register is its own section of the site, at `/hotels/` (folder `hotels/`, page built by `tools/build-hotels.py`,
+rules in `hotels/README.md`). It sits in the header beside Blog; `/blog/hotels/` only redirects there.
+
+**Every hotel update that carries the owner's own notes also becomes a blog post** (the owner, 27 October 2026: "When I
+updated the hotel feed my notes can be used to crafting a blog post always", "Like that hotel was so and so"):
+1. Record the facts in the hotel's record as usual (`hotels/hotels.json`).
+2. Write a short post from the same notes, in the owner's voice: their words quoted or closely paraphrased, only what
+   they said (no invented rooms, meals, staff, ratings or feelings), with the parking verdict and the link
+   `/hotels/#review-<id>`. Several hotels from one trip can share one post.
+3. Put it at `blog/<slug>/index.html` and list it in `assets/js/blog-posts.js` (and the static list in
+   `blog/index.html`) with `"topic": "Hotel stay"` and `"hotel": "<record id>"`. The builder then opens that hotel's
+   notes with the post (`hotel_posts()`), and refuses a post that names no hotel in the register.
+4. Show the owner the draft before it is published.
 
 ## Handover: required at the start and end of every task
 
