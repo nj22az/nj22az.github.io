@@ -3,7 +3,8 @@ import {GLTFLoader} from '../../vendor/GLTFLoader.js';
 import {assetURL} from '../assets.js';
 import {GROUND_CLASSES} from './ground-standard.js';
 import {registerDetail} from './detail-stream.js';
-import {WORLD,BUILDING,FIXTURES,OUTSIDE,OPENINGS,SHOP,HOURS} from './okinawa/kitahama-shop.js';
+import {WORLD,BUILDING,FIXTURES,OUTSIDE,OPENINGS,SHOP,HOURS,kitahamaShopOpen} from './okinawa/kitahama-shop.js';
+import {kitahamaShopFrontage} from './interiors/kitahama-shop-room.js';
 
 /**
  * Johansson Mart, Kitahama, on the island: the two Blender models (tools/blender/build-kitahama-shop.py, from
@@ -27,13 +28,15 @@ const centre=(f,pad=0)=>{const [x,z]=at((f.min[0]+f.max[0])/2,(f.min[1]+f.max[1]
 /** What is solid outside: the walls (the shop is shut until batch 2), the machines, the bins, the A-board, the condensers. */
 export function kitahamaShopColliders(){
  const [x,z]=at(OU/2,OV/2);
- const out=[{x,z,w:OU,d:OV,height:BUILDING.parapetTop,kitahamaShop:'walls'}];
- for(const id of ['X1','X2','X7','X3']){const f=OUTSIDE.find(o=>o.id===id);out.push({...centre(f),kitahamaShop:id});}
+ // Named, as the police station's is: the shop stands on the old 5 Kitahama plot by the owner's word (27 October 2026).
+ const out=[{x,z,w:OU,d:OV,height:BUILDING.parapetTop,id:'johansson-mart',kitahamaShop:'walls'}];
+ for(const id of ['X1','X2','X7','X3']){const f=OUTSIDE.find(o=>o.id===id);out.push({...centre(f),id:'johansson-mart-'+id,kitahamaShop:id});}
  return out;
 }
 
 const cache=new Map();let loading=null;
-async function loadModels(){
+/** Both models, loaded once and shared by the street and the room. */
+export async function loadKitahamaShopModels(){
  if(cache.size===2)return true;
  loading??=(async()=>{
   const loader=new GLTFLoader();
@@ -55,7 +58,11 @@ async function loadModels(){
  return loading;
 }
 
-export function buildKitahamaShop({world,group=world.group,register,onAction,shadows=false}){
+/** A copy of one loaded model, for the room (null until loaded). */
+export function kitahamaShopModel(part){const m=cache.get(part);if(!m)return null;const c=m.clone(true);c.name='Johansson Mart '+part;c.userData.sharedAsset=true;return c;}
+
+export function buildKitahamaShop({world,group=world.group,register,onAction,enter,sites,shadows=false}){
+ let minutes=0;
  const root=new THREE.Group();root.name='Johansson Mart, Kitahama';
  root.position.set(WORLD[0],SHOP_PAD_TOP,WORLD[1]);root.userData.placeId='kitahama-shop';group.add(root);
  // The stand-in: the walls' size, in the render's cream, until the models are in.
@@ -68,16 +75,26 @@ export function buildKitahamaShop({world,group=world.group,register,onAction,sha
   for(const part of ['exterior','interior']){const m=cache.get(part).clone(true);m.name='Johansson Mart '+part;m.userData.sharedAsset=true;root.add(m);}
   standIn.removeFromParent();standIn.geometry.dispose();standIn.material.dispose();built=true;return true;
  };
- registerDetail(world,{id:'kitahama-shop',priority:1,x:WORLD[0]+OU/2,z:WORLD[1]+OV/2,radius:60,load:async()=>(await loadModels())&&place()});
+ registerDetail(world,{id:'kitahama-shop',priority:1,x:WORLD[0]+OU/2,z:WORLD[1]+OV/2,radius:60,load:async()=>(await loadKitahamaShopModels())&&place()});
  // What can be read from the street: the hours on the door, and the machines.
  const anchor=(u,v,h,label,fn)=>{const a=new THREE.Object3D();const [x,z]=at(u,v);a.position.set(x,SHOP_PAD_TOP+h,z);a.userData.placeId='kitahama-shop';group.add(a);register?.(a,label,fn);};
- const door=OPENINGS.find(o=>o.id==='D1');
- anchor((door.from+door.to)/2,-.5,1.3,'Read the hours on the door',()=>onAction?.('read',SHOP.name+' · '+SHOP.branchEnglish,
-  HOURS.sign+'\n'+HOURS.signEnglish+'\n\nThe door is shut for now. Grandmother Higa, who kept Higa Liquor on Main Street for fifty years, is to keep the till here when Sakura is shut: on weekday evenings and Saturdays.'));
+ const door=OPENINGS.find(o=>o.id==='D1'),[dx,dz]=at((door.from+door.to)/2,0);
+ // The shop as a place you go into (game.js roomShell 'kitahama-shop'): its door on the lane, its front glazing on the
+ // real street (interiors/kitahama-shop-room.js).
+ const site={id:'kitahama-shop',title:SHOP.name,jp:SHOP.jp+' '+SHOP.branch,sub:'CORNER SHOP · KITAHAMA',color:0x2e7a4e,accent:'#2e7a4e',
+  line:'Grandmother Higa’s corner shop · '+HOURS.signEnglish,opens:'17:30',x:dx,z:dz,
+  // On the forecourt, a stride clear of the glass (the walls' collider starts at the glass), so you come out onto it.
+  door:[dx,0,dz-.45],exitPosition:[dx,0,dz-.45],approachPosition:[dx,0,dz-1.2],entryFacing:Math.PI,
+  streetFrontage:kitahamaShopFrontage(WORLD,SHOP_PAD_TOP)};
+ sites?.push(site);
+ anchor((door.from+door.to)/2,-.5,1.3,'Go into Johansson Mart',()=>{
+  if(kitahamaShopOpen(minutes))return enter?.(site);
+  onAction?.('read',SHOP.name+' · '+SHOP.branchEnglish,'The hours on the door: '+HOURS.signEnglish+'\n\nShut. Grandmother Higa keeps the till here when Sakura is shut: weekday evenings and Saturdays.');
+ });
  const vm=OUTSIDE.find(o=>o.id==='X1');
  anchor((vm.min[0]+vm.max[0])/2,vm.min[1]-.4,1.1,'Look at the drinks machines',()=>onAction?.('read','Minato Drinks · Kitahama',
   'Two machines against the shop’s front wall: tea, water, milk coffee and sports drinks, cold all night. Minato Drinks rents the corner, as it rents Sakura’s wall.'));
- return {root,isBuilt:()=>built,load:async()=>(await loadModels())&&place()};
+ return {root,site,isBuilt:()=>built,isOpen:()=>kitahamaShopOpen(minutes),update(value){if(Number.isFinite(value))minutes=value;},load:async()=>(await loadKitahamaShopModels())&&place()};
 }
 
 /** The fittings' boxes on the island, for later batches (walking in, the keeper at the till). */

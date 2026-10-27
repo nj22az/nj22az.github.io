@@ -7,7 +7,9 @@ export const OWN_STAFF_ROOMS=Object.freeze(['clinic']);
  * An evening desk in somebody else's room: Nhung sets the town's paper at the back bench of the old Front-Row shop
  * (social.js AFTER_WORK, place `paper`), so the room draws her there while her plan says she is.
  */
-export const EVENING_DESKS=Object.freeze({Nhung:Object.freeze({place:'paper',site:'frontrow'})});
+export const EVENING_DESKS=Object.freeze({Nhung:Object.freeze({place:'paper',site:'frontrow'}),
+ // Grandmother Higa at Johansson Mart's till, weekday evenings and Saturdays (world/okinawa/kitahama-shop.js SHOP_DUTY).
+ 'Grandmother Higa':Object.freeze({place:'kitahama-shop',site:'kitahama-shop'})});
 /** The room a plan puts this person in: their workplace at work, or their evening desk's. */
 export const workRoomOf=(profile,plan)=>plan?.place==='work'?profile.workSite||null:EVENING_DESKS[profile.name]?.place===plan?.place?EVENING_DESKS[profile.name].site:null;
 /** Workplaces only the island builds: Sato Ramen for Mrs Sato, the police box for Officer Mori. */

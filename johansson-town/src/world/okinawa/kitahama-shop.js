@@ -13,6 +13,8 @@
  * the apron (the forecourt's concrete). WORLD is where that corner stands on the island (x east, z north, as lots.js).
  * Everything has a `why`: who it is for and why it stands where it does (the repository's "nothing is random").
  */
+import {townDate} from '../../town-clock.js';
+
 const F=Object.freeze;
 const box=(id,what,u0,v0,u1,v1,h0,h1,why,extra={})=>F({id,what,min:F([u0,v0,h0]),max:F([u1,v1,h1]),why,...extra});
 
@@ -68,6 +70,8 @@ export const OPENINGS=F([
  F({id:'D2',wall:'east',kind:'steel delivery door, single, outward',from:4.70,to:5.60,sill:BUILDING.floor,head:2.10,
   why:'the van stops on the approach and the cases go straight into the stockroom, not through the shop'}),
 ]);
+/** Where you stand to go in: on the forecourt, a stride in front of the door's glass (the street's door point, game.js doors). */
+export const DOOR_POINT=F([+(WORLD[0]+4.80).toFixed(3),+(WORLD[1]-.45).toFixed(3)]);
 /** The solid stretch of the front, west of the glazing: the vending machines stand against it outside, the copier inside. */
 export const FRONT_PIER=F({from:0,to:2.20});
 
@@ -83,8 +87,10 @@ export const INNER_DOORS=F([
 /** The fixtures, standing on the floor (h from the apron datum). */
 const fl=BUILDING.floor;
 export const FIXTURES=F([
- box('F1','till counter (with the cash register and the hot case)',4.30,1.60,4.90,3.80,fl,fl+.95,
-  'along the east wall, beside the door: the keeper sees who comes in and the whole floor; 950 mm, a counter’s height',{parts:F(['till: a cash register with a pole display facing the customer','hot case for nikuman and fried chicken, 450 mm wide, on the counter’s north end','a tray of island gōyā and greens from Grandmother Higa’s own garden at the customer’s end','a counter flap at the north end'])}),
+ box('F1','till counter (with the cash register and the hot case)',4.30,1.60,4.90,4.40,fl,fl+.95,
+  'along the east wall, beside the door: the keeper sees who comes in and the whole floor; 950 mm, a counter’s height. It runs on to the stockroom wall, its last 600 mm the lift-up flap the keeper comes through (27 October 2026: the keeper’s aisle was open to the shop floor)',{flap:F([3.80,4.40]),parts:F(['till: a cash register with a pole display facing the customer','hot case for nikuman and fried chicken, 450 mm wide, south of the flap','a tray of island gōyā and greens from Grandmother Higa’s own garden at the customer’s end','the lift-up flap and the gate under it, at the north end, against the stockroom wall'])}),
+ box('F12','counter return',4.90,1.45,5.60,1.60,fl,fl+.95,
+  'closes the keeper’s aisle at its south end, by the door: nobody walks in behind the till'),
  box('F2','cigarette and spirits shelf, behind the counter',5.60,1.60,OU-W,3.80,fl,fl+.95,
   'behind the keeper and under the side window, 700 mm behind the counter (the keeper’s aisle): cigarettes, awamori and whisky, which are asked for, not picked'),
  box('F3','three-door drinks cooler (reach-in, glass doors)',.30,5.30,2.55,OV-W,fl,fl+2.00,
@@ -143,6 +149,23 @@ export const HOURS=F({
  signEnglish:'Weekdays 17:30–21:00. Saturdays 9:00–21:00. Closed Sundays.',
  why:'open exactly when Sakura is shut (its evenings and its Saturdays) and when she is free of the bath. Nhung, her doctor, thinks a second job at 78 is the last thing her blood pressure needs.',
 });
+
+/** Open, at an absolute town minute: weekdays 17:30–21:00, Saturdays 9:00–21:00, shut on Sundays (HOURS; the device's
+ *  calendar, town-clock.js). The one rule the door, the town's hours and Grandmother Higa's day all read. */
+export const SHOP_OPEN=F({weekday:F([1050,1260]),saturday:F([540,1260])});
+/** When Grandmother Higa is at the shop: from the 17:00 van on weekdays and a quarter of an hour before the Saturday
+ *  opening, to closing. Her plan (people/canonical-day.js) and the till read it. */
+export const SHOP_DUTY=F({weekday:F([1020,1260]),saturday:F([525,1260])});
+export function kitahamaShopOnDuty(minutes){
+ const {weekday}=townDate(minutes),m=((minutes%1440)+1440)%1440;
+ const span=weekday===0?null:weekday===6?SHOP_DUTY.saturday:SHOP_DUTY.weekday;
+ return !!span&&m>=span[0]&&m<span[1];
+}
+export function kitahamaShopOpen(minutes){
+ const {weekday}=townDate(minutes),m=((minutes%1440)+1440)%1440;
+ const span=weekday===0?null:weekday===6?SHOP_OPEN.saturday:SHOP_OPEN.weekday;
+ return !!span&&m>=span[0]&&m<span[1];
+}
 
 /** Delivery: the island's everyday goods come on Sakura Trading's round (merchandising.js), the chain's too. */
 export const DELIVERY=F({by:'Sakura Trading’s van, on its round (commerce/trade-round.js)',when:'17:00, Monday to Saturday',

@@ -505,17 +505,21 @@ u0, v0, h0, u1, v1, h1 = F('F1')
 box(INTERIOR, 'F1 counter carcass', u0, v0, h0, u1, v1, h1 - .04, FITTING)
 box(INTERIOR, 'F1 counter top', u0 - .03, v0 - .03, h1 - .04, u1 + .03, v1, h1, COUNTER_TOP)
 box(INTERIOR, 'F1 counter green band', u0 - .005, v0, h1 - .2, u0, v1, h1 - .1, GREEN)
-box(INTERIOR, 'F1 counter flap joint', u0 - .03, v1 - .62, h1 - .002, u1 + .03, v1 - .6, h1 + .001, DARK)
 box(INTERIOR, 'F1 register', u0 + .12, v0 + .35, h1, u1 - .08, v0 + .75, h1 + .12, DARK, .01)
 box(INTERIOR, 'F1 register drawer', u0 + .1, v0 + .33, h1, u1 - .06, v0 + .77, h1 + .03, mat('register grey', '#5b6064', .5))
 cyl(INTERIOR, 'F1 pole display post', u0 + .14, v0 + .55, h1 + .12, h1 + .32, .012, DARK, 8)
 box(INTERIOR, 'F1 pole display', u0 + .1, v0 + .45, h1 + .32, u0 + .14, v0 + .65, h1 + .4, mat('display green', '#3c6b4f', .3, 0, 1, .6))
-box(INTERIOR, 'F1 hot case', u0 + .05, v1 - .55, h1, u1 - .05, v1 - .1, h1 + .42, GLASS)
-box(INTERIOR, 'F1 hot case base', u0 + .05, v1 - .55, h1, u1 - .05, v1 - .1, h1 + .06, FRAME)
+fl0, fl1 = FIX['F1']['flap']
+# the hot case stands south of the flap; the flap's joints cross the top, its gate under it
+hc0, hc1 = fl0 - .55, fl0 - .1
+box(INTERIOR, 'F1 hot case', u0 + .05, hc0, h1, u1 - .05, hc1, h1 + .42, GLASS)
+box(INTERIOR, 'F1 hot case base', u0 + .05, hc0, h1, u1 - .05, hc1, h1 + .06, FRAME)
 for k in range(2):
-    box(INTERIOR, 'F1 hot case tray', u0 + .08, v1 - .52, h1 + .1 + k * .15, u1 - .08, v1 - .13, h1 + .11 + k * .15, WARM)
+    box(INTERIOR, 'F1 hot case tray', u0 + .08, hc0 + .03, h1 + .1 + k * .15, u1 - .08, hc1 - .03, h1 + .11 + k * .15, WARM)
     for j in range(3):
-        cyl(INTERIOR, 'F1 nikuman', u0 + .18 + j * .12, v1 - .32, h1 + .11 + k * .15, h1 + .16 + k * .15, .04, mat('bun', '#f3ead6', .7), 10)
+        cyl(INTERIOR, 'F1 nikuman', u0 + .18 + j * .12, (hc0 + hc1) / 2, h1 + .11 + k * .15, h1 + .16 + k * .15, .04, mat('bun', '#f3ead6', .7), 10)
+box(INTERIOR, 'F1 flap hinge', u0 - .03, fl0 - .012, h1 - .002, u1 + .03, fl0 + .008, h1 + .002, FRAME)
+box(INTERIOR, 'F1 flap gate line', u0 - .004, fl0 - .01, h0 + .1, u0, fl0 + .01, h1 - .05, DARK)
 box(INTERIOR, 'F1 greens tray', u0 - .2, v0 + .05, h1 - .25, u0, v0 + .55, h1 - .2, WOOD)
 for j in range(5):
     bpy.ops.mesh.primitive_uv_sphere_add(segments=8, ring_count=5, radius=.035, location=loc(u0 - .1, v0 + .1 + j * .09, h1 - .2 + .02))
@@ -524,6 +528,11 @@ for j in range(5):
     o.scale = (1, 2.4, .9)
     o.data.materials.append(mat('gōyā green', '#5f8f3a', .6))
     INTERIOR.append(o)
+# F12 the counter return, closing the keeper's aisle at the door end
+u0, v0, h0, u1, v1, h1 = F('F12')
+box(INTERIOR, 'F12 return carcass', u0, v0, h0, u1, v1, h1 - .04, FITTING)
+box(INTERIOR, 'F12 return top', u0, v0 - .03, h1 - .04, u1, v1, h1, COUNTER_TOP)
+box(INTERIOR, 'F12 return green band', u0, v0 - .005, h1 - .2, u1, v0, h1 - .1, GREEN)
 # F2 behind the counter: a low cabinet, cigarettes on its top in a rack, bottles inside its open front
 u0, v0, h0, u1, v1, h1 = F('F2')
 box(INTERIOR, 'F2 cabinet', u0, v0, h0, u1, v1, h1, FITTING)

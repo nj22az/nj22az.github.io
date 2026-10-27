@@ -213,6 +213,8 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
   const standing=world.colliders.find(c=>standingHitsRect(x,z,.35,groundHeight(x,z),c));
   // (the Arakaki lot is the one the police station grew into, the owner's 19 October ask: its collider is the station's)
   if(id==='arakaki')assert.equal(standing?.id,'police-station',id+' lot carries the police station');
+  // (and 5 Kitahama's is where Johansson Mart stands, the owner's 27 October ask: its collider is the shop's)
+  else if(id==='kitahama-5')assert.equal(standing?.id,'johansson-mart',id+' lot carries Johansson Mart');
   // A cleared lot is dressed now (lots.js CLEARED_LOTS): whatever stands where the house stood is that lot's own dressing
   // (its cane, its parking, a garden bed), never a house.
   else if(standing){const lot=clearedLot(id),own=lot&&[lot,...CLEARED_LOTS.filter(l=>l.dressing.partOf===lot.id||lot.dressing.partOf===l.id)].flatMap(l=>l.dressing.props.map(p=>'lot-'+p.id));
@@ -224,7 +226,8 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
  for(const lot of CLEARED_LOTS.filter(l=>l.district!=='Kitano hamlet'&&!/-block$/.test(l.id))){
   assert.ok(lot.why.length>20&&lot.dressing&&lot.dressing!=='deferred',lot.id+' carries its reason and its dressing');
   const cx=(lot.rect.minX+lot.rect.maxX)/2,cz=(lot.rect.minZ+lot.rect.maxZ)/2,at=world.colliders.find(c=>standingHitsRect(cx,cz,.35,groundHeight(cx,cz),c));
-  assert.ok(!at||/^lot-/.test(at.id),lot.id+' carries only its dressing at its centre, not '+at?.id);
+  // (5 Kitahama's centre is under Johansson Mart, the owner's 27 October ask; lots.js records it on the lot)
+  assert.ok(!at||/^lot-/.test(at.id)||(lot.id==='kitahama-5-lot'&&at.id==='johansson-mart'),lot.id+' carries only its dressing at its centre, not '+at?.id);
   // And nothing without a collider is left standing on the grass either (an ishiganto set in a wall that is gone, a
   // nameplate, a step): every mesh of its own inside the lot, under 2 m, is listed by name, and only the dressing's own
   // signs and drinks machines may be there. The quarter's batched chunks (named `…|cell|cell`, spanning several lots)
@@ -233,6 +236,8 @@ test('the surplus dwellings, the housing project’s nine and phase 4’s eight,
   world.group.traverse(o=>{
    if(!o.isMesh||/\|-?\d+\|-?\d+$/.test(o.name)||signs.has(o.name))return;
    for(let p=o.parent;p;p=p.parent)if(p.userData?.vending||/vending/i.test(p.name||''))return;
+   // Johansson Mart, standing on the old 5 Kitahama plot by the owner's 27 October ask (world/kitahama-shop-build.js)
+   for(let p=o.parent;p;p=p.parent)if(p.userData?.placeId==='kitahama-shop')return;
    box.setFromObject(o);if(box.isEmpty()||box.max.x-box.min.x>20||box.max.z-box.min.z>20)return;
    const x=(box.min.x+box.max.x)/2,z=(box.min.z+box.max.z)/2;
    if(x>lot.rect.minX+.05&&x<lot.rect.maxX-.05&&z>lot.rect.minZ+.05&&z<lot.rect.maxZ-.05&&box.min.y<2)left.push(o.name||'(unnamed)');
