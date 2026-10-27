@@ -10,8 +10,9 @@ import re
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / 'blog/hotels/hotels.json'
-OUTPUT = ROOT / 'blog/hotels/index.html'
+DATA = ROOT / 'hotels/hotels.json'
+OUTPUT = ROOT / 'hotels/index.html'
+BLOG_POSTS = ROOT / 'assets/js/blog-posts.js'
 PARKING = {
     'external-paid': 'External paid parking',
     'hotel-paid': 'Hotel paid parking',
@@ -302,9 +303,23 @@ def comment(kind, who, body):
             f'<div class="hotel-comment-body"><p class="hotel-comment-who">{who}</p>{body}</div></li>')
 
 
-def post_thread(review):
-    """Comments are the record's own notes: an owner report, the price paid, the register notes and its sources."""
-    items = []
+def hotel_posts(path=BLOG_POSTS):
+    """Blog posts written from the owner's notes on a stay: catalogue entries carrying "hotel": <record id>."""
+    source = path.read_text(encoding='utf-8')
+    catalogue = json.loads(source[source.index('['):source.rindex(']') + 1])
+    posts = {}
+    for post in catalogue:
+        if post.get('hotel'):
+            posts.setdefault(post['hotel'], []).append(post)
+    return {hotel: sorted(items, key=lambda post: post['date'], reverse=True) for hotel, items in posts.items()}
+
+
+def post_thread(review, posts=()):
+    """Comments are the record's own notes: blog posts about the stay, an owner report, the price paid, the register
+    notes and its sources."""
+    items = [comment('note', f'Blog post · <time datetime="{e(post["date"])}">{date_label(post["date"])}</time>',
+                     f'<p><a href="{e(post["url"])}">{e(post["title"])}</a></p><p>{e(post["excerpt"])}</p>')
+             for post in posts]
     warning = review.get('parkingAccessWarning')
     if warning:
         items.append(comment('warning', f'Owner’s report · <time datetime="{e(warning["reportedOn"])}">{date_label(warning["reportedOn"])}</time>',
@@ -323,10 +338,10 @@ def post_thread(review):
     return items
 
 
-def render_review(review):
+def render_review(review, posts=()):
     category = parking_category(review)
     rid = e(review['id'])
-    thread = post_thread(review)
+    thread = post_thread(review, posts)
     map_action = (f'<a href="#hotel-map" data-hotel-focus="{rid}" hidden>{icon("pin")}Map</a>' if review['coordinates']
                   else '<span class="hotel-unmapped">Map location awaiting verification</span>')
     checked = review['parkingVerification']['checkedOn']
@@ -366,10 +381,13 @@ def gazetteer(reviews):
             for (town, code), points in sorted(towns.items(), key=lambda item: item[0][0].casefold())]
 
 
-def build(reviews):
+def build(reviews, posts=None):
+    posts = hotel_posts() if posts is None else posts
+    unknown = sorted(set(posts) - {review['id'] for review in reviews})
+    assert not unknown, f'Blog posts name hotels that are not in the register: {unknown}'
     reviews = sorted(reviews, key=place_key)
     rows = '\n'.join(render_row(review) for review in reviews)
-    notes = '\n'.join(render_review(review) for review in reviews)
+    notes = '\n'.join(render_review(review, posts.get(review['id'], ())) for review in reviews)
     count = len(reviews)
     countries = sorted({(review['countryCode'], review['country']) for review in reviews}, key=lambda item: item[1])
     country_options = ''.join(f'<option value="{e(code)}">{e(name)}</option>' for code, name in countries)
@@ -394,14 +412,14 @@ def build(reviews):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotels &amp; Parking | Blog – The Office of Nils Johansson</title>
+  <title>Hotels &amp; Parking – The Office of Nils Johansson</title>
   <meta name="description" content="Hotels for field service engineers: verified free parking, a trip planner with drive times, payment and receipt facts, and a map across Denmark, Sweden, Norway and Finland.">
-  <link rel="canonical" href="https://nj22az.github.io/blog/hotels/">
+  <link rel="canonical" href="https://nj22az.github.io/hotels/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Hotels &amp; Parking – The Office of Nils Johansson">
   <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, a trip planner, a filtered map and prices paid.">
-  <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
-  <meta property="og:image" content="https://nj22az.github.io/blog/hotels/banner/banner-desktop.jpg">
+  <meta property="og:url" content="https://nj22az.github.io/hotels/">
+  <meta property="og:image" content="https://nj22az.github.io/hotels/banner/banner-desktop.jpg">
   <meta property="og:image:width" content="2400">
   <meta property="og:image:height" content="800">
   <meta property="og:image:alt" content="Tetsuo drives his kei truck past Sakura Shōten, printed as a rubber stamp.">
@@ -422,14 +440,13 @@ def build(reviews):
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav id="site-nav" class="site-nav"></nav>
   <main id="main-content" class="hotel-page">
-    <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
     <header class="hotel-page-head">
       <h1 class="hotel-sr">Hotels &amp; Parking: free parking for field service trips</h1>
       <picture class="hotel-banner">
-        <source media="(max-width: 600px)" type="image/webp" srcset="/blog/hotels/banner/banner-phone.webp" width="1200" height="900">
-        <source media="(max-width: 600px)" srcset="/blog/hotels/banner/banner-phone.jpg" width="1200" height="900">
-        <source type="image/webp" srcset="/blog/hotels/banner/banner-desktop.webp">
-        <img src="/blog/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
+        <source media="(max-width: 600px)" type="image/webp" srcset="/hotels/banner/banner-phone.webp" width="1200" height="900">
+        <source media="(max-width: 600px)" srcset="/hotels/banner/banner-phone.jpg" width="1200" height="900">
+        <source type="image/webp" srcset="/hotels/banner/banner-desktop.webp">
+        <img src="/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
       </picture>
       <p class="hotel-intro">{count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
     </header>
@@ -492,26 +509,26 @@ def build(reviews):
 {rows}
         </tbody>
       </table>
-      <p class="hotel-price-note"><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download the spreadsheet (CSV)</a>. Free parking refers to the stated guest parking; charging or a paid garage can cost extra.</p>
+      <p class="hotel-price-note"><a class="hotel-download" href="/hotels/hotel-reviews.csv" download>Download the spreadsheet (CSV)</a>. Free parking refers to the stated guest parking; charging or a paid garage can cost extra.</p>
       </details>
     </section>
     <details class="hotel-method">
       <summary><h2 id="hotel-method-title">How the register works</h2></summary>
-      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/blog/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/blog/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
       <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but both payment at the hotel and inclusion on the hotel receipt are confirmed. Red means Avoid: paid parking with external payment, separate receipts or either fact unconfirmed, or a documented difficult-access report even when parking is free. An unconfirmed route stays labelled unknown; it is not a claim that hotel payment is impossible. Avoid is a parking preference, not a judgement of hotel quality. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
       <p>The trip planner only suggests green hotels. It asks OpenStreetMap routing for driving times, suggests the closest green hotel to where you are going, and lists overnight stops only where they fall in the second half of the drive and add little time. Notes under each hotel are the register’s own records: owner reports, prices paid, notes and sources.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
     </details>
   </main>
   <footer id="site-footer" class="site-footer"></footer>
-  <script src="/config.js?v=blog-1"></script>
-  <script src="/shared.js?v=hotel-fixed-1"></script>
+  <script src="/config.js?v=20261027-hotels"></script>
+  <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/blog/hotels/hotels.js?v=7"></script>
+  <script src="/hotels/hotels.js?v=7"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=6"></script>
-  <script src="/blog/hotels/hotels-trip.js?v=1"></script>
+  <script src="/hotels/hotels-map.js?v=6"></script>
+  <script src="/hotels/hotels-trip.js?v=1"></script>
 </body>
 </html>
 '''

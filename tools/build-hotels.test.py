@@ -16,7 +16,7 @@ spec.loader.exec_module(builder)
 
 class ParkingAdmissionTests(unittest.TestCase):
     def setUp(self):
-        self.records = json.loads((ROOT / 'blog/hotels/hotels.json').read_text(encoding='utf-8'))['reviews']
+        self.records = json.loads((ROOT / 'hotels/hotels.json').read_text(encoding='utf-8'))['reviews']
         self.free = copy.deepcopy(next(row for row in self.records if row['freeParking'] is True))
 
     def test_published_register_has_dated_confirmation_and_correct_categories(self):
@@ -30,6 +30,21 @@ class ParkingAdmissionTests(unittest.TestCase):
             else:
                 self.assertEqual(category, 'easy' if row['parkingPaymentAtHotel'] is True and row['parkingOnHotelReceipt'] is True else 'avoid')
             self.assertNotIn('easyParking', row)
+
+    def test_stay_blog_post_opens_the_hotels_thread_and_must_name_a_real_hotel(self):
+        post = {'title': 'Synthetic stay post', 'excerpt': 'Fixture excerpt.', 'url': '/blog/synthetic-stay/', 'date': '2026-10-27'}
+        html = builder.build(self.records, {self.free['id']: [post]})
+        thread = html[html.index(f'id="notes-{self.free["id"]}"'):]
+        thread = thread[:thread.index('</ol>')]
+        self.assertIn('<a href="/blog/synthetic-stay/">Synthetic stay post</a>', thread)
+        self.assertLess(thread.index('Blog post'), thread.index('Register notes'))
+        self.assertIn(post['date'], thread)
+        with self.assertRaises(AssertionError):
+            builder.build(self.records, {'no-such-hotel': [post]})
+        for hotel, posts in builder.hotel_posts().items():
+            self.assertIn(hotel, {row['id'] for row in self.records})
+            for item in posts:
+                self.assertTrue(item['url'].startswith('/blog/'))
 
     def test_easy_requires_hotel_payment_and_confirmed_hotel_receipt(self):
         row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
@@ -126,7 +141,7 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertIn(builder.e(self.free['parkingSummary']), html)
 
     def test_verified_locations_match_official_marker_evidence_and_csv(self):
-        evidence = json.loads((ROOT / 'blog/hotels/LOCATION-EVIDENCE-2026-10-25.json').read_text())['properties']
+        evidence = json.loads((ROOT / 'hotels/LOCATION-EVIDENCE-2026-10-25.json').read_text())['properties']
         self.assertEqual(len(evidence), 16)
         by_id = {row['hotelId']: row for row in self.records}
         for item in evidence:
@@ -137,7 +152,7 @@ class ParkingAdmissionTests(unittest.TestCase):
             self.assertEqual(marker['markerInfo']['hotelId'], item['officialPropertyId'])
             self.assertEqual(marker['coordinates']['lat'], row['coordinates']['latitude'])
             self.assertEqual(marker['coordinates']['lng'], row['coordinates']['longitude'])
-        with (ROOT / 'blog/hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
             exported = list(csv.DictReader(stream))
         self.assertEqual(len(exported), len(self.records))
         for item in exported:
@@ -147,7 +162,7 @@ class ParkingAdmissionTests(unittest.TestCase):
             self.assertEqual(item['Coordinate source'], row['coordinates']['sourceUrl'])
 
     def test_new_scandic_evidence_preserves_payment_receipt_and_named_coordinates(self):
-        evidence = json.loads((ROOT / 'blog/hotels/SCANDIC-PAID-EVIDENCE-2026-10-25.json').read_text())
+        evidence = json.loads((ROOT / 'hotels/SCANDIC-PAID-EVIDENCE-2026-10-25.json').read_text())
         self.assertEqual(len(evidence['properties']), 25)
         for item in evidence['properties'] + [evidence['additionalFreeProperty']]:
             row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
@@ -173,12 +188,12 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertEqual(row['parkingPaid'], 0)
         self.assertIn('street', row['parkingSummary'])
         self.assertIsNone(row['parkingDetails']['registrationAtReception'])
-        evidence = json.loads((ROOT / 'blog/hotels/HAVANNA-PARKING-EVIDENCE-2026-10-25.json').read_text())
+        evidence = json.loads((ROOT / 'hotels/HAVANNA-PARKING-EVIDENCE-2026-10-25.json').read_text())
         self.assertEqual(row['coordinates'], evidence['coordinates'])
         self.assertIn('Hotell Havanna, Krabbes väg 4', evidence['selectedPlaceEvidence'])
 
     def test_swedish_audit_matches_every_catalogue_property_and_new_marker(self):
-        audit = json.loads((ROOT / 'blog/hotels/SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json').read_text())
+        audit = json.loads((ROOT / 'hotels/SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json').read_text())
         self.assertEqual(len(audit['properties']), 91)
         self.assertEqual(len({p['hotelId'] for p in audit['properties']}), 91)
         self.assertEqual(sum(p['category'] == 'avoid' for p in audit['properties']), 72)
@@ -232,7 +247,7 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertIn('Register at reception', builder.render_review(row))
 
     def test_finland_follow_up_matches_evidence_and_keeps_rosendahl_tariff(self):
-        evidence = json.loads((ROOT / 'blog/hotels/FINLAND-EVIDENCE-2026-10-27.json').read_text())
+        evidence = json.loads((ROOT / 'hotels/FINLAND-EVIDENCE-2026-10-27.json').read_text())
         self.assertEqual(len(evidence['properties']), 8)
         for item in evidence['properties']:
             row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
@@ -250,7 +265,7 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertIn('owner', ros['sourceNote'].lower())
         hyvinkaa = next(r for r in self.records if r['hotelId'] == 'scandic-hyvinkaa')
         self.assertIn('only 12 spaces', hyvinkaa['parkingSummary'])
-        with (ROOT / 'blog/hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
             exported = {row['Hotel']: row for row in csv.DictReader(stream)}
         self.assertEqual(exported['Scandic Rosendahl']['Parking category'], 'Yellow — Easy parking')
         self.assertEqual(exported['Hotel Kajanus']['Free parking'], 'Yes')

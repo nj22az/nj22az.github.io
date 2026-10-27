@@ -46,6 +46,22 @@ applications, .NET assemblies and websites, with the evidence for each conclusio
   anti-cheat circumvention, no cheats, no reproducing another product's code or assets. Learn how a feature works,
   then build our own. Record what was inspected and why with the work.
 
+## Hotels & Parking
+
+The register is its own section of the site, at `/hotels/` (folder `hotels/`, page built by `tools/build-hotels.py`,
+rules in `hotels/README.md`). It sits in the header beside Blog; `/blog/hotels/` only redirects there.
+
+**Every hotel update that carries the owner's own notes also becomes a blog post** (the owner, 27 October 2026: "When I
+updated the hotel feed my notes can be used to crafting a blog post always", "Like that hotel was so and so"):
+1. Record the facts in the hotel's record as usual (`hotels/hotels.json`).
+2. Write a short post from the same notes, in the owner's voice: their words quoted or closely paraphrased, only what
+   they said (no invented rooms, meals, staff, ratings or feelings), with the parking verdict and the link
+   `/hotels/#review-<id>`. Several hotels from one trip can share one post.
+3. Put it at `blog/<slug>/index.html` and list it in `assets/js/blog-posts.js` (and the static list in
+   `blog/index.html`) with `"topic": "Hotel stay"` and `"hotel": "<record id>"`. The builder then opens that hotel's
+   notes with the post (`hotel_posts()`), and refuses a post that names no hotel in the register.
+4. Show the owner the draft before it is published.
+
 ## Handover: required at the start and end of every task
 
 These instructions apply to every agent working in this repository.

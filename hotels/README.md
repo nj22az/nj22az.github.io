@@ -1,5 +1,13 @@
 # Hotels & Parking
 
+## Own section and stay posts — 27 October 2026
+
+The register moved out of the blog to `/hotels/` (this folder, formerly `blog/hotels/`) and has its own link in the
+header; `/blog/hotels/` redirects here, keeping `?from=&to=` trips. Older notes in this folder still name the old
+path. From now on, every update with the owner's own notes on a stay also gets a blog post written from those notes
+only; the post is listed with `"hotel": "<record id>"` and appears first in that hotel's notes. The full rule is in
+the repository's `CLAUDE.md` and `AGENTS.md`, "Hotels & Parking".
+
 ## Finland follow-up — 27 October 2026
 
 Scandic Rosendahl is now **Easy (yellow)** on the owner's report that parking is paid

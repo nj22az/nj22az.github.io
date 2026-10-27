@@ -14,7 +14,7 @@ function boot(path, previous, lock) {
   return {context, attrs, values, randomCalls};
 }
 for (const previous of [...themes, null]) {
-  const state = boot('/blog/hotels/',previous,'clarity');
+  const state = boot('/hotels/',previous,'clarity');
   assert.equal(state.attrs.get('data-theme'),'clarity');
   assert.equal(state.context.window.NJThemeVisit.get(),'clarity');
   state.context.window.NJThemeVisit.remember('popwave');
