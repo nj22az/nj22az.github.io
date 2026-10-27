@@ -59,12 +59,12 @@ function tiles(k){
  // A bullnose cap along the top course.
  const cap=std(0x7f998c,{roughness:.3});
  k.box(.02,.03,d,R.minX+.01,TILE_TOP,cz,cap);k.box(w,.03,.02,cx,TILE_TOP,R.maxZ-.01,cap);k.box(w,.03,.02,cx,TILE_TOP,R.minZ+.01,cap);
- // Grey mosaic floor, a little darker round the drain.
+ // Grey mosaic floor, a little darker round the drain, laid flush: the shop's terrazzo is cut round it (sakura-shell.js).
  const floor=canvasTex(256,256,(ctx,W,H)=>{
   ctx.fillStyle='#4a524f';ctx.fillRect(0,0,W,H);
   const s=16;for(let y=0;y<H;y+=s)for(let x=0;x<W;x+=s){const c=118+Math.floor(hash(x*3+y,5)*26);ctx.fillStyle=`rgb(${c-4},${c+4},${c})`;ctx.fillRect(x+1,y+1,s-2,s-2);}
  },[w/.5,d/.5]);
- const f=k.plane(new THREE.MeshStandardMaterial({map:floor,roughness:.5,polygonOffset:true,polygonOffsetFactor:-2}),w,d,cx,.003,cz,0,'Restroom mosaic floor');f.rotation.x=-Math.PI/2;
+ const f=k.plane(new THREE.MeshStandardMaterial({map:floor,roughness:.5}),w,d,cx,0,cz,0,'Restroom mosaic floor');f.rotation.x=-Math.PI/2;
  const drain=k.mesh(new THREE.CylinderGeometry(.07,.07,.006,20),std(0x9aa3a8,{metalness:.6,roughness:.3}),-5.6,.006,-3.0,'Restroom floor drain');
  for(let i=-2;i<=2;i++)k.box(.11,.008,.008,drain.position.x,.008,drain.position.z+i*.022,std(0x2a2e30));
 }
@@ -150,7 +150,7 @@ function basinFittings(k){
  k.mesh(new THREE.CylinderGeometry(.007,.007,.03,8),chrome,-4.7,1.245,R.minZ+.1,'Soap globe plunger');
  // A blue towel on a ring, between the toilet and the basin.
  const ring=k.mesh(new THREE.TorusGeometry(.05,.007,8,18),chrome,-5.7,1.2,R.minZ+.03,'Towel ring');void ring;
- k.box(.13,.34,.02,-5.7,1.0,R.minZ+.035,std(0x2f6fd0,{roughness:.95}),'Hand towel');
+ k.box(.13,.34,.02,-5.7,1.0,R.minZ+.039,std(0x2f6fd0,{roughness:.95}),'Hand towel');
  k.box(.13,.02,.03,-5.7,1.155,R.minZ+.04,std(0x2a62b8,{roughness:.95}));
 }
 

@@ -55,12 +55,8 @@
   const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const MONTHS_SHORT = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-  // Heisei 9. The board shows today's month and day moved to 1997, and the weekday
-  // that date really fell on then -- not today's, which is almost never the same day
-  // of the week, and a date with the wrong weekday on it is the one thing a notice
-  // board in a town like this would never get wrong.
-  const TOWN_YEAR = 1997;
-  const HEISEI_YEAR = 9;
+  // The board follows the device's real date and weekday. The 1990s are the town's
+  // way of life and visual setting, not a substitute calendar.
 
   const minuteOfDay = (m) => ((m % 1440) + 1440) % 1440;
   const pad = (n) => String(n).padStart(2, "0");
@@ -113,22 +109,21 @@
     const d = new Date(now);
     const month = d.getMonth() + 1;
     const day = d.getDate();
-    // 29 February has no 1997 to land on; it becomes the 28th.
-    const onTown = new Date(TOWN_YEAR, d.getMonth(), Math.min(d.getDate(), d.getMonth() === 1 ? 28 : 31));
-    const weekday = WEEKDAYS[onTown.getDay()];
+    const year = d.getFullYear();
+    const weekday = WEEKDAYS[d.getDay()];
     const monthName = MONTHS[d.getMonth()];
     const monthShort = MONTHS_SHORT[d.getMonth()];
     const mm = pad(month);
     const dd = pad(day);
-    const long = `${day} ${monthName.toUpperCase()} ${TOWN_YEAR}`;
+    const long = `${day} ${monthName.toUpperCase()} ${year}`;
     return {
       weekday,
       weekdayUpper: weekday.toUpperCase(),
-      short: `${day} ${monthShort} ${TOWN_YEAR}`,
-      eraLine: `HEISEI ${HEISEI_YEAR} · ${long}`,
-      weekdayLine: `HEISEI ${HEISEI_YEAR} · ${weekday.toUpperCase()}`,
+      short: `${day} ${monthShort} ${year}`,
+      eraLine: `${weekday.toUpperCase()} · ${long}`,
+      weekdayLine: weekday.toUpperCase(),
       japanese: long,
-      documentNo: `JT-HB-H${HEISEI_YEAR}-${mm}${dd}`,
+      documentNo: `JT-HB-${year}-${mm}${dd}`,
     };
   };
 
@@ -296,7 +291,7 @@
     if (speeds) speeds.classList.toggle("locked", mode === "live");
     const note = $("clockChoiceNote");
     if (note) note.textContent = mode === "live"
-      ? "LIVE: the town keeps your own time and today's date, in 1997. Pick a start time to set the clock yourself; it can then run faster."
+      ? "LIVE: the town keeps your device's time, date and weekday. Life in Minato follows the 1990s. Pick a start time to set the clock yourself; it can then run faster."
       : `The town will open at ${mode === "saved" ? "the time you left it" : mode.slice(0, 2) + ":" + mode.slice(2)} and run at ${speed === 1 ? "real pace" : speed + "× speed"}. Change it any time from the TIME button.`;
   }
   document.querySelectorAll("[data-clock-mode]").forEach((btn) => {

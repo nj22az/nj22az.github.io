@@ -147,7 +147,8 @@ function intoRegion(geometry,[x0,y0,x1,y1]){
  */
 export function buildSakuraOfficeDressing({room,box,cyl,anchor,action,paint}){
  const sheet=paint(SHEET,SHEET,ctx=>drawSheet(ctx));
- const printed=sheet?new THREE.MeshStandardMaterial({map:sheet,roughness:.85}):null;
+ // Prints are decals on what they are printed on, drawn in front of it by polygon offset (the Sakura surface audit).
+ const printed=sheet?new THREE.MeshStandardMaterial({map:sheet,roughness:.85,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}):null;
  /** A printed face: a plane of the sheet's region, at `at`, turned by yaw (0 faces +z), or laid flat (face up). */
  const print=(region,[w,h],at,{yaw=0,flat=false,name,fallback=0xf2efe6}={})=>{
   const g=intoRegion(new THREE.PlaneGeometry(w,h),region),m=new THREE.Mesh(g,printed||new THREE.MeshStandardMaterial({color:fallback,roughness:.83}));
@@ -171,7 +172,7 @@ export function buildSakuraOfficeDressing({room,box,cyl,anchor,action,paint}){
  // ---- the desk: the mat and its notes, the seal, the pen can, the binoculars
  {const [x,y,z]=item('desk-mat').at;print(R.mat,[.8,.5],[x,y+.004,z],{flat:true,yaw:-Math.PI/2,name:'Desk mat',fallback:0x9fc4a8});}
  {const [x,y,z]=item('hanko').at;box([.13,.025,.08],[x,y+.0165,z],0x5a2a22,'Hanko tray');cyl(.022,.012,[x+.03,y+.035,z],0xc0322b,'Ink pad',12);cyl(.008,.05,[x-.035,y+.054,z],0x8a6a48,'Hanko',8);}
- {const [x,y,z]=item('pen-can').at;printedCyl(R.can,.033,.105,[x,y+.0565,z],'Pen can',0x7a4a2a);cyl(.031,.004,[x,y+.006,z],0x9a9a92,'Pen can base',14);
+ {const [x,y,z]=item('pen-can').at;printedCyl(R.can,.033,.105,[x,y+.0565,z],'Pen can',0x7a4a2a);cyl(.0335,.004,[x,y+.002,z],0x9a9a92,'Pen can base',14);/* the seamed base under the can, not inside it */
   for(const [dx,dz,a,c] of [[.01,0,.12,0x1d4e9a],[-.012,.008,-.1,0xc0322b],[0,-.012,.05,0x1d1d1d]]){const p=cyl(.004,.15,[x+dx,y+.12,z+dz],c,'Pen',5);p.rotation.z=a;}}
  {const [x,y,z]=item('binoculars').at;for(const dz of [-.035,.035]){const b=cyl(.026,.12,[x,y+.03,z+dz],DARK,'Binoculars barrel',10);b.rotation.z=Math.PI/2;}box([.05,.03,.04],[x,y+.03,z],DARK,'Binoculars bridge');}
 

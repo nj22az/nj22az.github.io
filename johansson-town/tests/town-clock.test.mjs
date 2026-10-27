@@ -4,16 +4,16 @@ import {realTownMinutes,townCalendar,clockCatchUp,townClockLine} from '../src/to
 import {readPlayers,addPlayer,switchPlayer,renamePlayer,readSave,slotKey,SAVE_KEY,DEFAULT_PLAYER} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
 
-test('the town clock is the device clock, on today’s date in 1997',()=>{
+test('the town clock and calendar follow the device’s actual date and weekday',()=>{
  const now=new Date(2026,8,23,14,7,30);
  const m=realTownMinutes(now);
  assert.equal(Math.floor(((m%1440)+1440)%1440),14*60+7,'The hour and minute are not the local ones');
  assert.equal(Math.floor(realTownMinutes(new Date(2026,8,24,0,0,1))/1440)-Math.floor(m/1440),1,'The day does not turn over at local midnight');
  const cal=townCalendar(now);
- assert.equal(cal.date.getFullYear(),1997);assert.equal(cal.date.getMonth(),8);assert.equal(cal.date.getDate(),23);
- assert.equal(cal.weekday,new Date(1997,8,23).getDay(),'The weekday is not 1997’s');
- assert.equal(townCalendar(new Date(2028,1,29)).date.getDate(),28,'29 February has nowhere to go in 1997');
- assert.match(townClockLine(now),/^14:07 · .*1997$/);
+ assert.equal(cal.date.getFullYear(),2026);assert.equal(cal.date.getMonth(),8);assert.equal(cal.date.getDate(),23);
+ assert.equal(cal.weekday,now.getDay(),'The weekday follows the device');
+ assert.equal(townCalendar(new Date(2028,1,29)).date.getDate(),29,'Leap days are retained');
+ assert.match(townClockLine(now),/^14:07 · .*2026$/);
 });
 
 test('coming back fast-forwards up to a day; older or old-format saves open at now',()=>{

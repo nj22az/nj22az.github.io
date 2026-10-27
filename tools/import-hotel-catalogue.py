@@ -4,7 +4,7 @@
 Accept /properties/content JSON maps or /files/properties/content JSONL, with
 optional gzip compression, plus the current en-US /references/amenities export.
 This is a discovery audit of the supplied files, not a complete hotel census.
-See blog/hotels/README.md for the separate, manually maintained stay register.
+See hotels/README.md for the separate, manually maintained stay register.
 """
 
 import argparse

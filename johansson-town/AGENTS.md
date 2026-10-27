@@ -2,6 +2,16 @@
 
 Read the repository's [AGENTS.md](../AGENTS.md) and [CLAUDE.md](../CLAUDE.md). Their working discipline applies here.
 
+## Owner's decision — 26 October 2026: the device calendar
+
+The owner: "they use normal date device date, they only live like it’s the 90’s".
+The gameplay calendar follows the device's actual local date, year and weekday. Do not project dates into 1997 or
+discard leap days. The 1990s remain the setting, culture, technology and visual direction. Shop rotas, school,
+clinic hours, residents and weekly happenings share `src/town-clock.js`; the title board prints the same real date.
+Retain saved civil-minute values and the existing optional set/faster clock. Thuan's weekend plan must govern her
+actual absence from Minato and Monday ferry return, as well as the timetable text.
+See [the device-calendar handover](briefs/HANDOFF-DEVICE-CALENDAR-2026-10-26.md).
+
 ## Owner's current decisions — 18 October 2026
 
 - Keep Minato a compact urban port town. Do not restore rural districts or expand its shoreline for housing.

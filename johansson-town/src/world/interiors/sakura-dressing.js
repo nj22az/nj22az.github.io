@@ -212,7 +212,7 @@ export function hangWallPosters(room,{anchor,action}){
   const mesh=new THREE.Mesh(new THREE.PlaneGeometry(...spot.size),material);
   mesh.position.set(...spot.position);mesh.rotation.y=spot.yaw;mesh.name=spec?spec.title:own.name;mesh.userData.sharedAsset=true;room.add(mesh);
   // Tape at the corners, because it is a poster on a wall.
-  const tape=new THREE.MeshStandardMaterial({color:0xf2ecd2,roughness:.7,transparent:true,opacity:.8});
+  const tape=new THREE.MeshStandardMaterial({color:0xf2ecd2,roughness:.7,transparent:true,opacity:.8,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-8});
   for(const [sx,sy] of [[-1,1],[1,1],[-1,-1],[1,-1]]){
    const t=new THREE.Mesh(new THREE.PlaneGeometry(.07,.03),tape);t.position.set(sx*(spot.size[0]/2-.02),sy*(spot.size[1]/2-.01),.002);t.rotation.z=sx*sy*.6;mesh.add(t);
   }

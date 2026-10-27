@@ -20,7 +20,7 @@ from urllib.request import Request, urlopen
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = Path(__file__).resolve().parents[1]
-FOLDER = ROOT / 'blog/hotels'
+FOLDER = ROOT / 'hotels'
 FINDINGS = FOLDER / 'scandic-sweden-findings-2026-10-24.json'
 DATE = '2026-10-24'
 HEADERS = ['Hotel','City','Country','Address','Recorded date','Currency','Room price paid','Parking paid','Total paid','Free parking','Parking arrangement','Parking payment','Parking receipt','Parking on hotel receipt','Parking category','Short review','Hotel website','Parking website','Source','Country code','Nights','Average room paid per night','Price note','Latitude','Longitude','Coordinate source','Parking verification','Parking checked date','Parking confirmation source','Payment at hotel','Free parking area','Weekday parking','Weekend parking','Free-area spaces','Reception registration','Paid parking alternatives','Evidence basis']
@@ -152,7 +152,7 @@ def apply(enrich=False):
     if marker not in source:
         target='      <p class="hotel-intro">Find hotels with confirmed free guest parking in Sweden, Denmark, Norway and Finland. Compare parking arrangements and use the map to see the hotels that match your filters.</p>'
         assert target in source,'Generator intro changed; review before applying'
-        source=source.replace(target,target+'\n      <p class="hotel-findings-note"><strong>Swedish Scandic update: 18 reviewed hotels with a free outdoor option on weekdays and weekends.</strong> This is a verified subset, not the complete chain. The free-parking label applies to the named area only. Registration instructions and paid garages are stated in each entry. <a href="/blog/hotels/scandic-sweden-findings-2026-10-24.json">View the dated evidence records</a>.</p>')
+        source=source.replace(target,target+'\n      <p class="hotel-findings-note"><strong>Swedish Scandic update: 18 reviewed hotels with a free outdoor option on weekdays and weekends.</strong> This is a verified subset, not the complete chain. The free-parking label applies to the named area only. Registration instructions and paid garages are stated in each entry. <a href="/hotels/scandic-sweden-findings-2026-10-24.json">View the dated evidence records</a>.</p>')
         generator.write_text(source,encoding='utf-8')
     subprocess.run(['python3',str(generator)],check=True,cwd=ROOT)
     export_csv(reviews)
@@ -214,7 +214,7 @@ Any wider Nordic/other-chain research remains a separate audit; no bulk unverifi
 '''
     (FOLDER/'HANDOVER-SCANDIC-2026-10-24.md').write_text(note,encoding='utf-8')
     index=ROOT/'HANDOVER.md';text=index.read_text(encoding='utf-8')
-    replacement=f'| Blog: Hotels & Parking | [24 October Swedish Scandic findings](blog/hotels/HANDOVER-SCANDIC-2026-10-24.md). Eighteen Swedish Scandics with official free outdoor weekday/weekend parking; {len(reviews)} total records. Skellefteå paid garage separated; registration notes retained. JSON, generated page and 37-column CSV updated. See the note for publication/check status. |'
+    replacement=f'| Blog: Hotels & Parking | [24 October Swedish Scandic findings](hotels/HANDOVER-SCANDIC-2026-10-24.md). Eighteen Swedish Scandics with official free outdoor weekday/weekend parking; {len(reviews)} total records. Skellefteå paid garage separated; registration notes retained. JSON, generated page and 37-column CSV updated. See the note for publication/check status. |'
     text,count=re.subn(r'^\| Blog: Hotels & Parking \|.*$',lambda match:replacement,text,flags=re.M)
     assert count==1,'Expected exactly one hotel handover row';index.write_text(text,encoding='utf-8')
     readme=FOLDER/'README.md';text=readme.read_text(encoding='utf-8')

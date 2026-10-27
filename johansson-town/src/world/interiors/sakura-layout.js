@@ -288,6 +288,9 @@ export const SAKURA_DRESSING=[
  * Ledger and service bell stay on the counter where sakura-interior places them.
  */
 /** The low open cabinet behind the till, under the medicine shelf. Board tops in metres. */
+/** The dark green tiles at the till, laid flush in the terrazzo: x and z in the room, from the front wall back. The shop
+ * floor and its sheen are cut round them, so no two floors lie in one plane (sakura-shell.js floorWithout). */
+export const SAKURA_TILL_FLOOR=Object.freeze([Object.freeze({x0:3.05,x1:4.54,z0:0,z1:3.56}),Object.freeze({x0:5.06,x1:6.67,z0:0,z1:3.56})]);
 export const SAKURA_TILL_CABINET=Object.freeze({x0:6.24,x1:6.62,z0:.3,z1:1.85,boards:Object.freeze([.38,.72,.96])});
 export const SAKURA_BACKBAR=Object.freeze([
   // Everything stands on a board of the till cabinet (SAKURA_TILL_CABINET): the top for

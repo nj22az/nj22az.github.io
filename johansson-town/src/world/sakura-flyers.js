@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {FLYER_PATH} from '../commerce/sakura-flyer.js';
 let paperMaterial;
 function material(){
- if(!paperMaterial){const texture=globalThis.document?.baseURI?new THREE.TextureLoader().load(new URL(FLYER_PATH,document.baseURI).href):new THREE.Texture();texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;paperMaterial=new THREE.MeshStandardMaterial({map:texture,roughness:.94,side:THREE.DoubleSide});}
+ if(!paperMaterial){const texture=globalThis.document?.baseURI?new THREE.TextureLoader().load(new URL(FLYER_PATH,document.baseURI).href):new THREE.Texture();texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=4;paperMaterial=new THREE.MeshStandardMaterial({map:texture,roughness:.94,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4,side:THREE.DoubleSide});}
  return paperMaterial;
 }
 export function addSakuraFlyer(parent,{position,width=.42,rotation=[0,0,0],stack=false}={}){

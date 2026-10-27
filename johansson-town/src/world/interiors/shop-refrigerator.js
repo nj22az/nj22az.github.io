@@ -6,8 +6,10 @@ export function createShopRefrigerator(room,reg){
  const group=new THREE.Group();group.name='Sakura refrigerated drinks and dairy';room.add(group);
  const parts=[],frame=new THREE.MeshStandardMaterial({color:0x798d89,metalness:.45,roughness:.36}),white=new THREE.MeshStandardMaterial({color:0xe4eee6,roughness:.65}),dark=new THREE.MeshStandardMaterial({color:0x263b36,roughness:.68}),light=new THREE.MeshBasicMaterial({color:0xf1fff1,toneMapped:false});
  const box=(w,h,d,x,y,z,material=white,parent=group)=>{const g=new THREE.BoxGeometry(w,h,d);g.translate(x,y,z);if(parent===group){parts.push({g,material});return;}const m=new THREE.Mesh(g,material);parent.add(m);};
- box(5.39,2.26,.065,.395,1.13,-3.895);box(5.39,.23,.75,.395,.115,-3.545,dark);box(5.39,.20,.75,.395,2.19,-3.545,frame);
- box(.05,1.9,.75,-2.275,1.17,-3.545);box(.05,1.9,.75,3.065,1.17,-3.545);
+ // The back panel, then the plinth, the head and the two sides in front of it, the sides between plinth and head: each
+ // piece starts where the last ends, so no two faces lie in one plane (the Sakura surface audit, SK-ZF rev A).
+ box(5.39,2.26,.065,.395,1.13,-3.895);box(5.39,.23,.6925,.395,.115,-3.51625,dark);box(5.39,.20,.6925,.395,2.19,-3.51625,frame);
+ box(.05,1.86,.6925,-2.275,1.16,-3.51625);box(.05,1.86,.6925,3.065,1.16,-3.51625);
  for(let i=1;i<4;i++)box(.035,1.91,.66,-2.27+i*1.33,1.17,-3.57,frame);
  for(let column=0;column<4;column++){
   const x=-1.60+column*1.33;

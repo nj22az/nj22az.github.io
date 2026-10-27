@@ -1,7 +1,7 @@
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
-import {SAKURA_LAYOUT,AISLE_LEVELS,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE} from './sakura-layout.js';
+import {SAKURA_LAYOUT,AISLE_LEVELS,CHILLER,BUN_STEAMER,FRONT_ENDCAPS,COPY_MACHINE,SAKURA_TILL_FLOOR} from './sakura-layout.js';
 import {MEDICINE_SHELF} from './sakura-dressing.js';
 import {BACKROOM} from './sakura-backroom.js';
 import {RESTROOM} from './sakura-restroom.js';
@@ -71,24 +71,25 @@ const material=(extra={})=>new THREE.MeshStandardMaterial({vertexColors:true,rou
 function buildShell(){
  const {span,box,mesh}=parts('sakura-building');
  const S=SAKURA_SHELL,top=S.ceiling,W=S.westX,E=S.eastX,F=S.floorFront,P=S.partitionZ,B=S.backZ;
- // A wall with its wainscot: wood to 0.9 m, a dark rail, plaster above.
+ // A wall with its wainscot: wood to 0.88 m under a dark rail to 0.94, plaster above. Each course starts where the last
+ // ends: the wood run up into the rail put the two boards' ends in one plane (the Sakura surface audit, SK-ZF rev A).
  // A wall whose inner face is exactly on the line given, built outward from it, with its
  // wainscot: wood to 0.9 m, a dark rail, plaster above. `face` points into the room.
  const wallX=(x,z0,z1,face)=>{const t=.08;
   span(Math.min(x,x-face*t),Math.max(x,x-face*t),0,top,z0,z1,C.plaster);
   const at=(d,w)=>[Math.min(x+face*d,x+face*(d+w)),Math.max(x+face*d,x+face*(d+w))];
-  span(...at(0,.018),.08,.9,z0,z1,C.wainscot);span(...at(0,.03),.88,.94,z0,z1,C.wainscotDark);span(...at(0,.025),0,.08,z0,z1,C.wainscotDark);};
+  span(...at(0,.018),.08,.88,z0,z1,C.wainscot);span(...at(0,.03),.88,.94,z0,z1,C.wainscotDark);span(...at(0,.025),0,.08,z0,z1,C.wainscotDark);};
  const wallZ=(z,x0,x1,face,{wains=true}={})=>{const t=.08;
   span(x0,x1,0,top,Math.min(z,z-face*t),Math.max(z,z-face*t),C.plaster);
   if(!wains)return;
   const at=(d,w)=>[Math.min(z+face*d,z+face*(d+w)),Math.max(z+face*d,z+face*(d+w))];
-  span(x0,x1,.08,.9,...at(0,.018),C.wainscot);span(x0,x1,.88,.94,...at(0,.03),C.wainscotDark);span(x0,x1,0,.08,...at(0,.025),C.wainscotDark);};
+  span(x0,x1,.08,.88,...at(0,.018),C.wainscot);span(x0,x1,.88,.94,...at(0,.03),C.wainscotDark);span(x0,x1,0,.08,...at(0,.025),C.wainscotDark);};
  // Shop floor: west and east walls; the partition with its passage (x 3.25..4.39) to the back.
  wallX(W+.04,P,F,1);wallX(E-.04,P,F,-1);
  wallZ(P+.04,-3.96,3.25,1);wallZ(P+.04,4.39,E,1);wallZ(P+.04,W,-3.96,1,{wains:false});
  span(3.25,4.39,2.2,top,P-.04,P+.04,C.plaster);
  // The back room: concrete, plain, its own walls round x -5.76..5.76.
- for(const [x,face] of [[S.backWestX,-1],[S.backEastX,1]])span(x-.04,x+.04,0,top,B,P,C.concrete);
+ for(const [x,face] of [[S.backWestX,-1],[S.backEastX,1]])span(x-.04,x+.04,0,top,B,P-.04,C.concrete);// up to the partition's back face, not into it
  span(S.backWestX,S.backEastX,0,top,B-.08,B,C.concrete);
  // The delivery door in the back wall, steel, painted green.
  span(3.0,4.3,0,2.3,B+.005,B+.05,0x4f7a64);span(3.85,4.15,1.0,1.08,B+.05,B+.09,C.steel);
@@ -116,11 +117,34 @@ function buildFrontFrame(){
  for(const [x0,x1] of [[W,-doorHalf],[doorHalf,E]]){
   span(x0,x1,0,.32,F-.04,F+.06,C.wainscotDark);
   const n=Math.max(1,Math.round((x1-x0)/1.45));
-  for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n;span(x-.05,x+.05,0,2.55,F-.04,F+.06,C.woodDark);}
+  // Posts stand 5 mm proud of the kick panels and the door posts 5 mm proud of the transom, never flush.
+  for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n;span(x-.05,x+.05,0,2.55,F-.045,F+.065,C.woodDark);}
  }
  span(W,E,2.5,2.6,F-.05,F+.07,C.woodDark);span(W,E,2.6,top,F-.03,F+.05,C.plaster);
- for(const x of [-doorHalf,doorHalf])span(x-.06,x+.06,0,2.6,F-.05,F+.07,C.woodDark);
+ for(const x of [-doorHalf,doorHalf])span(x-.06,x+.06,0,2.6,F-.055,F+.075,C.woodDark);
  return mesh(material());
+}
+
+/** Floors laid flush in the terrazzo, which is cut round them: the till's tiles and the restroom's mosaic. */
+export const SAKURA_FLOOR_INSETS=Object.freeze([...SAKURA_TILL_FLOOR,Object.freeze({x0:RESTROOM.minX,x1:RESTROOM.maxX,z0:RESTROOM.minZ,z1:RESTROOM.maxZ})]);
+/**
+ * A level floor from x0..x1 by z0..z1 at height y, with rectangular holes cut where another floor is laid flush (the
+ * till's tiles): cut into the cells of a grid through the holes' edges, so the two floors meet edge to edge and never
+ * share a plane. UVs are those of a PlaneGeometry of the whole floor laid flat, so a repeated texture is unchanged.
+ */
+export function floorWithout(x0,x1,z0,z1,holes=[],y=0){
+ const cut=(lo,hi,keys)=>[...new Set([lo,hi,...keys.map(v=>Math.min(hi,Math.max(lo,v)))])].sort((a,b)=>a-b);
+ const xs=cut(x0,x1,holes.flatMap(h=>[h.x0,h.x1])),zs=cut(z0,z1,holes.flatMap(h=>[h.z0,h.z1]));
+ const W=x1-x0,D=z1-z0,pos=[],uv=[],u=x=>(x-x0)/W,v=z=>(z1-z)/D;
+ for(let i=0;i+1<xs.length;i++)for(let k=0;k+1<zs.length;k++){
+  const a=xs[i],b=xs[i+1],c=zs[k],d=zs[k+1],mx=(a+b)/2,mz=(c+d)/2;
+  if(b-a<1e-9||d-c<1e-9||holes.some(h=>mx>h.x0&&mx<h.x1&&mz>h.z0&&mz<h.z1))continue;
+  // Two triangles facing up: (a,d) (b,d) (b,c) and (a,d) (b,c) (a,c).
+  for(const [x,z] of [[a,d],[b,d],[b,c],[a,d],[b,c],[a,c]]){pos.push(x,y,z);uv.push(u(x),v(z));}
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('normal',new THREE.Float32BufferAttribute(pos.map((_,i)=>i%3===1?1:0),3));
+ g.computeBoundingBox();g.computeBoundingSphere();return g;
 }
 
 function buildCeilingAndFloor(page){
@@ -144,8 +168,8 @@ function buildCeilingAndFloor(page){
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((S.eastX-S.westX)/.6,(S.floorFront-S.partitionZ)/.6);t.anisotropy=8;
   floorMat.map=t;
  }else floorMat.color.setHex(0xe9e1cf);
- const shopFloor=new THREE.Mesh(new THREE.PlaneGeometry(S.eastX-S.westX,S.floorFront-S.partitionZ),floorMat);
- shopFloor.rotation.x=-Math.PI/2;shopFloor.position.set((S.westX+S.eastX)/2,0,(S.floorFront+S.partitionZ)/2);shopFloor.name='sakura-floor';shopFloor.receiveShadow=true;out.push(shopFloor);
+ const shopFloor=new THREE.Mesh(floorWithout(S.westX,S.eastX,S.partitionZ,S.floorFront,SAKURA_FLOOR_INSETS),floorMat);
+ shopFloor.name='sakura-floor';shopFloor.receiveShadow=true;out.push(shopFloor);
  const back=new THREE.Mesh(new THREE.PlaneGeometry(S.backEastX-S.backWestX,S.partitionZ-S.backZ),new THREE.MeshStandardMaterial({color:0xb4b1a8,roughness:.9}));
  back.rotation.x=-Math.PI/2;back.position.set(0,.001,(S.partitionZ+S.backZ)/2);back.name='sakura-floor back room';back.receiveShadow=true;out.push(back);
  return out;
@@ -165,12 +189,12 @@ function buildIsland(id){
   shelf.span(a,b,.12,.2,inZ0,inZ1,C.wood);
   for(const level of AISLE_LEVELS){
    shelf.span(a,b,level-.022,level,inZ0,inZ1,C.wood);
-   // The price rail at the board's lip.
-   const lip=side<0?a:b;shelf.span(Math.min(lip,lip-side*.018),Math.max(lip,lip-side*.018),level-.05,level+.012,inZ0,inZ1,C.rail);
+   // The price rail on the board's lip, 3 mm proud of the board's edge: flush with it, the two faces fought.
+   const lip=side<0?a:b;shelf.span(Math.min(lip+side*.003,lip-side*.015),Math.max(lip+side*.003,lip-side*.015),level-.05,level+.012,inZ0,inZ1,C.rail);
   }
  }
  // Two compact bays on the daily-goods island, with a visible upright between them.
- if(id==='east')ends.span(x0,x1,.12,1.5,R.z-.018,R.z+.018,C.end);
+ if(id==='east')ends.span(x0,x1,.12,1.47,R.z-.018,R.z+.018,C.end);// 1 cm under the spine's top
  // A header board on the spine with the shop's hand-painted aisle card.
  shelf.span(R.x-.015,R.x+.015,1.48,1.5,inZ0,inZ1,C.woodDark);
  for(const z of [z0+.025,z1-.025])ends.span(x0,x1,0,1.5,z-.025,z+.025,C.end);
@@ -210,12 +234,13 @@ function buildWallShelving(){
  // The open chiller on the west wall (CHILLER): a dark well at the foot, four stepped
  // decks narrowing as they rise, a white back, end panels and a lit canopy on top.
  {const K=CHILLER,L=K.levels;
-  span(K.x0,K.x1,0,L[0]-.02,K.z0,K.z1,0x3a4a50);
-  span(K.x1-.06,K.x1,L[0]-.02,L[0]+.1,K.z0,K.z1,0xdfe6e8);
-  L.forEach((y,i)=>{const front=K.x1-.06-i*.08;span(K.x0,front,y-.025,y,K.z0+.02,K.z1-.02,0xe9eeef);span(front-.015,front,y-.03,y+.05,K.z0+.02,K.z1-.02,C.rail);});
-  span(K.x0,K.x0+.04,L[0],K.canopy,K.z0,K.z1,0xf4f6f6);
+  // Well, lip, back and canopy run between the two end panels (z ±0.03 round K.z0 and K.z1), not into them.
+  span(K.x0,K.x1,0,L[0]-.02,K.z0+.03,K.z1-.03,0x3a4a50);
+  span(K.x1-.06,K.x1,L[0]-.02,L[0]+.1,K.z0+.03,K.z1-.03,0xdfe6e8);
+  L.forEach((y,i)=>{const front=K.x1-.06-i*.08;span(K.x0,front,y-.025,y,K.z0+.02,K.z1-.02,0xe9eeef);span(front-.012,front+.003,y-.03,y+.05,K.z0+.03,K.z1-.03,C.rail);});// rails 3 mm proud of the decks, ends in the end panels
+  span(K.x0,K.x0+.04,L[0],K.canopy,K.z0+.03,K.z1-.03,0xf4f6f6);
   for(const z of [K.z0,K.z1])span(K.x0,K.x1,0,K.canopy+.18,z-.03,z+.03,0x2f5f4a);
-  span(K.x0,K.x1-.18,K.canopy,K.canopy+.18,K.z0,K.z1,0x2f5f4a);
+  span(K.x0,K.x1-.18,K.canopy,K.canopy+.18,K.z0+.03,K.z1-.03,0x2f5f4a);
   span(K.x1-.2,K.x1-.16,K.canopy-.02,K.canopy+.02,K.z0+.05,K.z1-.05,0xfffbee);
   // The two bays' dividers, so each pair of lines reads as its own section.
   for(const z of [-.27,1.11])span(K.x0+.04,K.x1-.3,L[0],K.canopy,z-.012,z+.012,0xcfd8da);}
@@ -230,19 +255,21 @@ function buildWallShelving(){
   span(x0+.08,x0+.34,.97,.99,z0+.06,z0+.2,0x2a6a3a);span(x0+.06,x1-.06,.5,.54,z0-.02,z0,0xb8bec0);
   span(x1+.05,x1+.45,0,.7,z0+.1,z1-.05,C.woodDark);span(x1+.1,x1+.4,.7,.82,z0+.15,z1-.12,0xe9e6dc);span(x1+.12,x1+.25,.82,.86,z0+.2,z0+.35,0x2b2e30);}
  // The delivery shelf by the restroom (x -6.19..-4.15, z -2.47..-1.86): bare steel.
- for(const y of [.088,.357,.670,.983,1.296])span(-6.17,-4.17,y-.02,y,-2.46,-1.87,C.steel);
+ for(const y of [.088,.357,.670,.983,1.296])span(-6.167,-4.173,y-.02,y,-2.457,-1.873,C.steel);// 3 mm inside the uprights' faces
  for(const x of [-6.15,-4.19])for(const z of [-2.45,-1.88])span(x-.02,x+.02,0,1.45,z-.02,z+.02,0x7d878a);
  // The medicine boards behind the till, over the cabinet, and the cupboard beside it.
  const M=MEDICINE_SHELF;
  span(M.back-.01,M.back+.03,.98,2.1,M.minZ-.08,M.maxZ+.08,C.woodDark);
- for(const y of M.levels)span(M.front-.02,M.back,y-.02,y,M.minZ-.08,M.maxZ+.08,C.wood);
+ // The boards end on the side panels and the top sits on them: run through them, their faces shared the panels' planes.
+ for(const y of M.levels)span(M.front-.02,M.back,y-.02,y,M.minZ-.06,M.maxZ+.06,C.wood);
  for(const z of [M.minZ-.08,M.maxZ+.08])span(M.front-.02,M.back+.03,.98,2.1,z-.02,z+.02,C.woodDark);
- span(M.front-.02,M.back+.03,2.08,2.12,M.minZ-.08,M.maxZ+.08,C.woodDark);
+ span(M.front-.025,M.back+.03,2.08,2.12,M.minZ-.08,M.maxZ+.08,C.woodDark);// the top 5 mm proud of the panels' fronts
  span(6.24,6.73,0,.9,1.88,3.52,C.wainscot);span(6.22,6.73,.9,.94,1.88,3.52,C.woodDark);
  // The back-room rack: two steel units, four boards.
  const K=BACKROOM.rack;
  for(const [a,b] of K.units){
-  for(const y of K.levels)span(a,b,y-.025,y,K.front,K.back,C.steel);
+  // Boards 3 mm inside the uprights' outer faces, so board ends and uprights never share a plane.
+  for(const y of K.levels)span(a+.003,b-.003,y-.025,y,K.front+.003,K.back-.003,C.steel);
   for(const x of [a+.02,b-.02])for(const z of [K.front+.02,K.back-.02])span(x-.02,x+.02,0,2.25,z-.02,z+.02,0x6f7a7c);
  }
  // The magazine rack's plinth so it does not float on the terrazzo.
@@ -285,7 +312,9 @@ export const TUBE_RUNS=Object.freeze([[-4.4,-3.2,3.2],[-1.2,-3.2,3.2],[2.4,-3.2,
 function buildTubes(){
  const {span,mesh}=parts('sakura-light'),y=SAKURA_SHELL.ceiling-.2;
  const runs=TUBE_RUNS;
- for(const [x,z0,z1] of runs)for(let z=z0;z<z1-.4;z+=1.32)span(x-.03,x+.03,y-.03,y+.03,z,z+1.2,0xfffbee);
+ // Each tube ends within its run: the last of a run used to hang up to 0.8 m past it, through the partition into the
+ // shop (the stockroom's) and through the small office's front wall (the office's), and met the wall band's cap there.
+ for(const [x,z0,z1] of runs)for(let z=z0;z<z1-.4;z+=1.32)span(x-.03,x+.03,y-.03,y+.03,z,Math.min(z+1.2,z1),0xfffbee);
  // Two bare tubes under the till canopy, lighting the counter top.
  for(const x of [4.55,4.95])for(const z of [.3,1.8])span(x-.025,x+.025,2.12,2.17,z,z+1.6,0xfffbee);
  return mesh(new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,emissive:0xfff3d6,emissiveIntensity:1}));
@@ -314,7 +343,8 @@ function buildDoors(){
  const P=SAKURA_SHELL.partitionZ;
  // The frame stands 2 cm proud of the wall's wainscot (its face 1.8 cm off the plaster): at 6 cm it lay 2 mm from the
  // wainscot's face, and a thin line flashed beside the passage.
- for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.08,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.08,C.woodDark);
+ // The jambs stop under the head.
+ for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.18,P-.06,P+.08,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.08,C.woodDark);
  span(4.4,4.44,0,2.12,P+.08,P+1.02,0xe9e1cf);
  // The office doorway: jambs, head and a casing on the shop side. Its door swings
  // (sakura-life.js buildOfficeDoor). The restroom door stands open into the restroom.

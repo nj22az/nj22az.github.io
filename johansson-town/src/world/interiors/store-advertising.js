@@ -142,7 +142,9 @@ export function createLabelAtlas(){
  */
 export function getLabelMaterial(){
  if(!labelMaterial){const texture=new THREE.CanvasTexture(createLabelAtlas());texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=2;
-  labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false});labelMaterial.name='Sakura fictional packaging atlas';
+  // Packaging art is printed on its pack: a decal 1 mm proud of the body, drawn in front of it by polygon offset so the
+  // two never trade places in the depth buffer (the owner, 26 October 2026: "much Z fighting ... I want it impeccable").
+  labelMaterial=new THREE.MeshBasicMaterial({map:texture,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});labelMaterial.name='Sakura fictional packaging atlas';
   refreshSakuraPrint(texture,drawShelfPrices,STORE_ITEMS.map(item=>STORE_BRANDS[item.id].name+item.jp+'¥'+item.cost).join(''));
   const designed=new Map(),repaint=ctx=>{paintDesigned(ctx,designed);paintFlavours(ctx);texture.needsUpdate=true;};
   for(const [row,file] of [[0,'packaging-atlas.webp'],[1,'packaging-groceries.webp']])new THREE.ImageLoader().load(assetURL('graphics/konbini/'+file),image=>{const canvas=texture.image,ctx=canvas.getContext('2d');ctx.drawImage(image,0,row*512,COLS*TW,512);repaint(ctx);},undefined,()=>{});

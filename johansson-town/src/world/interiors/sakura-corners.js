@@ -129,7 +129,7 @@ export function buildSakuraCorners(room,{anchor,action}={}){
  box(A.w-.08,.04,.2,A.x,1.36,front+.07,0x8e979e);
  box(.03,.22,.2,A.x-A.w/2+.05,1.25,front+.07,0x8e979e);box(.03,.22,.2,A.x+A.w/2-.05,1.25,front+.07,0x8e979e);
  // The shelf for your bag and the counter where the keypad sits, sloping to you.
- box(A.w,.03,.16,A.x,.95,front+.06,0x9aa2a8);
+ box(A.w,.03,.14,A.x,.95,front+.07,0x9aa2a8);// from the machine's face, not 2 cm into it with its sides flush
  prints.push(place(printed('atmHeader',A.w,.2),A.x,A.h+.11,A.z-A.d/2+.121,0));
  {const g=printed('atmScreen',.36,.26);g.rotateX(-.25);prints.push(place(g,A.x,1.2,front+.03,0));}
  {const g=printed('keypad',.22,.16);g.rotateX(-Math.PI/2+.35);prints.push(place(g,A.x+.12,.975,front+.07,0));}
@@ -145,7 +145,7 @@ export function buildSakuraCorners(room,{anchor,action}={}){
  box(.06,.025,.4,4.565,FURNITURE_HEIGHTS.serviceCounter+.012,.74,0xe9e4d8);
  [0x2aa36b,0xf0c419,0xe8553e,0x3b7dd8,0xf2f2f2,0x8e44ad,0x2aa36b,0xe8553e].forEach((hex,i)=>box(.045,.03,.042,4.565,FURNITURE_HEIGHTS.serviceCounter+.035,.57+i*.048,hex));
  const group=new THREE.Group();group.name='Sakura corners';room.add(group);
- const signs=new THREE.Mesh(mergeGeometries(prints),new THREE.MeshBasicMaterial({map:sheet(),toneMapped:false}));signs.name='Sakura aisle cards, window posters and cash corner prints';group.add(signs);
+ const signs=new THREE.Mesh(mergeGeometries(prints),new THREE.MeshBasicMaterial({map:sheet(),toneMapped:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4}));signs.name='Sakura aisle cards, window posters and cash corner prints';group.add(signs);
  const body=new THREE.Mesh(mergeGeometries(solids),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,metalness:.1}));body.name='Sakura cash corner';group.add(body);
  [...prints,...solids].forEach(g=>g.dispose());
  if(anchor&&action){

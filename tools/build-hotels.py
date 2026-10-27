@@ -10,8 +10,9 @@ import re
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / 'blog/hotels/hotels.json'
-OUTPUT = ROOT / 'blog/hotels/index.html'
+DATA = ROOT / 'hotels/hotels.json'
+OUTPUT = ROOT / 'hotels/index.html'
+BLOG_POSTS = ROOT / 'assets/js/blog-posts.js'
 PARKING = {
     'external-paid': 'External paid parking',
     'hotel-paid': 'Hotel paid parking',
@@ -156,6 +157,7 @@ def validate(reviews):
         assert review['id'] not in ids, 'Duplicate review id'
         ids.add(review['id'])
         dt.date.fromisoformat(review['recordedOn'])
+        validate_photos(review)
         warning = review.get('parkingAccessWarning')
         if warning is not None:
             assert warning.get('status') == 'avoid' and warning.get('source') == 'owner stay report', 'Access overrides need an attributed owner report'
@@ -206,67 +208,218 @@ def render_row(review):
           </tr>'''
 
 
+ICONS = {
+    'pin': '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+    'parking': '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+    'note': '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/>',
+    'check': '<path d="m5 12 4 4L19 6"/>',
+    'list': '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+    'clipboard': '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/>',
+    'receipt': '<path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+    'card': '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
+    'car': '<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><path d="M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/>',
+    'wallet': '<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3z"/><path d="M3 7l12-4v4M16 13.5h2"/>',
+    'message': '<path d="M4 5h16v11H10l-5 4v-4H4z"/>',
+    'bookmark': '<path d="M7 3h10v18l-5-4-5 4z"/>',
+    'share': '<path d="M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8"/>',
+    'globe': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+    'sliders': '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    'search': '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+    'locate': '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+    'flag': '<path d="M5 21V4h11l-2 4 2 4H5"/>',
+    'start': '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/>',
+    'route': '<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/>',
+    'warning': '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17v.01"/>',
+    'info': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>',
+    'close': '<path d="M6 6l12 12M18 6 6 18"/>',
+    'fit': '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+}
+
+
 def icon(name):
-    paths = {
-        'hotel': '<path d="M4 21V3h16v18M2 21h20M8 7h2m4 0h2M8 11h2m4 0h2M10 21v-6h4v6"/>',
-        'pin': '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
-        'parking': '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
-        'note': '<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/>',
-        'check': '<path d="m5 12 4 4L19 6"/>',
-        'arrow': '<path d="M5 12h14m-6-6 6 6-6 6"/>',
-    }
-    return '<svg class="hotel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths[name] + '</svg>'
+    return ('<svg class="hotel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" '
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>')
 
 
-def render_review(review):
-    paragraphs = '\n'.join('        <p>' + e(paragraph) + '</p>' for paragraph in review['review'])
-    category = parking_category(review)
-    tags = [(review['country'], ''), (parking_category_label(review), ' hotel-parking-' + category)]
-    if review['freeParking'] is not True and review['parkingOnHotelReceipt'] is False:
-        tags.extend([('Separate parking receipt', ''), ('Parking not on hotel receipt', '')])
-    tag_list = ''.join('<li class="hotel-tag' + css + '">' + e(tag) + '</li>' for tag, css in tags)
+# Nordic cross flags, drawn to the official proportions; a flag is a country's own colour coding
+# and never collides with the parking colours.
+FLAGS = {
+    'SE': ('16:10', '#006aa7', '#fecc02', 5, 2),
+    'DK': ('37:28', '#c8102e', '#ffffff', 12, 4),
+    'FI': ('18:11', '#ffffff', '#003580', 5, 3),
+    'NO': ('22:16', '#ba0c2f', '#ffffff', 6, 4),
+}
+
+
+def flag(code, name):
+    ratio, field, cross, hoist, width = FLAGS[code]
+    w, h = (int(v) for v in ratio.split(':'))
+    cy = h / 2
+    bars = f'<rect x="{hoist}" width="{width}" height="{h}" fill="{cross}"/><rect y="{cy - width / 2}" width="{w}" height="{width}" fill="{cross}"/>'
+    if code == 'NO':  # a blue cross inside the white one
+        bars += f'<rect x="{hoist + 1}" width="{width - 2}" height="{h}" fill="#00205b"/><rect y="{cy - (width - 2) / 2}" width="{w}" height="{width - 2}" fill="#00205b"/>'
+    return (f'<svg class="hotel-flag" viewBox="0 0 {w} {h}" role="img" aria-label="{e(name)}"><rect width="{w}" height="{h}" fill="{field}"/>{bars}'
+            f'<rect width="{w}" height="{h}" fill="none" stroke="rgba(8,19,26,.25)" stroke-width=".6"/></svg>')
+
+
+def country_tag(review):
+    return (f'<button type="button" class="hotel-country-tag" data-hotel-country="{e(review["countryCode"])}" aria-pressed="false" '
+            f'title="Show only {e(review["country"])}">{flag(review["countryCode"], review["country"])}{e(review["countryCode"])}</button>')
+
+
+def place_key(review):
+    """Feed order without a trip: country, then city, then hotel, so a place can be found by eye."""
+    return (review['country'].casefold(), review['city'].casefold(), review['name'].casefold())
+
+
+def post_chips(review):
+    """Short icon facts from the record itself; unknown stays visibly unknown."""
+    chips = []
+    details = review.get('parkingDetails') or {}
+    if review['freeParking'] is True and details.get('freeArea'):
+        chips.append(('pin', details['freeArea']))
+    if details.get('spaces'):
+        chips.append(('car', f'{details["spaces"]} spaces'))
+    if review['freeParking'] is not True:
+        operator = review.get('parkingOperator')
+        chips.append(('card', {True: 'Pay at the hotel', False: 'Pay separately' + (f' ({operator})' if operator else ''),
+                               None: 'Payment not confirmed'}[review['parkingPaymentAtHotel']]))
+        chips.append(('receipt', {True: 'On the hotel receipt', False: 'Separate receipt',
+                                  None: 'Receipt not confirmed'}[review['parkingOnHotelReceipt']]))
+    # Older entries give registration in their parking instructions, shown as the caption.
+    if 'parkingDetails' in review:
+        registration = details.get('registrationAtReception')
+        chips.append(('clipboard', 'Register at reception' if registration is True else
+                      'No registration needed' if registration is False else 'Registration not stated'))
+    paid_total = total_paid(review)
+    if paid_total is not None:
+        nights = review.get('nights')
+        duration = f'{nights} ' + ('night' if nights == 1 else 'nights') if nights else 'nights not recorded'
+        chips.append(('wallet', f'Paid {review["currency"] or review.get("currencyLabel") or ""} {money(paid_total)} · {duration}'))
+    return ''.join(f'<li>{icon(name)}{e(text)}</li>' for name, text in chips)
+
+
+def date_stamp(value):
+    """The date as an old film camera printed it in the corner of a photo: '26 10 27."""
+    day = dt.date.fromisoformat(value)
+    return f"’{day:%y} {day.month:2d} {day.day:2d}"
+
+
+def post_photos(review):
+    """The owner's own photos of the stay, small, each with the date it was taken; nothing when there are none."""
+    photos = review.get('photos') or []
+    if not photos:
+        return ''
+    figures = ''.join(
+        f'<figure><a href="{e(photo["src"])}"><img src="{e(photo["thumb"])}" width="480" height="{round(480 * photo["height"] / photo["width"])}" '
+        f'loading="lazy" decoding="async" alt="{e(photo["alt"])}"><time class="hotel-photo-stamp" datetime="{e(photo["takenOn"])}" '
+        f'aria-label="Taken {date_label(photo["takenOn"])}">{date_stamp(photo["takenOn"])}</time></a><figcaption>{e(photo["caption"])}</figcaption></figure>'
+        for photo in photos)
+    return f'\n        <div class="hotel-photos" aria-label="Photos of {e(review["name"])}">{figures}</div>'
+
+
+def validate_photos(review):
+    for photo in review.get('photos') or []:
+        for key in ('src', 'thumb'):
+            assert photo[key].startswith('/hotels/photos/') and (ROOT / photo[key].lstrip('/')).is_file(), f'{review["name"]}: missing photo {photo[key]}'
+        assert photo['alt'].strip() and photo['caption'].strip(), f'{review["name"]}: a photo needs a caption and alt text'
+        dt.date.fromisoformat(photo['takenOn'])
+        assert photo['width'] > 0 and photo['height'] > 0
+
+
+def comment(kind, who, body):
+    return (f'<li class="hotel-comment hotel-comment-{kind}"><span class="hotel-comment-icon">{icon(kind)}</span>'
+            f'<div class="hotel-comment-body"><p class="hotel-comment-who">{who}</p>{body}</div></li>')
+
+
+def hotel_posts(path=BLOG_POSTS):
+    """Blog posts written from the owner's notes on a stay: catalogue entries carrying "hotel": <record id>."""
+    source = path.read_text(encoding='utf-8')
+    catalogue = json.loads(source[source.index('['):source.rindex(']') + 1])
+    posts = {}
+    for post in catalogue:
+        if post.get('hotel'):
+            posts.setdefault(post['hotel'], []).append(post)
+    return {hotel: sorted(items, key=lambda post: post['date'], reverse=True) for hotel, items in posts.items()}
+
+
+def post_thread(review, posts=()):
+    """Comments are the record's own notes: blog posts about the stay, an owner report, the price paid, the register
+    notes and its sources."""
+    items = [comment('note', f'Blog post · <time datetime="{e(post["date"])}">{date_label(post["date"])}</time>',
+                     f'<p><a href="{e(post["url"])}">{e(post["title"])}</a></p><p>{e(post["excerpt"])}</p>')
+             for post in posts]
+    warning = review.get('parkingAccessWarning')
+    if warning:
+        items.append(comment('warning', f'Owner’s report · <time datetime="{e(warning["reportedOn"])}">{date_label(warning["reportedOn"])}</time>',
+                             f'<p>{e(warning["reason"])}</p>'))
+    items.append(comment('wallet', 'Price paid' if review['roomPaid'] is not None else 'Price', f'<p>{e(review["priceNote"])}</p>'))
+    items.append(comment('note', 'Register notes', ''.join(f'<p>{e(paragraph)}</p>' for paragraph in review['review'])))
     links = f'<a href="{e(review["hotelUrl"])}">Official hotel information</a>'
     if review['parkingUrl'] and review['parkingUrl'] != review['hotelUrl']:
         links += f'<a href="{e(review["parkingUrl"])}">Parking information</a>'
     if review['coordinates'] and review['coordinates']['sourceUrl'] not in (review['hotelUrl'], review['parkingUrl']):
         links += f'<a href="{e(review["coordinates"]["sourceUrl"])}">Hotel map location</a>'
     verification = review['parkingVerification']
-    registration = review.get('parkingDetails', {}).get('registrationAtReception')
-    registration_note = ('Register at reception' if registration is True else
-                         'No reception registration required' if registration is False else
-                         'Registration: see notes; requirements may be unstated')
-    # Older entries describe registration in their summary; retain that wording verbatim.
-    if 'parkingDetails' not in review:
-        registration_note = 'Check the parking instructions below'
-    map_action = (f'<a href="#hotel-map" data-hotel-focus="{e(review["id"])}" hidden>{icon("pin")}Show on map</a>'
-                  if review['coordinates'] else '<span class="hotel-unmapped">Map location awaiting verification</span>')
-    paid_total = total_paid(review)
-    nights = review.get('nights')
-    duration = f'{nights} ' + ('night' if nights == 1 else 'nights') if nights else 'Nights not recorded'
-    price = (f'<p class="hotel-card-price">Stay paid <strong>{e(review["currency"] or review.get("currencyLabel") or "")} {money(paid_total)}</strong> · {e(duration)}</p>'
-             if paid_total is not None else '')
-    return f'''      <article class="hotel-review" id="review-{e(review['id'])}" data-hotel-note="{e(review['id'])}" aria-labelledby="title-{e(review['id'])}">
-        <header class="hotel-card-header"><span class="hotel-card-avatar">{icon('hotel')}</span><div><p class="hotel-card-place">{e(review['city'])} · {e(review['country'])}</p><h3 id="title-{e(review['id'])}">{e(review['name'])}</h3></div></header>
-        <p class="hotel-card-parking hotel-parking-{category}">{icon('parking')}<strong>{e(parking_category_label(review))}</strong></p>
-        <p class="hotel-card-summary">{e(review['parkingSummary'])}</p>
-        <p class="hotel-card-condition">{icon('note')}{e(registration_note)}</p>
-        <p class="hotel-card-condition">{icon('note')}{e(receipt_label(review))}</p>
-{price}
-        <p class="hotel-card-checked">{icon('check')}Parking checked <time datetime="{e(verification['checkedOn'])}">{date_label(verification['checkedOn'])}</time></p>
-        <div class="hotel-card-actions">{map_action}<a href="{e(review['hotelUrl'])}">{icon('arrow')}Hotel website</a></div>
-        <details class="hotel-card-details"><summary>{icon('note')}Full notes, prices &amp; sources</summary>
-        <p class="hotel-review-meta">{e(full_address(review))}<br>Recorded <time datetime="{e(review['recordedOn'])}">{date_label(review['recordedOn'])}</time></p>
-        <p>{e(review['priceNote'])}</p>
-{paragraphs}
-        <ul class="hotel-review-tags" aria-label="Country and parking tags">{tag_list}</ul>
-        <p class="hotel-source">{e(review['sourceNote'])}<br>{links}</p>
-        </details>
+    items.append(comment('check', f'Sources · parking checked <a href="{e(verification["sourceUrl"])}"><time datetime="{e(verification["checkedOn"])}">{date_label(verification["checkedOn"])}</time></a>',
+                         f'<p>{e(review["sourceNote"])}</p><p class="hotel-comment-meta">{e(full_address(review))} · recorded '
+                         f'<time datetime="{e(review["recordedOn"])}">{date_label(review["recordedOn"])}</time></p><p class="hotel-source">{links}</p>'))
+    return items
+
+
+def render_review(review, posts=()):
+    category = parking_category(review)
+    rid = e(review['id'])
+    thread = post_thread(review, posts)
+    map_action = (f'<a href="#hotel-map" data-hotel-focus="{rid}" hidden>{icon("pin")}Map</a>' if review['coordinates']
+                  else '<span class="hotel-unmapped">Map location awaiting verification</span>')
+    checked = review['parkingVerification']['checkedOn']
+    return f'''      <article class="hotel-review hotel-post" id="review-{rid}" data-hotel-note="{rid}" data-checked="{e(checked)}" aria-labelledby="title-{rid}">
+        <header class="hotel-post-head"><span class="hotel-avatar hotel-avatar-{category}" aria-hidden="true">P</span><div class="hotel-post-who"><h4 id="title-{rid}">{e(review['name'])}</h4><p class="hotel-post-meta"><strong class="hotel-verdict hotel-verdict-{category}">{e(parking_category_label(review))}</strong> · {e(review['city'])}</p></div>{country_tag(review)}<button type="button" class="hotel-save" data-hotel-save="{rid}" aria-pressed="false" aria-label="Save {e(review['name'])}" hidden>{icon('bookmark')}</button></header>
+        <p class="hotel-trip-line" data-hotel-trip-line hidden></p>
+        <p class="hotel-post-caption">{e(review['parkingSummary'])}</p>
+        <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>{post_photos(review)}
+        <div class="hotel-post-actions"><button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="notes-{rid}" hidden>{icon('message')}Notes <span class="hotel-action-count">{len(thread)}</span></button>{map_action}<a href="{e(review['hotelUrl'])}">{icon('globe')}Website</a><button type="button" data-hotel-share="{rid}" hidden>{icon('share')}Share</button></div>
+        <ol class="hotel-thread" id="notes-{rid}" aria-label="Notes on {e(review['name'])}">{''.join(thread)}</ol>
       </article>'''
 
 
-def build(reviews):
+def render_parking_choice(reviews):
+    counts = {key: sum(parking_category(review) == key for review in reviews) for key in PARKING_CATEGORIES}
+    options = (('free', 'Free parking'), ('easy', 'Easy'), ('avoid', 'Avoid'), ('', 'All'), ('saved', 'Saved'))
+    labels = ''.join(
+        f'<label class="hotel-option hotel-option-{value or "all"}"{" data-hotel-saved-option hidden" if value == "saved" else ""}>'
+        f'<input type="radio" name="parking" value="{value}"{" checked" if value == "free" else ""}><span>'
+        f'{icon("bookmark") if value == "saved" else ""}{text} <span class="hotel-option-count" data-parking-count="{value or "all"}">'
+        f'{0 if value == "saved" else counts[value] if value else len(reviews)}</span><span class="hotel-sr"> hotels</span></span></label>'
+        for value, text in options)
+    return f'''<fieldset class="hotel-choice"><legend class="hotel-sr">Show</legend><div class="hotel-choice-options">{labels}</div></fieldset>'''
+
+
+def gazetteer(reviews):
+    """Places a trip can start or end at: the register's own towns, at the centre of their hotels."""
+    towns = {}
+    for review in reviews:
+        if review['coordinates'] is None:
+            continue
+        town = re.sub(r'\s+(?:[A-ZÆØÅÄÖ]{1,2}|SØ|NV|NØ|SV)$', '', review['city'])
+        towns.setdefault((town, review['countryCode']), []).append(review['coordinates'])
+    return [{'name': town, 'country': code,
+             'latitude': round(sum(p['latitude'] for p in points) / len(points), 5),
+             'longitude': round(sum(p['longitude'] for p in points) / len(points), 5)}
+            for (town, code), points in sorted(towns.items(), key=lambda item: item[0][0].casefold())]
+
+
+def check_posts(reviews, posts):
+    unknown = sorted(set(posts) - {review['id'] for review in reviews})
+    assert not unknown, f'Blog posts name hotels that are not in the register: {unknown}'
+
+
+def build(reviews, posts=None):
+    posts = hotel_posts() if posts is None else posts
+    reviews = sorted(reviews, key=place_key)
     rows = '\n'.join(render_row(review) for review in reviews)
-    notes = '\n'.join(render_review(review) for review in reviews)
+    notes = '\n'.join(render_review(review, posts.get(review['id'], ())) for review in reviews)
     count = len(reviews)
     countries = sorted({(review['countryCode'], review['country']) for review in reviews}, key=lambda item: item[1])
     country_options = ''.join(f'<option value="{e(code)}">{e(name)}</option>' for code, name in countries)
@@ -281,74 +434,104 @@ def build(reviews):
         'parkingSummary': review['parkingSummary'], 'reviewId': 'review-' + review['id']
     } for review in reviews if review['coordinates'] is not None]
     map_json = json.dumps(map_records, ensure_ascii=False).replace('<', '\\u003c')
+    places = gazetteer(reviews)
+    places_json = json.dumps(places, ensure_ascii=False).replace('<', '\\u003c')
+    place_options = ''.join(f'<option value="{e(place["name"])}"></option>' for place in places)
+    codes = ' · '.join(code for code, _ in countries)
     return f'''<!DOCTYPE html>
 <!-- Generated from hotels.json by tools/build-hotels.py. -->
 <html lang="en" data-theme="clarity" data-theme-lock="clarity" data-hotel-design="note">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hotels &amp; Parking | Blog – The Office of Nils Johansson</title>
-  <meta name="description" content="Hotels for field service engineers: verified parking, payment and receipt instructions, access warnings, chain filters and a map across Denmark, Sweden, Norway and Finland.">
-  <link rel="canonical" href="https://nj22az.github.io/blog/hotels/">
+  <title>Hotels &amp; Parking – The Office of Nils Johansson</title>
+  <meta name="description" content="Hotels for field service engineers: verified free parking, a trip planner with drive times, payment and receipt facts, and a map across Denmark, Sweden, Norway and Finland.">
+  <link rel="canonical" href="https://nj22az.github.io/hotels/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Hotels &amp; Parking – The Office of Nils Johansson">
-  <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, short notes, a filtered map and prices paid.">
-  <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, a trip planner, a filtered map and prices paid.">
+  <meta property="og:url" content="https://nj22az.github.io/hotels/">
+  <meta property="og:image" content="https://nj22az.github.io/hotels/banner/banner-desktop.jpg">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="800">
+  <meta property="og:image:alt" content="Tetsuo drives his kei truck past Sakura Shōten, printed as a rubber stamp.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#333333">
-  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-hotels.svg">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon-hotels.png">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon-hotels.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=6">
+  <link rel="stylesheet" href="/css/hotels.css?v=11">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="/css/hotels-map.css?v=2">
+  <link rel="stylesheet" href="/css/hotels-map.css?v=3">
 </head>
 <body class="hotel-site">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav id="site-nav" class="site-nav"></nav>
   <main id="main-content" class="hotel-page">
-    <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
-    <header>
-      <p class="hotel-eyebrow">Field notes · Hotels &amp; parking</p>
-      <h1>Hotels &amp; Parking</h1>
-      <p class="hotel-intro">Straightforward overnight stops for field service engineers. Find free parking, check how to pay and avoid extra receipt admin before you arrive.</p>
-      <p class="hotel-findings-note"><strong>{count} hotels · {sum(r['freeParking'] for r in reviews)} free-parking options · {len(map_records)} verified map locations.</strong> Free applies to the specified parking area; an access warning can still make a free hotel Avoid. Registration and paid alternatives remain in each entry. <a href="#hotel-method-title">How the register works</a>.</p>
+    <header class="hotel-page-head">
+      <h1 class="hotel-sr">Hotels &amp; Parking: free parking for field service trips</h1>
+      <picture class="hotel-banner">
+        <source media="(max-width: 600px)" type="image/webp" srcset="/hotels/banner/banner-phone.webp" width="1200" height="900">
+        <source media="(max-width: 600px)" srcset="/hotels/banner/banner-phone.jpg" width="1200" height="900">
+        <source type="image/webp" srcset="/hotels/banner/banner-desktop.webp">
+        <img src="/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
+      </picture>
+      <p class="hotel-intro">{count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
     </header>
-    <section aria-labelledby="hotel-register-title">
-      <div class="hotel-register-heading"><h2 id="hotel-register-title">Hotel register</h2><a class="hotel-download" href="/blog/hotels/hotel-reviews.csv" download>Download spreadsheet (CSV)</a></div>
-      <ul class="hotel-parking-legend" aria-label="Parking categories"><li class="hotel-tag hotel-parking-free">Green · Free parking</li><li class="hotel-tag hotel-parking-easy">Yellow · Easy — hotel payment &amp; receipt</li><li class="hotel-tag hotel-parking-avoid">Red · Avoid — payment or access concerns</li></ul>
-      <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotel reviews">
-        <div class="hotel-field hotel-search"><label for="hotel-search">Hotel or place</label><input id="hotel-search" type="search" name="search" placeholder="Search hotel, city or country" autocomplete="off"></div>
-        <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option>{country_options}</select></div>
-        <div class="hotel-field"><label for="hotel-chain">Hotel chain</label><select id="hotel-chain" name="chain"><option value="">All chains</option>{chain_options}</select></div>
-        <div class="hotel-field"><label for="hotel-parking">Parking</label><select id="hotel-parking" name="parking"><option value="free" selected>Green — Free parking</option><option value="easy">Yellow — Easy / one hotel receipt</option><option value="avoid">Red — Avoid / payment or access</option><option value="">All parking</option></select></div>
-        <div class="hotel-field"><label for="hotel-receipt">Parking on hotel receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">Yes</option><option value="false">No — separate receipt</option><option value="unknown">Not confirmed</option></select></div>
-        <button type="reset" class="hotel-reset">Reset filters</button>
+    <section class="hotel-trip" aria-labelledby="hotel-trip-title" data-hotel-trip hidden>
+      <h2 id="hotel-trip-title" class="hotel-sr">Plan a stop</h2>
+      <form class="hotel-trip-form" data-hotel-trip-form>
+        <div class="hotel-trip-field">{icon('start')}<label for="trip-from">From</label><input id="trip-from" name="from" list="hotel-places" placeholder="Örebro" autocomplete="off" enterkeyhint="next"><button type="button" class="hotel-icon-button" data-trip-locate aria-label="Start from my location">{icon('locate')}</button></div>
+        <div class="hotel-trip-field">{icon('flag')}<label for="trip-to">To</label><input id="trip-to" name="to" list="hotel-places" placeholder="Malmö" autocomplete="off" enterkeyhint="go"></div>
+        <div class="hotel-trip-buttons"><button type="submit" class="hotel-primary">{icon('route')}Find a hotel</button><button type="button" class="hotel-icon-button" data-trip-clear aria-label="Clear trip" hidden>{icon('close')}</button></div>
+        <datalist id="hotel-places">{place_options}</datalist>
       </form>
-      <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
-      <nav class="hotel-view-links" aria-label="Hotel views"><a href="#hotel-notes-title">{icon('hotel')}Hotel feed</a><a href="#hotel-map-title">{icon('pin')}Map</a></nav>
-      <div class="hotel-discovery">
-      <section class="hotel-notes" data-hotel-notes aria-labelledby="hotel-notes-title">
-        <h2 id="hotel-notes-title">Hotel feed</h2>
-        <p class="hotel-feed-intro">Parking, payment and receipt facts for working on the road. Easy requires confirmed hotel payment and inclusion on the hotel receipt. Unconfirmed paid arrangements are Avoid. Open an entry for full instructions and sources.</p>
+      <div class="hotel-trip-result" data-trip-result role="status" aria-live="polite"></div>
+      <p class="hotel-fine">Green (free) parking only. Drive times come from OpenStreetMap routing (OSRM); your places are sent there, never saved.</p>
+    </section>
+    <section class="hotel-feed" aria-labelledby="hotel-register-title">
+      <h2 id="hotel-register-title" class="hotel-sr">Hotels</h2>
+      <form class="hotel-filters" data-hotel-filters hidden role="search" aria-label="Filter hotels">
+        <div class="hotel-toolbar">
+          <div class="hotel-search">{icon('search')}<label for="hotel-search" class="hotel-sr">Search hotels</label><input id="hotel-search" type="search" name="search" placeholder="Search hotels" autocomplete="off"></div>
+          <details class="hotel-more" data-hotel-more><summary>{icon('sliders')}Filters <span class="hotel-filter-count" data-hotel-filter-count hidden></span></summary>
+            <div class="hotel-more-panel">
+              <div class="hotel-field"><label for="hotel-country">Country</label><select id="hotel-country" name="country"><option value="">All countries</option>{country_options}</select></div>
+              <div class="hotel-field"><label for="hotel-chain">Hotel chain</label><select id="hotel-chain" name="chain"><option value="">All chains</option>{chain_options}</select></div>
+              <div class="hotel-field"><label for="hotel-receipt">Parking receipt</label><select id="hotel-receipt" name="receipt"><option value="">Any arrangement</option><option value="not-applicable">No parking charge</option><option value="true">On the hotel receipt</option><option value="false">Separate receipt</option><option value="unknown">Not confirmed</option></select></div>
+              <button type="reset" class="hotel-reset">Reset filters</button>
+            </div>
+          </details>
+        </div>
+        {render_parking_choice(reviews)}
+        <div class="hotel-country-row" role="group" aria-label="Country">{''.join(f'<button type="button" class="hotel-country-tag" data-hotel-country="{e(code)}" aria-pressed="false">{flag(code, name)}{e(name)} <span class="hotel-option-count" data-country-count="{e(code)}">{sum(r["countryCode"] == code for r in reviews)}</span></button>' for code, name in countries)}</div>
+        <details class="hotel-legend"><summary>{icon('info')}What the colours mean</summary><ul><li><span class="hotel-avatar hotel-avatar-free" aria-hidden="true">P</span><strong>Free</strong> confirmed free guest parking</li><li><span class="hotel-avatar hotel-avatar-easy" aria-hidden="true">P</span><strong>Easy</strong> paid, but paid at the hotel and on the hotel receipt</li><li><span class="hotel-avatar hotel-avatar-avoid" aria-hidden="true">P</span><strong>Avoid</strong> paid parking not confirmed as easy, or difficult access</li></ul></details>
+      </form>
+      <div class="hotel-results-bar">
+        <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
+        <div class="hotel-view-switch" role="group" aria-label="Show hotels as" data-hotel-view-switch hidden><button type="button" data-hotel-view="list" aria-pressed="true">{icon('list')}Feed</button><button type="button" data-hotel-view="map" aria-pressed="false">{icon('pin')}Map</button></div>
+      </div>
+      <div class="hotel-discovery" data-hotel-discovery>
+      <section class="hotel-notes" data-hotel-notes aria-label="Hotel feed">
 {notes}
       </section>
       <section class="hotel-map-section" aria-labelledby="hotel-map-title">
-        <h3 id="hotel-map-title">{icon('pin')}Map of selected hotels</h3>
-        <p class="hotel-map-intro">{len(map_records)} of {count} hotels have verified locations. The map follows your filters. Select a marker for parking details.</p>
+        <div class="hotel-map-head"><h3 id="hotel-map-title">{icon('pin')}Map</h3>
         <div class="hotel-map-controls" data-hotel-map-controls hidden>
-          <button type="button" id="hotel-locate">Show my location</button>
-          <button type="button" id="hotel-fit-map">Fit selected hotels</button>
-          <button type="button" id="hotel-clear-location" hidden>Clear my location</button>
-        </div>
-        <div id="hotel-map" class="hotel-map" role="region" tabindex="-1" aria-label="Filtered hotels and your location" hidden></div>
-        <p id="hotel-map-status" class="hotel-map-status" role="status" aria-live="polite">Enable JavaScript to use the map. All hotel addresses are listed below.</p>
-        <p class="hotel-map-privacy">Show my location asks your browser for permission. Your position is used for this map view and is not saved in the register. Map tiles are provided by <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
+          <button type="button" id="hotel-locate" class="hotel-icon-button" aria-label="Show my location">{icon('locate')}</button>
+          <button type="button" id="hotel-fit-map" class="hotel-icon-button" aria-label="Fit the hotels shown">{icon('fit')}</button>
+          <button type="button" id="hotel-clear-location" class="hotel-icon-button" aria-label="Clear my location" hidden>{icon('close')}</button>
+        </div></div>
+        <div id="hotel-map" class="hotel-map" role="region" tabindex="-1" aria-label="Map of the hotels shown" hidden></div>
+        <p id="hotel-map-status" class="hotel-map-status" role="status" aria-live="polite">Enable JavaScript to use the map. {len(map_records)} of {count} hotels have verified locations.</p>
+        <p class="hotel-fine">Your location is only used on this map and never saved. Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</p>
       </section>
       </div>
+      <div class="hotel-empty" data-hotel-empty hidden><strong>No hotels match.</strong><p>Choose All, or reset the filters.</p></div>
       <details class="hotel-table-details"><summary>{icon('note')}Compare the full register</summary>
       <table class="hotel-table" data-hotel-table role="table">
         <caption>Room and stay totals cover the stated number of nights, not a nightly rate. Stay total = room + parking. Unknown prices remain unrecorded; these are not current advertised rates.</caption>
@@ -358,28 +541,29 @@ def build(reviews):
 {rows}
         </tbody>
       </table>
+      <p class="hotel-price-note"><a class="hotel-download" href="/hotels/hotel-reviews.csv" download>Download the spreadsheet (CSV)</a>. Free parking refers to the stated guest parking; charging or a paid garage can cost extra.</p>
       </details>
-      <div class="hotel-empty" data-hotel-empty hidden><strong>No hotels match these filters.</strong><p>Change a filter or choose All parking to see the other options. Reset filters returns to free parking.</p></div>
-      <p class="hotel-price-note">The spreadsheet contains every hotel in the register. Free-parking tags refer to the specified guest parking option; charging a vehicle or choosing a paid garage can cost extra.</p>
     </section>
-    <section class="hotel-method" aria-labelledby="hotel-method-title">
-      <h2 id="hotel-method-title">What this register records</h2>
-      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/blog/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/blog/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
+    <details class="hotel-method">
+      <summary><h2 id="hotel-method-title">How the register works</h2></summary>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
       <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but both payment at the hotel and inclusion on the hotel receipt are confirmed. Red means Avoid: paid parking with external payment, separate receipts or either fact unconfirmed, or a documented difficult-access report even when parking is free. An unconfirmed route stays labelled unknown; it is not a claim that hotel payment is impossible. Avoid is a parking preference, not a judgement of hotel quality. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
+      <p>The trip planner only suggests green hotels. It asks OpenStreetMap routing for driving times, suggests the closest green hotel to where you are going, and lists overnight stops only where they fall in the second half of the drive and add little time. Notes under each hotel are the register’s own records: owner reports, prices paid, notes and sources.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
-    </section>
+    </details>
   </main>
   <footer id="site-footer" class="site-footer"></footer>
-  <script src="/config.js?v=blog-1"></script>
-  <script src="/shared.js?v=hotel-fixed-1"></script>
+  <script src="/config.js?v=20261027-hotels"></script>
+  <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
-  <script src="/blog/hotels/hotels.js?v=4"></script>
+  <script id="hotel-places-data" type="application/json">{places_json}</script>
+  <script src="/hotels/hotels.js?v=8"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/blog/hotels/hotels-map.js?v=4"></script>
+  <script src="/hotels/hotels-map.js?v=6"></script>
+  <script src="/hotels/hotels-trip.js?v=1"></script>
 </body>
 </html>
 '''
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
@@ -387,7 +571,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     records = json.loads(DATA.read_text(encoding='utf-8'))['reviews']
     validate(records)
-    records.sort(key=lambda review: review['recordedOn'], reverse=True)
+    check_posts(records, hotel_posts())
     html = build(records)
     if args.check:
         assert OUTPUT.read_text(encoding='utf-8') == html, 'Run python3 tools/build-hotels.py to refresh the page'

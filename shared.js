@@ -153,7 +153,7 @@
 
   /* ── Navigation — theme-aware hamburger + overlay ── */
 
-  var navIcons = { home: "home", projects: "notebook", shop: "store", blog: "wordpress", journal: "wordpress", about: "user", locations: "mappin" };
+  var navIcons = { home: "home", projects: "notebook", shop: "store", blog: "wordpress", hotels: "bed", journal: "wordpress", about: "user", locations: "mappin" };
 
   function navLink(item, isHome) {
     var href = item.url || (isHome ? "#" + item.id : "/#" + item.id);
@@ -195,7 +195,7 @@
     overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.filter(function (n) {
-      return !compactOffice || !["home", "projects", "world", "blog", "linux-port", "course"].includes(n.id);
+      return !compactOffice || !["home", "projects", "world", "blog", "hotels", "linux-port", "course"].includes(n.id);
     }).map(function (n) {
       var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";

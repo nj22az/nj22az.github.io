@@ -21,6 +21,7 @@ import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
+import {umbrellaColourFor,wantsUmbrella} from '../avatars/umbrella.js';
 const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 /** How close a walker comes to a stand point or a quay spot before standing on it (stand-points.js). */
 const STAND_STOP=.12;
@@ -304,7 +305,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // The ferry's shore line hand (people/ferry-shore-crew.js) walks this body to the bitts and back; the street yields it,
    // and whatever it was using (a bench, the phone) is given up first.
    if(g.userData.ferryShoreTask){activities?.release?.(p,minutes);routes.delete(g);continue;}
-   const phase=commuterMode(v)?townPhase(v,minutes,rain):'town';
+   const scheduled=residentPlan(v,minutes,rain,state(),transit);
+   // The calendar can keep a commuter home for a whole weekend, even during their
+   // ordinary shift hours. Their actual presence must follow that plan too.
+   const phase=commuterMode(v)?scheduled.place==='away'?'away':townPhase(v,minutes,rain):'town';
    // They leave on the bus, not by ceasing to exist at the kerb. While the service is
    // somewhere up the road they wait in the queue, and they only go once there has
    // been a bus standing there for them to go in.
@@ -316,8 +320,8 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // 'away' is the far end of the bus road -- and stand in a clump at the mouth of the
    // tunnel until the next service, which is now as much as two and a half hours.
    if(transit&&phase==='away'&&!initialised.has(g))seenAtStop.add(g);
-   const holdForBus=transit&&phase==='away'&&!boarded(g);
-   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace(v.profile?.name);g.userData.commuterAwayDay=day;routes.delete(g);continue;}
+   const holdForBus=transit&&phase==='away'&&initialised.has(g)&&!boarded(g);
+   if(transit&&phase==='away'&&!holdForBus){g.visible=false;delete g.userData.indoors;delete g.userData.usingTownObject;g.userData.place='away';g.userData.activity=awayPlace(v.name);g.userData.commuterAwayDay=day;routes.delete(g);continue;}
    // Coming back is the same in reverse: nobody is put down on the platform until the
    // bus they would have been on is at it.
    if(transit&&phase==='arriving'&&(!g.visible||g.userData.commuterAwayDay===day)){
@@ -326,7 +330,7 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
     g.position.set(step[0],groundHeight(step[0],step[1]),step[1]);g.visible=true;
     aboard.delete(g);delete g.userData.commuterAwayDay;routes.delete(g);
    }
-   const scheduled=residentPlan(v,minutes,rain,state(),transit),plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=clearOfTunnelMouth(plan.target),tag=plan.place;
+   const plan=activities?.plan(p,scheduled,minutes,rain,dt)||scheduled;let target=clearOfTunnelMouth(plan.target),tag=plan.place;
    g.userData.place=plan.place;g.userData.activity=plan.activity;delete g.userData.justArrived;
    // Still on the platform: the plan has written them off as away, so put them back in
    // the queue rather than sending them walking up the bus road on foot.
@@ -440,6 +444,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
+  // In the rain, everyone out in the street has an umbrella up (avatars/umbrella.js); it folds away indoors.
+  for(const p of world.people){const u=p.g?.userData;if(!u)continue;
+   const up=p.g.visible&&wantsUmbrella(u,rain);
+   if(up)u.umbrella=umbrellaColourFor(p.profile?.name,p.profile?.age).canopy;else delete u.umbrella;}
   if(world.cat){const s=state();const spots=[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.some(pierFishOfItem))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
  },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode(p.profile)?commuterPhase(p.profile,clockMinutes):'town',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }

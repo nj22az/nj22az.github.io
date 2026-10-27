@@ -46,9 +46,12 @@ function dressBackbar(room,anchor,action,materials){
  const box=(w,h,d,x,y,z,color)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y,z);m.name='Sakura backbar';m.userData.sharedAsset=true;room.add(m);return m;};
  // The cabinet they stand on: sides, back, a kick board and three boards.
  {const C=SAKURA_TILL_CABINET,wood=0x8a6a4a,cx=(C.x0+C.x1)/2,cz=(C.z0+C.z1)/2,w=C.x1-C.x0,d=C.z1-C.z0,top=C.boards.at(-1);
-  for(const y of C.boards)box(w,.022,d,cx,y-.011,cz,wood);
+  // Carcass joinery: the boards, back and kick board sit between the sides and the boards in front of the back, so no
+  // two faces lie in one plane (the Sakura surface audit, SK-ZF rev A).
+  const inner=d-.044,back=.018;
+  for(const y of C.boards)box(w-back,.022,inner,cx-back/2,y-.011,cz,wood);
   for(const z of [C.z0+.011,C.z1-.011])box(w,top,.022,cx,top/2,z,wood);
-  box(.018,top,d,C.x1-.009,top/2,cz,0x6f553b);box(.02,.08,d,C.x0+.02,.04,cz,0x5c4631);}
+  box(back,top,inner,C.x1-back/2,top/2,cz,0x6f553b);box(.02,.08,inner,C.x0+.02,.04,cz,0x5c4631);}
  for(const prop of SAKURA_BACKBAR){
   const {id,x,y,z}=prop;
   if(id==='ferry-tickets'){for(let i=0;i<6;i++)box(.10,.003,.055,x,y+i*.004,z-i*.008,0xc45c48);}
@@ -143,7 +146,8 @@ export function buildSakuraInterior({room,reg,action,exit,stair=()=>{}}){
  {const B=BUN_STEAMER,glass=new THREE.MeshStandardMaterial({color:0xf4fbfb,transparent:true,opacity:.22,roughness:.05,depthWrite:false});
   const pane=(w,h,d,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),glass);m.position.set(x,y,z);m.name='Sakura bun steamer glass';room.add(m);};
   const y=B.top+.06+(B.h-.1)/2,h=B.h-.1;
-  pane(.008,h,B.d,B.x-B.w/2,y,B.z);for(const s of [-1,1])pane(B.w,h,.008,B.x,y,B.z+s*B.d/2);
+  // The front and back panes stop at the steel side (x1 - 0.02), rather than running flush to its outer face.
+  pane(.008,h,B.d,B.x-B.w/2,y,B.z);for(const s of [-1,1])pane(B.w-.02,h,.008,B.x-.01,y,B.z+s*B.d/2);
   anchor([B.x-.35,B.top+.25,B.z],'Ask for a steamed bun',()=>action('sakura-hot-snacks'));}
  anchor([COPY_MACHINE.x,1.1,COPY_MACHINE.z-.45],'Use the copy machine',()=>action('inspect','Copy machine · fax',
   'Ten yen a copy, fifty a page to fax. The fishermen\u2019s co-op sends its catch sheets to Naha from here every morning, and the lid is warm by nine.'));

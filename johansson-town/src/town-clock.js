@@ -2,25 +2,22 @@
  * The town keeps real time.
  *
  * It used to run a town minute to every real second, so a day went by in twenty-four
- * minutes. Now the clock is the one on your wall: the same hour and minute, today's date
- * -- in 1997, because that is when the town is. The day number the schedules count in
+ * minutes. Now the clock and calendar are the ones on your device, including the year
+ * and weekday. The town's 1990s setting does not change its calendar. The day number the schedules count in
  * is the local day since 1970, so midnight turns over when yours does.
  */
-export const TOWN_YEAR=1997;
-
 /** Absolute town minutes for a real moment: local minutes since 1 January 1970. */
 export function realTownMinutes(now=new Date()){
  return (now.getTime()-now.getTimezoneOffset()*60000)/60000;
 }
 
-/** The town's calendar for a real moment: today's month and day, in 1997. */
+/** The device's local civil date, including its actual year, weekday and leap days. */
 export function townCalendar(now=new Date()){
- const month=now.getMonth(),day=month===1&&now.getDate()===29?28:now.getDate();
- const date=new Date(TOWN_YEAR,month,day,now.getHours(),now.getMinutes(),now.getSeconds());
+ const date=new Date(now.getTime());
  return {date,weekday:date.getDay(),real:now};
 }
 
-/** '14:07 · Saturday 20 September 1997' */
+/** '14:07 · Monday 26 October 2026' */
 export function townClockLine(now=new Date()){
  const {date}=townCalendar(now);
  const hm=String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
@@ -44,9 +41,10 @@ export function clockCatchUp(savedMinutes,now=new Date(),maxMinutes=1440){
 /** The town date for an absolute town minute, so a fast clock turns the days over too. */
 export function townCalendarAt(minutes){
  const day=Math.floor(minutes/1440),d=new Date(day*86400000);   // local days since 1970, read as UTC
- const month=d.getUTCMonth(),date=month===1&&d.getUTCDate()===29?28:d.getUTCDate();
  const m=((minutes%1440)+1440)%1440;
- const town=new Date(TOWN_YEAR,month,date,Math.floor(m/60),Math.floor(m%60));
+ const town=new Date(0);
+ town.setFullYear(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
+ town.setHours(Math.floor(m/60),Math.floor(m%60),0,0);
  return {date:town,weekday:town.getDay()};
 }
 export function townClockLineAt(minutes){
@@ -105,7 +103,7 @@ export function createClock(setting,startMinutes,now=()=>Date.now()){
 
 /**
  * The calendar axis everything dated keys off (people/happenings.js, and later the diary,
- * the soundscape and the town book): which day it is, the 1997 date, the island's season
+ * the soundscape and the town book): which day it is, the local civil date, the island's season
  * and the part of the day. One helper, so they all turn over together.
  */
 export const townDay=minutes=>Math.floor(minutes/1440);

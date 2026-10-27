@@ -755,6 +755,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     set('shoulderL',-.15,0,.4);set('elbowL',-1.25);}
    if(s.carrying){set('shoulderL',-1.15,0,.3);set('shoulderR',-1.15,0,-.3);set('elbowL',-.5);set('elbowR',-.5);}
   }
+  // Under an umbrella (avatars/umbrella.js): the right upper arm forward and in, the forearm up, the hand in front of
+  // the chest and still, so the canopy rides steady over the head while the legs and the other arm walk on.
+  if(s.umbrella&&!onChair&&!s.riding&&!s.driving&&!s.carrying&&!s.climbing){set('shoulderR',-.22,0,.3);set('elbowR',-2.05);}
   // Drunk (tipsy 0–4, 2.5 is properly drunk): the body loses its line. A slow roll
   // through hips and chest, a lolling head, a stride that comes out uneven and arms held
   // out for balance; now and then a lurch. Standing, the whole body sways on its feet.

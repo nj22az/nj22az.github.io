@@ -24,8 +24,9 @@ export function buildSakuraBaskets(room){
    box(w,.025,.008,S.x,y,S.z+side*d/2,0xd7263d);
   }
   for(const side of [-1,1]){
-   box(.012,.02,d+.01,S.x+side*w/2,top-.01,S.z,0xfff6ea);
-   box(w+.01,.02,.012,S.x,top-.01,S.z+side*d/2,0xfff6ea);
+   // The rims stand 3 mm proud of the rails and the long rims end inside the short ones, never flush.
+   box(.014,.02,d+.01,S.x+side*w/2,top-.01,S.z,0xfff6ea);
+   box(w,.02,.012,S.x,top-.01,S.z+side*d/2,0xfff6ea);
    box(.014,.008,d*.6,S.x+side*(w/2-.018),top+.004,S.z,0xa81a2e);
   }
  }
