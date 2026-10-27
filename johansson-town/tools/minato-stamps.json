@@ -11,7 +11,7 @@
     },
     {
       "name": "blog-harbour-ferry",
-      "article": "/blog/",
+      "article": null,
       "near": {
         "pos": [
           26,
@@ -25,7 +25,7 @@
         ]
       },
       "time": "17:40",
-      "note": "The blog header option: the Minato Maru alongside the quay at dusk, from across the harbour",
+      "note": "The blog header option: the Minato Maru alongside the quay at dusk, from across the harbour (not used: the camera stood over a roof)",
       "alt": "The Minato Maru alongside the quay at dusk, printed as a rubber stamp from Johansson World."
     },
     {
@@ -88,18 +88,18 @@
       "ship": {
         "pos": [
           -2.5,
-          2.5,
+          2.2,
           10.75
         ],
         "at": [
-          -3.5,
-          1.5,
-          9.2
+          -3.45,
+          1.6,
+          9.1
         ]
       },
       "time": "12:00",
       "note": "The engine control booth: the main switchboard and the engine console",
-      "fov": 80,
+      "fov": 70,
       "alt": "A ship's engine control room with the main switchboard and the engine console, printed as a rubber stamp.",
       "caption": "The engine control room on the Minato Maru: the main switchboard and the engine console.",
       "alt_sv": "Kontrollrummet på ett fartyg med huvudtavlan och maskinpulpeten, tryckt som en gummistämpel.",
@@ -132,14 +132,14 @@
       "article": "pumpen-som-inte-startar",
       "ship": {
         "pos": [
-          -2.2,
-          1.85,
+          -2.25,
+          1.8,
           12.9
         ],
         "at": [
-          -3.85,
-          1.15,
-          11.4
+          -3.75,
+          1.05,
+          11.55
         ]
       },
       "time": "12:00",
@@ -147,7 +147,8 @@
       "alt": "The fire pumps in a ship's engine room, printed as a rubber stamp.",
       "caption": "The fire pumps in the Minato Maru's engine room.",
       "alt_sv": "Brandpumparna i ett fartygs maskinrum, tryckta som en gummistämpel.",
-      "caption_sv": "Brandpumparna i maskinrummet på Minato Maru."
+      "caption_sv": "Brandpumparna i maskinrummet på Minato Maru.",
+      "fov": 48
     },
     {
       "name": "bridge",

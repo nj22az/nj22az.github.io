@@ -31,6 +31,8 @@ def make_images(source):
     from PIL import Image, ImageOps
     OUT.mkdir(parents=True, exist_ok=True)
     for shot in json.loads(SHOTS.read_text(encoding='utf-8'))['shots']:
+        if not shot.get('article'):
+            continue
         render = Image.open(source / f'{shot["name"]}--stamp.png').convert('RGB')
         render = ImageOps.fit(render, (1600, 800), Image.LANCZOS)
         grey = render.convert('L')
@@ -131,7 +133,7 @@ def run(check):
         stale.append(CATALOGUE)
         if not check:
             CATALOGUE.write_text(new, encoding='utf-8')
-    for shot in shots:
+    for shot in (s for s in shots if s.get('article')):
         for ext in ('webp', 'jpg'):
             assert (OUT / f'{shot["name"]}.{ext}').is_file(), f'missing {shot["name"]}.{ext}: run with --from'
     if check:
