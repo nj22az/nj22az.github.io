@@ -41,7 +41,7 @@ export function createLiquid(profile){
  root.add(body,cap);
  let foam=null,ice=null;
  if(profile.hasFoam){
-  foam=dynamicMesh(new THREE.MeshStandardMaterial({color:0xf4e6c8,roughness:.86,metalness:0}), 'Foam on liquid surface',13);root.add(foam);
+  foam=dynamicMesh(new THREE.MeshStandardMaterial({color:0xfff8ec,roughness:.9,metalness:0}), 'Foam on liquid surface',13);root.add(foam);
  }
  const iceRadius=.013,iceSize=.014;
  if(profile.hasIce){

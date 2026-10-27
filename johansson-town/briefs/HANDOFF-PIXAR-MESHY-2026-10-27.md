@@ -217,6 +217,15 @@ obeys gravity pls"; "Screenshots"; a frame with the thumb standing up beside the
   rim at the lips; it is level and it reaches the rim (rim error 0, `valid` at the sip). Resting hands on a Pixar body
   are a little curled, never splayed (`animate.js`, grip 0.28).
 
+- **Audit of the new hold** (`shots-sip19`, three lenses and two refuters a fault): all three pass the seat, the fist
+  round the handle (four fingers through the loop, the handle seen above and below), no finger in the glass, the jug
+  upright carried and back on its spot, the rim at the lips, the face acting. The thumbs-up is gone. Confirmed, and
+  fixed: the beer read as milky tea (a saturated gold now, `0xf0a400`, with a whiter head; a deep amber came out as cocoa). Their call that the beer tips with the
+  glass is wrong again: at the swallow the beer's top is a horizontal line across a jug leaning 29 degrees (checked in
+  the frame). Left open, all rated should or nit: the knuckles close to his jaw at the sip from the side lens, the
+  swallow tipping further than the sip (the cycle's choice), the jug a few degrees off upright at approach and recover,
+  his head staying fairly upright under a litre jug, a dark stripe down his jaw and neck (the texture).
+
 ## Open
 
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril
