@@ -36,8 +36,8 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'dae59dce26'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'8929092308'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'c6316db476'}),
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'84cb40dc0f'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -64,6 +64,10 @@ export function preparePixarBody(card,scene){
  scene.traverse(o=>{
   if(!o.isSkinnedMesh)return;
   const joints=o.skeleton.bones.map(b=>b.name),name=o.material?.name||'';
+  // (the model's morph targets by their names, gripL and gripR: the loader keeps the names in userData, the mesh's
+  // dictionary is built from the attributes' names)
+  const targetNames=o.userData?.targetNames||o.geometry.userData?.targetNames;
+  if(targetNames&&o.geometry.morphAttributes?.position)o.geometry.morphAttributes.position.forEach((attr,i)=>{if(targetNames[i])attr.name=targetNames[i];});
   if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
   else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
  });
@@ -255,6 +259,9 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
   mouthPoint(){if(!lips)return null;bones.head.updateWorldMatrix(true,false);return bones.head.localToWorld(lips.clone());},
   /** The same lips in the head bone's own frame (consume.js poses a drink or a morsel against them). */
   get lipsLocal(){return lips?lips.clone():null;},
+  /** Close a hand round what it holds, 0 open to 1 a fist (the body's `gripL`/`gripR` morph targets, the studio's
+   * game_meshy.py grip_keys: the fingers curled toward the palm). A body without them keeps its hands as sculpted. */
+  grip(side,v){let any=false;for(const m of meshes){const i=m.morphTargetDictionary?.['grip'+side];if(i==null)continue;m.morphTargetInfluences[i]=THREE.MathUtils.clamp(v,0,1);any=true;}return any;},
   /** Dress or undress the body (its clothes on, the trunk under them left out; or the body in its underwear). */
   dress(on){dressed=dress(on);return dressed;},
   get dressed(){return dressed;},

@@ -191,7 +191,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
   get lens(){const m=avatar.measure;return {eye:m.H+.14,side:m.Rh*m.headSX+.26,head:m.headCentre};},
   /** Hip height above the feet when seated, for game.js's seat fit. */
   get sitHip(){const m=avatar.measure;return m.hipY+.09-m.seatDrop;},
-  hold(prop){if(tableDrink?.active)api.cancelTableDrink();if(held){if(held.userData.consumable)disposeServing(held);else held.removeFromParent();}held=prop||null;if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);if(held.userData.consumable)fitAvatarHeldProp(avatar,held);}},
+  hold(prop){if(tableDrink?.active)api.cancelTableDrink();if(held){if(held.userData.consumable)disposeServing(held);else held.removeFromParent();}held=prop||null;if(!held)avatar.pixar?.grip?.('R',0);if(held){held.position.set(0,-avatar.measure.hand*.4,avatar.measure.hand*.6);hand().add(held);if(held.userData.consumable)fitAvatarHeldProp(avatar,held);}},
   jump(){api.cancelTableDrink();animator.play('Jump');},
   stop(){api.cancelTableDrink();animator.stop();move=null;},
   /** Swap to a new recipe (the creator's save), keeping everything else. */

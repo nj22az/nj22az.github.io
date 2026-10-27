@@ -135,6 +135,7 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
 /** A drink is gripped in the palm (drinkGrip), clear of the arm; its base remains upright. */
 export function fitAvatarHeldProp(avatar,prop,lift=0,side='R'){
  const food=!!prop.userData.food,m=avatar.measure,hand=avatar.bones['hand'+side];
+ avatar.pixar?.grip?.(side,food?.35:1);   // (a hand with fingers closes on a glass, half on a morsel's sticks)
  avatar.root.updateWorldMatrix(true,true);
  const q=avatar.root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
  if(!food)alignDrinkHand(avatar,q,side);

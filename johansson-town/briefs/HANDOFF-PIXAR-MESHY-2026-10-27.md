@@ -97,18 +97,63 @@ drink, sit drink, sit toast, sit), `johansson-meshy-face.jpg`, `johansson-meshy-
 his lips in his hand, the feet on the stool's rail), `johansson-meshy-body-seated.jpg` (the seat of the shorts kept). World tests:
 `player-seating`, `avatar-dining-combat`, `pixar-meshy`, `pixar-johansson`, `avatar-polish`, `afterbath-outfit` pass.
 
+## Evening, 27 October 2026: a butt, no stretch, a hand that grips, cartoon drinking; published to the game
+
+The owner: "What's your plan? Make a plan, then work according to the plan to make the beer drinking look like it's
+from a cartoon and give him a butt and not stretch"; then "Push him to the game and I'll fault find while playing but
+drinking is not right his hand disappears for some reason"; "Thuan needs to be able to interact with the items in
+Sakura too, pick up a can etc, hands is something you need to put some effort in"; four hand links.
+
+**Done, in the plan's order:**
+1. **A butt** (studio `game_meshy.py sculpt_seat`): the back of the pelvis pushed out in two lobes over the hip joints,
+   5 cm at the fullest, blending into the thighs and the back; UVs untouched. Both Meshy bodies (she has hips under her
+   dress). `renders/game/johansson-meshy-seat-sculpt.jpg` before and after.
+2. **No stretch**: with the thigh weights kept to the legs (midday) the sit no longer drags the trunk; the seat of the
+   shorts keeps its shape (`johansson-meshy-body-seated.jpg`, side view standing and seated).
+3. **A hand that grips** (`game_meshy.py grip_keys` → morph targets `gripL`/`gripR` in the GLB, `export_morph=True`;
+   World `pixar.js grip(side, v)`, named from the model's `targetNames`): the fingers past the knuckles curled toward the
+   palm at three joints (70, 70, 60 degrees), fingertip first about the sculpted joint lines; the thumb as sculpted.
+   World closes the hand on a held glass (`consume.js fitAvatarHeldProp`), through the counter performance from the
+   reach to the release (`table-drink.js`), half on a morsel's sticks, and opens it when the prop goes
+   (`actors.js hold`). `johansson-meshy-hand-grip.jpg`: open above, closed below. `tools/pixar-sheet.mjs --grip`
+   renders the hands closed.
+4. **Cartoon drinking** (`table-drink.js`, Pixar bodies only): the head goes back as the jug tips (0.24 rad at full
+   tilt), three gulps bob it through the sip, the chest leans back, the elbow comes up and out as he drains it (the
+   reach's pole swings with the tilt), and he comes down with a satisfied nod and a happy face. The liquid, the rim at
+   the lips and the timing are the sober performance's; the sip still reads `valid` (rim error 0).
+5. **Checked front first**: `johansson-meshy-game-izakaya-sip-*.jpg`. From the camera's usual side the hand is behind
+   the jug at the grasp (the handle is on his right): that is the "hand disappears" of the owner's frame, most likely,
+   not a missing hand; the open hand earlier also sat inside the glass. If it still vanishes in play, say which camera.
+6. **Published to the game** (the owner: "Push him to the game and I'll fault find while playing"): the branch merged
+   into `main` and pushed, see the commit log. The cartoon characters are untouched (`?pixar=0`).
+
+**The hand links** (the owner, for Thuận's hands): `JackTisdell/hand` is a p5.js hand built from joint-angle components
+(phalanx, metacarpal, carpal group: a good model for finger bones, no mesh); `tubakhxn/Advanced-Hand-Gesture-3D-Visualizer`
+is a MediaPipe webcam demo (Python, no model); `jperedadnr/RiggedHand` is a Java and Leap Motion skinned-hand project
+(Apache-2.0; its model files are not visible from the page); animations-maschine.com is an agency's service page, no
+download. None gives a rigged hand mesh for World; the route stays our own: finger bones on World's skeleton from the
+Meshy hands (the next step below).
+
 ## Open
 
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril
    remnants under the dilation); his hair at the temples is the texture's painted streaks (the side view). His iris
    decal's seam at its edge. (The brows' remnants and his blotched skin: done this afternoon, above.)
-2. **His in-game checks, done once** (`node tools/pixar-shots.mjs --scenes --name Johansson <out>`, 81 steps; the
+2. **Thuận's hands and the things in Sakura** (the owner, 27 October 2026, evening: "Thuan needs to be able to
+   interact with the items in Sakura too, pick up a can etc, hands is something you need to put some effort in"). Her
+   Pixar body is the Tripo model with grafted hands; the plan: (a) when the owner gives a Meshy Thuận, her own hands with
+   grip keys as his; until then, graft the Meshy hands onto her (`game_thuan.py`'s graft, the Meshy hand mesh as the
+   donor) and give them the same keys; (b) finger bones on World's skeleton (thumb, index, the three others as one
+   chain) driven by the grip, so a can, a bottle, a basket and a broom each get their hold; (c) the Sakura shelves'
+   items made holdable (`heldProp` with `grip` data: radius or handle, height), the pick-up and put-back as the izakaya's
+   table performance. Start with (c) and the existing grip keys: a can in her hand at once; the fingers later.
+3. **His in-game checks, done once** (`node tools/pixar-shots.mjs --scenes --name Johansson <out>`, 81 steps; the
    studio repo's `renders/game/johansson-meshy-game-*.jpg`): idle, walk, gestures and the counter are clean, and the
    draught served at his seat is drunk by the game's own performance with the rim at his lips (`report.json`
    `sip.moments`: `valid` at the sip). The hand stays open around the mug: a holding hand shape is the next step
    (World's skeleton has no finger bones; a closed-hand shape key on the Meshy hand, driven by `heldProp`, is the
    likely route). The stools fit him (feet on the rail, knees at the counter); then the izakaya redrawn in CAD.
-3. Thuận is still on her Tripo model; the same route takes a Meshy Thuận when the owner gives one.
-4. The earlier Pixar Johansson route (the free sculpt, separate shirt and shorts) is kept in the studio repo out of the
+4. Thuận is still on her Tripo model; the same route takes a Meshy Thuận when the owner gives one.
+5. The earlier Pixar Johansson route (the free sculpt, separate shirt and shorts) is kept in the studio repo out of the
    game; its last fixes of the morning (the wrist graft, the hand straight at rest, a wrist weight ramp) live in the
    shared code and serve the Meshy route.

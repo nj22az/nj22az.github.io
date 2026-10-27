@@ -133,6 +133,17 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   b.spine.rotation.x=restSpine+reachLean*.62*reachWeight;
   b.chest.rotation.x=restChest+reachLean*.38*reachWeight;
   b.head.rotation.x=restHead-.08*headWeight;
+  // A Pixar body drinks like a cartoon (the owner, 27 October 2026: "make the beer drinking look like it's from a
+  // cartoon"): the head goes back as the jug tips, three gulps bob it, the chest leans back, the elbow comes up and
+  // out as he drains it, and he comes down with a satisfied nod; the hand closes on the jug (grip) from the reach to
+  // the release. The liquid, the rim at the lips and the timing are the sober performance's.
+  const cartoon=!!avatar.pixar,tipShare=cartoon?THREE.MathUtils.clamp(tip/1.1,0,1):0,drain=headWeight*tipShare;
+  if(cartoon){
+   b.head.rotation.x-=.24*drain;b.chest.rotation.x-=.12*drain;
+   if(phase.id==='SIP')b.head.rotation.x+=.035*Math.sin(u*Math.PI*6)*headWeight;
+   if(phase.id==='RECOVER'){b.head.rotation.x+=.14*Math.sin(Math.PI*s);b.chest.rotation.x-=.05*Math.sin(Math.PI*s);}
+   avatar.pixar.grip?.('R',phase.id==='REACH'?s:phase.id==='RETURN'?1-s:phase.id==='PREPARE'?0:1);
+  }
   b.shoulderR.position.copy(restShoulder);b.shoulderR.position.y+=.016*headWeight;
   body.updateWorldMatrix(true,true);
   const mouth=avatarMouth(avatar),pre=contact(mouth,.12,.027),at=contact(mouth,.12),hold=contact(mouth,tip);
@@ -156,7 +167,7 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   setWorld(prop,glassP,glassQ);
   // (a Pixar body's elbow hangs below the shoulder through the whole performance, as consume.js poses its drink; the
   // cartoon's goes out to the side: the owner, 27 October 2026, "the arm gets stuck in his head")
-  reach(avatar,handP,'R',avatar.pixar?[-.45,-1,.25]:-.25);
+  reach(avatar,handP,'R',avatar.pixar?[-.45-.5*drain,-1+.85*drain,.25]:-.25);
   b.handR.quaternion.copy(b.handR.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(handQ));
   b.handR.updateWorldMatrix(false,true);
   reach(avatar,restingHand,'L');b.handL.quaternion.copy(b.handL.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(restingHandQ));b.handL.updateWorldMatrix(false,true);
@@ -170,13 +181,14 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   if(allowConsumption&&valid&&phase.flowProgress>lastFlow){lastFlow=phase.flowProgress;lease.consume(lastFlow);}
   fluid.update(prop.userData.portion??lease.startFraction);
   if(phase.id==='SWALLOW')avatar.paintFace({expression:'neutral',talk:Math.sin(Math.PI*u)*.08,blink:0});
+  else if(cartoon&&phase.id==='RECOVER')avatar.paintFace({expression:'happy',blink:s<.3?1:0});
   last={...phase,controller,rimError,wristError,maxWristError,valid,tilt:phase.id==='SIP'?tip:0,consumedPortion:lease.consumedPortion,
    glassPosition:glassP.toArray(),wristPosition:handP.toArray(),mouth:mouth.toArray()};
   return last;
  }
  function finish(cancelled=false){
   if(!active)return;active=false;
-  b.shoulderR.position.copy(restShoulder);
+  b.shoulderR.position.copy(restShoulder);avatar.pixar?.grip?.('R',0);
   if(prop.parent===originalParent){setWorld(prop,restP,restQ);fluid.update(prop.userData.portion??lease.startFraction);}
   const result={...(cancelled?lease.cancel():lease.finish()),volumeConsumedMl:Math.max(0,lease.startFraction-(prop.userData.portion??lease.startFraction))*fluid.startingVolumeMl};
   (cancelled?onCancel:onComplete)(result);return result;
