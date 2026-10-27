@@ -207,7 +207,9 @@ function smoothJaw(g,names){
 const FINGER_NAME=/^(thumb|index|middle|ring|pinky)([LR])([123])$/;
 /** How far each joint turns at a full grip (radians), per finger: the thumb's root a little, its two joints more; the
  *  fingers' three joints as a fist closes (the index least, so a held thing shows). */
-const GRIP_TURN=Object.freeze({thumb:[.35,.55,.6],index:[1.05,1.15,.8],middle:[1.2,1.3,.9],ring:[1.25,1.35,.95],pinky:[1.3,1.4,1.0]});
+// (the thumb folds well over: with little turn it stood straight up beside the jug like a hitch-hiker's; the owner,
+// 27 October 2026, of that frame: "What's this?")
+const GRIP_TURN=Object.freeze({thumb:[.95,.8,.55],index:[1.05,1.15,.8],middle:[1.2,1.3,.9],ring:[1.25,1.35,.95],pinky:[1.3,1.4,1.0]});
 
 export function dressPixar(body,{root,bones,order,shadows=true}){
  const rest=body.rest,face={},fingers={};
@@ -309,6 +311,27 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
    let any=false;for(const m of meshes){const i=m.morphTargetDictionary?.['grip'+side];if(i==null)continue;m.morphTargetInfluences[i]=v;any=true;}return any;},
   /** The finger bones by name (empty for a body without them). */
   get fingers(){return fingers;},
+  /** Where a bar held in this hand lies, in the hand bone's own frame, with the fingers curled `v` of the way (`shape` as
+   * grip): the hollow the four fingers make (their middle and last joints, their tips, and the knuckles pushed toward the
+   * palm, averaged), with the bar's direction (the knuckle line) and how far the knuckles span along it. Null without
+   * finger bones. table-drink.js puts a jug's handle there, so the jug is in the hand, not beside it. */
+  holdPoint(side,v=1,shape=null){
+   const bend=body.card.fingers?.[side]?.bend,curl=body.card.fingers?.[side]?.curl;if(!bend||!curl)return null;
+   const pts=[],knuckles=[],cu=new THREE.Vector3(...curl).normalize();let bar=null;
+   for(const finger of ['index','middle','ring','pinky']){
+    const R=new THREE.Quaternion(),p=new THREE.Vector3(),chain=[];let last=null;
+    for(let k=1;k<=3;k++){const b=fingers[finger+side+k];if(!b)break;p.add(b.position.clone().applyQuaternion(R));chain.push(p.clone());last=b;
+     const ax=bend[finger+side+k];if(!ax)break;if(k===1&&finger==='middle')bar=new THREE.Vector3(...ax).normalize();
+     R.multiply(new THREE.Quaternion().setFromAxisAngle(_axis.set(ax[0],ax[1],ax[2]).normalize(),v*GRIP_TURN[finger][k-1]*(shape?.[finger]??1)));}
+    if(chain.length<3)continue;
+    const tip=chain[2].clone().add(last.position.clone().multiplyScalar(.85).applyQuaternion(R));
+    knuckles.push(chain[0]);pts.push(chain[1],chain[2],tip,chain[0].clone().addScaledVector(cu,.025));
+   }
+   if(!pts.length||!bar)return null;
+   const centre=pts.reduce((a,q)=>a.add(q),new THREE.Vector3()).multiplyScalar(1/pts.length);
+   const along=knuckles.map(k=>k.dot(bar)),span=Math.max(...along)-Math.min(...along);
+   return {centre,bar,span,knuckles};
+  },
   /** The seat of the body rounded out as it sits, 0 standing to 1 sat (the body's `seat` morph target, the studio's
    * game_meshy.py sculpt_seat: the owner, 27 October 2026, "the butt should come when he sits"). */
   seat(v){let any=false;for(const m of meshes){const i=m.morphTargetDictionary?.seat;if(i==null)continue;m.morphTargetInfluences[i]=THREE.MathUtils.clamp(v,0,1);any=true;}return any;},

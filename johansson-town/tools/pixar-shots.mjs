@@ -112,9 +112,25 @@ try{
   // (the owner, 27 October 2026: "test that he can drink beer in the izakaya")
   const served=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.serve('draft'));step('served a draught?',{served});
   if(served===true){await stepGame(600);const sipping=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.sip());step('sipping?',sipping);report.sip={started:sipping,moments:[]};
-   if(sipping){let at=0;for(const [moment,t] of [['reach',.7],['grasp',1.1],['lift',1.45],['approach',1.95],['contact',2.45],['sip',3.2],['swallow',4.1],['recover',4.6],['set-down',5.3]]){
-    await stepGame(Math.round((t-at)*1000));at=t;const d=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.drinking);report.sip.moments.push({moment,phase:d?.id,rimError:d?.rimError,wristError:d?.wristError,valid:d?.valid});
-    await shot('izakaya-sip-'+moment+'-front',await lens(...over.front));await shot('izakaya-sip-'+moment+'-side',await lens(1.6,1.05,Math.PI/2,.95));if(['contact','sip','grasp'].includes(moment))await shot('izakaya-sip-'+moment+'-hands',await lens(.9,1.15,.5,1.05));}
+   if(sipping){let at=0;for(const [moment,t] of [['reach',.7],['grasp',1.1],['lift',1.45],['approach',1.95],['contact',2.45],['sip',3.2],['swallow',4.1],['recover',4.6],['set-down',5.3],['landed',5.9]]){
+    await stepGame(Math.round((t-at)*1000));at=t;const d=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.drinking);
+    // the hand against the jug, measured (the owner, 27 October 2026: "he is not holding the beer"): each finger's nearest
+    // distance to the handle's bar (a hold has the bar a finger's radius off every finger, about 12 mm), fingertips inside
+    // the glass's body (a fault), the jug's lean off upright (gravity: it hangs level in the hand but for the sip's tip),
+    // and how far the wrist is from where the hold wants it
+    const m={moment,phase:d?.id,rimError:d?.rimError,wristError:d?.wristError,valid:d?.valid};
+    if(d?.fingers&&d.bar){const [a,b]=d.bar.map(v=>v),seg=(p,a,b)=>{const ab=b.map((x,i)=>x-a[i]),ap=p.map((x,i)=>x-a[i]),L=ab.reduce((s,x)=>s+x*x,0),t=Math.max(0,Math.min(1,ap.reduce((s,x,i)=>s+x*ab[i],0)/L));return Math.hypot(...p.map((x,i)=>x-(a[i]+ab[i]*t)));};
+     m.fingerToBar={};for(const f of ['index','middle','ring','pinky']){const pts=[1,2,3].map(k=>d.fingers[f+'R'+k]).filter(Boolean);if(pts.length)m.fingerToBar[f]=+Math.min(...pts.map(p=>seg(p,a,b))).toFixed(3);}
+     const up=d.glassUp,lean=Math.acos(Math.max(-1,Math.min(1,up[1])))*180/Math.PI;m.leanDeg=+lean.toFixed(1);m.tilt=+(d.tilt*180/Math.PI).toFixed(1);
+     const axisBase=d.glassPosition,inside=[];for(const [n,p] of Object.entries(d.fingers)){const rel=p.map((x,i)=>x-axisBase[i]),y=rel[0]*up[0]+rel[1]*up[1]+rel[2]*up[2],radial=Math.hypot(...rel.map((x,i)=>x-up[i]*y));if(y>.012&&y<d.glassHeight&&radial<d.glassRadius-.004)inside.push(n);}
+     // the fingertips (past the last joint by most of the last phalanx): how far inside the glass's wall each ends (a tip
+     // against the wall, inside the handle, is a hold; a tip through the wall is in the beer)
+     m.tipsThroughWall={};for(const f of ['index','middle','ring','pinky']){const j2=d.fingers[f+'R2'],j3=d.fingers[f+'R3'];if(!j2||!j3)continue;const tip=j3.map((x,i)=>x+(x-j2[i])*.85),rel=tip.map((x,i)=>x-axisBase[i]),y=rel[0]*up[0]+rel[1]*up[1]+rel[2]*up[2],radial=Math.hypot(...rel.map((x,i)=>x-up[i]*y));if(y>.012&&y<d.glassHeight)m.tipsThroughWall[f]=+(d.glassRadius-radial).toFixed(3);}
+     m.fingersInsideGlass=inside;m.baseAboveRest=+(d.glassPosition[1]-d.restPosition[1]).toFixed(3);m.holdSpan=d.hold?.span;}
+    report.sip.moments.push(m);
+    await shot('izakaya-sip-'+moment+'-front',await lens(...over.front));await shot('izakaya-sip-'+moment+'-side',await lens(1.6,1.05,Math.PI/2,.95));
+    // (turn +pi/2 looks from his right, the handle side: 'right' is that, a little toward the front; the 'side' lens is his right square on)
+    if(['contact','sip','grasp','lift','landed'].includes(moment)){await shot('izakaya-sip-'+moment+'-hands',await lens(.9,1.15,.5,1.05));await shot('izakaya-sip-'+moment+'-right',await lens(1.1,1.15,Math.PI/2-.35,1.0));}}
     await stepGame(2000);report.sip.end=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.drinking);}}
   }
   report.renderInfo=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.renderInfo);

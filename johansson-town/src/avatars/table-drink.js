@@ -30,7 +30,7 @@ function fluidFor(prop){
  const starting=source?n*Math.sin(2*Math.PI/n)/2*r*r*source.geometry.parameters.height*1e6:capacity*.9;
  const profile={id:kind,segments:n,innerRadiusBottom:r*.96,innerRadiusTop:r,interiorBottom:base,interiorTop:top,
   capacityMl:capacity*(.96*.96+.96+1)/3,liquidRimContact:[-r,top,0],height:h,
-  liquidColor:source?.material?.color?.getHex()||0xc18c36,liquidOpacity:kind==='awamori'?.38:.92,
+  liquidColor:source?.material?.color?.getHex()||0xc18c36,liquidOpacity:kind==='awamori'?.38:kind==='draft'?1:.92,
   hasFoam:!!surface?.head,foamHeight:.006,hasIce:['awamori','oolong'].includes(kind),startingVolumeMl:starting};
  const liquid=source?createLiquid(profile):null;
  if(liquid)prop.add(liquid.root);
@@ -99,14 +99,30 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
  // bar, the thumb on top; a glass without a handle the same way round its body. The hand bone is the wrist; the
  // knuckles come half a hand along, in the plane of the handle. (The mitten is turned half round instead, its palm
  // being an ellipsoid either way.) The owner, 27 October 2026: "align ... the hand too so he can drink beer".
- const holdOffset=g.handle!=null?new THREE.Vector3(g.handle+.02,(g.height??.06)-.02,-.085):new THREE.Vector3((g.radius??.04)+.02,(g.height??.06)-.02,-.06);
- const HOLD_Q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,-1),new THREE.Vector3(0,-1,0)));
- const wrist=(p,q)=>{if(realHand)return {p:p.clone().add(holdOffset.clone().applyQuaternion(q)),q:q.clone().multiply(HOLD_Q)};
+ // The hand's frame in the glass's: the palm (+x of the hand) toward the glass (-x of the glass, the handle being at +x),
+ // the knuckle line (+z of the hand, pinky to index) up the bar (+y), so the fingers (-y of the hand) point -z through
+ // the handle's hole and curl round its bar, and the thumb (+z of the hand) is on top. A right-handed turn.
+ const HOLD_Q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,1),new THREE.Vector3(0,1,0)));
+ // Where the bar (or a glass's side) is in the glass's frame, and where it lies in the curled hand (pixar.js holdPoint):
+ // the wrist goes where those two meet, so the jug is in the hand (the owner, 27 October 2026: "he is not holding the
+ // beer, model a beer jug that fits in his hand").
+ const holdIn=avatar.pixar?.holdPoint?.('R',1)||null;
+ const barAt=g.handle!=null?new THREE.Vector3(g.handle-(g.bar??.008),g.height??.08,0):new THREE.Vector3((g.radius??.04)+.012,g.height??.06,0);
+ const wrist=(p,q)=>{if(realHand&&holdIn){const handQ=q.clone().multiply(HOLD_Q);return {p:p.clone().add(barAt.clone().applyQuaternion(q)).sub(holdIn.centre.clone().applyQuaternion(handQ)),q:handQ};}
   const handQ=q.clone().multiply(HALF_TURN);return {p:p.clone().sub(gripOffset.clone().applyQuaternion(handQ)),q:handQ};};
  // (and the jug turned in the hand as it is lifted, so its handle is at his right and he drinks from the far side; it
  // stays so when it is set down)
  const rightDir=new THREE.Vector3(-1,0,0).transformDirection(body.matrixWorld),heldQ=realHand&&g.handle!=null?new THREE.Quaternion().setFromAxisAngle(Y,Math.atan2(-rightDir.z,rightDir.x)):restQ.clone();
  const tableHand=wrist(restP,restQ);
+ // (the reach stops a few centimetres short of the handle, behind it, with the fingers still open: they passed through the
+ // bar on the way in; the grasp slides the hand on as the fingers close)
+ const reachHand=realHand?{p:tableHand.p.clone().add(new THREE.Vector3(0,.004,.11).applyQuaternion(restQ)),q:tableHand.q}:tableHand;   // (a finger's length back: open fingers reach that far)
+ // The free hand rests on the counter beside the jug's spot, palm down, fingers forward (a Pixar body; the mitten keeps
+ // its lap): the judges of the counter frames, "the free hand hangs in the air at counter height, resting on nothing".
+ const left=b.shoulderL.getWorldPosition(new THREE.Vector3()).sub(b.shoulderR.getWorldPosition(new THREE.Vector3())).setY(0).normalize();
+ const toCounter=restP.clone().sub(b.shoulderL.getWorldPosition(new THREE.Vector3()).lerp(b.shoulderR.getWorldPosition(new THREE.Vector3()),.5)).setY(0).normalize();
+ const counterHand=realHand?restP.clone().addScaledVector(left,.27).addScaledVector(toCounter,-.03).add(new THREE.Vector3(0,.022,0)):null;
+ const counterHandQ=realHand?new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,1,0),toCounter.clone().negate(),new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),toCounter.clone().negate()))):null;
  let reachLean=.26;
  // Fit the same reach to each existing cast recipe. The pelvis stays on its seat;
  // shorter arms use a little more torso reach, never a longer forearm.
@@ -150,7 +166,8 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
    b.head.rotation.x-=.24*drain;b.chest.rotation.x-=.12*drain;
    if(phase.id==='SIP')b.head.rotation.x+=.035*Math.sin(u*Math.PI*6)*headWeight;
    if(phase.id==='RECOVER'){b.head.rotation.x+=.14*Math.sin(Math.PI*s);b.chest.rotation.x-=.05*Math.sin(Math.PI*s);}
-   avatar.pixar.grip?.('R',phase.id==='REACH'?s:phase.id==='RETURN'?1-s:phase.id==='PREPARE'?0:1);
+   avatar.pixar.grip?.('R',phase.id==='REACH'||phase.id==='PREPARE'?.1:phase.id==='GRASP'?.1+.9*THREE.MathUtils.smoothstep(s,.55,1):phase.id==='RETURN'?1-s:1);
+
   }
   b.shoulderR.position.copy(restShoulder);b.shoulderR.position.y+=.016*headWeight;
   body.updateWorldMatrix(true,true);
@@ -159,8 +176,8 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   const liftQ=heldQ.clone();
   switch(phase.id){
    case 'PREPARE':break;
-   case 'REACH':handP=point(restHand,tableHand.p,s,.035);handQ.slerp(tableHand.q,s);break;
-   case 'GRASP':handP.copy(tableHand.p);handQ.copy(tableHand.q);break;
+   case 'REACH':handP=point(restHand,reachHand.p,s,.035);handQ.slerp(reachHand.q,s);break;
+   case 'GRASP':handP=reachHand.p.clone().lerp(tableHand.p,Math.min(1,s/.6));handQ.copy(tableHand.q);break;   // (the hand slides on in the first part, open; the fingers close after)
    case 'LIFT':glassP.lerp(liftP,s);glassQ.copy(restQ).slerp(heldQ,s);controller='TRAJECTORY';break;
    case 'APPROACH':glassP=point(liftP,pre.p,s,.045);glassQ.copy(liftQ).slerp(pre.q,s);controller='TRAJECTORY';break;
    case 'CONTACT':{const k=contact(mouth,.12,.027*(1-s));glassP=k.p;glassQ=k.q;controller='MOUTH';break;}
@@ -172,13 +189,17 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
    case 'RETURN':{const h=realHand?wrist(restP,heldQ):tableHand;handP=point(h.p,restHand,s,.035);handQ.copy(h.q).slerp(restHandQ,s);glassQ.copy(realHand?heldQ:restQ);break;}
   }
   if(phase.index>=4&&phase.index<=10){const h=wrist(glassP,glassQ);handP=h.p;handQ=h.q;}
+  // (a Pixar body's eyes on the jug as he reaches for it and lifts it, shut for the sip and the swallow, a cartoon
+  // drinking with its eyes closed; the happy face after, below)
+  if(cartoon){if(['REACH','GRASP','LIFT','APPROACH'].includes(phase.id))avatar.paintFace({gaze:glassP.clone().add(new THREE.Vector3(0,.12,0))});else if(phase.id==='SIP'||phase.id==='SWALLOW')avatar.paintFace({blink:1});}
   setWorld(prop,glassP,glassQ);
   // (a Pixar body's elbow hangs below the shoulder through the whole performance, as consume.js poses its drink; the
   // cartoon's goes out to the side: the owner, 27 October 2026, "the arm gets stuck in his head")
   reach(avatar,handP,'R',avatar.pixar?[-.45-.5*drain,-1+.85*drain,.25]:-.25);
   b.handR.quaternion.copy(b.handR.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(handQ));
   b.handR.updateWorldMatrix(false,true);
-  reach(avatar,restingHand,'L');b.handL.quaternion.copy(b.handL.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(restingHandQ));b.handL.updateWorldMatrix(false,true);
+  if(counterHand){reach(avatar,counterHand,'L',[.45,-1,.25]);b.handL.quaternion.copy(b.handL.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(counterHandQ));b.handL.updateWorldMatrix(false,true);avatar.pixar?.grip?.('L',.22);}
+  else{reach(avatar,restingHand,'L');b.handL.quaternion.copy(b.handL.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(restingHandQ));b.handL.updateWorldMatrix(false,true);}
   const wristError=b.handR.getWorldPosition(new THREE.Vector3()).distanceTo(handP);maxWristError=Math.max(maxWristError,wristError);
   const actualRim=prop.localToWorld(rim.clone()),rimError=actualRim.distanceTo(mouth);
   const normal=Y.clone().applyQuaternion(glassQ.clone().invert());
@@ -190,8 +211,11 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   fluid.update(prop.userData.portion??lease.startFraction);
   if(phase.id==='SWALLOW')avatar.paintFace({expression:'neutral',talk:Math.sin(Math.PI*u)*.08,blink:0});
   else if(cartoon&&phase.id==='RECOVER')avatar.paintFace({expression:'happy',blink:s<.3?1:0});
+  const fingersAt=avatar.pixar?.fingers?Object.fromEntries(Object.entries(avatar.pixar.fingers).filter(([n])=>/R[123]$/.test(n)).map(([n,b])=>[n,b.getWorldPosition(new THREE.Vector3()).toArray().map(v=>+v.toFixed(4))])):null;
+  const barSeg=g.handle!=null?[barAt.clone().setY(g.opening?.[0]??(g.height-.05)),barAt.clone().setY(g.opening?.[1]??(g.height+.05))].map(v=>prop.localToWorld(v.clone()).toArray().map(x=>+x.toFixed(4))):null;
   last={...phase,controller,rimError,wristError,maxWristError,valid,tilt:phase.id==='SIP'?tip:0,consumedPortion:lease.consumedPortion,
-   glassPosition:glassP.toArray(),wristPosition:handP.toArray(),mouth:mouth.toArray()};
+   glassPosition:glassP.toArray(),glassUp:Y.clone().applyQuaternion(glassQ).toArray().map(v=>+v.toFixed(4)),restPosition:restP.toArray(),wristPosition:handP.toArray(),mouth:mouth.toArray(),
+   fingers:fingersAt,bar:barSeg,glassRadius:profile.innerRadiusTop,glassHeight:profile.height,hold:holdIn?{centre:holdIn.centre.toArray(),span:+holdIn.span.toFixed(3)}:null};
   return last;
  }
  function finish(cancelled=false){

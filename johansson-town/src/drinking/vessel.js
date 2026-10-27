@@ -33,8 +33,11 @@ function setTriangles(mesh,positions){
 export function createLiquid(profile){
  const root=new THREE.Group();root.name=profile.id+' liquid';
  const color=profile.liquidColor??0xc77915,opacity=profile.liquidOpacity??.87;
- const body=dynamicMesh(new THREE.MeshPhysicalMaterial({color,roughness:.2,metalness:0,transparent:true,opacity,depthWrite:false,side:THREE.FrontSide}), 'Enclosed liquid',10);
- const cap=dynamicMesh(new THREE.MeshStandardMaterial({color:new THREE.Color(color).lerp(new THREE.Color(0xffffff),.035),roughness:.24,metalness:.02,transparent:true,opacity:Math.min(1,opacity+.13),depthWrite:false,side:THREE.DoubleSide}), 'Horizontal free surface',11);
+ // (a liquid as good as opaque, beer, writes depth and is not drawn transparent: with depthWrite off, chopsticks behind
+ // the jug were drawn over the beer and the ink drew the chin and collar through it: the judges of the counter frames)
+ const solid=opacity>=.98;
+ const body=dynamicMesh(new THREE.MeshPhysicalMaterial({color,roughness:.2,metalness:0,transparent:!solid,opacity:solid?1:opacity,depthWrite:solid,side:THREE.FrontSide}), 'Enclosed liquid',10);
+ const cap=dynamicMesh(new THREE.MeshStandardMaterial({color:new THREE.Color(color).lerp(new THREE.Color(0xffffff),.035),roughness:.24,metalness:.02,transparent:!solid,opacity:solid?1:Math.min(1,opacity+.13),depthWrite:solid,side:THREE.DoubleSide}), 'Horizontal free surface',11);
  root.add(body,cap);
  let foam=null,ice=null;
  if(profile.hasFoam){

@@ -168,6 +168,46 @@ beer"; "Audit your screenshots ... as you are Akira Kurosawa or Miyazaki or Disn
 - `tests/pixar-meshy.test.mjs` accepts and checks the finger bones (30, each rested, bend axes in the card).
 - Risograph: the owner likes it; nothing changed there, the mouth now reads in it.
 
+## Late night, 27 October 2026: the jug in his hand
+
+The owner: "how about Johansson's hands???? he is not holding the beer, model a beer jug that fits in his hand and
+obeys gravity pls"; "Screenshots"; a frame with the thumb standing up beside the jug: "What's this?"
+
+- **Measured, not eyeballed** (`tools/pixar-shots.mjs --part sip`, `table-drink.js` diagnostics): per moment of the
+  performance, each finger's nearest distance to the handle's bar, fingertips inside the glass, the jug's lean off
+  upright, its base above its counter spot, the rim to the lips; the frames from his right (the handle side) and close.
+  Before: the hand sat beside the jug by a guessed offset; the bar was nowhere near the fingers.
+- **A jug that fits his hand** (`izakaya-serving-visuals.js` `JUG`): 大ジョッキ, 9.4 cm across, 19 cm tall on a thick base,
+  a D-handle (a tube on a rounded D) whose opening is 11.4 cm tall and 3.5 cm deep for his four fingers (their knuckles
+  span 5.9 cm centre to centre, a finger 2.2 cm thick) and whose bar is 15 mm thick to curl round. Its grip data says
+  where the bar is (`handle`, `bar`, `height`, `opening`).
+- **The hold is built from the fingers** (`pixar.js holdPoint`: forward kinematics of the finger bones at the grip, the
+  hollow the curled fingers make; `table-drink.js wrist`): the wrist goes where that hollow meets the bar, the palm
+  toward the glass, the knuckle line up the bar, the thumb on top (`HOLD_Q`, right-handed). Measured from the grasp to
+  the set-down: every finger 11 to 16 mm off the bar (a finger's half thickness plus the bar's radius), no fingertip in
+  the glass, the jug upright (lean 0) carried, tipped only at the sip (22 degrees) and swallow (30), level again set
+  down, rim error 0 at the sip.
+- **The thumb** folds over the handle now (`GRIP_TURN.thumb` 0.95/0.8/0.55 rad): with 0.35/0.55/0.6 it stood straight up
+  beside the jug ("What's this?").
+- **Gravity**: the jug hangs vertical from the hand through the lift and the carry, tips with the sip, is set down on its
+  spot (base 0 above rest); the beer's surface stays level (the liquid system). The NPCs' held glasses go through
+  `consume.js fitAvatarHeldProp` unchanged.
+- **Audited by independent judges** (three lenses: Kurosawa for weight and truth, Miyazaki for physics, Disney for
+  appeal; every fault then challenged by two refuters; `tools` of the session, a workflow over the frames and the
+  report). Round one (on the first frames) found: the thumb standing up beside the jug, things behind the beer drawn
+  through it (chopsticks, the ink of the chin and collar: the liquid had no depth write), the free hand hanging in
+  the air at counter height, the reach's open fingers passing through the bar, the set-down still shot before the jug
+  landed, and the lenses named from the wrong side. Fixed: the thumb folds over (`GRIP_TURN.thumb`); beer is drawn
+  opaque and writes depth (`drinking/vessel.js`, `liquidOpacity` 1 for the draught); the free hand rests on the counter
+  beside the jug's spot, palm down, fingers forward (`table-drink.js counterHand`); the reach stops a finger's length
+  behind the handle with the fingers open, the grasp slides the hand on and closes the fingers after
+  (`reachHand`, the grip ramp); a `landed` moment (base 0 above its spot); the `right` lens is his right. Also the jug
+  filled to 2 cm under the rim (a fresh 大ジョッキ), so it tips 13 degrees at the sip, and his eyes on the jug as he
+  reaches and lifts, shut as he drinks. The judges' one wrong call, recorded so nobody chases it: "the beer never
+  reaches his lips": seen from the front the beer stands lower at the near wall of a tilted jug while it touches the
+  rim at the lips; it is level and it reaches the rim (rim error 0, `valid` at the sip). Resting hands on a Pixar body
+  are a little curled, never splayed (`animate.js`, grip 0.28).
+
 ## Open
 
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril
