@@ -57,3 +57,14 @@ On the owner's word ("Yes publish and fix Mossy everywhere") as
 first: World work only, no conflicts). Live: the 14 changed pages and scripts and all 27 stamp images match the commit
 byte for byte; every article shows its picture with no errors and no overflow at 1440 and 390 px; Mossy breaks between
 words on the home page, the blog, an article and World.
+
+## Vietnam: Pixar Thuan (27 October 2026, later)
+
+The owner: "Make a stamp for the Vietnam post too, you can do it with Thuan, she is Vietnamese", then "and remember to
+use Pixar Thuan". Not a World shot: Pixar Thuan's hero render from Johansson Studio (`nj22az/jojo`, branch `pixar`,
+`3d/cast/renders/thuan-hero.jpg`, her plain studio backdrop), printed by `tools/stamp-filter.py` (new: a rubber-stamp
+print of any colour render, solid grainy darks, a speckle in the mid-tones, inked outlines) with
+`--crop 0.12,0.12,0.88,0.50`, then placed by `build-blog-stamps.py` like the others (shot `vietnam`, its `source`
+recorded in the shot list). Tried and dropped: the PORT 88 coffee render in Sakura's cold-cabinet corner (the busy,
+blurred shelves printed as heavy blobs; weighting ink by focus made the whole print pale). A World shoot of the
+game's Thuan was started and stopped when the owner asked for Pixar Thuan. **On the branch; awaiting the owner's word.**

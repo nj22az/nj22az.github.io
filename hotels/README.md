@@ -1,5 +1,12 @@
 # Hotels & Parking
 
+## Laajavuori: no card hold — 27 October 2026
+
+The owner, at Scandic Laajavuori today: "add that as an extra good thing ... that they didnt ask me to reserve anything
+on my card, this is a bonus ... some hotels always ask you to add your card for a deposit or if you want to order on
+the room". Added to the record's notes (owner stay report) and as "A bonus at check-in" in the stay post. **On the
+branch; awaiting the owner's word.**
+
 ## Folding cards — 27 October 2026
 
 The owner: "the notes on a hotel shouldn't show by standard it needs to be opened and the photos too, so make it sort

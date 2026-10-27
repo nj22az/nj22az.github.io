@@ -194,6 +194,14 @@
       "note": "The electrical workshop bench",
       "alt": "An electrical workbench on board a ship, printed as a rubber stamp.",
       "caption": "The electrical workbench on board the Minato Maru, in Johansson World."
+    },
+    {
+      "name": "vietnam",
+      "article": "vietnam",
+      "source": "Pixar Thuan from Johansson Studio: nj22az/jojo branch pixar, 3d/cast/renders/thuan-hero.jpg, stamped with tools/stamp-filter.py --crop 0.12,0.12,0.88,0.50 (not a World shot; the owner: \"you can do it with Thuan, she is Vietnamese\", \"remember to use Pixar Thuan\")",
+      "note": "Vietnam: Thuan, Sakura Shōten's owner, who is Vietnamese",
+      "alt": "Thuan, a young woman with long dark hair in a braid, waving and making a peace sign, printed as a rubber stamp.",
+      "caption": "Thuan of Sakura Shōten, who is Vietnamese, from Johansson Studio."
     }
   ]
 }

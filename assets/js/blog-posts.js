@@ -142,7 +142,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/vietnam/",
     "date": "2025-11-10",
     "topic": "Reflections",
-    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/10/vietnam/"
+    "sourceUrl": "https://theofficeofnils.wordpress.com/2025/11/10/vietnam/",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/vietnam-thumb.webp",
+      "alt": "Thuan, a young woman with long dark hair in a braid, waving and making a peace sign, printed as a rubber stamp."
+    }
   },
   {
     "id": "the-torn-poster",

@@ -5,6 +5,7 @@
  *   ship   metres in the Minato Maru's own frame (x across, +x port; z from her stern; y above her keel), wherever she lies
  *   near   metres from the ferry's position in the world (as tools/ferry-look.mjs frames her from the quay)
  *   world  plain world coordinates
+ *   resident  framed on a resident wherever she is at that time: {"resident":{"name":"Thuan","dist":2.4,"side":.8,"y":1.45}}
  * Every shot parks the ferry alongside in town, sets the time ("17:40"), hides the HUD and keeps Johansson out of frame.
  * "lights": true turns her navigation lights on; "clear" (metres, default 2.2) hides the people that close to the lens.
  */
@@ -53,16 +54,27 @@ try{
     const V=f.position.constructor;let pos,at;
     if(fixed){pos=fixed.pos;at=fixed.at;}
     else if(s.ship){const w=v=>f.localToWorld(new V(v[0],v[1]-DRAFT,v[2]-HALF)).toArray();pos=w(s.ship.pos);at=w(s.ship.at);}
+    else if(s.resident){
+     // A resident wherever her day has taken her: the camera in front of her (dist metres along the way she faces,
+     // side metres to her left), at height y, looking at her chest.
+     let who=null;a.scene.traverse(o=>{if(!who&&o.userData?.name===s.resident.name)who=o;});
+     if(!who)throw Error(s.resident.name+' is not in the scene at '+s.time);
+     who.updateMatrixWorld(true);const p=who.getWorldPosition(new V()),d=who.getWorldDirection(new V());d.y=0;d.normalize();
+     const l=new V(d.z,0,-d.x),r=s.resident;
+     pos=[p.x+d.x*r.dist+l.x*r.side,p.y+r.y,p.z+d.z*r.dist+l.z*r.side];at=[p.x+l.x*(r.lookSide||0),p.y+(r.look??1.05),p.z+l.z*(r.lookSide||0)];
+     s.__where=[p.x,p.y,p.z];
+    }
     else if(s.near){const p=f.position;pos=[p.x+s.near.pos[0],s.near.pos[1],p.z+s.near.pos[2]];at=[p.x+s.near.at[0],s.near.at[1],p.z+s.near.at[2]];}
     else {pos=s.world.pos;at=s.world.at;}
     // Johansson stands far behind the lens, on the ground, out of every picture.
-    const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1;a.teleport(pos[0]+dx/d*40,pos[2]+dz/d*40,0,0);a.step(30);
+    // (For a resident, only a few metres behind: a room may only be drawn while the player is near it.)
+    const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1,back=s.resident?2.5:40;a.teleport(pos[0]+dx/d*back,pos[2]+dz/d*back,0,0);a.step(30);
     // People right against the lens (an engineer at the board, a head at the camera's shoulder) step out of the picture;
     // the ones further off stay, so the place keeps its life. Skinned bodies, and what they carry on their bones.
     const clear=s.clear??2.2,hidden=[],q=new V();
     a.scene.traverse(o=>{if(!o.isSkinnedMesh)return;o.getWorldPosition(q);if(Math.hypot(q.x-pos[0],q.z-pos[2])>=clear)return;
      o.visible=false;hidden.push(o.name||'resident');for(const b of o.skeleton?.bones||[])b.traverse(c=>{if(c.isMesh)c.visible=false;});});
-    a.hud.photo(true);a.camera={pos,at,...(s.fov?{fov:s.fov}:{})};a.render();a.render();return {pos,at,hidden};
+    a.hud.photo(true);a.camera={pos,at,...(s.fov?{fov:s.fov}:{})};a.render();a.render();return {pos,at,hidden,where:s.__where};
    },{s,fixed,minutes:h*60+m,HALF,DRAFT});
    await page.waitForTimeout(500);
    const file=`${s.name}--${look}.png`;await canvas.screenshot({path:resolve(out,file)});
