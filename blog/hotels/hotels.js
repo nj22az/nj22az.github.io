@@ -10,6 +10,8 @@
   var empty = document.querySelector('[data-hotel-empty]');
   var table = document.querySelector('[data-hotel-table]');
   var choiceCounts = Array.from(document.querySelectorAll('[data-parking-count]'));
+  var countryCounts = Array.from(document.querySelectorAll('[data-country-count]'));
+  var countryTags = Array.from(document.querySelectorAll('[data-hotel-country]'));
   var savedOption = document.querySelector('[data-hotel-saved-option]');
   var filterCount = document.querySelector('[data-hotel-filter-count]');
   var discovery = document.querySelector('[data-hotel-discovery]');
@@ -39,10 +41,16 @@
     var terms = normalise(query.value.trim()).split(/\s+/).filter(Boolean);
     var visible = new Set();
     var tally = { free: 0, easy: 0, avoid: 0, all: 0, saved: 0 };
+    var byCountry = {};
     rows.forEach(function (row) {
       var id = row.dataset.hotelRow;
       var text = normalise(row.dataset.search);
       // Everything except the parking choice, so each choice can show what it would find.
+      var anywhere = terms.every(function (term) { return text.includes(term); }) &&
+        (!chain.value || row.dataset.chain === chain.value) &&
+        (!receipt.value || row.dataset.hotelReceipt === receipt.value) &&
+        (parking.value === 'saved' ? saved.has(id) : !parking.value || row.dataset.parkingCategory === parking.value);
+      if (anywhere) byCountry[row.dataset.country] = (byCountry[row.dataset.country] || 0) + 1;
       var place = terms.every(function (term) { return text.includes(term); }) &&
         (!country.value || row.dataset.country === country.value) &&
         (!chain.value || row.dataset.chain === chain.value) &&
@@ -54,6 +62,8 @@
     });
     posts.forEach(function (post) { post.hidden = !visible.has(post.dataset.hotelNote); });
     choiceCounts.forEach(function (badge) { badge.textContent = tally[badge.dataset.parkingCount]; });
+    countryCounts.forEach(function (badge) { badge.textContent = byCountry[badge.dataset.countryCount] || 0; });
+    countryTags.forEach(function (tag) { tag.setAttribute('aria-pressed', String(!!country.value && tag.dataset.hotelCountry === country.value)); });
     if (savedOption) savedOption.hidden = saved.size === 0 && parking.value !== 'saved';
     var active = [country.value, chain.value, receipt.value].filter(Boolean).length;
     if (filterCount) { filterCount.hidden = active === 0; filterCount.textContent = active; }
@@ -64,6 +74,14 @@
     feed.hidden = visible.size === 0;
     document.dispatchEvent(new CustomEvent('hotel-filter-change', { detail: { visibleIds: Array.from(visible) } }));
   }
+
+  // A country tag on a post or in the toolbar filters to that country; pressing it again clears it.
+  countryTags.forEach(function (tag) {
+    tag.addEventListener('click', function () {
+      country.value = country.value === tag.dataset.hotelCountry ? '' : tag.dataset.hotelCountry;
+      filter();
+    });
+  });
 
   // Notes open like a comment thread under the post.
   posts.forEach(function (post) {
