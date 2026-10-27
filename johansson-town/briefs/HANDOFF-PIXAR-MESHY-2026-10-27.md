@@ -32,9 +32,11 @@ remove goatee and moustache?"; "Remember to write handovers when you complete so
 1. **The brows on both:** the painted brow leaves remnants beside World's brow decal, and his decal lies thin and
    tilted (the face sheets). Fix in the studio's `paint_out_face`: the brow hole from the found brow's own box, the
    decal's tilt from the line's ends. His iris decal shows a seam at its edge.
-2. **His in-game checks** (the owner's standing asks): idle and Interact, the draught at the counter by the game's own
-   performance (`node tools/pixar-shots.mjs --scenes --name Johansson --part sip <out>`; the earlier body sipped with
-   the rim at the lips, `report.json` `sip.moments`), the stools against him; then the izakaya redrawn in CAD.
+2. **His in-game checks, done once** (`node tools/pixar-shots.mjs --scenes --name Johansson <out>`, 81 steps; the
+   studio repo's `renders/game/johansson-meshy-game-*.jpg`): idle, walk, gestures and the counter are clean, and the
+   draught served at his seat is drunk by the game's own performance with the rim at his lips (`report.json`
+   `sip.moments`: `valid` at the sip). The hand stays open around the mug: a holding hand shape is the next step. The
+   stools fit him (feet on the rail, knees at the counter); then the izakaya redrawn in CAD.
 3. Thuận is still on her Tripo model; the same route takes a Meshy Thuận when the owner gives one.
 4. The earlier Pixar Johansson route (the free sculpt, separate shirt and shorts) is kept in the studio repo out of the
    game; its last fixes of the morning (the wrist graft, the hand straight at rest, a wrist weight ramp) live in the
