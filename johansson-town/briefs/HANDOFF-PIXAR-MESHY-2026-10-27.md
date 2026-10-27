@@ -187,8 +187,17 @@ obeys gravity pls"; "Screenshots"; a frame with the thumb standing up beside the
   the set-down: every finger 11 to 16 mm off the bar (a finger's half thickness plus the bar's radius), no fingertip in
   the glass, the jug upright (lean 0) carried, tipped only at the sip (22 degrees) and swallow (30), level again set
   down, rim error 0 at the sip.
-- **The thumb** folds over the handle now (`GRIP_TURN.thumb` 0.95/0.8/0.55 rad): with 0.35/0.55/0.6 it stood straight up
-  beside the jug ("What's this?").
+- **The thumb ("What's this?")**: the digit standing up beside the jug was his real thumb, never rigged. The studio's
+  first finger cut (`game_meshy.py finger_joints`) took the hand past half its length as one block of four fingers and
+  a separate thumb; on his Meshy hand the index stands apart there and the short thumb ends before it, so the index
+  was rigged as the thumb (and swept across the palm), the three other fingers were cut into four bands, and the thumb
+  stayed on the hand bone. Seen with the vertices coloured by bone (a scratch render) and fixed in the studio: the five
+  tips are found as the points farthest along the mesh from the wrist, the thumb is the tip most to the front, every
+  vertex goes to the digit whose tip it reaches most directly (fused fingers part along their creases), the lightened
+  mesh takes each vertex's digit from the nearest labelled one, and the thumb's root sits in the ball of the thumb and
+  curls across the palm to meet the fingers. Both casts re-exported (Johansson `5fef83b9f0`, Thao `be1dcce7d0`; Thao's
+  index is her longest finger, and the split follows it). Now the thumb lies along the top of the fist over the index,
+  the four fingers close through the handle (10 to 21 mm off its bar), none in the glass (`shots-sip19`).
 - **Gravity**: the jug hangs vertical from the hand through the lift and the carry, tips with the sip, is set down on its
   spot (base 0 above rest); the beer's surface stays level (the liquid system). The NPCs' held glasses go through
   `consume.js fitAvatarHeldProp` unchanged.

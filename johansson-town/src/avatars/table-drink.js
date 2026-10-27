@@ -31,7 +31,7 @@ function fluidFor(prop){
  const profile={id:kind,segments:n,innerRadiusBottom:r*.96,innerRadiusTop:r,interiorBottom:base,interiorTop:top,
   capacityMl:capacity*(.96*.96+.96+1)/3,liquidRimContact:[-r,top,0],height:h,
   liquidColor:source?.material?.color?.getHex()||0xc18c36,liquidOpacity:kind==='awamori'?.38:kind==='draft'?1:.92,
-  hasFoam:!!surface?.head,foamHeight:.006,hasIce:['awamori','oolong'].includes(kind),startingVolumeMl:starting};
+  hasFoam:!!surface?.head,foamHeight:kind==='draft'?.018:.006,hasIce:['awamori','oolong'].includes(kind),startingVolumeMl:starting};
  const liquid=source?createLiquid(profile):null;
  if(liquid)prop.add(liquid.root);
  const api={profile,liquid,startingVolumeMl:Math.min(starting,profile.capacityMl),update(fraction){
@@ -86,7 +86,7 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
  const fluid=fluidFor(prop),profile=fluid.profile,rim=new THREE.Vector3(0,prop.userData.rimHeight,profile.innerRadiusTop+.002);
  const forward=new THREE.Vector3(0,0,1).transformDirection(body.matrixWorld),liftP=restP.clone().addScaledVector(Y,.065).addScaledVector(forward,-.014);
  const gripOffset=new THREE.Vector3(0,-m.hand*.55,0).add(tableGrip(prop,m,profile));
- let elapsed=0,active=true,last=null,maxWristError=0,lastFlow=0;
+ let elapsed=0,active=true,last=null,maxWristError=0,lastFlow=0,lookAt=null;
  const restHead=b.head.rotation.x,restSpine=b.spine.rotation.x,restChest=b.chest.rotation.x;
  const restShoulder=b.shoulderR.position.clone();
  const realHand=!!m.realHand,g=prop.userData.grip||{};
@@ -191,7 +191,10 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   if(phase.index>=4&&phase.index<=10){const h=wrist(glassP,glassQ);handP=h.p;handQ=h.q;}
   // (a Pixar body's eyes on the jug as he reaches for it and lifts it, shut for the sip and the swallow, a cartoon
   // drinking with its eyes closed; the happy face after, below)
-  if(cartoon){if(['REACH','GRASP','LIFT','APPROACH'].includes(phase.id))avatar.paintFace({gaze:glassP.clone().add(new THREE.Vector3(0,.12,0))});else if(phase.id==='SIP'||phase.id==='SWALLOW')avatar.paintFace({blink:1});}
+  // (a Pixar body's eyes on the jug as he reaches for it and lifts it: `lookAt`, which the actor hands the animator as
+  // his gaze; shut for the sip and the swallow, a cartoon drinking with its eyes closed; the happy face after, below)
+  lookAt=cartoon&&['PREPARE','REACH','GRASP','LIFT','APPROACH'].includes(phase.id)?glassP.clone().add(new THREE.Vector3(0,.14,0)):null;
+  if(cartoon&&phase.id==='SIP')avatar.paintFace({blink:1});
   setWorld(prop,glassP,glassQ);
   // (a Pixar body's elbow hangs below the shoulder through the whole performance, as consume.js poses its drink; the
   // cartoon's goes out to the side: the owner, 27 October 2026, "the arm gets stuck in his head")
@@ -209,7 +212,7 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   const valid=phase.id==='SIP'&&rimError<.002&&wristError<.003&&reachesEdge;
   if(allowConsumption&&valid&&phase.flowProgress>lastFlow){lastFlow=phase.flowProgress;lease.consume(lastFlow);}
   fluid.update(prop.userData.portion??lease.startFraction);
-  if(phase.id==='SWALLOW')avatar.paintFace({expression:'neutral',talk:Math.sin(Math.PI*u)*.08,blink:0});
+  if(phase.id==='SWALLOW')avatar.paintFace({expression:'neutral',talk:Math.sin(Math.PI*u)*.08,blink:cartoon?1:0});
   else if(cartoon&&phase.id==='RECOVER')avatar.paintFace({expression:'happy',blink:s<.3?1:0});
   const fingersAt=avatar.pixar?.fingers?Object.fromEntries(Object.entries(avatar.pixar.fingers).filter(([n])=>/R[123]$/.test(n)).map(([n,b])=>[n,b.getWorldPosition(new THREE.Vector3()).toArray().map(v=>+v.toFixed(4))])):null;
   const barSeg=g.handle!=null?[barAt.clone().setY(g.opening?.[0]??(g.height-.05)),barAt.clone().setY(g.opening?.[1]??(g.height+.05))].map(v=>prop.localToWorld(v.clone()).toArray().map(x=>+x.toFixed(4))):null;
@@ -227,6 +230,8 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
  }
  return {
   prop,get active(){return active;},get elapsed(){return elapsed;},get diagnostics(){return last;},
+  /** Where his eyes go while the performance has them (the jug as he reaches and lifts), or null. */
+  get lookAt(){return lookAt;},
   renderAt,
   update(dt){
    if(!active)return last;if(!lease.active||prop.parent!==originalParent){finish(true);return last;}

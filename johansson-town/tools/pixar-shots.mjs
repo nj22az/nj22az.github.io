@@ -126,7 +126,9 @@ try{
      // the fingertips (past the last joint by most of the last phalanx): how far inside the glass's wall each ends (a tip
      // against the wall, inside the handle, is a hold; a tip through the wall is in the beer)
      m.tipsThroughWall={};for(const f of ['index','middle','ring','pinky']){const j2=d.fingers[f+'R2'],j3=d.fingers[f+'R3'];if(!j2||!j3)continue;const tip=j3.map((x,i)=>x+(x-j2[i])*.85),rel=tip.map((x,i)=>x-axisBase[i]),y=rel[0]*up[0]+rel[1]*up[1]+rel[2]*up[2],radial=Math.hypot(...rel.map((x,i)=>x-up[i]*y));if(y>.012&&y<d.glassHeight)m.tipsThroughWall[f]=+(d.glassRadius-radial).toFixed(3);}
-     m.fingersInsideGlass=inside;m.baseAboveRest=+(d.glassPosition[1]-d.restPosition[1]).toFixed(3);m.holdSpan=d.hold?.span;}
+     m.fingersInsideGlass=inside;m.baseAboveRest=+(d.glassPosition[1]-d.restPosition[1]).toFixed(3);m.holdSpan=d.hold?.span;
+     // the hand the right way up on the handle: the index knuckle above the pinky's (along the jug's up), the thumb's tip above the wrist
+     const i1=d.fingers.indexR1,p1=d.fingers.pinkyR1,t3=d.fingers.thumbR3,w=d.wristPosition;if(i1&&p1)m.indexAbovePinky=+((i1[0]-p1[0])*up[0]+(i1[1]-p1[1])*up[1]+(i1[2]-p1[2])*up[2]).toFixed(3);if(t3&&w)m.thumbTipAboveWrist=+(t3[1]-w[1]).toFixed(3);}
     report.sip.moments.push(m);
     await shot('izakaya-sip-'+moment+'-front',await lens(...over.front));await shot('izakaya-sip-'+moment+'-side',await lens(1.6,1.05,Math.PI/2,.95));
     // (turn +pi/2 looks from his right, the handle side: 'right' is that, a little toward the front; the 'side' lens is his right square on)
