@@ -663,8 +663,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // (Seated the kit is behind them, against the seat back: the hands rest as anybody's do, clear of a chair's arms.)
    const A=soak?null:C.hands();
    if(A){armTo('R',A.R,chairBlend,A.handR);armTo('L',A.L,chairBlend,A.handL);}
-   if(avatar.pixar&&!soak){const S=CHAIR_SIT.pixar.slump;add('spine',S.spine*chairBlend);add('chest',S.chest*chairBlend);add('head',S.head*chairBlend);}
    else{set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);}
+   if(avatar.pixar&&!soak){const S=CHAIR_SIT.pixar.slump;add('spine',S.spine*chairBlend);add('chest',S.chest*chairBlend);add('head',S.head*chairBlend);}
+   avatar.pixar?.seat?.(soak?0:chairBlend);   // (the seat rounds out as the body sits)
    // A seat that says where its front edge is (seatFront: how far ahead of the body's mark) has the body slide forward on
    // it as far as the backs of the shins need to hang in front of that edge: short legs on a deep bench sit at its front,
    // the knees over the edge, instead of hanging straight down through the seat.
@@ -954,6 +955,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // where the seat is under the body, in its own frame: what it sits on keeps its cloth (towel-fit.js) on it
    avatar.seatLevel=chairBlend<1?null:(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-avatar.root.position.y;
   }else if(!s.riding&&!s.sleeping&&!lie){
+   avatar.pixar?.seat?.(0);
    groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)||!!FUN_POSES[gesture?.name]?.airborne});
    // Kneeling rests on the knees as well as the toes: nothing on the body (a boot's leg, a knee in thick cloth) goes
    // below the floor; whichever is lowest touches it.
