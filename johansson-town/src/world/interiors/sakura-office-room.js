@@ -3,6 +3,7 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {SAKURA_STAIR_PASSAGE,buildSakuraStairHead} from './sakura-stairs.js';
 import {buildSakuraOfficeDressing} from './sakura-office-dressing.js';
+import {buildTradePosters,buildSakuraHallStock} from './sakura-trade-posters.js';
 
 /**
  * Sakura's upper floor, in the office's own frame: x along the frontage (+x the harbour side, south), z from the back
@@ -116,12 +117,13 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  // The floor round the stairwell's hole (x -5.65..-2.05 behind the decorations store) and the top of its flight (from x
  // -1.8 at the hall's back): four boards that meet edge to edge, none over another (the top landing used to be a second
  // floor laid in the hall's, and flashed on the phone).
- for(const [x0,x1,z0,z1] of [[-hw,hw,-3.36,front],[-hw,-5.65,back,-3.36],[-2.05,hw,-4.96,-3.36],[-1.8,hw,back,-4.96]])box([x1-x0,.12,z1-z0],[(x0+x1)/2,-.06,(z0+z1)/2],0x947354,'Office timber floor');
+ // West of the stairwell the floor and the rear wall run under its wall (x -5.73..-5.65), which goes up to the ceiling.
+ for(const [x0,x1,z0,z1] of [[-hw,hw,-3.36,front],[-hw,-5.73,back,-3.36],[-2.05,hw,-4.96,-3.36],[-1.8,hw,back,-4.96]])box([x1-x0,.12,z1-z0],[(x0+x1)/2,-.06,(z0+z1)/2],0x947354,'Office timber floor');
  box([.12,H,front-back],[-hw,H/2,(front+back)/2],PLASTER,'Office north wall');
  box([O.width,.12,front-back],[0,H+.06,(front+back)/2],0xf1eadb,'Office ceiling');
  // The back wall: the stairwell opens behind it (sakura-stairs.js buildSakuraStairHead) under a lintel; the fire door is a door.
  const F=U.doors.fire;
- for(const [x0,x1] of [[-hw,-5.65],[-.6,F.x0],[F.x1,hw]])box([x1-x0,H,.12],[(x0+x1)/2,H/2,back],PLASTER,'Office rear wall',true);
+ for(const [x0,x1] of [[-hw,-5.73],[-.6,F.x0],[F.x1,hw]])box([x1-x0,H,.12],[(x0+x1)/2,H/2,back],PLASTER,'Office rear wall',true);
  box([F.x1-F.x0,H-F.head,.12],[0,(H+F.head)/2,back],PLASTER,'Fire door lintel');
  // The opening's head at 2.4 m, a beam's depth under the ceiling: the lens behind him at the stair head passes under it.
  box([5.05,H-2.4,.12],[(-5.65-.6)/2,(H+2.4)/2,back],PLASTER,'Stairwell lintel');
@@ -303,6 +305,10 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  }
  // What the storey holds besides its furniture: each piece with its owner and its reason (sakura-office-dressing.js).
  buildSakuraOfficeDressing({room,box,cyl,anchor,action,paint});
+ // The hall's trade posters and the drink stock outside the office (SK-ST-003, sakura-trade-posters.js).
+ {const {paper,pins}=buildTradePosters('hall');if(paper)room.add(paper);
+  const red=mat(0xc23a2e);for(const g of pins){const m=new THREE.Mesh(g,red);m.name='Poster pin';room.add(m);}
+  buildSakuraHallStock({room,box,collider});}
  const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);
  // The tubes' warm white as the shop's (sakura-interior.js): while the office shared the shop's room it was lit by both;
  // as a room of its own it keeps that light, not the town's evening blue.

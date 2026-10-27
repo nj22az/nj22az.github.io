@@ -108,7 +108,10 @@ test('from the stockroom, the foot and the climb camera, the stairwell is closed
 
 test('the office: the stair head opens on the whole stair, nothing black, a rail, nobody walks out over the well',()=>{
  const {room,prompts,blocked,layout}=office(),names=[];room.traverse(o=>names.push(o.name));
- assert.ok(names.includes('Stair rail'));assert.ok(names.includes('Sakura stairwell wood'));
+ for(const n of ['Stair head newel post','Stair head handrail','Stair head bottom rail','Stair head baluster'])assert.ok(names.includes(n),n);
+ // A balustrade, not a board: balusters with gaps under 110 mm (the owner circled the old solid board: "What's this wall or door?").
+ const zs=[];room.traverse(o=>{if(o.name==='Stair head baluster')zs.push(o.position.z);});zs.sort((a,b)=>a-b);
+ assert.ok(zs.length>=10);for(let i=1;i<zs.length;i++)assert.ok(zs[i]-zs[i-1]-.03<.11,'baluster gap');assert.ok(names.includes('Sakura stairwell wood'));
  assert.deepEqual(blackMeshes(room),[],'nothing black');
  assert.deepEqual(layout.spawn,[...P.head.arrive.at]);assert.equal(layout.yaw,P.head.arrive.yaw);
  assert.ok(prompts.some(p=>p.label==='Go downstairs'));
@@ -126,4 +129,21 @@ test('game.js walks the climb in this storey from its locked camera, the other s
   'function checkSakuraStair','SAKURA_STAIR_CLIMB','await S.ready'])assert.ok(GAME.includes(s),s);
  for(const s of ['placeLandingLens','stairLens','sakuraBoundsAt','STAIR_LENS_EASE','storeys:','officeEntry','SAKURA_STAIR_PASSAGE.fade'])assert.ok(!GAME.includes(s),'gone: '+s);
  assert.match(GAME,/#exitRoomButton'\)\.onclick=\(\)=>\{if\(current\?\.id==='sakura-office'\)\{takeSakuraStair\('down'\)/);
+});
+
+test('the stairwell trim (SK-ST-002): strings, a continuous handrail on brackets, nosing, the campaign posters, no door in the stair, the fittings',async()=>{
+ const {SAKURA_STAIR_TRIM:T,buildSakuraStairwell}=await import('../src/world/interiors/sakura-stairs.js');
+ for(const storey of ['shop','office']){
+  const root=new THREE.Group(),g=buildSakuraStairwell(root,{storey}),names=[];g.traverse(o=>{if(o.isMesh)names.push(o.name);});
+  for(const k of ['string','rail','metal','nosing','red','lamp','glow','fitting'])assert.ok(names.includes('Sakura stairwell '+k),`${storey}: ${k}`);
+  for(const p of ['1F','2F'])assert.ok(names.includes('Stair plate '+p),`${storey}: the ${p} plate`);
+  // No door in the stair: the old cupboard door opened onto the well between the flights (the owner: "Why is there a door").
+  assert.ok(!names.includes('Sakura stairwell door'),`${storey}: no door`);
+  // The campaign posters (Pixar Thuan, SP-NK-001's print) on the walls, flat on their faces.
+  const posters=names.filter(n=>n.startsWith('Stair poster'));assert.equal(posters.length,2,`${storey}: two posters`);
+ }
+ // One rail from the foot to the top landing, 850 mm over the nosing line, a hand's width off the wall.
+ const path=T.rail.path;assert.ok(path.length>=6&&T.rail.off-T.rail.radius>=.04);
+ for(let i=1;i<path.length;i++)assert.ok(Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1],path[i][2]-path[i-1][2])>0,'no zero-length piece');
+ assert.equal(T.strings.length,4,'a string each side of each flight');
 });
