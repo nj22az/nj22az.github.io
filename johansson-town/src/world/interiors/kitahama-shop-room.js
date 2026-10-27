@@ -1,5 +1,6 @@
 import * as THREE from '../../../vendor/three.module.js';
-import {BUILDING,FIXTURES,PARTITIONS,INNER_DOORS,OPENINGS,INSIDE,SHOP,HOURS} from '../okinawa/kitahama-shop.js';
+import {BUILDING,FIXTURES,PARTITIONS,INNER_DOORS,OPENINGS,INSIDE,SHOP,HOURS,kitahamaShopOnDuty} from '../okinawa/kitahama-shop.js';
+import {createAvatarActor,updateAvatarActor} from '../../avatars/actors.js';
 import {loadKitahamaShopModels,kitahamaShopModel} from '../kitahama-shop-build.js';
 
 /**
@@ -32,7 +33,10 @@ export function kitahamaShopFrontage(world,padTop){
   span:{minX:-door.to,maxX:-W1.from,minY:.05,maxY:W1.head-FL},hideGlazing:false};
 }
 
-export function buildKitahamaShopRoom({site,room,reg,collider=()=>{},action,exit}){
+/** What she says across the counter on the web: one short line (people/greetings.js, at most 35 characters). */
+export const KEEPER_GREETING='Welcome. Take your time, dear.';
+
+export function buildKitahamaShopRoom({site,room,reg,collider=()=>{},action,exit,getMinutes=()=>0}){
  const group=new THREE.Group();group.name='Johansson Mart interior';room.add(group);
  const solids=[];
  const solid=(x0,x1,z0,z1,h=CE,y0=0)=>{const c={x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,height:h-y0,minY:y0};solids.push(c);collider(c.x,c.z,c.w,c.d,c.height,c.minY);return c;};
@@ -61,8 +65,23 @@ export function buildKitahamaShopRoom({site,room,reg,collider=()=>{},action,exit
  {const [x,z]=mid(F('F7'));anchor(x,1.1,F('F7').max[1]+.45,'Look at the magazines',say('The magazine rack','The island paper, printed by Nhung, the weeklies, manga and puzzle books, read by the window.'));}
  {const [x,z]=mid(F('F8'));anchor(F('F8').max[0]+.35,1.0,z,'Look at the copier',say('The copier','¥10 a copy. The residents’ association copies its notices here.'));}
  anchor(KITAHAMA_SHOP_ROOM.exit[0],KITAHAMA_SHOP_ROOM.exit[1],KITAHAMA_SHOP_ROOM.exit[2],'Go out to the lane',()=>exit?.());
+ // The keeper: Grandmother Higa behind the till while the shop has her (SHOP_DUTY), facing the shop floor (west, -x).
+ // She is a neighbour of the town (people/neighbours.js), drawn here by the room itself; in the street she is indoors.
+ const keeperAt=KITAHAMA_SHOP_ROOM.staff['Grandmother Higa'];
+ const keeperBody=new THREE.Group();keeperBody.name='Grandmother Higa at the till';keeperBody.position.set(keeperAt[0],0,keeperAt[2]);
+ // An avatar faces +z at rotation 0; a quarter turn the positive way faces it to -x, the shop floor (seen in the game).
+ keeperBody.rotation.y=Math.PI/2;group.add(keeperBody);
+ let keeper=null;
+ const onDuty=()=>kitahamaShopOnDuty(getMinutes());
+ const showKeeper=()=>{const on=onDuty();if(on&&!keeper)keeper=createAvatarActor(keeperBody,'Grandmother Higa');keeperBody.visible=on;};
+ showKeeper();
+ anchor(F('F1').min[0]-.45,1.3,keeperAt[2],'Talk to Grandmother Higa',()=>onDuty()?action?.('read','Grandmother Higa',KEEPER_GREETING)
+  :action?.('read',SHOP.name,'Nobody at the till: Grandmother Higa is not in yet.'));
  return {...KITAHAMA_SHOP_ROOM,solids,colliders:[],
   hours:HOURS.signEnglish,
+  /** Each frame in the room: the keeper breathes and looks about; she comes and goes with her duty. */
+  ownedUpdate(dt){showKeeper();if(keeper&&keeperBody.visible)updateAvatarActor(keeper,dt);},
+  keeper:()=>keeperBody.visible?keeperBody:null,
   dispose(){group.traverse(o=>{if(o.isLight)o.dispose?.();});}};
 }
 

@@ -67,6 +67,11 @@ The owner: "So bring the new shop to the island?" In three batches, the project'
    `tests/boot.test.mjs` lists the shop among the interiors; `tests/housing-consolidation.test.mjs` records the shop as
    what stands on the old 5 Kitahama plot.
 
+Found in the running game and fixed: Grandmother Higa is a neighbour (`people/neighbours.js`), not one of the town's main
+residents, so the schedule's indoor list did not take her in, and the room's staff drawing does not reach neighbours.
+`neighbours.js` now takes her indoors on reaching the shop's door, and the room draws her at the till itself
+(`ownedUpdate`), facing the shop floor, with a short greeting. Seen at 18:00: she is behind the register.
+
 **Open:** the side window W2 shows a flat colour from inside (only the front glazing is mapped onto the street); the
 van's 17:00 stop on Sakura Trading's round (`commerce/trade-round.js`) is not built; the shop is not yet a storyteller
 place (`feed/places.js`, with captured backdrops) or in the resident guide's article for Grandmother Higa. Local
