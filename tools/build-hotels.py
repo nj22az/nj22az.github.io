@@ -381,10 +381,13 @@ def gazetteer(reviews):
             for (town, code), points in sorted(towns.items(), key=lambda item: item[0][0].casefold())]
 
 
-def build(reviews, posts=None):
-    posts = hotel_posts() if posts is None else posts
+def check_posts(reviews, posts):
     unknown = sorted(set(posts) - {review['id'] for review in reviews})
     assert not unknown, f'Blog posts name hotels that are not in the register: {unknown}'
+
+
+def build(reviews, posts=None):
+    posts = hotel_posts() if posts is None else posts
     reviews = sorted(reviews, key=place_key)
     rows = '\n'.join(render_row(review) for review in reviews)
     notes = '\n'.join(render_review(review, posts.get(review['id'], ())) for review in reviews)
@@ -525,7 +528,7 @@ def build(reviews, posts=None):
   <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/hotels/hotels.js?v=7"></script>
+  <script src="/hotels/hotels.js?v=8"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/hotels/hotels-map.js?v=6"></script>
   <script src="/hotels/hotels-trip.js?v=1"></script>
@@ -539,6 +542,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     records = json.loads(DATA.read_text(encoding='utf-8'))['reviews']
     validate(records)
+    check_posts(records, hotel_posts())
     html = build(records)
     if args.check:
         assert OUTPUT.read_text(encoding='utf-8') == html, 'Run python3 tools/build-hotels.py to refresh the page'

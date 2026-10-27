@@ -40,7 +40,8 @@ class ParkingAdmissionTests(unittest.TestCase):
         self.assertLess(thread.index('Blog post'), thread.index('Register notes'))
         self.assertIn(post['date'], thread)
         with self.assertRaises(AssertionError):
-            builder.build(self.records, {'no-such-hotel': [post]})
+            builder.check_posts(self.records, {'no-such-hotel': [post]})
+        builder.check_posts(self.records, builder.hotel_posts())
         for hotel, posts in builder.hotel_posts().items():
             self.assertIn(hotel, {row['id'] for row in self.records})
             for item in posts:

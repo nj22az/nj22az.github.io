@@ -195,4 +195,22 @@
   form.addEventListener('reset', function () { window.setTimeout(filter, 0); });
   form.hidden = false;
   filter();
+
+  // A link to one hotel (Share, a blog post) shows it whatever the parking choice, with its notes open.
+  function showLinked() {
+    var match = /^#review-(.+)$/.exec(location.hash);
+    var post = match && document.getElementById('review-' + match[1]);
+    if (!post) return;
+    if (post.hidden) {
+      query.value = ''; country.value = ''; chain.value = ''; receipt.value = '';
+      var option = form.querySelector('input[name=parking][value="' + categoryOf[match[1]] + '"]');
+      if (option) option.checked = true;
+      filter();
+    }
+    setView('list');
+    openNotes(post.id);
+    post.scrollIntoView();
+  }
+  window.addEventListener('hashchange', showLinked);
+  showLinked();
 })();
