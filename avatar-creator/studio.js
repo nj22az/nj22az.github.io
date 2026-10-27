@@ -5,7 +5,7 @@ import {openCreator} from '../johansson-town/src/avatars/creator.js?v=20261024-v
 import {ORIGINAL_THUAN_RECIPE,recipeFor,RESIDENT_NAMES} from '../johansson-town/src/avatars/cast.js';
 import {STUDIO_CHARACTERS} from '../johansson-town/src/studio/characters-data.js';
 import {normalizeRecipe,decodeRecipe} from '../johansson-town/src/avatars/recipe.js';
-import {createSceneWorkspace} from './scene.js?v=20261023-seawall';
+import {createSceneWorkspace} from './scene.js?v=20261027-free-camera';
 import {createWorldPanel} from './world-panel.js?v=20261011-1';
 import {createHomeWorkspace} from './home.js?v=20261011-1';
 import {createModelWorkspace} from './model.js?v=20261020-workshop';
@@ -42,7 +42,7 @@ function save(recipe){
 
 let currentRecipe=shared||restored||recipeFor('Johansson'),editor=null,workspace=null,home=null,model=null,rooms=null,worldLibrary=null,switching=false,editingId=null;
 const modes=document.createElement('nav');modes.className='studio-modes';modes.setAttribute('aria-label','Johansson Studio modes');
-for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Build scene'],['comic','Make comic'],['model','Make model'],['rooms','Edit room'],['library','World library']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
+for(const [id,label] of [['character','Edit character'],['home','Decorate home'],['scene','Free camera'],['comic','Make comic'],['model','Make model'],['rooms','Edit room'],['library','World library']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.mode=id;b.onclick=()=>switchMode(id);modes.append(b);}
 document.body.prepend(modes);
 function switchMode(mode,{focus=true,render=true}={}){
  if(mode!=='rooms')rooms?.hide();
@@ -173,4 +173,3 @@ requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=document.activeElem
 window.addEventListener('pagehide',()=>{editor?.cleanup();workspace?.dispose();home?.dispose();model?.dispose();rooms?.dispose();worldLibrary?.dispose();},{once:true});
 // For tests: the Make model workspace once opened.
 Object.defineProperty(window,'__studioModel',{get:()=>model,configurable:true});
-
