@@ -20,7 +20,7 @@ date stamp", and "The photos doesn't have to be full size like my camera but cle
   heaters at some spaces, an 800 m² spa, and "Bathrobes and spa access are included in your stay" for the Standard
   room. The CSV row is updated to match.
 - **Stay post:** `/blog/scandic-laajavuori-jyvaskyla/`, dated 27 October 2026, with the two photos small and
-  stamped. **Draft on branch `claude/peaceful-clarke-fprqk3`; not on main until the owner approves.**
+  stamped. **Published on the owner's word ("Yes") as `925475c0`; 11/11 live files match and the entry and post check out live.**
 - Checks: build `--check`; 20 unit tests (new: photos render with stamps, lazy thumbnails, and missing files fail);
   `blog-feed.test.cjs` (updated for the new newest post); `flags.cjs` 19/19; `feed.cjs` 46/46; the entry and the post
   in Chromium at 1440 and 390 px: thumbnails 480 px shown at 176/148 px (sharp at 2x), no overflow, no errors.
