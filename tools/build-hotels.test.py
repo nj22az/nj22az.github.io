@@ -155,6 +155,11 @@ class ParkingAdmissionTests(unittest.TestCase):
             self.assertEqual(marker['hotelName'], row['name'])
             self.assertEqual(row['coordinates'], item['coordinates'])
             self.assertEqual(marker['coordinates'], {'lat': row['coordinates']['latitude'], 'lng': row['coordinates']['longitude']})
+            # Rosendahl moved to Easy on the owner's 27 October report (FINLAND-EVIDENCE-2026-10-27.json).
+            if item['hotelId'] == 'scandic-rosendahl':
+                self.assertEqual(builder.parking_category(row), 'easy')
+                self.assertIs(row['parkingOnHotelReceipt'], True)
+                continue
             self.assertEqual(builder.parking_category(row), item['parkingCategory'])
             if not row['freeParking']:
                 self.assertEqual(row['parkingPaymentAtHotel'], item['paymentAtHotel'])
@@ -226,11 +231,35 @@ class ParkingAdmissionTests(unittest.TestCase):
         row = next(r for r in self.records if r['hotelId'] == 'scandic-vasteras')
         self.assertIn('Register at reception', builder.render_review(row))
 
+    def test_finland_follow_up_matches_evidence_and_keeps_rosendahl_tariff(self):
+        evidence = json.loads((ROOT / 'blog/hotels/FINLAND-EVIDENCE-2026-10-27.json').read_text())
+        self.assertEqual(len(evidence['properties']), 8)
+        for item in evidence['properties']:
+            row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
+            self.assertEqual(builder.parking_category(row), 'free')
+            self.assertEqual(row['coordinates'], item['coordinates'])
+            self.assertEqual(row['parkingVerification']['sourceUrl'], item['parkingUrl'])
+            self.assertIsNone(row['roomPaid'])
+            if 'markerEvidence' in item:
+                marker = json.loads('{' + item['markerEvidence'] + '}')
+                self.assertEqual(marker['hotelName'], row['name'])
+                self.assertEqual(marker['coordinates'], {'lat': row['coordinates']['latitude'], 'lng': row['coordinates']['longitude']})
+        ros = next(r for r in self.records if r['hotelId'] == 'scandic-rosendahl')
+        self.assertEqual(builder.parking_category(ros), 'easy')
+        self.assertIn('EUR 2/hour or 8/24 hours', ros['parkingSummary'])
+        self.assertIn('owner', ros['sourceNote'].lower())
+        hyvinkaa = next(r for r in self.records if r['hotelId'] == 'scandic-hyvinkaa')
+        self.assertIn('only 12 spaces', hyvinkaa['parkingSummary'])
+        with (ROOT / 'blog/hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = {row['Hotel']: row for row in csv.DictReader(stream)}
+        self.assertEqual(exported['Scandic Rosendahl']['Parking category'], 'Yellow — Easy parking')
+        self.assertEqual(exported['Hotel Kajanus']['Free parking'], 'Yes')
+
     def test_chain_filter_contains_only_groups_in_the_register(self):
         html = builder.build(self.records)
         self.assertIn('id="hotel-chain" name="chain"', html)
         self.assertEqual({builder.hotel_chain(r) for r in self.records}, {'Scandic', 'Thon Hotels', 'Best Western', 'Other hotels'})
-        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 121)
+        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 125)
         for row in self.records:
             self.assertIn('data-chain="' + builder.hotel_chain(row) + '"', builder.render_row(row))
         self.assertIn('data-theme="clarity" data-theme-lock="clarity"', html)

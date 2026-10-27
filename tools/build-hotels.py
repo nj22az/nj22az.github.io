@@ -403,8 +403,9 @@ def build(reviews):
   <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
   <meta name="twitter:card" content="summary">
   <meta name="theme-color" content="#333333">
-  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-hotels.svg">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon-hotels.png">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon-hotels.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
