@@ -1,4 +1,5 @@
 import {createToolProp,fitToolProp} from './tools.js';
+import {buildUmbrella,fitUmbrella} from './umbrella.js';
 import {wearEarDefenders} from './ear-defenders.js';
 import {appropriateOutfit} from './outfits.js';
 import * as THREE from '../../vendor/three.module.js';
@@ -102,9 +103,12 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   if(actor.heldProp&&Number.isFinite(u.heldPortion))setPropPortion(actor.heldProp,u.heldPortion,{immediate:true});
   if(actor.dishProp&&Number.isFinite(u.foodPortion))setPropPortion(actor.dishProp,u.foodPortion,{immediate:true});
  }
+ // In the rain (people/schedules.js umbrellaFor): an umbrella in the right hand, one per colour, while outdoors.
+ const umbrella=Number.isFinite(u.umbrella)?u.umbrella:null;
+ if(actor.umbrellaColour!==umbrella){actor.umbrellaProp?.removeFromParent();actor.umbrellaProp=umbrella===null?null:buildUmbrella({canopy:umbrella});actor.umbrellaColour=umbrella;if(actor.umbrellaProp)avatar.bones.handR.add(actor.umbrellaProp);}
  actor.animator.update(dt,{
   speed:actor.moving?actor.speed:0,running:actor.speed>3.2,seated,seatHeight:u.seatHeight,seatFront:u.seatFront,chairBlend:u.chairBlend,floorHeight:Number(u.floorHeight)||0,
-  pose:u.socialPose,seat:u.socialPose,climbing:!!u.climbing,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,
+  pose:u.socialPose,seat:u.socialPose,climbing:!!u.climbing,driving:!!u.inVehicle,riding,ridePhase:u.bicyclePhase||0,bicycleFit:u.bicycleFit,carrying:!!u.carrying,heldProp:actor.heldProp,umbrella:!!actor.umbrellaProp,
   waving:!!(u.chat?.greeting||actor.gestureTime>0&&!actor.waved),
   talking:!!(u.chat?.speaking||u.speakingUntil>now),
   expression:u.thuanExpression||feeling||(engaged?'smile':'neutral'),
@@ -122,6 +126,7 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
  const toolKind=u.tool||null;
  if(actor.toolKind!==toolKind){actor.toolProp?.removeFromParent();actor.toolProp=toolKind?createToolProp(toolKind):null;actor.toolKind=toolKind;if(actor.toolProp)avatar.bones.handR.add(actor.toolProp);}
  if(actor.toolProp)fitToolProp(avatar,actor.toolProp);
+ if(actor.umbrellaProp)fitUmbrella(avatar,actor.umbrellaProp);
  if(actor.heldProp){
   const c=actor.animator.consumption;
   if(c&&!Number.isFinite(u.heldPortion)&&c.swallow>.5&&actor.consumedCycle!==c.cycle){

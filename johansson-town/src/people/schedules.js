@@ -21,6 +21,7 @@ import {createStaffBenchRoutine} from './staff-bench-routine.js';
 import {commuterPhase,townPhase} from './commuter-schedule.js';
 import * as THREE from '../../vendor/three.module.js';
 import {alignedStep,forwardOnly,travelError,travelYaw} from './facing.js';
+import {umbrellaColourFor,wantsUmbrella} from '../avatars/umbrella.js';
 const HOME_RESIDENT_NAMES=new Set(HOME_OWNERS.map(p=>p.name));
 /** How close a walker comes to a stand point or a quay spot before standing on it (stand-points.js). */
 const STAND_STOP=.12;
@@ -443,6 +444,10 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   }
   // Ten distinct low-poly residents remain present; camera rank cannot hide a neighbour.
   outside.forEach(p=>{if(!(transit&&p.g.userData.commuterAwayDay===day))p.g.visible=true;});world.updateHomes?.(minutes);
+  // In the rain, everyone out in the street has an umbrella up (avatars/umbrella.js); it folds away indoors.
+  for(const p of world.people){const u=p.g?.userData;if(!u)continue;
+   const up=p.g.visible&&wantsUmbrella(u,rain);
+   if(up)u.umbrella=umbrellaColourFor(p.profile?.name,p.profile?.age).canopy;else delete u.umbrella;}
   if(world.cat){const s=state();const spots=[TOWN_DESTINATIONS.books,[-4,-18],TOWN_DESTINATIONS.pier];let target=spots[minute<600?0:minute<1080?1:2];if(s.quest===3)target=spots[0];else if(s.quest===1)target=spots[1];if(s.quest===2||s.inventory.some(pierFishOfItem))target=[player.position.x+.8,player.position.z+.8];move({g:world.cat},target,dt,'cat-'+Math.round(target[0]/3)+'-'+Math.round(target[1]/3));}
  },snapshot(){return Object.fromEntries(world.people.map(p=>{const g=p.g,inside=g.userData.indoors,phase=commuterMode(p.profile)?commuterPhase(p.profile,clockMinutes):'town',target=phase==='away'?transitStop().exit:indoorDoor(p.profile,inside);return [p.profile.name,{position:target?[...target]:[g.position.x,g.position.z],indoors:target&&phase!=='away'?inside:null,place:phase==='away'?'away':g.userData.place}];}));},pose(){}};
 }
