@@ -71,6 +71,27 @@ the office hall, a solid 1.5 m × 1 m board put up when the stairwell was a blac
 a handrail at 950 mm, a bottom rail, and 30 mm balusters with gaps under 110 mm (`SAKURA_STAIR_TRIM.guard`). It keeps
 the same collider. `build_trim_cad.py` passes 26/26 checks.
 
+## Trade posters and the drink stock (SK-ST-003 rev A)
+
+The owner: "Put more advertisement posters on the walls in the hallway and stair case ... like a fake beer brand and make
+up ads and liquor ads etc and I want liquor and beer boxes in the hallway outside the office". Built in
+`src/world/interiors/sakura-trade-posters.js` (data, artwork, builders), drawn on `build_posters_cad.py` (27/27 checks),
+tested by `tests/sakura-trade-posters.test.mjs`, photographed by `tools/sakura-hall-review.mjs`.
+
+- Nine designs, painted in code on one sheet (one texture, one draw per room). UMINEKO Draft, Black and the year-end
+  gift-set order poster use the town's lager; the others are new and fictional: KITANO 12 pure malt, SHIMAKAZE awamori,
+  MINATO-TSURU junmai, NAMI SOUR lemon chūhai, and ASAGAO cosmetics (Coral Bay Red lipstick, UV milk). Every drink poster
+  carries お酒は二十歳になってから.
+- Ten slots. Six in the stairwell: up the lower flight's north wall, on the landing's west and south walls, and up the upper
+  flight's south wall, each 120 mm or more over the rail at its higher edge. Four in the hall: lipstick by the store door,
+  the gift set and UV milk over the cases on the west wall, Umineko Draft over the shoe cabinet. Push pins in each corner.
+- Why: since Higa Liquor closed, the reps send campaign posters with each order and the spares go up on the staff walls.
+  Asagao's rep hopes Thuan will stock their lipsticks; she has not said yes, which is a story hook.
+- The cases, hand-stacked (a few mm off, a degree turned) and solid. West wall: 5 Umineko gift sets, 4 Shimakaze 1.8 L × 6,
+  2 Minato-Tsuru, 2 Kitano 12, 6 Umineko 24-can cases. By the office door: 5 Umineko Black (sale or return). Why: the
+  year-end gift orders and the Coral Bay Bar's December spirits wait dry, by the office and its safe, until Kōji's round.
+  A 1.9 m way stays clear.
+
 ## Checks
 
 - `tests/sakura-stairs.test.mjs`, `sakura-back`, `sakura-surfaces`: pass.

@@ -2,6 +2,7 @@ import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {assetURL} from '../../assets.js';
 import {SAKURA_STREET_POSTER} from '../sakura-street-poster.js';
+import {buildTradePosters} from './sakura-trade-posters.js';
 
 /**
  * Sakura's inside stair is a passage, not a place to walk (the owner, 20 October 2026, on his iPhone: "I don't want the
@@ -229,6 +230,7 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
   span('floor',W.west,W.east,-.12,0,W.south,W.north);
  }
  buildStairTrim(add,span);
+ const trade=buildTradePosters('stair');for(const g of trade.pins)add('red',g);
  const colour={plaster:0xece1ca,wood:0x8d7458,timber:0x947354,door:0xb08a5e,ceiling:0xf1eadb,floor:0xb4b1a8,string:0x7f6750,rail:0x8a6a48,
   metal:0xb9b6ae,nosing:0x5d625b,red:0xc23a2e,fitting:0xf2efe6,lamp:0xff5a44,glow:0xfff1d2};
  const lit={lamp:true,glow:true},shine={metal:{metalness:.6,roughness:.35},rail:{roughness:.55},red:{roughness:.45}};
@@ -238,6 +240,8 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
   m.name='Sakura stairwell '+key;m.receiveShadow=true;group.add(m);
  }
  if(typeof document!=='undefined'&&document.createElement)group.add(...stairPlates(dy,dz),...stairPosters(dy,dz));
+ // The brewers', distillers' and Asagao's posters up the flights and round the landing (SK-ST-003, sakura-trade-posters.js).
+ if(trade.paper){trade.paper.position.set(0,dy,dz);group.add(trade.paper);}
  return group;
 }
 

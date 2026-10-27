@@ -3,6 +3,7 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 import {FURNITURE_HEIGHTS} from '../furniture-standards.js';
 import {SAKURA_STAIR_PASSAGE,buildSakuraStairHead} from './sakura-stairs.js';
 import {buildSakuraOfficeDressing} from './sakura-office-dressing.js';
+import {buildTradePosters,buildSakuraHallStock} from './sakura-trade-posters.js';
 
 /**
  * Sakura's upper floor, in the office's own frame: x along the frontage (+x the harbour side, south), z from the back
@@ -304,6 +305,10 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  }
  // What the storey holds besides its furniture: each piece with its owner and its reason (sakura-office-dressing.js).
  buildSakuraOfficeDressing({room,box,cyl,anchor,action,paint});
+ // The hall's trade posters and the drink stock outside the office (SK-ST-003, sakura-trade-posters.js).
+ {const {paper,pins}=buildTradePosters('hall');if(paper)room.add(paper);
+  const red=mat(0xc23a2e);for(const g of pins){const m=new THREE.Mesh(g,red);m.name='Poster pin';room.add(m);}
+  buildSakuraHallStock({room,box,collider});}
  const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);
  // The tubes' warm white as the shop's (sakura-interior.js): while the office shared the shop's room it was lit by both;
  // as a room of its own it keeps that light, not the town's evening blue.
