@@ -8,6 +8,8 @@ Start here on every task, then read the latest applicable notes below. Maintain 
 
 **The Pixar-style konbini (Sakura Shōten) with Thuan, Johansson and Fujita interactions.** Three branches in each repo (the owner, 24 October): `main` (the cartoon World), `development` (Codex's prototypes), `pixar` (the Pixar work); every other branch is kept as an `archive/<name>` tag. Start from [the Pixar handover](johansson-town/briefs/HANDOFF-PIXAR-2026-10-24.md); the branch survey is [docs/BRANCHES-2026-10-24.md](docs/BRANCHES-2026-10-24.md).
 
+**Blender still, 27 October 2026 (night): Johansson, Thuận and Thao drinking beer at Minato** (the owner: "Make a rendering in blender of Johansson, a Thuan and Thao drinking beer in the izakaya"). Studio repo `nj22az/jojo`, branch `claude/quirky-hamilton-buam44`: `3d/cast/shots_izakaya.py` shoots the three in this repo's `johansson-town/art/izakaya/compact/minato-compact.blend`, which it reads and does not change. The render is `3d/cast/renders/izakaya/izakaya-toast.jpg`, and the notes are in `3d/cast/progress.md`, "Beer at Minato". Found in World's scene: the `Guest washroom sign` (手洗い) faces into its support, so it reads backwards from the room. It was turned for the still only. World is not changed.
+
 ## Current owner priority — 23 October 2026
 
 **Make Minato impeccable and immersive: “a little paradise that you wish were real.”**
