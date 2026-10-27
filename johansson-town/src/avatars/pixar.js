@@ -35,7 +35,7 @@ import {celFrom} from '../render/cel.js';
 
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
-export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
+export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
  Thao:Object.freeze({path:'avatars/pixar/thao',version:'be1dcce7d0'})});
 
@@ -287,13 +287,35 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  };
  // The lips, for a glass or a morsel brought to them (table-drink.js avatarMouth, consume.js): the mouth decal's centre
  // at the bind, kept in the head's frame (the cartoon's mouth is a point on its drawn head; his is where his mouth is)
- const lips=mouth?.mesh?(()=>{const g=mouth.mesh.geometry;g.computeBoundingBox();const c=g.boundingBox.getCenter(new THREE.Vector3());
-  mouth.mesh.updateWorldMatrix(true,false);mouth.mesh.localToWorld(c);bones.head.updateWorldMatrix(true,false);return bones.head.worldToLocal(c);})():null;
+ // (the decal as it is drawn: its skinned vertices' centre, measured the first time it is asked for, with the skeleton
+ // in place. The unskinned box put Thao's lips 10 cm behind her face, and the jug's rim inside her head: the owner,
+ // 27 October 2026, "Audit yourself")
+ let lipsAt=null;
+ const lipsNow=()=>{
+  if(lipsAt||!mouth?.mesh)return lipsAt;const m=mouth.mesh,g=m.geometry,n=g.attributes.position.count;
+  let top=m;while(top.parent)top=top.parent;top.updateMatrixWorld(true);m.skeleton?.update();
+  // (at the line between the lips: the decal rides the head above it and the jaw below, so the line is where its jaw
+  // weight crosses one half; the whole decal's centre sat a centimetre low, and a rim met the chin: the owner, "the beer
+  // doesn't reach her mouth")
+  const names=m.skeleton?.bones.map(b=>b.name)||[],jawAt=names.indexOf('jaw'),SI=g.attributes.skinIndex,SW=g.attributes.skinWeight;
+  const jawW=i=>{if(jawAt<0||!SI)return .5;let w=0;for(let k=0;k<4;k++)if(SI.getComponent(i,k)===jawAt)w+=SW.getComponent(i,k);return w;};
+  // (the middle of that line, where it crosses the face's centre: on the skin, not pushed out in front of it, where a
+  // rim came to rest 4 cm before her mouth and the jug's near edge on her chin: the owner, "do you look at the
+  // screenshots?")
+  const band=[],all=new THREE.Vector3();
+  for(let i=0;i<n;i++){const v=bones.head.worldToLocal(m.getVertexPosition(i,new THREE.Vector3()).applyMatrix4(m.matrixWorld));all.add(v);const j=jawW(i);if(j>.04&&j<.96)band.push(v);}
+  all.multiplyScalar(1/Math.max(1,n));
+  const side=new THREE.Vector3(1,0,0).transformDirection(root.matrixWorld).transformDirection(bones.head.matrixWorld.clone().invert()).normalize();
+  if(band.length>=4){const xs=band.map(v=>v.dot(side)).sort((a,b)=>a-b),mid=xs[xs.length>>1],span=xs[xs.length-1]-xs[0];
+   const centre=band.filter(v=>Math.abs(v.dot(side)-mid)<Math.max(.004,span*.08));lipsAt=centre.reduce((a,v)=>a.add(v),new THREE.Vector3()).multiplyScalar(1/centre.length);}
+  else lipsAt=all;
+  return lipsAt;
+ };
  const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh].filter(Boolean),eyes,brows,mouth,bones:face,smooth:true,acting,card:body.card,
   /** Where his lips are now (world), or null for a body without a rigged mouth. */
-  mouthPoint(){if(!lips)return null;bones.head.updateWorldMatrix(true,false);return bones.head.localToWorld(lips.clone());},
+  mouthPoint(){const lips=lipsNow();if(!lips)return null;bones.head.updateWorldMatrix(true,false);return bones.head.localToWorld(lips.clone());},
   /** The same lips in the head bone's own frame (consume.js poses a drink or a morsel against them). */
-  get lipsLocal(){return lips?lips.clone():null;},
+  get lipsLocal(){const lips=lipsNow();return lips?lips.clone():null;},
   /** Close a hand round what it holds, 0 open to 1 a fist (the body's `gripL`/`gripR` morph targets, the studio's
    * game_meshy.py grip_keys: the fingers curled toward the palm). A body without them keeps its hands as sculpted. */
   grip(side,v,shape=null){

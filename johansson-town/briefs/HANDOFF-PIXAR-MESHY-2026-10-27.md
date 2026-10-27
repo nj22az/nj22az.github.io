@@ -226,6 +226,45 @@ obeys gravity pls"; "Screenshots"; a frame with the thumb standing up beside the
   swallow tipping further than the sip (the cycle's choice), the jug a few degrees off upright at approach and recover,
   his head staying fairly upright under a litre jug, a dark stripe down his jaw and neck (the texture).
 
+## Later: Thuận and Thao drink beer the same way (the owner: "Can we use what we learned from Johansson?")
+
+The owner, 27 October 2026: "Can you do so Thuan and Thao also can drink beer now?"; "Everyone should eventually be
+Pixar style"; "Audit yourself"; "Thuan is better but the beer doesn't reach her mouth either".
+
+- **One hold for every hand with fingers** (`consume.js` `fingerHold`, `HOLD_Q`, used by `poseAvatarConsumption` and
+  `fitAvatarHeldProp`): a resident's jug sits with its bar in the curled fingers' hollow, the thumb on top, as
+  Johansson's at the counter; any Pixar body with finger bones gets it, the cartoon keeps its mitten grip. The held
+  jug's beer is the levelled liquid (`table-drink.js levelHeldDrink`), not a cylinder tipping with the glass; the
+  resting hand comes up and forward when it holds a jug, so the base clears the thighs (it went into Thuận's lap).
+- **Thuận has finger bones** (jojo `game_thuan.py` with `game_meshy.finger_joints(..., whole=True)` on each of her
+  procedural hands): GLB `7c2477169d`; a stray unweighted vertex by her hand now takes its neighbour's weights instead of
+  stopping the export.
+- **The lips point and the rim** (`pixar.js lipsNow`, `consume.js poseAvatarConsumption`), found by looking at the
+  frames, not the numbers (the owner: "Audit yourself"; "the beer doesn't reach her mouth"; "do you look at the
+  screenshots? Look and correct"). The point was the mouth decal's unskinned box: for Thao 10 cm behind her face, so
+  the rim went into her head; on the decal's centre it was a centimetre low; pushed to the face's front it stood 4 cm
+  in the air before the mouth. Now it is the middle of the line between the lips (where the decal's jaw weight changes
+  over), on the skin. And the rim point brought to the lips was the jug's far edge (the offset's sign: the body faces
+  +z), so the near edge and the rim went under the chin toward the throat while the numbers said "2 mm". Now the near
+  edge sits on the lower lip, the jug stands in front of the face tipped toward it, its far edge clear of the nose, and
+  the beer reaches the rim at the lips (the empty glass is the far, high side). Checked in close frames from both
+  sides with the lips and rim points marked (scratch probe), for Thuận and Thao; every finger 7 to 20 mm off the bar.
+  Lesson: a distance between two points is only as good as the points; mark them on the frame.
+- **The free hand** relaxes (grip 0.28) while the other holds a drink; it closed into a fist.
+- **Self-audit of Thao's face** (her probe frames), not yet fixed: her irises disagree (one centred, one pulled in), the
+  painted-out face reads flat and pale round the eyes and nose, pale gaps between her hair's ends and her neck, a
+  dark strand by her eye in profile and a doubled hairline, eyes that read as stickers in profile, her dress texture
+  smeared into zigzags, and her underwear showing when she sits (her Meshy dress). Next for her: the eyes' centres from
+  her own sockets, the painted-out skin blended to her cheeks, the hair's holes.
+- **Why Thuận is better** (the owner asked): she was made over two days on the owner's notes by her own route
+  (`game_thuan.py`, GAME.md): a film model from the owner's design, her hands built procedurally with nails, her face
+  painted out and rebuilt with her own measured eyes, lashes, brows and mouth in every feeling, a jaw, nose and cheeks,
+  her braids on springs, her skin matched to the film renders. Thao's Meshy model went through the quick route in an
+  afternoon: a generated textured sculpt with its own fused hands, its painted face cleaned and the same rigged
+  features laid over it.
+- **When they drink**: their routines still order tea (`resident-personalities.js`: Thuan `drink:'tea'`, Thao works
+  Minato's counter); the owner to say when each has a beer.
+
 ## Open
 
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril

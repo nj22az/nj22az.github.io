@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 import {sampleCycle,advanceCycle,CYCLE_DURATION,SIP_FLOW_START,ease} from '../drinking/cycle.js';
 import {requiredTilt,volumeAtPlane} from '../drinking/liquid.js';
 import {createLiquid} from '../drinking/vessel.js';
-import {drinkGrip,reach} from './consume.js';
+import {drinkGrip,reach,HOLD_Q} from './consume.js';
 import {faceLayout} from './face.js';
 import {shapeHeadPoint} from './head-profile.js';
 
@@ -20,6 +20,9 @@ export function avatarMouth(avatar){
 
 /** A single loose vessel may move; bottle-and-cup arrangements need separate meshes. */
 export const TABLE_DRINK_KINDS=Object.freeze(['draft','can','awamori','oolong']);
+
+/** A held drink's liquid kept level as the hand tips it (the counter performance's liquid, for a resident's jug). */
+export function levelHeldDrink(prop){return prop?.userData?.drinkSurface?.liquid?fluidFor(prop):null;}
 
 function fluidFor(prop){
  if(prop.userData.tableDrinkFluid)return prop.userData.tableDrinkFluid;
@@ -102,7 +105,7 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
  // The hand's frame in the glass's: the palm (+x of the hand) toward the glass (-x of the glass, the handle being at +x),
  // the knuckle line (+z of the hand, pinky to index) up the bar (+y), so the fingers (-y of the hand) point -z through
  // the handle's hole and curl round its bar, and the thumb (+z of the hand) is on top. A right-handed turn.
- const HOLD_Q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,1),new THREE.Vector3(0,1,0)));
+ // (HOLD_Q: consume.js, shared with every resident's hand on a jug)
  // Where the bar (or a glass's side) is in the glass's frame, and where it lies in the curled hand (pixar.js holdPoint):
  // the wrist goes where those two meet, so the jug is in the hand (the owner, 27 October 2026: "he is not holding the
  // beer, model a beer jug that fits in his hand").

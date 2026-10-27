@@ -941,7 +941,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }
   // A hand with fingers rests a little curled, as a hand does, never splayed flat (a judge of the counter frames: "the
   // free hand is a stiff starfish"); what it holds closes it further (consume.js, table-drink.js set the grip after this).
-  if(avatar.pixar?.grip){avatar.pixar.grip('L',s.heldProp?1:.28);if(!consumption&&!s.heldProp)avatar.pixar.grip('R',.28);}
+  if(avatar.pixar?.grip){avatar.pixar.grip('L',s.heldProp?.userData?.food?1:.28);if(!consumption&&!s.heldProp)avatar.pixar.grip('R',.28);}
   avatar.seatLevel=null;
   if(onChair&&!s.riding){
    // Keep sit/stand transitions continuous and use the actual clothing surface
