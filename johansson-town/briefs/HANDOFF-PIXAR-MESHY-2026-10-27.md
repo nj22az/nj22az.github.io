@@ -265,6 +265,33 @@ Pixar style"; "Audit yourself"; "Thuan is better but the beer doesn't reach her 
 - **When they drink**: their routines still order tea (`resident-personalities.js`: Thuan `drink:'tea'`, Thao works
   Minato's counter); the owner to say when each has a beer.
 
+## Thao's face: her hair a rigged mesh of its own, her skin even, her eyes smaller and almond
+
+The owner, 27 October 2026: "Fix her face, her face should be uniform"; "remove her hair to fix her eyes, and add it
+back as a rigged hairstyle not a painted or modelled hairstyle"; "make her look prettier, the skin, and make her eyes a
+bit smaller"; "they are Vietnamese women, her eyes should be rigged but a bit more almond shaped and smaller".
+
+- **Her hair is its own mesh** (jojo `game_meshy.split_hair`, `rig_hair_sides`; `thao_meshy.py rig_hair`): the sculpt's
+  black-textured surface on the head, the one large dark mass (opened three rings first, so a painted lash running into
+  it is the face's), copied out with the texture as it is (512 px, its own material `hair`), 6,000 triangles; under it on
+  the body the same faces pulled 3 mm in, a dark layer, so nothing shows through. Weighted to the head from the body
+  under it, the bob's sides on the braid bones (root at the temple, joint, end at the bob's tip). World: `pixar.js`
+  part `hair` (cel ramp, no skin shading), `springs.js` `SWING.bob` (stiff, 14 degrees at most) when the card says
+  `hair: {style: 'bob', rigged: true}`, the cartoon recipe's ponytail spring off for a body with its own hair.
+- **Her face clean-up** (`game_thuan.paint_out_face`, for the Meshy bodies): the hair (a thick dark mass reaching the
+  view's edge) kept out of every hole, fill and blur (the brows' search and the widened holes had painted skin into her
+  hairline at the temple, the "bite"); grey shading lines inside the face painted over (not flattened); 3 mm holes and a
+  2.5 mm feather round the painted features (their outlines stayed as rims); the skin evened over 8 mm; her cheeks and
+  jaw cleaned from each side (`side_clean`, 60 degrees each way, only the lines found and only well inside the skin seen:
+  a first try repainted the whole skin from the side and drew her profile as a dashed line down her face); her face's
+  skin painted as Thuận's is (`paint_skin`: one tone, a soft blush on the apples of the cheeks, faded at the hairline and
+  down the neck), all her skin a little less orange (`skin_tone`).
+- **Her eyes**: the face is symmetric about its middle to a millimetre and the painted eyes were placed alike (my "8 mm
+  to the side" measured from the nose bone, not the tip; corrected); the left one looked under her hair because her bob
+  sweeps over that temple. Smaller and almond: `eye_scale` 0.86, `iris_scale` 0.86, `eye_shape: 'almond'` with the outer
+  corner lifted 1.2 (`eyes3d.js` takes `own.shape`/`own.corner`); a first try at 0.84 and a narrower opening squinted.
+- GLB `thao` 2.1 MB, 25,423 triangles; tests 33/33 with `pixar-meshy` knowing a rigged hairstyle (its bones, its texture).
+
 ## Open
 
 1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril

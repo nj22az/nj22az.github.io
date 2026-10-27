@@ -26,7 +26,7 @@ for(const name of Object.keys(HEIGHTS)){
   assert.ok(glb.length<4.5*1024*1024,`GLB ${glb.length} bytes`);
   const j=gltfJSON(glb),tris=card.triangles;
   assert.ok(Object.values(tris).reduce((a,b)=>a+b,0)<=26000,'triangles in all');
-  assert.equal(j.images.length,1,'one texture: the body\'s own');
+  assert.equal(j.images.length,card.hair?.rigged?2:1,'one texture: the body\'s own (and a rigged hairstyle\'s own, small)');
   for(const want of ['pixar','eyes','brows','mouth'])assert.ok(tris[want]>0,'a '+want+' primitive');
   assert.equal(card.made_by,'jojo 3d/cast/game_meshy.py');
  });
@@ -38,7 +38,9 @@ for(const name of Object.keys(HEIGHTS)){
   const fingers=[...joints].filter(n=>finger.test(n));
   if(fingers.length){assert.equal(fingers.length,30,'fifteen finger bones a hand');for(const n of fingers)assert.ok(card.rest[n],'the card rests '+n);assert.ok(card.fingers?.L?.bend&&card.fingers?.R?.bend,'the card gives the fingers\' bend axes');}
   for(const n of ['hips','spine','chest','neck','head','shoulderL','elbowL','handL','thighR','kneeR','footR','jaw'])assert.ok(joints.has(n),'no '+n);
-  for(const n of joints)assert.ok(!n.startsWith('braid'),'a braid bone: '+n);
+  // (a rigged hairstyle swings on the braid bones, Thao's bob: its sides; otherwise no braid bones)
+  if(card.hair?.rigged){for(const n of ['braidL1','braidL2','braidR1','braidR2'])assert.ok(joints.has(n),'the hair\'s '+n);assert.ok(card.rest.braidLTip&&card.rest.braidRTip,'the hair\'s ends');}
+  else for(const n of joints)assert.ok(!n.startsWith('braid'),'a braid bone: '+n);
   assert.ok(Math.abs(card.measure.H-HEIGHTS[name])<.01,`height ${card.measure.H}`);
   assert.equal(card.measure.hipY,card.rest.hips[1],'the hips bone is where World\'s animation puts it');
   assert.ok(card.rest.footL[1]>0&&card.rest.footL[1]<.15&&card.rest.head[1]>1.1,'feet low, head high');

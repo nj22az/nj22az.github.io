@@ -70,7 +70,9 @@ export function eyeShape(style,eyes,own=null){
   // drawn on the white alone), and the iris warms round the pupil inside a darker rim (the creator's brief, 26 October).
   if(own)Object.assign(s,{follow:.32,still:1,depth:2.4,caruncle:.8,gainX:5.5,gainY:4,lidShadow:1,warmIris:1});
   // Almond and cat eyes come to points (the painter's two quadratic curves); a cat's outer corner lifts.
-  if(style==='almond'||style==='cat')Object.assign(s,{topAmp:.75*ry,botAmp:.65*ry,pTop:1,pBot:1});
+  if(style==='almond'||style==='cat'||own?.shape==='almond')Object.assign(s,{topAmp:.75*ry,botAmp:.65*ry,pTop:1,pBot:1});
+  // (a body's own almond eye, Pixar Thao's: its outer corner lifted a little, the owner's "a bit more almond shaped")
+  if(own?.shape==='almond'&&Number.isFinite(own.corner))Object.assign(s,{corner:own.corner,off:own.corner*.3});
   if(style==='cat')Object.assign(s,{corner:3,off:1,flick:7});
   if(style==='heavy')Object.assign(s,{cut:.41,lash:4});   // the lid's line where the painter draws it, a third of the way up
   if(style==='droopy')Object.assign(s,{cut:.21,slant:-.43});

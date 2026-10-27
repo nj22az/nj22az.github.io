@@ -37,7 +37,7 @@ import {celFrom} from '../render/cel.js';
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'be1dcce7d0'})});
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'c8a5dab912'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -69,12 +69,14 @@ export function preparePixarBody(card,scene){
   const targetNames=o.userData?.targetNames||o.geometry.userData?.targetNames;
   if(targetNames&&o.geometry.morphAttributes?.position)o.geometry.morphAttributes.position.forEach((attr,i)=>{if(targetNames[i])attr.name=targetNames[i];});
   if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
-  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
+  // (a rigged hairstyle is a part of its own, 'hair': Thao's bob, off her head so her face could be cleaned and put back
+  // on bones that swing; the owner, 27 October 2026, "add it back as a rigged hairstyle")
+  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
  });
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
  // World's measures for the body (build.js measure()), and its braids as the springs hang them (springs.js springRest).
- const measure={...card.measure,realHand:true};   // (a hand of its own, fingers and all: grips close on a glass, consume.js drinkGrip)
+ const measure={...card.measure,realHand:true,ownHair:card.hair?.style||null};   // (a hand of its own, fingers and all: grips close on a glass, consume.js drinkGrip)
  if(rest.braidL1)measure.braids=Object.fromEntries(['L','R'].map(s=>[s,[rest['braid'+s+'1'],rest['braid'+s+'2'],rest['braid'+s+'Tip']]]));
  return {name:card.name,card,rest,measure,parts,features,remapped:new Map()};
 }
@@ -239,7 +241,8 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  const materials=[],meshes=body.parts.map(part=>{
   const source=part.kind==='hands'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
-  const material=pixarSkin(celFrom(source,{bands:'soft3'}),{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
+  // (hair is not skin: the town's cel ramp alone, no warmth under it)
+  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
   // (the clothes are one surface of cloth: their insides show, at the sleeves, the collar and the hems)
   if(CLOTHES_PARTS.includes(part.kind))material.side=THREE.DoubleSide;
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);
@@ -253,7 +256,7 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  let dressed=dress(pixarDressed());
  // Her eye (the studio's measures of the painted one, her lashes) drawn as World draws every rigged eye, on the town's ramp.
  const F=body.features,E=body.card.eyes,mid=E.centres?(E.centres[0][0]+E.centres[1][0])/2:0;
- const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes},make:skinned,stand:STAND_IN,nearer:.0018});
+ const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes,shape:E.shape,corner:E.corner},make:skinned,stand:STAND_IN,nearer:.0018});
  const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||0}):null;
  // (the line between the lips in a dark ink whatever the painted lips were: the studio measured his as his own skin's
  // pink, and the seam vanished in the halftone looks and was faint in the plain one; the owner, 27 October 2026: "his

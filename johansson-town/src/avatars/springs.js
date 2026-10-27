@@ -27,6 +27,8 @@ export const SPRING_PARENT=Object.freeze({hairA:'head',hairB:'hairA',braidL1:'he
 export const SWING=Object.freeze({
  hair:Object.freeze({stiffness:.1,damping:.14,gravity:1.2,limit:40,radius:.025}),
  braid:Object.freeze({stiffness:.09,damping:.12,gravity:1.6,limit:50,radius:.03}),
+ // (a bob's sides: short, so stiff, a little sway when she turns or walks, never flying out from her face)
+ bob:Object.freeze({stiffness:.28,damping:.22,gravity:.5,limit:14,radius:.004}),
  skirt:Object.freeze({stiffness:.22,damping:.22,gravity:0,limit:20,radius:.02}),
  hem:Object.freeze({stiffness:.3,damping:.24,gravity:0,limit:14,radius:.015}),
  step:1/60,
@@ -61,13 +63,16 @@ export function springRest(recipe,m){
   :style==='long'?[[0,H(-R*.05),-R*.55],[0,H(-R*.7),-R*.58],[0,H(-R*1.38),-R*.55]]
   :[[0,H(0),-R*.5],[0,H(-R*.3),-R*.5],[0,H(-R*.6),-R*.5]];
  rest.hairA=tail[0];rest.hairB=tail[1];
- if(style==='ponytail'||style==='sweptponytail'||style==='long'||style==='longfringe')chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
+ // (a body with a rigged hairstyle of its own swings that, not the cartoon recipe's)
+ if(!m.ownHair&&(style==='ponytail'||style==='sweptponytail'||style==='long'||style==='longfringe'))chains.push({bones:['hairA','hairB'],tip:tail[2],...SWING.hair,kind:'hair'});
  // Braids: from behind each ear to the shoulders.
  for(const [s,side] of [[1,'L'],[-1,'R']]){
   const x=s*R*.85,own=m.braids?.[side];
   rest['braid'+side+'1']=own?own[0]:[x,H(-R*.3),-R*.35];rest['braid'+side+'2']=own?own[1]:[x,H(-R*1.05),-R*.2];
   // (own: a body's own braids, root, joint and end: a Pixar body's, pixar.js)
   if(style==='braids')chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:own?own[2]:[x,H(-R*1.98),-R*.05],...SWING.braid,kind:'braid'});
+  // (a bob of its own, Pixar Thao's: its sides on the same two bones a side)
+  else if(own&&m.ownHair==='bob')chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:own[2],...SWING.bob,kind:'bob'});
   if(style==='longbraids'){
    const points=longBraidPoints(m,s,recipe.hair);rest['braid'+side+'1']=points[0];rest['braid'+side+'2']=points[1];
    chains.push({bones:['braid'+side+'1','braid'+side+'2'],tip:points[2],...SWING.braid,kind:'braid'});
