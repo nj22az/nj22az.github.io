@@ -277,7 +277,7 @@ function buildStorage(parent){
  [[0xd7263d,0],[0x2a8fcc,1],[0x7ccc4a,2]].forEach(([c,i])=>box(.45,.28,.34,1.65+(i%2)*.05,.14+i*.29,-6.35,c,'Plastic crate'));
  // Step ladder, folded open.
  for(const s of [-1,1]){const rail=box(.04,1.2,.04,3.6+s*.16,.58,-5.5,0xc9ced2,'Step ladder');rail.rotation.x=.18;const back=box(.04,1.2,.04,3.6+s*.16,.58,-5.9,0xc9ced2,'Step ladder');back.rotation.x=-.18;}
- for(let i=0;i<3;i++)box(.36,.03,.12,3.6,.3+i*.32,-5.6+i*.04,0xc9ced2,'Step ladder step');
+ for(let i=0;i<3;i++)box(.28,.03,.12,3.6,.3+i*.32,-5.6+i*.04,0xc9ced2,'Step ladder step');// between the rails
  void group;
 }
 

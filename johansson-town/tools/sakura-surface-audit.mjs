@@ -44,10 +44,31 @@ function floorFinishes(root){
  return [...out.values()].sort((a,b)=>a.level-b.level||a.name.localeCompare(b.name));
 }
 
+/**
+ * The stockroom and the staircase, to the stricter rules of SK-ZF-004/005 (the owner, 27 October 2026: "audit the storage
+ * room and the stair case, Cad it first remove all Z fighting"): no two faces within 2 mm of one plane over 0.1 cm², even
+ * where they look alike (an overlap of two pieces of one colour is still two faces in one plane); and nothing within
+ * 10 mm of another face over 0.05 m² unless it is a decal or clear glazing. Regions in each room's own frame.
+ */
+export const STRICT_RULES=Object.freeze({tolerance:.002,minArea:1e-5,wideTolerance:.01,wideMinArea:.05});
+export const STRICT_ZONES=Object.freeze({
+ stockroom:Object.freeze({room:'shop',region:Object.freeze({minX:-5.8,maxX:5.8,minZ:-6.9,maxZ:-3.95})}),
+ 'stair foot':Object.freeze({room:'shop',region:Object.freeze({minX:-5.8,maxX:-.55,minZ:-6.9,maxZ:-3.95})}),
+ 'stair head':Object.freeze({room:'office',region:Object.freeze({minX:-6.45,maxX:-.55,minZ:-6.2,maxZ:-3.3})}),
+ 'upper stores':Object.freeze({room:'office',region:Object.freeze({minX:-6.45,maxX:-2.0,minZ:-3.4,maxZ:4.6})}),
+});
+function strict(root,region){
+ const R=STRICT_RULES;
+ const close=coplanarOverlaps(root,{regions:[region],tolerance:R.tolerance,minArea:R.minArea,offsetPairs:true,keepIdentical:true}).map(pair);
+ const wide=coplanarOverlaps(root,{regions:[region],tolerance:R.wideTolerance,minArea:R.wideMinArea,offsetPairs:true}).map(pair);
+ return {close,wide};
+}
+
 export async function auditSakuraSurfaces(){
  const shop=new THREE.Group(),display=buildSakuraInterior({room:shop,reg(){},action(){},exit(){}});await display.ready?.();
  const office=new THREE.Group();buildSakuraOfficeRoom({room:office,reg(){},action(){}});
- return {rules:SURFACE_RULES,shop:{...scan(shop),finishes:floorFinishes(shop)},office:{...scan(office),finishes:floorFinishes(office)}};
+ const rooms={shop,office},zones=Object.fromEntries(Object.entries(STRICT_ZONES).map(([k,z])=>[k,strict(rooms[z.room],z.region)]));
+ return {rules:SURFACE_RULES,shop:{...scan(shop),finishes:floorFinishes(shop)},office:{...scan(office),finishes:floorFinishes(office)},strictRules:STRICT_RULES,zones};
 }
 
 if(import.meta.url===`file://${process.argv[1]}`){
@@ -55,6 +76,6 @@ if(import.meta.url===`file://${process.argv[1]}`){
  const json=JSON.stringify(report,null,1)+'\n';
  if(process.argv[2])await writeFile(process.argv[2],json);else process.stdout.write(json);
  const n=r=>r.surfaces.length+r.floors.length;
- console.error(`shop ${n(report.shop)} pairs, office ${n(report.office)} pairs`);
+ console.error(`shop ${n(report.shop)} pairs, office ${n(report.office)} pairs; `+Object.entries(report.zones).map(([k,z])=>`${k} ${z.close.length}+${z.wide.length}`).join(', '));
  process.exit(0);
 }

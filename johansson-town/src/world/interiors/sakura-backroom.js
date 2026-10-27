@@ -103,7 +103,8 @@ function stockRack(k){
   // BoxGeometry faces: +x, -x, +y, -y, +z, -z. The print goes on both long faces.
   return [id,[plain,plain,tape,plain,face,face]];}));
  const orikon=std(0x2f7fb8,{roughness:.45}),orikonRim=std(0x23638f,{roughness:.45});
- const film=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.15,transparent:true,opacity:.18,depthWrite:false});
+ // Clear film: glazing that writes no depth, drawn in front of the tray it wraps by polygon offset (SK-ZF-004).
+ const film=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.15,transparent:true,opacity:.18,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
  const tray=std(0xb88f5c,{roughness:.9});
  const roll=std(0xf6f3ec,{roughness:.95}),rollPrint=new THREE.MeshStandardMaterial({roughness:.9,map:canvasTex(256,256,(ctx,w,h)=>{
   ctx.fillStyle='#f6f3ec';ctx.fillRect(0,0,w,h);ctx.fillStyle='#f0a6b8';for(let i=0;i<14;i++){ctx.beginPath();ctx.arc(hash(i,4)*w,hash(i,5)*h,10,0,Math.PI*2);ctx.fill();}
@@ -212,7 +213,7 @@ function exitSign(k){
   say(ctx,'非常口',330,76,64,'#f4fff6','center','900');say(ctx,'EXIT',330,142,40,'#f4fff6');
  });
  k.mesh(new THREE.BoxGeometry(.64,.26,.06),std(0xeef1ee),S.x,S.y,S.z+.03,'Exit sign housing');
- k.plane(tex,.6,.225,S.x,S.y,S.z+.062,0,'Exit sign',true);
+ Object.assign(k.plane(tex,.6,.225,S.x,S.y,S.z+.062,0,'Exit sign',true).material,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});// a decal on the housing (SK-ZF-004)
 }
 
 function beerCrates(k){
@@ -220,10 +221,12 @@ function beerCrates(k){
  const label=canvasTex(256,128,(ctx,w,h)=>{ctx.fillStyle='#dcb22c';ctx.fillRect(0,0,w,h);say(ctx,'海猫ビール',w/2,42,30,'#913a2b');say(ctx,'UMINEKO · 20本',w/2,88,20,'#913a2b');});
  [[C.x-.21,3],[C.x+.21,2]].forEach(([x,count])=>{for(let i=0;i<count;i++){
   const y=i*.3;k.put('beer crate floor',yellow,x,y,C.z,.42,.018,.34);
-  for(const dz of [-.163,.163]){k.put('beer crate long wall',yellow,x,y+.018,C.z+dz,.42,.245,.014);k.put('beer crate rim',yellow,x,y+.263,C.z+dz,.43,.018,.022);}
-  for(const dx of [-.203,.203])k.put('beer crate end wall',yellow,x+dx,y+.018,C.z,.014,.263,.34);
+  // The long walls between the end walls, the end walls under the rims, each rim one crate wide: stacked and side by
+  // side, no two pieces share a plane (SK-ZF-004).
+  for(const dz of [-.163,.163]){k.put('beer crate long wall',yellow,x,y+.018,C.z+dz,.392,.245,.014);k.put('beer crate rim',yellow,x,y+.263,C.z+dz,.42,.018,.022);}
+  for(const dx of [-.203,.203])k.put('beer crate end wall',yellow,x+dx,y+.018,C.z,.014,.245,.34);
   for(let a=0;a<5;a++)for(let b=0;b<4;b++)positions.push([x-.16+a*.08,y+.02,C.z-.12+b*.08]);
-  k.plane(label,.34,.16,x,y+.145,C.z+.1725,0,'Beer crate label');
+  Object.assign(k.plane(label,.34,.16,x,y+.145,C.z+.1725,0,'Beer crate label').material,{polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
  }});k.group.add(stockroomBeerBatch(positions));
 }
 
@@ -232,7 +235,7 @@ function cardboardBundle(k){
  const B=BACKROOM.bundle,board=std(0xbf9563,{roughness:.95}),twine=std(0xf2cc2f,{roughness:.6});
  for(let i=0;i<5;i++)k.put('flat cardboard',board,B.x-.09+i*.045,0,B.z+(hash(i,9)-.5)*.04,.044,.56-hash(i,8)*.04,.72,(hash(i,10)-.5)*.04);
  for(const dz of [-.2,.2])k.put('twine',twine,B.x,-.002,B.z+dz,.236,.566,.016);
- k.put('twine',twine,B.x,.27,B.z,.236,.016,.74);
+ k.put('twine',twine,B.x,.27,B.z,.242,.016,.74);// the cross loop 3 mm proud of the long loops
 }
 
 function daisha(k){
@@ -245,7 +248,8 @@ function daisha(k){
  for(const [x,z] of [[-.34,-.22],[.34,-.22],[-.34,.22],[.34,.22]]){add(new THREE.BoxGeometry(.05,.04,.05),chrome,x,.09,z);const w=add(new THREE.CylinderGeometry(.045,.045,.03,14),black,x,.045,z);w.rotation.x=Math.PI/2;}
  // The folding handle at the east end, standing up.
  for(const z of [-.25,.25])add(new THREE.CylinderGeometry(.014,.014,.86,10),chrome,.43,.59,z);
- add(new THREE.CylinderGeometry(.016,.016,.52,10),chrome,.43,1.02,0).rotation.x=Math.PI/2;
+ // The bar's ends sit inside the uprights, turned half a facet so no facet of it lies in one of theirs.
+ add(new THREE.CylinderGeometry(.016,.016,.50,10).rotateY(Math.PI/10),chrome,.43,1.02,0).rotation.x=Math.PI/2;
  // Four 番重 of rice: the top one open, onigiri in rows under the lid line.
  const crate=std(0x3d8fcf,{roughness:.4}),rim=std(0x2f74ad,{roughness:.4});
  for(let i=0;i<3;i++){add(new THREE.BoxGeometry(.64,.12,.44),crate,-.05,.22+i*.125,0);add(new THREE.BoxGeometry(.66,.015,.46),rim,-.05,.287+i*.125,0);}

@@ -63,7 +63,7 @@ export function coplanarOverlaps(root,{regions=null,tolerance=.005,minArea=.0004
      if(mat.side===THREE.BackSide)n.negate();
      // A face looking down at ground level rests on the ground: nobody can stand under it to see it.
      if(n.y<-.7&&Math.max(a.y,b.y,c.y)<ground&&!twoSided)continue;
-     const t={id,mesh:o,off:offset(mat)?[mat.polygonOffsetFactor||0,mat.polygonOffsetUnits||0].join('/'):'',glass:mat.transparent&&mat.depthWrite===false,src:sourceOf(index?index.getX(i):i),look:lookOf(o,mat,index?index.getX(i):i,k),pts:[a.clone(),b.clone(),c.clone()],n:n.clone(),d:n.dot(a)};
+     const t={id,mesh:o,off:offsetPairs&&offset(mat)?(mat.polygonOffsetFactor||0)+'/'+(mat.polygonOffsetUnits||0):'',glass:mat.transparent&&mat.depthWrite===false,src:sourceOf(index?index.getX(i):i),look:lookOf(o,mat,index?index.getX(i):i,k),pts:[a.clone(),b.clone(),c.clone()],n:n.clone(),d:n.dot(a)};
      tris.push(t);if(twoSided)tris.push({...t,n:t.n.clone().negate(),d:-t.d});
     }
    }
@@ -87,7 +87,7 @@ export function coplanarOverlaps(root,{regions=null,tolerance=.005,minArea=.0004
  // Buckets by facing (to about 1°) and by plane (tolerance-wide slabs; a pair can straddle two).
  const q=v=>Math.round(v*60),buckets=new Map();
  for(const t of tris){const key=q(t.n.x)+','+q(t.n.y)+','+q(t.n.z);(buckets.get(key)??buckets.set(key,[]).get(key)).push(t);}
- const found=new Map(),u=new THREE.Vector3(),v=new THREE.Vector3();
+ const found=new Map(),u=new THREE.Vector3(),v=new THREE.Vector3(),centre=new THREE.Vector3();
  for(const list of buckets.values()){
   if(list.length<2)continue;
   const N=list[0].n;u.set(Math.abs(N.y)<.9?0:1,Math.abs(N.y)<.9?1:0,0).cross(N).normalize();v.crossVectors(N,u);
@@ -111,13 +111,15 @@ export function coplanarOverlaps(root,{regions=null,tolerance=.005,minArea=.0004
     const f=found.get(key)??found.set(key,{a:p.src,b:r.src,same:s.mesh===t.mesh,area:0,gap:0,normal:s.n.toArray().map(x=>+x.toFixed(3)),at:s.pts[0].toArray().map(x=>+x.toFixed(2))}).get(key);
     f.area+=area;f.gap=Math.max(f.gap,Math.abs(t.d-s.d));
     // The middle of all the overlaps, weighted by their areas: where on the plan the pair fights.
-    {const cx=poly.reduce((a,p)=>a+p[0],0)/poly.length,cy=poly.reduce((a,p)=>a+p[1],0)/poly.length,c=u.clone().multiplyScalar(cx).addScaledVector(v,cy);c.addScaledVector(s.n,s.d-c.dot(s.n));
-     f.sum??=new THREE.Vector3();f.sum.addScaledVector(c,area);f.centre=f.sum.clone().divideScalar(f.area).toArray().map(x=>+x.toFixed(2));}
+    // Accumulated as plain numbers (the town has millions of overlaps to weigh; nothing is allocated per overlap).
+    {let cx=0,cy=0;for(const p of poly){cx+=p[0];cy+=p[1];}cx/=poly.length;cy/=poly.length;
+     const c=centre.copy(u).multiplyScalar(cx).addScaledVector(v,cy);c.addScaledVector(s.n,s.d-c.dot(s.n));
+     f.sx=(f.sx||0)+c.x*area;f.sy=(f.sy||0)+c.y*area;f.sz=(f.sz||0)+c.z*area;}
     if(detail){const bb=x=>{const lo=[0,1,2].map(k=>Math.min(...x.pts.map(p=>p.getComponent(k)))),hi=[0,1,2].map(k=>Math.max(...x.pts.map(p=>p.getComponent(k))));return lo.map((v,k)=>v.toFixed(3)+'..'+hi[k].toFixed(3)).join(' ');};(f.boxes??=[]).length<6&&f.boxes.push([bb(p),bb(r)]);}
    }
   }
  }
- return [...found.values()].filter(f=>f.area>=minArea).map(({sum,...f})=>f).sort((x,y)=>y.area-x.area);
+ return [...found.values()].filter(f=>f.area>=minArea).map(({sx,sy,sz,...f})=>({...f,centre:[sx,sy,sz].map(x=>+(x/f.area).toFixed(2))})).sort((x,y)=>y.area-x.area);
 }
 
 /** The intersection of two triangles in a plane (Sutherland–Hodgman, both wound either way), and a polygon's area. */

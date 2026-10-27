@@ -343,7 +343,8 @@ function buildDoors(){
  const P=SAKURA_SHELL.partitionZ;
  // The frame stands 2 cm proud of the wall's wainscot (its face 1.8 cm off the plaster): at 6 cm it lay 2 mm from the
  // wainscot's face, and a thin line flashed beside the passage.
- for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.22,P-.06,P+.08,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.08,C.woodDark);
+ // The jambs stop under the head.
+ for(const x of [3.25,4.39])span(x-.05,x+.05,0,2.18,P-.06,P+.08,C.woodDark);span(3.2,4.44,2.18,2.26,P-.06,P+.08,C.woodDark);
  span(4.4,4.44,0,2.12,P+.08,P+1.02,0xe9e1cf);
  // The office doorway: jambs, head and a casing on the shop side. Its door swings
  // (sakura-life.js buildOfficeDoor). The restroom door stands open into the restroom.

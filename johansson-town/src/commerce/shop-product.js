@@ -54,7 +54,10 @@ export function shopProductTemplate(target,{sides=SIDES}={}){
   // through it, over a dark well 2.5 mm below.
   const r=W/2,h=H,lid=h-.002,rim=h+.002,ri=r*.82,drink=DRINK_CANS.has(id);
   part(new THREE.CylinderGeometry(r,r,lid-.006,sides,1,true),brand.paper,[0,(lid+.006)/2,0]);
-  cyl(r+.0015,.006,.003,0xa8b3ad);
+  // The base bead: its side and the can's bottom, open above (inside the can nothing needs a face).
+  part(new THREE.CylinderGeometry(r+.0015,r+.0015,.006,sides,1,true),0xa8b3ad,[0,.003,0]);
+  part(new THREE.CircleGeometry(r+.0015,sides).rotateX(Math.PI/2),0xa8b3ad,[0,0,0]);
+  part(new THREE.RingGeometry(r,r+.0015,sides).rotateX(-Math.PI/2),0xa8b3ad,[0,.006,0]);
   part(new THREE.CylinderGeometry(r+.0015,r+.0015,rim-lid,sides,1,true),0xcad0c8,[0,(lid+rim)/2,0]);
   part(new THREE.RingGeometry(ri,r+.0015,sides).rotateX(-Math.PI/2),0xcad0c8,[0,rim,0]);
   part(new THREE.RingGeometry(r,r+.0015,sides).rotateX(Math.PI/2),0xcad0c8,[0,lid,0]);

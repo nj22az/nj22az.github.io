@@ -112,9 +112,10 @@ export function buildSakuraStairHead({room,box,collider=()=>{},reg=()=>{},go=()=
  for(let i=0;i<P.treads;i++)box([TREAD,.1,f.z1-f.z0],[f.x0-(i+.5)*TREAD,-(i+1)*RISE-.05,(f.z0+f.z1)/2],WOOD,'Sakura upper stair tread');
  // The stairwell behind the hall: its back wall (down into the pit), its ends, its ceiling, and a lintel over the opening.
  box([-.6+5.65,7,.08],[(-.6-5.65)/2,-.7,-6.1],PLASTER,'Stairwell wall',true);
- box([.08,2.8,.64],[-.64,1.4,-5.82],PLASTER,'Stairwell wall',true);
- box([.08,2.8,.64],[-5.61,1.4,-5.82],PLASTER,'Stairwell wall',true);
- box([-.6+5.65,.12,.64],[(-.6-5.65)/2,2.86,-5.82],0xf1eadb,'Stairwell ceiling');
+ // The end walls and the ceiling start at the back wall's face (z -6.06), not inside it (SK-ZF-005).
+ box([.08,2.8,.56],[-.64,1.4,-5.78],PLASTER,'Stairwell wall',true);
+ box([.08,2.8,.56],[-5.61,1.4,-5.78],PLASTER,'Stairwell wall',true);
+ box([-.6+5.65,.12,.56],[(-.6-5.65)/2,2.86,-5.78],0xf1eadb,'Stairwell ceiling');
  // The rail along the hole's east edge, between the hall and the pit.
  box([.06,1,1.5],[-2.05,.5,-4.16],TIMBER,'Stair rail',true);
  const solid=(x,z,w,d,height,minY)=>collider(x,z,w,d,height,minY);

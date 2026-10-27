@@ -150,7 +150,8 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  };
  const wallZ=(z,x0,x1,c=PLASTER,name='Partition')=>box([x1-x0,H,T],[(x0+x1)/2,H/2,z],c,name,true);
  const A=U.stores[0],B=U.stores[1],D=U.doors,K=U.oshiire,OF=U.office;
- wallX(A.door.at,A.minZ,front,[{...A.door,head:2.1},{from:K.minZ,to:K.maxZ,head:K.head}],PLASTER,'Store wall');
+ // The store's long wall starts at the face of its end wall (A.minZ + T/2), not inside it: their faces met in one plane.
+ wallX(A.door.at,A.minZ+T/2,front,[{...A.door,head:2.1},{from:K.minZ,to:K.maxZ,head:K.head}],PLASTER,'Store wall');
  wallX(B.door.at,back,front,[{...B.door,head:2.1},D.office,D.restRoom],PLASTER,'Office wall');
  wallZ(A.minZ,-hw,A.door.at+T/2,PLASTER,'Store wall');wallZ(R.minZ,R.minX,R.maxX,PLASTER,'Rest room wall');wallZ(OF.minZ,OF.minX,hw,PLASTER,'Office back wall');
  // Closed store doors (hinged 0.90 × 2.10 m), each with its plate and a look inside.
@@ -270,11 +271,13 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
   collider((R.minX+R.maxX)/2,front-.1,R.maxX-R.minX-T,.2,R.ceiling);
   // The futon cupboard: its lining, middle shelf, two fronts (the near one slid over the far), the folded futon.
   const kw=K.maxX-K.minX,kl=K.maxZ-K.minZ,kz=(K.minZ+K.maxZ)/2;
-  box([.02,K.head,kl],[K.minX+.01,K.head/2,kz],SAND,'Oshiire back');
+  // Lining in courses (SK-ZF-005): the sides full height and depth, the back between them, the top on the back between
+  // the sides; no board runs into another's plane.
+  box([.02,K.head-.03,kl-.04],[K.minX+.01,(K.head-.03)/2,kz],SAND,'Oshiire back');
   for(const z of [K.minZ+.01,K.maxZ-.01])box([kw,K.head,.02],[(K.minX+K.maxX)/2,K.head/2,z],SAND,'Oshiire side');
-  box([kw,.03,kl],[(K.minX+K.maxX)/2,K.head-.015,kz],SAND,'Oshiire top');box([kw-.03,.03,kl-.046],[(K.minX+K.maxX)/2+.01,.05,kz],TIMBER,'Oshiire floor');
+  box([kw-.02,.03,kl-.04],[(K.minX+K.maxX)/2+.01,K.head-.015,kz],SAND,'Oshiire top');box([kw-.03,.03,kl-.046],[(K.minX+K.maxX)/2+.01,.05,kz],TIMBER,'Oshiire floor');
   // Floor, shelf and its edge stand clear of the back and the sides (a board flush in a wall's plane flashes).
-  box([kw-.03,.03,kl-.046],[(K.minX+K.maxX)/2+.01,K.shelf-.015,kz],TIMBER,'Oshiire middle shelf');box([.05,.06,kl-.056],[K.maxX-.026,K.shelf-.027,kz],DARK,'Oshiire shelf edge');
+  box([kw-.076,.03,kl-.046],[K.minX+.025+(kw-.076)/2,K.shelf-.015,kz],TIMBER,'Oshiire middle shelf');/* to the edge's back, not under it */box([.05,.06,kl-.056],[K.maxX-.026,K.shelf-.027,kz],DARK,'Oshiire shelf edge');
   collider((K.minX+K.maxX)/2+.2,kz,kw-.4,kl,K.head);
   const fronts=new THREE.MeshStandardMaterial({color:0xe9e2cf,roughness:.9});
   for(const [dx,z] of [[.035,K.minZ+kl/4],[.005,K.minZ+kl/4+.02]]){box([.02,K.head-.02,kl/2],[K.maxX+dx,(K.head-.02)/2,z],fronts,'Oshiire sliding front');box([.025,K.head-.03,.02],[K.maxX+dx,(K.head-.03)/2,z+kl/4],DARK,'Oshiire front edge');}
