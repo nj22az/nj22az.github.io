@@ -217,7 +217,7 @@ export function createAvatarJohansson({scene,recipe=playerRecipe()}={}){
    // Player and residents use the same measured seat support.
    animator.update(dt,{speed:state.speed||0,running:!!state.running,seated:!!state.seated,
     seatHeight:state.seatHeight,seatFront:state.seatFront,seat:seatMove,sleeping:!!state.sleeping,airborne:!!state.airborne,
-    talking:tableDrink?.active?false:time<speakUntil,expression,gaze:tableDrink?.active?null:lookPoint,heldProp:held,tipsy:tableDrink?.active?0:state.tipsy||0});
+    talking:tableDrink?.active?false:time<speakUntil,expression,gaze:tableDrink?.active?(tableDrink.lookAt||null):lookPoint,heldProp:held,tipsy:tableDrink?.active?0:state.tipsy||0});
    if(tableDrink?.active){
     tableDrink.update(dt);
     if(tableDrink.active&&state.firstPersonDrinking){drinkingArm??=createFirstPersonDrinkingArm(avatar);drinkingArm.setVisible(true);root.visible=true;}
