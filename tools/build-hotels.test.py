@@ -47,6 +47,21 @@ class ParkingAdmissionTests(unittest.TestCase):
             for item in posts:
                 self.assertTrue(item['url'].startswith('/blog/'))
 
+    def test_photos_show_small_with_a_date_stamp_and_must_exist(self):
+        row = next(r for r in self.records if r.get('photos'))
+        html = builder.render_review(row)
+        self.assertEqual(html.count('class="hotel-photo-stamp"'), len(row['photos']))
+        self.assertIn('’26 10 27', html)
+        self.assertIn('loading="lazy"', html)
+        for photo in row['photos']:
+            self.assertIn(f'src="{photo["thumb"]}"', html)
+            self.assertIn(f'href="{photo["src"]}"', html)
+        self.assertNotIn('hotel-photos', builder.render_review(self.free if not self.free.get('photos') else self.records[-1]))
+        broken = copy.deepcopy(row)
+        broken['photos'][0]['thumb'] = '/hotels/photos/missing.webp'
+        with self.assertRaises(AssertionError):
+            builder.validate([broken])
+
     def test_easy_requires_hotel_payment_and_confirmed_hotel_receipt(self):
         row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
         row['name'] = 'Synthetic hotel-payment test fixture'

@@ -672,13 +672,16 @@
         "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-laajavuori/map-view"
       },
       "recordedOn": "2026-10-24",
-      "stayDates": null,
-      "nights": null,
-      "currency": null,
-      "currencyLabel": null,
-      "roomPaid": null,
+      "stayDates": {
+        "checkIn": "2026-10-27",
+        "checkOut": "2026-10-28"
+      },
+      "nights": 1,
+      "currency": "EUR",
+      "currencyLabel": "EUR",
+      "roomPaid": 116,
       "parkingPaid": 0,
-      "priceNote": "Room price not recorded. Free guest parking confirmed in official hotel information.",
+      "priceNote": "Booked price for one night in a Standard room, 27–28 October 2026, from the booking confirmation. Spa access is included in the room; parking is free. Not a current advertised rate.",
       "freeParking": true,
       "parkingPaymentAtHotel": null,
       "parkingType": "free",
@@ -690,17 +693,39 @@
       "parkingOnHotelReceipt": null,
       "summary": "Free outdoor parking, with 300 spaces; no advance reservations. Plugit EV charging is paid.",
       "review": [
-        "Scandic Laajavuori confirms free outdoor parking on weekdays and weekends, with 300 spaces. Spaces cannot be reserved. EV charging through Plugit is charged separately and requires the app or online payment."
+        "Owner stay report, 27 October 2026: the free parking is easy. The hotel’s large outdoor car park has 300 free spaces, with engine heaters at some of them; spaces cannot be reserved in advance. Plugit EV charging is charged separately and needs the app or online payment.",
+        "Owner stay report: a free spa is included with the stay, with a proper swimming pool. The hotel’s page describes an 800 m² spa with jacuzzis, swimming pools, a pool for small children and several saunas, and says bathrobes and spa access are included in a Standard room.",
+        "One night in a Standard room cost 116 EUR (27–28 October 2026, booking confirmation). Personal and booking details are omitted."
       ],
       "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-laajavuori",
       "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-laajavuori",
       "identityCheckedOn": "2026-10-24",
-      "sourceNote": "Parking research checked against the official hotel page on 24 October 2026; this is not a personal stay review. Address and coordinates come from the official property page or its property map. Room price and stay dates have not been recorded.",
+      "sourceNote": "Free outdoor parking (300 spaces, no advance reservation, engine heaters at some spaces) and spa access included in the Standard room: the official hotel page, checked 27 October 2026. Stay dates, room type and price: the owner’s booking confirmation. Ease of parking and the pool: the owner’s stay report of 27 October 2026. Photos: the owner’s, sent 27 October 2026 without capture dates; dated with the stay.",
       "parkingVerification": {
         "status": "confirmed-free",
-        "checkedOn": "2026-10-24",
+        "checkedOn": "2026-10-27",
         "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-laajavuori"
-      }
+      },
+      "photos": [
+        {
+          "src": "/hotels/photos/scandic-laajavuori/entrance-2026-10-27.webp",
+          "thumb": "/hotels/photos/scandic-laajavuori/entrance-2026-10-27-thumb.webp",
+          "width": 1600,
+          "height": 1200,
+          "takenOn": "2026-10-27",
+          "caption": "The entrance and the drop-off in front of it",
+          "alt": "The concrete front of Scandic Laajavuori with its name in white letters over a covered entrance, a pedestrian crossing and a taxi sign."
+        },
+        {
+          "src": "/hotels/photos/scandic-laajavuori/room-2026-10-27.webp",
+          "thumb": "/hotels/photos/scandic-laajavuori/room-2026-10-27-thumb.webp",
+          "width": 1600,
+          "height": 1200,
+          "takenOn": "2026-10-27",
+          "caption": "The Standard room",
+          "alt": "A Standard room at Scandic Laajavuori in lamplight: two made-up beds side by side with folded bathrobes, a desk and a wall-mounted television."
+        }
+      ]
     },
     {
       "id": "scandic-waskia-2026-10-24",

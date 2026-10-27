@@ -157,6 +157,7 @@ def validate(reviews):
         assert review['id'] not in ids, 'Duplicate review id'
         ids.add(review['id'])
         dt.date.fromisoformat(review['recordedOn'])
+        validate_photos(review)
         warning = review.get('parkingAccessWarning')
         if warning is not None:
             assert warning.get('status') == 'avoid' and warning.get('source') == 'owner stay report', 'Access overrides need an attributed owner report'
@@ -298,6 +299,34 @@ def post_chips(review):
     return ''.join(f'<li>{icon(name)}{e(text)}</li>' for name, text in chips)
 
 
+def date_stamp(value):
+    """The date as an old film camera printed it in the corner of a photo: '26 10 27."""
+    day = dt.date.fromisoformat(value)
+    return f"’{day:%y} {day.month:2d} {day.day:2d}"
+
+
+def post_photos(review):
+    """The owner's own photos of the stay, small, each with the date it was taken; nothing when there are none."""
+    photos = review.get('photos') or []
+    if not photos:
+        return ''
+    figures = ''.join(
+        f'<figure><a href="{e(photo["src"])}"><img src="{e(photo["thumb"])}" width="480" height="{round(480 * photo["height"] / photo["width"])}" '
+        f'loading="lazy" decoding="async" alt="{e(photo["alt"])}"><time class="hotel-photo-stamp" datetime="{e(photo["takenOn"])}" '
+        f'aria-label="Taken {date_label(photo["takenOn"])}">{date_stamp(photo["takenOn"])}</time></a><figcaption>{e(photo["caption"])}</figcaption></figure>'
+        for photo in photos)
+    return f'\n        <div class="hotel-photos" aria-label="Photos of {e(review["name"])}">{figures}</div>'
+
+
+def validate_photos(review):
+    for photo in review.get('photos') or []:
+        for key in ('src', 'thumb'):
+            assert photo[key].startswith('/hotels/photos/') and (ROOT / photo[key].lstrip('/')).is_file(), f'{review["name"]}: missing photo {photo[key]}'
+        assert photo['alt'].strip() and photo['caption'].strip(), f'{review["name"]}: a photo needs a caption and alt text'
+        dt.date.fromisoformat(photo['takenOn'])
+        assert photo['width'] > 0 and photo['height'] > 0
+
+
 def comment(kind, who, body):
     return (f'<li class="hotel-comment hotel-comment-{kind}"><span class="hotel-comment-icon">{icon(kind)}</span>'
             f'<div class="hotel-comment-body"><p class="hotel-comment-who">{who}</p>{body}</div></li>')
@@ -349,7 +378,7 @@ def render_review(review, posts=()):
         <header class="hotel-post-head"><span class="hotel-avatar hotel-avatar-{category}" aria-hidden="true">P</span><div class="hotel-post-who"><h4 id="title-{rid}">{e(review['name'])}</h4><p class="hotel-post-meta"><strong class="hotel-verdict hotel-verdict-{category}">{e(parking_category_label(review))}</strong> · {e(review['city'])}</p></div>{country_tag(review)}<button type="button" class="hotel-save" data-hotel-save="{rid}" aria-pressed="false" aria-label="Save {e(review['name'])}" hidden>{icon('bookmark')}</button></header>
         <p class="hotel-trip-line" data-hotel-trip-line hidden></p>
         <p class="hotel-post-caption">{e(review['parkingSummary'])}</p>
-        <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>
+        <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>{post_photos(review)}
         <div class="hotel-post-actions"><button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="notes-{rid}" hidden>{icon('message')}Notes <span class="hotel-action-count">{len(thread)}</span></button>{map_action}<a href="{e(review['hotelUrl'])}">{icon('globe')}Website</a><button type="button" data-hotel-share="{rid}" hidden>{icon('share')}Share</button></div>
         <ol class="hotel-thread" id="notes-{rid}" aria-label="Notes on {e(review['name'])}">{''.join(thread)}</ol>
       </article>'''
@@ -435,7 +464,7 @@ def build(reviews, posts=None):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=10">
+  <link rel="stylesheet" href="/css/hotels.css?v=11">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=3">
 </head>

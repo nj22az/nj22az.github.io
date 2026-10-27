@@ -1,6 +1,15 @@
 /* Shared catalogue: English first; Swedish only where available. */
 window.OFFICE_BLOG_POSTS = [
   {
+    "id": "scandic-laajavuori-jyvaskyla",
+    "title": "Scandic Laajavuori, Jyväskylä: easy free parking and a spa with a real pool",
+    "excerpt": "One night at Scandic Laajavuori in Jyväskylä. The free parking is easy, and a spa with a proper swimming pool is included in the stay.",
+    "url": "/blog/scandic-laajavuori-jyvaskyla/",
+    "date": "2026-10-27",
+    "topic": "Hotel stay",
+    "hotel": "scandic-laajavuori-2026-10-24"
+  },
+  {
     "id": "scandic-rosendahl-tampere",
     "title": "Scandic Rosendahl, Tampere: paid parking on one bill",
     "excerpt": "Parking at Scandic Rosendahl is not free, but you pay for it at the hotel and it goes on the hotel bill. One receipt for the stay makes it Easy.",

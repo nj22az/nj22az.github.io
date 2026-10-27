@@ -1,5 +1,30 @@
 # Hotels & Parking
 
+## Photos and the Scandic Laajavuori stay — 27 October 2026
+
+The owner sent two photos and the booking for Scandic Laajavuori (Jyväskylä, 27–28 October 2026, Standard, 116 EUR):
+"make the photos smaller and praise the ease of the free parking and add that they have a free spa that is included
+with the visit with a proper swimming pool", then "Add a photos section to each hotel so we can see the photos with a
+date stamp", and "The photos doesn't have to be full size like my camera but clear at least".
+
+- **Photos on any hotel:** a record may carry `photos` (`src`, `thumb`, `width`, `height`, `takenOn`, `caption`,
+  `alt`). The post then shows a small strip of thumbnails between the facts and the actions, each with the date
+  printed in the corner like a film camera's date stamp (`’26 10 27`); tapping opens the larger photo. Hotels without
+  photos show nothing. Files live in `hotels/photos/<hotel>/`: a 1600 px WebP (q84) and a 480 px thumbnail (q80),
+  metadata stripped. The builder refuses a photo whose file, caption, alt text or date is missing.
+- **Photo dates:** the uploads carried no capture date, so both are dated 27 October 2026, the arrival day, when the
+  owner sent them. The booking screenshot is not published (it shows the booking number and the owner's email); only
+  its dates, room type and price are used.
+- **The record:** stay dates, one night, 116 EUR, the owner's report (easy free parking; a free spa with a proper
+  pool included), and the hotel's page rechecked on 27 October 2026: 300 free outdoor spaces, no reservations, engine
+  heaters at some spaces, an 800 m² spa, and "Bathrobes and spa access are included in your stay" for the Standard
+  room. The CSV row is updated to match.
+- **Stay post:** `/blog/scandic-laajavuori-jyvaskyla/`, dated 27 October 2026, with the two photos small and
+  stamped. **Draft on branch `claude/peaceful-clarke-fprqk3`; not on main until the owner approves.**
+- Checks: build `--check`; 20 unit tests (new: photos render with stamps, lazy thumbnails, and missing files fail);
+  `blog-feed.test.cjs` (updated for the new newest post); `flags.cjs` 19/19; `feed.cjs` 46/46; the entry and the post
+  in Chromium at 1440 and 390 px: thumbnails 480 px shown at 176/148 px (sharp at 2x), no overflow, no errors.
+
 ## Own section and stay posts — 27 October 2026
 
 The register moved out of the blog to `/hotels/` (this folder, formerly `blog/hotels/`) and has its own link in the
