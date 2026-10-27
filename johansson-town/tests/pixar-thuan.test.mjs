@@ -34,7 +34,11 @@ test('her model is the version the game asks for, light enough for a phone',()=>
 test('she is skinned to World\'s own bones (and the face\'s: jaw, nose, cheeks)',()=>{
  const j=gltfJSON(glb),joints=new Set(j.skins.flatMap(s=>s.joints.map(i=>j.nodes[i].name)));
  const known=new Set([...BONES,'jaw','nose','cheekL','cheekR']);
- for(const n of joints)assert.ok(known.has(n),'unknown bone '+n);
+ // (and her finger bones, fifteen a hand, so she holds a jug by its handle: jojo game_thuan.py, game_meshy.finger_joints)
+ const finger=/^(thumb|index|middle|ring|pinky)[LR][123]$/;
+ for(const n of joints)assert.ok(known.has(n)||finger.test(n),'unknown bone '+n);
+ assert.equal([...joints].filter(n=>finger.test(n)).length,30,'fifteen finger bones a hand');
+ assert.ok(card.fingers?.L?.bend&&card.fingers?.R?.bend,'the card gives the fingers\' bend axes');
  for(const n of ['hips','spine','chest','neck','head','shoulderL','elbowL','handL','thighR','kneeR','footR','braidL1','braidR2','jaw'])assert.ok(joints.has(n),'no '+n);
  // Every joint's rest place is in the card, in World's frame: standing on the ground, her head where World's Thuan's is.
  for(const n of [...joints])assert.ok(Array.isArray(card.rest[n])&&card.rest[n].every(Number.isFinite),'rest of '+n);

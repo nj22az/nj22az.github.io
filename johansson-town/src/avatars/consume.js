@@ -41,6 +41,24 @@ export function drinkGrip(prop,m,side='R'){
  const out=m.realHand?(g.handle!=null?g.handle+.02:g.radius+.012):g.handle!=null?g.handle+m.hand*.25:g.radius+m.hand*.70;
  return new THREE.Vector3(s*out,-g.height,0);
 }
+/** A right hand's turn on a jug's handle (table-drink.js, the counter performance): the palm toward the glass, the
+ * knuckle line up the bar, the thumb on top. The hand's frame (palm +x, fingers -y, thumb +z) onto the jug's (handle
+ * +x, up +y). */
+export const HOLD_Q=Object.freeze(new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,1),new THREE.Vector3(0,1,0))));
+/**
+ * A hand with finger bones (pixar.js holdPoint) on a jug made for fingers (a handle with an `opening`, the izakaya's
+ * 大ジョッキ): where the bar lies in the jug's frame and where the curled fingers' hollow lies in the hand's, so the bar
+ * sits in the fist. Null for a hand without finger bones, the left hand, or a vessel held round its body; they keep
+ * drinkGrip. What Johansson learned at the counter, for everyone with fingers (the owner, 27 October 2026: "Can we use
+ * what we learned from Johansson?"; "Everyone should eventually be Pixar style").
+ */
+export function fingerHold(avatar,prop,side='R'){
+ const g=prop?.userData?.grip;if(side!=='R'||!g||g.handle==null||!g.opening)return null;
+ const h=avatar.pixar?.holdPoint?.(side,1);if(!h)return null;
+ return {centre:h.centre,barAt:new THREE.Vector3(g.handle-(g.bar??.008),g.height??.08,0)};
+}
+/** The jug's turn in a right hand: upright (tipped by `q`'s sip), its handle toward the hand (its +x to the body's -x). */
+const jugTurn=q=>q.clone().multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI));
 /** Keep the palm upright while holding or sipping, including idle holds. */
 function alignDrinkHand(avatar,q,side='R'){
  const hand=avatar.bones['hand'+side],handQ=q;
@@ -97,8 +115,18 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  // (what meets the lips: the cartoon's rim at its centre (its lips point stands off its big head); a Pixar body's lips are
  // its own skin, so the rim's near edge comes to them and the glass stands in front of the face, not through the cheek
  // and chin: the owner, 27 October 2026, "the arm gets stuck in his head")
- const rimNear=avatar.pixar&&!food?(prop?.userData.grip?.radius??.039)*.9:0;
- const contact=(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,rimNear))).applyQuaternion(q);
+ // (the edge nearest the face is behind the glass's axis, toward the body (-z, the body faces +z): it was +z, the far
+ // edge, so the near edge and the rim went under the chin toward the throat: the owner, 27 October 2026, "do you look at
+ // the screenshots? Look and correct")
+ const rimNear=avatar.pixar&&!food?-(prop?.userData.grip?.radius??.039)*.9:0;
+ const held=!food&&prop?fingerHold(avatar,prop):null,heldQ=held?jugTurn(q):null,heldHandQ=held?heldQ.clone().multiply(HOLD_Q):null;
+ // (a jug held by its handle hangs its base a hand's height under the fist: the resting hand comes up and forward so the
+ // base clears the thighs; at the lap it went into Thuận's)
+ if(held){const base=held.centre.clone().applyQuaternion(heldHandQ).sub(held.barAt.clone().applyQuaternion(heldQ)),below=Math.max(0,-base.y),up=new THREE.Vector3(0,1,0),fwd=new THREE.Vector3(0,0,1).applyQuaternion(root.getWorldQuaternion(new THREE.Quaternion()));
+  rest.addScaledVector(up,Math.max(0,below-.05)).addScaledVector(fwd,.06);}
+ // (with finger bones: from the wrist to the jug's base is the fingers' hollow less the bar's place on the jug; then the rim)
+ const contact=held?held.centre.clone().applyQuaternion(heldHandQ).sub(held.barAt.clone().applyQuaternion(heldQ)).add(new THREE.Vector3(0,prop.userData.rimHeight??.15,rimNear).applyQuaternion(q))
+  :(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,rimNear))).applyQuaternion(q);
  // Short arms and large custom heads still meet the drink. Start from a
  // reachable resting hand, then lean gently; any remaining reach is met by
  // bringing the head towards the hand instead of turning it through a right angle.
@@ -129,7 +157,8 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  reach(avatar,target,'R',avatar.pixar?[-.45,-1,.25]:-.25);
  // The vessel sits inside the hand, where the thumb can close on it, rather
  // than hanging outside the wrist. Keep the palm level throughout the sip.
- if(!food)alignDrinkHand(avatar,q);
+ if(held)alignDrinkHand(avatar,heldHandQ);
+ else if(!food)alignDrinkHand(avatar,q);
  else{b.handR.quaternion.copy(b.handR.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));b.handR.updateWorldMatrix(false,true);}
 }
 /** A drink is gripped in the palm (drinkGrip), clear of the arm; its base remains upright. */
@@ -138,6 +167,17 @@ export function fitAvatarHeldProp(avatar,prop,lift=0,side='R'){
  avatar.pixar?.grip?.(side,food?.35:1);   // (a hand with fingers closes on a glass, half on a morsel's sticks)
  avatar.root.updateWorldMatrix(true,true);
  const q=avatar.root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
+ const held=!food?fingerHold(avatar,prop,side):null;
+ if(held){
+  // (the jug's bar in the fist: the hand turned onto the handle, the jug placed so its bar lies in the fingers' hollow;
+  // the beer's surface levelled after, table-drink.js levelHeldDrink)
+  const jq=jugTurn(q),hq=jq.clone().multiply(HOLD_Q);alignDrinkHand(avatar,hq,side);
+  const p=hand.getWorldPosition(new THREE.Vector3()).add(held.centre.clone().applyQuaternion(hq)).sub(held.barAt.clone().applyQuaternion(jq));
+  const world=new THREE.Matrix4().compose(p,jq,new THREE.Vector3(1,1,1));
+  prop.matrixAutoUpdate=false;prop.matrix.copy(hand.matrixWorld).invert().multiply(world);prop.matrixWorldNeedsUpdate=true;
+  prop.updateMatrixWorld(true);prop.userData.tableDrinkFluid?.update(prop.userData.portion??1);
+  return;
+ }
  if(!food)alignDrinkHand(avatar,q,side);
  const p=food?hand.getWorldPosition(new THREE.Vector3()):hand.localToWorld(palm(m)).add(drinkGrip(prop,m,side).applyQuaternion(q));
  const world=new THREE.Matrix4().compose(p,q,new THREE.Vector3(1,1,1));

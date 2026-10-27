@@ -9,7 +9,7 @@ import {recipeFor} from './cast.js';
 import {normalizeRecipe,decodeRecipe,encodeRecipe} from './recipe.js';
 import {fitAvatarHeldProp,gripWheel} from './consume.js';
 import {workHands} from './work-hands.js';
-import {createAvatarTableDrink,createFirstPersonDrinkingArm,TABLE_DRINK_KINDS} from './table-drink.js';
+import {createAvatarTableDrink,createFirstPersonDrinkingArm,TABLE_DRINK_KINDS,levelHeldDrink} from './table-drink.js';
 import {DEFAULT_PLAYER,readPlayers,readSave} from '../save.js';
 import {swingsAt} from './springs.js';
 const swingAt=new THREE.Vector3();
@@ -92,7 +92,11 @@ export function updateAvatarActor(actor,dt,now=performance.now()){
   disposeServing(actor.heldProp);disposeServing(actor.dishProp);actor.heldProp=null;actor.dishProp=null;actor.heldKind=heldKind;actor.portion=1;actor.consumedCycle=-1;
   const drinks={beer:'draft',tea:'oolong',cup:'oolong',coffee:'coffee',mugicha:'mugicha',can:'can',bottle:'bottle',draft:'draft',oolong:'oolong',awamori:'awamori',sake:'sake'};
   const foods=['rice','bun','ramen','fish','yakitori','gyoza','edamame','sashimi','oden','hiyayakko','dashimaki','agedashi','karaage','ochazuke','chopsticks'];
-  if(drinks[heldKind])actor.heldProp=createDrinkProp(drinks[heldKind],{held:true});
+  if(drinks[heldKind]){
+   actor.heldProp=createDrinkProp(drinks[heldKind],{held:true});
+   // (a hand with fingers holds a jug by its handle and tips it to the lips: the beer in it stays level, as Johansson's)
+   if(avatar.pixar?.holdPoint&&drinks[heldKind]==='draft')levelHeldDrink(actor.heldProp);
+  }
   else if(foods.includes(heldKind)){
    actor.heldProp=createBiteProp(heldKind);
    if(heldKind!=='bun'&&heldKind!=='chopsticks'){
