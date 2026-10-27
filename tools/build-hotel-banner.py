@@ -11,7 +11,7 @@ The frame comes from Johansson World itself (johansson-town/tools/tetsuo-banner-
 --style stamp / riso set the title as printed matter for the Rubber stamp and Risograph Looks: a stamped
 burgundy label or a two-plate riso tag on the frame's own paper colour.
 
-  python3 tools/build-hotel-banner.py <frame.png> [--out blog/hotels/banner]
+  python3 tools/build-hotel-banner.py <frame.png> [--style stamp] [--site] [--out blog/hotels/banner]
 
 Colours are the hotel page's own: ink #08131a, white, free-parking green #22c55e for the rule.
 """
@@ -155,13 +155,13 @@ def printed_label(base, x, edge, title_size, line_size, style, anchor='bottom', 
     base.alpha_composite(label, (x, top))
 
 
-def build(frame, out, truck_x, style='ink'):
+def build(frame, out, truck_x, style='ink', site=False):
     out.mkdir(parents=True, exist_ok=True)
     source = Image.open(frame).convert('RGBA')
     made = []
     # Desktop: 3:1, the whole street; title on the left third where the road and sky are calm.
     desk = crop_to(source, 3, centre_x=0.5).resize((2400, 800), Image.LANCZOS)
-    art = desk.copy()
+    art_desk = desk.copy()
     if style == 'ink':
         desk.alpha_composite(gradient(desk.size, 'right', [(0, 200), (0.32, 110), (0.56, 0), (1, 0)]))
         text_block(desk, 120, 800 - 128, 150, 50, 800)
@@ -175,12 +175,19 @@ def build(frame, out, truck_x, style='ink'):
         text_block(phone, 64, 70, 112, 40, 1000, anchor='top')
     else:
         printed_label(phone, 34, 26, 84, 30, style, anchor='top', tilt=-1.6)  # ends above the truck's canopy
-    for name, image in (('banner-desktop', desk), ('banner-phone', phone), ('art-desktop', art), ('art-phone', phone_art)):
+    images = [('banner-desktop', desk), ('banner-phone', phone)] + ([] if site else [('art-desktop', art_desk), ('art-phone', phone_art)])
+    for name, image in images:
         rgb = image.convert('RGB')
-        rgb.save(out / f'{name}.png', optimize=True)
+        if site:
+            # For the site: WebP for browsers, a JPEG fallback for old ones and link previews.
+            rgb.save(out / f'{name}.jpg', quality=84, optimize=True, progressive=True)
+            made.append(out / f'{name}.jpg')
+        else:
+            rgb.save(out / f'{name}.png', optimize=True)
+            made.append(out / f'{name}.png')
         # Print Looks are all grain and halftone dots: quality 75 keeps them crisp at a fraction of the size.
         rgb.save(out / f'{name}.webp', quality=86 if style == 'ink' else 75, method=6)
-        made += [out / f'{name}.png', out / f'{name}.webp']
+        made.append(out / f'{name}.webp')
     return made
 
 
@@ -189,9 +196,10 @@ def main():
     parser.add_argument('frame', type=Path)
     parser.add_argument('--out', type=Path, default=ROOT / 'blog/hotels/banner')
     parser.add_argument('--style', choices=['ink', *PRINT], default='ink', help='ink: white title on an ink gradient; stamp or riso: a printed label for those Looks')
+    parser.add_argument('--site', action='store_true', help='Write only what the page serves: banner-* as WebP plus a JPEG fallback (no PNG, no art-*)')
     parser.add_argument('--truck-x', type=float, default=0.47, help='Tetsuo cab position across the frame (0-1) for the phone crop')
     args = parser.parse_args()
-    for path in build(args.frame, args.out, args.truck_x, args.style):
+    for path in build(args.frame, args.out, args.truck_x, args.style, site=args.site):
         print(f'{path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}  {path.stat().st_size // 1024} KB')
 
 

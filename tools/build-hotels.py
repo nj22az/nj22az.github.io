@@ -401,7 +401,11 @@ def build(reviews):
   <meta property="og:title" content="Hotels &amp; Parking – The Office of Nils Johansson">
   <meta property="og:description" content="Hotels in Sweden, Denmark, Norway and Finland: confirmed parking, a trip planner, a filtered map and prices paid.">
   <meta property="og:url" content="https://nj22az.github.io/blog/hotels/">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://nj22az.github.io/blog/hotels/banner/banner-desktop.jpg">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="800">
+  <meta property="og:image:alt" content="Tetsuo drives his kei truck past Sakura Shōten, printed as a rubber stamp.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#333333">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-hotels.svg">
   <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon-hotels.png">
@@ -410,7 +414,7 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=9">
+  <link rel="stylesheet" href="/css/hotels.css?v=10">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=3">
 </head>
@@ -420,8 +424,14 @@ def build(reviews):
   <main id="main-content" class="hotel-page">
     <nav class="blog-section-nav" aria-label="Blog sections"><a href="/blog/">Articles</a><a href="/blog/hotels/" aria-current="page">Hotels &amp; Parking</a></nav>
     <header class="hotel-page-head">
-      <h1>Hotels &amp; Parking</h1>
-      <p class="hotel-intro">Free parking for field service trips. {count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
+      <h1 class="hotel-sr">Hotels &amp; Parking: free parking for field service trips</h1>
+      <picture class="hotel-banner">
+        <source media="(max-width: 600px)" type="image/webp" srcset="/blog/hotels/banner/banner-phone.webp" width="1200" height="900">
+        <source media="(max-width: 600px)" srcset="/blog/hotels/banner/banner-phone.jpg" width="1200" height="900">
+        <source type="image/webp" srcset="/blog/hotels/banner/banner-desktop.webp">
+        <img src="/blog/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
+      </picture>
+      <p class="hotel-intro">{count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
     </header>
     <section class="hotel-trip" aria-labelledby="hotel-trip-title" data-hotel-trip hidden>
       <h2 id="hotel-trip-title" class="hotel-sr">Plan a stop</h2>
