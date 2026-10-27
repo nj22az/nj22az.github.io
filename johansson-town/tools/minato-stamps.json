@@ -202,6 +202,78 @@
       "note": "Vietnam: Thuan, Sakura Shōten's owner, who is Vietnamese",
       "alt": "Thuan, a young woman with long dark hair in a braid, waving and making a peace sign, printed as a rubber stamp.",
       "caption": "Thuan of Sakura Shōten, who is Vietnamese, from Johansson Studio."
+    },
+    {
+      "name": "stay-onsen-wide",
+      "article": null,
+      "view": "onsen/wide",
+      "time": "18:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-onsen-push",
+      "article": null,
+      "view": "onsen/push",
+      "time": "18:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-sakura-wide",
+      "article": null,
+      "view": "sakura/wide",
+      "time": "15:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-sakura-push",
+      "article": null,
+      "view": "sakura/push",
+      "time": "15:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-pier-wide",
+      "article": null,
+      "view": "pier/wide",
+      "time": "16:30",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-pier-low",
+      "article": null,
+      "view": "pier/low",
+      "time": "16:30",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-fumoto-wide",
+      "article": null,
+      "view": "fumoto-square/wide",
+      "time": "16:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-park-wide",
+      "article": null,
+      "view": "park/wide",
+      "time": "16:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
+    },
+    {
+      "name": "stay-rainflower-wide",
+      "article": null,
+      "view": "rainflower/wide",
+      "time": "16:00",
+      "back": 1.2,
+      "note": "Hotel stay candidate (trial)"
     }
   ]
 }

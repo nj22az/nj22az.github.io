@@ -7,7 +7,8 @@
  *   world  plain world coordinates
  *   resident  framed on a resident wherever she is at that time: {"resident":{"name":"Thuan","dist":2.4,"side":.8,"y":1.45}}
  * Every shot parks the ferry alongside in town, sets the time ("17:40"), hides the HUD and keeps Johansson out of frame.
- * "lights": true turns her navigation lights on; "clear" (metres, default 2.2) hides the people that close to the lens.
+ * "lights": true turns her navigation lights on; "clear" (metres, default 2.2) hides the people that close to the lens;
+ * "back" (metres) is how far behind the lens Johansson stands: keep it small indoors, where a room is drawn only near him.
  */
 import {chromium} from 'playwright';
 import {createServer} from 'node:http';
@@ -68,12 +69,13 @@ try{
     else {pos=s.world.pos;at=s.world.at;}
     // Johansson stands far behind the lens, on the ground, out of every picture.
     // (For a resident, only a few metres behind: a room may only be drawn while the player is near it.)
-    const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1,back=s.resident?2.5:40;a.teleport(pos[0]+dx/d*back,pos[2]+dz/d*back,0,0);a.step(30);
+    const dx=pos[0]-at[0],dz=pos[2]-at[2],d=Math.hypot(dx,dz)||1,back=s.back??(s.resident?2.5:40);a.teleport(pos[0]+dx/d*back,pos[2]+dz/d*back,0,0);a.step(30);
     // People right against the lens (an engineer at the board, a head at the camera's shoulder) step out of the picture;
     // the ones further off stay, so the place keeps its life. Skinned bodies, and what they carry on their bones.
     const clear=s.clear??2.2,hidden=[],q=new V();
     a.scene.traverse(o=>{if(!o.isSkinnedMesh)return;o.getWorldPosition(q);if(Math.hypot(q.x-pos[0],q.z-pos[2])>=clear)return;
      o.visible=false;hidden.push(o.name||'resident');for(const b of o.skeleton?.bones||[])b.traverse(c=>{if(c.isMesh)c.visible=false;});});
+    for(const h of [a.hands,a.hands?.group,a.hands?.root])if(h?.isObject3D)h.visible=false;
     a.hud.photo(true);a.camera={pos,at,...(s.fov?{fov:s.fov}:{})};a.render();a.render();return {pos,at,hidden,where:s.__where};
    },{s,fixed,minutes:h*60+m,HALF,DRAFT});
    await page.waitForTimeout(500);
