@@ -220,6 +220,13 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
+    "title": "Minato Drinks · Kitahama",
+    "organisation": "Town Services",
+    "text": "Two machines against the shop’s front wall: tea, water, milk coffee and sports drinks, cold all night. Minato Drinks rents the corner, as it rents Sakura’s wall.",
+    "source": "notice:Minato Drinks · Kitahama"
+  },
+  {
+    "type": "Notice",
     "title": "Minato fuel depot",
     "organisation": "Town Services",
     "text": "Hazardous materials · No open flames. The shore tank stores diesel for the town power house. Keep the access and the bund clear.",

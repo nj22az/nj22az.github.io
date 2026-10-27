@@ -255,11 +255,14 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
       if(len<.06)p.path.shift();else {const x=g.position.x+dx/len*step,z=g.position.z+dz/len*step;if(!blocked(x,z,.3)){g.position.set(x,groundAt(x,z),z);faceAlong(g,dx,dz);}}
      }
      const arrived=Math.hypot(g.position.x-phase.target[0],g.position.z-phase.target[1])<.35;
-     if(arrived&&phase.place==='home')g.userData.indoors='home';else delete g.userData.indoors;
+     // Indoors on arriving: at home, or behind a counter she keeps (Grandmother Higa at Johansson Mart's till,
+     // world/okinawa/kitahama-shop.js; the shop's room draws her there, interiors/kitahama-shop-room.js).
+     const goesIn=phase.place==='home'||phase.place==='kitahama-shop';
+     if(arrived&&goesIn)g.userData.indoors=phase.place;else delete g.userData.indoors;
      g.userData.sleeping=arrived&&phase.place==='home'&&phase.rest==='sleep';
      g.userData.walking=!arrived&&!!p.path?.length&&!g.userData.chatHold&&!g.userData.aboardFerry;
      if(!g.userData.chatHold)standAtPoint(g,spec,phase.stand,arrived&&!p.path?.length&&!g.userData.playerConversation,dt);
-     g.visible=!g.userData.aboardFerry&&!(arrived&&(phase.place==='home'||phase.school));
+     g.visible=!g.userData.aboardFerry&&!(arrived&&(goesIn||phase.school));
      continue;
     }
     if(spec.routine?.some(phase=>phase.route)){

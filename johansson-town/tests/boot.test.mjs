@@ -31,7 +31,7 @@ import {residentCards,canonicalHomeSites} from '../src/people/home-directory.js'
 // Explicit post-consolidation addresses: removing a working door still fails this smoke.
 // Keep the visit expectation tied to this independent inventory, not the runtime's SITES.
 // The doctor's flat (home-clinic) went with Dr Kakazu on 22 October 2026: Nhung, the doctor now, lives at 3 Kitahama.
-const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','izakaya','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
+const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','izakaya','kitahama-shop','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
 // Thirteen core households plus supporting accommodation and duty berths (CAST-CONSOLIDATION-REPORT.md; roster.js HOUSEHOLDS).
 const EXPECTED_HOME_DESTINATIONS=['ferry-chief-cabin','ferry-crew-cabin','ferry-engineer-duty-berth','ferry-officer-cabin','fujita-houseboat','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','koban','mayor-home','office','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan'];
 const root=resolve(new URL('..',import.meta.url).pathname);

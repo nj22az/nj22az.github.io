@@ -109,7 +109,8 @@ const lot=id=>CLEARED_LOTS.find(l=>l.id===id);
 const flatOf=(id,f)=>lot(id).dressing.flat.find(x=>x.id===f).rect;
 /** The pads and beds the cleared lots are laid with (lots.js): what each is, its class and its top. */
 export const KITAHAMA_PADS=Object.freeze([
- {lot:'kitahama-north-block',flat:'parking-gravel',cls:'coral-sand',top:PAD_TOP,name:'Kitahama monthly parking',why:'Crushed coral rolled on a sub-base under the four bays: cars on grass rut it in the rains.'},
+ {lot:'kitahama-north-block',flat:'parking-gravel',cls:'coral-sand',top:PAD_TOP,name:'Kitahama monthly parking',why:'Crushed coral rolled on a sub-base under the three bays: cars on grass rut it in the rains.'},
+ {lot:'kitahama-north-block',flat:'shop-apron',cls:'concrete',top:PAD_TOP,name:'Johansson Mart forecourt',why:'The shop stands on its slab and the forecourt is swept concrete: the vending machines, the bins and the A-board stand on it (okinawa/kitahama-shop.js).'},
  {lot:'kitahama-7-lot',flat:'practice-ground',cls:'coral-sand',top:PAD_TOP,name:'The eisa ground',why:'Crushed coral, swept: the drummers\' feet and the dancers\' want level ground, not grass.'},
  {lot:'kitahama-9-lot',flat:'hoop-pad',cls:'concrete',top:PAD_TOP,name:'The hoop\'s pad',why:'A ball bounces on concrete, not on grass.'},
 ].map(p=>Object.freeze({...p,...fromBounds(flatOf(p.lot,p.flat))})));

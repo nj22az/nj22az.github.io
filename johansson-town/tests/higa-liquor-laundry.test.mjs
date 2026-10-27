@@ -48,10 +48,12 @@ test('Higa Liquor is shut for good: no hours and no card, a closing notice that 
  assert.deepEqual(SAKURA_BOTTLES.map(b=>[b.id,b.cost]),[['awamori-mini',600],['umineko-large',330],['sake-cup',220]]);
 });
 
-test('nobody keeps the shop: Grandmother Higa keeps only the bath, and Yui no counter on Saturdays',()=>{
- const wed=dayWith(3),sat=dayWith(6);
- for(const [name,day,h,place] of [['Grandmother Higa',wed,10,'onsen'],['Grandmother Higa',wed,14,'onsen'],['Grandmother Higa',wed,18,'home'],['Grandmother Higa',wed,21,'home'],
-  ['Grandmother Higa',sat,10,'onsen'],['Grandmother Higa',sat,18,'home'],['Miss Higa',sat,10,'onsen'],['Miss Higa',sat,18,'onsen']])
+// Higa Liquor stays shut (22 October 2026). Since 27 October Grandmother Higa also keeps Johansson Mart's till in Kitahama on
+// weekday evenings and Saturdays, when Sakura is shut and Miss Higa has the bandai (world/okinawa/kitahama-shop.js).
+test('nobody keeps the shut liquor shop: Grandmother Higa keeps the bath and Johansson Mart’s till, and Yui no counter on Saturdays',()=>{
+ const wed=dayWith(3),sat=dayWith(6),sun=dayWith(0);
+ for(const [name,day,h,place] of [['Grandmother Higa',wed,10,'onsen'],['Grandmother Higa',wed,14,'onsen'],['Grandmother Higa',wed,18,'kitahama-shop'],['Grandmother Higa',wed,21,'home'],
+  ['Grandmother Higa',sat,10,'kitahama-shop'],['Grandmother Higa',sat,18,'kitahama-shop'],['Grandmother Higa',sun,18,'home'],['Miss Higa',sat,10,'onsen'],['Miss Higa',sat,18,'onsen']])
   assert.equal(canonicalDay(name,at(day,h)).place,place,`${name} at ${h} on ${townCalendarAt(day).weekday}`);
  for(let d=10000;d<10007;d++)for(const p of CAST)for(let m=0;m<DAY;m+=30)assert.notEqual(canonicalDay(p.name,d*DAY+m)?.place,'higa-liquor',p.name+' is never behind the shut counter');
  for(const p of CAST)assert.ok(!p.day.some(r=>r[1]==='higa-liquor'),p.name+'’s day has no counter');

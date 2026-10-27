@@ -71,7 +71,7 @@ export const CAST=Object.freeze([
   day:[['07:00','higa','breakfast with her grandmother'],['08:00','school','teaching'],['15:30','school','marking'],['17:00','onsen','the bandai at Umi-no-yu'],['22:00','higa','home']]}),
  // Higa Liquor closed on 22 October 2026 (the owner: Sakura sells and supplies the drink; commerce/higa-liquor.js), and
  // Grandmother Higa keeps only the bathhouse: the bandai by day, from the bath's opening at ten, Yui from five.
- person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'onsen',family:'Higa',purpose:'owns Umi-no-yu and keeps its bandai by day, 10:00–17:00; her liquor shop on Main Street stands shut, its trade Sakura’s',
+ person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'onsen',family:'Higa',purpose:'owns Umi-no-yu and keeps its bandai by day, 10:00–17:00; her liquor shop on Main Street stands shut, its trade Sakura’s; since 27 October 2026 she keeps the till at Johansson Mart in Kitahama on weekday evenings and Saturdays, when Sakura is shut',
   day:[['07:00','higa','the garden across the lane: the vines, the beds and the altar flowers',{stand:'higa-garden'}],['08:30','higa','the verandah'],['10:00','onsen','the bandai at Umi-no-yu, the bath’s opening'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa','home to the verandah']]}),
  // The Front-Row yard. Tetsuo keeps the island's electrics since the power house lost its keeper (roster.js RETIRED).
  person('Tetsuo',{sex:'m',age:40,home:'resident-home-kenji',work:'workshop',family:'Chinen',purpose:'radio repairer at the Chin & Tetsuo workshop; the ferry’s electrician under contract; tends the onsen’s boiler and pumps and the power house’s switchboard',

@@ -94,10 +94,11 @@ test('nothing on a lot stands on a walking circuit, a lane, a door’s approach 
 
 test('every dressed lot can be walked into from Main Street, and what it offers is reached on foot',()=>{
  const nav=createNavigation(playerBlocked,{step:.5});
- // The inside of each: the lane garden's middle path, the free bay, the gap to the parking sign, the bicycle shed's
+ // The inside of each: the lane garden's middle path, Johansson Mart's forecourt at its door (where the to-let bay was,
+ // 27 October 2026), the gap between Kōji's and Nhung's cars to the parking sign, the bicycle shed's
  // front, the hoop's free-throw line, the eisa ground, Mac's table, Gran Higa's path, between Kōji's rails, Tetsu's
  // table and the drinks corner's bench.
- const goals={'the lane garden':[24.0,65.0],'the free bay':[39.9,64.5],'the parking sign':[36.0,63.2],'the bicycle shed':[6.8,52.2],'the hoop':[12.5,53.2],
+ const goals={'the lane garden':[24.0,65.0],'Johansson Mart’s door':[40.4,62.6],'the parking sign':[30.52,63.2],'the bicycle shed':[6.8,52.2],'the hoop':[12.5,53.2],
   'the eisa ground':[-15,52],'Mac’s table':[-29.6,50.4],'Gran Higa’s garden':[-30.9,-5],'Kōji’s nets':[-31.5,8.6],'Tetsu’s table':[-20.5,-.2],'the drinks corner':[7.0,-2.3]};
  for(const [name,[x,z]] of Object.entries(goals)){
   assert.equal(playerBlocked(x,z,.32),false,name+' is open ground');
@@ -108,6 +109,8 @@ test('every dressed lot can be walked into from Main Street, and what it offers 
     assert.ok(canStepBetween(groundHeight(px,pz),groundHeight(nx,nz)),name+': a step at '+[nx,nz]);assert.equal(playerBlocked(nx,nz,.32),false,name+': blocked at '+[nx.toFixed(2),nz.toFixed(2)]);px=nx;pz=nz;}}
   assert.ok(Math.hypot(px-x,pz-z)<.6,name+' is reached');
  }
+ // The shop itself is solid until it is walked into (world/kitahama-shop-build.js, batch 1).
+ assert.equal(playerBlocked(38.6,66.3,.32),true,'Johansson Mart’s walls are solid');
 });
 
 test('the retained plots keep their gates, nameplates and gutters; their planting stays on their walls',()=>{

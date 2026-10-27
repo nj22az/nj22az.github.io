@@ -15,6 +15,7 @@ import {airportWorld} from '../world/airport-ground.js';
 import {standNow} from './stand-points.js';
 import {quayBreakPlan} from './quay-breaks.js';
 import {shopDayPlan,LAUNDRY_STANDS} from './shop-days.js';
+import {kitahamaShopOnDuty,kitahamaShopOpen,DOOR_POINT as KITAHAMA_SHOP_DOOR} from '../world/okinawa/kitahama-shop.js';
 import {YUNTAKU} from '../commerce/higa-liquor.js';
 
 const HOME_TARGETS=new Map();
@@ -53,6 +54,11 @@ export function canonicalDay(name,minutes,rain=false){
  }
  const rest=canonicalRest(name,minutes);
  if(rest)return {...homePlan(rest.activity),rest:rest.id};
+ // Johansson Mart, Kitahama (world/okinawa/kitahama-shop.js; the owner, 27 October 2026): Grandmother Higa keeps its till
+ // on weekday evenings and Saturdays, when Sakura is shut and Miss Higa has the bandai. It comes before the shut Higa
+ // Liquor's bench: while the shop has her, she is behind its counter.
+ if(name==='Grandmother Higa'&&kitahamaShopOnDuty(minutes))return {place:'kitahama-shop',target:[...KITAHAMA_SHOP_DOOR],
+  activity:kitahamaShopOpen(minutes)?'the till at Johansson Mart':'taking in the van’s cases at Johansson Mart',rain:!!rain};
  // Sakura Trading's round, the bench outside the shut Higa Liquor, and washing day at the coin laundry (shop-days.js).
  const shop=shopDayPlan(name,minutes,{pointFor:place=>points[place]?[...points[place]]:null});
  if(shop){if(shop.home)return homePlan(shop.activity);return {...shop,target:shop.target||[...points[shop.place]],rain:!!rain};}

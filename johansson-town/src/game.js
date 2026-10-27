@@ -50,6 +50,7 @@ import {WAREHOUSE} from './world/warehouse.js';
 import {assignWorkplaces} from './people/workplaces.js';
 import {createHomeResidents} from './people/home-residents.js';
 import {buildPoliceStationInterior} from './world/interiors/police-station.js';
+import {buildKitahamaShopRoom,kitahamaShopRoomReady} from './world/interiors/kitahama-shop-room.js';
 import {buildPortHall} from './world/interiors/port-hall.js';
 import {PORT_BUILDING} from './world/port-building.js';
 import {chooseOpening,OPENINGS,recoverSakuraBenchCheckpoint} from './world/openings.js';
@@ -1306,6 +1307,8 @@ function roomShell(s){
  // Who is at the street door and who is past the step (their shoes are there): the player, unnamed, and the bathers.
  if(s.id==='onsen'){activeRoomLayout=buildOnsenInterior({...shared,people:()=>[{name:null,x:player.position.x,z:player.position.z},...world.people.filter(p=>p.g.userData.inOnsen&&p.g.visible).map(p=>({name:p.profile.name,x:p.g.position.x,z:p.g.position.z}))]});return;}
  if(s.id==='koban'){activeRoomLayout=buildPoliceStationInterior(shared);return;}
+ // Johansson Mart, Kitahama (world/interiors/kitahama-shop-room.js): its own models, in the shop's own frame.
+ if(s.id==='kitahama-shop'){activeRoomLayout=buildKitahamaShopRoom({...shared,getMinutes:()=>minutes});return;}
  if(s.id==='ramen'){activeRoomLayout=buildSatoRamenRoom({...shared,getMinutes:()=>minutes,exploration:{state:activities.state,show:activities.menu,save:activities.save,close:activities.close}});return;}
  // A home with a room of its own (the office, the police box) keeps it; everyone else gets a flat.
  activeRoomLayout=homeOwner(s)&&!s.ownRoom?buildResidentHome({...shared,profile:world.people.find(p=>p.profile.name===homeOwner(s)).profile,box}):s.id==='warehouse'?buildWarehouseInterior(shared):buildCompactShop(shared)||buildSuppliedRoom(shared);
@@ -1466,6 +1469,11 @@ async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawn
   roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
   try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
   if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
+ }
+ // Johansson Mart's models are shared with the street; wait for them at the door so the room never opens empty.
+ if(s.id==='kitahama-shop'){
+  roomLoading=true;resetInput();let ready=false;try{ready=await kitahamaShopRoomReady();}finally{roomLoading=false;}
+  if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
  }
  if(!roomAssetsReady(s)){
   roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
