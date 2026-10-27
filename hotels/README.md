@@ -8,6 +8,19 @@ path. From now on, every update with the owner's own notes on a stay also gets a
 only; the post is listed with `"hotel": "<record id>"` and appears first in that hotel's notes. The full rule is in
 the repository's `CLAUDE.md` and `AGENTS.md`, "Hotels & Parking".
 
+Published to main as `98dd96b4`. A `#review-<id>` link (Share, a blog post) now switches the parking choice to that
+hotel's, opens its notes and scrolls to it; before, an Avoid or Easy hotel's link landed on a hidden post.
+
+**First stay posts (drafts on branch `claude/peaceful-clarke-fprqk3`, not on main until the owner approves):**
+`/blog/hotel-marina-vedbaek/`, `/blog/best-western-plus-hotel-odense/`, `/blog/scandic-rosendahl-tampere/`. Written
+only from these records' owner notes, receipt and checked sources; the Rosendahl quote is the owner's message of
+27 October, lightly trimmed. **Post dates 13, 18 and 23 October 2026 are invented on the owner's instruction ("make
+up the dates so they end up chronological")**, in the order the notes were recorded; they are publishing dates, not
+stay dates (none are recorded), and the posts never state when the stays were. So a hotel's notes show its blog post
+dated before the owner's report it was written from. Checks: build `--check`, 19 unit tests, `blog-feed.test.cjs`
+(updated for the three newest posts), `flags.cjs` 19/19, `feed.cjs` 46/46, links both ways in Chromium, no overflow
+at 1440 and 390 px.
+
 ## Finland follow-up — 27 October 2026
 
 Scandic Rosendahl is now **Easy (yellow)** on the owner's report that parking is paid

@@ -1,6 +1,33 @@
 /* Shared catalogue: English first; Swedish only where available. */
 window.OFFICE_BLOG_POSTS = [
   {
+    "id": "scandic-rosendahl-tampere",
+    "title": "Scandic Rosendahl, Tampere: paid parking on one bill",
+    "excerpt": "Parking at Scandic Rosendahl is not free, but you pay for it at the hotel and it goes on the hotel bill. One receipt for the stay makes it Easy.",
+    "url": "/blog/scandic-rosendahl-tampere/",
+    "date": "2026-10-23",
+    "topic": "Hotel stay",
+    "hotel": "scandic-rosendahl-2026-10-25"
+  },
+  {
+    "id": "best-western-plus-hotel-odense",
+    "title": "Best Western Plus Hotel Odense: free parking, but a long walk",
+    "excerpt": "The parking was free, but it was a long walk from the hotel and on a construction site. For field service work, that makes it one to avoid for now.",
+    "url": "/blog/best-western-plus-hotel-odense/",
+    "date": "2026-10-18",
+    "topic": "Hotel stay",
+    "hotel": "best-western-plus-hotel-odense-2026-10-25"
+  },
+  {
+    "id": "hotel-marina-vedbaek",
+    "title": "Hotel Marina, Vedbæk: free parking, registered at reception",
+    "excerpt": "Five nights at Hotel Marina in Vedbæk, Denmark. The outdoor parking is free once the car is registered on the APCOA tablet at reception.",
+    "url": "/blog/hotel-marina-vedbaek/",
+    "date": "2026-10-13",
+    "topic": "Hotel stay",
+    "hotel": "hotel-marina-2026-10-24"
+  },
+  {
     "id": "lanternan-som-lyser-svagt",
     "title": "The navigation light that glows dimly",
     "excerpt": "Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.",
