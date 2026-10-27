@@ -150,7 +150,9 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   }
   if(phase.index>=4&&phase.index<=10){const h=wrist(glassP,glassQ);handP=h.p;handQ=h.q;}
   setWorld(prop,glassP,glassQ);
-  reach(avatar,handP,'R');
+  // (a Pixar body's elbow hangs below the shoulder through the whole performance, as consume.js poses its drink; the
+  // cartoon's goes out to the side: the owner, 27 October 2026, "the arm gets stuck in his head")
+  reach(avatar,handP,'R',avatar.pixar?[-.45,-1,.25]:-.25);
   b.handR.quaternion.copy(b.handR.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(handQ));
   b.handR.updateWorldMatrix(false,true);
   reach(avatar,restingHand,'L');b.handL.quaternion.copy(b.handL.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(restingHandQ));b.handL.updateWorldMatrix(false,true);

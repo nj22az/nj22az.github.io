@@ -27,16 +27,68 @@ remove goatee and moustache?"; "Remember to write handovers when you complete so
   walking, wave, think, sit drink), `johansson-meshy-face.jpg`, `thao-meshy-body.jpg`, `thao-meshy-face.jpg`,
   `thao-meshy-in-game.jpg` and `-face.jpg` (the izakaya's door, 17:30), the painted-out faces.
 
+## Afternoon, 27 October 2026: the sit-drink pose, his face, Thao's eyes
+
+The owner, in order: a diagnostics note on the sheet's "sit drink" cell (the right elbow up beside the head, the hand
+dangling at the collarbone, no grip; the hips "not lowered", the thighs "crushed", the feet floating; the left arm
+hanging); "His face needs to be cleaner too"; "He looks like a burn victim now make his head gorgeous so he fits in and
+Thao's eyes were all over the place"; "Shouldn't the elbow be down when he is drinking"; "he looks good now but the arm
+gets stuck in his head".
+
+**World (`src/avatars/animate.js`, `consume.js`):**
+- The drinking arm on a Pixar body (`drinkArm`, and the sip's own IK in `poseAvatarConsumption`): the elbow hangs below
+  the shoulder and a little forward (the reach's pole `[-.45,-1,.25]`), the forearm folds up and turns across to the
+  mouth. The cartoon keeps its raised arm (short arms, big head). A toast raises the glass before the face with the
+  elbow bent, not a straight arm overhead.
+- What meets the lips on a Pixar body is the rim's near edge (`rimNear`, the glass's radius), not the rim's centre: its
+  lips are its own skin, and with the centre there the glass stood through his cheek and chin.
+- The draught at the counter is the table-drink performance (`table-drink.js`), not the gesture: its arm takes the same
+  elbow-down pole on a Pixar body. In the booted game the sip's rim error is 0 (`johansson-meshy-game-report.json`).
+- Seated in shorts or trousers, a Pixar body's hands rest on its thighs (the cartoon's rest on the lap only over a
+  skirt's cloth). The owner: "Sitting is awkward like he is stretched": a Pixar body now sits as a person does on a
+  stool (`CHAIR_SIT.pixar`): the thighs sloping a little down to the knees (-1.36 rad), the knees a hand apart, the
+  shins hanging, and a soft back (spine and chest curved forward a touch, the chin level). The cartoon's square toy sit
+  (`CHAIR_SIT.cartoon`) is unchanged.
+- **The hips and thighs are right for this body.** Measured on the Meshy mesh (`scratchpad legs.py`): his crotch is at
+  0.59 m of 1.80 (a third of his height; a person's is near half), the knee at 0.46, so his thigh bone is 0.19 m and his
+  shin 0.34. Seated on the izakaya's 0.46 m stool the animator lowers him 9 cm (the seat under his own bottom,
+  `seat-support.js`) and his feet hang 10 cm off the floor, on the stool's rail in the game. The sheet draws no stool,
+  so he looks as if he floats; nothing to fix in the rig short of resculpting his legs (not done: the owner's model).
+- A gripping hand is still open (World's skeleton has no finger bones): `3. Open` below.
+
+**Studio (`3d/cast/game_thuan.py paint_out_face`, `game_meshy.py`, the landmarks):**
+- `clean=True` (the Meshy bodies): the holes fill from the skin's own tone round them (a wide normalised blur, wider
+  where little skin is near), feathered, and the whole front of the face is smoothed of blotches and stubble
+  (`clean_skin`). The old fill was one flat lighter pink in jagged patches, and a tanned skin's shaded side passed the
+  brow-remnant test by luminance alone, so his forehead and cheeks were patched all over: now a remnant must be dark
+  *and* grey (`sat < .24`), and the found brow's own box goes too.
+- `tone=L['skin_tone']`: his skin brought from the texture's red-orange (0.90, 0.58, 0.49) to (0.93, 0.66, 0.53), toward
+  the cartoon Johansson's #dc9d7a, by hue so the khaki shorts stay khaki (`tone_skin`). Shave zones: the goatee's zone
+  widened over the jaw, the tuft painted at his hairline added.
+- Thao: her brows lie 2 to 6 cm above her eyes (`face_zones.brow_above`), lower than Thuận's, so they were missed and
+  the painted brows stayed under the rigged ones; her left brow hides under her bob from its middle out, so a brow
+  with less than two thirds of the other's span takes the other's shape. Her iris measured as wide as the eye
+  (`IRIS_MOST = .72` of the half width now): with white either side, her look about stays inside the eye.
+- New exports: `johansson.glb` version `a9b404b7e3`, `thao.glb` `1ec248fabf`; runtime rebuilt.
+
+**Evidence** (studio repo `3d/cast/renders/game/`): `johansson-meshy-body.jpg` (turned round, walking, wave, think,
+drink, sit drink, sit toast, sit), `johansson-meshy-face.jpg`, `johansson-meshy-face-painted-out.jpg`,
+`thao-meshy-face.jpg` (at rest, looking, three-quarter, side, the feelings), `thao-meshy-face-painted-out.jpg`,
+`johansson-meshy-game-izakaya-sip-*.jpg` (the draught at the counter in the booted game: the elbow down, the glass at
+his lips, the feet on the stool's rail). World tests:
+`player-seating`, `avatar-dining-combat`, `pixar-meshy`, `pixar-johansson`, `avatar-polish`, `afterbath-outfit` pass.
+
 ## Open
 
-1. **The brows on both:** the painted brow leaves remnants beside World's brow decal, and his decal lies thin and
-   tilted (the face sheets). Fix in the studio's `paint_out_face`: the brow hole from the found brow's own box, the
-   decal's tilt from the line's ends. His iris decal shows a seam at its edge.
+1. **Faces, the last details:** a few dark specks remain beside Thao's eyes and on her nose (lash-fin and nostril
+   remnants under the dilation); his hair at the temples is the texture's painted streaks (the side view). His iris
+   decal's seam at its edge. (The brows' remnants and his blotched skin: done this afternoon, above.)
 2. **His in-game checks, done once** (`node tools/pixar-shots.mjs --scenes --name Johansson <out>`, 81 steps; the
    studio repo's `renders/game/johansson-meshy-game-*.jpg`): idle, walk, gestures and the counter are clean, and the
    draught served at his seat is drunk by the game's own performance with the rim at his lips (`report.json`
-   `sip.moments`: `valid` at the sip). The hand stays open around the mug: a holding hand shape is the next step. The
-   stools fit him (feet on the rail, knees at the counter); then the izakaya redrawn in CAD.
+   `sip.moments`: `valid` at the sip). The hand stays open around the mug: a holding hand shape is the next step
+   (World's skeleton has no finger bones; a closed-hand shape key on the Meshy hand, driven by `heldProp`, is the
+   likely route). The stools fit him (feet on the rail, knees at the counter); then the izakaya redrawn in CAD.
 3. Thuận is still on her Tripo model; the same route takes a Meshy Thuận when the owner gives one.
 4. The earlier Pixar Johansson route (the free sculpt, separate shirt and shorts) is kept in the studio repo out of the
    game; its last fixes of the morning (the wrist graft, the hand straight at rest, a wrist weight ramp) live in the

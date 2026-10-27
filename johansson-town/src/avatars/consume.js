@@ -92,7 +92,11 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
  const lips=avatar.pixar?.lipsLocal||new THREE.Vector3(v.x*m.Rh*m.headSX,m.headCentre-m.headY+v.y*m.Rh*m.headSY,v.z*m.Rh*.98+.025*m.k);   // (a Pixar body's own lips, pixar.js)
  const rest=root.localToWorld(new THREE.Vector3(-m.shoulderX-m.hand*.4,m.shoulderY-m.upper-m.fore*.55,m.depth*.75));
  const q=root.getWorldQuaternion(new THREE.Quaternion()).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),drinkTilt(prop,lift,food)));
- const contact=(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,0))).applyQuaternion(q);
+ // (what meets the lips: the cartoon's rim at its centre (its lips point stands off its big head); a Pixar body's lips are
+ // its own skin, so the rim's near edge comes to them and the glass stands in front of the face, not through the cheek
+ // and chin: the owner, 27 October 2026, "the arm gets stuck in his head")
+ const rimNear=avatar.pixar&&!food?(prop?.userData.grip?.radius??.039)*.9:0;
+ const contact=(food?new THREE.Vector3(0,.04,.115):palm(m).add(drinkGrip(prop,m)).add(new THREE.Vector3(0,prop?.userData.rimHeight??.15,rimNear))).applyQuaternion(q);
  // Short arms and large custom heads still meet the drink. Start from a
  // reachable resting hand, then lean gently; any remaining reach is met by
  // bringing the head towards the hand instead of turning it through a right angle.
@@ -119,7 +123,8 @@ export function poseAvatarConsumption(avatar,lift,food=false,prop=null){
   head.updateWorldMatrix(true,false);
   target=rest.clone().lerp(head.localToWorld(lips.clone()).sub(contact),lift);
  }
- reach(avatar,target,'R');
+ // (a Pixar body's elbow hangs below the shoulder as it drinks, the cartoon's short arm goes out to the side)
+ reach(avatar,target,'R',avatar.pixar?[-.45,-1,.25]:-.25);
  // The vessel sits inside the hand, where the thumb can close on it, rather
  // than hanging outside the wrist. Keep the palm level throughout the sip.
  if(!food)alignDrinkHand(avatar,q);

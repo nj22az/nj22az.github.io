@@ -264,7 +264,13 @@ const LEG_JOINTS=['thighL','kneeL','footL','thighR','kneeR','footR'];
 /** On a chair or a bench: where the mittens rest (`hands`: how far along the thighs, from the hips to the knees), and how
  *  far the backs of the shins stay in front of the seat's front edge (`edge`, metres for a body of 1.6 m), the body sliding
  *  forward on the seat as far as that needs (a seat that says where its front edge is: `seatFront`). */
-export const CHAIR_SIT=Object.freeze({hands:.6,edge:.012});
+export const CHAIR_SIT=Object.freeze({hands:.6,edge:.012,
+ // the legs' shape on a chair (thigh: pitch from hanging, knee: the shin's bend back from the thigh, spread: the knees apart)
+ cartoon:Object.freeze({thigh:-1.52,knee:1.45,spread:.06}),
+ // (a Pixar body: the thighs slope a little down to the knees, a hand apart, the shins hanging; and it sits with a soft
+ // back, `slump`: the spine and chest curved forward a touch, the chin kept level. The owner, 27 October 2026: "Sitting
+ // is awkward like he is stretched".)
+ pixar:Object.freeze({thigh:-1.36,knee:1.3,spread:.12,slump:Object.freeze({spine:.07,chest:.09,head:-.1})})});
 /** How far each angle of an arm laid on the lap may go ([low, high] per angle, as reachFor's `bounds`; pair-poses.js has the
  *  same for a reach to a partner): kept off the thighs as wide as they are drawn (shorts, wide trousers), an arm must not be
  *  wound round the shoulder to get there, which it would unwind through the air every time the body sits down or gets up. */
@@ -657,6 +663,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // (Seated the kit is behind them, against the seat back: the hands rest as anybody's do, clear of a chair's arms.)
    const A=soak?null:C.hands();
    if(A){armTo('R',A.R,chairBlend,A.handR);armTo('L',A.L,chairBlend,A.handL);}
+   if(avatar.pixar&&!soak){const S=CHAIR_SIT.pixar.slump;add('spine',S.spine*chairBlend);add('chest',S.chest*chairBlend);add('head',S.head*chairBlend);}
    else{set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);}
    // A seat that says where its front edge is (seatFront: how far ahead of the body's mark) has the body slide forward on
    // it as far as the backs of the shins need to hang in front of that edge: short legs on a deep bench sit at its front,
@@ -671,7 +678,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const pose=s.pose;
    if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
    else if(pose==='Type'){set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.7+Math.sin(time*14)*.08);set('elbowR',-.7+Math.sin(time*13+1)*.08);set('head',.15);}
-   else if(pose==='Eat'||pose==='Drink'||pose==='SitDrinkHip'||s.seat==='SitEat'){const lift=Math.max(0,Math.sin(time*1.4))**4;set('shoulderR',-.6-lift*.9,0,-.25);set('elbowR',-.8-lift*1.3);set('head',.08-lift*.1);
+   else if(pose==='Eat'||pose==='Drink'||pose==='SitDrinkHip'||s.seat==='SitEat'){const lift=Math.max(0,Math.sin(time*1.4))**4;drinkArm(lift);set('head',.08-lift*.1);
     // the bathhouse way with a bottle of milk: the other hand on the hip, the chin up
     if(pose==='SitDrinkHip'){set('shoulderL',.15,0,.75);set('elbowL',-.3,0,-1.5);add('head',-.12);}}
    // Pouring from the chair: the glass held out low in the right hand, the bottle brought across in the left
@@ -1035,8 +1042,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const flex=ankle<m.shin*Math.cos(.07)?Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1)):0;
   const key=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible).map(o=>o.uuid).join('/')+'|'+seat.toFixed(3)+'|'+flex.toFixed(3);
   if(chairShapes.has(key))return chairShapes.get(key);
-  const knee=flex>0?1.52-flex:1.45;
-  const joints={thighL:[-1.52,0,.06],thighR:[-1.52,0,-.06],kneeL:[knee,0,0],kneeR:[knee,0,0],footL:[flex,0,0],footR:[flex,0,0]};
+  const P=avatar.pixar?CHAIR_SIT.pixar:CHAIR_SIT.cartoon;
+  const knee=flex>0?-P.thigh-flex:P.knee;
+  const joints={thighL:[P.thigh,0,P.spread],thighR:[P.thigh,0,-P.spread],kneeL:[knee,0,0],kneeR:[knee,0,0],footL:[flex,0,0],footR:[flex,0,0]};
   const S=seatedScan(joints,seat);
   // where the right mitten lies: on top of the lap over the thigh, `hands` of the way to the knee (nearer the hips for arms
   // too short for that), never in it (a hand hung beside the hips goes through a skirt that lies on the lap)
@@ -1051,7 +1059,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // by the side, as a sitter's is, not winged out over the next place on the bench or a chair's arm)
   // (the left the mirror of the right: the sit is the same both sides, and an arm solved on its own can settle elsewhere)
   const mirrored=A=>({...A,L:A.R,handL:A.handR});
-  const shape={joints,shins:S.shins,hands:()=>!S.cloth?null:hands??=mirrored(reachFor('ChairSit:'+key,{pose:()=>joints,legs:S.leg*1.04,only:'R',
+  const shape={joints,shins:S.shins,hands:()=>!(S.cloth||avatar.pixar)?null:hands??=mirrored(reachFor('ChairSit:'+key,{pose:()=>joints,legs:S.leg*1.04,only:'R',
    R:{touch:true,root:place,elbow:m=>[-(m.width/2-m.armR*.4),m.hipY+m.torso*.3,m.depth*.3],seed:[-.55,.1,-.1,-.6,0],hand:[-.3,0,0],bounds:LAP_BOUNDS}}))};
   chairShapes.set(key,shape);return shape;
  }
@@ -1268,6 +1276,17 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const p=avatar.pair;if(p&&p.name===R.pair&&p.role===R.role&&p.fit)return p.fit[R.role];
   if(!soloFits.has(R.pair))soloFits.set(R.pair,fitPair(R.pair,avatar,avatar));return soloFits.get(R.pair)[R.role];
  }
+ /**
+  * The right arm bringing a drink (or a morsel) to the mouth, `lift` 0 (held low, in front of the chest) to 1 (at the lips).
+  * The cartoon's short arm and big head need the upper arm raised to reach; a Pixar body drinks as a person does (the owner,
+  * 27 October 2026: "Shouldn't the elbow be down when he is drinking"): the elbow hangs below the shoulder and a little
+  * forward, the forearm folds up and turns across to the mouth (the angles measured on Meshy Johansson's bones, the hand
+  * two fingers under his lips, where the rim of the glass comes to them: tools/pixar-sheet.mjs "sit drink").
+  */
+ function drinkArm(lift){
+  if(avatar.pixar){set('shoulderR',-.5-lift*.45,.35+lift*.6,-.1);set('elbowR',-1.55-lift*.7);set('handR',-.2*lift,0,0);}
+  else{set('shoulderR',-.6-lift*.95,0,-.25);set('elbowR',-.85-lift*1.25);}
+ }
  function applyGesture(g,s,seated=false){
   const t=g.t,d=g.d,e=d===Infinity?1:env(t,d),q=d===Infinity?Math.min(1,t/.3):ease(t,d);
   // the moves for Fujita's Ten Minutes of Heaven come in smoothly over half a second (big ones slower); a pose the scene
@@ -1354,8 +1373,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     add('chest',.34*q);set('shoulderL',-1.48*q+press,0,.16*q);set('shoulderR',-1.48*q+press,0,-.16*q);
     set('elbowL',-.12*q);set('elbowR',-.12*q);set('handL',.6*q);set('handR',.6*q);add('head',.25*q);break;
    }
-   case 'SitToast':set('shoulderR',-1.9*q,0,-.2);set('elbowR',-.6*q);add('head',-.15*q);break;
-   case 'SitDrink':{const lift=Math.max(0,Math.sin(t*2.6))**2;set('shoulderR',-.6-lift*1,0,-.25);set('elbowR',-.9-lift*1.2);break;}
+   // (a toast on a Pixar body: the glass raised in front of the face with the elbow bent, not a straight arm overhead)
+   case 'SitToast':if(avatar.pixar){set('shoulderR',-1.35*q,.45*q,-.15*q);set('elbowR',-1.3*q);}else{set('shoulderR',-1.9*q,0,-.2);set('elbowR',-.6*q);}add('head',-.15*q);break;
+   case 'SitDrink':{const lift=Math.max(0,Math.sin(t*2.6))**2;drinkArm(lift);break;}
    // Playful poses for photos: struck, held while the move lasts, and kept alive with a
    // little bounce. The head is big and the arms short, so every hand stays at or
    // below the cheek.
