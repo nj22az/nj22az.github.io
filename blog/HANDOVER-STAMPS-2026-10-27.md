@@ -68,3 +68,21 @@ print of any colour render, solid grainy darks, a speckle in the mid-tones, inke
 recorded in the shot list). Tried and dropped: the PORT 88 coffee render in Sakura's cold-cabinet corner (the busy,
 blurred shelves printed as heavy blobs; weighting ink by focus made the whole print pale). A World shoot of the
 game's Thuan was started and stopped when the owner asked for Pixar Thuan. **Published on the owner's "Yes" as `9cbb9761`; live files match and the stamp shows on the post and in the blog list.**
+
+## Hotel stay posts (27 October 2026, later)
+
+The owner: "Make a stamp for the hotel stay posts too, and use the rubber stamp shader it looks good". Minato has no
+hotel, so each post has the Minato place that matches its story, shot in World's Rubber stamp Look:
+
+| Post | Shot | Why |
+| --- | --- | --- |
+| Hotel Marina | `stay-marina`: Harbour Park, `park/wide` | the hotel by the sea |
+| Best Western Plus Odense | `stay-odense`: the main street, `onsen/push` camera outdoors | the long walk from the parking |
+| Scandic Rosendahl | `stay-rosendahl`: inside Sakura, `market` room, `sakura/push` | paying at the counter, one bill |
+| Scandic Laajavuori | `stay-laajavuori`: Umi-no-yu's front desk, `onsen` room, `onsen/wide` | the free spa |
+
+The shoot tool can now enter an interior first (`"room"`, as `render-feed-backdrops.mjs` does; without it an interior
+camera photographs the street outside) and keeps Johansson `"back"` metres behind the lens, with his hands hidden.
+Tried and dropped: the empty pier (`pier/wide`, `pier/low`), the sea from Fumoto square, Rainflower Lane. Each post's
+link preview is now its stamp (Laajavuori's was its entrance photo; the photos stay in the post). **On the branch;
+awaiting the owner's word.**

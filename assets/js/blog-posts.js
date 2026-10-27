@@ -7,7 +7,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/scandic-laajavuori-jyvaskyla/",
     "date": "2026-10-27",
     "topic": "Hotel stay",
-    "hotel": "scandic-laajavuori-2026-10-24"
+    "hotel": "scandic-laajavuori-2026-10-24",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/stay-laajavuori-thumb.webp",
+      "alt": "The front desk of a Japanese bathhouse with its price board and a red curtain, printed as a rubber stamp."
+    }
   },
   {
     "id": "scandic-rosendahl-tampere",
@@ -16,7 +20,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/scandic-rosendahl-tampere/",
     "date": "2026-10-23",
     "topic": "Hotel stay",
-    "hotel": "scandic-rosendahl-2026-10-25"
+    "hotel": "scandic-rosendahl-2026-10-25",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/stay-rosendahl-thumb.webp",
+      "alt": "The counter and shelves of a small Japanese shop, printed as a rubber stamp."
+    }
   },
   {
     "id": "best-western-plus-hotel-odense",
@@ -25,7 +33,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/best-western-plus-hotel-odense/",
     "date": "2026-10-18",
     "topic": "Hotel stay",
-    "hotel": "best-western-plus-hotel-odense-2026-10-25"
+    "hotel": "best-western-plus-hotel-odense-2026-10-25",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/stay-odense-thumb.webp",
+      "alt": "A street of shops running away into the distance, printed as a rubber stamp."
+    }
   },
   {
     "id": "hotel-marina-vedbaek",
@@ -34,7 +46,11 @@ window.OFFICE_BLOG_POSTS = [
     "url": "/blog/hotel-marina-vedbaek/",
     "date": "2026-10-13",
     "topic": "Hotel stay",
-    "hotel": "hotel-marina-2026-10-24"
+    "hotel": "hotel-marina-2026-10-24",
+    "stamp": {
+      "src": "/assets/images/blog/stamps/stay-marina-thumb.webp",
+      "alt": "Harbour Park by the water in Minato, printed as a rubber stamp."
+    }
   },
   {
     "id": "lanternan-som-lyser-svagt",
