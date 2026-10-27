@@ -11,7 +11,7 @@ still opens its card. Phones stack each action's icon over its label so five act
 off, or in print, everything shows. Assets `hotels.css?v=12`, `hotels.js?v=9`. Checked: `feed.cjs` 46/46 (updated to
 measure the fold-out instead of the thread's visibility), `flags.cjs` 19/19, the Laajavuori card closed on load,
 opened by a tap and by Photos, closed again, not opened by Website, opened by its link; no card wider than the screen
-at 320, 390, 834 and 1440 px. **On branch `claude/peaceful-clarke-fprqk3`; not yet on main.**
+at 320, 390, 834 and 1440 px. **Published to main as `a2f5c851` after the owner's "The photos shouldn't show automatically either"; live files match, and on the live page no photo or note shows until a card is opened.**
 
 ## Photos and the Scandic Laajavuori stay — 27 October 2026
 
