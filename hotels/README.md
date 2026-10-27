@@ -19,7 +19,8 @@ said I did not want a voucher, this should be logged and become another tag to s
 - Checks: build `--check`; 21 unit tests (new: the chip, the row tag, validation, the CSV agreeing with the records);
   `blog-feed.test.cjs` (updated for the new post); `flags.cjs` 19/19; `feed.cjs` 46/46, its "actions on one row" now
   counting rows rather than height (phones stack icon over label since the folding cards). Assets `hotels.js?v=10`.
-  **On the branch; awaiting the owner's word.**
+  **Published on the owner's "Yes" as `59f4b0fb`; 11/11 changed files match live; live: the filter finds Elmia
+  (asked) and Laajavuori (none), the post shows its stamp, `feed.cjs` 46/46.**
 
 ## Laajavuori: no card hold — 27 October 2026
 
