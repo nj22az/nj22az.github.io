@@ -65,4 +65,7 @@ These rules replace the 26 October finder layout:
     sends a driver backwards or stops them early.
 - **Map:** round pins (Avoid small and behind), a legend, the route with A/B and
   numbered picks matching the trip card. Popups are short and lead back to the post.
+- **Country** is shown by its flag (inline SVG) with the code, as a pressable tag on
+  the post and in a toolbar row. Never use a plain colour for country: colour means
+  parking, blue means you.
 - Below 1000 px the feed comes first, with a floating Feed/Map switch.

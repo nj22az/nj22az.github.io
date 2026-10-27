@@ -97,6 +97,23 @@ the meaning.
 - Asset versions: `hotels.css?v=8`, `hotels-map.css?v=3`, `hotels.js?v=6`,
   `hotels-map.js?v=6`, `hotels-trip.js?v=1`.
 
+## Country tags — 27 October 2026, follow-up
+
+The owner: "It should be clear with a tag or colour coding which country a post belongs
+to." Colour alone would collide with the parking colours, so each post carries its
+country's flag (inline SVG Nordic cross, `flag()` in `tools/build-hotels.py`) with the
+code (SE, DK, NO, FI) as a tag in the header. The toolbar has a flag row (Denmark,
+Finland, Norway, Sweden) with live counts that follow the parking choice. Pressing a
+tag, on a post or in the row, filters to that country; pressing it again, or Reset,
+clears it. On phones the post's tag wraps under the name so long names keep two
+lines at most. Assets `hotels.css?v=9`, `hotels.js?v=7`. Browser checks `flags.cjs`
+(session scratch): **19/19**, and the earlier 46 still pass. **Published to main on
+the owner's word ("Yes") as
+[`b52c3a72`](https://github.com/nj22az/nj22az.github.io/commit/b52c3a722104eab119ba4bc7249b5467512a35c3)**
+(main merged in first; it had only Johansson Town changes, no conflicts).
+[Pages run 40457133999](https://github.com/nj22az/nj22az.github.io/actions/runs/40457133999)
+succeeded; 8/8 live hotel files match the commit and both harnesses pass live.
+
 ## External services and privacy
 
 - OSRM demo server (`router.project-osrm.org`, CORS `*`, one request per second) and

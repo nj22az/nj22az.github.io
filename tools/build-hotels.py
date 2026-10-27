@@ -239,6 +239,32 @@ def icon(name):
             'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>')
 
 
+# Nordic cross flags, drawn to the official proportions; a flag is a country's own colour coding
+# and never collides with the parking colours.
+FLAGS = {
+    'SE': ('16:10', '#006aa7', '#fecc02', 5, 2),
+    'DK': ('37:28', '#c8102e', '#ffffff', 12, 4),
+    'FI': ('18:11', '#ffffff', '#003580', 5, 3),
+    'NO': ('22:16', '#ba0c2f', '#ffffff', 6, 4),
+}
+
+
+def flag(code, name):
+    ratio, field, cross, hoist, width = FLAGS[code]
+    w, h = (int(v) for v in ratio.split(':'))
+    cy = h / 2
+    bars = f'<rect x="{hoist}" width="{width}" height="{h}" fill="{cross}"/><rect y="{cy - width / 2}" width="{w}" height="{width}" fill="{cross}"/>'
+    if code == 'NO':  # a blue cross inside the white one
+        bars += f'<rect x="{hoist + 1}" width="{width - 2}" height="{h}" fill="#00205b"/><rect y="{cy - (width - 2) / 2}" width="{w}" height="{width - 2}" fill="#00205b"/>'
+    return (f'<svg class="hotel-flag" viewBox="0 0 {w} {h}" role="img" aria-label="{e(name)}"><rect width="{w}" height="{h}" fill="{field}"/>{bars}'
+            f'<rect width="{w}" height="{h}" fill="none" stroke="rgba(8,19,26,.25)" stroke-width=".6"/></svg>')
+
+
+def country_tag(review):
+    return (f'<button type="button" class="hotel-country-tag" data-hotel-country="{e(review["countryCode"])}" aria-pressed="false" '
+            f'title="Show only {e(review["country"])}">{flag(review["countryCode"], review["country"])}{e(review["countryCode"])}</button>')
+
+
 def place_key(review):
     """Feed order without a trip: country, then city, then hotel, so a place can be found by eye."""
     return (review['country'].casefold(), review['city'].casefold(), review['name'].casefold())
@@ -305,7 +331,7 @@ def render_review(review):
                   else '<span class="hotel-unmapped">Map location awaiting verification</span>')
     checked = review['parkingVerification']['checkedOn']
     return f'''      <article class="hotel-review hotel-post" id="review-{rid}" data-hotel-note="{rid}" data-checked="{e(checked)}" aria-labelledby="title-{rid}">
-        <header class="hotel-post-head"><span class="hotel-avatar hotel-avatar-{category}" aria-hidden="true">P</span><div class="hotel-post-who"><h4 id="title-{rid}">{e(review['name'])}</h4><p class="hotel-post-meta"><strong class="hotel-verdict hotel-verdict-{category}">{e(parking_category_label(review))}</strong> · {e(review['city'])}, {e(review['country'])}</p></div><button type="button" class="hotel-save" data-hotel-save="{rid}" aria-pressed="false" aria-label="Save {e(review['name'])}" hidden>{icon('bookmark')}</button></header>
+        <header class="hotel-post-head"><span class="hotel-avatar hotel-avatar-{category}" aria-hidden="true">P</span><div class="hotel-post-who"><h4 id="title-{rid}">{e(review['name'])}</h4><p class="hotel-post-meta"><strong class="hotel-verdict hotel-verdict-{category}">{e(parking_category_label(review))}</strong> · {e(review['city'])}</p></div>{country_tag(review)}<button type="button" class="hotel-save" data-hotel-save="{rid}" aria-pressed="false" aria-label="Save {e(review['name'])}" hidden>{icon('bookmark')}</button></header>
         <p class="hotel-trip-line" data-hotel-trip-line hidden></p>
         <p class="hotel-post-caption">{e(review['parkingSummary'])}</p>
         <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>
@@ -383,7 +409,7 @@ def build(reviews):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=8">
+  <link rel="stylesheet" href="/css/hotels.css?v=9">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=3">
 </head>
@@ -422,6 +448,7 @@ def build(reviews):
           </details>
         </div>
         {render_parking_choice(reviews)}
+        <div class="hotel-country-row" role="group" aria-label="Country">{''.join(f'<button type="button" class="hotel-country-tag" data-hotel-country="{e(code)}" aria-pressed="false">{flag(code, name)}{e(name)} <span class="hotel-option-count" data-country-count="{e(code)}">{sum(r["countryCode"] == code for r in reviews)}</span></button>' for code, name in countries)}</div>
         <details class="hotel-legend"><summary>{icon('info')}What the colours mean</summary><ul><li><span class="hotel-avatar hotel-avatar-free" aria-hidden="true">P</span><strong>Free</strong> confirmed free guest parking</li><li><span class="hotel-avatar hotel-avatar-easy" aria-hidden="true">P</span><strong>Easy</strong> paid, but paid at the hotel and on the hotel receipt</li><li><span class="hotel-avatar hotel-avatar-avoid" aria-hidden="true">P</span><strong>Avoid</strong> paid parking not confirmed as easy, or difficult access</li></ul></details>
       </form>
       <div class="hotel-results-bar">
@@ -470,7 +497,7 @@ def build(reviews):
   <script src="/shared.js?v=hotel-fixed-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/blog/hotels/hotels.js?v=6"></script>
+  <script src="/blog/hotels/hotels.js?v=7"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/blog/hotels/hotels-map.js?v=6"></script>
   <script src="/blog/hotels/hotels-trip.js?v=1"></script>
