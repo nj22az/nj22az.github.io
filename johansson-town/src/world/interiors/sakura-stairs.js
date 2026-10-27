@@ -1,5 +1,7 @@
 import * as THREE from '../../../vendor/three.module.js';
 import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
+import {assetURL} from '../../assets.js';
+import {SAKURA_STREET_POSTER} from '../sakura-street-poster.js';
 
 /**
  * Sakura's inside stair is a passage, not a place to walk (the owner, 20 October 2026, on his iPhone: "I don't want the
@@ -35,7 +37,7 @@ const TREAD=2.7/12,RISE=SAKURA_STAIR.height/24;
  *
  * A dog-leg of 24 risers of RISE (167 mm) on goings of TREAD (225 mm): the lower flight rises west from the stockroom to
  * the turning landing, the upper flight east from it to the top landing at the office floor. Each flight stands on a
- * closed plaster carriage to the floor (under the upper flight, the under-stair cupboard), so nothing is open beneath.
+ * closed plaster carriage to the floor, so nothing is open beneath.
  * The well walls: west x -5.65, south z -6.70 (the office's stairwell back wall, carried down), north z -4.07.
  */
 export const SAKURA_STAIRWELL=Object.freeze({
@@ -56,7 +58,12 @@ export const SAKURA_STAIRWELL=Object.freeze({
  * - the handrail: one continuous wall rail, a 40 mm tube on brackets 65 mm off the wall, 850 mm over the nosing line, from
  *   the foot round the landing to the top (a stair must have one; staff carry stock up it);
  * - skirting where the landings meet the walls (mops and boots); non-slip nosing on every tread (stock in both hands);
- * - the cupboard door in a casing, with a knob; 1F and 2F plates where each floor starts; the stair light and a switch at
+ * - the shop's campaign poster (Pixar Thuan, the one on Blue Coral's wall, SP-NK-001), pinned up twice where the climb
+ *   sees it: on the wall between the flights at eye height, and straight ahead on the landing (the owner, 27 October 2026:
+ *   "bring the posters from the town with the Pixar Thuan into the staircase ... on the walls"). The under-stair cupboard
+ *   door that rev A put on that wall is gone ("Why is there a door in the staircase?"): it opened onto the 450 mm well
+ *   between the flights, where nobody could reach it;
+ * - 1F and 2F plates where each floor starts; the stair light and a switch at
  *   each end, so it can be lit from either; the fire alarm on the landing, the office's way out (evacuateSakuraOffice).
  * In the shop's frame. Strings and rails follow the nosing line (each tread's nose), `noseLine`.
  */
@@ -89,7 +96,12 @@ export const SAKURA_STAIR_TRIM=Object.freeze({
   // The most a bracket may be from the next.
   bracketsEvery:1.0}),
  nosing:Object.freeze({depth:.035,height:.004,back:.012,end:.03}),
- cupboard:Object.freeze({x:Object.freeze([-3.2,-2.4]),y:1.8,casing:.05,proud:.03,leaf:.015}),
+ // The posters (B2, 515 x 728 mm) on push pins: [x, y, z] of the centre on the wall's face, and which way it faces.
+ posters:Object.freeze([
+  Object.freeze({at:Object.freeze([-2.7,1.9,-5.60]),face:'+z',why:'Between the flights, at the eye of someone on the lower flight; the camera at the foot sees it.'}),
+  Object.freeze({at:Object.freeze([-5.65,Ly+1.5,-4.65]),face:'+x',why:'On the landing’s back wall, straight ahead at the top of the lower flight.'}),
+ ]),
+ poster:Object.freeze({w:.515,h:.728,asset:SAKURA_STREET_POSTER.asset}),
  // Plates: [text, x, y, z, normal axis]; the alarm, light and switches likewise, each with the wall it is on.
  plates:Object.freeze([Object.freeze({text:'1F',sub:'売場',at:Object.freeze([-1.97,1.58,-4.07]),face:'-z'}),Object.freeze({text:'2F',sub:'事務所',at:Object.freeze([-.68,SAKURA_STAIR.height+1.5,-6.42]),face:'-x'})]),
  alarm:Object.freeze({at:Object.freeze([-5.65,Ly+1.45,-5.4]),face:'+x'}),
@@ -179,7 +191,7 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
  carriage(lower,S.lower.z0,S.lower.z1);
  const TZ=SAKURA_STAIR_TRIM.treadZ;
  for(const [x1,x0,top] of lower)span('wood',x0,x1+NOSE,top-BOARD,top,TZ.lower[0],TZ.lower[1]);
- // Upper flight: tread i (1..11) i goings west of x -1.8, its top at 24 - i rises; its carriage is the under-stair cupboard.
+ // Upper flight: tread i (1..11) i goings west of x -1.8, its top at 24 - i rises; its carriage closed to the floor.
  const upper=[];for(let i=11;i>=1;i--){const x1=S.upper.x1-(i-1)*TREAD,x0=x1-TREAD;upper.push([x0,x1,(24-i)*RISE]);}
  carriage(upper,S.upper.z0,S.upper.z1);
  for(const [x0,x1,top] of upper)span('wood',x0-NOSE,x1,top-BOARD,top,TZ.upper[0],TZ.upper[1]);
@@ -222,11 +234,11 @@ export function buildSakuraStairwell(parent,{storey='shop'}={}){
   const m=new THREE.Mesh(mergeGeometries(list),material);list.forEach(g=>g.dispose());
   m.name='Sakura stairwell '+key;m.receiveShadow=true;group.add(m);
  }
- if(typeof document!=='undefined'&&document.createElement)group.add(...stairPlates(dy,dz));
+ if(typeof document!=='undefined'&&document.createElement)group.add(...stairPlates(dy,dz),...stairPosters(dy,dz));
  return group;
 }
 
-/** The trim (SAKURA_STAIR_TRIM, SK-ST-002): strings, rail and brackets, skirting, nosing, the cupboard door, the fittings. */
+/** The trim (SAKURA_STAIR_TRIM, SK-ST-002): strings, rail and brackets, skirting, nosing, the posters' pins, the fittings. */
 function buildStairTrim(add,span){
  const T=SAKURA_STAIR_TRIM,S=SAKURA_STAIRWELL;
  // Strings: their side profile between the nosing line's offsets, extruded across their thickness.
@@ -259,12 +271,11 @@ function buildStairTrim(add,span){
   }
  }
  for(const p of pts){const g=new THREE.SphereGeometry(R.radius*1.04,8,6);g.translate(p.x,p.y,p.z);add('rail',g);}
- // The under-stair cupboard: its door in a casing on the carriage's face to the well, and a knob.
- const C=T.cupboard,face=S.upper.z1,[cx0,cx1]=C.x,c=C.casing;
- span('string',cx0-c,cx0,0,C.y+c,face,face+C.proud);span('string',cx1,cx1+c,0,C.y+c,face,face+C.proud);span('string',cx0,cx1,C.y,C.y+c,face,face+C.proud);
- span('door',cx0+.003,cx1-.003,.01,C.y-.003,face,face+C.leaf);
- const knob=new THREE.SphereGeometry(.024,10,8);knob.scale(1,1,.8).translate(cx1-.09,.95,face+C.leaf+.02);add('metal',knob);
- tube(new THREE.Vector3(cx1-.09,.95,face+C.leaf),new THREE.Vector3(cx1-.09,.95,face+C.leaf+.016),.007,'metal',6);
+ // The posters' push pins, one in each corner, 25 mm in (the paper itself is a decal, stairPosters).
+ const Q=T.poster;
+ for(const p of T.posters){const [x,y,z]=p.at,n=p.face[1]==='x'?new THREE.Vector3(1,0,0):new THREE.Vector3(0,0,1),along=p.face[1]==='x'?new THREE.Vector3(0,0,1):new THREE.Vector3(1,0,0);
+  for(const [a,b] of [[-1,-1],[-1,1],[1,-1],[1,1]]){const c=new THREE.Vector3(x,y,z).addScaledVector(along,a*(Q.w/2-.025)).add(new THREE.Vector3(0,b*(Q.h/2-.025),0));
+   const head=new THREE.CylinderGeometry(.006,.006,.005,8);head.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up,n));head.translate(...c.clone().addScaledVector(n,.0035).toArray());add('red',head);}}
  // The fittings, each a box out from its wall: [width, height, depth] along the wall, up, out.
  // `from`: how far out from the wall it starts (on the face of what it is mounted on, never in the same plane).
  const fit=(at,face,w,h,d,key,lift=0,from=0)=>{const [x,y,z]=at,sg=face[0]==='-'?-1:1,a=sg*from,b=sg*(from+d);
@@ -284,6 +295,16 @@ function buildStairTrim(add,span){
 function wallBehind(p){
  const W=SAKURA_STAIRWELL.walls,d=[[W.north-p.z,new THREE.Vector3(0,0,1)],[p.z-W.south,new THREE.Vector3(0,0,-1)],[p.x-W.west,new THREE.Vector3(-1,0,0)]];
  return d.reduce((a,b)=>b[0]<a[0]?b:a)[1];
+}
+/** The posters' paper: the campaign print (SP-NK-001's artwork) as a decal 1 mm off the wall, polygon offset. */
+function stairPosters(dy,dz){
+ const Q=SAKURA_STAIR_TRIM.poster,material=new THREE.MeshStandardMaterial({color:0xfff4de,roughness:.7,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-4});
+ if(globalThis.document?.baseURI){const t=new THREE.TextureLoader().load(assetURL(Q.asset));t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;material.map=t;material.color.set(0xffffff);}
+ return SAKURA_STAIR_TRIM.posters.map((p,i)=>{
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(Q.w,Q.h),material),[x,y,z]=p.at;
+  if(p.face==='+x'){m.position.set(x+.001,y+dy,z+dz);m.rotation.y=Math.PI/2;}else{m.position.set(x,y+dy,z+.001+dz);}
+  m.name=`Stair poster ${i+1} · Sakura campaign`;return m;
+ });
 }
 /** The 1F and 2F plates' lettering: decals on their boards (polygon offset, SK-ZF rules). */
 function stairPlates(dy,dz){

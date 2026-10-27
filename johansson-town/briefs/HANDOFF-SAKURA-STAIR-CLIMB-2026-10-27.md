@@ -53,6 +53,17 @@ The shader, AO, noise and light-pool notes belong to the Blender konbini, and th
   shift (they change World's shared lighting), and Blender modifiers. Stockroom tape and the hand truck already exist.
 - Sheet: `docs/qa/sakura-surfaces/stair-trim.jpg`. Test: the trim test in `tests/sakura-stairs.test.mjs`.
 
+## No door; Thuan's campaign posters (SK-ST-002 rev B)
+
+The owner: "Why is there a door in the staircase? Can you make it more realistic and bring the posters from the town with
+the Pixar Thuan into the staircase ... on the walls". The under-stair cupboard door is gone: rev A put it on the carriage's
+face to the 450 mm well between the flights, where nobody could reach it, so that face is now plain wall. The only town
+poster with the Pixar Thuan is Sakura's campaign print on Blue Coral (SP-NK-001, "After the ice cream, a cold tea."). It
+is pinned up twice as B2 (515 x 728 mm), with a push pin in each corner: between the flights at the eye height of someone
+on the lower flight (the foot camera sees it), and straight ahead on the landing's back wall beside the fire alarm (the down
+camera sees it). The paper is a decal 1 mm off the wall. `build_trim_cad.py` passes 24/24 checks (clear of the rail, on
+its wall). Sheet: `docs/qa/sakura-surfaces/stair-posters.jpg`.
+
 ## Checks
 
 - `tests/sakura-stairs.test.mjs`, `sakura-back`, `sakura-surfaces`: pass.

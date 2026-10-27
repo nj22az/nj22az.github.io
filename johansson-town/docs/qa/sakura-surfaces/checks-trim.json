@@ -90,6 +90,26 @@
   "detail": "577 mm"
  },
  {
+  "check": "poster 1 clear of the handrail",
+  "ok": true,
+  "detail": "1465 mm"
+ },
+ {
+  "check": "poster 1 wholly on the wall between the flights, under the upper flight",
+  "ok": true,
+  "detail": "top 2.26 m, flight above 3.14 m"
+ },
+ {
+  "check": "poster 2 clear of the handrail",
+  "ok": true,
+  "detail": "279 mm"
+ },
+ {
+  "check": "poster 2 on the landing wall, clear of the alarm",
+  "ok": true,
+  "detail": ""
+ },
+ {
   "check": "no two faces in one plane: shop, office and the strict zones",
   "ok": true,
   "detail": "{\"shop\": 0, \"office\": 0, \"zones\": 0}"

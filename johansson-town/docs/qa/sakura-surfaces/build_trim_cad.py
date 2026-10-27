@@ -1,8 +1,8 @@
-"""Sakura's stairwell trim, drawing SK-ST-002 revision A (27 October 2026), after the owner's review of the climb frames
+"""Sakura's stairwell trim, drawing SK-ST-002 revision B (27 October 2026; rev A had an under-stair cupboard door), after the owner's review of the climb frames
 (the walls were blank planes, the step ends showed as a sawtooth, the under-stair cupboard door read as a loose board).
 Drawn from the data in src/world/interiors/sakura-stairs.js (SAKURA_STAIRWELL, SAKURA_STAIR_TRIM): the plan and the
 section looking north with the strings, the handrail and its brackets, the skirting, the nosing and the fittings.
-Writes beside this file: Sakura-Stair-Trim-Rev-A.pdf (one A3 sheet), Sakura-Stair-Trim-Rev-A.dxf (1:1 mm), checks-trim.json.
+Writes beside this file: Sakura-Stair-Trim-Rev-B.pdf (one A3 sheet), Sakura-Stair-Trim-Rev-B.dxf (1:1 mm), checks-trim.json.
 
     python3 docs/qa/sakura-surfaces/build_trim_cad.py     (from johansson-town/; needs node, reportlab, ezdxf)
 """
@@ -73,6 +73,17 @@ for name, at in [('1F plate', T['plates'][0]['at']), ('2F plate', T['plates'][1]
                  ('stair light', T['light']['at'])] + [(f'switch {i + 1}', s['at']) for i, s in enumerate(T['switches'])]:
     d = near_rail(at)
     check(f'{name} clear of the handrail', d >= .12, f'{d * 1000:.0f} mm')
+Q = T['poster']
+for i, p in enumerate(T['posters']):
+    x, y, z = p['at']
+    edge = [(x, y - Q['h'] / 2, z)] + ([(x, y - Q['h'] / 2, z - Q['w'] / 2), (x, y - Q['h'] / 2, z + Q['w'] / 2)] if p['face'] == '+x' else [(x - Q['w'] / 2, y - Q['h'] / 2, z), (x + Q['w'] / 2, y - Q['h'] / 2, z)])
+    d = min(near_rail(e) for e in edge)
+    check(f'poster {i + 1} clear of the handrail', d >= .1, f'{d * 1000:.0f} mm')
+    if p['face'] == '+z':
+        under = upper_line(x - Q['w'] / 2) - .03
+        check(f'poster {i + 1} wholly on the wall between the flights, under the upper flight', y + Q['h'] / 2 < under - .2, f"top {y + Q['h'] / 2:.2f} m, flight above {under:.2f} m")
+    else:
+        check(f'poster {i + 1} on the landing wall, clear of the alarm', abs(z - T['alarm']['at'][2]) > Q['w'] / 2 + .11 + .05)
 check('no two faces in one plane: shop, office and the strict zones', all(v == 0 for v in D['pairs'].values()), json.dumps(D['pairs']))
 
 # Drawings: plan (x, z) and section looking north (x, y), 1:40, in mm on the sheet.
@@ -84,10 +95,10 @@ def P(ox, oy):
     return lambda x, y: (ox + (x + 6.0) * S * 1000, oy + y * S * 1000)
 
 
-pdf = canvas.Canvas(os.path.join(HERE, 'Sakura-Stair-Trim-Rev-A.pdf'), pagesize=(PW, PH))
-pdf.setTitle('SK-ST-002 rev A, Sakura stairwell trim')
+pdf = canvas.Canvas(os.path.join(HERE, 'Sakura-Stair-Trim-Rev-B.pdf'), pagesize=(PW, PH))
+pdf.setTitle('SK-ST-002 rev B, Sakura stairwell trim')
 pdf.setFont('Helvetica-Bold', 13)
-pdf.drawString(40, PH - 40, 'SK-ST-002  Sakura stairwell trim: strings, handrail, skirting, nosing, fittings   rev A  27 October 2026')
+pdf.drawString(40, PH - 40, 'SK-ST-002  Sakura stairwell trim: strings, handrail, skirting, nosing, fittings   rev B  27 October 2026')
 TP, TS = P(70, 120), P(70, 400)
 
 
@@ -113,7 +124,7 @@ for k in ('lower', 'upper', 'landing', 'top'):
 for s in T['strings']:
     rect(TP, s['x'][0], s['x'][1], pz(s['z'][0]), pz(s['z'][1]), '#5b4636', True)
 line(TP, [(p[0], pz(p[2])) for p in path], '#c0392b', 1.6)
-for name, at, col in [('1F', T['plates'][0]['at'], '#2f6b5e'), ('2F', T['plates'][1]['at'], '#2f6b5e'), ('alarm', T['alarm']['at'], '#c23a2e'),
+for name, at, col in [(f'poster {i + 1}', p['at'], '#e67e22') for i, p in enumerate(T['posters'])] + [('1F', T['plates'][0]['at'], '#2f6b5e'), ('2F', T['plates'][1]['at'], '#2f6b5e'), ('alarm', T['alarm']['at'], '#c23a2e'),
                       ('light', T['light']['at'], '#d4a017')] + [('sw', s['at'], '#555555') for s in T['switches']]:
     x, y = TP(at[0], pz(at[2])); pdf.setFillColor(HexColor(col)); pdf.circle(x, y, 3, fill=1, stroke=0); pdf.setFont('Helvetica', 7); pdf.drawString(x + 4, y + 2, name)
 pdf.setFillColor(HexColor('#000000')); pdf.setFont('Helvetica', 9)
@@ -140,7 +151,8 @@ for txt in ['Why each piece is there:',
             '- Handrail: one continuous wall rail (a stair must have one; staff carry stock up it), 40 mm, 65 mm off the wall,',
             '  on brackets about every metre, round the landing on its three walls, over the top landing to the hall.',
             '- Skirting where the landings meet the walls; non-slip nosing on all 22 treads.',
-            '- The under-stair cupboard door in a 50 mm casing with a knob (it read as a loose board).',
+            '- Rev B: no door in the stair (rev A\'s cupboard door opened onto the 450 mm well). Instead the shop\'s campaign',
+            '  poster with Pixar Thuan (SP-NK-001\'s print, B2) is pinned up twice: between the flights and on the landing.',
             '- 1F and 2F plates where each floor starts; the stair light on the landing wall and a switch at each end;',
             '  the fire alarm (lamp, bell, button) on the landing: the office\'s way out is down this stair.',
             '- Office storey: the stairwell\'s west wall now runs to the ceiling (the office floor west of it showed',
@@ -160,7 +172,7 @@ for s in T['strings']:
 msp.add_lwpolyline([(mm(p[0]), mm(p[2])) for p in path], dxfattribs={'layer': 'RAIL'})
 for at in [T['plates'][0]['at'], T['plates'][1]['at'], T['alarm']['at'], T['light']['at']] + [s['at'] for s in T['switches']]:
     msp.add_circle((mm(at[0]), mm(at[2])), 40, dxfattribs={'layer': 'FITTING'})
-DXF = os.path.join(HERE, 'Sakura-Stair-Trim-Rev-A.dxf')
+DXF = os.path.join(HERE, 'Sakura-Stair-Trim-Rev-B.dxf')
 doc.saveas(DXF)
 check('DXF reopens with no audit errors', not ezdxf.readfile(DXF).audit().has_errors)
 json.dump(CHECKS, open(os.path.join(HERE, 'checks-trim.json'), 'w'), indent=1)

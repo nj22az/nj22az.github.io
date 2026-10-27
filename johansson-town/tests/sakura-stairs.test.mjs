@@ -128,15 +128,16 @@ test('game.js walks the climb in this storey from its locked camera, the other s
  assert.match(GAME,/#exitRoomButton'\)\.onclick=\(\)=>\{if\(current\?\.id==='sakura-office'\)\{takeSakuraStair\('down'\)/);
 });
 
-test('the stairwell trim (SK-ST-002): strings, a continuous handrail on brackets, nosing, a framed cupboard door, the fittings',async()=>{
+test('the stairwell trim (SK-ST-002): strings, a continuous handrail on brackets, nosing, the campaign posters, no door in the stair, the fittings',async()=>{
  const {SAKURA_STAIR_TRIM:T,buildSakuraStairwell}=await import('../src/world/interiors/sakura-stairs.js');
  for(const storey of ['shop','office']){
   const root=new THREE.Group(),g=buildSakuraStairwell(root,{storey}),names=[];g.traverse(o=>{if(o.isMesh)names.push(o.name);});
-  for(const k of ['string','rail','metal','nosing','red','lamp','glow','fitting','door'])assert.ok(names.includes('Sakura stairwell '+k),`${storey}: ${k}`);
+  for(const k of ['string','rail','metal','nosing','red','lamp','glow','fitting'])assert.ok(names.includes('Sakura stairwell '+k),`${storey}: ${k}`);
   for(const p of ['1F','2F'])assert.ok(names.includes('Stair plate '+p),`${storey}: the ${p} plate`);
-  // The cupboard door is a leaf inside its casing, not a board standing proud of the stair.
-  const door=g.getObjectByName('Sakura stairwell door');door.geometry.computeBoundingBox();const b=door.geometry.boundingBox,C=T.cupboard;
-  assert.ok(b.min.x>C.x[0]&&b.max.x<C.x[1]&&b.max.y-b.min.y<C.y,`${storey}: the door leaf sits in its opening`);
+  // No door in the stair: the old cupboard door opened onto the well between the flights (the owner: "Why is there a door").
+  assert.ok(!names.includes('Sakura stairwell door'),`${storey}: no door`);
+  // The campaign posters (Pixar Thuan, SP-NK-001's print) on the walls, flat on their faces.
+  const posters=names.filter(n=>n.startsWith('Stair poster'));assert.equal(posters.length,2,`${storey}: two posters`);
  }
  // One rail from the foot to the top landing, 850 mm over the nosing line, a hand's width off the wall.
  const path=T.rail.path;assert.ok(path.length>=6&&T.rail.off-T.rail.radius>=.04);
