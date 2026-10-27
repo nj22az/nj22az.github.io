@@ -37,7 +37,7 @@ import {celFrom} from '../render/cel.js';
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'c8a5dab912'})});
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
