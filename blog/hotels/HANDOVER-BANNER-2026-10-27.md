@@ -17,8 +17,9 @@ banner files were delivered from the session scratch; the page waits for the own
   Runners-up in the PDF: Oil painting and Natural. All 19 Looks were rendered for `cab` and `profileB`.
 - **Layout:** `tools/build-hotel-banner.py <frame.png> [--out dir] [--truck-x 0.47]` (Pillow): `banner-desktop`
   2400×800 (title on the left third, kept clear of the cab), `banner-phone` 1200×900 (title in the sky), and `art-*`
-  without text for a page that keeps the title as HTML. PNG and WebP (desktop WebP 247 KB art / 214 KB with text).
-- A 3600×1200 render of the same frame was started for sharper phone crops; swap it in with the same script.
+  without text for a page that keeps the title as HTML. PNG and WebP.
+- Built from a 3600×1200 render of the same frame (the phone crop now comes from 1600 px, not 1067). WebP sizes:
+  desktop art 230 KB, phone art 121 KB.
 
 Recommended for the page (PDF): the art without baked-in text, title and short line as HTML over it, `<picture>`
 with the 4:3 crop at ≤ 600 px, scope line under the banner, alt text naming Tetsuo and Sakura Shōten.
