@@ -1,5 +1,18 @@
 # Hotels & Parking
 
+## Folding cards — 27 October 2026
+
+The owner: "the notes on a hotel shouldn't show by standard it needs to be opened and the photos too, so make it sort
+of a flip card that expands when you click it." Each post is now a closed card (name, verdict, summary, facts and
+actions). Tapping the card, or its Notes or Photos button, folds out the photos and the notes together, like a card
+turned down (a short rotate and unfold; none with reduced motion); tapping again closes it. Links and buttons inside
+the card keep their own job. The fold-out is `inert` while closed. A `#review-<id>` link, a map popup or a trip pick
+still opens its card. Phones stack each action's icon over its label so five actions keep one row. With JavaScript
+off, or in print, everything shows. Assets `hotels.css?v=12`, `hotels.js?v=9`. Checked: `feed.cjs` 46/46 (updated to
+measure the fold-out instead of the thread's visibility), `flags.cjs` 19/19, the Laajavuori card closed on load,
+opened by a tap and by Photos, closed again, not opened by Website, opened by its link; no card wider than the screen
+at 320, 390, 834 and 1440 px. **On branch `claude/peaceful-clarke-fprqk3`; not yet on main.**
+
 ## Photos and the Scandic Laajavuori stay — 27 October 2026
 
 The owner sent two photos and the booking for Scandic Laajavuori (Jyväskylä, 27–28 October 2026, Standard, 116 EUR):
