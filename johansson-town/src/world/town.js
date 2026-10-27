@@ -18,6 +18,7 @@ import {addSakuraStreetPoster} from './sakura-street-poster.js';
 import {addWoodlandPoster,WOODLAND_POSTER} from './woodland-poster.js';
 import {buildIslandLandscape} from './island-landscape.js';
 import {buildBlueCoralShop} from './blue-coral-shop.js';
+import {buildKitahamaShop} from './kitahama-shop-build.js';
 import {createTownTraffic} from './town-traffic.js';
 import {buildKitanoLink} from './kitano-link.js';
 import {buildOilJetty} from './oil-jetty.js';
@@ -364,6 +365,9 @@ export function createTown(options){
   buildIzakaya(world,options);
   buildPark(world,options);
   world.blueCoral=buildBlueCoralShop({world,group:world.group,register:options.register,onAction:options.onAction,sites:options.sites,shadows:options.shadows});
+  // Johansson Mart at the entrance to Kitahama (okinawa/kitahama-shop.js; the owner, 27 October 2026), Grandmother Higa's
+  // corner shop: standing and solid in this batch, walked into in the next.
+  world.kitahamaShop=buildKitahamaShop({world,group:world.group,register:options.register,onAction:options.onAction,shadows:options.shadows});
   const plants=buildStreetPlants(world.group,world.plantSites,options);
   if(world.plantSites.length&&!plants.count)registerDetail(world,{id:'street-plants',x:0,z:20,radius:70,load:async()=>{
     if(!await preloadStreetPlants())return false;buildStreetPlants(world.group,world.plantSites,options);return true;

@@ -162,18 +162,18 @@ export const STOCK=F([
 
 /** What changes on the site to make room, and what each change touches (the repository's "plan a change before making it"). */
 export const SITE_CHANGES=F([
- F({what:'the shop takes the east end of the monthly parking (bays 3 and 4) and the east part of the hedge and the gōyā curtain',
-  touches:'lots.js NORTH_BLOCK props (bay-3-hatchback, mac-toolbox, bay-4-stops, parking-hedge, goya-curtain, parking-sign), the parking gravel, their colliders, and the lot tests'}),
- F({what:'Mac’s bay moves to the west end of the parking (x 28.0–30.6); the parking keeps three bays (Kōji, Nhung, Mac) and the to-let bay goes',
-  touches:'bay-3-hatchback and mac-toolbox positions; the parking sign now reads 空きなし (none free)'}),
- F({what:'Mrs Sato’s spring-onion bed is shortened from 5.0 m to 3.2 m (x 24.6–27.8) to make room for Mac’s bay',
-  touches:'lots.js negi-bed; her stories about the negi stay'}),
- F({what:'the hedge now runs x 28.0–35.4 and the gōyā curtain x 29.8–35.4, stopping short of the garden shed (x 27.4–29.6); the parking sign moves to x 31.4',
-  touches:'parking-hedge, goya-curtain, parking-sign'}),
+ F({what:'the shop takes the east end of the monthly parking (old bays 3 and 4) and stands on its own concrete (lots.js shop-apron)',
+  touches:'lots.js NORTH_BLOCK, ground-plan-quarters.js KITAHAMA_PADS; done 27 October 2026 (batch 1)'}),
+ F({what:'the parking moves west and keeps three bays in the same order (1 Kōji, 2 Nhung, 3 Mac); the to-let bay goes',
+  touches:'lot-dressing.js PARKING, the car and toolbox rectangles in lots.js; the sign now reads 空きなし (none free); done (batch 1)'}),
+ F({what:'Mrs Sato’s spring onions and Riku’s sunflowers are shortened to x 24.6–27.8, clear of the gravel',
+  touches:'lots.js negi-bed, sunflower-bed; done (batch 1)'}),
+ F({what:'the hedge runs x 28.0–35.4 and the gōyā curtain x 29.8–35.4, short of the garden shed; the parking sign stands at x 31.7',
+  touches:'lots.js parking-hedge, goya-curtain, parking-sign; done (batch 1)'}),
  F({what:'Grandmother Higa’s week gains the shop (HOURS); the bath’s hours do not change',
-  touches:'people/cast.js her day and purpose, residents’ routines and walking routes (her home to Kitahama), the storyteller’s places (feed/places.js), the resident guide'}),
+  touches:'people/cast.js her day and purpose, residents’ routines and walking routes (her home to Kitahama), the storyteller’s places (feed/places.js), the resident guide (batch 3)'}),
  F({what:'Sakura Trading’s round gains a stop at 17:00 on the approach',
-  touches:'commerce/trade-round.js, the van’s route on the approach'}),
+  touches:'commerce/trade-round.js, the van’s route on the approach (batch 3)'}),
 ]);
 
 /** Open questions, written down rather than guessed (the repository's "if a part is not built yet, record it"). */

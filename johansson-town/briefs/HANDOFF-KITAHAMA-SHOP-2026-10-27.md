@@ -39,6 +39,22 @@ and `-interior.glb` (about 10 000 and 9 100 triangles, 17/17 checks). The Meshy 
 - The canopy's tie rods, the A-board, the vending machines' displays and the island's packets were corrected after the
   first renders; a leaning A-board panel dipped 3 mm below the ground (the export check caught it).
 
+## Batch 1: the shop on the island (27 October 2026)
+
+The owner: "So bring the new shop to the island?" In three batches, the project's rule for characters, ground and lighting:
+
+1. **Done: the shop stands.** `src/world/kitahama-shop-build.js` places both models unrotated at x 35.6, z 63.2 on the
+   pad top (0.045), streamed in near the player with a cream stand-in until they load; colliders for the walls (the shop
+   is shut), the machines, the bins, the A-board and the condensers; prompts for the hours on the door and the machines.
+   The parking moved west with three bays in the same order (Kōji, Nhung, Mac), the to-let bay went, the onion and
+   sunflower beds shortened, the hedge, the gōyā curtain and the sign moved, and the sign reads 空きなし; the shop stands
+   on its own concrete (lots.js `shop-apron`, KITAHAMA_PADS). `tests/lot-dressing.test.mjs` now walks to the shop's
+   forecourt (where the free bay was) and checks the walls are solid. Seen in the running game from source (the audit
+   session, headless): from the lane and the approach the shop stands, lit inside through the glass.
+2. **Next: walking in.** The door prompt into the interior as a room, like the other shops; shut outside its hours.
+3. **Then: Grandmother Higa's week** (cast.js), behind the till in the shop's hours; the van's 17:00 stop; the
+   storyteller's place and the resident guide.
+
 ## Next
 
 1. The owner looks at the renders; any change goes into the data, and both builders are run again.
