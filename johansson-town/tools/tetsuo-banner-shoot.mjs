@@ -22,6 +22,9 @@ const browser=await chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PA
 // Camera setups in the truck's own frame: f = metres ahead of its nose direction, s = metres to its driver's side (+x
 // in the truck's frame is the passenger side, the driver sits at -x), y = height; look = point on the truck in the same frame.
 const SHOTS={
+ sideSea:{f:-.6,s:-5.2,y:1.15,look:[0,1.05,.4]},
+ sideSeaLow:{f:.8,s:-4.4,y:.7,look:[0,1.1,.9]},
+ cab:{f:3.2,s:-2.2,y:1.35,look:[-.3,1.25,.4]},
  front34:{f:6.5,s:-3.2,y:1.05,look:[0,.95,-.2]},
  front34high:{f:8,s:-5,y:3.2,look:[0,.8,-.6]},
  side:{f:.4,s:-6.5,y:1.25,look:[0,.95,.2]},
@@ -39,17 +42,27 @@ try{
  await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit`);
  await page.locator('#enter:not([disabled])').waitFor();await page.locator('#enter').click();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp);
- const pose=await page.evaluate(({minutes,road,from})=>{
+ const pose=await page.evaluate(({minutes,road,from,clear})=>{
   const a=window.__JOHANSSON_AUDIT__,c=a.world.traffic;a.setTime(10002*1440+minutes);c.reconcileAbsent();
   const v=c.islanders.find(v=>v.owner==='Tetsuo');
   if(!c.drivers.board(v))throw Error('Tetsuo could not take the wheel');
   for(const car of c.traffic.vehicles)car.hold=true;
   v.where='driving';c.traffic.drive(v,c.network.path([road]),{from});v.hold=true;a.step(60);
-  // Keep Johansson out of frame: far behind the camera side.
-  const p=v.g.position,yaw=v.g.rotation.y;a.teleport(p.x-Math.sin(yaw)*40,p.z-Math.cos(yaw)*40,yaw,0);a.step(60);
-  a.hud.photo(true);
-  return {x:p.x,y:p.y,z:p.z,yaw,kind:v.kind,driver:c.drivers.atWheel(v),length:v.length,width:v.width};
- },{minutes:time[0]*60+time[1],road:arg('road','main-south'),from:Number(arg('from','27.5'))});
+  // The truck's group can sit inside a moving parent: use its world position and heading.
+  v.g.updateMatrixWorld(true);
+  // Aim at the truck's drawn body: the centre of its world bounding box, not its group origin.
+  const B=v.g.position.constructor,box={min:new B(Infinity,Infinity,Infinity),max:new B(-Infinity,-Infinity,-Infinity)},tmp=new B();
+  v.g.traverse(o=>{if(!o.isMesh||!o.geometry)return;o.geometry.computeBoundingBox?.();const b=o.geometry.boundingBox;if(!b)return;
+   for(const x of [b.min.x,b.max.x])for(const y of [b.min.y,b.max.y])for(const z of [b.min.z,b.max.z]){tmp.set(x,y,z).applyMatrix4(o.matrixWorld);box.min.min(tmp);box.max.max(tmp);}});
+  const d=v.g.getWorldDirection(new B()),yaw=Math.atan2(d.x,d.z);
+  const p=new B((box.min.x+box.max.x)/2,box.min.y,(box.min.z+box.max.z)/2),origin=v.g.getWorldPosition(new B());
+  // Keep Johansson out of frame, far behind the truck.
+  a.teleport(p.x-Math.sin(yaw)*45,p.z-Math.cos(yaw)*45,yaw,0);a.step(60);
+  // A portrait of one truck: other moving or parked vehicles within reach of the lens step out of the picture.
+  const hidden=[];for(const car of c.traffic.vehicles){if(car===v)continue;const q=car.g.getWorldPosition(car.g.position.clone());if(Math.hypot(q.x-p.x,q.z-p.z)<Number(clear)){car.g.visible=false;hidden.push(car.owner||car.kind);}}
+  v.g.updateMatrixWorld(true);a.hud.photo(true);
+  return {x:p.x,y:p.y,z:p.z,yaw,origin:origin.toArray(),box:[box.min.toArray(),box.max.toArray()],kind:v.kind,driver:c.drivers.atWheel(v),length:v.length,width:v.width,hidden};
+ },{minutes:time[0]*60+time[1],road:arg('road','main-south'),from:Number(arg('from','27.5')),clear:arg('clear','30')});
  report.truck=pose;console.log('truck',JSON.stringify(pose));
  const canvas=page.locator('canvas').first();
  for(const look of looks){
