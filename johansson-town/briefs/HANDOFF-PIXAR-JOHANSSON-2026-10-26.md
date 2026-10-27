@@ -235,7 +235,98 @@ error there", with the neck's base circled on the raised arm's side of the wave.
 - `tools/pixar-shots.mjs --name Johansson` on the built runtime: island ready, playing, Johansson on Main Street drawn dressed, no page errors (jojo `renders/game/johansson-in-game-neck.jpg`).
 - Not checked: a physical phone, a GPU browser, the Linux edition.
 
-## For the next session (written 26 October 2026, end of the session)
+## 27 October 2026, morning: the waving arm's armpit, and the bind pose
+
+The owner circled the raised arm's armpit in the wave, twice: "Audit this and fix it now or make a plan if you can't fix
+immediately". Audited and fixed (jojo `3d/cast/AUDIT-JOHANSSON-BODY.md` section 7, `CLOTHES.md`, `progress.md`):
+
+- **Found**: the shirt's side panel was 50-80 % the arm's by the film's bone heat and rose with the arm as a dark blade;
+  the body's skin beside the arm rose with it out through the cloth (the orange patch; its sawtooth edge the cut to the
+  hidden trunk); the side holes' fills smeared the atlas (the striped strip); the sleeve's cap folded at a hard crease
+  where the weights stepped within 2 cm.
+- **Fixed in the export**: the weights round each armhole are a garment's by where each vertex lies (the side panel
+  with the chest, the sleeve with its shoulder, a short blend at the trunk's side, the sleeve's underside rising along
+  the arm, the cap rising across 8 cm, nothing below the sleeve's end); the body's skin that is not the arm's own the
+  same; the big fills on one plain texel.
+- **Bound with the arms out 35 degrees.** The studio bakes, fits, dresses and weights him with the upper arms swung out
+  (jojo `game_johansson.BIND_OUT`, `a_pose`); the card's `rest` is still World's arms-down rest and its new `bind` says
+  the shoulders' turns (`shoulderL` z +0.611, `shoulderR` z -0.611). World (`src/avatars/pixar.js` `dressPixar`) poses
+  the bones so before it takes the skeleton's inverses and rests them again, and binds each mesh with its own matrix
+  given (three.js's `bind()` without one recalculates the inverses from the bones at rest, which undid it). A raised arm
+  now stretches the armpit from 35 degrees, not from arms-down. Thuận's card has no `bind`: she is as she was.
+- **In World**: `tests/pixar-fixture.mjs` (the Pixar body loaded, built and skinned by World itself in Node:
+  `garmentHold` counts the covered skin that leaves a garment in a pose and the cloth's stretch) and a new test in
+  `tests/pixar-johansson.test.mjs` (the card's bind; in the wave at most 2 covered vertices outside the shirt, its
+  stretch under 3.5x; at idle none). The sheet tool gained `--frame at:<bone>[:metres[:up]]`, the camera walked round
+  the bone by the cell's turn (`at:shoulderR` with `--pose Wave:0.9` is the owner's view).
+- GLB `53fc7fdd88` (`PIXAR_BODIES.Johansson.version`).
+
+### Checks (27 October, morning)
+
+- `node --test tests/pixar-johansson.test.mjs tests/pixar-thuan.test.mjs tests/pixar-skin.test.mjs tests/wave-gesture.test.mjs
+  tests/runtime-package.test.mjs`: 24/24, the new armpit test among them (the card's bind; standing idle nothing of the
+  shirt left behind, the side carried under 35 mm by the wave and by the hand to the chin, the covered skin inside).
+- Full guard on the rebuilt runtime: 88 files, **445 of 446 tests pass**; the one failure is `no-z-fighting.test.mjs`
+  running out of Node's default heap in this container (it does so on the branch's previous commit too, checked in a
+  worktree) and passing 5/5 with `NODE_OPTIONS=--max-old-space-size=6144`. Nothing of this change is in it.
+- The sheets, every cell looked at: the waving shoulder from six azimuths (`--frame at:shoulderR --pose Wave:0.9`),
+  dressed and undressed; the body in World's rest and moves; and World's own poses (`--body interact,counter idle,drink,
+  eat,sit drink,sit toast,sit`, the seated cells on a 0.46 m stool, the izakaya's counter): nothing of the shirt left
+  behind at rest, the sleeve a tube that lifts with the arm, no blade, no skin through the cloth, no strip. jojo
+  `renders/game/johansson-armpit-before.jpg`, `-after.jpg`, `johansson-bind-sheet.jpg`, `johansson-poses-sheet.jpg`.
+- Measured (`tests/pixar-fixture.mjs garmentHold`), before -> after: the shirt's side carried by the waving arm 71 ->
+  19 mm, by the hand to the chin 55 -> 12 mm; covered skin outside the shirt in the wave 1 (7 mm) -> 0, Think 5 (15 mm)
+  -> 3 (4 mm); the armpit band's worst stretch 5.8x -> 5.1x (cloth skinned to a 98-degree raise must stretch; it is now
+  one band under the arm, not the whole side).
+- `tools/pixar-shots.mjs --name Johansson` on the built runtime: island ready, playing, Johansson on Main Street drawn
+  dressed with his arms hanging at rest, no page errors (jojo `renders/game/johansson-in-game-bind.jpg`).
+- Twelve exports were made and judged on the way; what failed is in jojo `3d/cast/progress.md`.
+- Not checked: a physical phone, a GPU browser, the Linux edition; him at the izakaya's counter in the booted game (the
+  stool against his measures), which the owner asked for next.
+
+## For the next session (written 26 October 2026, end of the session; **updated 27 October, morning**)
+
+**27 October, morning:** the armpit is fixed and he is bound with the arms out (the section above); everything is on
+`claude/vibrant-brown-0udpq3` in both repos. Still waiting on the owner: publishing him (and the wave fix), the body
+plan's decisions, stubble. Left from the morning: with the arm raised forward (Think) the arm's skin stands out of the
+sleeve's underside by up to 4 cm at the hem's inner side, where a loose sleeve would hang open (the underside stays with
+the chest near the armpit so that the sideways raise folds instead of tearing); the undressed armpit (parked) has a step
+in its silhouette; the trunk's measured `width` is now the shirt's real width (0.357 m, was 0.300 pressed by the hanging
+arms; the cartoon's is 0.46). Thuận is still bound arms-down: the same `a_pose` and `armhole_weights` would do for her.
+The A-pose item in "Next work" below is done.
+
+**The owner's direction, 27 October 2026, morning (their words, the next work after this):**
+1. "It's starting to look good but check the arms and sleeves": every sleeve check is in the section above; the arms'
+   skin at the hem of a raised sleeve (34 mm out in the wave) and the forward raise (Think) are the two left.
+2. "Why is Johansson more difficult than Thuan?": her film model is a generated mesh with her polo and shorts modelled
+   as part of one clean surface, never cut apart, bound arms-down with the film's bone heat, her sleeves short and
+   tight on the arm; his is a free sculpt painted from a drawing, the shirt, arms and even the forearms grown into one
+   surface, cut into a separate shirt, shorts and a body by colour, with a loose Hawaiian shirt whose sleeves stand off
+   the arm, so cloth and skin can part; and he is the player, seen most and waving.
+3. **Natural behaviour**: "We need to add normal behaviour too, like when Thuan is in Sakura it looks like her posing
+   is unnatural. I need them to behave realistic and interact with their World, both Johansson and Thuan." The next
+   piece of work after the armpit: audit her at the counter and about the shop (the poses `animate.js` gives her:
+   CounterIdle, Interact, Stack, Wipe; where her hands go, what she looks at, how she stands and shifts weight), and
+   him walking, carrying, sitting and waving, against how a person does these; then acting and interaction, not only
+   poses.
+4. **Reuse the bodies for the rework**: "the work on them should be used for expanding the rework, like Thuan's body
+   could be used for reworking Vy, Thao and Nhung and resized, only need new head; and Johansson's body could be used
+   for reworking Tetsuo and maybe Fujita." The export pipeline (jojo `game_thuan.py`, `game_johansson.py`,
+   `clothes_apart.py`) is to become a body-and-head system: one woman's body (hers) scaled per resident with a new head
+   and her own clothes, one man's body (his) for Tetsuo and perhaps Fujita. Plan it in `3d/cast/PLAN-PIXAR.md` before
+   building.
+5. **The finish line**: "We should be able to make an animated Pixar film with him when you are done." The studio's
+   films (jojo `remotion/`) shoot World's own rooms with World's residents; Pixar Johansson must act, walk, sit, hold
+   and drink in them without a glitch, in every lens.
+6. **"Pls don't give up, make Johansson perfect."** And: "Remember to test that he can drink beer in the izakaya as
+   well, and if the stools are too small or so we need to build the izakaya next; now focus on making Johansson look
+   good and he should be able to have idle and interact animations and drink beer." So the next checks on him, in
+   World's own poses (`animate.js`): idle (its stance, its breathing and shifts), `Interact`, the izakaya's `Sit at the
+   counter` with `SitDrink` / `SitToast` (World `src/world/openings.js`, `izakaya.js`: the stool's height and the counter
+   against his measures: `measure.seatDrop`, `hipY`, `hand`), `Drink` standing, `Eat`; every one looked at close in the
+   sheet tool (`--body`, and a pose cell for the seated poses), then in the booted game at the izakaya's counter. If the
+   stools are too small for him, the izakaya is rebuilt next (the owner).
+
 
 **Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (the
 morning's work: this one `8a73aafe`, jojo `978dd15`; the evening's audit, plan and fix: this one `a52b6880`, jojo

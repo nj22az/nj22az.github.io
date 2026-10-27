@@ -8,6 +8,8 @@ import {eyeShape,EYES_3D_STATES} from '../src/avatars/eyes3d.js';
 import {featuresOf,MOUTH_KEYS,BROW_KEYS} from '../src/avatars/face-features.js';
 import {actingOf,springOf} from '../src/avatars/face-acting.js';
 import {PIXAR_BODIES,pixarWanted,pixarDressed,CLOTHES_PARTS} from '../src/avatars/pixar.js';
+import {installDOM} from './fixtures.mjs';
+import {providePixarBodyInNode,pixarAvatar,garmentHold,pose} from './pixar-fixture.mjs';
 
 // Pixar Johansson in World (src/avatars/pixar.js; the owner, 26 October 2026: "Fix Johansson's blockers and bring him into
 // the game"). His model and card come from the studio repo (jojo 3d/cast/game_johansson.py) into assets/avatars/pixar/.
@@ -163,4 +165,40 @@ test('he acts his feelings his own way, inside his decals, never as a mirror',()
  const her=actingOf('Thuan');
  assert.ok(springOf(acting,'shock').f<springOf(her,'shock').f,'his shock is a beat slower');
  assert.notDeepEqual(A.angry,her.feelings.angry,'his anger is not hers');
+});
+
+test('bound with his arms out, his shirt holds at the armpit when he waves',async()=>{
+ // (the owner, 27 October 2026, the waving arm's armpit circled: the shirt's side rose with the arm as a dark blade, the
+ // skin under it pushed out through the cloth, a strip of smeared texels beside the arm). The studio bakes his skin with
+ // the upper arms out 35 degrees and says so in the card; World takes its skeleton's inverses in that pose (pixar.js
+ // dressPixar), so the wave stretches the armpit from there, not from arms-down. The shirt's sides follow his chest, its
+ // sleeves his arms, blended at the armholes (jojo clothes_apart.py armhole_weights).
+ const t=35*Math.PI/180;
+ assert.ok(card.bind&&Math.abs(card.bind.shoulderL[2]-t)<.01&&Math.abs(card.bind.shoulderR[2]+t)<.01,'the card says the arms were bound out 35 degrees');
+ assert.ok(card.rest.elbowL[0]-card.rest.shoulderL[0]<.02,'World\'s rest still hangs the arms straight down');
+ installDOM();
+ await providePixarBodyInNode('Johansson');
+ const av=pixarAvatar('Johansson');
+ // standing idle, bound out, the sleeves hang down round the arms and the hem hangs still: nothing of the shirt is left
+ // behind in the bind pose (a cuff standing out sideways, a spike at the hip). Measured first: a gesture played before
+ // leaves the animator settling for a while
+ for(const bone of ['shoulderL','shoulderR']){
+  const idle=garmentHold(av,{garment:'shirt',bone,move:'idle'});
+  assert.ok(idle.outside<=2,`${idle.outside} covered vertices outside the shirt standing idle (${bone})`);
+  assert.ok(idle.stretch<2.5,`the shirt's worst edge stretch standing idle (${bone}): ${idle.stretch.toFixed(1)}x`);
+ }
+ // in the wave (shoulderR up 98 degrees) the skin the shirt covers at rest stays inside it, and the cloth stretches no
+ // more than a sleeve pulled up an arm does
+ const wave=garmentHold(av,{garment:'shirt',bone:'shoulderR',move:'Wave',secs:.9});
+ assert.ok(wave.covered>25,'the shirt covers skin round the shoulder at rest: '+wave.covered);
+ // (the fault the owner circled was the shirt's side carried up by the arm, 71 mm at its furthest before the fix and
+ // 19 mm after; the skin stays under the cloth either way, and the armpit's band stretches about fivefold, as cloth
+ // skinned from 35 degrees to 98 must)
+ assert.ok(wave.sideLift<.035,`the shirt's side carried ${(wave.sideLift*1000).toFixed(0)} mm by the waving arm`);
+ assert.ok(wave.outside<=3,`${wave.outside} of ${wave.covered} covered vertices outside the shirt in the wave (worst ${(wave.worst*1000).toFixed(0)} mm)`);
+ assert.ok(wave.stretch<7,`the shirt's worst edge stretch at the shoulder in the wave: ${wave.stretch.toFixed(1)}x`);
+ const think=garmentHold(av,{garment:'shirt',bone:'shoulderR',move:'Think',secs:1.2});
+ assert.ok(think.sideLift<.035&&think.outside<=8,`the hand to the chin: the side carried ${(think.sideLift*1000).toFixed(0)} mm, ${think.outside} covered vertices outside (worst ${(think.worst*1000).toFixed(0)} mm)`);
+ pose(av,null);
+ av.a.dispose();
 });

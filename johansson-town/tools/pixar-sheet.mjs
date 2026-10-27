@@ -25,10 +25,11 @@ const turnBy=+(opt('--turn')||0);
 // --motion from:to[:seconds]: the face going from one feeling to the next on its springs, a frame every 50 ms (a clock of
 // the tool's own, so the frames are the same every run)
 const motion=opt('--motion');
-// --body a,b: only these body cells (their labels), and no face cells unless --cells asks for some
+// --body a,b: only these body cells (their labels), and no face cells unless --cells asks for some; --seat h: the seat
+// height (metres) the seated cells sit him on
 const bodyOnly=opt('--body');
 // --pose move:seconds: every face cell's body in this gesture (animate.js) so many seconds in (Wave:0.9), for the close
-// frames: --frame neck looks at the neck and collar from 0.6 m
+// frames: --frame neck looks at the neck and collar from 0.6 m, --frame at:<bone>[:metres[:up]] at any bone where the pose put it
 const pose=opt('--pose');
 // --undressed: the body without its clothes (its underwear), as ?pixarClothes=0 shows it
 const undressed=argv.includes('--undressed');if(undressed)argv.splice(argv.indexOf('--undressed'),1);
@@ -71,7 +72,12 @@ const EYES=[
 if(only){const want=only.split(','),known=new Map(EYES.map(c=>[c[0],c]));EYES.splice(0,EYES.length,...want.map(w=>known.get(w)||[w,{expression:w},0]));}
 if(motion){const [from,to,secs=.8]=motion.split(':');EYES.splice(0,EYES.length,[from,{expression:from},0,false,0],
  ...Array.from({length:Math.round(+secs*20)},(_,i)=>[`${to} +${(i+1)*50} ms`,{expression:to},0,false,50]));}
-const BODY=[['front',0],['three-quarter',.7],['side',Math.PI/2],['back',Math.PI],['walking',.5,'walk',.4],['wave',0,'Wave',.9],['wave later',.35,'Wave',1.15],['think',.35,'Think',1.2],['cartoon today',0,null,0,true]];
+// (a sixth element: the animator's state for the cell, a pose of World's or a seat: --body "interact,sit drink")
+const SEAT=+(opt('--seat')||.46);   // a stool's seat height (metres) for the seated cells: the izakaya's counter stools by default
+const BODY=[['front',0],['three-quarter',.7],['side',Math.PI/2],['back',Math.PI],['walking',.5,'walk',.4],['wave',0,'Wave',.9],['wave later',.35,'Wave',1.15],['think',.35,'Think',1.2],
+ ['interact',.35,null,1.5,false,{pose:'Interact'}],['counter idle',.35,null,1.5,false,{pose:'CounterIdle'}],['drink',.35,'Drink',1.6],['eat',.35,'Eat',1.6],
+ ['sit drink',.5,'SitDrink',1.4,false,{seated:true,seatHeight:SEAT}],['sit toast',.5,'SitToast',1.4,false,{seated:true,seatHeight:SEAT}],['sit',.5,null,1,false,{seated:true,seatHeight:SEAT}],
+ ['cartoon today',0,null,0,true]];
 
 const server=await serveGame(resolve(new URL('..',import.meta.url).pathname));
 const browser=await playwright.chromium.launch({executablePath:process.env.TOWN_CHROMIUM_PATH,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
@@ -117,6 +123,10 @@ try{
    // (--frame mouth: close on the mouth, a little below the eyes; --frame eyes: close on the eyes; --frame nose; --frame
    // chest: his shoulders, arms and trunk to the waist; --frame hips: from the waist to the knees)
    if(frame==='hand'&&!old){a.root.updateMatrixWorld(true);const q=a.bones.handL.getWorldPosition(new T.Vector3()),t=turn||0;camera.position.set(q.x+Math.sin(t)*.42,q.y-.02,q.z+Math.cos(t)*.42);camera.lookAt(q.x,q.y-.04,q.z);}
+   // (--frame at:<bone>[:metres[:up]]: close on any bone of the body where the pose has put it, from so far (0.6 m) and so
+   // much above it (0.02 m); the cell's turn (and --turn) walks the camera round the bone instead of turning the body:
+   // at:shoulderR for the shoulder of the waving arm, at:elbowL for the other)
+   else if(frame.startsWith('at:')&&!old){const [,bone,dist='.6',up_='.02']=frame.split(':');const t=a.root.rotation.y,d=+dist;a.root.rotation.y=0;a.root.updateMatrixWorld(true);const q=a.bones[bone].getWorldPosition(new T.Vector3());camera.position.set(q.x+Math.sin(t)*d,q.y+ +up_,q.z+Math.cos(t)*d);camera.lookAt(q.x,q.y,q.z);}
    else if(frame==='nose'&&!old){const c=a.pixar?.card?.eyes?.centres,y=(c?.[0]?.[1]??h.y+up)-.05,x=c?(c[0][0]+c[1][0])/2:0,t=turn||0;camera.position.set(h.x+x+Math.sin(t)*.5,y+.02,h.z+Math.cos(t)*.5);camera.lookAt(h.x+x,y,h.z+.06);}
    else if(frame==='eyes'&&!old){const c=a.pixar?.card?.eyes?.centres,y=c?.[0]?.[1]??h.y+up,x=c?(c[0][0]+c[1][0])/2:h.x;camera.position.set(h.x+x,y+.005,h.z+.42);camera.lookAt(h.x+x,y,h.z);}
    else if((frame==='chest'||frame==='hips')&&!old){const dy=frame==='hips'?.74:.36;camera.position.set(h.x,h.y-dy+.04,h.z+1.25);camera.lookAt(h.x,h.y-dy,h.z);}
@@ -126,13 +136,14 @@ try{
    report.cells.push({label,showing:a.pixar?a.pixar.eyes.showing:null});
   });
   const anim=createAnimator(pixar),animOld=createAnimator(cartoon);
-  const bodyPng=!body.length?null:sheet(body,[300,520],8,([label,turn,move,t,old],camera)=>{
+  const bodyPng=!body.length?null:sheet(body,[300,520],8,([label,turn,move,t,old,state={}],camera)=>{
    const a=old?cartoon:pixar,an=old?animOld:anim;show(a);a.root.rotation.y=turn;a.root.position.set(0,0,0);
    for(const b of Object.values(a.bones))b.rotation.set(0,0,0);
    if(move==='walk'){for(let k=0;k<Math.round(t*60)+30;k++)an.update(1/60,{speed:1.4});}
-   else if(move){an.play?.(move);for(let k=0;k<Math.round(t*60);k++)an.update(1/60,{});}
-   else for(let k=0;k<30;k++)an.update(1/60,{});
-   a.root.position.set(0,0,0);
+   else if(move){an.play?.(move);for(let k=0;k<Math.round(t*60);k++)an.update(1/60,state);}
+   else for(let k=0;k<Math.max(30,Math.round((t||0)*60));k++)an.update(1/60,state);
+   // (seated, the animator lowers him onto the seat: he stays where it puts him, the stool imagined)
+   if(!state.seated)a.root.position.set(0,0,0);
    camera.position.set(0,.95,5.6);camera.lookAt(0,.82,0);
   });
   pixar.dispose();cartoon.dispose();

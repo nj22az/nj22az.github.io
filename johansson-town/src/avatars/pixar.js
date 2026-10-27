@@ -36,7 +36,7 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'9f8fd79deb'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'53fc7fdd88'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -187,9 +187,17 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  const rest=body.rest,face={};
  for(const name of FACE_BONES){if(!rest[name])continue;const b=new THREE.Bone();b.name=name;b.position.set(...rest[name]).sub(new THREE.Vector3(...rest.head));bones.head.add(b);face[name]=b;}
  const restOf=Object.fromEntries(Object.entries(face).map(([k,b])=>[k,b.position.clone()]));
+ // The pose his skin was bound in (the card's `bind`: a turn per bone, Euler radians; the studio bakes his arms out
+ // 35 degrees, the owner, 27 October 2026): the skeleton takes its inverses with those turns on, so a raised arm
+ // stretches the armpit from there and not from arms-down; the bones then rest as World has them.
+ const bind=body.card.bind||null;
+ for(const [n,e] of Object.entries(bind||{}))bones[n]?.rotation.set(e[0],e[1],e[2]);
  root.updateMatrixWorld(true);
  const names=[...order,...Object.keys(face)],skeleton=new THREE.Skeleton(names.map(n=>bones[n]||face[n]));
- const skinned=(g,m)=>{const mesh=new THREE.SkinnedMesh(g,m);mesh.frustumCulled=false;root.add(mesh);mesh.bind(skeleton);return mesh;};
+ if(bind){for(const n of Object.keys(bind))bones[n]?.rotation.set(0,0,0);root.updateMatrixWorld(true);}
+ // (bound with its own matrix given: three.js's bind() without one recalculates the skeleton's inverses from the bones as
+ // they stand now, at rest, and would undo the bind pose above)
+ const skinned=(g,m)=>{const mesh=new THREE.SkinnedMesh(g,m);mesh.frustumCulled=false;root.add(mesh);mesh.updateMatrixWorld(true);mesh.bind(skeleton,mesh.matrixWorld);return mesh;};
  // Shaded as every resident's face is (build.js buildHead): the town's high-key ramp, a little self-lit, so her pale skin
  // stays the pale skin of her film model and does not go brown in a shadow.
  const materials=[],meshes=body.parts.map(part=>{
