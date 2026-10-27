@@ -12,8 +12,14 @@ The owner, 27 October 2026:
   I want to stay in Kristinehamn? If I'm going to Malmo."
 
 Built on branch `claude/peaceful-clarke-fprqk3`, restarted from main `cb9a16a0`
-because the previous work there was already published. **Pushed to the branch
-only; not on main and not published.** Publishing needs the owner's word.
+because the previous work there was already published. **Published to main on the
+owner's word ("Push to main") as
+[`3254716b`](https://github.com/nj22az/nj22az.github.io/commit/3254716b3329b1855a1c7b7d84d81fc0ba2338b5)**,
+a fast-forward from `cb9a16a0`.
+[Pages run 40455761285](https://github.com/nj22az/nj22az.github.io/actions/runs/40455761285)
+succeeded. Nine live files match the commit byte for byte (the page, the three
+scripts, both stylesheets, `hotels.json`, the CSV and this note), and the 46 browser
+checks pass against the live page (OSRM still relayed in the sandbox).
 Supersedes the layout of the
 [26 October finder note](HANDOVER-FINDER-CLARITY-2026-10-26.md). Its data rules
 still hold.
@@ -133,7 +139,7 @@ the meaning.
 
 ## Next
 
-1. The owner reviews the branch. To publish, merge it into main, then verify Pages,
-   the live files, and one live trip from a real phone (the first direct OSRM call).
+1. Published and verified. Still outstanding: one trip from a real phone, which is
+   the first direct browser-to-OSRM call.
 2. Possible later: visitor comments (needs a backend and moderation; none was
    built); Easy (yellow) hotels as a fallback when no green fits; a "leave at" time.

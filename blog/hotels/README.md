@@ -9,8 +9,7 @@ The page now reads like a feed:
 - a From/To planner that picks green-parking hotels by real drive time;
 - a clearer map.
 
-Data and rules are unchanged. On branch `claude/peaceful-clarke-fprqk3`, not yet
-on main. See the [handover](HANDOVER-FEED-TRIP-2026-10-27.md).
+Data and rules are unchanged. Published as `3254716b`. See the [handover](HANDOVER-FEED-TRIP-2026-10-27.md).
 
 ## Finder clarity — 26 October 2026
 
