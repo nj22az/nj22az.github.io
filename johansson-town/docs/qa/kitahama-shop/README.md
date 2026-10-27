@@ -5,9 +5,30 @@ konbini, one room with a till, an island, a drinks cooler and a magazine window.
 2026 ("draw the shop in cad and I'll drop a Meshy for you after, exterior and interior; you need to describe size and all
 what we need").
 
-**State:** drawn, not built into World. The data is `src/world/okinawa/kitahama-shop.js`; this drawing is made from it
-(`python3 docs/qa/kitahama-shop/build_shop_cad.py` from `johansson-town/`, 23/23 checks in `checks.json`). The game builds
-the shop once the two Meshy models are in.
+**State:** drawn, and built as two models in Blender from the same data (below); not yet placed in World. The data is
+`src/world/okinawa/kitahama-shop.js`; the drawing (`python3 docs/qa/kitahama-shop/build_shop_cad.py`, 23/23 checks) and
+the models (`tools/blender/build-kitahama-shop.py`, 17/17 checks) are both made from it, so a change to the data changes
+both. The Meshy brief further down stays as the specification the models meet, and as the way to a hand-sculpted
+version if one is wanted.
+
+## Built in Blender (27 October 2026)
+
+| File | What |
+| --- | --- |
+| `tools/blender/build-kitahama-shop.py` | the parametric build: every wall, opening, fitting and outside item from the data |
+| `assets/models/kitahama-shop/kitahama-shop-exterior.glb` | walls, roof, glazing, doors, signboard, canopy, vending machines, bins, A-board, condensers, tank: about 10 000 triangles |
+| `assets/models/kitahama-shop/kitahama-shop-interior.glb` | floor, wall finishes, ceiling (its own mesh, to leave off), troffers, partitions, staff door, F1–F11 with their stock: about 9 100 triangles |
+| `art/kitahama-shop/kitahama-shop.blend` | both, for editing |
+| `art/kitahama-shop/kitahama-shop-export.json` | triangle counts, bounds, file hashes, and the checks: each fitting built inside its drawn box, the budgets |
+
+Run it from `johansson-town/` with Blender (`blender -b --python tools/blender/build-kitahama-shop.py -- --root .`) or with
+the bpy module (`python3.11 tools/blender/build-kitahama-shop.py -- --root .` after `pip install bpy`). Meshes are joined by
+material, as the other Blender props are, to keep draw calls down on phones; the fittings' boxes travel as glTF extras.
+
+**Which way round it is.** The game's frame (x east, z north, y up) shows the world mirrored against a printed map:
+standing on the lane, the door is on your left and the vending machines on your right. The models are built in that frame,
+so they drop in unrotated at x 35.6, z 63.2, and the elevations on sheet 3 are drawn as the player sees each face. The
+plan (sheet 2) is the data's plan, north up, east to the right.
 
 | File | What |
 | --- | --- |

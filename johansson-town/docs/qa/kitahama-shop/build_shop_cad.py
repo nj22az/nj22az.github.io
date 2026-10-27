@@ -443,7 +443,10 @@ def sheet_plan(c):
 def elevation(v, face):
     """An outside elevation: 'south' (front), 'east' (approach), 'north', 'west'. x along the face as seen."""
     length = OU if face in ('south', 'north') else OV
-    flip = face in ('north', 'west')          # seen from outside, these run the other way
+    # Drawn as the player sees each face in World. The game's frame (x east, z north, y up) is mirrored against a printed
+    # map, so from the lane the door is on the left, and from the approach the lane end is on the right
+    # (checked in renders of the Blender models, tools/blender/build-kitahama-shop.py).
+    flip = face in ('south', 'east')
     X = (lambda a: length - a) if flip else (lambda a: a)
     fl, ce, rt, pt = B['floor'], B['ceiling'], B['roofTop'], B['parapetTop']
     # ground
@@ -458,8 +461,9 @@ def elevation(v, face):
     if face in ('south', 'east'):
         sb = OUT['X6']
         h0, h1 = sb['min'][2], sb['max'][2]
-        v.rect(-.02, h0, length + (.15 if face == 'south' else 0), h1, stroke=INK, fill=GREEN, lw=.5)
-        v.rect(-.02, h0, length + (.15 if face == 'south' else 0), h0 + .05, stroke=None, fill=HexColor('#ffffff'))
+        lo, hi = (-.15, length + .02) if face == 'south' else (-.02, length)
+        v.rect(lo, h0, hi, h1, stroke=INK, fill=GREEN, lw=.5)
+        v.rect(lo, h0, hi, h0 + .05, stroke=None, fill=HexColor('#ffffff'))
         v.text(length / 2, h0 + .44, 'JOHANSSON MART', size=11, bold=True, color=HexColor('#ffffff'))
         v.text(length / 2, h0 + .17, 'ヨハンソンマート　北浜店', size=7, color=HexColor('#ffffff'), font=JP)
     for o in D['OPENINGS']:
@@ -478,17 +482,19 @@ def elevation(v, face):
         v.text((a + b) / 2, o['sill'] - .12 if o['sill'] > .3 else o['head'] + .2, o['id'], size=6, bold=True)
         v.dim(a, 0, a, o['head'], .35 if not door else -.0 + .35, size=5) if o['id'] in ('D1', 'W2') else None
     if face == 'south':
-        cp = OUT['X5']
-        v.rect(cp['min'][0], cp['min'][2], cp['max'][0], cp['max'][2], stroke=INK, fill=GREEN, lw=.4)
-        vm = OUT['X1']
-        v.rect(vm['min'][0], 0, vm['max'][0], vm['max'][2], stroke=INK, fill=HexColor('#ffffff'), lw=.5)
-        v.line((vm['min'][0] + vm['max'][0]) / 2, 0, (vm['min'][0] + vm['max'][0]) / 2, vm['max'][2], lw=.4)
-        v.text((vm['min'][0] + vm['max'][0]) / 2, vm['max'][2] - .25, 'X1 drinks machines', size=5.5)
-        bn = OUT['X2']
-        v.rect(bn['min'][0], 0, bn['max'][0], bn['max'][2], stroke=INK, fill=HexColor('#c9ccc8'), lw=.4)
-        ab = OUT['X7']
-        v.line(ab['min'][0], 0, (ab['min'][0] + ab['max'][0]) / 2, ab['max'][2], lw=.6)
-        v.line(ab['max'][0], 0, (ab['min'][0] + ab['max'][0]) / 2, ab['max'][2], lw=.6)
+        # the outside items flip with the face, as the openings do
+        span = lambda it: sorted((X(it['min'][0]), X(it['max'][0])))
+        a0, a1 = span(OUT['X5'])
+        v.rect(a0, OUT['X5']['min'][2], a1, OUT['X5']['max'][2], stroke=INK, fill=GREEN, lw=.4)
+        a0, a1 = span(OUT['X1'])
+        v.rect(a0, 0, a1, OUT['X1']['max'][2], stroke=INK, fill=HexColor('#ffffff'), lw=.5)
+        v.line((a0 + a1) / 2, 0, (a0 + a1) / 2, OUT['X1']['max'][2], lw=.4)
+        v.text((a0 + a1) / 2, OUT['X1']['max'][2] - .25, 'X1 drinks machines', size=5.5)
+        a0, a1 = span(OUT['X2'])
+        v.rect(a0, 0, a1, OUT['X2']['max'][2], stroke=INK, fill=HexColor('#c9ccc8'), lw=.4)
+        a0, a1 = span(OUT['X7'])
+        v.line(a0, 0, (a0 + a1) / 2, OUT['X7']['max'][2], lw=.6)
+        v.line(a1, 0, (a0 + a1) / 2, OUT['X7']['max'][2], lw=.6)
     if face in ('north', 'east'):
         tk = OUT['X4']
         a, b = sorted((X(tk['min'][0] if face == 'north' else tk['min'][1]), X(tk['max'][0] if face == 'north' else tk['max'][1])))
@@ -519,6 +525,7 @@ def sheet_elevations(c):
         v = s.view(x, y, 50)
         elevation(v, face)
     c.setFont(JP, 7)
+    c.drawString(40 * MM, 36 * MM, 'Each face is drawn as the player sees it in World: the game’s frame mirrors a printed map, so from the lane the door is on the left.')
     yy = 30
     for line in wrap(f"Walls: {LIV['walls']}. Fascia: {LIV['fascia']}. Frames: anodised aluminium.", 110):
         c.drawString(40 * MM, yy * MM, line)

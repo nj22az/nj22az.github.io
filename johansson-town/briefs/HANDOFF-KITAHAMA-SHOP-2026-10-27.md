@@ -1,7 +1,9 @@
 # Handover: Johansson Mart, Kitahama: the corner shop, drawn (27 October 2026)
 
-**State: drawn and specified on branch `claude/kitahama-corner-shop`; not built into World.** Waiting for the owner's two
-Meshy models (exterior and interior), made to the brief in `docs/qa/kitahama-shop/README.md`.
+**State: drawn (KS-001 rev A) and built as two Blender models from the same data, on branch
+`claude/kitahama-corner-shop`; not placed in World.** The owner asked the same day: "Can you build it? In blender with
+parametric code?" `tools/blender/build-kitahama-shop.py` makes `assets/models/kitahama-shop/kitahama-shop-exterior.glb`
+and `-interior.glb` (about 10 000 and 9 100 triangles, 17/17 checks). The Meshy brief stays as their specification.
 
 ## The owner's decisions (27 October 2026)
 
@@ -30,9 +32,16 @@ Meshy models (exterior and interior), made to the brief in `docs/qa/kitahama-sho
   900 mm clear inside each door and the staff door's swing clear.
 - The gōyā curtain, shortened for the shop, would have run into the garden shed; it now stops at x 29.8.
 
+## Found while building
+
+- Renders of the models from the lane showed the game's frame mirrors a printed map: from the lane the door is on the
+  left. The models are right (built in the game's frame); the elevations were redrawn as the player sees each face.
+- The canopy's tie rods, the A-board, the vending machines' displays and the island's packets were corrected after the
+  first renders; a leaning A-board panel dipped 3 mm below the ground (the export check caught it).
+
 ## Next
 
-1. The owner's Meshy GLBs into `art/` (or wherever the asset catalogue takes them), checked against the README's sizes.
-2. Build it: place the models at `WORLD` (x 35.6, z 63.2), colliders from the data, the doors, the lights; then work
+1. The owner looks at the renders; any change goes into the data, and both builders are run again.
+2. Place it in World: place the models at `WORLD` (x 35.6, z 63.2), colliders from the data, the doors, the lights; then work
    through `SITE_CHANGES` (the parking, the beds, the hedge, the sign), Grandmother Higa's day in `people/cast.js`,
    the van's stop, the storyteller's place. Check it in the live game before publishing.
