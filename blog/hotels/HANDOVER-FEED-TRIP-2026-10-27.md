@@ -107,8 +107,12 @@ Finland, Norway, Sweden) with live counts that follow the parking choice. Pressi
 tag, on a post or in the row, filters to that country; pressing it again, or Reset,
 clears it. On phones the post's tag wraps under the name so long names keep two
 lines at most. Assets `hotels.css?v=9`, `hotels.js?v=7`. Browser checks `flags.cjs`
-(session scratch): **19/19**, and the earlier 46 still pass. Published state is in
-the top section.
+(session scratch): **19/19**, and the earlier 46 still pass. **Published to main on
+the owner's word ("Yes") as
+[`b52c3a72`](https://github.com/nj22az/nj22az.github.io/commit/b52c3a722104eab119ba4bc7249b5467512a35c3)**
+(main merged in first; it had only Johansson Town changes, no conflicts).
+[Pages run 40457133999](https://github.com/nj22az/nj22az.github.io/actions/runs/40457133999)
+succeeded; 8/8 live hotel files match the commit and both harnesses pass live.
 
 ## External services and privacy
 
