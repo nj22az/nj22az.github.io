@@ -83,17 +83,26 @@
     });
   });
 
-  // Notes open like a comment thread under the post.
+  // A post is a closed card: name, verdict and facts. Tapping it, or Notes or Photos, folds out its photos and notes.
+  function setOpen(post, open) {
+    var more = post.querySelector('.hotel-post-more');
+    post.classList.toggle('is-open', open);
+    if (more) more.inert = !open;
+    post.querySelectorAll('[data-hotel-thread]').forEach(function (button) { button.setAttribute('aria-expanded', String(open)); });
+  }
   posts.forEach(function (post) {
-    var toggle = post.querySelector('[data-hotel-thread]');
-    var thread = post.querySelector('.hotel-thread');
-    if (toggle && thread) {
-      toggle.hidden = false;
-      thread.hidden = true;
-      toggle.addEventListener('click', function () {
-        var open = toggle.getAttribute('aria-expanded') !== 'true';
-        toggle.setAttribute('aria-expanded', String(open));
-        thread.hidden = !open;
+    var toggles = post.querySelectorAll('[data-hotel-thread]');
+    if (toggles.length && post.querySelector('.hotel-post-more')) {
+      post.classList.add('is-card');
+      setOpen(post, false);
+      toggles.forEach(function (toggle) {
+        toggle.hidden = false;
+        toggle.addEventListener('click', function () { setOpen(post, !post.classList.contains('is-open')); });
+      });
+      post.addEventListener('click', function (event) {
+        if (event.target.closest('a,button,input,select,label,.hotel-post-more')) return;
+        if (window.getSelection && String(window.getSelection())) return;
+        setOpen(post, !post.classList.contains('is-open'));
       });
     }
     var save = post.querySelector('[data-hotel-save]');
@@ -126,8 +135,7 @@
   // Opening a post from a link (a map popup, the trip card, the table) opens its notes too.
   function openNotes(id) {
     var post = document.getElementById(id);
-    var toggle = post && post.querySelector('[data-hotel-thread]');
-    if (toggle && toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+    if (post && post.classList.contains('is-card')) setOpen(post, true);
   }
 
   // A planned trip orders the feed by suitability and says why on each post; clearing restores place order.

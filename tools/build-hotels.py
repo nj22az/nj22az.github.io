@@ -220,6 +220,7 @@ ICONS = {
     'car': '<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><path d="M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/>',
     'wallet': '<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3z"/><path d="M3 7l12-4v4M16 13.5h2"/>',
     'message': '<path d="M4 5h16v11H10l-5 4v-4H4z"/>',
+    'camera': '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
     'bookmark': '<path d="M7 3h10v18l-5-4-5 4z"/>',
     'share': '<path d="M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8"/>',
     'globe': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
@@ -374,13 +375,17 @@ def render_review(review, posts=()):
     map_action = (f'<a href="#hotel-map" data-hotel-focus="{rid}" hidden>{icon("pin")}Map</a>' if review['coordinates']
                   else '<span class="hotel-unmapped">Map location awaiting verification</span>')
     checked = review['parkingVerification']['checkedOn']
+    photo_count = len(review.get('photos') or [])
+    photos_action = (f'<button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="more-{rid}" hidden>{icon("camera")}Photos <span class="hotel-action-count">{photo_count}</span></button>'
+                     if photo_count else '')
     return f'''      <article class="hotel-review hotel-post" id="review-{rid}" data-hotel-note="{rid}" data-checked="{e(checked)}" aria-labelledby="title-{rid}">
         <header class="hotel-post-head"><span class="hotel-avatar hotel-avatar-{category}" aria-hidden="true">P</span><div class="hotel-post-who"><h4 id="title-{rid}">{e(review['name'])}</h4><p class="hotel-post-meta"><strong class="hotel-verdict hotel-verdict-{category}">{e(parking_category_label(review))}</strong> · {e(review['city'])}</p></div>{country_tag(review)}<button type="button" class="hotel-save" data-hotel-save="{rid}" aria-pressed="false" aria-label="Save {e(review['name'])}" hidden>{icon('bookmark')}</button></header>
         <p class="hotel-trip-line" data-hotel-trip-line hidden></p>
         <p class="hotel-post-caption">{e(review['parkingSummary'])}</p>
-        <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>{post_photos(review)}
-        <div class="hotel-post-actions"><button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="notes-{rid}" hidden>{icon('message')}Notes <span class="hotel-action-count">{len(thread)}</span></button>{map_action}<a href="{e(review['hotelUrl'])}">{icon('globe')}Website</a><button type="button" data-hotel-share="{rid}" hidden>{icon('share')}Share</button></div>
-        <ol class="hotel-thread" id="notes-{rid}" aria-label="Notes on {e(review['name'])}">{''.join(thread)}</ol>
+        <ul class="hotel-chips" aria-label="Parking facts">{post_chips(review)}</ul>
+        <div class="hotel-post-actions"><button type="button" data-hotel-thread="{rid}" aria-expanded="false" aria-controls="more-{rid}" hidden>{icon('message')}Notes <span class="hotel-action-count">{len(thread)}</span></button>{photos_action}{map_action}<a href="{e(review['hotelUrl'])}">{icon('globe')}Website</a><button type="button" data-hotel-share="{rid}" hidden>{icon('share')}Share</button></div>
+        <div class="hotel-post-more" id="more-{rid}"><div class="hotel-post-more-inner">{post_photos(review)}
+        <ol class="hotel-thread" id="notes-{rid}" aria-label="Notes on {e(review['name'])}">{''.join(thread)}</ol></div></div>
       </article>'''
 
 
@@ -464,7 +469,7 @@ def build(reviews, posts=None):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=11">
+  <link rel="stylesheet" href="/css/hotels.css?v=12">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=3">
 </head>
@@ -557,7 +562,7 @@ def build(reviews, posts=None):
   <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/hotels/hotels.js?v=8"></script>
+  <script src="/hotels/hotels.js?v=9"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="/hotels/hotels-map.js?v=6"></script>
   <script src="/hotels/hotels-trip.js?v=1"></script>
