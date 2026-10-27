@@ -178,7 +178,8 @@ def build(frame, out, truck_x, style='ink'):
     for name, image in (('banner-desktop', desk), ('banner-phone', phone), ('art-desktop', art), ('art-phone', phone_art)):
         rgb = image.convert('RGB')
         rgb.save(out / f'{name}.png', optimize=True)
-        rgb.save(out / f'{name}.webp', quality=86, method=6)
+        # Print Looks are all grain and halftone dots: quality 75 keeps them crisp at a fraction of the size.
+        rgb.save(out / f'{name}.webp', quality=86 if style == 'ink' else 75, method=6)
         made += [out / f'{name}.png', out / f'{name}.webp']
     return made
 

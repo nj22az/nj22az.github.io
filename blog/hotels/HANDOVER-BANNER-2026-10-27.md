@@ -24,3 +24,13 @@ banner files were delivered from the session scratch; the page waits for the own
 Recommended for the page (PDF): the art without baked-in text, title and short line as HTML over it, `<picture>`
 with the 4:3 crop at ≤ 600 px, scope line under the banner, alt text naming Tetsuo and Sakura Shōten.
 Not done: wiring into the page, physical-device check.
+
+## The owner's picks: Rubber stamp and Risograph
+
+The owner: "I do love rubber stamp can you use that or Risograph". Both rendered at 3600×1200 (cab, 17:40) and
+built with `--style stamp` / `--style riso`: the title as printed matter (a stamped burgundy label with a double
+border, or a teal-and-coral two-plate riso tag slightly out of register) on the frame's own paper, sized to end
+before the truck. Print Looks save WebP at quality 75: Rubber stamp 334 KB desktop / 259 KB phone, Risograph
+873 KB / 497 KB (halftone dots barely compress). Mocked on the page with the label baked into the art and the page
+title kept visually hidden. Recommendation in the refreshed PDF: Rubber stamp for the page, Risograph for
+posters or social images. Still waiting on the owner's choice; nothing on the page yet.
