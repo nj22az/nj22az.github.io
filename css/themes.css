@@ -173,7 +173,7 @@
   line-height: normal;
   letter-spacing: normal;
   font-feature-settings: "palt" 0;
-  word-break: break-all;
+  word-break: normal;
   overflow-wrap: break-word;
   line-break: strict;
 }

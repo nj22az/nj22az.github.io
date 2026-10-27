@@ -26,7 +26,7 @@ SITE = 'https://nj22az.github.io'
 PAPER = (252, 247, 231)
 INK = (125, 36, 51)
 MARK = 'data-blog-stamp'
-CSS_VERSION = 4   # raise with every change to css/blog-stamps.css, so browsers fetch it again
+CSS_VERSION = 5   # raise with every change to css/blog-stamps.css, so browsers fetch it again
 
 
 def make_images(source):

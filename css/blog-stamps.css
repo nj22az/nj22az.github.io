@@ -16,6 +16,5 @@
   .blog-feed-item.has-stamp>.blog-feed-stamp{grid-row:1/span 2;width:104px;margin-top:2px}
   .blog-feed-item.has-stamp>:not(.blog-feed-stamp):not(.blog-feed-meta):not(h2):not(h3){grid-column:1/-1}
 }
-/* English breaks between words. (The Mossy theme sets break-all on the whole page, which splits words anywhere.) */
-.blog-page,.blog-reading{word-break:normal;overflow-wrap:break-word}
+
 @media (forced-colors:active){.blog-stamp-art,.blog-feed-stamp,.blog-head-stamp{background:CanvasText}}

@@ -3,7 +3,7 @@
 The owner: "Make the rubber stamp images from Minato for the blog" (after the site audit proposed one picture per
 article, shot in Johansson World on the real places, printed in the Rubber stamp Look).
 
-**State: built on branch `claude/peaceful-clarke-fprqk3`, not on main; review sheet sent, waiting for the owner's word.**
+**State: published to main on the owner's word ("Yes publish and fix Mossy everywhere"); see the end of this note.**
 
 ## What each page gets
 
@@ -45,6 +45,7 @@ the Hotels banner). Each article picture also becomes its link preview (`og:imag
 - `build-blog-stamps.py --check` PASS; rerun is idempotent (one picture per page). `blog-feed.test.cjs` PASS.
 - Chromium, 1440 and 390 px, all 10 pages: the right picture loads, no horizontal overflow, no errors; Swedish pages
   in their text column; Cobalt, Mossy, Cute, Crimson and others checked by eye. List thumbnails 20–40 KB each.
-- Found, not fixed site-wide: the **Mossy theme sets `word-break: break-all` on every page** (`css/themes.css:176`),
-  which splits English words anywhere. `css/blog-stamps.css` sets normal breaking on the blog pages it styles; the
-  rest of the site still has it in Mossy.
+- **Mossy theme fixed everywhere:** it set `word-break: break-all` on every page (`css/themes.css`), which split
+  English words anywhere ("Thu ận"). Now `word-break: normal` (Japanese still breaks between characters on its own);
+  `styles.css` imports `themes.css?v=mossy-words-1`, and the blog-only workaround in `css/blog-stamps.css` is removed
+  (`CSS_VERSION` 5). Checked in Mossy at 390 px: home, blog, an article, World: whole words, no overflow.
