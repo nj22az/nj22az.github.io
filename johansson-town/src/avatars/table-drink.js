@@ -12,6 +12,7 @@ const point=(a,b,t,arc=0)=>a.clone().lerp(b,t).addScaledVector(Y,arc*4*t*(1-t));
 
 /** The rendered mouth, in the actual head's frame, shared across all cast recipes. */
 export function avatarMouth(avatar){
+ const own=avatar.pixar?.mouthPoint?.();if(own)return own;   // (a Pixar body's own lips, pixar.js)
  const m=avatar.measure,L=faceLayout(avatar.recipe),theta=Math.PI*.28+L.mouthY/256*Math.PI*.58,phi=Math.PI/2-.95+L.mouthX/256*1.9;
  const p=shapeHeadPoint(new THREE.Vector3(-Math.cos(phi)*Math.sin(theta),Math.cos(theta),Math.sin(phi)*Math.sin(theta)),m.profile);
  return avatar.bones.head.localToWorld(new THREE.Vector3(p.x*m.Rh*m.headSX,m.headCentre-m.headY+p.y*m.Rh*m.headSY,p.z*m.Rh*.98+.025*m.k));

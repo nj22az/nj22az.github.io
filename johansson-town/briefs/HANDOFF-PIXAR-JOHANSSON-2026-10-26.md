@@ -326,6 +326,22 @@ The A-pose item in "Next work" below is done.
    against his measures: `measure.seatDrop`, `hipY`, `hand`), `Drink` standing, `Eat`; every one looked at close in the
    sheet tool (`--body`, and a pose cell for the seated poses), then in the booted game at the izakaya's counter. If the
    stools are too small for him, the izakaya is rebuilt next (the owner).
+7. "Proceed, do screenshots, test him and see so he looks natural in the game, no twisted limbs or wrists." Then:
+   **"Then redraw the izakaya in CAD and work away all Z fighting and flickering."** The izakaya (Minato, `src/world/
+   interiors/minato-compact-plan.js`, `izakaya.js`) is to be drawn in CAD first, as Sakura was (jojo `3d/sakura/cad/`,
+   the owner's standing CAD-first rule), and rebuilt from the drawing with every coplanar surface and flicker gone
+   (`tests/no-z-fighting.test.mjs` already measures the izakaya and Sato Ramen: nothing over 0.01 m² may share a plane).
+8. **Thao from the owner's Meshy model.** The owner uploaded `Striped Dress Doll` (Meshy AI, 26 October 2026), now jojo
+   `3d/cast/models/thao/thao-meshy.glb` (committed): "Then rig this model and replace Thao and animate so she has all
+   movement and normal behaviour, rig the face and eyes." One unrigged mesh of 715,566 triangles with three JPEG
+   textures, 1.90 units tall. The route is Thuận's (jojo `3d/cast/GAME.md`, `game_thuan.py`): a landmarks module for her
+   (`thao_ai.py`: the joints, the eyes, the dress's hem, her height in World from `measure(recipeFor('Thao')).H`), the film
+   rig (`airig.build`), World's rest, her painted eyes, brows and mouth found and painted out and drawn live on decals,
+   the jaw, nose and cheek bones, World's weights, the card; then `PIXAR_BODIES.Thao` in `src/avatars/pixar.js`, her
+   acting in `face-acting.js`, the sheets and the booted game, and the owner's word before she replaces the cartoon. Her
+   dress is a skirt: World's skirt springs and seats (`skirt-shape.js`) need looking at for a Pixar body. Bind her with
+   the arms out as Johansson is (`a_pose`) and give her clothes a garment's weights (`armhole_weights`) from the start.
+   Order of work the owner set: the screenshots of Johansson first, then the izakaya in CAD, then Thao.
 
 
 **Where it stands.** Everything above is committed and pushed on `claude/vibrant-brown-0udpq3` in both repos (the

@@ -36,7 +36,8 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'bde294af7c'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'53fc7fdd88'})});
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'7fa87c4213'}),
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'14fcbc8287'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -245,7 +246,15 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
   if(e.look&&!state.gaze){P[EYE_AT.lookX]=e.look[0];P[EYE_AT.lookY]=e.look[1];}
   if(e.tremble&&api.smooth){const t=now/1000;P[EYE_AT.lookX]+=e.tremble*Math.sin(t*69.1);P[EYE_AT.lookY]+=e.tremble*.6*Math.sin(t*81.7+1);}
  };
+ // The lips, for a glass or a morsel brought to them (table-drink.js avatarMouth, consume.js): the mouth decal's centre
+ // at the bind, kept in the head's frame (the cartoon's mouth is a point on its drawn head; his is where his mouth is)
+ const lips=mouth?.mesh?(()=>{const g=mouth.mesh.geometry;g.computeBoundingBox();const c=g.boundingBox.getCenter(new THREE.Vector3());
+  mouth.mesh.updateWorldMatrix(true,false);mouth.mesh.localToWorld(c);bones.head.updateWorldMatrix(true,false);return bones.head.worldToLocal(c);})():null;
  const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh].filter(Boolean),eyes,brows,mouth,bones:face,smooth:true,acting,card:body.card,
+  /** Where his lips are now (world), or null for a body without a rigged mouth. */
+  mouthPoint(){if(!lips)return null;bones.head.updateWorldMatrix(true,false);return bones.head.localToWorld(lips.clone());},
+  /** The same lips in the head bone's own frame (consume.js poses a drink or a morsel against them). */
+  get lipsLocal(){return lips?lips.clone():null;},
   /** Dress or undress the body (its clothes on, the trunk under them left out; or the body in its underwear). */
   dress(on){dressed=dress(on);return dressed;},
   get dressed(){return dressed;},

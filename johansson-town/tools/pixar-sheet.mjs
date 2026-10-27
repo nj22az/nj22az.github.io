@@ -85,7 +85,7 @@ try{
  const page=await browser.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto(server.url+'src/avatars/face.js?pixar='+name.toLowerCase());
- const result=await page.evaluate(async({name,undressed,eyes,body,cellSize,frame,moving,turnBy,pose})=>{
+ const result=await page.evaluate(async({name,undressed,eyes,body,cellSize,frame,moving,turnBy,pose,SEAT})=>{
   const T=await import('/johansson-town/vendor/three.module.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js');
   const {createInkPipeline}=await import('/johansson-town/src/render/ink-pipeline.js'),{loadPixarBodies}=await import('/johansson-town/src/avatars/pixar.js'),{createAvatarAnimator:createAnimator}=await import('/johansson-town/src/avatars/animate.js');
   // assets/ resolve against the page (assets.js): the game's folder, as on its own page
@@ -116,7 +116,12 @@ try{
   const eyesPng=!eyes.length?null:sheet(eyes,[cellSize,cellSize],Math.min(6,Math.max(1,Math.floor(1920/cellSize))),(cell,camera)=>{const [label,state,turn,old]=cell;
    const a=old?cartoon:pixar;show(a);a.root.rotation.y=turn+turnBy;if(moving)clock+=cell[4]||0;
    for(const b of Object.values(a.bones))b.rotation.set(0,0,0);
-   if(pose&&!old){const [move,secs='.9']=pose.split(':');a.root.position.set(0,0,0);animFace.play?.(move);for(let k=0;k<Math.round(+secs*60);k++)animFace.update(1/60,{});a.root.position.set(0,0,0);}
+   // (--pose Wave:0.9 a gesture; --pose pose:Interact:1.5 one of World's poses; --pose seat:SitDrink:1.3 a seated gesture
+   // on the stool; --pose idle:0.5 the stance alone)
+   if(pose&&!old){const parts=pose.split(':'),kind=['pose','seat','idle'].includes(parts[0])?parts.shift():'gesture',move=parts[0],secs=parts[1]||'.9';a.root.position.set(0,0,0);
+    const state=kind==='pose'?{pose:move}:kind==='seat'?{seated:true,seatHeight:SEAT}:{};
+    if(kind==='gesture'||kind==='seat')animFace.play?.(move);
+    for(let k=0;k<Math.round(+secs*60);k++)animFace.update(1/60,state);if(!state.seated)a.root.position.set(0,0,0);}
    a.paintFace({blink:0,talk:0,look:[0,0],gaze:null,blinkLeft:undefined,blinkRight:undefined,...state});
    // (a Pixar body's face at its own eyes' height, a little below: its card says where they are)
    const h=headAt(a),eyeY=a.pixar?.card?.eyes?.centres?.[0]?.[1],up=old?a.measure.headCentre-a.measure.headY:eyeY!=null?eyeY-a.pixar.card.rest.head[1]-.012:.075;
@@ -148,7 +153,7 @@ try{
   });
   pixar.dispose();cartoon.dispose();
   return {report,eyesPng,bodyPng};
- },{name,undressed,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion,turnBy,pose});
+ },{name,undressed,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion,turnBy,pose,SEAT});
  if(result.eyesPng)writeFileSync(resolve(out,name+tag+'-eyes.png'),Buffer.from(result.eyesPng.split(',')[1],'base64'));
  if(result.bodyPng)writeFileSync(resolve(out,name+tag+'-body.png'),Buffer.from(result.bodyPng.split(',')[1],'base64'));
  writeFileSync(resolve(out,name+tag+'.json'),JSON.stringify(result.report,null,1)+'\n');

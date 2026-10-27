@@ -2466,6 +2466,12 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get player(){return {position:player.position.toArray(),yaw,room:current?.id??null};},
  /** Stand him at a point with its height (on a deck aboard the ferry, where the town's ground is the sea). */
  stand(x,y,z,facing){spawnScene?.cancel('placement');ensureKitanoAt(x,z);if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,y,z);if(Number.isFinite(facing))yaw=facing;},
+ /** For the audit of his drinking (the owner, 27 October 2026: "test that he can drink beer in the izakaya"): a drink
+  *  served at once at his izakaya seat (the opening's serveNow), a sip of it by the game's own performance, and where
+  *  that performance stands (table-drink.js diagnostics: the phase, the rim's and the wrist's errors). */
+ serve(kind='draft'){if(!seated)return 'not seated';if(!parkSeat?.izakaya)return 'not an izakaya seat';if(!beerService)return 'no beer service in this room';if(!parkSeat.izakaya.table)return 'the seat has no table';return beerService.serveNow(kind,parkSeat.izakaya)?true:'serveNow refused '+kind;},
+ sip(){return drinkNow();},
+ get drinking(){return johansson?.drinkingState||null;},
  teleport(x,z,facing,tilt){spawnScene?.cancel('placement');ensureKitanoAt(x,z);if(seated){seated=false;parkSeat=null;johansson?.seat?.(null);}player.position.set(x,groundHeight(x,z),z);if(Number.isFinite(facing))yaw=facing;if(Number.isFinite(tilt))pitch=tilt;},
  get lensOcclusion(){return lensOcclusion;},
  /** For the audit: the lens's own tests at a point (what stops the boom), and whether he is in one of the ferry's rooms. */
