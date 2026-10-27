@@ -1,16 +1,17 @@
-/* Progressive filters; the complete register remains readable without JS. */
+/* Progressive feed: filters, saved hotels, notes and trip order. Every post stays readable without JS. */
 (function () {
   'use strict';
   var form = document.querySelector('[data-hotel-filters]');
   if (!form) return;
   var rows = Array.from(document.querySelectorAll('[data-hotel-row]'));
-  var reviews = Array.from(document.querySelectorAll('[data-hotel-note]'));
-  var groups = Array.from(document.querySelectorAll('[data-hotel-group]'));
+  var posts = Array.from(document.querySelectorAll('[data-hotel-note]'));
+  var feed = document.querySelector('[data-hotel-notes]');
   var count = document.querySelector('[data-hotel-count]');
   var empty = document.querySelector('[data-hotel-empty]');
   var table = document.querySelector('[data-hotel-table]');
-  var notes = document.querySelector('[data-hotel-notes]');
   var choiceCounts = Array.from(document.querySelectorAll('[data-parking-count]'));
+  var savedOption = document.querySelector('[data-hotel-saved-option]');
+  var filterCount = document.querySelector('[data-hotel-filter-count]');
   var discovery = document.querySelector('[data-hotel-discovery]');
   var viewSwitch = document.querySelector('[data-hotel-view-switch]');
   var query = form.elements.namedItem('search');
@@ -18,7 +19,15 @@
   var chain = form.elements.namedItem('chain');
   var parking = form.elements.namedItem('parking');
   var receipt = form.elements.namedItem('receipt');
-  var parkingNames = { free: 'with free parking', easy: 'with easy parking', avoid: 'to avoid', '': '' };
+  var parkingNames = { free: 'with free parking', easy: 'with easy parking', avoid: 'to avoid', saved: 'saved', '': '' };
+  var categoryOf = {};
+  rows.forEach(function (row) { categoryOf[row.dataset.hotelRow] = row.dataset.parkingCategory; });
+
+  // Saved hotels are a per-browser convenience; the page works the same without storage.
+  var STORE = 'nj-hotel-saved';
+  var saved = new Set();
+  try { saved = new Set(JSON.parse(localStorage.getItem(STORE) || '[]')); } catch (error) { saved = new Set(); }
+  function keepSaved() { try { localStorage.setItem(STORE, JSON.stringify(Array.from(saved))); } catch (error) { /* not stored */ } }
 
   function normalise(value) {
     return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('en').replace(/ø/g, 'o').replace(/æ/g, 'ae');
@@ -29,35 +38,101 @@
   function filter() {
     var terms = normalise(query.value.trim()).split(/\s+/).filter(Boolean);
     var visible = new Set();
-    var tally = { free: 0, easy: 0, avoid: 0, all: 0 };
+    var tally = { free: 0, easy: 0, avoid: 0, all: 0, saved: 0 };
     rows.forEach(function (row) {
+      var id = row.dataset.hotelRow;
       var text = normalise(row.dataset.search);
       // Everything except the parking choice, so each choice can show what it would find.
       var place = terms.every(function (term) { return text.includes(term); }) &&
         (!country.value || row.dataset.country === country.value) &&
         (!chain.value || row.dataset.chain === chain.value) &&
         (!receipt.value || row.dataset.hotelReceipt === receipt.value);
-      if (place) { tally[row.dataset.parkingCategory] += 1; tally.all += 1; }
-      var show = place && (!parking.value || row.dataset.parkingCategory === parking.value);
+      if (place) { tally[row.dataset.parkingCategory] += 1; tally.all += 1; if (saved.has(id)) tally.saved += 1; }
+      var show = place && (parking.value === 'saved' ? saved.has(id) : !parking.value || row.dataset.parkingCategory === parking.value);
       row.hidden = !show;
-      if (show) visible.add(row.dataset.hotelRow);
+      if (show) visible.add(id);
     });
-    reviews.forEach(function (review) { review.hidden = !visible.has(review.dataset.hotelNote); });
-    groups.forEach(function (group) {
-      var shown = group.querySelectorAll('[data-hotel-note]:not([hidden])').length;
-      group.hidden = shown === 0;
-      group.querySelector('[data-hotel-group-count]').textContent = shown + ' ' + plural(shown);
-    });
+    posts.forEach(function (post) { post.hidden = !visible.has(post.dataset.hotelNote); });
     choiceCounts.forEach(function (badge) { badge.textContent = tally[badge.dataset.parkingCount]; });
+    if (savedOption) savedOption.hidden = saved.size === 0 && parking.value !== 'saved';
+    var active = [country.value, chain.value, receipt.value].filter(Boolean).length;
+    if (filterCount) { filterCount.hidden = active === 0; filterCount.textContent = active; }
     var description = parkingNames[parking.value] || '';
     count.textContent = visible.size + ' ' + plural(visible.size) + (description ? ' ' + description : '');
     empty.hidden = visible.size !== 0;
     table.hidden = visible.size === 0;
-    notes.hidden = visible.size === 0;
+    feed.hidden = visible.size === 0;
     document.dispatchEvent(new CustomEvent('hotel-filter-change', { detail: { visibleIds: Array.from(visible) } }));
   }
 
-  // On narrow screens the list and the map take turns behind a floating switch;
+  // Notes open like a comment thread under the post.
+  posts.forEach(function (post) {
+    var toggle = post.querySelector('[data-hotel-thread]');
+    var thread = post.querySelector('.hotel-thread');
+    if (toggle && thread) {
+      toggle.hidden = false;
+      thread.hidden = true;
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(open));
+        thread.hidden = !open;
+      });
+    }
+    var save = post.querySelector('[data-hotel-save]');
+    if (save) {
+      var id = save.dataset.hotelSave;
+      save.hidden = false;
+      save.setAttribute('aria-pressed', String(saved.has(id)));
+      save.addEventListener('click', function () {
+        if (saved.has(id)) saved.delete(id); else saved.add(id);
+        save.setAttribute('aria-pressed', String(saved.has(id)));
+        keepSaved();
+        filter();
+      });
+    }
+    var share = post.querySelector('[data-hotel-share]');
+    if (share && (navigator.share || (navigator.clipboard && window.isSecureContext))) {
+      share.hidden = false;
+      share.addEventListener('click', function () {
+        var url = location.origin + location.pathname + '#' + post.id;
+        var title = post.querySelector('h4').textContent;
+        if (navigator.share) { navigator.share({ title: title, url: url }).catch(function () {}); return; }
+        navigator.clipboard.writeText(url).then(function () {
+          share.lastChild.textContent = 'Link copied';
+          window.setTimeout(function () { share.lastChild.textContent = 'Share'; }, 2000);
+        });
+      });
+    }
+  });
+
+  // Opening a post from a link (a map popup, the trip card, the table) opens its notes too.
+  function openNotes(id) {
+    var post = document.getElementById(id);
+    var toggle = post && post.querySelector('[data-hotel-thread]');
+    if (toggle && toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+  }
+
+  // A planned trip orders the feed by suitability and says why on each post; clearing restores place order.
+  var placeOrder = posts.slice();
+  document.addEventListener('hotel-trip-change', function (event) {
+    var picks = (event.detail && event.detail.picks) || [];
+    var lines = new Map(picks.map(function (pick) { return [pick.id, pick]; }));
+    var ordered = picks.map(function (pick) { return document.getElementById('review-' + pick.id); }).filter(Boolean);
+    placeOrder.forEach(function (post) { if (!lines.has(post.dataset.hotelNote)) ordered.push(post); });
+    ordered.forEach(function (post) {
+      feed.appendChild(post);
+      var line = post.querySelector('[data-hotel-trip-line]');
+      var pick = lines.get(post.dataset.hotelNote);
+      line.hidden = !pick;
+      line.textContent = pick ? pick.rank + ' · ' + pick.line : '';
+    });
+    if (picks.length && parking.value !== 'free' && parking.value !== '') {
+      form.querySelector('input[name=parking][value=free]').checked = true;
+    }
+    filter();
+  });
+
+  // On narrow screens the feed and the map take turns behind a floating switch;
   // wide screens show both side by side and never show the switch.
   var listScroll = null;
   function setView(view, restore) {
@@ -72,6 +147,7 @@
     var top = view === 'list' && listScroll !== null ? listScroll : discovery.getBoundingClientRect().top + window.scrollY - 76;
     window.scrollTo(0, Math.max(0, top));
   }
+  window.NJHotelView = setView;
 
   if (discovery && viewSwitch) {
     discovery.dataset.view = 'list';
@@ -85,14 +161,15 @@
         viewSwitch.hidden = !entries[0].isIntersecting;
       }).observe(discovery);
     }
-    // Capture phase: the right view is showing before the map or the browser acts on the link.
-    document.addEventListener('click', function (event) {
-      var link = event.target.closest && event.target.closest('a');
-      if (!link) return;
-      if (link.hasAttribute('data-hotel-focus')) setView('map');
-      else if (/^#review-/.test(link.getAttribute('href') || '')) setView('list');
-    }, true);
   }
+  // Capture phase: the right view is showing before the map or the browser acts on the link.
+  document.addEventListener('click', function (event) {
+    var link = event.target.closest && event.target.closest('a');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (link.hasAttribute('data-hotel-focus')) setView('map');
+    else if (/^#review-/.test(href)) { setView('list'); if (link.hasAttribute('data-hotel-open-notes')) openNotes(href.slice(1)); }
+  }, true);
 
   form.addEventListener('input', filter);
   form.addEventListener('change', filter);

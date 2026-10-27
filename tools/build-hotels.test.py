@@ -217,10 +217,12 @@ class ParkingAdmissionTests(unittest.TestCase):
         row = next(r for r in self.records if r['hotelId'] == 'scandic-skelleftea')
         html = builder.render_review(row)
         # Unknown registration stays visible as unknown, never turned into "not required".
-        self.assertIn('<dt>Registration</dt><dd>Not stated by the hotel</dd>', html)
-        self.assertNotIn('Not required', html)
+        self.assertIn('Registration not stated</li>', html)
+        self.assertNotIn('No registration needed', html)
         self.assertIn(builder.e(row['parkingSummary']), html)
-        self.assertIn('<details', html)
+        # Full notes and sources stay in the post's thread.
+        self.assertIn('class="hotel-thread"', html)
+        self.assertIn(builder.e(row['review'][1]), html)
         row = next(r for r in self.records if r['hotelId'] == 'scandic-vasteras')
         self.assertIn('Register at reception', builder.render_review(row))
 

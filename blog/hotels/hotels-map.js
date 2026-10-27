@@ -18,9 +18,9 @@
 
   if (!window.L) { unavailable(); return; }
   var parkingCategories = {
-    free: { label: 'Free parking', marker: 'Free' },
-    easy: { label: 'Easy parking · One hotel receipt', marker: 'Easy' },
-    avoid: { label: 'Paid parking · Avoid', marker: 'Avoid' }
+    free: { label: 'Free parking', size: 24 },
+    easy: { label: 'Easy parking · One hotel receipt', size: 24 },
+    avoid: { label: 'Paid parking · Avoid', size: 14 }
   };
   var hotels;
   try {
@@ -54,38 +54,43 @@
   var markers = new Map();
   var hasView = false;
 
+  var tripLines = new Map();
   function popup(hotel) {
     var box = document.createElement('div');
     var heading = document.createElement('strong');
     heading.textContent = hotel.name;
     box.appendChild(heading);
-    [hotel.address, [hotel.city, hotel.country].filter(Boolean).join(', ')].filter(Boolean).forEach(function (text) {
-      var line = document.createElement('p');
-      line.textContent = text;
-      box.appendChild(line);
-    });
+    var place = document.createElement('p');
+    place.textContent = [hotel.city, hotel.country].filter(Boolean).join(', ');
+    box.appendChild(place);
     var parking = document.createElement('p');
     parking.className = 'hotel-map-parking hotel-map-parking-' + hotel.parkingCategory;
-    parking.textContent = parkingCategories[hotel.parkingCategory].label;
+    parking.textContent = hotel.parkingLabel || parkingCategories[hotel.parkingCategory].label;
     box.appendChild(parking);
-    if (hotel.parkingSummary) {
-      var summary = document.createElement('p');
-      summary.textContent = hotel.parkingSummary;
-      box.appendChild(summary);
+    if (tripLines.has(hotel.id)) {
+      var trip = document.createElement('p');
+      trip.className = 'hotel-map-trip';
+      trip.textContent = tripLines.get(hotel.id);
+      box.appendChild(trip);
     }
     var reviewId = hotel.reviewId || 'review-' + hotel.id;
     if (/^[a-z0-9-]+$/.test(reviewId)) {
       var link = document.createElement('a');
       link.href = '#' + reviewId;
-      link.textContent = 'Read hotel notes';
-      link.addEventListener('click', function () {
-        var article = document.getElementById(reviewId);
-        var details = article && article.querySelector('details');
-        if (details) details.open = true;
-      });
+      link.setAttribute('data-hotel-open-notes', '');
+      link.textContent = 'Open the post';
       box.appendChild(link);
     }
     return box;
+  }
+
+  function hotelIcon(hotel, rank) {
+    var size = rank ? 34 : parkingCategories[hotel.parkingCategory].size;
+    return L.divIcon({
+      className: 'hotel-map-marker hotel-map-marker-' + hotel.parkingCategory + (rank ? ' hotel-map-marker-pick' : ''),
+      html: '<span aria-hidden="true">' + (rank || (size > 16 ? 'P' : '')) + '</span>',
+      iconSize: [size, size], iconAnchor: [size / 2, size / 2]
+    });
   }
 
   hotels.forEach(function (hotel) {
@@ -94,8 +99,9 @@
     var marker = L.marker([hotel.latitude, hotel.longitude], {
       title: label,
       alt: label,
-      icon: L.divIcon({ className: 'hotel-map-marker hotel-map-marker-' + hotel.parkingCategory, html: '<span aria-hidden="true">' + category.marker + '</span>', iconSize: [48, 28], iconAnchor: [24, 14] })
-    }).bindPopup(popup(hotel), { maxWidth: 260, minWidth: 170 });
+      icon: hotelIcon(hotel),
+      zIndexOffset: hotel.parkingCategory === 'avoid' ? -100 : 0
+    }).bindPopup(function () { return popup(hotel); }, { maxWidth: 260, minWidth: 170 });
     marker.on('add', function () {
       var element = marker.getElement();
       if (element) element.setAttribute('aria-label', label);
@@ -125,9 +131,9 @@
     var count = selected().length;
     var total = visibleIds.size;
     var missing = total - count;
-    var message = total ? count + ' of ' + total + ' selected hotels have verified map locations.' : 'No hotels match the filters.';
-    if (missing > 0) message += ' ' + missing + ' ' + (missing === 1 ? 'hotel is' : 'hotels are') + ' listed below with addresses while map coordinates await verification.';
-    if (position) message += ' Your location is shown; estimated accuracy ' + Math.round(position.accuracy).toLocaleString('en-GB') + ' metres.';
+    var message = total ? count + ' ' + (count === 1 ? 'hotel' : 'hotels') + ' on the map.' : 'No hotels match the filters.';
+    if (missing > 0) message += ' ' + missing + ' without a verified location ' + (missing === 1 ? 'is' : 'are') + ' in the feed only.';
+    if (position) message += ' You are shown in blue (±' + Math.round(position.accuracy).toLocaleString('en-GB') + ' m).';
     if (locationMessage) message += ' ' + locationMessage;
     if (tileError) message += ' Some map tiles could not load. Hotel markers and the register remain available.';
     status.textContent = message;
@@ -136,6 +142,7 @@
   function fitSelection() {
     var points = selected().map(function (hotel) { return [hotel.latitude, hotel.longitude]; });
     if (position) points.push([position.latitude, position.longitude]);
+    if (tripLayer && tripLayer.getLayers().length) points = tripBounds.concat(tripPicks.length ? [] : points);
     if (points.length) map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 14, animate: false });
     else if (!hasView) map.setView([56.5, 12], 5);
     hasView = true;
@@ -180,7 +187,7 @@
   }
 
   function finishLocationRequest() {
-    if (locate) { locate.disabled = false; locate.textContent = position ? 'Update my location' : 'Show my location'; }
+    if (locate) { locate.disabled = false; locate.setAttribute('aria-label', position ? 'Update my location' : 'Show my location'); }
     if (clear) clear.hidden = !position;
   }
 
@@ -192,7 +199,6 @@
     }
     var request = ++locationRequest;
     locate.disabled = true;
-    locate.textContent = 'Finding your location…';
     if (clear) clear.hidden = false;
     locationMessage = 'Waiting for your browser to provide your location.';
     updateStatus();
@@ -241,6 +247,57 @@
       updateStatus();
     });
   }
+
+  // A planned trip: the road as a line, A and B, and its picks numbered as in the trip card.
+  var tripLayer = L.layerGroup().addTo(map);
+  var tripBounds = [];
+  var tripPicks = [];
+  function endMarker(point, text, title) {
+    return L.marker([point.latitude, point.longitude], {
+      title: title, alt: title, zIndexOffset: 1000, keyboard: false,
+      icon: L.divIcon({ className: 'hotel-map-end', html: '<span aria-hidden="true">' + text + '</span>', iconSize: [30, 30], iconAnchor: [15, 15] })
+    });
+  }
+  document.addEventListener('hotel-trip-change', function (event) {
+    var trip = event.detail;
+    tripLayer.clearLayers();
+    tripLines = new Map();
+    tripPicks.forEach(function (id) { var hotel = hotels.find(function (h) { return h.id === id; }); if (hotel) markers.get(id).setIcon(hotelIcon(hotel)); });
+    tripPicks = [];
+    tripBounds = [];
+    if (trip) {
+      if (trip.line) {
+        L.polyline(trip.line, { color: '#ffffff', weight: 8, opacity: 0.9, interactive: false }).addTo(tripLayer);
+        L.polyline(trip.line, { color: '#08131a', weight: 4, opacity: 0.85, interactive: false }).addTo(tripLayer);
+        tripBounds = trip.line.slice();
+      }
+      endMarker(trip.origin, 'A', 'Start: ' + trip.origin.label).addTo(tripLayer);
+      tripBounds.push([trip.origin.latitude, trip.origin.longitude]);
+      if (trip.destination) {
+        endMarker(trip.destination, 'B', 'Destination: ' + trip.destination.label).addTo(tripLayer);
+        tripBounds.push([trip.destination.latitude, trip.destination.longitude]);
+      }
+      trip.picks.forEach(function (pick) {
+        var hotel = hotels.find(function (h) { return h.id === pick.id; });
+        if (!hotel) return;
+        tripLines.set(pick.id, pick.rank + ' · ' + pick.line);
+        markers.get(pick.id).setIcon(hotelIcon(hotel, pick.rank)).setZIndexOffset(2000 - pick.rank);
+        tripPicks.push(pick.id);
+        tripBounds.push([hotel.latitude, hotel.longitude]);
+      });
+    }
+    markers.forEach(function (marker, id) { if (tripPicks.indexOf(id) === -1) marker.setZIndexOffset(0); });
+    hasView = false;
+    fitSelection();
+  });
+
+  var legend = L.control({ position: 'bottomleft' });
+  legend.onAdd = function () {
+    var box = L.DomUtil.create('div', 'hotel-map-legend');
+    box.innerHTML = '<span><i class="hotel-map-key hotel-map-key-free"></i>Free</span><span><i class="hotel-map-key hotel-map-key-avoid"></i>Avoid</span><span><i class="hotel-map-key hotel-map-key-you"></i>You</span>';
+    return box;
+  };
+  legend.addTo(map);
 
   updateHotels();
 })();
