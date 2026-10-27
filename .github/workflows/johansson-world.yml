@@ -31,4 +31,8 @@ jobs:
       # The list is johansson-town/tests/ci-guard.txt: tests that pass on main and guard the owner's rules.
       - name: Guard tests
         working-directory: johansson-town
+        # The town-wide surface scan (tests/no-z-fighting.test.mjs) needs more than Node's default heap since every
+        # shop's packs gained their real joints (26 October 2026); the ferry integration uses the same limit.
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: node tools/ci-guard.mjs
