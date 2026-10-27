@@ -1,9 +1,10 @@
 # Handover: Johansson Mart, Kitahama: the corner shop, drawn (27 October 2026)
 
-**State: drawn (KS-001 rev A) and built as two Blender models from the same data, on branch
-`claude/kitahama-corner-shop`; not placed in World.** The owner asked the same day: "Can you build it? In blender with
-parametric code?" `tools/blender/build-kitahama-shop.py` makes `assets/models/kitahama-shop/kitahama-shop-exterior.glb`
-and `-interior.glb` (about 10 000 and 9 100 triangles, 17/17 checks). The Meshy brief stays as their specification.
+**State: on `main` and live (PR #400, merge `f05a2470b`, Pages deployed 27 October 2026).** Drawn (KS-001 rev A), built
+as two Blender models from the same data (`tools/blender/build-kitahama-shop.py`), and brought to the island in three
+batches: the building on the north block's shop apron, walking in, Grandmother Higa at the till on weekday evenings and
+Saturdays. The guard check's red at merge was `main`'s own (cast proportions, izakaya drinks station, seated pose,
+no-z-fighting heap), the same four failing on a clean `main`; the Linux check was green. Open items below.
 
 ## The owner's decisions (27 October 2026)
 
