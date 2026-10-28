@@ -132,8 +132,9 @@ const LOOK_BACK=Object.freeze({hips:[0,.06,0],spine:[0,.2,0],chest:[-.04,.3,0],t
 /** Out of breath: bent forward at the spine and the chest over knees a little bent, the feet flat, the head up to look ahead. */
 const OUT_OF_BREATH=Object.freeze({spine:[.25,0,0],chest:[.45,0,0],neck:[-.15,0,0],head:[-.35,0,0],
  thighL:[-.35,0,.08],kneeL:[.5,0,0],footL:[-.15,0,-.08],thighR:[-.35,0,-.08],kneeR:[.5,0,0],footR:[-.15,0,.08]});
-/** Squat and watch: down on the heels (Crouch's legs, the soles flat), the chest forward over the knees. */
-const SQUAT=Object.freeze({chest:[.42,0,0],thighL:[-1.7,0,.25],kneeL:[2.3,0,0],footL:[-.6,0,-.25],thighR:[-1.7,0,-.25],kneeR:[2.3,0,0],footR:[-.6,0,.25]});
+/** Squat and watch: down on the heels (Crouch's legs, the soles flat), the back nearly upright as a child squats (leant .42
+ *  forward, a round body's belly came down over the hands on its knees), the head bent to look. */
+const SQUAT=Object.freeze({chest:[.25,0,0],thighL:[-1.7,0,.25],kneeL:[2.3,0,0],footL:[-.6,0,-.25],thighR:[-1.7,0,-.25],kneeR:[2.3,0,0],footR:[-.6,0,.25]});
 /** Kneel: the thighs upright, the shins along the floor behind, the toes down under the knees (tucked under by kneelFoot), the
  *  back straight. */
 /** Kneeling down (Kneel): the knees bend over the first `bend` of the ease, on the balls of the feet (`toes`: how far the feet
@@ -360,7 +361,7 @@ export const FUN_POSES=Object.freeze({
   use:'Down on the heels to watch something small and wonderful: a crab on the slipway, the cat, fish in the harbour; the forearms on the knees, the head bent to look.',
   // (both mittens over the knees, on the thighs' tops, carried by the thighs: a chin on a mitten is out of reach of a big
   // head on short arms, squatting; placed along the shin, they hung in front of the shins, not on the knees)
-  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*1.02,m.legR*1.3+m.hand*.85]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
+  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*1.02,m.legR*1.45+m.hand*.85]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
   play(P){const {w,t}=P,sway=Math.sin(t*1.3)*.015*w;
    for(const [j,a] of Object.entries(SQUAT))P.toward(j,...a,w);
    both(P,P.reach(),w);P.add('neck',.1*w);P.add('head',.2*w,sway,.12*w);}}),
