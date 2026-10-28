@@ -331,7 +331,7 @@ export const FUN_POSES=Object.freeze({
   play(P){const {w,t}=P,claw=Math.sin(t*8)*.15*w;
    both(P,P.reach(),w);P.add('handR',claw);P.add('handL',-claw);P.toward('chest',.16,0,0,w);P.add('head',-.06*w);
    leg(P,'L',-.32,.3,0,w,.04);leg(P,'R',.2,matchKnee(-.32,.3,.2),0,w,.04);}}),
- Shiver:Object.freeze({label:'Shiver',face:'worried',d:Infinity,ramp:.95,
+ Shiver:Object.freeze({label:'Shiver',face:'worried',d:Infinity,ramp:.7,
   use:'Cold to the bone, the wind off the sea: the arms wrapped tight round the chest, the shoulders up, the knees together, shivering.',
   reach:{pose:()=>({chest:[.06,0,0]}),R:{touch:true,on:['spine',(m,v)=>onTorso(m,v,1,.8)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]},
    L:{touch:true,on:['spine',(m,v)=>onTorso(m,v,-1,.7)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]}},
@@ -357,7 +357,7 @@ export const FUN_POSES=Object.freeze({
   play(P){const {w,t}=P,heave=Math.sin(t*7)*.035*w;
    for(const [j,a] of Object.entries(OUT_OF_BREATH))P.toward(j,...a,w);
    both(P,P.reach(),w);P.add('chest',heave);P.add('head',-heave*.6);}}),
- SquatWatch:Object.freeze({label:'Squat and watch',face:'focus',d:Infinity,ramp:.65,
+ SquatWatch:Object.freeze({label:'Squat and watch',face:'focus',d:Infinity,ramp:.7,
   use:'Down on the heels to watch something small and wonderful: a crab on the slipway, the cat, fish in the harbour; the forearms on the knees, the head bent to look.',
   // (both mittens over the knees, on the thighs' tops, carried by the thighs: a chin on a mitten is out of reach of a big
   // head on short arms, squatting; placed along the shin, they hung in front of the shins, not on the knees)
