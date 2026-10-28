@@ -194,6 +194,10 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   if(wallTo>wallFrom)parapet(wall.depth,wallTo-wallFrom,wall.x,(wallFrom+wallTo)/2);
   wallFrom=access.z+access.half;
  }
+ // The south return along the auction apron, as the plan above says (EAST_LAWN.wall.southFrom): it was never built, and
+ // the strip between the lawn's south edge and the quay's north edge (z -38.9 to -38) lay open 0.4 m deep, from the
+ // truck gate east to the seawall (Kōji stepped into it on his way to the ice plant). The wall fills the whole strip.
+ {const z0=-38.9,z1=EAST_LAWN.minZ,x0=wall.southFrom,x1=wall.x-wall.depth/2;parapet(x1-x0,z1-z0,(x0+x1)/2,(z0+z1)/2);}
 
 
 
