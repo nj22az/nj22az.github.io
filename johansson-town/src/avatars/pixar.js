@@ -36,8 +36,8 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'}),
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'ad4813d010'}),
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'c41a269523'}),
  // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
  Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'503e7d9582'}),
  'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'dd82ed6d9a'})});
