@@ -417,6 +417,10 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   heavier black frames a size bigger (3.4 mm, 1.3 of the eye), white tape wound round the bridge (`glasses.tape`), and a
   pocket protector on his left chest (`pocket`: a sheet lying on the chest 3 mm off it, a flat slab sank into its curve)
   with a blue and a red pen, clips on, and a small yellow-handled screwdriver, the electrician's; on the chest bone.
+- **Hair on the back** (the owner: "He needs some hair on the back too"; `build_glasses` `back_hair`): a horseshoe
+  fringe of 62 short grey strands from behind one ear round to the other, two staggered rows found by rays in toward the
+  head's middle, higher at the sides (meeting the sideburns) and lower and ragged at the nape (an even band read as a
+  headband). GLB 2.8 MB.
 
 ## Open
 
