@@ -462,6 +462,17 @@ from Thao, women in trousers from Thuận (her export cannot clone yet), childre
 smoothed off), checked (ground, car floor, the sip), in World; sheets `jojo 3d/cast/renders/game/chin-*-world.png`. Hats
 (his cap) and longer hair are still to make.
 
+## 28 October 2026, latest: Chin's rounded-rectangle face and his own hair
+
+The owner: "His face should be more like a rounded rectangle and have a hair like a young boy". jojo `game_meshy.py`:
+`egg_face.square` (a superellipse below the widest: sides nearly straight to a broad jaw, the corners rounded into a flat
+chin; Chin's power 3.5, widest at 1.64 m of the sculpt) and `build_boy_hair` (a modelled cap from rays onto the scalp:
+thick on top, short over the ears and the nape, short sideburns, a fringe of rounded locks above the brows; coloured per
+vertex, weighted as the scalp under it; World draws a `hair` part without a texture per vertex, pixar.js). The painted
+temples only under the sideburns. Chin: body 17,000, hair 3,136, card 21,560 triangles. Avatar tests 102/102; the sip
+2 mm from the lips. Sheets `jojo 3d/cast/renders/game/chin-face-world.png`, `chin-body-world.png`. A faint lavender
+sliver of the donor's grey remains at the nape below the cap, behind the ear (side view).
+
 ## 28 October 2026, latest: Chin's second mouth gone
 
 The owner, circling Chin's mouth: "It's like he has two mouths". The donor's upper lip stood forward and ended in a crease
