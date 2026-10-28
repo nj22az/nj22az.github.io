@@ -462,6 +462,14 @@ from Thao, women in trousers from Thuận (her export cannot clone yet), childre
 smoothed off), checked (ground, car floor, the sip), in World; sheets `jojo 3d/cast/renders/game/chin-*-world.png`. Hats
 (his cap) and longer hair are still to make.
 
+## 28 October 2026, latest: Chin's second mouth gone
+
+The owner, circling Chin's mouth: "It's like he has two mouths". The donor's upper lip stood forward and ended in a crease
+1.5 cm under the nose, where `flatten_muzzle` stops short of the nostrils; it read as a second mouth over the drawn one.
+jojo `game_meshy.smooth_upper_lip` (Chin's `muzzle.upper_lip`, z 1.538 to 1.575 of the sculpt) lays each front column
+from the mouth to the nose's base on one slope (measured: the 5 mm step at 1.369 m is gone). Re-exported, in World;
+sheets `jojo 3d/cast/renders/game/chin-face-world.png`, `chin-mouth-before-after.png`. Avatar tests 99/99.
+
 ## 28 October 2026, latest: the clones' faces from the avatar creator
 
 The owner: "Can you combine them with the old avatar creator? To make the faces more interesting". A clone's card says
