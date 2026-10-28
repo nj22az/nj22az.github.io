@@ -39,8 +39,8 @@ export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixa
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
  Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'}),
  // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
- Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'c44da688c7'}),
- 'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'42043f44aa'})});
+ Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'c99fa6171a'}),
+ 'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'49c2d7259f'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){

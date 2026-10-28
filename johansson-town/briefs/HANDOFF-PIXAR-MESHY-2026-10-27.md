@@ -322,6 +322,35 @@ is rounder too", "Look where the mouth is".
 - **Fujita**: his side hair `#d2ccba` (closed the same way), square glasses, a walrus moustache over the upper lip.
 - Evidence: jojo `3d/cast/renders/game/clones-tetsuo-*.png`, `clones-fujita-*.png`; tests 39/39.
 
+## 28 October 2026: the clones' faces, a Pixar audit
+
+The owner: "I think the faces need to be more flat under the nose now you see Johansson's old face in them"; "Audit
+yourself as a Pixar artist"; "Move their mouths Fujita should had a nose like super Mario".
+
+- **Under the nose** (jojo `game_meshy.flatten_muzzle`, `muzzle` in each clone's module): the face from the nose's base to
+  the chin seen from the front as a depth map, a smooth surface fitted over it (a 2D polynomial) and only what differs
+  from it blurred (longer up and down than across); front-facing skin moved to it. Johansson's sculpted open smile (the
+  dents at its corners, the crease under the nose), the moustache's ridge and the goatee's bump are gone; the face keeps
+  its roundness. (A blur of the depth itself pulled the jaw's sides 3 cm forward; the residual blur does not.)
+- **The audit's faults, fixed**: the side clean-up ran at Thao's face height (1.22–1.43 m: his neck) and never cleaned
+  their cheeks; now `side_window` at their own. Thuận's painted eyeliner flick on both old men: `eye_lines` (no flick).
+  Tetsuo's brows heavy dark bars: light grey `#aaa59d`, 0.7 as thick (`brow_thin`). Johansson's sculpted brow blades
+  (thin fins with an undercut) smoothed into the forehead (`face_zones.brow_smooth` 400 passes, `brow_grow` 4 mm; a
+  front-only smoothing tore them, dropped). Tetsuo's temples: the horseshoe's pale strands painted his skin
+  (`what='temples'`), the stubble's smudges on the jaw evened (`what='jaw'`), the scalp's sculpted hair block smoothed of
+  its grooves (`smooth_scalp`, from each side and from behind, the ears left). Each man a nose of his own (`nose_shape`
+  in `reshape`): Tetsuo's narrower and longer (his cartoon's tall oval), Fujita's Super Mario's (1.32 across, 1.15 deep,
+  1.2 long, its whole ball).
+- **The mouths moved**: Tetsuo's right under his nose as his cartoon's (`mouth_at` 1.555, the jaw's split with it);
+  Fujita's Mario arrangement, the moustache tucked under the nose and the mouth just below its fringe (1.536), no wider
+  than the moustache, at the face's middle (his painted sliver had been found 1 cm to one side).
+- Checked: clay renders against Johansson's (`renders/game/clones-clay.jpg`), World's faces, and both drinking the jug
+  with the rim on the lower lip at the sip (2 mm; `clones-drink.jpg`); tests 39/39.
+- **Not yet right** (the audit's rest): a brownish patch beside each nose (the old smile's laugh line painted in the
+  texture, inside the front's clean-up); the ears faceted at the rim (the 20,000-triangle budget) and plain; a faint
+  plateau where Tetsuo's sculpted hair block was; the mouth line reads lipstick red on the men (World's mouth shader,
+  shared with Johansson); Tetsuo's chin is still Johansson's long one, his cartoon's egg would want it shorter.
+
 ## Open
 
 0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use
