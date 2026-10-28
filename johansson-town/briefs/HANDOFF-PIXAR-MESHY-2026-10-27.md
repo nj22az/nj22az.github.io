@@ -424,6 +424,30 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, last: corrected and audited ("Correct it audit yourself")
+
+Corrected, each measured (scratchpad probe-cab.mjs, probe-stand.mjs) and the full suite run before and after:
+- **Every Pixar sole on its foot bone** (jojo `game_thuan.soles_on_foot`, in the game export and the film rig): World keeps a
+  foot on the floor by the points its foot bone carries rigidly (foot-ground.js), and Johansson's soles (0.6 foot, 0.4 shin)
+  went 9 cm into a car's floor, Thao's 4, Thuận's 6. Johansson, Thao, Thuận and Tetsuo re-exported (cards otherwise
+  identical): seated in the car and the kei truck their soles are on the floor (0), standing and walking on the ground (0).
+- **Drivers**: never the floor-sit (animate.js `floorWeight`: a car's 0.46 seat over its 0.265 floor read as a cushion and
+  threw the legs 8 to 12 cm toward the pedals; found by the audit), and their heels planted on the cab floor
+  (`heelsOnFloor` when driving). The harbour master, Nhung, Johansson, Thao, Tetsuo and Thuận: soles on a car's floor.
+- **The vehicle errands** (town-traffic.js): on the Minato Maru's own sailings, one car a sailing (the errands still ran at
+  the times set before her timetable of 21 October, when she lay at Kitano-jima, and a car waited at the ramp with no boat):
+  Tetsuo 07:30 over, 08:08 back, Mon/Wed/Fri; the harbour master the same, Tue/Thu/Sat; Thao 14:08 over, 14:45 back, daily;
+  Nhung 21:38/22:15 Mon/Thu; Mrs Sato the same, Tue/Fri. The tests brought up to date: Reiko retired with her car (five
+  vehicles), the times on their weekdays (day 0 a Thursday), the 0.19 jug, a skirt's lap hand (Vy).
+- From the audit too: the bushy brow tufts laid along the brow (they slid through a pattern fixed on the skin as his brows
+  moved), the first-person sip back on its own curve (hands.js; the residents' gentler sip had changed it), the weakened
+  test checks restored, the film scalp's skin read from the top of whichever head.
+Full suite: 67 failures this morning (`f56d7896`), 60 now; none new, 7 fixed. The 60 left are older and outside this work
+(building circuits, stairs, hats and necklaces, the countryside, dining surfaces, Obon, the ferry design book and others).
+Not fixed: Mrs Sato's feet hang 9.6 cm over her kei truck's floor (a short body on its 0.56 seat; the door and dash hide it);
+the harbour master's cap touches a car's roof (it did this morning); the errands' far-shore stop is a turnaround (their
+`back` falls before the boat arrives, as the airport errand's test has it); no one drives the delivery truck.
+
 ## 28 October 2026, latest: Tetsuo in his kei truck, and his shoes on the ground
 
 The owner: "Will he fit in the car now on Minato island". Measured (scratchpad probe-cab.mjs: every drawn vertex of him,
