@@ -476,7 +476,7 @@ painted his skin (`grey_off`, first of his paint rules); the shirt's paint stopp
 to 1.515 m: above it the donor's grey read as cloth and showed as a pale strip; every clone); the scalp's dark paint only on
 the crown under the hair; the hair's edge thinning to the skin over the ears and at the nape (no ledge), locks all round,
 grooves down from the crown, its clumps lit along their ridges (near-black alone read as a flat cap). Nothing clips in the
-poses (the think pose's fingers on the hair). The sip 2 mm from the lips; avatar tests 102/102.
+poses (the think pose's fingers on the hair). The sip 2 mm from the lips; avatar tests 102/102. Full suite: the same 6 older failures, none new. On main (`7bfc2ba8`).
 
 ## 28 October 2026, latest: Chin's second mouth gone
 
@@ -499,8 +499,8 @@ eye's `cut`, `slant` and a round eye's `corner`. The hand-made faces (Johansson,
 unchanged. `tools/pixar-sheet.mjs --face '<json>'` tries other parts on a face; tests `tests/pixar-face.test.mjs`.
 Sheet: `jojo 3d/cast/renders/game/chin-recipe-faces.png` (Chin as his recipe, and four other combinations). Not yet
 carried over (export-side, `clone_recipe.py`): the nose's style (only its size), glasses, moustache and beard. Seen: the
-painter's `smile` feeling barely lifts a clone's mouth (it did before this). Branch only, not yet on main: the owner sees
-the faces first.
+painter's `smile` feeling barely lifts a clone's mouth (it did before this). Published to main with Chin's fixes below
+(the owner: "Yes push"; `7bfc2ba8`).
 
 ## 28 October 2026, last: corrected and audited ("Correct it audit yourself")
 
