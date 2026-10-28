@@ -17,7 +17,9 @@ test('restoring a retired layout cannot change dialogue about the live peninsula
   acts.action('resident','Nhung');
   assert.ok(dom.has('Where do you live?'));
   dom.button('Where do you live?');
-  assert.match(document.querySelector('#activityBody').firstChild.textContent,/Front-Row Yard/);
+  // Nhung's home is 3 Kitahama with Kōji and Riku (the cast consolidation's phase 3, johansson-town/AGENTS.md and
+  // docs/CAST-CONSOLIDATION.md; kept when she became the island doctor on 22 October 2026). It was 1 Front-Row Yard.
+  assert.match(document.querySelector('#activityBody').firstChild.textContent,/3 Kitahama/);
   assert.doesNotMatch(document.querySelector('#activityBody').firstChild.textContent,/commute|leave by bus/i);
  }
 });

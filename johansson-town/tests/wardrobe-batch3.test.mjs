@@ -35,10 +35,16 @@ const baseLayer=body=>normalizeRecipe({...body,outfit:{...body.outfit,top:'tank'
 const marksOf=a=>a.body.material.userData.garment.marks;
 const colourCount=(a,hex)=>{const C=a.body.geometry.attributes.color,c=new THREE.Color(hex);let n=0;for(let i=0;i<C.count;i++)if(Math.abs(C.getX(i)-c.r)+Math.abs(C.getY(i)-c.g)+Math.abs(C.getZ(i)-c.b)<1e-4)n++;return n;};
 function draws(a){let meshes=0,ink=0;const face=o=>{for(let p=o;p;p=p.parent)if(p.name==='Face objects')return true;return false;};
- a.root.traverse(o=>{if(o.isMesh&&o.visible&&!face(o))(o.userData.outline?ink++:meshes++);});return [meshes,ink];}
+ // The rigged eyes (eyes3d.js) are a draw of their own, on for everyone since the owner's word of 25 October 2026 ("I think
+ // it looks better already": commit 4ad3b4e6, briefs/HANDOFF-AVATAR-EYES-2026-10-25.md); tests/eyes3d.test.mjs holds both
+ // eyes to one draw. The body and the head are still the two draws counted here.
+ a.root.traverse(o=>{if(o.isMesh&&o.visible&&!face(o)&&o!==a.eyes3d?.mesh)(o.userData.outline?ink++:meshes++);});return [meshes,ink];}
 
 test('the new items are appended to their slots, never dealt by the dice, and nobody is wearing them',()=>{
- assert.deepEqual(PARTS.top.slice(-2),['raglan','pinafore']);assert.equal(PARTS.hat.at(-1),'hairclip');
+ // Appended after batch 3: Vy's striped tee and vest (briefs/HANDOFF-VY-REFERENCE-2026-10-24.md, "appended to the wardrobe").
+ // Batch 3's two tops stay together, in order, and only that later top comes after them.
+ const at=PARTS.top.indexOf('raglan');
+ assert.deepEqual(PARTS.top.slice(at,at+2),['raglan','pinafore']);assert.deepEqual(PARTS.top.slice(at+2),['stripedvest']);assert.equal(PARTS.hat.at(-1),'hairclip');
  for(let i=0;i<60;i++){const r=randomRecipe('dice-'+i);assert.ok(DICE.tops.includes(r.outfit.top));assert.equal(r.outfit.hat,'none');assert.equal(r.outfit.bottomPattern,'none');}
  for(const [name,r] of Object.entries(CAST_RECIPES)){
   assert.ok(!TOPS.includes(r.outfit.top)&&r.outfit.hat!=='hairclip'&&r.outfit.bottomPattern!=='stripes',name+' is dressed as before');

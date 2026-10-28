@@ -43,11 +43,16 @@ test('beer drinkers at Minato order rounds until drunk, then stop before the lim
  assert.equal(fresh.account('Chin',minutes).meals.izakaya.drink,'tea');next.dispose();service.dispose();
 });
 
-test('the Barfly drinks himself drunk and then rests with an empty glass',()=>{
- const room=new THREE.Group(),barfly=person('Chin');barfly.profile={...barfly.profile,name:'Barfly'};barfly.g.userData.inIzakaya=true;barfly.g.userData.seatHeight=.71;
- const service=createVenueService({room,place:'izakaya',getCustomers:()=>[barfly],getMinutes:()=>1200});
- let rested=false,peak=0;for(let i=0;i<60*400;i++){service.update(1/60);peak=Math.max(peak,barfly.g.userData.tipsy||0);rested||=barfly.g.userData.socialPose==='Sit'&&!barfly.g.userData.heldItem;}
- assert.ok(rested);assert.ok(peak>=DRUNK&&peak<=LIMIT,'drunk, never past the limit');
+// The Barfly retired in phase 4 of the consolidation (src/people/roster.js: gone('barfly', … to:['fuji'], "the izakaya’s
+// regulars and gossip, from the residents themselves"); Minato's beer now comes only from Thao. The regular who drinks
+// at Minato is a resident: Chin, served by Thao, his evening running on the town clock (rounds every 20 town minutes).
+test('a regular at Minato drinks himself drunk and then rests with an empty glass',()=>{
+ const room=new THREE.Group(),regular=person('Chin'),nao=person('Thao');regular.g.userData.inIzakaya=true;regular.g.userData.seatHeight=.71;nao.g.userData.inIzakaya=true;
+ let minutes=1200;const service=createVenueService({room,place:'izakaya',getCustomers:()=>[regular],getStaff:()=>nao.g,getMinutes:()=>minutes});
+ let peak=0;for(let i=0;i<60*400;i++){service.update(1/60);minutes+=1/60;peak=Math.max(peak,regular.g.userData.tipsy||0);}
+ const data=regular.g.userData;
+ assert.ok(data.socialPose==='Sit'&&!data.heldItem&&data.mealState==='finished','he rests at the counter with nothing in his hand');
+ assert.ok(peak>=DRUNK&&peak<=LIMIT,'drunk, never past the limit');service.dispose();
 });
 
 test('the first-person sip runs on the avatar clock and tips further as the glass empties',()=>{

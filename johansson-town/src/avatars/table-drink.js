@@ -199,6 +199,14 @@ export function createAvatarTableDrink(avatar,lease,{onComplete=()=>{},onCancel=
   lookAt=cartoon&&['PREPARE','REACH','GRASP','LIFT','APPROACH'].includes(phase.id)?glassP.clone().add(new THREE.Vector3(0,.14,0)):null;
   if(cartoon&&phase.id==='SIP')avatar.paintFace({blink:1});
   setWorld(prop,glassP,glassQ);
+  // The last mouthfuls tip the jug far over, and its handle (his wrist) swings out away from the lips: a short arm
+  // (Mr Fujita's) would then be asked for more than its length, and the hand would come off the handle. A person
+  // brings the shoulder forward for it, so the shoulder goes toward the hand by what the straight arm lacks (a few
+  // millimetres; never more than 3 cm, a shoulder's own reach), and the forearm stays its length.
+  {const sw=b.shoulderR.getWorldPosition(new THREE.Vector3()),ew=b.elbowR.getWorldPosition(new THREE.Vector3()),hw=b.handR.getWorldPosition(new THREE.Vector3());
+   const arm=(sw.distanceTo(ew)+ew.distanceTo(hw))*.998,short=sw.distanceTo(handP)-arm;
+   if(short>0){const to=sw.clone().addScaledVector(handP.clone().sub(sw).normalize(),Math.min(short,.03));
+    b.shoulderR.position.copy(b.shoulderR.parent.worldToLocal(to));body.updateWorldMatrix(true,true);}}
   // (a Pixar body's elbow hangs below the shoulder through the whole performance, as consume.js poses its drink; the
   // cartoon's goes out to the side: the owner, 27 October 2026, "the arm gets stuck in his head")
   reach(avatar,handP,'R',avatar.pixar?[-.45-.5*drain,-1+.85*drain,.25]:-.25);

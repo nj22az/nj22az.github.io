@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {circleHitsRect,standingHitsRect,townBoundsBlocked} from '../physics.js';
+import {MINATO_COMPACT} from '../src/world/interiors/minato-compact-plan.js';
 
 installDOM();globalThis.self=globalThis;
 const {STAND_SEQUENCES,STANDING_RESIDENTS,standNow,standAt,dayPhase,STAND_WALK}=await import('../src/people/stand-points.js');
@@ -129,7 +130,7 @@ test('Front-Row Books and the police station: every point reachable from the wor
 test('Sato Ramen: Mrs Sato’s points are on the kitchen floor, clear of the line and the counter',()=>{
  for(const id of ['ramen-stock','ramen-lunch'])for(const p of STAND_SEQUENCES[id].points){
   assert.ok(p.station==='pass'||SATO_KITCHEN[p.station],'a station of the kitchen');
-  assert.ok(p.x>=SATO_KITCHEN.minX&&p.x<=SATO_KITCHEN.maxX&&p.z<=SATO_KITCHEN.passZ+.01&&p.z>=-5.2,'on the kitchen floor');
+  assert.ok(p.x>=SATO_KITCHEN.minX&&p.x<=SATO_KITCHEN.maxX&&p.z<=SATO_KITCHEN.passZ+.01&&p.z>=MINATO_COMPACT.ramenPrep.position[2]+MINATO_COMPACT.ramenPrep.depth/2,'on the kitchen floor');   // in front of the back line (the compact plan)
   assert.equal(SATO_COLLIDERS.some(c=>circleHitsRect(p.x,p.z,.2,c)),false,id+' clear of solids: '+p.activity);
  }
 });

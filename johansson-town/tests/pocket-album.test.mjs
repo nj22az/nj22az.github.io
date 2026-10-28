@@ -46,10 +46,12 @@ test('a damaged photo is refused, and a saved album keeps only sound photos, onc
 });
 
 test('a caption says who, where and when; the storyteller can ask by person and by place',()=>{
+ // Day 2 is Saturday 3 January 1970 on the device calendar (the owner, 26 October 2026; johansson-town/AGENTS.md); the old
+ // projection into 1997 made it a Friday.
  const p=addPhoto([],photo()).photo;
- assert.equal(photoCaption(p),'Mrs Sato and Thuan · Sato Ramen · Friday 3 January, 12:40');
- assert.equal(photoCaption({...p,people:[],place:null}),'Friday 3 January, 12:40');
- assert.equal(photoCaption({...p,people:['A','B','C']}),'A, B and C · Sato Ramen · Friday 3 January, 12:40');
+ assert.equal(photoCaption(p),'Mrs Sato and Thuan · Sato Ramen · Saturday 3 January, 12:40');
+ assert.equal(photoCaption({...p,people:[],place:null}),'Saturday 3 January, 12:40');
+ assert.equal(photoCaption({...p,people:['A','B','C']}),'A, B and C · Sato Ramen · Saturday 3 January, 12:40');
  const album=[p,addPhoto([p],photo({people:['Thuan'],place:{id:'pier',title:'The pier'}})).photo];
  assert.deepEqual(photosOf(album,'Thuan').map(x=>x.id),['ph1','ph2']);
  assert.deepEqual(photosOf(album,'Mrs Sato').map(x=>x.id),['ph1']);

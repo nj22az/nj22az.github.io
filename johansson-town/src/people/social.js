@@ -470,11 +470,13 @@ export function residentPlan(profile,minutes,rain=false,state=null){
   const routine=homeRoutine(profile,minutes);
   if(['sleep','wake','breakfast','prepare'].includes(routine.id))return {place:'home',target:profile.home,activity:routine.activity+' at home'};
  }
- // Higa Liquor's bench and the coin laundry's washing day (shop-days.js), once they are up.
- {const shop=shopDayPlan(profile?.name,minutes);if(shop&&!shop.home&&shop.target)return shop;}
  // Today's happening, if it names them (happenings.js): the fish auction, the eisa. Read
  // after sleep and breakfast, so nobody is got out of bed for one.
  const happening=happeningPlan(profile,minutes,rain);
+ // Higa Liquor's bench and the coin laundry's washing day (shop-days.js), once they are up. The bench is an ordinary
+ // evening's habit: on a night a happening names them (Tetsuo at the eisa, 19:30, inside his 18:30–20:00 bench) they go
+ // to it, as its news says they did; the laundry and Kōji's round are kept to.
+ {const shop=shopDayPlan(profile?.name,minutes);if(shop&&!shop.home&&shop.target&&!(happening&&shop.place==='higa-bench'))return shop;}
  if(happening)return happening;
  // Local residents leave early enough to be seen walking from home to work.
  // Sleep/breakfast above and night shifts retain priority.

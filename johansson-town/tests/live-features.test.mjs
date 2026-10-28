@@ -30,7 +30,9 @@ test('World has no maker, wardrobes, outfits, decorating or building: those are 
  assert.doesNotMatch(game,/__JOHANSSON_MODE__==='build'|startBuildMode/,'the game never starts in a build mode');
  assert.doesNotMatch(game,/openCreator|Make your islander|Resident wardrobes|createHomeDecorating/,'no maker, wardrobes or arranging in the game');
  assert.match(game,/createHomeCustomization\(\{room,state:activities\.state\}\)/,'the home is dressed as Studio left it, with no Decorate your home');
- assert.match(game,/onStudio:\(\)=>\{activities\.save\(\);location\.href=new URL\('\.\.\/avatar-creator\//,'the Town Book saves progress and opens Johansson Studio');
+ // Leaving for Studio goes through the guarded save (docs/EXPERIENCE-IMPLEMENTATION.md: "Leaving for Johansson Studio
+ // uses the same guard"): Studio opens only once the save is written. It used to be a bare activities.save() first.
+ assert.match(game,/onStudio:\(\)=>activities\.saveBeforeLeaving\(\(\)=>\{location\.href=new URL\('\.\.\/avatar-creator\//,'the Town Book saves progress and opens Johansson Studio');
  for(const [path,code] of await sources('src'))assert.doesNotMatch(code,/thuan-wardrobe|openMaker/,path+' offers no wardrobe or mirror maker');
  const creatorPage=await read('creator/index.html');
  assert.match(creatorPage,/location\.replace/,'the old maker address forwards to Studio');

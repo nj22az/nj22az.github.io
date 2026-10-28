@@ -49,8 +49,12 @@ test('after surgery: Thuan at the counter, supper at home, ice cream at the free
  assert.equal(residentPlan(who('Nhung'),night+1440+1230,false,{},true).place,'paper');
 });
 
-test('Vy is a teen in her sailor uniform with a school-day routine',()=>{
- const vy=recipeFor('Vy');assert.equal(vy.age,'teen');assert.equal(vy.outfit.top,'sailor');assert.equal(vy.outfit.bottom,'pleatedskirt');
+// Vy is eleven, a pupil at the island school (docs/CAST-CONSOLIDATION.md: "retain age 11"), in the owner's 24 October
+// reference look, which the owner accepted for everywhere (HANDOVER.md; briefs/HANDOFF-VY-REFERENCE-2026-10-24.md): the
+// monochrome striped top and dark skirt. She used to be a teen in a sailor uniform and pleated skirt.
+test('Vy is an eleven-year-old in her own monochrome look with a school-day routine',()=>{
+ const vy=recipeFor('Vy');assert.equal(vy.age,'child');assert.equal(vy.outfit.top,'stripedvest');assert.equal(vy.outfit.bottom,'skirt');
+ assert.equal(vy.outfit.topColour,vy.outfit.bottomColour,'one colour, top and skirt');
  assert.ok(NEIGHBOUR_TALK.Vy.routine.some(r=>/ice cream/.test(r.role)));
 });
 

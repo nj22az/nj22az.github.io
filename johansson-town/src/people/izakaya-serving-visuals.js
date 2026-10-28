@@ -177,11 +177,13 @@ export function buildServingDrink(kind,{held=false}={}){
   // judges of the counter frames saw "a fist closed on nothing")
   const D=[[JUG.r-.012,JUG.opening[0]-.004,0],[JUG.r+.014,JUG.opening[0]-.006,0],[JUG.barX-.004,JUG.opening[0]+.004,0],[JUG.barX,JUG.opening[0]+.02,0],
    [JUG.barX,JUG.opening[1]-.02,0],[JUG.barX-.004,JUG.opening[1]-.004,0],[JUG.r+.014,JUG.opening[1]+.006,0],[JUG.r-.012,JUG.opening[1]+.004,0]];
-  glass.tube(D,JUG.bar,0xd6e0d6);china.tube(D,JUG.bar*.72,0xdfe9e4);
+  // (the core 0.6 of the bar, its faces 3 mm inside the tube's, so the two never share a plane and flicker)
+  glass.tube(D,JUG.bar,0xd6e0d6);china.tube(D,JUG.bar*.6,0xdfe9e4);
   // (a saturated gold: a pale one read as milky tea and a deep amber as cocoa through the room's grade, the judges)
   // (the beer inside the glass's wall, 3.7 cm from the axis against the wall's 3.9: a wider column poked through the
-  // facets as spikes; filled to 2 cm under the rim with a thick head)
-  fill(JUG.r-.0095,JUG.h-.028,(JUG.h-.028)/2+.011,0,0xf0a400,true);rimHeight=JUG.h;
+  // facets as spikes; filled to 2 cm under the rim with a thick head; its bottom 2 mm over the glass's inner floor at
+  // 0.011, as the other glasses' fills are, so the two faces do not flicker through the glass)
+  fill(JUG.r-.0095,JUG.h-.030,(JUG.h-.030)/2+.013,0,0xf0a400,true);rimHeight=JUG.h;
  }else if(kind==='bottle'){
   if(!held){
    const bottle=pieces(group,'Brown beer bottle');bottle.lathe([[0,0],[.03,0],[.037,.005],[.038,.032],[.037,.203],[.03,.22],[.014,.254],[.013,.278],[0,.278]],0x604128,-.06);bottle.finish();

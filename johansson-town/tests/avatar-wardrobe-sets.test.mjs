@@ -25,7 +25,10 @@ const dressed=(body,outfit)=>normalizeRecipe({...body,outfit:{...body.outfit,...
 const baseLayer=body=>normalizeRecipe({...body,outfit:{...body.outfit,top:'tank',bottom:'underwear',footwear:'barefoot',hat:'none'},accessories:{...body.accessories,earrings:'none',neckwear:'none',pin:false}});
 const vertices=r=>{const a=buildAvatar(r,{shadows:false,faceSize:64}),n=a.body.geometry.attributes.position.count;a.dispose();return n;};
 function draws(a){let meshes=0,ink=0;const face=o=>{for(let p=o;p;p=p.parent)if(p.name==='Face objects')return true;return false;};
- a.root.traverse(o=>{if(o.isMesh&&o.visible&&!face(o))(o.userData.outline?ink++:meshes++);});return [meshes,ink];}
+ // The rigged eyes (eyes3d.js) are a draw of their own, on for everyone since the owner's word of 25 October 2026 ("I think
+ // it looks better already": commit 4ad3b4e6, briefs/HANDOFF-AVATAR-EYES-2026-10-25.md); tests/eyes3d.test.mjs holds both
+ // eyes to one draw. The body and the head are still the two draws counted here.
+ a.root.traverse(o=>{if(o.isMesh&&o.visible&&!face(o)&&o!==a.eyes3d?.mesh)(o.userData.outline?ink++:meshes++);});return [meshes,ink];}
 
 test('each batch-1 set stays at two draws and two ink shells, and its hat comes off without a third draw',()=>{
  for(const id of BATCH_1)for(const [who,body] of Object.entries(BODIES)){

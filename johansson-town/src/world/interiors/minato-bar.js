@@ -36,8 +36,10 @@ export const MINATO_BAR=Object.freeze({
  // counter can watch.
  rack:Object.freeze({...at(-1.06,IN_WORKTOP,AT_WORKTOP,Math.PI),
   // Eight clean glasses, the nearer row within her reach of the worktop's edge; she tops the rack up from the glass
-  // washer under the worktop when she is back at her station.
-  slots:Object.freeze({draft:[[-1.25,-1.72],[-1.12,-1.72],[-.99,-1.72]],oolong:[[-1.25,-1.61],[-1.13,-1.61],[-1.01,-1.61]],awamori:[[-.86,-1.72],[-.88,-1.61]]}),
+  // washer under the worktop when she is back at her station. A draught mug is 0.145 m across with its handle (to +x),
+  // so the mugs stand 0.15 m apart, each handle clear of the next mug, and the two rocks glasses go to the back row
+  // with the tumblers.
+  slots:Object.freeze({draft:[[-1.25,-1.72],[-1.10,-1.72],[-.95,-1.72]],oolong:[[-1.26,-1.61],[-1.165,-1.61],[-1.07,-1.61]],awamori:[[-.975,-1.61],[-.88,-1.61]]}),
   tray:[-1.06,-1.665,.48,.22],
   purpose:'The night’s clean glasses, beside the prep board, where each pour starts.'}),
  // A glass stands on a ribbed mat (the pour) or the tap's grille: on the ribs' crests, never flat on a flat top.

@@ -1,12 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {recipeFor,baseRecipe,RESIDENT_NAMES,RESIDENT_GROUPS,CAST_RECIPES,NEIGHBOUR_RECIPES} from '../src/avatars/cast.js';
+import {recipeFor,baseRecipe,RESIDENT_NAMES,RESIDENT_GROUPS,CAST_RECIPES,NEIGHBOUR_RECIPES,RETIRED_RECIPE_NAMES} from '../src/avatars/cast.js';
 import {LOOKS} from '../src/avatars/looks-data.js';
 import {LOOK_PATHS,LOOK_FIELDS,applyLook,readPath} from '../src/avatars/looks.js';
 import {normalizeRecipe,DEFAULT_RECIPE} from '../src/avatars/recipe.js';
 import {PROFILES} from '../src/people/profiles.js';
 import {WARDROBE_KEY} from '../src/avatars/wardrobe.js';
-import {CAST_NAMES} from '../src/people/cast.js';
+import {CAST_NAMES,liveNameFor} from '../src/people/cast.js';
+import {identityOf} from '../src/people/roster.js';
 
 // Everybody World asks recipeFor about: the island's cast (people/cast.js), the residents (PROFILES, and Thuan in the
 // cast; residents.js draws its list from these), the neighbours (NEIGHBOUR_RECIPES: everyone in neighbours.js), the
@@ -57,10 +58,15 @@ test('look fields are worked out from the recipe and stay in step with the maker
 test('the resident groups cover everybody once, and the Studio pickers can name them all',()=>{
  assert.equal(new Set(RESIDENT_NAMES).size,RESIDENT_NAMES.length);
  // Harbour visitor is the maker's starting template (creator.js), not a resident: it has no look to change.
- assert.deepEqual([...RESIDENT_GROUPS.cast],Object.keys(CAST_RECIPES).filter(n=>n!=='Harbour visitor'));
+ // Nor is anybody the roster retired (people/roster.js RETIRED; phase 5 of docs/CAST-CONSOLIDATION.md, recorded in
+ // johansson-town/AGENTS.md): their drawings stay in CAST_RECIPES for history stories, their names in no live list.
+ assert.deepEqual([...RESIDENT_GROUPS.cast],Object.keys(CAST_RECIPES).filter(n=>n!=='Harbour visitor'&&!RETIRED_RECIPE_NAMES.includes(n)));
+ for(const n of RETIRED_RECIPE_NAMES)assert.ok(!RESIDENT_NAMES.includes(n),n+' is retired');
  assert.ok(!RESIDENT_NAMES.includes('Harbour visitor'));
- for(const p of PROFILES)assert.ok(RESIDENT_NAMES.includes(p.name),p.name);
- for(const n of Object.keys(NEIGHBOUR_RECIPES))assert.ok(RESIDENT_NAMES.includes(n),n);
+ // A townsfolk profile whose name the roster now gives to somebody else (Emi is Mrs Nakamura's display name,
+ // docs/CAST-CONSOLIDATION.md) is that person: Studio names her, not a second resident called Emi.
+ for(const p of PROFILES)if(!RETIRED_RECIPE_NAMES.includes(p.name))assert.ok(RESIDENT_NAMES.includes(liveNameFor(p.name)===p.name?p.name:identityOf(p.name)?.avatar||p.name),p.name);
+ for(const n of Object.keys(NEIGHBOUR_RECIPES))if(!RETIRED_RECIPE_NAMES.includes(n))assert.ok(RESIDENT_NAMES.includes(n),n);
 });
 
 test('the player without a saved look is Johansson as World draws him, so a published look reaches the player too',async()=>{

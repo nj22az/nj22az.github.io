@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
 import {IZAKAYA_PLAYER_SEATS} from '../src/people/izakaya-beer.js';
 import {SATO_COUNTER,SATO_LEDGE,SATO_CORNER} from '../src/world/sato-ramen-layout.js';
+import {MINATO_COMPACT} from '../src/world/interiors/minato-compact-plan.js';
 import {buildOfficeShell,buildOfficeWorkplace} from '../src/world/interiors/office-workplace.js';
 import {buildCompactShop} from '../src/world/interiors/compact-shops.js';
 import {buildPortHall} from '../src/world/interiors/port-hall.js';
@@ -73,20 +74,30 @@ test('the counter, its collider, mounted goods and low till share their physical
 });
 
 test('all exported Minato and ramen dining places meet their seat and tabletop surfaces',async()=>{
- // The fitted room used by this runtime; its new counter surface is tested with
- // the full three-piece assembly in izakaya-backbar.test.mjs.
- const bytes=await readFile(new URL('../assets/models/izakaya/minato-interior-walnut.glb',import.meta.url)),root=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
+ // The fitted room this runtime loads (src/world/izakaya.js reads minato-interior-compact.glb, built from
+ // art/izakaya/compact/plan.json); its new counter surface is tested with the full three-piece assembly in
+ // izakaya-backbar.test.mjs. The compact export carries textures, so the loader needs a browser's self and bitmaps.
+ const bytes=await readFile(new URL('../assets/models/izakaya/minato-interior-compact.glb',import.meta.url));
+ const previous={self:globalThis.self,bitmap:globalThis.createImageBitmap};
+ globalThis.self=globalThis;globalThis.createImageBitmap=async()=>({width:4,height:4,close(){}});
+ let root;try{root=(await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;}
+ finally{globalThis.self=previous.self;globalThis.createImageBitmap=previous.bitmap;}
  root.updateMatrixWorld(true);
  const places=[...Object.values(IZAKAYA_PLAYER_SEATS),...SATO_COUNTER,...SATO_LEDGE,...SATO_CORNER];
  for(const seat of places){
   const [x,,z]=seat.position,actual=surface(root,x,z,seat.surfaceY+.02);
   assert.ok(Math.abs(actual-seat.surfaceY)<.002,'Seat floats at '+[x,z]+': '+actual);
  }
- for(const [x,z,y] of [[-2.5,2.5,FURNITURE_HEIGHTS.table],[3.65,2.45,FURNITURE_HEIGHTS.table],[-4.6,4.35,FURNITURE_HEIGHTS.table],[7.65,1.15,FURNITURE_HEIGHTS.table],[7.1,-2.2,FURNITURE_HEIGHTS.serviceCounter],[11.2,1.2,FURNITURE_HEIGHTS.serviceCounter]])
+ // The booth table, the izakaya counter, the ramen counter and the ramen ledge, where the plan puts them.
+ const {booth,counter,ramenCounter,ramenLedge}=MINATO_COMPACT;
+ for(const [x,z,y] of [[booth.position[0],booth.position[2],FURNITURE_HEIGHTS.table],[booth.position[0]-booth.tableWidth/2+.1,booth.position[2],FURNITURE_HEIGHTS.table],[booth.position[0]+booth.tableWidth/2-.1,booth.position[2],FURNITURE_HEIGHTS.table],
+  [counter.position[0],counter.position[2],FURNITURE_HEIGHTS.serviceCounter],[ramenCounter.position[0],ramenCounter.position[2],FURNITURE_HEIGHTS.serviceCounter],[ramenLedge.position[0],ramenLedge.position[2],FURNITURE_HEIGHTS.serviceCounter]])
   assert.ok(Math.abs(surface(root,x,z,y+.018)-y)<.002,'Dining surface differs from props and reach targets at '+[x,z]);
  // A covering resident keeps their face above the complete fitted counter, shelves and pots.
  const cast=Object.values({...CAST_RECIPES,...NEIGHBOUR_RECIPES}).filter(r=>['adult','elder'].includes(r.age)),shortest=Math.min(...cast.map(r=>measure(r).headCentre));
- for(const [cx,cz,sx,sz] of [[3.5,-.8,3.5,-3.8],[8.6,-.8,8.6,-4.35]])for(const recipe of cast){
+ // From the guests' side of each counter to where the cook works: Thao at the grill, Mrs Sato at her pots.
+ const {kitchenStations,counterStandZ,ramenStaff,ramenStandZ}=MINATO_COMPACT;
+ for(const [cx,cz,sx,sz] of [[kitchenStations.grill[0],counterStandZ,kitchenStations.grill[0],kitchenStations.grill[2]],[ramenStaff.pots[0],ramenStandZ,ramenStaff.pots[0],ramenStaff.pots[1]]])for(const recipe of cast){
   const from=new THREE.Vector3(cx,shortest,cz),to=new THREE.Vector3(sx,measure(recipe).headCentre,sz),dir=to.clone().sub(from),ray=new THREE.Raycaster(from,dir.clone().normalize(),0,dir.length()-.001);
   assert.equal(ray.intersectObject(root,true).filter(h=>!h.object.material.transparent).length,0,'A covering resident is hidden behind the dining counter');
  }

@@ -261,7 +261,9 @@ function drawnRecipe(name){
   // (The first twelve forms only: the shapes added later must not change a look already dealt from its seed.)
   head:{size:.38+r()*.22,shape:r(),form:any(PARTS.head.slice(0,12)),jaw:.25+r()*.5,cheeks:.25+r()*.5},
   hair:{style:grey&&!feminine?any(['horseshoe','buzz','crop']):feminine?any(['bob','long','ponytail','bun','sidepart']):any(['crop','sidepart','spiky','buzz']),colour:style.hair||'#1c1714',flip:r()<.5},
-  eyes:{style:any(PARTS.eyes),size:.35+r()*.35,spacing:.4+r()*.2,tilt:.4+r()*.2},
+  // (The first fifteen eye styles only, up to 'squint': 'starry' and 'inkoval', added later, must not change the eyes a
+  // seed has dealt; with them in the deal Mr Fujita's own squint became stars.)
+  eyes:{style:any(PARTS.eyes.slice(0,15)),size:.35+r()*.35,spacing:.4+r()*.2,tilt:.4+r()*.2},
   brows:{style:any(PARTS.brows.slice(0,6)),colour:style.hair||'#1c1714'},
   nose:{style:any(PARTS.nose.slice(0,5)),size:.35+r()*.4},
   mouth:{style:any(PARTS.mouth),colour:feminine?'#cc3d52':'#b8544a'},

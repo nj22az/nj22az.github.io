@@ -8,6 +8,7 @@ import {residentialHome} from '../world/residential-layout.js';
 import {PROFILES} from './profiles.js';
 import {YARD_RESIDENT_NAMES,YARD_HOMES} from '../world/yard-homes-layout.js';
 import {KOBAN} from '../world/koban-layout.js';
+import {SCHOOL} from '../world/school-layout.js';
 import {activeHomeForResident,homeForResident} from './island-households.js';
 /**
  * On the island two people live where they work: the harbour master in a bed nook in
@@ -24,6 +25,9 @@ export const THUAN_PROFILE={...residentialHome('Thuan'),"name":"Thuan","age":25,
 // The walking residents. Reiko, the Bus driver and Barfly were retired in phase 4 of the consolidation (roster.js
 // RETIRED): Nhung prints the paper, the Harbour master keeps his own stories, and Minato's regulars are the residents.
 // Dr Kakazu retired into Nhung on 22 October 2026: she is the island doctor (clinic-hours.js), the clinic her work.
+// Her work is the clinic's step (school.js: the Minato Clinic door at x 34.1, approached from B.minZ-1.4; canonical-day.js
+// `clinic`). The profile's [4.3,34] was nobody's door, thirty metres west of the town hall, where she walked to open up.
+const CLINIC_STEP=Object.freeze([34.1,SCHOOL.building.minZ-1.4]);
 export const ACTIVE_RESIDENT_NAMES=Object.freeze(['Nhung','Chin','Mrs Sato','Harbour master','Tetsuo','Officer Mori','Thao','Thuan']);
 const NEIGHBOURHOOD={
  Nhung:{friend:'Thao',role:'the island doctor',gossip:'I put Tama in the paper. He has been sitting on the entire edition ever since.',clue:'Surgery is nine to twelve and two to five. In the evening I set the town’s paper at the old Front-Row shop; Sakura sells the books now.'},
@@ -38,7 +42,7 @@ export const RESIDENTS=ACTIVE_RESIDENT_NAMES.map(name=>{
  const source=name==='Thuan'?THUAN_PROFILE:PROFILES.find(p=>p.name===name);
  const diningPoint=point=>point&&point[0]===24&&point[1]>=18&&point[1]<=25?restaurantApproach('izakaya'):point;
  const shopFloor={Chin:'workshop',Tetsuo:'workshop'}[name];
- const profile={...source,...NEIGHBOURHOOD[name],work:({'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Officer Mori':[...KOBAN.door],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.work),evening:({Nhung:[.15,18.7],Chin:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Tetsuo:[.15,16.5],'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
+ const profile={...source,...NEIGHBOURHOOD[name],work:({'Harbour master':[HARBOUR_OFFICE.door[0],HARBOUR_OFFICE.door[2]],'Officer Mori':[...KOBAN.door],Thao:IZAKAYA_DOOR,Nhung:CLINIC_STEP})[name]||diningPoint(source.work),evening:({Nhung:[.15,18.7],Chin:[.15,17.6], 'Mrs Sato':TOWN_DESTINATIONS.bus,'Harbour master':[0,-48],Tetsuo:[.15,16.5],'Officer Mori':[0,28],Thao:IZAKAYA_DOOR})[name]||diningPoint(source.evening),...residentialHome(name)};
  // The shop staff stand at their own shop's door, and where that door is depends on
  // the layout, which is not known yet. Read it when somebody asks.
  if(shopFloor)Object.defineProperty(profile,'work',{get:()=>TOWN_DESTINATIONS[shopFloor],enumerable:true,configurable:true});
