@@ -470,8 +470,13 @@ chin; Chin's power 3.5, widest at 1.64 m of the sculpt) and `build_boy_hair` (a 
 thick on top, short over the ears and the nape, short sideburns, a fringe of rounded locks above the brows; coloured per
 vertex, weighted as the scalp under it; World draws a `hair` part without a texture per vertex, pixar.js). The painted
 temples only under the sideburns. Chin: body 17,000, hair 3,136, card 21,560 triangles. Avatar tests 102/102; the sip
-2 mm from the lips. Sheets `jojo 3d/cast/renders/game/chin-face-world.png`, `chin-body-world.png`. A faint lavender
-sliver of the donor's grey remains at the nape below the cap, behind the ear (side view).
+2 mm from the lips. Sheets `jojo 3d/cast/renders/game/chin-face-world.png`, `chin-body-world.png`. Then, the owner: "Fix why would I accept any faults ?". Seen from behind (the sheet's
+face cells now include `back` and `back three-quarter`) and fixed: the donor's grey behind the ears and across the nape
+painted his skin (`grey_off`, first of his paint rules); the shirt's paint stopped at its collar (`clone_recipe` top rule
+to 1.515 m: above it the donor's grey read as cloth and showed as a pale strip; every clone); the scalp's dark paint only on
+the crown under the hair; the hair's edge thinning to the skin over the ears and at the nape (no ledge), locks all round,
+grooves down from the crown, its clumps lit along their ridges (near-black alone read as a flat cap). Nothing clips in the
+poses (the think pose's fingers on the hair). The sip 2 mm from the lips; avatar tests 102/102.
 
 ## 28 October 2026, latest: Chin's second mouth gone
 
