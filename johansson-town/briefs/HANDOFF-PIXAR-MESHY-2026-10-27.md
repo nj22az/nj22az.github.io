@@ -424,6 +424,14 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, latest: Tetsuo's brows bushier
+
+The owner: "Make his eyebrows bushier" ("I mean Tetsuo"). Thicker (`brow_thin` 0.7 to 1.05 of the painted brow, jojo
+`tetsuo_meshy.py`) and with a bushy edge: World's brow shader takes a body's own `browBushy` (face-acting.js, Tetsuo 1;
+face-features.js `uBrowBushy`: the outline in tufts, hairs standing out of the top and the ends, a grain along the brow);
+the film model draws the same tufts (`film_meshy._brow`, `brow_bushy`). Sheet: `jojo 3d/cast/renders/game/tetsuo-brows-world.png`
+(at rest, three-quarter, happy, angry, surprised, thinking). Tests 65/65.
+
 ## 28 October 2026, last but two: the seated drink
 
 The owner: "Sit drink is still not right". Two faults. The review sheet (`tools/pixar-sheet.mjs`) posed `sit drink` with
