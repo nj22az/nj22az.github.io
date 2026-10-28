@@ -431,6 +431,9 @@ The owner: "Make his eyebrows bushier" ("I mean Tetsuo"). Thicker (`brow_thin` 0
 face-features.js `uBrowBushy`: the outline in tufts, hairs standing out of the top and the ends, a grain along the brow);
 the film model draws the same tufts (`film_meshy._brow`, `brow_bushy`). Sheet: `jojo 3d/cast/renders/game/tetsuo-brows-world.png`
 (at rest, three-quarter, happy, angry, surprised, thinking). Tests 65/65.
+Then "They are too long": cut to (-10.5, 15.5) of the eye's units (`brow_span`, read where the export takes the brows, so
+the game and the film model both get it; they ran from -12.6 to 23, an eye's width past its corner), the outer ends tapered
+(`browTaper` .3).
 
 ## 28 October 2026, last but two: the seated drink
 

@@ -219,7 +219,7 @@ export const ACTING=Object.freeze({
   browRange:Object.freeze([[-3.2,11],[-9.5,24],[-1.6,3],[0,3.6],[-4,10],[0,1],[0,.8]])}),
  // (talkBrows: his brows hop up and down with every word he says, the nervous talker's tell)
  // (browBushy: his brows' edge in tufts, an old man's bushy brows: the owner, 28 October 2026, "Make his eyebrows bushier")
- Tetsuo:Object.freeze({feelings:TETSUO,talkBrows:1.7,lines:1,browBushy:1}),
+ Tetsuo:Object.freeze({feelings:TETSUO,talkBrows:1.7,lines:1,browBushy:1,browTaper:.3}),
 });
 
 /** A body's acting, or null. */
