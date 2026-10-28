@@ -255,7 +255,8 @@ export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
    const mesh=skinned(inOrder(body,part,names),glass);
    mesh.name='Pixar '+body.name+' · '+part.kind;mesh.castShadow=false;mesh.receiveShadow=false;mesh.renderOrder=1;mesh.userData.pixarPart=part.kind;return mesh;
   }
-  const source=part.kind==='hands'||part.kind==='glasses'||part.kind==='shoes'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:part.kind==='glasses'?.4:part.kind==='shoes'?.55:.82,emissive:0xffffff,emissiveIntensity:.05})
+  // (a clone's modelled hair, Chin's, is coloured per vertex as the glasses are; Thao's bob carries its texture)
+  const source=part.kind==='hands'||part.kind==='glasses'||part.kind==='shoes'||part.kind==='hair'&&!part.map?new THREE.MeshStandardMaterial({vertexColors:true,roughness:part.kind==='glasses'?.4:part.kind==='shoes'?.55:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
   // (hair is not skin: the town's cel ramp alone, no warmth under it)
   const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'||part.kind==='glasses'||part.kind==='shoes'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
