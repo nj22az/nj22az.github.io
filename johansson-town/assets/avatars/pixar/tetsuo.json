@@ -263,21 +263,21 @@
  },
  "measure": {
   "H": 1.6333,
-  "Rh": 0.11734,
-  "headSX": 1.14016,
-  "headSY": 1.38014,
-  "headCentre": 1.46465,
+  "Rh": 0.11717,
+  "headSX": 1.14149,
+  "headSY": 1.38203,
+  "headCentre": 1.46464,
   "neck": 0.06229,
   "torso": 0.72075,
   "leg": 0.56948,
   "foot": 0.06848,
   "thigh": 0.17745,
   "shin": 0.32354,
-  "legR": 0.0482,
-  "armR": 0.06508,
+  "legR": 0.07691,
+  "armR": 0.06518,
   "width": 0.30908,
-  "hips": 0.34619,
-  "waistRatio": 1.06812,
+  "hips": 0.33923,
+  "waistRatio": 1.0681,
   "depth": 0.24275,
   "upper": 0.24206,
   "fore": 0.21886,
@@ -289,7 +289,7 @@
   "shoulderX": 0.17796,
   "shoulderY": 1.20124,
   "hipX": 0.08275,
-  "seatDrop": 0.04579,
+  "seatDrop": 0.07306,
   "k": 1.02081
  },
  "eyes": {
@@ -315,7 +315,7 @@
   ]
  },
  "brows": {
-  "colour": "#aaa59d",
+  "colour": "#5c5853",
   "left": {
    "x0": -12.649,
    "x1": 23.216,
@@ -375,7 +375,7 @@
  "skin": "#e38371",
  "triangles": {
   "pixar": 20000,
-  "glasses": 1624,
+  "glasses": 1752,
   "lens": 40,
   "glint": 8,
   "eyes": 480,
@@ -394,7 +394,7 @@
    -0.61087
   ]
  },
- "glb_bytes": 1964668,
+ "glb_bytes": 1981488,
  "fingers": {
   "L": {
    "bend": {

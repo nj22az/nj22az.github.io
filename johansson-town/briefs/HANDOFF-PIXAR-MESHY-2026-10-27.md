@@ -369,6 +369,23 @@ The owner: "Make the glasses full can you make Tetsuo look more awkward".
 - Checked: World's face sheets (rest, smile, happy, shy, embarrassed, thinking), the body sheet, a walk filmed beside
   Johansson's (`renders/game/tetsuo-walk.jpg`); tests 52/52 (Pixar bodies, gait, body language, skin).
 
+## 28 October 2026, evening: Tetsuo's trousers, whole glasses, darker brows
+
+The owner: "Fix Tetsuos pants and make the glasses whole and his eyebrows a bit more black"; "And fix his pants".
+
+- **Trousers** (jojo `reshape`, `trouser_legs`): he wore Johansson's short shorts with his bare legs painted dark below
+  them (shorts over leggings). Now each leg below the shorts' rolled hem (0.58–0.60 m in the film frame, mid-thigh) is a
+  trouser leg round its own line: shaped from the shorts' own section at the hem all round the leg, tapering to a 53 mm
+  cuff at 0.15 m over a little white sock; round the hem every point (the hips' roll too) goes onto that surface, so
+  the roll and the groove under it are gone; 12 mm kept off the middle at the crotch. Wrong turns, for the next one:
+  the knee taken for the hem (the thigh left bare above it), the texture's khaki taken for the hem (it passes as skin;
+  the roll stood over a groove), and a smoothing of the hem's band (it folded the roll's inner layers into a ridge).
+- **Whole glasses** (`build_glasses`): each rim set at the eye's depth sank into the bridge of the nose, and the frame
+  read as two broken arcs; now each rim comes forward as one, flat, until all of it is 4 mm clear of the face (17 mm
+  for Tetsuo), and the bridge is lifted over the nose point by point.
+- **Brows** charcoal `#5c5853`.
+- Checked in clay (the legs from three sides) and in World's sheets; tests 52/52.
+
 ## Open
 
 0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use
