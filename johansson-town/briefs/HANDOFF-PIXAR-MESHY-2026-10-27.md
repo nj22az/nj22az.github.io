@@ -420,7 +420,9 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
 - **Hair on the back** (the owner: "He needs some hair on the back too"; `build_glasses` `back_hair`): a horseshoe
   fringe of 62 short grey strands from behind one ear round to the other, two staggered rows found by rays in toward the
   head's middle, higher at the sides (meeting the sideburns) and lower and ragged at the nape (an even band read as a
-  headband). GLB 2.8 MB.
+  headband). Hair strands are four-sided tubes and his body 18,500 triangles: with eight-sided strands he passed the
+  phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
+  GLB 2.3 MB, tests 52/52.
 
 ## Open
 
