@@ -53,6 +53,8 @@ const EYES=[
  ['wink (left)',{expression:'neutral',blinkLeft:1,blinkRight:0},0],
  ['three-quarter',{expression:'neutral',look:[.4,0]},.62],
  ['side',{expression:'neutral'},1.2],
+ ['back three-quarter',{expression:'neutral'},2.4],
+ ['back',{expression:'neutral'},Math.PI],
  ['smile',{expression:'smile'},0],
  ['happy',{expression:'happy'},0],
  ['angry',{expression:'angry'},0],
