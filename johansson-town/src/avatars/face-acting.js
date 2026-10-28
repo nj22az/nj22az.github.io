@@ -179,6 +179,35 @@ const JOHANSSON=Object.freeze({
  eyeroll:{brows:{left:[3.4,-.2,1,0],right:[2.6,0,.8,0]},mouth:{smile:-1,width:.9,asym:-.8,shift:-1.2,thin:.5},eyes:{look:[.2,-1.75],cut:.28}},
 });
 
+/**
+ * Pixar Tetsuo: the island's electrician, a deadpan music lover (profiles.js: "Turn it gently. Radios have feelings"),
+ * awkward with people (the owner, 28 October 2026: "can you make Tetsuo look more awkward"). At rest he is never quite
+ * at ease: the inner ends of his brows a little up, the mouth a tight line pulled to one side, the eyes slightly wide
+ * and off to the side rather than on yours. His smile is the awkward one, too wide and all teeth with the brows still
+ * worried; his laugh a snort he swallows; when he is shy or caught out he looks down and away with a sweaty grin.
+ */
+const TETSUO=Object.freeze({
+ neutral:{brows:{left:[1.4,-2.4,.2,.5],right:[.7,-1.6,.1,.3]},mouth:{smile:.2,width:.88,asym:1,shift:1,thin:.55},
+  eyes:{ry:1.06,look:[.2,.06]}},
+ calm:{brows:{left:[1,-1.8,.2,.3],right:[.5,-1.2,.1,.2]},mouth:{smile:.5,width:.9,asym:.8,shift:.8,thin:.5},eyes:{ry:1.04,look:[.15,.05]}},
+ smile:{brows:{left:[3.4,-4.2,.4,1],right:[2.8,-3.6,.4,.8]},mouth:{smile:2.6,width:1.28,open:3.4,upper:.42,teeth:1,thin:.5,asym:.5,wobble:.25},
+  eyes:{smile:.2,ry:1.05,look:[.1,0]},cheeks:[.5,.4],spring:{f:3.4,z:.6}},
+ content:{brows:{left:[2,-3,.3,.6],right:[1.6,-2.6,.3,.5]},mouth:{smile:1.6,width:1.1,open:1,upper:.6,teeth:.8,thin:.5,asym:.4},
+  eyes:{smile:.15},cheeks:[.4,.3]},
+ happy:{brows:{left:[4.4,-4.6,.6,1],right:[3.8,-4,.6,.8]},mouth:{smile:3,width:1.26,open:4,upper:.5,teeth:1,thin:.4,asym:.5,wobble:.3},
+  eyes:{smile:.25,ry:1.08},cheeks:[.7,.6],spring:{f:3.2,z:.55}},
+ laugh:{brows:{left:[4,-4,.6,.8],right:[3.2,-3.4,.5,.6]},mouth:{smile:2.6,width:1.16,open:3,upper:.6,teeth:1,thin:.5,asym:.8,shift:.8},
+  eyes:{smile:.4,cut:.2,look:[.3,.2]},cheeks:[.6,.5],scrunch:.5,spring:{f:4,z:.5}},
+ shy:{brows:{left:[3,-4.4,.2,1],right:[2.4,-3.8,.2,.8]},mouth:{smile:1.4,width:1.08,open:1,upper:.6,teeth:.8,thin:.5,shift:1.4,asym:.7,wobble:.4},
+  eyes:{cut:.3,look:[.65,.55],smile:.2},cheeks:[.4,.5],spring:{f:2.2,z:.8}},
+ embarrassed:{brows:{left:[4,-6,.2,1.6],right:[3.2,-5.2,.2,1.4]},mouth:{smile:1,width:1.18,open:1.6,upper:.6,teeth:1,thin:.5,wobble:.8,shift:-1},
+  eyes:{cut:.24,look:[-.6,.5],smile:.2},cheeks:[.5,.4],spring:{f:2.8,z:.6}},
+ sweatdrop:{brows:{left:[3.6,-5,.2,1.2],right:[2.8,-4.2,.2,1]},mouth:{smile:1.2,width:1.2,open:1.2,upper:.6,teeth:1,thin:.5,wobble:.9},
+  eyes:{ry:1.08,look:[.4,.1]}},
+ thinking:{brows:{left:[5,-1.4,1,.2],right:[-1,2.4,-.3,.6]},mouth:{smile:-.4,width:.8,asym:1.4,shift:1.8,thin:.6},eyes:{look:[.6,-.6],cut:.1},
+  spring:{f:1.8,z:.9}},
+});
+
 /** Each Pixar body's acting (a body not listed plays the painter's feelings). talkBrows: how much the brows rise and fall
  *  with what is said; lines: an older face's lines; mouth: the body's own mouth under every feeling's (none so far). */
 export const ACTING=Object.freeze({
@@ -188,6 +217,8 @@ export const ACTING=Object.freeze({
  // wider than hers for the evil V: his brow decal was made wider to hold it, jojo game_johansson.py face_decals)
  Johansson:Object.freeze({feelings:JOHANSSON,talkBrows:.7,lines:1,browTaper:.4,
   browRange:Object.freeze([[-3.2,11],[-9.5,24],[-1.6,3],[0,3.6],[-4,10],[0,1],[0,.8]])}),
+ // (talkBrows: his brows hop up and down with every word he says, the nervous talker's tell)
+ Tetsuo:Object.freeze({feelings:TETSUO,talkBrows:1.7,lines:1}),
 });
 
 /** A body's acting, or null. */

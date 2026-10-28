@@ -58,7 +58,10 @@ export const PERSONAL_GAITS=Object.freeze({
  Nhung:{stride:.9,bounce:.9,arms:.7,headBob:.02,tics:['sky','hair'],ticEvery:[9,18]},
  Johansson:{stride:1.12,bounce:.85,arms:.9,lean:.03,tics:['sky','watch','glance'],ticEvery:[10,20]},
  'Harbour master':{stride:1.05,bounce:.7,arms:.8,toe:.12,carry:'behind',tics:['sky','watch']},
- Tetsuo:{stride:.95,bounce:.7,arms:.7,swagger:.8,carry:'pockets',tics:['glance','nod']},
+ // (awkward, the owner, 28 October 2026: "can you make Tetsuo look more awkward": a stooped, head-first, bouncy walk, the
+ // arms held stiff and close, no swagger, the feet a little turned in, and nervous glances and a rub of his bald head)
+ Tetsuo:{stride:.88,bounce:1.25,lift:1.2,arms:.42,elbow:.22,swagger:.25,lean:.08,headBob:.04,toe:-.06,carry:'swing',
+  tics:['glance','glance','hair','nod','watch'],ticEvery:[5,10]},
 });
 /**
  * The walks of the retired (people/roster.js RETIRED): kept so a history story or Studio still walks them as themselves,

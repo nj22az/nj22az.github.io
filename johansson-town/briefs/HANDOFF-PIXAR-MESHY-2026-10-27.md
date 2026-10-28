@@ -351,6 +351,24 @@ yourself as a Pixar artist"; "Move their mouths Fujita should had a nose like su
   plateau where Tetsuo's sculpted hair block was; the mouth line reads lipstick red on the men (World's mouth shader,
   shared with Johansson); Tetsuo's chin is still Johansson's long one, his cartoon's egg would want it shorter.
 
+## 28 October 2026, later: full glasses and an awkward Tetsuo
+
+The owner: "Make the glasses full can you make Tetsuo look more awkward".
+
+- **The glasses full**: both clones' frames hold glass and a glint, as the cartoon's glasses do (face-objects.js: faint
+  `#dbeaf2` glass at 0.12, a white diagonal stroke and a dot high on each lens). jojo `build_glasses` makes them two
+  small parts of their own (materials `lens`, `glint`, on the head bone); World's `pixar.js` draws them see-through, no
+  shadow, after the eyes. Tetsuo's round rims thicker (2.2 mm, as Fujita's square ones).
+- **Tetsuo awkward**: his ears stand out 11 degrees (jojo `reshape`, `ears_out`), his trousers stop above the ankle over
+  white socks (`what='socks'`); World: his own face acting (`face-acting.js` TETSUO: never at ease at rest, the inner
+  brows a little up, the mouth a tight line to one side, the eyes off to the side; the smile too wide with teeth and
+  worried brows; looks down and away when shy; brows that hop when he talks, `talkBrows` 1.7), an awkward walk
+  (`gait.js`: stooped, short bouncy steps, arms held stiff and bent, no swagger, the feet a little in, nervous glances
+  and a rub of his bald head), and his own habits (`body-language.js PERSONAL_STYLE`: he fidgets where a Quiet
+  craftsman stands with his hands on his hips, tugs his collar while you talk; `bodyLanguage(profile, name)`).
+- Checked: World's face sheets (rest, smile, happy, shy, embarrassed, thinking), the body sheet, a walk filmed beside
+  Johansson's (`renders/game/tetsuo-walk.jpg`); tests 52/52 (Pixar bodies, gait, body language, skin).
+
 ## Open
 
 0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use

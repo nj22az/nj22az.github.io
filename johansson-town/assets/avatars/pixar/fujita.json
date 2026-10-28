@@ -376,6 +376,8 @@
  "triangles": {
   "pixar": 20000,
   "glasses": 1656,
+  "lens": 40,
+  "glint": 8,
   "eyes": 480,
   "brows": 560,
   "mouth": 384
@@ -392,7 +394,7 @@
    -0.61087
   ]
  },
- "glb_bytes": 1923164,
+ "glb_bytes": 1930348,
  "fingers": {
   "L": {
    "bend": {

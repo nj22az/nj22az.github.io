@@ -351,7 +351,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  const {bones,measure:m}=avatar;
  const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
  const supportSeat=createSeatSupport(avatar),findUnderside=createUndersideFinder(avatar),findSoles=createSoleFinder(avatar);
- const style=bodyLanguage(avatar.recipe?.profile||{});
+ const style=bodyLanguage(avatar.recipe?.profile||{},avatar.recipe?.name);
  const pick=list=>list[Math.floor(random()*list.length)];
  const idleWait=()=>style.idleEvery[0]+random()*(style.idleEvery[1]-style.idleEvery[0]);
  let idleIn=4+idleWait()*.6,wasTalking=false,quietFor=10;
