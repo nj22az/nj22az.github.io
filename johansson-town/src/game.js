@@ -29,6 +29,8 @@ import {buildAirportArrivals} from './world/interiors/airport-arrivals.js';
 import {createBookshopCustomers} from './people/bookshop-customers.js';
 import {createPhotoStudio,poseStudioActor} from './photo/studio.js';
 import {buildAvatar} from './avatars/build.js';
+import {storyProps} from './avatars/story-props.js';
+import {FUN_POSES} from './avatars/fun-poses.js';
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
@@ -2515,13 +2517,15 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
   *  `pose` at its still with `expression`, on `parent` (the ferry, so she rides her deck) at `at` in its frame, facing
   *  `yaw`. The living resident of that name is hidden meanwhile; `unstage()` takes it away and shows them again.
   *  `shadows: false` for a close portrait, as the photo studio builds its cast: at under a metre the sun's shadow map
-  *  shows on the skin in blotches. */
- stage(name,{pose='Idle',expression='smile',outfit='clothes',at=[0,0,0],yaw=0,parent=scene,shadows=true}={}){
+  *  shows on the skin in blotches. `props`: story props to give (story-props.js), each fitted to the pose's own grip
+  *  (Selfie's camera hand); they are in `staged.props`. */
+ stage(name,{pose='Idle',expression='smile',outfit='clothes',at=[0,0,0],yaw=0,parent=scene,shadows=true,props=[]}={}){
   this.unstage();const avatar=buildAvatar(recipeFor(name),{shadows,faceSize:512});avatar.wear(outfit);
   const holder=new THREE.Group();holder.name='Staged '+name;holder.add(avatar.root);holder.position.set(...at);holder.rotation.y=yaw;parent.add(holder);
-  poseStudioActor({avatar,pose,expression});holder.updateMatrixWorld(true);
+  poseStudioActor({avatar,pose,expression});
+  const given=Object.fromEntries(props.map(kind=>[kind,storyProps(avatar).give(kind,{grip:FUN_POSES[pose]?.hands?.R})]));holder.updateMatrixWorld(true);
   const living=[];scene.traverse(o=>{if(o!==holder&&o.userData?.name===name&&o.visible){o.visible=false;living.push(o);}});
-  this.staged={holder,avatar,living};return holder;},
+  this.staged={holder,avatar,living,props:given};return holder;},
  unstage(){const st=this.staged;if(!st)return;st.holder.removeFromParent();st.avatar.dispose?.();for(const o of st.living)o.visible=true;this.staged=null;},
  /** The quiet HUD: wake() it, fade it now (idle()), or hide every control for a clean picture (photo(true)). */
  hud:{wake:()=>quietHud.wake(),hold:on=>quietHud.hold(on),idle:()=>quietHud.rest(),photo:on=>quietHud.photo(on),get state(){return {idle:quietHud.idle,photo:quietHud.photoMode};}},

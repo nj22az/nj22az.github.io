@@ -68,6 +68,13 @@ The runtime `characters/realistic/yuri-playful.glb` now uses the user's newer `M
 - Runtime adaptations: normalize scale/orientation; omit transparent glass; bake source colours into one opaque mesh; add original Minato Drinks, Harbour Tea and Dockside Coffee mock branding.
 - All drink brands and campaign artwork are fictional placeholders, not endorsements. Campaign presentation is in `src/commerce/vending-catalogue.js`; saved inventory IDs and drink gameplay remain independent of branding. No advertising service is connected.
 
+### Thuan's smartphone (28 October 2026)
+- **6.1 inch smartphone (Computers and Desk Gadgets)**, 3D Assets (3DAssets.dev): https://3dassets.dev/assets/computers-and-desk-gadgets-smartphone-61-9d832bea
+- Licence: CC0 1.0 Universal, https://creativecommons.org/publicdomain/zero/1.0/ (no attribution required; credited here as provenance). The listing marks it AI-generated.
+- Download: https://cdn.3dassets.dev/assets/38847/v1/model.glb (21,336 bytes, SHA-256 `a57842ee78bbc3dac4e143eb8f5cabc0ffc4a1bf33b2182c997770957636aa7b`).
+- Local, modified: `models/props/smartphone-61.glb` (SHA-256 `1cf5e3fbede24c0186b492935cbd7c504471f4e39044c3ab90b9a25b50c5ff01`), made by `../tools/clean-smartphone-glb.py`: the 80 triangles of its black body that stood above the screen (two slabs to 21.8 mm, the phone being 8 mm) are left out; nothing else changed.
+- Runtime: held by Thuan in the Selfie pose (`src/avatars/story-props.js` `smartphone`), drawn on the town's cel ramp. No maker's name or logo is on it.
+
 ## Living-town prototype · September 2026
 
 Minato izakaya and the 21 resident prototypes are original scripted Blender constructions for this project. Editable `.blend` files, generators and export records are included under `art/izakaya`, `art/living-cast` and `tools/blender`. Runtime GLBs are local. No downloaded third-party mesh or texture was used in these new constructions. Thuan's user-supplied Meshy asset and its existing provenance are unchanged. The prototype cast is not a claim of final art approval or equivalence to Thuan; see `docs/LIVING-TOWN.md`.

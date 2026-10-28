@@ -4,7 +4,8 @@
  * picture is taken from where her camera is: ahead of her face, up and out to her right, so her arm comes in from the
  * frame's corner, a little wide, as a phone held at arm's length sees.
  *   node tools/ferry-selfie-shoot.mjs <out-dir> [--time 11:30] [--looks none,stamp] [--size 1200x1600] [--berth]
- *        [--at x,z] [--yaw 1.571] [--face excited] [--lens ahead,up,right] [--fov 56]
+ *        [--at x,z] [--yaw 1.571] [--face excited] [--lens ahead,up,right] [--fov 56] [--target phone]
+ * (--target phone: the lens looks at her smartphone rather than her face, to check how it is held)
  * Under way unless --berth: she sails from Minato for Kitano-jima and the picture is taken once she is in open water.
  * Ship frame (ferry-model.js): +z forward, +x to port, y up from her laden waterline; the open deck is at 5.5 m.
  */
@@ -23,7 +24,7 @@ const HALF=FERRY_SHIP.length/2,DECK=FERRY_HEIGHTS.passengerDeck-FERRY_SHIP.draft
 // (in the gap between the side bench's forward end, z −13.95, and the funnel's casing, from z −13.35: ferry-interior.js. At
 // z −14.4 she stood in the bench, its seat through her legs, which the close lens did not show)
 const [ax,az]=(arg('at')||`${(FERRY_SHIP.beam/2-.55).toFixed(2)},-13.65`).split(',').map(Number);
-const shot={at:[ax,DECK,az],yaw:+arg('yaw',String(Math.PI/2)),face:arg('face','excited'),lens:arg('lens','.64,.15,.1').split(',').map(Number),fov:+arg('fov','56')};
+const shot={at:[ax,DECK,az],yaw:+arg('yaw',String(Math.PI/2)),face:arg('face','excited'),lens:arg('lens','.64,.15,.1').split(',').map(Number),fov:+arg('fov','56'),target:arg('target','face')};
 const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.wasm':'application/wasm','.webmanifest':'application/manifest+json','.mp3':'audio/mpeg','.ogg':'audio/ogg','.woff2':'font/woff2','.ktx2':'image/ktx2','.bin':'application/octet-stream'};
 const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new URL(req.url,'http://x').pathname),file=resolve(site,'.'+(path.endsWith('/')?path+'index.html':path));if(!file.startsWith(site+'/'))throw Error('outside');const body=await readFile(file);res.writeHead(200,{'content-type':types[extname(file)]||'application/octet-stream'});res.end(body);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
@@ -49,21 +50,30 @@ try{
  report.voyage=voyage;console.log('ferry',JSON.stringify(voyage));
  for(const look of looks){
   await page.evaluate(name=>window.__JOHANSSON_LOOK__.setStyle(name),look);
-  const view=await page.evaluate(({shot})=>{
+  const view=await page.evaluate(async({shot})=>{
    const a=window.__JOHANSSON_AUDIT__,f=a.world.ferry.ferry;f.updateMatrixWorld(true);
    // On the deck, riding with her; a body faces its own −z, turned by `yaw` (π/2: inboard from the port rail).
-   const holder=a.stage('Thuan',{pose:'Selfie',expression:shot.face,at:shot.at,yaw:shot.yaw,parent:f,shadows:false});
+   const holder=a.stage('Thuan',{pose:'Selfie',expression:shot.face,at:shot.at,yaw:shot.yaw,parent:f,shadows:false,props:['smartphone']});
+   await a.staged.props.smartphone.userData.ready;
    const avatar=a.staged.avatar,V=holder.position.constructor;holder.updateMatrixWorld(true);
    const hand=avatar.bones.handR.getWorldPosition(new V()),head=avatar.bones.head.getWorldPosition(new V());
    const face=head.clone().add(new V(0,avatar.measure.headCentre-avatar.measure.headY,0).multiplyScalar(holder.getWorldScale(new V()).y));
+   // her smartphone (story-props.js), on her fingers, its screen to her face (the fit is made as it is given)
+   const phone=a.staged.props.smartphone;holder.updateMatrixWorld(true);
    // the lens, in her own frame from her face: ahead, up and to her right (where the camera in her mitten points from)
    const ahead=new V(0,0,-1).transformDirection(holder.matrixWorld),right=new V(-1,0,0).transformDirection(holder.matrixWorld);
    const lens=face.clone().addScaledVector(ahead,shot.lens[0]).add(new V(0,shot.lens[1],0)).addScaledVector(right,shot.lens[2]);
    // Johansson stands well forward, out of the picture (on her deck, so the ship is drawn round him).
    const fwd=new V(0,0,1).transformDirection(f.matrixWorld);a.teleport(face.x+fwd.x*12,face.z+fwd.z*12,0,0);
    for(const x of [a.hands,a.hands?.group,a.hands?.root])if(x?.isObject3D)x.visible=false;
-   a.hud.photo(true);a.camera={pos:lens.toArray(),at:face.toArray(),fov:shot.fov};a.render();a.render();
-   return {lens:lens.toArray(),face:face.toArray(),hand:hand.toArray(),probe:a.probe(lens.x,lens.y,lens.z)};
+   // (the opening notice, "Welcome to Minato.", waits on a clock the frozen audit never runs: out of the picture)
+   const note=document.querySelector('#subtitle');if(note)note.style.visibility='hidden';
+   a.hud.photo(true);const cam=phone.getWorldPosition(new V());a.camera={pos:lens.toArray(),at:(shot.target==='phone'?cam:face).toArray(),fov:shot.fov};a.render();a.render();
+   return {lens:lens.toArray(),face:face.toArray(),hand:hand.toArray(),probe:a.probe(lens.x,lens.y,lens.z),
+    // (how far the nearest finger is outside the phone, metres: negative is a finger through it)
+    phoneClear:+phone.userData.clearance().toFixed(4),
+    // (how squarely the screen, and its front camera, look at her face: 1 straight at it)
+    screenToFace:+phone.userData.screen().dot(face.clone().sub(phone.getWorldPosition(new V())).normalize()).toFixed(3)};
   },{shot});
   await page.waitForTimeout(500);
   const file=`thuan-ferry-selfie--${look}.png`;await canvas.screenshot({path:resolve(out,file)});

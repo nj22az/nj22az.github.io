@@ -1,4 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
+import {GLTFLoader} from '../../vendor/GLTFLoader.js';
+import {assetURL} from '../assets.js';
 import {celFrom} from '../render/cel.js';
 import {bodyVolume} from './build.js';
 import {faceLayout} from './face.js';
@@ -21,6 +23,7 @@ import {faceObjectPoint} from './face-objects.js';
  *   storyProps(avatar).give('gloves')         electrician's rubber gloves over both mittens, gauntlets over the cuffs (WORK_KIT)
  *   storyProps(avatar).give('voltageTester')  a two-pole voltage tester in the right mitten, its second probe parked on it (WORK_KIT)
  *   storyProps(avatar).giveKit('electricianWork')   all four at once: Tetsuo's work kit for a board (WORK_KIT)
+ *   storyProps(avatar).give('smartphone')     a smartphone in the right hand, its screen to her (Selfie); .userData.fit() once posed
  *
  * The moves give what they need themselves (SitRead the paper, CordWrapped the cord, BasketHead the basket, TorchUp the
  * torch, at his pocket); giving it beforehand puts it in place before the move (the torch on his pocket in 3f).
@@ -51,6 +54,10 @@ export const STORY_PROPS=Object.freeze({
   where:'Over both mittens, their long gauntlets pulled up over the ends of his sleeves.'}),
  voltageTester:Object.freeze({who:'Tetsuo',why:'Prove dead before touching: a two-pole voltage tester, both probes on the terminals, a row of lamps for the voltage. He proves it on something live first, then the dead board, then live again (live, dead, live), so a broken tester can never tell him a live board is dead.',
   where:'The main handle in his right mitten, probe tip out past his fingers; the second probe on its lead, parked on the handle until he takes it in his left mitten (testerSplit).'}),
+ // (the owner, 28 October 2026, of Thuan's selfie on the Minato Maru: "Give her a camera", then "But bring an open source
+ // smartphone"; Minato keeps its old parts and lives today, the owner, 19 October 2026)
+ smartphone:Object.freeze({who:'Thuan',why:'Her own phone: on her day off on the ferry she takes a selfie with the sea behind her, the phone held out at arm’s length on its front camera, which is why her arm is out.',
+  where:'In her right hand, upright, its lower half in her fingers and its back against them, the screen turned to her face.'}),
 });
 
 /**
@@ -177,6 +184,30 @@ export function buildPaperback(){
  add(book,new THREE.BoxGeometry(.016,H,.005),board,0,H/2,back+.0005);                                         // the spine
  book.rotation.x=B.tilt;book.position.set(0,B.lift,B.ahead);
  g.userData.hold='facing';
+ return g;
+}
+
+/** Thuan's smartphone: the CC0 "6.1 inch smartphone" from 3DAssets.dev (assets/ATTRIBUTION.md), its stray slabs removed by
+ *  tools/clean-smartphone-glb.py. In its own frame here x runs across it (its width), y up it (its length) and the screen
+ *  faces +z, the slab's middle at the origin; metres, measured from the file. The model loads once and each phone is a
+ *  copy of it; until it is in, the phone is a plain slab of its size, so it is never missing from a picture. */
+export const SMARTPHONE=Object.freeze({w:.073,h:.152,d:.008,bump:.005,path:'models/props/smartphone-61.glb',
+ // the model's frame: its length along x, its screen up +y, the slab from 5.8 to 13.8 mm
+ slabMiddle:.0098});
+let phoneModel=null;
+function loadPhone(){return phoneModel??=new GLTFLoader().loadAsync(assetURL(SMARTPHONE.path)).then(g=>g.scene).catch(e=>{console.warn('Smartphone model unavailable:',e?.message||e);return null;});}
+export function buildSmartphone(){
+ const P=SMARTPHONE,g=new THREE.Group();g.name='Smartphone';
+ const stand=add(g,new THREE.BoxGeometry(P.w,P.h,P.d),mat(0x2a2c30,{roughness:.4}));stand.name='Smartphone (until the model is in)';
+ g.userData.ready=(typeof document==='undefined'?Promise.resolve(null):loadPhone()).then(scene=>{
+  if(!scene)return g;const m=scene.clone(true);
+  // (its length along x to down y, so its rear cameras (at the model's −x end) are at the top; its screen up y to out z;
+  // a proper turn, the model's frame into the phone's. The owner, of the first: "The phone looks upside down")
+  m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)));
+  m.position.copy(new THREE.Vector3(0,-P.slabMiddle,0).applyQuaternion(m.quaternion));
+  m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.material=celFrom(o.material,{bands:'soft3'});}});
+  g.add(m);stand.removeFromParent();stand.geometry.dispose();return g;});
+ g.userData.hold='hook';
  return g;
 }
 
@@ -569,6 +600,53 @@ export function buildTester(){
 
 /** Where a mitten closes on a handle held pointing ahead (+z): the middle of the mitten, in the hand bone's frame. */
 const fistSpot=avatar=>new THREE.Vector3(0,-avatar.measure.hand*.55,0);
+/** The phone in the right hand, as a hand holds one out for a selfie: upright, its length along the knuckle line, its back
+ *  against the flat of the fingers, the screen facing the way the palm does (to her, once the pose has turned the wrist:
+ *  Selfie), its bottom edge just past the little finger (a body with fingers: pixar.holdPoint with the pose's own `grip`;
+ *  a mitten body holds it in the fist). It then comes off the fingers only as far as each needs to rest on it and not go
+ *  through it (clearance). */
+function placeInHook(avatar,o,grip){
+ const P=SMARTPHONE,C={w:P.w,h:P.h,d:P.d+P.bump,dz:-P.bump/2},hp=avatar.pixar?.holdPoint?.('R',1,grip||null);
+ const bar=hp?hp.bar.clone().normalize():new THREE.Vector3(0,0,1),curl=avatar.pixar?.card?.fingers?.R?.curl;
+ const K=hp?hp.knuckles.reduce((s,k)=>s.add(k),new THREE.Vector3()).multiplyScalar(1/hp.knuckles.length):fistSpot(avatar);
+ // (the fingers' way, from the knuckle line out along the flat of them, square to it: the phone's width lies on the pads;
+ // its screen square to both, on the palm's side, the card's curl)
+ const pad=hp?hp.centre.clone().sub(K):new THREE.Vector3(0,-1,0);pad.addScaledVector(bar,-pad.dot(bar));
+ const x=pad.lengthSq()>1e-10?pad.normalize():new THREE.Vector3(0,-1,0);
+ const k=hp?.knuckles,toIndex=k&&k.length>1?Math.sign(k[0].clone().sub(k[k.length-1]).dot(bar))||1:1;
+ const y=bar.clone().multiplyScalar(toIndex),z=new THREE.Vector3().crossVectors(x,y).normalize();
+ if(curl&&z.dot(new THREE.Vector3(...curl))<0){z.negate();x.negate();}
+ o.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z));
+ // (its width's middle over the middle of the fingers, its bottom edge just past the little finger, its back on the pads;
+ // fit() then brings it forward off them until no finger is in it)
+ const span=hp?hp.span:.06,along=hp?hp.centre.clone().sub(K).dot(x):0;
+ o.position.copy(K).addScaledVector(x,along).addScaledVector(y,C.h/2-span/2-.012*(avatar.measure.k||1));
+ o.userData.screen=()=>new THREE.Vector3(0,0,1).transformDirection(o.matrixWorld);
+ /** Every finger joint, the middle of every segment and every fingertip at least a finger's half-thickness outside the
+  *  phone (its camera bump included): how far the nearest is (metres; negative: through it). */
+ const fingerPoints=()=>{const pts=[];
+  for(const [name,b] of Object.entries(avatar.pixar?.fingers||{})){if(!name.includes('R'))continue;
+   const p=b.getWorldPosition(new THREE.Vector3()),child=b.children.find(c=>c.isBone);
+   // (the last joint's tip: as far again as that joint is from the one before, as holdPoint takes it)
+   const end=child?child.getWorldPosition(new THREE.Vector3()):b.localToWorld(b.position.clone().multiplyScalar(.85));
+   pts.push(p,p.clone().lerp(end,.5));if(!child)pts.push(end);}
+  return pts;};
+ const half=new THREE.Vector3(C.w/2,C.h/2,C.d/2),_p=new THREE.Vector3(),_inv=new THREE.Matrix4();
+ o.userData.clearance=()=>{o.updateWorldMatrix(true,false);_inv.copy(o.matrixWorld).invert();let worst=Infinity;
+  const r=.0075*(avatar.measure.k||1);
+  for(const p of fingerPoints()){_p.copy(p).applyMatrix4(_inv);_p.z-=C.dz;const q=[Math.abs(_p.x)-half.x,Math.abs(_p.y)-half.y,Math.abs(_p.z)-half.z];
+   worst=Math.min(worst,Math.hypot(...q.map(v=>Math.max(v,0)))+Math.min(Math.max(...q),0)-r);}
+  return worst;};
+ /** The least move off the fingers and across (in the hand's frame) that clears them all; call once posed. -1 if none. */
+ o.userData.fit=()=>{if(!avatar.pixar?.fingers)return 0;if(o.userData.clearance()>=0)return 0;
+  // (the least move that clears every finger: forward off the fingers' pads, across its width so the thumb lies along
+  // its edge, and up its length so the little finger is under its bottom edge; 2 mm steps, nearest first)
+  const start=o.position.clone();let best=null;
+  for(let f=0;f<=15;f++)for(let a=-20;a<=10;a++)for(let u=0;u<=14;u++){const cost=Math.hypot(f,a,u);if(best&&cost>=best.cost)continue;
+   o.position.copy(start).addScaledVector(z,f*.002).addScaledVector(x,a*.002).addScaledVector(y,u*.002);if(o.userData.clearance()>=0)best={cost,p:o.position.clone()};}
+  o.position.copy(best?best.p:start);return best?best.cost*.002:-1;};
+}
+
 
 /** The story's props on one body: given, taken, and where each is. */
 export function storyProps(avatar){
@@ -589,6 +667,7 @@ export function storyProps(avatar){
    else if(kind==='safetyGlasses'){o=buildSafetyGlasses(avatar);avatar.bones.head.add(o);}
    else if(kind==='headlamp'){o=buildHeadlamp(avatar);avatar.bones.head.add(o);o.userData.headlamp.setOn(options.on!==false);}
    else if(kind==='gloves'){o=new THREE.Group();o.name='Rubber gloves';o.userData.parts=['L','R'].map(s=>{const gl=buildGlove(avatar,s);avatar.bones['hand'+s].add(gl);return gl;});avatar.root.add(o);}
+   else if(kind==='smartphone'){o=buildSmartphone();placeInHook(avatar,o,options.grip);avatar.bones.handR.add(o);o.userData.at='R';o.userData.fit();}
    else if(kind==='voltageTester'){o=buildTester();o.position.copy(fistSpot(avatar));o.rotation.x=Math.PI/2;avatar.bones.handR.add(o);o.userData.at='R';o.userData.tester.setReading(options.reading||0);}
    else if(kind==='pumpkinSuit'||kind==='ghostSheet'||kind==='witchHat'){o=new THREE.Group();o.name=kind;const c=buildCostume(avatar,kind);
     for(const [bone,part] of c.parts){avatar.bones[bone].add(part);}o.userData.parts=c.parts;avatar.root.add(o);}

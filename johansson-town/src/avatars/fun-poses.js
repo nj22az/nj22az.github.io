@@ -279,6 +279,8 @@ export const FUN_POSES=Object.freeze({
    P.toward('hips',0,.06,.03,w);P.toward('chest',-.06,-.05,-.03,w);P.add('head',-.1*w,0,.04*w);}}),
  // (the creator, 28 October 2026, a holiday photo: "Make a scene on the Minato Ferry where Thuan poses like this"): the
  // camera is the right mitten, so the arm goes out ahead and up to it, a little to her right, and the face turns up to it;
+ // (the camera hand's wrist turned (.7, -.2, .3) so the phone's screen in it faces her face (story-props.js smartphone,
+ // measured on Pixar Thuan: 0.999 of square; its fingers flat to hold the phone upright, the thumb along its edge)
  // the left mitten up beside the cheek and a little ahead of it, the palm turned to the lens, two fingers up (`hands`: a
  // body with fingers makes the V, the thumb across the folded ring and little fingers; a mitten body shows the raised
  // mitten); the head tipped toward the camera arm, the hip out to the left. The camera arm aims where it can reach (a
@@ -286,8 +288,8 @@ export const FUN_POSES=Object.freeze({
  Selfie:Object.freeze({label:'Selfie',face:'excited',d:3,ramp:.7,
   use:'A holiday photo of yourself: the camera held out at arm’s length ahead and up, a peace sign by the cheek, a big smile at the lens.',
   reach:{hair:true,head:[-.1,-.12,-.2],L:{cover:true,head:[.75,-.15,.65,.08],seed:[-1.5,.7,-.7,-1.95,0],hand:[0,1.2,0]},
-   R:{at:m=>[-(m.shoulderX+m.upper*.3),m.headCentre-m.Rh*.15,(m.upper+m.fore)*.92],seed:[-1.7,0,-.25,-.1,0],hand:[0,0,0]}},
-  hands:{L:{index:0,middle:0,ring:1.1,pinky:1.1,thumb:1},R:{index:.75,middle:.85,ring:.9,pinky:.9,thumb:.6}},
+   R:{at:m=>[-(m.shoulderX+m.upper*.3),m.headCentre-m.Rh*.15,(m.upper+m.fore)*.92],seed:[-1.7,0,-.25,-.1,0],hand:[.7,-.2,.3]}},
+  hands:{L:{index:0,middle:0,ring:1.1,pinky:1.1,thumb:1},R:{index:.32,middle:.34,ring:.38,pinky:.45,thumb:.1}},
   play(P){const {w,t}=P,sway=Math.sin(t*2.2)*.012*w;both(P,P.reach(),w);
    P.toward('chest',-.04,-.1,-.04+sway,w);P.add('head',-.1*w,-.12*w,-.2*w);
    P.toward('hips',0,.08,.06,w);P.toward('thighR',-.12,0,0,w);P.toward('kneeR',.28,0,0,w);P.toward('footR',-.16,0,0,w);}}),
