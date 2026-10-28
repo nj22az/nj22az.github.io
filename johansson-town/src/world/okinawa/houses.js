@@ -441,6 +441,9 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
   for(const [i,colour] of [0xe7d5a3,0xa28cba,0xeeb2b9].entries())kit.sphere(.07,displayX+(i-1)*.16,1.42,displayZ,colour,{sy:.7,detail:1});
   kit.box(.6,.03,.54,displayX,1.61,displayZ,0x369d9b);
   for(const x of [displayX-.28,displayX+.28])kit.box(.025,.23,.5,x,1.49,displayZ,0x369d9b);
+  // Its collider is the drawn freezer, up to its lid (1.625), standing on the counter's footprint: a hand or a held cone
+  // at 1.3 m meets the case, not the counter's 1.01 top (tests/nakamura-display.test.mjs).
+  furniture.push(kit.rect(displayX-.3,displayX+.3,displayZ-.27,displayZ+.27,1.625,'ice-cream-display'));
  }else if(kind==='post'){
   // The counter with its glass screen and brass scale, the wall of pigeonholes behind,
   // the form rack, and the round red post box out on the pavement.

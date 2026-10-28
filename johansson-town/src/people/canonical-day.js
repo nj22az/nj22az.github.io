@@ -17,16 +17,21 @@ import {quayBreakPlan} from './quay-breaks.js';
 import {shopDayPlan,LAUNDRY_STANDS} from './shop-days.js';
 import {kitahamaShopOnDuty,kitahamaShopOpen,DOOR_POINT as KITAHAMA_SHOP_DOOR} from '../world/okinawa/kitahama-shop.js';
 import {YUNTAKU} from '../commerce/higa-liquor.js';
+import {EAST_QUAY} from '../world/okinawa/layout.js';
 
 const HOME_TARGETS=new Map();
 const activeTarget=name=>{if(!HOME_TARGETS.has(name))HOME_TARGETS.set(name,activeResidentHome(name)?.target);return HOME_TARGETS.get(name);};
 const minute=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
+// Ice for the boats is loaded at the ice plant's door (the steel shutter on its west wall, world/okinawa/quarters.js),
+// a metre out in the lane. The old spot, [31, -41], is where the fish market's drinks machine has stood since the owner
+// moved it there (21 October 2026, quarters.js AUCTION_VENDING), so Kōji was sent into the machine.
+const ICE_DOOR=Object.freeze([EAST_QUAY.ice.minX-1,EAST_QUAY.ice.minZ+2.7]);
 const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHOLD,warehouse:[-9.7,-41.4],
  school:[SCHOOL.genkan.x,SCHOOL.building.minZ-1.4],park:HARBOUR_PARK_STUDY[0],onsen:ONSEN_DOOR,
  port:[8,-38],ferry:[8,-38],office:[8,-38],koban:[5.05,20.3],
  'sato-ramen':RAMEN_DOOR,books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
  zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
- 'fish-auction':[25,-39.6],'ice-plant':[31,-41],boatyard:[-31.8,-45],sea:[-31.8,-45],
+ 'fish-auction':[25,-39.6],'ice-plant':ICE_DOOR,boatyard:[-31.8,-45],sea:[-31.8,-45],
  'higa-bench':YUNTAKU.seats.mac.stand,'coin-laundry':LAUNDRY_STANDS.W2.at,clinic:[34.1,35.1],'cargo-yard':[17,-40],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
  'main-street':[1,0],seawall:[-36.7,-20],'net-ground':[-28.4,7.6],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};

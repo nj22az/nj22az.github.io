@@ -25,6 +25,8 @@ function supported(c,at=land){
  }
  return true;
 }
+/** Axis-aligned rectangles that share area (touching edges do not count); a rotated building is tested by its bounding box. */
+const rectsOverlap=(a,b)=>{const e=1e-6,bw=b.yaw?Math.hypot(b.w,b.d):b.w,bd=b.yaw?Math.hypot(b.w,b.d):b.d;return Math.abs(a.x-b.x)<(a.w+bw)/2-e&&Math.abs(a.z-b.z)<(a.d+bd)/2-e;};
 const within=(b,x,z)=>x>=b.minX-1e-4&&x<=b.maxX+1e-4&&z>=b.minZ-1e-4&&z<=b.maxZ+1e-4;
 // Documented structures supported by decks, not by the land polygon. These are
 // bounded allowances: moving one further into the sea must still fail.
@@ -36,6 +38,11 @@ function harbourSupport(c){
  if(c.outerPier)return (x,z)=>within({minX:-OUTER_PIER.width/2,maxX:OUTER_PIER.width/2,minZ:OUTER_PIER.z-OUTER_PIER.length/2,maxZ:-49.7},x,z);
  if(c.houseboat)return (x,z)=>within({minX:HOUSEBOAT.x-HOUSEBOAT.width/2,maxX:HOUSEBOAT.x+HOUSEBOAT.width/2,minZ:HOUSEBOAT.z-HOUSEBOAT.length/2-HOUSEBOAT.sternExtension/2,maxZ:HOUSEBOAT.z+HOUSEBOAT.length/2-HOUSEBOAT.sternExtension/2},x,z);
  if(/^jetty-(manifold|crane)$/.test(c.id))return (x,z)=>within(OIL_JETTY.head,x,z);
+ // The original CAD cargo berth (25 October 2026, published on the owner's word: briefs/HANDOFF-CARGO-BERTH-2026-10-25.md):
+ // the bollards and the two mast lights stand on the 100 x 18 m piled quay, and the shore ramp's guard rails on the ramp's
+ // two edges (oil-jetty.js), half a rail's depth (4 cm) either side of the edge line.
+ if(/^cargo-quay-(bollard|light)$/.test(c.id))return (x,z)=>within(OIL_JETTY.deck,x,z);
+ if(c.id==='cargo-ramp-rail'){const A=OIL_JETTY.access;return (x,z)=>within({minX:A.minX,maxX:A.maxX,minZ:A.minZ-.04,maxZ:A.maxZ+.04},x,z);}
  // The seaward face of the existing retaining kerb intentionally straddles land.
  if(c.id==='east-quay-edge')return (x,z)=>within({minX:18.8,maxX:41.2,minZ:-50.01,maxZ:-49.69},x,z);
  if(!c.id)return (x,z)=>within({minX:-OUTER_PIER.width/2,maxX:OUTER_PIER.width/2,minZ:OUTER_PIER.z-OUTER_PIER.length/2,maxZ:-49.7},x,z);
@@ -69,7 +76,10 @@ test('retained planting roots do not intersect occupied building footprints',()=
  assert.ok(roots.length>10,'retained garden and windbreak planting is checked');
  for(const c of roots){
   assert.ok(supported(c),`${c.id} roots supported at ${c.x},${c.z}`);
-  for(const b of buildings)assert.equal(circleHitsRect(c.x,c.z,Math.max(c.w,c.d)/2,b),false,`${c.id} intersects ${b.id} at ${c.x},${c.z}`);
+  // A trunk or a tub is a circle round its centre. A trough (one side over half again the other, like Nakamura's wall
+  // planter along the shop's flank) is its own rectangle: a circle of half its length reached two metres into the shop.
+  const trough=Math.max(c.w,c.d)>1.5*Math.min(c.w,c.d)&&!c.yaw;
+  for(const b of buildings)assert.equal(trough?rectsOverlap(c,b):circleHitsRect(c.x,c.z,Math.max(c.w,c.d)/2,b),false,`${c.id} intersects ${b.id} at ${c.x},${c.z}`);
  }
  assert.equal(world.colliders.some(c=>c.id==='sea-almond'||c.id==='east-lawn-tree'),false,'retired planting styles cannot return');
 });

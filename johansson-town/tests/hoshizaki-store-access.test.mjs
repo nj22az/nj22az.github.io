@@ -4,46 +4,36 @@ import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
 import {COAST_BOUNDS} from '../src/world/island-coast.js';
 import {HOSHIZAKI_STORE} from '../src/world/island-plan.js';
-import {planHeight,groundHeight,setWalkSurface} from '../src/world/layout.js';
+import {planHeight,groundHeight,setWalkSurface,routeAt} from '../src/world/layout.js';
+import {onIslandLand} from '../src/world/coastal-ground.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {createNeighbours} from '../src/people/neighbours.js';
 import {PLACES} from '../src/people/cast.js';
-import {townBoundsBlocked,standingHitsRect,canStepBetween} from '../physics.js';
+import {townBoundsBlocked,standingHitsRect} from '../physics.js';
 
-// The store is closed (people/cast.js PLACES: nobody keeps it since Mina left). The building stands, so its drawn
-// approach must still be walkable, and no neighbour may be left standing at its counter or its door.
-test('the Hoshizaki store is closed: nobody keeps or queues at it, and its drawn approach stays clear',async()=>{
+// The store is closed (people/cast.js PLACES: nobody keeps it since Mina left), and Hoshizaki went with the rural
+// districts: the owner, 18 October 2026 (AGENTS.md), "Keep Minato a compact urban port town. Do not restore rural
+// districts"; docs/qa/urban-only-island/README.md names Hoshizaki among the removed places ("Removed rural locations are
+// explicitly tested as sea without routes, meshes, colliders or map targets"). So its old approach must be sea, with
+// nothing drawn or solid there, and no neighbour may be sent to its counter or its door.
+test('the Hoshizaki store is closed and retired: its approach is sea, nothing stands there, and nobody keeps or queues at it',async()=>{
  installDOM();globalThis.self=globalThis;
  assert.ok(PLACES['hoshizaki-store'].closed,'the cast says the store is closed');
  assert.ok(!Object.values(PLACES).some(p=>!p.closed&&/Hoshizaki/.test(p.name)),'no open place is the store');
  const {createTown}=await import('../src/world/town.js'),{createBusinesses}=await import('../src/world/businesses.js');
  const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  const surface=createWalkSurface({minX:COAST_BOUNDS.minX-2,maxX:COAST_BOUNDS.maxX+2,minZ:COAST_BOUNDS.minZ-2,maxZ:COAST_BOUNDS.maxZ+2,base:planHeight});surface.add(world.group);setWalkSurface(surface);
- const solids=world.colliders.filter(c=>c.x>115&&c.x<165&&c.z>175&&c.z<218);
- const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||solids.some(c=>standingHitsRect(x,z,r,groundHeight(x,z),c));
+ const area=(x,z)=>x>115&&x<165&&z>175&&z<218;
+ assert.deepEqual(world.colliders.filter(c=>area(c.x,c.z)).map(c=>c.id),[],'no solids where the village stood');
  world.group.updateMatrixWorld(true);
- const floors=[];world.group.traverse(o=>{
-  if(!o.isMesh||o.material?.transparent)return;
-  for(let p=o;p;p=p.parent)if(!p.visible||p.userData.dynamicProp)return;
-  const b=new THREE.Box3().setFromObject(o);if(b.min.x<=139&&b.max.x>=125&&b.min.z<=211&&b.max.z>=205)floors.push({mesh:o,bounds:b});
- });
- const ray=new THREE.Raycaster();
- function floorAt(x,z){
-  const y=groundHeight(x,z);ray.set(new THREE.Vector3(x,y+.24,z),new THREE.Vector3(0,-1,0));
-  const candidates=floors.filter(({bounds:b})=>x>=b.min.x&&x<=b.max.x&&z>=b.min.z&&z<=b.max.z).map(o=>o.mesh);
-  assert.ok(ray.intersectObjects(candidates,false).some(hit=>Math.abs(hit.point.y-y)<.025),'Visible supporting floor at '+[x,z]);return y;
- }
- const approach=[[138,206],[138,210],[126,210],HOSHIZAKI_STORE.customer];
- for(const points of [approach,[...approach].reverse()]){
-  let [x,z]=points[0];
-  for(const [tx,tz] of points.slice(1)){
-   const sx=x,sz=z,n=Math.ceil(Math.hypot(tx-x,tz-z)/.04);
-   for(let k=1;k<=n;k++)for(const [px,pz] of [[sx+(tx-sx)*k/n,z],[sx+(tx-sx)*k/n,sz+(tz-sz)*k/n]]){
-    assert.equal(blocked(px,pz),false,'The approach clears buildings at '+[px,pz]);
-    assert.ok(canStepBetween(groundHeight(x,z),groundHeight(px,pz)),'Continuous approach height');
-    if(k%5===0||k===n)floorAt(px,pz);x=px;z=pz;
-   }
-  }
+ const drawn=[];world.group.traverse(o=>{if(!o.isMesh||o.isInstancedMesh)return;const b=new THREE.Box3().setFromObject(o);if(!b.isEmpty()&&b.min.x>=115&&b.max.x<=165&&b.min.z>=175&&b.max.z<=218)drawn.push(o.name);});
+ assert.deepEqual(drawn,[],'nothing drawn where the village stood');
+ const blocked=(x,z,r=.32)=>townBoundsBlocked(x,z,r)||world.colliders.some(c=>standingHitsRect(x,z,r,groundHeight(x,z),c));
+ const approach=[[138,206],[138,210],[126,210],HOSHIZAKI_STORE.customer,HOSHIZAKI_STORE.clerk,HOSHIZAKI_STORE.waiting];
+ for(const [x,z] of approach){
+  assert.equal(onIslandLand(x,z),false,'the old approach is sea at '+[x,z]);
+  assert.equal(routeAt(x,z,.32),null,'no walking route at '+[x,z]);
+  assert.equal(blocked(x,z),true,'the town bounds keep walkers off the sea at '+[x,z]);
  }
  const neighbours=createNeighbours({parent:new THREE.Group(),blocked});
  const viewer={x:126,z:207.3};

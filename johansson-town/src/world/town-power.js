@@ -19,11 +19,15 @@ export function buildTownPower(world,{register,onAction,shadows=false}={}){
  const strung=[];
  const link=(a,b,sag=.38)=>{strung.push({a,b,sag});spans.push({from:a.id,to:b.id});};
  for(const s of planned?.spans||[])link(s.a,s.b,s.sag);
- const root=pole(24,34,{transformer:false});root.source=true;
+ // The outgoing pole beside the cable riser at the power compound's north-west corner (23.34, 32.1, below), on the school
+ // ground north of the fence: at (24, 34) it stood inside the school's east corridor column and in the passage beside it.
+ const root=pole(23.34,32.75,{transformer:false});root.source=true;
  const nearest=(x,z)=>nodes.reduce((a,b)=>Math.hypot(b.x-x,b.z-z)<Math.hypot(a.x-x,a.z-z)?b:a);
  // Follow the terminal's northern verge; never put a feeder pole through a house.
  const west=nearest(-36.7,20),main=nearest(5,19.6);
- const connector=[west,...[[-39,28],[-15.5,28],[5.2,28]].map(p=>pole(...p,{tel:false})),main];
+ // The middle pole stands on the grass verge east of Well Lane's end: at x -15.5 it stood inside the rubbish cage there
+ // (kitahama-quarter.js buildCorner).
+ const connector=[west,...[[-39,28],[-13.5,28],[5.2,28]].map(p=>pole(...p,{tel:false})),main];
  for(let i=1;i<connector.length;i++)link(connector[i-1],connector[i]);link(root,connector.at(-2));
  // Aoba Radio, up the hill, is fed by buried cable: a line of poles up an empty slope
  // only cluttered the skyline. The coast feeder follows its landward verge, clear

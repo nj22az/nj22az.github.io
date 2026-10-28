@@ -10,9 +10,9 @@ import {createActivities} from '../activities.js?snappy=1';
 import {createCastAI,DIALOGUE} from '../src/people/schedules.js?snappy=1';
 import {ROUTES,activeRoutes,routeAt,groundHeight} from '../src/world/layout.js?snappy=1';
 import {TOWN_DESTINATIONS} from '../src/world/town-grid.js';
+import {GROUND_CLASSES} from '../src/world/ground-standard.js';
 import {createNavigation} from '../src/people/navmesh.js?snappy=1';
 import {circleHitsRect,townBoundsBlocked,sweepFraction} from '../physics.js?snappy=1';
-import {createContentItems} from '../content-items.js';
 import {createHands} from '../src/interact/hands.js';
 import {readSave} from '../src/save.js';
 import {installDOM} from './fixtures.mjs';
@@ -22,7 +22,11 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 // Residents return to the street one at a time; checks on someone still away wait for them.
 const inCast=name=>STREET_CAST_NAMES.includes(name);
 const sites=()=>['office','frontrow','form3d','stepwise','journal','electronics','market','career'].map((id,i)=>({id,title:id,jp:id,side:i%2?1:-1,z:[38,30,18,8,-4,-16,-28,-39][i],color:0x777766,accent:'#49675d',line:id}));
-const build=()=>{installDOM();const anchors=[],all=sites(),world=createTown({scene:new THREE.Scene(),sites:all,mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});createContentItems({group:world.group,colliders:world.colliders,register:(o,label,fn)=>anchors.push({o,label,fn}),onInspect(){},onRead(){}});return {world,anchors,all};};
+// The town as the game builds it. The portfolio items are no longer laid on reading tables in the street: since 9 and
+// 13 September 2026 (a5f407f2, b93dd3c6) they live inside the businesses (src/world/interiors/business-content.js), and
+// nothing in the game calls createContentItems. Its tables stood at their September street positions, one of them
+// (the workshop calculator, content-data.js, at 5.2,-10) in front of the Nakamura family's door, which is not in the game.
+const build=()=>{installDOM();const anchors=[],all=sites(),world=createTown({scene:new THREE.Scene(),sites:all,mobile:true,shadows:false,register:(o,label,fn)=>anchors.push({o,label,fn}),onAction(){},enter(){},getPlayerPosition:()=>new THREE.Vector3()});return {world,anchors,all};};
 
 test('ground, pier edges and A/D coordinate convention',()=>{
  assert.equal(townBoundsBlocked(0,-62,.28),false);assert.equal(townBoundsBlocked(4.1,-62,.28),true);assert.equal(townBoundsBlocked(0,-86.9,.28),false);assert.equal(townBoundsBlocked(0,-87.2,.28),true);
@@ -31,7 +35,9 @@ test('ground, pier edges and A/D coordinate convention',()=>{
  // where the west yard does. the island's own tests walk that one.
  for(const route of activeRoutes())for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];for(let t=0;t<=1;t+=.02)assert.ok(routeAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,.28),route.id+' lacks ground');}
  for(const yaw of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const f={x:-Math.sin(yaw),z:-Math.cos(yaw)},right={x:Math.cos(yaw),z:-Math.sin(yaw)};assert.ok(Math.abs(f.x*right.x+f.z*right.z)<1e-10);assert.ok(f.x*right.z-f.z*right.x>.99);}
- assert.equal(groundHeight(0,0),0);assert.equal(groundHeight(32,47),0);
+ // Roads and back lanes are finished 4 cm above the datum (docs/GROUND-STANDARD.md, "One ground system", 21 October 2026:
+ // road and lane top 4 cm; GROUND_CLASSES). Main Street at the origin and the lane north of the town hall.
+ for(const [x,z] of [[0,0],[32,47]])assert.ok(Math.abs(groundHeight(x,z)-GROUND_CLASSES.road.top)<1e-9&&GROUND_CLASSES.lane.top===GROUND_CLASSES.road.top,'street finish at '+[x,z]);
 });
 test('navigation finds a collision-free route and cannot cut a wall corner',()=>{
  const blocked=(x,z,r=0)=>x<-1||x>8||z<-1||z>8||circleHitsRect(x,z,r,{x:3,z:3,w:2,d:5});

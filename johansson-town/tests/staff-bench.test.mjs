@@ -101,7 +101,7 @@ test('the complete shop controller receives Thuan back at the till after her ben
   const activities=createTownActivities({getTargets:()=>targets,collides:blocked,getPlayerPosition:()=>player.position,ledger,getState:()=>state});
   const ai=createCastAI({world,player,state:()=>state,paused:()=>false,collides:blocked,activities});
   const shop=createSakuraShop({world,scene,state,ledger,register,action(){},exit(){},getMinutes:()=>minutes,getPlayerPosition:()=>player.position,isInside:()=>false,onBorrow:activities.release});
-  const phases=new Set();let returned=false;
+  const phases=new Set(),till=new T.Vector3(...SAKURA_LAYOUT.staff);let returned=false,backAtTill=false;
   for(;minutes<1000;minutes+=1/60){
    const before=thuan.g.position.clone(),parent=thuan.g.parent,yaw=thuan.g.rotation.y,chair=thuan.g.userData.chairBlend;
    ai.update(1/60,minutes,false);shop.update(1/60);world.update(1/60,minutes,1,minutes);
@@ -118,11 +118,15 @@ test('the complete shop controller receives Thuan back at the till after her ben
    if(data.staffBenchPhase)phases.add(data.staffBenchPhase);
    if(!data.staffBenchPhase&&!data.indoors&&!data.usingTownObject)assert.equal(blocked(thuan.g.position.x,thuan.g.position.z,.3),false);
    if(minutes>930&&data.inMarket&&data.roomTransition)returned=true;
+   if(returned&&data.inMarket&&!data.staffBenchPhase&&thuan.g.position.distanceTo(till)<.12)backAtTill=true;
   }
   for(const phase of ['sit','sleep','wake','stand','leave'])assert.ok(phases.has(phase),phase);
   assert.ok(returned,'She walks in through the shop entrance');
   assert.equal(thuan.g.userData.inMarket,true);
-  assert.ok(thuan.g.position.distanceTo(new T.Vector3(...SAKURA_LAYOUT.staff))<.12,'She reaches the till');
+  // She reaches the till after the break. Not necessarily still there at 16:40: her afternoon at the shop is the
+  // sakura-floor stand sequence (people/stand-sequences.js, cast.js 'the afternoon till'): the till, the cold drinks, the
+  // till again and the west window, and by 16:39 she is on her way to the window.
+  assert.ok(backAtTill,'She reaches the till');
   assert.equal(thuan.g.userData.staffBenchPhase,undefined);
   assert.equal(thuan.g.userData.usingTownObject,undefined);
   assert.equal(world.staffBench.seat.userData.reservedBy,undefined);
