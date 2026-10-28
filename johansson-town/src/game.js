@@ -27,7 +27,8 @@ import {createIslandPlay,NAHA_ARRIVALS} from './island/play.js';
 import {createFerryWalk} from './world/ferry-walk.js';
 import {buildAirportArrivals} from './world/interiors/airport-arrivals.js';
 import {createBookshopCustomers} from './people/bookshop-customers.js';
-import {createPhotoStudio} from './photo/studio.js';
+import {createPhotoStudio,poseStudioActor} from './photo/studio.js';
+import {buildAvatar} from './avatars/build.js';
 import {createGamepadInput,createMenuRepeat,lookStep} from './input/analogue.js';
 import {createTouchSticks} from './input/touch-sticks.js';
 import {createCameraControls,navigateControls,focusableControls} from './input/camera-controls.js';
@@ -2510,6 +2511,18 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  concert:()=>openKaraoke(),
  get concertState(){return concert?.snapshot()||{active:false};},
  photo:()=>openPhotoStudio(),
+ /** A resident stood for a picture (tools/ferry-selfie-shoot.mjs): their own body built as the photo studio builds it, in
+  *  `pose` at its still with `expression`, on `parent` (the ferry, so she rides her deck) at `at` in its frame, facing
+  *  `yaw`. The living resident of that name is hidden meanwhile; `unstage()` takes it away and shows them again.
+  *  `shadows: false` for a close portrait, as the photo studio builds its cast: at under a metre the sun's shadow map
+  *  shows on the skin in blotches. */
+ stage(name,{pose='Idle',expression='smile',outfit='clothes',at=[0,0,0],yaw=0,parent=scene,shadows=true}={}){
+  this.unstage();const avatar=buildAvatar(recipeFor(name),{shadows,faceSize:512});avatar.wear(outfit);
+  const holder=new THREE.Group();holder.name='Staged '+name;holder.add(avatar.root);holder.position.set(...at);holder.rotation.y=yaw;parent.add(holder);
+  poseStudioActor({avatar,pose,expression});holder.updateMatrixWorld(true);
+  const living=[];scene.traverse(o=>{if(o!==holder&&o.userData?.name===name&&o.visible){o.visible=false;living.push(o);}});
+  this.staged={holder,avatar,living};return holder;},
+ unstage(){const st=this.staged;if(!st)return;st.holder.removeFromParent();st.avatar.dispose?.();for(const o of st.living)o.visible=true;this.staged=null;},
  /** The quiet HUD: wake() it, fade it now (idle()), or hide every control for a clean picture (photo(true)). */
  hud:{wake:()=>quietHud.wake(),hold:on=>quietHud.hold(on),idle:()=>quietHud.rest(),photo:on=>quietHud.photo(on),get state(){return {idle:quietHud.idle,photo:quietHud.photoMode};}},
  get photoActive(){return !!photoStudio?.active;},

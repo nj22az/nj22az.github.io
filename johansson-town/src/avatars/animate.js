@@ -816,7 +816,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   if(attention>.01&&!talking)add('head',0,0,listen.tilt*tiltSide*attention);
   quietFor=talking?0:quietFor+dt;wasTalking=talking;
   if(s.waving&&!gesture)play('Wave');
-  let gestureEyes=null;
+  let gestureEyes=null,gestureHands=null;
   // A held move the scene names as a pose (s.pose, one of STORY_POSES) is played as that move while it is named: in over half
   // a second, and out over half a second once it is not (a new one comes in when the old one is out).
   const named=STORY_POSES.has(s.pose)&&gesture?.name!==s.pose?s.pose:null;
@@ -841,7 +841,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    const r=applyGesture(gesture,s,onChair);
    if(!legs&&r?.root!==undefined)targetRoot+=r.root;
    // Some moves say where the eyes are (down on the book while calling out): unless the scene says otherwise.
-   gestureEyes=r?.eyes||null;ownLegs||=!!r?.legs;
+   gestureEyes=r?.eyes||null;gestureHands=r?.hands||null;ownLegs||=!!r?.legs;
   }}
   // the named pose after the move, so a pose that binds the body (a cord round it) keeps it through a laugh
   if(posed&&posed.ramp>0){const r=applyGesture(posed,s,onChair);if(r?.eyes)gestureEyes=r.eyes;ownLegs||=!!r?.legs;if(!legs&&r?.root!==undefined)targetRoot+=r.root;}
@@ -941,7 +941,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }
   // A hand with fingers rests a little curled, as a hand does, never splayed flat (a judge of the counter frames: "the
   // free hand is a stiff starfish"); what it holds closes it further (consume.js, table-drink.js set the grip after this).
-  if(avatar.pixar?.grip){avatar.pixar.grip('L',s.heldProp?.userData?.food?1:.28);if(!consumption&&!s.heldProp)avatar.pixar.grip('R',.28);}
+  if(avatar.pixar?.grip){avatar.pixar.grip('L',s.heldProp?.userData?.food?1:.28);if(!consumption&&!s.heldProp)avatar.pixar.grip('R',.28);
+   // a move that shapes the fingers (fun-poses.js `hands`: Selfie's V), each finger from the resting curl to its own as the
+   // move comes in, on a hand that holds nothing
+   if(gestureHands)for(const [side,shape] of Object.entries(gestureHands.shapes)){if(side==='L'?s.heldProp?.userData?.food:consumption||s.heldProp)continue;
+    avatar.pixar.grip(side,1,Object.fromEntries(Object.entries(shape).map(([f,v])=>[f,.28+(v-.28)*gestureHands.w])));}}
   avatar.seatLevel=null;
   if(onChair&&!s.riding){
    // Keep sit/stand transitions continuous and use the actual clothing surface
@@ -1632,7 +1636,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     add('chest',Math.sin(t*2.4)*.012*w);add('head',0,0,Math.sin(t*1.2)*.008*w);break;
    }
     const F=FUN_POSES[g.name];
-    if(F)return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;
+    if(F){const r=F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;return F.hands?{...r,hands:{shapes:F.hands,w}}:r;}
     // A role of a pair pose (pair-poses.js): its body from the fit for this body and its partner (playPair; played alone,
     // the fit of this body with itself), the arms solved on the partner's body the first time (or by playPair, at once).
     const R=PAIR_ROLES[g.name];if(!R)break;

@@ -277,6 +277,18 @@ export const FUN_POSES=Object.freeze({
    leg(P,'L',-.08,.05,0,w,.02);leg(P,'R',-1.1-bounce,1.35,.5,w,.02);
    P.armTo('R',[.55,0,-.25,-.4],w);P.armTo('L',[-1-bounce,0,-.3,-.7],w);
    P.toward('hips',0,.06,.03,w);P.toward('chest',-.06,-.05,-.03,w);P.add('head',-.1*w,0,.04*w);}}),
+ // (the creator, 28 October 2026, a holiday photo: "Make a scene on the Minato Ferry where Thuan poses like this"): the
+ // camera is the right mitten, so the arm goes out ahead and up to it, a little to her right, and the face turns up to it;
+ // the left mitten up beside the cheek, out from it, two fingers up (`hands`: a body with fingers makes the V, a mitten
+ // body shows the raised mitten); the hip out to the left. The still is taken from where the right mitten is.
+ Selfie:Object.freeze({label:'Selfie',face:'excited',d:3,ramp:.7,
+  use:'A holiday photo of yourself: the camera held out at arm’s length ahead and up, a peace sign by the cheek, a big smile at the lens.',
+  reach:{hair:true,head:[-.1,-.12,-.08],L:{cover:true,head:[.95,-.2,.45,.07],seed:[-1.5,.7,-.7,-1.95,0],hand:[0,0,0]},
+   R:{at:m=>[-(m.shoulderX+m.upper*.35),m.headCentre+m.Rh*.35,m.upper*1.9],seed:[-2,0,-.25,-.1,0],hand:[0,0,0]}},
+  hands:{L:{index:0,middle:0,ring:1,pinky:1,thumb:1},R:{index:.75,middle:.85,ring:.9,pinky:.9,thumb:.6}},
+  play(P){const {w,t}=P,sway=Math.sin(t*2.2)*.012*w;both(P,P.reach(),w);
+   P.toward('chest',-.04,-.1,-.04+sway,w);P.add('head',-.1*w,-.12*w,-.08*w);
+   P.toward('hips',0,.08,.06,w);P.toward('thighR',-.12,0,0,w);P.toward('kneeR',.28,0,0,w);P.toward('footR',-.16,0,0,w);}}),
  Tiptoe:Object.freeze({label:'Tiptoe',face:'focus',d:2.6,ramp:.5,
   use:'Up on the toes, reaching for the top shelf or peering over a fence: tall, the heels up, the arms a little out for balance.',
   play(P){const {w,t}=P,sway=Math.sin(t*2.6)*.015*w;
