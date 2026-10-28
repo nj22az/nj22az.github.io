@@ -386,6 +386,23 @@ The owner: "Fix Tetsuos pants and make the glasses whole and his eyebrows a bit 
 - **Brows** charcoal `#5c5853`.
 - Checked in clay (the legs from three sides) and in World's sheets; tests 52/52.
 
+## 28 October 2026, night: Tetsuo's sleeves and an egg of a face
+
+The owner: "How about his sleeves? And the face should be more egg like".
+
+- **Sleeves** (jojo `reshape`, `sleeve_arms`): his long sleeves were the jacket's colour painted on Johansson's bare
+  arms below a short sleeve. Now each arm below the short sleeve's hem (0.15 m down the arm's line from the shoulder,
+  where its blue gives way to skin) is a sleeve round its own line (shoulder to wrist, the arm out in the bind's A),
+  shaped from the short sleeve's own section at the hem and a little looser than the arm, closing round the wrist over
+  24 mm at 0.49 m; round the hem every point of the arm onto that surface (its roll goes); the fill fades with the
+  hand's weight (a hard cut left shards). The paint's sleeves end 6 mm past the cuff, cut per texel along the arm
+  (`texture_paint(..., cuffs)`: a cut by the forearm's weight left green on the back of the hand, a mark on the mesh's
+  points a sawtooth). A cuff closing over 4 mm broke into teeth when the mesh was thinned.
+- **The egg** (`reshape`, `egg_face`): each height of the head scaled across to an egg seen from the front, widest at the
+  temples (1.695 m, 102 mm a side), a long half-oval narrowing a little more (`taper` 0.12) down to a round chin and a
+  short one up to the crown; his jaw comes in by 10 to 19% (a taper of 0.25 made a V, not an egg).
+- Checked: clay of the arms, World's sheets, the jug held and at the lips (rim 2 mm at the sip); tests 52/52.
+
 ## Open
 
 0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use
