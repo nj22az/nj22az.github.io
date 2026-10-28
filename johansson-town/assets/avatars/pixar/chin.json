@@ -297,7 +297,7 @@
   "rx": 12.5,
   "ry": 11.033,
   "iris": 8.75,
-  "colour": "#2f80a0",
+  "colour": "#2a1d16",
   "lash": 3.8,
   "flick": 3.2,
   "lashes": 0,
@@ -391,7 +391,7 @@
    -0.61087
   ]
  },
- "glb_bytes": 1790392,
+ "glb_bytes": 1790192,
  "fingers": {
   "L": {
    "bend": {

@@ -5,7 +5,7 @@ import {installDOM} from './fixtures.mjs';
 import {COAST_BOUNDS} from '../src/world/island-coast.js';
 import {HARBOUR_PARK_PATHS,HARBOUR_PARK_SEATS} from '../src/world/harbour-park-plan.js';
 import {ONSEN_APPROACH,onsenPoint} from '../src/world/onsen-layout.js';
-import {MOUNTAIN_TRAIL,COAST_ROAD} from '../src/world/island-plan.js';
+import {COAST_ROAD} from '../src/world/island-plan.js';
 import {onIslandLand} from '../src/world/coastal-ground.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {groundHeight,planHeight,setWalkSurface} from '../src/world/layout.js';
@@ -49,10 +49,9 @@ test('Harbour Park walks, footbath, benches and outer-island trails connect on r
   walk([[6,-20.8],[9.6,-21.8],[9.4,-24.8],[9,-29.8],HARBOUR_PARK_SEATS[0].stand],'crossing to cherry bench stand');
   walk([[12,-22.4],ONSEN_APPROACH],'park to bathhouse porch');
   walk([[12,-22.4],[13.4,-22.4],[13.4,-18.7],onsenPoint(1.9,8.5)],'park to footbath seat approach');
-  walk([[23.5,90],...MOUNTAIN_TRAIL.slice(0,5)],'Fukugi Lane to Aoba Radio');
-  const radio=[[40,158],[39.3,159.2],[39.3,160],[39.3,166.16],[39.1,166.8],[37.5,166.8],[36.2,164.8],[34.8,165.8]];
-  walk(radio,'radio outside stair and public lookout');
-  walk([...radio].reverse(),'radio lookout return down the real stair');
+  // (No walk up the mountain trail to Aoba Radio and its roof lookout: the owner, 18 October 2026, AGENTS.md "Keep Minato
+  // a compact urban port town. Do not restore rural districts"; the main island now ends at the urban blocks
+  // (island-plan.js ISLAND_COAST), no route runs north of z 95, and buildAobaRadio (aoba-radio.js) is built by nothing.)
   walk([[53,66],...COAST_ROAD],'Kitahama street through the full coastal road and back to Nishi',{land:true});
   walk([...COAST_ROAD.slice(0,4)].reverse().concat([[53,66]]),'coastal road return to the Kitahama street',{land:true});
  }finally{setWalkSurface(null);}
