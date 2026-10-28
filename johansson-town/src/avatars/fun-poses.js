@@ -331,7 +331,7 @@ export const FUN_POSES=Object.freeze({
   play(P){const {w,t}=P,claw=Math.sin(t*8)*.15*w;
    both(P,P.reach(),w);P.add('handR',claw);P.add('handL',-claw);P.toward('chest',.16,0,0,w);P.add('head',-.06*w);
    leg(P,'L',-.32,.3,0,w,.04);leg(P,'R',.2,matchKnee(-.32,.3,.2),0,w,.04);}}),
- Shiver:Object.freeze({label:'Shiver',face:'worried',d:Infinity,ramp:.7,
+ Shiver:Object.freeze({label:'Shiver',face:'worried',d:Infinity,ramp:.95,
   use:'Cold to the bone, the wind off the sea: the arms wrapped tight round the chest, the shoulders up, the knees together, shivering.',
   reach:{pose:()=>({chest:[.06,0,0]}),R:{touch:true,on:['spine',(m,v)=>onTorso(m,v,1,.8)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]},
    L:{touch:true,on:['spine',(m,v)=>onTorso(m,v,-1,.7)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]}},
