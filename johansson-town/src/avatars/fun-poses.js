@@ -316,7 +316,7 @@ export const FUN_POSES=Object.freeze({
  Yawn:Object.freeze({label:'Yawn',face:'drowsy',d:3,ramp:.9,
   use:'Still half asleep, or the end of a long night: one arm stretched up high, the other mitten over the yawning mouth, the head tipped back.',
   reach:{hair:true,head:[-.16,0,.08],R:{cover:true,head:[-.05,-.45,1,.035],seed:[-1.3,.5,-.3,-2.1,0],hand:[0,-1.2,0]},
-   L:{at:m=>[m.Rh*m.headSX*1.15+m.hand*1.8,m.headCentre+m.Rh*m.headSY*1.05,-.02*m.k],upper:true,seed:[-2.9,-.1,.35,-.1,0],hand:[0,0,0]}},
+   L:{at:m=>[m.Rh*m.headSX*1.35+m.hand*2.2,m.headCentre+m.Rh*m.headSY*.85,-.02*m.k],upper:true,cover:.012,seed:[-2.9,-.1,.35,-.1,0],hand:[0,0,0]}},
   play(P){const {w,t}=P,sway=Math.sin(t*1.6)*.03*w;
    both(P,P.reach(),w);P.toward('chest',-.08,0,-.05+sway,w);P.add('head',-.16*w,0,.08*w);}}),
  Giggle:Object.freeze({label:'Giggle',face:'laugh',d:2.6,ramp:.85,
@@ -336,7 +336,7 @@ export const FUN_POSES=Object.freeze({
    L:{touch:true,on:['spine',(m,v)=>onTorso(m,v,-1,.7)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]}},
   play(P){const {w,t}=P,shiver=Math.sin(t*38)*.012*w;
    both(P,P.reach(),w);P.toward('chest',.06+shiver,0,0,w);P.add('neck',.08*w);P.add('head',.1*w,0,shiver);kneesIn(P,w,.14,.1);}}),
- BlowKiss:Object.freeze({label:'Blow a kiss',face:'kiss',d:2.6,ramp:.7,
+ BlowKiss:Object.freeze({label:'Blow a kiss',face:'kiss',d:2.8,ramp:.9,
   use:'A fond goodbye from the ferry’s rail or a doorway: the mitten kissed at the lips, then sent off with the arm thrown out, palm up.',
   reach:{hair:true,head:[.04,0,-.08],only:'R',R:{cover:true,head:[-.08,-.38,1,.04],seed:[-1.3,.5,-.3,-2.1,0],hand:[0,-1.2,0]}},
   play(P){const {w,t}=P,send=between(t,.6,1.4),A=P.reach();
@@ -359,7 +359,7 @@ export const FUN_POSES=Object.freeze({
  SquatWatch:Object.freeze({label:'Squat and watch',face:'focus',d:Infinity,ramp:.9,
   use:'Down on the heels to watch something small and wonderful: a crab on the slipway, the cat, fish in the harbour; the forearms on the knees, the head bent to look.',
   // (both mittens on the knees: a chin on a mitten is out of reach of a big head on short arms, squatting)
-  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['kneeR',m=>[-m.hipX,m.hipY-m.thigh,m.legR*1.6+m.hand*1.1]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
+  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['kneeR',m=>[-m.hipX,m.hipY-m.thigh,m.legR*1.5+m.hand*1.6]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
   play(P){const {w,t}=P,sway=Math.sin(t*1.3)*.015*w;
    for(const [j,a] of Object.entries(SQUAT))P.toward(j,...a,w);
    both(P,P.reach(),w);P.add('neck',.1*w);P.add('head',.2*w,sway,.12*w);}}),
