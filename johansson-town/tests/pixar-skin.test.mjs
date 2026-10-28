@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {celFrom} from '../src/render/cel.js';
-import {pixarSkin,markSkin,SKIN_MARK} from '../src/avatars/pixar-skin.js';
+import {pixarSkin,markSkin,SKIN_MARK,HAND_MARK} from '../src/avatars/pixar-skin.js';
 import {eyeShape,EYE_PARAMS} from '../src/avatars/eyes3d.js';
 
 // A Pixar body's skin (src/avatars/pixar-skin.js; the owner's rendering brief of 26 October 2026: warm subsurface skin,
@@ -31,7 +31,11 @@ test('on skin the town\'s cool shadow tint gives way to a warm one, through a co
 test('a rim round the body, none on a feature\'s decal; skin marked only while the ink pass draws',()=>{
  const body=compile(skinned()),decal=compile(skinned(false));
  assert.match(body.fragmentShader,/uRimWarm/);assert.doesNotMatch(decal.fragmentShader,/uRim \*/);
- assert.match(body.fragmentShader,new RegExp('gl_FragColor\\.a = mix\\( gl_FragColor\\.a, '+SKIN_MARK.toFixed(4)));
+ // (the hands mark themselves apart, HAND_MARK: skin for the grade, but inked in full, the contour of every finger; the
+ // weight comes from the body's own skinning, pixar.js `pixarHand`)
+ assert.match(body.fragmentShader,new RegExp('gl_FragColor\\.a = mix\\( gl_FragColor\\.a, mix\\( '+SKIN_MARK.toFixed(4)+', '+HAND_MARK.toFixed(4)+', step\\( \\.5, vPixarHand \\) \\)'));
+ assert.match(body.vertexShader,/attribute float pixarHand;/);assert.doesNotMatch(decal.vertexShader,/attribute float pixarHand/,'a decal needs no hand weight');
+ assert.ok(Math.abs(HAND_MARK-SKIN_MARK)>.02&&HAND_MARK<.99,'the hand mark is told from the skin and from an opaque 1 after 8 bits');
  assert.doesNotMatch(decal.fragmentShader,/gl_FragColor\.a = mix/,'a see-through decal writes no mark');
  assert.equal(body.uniforms.uSkinMark.value,0,'no mark outside the ink pipeline (Studio\'s editor, a comic panel)');
  markSkin(true);assert.equal(body.uniforms.uSkinMark.value,1);markSkin(false);assert.equal(body.uniforms.uSkinMark.value,0);

@@ -34,12 +34,51 @@ smile): "Make a scene on the Minato Ferry where Thuan poses like this".
   game camera's distance the acne doesn't show.
 - The audit camera ignores `fov` (also noted in the blog-stamp handover), so the framing comes from the lens position.
 
+## Second round: the hand and the pose (the owner: "Looks like the hand needs improvement? And the pose ?")
+
+Judged up close against the photo in a rig with only Thuan, through the selfie lens, at the hand and from the front and
+side (a scratch page, not committed):
+- **The V hand:** before, the thumb stuck out sideways, the ring and little fingers hooked half closed, and the side
+  of the hand faced the lens. Now the wrist turns the palm to the lens (`hand:[0,1.2,0]` on the left reach), the ring and
+  little fingers fold deeper (1.1), and the thumb lies across them. A thumb turned 1.3 bent down to the wrist, so it
+  stays at 1.0.
+- **The V hand's place:** before, it was pressed against the cheek. Now it sits beside the cheek and a little ahead of it, as in
+  the photo (`head:[.75,-.15,.65,.08]`). Further out, at the shoulder, it left the frame and looked like a wave.
+- **The camera arm:** it aimed at a point beyond her reach, so it went up over her head and read as a raised fist from
+  the front. It now aims where she can reach it, at eye level ((upper + forearm) × 0.92 ahead).
+- **The head** tips toward the camera arm (roll −0.2). The face is `excited`, the photo's open smile.
+- The lens default is now 0.64 ahead, 0.15 up, 0.10 right, which keeps the camera fist out of frame and the V in it.
+
+## Third round: contour on the fingers (the owner: "The fingers need more contour she's supposed to come out as she is an animated cartoon character")
+
+Why they were flat: the ink pass (`src/render/ink-pipeline.js`) finds edges from depth. On anything marked as skin it raises the
+threshold and cuts inside-corner lines by 90%, so that a face's soft curves don't ink as smudges. The hands were marked as skin too,
+so a finger against the palm got a faint one-pixel line or none.
+- **The hands mark themselves apart.** `pixar.js` gives every Pixar body's geometry a `pixarHand` weight from its own
+  skinning (how much the hand and finger bones carry each vertex; Thuan is one mesh, hands and all). `pixar-skin.js` writes
+  `HAND_MARK` (0.94) where that weight is over half, `SKIN_MARK` (0.98) elsewhere (program key `pixar-skin-v5`).
+- **The ink pass** still treats both as skin for the grade (warm in shadow). Faces keep their softened ink (`gSoft`).
+  Hands are inked in full and bolder: depth is sampled from twice as far round (a two-pixel line on a narrow finger),
+  with the threshold 1.4× and inside-corner lines at half. At the plain threshold the fingertips' flat facets inked as
+  scratches (tried and rejected).
+- Seen up close (the selfie) and at a game distance (2.4 m, `thuan-ferry-selfie-wide.jpg`): outlines round each finger
+  and the palm, creases where the fingers fold, no blobs from further off. One small facet mark is left at the base of
+  the thumb.
+
+**Found and fixed:** the 2.4 m check showed her standing *in* the open deck's side bench (its seat through her legs) at
+z −14.4. The close lens had hidden it. Her default spot is now z −13.65, in the gap between the bench's forward end
+(−13.95) and the funnel casing (−13.35). Checked clear from 2.4 m.
+
 ## Checks
 
 - Every frame was looked at in full: no clipping of the V hand into the hair or head, clean skin, the rail and the sea
   read, and the open right hand stays out of frame.
 - `tests/fun-poses.test.mjs`: **4/4 pass** (Selfie on every body, child to elder, slim to round: in nothing, feet on the floor).
 - `tests/photo-studio.test.mjs` and `tests/runtime-package.test.mjs`: **8/8 pass**.
+- After the second round: fun-poses, photo studio and runtime **12/12 pass**.
+- After the third round: `pixar-skin` 5/5 (its mark test updated for the hand mark), `pixar-thuan`, `pixar-johansson`,
+  `pixar-meshy`, `ink-recovery`, `looks` all pass. `looks-data` has **1 failure, pre-existing**: it fails the same with
+  these changes stashed ("the resident groups cover everybody once"). It isn't related to this work and was left alone.
 - Not run: the full World guard, phone-width or real-device checks, and the photo studio's Selfie through its UI.
 
 ## Open / next
@@ -49,5 +88,8 @@ smile): "Make a scene on the Minato Ferry where Thuan poses like this".
   own departure (or the operations request's preconditions).
 - The photo's yellow bucket hat and white summer outfit are not in Thuan's wardrobe. A sun hat sold at Sakura would give
   her a reason to have one (hat-assets.js).
+- **Pixar Thuan's wrist seam:** where her hand meets the forearm, the skin shows a ragged edge. It appears at rest
+  too (the rig's untwisted hand), and the palm-forward twist makes it easier to see in this close-up. The fix belongs in
+  the model's export (jojo `3d/cast/game_thuan.py`, the hand's join to the arm), not in the pose.
 - The camera hand holds nothing. A 1990s disposable camera in it would explain the arm when the pose is seen from
   another angle.

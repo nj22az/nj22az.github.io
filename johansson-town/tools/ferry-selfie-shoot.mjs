@@ -4,7 +4,7 @@
  * picture is taken from where her camera is: ahead of her face, up and out to her right, so her arm comes in from the
  * frame's corner, a little wide, as a phone held at arm's length sees.
  *   node tools/ferry-selfie-shoot.mjs <out-dir> [--time 11:30] [--looks none,stamp] [--size 1200x1600] [--berth]
- *        [--at x,z] [--yaw 1.571] [--face smile] [--lens ahead,up,right] [--fov 56]
+ *        [--at x,z] [--yaw 1.571] [--face excited] [--lens ahead,up,right] [--fov 56]
  * Under way unless --berth: she sails from Minato for Kitano-jima and the picture is taken once she is in open water.
  * Ship frame (ferry-model.js): +z forward, +x to port, y up from her laden waterline; the open deck is at 5.5 m.
  */
@@ -20,8 +20,10 @@ const out=resolve(process.argv[2]&&!process.argv[2].startsWith('--')?process.arg
 const [W,H]=arg('size','1200x1600').split('x').map(Number),looks=arg('looks','none').split(',');
 const [h,m]=arg('time','11:30').split(':').map(Number),berth=process.argv.includes('--berth');
 const HALF=FERRY_SHIP.length/2,DECK=FERRY_HEIGHTS.passengerDeck-FERRY_SHIP.draft;
-const [ax,az]=(arg('at')||`${(FERRY_SHIP.beam/2-.55).toFixed(2)},-14.4`).split(',').map(Number);
-const shot={at:[ax,DECK,az],yaw:+arg('yaw',String(Math.PI/2)),face:arg('face','smile'),lens:arg('lens','.64,.15,.12').split(',').map(Number),fov:+arg('fov','56')};
+// (in the gap between the side bench's forward end, z −13.95, and the funnel's casing, from z −13.35: ferry-interior.js. At
+// z −14.4 she stood in the bench, its seat through her legs, which the close lens did not show)
+const [ax,az]=(arg('at')||`${(FERRY_SHIP.beam/2-.55).toFixed(2)},-13.65`).split(',').map(Number);
+const shot={at:[ax,DECK,az],yaw:+arg('yaw',String(Math.PI/2)),face:arg('face','excited'),lens:arg('lens','.64,.15,.1').split(',').map(Number),fov:+arg('fov','56')};
 const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.wasm':'application/wasm','.webmanifest':'application/manifest+json','.mp3':'audio/mpeg','.ogg':'audio/ogg','.woff2':'font/woff2','.ktx2':'image/ktx2','.bin':'application/octet-stream'};
 const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new URL(req.url,'http://x').pathname),file=resolve(site,'.'+(path.endsWith('/')?path+'index.html':path));if(!file.startsWith(site+'/'))throw Error('outside');const body=await readFile(file);res.writeHead(200,{'content-type':types[extname(file)]||'application/octet-stream'});res.end(body);}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));

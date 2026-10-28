@@ -112,6 +112,7 @@ export function pixarBody(recipe){
 /** For tests and tools: wear a body prepared elsewhere (node has no fetch of the assets). */
 export function providePixarBody(body){loaded.set(body.name,body);}
 
+const HAND_BONE=/^(hand[LR]|(thumb|index|middle|ring|pinky)[LR][123])$/;
 // A geometry's skin indices in this skeleton's order (the model's joints are World's bone names), made once a body.
 function inOrder(body,part,order){
  const key=order.join(',');
@@ -122,6 +123,11 @@ function inOrder(body,part,order){
  const g=part.geometry.clone(),src=part.geometry.attributes.skinIndex,idx=new Uint16Array(src.count*4);
  for(let i=0;i<src.count;i++)for(let c=0;c<4;c++)idx[i*4+c]=map[src.getComponent(i,c)];
  g.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(idx,4));
+ // How much of each vertex the hand and its fingers carry (pixar-skin.js: the hands are inked in full, HAND_MARK). Her
+ // body is one mesh, hands and all, so the skin's own weights say where the hand is.
+ const handJoint=part.joints.map(n=>HAND_BONE.test(n)),w=part.geometry.attributes.skinWeight,hand=new Float32Array(src.count);
+ for(let i=0;i<src.count;i++)for(let c=0;c<4;c++)if(handJoint[src.getComponent(i,c)])hand[i]+=w.getComponent(i,c);
+ g.setAttribute('pixarHand',new THREE.BufferAttribute(hand,1));
  cache.set(key,g);return g;
 }
 

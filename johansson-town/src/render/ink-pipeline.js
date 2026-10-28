@@ -2,7 +2,7 @@ import {createLookBuffers} from './look-buffers.js';
 import {drawWithLookMaterials} from './look-materials.js';
 import * as THREE from '../../vendor/three.module.js';
 import {lookFragment,lookNormals,lookSurfaceStrokes} from './looks.js';
-import {SKIN_MARK,markSkin} from '../avatars/pixar-skin.js';
+import {SKIN_MARK,HAND_MARK,markSkin} from '../avatars/pixar-skin.js';
 
 /**
  * The 3D-to-2D pass: what turns a lit 3D town into a drawn one.
@@ -68,8 +68,11 @@ uniform float uFadeStart,uFadeEnd,uStrength,uSkyDepth;
 // A modelled character's skin marks itself in the scene's alpha (SKIN_MARK, avatars/pixar-skin.js): its soft curves get no
 // inside-corner ink (which on a face draws grey smudges under the cheekbones and beside the nose), and its darks are
 // toned warm rather than violet (the grade's split tone): skin in shadow is light under the skin, not a bruise.
-float gSkin=0.;
+// A Pixar body's hands mark themselves apart (HAND_MARK): skin for the grade, but inked in full, outline and creases (a
+// cartoon hand reads by the contour of each finger).
+float gSkin=0.,gSoft=0.,gHand=0.;
 float skinMark(float a){return 1.0-smoothstep(0.004,0.008,abs(a-${SKIN_MARK.toFixed(4)}));}
+float handMark(float a){return 1.0-smoothstep(0.004,0.008,abs(a-${HAND_MARK.toFixed(4)}));}
 
 float linearDepth(vec2 uv){
  float d=texture2D(tDepth,uv).x;
@@ -79,7 +82,10 @@ float linearDepth(vec2 uv){
 vec3 inkColour(vec2 uv){
  vec3 col=texture2D(tDiffuse,uv).rgb;
  if(uInkEnabled<0.5)return col;
- vec2 t=uTexel*uThickness;
+ // (a hand's lines are drawn bolder, from twice as far round: a finger is narrow, and a one-pixel line on it is lost; and
+ // only its firm edges, its silhouette and the creases where a finger folds against the palm: lower, the flat facets of
+ // its fingertips inked as scratches)
+ vec2 t=uTexel*uThickness*(1.0+gHand);
  float dc=linearDepth(uv);
  if(dc>uSkyDepth){return col;}
 
@@ -95,8 +101,8 @@ vec3 inkColour(vec2 uv){
  float concave=max(0.0,-sx)+max(0.0,-sy);
 
  // (on skin only a firm edge inks: a faint one, where a nose's underside meets the lip, breaks up into scratches)
- float edge=smoothstep(uSens*mix(0.32,0.7,gSkin),uSens*mix(1.0,1.6,gSkin),convex);
- edge=max(edge,smoothstep(uConcave,uConcave*3.4,concave)*uConcaveAmount*(1.0-0.9*gSkin));
+ float edge=smoothstep(uSens*mix(0.32,0.7,gSoft)*(1.0+0.4*gHand),uSens*mix(1.0,1.6,gSoft)*(1.0+0.4*gHand),convex);
+ edge=max(edge,smoothstep(uConcave,uConcave*3.4,concave)*uConcaveAmount*(1.0-0.9*gSoft)*(1.0-0.5*gHand));
  edge*=1.0-smoothstep(uFadeStart,uFadeEnd,dc);
  edge*=uStrength;
 
@@ -157,7 +163,7 @@ const COMPOSITE_FRAGMENT=`
 varying vec2 vUv;
 ${INK_FUNCTIONS}
 ${GRADE_FUNCTIONS}
-void main(){gSkin=skinMark(texture2D(tDiffuse,vUv).a);gl_FragColor=vec4(gradeColour(inkColour(vUv),vUv),1.0);}
+void main(){float a=texture2D(tDiffuse,vUv).a;gSoft=skinMark(a);gHand=handMark(a);gSkin=max(gSoft,gHand);gl_FragColor=vec4(gradeColour(inkColour(vUv),vUv),1.0);}
 `;
 
 const FXAA_FRAGMENT=`

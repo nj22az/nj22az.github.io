@@ -16,12 +16,18 @@ import * as THREE from '../../vendor/three.module.js';
  *  to the screen, so the mark never shows. A see-through canvas drawn without that pass (Studio's editor, a comic's
  *  panel) gets no mark. */
 export const SKIN_MARK=.98;
+/** The mark a Pixar body's hands write instead (where its `pixarHand` weight, pixar.js, is over half): skin for the grade (warm in shadow), but inked as
+ *  the town inks everything, outline and creases: a cartoon hand reads by the contour of each finger (the owner, 28
+ *  October 2026, of Thuan's V: "The fingers need more contour she's supposed to come out as she is an animated cartoon
+ *  character"), where a face's soft curves would ink as smudges. */
+export const HAND_MARK=.94;
 export function markSkin(on){SKIN_UNIFORMS.uSkinMark.value=on?1:0;}
 const SKIN_UNIFORMS=Object.freeze({uSkinShadow:{value:new THREE.Color('#f0b39c')},uSkinTerminator:{value:new THREE.Color('#e06a4b')},
  uSkinAmbient:{value:new THREE.Vector3(1.12,.96,.86)},uRimWarm:{value:new THREE.Color('#fff3d6')},uRimCool:{value:new THREE.Color('#8ab4f8')},
  uRim:{value:.2},uSheen:{value:.07},uSkinMark:{value:0}});
 const SKIN_HEAD=`uniform vec3 uSkinShadow,uSkinTerminator,uSkinAmbient,uRimWarm,uRimCool;
 uniform float uRim,uSheen,uSkinMark,uHeadY,uHeadR;
+varying float vPixarHand;
 uniform vec2 uHeadXZ;
 varying vec3 vPixarPos;
 float pixarSkinW=0.;
@@ -54,8 +60,9 @@ const sheenAndRim=rim=>`{ vec3 Vv = normalize( vViewPosition ), Nn = normalize( 
 	  #endif
 	  ${rim?'outgoingLight += mix( uRimCool, uRimWarm, smoothstep( -.25, .35, sunSide ) ) * fr * uRim * ( .6 + .4 * pixarSkinW );':''} }
 	#include <opaque_fragment>
-	${rim?`gl_FragColor.a = mix( gl_FragColor.a, ${SKIN_MARK.toFixed(4)}, uSkinMark * step( .5, pixarSkinW ) * step( .999, gl_FragColor.a ) );`:''}`;
-/** Pixar skin on a cel material. rim: false for a feature's decal, which lies on skin that has it. head: {y, x, z, r},
+	${rim?`gl_FragColor.a = mix( gl_FragColor.a, mix( ${SKIN_MARK.toFixed(4)}, ${HAND_MARK.toFixed(4)}, step( .5, vPixarHand ) ), uSkinMark * step( .5, pixarSkinW ) * step( .999, gl_FragColor.a ) );`:''}`;
+/** Pixar skin on a cel material. rim: false for a feature's decal, which lies on skin that has it (a rim
+ * skin's geometry carries `pixarHand`, pixar.js: its hands write HAND_MARK). head: {y, x, z, r},
  * the neck's height, the head's axis and its radius (the card's measures): what stands out of the head beyond its radius
  * (the nose, the ears) takes a sharper, stronger sheen (roughness about .45 against the body's .65: the owner's spec
  * of 26 October 2026, night); without it the sheen is the body's everywhere. */
@@ -66,13 +73,13 @@ export function pixarSkin(material,{rim=true,head=null}={}){
   base?.call(material,shader,renderer);
   Object.assign(shader.uniforms,SKIN_UNIFORMS,headUniforms);
   // (the position in the body's own frame, after skinning: the head's measures are in it)
-  shader.vertexShader=('varying vec3 vPixarPos;\n'+shader.vertexShader).replace('#include <skinning_vertex>','#include <skinning_vertex>\n\tvPixarPos = transformed;');
+  shader.vertexShader=('varying vec3 vPixarPos;\nvarying float vPixarHand;\n'+(rim?'attribute float pixarHand;\n':'')+shader.vertexShader).replace('#include <skinning_vertex>','#include <skinning_vertex>\n\tvPixarPos = transformed;\n\tvPixarHand = '+(rim?'pixarHand':'0.')+';');
   let f=SKIN_HEAD+shader.fragmentShader;
   // (the town's cel patch, cel.js, is the irradiance line this replaces; without it the skin keeps the plain ramp)
   if(f.includes(CEL_LINE))f=f.replace(CEL_LINE,SKIN_IRRADIANCE);
   shader.fragmentShader=f.replace('#include <normal_fragment_begin>',SKIN_MASK).replace('#include <lights_fragment_end>',SKIN_AMBIENT)
    .replace('#include <opaque_fragment>',sheenAndRim(rim));
  };
- material.customProgramCacheKey=()=>baseKey()+':pixar-skin-v4'+(rim?'':'-norim')+(head?'-head':'');
+ material.customProgramCacheKey=()=>baseKey()+':pixar-skin-v5'+(rim?'':'-norim')+(head?'-head':'');
  return material;
 }
