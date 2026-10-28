@@ -403,6 +403,15 @@ The owner: "How about his sleeves? And the face should be more egg like".
   short one up to the crown; his jaw comes in by 10 to 19% (a taper of 0.25 made a V, not an egg).
 - Checked: clay of the arms, World's sheets, the jug held and at the lips (rim 2 mm at the sip); tests 52/52.
 
+## 28 October 2026, late: Tetsuo's ears smaller, sideburns drawn
+
+The owner: "Make his ears smaller and give him small side burns"; "Smaller ears and draw his sideburns in python".
+
+- Ears 0.66 of their size (jojo `reshape`, `ear_scale`: drawn in toward where each joins the head, before they are
+  turned out). Sideburns drawn as hair in `build_glasses` (`sideburns`): seven short grey strands a side lying on the
+  skin in front of the ear from the temple down, the ones by the ear longest, so the tuft narrows toward the jaw (a
+  painted patch first read as a dark block). Tests 52/52.
+
 ## Open
 
 0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use

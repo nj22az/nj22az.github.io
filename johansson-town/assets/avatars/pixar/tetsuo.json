@@ -263,9 +263,9 @@
  },
  "measure": {
   "H": 1.6333,
-  "Rh": 0.11798,
-  "headSX": 1.12844,
-  "headSY": 1.37121,
+  "Rh": 0.11806,
+  "headSX": 0.95009,
+  "headSY": 1.37036,
   "headCentre": 1.46468,
   "neck": 0.06229,
   "torso": 0.72075,
@@ -274,7 +274,7 @@
   "thigh": 0.17745,
   "shin": 0.32354,
   "legR": 0.07691,
-  "armR": 0.06857,
+  "armR": 0.06882,
   "width": 0.31105,
   "hips": 0.33923,
   "waistRatio": 1.06136,
@@ -372,10 +372,10 @@
   "lowerLip": "#ef9f92",
   "ink": "#ee9d8f"
  },
- "skin": "#e38370",
+ "skin": "#e28370",
  "triangles": {
   "pixar": 20000,
-  "glasses": 1752,
+  "glasses": 3808,
   "lens": 40,
   "glint": 8,
   "eyes": 480,
@@ -394,7 +394,7 @@
    -0.61087
   ]
  },
- "glb_bytes": 1982776,
+ "glb_bytes": 2216340,
  "fingers": {
   "L": {
    "bend": {
