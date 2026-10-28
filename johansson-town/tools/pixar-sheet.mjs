@@ -37,6 +37,8 @@ const undressed=argv.includes('--undressed');if(undressed)argv.splice(argv.index
 const grip=argv.includes('--grip');if(grip)argv.splice(argv.indexOf('--grip'),1);
 // --hold: the right hand turned as table-drink.js holds a jug (its HOLD_Q), to look at the hand in that turn: use with --grip
 const hold=argv.includes('--hold');if(hold)argv.splice(argv.indexOf('--hold'),1);
+// --face '{"eyes":{"style":"cat"}}': the recipe's face parts changed for this sheet (a clone's face follows its recipe)
+const faceParts=JSON.parse(opt('--face')||'null');
 const name=argv[0]||'Thuan',out=resolve(argv[1]||'output/pixar');mkdirSync(out,{recursive:true});
 
 // [label, face state, turn of the body (radians, + to her left)]
@@ -89,7 +91,7 @@ try{
  const page=await browser.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
  await page.goto(server.url+'src/avatars/face.js?pixar='+name.toLowerCase());
- const result=await page.evaluate(async({name,undressed,grip,hold,eyes,body,cellSize,frame,moving,turnBy,pose,SEAT})=>{
+ const result=await page.evaluate(async({faceParts,name,undressed,grip,hold,eyes,body,cellSize,frame,moving,turnBy,pose,SEAT})=>{
   const T=await import('/johansson-town/vendor/three.module.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js');
   const {createInkPipeline}=await import('/johansson-town/src/render/ink-pipeline.js'),{loadPixarBodies}=await import('/johansson-town/src/avatars/pixar.js'),{createAvatarAnimator:createAnimator}=await import('/johansson-town/src/avatars/animate.js');
   // assets/ resolve against the page (assets.js): the game's folder, as on its own page
@@ -97,7 +99,8 @@ try{
   const got=await loadPixarBodies();if(!got.includes(name))throw new Error('no Pixar body for '+name);
   const scene=new T.Scene();scene.background=new T.Color('#c9d6cf');
   const fill=new T.HemisphereLight(0xffffff,0x887766,1.5),sun=new T.DirectionalLight(0xffffff,2);sun.position.set(2,5,4);scene.add(fill,sun);
-  const pixar=buildAvatar(recipeFor(name),{shadows:false}),cartoon=buildAvatar(recipeFor(name),{shadows:false,pixar:null});
+  const own=recipeFor(name),recipe=faceParts?{...own,...Object.fromEntries(Object.entries(faceParts).map(([k,v])=>[k,{...own[k],...v}]))}:own;
+  const pixar=buildAvatar(recipe,{shadows:false}),cartoon=buildAvatar(recipe,{shadows:false,pixar:null});
   if(undressed)pixar.pixar?.dress(false);
   for(const a of [pixar,cartoon]){a.root.rotation.y=0;scene.add(a.root);}
   pixar.pixar.smooth=moving;   // each cell its feeling at once (the game eases between them), unless it is a motion strip
@@ -167,7 +170,7 @@ try{
   });
   pixar.dispose();cartoon.dispose();
   return {report,eyesPng,bodyPng};
- },{name,undressed,grip,hold,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion,turnBy,pose,SEAT});
+ },{faceParts,name,undressed,grip,hold,eyes:bodyOnly&&!only?[]:EYES,body:bodyOnly?BODY.filter(c=>bodyOnly.split(',').includes(c[0])):only||motion?[]:BODY,cellSize,frame,moving:!!motion,turnBy,pose,SEAT});
  if(result.eyesPng)writeFileSync(resolve(out,name+tag+'-eyes.png'),Buffer.from(result.eyesPng.split(',')[1],'base64'));
  if(result.bodyPng)writeFileSync(resolve(out,name+tag+'-body.png'),Buffer.from(result.bodyPng.split(',')[1],'base64'));
  writeFileSync(resolve(out,name+tag+'.json'),JSON.stringify(result.report,null,1)+'\n');

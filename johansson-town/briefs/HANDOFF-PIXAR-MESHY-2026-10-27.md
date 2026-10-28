@@ -462,6 +462,22 @@ from Thao, women in trousers from Thuận (her export cannot clone yet), childre
 smoothed off), checked (ground, car floor, the sip), in World; sheets `jojo 3d/cast/renders/game/chin-*-world.png`. Hats
 (his cap) and longer hair are still to make.
 
+## 28 October 2026, latest: the clones' faces from the avatar creator
+
+The owner: "Can you combine them with the old avatar creator? To make the faces more interesting". A clone's card says
+`face: 'recipe'` (jojo `game_meshy.py` writes it for a `clone_recipe` body; Chin's card has it), and World reshapes the
+donor's modelled face from the resident's recipe (`src/avatars/pixar-face.js`, used by `pixar.js dressPixar`, which now
+takes the recipe from `build.js`): each creator eye style as the modelled eye's width, height, iris, lid line, slant,
+corner and lashes (size, width and tilt sliders too; kept inside the decal's disc); each brow style as an arch, a slope,
+a flattening, a thickness, a length, a taper and bushy hair (size, height and tilt too; `none`: no brows); each mouth
+style as how the mouth rests under every feeling (featuresOf `base`) and its width. eyes3d.js `eyeShape` now takes an own
+eye's `cut`, `slant` and a round eye's `corner`. The hand-made faces (Johansson, Thuận, Thao, Tetsuo, Mr Fujita) are
+unchanged. `tools/pixar-sheet.mjs --face '<json>'` tries other parts on a face; tests `tests/pixar-face.test.mjs`.
+Sheet: `jojo 3d/cast/renders/game/chin-recipe-faces.png` (Chin as his recipe, and four other combinations). Not yet
+carried over (export-side, `clone_recipe.py`): the nose's style (only its size), glasses, moustache and beard. Seen: the
+painter's `smile` feeling barely lifts a clone's mouth (it did before this). Branch only, not yet on main: the owner sees
+the faces first.
+
 ## 28 October 2026, last: corrected and audited ("Correct it audit yourself")
 
 Corrected, each measured (scratchpad probe-cab.mjs, probe-stand.mjs) and the full suite run before and after:
