@@ -58,7 +58,8 @@ test('Fujita and every actor receive the correct vessel on the first frame and k
  for(const name of names){const entity=new THREE.Group(),actor=createAvatarActor(entity,name);
   Object.assign(entity.userData,{seatHeight:.42,socialPose:'Drink',heldItem:'beer',heldPortion:.6,consumeElapsed:1.2});
   updateAvatarActor(actor,1/60,1000);
-  assert.equal(actor.heldProp.userData.rimHeight,.15);
+  // (the draught jug, whatever its height: modelled to Johansson's hand on 27 October 2026 its rim stands 0.19, not 0.15)
+  const jug=createDrinkProp('draft',{held:true});assert.equal(actor.heldProp.userData.rimHeight,jug.userData.rimHeight);disposeServing(jug);
   check(actor.avatar,actor.heldProp,renderedHand(actor.avatar),name+' first frame',true);
   entity.userData.socialPose='Sit';delete entity.userData.consumeElapsed;
   updateAvatarActor(actor,1/60,1017);check(actor.avatar,actor.heldProp,renderedHand(actor.avatar),name+' resting hold',false);
@@ -89,7 +90,9 @@ test('resting arms stay low beside the body and lift the drink only to sip',()=>
    assert.ok(wrist.y<m.shoulderY-m.upper*.8,name+' rests the drink below the chest');
    assert.ok(wrist.z<m.depth*.9,name+' does not hold the drink out in front');
    const free=a.root.worldToLocal(a.bones.handL.getWorldPosition(new THREE.Vector3()));
-   assert.ok(free.z<m.depth*.7,name+' free arm rests beside the thighs');
+   // (beside the thighs, or, in a skirt or a dress, on the lap (animate.js: the mittens rest on the cloth): never past the knee)
+   const knee=a.root.worldToLocal(a.bones.kneeL.getWorldPosition(new THREE.Vector3()));
+   assert.ok(free.z<Math.max(m.depth*.7,knee.z*.8),name+' free arm rests beside the thighs or on the lap ('+free.z.toFixed(3)+', knee '+knee.z.toFixed(3)+')');
    for(let i=0;i<30;i++)anim.update(1/60,{seated:true,seatHeight:.42,pose:'Drink',heldProp:prop,consumeElapsed:1.2});
    const sipping=a.root.worldToLocal(a.bones.handR.getWorldPosition(new THREE.Vector3()));
    assert.ok(sipping.y>wrist.y+m.hand,name+' raises the drink to sip');

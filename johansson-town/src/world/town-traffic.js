@@ -144,8 +144,14 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  const quayBay=i=>{const [x,z]=QUAY_BAYS[i];return {where:'quay',bay:i,x,y:wheelsAt(x,z),z,yaw:0};};
  const serviceBay=i=>{const [x,z]=SERVICE_BAYS[i];return {where:'service',bay:i,x,y:wheelsAt(x,z),z,yaw:Math.PI};};
  const islanders=[make('kei truck',0x5f8f5a,'islander','Tetsuo','Collect airport cargo for the workshop'),make('car',0xe9e6dc,'islander','Harbour master','Inspect airport cargo manifests')];
- const appointments=[{leave:690,back:750},{leave:960,back:1020}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
- // The morning kei truck is Minato Izakaya's (Thao's): the dry goods off the airport freight for the evening trade. It
+ // (each errand on the Minato Maru's own sailings, ferry-timetable.js, one car a sailing: she sails to her timetable and
+ // takes the one car on her deck; the errands still ran at the times set before it (11:30, 16:00, 10:00, 13:00), when she
+ // lay at Kitano-jima, and a car waited at the ramp with no boat. Wanted on the far shore from 11 minutes before its boat
+ // until 20 before the one back, as the airport errand's test has it. Tetsuo takes the first boat over at 07:30 for the
+ // workshop's parts off the morning freight and comes back with the commuter boat at 08:08, on Mondays, Wednesdays and
+ // Fridays; the harbour master the same boats on the other three days, to check that freight's manifests)
+ const appointments=[{leave:7*60+30-11,back:8*60+8-20,weekdays:[1,3,5]},{leave:7*60+30-11,back:8*60+8-20,weekdays:[2,4,6]}];islanders.forEach((v,i)=>{v.home='town';v.homeBay=i;v.appointment=appointments[i];parkAt(v,quayBay(i));});
+ // The first kei truck is Minato Izakaya's (Thao's): the dry goods off the airport freight for the evening trade. It
  // was Chin's, but Chin is the ferry's motorman through the ship's day (ferry-crew.js), his body the ship's then, and the
  // driver code refuses a body the ship has (vehicle-driver.js), so a truck of his would stand in its bay all day; the
  // workshop's airport freight is Tetsuo's islander run above.
@@ -154,7 +160,10 @@ export function createTownTraffic({parent,colliders=null,ferry=null,getPlayerPos
  // from Kitano-jima on the 21:38 and back on the 22:15 (ferry-timetable.js), on Mondays and Thursdays: Wednesday evening
  // is her coin laundry (commerce/coin-laundry.js), Saturday afternoon and Sunday evening her own.
  const fleet=[make('kei truck',0xf2f0ea,'ferry','Thao','Deliver airport dry goods to Minato Izakaya'),make('kei truck',0x2f6f9f,'ferry','Mrs Sato','Deliver airport kitchen supplies to Main Street'),make('car',0xc8432f,'ferry','Nhung','Bring the clinic’s medicines from the airport freight')];
- const fleetAppointments=[{leave:600,back:690},{leave:780,back:870},{leave:1280,back:1320,weekdays:[1,4]}];
+ // (Thao's dry goods come over on the 14:08 for the evening trade and her truck goes back on the 14:45, every day; Mrs
+ // Sato's kitchen supplies on the evening boats, 21:38 over and 22:15 back, on Tuesdays and Fridays, the evenings the
+ // clinic's car is not on the deck)
+ const fleetAppointments=[{leave:14*60+8-11,back:14*60+45-20},{leave:21*60+38-11,back:22*60+15-20,weekdays:[2,5]},{leave:1280,back:1320,weekdays:[1,4]}];
  fleet.forEach((v,i)=>{v.home='airport';v.appointment=fleetAppointments[i];const bay=reserve('airport');v.homeBay=bay;parkAt(v,airportVehicleBay(bay));});
  const all=[...islanders,...fleet];
  const wantedShore=(v,minutes)=>{const m=((minutes%1440)+1440)%1440,a=v.appointment,today=!a.weekdays||a.weekdays.includes(townCalendarAt(minutes).weekday);return today&&m>=a.leave&&m<a.back?(v.home==='town'?'airport':'town'):v.home;};
