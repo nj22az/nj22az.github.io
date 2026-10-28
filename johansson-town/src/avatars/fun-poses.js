@@ -358,8 +358,9 @@ export const FUN_POSES=Object.freeze({
    both(P,P.reach(),w);P.add('chest',heave);P.add('head',-heave*.6);}}),
  SquatWatch:Object.freeze({label:'Squat and watch',face:'focus',d:Infinity,ramp:.9,
   use:'Down on the heels to watch something small and wonderful: a crab on the slipway, the cat, fish in the harbour; the forearms on the knees, the head bent to look.',
-  // (both mittens on the knees: a chin on a mitten is out of reach of a big head on short arms, squatting)
-  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['kneeR',m=>[-m.hipX,m.hipY-m.thigh,m.legR*1.8+m.hand*2.4]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
+  // (both mittens over the knees, on the thighs' tops, carried by the thighs: a chin on a mitten is out of reach of a big
+  // head on short arms, squatting; placed along the shin, they hung in front of the shins, not on the knees)
+  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*.9,m.legR*1.15+m.hand*.85]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
   play(P){const {w,t}=P,sway=Math.sin(t*1.3)*.015*w;
    for(const [j,a] of Object.entries(SQUAT))P.toward(j,...a,w);
    both(P,P.reach(),w);P.add('neck',.1*w);P.add('head',.2*w,sway,.12*w);}}),
