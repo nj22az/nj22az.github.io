@@ -50,9 +50,12 @@ vec4 browsPaint(){
  // (uBrowBushy, a body's own: a bushy brow's edge in tufts, hairs standing out of its top and its ends, a grain along it)
  float grain=1.;
  if(uBrowBushy>0.){
-  float tuft=.5+.5*sin(p.x*2.6+1.7*sin(p.x*1.1));tuft*=.65+.35*sin(p.x*6.3+p.y*1.9+1.3);
-  d+=uBrowBushy*(1.05*tuft-.35)*smoothstep(-2.2,-.2,d)*(p.y>y?1.:.55);
-  grain=1.-uBrowBushy*.16*(.5+.5*sin(p.x*7.1+(p.y-y)*2.4))*(.5+.5*sin(p.x*3.3-1.));
+  // (laid along the brow itself (xr: where along it, p.y-y: how far off its middle line), so the tufts travel with it as it
+  // lifts and knits while he talks, not through a pattern fixed on the skin; the top's longer tufts eased in, no step)
+  float q=p.y-y;
+  float tuft=.5+.5*sin(xr*2.6+1.7*sin(xr*1.1));tuft*=.65+.35*sin(xr*6.3+q*1.9+1.3);
+  d+=uBrowBushy*(1.05*tuft-.35)*smoothstep(-2.2,-.2,d)*mix(.55,1.,smoothstep(-.6,.6,q));
+  grain=1.-uBrowBushy*.16*(.5+.5*sin(xr*7.1+q*2.4))*(.5+.5*sin(xr*3.3-1.));
  }
  // A brow has volume: the hairs catch the light along its top and darken toward its underside, and it lays a soft
  // warm shadow on the skin under it (the brow seen as hair on a brow ridge, not ink on the skin).

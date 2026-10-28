@@ -378,7 +378,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  let phase=0,time=Number.isFinite(initialTime)?initialTime:Math.random()*10,rootY=0,hipsY=0,lean=0;
  let lie=0,lyingTilt=false,prone=false,floorSit=0,floorEase=0,floorSeat=null,firstUpdate=true;
  /** How much a seat (a state's seatHeight over its floorHeight) is sat on as the floor (FLOOR_SIT): 0 a chair, 1 the floor. */
- const floorWeight=st=>{if(st.seat==='Soak'||st.pose==='Soak')return 0;
+ // (never a driver: a car's seat is a seat, however low over its floor; at the floor's real height, 0.265, a car's 0.46
+ // seat read as a cushion and threw a driver's legs out toward the pedals, 8 to 12 cm)
+ const floorWeight=st=>{if(st.seat==='Soak'||st.pose==='Soak'||st.driving)return 0;
   const seatH=Number.isFinite(st.seatHeight)?st.seatHeight:.45,ankle=seatH+m.seatDrop-m.thigh*Math.cos(1.52)-(st.floorHeight||0)-m.foot-m.legR*.28;
   return ankle<m.shin*Math.cos(.07)?THREE.MathUtils.smoothstep(Math.acos(THREE.MathUtils.clamp(ankle/m.shin,0,1)),FLOOR_SIT.from,FLOOR_SIT.to):0;};
  // KneelHug's kneel, 0..1: eased down and up over 0.8 s whatever ends the move (its time, another move, a stop).
@@ -954,7 +956,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     avatar.root.position.y=floorSit>0?Math.max(standingY,avatar.root.position.y):THREE.MathUtils.lerp(standingY,avatar.root.position.y,chairBlend);
    }else supportSeat(Number.isFinite(s.seatHeight)?s.seatHeight:.45);
    // Sat on the floor, the heels rest on it, and nothing of the feet goes through it on the way down or up.
-   if(floorSit>0)heelsOnFloor(Number.isFinite(s.seatHeight)?s.seatHeight:.45,s.floorHeight||0,smooth((chairBlend-.8)/.2),chairBlend>=1);
+   // (a driver's heels on the cab's floor as well, measured: the chair's legs are a body's average, and soles hung 1.5 to
+   // 1.9 cm over a car's floor or stood 1.4 in it)
+   if(floorSit>0||s.driving&&Number.isFinite(s.floorHeight))heelsOnFloor(Number.isFinite(s.seatHeight)?s.seatHeight:.45,s.floorHeight||0,smooth((chairBlend-.8)/.2),chairBlend>=1);
    // where the seat is under the body, in its own frame: what it sits on keeps its cloth (towel-fit.js) on it
    avatar.seatLevel=chairBlend<1?null:(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-avatar.root.position.y;
   }else if(!s.riding&&!s.sleeping&&!lie){

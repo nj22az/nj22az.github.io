@@ -64,9 +64,9 @@ test('section rendering follows each moving car at the airport and out on the fe
 test('a purposeful errand stages, reverses aboard with its resident driver, sails and drives off at both shores',()=>{
  const s=cargoFixture(),{cars,people,run:ferry}=s,v=cars.islanders[0];cars.update(.1,MON+TETSUO_OUT-30);assert.equal(v.trip,null);
  cars.update(.1,MON+TETSUO_OUT);assert.ok(v.trip);assert.equal(people[0].g.parent,v.g);assert.equal(people[0].g.userData.inVehicle,v.id);
- const first=v.trip;cars.update(.1,MON+TETSUO_OUT+2);assert.equal(v.trip,first);const position=v.g.position.clone();cars.update(.1,MON+TETSUO_BACK-1);assert.equal(v.trip,first);assert.ok(position.distanceTo(v.g.position)<1,'Clock jumps cannot teleport a car');
+ const first=v.trip;cars.update(.1,MON+TETSUO_OUT+2);assert.equal(v.trip,first);const position=v.g.position.clone();cars.update(.1,MON+TETSUO_BACK+30);assert.equal(v.trip,first);assert.ok(position.distanceTo(v.g.position)<1,'Clock jumps cannot teleport a car');
  cars.traffic.finish(v);assert.equal(v.where,'waiting-ferry');assert.equal(cars.prepareCrossing('airport'),false);assert.equal(v.trip.reverse,true);
- const start=v.g.position.clone();for(let i=0;i<20;i++)cars.update(.1,720);assert.ok(v.g.position.distanceTo(start)>.1,'Actually drives along the ramp');assert.ok(v.g.position.distanceTo(start)<3,'No jump from shore to deck');
+ const start=v.g.position.clone();for(let i=0;i<20;i++)cars.update(.1,MON+TETSUO_OUT+5);assert.ok(v.g.position.distanceTo(start)>.1,'Actually drives along the ramp');assert.ok(v.g.position.distanceTo(start)<3,'No jump from shore to deck');
  cars.traffic.finish(v);assert.equal(v.where,'aboard');assert.equal(cars.prepareCrossing('airport'),true);assert.ok(cars.drivers.has(v));
  const local=v.g.position.clone();ferry.ferry.worldToLocal(local);assert.ok(Math.abs(local.z-FERRY_VEHICLE_DECK_Z)<.01);assert.ok(local.z-v.length/2>FERRY_DECKS.car.aft&&local.z+v.length/2<FERRY_DECKS.car.fore,'On the car deck, between the aft mooring station and the bow houses');
  sailCargo(s,v,'airport',{onPassage:()=>{assert.ok(v.g.position.distanceTo(start)>40);assert.equal(people[0].g.parent,ferry.ferry,'The same driver travels in passenger space');}});
