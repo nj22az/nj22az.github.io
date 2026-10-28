@@ -424,6 +424,21 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, last but two: the seated drink
+
+The owner: "Sit drink is still not right". Two faults. The review sheet (`tools/pixar-sheet.mjs`) posed `sit drink` with
+no glass, so the drink arm's empty fist rammed his chin: its drinking cells (drink, sit drink, sit toast) now hold a
+draught glass as the game does at a table (`createDrinkProp`, `fitAvatarHeldProp` each frame). And the sip itself
+(`consume.js`, for every Pixar body): a full glass was tipped 31 degrees with the head nearly still, so the beer stood 13 mm
+over the lip side of the rim and the glass's far wall swung into the nose. Now a full glass tips 11.5 degrees and more as it
+empties (`drinkTilt` 0.2 + 0.75 x drunk), and the head goes back 0.14 to 0.30 rad to meet it (`drinkHeadTilt`). Measured
+(scratchpad probe-resident-drink.mjs) for Tetsuo and Johansson at the sip: rim 2 mm from the lips, the beer 2 mm under
+the rim, the nose clear. Evidence: `jojo 3d/cast/renders/game/tetsuo-drink-world.png`, `tetsuo-sip-world.jpg`.
+
+Not from this work: `tests/drink-grip.test.mjs` fails 2 of its tests ("Fujita and every actor receive the correct vessel
+... keep gripping", 0.19 against 0.15; "Vy free arm rests beside the thighs") already at `f56d7896` (05:48 today), before
+the day's Tetsuo work.
+
 ## 28 October 2026, last but one: real shoes for Tetsuo
 
 The owner: "Replace his feet with real shoes". `jojo 3d/cast/game_meshy.py build_shoes` (spec `shoes` in

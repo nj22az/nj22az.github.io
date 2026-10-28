@@ -18,13 +18,16 @@ export function consumptionPhase(t,duration=2.4){
 export function drinkTilt(prop,lift,food=false){
  if(food)return 0;
  const left=THREE.MathUtils.clamp(prop?.userData?.portion??1,0,1);
- return -(.55+.2*(1-left))*lift;
+ // (a full glass tipped a little, as a person sips it: its beer stands 9 mm under a 4 cm rim, so past about 12 degrees it
+ // spills over the lip; at 31 degrees it stood 13 mm over the rim and the glass's far wall swung back into the nose. The
+ // emptier the glass, the further it goes; the head goes back to meet it, drinkHeadTilt)
+ return -(.2+.75*(1-left))*lift;
 }
 /** The head goes back with the sip, further for the last of the glass. */
 export function drinkHeadTilt(prop,lift,food=false){
  if(food)return 0;
  const left=THREE.MathUtils.clamp(prop?.userData?.portion??1,0,1);
- return -.05*(1-left)*THREE.MathUtils.smoothstep(lift,.5,1);
+ return -(.14+.16*(1-left))*THREE.MathUtils.smoothstep(lift,.35,1);
 }
 /**
  * Where a drink sits against the hand, in the hand's level frame: from the palm's centre

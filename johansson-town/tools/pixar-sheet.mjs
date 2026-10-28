@@ -147,10 +147,18 @@ try{
    report.cells.push({label,showing:a.pixar?a.pixar.eyes.showing:null});
   });
   const anim=createAnimator(pixar),animOld=createAnimator(cartoon);
+  const {fitAvatarHeldProp}=await import('/johansson-town/src/avatars/consume.js'),{createDrinkProp}=await import('/johansson-town/src/people/izakaya-beer.js'),{levelHeldDrink}=await import('/johansson-town/src/avatars/table-drink.js');
+  let prop=null;
   const bodyPng=!body.length?null:sheet(body,[300,520],8,([label,turn,move,t,old,state={}],camera)=>{
    const a=old?cartoon:pixar,an=old?animOld:anim;show(a);a.root.rotation.y=turn;a.root.position.set(0,0,0);
    for(const b of Object.values(a.bones))b.rotation.set(0,0,0);
+   // (a drinking cell holds a draught glass, as the game puts one in the hand at a table (game.js): without it the drink
+   // arm's empty fist rammed his chin, the owner, 28 October 2026, "Sit drink is still not right")
+   const drinking=!old&&['Drink','SitDrink','SitToast'].includes(move);
+   if(drinking&&!prop){prop=createDrinkProp('draft',{held:true});a.bones.handR.add(prop);if(a.pixar?.holdPoint)levelHeldDrink(prop);}
+   if(prop)prop.visible=drinking;
    if(move==='walk'){for(let k=0;k<Math.round(t*60)+30;k++)an.update(1/60,{speed:1.4});}
+   else if(drinking){an.play?.(move);for(let k=0;k<Math.round(t*60);k++){an.update(1/60,{...state,heldProp:prop});fitAvatarHeldProp(a,prop,an.consumption?.lift||0);}}
    else if(move){an.play?.(move);for(let k=0;k<Math.round(t*60);k++)an.update(1/60,state);}
    else for(let k=0;k<Math.max(30,Math.round((t||0)*60));k++)an.update(1/60,state);
    // (seated, the animator lowers him onto the seat: he stays where it puts him, the stool imagined)
