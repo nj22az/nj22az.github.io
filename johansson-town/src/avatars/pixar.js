@@ -42,7 +42,7 @@ export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixa
  // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
  Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'87961f3990'}),
  // (the first of the residents cloned from their World look: jojo clone_recipe.py, the owner, 28 October 2026)
- Chin:Object.freeze({path:'avatars/pixar/chin',version:'b0134cc839'}),
+ Chin:Object.freeze({path:'avatars/pixar/chin',version:'a6bdc42966'}),
  'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'dd82ed6d9a'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
