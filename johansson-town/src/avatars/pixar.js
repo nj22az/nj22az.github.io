@@ -36,7 +36,7 @@ import {celFrom} from '../render/cel.js';
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
 export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'0ad20f9650'}),
  Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
