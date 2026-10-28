@@ -272,7 +272,7 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  // Her eye (the studio's measures of the painted one, her lashes) drawn as World draws every rigged eye, on the town's ramp.
  const F=body.features,E=body.card.eyes,mid=E.centres?(E.centres[0][0]+E.centres[1][0])/2:0;
  const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes,shape:E.shape,corner:E.corner},make:skinned,stand:STAND_IN,nearer:.0018});
- const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||0}):null;
+ const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||0,bushy:actingOf(body.name)?.browBushy||0}):null;
  // (the line between the lips in a dark ink whatever the painted lips were: the studio measured his as his own skin's
  // pink, and the seam vanished in the halftone looks and was faint in the plain one; the owner, 27 October 2026: "his
  // mouth needs to show in all shaders and even normal")
