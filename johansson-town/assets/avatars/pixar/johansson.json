@@ -264,9 +264,9 @@
  "measure": {
   "H": 1.67689,
   "Rh": 0.12792,
-  "headSX": 1.00247,
-  "headSY": 1.19554,
-  "headCentre": 1.51894,
+  "headSX": 1.00246,
+  "headSY": 1.19482,
+  "headCentre": 1.51903,
   "neck": 0.06521,
   "torso": 0.75456,
   "leg": 0.5962,
@@ -391,7 +391,7 @@
    -0.61087
   ]
  },
- "glb_bytes": 1873036,
+ "glb_bytes": 1872420,
  "fingers": {
   "L": {
    "bend": {

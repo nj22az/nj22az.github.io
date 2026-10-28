@@ -18,6 +18,14 @@ well"; "The mouth is a bit offset"; "If you fix the mouth will beer drink still 
   `tools/pixar-sheet.mjs Johansson` (every expression); `tools/pixar-shots.mjs --scenes --name Johansson --part sip` (the
   draught at the counter: rim error 0, valid at the sip). Evidence: studio `3d/cast/renders/game/johansson-meshy-mouth-centred-sip.jpg`.
 
+## Later the same day: the face pass of the owner's "anything but outstanding perfect is wrong"
+
+- GLB `2d74cc67fa`. The chin is widened less (0.55 of the earlier 0.85: it had squared the jaw). The extra shave zones and
+  the grey paint boxes no longer reach the collar (|x| < 0.075 m, above 1.44 m). A new box paints the jaw's seam.
+- Checked again: `node --test tests/pixar-meshy.test.mjs tests/pixar-johansson.test.mjs` (7/7);
+  `tools/pixar-sheet.mjs Johansson` (every expression; no moustache, the mouth centred);
+  `tools/pixar-shots.mjs --scenes --name Johansson --part sip`: rim error 0 and valid at SIP, as before.
+
 ## Open
 
 - Publishing to `main` waits for the owner's word, as before.
