@@ -424,6 +424,18 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, last but one: real shoes for Tetsuo
+
+The owner: "Replace his feet with real shoes". `jojo 3d/cast/game_meshy.py build_shoes` (spec `shoes` in
+`tetsuo_meshy.py`): on each foot a closed brown leather lace-up lofted along the sandal's own footbed (smoothed, 10%
+narrower), a dark sole with a welt and a heel block, a round toe box, five pale laces across the instep, the collar at
+8.5 cm so his white socks show (sock paint now from 7 cm). The donor's foot is pressed inside and every face wholly inside
+deleted (124,724 at the sculpt's resolution), so no toe shows and its triangles went to the shoes; the shoe takes the foot's
+own weights (`hair_weights_from`), so it walks and sits with him. World draws a new part `shoes` (pixar.js: coloured per
+vertex as the glasses are, lifted 1.9 under the cel ramp, which turned the brown near black). Body 17,000 triangles, shoes
+2,288, 25,836 in all, GLB 2.2 MB; tests 52/52; sheet `jojo 3d/cast/renders/game/tetsuo-shoes-world.png` (no clipping
+standing, walking or sitting). The film model takes the same shoes with the film rig's foot and toe weights.
+
 ## 28 October 2026, last: film Tetsuo in Blender
 
 The owner: "These changes you made to the game model? Can't you do that to the blender model as well? Make a copy of

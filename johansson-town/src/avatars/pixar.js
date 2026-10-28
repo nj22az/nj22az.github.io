@@ -39,7 +39,7 @@ export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixa
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5fef83b9f0'}),
  Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'}),
  // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
- Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'74e547513a'}),
+ Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'c9622262d8'}),
  'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'dd82ed6d9a'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
@@ -256,6 +256,8 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
   // (hair is not skin: the town's cel ramp alone, no warmth under it)
   const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'||part.kind==='glasses'||part.kind==='shoes'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
+  // (a clone's shoes lifted: the leather's brown, linear per vertex, went near black under the cel ramp and hid the sole and laces)
+  if(part.kind==='shoes'&&material.color)material.color.setScalar(1.9);
   // (the clothes are one surface of cloth: their insides show, at the sleeves, the collar and the hems)
   if(CLOTHES_PARTS.includes(part.kind))material.side=THREE.DoubleSide;
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);
