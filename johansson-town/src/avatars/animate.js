@@ -349,7 +349,7 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
  */
 export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1,initialTime}={}){
  const {bones,measure:m}=avatar;
- const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
+ const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar),groundKneeling=createLieGrounder(avatar,{bridging:false});
  const supportSeat=createSeatSupport(avatar),findUnderside=createUndersideFinder(avatar),findSoles=createSoleFinder(avatar);
  const style=bodyLanguage(avatar.recipe?.profile||{},avatar.recipe?.name);
  const pick=list=>list[Math.floor(random()*list.length)];
@@ -531,6 +531,25 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  }
  /** With the body put in `pose` (joint: [x, y, z]; every other joint straight) for a moment: a function giving, for a place
   *  carried by a bone (in the body's frame at rest), where it is in the chest's frame. The body is put back as it was. */
+ /**
+  * A funny pose that kneels (fun-poses.js `kneels`: its legs, the feet turned toes down under the knees): how far past that
+  * the feet's pitch turns, the toes tucked under, for the knees to come down on the floor with the toes on this body in what
+  * it wears now, found once (a long foot or a big shoe reaches the floor at a different angle than a child's). The most it
+  * turns with the feet still the lowest thing on the body: on the floor (the foot grounder), the knees rest on it too rather
+  * than going through it (lifting the feet off it) or hovering over it.
+  */
+ const kneelFeet=new Map();
+ function kneelFoot(name,pose){
+  const meshes=avatar.root.children.filter(o=>o.isSkinnedMesh&&o.visible).map(o=>o.uuid).join('/'),key=name+'|'+meshes;
+  if(kneelFeet.has(key))return kneelFeet.get(key);
+  const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3)),y=root.position.y;
+  const below=f=>{JOINTS.forEach(j=>{const a=pose[j]||[0,0,0];bones[j].rotation.set(/^foot/.test(j)?f:a[0],a[1],a[2]);});root.position.y=0;root.updateMatrixWorld(true);
+   groundFeet(0);return groundKneeling(0);};
+  let lo=pose.footL?.[0]??0,hi=lo+1.7;
+  if(below(lo)<=1e-6&&below(hi)>1e-6)for(let i=0;i<24;i++){const mid=(lo+hi)/2;if(below(mid)>1e-6)hi=mid;else lo=mid;}
+  JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.position.y=y;root.updateMatrixWorld(true);
+  kneelFeet.set(key,lo);return lo;
+ }
  function posedPlaces(pose){
   const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
   const put=rot=>{JOINTS.forEach((j,i)=>bones[j].rotation.set(...rot(j,i)));root.updateMatrixWorld(true);};
@@ -962,7 +981,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)||!!FUN_POSES[gesture?.name]?.airborne});
    // Kneeling rests on the knees as well as the toes: nothing on the body (a boot's leg, a knee in thick cloth) goes
    // below the floor; whichever is lowest touches it.
+   // (and a funny pose that kneels, on its knees and toes: fun-poses.js `kneels`, Kneel; a long skirt's hem folds on the floor)
    if(kneel>0){const up=groundLying(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
+   else if(FUN_POSES[gesture?.name]?.kneels){const up=groundKneeling(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
   }
   if(lie>0||lyingTilt){
    // On the back: tipped over about the hips so they lie where they stood, raised by the back of the head
@@ -1632,7 +1653,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
     add('chest',Math.sin(t*2.4)*.012*w);add('head',0,0,Math.sin(t*1.2)*.008*w);break;
    }
     const F=FUN_POSES[g.name];
-    if(F)return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach)})||null;
+    if(F)return F.play({t,d,w,q,e,m,seated,set,add,toward,armTo,reach:()=>reachFor('Fun:'+g.name,F.reach),kneelFoot:()=>kneelFoot('Fun:'+g.name,F.kneels)})||null;
     // A role of a pair pose (pair-poses.js): its body from the fit for this body and its partner (playPair; played alone,
     // the fit of this body with itself), the arms solved on the partner's body the first time (or by playPair, at once).
     const R=PAIR_ROLES[g.name];if(!R)break;

@@ -127,6 +127,20 @@ function poleHug(side){
    return {root:.14*w*m.k};}});
 }
 
+/** Look back: the shoulders turned to the left over the hips, the weight on the left foot. */
+const LOOK_BACK=Object.freeze({hips:[0,.06,0],spine:[0,.2,0],chest:[-.04,.3,0],thighL:[0,0,.12],thighR:[-.12,0,-.04],kneeR:[.3,0,0],footR:[-.18,0,.04]});
+/** Out of breath: bent forward at the spine and the chest over knees a little bent, the feet flat, the head up to look ahead. */
+const OUT_OF_BREATH=Object.freeze({spine:[.25,0,0],chest:[.45,0,0],neck:[-.15,0,0],head:[-.35,0,0],
+ thighL:[-.35,0,.08],kneeL:[.5,0,0],footL:[-.15,0,-.08],thighR:[-.35,0,-.08],kneeR:[.5,0,0],footR:[-.15,0,.08]});
+/** Squat and watch: down on the heels (Crouch's legs, the soles flat), the chest forward over the knees. */
+const SQUAT=Object.freeze({chest:[.42,0,0],thighL:[-1.7,0,.25],kneeL:[2.3,0,0],footL:[-.6,0,-.25],thighR:[-1.7,0,-.25],kneeR:[2.3,0,0],footR:[-.6,0,.25]});
+/** Kneel: the thighs upright, the shins along the floor behind, the toes down under the knees (tucked under by kneelFoot), the
+ *  back straight. */
+/** Kneeling down (Kneel): the knees bend over the first `bend` of the ease, on the balls of the feet (`toes`: how far the feet
+ *  are turned past level, toes down); from `lay` of it the toes are tucked under. */
+const KNEEL_DOWN=Object.freeze({bend:.65,toes:1.5,lay:.6});
+const KNEEL_UP=Object.freeze({hips:[0,0,0],spine:[0,0,0],thighL:[0,0,.04],kneeL:[1.57,0,0],footL:[KNEEL_DOWN.toes-1.57,0,-.04],thighR:[0,0,-.04],kneeR:[1.57,0,0],footR:[KNEEL_DOWN.toes-1.57,0,.04]});
+
 export const FUN_POSES=Object.freeze({
  JawDrop:Object.freeze({label:'Jaw drop',face:'gobsmacked',d:2.6,ramp:.8,
   use:'Shock at something unbelievable: both mittens on the cheeks, leaning back, the knees gone weak.',
@@ -284,4 +298,86 @@ export const FUN_POSES=Object.freeze({
    leg(P,'L',-.06,.12,.85,w,.02);leg(P,'R',-.06,.12,.85,w,.02);
    P.armTo('R',[-.1,0,-.5,-.3],w,[0,0,-.25]);P.armTo('L',[-.1,0,-.5,-.3],w,[0,0,-.25]);
    P.toward('chest',.05,0,sway,w);P.add('head',-.05*w,0,-sway);}}),
+ // Everyday moments (the owner, 2026-10-28: "Bring what is useful", from the pose-reference survey:
+ // docs/research/ai-pose-gallery.md): the gestures and stances of a day in the town that the list lacked. Each is written
+ // for our own bodies from where the joints go in a reference drawing, never from its figure or its framing.
+ Beckon:Object.freeze({label:'Beckoning cat',face:'happy',d:3,ramp:.7,
+  use:'Come in, come in! The maneki-neko’s paw: a curled mitten up beside the cheek, beckoning, the other paw before the belly; a shop welcoming its customers.',
+  reach:{hair:true,head:[.04,0,-.12],
+   R:{at:m=>[-(m.Rh*m.headSX+m.hand*1.3),m.headCentre-m.Rh*m.headSY*.15,m.Rh*.45],upper:true,seed:[-1.2,.2,-1,-2,0],hand:[.9,0,0]},
+   L:{at:m=>[m.shoulderX*.55,m.chestY-.08*m.k,m.depth/2+m.hand*1.5],seed:[-.5,-.3,.2,-1.4,0],hand:[.8,0,0]}},
+  play(P){const {w,t}=P,curl=Math.max(0,Math.sin(t*5))*.55*w;
+   both(P,P.reach(),w);P.add('handR',curl);P.add('head',.04*w,0,-.12*w);P.toward('hips',0,0,.04,w);P.toward('thighR',-.1,0,0,w);P.toward('kneeR',.25,0,0,w);P.toward('footR',-.15,0,0,w);}}),
+ Please:Object.freeze({label:'Please!',face:'hope',d:2.8,ramp:.8,
+  use:'Begging a favour, or sorry: the palms pressed together under the chin, the head bowed over them, a little bob of asking.',
+  reach:{hair:true,head:[.14,0,0],R:{at:m=>[-m.hand*.95,m.headCentre-m.Rh*m.headSY*1.2,m.Rh*.95],elbow:m=>[-(m.shoulderX*.8),m.chestY-.05*m.k,m.depth/2+.06*m.k],seed:[-.9,.6,-.1,-1.9,0],hand:[0,0,.25]}},
+  play(P){const {w,t}=P,bob=Math.max(0,Math.sin(t*4))*.05*w;
+   both(P,P.reach(),w);P.toward('chest',.12+bob,0,0,w);P.add('head',.14*w+bob);kneesIn(P,w,.12,.04);}}),
+ Yawn:Object.freeze({label:'Yawn',face:'drowsy',d:3,ramp:.9,
+  use:'Still half asleep, or the end of a long night: one arm stretched up high, the other mitten over the yawning mouth, the head tipped back.',
+  reach:{hair:true,head:[-.16,0,.08],R:{cover:true,head:[-.05,-.45,1,.035],seed:[-1.3,.5,-.3,-2.1,0],hand:[0,-1.2,0]},
+   L:{at:m=>[m.Rh*m.headSX*.95+m.hand*1.4,m.headCentre+m.Rh*m.headSY*1.15,-.02*m.k],upper:true,seed:[-2.9,-.1,.35,-.1,0],hand:[0,0,0]}},
+  play(P){const {w,t}=P,sway=Math.sin(t*1.6)*.03*w;
+   both(P,P.reach(),w);P.toward('chest',-.08,0,-.05+sway,w);P.add('head',-.16*w,0,.08*w);}}),
+ Giggle:Object.freeze({label:'Giggle',face:'laugh',d:2.6,ramp:.85,
+  use:'Trying not to laugh out loud: both mittens over the mouth, the shoulders shaking, the knees turned in; a secret too funny to keep.',
+  reach:{hair:true,head:[.1,0,.08],R:{cover:true,head:[-.22,-.5,1,.035],seed:[-1.55,.72,-.72,-1.9,0],hand:[0,0,0]}},
+  play(P){const {w,t}=P,shake=Math.abs(Math.sin(t*13))*.025*w;
+   both(P,P.reach(),w);P.toward('chest',.08+shake,0,0,w);P.add('head',.1*w,0,.08*w);kneesIn(P,w,.18,.08);return {root:shake*.2};}}),
+ Rawr:Object.freeze({label:'Rawr!',face:'raging',d:2.6,ramp:.6,
+  use:'Pretending to be a monster for a child (or a bear): both mittens up as claws beside the face, leaning in, a foot stamped forward.',
+  reach:{hair:true,head:[-.06,0,0],R:{at:m=>[-(m.Rh*m.headSX+m.hand*1.6),m.headCentre-m.Rh*m.headSY*.3,m.Rh*.8],upper:true,seed:[-1.3,.3,-.9,-1.6,0],hand:[1.1,0,0]}},
+  play(P){const {w,t}=P,claw=Math.sin(t*8)*.15*w;
+   both(P,P.reach(),w);P.add('handR',claw);P.add('handL',-claw);P.toward('chest',.16,0,0,w);P.add('head',-.06*w);
+   leg(P,'L',-.32,.3,0,w,.04);leg(P,'R',.2,matchKnee(-.32,.3,.2),0,w,.04);}}),
+ Shiver:Object.freeze({label:'Shiver',face:'worried',d:Infinity,ramp:.95,
+  use:'Cold to the bone, the wind off the sea: the arms wrapped tight round the chest, the shoulders up, the knees together, shivering.',
+  reach:{pose:()=>({chest:[.06,0,0]}),R:{touch:true,on:['spine',(m,v)=>onTorso(m,v,1,.8)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]},
+   L:{touch:true,on:['spine',(m,v)=>onTorso(m,v,-1,.7)],seed:[-.6,.3,.35,-2.1,0],hand:[0,0,0]}},
+  play(P){const {w,t}=P,shiver=Math.sin(t*38)*.012*w;
+   both(P,P.reach(),w);P.toward('chest',.06+shiver,0,0,w);P.add('neck',.08*w);P.add('head',.1*w,0,shiver);kneesIn(P,w,.14,.1);}}),
+ BlowKiss:Object.freeze({label:'Blow a kiss',face:'kiss',d:2.6,ramp:.7,
+  use:'A fond goodbye from the ferry’s rail or a doorway: the mitten kissed at the lips, then sent off with the arm thrown out, palm up.',
+  reach:{hair:true,head:[.04,0,-.08],only:'R',R:{cover:true,head:[-.08,-.38,1,.04],seed:[-1.3,.5,-.3,-2.1,0],hand:[0,-1.2,0]}},
+  play(P){const {w,t}=P,send=between(t,.65,1.25),A=P.reach();
+   P.armTo('R',[-1.45,.1,-.55,-.25,0].map((v,i)=>A.R[i]+(v-A.R[i])*send),w,[-.4*send,-1.2*(1-send),.4*send]);
+   P.toward('chest',.04-.1*send,0,0,w);P.add('head',(.04-.12*send)*w,0,-.08*w);P.toward('thighL',-.1*send,0,0,w);P.toward('kneeL',.3*send,0,0,w);P.toward('footL',-.2*send,0,0,w);}}),
+ LookBack:Object.freeze({label:'Look back',face:'surprised',d:2.6,ramp:.6,
+  use:'Somebody called a name from behind: turning round over the left shoulder to look, the shoulders and the head turned, the feet where they were.',
+  // (turned from the spine and the chest over still hips, the left mitten on the hip and the right arm held out from the
+  // side: hanging, both swung into the hips and the thighs as the shoulders turned over them)
+  reach:{pose:()=>LOOK_BACK,only:'L',L:{touch:true,on:['hips',(m,v)=>onHip(m,v,1)],elbow:m=>akimbo(m,1),seed:[.15,0,-.75,-.3,0],hand:[0,0,0]}},
+  play(P){const {w}=P;
+   for(const [j,a] of Object.entries(LOOK_BACK))P.toward(j,...a,w);both(P,P.reach(),w);
+   P.add('neck',0,.3*w,0);P.add('head',-.04*w,.45*w,-.06*w);P.armTo('R',[-.2,0,-.42,-.35],w);}}),
+ OutOfBreath:Object.freeze({label:'Out of breath',face:'sweatdrop',d:2.8,ramp:.7,
+  use:'Just made it (the ferry, the bus, the shop before it shut): bent over, both mittens on the thighs above the knees, the chest heaving.',
+  reach:{pose:()=>OUT_OF_BREATH,R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*.72,m.legR*1.15+m.hand*.85]],seed:[-.9,.1,-.1,-.6,0],hand:[-.2,0,0]}},
+  play(P){const {w,t}=P,heave=Math.sin(t*7)*.035*w;
+   for(const [j,a] of Object.entries(OUT_OF_BREATH))P.toward(j,...a,w);
+   both(P,P.reach(),w);P.add('chest',heave);P.add('head',-heave*.6);}}),
+ SquatWatch:Object.freeze({label:'Squat and watch',face:'focus',d:Infinity,ramp:.9,
+  use:'Down on the heels to watch something small and wonderful: a crab on the slipway, the cat, fish in the harbour; the forearms on the knees, the head bent to look.',
+  // (both mittens on the knees: a chin on a mitten is out of reach of a big head on short arms, squatting)
+  reach:{pose:()=>SQUAT,hair:true,neck:.1,head:[.2,0,.12],R:{touch:true,on:['kneeR',m=>[-m.hipX,m.hipY-m.thigh,m.legR*1.35+m.hand*.95]],seed:[-1,.1,-.1,-.5,0],hand:[0,0,0]}},
+  play(P){const {w,t}=P,sway=Math.sin(t*1.3)*.015*w;
+   for(const [j,a] of Object.entries(SQUAT))P.toward(j,...a,w);
+   both(P,P.reach(),w);P.add('neck',.1*w);P.add('head',.2*w,sway,.12*w);}}),
+ RadioTaiso:Object.freeze({label:'Morning exercises',face:'happy',d:Infinity,ramp:.6,
+  use:'Rajio taisō in the square at half past six: the arms swung up and out in a big circle and down again, the knees bouncing in time.',
+  play(P){const {w,t}=P,p=(1-Math.cos(t*Math.PI))/2,bounce=(1-p)*.25;
+   P.armTo('R',[-.25*p,0,-.15-2.55*p,-.15],w);P.armTo('L',[-.25*p,0,-.15-2.55*p,-.15],w);
+   P.toward('chest',-.08*p,0,0,w);P.add('head',-.12*p*w);
+   for(const s of ['L','R'])leg(P,s,-bounce*.6,bounce,0,w,.06);}}),
+ Kneel:Object.freeze({label:'Kneel',face:'calm',d:3.5,ramp:1.1,kneels:KNEEL_UP,
+  use:'Kneeling upright on the tatami: before the family altar, being told off by an elder, a formal apology, listening to a long story; the mittens on the thighs.',
+  reach:{pose:()=>KNEEL_UP,R:{touch:true,on:['thighR',m=>[-m.hipX,m.hipY-m.thigh*.55,m.legR*1.15+m.hand*.85]],seed:[-.4,.1,-.1,-.4,0],hand:[-.2,0,0]}},
+  // Down the way a person kneels: onto the balls of the feet as the knees bend (the toes the lowest thing on the body, the
+  // shins clear of the floor), the knees folded to a right angle above it, then the toes tucked further under until the
+  // knees come down on the floor with them (how far is this body's own: animate.js kneelFoot); getting up, the same
+  // backwards. The knees never touch first, so they never lift the feet off the floor.
+  play(P){const {w}=P,f=P.kneelFoot(),K=KNEEL_UP,D=KNEEL_DOWN,bend=smooth(w/D.bend),lay=smooth((w-D.lay)/(1-D.lay));
+   const knee=K.kneeL[0]*bend,pitch=D.toes*bend+(f+K.kneeL[0]-D.toes)*lay,hold=Math.min(1,w*4);
+   for(const [j,a] of Object.entries(K))P.toward(j,/^knee/.test(j)?knee:/^foot/.test(j)?pitch-knee:a[0],a[1],a[2],hold);
+   both(P,P.reach(),w);P.add('head',.12*w);}}),
 });

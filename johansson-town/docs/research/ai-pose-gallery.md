@@ -128,6 +128,35 @@ These are gestures, so they work standing or seated and suit comic panels and th
 Left out: P019 (tucking hair behind the ear, drawn as a pin-up), P020 (both hands on the cheeks; ↺ `DoubleCheek` is
 enough), P024 (heart with a hand on the chest).
 
+## Brought into the World (28 October 2026)
+
+The owner: "Bring what is useful". Twelve new poses in `src/avatars/fun-poses.js` (the one list the photo studio, Johansson
+Studio and the storyteller read), each written for our bodies and checked on every body by `tests/fun-poses.test.mjs`:
+
+| Pose | Label | From |
+|---|---|---|
+| `Beckon` | Beckoning cat | upper P008 |
+| `Please` | Please! | upper P016 |
+| `Yawn` | Yawn | upper P023 |
+| `Giggle` | Giggle | upper P015 |
+| `Rawr` | Rawr! | upper P009 |
+| `Shiver` | Shiver | upper P017 |
+| `BlowKiss` | Blow a kiss | upper P012 |
+| `LookBack` | Look back | standard P017 |
+| `OutOfBreath` | Out of breath | standard P067 / P071 |
+| `SquatWatch` | Squat and watch | standard P061 / P063 |
+| `RadioTaiso` | Morning exercises | standard P077 |
+| `Kneel` | Kneel | standard P031 |
+
+Changed while building them: squat P063 (chin on a hand) is out of reach for a big head on short arms, so `SquatWatch`
+rests both forearms on the knees. `Kneel` has its toes tucked under (feet laid flat behind would let the knees land before
+the toes); the feet's angle is solved for each body (`animate.js` `kneelFoot`), so knees and toes rest on the floor
+together on every body. The storyteller uses `OutOfBreath`, `Shiver`, `Yawn` and `Please` in the ferry, last-boat,
+missed-boat and weather stories.
+
+Still to do: sitting, side-sitting and lying on the floor (P001–P012, P041–P058). These need the floor-seat and lying
+grounding that residents use (`floorSit`, `createLieGrounder`), not a standing move.
+
 ## Where to start
 
 The ones with the most stories behind them, in order: **tatami side-sit (P041–P046)**, **kneeling upright (P031)**,

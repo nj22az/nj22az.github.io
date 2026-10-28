@@ -70,8 +70,10 @@ export function createSoleFinder(avatar){
  * and the face are found in their place this frame and the body is raised or lowered by what the lowest
  * point is off the floor. The swinging parts (a braid, a hem) are left out: they hang from the body and
  * follow it. Returns how far the root must move up (metres), for whoever blends it in.
+ * `bridging: false` leaves out the cloth carried by both legs at once as well (a long skirt's hem, between the knees): a
+ * body kneeling rests on its knees and toes, and that cloth folds on the floor rather than holding them up off it.
  */
-export function createLieGrounder(avatar){
+export function createLieGrounder(avatar,{bridging=true}={}){
  const swinging=new Set(['hairA','hairB','braidL1','braidL2','braidR1','braidR2','skirtF','skirtB','skirtL','skirtR']);
  const inverse=new THREE.Matrix4(),matrix=new THREE.Matrix4(),point=new THREE.Vector3(),sum=new THREE.Vector3();
  let signature='',bones=[],samples=[];
@@ -92,6 +94,7 @@ export function createLieGrounder(avatar){
      if(swinging.has(bone.name)){swing+=w;continue;}
      parts.push([slotOf(bone),w,point.fromBufferAttribute(position,i).applyMatrix4(mesh.bindMatrix).applyMatrix4(mesh.skeleton.boneInverses[index]).clone()]);
     }
+    if(!bridging&&['L','R'].every(side=>parts.some(([b])=>/^(thigh|knee|foot)/.test(bones[b].name)&&bones[b].name.endsWith(side))))continue;
     if(swing<.5&&parts.length)samples.push(parts);
    }
   }
