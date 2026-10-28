@@ -424,6 +424,27 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, latest: Tetsuo in his kei truck, and his shoes on the ground
+
+The owner: "Will he fit in the car now on Minato island". Measured (scratchpad probe-cab.mjs: every drawn vertex of him,
+skinned, against the cab, as vehicle-driver.js seats him; and a cut-away of the footwell): his head, glasses and all,
+11.8 cm under the kei truck's roof (car 8.5, kei car 4.6), nothing through the cab. Two faults found and fixed:
+- **The shoes**: their weights had been copied from the skin nearest them after the foot inside was deleted, so they rode
+  the ankle and shin: his toe went 7.8 cm into the ground in his stride, and the heel block hung 1.2 cm under the sole.
+  Now each shoe rides its foot bone (`footL`/`footR`, and `foot.L`/`foot.R` for the film rig) and the heel is built up
+  inside it: standing and walking, his lowest point is the ground (probe-stand.mjs: 0, 0; this morning's sandals 0, 0).
+- **The cab** (every driver): drivers' feet were set on 0.22 and the floor's top is 0.265 in all four vehicles (measured
+  by rays), so soles stood 4 to 8 cm in it; `DRIVER_SEATS.floor` 0.265, `vehicle-driver.js` uses it. The kei truck's front
+  wheels lie under the footwell and the outer foot stood 3 cm into the tyre: its driver sits 0.27 from the middle (was
+  0.32), the seats drawn under where they sit. Tetsuo in the kei truck: soles on the floor, nothing in a tyre.
+Sheet: `jojo 3d/cast/renders/game/tetsuo-kei-truck.jpg`. Published `d7e5505d`.
+
+Found, not fixed: Johansson's sandal soles are weighted 0.6 foot / 0.4 shin, so seated his lowest points go 4 to 9 cm into
+a car's floor whatever the floor height (the feet are planted by the foot bone); his export wants the sole on the foot
+bone as Tetsuo's shoes are. In the delivery truck a Pixar driver's feet hang 8 to 9 cm over its floor (its seat is 0.72
+high; nobody Pixar drives it yet). `tests/owned-vehicles.test.mjs` fails 5 tests already at `f56d7896` (05:48 today),
+before the day's work, as `drink-grip` fails 2.
+
 ## 28 October 2026, latest: Tetsuo's brows bushier
 
 The owner: "Make his eyebrows bushier" ("I mean Tetsuo"). Thicker (`brow_thin` 0.7 to 1.05 of the painted brow, jojo
