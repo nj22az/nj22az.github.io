@@ -74,7 +74,7 @@ export function preparePixarBody(card,scene){
   if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
   // (a rigged hairstyle is a part of its own, 'hair': Thao's bob, off her head so her face could be cleaned and put back
   // on bones that swing; the owner, 27 October 2026, "add it back as a rigged hairstyle")
-  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':name==='glasses'||name==='lens'||name==='glint'?name:CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
+  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':name==='glasses'||name==='shoes'||name==='lens'||name==='glint'?name:CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
  });
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
@@ -252,10 +252,10 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
    const mesh=skinned(inOrder(body,part,names),glass);
    mesh.name='Pixar '+body.name+' · '+part.kind;mesh.castShadow=false;mesh.receiveShadow=false;mesh.renderOrder=1;mesh.userData.pixarPart=part.kind;return mesh;
   }
-  const source=part.kind==='hands'||part.kind==='glasses'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:part.kind==='glasses'?.4:.82,emissive:0xffffff,emissiveIntensity:.05})
+  const source=part.kind==='hands'||part.kind==='glasses'||part.kind==='shoes'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:part.kind==='glasses'?.4:part.kind==='shoes'?.55:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
   // (hair is not skin: the town's cel ramp alone, no warmth under it)
-  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'||part.kind==='glasses'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
+  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'||part.kind==='glasses'||part.kind==='shoes'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
   // (the clothes are one surface of cloth: their insides show, at the sleeves, the collar and the hems)
   if(CLOTHES_PARTS.includes(part.kind))material.side=THREE.DoubleSide;
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);
