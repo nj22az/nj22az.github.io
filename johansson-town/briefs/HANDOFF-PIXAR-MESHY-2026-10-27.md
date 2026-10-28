@@ -424,6 +424,18 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, last: film Tetsuo in Blender
+
+The owner: "These changes you made to the game model? Can't you do that to the blender model as well? Make a copy of
+Johansson and add these changes to the model". Done in the studio repo (`jojo`, branch `claude/vibrant-brown-0udpq3`):
+`game_meshy.py tetsuo ... --resume --film` (`3d/cast/film_meshy.py`) runs every clone change on Johansson's sculpt and
+keeps it at film quality: 410,804 triangles, 4K textures, the film rig (IK legs, jaw, arms) bound again at rest (0.00 mm),
+eyes, brows and mouth painted for Cycles, 26,550 real hairs (a Curves object on the head bone), the skull under the
+donor's sculpted hair rebuilt smooth, the scalp shaded in the shader. The file: `jojo/3d/cast/models/tetsuo/tetsuo-film.blend`
+(31 MB); renders `3d/cast/renders/game/tetsuo-film-body.jpg`, `tetsuo-film-face.jpg`; notes in `3d/cast/GAME.md`. World
+is unchanged by this. Left: the shorts' roll at the knee from behind, laugh lines, goatee marks under the chin, the
+fringe reading as close-cropped felt in wide shots; Fujita not yet run with `--film`.
+
 ## Open
 
 0. **A new head for Tetsuo** (the owner, 27 October 2026, with a picture of a bald old man in round glasses: "Can you use
