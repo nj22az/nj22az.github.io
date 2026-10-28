@@ -411,6 +411,8 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   turned out). Sideburns drawn as hair in `build_glasses` (`sideburns`): seven short grey strands a side lying on the
   skin in front of the ear from the temple down, the ones by the ear longest, so the tuft narrows toward the jaw (a
   painted patch first read as a dark block). Tests 52/52.
+- His nose smaller (the owner: "Make his nose smaller"): `nose_shape` 0.68 across, 0.75 deep, 0.85 long, reaching the
+  whole ball (6.2 cm; at 5 cm only its tip shrank).
 
 ## Open
 
