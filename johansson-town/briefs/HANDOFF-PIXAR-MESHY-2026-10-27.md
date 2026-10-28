@@ -424,6 +424,44 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   phone budget (30,300 of 26,000; `pixar-meshy` failed and that push went to `main` before it was caught); now 25,048,
   GLB 2.3 MB, tests 52/52.
 
+## 28 October 2026, night: the older failing tests, and everyone Pixar begun
+
+The owner: "Fix now everyone should eventually be Pixar class so you can reuse the body's of Thuan and Thao and then we
+need to make faces as you reuse Johansson".
+
+**The full suite: 67 failing this morning (`f56d7896`), 6 now**, none new. Five agents took them in groups (draw counts,
+calendar and cast, street layout, interiors, poses); each fix found a root cause; a stale test was updated only where a
+recorded decision changed what is right, and that decision is cited beside it; no check skipped or weakened. Real faults
+fixed among them: the diary's impossible "Monday 17 August 1997" (the device calendar), the eisa that never brought the
+street out (Tetsuo's bench beat the happening), Nhung walking to nobody's door to open the clinic, Mrs Sato's cooking
+spots outside the compact ramen room, the draught mugs' handles in each other on the back bar and two flickers in the jug,
+the coin laundry's floor flickering on the slab, power poles in a planter, a school column and a rubbish cage, a flagpole in
+a lane, a planter's solid in the shop wall, the ice-cream freezer with no collider, Kōji's ice-plant errand aimed inside
+the vending machine, Mr Fujita's hand off the jug on his last sips, Mr Fujita's squint lost to a later eye style, a walker
+stuck turning on the spot, Thuan snapped round at the till, and the lawn's south return wall (described, never built:
+a 0.85 m gap 0.4 deep between the lawn and the quay; now built, `east-lawn-south-return`).
+
+**Left for the owner** (tests still failing, the options in the agents' notes):
+- `architect-masterplan`: props placed on 20 and 21 October (your fish-market drinks machine among them) stand in the 1.9 m
+  walk band kept round buildings since 17 October. A: move them all; B (recommended): a measured minimum clear width past a
+  fixture (e.g. 1.2 m); C: adjust some walk bounds.
+- `izakaya-lived-in`: the leftover-evening props are all in the old walnut room's places and no longer built: (a) place them
+  in the compact room, or (b) retire the module.
+- `pole-hug` (Miss Higa): her long skirt hangs across the pole between her knees: (a) the skirt's cloth drapes round the
+  pole, (b) a skirt variant of the hug, knees together, or (c) accepted.
+- `onsen-seats`: three sitters 1 to 4 mm (a head 1.5 cm) outside the massage chair's keepClear: re-measure in Studio and
+  republish the card once the bodies settle.
+- `published photo articles retain their real model portraits`: already failing this morning, not yet looked at.
+
+**Everyone Pixar** (jojo `3d/cast/clones/progress.md`, `checks.md`): World's `tools/cast-recipes.mjs` writes every active
+resident's look and height (17, 13 still cartoon); jojo `clone_recipe.py` makes the first pass from it (the donor's sculpt
+at the resident's height, skin, eyes, brows, clothes painted and shaped, shoes or sandals, short hair painted, stubble
+evened), and `game_meshy.py <key>` uses it when the resident has no `<key>_meshy.py`. Men from Johansson, women in a skirt
+from Thao, women in trousers from Thuận (her export cannot clone yet), children want a child's sculpt. **Chin** first:
+`chin_meshy.py` (a narrow younger face, smaller ears close to the head, a smaller nose, the donor's smile lines and goatee
+smoothed off), checked (ground, car floor, the sip), in World; sheets `jojo 3d/cast/renders/game/chin-*-world.png`. Hats
+(his cap) and longer hair are still to make.
+
 ## 28 October 2026, last: corrected and audited ("Correct it audit yourself")
 
 Corrected, each measured (scratchpad probe-cab.mjs, probe-stand.mjs) and the full suite run before and after:
