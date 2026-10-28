@@ -961,7 +961,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // A hand with fingers rests a little curled, as a hand does, never splayed flat (a judge of the counter frames: "the
   // free hand is a stiff starfish"); what it holds closes it further (consume.js, table-drink.js set the grip after this).
   if(avatar.pixar?.grip){avatar.pixar.grip('L',s.heldProp?.userData?.food?1:.28);if(!consumption&&!s.heldProp)avatar.pixar.grip('R',.28);}
-  avatar.seatLevel=null;
+  avatar.seatLevel=null;avatar.floorLevel=null;
   if(onChair&&!s.riding){
    // Keep sit/stand transitions continuous and use the actual clothing surface
    // as the contact point. Camera eye height never determines this support.
@@ -983,7 +983,8 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // below the floor; whichever is lowest touches it.
    // (and a funny pose that kneels, on its knees and toes: fun-poses.js `kneels`, Kneel; a long skirt's hem folds on the floor)
    if(kneel>0){const up=groundLying(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
-   else if(FUN_POSES[gesture?.name]?.kneels){const up=groundKneeling(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
+   else if(FUN_POSES[gesture?.name]?.kneels){const up=groundKneeling(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;
+    avatar.floorLevel=((s.floorHeight||0)-avatar.root.position.y)/avatar.root.scale.y;}
   }
   if(lie>0||lyingTilt){
    // On the back: tipped over about the hips so they lie where they stood, raised by the back of the head

@@ -121,6 +121,9 @@ export function createTowelFit(avatar,mesh){
    lowest=Math.min(lowest,uniforms.uLegA.value[i].y);
   }
   uniforms.uSeat.value=seated?Math.max(lowest-legR(0),Number.isFinite(avatar.seatLevel)?avatar.seatLevel:-Infinity):NO_SEAT;
+  // and never below the floor the body kneels on (avatar.floorLevel, set by the animator while kneeling): a long skirt
+  // round knees on the floor lies on it, not through it
+  if(Number.isFinite(avatar.floorLevel))uniforms.uSeat.value=Math.max(uniforms.uSeat.value,avatar.floorLevel);
   return uniforms;
  }
  const h=new THREE.Vector3(),q=new THREE.Vector3(),ab=new THREE.Vector3(),d=new THREE.Vector3();

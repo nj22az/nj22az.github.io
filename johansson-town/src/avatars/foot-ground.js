@@ -70,8 +70,9 @@ export function createSoleFinder(avatar){
  * and the face are found in their place this frame and the body is raised or lowered by what the lowest
  * point is off the floor. The swinging parts (a braid, a hem) are left out: they hang from the body and
  * follow it. Returns how far the root must move up (metres), for whoever blends it in.
- * `bridging: false` leaves out the cloth carried by both legs at once as well (a long skirt's hem, between the knees): a
- * body kneeling rests on its knees and toes, and that cloth folds on the floor rather than holding them up off it.
+ * `bridging: false` leaves out the cloth carried by both legs at once as well (a long skirt's hem, between the knees),
+ * and the cloth fitted after skinning (towel-fit.js: drawn where the fit puts it, not where the bones carry it): a body
+ * kneeling rests on its knees and toes, and that cloth folds on the floor rather than holding them up off it.
  */
 export function createLieGrounder(avatar,{bridging=true}={}){
  const swinging=new Set(['hairA','hairB','braidL1','braidL2','braidR1','braidR2','skirtF','skirtB','skirtL','skirtR']);
@@ -84,8 +85,9 @@ export function createLieGrounder(avatar,{bridging=true}={}){
   const slotOf=bone=>{if(!slot.has(bone)){slot.set(bone,bones.length);bones.push(bone);}return slot.get(bone);};
   for(const mesh of meshes){
    const g=mesh.geometry;if(seen.has(g))continue;seen.add(g);
-   const {position,skinIndex,skinWeight}=g.attributes;if(!skinIndex||!skinWeight)continue;
+   const {position,skinIndex,skinWeight,towelFit}=g.attributes;if(!skinIndex||!skinWeight)continue;
    for(let i=0;i<position.count;i++){
+    if(!bridging&&towelFit&&towelFit.getX(i)>.5)continue;
     const id=[position.getX(i),position.getY(i),position.getZ(i)].map(v=>v.toFixed(4)).join('/');if(unique.has(id))continue;unique.add(id);
     const parts=[];let swing=0;
     for(let k=0;k<4;k++){
