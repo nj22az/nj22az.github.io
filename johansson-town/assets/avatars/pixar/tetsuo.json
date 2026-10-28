@@ -375,7 +375,7 @@
  "skin": "#e38672",
  "triangles": {
   "pixar": 20000,
-  "glasses": 3808,
+  "glasses": 4140,
   "lens": 40,
   "glint": 8,
   "eyes": 480,
@@ -394,7 +394,7 @@
    -0.61087
   ]
  },
- "glb_bytes": 2212960,
+ "glb_bytes": 2246988,
  "fingers": {
   "L": {
    "bend": {

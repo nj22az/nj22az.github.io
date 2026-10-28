@@ -413,6 +413,10 @@ The owner: "Make his ears smaller and give him small side burns"; "Smaller ears 
   painted patch first read as a dark block). Tests 52/52.
 - His nose smaller (the owner: "Make his nose smaller"): `nose_shape` 0.68 across, 0.75 deep, 0.85 long, reaching the
   whole ball (6.2 cm; at 5 cm only its tip shrank).
+- **The awkward nerd** (the owner: "make him look more like an awkward nerd. Work in blender"; jojo `build_glasses`):
+  heavier black frames a size bigger (3.4 mm, 1.3 of the eye), white tape wound round the bridge (`glasses.tape`), and a
+  pocket protector on his left chest (`pocket`: a sheet lying on the chest 3 mm off it, a flat slab sank into its curve)
+  with a blue and a red pen, clips on, and a small yellow-handled screwdriver, the electrician's; on the chest bone.
 
 ## Open
 
