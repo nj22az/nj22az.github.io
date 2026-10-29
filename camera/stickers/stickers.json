@@ -1,0 +1,581 @@
+{
+ "source": "nj22az/jojo art/stickers at c9e3b6a",
+ "sets": [
+  {
+   "id": "thuan",
+   "name": "Thuan",
+   "stickers": [
+    {
+     "id": "thuan/Fume",
+     "src": "thuan/Fume.webp",
+     "thumb": "thuan/Fume.thumb.webp",
+     "width": 673,
+     "height": 1024,
+     "line": "Tức điên lên!",
+     "gloss": "I'm furious!"
+    },
+    {
+     "id": "thuan/ShakeFists",
+     "src": "thuan/ShakeFists.webp",
+     "thumb": "thuan/ShakeFists.thumb.webp",
+     "width": 665,
+     "height": 1024,
+     "line": "Bực quá trời!",
+     "gloss": "So annoying!"
+    },
+    {
+     "id": "thuan/Scold",
+     "src": "thuan/Scold.webp",
+     "thumb": "thuan/Scold.thumb.webp",
+     "width": 625,
+     "height": 1024,
+     "line": "Liệu hồn nha!",
+     "gloss": "Watch yourself!"
+    },
+    {
+     "id": "thuan/Scold-sister",
+     "src": "thuan/Scold-sister.webp",
+     "thumb": "thuan/Scold-sister.thumb.webp",
+     "width": 640,
+     "height": 1024,
+     "line": "Ai cho mặc đồ tui?!",
+     "gloss": "Who said you could wear my clothes?!"
+    },
+    {
+     "id": "thuan/Huff",
+     "src": "thuan/Huff.webp",
+     "thumb": "thuan/Huff.thumb.webp",
+     "width": 608,
+     "height": 1024,
+     "line": "Hứ! Hông thèm!",
+     "gloss": "Hmph! Don't care!"
+    },
+    {
+     "id": "thuan/Eyeroll",
+     "src": "thuan/Eyeroll.webp",
+     "thumb": "thuan/Eyeroll.thumb.webp",
+     "width": 691,
+     "height": 1024,
+     "line": "Hết nói nổi luôn.",
+     "gloss": "I'm speechless (give me a break)."
+    },
+    {
+     "id": "thuan/Seethe",
+     "src": "thuan/Seethe.webp",
+     "thumb": "thuan/Seethe.thumb.webp",
+     "width": 683,
+     "height": 1024,
+     "line": "Bình tĩnh… bình tĩnh…",
+     "gloss": "Calm… calm…"
+    },
+    {
+     "id": "thuan/Seethe-late",
+     "src": "thuan/Seethe-late.webp",
+     "thumb": "thuan/Seethe-late.thumb.webp",
+     "width": 678,
+     "height": 1024,
+     "line": "Mấy giờ rồi hả anh?",
+     "gloss": "What time do you call this?"
+    },
+    {
+     "id": "thuan/JawDrop",
+     "src": "thuan/JawDrop.webp",
+     "thumb": "thuan/JawDrop.thumb.webp",
+     "width": 513,
+     "height": 1024,
+     "line": "Trời ơi!",
+     "gloss": "Oh my god!"
+    },
+    {
+     "id": "thuan/Facepalm",
+     "src": "thuan/Facepalm.webp",
+     "thumb": "thuan/Facepalm.thumb.webp",
+     "width": 643,
+     "height": 1024,
+     "line": "Bó tay luôn…",
+     "gloss": "I give up (nothing to be done)."
+    },
+    {
+     "id": "thuan/OhNo",
+     "src": "thuan/OhNo.webp",
+     "thumb": "thuan/OhNo.thumb.webp",
+     "width": 507,
+     "height": 1024,
+     "line": "Chết rồi!",
+     "gloss": "Oh no, I'm done for!"
+    },
+    {
+     "id": "thuan/HideFace",
+     "src": "thuan/HideFace.webp",
+     "thumb": "thuan/HideFace.thumb.webp",
+     "width": 601,
+     "height": 1024,
+     "line": "Ngại quá đi…",
+     "gloss": "So embarrassing…"
+    },
+    {
+     "id": "thuan/Shush",
+     "src": "thuan/Shush.webp",
+     "thumb": "thuan/Shush.thumb.webp",
+     "width": 580,
+     "height": 1024,
+     "line": "Bí mật nha!",
+     "gloss": "It's a secret, ok!"
+    },
+    {
+     "id": "thuan/Salute",
+     "src": "thuan/Salute.webp",
+     "thumb": "thuan/Salute.thumb.webp",
+     "width": 401,
+     "height": 1024,
+     "line": "Dạ, rõ!",
+     "gloss": "Yes, understood!"
+    },
+    {
+     "id": "thuan/Swoon",
+     "src": "thuan/Swoon.webp",
+     "thumb": "thuan/Swoon.thumb.webp",
+     "width": 606,
+     "height": 1024,
+     "line": "Xỉu…",
+     "gloss": "Fainting… (the meme)"
+    },
+    {
+     "id": "thuan/Flex",
+     "src": "thuan/Flex.webp",
+     "thumb": "thuan/Flex.thumb.webp",
+     "width": 555,
+     "height": 1024,
+     "line": "Khỏe re!",
+     "gloss": "Strong as anything!"
+    },
+    {
+     "id": "thuan/PointLaugh",
+     "src": "thuan/PointLaugh.webp",
+     "thumb": "thuan/PointLaugh.thumb.webp",
+     "width": 558,
+     "height": 1024,
+     "line": "Quê chưa!",
+     "gloss": "Embarrassed much?!"
+    },
+    {
+     "id": "thuan/FistPump",
+     "src": "thuan/FistPump.webp",
+     "thumb": "thuan/FistPump.thumb.webp",
+     "width": 436,
+     "height": 1024,
+     "line": "Quá đã!",
+     "gloss": "So satisfying!"
+    },
+    {
+     "id": "thuan/JumpForJoy",
+     "src": "thuan/JumpForJoy.webp",
+     "thumb": "thuan/JumpForJoy.thumb.webp",
+     "width": 713,
+     "height": 1024,
+     "line": "Sướng quá!",
+     "gloss": "So happy!"
+    },
+    {
+     "id": "thuan/StartledJump",
+     "src": "thuan/StartledJump.webp",
+     "thumb": "thuan/StartledJump.thumb.webp",
+     "width": 656,
+     "height": 1024,
+     "line": "Hết hồn!",
+     "gloss": "You scared the life out of me!"
+    },
+    {
+     "id": "thuan/Sneak",
+     "src": "thuan/Sneak.webp",
+     "thumb": "thuan/Sneak.thumb.webp",
+     "width": 690,
+     "height": 1024,
+     "line": "Rón rén thôi…",
+     "gloss": "Tiptoe, quietly…"
+    },
+    {
+     "id": "thuan/Heart",
+     "src": "thuan/Heart.webp",
+     "thumb": "thuan/Heart.thumb.webp",
+     "width": 632,
+     "height": 1024,
+     "line": "Nhớ anh quá…",
+     "gloss": "I miss you so much…"
+    },
+    {
+     "id": "thuan/Wave",
+     "src": "thuan/Wave.webp",
+     "thumb": "thuan/Wave.thumb.webp",
+     "width": 529,
+     "height": 1024,
+     "line": "Chào nha!",
+     "gloss": "Hi there!"
+    },
+    {
+     "id": "thuan/Bow",
+     "src": "thuan/Bow.webp",
+     "thumb": "thuan/Bow.thumb.webp",
+     "width": 663,
+     "height": 1024,
+     "line": "Cảm ơn nha!",
+     "gloss": "Thank you!"
+    },
+    {
+     "id": "thuan/Tada",
+     "src": "thuan/Tada.webp",
+     "thumb": "thuan/Tada.thumb.webp",
+     "width": 738,
+     "height": 1024,
+     "line": "Giảm giá nè!",
+     "gloss": "Sale on!"
+    },
+    {
+     "id": "thuan/stand",
+     "src": "thuan/stand.webp",
+     "thumb": "thuan/stand.thumb.webp",
+     "width": 611,
+     "height": 1024,
+     "line": "Mua gì hông?",
+     "gloss": "Buying anything?"
+    }
+   ]
+  },
+  {
+   "id": "fuji",
+   "name": "Fuji",
+   "stickers": [
+    {
+     "id": "fuji/Wave",
+     "src": "fuji/Wave.webp",
+     "thumb": "fuji/Wave.thumb.webp",
+     "width": 541,
+     "height": 1024,
+     "line": "はいさい！",
+     "gloss": "Hello! (Okinawan)"
+    },
+    {
+     "id": "fuji/Tada",
+     "src": "fuji/Tada.webp",
+     "thumb": "fuji/Tada.thumb.webp",
+     "width": 860,
+     "height": 1024,
+     "line": "なんくるないさ〜",
+     "gloss": "It'll all work out (Okinawan)"
+    },
+    {
+     "id": "fuji/stand",
+     "src": "fuji/stand.webp",
+     "thumb": "fuji/stand.thumb.webp",
+     "width": 608,
+     "height": 1024,
+     "line": "ちばりよー！",
+     "gloss": "Do your best! (Okinawan)"
+    },
+    {
+     "id": "fuji/Bow",
+     "src": "fuji/Bow.webp",
+     "thumb": "fuji/Bow.thumb.webp",
+     "width": 822,
+     "height": 1024,
+     "line": "にふぇーでーびる",
+     "gloss": "Thank you (Okinawan)"
+    },
+    {
+     "id": "fuji/Salute",
+     "src": "fuji/Salute.webp",
+     "thumb": "fuji/Salute.thumb.webp",
+     "width": 454,
+     "height": 1024,
+     "line": "出港ー！",
+     "gloss": "Casting off!"
+    },
+    {
+     "id": "fuji/JawDrop",
+     "src": "fuji/JawDrop.webp",
+     "thumb": "fuji/JawDrop.thumb.webp",
+     "width": 689,
+     "height": 1024,
+     "line": "あぎじゃびよー！",
+     "gloss": "Good grief! (Okinawan)"
+    },
+    {
+     "id": "fuji/Facepalm",
+     "src": "fuji/Facepalm.webp",
+     "thumb": "fuji/Facepalm.thumb.webp",
+     "width": 584,
+     "height": 1024,
+     "line": "まいった…",
+     "gloss": "I give up…"
+    },
+    {
+     "id": "fuji/OhNo",
+     "src": "fuji/OhNo.webp",
+     "thumb": "fuji/OhNo.thumb.webp",
+     "width": 538,
+     "height": 1024,
+     "line": "しまった！",
+     "gloss": "Oh no!"
+    },
+    {
+     "id": "fuji/Shush",
+     "src": "fuji/Shush.webp",
+     "thumb": "fuji/Shush.thumb.webp",
+     "width": 602,
+     "height": 1024,
+     "line": "ないしょだぞ",
+     "gloss": "That's a secret"
+    },
+    {
+     "id": "fuji/Flex",
+     "src": "fuji/Flex.webp",
+     "thumb": "fuji/Flex.thumb.webp",
+     "width": 729,
+     "height": 1024,
+     "line": "まだまだ現役！",
+     "gloss": "Still going strong!"
+    },
+    {
+     "id": "fuji/PointLaugh",
+     "src": "fuji/PointLaugh.webp",
+     "thumb": "fuji/PointLaugh.thumb.webp",
+     "width": 636,
+     "height": 1024,
+     "line": "わっはっは！",
+     "gloss": "Ha ha ha!"
+    },
+    {
+     "id": "fuji/FistPump",
+     "src": "fuji/FistPump.webp",
+     "thumb": "fuji/FistPump.thumb.webp",
+     "width": 550,
+     "height": 1024,
+     "line": "よっしゃ！",
+     "gloss": "Yes!"
+    },
+    {
+     "id": "fuji/JumpForJoy",
+     "src": "fuji/JumpForJoy.webp",
+     "thumb": "fuji/JumpForJoy.thumb.webp",
+     "width": 745,
+     "height": 1024,
+     "line": "大漁だ〜！",
+     "gloss": "A big catch!"
+    },
+    {
+     "id": "fuji/StartledJump",
+     "src": "fuji/StartledJump.webp",
+     "thumb": "fuji/StartledJump.thumb.webp",
+     "width": 687,
+     "height": 1024,
+     "line": "うわっ！",
+     "gloss": "Whoa!"
+    },
+    {
+     "id": "fuji/Fume",
+     "src": "fuji/Fume.webp",
+     "thumb": "fuji/Fume.thumb.webp",
+     "width": 556,
+     "height": 1024,
+     "line": "こらーっ！",
+     "gloss": "HEY!"
+    },
+    {
+     "id": "fuji/ShakeFists",
+     "src": "fuji/ShakeFists.webp",
+     "thumb": "fuji/ShakeFists.thumb.webp",
+     "width": 740,
+     "height": 1024,
+     "line": "がまんならん！",
+     "gloss": "I can't stand it!"
+    },
+    {
+     "id": "fuji/Scold",
+     "src": "fuji/Scold.webp",
+     "thumb": "fuji/Scold.thumb.webp",
+     "width": 607,
+     "height": 1024,
+     "line": "しっかりせい！",
+     "gloss": "Pull yourself together!"
+    },
+    {
+     "id": "fuji/Huff",
+     "src": "fuji/Huff.webp",
+     "thumb": "fuji/Huff.thumb.webp",
+     "width": 397,
+     "height": 1024,
+     "line": "ふん！",
+     "gloss": "Hmph!"
+    },
+    {
+     "id": "fuji/Eyeroll",
+     "src": "fuji/Eyeroll.webp",
+     "thumb": "fuji/Eyeroll.thumb.webp",
+     "width": 582,
+     "height": 1024,
+     "line": "やれやれ…",
+     "gloss": "Oh dear…"
+    },
+    {
+     "id": "fuji/Seethe",
+     "src": "fuji/Seethe.webp",
+     "thumb": "fuji/Seethe.thumb.webp",
+     "width": 724,
+     "height": 1024,
+     "line": "落ち着け…落ち着け…",
+     "gloss": "Calm down… calm down…"
+    },
+    {
+     "id": "fuji/Kachashi",
+     "src": "fuji/Kachashi.webp",
+     "thumb": "fuji/Kachashi.thumb.webp",
+     "width": 726,
+     "height": 1024,
+     "line": "かちゃーしー！",
+     "gloss": "Kachāshī! (the Okinawan dance)"
+    },
+    {
+     "id": "fuji/Stretch",
+     "src": "fuji/Stretch.webp",
+     "thumb": "fuji/Stretch.thumb.webp",
+     "width": 761,
+     "height": 1024,
+     "line": "ふぅ〜、上がり！",
+     "gloss": "Phew, off duty!"
+    },
+    {
+     "id": "fuji/Slump",
+     "src": "fuji/Slump.webp",
+     "thumb": "fuji/Slump.thumb.webp",
+     "width": 498,
+     "height": 1024,
+     "line": "疲れた…",
+     "gloss": "I'm beat…"
+    },
+    {
+     "id": "fuji/BentStuck",
+     "src": "fuji/BentStuck.webp",
+     "thumb": "fuji/BentStuck.thumb.webp",
+     "width": 794,
+     "height": 1024,
+     "line": "ぎっくり腰…！",
+     "gloss": "My back…!"
+    },
+    {
+     "id": "fuji/Walk",
+     "src": "fuji/Walk.webp",
+     "thumb": "fuji/Walk.thumb.webp",
+     "width": 565,
+     "height": 1024,
+     "line": "行ってくる",
+     "gloss": "Off I go"
+    },
+    {
+     "id": "fuji/Run",
+     "src": "fuji/Run.webp",
+     "thumb": "fuji/Run.thumb.webp",
+     "width": 542,
+     "height": 1024,
+     "line": "待てーっ！",
+     "gloss": "Wait for me!"
+    },
+    {
+     "id": "fuji/Dash",
+     "src": "fuji/Dash.webp",
+     "thumb": "fuji/Dash.thumb.webp",
+     "width": 626,
+     "height": 1024,
+     "line": "にげろーっ！",
+     "gloss": "Run for it!"
+    },
+    {
+     "id": "fuji/Skip",
+     "src": "fuji/Skip.webp",
+     "thumb": "fuji/Skip.thumb.webp",
+     "width": 560,
+     "height": 1024,
+     "line": "るんるん♪",
+     "gloss": "La-la-la (skipping along)"
+    }
+   ]
+  },
+  {
+   "id": "thuan-nils",
+   "name": "Thuan & Nils",
+   "stickers": [
+    {
+     "id": "thuan-nils/Walk",
+     "src": "thuan-nils/Walk.webp",
+     "thumb": "thuan-nils/Walk.thumb.webp",
+     "width": 576,
+     "height": 1024,
+     "line": "Đi chợ nha!",
+     "gloss": "Off to the market!"
+    },
+    {
+     "id": "thuan-nils/Run",
+     "src": "thuan-nils/Run.webp",
+     "thumb": "thuan-nils/Run.thumb.webp",
+     "width": 462,
+     "height": 1024,
+     "line": "Trễ rồi!",
+     "gloss": "I'm late!"
+    },
+    {
+     "id": "thuan-nils/Dash",
+     "src": "thuan-nils/Dash.webp",
+     "thumb": "thuan-nils/Dash.thumb.webp",
+     "width": 545,
+     "height": 1024,
+     "line": "Chạy lẹ đi!",
+     "gloss": "Run, quick!"
+    },
+    {
+     "id": "thuan-nils/hug",
+     "src": "thuan-nils/hug.webp",
+     "thumb": "thuan-nils/hug.thumb.webp",
+     "width": 812,
+     "height": 1024,
+     "line": "Thương anh lắm.",
+     "gloss": "Love you so much."
+    },
+    {
+     "id": "thuan-nils/kiss",
+     "src": "thuan-nils/kiss.webp",
+     "thumb": "thuan-nils/kiss.thumb.webp",
+     "width": 833,
+     "height": 1024,
+     "line": "Chụt!",
+     "gloss": "Mwah!"
+    },
+    {
+     "id": "thuan-nils/fight",
+     "src": "thuan-nils/fight.webp",
+     "thumb": "thuan-nils/fight.thumb.webp",
+     "width": 756,
+     "height": 1024,
+     "line": "Anh nói cái gì?!",
+     "gloss": "What did you say?!"
+    },
+    {
+     "id": "thuan-nils/shove",
+     "src": "thuan-nils/shove.webp",
+     "thumb": "thuan-nils/shove.thumb.webp",
+     "width": 637,
+     "height": 1024,
+     "line": "Tránh ra nè!",
+     "gloss": "Out of my way! (pushing him back)"
+    },
+    {
+     "id": "thuan-nils/back-to-back",
+     "src": "thuan-nils/back-to-back.webp",
+     "thumb": "thuan-nils/back-to-back.thumb.webp",
+     "width": 747,
+     "height": 1024,
+     "line": "",
+     "gloss": "(no words: the pose is the joke)"
+    }
+   ]
+  }
+ ]
+}

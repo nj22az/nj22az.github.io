@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pocket Camera">
+<title>Pocket Camera · The Office of Nils Johansson</title>
+<meta name="description" content="A camera and photo editor with every Look from Johansson World: Pocket, Manga, Woodblock print, Watercolour, Old TV and more, alone or mixed. Your photos stay on your device.">
+<meta property="og:title" content="Pocket Camera">
+<meta property="og:description" content="Every Look from Johansson World, on your camera and your own photos. Mix them, shoot, save.">
+<meta property="og:image" content="https://nj22az.github.io/camera/preview.jpg">
+<meta property="og:url" content="https://nj22az.github.io/camera/">
+<link rel="canonical" href="https://nj22az.github.io/camera/">
+<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+<link rel="stylesheet" href="camera.css?v=20261029">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 4.5 7.5 12l7.5 7.5"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M18.6 6.4l1.4-1.4"/></symbol>
+  <symbol id="i-ratio" viewBox="0 0 24 24"><rect x="4" y="6.5" width="16" height="11" rx="2.6"/></symbol>
+  <symbol id="i-date" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3.2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3.2"/><circle cx="8.6" cy="10.2" r="1.7"/><path d="m21 15.5-4.6-4.4L9 18.5"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M5 10.5a7.3 7.3 0 0 1 12.9-3.8M19 13.5a7.3 7.3 0 0 1-12.9 3.8"/><path d="M18.4 3.4v3.8h-3.8M5.6 20.6v-3.8h3.8"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><rect x="3.8" y="3.8" width="16.4" height="16.4" rx="4.2"/><circle cx="8.6" cy="8.6" r="1.25" class="fill"/><circle cx="15.4" cy="15.4" r="1.25" class="fill"/><circle cx="12" cy="12" r="1.25" class="fill"/><circle cx="15.4" cy="8.6" r="1.25" class="fill"/><circle cx="8.6" cy="15.4" r="1.25" class="fill"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3.5v11M8 7.5l4-4 4 4"/><path d="M8.5 10.5H6.8a1.8 1.8 0 0 0-1.8 1.8v6.4a1.8 1.8 0 0 0 1.8 1.8h10.4a1.8 1.8 0 0 0 1.8-1.8v-6.4a1.8 1.8 0 0 0-1.8-1.8h-1.7"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 11v6M14 11v6M6.5 7l.9 11.4A1.8 1.8 0 0 0 9.2 20h5.6a1.8 1.8 0 0 0 1.8-1.6L17.5 7M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></symbol>
+  <symbol id="i-light" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.8"/><path d="M12 2.8v2.4M12 18.8v2.4M21.2 12h-2.4M5.2 12H2.8M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7M18.5 18.5l-1.7-1.7M7.2 7.2 5.5 5.5"/></symbol>
+  <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" class="fill"/></symbol>
+  <symbol id="i-colour" viewBox="0 0 24 24"><path d="M12 3.5c3.2 4.1 6.2 7.2 6.2 10.7a6.2 6.2 0 0 1-12.4 0C5.8 10.7 8.8 7.6 12 3.5Z"/></symbol>
+  <symbol id="i-warmth" viewBox="0 0 24 24"><path d="M10 13.6V5.5a2 2 0 0 1 4 0v8.1a4.2 4.2 0 1 1-4 0Z"/><path d="M12 10v6"/></symbol>
+  <symbol id="i-pattern" viewBox="0 0 24 24"><circle cx="7" cy="7" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><circle cx="12" cy="12" r="1.2" class="fill"/></symbol>
+  <symbol id="i-sticker" viewBox="0 0 24 24"><path d="M14.5 20.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5h10A3.5 3.5 0 0 1 20.5 7v7.5Z"/><path d="M14.5 20.5v-3a3 3 0 0 1 3-3h3"/><path d="M8.6 9.6h.01M15.4 9.6h.01M8.8 13.6c.9 1 2 1.5 3.2 1.5"/></symbol>
+  <symbol id="i-flip-h" viewBox="0 0 24 24"><path d="M12 3.5v17"/><path d="M8.5 7 3.5 17h5ZM15.5 7l5 10h-5Z"/></symbol>
+  <symbol id="i-resize" viewBox="0 0 24 24"><path d="M7 17 17 7M11 7h6v6M13 17H7v-6"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4.5 7.5h2.8L9 5h6l1.7 2.5h2.8a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18V9a1.5 1.5 0 0 1 1.5-1.5Z"/><circle cx="12" cy="13" r="3.6"/></symbol>
+ </defs>
+</svg>
+
+<div class="app" id="app">
+ <!-- Camera -->
+ <section class="screen camera" id="camera" aria-label="Camera">
+  <header class="bar">
+   <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
+   <div class="chips" role="group" aria-label="Camera settings">
+    <button type="button" class="chip" id="timer" aria-label="Self-timer: off"><svg><use href="#i-timer"/></svg><span>Off</span></button>
+    <button type="button" class="chip" id="ratio" aria-label="Picture shape: 4:3"><span>4:3</span></button>
+    <button type="button" class="chip" id="stamp" aria-pressed="false" aria-label="Date stamp"><svg><use href="#i-date"/></svg><span>Date</span></button>
+   </div>
+   <button type="button" class="round" id="import" aria-label="Edit a photo from this device"><svg><use href="#i-photo"/></svg></button>
+  </header>
+  <div class="stage" id="cameraStage">
+   <div class="frame" id="cameraFrame"><button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button></div>
+   <div class="welcome" id="welcome" hidden>
+    <h1>Pocket Camera</h1>
+    <p>Every Look from Johansson World, on your camera and your own photos. Mix them, shoot, save.</p>
+    <div class="welcome-actions">
+     <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
+     <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Edit a photo</button>
+    </div>
+    <p class="fine" id="welcomeNote">Photos stay on this device. Nothing is uploaded.</p>
+   </div>
+   <div class="count" id="count" aria-live="assertive"></div>
+  </div>
+  <div class="dock" id="cameraDock">
+   <div class="controls">
+    <button type="button" class="roll" id="roll" aria-label="Album"><img alt="" hidden></button>
+    <button type="button" class="shutter" id="shutter" aria-label="Take photo" disabled></button>
+    <button type="button" class="round big" id="flip" aria-label="Switch camera" hidden><svg><use href="#i-flip"/></svg></button>
+   </div>
+  </div>
+ </section>
+
+ <!-- Editor -->
+ <section class="screen editor" id="editor" aria-label="Edit photo" hidden>
+  <header class="bar">
+   <button type="button" class="text-button" id="cancelEdit">Cancel</button>
+   <div class="chips">
+    <button type="button" class="chip" id="editStamp" aria-pressed="false" aria-label="Date stamp"><svg><use href="#i-date"/></svg><span>Date</span></button>
+   </div>
+   <button type="button" class="pill-button" id="saveEdit">Save</button>
+  </header>
+  <div class="stage" id="editStage">
+   <div class="frame" id="editFrame"></div>
+   <div class="badge-original" id="original" hidden>ORIGINAL</div>
+  </div>
+  <div class="dock" id="editDock">
+   <div class="segmented" role="tablist" aria-label="Edit">
+    <button type="button" role="tab" id="tabLooks" aria-selected="true" aria-controls="panelLooks">Looks</button>
+    <button type="button" role="tab" id="tabAdjust" aria-selected="false" aria-controls="panelAdjust">Adjust</button>
+    <button type="button" role="tab" id="tabStickers" aria-selected="false" aria-controls="panelStickers">Stickers</button>
+   </div>
+   <div class="panel" id="panelLooks" role="tabpanel" aria-labelledby="tabLooks"></div>
+   <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
+    <div class="adjusters" id="adjusters" role="radiogroup" aria-label="Adjustment"></div>
+    <div class="slider-row">
+     <input type="range" id="adjustSlider" min="-100" max="100" step="1" value="0" aria-label="Light">
+     <output id="adjustValue">0</output>
+    </div>
+   </div>
+   <div class="panel" id="panelStickers" role="tabpanel" aria-labelledby="tabStickers" hidden></div>
+  </div>
+ </section>
+
+ <!-- Album -->
+ <section class="screen album" id="album" aria-label="Album" hidden>
+  <header class="bar">
+   <button type="button" class="back" id="closeAlbum"><svg><use href="#i-back"/></svg><span>Camera</span></button>
+   <h2>Album</h2>
+   <button type="button" class="round" id="albumImport" aria-label="Edit a photo from this device"><svg><use href="#i-photo"/></svg></button>
+  </header>
+  <div class="album-scroll">
+   <div class="grid" id="grid"></div>
+   <div class="album-empty" id="albumEmpty" hidden>
+    <p><strong>No photos yet</strong>Take one with the camera, or choose a photo from this device to edit.</p>
+    <button type="button" class="button" id="emptyImport"><svg><use href="#i-photo"/></svg>Edit a photo</button>
+   </div>
+   <p class="fine album-note" id="albumNote"></p>
+  </div>
+ </section>
+
+ <!-- One photo -->
+ <section class="screen viewer" id="viewer" aria-label="Photo" hidden>
+  <header class="bar">
+   <button type="button" class="back" id="closeViewer"><svg><use href="#i-back"/></svg><span>Album</span></button>
+   <h2 id="viewerTitle"></h2>
+   <span class="bar-spacer"></span>
+  </header>
+  <div class="stage" id="viewerStage"><img id="viewerImage" alt=""></div>
+  <div class="toolbar">
+   <button type="button" id="sharePhoto"><svg><use href="#i-share"/></svg><span>Share</span></button>
+   <button type="button" id="editPhoto"><svg><use href="#i-edit"/></svg><span>Edit</span></button>
+   <button type="button" id="deletePhoto"><svg><use href="#i-trash"/></svg><span>Delete</span></button>
+  </div>
+ </section>
+
+ <!-- The Look tray: moved between the camera and the editor. -->
+ <div class="tray" id="tray">
+  <div class="layers" id="layers" role="group" aria-label="Looks in this mix"></div>
+  <div class="slider-row" id="amountRow" hidden>
+   <input type="range" id="amount" min="0" max="100" step="1" value="100" aria-label="Intensity">
+   <output id="amountValue">100</output>
+  </div>
+  <div class="strip" id="strip" role="radiogroup" aria-label="Look"></div>
+ </div>
+
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
+ <div class="flash" id="flash"></div>
+</div>
+
+<!-- The sticker sheets: in the editor's Stickers tab, or over the camera. -->
+<div class="sticker-picker" id="stickerPicker">
+ <div class="sticker-sets" id="stickerSets" role="tablist" aria-label="Sticker sheets"></div>
+ <div class="sticker-grid" id="stickerGrid" role="tabpanel" aria-label="Stickers"></div>
+</div>
+<dialog class="sheet sticker-sheet" id="stickerSheet" aria-label="Stickers">
+ <header><h2>Stickers</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
+</dialog>
+
+<dialog class="sheet" id="deleteSheet" aria-label="Delete photo">
+ <form method="dialog">
+  <p>This photo will be deleted from this device.</p>
+  <button value="delete" class="danger">Delete Photo</button>
+  <button value="cancel" autofocus>Cancel</button>
+ </form>
+</dialog>
+
+<input type="file" id="picker" accept="image/*" hidden>
+<video id="video" class="video-source" playsinline muted autoplay></video>
+<noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
+<script type="module" src="app.js?v=20261029"></script>
+</body>
+</html>
