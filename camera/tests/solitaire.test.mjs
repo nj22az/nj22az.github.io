@@ -1,0 +1,17 @@
+import {strict as assert} from 'node:assert';
+import {dealKlondike,drawStock,moveKlondike,canStack,canFound,isKlondikeWon} from '../solitaire.js';
+const c=(rank,suit,faceUp=true)=>({rank,suit,faceUp});
+const cards=['hearts','diamonds','clubs','spades'].flatMap(suit=>Array.from({length:13},(_,i)=>c(i+1,suit)));
+const g=dealKlondike(cards);
+assert.equal(g.stock.length,24);assert.deepEqual(g.tableau.map(p=>p.length),[1,2,3,4,5,6,7]);
+assert(g.tableau.every(p=>p.filter(c=>c.faceUp).length===1&&p.at(-1).faceUp));
+assert.equal(drawStock(g),true);assert.equal(g.stock.length,23);assert(g.waste[0].faceUp);
+while(g.stock.length)drawStock(g);const last=g.waste.at(-1);assert(drawStock(g));assert.equal(g.stock.length,24);assert.equal(g.waste.length,0);assert.equal(g.stock[0],last);assert.equal(g.stock.at(-1).faceUp,false);
+assert(canStack(c(12,'hearts'),c(13,'clubs')));assert(!canStack(c(12,'diamonds'),c(13,'hearts')));assert(canStack(c(13,'spades'),null));assert(!canStack(c(12,'spades'),null));
+assert(canFound(c(1,'spades'),null));assert(canFound(c(2,'spades'),c(1,'spades')));assert(!canFound(c(2,'clubs'),c(1,'spades')));
+const x={stock:[],waste:[c(1,'hearts')],foundation:[[],[],[],[]],tableau:[[c(6,'clubs',false),c(5,'hearts'),c(4,'clubs')],[c(6,'spades')],[],[],[],[],[]],moves:0};
+assert(moveKlondike(x,{kind:'waste'},{kind:'foundation',index:0}));assert.equal(x.foundation[0][0].rank,1);
+assert(moveKlondike(x,{kind:'tableau',index:0,cardIndex:1},{kind:'tableau',index:1}));assert.equal(x.tableau[1].length,3);assert(x.tableau[0][0].faceUp);
+const before=JSON.stringify(x);assert(!moveKlondike(x,{kind:'tableau',index:1,cardIndex:1},{kind:'tableau',index:2}));assert.equal(JSON.stringify(x),before);
+assert(!isKlondikeWon(x));assert(isKlondikeWon({foundation:Array.from({length:4},()=>Array(13).fill(1))}));
+assert.throws(()=>dealKlondike(cards.slice(1)));console.log('Solitaire rules: all checks passed');

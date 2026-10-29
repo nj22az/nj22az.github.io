@@ -4,11 +4,12 @@ frames of a Game Boy Camera project turned out to be others' art with no licence
 
 The hand-held camera's frames were pixel art in four shades round a photo: 160 x 144 pixels with a 16-pixel border.
 These are drawn the same way, each in a palette of its own, from the island: the Pocket Look's greens, the harbour
-with its ferry and lighthouse, Sakura's blossom, the ferry ticket to Kitano-jima, the matsuri's lanterns, and Fuji
-saying "Haisai!", redrawn in four shades from his own die-cut sticker.
+with its ferry and lighthouse, Sakura's blossom, the ferry ticket to Kitano-jima, the matsuri's lanterns, and Thuan
+waving "Hi there!", redrawn in four shades from her own die-cut sticker. Island Post and Shop Day add an original
+island postage stamp and a miniature shopfront.
 
 A photo may be any shape, so a frame is drawn as pieces, never stretched: four corners, an edge piece for each side
-that repeats along it, and small scenes placed against an edge (the ferry, a stamp, Fuji). The camera (frames.js)
+that repeats along it, and small scenes placed against an edge (the ferry, a stamp, Thuan). The camera (frames.js)
 lays them out at a scale where the photo's short side is 144 pixels and enlarges them with hard pixel edges, the same
 in the viewfinder and in the save.
 
@@ -216,7 +217,9 @@ def harbour():
     """Minato's harbour: sky and clouds above with gulls and the sun, the sea below with the ferry on it, the lighthouse."""
     NAVY, SEA, SKY, FOAM = 0, 1, 2, 3
     top = Art(32, B, SKY)
-    top.sprite(['......3333.......', '...333333333.....', '.3333333333333...', '33333333333333333'], 8, 3)
+    # Stepped clouds have a shaded underside rather than a flat stripe.
+    top.sprite(['.....3333...........', '...333333333........', '.3333333333333......',
+                '3333333333333333....', '.11111111111111.....'], 6, 3)
     top.hline(0, 31, B - 1, NAVY)
     sea = Art(16, B, SEA)
     sea.hline(0, 15, 0, NAVY)
@@ -233,6 +236,11 @@ def harbour():
     for x in range(0, 16, 4):
         sea.px(x + 1, 13, SEA)
     side_l, side_r = band(B, 16, SKY, NAVY, 'right'), band(B, 16, SKY, NAVY, 'left')
+    # Quiet alternating nautical stitches keep both vertical edges intentional.
+    for a, mirror in ((side_l, False), (side_r, True)):
+        for x, y, colour in ((3, 2, FOAM), (4, 2, FOAM), (5, 3, FOAM),
+                             (7, 8, SEA), (8, 9, SEA), (9, 8, SEA), (3, 13, FOAM)):
+            a.px(B - 1 - x if mirror else x, y, colour)
     pieces = {'top': top, 'bottom': sea, 'left': side_l, 'right': side_r,
               'tl': corner(SKY, NAVY, 'tl'), 'tr': corner(SKY, NAVY, 'tr'),
               'bl': Art(B, B), 'br': Art(B, B)}
@@ -252,6 +260,9 @@ def harbour():
     ferry.rect(12, 5, 20, 5, FOAM)
     for x in range(14, 30, 4):
         ferry.rect(x, 7, 2, 2, SEA)
+    ferry.hline(14, 29, 5, NAVY)
+    ferry.rect(31, 8, 4, 2, FOAM)
+    ferry.px(7, 11, SEA); ferry.px(9, 11, SEA); ferry.px(33, 11, SEA)
     ferry.rect(25, 1, 4, 4, NAVY)
     ferry.hline(25, 28, 2, SEA)
     ferry.outline(NAVY)
@@ -288,8 +299,16 @@ def sakura():
             else:
                 a.sprite(['.2.', '212', '.2.'], x - 1, y - 1)
         return a
+    def flower_corner(which):
+        a = corner(CREAM, PLUM, which)
+        # A small five-petal seal in each corner, kept clear of the inner edge.
+        x = 3 if which in ('tl', 'bl') else 8
+        y = 3 if which in ('tl', 'tr') else 8
+        a.sprite(['.222.', '22122', '21012', '22122', '.222.'], x, y)
+        a.px(x + 2, y + 2, PLUM)
+        return a
     pieces = {'top': petals(24, B, 0, 'bottom'), 'bottom': petals(24, B, 1, 'top'), 'left': petals(B, 24, 2, 'right'), 'right': petals(B, 24, 3, 'left'),
-              'tl': corner(CREAM, PLUM, 'tl'), 'tr': corner(CREAM, PLUM, 'tr'), 'bl': corner(CREAM, PLUM, 'bl'), 'br': corner(CREAM, PLUM, 'br')}
+              **{w: flower_corner(w) for w in ('tl', 'tr', 'bl', 'br')}}
     blossom = ['.222.', '22122', '21012', '22122', '.222.']
     branch = Art(92, 26)
     # The branch: thick at the corner, thinning as it reaches along the top, with twigs.
@@ -306,6 +325,9 @@ def sakura():
         branch.sprite(blossom, x, y)
     for x, y in ((18, 4), (47, 14), (68, 6), (82, 7)):
         branch.px(x, y, ROSE); branch.px(x + 1, y, ROSE); branch.px(x, y + 1, PINK)
+    # Scattered tiny buds give the branch variation between open blossoms.
+    for x, y in ((5, 5), (37, 7), (57, 10), (79, 12)):
+        branch.sprite(['.1.', '212', '.2.'], x, y)
     cluster = Art(26, 22)
     for x, y in ((2, 9), (10, 3), (17, 10), (9, 15)):
         cluster.sprite(blossom, x, y)
@@ -407,10 +429,12 @@ def matsuri():
                  [feature(firework(17, AMBER, CREAM), 'bl', -1, 1), feature(firework(17, PURPLE, AMBER), 'br', 1, 1), feature(title, 'bc', 0, -4)])
 
 
-def haisai():
-    """Fuji says "Haisai!": his waving sticker, redrawn in four shades, standing at the corner of the photo."""
+def hello():
+    """Thuan waves from the corner of the photo: her Pixar sticker, redrawn in four shades, saying her own "Hi there!".
+    The shades are hers: ink for her hair and polo, the brown of her shorts, a light skin that lit skin falls to (not the
+    paper, which keeps to her white shoes and the border), and paper."""
     INK, TEAL, TAN, PAPER = 0, 1, 2, 3
-    palette = ['#2a2420', '#5f8f86', '#d9a77f', '#fbf6ea']
+    palette = ['#2a2420', '#8a5a44', '#efc4a4', '#fbf6ea']
     def edge(w, h, inner):
         a = band(w, h, PAPER, INK, inner)
         if inner in ('bottom', 'top'):
@@ -428,16 +452,18 @@ def haisai():
         return a
     pieces = {'top': edge(8, B, 'bottom'), 'bottom': edge(8, B, 'top'), 'left': edge(B, 8, 'right'), 'right': edge(B, 8, 'left'),
               **{w: corner_piece(w) for w in ('tl', 'tr', 'bl', 'br')}}
-    fuji = sticker_sprite(ROOT / 'camera' / 'stickers' / 'fuji' / 'Wave.webp', crop_bottom=842, height=72, palette=palette, border=40)
-    words = 'HAISAI!'
+    thuan = sticker_sprite(ROOT / 'camera' / 'stickers' / 'thuan-pixar' / 'Wave.webp', height=72, palette=palette, border=24)
+    # Her sticker's own line, "Chào nha!", in its checked English (art/stickers/thuan/stickers.json): the frame's
+    # letters are A to Z.
+    words = 'HI THERE!'
     bubble = Art(text_width(words) + 9, 17)
     bubble.rect(1, 0, bubble.w - 2, 12, PAPER)
     bubble.rect(0, 1, bubble.w, 10, PAPER)
     bubble.text(words, 5, 3, INK)
     bubble.sprite(['3333', '.333', '..33', '...3'], bubble.w - 9, 12)
     bubble.outline(INK)
-    return frame('haisai', 'Haisai', 'Fuji waves from the corner: “Haisai!” (hello, in Okinawan)', palette, pieces,
-                 [feature(fuji, 'br', -3, 0), feature(bubble, 'br', -3 - fuji.w + 6, -fuji.h + 4)])
+    return frame('hello', 'Hello', 'Thuan waves from the corner: “Hi there!”', palette, pieces,
+                 [feature(thuan, 'br', -3, 0), feature(bubble, 'br', -3 - thuan.w + 6, -thuan.h + 4)])
 
 
 def lab(rgb):
@@ -452,25 +478,32 @@ def lab(rgb):
     return 116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)
 
 
-def sticker_sprite(path, crop_bottom, height, palette, border=0):
-    """A resident's sticker as pixel art: cut above its lettering, its die-cut border taken off (`border` source pixels,
-    so white hair is not lost in white paper), reduced to `height` pixels, each pixel the nearest of the four shades as
-    the eye sees colour, then an ink line round the figure and a paper rim round that, as the sticker's own cut."""
-    from PIL import ImageFilter
+def sticker_sprite(path, height, palette, border=0, crop_bottom=None):
+    """A resident's sticker (the camera's, without lettering) as pixel art: its die-cut border taken off (`border` source
+    pixels, so white hair is not lost in white paper), reduced to `height` pixels, each pixel the nearest of the four
+    shades as the eye sees colour, then an ink line round the figure and a paper rim round that, as the sticker's own
+    cut. `crop_bottom` cuts off anything under the figure (a lettered sticker's words)."""
+    from PIL import ImageFilter, ImageChops
     im = Image.open(path).convert('RGBA')
-    im = im.crop((0, 0, im.width, crop_bottom))
+    if crop_bottom:
+        im = im.crop((0, 0, im.width, crop_bottom))
     if border:
         alpha = im.getchannel('A').point(lambda a: 255 if a > 128 else 0)
         for _ in range(max(1, border // 4)):
             alpha = alpha.filter(ImageFilter.MinFilter(9))
-        im.putalpha(alpha)
+        # The die-cut also fills the gaps a figure encloses (between a raised arm and the head): it is pure white, which
+        # the figure's own whites (hair, a shirt) are not, being shaded.
+        r, g, b, _ = im.split()
+        die = ImageChops.multiply(ImageChops.multiply(r.point(lambda v: 255 if v >= 250 else 0), g.point(lambda v: 255 if v >= 250 else 0)), b.point(lambda v: 255 if v >= 250 else 0))
+        im.putalpha(ImageChops.subtract(alpha, die))
     im = im.crop(im.getbbox())
     w = max(1, round(im.width * height / im.height))
     small = im.resize((w, height), Image.LANCZOS)
     cols = [lab(hexrgb(c)) for c in palette]
     def nearest(rgb):
         L, a, b = lab(rgb)
-        return min(range(len(cols)), key=lambda i: (L - cols[i][0]) ** 2 + (a - cols[i][1]) ** 2 + (b - cols[i][2]) ** 2)
+        # Colour counts a little more than lightness, so lit skin stays skin and does not turn to paper.
+        return min(range(len(cols)), key=lambda i: (L - cols[i][0]) ** 2 + 2.2 * ((a - cols[i][1]) ** 2 + (b - cols[i][2]) ** 2))
     art = Art(w + 4, height + 2)
     for y in range(height):
         for x in range(w):
@@ -482,7 +515,85 @@ def sticker_sprite(path, crop_bottom, height, palette, border=0):
     return art
 
 
-FRAMES = [pocket, harbour, sakura, ticket, matsuri, haisai]
+def island_post():
+    """An original Minato postcard, with a postage stamp and a small island skyline."""
+    INK, CORAL, SAND, PAPER = 0, 1, 2, 3
+    def edge(w, h, side):
+        a = band(w, h, PAPER, INK, side)
+        if side in ('top', 'bottom'):
+            y = 3 if side == 'bottom' else h - 4
+            for x in range(w):
+                a.px(x, y, CORAL if (x // 4) % 2 == 0 else SAND)
+        else:
+            x = 3 if side == 'right' else w - 4
+            for y in range(h):
+                a.px(x, y, CORAL if (y // 4) % 2 == 0 else SAND)
+        return a
+    pieces = {'top': edge(16, B, 'bottom'), 'bottom': edge(16, B, 'top'),
+              'left': edge(B, 16, 'right'), 'right': edge(B, 16, 'left'),
+              **{k: corner(PAPER, INK, k) for k in ('tl','tr','bl','br')}}
+    title = Art(text_width('MINATO POST') + 8, 11, PAPER)
+    title.text('MINATO POST', 4, 2, INK)
+    stamp = Art(25, 29)
+    stamp.rect(1, 1, 23, 27, PAPER)
+    for x in range(1, 24, 3):
+        stamp.px(x, 0, INK); stamp.px(x, 28, INK)
+    for y in range(1, 28, 3):
+        stamp.px(0, y, INK); stamp.px(24, y, INK)
+    stamp.rect(4, 4, 17, 20, SAND)
+    stamp.disc(16, 9, 3, CORAL)
+    stamp.sprite(['......000........','.....01110.......','....0111110......',
+                  '...011111110.....','..01111111110....','.0000000000000...',
+                  '33333333333333333','11111111111111111'], 4, 15)
+    stamp.outline(INK)
+    # Cancellation waves make the stamp read like an actual piece of post.
+    postmark = Art(28, 11)
+    for row in (1, 4, 7):
+        for x in range(28):
+            postmark.px(x, row + ((x // 4) % 2), CORAL)
+    return frame('island-post', 'Island Post', 'A postcard from Minato, with its own island stamp',
+                 ['#41353b','#c45c55','#dfc995','#fff7df'], pieces,
+                 [feature(title, 'bc', 0, -2), feature(stamp, 'tr', -5, 5), feature(postmark, 'tr', -27, 20)])
+
+
+def shop_day():
+    """An original shopfront frame: striped awning, a tiny storefront and friendly signs."""
+    INK, TEAL, PEACH, CREAM = 0, 1, 2, 3
+    top = Art(16, B, CREAM)
+    for x in range(16):
+        top.rect(x, 1, 1, 10, PEACH if (x // 4) % 2 else TEAL)
+        top.px(x, 11 + (1 if x % 4 in (1, 2) else 0), INK)
+    top.hline(0, 15, 15, INK)
+    bottom = band(16, B, CREAM, INK, 'top')
+    for x in range(16):
+        if x % 8 in (2, 3): bottom.px(x, 10, PEACH)
+        if x % 8 == 6: bottom.px(x, 12, TEAL)
+    def side(inner):
+        a = band(B, 16, CREAM, INK, inner)
+        for y in range(2, 16, 8):
+            a.sprite(['.2.','212','.2.'], 5, y)
+        return a
+    pieces = {'top':top, 'bottom':bottom, 'left':side('right'), 'right':side('left'),
+              **{k:corner(CREAM, INK, k) for k in ('tl','tr','bl','br')}}
+    shop = Art(40, 33)
+    # A compact miniature with an outlined tiled roof, door and window displays.
+    shop.rect(3, 9, 34, 22, CREAM)
+    shop.rect(1, 6, 38, 6, INK)
+    for x in range(3, 38, 6):
+        shop.rect(x, 7, 3, 4, TEAL); shop.rect(x + 3, 7, 3, 4, PEACH)
+    shop.rect(5, 14, 13, 12, INK); shop.rect(7, 16, 9, 8, TEAL)
+    shop.rect(21, 13, 11, 18, INK); shop.rect(23, 15, 7, 14, CREAM)
+    shop.px(28, 23, PEACH)
+    shop.rect(3, 30, 34, 2, INK)
+    shop.outline(INK)
+    sign = Art(text_width('SHOP DAY') + 8, 11, TEAL)
+    sign.text('SHOP DAY', 4, 2, CREAM)
+    return frame('shop-day', 'Shop Day', 'A little Minato shop and its striped awning',
+                 ['#323d3a','#4d8c83','#e68b78','#fff4de'], pieces,
+                 [feature(sign, 'tc', 0, 2), feature(shop, 'bl', 2, -1)])
+
+
+FRAMES = [pocket, harbour, sakura, ticket, matsuri, hello, island_post, shop_day]
 
 
 # ---------------------------------------------------------------- packing and laying out
@@ -619,3 +730,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

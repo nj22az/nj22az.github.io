@@ -6,12 +6,15 @@
 import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029b';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMine,deleteMine} from './album.js?v=20261029b';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029b';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029i';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
-import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029b';
+import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029e';
+import {cardView,shuffleDeck} from './playing-cards.js?v=20261029a';
+import {createBlackjack} from './blackjack.js?v=20261029a';
+import {createSolitaire} from './solitaire.js?v=20261029a';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -665,7 +668,7 @@ $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)o
 
 function show(mode){
  state.mode=mode;
- for(const id of ['camera','editor','album','viewer','memory'])$(id).hidden=id!==mode;
+ for(const id of ['camera','editor','album','viewer','memory','cardsHub','cardGame'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
  if(mode==='editor'){$('panelLooks').append(tray);placeCanvas($('editFrame'));$('panelStickers').append($('stickerPicker'));}
  if(mode==='camera'||mode==='editor'){buildTrayFor();}
@@ -703,7 +706,7 @@ async function memorySources(){
 /** A resident sticker, any one, to cheer the last pair. */
 function cheer(){
  const all=(stickerSheets?.sets||[]).flatMap(set=>set.stickers),s=all[Math.floor(Math.random()*all.length)];
- return s?{url:s.url,alt:`${s.set}: “${s.line}” (${s.gloss})`}:null;
+ return s?{url:s.url,alt:`${s.set}: ${s.gloss}`}:null;
 }
 const memory=createMemory($('memory'),{sources:memorySources,cheer,sound,store,onPlay:()=>{$('memoryNew').hidden=false;}});
 async function openMemory(){sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
@@ -711,6 +714,24 @@ $('playMemory').addEventListener('click',openMemory);
 $('emptyPlay').addEventListener('click',openMemory);
 $('closeMemory').addEventListener('click',()=>{memory.close();openAlbum();});
 $('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden=true;memory.showSetup();});
+
+// A separate game room keeps the photo-based Memory flow intact.
+let activeCardGame=null;
+function openCardsHub(){activeCardGame?.destroy();activeCardGame=null;show('cardsHub');}
+function openCardGame(kind){
+ activeCardGame?.destroy();
+ const root=$('cardGameContent');root.replaceChildren();
+ $('cardGameTitle').textContent=kind==='blackjack'?'Blackjack':'Solitaire';
+ show('cardGame');
+ activeCardGame=(kind==='blackjack'?createBlackjack:createSolitaire)({root,cardView,shuffleDeck});
+ activeCardGame.start();
+}
+$('openCardGames').addEventListener('click',openCardsHub);
+$('closeCardsHub').addEventListener('click',openAlbum);
+$('closeCardGame').addEventListener('click',openCardsHub);
+$('chooseBlackjack').addEventListener('click',()=>openCardGame('blackjack'));
+$('chooseSolitaire').addEventListener('click',()=>openCardGame('solitaire'));
+
 
 let viewerURL;
 async function openViewer(id){
@@ -755,7 +776,13 @@ function pickPhoto(){$('picker').value='';$('picker').click();}
 for(const id of ['import','welcomeImport','albumImport','emptyImport'])$(id).addEventListener('click',pickPhoto);
 $('picker').addEventListener('change',e=>useFiles([...e.target.files||[]]));
 const isPicture=file=>file.type.startsWith('image/')||/\.(jpe?g|png|webp|gif|avif|heic|heif)$/i.test(file.name);
-/** The photographer's own photos: one opens in the editor; several go straight into the album in the camera's Look. */
+/**
+ * The photographer's own photos start with the camera's main Look only (its first layer, at full strength), not its
+ * whole mix, which the dice make of two (the owner, 29 October 2026: "Why are two effects chosen at standard when I open
+ * one of my photos?", then "main look and then we play with it in the app").
+ */
+const mainLook=()=>[{look:state.camera.recipe.layers[0]?.look||'none',amount:1}];
+/** The photographer's own photos: one opens in the editor; several go straight into the album, in the camera's main Look. */
 async function useFiles(files){
  files=files.filter(isPicture);
  if(!files.length)return;
@@ -765,7 +792,7 @@ async function useFiles(files){
 let importing=false;
 async function addToAlbum(files){
  if(importing||!engine)return;importing=true;
- const c=state.camera.recipe,recipe=normalRecipe({layers:c.layers,frame:c.frame,stamp:c.stamp,adjust:{light:c.adjust.light}});
+ const c=state.camera.recipe,recipe=normalRecipe({layers:mainLook(),frame:c.frame,stamp:c.stamp,adjust:{light:c.adjust.light}});
  let done=0,failed=0;
  try{
   for(const file of files){
@@ -790,7 +817,7 @@ async function editFile(file){
  if(!isPicture(file)){toast('That is not a picture');return;}
  try{
   const picture=await decode(file);
-  const recipe=normalRecipe({layers:state.camera.recipe.layers,stamp:false});
+  const recipe=normalRecipe({layers:mainLook(),stamp:false});
   const sourceBlob=picture.picture instanceof HTMLCanvasElement?await toBlob(picture.picture,'image/jpeg',.92):file;
   openEditor({...picture,recipe,shotId:null,taken:new Date(file.lastModified||Date.now()),sourceBlob});
  }catch{toast('That picture could not be opened');}
@@ -891,23 +918,40 @@ $('tabStickers').addEventListener('click',()=>selectTab('stickers'));
 $('tabFrame').addEventListener('click',()=>selectTab('frame'));
 
 // ---------- Stickers ----------
-/** Asks for a balloon's words in a small sheet; resolves to the words, or null if cancelled. */
-function askText(initial,placeholder){
- const sheet=$('textSheet'),field=$('balloonText');
- field.value=initial||'';field.placeholder=placeholder||'';sheet.returnValue='';
+/**
+ * Asks for the words and how they are lettered (a speech balloon, a shout, a thought, a caption, or words alone) in a
+ * small sheet; resolves to {text, style}, or null if cancelled.
+ */
+function askLettering({text='',style='balloon:speech',title='What do they say?'}={}){
+ const sheet=$('textSheet'),field=$('balloonText'),styles=$('letteringStyles');
+ let chosen=BALLOONS.some(b=>b.id===style)?style:'balloon:speech';
+ const sample=()=>BALLOONS.find(b=>b.id===chosen)?.sample||'';
+ const paint=()=>{for(const b of styles.children)b.setAttribute('aria-checked',String(b.dataset.style===chosen));field.placeholder=sample();};
+ styles.textContent='';
+ for(const b of BALLOONS){
+  const button=document.createElement('button');button.type='button';button.setAttribute('role','radio');button.dataset.style=b.id;button.textContent=b.label;
+  button.addEventListener('click',()=>{sound('tick');chosen=b.id;paint();field.focus();});styles.append(button);
+ }
+ $('textSheetTitle').textContent=title;field.value=text;sheet.returnValue='';paint();
  return new Promise(resolve=>{
-  sheet.onclose=()=>resolve(sheet.returnValue==='ok'?field.value.trim():null);
+  sheet.onclose=()=>resolve(sheet.returnValue==='ok'&&field.value.trim()?{text:field.value.trim(),style:chosen}:null);
   sheet.showModal();requestAnimationFrame(()=>{field.focus();field.select();});
  });
 }
 // Return finishes the words (Shift+Return starts a new line).
 $('balloonText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('textSheet').close('ok');}});
 async function editBalloonText(layer,i,s){
- const text=await askText(s.text,BALLOONS.find(b=>b.id===s.id)?.sample);
- if(text)layer.setText(i,text);
+ const answer=await askLettering({text:s.text,style:s.id});
+ if(answer){layer.setText(i,answer.text);layer.setStyle(i,answer.style);}
 }
-const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember,editText:(i,s)=>editBalloonText(cameraStickers,i,s)});
-const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s)});
+/** A resident's sticker offers their own words (the sheets' lines), to letter as they are or change first. */
+async function sayLettering(layer,i,info){
+ if(!info?.line)return;
+ const who=info.who||'they',answer=await askLettering({text:info.line,style:'balloon:speech',title:who==='they'?'What do they say?':`What does ${who} say?`});
+ if(answer){await layer.sayAs(i,answer);sound('pop');}
+}
+const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember,editText:(i,s)=>editBalloonText(cameraStickers,i,s),say:(i,info)=>sayLettering(cameraStickers,i,info)});
+const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s),say:(i,info)=>sayLettering(editStickers,i,info)});
 const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?cameraStickers:null;
 // The sheets: Lettering first (balloons and captions), then the residents' sheets, then the photographer's own.
 let stickerSet=1,mine=[];
@@ -1001,9 +1045,9 @@ $('stickerGrid').addEventListener('click',async e=>{
  const layer=stickerLayer();if(!layer)return;
  if(state.mode==='camera')$('stickerSheet').close();
  if(b.classList.contains('lettering')){
-  const text=await askText('',BALLOONS.find(x=>x.id===b.dataset.id)?.sample);
-  if(!text)return;
-  await loadLetteringFont();layer.add(b.dataset.id,{text});
+  const answer=await askLettering({style:b.dataset.id});
+  if(!answer)return;
+  await loadLetteringFont();layer.add(answer.style,{text:answer.text});
  }else layer.add(b.dataset.id);
  sound('pop');
 });
@@ -1082,14 +1126,15 @@ if(!startEngine()){
  loadMine().then(()=>cameraStickers.render());
  // The camera's stickers need their pictures before they can show. The first screen greets with a sticker from the
  // residents' sheets, a different one each time (the owner, 29 October 2026: "Replace Fuji with a random sticker when
- // you start"), never the one shown last; Fuji waves the empty album off ("Casting off!").
+ // you start"), never the one shown last; Johansson, the chief engineer, salutes the empty album.
  loadStickerSets().then(manifest=>{
   stickerSheets=manifest;cameraStickers.render();
   const all=manifest.sets.flatMap(set=>set.stickers),last=store.read().greeting;
-  const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('fuji/Salute');
+  const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('johansson-pixar/Salute');
   if(hello)store.write({...store.read(),greeting:hello.id});
-  if(hello){const img=$('welcomeSticker');img.src=hello.url;img.alt=`${hello.set}: “${hello.line}” (${hello.gloss})`;img.hidden=false;}
-  if(off){const img=$('emptySticker');img.src=off.url;img.alt=`${off.set}: “${off.line}” (${off.gloss})`;img.hidden=false;}
+  // The stickers are figures without words; what they would say is their gloss, for whoever cannot see them.
+  if(hello){const img=$('welcomeSticker');img.src=hello.url;img.alt=`${hello.set}: ${hello.gloss}`;img.hidden=false;}
+  if(off){const img=$('emptySticker');img.src=off.url;img.alt=`${off.set}: ${off.gloss}`;img.hidden=false;}
  }).catch(()=>{});
  if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }

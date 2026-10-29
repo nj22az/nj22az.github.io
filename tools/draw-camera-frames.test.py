@@ -43,11 +43,11 @@ class PixelFrames(unittest.TestCase):
                 gaps = [(x, y) for y in range(h) for x in range(w)
                         if (x < b or x >= w - b or y < b or y >= h - b) and alpha.getpixel((x, y)) < 255]
                 self.assertEqual(gaps[:5], [], f"{meta['id']} at {w}x{h}: border pixels left open")
-                # The photo is clear but where a scene is set over it on purpose (the ferry's bow, Fuji).
+                # The photo is clear but where a scene is set over it on purpose (the ferry's bow, Thuan).
                 window = [(x, y) for y in range(b, h - b) for x in range(b, w - b)]
                 covered = sum(1 for x, y in window if alpha.getpixel((x, y)))
-                # Fuji stands in front of the photo's corner, as a resident in a sticker would; the others keep to the border.
-                limit = .14 if meta['id'] == 'haisai' else .03
+                # Thuan stands in front of the photo's corner, as a resident in a sticker would; the others keep to the border.
+                limit = .14 if meta['id'] == 'hello' else .03
                 self.assertLess(covered / len(window), limit, f"{meta['id']} at {w}x{h} covers {covered / len(window):.0%} of the photo")
 
     def test_four_shades_each(self):

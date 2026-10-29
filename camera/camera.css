@@ -169,6 +169,8 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker>button,.sticker-handle{position:absolute;display:none;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .sticker>button svg,.sticker-handle svg{width:16px;height:16px;stroke-width:2.2}
 .sticker-remove{left:-15px;top:-15px}.sticker-flip{right:-15px;top:-15px}.sticker-handle{right:-15px;bottom:-15px;cursor:nwse-resize}.sticker-text{left:-15px;bottom:-15px}
+.sticker-say{left:-15px;bottom:-15px}
+.sticker.selected>.sticker-say[hidden]{display:none}
 .sticker.selected::before{content:"";position:absolute;inset:-4px;border:1.5px dashed rgba(255,255,255,.9);border-radius:10px;box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
 .sticker.selected>button,.sticker.selected .sticker-handle{display:grid}
 .sticker.balloon.selected::before{border-radius:14px}
@@ -289,6 +291,8 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .text-sheet textarea{width:100%;min-height:76px;padding:10px 12px;border:0;border-radius:10px;background:#1c1c1e;color:var(--label);font:600 19px/1.25 "Pocket Baloo",ui-rounded,system-ui,sans-serif;resize:none;-webkit-user-select:text;user-select:text}
 .text-sheet textarea:focus{outline:2px solid var(--accent);outline-offset:0}
 .sheet-buttons{display:flex;justify-content:space-between;align-items:center}
+.mini-seg.lettering-styles{grid-template-columns:repeat(5,1fr)}
+.lettering-styles button{padding:0 4px;font-size:12px}
 
 /* Action sheet */
 .sheet{width:min(420px,calc(100% - 16px));margin:auto auto max(8px,env(safe-area-inset-bottom));padding:0;border:0;border-radius:14px;background:transparent;color:var(--label)}

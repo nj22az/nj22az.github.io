@@ -2,7 +2,7 @@
  * Memory, the camera's game (the owner, 29 October 2026: "Can you add the mini games … I want memory with our own
  * photos or with the stickers"), as the hand-held cameras had games inside them. Pairs of cards face down; turn two,
  * keep them if they match. The cards are the photographer's own photos from the album, or one of the residents' sticker
- * sheets (Thuan, Fuji, Thuan & Nils), or their own die-cut stickers. The board is laid out to give the cards the most
+ * sheets (Thuan, Johansson, Thao and the cartoon Thuan, Thuan & Nils), or their own die-cut stickers. The board is laid out to give the cards the most
  * room the screen has; moves and time are counted, and the best game for each set of cards and size is kept.
  */
 export const PAIRS=Object.freeze([6,8,10,12]);
