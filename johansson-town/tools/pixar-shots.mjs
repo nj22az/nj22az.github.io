@@ -3,7 +3,8 @@
 // street), and photographs her close (front, three-quarter, face, then the face as the town moves on) from the audit
 // harness's lens; with --cartoon the same views with ?pixar=0, to compare.
 //   node tools/pixar-shots.mjs [--name Thuan] [--time 12:20] [--cartoon] [--painted] [--source] [--scenes] [out-dir]
-// --painted: Thuận 2.0's painted face (?face=painted, src/avatars/painted-face.js) in place of the rigged one.
+// --painted: Thuận 2.0's painted face (?face=painted, src/avatars/painted-face.js) in place of the rigged one; with
+// --frames every painted expression held and photographed (frame-<name>.png), then her eyes looking about (gaze-*.png).
 // The built runtime by default (npm run build:runtime first); --source serves the source modules. Run it alone.
 // --scenes (the player, Johansson): him in the game's own situations, each from several lenses: standing idle in four
 // views, walking, World's gestures (the owner, 27 October 2026: "test him and see so he looks natural in the game, no
@@ -144,6 +145,16 @@ try{
  await shot('face',await lens(.75,1.42,.25,1.4));
  // Her eyes about: a moment of the town, then the face again (a blink or a glance may land)
  for(let i=0;i<4;i++){await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(700));await shot('face-'+(i+1),await lens(.75,1.42,.25,1.4));}
+ if(args.includes('--frames')){
+  // every painted expression, held while it is photographed (painted-face.js hold), then her eyes looking about
+  const held=(frame,look)=>page.evaluate(([f,l])=>{let api=null;window.__PIXAR_SUBJECT__.traverse(o=>{if(o.userData?.paintedFace)api=o.userData.paintedFace;});if(!api)return null;api.hold(f,l);return api.frames;},[frame,look]);
+  const frames=await held(null,null);
+  if(!frames)report.errors.push('--frames: no painted face on '+NAME+' (needs --painted)');
+  const cam=await lens(.75,1.42,.25,1.4);
+  for(const f of frames||[]){await held(f,null);await shot('frame-'+f,cam);}
+  for(const [n,l] of [['ahead',[0,0]],['left',[1,0]],['right',[-1,0]],['up',[0,-1]],['down',[0,1]]]){await held('neutral',l);await shot('gaze-'+n,cam);}
+  await held(null,null);step('frames',{frames});
+ }
  report.renderInfo=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.renderInfo);
  }
 }finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}

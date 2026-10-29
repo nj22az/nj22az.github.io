@@ -599,12 +599,7 @@
    1.48
   ],
   "aspect": 0.907407,
-  "frames": [
-   "neutral",
-   "happy",
-   "blink"
-  ],
-  "texture": "thuan-face.png",
+  "manifest": "thuan-face.json",
   "eyes": [
    [
     -0.06975,

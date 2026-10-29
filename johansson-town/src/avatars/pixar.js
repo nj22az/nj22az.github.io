@@ -37,7 +37,7 @@ import {rigPaintedFace,frameFor,paintedFaceWanted} from './painted-face.js';
 
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
-export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'3cdc730c8c'}),
+export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'3cdc730c8c',face:'0fa313a4b5'}),
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'ad4813d010'}),
  Thao:Object.freeze({path:'avatars/pixar/thao',version:'c41a269523'}),
  // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
@@ -101,8 +101,13 @@ export async function loadPixarBodies({search,timeout=20000}={}){
    const body=preparePixarBody(card,gltf.scene);
    // (Thuận 2.0's painted face, asked for with ?face=painted: its frames beside the model, painted-face.js)
    if(card.facePaint&&body.features.facepaint&&paintedFaceWanted(search)){
-    try{body.facePaintTexture=await new THREE.TextureLoader().loadAsync(assetURL(path.replace(/[^/]+$/,'')+card.facePaint.texture+v));}
-    catch(error){console.warn('Painted face unavailable: '+name,error);}
+    try{
+     // (the face's own version, the hash of its manifest and atlases: new expressions are fetched fresh though the model is not)
+     const dir=path.replace(/[^/]+$/,''),tl=new THREE.TextureLoader(),fv='?v='+(PIXAR_BODIES[name].face||version);
+     const manifest=await (await fetch(assetURL(dir+(card.facePaint.manifest||'thuan-face.json')+fv))).json();
+     const [over,under]=await Promise.all([manifest.over.file,manifest.under.file].map(f=>tl.loadAsync(assetURL(dir+f+fv))));
+     body.facePaint={manifest,over,under};
+    }catch(error){console.warn('Painted face unavailable: '+name,error);}
    }
    loaded.set(name,body);
   }catch(error){console.warn('Pixar body unavailable: '+name,error);}
@@ -297,8 +302,8 @@ export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
  for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])if(m?.material?.isMeshToonMaterial)m.material.gradientMap=smoothRamp();
  // Thuận 2.0's painted face (painted-face.js), asked for with ?face=painted: drawn in place of the rigged eyes, brows and
  // mouth (their materials hidden, so nothing that shows the avatar's meshes brings them back), the jaw and cheeks still.
- const painted=F.facepaint&&body.facePaintTexture&&body.card.facePaint&&paintedFaceWanted()
-  ?rigPaintedFace(inOrder(body,F.facepaint,names),body.card.facePaint,body.facePaintTexture,{make:skinned,gradientMap:smoothRamp()}):null;
+ const painted=F.facepaint&&body.facePaint&&body.card.facePaint&&paintedFaceWanted()
+  ?rigPaintedFace(inOrder(body,F.facepaint,names),body.card.facePaint,body.facePaint,{make:skinned,gradientMap:smoothRamp()}):null;
  if(painted)for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])for(const mat of [m?.material].flat())if(mat)mat.visible=false;
  // Each body acts its feelings its own way (face-acting.js), and gets from one to the next on springs of the feeling's own
  // timing: a wall clock, as paintFace has no step.
@@ -416,8 +421,9 @@ export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
    f.jaw=THREE.MathUtils.clamp(f.jaw,0,1.15);f.cheeks=f.cheeks.map(v=>THREE.MathUtils.clamp(v,0,1.2));f.scrunch=THREE.MathUtils.clamp(f.scrunch,0,1.2);
    if(eyes.showing)actEyes(state,act,dt,sp,now,f.cheeks);
    brows?.set(f.brows.left,f.brows.right);mouth?.set(f.mouth);
-   // (the painted face: its frame for the feeling and the blink; the face's bones stay at rest under the paint)
-   if(painted){painted.set(frameFor(state,target,painted.frames));return;}
+   // (the painted face: its frame for the feeling, the blink and the wink, her irises where her eyes look (the rigged
+   // eyes still work out the gaze, hidden); the face's bones stay at rest under the paint)
+   if(painted){painted.set(frameFor(state,painted.frames));painted.look(eyes.params[EYE_AT.lookX],eyes.params[EYE_AT.lookY]);return;}
    if(face.jaw)face.jaw.rotation.x=f.jaw*FACE_REACH.jaw;
    for(const [i,s,x] of [[0,'L',1],[1,'R',-1]])if(face['cheek'+s])face['cheek'+s].position.copy(restOf['cheek'+s]).add(new THREE.Vector3(x*FACE_REACH.cheek[2]*f.cheeks[i],FACE_REACH.cheek[0]*f.cheeks[i],FACE_REACH.cheek[1]*f.cheeks[i]));
    if(face.nose)face.nose.position.copy(restOf.nose).add(new THREE.Vector3(0,FACE_REACH.nose[0]*f.scrunch,FACE_REACH.nose[1]*f.scrunch));

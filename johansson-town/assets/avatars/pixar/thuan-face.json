@@ -1,0 +1,132 @@
+{
+ "window": [
+  -0.135,
+  0.135,
+  1.235,
+  1.48
+ ],
+ "frames": [
+  "neutral",
+  "smile",
+  "happy",
+  "laugh",
+  "excited",
+  "blink",
+  "sleepy",
+  "surprised",
+  "sad",
+  "worried",
+  "angry",
+  "shy",
+  "smug",
+  "pout",
+  "wink"
+ ],
+ "look": {
+  "neutral": [
+   0,
+   0
+  ],
+  "smile": [
+   0,
+   0
+  ],
+  "happy": [
+   0,
+   0
+  ],
+  "laugh": [
+   0,
+   0
+  ],
+  "excited": [
+   0,
+   0
+  ],
+  "blink": [
+   0,
+   0
+  ],
+  "sleepy": [
+   0,
+   0
+  ],
+  "surprised": [
+   0,
+   0
+  ],
+  "sad": [
+   0,
+   0.5
+  ],
+  "worried": [
+   0,
+   0
+  ],
+  "angry": [
+   0,
+   0
+  ],
+  "shy": [
+   -0.55,
+   0.7
+  ],
+  "smug": [
+   0.75,
+   0.1
+  ],
+  "pout": [
+   -0.5,
+   0
+  ],
+  "wink": [
+   0,
+   0
+  ]
+ },
+ "irisRange": [
+  0.0085,
+  0.004
+ ],
+ "eyes": {
+  "L": [
+   0.059,
+   1.3685
+  ],
+  "R": [
+   -0.05975,
+   1.36875
+  ]
+ },
+ "over": {
+  "file": "thuan-face-over.png",
+  "cols": 4,
+  "rows": 4,
+  "slot": [
+   448,
+   410
+  ],
+  "box": [
+   -0.112,
+   0.112,
+   1.255,
+   1.46
+  ]
+ },
+ "under": {
+  "file": "thuan-face-under.png",
+  "cols": 4,
+  "rows": 4,
+  "slot": [
+   440,
+   180
+  ],
+  "box": [
+   -0.11,
+   0.11,
+   1.32,
+   1.41
+  ],
+  "iris": 15
+ }
+}
