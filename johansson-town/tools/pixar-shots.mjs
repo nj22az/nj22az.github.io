@@ -48,10 +48,11 @@ try{
   const found=[];scene?.traverse(o=>{if(o.name==='Shimanchu · '+name)found.push(o);});
   const shown=found.find(o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;})||found[0];
   if(!shown)return null;window.__PIXAR_SUBJECT__=shown;shown.updateWorldMatrix(true,true);
-  const p=shown.getWorldPosition(new shown.position.constructor());let pixar=null;shown.traverse(o=>{if(o.name?.startsWith('Pixar '))pixar=(pixar||0)+1;});
-  return {count:found.length,position:p.toArray().map(v=>+v.toFixed(2)),visible:found.map(o=>{for(let q=o;q;q=q.parent)if(!q.visible)return false;return true;}),pixarMeshes:pixar};
+  const p=shown.getWorldPosition(new shown.position.constructor());let pixar=null,painted=null;shown.traverse(o=>{if(o.name?.startsWith('Pixar '))pixar=(pixar||0)+1;if(o.name==='painted face')painted={...painted,visible:o.visible&&o.material?.visible!==false};if(o.name==='Shimanchu eyes')painted={...painted,rigEyes:o.visible&&o.material?.visible!==false};});
+  return {count:found.length,position:p.toArray().map(v=>+v.toFixed(2)),visible:found.map(o=>{for(let q=o;q;q=q.parent)if(!q.visible)return false;return true;}),pixarMeshes:pixar,painted};
  },NAME);
  let where=await find();step('found '+NAME,{where});
+ if(args.includes('--check'))throw Object.assign(new Error('--check: stopped after finding '+NAME),{check:true});
  if(!where?.visible?.some(Boolean)){
   // Not out in the town now: at work, most of the day (Thuan in Sakura; Thao, who runs the izakaya, there from 16:00)
   const workplace={Thuan:'sakura',Thao:'izakaya'}[NAME]||'sakura';

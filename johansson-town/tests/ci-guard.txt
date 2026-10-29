@@ -97,6 +97,7 @@ face-lighting.test.mjs
 tree-rebuild.test.mjs
 eyes3d.test.mjs
 pixar-thuan.test.mjs
+painted-face.test.mjs
 pixar-johansson.test.mjs
 pixar-skin.test.mjs
 wave-gesture.test.mjs
