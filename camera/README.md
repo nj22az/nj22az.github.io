@@ -141,7 +141,9 @@ techniques, drawn here:
   and Latin, 38 KB, `fonts/OFL-MPLUSRounded1c.txt`), each turned and sized a little along a rising line, black with a
   white edge. Twelve ready to tap, with what they mean: ドーン!, ゴゴゴ, ドキドキ, ガーン, ジャーン!, バーン!, キラキラ, シーン,
   ザワザワ, ゴクリ, BOOM!, WHAM!.
-- **Marks** (`tools/draw-manga-marks.py`, under the lines in the Manga tab): sweat drop, anger vein, sparkles, heart,
+- **Marks** (`tools/draw-manga-marks.py`, under the lines in the Manga tab): sweat drop (drawn the way Akira Toriyama
+  draws one, the owner: "Make the water drop look like an Akira Toriyama water drop": a plump bulb, a short tip that
+  flicks to one side, one brush line heavy at the bottom and thin at the tip, the shine inside), anger vein, sparkles, heart,
   !, ?, !?, gloom lines, blush and a music note, drawn in Python with an ink line and a white edge. They go in small,
   by a face, and are never a deck for Memory or a greeting.
 

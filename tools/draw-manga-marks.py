@@ -41,17 +41,70 @@ def polygon_outline(d, points, fill, line=LINE):
         d.ellipse([p[0] - line / 2, p[1] - line / 2, p[0] + line / 2, p[1] + line / 2], fill=INK)
 
 
+def bezier(p0, p1, p2, p3, n=60):
+    """Points along a cubic Bézier curve, its end left out (the next piece starts there)."""
+    out = []
+    for i in range(n):
+        t = i / n
+        u = 1 - t
+        out.append((u ** 3 * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t ** 3 * p3[0],
+                    u ** 3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t ** 3 * p3[1]))
+    return out
+
+
+def brush_shape(d, outline, width, fill):
+    """An ink line drawn as a brush pen draws it: the shape filled with ink, then filled again with `fill` inside an
+    edge `width(i)` thick at point i, so the line swells and thins as it goes round."""
+    n = len(outline)
+    area = sum(outline[i][0] * outline[(i + 1) % n][1] - outline[(i + 1) % n][0] * outline[i][1] for i in range(n))
+    side = 1 if area > 0 else -1          # which normal points in, whichever way round the outline was drawn
+    inner = []
+    for i, (x, y) in enumerate(outline):
+        (ax, ay), (bx, by) = outline[i - 1], outline[(i + 1) % n]
+        tx, ty = bx - ax, by - ay
+        length = math.hypot(tx, ty) or 1
+        w = width(i)
+        inner.append((x - ty / length * w * side, y + tx / length * w * side))
+    d.polygon(outline, fill=INK)
+    d.polygon(inner, fill=fill)
+
+
 def sweat():
+    """The sweat drop, as Akira Toriyama draws one (the owner: "Make the water drop look like an Akira Toriyama water
+    drop"): a plump round bulb and a sharp tip that leans and curls a little to one side; one bold brush line, heavy
+    round the bottom and thinning to the tip; a pale inside with a short curved stroke along the inside of the bulb, the
+    shine on the water. Our own drawing of the way he draws them, nothing traced."""
     im, d = canvas()
-    cx, cy, r = S / 2, S * .6, S * .26
-    pts = []
-    for i in range(121):
-        a = math.pi * 2 * i / 120
-        x, y = math.sin(a), -math.cos(a)
-        k = max(0.0, -y)
-        pts.append((cx + r * x * (1 - .9 * k ** 1.15), cy + r * y - S * .2 * k ** 3))
-    polygon_outline(d, pts, (150, 212, 244, 255))
-    d.ellipse([cx - r * .55, cy - r * .1, cx - r * .2, cy + r * .45], fill=WHITE)
+    r, cx, cy = S * .29, S * .45, S * .64
+    at = lambda deg: (cx + r * math.cos(math.radians(deg)), cy - r * math.sin(math.radians(deg)))
+    heading = lambda deg: (-math.sin(math.radians(deg)), -math.cos(math.radians(deg)))   # along the bulb, angle rising
+    L, R = 150, 388                                    # the bulb's shoulders, left and right, round under the bottom
+    bulb = [at(L + (R - L) * i / 140) for i in range(141)]
+    tip = (cx + r * .74, cy - r * 1.7)                 # short, and leaning: the drop has just flown off
+    r0, hr = at(R), heading(R)
+    l0, hl = at(L), heading(L)
+    # The right side comes in under the tip (the hook); the left swings out full, so the tip flicks to one side.
+    up = bezier(r0, (r0[0] + hr[0] * r * .45, r0[1] + hr[1] * r * .45), (tip[0] - r * .08, tip[1] + r * .38), tip)
+    down = bezier(tip, (tip[0] - r * .36, tip[1] + r * .08), (l0[0] - hl[0] * r * .95, l0[1] - hl[1] * r * .95), l0)
+    outline = bulb[:-1] + up + down
+    nb, nu, nd = len(bulb) - 1, len(up), len(down)
+
+    def width(i):
+        if i < nb:                                     # round the bulb: heaviest at the bottom
+            return r * (.085 + .065 * math.sin(math.pi * i / nb))
+        if i < nb + nu:                                # up the right side, thinning to the tip
+            return r * (.085 - .06 * ((i - nb) / nu) ** 1.4)
+        return r * (.025 + .06 * ((i - nb - nu) / nd) ** .8)   # down the left, swelling again
+    brush_shape(d, outline, width, (236, 248, 255, 255))
+    # The shine: a short stroke along the inside of the bulb, low on the right, thick in its middle and pointed at its ends.
+    out, back = [], []
+    for i in range(41):
+        deg, k = -62 + 50 * i / 40, math.sin(math.pi * i / 40)
+        ux, uy = math.cos(math.radians(deg)), -math.sin(math.radians(deg))
+        px, py = cx + r * .66 * ux, cy + r * .66 * uy
+        out.append((px + ux * r * .05 * k, py + uy * r * .05 * k))
+        back.append((px - ux * r * .05 * k, py - uy * r * .05 * k))
+    d.polygon(out + back[::-1], fill=INK)
     return im
 
 
