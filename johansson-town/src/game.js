@@ -156,6 +156,7 @@ import { createInkPipeline, GRADE_DEFAULTS } from './render/ink-pipeline.js?snap
 import {LOOKS,isLook,clearSavedLook,lookCSS,lookNeedsPipeline,lookFlatten} from './render/looks.js';
 import {createFreeCamera} from './input/free-camera.js';
 import {createLookPicker,lookSwatch} from './ui/look-picker.js';
+import {createLookPreviews} from './render/look-previews.js';
 import {setupTownBookHome} from './ui/town-book-home.js';
 import {svg as uiIcon} from './ui/icons.js';
 import { createInkRecovery } from './render/ink-recovery.js';
@@ -360,8 +361,9 @@ function setLook(name){look=isLook(name)?name:'none';applyLook();}
 /** The looks this device can draw, in menu order: the free camera's L and Look button step through them. */
 const drawableLooks=()=>Object.keys(LOOKS).filter(id=>graphics.postprocess||!lookNeedsPipeline(id));
 function nextLook(){const ids=drawableLooks();setLook(ids[(ids.indexOf(look)+1)%ids.length]);}
-/** The Look picker (ui/look-picker.js): a picture per look, chosen live over the town. */
-const lookPicker=createLookPicker({looks:LOOKS,available:drawableLooks,current:()=>look,choose:setLook,onOpen:()=>resetInput(),onClose:()=>resetInput()});
+/** The Look picker (ui/look-picker.js): a strip of the town in each look (render/look-previews.js), chosen live over it. */
+const lookPreviews=createLookPreviews(renderer,()=>pipeline);
+const lookPicker=createLookPicker({looks:LOOKS,available:drawableLooks,current:()=>look,choose:setLook,previews:lookPreviews,onOpen:()=>resetInput(),onClose:()=>resetInput()});
 function lookMenu(){lookPicker.show();}
 /** Plain output, for while the ink is away. */
 function renderPlain(){useTownColour(renderer);applyLook();}

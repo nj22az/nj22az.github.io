@@ -189,6 +189,18 @@ void main(){
  * A screen-filling triangle-pair. three's own FullScreenQuad lives in the addons,
  * which are not vendored here, and it is four lines.
  */
+// The graded picture shrunk for the Look picker's live pictures: sixteen samples across each small pixel, so a
+// 2000-line frame becomes a 240-line one without the shimmer of reading every eighth pixel.
+const SHRINK_FRAGMENT=`
+uniform sampler2D tDiffuse;
+uniform vec2 uStep;
+varying vec2 vUv;
+void main(){
+ vec3 c=vec3(0.0);
+ for(int j=0;j<4;j++)for(int i=0;i<4;i++)c+=texture2D(tDiffuse,vUv+(vec2(float(i),float(j))-1.5)*uStep).rgb;
+ gl_FragColor=vec4(c/16.0,1.0);
+}`;
+
 function makeQuad(fragmentShader,uniforms){
  const material=new THREE.ShaderMaterial({
   uniforms,vertexShader:QUAD_VERTEX,fragmentShader,
@@ -270,6 +282,7 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
   uExposure:{value:1}
  });
  const fxaaPass=makeQuad(FXAA_FRAGMENT,{tDiffuse:{value:null},uTexel:{value:new THREE.Vector2(1,1)}});
+ let shrinkPass=null;
 
  const size=new THREE.Vector2(0,0);
  const state={ink:true,grade:true,fxaa,scale:superScale,samples:msaa,hdr:halfFloat,look:'none',focusDistance:0,focusRange:3,focusMode:0};
@@ -387,12 +400,48 @@ export function createInkPipeline(renderer,{superScale=1.5,pixelBudget=4.6e6,fxa
     renderer.setRenderTarget(previousTarget);
    }
   },
+  /**
+   * The Look picker's live pictures (render/look-previews.js). `shrinkPicture(target)` copies the last frame's graded
+   * picture, before any look, into a small target; `renderLookPreview(name, source, target)` then draws that picture
+   * in one look, with the frame's own depth, into another small target. The look's pass is the one the town is drawn
+   * with (compiled on first use, as when the look is chosen), so a preview is that look, not an imitation of it. False
+   * when there is no fresh picture to draw from.
+   */
+  shrinkPicture(target){
+   // The graded picture is kept in rtColour whenever anything follows the grade (FXAA or a look).
+   if(!width||!(state.fxaa||state.look!=='none'))return false;
+   shrinkPass??=makeQuad(SHRINK_FRAGMENT,{tDiffuse:{value:null},uStep:{value:new THREE.Vector2()}});
+   const previous=renderer.getRenderTarget();
+   try{
+    shrinkPass.material.uniforms.tDiffuse.value=rtColour.texture;
+    shrinkPass.material.uniforms.uStep.value.set(1/target.width/4,1/target.height/4);
+    renderer.setRenderTarget(target);shrinkPass.render(renderer);
+   }finally{renderer.setRenderTarget(previous);}
+   return true;
+  },
+  renderLookPreview(name,source,target){
+   const pass=lookPass(name);if(!pass)return false;
+   const previous=renderer.getRenderTarget();
+   try{
+    const u=pass.material.uniforms,live=compositePass.material.uniforms;
+    // Every uniform the live frame sets is set here too, and set back by the next live frame.
+    u.tDiffuse.value=source.texture;
+    u.uTexel.value.set(1/target.width,1/target.height);u.uResolution.value.set(target.width,target.height);
+    u.uFocusMode.value=state.focusMode;u.uFocusDistance.value=state.focusDistance;u.uFocusRange.value=state.focusRange;
+    // Normals are drawn only for a look that uses them; for any other they would be an old frame's, so none.
+    u.tNormal.value=lookNormals(state.look)?auxiliary.target?.texture||null:null;
+    if(view){u.uProjectionInverse.value.copy(view.projectionMatrixInverse);u.uCameraWorld.value.copy(view.matrixWorld);}
+    u.uNear.value=live.uNear.value;u.uFar.value=live.uFar.value;
+    renderer.setRenderTarget(target);pass.render(renderer);
+   }finally{renderer.setRenderTarget(previous);}
+   return true;
+  },
   /** The target the town is drawn into: shaders compiled ahead of time are compiled for it (game.js compileTown). */
   get sceneTarget(){return rtScene;},
   dispose(){
    auxiliary.dispose();
    [rtScene,rtColour,rtLook].forEach(rt=>rt?.dispose());
-   [compositePass,fxaaPass,...lookPasses.values()].forEach(p=>p?.dispose());
+   [compositePass,fxaaPass,shrinkPass,...lookPasses.values()].forEach(p=>p?.dispose());
   }
  };
 }
