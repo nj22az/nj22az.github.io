@@ -42,13 +42,14 @@ ok('the panels stay inside the page and its margin, and do not overlap (an inset
  for(const l of COMIC_LAYOUTS){
   const {width,height}=pageSize(l.id),g=pageGeometry(l.id,width,height);
   for(const p of g.panels)for(const [x,y] of p.points)assert.ok(x>=g.margin-.01&&x<=width-g.margin+.01&&y>=g.margin-.01&&y<=height-g.margin+.01,l.id);
-  // A grid of points: none is in two panels that are not an inset over its splash (each panel asked on its own).
-  let found=0;
+  // A grid of points: none is in two panels that are not an inset over its splash (each panel asked on its own), and
+  // every panel holds some of them.
+  const found=g.panels.map(()=>0);
   for(let y=5;y<height;y+=97)for(let x=5;x<width;x+=97){
-   const holding=g.panels.filter(p=>!p.inset&&within(p.points,x,y)).length;found+=holding;
-   assert.ok(holding<=1,`${l.id}: (${x}, ${y}) is in ${holding} panels`);
+   const holding=g.panels.map((p,i)=>!p.inset&&within(p.points,x,y)?i:-1).filter(i=>i>=0);holding.forEach(i=>found[i]++);
+   assert.ok(holding.length<=1,`${l.id}: (${x}, ${y}) is in ${holding.length} panels`);
   }
-  assert.ok(found>0,`${l.id}: the grid finds its panels`);
+  g.panels.forEach((p,i)=>assert.ok(p.inset||found[i]>0,`${l.id}: the grid finds panel ${i+1}`));
  }
 });
 ok('a point in a panel finds it, insets first; a gutter finds none',()=>{

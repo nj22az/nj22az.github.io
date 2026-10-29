@@ -1299,8 +1299,8 @@ async function openComicShot(shot){
   try{const pic=await refPicture(p.ref,shot.panels?.[i]);if(pic){slot.picture=pic;slot.place=pic.place||null;}else lost++;}catch{lost++;}
   return slot;
  }));
- // Left meanwhile (back to the album, another photo): nothing opens, and what was found is let go.
- if(state.mode!=='viewer'||state.viewing?.id!==shot.id){for(const s of slots)release(s.picture?.image);if($('toast').textContent==='Opening the comic…')$('toast').classList.remove('show');return;}
+ // Left meanwhile (back to the album, another photo), or the graphics lost: nothing opens, and what was found is let go.
+ if(state.mode!=='viewer'||state.viewing?.id!==shot.id||!engine||engine.lost()){for(const s of slots)release(s.picture?.image);if($('toast').textContent==='Opening the comic…')$('toast').classList.remove('show');return;}
  toast(lost?`${lost===1?'A panel’s picture':`${lost} panels’ pictures`} could not be found`:'Comic opened',{ms:lost?2600:900});
  openComic({recipe:shot.recipe,slots,shotId:shot.id,taken:new Date(shot.taken||shot.created)});
 }
@@ -1342,13 +1342,14 @@ function renderComicPanel(){
  $('comicPanelName').textContent=`Panel ${i+1} of ${n} · ${what}`;
  const views=$('comicViews');views.textContent='';views.hidden=!slot?.ref?.startsWith('place:');
  if(!views.hidden)placeView(slot.ref).then(found=>{
-  if(!found||comicEdit()!==e||e.comic.selected!==i)return;
+  if(comicEdit()!==e||e.comic.selected!==i)return;
+  if(!found){views.hidden=true;return;}
   views.textContent='';
   for(const v of found.place.views){const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(v.id===found.view.id));b.textContent=v.name;
    b.addEventListener('click',()=>{if(v.id===found.view.id)return;sound('tick');fillPanel(i,{ref:`place:${found.place.id}/${v.id}`});});views.append(b);}
   views.hidden=found.place.views.length<2;
  }).catch(()=>{});
- $('comicFocus').disabled=!slot?.picture&&e.comic.focus==null;$('comicClear').disabled=!slot?.picture;
+ $('comicFocus').disabled=!slot?.picture&&e.comic.focus==null;$('comicClear').disabled=!slot?.picture&&!slot?.ref;
  const focused=e.comic.focus!=null;
  $('comicFocus').querySelector('use').setAttribute('href',focused?'#i-page':'#i-zoom');
  $('comicFocus').setAttribute('aria-label',focused?'Show the whole page':'Zoom in on this panel');$('comicFocus').title=focused?'Whole page':'Zoom in';
@@ -1374,8 +1375,9 @@ function refocus(){invalidate();requestAnimationFrame(()=>requestAnimationFrame(
 const ask=(e,i)=>e.comic.asked[i]=(e.comic.asked[i]||0)+1;
 /** The chosen panel filled: with a picture from the album, one of the places or the photographer's own. */
 async function fillPanel(i,{ref,blob=null}){
- const e=comicEdit();if(!e||i<0||i>=panelCount(e))return;
- const asked=ask(e,i),latest=()=>comicEdit()===e&&e.comic.asked[i]===asked&&i<panelCount(e);
+ // Nothing is filled while the page is being saved (the album would keep a picture the saved page does not show).
+ const e=comicEdit();if(!e||e.saving||i<0||i>=panelCount(e))return;
+ const asked=ask(e,i),latest=()=>comicEdit()===e&&!e.saving&&e.comic.asked[i]===asked&&i<panelCount(e);
  try{
   const pic=ref.startsWith('place:')?await refPicture(ref):await panelPicture(blob);
   if(!pic)return;
@@ -1389,14 +1391,15 @@ async function fillPanel(i,{ref,blob=null}){
 $('comicFill').addEventListener('click',()=>{const e=comicEdit();if(e)openComicSheet(e.comic.selected??0);});
 $('comicFocus').addEventListener('click',()=>{const e=comicEdit();if(!e)return;sound('tick');focusPanel(e.comic.focus==null);});
 $('comicClear').addEventListener('click',()=>{
- const e=comicEdit();if(!e)return;sound('tick');
+ const e=comicEdit();if(!e||e.saving)return;sound('tick');
  const i=e.comic.selected??0;ask(e,i);release(e.comic.slots[i]?.picture?.image);e.comic.slots[i]=emptySlot();composeComic();renderComicPanel();
 });
 
 // The sheet a panel is filled from: Minato's places first (the town's own rooms and streets), the album, own photos.
-let comicSource='places',comicTarget=0,comicSheetAt=0,comicSheetRun=0,comicURLs=[];
-function openComicSheet(i){
- comicTarget=i;$('comicSheetTitle').textContent=`Panel ${i+1}`;renderComicSheet();openSheet($('comicSheet'));comicSheetAt=performance.now();
+let comicSource='places',comicTarget=0,comicStray=0,comicSheetRun=0,comicURLs=[];
+/** The sheet for panel i; `tapped` when a tap on the panel opened it as the finger lifted, its own click still to come. */
+function openComicSheet(i,tapped=false){
+ comicTarget=i;$('comicSheetTitle').textContent=`Panel ${i+1}`;renderComicSheet();openSheet($('comicSheet'));comicStray=tapped?performance.now():0;
 }
 // The album's thumbnails are let go when the sheet is drawn again or closes (those never scrolled to never load).
 const dropComicURLs=()=>{comicURLs.forEach(u=>URL.revokeObjectURL(u));comicURLs=[];};
@@ -1455,8 +1458,10 @@ function endPanelShoot(back){
 }
 $('backToComic').addEventListener('click',()=>{sound('tick');endPanelShoot(true);});
 $('comicFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f&&isPicture(f)){$('comicSheet').close();fillPanel(comicTarget,{ref:'own',blob:f});}});
-// A tap on the backdrop closes it, but not the click of the very tap on a panel that opened it.
-$('comicSheet').addEventListener('click',e=>{if(e.target===e.currentTarget&&performance.now()-comicSheetAt>500)e.currentTarget.close();});
+// The click of the tap that opened the sheet (on a panel, as the finger lifted) lands in it a moment later, on the
+// backdrop, a picture or a tab: it chooses nothing and does not close the sheet. A tap on the backdrop after it does.
+$('comicSheet').addEventListener('click',e=>{const stray=comicStray&&performance.now()-comicStray<500;comicStray=0;if(stray){e.stopImmediatePropagation();e.preventDefault();}},true);
+$('comicSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 $('comicSheet').addEventListener('close',dropComicURLs);
 
 /** A resident added to a panel showing one of the places stands on its floor, at their height there. */
@@ -1474,11 +1479,13 @@ function comicStand(id,aspect){
 {
  const frame=$('editFrame');let touch=null,lastTap={t:0,i:-1};
  const toPage=(x,y)=>{const r=frame.getBoundingClientRect(),e=state.edit;return {x:(x-r.left)/r.width*e.width,y:(y-r.top)/r.height*e.height,k:e.width/r.width};};
- const restart=()=>{const e=comicEdit();if(!touch||!e)return;touch.view={...e.comic.slots[touch.i].view};touch.start=new Map(touch.pointers);};
+ const restart=()=>{const e=comicEdit();if(!touch||touch.e!==e)return;touch.view={...e.comic.slots[touch.i].view};touch.start=new Map(touch.pointers);};
  frame.addEventListener('pointerdown',ev=>{
-  // A finger the stickers took (on a sticker, or a second one beside the sticker being moved) is theirs alone.
-  const e=comicEdit();if(!e||ev.defaultPrevented||editStickers.busy||ev.target.closest('.sticker,button'))return;
+  const e=comicEdit();if(!e||ev.target.closest('.sticker,button'))return;
   ev.stopPropagation();
+  // A finger the stickers took (a second one beside the sticker being moved), or one while they are busy (its corner
+  // handle held), is theirs: it moves no picture, and the page takes no hold or swipe either.
+  if(ev.defaultPrevented||editStickers.busy)return;
   // A gesture on a page since closed (the editor left mid-touch) is forgotten, so this is a first finger.
   if(touch&&touch.e!==e)touch=null;
   if(touch){if(touch.pointers.size===1){touch.pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});touch.moved=true;restart();}return;}
@@ -1512,7 +1519,7 @@ function comicStand(id,aspect){
   if(ev.type!=='pointerup')return;
   const now=performance.now(),twice=lastTap.i===t.i&&now-lastTap.t<320;lastTap={t:now,i:t.i};
   choosePanel(t.i);
-  if(!e.comic.slots[t.i]?.picture){sound('tick');openComicSheet(t.i);return;}
+  if(!e.comic.slots[t.i]?.picture){sound('tick');openComicSheet(t.i,true);return;}
   if(twice){lastTap={t:0,i:-1};sound('tick');focusPanel(e.comic.focus==null);}
  };
  frame.addEventListener('pointerup',end);frame.addEventListener('pointercancel',end);frame.addEventListener('lostpointercapture',end);

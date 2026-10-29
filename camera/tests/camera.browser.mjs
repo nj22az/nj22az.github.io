@@ -613,7 +613,7 @@ async function makeComics({label,width,height}){
   const edit=fn=>page.evaluate(fn);
   // A point of the page (shares) on the screen, to tap.
   const at=async(x,y)=>{const b=await page.locator('#editFrame').boundingBox();return {x:b.x+b.width*x,y:b.y+b.height*y};};
-  const panelCentre=async i=>{const c=await edit(i=>{const e=window.pocketCamera.state.edit,b=window.pocketCamera.panelArea(i);return {x:(b.x+b.w/2),y:(b.y+b.h/2)};},i);return at(c.x,c.y);};
+  const panelCentre=async i=>{const c=await page.evaluate(i=>{const b=window.pocketCamera.panelArea(i);return {x:(b.x+b.w/2),y:(b.y+b.h/2)};},i);return at(c.x,c.y);};
   await check(`${label}: a comic from the album: Panels first, the layouts all across, a tap on an empty panel asks what fills it`,async()=>{
    await page.locator('#roll').tap();await page.waitForSelector('#album:not([hidden])');
    await page.locator('#openComic').tap();await page.waitForFunction(()=>window.pocketCamera.state.edit?.comic);
@@ -637,6 +637,13 @@ async function makeComics({label,width,height}){
    assert.equal(view.ref,'place:sakura/wide');assert.match(view.name,/Panel 1 of 3 · Sakura Shōten/);
    await page.waitForFunction(()=>document.querySelectorAll('#comicViews button').length===4);
    assert.deepEqual(await page.$$eval('#comicViews button',b=>b.map(x=>x.textContent)),['Wide','Close','Low','High']);
+  });
+  await check(`${label}: a tap on an empty lower panel opens its sheet, and the tap's own click chooses nothing in it`,async()=>{
+   // Looked at a moment later: the click that picked a picture would have closed the sheet again at once.
+   const p=await panelCentre(1);await page.touchscreen.tap(p.x,p.y);await page.waitForTimeout(800);
+   const s=await edit(()=>({open:document.querySelector('#comicSheet').open,title:document.querySelector('#comicSheetTitle').textContent,filled:!!window.pocketCamera.state.edit.comic.slots[1].picture,mode:window.pocketCamera.state.mode}));
+   assert.deepEqual(s,{open:true,title:'Panel 2',filled:false,mode:'editor'},'the sheet stays open and the panel empty');
+   await page.locator('#comicSheet .done').tap();await page.waitForFunction(()=>!document.querySelector('#comicSheet').open);
   });
   await check(`${label}: a picture moves inside its panel; tapped twice the page zooms in on the panel, and out again`,async()=>{
    const before=await edit(()=>({...window.pocketCamera.state.edit.comic.slots[0].view}));
@@ -757,15 +764,23 @@ async function makeComics({label,width,height}){
     for(let i=1;i<=6;i++){ev('pointermove',12,two.x+out*i*8,two.y,under);await new Promise(r=>setTimeout(r,16));}
     ev('pointerup',12,two.x+out*48,two.y,under);ev('pointerup',11,one.x,one.y,el);
     const s=e.recipe.stickers.find(s=>s.id.startsWith('thuan-blender/'));
+    // The corner handle held, a finger on the page beside it, held and then swiped: no original, no other Look.
+    const look=e.recipe.layers[0].look,handle=el.querySelector('.sticker-handle'),hr=el.getBoundingClientRect();
+    ev('pointerdown',14,hr.right,hr.bottom,handle);ev('pointerdown',15,two.x,two.y,under);await new Promise(r=>setTimeout(r,260));
+    const busy={comparing:e.comparing};
+    for(let i=1;i<=4;i++){ev('pointermove',15,two.x+out*i*25,two.y,under);await new Promise(r=>setTimeout(r,16));}
+    ev('pointerup',15,two.x+out*100,two.y,under);ev('pointerup',14,hr.right,hr.bottom,handle);
+    busy.look=e.recipe.layers[0].look===look;busy.view=JSON.stringify(view)===JSON.stringify(e.comic.slots[0].view);
     // Held on the stage beside the page: the original, still on its paper with its borders.
     const stage=document.querySelector('#editStage');ev('pointerdown',13,fr.left-2,fr.top+fr.height/2,stage);await new Promise(r=>setTimeout(r,320));
     const held={comparing:e.comparing,paper:document.querySelector('#editFrame canvas.frame-art').hidden===false};
     ev('pointerup',13,fr.left-2,fr.top+fr.height/2,stage);
-    return {under:under.closest('.sticker')?'sticker':'page',moved:JSON.stringify(view)!==JSON.stringify(e.comic.slots[0].view),grew:s.size/size,held};
+    return {under:under.closest('.sticker')?'sticker':'page',moved:JSON.stringify(view)!==JSON.stringify(e.comic.slots[0].view),grew:s.size/size,held,busy};
    });
    assert.equal(r.under,'page','the second finger is on the page, not on a sticker');
    assert.equal(r.moved,false,'the panel’s picture stays where it was');assert.ok(r.grew>1.2,`the sticker is pinched larger (${r.grew.toFixed(2)}×)`);
    assert.deepEqual(r.held,{comparing:true,paper:true},'held for the original, the page keeps its paper and borders');
+   assert.deepEqual(r.busy,{comparing:false,look:true,view:true},'with a sticker’s handle held, a finger on the page neither shows the original nor changes the Look');
   });
   await check(`${label}: a picture pasted or dropped with a comic open fills the chosen panel; the page stays`,async()=>{
    const send=(type,count)=>page.evaluate(async([type,count])=>{
