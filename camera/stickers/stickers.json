@@ -1,245 +1,83 @@
 {
- "source": "nj22az/jojo art/stickers/*/plain at d36f837",
+ "source": "nj22az/jojo art/stickers/*/plain at 7803e69",
  "lettered": false,
  "sets": [
   {
-   "id": "thuan-pixar",
+   "id": "thuan-blender",
    "name": "Thuan",
    "who": "Thuan",
    "stickers": [
     {
-     "id": "thuan-pixar/Fume",
-     "src": "thuan-pixar/Fume.webp?v=d36f837",
-     "thumb": "thuan-pixar/Fume.thumb.webp?v=d36f837",
-     "width": 486,
+     "id": "thuan-blender/v-wave",
+     "src": "thuan-blender/v-wave.webp?v=7803e69",
+     "thumb": "thuan-blender/v-wave.thumb.webp?v=7803e69",
+     "width": 523,
      "height": 1024,
-     "line": "Tức điên lên!",
-     "gloss": "I'm furious!"
+     "line": "",
+     "gloss": "Peace and a wave"
     },
     {
-     "id": "thuan-pixar/ShakeFists",
-     "src": "thuan-pixar/ShakeFists.webp?v=d36f837",
-     "thumb": "thuan-pixar/ShakeFists.thumb.webp?v=d36f837",
-     "width": 531,
-     "height": 1024,
-     "line": "Bực quá trời!",
-     "gloss": "So annoying!"
-    },
-    {
-     "id": "thuan-pixar/Scold",
-     "src": "thuan-pixar/Scold.webp?v=d36f837",
-     "thumb": "thuan-pixar/Scold.thumb.webp?v=d36f837",
-     "width": 465,
-     "height": 1024,
-     "line": "Liệu hồn nha!",
-     "gloss": "Watch yourself!"
-    },
-    {
-     "id": "thuan-pixar/Scold-sister",
-     "src": "thuan-pixar/Scold-sister.webp?v=d36f837",
-     "thumb": "thuan-pixar/Scold-sister.thumb.webp?v=d36f837",
-     "width": 465,
-     "height": 1024,
-     "line": "Ai cho mặc đồ tui?!",
-     "gloss": "Who said you could wear my clothes?!"
-    },
-    {
-     "id": "thuan-pixar/Huff",
-     "src": "thuan-pixar/Huff.webp?v=d36f837",
-     "thumb": "thuan-pixar/Huff.thumb.webp?v=d36f837",
-     "width": 421,
-     "height": 1024,
-     "line": "Hứ! Hông thèm!",
-     "gloss": "Hmph! Don't care!"
-    },
-    {
-     "id": "thuan-pixar/Eyeroll",
-     "src": "thuan-pixar/Eyeroll.webp?v=d36f837",
-     "thumb": "thuan-pixar/Eyeroll.thumb.webp?v=d36f837",
-     "width": 484,
-     "height": 1024,
-     "line": "Hết nói nổi luôn.",
-     "gloss": "I'm speechless (give me a break)."
-    },
-    {
-     "id": "thuan-pixar/Seethe",
-     "src": "thuan-pixar/Seethe.webp?v=d36f837",
-     "thumb": "thuan-pixar/Seethe.thumb.webp?v=d36f837",
-     "width": 449,
-     "height": 1024,
-     "line": "Bình tĩnh… bình tĩnh…",
-     "gloss": "Calm… calm…"
-    },
-    {
-     "id": "thuan-pixar/Seethe-late",
-     "src": "thuan-pixar/Seethe-late.webp?v=d36f837",
-     "thumb": "thuan-pixar/Seethe-late.thumb.webp?v=d36f837",
-     "width": 449,
-     "height": 1024,
-     "line": "Mấy giờ rồi hả anh?",
-     "gloss": "What time do you call this?"
-    },
-    {
-     "id": "thuan-pixar/JawDrop",
-     "src": "thuan-pixar/JawDrop.webp?v=d36f837",
-     "thumb": "thuan-pixar/JawDrop.thumb.webp?v=d36f837",
-     "width": 514,
-     "height": 1024,
-     "line": "Trời ơi!",
-     "gloss": "Oh my god!"
-    },
-    {
-     "id": "thuan-pixar/Facepalm",
-     "src": "thuan-pixar/Facepalm.webp?v=d36f837",
-     "thumb": "thuan-pixar/Facepalm.thumb.webp?v=d36f837",
-     "width": 487,
-     "height": 1024,
-     "line": "Bó tay luôn…",
-     "gloss": "I give up (nothing to be done)."
-    },
-    {
-     "id": "thuan-pixar/OhNo",
-     "src": "thuan-pixar/OhNo.webp?v=d36f837",
-     "thumb": "thuan-pixar/OhNo.thumb.webp?v=d36f837",
-     "width": 477,
-     "height": 1024,
-     "line": "Chết rồi!",
-     "gloss": "Oh no, I'm done for!"
-    },
-    {
-     "id": "thuan-pixar/HideFace",
-     "src": "thuan-pixar/HideFace.webp?v=d36f837",
-     "thumb": "thuan-pixar/HideFace.thumb.webp?v=d36f837",
-     "width": 412,
-     "height": 1024,
-     "line": "Ngại quá đi…",
-     "gloss": "So embarrassing…"
-    },
-    {
-     "id": "thuan-pixar/Shush",
-     "src": "thuan-pixar/Shush.webp?v=d36f837",
-     "thumb": "thuan-pixar/Shush.thumb.webp?v=d36f837",
-     "width": 403,
-     "height": 1024,
-     "line": "Bí mật nha!",
-     "gloss": "It's a secret, ok!"
-    },
-    {
-     "id": "thuan-pixar/Salute",
-     "src": "thuan-pixar/Salute.webp?v=d36f837",
-     "thumb": "thuan-pixar/Salute.thumb.webp?v=d36f837",
-     "width": 405,
-     "height": 1024,
-     "line": "Dạ, rõ!",
-     "gloss": "Yes, understood!"
-    },
-    {
-     "id": "thuan-pixar/Swoon",
-     "src": "thuan-pixar/Swoon.webp?v=d36f837",
-     "thumb": "thuan-pixar/Swoon.thumb.webp?v=d36f837",
-     "width": 606,
-     "height": 1024,
-     "line": "Xỉu…",
-     "gloss": "Fainting… (the meme)"
-    },
-    {
-     "id": "thuan-pixar/Flex",
-     "src": "thuan-pixar/Flex.webp?v=d36f837",
-     "thumb": "thuan-pixar/Flex.thumb.webp?v=d36f837",
-     "width": 551,
-     "height": 1024,
-     "line": "Khỏe re!",
-     "gloss": "Strong as anything!"
-    },
-    {
-     "id": "thuan-pixar/PointLaugh",
-     "src": "thuan-pixar/PointLaugh.webp?v=d36f837",
-     "thumb": "thuan-pixar/PointLaugh.thumb.webp?v=d36f837",
-     "width": 428,
-     "height": 1024,
-     "line": "Quê chưa!",
-     "gloss": "Embarrassed much?!"
-    },
-    {
-     "id": "thuan-pixar/FistPump",
-     "src": "thuan-pixar/FistPump.webp?v=d36f837",
-     "thumb": "thuan-pixar/FistPump.thumb.webp?v=d36f837",
-     "width": 409,
-     "height": 1024,
-     "line": "Quá đã!",
-     "gloss": "So satisfying!"
-    },
-    {
-     "id": "thuan-pixar/JumpForJoy",
-     "src": "thuan-pixar/JumpForJoy.webp?v=d36f837",
-     "thumb": "thuan-pixar/JumpForJoy.thumb.webp?v=d36f837",
-     "width": 841,
-     "height": 1024,
-     "line": "Sướng quá!",
-     "gloss": "So happy!"
-    },
-    {
-     "id": "thuan-pixar/StartledJump",
-     "src": "thuan-pixar/StartledJump.webp?v=d36f837",
-     "thumb": "thuan-pixar/StartledJump.thumb.webp?v=d36f837",
-     "width": 692,
-     "height": 1024,
-     "line": "Hết hồn!",
-     "gloss": "You scared the life out of me!"
-    },
-    {
-     "id": "thuan-pixar/Sneak",
-     "src": "thuan-pixar/Sneak.webp?v=d36f837",
-     "thumb": "thuan-pixar/Sneak.thumb.webp?v=d36f837",
-     "width": 528,
-     "height": 1024,
-     "line": "Rón rén thôi…",
-     "gloss": "Tiptoe, quietly…"
-    },
-    {
-     "id": "thuan-pixar/Heart",
-     "src": "thuan-pixar/Heart.webp?v=d36f837",
-     "thumb": "thuan-pixar/Heart.thumb.webp?v=d36f837",
-     "width": 424,
-     "height": 1024,
-     "line": "Nhớ anh quá…",
-     "gloss": "I miss you so much…"
-    },
-    {
-     "id": "thuan-pixar/Wave",
-     "src": "thuan-pixar/Wave.webp?v=d36f837",
-     "thumb": "thuan-pixar/Wave.thumb.webp?v=d36f837",
-     "width": 480,
+     "id": "thuan-blender/wave",
+     "src": "thuan-blender/wave.webp?v=7803e69",
+     "thumb": "thuan-blender/wave.thumb.webp?v=7803e69",
+     "width": 525,
      "height": 1024,
      "line": "Chào nha!",
      "gloss": "Hi there!"
     },
     {
-     "id": "thuan-pixar/Bow",
-     "src": "thuan-pixar/Bow.webp?v=d36f837",
-     "thumb": "thuan-pixar/Bow.thumb.webp?v=d36f837",
-     "width": 497,
-     "height": 1024,
-     "line": "Cảm ơn nha!",
-     "gloss": "Thank you!"
-    },
-    {
-     "id": "thuan-pixar/Tada",
-     "src": "thuan-pixar/Tada.webp?v=d36f837",
-     "thumb": "thuan-pixar/Tada.thumb.webp?v=d36f837",
-     "width": 814,
-     "height": 1024,
-     "line": "Giảm giá nè!",
-     "gloss": "Sale on!"
-    },
-    {
-     "id": "thuan-pixar/stand",
-     "src": "thuan-pixar/stand.webp?v=d36f837",
-     "thumb": "thuan-pixar/stand.thumb.webp?v=d36f837",
-     "width": 404,
+     "id": "thuan-blender/stand",
+     "src": "thuan-blender/stand.webp?v=7803e69",
+     "thumb": "thuan-blender/stand.thumb.webp?v=7803e69",
+     "width": 443,
      "height": 1024,
      "line": "Mua gì hông?",
      "gloss": "Buying anything?"
+    },
+    {
+     "id": "thuan-blender/peace",
+     "src": "thuan-blender/peace.webp?v=7803e69",
+     "thumb": "thuan-blender/peace.thumb.webp?v=7803e69",
+     "width": 452,
+     "height": 1024,
+     "line": "",
+     "gloss": "Peace sign"
+    },
+    {
+     "id": "thuan-blender/double-v",
+     "src": "thuan-blender/double-v.webp?v=7803e69",
+     "thumb": "thuan-blender/double-v.thumb.webp?v=7803e69",
+     "width": 455,
+     "height": 1024,
+     "line": "",
+     "gloss": "Double peace"
+    },
+    {
+     "id": "thuan-blender/thumbs-up",
+     "src": "thuan-blender/thumbs-up.webp?v=7803e69",
+     "thumb": "thuan-blender/thumbs-up.thumb.webp?v=7803e69",
+     "width": 473,
+     "height": 1024,
+     "line": "",
+     "gloss": "Thumbs up"
+    },
+    {
+     "id": "thuan-blender/fist-pump",
+     "src": "thuan-blender/fist-pump.webp?v=7803e69",
+     "thumb": "thuan-blender/fist-pump.thumb.webp?v=7803e69",
+     "width": 500,
+     "height": 1024,
+     "line": "Quá đã!",
+     "gloss": "So satisfying!"
+    },
+    {
+     "id": "thuan-blender/salute",
+     "src": "thuan-blender/salute.webp?v=7803e69",
+     "thumb": "thuan-blender/salute.thumb.webp?v=7803e69",
+     "width": 471,
+     "height": 1024,
+     "line": "Dạ, rõ!",
+     "gloss": "Yes, understood!"
     }
    ]
   },
@@ -250,8 +88,8 @@
    "stickers": [
     {
      "id": "johansson-pixar/Wave",
-     "src": "johansson-pixar/Wave.webp?v=d36f837",
-     "thumb": "johansson-pixar/Wave.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Wave.webp?v=7803e69",
+     "thumb": "johansson-pixar/Wave.thumb.webp?v=7803e69",
      "width": 535,
      "height": 1024,
      "line": "",
@@ -259,8 +97,8 @@
     },
     {
      "id": "johansson-pixar/Salute",
-     "src": "johansson-pixar/Salute.webp?v=d36f837",
-     "thumb": "johansson-pixar/Salute.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Salute.webp?v=7803e69",
+     "thumb": "johansson-pixar/Salute.thumb.webp?v=7803e69",
      "width": 494,
      "height": 1024,
      "line": "",
@@ -268,8 +106,8 @@
     },
     {
      "id": "johansson-pixar/HandsOnHips",
-     "src": "johansson-pixar/HandsOnHips.webp?v=d36f837",
-     "thumb": "johansson-pixar/HandsOnHips.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/HandsOnHips.webp?v=7803e69",
+     "thumb": "johansson-pixar/HandsOnHips.thumb.webp?v=7803e69",
      "width": 538,
      "height": 1024,
      "line": "",
@@ -277,8 +115,8 @@
     },
     {
      "id": "johansson-pixar/Laugh",
-     "src": "johansson-pixar/Laugh.webp?v=d36f837",
-     "thumb": "johansson-pixar/Laugh.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Laugh.webp?v=7803e69",
+     "thumb": "johansson-pixar/Laugh.thumb.webp?v=7803e69",
      "width": 505,
      "height": 1024,
      "line": "",
@@ -286,8 +124,8 @@
     },
     {
      "id": "johansson-pixar/Think",
-     "src": "johansson-pixar/Think.webp?v=d36f837",
-     "thumb": "johansson-pixar/Think.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Think.webp?v=7803e69",
+     "thumb": "johansson-pixar/Think.thumb.webp?v=7803e69",
      "width": 488,
      "height": 1024,
      "line": "",
@@ -295,8 +133,8 @@
     },
     {
      "id": "johansson-pixar/ScratchHead",
-     "src": "johansson-pixar/ScratchHead.webp?v=d36f837",
-     "thumb": "johansson-pixar/ScratchHead.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/ScratchHead.webp?v=7803e69",
+     "thumb": "johansson-pixar/ScratchHead.thumb.webp?v=7803e69",
      "width": 525,
      "height": 1024,
      "line": "",
@@ -304,8 +142,8 @@
     },
     {
      "id": "johansson-pixar/Shrug",
-     "src": "johansson-pixar/Shrug.webp?v=d36f837",
-     "thumb": "johansson-pixar/Shrug.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Shrug.webp?v=7803e69",
+     "thumb": "johansson-pixar/Shrug.thumb.webp?v=7803e69",
      "width": 614,
      "height": 1024,
      "line": "",
@@ -313,8 +151,8 @@
     },
     {
      "id": "johansson-pixar/Stretch",
-     "src": "johansson-pixar/Stretch.webp?v=d36f837",
-     "thumb": "johansson-pixar/Stretch.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Stretch.webp?v=7803e69",
+     "thumb": "johansson-pixar/Stretch.thumb.webp?v=7803e69",
      "width": 630,
      "height": 1024,
      "line": "",
@@ -322,8 +160,8 @@
     },
     {
      "id": "johansson-pixar/Clap",
-     "src": "johansson-pixar/Clap.webp?v=d36f837",
-     "thumb": "johansson-pixar/Clap.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Clap.webp?v=7803e69",
+     "thumb": "johansson-pixar/Clap.thumb.webp?v=7803e69",
      "width": 492,
      "height": 1024,
      "line": "",
@@ -331,8 +169,8 @@
     },
     {
      "id": "johansson-pixar/Cheer",
-     "src": "johansson-pixar/Cheer.webp?v=d36f837",
-     "thumb": "johansson-pixar/Cheer.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Cheer.webp?v=7803e69",
+     "thumb": "johansson-pixar/Cheer.thumb.webp?v=7803e69",
      "width": 652,
      "height": 1024,
      "line": "",
@@ -340,8 +178,8 @@
     },
     {
      "id": "johansson-pixar/Bow",
-     "src": "johansson-pixar/Bow.webp?v=d36f837",
-     "thumb": "johansson-pixar/Bow.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Bow.webp?v=7803e69",
+     "thumb": "johansson-pixar/Bow.thumb.webp?v=7803e69",
      "width": 524,
      "height": 1024,
      "line": "",
@@ -349,8 +187,8 @@
     },
     {
      "id": "johansson-pixar/JawDrop",
-     "src": "johansson-pixar/JawDrop.webp?v=d36f837",
-     "thumb": "johansson-pixar/JawDrop.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/JawDrop.webp?v=7803e69",
+     "thumb": "johansson-pixar/JawDrop.thumb.webp?v=7803e69",
      "width": 560,
      "height": 1024,
      "line": "",
@@ -358,8 +196,8 @@
     },
     {
      "id": "johansson-pixar/Facepalm",
-     "src": "johansson-pixar/Facepalm.webp?v=d36f837",
-     "thumb": "johansson-pixar/Facepalm.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Facepalm.webp?v=7803e69",
+     "thumb": "johansson-pixar/Facepalm.thumb.webp?v=7803e69",
      "width": 491,
      "height": 1024,
      "line": "",
@@ -367,8 +205,8 @@
     },
     {
      "id": "johansson-pixar/OhNo",
-     "src": "johansson-pixar/OhNo.webp?v=d36f837",
-     "thumb": "johansson-pixar/OhNo.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/OhNo.webp?v=7803e69",
+     "thumb": "johansson-pixar/OhNo.thumb.webp?v=7803e69",
      "width": 467,
      "height": 1024,
      "line": "",
@@ -376,8 +214,8 @@
     },
     {
      "id": "johansson-pixar/Shush",
-     "src": "johansson-pixar/Shush.webp?v=d36f837",
-     "thumb": "johansson-pixar/Shush.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Shush.webp?v=7803e69",
+     "thumb": "johansson-pixar/Shush.thumb.webp?v=7803e69",
      "width": 405,
      "height": 1024,
      "line": "",
@@ -385,8 +223,8 @@
     },
     {
      "id": "johansson-pixar/Flex",
-     "src": "johansson-pixar/Flex.webp?v=d36f837",
-     "thumb": "johansson-pixar/Flex.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Flex.webp?v=7803e69",
+     "thumb": "johansson-pixar/Flex.thumb.webp?v=7803e69",
      "width": 647,
      "height": 1024,
      "line": "",
@@ -394,8 +232,8 @@
     },
     {
      "id": "johansson-pixar/PointLaugh",
-     "src": "johansson-pixar/PointLaugh.webp?v=d36f837",
-     "thumb": "johansson-pixar/PointLaugh.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/PointLaugh.webp?v=7803e69",
+     "thumb": "johansson-pixar/PointLaugh.thumb.webp?v=7803e69",
      "width": 425,
      "height": 1024,
      "line": "",
@@ -403,8 +241,8 @@
     },
     {
      "id": "johansson-pixar/FistPump",
-     "src": "johansson-pixar/FistPump.webp?v=d36f837",
-     "thumb": "johansson-pixar/FistPump.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/FistPump.webp?v=7803e69",
+     "thumb": "johansson-pixar/FistPump.thumb.webp?v=7803e69",
      "width": 410,
      "height": 1024,
      "line": "",
@@ -412,8 +250,8 @@
     },
     {
      "id": "johansson-pixar/JumpForJoy",
-     "src": "johansson-pixar/JumpForJoy.webp?v=d36f837",
-     "thumb": "johansson-pixar/JumpForJoy.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/JumpForJoy.webp?v=7803e69",
+     "thumb": "johansson-pixar/JumpForJoy.thumb.webp?v=7803e69",
      "width": 957,
      "height": 1024,
      "line": "",
@@ -421,8 +259,8 @@
     },
     {
      "id": "johansson-pixar/StartledJump",
-     "src": "johansson-pixar/StartledJump.webp?v=d36f837",
-     "thumb": "johansson-pixar/StartledJump.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/StartledJump.webp?v=7803e69",
+     "thumb": "johansson-pixar/StartledJump.thumb.webp?v=7803e69",
      "width": 830,
      "height": 1024,
      "line": "",
@@ -430,8 +268,8 @@
     },
     {
      "id": "johansson-pixar/Sneak",
-     "src": "johansson-pixar/Sneak.webp?v=d36f837",
-     "thumb": "johansson-pixar/Sneak.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Sneak.webp?v=7803e69",
+     "thumb": "johansson-pixar/Sneak.thumb.webp?v=7803e69",
      "width": 586,
      "height": 1024,
      "line": "",
@@ -439,8 +277,8 @@
     },
     {
      "id": "johansson-pixar/Huff",
-     "src": "johansson-pixar/Huff.webp?v=d36f837",
-     "thumb": "johansson-pixar/Huff.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Huff.webp?v=7803e69",
+     "thumb": "johansson-pixar/Huff.thumb.webp?v=7803e69",
      "width": 450,
      "height": 1024,
      "line": "",
@@ -448,8 +286,8 @@
     },
     {
      "id": "johansson-pixar/Eyeroll",
-     "src": "johansson-pixar/Eyeroll.webp?v=d36f837",
-     "thumb": "johansson-pixar/Eyeroll.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Eyeroll.webp?v=7803e69",
+     "thumb": "johansson-pixar/Eyeroll.thumb.webp?v=7803e69",
      "width": 578,
      "height": 1024,
      "line": "",
@@ -457,8 +295,8 @@
     },
     {
      "id": "johansson-pixar/Seethe",
-     "src": "johansson-pixar/Seethe.webp?v=d36f837",
-     "thumb": "johansson-pixar/Seethe.thumb.webp?v=d36f837",
+     "src": "johansson-pixar/Seethe.webp?v=7803e69",
+     "thumb": "johansson-pixar/Seethe.thumb.webp?v=7803e69",
      "width": 520,
      "height": 1024,
      "line": "",
@@ -473,8 +311,8 @@
    "stickers": [
     {
      "id": "thao-pixar/Wave",
-     "src": "thao-pixar/Wave.webp?v=d36f837",
-     "thumb": "thao-pixar/Wave.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Wave.webp?v=7803e69",
+     "thumb": "thao-pixar/Wave.thumb.webp?v=7803e69",
      "width": 479,
      "height": 1024,
      "line": "",
@@ -482,8 +320,8 @@
     },
     {
      "id": "thao-pixar/Peace",
-     "src": "thao-pixar/Peace.webp?v=d36f837",
-     "thumb": "thao-pixar/Peace.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Peace.webp?v=7803e69",
+     "thumb": "thao-pixar/Peace.thumb.webp?v=7803e69",
      "width": 469,
      "height": 1024,
      "line": "",
@@ -491,8 +329,8 @@
     },
     {
      "id": "thao-pixar/Coy",
-     "src": "thao-pixar/Coy.webp?v=d36f837",
-     "thumb": "thao-pixar/Coy.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Coy.webp?v=7803e69",
+     "thumb": "thao-pixar/Coy.thumb.webp?v=7803e69",
      "width": 406,
      "height": 1024,
      "line": "",
@@ -500,8 +338,8 @@
     },
     {
      "id": "thao-pixar/Heart",
-     "src": "thao-pixar/Heart.webp?v=d36f837",
-     "thumb": "thao-pixar/Heart.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Heart.webp?v=7803e69",
+     "thumb": "thao-pixar/Heart.thumb.webp?v=7803e69",
      "width": 418,
      "height": 1024,
      "line": "",
@@ -509,8 +347,8 @@
     },
     {
      "id": "thao-pixar/DoubleCheek",
-     "src": "thao-pixar/DoubleCheek.webp?v=d36f837",
-     "thumb": "thao-pixar/DoubleCheek.thumb.webp?v=d36f837",
+     "src": "thao-pixar/DoubleCheek.webp?v=7803e69",
+     "thumb": "thao-pixar/DoubleCheek.thumb.webp?v=7803e69",
      "width": 491,
      "height": 1024,
      "line": "",
@@ -518,8 +356,8 @@
     },
     {
      "id": "thao-pixar/CheekRest",
-     "src": "thao-pixar/CheekRest.webp?v=d36f837",
-     "thumb": "thao-pixar/CheekRest.thumb.webp?v=d36f837",
+     "src": "thao-pixar/CheekRest.webp?v=7803e69",
+     "thumb": "thao-pixar/CheekRest.thumb.webp?v=7803e69",
      "width": 481,
      "height": 1024,
      "line": "",
@@ -527,8 +365,8 @@
     },
     {
      "id": "thao-pixar/HeelKick",
-     "src": "thao-pixar/HeelKick.webp?v=d36f837",
-     "thumb": "thao-pixar/HeelKick.thumb.webp?v=d36f837",
+     "src": "thao-pixar/HeelKick.webp?v=7803e69",
+     "thumb": "thao-pixar/HeelKick.thumb.webp?v=7803e69",
      "width": 417,
      "height": 1024,
      "line": "",
@@ -536,8 +374,8 @@
     },
     {
      "id": "thao-pixar/Tada",
-     "src": "thao-pixar/Tada.webp?v=d36f837",
-     "thumb": "thao-pixar/Tada.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Tada.webp?v=7803e69",
+     "thumb": "thao-pixar/Tada.thumb.webp?v=7803e69",
      "width": 866,
      "height": 1024,
      "line": "",
@@ -545,8 +383,8 @@
     },
     {
      "id": "thao-pixar/Laugh",
-     "src": "thao-pixar/Laugh.webp?v=d36f837",
-     "thumb": "thao-pixar/Laugh.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Laugh.webp?v=7803e69",
+     "thumb": "thao-pixar/Laugh.thumb.webp?v=7803e69",
      "width": 440,
      "height": 1024,
      "line": "",
@@ -554,8 +392,8 @@
     },
     {
      "id": "thao-pixar/Clap",
-     "src": "thao-pixar/Clap.webp?v=d36f837",
-     "thumb": "thao-pixar/Clap.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Clap.webp?v=7803e69",
+     "thumb": "thao-pixar/Clap.thumb.webp?v=7803e69",
      "width": 432,
      "height": 1024,
      "line": "",
@@ -563,8 +401,8 @@
     },
     {
      "id": "thao-pixar/Think",
-     "src": "thao-pixar/Think.webp?v=d36f837",
-     "thumb": "thao-pixar/Think.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Think.webp?v=7803e69",
+     "thumb": "thao-pixar/Think.thumb.webp?v=7803e69",
      "width": 424,
      "height": 1024,
      "line": "",
@@ -572,8 +410,8 @@
     },
     {
      "id": "thao-pixar/Shrug",
-     "src": "thao-pixar/Shrug.webp?v=d36f837",
-     "thumb": "thao-pixar/Shrug.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Shrug.webp?v=7803e69",
+     "thumb": "thao-pixar/Shrug.thumb.webp?v=7803e69",
      "width": 533,
      "height": 1024,
      "line": "",
@@ -581,8 +419,8 @@
     },
     {
      "id": "thao-pixar/JawDrop",
-     "src": "thao-pixar/JawDrop.webp?v=d36f837",
-     "thumb": "thao-pixar/JawDrop.thumb.webp?v=d36f837",
+     "src": "thao-pixar/JawDrop.webp?v=7803e69",
+     "thumb": "thao-pixar/JawDrop.thumb.webp?v=7803e69",
      "width": 529,
      "height": 1024,
      "line": "",
@@ -590,8 +428,8 @@
     },
     {
      "id": "thao-pixar/OhNo",
-     "src": "thao-pixar/OhNo.webp?v=d36f837",
-     "thumb": "thao-pixar/OhNo.thumb.webp?v=d36f837",
+     "src": "thao-pixar/OhNo.webp?v=7803e69",
+     "thumb": "thao-pixar/OhNo.thumb.webp?v=7803e69",
      "width": 415,
      "height": 1024,
      "line": "",
@@ -599,8 +437,8 @@
     },
     {
      "id": "thao-pixar/HideFace",
-     "src": "thao-pixar/HideFace.webp?v=d36f837",
-     "thumb": "thao-pixar/HideFace.thumb.webp?v=d36f837",
+     "src": "thao-pixar/HideFace.webp?v=7803e69",
+     "thumb": "thao-pixar/HideFace.thumb.webp?v=7803e69",
      "width": 378,
      "height": 1024,
      "line": "",
@@ -608,8 +446,8 @@
     },
     {
      "id": "thao-pixar/Shush",
-     "src": "thao-pixar/Shush.webp?v=d36f837",
-     "thumb": "thao-pixar/Shush.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Shush.webp?v=7803e69",
+     "thumb": "thao-pixar/Shush.thumb.webp?v=7803e69",
      "width": 331,
      "height": 1024,
      "line": "",
@@ -617,8 +455,8 @@
     },
     {
      "id": "thao-pixar/Huff",
-     "src": "thao-pixar/Huff.webp?v=d36f837",
-     "thumb": "thao-pixar/Huff.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Huff.webp?v=7803e69",
+     "thumb": "thao-pixar/Huff.thumb.webp?v=7803e69",
      "width": 342,
      "height": 1024,
      "line": "",
@@ -626,8 +464,8 @@
     },
     {
      "id": "thao-pixar/Eyeroll",
-     "src": "thao-pixar/Eyeroll.webp?v=d36f837",
-     "thumb": "thao-pixar/Eyeroll.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Eyeroll.webp?v=7803e69",
+     "thumb": "thao-pixar/Eyeroll.thumb.webp?v=7803e69",
      "width": 495,
      "height": 1024,
      "line": "",
@@ -635,8 +473,8 @@
     },
     {
      "id": "thao-pixar/PointLaugh",
-     "src": "thao-pixar/PointLaugh.webp?v=d36f837",
-     "thumb": "thao-pixar/PointLaugh.thumb.webp?v=d36f837",
+     "src": "thao-pixar/PointLaugh.webp?v=7803e69",
+     "thumb": "thao-pixar/PointLaugh.thumb.webp?v=7803e69",
      "width": 386,
      "height": 1024,
      "line": "",
@@ -644,8 +482,8 @@
     },
     {
      "id": "thao-pixar/JumpForJoy",
-     "src": "thao-pixar/JumpForJoy.webp?v=d36f837",
-     "thumb": "thao-pixar/JumpForJoy.thumb.webp?v=d36f837",
+     "src": "thao-pixar/JumpForJoy.webp?v=7803e69",
+     "thumb": "thao-pixar/JumpForJoy.thumb.webp?v=7803e69",
      "width": 885,
      "height": 1024,
      "line": "",
@@ -653,8 +491,8 @@
     },
     {
      "id": "thao-pixar/StartledJump",
-     "src": "thao-pixar/StartledJump.webp?v=d36f837",
-     "thumb": "thao-pixar/StartledJump.thumb.webp?v=d36f837",
+     "src": "thao-pixar/StartledJump.webp?v=7803e69",
+     "thumb": "thao-pixar/StartledJump.thumb.webp?v=7803e69",
      "width": 719,
      "height": 1024,
      "line": "",
@@ -662,8 +500,8 @@
     },
     {
      "id": "thao-pixar/Sneak",
-     "src": "thao-pixar/Sneak.webp?v=d36f837",
-     "thumb": "thao-pixar/Sneak.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Sneak.webp?v=7803e69",
+     "thumb": "thao-pixar/Sneak.thumb.webp?v=7803e69",
      "width": 549,
      "height": 1024,
      "line": "",
@@ -671,8 +509,8 @@
     },
     {
      "id": "thao-pixar/Skip",
-     "src": "thao-pixar/Skip.webp?v=d36f837",
-     "thumb": "thao-pixar/Skip.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Skip.webp?v=7803e69",
+     "thumb": "thao-pixar/Skip.thumb.webp?v=7803e69",
      "width": 539,
      "height": 1024,
      "line": "",
@@ -680,12 +518,253 @@
     },
     {
      "id": "thao-pixar/Swoon",
-     "src": "thao-pixar/Swoon.webp?v=d36f837",
-     "thumb": "thao-pixar/Swoon.thumb.webp?v=d36f837",
+     "src": "thao-pixar/Swoon.webp?v=7803e69",
+     "thumb": "thao-pixar/Swoon.thumb.webp?v=7803e69",
      "width": 551,
      "height": 1024,
      "line": "",
      "gloss": "Swooning"
+    }
+   ]
+  },
+  {
+   "id": "thuan-pixar",
+   "name": "World Thuan",
+   "who": "Thuan",
+   "stickers": [
+    {
+     "id": "thuan-pixar/Fume",
+     "src": "thuan-pixar/Fume.webp?v=7803e69",
+     "thumb": "thuan-pixar/Fume.thumb.webp?v=7803e69",
+     "width": 486,
+     "height": 1024,
+     "line": "Tức điên lên!",
+     "gloss": "I'm furious!"
+    },
+    {
+     "id": "thuan-pixar/ShakeFists",
+     "src": "thuan-pixar/ShakeFists.webp?v=7803e69",
+     "thumb": "thuan-pixar/ShakeFists.thumb.webp?v=7803e69",
+     "width": 531,
+     "height": 1024,
+     "line": "Bực quá trời!",
+     "gloss": "So annoying!"
+    },
+    {
+     "id": "thuan-pixar/Scold",
+     "src": "thuan-pixar/Scold.webp?v=7803e69",
+     "thumb": "thuan-pixar/Scold.thumb.webp?v=7803e69",
+     "width": 465,
+     "height": 1024,
+     "line": "Liệu hồn nha!",
+     "gloss": "Watch yourself!"
+    },
+    {
+     "id": "thuan-pixar/Scold-sister",
+     "src": "thuan-pixar/Scold-sister.webp?v=7803e69",
+     "thumb": "thuan-pixar/Scold-sister.thumb.webp?v=7803e69",
+     "width": 465,
+     "height": 1024,
+     "line": "Ai cho mặc đồ tui?!",
+     "gloss": "Who said you could wear my clothes?!"
+    },
+    {
+     "id": "thuan-pixar/Huff",
+     "src": "thuan-pixar/Huff.webp?v=7803e69",
+     "thumb": "thuan-pixar/Huff.thumb.webp?v=7803e69",
+     "width": 421,
+     "height": 1024,
+     "line": "Hứ! Hông thèm!",
+     "gloss": "Hmph! Don't care!"
+    },
+    {
+     "id": "thuan-pixar/Eyeroll",
+     "src": "thuan-pixar/Eyeroll.webp?v=7803e69",
+     "thumb": "thuan-pixar/Eyeroll.thumb.webp?v=7803e69",
+     "width": 484,
+     "height": 1024,
+     "line": "Hết nói nổi luôn.",
+     "gloss": "I'm speechless (give me a break)."
+    },
+    {
+     "id": "thuan-pixar/Seethe",
+     "src": "thuan-pixar/Seethe.webp?v=7803e69",
+     "thumb": "thuan-pixar/Seethe.thumb.webp?v=7803e69",
+     "width": 449,
+     "height": 1024,
+     "line": "Bình tĩnh… bình tĩnh…",
+     "gloss": "Calm… calm…"
+    },
+    {
+     "id": "thuan-pixar/Seethe-late",
+     "src": "thuan-pixar/Seethe-late.webp?v=7803e69",
+     "thumb": "thuan-pixar/Seethe-late.thumb.webp?v=7803e69",
+     "width": 449,
+     "height": 1024,
+     "line": "Mấy giờ rồi hả anh?",
+     "gloss": "What time do you call this?"
+    },
+    {
+     "id": "thuan-pixar/JawDrop",
+     "src": "thuan-pixar/JawDrop.webp?v=7803e69",
+     "thumb": "thuan-pixar/JawDrop.thumb.webp?v=7803e69",
+     "width": 514,
+     "height": 1024,
+     "line": "Trời ơi!",
+     "gloss": "Oh my god!"
+    },
+    {
+     "id": "thuan-pixar/Facepalm",
+     "src": "thuan-pixar/Facepalm.webp?v=7803e69",
+     "thumb": "thuan-pixar/Facepalm.thumb.webp?v=7803e69",
+     "width": 487,
+     "height": 1024,
+     "line": "Bó tay luôn…",
+     "gloss": "I give up (nothing to be done)."
+    },
+    {
+     "id": "thuan-pixar/OhNo",
+     "src": "thuan-pixar/OhNo.webp?v=7803e69",
+     "thumb": "thuan-pixar/OhNo.thumb.webp?v=7803e69",
+     "width": 477,
+     "height": 1024,
+     "line": "Chết rồi!",
+     "gloss": "Oh no, I'm done for!"
+    },
+    {
+     "id": "thuan-pixar/HideFace",
+     "src": "thuan-pixar/HideFace.webp?v=7803e69",
+     "thumb": "thuan-pixar/HideFace.thumb.webp?v=7803e69",
+     "width": 412,
+     "height": 1024,
+     "line": "Ngại quá đi…",
+     "gloss": "So embarrassing…"
+    },
+    {
+     "id": "thuan-pixar/Shush",
+     "src": "thuan-pixar/Shush.webp?v=7803e69",
+     "thumb": "thuan-pixar/Shush.thumb.webp?v=7803e69",
+     "width": 403,
+     "height": 1024,
+     "line": "Bí mật nha!",
+     "gloss": "It's a secret, ok!"
+    },
+    {
+     "id": "thuan-pixar/Salute",
+     "src": "thuan-pixar/Salute.webp?v=7803e69",
+     "thumb": "thuan-pixar/Salute.thumb.webp?v=7803e69",
+     "width": 405,
+     "height": 1024,
+     "line": "Dạ, rõ!",
+     "gloss": "Yes, understood!"
+    },
+    {
+     "id": "thuan-pixar/Swoon",
+     "src": "thuan-pixar/Swoon.webp?v=7803e69",
+     "thumb": "thuan-pixar/Swoon.thumb.webp?v=7803e69",
+     "width": 606,
+     "height": 1024,
+     "line": "Xỉu…",
+     "gloss": "Fainting… (the meme)"
+    },
+    {
+     "id": "thuan-pixar/Flex",
+     "src": "thuan-pixar/Flex.webp?v=7803e69",
+     "thumb": "thuan-pixar/Flex.thumb.webp?v=7803e69",
+     "width": 551,
+     "height": 1024,
+     "line": "Khỏe re!",
+     "gloss": "Strong as anything!"
+    },
+    {
+     "id": "thuan-pixar/PointLaugh",
+     "src": "thuan-pixar/PointLaugh.webp?v=7803e69",
+     "thumb": "thuan-pixar/PointLaugh.thumb.webp?v=7803e69",
+     "width": 428,
+     "height": 1024,
+     "line": "Quê chưa!",
+     "gloss": "Embarrassed much?!"
+    },
+    {
+     "id": "thuan-pixar/FistPump",
+     "src": "thuan-pixar/FistPump.webp?v=7803e69",
+     "thumb": "thuan-pixar/FistPump.thumb.webp?v=7803e69",
+     "width": 409,
+     "height": 1024,
+     "line": "Quá đã!",
+     "gloss": "So satisfying!"
+    },
+    {
+     "id": "thuan-pixar/JumpForJoy",
+     "src": "thuan-pixar/JumpForJoy.webp?v=7803e69",
+     "thumb": "thuan-pixar/JumpForJoy.thumb.webp?v=7803e69",
+     "width": 841,
+     "height": 1024,
+     "line": "Sướng quá!",
+     "gloss": "So happy!"
+    },
+    {
+     "id": "thuan-pixar/StartledJump",
+     "src": "thuan-pixar/StartledJump.webp?v=7803e69",
+     "thumb": "thuan-pixar/StartledJump.thumb.webp?v=7803e69",
+     "width": 692,
+     "height": 1024,
+     "line": "Hết hồn!",
+     "gloss": "You scared the life out of me!"
+    },
+    {
+     "id": "thuan-pixar/Sneak",
+     "src": "thuan-pixar/Sneak.webp?v=7803e69",
+     "thumb": "thuan-pixar/Sneak.thumb.webp?v=7803e69",
+     "width": 528,
+     "height": 1024,
+     "line": "Rón rén thôi…",
+     "gloss": "Tiptoe, quietly…"
+    },
+    {
+     "id": "thuan-pixar/Heart",
+     "src": "thuan-pixar/Heart.webp?v=7803e69",
+     "thumb": "thuan-pixar/Heart.thumb.webp?v=7803e69",
+     "width": 424,
+     "height": 1024,
+     "line": "Nhớ anh quá…",
+     "gloss": "I miss you so much…"
+    },
+    {
+     "id": "thuan-pixar/Wave",
+     "src": "thuan-pixar/Wave.webp?v=7803e69",
+     "thumb": "thuan-pixar/Wave.thumb.webp?v=7803e69",
+     "width": 480,
+     "height": 1024,
+     "line": "Chào nha!",
+     "gloss": "Hi there!"
+    },
+    {
+     "id": "thuan-pixar/Bow",
+     "src": "thuan-pixar/Bow.webp?v=7803e69",
+     "thumb": "thuan-pixar/Bow.thumb.webp?v=7803e69",
+     "width": 497,
+     "height": 1024,
+     "line": "Cảm ơn nha!",
+     "gloss": "Thank you!"
+    },
+    {
+     "id": "thuan-pixar/Tada",
+     "src": "thuan-pixar/Tada.webp?v=7803e69",
+     "thumb": "thuan-pixar/Tada.thumb.webp?v=7803e69",
+     "width": 814,
+     "height": 1024,
+     "line": "Giảm giá nè!",
+     "gloss": "Sale on!"
+    },
+    {
+     "id": "thuan-pixar/stand",
+     "src": "thuan-pixar/stand.webp?v=7803e69",
+     "thumb": "thuan-pixar/stand.thumb.webp?v=7803e69",
+     "width": 404,
+     "height": 1024,
+     "line": "Mua gì hông?",
+     "gloss": "Buying anything?"
     }
    ]
   },
@@ -696,8 +775,8 @@
    "stickers": [
     {
      "id": "thuan/Fume",
-     "src": "thuan/Fume.webp?v=d36f837",
-     "thumb": "thuan/Fume.thumb.webp?v=d36f837",
+     "src": "thuan/Fume.webp?v=7803e69",
+     "thumb": "thuan/Fume.thumb.webp?v=7803e69",
      "width": 567,
      "height": 1024,
      "line": "Tức điên lên!",
@@ -705,8 +784,8 @@
     },
     {
      "id": "thuan/ShakeFists",
-     "src": "thuan/ShakeFists.webp?v=d36f837",
-     "thumb": "thuan/ShakeFists.thumb.webp?v=d36f837",
+     "src": "thuan/ShakeFists.webp?v=7803e69",
+     "thumb": "thuan/ShakeFists.thumb.webp?v=7803e69",
      "width": 593,
      "height": 1024,
      "line": "Bực quá trời!",
@@ -714,8 +793,8 @@
     },
     {
      "id": "thuan/Scold",
-     "src": "thuan/Scold.webp?v=d36f837",
-     "thumb": "thuan/Scold.thumb.webp?v=d36f837",
+     "src": "thuan/Scold.webp?v=7803e69",
+     "thumb": "thuan/Scold.thumb.webp?v=7803e69",
      "width": 474,
      "height": 1024,
      "line": "Liệu hồn nha!",
@@ -723,8 +802,8 @@
     },
     {
      "id": "thuan/Scold-sister",
-     "src": "thuan/Scold-sister.webp?v=d36f837",
-     "thumb": "thuan/Scold-sister.thumb.webp?v=d36f837",
+     "src": "thuan/Scold-sister.webp?v=7803e69",
+     "thumb": "thuan/Scold-sister.thumb.webp?v=7803e69",
      "width": 474,
      "height": 1024,
      "line": "Ai cho mặc đồ tui?!",
@@ -732,8 +811,8 @@
     },
     {
      "id": "thuan/Huff",
-     "src": "thuan/Huff.webp?v=d36f837",
-     "thumb": "thuan/Huff.thumb.webp?v=d36f837",
+     "src": "thuan/Huff.webp?v=7803e69",
+     "thumb": "thuan/Huff.thumb.webp?v=7803e69",
      "width": 437,
      "height": 1024,
      "line": "Hứ! Hông thèm!",
@@ -741,8 +820,8 @@
     },
     {
      "id": "thuan/Eyeroll",
-     "src": "thuan/Eyeroll.webp?v=d36f837",
-     "thumb": "thuan/Eyeroll.thumb.webp?v=d36f837",
+     "src": "thuan/Eyeroll.webp?v=7803e69",
+     "thumb": "thuan/Eyeroll.thumb.webp?v=7803e69",
      "width": 552,
      "height": 1024,
      "line": "Hết nói nổi luôn.",
@@ -750,8 +829,8 @@
     },
     {
      "id": "thuan/Seethe",
-     "src": "thuan/Seethe.webp?v=d36f837",
-     "thumb": "thuan/Seethe.thumb.webp?v=d36f837",
+     "src": "thuan/Seethe.webp?v=7803e69",
+     "thumb": "thuan/Seethe.thumb.webp?v=7803e69",
      "width": 513,
      "height": 1024,
      "line": "Bình tĩnh… bình tĩnh…",
@@ -759,8 +838,8 @@
     },
     {
      "id": "thuan/Seethe-late",
-     "src": "thuan/Seethe-late.webp?v=d36f837",
-     "thumb": "thuan/Seethe-late.thumb.webp?v=d36f837",
+     "src": "thuan/Seethe-late.webp?v=7803e69",
+     "thumb": "thuan/Seethe-late.thumb.webp?v=7803e69",
      "width": 513,
      "height": 1024,
      "line": "Mấy giờ rồi hả anh?",
@@ -768,8 +847,8 @@
     },
     {
      "id": "thuan/JawDrop",
-     "src": "thuan/JawDrop.webp?v=d36f837",
-     "thumb": "thuan/JawDrop.thumb.webp?v=d36f837",
+     "src": "thuan/JawDrop.webp?v=7803e69",
+     "thumb": "thuan/JawDrop.thumb.webp?v=7803e69",
      "width": 562,
      "height": 1024,
      "line": "Trời ơi!",
@@ -777,8 +856,8 @@
     },
     {
      "id": "thuan/Facepalm",
-     "src": "thuan/Facepalm.webp?v=d36f837",
-     "thumb": "thuan/Facepalm.thumb.webp?v=d36f837",
+     "src": "thuan/Facepalm.webp?v=7803e69",
+     "thumb": "thuan/Facepalm.thumb.webp?v=7803e69",
      "width": 507,
      "height": 1024,
      "line": "Bó tay luôn…",
@@ -786,8 +865,8 @@
     },
     {
      "id": "thuan/OhNo",
-     "src": "thuan/OhNo.webp?v=d36f837",
-     "thumb": "thuan/OhNo.thumb.webp?v=d36f837",
+     "src": "thuan/OhNo.webp?v=7803e69",
+     "thumb": "thuan/OhNo.thumb.webp?v=7803e69",
      "width": 563,
      "height": 1024,
      "line": "Chết rồi!",
@@ -795,8 +874,8 @@
     },
     {
      "id": "thuan/HideFace",
-     "src": "thuan/HideFace.webp?v=d36f837",
-     "thumb": "thuan/HideFace.thumb.webp?v=d36f837",
+     "src": "thuan/HideFace.webp?v=7803e69",
+     "thumb": "thuan/HideFace.thumb.webp?v=7803e69",
      "width": 460,
      "height": 1024,
      "line": "Ngại quá đi…",
@@ -804,8 +883,8 @@
     },
     {
      "id": "thuan/Shush",
-     "src": "thuan/Shush.webp?v=d36f837",
-     "thumb": "thuan/Shush.thumb.webp?v=d36f837",
+     "src": "thuan/Shush.webp?v=7803e69",
+     "thumb": "thuan/Shush.thumb.webp?v=7803e69",
      "width": 458,
      "height": 1024,
      "line": "Bí mật nha!",
@@ -813,8 +892,8 @@
     },
     {
      "id": "thuan/Salute",
-     "src": "thuan/Salute.webp?v=d36f837",
-     "thumb": "thuan/Salute.thumb.webp?v=d36f837",
+     "src": "thuan/Salute.webp?v=7803e69",
+     "thumb": "thuan/Salute.thumb.webp?v=7803e69",
      "width": 448,
      "height": 1024,
      "line": "Dạ, rõ!",
@@ -822,8 +901,8 @@
     },
     {
      "id": "thuan/Swoon",
-     "src": "thuan/Swoon.webp?v=d36f837",
-     "thumb": "thuan/Swoon.thumb.webp?v=d36f837",
+     "src": "thuan/Swoon.webp?v=7803e69",
+     "thumb": "thuan/Swoon.thumb.webp?v=7803e69",
      "width": 663,
      "height": 1024,
      "line": "Xỉu…",
@@ -831,8 +910,8 @@
     },
     {
      "id": "thuan/Flex",
-     "src": "thuan/Flex.webp?v=d36f837",
-     "thumb": "thuan/Flex.thumb.webp?v=d36f837",
+     "src": "thuan/Flex.webp?v=7803e69",
+     "thumb": "thuan/Flex.thumb.webp?v=7803e69",
      "width": 610,
      "height": 1024,
      "line": "Khỏe re!",
@@ -840,8 +919,8 @@
     },
     {
      "id": "thuan/PointLaugh",
-     "src": "thuan/PointLaugh.webp?v=d36f837",
-     "thumb": "thuan/PointLaugh.thumb.webp?v=d36f837",
+     "src": "thuan/PointLaugh.webp?v=7803e69",
+     "thumb": "thuan/PointLaugh.thumb.webp?v=7803e69",
      "width": 498,
      "height": 1024,
      "line": "Quê chưa!",
@@ -849,8 +928,8 @@
     },
     {
      "id": "thuan/FistPump",
-     "src": "thuan/FistPump.webp?v=d36f837",
-     "thumb": "thuan/FistPump.thumb.webp?v=d36f837",
+     "src": "thuan/FistPump.webp?v=7803e69",
+     "thumb": "thuan/FistPump.thumb.webp?v=7803e69",
      "width": 476,
      "height": 1024,
      "line": "Quá đã!",
@@ -858,8 +937,8 @@
     },
     {
      "id": "thuan/JumpForJoy",
-     "src": "thuan/JumpForJoy.webp?v=d36f837",
-     "thumb": "thuan/JumpForJoy.thumb.webp?v=d36f837",
+     "src": "thuan/JumpForJoy.webp?v=7803e69",
+     "thumb": "thuan/JumpForJoy.thumb.webp?v=7803e69",
      "width": 793,
      "height": 1024,
      "line": "Sướng quá!",
@@ -867,8 +946,8 @@
     },
     {
      "id": "thuan/StartledJump",
-     "src": "thuan/StartledJump.webp?v=d36f837",
-     "thumb": "thuan/StartledJump.thumb.webp?v=d36f837",
+     "src": "thuan/StartledJump.webp?v=7803e69",
+     "thumb": "thuan/StartledJump.thumb.webp?v=7803e69",
      "width": 724,
      "height": 1024,
      "line": "Hết hồn!",
@@ -876,8 +955,8 @@
     },
     {
      "id": "thuan/Sneak",
-     "src": "thuan/Sneak.webp?v=d36f837",
-     "thumb": "thuan/Sneak.thumb.webp?v=d36f837",
+     "src": "thuan/Sneak.webp?v=7803e69",
+     "thumb": "thuan/Sneak.thumb.webp?v=7803e69",
      "width": 537,
      "height": 1024,
      "line": "Rón rén thôi…",
@@ -885,8 +964,8 @@
     },
     {
      "id": "thuan/Heart",
-     "src": "thuan/Heart.webp?v=d36f837",
-     "thumb": "thuan/Heart.thumb.webp?v=d36f837",
+     "src": "thuan/Heart.webp?v=7803e69",
+     "thumb": "thuan/Heart.thumb.webp?v=7803e69",
      "width": 477,
      "height": 1024,
      "line": "Nhớ anh quá…",
@@ -894,8 +973,8 @@
     },
     {
      "id": "thuan/Wave",
-     "src": "thuan/Wave.webp?v=d36f837",
-     "thumb": "thuan/Wave.thumb.webp?v=d36f837",
+     "src": "thuan/Wave.webp?v=7803e69",
+     "thumb": "thuan/Wave.thumb.webp?v=7803e69",
      "width": 521,
      "height": 1024,
      "line": "Chào nha!",
@@ -903,8 +982,8 @@
     },
     {
      "id": "thuan/Bow",
-     "src": "thuan/Bow.webp?v=d36f837",
-     "thumb": "thuan/Bow.thumb.webp?v=d36f837",
+     "src": "thuan/Bow.webp?v=7803e69",
+     "thumb": "thuan/Bow.thumb.webp?v=7803e69",
      "width": 718,
      "height": 1024,
      "line": "Cảm ơn nha!",
@@ -912,8 +991,8 @@
     },
     {
      "id": "thuan/Tada",
-     "src": "thuan/Tada.webp?v=d36f837",
-     "thumb": "thuan/Tada.thumb.webp?v=d36f837",
+     "src": "thuan/Tada.webp?v=7803e69",
+     "thumb": "thuan/Tada.thumb.webp?v=7803e69",
      "width": 823,
      "height": 1024,
      "line": "Giảm giá nè!",
@@ -921,8 +1000,8 @@
     },
     {
      "id": "thuan/stand",
-     "src": "thuan/stand.webp?v=d36f837",
-     "thumb": "thuan/stand.thumb.webp?v=d36f837",
+     "src": "thuan/stand.webp?v=7803e69",
+     "thumb": "thuan/stand.thumb.webp?v=7803e69",
      "width": 453,
      "height": 1024,
      "line": "Mua gì hông?",
@@ -937,8 +1016,8 @@
    "stickers": [
     {
      "id": "thuan-nils/Walk",
-     "src": "thuan-nils/Walk.webp?v=d36f837",
-     "thumb": "thuan-nils/Walk.thumb.webp?v=d36f837",
+     "src": "thuan-nils/Walk.webp?v=7803e69",
+     "thumb": "thuan-nils/Walk.thumb.webp?v=7803e69",
      "width": 455,
      "height": 1024,
      "line": "Đi chợ nha!",
@@ -946,8 +1025,8 @@
     },
     {
      "id": "thuan-nils/Run",
-     "src": "thuan-nils/Run.webp?v=d36f837",
-     "thumb": "thuan-nils/Run.thumb.webp?v=d36f837",
+     "src": "thuan-nils/Run.webp?v=7803e69",
+     "thumb": "thuan-nils/Run.thumb.webp?v=7803e69",
      "width": 515,
      "height": 1024,
      "line": "Trễ rồi!",
@@ -955,8 +1034,8 @@
     },
     {
      "id": "thuan-nils/Dash",
-     "src": "thuan-nils/Dash.webp?v=d36f837",
-     "thumb": "thuan-nils/Dash.thumb.webp?v=d36f837",
+     "src": "thuan-nils/Dash.webp?v=7803e69",
+     "thumb": "thuan-nils/Dash.thumb.webp?v=7803e69",
      "width": 606,
      "height": 1024,
      "line": "Chạy lẹ đi!",
@@ -964,8 +1043,8 @@
     },
     {
      "id": "thuan-nils/hug",
-     "src": "thuan-nils/hug.webp?v=d36f837",
-     "thumb": "thuan-nils/hug.thumb.webp?v=d36f837",
+     "src": "thuan-nils/hug.webp?v=7803e69",
+     "thumb": "thuan-nils/hug.thumb.webp?v=7803e69",
      "width": 749,
      "height": 1024,
      "line": "Thương anh lắm.",
@@ -973,8 +1052,8 @@
     },
     {
      "id": "thuan-nils/kiss",
-     "src": "thuan-nils/kiss.webp?v=d36f837",
-     "thumb": "thuan-nils/kiss.thumb.webp?v=d36f837",
+     "src": "thuan-nils/kiss.webp?v=7803e69",
+     "thumb": "thuan-nils/kiss.thumb.webp?v=7803e69",
      "width": 924,
      "height": 1024,
      "line": "Chụt!",
@@ -982,8 +1061,8 @@
     },
     {
      "id": "thuan-nils/fight",
-     "src": "thuan-nils/fight.webp?v=d36f837",
-     "thumb": "thuan-nils/fight.thumb.webp?v=d36f837",
+     "src": "thuan-nils/fight.webp?v=7803e69",
+     "thumb": "thuan-nils/fight.thumb.webp?v=7803e69",
      "width": 771,
      "height": 1024,
      "line": "Anh nói cái gì?!",
@@ -991,8 +1070,8 @@
     },
     {
      "id": "thuan-nils/shove",
-     "src": "thuan-nils/shove.webp?v=d36f837",
-     "thumb": "thuan-nils/shove.thumb.webp?v=d36f837",
+     "src": "thuan-nils/shove.webp?v=7803e69",
+     "thumb": "thuan-nils/shove.thumb.webp?v=7803e69",
      "width": 697,
      "height": 1024,
      "line": "Tránh ra nè!",
@@ -1000,8 +1079,8 @@
     },
     {
      "id": "thuan-nils/back-to-back",
-     "src": "thuan-nils/back-to-back.webp?v=d36f837",
-     "thumb": "thuan-nils/back-to-back.thumb.webp?v=d36f837",
+     "src": "thuan-nils/back-to-back.webp?v=7803e69",
+     "thumb": "thuan-nils/back-to-back.thumb.webp?v=7803e69",
      "width": 750,
      "height": 1024,
      "line": "",
