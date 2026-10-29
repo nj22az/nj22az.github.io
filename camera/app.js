@@ -10,6 +10,8 @@ import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,c
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029b';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029b';
+import {createPrinter} from './printer.js?v=20261029e';
+import {createMemory} from './memory.js?v=20261029e';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -50,12 +52,14 @@ const state={
  edit:null,
  shots:[],viewing:null,
  sound:saved.sound!==false,
+ // Every photo saved comes out of the printer first (printer.js); the settings row turns it off for quick shooting.
+ printer:saved.printer!==false,
 };
 state.camera.recipe.stamp=!!saved.stamp;
 const current=()=>state.mode==='editor'?state.edit:state.camera;
 function remember(){
  const c=state.camera,r=c.recipe;
- store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick},ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound});
+ store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick},ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,printer:state.printer});
 }
 
 // ---------- The engine and its canvas ----------
@@ -110,14 +114,25 @@ function sound(kind){
   if(kind==='shutter'){burst(0,.045,3200,.5);burst(.075,.06,1900,.38);}
   else if(kind==='tick')burst(0,.012,4200,.12);
   else if(kind==='count')burst(0,.02,2600,.18);
+  else if(kind==='flip')burst(0,.03,1500,.16);
+  else if(kind==='feed'){burst(0,.035,1700,.07);const o=audio.createOscillator(),g=audio.createGain();o.type='square';o.frequency.value=118;g.gain.setValueAtTime(.025,t);g.gain.exponentialRampToValueAtTime(.0001,t+.04);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+.045);}
+  else if(kind==='tear'){burst(0,.05,2400,.32);burst(.04,.08,1300,.28);}
+  else if(kind==='nope'||kind==='win'){
+   // A soft falling pair for a miss; a rising arpeggio for the last pair found.
+   const notes=kind==='nope'?[[0,330],[.09,247]]:[[0,523],[.09,659],[.18,784],[.27,1047]];
+   for(const [at,f] of notes){const o=audio.createOscillator(),g=audio.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(.0001,t+at);g.gain.exponentialRampToValueAtTime(kind==='nope'?.07:.12,t+at+.015);g.gain.exponentialRampToValueAtTime(.0001,t+at+(kind==='nope'?.16:.3));o.connect(g).connect(audio.destination);o.start(t+at);o.stop(t+at+.32);}
+  }
   else if(kind==='pop'){
    // A small rising blip, for a sticker stuck on.
    const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(980,t+.07);
    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.13);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+.14);
   }
  }catch{}
- if(kind!=='tick')navigator.vibrate?.(kind==='shutter'?12:6);
+ if(!['tick','feed','flip'].includes(kind))navigator.vibrate?.(kind==='shutter'?12:6);
 }
+
+// The printer every saved photo comes out of (printer.js).
+const printer=createPrinter({sound,reduceMotion});
 
 // ---------- Laying out the picture ----------
 /** Sizes the canvas's box to sit whole inside its stage at the picture's shape. */
@@ -324,9 +339,10 @@ function loop(t){
  if(!engine)return;
  // Nothing can be drawn until the graphics come back (webglcontextrestored).
  if(engine.lost()){if(state.mode==='camera'||state.mode==='editor')setTimeout(schedule,250);return;}
- if(state.mode==='camera'&&state.camera.running){drawCamera(t);schedule();}
+ // While the printer prints, the viewfinder (blurred behind it) holds still, so the print moves smoothly.
+ if(state.mode==='camera'&&state.camera.running){if(!printer.busy)drawCamera(t);schedule();}
  else if(state.mode==='editor'&&state.edit){if(dirty)drawEditor();if(thumbsDue||dirty)schedule();}
- drawThumbs();
+ if(!printer.busy)drawThumbs();
 }
 function videoSize(){const v=$('video');return {width:v.videoWidth||1,height:v.videoHeight||1};}
 /** The part of the camera picture that is kept: the chosen shape, zoomed, centred. */
@@ -435,6 +451,7 @@ function renderCameraChips(){
  setting('frameSetting',{label:r.frame==='none'?'Frame':frame.label,on:r.frame!=='none',aria:`Frame: ${frame.label}`});
  setting('mirrorSetting',{label:r.trick==='none'?'Mirror':TRICK_LABELS[r.trick],on:r.trick!=='none',aria:`Mirror lens: ${TRICK_LABELS[r.trick]}`});
  setting('stamp',{label:'Date',on:r.stamp,aria:`Date stamp: ${r.stamp?'on':'off'}`});
+ setting('printSetting',{label:'Print',on:state.printer,aria:`Printer when saving: ${state.printer?'on':'off'}`});
  setting('soundSetting',{label:state.sound?'Sound':'Muted',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
  // What is switched on, beside the chevron, so it is never a surprise in the photo.
  const status=[c.timer&&'timer',r.frame!=='none'&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
@@ -457,6 +474,7 @@ $('frameSetting').addEventListener('click',()=>changeSetting(()=>{const r=state.
 $('mirrorSetting').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.trick=cycle(TRICKS,r.trick);refreshThumbs(true);}));
 $('stamp').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.stamp=!r.stamp;}));
 $('soundSetting').addEventListener('click',()=>{state.sound=!state.sound;sound('tick');renderCameraChips();remember();});
+$('printSetting').addEventListener('click',()=>{state.printer=!state.printer;sound('tick');renderCameraChips();remember();});
 $('zoom').addEventListener('click',()=>{const c=state.camera;c.zoom=cycle(ZOOMS,c.zoom);sound('tick');renderCameraChips();refreshThumbs(true);});
 
 // Light, live, as the hand-held camera set brightness on its pad: drag up or down on the picture. The sun shows how far;
@@ -524,10 +542,19 @@ async function takePhoto(){
   try{finished=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);}
   finally{engine.dropSource('still');}
   const {photo,thumb}=finished,source=await toBlob(still,'image/jpeg',.92);still.width=still.height=0;
-  flyToRoll(photo);
-  await keep({photo,source,thumb,recipe,width:size.width,height:size.height,taken:taken.getTime()});
+  // Printed, then into the album's thumbnail; the thumbnail changes when the print lands in it.
+  const printing=printPhoto(photo,size.width,size.height,()=>$('roll').getBoundingClientRect());
+  if(!printing)flyToRoll(photo);
+  await keep({photo,source,thumb,recipe,width:size.width,height:size.height,taken:taken.getTime()},{roll:!printing});
+  if(printing){await printing;renderRoll(true);}
  }catch(err){console.error(err);toast('The photo could not be saved');}
  finally{c.busy=false;$('shutter').classList.remove('waiting');$('count').textContent='';}
+}
+/** Plays the printer for a saved photo when it is on; a promise for its landing, or null when it does not play. */
+function printPhoto(blob,width,height,to){
+ if(!state.printer||reduceMotion||printer.busy)return null;
+ const url=URL.createObjectURL(blob);
+ return printer.print(url,{width,height,to}).catch(()=>false).finally(()=>URL.revokeObjectURL(url));
 }
 function flash(){const f=$('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go');}
 function flyToRoll(blob){
@@ -587,6 +614,12 @@ async function decode(blob){
  return {picture,width,height,close:()=>picture.close?.()};
 }
 
+/** The largest rectangle of shape `aspect` inside `r`, less `pad` all round, centred: where a photo shows. */
+function fitInside(r,aspect,pad=0){
+ const w0=r.width-2*pad,h0=r.height-2*pad;let w=w0,h=w0/aspect;if(h>h0){h=h0;w=h0*aspect;}
+ return {left:r.left+(r.width-w)/2,top:r.top+(r.height-h)/2,width:w,height:h};
+}
+
 // ---------- Album ----------
 let albumOK=true;
 async function loadShots(){
@@ -594,9 +627,9 @@ async function loadShots(){
  if(state.shots.length)keepAlbum();
  renderRoll();
 }
-async function keep(shot){
+async function keep(shot,{roll=true}={}){
  if(!albumOK){offerFile(shot.photo);return null;}
- try{const r=await addShot(shot);state.shots.unshift(r);renderRoll(true);keepAlbum();return r;}
+ try{const r=await addShot(shot);state.shots.unshift(r);if(roll)renderRoll(true);keepAlbum();return r;}
  catch{albumOK=false;offerFile(shot.photo);return null;}
 }
 let rollURL;
@@ -624,7 +657,7 @@ $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)o
 
 function show(mode){
  state.mode=mode;
- for(const id of ['camera','editor','album','viewer'])$(id).hidden=id!==mode;
+ for(const id of ['camera','editor','album','viewer','memory'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
  if(mode==='editor'){$('panelLooks').append(tray);placeCanvas($('editFrame'));$('panelStickers').append($('stickerPicker'));}
  if(mode==='camera'||mode==='editor'){buildTrayFor();}
@@ -646,6 +679,30 @@ async function maybeStartCamera(){
 $('roll').addEventListener('click',openAlbum);
 function openAlbum(){show('album');renderGrid();}
 $('closeAlbum').addEventListener('click',()=>show('camera'));
+
+// ---------- Memory ----------
+let stickerSheets=null;
+/** The cards Memory can be played with: the album's photos, each of the residents' sheets, the photographer's own stickers. */
+async function memorySources(){
+ const manifest=stickerSheets||await loadStickerSets().catch(()=>null);
+ const day=s=>new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'});
+ return [
+  {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:`Your photo of ${day(s)}`}))},
+  ...(manifest?.sets||[]).map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
+  {id:'mine',name:'Your stickers',kind:'sticker',items:mine.map(m=>stickerById(m.id)).filter(Boolean).map(s=>({id:s.id,url:s.url,label:'Your sticker'}))},
+ ];
+}
+/** A resident sticker, any one, to cheer the last pair. */
+function cheer(){
+ const all=(stickerSheets?.sets||[]).flatMap(set=>set.stickers),s=all[Math.floor(Math.random()*all.length)];
+ return s?{url:s.url,alt:`${s.set}: “${s.line}” (${s.gloss})`}:null;
+}
+const memory=createMemory($('memory'),{sources:memorySources,cheer,sound,store,onPlay:()=>{$('memoryNew').hidden=false;}});
+async function openMemory(){sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
+$('playMemory').addEventListener('click',openMemory);
+$('emptyPlay').addEventListener('click',openMemory);
+$('closeMemory').addEventListener('click',()=>{memory.close();openAlbum();});
+$('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden=true;memory.showSetup();});
 
 let viewerURL;
 async function openViewer(id){
@@ -783,11 +840,14 @@ $('saveEdit').addEventListener('click',async()=>{
  try{
   const recipe=normalRecipe(e.recipe);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
+  const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
   let shot;
   if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
-  if(shot){state.viewing=shot;openViewer(shot.id);toast('Saved to the album');}else show('camera');
+  if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
+  if(printing)await printing;
+  if(shot)toast('Saved to the album');
  }catch(err){console.error(err);toast('The photo could not be saved');}
  finally{e.saving=false;button.disabled=false;$('cancelEdit').disabled=false;button.textContent='Save';}
 });
@@ -976,7 +1036,7 @@ addEventListener('keydown',e=>{
   if((e.key===' '||e.key==='Enter')&&!e.target.closest?.('button,a')){e.preventDefault();takePhoto();}
   else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
  }else if(e.key==='Escape'){
-  if(state.mode==='editor')closeEditor();else if(state.mode==='viewer')openAlbum();else if(state.mode==='album')show('camera');
+  if(state.mode==='editor')closeEditor();else if(state.mode==='viewer')openAlbum();else if(state.mode==='album')show('camera');else if(state.mode==='memory'){memory.close();openAlbum();}
  }else if(state.mode==='editor'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
 });
 addEventListener('dragover',e=>{if([...e.dataTransfer?.items||[]].some(i=>i.kind==='file'))e.preventDefault();});
@@ -1012,7 +1072,7 @@ if(!startEngine()){
  // residents' sheets, a different one each time (the owner, 29 October 2026: "Replace Fuji with a random sticker when
  // you start"), never the one shown last; Fuji waves the empty album off ("Casting off!").
  loadStickerSets().then(manifest=>{
-  cameraStickers.render();
+  stickerSheets=manifest;cameraStickers.render();
   const all=manifest.sets.flatMap(set=>set.stickers),last=store.read().greeting;
   const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('fuji/Salute');
   if(hello)store.write({...store.read(),greeting:hello.id});
@@ -1022,4 +1082,4 @@ if(!startEngine()){
  if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers};
+window.pocketCamera={state,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory};
