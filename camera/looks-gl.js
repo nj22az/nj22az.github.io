@@ -14,10 +14,19 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
-// A camera-only original Look. It builds on World's shared sampling and outline helpers, without adding a World Look.
+// Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
+// Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
+// dots, a blueprint and night vision.
 export const LOOKS=Object.freeze({...WORLD_LOOKS,
- adventureInk:Object.freeze({label:'Adventure Ink',short:'Adventure',hint:'Bright cel colours and clean manga-inspired ink.'})
+ adventureInk:Object.freeze({label:'Adventure Ink',short:'Adventure',hint:'Bright cel colours and clean manga-inspired ink.'}),
+ instant:Object.freeze({label:'Instant film',short:'Instant',hint:'An instant print: a soft matte fade, warm light, a leak of light in the corner.'}),
+ camcorder:Object.freeze({label:'VHS camcorder',short:'VHS',hint:'A home video tape of the 80s: colours that bleed, soft lines, a wobble at the foot.'}),
+ halftone:Object.freeze({label:'Comic dots',short:'Dots',hint:'A printed comic page: the picture in cyan, magenta, yellow and black dots.'}),
+ cyanotype:Object.freeze({label:'Blueprint',short:'Blueprint',hint:'A cyanotype: Prussian blue and paper white, as an engineer\'s plans were printed.'}),
+ nightVision:Object.freeze({label:'Night vision',short:'Night',hint:'Green phosphor through an image tube: the dark brought up, with grain.'}),
 });
+/** The World Look whose little house stands in for a camera-only Look until its live thumbnail is drawn. */
+export const LOOK_STANDIN=Object.freeze({adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket'});
 
 // Clean coloured-comic panels: preserve the photo's hue, group the light into five gentle cel bands, and keep small
 // dark details (especially eyes) as well as colour boundaries. No copied characters, art or shader code is used.
@@ -61,6 +70,99 @@ void main(){
  gl_FragColor=vec4(col,1.0);
 }`;
 
+// An instant print: a gentle S curve, then a matte fade (blacks lifted, whites softened), cool shadows and warm
+// highlights, a leak of orange light from the top right corner, soft corners and a fine grain.
+const INSTANT_BODY=`
+void main(){
+ float u=unit();
+ vec3 c=texture2D(tDiffuse,vUv).rgb;
+ float l=luma(c);
+ c=mix(vec3(l),c,.78);
+ c=mix(c,c*c*(3.0-2.0*c),.45);
+ c=mix(vec3(.16,.13,.15),vec3(.97,.91,.78),c);
+ c+=vec3(.06,.025,-.05)*smoothstep(.4,1.0,l)+vec3(-.03,.01,.05)*(1.0-smoothstep(0.0,.45,l));
+ vec2 q=(vUv-vec2(1.02,1.02))*vec2(1.5,1.0);
+ c+=vec3(.75,.30,.08)*exp(-dot(q,q)*3.2)*.7;
+ vec2 v=vUv-.5;
+ c*=1.0-dot(v,v)*.8;
+ c+=(hash(floor(vUv*uResolution/(1.4*u)))-.5)*.06;
+ gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
+}`;
+// A home video tape: the picture split into brightness and colour as a VHS recorder does, the colour smeared and late
+// along each line, every line a hair off its neighbours and the bottom few torn sideways (the head switch), a few
+// specks of tape noise and faint lines. Still, as every Look is: nothing moves with time.
+const CAMCORDER_BODY=`
+vec3 toYiq(vec3 c){return vec3(dot(c,vec3(.299,.587,.114)),dot(c,vec3(.596,-.274,-.322)),dot(c,vec3(.211,-.523,.312)));}
+vec3 fromYiq(vec3 y){return vec3(y.x+.956*y.y+.621*y.z,y.x-.272*y.y-.647*y.z,y.x-1.106*y.y+1.703*y.z);}
+void main(){
+ float u=unit();
+ float row=floor(vUv.y*uResolution.y/(2.0*u));
+ float jitter=(hash(vec2(row,7.0))-.5)*2.0*u*uTexel.x+(1.0-smoothstep(0.0,.07,vUv.y))*(.01+hash(vec2(row,3.0))*.02);
+ vec2 p=vec2(vUv.x+jitter,vUv.y);
+ float y=0.0;vec2 iq=vec2(0.0);
+ for(int i=-2;i<=2;i++){y+=toYiq(texture2D(tDiffuse,p+vec2(float(i)*2.2*u*uTexel.x,0.0)).rgb).x*(i==0?.32:.17);}
+ for(int i=0;i<8;i++){iq+=toYiq(texture2D(tDiffuse,p+vec2((float(i)+1.5)*5.0*u*uTexel.x,0.0)).rgb).yz;}
+ vec3 c=fromYiq(vec3(y*.96+.03,iq/8.0*1.45));
+ c+=step(.998,hash(vec2(floor(vUv.x*uResolution.x/(4.0*u)),row)))*.4;
+ c*=.88+.12*step(.5,fract(vUv.y*uResolution.y/(3.0*u)));
+ c=mix(c,vec3(luma(c)),.06);
+ c=c*vec3(1.06,1.0,.94)*1.04-.02;
+ gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
+}`;
+// A printed comic page: the picture separated into cyan, magenta, yellow and black, each printed as a grid of round
+// dots at its own screen angle on cream paper, the dots as big as their ink's share of the colour.
+const HALFTONE_BODY=`
+float comicDot(vec2 px,float angle,float cell,float cover){
+ float s=sin(angle),c=cos(angle);
+ vec2 f=fract(mat2(c,-s,s,c)*px/cell)-.5;
+ float r=sqrt(clamp(cover,0.0,1.0))*.62;
+ return 1.0-smoothstep(r-.07,r+.07,length(f));
+}
+void main(){
+ float u=unit(),cell=max(6.0,13.0*u);
+ vec2 px=vUv*uResolution;
+ vec3 c=texture2D(tDiffuse,vUv).rgb;
+ float k=1.0-max(c.r,max(c.g,c.b));
+ vec3 cmy=(1.0-c-k)/max(1.0-k,.001)*.9;
+ vec3 col=vec3(.98,.96,.90);
+ col*=mix(vec3(1.0),vec3(0.0,.66,.92),comicDot(px,.26,cell,cmy.x));
+ col*=mix(vec3(1.0),vec3(.92,.16,.52),comicDot(px,1.31,cell,cmy.y));
+ col*=mix(vec3(1.0),vec3(1.0,.90,.05),comicDot(px,0.0,cell,cmy.z));
+ // Black only where the picture is truly dark, as a comic's key plate: the shadows, not every middle tone.
+ col*=mix(vec3(1.0),vec3(.13,.12,.14),comicDot(px,.79,cell,smoothstep(.38,1.0,k)*.95));
+ gl_FragColor=vec4(col,1.0);
+}`;
+// A cyanotype: the light of the picture printed from Prussian blue to paper white, with the paper's grain and its
+// brushed-on edges a little darker.
+const CYANOTYPE_BODY=`
+void main(){
+ float u=unit();
+ float l=pow(smoothstep(.04,.96,luma(texture2D(tDiffuse,vUv).rgb)),.85);
+ vec3 deep=vec3(.03,.17,.36),mid=vec3(.13,.39,.62),paper=vec3(.90,.94,.95);
+ vec3 col=l<.5?mix(deep,mid,l*2.0):mix(mid,paper,(l-.5)*2.0);
+ col+=(noise(vUv*uResolution/(3.0*u))-.5)*.05;
+ vec2 v=vUv-.5;
+ col*=1.0-dot(v,v)*.35;
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}`;
+// Night vision: the picture's light amplified into green phosphor, the bright parts glowing out a little, grain and
+// faint lines, seen through the round end of an image tube.
+const NIGHT_BODY=`
+void main(){
+ float u=unit();
+ vec3 c=texture2D(tDiffuse,vUv).rgb,g=vec3(0.0);
+ for(int i=0;i<8;i++){float a=float(i)*.785;g+=texture2D(tDiffuse,vUv+vec2(cos(a),sin(a))*uTexel*5.0*u).rgb;}
+ float l=smoothstep(.03,.95,luma(c)*.85+luma(g/8.0)*.3);
+ l=pow(l,.9);
+ l+=(hash(floor(vUv*uResolution/(1.5*u)))-.5)*.14;
+ l*=.92+.08*step(.5,fract(vUv.y*uResolution.y/(3.0*u)));
+ vec2 v=(vUv-.5)*vec2(uResolution.x/uResolution.y,1.0);
+ float tube=1.0-smoothstep(.42,.72,length(v));
+ gl_FragColor=vec4(clamp(vec3(.10,1.0,.32)*l*tube+vec3(0.0,.03,0.0),0.0,1.0),1.0);
+}`;
+/** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). */
+const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY};
+
 /** In the order World's menu offers them. */
 export const LOOK_NAMES=Object.freeze(Object.keys(LOOKS));
 /** The trick lenses, as the hand-held cameras had them: Twin mirrors the left half onto the right, Quad the top left
@@ -74,13 +176,14 @@ const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;\nfloat unit(){r
 
 /** World's fragment for a Look as GLSL ES 3.00, mixed into its input by uAmount; null for Natural. */
 export function photoFragment(name,{light=false}={}){
- let world=lookFragment(name==='adventureInk'?'flat':name,{light,depth:false});
+ const own=CAMERA_BODIES[name];
+ let world=lookFragment(own?'flat':name,{light,depth:false});
  if(!world)return null;
- if(name==='adventureInk'){
+ if(own){
   // flat's program is the final main after the shared helpers; replace only it, retaining the camera conversion.
   const main=world.lastIndexOf('void main()');
   if(main<0)throw new Error('World Look helper entry point changed');
-  world=world.slice(0,main)+ADVENTURE_BODY;
+  world=world.slice(0,main)+own;
  }
  const body=world.replace('#include <packing>','').replace(WORLD_UNIT,PHOTO_UNIT).replace(/void\s+main\s*\(\s*\)/,'void lookMain()');
  return `#version 300 es
@@ -103,7 +206,7 @@ export const lookDrawsLines=name=>name==='adventureInk'||(name!=='none'&&lookUse
  * photo before its dither (src/photo/pocket-camera.js), a picture is exposed for them first: its average brought to
  * the town's middle.
  */
-export const INK_LOOKS=Object.freeze(['pocket','snes','lines','manga','print','riso','pencilManga','stamp']);
+export const INK_LOOKS=Object.freeze(['pocket','snes','lines','manga','print','riso','pencilManga','stamp','halftone','cyanotype','nightVision']);
 
 /** A recipe with every field present and in range. */
 export function normalRecipe(recipe={}){

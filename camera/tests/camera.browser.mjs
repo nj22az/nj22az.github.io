@@ -58,7 +58,9 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
    await page.waitForFunction(()=>document.querySelector('#cameraFrame canvas')?.width>100,null,{timeout:20000});
    await page.waitForTimeout(1500);await shot('1-camera');
-   assert.equal(await app(()=>document.querySelector('#camera').classList.contains('compact')),false,'a tall screen keeps the Looks under the picture');
+   // A wide window keeps the Looks beside or under the picture; a phone folds them over it when the picture would
+   // otherwise be narrower than the screen (checked at Safari's height below).
+   if(!mobile)assert.equal(await app(()=>document.querySelector('#camera').classList.contains('compact')),false,'a wide window keeps the Looks off the picture');
   });
   await check(`${label}: every World Look compiles and draws the camera picture`,async()=>{
    const out=await app(()=>{
@@ -70,7 +72,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
     }
     return report;
    });
-   assert.ok(Object.keys(out).length>=19,`${Object.keys(out).length} Looks offered`);
+   assert.ok(Object.keys(out).length>=25,`${Object.keys(out).length} Looks offered (World's, Adventure Ink and the camera's five)`);
    for(const [look,r] of Object.entries(out)){assert.equal(r.failed,false,`${look} compiled`);assert.ok(r.spread>3,`${look} draws a picture, not a flat colour (${r.spread.toFixed(1)})`);}
   });
   await check(`${label}: two camera starts at once leave one camera running`,async()=>{
@@ -83,11 +85,26 @@ async function run({label,width,height,dpr,mobile,portrait}){
    });
    assert.equal(live.made,2);assert.equal(live.live,1,'the earlier camera is turned off');assert.ok(live.running);
   });
-  await check(`${label}: thumbnails show the camera in each Look`,async()=>{
-   await page.waitForFunction(()=>document.querySelectorAll('.tile canvas.drawn').length>=19,null,{timeout:60000});await shot('2-thumbnails');
+  await check(`${label}: thumbnails show the camera in each Look of the kind on show`,async()=>{
+   // On a phone the strip may be folded over the picture: the Look's name unfolds it.
+   if(await app(()=>{const c=document.querySelector('#camera');return c.classList.contains('compact')&&!c.classList.contains('looks-open');}))await page.click('#layers .layer.active .layer-pick');
+   const shownDrawn=()=>page.waitForFunction(()=>{const t=[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden);return t.length>0&&t.every(x=>x.querySelector('canvas.drawn'));},null,{timeout:60000});
+   await shownDrawn();
+   await page.click('#lookGroups button[data-group="drawn"]');await shownDrawn();
+   assert.equal(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).length),8,'Drawn: eight Looks');
+   await shot('2-thumbnails');
   });
   await check(`${label}: a mix of two Looks, chosen from the strip`,async()=>{
    await page.click('.add-layer');
+   // The Looks come in kinds; a kind shows only its own (the owner: "game consoles can stay with each other and vhs for
+   // 80's"), and the kind of the chosen Look is the one open.
+   const kinds=await app(()=>[...document.querySelectorAll('#lookGroups button')].map(b=>b.textContent));
+   assert.deepEqual(kinds,['Photo','Games','80s','Drawn','Painted','Print']);
+   await page.click('#lookGroups button[data-group="80s"]');
+   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['crt','camcorder'],'80s: Old TV and the VHS camcorder');
+   await page.click('#lookGroups button[data-group="games"]');
+   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['pocket','snes'],'the game consoles together');
+   await page.click('#lookGroups button[data-group="80s"]');
    await page.click('.tile[data-look="crt"]');
    const layers=await app(()=>window.pocketCamera.state.camera.recipe.layers.map(l=>l.look));
    assert.deepEqual(layers,['pocket','crt']);
@@ -234,7 +251,8 @@ async function run({label,width,height,dpr,mobile,portrait}){
    const opened=await app(()=>({edit:window.pocketCamera.state.edit.recipe.layers,camera:window.pocketCamera.state.camera.recipe.layers}));
    assert.ok(opened.camera.length>1,'the camera has a mix on');
    assert.deepEqual(opened.edit,[{look:opened.camera[0].look,amount:1}],'the photo opens in the main Look only');
-   await page.click('.tile[data-look="watercolour"]');await page.click('.add-layer');await page.click('.tile[data-look="print"]');
+   await page.click('#lookGroups button[data-group="painted"]');await page.click('.tile[data-look="watercolour"]');await page.click('.add-layer');
+   await page.click('#lookGroups button[data-group="print"]');await page.click('.tile[data-look="print"]');
    await page.waitForTimeout(1500);await shot('10-import');
    await page.click('#saveEdit');await page.waitForSelector('#viewer:not([hidden])',{timeout:60000});
    const n=await app(async()=>{const s=window.pocketCamera.state.shots;const b=await createImageBitmap(s[0].photo);return {count:s.length,w:b.width,h:b.height};});
@@ -377,11 +395,11 @@ async function playAndPrint({label,width,height}){
    assert.equal(v.strip,'none','the strip is folded');assert.ok(v.trayOver,'the Look row is on the picture');
    await page.locator('#layers .layer.active .layer-pick').tap();
    v=await look();assert.ok(v.open&&v.strip!=='none','the Look name unfolds the strip');
-   await page.locator('#strip .tile[data-look="sepia"]').tap();
+   await page.locator('#lookGroups button[data-group="photo"]').tap();await page.locator('#strip .tile[data-look="sepia"]').tap();
    assert.equal(await page.evaluate(()=>window.pocketCamera.state.camera.recipe.layers[0].look),'sepia');
    const f=await page.locator('#cameraFrame').boundingBox();await page.touchscreen.tap(f.x+f.width/2,f.y+f.height*.3);
    await page.waitForFunction(()=>!document.querySelector('#camera').classList.contains('looks-open'));
-   await page.locator('#layers .layer.active .layer-pick').tap();await page.locator('#strip .tile[data-look="pocket"]').tap();
+   await page.locator('#layers .layer.active .layer-pick').tap();await page.locator('#lookGroups button[data-group="games"]').tap();await page.locator('#strip .tile[data-look="pocket"]').tap();
    await page.touchscreen.tap(f.x+f.width/2,f.y+f.height*.3);
    // Every row fits across the phone held upright: nothing runs off its edge (the owner: "parts are truncated in portrait").
    const fits=sel=>page.evaluate(sel=>{const e=document.querySelector(sel),r=e.getBoundingClientRect();

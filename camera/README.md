@@ -108,6 +108,26 @@ beside the picture, as on an iPad.
 
 **Adventure Ink** is a camera-only Look with cel bands and ink outlines; its matching **Adventure** frame is drawn by `tools/draw-camera-frames.py`. The Look works with the existing mix and editing system.
 
+## The camera's own Looks, and the kinds
+
+Besides World's nineteen and Adventure Ink, five Looks are the camera's own (`looks-gl.js`, each a main of its own over
+World's shared helpers; World is unchanged; the owner, 29 October 2026: "Yes add"): **Instant film** (a matte fade,
+warm light, a leak of light in the corner, grain), **VHS camcorder** (an 80s home video tape: colour that bleeds and
+lags along each line, lines a hair apart, the foot torn sideways, a few specks), **Comic dots** (cyan, magenta, yellow
+and black dots at their own screen angles on cream paper, black only in the shadows), **Blueprint** (a cyanotype:
+Prussian blue to paper white) and **Night vision** (green phosphor through a round image tube, with grain). Like every
+Look they are still: nothing moves with time, so a photo is the viewfinder.
+
+The strip shows one kind at a time (the owner: "make sub menu organisation so it doesn't feel cluttered like game
+consoles can stay with each other and vhs for 80's or so"): **Photo** (Natural, Black & white, Sepia, Instant,
+Miniature, Night vision), **Games** (Pocket, 16-bit), **80s** (Old TV, VHS), **Drawn** (Line drawing, Sketchbook, Pencil
+crayon, Pencil manga, Manga, Cartoon, Adventure Ink, Comic dots), **Painted** (Watercolour, Oil, Heavy brush) and
+**Print** (Woodblock, Risograph, Rubber stamp, Blueprint). The kind of the chosen Look is the one open and keeps its name
+in yellow while another is looked at; a swipe across the picture goes through every Look, kind after kind; only the
+open kind's thumbnails are drawn, and none while the strip is folded over the picture. A Look World adds later goes under
+More until it is given a kind (`LOOK_GROUPS` in `app.js`). New dice mixes: Home video (Instant and VHS), Comic book
+(Cartoon and Comic dots), Engineer's plan (Line drawing and Blueprint), Night watch (Night vision and Old TV).
+
 ## How it works
 
 | File | Purpose |
@@ -161,7 +181,7 @@ steps, the print lands in the album, a tap skips it, Print off saves without it)
 the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
 the cartoon Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
 saved JPEG). Then, at phone and desktop size, it
-compiles and draws all 19 Looks on the camera picture, starts
+compiles and draws all 25 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a
 lettered balloon, takes the photo (the print's border is in the saved file), re-edits it from its source (Film frame,

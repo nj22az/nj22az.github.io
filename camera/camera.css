@@ -447,3 +447,17 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker-sets{flex:none;min-height:30px}
 /* Four and a half frames across the sheet at any width, so the next one always shows at the edge. */
 .frame-sheet .frame-choice canvas{width:calc((min(420px,100vw - 16px) - 72px)/4.5);height:calc((min(420px,100vw - 16px) - 72px)/4.5)}
+/* The kinds of Look over the strip (Photo, Games, 80s, Drawn, Painted, Print): one shown at a time, so the strip holds a
+   few Looks, not twenty-five. The kind that holds the chosen Look keeps its name in yellow while another is open. */
+.look-groups{display:flex;flex:none;justify-content:center;gap:clamp(3px,1.2vw,6px);padding:6px 12px 0;min-height:28px}
+.look-groups button{flex:0 1 auto;min-width:0;height:28px;padding:0 clamp(7px,2.4vw,12px);border-radius:14px;color:var(--label-2);font-size:clamp(12px,3.3vw,13px);font-weight:650;white-space:nowrap;transition:background-color .2s,color .2s}
+.look-groups button[aria-selected="true"]{background:#f0f0ee;color:#181818}
+.look-groups button.has-look:not([aria-selected="true"]){color:var(--accent)}
+.tile[hidden]{display:none}
+.camera.compact:not(.looks-open) .look-groups{display:none}
+.look-groups[hidden]{display:none}
+/* A kind's few Looks sit in the middle of the strip; a long kind still scrolls from its first. */
+.strip::before,.strip::after{content:"";flex:1 0 0px}
+/* Unfolded over the picture, the kinds and the strip have a deeper shade behind them, so their names read on a bright
+   picture. */
+.camera.compact.looks-open .tray{background:linear-gradient(to top,rgba(0,0,0,.8),rgba(0,0,0,.55) 72%,transparent)}

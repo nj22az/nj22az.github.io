@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029c';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029s';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029k';
@@ -31,6 +31,7 @@ const MIXES=[
  ['Cartridge TV','snes','crt',1],['Hand-held TV','pocket','crt',1],['Late show','mono','crt',1],['Old reel','sepia','crt',.8],
  ['Toy town','print','tilt',1],['Model village','watercolour','tilt',1],['Diorama','oil','tilt',1],["Architect's model",'sketchbook','tilt',1],
  ['Two-colour print','lines','riso',1],['Poster','print','riso',.6],
+ ['Home video','instant','camcorder',1],['Comic book','flat','halftone',1],["Engineer's plan",'lines','cyanotype',1],['Night watch','nightVision','crt',.8],
 ];
 // What "Mix" puts over a Look first: its partner from a mix above, or one that reads well over most.
 const FINISHERS=['crt','tilt','riso','manga','lines','sepia','mono','stamp'];
@@ -89,7 +90,29 @@ function toast(text,{look=false,ms=1400}={}){
 }
 const lookLabel=name=>LOOKS[name]?.short||name;
 const mixLabel=recipe=>recipe.layers.map(l=>lookLabel(l.look)).join(' + ');
-const offered=()=>LOOK_NAMES.filter(n=>!engine?.failed(n));
+/*
+ * The Looks in kinds, so the strip shows a few at a time (the owner, 29 October 2026: "make sub menu organisation so it
+ * doesn't feel cluttered like game consoles can stay with each other and vhs for 80's or so"). A Look World adds later
+ * and no kind names goes under More.
+ */
+const LOOK_GROUPS=(()=>{
+ const groups=[
+  {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','tilt','nightVision']},
+  {id:'games',label:'Games',looks:['pocket','snes']},
+  {id:'80s',label:'80s',looks:['crt','camcorder']},
+  {id:'drawn',label:'Drawn',looks:['lines','sketchbook','crayon','pencilManga','manga','flat','adventureInk','halftone']},
+  {id:'painted',label:'Painted',looks:['watercolour','oil','brushOil']},
+  {id:'print',label:'Print',looks:['print','riso','stamp','cyanotype']},
+ ].map(g=>({...g,looks:g.looks.filter(n=>LOOK_NAMES.includes(n))}));
+ const placed=new Set(groups.flatMap(g=>g.looks)),more=LOOK_NAMES.filter(n=>!placed.has(n));
+ if(more.length)groups.push({id:'more',label:'More',looks:more});
+ return groups;
+})();
+const groupOf=name=>LOOK_GROUPS.find(g=>g.looks.includes(name))||LOOK_GROUPS[0];
+/** Every Look in the order of its kind: the strip's order and a swipe's. */
+const offered=()=>LOOK_GROUPS.flatMap(g=>g.looks).filter(n=>!engine?.failed(n));
+// The kind the strip shows: the chosen Look's, until another kind is tapped.
+let shownGroup=null;
 function icon(name){return `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const nextFrame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
@@ -198,13 +221,23 @@ function stampOverlay(frame,on,date,frameId='none'){
 // ---------- The Look tray ----------
 const tray=$('tray'),strip=$('strip'),layersEl=$('layers');
 const tiles=new Map();
+function buildGroups(){
+ const row=$('lookGroups');row.textContent='';
+ for(const g of LOOK_GROUPS){
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.textContent=g.label;
+  b.setAttribute('aria-label',`${g.label}: ${g.looks.map(n=>LOOKS[n].label).join(', ')}`);
+  b.addEventListener('click',()=>{sound('tick');shownGroup=g.id;renderStripSelection();refreshThumbs(true);});
+  row.append(b);
+ }
+}
 function buildStrip(){
+ buildGroups();
  strip.textContent='';tiles.clear();
  for(const name of offered()){
   const b=document.createElement('button');b.type='button';b.className='tile';b.setAttribute('role','radio');b.dataset.look=name;
   b.title=LOOKS[name].hint;b.setAttribute('aria-label',LOOKS[name].label);
   // World's own picture of the Look (the same little house in each style) until the live one is drawn.
-  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(name==='adventureInk'?'flat':name,`cam-${name}`);
+  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(LOOK_STANDIN[name]||name,`cam-${name}`);
   const c=document.createElement('canvas');c.width=c.height=THUMB;face.append(c);
   const s=document.createElement('span');s.className='name';s.textContent=lookLabel(name);
   b.append(face,s);strip.append(b);tiles.set(name,{button:b,canvas:c,drawn:false});
@@ -243,8 +276,10 @@ function renderLayers(){
  }
 }
 function renderStripSelection({scroll=true}={}){
- const ctx=current(),look=ctx.recipe.layers[ctx.active].look;
- for(const [name,t] of tiles){const on=name===look;t.button.setAttribute('aria-checked',String(on));t.button.tabIndex=on?0:-1;}
+ const ctx=current(),look=ctx.recipe.layers[ctx.active].look,group=LOOK_GROUPS.find(g=>g.id===shownGroup)||groupOf(look);
+ for(const b of $('lookGroups').children){const on=b.dataset.group===group.id;b.setAttribute('aria-selected',String(on));b.classList.toggle('has-look',groupOf(look).id===b.dataset.group);}
+ for(const [name,t] of tiles){const on=name===look;t.button.setAttribute('aria-checked',String(on));t.button.tabIndex=on||(!group.looks.includes(look)&&name===group.looks[0])?0:-1;t.button.hidden=!group.looks.includes(name);}
+ if(group.id!==strip.dataset.group){strip.dataset.group=group.id;strip.scrollLeft=0;}
  if(scroll){const t=tiles.get(look)?.button;if(t)scrollTileIntoView(t);}
 }
 function scrollTileIntoView(t){
@@ -264,12 +299,13 @@ function showAmountRow(show){
  // Beside the picture (a wide window) there is room for both.
  const row=$('amountRow'),inCamera=state.mode==='camera'&&!wide.matches;
  if(inCamera&&show&&strip.offsetHeight)row.style.height=`${strip.offsetHeight}px`;else row.style.height='';
- row.hidden=!show;strip.hidden=inCamera&&show;
+ row.hidden=!show;strip.hidden=inCamera&&show;$('lookGroups').hidden=inCamera&&show;
 }
 function toggleAmount(){if(state.mode==='camera')showAmountRow($('amountRow').hidden);}
 $('amountDone').addEventListener('click',()=>{sound('tick');showAmountRow(false);});
 /** After any change to the mix: redraw the tray and the picture. */
 function trayChanged({thumbs=false,announce=false,scroll=true}={}){
+ shownGroup=null;
  renderLayers();renderStripSelection({scroll});renderAmount();
  if(announce)toast(mixLabel(current().recipe),{look:true,ms:900});
  if(state.mode==='camera')remember();
@@ -337,7 +373,11 @@ function drawThumbs(){
  const ctx=current(),source=live?'live':'edit';
  if(!engine.hasSource(source))return;
  const crop=squareCrop(live?cameraCrop():{x:0,y:0,w:1,h:1},live?videoSize():{width:state.edit.width,height:state.edit.height});
- const names=[...tiles.keys()];
+ // Only the kind on show: a few Looks at a time, which is also the phone's battery spared.
+ // None at all while the strip is folded over the picture: it draws them when it unfolds.
+ const folded=live&&isCompact()&&!$('camera').classList.contains('looks-open');
+ const names=folded?[]:[...tiles.keys()].filter(n=>!tiles.get(n).button.hidden);
+ if(!names.length)return;
  const out=engine.thumbnails(ctx.recipe,{source,crop,mirror:live&&state.camera.mirror,size:THUMB,names,layer:ctx.active});
  thumbsAt=t;
  if(!out)return;
