@@ -9,9 +9,10 @@ const faceUrl=new URL('./cards/playing-cards.png',import.meta.url).href;
 const backUrl=new URL('./cards/playing-card-back.png',import.meta.url).href;
 export function cardView(card,faceDown=false){
  const span=document.createElement('span');span.className='playing-card';
- if(faceDown){span.style.backgroundImage=`url("${backUrl}")`;span.style.backgroundSize='100% 100%';span.setAttribute('aria-label','Face-down card');}
+ if(faceDown){span.classList.add('face-down');span.style.backgroundImage=`url("${backUrl}")`;span.style.backgroundSize='100% 100%';span.setAttribute('aria-label','Face-down card');}
  else{
   const suit=SUITS.indexOf(card.suit),rank=Number(card.rank);
+  span.dataset.index=({1:'A',11:'J',12:'Q',13:'K'})[rank]||String(rank);span.dataset.suit=({hearts:'♥',diamonds:'♦',clubs:'♣',spades:'♠'})[card.suit]||'';span.classList.add(suit<2?'red-suit':'dark-suit');
   if(suit<0||rank<1||rank>13||!Number.isInteger(rank))throw new RangeError('Invalid playing card');
   span.style.backgroundImage=`url("${faceUrl}")`;span.style.backgroundSize='1300% 400%';span.style.backgroundPosition=`${(rank-1)/12*100}% ${suit/3*100}%`;
   const name=({1:'Ace',11:'Jack',12:'Queen',13:'King'})[rank]||rank;span.setAttribute('aria-label',`${name} of ${card.suit}`);

@@ -25,6 +25,8 @@
 <link rel="stylesheet" href="card-games.css?v=20261029a">
 <link rel="stylesheet" href="blackjack.css?v=20261029a">
 <link rel="stylesheet" href="solitaire.css?v=20261029a">
+<link rel="stylesheet" href="game-room-refresh.css?v=20261029c">
+<link rel="stylesheet" href="image-generator.css?v=20261029a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -97,7 +99,7 @@
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
      <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Your photos</button>
     </div>
-    <p class="fine" id="welcomeNote">Photos stay on this device. Nothing is uploaded.</p>
+    <p class="fine" id="welcomeNote">Camera photos stay on this device. Image creation sends your prompt and any reference to your chosen server.</p>
    </div>
    <div class="count" id="count" aria-live="assertive"></div>
   </div>
@@ -156,7 +158,8 @@
    </div>
   </header>
   <div class="album-scroll">
-   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Card games</strong><small>Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
+   <button type="button" class="arcade-entry" id="openImageGenerator"><span class="arcade-entry-icon" aria-hidden="true">✦</span><span><strong>Create an image</strong><small>Use your own image server</small></span><span aria-hidden="true">›</span></button>
+   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
     <img class="empty-sticker" id="emptySticker" alt="" hidden>
@@ -186,7 +189,8 @@
  <!-- Original island card games -->
  <section class="screen card-games" id="cardsHub" aria-label="Card games" hidden>
   <header class="bar"><button type="button" class="back" id="closeCardsHub"><svg><use href="#i-back"/></svg><span>Album</span></button><h2>Card games</h2><span class="bar-spacer"></span></header>
-  <div class="cards-hub-content"><p class="cards-kicker">MINATO GAME ROOM</p><h1>Pick a game</h1><p>Play a hand with the residents of Johansson World.</p>
+  <div class="cards-hub-content"><div class="game-room-intro"><div><p class="cards-kicker">JOHANSSON WORLD · MINATO</p><h1>Game Room</h1><p>Choose a game and stay a while.</p></div><img class="game-room-mascot" src="stickers/thuan-blender/wave.thumb.webp" alt="" aria-hidden="true"></div><p class="game-room-label">CHOOSE A GAME</p>
+   <button class="game-choice" id="chooseMemory" type="button"><span class="choice-symbol memory-symbol" aria-hidden="true">✿</span><span><strong>Memory</strong><small>Find pairs of photos or residents.</small></span><span aria-hidden="true">›</span></button>
    <button class="game-choice" id="chooseBlackjack" type="button"><span class="choice-symbol" aria-hidden="true">21</span><span><strong>Blackjack</strong><small>Get close to 21 without going over.</small></span><span aria-hidden="true">›</span></button>
    <button class="game-choice" id="chooseSolitaire" type="button"><span class="choice-symbol" aria-hidden="true">♠</span><span><strong>Solitaire</strong><small>Build the four suits from ace to king.</small></span><span aria-hidden="true">›</span></button>
   </div>
@@ -262,6 +266,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029k"></script>
+<script type="module" src="app.js?v=20261029n"></script>
 </body>
 </html>

@@ -93,6 +93,12 @@ different one each time (never the one shown last), sized to the space the brows
 there is a picture the Look tray waits and the shutter starts the camera. Johansson, the chief engineer, salutes the empty album; every tap answers with a soft sound, which Sound in the settings mutes. The interface uses a harbour-green and cream palette, tactile controls and original island pixel art, with 44-point targets. Memory uses a Python-drawn Minato lighthouse card back. A wide window puts the controls
 beside the picture, as on an iPad.
 
+## Image creation and Adventure Ink
+
+**Adventure Ink** is a camera-only Look with cel bands and ink outlines; its matching **Adventure** frame is drawn by `tools/draw-camera-frames.py`. The Look works with the existing mix and editing system.
+
+**Create an image** is in the Album. It connects to a user-supplied server, sends a prompt and optional reference photo, and opens the returned image in the editor or offers a download. The included `camera/generator/` server uses FLUX.2 [klein] 4B open weights; see its README for installation, security and the difference between a Mac's localhost and an HTTPS service accessible to an iPhone. The server is not hosted by GitHub Pages; no model service or payment service is configured by this repository. An M1 Pro with 16 GB has not been verified and the model may not fit or may run slowly. A personal localhost server is not a ready-made public production service.
+
 ## How it works
 
 | File | Purpose |

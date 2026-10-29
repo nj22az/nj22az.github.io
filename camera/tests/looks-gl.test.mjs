@@ -18,6 +18,10 @@ for(const name of LOOK_NAMES.filter(n=>n!=='none'))for(const light of [false,tru
  assert.equal(f.includes('#define LIGHT'),light,`${name}: light only when asked`);
 }
 assert.ok(lookDrawsLines('manga')&&!lookDrawsLines('mono')&&!lookDrawsLines('none'));
+assert.ok(LOOK_NAMES.includes('adventureInk')&&lookDrawsLines('adventureInk'));
+assert.equal(normalRecipe({layers:[{look:'adventureInk'}]}).layers[0].look,'adventureInk');
+assert.ok(photoFragment('adventureInk').includes('vec3(.09,.095,.12)'));
+
 
 const r=normalRecipe({layers:[{look:'manga',amount:2},{look:'nope'},{look:'crt'},{look:'oil'}],adjust:{light:5,pattern:'x'}});
 assert.deepEqual(r.layers,[{look:'manga',amount:1},{look:'none',amount:1},{look:'crt',amount:1}]);

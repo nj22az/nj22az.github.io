@@ -67,7 +67,8 @@ export function createSolitaire({root,cardView,shuffleDeck}){
   if(selected){message='That card cannot be placed there.';render();}
  }
  function render(){
-  const scroll=root.querySelector('.sol-scroll')?.scrollTop||0;
+  const priorScroll=root.querySelector('.sol-scroll');
+  const scroll=priorScroll?.scrollTop||0,scrollLeft=priorScroll?.scrollLeft||0;
   const active=root.contains(document.activeElement)?document.activeElement?.dataset.focusKey:null;
   root.replaceChildren();root.classList.add('solitaire-game');
   const toolbar=text('div','sol-toolbar','');
@@ -105,7 +106,7 @@ export function createSolitaire({root,cardView,shuffleDeck}){
   }
   board.append(cols);region.append(board);
   const status=text('p','sol-status',`${message} ${game.moves} ${game.moves===1?'move':'moves'}.`);status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-  root.append(toolbar,region,status);region.scrollTop=scroll;
+  root.append(toolbar,region,status);region.scrollTop=scroll;region.scrollLeft=scrollLeft;
   if(active){const next=[...root.querySelectorAll('[data-focus-key]')].find(el=>el.dataset.focusKey===active&&!el.disabled);next?.focus({preventScroll:true});}
  }
  function start(){game=dealKlondike(shuffleDeck());selected=null;message='Tap a card, then its destination.';render();}

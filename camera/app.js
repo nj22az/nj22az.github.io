@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029b';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029c';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMine,deleteMine} from './album.js?v=20261029b';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029i';
@@ -12,9 +12,10 @@ import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029e';
-import {cardView,shuffleDeck} from './playing-cards.js?v=20261029a';
+import {createImageGenerator} from './image-generator.js?v=20261029a';
+import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
 import {createBlackjack} from './blackjack.js?v=20261029a';
-import {createSolitaire} from './solitaire.js?v=20261029a';
+import {createSolitaire} from './solitaire.js?v=20261029b';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -183,7 +184,7 @@ function buildStrip(){
   const b=document.createElement('button');b.type='button';b.className='tile';b.setAttribute('role','radio');b.dataset.look=name;
   b.title=LOOKS[name].hint;b.setAttribute('aria-label',LOOKS[name].label);
   // World's own picture of the Look (the same little house in each style) until the live one is drawn.
-  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(name,`cam-${name}`);
+  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(name==='adventureInk'?'flat':name,`cam-${name}`);
   const c=document.createElement('canvas');c.width=c.height=THUMB;face.append(c);
   const s=document.createElement('span');s.className='name';s.textContent=lookLabel(name);
   b.append(face,s);strip.append(b);tiles.set(name,{button:b,canvas:c,drawn:false});
@@ -690,6 +691,9 @@ async function maybeStartCamera(){
 $('roll').addEventListener('click',openAlbum);
 function openAlbum(){show('album');renderGrid();}
 $('closeAlbum').addEventListener('click',()=>show('camera'));
+const imageGenerator=createImageGenerator({onEdit:async file=>{if(!engine||engine.lost())throw new Error('The editor needs WebGL 2. Download this image instead.');await editFile(file);}});
+$('openImageGenerator').addEventListener('click',()=>imageGenerator.open());
+
 
 // ---------- Memory ----------
 let stickerSheets=null;
@@ -709,10 +713,11 @@ function cheer(){
  return s?{url:s.url,alt:`${s.set}: ${s.gloss}`}:null;
 }
 const memory=createMemory($('memory'),{sources:memorySources,cheer,sound,store,onPlay:()=>{$('memoryNew').hidden=false;}});
-async function openMemory(){sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
-$('playMemory').addEventListener('click',openMemory);
-$('emptyPlay').addEventListener('click',openMemory);
-$('closeMemory').addEventListener('click',()=>{memory.close();openAlbum();});
+let memoryReturnToGames=false;
+async function openMemory(fromGames=false){memoryReturnToGames=fromGames;document.querySelector('#closeMemory span').textContent=fromGames?'Games':'Album';sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
+$('playMemory').addEventListener('click',()=>openMemory());
+$('emptyPlay').addEventListener('click',()=>openMemory());
+$('closeMemory').addEventListener('click',()=>{memory.close();if(memoryReturnToGames)openCardsHub();else openAlbum();});
 $('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden=true;memory.showSetup();});
 
 // A separate game room keeps the photo-based Memory flow intact.
@@ -729,6 +734,7 @@ function openCardGame(kind){
 $('openCardGames').addEventListener('click',openCardsHub);
 $('closeCardsHub').addEventListener('click',openAlbum);
 $('closeCardGame').addEventListener('click',openCardsHub);
+$('chooseMemory').addEventListener('click',()=>openMemory(true));
 $('chooseBlackjack').addEventListener('click',()=>openCardGame('blackjack'));
 $('chooseSolitaire').addEventListener('click',()=>openCardGame('solitaire'));
 

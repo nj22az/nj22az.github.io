@@ -713,6 +713,76 @@
      "dy": -1
     }
    ]
+  },
+  {
+   "id": "adventure",
+   "label": "Adventure",
+   "hint": "An original inked island adventure panel",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     16,
+     16
+    ],
+    "bottom": [
+     85,
+     0,
+     16,
+     16
+    ],
+    "left": [
+     102,
+     0,
+     16,
+     16
+    ],
+    "right": [
+     0,
+     17,
+     16,
+     16
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      17,
+      17,
+      105,
+      12
+     ],
+     "anchor": "bc",
+     "dx": 0,
+     "dy": -2
+    }
+   ]
   }
  ]
 }

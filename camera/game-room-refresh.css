@@ -1,0 +1,58 @@
+/* Minato Game Room: warm paper, deep harbour ink and a playful ticket-book feel. */
+.card-games,.memory{--game-ink:#253f3d;--game-cream:#fff5de;--game-coral:#d8715f;--game-gold:#efc16e;--game-teal:#4d8c81}
+.card-games{background:#ead9b7;color:var(--game-ink)}
+.card-games .bar,.memory .bar{height:56px;background:#213f3b;color:#fff5de;border-bottom:3px solid #e6b963;box-shadow:0 3px 0 rgba(50,57,44,.15)}
+.card-games .bar h2,.memory .bar h2{font-size:13px;letter-spacing:.12em;font-weight:850;color:#fff4dd}
+.card-games .back,.memory .back,.memory .memory-new{color:#fff4dd;font-weight:700}
+.arcade-entry{background:#fff3dc;border:2px solid #274844;border-radius:14px;box-shadow:0 4px 0 #274844;color:#274844}
+.arcade-entry-icon{display:grid;place-items:center;width:48px;height:42px;flex:none;border-radius:9px;background:#e6b868;color:#8b3e38;letter-spacing:-.1em}
+.arcade-entry strong{font-size:16px}.arcade-entry small{color:#526960}
+.cards-hub-content{width:min(100%,720px);padding:clamp(20px,4vh,44px) 20px 28px}
+.game-room-intro{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:150px;padding:22px 22px 20px;overflow:hidden;border:3px solid #274844;border-radius:20px;background:radial-gradient(circle at 75% 8%,#fae6a6 0 30px,transparent 31px),linear-gradient(155deg,#f7e8c7 0 65%,#bcd7bc 65%);box-shadow:0 6px 0 #274844}
+.game-room-intro>div{position:relative;z-index:1}.game-room-intro h1{font-family:ui-rounded,system-ui,sans-serif;font-size:clamp(30px,7vw,48px);font-weight:900;letter-spacing:-.045em;line-height:1;margin:8px 0;color:#274844}.game-room-intro p:not(.cards-kicker){margin:0;font-size:14px;line-height:1.35;color:#4b665c}
+.game-room-intro .cards-kicker{margin:0;color:#b05243;font-size:10px;font-weight:900;letter-spacing:.13em}
+.game-room-mascot{position:relative;z-index:1;align-self:flex-end;width:clamp(72px,18vw,120px);height:120px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 4px 0 rgba(32,68,60,.18));margin:-10px 0 -10px}
+.game-room-label{margin:28px 0 9px;font-size:11px;font-weight:900;letter-spacing:.14em;color:#7e6650}
+.game-choice{position:relative;display:flex;align-items:center;gap:14px;min-height:86px;margin:0 0 10px;padding:12px 16px;background:#fff8e8;color:#274844;border:2px solid #274844;border-radius:14px;box-shadow:0 4px 0 #274844;transition:transform .15s ease,box-shadow .15s ease}
+.game-choice:active{transform:translateY(3px);box-shadow:0 1px 0 #274844}.game-choice strong{font-size:19px;font-weight:850;letter-spacing:-.02em}.game-choice small{color:#5a7063;font-size:13px;line-height:1.35}.game-choice>span:last-child{font-size:25px;font-weight:800;color:#bc5e4c}
+.choice-symbol{width:52px;height:58px;border-radius:9px;background:#e5b96e;color:#274844;font-size:24px;box-shadow:inset 0 0 0 3px #f7e3b8}.game-choice:nth-of-type(2) .choice-symbol{background:#d7816d;color:#fff7e7}.game-choice:nth-of-type(3) .choice-symbol{background:#8fb7a0;color:#204941}.memory-symbol{font-size:29px}
+.game-choice:focus-visible,.arcade-entry:focus-visible,.card-games button:focus-visible,.memory button:focus-visible{outline:3px solid #d65242;outline-offset:3px}
+/* The two hands sit on a framed table; the status and actions remain within reach. */
+.blackjack-layout{gap:10px;padding:14px 14px 20px;background:radial-gradient(ellipse at 50% 25%,#639787 0,#447e70 45%,#2e665c 100%);color:#fff5de}
+.blackjack-rules{max-width:520px;color:#eef3dc;font-size:13px;line-height:1.4}
+.blackjack-table{position:relative;flex:0 0 auto;justify-content:center;gap:10px;width:min(100%,660px);margin:auto auto 0;padding:12px;border:2px solid #294c43;border-radius:20px;background:#f1e2be;box-shadow:inset 0 0 0 3px #fff4d6,0 7px 0 #274b42,0 14px 28px rgba(27,55,49,.2)}
+.blackjack-hand{gap:8px;padding:10px 12px;border:1px solid #a9b893;border-radius:11px;background:#d9e6cc;color:#26483f}
+.blackjack-hand:last-child{background:#fff7e5;border-color:#d2b995}
+.blackjack-hand-title{font-size:13px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+.blackjack-score{min-width:42px;padding:5px 8px;background:#264b42;color:#fff3d6;border-radius:8px;font-size:14px;letter-spacing:0}
+.blackjack-cards{min-height:94px;justify-content:center;gap:8px;padding:3px 2px 7px}
+.blackjack-cards>*{width:clamp(62px,13vh,104px)}
+.blackjack-message{margin:4px 0 0;color:#fff8e3;font-size:16px;text-shadow:0 2px 0 #2f6459}
+.blackjack-actions{margin:0 auto auto;gap:10px}
+.blackjack-actions .button,.memory .button{min-height:48px;border:2px solid #253f3d;border-radius:11px;background:#fff4dd;color:#253f3d;box-shadow:0 4px 0 #253f3d;font-weight:850}
+.blackjack-actions .primary,.memory .button.primary{background:#f5c86f;color:#253f3d}.blackjack-actions .button:active,.memory .button:active{transform:translateY(3px);box-shadow:0 1px 0 #253f3d}
+/* A scrollable felt board keeps rank labels and card tabs legible on a phone. */
+.solitaire-game{background:#d5e6cf;color:#24483f}
+.sol-toolbar{padding:10px 14px;background:#fff1d4;border-bottom:2px solid #d0b58e}
+.sol-instructions{color:#466056;font-size:13px;font-weight:700}.sol-reset{background:#f2c675;border:2px solid #274844;border-radius:10px;box-shadow:0 3px 0 #274844}
+.sol-scroll{background:radial-gradient(ellipse at 50% 0%,#9bc7ae,#70a390);padding:14px 12px 18px}
+.sol-board{--sol-card-width:clamp(56px,calc((100vw - 78px)/7),100px);min-width:428px;max-width:760px}
+.sol-top,.sol-columns{gap:6px}.sol-top{margin-bottom:14px}.sol-card-button{border-radius:6px}
+.sol-tableau-card:not(:first-child){margin-top:max(-103%,calc(44px - 140%))}
+.sol-placeholder{background:rgba(255,250,223,.15);border:2px dashed rgba(36,72,63,.5);border-radius:8px;color:#315f51}
+.sol-card-button.is-selected{outline:3px solid #ffd675;outline-offset:3px;box-shadow:0 0 0 5px #355b4c;z-index:10}.sol-status{padding:10px 14px;background:#24483f;color:#fff4dc}
+.playing-card{border-radius:7px;box-shadow:0 3px 0 rgba(28,65,57,.55),0 4px 12px rgba(28,65,57,.14)}
+@media(max-width:600px){.sol-board{--sol-card-width:56px}.sol-scroll{padding:10px}.sol-card-button .playing-card:not(.face-down)::before{content:attr(data-index) ' ' attr(data-suit);position:absolute;z-index:1;top:3px;left:3px;display:block;min-width:25px;padding:2px 3px;border-radius:3px;background:#fff8e8;color:#214b49;font:900 13px/1 ui-sans-serif,system-ui,sans-serif;white-space:nowrap;box-shadow:0 0 0 1px #fff8e8}.sol-card-button .playing-card.red-suit::before{color:#b74d42}}
+/* Memory remains sized by its own board algorithm, with a calmer framed play surface. */
+.memory{background:#e9dbb9}.memory .memory-choose{padding-top:18px}.memory .memory-lead{color:#294b42;font-size:15px;font-weight:750}
+.memory .memory-deck{background:#fff7e4;border-color:#9aaf95;border-radius:12px;box-shadow:0 3px 0 #b1a685}
+.memory .memory-deck[aria-checked="true"]{border-color:#25483f;box-shadow:0 3px 0 #25483f,inset 0 0 0 2px #efc16e}
+.memory .memory-go{background:#fff2d9;border-color:#c8b491}.memory .memory-pairs button{min-height:44px}
+.memory .memory-stage{box-sizing:border-box;width:min(100%,900px);margin:0 auto;background:radial-gradient(ellipse at 50% 25%,#a5cdb2,#77a994);border-left:3px solid rgba(39,72,63,.22);border-right:3px solid rgba(39,72,63,.22)}
+.memory .memory-status{padding:10px 16px;background:#25483f;color:#f0ebcf;font-weight:750}.memory .memory-face,.memory .memory-back{border-radius:8px}
+@media(max-height:600px){.blackjack-layout{padding:8px 12px 12px;gap:6px}.blackjack-table{gap:6px;padding:7px}.blackjack-hand{padding:6px 10px;gap:4px}.blackjack-cards{min-height:70px}.blackjack-cards>*{width:clamp(56px,12vh,80px)}.blackjack-message{font-size:14px}.game-room-intro{min-height:110px;padding:14px}.game-room-mascot{height:90px}}
+@media(prefers-reduced-motion:reduce){.game-choice{transition:none}}
+/* Keep the section label clear of the introduction and show all three choices on short phones. */
+.cards-hub-content > p.game-room-label{margin:20px 0 9px;line-height:1.2}
+@media(max-height:600px){.cards-hub-content{padding-top:12px;padding-bottom:14px}.game-room-intro{min-height:96px}.game-room-intro h1{font-size:28px}.cards-hub-content > p.game-room-label{margin:14px 0 7px}.game-choice{min-height:68px;padding:7px 12px;margin-bottom:7px}.choice-symbol{height:46px;width:46px}.game-choice small{font-size:12px}.game-room-mascot{height:70px}}
+@media(max-height:600px){.blackjack-layout{justify-content:center;gap:5px;padding:6px 10px 10px}.blackjack-rules{font-size:11px;line-height:1.25}.blackjack-table{margin:2px auto 0;padding:6px;gap:4px}.blackjack-hand{padding:4px 8px;gap:3px}.blackjack-hand-title{font-size:11px}.blackjack-score{padding:3px 6px;font-size:12px}.blackjack-cards{min-height:0;padding:1px 2px 3px}.blackjack-cards>*{width:48px}.blackjack-message{margin:0;font-size:13px}.blackjack-actions{margin:0 auto}.blackjack-actions .button{min-height:44px}}

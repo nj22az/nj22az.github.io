@@ -593,7 +593,61 @@ def shop_day():
                  [feature(sign, 'tc', 0, 2), feature(shop, 'bl', 2, -1)])
 
 
-FRAMES = [pocket, harbour, sakura, ticket, matsuri, hello, island_post, shop_day]
+
+def adventure():
+    """Original, punchy adventure-comic border: thick ink, warm paper and energetic action marks."""
+    INK, RED, GOLD, PAPER = 0, 1, 2, 3
+    def edge(w, h, side):
+        a = Art(w, h, PAPER)
+        if side in ('bottom', 'top'):
+            inner = h-1 if side == 'bottom' else 0
+            far = 0 if side == 'bottom' else h-1
+            a.hline(0, w-1, inner, INK); a.hline(0, w-1, inner + (-1 if side=='bottom' else 1), INK)
+            a.hline(0, w-1, far, INK)
+            # Stepped bursts and separated ink speed-lines, inspired by hand-lettered panels.
+            for x in range(w):
+                a.px(x, 3, GOLD if (x // 4) % 2 == 0 else RED)
+                if x % 16 in range(1,7):a.px(x,7,INK)
+                if x % 16 in range(9,13):a.px(x,10,RED)
+        else:
+            inner = w-1 if side == 'right' else 0
+            far = 0 if side == 'right' else w-1
+            a.vline(inner, 0, h-1, INK);a.vline(inner + (-1 if side=='right' else 1), 0, h-1, INK)
+            a.vline(far, 0, h-1, INK)
+            for y in range(h):
+                a.px(3,y,GOLD if (y // 4) % 2 == 0 else RED)
+                if y % 16 in range(1,7):a.px(7,y,INK)
+                if y % 16 in range(9,13):a.px(10,y,RED)
+        return a
+    def corner_piece(which):
+        a=Art(B,B,PAPER)
+        # Emphatic closed ink corners with a small coloured diamond and radiating marks.
+        xinner = B-1 if which in ('tl','bl') else 0
+        yinner = B-1 if which in ('tl','tr') else 0
+        xouter = 0 if xinner else B-1; youter=0 if yinner else B-1
+        a.vline(xouter,0,B-1,INK); a.hline(0,B-1,youter,INK)
+        a.px(xinner,yinner,INK)
+        cx=6 if xouter==0 else 9; cy=6 if youter==0 else 9
+        for dy in range(-3,4):
+            for dx in range(-3,4):
+                if abs(dx)+abs(dy)<=3:a.px(cx+dx,cy+dy,INK)
+                if abs(dx)+abs(dy)<=2:a.px(cx+dx,cy+dy,GOLD)
+        a.px(cx,cy,RED)
+        a.px(cx-4,cy,INK);a.px(cx+4,cy,INK);a.px(cx,cy-4,INK);a.px(cx,cy+4,INK)
+        return a
+    pieces={'top':edge(16,B,'bottom'),'bottom':edge(16,B,'top'),
+            'left':edge(B,16,'right'),'right':edge(B,16,'left'),
+            **{k:corner_piece(k) for k in ('tl','tr','bl','br')}}
+    # Its own fictional island publication, not the marks or characters of an existing comic.
+    label='MINATO ADVENTURE'
+    title=Art(text_width(label)+10,12,INK)
+    title.rect(1,1,title.w-2,10,GOLD)
+    title.text(label,5,2,INK)
+    return frame('adventure', 'Adventure', 'An original inked island adventure panel',
+                 ['#25272c','#d85d42','#f5c653','#fff5d9'],pieces,[feature(title,'bc',0,-2)])
+
+
+FRAMES = [pocket, harbour, sakura, ticket, matsuri, hello, island_post, shop_day, adventure]
 
 
 # ---------------------------------------------------------------- packing and laying out
