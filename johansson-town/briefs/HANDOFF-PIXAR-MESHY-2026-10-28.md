@@ -56,20 +56,23 @@ to the wrist, and the chair sit (`src/avatars/animate.js` `chairShape`) held the
 over the lap: the reach (`reachFor`) keeps a mitten's middle 0.7 of a hand off the body, sampled as a 23 cm ball.
 
 - A Pixar body now rests its palms on its thighs by the knees (`CHAIR_SIT.pixar.rest`): the farthest point of `along`
-  (85 % of the way from the hip to the knee first, 45 % last) the arm reaches, with the trunk leaned in by one of `leans`
-  if it must (at most 0.12 rad, shared by the spine and the chest, the head kept level); the arm is solved with the trunk
-  as it is drawn (the slump and the lean), which it was not before. Johansson reaches 85 % with no lean; Thuận and Thao
-  rest theirs on their knees too.
-- A body that reaches no point of its thighs within that lean keeps the mitten's place over the lap, as before: Tetsuo,
-  Chin and Mr Fujita, whose GLBs still have the low hip joints Johansson had (their trunks too long seated). Leaned in as
-  far as it took (0.3 rad) they hunched over their laps with their arms hanging straight. Their re-export with his hip
-  joints (they take his `L`) would rest their hands too.
+  (85 % of the way from the hip to the knee first, 45 % last) the arm reaches, the shoulder found and the arm solved with
+  the trunk slumped as it is drawn. Johansson, Thuận and Thao reach 85 %. The palm is turned down (`hand`) only on an arm
+  still on the lap once every pose and move has had it, fading as far as the shoulder has moved (`off`): driving,
+  typing, a toast or a fidget take the arm and its hand has the lap's old bend (`free`); drinking, the free hand stays
+  palm down on the knee.
+- A body that reaches no point of its thighs keeps the mitten's place over the lap, found and solved upright exactly as
+  before: Tetsuo, Chin and Mr Fujita, whose GLBs still have the low hip joints Johansson had (their trunks too long
+  seated). Leaned in far enough to reach (0.3 rad) they hunched over their laps with their arms hanging straight, so there
+  is no lean. Their re-export with his hip joints (they take his `L`) would rest their hands too.
 - `reachFor` takes `flat` (a thin hand sampled at [its thickness, its width] of the mitten's round) and `clear` (how near
   its middle may come to the body). The cartoon bodies are as before.
-- Checked: in the built game on the sea-wall bench by the game's own interaction, and on the quay bench, the palms on the
-  knees, fingers over them, from the side, front and three-quarter; every Pixar body seated on a stool (0.44 m) in
-  `tools/pixar-sheet.mjs`'s renderer, front and side, against `main` before the change; `tests/pixar-*.test.mjs` and the
-  seating tests 52/52. (`tools/pixar-sheet.mjs` exits 1 on a 404 in its page, on `main` before the change too.)
+- Checked: the review's probe (every Pixar body and three cartoon looks through the animator, seated at five heights,
+  driving, drinking, typing) is identical to `main` before the change for the cartoon bodies and the three clones, and
+  for the others except their hands on the lap; in the built game on the sea-wall and quay benches and at the izakaya
+  counter (the sip valid, rim error 0), the palms on the knees, fingers over them; every Pixar body on a stool (0.44 m),
+  front and side, against `main` before the change; `tests/pixar-*.test.mjs` and the seating, drinking and collision tests
+  77/77. (`tools/pixar-sheet.mjs` exits 1 on a 404 in its page, on `main` before the change too.)
 
 ## Open
 

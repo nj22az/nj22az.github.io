@@ -273,10 +273,12 @@ export const CHAIR_SIT=Object.freeze({hands:.6,edge:.012,
  pixar:Object.freeze({thigh:-1.36,knee:1.3,spread:.12,slump:Object.freeze({spine:.07,chest:.09,head:-.1}),
   // (and the palms laid on the thighs by the knees, as a sitter rests them (the owner, 29 October 2026: "shouldn't they
   // rest on his knees when sitting like that"): the farthest of `along` (of the way from the hip to the knee) the arm
-  // reaches with the trunk leaned in by one of `leans` (radians, shared by the spine and the chest, the head kept level),
-  // the palm's middle `palm` hand lengths over the lap; a mitten held 0.85 of a hand over it floated in front of
-  // Johansson's belly, and his arms reach neither knee from an upright back)
-  rest:Object.freeze({along:Object.freeze([.85,.75,.65,.55,.45]),leans:Object.freeze([0,.06,.12]),palm:.22,slack:.93,hand:Object.freeze([0,1.3,0]),flat:Object.freeze([.18,.4]),clear:.14,level:.6})})});
+  // reaches with the trunk slumped, the palm's middle `palm` hand lengths over the lap; a mitten held 0.85 of a hand over
+  // it floated in front of Johansson's belly)
+  rest:Object.freeze({along:Object.freeze([.85,.75,.65,.55,.45]),palm:.22,slack:.93,hand:Object.freeze([0,1.3,0]),flat:Object.freeze([.18,.4]),clear:.14,
+  // (`hand` turns the palm down on the thigh; an arm a pose or a gesture takes off the lap has the lap's old bend, `free`,
+  // as far as its shoulder has moved, `off` radians wholly: a hand on a steering wheel or raised in a toast palm down)
+  free:Object.freeze([-.3,0,0]),off:.3})})});
 /** How far each angle of an arm laid on the lap may go ([low, high] per angle, as reachFor's `bounds`; pair-poses.js has the
  *  same for a reach to a partner): kept off the thighs as wide as they are drawn (shorts, wide trousers), an arm must not be
  *  wound round the shoulder to get there, which it would unwind through the air every time the body sits down or gets up. */
@@ -644,7 +646,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }else{consumption=null;consumeTime=0;}
   lastConsume=action;
   for(const j of JOINTS)target[j].set(0,0,0);
-  let targetRoot=0,targetHips=0,targetLean=0,seatSlide=0;floorSit=0;
+  let targetRoot=0,targetHips=0,targetLean=0,seatSlide=0,onLap=null;floorSit=0;
   const chairBlend=Number.isFinite(s.chairBlend)?THREE.MathUtils.clamp(s.chairBlend,0,1):(s.seated?1:0);
   const onChair=chairBlend>0||s.seated;
   const speed=s.speed||0,moving=speed>.08&&!s.seated&&!s.riding;
@@ -673,9 +675,10 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    // with it); in trousers or shorts they rest beside the thighs, as before. Task poses lift only the arms they need.
    // (Seated the kit is behind them, against the seat back: the hands rest as anybody's do, clear of a chair's arms.)
    const A=soak?null:C.hands();
-   if(A){armTo('R',A.R,chairBlend,A.handR);armTo('L',A.L,chairBlend,A.handL);}
+   if(A){const R=C.rest;armTo('R',A.R,chairBlend,R?R.free:A.handR);armTo('L',A.L,chairBlend,R?R.free:A.handL);
+    if(R)onLap={w:chairBlend,R:target.shoulderR.clone(),L:target.shoulderL.clone()};}
    else{set('shoulderL',-.10,0,.13);set('shoulderR',-.10,0,-.13);set('elbowL',-.15);set('elbowR',-.15);}
-   if(avatar.pixar&&!soak){const S=CHAIR_SIT.pixar.slump,l=C.lean||0;add('spine',(S.spine+l/2)*chairBlend);add('chest',(S.chest+l/2)*chairBlend);add('head',(S.head-l*CHAIR_SIT.pixar.rest.level)*chairBlend);}
+   if(avatar.pixar&&!soak){const S=CHAIR_SIT.pixar.slump;add('spine',S.spine*chairBlend);add('chest',S.chest*chairBlend);add('head',S.head*chairBlend);}
    avatar.pixar?.seat?.(soak?0:chairBlend);   // (the seat rounds out as the body sits)
    // A seat that says where its front edge is (seatFront: how far ahead of the body's mark) has the body slide forward on
    // it as far as the backs of the shins need to hang in front of that edge: short legs on a deep bench sit at its front,
@@ -858,6 +861,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   if(posed&&posed.ramp>0){const r=applyGesture(posed,s,onChair);if(r?.eyes)gestureEyes=r.eyes;ownLegs||=!!r?.legs;if(!legs&&r?.root!==undefined)targetRoot+=r.root;}
   if(legs&&!ownLegs)for(const [j,pose] of legs)target[j].copy(pose);
   torchArm(dt,s);
+  // (the palms turned down on the thighs where the arms still rest there, once every pose and move has had them)
+  if(onLap){const R=CHAIR_SIT.pixar.rest;for(const side of ['R','L']){const w=onLap.w*(1-smooth(target['shoulder'+side].distanceTo(onLap[side])/R.off)),k=side==='R'?1:-1;
+   if(w>0)toward('hand'+side,R.hand[0],R.hand[1]*k,R.hand[2]*k,w);}}
   // Kneeling down and getting up take their time (0.8 s each way), however the kneel ends; seated, nobody kneels.
   const kneeling=gesture?.name==='KneelHug'&&!onChair&&(gesture.d===Infinity||gesture.t<gesture.d-.8);
   if(kneeling&&kneelRamp===0)kneelT=0;
@@ -1070,25 +1076,25 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // where the right mitten lies: on top of the lap over the thigh, `hands` of the way to the knee (nearer the hips for arms
   // too short for that), never in it (a hand hung beside the hips goes through a skirt that lies on the lap)
   const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
-  // (a Pixar body sits with its trunk slumped, and leaned in as far as its arms need to rest on the thighs: the shoulder
-  // found with the trunk so, and the arm solved with it, or the hand lands off the place it was aimed at)
-  const trunk=lean=>avatar.pixar?{spine:[P.slump.spine+lean/2,0,0],chest:[P.slump.chest+lean/2,0,0]}:{};
-  const shoulderAt=lean=>{const J={...joints,...trunk(lean)};JOINTS.forEach(j=>bones[j].rotation.set(...(J[j]||[0,0,0])));root.updateMatrixWorld(true);
+  // (a Pixar body resting its palms on its thighs: the shoulder found with its trunk slumped as it is drawn, and the arm
+  // solved so, or the hand lands off the place it was aimed at)
+  const slumped=avatar.pixar?{...joints,spine:[P.slump.spine,0,0],chest:[P.slump.chest,0,0]}:joints;
+  const shoulderAt=J=>{JOINTS.forEach(j=>bones[j].rotation.set(...(J[j]||[0,0,0])));root.updateMatrixWorld(true);
    const p=root.worldToLocal(bones.shoulderR.getWorldPosition(new THREE.Vector3()));JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.updateMatrixWorld(true);return p;};
   const reachArm=(m.upper+m.fore+m.hand*.55)*.97,reaches=(sh,q,slack=1)=>sh.distanceTo(new THREE.Vector3(...q))<=reachArm*slack;
   const lapAt=(f,palm=.85)=>{const L=S.lap(f);return [L.axis.x,L.top+m.hand*palm,L.axis.z];};
-  let place=null,lean=0,rest=null;
-  // (arms too short for the knees rest higher up the thigh, as a person's do, never the trunk hunched over them; a body
-  // that cannot reach its thighs at all leaned in so little, Tetsuo, Chin and Mr Fujita with the low hip joints of their
-  // export of 28 October, keeps the mitten's place over the lap)
-  if(avatar.pixar){const R=P.rest;for(const f of R.along){for(const l of R.leans)if(reaches(shoulderAt(l),lapAt(f,R.palm),R.slack)){place=lapAt(f,R.palm);lean=l;rest=R;break;}if(place)break;}}
-  if(!place){const shoulder=shoulderAt(0);place=[1,.8,.6,.4,.2,0].map(u=>lapAt(u*CHAIR_SIT.hands)).find(q=>reaches(shoulder,q))||lapAt(0);}
+  let place=null,rest=null;
+  // (arms too short for the knees rest higher up the thigh, as a person's do; a body that reaches no point of its thighs,
+  // Tetsuo, Chin and Mr Fujita with the low hip joints of their export of 28 October, keeps the mitten's place over the lap,
+  // found and solved upright as it always was: leaned in to reach, they hunched over their laps with their arms straight)
+  if(avatar.pixar){const R=P.rest,shoulder=shoulderAt(slumped);place=R.along.map(f=>lapAt(f,R.palm)).find(q=>reaches(shoulder,q,R.slack))||null;if(place)rest=R;}
+  if(!place){const shoulder=shoulderAt(joints);place=[1,.8,.6,.4,.2,0].map(u=>lapAt(u*CHAIR_SIT.hands)).find(q=>reaches(shoulder,q))||lapAt(0);}
   let hands;
   // (the arm kept out of the legs as wide as they are drawn: a mitten laid on shorts lies on them, not in them; the elbow
   // by the side, as a sitter's is, not winged out over the next place on the bench or a chair's arm)
   // (the left the mirror of the right: the sit is the same both sides, and an arm solved on its own can settle elsewhere)
   const mirrored=A=>({...A,L:A.R,handL:A.handR});
-  const shape={joints,lean,shins:S.shins,hands:()=>!(S.cloth||avatar.pixar)?null:hands??=mirrored(reachFor('ChairSit:'+key,{pose:()=>({...joints,...trunk(lean)}),legs:S.leg*1.04,only:'R',
+  const shape={joints,rest,shins:S.shins,hands:()=>!(S.cloth||avatar.pixar)?null:hands??=mirrored(reachFor('ChairSit:'+key,{pose:()=>rest?slumped:joints,legs:S.leg*1.04,only:'R',
    R:{touch:true,root:place,elbow:m=>[-(m.width/2-m.armR*.4),m.hipY+m.torso*.3,m.depth*.3],seed:[-.55,.1,-.1,-.6,0],hand:rest?rest.hand:[-.3,0,0],flat:rest?.flat,clear:rest?.clear,bounds:LAP_BOUNDS}}))};
   chairShapes.set(key,shape);return shape;
  }
