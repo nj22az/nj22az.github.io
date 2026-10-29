@@ -88,13 +88,31 @@ const cubeCam = new THREE.CubeCamera(0.05, 40, cube);
 cubeCam.position.copy(fromBlender([-1.9, 0.6, 1.05]));
 scene.add(cubeCam);
 cubeCam.update(renderer, scene);
-const glass = new THREE.MeshStandardMaterial({color: 0xffffff, roughness: 0.05, metalness: 0, envMap: cube.texture,
-  envMapIntensity: 1.4, transparent: true, opacity: 0.22, depthWrite: false});
-const beer = new THREE.MeshStandardMaterial({color: 0xe7a43c, emissive: 0xa2621a, emissiveIntensity: 0.6, roughness: 0.12,
-  metalness: 0, envMap: cube.texture, envMapIntensity: 0.8, transparent: true, opacity: 0.9});
+// (the still's beer is a clear gold lit through, its glass bright at the rims: the light is the beer's own here, as
+// nothing else lights the page)
+// (glass only reflects: no colour of its own, its reflections added over what is behind, faint face on and bright at the
+// rims; a white glass took the room's light as a matte surface would and turned the beer milky)
+const glass = new THREE.MeshStandardMaterial({color: 0x000000, roughness: 0.05, metalness: 0, envMap: cube.texture,
+  envMapIntensity: 0.7, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false});
+// the beer unlit, as the still shows it: amber, lighter and yellower toward the glass's foot (measured on the still's
+// jugs: (195, 125, 45) in the middle, (210, 150, 62) low), along each jug's own axis
+const beer = new THREE.MeshBasicMaterial({vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false});
+const linear = c => c.map(v => ((v / 255 + 0.055) / 1.055) ** 2.4);
+const BEER_TOP = linear([188, 112, 32]), BEER_LOW = linear([212, 152, 64]);
+function shadeBeer(mesh) {
+  const g = mesh.geometry, pos = g.attributes.position;
+  g.computeBoundingBox();
+  const {min, max} = g.boundingBox, col = new Float32Array(pos.count * 3);
+  for (let i = 0; i < pos.count; i++) {
+    const t = THREE.MathUtils.clamp((pos.getY(i) - min.y) / (max.y - min.y || 1), 0, 1);
+    for (let k = 0; k < 3; k++) col[i * 3 + k] = BEER_LOW[k] + (BEER_TOP[k] - BEER_LOW[k]) * t;
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+}
 live.scene.traverse(o => {
   if (!o.isMesh) return;
   const isBeer = /beer/i.test(o.name) || /beer/i.test(o.parent?.name || '');
+  if (isBeer) shadeBeer(o);
   o.material = isBeer ? beer : glass;
   o.renderOrder = isBeer ? 1 : 2;
   triangles += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3;
