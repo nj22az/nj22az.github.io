@@ -7,6 +7,7 @@ import {rigBrows,rigMouth,featuresOf} from './face-features.js';
 import {actingOf,springOf} from './face-acting.js';
 import {recipeFace} from './pixar-face.js';
 import {celFrom} from '../render/cel.js';
+import {rigPaintedFace,frameFor,paintedFaceWanted} from './painted-face.js';
 
 /**
  * Pixar bodies: a resident drawn as the studio's film model instead of the cartoon (the creator, 26 October 2026:
@@ -74,7 +75,7 @@ export function preparePixarBody(card,scene){
   // dictionary is built from the attributes' names)
   const targetNames=o.userData?.targetNames||o.geometry.userData?.targetNames;
   if(targetNames&&o.geometry.morphAttributes?.position)o.geometry.morphAttributes.position.forEach((attr,i)=>{if(targetNames[i])attr.name=targetNames[i];});
-  if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
+  if(['eyes','brows','mouth','facepaint'].includes(name))features[name]={geometry:o.geometry,joints};
   // (a rigged hairstyle is a part of its own, 'hair': Thao's bob, off her head so her face could be cleaned and put back
   // on bones that swing; the owner, 27 October 2026, "add it back as a rigged hairstyle")
   else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':name==='glasses'||name==='shoes'||name==='lens'||name==='glint'?name:CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
@@ -97,7 +98,13 @@ export async function loadPixarBodies({search,timeout=20000}={}){
   if(loaded.has(name))return;
   try{
    const {path,version}=PIXAR_BODIES[name],v='?v='+version,card=await (await fetch(assetURL(path+'.json'+v))).json(),gltf=await loader.loadAsync(assetURL(path+'.glb'+v));
-   loaded.set(name,preparePixarBody(card,gltf.scene));
+   const body=preparePixarBody(card,gltf.scene);
+   // (Thuận 2.0's painted face, asked for with ?face=painted: its frames beside the model, painted-face.js)
+   if(card.facePaint&&body.features.facepaint&&paintedFaceWanted(search)){
+    try{body.facePaintTexture=await new THREE.TextureLoader().loadAsync(assetURL(path.replace(/[^/]+$/,'')+card.facePaint.texture+v));}
+    catch(error){console.warn('Painted face unavailable: '+name,error);}
+   }
+   loaded.set(name,body);
   }catch(error){console.warn('Pixar body unavailable: '+name,error);}
  };
  let timer;
@@ -288,6 +295,11 @@ export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
  const mouth=F.mouth&&mouthStyle?rigMouth(smoothJaw(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal',mid),names),mouthStyle,{make:skinned,lines:actingOf(body.name)?.lines||0,seam:2.2}):null;
  // (the features shaded on the same blended ramp as her skin: stepped bands cut a lip or an eye into two tones)
  for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])if(m?.material?.isMeshToonMaterial)m.material.gradientMap=smoothRamp();
+ // Thuận 2.0's painted face (painted-face.js), asked for with ?face=painted: drawn in place of the rigged eyes, brows and
+ // mouth (their materials hidden, so nothing that shows the avatar's meshes brings them back), the jaw and cheeks still.
+ const painted=F.facepaint&&body.facePaintTexture&&body.card.facePaint&&paintedFaceWanted()
+  ?rigPaintedFace(inOrder(body,F.facepaint,names),body.card.facePaint,body.facePaintTexture,{make:skinned,gradientMap:smoothRamp()}):null;
+ if(painted)for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])for(const mat of [m?.material].flat())if(mat)mat.visible=false;
  // Each body acts its feelings its own way (face-acting.js), and gets from one to the next on springs of the feeling's own
  // timing: a wall clock, as paintFace has no step.
  const acting=actingOf(body.name),feelings=acting?.feelings||null,springs=faceSprings();
@@ -337,7 +349,7 @@ export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
   else lipsAt=all;
   return lipsAt;
  };
- const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh].filter(Boolean),eyes,brows,mouth,bones:face,smooth:true,acting,card:body.card,
+ const api={meshes:[...meshes,eyes.mesh,brows?.mesh,mouth?.mesh,painted?.mesh].filter(Boolean),eyes,brows,mouth,painted,bones:face,smooth:true,acting,card:body.card,
   /** Where his lips are now (world), or null for a body without a rigged mouth. */
   mouthPoint(){const lips=lipsNow();if(!lips)return null;bones.head.updateWorldMatrix(true,false);return bones.head.localToWorld(lips.clone());},
   /** The same lips in the head bone's own frame (consume.js poses a drink or a morsel against them). */
@@ -404,13 +416,15 @@ export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
    f.jaw=THREE.MathUtils.clamp(f.jaw,0,1.15);f.cheeks=f.cheeks.map(v=>THREE.MathUtils.clamp(v,0,1.2));f.scrunch=THREE.MathUtils.clamp(f.scrunch,0,1.2);
    if(eyes.showing)actEyes(state,act,dt,sp,now,f.cheeks);
    brows?.set(f.brows.left,f.brows.right);mouth?.set(f.mouth);
+   // (the painted face: its frame for the feeling and the blink; the face's bones stay at rest under the paint)
+   if(painted){painted.set(frameFor(state,target,painted.frames));return;}
    if(face.jaw)face.jaw.rotation.x=f.jaw*FACE_REACH.jaw;
    for(const [i,s,x] of [[0,'L',1],[1,'R',-1]])if(face['cheek'+s])face['cheek'+s].position.copy(restOf['cheek'+s]).add(new THREE.Vector3(x*FACE_REACH.cheek[2]*f.cheeks[i],FACE_REACH.cheek[0]*f.cheeks[i],FACE_REACH.cheek[1]*f.cheeks[i]));
    if(face.nose)face.nose.position.copy(restOf.nose).add(new THREE.Vector3(0,FACE_REACH.nose[0]*f.scrunch,FACE_REACH.nose[1]*f.scrunch));
   },
   // (shown again, dressed as he was: the trunk under his clothes stays out while he wears them)
   set visible(on){for(const m of meshes)m.visible=on;if(on)dress(dressed);},
-  dispose(){for(const m of materials)m.dispose();eyes.dispose();brows?.dispose();mouth?.dispose();},
+  dispose(){for(const m of materials)m.dispose();eyes.dispose();brows?.dispose();mouth?.dispose();painted?.dispose();},
  };
  return api;
 }

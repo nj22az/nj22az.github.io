@@ -2,7 +2,8 @@
 // (Pixar bodies are drawn by default), finds the resident where the town has put her (in Sakura if she is not out in the
 // street), and photographs her close (front, three-quarter, face, then the face as the town moves on) from the audit
 // harness's lens; with --cartoon the same views with ?pixar=0, to compare.
-//   node tools/pixar-shots.mjs [--name Thuan] [--time 12:20] [--cartoon] [--source] [--scenes] [out-dir]
+//   node tools/pixar-shots.mjs [--name Thuan] [--time 12:20] [--cartoon] [--painted] [--source] [--scenes] [out-dir]
+// --painted: Thuận 2.0's painted face (?face=painted, src/avatars/painted-face.js) in place of the rigged one.
 // The built runtime by default (npm run build:runtime first); --source serves the source modules. Run it alone.
 // --scenes (the player, Johansson): him in the game's own situations, each from several lenses: standing idle in four
 // views, walking, World's gestures (the owner, 27 October 2026: "test him and see so he looks natural in the game, no
@@ -14,7 +15,7 @@ import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),site=resolve(root,'..');
 const args=process.argv.slice(2),flag=k=>{const i=args.indexOf(k);return i>=0?args[i+1]:null;};
-const SOURCE=args.includes('--source'),CARTOON=args.includes('--cartoon'),SCENES=args.includes('--scenes'),NAME=flag('--name')||'Thuan',TIME=flag('--time')||'12:20';
+const SOURCE=args.includes('--source'),CARTOON=args.includes('--cartoon'),PAINTED=args.includes('--painted'),SCENES=args.includes('--scenes'),NAME=flag('--name')||'Thuan',TIME=flag('--time')||'12:20';
 const out=resolve(args.find((a,i)=>!a.startsWith('--')&&!['--name','--time','--part'].includes(args[i-1]))||resolve(root,'output/pixar-shots'));await mkdir(out,{recursive:true});
 const TYPES={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.glb':'model/gltf-binary','.svg':'image/svg+xml','.hdr':'application/octet-stream','.wasm':'application/wasm'};
 const sourcePage=html=>html.replace(/<link rel="modulepreload" data-town-runtime[^>]*>\n?/g,'')
@@ -36,7 +37,7 @@ try{
  const page=await context.newPage();page.setDefaultTimeout(900000);
  page.on('pageerror',e=>report.errors.push(e.message));
  page.on('console',m=>{if(m.type()==='warning'||m.type()==='error')report.warnings.push(m.text().slice(0,300));});
- await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${CARTOON?'&pixar=0':''}`);step('page loaded');
+ await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit${CARTOON?'&pixar=0':''}${PAINTED?'&face=painted':''}`);step('page loaded');
  await page.locator('#enter:not([disabled])').waitFor();step('island ready');
  await page.locator('#enter').click();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp);step('playing');
