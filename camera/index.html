@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261029t">
+<link rel="stylesheet" href="camera.css?v=20261029u">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -128,6 +128,7 @@
    <div class="segmented" role="tablist" aria-label="Edit">
     <button type="button" role="tab" id="tabLooks" aria-selected="true" aria-controls="panelLooks">Looks</button>
     <button type="button" role="tab" id="tabAdjust" aria-selected="false" aria-controls="panelAdjust">Adjust</button>
+    <button type="button" role="tab" id="tabErase" aria-selected="false" aria-controls="panelErase">Erase</button>
     <button type="button" role="tab" id="tabStickers" aria-selected="false" aria-controls="panelStickers">Stickers</button>
     <button type="button" role="tab" id="tabFrame" aria-selected="false" aria-controls="panelFrame">Frame</button>
    </div>
@@ -137,6 +138,15 @@
     <div class="slider-row">
      <input type="range" id="adjustSlider" min="-100" max="100" step="1" value="0" aria-label="Light">
      <output id="adjustValue">0</output>
+    </div>
+   </div>
+   <!-- Erase: paint over what should go; it is filled from the picture round it (PhotoCraft's Content-Aware Fill). -->
+   <div class="panel erase-panel" id="panelErase" role="tabpanel" aria-labelledby="tabErase" hidden>
+    <p class="erase-hint" id="eraseHint">Paint over what should go.</p>
+    <div class="slider-row">
+     <span class="erase-label" aria-hidden="true">Brush</span>
+     <input type="range" id="eraseSize" min="2" max="24" step="1" value="8" aria-label="Brush size">
+     <button type="button" class="text-button" id="eraseUndo" disabled>Undo</button>
     </div>
    </div>
    <div class="panel" id="panelStickers" role="tabpanel" aria-labelledby="tabStickers" hidden></div>
@@ -268,6 +278,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029t"></script>
+<script type="module" src="app.js?v=20261029u"></script>
 </body>
 </html>

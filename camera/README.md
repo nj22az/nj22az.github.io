@@ -128,6 +128,23 @@ open kind's thumbnails are drawn, and none while the strip is folded over the pi
 More until it is given a kind (`LOOK_GROUPS` in `app.js`). New dice mixes: Home video (Instant and VHS), Comic book
 (Cartoon and Comic dots), Engineer's plan (Line drawing and Blueprint), Night watch (Night vision and Old TV).
 
+## Erase
+
+The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint
+over what should go and, when the finger lifts, it is filled from the picture round it. The fill is PhotoCraft's
+Content-Aware Fill (patch-based completion; <https://github.com/storytold/photocraft>, MIT OR Apache-2.0, licence in
+`pocket-algo.LICENSE.txt`), built from `tools/pocket-algo/` (a few lines over `photocraft_algo::content_aware`, pinned
+to the commit it was tested at) to `pocket-algo.wasm` (157 KB), and run in `erase-worker.js` off the page's thread.
+Only a window round the stroke is filled (a square of 4·√(w·h) round it, as PhotoCraft samples, at a working size of
+1.6 megapixels at most), and it comes back through the painted mask, so nothing else changes. It changes the photo's
+own picture: the Looks, stickers and frames are drawn over it as before, and a save keeps the erased picture as the
+photo's source. Undo takes back the last few (within 64 MB). Rebuild the module with `tools/pocket-algo/build.sh`
+(Rust and `rustup target add wasm32-unknown-unknown`).
+
+PhotoCraft's Select Subject was tried for cutting own stickers out of any photo and left out: on its own it took the
+wrong parts, and tapped it took the floor; a drawn box cut well, but not well enough yet beside the iPhone's own Copy
+Subject, which the camera already pastes.
+
 ## A manga moment
 
 The owner (29 October 2026): "How about Line messengers crazy effects ? … Can make the pictures look like they are from

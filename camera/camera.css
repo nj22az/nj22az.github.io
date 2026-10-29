@@ -482,3 +482,15 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker-sets button{padding:0 clamp(5px,1.9vw,12px);font-size:clamp(11.5px,3.2vw,13px)}
 /* Narrower than 340 points (the first iPhone SE) the row scrolls rather than squeeze a name. */
 @media (max-width:340px){.sticker-sets button{flex:none}}
+/* Erase (erase.js): the brush over the photo while the Erase tab is open; it breathes while the fill runs. */
+.erase-paint{position:absolute;inset:0;z-index:5;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.erase-paint[hidden]{display:none}
+.erase-paint.working{animation:erase-breathe .8s ease-in-out infinite alternate}
+@keyframes erase-breathe{from{opacity:1}to{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.erase-paint.working{animation:none;opacity:.6}}
+.erase-panel .erase-hint{margin:14px 16px 6px;text-align:center;font-size:14px;font-weight:600;color:var(--label-2)}
+.erase-panel .slider-row{gap:12px}
+.erase-label{flex:none;font-size:13px;font-weight:650;color:var(--label-2)}
+/* The editor's five tabs (Looks, Adjust, Erase, Stickers, Frame) in one row across any phone. */
+.segmented{grid-template-columns:repeat(5,1fr)}
+.segmented button{min-width:0;padding:0 2px;font-size:min(13px,3.4vw);white-space:nowrap;overflow:hidden;text-overflow:clip}

@@ -11,6 +11,7 @@ import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
+import {createEraser} from './erase.js?v=20261029a';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
@@ -454,10 +455,11 @@ function drawEditor(){
  const box=fitFrame($('editFrame'),$('editStage'),e.width/e.height);
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(e.height,box.height*dpr,2048/Math.max(1,e.width/e.height),2048);
  setCanvasSize(h*e.width/e.height,h);
- const recipe=e.comparing?normalRecipe():e.recipe;
+ // While erasing, the photo as it is under the Looks: no mirror trick, and no frame or date over its edges.
+ const recipe=e.comparing?normalRecipe():e.erasing?{...e.recipe,trick:'none'}:e.recipe;
  dirty=!engine.draw(recipe,{source:'edit'});
- paintFrame($('editFrame'),e.recipe.frame,e.comparing);
- stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing,e.taken,e.recipe.frame);
+ paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing);
+ stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing,e.taken,e.recipe.frame);
 }
 addEventListener('resize',invalidate);
 
@@ -582,7 +584,7 @@ $('exposureChip').addEventListener('click',()=>{sound('tick');setExposure(0);rem
 // Swipe across the picture for the next Look; tap twice to turn the camera round.
 function gestures(stage,{onDoubleTap,onDrag}={}){
  let start=null,lastTap=0;
- stage.addEventListener('pointerdown',e=>{if(e.target.closest('button,.settings'))return;start={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId,dragging:false};});
+ stage.addEventListener('pointerdown',e=>{if(e.target.closest('button,.settings,.erase-paint'))return;start={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId,dragging:false};});
  stage.addEventListener('pointermove',e=>{
   if(!start||e.pointerId!==start.id||!onDrag)return;
   const dx=e.clientX-start.x,dy=e.clientY-start.y;
@@ -914,6 +916,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  state.edit?.picture?.close?.();
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
  engine.setSource('edit',picture,width,height);
+ eraser.reset();$('eraseUndo').disabled=true;
  show('editor');selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
@@ -965,10 +968,12 @@ $('saveEdit').addEventListener('click',async()=>{
  const button=$('saveEdit');e.saving=true;button.disabled=true;$('cancelEdit').disabled=true;button.textContent='Saving…';await nextFrame();
  try{
   const recipe=normalRecipe(e.recipe);
+  // An erased photo keeps its erased picture as its source, so it opens again as it was left.
+  if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
   const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
   let shot;
-  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
+  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...(e.erased?{source:e.sourceBlob}:{})});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
@@ -982,7 +987,7 @@ $('saveEdit').addEventListener('click',async()=>{
  const stage=$('editStage');let holding=null,at=null;
  const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing){state.edit.comparing=false;$('original').hidden=true;editStickers.hidden=false;invalidate();}};
  stage.addEventListener('pointerdown',e=>{
-  if(!state.edit||e.target.closest('button'))return;
+  if(!state.edit||e.target.closest('button')||state.edit.erasing)return;
   at={x:e.clientX,y:e.clientY};
   holding=setTimeout(()=>{if(!state.edit)return;state.edit.comparing=true;$('original').hidden=false;editStickers.hidden=true;invalidate();},140);
  });
@@ -992,15 +997,20 @@ $('saveEdit').addEventListener('click',async()=>{
  gestures(stage);
 }
 function selectTab(tab){
- for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
+ for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabErase','panelErase','erase'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
   $(id).setAttribute('aria-selected',String(tab===name));$(panel).hidden=tab!==name;
  }
+ // Erasing paints on the photo itself: the stickers step aside (they are not erased) and come back after.
+ const erasing=tab==='erase';
+ if(state.edit){state.edit.erasing=erasing;editStickers.hidden=erasing;if(erasing)editStickers.select(null);}
+ eraser.active=erasing;invalidate();
  if(tab==='looks')requestAnimationFrame(()=>renderStripSelection());
  if(tab==='stickers')renderStickerPicker();
  if(tab==='frame')renderFramePanel();
 }
 $('tabLooks').addEventListener('click',()=>selectTab('looks'));
 $('tabAdjust').addEventListener('click',()=>selectTab('adjust'));
+$('tabErase').addEventListener('click',()=>selectTab('erase'));
 $('tabStickers').addEventListener('click',()=>selectTab('stickers'));
 $('tabFrame').addEventListener('click',()=>selectTab('frame'));
 
@@ -1046,6 +1056,15 @@ async function sayLettering(layer,i,info){
 const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember,editText:(i,s)=>editBalloonText(cameraStickers,i,s),say:(i,info)=>sayLettering(cameraStickers,i,info)});
 const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s),say:(i,info)=>sayLettering(editStickers,i,info)});
 const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?cameraStickers:null;
+// Erase (erase.js): paint over what should go; the editor's picture changes, the Looks redraw over it.
+const eraser=createEraser($('editFrame'),{
+ edit:()=>state.edit,
+ changed:picture=>{const e=state.edit;if(!e)return;e.erased=true;engine.setSource('edit',picture,e.width,e.height);$('eraseUndo').disabled=!eraser.canUndo;refreshThumbs(true);invalidate();},
+ busy:on=>{$('eraseHint').textContent=on?'Erasing…':'Paint over what should go.';$('saveEdit').disabled=on;$('cancelEdit').disabled=on;if(!on)sound('pop');},
+ failed:()=>toast('That could not be erased'),
+});
+$('eraseSize').addEventListener('input',e=>{eraser.size=e.target.value;});
+$('eraseUndo').addEventListener('click',()=>{if(eraser.working)return;sound('tick');eraser.undo();$('eraseUndo').disabled=!eraser.canUndo;});
 // The sheets: Lettering first (balloons and captions), then the residents' sheets, then the photographer's own.
 let stickerSet=1,mine=[];
 async function loadMine(){

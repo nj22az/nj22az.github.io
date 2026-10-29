@@ -251,12 +251,37 @@ async function run({label,width,height,dpr,mobile,portrait}){
    const opened=await app(()=>({edit:window.pocketCamera.state.edit.recipe.layers,camera:window.pocketCamera.state.camera.recipe.layers}));
    assert.ok(opened.camera.length>1,'the camera has a mix on');
    assert.deepEqual(opened.edit,[{look:opened.camera[0].look,amount:1}],'the photo opens in the main Look only');
+   // Erase: paint over the white scooter behind the palm; it is filled from round it, and nothing else changes.
+   await page.click('#tabErase');await page.waitForSelector('#editFrame .erase-paint:not([hidden])');
+   const sample=()=>app(()=>{const e=window.pocketCamera.state.edit,c=document.createElement('canvas');c.width=e.width;c.height=e.height;const g=c.getContext('2d');g.drawImage(e.picture,0,0);
+    const at=(x,y)=>[...g.getImageData(Math.round(x*e.width),Math.round(y*e.height),1,1).data].slice(0,3);return {scooter:at(.73,.66),corner:at(.08,.1)};});
+   const paintOver=async()=>{
+    const r=await page.locator('#editFrame .erase-paint').boundingBox();
+    await page.mouse.move(r.x+r.width*.715,r.y+r.height*.58);await page.mouse.down();
+    for(let k=1;k<=10;k++)await page.mouse.move(r.x+r.width*(.715+k*.003),r.y+r.height*(.58+k*.014),{steps:2});
+    await page.mouse.up();
+    await page.waitForFunction(()=>document.querySelector('#eraseHint').textContent.startsWith('Paint'),null,{timeout:90000});
+   };
+   const untouched=await sample();
+   await paintOver();
+   const erased=await sample();
+   assert.ok(Math.abs(erased.scooter[0]+erased.scooter[1]+erased.scooter[2]-untouched.scooter[0]-untouched.scooter[1]-untouched.scooter[2])>60,`the painted part is filled (${untouched.scooter} → ${erased.scooter})`);
+   assert.deepEqual(erased.corner,untouched.corner,'the rest of the photo is untouched');
+   await shot('10a-erased');
+   assert.equal(await page.isDisabled('#eraseUndo'),false,'Undo is offered');
+   await page.click('#eraseUndo');assert.deepEqual((await sample()).scooter,untouched.scooter,'Undo takes it back');
+   await paintOver();
+   const kept=(await sample()).scooter;
+   await page.click('#tabLooks');
    await page.click('#lookGroups button[data-group="painted"]');await page.click('.tile[data-look="watercolour"]');await page.click('.add-layer');
    await page.click('#lookGroups button[data-group="print"]');await page.click('.tile[data-look="print"]');
    await page.waitForTimeout(1500);await shot('10-import');
    await page.click('#saveEdit');await page.waitForSelector('#viewer:not([hidden])',{timeout:60000});
    const n=await app(async()=>{const s=window.pocketCamera.state.shots;const b=await createImageBitmap(s[0].photo);return {count:s.length,w:b.width,h:b.height};});
    assert.equal(n.count,2);assert.deepEqual([n.w,n.h],[1920,1440]);
+   // The erased picture is the photo's own now: opened again, it is as it was left.
+   const source=await app(async()=>{const b=await createImageBitmap(window.pocketCamera.state.shots[0].source),c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d');g.drawImage(b,0,0);return [...g.getImageData(Math.round(.73*b.width),Math.round(.66*b.height),1,1).data].slice(0,3);});
+   assert.ok(source.every((v,i)=>Math.abs(v-kept[i])<14),`the saved source is the erased picture (${source} ~ ${kept})`);
   });
   await check(`${label}: several of your own photos at once go into the album in the camera's main Look`,async()=>{
    const before=await app(()=>window.pocketCamera.state.shots.length);
