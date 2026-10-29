@@ -26,7 +26,8 @@
 <link rel="stylesheet" href="blackjack.css?v=20261029a">
 <link rel="stylesheet" href="solitaire.css?v=20261029a">
 <link rel="stylesheet" href="game-room-refresh.css?v=20261029c">
-<link rel="stylesheet" href="image-generator.css?v=20261029a">
+<link rel="stylesheet" href="social-share.css?v=20261029a">
+<link rel="stylesheet" href="camera-black.css?v=20261029a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -71,7 +72,7 @@
  <!-- Camera -->
  <section class="screen camera" id="camera" aria-label="Camera">
   <header class="bar">
-   <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
+   <div class="camera-home"><a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a><span class="camera-mark">POCKET CAMERA</span></div>
    <!-- As on an iPhone: the settings hide behind a chevron; what is switched on shows beside it, in yellow. -->
    <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus"></span><svg><use href="#i-chevron"/></svg></button>
    <button type="button" class="photos-button" id="import" aria-label="Your photos: choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
@@ -99,7 +100,7 @@
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
      <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Your photos</button>
     </div>
-    <p class="fine" id="welcomeNote">Camera photos stay on this device. Image creation sends your prompt and any reference to your chosen server.</p>
+    <p class="fine" id="welcomeNote">Photos stay on this device. Nothing is uploaded.</p>
    </div>
    <div class="count" id="count" aria-live="assertive"></div>
   </div>
@@ -158,7 +159,6 @@
    </div>
   </header>
   <div class="album-scroll">
-   <button type="button" class="arcade-entry" id="openImageGenerator"><span class="arcade-entry-icon" aria-hidden="true">✦</span><span><strong>Create an image</strong><small>Use your own image server</small></span><span aria-hidden="true">›</span></button>
    <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
@@ -266,6 +266,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029n"></script>
+<script type="module" src="app.js?v=20261029p"></script>
 </body>
 </html>

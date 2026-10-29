@@ -4,18 +4,17 @@
  * browser's own storage (album.js) until shared.
  */
 import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029c';
-import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMine,deleteMine} from './album.js?v=20261029b';
+import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029i';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
 import {createPrinter} from './printer.js?v=20261029e';
-import {createMemory} from './memory.js?v=20261029e';
-import {createImageGenerator} from './image-generator.js?v=20261029a';
+import {createMemory} from './memory.js?v=20261029f';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
-import {createBlackjack} from './blackjack.js?v=20261029a';
-import {createSolitaire} from './solitaire.js?v=20261029b';
+import {createBlackjack} from './blackjack.js?v=20261029b';
+import {createSolitaire} from './solitaire.js?v=20261029c';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -633,15 +632,22 @@ function fitInside(r,aspect,pad=0){
 }
 
 // ---------- Album ----------
-let albumOK=true;
-async function loadShots(){
- try{state.shots=await listShots();}catch{albumOK=false;state.shots=[];}
+let albumOK=true,albumRevision=0;
+async function refreshShots(){
+ let revision,shots;
+ do{revision=albumRevision;shots=await listShots();}while(revision!==albumRevision);
+ state.shots=shots;
  if(state.shots.length)keepAlbum();
- renderRoll();
+ renderRoll();if(state.mode==='album')renderGrid();
+}
+async function loadShots(){
+ try{await refreshShots();}catch{albumOK=false;state.shots=[];renderRoll();return;}
+ // Do not hold up the album while samples download. An unavailable asset is retried on a later visit.
+ try{await ensureAlbumSamples();await refreshShots();}catch{/* The owner's photos remain usable offline. */}
 }
 async function keep(shot,{roll=true}={}){
  if(!albumOK){offerFile(shot.photo);return null;}
- try{const r=await addShot(shot);state.shots.unshift(r);if(roll)renderRoll(true);keepAlbum();return r;}
+ try{const r=await addShot(shot);albumRevision++;state.shots.unshift(r);if(roll)renderRoll(true);keepAlbum();return r;}
  catch{albumOK=false;offerFile(shot.photo);return null;}
 }
 let rollURL;
@@ -659,7 +665,7 @@ function renderGrid(){
  for(const shot of state.shots){
   const b=document.createElement('button');b.type='button';b.dataset.id=shot.id;
   const url=URL.createObjectURL(shot.thumb||shot.photo);gridURLs.push(url);
-  b.setAttribute('aria-label',`Photo, ${mixLabel(normalRecipe(shot.recipe))}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
+  b.setAttribute('aria-label',shot.sampleLabel||`Photo, ${mixLabel(normalRecipe(shot.recipe))}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
   b.innerHTML=`<img src="${url}" alt="" loading="lazy" decoding="async">`;grid.append(b);
  }
  $('albumEmpty').hidden=state.shots.length>0;
@@ -691,8 +697,6 @@ async function maybeStartCamera(){
 $('roll').addEventListener('click',openAlbum);
 function openAlbum(){show('album');renderGrid();}
 $('closeAlbum').addEventListener('click',()=>show('camera'));
-const imageGenerator=createImageGenerator({onEdit:async file=>{if(!engine||engine.lost())throw new Error('The editor needs WebGL 2. Download this image instead.');await editFile(file);}});
-$('openImageGenerator').addEventListener('click',()=>imageGenerator.open());
 
 
 // ---------- Memory ----------
@@ -702,7 +706,7 @@ async function memorySources(){
  const manifest=stickerSheets||await loadStickerSets().catch(()=>null);
  const day=s=>new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'});
  return [
-  {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:`Your photo of ${day(s)}`}))},
+  {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:s.sampleLabel||`Your photo of ${day(s)}`}))},
   ...(manifest?.sets||[]).map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
   {id:'mine',name:'Your stickers',kind:'sticker',items:mine.map(m=>stickerById(m.id)).filter(Boolean).map(s=>({id:s.id,url:s.url,label:'Your sticker'}))},
  ];
@@ -744,17 +748,19 @@ async function openViewer(id){
  const shot=state.shots.find(s=>s.id===id)||await getShot(id).catch(()=>null);if(!shot)return;
  state.viewing=shot;show('viewer');
  if(viewerURL)URL.revokeObjectURL(viewerURL);viewerURL=URL.createObjectURL(shot.photo);
- const img=$('viewerImage');img.src=viewerURL;img.alt=`Photo in ${mixLabel(normalRecipe(shot.recipe))}`;
- $('viewerTitle').textContent=new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});
- $('sharePhoto').querySelector('span').textContent=canShareFiles()?'Share':'Download';
- $('sharePhoto').querySelector('use').setAttribute('href',canShareFiles()?'#i-share':'#i-download');
+ const img=$('viewerImage');img.src=viewerURL;img.alt=shot.sampleLabel||`Photo in ${mixLabel(normalRecipe(shot.recipe))}`;
+ $('viewerTitle').textContent=shot.sampleLabel||new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});
+ $('editPhoto').disabled=!engine||engine.lost();$('editPhoto').title=$('editPhoto').disabled?'Editing requires WebGL 2':'';
+ const shareFile=new File([shot.photo],fileName(shot),{type:shot.photo.type||'image/jpeg'}),canShare=canShareFiles(shareFile);
+ $('sharePhoto').querySelector('span').textContent=canShare?'Share':'Download';
+ $('sharePhoto').querySelector('use').setAttribute('href',canShare?'#i-share':'#i-download');
 }
 $('closeViewer').addEventListener('click',openAlbum);
-function canShareFiles(){try{return !!navigator.canShare?.({files:[new File([new Blob()],'x.jpg',{type:'image/jpeg'})]});}catch{return false;}}
-function fileName(shot){const d=new Date(shot?.taken||Date.now());return `pocket-camera-${d.toISOString().slice(0,19).replace(/[:T]/g,'-')}.jpg`;}
+function canShareFiles(file){try{return !!navigator.share&&!!navigator.canShare?.({files:[file]});}catch{return false;}}
+function fileName(shot){const d=new Date(shot?.taken||Date.now()),ext=shot?.photo?.type==='image/png'?'png':'jpg';return `pocket-camera-${d.toISOString().slice(0,19).replace(/[:T]/g,'-')}.${ext}`;}
 async function sharePhoto(shot){
- const file=new File([shot.photo],fileName(shot),{type:'image/jpeg'});
- if(canShareFiles()){try{await navigator.share({files:[file],title:'Pocket Camera'});}catch(err){if(err?.name!=='AbortError')download(file);}return;}
+ const file=new File([shot.photo],fileName(shot),{type:shot.photo.type||'image/jpeg'});
+ if(canShareFiles(file)){try{await navigator.share({files:[file],title:'Pocket Camera'});}catch(err){if(err?.name!=='AbortError')download(file);}return;}
  download(file);
 }
 function download(file){const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
@@ -773,7 +779,7 @@ function confirmDelete(message,label,then){
 }
 $('deletePhoto').addEventListener('click',()=>confirmDelete('This photo will be deleted from this device.','Delete Photo',async()=>{
  if(!state.viewing)return;
- const id=state.viewing.id;await deleteShot(id).catch(()=>{});
+ const id=state.viewing.id;await deleteShot(id).catch(()=>{});albumRevision++;
  state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
 }));
 
@@ -887,7 +893,7 @@ $('saveEdit').addEventListener('click',async()=>{
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
   const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
   let shot;
-  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
+  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
@@ -1123,12 +1129,13 @@ new ResizeObserver(invalidate).observe(document.body);
 const standalone=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
 document.documentElement.classList.toggle('standalone',standalone);
 if('serviceWorker' in navigator)navigator.serviceWorker.register(new URL('./sw.js',import.meta.url)).catch(()=>{});
+loadShots();
 if(!startEngine()){
  showWelcome();
  $('welcome').querySelector('p').textContent='Pocket Camera needs WebGL 2, which this browser does not offer.';
  $('welcome').querySelector('.welcome-actions').hidden=true;$('welcomeNote').hidden=true;setShutter('off');
 }else{
- buildStrip();show('camera');loadShots();
+ buildStrip();show('camera');
  loadMine().then(()=>cameraStickers.render());
  // The camera's stickers need their pictures before they can show. The first screen greets with a sticker from the
  // residents' sheets, a different one each time (the owner, 29 October 2026: "Replace Fuji with a random sticker when

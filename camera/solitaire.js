@@ -1,3 +1,4 @@
+import {createResultShare} from './social-share.js?v=20261029a';
 /** Klondike, draw one: tap a card or ordered run, then its destination.
  * Cards use rank 1–13 and suits 'hearts', 'diamonds', 'clubs', 'spades'.
  * Rendering is supplied by Pocket Camera's shared deck through cardView(card, faceDown).
@@ -106,7 +107,9 @@ export function createSolitaire({root,cardView,shuffleDeck}){
   }
   board.append(cols);region.append(board);
   const status=text('p','sol-status',`${message} ${game.moves} ${game.moves===1?'move':'moves'}.`);status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-  root.append(toolbar,region,status);region.scrollTop=scroll;region.scrollLeft=scrollLeft;
+  root.append(toolbar,region,status);
+  if(isKlondikeWon(game))root.append(createResultShare({game:'Solitaire',headline:'All suits complete!',detail:`${game.moves} moves`}));
+  region.scrollTop=scroll;region.scrollLeft=scrollLeft;
   if(active){const next=[...root.querySelectorAll('[data-focus-key]')].find(el=>el.dataset.focusKey===active&&!el.disabled);next?.focus({preventScroll:true});}
  }
  function start(){game=dealKlondike(shuffleDeck());selected=null;message='Tap a card, then its destination.';render();}

@@ -1,0 +1,11 @@
+/* Result controls share via the device's apps; downloads remain available without Web Share. */
+.result-share{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:100%}
+.result-share-button{min-height:44px;padding:8px 14px;border:2px solid #25483f;border-radius:10px;background:#fff5de;color:#25483f;font:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #25483f}
+.result-share-button:disabled{opacity:.5;cursor:wait}.result-share-button:focus-visible{outline:3px solid #dd704e;outline-offset:3px}
+.result-share-message{flex-basis:100%;text-align:center;font-size:12px;line-height:1.35;color:inherit}
+.result-share-message:empty{display:none}
+.blackjack-layout .result-share{margin:0 auto 8px}.memory-win .result-share{width:min(300px,100%)}.memory-win .result-share-message{color:#fff5de}
+.solitaire-game .result-share{padding:8px;background:#24483f;color:#fff5de}
+.memory .memory-win{overflow-y:auto;justify-content:safe center}
+@media(max-height:700px){.memory .memory-cheer{height:min(19vh,120px)}.memory .memory-win{padding:12px;gap:5px}.memory .memory-win-buttons{gap:6px;margin-top:5px}.memory .memory-win h3{font-size:23px}}
+.blackjack-layout.result-ready{justify-content:flex-start}

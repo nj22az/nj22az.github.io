@@ -1,3 +1,4 @@
+import {createResultShare} from './social-share.js?v=20261029a';
 /**
  * Memory, the camera's game (the owner, 29 October 2026: "Can you add the mini games … I want memory with our own
  * photos or with the stickers"), as the hand-held cameras had games inside them. Pairs of cards face down; turn two,
@@ -164,7 +165,7 @@ export function createMemory(root,{sources,cheer=()=>null,sound=()=>{},store,onP
    const again=document.createElement('button');again.type='button';again.className='button primary';again.textContent='Play again';again.addEventListener('click',()=>start());
    const other=document.createElement('button');other.type='button';other.className='button';other.textContent='Other cards';other.addEventListener('click',()=>{sound('tick');showSetup();});
    const buttons=document.createElement('div');buttons.className='memory-win-buttons';buttons.append(again,other);
-   win.append(h,p,buttons);win.hidden=false;again.focus({preventScroll:true});
+   win.append(h,p,buttons,createResultShare({game:'Memory',headline:`${game.pairs} pairs found!`,detail:`${game.moves} moves · ${clock(game.ms)}`}));win.hidden=false;again.focus({preventScroll:true});
   },700+game.cards.length*28);
  }
  // Arrow keys move along the board as it is laid out; Enter or Space turns the card.

@@ -1,3 +1,4 @@
+import {createResultShare} from './social-share.js?v=20261029a';
 /**
  * Pocket Camera Blackjack — a friendly, no-stakes game with one 52-card deck.
  * Dealer stands on all 17s, including soft 17. No betting, splitting or insurance.
@@ -76,7 +77,9 @@ export function createBlackjack({root,cardView,shuffleDeck}){
   const actions=el('div','blackjack-actions');
   if(game.phase==='playing')actions.append(button('Hit',hit,'primary'),button('Stand',stand));
   else actions.append(button('Deal again',start,'primary'));
-  layout.append(hint,table,status,actions);root.replaceChildren(layout);
+  layout.append(hint,table,status,actions);
+  if(game.phase==='done'){layout.className+=' result-ready';layout.append(createResultShare({game:'Blackjack',headline:game.message,detail:`Your hand ${blackjackScore(game.player).total} · Dealer ${blackjackScore(game.dealer).total}`}));}
+  root.replaceChildren(layout);
  }
  function destroy(){game=null;root.replaceChildren();}
  return {start,destroy,get state(){return game;}};
