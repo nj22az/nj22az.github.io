@@ -3,8 +3,13 @@
 ## Delivery state
 
 Prepared on local `main` from production `34a1c38070aec190141108e7c541368033ebf33f`.
-No new remote branch. Publication is pending at this preparation stage; see the
-publication update below when present. No PR was open for this audit at the initial check.
+No new remote branch and no PR. **Published to `main` as
+[`8a1d1aa7002cbdaa47969ef045d59327a0d97153`](https://github.com/nj22az/nj22az.github.io/commit/8a1d1aa7002cbdaa47969ef045d59327a0d97153).
+[Pages deployment 40835574456](https://github.com/nj22az/nj22az.github.io/actions/runs/40835574456)
+succeeded. All 16 public files match tested local bytes, including page, data, CSV,
+CSS/JS, audit, evidence, tests and handovers. See
+[publication evidence](PUBLICATION-NORWAY-2026-10-29.json).
+The handover/publication sign-off is a documentation-only follow-up.
 The owner explicitly requested expansion and addition of supported findings to the
 directory, CSV and map through the repository workflow.
 
@@ -77,8 +82,7 @@ labelled marker shapes were retained; the Blue styles use the same component rul
 
 ## Next concrete actions
 
-Verify publication/Pages and exact live data/page/CSV bytes, then record its commit.
-Complete desktop/iPad/narrow-screen/Leaflet checks when a browser can reach the page;
+Publication and exact live bytes are verified. Complete desktop/iPad/narrow-screen/Leaflet checks when a browser can reach the page;
 mock OSM tile requests in automation. Confirm charges for the three withheld properties
 from official hotel information before admission. Resolve Hotel Norge tariffs and
 hotel-receipt inclusion before promoting any paid Norwegian property to Yellow.
