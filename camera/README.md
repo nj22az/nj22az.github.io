@@ -64,7 +64,9 @@ node camera/tests/camera.browser.mjs         # real Chromium with a fake camera,
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check compiles and draws all 19 Looks on the camera picture, takes a photo with a mix, a sticker and the
-date stamp, re-edits it from its source (adjustments, a second sticker resized by its handle, hold for the original),
-imports and saves a photo, deletes one, reloads, and requires no page errors. It runs in software WebGL (SwiftShader);
-real phones (iPhone Safari, Android Chrome) and their frame rates are not covered by it.
+The browser check compiles and draws all 19 Looks on the camera picture, starts the camera twice at once (one camera
+stays on), takes a photo with a mix, a sticker (dragged, then pinched with two fingers) and the date stamp, re-edits it
+from its source (adjustments, a second sticker resized by its handle, hold for the original, Cancel held while saving),
+imports and saves a photo, deletes one, reloads, loses the graphics and takes no black photo, and requires no page
+errors. It runs in software WebGL (SwiftShader), which never restores a lost context, so the camera coming back after
+one is not checked; real phones (iPhone Safari, Android Chrome) and their frame rates are not covered by it either.

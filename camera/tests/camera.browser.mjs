@@ -54,6 +54,16 @@ async function run({label,width,height,dpr,mobile,portrait}){
    assert.ok(Object.keys(out).length>=19,`${Object.keys(out).length} Looks offered`);
    for(const [look,r] of Object.entries(out)){assert.equal(r.failed,false,`${look} compiled`);assert.ok(r.spread>3,`${look} draws a picture, not a flat colour (${r.spread.toFixed(1)})`);}
   });
+  await check(`${label}: two camera starts at once leave one camera running`,async()=>{
+   const live=await app(async()=>{
+    const md=navigator.mediaDevices,real=md.getUserMedia.bind(md),streams=[];
+    md.getUserMedia=async c=>{const s=await real(c);streams.push(s);return s;};
+    const {startCamera}=window.pocketCamera;await Promise.all([startCamera(),startCamera()]);
+    md.getUserMedia=real;
+    return {made:streams.length,live:streams.flatMap(s=>s.getTracks()).filter(t=>t.readyState==='live').length,running:window.pocketCamera.state.camera.running};
+   });
+   assert.equal(live.made,2);assert.equal(live.live,1,'the earlier camera is turned off');assert.ok(live.running);
+  });
   await check(`${label}: thumbnails show the camera in each Look`,async()=>{
    await page.waitForFunction(()=>document.querySelectorAll('.tile canvas.drawn').length>=19,null,{timeout:60000});await shot('2-thumbnails');
   });
@@ -80,6 +90,18 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.mouse.move(box.x+box.width/2-50,box.y+box.height/2-30,{steps:6});await page.mouse.up();
    const s=await app(()=>window.pocketCamera.state.camera.recipe.stickers);
    assert.equal(s.length,1);assert.equal(s[0].id,'fuji/Wave');assert.ok(s[0].x<.5&&s[0].y<.56,'moved up and left');
+   // Two fingers, both on the sticker, spread apart and turned: it grows and turns.
+   const pinched=await app(()=>{
+    const el=document.querySelector('#cameraFrame .sticker'),r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const before={...window.pocketCamera.state.camera.recipe.stickers[0]};
+    const fire=(type,id,x,y,target=el)=>target.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===11,clientX:x,clientY:y,bubbles:true,cancelable:true}));
+    fire('pointerdown',11,cx-10,cy-20);fire('pointerdown',12,cx+10,cy+20);
+    for(let k=1;k<=5;k++){fire('pointermove',12,cx+10+k*8,cy+20+k*4,window);fire('pointermove',11,cx-10-k*8,cy-20-k*2,window);}
+    fire('pointerup',12,cx+50,cy+40,window);fire('pointerup',11,cx-50,cy-30,window);
+    return {before,after:window.pocketCamera.state.camera.recipe.stickers[0]};
+   });
+   assert.ok(pinched.after.size>pinched.before.size*1.3,`pinched bigger (${pinched.before.size.toFixed(2)} → ${pinched.after.size.toFixed(2)})`);
+   assert.notEqual(Math.round(pinched.after.angle),Math.round(pinched.before.angle),'and turned');
    await page.waitForTimeout(300);await shot('3c-sticker');
   });
   await check(`${label}: the shutter keeps a photo, its source and its recipe in the album`,async()=>{
@@ -111,12 +133,18 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.click('#tabAdjust');await page.click('.adjuster[data-key="pattern"]');await page.fill('#adjustSlider','80');
    await page.click('.adjuster[data-key="light"]');await page.fill('#adjustSlider','30');
    await page.waitForTimeout(800);await shot('8-adjust');
-   // A corner of the picture, clear of the stickers (holding a sticker picks it up instead).
-   const box=await page.locator('#editFrame').boundingBox();
-   await page.mouse.move(box.x+16,box.y+16);await page.mouse.down();await page.waitForTimeout(400);
+   // A part of the picture clear of the stickers (holding a sticker picks it up instead).
+   const spot=await app(()=>{
+    const r=document.querySelector('#editFrame').getBoundingClientRect();
+    for(let y=.05;y<1;y+=.1)for(let x=.05;x<1;x+=.1){const px=r.left+x*r.width,py=r.top+y*r.height;if(!document.elementFromPoint(px,py)?.closest('.sticker,button'))return {x:px,y:py};}
+   });
+   assert.ok(spot,'some of the picture is free of stickers');
+   await page.mouse.move(spot.x,spot.y);await page.mouse.down();await page.waitForTimeout(400);
    assert.equal(await page.isVisible('#original'),true,'holding shows the original');await shot('9-original');
    await page.mouse.up();assert.equal(await page.isVisible('#original'),false);
-   await page.click('#saveEdit');await page.waitForSelector('#viewer:not([hidden])',{timeout:30000});
+   await page.click('#saveEdit');
+   assert.equal(await page.isDisabled('#cancelEdit'),true,'Cancel waits while saving');
+   await page.waitForSelector('#viewer:not([hidden])',{timeout:30000});
    const edited=await app(()=>{const s=window.pocketCamera.state.shots[0];return {edited:!!s.edited,adjust:s.recipe.adjust};});
    await shot('9b-saved');
    assert.ok(edited.edited);assert.equal(edited.adjust.pattern,.8);assert.equal(edited.adjust.light,.3);
@@ -138,6 +166,26 @@ async function run({label,width,height,dpr,mobile,portrait}){
   });
   await check(`${label}: the album lasts a reload`,async()=>{
    await page.reload();await page.waitForFunction(()=>window.pocketCamera?.state.shots.length===1,null,{timeout:20000});
+  });
+  await check(`${label}: lost graphics never save a black photo`,async()=>{
+   const out=await app(async()=>{
+    const pc=window.pocketCamera,ext=pc.engine.gl.getExtension('WEBGL_lose_context');if(!ext)return {skipped:true};
+    const canvas=document.querySelector('#cameraFrame canvas'),within=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(()=>r('timeout'),ms))]);
+    const lost=new Promise(r=>canvas.addEventListener('webglcontextlost',()=>r('lost'),{once:true}));
+    const restored=new Promise(r=>canvas.addEventListener('webglcontextrestored',()=>r('restored'),{once:true}));
+    const count=pc.state.shots.length;ext.loseContext();
+    await pc.takePhoto();const afterLost=pc.state.shots.length;
+    const event=await within(lost,5000);ext.restoreContext();
+    const back=await within(restored,10000);await new Promise(r=>setTimeout(r,800));
+    return {count,afterLost,event,back,shutter:!document.querySelector('#shutter').disabled};
+   });
+   if(out.skipped)return;
+   assert.equal(out.afterLost,out.count,'no photo kept while the graphics were lost');
+   assert.equal(out.event,'lost');
+   // Headless Chromium with software WebGL never restores a lost context, even on a bare canvas; there only the first
+   // half (no black photo) can be checked.
+   if(out.back==='timeout'){console.log('    (this browser does not restore lost contexts: the camera coming back is not checked)');return;}
+   assert.ok(out.shutter,'the shutter is back');
   });
   await check(`${label}: no page errors`,async()=>assert.deepEqual(errors,[]));
  }finally{await browser.close();}

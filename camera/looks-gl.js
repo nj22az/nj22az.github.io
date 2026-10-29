@@ -79,6 +79,7 @@ uniform sampler2D tSource;
 uniform vec4 uCrop;
 uniform float uMirror,uSmooth,uAuto,uBias,uLight,uContrast,uColour,uWarmth;
 uniform vec2 uStep;
+uniform float uMeanLod;
 float luma(vec3 c){return dot(c,vec3(.2126,.7152,.0722));}
 vec3 at(vec2 p){
  vec2 q=vec2(p.x,1.0-p.y);if(uMirror>.5)q.x=1.0-q.x;
@@ -96,8 +97,11 @@ void main(){
   c=mix(c,sum/total,uSmooth);
  }
  if(uAuto>0.0){
-  // The whole picture's average, from its smallest mipmap.
-  float mean=clamp(luma(textureLod(tSource,vec2(.5),16.0).rgb),.02,.98);
+  // The average of the part of the picture that is kept (the crop, so the viewfinder and the save agree), from nine
+  // samples of a mipmap about a third of it across.
+  float mean=0.0;
+  for(int j=0;j<3;j++)for(int i=0;i<3;i++)mean+=luma(textureLod(tSource,uCrop.xy+(vec2(i,j)+.5)/3.0*uCrop.zw,uMeanLod).rgb);
+  mean=clamp(mean/9.0,.02,.98);
   c=pow(max(c,vec3(0.0)),vec3(mix(1.0,clamp(log(.56)/log(mean),.45,2.2),uAuto)));
  }
  c=pow(max(c,vec3(0.0)),vec3(exp2(-uLight*.85)));
@@ -132,6 +136,8 @@ export function createLookEngine(canvas,{light=false}={}){
  }
  function finish(entry,key){
   if(entry.uniforms||entry.failed)return entry;
+  // A lost context answers nothing; that is not the shader's fault, so nothing is marked as failed.
+  if(gl.isContextLost())return entry;
   if(!gl.getProgramParameter(entry.program,gl.LINK_STATUS)){
    entry.failed=true;console.error(`Pocket Camera: ${key} did not compile`,gl.getShaderInfoLog(entry.fragment)||gl.getProgramInfoLog(entry.program));return entry;
   }
@@ -139,16 +145,24 @@ export function createLookEngine(canvas,{light=false}={}){
   for(let i=0;i<count;i++){const name=gl.getActiveUniform(entry.program,i).name;u[name]=gl.getUniformLocation(entry.program,name);}
   entry.uniforms=u;return entry;
  }
- const lookKey=(name,full)=>name+(full||!light?':full':':light');
+ // Only the Looks with a lighter build (#ifdef LIGHT: Oil, Heavy brush) have two programs on a phone.
+ const lighter=new Map(),hasLight=name=>{if(!lighter.has(name))lighter.set(name,/#ifdef LIGHT/.test(photoFragment(name)||''));return lighter.get(name);};
+ const lookKey=(name,full)=>name+(full||!light||!hasLight(name)?':full':':light');
  /** Starts compiling a Look without waiting for it (thumbnails ask for every Look at once). */
  function request(name,full=false){
   const key=lookKey(name,full);
-  return programs.get(key)||build(key,photoFragment(name,{light:light&&!full}));
+  return programs.get(key)||build(key,photoFragment(name,{light:key.endsWith(':light')}));
  }
  const ready=entry=>entry.uniforms||entry.failed||!parallel||gl.getProgramParameter(entry.program,parallel.COMPLETION_STATUS_KHR);
  /** The compiled program for a Look, compiling it now if need be; null if it failed. */
- function look(name,full=false){const key=lookKey(name,full),e=finish(request(name,full),key);return e.failed?null:e;}
- const fixed=(key,text)=>{const e=finish(programs.get(key)||build(key,text),key);return e.failed?null:e;};
+ function look(name,full=false){
+  if(gl.isContextLost())return undefined;
+  const key=lookKey(name,full),e=finish(request(name,full),key);
+  // A full build that will not compile on this device falls back to the light one.
+  if(e.failed&&full&&key!==lookKey(name,false))return look(name,false);
+  return e.failed?null:e;
+ }
+ const fixed=(key,text)=>{const e=finish(programs.get(key)||build(key,text),key);return e.failed||!e.uniforms?null:e;};
 
  function texture(w,h){
   const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
@@ -201,14 +215,15 @@ export function createLookEngine(canvas,{light=false}={}){
  }
 
  const f1=(l,v)=>{if(l)gl.uniform1f(l,v);};
- function prepare(recipe,crop,mirror,w,h,smooth,auto){
-  const a=recipe.adjust;
+ function prepare(recipe,source,crop,mirror,w,h,smooth,auto){
+  const a=recipe.adjust,s=sources.get(source);
+  const meanLod=Math.max(0,Math.log2(Math.max(crop.w*s.width,crop.h*s.height)/3));
   // A Look that draws lines finds them in the detail of a picture about as tall as its patterns are sized for (the
   // viewfinder's): a larger save reads its source that much softer, so its lines are the viewfinder's lines, not the
   // floor's grain as well. Patterns, outlines and dots are still drawn at the save's full size.
   const bias=smooth?Math.max(0,Math.log2(h/(1080*2**-a.pattern))):0;
   return u=>{
-   f1(u.uBias,bias);
+   f1(u.uBias,bias);f1(u.uMeanLod,meanLod);
    gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smooth?1:0);f1(u.uAuto,auto?1:0);
    // Smoothing reaches about a thousandth of the picture's height, whatever its size.
    if(u.uStep)gl.uniform2f(u.uStep,h/(900*w),1/900);
@@ -223,27 +238,30 @@ export function createLookEngine(canvas,{light=false}={}){
  };
 
  /**
-  * Runs a recipe from a source into `output` (a framebuffer, or null for the canvas). Returns false while a Look in
-  * it is still compiling (nothing is drawn then), so a frame never shows half a recipe.
-  */ 
- function run(recipe,{source,crop={x:0,y:0,w:1,h:1},mirror=false,width,height,output=null,viewport,targetName='view',full=false,tile=0,layers=recipe.layers}){
-  if(!sources.has(source))return false;
+  * Runs a recipe from a source into `output` (a framebuffer, null for the canvas, or 'pair' to leave the result in the
+  * target pair and get its framebuffer back). Returns false while a Look in it is still compiling (nothing is drawn
+  * then), so a frame never shows half a recipe. `expose` exposes the picture as for an ink Look whatever the recipe.
+  */
+ function run(recipe,{source,crop={x:0,y:0,w:1,h:1},mirror=false,width,height,output=null,viewport,targetName='view',full=false,tile=0,layers=recipe.layers,expose=false}){
+  if(!sources.has(source)||gl.isContextLost())return false;
   const active=layers.filter(l=>l.look!=='none'&&l.amount>0);
   const entries=active.map(l=>full?look(l.look,true):(ready(request(l.look))?look(l.look):undefined));
   if(entries.some(e=>e===undefined))return false;
-  const prep=fixed('prepare',PREPARE);
+  if(full&&entries.some(e=>!e))throw new Error(`${active[entries.indexOf(null)].look} cannot be drawn on this device`);
+  const prep=fixed('prepare',PREPARE),src=sources.get(source).t,intoPair=output==='pair';
+  if(!prep)return false;
   const steps=active.map((l,i)=>({layer:l,entry:entries[i]})).filter(s=>s.entry);
-  const smooth=steps.some(s=>lookDrawsLines(s.layer.look)),auto=steps.some(s=>INK_LOOKS.includes(s.layer.look));
+  const smooth=steps.some(s=>lookDrawsLines(s.layer.look)),auto=expose||steps.some(s=>INK_LOOKS.includes(s.layer.look));
   const vp=viewport||[0,0,width,height];
-  if(!steps.length){pass(prep,sources.get(source).t,output,vp,prepare(recipe,crop,mirror,width,height,false),tile);return true;}
+  if(!steps.length&&!intoPair){pass(prep,src,output,vp,prepare(recipe,source,crop,mirror,width,height,false,auto),tile);return true;}
   const p=pair(targetName,width,height);let read=0;
-  pass(prep,sources.get(source).t,p.items[0].f,[0,0,width,height],prepare(recipe,crop,mirror,width,height,smooth,auto),tile);
+  pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
   steps.forEach(({layer,entry},i)=>{
-   const last=i===steps.length-1;
+   const last=i===steps.length-1&&!intoPair;
    pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern),tile);
    read=1-read;
   });
-  return true;
+  return intoPair?p.items[read].f:true;
  }
 
  return {
@@ -254,28 +272,35 @@ export function createLookEngine(canvas,{light=false}={}){
   warm(names){if(parallel)for(const n of names)if(n!=='none')request(n);},
   isReady:name=>name==='none'||ready(request(name)),
   /** Draws a recipe on the canvas at the canvas's own size. */
-  draw(recipe,options){return run(recipe,{...options,width:canvas.width,height:canvas.height,output:null});},
+  draw(recipe,options){
+   // The full builds a save will use start compiling now, not when the shutter is pressed.
+   if(light)for(const l of recipe.layers)if(l.look!=='none'&&hasLight(l.look))request(l.look,true);
+   return run(recipe,{...options,width:canvas.width,height:canvas.height,output:null});
+  },
   /**
    * Draws one small square per Look into an atlas and hands back its pixels (rows top first): each Look as the
    * chosen layer would be, over the layers before it. Looks still compiling are left out (`missing`).
    */
   thumbnails(recipe,{source,crop,mirror,size,names,layer=0}){
-   if(!sources.has(source))return null;
+   if(!sources.has(source)||gl.isContextLost())return null;
    const n=names.length,w=size*n,h=size,atlas=pair('atlas',w,h),missing=[];
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.viewport(0,0,w,h);gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);
    const before={...recipe,layers:recipe.layers.slice(0,layer)};
+   // Two pictures to draw the tiles over: as the layers before leave it, and exposed for an ink Look, as choosing one
+   // would expose it.
    const base=pair('thumb-base',size,size);
    if(!run(before,{source,crop,mirror,width:size,height:size,output:base.items[0].f,targetName:'thumb'}))return null;
+   if(!run(before,{source,crop,mirror,width:size,height:size,output:base.items[1].f,targetName:'thumb',expose:true}))return null;
    // Without background compiling, a few new Looks are compiled per call, so the strip fills in without a long stall.
    let budget=parallel?Infinity:3;
    names.forEach((name,i)=>{
-    if(name==='none'){pass(fixed('copy',COPY),base.items[0].t,atlas.items[0].f,[i*size,0,size,size]);return;}
+    if(name==='none'){const copy=fixed('copy',COPY);if(copy)pass(copy,base.items[0].t,atlas.items[0].f,[i*size,0,size,size]);return;}
     const e=programs.get(lookKey(name,false));
     if(!e&&budget<=0){missing.push(name);return;}
     if(!e)budget--;
     if(!ready(request(name))){missing.push(name);return;}
     const entry=look(name);if(!entry){missing.push(name);return;}
-    pass(entry,base.items[0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35));
+    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35));
    });
    const pixels=new Uint8Array(w*h*4);
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
@@ -283,21 +308,28 @@ export function createLookEngine(canvas,{light=false}={}){
   },
   /** The recipe at full quality and full size, as pixels (rows top first). */
   render(recipe,{source,crop,mirror,width,height}){
-   const out=pair('export-out',width,height);
-   if(!run(recipe,{source,crop,mirror,width,height,output:out.items[0].f,targetName:'export',full:true,tile:1024}))throw new Error('The picture could not be drawn');
-   const pixels=new Uint8Array(width*height*4);
-   gl.bindFramebuffer(gl.FRAMEBUFFER,out.items[0].f);gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
-   release('export');release('export-out');
-   return {width,height,data:flipRows(pixels,width,height)};
+   if(gl.isContextLost())throw new Error('The graphics were lost');
+   try{
+    const result=run(recipe,{source,crop,mirror,width,height,output:'pair',targetName:'export',full:true,tile:1024});
+    if(!result)throw new Error('The picture could not be drawn');
+    const pixels=new Uint8Array(width*height*4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,result);gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+    // A context lost while drawing reads back nothing: never hand that on as a black photo.
+    if(gl.isContextLost())throw new Error('The graphics were lost');
+    return {width,height,data:flipRows(pixels,width,height)};
+   }finally{release('export');}
   },
   failed:name=>!!programs.get(lookKey(name,false))?.failed,
   lost:()=>gl.isContextLost(),
  };
 }
 
-/** WebGL reads rows bottom first; pictures want them top first. */
+/** WebGL reads rows bottom first; pictures want them top first. Turned over in place: a save is too big to copy. */
 export function flipRows(pixels,w,h){
- const row=w*4,out=new Uint8ClampedArray(pixels.length);
- for(let y=0;y<h;y++)out.set(pixels.subarray((h-1-y)*row,(h-y)*row),y*row);
- return out;
+ const row=w*4,spare=new Uint8Array(row);
+ for(let top=0,bottom=h-1;top<bottom;top++,bottom--){
+  const a=pixels.subarray(top*row,(top+1)*row),b=pixels.subarray(bottom*row,(bottom+1)*row);
+  spare.set(a);a.set(b);b.set(spare);
+ }
+ return new Uint8ClampedArray(pixels.buffer,pixels.byteOffset,pixels.length);
 }

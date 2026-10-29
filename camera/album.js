@@ -10,15 +10,29 @@ function db(){
  opening??=new Promise((resolve,reject)=>{
   const request=indexedDB.open(DB,1);
   request.onupgradeneeded=()=>request.result.createObjectStore(STORE,{keyPath:'id'});
-  request.onsuccess=()=>resolve(request.result);
+  request.onsuccess=()=>{
+   const d=request.result;
+   // Safari can close the connection behind the page's back; the next call opens it again.
+   d.onclose=()=>{opening=null;};d.onversionchange=()=>{d.close();opening=null;};
+   resolve(d);
+  };
   request.onerror=()=>{opening=null;reject(request.error);};
  });
  return opening;
 }
-async function transact(mode,work){
- const store=(await db()).transaction(STORE,mode).objectStore(STORE);
- return new Promise((resolve,reject)=>{const r=work(store);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+/** One request in its own transaction, settled when the transaction is (a write is only kept once it completes). */
+async function transact(mode,work,retry=true){
+ let tx;
+ try{tx=(await db()).transaction(STORE,mode);}
+ catch(err){opening=null;if(retry)return transact(mode,work,false);throw err;}
+ return new Promise((resolve,reject)=>{
+  const r=work(tx.objectStore(STORE));
+  tx.oncomplete=()=>resolve(r.result);
+  tx.onabort=tx.onerror=()=>reject(tx.error||r.error||new Error('The album could not be written'));
+ });
 }
+/** Asks the browser to keep the album (Safari otherwise clears a site's storage after a week without a visit). */
+export function keepAlbum(){try{navigator.storage?.persist?.();}catch{}}
 
 /** Every shot, newest first. */
 export async function listShots(){return (await transact('readonly',s=>s.getAll())).sort((a,b)=>b.created-a.created);}

@@ -26,13 +26,17 @@ export const stickerLabel=s=>s?(s.gloss||s.line||'Sticker'):'Sticker';
 /** A sticker's picture, decoded and ready to draw. */
 export function stickerImage(id){
  const s=byId.get(id);if(!s)return Promise.reject(new Error(`Unknown sticker ${id}`));
- if(!images.has(id)){const img=new Image();img.decoding='async';img.src=s.url;images.set(id,img.decode().then(()=>img));}
+ if(!images.has(id)){
+  const img=new Image();img.decoding='async';img.src=s.url;
+  // A failed load is not remembered, so the next save tries again.
+  images.set(id,img.decode().then(()=>img,err=>{images.delete(id);throw err;}));
+ }
  return images.get(id);
 }
 
-/** Prints the stickers onto a finished picture (w×h) in order, the last on top. */
+/** Prints the stickers onto a finished picture (w×h) in order, the last on top; returns how many could not be loaded. */
 export async function drawStickers(g,w,h,stickers){
- if(!stickers?.length)return;
+ if(!stickers?.length)return 0;
  await loadStickerSets();
  const pictures=await Promise.all(stickers.map(s=>stickerImage(s.id).catch(()=>null)));
  stickers.forEach((s,i)=>{
@@ -41,6 +45,7 @@ export async function drawStickers(g,w,h,stickers){
   g.save();g.translate(s.x*w,s.y*h);g.rotate(s.angle*Math.PI/180);if(s.flip)g.scale(-1,1);
   g.imageSmoothingQuality='high';g.drawImage(img,-width/2,-height/2,width,height);g.restore();
  });
+ return pictures.filter(p=>!p).length;
 }
 
 const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
@@ -101,6 +106,8 @@ export function createStickerLayer(frame,{list,changed}){
  const point=e=>({x:e.clientX,y:e.clientY});
  function begin(e,i,mode){
   const s=list()[i],rect=frame.getBoundingClientRect();
+  // The sticker keeps the pointer even when it leaves the window.
+  try{els[i]?.setPointerCapture(e.pointerId);}catch{}
   gesture={i,mode,rect,pointers:new Map([[e.pointerId,point(e)]]),from:{...s},start:new Map([[e.pointerId,point(e)]])};
  }
  function restart(){
@@ -111,13 +118,16 @@ export function createStickerLayer(frame,{list,changed}){
   const el=e.target.closest('.sticker');
   if(e.target.closest('.sticker-remove')){e.stopPropagation();e.preventDefault();remove(els.indexOf(el));return;}
   if(e.target.closest('.sticker-flip')){e.stopPropagation();e.preventDefault();flip(els.indexOf(el));return;}
+  // A second finger, on the sticker or beside it, turns a drag into a pinch.
+  if(gesture&&gesture.pointers.size===1&&gesture.mode==='move'&&(!el||els.indexOf(el)===gesture.i)){
+   e.stopPropagation();e.preventDefault();gesture.pointers.set(e.pointerId,point(e));restart();return;
+  }
   if(el){
    e.stopPropagation();e.preventDefault();
    if(els.indexOf(el)!==selected)select(els.indexOf(el));
    begin(e,selected,e.target.closest('.sticker-handle')?'handle':'move');
    return;
   }
-  if(gesture&&gesture.pointers.size===1&&gesture.mode==='move'){e.stopPropagation();gesture.pointers.set(e.pointerId,point(e));restart();return;}
   if(selected!=null){selected=null;render();}
  });
  addEventListener('pointermove',e=>{

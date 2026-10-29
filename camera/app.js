@@ -4,7 +4,7 @@
  * browser's own storage (album.js) until shared.
  */
 import {createLookEngine,LOOKS,LOOK_NAMES,normalRecipe,exportSize} from './looks-gl.js?v=20261029';
-import {listShots,getShot,addShot,updateShot,deleteShot} from './album.js?v=20261029';
+import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum} from './album.js?v=20261029';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,createStickerLayer,drawStickers} from './stickers.js?v=20261029';
 
@@ -47,10 +47,11 @@ function startEngine(){
  try{engine=createLookEngine(canvas,{light:coarse});engine.warm(LOOK_NAMES);return true;}
  catch{engine=null;return false;}
 }
-canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();toast('Graphics restarted');});
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();$('shutter').disabled=true;$('saveEdit').disabled=true;toast('Graphics restarted');});
 canvas.addEventListener('webglcontextrestored',()=>{
  startEngine();
  if(state.edit)engine?.setSource('edit',state.edit.picture,state.edit.width,state.edit.height);
+ $('shutter').disabled=!state.camera.running;$('saveEdit').disabled=false;refreshThumbs(true);
  invalidate();
 });
 
@@ -199,7 +200,7 @@ function addLayer(){
 }
 function removeLayer(i){
  const ctx=current();if(ctx.recipe.layers.length<2)return;
- ctx.recipe.layers.splice(i,1);ctx.active=Math.min(ctx.active,ctx.recipe.layers.length-1);
+ ctx.recipe.layers.splice(i,1);if(i<ctx.active)ctx.active--;ctx.active=Math.min(ctx.active,ctx.recipe.layers.length-1);
  trayChanged({thumbs:true,announce:true});
 }
 function shuffle(){
@@ -261,10 +262,12 @@ let dirty=true,raf=0,lines=coarse?720:1080;
 const frameTimes=[];
 function invalidate(){dirty=true;schedule();}
 function schedule(){if(!raf)raf=requestAnimationFrame(loop);}
-let lastFrame=0,videoFresh=false;
+let lastFrame=0,videoFresh=false,uploadedAt=-1;
 function loop(t){
  raf=0;
  if(!engine)return;
+ // Nothing can be drawn until the graphics come back (webglcontextrestored).
+ if(engine.lost()){if(state.mode==='camera'||state.mode==='editor')setTimeout(schedule,250);return;}
  if(state.mode==='camera'&&state.camera.running){drawCamera(t);schedule();}
  else if(state.mode==='editor'&&state.edit){if(dirty)drawEditor();if(thumbsDue||dirty)schedule();}
  drawThumbs();
@@ -281,7 +284,9 @@ function cameraCrop(){
 function drawCamera(t){
  const v=$('video');
  if(v.readyState<2)return;
- if(videoFresh||!('requestVideoFrameCallback' in v)){engine.setSource('live',v,v.videoWidth,v.videoHeight);videoFresh=false;}
+ // A new frame when the video says so, or when its clock has moved (in case a browser never calls back for a video
+ // that is not on screen).
+ if(videoFresh||v.currentTime!==uploadedAt){engine.setSource('live',v,v.videoWidth,v.videoHeight);videoFresh=false;uploadedAt=v.currentTime;}
  const crop=cameraCrop(),pw=crop.w*v.videoWidth,ph=crop.h*v.videoHeight;
  const box=fitFrame($('cameraFrame'),$('cameraStage'),pw/ph);
  // The viewfinder is drawn at the screen's own detail, no finer than the camera and no finer than the device keeps up with.
@@ -313,13 +318,16 @@ addEventListener('resize',invalidate);
 // ---------- Camera ----------
 const video=$('video');
 if('requestVideoFrameCallback' in video){const tick=()=>{videoFresh=true;video.requestVideoFrameCallback(tick);};video.requestVideoFrameCallback(tick);}
+let cameraStarts=0;
 async function startCamera(){
  const c=state.camera;
  if(!navigator.mediaDevices?.getUserMedia){showWelcome('This browser does not offer a camera here. You can still edit photos.');return;}
  stopCamera();
+ const start=++cameraStarts;
  try{
   const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:c.facing},width:{ideal:1920},height:{ideal:1440}}});
-  if(state.mode!=='camera'){stream.getTracks().forEach(t=>t.stop());return;}
+  // A later start (a second tap of Flip, leaving the camera) wins; this camera is turned off again.
+  if(start!==cameraStarts||state.mode!=='camera'){stream.getTracks().forEach(t=>t.stop());return;}
   c.stream=stream;video.srcObject=stream;await video.play().catch(()=>{});
   const settings=stream.getVideoTracks()[0]?.getSettings?.()||{};
   c.mirror=settings.facingMode?settings.facingMode==='user':c.facing==='user'||!coarse;
@@ -328,13 +336,14 @@ async function startCamera(){
   navigator.mediaDevices.enumerateDevices?.().then(d=>{$('flip').hidden=d.filter(x=>x.kind==='videoinput').length<2;}).catch(()=>{});
   refreshThumbs(true);schedule();
  }catch(err){
+  if(start!==cameraStarts)return;
   c.running=false;
   showWelcome(err?.name==='NotAllowedError'?'The camera is not allowed for this page. Allow it in the browser’s settings, or edit a photo instead.'
    :err?.name==='NotFoundError'||err?.name==='OverconstrainedError'?'No camera was found. You can still edit photos.':'The camera could not start. You can still edit photos.');
  }
 }
 function stopCamera(){
- const c=state.camera;c.running=false;
+ const c=state.camera;c.running=false;cameraStarts++;
  c.stream?.getTracks().forEach(t=>t.stop());c.stream=null;video.srcObject=null;
  $('shutter').disabled=true;
 }
@@ -383,7 +392,7 @@ gestures($('cameraStage'),{onDoubleTap:()=>{if(state.camera.running&&!$('flip').
 // Taking a photo: the frame as it is now, at the camera's full detail, through the whole recipe.
 $('shutter').addEventListener('click',()=>takePhoto());
 async function takePhoto(){
- const c=state.camera;if(!c.running||c.busy||!engine)return;
+ const c=state.camera;if(!c.running||c.busy||!engine||engine.lost())return;
  c.busy=true;$('shutter').classList.toggle('waiting',c.timer>0);
  try{
   for(let s=c.timer;s>0;s--){$('count').innerHTML=`<span>${s}</span>`;sound('count');await wait(1000);if(!c.running)return;}
@@ -397,9 +406,10 @@ async function takePhoto(){
   await nextFrame();
   const taken=new Date(),recipe=normalRecipe(c.recipe);
   engine.setSource('still',still,size.width,size.height);
-  const photo=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);
-  engine.dropSource('still');
-  const [source,thumb]=await Promise.all([toBlob(still,'image/jpeg',.92),thumbnailOf(photo)]);
+  let finished;
+  try{finished=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);}
+  finally{engine.dropSource('still');}
+  const {photo,thumb}=finished,source=await toBlob(still,'image/jpeg',.92);still.width=still.height=0;
   flyToRoll(photo);
   await keep({photo,source,thumb,recipe,width:size.width,height:size.height,taken:taken.getTime()});
  }catch(err){console.error(err);toast('The photo could not be saved');}
@@ -418,13 +428,19 @@ function flyToRoll(blob){
 
 // ---------- Finishing a photo ----------
 const toBlob=(c,type,q)=>new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error('Encoding failed')),type,q));
-/** Pixels from the engine to a JPEG: the stickers stuck on, then the date printed in the corner if asked. */
+/** Pixels from the engine to a JPEG and its album thumbnail: the stickers stuck on, then the date if asked. */
 async function finishPhoto(pixels,recipe,date){
  const c=document.createElement('canvas');c.width=pixels.width;c.height=pixels.height;
  const g=c.getContext('2d');g.putImageData(new ImageData(pixels.data,pixels.width,pixels.height),0,0);
- await drawStickers(g,c.width,c.height,recipe.stickers);
+ const missing=await drawStickers(g,c.width,c.height,recipe.stickers);
+ if(missing)toast(missing===1?'A sticker could not be loaded and is left off':`${missing} stickers could not be loaded and are left off`,{ms:2600});
  if(recipe.stamp)printStamp(g,c.width,c.height,date);
- return toBlob(c,'image/jpeg',.92);
+ try{
+  const photo=await toBlob(c,'image/jpeg',.92);
+  const s=Math.min(c.width,c.height),t=document.createElement('canvas');t.width=t.height=320;
+  t.getContext('2d').drawImage(c,(c.width-s)/2,(c.height-s)/2,s,s,0,0,320,320);
+  return {photo,thumb:await toBlob(t,'image/jpeg',.8)};
+ }finally{c.width=c.height=0;}
 }
 function printStamp(g,w,h,date){
  const size=h*.045,text=dateStamp(date);
@@ -435,18 +451,17 @@ function printStamp(g,w,h,date){
  g.shadowColor='rgba(255,120,30,.55)';g.shadowBlur=size*.5;g.shadowOffsetY=0;g.fillStyle='#ff9a3c';g.fillText(text,x,y);
  g.restore();
 }
-async function thumbnailOf(blob){
- const img=await decode(blob),s=Math.min(img.width,img.height),c=document.createElement('canvas');c.width=c.height=320;
- c.getContext('2d').drawImage(img.picture,(img.width-s)/2,(img.height-s)/2,s,s,0,0,320,320);
- img.close();return toBlob(c,'image/jpeg',.8);
-}
 /** Any picture file to something the engine can read, the right way up, no larger than a save may be. */
 async function decode(blob){
  let picture,width,height;
  try{picture=await createImageBitmap(blob,{imageOrientation:'from-image'});width=picture.width;height=picture.height;}
  catch{
   const url=URL.createObjectURL(blob);
-  try{const img=new Image();img.src=url;await img.decode();picture=img;width=img.naturalWidth;height=img.naturalHeight;}finally{URL.revokeObjectURL(url);}
+  try{
+   // Drawn through a canvas, which applies the photo's orientation; the image itself might reach WebGL unturned.
+   const img=new Image();img.src=url;await img.decode();width=img.naturalWidth;height=img.naturalHeight;
+   picture=document.createElement('canvas');picture.width=width;picture.height=height;picture.getContext('2d').drawImage(img,0,0);
+  }finally{URL.revokeObjectURL(url);}
  }
  const fit=exportSize(width,height,Math.min(4096,engine?.maxTexture||4096));
  if(fit.width!==width){
@@ -461,11 +476,12 @@ async function decode(blob){
 let albumOK=true;
 async function loadShots(){
  try{state.shots=await listShots();}catch{albumOK=false;state.shots=[];}
+ if(state.shots.length)keepAlbum();
  renderRoll();
 }
 async function keep(shot){
  if(!albumOK){offerFile(shot.photo);return null;}
- try{const r=await addShot(shot);state.shots.unshift(r);renderRoll(true);return r;}
+ try{const r=await addShot(shot);state.shots.unshift(r);renderRoll(true);keepAlbum();return r;}
  catch{albumOK=false;offerFile(shot.photo);return null;}
 }
 let rollURL;
@@ -548,7 +564,7 @@ $('deletePhoto').addEventListener('click',()=>{
   const id=state.viewing.id;await deleteShot(id).catch(()=>{});
   state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
  };
- sheet.showModal();
+ sheet.returnValue='';sheet.showModal();
 });
 
 // ---------- Editor ----------
@@ -575,6 +591,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
+ if(state.edit?.saving)return;
  const from=state.edit?.from;engine?.dropSource('edit');state.edit?.picture?.close?.();state.edit=null;
  if(from==='viewer'&&state.viewing)openViewer(state.viewing.id);else if(from==='album')openAlbum();else show('camera');
 }
@@ -582,19 +599,18 @@ $('cancelEdit').addEventListener('click',closeEditor);
 function renderEditChips(){$('editStamp').setAttribute('aria-pressed',String(state.edit.recipe.stamp));}
 $('editStamp').addEventListener('click',()=>{const e=state.edit;e.recipe.stamp=!e.recipe.stamp;renderEditChips();invalidate();});
 $('saveEdit').addEventListener('click',async()=>{
- const e=state.edit;if(!e)return;
- const button=$('saveEdit');button.disabled=true;button.textContent='Saving…';await nextFrame();
+ const e=state.edit;if(!e||e.saving)return;
+ const button=$('saveEdit');e.saving=true;button.disabled=true;$('cancelEdit').disabled=true;button.textContent='Saving…';await nextFrame();
  try{
   const recipe=normalRecipe(e.recipe);
-  const photo=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
-  const thumb=await thumbnailOf(photo);
+  const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
   let shot;
   if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;openViewer(shot.id);toast('Saved to the album');}else show('camera');
  }catch(err){console.error(err);toast('The photo could not be saved');}
- finally{button.disabled=false;button.textContent='Save';}
+ finally{e.saving=false;button.disabled=false;$('cancelEdit').disabled=false;button.textContent='Save';}
 });
 // Hold the picture to see the original.
 {
@@ -711,4 +727,4 @@ if(!startEngine()){
  if(state.camera.recipe.stickers.length)loadStickerSets().then(()=>cameraStickers.render()).catch(()=>{});
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,takePhoto,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers};
+window.pocketCamera={state,editFile,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers};
