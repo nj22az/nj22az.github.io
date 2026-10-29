@@ -5,7 +5,10 @@
 photo editing app and a live camera app … use all the shaders from Johansson world on my photos maybe even a
 combination. Make it feel like a polished camera app playful like Gameboy camera, … I don't want to have a Gameboy on
 screen: use Apple design", then "Bring the die cut stickers to the camera app", "Audit yourself what's wrong pls fix it,
-be designer for Gameboy camera and DS camera and a comic Artist" and "I want to be able to use my own photos too".
+be designer for Gameboy camera and DS camera and a comic Artist" and "I want to be able to use my own photos too"; then,
+from an iPhone, "the Ui needs improvement", "Fuji shouldn't be cropped off like that we should use the whole screen
+intelligently", "Replace Fuji with a random sticker when you start" and "It should be installable as iPhone app web page
+too on the Home Screen draw a Camera icon with Python".
 
 ## What it does
 
@@ -46,9 +49,18 @@ be designer for Gameboy camera and DS camera and a comic Artist" and "I want to 
   recipe, so **Edit** starts again from the original with every Look, setting and sticker where it was. Share (the
   system sheet, so a phone can save to Photos) or download.
 
+- **Home Screen app** (`manifest.webmanifest`, `sw.js`, `icons/`): Share, then Add to Home Screen, on an iPhone (or
+  Install on Android and desktop Chrome) gives Pocket Camera its own icon and a full screen without the browser. The
+  icon is drawn in code by `tools/draw-camera-icon.py` (a white toy camera on graphite, the lens ringed in the camera's
+  yellow, the Pocket Look's pixel house in the glass): the 180 px Home Screen icon, 192 and 512 px and a maskable 512
+  for the manifest, and the 32 px tab icon. On the Home Screen the way back to the website is hidden. The worker asks
+  the network first, so the app is always the site as published, and keeps a copy of the camera's own files and of the
+  World code the Looks use, so the camera opens without a signal.
+
 Default first Look: **Pocket**, the town's own hand-held camera (World's `pocket` Look), which gives the Game Boy
-Camera feeling with no console on screen. Fuji ("Haisai!") or Thuan ("Chào nha!") greets on the first screen, and
-Fuji salutes the empty album ("Casting off!"); every tap answers with a soft sound, which Sound in the settings mutes. The interface follows Apple's camera and Photos apps: always dark, system
+Camera feeling with no console on screen. The first screen greets with a sticker from the residents' sheets, a
+different one each time (never the one shown last), sized to the space the browser leaves so it is always whole; until
+there is a picture the Look tray waits and the shutter starts the camera. Fuji salutes the empty album ("Casting off!"); every tap answers with a soft sound, which Sound in the settings mutes. The interface follows Apple's camera and Photos apps: always dark, system
 font, the camera's yellow for what is chosen, translucent material, 44-point targets. A wide window puts the controls
 beside the picture, as on an iPad.
 
@@ -90,11 +102,14 @@ beside the picture, as on an iPad.
 
 ```
 node camera/tests/looks-gl.test.mjs          # every Look converts; recipe, sizes, rows
-node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone and desktop (needs ffmpeg for the photo feed)
+node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (36 checks at phone and desktop size) compiles and draws all 19 Looks on the camera picture, starts
+The browser check (42 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
+starting the camera, the manifest, its icons at their sizes and the offline worker. Then, at phone and desktop size, it
+compiles and draws all 19 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a
 lettered balloon, takes the photo (the print's border is in the saved file), re-edits it from its source (Film frame,

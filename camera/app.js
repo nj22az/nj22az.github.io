@@ -66,11 +66,11 @@ function startEngine(){
  try{engine=createLookEngine(canvas,{light:coarse});engine.warm(LOOK_NAMES);return true;}
  catch{engine=null;return false;}
 }
-canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();$('shutter').disabled=true;$('saveEdit').disabled=true;toast('Graphics restarted');});
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();setShutter('off');$('saveEdit').disabled=true;toast('Graphics restarted');});
 canvas.addEventListener('webglcontextrestored',()=>{
  startEngine();
  if(state.edit)engine?.setSource('edit',state.edit.picture,state.edit.width,state.edit.height);
- $('shutter').disabled=!state.camera.running;$('saveEdit').disabled=false;refreshThumbs(true);
+ setShutter(state.camera.running?'shoot':$('welcome').hidden||!canStart()?'off':'start');$('saveEdit').disabled=false;refreshThumbs(true);
  invalidate();
 });
 
@@ -173,8 +173,9 @@ function buildStrip(){
 }
 function renderLayers(){
  const ctx=current(),{layers}=ctx.recipe;layersEl.textContent='';
+ // The Looks of one mix sit together in one capsule, as the segments of one control: the chosen one is lit.
+ const mix=document.createElement('span');mix.className='mix';layersEl.append(mix);
  layers.forEach((layer,i)=>{
-  if(i>0){const j=document.createElement('span');j.className='layer-join';j.textContent='+';j.setAttribute('aria-hidden','true');layersEl.append(j);}
   const wrap=document.createElement('span');wrap.className=`layer${i===ctx.active?' active':''}${layers.length>1?' removable':''}`;
   const pick=document.createElement('button');pick.type='button';pick.className='layer-pick';pick.textContent=lookLabel(layer.look);
   pick.setAttribute('aria-pressed',String(i===ctx.active));pick.setAttribute('aria-label',`Look ${i+1}: ${LOOKS[layer.look].label}${layer.amount<1?`, ${Math.round(layer.amount*100)}%`:''}`);
@@ -182,7 +183,7 @@ function renderLayers(){
   const remove=document.createElement('button');remove.type='button';remove.className='layer-remove';remove.innerHTML=icon('x');
   remove.setAttribute('aria-label',`Remove ${LOOKS[layer.look].label} from the mix`);
   remove.addEventListener('click',()=>removeLayer(i));
-  wrap.append(pick,remove);layersEl.append(wrap);
+  wrap.append(pick,remove);mix.append(wrap);
  });
  if(layers.length<MAX_LAYERS){
   const add=document.createElement('button');add.type='button';add.className='add-layer';add.innerHTML=`${icon('plus')}<span>Mix</span>`;
@@ -388,7 +389,7 @@ async function startCamera(){
   c.stream=stream;video.srcObject=stream;await video.play().catch(()=>{});
   const settings=stream.getVideoTracks()[0]?.getSettings?.()||{};
   c.mirror=settings.facingMode?settings.facingMode==='user':c.facing==='user'||!coarse;
-  c.running=true;$('welcome').hidden=true;$('shutter').disabled=false;$('zoom').hidden=false;
+  c.running=true;$('welcome').hidden=true;$('camera').classList.remove('idle');setShutter('shoot');$('zoom').hidden=false;
   store.write({...store.read(),cameraAllowed:true});
   navigator.mediaDevices.enumerateDevices?.().then(d=>{$('flip').hidden=d.filter(x=>x.kind==='videoinput').length<2;}).catch(()=>{});
   refreshThumbs(true);schedule();
@@ -402,10 +403,17 @@ async function startCamera(){
 function stopCamera(){
  const c=state.camera;c.running=false;cameraStarts++;
  c.stream?.getTracks().forEach(t=>t.stop());c.stream=null;video.srcObject=null;
- $('shutter').disabled=true;
+ setShutter('off');
 }
+const canStart=()=>!!navigator.mediaDevices?.getUserMedia&&!!engine;
+/** The shutter takes the photo; before there is a picture it starts the camera, the one obvious thing to press. */
+function setShutter(kind){
+ const s=$('shutter');s.dataset.kind=kind;s.disabled=kind==='off';
+ s.setAttribute('aria-label',kind==='start'?'Start camera':'Take photo');
+}
+/** The first screen: the greeting, without the Look tray (nothing to see it on yet), the shutter starting the camera. */
 function showWelcome(note){
- $('welcome').hidden=false;$('zoom').hidden=true;$('shutter').disabled=true;
+ $('welcome').hidden=false;$('zoom').hidden=true;$('camera').classList.add('idle');setShutter(canStart()?'start':'off');
  if(note)$('welcomeNote').textContent=note;
  fitFrame($('cameraFrame'),$('cameraStage'),3/4);
 }
@@ -496,7 +504,7 @@ gestures($('cameraStage'),{
 });
 
 // Taking a photo: the frame as it is now, at the camera's full detail, through the whole recipe.
-$('shutter').addEventListener('click',()=>takePhoto());
+$('shutter').addEventListener('click',()=>{if($('shutter').dataset.kind==='start')startCamera();else takePhoto();});
 async function takePhoto(){
  const c=state.camera;if(!c.running||c.busy||!engine||engine.lost())return;
  c.busy=true;$('shutter').classList.toggle('waiting',c.timer>0);
@@ -979,18 +987,25 @@ document.addEventListener('visibilitychange',()=>{
 new ResizeObserver(invalidate).observe(document.body);
 
 // ---------- Start ----------
+// On the Home Screen the camera is an app of its own: no way back to the website is needed, and it works offline (sw.js).
+const standalone=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
+document.documentElement.classList.toggle('standalone',standalone);
+if('serviceWorker' in navigator)navigator.serviceWorker.register(new URL('./sw.js',import.meta.url)).catch(()=>{});
 if(!startEngine()){
  showWelcome();
  $('welcome').querySelector('p').textContent='Pocket Camera needs WebGL 2, which this browser does not offer.';
- $('welcome').querySelector('.welcome-actions').hidden=true;$('welcomeNote').hidden=true;
+ $('welcome').querySelector('.welcome-actions').hidden=true;$('welcomeNote').hidden=true;setShutter('off');
 }else{
  buildStrip();show('camera');loadShots();
  loadMine().then(()=>cameraStickers.render());
- // The camera's stickers need their pictures before they can show; the residents greet on the first screen (Fuji's
- // "Haisai!" or Thuan's "Chào nha!", by the day) and wave the empty album off ("Casting off!").
- loadStickerSets().then(()=>{
+ // The camera's stickers need their pictures before they can show. The first screen greets with a sticker from the
+ // residents' sheets, a different one each time (the owner, 29 October 2026: "Replace Fuji with a random sticker when
+ // you start"), never the one shown last; Fuji waves the empty album off ("Casting off!").
+ loadStickerSets().then(manifest=>{
   cameraStickers.render();
-  const hello=stickerById(new Date().getDate()%2?'fuji/Wave':'thuan/Wave'),off=stickerById('fuji/Salute');
+  const all=manifest.sets.flatMap(set=>set.stickers),last=store.read().greeting;
+  const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('fuji/Salute');
+  if(hello)store.write({...store.read(),greeting:hello.id});
   if(hello){const img=$('welcomeSticker');img.src=hello.url;img.alt=`${hello.set}: “${hello.line}” (${hello.gloss})`;img.hidden=false;}
   if(off){const img=$('emptySticker');img.src=off.url;img.alt=`${off.set}: “${off.line}” (${off.gloss})`;img.hidden=false;}
  }).catch(()=>{});

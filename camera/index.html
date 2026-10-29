@@ -16,9 +16,10 @@
 <meta property="og:image" content="https://nj22az.github.io/camera/preview.jpg">
 <meta property="og:url" content="https://nj22az.github.io/camera/">
 <link rel="canonical" href="https://nj22az.github.io/camera/">
-<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261029b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="camera.css?v=20261029c">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -82,7 +83,7 @@
    <div class="welcome" id="welcome" hidden>
     <img class="welcome-sticker" id="welcomeSticker" alt="" hidden>
     <h1>Pocket Camera</h1>
-    <p>Every Look from Johansson World, on your camera and your own photos. Mix them, shoot, save.</p>
+    <p>Every Look from Johansson World, on your camera and your own photos.</p>
     <div class="welcome-actions">
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
      <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Your photos</button>
@@ -212,6 +213,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029b"></script>
+<script type="module" src="app.js?v=20261029c"></script>
 </body>
 </html>

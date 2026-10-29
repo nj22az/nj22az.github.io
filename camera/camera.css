@@ -30,8 +30,10 @@ svg .fill{fill:currentColor;stroke:none}
 .bar-spacer{width:44px}
 .back{display:inline-flex;align-items:center;gap:2px;height:44px;padding:0 8px 0 2px;color:var(--label);text-decoration:none;font-size:17px;letter-spacing:-.02em;border-radius:10px}
 .back svg{width:24px;height:24px;stroke-width:2.2}
+.standalone .camera .back{visibility:hidden}
 /* The settings chevron: what is switched on sits beside it in yellow. */
-.settings-toggle{display:inline-flex;align-items:center;gap:6px;height:36px;min-width:44px;padding:0 10px;border-radius:18px;background:var(--fill);transition:background-color .2s,transform .25s var(--spring)}
+.settings-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;min-width:44px;padding:0 10px;border-radius:18px;color:var(--label-2);transition:background-color .2s,color .2s,transform .25s var(--spring)}
+.settings-toggle.open,.settings-toggle.busy{background:var(--fill);color:var(--label)}
 .settings-toggle:active{transform:scale(.92)}
 .settings-toggle>svg{width:20px;height:20px;stroke-width:2.2;transition:transform .3s var(--spring)}
 .settings-toggle.open>svg{transform:rotate(180deg)}
@@ -60,18 +62,21 @@ svg .fill{fill:currentColor;stroke:none}
 
 /* The stage holds the picture, centred and whole. */
 .stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;overflow:hidden;touch-action:none}
+#cameraStage{container-type:size}
 .frame{position:relative;overflow:hidden;background:#0c0c0d}
 .camera .frame{border-radius:4px}
 .frame canvas{display:block;width:100%;height:100%}
 .frame .date-stamp{position:absolute;right:3.5%;bottom:3%;font:700 1em/1 "Courier New",ui-monospace,monospace;letter-spacing:.06em;color:var(--stamp);text-shadow:0 0 .08em #3a1600,0 .08em .16em rgba(0,0,0,.85),0 0 .5em rgba(255,120,30,.5);white-space:pre;pointer-events:none}
 
-.welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(120% 80% at 50% 0%,#1d2a22 0%,#000 70%)}
-.welcome-sticker{width:clamp(96px,22vh,170px);height:auto;margin-bottom:-4px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));transform-origin:50% 90%;animation:bob 2.6s ease-in-out infinite}
+.welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;gap:clamp(6px,2.2cqh,14px);padding:20px 24px;padding:clamp(10px,3.5cqh,28px) 24px;overflow:hidden;text-align:center;background:radial-gradient(120% 80% at 50% 0%,#1d2a22 0%,#000 70%)}
+.welcome-sticker{flex:none;width:auto;height:clamp(72px,18vh,150px);height:clamp(0px,min(calc(100cqh - 300px),44cqh),280px);max-width:64%;object-fit:contain;margin-bottom:-4px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));transform-origin:50% 90%;animation:bob 2.6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
-.welcome h1{margin:0;font-size:34px;font-weight:700;letter-spacing:-.03em}
-.welcome p{margin:0;max-width:30ch;color:var(--label-2);font-size:17px;line-height:1.35}
-.welcome .fine{font-size:13px;color:var(--label-3)}
-.welcome-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:8px 0 4px}
+.welcome h1{margin:0;font-size:30px;font-size:clamp(26px,6.4cqh,34px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.welcome p{margin:0;max-width:28ch;color:var(--label-2);font-size:17px;line-height:1.35}
+.welcome .fine{max-width:42ch;font-size:13px;color:var(--label-3)}
+.welcome-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:min(260px,100%);margin:6px 0 2px}
+@container (max-height:380px){.welcome-sticker{display:none}.welcome .fine{display:none}}
+@container (max-height:250px){.welcome p{display:none}}
 .button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:24px;background:var(--fill-strong);font-size:17px;font-weight:600;letter-spacing:-.02em;transition:transform .25s var(--spring)}
 .button svg{width:20px;height:20px}
 .button:active{transform:scale(.95)}
@@ -110,20 +115,23 @@ svg .fill{fill:currentColor;stroke:none}
 
 /* The Look tray. */
 .tray{padding:6px 0 0}
+.camera.idle .tray{display:none}
 .layers{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
 .layers::-webkit-scrollbar{display:none}
-.layer{flex:none;display:inline-flex;align-items:center;height:32px;border-radius:16px;background:var(--fill);transition:background-color .2s,color .2s,transform .3s var(--spring)}
+.mix{flex:none;display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:18px;background:var(--fill)}
+.layer{flex:none;display:inline-flex;align-items:center;height:32px;border-radius:16px;color:var(--label-2);transition:background-color .2s,color .2s,transform .3s var(--spring)}
 .layer.active{background:#fff;color:#000}
 .layer-pick{height:32px;padding:0 13px;font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
 .layer.active.removable .layer-pick{padding-right:4px}
 .layer-remove{display:none;place-items:center;width:28px;height:32px;margin-right:2px}
 .layer.active.removable .layer-remove{display:grid}
 .layer-remove svg{width:15px;height:15px;stroke-width:2.4}
-.layer-join{flex:none;color:var(--label-3);font-size:15px;font-weight:600}
-.add-layer{flex:none;display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 12px 0 9px;border-radius:16px;border:1px dashed var(--label-3);color:var(--label-2);font-size:14px;font-weight:600}
+.add-layer{flex:none;display:inline-flex;align-items:center;gap:3px;height:36px;padding:0 10px 0 6px;border-radius:18px;color:var(--label);font-size:14px;font-weight:600;transition:transform .25s var(--spring)}
+.add-layer:active{transform:scale(.92)}
 .add-layer svg{width:16px;height:16px;stroke-width:2.2}
-.shuffle{flex:none;margin-left:auto;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--label-2)}
-.shuffle svg{width:24px;height:24px}
+.shuffle{flex:none;margin-left:auto;display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--fill);color:var(--label);transition:transform .25s var(--spring)}
+.shuffle:active{transform:scale(.9)}
+.shuffle svg{width:21px;height:21px}
 .shuffle+.shuffle{margin-left:0}
 .shuffle.roll-dice svg{animation:dice .6s var(--spring)}
 @keyframes dice{0%{transform:rotate(0) scale(.7)}100%{transform:rotate(360deg) scale(1)}}

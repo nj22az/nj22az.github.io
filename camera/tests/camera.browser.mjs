@@ -268,7 +268,57 @@ async function run({label,width,height,dpr,mobile,portrait}){
  }finally{await browser.close();}
 }
 
+// The first screen at the sizes a phone's browser really leaves (an iPhone's Safari with its toolbar, an iPhone SE):
+// the greeting whole inside the picture's space (the owner, on an iPhone, 29 October 2026: Fuji cut off and Start
+// camera under the Look strip), the strip waiting for a picture, the shutter starting the camera; and what the Home
+// Screen needs (the manifest and its icons).
+async function firstScreen({label,width,height}){
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
+ try{
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true});
+  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(`${server.url}camera/`);
+  await page.waitForFunction(()=>!document.querySelector('#welcome').hidden&&document.querySelector('#welcomeSticker').complete&&!document.querySelector('#welcomeSticker').hidden,null,{timeout:20000});
+  await check(`${label}: the greeting fits whole, the strip waits, the shutter starts the camera`,async()=>{
+   const out=await page.evaluate(()=>{
+    const stage=document.querySelector('#cameraStage').getBoundingClientRect(),inside=[];
+    for(const el of document.querySelectorAll('#welcome > *')){
+     const r=el.getBoundingClientRect();if(!r.width||getComputedStyle(el).display==='none')continue;
+     inside.push({el:el.id||el.className||el.tagName,ok:r.top>=stage.top-.5&&r.bottom<=stage.bottom+.5&&r.left>=stage.left-.5&&r.right<=stage.right+.5});
+    }
+    const sticker=document.querySelector('#welcomeSticker').getBoundingClientRect();
+    return {inside,sticker:sticker.height,tray:getComputedStyle(document.querySelector('#tray')).display,
+     shutter:{disabled:document.querySelector('#shutter').disabled,label:document.querySelector('#shutter').getAttribute('aria-label')}};
+   });
+   for(const i of out.inside)assert.ok(i.ok,`${i.el} inside the stage`);
+   assert.ok(out.inside.some(i=>/actions/.test(i.el)),'the buttons are shown');
+   assert.ok(out.sticker>=60,`the greeting sticker is shown whole and not tiny (${Math.round(out.sticker)} px)`);
+   assert.equal(out.tray,'none','no Look strip before there is a picture');
+   assert.deepEqual(out.shutter,{disabled:false,label:'Start camera'});
+   await context.grantPermissions(['camera']);
+   await page.locator('#shutter').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.running,null,{timeout:20000});
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('#tray')).display!=='none'&&document.querySelector('#shutter').getAttribute('aria-label')),'Take photo');
+  });
+  await check(`${label}: the Home Screen app's manifest and icons`,async()=>{
+   const out=await page.evaluate(async()=>{
+    const link=document.querySelector('link[rel="manifest"]').href,manifest=await (await fetch(link)).json();
+    const icons=[...manifest.icons.map(i=>new URL(i.src,link).href),document.querySelector('link[rel="apple-touch-icon"]').href,document.querySelector('link[rel="icon"]').href];
+    const sizes=await Promise.all(icons.map(async u=>{const b=await createImageBitmap(await (await fetch(u)).blob());return [b.width,b.height];}));
+    return {manifest,sizes,worker:!!(await navigator.serviceWorker.getRegistration())};
+   });
+   assert.equal(out.manifest.display,'standalone');assert.equal(out.manifest.start_url,'/camera/');
+   assert.deepEqual(out.sizes,[[192,192],[512,512],[512,512],[180,180],[32,32]]);
+   assert.ok(out.manifest.icons.some(i=>i.purpose==='maskable'),'a maskable icon');
+   assert.ok(out.worker,'the offline worker is registered');
+  });
+  await check(`${label}: first screen without page errors`,async()=>assert.deepEqual(errors,[]));
+ }finally{await browser.close();}
+}
+
 try{
+ await firstScreen({label:'iPhone Safari',width:390,height:664});
+ await firstScreen({label:'iPhone SE Safari',width:375,height:560});
  await run({label:'phone',width:390,height:844,dpr:2,mobile:true,portrait:true});
  await run({label:'desktop',width:1280,height:800,dpr:1,mobile:false,portrait:false});
  console.log(`${results.length} checks pass`);
