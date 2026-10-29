@@ -30,3 +30,8 @@ well"; "The mouth is a bit offset"; "If you fix the mouth will beer drink still 
 
 - Publishing to `main` waits for the owner's word, as before.
 - A faint crease under the nose, where the moustache's sculpted volume met the nose, shows only close up.
+- Seated, his cheeks parted (the owner, 28 October, night: "why is Johansson butt like that", "The butt should be
+  together"). In the studio's izakaya still the thighs bent 80 degrees carried each cheek with its own thigh and lifted
+  the crotch 16 cm off the cushion, an arch the counter showed through; the still now presses them together
+  (studio `3d/cast/shots_izakaya.py` `seat_together`, notes in `3d/cast/progress.md`). World's seated Johansson
+  (SitDrink, SitToast) bends his thighs the same way and may show the same arch from behind: not checked.
