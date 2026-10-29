@@ -26,7 +26,8 @@ class ParkingAdmissionTests(unittest.TestCase):
             if row.get('parkingAccessWarning'):
                 self.assertEqual(category, 'avoid')
             elif row['freeParking']:
-                self.assertEqual(category, 'free')
+                registered = row.get('parkingRegistrationRequired') is True or row.get('parkingDetails', {}).get('registrationAtReception') is True
+                self.assertEqual(category, 'registered' if registered else 'free')
             else:
                 self.assertEqual(category, 'easy' if row['parkingPaymentAtHotel'] is True and row['parkingOnHotelReceipt'] is True else 'avoid')
             self.assertNotIn('easyParking', row)
@@ -236,7 +237,9 @@ class ParkingAdmissionTests(unittest.TestCase):
         for item in audit['properties']:
             row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
             self.assertEqual(builder.hotel_chain(row), 'Scandic')
-            self.assertEqual(builder.parking_category(row), item['category'])
+            # The owner's 29 October Blue category separates required registration.
+            expected = 'registered' if row['hotelId'] == 'scandic-vasteras' else item['category']
+            self.assertEqual(builder.parking_category(row), expected)
             if item['disposition'] == 'added':
                 marker = json.loads('{' + item['markerEvidence'] + '}')
                 self.assertEqual(marker['hotelName'], row['name'])
@@ -310,10 +313,47 @@ class ParkingAdmissionTests(unittest.TestCase):
         html = builder.build(self.records)
         self.assertIn('id="hotel-chain" name="chain"', html)
         self.assertEqual({builder.hotel_chain(r) for r in self.records}, {'Scandic', 'Thon Hotels', 'Best Western', 'Other hotels'})
-        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 125)
+        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 200)
         for row in self.records:
             self.assertIn('data-chain="' + builder.hotel_chain(row) + '"', builder.render_row(row))
         self.assertIn('data-theme="clarity" data-theme-lock="clarity"', html)
+
+    def test_norway_snapshot_coverage_withholds_unknown_charges_and_matches_export(self):
+        audit = json.loads((ROOT / 'hotels/SCANDIC-NORWAY-EVIDENCE-2026-10-29.json').read_text())
+        items = audit['properties']
+        self.assertEqual(len({p['officialPropertyId'] for p in items}), 81)
+        self.assertEqual({p['hotelId'] for p in items if p['previouslyRegistered']},
+                         {'scandic-flesland-airport', 'scandic-byporten', 'scandic-ornen'})
+        self.assertEqual(sum(p['disposition'] == 'added' for p in items), 75)
+        by_id = {r['hotelId']: r for r in self.records}
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = {r['Hotel']: r for r in csv.DictReader(stream)}
+        for p in items:
+            if p['category'] == 'unresolved':
+                self.assertNotIn(p['hotelId'], by_id)
+                self.assertNotIn(p['name'], exported)
+                continue
+            row = by_id[p['hotelId']]
+            self.assertEqual(builder.parking_category(row), p['category'])
+            self.assertEqual(row['coordinates'], p['coordinates'])
+            self.assertEqual(row['parkingVerification']['checkedOn'], '2026-10-29')
+            self.assertIsNone(row['parkingOnHotelReceipt'])
+            self.assertEqual(row['parkingPaymentAtHotel'], p['parkingPaymentAtHotel'])
+            self.assertEqual(exported[row['name']]['Weekday parking'], row['parkingDetails']['weekday'])
+            self.assertEqual(exported[row['name']]['Weekend parking'], row['parkingDetails']['weekend'])
+            self.assertEqual(exported[row['name']]['Parking checked date'], '2026-10-29')
+            self.assertEqual(exported[row['name']]['Parking paid'], '0' if row['freeParking'] else '')
+            self.assertEqual(exported[row['name']]['Room price paid'], '')
+            self.assertTrue(all(s['url'].startswith('https://www.scandichotels.com/') for s in p['sources']))
+            self.assertTrue(all(len(s['sha256']) == 64 for s in p['sources']))
+        sunnfjord = by_id['scandic-sunnfjord-hotel-spa']
+        self.assertEqual(builder.parking_category(sunnfjord), 'registered')
+        self.assertEqual(exported[sunnfjord['name']]['Parking category'], 'Blue — Free with registration')
+        self.assertIn('inPark', sunnfjord['parkingSummary'])
+        self.assertIn('Conflicting official rates', by_id['hotel-norge-by-scandic']['parkingSummary'])
+        self.assertIn('20 minutes', by_id['scandic-byporten']['parkingSummary'])
+        self.assertIs(by_id['scandic-alta']['parkingPaymentAtHotel'], True)
+        self.assertEqual(builder.parking_category(by_id['scandic-alta']), 'avoid')
 
 
 if __name__ == '__main__':

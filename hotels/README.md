@@ -1,5 +1,26 @@
 # Hotels & Parking
 
+## Norwegian Scandic audit and Blue registration category — 29 October 2026
+
+All 81 Norwegian Scandic catalogue properties reviewed: 18 Green, 1 Blue, 59 Red,
+and three charge-unknown properties withheld (Holberg, Karl Johan, Sarpsborg).
+Before this review only Flesland Airport, Byporten and Ørnen were registered;
+75 additions bring the register to **211 hotels: 57 Green, 4 Blue, 1 Easy, 149 Avoid,
+all mapped**. No Norwegian hotel has confirmed combined hotel-receipt inclusion.
+See the [complete audit](SCANDIC-NORWAY-AUDIT-2026-10-29.md),
+[dated official evidence](SCANDIC-NORWAY-EVIDENCE-2026-10-29.json) and
+[delivery handover](HANDOVER-NORWAY-AUDIT-2026-10-29.md).
+
+**Blue** now separates confirmed free parking requiring vehicle registration from
+Green in cards, table, filters, CSV and map. Existing Marina, Kolding and Västerås
+requirements retain their original evidence dates. Unknown registration remains
+explicitly unknown; it is not recorded as unnecessary. Reset and the trip planner
+retain the established Green-only criterion. All/Blue includes registration hotels.
+The visitor’s map location remains a separate labelled rectangular “You” marker.
+
+The dated sections below are historical release notes; their old counts and
+three-colour descriptions are superseded by this entry and the four-colour rules.
+
 ## Card at check-in: a new tag — 27 October 2026
 
 The owner: "At my stay at Scandic Elmia they asked to reserve my credit card even though I had paid for the room and
@@ -234,6 +255,7 @@ paid stay observations, including Scandic Elmia, as clearly labelled paid entrie
 | Colour | Category | Meaning |
 | --- | --- | --- |
 | Green | Free parking | Confirmed free guest parking; the preferred option and default filter. |
+| Blue | Free with registration | Confirmed free guest parking requiring vehicle registration. |
 | Yellow | Easy parking | Parking is paid at the hotel and confirmed on the hotel receipt. |
 | Red | Paid parking — Avoid | Paid parking has external payment, separate receipts or either fact unconfirmed; documented difficult access also qualifies. |
 
