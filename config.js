@@ -269,7 +269,7 @@ CONFIG.projectExplorer = [
     "category": "create",
     "title": "Pocket Camera",
     "eyebrow": "EVERY LOOK FROM JOHANSSON WORLD",
-    "summary": "A camera and photo editor with the island’s own art styles. Shoot through Pocket, Manga, Woodblock print or Old TV, mix up to three, and stick on the residents’ die-cut stickers.",
+    "summary": "A camera and photo editor with the island’s own art styles. Shoot through Pocket, Manga, Woodblock print or Old TV, mix up to three, stick on the residents’ die-cut stickers, and make comics.",
     "url": "/camera/",
     "action": "Open the camera",
     "format": "Camera & photo editor",
@@ -279,7 +279,8 @@ CONFIG.projectExplorer = [
     "features": [
       "Every Look from Johansson World, live on the camera or on your own photos",
       "Mix up to three Looks; adjust light, colour and the size of the pattern",
-      "Die-cut stickers of Thuan and Fuji, and a film camera’s date stamp"
+      "Die-cut stickers of Johansson, Thuan and Thao, and a film camera’s date stamp",
+      "Comics: panels from your photos, the camera or Minato’s own places, lettered with the stickers"
     ],
     "preview": "camera"
   },

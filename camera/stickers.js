@@ -60,9 +60,10 @@ export function stickerImage(id){
 
 /**
  * Prints the stickers onto a finished picture (w×h): the lines first, under everything, then the others in order, the
- * last on top; returns how many could not be loaded.
+ * last on top; returns how many could not be loaded. On a comic's page `clip(s, w, h)` gives the panel a sticker's lines
+ * stay inside (a polygon in pixels), so they streak to that panel's border, not across the page.
  */
-export async function drawStickers(g,w,h,stickers){
+export async function drawStickers(g,w,h,stickers,clip=null){
  if(!stickers?.length)return 0;
  stickers=[...stickers.filter(s=>isEffect(s.id)),...stickers.filter(s=>!isEffect(s.id))];
  const sheets=stickers.some(s=>!isBalloon(s.id)&&!isEffect(s.id)),lettered=stickers.some(s=>isBalloon(s.id));
@@ -71,7 +72,7 @@ export async function drawStickers(g,w,h,stickers){
  const pictures=await Promise.all(stickers.map(s=>isEffect(s.id)?'effect':isBalloon(s.id)?'balloon':stickerImage(s.id).catch(()=>null)));
  stickers.forEach((s,i)=>{
   const img=pictures[i];if(!img)return;
-  if(img==='effect'){drawEffect(g,s,w,h);return;}
+  if(img==='effect'){clipped(g,clip?.(s,w,h),()=>drawEffect(g,s,w,h));return;}
   if(img==='balloon'){
    const l=balloonLayout(s.id,s.text??'',s.flip);
    g.save();g.translate(s.x*w,s.y*h);g.rotate(s.angle*Math.PI/180);l.draw(g,0,0,s.size*h/l.height);g.restore();return;
@@ -83,24 +84,36 @@ export async function drawStickers(g,w,h,stickers){
  return pictures.filter(p=>!p).length;
 }
 
+/** Draws inside a polygon (pixels), or anywhere when there is none. */
+function clipped(g,points,draw){
+ if(!points?.length){draw();return;}
+ g.save();g.beginPath();g.moveTo(...points[0]);for(const p of points.slice(1))g.lineTo(...p);g.closePath();g.clip();draw();g.restore();
+}
 const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
-const SIZE=[.06,1.6];
+// Small enough for a mark by a face in a 4-koma's panel; normalRecipe (looks-gl.js) keeps the same range.
+const SIZE=[.015,1.6];
 const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
 
 /**
  * The stickers over one frame. `list()` is the recipe's array (changed in place); `changed()` is told after each change.
+ * On a comic's page: `area()` is the chosen panel's box (shares of the page), where a new sticker or balloon goes, a
+ * sticker at that panel's scale; `letters()` is the page's one lettering size (the letters' height as a share of the
+ * page's), the same in every panel as a letterer keeps it; `stand(id, aspect)` may stand a resident on the floor of a
+ * place shown there ({x, y, size}, or null); `clip(s, w, h)` keeps a sticker's lines inside its panel.
  */
-export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}){
+export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null,area=()=>null,letters=()=>null,stand=()=>null,clip=null}){
  const layer=document.createElement('div');layer.className='stickers';frame.append(layer);
  // The lines are painted on one canvas over the whole picture, under every sticker; each has a clear circle to hold.
  const art=document.createElement('canvas');art.className='effects-art';art.setAttribute('aria-hidden','true');layer.append(art);
  let selected=null,gesture=null;
  const els=[];
  function paintEffects(){
-  const items=list(),dpr=Math.min(3,devicePixelRatio||1),w=Math.round(frame.clientWidth*dpr),h=Math.round(frame.clientHeight*dpr);
+  // No larger than a phone can keep (a comic's page zoomed in on one panel is several screens across).
+  const fw=frame.clientWidth,fh=frame.clientHeight,dpr=Math.min(3,devicePixelRatio||1,Math.sqrt(8e6/Math.max(1,fw*fh)));
+  const items=list(),w=Math.round(fw*dpr),h=Math.round(fh*dpr);
   const any=items.some(s=>isEffect(s.id));art.hidden=!any;if(!any||!w||!h)return;
   if(art.width!==w||art.height!==h){art.width=w;art.height=h;}
-  const g=art.getContext('2d');g.clearRect(0,0,w,h);for(const s of items)if(isEffect(s.id))drawEffect(g,s,w,h);
+  const g=art.getContext('2d');g.clearRect(0,0,w,h);for(const s of items)if(isEffect(s.id))clipped(g,clip?.(s,w,h),()=>drawEffect(g,s,w,h));
  }
  new ResizeObserver(()=>paintEffects()).observe(frame);
 
@@ -157,20 +170,27 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
   selected=i!=null&&i>=0?i:null;render();
  }
  function add(id,{text=''}={}){
-  const items=list();
+  const items=list(),box=area()||{x:0,y:0,w:1,h:1},unit=letters()??.05;
+  // Placed in the picture, or in the chosen panel of a comic's page as if that panel were the picture.
+  const at=(x,y,size)=>({x:box.x+x*box.w,y:box.y+y*box.h,size:size*box.h});
   if(isBalloon(id)){
-   // Lettered at about a twentieth of the picture's height, in the upper part, where a letterer puts balloons first.
+   // Lettered at about a twentieth of the picture's height (a comic's own size on its page), in the upper part, where a
+   // letterer puts balloons first.
    const l=balloonLayout(id,text,false);
    // Words alone go low, as a caption under a picture; a balloon high, where a letterer puts them first.
-   const sfx=id==='balloon:sfx';
-   items.push({id,text,x:.5,y:id==='balloon:caption'?.12:id==='balloon:words'?.8:sfx?.22:.28,size:Math.min(.9,l.height/100*(sfx?.08:.05)),angle:0,flip:false});
+   const sfx=id==='balloon:sfx',size=Math.min(.9,l.height/100*unit*(sfx?1.6:1));
+   items.push({id,text,...at(.5,id==='balloon:caption'?.12:id==='balloon:words'?.8:sfx?.22:.28,0),size,angle:0,flip:false});
   }else if(isEffect(id)){
    // Focus lines look at the upper middle, where a face usually is; speed lines streak across the middle.
-   items.push({id,x:.5,y:id==='effect:focus'?.42:.5,size:id==='effect:focus'?.36:.3,angle:0,flip:false});
+   items.push({id,...at(.5,id==='effect:focus'?.42:.5,id==='effect:focus'?.36:.3),angle:0,flip:false});
   }else if(id.startsWith('marks/')){
    // A mark is small and goes by a face, high and to one side, as a manga draws it.
-   items.push({id,x:.64,y:.3,size:.13,angle:0,flip:false});
-  }else items.push({id,x:.5,y:.56,size:.42,angle:Math.round((Math.random()*16-8)*10)/10,flip:false});
+   items.push({id,...at(.64,.3,.13),angle:0,flip:false});
+  }else{
+   // A resident in one of World's places stands on its floor, upright, at their own height there.
+   const info=byId.get(id),standing=stand(id,info?info.width/info.height:.5);
+   items.push(standing?{id,...standing,angle:0,flip:false}:{id,...at(.5,.56,.42),angle:Math.round((Math.random()*16-8)*10)/10,flip:false});
+  }
   selected=items.length-1;render();
   els[selected]?.animate?.([{scale:'.4',opacity:0},{scale:'1.08',opacity:1,offset:.7},{scale:'1'}],{duration:380,easing:'ease-out'});
   changed();
@@ -186,7 +206,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
  async function sayAs(i,{text,style='balloon:speech'}){
   const s=list()[i],info=byId.get(s?.id);if(!s||!text)return;
   await loadLetteringFont();
-  const items=list(),l=balloonLayout(style,text,false),size=Math.min(.9,l.height/100*.05);
+  const items=list(),l=balloonLayout(style,text,false),size=Math.min(.9,l.height/100*(letters()??.05));
   const W=frame.clientWidth||1,H=frame.clientHeight||1,aspect=info?info.width/info.height:1;
   // As shares of the picture's width: half the sticker, and the whole lettering.
   const half=s.size*H*aspect/W/2,bw=size*H*l.width/l.height/W,right=s.x<.5;

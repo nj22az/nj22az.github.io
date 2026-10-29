@@ -1,0 +1,57 @@
+/* Pocket Camera's comics (comic.js): the page's panels in the editor, the layouts, and the sheet a panel is filled from. */
+
+/* What is chosen on the page: the panel's outline in the camera's yellow, an empty panel's "+". Never printed. */
+.comic-ui{position:absolute;inset:0;pointer-events:none}
+.comic-ui svg{display:block;width:100%;height:100%;overflow:visible}
+.comic-ui polygon{fill:none;stroke:none}
+.comic-ui polygon.empty{fill:rgba(255,253,246,.0);stroke:rgba(21,18,15,.28);stroke-width:1;stroke-dasharray:5 5;vector-effect:non-scaling-stroke}
+.comic-ui polygon.chosen{stroke:var(--accent);stroke-width:3;stroke-dasharray:none;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
+.comic-ui .plus circle{fill:rgba(21,18,15,.72)}
+.comic-ui .plus path{stroke:#fff;stroke-width:2.4;stroke-linecap:round;vector-effect:non-scaling-stroke}
+
+/* Zoomed in on one panel: the page as large as that panel needs, the panel in the middle of the stage. */
+.editor .frame.focused{position:absolute;left:50%;top:50%;transform:translate(calc(-50% + var(--tx,0px)),calc(-50% + var(--ty,0px)));box-shadow:none}
+
+/* The Panels tab: the layouts in a row, then the chosen panel and what can be done with it. */
+/* All eight across a phone held upright (320 to 430 points), none cut off. */
+.layout-choices{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:clamp(2px,1vw,8px);max-width:520px;margin:0 auto;padding:12px clamp(6px,2.5vw,16px) 6px}
+.layout-choice{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-width:0;height:64px;padding:4px 0 0;font-size:clamp(9.5px,2.7vw,11px);font-weight:600;letter-spacing:-.02em;color:var(--label-2);white-space:nowrap}
+.layout-choice span{max-width:100%;overflow:hidden;text-overflow:clip}
+.layout-choice .layout-icon{display:block;max-width:min(40px,100%);max-height:40px;width:auto;height:auto;transition:transform .3s var(--spring)}
+.layout-choice:active .layout-icon{transform:scale(.9)}
+.layout-icon .page{fill:#f6f1e4;stroke:#444;stroke-width:1}
+.layout-icon .cell{fill:#3a3a3c;stroke:none}
+.layout-choice[aria-checked="true"]{color:var(--accent)}
+.layout-choice[aria-checked="true"] .layout-icon .page{stroke:var(--accent);stroke-width:2}
+.layout-choice[aria-checked="true"] .layout-icon .cell{fill:#5b5134}
+
+.comic-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;max-width:520px;margin:0 auto;padding:6px 16px 0}
+.comic-panel-name{flex:1 1 140px;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comic-views{grid-template-columns:repeat(4,auto);order:3;flex:1 1 100%;justify-content:center}
+.comic-views button{padding:0 10px}
+.comic-buttons{display:flex;gap:8px}
+.comic-buttons .round{width:40px;height:40px}
+.comic-buttons .round:disabled{opacity:.35}
+.comic-hint{max-width:520px;margin:6px auto 0;padding:0 16px;font-size:12px;line-height:1.35;text-align:center;color:var(--label-3)}
+
+/* The sheet a panel is filled from: pictures, each with its name. */
+.comic-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+.comic-choice{display:flex;flex-direction:column;gap:4px;height:auto;padding:5px}
+.comic-choice img{aspect-ratio:4/3;height:auto;border-radius:9px;object-fit:cover;background:#2c2c2e}
+.comic-choice span{font-size:11px;font-weight:600;color:var(--label-2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comic-sheet .sticker-sets{padding-top:4px;padding-bottom:6px}
+
+/* The camera shooting a panel: the way back to the comic in place of the website's, and nothing that leaves it. */
+.camera.for-panel .camera-home,.camera.for-panel #import,.camera.for-panel #roll{visibility:hidden}
+.camera .bar{position:relative}
+.panel-back{position:absolute;left:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:2px;height:44px;font-size:17px;color:var(--accent)}
+.panel-back em{margin-left:8px;padding:2px 8px;border-radius:9px;background:#2a2a2c;color:#fff;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.02em}
+
+/* The album's way in. */
+.comic-entry .arcade-entry-icon{background:#f6d477;color:#181818;letter-spacing:0}
+.comic-entry .arcade-entry-icon svg{width:26px;height:26px;stroke-width:2}
+
+@media (max-height:700px){
+ .comic-hint{display:none}
+ .layout-choices{padding-top:8px}
+}

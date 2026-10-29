@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="game-room-refresh.css?v=20261029c">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
+<link rel="stylesheet" href="comic.css?v=20261029a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -64,6 +65,9 @@
   <symbol id="i-game" viewBox="0 0 24 24"><path d="M7.6 7.8h8.8a4.6 4.6 0 0 1 4.5 5.5l-.8 3.8a2.2 2.2 0 0 1-3.8 1l-1.6-2.1H9.3l-1.6 2.1a2.2 2.2 0 0 1-3.8-1l-.8-3.8a4.6 4.6 0 0 1 4.5-5.5Z"/><path d="M8.3 10.6v3.4M6.6 12.3H10"/><circle cx="15.6" cy="11.4" r="1" class="fill"/><circle cx="17.6" cy="13.4" r="1" class="fill"/></symbol>
   <symbol id="i-printer" viewBox="0 0 24 24"><path d="M7 9V4.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2.2"/><path d="M7 14.5h10v5.5H7Z"/><circle cx="17" cy="11.9" r=".9" class="fill"/></symbol>
   <symbol id="i-say" viewBox="0 0 24 24"><path d="M6.5 4.5h11A2.5 2.5 0 0 1 20 7v6.5a2.5 2.5 0 0 1-2.5 2.5H12l-4.6 3.6V16h-.9A2.5 2.5 0 0 1 4 13.5V7a2.5 2.5 0 0 1 2.5-2.5Z"/><circle cx="8.6" cy="10.3" r="1" class="fill"/><circle cx="12" cy="10.3" r="1" class="fill"/><circle cx="15.4" cy="10.3" r="1" class="fill"/></symbol>
+  <symbol id="i-comic" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.2"/><path d="M3.5 11h17M12 11v9.5"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M10.5 8v5M8 10.5h5"/></symbol>
+  <symbol id="i-page" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M8 10.5h5"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4.5 7.5h2.8L9 5h6l1.7 2.5h2.8a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18V9a1.5 1.5 0 0 1 1.5-1.5Z"/><circle cx="12" cy="13" r="3.6"/></symbol>
  </defs>
 </svg>
@@ -73,6 +77,8 @@
  <section class="screen camera" id="camera" aria-label="Camera">
   <header class="bar">
    <div class="camera-home"><a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a><span class="camera-mark">POCKET CAMERA</span></div>
+   <!-- Shooting a comic's panel: the way back to the comic, and which panel the photo goes in. -->
+   <button type="button" class="back panel-back" id="backToComic" hidden><svg><use href="#i-back"/></svg><span>Comic</span><em id="panelShootName">Panel 1</em></button>
    <!-- As on an iPhone: the settings hide behind a chevron; what is switched on shows beside it, in yellow. -->
    <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus"></span><svg><use href="#i-chevron"/></svg></button>
    <button type="button" class="photos-button" id="import" aria-label="Your photos: choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
@@ -126,10 +132,24 @@
   </div>
   <div class="dock" id="editDock">
    <div class="segmented" role="tablist" aria-label="Edit">
+    <button type="button" role="tab" id="tabComic" aria-selected="false" aria-controls="panelComic" hidden>Panels</button>
     <button type="button" role="tab" id="tabLooks" aria-selected="true" aria-controls="panelLooks">Looks</button>
     <button type="button" role="tab" id="tabAdjust" aria-selected="false" aria-controls="panelAdjust">Adjust</button>
     <button type="button" role="tab" id="tabStickers" aria-selected="false" aria-controls="panelStickers">Stickers</button>
     <button type="button" role="tab" id="tabFrame" aria-selected="false" aria-controls="panelFrame">Frame</button>
+   </div>
+   <div class="panel" id="panelComic" role="tabpanel" aria-labelledby="tabComic" hidden>
+    <div class="layout-choices" id="layoutChoices" role="radiogroup" aria-label="Layout"></div>
+    <div class="comic-actions" id="comicActions">
+     <span class="comic-panel-name" id="comicPanelName">Panel 1</span>
+     <div class="mini-seg comic-views" id="comicViews" role="radiogroup" aria-label="Angle" hidden></div>
+     <div class="comic-buttons">
+      <button type="button" class="round" id="comicFill" aria-label="Fill this panel" title="Fill"><svg><use href="#i-photo"/></svg></button>
+      <button type="button" class="round" id="comicFocus" aria-label="Zoom in on this panel" title="Zoom in"><svg><use href="#i-zoom"/></svg></button>
+      <button type="button" class="round" id="comicClear" aria-label="Empty this panel" title="Empty"><svg><use href="#i-trash"/></svg></button>
+     </div>
+    </div>
+    <p class="fine comic-hint" id="comicHint">Tap a panel to fill it. Drag its picture to move it, pinch to zoom; tap twice to zoom in on it. Stickers and words go in the panel that is chosen.</p>
    </div>
    <div class="panel" id="panelLooks" role="tabpanel" aria-labelledby="tabLooks"></div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
@@ -159,6 +179,7 @@
    </div>
   </header>
   <div class="album-scroll">
+   <button type="button" class="arcade-entry comic-entry" id="openComic"><span class="arcade-entry-icon" aria-hidden="true"><svg><use href="#i-comic"/></svg></span><span><strong>Make a comic</strong><small>Panels from your photos and Minato’s own places</small></span><span aria-hidden="true">›</span></button>
    <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
@@ -246,6 +267,15 @@
  <div class="frame-choices" id="cameraFrames" role="radiogroup" aria-label="Frame"></div>
 </dialog>
 
+<!-- What fills a comic's panel: a photo from the album, one of Minato's places as the storyteller photographed it, or
+     one of the photographer's own. -->
+<dialog class="sheet sticker-sheet comic-sheet" id="comicSheet" aria-labelledby="comicSheetTitle">
+ <header><h2 id="comicSheetTitle">Panel 1</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
+ <div class="sticker-sets" id="comicSources" role="tablist" aria-label="Pictures"></div>
+ <div class="sticker-grid comic-grid" id="comicGrid" role="tabpanel" aria-label="Pictures"></div>
+</dialog>
+<input type="file" id="comicFile" accept="image/*" hidden>
+
 <dialog class="sheet text-sheet" id="textSheet" aria-labelledby="textSheetTitle">
  <form method="dialog">
   <h2 id="textSheetTitle">What do they say?</h2>
@@ -268,6 +298,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029t"></script>
+<script type="module" src="app.js?v=20261029u"></script>
 </body>
 </html>

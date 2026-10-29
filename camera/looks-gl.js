@@ -218,7 +218,7 @@ export function normalRecipe(recipe={}){
  // Stickers (stickers.js): centre, height as a share of the picture's height, angle in degrees, mirrored or not; a
  // balloon (lettering.js) also keeps its words.
  const stickers=(Array.isArray(recipe.stickers)?recipe.stickers:[]).filter(s=>typeof s?.id==='string').slice(0,40)
-  .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
+  .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.015,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
    ...(s.id.startsWith('balloon:')?{text:String(s.text??'').slice(0,140)}:{})}));
  return {layers,
   adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0),detail:n(a.detail,-1,1,0)},

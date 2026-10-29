@@ -33,7 +33,8 @@ assert.equal(normalRecipe({frame:'panel',trick:'twin',adjust:{detail:-3}}).trick
 assert.equal(normalRecipe({frame:'<b>',trick:'spin'}).frame,'none');assert.equal(normalRecipe({trick:'spin'}).trick,'none');
 assert.equal(normalRecipe({adjust:{detail:-3}}).adjust.detail,-1);
 assert.deepEqual(normalRecipe({stickers:[{id:'balloon:speech',text:'x'.repeat(200)},{id:'fuji/Wave',text:'no'}]}).stickers.map(s=>s.text?.length),[140,undefined]);
-assert.deepEqual(normalRecipe({stickers:[{id:'fuji/Wave',x:2,size:0,angle:12,flip:1},{x:.5},null]}).stickers,[{id:'fuji/Wave',x:1.2,y:.5,size:.06,angle:12,flip:true}]);
+// The smallest sticker is a mark by a face in a 4-koma's panel (comic.js): 1.5% of the picture's height.
+assert.deepEqual(normalRecipe({stickers:[{id:'fuji/Wave',x:2,size:0,angle:12,flip:1},{x:.5},null]}).stickers,[{id:'fuji/Wave',x:1.2,y:.5,size:.015,angle:12,flip:true}]);
 
 assert.deepEqual(exportSize(1920,1440),{width:1920,height:1440});
 const big=exportSize(8064,6048);assert.ok(big.width<=4096&&big.width*big.height<=16e6);

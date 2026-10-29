@@ -147,6 +147,41 @@ techniques, drawn here:
   !, ?, !?, gloom lines, blush and a music note, drawn in Python with an ink line and a white edge. They go in small,
   by a face, and are never a deck for Memory or a greeting.
 
+## Comics
+
+The owner (29 October 2026), with a screenshot of the editor's stickers: "I think the stamp function is better than the
+comic builder in Johansson Studio is there a way to enhance the comic builder ? Bring it to the camera or its own mini
+app?". Studio's comic builder (`/avatar-creator/`, "Make comic") stages every panel in 3D through a five-step wizard,
+offers two layouts of fixed 4:3 cells, and places balloons it will not let you drag; the camera's editor lets you drag,
+pinch and turn everything. So the comic lives in the camera and is made with its own editor (`comic.js`, `comic.css`):
+
+- **Make a comic** in the album opens a page in the editor, with **Panels** in place of Frame (Panels · Looks · Adjust ·
+  Stickers). Eight layouts, all across a phone held upright: **One**, **Strip** (three across), **Four**, **4-koma**
+  (four down: set-up, build-up, the turn, the punchline), **Three**, **Big top**, **Action** (slanted gutters) and
+  **Splash** (one moment to the page's edge, a small reaction over it). They follow the studio's comic-layout rules
+  (`nj22az/jojo` `.claude/skills/comic-layout`): gutters 1.7% of the page's short side and the same everywhere, panels
+  meant to be equal exactly equal, a margin, borders inked with a pen's small wobble. Read left to right, top to bottom.
+- **A tap on an empty panel** asks what fills it: **Places** (Minato's own rooms and streets as the storyteller
+  photographed them, `johansson-town/assets/images/feed/`: nineteen places, Wide, Close, Low and High under the page),
+  **Album**, **Camera** (the camera opens for that panel, in its own Looks, mix and stickers, without its frame or date;
+  the shutter puts the photo in the panel, keeps it in the album, and brings the comic back) or **Photos** (the
+  device's).
+- **In a panel**: drag the picture to move it, pinch to zoom it (it always covers its panel); tap a panel to choose it;
+  tap twice, or the magnifier, to zoom the page in on it, which is how a small panel is lettered on a phone; Escape or
+  the magnifier again shows the whole page.
+- **Stickers and words go in the chosen panel**: a sticker at that panel's scale; a resident's sticker in one of the
+  places stands on its floor, on a spot the storyteller measured there (`views.json`), at their height in that room
+  (Johansson 1.78 m, Thuan and Thao 1.55 m), clear of the residents already in the panel; lettering at one size across
+  the page, as a letterer keeps it. Focus and speed lines stay inside their panel. Any sticker or balloon may still be
+  dragged across a border, as a balloon breaks a panel.
+- **The Looks draw over the whole page**: Manga or Comic dots make the town's rooms and the photos one comic. The page
+  is drawn in two parts so a Look never smudges the paper: the pictures run on under the gutters as a printer's bleed,
+  go through the Looks, then the paper and the borders are laid over them, then the stickers.
+- **Saved** as a page 3000 pixels on its long side, through the printer, into the album, with what fills each panel (a
+  place is fetched again; the other pictures are kept, no larger than 2048 pixels), so **Edit** opens it again panel by
+  panel. A layout changed and changed back keeps the panels' pictures. Places a comic has used are kept by the offline
+  worker.
+
 ## How it works
 
 | File | Purpose |
@@ -157,6 +192,7 @@ techniques, drawn here:
 | `album.js` | IndexedDB storage of shots (photo, source, thumbnail, recipe) and of the own stickers |
 | `frames.js` | The frames, drawn over a picture of any size |
 | `lettering.js` | Balloons and captions, laid out and drawn |
+| `comic.js`, `comic.css` | Comics: the layouts, a page's panels and gutters, a picture in its panel, World's places, a resident standing on a place's floor |
 | `cutout.js` | The photographer's own pictures to die-cut stickers |
 | `fonts/` | Baloo 2, subset to Latin and Vietnamese (SIL OFL 1.1, `OFL-Baloo2.txt`) |
 | `stickers/` | Web copies of the studio's sticker sheets and `stickers.json` (built, see below) |
@@ -189,6 +225,7 @@ techniques, drawn here:
 node camera/tests/looks-gl.test.mjs          # every Look converts; recipe, sizes, rows
 node camera/tests/blackjack.test.mjs         # scores and hand flow
 node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
+node camera/tests/comic.test.mjs             # comics: layouts and gutters, panels under a point, pictures covering their panels, places, standing on a floor
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```

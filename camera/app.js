@@ -3,14 +3,15 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029s';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029u';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029t';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029u';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
+import {COMIC_LAYOUTS,comicLayout,normalComic,pageSize,pageGeometry,panelAt,panelArea,composePage,drawComicFrame,moveView,layoutIcon,loadPlaces,placeView,statureOf,standInPanel} from './comic.js?v=20261029a';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
@@ -201,13 +202,17 @@ function frameArt(frame){
  if(art.previousElementSibling!==canvas&&canvas.parentElement===frame)canvas.after(art);else if(!art.parentElement)frame.prepend(art);
  return art;
 }
-function paintFrame(frame,id,hide=false){
- const art=frameArt(frame),w=frame.clientWidth,h=frame.clientHeight,dpr=Math.min(3,devicePixelRatio||1);
- art.hidden=hide||id==='none';
- const key=`${id}|${w}|${h}|${dpr}`;
+function paintFrame(frame,id,hide=false,comic=null){
+ // No larger than a phone can keep: a comic's page zoomed in on one panel is several screens across.
+ const art=frameArt(frame),w=frame.clientWidth,h=frame.clientHeight,dpr=Math.min(3,devicePixelRatio||1,Math.sqrt(8e6/Math.max(1,w*h)));
+ art.hidden=hide||id==='none'&&!comic;
+ const key=`${id}|${comic}|${w}|${h}|${dpr}`;
  if(art.hidden||art.key===key)return;
  art.key=key;art.width=Math.max(1,Math.round(w*dpr));art.height=Math.max(1,Math.round(h*dpr));
- const g=art.getContext('2d');g.clearRect(0,0,art.width,art.height);drawFrame(g,id,art.width,art.height);
+ const g=art.getContext('2d');g.clearRect(0,0,art.width,art.height);
+ // A comic's paper and borders (comic.js), then any frame, as a save draws them.
+ if(comic)drawComicFrame(g,comic,art.width,art.height);
+ drawFrame(g,id,art.width,art.height);
 }
 /** The date in the picture's own corner, inside any frame, the size the save prints it. */
 function stampOverlay(frame,on,date,frameId='none'){
@@ -438,7 +443,7 @@ function drawCamera(t){
  setCanvasSize(h*pw/ph,h);
  const drawn=engine.draw(state.camera.recipe,{source:'live',crop,mirror:state.camera.mirror});
  if(drawn)govern(t);
- paintFrame($('cameraFrame'),state.camera.recipe.frame);
+ paintFrame($('cameraFrame'),panelShoot?'none':state.camera.recipe.frame);
 }
 // Lower the viewfinder's detail when frames come slowly, raise it again when they come easily.
 function govern(t){
@@ -451,12 +456,12 @@ function govern(t){
 }
 function drawEditor(){
  const e=state.edit;
- const box=fitFrame($('editFrame'),$('editStage'),e.width/e.height);
+ const box=e.comic?fitComic(e):fitFrame($('editFrame'),$('editStage'),e.width/e.height);
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(e.height,box.height*dpr,2048/Math.max(1,e.width/e.height),2048);
  setCanvasSize(h*e.width/e.height,h);
  const recipe=e.comparing?normalRecipe():e.recipe;
  dirty=!engine.draw(recipe,{source:'edit'});
- paintFrame($('editFrame'),e.recipe.frame,e.comparing);
+ paintFrame($('editFrame'),e.recipe.frame,e.comparing,e.comic?.layout);
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing,e.taken,e.recipe.frame);
 }
 addEventListener('resize',invalidate);
@@ -531,7 +536,7 @@ function renderCameraChips(){
  $('settingsToggle').classList.toggle('busy',status.length>0);
  $('zoom').textContent=`${c.zoom}×`;$('zoom').setAttribute('aria-label',`Zoom ${c.zoom}×`);
  renderExposure();
- stampOverlay($('cameraFrame'),r.stamp,new Date(),r.frame);
+ stampOverlay($('cameraFrame'),r.stamp&&!panelShoot,new Date(),r.frame);
 }
 /** One panel at a time: a sheet coming up puts away the settings row, the intensity and the strip of Looks. */
 function openSheet(sheet){
@@ -622,16 +627,19 @@ async function takePhoto(){
   g.drawImage(v,crop.x*v.videoWidth,crop.y*v.videoHeight,pw,ph,0,0,size.width,size.height);
   sound('shutter');flash();
   await nextFrame();
-  const taken=new Date(),recipe=normalRecipe(c.recipe);
+  // A comic's panel takes the picture without the camera's frame or date: the page has its own borders.
+  const forPanel=panelShoot,taken=new Date(),recipe=normalRecipe(forPanel?{...c.recipe,frame:'none',stamp:false}:c.recipe);
   engine.setSource('still',still,size.width,size.height);
   let finished;
   try{finished=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);}
   finally{engine.dropSource('still');}
   const {photo,thumb}=finished,source=await toBlob(still,'image/jpeg',.92);still.width=still.height=0;
-  // Printed, then into the album's thumbnail; the thumbnail changes when the print lands in it.
-  const printing=printPhoto(photo,size.width,size.height,()=>$('roll').getBoundingClientRect());
-  if(!printing)flyToRoll(photo);
-  await keep({photo,source,thumb,recipe,width:size.width,height:size.height,taken:taken.getTime()},{roll:!printing});
+  // Printed, then into the album's thumbnail; the thumbnail changes when the print lands in it. A comic's panel goes
+  // straight back into the comic (and into the album too, as every photo does).
+  const printing=forPanel?null:printPhoto(photo,size.width,size.height,()=>$('roll').getBoundingClientRect());
+  if(!printing&&!forPanel)flyToRoll(photo);
+  const shot=await keep({photo,source,thumb,recipe,width:size.width,height:size.height,taken:taken.getTime()},{roll:!printing});
+  if(forPanel&&panelShoot===forPanel){endPanelShoot(true);await fillPanel(forPanel.i,{ref:shot?`shot:${shot.id}`:'own',blob:photo});return;}
   if(printing){await printing;renderRoll(true);}
  }catch(err){console.error(err);toast('The photo could not be saved');}
  finally{c.busy=false;$('shutter').classList.remove('waiting');$('count').textContent='';}
@@ -659,8 +667,9 @@ const toBlob=(c,type,q)=>new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Err
 async function finishPhoto(pixels,recipe,date){
  const c=document.createElement('canvas');c.width=pixels.width;c.height=pixels.height;
  const g=c.getContext('2d');g.putImageData(new ImageData(pixels.data,pixels.width,pixels.height),0,0);
+ if(recipe.comic)drawComicFrame(g,recipe.comic.layout,c.width,c.height);
  drawFrame(g,recipe.frame,c.width,c.height);
- const missing=await drawStickers(g,c.width,c.height,recipe.stickers);
+ const missing=await drawStickers(g,c.width,c.height,recipe.stickers,recipe.comic?comicClip(recipe.comic.layout):null);
  if(missing)toast(missing===1?'A sticker could not be loaded and is left off':`${missing} stickers could not be loaded and are left off`,{ms:2600});
  if(recipe.stamp)printStamp(g,frameInner(recipe.frame,c.width,c.height),date);
  try{
@@ -749,6 +758,7 @@ function renderGrid(){
 $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)openViewer(b.dataset.id);});
 
 function show(mode){
+ if(panelShoot&&mode!=='camera'&&mode!=='editor')endPanelShoot(false);
  state.mode=mode;
  for(const id of ['camera','editor','album','viewer','memory','cardsHub','cardGame'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
@@ -843,6 +853,7 @@ function offerFile(blob){download(new File([blob],fileName(),{type:'image/jpeg'}
 $('sharePhoto').addEventListener('click',()=>state.viewing&&sharePhoto(state.viewing));
 $('editPhoto').addEventListener('click',async()=>{
  const shot=state.viewing;if(!shot)return;
+ if(shot.recipe?.comic){await openComicShot(shot);return;}
  const picture=await decode(shot.source||shot.photo);
  openEditor({...picture,recipe:shot.source?shot.recipe:normalRecipe(),shotId:shot.id,taken:new Date(shot.taken||shot.created),sourceBlob:shot.source||shot.photo});
 });
@@ -909,17 +920,19 @@ async function editFile(file){
   openEditor({...picture,recipe,shotId:null,taken:new Date(file.lastModified||Date.now()),sourceBlob});
  }catch{toast('That picture could not be opened');}
 }
-function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
+function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob,comic=null}){
  if(!engine)return;
- state.edit?.picture?.close?.();
- state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
- engine.setSource('edit',picture,width,height);
- show('editor');selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
+ state.edit?.picture?.close?.();endComic();
+ state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode,comic};
+ // A comic's page has panels in place of a frame (no frame, mirror or date of its own).
+ $('tabComic').hidden=!comic;$('tabFrame').hidden=!!comic;
+ if(comic){Object.assign(state.edit.recipe,{frame:'none',trick:'none',stamp:false});composeComic();}else{engine.setSource('edit',picture,width,height);renderComicUI();}
+ show('editor');selectTab(comic?'comic':'looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
  if(state.edit?.saving)return;
- const from=state.edit?.from;engine?.dropSource('edit');state.edit?.picture?.close?.();state.edit=null;
+ const from=state.edit?.from;engine?.dropSource('edit');state.edit?.picture?.close?.();endComic();state.edit=null;
  if(from==='viewer'&&state.viewing)openViewer(state.viewing.id);else if(from==='album')openAlbum();else show('camera');
 }
 $('cancelEdit').addEventListener('click',closeEditor);
@@ -965,12 +978,15 @@ $('saveEdit').addEventListener('click',async()=>{
  const button=$('saveEdit');e.saving=true;button.disabled=true;$('cancelEdit').disabled=true;button.textContent='Saving…';await nextFrame();
  try{
   const recipe=normalRecipe(e.recipe);
-  const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
+  // A comic is saved as its page at full size, with what fills each panel, so it opens again panel by panel.
+  const page=e.comic?await savedPage(e,recipe):null;
+  const {photo,thumb}=page?page.finished:await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
   const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
+  const extra=page?{source:page.source,panels:page.panels,width:e.width,height:e.height}:{};
   let shot;
-  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
-  else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
-  engine.dropSource('edit');e.picture?.close?.();state.edit=null;
+  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...extra});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
+  else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime(),...extra});
+  engine.dropSource('edit');e.picture?.close?.();endComic();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
   if(printing)await printing;
   if(shot)toast('Saved to the album');
@@ -992,13 +1008,15 @@ $('saveEdit').addEventListener('click',async()=>{
  gestures(stage);
 }
 function selectTab(tab){
- for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
+ for(const [id,panel,name] of [['tabComic','panelComic','comic'],['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
   $(id).setAttribute('aria-selected',String(tab===name));$(panel).hidden=tab!==name;
  }
  if(tab==='looks')requestAnimationFrame(()=>renderStripSelection());
  if(tab==='stickers')renderStickerPicker();
  if(tab==='frame')renderFramePanel();
+ if(tab==='comic')renderComicPanel();
 }
+$('tabComic').addEventListener('click',()=>selectTab('comic'));
 $('tabLooks').addEventListener('click',()=>selectTab('looks'));
 $('tabAdjust').addEventListener('click',()=>selectTab('adjust'));
 $('tabStickers').addEventListener('click',()=>selectTab('stickers'));
@@ -1044,7 +1062,13 @@ async function sayLettering(layer,i,info){
  if(answer){await layer.sayAs(i,answer);sound('pop');}
 }
 const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember,editText:(i,s)=>editBalloonText(cameraStickers,i,s),say:(i,info)=>sayLettering(cameraStickers,i,info)});
-const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s),say:(i,info)=>sayLettering(editStickers,i,info)});
+const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s),say:(i,info)=>sayLettering(editStickers,i,info),
+ // On a comic's page a new sticker goes in the chosen panel, at its scale, and a resident stands on a place's floor.
+ area:()=>{const e=comicEdit();return e?panelArea(e.comic.layout,e.comic.selected??0,e.width,e.height):null;},
+ // One lettering size on a page, as the studio letters its comics: from the page's size, not the panel's.
+ letters:()=>{const e=comicEdit();return e?.026*Math.sqrt(e.width*e.height)/e.height:null;},
+ stand:(id,aspect)=>comicStand(id,aspect),
+ clip:(s,w,h)=>{const e=comicEdit();return e?comicClip(e.comic.layout)(s,w,h):null;}});
 const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?cameraStickers:null;
 // The sheets: Lettering first (balloons and captions), then the residents' sheets, then the photographer's own.
 let stickerSet=1,mine=[];
@@ -1195,6 +1219,306 @@ $('adjustSlider').addEventListener('input',ev=>{
 $('adjustSlider').addEventListener('change',()=>refreshThumbs(true));
 $('adjustSlider').addEventListener('dblclick',()=>setAdjust(0));
 
+// ---------- Comics ----------
+/*
+ * A comic's page in the editor (comic.js): the panels' pictures laid on a page that the Looks draw over like any photo,
+ * the paper and the inked borders after the Looks, and the stickers and words over everything, free to cross a border.
+ * The owner (29 October 2026): "I think the stamp function is better than the comic builder in Johansson Studio is
+ * there a way to enhance the comic builder ? Bring it to the camera or its own mini app?" So the comic is made with the
+ * camera's own editor, stickers and lettering; the panels come from the album, the photographer's own photos, or
+ * Minato's real places as the storyteller photographed them, where a resident's sticker stands on the floor.
+ */
+// A panel's picture is kept no larger than this: a page's panels are smaller than its long side (3000).
+const PANEL_SIDE=2048;
+const comicEdit=()=>state.edit?.comic?state.edit:null;
+const panelCount=e=>comicLayout(e.comic.layout).panels.length;
+const emptySlot=()=>({ref:null,view:{x:.5,y:.5,zoom:1},picture:null,place:null});
+function padSlots(comic){while(comic.slots.length<comicLayout(comic.layout).panels.length)comic.slots.push(emptySlot());}
+/** A picture for a panel: the right way up, no larger than a panel needs; `blob` is what a saved comic keeps of it. */
+async function panelPicture(blob,keep=true){
+ const d=await decode(blob);let {picture,width,height}=d;
+ const s=Math.min(1,PANEL_SIDE/Math.max(width,height));
+ if(s<1){
+  const c=document.createElement('canvas');c.width=Math.round(width*s);c.height=Math.round(height*s);
+  const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(picture,0,0,c.width,c.height);d.close();picture=c;width=c.width;height=c.height;
+ }
+ return {image:picture,width,height,blob:keep?blob:null,shrunk:s<1};
+}
+/** What a panel's `ref` names, as a picture: one of the places (fetched again), else the picture the comic kept. */
+async function refPicture(ref,kept){
+ if(!ref)return null;
+ if(ref.startsWith('place:')){
+  const found=await placeView(ref);if(!found)return null;
+  const r=await fetch(found.view.url);if(!r.ok)throw new Error('The place could not be loaded');
+  return {...await panelPicture(await r.blob(),false),place:found.view,placeName:found.place.name};
+ }
+ if(kept)return panelPicture(kept);
+ if(ref.startsWith('shot:')){const s=await getShot(ref.slice(5)).catch(()=>null);return s?panelPicture(s.photo):null;}
+ return null;
+}
+const comicPictures=e=>e.comic.slots.slice(0,panelCount(e)).map(s=>s.picture?{...s.picture,view:s.view}:null);
+const comicRecipe=e=>normalComic({layout:e.comic.layout,panels:e.comic.slots.slice(0,panelCount(e)).map(s=>({ref:s.picture?s.ref:null,view:s.view}))});
+/** The lines of a sticker stay inside the panel their centre is in. */
+const comicClip=layout=>(s,w,h)=>{const i=panelAt(layout,w,h,s.x*w,s.y*h);return i<0?null:pageGeometry(layout,w,h).panels[i].points;};
+
+/** Opens the editor on a comic's page: a new one in the layout last used, or a saved one with its panels. */
+function openComic({recipe=null,slots=[],shotId=null,taken=new Date()}={}){
+ if(!engine||engine.lost())return;
+ const layout=comicLayout(recipe?.comic?.layout||store.read().comicLayout).id,size=pageSize(layout,Math.min(4096,engine.maxTexture));
+ const comic={layout,slots,selected:0,focus:null,work:document.createElement('canvas')};padSlots(comic);
+ openEditor({picture:comic.work,width:size.width,height:size.height,recipe:recipe||{layers:[{look:'none',amount:1}]},shotId,taken,sourceBlob:null,comic});
+}
+$('openComic').addEventListener('click',()=>{sound('tick');openComic();});
+/** A saved comic, its panels' pictures found again. */
+async function openComicShot(shot){
+ const comic=normalComic(shot.recipe.comic);let lost=0;
+ toast('Opening the comic…',{ms:8000});
+ const slots=await Promise.all(comic.panels.map(async(p,i)=>{
+  const slot={...emptySlot(),ref:p.ref,view:p.view};
+  if(!p.ref)return slot;
+  try{const pic=await refPicture(p.ref,shot.panels?.[i]);if(pic){slot.picture=pic;slot.place=pic.place||null;}else lost++;}catch{lost++;}
+  if(!slot.picture)slot.ref=null;
+  return slot;
+ }));
+ toast(lost?`${lost===1?'A panel’s picture':`${lost} panels’ pictures`} could not be found`:'Comic opened',{ms:lost?2600:900});
+ openComic({recipe:shot.recipe,slots,shotId:shot.id,taken:new Date(shot.taken||shot.created)});
+}
+/** Lays the panels on the page the editor draws: lighter while a picture is being moved, then at full detail. */
+function composeComic({quick=false}={}){
+ const e=comicEdit();if(!e||!engine)return;
+ const c=e.comic,long=quick?1100:1600,s=Math.min(1,long/Math.max(e.width,e.height)),w=Math.round(e.width*s),h=Math.round(e.height*s);
+ if(c.work.width!==w||c.work.height!==h){c.work.width=w;c.work.height=h;}
+ composePage(c.work.getContext('2d'),c.layout,w,h,comicPictures(e));
+ engine.setSource('edit',c.work,e.width,e.height);
+ if(!quick)refreshThumbs(true);
+ renderComicUI();invalidate();
+}
+/** The chosen panel's outline and an empty panel's "+", over the page (never printed). */
+function renderComicUI(){
+ const frame=$('editFrame');let el=frame.querySelector('.comic-ui');
+ const e=comicEdit();
+ if(!e){if(el)el.hidden=true;return;}
+ if(!el){el=document.createElement('div');el.className='comic-ui';el.setAttribute('aria-hidden','true');frame.querySelector('.stickers').before(el);}
+ el.hidden=false;
+ const W=1000,H=Math.round(W*e.height/e.width),geo=pageGeometry(e.comic.layout,W,H);
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${geo.panels.map((p,i)=>{
+  const empty=!e.comic.slots[i]?.picture,b=p.box,r=Math.max(14,Math.min(44,Math.min(b.w,b.h)*.16)),cx=b.x+b.w/2,cy=b.y+b.h/2;
+  const plus=empty?`<g class="plus" transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)})"><circle r="${r.toFixed(1)}"/><path d="M${(-r*.42).toFixed(1)} 0H${(r*.42).toFixed(1)}M0 ${(-r*.42).toFixed(1)}V${(r*.42).toFixed(1)}"/></g>`:'';
+  return `<polygon points="${p.points.map(q=>q.map(v=>v.toFixed(1)).join(',')).join(' ')}" class="${empty?'empty':''}${i===e.comic.selected?' chosen':''}"/>${plus}`;
+ }).join('')}</svg>`;
+}
+/** The Panels tab: the layouts, and what the chosen panel holds. */
+function renderComicPanel(){
+ const e=comicEdit();if(!e)return;
+ const box=$('layoutChoices');box.textContent='';
+ for(const l of COMIC_LAYOUTS){
+  const b=document.createElement('button');b.type='button';b.className='layout-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(l.id===e.comic.layout));
+  b.title=l.hint;b.setAttribute('aria-label',`${l.label}: ${l.hint}`);b.innerHTML=`${layoutIcon(l.id,40)}<span>${l.label}</span>`;
+  b.addEventListener('click',()=>{sound('tick');setLayout(l.id);});box.append(b);
+ }
+ const i=e.comic.selected??0,slot=e.comic.slots[i],n=panelCount(e);
+ const what=!slot?.picture?'empty':slot.ref?.startsWith('place:')?slot.picture.placeName||'a place':slot.ref?.startsWith('shot:')?'from the album':'your photo';
+ $('comicPanelName').textContent=`Panel ${i+1} of ${n} · ${what}`;
+ const views=$('comicViews');views.textContent='';views.hidden=!slot?.ref?.startsWith('place:');
+ if(!views.hidden)placeView(slot.ref).then(found=>{
+  if(!found||comicEdit()!==e||e.comic.selected!==i)return;
+  views.textContent='';
+  for(const v of found.place.views){const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(v.id===found.view.id));b.textContent=v.name;
+   b.addEventListener('click',()=>{if(v.id===found.view.id)return;sound('tick');fillPanel(i,{ref:`place:${found.place.id}/${v.id}`});});views.append(b);}
+  views.hidden=found.place.views.length<2;
+ }).catch(()=>{});
+ $('comicFocus').disabled=!slot?.picture&&e.comic.focus==null;$('comicClear').disabled=!slot?.picture;
+ const focused=e.comic.focus!=null;
+ $('comicFocus').querySelector('use').setAttribute('href',focused?'#i-page':'#i-zoom');
+ $('comicFocus').setAttribute('aria-label',focused?'Show the whole page':'Zoom in on this panel');$('comicFocus').title=focused?'Whole page':'Zoom in';
+}
+function setLayout(id){
+ const e=comicEdit();if(!e||e.comic.layout===id)return;
+ e.comic.layout=id;padSlots(e.comic);store.write({...store.read(),comicLayout:id});
+ const size=pageSize(id,Math.min(4096,engine.maxTexture));e.width=size.width;e.height=size.height;
+ e.comic.selected=Math.min(e.comic.selected??0,panelCount(e)-1);e.comic.focus=null;
+ composeComic();renderComicPanel();editStickers.render();
+}
+function choosePanel(i){
+ const e=comicEdit();if(!e||i<0)return;
+ if(e.comic.selected!==i){e.comic.selected=i;if(e.comic.focus!=null)e.comic.focus=i;renderComicUI();renderComicPanel();if(e.comic.focus!=null)refocus();}
+}
+function focusPanel(on){
+ const e=comicEdit();if(!e)return;
+ e.comic.focus=on?e.comic.selected??0:null;renderComicPanel();refocus();
+}
+// The page zoomed in on a panel, or the whole page again; the balloons drawn again at their new size.
+function refocus(){invalidate();requestAnimationFrame(()=>requestAnimationFrame(()=>editStickers.render()));}
+/** The chosen panel filled: with a picture from the album, one of the places or the photographer's own. */
+async function fillPanel(i,{ref,blob=null}){
+ const e=comicEdit();if(!e)return;
+ try{
+  const pic=ref.startsWith('place:')?await refPicture(ref):await panelPicture(blob);
+  if(comicEdit()!==e||!pic)return;
+  e.comic.slots[i]={ref,view:{x:.5,y:.5,zoom:1},picture:pic,place:pic.place||null};
+  e.comic.selected=i;composeComic();renderComicPanel();sound('pop');
+  if(!store.read().comicTold){store.write({...store.read(),comicTold:true});toast('Drag the picture to move it, pinch to zoom; tap twice to zoom in on the panel',{ms:3600});}
+ }catch(err){console.error(err);toast('That picture could not be opened');}
+}
+$('comicFill').addEventListener('click',()=>{const e=comicEdit();if(e)openComicSheet(e.comic.selected??0);});
+$('comicFocus').addEventListener('click',()=>{const e=comicEdit();if(!e)return;sound('tick');focusPanel(e.comic.focus==null);});
+$('comicClear').addEventListener('click',()=>{const e=comicEdit();if(!e)return;sound('tick');e.comic.slots[e.comic.selected??0]=emptySlot();composeComic();renderComicPanel();});
+
+// The sheet a panel is filled from: Minato's places first (the town's own rooms and streets), the album, own photos.
+let comicSource='places',comicTarget=0,comicSheetAt=0;
+function openComicSheet(i){
+ comicTarget=i;$('comicSheetTitle').textContent=`Panel ${i+1}`;renderComicSheet();openSheet($('comicSheet'));comicSheetAt=performance.now();
+}
+async function renderComicSheet(){
+ const tabs=$('comicSources'),grid=$('comicGrid');tabs.textContent='';
+ for(const [id,name] of [['places','Places'],['album','Album'],['camera','Camera'],['photos','Photos']]){
+  if(id==='camera'&&!canStart())continue;
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;b.setAttribute('aria-selected',String(id===comicSource));
+  b.addEventListener('click',()=>{
+   sound('tick');
+   if(id==='photos'){$('comicFile').value='';$('comicFile').click();return;}
+   if(id==='camera'){$('comicSheet').close();shootPanel(comicTarget);return;}
+   comicSource=id;renderComicSheet();
+  });tabs.append(b);
+ }
+ grid.textContent='';grid.scrollTo?.({top:0});
+ const choice=(label,src,pick)=>{
+  const b=document.createElement('button');b.type='button';b.className='sticker-choice comic-choice';b.setAttribute('aria-label',label);
+  b.innerHTML=`<img src="${src}" alt="" loading="lazy" decoding="async"><span>${label}</span>`;
+  b.addEventListener('click',()=>{$('comicSheet').close();pick();});grid.append(b);return b;
+ };
+ if(comicSource==='album'){
+  if(!state.shots.length){grid.innerHTML='<p class="sticker-note">No photos in the album yet. Take some with the camera, or choose Your photos.</p>';return;}
+  for(const shot of state.shots){
+   const url=URL.createObjectURL(shot.thumb||shot.photo);
+   const b=choice(shot.sampleLabel||new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'short'}),url,()=>fillPanel(comicTarget,{ref:`shot:${shot.id}`,blob:shot.photo}));
+   b.querySelector('img').addEventListener('load',()=>URL.revokeObjectURL(url),{once:true});
+  }
+  return;
+ }
+ let list;try{list=await loadPlaces();}catch{grid.innerHTML='<p class="sticker-note">Minato’s places could not be loaded. Try again with a connection.</p>';return;}
+ if(comicSource!=='places')return;
+ for(const p of list)choice(p.name,p.thumb,()=>fillPanel(comicTarget,{ref:`place:${p.id}/${p.views[0].id}`}));
+ const note=document.createElement('p');note.className='sticker-note';
+ note.textContent='The town’s own rooms and streets, as the storyteller photographs them. Choose the angle under the page; a resident’s sticker stands on the floor.';
+ grid.append(note);
+}
+/*
+ * A panel shot with the camera (the owner: "Bring it to the camera"): the camera opens for that panel, in its own Looks,
+ * mix and stickers, without its frame or date; the shutter puts the photo in the panel and brings the comic back.
+ */
+let panelShoot=null;
+function shootPanel(i){
+ const e=comicEdit();if(!e||!canStart())return;
+ panelShoot={edit:e,i};
+ $('camera').classList.add('for-panel');$('backToComic').hidden=false;$('panelShootName').textContent=`Panel ${i+1}`;
+ show('camera');
+}
+function endPanelShoot(back){
+ const p=panelShoot;panelShoot=null;
+ $('camera').classList.remove('for-panel');$('backToComic').hidden=true;
+ if(back&&p&&state.edit===p.edit)show('editor');else renderCameraChips();
+}
+$('backToComic').addEventListener('click',()=>{sound('tick');endPanelShoot(true);});
+$('comicFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f&&isPicture(f)){$('comicSheet').close();fillPanel(comicTarget,{ref:'own',blob:f});}});
+// A tap on the backdrop closes it, but not the click of the very tap on a panel that opened it.
+$('comicSheet').addEventListener('click',e=>{if(e.target===e.currentTarget&&performance.now()-comicSheetAt>500)e.currentTarget.close();});
+
+/** A resident added to a panel showing one of the places stands on its floor, at their height there. */
+function comicStand(id,aspect){
+ const e=comicEdit(),stature=statureOf(id);if(!e||!stature)return null;
+ const i=e.comic.selected??0,slot=e.comic.slots[i];if(!slot?.picture||!slot.place)return null;
+ const geometry=pageGeometry(e.comic.layout,e.width,e.height);
+ const taken=e.recipe.stickers.filter(s=>statureOf(s.id)&&panelAt(e.comic.layout,e.width,e.height,s.x*e.width,s.y*e.height)===i).map(s=>({x:s.x}));
+ return standInPanel({geometry,index:i,picture:{width:slot.picture.width,height:slot.picture.height,view:slot.view},view:slot.place,stature,aspect,taken});
+}
+
+// On the page: tap a panel to choose it (an empty one asks what fills it), tap twice to zoom in on it; drag its picture
+// to move it and pinch to zoom it. Stickers keep their own gestures (stickers.js), and the page takes no swipe through
+// the Looks or hold for the original, so a picture can be moved.
+{
+ const frame=$('editFrame');let touch=null,lastTap={t:0,i:-1};
+ const toPage=(x,y)=>{const r=frame.getBoundingClientRect(),e=state.edit;return {x:(x-r.left)/r.width*e.width,y:(y-r.top)/r.height*e.height,k:e.width/r.width};};
+ const restart=()=>{const e=comicEdit();if(!touch||!e)return;touch.view={...e.comic.slots[touch.i].view};touch.start=new Map(touch.pointers);};
+ frame.addEventListener('pointerdown',ev=>{
+  const e=comicEdit();if(!e||ev.target.closest('.sticker,button'))return;
+  ev.stopPropagation();
+  if(touch){if(touch.pointers.size===1){touch.pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});touch.moved=true;restart();}return;}
+  const p=toPage(ev.clientX,ev.clientY),i=panelAt(e.comic.layout,e.width,e.height,p.x,p.y);if(i<0)return;
+  touch={i,pointers:new Map([[ev.pointerId,{x:ev.clientX,y:ev.clientY}]]),moved:false,at:{x:ev.clientX,y:ev.clientY}};restart();
+  try{frame.setPointerCapture(ev.pointerId);}catch{}
+ });
+ frame.addEventListener('pointermove',ev=>{
+  const e=comicEdit();if(!touch||!e||!touch.pointers.has(ev.pointerId))return;
+  touch.pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
+  const slot=e.comic.slots[touch.i];if(!slot?.picture)return;
+  const now=[...touch.pointers.values()],was=[...touch.pointers.keys()].map(id=>touch.start.get(id));
+  if(!touch.moved&&Math.hypot(now[0].x-touch.at.x,now[0].y-touch.at.y)<6)return;
+  touch.moved=true;
+  const box=pageGeometry(e.comic.layout,e.width,e.height).panels[touch.i].box,{k}=toPage(0,0);
+  let move;
+  if(now.length>=2){
+   const [a,b]=now,[a0,b0]=was,d0=Math.hypot(b0.x-a0.x,b0.y-a0.y)||1,c0=toPage((a0.x+b0.x)/2,(a0.y+b0.y)/2);
+   move={dx:((a.x+b.x)-(a0.x+b0.x))/2*k,dy:((a.y+b.y)-(a0.y+b0.y))/2*k,k:Math.hypot(b.x-a.x,b.y-a.y)/d0,at:c0};
+  }else move={dx:(now[0].x-was[0].x)*k,dy:(now[0].y-was[0].y)*k};
+  slot.view=moveView(box,slot.picture.width,slot.picture.height,touch.view,move);
+  composeComic({quick:true});
+ });
+ const end=ev=>{
+  if(!touch||!touch.pointers.has(ev.pointerId))return;
+  touch.pointers.delete(ev.pointerId);
+  if(touch.pointers.size){restart();return;}
+  const t=touch;touch=null;const e=comicEdit();if(!e)return;
+  if(t.moved){composeComic();return;}
+  if(ev.type==='pointercancel')return;
+  const now=performance.now(),twice=lastTap.i===t.i&&now-lastTap.t<320;lastTap={t:now,i:t.i};
+  choosePanel(t.i);
+  if(!e.comic.slots[t.i]?.picture){sound('tick');openComicSheet(t.i);return;}
+  if(twice){lastTap={t:0,i:-1};sound('tick');focusPanel(e.comic.focus==null);}
+ };
+ frame.addEventListener('pointerup',end);frame.addEventListener('pointercancel',end);
+}
+/**
+ * The page at full size through its recipe (to which it adds the comic): the finished photo, the page without its Looks
+ * (the album's source) and what each panel keeps of its picture (nothing for a place, which is fetched again).
+ */
+async function savedPage(e,recipe){
+ recipe.comic=comicRecipe(e);
+ const page=document.createElement('canvas');page.width=e.width;page.height=e.height;
+ composePage(page.getContext('2d'),recipe.comic.layout,e.width,e.height,comicPictures(e));
+ engine.setSource('comic-page',page,e.width,e.height);
+ let finished;
+ try{finished=await finishPhoto(engine.render(recipe,{source:'comic-page',width:e.width,height:e.height}),recipe,e.taken);}
+ finally{engine.dropSource('comic-page');}
+ try{
+  const kept=async pic=>{
+   if(pic.blob&&!pic.shrunk)return pic.blob;
+   const c=document.createElement('canvas');c.width=pic.width;c.height=pic.height;c.getContext('2d').drawImage(pic.image,0,0);
+   try{return await toBlob(c,'image/jpeg',.9);}finally{c.width=c.height=0;}
+  };
+  const panels=await Promise.all(e.comic.slots.slice(0,panelCount(e)).map(s=>!s.picture||s.place?null:kept(s.picture)));
+  return {finished,source:await toBlob(page,'image/jpeg',.9),panels};
+ }finally{page.width=page.height=0;}
+}
+/** The editor leaving a comic: the page back to its own size, the panels' pictures let go. */
+function endComic(){
+ const f=$('editFrame');f.classList.remove('focused');f.style.removeProperty('--tx');f.style.removeProperty('--ty');
+ const ui=f.querySelector('.comic-ui');if(ui)ui.hidden=true;
+ for(const s of state.edit?.comic?.slots||[])s.picture?.image?.close?.();
+}
+/** The page sized for the stage, or zoomed in on the chosen panel, which is then in the middle of the stage. */
+function fitComic(e){
+ const frame=$('editFrame'),stage=$('editStage'),page=fitFrame(frame,stage,e.width/e.height),f=e.comic.focus;
+ frame.classList.toggle('focused',f!=null);
+ if(f==null){frame.style.removeProperty('--tx');frame.style.removeProperty('--ty');return page;}
+ const a=panelArea(e.comic.layout,f,e.width,e.height),cs=getComputedStyle(stage);
+ const sw=stage.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),sh=stage.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+ const z=Math.max(1,Math.min(sw/(a.w*page.width),sh/(a.h*page.height))*.96),w=page.width*z,h=page.height*z;
+ frame.style.width=`${w}px`;frame.style.height=`${h}px`;frame.style.fontSize=`${h*.045}px`;
+ frame.style.setProperty('--tx',`${(.5-(a.x+a.w/2))*w}px`);frame.style.setProperty('--ty',`${(.5-(a.y+a.h/2))*h}px`);
+ return {width:w,height:h};
+}
+
 // ---------- Keys, drops, the page coming and going ----------
 addEventListener('keydown',e=>{
  if(e.target.closest?.('input,textarea,select,dialog'))return;
@@ -1207,11 +1531,13 @@ addEventListener('keydown',e=>{
  }
  if(state.mode==='camera'){
   if(e.key==='Escape'&&!$('settings').hidden){e.preventDefault();showSettings(false);return;}
+  if(e.key==='Escape'&&panelShoot){e.preventDefault();endPanelShoot(true);return;}
   if(e.key==='Escape'&&$('camera').classList.contains('looks-open')){e.preventDefault();showLooks(false);return;}
   if((e.key===' '||e.key==='Enter')&&!e.target.closest?.('button,a')){e.preventDefault();takePhoto();}
   else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
  }else if(e.key==='Escape'){
-  if(state.mode==='editor')closeEditor();else if(state.mode==='viewer')openAlbum();else if(state.mode==='album')show('camera');else if(state.mode==='memory'){memory.close();openAlbum();}
+  if(state.mode==='editor'&&state.edit?.comic?.focus!=null)focusPanel(false);
+  else if(state.mode==='editor')closeEditor();else if(state.mode==='viewer')openAlbum();else if(state.mode==='album')show('camera');else if(state.mode==='memory'){memory.close();openAlbum();}
  }else if(state.mode==='editor'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
 });
 addEventListener('dragover',e=>{if([...e.dataTransfer?.items||[]].some(i=>i.kind==='file'))e.preventDefault();});
@@ -1230,6 +1556,8 @@ document.addEventListener('visibilitychange',()=>{
  else if(state.camera.resume&&state.mode==='camera'){state.camera.resume=false;startCamera();}
 });
 new ResizeObserver(invalidate).observe(document.body);
+// The editor's tabs are not all one height (a comic's Panels tab is taller): the picture fits again when one opens.
+new ResizeObserver(invalidate).observe($('editStage'));
 
 // ---------- Start ----------
 // On the Home Screen the camera is an app of its own: no way back to the website is needed, and it works offline (sw.js).
@@ -1242,7 +1570,9 @@ if(!startEngine()){
  $('welcome').querySelector('p').textContent='Pocket Camera needs WebGL 2, which this browser does not offer.';
  $('welcome').querySelector('.welcome-actions').hidden=true;$('welcomeNote').hidden=true;setShutter('off');
 }else{
- buildStrip();show('camera');
+ // /camera/#comic opens straight into a new comic (the Home Screen app's shortcut, a bookmark): the comic maker as an
+ // app of its own, the camera's album, stickers and Looks behind it.
+ buildStrip();if(location.hash==='#comic')openComic();else show('camera');
  loadMine().then(()=>cameraStickers.render());
  // The camera's stickers need their pictures before they can show. The first screen greets with a sticker from the
  // residents' sheets, a different one each time (the owner, 29 October 2026: "Replace Fuji with a random sticker when
@@ -1259,4 +1589,4 @@ if(!startEngine()){
  if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory};
+window.pocketCamera={state,openComic,shootPanel,panelArea:i=>{const e=comicEdit();return e?panelArea(e.comic.layout,i,e.width,e.height):null;},fillPanel,setLayout,choosePanel,focusPanel,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory};

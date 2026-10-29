@@ -595,11 +595,151 @@ async function playAndPrint({label,width,height}){
  }finally{await browser.close();}
 }
 
+// Comics (comic.js; the owner, 29 October 2026: "I think the stamp function is better than the comic builder in
+// Johansson Studio … Bring it to the camera or its own mini app?"): a page of panels filled from Minato's places, the
+// album and the camera, its pictures moved in their panels, residents standing on a place's floor, lettering in the
+// chosen panel, saved as a page with clean gutters and inked borders, and opened again panel by panel; at an iPhone's
+// Safari size, with touch.
+async function makeComics({label,width,height}){
+ const y4m=join(temp,`${label}-comic.y4m`);let fake=[];
+ try{execFileSync('ffmpeg',['-loglevel','error','-y','-loop','1','-i',photo,'-t','1','-r','10','-vf','crop=ih*3/4:ih,scale=720:960,format=yuv420p',y4m]);fake=[`--use-file-for-fake-video-capture=${y4m}`];}catch{}
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',...fake]});
+ try{
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true,permissions:['camera']});
+  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  const shot=async step=>{if(shots)await page.screenshot({path:join(shots,`${label}-comic-${step}.png`)});};
+  await page.goto(`${server.url}camera/`);
+  await page.waitForFunction(()=>window.pocketCamera?.state.camera.running&&window.pocketCamera.state.shots.length>=2,null,{timeout:30000});
+  const edit=fn=>page.evaluate(fn);
+  // A point of the page (shares) on the screen, to tap.
+  const at=async(x,y)=>{const b=await page.locator('#editFrame').boundingBox();return {x:b.x+b.width*x,y:b.y+b.height*y};};
+  const panelCentre=async i=>{const c=await edit(i=>{const e=window.pocketCamera.state.edit,b=window.pocketCamera.panelArea(i);return {x:(b.x+b.w/2),y:(b.y+b.h/2)};},i);return at(c.x,c.y);};
+  await check(`${label}: a comic from the album: Panels first, the layouts all across, a tap on an empty panel asks what fills it`,async()=>{
+   await page.locator('#roll').tap();await page.waitForSelector('#album:not([hidden])');
+   await page.locator('#openComic').tap();await page.waitForFunction(()=>window.pocketCamera.state.edit?.comic);
+   const tabs=await page.$$eval('#editDock .segmented button',b=>b.filter(x=>!x.hidden).map(x=>[x.textContent,x.getAttribute('aria-selected')]));
+   assert.deepEqual(tabs,[['Panels','true'],['Looks','false'],['Adjust','false'],['Stickers','false']],'a page has Panels in place of Frame');
+   assert.equal(await page.$$eval('#layoutChoices .layout-choice',b=>b.length),8);
+   assert.ok(await page.evaluate(()=>{const e=document.querySelector('#layoutChoices'),r=e.getBoundingClientRect();
+    return e.scrollWidth<=e.clientWidth+1&&[...e.children].every(k=>{const q=k.getBoundingClientRect(),s=k.querySelector('span');return q.left>=Math.max(r.left,0)-1&&q.right<=Math.min(r.right,innerWidth)+1&&s.scrollWidth<=s.clientWidth+1;});}),'all eight layouts and their names fit across the phone');
+   await page.waitForTimeout(400);await shot('1-new');
+   const p=await panelCentre(0);await page.touchscreen.tap(p.x,p.y);
+   await page.waitForSelector('#comicSheet[open]');
+   assert.deepEqual(await page.$$eval('#comicSources button',b=>b.map(x=>x.textContent)),['Places','Album','Camera','Photos']);
+   await page.waitForSelector('#comicGrid .comic-choice');
+   const names=await page.$$eval('#comicGrid .comic-choice',b=>b.map(x=>x.getAttribute('aria-label')));
+   assert.equal(names.length,19,'all of World’s places');assert.equal(names[0],'Sakura Shōten');
+   await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>document.querySelector('#comicSheet').open),true,'the tap that opened the sheet does not close it again');
+   await shot('2-places');
+   await page.locator('#comicGrid .comic-choice',{hasText:'Sakura Shōten'}).tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.edit.comic.slots[0].picture);
+   const view=await edit(()=>({ref:window.pocketCamera.state.edit.comic.slots[0].ref,name:document.querySelector('#comicPanelName').textContent,angles:[...document.querySelectorAll('#comicViews button')].map(b=>b.textContent)}));
+   assert.equal(view.ref,'place:sakura/wide');assert.match(view.name,/Panel 1 of 3 · Sakura Shōten/);
+   await page.waitForFunction(()=>document.querySelectorAll('#comicViews button').length===4);
+   assert.deepEqual(await page.$$eval('#comicViews button',b=>b.map(x=>x.textContent)),['Wide','Close','Low','High']);
+  });
+  await check(`${label}: a picture moves inside its panel; tapped twice the page zooms in on the panel, and out again`,async()=>{
+   const before=await edit(()=>({...window.pocketCamera.state.edit.comic.slots[0].view}));
+   const p=await panelCentre(0);
+   await page.evaluate(async({x,y})=>{
+    // A one-finger drag, as touch pointers.
+    const frame=document.querySelector('#editFrame'),el=document.elementFromPoint(x,y),opts=(cx,cy,type)=>({pointerId:7,pointerType:'touch',isPrimary:true,clientX:cx,clientY:cy,bubbles:true,cancelable:true,buttons:type==='pointerup'?0:1});
+    el.dispatchEvent(new PointerEvent('pointerdown',opts(x,y,'pointerdown')));
+    for(let i=1;i<=6;i++){frame.dispatchEvent(new PointerEvent('pointermove',opts(x-i*12,y,'pointermove')));await new Promise(r=>setTimeout(r,16));}
+    frame.dispatchEvent(new PointerEvent('pointerup',opts(x-72,y,'pointerup')));
+   },p);
+   const after=await edit(()=>({...window.pocketCamera.state.edit.comic.slots[0].view}));
+   assert.ok(after.x>before.x+.01,`the picture follows the finger (${before.x.toFixed(3)} → ${after.x.toFixed(3)})`);
+   assert.equal(await edit(()=>window.pocketCamera.state.edit.recipe.layers[0].look),'none','a drag on a panel does not change the Look');
+   // Tapped twice: zoomed in on it, the panel filling the stage's width; Escape shows the whole page again.
+   await page.touchscreen.tap(p.x,p.y);await page.waitForTimeout(90);await page.touchscreen.tap(p.x,p.y);
+   await page.waitForFunction(()=>window.pocketCamera.state.edit.comic.focus===0);await page.waitForTimeout(500);
+   const zoom=await edit(()=>{
+    const f=document.querySelector('#editFrame').getBoundingClientRect(),st=document.querySelector('#editStage'),s=st.getBoundingClientRect(),cs=getComputedStyle(st),a=window.pocketCamera.panelArea(0);
+    const p={left:f.left+a.x*f.width,top:f.top+a.y*f.height,width:a.w*f.width,height:a.h*f.height},w=s.width-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),h=s.height-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+    return {fill:Math.max(p.width/w,p.height/h),inside:p.left>=s.left-1&&p.left+p.width<=s.right+1&&p.top>=s.top-1&&p.top+p.height<=s.bottom+1};
+   });
+   assert.ok(zoom.fill>.9&&zoom.inside,`the panel fills the stage (${zoom.fill.toFixed(2)}) and is whole in it`);
+   await shot('3-zoomed');
+   await page.keyboard.press('Escape');await page.waitForFunction(()=>window.pocketCamera.state.edit.comic.focus===null);
+   assert.equal(await edit(()=>window.pocketCamera.state.mode),'editor','Escape zooms out before it leaves');
+  });
+  await check(`${label}: a resident stands on the floor of the place in the chosen panel; words go in the chosen panel`,async()=>{
+   await page.locator('#tabStickers').tap();await page.locator('#stickerSets button',{hasText:/^Thuan$/}).tap();
+   await page.locator('#stickerGrid .sticker-choice[data-id^="thuan-blender/"]').first().tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.edit.recipe.stickers.length===1);
+   const s=await edit(()=>{const e=window.pocketCamera.state.edit,s=e.recipe.stickers[0],b=window.pocketCamera.panelArea(0);return {s,b};});
+   assert.equal(s.s.angle,0,'standing upright');
+   const foot=s.s.y+s.s.size*.455,top=s.s.y-s.s.size/2;
+   assert.ok(foot<=s.b.y+s.b.h+.002&&top>=s.b.y-.002&&s.s.x>s.b.x&&s.s.x<s.b.x+s.b.w,'whole inside the panel');
+   assert.ok(s.s.size>s.b.h*.3&&s.s.size<s.b.h,'at a person’s height in the room');
+   // The second panel chosen (filled from the album first), a speech balloon goes there.
+   await edit(async()=>{const pc=window.pocketCamera;await pc.fillPanel(1,{ref:`shot:${pc.state.shots[0].id}`,blob:pc.state.shots[0].photo});pc.choosePanel(1);});
+   await page.locator('#stickerSets button',{hasText:/^Text$/}).tap();
+   await page.locator('#stickerGrid .sticker-choice.lettering[data-id="balloon:speech"]').tap();await page.waitForSelector('#textSheet[open]');
+   await page.locator('#balloonText').fill('Who left the chairs out?');await page.locator('#textDone').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.edit.recipe.stickers.some(s=>s.id==='balloon:speech'));
+   const b=await edit(()=>{const e=window.pocketCamera.state.edit;return {s:e.recipe.stickers.find(s=>s.id==='balloon:speech'),box:window.pocketCamera.panelArea(1)};});
+   assert.ok(b.s.x>b.box.x&&b.s.x<b.box.x+b.box.w&&b.s.y>b.box.y&&b.s.y<b.box.y+b.box.h,'the balloon is in the chosen panel');
+   assert.ok(b.s.size<b.box.h*.5,'at the panel’s scale, not the page’s');
+   await page.waitForTimeout(400);await shot('4-stickers');
+  });
+  await check(`${label}: a panel shot with the camera: the camera for that panel, without its frame, and back into the comic`,async()=>{
+   await edit(()=>{const pc=window.pocketCamera;pc.state.camera.recipe.frame='print';pc.choosePanel(2);});
+   await page.locator('#tabComic').tap();await page.locator('#comicFill').tap();await page.waitForSelector('#comicSheet[open]');
+   await page.locator('#comicSources button',{hasText:'Camera'}).tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.mode==='camera'&&window.pocketCamera.state.camera.running,null,{timeout:20000});
+   const cam=await edit(()=>({back:!document.querySelector('#backToComic').hidden,name:document.querySelector('#panelShootName').textContent,
+    roll:getComputedStyle(document.querySelector('#roll')).visibility,frame:document.querySelector('#cameraFrame canvas.frame-art')?.hidden!==false}));
+   assert.deepEqual(cam,{back:true,name:'Panel 3',roll:'hidden',frame:true},'the way back to the comic, no album, no frame');
+   await page.waitForTimeout(600);await shot('5-camera');
+   const shots=await edit(()=>window.pocketCamera.state.shots.length);
+   await edit(()=>window.pocketCamera.takePhoto());
+   await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor'&&window.pocketCamera.state.edit?.comic?.slots[2].picture,null,{timeout:30000});
+   const back=await edit(()=>({ref:window.pocketCamera.state.edit.comic.slots[2].ref,shots:window.pocketCamera.state.shots.length,frame:window.pocketCamera.state.shots[0].recipe.frame,back:document.querySelector('#backToComic').hidden}));
+   assert.match(back.ref,/^shot:/);assert.equal(back.shots,shots+1,'kept in the album too');assert.equal(back.frame,'none','shot without the camera’s frame');assert.equal(back.back,true);
+   await edit(()=>{window.pocketCamera.state.camera.recipe.frame='none';});
+  });
+  await check(`${label}: the comic saves as a page with clean gutters and inked borders, and opens again panel by panel`,async()=>{
+   await edit(()=>{const pc=window.pocketCamera;pc.state.edit.recipe.layers=[{look:'manga',amount:1}];pc.state.printer=false;});
+   await page.locator('#saveEdit').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer',null,{timeout:120000});
+   const saved=await edit(async()=>{
+    const shot=window.pocketCamera.state.viewing,b=await createImageBitmap(shot.photo),c=document.createElement('canvas');c.width=b.width;c.height=b.height;
+    const g=c.getContext('2d');g.drawImage(b,0,0);
+    const e=shot.recipe.comic,{pageGeometry}=await import('/camera/comic.js?v=20261029a'),geo=pageGeometry(e.layout,b.width,b.height);
+    const px=(x,y)=>[...g.getImageData(Math.round(x),Math.round(y),1,1).data].slice(0,3);
+    const p0=geo.panels[0].box,p1=geo.panels[1].box;
+    // The gutter between the two lower panels.
+    return {size:[b.width,b.height],layout:e.layout,refs:e.panels.map(p=>p.ref&&p.ref.split(':')[0]),kept:(shot.panels||[]).map(p=>p?p.size>0:null),
+     margin:px(geo.margin/2,b.height/2),gutter:px(p1.x+p1.w+geo.gutter/2,p1.y+p1.h/2),border:px(p0.x+1,p0.y+p0.h/2),looks:shot.recipe.layers.map(l=>l.look),stickers:shot.recipe.stickers.length};
+   });
+   assert.deepEqual(saved.size,[2250,3000]);assert.equal(saved.layout,'hero');
+   assert.deepEqual(saved.refs,['place','shot','shot']);assert.deepEqual(saved.kept,[null,true,true],'a place is fetched again; the other pictures are kept');
+   for(const [name,c] of [['margin',saved.margin],['gutter',saved.gutter]])assert.ok(c.every((v,i)=>Math.abs(v-[255,253,246][i])<6),`the ${name} is clean paper (${c})`);
+   assert.ok(saved.border.every(v=>v<80),`the border is inked (${saved.border})`);
+   assert.deepEqual(saved.looks,['manga']);assert.equal(saved.stickers,2);
+   await shot('6-saved');
+   await page.locator('#editPhoto').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.edit?.comic?.slots.slice(0,3).every(s=>s.picture),null,{timeout:30000});
+   const again=await edit(()=>{const e=window.pocketCamera.state.edit;return {layout:e.comic.layout,refs:e.comic.slots.slice(0,3).map(s=>s.ref.split(':')[0]),stickers:e.recipe.stickers.length,look:e.recipe.layers[0].look,id:e.shotId===window.pocketCamera.state.viewing.id};});
+   assert.deepEqual(again,{layout:'hero',refs:['place','shot','shot'],stickers:2,look:'manga',id:true});
+   // Another layout keeps the panels' pictures; back again, all three are there.
+   await edit(()=>{const pc=window.pocketCamera;pc.setLayout('four');pc.setLayout('hero');});
+   assert.equal(await edit(()=>window.pocketCamera.state.edit.comic.slots.slice(0,3).filter(s=>s.picture).length),3);
+   await page.locator('#cancelEdit').tap();await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
+  });
+  await check(`${label}: comics without page errors`,async()=>assert.deepEqual(errors,[]));
+ }finally{await browser.close();}
+}
+
+// CAMERA_ONLY=comics (or first, print, phone, desktop) runs only those parts, while working on one.
+const only=new Set((process.env.CAMERA_ONLY||'').split(',').filter(Boolean)),part=name=>!only.size||only.has(name);
 try{
- await firstScreen({label:'iPhone Safari',width:390,height:664});
- await firstScreen({label:'iPhone SE Safari',width:375,height:560});
- await playAndPrint({label:'iPhone Safari',width:390,height:664});
- await run({label:'phone',width:390,height:844,dpr:2,mobile:true,portrait:true});
- await run({label:'desktop',width:1280,height:800,dpr:1,mobile:false,portrait:false});
+ if(part('first')){await firstScreen({label:'iPhone Safari',width:390,height:664});await firstScreen({label:'iPhone SE Safari',width:375,height:560});}
+ if(part('print'))await playAndPrint({label:'iPhone Safari',width:390,height:664});
+ if(part('comics'))await makeComics({label:'iPhone Safari',width:390,height:664});
+ if(part('phone'))await run({label:'phone',width:390,height:844,dpr:2,mobile:true,portrait:true});
+ if(part('desktop'))await run({label:'desktop',width:1280,height:800,dpr:1,mobile:false,portrait:false});
  console.log(`${results.length} checks pass`);
 }finally{await server.close();await rm(temp,{recursive:true,force:true});}
