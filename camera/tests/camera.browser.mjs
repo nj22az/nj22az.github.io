@@ -207,8 +207,8 @@ async function run({label,width,height,dpr,mobile,portrait}){
      const el=document.querySelector('#editFrame .sticker.selected'),r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
      const fire=(type,id,x,y,target=el)=>target.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===21,clientX:x,clientY:y,bubbles:true,cancelable:true}));
      fire('pointerdown',21,cx,cy-20);fire('pointerdown',22,cx,cy+20);
-     for(let k=1;k<=5;k++){fire('pointermove',22,cx,cy+20+k*10,window);fire('pointermove',21,cx,cy-20-k*10,window);}
-     fire('pointerup',22,cx,cy+70,window);fire('pointerup',21,cx,cy-70,window);
+     for(let k=1;k<=5;k++){fire('pointermove',22,cx,cy+20+k*2,window);fire('pointermove',21,cx,cy-20-k*2,window);}
+     fire('pointerup',22,cx,cy+30,window);fire('pointerup',21,cx,cy-30,window);
     });
    }else{
     const handle=page.locator('#editFrame .sticker.selected .sticker-handle');await handle.waitFor();
@@ -408,7 +408,7 @@ async function playAndPrint({label,width,height}){
    await page.locator('.sticker-button').tap();await page.waitForSelector('#stickerSheet[open] .sticker-choice');
    assert.ok(await fits('#stickerSets'),'every sticker tab fits across');
    assert.ok(await page.$$eval('#stickerSets button',b=>b.every(x=>x.getBoundingClientRect().height>=28)),'the tabs keep their height');
-   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Mine'],'a tab a resident');
+   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Manga','Mine'],'a tab a resident, and Manga');
    await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#stickerSheet').open);
    // A sheet puts the settings row away: one panel at a time.
    await page.locator('#settingsToggle').tap();await page.locator('#frameSetting').tap();await page.waitForSelector('#frameSheet[open]');
@@ -475,6 +475,56 @@ async function playAndPrint({label,width,height}){
    assert.equal(last.id,'balloon:shout');assert.equal(last.text,'Chào nha!');
    await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
   });
+  await check(`${label}: a manga moment: focus lines on a face, a sound effect, an emotion mark, kept in the save`,async()=>{
+   const pc=()=>window.pocketCamera;
+   await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
+   // The Manga tab: the lines first, then the marks under their name; the tabs still fit across the phone.
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Manga$/}).tap();
+   await page.waitForSelector('.sticker-choice.effect[data-id="effect:focus"]');await page.waitForSelector('.sticker-choice[data-id^="marks/"]');
+   const sheet=await page.evaluate(()=>({tabs:[...document.querySelectorAll('#stickerSets button')].map(b=>b.textContent),
+    effects:[...document.querySelectorAll('.sticker-choice.effect')].map(b=>b.dataset.id),marks:document.querySelectorAll('.sticker-choice[data-id^="marks/"]').length,
+    heading:[...document.querySelectorAll('#stickerGrid .sticker-heading')].map(h=>h.textContent)}));
+   assert.deepEqual(sheet.tabs,['Text','Thuan','Johansson','Thao','Manga','Mine']);
+   assert.deepEqual(sheet.effects,['effect:focus','effect:speed']);assert.equal(sheet.marks,10);assert.deepEqual(sheet.heading,['Marks']);
+   assert.ok(await page.evaluate(()=>{const e=document.querySelector('#stickerSets'),r=e.getBoundingClientRect();return [...e.children].every(k=>{const q=k.getBoundingClientRect();return q.left>=r.left-1&&q.right<=r.right+1;});}),'six tabs fit across');
+   await page.locator('.sticker-choice.effect[data-id="effect:focus"]').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='effect:focus'));
+   // The lines: ink near the edges, the clear circle round their centre left clear.
+   const lines=await page.evaluate(()=>{
+    const art=document.querySelector('#cameraFrame .effects-art'),g=art.getContext('2d'),w=art.width,h=art.height,s=window.pocketCamera.state.camera.recipe.stickers[0];
+    const alpha=(x,y,r)=>{const d=g.getImageData(Math.round(x-r),Math.round(y-r),Math.round(2*r),Math.round(2*r)).data;let a=0;for(let i=3;i<d.length;i+=4)a+=d[i];return a/(d.length/4)/255;};
+    return {shown:!art.hidden,edge:alpha(w*.08,h*.08,w*.06),centre:alpha(s.x*w,s.y*h,s.size*h*.3)};
+   });
+   assert.ok(lines.shown&&lines.edge>.08,`the lines are drawn towards the edges (${lines.edge.toFixed(3)})`);assert.equal(lines.centre,0,'the clear circle is clear');
+   // A dragged centre moves the lines with it.
+   const ring=await page.locator('#cameraFrame .sticker.effect').boundingBox();
+   await page.mouse.move(ring.x+ring.width/2,ring.y+ring.height/2);await page.mouse.down();await page.mouse.move(ring.x+ring.width/2+40,ring.y+ring.height/2+30,{steps:5});await page.mouse.up();
+   const moved=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers[0]);assert.ok(moved.x>.52&&moved.y>.44,'the centre follows the finger');
+   // A sound effect, from the ready-made words.
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Text$/}).tap();
+   await page.locator('.sticker-choice.lettering[data-id="balloon:sfx"]').tap();await page.waitForSelector('#textSheet[open]');
+   assert.equal(await page.isVisible('#soundPresets'),true,'the sound effects are offered');
+   await page.locator('#soundPresets button',{hasText:'ゴゴゴ'}).tap();await page.locator('#textDone').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='balloon:sfx'));
+   assert.equal(await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.find(s=>s.id==='balloon:sfx').text),'ゴゴゴ');
+   // An emotion mark, and the marks are no deck for Memory.
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Manga$/}).tap();
+   await page.locator('.sticker-choice[data-id="marks/sweat"]').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='marks/sweat'));
+   // Saved: the lines are in the photo, under the mark and the sound.
+   const before=await page.evaluate(()=>window.pocketCamera.state.shots.length);
+   await page.evaluate(()=>{window.pocketCamera.state.printer=false;});await page.evaluate(()=>window.pocketCamera.takePhoto());
+   await page.waitForFunction(n=>window.pocketCamera.state.shots.length===n+1,before);
+   const saved=await page.evaluate(async()=>{
+    const shot=window.pocketCamera.state.shots[0],b=await createImageBitmap(shot.photo),c=document.createElement('canvas');c.width=b.width;c.height=b.height;
+    const g=c.getContext('2d');g.drawImage(b,0,0);
+    const s=shot.recipe.stickers.find(x=>x.id==='effect:focus'),dark=(x,y,r)=>{const d=g.getImageData(Math.round(x-r),Math.round(y-r),Math.round(2*r),Math.round(2*r)).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i]+d[i+1]+d[i+2]<90)n++;return n/(d.length/4);};
+    return {ids:shot.recipe.stickers.map(x=>x.id),order:shot.recipe.stickers.map(x=>x.id),edge:dark(b.width*.06,b.height*.06,b.width*.05)};
+   });
+   assert.deepEqual([...saved.ids].sort(),['balloon:sfx','effect:focus','marks/sweat']);
+   assert.ok(saved.edge>.05,`the focus lines are printed into the photo (${saved.edge.toFixed(3)} of the corner inked)`);
+   await page.evaluate(()=>{window.pocketCamera.state.printer=true;window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
+  });
   // Six photos of their own for the album, as the photographer would bring in.
   await page.evaluate(async()=>{
    const blob=await (await fetch('/assets/images/nils-lake-hero-optimized.jpg')).blob();
@@ -510,6 +560,7 @@ async function playAndPrint({label,width,height}){
    assert.equal(out.game.found,6);assert.ok(out.game.over);assert.ok(out.best['photos:6'],'the best game is kept');assert.ok(out.cheer,'a resident cheers');
   });
   await check(`${label}: Memory with a sticker sheet, 12 pairs`,async()=>{
+   assert.equal(await page.locator('.memory-deck[data-deck="set:Marks"]').count(),0,'the manga marks are no deck');
    await page.locator('.memory-win button',{hasText:'Other cards'}).tap();
    await page.locator('.memory-deck[data-deck="set:Cartoon Thuan"]').tap();await page.locator('.memory-pairs button',{hasText:/^12$/}).tap();
    await page.locator('.memory-play').tap();await page.waitForSelector('.memory-card');

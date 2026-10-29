@@ -128,6 +128,23 @@ open kind's thumbnails are drawn, and none while the strip is folded over the pi
 More until it is given a kind (`LOOK_GROUPS` in `app.js`). New dice mixes: Home video (Instant and VHS), Comic book
 (Cartoon and Comic dots), Engineer's plan (Line drawing and Blueprint), Night watch (Night vision and Old TV).
 
+## A manga moment
+
+The owner (29 October 2026): "How about Line messengers crazy effects ? … Can make the pictures look like they are from
+a manga", then "Yes proceed". Nothing of LINE's is used (its art and code are its own); these are manga's common
+techniques, drawn here:
+- **Focus lines** (集中線) and **speed lines** (`effects.js`, the Manga tab): a sticker of their own over the whole
+  picture, painted under every other sticker. The clear circle is what is held: drag it onto a face, pinch to widen
+  it, turn speed lines with two fingers; flipped, the lines are white for a dark picture. The same lines every time,
+  at the picture's own size, in the viewfinder and in a save.
+- **Sound**, a lettering style in the Text tab: the letters in Rounded Mplus 1c Black (cut down to kana, punctuation
+  and Latin, 38 KB, `fonts/OFL-MPLUSRounded1c.txt`), each turned and sized a little along a rising line, black with a
+  white edge. Twelve ready to tap, with what they mean: ドーン!, ゴゴゴ, ドキドキ, ガーン, ジャーン!, バーン!, キラキラ, シーン,
+  ザワザワ, ゴクリ, BOOM!, WHAM!.
+- **Marks** (`tools/draw-manga-marks.py`, under the lines in the Manga tab): sweat drop, anger vein, sparkles, heart,
+  !, ?, !?, gloom lines, blush and a music note, drawn in Python with an ink line and a white edge. They go in small,
+  by a face, and are never a deck for Memory or a greeting.
+
 ## How it works
 
 | File | Purpose |

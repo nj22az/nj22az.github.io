@@ -13,15 +13,21 @@
  * "Make the stickers without text and we can add any text as another sticker"). A resident's sticker, chosen, offers its
  * own line as a speech balloon beside it, which can then be moved, changed or taken off like any other.
  */
-import {isBalloon,balloonLayout,balloonCanvas,loadLetteringFont,BALLOONS} from './lettering.js?v=20261029i';
+import {isBalloon,balloonLayout,balloonCanvas,loadLetteringFont,BALLOONS} from './lettering.js?v=20261029t';
+import {isEffect,drawEffect,effectLabel} from './effects.js?v=20261029b';
 
 const MANIFEST=new URL('./stickers/stickers.json',import.meta.url);
+// The camera's own sheet of manga marks (tools/draw-manga-marks.py): under the Manga tab with the lines, never a deck
+// for Memory or a greeting (its `kind`).
+const MARKS=new URL('./stickers/marks.json',import.meta.url);
 let loading;
 const byId=new Map(),images=new Map();
 
 /** The sticker sets, loaded once. */
 export function loadStickerSets(){
- loading??=fetch(MANIFEST).then(r=>{if(!r.ok)throw new Error('No stickers');return r.json();}).then(m=>{
+ loading??=Promise.all([fetch(MANIFEST).then(r=>{if(!r.ok)throw new Error('No stickers');return r.json();}),
+  fetch(MARKS).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([m,own])=>{
+  if(own?.stickers?.length)m.sets.push(own);
   for(const set of m.sets)for(const s of set.stickers){
    s.url=new URL(`./stickers/${s.src}`,import.meta.url).href;s.thumbUrl=new URL(`./stickers/${s.thumb}`,import.meta.url).href;s.set=set.name;s.who=set.who??set.name;byId.set(s.id,s);
   }
@@ -35,8 +41,9 @@ export function registerSticker(entry){byId.set(entry.id,{set:'Mine',gloss:'Your
 export function forgetSticker(id){byId.delete(id);images.delete(id);}
 export const stickerLabel=s=>s?(s.gloss||s.line||'Sticker'):'Sticker';
 const balloonName=id=>BALLOONS.find(b=>b.id===id)?.label||'Balloon';
-/** A placed sticker's own shape: a sheet sticker's picture, or a balloon laid out round its words. */
+/** A placed sticker's own shape: a sheet sticker's picture, a balloon laid out round its words, or the lines' clear circle. */
 function shapeOf(s){
+ if(isEffect(s.id))return {width:1,height:1};
  if(isBalloon(s.id)){const l=balloonLayout(s.id,s.text??'',s.flip);return {width:l.width,height:l.height};}
  return byId.get(s.id);
 }
@@ -51,15 +58,20 @@ export function stickerImage(id){
  return images.get(id);
 }
 
-/** Prints the stickers onto a finished picture (w×h) in order, the last on top; returns how many could not be loaded. */
+/**
+ * Prints the stickers onto a finished picture (w×h): the lines first, under everything, then the others in order, the
+ * last on top; returns how many could not be loaded.
+ */
 export async function drawStickers(g,w,h,stickers){
  if(!stickers?.length)return 0;
- const sheets=stickers.some(s=>!isBalloon(s.id)),lettered=stickers.some(s=>isBalloon(s.id));
+ stickers=[...stickers.filter(s=>isEffect(s.id)),...stickers.filter(s=>!isEffect(s.id))];
+ const sheets=stickers.some(s=>!isBalloon(s.id)&&!isEffect(s.id)),lettered=stickers.some(s=>isBalloon(s.id));
  if(sheets)await loadStickerSets();
  if(lettered)await loadLetteringFont();
- const pictures=await Promise.all(stickers.map(s=>isBalloon(s.id)?'balloon':stickerImage(s.id).catch(()=>null)));
+ const pictures=await Promise.all(stickers.map(s=>isEffect(s.id)?'effect':isBalloon(s.id)?'balloon':stickerImage(s.id).catch(()=>null)));
  stickers.forEach((s,i)=>{
   const img=pictures[i];if(!img)return;
+  if(img==='effect'){drawEffect(g,s,w,h);return;}
   if(img==='balloon'){
    const l=balloonLayout(s.id,s.text??'',s.flip);
    g.save();g.translate(s.x*w,s.y*h);g.rotate(s.angle*Math.PI/180);l.draw(g,0,0,s.size*h/l.height);g.restore();return;
@@ -80,8 +92,17 @@ const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
  */
 export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}){
  const layer=document.createElement('div');layer.className='stickers';frame.append(layer);
+ // The lines are painted on one canvas over the whole picture, under every sticker; each has a clear circle to hold.
+ const art=document.createElement('canvas');art.className='effects-art';art.setAttribute('aria-hidden','true');layer.append(art);
  let selected=null,gesture=null;
  const els=[];
+ function paintEffects(){
+  const items=list(),dpr=Math.min(3,devicePixelRatio||1),w=Math.round(frame.clientWidth*dpr),h=Math.round(frame.clientHeight*dpr);
+  const any=items.some(s=>isEffect(s.id));art.hidden=!any;if(!any||!w||!h)return;
+  if(art.width!==w||art.height!==h){art.width=w;art.height=h;}
+  const g=art.getContext('2d');g.clearRect(0,0,w,h);for(const s of items)if(isEffect(s.id))drawEffect(g,s,w,h);
+ }
+ new ResizeObserver(()=>paintEffects()).observe(frame);
 
  function place(el,s){
   el.style.left=`${s.x*100}%`;el.style.top=`${s.y*100}%`;el.style.height=`${s.size*100}%`;
@@ -98,34 +119,38 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
   const items=list();
   while(els.length>items.length)els.pop().remove();
   items.forEach((s,i)=>{
-   const balloon=isBalloon(s.id);
+   const balloon=isBalloon(s.id),effect=isEffect(s.id),kind=effect?'effect':balloon?'balloon':'picture';
    let el=els[i];
-   let stale=null;if(el&&el.classList.contains('balloon')!==balloon){stale=el;el=null;}
+   let stale=null;if(el&&el.dataset.kind!==kind){stale=el;el=null;}
    if(!el){
-    el=document.createElement('div');el.className=`sticker${balloon?' balloon':''}`;el.tabIndex=0;el.setAttribute('role','button');
-    el.innerHTML=`${balloon?'<canvas aria-hidden="true"></canvas>':'<img alt="" draggable="false">'}<button type="button" class="sticker-remove" aria-label="Remove">${icon('x')}</button>`
-     +`<button type="button" class="sticker-flip" aria-label="${balloon?'Turn the tail the other way':'Flip sticker'}">${icon('flip-h')}</button><span class="sticker-handle" aria-hidden="true">${icon('resize')}</span>`
-     +(balloon?`<button type="button" class="sticker-text" aria-label="Change the words">${icon('text')}</button>`:`<button type="button" class="sticker-say">${icon('say')}<span>Say</span></button>`);
+    el=document.createElement('div');el.className=`sticker${balloon?' balloon':effect?' effect':''}`;el.dataset.kind=kind;el.tabIndex=0;el.setAttribute('role','button');
+    el.innerHTML=`${balloon?'<canvas aria-hidden="true"></canvas>':effect?'':'<img alt="" draggable="false">'}<button type="button" class="sticker-remove" aria-label="Remove">${icon('x')}</button>`
+     +`<button type="button" class="sticker-flip" aria-label="${balloon?'Turn the tail the other way':effect?'White lines or black':'Flip sticker'}">${icon('flip-h')}</button><span class="sticker-handle" aria-hidden="true">${icon('resize')}</span>`
+     +(balloon?`<button type="button" class="sticker-text" aria-label="Change the words">${icon('text')}</button>`:effect?'':`<button type="button" class="sticker-say">${icon('say')}<span>Say</span></button>`);
     el.addEventListener('focus',()=>select(els.indexOf(el)));
     if(balloon)el.addEventListener('dblclick',()=>{const k=els.indexOf(el);if(k>=0)editText(k,list()[k]);});
-    if(stale)stale.replaceWith(el);else layer.append(el);
+    // The lines' circle stays under the stickers, so a resident stuck in the clear space is still the one picked up.
+    if(stale)stale.replaceWith(el);else if(effect)art.after(el);else layer.append(el);
     els[i]=el;
    }
    const info=shapeOf(s);
-   if(balloon){el.style.aspectRatio=`${info.width}/${info.height}`;paintBalloon(el,s);}
+   if(effect){el.style.aspectRatio='1/1';}
+   else if(balloon){el.style.aspectRatio=`${info.width}/${info.height}`;paintBalloon(el,s);}
    else{
     const img=el.querySelector('img');if(info&&img.dataset.id!==s.id){img.src=info.url;img.dataset.id=s.id;el.style.aspectRatio=`${info.width}/${info.height}`;}
     const words=el.querySelector('.sticker-say');words.hidden=!info?.line;if(info?.line)words.setAttribute('aria-label',`Their words: “${info.line}”`);
    }
    // Words alone have no tail to turn.
    el.querySelector('.sticker-flip').hidden=s.id==='balloon:words';
-   el.setAttribute('aria-label',balloon?`${balloonName(s.id)}: ${s.text||'no words yet'}. Arrow keys move it, Delete removes it, double-click changes the words.`:`Sticker: ${stickerLabel(info)}. Arrow keys move it, Delete removes it.`);
+   el.setAttribute('aria-label',effect?`${effectLabel(s.id)}: drag to move the centre, pinch for the clear space. Arrow keys move them, Delete removes them.`
+    :balloon?`${balloonName(s.id)}: ${s.text||'no words yet'}. Arrow keys move it, Delete removes it, double-click changes the words.`:`Sticker: ${stickerLabel(info)}. Arrow keys move it, Delete removes it.`);
    el.classList.toggle('selected',i===selected);place(el,s);
   });
+  paintEffects();
  }
  function select(i){
   const items=list();
-  if(i!=null&&i>=0&&i<items.length-1){
+  if(i!=null&&i>=0&&i<items.length-1&&!isEffect(items[i].id)){
    // The chosen sticker comes to the top, as one picked up from a pile would.
    const [s]=items.splice(i,1);items.push(s);const [el]=els.splice(i,1);els.push(el);layer.append(el);i=items.length-1;changed();
   }
@@ -137,7 +162,14 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
    // Lettered at about a twentieth of the picture's height, in the upper part, where a letterer puts balloons first.
    const l=balloonLayout(id,text,false);
    // Words alone go low, as a caption under a picture; a balloon high, where a letterer puts them first.
-   items.push({id,text,x:.5,y:id==='balloon:caption'?.12:id==='balloon:words'?.8:.28,size:Math.min(.9,l.height/100*.05),angle:0,flip:false});
+   const sfx=id==='balloon:sfx';
+   items.push({id,text,x:.5,y:id==='balloon:caption'?.12:id==='balloon:words'?.8:sfx?.22:.28,size:Math.min(.9,l.height/100*(sfx?.08:.05)),angle:0,flip:false});
+  }else if(isEffect(id)){
+   // Focus lines look at the upper middle, where a face usually is; speed lines streak across the middle.
+   items.push({id,x:.5,y:id==='effect:focus'?.42:.5,size:id==='effect:focus'?.36:.3,angle:0,flip:false});
+  }else if(id.startsWith('marks/')){
+   // A mark is small and goes by a face, high and to one side, as a manga draws it.
+   items.push({id,x:.64,y:.3,size:.13,angle:0,flip:false});
   }else items.push({id,x:.5,y:.56,size:.42,angle:Math.round((Math.random()*16-8)*10)/10,flip:false});
   selected=items.length-1;render();
   els[selected]?.animate?.([{scale:'.4',opacity:0},{scale:'1.08',opacity:1,offset:.7},{scale:'1'}],{duration:380,easing:'ease-out'});
@@ -222,7 +254,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
   }else{
    s.x=clamp(from.x+(now[0].x-was[0].x)/rect.width,-.2,1.2);s.y=clamp(from.y+(now[0].y-was[0].y)/rect.height,-.2,1.2);
   }
-  place(els[gesture.i],s);
+  place(els[gesture.i],s);if(isEffect(s.id))paintEffects();
  });
  const end=e=>{
   if(!gesture||!gesture.pointers.has(e.pointerId))return;
@@ -234,7 +266,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
   const el=e.target.closest('.sticker');if(!el)return;
   e.preventDefault();const i=els.indexOf(el);if(i!==selected)select(i);const s=list()[selected];
   if(e.shiftKey)s.angle+=e.deltaY*.15;else s.size=clamp(s.size*Math.exp(-e.deltaY*.0015),...SIZE);
-  place(els[selected],s);if(isBalloon(s.id))paintBalloon(els[selected],s);changed();
+  place(els[selected],s);if(isBalloon(s.id))paintBalloon(els[selected],s);if(isEffect(s.id))paintEffects();changed();
  },{passive:false});
 
  return {

@@ -6,10 +6,11 @@
 import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029s';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029k';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029t';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
-import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
+import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
+import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
@@ -781,13 +782,13 @@ async function memorySources(){
  const day=s=>new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'});
  return [
   {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:s.sampleLabel||`Your photo of ${day(s)}`}))},
-  ...(manifest?.sets||[]).map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
+  ...residentSets(manifest).map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
   {id:'mine',name:'Your stickers',kind:'sticker',items:mine.map(m=>stickerById(m.id)).filter(Boolean).map(s=>({id:s.id,url:s.url,label:'Your sticker'}))},
  ];
 }
 /** A resident sticker, any one, to cheer the last pair. */
 function cheer(){
- const all=(stickerSheets?.sets||[]).flatMap(set=>set.stickers),s=all[Math.floor(Math.random()*all.length)];
+ const all=residentSets(stickerSheets).flatMap(set=>set.stickers),s=all[Math.floor(Math.random()*all.length)];
  return s?{url:s.url,alt:`${s.set}: ${s.gloss}`}:null;
 }
 const memory=createMemory($('memory'),{sources:memorySources,cheer,sound,store,onPlay:()=>{$('memoryNew').hidden=false;}});
@@ -1012,7 +1013,13 @@ function askLettering({text='',style='balloon:speech',title='What do they say?'}
  const sheet=$('textSheet'),field=$('balloonText'),styles=$('letteringStyles');
  let chosen=BALLOONS.some(b=>b.id===style)?style:'balloon:speech';
  const sample=()=>BALLOONS.find(b=>b.id===chosen)?.sample||'';
- const paint=()=>{for(const b of styles.children)b.setAttribute('aria-checked',String(b.dataset.style===chosen));field.placeholder=sample();};
+ // A sound effect offers the manga's own: tap one to letter it, or write any.
+ const presets=$('soundPresets');presets.textContent='';
+ for(const fx of SOUND_EFFECTS){
+  const b=document.createElement('button');b.type='button';b.textContent=fx.text;b.title=fx.means;b.setAttribute('aria-label',`${fx.text}: ${fx.means}`);
+  b.addEventListener('click',()=>{sound('tick');field.value=fx.text;field.focus();});presets.append(b);
+ }
+ const paint=()=>{for(const b of styles.children)b.setAttribute('aria-checked',String(b.dataset.style===chosen));field.placeholder=sample();presets.hidden=chosen!=='balloon:sfx';};
  styles.textContent='';
  for(const b of BALLOONS){
   const button=document.createElement('button');button.type='button';button.setAttribute('role','radio');button.dataset.style=b.id;button.textContent=b.label;
@@ -1081,10 +1088,17 @@ function removeMine(id){
   cameraStickers.select(null);editStickers.select(null);remember();renderStickerPicker();
  });
 }
-/** The residents' sheets by tab: one tab a resident, their other sheets under theirs (the manifest's `tab`). */
+/** The residents' own sheets: Memory's decks and the greetings come from them, not from the manga marks. */
+const residentSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind!=='marks');
+/**
+ * The sheets by tab: one tab a resident, their other sheets under theirs (the manifest's `tab`), then Manga: the lines
+ * (effects.js) and the marks.
+ */
 function stickerTabs(manifest){
  const tabs=[];
  for(const set of manifest.sets){const name=set.tab||set.name,tab=tabs.find(t=>t.name===name);if(tab)tab.sets.push(set);else tabs.push({name,sets:[set]});}
+ const manga=tabs.find(t=>t.name==='Manga');
+ if(manga)tabs.push(...tabs.splice(tabs.indexOf(manga),1));else tabs.push({name:'Manga',sets:[]});
  return tabs;
 }
 async function renderStickerPicker(){
@@ -1126,9 +1140,15 @@ async function renderStickerPicker(){
   grid.append(note);
   return;
  }
+ if(tabs[stickerSet-1]?.name==='Manga'){
+  for(const fx of EFFECTS){
+   const b=document.createElement('button');b.type='button';b.className='sticker-choice effect';b.dataset.id=fx.id;b.title=fx.hint;b.setAttribute('aria-label',`${fx.label}: ${fx.hint}`);
+   const name=document.createElement('span');name.textContent=fx.label;b.append(effectPreview(fx.id,96),name);grid.append(b);
+  }
+ }
  (tabs[stickerSet-1]?.sets||[]).forEach((set,k)=>{
   // The resident's own sheet first; each of their other sheets under its name.
-  if(k>0){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
+  if(k>0||tabs[stickerSet-1].name==='Manga'){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
   for(const s of set.stickers){
    const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
    b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
@@ -1229,7 +1249,7 @@ if(!startEngine()){
  // you start"), never the one shown last; Johansson, the chief engineer, salutes the empty album.
  loadStickerSets().then(manifest=>{
   stickerSheets=manifest;cameraStickers.render();
-  const all=manifest.sets.flatMap(set=>set.stickers),last=store.read().greeting;
+  const all=residentSets(manifest).flatMap(set=>set.stickers),last=store.read().greeting;
   const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('johansson-pixar/Salute');
   if(hello)store.write({...store.read(),greeting:hello.id});
   // The stickers are figures without words; what they would say is their gloss, for whoever cannot see them.

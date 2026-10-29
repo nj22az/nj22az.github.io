@@ -1,0 +1,100 @@
+{
+ "id": "marks",
+ "name": "Marks",
+ "tab": "Manga",
+ "who": "",
+ "kind": "marks",
+ "source": "tools/draw-manga-marks.py",
+ "stickers": [
+  {
+   "id": "marks/sweat",
+   "src": "marks/sweat.webp?v=e27ad74c",
+   "thumb": "marks/sweat.thumb.webp?v=e27ad74c",
+   "width": 380,
+   "height": 512,
+   "line": "",
+   "gloss": "Sweat drop: nervous"
+  },
+  {
+   "id": "marks/anger",
+   "src": "marks/anger.webp?v=d6dbf812",
+   "thumb": "marks/anger.thumb.webp?v=d6dbf812",
+   "width": 512,
+   "height": 512,
+   "line": "",
+   "gloss": "Anger vein: cross"
+  },
+  {
+   "id": "marks/sparkles",
+   "src": "marks/sparkles.webp?v=c95f397f",
+   "thumb": "marks/sparkles.thumb.webp?v=c95f397f",
+   "width": 512,
+   "height": 458,
+   "line": "",
+   "gloss": "Sparkles: shining"
+  },
+  {
+   "id": "marks/heart",
+   "src": "marks/heart.webp?v=355b165b",
+   "thumb": "marks/heart.thumb.webp?v=355b165b",
+   "width": 512,
+   "height": 466,
+   "line": "",
+   "gloss": "Heart: in love"
+  },
+  {
+   "id": "marks/exclaim",
+   "src": "marks/exclaim.webp?v=7dbc08f3",
+   "thumb": "marks/exclaim.thumb.webp?v=7dbc08f3",
+   "width": 210,
+   "height": 512,
+   "line": "",
+   "gloss": "Exclamation: surprise"
+  },
+  {
+   "id": "marks/question",
+   "src": "marks/question.webp?v=e859ca9a",
+   "thumb": "marks/question.thumb.webp?v=e859ca9a",
+   "width": 375,
+   "height": 512,
+   "line": "",
+   "gloss": "Question: puzzled"
+  },
+  {
+   "id": "marks/surprise",
+   "src": "marks/surprise.webp?v=3378ab79",
+   "thumb": "marks/surprise.thumb.webp?v=3378ab79",
+   "width": 512,
+   "height": 448,
+   "line": "",
+   "gloss": "Exclamation and question: what!?"
+  },
+  {
+   "id": "marks/gloom",
+   "src": "marks/gloom.webp?v=c170e87a",
+   "thumb": "marks/gloom.thumb.webp?v=c170e87a",
+   "width": 350,
+   "height": 512,
+   "line": "",
+   "gloss": "Gloom lines: shocked"
+  },
+  {
+   "id": "marks/blush",
+   "src": "marks/blush.webp?v=acff3322",
+   "thumb": "marks/blush.thumb.webp?v=acff3322",
+   "width": 512,
+   "height": 312,
+   "line": "",
+   "gloss": "Blush: embarrassed"
+  },
+  {
+   "id": "marks/note",
+   "src": "marks/note.webp?v=58133521",
+   "thumb": "marks/note.thumb.webp?v=58133521",
+   "width": 393,
+   "height": 512,
+   "line": "",
+   "gloss": "Music note: happy"
+  }
+ ]
+}

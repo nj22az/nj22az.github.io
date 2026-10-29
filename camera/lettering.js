@@ -14,6 +14,10 @@
  */
 const FONT_URL=new URL('./fonts/baloo2.woff2',import.meta.url);
 const FAMILY='"Pocket Baloo",ui-rounded,"Hiragino Maru Gothic ProN","Arial Rounded MT Bold",system-ui,sans-serif';
+// Sound effects (ドーン, ゴゴゴ, BOOM): Rounded Mplus 1c Black, cut down to kana, punctuation and Latin
+// (fonts/OFL-MPLUSRounded1c.txt), so they letter the same on every phone and in every save.
+const KANA_URL=new URL('./fonts/mplus-rounded-black-kana.woff2',import.meta.url);
+const SFX_FAMILY='"Pocket Kana","Pocket Baloo","Hiragino Maru Gothic ProN",system-ui,sans-serif';
 const F=100,INK='#16130f',PAPER='#fffefa';
 let fontReady,measurer;
 
@@ -23,6 +27,18 @@ export const BALLOONS=Object.freeze([
  {id:'balloon:think',label:'Thought',sample:'Hmm…'},
  {id:'balloon:caption',label:'Caption',sample:'Meanwhile, in Minato…'},
  {id:'balloon:words',label:'Words',sample:'Nankurunaisa!'},
+ // A manga's sound effect (the owner, 29 October 2026: "Can make the pictures look like they are from a manga").
+ {id:'balloon:sfx',label:'Sound',sample:'ドーン!'},
+]);
+/**
+ * Sound effects ready to letter, each with what it means: the manga's own words for a sound or a feeling.
+ * The Japanese is as it is printed in manga; the English for whoever reads the photo in English.
+ */
+export const SOUND_EFFECTS=Object.freeze([
+ {text:'ドーン!',means:'Boom: a dramatic entrance'},{text:'ゴゴゴ',means:'A menacing rumble'},{text:'ドキドキ',means:'A pounding heart'},
+ {text:'ガーン',means:'Shock: a blow to the heart'},{text:'ジャーン!',means:'Ta-da!'},{text:'バーン!',means:'Bang!'},
+ {text:'キラキラ',means:'Sparkle'},{text:'シーン',means:'Dead silence'},{text:'ザワザワ',means:'An uneasy murmur'},
+ {text:'ゴクリ',means:'A gulp'},{text:'BOOM!',means:'Boom!'},{text:'WHAM!',means:'Wham!'},
 ]);
 export const isBalloon=id=>typeof id==='string'&&id.startsWith('balloon:');
 const styleOf=id=>id.slice('balloon:'.length);
@@ -30,7 +46,8 @@ const styleOf=id=>id.slice('balloon:'.length);
 /** Loads the lettering face once; balloons wait for it so they are measured in the face they are drawn in. */
 export function loadLetteringFont(){
  fontReady??=(async()=>{
-  try{const face=new FontFace('Pocket Baloo',`url(${FONT_URL}) format("woff2")`,{weight:'400 800'});await face.load();document.fonts.add(face);}catch{}
+  const load=async(name,url,weight)=>{try{const face=new FontFace(name,`url(${url}) format("woff2")`,{weight});await face.load();document.fonts.add(face);}catch{}};
+  await Promise.all([load('Pocket Baloo',FONT_URL,'400 800'),load('Pocket Kana',KANA_URL,'900')]);
  })();
  return fontReady;
 }
@@ -62,6 +79,7 @@ const jitter=(i,k=1)=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-
  * unit. `flip` sends the tail to the right instead of the left.
  */
 export function balloonLayout(id,text,flip=false){
+ if(styleOf(id)==='sfx')return soundLayout(text,flip);
  const style=styleOf(id),g=measure(),shout=style==='shout',caption=style==='caption',bare=style==='words';
  const words=(shout?String(text).toUpperCase():String(text)).trim()||'…';
  const weight=shout||bare?800:caption?600:700;
@@ -134,6 +152,38 @@ export function balloonLayout(id,text,flip=false){
   g.textAlign=caption?'left':'center';
   const x=caption?-tw/2:0;
   lines.forEach((l,i)=>g.fillText(l,x,(i-(lines.length-1)/2)*lh+F*.06));
+  g.restore();
+ }
+ return {width,height,draw};
+}
+
+/**
+ * A sound effect as a manga letters one: no balloon, the letters in the heaviest rounded face along a rising line, each
+ * a little turned and sized its own way (the same way every time for the same words), black with a white edge and a
+ * thin black line round that, so it reads over any picture. `flip` rises the other way.
+ */
+function soundLayout(text,flip){
+ const g=measure(),chars=Array.from(String(text).replace(/\s+/g,' ').trim()||'…');
+ g.font=`900 ${F}px ${SFX_FAMILY}`;
+ const WHITE=.15*F,LINE=.05*F,rise=(flip?1:-1)*.11*F;
+ const glyphs=[];let x=0;
+ chars.forEach((ch,i)=>{
+  const k=1+.2*(jitter(i,7)-.35)+(i===0?.12:0),w=g.measureText(ch).width*k;
+  glyphs.push({ch,k,turn:(jitter(i,11)-.5)*.3+(flip?.06:-.06),x:x+w/2,y:i*rise+(jitter(i,13)-.5)*.12*F});
+  x+=w*.9;
+ });
+ const pad=WHITE+LINE+.25*F,half=F*.62;
+ const xs=glyphs.map(c=>c.x),ys=glyphs.map(c=>c.y);
+ const minX=Math.min(...xs)-half*1.25,maxX=Math.max(...xs)+half*1.25,minY=Math.min(...ys)-half*1.3,maxY=Math.max(...ys)+half*1.3;
+ const width=maxX-minX+2*pad,height=maxY-minY+2*pad,ox=-(minX+maxX)/2,oy=-(minY+maxY)/2;
+ function draw(g,cx,cy,scale){
+  g.save();g.translate(cx,cy);g.scale(scale,scale);g.translate(ox,oy);
+  g.font=`900 ${F}px ${SFX_FAMILY}`;g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';g.miterLimit=2;
+  // Every letter's outer line first, then every white edge, then the ink, so no edge cuts into a neighbour's letter.
+  const pass=fn=>glyphs.forEach(c=>{g.save();g.translate(c.x,c.y);g.rotate(c.turn);g.scale(c.k,c.k);fn(c.ch);g.restore();});
+  g.strokeStyle=INK;g.lineWidth=2*(WHITE+LINE);pass(ch=>g.strokeText(ch,0,0));
+  g.strokeStyle='#ffffff';g.lineWidth=2*WHITE;pass(ch=>g.strokeText(ch,0,0));
+  g.fillStyle=INK;pass(ch=>g.fillText(ch,0,0));
   g.restore();
  }
  return {width,height,draw};

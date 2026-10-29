@@ -461,3 +461,24 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 /* Unfolded over the picture, the kinds and the strip have a deeper shade behind them, so their names read on a bright
    picture. */
 .camera.compact.looks-open .tray{background:linear-gradient(to top,rgba(0,0,0,.8),rgba(0,0,0,.55) 72%,transparent)}
+/* Six ways to letter (Speech, Shout, Thought, Caption, Words, Sound), and a sound effect's ready-made words. */
+.mini-seg.lettering-styles{grid-template-columns:repeat(6,1fr)}
+.lettering-styles button{padding:0 2px;font-size:min(12px,3.1vw)}
+.sound-presets{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.sound-presets[hidden]{display:none}
+.sound-presets button{height:32px;padding:0 11px;border-radius:16px;background:var(--fill);color:var(--label);font:900 15px/1 "Pocket Kana","Pocket Baloo",system-ui,sans-serif}
+.sound-presets button:active{transform:scale(.94)}
+/* Manga's lines (effects.js): painted under every sticker; the clear circle is what is held, moved and pinched. */
+.effects-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.effects-art[hidden]{display:none}
+.sticker.effect{border-radius:50%}
+.sticker.effect.selected::before{border-radius:50%}
+/* The Manga tab: the lines first, each a small picture with its name, then the marks. */
+.sticker-choice.effect{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:650;color:var(--label-2)}
+.sticker-choice.effect canvas{width:62%;aspect-ratio:1;border-radius:8px}
+#panelStickers .sticker-choice.effect{gap:1px;font-size:9px}
+/* Six sticker tabs (Text, Thuan, Johansson, Thao, Manga, Mine) across a phone from 360 points: tighter type and room. */
+.sticker-sets{gap:clamp(2px,.9vw,6px);padding:0 8px}
+.sticker-sets button{padding:0 clamp(5px,1.9vw,12px);font-size:clamp(11.5px,3.2vw,13px)}
+/* Narrower than 340 points (the first iPhone SE) the row scrolls rather than squeeze a name. */
+@media (max-width:340px){.sticker-sets button{flex:none}}
