@@ -21,6 +21,7 @@ PARKING = {
 }
 PARKING_CATEGORIES = {
     'free': 'Free parking',
+    'registered': 'Free parking · Registration required',
     'easy': 'Easy parking · One hotel receipt',
     'avoid': 'Paid parking · Avoid',
 }
@@ -30,7 +31,8 @@ def parking_category(review):
     if review.get('parkingAccessWarning', {}).get('status') == 'avoid':
         return 'avoid'
     if review.get('freeParking') is True:
-        return 'free'
+        registered = review.get('parkingRegistrationRequired') is True or review.get('parkingDetails', {}).get('registrationAtReception') is True
+        return 'registered' if registered else 'free'
     if review.get('freeParking') is False:
         payment = review.get('parkingPaymentAtHotel')
         if payment is None or type(payment) is bool:
@@ -54,7 +56,7 @@ def e(value):
 
 def hotel_chain(review):
     # Existing official property identities, not an affiliation inferred from location.
-    if review['name'].startswith('Scandic ') or review['hotelId'] in ('haymarket-by-scandic', 'downtown-camper-by-scandic'):
+    if review['name'].startswith('Scandic ') or review['hotelId'] in ('haymarket-by-scandic', 'downtown-camper-by-scandic', 'hotel-norge-by-scandic', 'grand-hotel-oslo-by-scandic', 'the-dock-69-39-by-scandic', 'olympiatoppen-sportshotel'):
         return 'Scandic'
     if review['name'].startswith('Best Western '):
         return 'Best Western'
@@ -409,7 +411,7 @@ def render_review(review, posts=()):
 
 def render_parking_choice(reviews):
     counts = {key: sum(parking_category(review) == key for review in reviews) for key in PARKING_CATEGORIES}
-    options = (('free', 'Free parking'), ('easy', 'Easy'), ('avoid', 'Avoid'), ('', 'All'), ('saved', 'Saved'))
+    options = (('free', 'Free parking'), ('registered', 'Free with registration'), ('easy', 'Easy'), ('avoid', 'Avoid'), ('', 'All'), ('saved', 'Saved'))
     labels = ''.join(
         f'<label class="hotel-option hotel-option-{value or "all"}"{" data-hotel-saved-option hidden" if value == "saved" else ""}>'
         f'<input type="radio" name="parking" value="{value}"{" checked" if value == "free" else ""}><span>'
@@ -487,9 +489,9 @@ def build(reviews, posts=None):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="/theme-bootstrap.js?v=hotel-fixed-1"></script>
   <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
-  <link rel="stylesheet" href="/css/hotels.css?v=12">
+  <link rel="stylesheet" href="/css/hotels.css?v=13">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="/css/hotels-map.css?v=3">
+  <link rel="stylesheet" href="/css/hotels-map.css?v=4">
 </head>
 <body class="hotel-site">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -533,7 +535,7 @@ def build(reviews, posts=None):
         </div>
         {render_parking_choice(reviews)}
         <div class="hotel-country-row" role="group" aria-label="Country">{''.join(f'<button type="button" class="hotel-country-tag" data-hotel-country="{e(code)}" aria-pressed="false">{flag(code, name)}{e(name)} <span class="hotel-option-count" data-country-count="{e(code)}">{sum(r["countryCode"] == code for r in reviews)}</span></button>' for code, name in countries)}</div>
-        <details class="hotel-legend"><summary>{icon('info')}What the colours mean</summary><ul><li><span class="hotel-avatar hotel-avatar-free" aria-hidden="true">P</span><strong>Free</strong> confirmed free guest parking</li><li><span class="hotel-avatar hotel-avatar-easy" aria-hidden="true">P</span><strong>Easy</strong> paid, but paid at the hotel and on the hotel receipt</li><li><span class="hotel-avatar hotel-avatar-avoid" aria-hidden="true">P</span><strong>Avoid</strong> paid parking not confirmed as easy, or difficult access</li></ul></details>
+        <details class="hotel-legend"><summary>{icon('info')}What the colours mean</summary><ul><li><span class="hotel-avatar hotel-avatar-free" aria-hidden="true">P</span><strong>Free</strong> confirmed free guest parking</li><li><span class="hotel-avatar hotel-avatar-registered" aria-hidden="true">P</span><strong>Free with registration</strong> free parking after required vehicle registration</li><li><span class="hotel-avatar hotel-avatar-easy" aria-hidden="true">P</span><strong>Easy</strong> paid, but paid at the hotel and on the hotel receipt</li><li><span class="hotel-avatar hotel-avatar-avoid" aria-hidden="true">P</span><strong>Avoid</strong> paid parking not confirmed as easy, or difficult access</li></ul></details>
       </form>
       <div class="hotel-results-bar">
         <p class="hotel-count" data-hotel-count role="status" aria-live="polite">{count} {'hotel' if count == 1 else 'hotels'}</p>
@@ -570,8 +572,8 @@ def build(reviews, posts=None):
     </section>
     <details class="hotel-method">
       <summary><h2 id="hotel-method-title">How the register works</h2></summary>
-      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. Coverage grows as hotels are verified. The Swedish Scandic audit covers 91 catalogue-linked properties; the other countries remain partial batches. <a href="/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
-      <p>Green means confirmed free guest parking, the preferred option and default filter. Yellow means “Easy parking”: parking costs money, but both payment at the hotel and inclusion on the hotel receipt are confirmed. Red means Avoid: paid parking with external payment, separate receipts or either fact unconfirmed, or a documented difficult-access report even when parking is free. An unconfirmed route stays labelled unknown; it is not a claim that hotel payment is impossible. Avoid is a parking preference, not a judgement of hotel quality. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
+      <p>Hotels join the free-parking list only after their own published information confirms free guest parking. Each parking entry links to its source and check date, with known registration requirements and paid alternatives explained. The Swedish Scandic audit covers 91 catalogue-linked properties. Norway’s 29 October review covers 81 catalogue properties: 78 have verified free/paid status and three remain outside this register pending charge confirmation. Other countries and chains remain partial. <a href="/hotels/SCANDIC-NORWAY-AUDIT-2026-10-29.md">Norwegian Scandic audit and unresolved cases</a> · <a href="/hotels/SCANDIC-SWEDEN-AUDIT-2026-10-25.md">Swedish Scandic audit</a> · <a href="/hotels/SCANDIC-PAID-AUDIT-2026-10-25.md">Other Nordic checks</a>.</p>
+      <p>Green means confirmed free guest parking, the preferred option and default filter. Blue separates free parking known to require vehicle registration; unknown registration requirements remain labelled unknown. Yellow means “Easy parking”: parking costs money, but both payment at the hotel and inclusion on the hotel receipt are confirmed. Red means Avoid: paid parking with external payment, separate receipts or either fact unconfirmed, or a documented difficult-access report even when parking is free. An unconfirmed route stays labelled unknown; it is not a claim that hotel payment is impossible. Avoid is a parking preference, not a judgement of hotel quality. Payment at the hotel and inclusion on the hotel receipt are recorded separately.</p>
       <p>The trip planner only suggests green hotels. It asks OpenStreetMap routing for driving times, suggests the closest green hotel to where you are going, and lists overnight stops only where they fall in the second half of the drive and add little time. Notes under each hotel are the register’s own records: owner reports, prices paid, notes and sources.</p>
       <p>Stay reports and official hotel information are identified in each note. Personal names, booking references, card details and exact stay dates are excluded. Prices and parking arrangements can change; the recorded date keeps each entry in context.</p>
     </details>
@@ -581,9 +583,9 @@ def build(reviews, posts=None):
   <script src="/shared.js?v=20261027-hotels"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
-  <script src="/hotels/hotels.js?v=10"></script>
+  <script src="/hotels/hotels.js?v=11"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/hotels/hotels-map.js?v=6"></script>
+  <script src="/hotels/hotels-map.js?v=7"></script>
   <script src="/hotels/hotels-trip.js?v=1"></script>
 </body>
 </html>

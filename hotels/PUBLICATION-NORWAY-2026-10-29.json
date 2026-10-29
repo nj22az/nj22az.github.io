@@ -1,0 +1,122 @@
+{
+  "checkedOn": "2026-10-29",
+  "commit": "8a1d1aa7002cbdaa47969ef045d59327a0d97153",
+  "pagesRun": "https://github.com/nj22az/nj22az.github.io/actions/runs/40835574456",
+  "pagesConclusion": "success",
+  "files": [
+    {
+      "path": "HANDOVER.md",
+      "url": "https://nj22az.github.io/HANDOVER.md",
+      "sha256": "c975d35cbc55ef93862c27d87e5377595ceb554c2d49dd6ea514351091cdab7d",
+      "bytes": 64309,
+      "matches": true
+    },
+    {
+      "path": "css/hotels-map.css",
+      "url": "https://nj22az.github.io/css/hotels-map.css",
+      "sha256": "eb7a36f7a25664da197f6f124b22418c68e6599ea3d9bd9312a9d0de4f6c0264",
+      "bytes": 3166,
+      "matches": true
+    },
+    {
+      "path": "css/hotels.css",
+      "url": "https://nj22az.github.io/css/hotels.css",
+      "sha256": "4028d949d7f912240ec149135213c7820105a345ae3969f445146a5fdff155b3",
+      "bytes": 25237,
+      "matches": true
+    },
+    {
+      "path": "hotels/DESIGN.md",
+      "url": "https://nj22az.github.io/hotels/DESIGN.md",
+      "sha256": "52cb4d0d5f9edf86dacd487d43e4214ffd063b1ac95683b08c0f7be841fef769",
+      "bytes": 4192,
+      "matches": true
+    },
+    {
+      "path": "hotels/HANDOVER-NORWAY-AUDIT-2026-10-29.md",
+      "url": "https://nj22az.github.io/hotels/HANDOVER-NORWAY-AUDIT-2026-10-29.md",
+      "sha256": "30f0c17a889bf0dd6e5efe4f6df92a45cb0511d6d168021fddc086da97ec3eeb",
+      "bytes": 5380,
+      "matches": true
+    },
+    {
+      "path": "hotels/README.md",
+      "url": "https://nj22az.github.io/hotels/README.md",
+      "sha256": "e08279a0d355ce4c3fe5e95544f43dae97a09a5a3420a9687407fcf4d43516b3",
+      "bytes": 25743,
+      "matches": true
+    },
+    {
+      "path": "hotels/SCANDIC-NORWAY-AUDIT-2026-10-29.md",
+      "url": "https://nj22az.github.io/hotels/SCANDIC-NORWAY-AUDIT-2026-10-29.md",
+      "sha256": "c5de76d4e2c186391358ef7b6ecf539139b17ffe71898e9cd516a4c256c77ed9",
+      "bytes": 19990,
+      "matches": true
+    },
+    {
+      "path": "hotels/SCANDIC-NORWAY-EVIDENCE-2026-10-29.json",
+      "url": "https://nj22az.github.io/hotels/SCANDIC-NORWAY-EVIDENCE-2026-10-29.json",
+      "sha256": "8af71ba5055342e1a37c80330cc39cfa7f2f0c56964702db9b20e50a9428c7d7",
+      "bytes": 173064,
+      "matches": true
+    },
+    {
+      "path": "hotels/hotel-reviews.csv",
+      "url": "https://nj22az.github.io/hotels/hotel-reviews.csv",
+      "sha256": "036b9c4e60cfb0ea1e7769ad50feb46ba0e5e2bab33ef97c6ede0f4b30131d19",
+      "bytes": 326290,
+      "matches": true
+    },
+    {
+      "path": "hotels/hotels-map.js",
+      "url": "https://nj22az.github.io/hotels/hotels-map.js",
+      "sha256": "7a1a642b9f54649484db9666b1537f0e88ac40c60ef50a4668bd6e4ff05ad3d7",
+      "bytes": 13834,
+      "matches": true
+    },
+    {
+      "path": "hotels/hotels.js",
+      "url": "https://nj22az.github.io/hotels/hotels.js",
+      "sha256": "ed60aa6f18edf5aeb27e965baa8d5371f6c66108f38a365f5c56696a53ad89f9",
+      "bytes": 11951,
+      "matches": true
+    },
+    {
+      "path": "hotels/hotels.json",
+      "url": "https://nj22az.github.io/hotels/hotels.json",
+      "sha256": "aa68178f105ca08e2efa1123946ee6e22081acd90e6b06313cae9b3df34defe3",
+      "bytes": 691277,
+      "matches": true
+    },
+    {
+      "path": "hotels/index.html",
+      "url": "https://nj22az.github.io/hotels/index.html",
+      "sha256": "120acbafa8ea05fd1076b88455ae5bab63f2656ec877e761eea4b3b03c1a3823",
+      "bytes": 2132702,
+      "matches": true
+    },
+    {
+      "path": "tools/build-hotels.py",
+      "url": "https://nj22az.github.io/tools/build-hotels.py",
+      "sha256": "c3ecb03ee37f41a0a8064553f90c38efc164460cd043c58b2645f847015620be",
+      "bytes": 44094,
+      "matches": true
+    },
+    {
+      "path": "tools/build-hotels.test.py",
+      "url": "https://nj22az.github.io/tools/build-hotels.test.py",
+      "sha256": "295835696316b4fb2fa6382b354881a315c00d47f6ca79baff8c5f9a24a85c80",
+      "bytes": 21868,
+      "matches": true
+    },
+    {
+      "path": "tools/hotel-filters.test.cjs",
+      "url": "https://nj22az.github.io/tools/hotel-filters.test.cjs",
+      "sha256": "bf01af314475bf174119f24bc4580e254fe07f45dff7be64be93289ed103e23a",
+      "bytes": 3731,
+      "matches": true
+    }
+  ],
+  "matchingFiles": 16,
+  "visualBrowserChecks": "Not run; local browser install failed, cloud browser could not reach preview."
+}

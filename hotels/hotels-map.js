@@ -19,6 +19,7 @@
   if (!window.L) { unavailable(); return; }
   var parkingCategories = {
     free: { label: 'Free parking', size: 24 },
+    registered: { label: 'Free parking · Registration required', size: 24 },
     easy: { label: 'Easy parking · One hotel receipt', size: 24 },
     avoid: { label: 'Paid parking · Avoid', size: 14 }
   };
@@ -294,7 +295,7 @@
   var legend = L.control({ position: 'bottomleft' });
   legend.onAdd = function () {
     var box = L.DomUtil.create('div', 'hotel-map-legend');
-    box.innerHTML = '<span><i class="hotel-map-key hotel-map-key-free"></i>Free</span><span><i class="hotel-map-key hotel-map-key-avoid"></i>Avoid</span><span><i class="hotel-map-key hotel-map-key-you"></i>You</span>';
+    box.innerHTML = '<span><i class="hotel-map-key hotel-map-key-free"></i>Free</span><span><i class="hotel-map-key hotel-map-key-registered"></i>Register</span><span><i class="hotel-map-key hotel-map-key-easy"></i>Easy</span><span><i class="hotel-map-key hotel-map-key-avoid"></i>Avoid</span><span><i class="hotel-map-key hotel-map-key-you"></i>You</span>';
     return box;
   };
   legend.addTo(map);

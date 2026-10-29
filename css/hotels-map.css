@@ -32,3 +32,7 @@
 .hotel-map :focus-visible{outline:3px solid #111;outline-offset:3px}
 @media(max-width:600px){.hotel-map{height:340px}}
 @media print{.hotel-map-section{display:none!important}}
+
+.hotel-map .hotel-map-parking-registered{background:#dbeafe;color:#1e3a8a}
+.hotel-map-marker-registered,.hotel-map-key-registered{background:#2563eb}
+.hotel-map-key-easy{background:#facc15}

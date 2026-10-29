@@ -21,8 +21,9 @@ This is a third-party design analysis, not official note documentation.
 - Near-black text `#08131a`, white cards, secondary background `#f5f8fa`, soft dividers.
 - Helvetica Neue / Arial for the English and Swedish content. Preserve readable
   line spacing and labelled controls. Do not apply Japanese-specific text spacing.
-- Icons accompany words. Green/yellow/red continue to describe parking; blue
-  remains the visitor's location. Brand decoration must not change those meanings.
+- Icons accompany words. Green/blue/yellow/red describe parking (blue requires vehicle registration).
+  The visitor's location uses its separate labelled symbol. Brand decoration must
+  not change those meanings.
 - Cards retain source dates, registration conditions, paid alternatives and
   expandable full notes. No invented ratings, stays, photographs or social activity.
 - Hotel pages declare `data-theme-lock="clarity"` as their neutral shared base and
@@ -67,5 +68,5 @@ These rules replace the 26 October finder layout:
   numbered picks matching the trip card. Popups are short and lead back to the post.
 - **Country** is shown by its flag (inline SVG) with the code, as a pressable tag on
   the post and in a toolbar row. Never use a plain colour for country: colour means
-  parking, blue means you.
+  parking; the visitor location has a separate labelled symbol.
 - Below 1000 px the feed comes first, with a floating Feed/Map switch.

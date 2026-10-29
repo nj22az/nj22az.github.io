@@ -272,3 +272,9 @@ html[data-hotel-design="note"] .hotel-filters :is(input,select),html[data-hotel-
 /* Five actions (Notes, Photos, Map, Website, Share) share one row on a phone: icon over label, nothing wider than its share. */
 .hotel-post-actions>*{min-width:0}
 @media(max-width:600px){.hotel-post-actions{gap:0;margin-inline:-6px}.hotel-post-actions>a,.hotel-post-actions>button{flex-direction:column;gap:2px;padding:4px 2px;font-size:11.5px;min-height:52px}.hotel-post-actions .hotel-action-count{font-size:11px}}
+
+/* Required vehicle registration is a distinct free-parking category. */
+.hotel-tag.hotel-parking-registered{color:#1e3a8a;background:#dbeafe;border-color:#2563eb}
+.hotel-option-registered>span{color:#1e3a8a;background:#dbeafe;border-color:#2563eb80}
+.hotel-avatar-registered{background:#2563eb}
+.hotel-verdict-registered{color:#1e3a8a}

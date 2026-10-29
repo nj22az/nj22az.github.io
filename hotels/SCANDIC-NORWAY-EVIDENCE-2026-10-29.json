@@ -1,0 +1,4519 @@
+{
+  "checkedOn": "2026-10-29",
+  "scope": "All 81 countryCode NO property entries in the current official Norwegian Scandic catalogue, including partner/by-Scandic properties. Not all Norwegian chains. Review coverage is complete for this catalogue snapshot; three charge-unknown properties are withheld, and unresolved billing/registration/tariffs are explicitly listed.",
+  "catalogueSource": "https://www.scandichotels.com/en/destinations/norway",
+  "catalogueSha256": "a65780569c0294f6dc875ec6a4aa0b1ffdd3647e9280f40f46224592d5f67dcb",
+  "initiallyRegisteredNorwegianScandics": [
+    "scandic-flesland-airport",
+    "scandic-ornen",
+    "scandic-byporten"
+  ],
+  "counts": {
+    "catalogue": 81,
+    "previouslyRegistered": 3,
+    "previouslyUnreviewed": 78,
+    "added": 75,
+    "updated": 3,
+    "withheld": 3,
+    "avoid": 59,
+    "free": 18,
+    "registered": 1,
+    "unresolved": 3
+  },
+  "policy": "Green: verified free option; Blue: free with required registration; Yellow: paid at hotel AND on hotel receipt; Red: confirmed paid without both billing facts, or difficult access. Unknown charge is withheld, never assumed paid or free. Negative distance placeholders are not walking distances. Zero amounts in a paid source data block mean unpriced, never free.",
+  "properties": [
+    {
+      "hotelId": "the-dock-69-39-by-scandic",
+      "officialPropertyId": "796",
+      "name": "The Dock 69°39 by Scandic",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/the-dock-69-39-by-scandic",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/the-dock-69-39-by-scandic",
+          "sha256": "563eb4a30fd4750283ad9614a76ed6eab4bb716a315ce890dd9f1a56c27e578b"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Vervet Parkeringsanlegg",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "58 NOK/hour; 500 NOK/24 hours (00:00–23:59)",
+          "weekend": "58 NOK/hour; 500 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 100,
+          "address": "Nordøstpassasjen 23, 9008 Tromsø, Norge",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 69.65379,
+        "longitude": 18.96595,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Skansegata 7",
+        "addressLocality": "Tromsø",
+        "postalCode": "9008",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-parken",
+      "officialPropertyId": "368",
+      "name": "Scandic Parken",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-parken",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-parken",
+          "sha256": "5e622245ac6b6735ae7a960a6ef9178b3a693ad5e19ff5a1016e4e03465ea3ee"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Jangaard Eiendom AS",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "25 NOK/hour (00:00–23:59); 250 NOK/24 hours (00:00–23:59)",
+          "weekend": "25 NOK/hour (00:00–23:59); 250 NOK/24 hours (00:00–23:59)",
+          "spaces": 180,
+          "distanceMetres": null,
+          "address": "Einarvikgata",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Ålesund Parkering",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "25 NOK/hour (08:00–16:00)",
+          "weekend": "25 NOK/hour (08:00–16:00)",
+          "spaces": null,
+          "distanceMetres": 10,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 62.473774,
+        "longitude": 6.158736,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Storgata 16",
+        "addressLocality": "Ålesund",
+        "postalCode": "6002",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-byparken",
+      "officialPropertyId": "322",
+      "name": "Scandic Byparken",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-byparken",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-byparken",
+          "sha256": "dce2a122acbf3ac125946c337b3819772a39ec0cb0b6b8ea2b38ade68d9101f3"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Grieg Park / Q-park",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "46 NOK/hour; 280 NOK/day; 280 NOK/24 hours (00:00–23:59)",
+          "weekend": "46 NOK/hour; 280 NOK/night; 280 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 400,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Klostergarasjen (15% discount for hotelguests using parking app)",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "46 NOK/hour; 280 NOK/day; 280 NOK/24 hours (00:00–23:59)",
+          "weekend": "46 NOK/hour; 280 NOK/day; 280 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 600,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.390255,
+        "longitude": 5.3242116,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Christiesgate 7",
+        "addressLocality": "Bergen",
+        "postalCode": "5015",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-alta",
+      "officialPropertyId": "301",
+      "name": "Scandic Alta",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-alta",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-alta",
+          "sha256": "a0e08131163d84824fba9af8508e7d54422d5cd9fa086d33f63c2bc4a3bf5fbf"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Alta",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "200 NOK/day; 200 NOK/night; 200 NOK/24 hours (00:00–23:59)",
+          "weekend": "200 NOK/day; 200 NOK/night; 200 NOK/24 hours (00:00–23:59)",
+          "spaces": 12,
+          "distanceMetres": null,
+          "address": "Løkkeveien 61",
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        },
+        {
+          "name": "Hotel parking",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "30 NOK/hour; 150 NOK/day; 150 NOK/night; 150 NOK/24 hours (00:00–23:59)",
+          "weekend": "30 NOK/hour; 150 NOK/day; 150 NOK/night; 150 NOK/24 hours (00:00–23:59)",
+          "spaces": 30,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "CanBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 69.96589,
+        "longitude": 23.2683,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Løkkeveien 61",
+        "addressLocality": "Alta",
+        "postalCode": "9509",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "hotel-norge-by-scandic",
+      "officialPropertyId": "785",
+      "name": "Hotel Norge by Scandic",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/hotel-norge-by-scandic",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/hotel-norge-by-scandic",
+          "sha256": "ab0d7f3688f4975c9aaf1fc63029e194c1154ef66563bab75d29f19efc100c4e"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/hotel-norge-by-scandic/parking",
+          "sha256": "6dd47d7c862f5f197f4a079634c9642fe55cb82607744c6b6fd9a84d4cc37ab0"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "ONEPARK",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "70 NOK/hour (00:00–00:00); 400 NOK/24 hours (00:00–23:59)",
+          "weekend": "70 NOK/hour (00:00–00:00); 400 NOK/24 hours (00:00–23:59)",
+          "spaces": 25,
+          "distanceMetres": null,
+          "address": "Nordahl Bruns gate",
+          "reservable": false,
+          "paymentType": "CanBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.391315,
+        "longitude": 5.323339,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Conflicting tariffs between official property and detailed parking pages."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "accessAndConditions": "Conflicting official rates: the property tariff lists NOK 400/24 h (70/hour) on weekdays and weekends, while its detailed parking page says NOK 280/day. No tariff is selected as definitive; confirm before travel. Hotel payment is offered in the structured parking data, but combined hotel-receipt inclusion is unconfirmed.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Nedre Ole Bullsplass 4",
+        "addressLocality": "Bergen",
+        "postalCode": "5012",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-bergen-city",
+      "officialPropertyId": "770",
+      "name": "Scandic Bergen City",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-bergen-city",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-bergen-city",
+          "sha256": "c6db0cea2ecfb61a9e9bd3340fb05aa5f16945e033556cd79697e3b940315623"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "City Park P-hus",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "70 NOK/hour; 315 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 400,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.39135,
+        "longitude": 5.31739,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Håkonsgaten 2-7",
+        "addressLocality": "BERGEN",
+        "postalCode": "5015",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-kokstad",
+      "officialPropertyId": "757",
+      "name": "Scandic Kokstad",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-kokstad",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-kokstad",
+          "sha256": "cc7fbf1d1ed72d08cd260b1fd8ca5902361e7d9a0aae4fcafc644bb6b0bc59ef"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 120,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.28994,
+        "longitude": 5.258052,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "accessAndConditions": "Free parking is subject to capacity; buses and larger vehicles require prior arrangement.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kokstadflaten 2",
+        "addressLocality": "Kokstad",
+        "postalCode": "5257",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-flesland-airport",
+      "officialPropertyId": "782",
+      "name": "Scandic Flesland Airport",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-flesland-airport",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-flesland-airport",
+          "sha256": "ec83cb418f42bc2228ea49a3e0a36b8197eacd39a807dc674631c8fe7d413f5e"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-flesland-airport/parking",
+          "sha256": "2376976553c6bae059b06a6c426fa8be94eb195ce0e8d44f507ea2eb31b9ee9f"
+        }
+      ],
+      "previouslyRegistered": true,
+      "disposition": "updated",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Apcoa",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 120,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Apcoa",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 20,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.28188,
+        "longitude": 5.236411,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-flesland-airport/map-view"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": false,
+      "paymentBasis": "Explicit external payment instructions on hotel website",
+      "accessAndConditions": "APCOA garage uses automatic number-plate entry/exit. Pay by Flow, online within 48 hours, or at the exit machine; otherwise an invoice follows. The detailed hotel page lists garage NOK 95/day and outdoor NOK 32/hour or 140/day without a separate weekend schedule. EasyPark outdoors adds 15%.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Lønningsveien 9",
+        "addressLocality": "Blomsterdalen, Bergen",
+        "postalCode": "5258",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-neptun",
+      "officialPropertyId": "778",
+      "name": "Scandic Neptun",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-neptun",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-neptun",
+          "sha256": "1b4d6324827b9d4f30d27b689980fe2dfd9d478986222242a34885256d131290"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "KlosterGarasjen",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "46 NOK/hour; 280 NOK/day; 280 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 50,
+          "address": "Vestre Murallmenningen 14, 5011 Bergen Norway",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.39447,
+        "longitude": 5.320222,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Valkendorfsgate 8",
+        "addressLocality": "Bergen",
+        "postalCode": "5012",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-torget-bergen",
+      "officialPropertyId": "779",
+      "name": "Scandic Torget Bergen",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-torget-bergen",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-torget-bergen",
+          "sha256": "4192a48485a30ae87ea9f0a5b9ab5b9855e8d6e0acf9a992a0a57ba53819c526"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-torget-bergen/parking",
+          "sha256": "e6afd9cba268d45c158dd9cecf73e4be7dfd8b05c54008b935d99c971b4134d9"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "KlosterGarasjen",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "56 NOK/hour; 300 NOK/24 hours (00:00–23:59)",
+          "weekend": "28 NOK/hour; 300 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 350,
+          "address": "Vestre Murallmenningen 14, 5011 Bergen",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.3943,
+        "longitude": 5.323993,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": false,
+      "paymentBasis": "Explicit external payment instructions on hotel website",
+      "accessAndConditions": "Give the vehicle number to reception within one hour for the stated 15% discount. Pay the garage machine or Sesam website; reception registration does not mean hotel billing.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strandkaien 2-6",
+        "addressLocality": "BERGEN",
+        "postalCode": "5013",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-bodo",
+      "officialPropertyId": "312",
+      "name": "Scandic Bodø",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-bodo",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-bodo",
+          "sha256": "28f69623c133fa83801b2184010de858fe4399cbaab1eb3f07e54bebc24520f1"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Hotel Parking",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 25,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 67.285255,
+        "longitude": 14.3827915,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sjøgata 23, Postboks 608",
+        "addressLocality": "Bodø",
+        "postalCode": "8001",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-ornen",
+      "officialPropertyId": "326",
+      "name": "Scandic Ørnen",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-ornen",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-ornen",
+          "sha256": "b433b7bc2c6b9e19884ce5a35066da0b8bbb44aea8a64fa863f693bb4daae8cf"
+        }
+      ],
+      "previouslyRegistered": true,
+      "disposition": "updated",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Bygarasjen",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "44 NOK/hour; 260 NOK/24 hours (00:00–23:59)",
+          "weekend": "44 NOK/hour; 260 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 100,
+          "address": "Fjøsangerveien 4",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.38821,
+        "longitude": 5.33148,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-ornen/map-view"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Lars Hillesgate 18",
+        "addressLocality": "Bergen",
+        "postalCode": "5008",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-havet",
+      "officialPropertyId": "314",
+      "name": "Scandic Havet",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-havet",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-havet",
+          "sha256": "8c4963a33f2f478368a2fbc41dae1642971cc1b891dfac53151484b070385edb"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Torggarasjen",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "36 NOK/hour (06:00–00:00); 180 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 200,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Gateparkering",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "31 NOK/hour (08:00–18:00)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 67.28421,
+        "longitude": 14.374967,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Tollbugaten 5",
+        "addressLocality": "Bodø",
+        "postalCode": "8006",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-fauske",
+      "officialPropertyId": "374",
+      "name": "Scandic Fauske",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-fauske",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-fauske",
+          "sha256": "f71d5f32d9f179b626347098c41d32c77f3532e9820b85bdfc4bcf865040a83e"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 35,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 67.25925,
+        "longitude": 15.398308,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Storgata 82",
+        "addressLocality": "Fauske",
+        "postalCode": "8200",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-ambassadeur-drammen",
+      "officialPropertyId": "786",
+      "name": "Scandic Ambassadeur Drammen",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-ambassadeur-drammen",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-ambassadeur-drammen",
+          "sha256": "23db4e0e1771ec53e623d5c01e748d24cbaa74205bbb23f3cede7a744cf8fb94"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Strømsø Torg p-hus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Grønland 1, Drammen 1818",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 30,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.74019,
+        "longitude": 10.201229,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strømsø Torg 7",
+        "addressLocality": "Drammen",
+        "postalCode": "3044",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-valdres",
+      "officialPropertyId": "787",
+      "name": "Scandic Valdres",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-valdres",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-valdres",
+          "sha256": "02e50321179dc64bfce640a1b85ead72b01d8d3e61daaf46b3a3c5ec391f9855"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Valdres",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "150 NOK/24 hours (00:00–23:59)",
+          "weekend": "150 NOK/24 hours (00:00–23:59)",
+          "spaces": 88,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.98498,
+        "longitude": 9.238614,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jernbanevegen 26",
+        "addressLocality": "Fagernes",
+        "postalCode": "2900",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-sunnfjord-hotel-spa",
+      "officialPropertyId": "321",
+      "name": "Scandic Sunnfjord Hotel & Spa",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sunnfjord-hotel-spa",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-sunnfjord-hotel-spa",
+          "sha256": "f5d57fc81dc531808928b48001888590619481b9e7e947cf8760958c55bd2327"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "registered",
+      "areas": [
+        {
+          "name": "Scandic Sunnfjord Hotel & SPA",
+          "type": "Garage",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 50,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Scandic Sunnfjord Hotel & SPA",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 155,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": true,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 61.45274,
+        "longitude": 5.8559575,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "accessAndConditions": "Register the vehicle number on the inPark tablet at reception for free parking.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Storehagen 2",
+        "addressLocality": "Førde",
+        "postalCode": "6800",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-city",
+      "officialPropertyId": "360",
+      "name": "Scandic City",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-city",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-city",
+          "sha256": "79b10512db345338df86fd4fd009cbc8a90b9bea000166c0507654401c0620aa"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic City",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "280 NOK/day; 280 NOK/24 hours (00:00–23:59)",
+          "weekend": "280 NOK/day; 280 NOK/24 hours (00:00–23:59)",
+          "spaces": 15,
+          "distanceMetres": 10,
+          "address": "Gunnar Nilsens Gate 9, 1607 Fredrikstad",
+          "reservable": true,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.212852,
+        "longitude": 10.939197,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Gunnar Nilsens Gate 9",
+        "addressLocality": "Fredrikstad",
+        "postalCode": "1607",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-hammerfest",
+      "officialPropertyId": "307",
+      "name": "Scandic Hammerfest",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-hammerfest",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-hammerfest",
+          "sha256": "f4952ac6ca473741de9e67a05291c6bf1565e394a67dbf04ecad2326e6810fda"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Kirkeparken",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "264 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 50,
+          "address": "Batteriet 2",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Parking",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "148 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 50,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 70.66314,
+        "longitude": 23.677174,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sørøygata 15",
+        "addressLocality": "Hammerfest",
+        "postalCode": "9600",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-honningsvag",
+      "officialPropertyId": "304",
+      "name": "Scandic Honningsvåg",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-honningsvag",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-honningsvag",
+          "sha256": "0f05bbe2f13eecf690386cd1fb9d3d39c578b252d42302f53a01d4e5b8144f1a"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 8,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 70.99432,
+        "longitude": 25.971594,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "accessAndConditions": "Only eight free spaces; overflow nearby is paid. A free space is not guaranteed.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Nordkappgata 4",
+        "addressLocality": "Honningsvåg",
+        "postalCode": "9750",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-honefoss",
+      "officialPropertyId": "389",
+      "name": "Scandic Hønefoss",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-honefoss",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-honefoss",
+          "sha256": "0f757534b7c5dac1c48c6748e1afee0e7d58fbaeefa43e90e44dcdc292aab084"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Apcoa",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "30 NOK/hour; 235 NOK/24 hours (00:00–23:59)",
+          "weekend": "30 NOK/hour; 235 NOK/24 hours (00:00–23:59)",
+          "spaces": 30,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.166252,
+        "longitude": 10.257285,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kongens gate 3",
+        "addressLocality": "Hønefoss",
+        "postalCode": "3510",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-harstad",
+      "officialPropertyId": "363",
+      "name": "Scandic Harstad",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-harstad",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-harstad",
+          "sha256": "7021503273fc3c2d4081f1bad4c4451c7a89824285c46ce93d5eb98a6f7aa7e6"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Parkinghouse \"Grottebadet\"",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 50,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Scandic Harstad",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "150 NOK/24 hours (00:00–23:59)",
+          "weekend": "150 NOK/24 hours (00:00–23:59)",
+          "spaces": 17,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 68.800896,
+        "longitude": 16.542273,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strandgata 9",
+        "addressLocality": "Harstad",
+        "postalCode": "9405",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-haugesund",
+      "officialPropertyId": "772",
+      "name": "Scandic Haugesund",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-haugesund",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-haugesund",
+          "sha256": "8325c8a30c2086db681a549961b2b59da7fa66b8665f63e843a740dba37c3d54"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Easypark, Appcoa",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": "Kirkegata 166",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Haugesund Kommune",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.415157,
+        "longitude": 5.2694025,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kirkegata 166",
+        "addressLocality": "Haugesund",
+        "postalCode": "5525",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-nordkapp",
+      "officialPropertyId": "308",
+      "name": "Scandic Nordkapp",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-nordkapp",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-nordkapp",
+          "sha256": "58cbf3b466252d0d0df57cf2bd0063c9d5dc1abd0a3d5072ced959c64601f6f7"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 40,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 71.028885,
+        "longitude": 25.892036,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Skipsfjorden",
+        "addressLocality": "Honningsvåg",
+        "postalCode": "9750",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-hamar",
+      "officialPropertyId": "756",
+      "name": "Scandic Hamar",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-hamar",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-hamar",
+          "sha256": "3accbde106222d072d884d698b36fdd8c25768c91380f6308319238f3e9ab2ae"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Apcoa Parking",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "145 NOK/24 hours (00:00–23:59)",
+          "weekend": "145 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Apcoa Parking",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "145 NOK/24 hours (00:00–23:59)",
+          "weekend": "145 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.79666,
+        "longitude": 11.086535,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Vangsveien 121",
+        "addressLocality": "Hamar",
+        "postalCode": "2318",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-bryggen",
+      "officialPropertyId": "303",
+      "name": "Scandic Bryggen",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-bryggen",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-bryggen",
+          "sha256": "3cd831cf38e55310611c36ae75177e7b1d75356da9c4216670e15411b835214b"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 15,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 70.979324,
+        "longitude": 25.97273,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Vågen 1",
+        "addressLocality": "Honningsvåg",
+        "postalCode": "9750",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-kirkenes",
+      "officialPropertyId": "306",
+      "name": "Scandic Kirkenes",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-kirkenes",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-kirkenes",
+          "sha256": "c7c2831283e673c85b79ce396657c5f1478aa852724ad1b7dc29996de7bfbcb9"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Parking",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 15,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 69.72646,
+        "longitude": 30.044489,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kongensgate 1-3",
+        "addressLocality": "Kirkenes",
+        "postalCode": "9915",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-karasjok",
+      "officialPropertyId": "305",
+      "name": "Scandic Karasjok",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-karasjok",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-karasjok",
+          "sha256": "c2eb27ff085651c90e20d0886f4635eb304694e47d62821eb88a44795627ef91"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Parking",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 40,
+          "distanceMetres": 50,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 69.47374,
+        "longitude": 25.510237,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Leavnnjageaidnu 49",
+        "addressLocality": "Karasjok",
+        "postalCode": "9730",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-kristiansund",
+      "officialPropertyId": "319",
+      "name": "Scandic Kristiansund",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-kristiansund",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-kristiansund",
+          "sha256": "59d935f4e20c2605e117f5a1f934fbb77e261aab8b3c3e0e14dae150b7bc1fcc"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "garage",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "120 NOK/24 hours (00:00–23:59)",
+          "weekend": "120 NOK/24 hours (00:00–23:59)",
+          "spaces": 50,
+          "distanceMetres": null,
+          "address": "Storgt 41",
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.10859,
+        "longitude": 7.7287436,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Storgata 41",
+        "addressLocality": "Kristiansund",
+        "postalCode": "6508",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-kristiansand-bystranda",
+      "officialPropertyId": "780",
+      "name": "Scandic Kristiansand Bystranda",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-kristiansand-bystranda",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-kristiansand-bystranda",
+          "sha256": "441a3ce4989a4689f82977777d9fb3e5cf3945608d544330c023ba913e99dd37"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Aquarama Parkering",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "46 NOK/hour; 390 NOK/day; 390 NOK/night; 390 NOK/24 hours (00:00–23:59)",
+          "weekend": "46 NOK/hour; 390 NOK/day; 390 NOK/night; 390 NOK/24 hours (00:00–23:59)",
+          "spaces": 201,
+          "distanceMetres": null,
+          "address": "Østre Strandgate 74, 4608 Kristiansand",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.14686,
+        "longitude": 8.00629,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Østre Strandgate 74",
+        "addressLocality": "Kristiansand",
+        "postalCode": "4608",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-hafjell",
+      "officialPropertyId": "789",
+      "name": "Scandic Hafjell",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-hafjell",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-hafjell",
+          "sha256": "475cc63cb771feae2258b474910a7f2bda4e4f5983651df36f9b649bd707057a"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 168,
+          "distanceMetres": 5,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 61.242004,
+        "longitude": 10.438011,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Hunderveien 1",
+        "addressLocality": "Øyer, Hafjell",
+        "postalCode": "2636",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-sorlandet",
+      "officialPropertyId": "788",
+      "name": "Scandic Sørlandet",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sorlandet",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-sorlandet",
+          "sha256": "a45a7ba1cc641795cd9ef3b475fc6289ba955ee7770e256c34d1bbd60bbd4c78"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Scandic parking",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 165,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.1799,
+        "longitude": 8.144898,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Travparkveien 14",
+        "addressLocality": "Kristiansand",
+        "postalCode": "4636",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-vestfjord-lofoten",
+      "officialPropertyId": "791",
+      "name": "Scandic Vestfjord Lofoten",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-vestfjord-lofoten",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-vestfjord-lofoten",
+          "sha256": "a7bedaba70f8ab35d83689aa83808fb906f539ad569642159d7f4f3e73bec190"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 20,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "CanBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 68.229385,
+        "longitude": 14.565672,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Fiskergata 46",
+        "addressLocality": "Svolvær",
+        "postalCode": "8300",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-victoria-lillehammer",
+      "officialPropertyId": "343",
+      "name": "Scandic Victoria Lillehammer",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-victoria-lillehammer",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-victoria-lillehammer",
+          "sha256": "aab62a6476fbdf7c991d9e86f167d25f97a82b996f1ea0b9634e6172a600b7c6"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Øya Parkering",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "40 NOK/hour; 220 NOK/24 hours (00:00–23:59)",
+          "weekend": "40 NOK/hour; 220 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 100,
+          "address": "Kirkegata 82, 2609 Lillehammer",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 61.116806,
+        "longitude": 10.464083,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Nymosvingen 3",
+        "addressLocality": "Lillehammer",
+        "postalCode": "2609",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-lillehammer-hotel",
+      "officialPropertyId": "790",
+      "name": "Scandic Lillehammer Hotel",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-lillehammer-hotel",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-lillehammer-hotel",
+          "sha256": "8dc4b492810e793257395456ce5ccf1412b9ff74be2ce6db7b0029c1cc945268"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 210,
+          "distanceMetres": 10,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 61.1175,
+        "longitude": 10.47697,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Turisthotellvegen 6",
+        "addressLocality": "Lillehammer",
+        "postalCode": "2609",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-leknes-lofoten",
+      "officialPropertyId": "387",
+      "name": "Scandic Leknes Lofoten",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-leknes-lofoten",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-leknes-lofoten",
+          "sha256": "811842b5ece8cc02dabb3890b3602255b2422f1b7bdd305dcdd5ef7d3ef577eb"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Hotel parking lot",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "25 NOK/hour (00:00–12:00); 150 NOK/day (00:00–12:00); 150 NOK/24 hours (00:00–23:59)",
+          "weekend": "25 NOK/hour (00:00–12:00); 150 NOK/day (00:00–12:00); 150 NOK/24 hours (00:00–23:59)",
+          "spaces": 50,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 68.14594,
+        "longitude": 13.612899,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Lillevollveien 15",
+        "addressLocality": "Leknes",
+        "postalCode": "8370",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-svolvaer",
+      "officialPropertyId": "311",
+      "name": "Scandic Svolvaer",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-svolvaer",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-svolvaer",
+          "sha256": "cbc943cdb5714d66863cc429ea17a9546908f42b8ab90c4f23f67d85156904ba"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Parking",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "300 NOK/day; 300 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": 30,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 68.23286,
+        "longitude": 14.570939,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "accessAndConditions": "Use marked spaces only. If full, the hotel directs drivers to street parking 50 m away; overflow charges are unverified.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Lamholmen",
+        "addressLocality": "Svolvær",
+        "postalCode": "8301",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-brennemoen",
+      "officialPropertyId": "388",
+      "name": "Scandic Brennemoen",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-brennemoen",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-brennemoen",
+          "sha256": "a4ad86de828b805503b2fc2d1673af7c9ed6cbf1fdcaa48610a6e49a4bde08ff"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 60,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.574017,
+        "longitude": 11.288128,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Brennemoveien 20",
+        "addressLocality": "Mysen",
+        "postalCode": "1850",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-seilet",
+      "officialPropertyId": "317",
+      "name": "Scandic Seilet",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-seilet",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-seilet",
+          "sha256": "ae2a0ac46a05d35545cf83d588cc68c7ee375042317f6776582283e859d1ec98"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Romsdal Parkering",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "35.9 NOK/hour (08:00–17:00); 276 NOK/day (08:00–17:00)",
+          "weekend": "35.9 NOK/hour (08:00–15:00); 276 NOK/day (08:00–15:00)",
+          "spaces": 40,
+          "distanceMetres": 20,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 62.733208,
+        "longitude": 7.144067,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Gideonveien 2",
+        "addressLocality": "MOLDE",
+        "postalCode": "6412",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-rock-city",
+      "officialPropertyId": "318",
+      "name": "Scandic Rock City",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-rock-city",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-rock-city",
+          "sha256": "97e2f369c554651a6618508d40e3219c9e54634e8d21713b39433d535a3801b7"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 50,
+          "distanceMetres": 20,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 64.46885,
+        "longitude": 11.487186,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sverresgt 35",
+        "addressLocality": "Namsos",
+        "postalCode": "7800",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "olympiatoppen-sportshotel",
+      "officialPropertyId": "339",
+      "name": "Olympiatoppen Sportshotel, part of Scandic",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/olympiatoppen-sportshotel",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/olympiatoppen-sportshotel",
+          "sha256": "bbff3dda3286e14205cf07d9fe0e1836d57599078ee4de3dd023deede39e64dd"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Olympiatoppen Sportshotell",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 500,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.96843,
+        "longitude": 10.731732,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sognsveien 228",
+        "addressLocality": "Oslo",
+        "postalCode": "0863",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-narvik",
+      "officialPropertyId": "313",
+      "name": "Scandic Narvik",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-narvik",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-narvik",
+          "sha256": "ffcb00899462584245dbd5f484667a2d89319b64926d61ae1c280789d1a8ba09"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Parkeringshus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "30 NOK/hour (00:00–00:00); 180 NOK/24 hours (00:00–23:59)",
+          "weekend": "30 NOK/hour (00:00–00:00); 180 NOK/24 hours (00:00–23:59)",
+          "spaces": 50,
+          "distanceMetres": null,
+          "address": "Kongens gate 33, 8514 Narvik",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 68.4368,
+        "longitude": 17.425985,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "accessAndConditions": "The hotel warns of reduced garage capacity during renovation and recommends extra arrival time; it does not own the parking.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kongensgate 33 Postboks 68",
+        "addressLocality": "Narvik",
+        "postalCode": "8501",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-meyergarden",
+      "officialPropertyId": "367",
+      "name": "Scandic Meyergården",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-meyergarden",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-meyergarden",
+          "sha256": "705f64b7e39721c395bfd6872bfba6a2e662d1334e4b7ebc085f4fbfd7664990"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Hotellparkering",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 60,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 66.31236,
+        "longitude": 14.135641,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "accessAndConditions": "The hotel describes its free spaces as limited; availability is not guaranteed.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Fridtjof Nansens gate 28",
+        "addressLocality": "Mo i Rana",
+        "postalCode": "8622",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "grand-hotel-oslo-by-scandic",
+      "officialPropertyId": "340",
+      "name": "Grand Hotel Oslo by Scandic",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/grand-hotel-oslo-by-scandic",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/grand-hotel-oslo-by-scandic",
+          "sha256": "5fb4563a95d09de1bdace2c7defb3cfe0554a04ded4ed18340359038a8446da8"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/grand-hotel-oslo-by-scandic/parking",
+          "sha256": "6df05f26c4838b8ecb040406e4ccc805c31063dda68be1658d3402691f54cb8e"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Grand Garage",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "105 NOK/hour; 550 NOK/day; 550 NOK/night; 550 NOK/24 hours (00:00–23:59)",
+          "weekend": "105 NOK/hour; 550 NOK/day; 550 NOK/night; 550 NOK/24 hours (00:00–23:59)",
+          "spaces": 40,
+          "distanceMetres": null,
+          "address": "Arbeidergaten 4",
+          "reservable": true,
+          "paymentType": "CanBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.914165,
+        "longitude": 10.739878,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Karl Johans gate 31",
+        "addressLocality": "Oslo",
+        "postalCode": "0159",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-byporten",
+      "officialPropertyId": "766",
+      "name": "Scandic Byporten",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-byporten",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-byporten",
+          "sha256": "b9dc0e507fa3f670a5010ef44e7197e590028f7c3a8d8142d58d346a8001f020"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-byporten/parking",
+          "sha256": "acd9c5a29a0de96b243c45fdafaaaaaff37b2627e9912bbd522c8fc66ba8b8b1"
+        }
+      ],
+      "previouslyRegistered": true,
+      "disposition": "updated",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "APCOA Byporten",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "330 NOK/24 hours (00:00–23:59)",
+          "weekend": "330 NOK/24 hours (00:00–23:59)",
+          "spaces": 96,
+          "distanceMetres": null,
+          "address": "Biskop Gunnerus' gate 6",
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.911816,
+        "longitude": 10.752869,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-byporten/map-view"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "accessAndConditions": "APCOA reads number plates at entry and exit. Enter via Biskop Gunnerus’ gate 6 and register/pay at the lobby machine within 20 minutes for the hotel rate. Maximum vehicle height 2 m. Machine payment in reception does not confirm inclusion on the hotel bill.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jernbanetorget.6",
+        "addressLocality": "Oslo",
+        "postalCode": "0154",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-alexandra-molde",
+      "officialPropertyId": "793",
+      "name": "Scandic Alexandra Molde",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-alexandra-molde",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-alexandra-molde",
+          "sha256": "03ea765476bb99c108602c11cbf0c61cdb24c45eb385c07417c9f979f2bf3e42"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "I hotellet (Scandic Alexandra Molde)",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "155 NOK/day (07:00–16:00); 175 NOK/night (15:00–12:00); 175 NOK/24 hours (00:00–23:59)",
+          "weekend": "155 NOK/day (07:00–17:00); 175 NOK/night (15:00–15:00); 175 NOK/24 hours (00:00–23:59)",
+          "spaces": 30,
+          "distanceMetres": null,
+          "address": "Storgaten 1, 6413 Molde",
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        },
+        {
+          "name": "Kommunal parkering",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "26 NOK/hour (08:00–17:00); 180 NOK/24 hours (00:00–23:59)",
+          "weekend": "26 NOK/hour (08:00–15:00); 180 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 50,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 62.734837,
+        "longitude": 7.1543126,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Storgaten 1-7",
+        "addressLocality": "Molde",
+        "postalCode": "6413",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-gardermoen",
+      "officialPropertyId": "342",
+      "name": "Scandic Gardermoen",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-gardermoen",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-gardermoen",
+          "sha256": "798a5d452fa414b0a067b7b154ab193670d1d7e5f484481d73e5194c0ab491c9"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Gardermoen",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "30 NOK/hour; 160 NOK/24 hours (00:00–23:59)",
+          "weekend": "30 NOK/hour; 160 NOK/24 hours (00:00–23:59)",
+          "spaces": 105,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.16694,
+        "longitude": 11.157667,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Jessheimvegen 467",
+        "addressLocality": "Gardermoen",
+        "postalCode": "2060",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-asker",
+      "officialPropertyId": "751",
+      "name": "Scandic Asker",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-asker",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-asker",
+          "sha256": "8772898146e3d01b7f0b54e54d7547e7e7405660696c79801efecb96595b5431"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Garage",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "30 NOK/hour; 170 NOK/night; 170 NOK/24 hours (00:00–23:59)",
+          "weekend": "30 NOK/hour; 170 NOK/night; 170 NOK/24 hours (00:00–23:59)",
+          "spaces": 70,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.834743,
+        "longitude": 10.441217,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Askerveien 61",
+        "addressLocality": "Asker",
+        "postalCode": "1384",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-holberg",
+      "officialPropertyId": "333",
+      "name": "Scandic Holberg",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-holberg",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-holberg",
+          "sha256": "60b5aa9c1e6a3905c2894f4bd27ac527c88a38e636f902d6e1abfdbe9e0aa833"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "withheld",
+      "category": "unresolved",
+      "areas": [],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.919605,
+        "longitude": 10.734425,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Official property parking section does not establish whether parking is free or paid, weekday/weekend charges, registration, payment route or hotel-receipt inclusion. Withheld from register, CSV and map pending official confirmation."
+      ]
+    },
+    {
+      "hotelId": "scandic-fornebu",
+      "officialPropertyId": "776",
+      "name": "Scandic Fornebu",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-fornebu",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-fornebu",
+          "sha256": "3f8b5dc34635f6a5dce905b38af651be8eec588e91bd5bc9182d2d6faa7c6121"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Aimo Park",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "60 NOK/hour; 275 NOK/24 hours (00:00–23:59)",
+          "weekend": "60 NOK/hour; 275 NOK/24 hours (00:00–23:59)",
+          "spaces": 195,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.893646,
+        "longitude": 10.629174,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Martin Linges vei 2",
+        "addressLocality": "Fornebu",
+        "postalCode": "1364",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-karl-johan",
+      "officialPropertyId": "391",
+      "name": "Scandic Karl Johan",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-karl-johan",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-karl-johan",
+          "sha256": "77f8d926cfa88f03f92ac7a6cd0661a88b78b45c41f7e2eb7e4f3d804b70f2ea"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "withheld",
+      "category": "unresolved",
+      "areas": [],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.9142,
+        "longitude": 10.740884,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Official property parking section does not establish whether parking is free or paid, weekday/weekend charges, registration, payment route or hotel-receipt inclusion. Withheld from register, CSV and map pending official confirmation."
+      ]
+    },
+    {
+      "hotelId": "scandic-oslo-city",
+      "officialPropertyId": "336",
+      "name": "Scandic Oslo City",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-oslo-city",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-oslo-city",
+          "sha256": "ebb47ce767c6dbf7c85c8e3a04a390ca3ede53828626cc6c4f6e1d4d64db1dd7"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Byporten Shopping P-hus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 100,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.911957,
+        "longitude": 10.749289,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": false,
+      "paymentBasis": "Explicit external payment instructions on hotel website",
+      "accessAndConditions": "Register and pay immediately after parking at the machine beside reception in Scandic Byporten (another hotel). The discount applies to overnight parking only.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Europarådets plass 1",
+        "addressLocality": "Oslo",
+        "postalCode": "0154",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-helsfyr",
+      "officialPropertyId": "337",
+      "name": "Scandic Helsfyr",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-helsfyr",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-helsfyr",
+          "sha256": "6449ad458a6efaa1348383b0be89ff46da0131f8e4a240221bcaba747afecb84"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Aimo Park",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "80 NOK/hour; 350 NOK/24 hours (00:00–23:59)",
+          "weekend": "80 NOK/hour; 350 NOK/24 hours (00:00–23:59)",
+          "spaces": 32,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Aimo Park",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "80 NOK/hour; 350 NOK/24 hours (00:00–23:59)",
+          "weekend": "80 NOK/hour; 350 NOK/24 hours (00:00–23:59)",
+          "spaces": 60,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.91562,
+        "longitude": 10.805057,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "accessAndConditions": "The garage distance is published as -1 m, a data error; actual walking distance is unverified.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Innspurten 7",
+        "addressLocality": "Oslo",
+        "postalCode": "0663",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-holmenkollen-park",
+      "officialPropertyId": "332",
+      "name": "Scandic Holmenkollen Park",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-holmenkollen-park",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-holmenkollen-park",
+          "sha256": "24022be3ca95660e7f1ce416f253495f2eb184bcfb250136d518e5fcec53e43b"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-holmenkollen-park/parking",
+          "sha256": "afe6b960110d056c8fa1c18ddaea466a0a9ff4d584fa0f5112b9bcede3f213e9"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Parking garage",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "40 NOK/hour; 210 NOK/24 hours (00:00–23:59)",
+          "weekend": "40 NOK/hour; 210 NOK/24 hours (00:00–23:59)",
+          "spaces": 200,
+          "distanceMetres": null,
+          "address": "Kongeveien 26",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Opposite Skiforeningen",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": null,
+          "distanceMetres": 200,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.962715,
+        "longitude": 10.662815,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "accessAndConditions": "The free outdoor option opposite Skiforeningen is 200 m away. The hotel garage is paid and operated by OnePark; EV charging costs extra.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Kongeveien 26",
+        "addressLocality": "Oslo",
+        "postalCode": "0787",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-lillestrom",
+      "officialPropertyId": "784",
+      "name": "Scandic Lillestrøm",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-lillestrom",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-lillestrom",
+          "sha256": "98b04ee661a9ca2d51fcd3293ab548377f1be627fd608d86d56a00fe7977a783"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.952606,
+        "longitude": 11.046131,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "accessAndConditions": "The hotel identifies Lillestrøm Syd Aimo Park across the street and states NOK 440/24 h in its parking introduction; the weekday/weekend tariff blocks only confirm a charge.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Stillverksveien 28",
+        "addressLocality": "Lillestrøm",
+        "postalCode": "2004",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-sjolyst",
+      "officialPropertyId": "760",
+      "name": "Scandic Sjølyst",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sjolyst",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-sjolyst",
+          "sha256": "74ab8552a9dd3d6014372cf48e2ea88e95f8ea9c26e4d4177a140212adaf8901"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Garage",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "200 NOK/24 hours (00:00–23:59)",
+          "weekend": "200 NOK/24 hours (00:00–23:59)",
+          "spaces": 25,
+          "distanceMetres": 10,
+          "address": "Sjølyst Plass 5",
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.920155,
+        "longitude": 10.682069,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sjølyst plass 5",
+        "addressLocality": "Oslo",
+        "postalCode": "0212",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-oslo-airport",
+      "officialPropertyId": "773",
+      "name": "Scandic Oslo Airport",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-oslo-airport",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-oslo-airport",
+          "sha256": "c83ed0a0598be9caaa29876aa4d8b7cb5d2f043200d67e633172aa6495242af7"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Oslo Airport",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "180 NOK/24 hours (00:00–23:59)",
+          "weekend": "180 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.186344,
+        "longitude": 11.067156,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Ravinevegen 15",
+        "addressLocality": "Gardermoen",
+        "postalCode": "2060",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-solli",
+      "officialPropertyId": "759",
+      "name": "Scandic Solli",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-solli",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-solli",
+          "sha256": "30b0c3aa5c5f0216f5f70c68940cf01d2406c65af694e7a838c07c1292111dcc"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Solli",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "300 NOK/day; 300 NOK/night; 300 NOK/24 hours (00:00–23:59)",
+          "weekend": "300 NOK/day; 300 NOK/night; 300 NOK/24 hours (00:00–23:59)",
+          "spaces": 13,
+          "distanceMetres": null,
+          "address": "On site",
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        },
+        {
+          "name": "Bakgården til Scandic Solli",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "300 NOK/day; 300 NOK/night; 300 NOK/24 hours (00:00–23:59)",
+          "weekend": "300 NOK/day; 300 NOK/night; 300 NOK/24 hours (00:00–23:59)",
+          "spaces": 6,
+          "distanceMetres": 50,
+          "address": null,
+          "reservable": false,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.913914,
+        "longitude": 10.721283,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "accessAndConditions": "The garage distance is published as -1 m, a data error; actual walking distance is unverified.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Parkveien 68, Box 2458 Solli",
+        "addressLocality": "Oslo",
+        "postalCode": "0260",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-victoria-oslo",
+      "officialPropertyId": "334",
+      "name": "Scandic Victoria Oslo",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-victoria-oslo",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-victoria-oslo",
+          "sha256": "81411af0d9ac6c206cb2db28facf3c04bf49f32c5fe71d7cfd9aae6aba0c6ecf"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Parking, external garage below hotel",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "110 NOK/hour; 525 NOK/day; 525 NOK/night; 525 NOK/24 hours (00:00–23:59)",
+          "weekend": "110 NOK/hour; 525 NOK/day; 525 NOK/night; 525 NOK/24 hours (00:00–23:59)",
+          "spaces": 83,
+          "distanceMetres": null,
+          "address": "Kjeld Stubs gate",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.91247,
+        "longitude": 10.73682,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rosenkrantzgate 13",
+        "addressLocality": "Oslo",
+        "postalCode": "0121",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-vulkan",
+      "officialPropertyId": "774",
+      "name": "Scandic Vulkan",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-vulkan",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-vulkan",
+          "sha256": "dff4cd1fb0724791c726370c06a87786d4f0a597afc09290e82c0b47b4d5c339"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Vulkan P-hus/One Park",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "50 NOK/hour; 390 NOK/24 hours (00:00–23:59)",
+          "weekend": "50 NOK/hour; 390 NOK/24 hours (00:00–23:59)",
+          "spaces": 150,
+          "distanceMetres": 30,
+          "address": "Maridalsveien 17, 0175",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.92274,
+        "longitude": 10.75138,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Maridalsveien 13",
+        "addressLocality": "Oslo",
+        "postalCode": "0178",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-syv-sostre",
+      "officialPropertyId": "365",
+      "name": "Scandic Syv Søstre",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-syv-sostre",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-syv-sostre",
+          "sha256": "0d3798a81370d137f856c6c59f223f716009efa7b7a933201e11d81b329dc044"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Havnevesenet eller Sjøbergsgate (søk og betal i Easypark-app)",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 20,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 66.02285,
+        "longitude": 12.637091,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": false,
+      "paymentBasis": "Explicit external payment instructions on hotel website",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Torolv Kveldulvsons gate 16",
+        "addressLocality": "Sandnessjøen",
+        "postalCode": "8800",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-st-olavs-plass",
+      "officialPropertyId": "765",
+      "name": "Scandic St. Olavs plass",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-st-olavs-plass",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-st-olavs-plass",
+          "sha256": "0a02f63d82e8de539e0e3cf0e1701bc333d83f9611ba74dad85726dbda48c2a5"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Edderkoppen P-hus, (operator: OnePark)",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 66,
+          "distanceMetres": null,
+          "address": "St. Olavs gate 1",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.918182,
+        "longitude": 10.739994,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "St. Olavs plass 1",
+        "addressLocality": "Oslo",
+        "postalCode": "0165",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-sarpsborg",
+      "officialPropertyId": "345",
+      "name": "Scandic Sarpsborg",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sarpsborg",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-sarpsborg",
+          "sha256": "41ecae2b56171963b26e692f92909c47d51b56f2cfa45eb535b9727775c4a8ec"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "withheld",
+      "category": "unresolved",
+      "areas": [],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.28318,
+        "longitude": 11.109455,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Official property parking section does not establish whether parking is free or paid, weekday/weekend charges, registration, payment route or hotel-receipt inclusion. Withheld from register, CSV and map pending official confirmation."
+      ]
+    },
+    {
+      "hotelId": "scandic-sortland",
+      "officialPropertyId": "359",
+      "name": "Scandic Sortland",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-sortland",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-sortland",
+          "sha256": "d838320ef11ca53aba08ac0387a5283145b0666db3a955d54495e6e2a5aa585b"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Parking",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "150 NOK/24 hours (00:00–23:59)",
+          "weekend": "150 NOK/24 hours (00:00–23:59)",
+          "spaces": 80,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "CanBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 68.69748,
+        "longitude": 15.418183,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Havnegata 3",
+        "addressLocality": "Sortland",
+        "postalCode": "8400",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-royal-stavanger",
+      "officialPropertyId": "795",
+      "name": "Scandic Royal Stavanger",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-royal-stavanger",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-royal-stavanger",
+          "sha256": "25a9175020030484e7e282c309dcfa0bfeed62527ceda5f4c3eba48f32a9b08a"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "St.Olav",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 500,
+          "address": "Løkkeveien 26, 4008 Stavanger",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.967823,
+        "longitude": 5.727351,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Løkkeveien 26",
+        "addressLocality": "Stavanger",
+        "postalCode": "4008",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-stavanger-city",
+      "officialPropertyId": "781",
+      "name": "Scandic Stavanger City",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-stavanger-city",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-stavanger-city",
+          "sha256": "85bfc9e7f03fb12e0df38997da49b1fad57a97ed389e2708d40c7ecec49e8bc4"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "One Park",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "35 NOK/hour; 350 NOK/day; 350 NOK/night; 350 NOK/24 hours (00:00–23:59)",
+          "weekend": "35 NOK/hour; 350 NOK/day; 350 NOK/night; 350 NOK/24 hours (00:00–23:59)",
+          "spaces": 25,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.970615,
+        "longitude": 5.743912,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Reidar Bergesgate 7",
+        "addressLocality": "Stavanger",
+        "postalCode": "4013",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-stavanger-park",
+      "officialPropertyId": "323",
+      "name": "Scandic Stavanger Park",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-stavanger-park",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-stavanger-park",
+          "sha256": "23d14688da3a6d54ff25f65afd1211dc286299bb155ea4c081bb24994c820b29"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Jernbanelokket (train station) Olav V's gate 22, 4005 Stavanger",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "310 NOK/24 hours (00:00–23:59)",
+          "weekend": "310 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 50,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.96572,
+        "longitude": 5.731216,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Prestegårdsbakken 1",
+        "addressLocality": "Stavanger",
+        "postalCode": "4005",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-stavanger-airport",
+      "officialPropertyId": "325",
+      "name": "Scandic Stavanger Airport",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-stavanger-airport",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-stavanger-airport",
+          "sha256": "fe4cdd7709ebc5f17eaac509b741a6c4a725a062a06db79a9c1c8167e875f033"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "P4",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 30,
+          "address": "Flyplassvegen",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Apcoa",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 10,
+          "distanceMetres": 30,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.883846,
+        "longitude": 5.627288,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Flyplassvegen 226",
+        "addressLocality": "Sola",
+        "postalCode": "4055",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-park-sandefjord",
+      "officialPropertyId": "329",
+      "name": "Scandic Park Sandefjord",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-park-sandefjord",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-park-sandefjord",
+          "sha256": "3ab1b7fabd9057e14e23a20a3ba295a0f206329e70f98f4a40f0fc77b1210057"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Garage",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "250 NOK/24 hours (00:00–23:59)",
+          "weekend": "250 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "250 NOK/24 hours (00:00–23:59)",
+          "weekend": "250 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 150,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.127377,
+        "longitude": 10.22094,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Strandpromenaden 9",
+        "addressLocality": "Sandefjord",
+        "postalCode": "3208",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-bakklandet",
+      "officialPropertyId": "320",
+      "name": "Scandic Bakklandet",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-bakklandet",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-bakklandet",
+          "sha256": "c4c8ae3d0b44666eadee79df9a4a677ba955dc84e5358ae44aa266492a4440ee"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Bakklandet P-Hus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 205,
+          "distanceMetres": null,
+          "address": "Nedre Bakklandet 60",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.432064,
+        "longitude": 10.40695,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Nedre Bakklandet 60",
+        "addressLocality": "Trondheim",
+        "postalCode": "7014",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-ishavshotel",
+      "officialPropertyId": "310",
+      "name": "Scandic Ishavshotel",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-ishavshotel",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-ishavshotel",
+          "sha256": "56c5e6238c0eb7e6de59e54be327a1b8570dacb4cc67d7ddae10bfe62ff45635"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Fjellet P-hus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "45 NOK/hour (08:00–18:00); 225 NOK/night (18:00–08:00); 450 NOK/24 hours (00:00–23:59)",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 500,
+          "address": "Vestregata 23, 9008 Tromsø",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Scandic - parking fees apply",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "450 NOK/24 hours (00:00–23:59)",
+          "weekend": "450 NOK/24 hours (00:00–23:59)",
+          "spaces": 4,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": true,
+          "paymentType": "MustBePaidAtTheHotel",
+          "paymentAtHotel": true
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 69.64955,
+        "longitude": 18.962034,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": true,
+      "paymentBasis": "Official property parking data paymentType; does not establish receipt inclusion",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Fredrik Langesgate 2",
+        "addressLocality": "Tromsø",
+        "postalCode": "9008",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-stavanger-forus",
+      "officialPropertyId": "775",
+      "name": "Scandic Stavanger Forus",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-stavanger-forus",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-stavanger-forus",
+          "sha256": "0a69d532c7513c0acad44c29c96d9bac53c209fa97cdd5ea7afadd624e77d30d"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Scandic Stavanger Forus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": 125,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 58.89104,
+        "longitude": 5.729548,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Bjødnabeen 2",
+        "addressLocality": "Stavanger",
+        "postalCode": "4033",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-stiklestad",
+      "officialPropertyId": "380",
+      "name": "Scandic Stiklestad",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-stiklestad",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-stiklestad",
+          "sha256": "13669ed3bd7f0113f3dd4e1575e6a8e37f1af7f3d8485bf541c75ac054869f0a"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Stiklestad",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 300,
+          "distanceMetres": 100,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.79583,
+        "longitude": 11.562773,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Stiklestad alle 350",
+        "addressLocality": "Verdal",
+        "postalCode": "7656",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-solsiden",
+      "officialPropertyId": "771",
+      "name": "Scandic Solsiden",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-solsiden",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-solsiden",
+          "sha256": "c7fb60374b252cbe69fd33b73a6b5600f760fdd26934b3100b17cb6bd3536283"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-solsiden/parking",
+          "sha256": "98347090623657874650a18033cffb9113b4536dd22c3899c302cbd0de1fb634"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Solsiden senter/ Apcoa/ Parkly",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "55 NOK/hour; 390 NOK/24 hours (00:00–23:59)",
+          "weekend": "55 NOK/hour; 390 NOK/24 hours (00:00–23:59)",
+          "spaces": 50,
+          "distanceMetres": null,
+          "address": "Trenerys gate",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.434513,
+        "longitude": 10.413795,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "accessAndConditions": "Use the entrance from Trenerys gate behind the hotel. Parkly and APCOA operate different spaces; the hotel says the listed rates apply to Parkly spaces.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Beddingen 1",
+        "addressLocality": "Trondheim",
+        "postalCode": "7042",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-vadso",
+      "officialPropertyId": "302",
+      "name": "Scandic Vadsø",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-vadso",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-vadso",
+          "sha256": "74b2f69b1688581a7c38bac5a62515a6c2e940590111f02a874ca5297be92ac6"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Hotellparking",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 10,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 70.07461,
+        "longitude": 29.749731,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Oscars gt. 4",
+        "addressLocality": "Vadsø",
+        "postalCode": "9811",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-lerkendal",
+      "officialPropertyId": "764",
+      "name": "Scandic Lerkendal",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-lerkendal",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-lerkendal",
+          "sha256": "2377207f62ed6c476ea10bc4ed4b636cc905110044b458f59636dfc4efea6615"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Lerkendal P-hus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "56 NOK/hour (00:00–23:59); 390 NOK/24 hours (00:00–23:59)",
+          "weekend": "56 NOK/hour (00:00–23:59); 390 NOK/24 hours (00:00–23:59)",
+          "spaces": 250,
+          "distanceMetres": null,
+          "address": "Klæbuveien 127",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Lerkendal - offentlig parkering foran hotellet",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "56 NOK/hour (00:00–23:59); 390 NOK/24 hours (00:00–23:59)",
+          "weekend": "56 NOK/hour (00:00–23:59); 390 NOK/24 hours (00:00–23:59)",
+          "spaces": 150,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.411457,
+        "longitude": 10.402594,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Klæbuveien 127",
+        "addressLocality": "Trondheim",
+        "postalCode": "7031",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-hell",
+      "officialPropertyId": "315",
+      "name": "Scandic Hell",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-hell",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-hell",
+          "sha256": "8ad909a05961392315e415d333132c55856ed4758696ddd7ce4869ed47815b19"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "At hotel",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 604,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.44904,
+        "longitude": 10.912651,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "accessAndConditions": "Free parking applies during the hotel stay. Longer airport parking is a separate Park, Stay and Fly offer.",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Sandfærhus 22",
+        "addressLocality": "Hell",
+        "postalCode": "7570",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-nidelven",
+      "officialPropertyId": "316",
+      "name": "Scandic Nidelven",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-nidelven",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-nidelven",
+          "sha256": "bef0fc9e072c8ffb40cf4cca6ede545f6662ba6fa4cfd0db3ddb73377609748d"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Trondheim Sentralstasjon",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "50 NOK/hour; 325 NOK/day",
+          "weekend": "50 NOK/hour; 325 NOK/day",
+          "spaces": null,
+          "distanceMetres": 30,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 63.435642,
+        "longitude": 10.406156,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Havnegt 1-3",
+        "addressLocality": "Trondheim",
+        "postalCode": "7010",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-voss",
+      "officialPropertyId": "792",
+      "name": "Scandic Voss",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-voss",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-voss",
+          "sha256": "59c81fc9709ceca433ccdcb8491af900fd4bc279e4700285757bb79ccdebe877"
+        },
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-voss/parking",
+          "sha256": "ee53478ceeb230ac24426f407fe8a9da66ab88b7da692a13bd2b32234362e308"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "Stasjonsgarasjen",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "38 NOK/hour; 220 NOK/24 hours (00:00–23:59)",
+          "weekend": "38 NOK/hour; 220 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": null,
+          "address": "Gurid Almenningens plass 1",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        },
+        {
+          "name": "Voss Stasjon",
+          "type": "Outdoor",
+          "freeParking": false,
+          "weekday": "24 NOK/hour; 130 NOK/24 hours (00:00–23:59)",
+          "weekend": "24 NOK/hour; 130 NOK/24 hours (00:00–23:59)",
+          "spaces": null,
+          "distanceMetres": 100,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 60.62926,
+        "longitude": 6.412434,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Evangervegen 1A",
+        "addressLocality": "Voss",
+        "postalCode": "5704",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-go-grensen-20",
+      "officialPropertyId": "797",
+      "name": "Scandic Go, Grensen 20",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-go-grensen-20",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-go-grensen-20",
+          "sha256": "7dcfa79e5f250ebdd1b1a596b5dc480e72cbb61f59b95ec2ffffbcce33a82d8c"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "avoid",
+      "areas": [
+        {
+          "name": "OnePark Sentrum P-hus",
+          "type": "Garage",
+          "freeParking": false,
+          "weekday": "Paid; amount not stated",
+          "weekend": "Paid; amount not stated",
+          "spaces": null,
+          "distanceMetres": 150,
+          "address": "C.J Hambros Plass 1",
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 59.91445,
+        "longitude": 10.74107,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary.",
+        "Combined hotel-receipt inclusion unconfirmed; remains Red/Avoid.",
+        "Payment at hotel unconfirmed.",
+        "One or more paid weekday/weekend amounts are not published in the tariff blocks."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Hotel payment route not stated; operator identity alone is not evidence of the payment route",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Grensen 20",
+        "addressLocality": "Oslo",
+        "postalCode": "0159",
+        "addressCountry": "Norway"
+      }
+    },
+    {
+      "hotelId": "scandic-victoria-floro",
+      "officialPropertyId": "767",
+      "name": "Scandic Victoria Florø",
+      "checkedOn": "2026-10-29",
+      "hotelUrl": "https://www.scandichotels.com/en/hotels/scandic-victoria-floro",
+      "sources": [
+        {
+          "url": "https://www.scandichotels.com/en/hotels/scandic-victoria-floro",
+          "sha256": "c3a5d0b278374cc40f872eab25bb555e85492fcd16213cbe67cf656ae7bf2f62"
+        }
+      ],
+      "previouslyRegistered": false,
+      "disposition": "added",
+      "category": "free",
+      "areas": [
+        {
+          "name": "Outdoor",
+          "type": "Outdoor",
+          "freeParking": true,
+          "weekday": "Free",
+          "weekend": "Free",
+          "spaces": 8,
+          "distanceMetres": null,
+          "address": null,
+          "reservable": false,
+          "paymentType": "NoInformation",
+          "paymentAtHotel": null
+        }
+      ],
+      "registrationAtReception": null,
+      "parkingOnHotelReceipt": null,
+      "coordinates": {
+        "latitude": 61.599808,
+        "longitude": 5.035612,
+        "sourceUrl": "https://www.scandichotels.com/en/destinations/norway"
+      },
+      "coordinateBasis": "Named official Norway catalogue hotel entry: id, name, address and location; not a destination/viewport centre.",
+      "unresolved": [
+        "Registration requirement not stated; not treated as confirmation that registration is unnecessary."
+      ],
+      "parkingPaymentAtHotel": null,
+      "paymentBasis": "Not applicable to free option",
+      "identity": {
+        "@type": "PostalAddress",
+        "streetAddress": "Markegata 43",
+        "addressLocality": "Florø",
+        "postalCode": "6905",
+        "addressCountry": "Norway"
+      }
+    }
+  ]
+}
