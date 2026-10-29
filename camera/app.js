@@ -755,7 +755,13 @@ function pickPhoto(){$('picker').value='';$('picker').click();}
 for(const id of ['import','welcomeImport','albumImport','emptyImport'])$(id).addEventListener('click',pickPhoto);
 $('picker').addEventListener('change',e=>useFiles([...e.target.files||[]]));
 const isPicture=file=>file.type.startsWith('image/')||/\.(jpe?g|png|webp|gif|avif|heic|heif)$/i.test(file.name);
-/** The photographer's own photos: one opens in the editor; several go straight into the album in the camera's Look. */
+/**
+ * The photographer's own photos start with the camera's main Look only (its first layer, at full strength), not its
+ * whole mix, which the dice make of two (the owner, 29 October 2026: "Why are two effects chosen at standard when I open
+ * one of my photos?", then "main look and then we play with it in the app").
+ */
+const mainLook=()=>[{look:state.camera.recipe.layers[0]?.look||'none',amount:1}];
+/** The photographer's own photos: one opens in the editor; several go straight into the album, in the camera's main Look. */
 async function useFiles(files){
  files=files.filter(isPicture);
  if(!files.length)return;
@@ -765,7 +771,7 @@ async function useFiles(files){
 let importing=false;
 async function addToAlbum(files){
  if(importing||!engine)return;importing=true;
- const c=state.camera.recipe,recipe=normalRecipe({layers:c.layers,frame:c.frame,stamp:c.stamp,adjust:{light:c.adjust.light}});
+ const c=state.camera.recipe,recipe=normalRecipe({layers:mainLook(),frame:c.frame,stamp:c.stamp,adjust:{light:c.adjust.light}});
  let done=0,failed=0;
  try{
   for(const file of files){
@@ -790,7 +796,7 @@ async function editFile(file){
  if(!isPicture(file)){toast('That is not a picture');return;}
  try{
   const picture=await decode(file);
-  const recipe=normalRecipe({layers:state.camera.recipe.layers,stamp:false});
+  const recipe=normalRecipe({layers:mainLook(),stamp:false});
   const sourceBlob=picture.picture instanceof HTMLCanvasElement?await toBlob(picture.picture,'image/jpeg',.92):file;
   openEditor({...picture,recipe,shotId:null,taken:new Date(file.lastModified||Date.now()),sourceBlob});
  }catch{toast('That picture could not be opened');}

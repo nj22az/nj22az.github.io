@@ -55,8 +55,10 @@ when saving ? I want memory with our own photos or with the stickers".
   lettered in; drawn from paths, sharp at any size. The tail turns with the flip button, the words change with Aa or a
   double-click.
 - **Your own photos**: **Photos** at the top right (and Your photos on the first screen and in the album, or drop
-  pictures on the window, or paste one): one photo opens in the editor; several at once go straight into the album in
-  the camera's Look, frame and light.
+  pictures on the window, or paste one): one photo opens in the editor; several at once go straight into the album, with
+  the camera's frame and light. Either way they start with the camera's main Look alone, never its whole mix (the
+  owner, 29 October 2026: "main look and then we play with it in the app"); a second or third Look is added in the
+  editor.
 - **Your own stickers** (`cutout.js`, the sheet **Mine**): any photo becomes a die-cut sticker with the studio's white
   border, grey cut line and shadow; a picture with a transparent background (a subject lifted from a photo with Copy
   on an iPhone, iPad or Mac, then **Paste**) is cut round its own outline, any other with rounded corners. Kept on the

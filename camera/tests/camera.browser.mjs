@@ -200,20 +200,24 @@ async function run({label,width,height,dpr,mobile,portrait}){
   await check(`${label}: a photo from the device opens in the editor and saves as a new photo`,async()=>{
    await page.click('#closeViewer');await page.setInputFiles('#picker',garden);
    await page.waitForSelector('#editor:not([hidden])',{timeout:20000});
+   // It opens with the camera's main Look alone, not the camera's whole mix (the owner: "main look and then we play with it").
+   const opened=await app(()=>({edit:window.pocketCamera.state.edit.recipe.layers,camera:window.pocketCamera.state.camera.recipe.layers}));
+   assert.ok(opened.camera.length>1,'the camera has a mix on');
+   assert.deepEqual(opened.edit,[{look:opened.camera[0].look,amount:1}],'the photo opens in the main Look only');
    await page.click('.tile[data-look="watercolour"]');await page.click('.add-layer');await page.click('.tile[data-look="print"]');
    await page.waitForTimeout(1500);await shot('10-import');
    await page.click('#saveEdit');await page.waitForSelector('#viewer:not([hidden])',{timeout:60000});
    const n=await app(async()=>{const s=window.pocketCamera.state.shots;const b=await createImageBitmap(s[0].photo);return {count:s.length,w:b.width,h:b.height};});
    assert.equal(n.count,2);assert.deepEqual([n.w,n.h],[1920,1440]);
   });
-  await check(`${label}: several of your own photos at once go into the album in the camera's Look`,async()=>{
+  await check(`${label}: several of your own photos at once go into the album in the camera's main Look`,async()=>{
    const before=await app(()=>window.pocketCamera.state.shots.length);
    await page.click('#closeViewer');await page.setInputFiles('#picker',[photo,garden]);
    await page.waitForFunction(n=>window.pocketCamera.state.shots.length===n+2,before,{timeout:120000});
    await page.waitForSelector('#album:not([hidden])');await page.waitForTimeout(500);await shot('10b-many');
    const looks=await app(()=>window.pocketCamera.state.shots.slice(0,2).map(s=>s.recipe.layers.map(l=>l.look).join('+')));
-   const camera=await app(()=>window.pocketCamera.state.camera.recipe.layers.map(l=>l.look).join('+'));
-   assert.deepEqual(looks,[camera,camera]);
+   const camera=await app(()=>window.pocketCamera.state.camera.recipe.layers.map(l=>l.look));
+   assert.ok(camera.length>1,'the camera has a mix on');assert.deepEqual(looks,[camera[0],camera[0]],'in its main Look only');
    await page.click('#grid button');await page.waitForSelector('#viewer:not([hidden])');
   });
   await check(`${label}: your own pictures as die-cut stickers: a cut-out round its outline, a photo with rounded corners`,async()=>{
@@ -366,6 +370,7 @@ async function playAndPrint({label,width,height}){
    await page.waitForSelector('#textSheet[open]');
    assert.equal(await page.getAttribute('#letteringStyles [data-style="balloon:words"]','aria-checked'),'true','Words is chosen in the sheet');
    await page.fill('#balloonText','Nankurunaisa!');await page.locator('#textDone').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.length===1,null,{timeout:5000});
    let last=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
    assert.equal(last.id,'balloon:words');assert.equal(last.text,'Nankurunaisa!');assert.ok(last.y>.6,'words alone go low, as a caption');
    // A resident's sticker, chosen, offers their own line: as a speech balloon, or here as words alone under them.
@@ -397,6 +402,8 @@ async function playAndPrint({label,width,height}){
    await window.pocketCamera.useFiles([0,1,2,3,4,5].map(i=>new File([blob],`lake-${i}.jpg`,{type:'image/jpeg',lastModified:Date.now()-i*1000})));
   });
   await page.waitForFunction(()=>window.pocketCamera.state.mode==='album',null,{timeout:60000});
+  // Several photos go into the album in the camera's main Look alone, as one photo opens.
+  assert.ok((await page.evaluate(()=>window.pocketCamera.state.shots.slice(0,6).map(s=>s.recipe.layers.length))).every(n=>n===1),'imported in the main Look only');
   await check(`${label}: Memory with the album's own photos: the board fits, a miss turns back, the last pair wins`,async()=>{
    await page.locator('#playMemory').tap();
    await page.waitForSelector('.memory-deck[data-deck="photos"]:not([disabled])',{timeout:15000});
