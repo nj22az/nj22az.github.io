@@ -53,6 +53,17 @@ Saved planner (the retained legacy part), only if wanted:
 3. Address: for example `/vecka/` or `/onsen-planner/`. The same page can serve as the App Store support page.
 4. Planner data: this browser only (with backup), or synced (needs a backend and a new privacy review).
 
+## Claude's recommendation (given to the owner the same day; not yet accepted)
+
+1. The week utility only. The app's own direction (1 October 2026) makes the week the product and keeps the planner as a
+   retained legacy part; on the web the planner is most of the work and carries the data-loss risk.
+2. The app's own looks, Apple by default, with its own small menu (as Sjöskolan), so the page matches the app it advertises.
+3. `/vecka/`, after the proposed App Store name "Vecka — Week Number" and the `vecka://` scheme; a redirect covers a rename.
+4. No sync. If the planner is ever built: this browser only, with backup, until people ask for more.
+
+Also: the `.ics` week calendar as the widget stand-in, and the header calendar switched to the shared ISO module so it
+shows the week-year.
+
 ## Next concrete actions
 
 Once the owner answers 1–3: build the week utility as a PWA on a branch, with the shared ISO module, the ported date
