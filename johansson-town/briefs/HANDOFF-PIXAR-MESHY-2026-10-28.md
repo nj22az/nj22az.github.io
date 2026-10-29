@@ -66,13 +66,20 @@ over the lap: the reach (`reachFor`) keeps a mitten's middle 0.7 of a hand off t
   seated). Leaned in far enough to reach (0.3 rad) they hunched over their laps with their arms hanging straight, so there
   is no lean. Their re-export with his hip joints (they take his `L`) would rest their hands too.
 - `reachFor` takes `flat` (a thin hand sampled at [its thickness, its width] of the mitten's round) and `clear` (how near
-  its middle may come to the body). The cartoon bodies are as before.
+  its middle may come to the body). The cartoon bodies are as before. A second review measured the palms 1.5 to 2.7 cm
+  over the thighs: the hand was sampled more than twice as thick as it is drawn (`flat` 0.18), so it stood off the legs;
+  now 0.07. And the sitter's breath (the chest 0.02 rad) rocked the resting hand 1.5 cm, into the thigh and off it: a
+  quarter of it while the palms rest there (not driving, typing, drinking or sat on the floor). Through a breath,
+  Johansson's palm is 0.1 cm into his thigh to 0.6 cm over it at seats from 0.35 to 0.62 m; Thao's 1.8 to 2.1 cm over
+  (her arm at its full reach: nearer the hip, the hand went into the thigh). `tests/pixar-seated-hands.test.mjs` holds
+  it: the lowest of the drawn hand's vertices over the leg's top beneath it, and the wrist past 0.6 of the thigh.
 - Checked: the review's probe (every Pixar body and three cartoon looks through the animator, seated at five heights,
-  driving, drinking, typing) is identical to `main` before the change for the cartoon bodies and the three clones, and
-  for the others except their hands on the lap; in the built game on the sea-wall and quay benches and at the izakaya
-  counter (the sip valid, rim error 0), the palms on the knees, fingers over them; every Pixar body on a stool (0.44 m),
-  front and side, against `main` before the change; `tests/pixar-*.test.mjs` and the seating, drinking and collision tests
-  77/77. (`tools/pixar-sheet.mjs` exits 1 on a 404 in its page, on `main` before the change too.)
+  on a floor cushion, driving, drinking, typing) is identical to `main` before the change, but for Johansson's,
+  Thuận's and Thao's hands at rest on a chair, bench or stool and their free hand as they drink; in the built game on the
+  sea-wall and quay benches and at the izakaya counter (the sip valid, rim error 0), the palms on the knees, fingers over
+  them; every Pixar body on a stool (0.44 m),
+  front and side, against `main` before the change; `tests/pixar-*.test.mjs` (with the new one), the seating, drinking and
+  collision tests and the runtime package 83/83; the full suite's failures are `main`'s 7. (`tools/pixar-sheet.mjs` exits 1 on a 404 in its page, on `main` before the change too.)
 
 ## Open
 
@@ -81,3 +88,6 @@ over the lap: the reach (`reachFor`) keeps a mitten's middle 0.7 of a hand off t
   next export takes the same hip joints; their GLBs on `main` still have the old ones, sit as tall as he did, and their
   hands stay over their laps, not on their knees.
 - His arms are 13 % short of a person's (0.29 of his height against 0.33): the sculpt's own, kept.
+- Thao's palms rest 1.8 to 2.1 cm over her thighs: her arm at its full reach at 85 % of the way to the knee.
+- From the review of 29 October, older than the hands: his raised fist in the seated toast comes against his chin (the
+  game's toast with no jug); at the counter his free hand's fingertips touch the corner of the napkin box.
