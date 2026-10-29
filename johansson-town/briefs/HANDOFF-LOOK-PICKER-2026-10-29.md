@@ -40,4 +40,5 @@ little house in each style).
 - Under the Cartoon look the frame's surfaces are already flattened, so the other pictures show them flat too.
 - Not checked on a physical phone or a real GPU (frame cost of compiling the looks for their pictures on first open).
 
-Branch `claude/friendly-darwin-a4e3re`; not on `main`.
+Made on `claude/friendly-darwin-a4e3re`; published to `main` as `3e68490df` (a fast-forward) on the owner's word, 29 October
+2026, when they could not find the camera on the live site.
