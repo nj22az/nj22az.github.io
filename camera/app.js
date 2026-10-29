@@ -3,10 +3,13 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,normalRecipe,exportSize} from './looks-gl.js?v=20261029';
-import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum} from './album.js?v=20261029';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029b';
+import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMine,deleteMine} from './album.js?v=20261029b';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
-import {loadStickerSets,stickerLabel,createStickerLayer,drawStickers} from './stickers.js?v=20261029';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029b';
+import {makeSticker} from './cutout.js?v=20261029b';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029b';
+import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029b';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -14,12 +17,24 @@ const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const SETTINGS_KEY='office-pocket-camera';
 const MAX_LAYERS=3;
 const RATIOS=['4:3','1:1','16:9'],TIMERS=[0,3,10],ZOOMS=[1,2,3];
-// The second Look of a surprise mix: ones that read well over any other.
-const FINISHERS=['crt','tilt','riso','pocket','snes','sepia','mono','print','manga','stamp','watercolour','crayon'];
+// The dice's mixes, chosen by eye on a real photo and on the town (as the hand-held cameras' lenses were chosen, not
+// drawn at random): each a base and a Look over it, with its name. Pairs that came out as noise or mush were left out:
+// Crayon or Riso over ink, Miniature over Pocket's pixels, Stamp over Sepia, Heavy brush through the TV.
+const MIXES=[
+ ['Ink & wash','watercolour','lines',.7],['Comic colour','watercolour','manga',.5],['Sunday comic','flat','manga',.45],
+ ['Pencil & wash','watercolour','pencilManga',.5],['Inked oils','oil','manga',.4],['Line & colour','flat','lines',.6],
+ ['Cartridge TV','snes','crt',1],['Hand-held TV','pocket','crt',1],['Late show','mono','crt',1],['Old reel','sepia','crt',.8],
+ ['Toy town','print','tilt',1],['Model village','watercolour','tilt',1],['Diorama','oil','tilt',1],["Architect's model",'sketchbook','tilt',1],
+ ['Two-colour print','lines','riso',1],['Poster','print','riso',.6],
+];
+// What "Mix" puts over a Look first: its partner from a mix above, or one that reads well over most.
+const FINISHERS=['crt','tilt','riso','manga','lines','sepia','mono','stamp'];
 const ADJUSTMENTS=[
  {key:'light',label:'Light',icon:'light'},{key:'contrast',label:'Contrast',icon:'contrast'},{key:'colour',label:'Colour',icon:'colour'},
  {key:'warmth',label:'Warmth',icon:'warmth'},{key:'pattern',label:'Pattern',icon:'pattern',hint:'The size of dots, strokes and lines'},
+ {key:'detail',label:'Detail',icon:'detail',hint:'How many lines the drawn Looks ink: fewer and bolder, or more'},
 ];
+const TRICK_LABELS={none:'Off',twin:'Twin',quad:'Quad'};
 const THUMB=144;
 
 const store={
@@ -34,10 +49,14 @@ const state={
   timer:TIMERS.includes(saved.timer)?saved.timer:0,zoom:1,facing:saved.facing==='user'?'user':'environment',mirror:false,stream:null,running:false,busy:false},
  edit:null,
  shots:[],viewing:null,
+ sound:saved.sound!==false,
 };
 state.camera.recipe.stamp=!!saved.stamp;
 const current=()=>state.mode==='editor'?state.edit:state.camera;
-function remember(){const c=state.camera;store.write({...store.read(),recipe:{layers:c.recipe.layers,stickers:c.recipe.stickers},ratio:c.ratio,timer:c.timer,stamp:c.recipe.stamp,facing:c.facing});}
+function remember(){
+ const c=state.camera,r=c.recipe;
+ store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick},ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound});
+}
 
 // ---------- The engine and its canvas ----------
 const canvas=document.createElement('canvas');
@@ -76,6 +95,7 @@ export function dateStamp(date){
 // Sound: a two-part mechanical shutter and a soft tick, made here rather than loaded.
 let audio;
 function sound(kind){
+ if(!state.sound)return;
  try{
   audio??=new (window.AudioContext||window.webkitAudioContext)();
   if(audio.state==='suspended')audio.resume();
@@ -90,6 +110,11 @@ function sound(kind){
   if(kind==='shutter'){burst(0,.045,3200,.5);burst(.075,.06,1900,.38);}
   else if(kind==='tick')burst(0,.012,4200,.12);
   else if(kind==='count')burst(0,.02,2600,.18);
+  else if(kind==='pop'){
+   // A small rising blip, for a sticker stuck on.
+   const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(980,t+.07);
+   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.16,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.13);o.connect(g).connect(audio.destination);o.start(t);o.stop(t+.14);
+  }
  }catch{}
  if(kind!=='tick')navigator.vibrate?.(kind==='shutter'?12:6);
 }
@@ -105,11 +130,29 @@ function fitFrame(frame,stage,aspect){
  return {width:fw,height:fh};
 }
 function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}}
-function placeCanvas(frame){if(canvas.parentElement!==frame)frame.prepend(canvas);}
-function stampOverlay(frame,on,date){
+function placeCanvas(frame){if(canvas.parentElement!==frame)frame.prepend(canvas);frameArt(frame).key='';}
+/** The frame over the picture (frames.js), drawn at the screen's detail; only again when the frame or the size changes. */
+function frameArt(frame){
+ let art=frame.querySelector('canvas.frame-art');
+ if(!art){art=document.createElement('canvas');art.className='frame-art';art.setAttribute('aria-hidden','true');}
+ if(art.previousElementSibling!==canvas&&canvas.parentElement===frame)canvas.after(art);else if(!art.parentElement)frame.prepend(art);
+ return art;
+}
+function paintFrame(frame,id,hide=false){
+ const art=frameArt(frame),w=frame.clientWidth,h=frame.clientHeight,dpr=Math.min(3,devicePixelRatio||1);
+ art.hidden=hide||id==='none';
+ const key=`${id}|${w}|${h}|${dpr}`;
+ if(art.hidden||art.key===key)return;
+ art.key=key;art.width=Math.max(1,Math.round(w*dpr));art.height=Math.max(1,Math.round(h*dpr));
+ const g=art.getContext('2d');g.clearRect(0,0,art.width,art.height);drawFrame(g,id,art.width,art.height);
+}
+/** The date in the picture's own corner, inside any frame, the size the save prints it. */
+function stampOverlay(frame,on,date,frameId='none'){
  let el=frame.querySelector('.date-stamp');
  if(!on){el?.remove();return;}
  if(!el){el=document.createElement('time');el.className='date-stamp';frame.append(el);}
+ const w=frame.clientWidth,h=frame.clientHeight,inner=frameInner(frameId,w,h);
+ el.style.right=`${w-inner.x-inner.w+inner.w*.035}px`;el.style.bottom=`${h-inner.y-inner.h+inner.h*.03}px`;el.style.fontSize=`${inner.h*.045}px`;
  el.textContent=dateStamp(date);el.dateTime=date.toISOString().slice(0,10);
 }
 
@@ -169,8 +212,17 @@ function renderAmount(){
  a.setAttribute('aria-label',`${LOOKS[layer.look].label} intensity`);
  a.disabled=layer.look==='none';
 }
-function showAmountRow(show){$('amountRow').hidden=!show;}
+// In the editor the intensity sits under the layers; in the camera it takes the strip's place at the strip's height,
+// so it never covers the picture's own controls and the viewfinder does not change size.
+const wide=matchMedia('(min-width:1000px) and (min-aspect-ratio:5/4)');
+function showAmountRow(show){
+ // Beside the picture (a wide window) there is room for both.
+ const row=$('amountRow'),inCamera=state.mode==='camera'&&!wide.matches;
+ if(inCamera&&show)row.style.height=`${strip.offsetHeight}px`;else row.style.height='';
+ row.hidden=!show;strip.hidden=inCamera&&show;
+}
 function toggleAmount(){if(state.mode==='camera')showAmountRow($('amountRow').hidden);}
+$('amountDone').addEventListener('click',()=>{sound('tick');showAmountRow(false);});
 /** After any change to the mix: redraw the tray and the picture. */
 function trayChanged({thumbs=false,announce=false,scroll=true}={}){
  renderLayers();renderStripSelection({scroll});renderAmount();
@@ -192,9 +244,10 @@ function stepLook(dir){
 }
 function addLayer(){
  const ctx=current();if(ctx.recipe.layers.length>=MAX_LAYERS)return;
- const used=new Set(ctx.recipe.layers.map(l=>l.look));
- const next=FINISHERS.find(n=>!used.has(n)&&tiles.has(n))||'crt';
- ctx.recipe.layers.push({look:next,amount:1});ctx.active=ctx.recipe.layers.length-1;
+ const used=new Set(ctx.recipe.layers.map(l=>l.look)),top=ctx.recipe.layers.at(-1).look;
+ const partner=MIXES.find(([,base,over])=>base===top&&!used.has(over)&&tiles.has(over));
+ const next=partner?partner[2]:FINISHERS.find(n=>!used.has(n)&&tiles.has(n))||'crt';
+ ctx.recipe.layers.push({look:next,amount:partner?partner[3]:1});ctx.active=ctx.recipe.layers.length-1;
  trayChanged({thumbs:true,announce:true});
  layersEl.querySelectorAll('.layer')[ctx.active]?.classList.add('enter');
 }
@@ -203,14 +256,16 @@ function removeLayer(i){
  ctx.recipe.layers.splice(i,1);if(i<ctx.active)ctx.active--;ctx.active=Math.min(ctx.active,ctx.recipe.layers.length-1);
  trayChanged({thumbs:true,announce:true});
 }
+let lastMix=-1;
 function shuffle(){
- const ctx=current(),names=offered().filter(n=>n!=='none'),pick=list=>list[Math.floor(Math.random()*list.length)];
- const first=pick(names),layers=[{look:first,amount:1}];
- if(Math.random()<.65){const second=pick(FINISHERS.filter(n=>n!==first&&tiles.has(n)));if(second)layers.push({look:second,amount:Math.round((.65+Math.random()*.35)*100)/100});}
- ctx.recipe.layers=layers;ctx.active=0;
- trayChanged({thumbs:true,announce:true});
+ const ctx=current(),choices=MIXES.map((m,i)=>i).filter(i=>i!==lastMix&&tiles.has(MIXES[i][1])&&tiles.has(MIXES[i][2]));
+ if(!choices.length)return;
+ const i=choices[Math.floor(Math.random()*choices.length)],[name,base,over,amount]=MIXES[i];lastMix=i;
+ ctx.recipe.layers=[{look:base,amount:1},{look:over,amount}];ctx.active=0;
+ trayChanged({thumbs:true});
+ toast(`${name} · ${mixLabel(ctx.recipe)}`,{look:true,ms:1300});sound('tick');
 }
-strip.addEventListener('click',e=>{const t=e.target.closest('.tile');if(t)chooseLook(t.dataset.look);});
+strip.addEventListener('click',e=>{const t=e.target.closest('.tile');if(t){sound('tick');chooseLook(t.dataset.look);}});
 strip.addEventListener('keydown',e=>{
  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
  e.preventDefault();e.stopPropagation();stepLook(e.key==='ArrowRight'?1:-1);
@@ -294,6 +349,7 @@ function drawCamera(t){
  setCanvasSize(h*pw/ph,h);
  const drawn=engine.draw(state.camera.recipe,{source:'live',crop,mirror:state.camera.mirror});
  if(drawn)govern(t);
+ paintFrame($('cameraFrame'),state.camera.recipe.frame);
 }
 // Lower the viewfinder's detail when frames come slowly, raise it again when they come easily.
 function govern(t){
@@ -311,7 +367,8 @@ function drawEditor(){
  setCanvasSize(h*e.width/e.height,h);
  const recipe=e.comparing?normalRecipe():e.recipe;
  dirty=!engine.draw(recipe,{source:'edit'});
- stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing,e.taken);
+ paintFrame($('editFrame'),e.recipe.frame,e.comparing);
+ stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing,e.taken,e.recipe.frame);
 }
 addEventListener('resize',invalidate);
 
@@ -358,36 +415,85 @@ $('flip').addEventListener('click',()=>{
  $('cameraFrame').animate?.([{transform:'rotateY(0)'},{transform:'rotateY(90deg)',opacity:.3},{transform:'rotateY(0)'}],{duration:reduceMotion?1:420,easing:'ease-in-out'});
  startCamera();
 });
-function renderCameraChips(){
- const c=state.camera;
- $('timer').querySelector('span').textContent=c.timer?`${c.timer}s`:'Off';$('timer').classList.toggle('on',c.timer>0);
- $('timer').setAttribute('aria-label',`Self-timer: ${c.timer?`${c.timer} seconds`:'off'}`);
- $('ratio').querySelector('span').textContent=c.ratio;$('ratio').setAttribute('aria-label',`Picture shape: ${c.ratio}`);
- $('stamp').setAttribute('aria-pressed',String(c.recipe.stamp));
- $('zoom').textContent=`${c.zoom}×`;$('zoom').setAttribute('aria-label',`Zoom ${c.zoom}×`);
- stampOverlay($('cameraFrame'),c.recipe.stamp,new Date());
+// The settings row: each button shows its value, in yellow when it is switched on; a tap moves it to the next value.
+function setting(id,{label,on,icon,aria}){
+ const b=$(id);b.querySelector('span').textContent=label;b.classList.toggle('on',!!on);b.setAttribute('aria-label',aria);
+ if(icon)b.querySelector('use').setAttribute('href',`#i-${icon}`);
 }
-$('timer').addEventListener('click',()=>{const c=state.camera;c.timer=TIMERS[(TIMERS.indexOf(c.timer)+1)%TIMERS.length];renderCameraChips();remember();});
-$('ratio').addEventListener('click',()=>{const c=state.camera;c.ratio=RATIOS[(RATIOS.indexOf(c.ratio)+1)%RATIOS.length];renderCameraChips();remember();refreshThumbs(true);});
-$('stamp').addEventListener('click',()=>{const c=state.camera;c.recipe.stamp=!c.recipe.stamp;renderCameraChips();remember();toast(c.recipe.stamp?'Date stamp on':'Date stamp off');});
-$('zoom').addEventListener('click',()=>{const c=state.camera;c.zoom=ZOOMS[(ZOOMS.indexOf(c.zoom)+1)%ZOOMS.length];renderCameraChips();refreshThumbs(true);});
+function renderCameraChips(){
+ const c=state.camera,r=c.recipe,frame=FRAMES.find(f=>f.id===r.frame);
+ setting('timer',{label:c.timer?`${c.timer}s`:'Timer',on:c.timer>0,aria:`Self-timer: ${c.timer?`${c.timer} seconds`:'off'}`});
+ setting('ratio',{label:c.ratio,aria:`Picture shape: ${c.ratio}`});
+ setting('frameSetting',{label:r.frame==='none'?'Frame':frame.label,on:r.frame!=='none',aria:`Frame: ${frame.label}`});
+ setting('mirrorSetting',{label:r.trick==='none'?'Mirror':TRICK_LABELS[r.trick],on:r.trick!=='none',aria:`Mirror lens: ${TRICK_LABELS[r.trick]}`});
+ setting('stamp',{label:'Date',on:r.stamp,aria:`Date stamp: ${r.stamp?'on':'off'}`});
+ setting('soundSetting',{label:state.sound?'Sound':'Muted',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
+ // What is switched on, beside the chevron, so it is never a surprise in the photo.
+ const status=[c.timer&&'timer',r.frame!=='none'&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
+ $('settingsStatus').innerHTML=status.map(icon).join('');
+ $('settingsToggle').classList.toggle('busy',status.length>0);
+ $('zoom').textContent=`${c.zoom}×`;$('zoom').setAttribute('aria-label',`Zoom ${c.zoom}×`);
+ renderExposure();
+ stampOverlay($('cameraFrame'),r.stamp,new Date(),r.frame);
+}
+function showSettings(open){
+ $('settings').hidden=!open;$('settingsToggle').setAttribute('aria-expanded',String(open));$('settingsToggle').classList.toggle('open',open);
+}
+$('settingsToggle').addEventListener('click',()=>{sound('tick');showSettings($('settings').hidden);});
+const cycle=(list,value)=>list[(list.indexOf(value)+1)%list.length];
+// The row shows each value as it changes, so a change needs no message of its own.
+function changeSetting(fn){fn();sound('tick');renderCameraChips();remember();invalidate();}
+$('timer').addEventListener('click',()=>changeSetting(()=>{state.camera.timer=cycle(TIMERS,state.camera.timer);}));
+$('ratio').addEventListener('click',()=>changeSetting(()=>{state.camera.ratio=cycle(RATIOS,state.camera.ratio);refreshThumbs(true);}));
+$('frameSetting').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.frame=cycle(FRAMES.map(f=>f.id),r.frame);}));
+$('mirrorSetting').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.trick=cycle(TRICKS,r.trick);refreshThumbs(true);}));
+$('stamp').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.stamp=!r.stamp;}));
+$('soundSetting').addEventListener('click',()=>{state.sound=!state.sound;sound('tick');renderCameraChips();remember();});
+$('zoom').addEventListener('click',()=>{const c=state.camera;c.zoom=cycle(ZOOMS,c.zoom);sound('tick');renderCameraChips();refreshThumbs(true);});
+
+// Light, live, as the hand-held camera set brightness on its pad: drag up or down on the picture. The sun shows how far;
+// the small sun chip, while it is not neutral, puts it back.
+function renderExposure(){
+ const v=state.camera.recipe.adjust.light,chip=$('exposureChip');
+ chip.hidden=Math.abs(v)<.02;chip.querySelector('span').textContent=`${v>0?'+':''}${v.toFixed(1)}`;
+ chip.setAttribute('aria-label',`Light ${v>0?'+':''}${v.toFixed(1)}: tap to put it back`);
+ $('exposure').style.setProperty('--at',String(.5-v/2));
+}
+let exposureTimer;
+function setExposure(v){
+ state.camera.recipe.adjust.light=Math.round(Math.max(-1,Math.min(1,v))*20)/20;
+ const e=$('exposure');e.classList.add('show');clearTimeout(exposureTimer);exposureTimer=setTimeout(()=>e.classList.remove('show'),900);
+ renderExposure();refreshThumbs();invalidate();
+}
+$('exposureChip').addEventListener('click',()=>{sound('tick');setExposure(0);remember();});
 
 // Swipe across the picture for the next Look; tap twice to turn the camera round.
-function gestures(stage,{onDoubleTap}={}){
+function gestures(stage,{onDoubleTap,onDrag}={}){
  let start=null,lastTap=0;
- stage.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;start={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId};});
+ stage.addEventListener('pointerdown',e=>{if(e.target.closest('button,.settings'))return;start={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId,dragging:false};});
+ stage.addEventListener('pointermove',e=>{
+  if(!start||e.pointerId!==start.id||!onDrag)return;
+  const dx=e.clientX-start.x,dy=e.clientY-start.y;
+  if(!start.dragging&&Math.abs(dy)>14&&Math.abs(dy)>Math.abs(dx)*1.3){start.dragging=true;start.from=onDrag.begin();}
+  if(start.dragging)onDrag.move(start.from,dy);
+ });
  stage.addEventListener('pointerup',e=>{
   if(!start||e.pointerId!==start.id)return;
-  const dx=e.clientX-start.x,dy=e.clientY-start.y,dt=performance.now()-start.t;start=null;
+  const dx=e.clientX-start.x,dy=e.clientY-start.y,dt=performance.now()-start.t,dragged=start.dragging;start=null;
+  if(dragged){onDrag.end?.();return;}
   if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.4&&dt<700){stepLook(dx<0?1:-1);return;}
   if(Math.hypot(dx,dy)<10&&dt<300){
    const now=performance.now();
-   if(now-lastTap<320){lastTap=0;onDoubleTap?.();}else{lastTap=now;if(state.mode==='camera')showAmountRow(false);}
+   if(now-lastTap<320){lastTap=0;onDoubleTap?.();}else{lastTap=now;if(state.mode==='camera'){showAmountRow(false);showSettings(false);}}
   }
  });
  stage.addEventListener('pointercancel',()=>{start=null;});
 }
-gestures($('cameraStage'),{onDoubleTap:()=>{if(state.camera.running&&!$('flip').hidden)$('flip').click();}});
+gestures($('cameraStage'),{
+ onDoubleTap:()=>{if(state.camera.running&&!$('flip').hidden)$('flip').click();},
+ // The whole height of the picture is the whole range of light.
+ onDrag:{begin:()=>state.camera.recipe.adjust.light,move:(from,dy)=>setExposure(from-dy/($('cameraFrame').clientHeight||1)*2),end:remember},
+});
 
 // Taking a photo: the frame as it is now, at the camera's full detail, through the whole recipe.
 $('shutter').addEventListener('click',()=>takePhoto());
@@ -432,9 +538,10 @@ const toBlob=(c,type,q)=>new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Err
 async function finishPhoto(pixels,recipe,date){
  const c=document.createElement('canvas');c.width=pixels.width;c.height=pixels.height;
  const g=c.getContext('2d');g.putImageData(new ImageData(pixels.data,pixels.width,pixels.height),0,0);
+ drawFrame(g,recipe.frame,c.width,c.height);
  const missing=await drawStickers(g,c.width,c.height,recipe.stickers);
  if(missing)toast(missing===1?'A sticker could not be loaded and is left off':`${missing} stickers could not be loaded and are left off`,{ms:2600});
- if(recipe.stamp)printStamp(g,c.width,c.height,date);
+ if(recipe.stamp)printStamp(g,frameInner(recipe.frame,c.width,c.height),date);
  try{
   const photo=await toBlob(c,'image/jpeg',.92);
   const s=Math.min(c.width,c.height),t=document.createElement('canvas');t.width=t.height=320;
@@ -442,11 +549,11 @@ async function finishPhoto(pixels,recipe,date){
   return {photo,thumb:await toBlob(t,'image/jpeg',.8)};
  }finally{c.width=c.height=0;}
 }
-function printStamp(g,w,h,date){
+function printStamp(g,{x:left,y:top,w,h},date){
  const size=h*.045,text=dateStamp(date);
  g.save();g.font=`700 ${size}px "Courier New",ui-monospace,monospace`;g.textAlign='right';g.textBaseline='bottom';
  if('letterSpacing' in g)g.letterSpacing=`${size*.06}px`;
- const x=w-w*.035,y=h-h*.03;
+ const x=left+w-w*.035,y=top+h-h*.03;
  g.fillStyle='rgba(0,0,0,.75)';g.shadowColor='rgba(0,0,0,.85)';g.shadowBlur=size*.16;g.shadowOffsetY=size*.08;g.fillText(text,x,y);
  g.shadowColor='rgba(255,120,30,.55)';g.shadowBlur=size*.5;g.shadowOffsetY=0;g.fillStyle='#ff9a3c';g.fillText(text,x,y);
  g.restore();
@@ -515,6 +622,7 @@ function show(mode){
  if(mode==='camera'||mode==='editor'){buildTrayFor();}
  if(mode==='camera'){renderCameraChips();if(!state.camera.running)maybeStartCamera();else{refreshThumbs(true);schedule();}}
  else if(state.camera.running)stopCamera();
+ if(mode!=='camera')showSettings(false);
  invalidate();
 }
 function buildTrayFor(){
@@ -557,24 +665,56 @@ $('editPhoto').addEventListener('click',async()=>{
  const picture=await decode(shot.source||shot.photo);
  openEditor({...picture,recipe:shot.source?shot.recipe:normalRecipe(),shotId:shot.id,taken:new Date(shot.taken||shot.created),sourceBlob:shot.source||shot.photo});
 });
-$('deletePhoto').addEventListener('click',()=>{
- const sheet=$('deleteSheet');
- sheet.onclose=async()=>{
-  if(sheet.returnValue!=='delete'||!state.viewing)return;
-  const id=state.viewing.id;await deleteShot(id).catch(()=>{});
-  state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
- };
+/** The action sheet for anything that cannot be undone. */
+function confirmDelete(message,label,then){
+ const sheet=$('deleteSheet');$('deleteMessage').textContent=message;$('deleteConfirm').textContent=label;
+ sheet.onclose=()=>{if(sheet.returnValue==='delete')then();};
  sheet.returnValue='';sheet.showModal();
-});
+}
+$('deletePhoto').addEventListener('click',()=>confirmDelete('This photo will be deleted from this device.','Delete Photo',async()=>{
+ if(!state.viewing)return;
+ const id=state.viewing.id;await deleteShot(id).catch(()=>{});
+ state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
+}));
 
 // ---------- Editor ----------
 function pickPhoto(){$('picker').value='';$('picker').click();}
 for(const id of ['import','welcomeImport','albumImport','emptyImport'])$(id).addEventListener('click',pickPhoto);
-$('picker').addEventListener('change',async e=>{
- const file=e.target.files?.[0];if(file)await editFile(file);
-});
+$('picker').addEventListener('change',e=>useFiles([...e.target.files||[]]));
+const isPicture=file=>file.type.startsWith('image/')||/\.(jpe?g|png|webp|gif|avif|heic|heif)$/i.test(file.name);
+/** The photographer's own photos: one opens in the editor; several go straight into the album in the camera's Look. */
+async function useFiles(files){
+ files=files.filter(isPicture);
+ if(!files.length)return;
+ if(files.length===1){await editFile(files[0]);return;}
+ await addToAlbum(files);
+}
+let importing=false;
+async function addToAlbum(files){
+ if(importing||!engine)return;importing=true;
+ const c=state.camera.recipe,recipe=normalRecipe({layers:c.layers,frame:c.frame,stamp:c.stamp,adjust:{light:c.adjust.light}});
+ let done=0,failed=0;
+ try{
+  for(const file of files){
+   toast(`Adding ${done+failed+1} of ${files.length} in ${mixLabel(recipe)}…`,{ms:60000});
+   try{
+    const picture=await decode(file);
+    engine.setSource('import',picture.picture,picture.width,picture.height);
+    let finished;
+    try{finished=await finishPhoto(engine.render(recipe,{source:'import',width:picture.width,height:picture.height}),recipe,new Date(file.lastModified||Date.now()));}
+    finally{engine.dropSource('import');}
+    const source=picture.picture instanceof HTMLCanvasElement?await toBlob(picture.picture,'image/jpeg',.92):file;
+    picture.close();
+    await keep({...finished,source,recipe,width:picture.width,height:picture.height,taken:file.lastModified||Date.now()});done++;
+   }catch(err){console.error(err);failed++;}
+   await nextFrame();
+  }
+ }finally{importing=false;}
+ toast(failed?`${done} added to the album; ${failed} could not be opened`:`${done} photos added to the album`,{ms:2600});
+ openAlbum();
+}
 async function editFile(file){
- if(!file.type.startsWith('image/')&&!/\.(jpe?g|png|webp|gif|avif|heic|heif)$/i.test(file.name)){toast('That is not a picture');return;}
+ if(!isPicture(file)){toast('That is not a picture');return;}
  try{
   const picture=await decode(file);
   const recipe=normalRecipe({layers:state.camera.recipe.layers,stamp:false});
@@ -587,7 +727,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  state.edit?.picture?.close?.();
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
  engine.setSource('edit',picture,width,height);
- show('editor');selectTab('looks');renderAdjusters();renderEditChips();editStickers.select(null);
+ show('editor');selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
@@ -596,8 +736,29 @@ function closeEditor(){
  if(from==='viewer'&&state.viewing)openViewer(state.viewing.id);else if(from==='album')openAlbum();else show('camera');
 }
 $('cancelEdit').addEventListener('click',closeEditor);
-function renderEditChips(){$('editStamp').setAttribute('aria-pressed',String(state.edit.recipe.stamp));}
-$('editStamp').addEventListener('click',()=>{const e=state.edit;e.recipe.stamp=!e.recipe.stamp;renderEditChips();invalidate();});
+// The Frame tab: the frames drawn over the photo itself, the mirror lens, the date stamp.
+function renderFramePanel(){
+ const e=state.edit;if(!e)return;
+ const box=$('frameChoices');box.textContent='';
+ const natural=tiles.get('none')?.canvas;
+ for(const f of FRAMES){
+  const b=document.createElement('button');b.type='button';b.className='frame-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.frame===f.id));
+  b.title=f.hint||'No frame';b.dataset.frame=f.id;
+  const c=document.createElement('canvas');c.width=c.height=132;const g=c.getContext('2d');
+  if(natural?.classList.contains('drawn'))g.drawImage(natural,0,0,132,132);else{g.fillStyle='#3a3a3c';g.fillRect(0,0,132,132);}
+  drawFrame(g,f.id,132,132);
+  const label=document.createElement('span');label.textContent=f.label;
+  b.append(c,label);box.append(b);
+ }
+ const seg=$('mirrorChoices');seg.textContent='';
+ for(const t of TRICKS){
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.trick===t));b.dataset.trick=t;b.textContent=TRICK_LABELS[t];seg.append(b);
+ }
+ $('editStamp').setAttribute('aria-checked',String(e.recipe.stamp));
+}
+$('frameChoices').addEventListener('click',ev=>{const b=ev.target.closest('.frame-choice');if(!b||!state.edit)return;sound('tick');state.edit.recipe.frame=b.dataset.frame;renderFramePanel();invalidate();});
+$('mirrorChoices').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');state.edit.recipe.trick=b.dataset.trick;renderFramePanel();refreshThumbs(true);invalidate();});
+$('editStamp').addEventListener('click',()=>{const e=state.edit;if(!e)return;sound('tick');e.recipe.stamp=!e.recipe.stamp;renderFramePanel();invalidate();});
 $('saveEdit').addEventListener('click',async()=>{
  const e=state.edit;if(!e||e.saving)return;
  const button=$('saveEdit');e.saving=true;button.disabled=true;$('cancelEdit').disabled=true;button.textContent='Saving…';await nextFrame();
@@ -627,43 +788,134 @@ $('saveEdit').addEventListener('click',async()=>{
  gestures(stage);
 }
 function selectTab(tab){
- for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabStickers','panelStickers','stickers']]){
+ for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
   $(id).setAttribute('aria-selected',String(tab===name));$(panel).hidden=tab!==name;
  }
  if(tab==='looks')requestAnimationFrame(()=>renderStripSelection());
  if(tab==='stickers')renderStickerPicker();
+ if(tab==='frame')renderFramePanel();
 }
 $('tabLooks').addEventListener('click',()=>selectTab('looks'));
 $('tabAdjust').addEventListener('click',()=>selectTab('adjust'));
 $('tabStickers').addEventListener('click',()=>selectTab('stickers'));
+$('tabFrame').addEventListener('click',()=>selectTab('frame'));
 
 // ---------- Stickers ----------
-const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember});
-const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{}});
+/** Asks for a balloon's words in a small sheet; resolves to the words, or null if cancelled. */
+function askText(initial,placeholder){
+ const sheet=$('textSheet'),field=$('balloonText');
+ field.value=initial||'';field.placeholder=placeholder||'';sheet.returnValue='';
+ return new Promise(resolve=>{
+  sheet.onclose=()=>resolve(sheet.returnValue==='ok'?field.value.trim():null);
+  sheet.showModal();requestAnimationFrame(()=>{field.focus();field.select();});
+ });
+}
+// Return finishes the words (Shift+Return starts a new line).
+$('balloonText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('textSheet').close('ok');}});
+async function editBalloonText(layer,i,s){
+ const text=await askText(s.text,BALLOONS.find(b=>b.id===s.id)?.sample);
+ if(text)layer.setText(i,text);
+}
+const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember,editText:(i,s)=>editBalloonText(cameraStickers,i,s)});
+const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s)});
 const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?cameraStickers:null;
-let stickerSet=0;
+// The sheets: Lettering first (balloons and captions), then the residents' sheets, then the photographer's own.
+let stickerSet=1,mine=[];
+async function loadMine(){
+ try{
+  mine=await listMine();
+  for(const m of mine)if(!stickerById(m.id))registerSticker({id:m.id,url:URL.createObjectURL(m.blob),thumbUrl:null,width:m.width,height:m.height});
+ }catch{mine=[];}
+}
+/** A picture to a new own sticker, kept, and stuck on the picture at once. */
+async function stickerFromPicture(file){
+ const layer=stickerLayer();
+ try{
+  toast('Cutting your sticker…',{ms:8000});
+  const made=await makeSticker(file);
+  const record=await addMine({blob:made.blob,width:made.width,height:made.height,cut:made.cut});
+  mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(made.blob),width:made.width,height:made.height});
+  toast(made.cut==='outline'?'Cut round its outline':'A photo sticker',{ms:1400});
+  if($('stickerSheet').open)$('stickerSheet').close();
+  layer?.add(record.id);sound('pop');
+  if(state.mode==='editor'&&!$('panelStickers').hidden)renderStickerPicker();
+ }catch(err){console.error(err);toast('That picture could not be made into a sticker');}
+}
+$('stickerFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f)stickerFromPicture(f);});
+async function pasteSticker(){
+ try{
+  for(const item of await navigator.clipboard.read()){
+   const type=item.types.find(t=>t.startsWith('image/'));
+   if(type){await stickerFromPicture(new File([await item.getType(type)],'pasted',{type}));return;}
+  }
+  toast('There is no picture to paste. Copy a photo, or a subject lifted from one, first.',{ms:2600});
+ }catch{toast('Pasting was not allowed here.',{ms:2000});}
+}
+function removeMine(id){
+ confirmDelete('This sticker will be deleted from this device. Photos already saved keep it.','Delete Sticker',async()=>{
+  await deleteMine(id).catch(()=>{});
+  const url=stickerById(id)?.url;forgetSticker(id);if(url)URL.revokeObjectURL(url);
+  mine=mine.filter(m=>m.id!==id);
+  // Off the viewfinder and the photo being edited too.
+  for(const list of [state.camera.recipe.stickers,state.edit?.recipe.stickers].filter(Boolean))for(let i=list.length-1;i>=0;i--)if(list[i].id===id)list.splice(i,1);
+  cameraStickers.select(null);editStickers.select(null);remember();renderStickerPicker();
+ });
+}
 async function renderStickerPicker(){
  const grid=$('stickerGrid'),sets=$('stickerSets');
  let manifest;
  try{manifest=await loadStickerSets();}catch{grid.innerHTML='<p class="fine">The stickers could not be loaded.</p>';return;}
  sets.textContent='';
- manifest.sets.forEach((set,i)=>{
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=set.name;
-  b.setAttribute('aria-selected',String(i===stickerSet));b.addEventListener('click',()=>{stickerSet=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
+ ['Lettering',...manifest.sets.map(s=>s.name),'Mine'].forEach((name,i)=>{
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;
+  b.setAttribute('aria-selected',String(i===stickerSet));b.addEventListener('click',()=>{sound('tick');stickerSet=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
   sets.append(b);
  });
  grid.textContent='';
- for(const s of manifest.sets[stickerSet].stickers){
+ if(stickerSet===0){
+  await loadLetteringFont();
+  for(const b of BALLOONS){
+   const button=document.createElement('button');button.type='button';button.className='sticker-choice lettering';button.dataset.id=b.id;
+   button.setAttribute('aria-label',`${b.label} balloon`);button.title=b.label;
+   const art=balloonCanvas(b.id,b.sample,false,160);art.setAttribute('aria-hidden','true');
+   const name=document.createElement('span');name.textContent=b.label;
+   button.append(art,name);grid.append(button);
+  }
+  return;
+ }
+ if(stickerSet===manifest.sets.length+1){
+  const make=(label,glyph,fn,aria)=>{const b=document.createElement('button');b.type='button';b.className='sticker-choice make';b.innerHTML=`${icon(glyph)}<span>${label}</span>`;b.setAttribute('aria-label',aria);b.addEventListener('click',fn);grid.append(b);};
+  make('From a photo','photo',()=>$('stickerFile').click(),'Make a sticker from one of your photos');
+  if(navigator.clipboard?.read)make('Paste','paste',pasteSticker,'Paste a picture or a lifted subject as a sticker');
+  for(const m of mine){
+   const info=stickerById(m.id);if(!info)continue;
+   const b=document.createElement('button');b.type='button';b.className='sticker-choice mine';b.dataset.id=m.id;b.setAttribute('aria-label','Your sticker');
+   b.innerHTML=`<img src="${info.url}" alt="" decoding="async"><span class="mine-remove" role="button" aria-label="Delete this sticker">${icon('x')}</span>`;
+   grid.append(b);
+  }
+  const note=document.createElement('p');note.className='sticker-note';
+  note.textContent='Any photo becomes a die-cut sticker. On an iPhone, iPad or Mac, touch and hold the subject of a photo in Photos, choose Copy, then Paste here: it is cut round its outline.';
+  grid.append(note);
+  return;
+ }
+ for(const s of manifest.sets[stickerSet-1].stickers){
   const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
   b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
   b.innerHTML=`<img src="${s.thumbUrl}" alt="" loading="lazy" decoding="async" width="${Math.round(256*s.width/Math.max(s.width,s.height))}" height="${Math.round(256*s.height/Math.max(s.width,s.height))}">`;
   grid.append(b);
  }
 }
-$('stickerGrid').addEventListener('click',e=>{
- const b=e.target.closest('.sticker-choice');if(!b)return;
- sound('tick');stickerLayer()?.add(b.dataset.id);
+$('stickerGrid').addEventListener('click',async e=>{
+ const gone=e.target.closest('.mine-remove');if(gone){e.stopPropagation();removeMine(gone.closest('.sticker-choice').dataset.id);return;}
+ const b=e.target.closest('.sticker-choice');if(!b||b.classList.contains('make'))return;
+ const layer=stickerLayer();if(!layer)return;
  if(state.mode==='camera')$('stickerSheet').close();
+ if(b.classList.contains('lettering')){
+  const text=await askText('',BALLOONS.find(x=>x.id===b.dataset.id)?.sample);
+  if(!text)return;
+  await loadLetteringFont();layer.add(b.dataset.id,{text});
+ }else layer.add(b.dataset.id);
+ sound('pop');
 });
 function openStickerSheet(){
  const sheet=$('stickerSheet');sheet.append($('stickerPicker'));renderStickerPicker();sheet.showModal();
@@ -702,6 +954,7 @@ addEventListener('keydown',e=>{
   if(move){e.preventDefault();layer.nudge(...move);return;}
  }
  if(state.mode==='camera'){
+  if(e.key==='Escape'&&!$('settings').hidden){e.preventDefault();showSettings(false);return;}
   if((e.key===' '||e.key==='Enter')&&!e.target.closest?.('button,a')){e.preventDefault();takePhoto();}
   else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
  }else if(e.key==='Escape'){
@@ -709,7 +962,16 @@ addEventListener('keydown',e=>{
  }else if(state.mode==='editor'&&(e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
 });
 addEventListener('dragover',e=>{if([...e.dataTransfer?.items||[]].some(i=>i.kind==='file'))e.preventDefault();});
-addEventListener('drop',e=>{const f=[...e.dataTransfer?.files||[]].find(f=>f.type.startsWith('image/'));if(f){e.preventDefault();editFile(f);}});
+addEventListener('drop',e=>{const files=[...e.dataTransfer?.files||[]].filter(isPicture);if(files.length){e.preventDefault();useFiles(files);}});
+// A pasted picture: a sticker while the stickers are open (a subject lifted in Photos is cut round its outline), else
+// a photo to edit.
+addEventListener('paste',e=>{
+ if(e.target.closest?.('input,textarea'))return;
+ const file=[...e.clipboardData?.files||[]].find(isPicture);if(!file)return;
+ e.preventDefault();
+ const stickersOpen=$('stickerSheet').open||(state.mode==='editor'&&!$('panelStickers').hidden);
+ if(stickersOpen)stickerFromPicture(file);else useFiles([file]);
+});
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){if(state.camera.running){stopCamera();state.camera.resume=true;}}
  else if(state.camera.resume&&state.mode==='camera'){state.camera.resume=false;startCamera();}
@@ -722,9 +984,17 @@ if(!startEngine()){
  $('welcome').querySelector('p').textContent='Pocket Camera needs WebGL 2, which this browser does not offer.';
  $('welcome').querySelector('.welcome-actions').hidden=true;$('welcomeNote').hidden=true;
 }else{
- buildStrip();show('camera');loadShots();cameraStickers.render();
- // The camera's stickers need their pictures before they can show.
- if(state.camera.recipe.stickers.length)loadStickerSets().then(()=>cameraStickers.render()).catch(()=>{});
+ buildStrip();show('camera');loadShots();
+ loadMine().then(()=>cameraStickers.render());
+ // The camera's stickers need their pictures before they can show; the residents greet on the first screen (Fuji's
+ // "Haisai!" or Thuan's "Chào nha!", by the day) and wave the empty album off ("Casting off!").
+ loadStickerSets().then(()=>{
+  cameraStickers.render();
+  const hello=stickerById(new Date().getDate()%2?'fuji/Wave':'thuan/Wave'),off=stickerById('fuji/Salute');
+  if(hello){const img=$('welcomeSticker');img.src=hello.url;img.alt=`${hello.set}: “${hello.line}” (${hello.gloss})`;img.hidden=false;}
+  if(off){const img=$('emptySticker');img.src=off.url;img.alt=`${off.set}: “${off.line}” (${off.gloss})`;img.hidden=false;}
+ }).catch(()=>{});
+ if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers};
+window.pocketCamera={state,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers};

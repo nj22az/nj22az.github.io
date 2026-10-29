@@ -92,6 +92,15 @@ The project-authored open-model recipes were already released under
 [workshop copy's notices](johansson-town/assets/workshop/LICENSE.txt), are
 preserved. They are not subject to the original-material no-resale restriction.
 
+## Pocket Camera
+
+These support `camera/`, the camera and photo editor. Its Looks are Johansson World's own shaders, imported from
+`johansson-town/`; the residents' stickers are the studio's own (`nj22az/jojo`, `art/stickers/`).
+
+| Project and creator | Documented use | Licence and retained notices |
+| --- | --- | --- |
+| [Baloo 2 — Ek Type](https://github.com/EkType/Baloo2) | `camera/fonts/baloo2.woff2` letters the speech balloons and captions, as the studio's sticker sheets are lettered. Subset to Latin and Vietnamese with fontTools; the outlines are unchanged. | SIL Open Font License 1.1. [Licence](camera/fonts/OFL-Baloo2.txt). |
+
 ## References and discovery catalogues
 
 These acknowledgements distinguish research and inspiration from shipped code:

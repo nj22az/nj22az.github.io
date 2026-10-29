@@ -18,7 +18,7 @@
 <link rel="canonical" href="https://nj22az.github.io/camera/">
 <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
 <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261029">
+<link rel="stylesheet" href="camera.css?v=20261029b">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -44,6 +44,14 @@
   <symbol id="i-sticker" viewBox="0 0 24 24"><path d="M14.5 20.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5h10A3.5 3.5 0 0 1 20.5 7v7.5Z"/><path d="M14.5 20.5v-3a3 3 0 0 1 3-3h3"/><path d="M8.6 9.6h.01M15.4 9.6h.01M8.8 13.6c.9 1 2 1.5 3.2 1.5"/></symbol>
   <symbol id="i-flip-h" viewBox="0 0 24 24"><path d="M12 3.5v17"/><path d="M8.5 7 3.5 17h5ZM15.5 7l5 10h-5Z"/></symbol>
   <symbol id="i-resize" viewBox="0 0 24 24"><path d="M7 17 17 7M11 7h6v6M13 17H7v-6"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+  <symbol id="i-frame" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.4"/><rect x="7" y="7" width="10" height="8" rx="1"/></symbol>
+  <symbol id="i-mirror" viewBox="0 0 24 24"><path d="M12 2.8v18.4" stroke-dasharray="2.2 2.4"/><path d="M9.2 6.2a6 6 0 0 0 0 11.6M14.8 6.2a6 6 0 0 1 0 11.6"/><circle cx="7.6" cy="10.6" r=".9" class="fill"/><circle cx="16.4" cy="10.6" r=".9" class="fill"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
+  <symbol id="i-sound-off" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z"/><path d="m15.5 9.5 5 5M20.5 9.5l-5 5"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M3.5 7V5h10v2M8.5 5v14M6.5 19h4"/><path d="M14 12v-1.5h6.5V12M17.2 10.5V19M16 19h2.4"/></symbol>
+  <symbol id="i-detail" viewBox="0 0 24 24"><path d="M12 3.2 6.3 9.8l2 8.7h7.4l2-8.7Z"/><path d="M12 3.2v8.3"/><circle cx="12" cy="12.6" r="1.3"/><path d="M8.5 21h7"/></symbol>
+  <symbol id="i-paste" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="2.6"/><path d="M9 4.5V3.6a1.1 1.1 0 0 1 1.1-1.1h3.8A1.1 1.1 0 0 1 15 3.6v.9a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1Z"/><path d="M8.5 11h7M8.5 14.5h5"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4.5 7.5h2.8L9 5h6l1.7 2.5h2.8a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18V9a1.5 1.5 0 0 1 1.5-1.5Z"/><circle cx="12" cy="13" r="3.6"/></symbol>
  </defs>
 </svg>
@@ -53,21 +61,31 @@
  <section class="screen camera" id="camera" aria-label="Camera">
   <header class="bar">
    <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
-   <div class="chips" role="group" aria-label="Camera settings">
-    <button type="button" class="chip" id="timer" aria-label="Self-timer: off"><svg><use href="#i-timer"/></svg><span>Off</span></button>
-    <button type="button" class="chip" id="ratio" aria-label="Picture shape: 4:3"><span>4:3</span></button>
-    <button type="button" class="chip" id="stamp" aria-pressed="false" aria-label="Date stamp"><svg><use href="#i-date"/></svg><span>Date</span></button>
-   </div>
-   <button type="button" class="round" id="import" aria-label="Edit a photo from this device"><svg><use href="#i-photo"/></svg></button>
+   <!-- As on an iPhone: the settings hide behind a chevron; what is switched on shows beside it, in yellow. -->
+   <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus"></span><svg><use href="#i-chevron"/></svg></button>
+   <button type="button" class="photos-button" id="import" aria-label="Your photos: choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
   </header>
   <div class="stage" id="cameraStage">
-   <div class="frame" id="cameraFrame"><button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button></div>
+   <div class="settings" id="settings" role="group" aria-label="Camera settings" hidden>
+    <button type="button" class="setting" id="timer"><i><svg><use href="#i-timer"/></svg></i><span>Timer</span></button>
+    <button type="button" class="setting" id="ratio"><i><svg><use href="#i-ratio"/></svg></i><span>4:3</span></button>
+    <button type="button" class="setting" id="frameSetting"><i><svg><use href="#i-frame"/></svg></i><span>Frame</span></button>
+    <button type="button" class="setting" id="mirrorSetting"><i><svg><use href="#i-mirror"/></svg></i><span>Mirror</span></button>
+    <button type="button" class="setting" id="stamp"><i><svg><use href="#i-date"/></svg></i><span>Date</span></button>
+    <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><span>Sound</span></button>
+   </div>
+   <div class="frame" id="cameraFrame">
+    <button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button>
+    <button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button>
+    <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
+   </div>
    <div class="welcome" id="welcome" hidden>
+    <img class="welcome-sticker" id="welcomeSticker" alt="" hidden>
     <h1>Pocket Camera</h1>
     <p>Every Look from Johansson World, on your camera and your own photos. Mix them, shoot, save.</p>
     <div class="welcome-actions">
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
-     <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Edit a photo</button>
+     <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Your photos</button>
     </div>
     <p class="fine" id="welcomeNote">Photos stay on this device. Nothing is uploaded.</p>
    </div>
@@ -86,9 +104,7 @@
  <section class="screen editor" id="editor" aria-label="Edit photo" hidden>
   <header class="bar">
    <button type="button" class="text-button" id="cancelEdit">Cancel</button>
-   <div class="chips">
-    <button type="button" class="chip" id="editStamp" aria-pressed="false" aria-label="Date stamp"><svg><use href="#i-date"/></svg><span>Date</span></button>
-   </div>
+   <span></span>
    <button type="button" class="pill-button" id="saveEdit">Save</button>
   </header>
   <div class="stage" id="editStage">
@@ -100,6 +116,7 @@
     <button type="button" role="tab" id="tabLooks" aria-selected="true" aria-controls="panelLooks">Looks</button>
     <button type="button" role="tab" id="tabAdjust" aria-selected="false" aria-controls="panelAdjust">Adjust</button>
     <button type="button" role="tab" id="tabStickers" aria-selected="false" aria-controls="panelStickers">Stickers</button>
+    <button type="button" role="tab" id="tabFrame" aria-selected="false" aria-controls="panelFrame">Frame</button>
    </div>
    <div class="panel" id="panelLooks" role="tabpanel" aria-labelledby="tabLooks"></div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
@@ -110,6 +127,11 @@
     </div>
    </div>
    <div class="panel" id="panelStickers" role="tabpanel" aria-labelledby="tabStickers" hidden></div>
+   <div class="panel" id="panelFrame" role="tabpanel" aria-labelledby="tabFrame" hidden>
+    <div class="frame-choices" id="frameChoices" role="radiogroup" aria-label="Frame"></div>
+    <div class="option-row"><span id="mirrorLabel">Mirror</span><div class="mini-seg" id="mirrorChoices" role="radiogroup" aria-labelledby="mirrorLabel"></div></div>
+    <div class="option-row"><span id="stampLabel">Date stamp</span><button type="button" class="switch" id="editStamp" role="switch" aria-checked="false" aria-labelledby="stampLabel"></button></div>
+   </div>
   </div>
  </section>
 
@@ -118,13 +140,14 @@
   <header class="bar">
    <button type="button" class="back" id="closeAlbum"><svg><use href="#i-back"/></svg><span>Camera</span></button>
    <h2>Album</h2>
-   <button type="button" class="round" id="albumImport" aria-label="Edit a photo from this device"><svg><use href="#i-photo"/></svg></button>
+   <button type="button" class="photos-button" id="albumImport" aria-label="Add your own photos"><svg><use href="#i-plus"/></svg><span>Add</span></button>
   </header>
   <div class="album-scroll">
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
-    <p><strong>No photos yet</strong>Take one with the camera, or choose a photo from this device to edit.</p>
-    <button type="button" class="button" id="emptyImport"><svg><use href="#i-photo"/></svg>Edit a photo</button>
+    <img class="empty-sticker" id="emptySticker" alt="" hidden>
+    <p><strong>No photos yet</strong>Take one with the camera, or bring in your own photos: one to edit, or several at once in the camera's Look.</p>
+    <button type="button" class="button" id="emptyImport"><svg><use href="#i-photo"/></svg>Your photos</button>
    </div>
    <p class="fine album-note" id="albumNote"></p>
   </div>
@@ -151,6 +174,7 @@
   <div class="slider-row" id="amountRow" hidden>
    <input type="range" id="amount" min="0" max="100" step="1" value="100" aria-label="Intensity">
    <output id="amountValue">100</output>
+   <button type="button" class="text-button amount-done" id="amountDone">Done</button>
   </div>
   <div class="strip" id="strip" role="radiogroup" aria-label="Look"></div>
  </div>
@@ -168,17 +192,26 @@
  <header><h2>Stickers</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
 </dialog>
 
-<dialog class="sheet" id="deleteSheet" aria-label="Delete photo">
+<dialog class="sheet text-sheet" id="textSheet" aria-labelledby="textSheetTitle">
  <form method="dialog">
-  <p>This photo will be deleted from this device.</p>
-  <button value="delete" class="danger">Delete Photo</button>
+  <h2 id="textSheetTitle">What do they say?</h2>
+  <textarea id="balloonText" rows="3" maxlength="140" autocomplete="off" spellcheck="true"></textarea>
+  <div class="sheet-buttons"><button value="cancel" class="text-button" formnovalidate>Cancel</button><button value="ok" class="pill-button" id="textDone">Done</button></div>
+ </form>
+</dialog>
+
+<dialog class="sheet" id="deleteSheet" aria-label="Delete">
+ <form method="dialog">
+  <p id="deleteMessage">This photo will be deleted from this device.</p>
+  <button value="delete" class="danger" id="deleteConfirm">Delete Photo</button>
   <button value="cancel" autofocus>Cancel</button>
  </form>
 </dialog>
 
-<input type="file" id="picker" accept="image/*" hidden>
+<input type="file" id="picker" accept="image/*" multiple hidden>
+<input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029"></script>
+<script type="module" src="app.js?v=20261029b"></script>
 </body>
 </html>

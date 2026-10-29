@@ -30,15 +30,30 @@ svg .fill{fill:currentColor;stroke:none}
 .bar-spacer{width:44px}
 .back{display:inline-flex;align-items:center;gap:2px;height:44px;padding:0 8px 0 2px;color:var(--label);text-decoration:none;font-size:17px;letter-spacing:-.02em;border-radius:10px}
 .back svg{width:24px;height:24px;stroke-width:2.2}
-.chips{display:flex;gap:6px;justify-content:center}
-.chip{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:44px;height:32px;padding:0 11px;border-radius:16px;background:var(--fill);font-size:13px;font-weight:600;letter-spacing:0;transition:background-color .2s,color .2s,transform .25s var(--spring)}
-.chip svg{width:17px;height:17px;stroke-width:2}
-.chip:active{transform:scale(.92)}
-.chip[aria-pressed="true"],.chip.on{background:var(--accent);color:#000}
+/* The settings chevron: what is switched on sits beside it in yellow. */
+.settings-toggle{display:inline-flex;align-items:center;gap:6px;height:36px;min-width:44px;padding:0 10px;border-radius:18px;background:var(--fill);transition:background-color .2s,transform .25s var(--spring)}
+.settings-toggle:active{transform:scale(.92)}
+.settings-toggle>svg{width:20px;height:20px;stroke-width:2.2;transition:transform .3s var(--spring)}
+.settings-toggle.open>svg{transform:rotate(180deg)}
+.settings-status{display:inline-flex;gap:4px;color:var(--accent)}
+.settings-status:empty{display:none}
+.settings-status svg{width:17px;height:17px;stroke-width:2}
+.settings{position:absolute;z-index:4;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:2px;max-width:calc(100% - 16px);padding:8px 6px;border-radius:20px;background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);box-shadow:0 8px 30px rgba(0,0,0,.35);overflow-x:auto;scrollbar-width:none;animation:drop .32s var(--spring)}
+.settings::-webkit-scrollbar{display:none}
+@keyframes drop{from{opacity:0;transform:translate(-50%,-10px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+.setting{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;font-size:11px;font-weight:600;color:var(--label-2)}
+.setting i{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--fill);color:var(--label);transition:background-color .2s,color .2s,transform .25s var(--spring)}
+.setting:active i{transform:scale(.88)}
+.setting.on{color:var(--accent)}
+.setting.on i{background:var(--accent);color:#000}
+.setting span{white-space:nowrap}
 .round{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--fill);transition:transform .25s var(--spring),background-color .2s}
 .round:active{transform:scale(.9)}
 .round.big{width:50px;height:50px}.round.big svg{width:26px;height:26px}
 .text-button{height:44px;padding:0 6px;font-size:17px;letter-spacing:-.02em}
+.photos-button{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 11px;border-radius:18px;background:var(--fill);font-size:15px;font-weight:600;letter-spacing:-.01em;transition:transform .25s var(--spring)}
+.photos-button:active{transform:scale(.93)}
+.photos-button svg{width:20px;height:20px}
 .pill-button{height:34px;padding:0 16px;border-radius:17px;background:var(--accent);color:#000;font-size:15px;font-weight:600;transition:transform .25s var(--spring),opacity .2s}
 .pill-button:active{transform:scale(.94)}
 .pill-button:disabled{opacity:.4}
@@ -51,6 +66,8 @@ svg .fill{fill:currentColor;stroke:none}
 .frame .date-stamp{position:absolute;right:3.5%;bottom:3%;font:700 1em/1 "Courier New",ui-monospace,monospace;letter-spacing:.06em;color:var(--stamp);text-shadow:0 0 .08em #3a1600,0 .08em .16em rgba(0,0,0,.85),0 0 .5em rgba(255,120,30,.5);white-space:pre;pointer-events:none}
 
 .welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(120% 80% at 50% 0%,#1d2a22 0%,#000 70%)}
+.welcome-sticker{width:clamp(96px,22vh,170px);height:auto;margin-bottom:-4px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));transform-origin:50% 90%;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
 .welcome h1{margin:0;font-size:34px;font-weight:700;letter-spacing:-.03em}
 .welcome p{margin:0;max-width:30ch;color:var(--label-2);font-size:17px;line-height:1.35}
 .welcome .fine{font-size:13px;color:var(--label-3)}
@@ -66,6 +83,14 @@ svg .fill{fill:currentColor;stroke:none}
 @keyframes count{0%{transform:scale(1.6);opacity:0}18%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.85);opacity:0}}
 .zoom{position:absolute;z-index:1;left:50%;bottom:12px;transform:translateX(-50%);min-width:38px;height:38px;padding:0 10px;border-radius:19px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font-size:13px;font-weight:700;color:var(--accent);transition:transform .25s var(--spring)}
 .zoom:active{transform:translateX(-50%) scale(.9)}
+/* Light, as it is dragged: a sun on a track at the picture's right edge; a chip to put it back. */
+.exposure{position:absolute;z-index:3;right:10px;top:15%;bottom:15%;width:28px;display:flex;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.exposure.show{opacity:1;transition-duration:.08s}
+.exposure i{position:absolute;top:0;bottom:0;width:2px;border-radius:1px;background:rgba(255,214,10,.55)}
+.exposure svg{position:absolute;top:calc(var(--at,.5)*100% - 13px);width:26px;height:26px;color:var(--accent);filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));stroke-width:2}
+.exposure-chip{position:absolute;z-index:2;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px 0 8px;border-radius:15px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--accent);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.exposure-chip svg{width:16px;height:16px;stroke-width:2.2}
+.frame-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
 /* The dock: everything under the picture. */
 .dock{flex:none;width:100%;max-width:760px;margin:0 auto}
@@ -131,23 +156,40 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker{position:absolute;pointer-events:auto;touch-action:none;cursor:grab;outline:none}
 .sticker:active{cursor:grabbing}
 .sticker img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+.sticker canvas{display:block;width:100%;height:100%;pointer-events:none}
 .sticker.flipped img{transform:scaleX(-1)}
 .sticker>button,.sticker-handle{position:absolute;display:none;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .sticker>button svg,.sticker-handle svg{width:16px;height:16px;stroke-width:2.2}
-.sticker-remove{left:-15px;top:-15px}.sticker-flip{right:-15px;top:-15px}.sticker-handle{right:-15px;bottom:-15px;cursor:nwse-resize}
+.sticker-remove{left:-15px;top:-15px}.sticker-flip{right:-15px;top:-15px}.sticker-handle{right:-15px;bottom:-15px;cursor:nwse-resize}.sticker-text{left:-15px;bottom:-15px}
 .sticker.selected::before{content:"";position:absolute;inset:-4px;border:1.5px dashed rgba(255,255,255,.9);border-radius:10px;box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
 .sticker.selected>button,.sticker.selected .sticker-handle{display:grid}
+.sticker.balloon.selected::before{border-radius:14px}
 
 /* The sticker sheets */
 .sticker-picker{display:flex;flex-direction:column;gap:8px;padding:10px 0 4px}
-.sticker-sets{display:flex;gap:6px;justify-content:center;padding:0 16px}
-.sticker-sets button{height:30px;padding:0 13px;border-radius:15px;background:var(--fill);font-size:13px;font-weight:600;white-space:nowrap}
+.sticker-sets{display:flex;gap:6px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.sticker-sets::-webkit-scrollbar{display:none}
+.sticker-sets>:first-child{margin-left:auto}.sticker-sets>:last-child{margin-right:auto}
+.sticker-sets button{flex:none;height:30px;padding:0 13px;border-radius:15px;background:var(--fill);font-size:13px;font-weight:600;white-space:nowrap}
 .sticker-sets button[aria-selected="true"]{background:#fff;color:#000}
 .sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px;padding:4px 16px 12px;overflow-y:auto}
 .sticker-choice{display:block;height:96px;padding:6px;border-radius:14px;background:var(--surface);transition:transform .3s var(--spring),background-color .2s}
 .sticker-choice:active{transform:scale(.9)}
 .sticker-choice:hover{background:var(--surface-2)}
 .sticker-choice img{display:block;width:100%;height:100%;object-fit:contain}
+.sticker-choice.lettering{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.sticker-choice.lettering canvas{display:block;max-width:100%;min-height:0;flex:1;object-fit:contain;width:auto;height:auto;max-height:70%}
+.sticker-choice.lettering span{font-size:11px;font-weight:600;color:var(--label-2)}
+#panelStickers .sticker-choice.lettering span{display:none}
+/* The own sheet: make one from a photo, paste a lifted subject, and the ones made, each with its own remove. */
+.sticker-choice.make{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--label-3);background:none;color:var(--label-2);font-size:11px;font-weight:600}
+.sticker-choice.make svg{width:26px;height:26px}
+.sticker-choice.mine{position:relative}
+.sticker-choice .mine-remove{position:absolute;top:2px;right:2px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(28,28,30,.85);color:var(--label-2)}
+.sticker-choice .mine-remove svg{width:13px;height:13px;stroke-width:2.4}
+.sticker-note{grid-column:1/-1;margin:2px 4px 0;font-size:12px;color:var(--label-3);line-height:1.35}
+#panelStickers .sticker-note{display:none}
+#panelStickers .sticker-choice.lettering canvas{max-height:100%}
 #panelStickers .sticker-grid{grid-auto-flow:column;grid-template-columns:none;grid-template-rows:repeat(2,64px);grid-auto-columns:56px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain}
 #panelStickers .sticker-grid::-webkit-scrollbar{display:none}
 #panelStickers .sticker-choice{height:64px;padding:4px;border-radius:12px}
@@ -162,12 +204,15 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 /* Editor */
 .editor .stage{padding:8px 12px}
 .badge-original{position:absolute;top:16px;left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:6px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:11px;font-weight:700;letter-spacing:.08em}
-.segmented{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:min(330px,calc(100% - 32px));margin:6px auto 2px;padding:2px;border-radius:9px;background:var(--fill)}
+.segmented{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;width:min(360px,calc(100% - 24px));margin:6px auto 2px;padding:2px;border-radius:9px;background:var(--fill)}
 .segmented button{height:30px;border-radius:7px;font-size:13px;font-weight:600;color:var(--label-2);transition:background-color .2s,color .2s}
 .segmented button[aria-selected="true"]{background:var(--surface-2);color:var(--label);box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .panel{min-height:178px;padding-bottom:8px}
-.adjusters{display:flex;gap:6px;justify-content:center;padding:14px 12px 4px;overflow-x:auto;scrollbar-width:none}
-.adjuster{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;width:66px;font-size:11px;font-weight:600;color:var(--label-2)}
+.adjusters{display:flex;gap:4px;padding:14px 12px 4px;overflow-x:auto;scrollbar-width:none}
+.adjusters::-webkit-scrollbar{display:none}
+/* Centred while they fit, scrolled from the first when they do not. */
+.adjusters>:first-child{margin-left:auto}.adjusters>:last-child{margin-right:auto}
+.adjuster{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;width:60px;font-size:11px;font-weight:600;color:var(--label-2)}
 .adjuster i{position:relative;display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:conic-gradient(var(--ring,var(--label-2)) calc(var(--v,0)*1turn),transparent 0);transition:transform .3s var(--spring)}
 .adjuster i::before{content:"";position:absolute;inset:2px;border-radius:50%;background:var(--surface)}
 .adjuster i svg{position:relative;width:22px;height:22px}
@@ -178,6 +223,23 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .adjuster.changed:not([aria-checked="true"]) i{--ring:var(--label)}
 .editor .tray{padding-top:2px}
 
+/* The Frame tab */
+.frame-choices{display:flex;gap:10px;padding:12px 16px 6px;overflow-x:auto;scrollbar-width:none}
+.frame-choices>:first-child{margin-left:auto}.frame-choices>:last-child{margin-right:auto}
+.frame-choice{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--label-2)}
+.frame-choice canvas{display:block;width:64px;height:64px;border-radius:12px;transition:box-shadow .2s,transform .3s var(--spring)}
+.frame-choice:active canvas{transform:scale(.92)}
+.frame-choice[aria-checked="true"]{color:var(--accent)}
+.frame-choice[aria-checked="true"] canvas{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+.option-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:420px;margin:0 auto;padding:6px 20px;font-size:15px}
+.mini-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.mini-seg button{height:30px;padding:0 12px;border-radius:7px;font-size:13px;font-weight:600;color:var(--label-2)}
+.mini-seg button[aria-checked="true"]{background:var(--surface-2);color:var(--label);box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.switch{position:relative;width:51px;height:31px;border-radius:16px;background:var(--fill-strong);transition:background-color .25s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .3s var(--spring)}
+.switch[aria-checked="true"]{background:#30d158}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+
 /* Album */
 .album-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:2px}
@@ -186,6 +248,7 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .grid button:active img{transform:scale(.95)}
 .album-empty{display:flex;flex-direction:column;align-items:center;gap:18px;padding:18vh 32px 32px;text-align:center}
 .album-empty p{margin:0;max-width:30ch;color:var(--label-2)}
+.empty-sticker{width:120px;height:auto;margin-bottom:-6px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));animation:bob 2.6s ease-in-out infinite}
 .album-empty strong{display:block;margin-bottom:6px;font-size:22px;color:var(--label);letter-spacing:-.02em}
 .album-note{margin:16px;text-align:center}
 .fine{font-size:13px;color:var(--label-3)}
@@ -206,6 +269,15 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .flash.go{animation:flash .5s ease-out}
 @keyframes flash{0%{opacity:.9}100%{opacity:0}}
 .flyer{position:fixed;z-index:25;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);pointer-events:none;object-fit:cover}
+
+/* The words for a balloon */
+.text-sheet{width:min(420px,calc(100% - 24px));margin:max(12px,env(safe-area-inset-top)) auto auto;margin-top:max(12px,10vh);padding:0;border:0;border-radius:16px;background:rgba(44,44,46,.96);color:var(--label);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px)}
+.text-sheet::backdrop{background:rgba(0,0,0,.45)}
+.text-sheet form{display:grid;gap:12px;padding:18px 16px 14px}
+.text-sheet h2{margin:0;font-size:17px;font-weight:600;text-align:center}
+.text-sheet textarea{width:100%;min-height:76px;padding:10px 12px;border:0;border-radius:10px;background:#1c1c1e;color:var(--label);font:600 19px/1.25 "Pocket Baloo",ui-rounded,system-ui,sans-serif;resize:none;-webkit-user-select:text;user-select:text}
+.text-sheet textarea:focus{outline:2px solid var(--accent);outline-offset:0}
+.sheet-buttons{display:flex;justify-content:space-between;align-items:center}
 
 /* Action sheet */
 .sheet{width:min(420px,calc(100% - 16px));margin:auto auto max(8px,env(safe-area-inset-bottom));padding:0;border:0;border-radius:14px;background:transparent;color:var(--label)}
@@ -230,7 +302,7 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
  .editor .panel{min-height:0}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;transition-duration:1ms!important}}
-/* In the camera the intensity slider floats over the foot of the picture, so the viewfinder never changes size. */
-.camera .tray{position:relative}
-.camera #amountRow{position:absolute;left:12px;right:12px;bottom:calc(100% + 8px);z-index:2;border-radius:22px;background:rgba(28,28,30,.72);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6)}
-@media (min-width:1000px) and (min-aspect-ratio:5/4){.camera #amountRow{position:static;background:none;backdrop-filter:none;-webkit-backdrop-filter:none}}
+/* In the camera the intensity slider stands in for the strip, at its height (app.js showAmountRow). */
+.camera #amountRow{box-sizing:border-box;padding:0 12px 0 24px}
+.amount-done{color:var(--accent);font-weight:600;font-size:15px}
+.editor .amount-done{display:none}

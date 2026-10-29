@@ -24,6 +24,11 @@ assert.deepEqual(r.layers,[{look:'manga',amount:1},{look:'none',amount:1},{look:
 assert.equal(r.adjust.light,1);assert.equal(r.adjust.pattern,0);assert.equal(r.stamp,false);
 assert.deepEqual(normalRecipe().layers,[{look:'none',amount:1}]);
 assert.deepEqual(normalRecipe().stickers,[]);
+assert.equal(normalRecipe().frame,'none');assert.equal(normalRecipe().trick,'none');assert.equal(normalRecipe().adjust.detail,0);
+assert.equal(normalRecipe({frame:'panel',trick:'twin',adjust:{detail:-3}}).trick,'twin');
+assert.equal(normalRecipe({frame:'<b>',trick:'spin'}).frame,'none');assert.equal(normalRecipe({trick:'spin'}).trick,'none');
+assert.equal(normalRecipe({adjust:{detail:-3}}).adjust.detail,-1);
+assert.deepEqual(normalRecipe({stickers:[{id:'balloon:speech',text:'x'.repeat(200)},{id:'fuji/Wave',text:'no'}]}).stickers.map(s=>s.text?.length),[140,undefined]);
 assert.deepEqual(normalRecipe({stickers:[{id:'fuji/Wave',x:2,size:0,angle:12,flip:1},{x:.5},null]}).stickers,[{id:'fuji/Wave',x:1.2,y:.5,size:.06,angle:12,flip:true}]);
 
 assert.deepEqual(exportSize(1920,1440),{width:1920,height:1440});

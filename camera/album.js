@@ -1,15 +1,21 @@
 /**
  * The album: every photo Pocket Camera saves, kept in this browser (IndexedDB) and nowhere else. A shot keeps the
  * finished photo, the picture it was made from and the recipe (Looks, mix, adjustments, date stamp), so it can be
- * opened again and re-edited from the original rather than from the finished photo.
+ * opened again and re-edited from the original rather than from the finished photo. The photographer's own die-cut
+ * stickers (cutout.js) are kept beside the photos.
  */
-const DB='office-pocket-camera',STORE='shots';
+const DB='office-pocket-camera',STORE='shots',MINE='stickers';
 let opening;
 
 function db(){
  opening??=new Promise((resolve,reject)=>{
-  const request=indexedDB.open(DB,1);
-  request.onupgradeneeded=()=>request.result.createObjectStore(STORE,{keyPath:'id'});
+  // Version 2 adds the own stickers; an album from version 1 keeps its photos.
+  const request=indexedDB.open(DB,2);
+  request.onupgradeneeded=()=>{
+   const d=request.result;
+   if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});
+   if(!d.objectStoreNames.contains(MINE))d.createObjectStore(MINE,{keyPath:'id'});
+  };
   request.onsuccess=()=>{
    const d=request.result;
    // Safari can close the connection behind the page's back; the next call opens it again.
@@ -21,12 +27,12 @@ function db(){
  return opening;
 }
 /** One request in its own transaction, settled when the transaction is (a write is only kept once it completes). */
-async function transact(mode,work,retry=true){
+async function transact(mode,work,retry=true,store=STORE){
  let tx;
- try{tx=(await db()).transaction(STORE,mode);}
- catch(err){opening=null;if(retry)return transact(mode,work,false);throw err;}
+ try{tx=(await db()).transaction(store,mode);}
+ catch(err){opening=null;if(retry)return transact(mode,work,false,store);throw err;}
  return new Promise((resolve,reject)=>{
-  const r=work(tx.objectStore(STORE));
+  const r=work(tx.objectStore(store));
   tx.oncomplete=()=>resolve(r.result);
   tx.onabort=tx.onerror=()=>reject(tx.error||r.error||new Error('The album could not be written'));
  });
@@ -47,3 +53,11 @@ export async function updateShot(id,changes){
  await transact('readwrite',s=>s.put(record));return record;
 }
 export const deleteShot=id=>transact('readwrite',s=>s.delete(id));
+
+/** The own stickers ({id, blob, width, height, created}), oldest first, as they were made. */
+export async function listMine(){return (await transact('readonly',s=>s.getAll(),true,MINE)).sort((a,b)=>a.created-b.created);}
+export async function addMine(sticker){
+ const record={...sticker,id:`mine:${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,created:Date.now()};
+ await transact('readwrite',s=>s.put(record),true,MINE);return record;
+}
+export const deleteMine=id=>transact('readwrite',s=>s.delete(id),true,MINE);

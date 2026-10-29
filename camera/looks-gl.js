@@ -8,14 +8,18 @@
  * a 1080-line screen, follows the picture's own height instead. A pattern then covers the same share of the photo in
  * the viewfinder, in a thumbnail and in a 12-megapixel save, so what is seen is what is saved.
  *
- * Every picture goes through a first pass of our own: crop, mirror, Light, Contrast, Colour and Warmth, and for the
- * Looks that draw lines a light edge-keeping smoothing, so camera noise is not inked as detail.
+ * Every picture goes through a first pass of our own: crop, mirror, the trick lens (Twin, Quad), Light, Contrast,
+ * Colour and Warmth, and for the Looks that draw lines a light edge-keeping smoothing, so camera noise is not inked as
+ * detail (Detail sets how much).
  */
 import {LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
 export {LOOKS};
 /** In the order World's menu offers them. */
 export const LOOK_NAMES=Object.freeze(Object.keys(LOOKS));
+/** The trick lenses, as the hand-held cameras had them: Twin mirrors the left half onto the right, Quad the top left
+ * quarter into all four. */
+export const TRICKS=Object.freeze(['none','twin','quad']);
 /** The longest side and the most pixels a save may have (iOS Safari refuses canvases over 16.7 million pixels). */
 export const MAX_SIDE=4096,MAX_PIXELS=16e6;
 
@@ -56,10 +60,17 @@ export function normalRecipe(recipe={}){
   .map(l=>({look:Object.hasOwn(LOOKS,l?.look)?l.look:'none',amount:n(l?.amount,0,1,1)}));
  if(!layers.length)layers.push({look:'none',amount:1});
  const a=recipe.adjust||{};
- // Stickers (stickers.js): centre, height as a share of the picture's height, angle in degrees, mirrored or not.
+ // Stickers (stickers.js): centre, height as a share of the picture's height, angle in degrees, mirrored or not; a
+ // balloon (lettering.js) also keeps its words.
  const stickers=(Array.isArray(recipe.stickers)?recipe.stickers:[]).filter(s=>typeof s?.id==='string').slice(0,40)
-  .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip}));
- return {layers,adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0)},stamp:!!recipe.stamp,stickers};
+  .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
+   ...(s.id.startsWith('balloon:')?{text:String(s.text??'').slice(0,140)}:{})}));
+ return {layers,
+  adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0),detail:n(a.detail,-1,1,0)},
+  stamp:!!recipe.stamp,stickers,
+  // The print's border (frames.js) and the trick lens.
+  frame:typeof recipe.frame==='string'&&/^[a-z]{1,20}$/.test(recipe.frame)?recipe.frame:'none',
+  trick:TRICKS.includes(recipe.trick)?recipe.trick:'none'};
 }
 
 /** The size a save of a w×h crop may have: as it is, or scaled down to the limits. */
@@ -77,11 +88,13 @@ precision highp float;
 in vec2 vUv;out vec4 fragColor;
 uniform sampler2D tSource;
 uniform vec4 uCrop;
-uniform float uMirror,uSmooth,uAuto,uBias,uLight,uContrast,uColour,uWarmth;
+uniform float uMirror,uSmooth,uAuto,uBias,uTrick,uLight,uContrast,uColour,uWarmth;
 uniform vec2 uStep;
 uniform float uMeanLod;
 float luma(vec3 c){return dot(c,vec3(.2126,.7152,.0722));}
 vec3 at(vec2 p){
+ if(uTrick>.5)p.x=.5-abs(p.x-.5);
+ if(uTrick>1.5)p.y=.5+abs(p.y-.5);
  vec2 q=vec2(p.x,1.0-p.y);if(uMirror>.5)q.x=1.0-q.x;
  return texture(tSource,uCrop.xy+q*uCrop.zw,uBias).rgb;
 }
@@ -221,12 +234,15 @@ export function createLookEngine(canvas,{light=false}={}){
   // A Look that draws lines finds them in the detail of a picture about as tall as its patterns are sized for (the
   // viewfinder's): a larger save reads its source that much softer, so its lines are the viewfinder's lines, not the
   // floor's grain as well. Patterns, outlines and dots are still drawn at the save's full size.
-  const bias=smooth?Math.max(0,Math.log2(h/(1080*2**-a.pattern))):0;
+  // Detail: less (-1) smooths wider and reads softer still, for fewer, bolder lines; more (+1) smooths nothing.
+  const d=a.detail||0,bias=smooth?Math.max(0,Math.log2(h/(1080*2**-a.pattern))*(1-Math.max(0,d))+Math.max(0,-d)*1.3):0;
+  const smoothing=smooth?Math.min(1,1-d):0,reach=2**-d;
   return u=>{
    f1(u.uBias,bias);f1(u.uMeanLod,meanLod);
-   gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smooth?1:0);f1(u.uAuto,auto?1:0);
+   gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smoothing);f1(u.uAuto,auto?1:0);
+   f1(u.uTrick,TRICKS.indexOf(recipe.trick||'none'));
    // Smoothing reaches about a thousandth of the picture's height, whatever its size.
-   if(u.uStep)gl.uniform2f(u.uStep,h/(900*w),1/900);
+   if(u.uStep)gl.uniform2f(u.uStep,reach*h/(900*w),reach/900);
    f1(u.uLight,a.light);f1(u.uContrast,a.contrast);f1(u.uColour,a.colour);f1(u.uWarmth,a.warmth);
   };
  }

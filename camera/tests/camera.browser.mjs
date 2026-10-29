@@ -1,5 +1,6 @@
 // Pocket Camera in a real browser: a fake camera fed from a photo, every World Look compiled and drawn, a photo taken,
-// mixed, stickered, edited, saved, re-edited and deleted, at phone and desktop sizes, with no page errors.
+// mixed (by hand and by the dice), framed, stickered, lettered, lit by a drag, edited (frame, mirror, detail), saved,
+// re-edited and deleted, at phone and desktop sizes, with no page errors.
 // Run from the repository root: node camera/tests/camera.browser.mjs
 // CAMERA_SHOTS=<folder> also writes screenshots of each step. Needs ffmpeg for the camera picture (else Chromium's own).
 import assert from 'node:assert/strict';
@@ -13,6 +14,8 @@ import {serveGame} from '../../johansson-town/tools/mcp/static-server.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const repo=fileURLToPath(new URL('../../',import.meta.url));
 const photo=join(repo,'IMG_2855.jpeg'),garden=join(repo,'assets/images/nils-lake-hero-optimized.jpg');
+// A cut-out with a transparent background, as a subject lifted from a photo arrives: World's own mascot render.
+const cutout=join(repo,'assets/mascots/johansson-tada.webp');
 const shots=process.env.CAMERA_SHOTS;if(shots)await mkdir(shots,{recursive:true});
 const temp=await mkdtemp(join(tmpdir(),'pocket-camera-'));
 const server=await serveGame({root:repo,mounts:['camera','johansson-town','assets']});
@@ -76,12 +79,35 @@ async function run({label,width,height,dpr,mobile,portrait}){
    if(!await page.isVisible('#amountRow'))await page.click('.layer-pick >> nth=1');
    await page.fill('#amount','60');
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.layers[1].amount),.6);
-   await page.click('#stamp');
+   // The settings row, behind the chevron: the date stamp on, the Print frame.
+   await page.click('#settingsToggle');await page.waitForSelector('#settings:not([hidden])');
+   await page.click('#stamp');await page.click('#frameSetting');
+   assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.frame),'print');
+   assert.equal(await page.locator('#settingsStatus svg').count(),2,'the frame and the date show beside the chevron');
    await page.waitForTimeout(600);await shot('3-mix');
+   await page.click('#settingsToggle');assert.equal(await page.isHidden('#settings'),true);
+  });
+  await check(`${label}: the curated dice rolls a named mix`,async()=>{
+   const before=await app(()=>JSON.stringify(window.pocketCamera.state.camera.recipe.layers));
+   await page.click('.shuffle >> nth=0');
+   const after=await app(()=>window.pocketCamera.state.camera.recipe.layers);
+   assert.equal(after.length,2);assert.match(await page.textContent('#toast'),/ · /,'its name is shown');
+   // Back to the mix the next checks expect.
+   await page.evaluate(b=>{const r=window.pocketCamera.state.camera.recipe;r.layers=JSON.parse(b);},before);
+  });
+  await check(`${label}: light dragged up and down on the viewfinder, and put back`,async()=>{
+   const f=await page.locator('#cameraFrame').boundingBox();
+   await page.mouse.move(f.x+f.width*.15,f.y+f.height*.7);await page.mouse.down();
+   await page.mouse.move(f.x+f.width*.15,f.y+f.height*.55,{steps:6});await page.mouse.up();
+   const light=await app(()=>window.pocketCamera.state.camera.recipe.adjust.light);
+   assert.ok(light>.2,`dragging up brightens (${light})`);
+   assert.equal(await page.isVisible('#exposureChip'),true);await shot('3a-exposure');
+   await page.click('#exposureChip');
+   assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.adjust.light),0);assert.equal(await page.isHidden('#exposureChip'),true);
   });
   await check(`${label}: a die-cut sticker on the viewfinder, dragged into place`,async()=>{
    await page.click('.sticker-button');await page.waitForSelector('#stickerSheet[open] .sticker-choice');
-   await page.click('#stickerSets button >> nth=1');await page.waitForSelector('.sticker-choice[data-id^="fuji/"]');
+   await page.click('#stickerSets button >> nth=2');await page.waitForSelector('.sticker-choice[data-id^="fuji/"]');
    await page.waitForTimeout(300);await shot('3b-sticker-sheet');
    await page.click('.sticker-choice >> nth=0');
    await page.waitForSelector('#cameraFrame .sticker.selected img[src*="fuji"]');
@@ -104,13 +130,25 @@ async function run({label,width,height,dpr,mobile,portrait}){
    assert.notEqual(Math.round(pinched.after.angle),Math.round(pinched.before.angle),'and turned');
    await page.waitForTimeout(300);await shot('3c-sticker');
   });
+  await check(`${label}: a speech balloon lettered with the photographer's words`,async()=>{
+   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=0');
+   await page.click('.sticker-choice.lettering[data-id="balloon:speech"]');
+   await page.waitForSelector('#textSheet[open]');await page.fill('#balloonText','Who left the chairs out?');await page.click('#textDone');
+   await page.waitForSelector('#cameraFrame .sticker.balloon canvas');
+   const b=await app(()=>{const s=window.pocketCamera.state.camera.recipe.stickers.at(-1),c=document.querySelector('#cameraFrame .sticker.balloon canvas');return {s,painted:c.width>50&&c.height>50};});
+   assert.equal(b.s.id,'balloon:speech');assert.equal(b.s.text,'Who left the chairs out?');assert.ok(b.painted,'drawn at its size');
+   await page.waitForTimeout(300);await shot('3d-balloon');
+  });
   await check(`${label}: the shutter keeps a photo, its source and its recipe in the album`,async()=>{
    await page.click('#shutter');
    await page.waitForFunction(()=>window.pocketCamera.state.shots.length===1,null,{timeout:30000});
    const s=await app(async()=>{const x=window.pocketCamera.state.shots[0],b=await createImageBitmap(x.photo);return {w:b.width,h:b.height,ww:x.width,hh:x.height,recipe:x.recipe,source:x.source.size>0,thumb:x.thumb.size>0};});
    assert.equal(s.w,s.ww);assert.equal(s.h,s.hh);assert.ok(s.source&&s.thumb);
-   assert.deepEqual(s.recipe.layers.map(l=>l.look),['pocket','crt']);assert.equal(s.recipe.stamp,true);
-   assert.deepEqual(s.recipe.stickers.map(x=>x.id),['fuji/Wave'],'the sticker is in the recipe');
+   assert.deepEqual(s.recipe.layers.map(l=>l.look),['pocket','crt']);assert.equal(s.recipe.stamp,true);assert.equal(s.recipe.frame,'print');
+   assert.deepEqual(s.recipe.stickers.map(x=>x.id),['fuji/Wave','balloon:speech'],'the sticker and the balloon are in the recipe');
+   // The print's paper is in the saved photo's corner: the frame was drawn into it, not only on the screen.
+   const corner=await app(async()=>{const b=await createImageBitmap(window.pocketCamera.state.shots[0].photo),c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d');g.drawImage(b,0,0);return [...g.getImageData(4,4,1,1).data].slice(0,3);});
+   assert.ok(corner.every(v=>v>225),`the print's white border (${corner})`);
    await page.waitForTimeout(700);await shot('4-taken');
   });
   await check(`${label}: the album, one photo, and re-editing it from its source`,async()=>{
@@ -120,17 +158,21 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.click('#editPhoto');await page.waitForSelector('#editor:not([hidden])');
    assert.deepEqual(await app(()=>window.pocketCamera.state.edit.recipe.layers.map(l=>l.look)),['pocket','crt']);
    await page.waitForSelector('#editFrame .sticker img[src*="fuji"]');
-   await page.click('#tabStickers');await page.click('#stickerSets button >> nth=0');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
+   await page.waitForSelector('#editFrame .sticker.balloon canvas');
+   await page.click('#tabStickers');await page.click('#stickerSets button >> nth=1');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
    await page.click('#panelStickers .sticker-choice >> nth=3');
    const handle=page.locator('#editFrame .sticker.selected .sticker-handle');await handle.waitFor();
    const h=await handle.boundingBox();
    await page.mouse.move(h.x+h.width/2,h.y+h.height/2);await page.mouse.down();await page.mouse.move(h.x+h.width/2+40,h.y+h.height/2-10,{steps:6});await page.mouse.up();
    const st=await app(()=>window.pocketCamera.state.edit.recipe.stickers);
-   assert.equal(st.length,2);assert.ok(st[1].size>.42,'the handle made it bigger');assert.ok(st[1].id.startsWith('thuan/'));
+   assert.equal(st.length,3);assert.ok(st[2].size>.42,'the handle made it bigger');assert.ok(st[2].id.startsWith('thuan/'));
    await page.waitForTimeout(300);await shot('7b-editor-stickers');
    await page.click('#tabLooks');
    await page.waitForTimeout(1500);await shot('7-editor');
+   await page.click('#tabFrame');await page.click('.frame-choice[data-frame="film"]');await page.click('#mirrorChoices button[data-trick="twin"]');
+   await page.waitForTimeout(600);await shot('7c-frame-tab');
    await page.click('#tabAdjust');await page.click('.adjuster[data-key="pattern"]');await page.fill('#adjustSlider','80');
+   await page.click('.adjuster[data-key="detail"]');await page.fill('#adjustSlider','-50');
    await page.click('.adjuster[data-key="light"]');await page.fill('#adjustSlider','30');
    await page.waitForTimeout(800);await shot('8-adjust');
    // A part of the picture clear of the stickers (holding a sticker picks it up instead).
@@ -145,10 +187,11 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.click('#saveEdit');
    assert.equal(await page.isDisabled('#cancelEdit'),true,'Cancel waits while saving');
    await page.waitForSelector('#viewer:not([hidden])',{timeout:30000});
-   const edited=await app(()=>{const s=window.pocketCamera.state.shots[0];return {edited:!!s.edited,adjust:s.recipe.adjust};});
+   const edited=await app(()=>{const s=window.pocketCamera.state.shots[0];return {edited:!!s.edited,adjust:s.recipe.adjust,frame:s.recipe.frame,trick:s.recipe.trick};});
    await shot('9b-saved');
-   assert.ok(edited.edited);assert.equal(edited.adjust.pattern,.8);assert.equal(edited.adjust.light,.3);
-   assert.equal(await app(()=>window.pocketCamera.state.shots[0].recipe.stickers.length),2);
+   assert.ok(edited.edited);assert.equal(edited.adjust.pattern,.8);assert.equal(edited.adjust.light,.3);assert.equal(edited.adjust.detail,-.5);
+   assert.equal(edited.frame,'film');assert.equal(edited.trick,'twin');
+   assert.equal(await app(()=>window.pocketCamera.state.shots[0].recipe.stickers.length),3);
   });
   await check(`${label}: a photo from the device opens in the editor and saves as a new photo`,async()=>{
    await page.click('#closeViewer');await page.setInputFiles('#picker',garden);
@@ -159,13 +202,47 @@ async function run({label,width,height,dpr,mobile,portrait}){
    const n=await app(async()=>{const s=window.pocketCamera.state.shots;const b=await createImageBitmap(s[0].photo);return {count:s.length,w:b.width,h:b.height};});
    assert.equal(n.count,2);assert.deepEqual([n.w,n.h],[1920,1440]);
   });
+  await check(`${label}: several of your own photos at once go into the album in the camera's Look`,async()=>{
+   const before=await app(()=>window.pocketCamera.state.shots.length);
+   await page.click('#closeViewer');await page.setInputFiles('#picker',[photo,garden]);
+   await page.waitForFunction(n=>window.pocketCamera.state.shots.length===n+2,before,{timeout:120000});
+   await page.waitForSelector('#album:not([hidden])');await page.waitForTimeout(500);await shot('10b-many');
+   const looks=await app(()=>window.pocketCamera.state.shots.slice(0,2).map(s=>s.recipe.layers.map(l=>l.look).join('+')));
+   const camera=await app(()=>window.pocketCamera.state.camera.recipe.layers.map(l=>l.look).join('+'));
+   assert.deepEqual(looks,[camera,camera]);
+   await page.click('#grid button');await page.waitForSelector('#viewer:not([hidden])');
+  });
+  await check(`${label}: your own pictures as die-cut stickers: a cut-out round its outline, a photo with rounded corners`,async()=>{
+   await page.click('#closeViewer');await page.click('#closeAlbum');await page.waitForFunction(()=>window.pocketCamera.state.camera.running,null,{timeout:20000});
+   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=4');await page.waitForSelector('.sticker-choice.make');
+   await page.setInputFiles('#stickerFile',cutout);
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id.startsWith('mine:')),null,{timeout:20000});
+   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=4');
+   await page.setInputFiles('#stickerFile',garden);
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.filter(s=>s.id.startsWith('mine:')).length===2,null,{timeout:20000});
+   const cuts=await app(async()=>{
+    const {listMine}=await import('/camera/album.js?v=20261029b');
+    return (await listMine()).map(m=>m.cut);
+   });
+   assert.deepEqual(cuts,['outline','photo']);
+   await page.waitForTimeout(400);await shot('10c-own-stickers');
+   // Deleted from the sheet, and off the viewfinder with it.
+   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=4');
+   await page.click('.sticker-choice.mine >> nth=0 >> .mine-remove');await page.click('#deleteSheet button[value="delete"]');
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.filter(s=>s.id.startsWith('mine:')).length===1);
+   await page.click('#stickerSheet .done');
+   await page.click('#roll');await page.waitForSelector('#grid button');await page.click('#grid button');await page.waitForSelector('#viewer:not([hidden])');
+  });
   await check(`${label}: deleting a photo`,async()=>{
+   const n=await app(()=>window.pocketCamera.state.shots.length);
    await page.click('#deletePhoto');await page.click('#deleteSheet button[value="delete"]');
-   await page.waitForFunction(()=>window.pocketCamera.state.shots.length===1);
+   await page.waitForFunction(n=>window.pocketCamera.state.shots.length===n-1,n);
    await page.waitForSelector('#album:not([hidden])');
   });
-  await check(`${label}: the album lasts a reload`,async()=>{
-   await page.reload();await page.waitForFunction(()=>window.pocketCamera?.state.shots.length===1,null,{timeout:20000});
+  await check(`${label}: the album and your own stickers last a reload`,async()=>{
+   const n=await app(()=>window.pocketCamera.state.shots.length);
+   await page.reload();await page.waitForFunction(n=>window.pocketCamera?.state.shots.length===n,n,{timeout:20000});
+   await page.waitForFunction(()=>document.querySelector('#cameraFrame .sticker img[src^="blob:"]'),null,{timeout:20000});
   });
   await check(`${label}: lost graphics never save a black photo`,async()=>{
    const out=await app(async()=>{
