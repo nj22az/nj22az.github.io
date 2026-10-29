@@ -5,7 +5,8 @@ frames of a Game Boy Camera project turned out to be others' art with no licence
 The hand-held camera's frames were pixel art in four shades round a photo: 160 x 144 pixels with a 16-pixel border.
 These are drawn the same way, each in a palette of its own, from the island: the Pocket Look's greens, the harbour
 with its ferry and lighthouse, Sakura's blossom, the ferry ticket to Kitano-jima, the matsuri's lanterns, and Thuan
-waving "Hi there!", redrawn in four shades from her own die-cut sticker.
+waving "Hi there!", redrawn in four shades from her own die-cut sticker. Island Post and Shop Day add an original
+island postage stamp and a miniature shopfront.
 
 A photo may be any shape, so a frame is drawn as pieces, never stretched: four corners, an edge piece for each side
 that repeats along it, and small scenes placed against an edge (the ferry, a stamp, Thuan). The camera (frames.js)
@@ -216,7 +217,9 @@ def harbour():
     """Minato's harbour: sky and clouds above with gulls and the sun, the sea below with the ferry on it, the lighthouse."""
     NAVY, SEA, SKY, FOAM = 0, 1, 2, 3
     top = Art(32, B, SKY)
-    top.sprite(['......3333.......', '...333333333.....', '.3333333333333...', '33333333333333333'], 8, 3)
+    # Stepped clouds have a shaded underside rather than a flat stripe.
+    top.sprite(['.....3333...........', '...333333333........', '.3333333333333......',
+                '3333333333333333....', '.11111111111111.....'], 6, 3)
     top.hline(0, 31, B - 1, NAVY)
     sea = Art(16, B, SEA)
     sea.hline(0, 15, 0, NAVY)
@@ -233,6 +236,11 @@ def harbour():
     for x in range(0, 16, 4):
         sea.px(x + 1, 13, SEA)
     side_l, side_r = band(B, 16, SKY, NAVY, 'right'), band(B, 16, SKY, NAVY, 'left')
+    # Quiet alternating nautical stitches keep both vertical edges intentional.
+    for a, mirror in ((side_l, False), (side_r, True)):
+        for x, y, colour in ((3, 2, FOAM), (4, 2, FOAM), (5, 3, FOAM),
+                             (7, 8, SEA), (8, 9, SEA), (9, 8, SEA), (3, 13, FOAM)):
+            a.px(B - 1 - x if mirror else x, y, colour)
     pieces = {'top': top, 'bottom': sea, 'left': side_l, 'right': side_r,
               'tl': corner(SKY, NAVY, 'tl'), 'tr': corner(SKY, NAVY, 'tr'),
               'bl': Art(B, B), 'br': Art(B, B)}
@@ -252,6 +260,9 @@ def harbour():
     ferry.rect(12, 5, 20, 5, FOAM)
     for x in range(14, 30, 4):
         ferry.rect(x, 7, 2, 2, SEA)
+    ferry.hline(14, 29, 5, NAVY)
+    ferry.rect(31, 8, 4, 2, FOAM)
+    ferry.px(7, 11, SEA); ferry.px(9, 11, SEA); ferry.px(33, 11, SEA)
     ferry.rect(25, 1, 4, 4, NAVY)
     ferry.hline(25, 28, 2, SEA)
     ferry.outline(NAVY)
@@ -288,8 +299,16 @@ def sakura():
             else:
                 a.sprite(['.2.', '212', '.2.'], x - 1, y - 1)
         return a
+    def flower_corner(which):
+        a = corner(CREAM, PLUM, which)
+        # A small five-petal seal in each corner, kept clear of the inner edge.
+        x = 3 if which in ('tl', 'bl') else 8
+        y = 3 if which in ('tl', 'tr') else 8
+        a.sprite(['.222.', '22122', '21012', '22122', '.222.'], x, y)
+        a.px(x + 2, y + 2, PLUM)
+        return a
     pieces = {'top': petals(24, B, 0, 'bottom'), 'bottom': petals(24, B, 1, 'top'), 'left': petals(B, 24, 2, 'right'), 'right': petals(B, 24, 3, 'left'),
-              'tl': corner(CREAM, PLUM, 'tl'), 'tr': corner(CREAM, PLUM, 'tr'), 'bl': corner(CREAM, PLUM, 'bl'), 'br': corner(CREAM, PLUM, 'br')}
+              **{w: flower_corner(w) for w in ('tl', 'tr', 'bl', 'br')}}
     blossom = ['.222.', '22122', '21012', '22122', '.222.']
     branch = Art(92, 26)
     # The branch: thick at the corner, thinning as it reaches along the top, with twigs.
@@ -306,6 +325,9 @@ def sakura():
         branch.sprite(blossom, x, y)
     for x, y in ((18, 4), (47, 14), (68, 6), (82, 7)):
         branch.px(x, y, ROSE); branch.px(x + 1, y, ROSE); branch.px(x, y + 1, PINK)
+    # Scattered tiny buds give the branch variation between open blossoms.
+    for x, y in ((5, 5), (37, 7), (57, 10), (79, 12)):
+        branch.sprite(['.1.', '212', '.2.'], x, y)
     cluster = Art(26, 22)
     for x, y in ((2, 9), (10, 3), (17, 10), (9, 15)):
         cluster.sprite(blossom, x, y)
@@ -493,7 +515,85 @@ def sticker_sprite(path, height, palette, border=0, crop_bottom=None):
     return art
 
 
-FRAMES = [pocket, harbour, sakura, ticket, matsuri, hello]
+def island_post():
+    """An original Minato postcard, with a postage stamp and a small island skyline."""
+    INK, CORAL, SAND, PAPER = 0, 1, 2, 3
+    def edge(w, h, side):
+        a = band(w, h, PAPER, INK, side)
+        if side in ('top', 'bottom'):
+            y = 3 if side == 'bottom' else h - 4
+            for x in range(w):
+                a.px(x, y, CORAL if (x // 4) % 2 == 0 else SAND)
+        else:
+            x = 3 if side == 'right' else w - 4
+            for y in range(h):
+                a.px(x, y, CORAL if (y // 4) % 2 == 0 else SAND)
+        return a
+    pieces = {'top': edge(16, B, 'bottom'), 'bottom': edge(16, B, 'top'),
+              'left': edge(B, 16, 'right'), 'right': edge(B, 16, 'left'),
+              **{k: corner(PAPER, INK, k) for k in ('tl','tr','bl','br')}}
+    title = Art(text_width('MINATO POST') + 8, 11, PAPER)
+    title.text('MINATO POST', 4, 2, INK)
+    stamp = Art(25, 29)
+    stamp.rect(1, 1, 23, 27, PAPER)
+    for x in range(1, 24, 3):
+        stamp.px(x, 0, INK); stamp.px(x, 28, INK)
+    for y in range(1, 28, 3):
+        stamp.px(0, y, INK); stamp.px(24, y, INK)
+    stamp.rect(4, 4, 17, 20, SAND)
+    stamp.disc(16, 9, 3, CORAL)
+    stamp.sprite(['......000........','.....01110.......','....0111110......',
+                  '...011111110.....','..01111111110....','.0000000000000...',
+                  '33333333333333333','11111111111111111'], 4, 15)
+    stamp.outline(INK)
+    # Cancellation waves make the stamp read like an actual piece of post.
+    postmark = Art(28, 11)
+    for row in (1, 4, 7):
+        for x in range(28):
+            postmark.px(x, row + ((x // 4) % 2), CORAL)
+    return frame('island-post', 'Island Post', 'A postcard from Minato, with its own island stamp',
+                 ['#41353b','#c45c55','#dfc995','#fff7df'], pieces,
+                 [feature(title, 'bc', 0, -2), feature(stamp, 'tr', -5, 5), feature(postmark, 'tr', -27, 20)])
+
+
+def shop_day():
+    """An original shopfront frame: striped awning, a tiny storefront and friendly signs."""
+    INK, TEAL, PEACH, CREAM = 0, 1, 2, 3
+    top = Art(16, B, CREAM)
+    for x in range(16):
+        top.rect(x, 1, 1, 10, PEACH if (x // 4) % 2 else TEAL)
+        top.px(x, 11 + (1 if x % 4 in (1, 2) else 0), INK)
+    top.hline(0, 15, 15, INK)
+    bottom = band(16, B, CREAM, INK, 'top')
+    for x in range(16):
+        if x % 8 in (2, 3): bottom.px(x, 10, PEACH)
+        if x % 8 == 6: bottom.px(x, 12, TEAL)
+    def side(inner):
+        a = band(B, 16, CREAM, INK, inner)
+        for y in range(2, 16, 8):
+            a.sprite(['.2.','212','.2.'], 5, y)
+        return a
+    pieces = {'top':top, 'bottom':bottom, 'left':side('right'), 'right':side('left'),
+              **{k:corner(CREAM, INK, k) for k in ('tl','tr','bl','br')}}
+    shop = Art(40, 33)
+    # A compact miniature with an outlined tiled roof, door and window displays.
+    shop.rect(3, 9, 34, 22, CREAM)
+    shop.rect(1, 6, 38, 6, INK)
+    for x in range(3, 38, 6):
+        shop.rect(x, 7, 3, 4, TEAL); shop.rect(x + 3, 7, 3, 4, PEACH)
+    shop.rect(5, 14, 13, 12, INK); shop.rect(7, 16, 9, 8, TEAL)
+    shop.rect(21, 13, 11, 18, INK); shop.rect(23, 15, 7, 14, CREAM)
+    shop.px(28, 23, PEACH)
+    shop.rect(3, 30, 34, 2, INK)
+    shop.outline(INK)
+    sign = Art(text_width('SHOP DAY') + 8, 11, TEAL)
+    sign.text('SHOP DAY', 4, 2, CREAM)
+    return frame('shop-day', 'Shop Day', 'A little Minato shop and its striped awning',
+                 ['#323d3a','#4d8c83','#e68b78','#fff4de'], pieces,
+                 [feature(sign, 'tc', 0, 2), feature(shop, 'bl', 2, -1)])
+
+
+FRAMES = [pocket, harbour, sakura, ticket, matsuri, hello, island_post, shop_day]
 
 
 # ---------------------------------------------------------------- packing and laying out
@@ -630,3 +730,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

@@ -26,8 +26,7 @@ when saving ? I want memory with our own photos or with the stickers".
   the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
   (the Pocket Look's greens, the little camera), **Harbour** (the ferry, the lighthouse, gulls and the sun),
   **Sakura** (a branch in blossom), **Ticket** (Minato to Kitano-jima, perforated and stamped), **Matsuri**
-  (lanterns and fireworks) and **Hello** (Thuan, redrawn in four shades from her own sticker, waving from the corner:
-  "Hi there!").
+  (lanterns and fireworks), **Hello** (Thuan, redrawn in four shades from her own sticker, waving from the corner), **Island Post** (a Minato postcard) and **Shop Day** (an island shop awning).
   Each is a sheet of pieces in `frames/` (corners, edges that repeat, scenes set against an edge) that `frames.js`
   lays out for the photo's own shape and enlarges with hard pixel edges, never stretched. In the camera, **Frame** in
   the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
@@ -79,6 +78,7 @@ when saving ? I want memory with our own photos or with the stickers".
   pairs. The board takes the grid that gives the cards the most room on the screen; a third card turns two that did
   not match back at once; moves and time are counted, the best game for each set of cards and size is kept, and a
   resident cheers the last pair.
+- **Card games**: the Album opens a game room with Blackjack and draw-one Klondike Solitaire. Blackjack has no stakes: Hit or Stand, with the dealer standing on 17. Solitaire uses tap-to-select and tap-to-place controls. A 52-card sheet and matching back are drawn by `tools/draw-playing-cards.py`; the Jacks, Queens and Kings use the existing Thao, Thuan and Johansson sticker artwork. The card games use a new shuffled deck for each deal.
 - **Home Screen app** (`manifest.webmanifest`, `sw.js`, `icons/`): Share, then Add to Home Screen, on an iPhone (or
   Install on Android and desktop Chrome) gives Pocket Camera its own icon and a full screen without the browser. The
   icon is drawn in code by `tools/draw-camera-icon.py` (a white toy camera on graphite, the lens ringed in the camera's
@@ -90,8 +90,7 @@ when saving ? I want memory with our own photos or with the stickers".
 Default first Look: **Pocket**, the town's own hand-held camera (World's `pocket` Look), which gives the Game Boy
 Camera feeling with no console on screen. The first screen greets with a sticker from the residents' sheets, a
 different one each time (never the one shown last), sized to the space the browser leaves so it is always whole; until
-there is a picture the Look tray waits and the shutter starts the camera. Johansson, the chief engineer, salutes the empty album; every tap answers with a soft sound, which Sound in the settings mutes. The interface follows Apple's camera and Photos apps: always dark, system
-font, the camera's yellow for what is chosen, translucent material, 44-point targets. A wide window puts the controls
+there is a picture the Look tray waits and the shutter starts the camera. Johansson, the chief engineer, salutes the empty album; every tap answers with a soft sound, which Sound in the settings mutes. The interface uses a harbour-green and cream palette, tactile controls and original island pixel art, with 44-point targets. Memory uses a Python-drawn Minato lighthouse card back. A wide window puts the controls
 beside the picture, as on an iPad.
 
 ## How it works
@@ -134,6 +133,8 @@ beside the picture, as on an iPad.
 
 ```
 node camera/tests/looks-gl.test.mjs          # every Look converts; recipe, sizes, rows
+node camera/tests/blackjack.test.mjs         # scores and hand flow
+node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```

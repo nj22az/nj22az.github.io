@@ -20,6 +20,11 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="camera.css?v=20261029i">
+<link rel="stylesheet" href="camera-refresh.css?v=20261029a">
+<link rel="stylesheet" href="memory-retro.css?v=20261029a">
+<link rel="stylesheet" href="card-games.css?v=20261029a">
+<link rel="stylesheet" href="blackjack.css?v=20261029a">
+<link rel="stylesheet" href="solitaire.css?v=20261029a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -151,6 +156,7 @@
    </div>
   </header>
   <div class="album-scroll">
+   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Card games</strong><small>Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
     <img class="empty-sticker" id="emptySticker" alt="" hidden>
@@ -175,6 +181,19 @@
   <div class="memory-stage" hidden><div class="memory-board" role="group" aria-label="Cards"></div></div>
   <p class="memory-status" aria-live="polite" hidden></p>
   <div class="memory-win" role="dialog" aria-label="All pairs found" hidden></div>
+ </section>
+
+ <!-- Original island card games -->
+ <section class="screen card-games" id="cardsHub" aria-label="Card games" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardsHub"><svg><use href="#i-back"/></svg><span>Album</span></button><h2>Card games</h2><span class="bar-spacer"></span></header>
+  <div class="cards-hub-content"><p class="cards-kicker">MINATO GAME ROOM</p><h1>Pick a game</h1><p>Play a hand with the residents of Johansson World.</p>
+   <button class="game-choice" id="chooseBlackjack" type="button"><span class="choice-symbol" aria-hidden="true">21</span><span><strong>Blackjack</strong><small>Get close to 21 without going over.</small></span><span aria-hidden="true">›</span></button>
+   <button class="game-choice" id="chooseSolitaire" type="button"><span class="choice-symbol" aria-hidden="true">♠</span><span><strong>Solitaire</strong><small>Build the four suits from ace to king.</small></span><span aria-hidden="true">›</span></button>
+  </div>
+ </section>
+ <section class="screen card-games" id="cardGame" aria-label="Card game" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardGame"><svg><use href="#i-back"/></svg><span>Games</span></button><h2 id="cardGameTitle">Card game</h2><span class="bar-spacer"></span></header>
+  <div id="cardGameContent" class="card-game-content"></div>
  </section>
 
  <!-- One photo -->
@@ -243,6 +262,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029j"></script>
+<script type="module" src="app.js?v=20261029k"></script>
 </body>
 </html>

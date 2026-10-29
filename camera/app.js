@@ -12,6 +12,9 @@ import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029e';
+import {cardView,shuffleDeck} from './playing-cards.js?v=20261029a';
+import {createBlackjack} from './blackjack.js?v=20261029a';
+import {createSolitaire} from './solitaire.js?v=20261029a';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -665,7 +668,7 @@ $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)o
 
 function show(mode){
  state.mode=mode;
- for(const id of ['camera','editor','album','viewer','memory'])$(id).hidden=id!==mode;
+ for(const id of ['camera','editor','album','viewer','memory','cardsHub','cardGame'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
  if(mode==='editor'){$('panelLooks').append(tray);placeCanvas($('editFrame'));$('panelStickers').append($('stickerPicker'));}
  if(mode==='camera'||mode==='editor'){buildTrayFor();}
@@ -711,6 +714,24 @@ $('playMemory').addEventListener('click',openMemory);
 $('emptyPlay').addEventListener('click',openMemory);
 $('closeMemory').addEventListener('click',()=>{memory.close();openAlbum();});
 $('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden=true;memory.showSetup();});
+
+// A separate game room keeps the photo-based Memory flow intact.
+let activeCardGame=null;
+function openCardsHub(){activeCardGame?.destroy();activeCardGame=null;show('cardsHub');}
+function openCardGame(kind){
+ activeCardGame?.destroy();
+ const root=$('cardGameContent');root.replaceChildren();
+ $('cardGameTitle').textContent=kind==='blackjack'?'Blackjack':'Solitaire';
+ show('cardGame');
+ activeCardGame=(kind==='blackjack'?createBlackjack:createSolitaire)({root,cardView,shuffleDeck});
+ activeCardGame.start();
+}
+$('openCardGames').addEventListener('click',openCardsHub);
+$('closeCardsHub').addEventListener('click',openAlbum);
+$('closeCardGame').addEventListener('click',openCardsHub);
+$('chooseBlackjack').addEventListener('click',()=>openCardGame('blackjack'));
+$('chooseSolitaire').addEventListener('click',()=>openCardGame('solitaire'));
+
 
 let viewerURL;
 async function openViewer(id){
