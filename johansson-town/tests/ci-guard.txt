@@ -64,6 +64,8 @@ player-seating.test.mjs
 npc-seating.test.mjs
 floor-sit.test.mjs
 skirt-follow.test.mjs
+# The costume gallery's wardrobe: the tiered skirt, gingham and their sets (docs/research/costume-gallery.md).
+wardrobe-gallery.test.mjs
 pair-poses.test.mjs
 izakaya-bar.test.mjs
 izakaya-beer.test.mjs

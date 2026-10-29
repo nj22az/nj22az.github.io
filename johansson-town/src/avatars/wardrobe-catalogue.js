@@ -108,6 +108,11 @@ const PART_ENTRIES={
   cropped:{label:'Cropped trousers',category:'Trousers & shorts',tags:['rain','rainy season'],who:'Kenta and the Cold-storage kid in the rainy season',why:'Hems clear of the puddles in May and June.'},
   culottes:{label:'Culottes',category:'Skirts',tags:['bookshop','ladder'],who:'Nhung at Front-Row Books, before she became the island doctor',why:'As cool as a skirt, and easy on the ladder to the top shelves.'},
   pleatedskirt:{label:'Pleated skirt',category:'Skirts',tags:['school uniform','ferry','pleats'],who:'Vy and Hana with the sailor uniform; Thuan; the harbour visitor',why:'Pleats that swing on the walk to the ferry and fall back neat.'},
+  // The costume gallery's batch (2026-10-29, docs/research/costume-gallery.md): the gallery's most worn long skirt.
+  tieredskirt:{label:'Tiered skirt',category:'Skirts',tags:['tiers','long skirt','gathered','Sunday','cherry','Haarii','summer'],
+   who:'Miss Higa on Sunday mornings; Ms Ganaha under the harbour cherry; the crowd on the quay for the Haarii races',
+   why:'A long skirt in three tiers, each gathered onto the one above: it lifts in the sea wind and still keeps the sun off the legs.',
+   colourways:[{name:'Paper white',colours:{'outfit.bottomColour':'#f4f1ea'}},{name:'Hibiscus',colours:{'outfit.bottomColour':'#d9668a'}},{name:'Turmeric',colours:{'outfit.bottomColour':'#e8b83e'}},{name:'Sky',colours:{'outfit.bottomColour':'#8fbfe0'}}]},
  },
  footwear:{
   barefoot:{label:'Bare feet',category:'Everyday',tags:['genkan','beach','indoors'],who:'everyone indoors, and on the beach',why:'Shoes come off at every door on the island.'},

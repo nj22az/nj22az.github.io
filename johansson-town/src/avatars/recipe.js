@@ -52,7 +52,9 @@ export const PARTS=Object.freeze({
   'shirt','vest','knitvest','gymtee','baseball',
   // Cute everyday wear (the creator, 2026-10-14: "characters need to … have cute clothes"), painted the same way.
   'raglan','pinafore','stripedvest']),
- bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt']),
+ bottom:Object.freeze(['underwear','shorts','trousers','skirt','longskirt','widepants','cropped','culottes','pleatedskirt',
+  // The costume gallery's batch (2026-10-29): the long skirt in gathered tiers (tiered-skirt.js). Appended, so no saved id moves.
+  'tieredskirt']),
  footwear:Object.freeze(['barefoot','sneakers','sandals','shoes','boots']),
  hat:Object.freeze(['none','cap','captain','police','helmet','straw','headband','kerchief','beanie','beret','bucket','ribbon','squid','teapot','sunflower','paperboat','mountain',
   // Hats that are models from World's asset catalogue (hat-assets.js), sold at Sakura Shōten: appended, so no saved id moves.
@@ -67,11 +69,13 @@ export const PARTS=Object.freeze({
 });
 
 /** The prints a top can carry (garment.js), in the order the maker offers them. */
-export const PATTERNS=Object.freeze(['none','flowers','stripes','dots']);
+export const PATTERNS=Object.freeze(['none','flowers','stripes','dots',
+ // Gingham (garment.js), the costume gallery's batch (2026-10-29): appended, and never dealt by the dice (DICE.patterns).
+ 'gingham']);
 /** The patterns a bottom can carry: plaid on a skirt, stripes down trousers (build.js), in the order the maker offers them. */
 export const BOTTOM_PATTERNS=Object.freeze(['none','plaid','stripes']);
 /** Bottoms that are skirts: they hang from the waist as cloth on springs (build.js, springs.js), not as two legs. */
-export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt']);
+export const DRESS_BOTTOMS=Object.freeze(['skirt','longskirt','pleatedskirt','tieredskirt']);
 /**
  * Tops that carry a number (`outfit.number`, 1–99; 0 is none): the maker shows its number stepper only for these. The
  * Seagulls jersey wears it on the back.
@@ -88,6 +92,8 @@ export const DICE=Object.freeze({
  bottomColours:Object.freeze(['#27304d','#6d7478','#c8b48a','#2b2b2b','#9a6a42','#2f5f9e']),
  shoes:Object.freeze(['#6d4a32','#2b2b2b','#f4f1ea','#d8342c']),
  footwear:Object.freeze(['sneakers','sandals','shoes','boots']),
+ // The prints the dice have always dealt: a print added to the maker later (gingham) is chosen on purpose, never dealt.
+ patterns:Object.freeze(['flowers','stripes','dots']),
 });
 
 const clamp=(v,lo=0,hi=1)=>Math.min(hi,Math.max(lo,Number.isFinite(+v)?+v:lo));
@@ -224,7 +230,7 @@ export function randomRecipe(seed=Math.random().toString(36)){
   glasses:{style:r()<.25?any(PARTS.glasses.slice(1)):'none',colour:any(['#2b2b2b','#8a4a3a','#c8a060','#e06a7a']),size:.35+r()*.3,height:.4+r()*.2},
   facial:{moustache:age==='adult'&&!feminine&&r()<.22?any(PARTS.moustache.slice(1,5)):'none',beard:age==='adult'&&!feminine&&r()<.2?any(PARTS.beard.slice(1)):'none',colour:'#3a2618',size:.35+r()*.3,height:.4+r()*.2},
   blush:feminine?.3+r()*.4:r()*.2,freckles:r()<.12,mole:r()<.1,moleSpot:{x:r(),height:r(),size:.3+r()*.4},wrinkles:older?.5+r()*.5:0,
-  outfit:{top:any(DICE.tops),topColour:any(pal.cloth),pattern:r()<.3?any(PATTERNS.slice(1)):'none',
+  outfit:{top:any(DICE.tops),topColour:any(pal.cloth),pattern:r()<.3?any(DICE.patterns):'none',
    bottom:feminine&&r()<.4?any(DICE.skirtsAndWide):any(DICE.trousers),bottomColour:any(DICE.bottomColours),shoes:any(DICE.shoes),footwear:any(DICE.footwear),hat:'none',hatColour:'#f4f1ea',accent:any(pal.cloth)},
   profile:{pace:r(),talk:r(),show:r(),outlook:r(),pitch:feminine?.45+r()*.5:r()*.6,speed:r(),month:1+Math.floor(r()*12),day:1+Math.floor(r()*28),favourite:any(pal.cloth)},
  });

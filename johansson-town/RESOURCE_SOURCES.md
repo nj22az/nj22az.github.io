@@ -8,6 +8,8 @@ The active cast consists of 21 individually fitted MakeHuman CC0 residents and t
 
 The Look setting (`src/render/looks.js`) takes its set of looks from Super Mario Odyssey's Snapshot Mode as recreated by Daniel Ilett in [smo-shaders](https://github.com/daniel-ilett/smo-shaders) (MIT). The shaders are written new for three.js; no code or asset from that project is shipped.
 
+The wardrobe's costume-gallery sets (the tiered skirt, gingham and thirteen outfits, 29 October 2026) were studied from the owner's [COSTUME-DB-01 衣装集](https://ai-costume-gallery.pages.dev/) by ギア: AI-generated outfit pictures that may be used, edited and referred to in a work but whose image data may not be redistributed. None of its pictures is shipped; the looks are rebuilt from the town's own garments and palette, and the gallery ids each set was studied from are recorded beside it (`src/avatars/outfits.js`) and in [docs/research/costume-gallery.md](docs/research/costume-gallery.md).
+
 `resource-catalog.js` retains the existing prop-source catalogue. Its approved/future entries are intake candidates, not a statement that a file is included. The retired procedural and VRoid character prototypes were removed in the 2026 cleanup; see docs/EXPANSION-NOTES.md for where to recover them. ambientCG and GSI imagery are not included.
 
 Accept a new asset only with exact-file provenance and permission to redistribute. Keep required notices on screen and in the ledger. Preserve collision/interaction anchors when a visual model fails. Do not add remote asset URLs or franchise scans to the runtime.

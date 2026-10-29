@@ -34,6 +34,8 @@ const BODIES=[
  ['Mai (skirt, a child)',recipeFor('Mai'),'clothes','skirt'],
  ['Grandmother Higa (long skirt)',recipeFor('Grandmother Higa'),'clothes','dress'],
  ['a sundress',dressed('Sundress sitter',sundress),'clothes','dress'],
+ // The costume gallery's batch (2026-10-29): the long skirt in tiers, fuller at each tier's hem.
+ ['a tiered skirt',dressed('Tiered sitter',{bottom:'tieredskirt',bottomColour:'#e8b83e'}),'clothes','dress'],
  ['Thao after the bath (house dress)',recipeFor('Thao'),'afterbath','dress'],
  ['Kōji (shorts)',recipeFor('Kōji'),'clothes','shorts'],
  ['Kai (shorts)',recipeFor('Kai'),'clothes','shorts'],

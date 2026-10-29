@@ -27,6 +27,8 @@ for(const age of ['child','teen','adult','elder'])for(const build of [0,1])for(c
 for(const [who,outfits] of [['Mr Fujita',['clothes','afterbath','swim','towel']],['Miss Higa',['clothes','afterbath']],['Nhung',['towel','afterbath']],['Tetsuo',['afterbath']]])
  for(const outfit of outfits)BODIES.push([`${who} (${outfit})`,recipeFor(who),outfit]);
 BODIES.push(['Thuan in her pleated skirt',ORIGINAL_THUAN_RECIPE,'clothes']);
+// The costume gallery's batch (2026-10-29): the tiered skirt, the fullest long skirt, on the floor too.
+BODIES.push(['Miss Higa in a tiered skirt',normalizeRecipe({...recipeFor('Miss Higa'),outfit:{...recipeFor('Miss Higa').outfit,bottom:'tieredskirt'}}),'clothes']);
 
 /** A body on its mark (facing -z, as the town's do), set going with `state` for `frames` sixtieths of a second. */
 function seeded(seed=7){let s=seed;return ()=>{s=(s*16807)%2147483647;return s/2147483647;};}

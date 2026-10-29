@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Wardrobe sheet</title>
+<style>html,body{margin:0;height:100%;background:#efe6d2;overflow:hidden;font:600 13px system-ui,sans-serif}canvas{display:block}
+.tag{position:absolute;transform:translateX(-50%);text-align:center;color:#2b2623;width:150px;line-height:1.2}.tag small{display:block;font-weight:400;color:#6d6458}</style></head>
+<body>
+<script type="module">
+// A review sheet for the wardrobe: one body wearing each set (or trial outfit) side by side, front and back, labelled.
+// ?sets=id,id  the sets (outfits.js) to show; ?body=Miss Higa  the resident who wears them (cast.js recipeFor);
+// ?trial=<URI-encoded JSON [{label, outfit}]>  outfits not yet in the wardrobe; ?pose=idle|walk|sit; ?turn=0.35
+import * as THREE from '../vendor/three.module.js';
+import {buildAvatar} from '../src/avatars/build.js';
+import {createAvatarAnimator} from '../src/avatars/animate.js';
+import {recipeFor} from '../src/avatars/cast.js';
+import {normalizeRecipe} from '../src/avatars/recipe.js';
+import {ISLAND_OUTFITS,ISLAND_COSTUMES} from '../src/avatars/outfits.js';
+import {putOnSet} from '../src/avatars/wardrobe-catalogue.js';
+const q=new URLSearchParams(location.search),SETS=[...ISLAND_OUTFITS,...ISLAND_COSTUMES];
+const body=recipeFor(q.get('body')||'Miss Higa'),pose=q.get('pose')||'idle',turn=+(q.get('turn')??.35),back=q.get('back')==='1';
+const looks=[...(q.get('sets')?q.get('sets').split(','):[]).map(id=>{const s=SETS.find(x=>x.id===id);if(!s)throw new Error('no set '+id);return {label:s.label,sub:s.id,outfit:putOnSet(body.outfit,s)};}),
+ ...(q.get('trial')?JSON.parse(q.get('trial')):[]).map(t=>({label:t.label,sub:t.sub||'trial',outfit:{...body.outfit,...t.outfit}}))];
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setPixelRatio(devicePixelRatio);renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.append(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xefe6d2);
+scene.add(new THREE.HemisphereLight(0xffffff,0xc8a878,2.0));const sun=new THREE.DirectionalLight(0xffffff,1.5);sun.position.set(2,5,6);scene.add(sun);
+const gap=.78,people=looks.map((look,i)=>{
+ const a=buildAvatar(normalizeRecipe({...body,outfit:look.outfit}),{faceSize:256});const holder=new THREE.Group();holder.add(a.root);
+ holder.position.x=(i-(looks.length-1)/2)*gap;holder.rotation.y=(back?0:Math.PI)+turn;scene.add(holder);
+ return {a,anim:createAvatarAnimator(a),holder,look};
+});
+const camera=new THREE.PerspectiveCamera(24,innerWidth/innerHeight,.1,100);
+const span=Math.max(1.6,looks.length*gap);camera.position.set(0,.95,span/(2*Math.tan(THREE.MathUtils.degToRad(24*innerWidth/innerHeight)/2))*.98+.6);camera.lookAt(0,.78,0);
+for(const p of people){const d=document.createElement('div');d.className='tag';d.innerHTML=`${p.look.label}<small>${p.look.sub}</small>`;document.body.append(d);p.tag=d;}
+const state={speed:pose==='walk'?1.2:0,seated:pose==='sit',seatHeight:.45,expression:'neutral'};
+let n=0;function frame(){
+ for(const p of people){p.anim.update(1/30,state);p.a.springs?.update(1/30);}
+ renderer.render(scene,camera);
+ for(const p of people){const v=new THREE.Vector3(p.holder.position.x,-.03,0).project(camera);p.tag.style.left=((v.x+1)/2*innerWidth)+'px';p.tag.style.top=((1-v.y)/2*innerHeight)+'px';}
+ if(++n<40)requestAnimationFrame(frame);else window.__READY__=true;}
+frame();
+</script>
+</body></html>

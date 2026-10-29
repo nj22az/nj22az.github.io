@@ -11,11 +11,14 @@ export function skirtSpec(m,kind='skirt'){
   const hipR=m.hips*.5+.007*m.k,hemR=Math.max(hipR+.009*m.k,waistR*(m.studio?1.40:1.18))+(m.skirtFlare-.5)*.05*m.k;
   return {waist,length,waistR,hipR,hemR,hipAt:Math.min(.65,Math.max(.25,(waist-m.hipY)/length)),rx:hemR,rz:hemR*m.depth/m.width,thickness:.002*m.k};
  }
- const waist=m.hipY+m.torso*.13,tailored=kind==='skirt';
- const length=tailored?m.torso*.13+m.thigh*.78:kind==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9;
+ const waist=m.hipY+m.torso*.13,tailored=kind==='skirt',tiered=kind==='tieredskirt';
+ const length=tailored?m.torso*.13+m.thigh*.78:kind==='longskirt'||tiered?m.thigh+m.shin*.85:m.thigh*.9;
  const waistR=tailored?m.hips*.5+.008*m.k:m.hips*.53;
- const hipR=m.hips*.53+.004*m.k,hemR=tailored?m.hips*.55+.008*m.k:m.hips*.66+length*.22;
- return {waist,length,waistR,hipR,hemR,rx:hemR,rz:hemR*m.depth/m.width,thickness:.0035*m.k};
+ // The tiered skirt (tiered-skirt.js) falls on the long skirt's line, and each tier stands out from it by a hem's step
+ // (`step`): hemR is its outermost reach, what the hem's springs and the bath's cloth fit must clear.
+ const step=tiered?.012*m.k:0;
+ const hipR=m.hips*.53+.004*m.k,hemR=tailored?m.hips*.55+.008*m.k:tiered?m.hips*.66+length*.22+step:m.hips*.66+length*.22;
+ return {waist,length,waistR,hipR,hemR,rx:hemR,rz:hemR*m.depth/m.width,thickness:(tiered?.003:.0035)*m.k,...(tiered?{step}:{})};
 }
 
 export function skirtRadiusAt(s,f){

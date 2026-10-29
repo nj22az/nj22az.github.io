@@ -60,6 +60,8 @@ export const SHIRT_SLEEVES=Object.freeze(['vest','knitvest','stripedvest']);
 export const ACCENT_SLEEVES=Object.freeze(['raglan']);
 /** Tops whose arm under a short sleeve is an undershirt in the accent colour, not skin (the Seagulls jersey). */
 export const UNDERSHIRT_ARMS=Object.freeze(['baseball']);
+/** The width of one gingham band (a check), in metres at the town's adult scale (× m.k). */
+export const GINGHAM=.022;
 /** Long-sleeved tops whose sleeve ends before the wrist, as a fraction of the arm from shoulder to wrist. */
 export const SLEEVE_END=Object.freeze({festival:.66});
 /** Lettering on cloth: a rounded gothic for a sewn name patch, a script for a team's name, a heavy face for a number. */
@@ -138,6 +140,18 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   const band=m.torso*.12*pxPerY,from=Y(1.0),to=Y(hem);
   ctx.fillStyle='#f4f1ea';for(let y=to-band;y>from;y-=band*2)ctx.fillRect(0,Math.max(from,y-band),TW,Math.min(band,y-from));
   marks.push('stripes');
+ }
+ // Gingham (the costume gallery's batch, 2026-10-29): paper-white bands one way and the other over the cloth, half see-through,
+ // so the cloth shows in three tones (the colour, the colour half-washed, near white where the bands cross), as woven checks do.
+ if(o.pattern==='gingham'&&!['tank','overalls'].includes(o.top)){
+  // A sundress is cloth only up to its bodice's edge (its straps are plain); above that is skin.
+  const check=GINGHAM*k,from=Y(o.top==='sundress'?.795:1.0),to=Y(hem),bandY=check*pxPerY;
+  // Round the body the checks keep their size at the chest: as many as fit its girth there, a whole number so the seam meets.
+  const a=W/2,b=D/2,girth=Math.PI*(3*(a+b)-Math.sqrt((3*a+b)*(a+3*b)))*radiusAt(.6),across=Math.max(8,Math.round(girth/(check*2)))*2;
+  ctx.save();ctx.globalAlpha=.5;ctx.fillStyle='#f4f1ea';
+  for(let y=to-bandY;y>from;y-=bandY*2)ctx.fillRect(0,Math.max(from,y-bandY),TW,Math.min(bandY,y-from));
+  for(let i=0;i<across;i+=2)ctx.fillRect(i/across*TW,from,TW/across,to-from);
+  ctx.restore();marks.push('gingham');
  }
  if(o.pattern==='flowers'||o.pattern==='dots'){
   const flowers=o.pattern==='flowers',big=o.top==='kariyushi';
@@ -403,6 +417,13 @@ export function paintGarment(ctx,recipe,m,radiusAt){
   ctx.save();ctx.beginPath();ctx.rect(0,yTop,TW,end-yTop);ctx.clip();
   if(col==='stripedvest'){ctx.fillStyle=o.topColour;const step=h/9;for(let y=yTop+step*.5;y<end;y+=step)ctx.fillRect(0,y,TW,Math.min(step*.22,end-y));marks.push('striped sleeves');}
   if(o.pattern==='stripes'&&!shirtSleeve){ctx.fillStyle='#f4f1ea';const band=m.torso*.12*pxV;for(let y=yTop+band;y<end;y+=band*2)ctx.fillRect(0,y,TW,Math.min(band,end-y));}
+  if(o.pattern==='gingham'&&!shirtSleeve){
+   const check=GINGHAM*m.k,bandV=check*pxV,around=Math.max(4,Math.round(sleeveCirc/(check*2)))*2;
+   ctx.save();ctx.globalAlpha=.5;ctx.fillStyle='#f4f1ea';
+   for(let y=yTop+bandV;y<end;y+=bandV*2)ctx.fillRect(0,y,TW,Math.min(bandV,end-y));
+   for(let i=0;i<around;i+=2)ctx.fillRect(i/around*TW,yTop,TW/around,end-yTop);
+   ctx.restore();
+  }
   if((o.pattern==='flowers'||o.pattern==='dots')&&!shirtSleeve){
    const flowers=o.pattern==='flowers',r=m.k*(flowers?(col==='kariyushi'?.05:.036):.016),petal=flowers?'#f8f6ef':o.accent;
    const cols=flowers?4:8,rows=Math.max(1,Math.round(sleeveLen/(r*4)));

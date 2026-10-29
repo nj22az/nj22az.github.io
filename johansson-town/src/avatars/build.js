@@ -1,5 +1,6 @@
 import {authoredSkirtGeometry,authoredSkirtMaterial} from './authored-skirt.js';
 import {skirtSpec,skirtRadiusAt,tailoredSkirtGeometry} from './skirt-shape.js';
+import {tieredSkirtGeometry,tieredReachAt} from './tiered-skirt.js';
 import {longFringeGeometry} from './long-fringe.js';
 import {SWEPT_PONYTAIL} from './swept-ponytail-mesh.js';
 import {POLO_COLLAR} from './contrast-polo-mesh.js';
@@ -979,10 +980,10 @@ function addBody(list,recipe,m,swim=false){
  if(!swim&&o.top==='apron'){
   const topY=hipY+m.torso*.75,bottomY=hipY-m.thigh*.78;
   const apron=new THREE.PlaneGeometry(W*.7,topY-bottomY,8,14);apron.translate(0,(topY+bottomY)/2,0);
-  const positions=apron.attributes.position,skirt=['skirt','longskirt'].includes(o.bottom),len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,cut=o.bottom==='skirt'?skirtSpec(m):null;
+  const positions=apron.attributes.position,skirt=['skirt','longskirt'].includes(o.bottom),len=o.bottom==='longskirt'?m.thigh+m.shin*.85:m.thigh*.9,cut=['skirt','tieredskirt'].includes(o.bottom)?skirtSpec(m,o.bottom):null;
   for(let i=0;i<positions.count;i++){
    const y=positions.getY(i),t=(y-hipY)/m.torso;
-   const radius=y>=hipY?W/2*latheRadius(prof,t):cut?skirtRadiusAt(cut,(cut.waist-y)/cut.length):skirt?THREE.MathUtils.lerp(m.hips*.53,m.hips*.66+len*.22,THREE.MathUtils.clamp((hipY+.03-y)/len,0,1)):W*.52;
+   const radius=y>=hipY?W/2*latheRadius(prof,t):cut?(o.bottom==='tieredskirt'?tieredReachAt:skirtRadiusAt)(cut,THREE.MathUtils.clamp((cut.waist-y)/cut.length,0,1)):skirt?THREE.MathUtils.lerp(m.hips*.53,m.hips*.66+len*.22,THREE.MathUtils.clamp((hipY+.03-y)/len,0,1)):W*.52;
    const x=positions.getX(i)*(y>hipY?1-THREE.MathUtils.clamp(t,0,1)*.25:1);
    positions.setXYZ(i,x,y,radius*D/W*Math.sqrt(Math.max(.05,1-(x/radius)**2))+.025*m.k);
   }apron.computeVertexNormals();
@@ -1081,18 +1082,19 @@ function addBody(list,recipe,m,swim=false){
  if(b==='housedress')addHullSkirt(list,recipe,m,'housedress',bottom);
  if(b==='swim'&&!bare&&wearsSwimSkirt(recipe))addHullSkirt(list,recipe,m,'swim',bottom);
  if(DRESS_BOTTOMS.includes(b)&&!(b==='skirt'&&o.skirtCut==='panel'&&!swim)){
-  const len=skirtSpec(m,b).length;
+  // The long skirt and the tiered skirt reach below the knee and go with the shins.
+  const len=skirtSpec(m,b).length,long=b==='longskirt'||b==='tieredskirt';
   // The skirt hangs from the hips and, lower down, goes with the legs: seated, it lies on the lap; and a long skirt,
   // below the knee, goes with the shins, so seated it falls over them instead of sticking out past the knees like a tube.
   const drape=p=>{
    // Front and side panels track their own thigh during a stride. Retain
    // some hip/spring support behind so sitting does not lift the rear hem.
    const front=THREE.MathUtils.smoothstep(p.z,-D*.35,D*.22);
-   const leg=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,.02,.12):THREE.MathUtils.smoothstep(waist-p.y,len*.15,len*.85)*(.28+.72*front),w=THREE.MathUtils.smoothstep(p.x,-W*.20,W*.20);
-   const shin=b==='longskirt'?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
+   const leg=long?THREE.MathUtils.smoothstep(hipY-p.y,.02,.12):THREE.MathUtils.smoothstep(waist-p.y,len*.15,len*.85)*(.28+.72*front),w=THREE.MathUtils.smoothstep(p.x,-W*.20,W*.20);
+   const shin=long?THREE.MathUtils.smoothstep(hipY-p.y,m.thigh*.82,m.thigh*1.02):0;
    return [['hips',1-leg],['thighL',leg*(1-shin)*w],['thighR',leg*(1-shin)*(1-w)],['kneeL',leg*shin*w],['kneeR',leg*shin*(1-w)]];
   };
-  const skirt=b==='skirt'?tailoredSkirtGeometry(m):b==='pleatedskirt'?pleatedSkirtGeometry(m,len):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
+  const skirt=b==='skirt'?tailoredSkirtGeometry(m):b==='pleatedskirt'?pleatedSkirtGeometry(m,len):b==='tieredskirt'?tieredSkirtGeometry(m):new THREE.CylinderGeometry(m.hips*.53,m.hips*.66+len*.22,len,32,8,true);
   const hem=hemSpec(recipe,m);
   const cloth=part(list,skirt,hem?quarterShare(hem,drape):drape,o.bottomPattern==='plaid'?(p=>{const vertical=Math.floor((Math.atan2(p.x,p.z)*12/Math.PI))%4===0,horizontal=Math.floor((hipY-p.y)/(.06*m.k))%4===0;return vertical||horizontal?o.accent:bottom;}):b==='pleatedskirt'?(p=>{
    const angle=Math.atan2(p.x,p.z*W/D),phase=((angle/(Math.PI*2)*12)%1+1)%1;
