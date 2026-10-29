@@ -265,6 +265,25 @@ CONFIG.projectExplorer = [
     "preview": "world"
   },
   {
+    "id": "camera",
+    "category": "create",
+    "title": "Pocket Camera",
+    "eyebrow": "EVERY LOOK FROM JOHANSSON WORLD",
+    "summary": "A camera and photo editor with the island’s own art styles. Shoot through Pocket, Manga, Woodblock print or Old TV, mix up to three, and stick on the residents’ die-cut stickers.",
+    "url": "/camera/",
+    "action": "Open the camera",
+    "format": "Camera & photo editor",
+    "language": "English",
+    "status": "Browser app",
+    "firstTry": "Start the camera, swipe across the picture to change the Look, tap Mix to add a second, or roll the dice for a surprise. Photos stay on your device.",
+    "features": [
+      "Every Look from Johansson World, live on the camera or on your own photos",
+      "Mix up to three Looks; adjust light, colour and the size of the pattern",
+      "Die-cut stickers of Thuan and Fuji, and a film camera’s date stamp"
+    ],
+    "preview": "camera"
+  },
+  {
     "id": "maintenance",
     "category": "tools",
     "title": "Maintenance Desk",

@@ -1,9 +1,12 @@
 /**
- * The Look picker: one small picture per look, the same little house drawn in each style, and a one-word name
- * (the owner, 22 October 2026: "The menus are too text heavy, can they be more icon based?"). A tap draws the town in
- * that look at once and the sheet stays open, so looks can be compared against the town behind it; ×, Escape or a
- * tap above the sheet closes it. While it is open it keeps every key and pointer from reaching the town, as the free
- * camera does.
+ * The Look picker: a strip along the foot of the screen, as in a camera app, with the town left in full view above
+ * it. Each look is a small picture of the town as it is now, drawn in that look (render/look-previews.js), with a
+ * one-word name; until a picture is ready the same little house stands in, drawn in each style (the owner,
+ * 22 October 2026: "The menus are too text heavy, can they be more icon based?"; 29 October 2026: "shader picking is a
+ * surprise I want to be able to choose from a menu like in the camera app you are making and see the results", "In
+ * world the menu blocks the whole screen the camera app looks more sophisticated"). A tap draws the town in that look
+ * at once and the strip stays open, so looks are compared on the town itself; ×, Escape or a tap on the town closes
+ * it. While it is open it keeps every key and pointer from reaching the town, as the free camera does.
  */
 import {svg as icon} from './icons.js';
 
@@ -73,73 +76,112 @@ export function lookSwatch(id,uid=id){
 }
 
 const STYLE=`
-#lookPicker{position:fixed;inset:0;z-index:62;display:flex;align-items:flex-end;justify-content:center;background:linear-gradient(transparent 40%,rgba(10,16,16,.35))}
+#lookPicker{position:fixed;inset:0;z-index:62;display:flex;align-items:flex-end;justify-content:center;pointer-events:auto}
 #lookPicker[hidden]{display:none}
-#lookPicker .look-sheet{width:min(400px,calc(100% - 16px));margin:0 0 max(12px,env(safe-area-inset-bottom));padding:14px 14px 16px;border-radius:18px;
- max-height:calc(100dvh - 24px);overflow-y:auto;background:#fbf9f3;color:#1d2825;box-shadow:0 10px 40px rgba(0,0,0,.25);font:700 12px/1.2 system-ui,sans-serif}
-#lookPicker .look-head{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
-#lookPicker .look-head svg{width:22px;height:22px}
-#lookPicker .look-close{display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#eceee6;color:inherit}
-#lookPicker .look-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-#lookPicker .look-grid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 4px 8px;border:2px solid transparent;
- border-radius:14px;background:none;color:inherit;font:inherit;letter-spacing:0}
-#lookPicker .look-grid button svg{display:block;width:60px;height:60px;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.08)}
-#lookPicker .look-grid button[aria-pressed="true"]{border-color:#2f8a5f;background:#e6f3ea}
-#lookPicker .look-grid button:focus-visible{outline:3px solid #2f8a5f;outline-offset:2px}
+#lookPicker .look-sheet{width:min(760px,100%);margin:0 auto;padding:10px 0 max(12px,env(safe-area-inset-bottom));border-radius:22px 22px 0 0;
+ background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);
+ box-shadow:0 -10px 34px rgba(0,0,0,.28);color:#fff;font:600 11px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,sans-serif;animation:lookRise .32s cubic-bezier(.32,1.3,.5,1)}
+@keyframes lookRise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+#lookPicker .look-head{display:flex;align-items:center;gap:10px;margin:0 14px 8px}
+#lookPicker .look-head>svg{flex:none;width:20px;height:20px;color:#ffd60a}
+#lookPicker .look-name{flex:none;font-size:15px;font-weight:700;letter-spacing:-.01em}
+#lookPicker .look-hint{flex:1;min-width:0;font-size:12px;font-weight:500;color:rgba(235,235,245,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lookPicker .look-close{flex:none;display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:rgba(118,118,128,.28);color:#fff}
+#lookPicker .look-close svg{width:16px;height:16px}
+#lookPicker .look-strip{display:flex;gap:10px;overflow-x:auto;padding:6px 14px 4px;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x}
+#lookPicker .look-strip::-webkit-scrollbar{display:none}
+#lookPicker .look-strip button{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:66px;padding:0;border:0;background:none;color:rgba(235,235,245,.62);font:inherit;letter-spacing:0}
+#lookPicker .look-face{position:relative;display:block;width:62px;height:62px;border-radius:14px;overflow:hidden;background:#1c1c1e;transition:transform .3s cubic-bezier(.32,1.3,.5,1),box-shadow .2s}
+#lookPicker .look-face svg{display:block;width:100%;height:100%}
+#lookPicker .look-face canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
+#lookPicker .look-face canvas.drawn{opacity:1}
+#lookPicker .look-strip button:active .look-face{transform:scale(.92)}
+#lookPicker .look-strip button[aria-pressed="true"]{color:#ffd60a}
+#lookPicker .look-strip button[aria-pressed="true"] .look-face{box-shadow:0 0 0 2px rgba(28,28,30,.9),0 0 0 4px #ffd60a}
+#lookPicker .look-strip button span:last-child{max-width:66px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lookPicker .look-strip button:focus-visible{outline:none}
+#lookPicker .look-strip button:not([aria-pressed="true"]):focus-visible .look-face{box-shadow:0 0 0 2px rgba(28,28,30,.9),0 0 0 4px rgba(255,255,255,.85)}
+@media (prefers-reduced-motion:reduce){#lookPicker .look-sheet{animation:none}#lookPicker .look-face,#lookPicker .look-face canvas{transition:none}}
 `;
 
 /**
  * @param {object} o
- * @param {Record<string,{label:string,short?:string}>} o.looks the catalogue (render/looks.js LOOKS)
+ * @param {Record<string,{label:string,short?:string,hint?:string}>} o.looks the catalogue (render/looks.js LOOKS)
  * @param {()=>string[]} o.available the looks this device can draw, in order
  * @param {()=>string} o.current
  * @param {(id:string)=>void} o.choose
+ * @param {{begin:()=>void,draw:(id:string,canvas:HTMLCanvasElement)=>boolean}} [o.previews] the town in each look
  */
-export function createLookPicker({looks,available,current,choose,doc=globalThis.document,win=globalThis,onOpen=()=>{},onClose=()=>{}}){
- let root=null,grid=null,open=false,focusBefore=null;
+export function createLookPicker({looks,available,current,choose,previews=null,doc=globalThis.document,win=globalThis,onOpen=()=>{},onClose=()=>{}}){
+ let root=null,strip=null,open=false,focusBefore=null,queue=[],frame=0;
  function build(){
   const style=doc.createElement('style');style.textContent=STYLE;doc.head.append(style);
   root=doc.createElement('div');root.id='lookPicker';root.hidden=true;
-  root.innerHTML=`<div class="look-sheet" role="dialog" aria-modal="true" aria-label="Look: how the town is drawn"><div class="look-head">${icon('camera')}<button type="button" class="look-close" aria-label="Close">${icon('close')}</button></div><div class="look-grid"></div></div>`;
-  grid=root.querySelector('.look-grid');
+  root.innerHTML=`<div class="look-sheet" role="dialog" aria-modal="true" aria-label="Look: how the town is drawn"><div class="look-head">${icon('camera')}<span class="look-name"></span><span class="look-hint"></span><button type="button" class="look-close" aria-label="Close">${icon('close')}</button></div><div class="look-strip" role="radiogroup" aria-label="Look"></div></div>`;
+  strip=root.querySelector('.look-strip');
   root.querySelector('.look-close').onclick=close;
-  // A tap on the town above the sheet closes it; taps inside the sheet do not.
+  // A tap on the town above the strip closes it; taps inside the strip do not.
   root.addEventListener('pointerdown',e=>{if(e.target===root){e.preventDefault();close();}});
-  // Drags and taps on the sheet are its own: the game's look-around listeners on the document never see them.
+  // Drags and taps on the strip are its own: the game's look-around listeners on the document never see them.
   const sheet=root.querySelector('.look-sheet');
   for(const type of ['pointerdown','pointermove','pointerup','touchstart','touchmove','mousedown','mousemove','wheel'])sheet.addEventListener(type,e=>e.stopPropagation());
   doc.body.append(root);
  }
+ function mark(){
+  const now=current(),info=looks[now]||looks.none;
+  root.querySelector('.look-name').textContent=info.label;
+  root.querySelector('.look-hint').textContent=info.hint||'';
+  for(const b of strip.children){const on=b.dataset.look===now;b.setAttribute('aria-pressed',String(on));b.tabIndex=on?0:-1;}
+ }
  function render(){
-  const now=current();
-  grid.replaceChildren(...available().map(id=>{
-   const b=doc.createElement('button');b.type='button';b.dataset.look=id;
-   b.setAttribute('aria-pressed',String(id===now));b.setAttribute('aria-label',looks[id].label);b.title=looks[id].label;
-   b.innerHTML=lookSwatch(id,'p'+id)+`<span>${looks[id].short||looks[id].label}</span>`;
-   b.onclick=()=>{choose(id);render();grid.querySelector(`[data-look="${id}"]`)?.focus();};
+  strip.replaceChildren(...available().map(id=>{
+   const b=doc.createElement('button');b.type='button';b.dataset.look=id;b.setAttribute('role','radio');
+   b.setAttribute('aria-label',looks[id].label);b.title=looks[id].hint||looks[id].label;
+   b.innerHTML=`<span class="look-face">${lookSwatch(id,'p'+id)}<canvas aria-hidden="true"></canvas></span><span>${looks[id].short||looks[id].label}</span>`;
+   b.onclick=()=>{choose(id);mark();};
    return b;
   }));
+  mark();
+ }
+ // The live pictures, one a frame: the chosen look first, then outwards from it along the strip.
+ function drawNext(){
+  frame=0;
+  if(!open||!previews)return;
+  const id=queue.shift();if(!id)return;
+  const canvas=strip.querySelector(`[data-look="${id}"] canvas`);
+  if(canvas&&previews.draw(id,canvas))canvas.classList.add('drawn');
+  else if(canvas){queue=[];return;}
+  frame=win.requestAnimationFrame?.(drawNext)||0;
+ }
+ function startPreviews(){
+  if(!previews)return;
+  const ids=available(),at=Math.max(0,ids.indexOf(current()));
+  queue=[...ids].sort((a,b)=>Math.abs(ids.indexOf(a)-at)-Math.abs(ids.indexOf(b)-at));
+  previews.begin();
+  // After the next frame of the town, so the picture drawn from is the one on the screen.
+  frame=win.requestAnimationFrame?.(()=>{frame=win.requestAnimationFrame?.(drawNext)||0;})||0;
  }
  function show(){
   if(!root)build();
   if(open)return;
   open=true;focusBefore=doc.activeElement;doc.exitPointerLock?.();render();root.hidden=false;onOpen();
-  (grid.querySelector('[aria-pressed="true"]')||grid.firstElementChild)?.focus();
+  const chosen=strip.querySelector('[aria-pressed="true"]')||strip.firstElementChild;
+  chosen?.focus({preventScroll:true});chosen?.scrollIntoView?.({inline:'center',block:'nearest'});
+  startPreviews();
  }
  function close(){
   if(!open)return;
-  open=false;root.hidden=true;onClose();
+  open=false;root.hidden=true;queue=[];if(frame)win.cancelAnimationFrame?.(frame);frame=0;onClose();
   if(focusBefore?.getClientRects?.().length)focusBefore.focus();
  }
- // Keys stay in the sheet: Escape closes, arrows move between pictures, Enter/Space choose, the rest never reach the town.
+ // Keys stay in the strip: Escape closes, arrows move between pictures, Enter/Space choose, the rest never reach the town.
  win.addEventListener('keydown',e=>{
   if(!open)return;
   e.stopImmediatePropagation();
   if(e.code==='Escape'){e.preventDefault();close();return;}
-  const items=[...grid.children],at=items.indexOf(doc.activeElement);
-  const cols=Math.max(1,Math.round(grid.clientWidth/Math.max(1,items[0]?.offsetWidth||1)));
-  const step={ArrowRight:1,ArrowLeft:-1,ArrowDown:cols,ArrowUp:-cols}[e.code];
-  if(step){e.preventDefault();items[Math.max(0,Math.min(items.length-1,(at<0?0:at)+step))]?.focus();return;}
+  const items=[...strip.children],at=items.indexOf(doc.activeElement);
+  const step={ArrowRight:1,ArrowLeft:-1,ArrowDown:1,ArrowUp:-1}[e.code];
+  if(step){e.preventDefault();const next=items[Math.max(0,Math.min(items.length-1,(at<0?0:at)+step))];next?.focus();next?.scrollIntoView?.({inline:'nearest',block:'nearest'});return;}
   if(!['Enter','Space','NumpadEnter','Tab'].includes(e.code))e.preventDefault();
  },true);
  for(const type of ['keyup','wheel'])win.addEventListener(type,e=>{if(open)e.stopImmediatePropagation();},true);
