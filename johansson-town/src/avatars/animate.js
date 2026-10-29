@@ -276,7 +276,7 @@ export const CHAIR_SIT=Object.freeze({hands:.6,edge:.012,
   // reaches with the trunk leaned in by one of `leans` (radians, shared by the spine and the chest, the head kept level),
   // the palm's middle `palm` hand lengths over the lap; a mitten held 0.85 of a hand over it floated in front of
   // Johansson's belly, and his arms reach neither knee from an upright back)
-  rest:Object.freeze({along:Object.freeze([.85,.75,.65,.55,.45]),leans:Object.freeze([0,.06,.12,.18,.24,.3]),palm:.22,slack:.93,hand:Object.freeze([0,1.3,0]),flat:Object.freeze([.18,.4]),clear:.14,level:.6})})});
+  rest:Object.freeze({along:Object.freeze([.85,.75,.65,.55,.45]),leans:Object.freeze([0,.06,.12]),palm:.22,slack:.93,hand:Object.freeze([0,1.3,0]),flat:Object.freeze([.18,.4]),clear:.14,level:.6})})});
 /** How far each angle of an arm laid on the lap may go ([low, high] per angle, as reachFor's `bounds`; pair-poses.js has the
  *  same for a reach to a partner): kept off the thighs as wide as they are drawn (shorts, wide trousers), an arm must not be
  *  wound round the shoulder to get there, which it would unwind through the air every time the body sits down or gets up. */
@@ -1072,15 +1072,17 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const root=avatar.root,saved=JOINTS.map(j=>bones[j].rotation.toArray().slice(0,3));
   // (a Pixar body sits with its trunk slumped, and leaned in as far as its arms need to rest on the thighs: the shoulder
   // found with the trunk so, and the arm solved with it, or the hand lands off the place it was aimed at)
-  const rest=avatar.pixar?P.rest:null,trunk=lean=>rest?{spine:[P.slump.spine+lean/2,0,0],chest:[P.slump.chest+lean/2,0,0]}:{};
+  const trunk=lean=>avatar.pixar?{spine:[P.slump.spine+lean/2,0,0],chest:[P.slump.chest+lean/2,0,0]}:{};
   const shoulderAt=lean=>{const J={...joints,...trunk(lean)};JOINTS.forEach(j=>bones[j].rotation.set(...(J[j]||[0,0,0])));root.updateMatrixWorld(true);
    const p=root.worldToLocal(bones.shoulderR.getWorldPosition(new THREE.Vector3()));JOINTS.forEach((j,i)=>bones[j].rotation.set(...saved[i]));root.updateMatrixWorld(true);return p;};
-  const reachArm=(m.upper+m.fore+m.hand*.55)*.97,reaches=(sh,q)=>sh.distanceTo(new THREE.Vector3(...q))<=reachArm*(rest?rest.slack:1);
-  const lapAt=f=>{const L=S.lap(f);return [L.axis.x,L.top+m.hand*(rest?rest.palm:.85),L.axis.z];};
-  let place=null,lean=0;
-  if(rest){for(const f of rest.along){for(const l of rest.leans)if(reaches(shoulderAt(l),lapAt(f))){place=lapAt(f);lean=l;break;}if(place)break;}
-   if(!place){lean=rest.leans[rest.leans.length-1];place=lapAt(rest.along[rest.along.length-1]);}}
-  else{const shoulder=shoulderAt(0);place=[1,.8,.6,.4,.2,0].map(u=>lapAt(u*CHAIR_SIT.hands)).find(q=>reaches(shoulder,q))||lapAt(0);}
+  const reachArm=(m.upper+m.fore+m.hand*.55)*.97,reaches=(sh,q,slack=1)=>sh.distanceTo(new THREE.Vector3(...q))<=reachArm*slack;
+  const lapAt=(f,palm=.85)=>{const L=S.lap(f);return [L.axis.x,L.top+m.hand*palm,L.axis.z];};
+  let place=null,lean=0,rest=null;
+  // (arms too short for the knees rest higher up the thigh, as a person's do, never the trunk hunched over them; a body
+  // that cannot reach its thighs at all leaned in so little, Tetsuo, Chin and Mr Fujita with the low hip joints of their
+  // export of 28 October, keeps the mitten's place over the lap)
+  if(avatar.pixar){const R=P.rest;for(const f of R.along){for(const l of R.leans)if(reaches(shoulderAt(l),lapAt(f,R.palm),R.slack)){place=lapAt(f,R.palm);lean=l;rest=R;break;}if(place)break;}}
+  if(!place){const shoulder=shoulderAt(0);place=[1,.8,.6,.4,.2,0].map(u=>lapAt(u*CHAIR_SIT.hands)).find(q=>reaches(shoulder,q))||lapAt(0);}
   let hands;
   // (the arm kept out of the legs as wide as they are drawn: a mitten laid on shorts lies on them, not in them; the elbow
   // by the side, as a sitter's is, not winged out over the next place on the bench or a chair's arm)

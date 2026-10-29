@@ -56,17 +56,25 @@ to the wrist, and the chair sit (`src/avatars/animate.js` `chairShape`) held the
 over the lap: the reach (`reachFor`) keeps a mitten's middle 0.7 of a hand off the body, sampled as a 23 cm ball.
 
 - A Pixar body now rests its palms on its thighs by the knees (`CHAIR_SIT.pixar.rest`): the farthest point of `along`
-  (85 % of the way from the hip to the knee first) the arm reaches, with the trunk leaned in by one of `leans` if it must
-  (shared by the spine and the chest, the head kept level); the arm is solved with the trunk as it is drawn (the slump
-  and the lean), which it was not before. Johansson reaches 85 % with no lean.
+  (85 % of the way from the hip to the knee first, 45 % last) the arm reaches, with the trunk leaned in by one of `leans`
+  if it must (at most 0.12 rad, shared by the spine and the chest, the head kept level); the arm is solved with the trunk
+  as it is drawn (the slump and the lean), which it was not before. Johansson reaches 85 % with no lean; Thuận and Thao
+  rest theirs on their knees too.
+- A body that reaches no point of its thighs within that lean keeps the mitten's place over the lap, as before: Tetsuo,
+  Chin and Mr Fujita, whose GLBs still have the low hip joints Johansson had (their trunks too long seated). Leaned in as
+  far as it took (0.3 rad) they hunched over their laps with their arms hanging straight. Their re-export with his hip
+  joints (they take his `L`) would rest their hands too.
 - `reachFor` takes `flat` (a thin hand sampled at [its thickness, its width] of the mitten's round) and `clear` (how near
-  its middle may come to the body). The cartoon bodies' mittens are as before.
-- Checked: on the quay bench and the sea-wall bench by the game's own interaction (`--source`), the palms on the knees,
-  fingers over them, from the side, front and three-quarter.
+  its middle may come to the body). The cartoon bodies are as before.
+- Checked: in the built game on the sea-wall bench by the game's own interaction, and on the quay bench, the palms on the
+  knees, fingers over them, from the side, front and three-quarter; every Pixar body seated on a stool (0.44 m) in
+  `tools/pixar-sheet.mjs`'s renderer, front and side, against `main` before the change; `tests/pixar-*.test.mjs` and the
+  seating tests 52/52. (`tools/pixar-sheet.mjs` exits 1 on a 404 in its page, on `main` before the change too.)
 
 ## Open
 
 - A faint crease under the nose, where the moustache's sculpted volume met the nose, shows only close up.
-- Tetsuo and Mr Fujita are cloned from his sculpt and landmarks (`tetsuo_meshy.py`, `fujita_meshy.py` take his `L`): their
-  next export takes the same hip joints; their GLBs on `main` still have the old ones and sit as tall as he did.
+- Tetsuo, Mr Fujita and Chin are cloned from his sculpt and landmarks (`tetsuo_meshy.py`, `fujita_meshy.py` take his `L`): their
+  next export takes the same hip joints; their GLBs on `main` still have the old ones, sit as tall as he did, and their
+  hands stay over their laps, not on their knees.
 - His arms are 13 % short of a person's (0.29 of his height against 0.33): the sculpt's own, kept.
