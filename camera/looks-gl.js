@@ -77,12 +77,12 @@ precision highp float;
 in vec2 vUv;out vec4 fragColor;
 uniform sampler2D tSource;
 uniform vec4 uCrop;
-uniform float uMirror,uSmooth,uAuto,uLight,uContrast,uColour,uWarmth;
+uniform float uMirror,uSmooth,uAuto,uBias,uLight,uContrast,uColour,uWarmth;
 uniform vec2 uStep;
 float luma(vec3 c){return dot(c,vec3(.2126,.7152,.0722));}
 vec3 at(vec2 p){
  vec2 q=vec2(p.x,1.0-p.y);if(uMirror>.5)q.x=1.0-q.x;
- return texture(tSource,uCrop.xy+q*uCrop.zw).rgb;
+ return texture(tSource,uCrop.xy+q*uCrop.zw,uBias).rgb;
 }
 void main(){
  vec3 c=at(vUv);
@@ -203,7 +203,12 @@ export function createLookEngine(canvas,{light=false}={}){
  const f1=(l,v)=>{if(l)gl.uniform1f(l,v);};
  function prepare(recipe,crop,mirror,w,h,smooth,auto){
   const a=recipe.adjust;
+  // A Look that draws lines finds them in the detail of a picture about as tall as its patterns are sized for (the
+  // viewfinder's): a larger save reads its source that much softer, so its lines are the viewfinder's lines, not the
+  // floor's grain as well. Patterns, outlines and dots are still drawn at the save's full size.
+  const bias=smooth?Math.max(0,Math.log2(h/(1080*2**-a.pattern))):0;
   return u=>{
+   f1(u.uBias,bias);
    gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smooth?1:0);f1(u.uAuto,auto?1:0);
    // Smoothing reaches about a thousandth of the picture's height, whatever its size.
    if(u.uStep)gl.uniform2f(u.uStep,h/(900*w),1/900);
