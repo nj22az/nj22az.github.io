@@ -12,9 +12,55 @@
  * Colour and Warmth, and for the Looks that draw lines a light edge-keeping smoothing, so camera noise is not inked as
  * detail (Detail sets how much).
  */
-import {LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
+import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
-export {LOOKS};
+// A camera-only original Look. It builds on World's shared sampling and outline helpers, without adding a World Look.
+export const LOOKS=Object.freeze({...WORLD_LOOKS,
+ adventureInk:Object.freeze({label:'Adventure Ink',short:'Adventure',hint:'Bright cel colours and clean manga-inspired ink.'})
+});
+
+// Clean coloured-comic panels: preserve the photo's hue, group the light into five gentle cel bands, and keep small
+// dark details (especially eyes) as well as colour boundaries. No copied characters, art or shader code is used.
+const ADVENTURE_BODY=`
+// Smooth small photo texture while keeping strong boundaries. A five-tap, edge-aware brush makes a more legible
+// colour cel than posterising the original pixel noise. Five taps per probe keeps the live-camera cost bounded.
+vec3 adventureSmooth(vec2 p,float radius){
+ vec3 c=texture2D(tDiffuse,p).rgb;
+ vec2 d=uTexel*radius;
+ vec3 a=texture2D(tDiffuse,p+vec2(d.x,0.0)).rgb;
+ vec3 b=texture2D(tDiffuse,p-vec2(d.x,0.0)).rgb;
+ vec3 e=texture2D(tDiffuse,p+vec2(0.0,d.y)).rgb;
+ vec3 f=texture2D(tDiffuse,p-vec2(0.0,d.y)).rgb;
+ vec3 da=a-c,db=b-c,de=e-c,df=f-c;
+ float wa=exp(-dot(da,da)*16.0),wb=exp(-dot(db,db)*16.0);
+ float we=exp(-dot(de,de)*16.0),wf=exp(-dot(df,df)*16.0);
+ return (c+a*wa+b*wb+e*we+f*wf)/(1.0+wa+wb+we+wf);
+}
+void main(){
+ float u=unit();
+ vec3 orig=texture2D(tDiffuse,vUv).rgb;
+ vec3 source=adventureSmooth(vUv,2.1*u);
+ float l=luma(source);
+ float band=.14+.15*smoothstep(.18,.25,l)+.19*smoothstep(.36,.43,l)
+   +.21*smoothstep(.57,.64,l)+.18*smoothstep(.77,.84,l);
+ // A shared gain keeps skin and strong colours in hue; gentle transitions prevent speckles near a tone boundary.
+ float target=mix(l,band,.68);
+ vec3 col=source*(target/max(l,.035));
+ col/=max(1.0,max(col.r,max(col.g,col.b)));
+ col=clamp(mix(vec3(luma(col)),col,1.11)*1.04,0.0,1.0);
+ // Ink only broad, stable differences between smoothed regions, not tiny photo texture.
+ vec2 t=uTexel*2.0*u;
+ vec3 gx=adventureSmooth(vUv+vec2(t.x,0.0),2.1*u)-adventureSmooth(vUv-vec2(t.x,0.0),2.1*u);
+ vec3 gy=adventureSmooth(vUv+vec2(0.0,t.y),2.1*u)-adventureSmooth(vUv-vec2(0.0,t.y),2.1*u);
+ float strength=length(vec2(length(gx),length(gy)))*.577;
+ float ink=smoothstep(.14,.38,strength)*.72;
+ // Restore very dark marks only, preserving eyes and thin lettering without outlining every bit of texture.
+ float dark=1.0-smoothstep(.025,.15,luma(orig));
+ col=mix(col,orig,dark*.80);
+ col=mix(col,vec3(.09,.095,.12),ink);
+ gl_FragColor=vec4(col,1.0);
+}`;
+
 /** In the order World's menu offers them. */
 export const LOOK_NAMES=Object.freeze(Object.keys(LOOKS));
 /** The trick lenses, as the hand-held cameras had them: Twin mirrors the left half onto the right, Quad the top left
@@ -28,8 +74,14 @@ const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;\nfloat unit(){r
 
 /** World's fragment for a Look as GLSL ES 3.00, mixed into its input by uAmount; null for Natural. */
 export function photoFragment(name,{light=false}={}){
- const world=lookFragment(name,{light,depth:false});
+ let world=lookFragment(name==='adventureInk'?'flat':name,{light,depth:false});
  if(!world)return null;
+ if(name==='adventureInk'){
+  // flat's program is the final main after the shared helpers; replace only it, retaining the camera conversion.
+  const main=world.lastIndexOf('void main()');
+  if(main<0)throw new Error('World Look helper entry point changed');
+  world=world.slice(0,main)+ADVENTURE_BODY;
+ }
  const body=world.replace('#include <packing>','').replace(WORLD_UNIT,PHOTO_UNIT).replace(/void\s+main\s*\(\s*\)/,'void lookMain()');
  return `#version 300 es
 precision highp float;precision highp int;
@@ -44,7 +96,7 @@ void main(){lookMain();vec3 before=texture(tDiffuse,vUv).rgb;fragColor=vec4(mix(
 }
 
 /** Whether a Look draws outlines (and so wants camera noise smoothed away first). */
-export const lookDrawsLines=name=>name!=='none'&&lookUsesDepth(name);
+export const lookDrawsLines=name=>name==='adventureInk'||(name!=='none'&&lookUsesDepth(name));
 /**
  * The Looks that print a picture in a few inks at fixed thresholds. World's town is bright and evenly lit, and they
  * are set for it; a photo of a shady garden would print almost solid. So, as the town's Pocket camera exposes each

@@ -22,6 +22,20 @@ const server=await serveGame({root:repo,mounts:['camera','johansson-town','asset
 const results=[];
 const check=async(name,fn)=>{await fn();results.push(name);console.log(`ok  ${name}`);};
 
+// Confirm the default pair exists, then deliberately remove it so the historical photo-count and empty-album
+// checks below still exercise their original conditions. Reload also verifies the once-only marker respects deletion.
+async function clearSamplesForRegression(page,label){
+ await page.waitForFunction(()=>window.pocketCamera?.state.shots.filter(s=>s.id.startsWith('sample:harbour-')).length===2,null,{timeout:20000});
+ await check(`${label}: both samples seed once and stay deleted`,async()=>{
+  const before=await page.evaluate(()=>window.pocketCamera.state.shots.filter(s=>s.id.startsWith('sample:harbour-')).map(s=>({id:s.id,look:s.recipe.layers[0].look,source:s.source.size,photo:s.photo.size})));
+  assert.equal(before.length,2);assert.deepEqual(new Set(before.map(s=>s.look)),new Set(['none','adventureInk']));assert.ok(before.every(s=>s.source>0&&s.photo>0));
+  await page.evaluate(async()=>{const album=await import('/camera/album.js?v=20261029c');for(const s of await album.listShots())if(s.id.startsWith('sample:harbour-'))await album.deleteShot(s.id);});
+  await page.reload();await page.waitForFunction(()=>!!window.pocketCamera,null,{timeout:20000});
+  const remaining=await page.evaluate(async()=>{const album=await import('/camera/album.js?v=20261029c');await album.ensureAlbumSamples();return (await album.listShots()).filter(s=>s.id.startsWith('sample:harbour-')).length;});
+  assert.equal(remaining,0,'deleted samples do not reappear');
+ });
+}
+
 async function run({label,width,height,dpr,mobile,portrait}){
  let fake=[];
  try{
@@ -39,6 +53,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
  const app=fn=>page.evaluate(fn);
  try{
   await page.goto(`${server.url}camera/`);
+  await clearSamplesForRegression(page,label);
   await check(`${label}: the camera starts and draws a Look`,async()=>{
    await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
    await page.waitForFunction(()=>document.querySelector('#cameraFrame canvas')?.width>100,null,{timeout:20000});
@@ -351,6 +366,7 @@ async function playAndPrint({label,width,height}){
   const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true,permissions:['camera']});
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto(`${server.url}camera/`);
+  await clearSamplesForRegression(page,label);
   await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
   await check(`${label}: the picture takes the whole width; the Looks unfold from the Look's name`,async()=>{
    await page.waitForFunction(()=>document.querySelector('#camera').classList.contains('compact'),null,{timeout:10000});
@@ -500,7 +516,7 @@ async function playAndPrint({label,width,height}){
     const g=c.getContext('2d');g.drawImage(bmp,0,0);const side=[...g.getImageData(Math.round(bmp.width*.03),Math.round(bmp.height*.5),1,1).data];
     return {report,pixel:FRAMES.filter(f=>f.pixel).map(f=>f.id),side,frame:shot.recipe.frame};
    });
-   assert.deepEqual(out.pixel,['pocket','harbour','sakura','ticket','matsuri','hello']);
+   assert.deepEqual(out.pixel,['pocket','harbour','sakura','ticket','matsuri','hello','island-post','shop-day','adventure']);
    for(const [k,r] of Object.entries(out.report)){assert.equal(r.open,0,`${k}: ${r.open} of ${r.seen} border pixels open`);assert.equal(r.mid,0,`${k}: the photo's middle is clear`);assert.ok(r.border>30,`${k}: a border of ${r.border} px`);}
    assert.equal(out.frame,'harbour');
    // The harbour's sky down the left side (#9fd0ee), not the photo, in the saved JPEG.

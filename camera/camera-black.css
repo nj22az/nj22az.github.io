@@ -1,0 +1,60 @@
+/* Pocket Camera: a black camera surface with a small warm accent and legible controls. */
+:root{
+ --bg:#000;--surface:#171819;--surface-2:#292a2c;
+ --fill:rgba(255,255,255,.10);--fill-strong:rgba(255,255,255,.16);
+ --label:#fff;--label-2:rgba(255,255,255,.80);--label-3:rgba(255,255,255,.65);
+ --separator:rgba(255,255,255,.20);--accent:#f6d477;--red:#ff8d83;--stamp:#ffbf77;
+}
+html,body,.app{background:#000}
+.bar{background:#090909;box-shadow:inset 0 -1px rgba(255,255,255,.16)}
+/* A title remains in the same place in a browser and on the Home Screen. */
+.camera-home{display:flex;align-items:center;min-width:0;gap:3px;justify-self:start}
+.camera-home .back{flex:none;width:32px;justify-content:flex-start;padding:0}
+.camera-home .back span{position:absolute;clip:rect(0 0 0 0);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.camera-mark{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:800;letter-spacing:.045em;color:#fff}
+.standalone .camera-home .back{display:none}
+.camera .settings-toggle{color:#fff;background:transparent;box-shadow:none}
+.camera .settings-toggle.open,.camera .settings-toggle.busy{background:#303033;box-shadow:inset 0 0 0 1px #555}
+.round,.photos-button{background:#252527;box-shadow:inset 0 0 0 1px #454548;color:#fff}
+.settings{background:#1d1e20;border-color:#4c4c4e}
+.setting i{background:#343436;box-shadow:none}.setting.on i{background:var(--accent);color:#171717}
+.button{background:#29292b;color:#fff;box-shadow:inset 0 0 0 1px #555,0 3px 0 #090909}
+.pill-button,.button.primary{background:var(--accent);color:#181818;box-shadow:inset 0 -3px rgba(94,65,10,.18)}
+.welcome{background:radial-gradient(ellipse at 50% 22%,#222 0%,#0b0b0b 58%,#000 100%)}
+.welcome h1{color:#fff;text-shadow:none}.welcome p{color:#e0e0e0}.welcome .fine{color:#aaa}
+.welcome-sticker{filter:drop-shadow(0 6px 12px rgba(0,0,0,.65))}
+.camera.idle .exposure-chip,.camera.idle .exposure{display:none}
+.camera .frame,.editor .frame{box-shadow:0 0 0 1px #484848}
+.controls{background:#090909;border-top:1px solid #272727}
+.roll{background:#292929;box-shadow:inset 0 0 0 1px #777}.shutter{border-color:#fafafa;box-shadow:none}.shutter::after{background:#fafafa}
+.mix,.segmented,.mini-seg{background:#202022;box-shadow:inset 0 0 0 1px #3c3c3e}
+.layer.active,.segmented button[aria-selected="true"],.mini-seg button[aria-checked="true"],.sticker-sets button[aria-selected="true"]{background:#f0f0ee;color:#181818}
+.sticker-choice{background:#242426;box-shadow:inset 0 0 0 1px #444}.sticker-choice:hover{background:#353537}
+.sticker-sheet,.text-sheet{background:#202022;box-shadow:0 12px 30px #000b,inset 0 0 0 1px #48484a}
+.text-sheet textarea{background:#111;color:#fff}.album-empty strong{color:#fff}
+.toast{background:#28282a;box-shadow:inset 0 0 0 1px #555}
+#deleteSheet p,#deleteSheet button{background:#2a2a2c}#deleteSheet button{color:#f5d77b}#deleteSheet .danger{color:#ff8d83}
+/* The games keep their own illustrated cards, but the surrounding app and panels are black. */
+.card-games,.memory{background:#050505;color:#f5f5f2}
+.card-games .bar,.memory .bar{background:#0b0b0b;color:#fff;border-bottom:2px solid #484033}
+.card-games .bar h2,.memory .bar h2,.card-games .back,.memory .back,.memory .memory-new{color:#fff}
+.arcade-entry,.game-choice{background:#1d1d1f;color:#fff;border-color:#444;box-shadow:0 3px 0 #080808}
+.arcade-entry small,.game-choice small{color:#d0d0cc}
+.game-room-intro{background:linear-gradient(145deg,#303031,#1b1b1d);border-color:#49443b;box-shadow:0 5px 0 #090909}
+.game-room-intro h1{color:#fff}.game-room-intro p:not(.cards-kicker){color:#deded8}.game-room-intro .cards-kicker,.game-room-label{color:#efcf80}
+.game-choice>span:last-child{color:#e4c475}.choice-symbol{background:#d2ad5e;color:#141414;box-shadow:inset 0 0 0 3px #ebd391}
+.blackjack-layout{background:#101112;color:#f4f4ef}.blackjack-rules{color:#d6d6d2}
+.blackjack-table{background:#242426;border-color:#52504a;box-shadow:inset 0 0 0 2px #353535,0 6px 0 #060606}
+.blackjack-hand,.blackjack-hand:last-child{background:#161718;color:#fff;border-color:#454545}
+.blackjack-score{background:#ebcf78;color:#1b1b19}.blackjack-message{color:#fff;text-shadow:none}
+.solitaire-game{background:#111;color:#fff}.sol-toolbar{background:#202022;border-color:#444}.sol-instructions{color:#f0f0ec}
+.sol-scroll{background:#171c1a}.sol-placeholder{background:rgba(255,255,255,.06);border-color:#8b948b;color:#d5ded4}
+.sol-status{background:#080909;color:#fff}
+.memory{background:#101011}.memory .memory-lead,.memory .memory-setup h3{color:#eee}
+.memory .memory-deck{background:#252527;color:#fff;border-color:#666;box-shadow:0 3px 0 #070707}
+.memory .memory-deck[aria-checked="true"]{border-color:#f0cf75;box-shadow:0 3px 0 #070707,inset 0 0 0 1px #f0cf75}
+.memory .memory-deck-note,.memory .memory-best{color:#ccc}.memory .memory-go{background:#1b1b1c;border-color:#444}
+.memory .mini-seg.memory-pairs{background:#272729;border-color:#555}.memory .memory-pairs button{color:#fff}.memory .memory-pairs button[aria-checked="true"]{background:#f0cf75;color:#1a1a19}
+.memory .memory-stage{background:#1d2320;border-color:#343b36}.memory .memory-status{background:#090a09;color:#eee}
+.memory .memory-win{background:rgba(8,8,8,.96)}
+:focus-visible{outline:3px solid #f6d477;outline-offset:2px}

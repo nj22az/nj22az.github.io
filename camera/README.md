@@ -26,8 +26,7 @@ when saving ? I want memory with our own photos or with the stickers".
   the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
   (the Pocket Look's greens, the little camera), **Harbour** (the ferry, the lighthouse, gulls and the sun),
   **Sakura** (a branch in blossom), **Ticket** (Minato to Kitano-jima, perforated and stamped), **Matsuri**
-  (lanterns and fireworks) and **Hello** (Thuan, redrawn in four shades from her own sticker, waving from the corner:
-  "Hi there!").
+  (lanterns and fireworks), **Hello** (Thuan, redrawn in four shades from her own sticker, waving from the corner), **Island Post** (a Minato postcard) and **Shop Day** (an island shop awning).
   Each is a sheet of pieces in `frames/` (corners, edges that repeat, scenes set against an edge) that `frames.js`
   lays out for the photo's own shape and enlarges with hard pixel edges, never stretched. In the camera, **Frame** in
   the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
@@ -73,9 +72,9 @@ when saving ? I want memory with our own photos or with the stickers".
   border, grey cut line and shadow; a picture with a transparent background (a subject lifted from a photo with Copy
   on an iPhone, iPad or Mac, then **Paste**) is cut round its own outline, any other with rounded corners. Kept on the
   device with the album; deleting one takes it off the viewfinder too, and saved photos keep it.
-- **Album**: kept in this browser (IndexedDB), nothing uploaded. Each photo keeps its untouched picture and its
+- **Album**: two sample photos (the original and Adventure Ink) are added once, including to existing albums. They can be edited or deleted; deleted samples do not reappear. Kept in this browser (IndexedDB), nothing uploaded. Each photo keeps its untouched picture and its
   recipe, so **Edit** starts again from the original with every Look, setting and sticker where it was. Share (the
-  system sheet, so a phone can save to Photos) or download.
+  system sheet, so a phone can save to Photos or choose a social app) or download.
 
 - **The printer** (`printer.js`): every photo saved, from the shutter or the editor's Save, comes out of a little
   printer first, as the hand-held camera's photos came out of its printer: a white toy printer in the icon's plastic
@@ -89,6 +88,8 @@ when saving ? I want memory with our own photos or with the stickers".
   pairs. The board takes the grid that gives the cards the most room on the screen; a third card turns two that did
   not match back at once; moves and time are counted, the best game for each set of cards and size is kept, and a
   resident cheers the last pair.
+- **Card games**: the Album opens a game room with Blackjack and draw-one Klondike Solitaire. Blackjack has no stakes: Hit or Stand, with the dealer standing on 17. Solitaire uses tap-to-select and tap-to-place controls. A 52-card sheet and matching back are drawn by `tools/draw-playing-cards.py`; the Jacks, Queens and Kings use the existing Thao, Thuan and Johansson sticker artwork. The card games use a new shuffled deck for each deal.
+- **Share game results**: Memory wins, Blackjack outcomes and Solitaire wins can be shared through the device share sheet, or saved as an image. A text fallback is offered when image sharing is unavailable. No result is posted until the player chooses to share.
 - **Home Screen app** (`manifest.webmanifest`, `sw.js`, `icons/`): Share, then Add to Home Screen, on an iPhone (or
   Install on Android and desktop Chrome) gives Pocket Camera its own icon and a full screen without the browser. The
   icon is drawn in code by `tools/draw-camera-icon.py` (a white toy camera on graphite, the lens ringed in the camera's
@@ -100,9 +101,12 @@ when saving ? I want memory with our own photos or with the stickers".
 Default first Look: **Pocket**, the town's own hand-held camera (World's `pocket` Look), which gives the Game Boy
 Camera feeling with no console on screen. The first screen greets with a sticker from the residents' sheets, a
 different one each time (never the one shown last), sized to the space the browser leaves so it is always whole; until
-there is a picture the Look tray waits and the shutter starts the camera. Johansson, the chief engineer, salutes the empty album; every tap answers with a soft sound, which Sound in the settings mutes. The interface follows Apple's camera and Photos apps: always dark, system
-font, the camera's yellow for what is chosen, translucent material, 44-point targets. A wide window puts the controls
+there is a picture the Look tray waits and the shutter starts the camera. Johansson, the chief engineer, salutes the empty album; every tap answers with a soft sound, which Sound in the settings mutes. The interface uses black and charcoal camera surfaces, clear labels, restrained warm accents and original island pixel art, with 44-point targets. Memory uses a Python-drawn Minato lighthouse card back. A wide window puts the controls
 beside the picture, as on an iPad.
+
+## Adventure Ink
+
+**Adventure Ink** is a camera-only Look with cel bands and ink outlines; its matching **Adventure** frame is drawn by `tools/draw-camera-frames.py`. The Look works with the existing mix and editing system.
 
 ## How it works
 
@@ -144,11 +148,13 @@ beside the picture, as on an iPad.
 
 ```
 node camera/tests/looks-gl.test.mjs          # every Look converts; recipe, sizes, rows
+node camera/tests/blackjack.test.mjs         # scores and hand flow
+node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (50 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+The browser check (53 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
 its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
 starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
 steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,

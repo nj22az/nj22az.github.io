@@ -275,7 +275,7 @@ export const CHAIR_SIT=Object.freeze({hands:.6,edge:.012,
   // rest on his knees when sitting like that"): the farthest of `along` (of the way from the hip to the knee) the arm
   // reaches with the trunk slumped, the palm's middle `palm` hand lengths over the lap; a mitten held 0.85 of a hand over
   // it floated in front of Johansson's belly)
-  rest:Object.freeze({along:Object.freeze([.85,.75,.65,.55,.45]),palm:.22,slack:.93,hand:Object.freeze([0,1.3,0]),flat:Object.freeze([.18,.4]),clear:.14,
+  rest:Object.freeze({along:Object.freeze([.85,.75,.65,.55,.45]),palm:.22,slack:.93,hand:Object.freeze([0,1.3,0]),flat:Object.freeze([.07,.4]),clear:.14,
   // (`hand` turns the palm down on the thigh; an arm a pose or a gesture takes off the lap has the lap's old bend, `free`,
   // as far as its shoulder has moved, `off` radians wholly: a hand on a steering wheel or raised in a toast palm down)
   free:Object.freeze([-.3,0,0]),off:.3})})});
@@ -689,7 +689,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    if(floorSit>0){const F=floorShape(seatH-(s.floorHeight||0)),A=F.hands();
     for(const j of LEG_JOINTS)target[j].lerp(_pose.set(...F.joints[j]),floorSit);add('chest',FLOOR_SIT.lean*floorSit);
     if(A){armTo('R',A.R,floorSit,A.handR);armTo('L',A.L,floorSit,A.handL);}}
-   add('chest',Math.sin(time*1.5)*.02);
+   // (a sitter's breath; a quarter of it with the palms laid on the thighs, which brace the trunk: the arm goes with the
+   // chest, and the whole of it rocked the resting hand 1.5 cm, into the thigh and off it)
+   add('chest',Math.sin(time*1.5)*.02*(C.rest&&!soak&&!s.driving&&!s.pose?1-.75*(1-floorSit):1));
    const pose=s.pose;
    if(s.driving){set('shoulderL',-.95,0,.12);set('shoulderR',-.95,0,-.12);set('elbowL',-.65);set('elbowR',-.65);set('head',-.06);}
    else if(pose==='Type'){set('shoulderL',-.9,0,.1);set('shoulderR',-.9,0,-.1);set('elbowL',-.7+Math.sin(time*14)*.08);set('elbowR',-.7+Math.sin(time*13+1)*.08);set('head',.15);}

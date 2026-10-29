@@ -1,0 +1,17 @@
+/* Klondike board: compact enough for touch, scrollable on small screens. */
+.solitaire-game{--sol-ink:#214840;--sol-paper:#fbf0d4;display:flex;flex:1;min-height:0;flex-direction:column;background:#83ad9b;color:var(--sol-ink)}
+.sol-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:var(--sol-paper);border-bottom:2px solid #af9e77}
+.sol-instructions{font-size:13px;line-height:1.3;margin:0;max-width:46ch;font-weight:650}
+.sol-reset{flex:none;min-height:44px;padding:0 12px;border:2px solid var(--sol-ink);border-radius:8px;background:#f5c77e;color:var(--sol-ink);font:inherit;font-weight:700}
+.sol-scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:12px;}
+.sol-board{--sol-card-width:clamp(44px,calc((100vw - 68px)/7),100px);max-width:760px;min-width:calc(7 * var(--sol-card-width) + 6 * 5px);margin:0 auto}
+.sol-top,.sol-columns{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.sol-top{margin-bottom:16px}
+.sol-column{min-width:0;display:flex;flex-direction:column;align-items:stretch;padding-bottom:16px}
+.sol-card-button{position:relative;box-sizing:border-box;width:100%;aspect-ratio:5/7;padding:0;border:0;border-radius:5px;background:transparent;color:inherit;cursor:pointer}
+.sol-card-button>*,.sol-card-button img,.sol-card-button svg{width:100%;height:100%;display:block;object-fit:fill}
+.sol-card-button:disabled{opacity:1;cursor:default}.sol-card-button:focus-visible,.sol-reset:focus-visible{outline:3px solid #d35440;outline-offset:2px;z-index:20}
+.sol-card-button.is-selected{outline:3px solid #ffd05d;outline-offset:2px;z-index:10}
+.sol-tableau-card:not(:first-child){margin-top:-103%}.sol-tableau-card:last-child{margin-bottom:0}
+.sol-placeholder{display:grid!important;place-items:center;box-sizing:border-box;border:2px dashed rgba(33,72,64,.55);border-radius:5px;font-size:clamp(11px,2.7vw,18px);font-weight:800;color:rgba(33,72,64,.7)}
+.sol-top-gap{min-width:0}.sol-status{margin:0;padding:10px 14px;min-height:42px;background:var(--sol-ink);color:var(--sol-paper);font-size:13px;font-weight:700}
+@media(max-width:360px){.sol-scroll{padding:8px}.sol-board{--sol-card-width:44px}}

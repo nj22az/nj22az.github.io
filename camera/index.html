@@ -19,7 +19,15 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261029k">
+<link rel="stylesheet" href="camera.css?v=20261029q">
+<link rel="stylesheet" href="camera-refresh.css?v=20261029a">
+<link rel="stylesheet" href="memory-retro.css?v=20261029a">
+<link rel="stylesheet" href="card-games.css?v=20261029a">
+<link rel="stylesheet" href="blackjack.css?v=20261029a">
+<link rel="stylesheet" href="solitaire.css?v=20261029a">
+<link rel="stylesheet" href="game-room-refresh.css?v=20261029c">
+<link rel="stylesheet" href="social-share.css?v=20261029a">
+<link rel="stylesheet" href="camera-black.css?v=20261029a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -64,7 +72,7 @@
  <!-- Camera -->
  <section class="screen camera" id="camera" aria-label="Camera">
   <header class="bar">
-   <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
+   <div class="camera-home"><a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a><span class="camera-mark">POCKET CAMERA</span></div>
    <!-- As on an iPhone: the settings hide behind a chevron; what is switched on shows beside it, in yellow. -->
    <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus"></span><svg><use href="#i-chevron"/></svg></button>
    <button type="button" class="photos-button" id="import" aria-label="Your photos: choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
@@ -146,11 +154,12 @@
    <button type="button" class="back" id="closeAlbum"><svg><use href="#i-back"/></svg><span>Camera</span></button>
    <h2>Album</h2>
    <div class="bar-actions">
-    <button type="button" class="photos-button" id="playMemory" aria-label="Play Memory with your photos or the stickers"><svg><use href="#i-game"/></svg><span>Play</span></button>
-    <button type="button" class="round" id="albumImport" aria-label="Add your own photos" title="Add photos"><svg><use href="#i-plus"/></svg></button>
+    <button type="button" class="round" id="playMemory" aria-label="Play Memory with your photos or the stickers" title="Memory"><svg><use href="#i-game"/></svg></button>
+    <button type="button" class="photos-button" id="albumImport" aria-label="Add your own photos"><svg><use href="#i-plus"/></svg><span>Add</span></button>
    </div>
   </header>
   <div class="album-scroll">
+   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
     <img class="empty-sticker" id="emptySticker" alt="" hidden>
@@ -175,6 +184,20 @@
   <div class="memory-stage" hidden><div class="memory-board" role="group" aria-label="Cards"></div></div>
   <p class="memory-status" aria-live="polite" hidden></p>
   <div class="memory-win" role="dialog" aria-label="All pairs found" hidden></div>
+ </section>
+
+ <!-- Original island card games -->
+ <section class="screen card-games" id="cardsHub" aria-label="Card games" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardsHub"><svg><use href="#i-back"/></svg><span>Album</span></button><h2>Card games</h2><span class="bar-spacer"></span></header>
+  <div class="cards-hub-content"><div class="game-room-intro"><div><p class="cards-kicker">JOHANSSON WORLD · MINATO</p><h1>Game Room</h1><p>Choose a game and stay a while.</p></div><img class="game-room-mascot" src="stickers/thuan-blender/wave.thumb.webp" alt="" aria-hidden="true"></div><p class="game-room-label">CHOOSE A GAME</p>
+   <button class="game-choice" id="chooseMemory" type="button"><span class="choice-symbol memory-symbol" aria-hidden="true">✿</span><span><strong>Memory</strong><small>Find pairs of photos or residents.</small></span><span aria-hidden="true">›</span></button>
+   <button class="game-choice" id="chooseBlackjack" type="button"><span class="choice-symbol" aria-hidden="true">21</span><span><strong>Blackjack</strong><small>Get close to 21 without going over.</small></span><span aria-hidden="true">›</span></button>
+   <button class="game-choice" id="chooseSolitaire" type="button"><span class="choice-symbol" aria-hidden="true">♠</span><span><strong>Solitaire</strong><small>Build the four suits from ace to king.</small></span><span aria-hidden="true">›</span></button>
+  </div>
+ </section>
+ <section class="screen card-games" id="cardGame" aria-label="Card game" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardGame"><svg><use href="#i-back"/></svg><span>Games</span></button><h2 id="cardGameTitle">Card game</h2><span class="bar-spacer"></span></header>
+  <div id="cardGameContent" class="card-game-content"></div>
  </section>
 
  <!-- One photo -->
@@ -243,6 +266,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029k"></script>
+<script type="module" src="app.js?v=20261029q"></script>
 </body>
 </html>

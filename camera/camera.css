@@ -424,7 +424,7 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker.selected>.sticker-say:not([hidden]){display:inline-flex;align-items:center}
 /* One photo: actions in white, Delete in red, as Photos has them; yellow is for what is chosen. */
 .toolbar button{color:var(--label)}
-.toolbar #deletePhoto{color:#ff453a}
+.toolbar #deletePhoto{color:var(--red,#ff453a)}
 /* The residents' tabs: their other sheets under their names. */
 .sticker-heading{grid-column:1/-1;margin:10px 2px 0;font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--label-2)}
 #panelStickers .sticker-grid{grid-auto-columns:min-content}

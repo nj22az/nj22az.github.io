@@ -3,15 +3,18 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029b';
-import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMine,deleteMine} from './album.js?v=20261029b';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029c';
+import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029k';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
 import {createPrinter} from './printer.js?v=20261029e';
-import {createMemory} from './memory.js?v=20261029k';
+import {createMemory} from './memory.js?v=20261029q';
+import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
+import {createBlackjack} from './blackjack.js?v=20261029b';
+import {createSolitaire} from './solitaire.js?v=20261029c';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -201,7 +204,7 @@ function buildStrip(){
   const b=document.createElement('button');b.type='button';b.className='tile';b.setAttribute('role','radio');b.dataset.look=name;
   b.title=LOOKS[name].hint;b.setAttribute('aria-label',LOOKS[name].label);
   // World's own picture of the Look (the same little house in each style) until the live one is drawn.
-  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(name,`cam-${name}`);
+  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(name==='adventureInk'?'flat':name,`cam-${name}`);
   const c=document.createElement('canvas');c.width=c.height=THUMB;face.append(c);
   const s=document.createElement('span');s.className='name';s.textContent=lookLabel(name);
   b.append(face,s);strip.append(b);tiles.set(name,{button:b,canvas:c,drawn:false});
@@ -663,15 +666,22 @@ function fitInside(r,aspect,pad=0){
 }
 
 // ---------- Album ----------
-let albumOK=true;
-async function loadShots(){
- try{state.shots=await listShots();}catch{albumOK=false;state.shots=[];}
+let albumOK=true,albumRevision=0;
+async function refreshShots(){
+ let revision,shots;
+ do{revision=albumRevision;shots=await listShots();}while(revision!==albumRevision);
+ state.shots=shots;
  if(state.shots.length)keepAlbum();
- renderRoll();
+ renderRoll();if(state.mode==='album')renderGrid();
+}
+async function loadShots(){
+ try{await refreshShots();}catch{albumOK=false;state.shots=[];renderRoll();return;}
+ // Do not hold up the album while samples download. An unavailable asset is retried on a later visit.
+ try{await ensureAlbumSamples();await refreshShots();}catch{/* The owner's photos remain usable offline. */}
 }
 async function keep(shot,{roll=true}={}){
  if(!albumOK){offerFile(shot.photo);return null;}
- try{const r=await addShot(shot);state.shots.unshift(r);if(roll)renderRoll(true);keepAlbum();return r;}
+ try{const r=await addShot(shot);albumRevision++;state.shots.unshift(r);if(roll)renderRoll(true);keepAlbum();return r;}
  catch{albumOK=false;offerFile(shot.photo);return null;}
 }
 let rollURL;
@@ -689,7 +699,7 @@ function renderGrid(){
  for(const shot of state.shots){
   const b=document.createElement('button');b.type='button';b.dataset.id=shot.id;
   const url=URL.createObjectURL(shot.thumb||shot.photo);gridURLs.push(url);
-  b.setAttribute('aria-label',`Photo, ${mixLabel(normalRecipe(shot.recipe))}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
+  b.setAttribute('aria-label',shot.sampleLabel||`Photo, ${mixLabel(normalRecipe(shot.recipe))}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
   b.innerHTML=`<img src="${url}" alt="" loading="lazy" decoding="async">`;grid.append(b);
  }
  $('albumEmpty').hidden=state.shots.length>0;
@@ -699,7 +709,7 @@ $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)o
 
 function show(mode){
  state.mode=mode;
- for(const id of ['camera','editor','album','viewer','memory'])$(id).hidden=id!==mode;
+ for(const id of ['camera','editor','album','viewer','memory','cardsHub','cardGame'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
  if(mode==='editor'){$('panelLooks').append(tray);placeCanvas($('editFrame'));$('panelStickers').append($('stickerPicker'));}
  if(mode==='camera'||mode==='editor'){buildTrayFor();}
@@ -722,6 +732,7 @@ $('roll').addEventListener('click',openAlbum);
 function openAlbum(){show('album');renderGrid();}
 $('closeAlbum').addEventListener('click',()=>show('camera'));
 
+
 // ---------- Memory ----------
 let stickerSheets=null;
 /** The cards Memory can be played with: the album's photos, each of the residents' sheets, the photographer's own stickers. */
@@ -729,7 +740,7 @@ async function memorySources(){
  const manifest=stickerSheets||await loadStickerSets().catch(()=>null);
  const day=s=>new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'});
  return [
-  {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:`Your photo of ${day(s)}`}))},
+  {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:s.sampleLabel||`Your photo of ${day(s)}`}))},
   ...(manifest?.sets||[]).map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
   {id:'mine',name:'Your stickers',kind:'sticker',items:mine.map(m=>stickerById(m.id)).filter(Boolean).map(s=>({id:s.id,url:s.url,label:'Your sticker'}))},
  ];
@@ -740,28 +751,50 @@ function cheer(){
  return s?{url:s.url,alt:`${s.set}: ${s.gloss}`}:null;
 }
 const memory=createMemory($('memory'),{sources:memorySources,cheer,sound,store,onPlay:()=>{$('memoryNew').hidden=false;}});
-async function openMemory(){sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
-$('playMemory').addEventListener('click',openMemory);
-$('emptyPlay').addEventListener('click',openMemory);
-$('closeMemory').addEventListener('click',()=>{memory.close();openAlbum();});
+let memoryReturnToGames=false;
+async function openMemory(fromGames=false){memoryReturnToGames=fromGames;document.querySelector('#closeMemory span').textContent=fromGames?'Games':'Album';sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
+$('playMemory').addEventListener('click',()=>openMemory());
+$('emptyPlay').addEventListener('click',()=>openMemory());
+$('closeMemory').addEventListener('click',()=>{memory.close();if(memoryReturnToGames)openCardsHub();else openAlbum();});
 $('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden=true;memory.showSetup();});
+
+// A separate game room keeps the photo-based Memory flow intact.
+let activeCardGame=null;
+function openCardsHub(){activeCardGame?.destroy();activeCardGame=null;show('cardsHub');}
+function openCardGame(kind){
+ activeCardGame?.destroy();
+ const root=$('cardGameContent');root.replaceChildren();
+ $('cardGameTitle').textContent=kind==='blackjack'?'Blackjack':'Solitaire';
+ show('cardGame');
+ activeCardGame=(kind==='blackjack'?createBlackjack:createSolitaire)({root,cardView,shuffleDeck});
+ activeCardGame.start();
+}
+$('openCardGames').addEventListener('click',openCardsHub);
+$('closeCardsHub').addEventListener('click',openAlbum);
+$('closeCardGame').addEventListener('click',openCardsHub);
+$('chooseMemory').addEventListener('click',()=>openMemory(true));
+$('chooseBlackjack').addEventListener('click',()=>openCardGame('blackjack'));
+$('chooseSolitaire').addEventListener('click',()=>openCardGame('solitaire'));
+
 
 let viewerURL;
 async function openViewer(id){
  const shot=state.shots.find(s=>s.id===id)||await getShot(id).catch(()=>null);if(!shot)return;
  state.viewing=shot;show('viewer');
  if(viewerURL)URL.revokeObjectURL(viewerURL);viewerURL=URL.createObjectURL(shot.photo);
- const img=$('viewerImage');img.src=viewerURL;img.alt=`Photo in ${mixLabel(normalRecipe(shot.recipe))}`;
- $('viewerTitle').textContent=new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});
- $('sharePhoto').querySelector('span').textContent=canShareFiles()?'Share':'Download';
- $('sharePhoto').querySelector('use').setAttribute('href',canShareFiles()?'#i-share':'#i-download');
+ const img=$('viewerImage');img.src=viewerURL;img.alt=shot.sampleLabel||`Photo in ${mixLabel(normalRecipe(shot.recipe))}`;
+ $('viewerTitle').textContent=shot.sampleLabel||new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});
+ $('editPhoto').disabled=!engine||engine.lost();$('editPhoto').title=$('editPhoto').disabled?'Editing requires WebGL 2':'';
+ const shareFile=new File([shot.photo],fileName(shot),{type:shot.photo.type||'image/jpeg'}),canShare=canShareFiles(shareFile);
+ $('sharePhoto').querySelector('span').textContent=canShare?'Share':'Download';
+ $('sharePhoto').querySelector('use').setAttribute('href',canShare?'#i-share':'#i-download');
 }
 $('closeViewer').addEventListener('click',openAlbum);
-function canShareFiles(){try{return !!navigator.canShare?.({files:[new File([new Blob()],'x.jpg',{type:'image/jpeg'})]});}catch{return false;}}
-function fileName(shot){const d=new Date(shot?.taken||Date.now());return `pocket-camera-${d.toISOString().slice(0,19).replace(/[:T]/g,'-')}.jpg`;}
+function canShareFiles(file){try{return !!navigator.share&&!!navigator.canShare?.({files:[file]});}catch{return false;}}
+function fileName(shot){const d=new Date(shot?.taken||Date.now()),ext=shot?.photo?.type==='image/png'?'png':'jpg';return `pocket-camera-${d.toISOString().slice(0,19).replace(/[:T]/g,'-')}.${ext}`;}
 async function sharePhoto(shot){
- const file=new File([shot.photo],fileName(shot),{type:'image/jpeg'});
- if(canShareFiles()){try{await navigator.share({files:[file],title:'Pocket Camera'});}catch(err){if(err?.name!=='AbortError')download(file);}return;}
+ const file=new File([shot.photo],fileName(shot),{type:shot.photo.type||'image/jpeg'});
+ if(canShareFiles(file)){try{await navigator.share({files:[file],title:'Pocket Camera'});}catch(err){if(err?.name!=='AbortError')download(file);}return;}
  download(file);
 }
 function download(file){const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
@@ -780,7 +813,7 @@ function confirmDelete(message,label,then){
 }
 $('deletePhoto').addEventListener('click',()=>confirmDelete('This photo will be deleted from this device.','Delete Photo',async()=>{
  if(!state.viewing)return;
- const id=state.viewing.id;await deleteShot(id).catch(()=>{});
+ const id=state.viewing.id;await deleteShot(id).catch(()=>{});albumRevision++;
  state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
 }));
 
@@ -894,7 +927,7 @@ $('saveEdit').addEventListener('click',async()=>{
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
   const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
   let shot;
-  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
+  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
@@ -1143,12 +1176,13 @@ new ResizeObserver(invalidate).observe(document.body);
 const standalone=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
 document.documentElement.classList.toggle('standalone',standalone);
 if('serviceWorker' in navigator)navigator.serviceWorker.register(new URL('./sw.js',import.meta.url)).catch(()=>{});
+loadShots();
 if(!startEngine()){
  showWelcome();
  $('welcome').querySelector('p').textContent='Pocket Camera needs WebGL 2, which this browser does not offer.';
  $('welcome').querySelector('.welcome-actions').hidden=true;$('welcomeNote').hidden=true;setShutter('off');
 }else{
- buildStrip();show('camera');loadShots();
+ buildStrip();show('camera');
  loadMine().then(()=>cameraStickers.render());
  // The camera's stickers need their pictures before they can show. The first screen greets with a sticker from the
  // residents' sheets, a different one each time (the owner, 29 October 2026: "Replace Fuji with a random sticker when
