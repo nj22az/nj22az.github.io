@@ -745,15 +745,25 @@ function closeEditor(){
 }
 $('cancelEdit').addEventListener('click',closeEditor);
 // The Frame tab: the frames drawn over the photo itself, the mirror lens, the date stamp.
+/** The photo as it will be saved (its Looks, light and mirror; no frame), as a square of `size` px, for the frame choices. */
+function editPreview(size){
+ const e=state.edit;if(!engine||!e||engine.lost())return null;
+ const a=e.width/e.height,w=a>=1?Math.round(size*a):size,h=a>=1?size:Math.round(size/a);
+ let px;try{px=engine.render({...normalRecipe(e.recipe),frame:'none',stamp:false,stickers:[]},{source:'edit',width:w,height:h});}catch{return null;}
+ const t=document.createElement('canvas');t.width=px.width;t.height=px.height;t.getContext('2d').putImageData(new ImageData(px.data,px.width,px.height),0,0);
+ const c=document.createElement('canvas');c.width=c.height=size;
+ c.getContext('2d').drawImage(t,(px.width-size)/2,(px.height-size)/2,size,size,0,0,size,size);
+ return c;
+}
 function renderFramePanel(){
  const e=state.edit;if(!e)return;
  const box=$('frameChoices');box.textContent='';
- const natural=tiles.get('none')?.canvas;
+ const preview=$('panelFrame').hidden?null:editPreview(132);
  for(const f of FRAMES){
   const b=document.createElement('button');b.type='button';b.className='frame-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.frame===f.id));
   b.title=f.hint||'No frame';b.dataset.frame=f.id;
   const c=document.createElement('canvas');c.width=c.height=132;const g=c.getContext('2d');
-  if(natural?.classList.contains('drawn'))g.drawImage(natural,0,0,132,132);else{g.fillStyle='#3a3a3c';g.fillRect(0,0,132,132);}
+  if(preview)g.drawImage(preview,0,0);else{g.fillStyle='#3a3a3c';g.fillRect(0,0,132,132);}
   drawFrame(g,f.id,132,132);
   const label=document.createElement('span');label.textContent=f.label;
   b.append(c,label);box.append(b);
