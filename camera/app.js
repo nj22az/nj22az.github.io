@@ -1348,14 +1348,15 @@ function renderComicPanel(){
   for(const v of found.place.views){const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(v.id===found.view.id));b.textContent=v.name;
    b.addEventListener('click',()=>{if(v.id===found.view.id)return;sound('tick');fillPanel(i,{ref:`place:${found.place.id}/${v.id}`});});views.append(b);}
   views.hidden=found.place.views.length<2;
- }).catch(()=>{});
+ }).catch(()=>{if(comicEdit()===e&&e.comic.selected===i)views.hidden=true;});
  $('comicFocus').disabled=!slot?.picture&&e.comic.focus==null;$('comicClear').disabled=!slot?.picture&&!slot?.ref;
  const focused=e.comic.focus!=null;
  $('comicFocus').querySelector('use').setAttribute('href',focused?'#i-page':'#i-zoom');
  $('comicFocus').setAttribute('aria-label',focused?'Show the whole page':'Zoom in on this panel');$('comicFocus').title=focused?'Whole page':'Zoom in';
 }
 function setLayout(id){
- const e=comicEdit();if(!e||e.comic.layout===id)return;
+ // Not while the page is being saved: the album would keep one layout's page with another's panels and size.
+ const e=comicEdit();if(!e||e.saving||e.comic.layout===id)return;
  e.comic.layout=id;padSlots(e.comic);store.write({...store.read(),comicLayout:id});
  const size=pageSize(id,Math.min(4096,engine.maxTexture));e.width=size.width;e.height=size.height;
  e.comic.selected=Math.min(e.comic.selected??0,panelCount(e)-1);e.comic.focus=null;
@@ -1459,8 +1460,9 @@ function endPanelShoot(back){
 $('backToComic').addEventListener('click',()=>{sound('tick');endPanelShoot(true);});
 $('comicFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f&&isPicture(f)){$('comicSheet').close();fillPanel(comicTarget,{ref:'own',blob:f});}});
 // The click of the tap that opened the sheet (on a panel, as the finger lifted) lands in it a moment later, on the
-// backdrop, a picture or a tab: it chooses nothing and does not close the sheet. A tap on the backdrop after it does.
-$('comicSheet').addEventListener('click',e=>{const stray=comicStray&&performance.now()-comicStray<500;comicStray=0;if(stray){e.stopImmediatePropagation();e.preventDefault();}},true);
+// backdrop, a picture or a tab, and so does a second tap of a double tap: for half a second, while the sheet comes up,
+// they choose nothing and do not close it. A tap on the backdrop after that does.
+$('comicSheet').addEventListener('click',e=>{if(comicStray&&performance.now()-comicStray<500){e.stopImmediatePropagation();e.preventDefault();}},true);
 $('comicSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 $('comicSheet').addEventListener('close',dropComicURLs);
 

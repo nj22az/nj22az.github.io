@@ -629,7 +629,7 @@ async function makeComics({label,width,height}){
    await page.waitForSelector('#comicGrid .comic-choice');
    const names=await page.$$eval('#comicGrid .comic-choice',b=>b.map(x=>x.getAttribute('aria-label')));
    assert.equal(names.length,19,'all of World’s places');assert.equal(names[0],'Sakura Shōten');
-   await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>document.querySelector('#comicSheet').open),true,'the tap that opened the sheet does not close it again');
+   await page.waitForTimeout(600);assert.equal(await page.evaluate(()=>document.querySelector('#comicSheet').open),true,'the tap that opened the sheet does not close it again');
    await shot('2-places');
    await page.locator('#comicGrid .comic-choice',{hasText:'Sakura Shōten'}).tap();
    await page.waitForFunction(()=>window.pocketCamera.state.edit.comic.slots[0].picture);
@@ -643,6 +643,10 @@ async function makeComics({label,width,height}){
    const p=await panelCentre(1);await page.touchscreen.tap(p.x,p.y);await page.waitForTimeout(800);
    const s=await edit(()=>({open:document.querySelector('#comicSheet').open,title:document.querySelector('#comicSheetTitle').textContent,filled:!!window.pocketCamera.state.edit.comic.slots[1].picture,mode:window.pocketCamera.state.mode}));
    assert.deepEqual(s,{open:true,title:'Panel 2',filled:false,mode:'editor'},'the sheet stays open and the panel empty');
+   await page.locator('#comicSheet .done').tap();await page.waitForFunction(()=>!document.querySelector('#comicSheet').open);
+   // Tapped twice, as a panel is zoomed in on: the second tap lands in the sheet coming up, and chooses nothing either.
+   await page.touchscreen.tap(p.x,p.y);await page.waitForTimeout(110);await page.touchscreen.tap(p.x,p.y);await page.waitForTimeout(800);
+   assert.deepEqual(await edit(()=>({open:document.querySelector('#comicSheet').open,filled:!!window.pocketCamera.state.edit.comic.slots[1].picture})),{open:true,filled:false},'a double tap chooses nothing either');
    await page.locator('#comicSheet .done').tap();await page.waitForFunction(()=>!document.querySelector('#comicSheet').open);
   });
   await check(`${label}: a picture moves inside its panel; tapped twice the page zooms in on the panel, and out again`,async()=>{
