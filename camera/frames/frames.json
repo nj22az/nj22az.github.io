@@ -1,0 +1,545 @@
+{
+ "frames": [
+  {
+   "id": "pocket",
+   "label": "Pocket",
+   "hint": "The Pocket Look’s four greens, with the little camera",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     8,
+     16
+    ],
+    "bottom": [
+     77,
+     0,
+     8,
+     16
+    ],
+    "left": [
+     86,
+     0,
+     16,
+     8
+    ],
+    "right": [
+     103,
+     0,
+     16,
+     8
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      0,
+      17,
+      99,
+      11
+     ],
+     "anchor": "bc",
+     "dx": 0,
+     "dy": -2
+    }
+   ]
+  },
+  {
+   "id": "harbour",
+   "label": "Harbour",
+   "hint": "Minato’s harbour: the ferry, the lighthouse and the gulls",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     32,
+     16
+    ],
+    "bottom": [
+     101,
+     0,
+     16,
+     16
+    ],
+    "left": [
+     0,
+     17,
+     16,
+     16
+    ],
+    "right": [
+     17,
+     17,
+     16,
+     16
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      34,
+      17,
+      15,
+      15
+     ],
+     "anchor": "tl",
+     "dx": 3,
+     "dy": 1
+    },
+    {
+     "rect": [
+      50,
+      17,
+      22,
+      9
+     ],
+     "anchor": "tr",
+     "dx": -22,
+     "dy": 3
+    },
+    {
+     "rect": [
+      73,
+      17,
+      44,
+      18
+     ],
+     "anchor": "bl",
+     "dx": 22,
+     "dy": -1
+    },
+    {
+     "rect": [
+      0,
+      36,
+      13,
+      40
+     ],
+     "anchor": "br",
+     "dx": -3,
+     "dy": -4
+    }
+   ]
+  },
+  {
+   "id": "sakura",
+   "label": "Sakura",
+   "hint": "A branch of cherry blossom, as on Sakura Shōten’s sign",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     24,
+     16
+    ],
+    "bottom": [
+     93,
+     0,
+     24,
+     16
+    ],
+    "left": [
+     0,
+     17,
+     16,
+     24
+    ],
+    "right": [
+     17,
+     17,
+     16,
+     24
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      34,
+      17,
+      92,
+      26
+     ],
+     "anchor": "tl",
+     "dx": 0,
+     "dy": 1
+    },
+    {
+     "rect": [
+      0,
+      44,
+      26,
+      22
+     ],
+     "anchor": "br",
+     "dx": -2,
+     "dy": -2
+    },
+    {
+     "rect": [
+      27,
+      44,
+      9,
+      30
+     ],
+     "anchor": "tr",
+     "dx": -4,
+     "dy": 18
+    }
+   ]
+  },
+  {
+   "id": "ticket",
+   "label": "Ticket",
+   "hint": "The ferry ticket from Minato to Kitano-jima, stamped",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     8,
+     16
+    ],
+    "bottom": [
+     77,
+     0,
+     8,
+     16
+    ],
+    "left": [
+     86,
+     0,
+     16,
+     4
+    ],
+    "right": [
+     103,
+     0,
+     16,
+     8
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      0,
+      17,
+      119,
+      7
+     ],
+     "anchor": "tc",
+     "dx": 0,
+     "dy": 5
+    },
+    {
+     "rect": [
+      0,
+      25,
+      53,
+      7
+     ],
+     "anchor": "bl",
+     "dx": 20,
+     "dy": -4
+    },
+    {
+     "rect": [
+      54,
+      25,
+      41,
+      7
+     ],
+     "anchor": "br",
+     "dx": -20,
+     "dy": -4
+    },
+    {
+     "rect": [
+      96,
+      25,
+      27,
+      27
+     ],
+     "anchor": "tr",
+     "dx": -10,
+     "dy": 19
+    }
+   ]
+  },
+  {
+   "id": "matsuri",
+   "label": "Matsuri",
+   "hint": "The summer festival at night: lanterns and fireworks",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     16,
+     16
+    ],
+    "bottom": [
+     85,
+     0,
+     16,
+     16
+    ],
+    "left": [
+     102,
+     0,
+     16,
+     24
+    ],
+    "right": [
+     0,
+     25,
+     16,
+     24
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      17,
+      25,
+      17,
+      17
+     ],
+     "anchor": "bl",
+     "dx": -1,
+     "dy": 1
+    },
+    {
+     "rect": [
+      35,
+      25,
+      17,
+      17
+     ],
+     "anchor": "br",
+     "dx": 1,
+     "dy": 1
+    },
+    {
+     "rect": [
+      0,
+      50,
+      84,
+      8
+     ],
+     "anchor": "bc",
+     "dx": 0,
+     "dy": -4
+    }
+   ]
+  },
+  {
+   "id": "haisai",
+   "label": "Haisai",
+   "hint": "Fuji waves from the corner: “Haisai!” (hello, in Okinawan)",
+   "border": 16,
+   "short": 144,
+   "pieces": {
+    "tl": [
+     0,
+     0,
+     16,
+     16
+    ],
+    "tr": [
+     17,
+     0,
+     16,
+     16
+    ],
+    "bl": [
+     34,
+     0,
+     16,
+     16
+    ],
+    "br": [
+     51,
+     0,
+     16,
+     16
+    ],
+    "top": [
+     68,
+     0,
+     8,
+     16
+    ],
+    "bottom": [
+     77,
+     0,
+     8,
+     16
+    ],
+    "left": [
+     86,
+     0,
+     16,
+     8
+    ],
+    "right": [
+     103,
+     0,
+     16,
+     8
+    ]
+   },
+   "features": [
+    {
+     "rect": [
+      0,
+      17,
+      35,
+      74
+     ],
+     "anchor": "br",
+     "dx": -3,
+     "dy": 0
+    },
+    {
+     "rect": [
+      36,
+      17,
+      50,
+      17
+     ],
+     "anchor": "br",
+     "dx": -32,
+     "dy": -70
+    }
+   ]
+  }
+ ]
+}

@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261029e">
+<link rel="stylesheet" href="camera.css?v=20261029f">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -215,6 +215,12 @@
  <header><h2>Stickers</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
 </dialog>
 
+<!-- The camera's frames: every frame on the picture as it is now (the editor has the same row in its Frame tab). -->
+<dialog class="sheet sticker-sheet frame-sheet" id="frameSheet" aria-label="Frames">
+ <header><h2>Frame</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
+ <div class="frame-choices" id="cameraFrames" role="radiogroup" aria-label="Frame"></div>
+</dialog>
+
 <dialog class="sheet text-sheet" id="textSheet" aria-labelledby="textSheetTitle">
  <form method="dialog">
   <h2 id="textSheetTitle">What do they say?</h2>
@@ -235,6 +241,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261029e"></script>
+<script type="module" src="app.js?v=20261029f"></script>
 </body>
 </html>

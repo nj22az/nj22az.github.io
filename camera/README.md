@@ -22,6 +22,17 @@ when saving ? I want memory with our own photos or with the stickers".
   deeper foot), **Panel** (a comic panel's hand-inked border on white), **Film** (a 35 mm frame with its sprocket holes
   and edge print, turning with the picture). Drawn over the picture's edges in the viewfinder and in the save alike;
   the date stays in the picture's own corner, stickers and balloons may cross the border as a balloon breaks a panel.
+- **Pixel frames**, drawn in Python by `tools/draw-camera-frames.py` (the owner: "Draw our own frames in Python") in
+  the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
+  (the Pocket Look's greens, the little camera), **Harbour** (the ferry, the lighthouse, gulls and the sun),
+  **Sakura** (a branch in blossom), **Ticket** (Minato to Kitano-jima, perforated and stamped), **Matsuri**
+  (lanterns and fireworks) and **Haisai** (Fuji, redrawn in four shades from his own sticker, waving from the corner).
+  Each is a sheet of pieces in `frames/` (corners, edges that repeat, scenes set against an edge) that `frames.js`
+  lays out for the photo's own shape and enlarges with hard pixel edges, never stretched. In the camera, **Frame** in
+  the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
+  `python3 tools/draw-camera-frames.py --preview out.png` draws them on a photo at three shapes;
+  `python3 tools/draw-camera-frames.test.py` checks that the files are the drawing and every border is whole.
+  (Frames from a Game Boy Camera project were looked at and not used: no licence, and others' marks and art.)
 - **Mirror** lens: **Twin** (the left half mirrored onto the right) and **Quad** (one quarter into four), the trick
   lenses of the hand-held cameras, before the Looks so they draw the mirrored picture.
 - **Mix**: up to three Looks stacked, each with its own intensity (tap the chosen one again in the camera; there the
@@ -119,12 +130,13 @@ node camera/tests/camera.browser.mjs         # real Chromium with a fake camera,
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (47 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+The browser check (48 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
 its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
 starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
 steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,
 the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
-Thuan's sheet). Then, at phone and desktop size, it
+Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
+saved JPEG). Then, at phone and desktop size, it
 compiles and draws all 19 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a

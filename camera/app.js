@@ -8,7 +8,7 @@ import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMi
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029b';
 import {makeSticker} from './cutout.js?v=20261029b';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029b';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029b';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029e';
@@ -470,7 +470,15 @@ const cycle=(list,value)=>list[(list.indexOf(value)+1)%list.length];
 function changeSetting(fn){fn();sound('tick');renderCameraChips();remember();invalidate();}
 $('timer').addEventListener('click',()=>changeSetting(()=>{state.camera.timer=cycle(TIMERS,state.camera.timer);}));
 $('ratio').addEventListener('click',()=>changeSetting(()=>{state.camera.ratio=cycle(RATIOS,state.camera.ratio);refreshThumbs(true);}));
-$('frameSetting').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.frame=cycle(FRAMES.map(f=>f.id),r.frame);}));
+// Frame: a sheet with every frame on the picture as it is now (ten are too many to step through one tap at a time).
+$('frameSetting').addEventListener('click',()=>{sound('tick');openFrameSheet();});
+function openFrameSheet(){
+ const c=state.camera,preview=c.running?lookPreview({source:'live',crop:squareCrop(cameraCrop(),videoSize()),mirror:c.mirror,recipe:c.recipe},132):null;
+ renderFrameChoices($('cameraFrames'),c.recipe.frame,preview,id=>{changeSetting(()=>{c.recipe.frame=id;});$('frameSheet').close();});
+ $('frameSheet').showModal();
+ requestAnimationFrame(()=>$('cameraFrames').querySelector('[aria-checked="true"]')?.scrollIntoView({inline:'center',block:'nearest'}));
+}
+$('frameSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 $('mirrorSetting').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.trick=cycle(TRICKS,r.trick);refreshThumbs(true);}));
 $('stamp').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.recipe;r.stamp=!r.stamp;}));
 $('soundSetting').addEventListener('click',()=>{state.sound=!state.sound;sound('tick');renderCameraChips();remember();});
@@ -802,36 +810,40 @@ function closeEditor(){
 }
 $('cancelEdit').addEventListener('click',closeEditor);
 // The Frame tab: the frames drawn over the photo itself, the mirror lens, the date stamp.
-/** The photo as it will be saved (its Looks, light and mirror; no frame), as a square of `size` px, for the frame choices. */
-function editPreview(size){
- const e=state.edit;if(!engine||!e||engine.lost())return null;
- const a=e.width/e.height,w=a>=1?Math.round(size*a):size,h=a>=1?size:Math.round(size/a);
- let px;try{px=engine.render({...normalRecipe(e.recipe),frame:'none',stamp:false,stickers:[]},{source:'edit',width:w,height:h});}catch{return null;}
- const t=document.createElement('canvas');t.width=px.width;t.height=px.height;t.getContext('2d').putImageData(new ImageData(px.data,px.width,px.height),0,0);
- const c=document.createElement('canvas');c.width=c.height=size;
- c.getContext('2d').drawImage(t,(px.width-size)/2,(px.height-size)/2,size,size,0,0,size,size);
+/** A picture through its recipe (no frame, date or stickers) as a square of `size` px, for the frame choices. */
+function lookPreview({source,recipe,crop,mirror},size){
+ if(!engine||engine.lost()||!engine.hasSource(source))return null;
+ let px;try{px=engine.render({...normalRecipe(recipe),frame:'none',stamp:false,stickers:[]},{source,crop,mirror,width:size,height:size});}catch{return null;}
+ const c=document.createElement('canvas');c.width=px.width;c.height=px.height;c.getContext('2d').putImageData(new ImageData(px.data,px.width,px.height),0,0);
  return c;
+}
+/** The photo being edited as it will be saved, squared from its middle. */
+function editPreview(size){
+ const e=state.edit;if(!e)return null;
+ return lookPreview({source:'edit',recipe:e.recipe,crop:squareCrop({x:0,y:0,w:1,h:1},{width:e.width,height:e.height})},size);
+}
+/** Every frame as a choice, drawn over `preview`; `pick(id)` when one is chosen. */
+function renderFrameChoices(box,current,preview,pick){
+ box.textContent='';
+ for(const f of FRAMES){
+  const b=document.createElement('button');b.type='button';b.className='frame-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(current===f.id));
+  b.title=f.hint||'No frame';b.dataset.frame=f.id;
+  const c=document.createElement('canvas');c.width=c.height=132;const g=c.getContext('2d');
+  if(preview)g.drawImage(preview,0,0,132,132);else{g.fillStyle='#3a3a3c';g.fillRect(0,0,132,132);}
+  drawFrame(g,f.id,132,132);
+  const label=document.createElement('span');label.textContent=f.label;
+  b.append(c,label);b.addEventListener('click',()=>{sound('tick');pick(f.id);});box.append(b);
+ }
 }
 function renderFramePanel(){
  const e=state.edit;if(!e)return;
- const box=$('frameChoices');box.textContent='';
- const preview=$('panelFrame').hidden?null:editPreview(132);
- for(const f of FRAMES){
-  const b=document.createElement('button');b.type='button';b.className='frame-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.frame===f.id));
-  b.title=f.hint||'No frame';b.dataset.frame=f.id;
-  const c=document.createElement('canvas');c.width=c.height=132;const g=c.getContext('2d');
-  if(preview)g.drawImage(preview,0,0);else{g.fillStyle='#3a3a3c';g.fillRect(0,0,132,132);}
-  drawFrame(g,f.id,132,132);
-  const label=document.createElement('span');label.textContent=f.label;
-  b.append(c,label);box.append(b);
- }
+ renderFrameChoices($('frameChoices'),e.recipe.frame,$('panelFrame').hidden?null:editPreview(132),id=>{e.recipe.frame=id;renderFramePanel();invalidate();});
  const seg=$('mirrorChoices');seg.textContent='';
  for(const t of TRICKS){
   const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.trick===t));b.dataset.trick=t;b.textContent=TRICK_LABELS[t];seg.append(b);
  }
  $('editStamp').setAttribute('aria-checked',String(e.recipe.stamp));
 }
-$('frameChoices').addEventListener('click',ev=>{const b=ev.target.closest('.frame-choice');if(!b||!state.edit)return;sound('tick');state.edit.recipe.frame=b.dataset.frame;renderFramePanel();invalidate();});
 $('mirrorChoices').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');state.edit.recipe.trick=b.dataset.trick;renderFramePanel();refreshThumbs(true);invalidate();});
 $('editStamp').addEventListener('click',()=>{const e=state.edit;if(!e)return;sound('tick');e.recipe.stamp=!e.recipe.stamp;renderFramePanel();invalidate();});
 $('saveEdit').addEventListener('click',async()=>{

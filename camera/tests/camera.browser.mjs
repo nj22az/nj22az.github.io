@@ -79,9 +79,13 @@ async function run({label,width,height,dpr,mobile,portrait}){
    if(!await page.isVisible('#amountRow'))await page.click('.layer-pick >> nth=1');
    await page.fill('#amount','60');
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.layers[1].amount),.6);
-   // The settings row, behind the chevron: the date stamp on, the Print frame.
+   // The settings row, behind the chevron: the date stamp on, the Print frame from the frame sheet (every frame, drawn
+   // on the picture as it is).
    await page.click('#settingsToggle');await page.waitForSelector('#settings:not([hidden])');
    await page.click('#stamp');await page.click('#frameSetting');
+   await page.waitForSelector('#frameSheet[open] .frame-choice[data-frame="print"]');
+   assert.ok(await page.locator('#cameraFrames .frame-choice').count()>=10,'the drawn and the pixel frames are offered');
+   await page.click('#cameraFrames .frame-choice[data-frame="print"]');await page.waitForFunction(()=>!document.querySelector('#frameSheet').open);
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.frame),'print');
    assert.equal(await page.locator('#settingsStatus svg').count(),2,'the frame and the date show beside the chevron');
    await page.waitForTimeout(600);await shot('3-mix');
@@ -392,6 +396,29 @@ async function playAndPrint({label,width,height}){
    const out=await page.evaluate(()=>{const g=window.pocketCamera.memory.game,ids=new Set(g.cards.map(c=>c.item.id));return {n:g.cards.length,ids:ids.size,kind:document.querySelector('.memory-board').className};});
    assert.equal(out.n,24);assert.equal(out.ids,12);assert.match(out.kind,/deck-sticker/);
    await page.locator('#closeMemory').tap();await page.waitForFunction(()=>window.pocketCamera.state.mode==='album');
+  });
+  await check(`${label}: the pixel frames, drawn in Python, close round every shape and are kept in the save`,async()=>{
+   await page.locator('#closeAlbum').tap();await page.waitForFunction(()=>window.pocketCamera.state.camera.running,null,{timeout:20000});
+   const out=await page.evaluate(async()=>{
+    const {FRAMES,drawFrame,frameInner}=await import('/camera/frames.js?v=20261029f'),report={};
+    for(const f of FRAMES.filter(f=>f.pixel))for(const [w,h] of [[960,720],[720,960],[1280,720]]){
+     const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');drawFrame(g,f.id,w,h);
+     const d=g.getImageData(0,0,w,h).data,inner=frameInner(f.id,w,h);let open=0,seen=0;
+     for(let y=0;y<h;y+=3)for(let x=0;x<w;x+=3){const inBorder=x<inner.x-1||x>inner.x+inner.w+1||y<inner.y-1||y>inner.y+inner.h+1;if(inBorder){seen++;if(d[(y*w+x)*4+3]<255)open++;}}
+     const mid=d[((h>>1)*w+(w>>1))*4+3];
+     report[`${f.id} ${w}x${h}`]={open,seen,mid,border:Math.round(inner.x)};
+    }
+    const pc=window.pocketCamera;pc.state.printer=false;pc.state.camera.recipe.frame='harbour';
+    await pc.takePhoto();pc.state.camera.recipe.frame='none';pc.state.printer=true;
+    const shot=pc.state.shots[0],bmp=await createImageBitmap(shot.photo),c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;
+    const g=c.getContext('2d');g.drawImage(bmp,0,0);const side=[...g.getImageData(Math.round(bmp.width*.03),Math.round(bmp.height*.5),1,1).data];
+    return {report,pixel:FRAMES.filter(f=>f.pixel).map(f=>f.id),side,frame:shot.recipe.frame};
+   });
+   assert.deepEqual(out.pixel,['pocket','harbour','sakura','ticket','matsuri','haisai']);
+   for(const [k,r] of Object.entries(out.report)){assert.equal(r.open,0,`${k}: ${r.open} of ${r.seen} border pixels open`);assert.equal(r.mid,0,`${k}: the photo's middle is clear`);assert.ok(r.border>30,`${k}: a border of ${r.border} px`);}
+   assert.equal(out.frame,'harbour');
+   // The harbour's sky down the left side (#9fd0ee), not the photo, in the saved JPEG.
+   assert.ok(Math.abs(out.side[0]-159)<14&&Math.abs(out.side[1]-208)<14&&Math.abs(out.side[2]-238)<14,`the saved photo has the frame's sky at its side (${out.side.slice(0,3)})`);
   });
   await check(`${label}: printer and Memory without page errors`,async()=>assert.deepEqual(errors,[]));
  }finally{await browser.close();}
