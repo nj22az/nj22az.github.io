@@ -4,11 +4,11 @@ frames of a Game Boy Camera project turned out to be others' art with no licence
 
 The hand-held camera's frames were pixel art in four shades round a photo: 160 x 144 pixels with a 16-pixel border.
 These are drawn the same way, each in a palette of its own, from the island: the Pocket Look's greens, the harbour
-with its ferry and lighthouse, Sakura's blossom, the ferry ticket to Kitano-jima, the matsuri's lanterns, and Fuji
-saying "Haisai!", redrawn in four shades from his own die-cut sticker.
+with its ferry and lighthouse, Sakura's blossom, the ferry ticket to Kitano-jima, the matsuri's lanterns, and Thuan
+waving "Hi there!", redrawn in four shades from her own die-cut sticker.
 
 A photo may be any shape, so a frame is drawn as pieces, never stretched: four corners, an edge piece for each side
-that repeats along it, and small scenes placed against an edge (the ferry, a stamp, Fuji). The camera (frames.js)
+that repeats along it, and small scenes placed against an edge (the ferry, a stamp, Thuan). The camera (frames.js)
 lays them out at a scale where the photo's short side is 144 pixels and enlarges them with hard pixel edges, the same
 in the viewfinder and in the save.
 
@@ -407,10 +407,12 @@ def matsuri():
                  [feature(firework(17, AMBER, CREAM), 'bl', -1, 1), feature(firework(17, PURPLE, AMBER), 'br', 1, 1), feature(title, 'bc', 0, -4)])
 
 
-def haisai():
-    """Fuji says "Haisai!": his waving sticker, redrawn in four shades, standing at the corner of the photo."""
+def hello():
+    """Thuan waves from the corner of the photo: her Pixar sticker, redrawn in four shades, saying her own "Hi there!".
+    The shades are hers: ink for her hair and polo, the brown of her shorts, a light skin that lit skin falls to (not the
+    paper, which keeps to her white shoes and the border), and paper."""
     INK, TEAL, TAN, PAPER = 0, 1, 2, 3
-    palette = ['#2a2420', '#5f8f86', '#d9a77f', '#fbf6ea']
+    palette = ['#2a2420', '#8a5a44', '#efc4a4', '#fbf6ea']
     def edge(w, h, inner):
         a = band(w, h, PAPER, INK, inner)
         if inner in ('bottom', 'top'):
@@ -428,16 +430,18 @@ def haisai():
         return a
     pieces = {'top': edge(8, B, 'bottom'), 'bottom': edge(8, B, 'top'), 'left': edge(B, 8, 'right'), 'right': edge(B, 8, 'left'),
               **{w: corner_piece(w) for w in ('tl', 'tr', 'bl', 'br')}}
-    fuji = sticker_sprite(ROOT / 'camera' / 'stickers' / 'fuji' / 'Wave.webp', crop_bottom=842, height=72, palette=palette, border=40)
-    words = 'HAISAI!'
+    thuan = sticker_sprite(ROOT / 'camera' / 'stickers' / 'thuan-pixar' / 'Wave.webp', height=72, palette=palette, border=24)
+    # Her sticker's own line, "Chào nha!", in its checked English (art/stickers/thuan/stickers.json): the frame's
+    # letters are A to Z.
+    words = 'HI THERE!'
     bubble = Art(text_width(words) + 9, 17)
     bubble.rect(1, 0, bubble.w - 2, 12, PAPER)
     bubble.rect(0, 1, bubble.w, 10, PAPER)
     bubble.text(words, 5, 3, INK)
     bubble.sprite(['3333', '.333', '..33', '...3'], bubble.w - 9, 12)
     bubble.outline(INK)
-    return frame('haisai', 'Haisai', 'Fuji waves from the corner: “Haisai!” (hello, in Okinawan)', palette, pieces,
-                 [feature(fuji, 'br', -3, 0), feature(bubble, 'br', -3 - fuji.w + 6, -fuji.h + 4)])
+    return frame('hello', 'Hello', 'Thuan waves from the corner: “Hi there!”', palette, pieces,
+                 [feature(thuan, 'br', -3, 0), feature(bubble, 'br', -3 - thuan.w + 6, -thuan.h + 4)])
 
 
 def lab(rgb):
@@ -452,25 +456,32 @@ def lab(rgb):
     return 116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)
 
 
-def sticker_sprite(path, crop_bottom, height, palette, border=0):
-    """A resident's sticker as pixel art: cut above its lettering, its die-cut border taken off (`border` source pixels,
-    so white hair is not lost in white paper), reduced to `height` pixels, each pixel the nearest of the four shades as
-    the eye sees colour, then an ink line round the figure and a paper rim round that, as the sticker's own cut."""
-    from PIL import ImageFilter
+def sticker_sprite(path, height, palette, border=0, crop_bottom=None):
+    """A resident's sticker (the camera's, without lettering) as pixel art: its die-cut border taken off (`border` source
+    pixels, so white hair is not lost in white paper), reduced to `height` pixels, each pixel the nearest of the four
+    shades as the eye sees colour, then an ink line round the figure and a paper rim round that, as the sticker's own
+    cut. `crop_bottom` cuts off anything under the figure (a lettered sticker's words)."""
+    from PIL import ImageFilter, ImageChops
     im = Image.open(path).convert('RGBA')
-    im = im.crop((0, 0, im.width, crop_bottom))
+    if crop_bottom:
+        im = im.crop((0, 0, im.width, crop_bottom))
     if border:
         alpha = im.getchannel('A').point(lambda a: 255 if a > 128 else 0)
         for _ in range(max(1, border // 4)):
             alpha = alpha.filter(ImageFilter.MinFilter(9))
-        im.putalpha(alpha)
+        # The die-cut also fills the gaps a figure encloses (between a raised arm and the head): it is pure white, which
+        # the figure's own whites (hair, a shirt) are not, being shaded.
+        r, g, b, _ = im.split()
+        die = ImageChops.multiply(ImageChops.multiply(r.point(lambda v: 255 if v >= 250 else 0), g.point(lambda v: 255 if v >= 250 else 0)), b.point(lambda v: 255 if v >= 250 else 0))
+        im.putalpha(ImageChops.subtract(alpha, die))
     im = im.crop(im.getbbox())
     w = max(1, round(im.width * height / im.height))
     small = im.resize((w, height), Image.LANCZOS)
     cols = [lab(hexrgb(c)) for c in palette]
     def nearest(rgb):
         L, a, b = lab(rgb)
-        return min(range(len(cols)), key=lambda i: (L - cols[i][0]) ** 2 + (a - cols[i][1]) ** 2 + (b - cols[i][2]) ** 2)
+        # Colour counts a little more than lightness, so lit skin stays skin and does not turn to paper.
+        return min(range(len(cols)), key=lambda i: (L - cols[i][0]) ** 2 + 2.2 * ((a - cols[i][1]) ** 2 + (b - cols[i][2]) ** 2))
     art = Art(w + 4, height + 2)
     for y in range(height):
         for x in range(w):
@@ -482,7 +493,7 @@ def sticker_sprite(path, crop_bottom, height, palette, border=0):
     return art
 
 
-FRAMES = [pocket, harbour, sakura, ticket, matsuri, haisai]
+FRAMES = [pocket, harbour, sakura, ticket, matsuri, hello]
 
 
 # ---------------------------------------------------------------- packing and laying out

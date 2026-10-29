@@ -461,9 +461,9 @@
    ]
   },
   {
-   "id": "haisai",
-   "label": "Haisai",
-   "hint": "Fuji waves from the corner: “Haisai!” (hello, in Okinawan)",
+   "id": "hello",
+   "label": "Hello",
+   "hint": "Thuan waves from the corner: “Hi there!”",
    "border": 16,
    "short": 144,
    "pieces": {
@@ -521,7 +521,7 @@
      "rect": [
       0,
       17,
-      35,
+      33,
       74
      ],
      "anchor": "br",
@@ -530,13 +530,13 @@
     },
     {
      "rect": [
-      36,
+      34,
       17,
-      50,
+      62,
       17
      ],
      "anchor": "br",
-     "dx": -32,
+     "dx": -30,
      "dy": -70
     }
    ]

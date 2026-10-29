@@ -1,15 +1,19 @@
 /**
- * Die-cut stickers on the picture: the studio's sticker sheets of Johansson World's residents (Thuan, Fuji, Thuan &
- * Nils; nj22az/jojo art/stickers, made light by tools/build-camera-stickers.py). They sit on top of the Looks as real
- * stickers sit on a print, in the viewfinder and on a photo alike, and are kept in the recipe (where, how big, which
+ * Die-cut stickers on the picture: the studio's sticker sheets of Johansson World's residents (Thuan, Johansson and
+ * Thao in their Pixar bodies, the cartoon Thuan, Thuan & Nils; nj22az/jojo art/stickers, made light by
+ * tools/build-camera-stickers.py). They sit on top of the Looks as real stickers sit on a print, in the viewfinder and on a photo alike, and are kept in the recipe (where, how big, which
  * way round), so a photo can be opened again and its stickers moved.
  *
  * One finger moves a sticker, two pinch and turn it; the corner handle does both with a mouse, the wheel resizes and
  * Shift+wheel turns. A sticker is placed by its centre, its height as a share of the picture's height and its angle.
  * Balloons and captions (lettering.js) are placed the same way and keep their words; flipping one sends its tail the
  * other way rather than mirroring its letters.
+ *
+ * The residents' stickers are the figures alone; their words are a sticker of their own (the owner, 29 October 2026:
+ * "Make the stickers without text and we can add any text as another sticker"). A resident's sticker, chosen, offers its
+ * own line as a speech balloon beside it, which can then be moved, changed or taken off like any other.
  */
-import {isBalloon,balloonLayout,balloonCanvas,loadLetteringFont,BALLOONS} from './lettering.js?v=20261029';
+import {isBalloon,balloonLayout,balloonCanvas,loadLetteringFont,BALLOONS} from './lettering.js?v=20261029i';
 
 const MANIFEST=new URL('./stickers/stickers.json',import.meta.url);
 let loading;
@@ -19,7 +23,7 @@ const byId=new Map(),images=new Map();
 export function loadStickerSets(){
  loading??=fetch(MANIFEST).then(r=>{if(!r.ok)throw new Error('No stickers');return r.json();}).then(m=>{
   for(const set of m.sets)for(const s of set.stickers){
-   s.url=new URL(`./stickers/${s.src}`,import.meta.url).href;s.thumbUrl=new URL(`./stickers/${s.thumb}`,import.meta.url).href;s.set=set.name;byId.set(s.id,s);
+   s.url=new URL(`./stickers/${s.src}`,import.meta.url).href;s.thumbUrl=new URL(`./stickers/${s.thumb}`,import.meta.url).href;s.set=set.name;s.who=set.who??set.name;byId.set(s.id,s);
   }
   return m;
  }).catch(err=>{loading=null;throw err;});
@@ -74,7 +78,7 @@ const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
 /**
  * The stickers over one frame. `list()` is the recipe's array (changed in place); `changed()` is told after each change.
  */
-export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
+export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}){
  const layer=document.createElement('div');layer.className='stickers';frame.append(layer);
  let selected=null,gesture=null;
  const els=[];
@@ -101,7 +105,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
     el=document.createElement('div');el.className=`sticker${balloon?' balloon':''}`;el.tabIndex=0;el.setAttribute('role','button');
     el.innerHTML=`${balloon?'<canvas aria-hidden="true"></canvas>':'<img alt="" draggable="false">'}<button type="button" class="sticker-remove" aria-label="Remove">${icon('x')}</button>`
      +`<button type="button" class="sticker-flip" aria-label="${balloon?'Turn the tail the other way':'Flip sticker'}">${icon('flip-h')}</button><span class="sticker-handle" aria-hidden="true">${icon('resize')}</span>`
-     +(balloon?`<button type="button" class="sticker-text" aria-label="Change the words">${icon('text')}</button>`:'');
+     +(balloon?`<button type="button" class="sticker-text" aria-label="Change the words">${icon('text')}</button>`:`<button type="button" class="sticker-say">${icon('say')}</button>`);
     el.addEventListener('focus',()=>select(els.indexOf(el)));
     if(balloon)el.addEventListener('dblclick',()=>{const k=els.indexOf(el);if(k>=0)editText(k,list()[k]);});
     if(stale)stale.replaceWith(el);else layer.append(el);
@@ -109,7 +113,12 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
    }
    const info=shapeOf(s);
    if(balloon){el.style.aspectRatio=`${info.width}/${info.height}`;paintBalloon(el,s);}
-   else{const img=el.querySelector('img');if(info&&img.dataset.id!==s.id){img.src=info.url;img.dataset.id=s.id;el.style.aspectRatio=`${info.width}/${info.height}`;}}
+   else{
+    const img=el.querySelector('img');if(info&&img.dataset.id!==s.id){img.src=info.url;img.dataset.id=s.id;el.style.aspectRatio=`${info.width}/${info.height}`;}
+    const words=el.querySelector('.sticker-say');words.hidden=!info?.line;if(info?.line)words.setAttribute('aria-label',`Their words: “${info.line}”`);
+   }
+   // Words alone have no tail to turn.
+   el.querySelector('.sticker-flip').hidden=s.id==='balloon:words';
    el.setAttribute('aria-label',balloon?`${balloonName(s.id)}: ${s.text||'no words yet'}. Arrow keys move it, Delete removes it, double-click changes the words.`:`Sticker: ${stickerLabel(info)}. Arrow keys move it, Delete removes it.`);
    el.classList.toggle('selected',i===selected);place(el,s);
   });
@@ -127,7 +136,8 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
   if(isBalloon(id)){
    // Lettered at about a twentieth of the picture's height, in the upper part, where a letterer puts balloons first.
    const l=balloonLayout(id,text,false);
-   items.push({id,text,x:.5,y:id==='balloon:caption'?.12:.28,size:Math.min(.9,l.height/100*.05),angle:0,flip:false});
+   // Words alone go low, as a caption under a picture; a balloon high, where a letterer puts them first.
+   items.push({id,text,x:.5,y:id==='balloon:caption'?.12:id==='balloon:words'?.8:.28,size:Math.min(.9,l.height/100*.05),angle:0,flip:false});
   }else items.push({id,x:.5,y:.56,size:.42,angle:Math.round((Math.random()*16-8)*10)/10,flip:false});
   selected=items.length-1;render();
   els[selected]?.animate?.([{scale:'.4',opacity:0},{scale:'1.08',opacity:1,offset:.7},{scale:'1'}],{duration:380,easing:'ease-out'});
@@ -137,7 +147,28 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
   if(i==null)return;const items=list();items.splice(i,1);els.splice(i,1)[0]?.remove();selected=null;render();changed();
  }
  function flip(i=selected){if(i==null)return;const s=list()[i];s.flip=!s.flip;render();changed();}
+ /**
+  * A resident's words as lettering of their own beside them: words alone under their feet, where the stickers used to
+  * carry them; a balloon beside their head, on the side with more room, its tail towards them.
+  */
+ async function sayAs(i,{text,style='balloon:speech'}){
+  const s=list()[i],info=byId.get(s?.id);if(!s||!text)return;
+  await loadLetteringFont();
+  const items=list(),l=balloonLayout(style,text,false),size=Math.min(.9,l.height/100*.05);
+  const W=frame.clientWidth||1,H=frame.clientHeight||1,aspect=info?info.width/info.height:1;
+  // As shares of the picture's width: half the sticker, and the whole lettering.
+  const half=s.size*H*aspect/W/2,bw=size*H*l.width/l.height/W,right=s.x<.5;
+  const inX=v=>clamp(v,Math.min(.5,bw/2),Math.max(.5,1-bw/2)),inY=v=>clamp(v,Math.min(.5,size/2),Math.max(.5,1-size/2));
+  const placed=style==='balloon:words'?{x:inX(s.x),y:inY(s.y+s.size/2+size*.25),flip:false}
+   :{x:inX(s.x+(right?1:-1)*(half*.55+bw/2)),y:inY(s.y-s.size/2+size*.15),flip:!right};
+  items.push({id:style,text,...placed,size,angle:0});
+  selected=items.length-1;render();
+  els[selected]?.animate?.([{scale:'.4',opacity:0},{scale:'1.08',opacity:1,offset:.7},{scale:'1'}],{duration:380,easing:'ease-out'});
+  changed();
+ }
  function setText(i,text){const s=list()[i];if(!s||!isBalloon(s.id))return;s.text=String(text).slice(0,140);render();changed();}
+ /** Another style of lettering for the same words (a speech balloon to a shout, to words alone …). */
+ function setStyle(i,id){const s=list()[i];if(!s||!isBalloon(s.id)||!isBalloon(id)||s.id===id)return;s.id=id;if(id==='balloon:words')s.flip=false;render();changed();}
  function nudge(dx,dy){if(selected==null)return;const s=list()[selected];s.x=clamp(s.x+dx,-.2,1.2);s.y=clamp(s.y+dy,-.2,1.2);render();changed();}
 
  const point=e=>({x:e.clientX,y:e.clientY});
@@ -156,6 +187,10 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
   if(e.target.closest('.sticker-remove')){e.stopPropagation();e.preventDefault();remove(els.indexOf(el));return;}
   if(e.target.closest('.sticker-flip')){e.stopPropagation();e.preventDefault();flip(els.indexOf(el));return;}
   if(e.target.closest('.sticker-text')){e.stopPropagation();e.preventDefault();const k=els.indexOf(el);editText(k,list()[k]);return;}
+  if(e.target.closest('.sticker-say')){
+   e.stopPropagation();e.preventDefault();const k=els.indexOf(el),info=byId.get(list()[k]?.id);
+   if(say)say(k,info);else sayAs(k,{text:info?.line});return;
+  }
   // A second finger, on the sticker or beside it, turns a drag into a pinch.
   if(gesture&&gesture.pointers.size===1&&gesture.mode==='move'&&(!el||els.indexOf(el)===gesture.i)){
    e.stopPropagation();e.preventDefault();gesture.pointers.set(e.pointerId,point(e));restart();return;
@@ -203,7 +238,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{}}){
  },{passive:false});
 
  return {
-  render,add,remove,flip,nudge,select,setText,
+  render,add,remove,flip,nudge,select,setText,setStyle,sayAs,
   get selected(){return selected;},
   get busy(){return !!gesture;},
   set hidden(v){layer.hidden=v;},

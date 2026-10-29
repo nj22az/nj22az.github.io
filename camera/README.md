@@ -26,7 +26,8 @@ when saving ? I want memory with our own photos or with the stickers".
   the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
   (the Pocket Look's greens, the little camera), **Harbour** (the ferry, the lighthouse, gulls and the sun),
   **Sakura** (a branch in blossom), **Ticket** (Minato to Kitano-jima, perforated and stamped), **Matsuri**
-  (lanterns and fireworks) and **Haisai** (Fuji, redrawn in four shades from his own sticker, waving from the corner).
+  (lanterns and fireworks) and **Hello** (Thuan, redrawn in four shades from her own sticker, waving from the corner:
+  "Hi there!").
   Each is a sheet of pieces in `frames/` (corners, edges that repeat, scenes set against an edge) that `frames.js`
   lays out for the photo's own shape and enlarges with hard pixel edges, never stretched. In the camera, **Frame** in
   the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
@@ -43,7 +44,9 @@ when saving ? I want memory with our own photos or with the stickers".
 - **Editor** (a photo from the device, or any photo in the album): Looks, Adjust (Light, Contrast, Colour, Warmth,
   Pattern, the size of dots, strokes and lines, and Detail, how many lines the drawn Looks ink), Stickers, Frame (the
   frames over the photo itself, Mirror, the date stamp); hold the picture to see the original.
-- **Stickers**: Thuan, Fuji, and Thuan & Nils, on the viewfinder or a photo. Drag; pinch and turn with two fingers;
+- **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
+  important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, **Johansson** and **Thao** in their
+  Pixar bodies (as World draws them), **Cartoon Thuan** and **Thuan & Nils**, on the viewfinder or a photo. Drag; pinch and turn with two fingers;
   the corner handle turns and resizes with a mouse; wheel resizes, Shift+wheel turns; arrows nudge, Delete removes.
 - **Lettering** (`lettering.js`, the first sheet): Speech, Shout, Thought and Caption with the photographer's own words,
   lettered as a letterer does (balanced lines in an oval, one closed outline round balloon and tail, a shout in
@@ -69,7 +72,7 @@ when saving ? I want memory with our own photos or with the stickers".
   reduced motion. The viewfinder holds still behind it, so the print moves smoothly.
 - **Memory** (`memory.js`, the game pad at the top of the album, or Play Memory in an empty album): pairs of cards
   face down, turn two, keep them if they match. Play with **your own photos** (at least six in the album), one of
-  the residents' sticker sheets (**Thuan**, **Fuji**, **Thuan & Nils**) or **your own stickers**; 6, 8, 10 or 12
+  the residents' sticker sheets (each of the sheets above) or **your own stickers**; 6, 8, 10 or 12
   pairs. The board takes the grid that gives the cards the most room on the screen; a third card turns two that did
   not match back at once; moves and time are counted, the best game for each set of cards and size is kept, and a
   resident cheers the last pair.
@@ -84,7 +87,7 @@ when saving ? I want memory with our own photos or with the stickers".
 Default first Look: **Pocket**, the town's own hand-held camera (World's `pocket` Look), which gives the Game Boy
 Camera feeling with no console on screen. The first screen greets with a sticker from the residents' sheets, a
 different one each time (never the one shown last), sized to the space the browser leaves so it is always whole; until
-there is a picture the Look tray waits and the shutter starts the camera. Fuji salutes the empty album ("Casting off!"); every tap answers with a soft sound, which Sound in the settings mutes. The interface follows Apple's camera and Photos apps: always dark, system
+there is a picture the Look tray waits and the shutter starts the camera. Johansson, the chief engineer, salutes the empty album; every tap answers with a soft sound, which Sound in the settings mutes. The interface follows Apple's camera and Photos apps: always dark, system
 font, the camera's yellow for what is chosen, translucent material, 44-point targets. A wide window puts the controls
 beside the picture, as on an iPad.
 
@@ -119,8 +122,8 @@ beside the picture, as on an iPad.
 - **Stickers** come from the studio repo (`nj22az/jojo`, `art/stickers/`, drawn by World's avatar code and lettered in
   each resident's voice, checked by the language controllers there). `tools/build-camera-stickers.py ../jojo` makes the
   1024 px and 256 px WebP copies and the manifest (it records the studio commit). Run it again after the studio adds or
-  re-cuts a sticker. The Thuan stickers are the sheets of 19 October 2026, drawn before her Pixar body replaced the
-  cartoon in World; new Pixar stickers would be made in the studio first.
+  re-cuts a sticker. A sheet's `who` names the resident ("What does Thuan say?"); a sticker with no checked line yet
+  (Johansson's, Thao's) has a label instead ("Waving") and offers no words of its own.
 
 ## Checks
 
@@ -130,7 +133,7 @@ node camera/tests/camera.browser.mjs         # real Chromium with a fake camera,
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (48 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+The browser check (49 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
 its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
 starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
 steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,

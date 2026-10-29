@@ -5,6 +5,10 @@
  * with a trail of bubbles, a caption in a box. Lettered in Baloo 2, the face the residents' die-cut stickers are
  * lettered in (fonts/OFL-Baloo2.txt); Japanese and other scripts fall back to the system's rounded face.
  *
+ * And Words: the words alone, with no balloon, lettered as the residents' stickers were (ink with a thick white die-cut
+ * edge, its grey cut line and a soft shadow), a sticker of their own (the owner, 29 October 2026: "Or without the
+ * balloon too").
+ *
  * Everything is drawn from paths at the size it is shown or saved, so a balloon is as sharp on a 12-megapixel save as
  * on the screen. Layout units: the lettering is 100 units tall.
  */
@@ -18,6 +22,7 @@ export const BALLOONS=Object.freeze([
  {id:'balloon:shout',label:'Shout',sample:'Whoa!'},
  {id:'balloon:think',label:'Thought',sample:'Hmm…'},
  {id:'balloon:caption',label:'Caption',sample:'Meanwhile, in Minato…'},
+ {id:'balloon:words',label:'Words',sample:'Nankurunaisa!'},
 ]);
 export const isBalloon=id=>typeof id==='string'&&id.startsWith('balloon:');
 const styleOf=id=>id.slice('balloon:'.length);
@@ -57,21 +62,24 @@ const jitter=(i,k=1)=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-
  * unit. `flip` sends the tail to the right instead of the left.
  */
 export function balloonLayout(id,text,flip=false){
- const style=styleOf(id),g=measure(),shout=style==='shout',caption=style==='caption';
+ const style=styleOf(id),g=measure(),shout=style==='shout',caption=style==='caption',bare=style==='words';
  const words=(shout?String(text).toUpperCase():String(text)).trim()||'…';
- const weight=shout?800:caption?600:700;
+ const weight=shout||bare?800:caption?600:700;
  g.font=`${weight} ${F}px ${FAMILY}`;
  const total=g.measureText(words.replace(/\n/g,' ')).width;
  const widest=Math.max(...words.split(/\s+/).map(w=>g.measureText(w).width));
  // Balanced lines: a balloon somewhat wider than tall, never a ribbon of one long line, and never a word broken
  // unless it is wider than any balloon should be.
- const balanced=caption?Math.max(5*F,Math.min(13*F,Math.sqrt(total*F*3.2))):Math.max(3*F,Math.min(9*F,Math.sqrt(total*F*1.9)));
- const max=Math.max(balanced,Math.min(widest,caption?16*F:12*F));
+ const balanced=caption||bare?Math.max(5*F,Math.min(13*F,Math.sqrt(total*F*3.2))):Math.max(3*F,Math.min(9*F,Math.sqrt(total*F*1.9)));
+ const max=Math.max(balanced,Math.min(widest,caption||bare?16*F:12*F));
  const lines=wrap(g,words,max),lh=F*1.06;
  const tw=Math.max(F,...lines.map(l=>g.measureText(l).width)),th=lines.length*lh;
  const L=F*(shout?.11:.085);
  let rx,ry,width,height,cy0;
- if(caption){rx=tw/2+.55*F;ry=th/2+.42*F;width=2*rx+2*L;height=2*ry+2*L;cy0=0;}
+ // Words: the die-cut round the letters is .34 of their height, the cut line .05 outside it, and room for the shadow.
+ const CUT=.34*F,EDGE=.05*F,DROP=.12*F;
+ if(bare){rx=tw/2;ry=th/2;width=tw+2*(CUT+EDGE)+DROP;height=th+2*(CUT+EDGE)+DROP;cy0=-DROP/2;}
+ else if(caption){rx=tw/2+.55*F;ry=th/2+.42*F;width=2*rx+2*L;height=2*ry+2*L;cy0=0;}
  else{
   // An oval that holds the block of words with room at its corners: √2 times its half-size is the least that does.
   rx=tw/2*1.42+.45*F;ry=th/2*1.42+.45*F;
@@ -107,6 +115,16 @@ export function balloonLayout(id,text,flip=false){
  }
  function draw(g,cx,cy,scale){
   g.save();g.translate(cx,cy);g.scale(scale,scale);g.translate(0,cy0);
+  if(bare){
+   // The sticker's own cut: a soft shadow under the grey cut line, the white edge over it, then the ink.
+   g.font=`${weight} ${F}px ${FAMILY}`;g.textBaseline='middle';g.textAlign='center';g.lineJoin='round';g.miterLimit=2;
+   const lines_=(l,i)=>[l,0,(i-(lines.length-1)/2)*lh+F*.06];
+   g.save();g.shadowColor='rgba(0,0,0,.28)';g.shadowBlur=DROP*scale;g.shadowOffsetY=DROP*.45*scale;
+   g.strokeStyle='#b2aaa0';g.lineWidth=2*(CUT+EDGE);lines.forEach((l,i)=>g.strokeText(...lines_(l,i)));g.restore();
+   g.strokeStyle='#ffffff';g.lineWidth=2*CUT;lines.forEach((l,i)=>g.strokeText(...lines_(l,i)));
+   g.fillStyle=INK;lines.forEach((l,i)=>g.fillText(...lines_(l,i)));
+   g.restore();return;
+  }
   // One outline round everything: stroke the shapes twice as wide as the line, then fill them, so only the outside
   // of their union keeps its ink.
   g.beginPath();shape(g,0,0);

@@ -111,15 +111,15 @@ async function run({label,width,height,dpr,mobile,portrait}){
   });
   await check(`${label}: a die-cut sticker on the viewfinder, dragged into place`,async()=>{
    await page.click('.sticker-button');await page.waitForSelector('#stickerSheet[open] .sticker-choice');
-   await page.click('#stickerSets button >> nth=2');await page.waitForSelector('.sticker-choice[data-id^="fuji/"]');
+   await page.click('#stickerSets button:text-is("Johansson")');await page.waitForSelector('.sticker-choice[data-id^="johansson-pixar/"]');
    await page.waitForTimeout(300);await shot('3b-sticker-sheet');
    await page.click('.sticker-choice >> nth=0');
-   await page.waitForSelector('#cameraFrame .sticker.selected img[src*="fuji"]');
+   await page.waitForSelector('#cameraFrame .sticker.selected img[src*="johansson-pixar"]');
    const box=await page.locator('#cameraFrame .sticker').boundingBox();
    await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();
    await page.mouse.move(box.x+box.width/2-50,box.y+box.height/2-30,{steps:6});await page.mouse.up();
    const s=await app(()=>window.pocketCamera.state.camera.recipe.stickers);
-   assert.equal(s.length,1);assert.equal(s[0].id,'fuji/Wave');assert.ok(s[0].x<.5&&s[0].y<.56,'moved up and left');
+   assert.equal(s.length,1);assert.equal(s[0].id,'johansson-pixar/Wave');assert.ok(s[0].x<.5&&s[0].y<.56,'moved up and left');
    // Two fingers, both on the sticker, spread apart and turned: it grows and turns.
    const pinched=await app(()=>{
     const el=document.querySelector('#cameraFrame .sticker'),r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
@@ -149,7 +149,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    const s=await app(async()=>{const x=window.pocketCamera.state.shots[0],b=await createImageBitmap(x.photo);return {w:b.width,h:b.height,ww:x.width,hh:x.height,recipe:x.recipe,source:x.source.size>0,thumb:x.thumb.size>0};});
    assert.equal(s.w,s.ww);assert.equal(s.h,s.hh);assert.ok(s.source&&s.thumb);
    assert.deepEqual(s.recipe.layers.map(l=>l.look),['pocket','crt']);assert.equal(s.recipe.stamp,true);assert.equal(s.recipe.frame,'print');
-   assert.deepEqual(s.recipe.stickers.map(x=>x.id),['fuji/Wave','balloon:speech'],'the sticker and the balloon are in the recipe');
+   assert.deepEqual(s.recipe.stickers.map(x=>x.id),['johansson-pixar/Wave','balloon:speech'],'the sticker and the balloon are in the recipe');
    // The print's paper is in the saved photo's corner: the frame was drawn into it, not only on the screen.
    const corner=await app(async()=>{const b=await createImageBitmap(window.pocketCamera.state.shots[0].photo),c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d');g.drawImage(b,0,0);return [...g.getImageData(4,4,1,1).data].slice(0,3);});
    assert.ok(corner.every(v=>v>225),`the print's white border (${corner})`);
@@ -161,9 +161,9 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.waitForFunction(()=>document.querySelector('#viewerImage').naturalWidth>0);await shot('6-viewer');
    await page.click('#editPhoto');await page.waitForSelector('#editor:not([hidden])');
    assert.deepEqual(await app(()=>window.pocketCamera.state.edit.recipe.layers.map(l=>l.look)),['pocket','crt']);
-   await page.waitForSelector('#editFrame .sticker img[src*="fuji"]');
+   await page.waitForSelector('#editFrame .sticker img[src*="johansson-pixar"]');
    await page.waitForSelector('#editFrame .sticker.balloon canvas');
-   await page.click('#tabStickers');await page.click('#stickerSets button >> nth=1');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
+   await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Cartoon Thuan")');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
    await page.click('#panelStickers .sticker-choice >> nth=3');
    const handle=page.locator('#editFrame .sticker.selected .sticker-handle');await handle.waitFor();
    const h=await handle.boundingBox();
@@ -218,10 +218,10 @@ async function run({label,width,height,dpr,mobile,portrait}){
   });
   await check(`${label}: your own pictures as die-cut stickers: a cut-out round its outline, a photo with rounded corners`,async()=>{
    await page.click('#closeViewer');await page.click('#closeAlbum');await page.waitForFunction(()=>window.pocketCamera.state.camera.running,null,{timeout:20000});
-   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=4');await page.waitForSelector('.sticker-choice.make');
+   await page.click('.sticker-button');await page.click('#stickerSets button:text-is("Mine")');await page.waitForSelector('.sticker-choice.make');
    await page.setInputFiles('#stickerFile',cutout);
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id.startsWith('mine:')),null,{timeout:20000});
-   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=4');
+   await page.click('.sticker-button');await page.click('#stickerSets button:text-is("Mine")');
    await page.setInputFiles('#stickerFile',garden);
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.filter(s=>s.id.startsWith('mine:')).length===2,null,{timeout:20000});
    const cuts=await app(async()=>{
@@ -231,7 +231,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    assert.deepEqual(cuts,['outline','photo']);
    await page.waitForTimeout(400);await shot('10c-own-stickers');
    // Deleted from the sheet, and off the viewfinder with it.
-   await page.click('.sticker-button');await page.click('#stickerSets button >> nth=4');
+   await page.click('.sticker-button');await page.click('#stickerSets button:text-is("Mine")');
    await page.click('.sticker-choice.mine >> nth=0 >> .mine-remove');await page.click('#deleteSheet button[value="delete"]');
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.filter(s=>s.id.startsWith('mine:')).length===1);
    await page.click('#stickerSheet .done');
@@ -357,6 +357,40 @@ async function playAndPrint({label,width,height}){
    assert.ok(out.skipped<1800,`a tap skipped to the tear (${Math.round(out.skipped)} ms after it)`);
    assert.equal(out.printed,false,'no printer with Print off');assert.equal(out.off,false);assert.equal(out.on,true,'Print back on');
   });
+  // The residents' stickers are figures without words; words are stickers of their own (the owner: "Make the stickers
+  // without text and we can add any text as another sticker", "Or without the balloon too").
+  await check(`${label}: words alone, a resident's own words, and lettering that changes its style`,async()=>{
+   await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:'Lettering'}).tap();
+   await page.locator('.sticker-choice.lettering[data-id="balloon:words"]').tap();
+   await page.waitForSelector('#textSheet[open]');
+   assert.equal(await page.getAttribute('#letteringStyles [data-style="balloon:words"]','aria-checked'),'true','Words is chosen in the sheet');
+   await page.fill('#balloonText','Nankurunaisa!');await page.locator('#textDone').tap();
+   let last=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
+   assert.equal(last.id,'balloon:words');assert.equal(last.text,'Nankurunaisa!');assert.ok(last.y>.6,'words alone go low, as a caption');
+   // A resident's sticker, chosen, offers their own line: as a speech balloon, or here as words alone under them.
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Cartoon Thuan$/}).tap();
+   await page.locator('.sticker-choice[data-id="thuan/Wave"]').tap();
+   await page.waitForSelector('#cameraFrame .sticker.selected .sticker-say');
+   const line=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
+   await page.locator('#cameraFrame .sticker.selected .sticker-say').tap();
+   await page.waitForSelector('#textSheet[open]');
+   const offered=await page.evaluate(()=>({text:document.querySelector('#balloonText').value,title:document.querySelector('#textSheetTitle').textContent,speech:document.querySelector('#letteringStyles [data-style="balloon:speech"]').getAttribute('aria-checked')}));
+   assert.equal(offered.text,'Chào nha!','Thuan’s own words, ready to letter');assert.equal(offered.title,'What does Thuan say?');assert.equal(offered.speech,'true');
+   await page.locator('#letteringStyles [data-style="balloon:words"]').tap();await page.locator('#textDone').tap();
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.length===3);
+   last=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
+   assert.equal(last.id,'balloon:words');assert.equal(last.text,'Chào nha!');assert.ok(last.y>line.y,'under her feet, where the stickers carried their words');
+   // The same words as a shout: the style changes, the words stay.
+   await page.evaluate(()=>window.pocketCamera.cameraStickers.select(2));
+   await page.locator('#cameraFrame .sticker.selected').dblclick();await page.waitForSelector('#textSheet[open]');
+   await page.locator('#letteringStyles [data-style="balloon:shout"]').tap();await page.locator('#textDone').tap();
+   // The sheet's close event comes a moment after the tap; the style changes then.
+   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1).id!=='balloon:words',null,{timeout:5000}).catch(()=>{});
+   last=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
+   assert.equal(last.id,'balloon:shout');assert.equal(last.text,'Chào nha!');
+   await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
+  });
   // Six photos of their own for the album, as the photographer would bring in.
   await page.evaluate(async()=>{
    const blob=await (await fetch('/assets/images/nils-lake-hero-optimized.jpg')).blob();
@@ -414,7 +448,7 @@ async function playAndPrint({label,width,height}){
     const g=c.getContext('2d');g.drawImage(bmp,0,0);const side=[...g.getImageData(Math.round(bmp.width*.03),Math.round(bmp.height*.5),1,1).data];
     return {report,pixel:FRAMES.filter(f=>f.pixel).map(f=>f.id),side,frame:shot.recipe.frame};
    });
-   assert.deepEqual(out.pixel,['pocket','harbour','sakura','ticket','matsuri','haisai']);
+   assert.deepEqual(out.pixel,['pocket','harbour','sakura','ticket','matsuri','hello']);
    for(const [k,r] of Object.entries(out.report)){assert.equal(r.open,0,`${k}: ${r.open} of ${r.seen} border pixels open`);assert.equal(r.mid,0,`${k}: the photo's middle is clear`);assert.ok(r.border>30,`${k}: a border of ${r.border} px`);}
    assert.equal(out.frame,'harbour');
    // The harbour's sky down the left side (#9fd0ee), not the photo, in the saved JPEG.
