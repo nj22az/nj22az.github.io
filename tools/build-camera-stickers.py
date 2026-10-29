@@ -21,9 +21,10 @@ from PIL import Image
 SETS = [  # (folder in art/stickers, name in the picker, who they are: "What does Thuan say?")
     # The camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not important
     # for the camera app", "Use Johansson , Thuan and Thao"), first in their 3D bodies.
-    ('thuan-pixar', 'Thuan', 'Thuan'),         # her Pixar body in World (the owner: "Bring Pixar Thuan too")
+    ('thuan-blender', 'Thuan', 'Thuan'),       # her Blender doll, 3d/cast ("blender Thuan the one that looks like a real doll")
     ('johansson-pixar', 'Johansson', 'Johansson'),
     ('thao-pixar', 'Thao', 'Thao'),
+    ('thuan-pixar', 'World Thuan', 'Thuan'),   # her Pixar body in World (the owner: "Bring Pixar Thuan too")
     ('thuan', 'Cartoon Thuan', 'Thuan'),       # her cartoon of 19 October, with the same poses and lines
     ('thuan-nils', 'Thuan & Nils', ''),
 ]

@@ -45,8 +45,9 @@ when saving ? I want memory with our own photos or with the stickers".
   Pattern, the size of dots, strokes and lines, and Detail, how many lines the drawn Looks ink), Stickers, Frame (the
   frames over the photo itself, Mirror, the date stamp); hold the picture to see the original.
 - **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
-  important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, **Johansson** and **Thao** in their
-  Pixar bodies (as World draws them), **Cartoon Thuan** and **Thuan & Nils**, on the viewfinder or a photo. Drag; pinch and turn with two fingers;
+  important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
+  thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
+  draws them), **World Thuan** (hers), **Cartoon Thuan** and **Thuan & Nils**, on the viewfinder or a photo. Drag; pinch and turn with two fingers;
   the corner handle turns and resizes with a mouse; wheel resizes, Shift+wheel turns; arrows nudge, Delete removes.
 - **Lettering** (`lettering.js`, the first sheet): Speech, Shout, Thought and Caption with the photographer's own words,
   lettered as a letterer does (balanced lines in an oval, one closed outline round balloon and tail, a shout in
@@ -123,7 +124,9 @@ beside the picture, as on an iPad.
   each resident's voice, checked by the language controllers there). `tools/build-camera-stickers.py ../jojo` makes the
   1024 px and 256 px WebP copies and the manifest (it records the studio commit). Run it again after the studio adds or
   re-cuts a sticker. A sheet's `who` names the resident ("What does Thuan say?"); a sticker with no checked line yet
-  (Johansson's, Thao's) has a label instead ("Waving") and offers no words of its own.
+  (Johansson's, Thao's, some of the Blender Thuan's) has a label instead ("Waving") and offers no words of its own.
+  The Blender Thuan is rendered in Cycles by the studio's `3d/cast/shots_stickers.py`; the others by World's avatar
+  code (`art/stickers/render.mjs`).
 
 ## Checks
 
@@ -138,7 +141,7 @@ its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's 
 starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
 steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,
 the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
-Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
+the cartoon Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
 saved JPEG). Then, at phone and desktop size, it
 compiles and draws all 19 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the

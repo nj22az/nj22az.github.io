@@ -425,7 +425,7 @@ async function playAndPrint({label,width,height}){
   });
   await check(`${label}: Memory with a sticker sheet, 12 pairs`,async()=>{
    await page.locator('.memory-win button',{hasText:'Other cards'}).tap();
-   await page.locator('.memory-deck[data-deck="set:Thuan"]').tap();await page.locator('.memory-pairs button',{hasText:/^12$/}).tap();
+   await page.locator('.memory-deck[data-deck="set:Cartoon Thuan"]').tap();await page.locator('.memory-pairs button',{hasText:/^12$/}).tap();
    await page.locator('.memory-play').tap();await page.waitForSelector('.memory-card');
    const out=await page.evaluate(()=>{const g=window.pocketCamera.memory.game,ids=new Set(g.cards.map(c=>c.item.id));return {n:g.cards.length,ids:ids.size,kind:document.querySelector('.memory-board').className};});
    assert.equal(out.n,24);assert.equal(out.ids,12);assert.match(out.kind,/deck-sticker/);
