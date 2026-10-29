@@ -33,7 +33,10 @@ const wearing=(body,top,more={})=>{const way=entryFor('top',top).colourways[0]?.
 const baseLayer=body=>normalizeRecipe({...body,outfit:{...body.outfit,top:'tank',bottom:'underwear',footwear:'barefoot',hat:'none'},accessories:{...body.accessories,earrings:'none',neckwear:'none',pin:false}});
 const marksOf=a=>a.body.material.userData.garment.marks;
 function draws(a){let meshes=0,ink=0;const face=o=>{for(let p=o;p;p=p.parent)if(p.name==='Face objects')return true;return false;};
- a.root.traverse(o=>{if(o.isMesh&&o.visible&&!face(o))(o.userData.outline?ink++:meshes++);});return [meshes,ink];}
+ // The rigged eyes (eyes3d.js) are a draw of their own, on for everyone since the owner's word of 25 October 2026 ("I think
+ // it looks better already": commit 4ad3b4e6, briefs/HANDOFF-AVATAR-EYES-2026-10-25.md); tests/eyes3d.test.mjs holds both
+ // eyes to one draw. The body and the head are still the two draws counted here.
+ a.root.traverse(o=>{if(o.isMesh&&o.visible&&!face(o)&&o!==a.eyes3d?.mesh)(o.userData.outline?ink++:meshes++);});return [meshes,ink];}
 
 test('one list each for the prints, the skirts and the dice, used everywhere',()=>{
  assert.deepEqual([...PATTERNS],['none','flowers','stripes','dots']);
@@ -69,7 +72,10 @@ test('each batch-2 top is in the catalogue with who, why and its own colours fro
  const found=q=>searchWardrobe(q).flatMap(g=>g.entries.map(e=>e.slot+':'+e.id));
  assert.ok(found('Ganaha').includes('top:vest')&&found('Ganaha').includes('set:ticket-window'));
  assert.ok(found('Fujita').includes('top:knitvest'));assert.ok(found('Seagulls').includes('top:baseball'));assert.ok(found('PE').includes('top:gymtee'));
- assert.ok(found('happi').includes('top:festival'));assert.ok(found('Shimabukuro').includes('top:shirt'));
+ assert.ok(found('happi').includes('top:festival'));
+ // Mr Shimabukuro is retired (roster.js RETIRED; phase 4 of docs/CAST-CONSOLIDATION.md, recorded in johansson-town/AGENTS.md),
+ // so no live list names him: the office shirt is found by who wears it now, and no longer by him.
+ assert.ok(found('Reed').includes('top:shirt'));assert.ok(!found('Shimabukuro').includes('top:shirt'));
  for(const id of SETS){const s=set(id);assert.ok(s.who&&s.why,id);
   for(const [k,v] of Object.entries(s.outfit))if(/^#/.test(v))assert.ok(ISLAND_HEX.has(v),`${id} ${k} ${v}`);}
  assert.deepEqual([set('ticket-window').outfit.top,set('ticket-window').outfit.topColour,set('ticket-window').outfit.bottom],['vest','#b4583c','skirt']);

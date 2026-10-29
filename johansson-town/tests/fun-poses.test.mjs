@@ -36,6 +36,59 @@ function body(recipe,outfit){
  const step=(n=1)=>{for(let i=0;i<n;i++){own(()=>animator.update(1/60,{}));avatar.springs?.update(1/60);}holder.updateMatrixWorld(true);};
  return {avatar,animator,step,m:avatar.measure};
 }
+/** The distance from a point to the nearest of `points`, exactly, or (when that is `bound` or more) a distance no nearer
+ *  than `bound`: the points are filed in cubes of `cell` metres and the cubes searched outwards from the point's own, ring
+ *  by ring, until no unsearched cube can hold a nearer one, or one nearer than `bound`. (Measured one
+ *  by one, every mitten point against every point of the hair, with the ray casts below, a pose took two seconds, and
+ *  this file over 900.) */
+function nearestOf(points,cell=.02){
+ const at=v=>Math.floor(v/cell),key=(i,j,k)=>((i+1024)*2048+(j+1024))*2048+(k+1024),grid=new Map();
+ const lo=[Infinity,Infinity,Infinity],hi=[-Infinity,-Infinity,-Infinity];
+ for(const p of points){const c=[at(p.x),at(p.y),at(p.z)],k=key(...c);let list=grid.get(k);if(!list)grid.set(k,list=[]);list.push(p.x,p.y,p.z);
+  for(let a=0;a<3;a++){lo[a]=Math.min(lo[a],c[a]);hi[a]=Math.max(hi[a],c[a]);}}
+ return (p,bound=Infinity)=>{
+  if(!points.length)return Infinity;
+  const c=[at(p.x),at(p.y),at(p.z)],last=Math.max(...[0,1,2].map(a=>Math.max(Math.abs(c[a]-lo[a]),Math.abs(c[a]-hi[a]))));let best=Infinity;
+  for(let r=0;r<=last;r++){
+   // (only the cubes inside the points' own bounds can hold any)
+   for(let i=Math.max(-r,lo[0]-c[0]);i<=Math.min(r,hi[0]-c[0]);i++)for(let j=Math.max(-r,lo[1]-c[1]);j<=Math.min(r,hi[1]-c[1]);j++){
+    const k0=Math.max(-r,lo[2]-c[2]),k1=Math.min(r,hi[2]-c[2]);
+    // (on the ring's edge in i or j, every k; inside it, only its two faces in k)
+    const ks=Math.abs(i)===r||Math.abs(j)===r?Array.from({length:Math.max(0,k1-k0+1)},(_,n)=>k0+n):[-r,r].filter(k=>k>=k0&&k<=k1);
+    for(const k of ks){
+     const list=grid.get(key(c[0]+i,c[1]+j,c[2]+k));if(!list)continue;
+     for(let n=0;n<list.length;n+=3){const dx=list[n]-p.x,dy=list[n+1]-p.y,dz=list[n+2]-p.z,d=dx*dx+dy*dy+dz*dz;if(d<best)best=d;}
+    }
+   }
+   // every cube not yet searched is r + 1 or more cubes from the point's own: at least r cubes away from the point
+   if(best<=(r*cell)**2||r*cell>=bound)break;
+  }
+  return Math.sqrt(best);
+ };
+}
+/** The first hit of a ray from `centre` out along a unit direction with a mesh's triangles (either side), as a distance, or
+ *  undefined: the same as Raycaster.intersectObject's nearest, the mesh's triangles first put in the world once and each
+ *  given the cone of directions from the centre it can be seen in, so a ray is tested only against the few in its way. */
+function rayFrom(mesh,centre){
+ mesh.updateWorldMatrix(true,false);
+ const P=mesh.geometry.attributes.position,I=mesh.geometry.index,count=I?I.count:P.count,v=new THREE.Vector3(),tris=[];
+ const vert=n=>mesh.getVertexPosition(I?I.getX(n):n,v).applyMatrix4(mesh.matrixWorld).clone();
+ for(let n=0;n+2<count;n+=3){
+  const a=vert(n),b=vert(n+1),c=vert(n+2),dirs=[a,b,c].map(q=>q.clone().sub(centre).normalize()),axis=dirs[0].clone().add(dirs[1]).add(dirs[2]);
+  if(axis.lengthSq()<1e-12){tris.push({a,b,c,axis:null});continue;}
+  axis.normalize();tris.push({a,b,c,axis,cos:Math.min(...dirs.map(d=>d.dot(axis)))-1e-9});
+ }
+ const ray=new THREE.Ray(),hit=new THREE.Vector3();
+ return dir=>{
+  ray.set(centre,dir);let best;
+  for(const t of tris){
+   // (a cone wider than a half turn does not hold its triangle's directions: tested whole)
+   if(t.axis&&t.cos>0&&dir.dot(t.axis)<t.cos)continue;
+   if(ray.intersectTriangle(t.a,t.b,t.c,false,hit)){const d=hit.distanceTo(centre);if(best===undefined||d<best)best=d;}
+  }
+  return best;
+ };
+}
 /** How the mittens and forearms sit against their own body: the deepest any point of them goes into the drawn head (from
  *  the head's middle out through the point to the head's own mesh; metres, negative inside), how deep a mitten goes into the
  *  torso (as bodyVolume has it, where the hips and the chest have taken it) and into the legs (round limbs of the legs'
@@ -45,16 +98,15 @@ function selfContact(b){
  const frames=[['hips',m.hipY],['chest',m.chestY]].map(([n,y])=>[bones[n].matrixWorld.clone().invert(),y]);
  const torso=p=>Math.min(...frames.map(([inv,y])=>{const v=p.clone().applyMatrix4(inv);v.y+=y;return vol.sdf(v);}));
  const legs=['L','R'].flatMap(s=>[[bones['thigh'+s],bones['knee'+s],m.legR],[bones['knee'+s],bones['foot'+s],m.legR*.9]]).map(([a,c,r])=>[new THREE.Line3(a.getWorldPosition(new THREE.Vector3()),c.getWorldPosition(new THREE.Vector3())),r]);
- const mesh=avatar.face.head,centre=bones.head.localToWorld(new THREE.Vector3(0,m.headCentre-m.headY,0)),ray=new THREE.Raycaster(),q=new THREE.Vector3();
- mesh.material.side=THREE.DoubleSide;
- const hair=surface(avatar,{only:n=>n==='head'}).map(a=>a.p);
+ const mesh=avatar.face.head,centre=bones.head.localToWorld(new THREE.Vector3(0,m.headCentre-m.headY,0)),cast=rayFrom(mesh,centre),q=new THREE.Vector3();
+ const hair=nearestOf(surface(avatar,{only:n=>n==='head'}).map(a=>a.p));
  let head=Infinity,body=Infinity,leg=Infinity;const near={L:Infinity,R:Infinity};
  for(const {p,bone} of surface(avatar,{only:n=>/^(hand|elbow)[LR]$/.test(n)})){
   const d=p.clone().sub(centre),r=d.length();
-  let gap=Infinity;if(r<m.Rh*1.6){ray.set(centre,d.normalize());const hit=ray.intersectObject(mesh,false)[0];if(hit){gap=r-hit.distance;head=Math.min(head,gap);}}
+  let gap=Infinity;if(r<m.Rh*1.6){const hit=cast(d.normalize());if(hit!==undefined){gap=r-hit;head=Math.min(head,gap);}}
   if(bone.startsWith('hand')){body=Math.min(body,torso(p));for(const [l,lr] of legs)leg=Math.min(leg,l.closestPointToPoint(p,true,q).distanceTo(p)-lr);
    // how near the mitten is to the head: to its drawn surface straight out from its middle, or to the hair and the ears
-   const s=bone.at(-1);near[s]=Math.min(near[s],gap);if(r<m.Rh*2)for(const h of hair)near[s]=Math.min(near[s],h.distanceTo(p));}
+   const s=bone.at(-1);near[s]=Math.min(near[s],gap);if(r<m.Rh*2)near[s]=Math.min(near[s],hair(p,near[s]));}
  }
  return {head,body,leg,near};
 }

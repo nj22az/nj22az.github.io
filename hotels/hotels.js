@@ -22,7 +22,7 @@
   var parking = form.elements.namedItem('parking');
   var receipt = form.elements.namedItem('receipt');
   var cardHold = form.elements.namedItem('cardhold');
-  var parkingNames = { free: 'with free parking', easy: 'with easy parking', avoid: 'to avoid', saved: 'saved', '': '' };
+  var parkingNames = { free: 'with free parking', registered: 'with free parking requiring registration', easy: 'with easy parking', avoid: 'to avoid', saved: 'saved', '': '' };
   var categoryOf = {};
   rows.forEach(function (row) { categoryOf[row.dataset.hotelRow] = row.dataset.parkingCategory; });
 
@@ -41,7 +41,7 @@
   function filter() {
     var terms = normalise(query.value.trim()).split(/\s+/).filter(Boolean);
     var visible = new Set();
-    var tally = { free: 0, easy: 0, avoid: 0, all: 0, saved: 0 };
+    var tally = { free: 0, registered: 0, easy: 0, avoid: 0, all: 0, saved: 0 };
     var byCountry = {};
     rows.forEach(function (row) {
       var id = row.dataset.hotelRow;

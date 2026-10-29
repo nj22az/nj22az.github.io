@@ -82,9 +82,9 @@ test('Tetsuo keeps a solid kei truck throughout his actual town departure',()=>{
  installDOM();const parent=new THREE.Group(),g=new THREE.Group(),colliders=[];parent.add(g);g.position.set(-30,0,30);
  const people=[{g,profile:{name:'Tetsuo'}}],cars=createTownTraffic({parent,colliders,people:()=>people}),v=cars.islanders[0];
  const grid=createColliderGrid(colliders);grid.refresh();const old=v.g.position.clone();
- assert.equal(hit(grid,old.x,old.z,old.y),true);cars.update(1/60,690);assert.ok(v.trip);
+ assert.equal(hit(grid,old.x,old.z,old.y),true);cars.update(1/60,4*1440+7*60+19);assert.ok(v.trip);
  assert.equal(g.userData.inVehicle,v.id);
- for(let i=0;i<400;i++){cars.update(1/60,690);follows(v);assert.equal(hit(grid,v.g.position.x,v.g.position.z,v.g.position.y),true);}
+ for(let i=0;i<400;i++){cars.update(1/60,4*1440+7*60+19);follows(v);assert.equal(hit(grid,v.g.position.x,v.g.position.z,v.g.position.y),true);}
  assert.ok(v.g.position.distanceTo(old)>3,'the truck actually left the bay');
  cars.reconcileAbsent();follows(v);assert.equal(g.userData.inVehicle,undefined);assert.equal(hit(grid,old.x,old.z,old.y),true);
 });

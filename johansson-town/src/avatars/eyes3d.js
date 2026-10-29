@@ -73,7 +73,10 @@ export function eyeShape(style,eyes,own=null){
   if(style==='almond'||style==='cat'||own?.shape==='almond')Object.assign(s,{topAmp:.75*ry,botAmp:.65*ry,pTop:1,pBot:1});
   // (a body's own almond eye, Pixar Thao's: its outer corner lifted a little, the owner's "a bit more almond shaped")
   if(own?.shape==='almond'&&Number.isFinite(own.corner))Object.assign(s,{corner:own.corner,off:own.corner*.3});
-  if(style==='cat')Object.assign(s,{corner:3,off:1,flick:7});
+  // (a clone's eye reshaped by its recipe (pixar-face.js): its own lid line and slant, and an outer corner lifted on a round eye too)
+  if(own){for(const k of ['cut','slant'])if(Number.isFinite(own[k]))s[k]=own[k];
+   if(own.shape!=='almond'&&Number.isFinite(own.corner))Object.assign(s,{corner:own.corner,off:own.corner*.3});}
+ if(style==='cat')Object.assign(s,{corner:3,off:1,flick:7});
   if(style==='heavy')Object.assign(s,{cut:.41,lash:4});   // the lid's line where the painter draws it, a third of the way up
   if(style==='droopy')Object.assign(s,{cut:.21,slant:-.43});
  }

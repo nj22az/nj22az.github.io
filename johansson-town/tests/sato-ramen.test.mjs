@@ -9,6 +9,7 @@ import {createRamenPlayerService} from '../src/people/ramen-player-service.js';
 import {circleHitsRect} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 import {FURNITURE_HEIGHTS} from '../src/world/furniture-standards.js';
+import {MINATO_COMPACT} from '../src/world/interiors/minato-compact-plan.js';
 
 const profile=name=>RESIDENTS.find(p=>p.name===name);
 
@@ -47,7 +48,10 @@ test('every stool can be reached and sat on, and the cook stands in the kitchen'
   assert.ok(Math.abs(Math.cos(seat.yaw)*dx-Math.sin(seat.yaw)*dz)<.000001,'The place setting stays aligned with its stool');
  }
  assert.ok(SATO_GUEST_SEATS.length>=5);
- assert.ok(SATO_COOK.position[2]<-3.35,'Mrs Sato is behind the counter, on the kitchen side');
+ // Behind the counter's kitchen edge and in front of the back line, in the compact plan the room is built from.
+ const {ramenCounter,ramenPrep}=MINATO_COMPACT;
+ assert.ok(SATO_COOK.position[2]<ramenCounter.position[2]-ramenCounter.depth/2&&SATO_COOK.position[2]>ramenPrep.position[2]+ramenPrep.depth/2,'Mrs Sato is behind the counter, on the kitchen side');
+ assert.ok(SATO_COOK.position[0]>ramenCounter.position[0]-ramenCounter.width/2&&SATO_COOK.position[0]<ramenCounter.position[0]+ramenCounter.width/2,'Mrs Sato is along the counter');
 });
 
 test('ordering a bowl at the counter charges for it and sets it down in front of you',()=>{

@@ -409,9 +409,10 @@ function buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes}){
  * Fukugi along the yard's west edge, where the old yard wall stood: the shops' yard takes the west wind off the sea
  * through the Nishi lanes, and the row shades Thuan's break bench (staff-bench.js) and the goya bed in the afternoon.
  * Planted between the lane openings (WEST_YARD.lanes), clear of the tyres and of the building circuits (the stretch
- * beside the yard houses is left for the housing consolidation).
+ * beside the yard houses is left for the housing consolidation). Midway between the Higa house's circuit band (to x
+ * -24.55) and Sakura's (from -23.55): at -24.1 the stoutest trunk (0.91 m) stood 5 mm in the Higa house's band.
  */
-export const YARD_WINDBREAK=Object.freeze({x:-24.1,z:Object.freeze([-25.2,-23.1,-21,-18.9])});
+export const YARD_WINDBREAK=Object.freeze({x:-24.05,z:Object.freeze([-25.2,-23.1,-21,-18.9])});
 
 /**
  * The coin laundry's long south wall, which faces Main Street's crossing and was blank: its own painted name and

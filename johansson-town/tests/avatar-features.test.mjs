@@ -27,7 +27,10 @@ test('all hats and accessories remain in the two-draw skinned avatar through pos
   const anim=createAvatarAnimator(a);anim.play('Wave');anim.update(.1,{speed:1});a.root.updateMatrixWorld(true);
   // (Glasses and facial hair are head-bound face objects with their own meshes, not hats or accessories: not counted.)
   const faceObject=o=>{for(let p=o;p;p=p.parent)if(p.name==='Face objects')return true;return false;};
-  let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible&&!faceObject(o))(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
+  // The rigged eyes (eyes3d.js) are a draw of their own, on for everyone since the owner's word of 25 October 2026 ("I think
+  // it looks better already": commit 4ad3b4e6, briefs/HANDOFF-AVATAR-EYES-2026-10-25.md); tests/eyes3d.test.mjs holds both
+  // eyes to one draw. The body and the head are still the two draws counted here.
+  let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible&&!faceObject(o)&&o!==a.eyes3d?.mesh)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
   for(const v of a.body.geometry.attributes.position.array)assert.ok(Number.isFinite(v));
   a.wear('swim');assert.equal(a.body.visible,false);a.wear('clothes');assert.equal(a.body.visible,true);a.dispose();
  }
@@ -36,7 +39,8 @@ test('a hat comes off without a third draw call, and the copy on the peg is the 
  const recipe=CAST_RECIPES['Officer Mori'],a=buildAvatar(recipe,{shadows:false});
  assert.ok(a.hasHat&&a.hatOn);const whole=a.body.geometry.attributes.position.count;
  a.setHat(false);assert.equal(a.hatOn,false);assert.ok(a.body.geometry.drawRange.count<whole,'the hat is no longer drawn');
- let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
+ // (The rigged eyes are their own draw, as in the test above.)
+ let draws=0,lines=0;a.root.traverse(o=>{if(o.isMesh&&o.visible&&o!==a.eyes3d?.mesh)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
  a.setHat(true);assert.equal(a.hatOn,true);
  const prop=buildHatProp(recipe);assert.ok(prop?.isMesh&&!prop.isSkinnedMesh);
  assert.equal(prop.geometry.attributes.position.count,whole-a.body.geometry.drawRange.start-(a.setHat(false),a.body.geometry.drawRange.count),'the peg holds the hat that came off');

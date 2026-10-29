@@ -18,7 +18,7 @@ const BROWS=`varying vec3 vFeature;
 uniform float uBrowShapeL[8],uBrowShapeR[8];
 uniform vec4 uBrowL,uBrowR,uBrowL2,uBrowR2;
 uniform vec3 uBrowInk;
-uniform float uBrowLines,uBrowTaper;
+uniform float uBrowLines,uBrowTaper,uBrowBushy;
 float B[8];
 float browLine(float x){return B[2]*x*x+B[3]*x+B[4];}
 float browHalf(float x){return max(.25,B[5]*x*x+B[6]*x+B[7]);}
@@ -47,12 +47,22 @@ vec4 browsPaint(){
  float x0=B[0],x1=B[1],w=.8*max(length(fwidth(p)),1e-3),inner=x0-e.w;
  float s=clamp((p.x-inner)/(x1-inner),0.,1.),xr=x0+s*(x1-x0),y,ys;
  float d=browInside(p,e,f,y);
+ // (uBrowBushy, a body's own: a bushy brow's edge in tufts, hairs standing out of its top and its ends, a grain along it)
+ float grain=1.;
+ if(uBrowBushy>0.){
+  // (laid along the brow itself (xr: where along it, p.y-y: how far off its middle line), so the tufts travel with it as it
+  // lifts and knits while he talks, not through a pattern fixed on the skin; the top's longer tufts eased in, no step)
+  float q=p.y-y;
+  float tuft=.5+.5*sin(xr*2.6+1.7*sin(xr*1.1));tuft*=.65+.35*sin(xr*6.3+q*1.9+1.3);
+  d+=uBrowBushy*(1.05*tuft-.35)*smoothstep(-2.2,-.2,d)*mix(.55,1.,smoothstep(-.6,.6,q));
+  grain=1.-uBrowBushy*.16*(.5+.5*sin(xr*7.1+q*2.4))*(.5+.5*sin(xr*3.3-1.));
+ }
  // A brow has volume: the hairs catch the light along its top and darken toward its underside, and it lays a soft
  // warm shadow on the skin under it (the brow seen as hair on a brow ridge, not ink on the skin).
  float v=clamp((p.y-y)/browHalfAt(s,f),-1.,1.);
  vec3 hair=mix(uBrowInk*.72,uBrowInk*1.22+.03,smoothstep(-.9,.75,v));
  hair+=(uBrowInk*.6+.05)*.35*smoothstep(.2,.55,v)*smoothstep(1.,.7,v);
- vec4 col=vec4(hair,.96*smoothstep(-w,w,d));
+ vec4 col=vec4(hair*grain,.96*smoothstep(-w,w,d));
  float dropped=browInside(p+vec2(0.,1.15),e,f,ys)+.45;
  float shade=.2*smoothstep(-1.4,1.,dropped)*step(p.y,y);
  col=vec4((col.rgb*col.a+vec3(.46,.27,.21)*shade*(1.-col.a))/max(col.a+shade*(1.-col.a),1e-4),col.a+shade*(1.-col.a));
@@ -210,10 +220,10 @@ const colour=hex=>new THREE.Color(hex);
 /** Brows on their decal, each its own ({left, right}: x0, x1, line, half; colour). `make(geometry, material)` makes the mesh
  *  (a skinned one for a skinned face); `lines` (0..1) draws an older face's forehead lines and frown creases; `taper`
  *  (0..1) thins the outer end to a tail. */
-export function rigBrows(geometry,brows,{make=(g,m)=>new THREE.Mesh(g,m),lines=0,taper=0}={}){
+export function rigBrows(geometry,brows,{make=(g,m)=>new THREE.Mesh(g,m),lines=0,taper=0,bushy=0}={}){
  const shape=b=>new Float32Array([b.x0,b.x1,...b.line,...b.half]);
  const uniforms={uBrowShapeL:{value:shape(brows.left)},uBrowShapeR:{value:shape(brows.right)},uBrowL:{value:new THREE.Vector4()},uBrowR:{value:new THREE.Vector4()},
-  uBrowL2:{value:new THREE.Vector4()},uBrowR2:{value:new THREE.Vector4()},uBrowInk:{value:colour(brows.colour)},uBrowLines:{value:lines},uBrowTaper:{value:taper}};
+  uBrowL2:{value:new THREE.Vector4()},uBrowR2:{value:new THREE.Vector4()},uBrowInk:{value:colour(brows.colour)},uBrowLines:{value:lines},uBrowTaper:{value:taper},uBrowBushy:{value:bushy}};
  const {material,dispose}=featureMaterial('Shimanchu brows',BROWS,'browsPaint',uniforms);
  const mesh=make(geometry,material);mesh.name='Shimanchu brows';mesh.castShadow=false;mesh.receiveShadow=true;mesh.renderOrder=-1;
  return {mesh,uniforms,

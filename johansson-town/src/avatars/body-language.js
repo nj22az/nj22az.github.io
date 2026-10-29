@@ -35,6 +35,15 @@ const STYLE=Object.freeze({
  'Typhoon':          {feel:{happy:'Tada',laugh:'Laugh',shy:'Coy'},idle:['Tada','Kachashi','HeelKick','Cheer'],talk:['Tada','Peace','Laugh'],quirk:'HeelRock'},
 });
 
+/**
+ * A few residents whose body language is their own, over their type's: Tetsuo, awkward with people (the owner, 28 October
+ * 2026, "can you make Tetsuo look more awkward"), fidgets where a Quiet craftsman would stand with his hands on his hips,
+ * tugs his collar while you talk and answers a laugh with a fidget.
+ */
+export const PERSONAL_STYLE=Object.freeze({
+ Tetsuo:Object.freeze({feel:{happy:'Nod',laugh:'Fidget',shy:'Fidget'},idle:['Fidget','LookAround','Fidget','ScratchHead'],talk:['Fidget','Nod','Shrug'],quirk:'CollarTug'}),
+});
+
 const lively=p=>(dialStep(p.show)-1)/(DIAL_STEPS-1),brisk=p=>(dialStep(p.pace)-1)/(DIAL_STEPS-1),frank=p=>(dialStep(p.talk)-1)/(DIAL_STEPS-1),sunny=p=>(dialStep(p.outlook)-1)/(DIAL_STEPS-1);
 
 /**
@@ -44,7 +53,7 @@ const lively=p=>(dialStep(p.show)-1)/(DIAL_STEPS-1),brisk=p=>(dialStep(p.pace)-1
 export const CONVERSATION_BIG=Object.freeze(new Set(['Tada','HeelKick','Kachashi','Cheer','Stomp','Fist','Hop','Stretch','LookAround','Wave','Jump']));
 
 /**
- * The body language of a profile.
+ * The body language of a profile (and, for the residents in PERSONAL_STYLE, of their `name`).
  * @returns {{type:string,feel:object,idle:string[],talk:string[],quirk:string,idleEvery:[number,number],talkChance:number,listen:object}}
  *   idleEvery: seconds between flourishes standing about (lively, brisk people fidget
  *   more); talkChance: how often a new line comes with a move.
@@ -53,8 +62,8 @@ export const CONVERSATION_BIG=Object.freeze(new Set(['Tada','HeelKick','Kachashi
  *   tilt); glanceAway, the chance of looking off for a moment instead of holding
  *   your eye (quiet people do it more); quirkEvery, seconds between their habit.
  */
-export function bodyLanguage(profile={}){
- const type=personalityOf(profile),style=STYLE[type.name],l=lively(profile),b=brisk(profile),f=frank(profile),o=sunny(profile);
+export function bodyLanguage(profile={},name){
+ const type=personalityOf(profile),style={...STYLE[type.name],...PERSONAL_STYLE[name]},l=lively(profile),b=brisk(profile),f=frank(profile),o=sunny(profile);
  const base=34-l*20-b*6,nod=6.5-o*3-f*1.5,quirk=16-l*6-b*4;
  return {type:type.name,feel:style.feel,idle:style.idle,talk:style.talk,quirk:style.quirk,
   idleEvery:[base*.6,base*1.4],talkChance:Math.min(.85,.3+l*.4+f*.15),
@@ -62,7 +71,7 @@ export function bodyLanguage(profile={}){
 }
 
 /** Every move any personality uses, so a test can check animate.js knows them all. */
-export const BODY_LANGUAGE_MOVES=Object.freeze([...new Set(Object.values(STYLE).flatMap(s=>[...Object.values(s.feel),...s.idle,...s.talk,s.quirk]))]);
+export const BODY_LANGUAGE_MOVES=Object.freeze([...new Set([...Object.values(STYLE),...Object.values(PERSONAL_STYLE)].flatMap(s=>[...Object.values(s.feel),...s.idle,...s.talk,s.quirk]))]);
 
 /**
  * The feeling in a line of dialogue, from the words, or null when it is just talk. It

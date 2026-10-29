@@ -29,8 +29,9 @@ export const CHAIN_RUNS=Object.freeze([
 /** Planters at the corners of the crossings, on the east footway. */
 export const PLANTERS=Object.freeze([
  // Near the kerb, so the walking line along the shopfronts (the postman's round) stays clear.
- // The south one stands clear of Kitano Road's mouth, which opens opposite the crossing.
- [MAIN_ROAD.east+1.25,SHOP_CROSSING_Z+2.55],[MAIN_ROAD.east+1.25,-1.7],
+ // The south one stands clear of Kitano Road's mouth, which opens opposite the crossing, and south of the kerb's
+ // utility pole at z -1.5 (quarters.js buildWires): at z -1.7 the pole stood in its bed.
+ [MAIN_ROAD.east+1.25,SHOP_CROSSING_Z+2.55],[MAIN_ROAD.east+1.25,-2.6],
 ]);
 
 const POST_SPACING=2.4;

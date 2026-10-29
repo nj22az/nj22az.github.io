@@ -63,8 +63,9 @@ for(const dt of [1/60,1/30])test(`Thuan approaches, crosses the onsen threshold 
    assert.equal(g.visible,true);assert.equal(g.userData.indoors,undefined);
   }
   assert.ok(Math.hypot(g.position.x-ONSEN_DOOR[0],g.position.z-ONSEN_DOOR[1])>.3,'She leaves the threshold and continues home');
-  // Since the island grew she lives in Kitahama: after the bath she walks home, not to the ferry.
-  assert.equal(g.userData.place,'home');assert.equal(ai.snapshot().Thuan.indoors,null);
+  // Thuan lives on Kitano-jima only and goes home on the last boat (the cast consolidation's phase 3, johansson-town/AGENTS.md;
+  // her Kitahama weekday room was dropped): after the bath she walks to the terminal for it. It used to be 'home' in Kitahama.
+  assert.equal(g.userData.place,'bus');assert.equal(ai.snapshot().Thuan.indoors,null);
  }finally{}
 });
 

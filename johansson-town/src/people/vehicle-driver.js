@@ -9,7 +9,7 @@ export function createVehicleDrivers({people}){
  function atWheel(v,saved){
   const g=saved.g,u=g.userData,seat=v.g.userData.driverSeat;v.g.add(g);
   g.position.set(seat.x,0,seat.z);g.rotation.set(0,Math.PI,0);g.visible=true;
-  Object.assign(u,{inVehicle:v.id,indoors:'vehicle',socialPose:'Sit',seatHeight:seat.y,floorHeight:.22,activity:'Driving · '+v.purpose});delete u.ferryPassenger;saved.mode='driving';
+  Object.assign(u,{inVehicle:v.id,indoors:'vehicle',socialPose:'Sit',seatHeight:seat.y,floorHeight:seat.floor??.22,activity:'Driving · '+v.purpose});delete u.ferryPassenger;saved.mode='driving';
  }
  function board(v){
   if(borrowed.has(v))return true;

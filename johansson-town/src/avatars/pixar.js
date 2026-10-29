@@ -5,6 +5,7 @@ import {rigEyes,EYE_PARAMS} from './eyes3d.js';
 import {pixarSkin} from './pixar-skin.js';
 import {rigBrows,rigMouth,featuresOf} from './face-features.js';
 import {actingOf,springOf} from './face-acting.js';
+import {recipeFace} from './pixar-face.js';
 import {celFrom} from '../render/cel.js';
 
 /**
@@ -35,9 +36,14 @@ import {celFrom} from '../render/cel.js';
 
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
-export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'7c2477169d'}),
- Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'d86aa6f60d'}),
- Thao:Object.freeze({path:'avatars/pixar/thao',version:'64243a0749'})});
+export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'a547eec1d7'}),
+ Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'5cb788b657'}),
+ Thao:Object.freeze({path:'avatars/pixar/thao',version:'c41a269523'}),
+ // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
+ Tetsuo:Object.freeze({path:'avatars/pixar/tetsuo',version:'87961f3990'}),
+ // (the first of the residents cloned from their World look: jojo clone_recipe.py, the owner, 28 October 2026)
+ Chin:Object.freeze({path:'avatars/pixar/chin',version:'35aa624f94'}),
+ 'Mr Fujita':Object.freeze({path:'avatars/pixar/fujita',version:'dd82ed6d9a'})});
 
 /** Which residents this page draws as Pixar bodies: all there are, unless it asks for the cartoon (`?pixar=0`) or names them. */
 export function pixarWanted(name,search=globalThis.location?.search||''){
@@ -71,7 +77,7 @@ export function preparePixarBody(card,scene){
   if(['eyes','brows','mouth'].includes(name))features[name]={geometry:o.geometry,joints};
   // (a rigged hairstyle is a part of its own, 'hair': Thao's bob, off her head so her face could be cleaned and put back
   // on bones that swing; the owner, 27 October 2026, "add it back as a rigged hairstyle")
-  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
+  else parts.push({geometry:o.geometry,joints,kind:name.startsWith('hands')?'hands':name==='hair'?'hair':name==='glasses'||name==='shoes'||name==='lens'||name==='glint'?name:CLOTHES_PARTS.includes(name)||name==='torso'?name:'body',map:o.material?.map||null});
  });
  if(!parts.length||!features.eyes)throw new Error('Pixar body: expected a body and eyes in the model');
  const rest=Object.fromEntries(Object.entries(card.rest).map(([k,v])=>[k,v.slice()]));
@@ -213,7 +219,7 @@ const FINGER_NAME=/^(thumb|index|middle|ring|pinky)([LR])([123])$/;
 // 27 October 2026, of that frame: "What's this?")
 const GRIP_TURN=Object.freeze({thumb:[.95,.8,.55],index:[1.05,1.15,.8],middle:[1.2,1.3,.9],ring:[1.25,1.35,.95],pinky:[1.3,1.4,1.0]});
 
-export function dressPixar(body,{root,bones,order,shadows=true}){
+export function dressPixar(body,{root,bones,order,shadows=true,recipe=null}){
  const rest=body.rest,face={},fingers={};
  for(const name of FACE_BONES){if(!rest[name])continue;const b=new THREE.Bone();b.name=name;b.position.set(...rest[name]).sub(new THREE.Vector3(...rest.head));bones.head.add(b);face[name]=b;}
  // The finger bones (a body whose card has them: the studio's game_meshy.py finger_rig), children of the hand bone in
@@ -239,10 +245,23 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  // Shaded as every resident's face is (build.js buildHead): the town's high-key ramp, a little self-lit, so her pale skin
  // stays the pale skin of her film model and does not go brown in a shadow.
  const materials=[],meshes=body.parts.map(part=>{
-  const source=part.kind==='hands'?new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,emissive:0xffffff,emissiveIntensity:.05})
+  // (the hands and a pair of glasses (the clones' frames, jojo game_meshy.build_glasses) carry their colour per vertex)
+  // (the glass in a clone's frames and the glint on it, drawn as the cartoon's glasses are (face-objects.js): faint glass
+  // the eyes read through, a white stroke that catches the light; the owner, 28 October 2026, "Make the glasses full")
+  if(part.kind==='lens'||part.kind==='glint'){
+   const glass=part.kind==='lens'?new THREE.MeshStandardMaterial({color:'#dbeaf2',transparent:true,opacity:.12,roughness:.15,metalness:0,depthWrite:false,side:THREE.DoubleSide})
+    :new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8,depthWrite:false,side:THREE.DoubleSide});
+   glass.name='Pixar '+body.name+' · '+part.kind;materials.push(glass);
+   const mesh=skinned(inOrder(body,part,names),glass);
+   mesh.name='Pixar '+body.name+' · '+part.kind;mesh.castShadow=false;mesh.receiveShadow=false;mesh.renderOrder=1;mesh.userData.pixarPart=part.kind;return mesh;
+  }
+  // (a clone's modelled hair, Chin's, is coloured per vertex as the glasses are; Thao's bob carries its texture)
+  const source=part.kind==='hands'||part.kind==='glasses'||part.kind==='shoes'||part.kind==='hair'&&!part.map?new THREE.MeshStandardMaterial({vertexColors:true,roughness:part.kind==='glasses'?.4:part.kind==='shoes'?.55:.82,emissive:0xffffff,emissiveIntensity:.05})
    :new THREE.MeshStandardMaterial({map:part.map,roughness:.82,emissive:0xffffff,emissiveMap:part.map,emissiveIntensity:.05});
   // (hair is not skin: the town's cel ramp alone, no warmth under it)
-  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
+  const cel=celFrom(source,{bands:'soft3'}),material=part.kind==='hair'||part.kind==='glasses'||part.kind==='shoes'?cel:pixarSkin(cel,{head:{y:body.card.measure.neckY,x:rest.head[0],z:rest.head[2],r:body.card.measure.Rh}});source.dispose();material.gradientMap=smoothRamp();
+  // (a clone's shoes lifted: the leather's brown, linear per vertex, went near black under the cel ramp and hid the sole and laces)
+  if(part.kind==='shoes'&&material.color)material.color.setScalar(1.9);
   // (the clothes are one surface of cloth: their insides show, at the sleeves, the collar and the hems)
   if(CLOTHES_PARTS.includes(part.kind))material.side=THREE.DoubleSide;
   material.name='Pixar '+body.name+' · '+part.kind;materials.push(material);
@@ -255,13 +274,17 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
  const dress=on=>{const wear=!!on&&clothes.length>0;for(const m of clothes)m.visible=wear;for(const m of torso)m.visible=!wear||!clothes.length;return wear;};
  let dressed=dress(pixarDressed());
  // Her eye (the studio's measures of the painted one, her lashes) drawn as World draws every rigged eye, on the town's ramp.
+ // (a clone's face reshaped by the resident's recipe, the avatar creator's eyes, brows and mouth: pixar-face.js)
+ const look=body.card.face==='recipe'&&recipe?recipeFace(body.card,recipe):null;
  const F=body.features,E=body.card.eyes,mid=E.centres?(E.centres[0][0]+E.centres[1][0])/2:0;
- const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes,shape:E.shape,corner:E.corner},make:skinned,stand:STAND_IN,nearer:.0018});
- const brows=F.brows&&body.card.brows?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),body.card.brows,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||0}):null;
+ const eyes=rigEyes(withLocal(inOrder(body,F.eyes,names).clone(),'eyeLocal',mid),{iris:E.colour,style:'pixar',own:look?.eyes||{rx:E.rx,ry:E.ry,iris:E.iris,lash:E.lash,flick:E.flick,lashes:E.lashes,shape:E.shape,corner:E.corner},make:skinned,stand:STAND_IN,nearer:.0018});
+ const browCard=look?look.brows:body.card.brows;
+ const brows=F.brows&&browCard?rigBrows(withLocal(inOrder(body,F.brows,names).clone(),'featureLocal',mid),browCard,{make:skinned,lines:actingOf(body.name)?.lines||0,taper:actingOf(body.name)?.browTaper||look?.taper||0,bushy:actingOf(body.name)?.browBushy||look?.bushy||0}):null;
  // (the line between the lips in a dark ink whatever the painted lips were: the studio measured his as his own skin's
  // pink, and the seam vanished in the halftone looks and was faint in the plain one; the owner, 27 October 2026: "his
  // mouth needs to show in all shaders and even normal")
- const mouthStyle=body.card.mouth?{...saneMouth(body.card.mouth),ink:inkFor(body.card.mouth.ink),lip:lipFor(body.card.mouth.lip),lowerLip:lipFor(body.card.mouth.lowerLip||body.card.mouth.lip)}:null;
+ const mouthCard=look?.mouth||body.card.mouth;
+ const mouthStyle=mouthCard?{...saneMouth(mouthCard),ink:inkFor(body.card.mouth.ink),lip:lipFor(body.card.mouth.lip),lowerLip:lipFor(body.card.mouth.lowerLip||body.card.mouth.lip)}:null;
  const mouth=F.mouth&&mouthStyle?rigMouth(smoothJaw(withLocal(inOrder(body,F.mouth,names).clone(),'featureLocal',mid),names),mouthStyle,{make:skinned,lines:actingOf(body.name)?.lines||0,seam:2.2}):null;
  // (the features shaded on the same blended ramp as her skin: stepped bands cut a lip or an eye into two tones)
  for(const m of [eyes.mesh,brows?.mesh,mouth?.mesh])if(m?.material?.isMeshToonMaterial)m.material.gradientMap=smoothRamp();
@@ -369,7 +392,7 @@ export function dressPixar(body,{root,bones,order,shadows=true}){
    const act=feelings?.[state.expression]||null;
    eyes.update(act?.eyes?.as?{...state,eyesAs:act.eyes.as}:state);
    const now=globalThis.performance?.now?.()??0,dt=last?Math.min(.25,(now-last)/1000):1;last=now;
-   const sp=api.smooth?springOf(acting,state.expression):null,target=featuresOf(state,feelings,acting?.mouth);
+   const sp=api.smooth?springOf(acting,state.expression):null,target=featuresOf(state,feelings,acting?.mouth||look?.mouthBase);
    // while she talks her brows rise and fall with it, one side a beat behind the other
    const talk=+state.talk||0;
    if(acting?.talkBrows&&talk>0&&api.smooth){const t=now/1000,a=acting.talkBrows*talk;

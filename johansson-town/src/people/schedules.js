@@ -125,6 +125,14 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
   g.rotation.y+=THREE.MathUtils.clamp(delta,-turnRate*dt,turnRate*dt);
   return forwardOnly(g.rotation.y,dx,dz);
  }
+ /** `points` without its first point when the walker at `at` is already nearer the second than the first is (the first
+  *  is behind her or beside her) and the straight way to the second is clear. */
+ const passed=(points,at)=>{
+  if(points.length<2)return points;const [ax,az]=points[0],[bx,bz]=points[1],run=Math.hypot(bx-at.x,bz-at.z);
+  if(run>Math.hypot(bx-ax,bz-az))return points;
+  for(let t=0;t<=run;t+=.1){const k=t/run;if(collides(at.x+(bx-at.x)*k,at.z+(bz-at.z)*k,.3))return points;}
+  return points.slice(1);
+ };
  function move(person,target,dt,tag,pace=0,stopAt=0){const g=person.g,arrival=stopAt||(tag==='onsen'?ONSEN_ENTRY_RADIUS:person===thuan&&tag==='nap'?STAFF_BENCH.approachRadius:.7);if(Math.hypot(g.position.x-target[0],g.position.z-target[1])<arrival)return;
   // Somebody standing inside a collider can never leave it. Every step out of one is
   // still in one, so the walker refuses all of them -- and the route it would have
@@ -181,7 +189,11 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
    // head-on with no detour at all, and they stood nose to nose for the rest of the hour.
    const hx=g.position.x,hz=g.position.z;
    const detour=createNavigation((x,z,r)=>collides(x,z,r)||obstacles.some(o=>{const d=Math.hypot(x-o.x,z-o.z);return d<r+.34&&d<Math.hypot(hx-o.x,hz-o.z)-.01;}));
-   const points=detour.path(g.position,{x:target[0],z:target[1]});
+   // The search starts on the grid point nearest the walker, which is often behind her: a walker replanning on the move
+   // turned round to it, walked back, turned round again, and was stalled once more before she had gone a metre, so the
+   // next detour sent her back again (Thuan in the yard behind Sakura, walking back from her break, for the rest of the
+   // afternoon). A first point she has already passed is left out when the way to the next is clear.
+   const points=passed(detour.path(g.position,{x:target[0],z:target[1]}),g.position);
    if(points.length){route.points=points;route.at=0;}else if(detourRetryMinutes)route.noDetourUntil=clockMinutes+detourRetryMinutes;route.stalled=0;route.checkpoint.copy(g.position);
   }
   const goal=route.points[route.at];if(!goal)return;const dx=goal[0]-g.position.x,dz=goal[1]-g.position.z,d=Math.hypot(dx,dz);if(d<Math.min(.16,arrival)){route.at++;return;}

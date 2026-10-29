@@ -1855,7 +1855,7 @@ export function buildAvatar(input,{shadows=true,faceSize=256,eyes3d=eyes3dOn(),p
  let panelBody=null,panelOutline=null;
  let outline=addOutline(root,body,true);addOutline(face.head,face.head,false);
  // A Pixar body (pixar.js) on the same bones; the cartoon stays built underneath and hidden (hideCartoon).
- const pixarSkin=pixar?dressPixar(pixar,{root,bones,order:BONES,shadows}):null;
+ const pixarSkin=pixar?dressPixar(pixar,{root,bones,order:BONES,shadows,recipe}):null;
  const openFingerPositions=geometry.attributes.position.array.slice(fingerStart*3,fingerEnd*3),closedFingerPositions=openFingerPositions.slice();
  for(let i=fingerStart;i<fingerEnd;i++){const sx=geometry.attributes.skinIndex.getX(i)===BI.handL?1:-1,j=(i-fingerStart)*3;closedFingerPositions[j]=sx*(m.shoulderX+.015);closedFingerPositions[j+1]=m.shoulderY-m.upper-m.fore-m.hand*.55;closedFingerPositions[j+2]=0;}
  geometry.attributes.position.array.set(closedFingerPositions,fingerStart*3);let handsOpen=false;

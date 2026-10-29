@@ -165,7 +165,10 @@ export function createIndoorResidents({world,parent,place,getState=()=>({}),getP
     }else if(saved.phase==='sitting'&&!hasSeat(seat)&&seat.staff){
      // A standing place at work (Sakura's till, sakura-queue.js): walked onto from wherever the routed walk stopped,
      // facing the way the step goes, never slid or set down on it.
-     if(tillStep(g,seat.position,dt)){g.rotation.set(0,seat.yaw,0);saved.blend=1;saved.phase='seated';}
+     // On it, she turns to face the counter at a walker's turning pace: set straight round, she swung a quarter of a
+     // turn in one frame as she stepped onto it.
+     if(tillStep(g,seat.position,dt)){const a=Math.atan2(Math.sin(seat.yaw-g.rotation.y),Math.cos(seat.yaw-g.rotation.y));
+      if(Math.abs(a)>dt*2.6)g.rotation.y+=Math.sign(a)*dt*2.6;else{g.rotation.set(0,seat.yaw,0);saved.blend=1;saved.phase='seated';}}
     }else if(saved.phase==='sitting'){
      saved.blend=Math.min(1,saved.blend+dt*2);moveAcrossSeat(g,seat.stand,seat.position,saved.blend);chairPose(g,seat,saved.blend);if(saved.blend===1)saved.phase='seated';
     }

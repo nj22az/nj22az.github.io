@@ -46,10 +46,16 @@ test('every door opens onto a building',async()=>{
 });
 
 test('the shop staff stand at their own shop',async()=>{
- 
+ const {sites}=await island();
  const {RESIDENTS}=await import('../src/people/residents.js?shopfronts');
- for(const [name,id] of [['Nhung','frontrow'],['Reiko','frontrow'],['Chin','form3d'],['Tetsuo','form3d']]){
-  const work=RESIDENTS.find(p=>p.name===name)?.work,door=id==='form3d'?DOCK_WORKSHOP_PLOT.door.filter((_,i)=>i!==1):westShopDoor(id);
+ // Nhung is the island doctor since 22 October 2026, her work the clinic (johansson-town/AGENTS.md, workplaces.js
+ // WORK_SITES); Front-Row is unstaffed and Reiko retired in the cast consolidation (docs/CAST-CONSOLIDATION.md, roster.js
+ // RETIRED `reiko`), so nobody keeps Front-Row's door. They were ['Nhung','frontrow'] and ['Reiko','frontrow'].
+ assert.equal(RESIDENTS.some(p=>p.name==='Reiko'),false,'Reiko is retired');
+ const clinic=sites.find(s=>s.id==='clinic');assert.ok(clinic,'the town hall has its clinic door');
+ const doorOf=id=>id==='form3d'?DOCK_WORKSHOP_PLOT.door.filter((_,i)=>i!==1):id==='clinic'?[clinic.approachPosition[0],clinic.approachPosition[2]]:westShopDoor(id);
+ for(const [name,id] of [['Nhung','clinic'],['Chin','form3d'],['Tetsuo','form3d']]){
+  const work=RESIDENTS.find(p=>p.name===name)?.work,door=doorOf(id);
   assert.ok(work,name+' has nowhere to work');
   assert.ok(Math.hypot(work[0]-door[0],work[1]-door[1])<.6,name+' works at '+JSON.stringify(work)+', not at '+JSON.stringify(door));
  }

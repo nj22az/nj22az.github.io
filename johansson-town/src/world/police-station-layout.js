@@ -51,9 +51,12 @@ export const STATION_YARD=Object.freeze({
  /**
   * The flagpole at the yard's south-west corner, by the plaza, where the flag is seen across the bus plaza and up Main
   * Street; 2.5 m clear of the rack, so no bicycle stands in front of it seen from the plaza (the owner's phone, 20 October
-  * 2026: a bicycle seemed to stand in the pole when it was behind the rack).
+  * 2026: a bicycle seemed to stand in the pole when it was behind the rack). Its foot is on the yard's own concrete, which
+  * starts at the footway's edge (x 5.2, ground-plan-quarters.js), 2.7 m from the rack's first slot: at x 4.0 it stood on
+  * the footway, in the middle of the lane that opens north from the plaza across this corner (x 4.5), where a walker
+  * up the lane met it.
   */
- flagpole:Object.freeze({x:4.0,z:31.0,height:6.2,raise:510,lower:1035,
+ flagpole:Object.freeze({x:5.45,z:31.2,height:6.2,raise:510,lower:1035,
   why:'The national flag, raised at half past eight when the desk opens for the day and lowered at a quarter past five.'}),
  /** Against the station's south wall, under the eave, facing the bus plaza. */
  bench:Object.freeze({x:7.4,z:22.26,length:1.6,why:'For whoever is waiting: to see the officer, for the bus, or for a child to be collected.'}),

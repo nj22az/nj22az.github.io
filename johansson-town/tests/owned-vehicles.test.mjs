@@ -15,12 +15,17 @@ import {createTownSections} from '../src/render/town-sections.js';
 import {renderedVehicleFootprint,vehicleHitsRect} from './vehicle-footprint.mjs';
 import {ferryServiceFixture} from './ferry-service-fixture.mjs';
 import {QUICK_CROSSING} from '../src/world/ferry-quick-crossing.js';
-function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Thao','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
+// (the errands run on the ferry's own sailings and days (town-traffic.js): town day 0 is a Thursday (1 January 1970);
+// Tetsuo's run is the 07:30 over and the 08:08 back on Mondays, Wednesdays and Fridays)
+const MON=4*1440,WED=6*1440,TETSUO_OUT=7*60+30-11,TETSUO_BACK=8*60+8-20;
+/** The first minute of an appointment on a day it runs (a weekdays list, or every day). */
+const onItsDay=(a,minute=a.leave)=>{for(let d=0;d<7;d++)if(!a.weekdays||a.weekdays.includes((4+d)%7))return d*1440+minute;};
+function fixture(){installDOM();const parent=new T.Group(),people=['Tetsuo','Harbour master','Thao','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;parent.add(g);return {g,profile:{name}};});const ferry=createFerryRun({parent});ferry.parkAt('town');const cars=createTownTraffic({parent,ferry,people:()=>people});return {parent,people,cars,ferry};}
 /** The ferry, crew, borrowed shore hand and cars all advance on the same ordinary clock. */
 function cargoFixture(){
- const s=ferryServiceFixture({minute:690}),q=QUICK_CROSSING.town;
+ const s=ferryServiceFixture({minute:MON+TETSUO_OUT}),q=QUICK_CROSSING.town;
  s.player.position.set(q.stand[0],q.ground,q.stand[1]);
- const people=['Tetsuo','Harbour master','Thao','Reiko','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;g.position.set(-30,0,30);s.group.add(g);return {g,profile:{name}};});
+ const people=['Tetsuo','Harbour master','Thao','Mrs Sato','Nhung'].map(name=>{const g=new T.Group();g.userData.name=name;g.position.set(-30,0,30);s.group.add(g);return {g,profile:{name}};});
  s.world.people.push(...people);
  const cars=createTownTraffic({parent:s.group,colliders:s.world.colliders,ferry:s.run,people:()=>s.world.people,getPlayerPosition:()=>s.player.position});
  s.world.traffic=cars;return Object.assign(s,{cars,people});
@@ -46,9 +51,9 @@ function sailCargo(s,v,destination,{onPassage=()=>{}}={}){
  assert.equal(ferry.berth,destination);assert.equal(ferry.rampDown,1);assert.equal(ferry.canUnload,true);assert.equal(v.transfer,'off');
 }
 test('all cars have distinct existing owners, drivers and purposes; cars stay parked without their driver',()=>{
- const {cars,people}=fixture();assert.equal(cars.snapshot().length,6);
+ const {cars,people}=fixture();assert.equal(cars.snapshot().length,5);
  for(const v of cars.snapshot()){assert.ok(people.some(p=>p.profile.name===v.owner));assert.equal(v.driver,v.owner);assert.ok(v.purpose);}
- people[0].g.userData.indoors='workshop';cars.update(.1,690);
+ people[0].g.userData.indoors='workshop';cars.update(.1,MON+TETSUO_OUT);
  assert.equal(cars.islanders[0].trip,null);assert.equal(cars.islanders[0].where,'quay');
 });
 test('section rendering follows each moving car at the airport and out on the ferry route',()=>{
@@ -57,18 +62,18 @@ test('section rendering follows each moving car at the airport and out on the fe
  draw();v.g.position.set(-100,.6,-140);draw();
 });
 test('a purposeful errand stages, reverses aboard with its resident driver, sails and drives off at both shores',()=>{
- const s=cargoFixture(),{cars,people,run:ferry}=s,v=cars.islanders[0];cars.update(.1,510);assert.equal(v.trip,null);
- cars.update(.1,690);assert.ok(v.trip);assert.equal(people[0].g.parent,v.g);assert.equal(people[0].g.userData.inVehicle,v.id);
- const first=v.trip;cars.update(.1,700);assert.equal(v.trip,first);const position=v.g.position.clone();cars.update(.1,800);assert.equal(v.trip,first);assert.ok(position.distanceTo(v.g.position)<1,'Clock jumps cannot teleport a car');
+ const s=cargoFixture(),{cars,people,run:ferry}=s,v=cars.islanders[0];cars.update(.1,MON+TETSUO_OUT-30);assert.equal(v.trip,null);
+ cars.update(.1,MON+TETSUO_OUT);assert.ok(v.trip);assert.equal(people[0].g.parent,v.g);assert.equal(people[0].g.userData.inVehicle,v.id);
+ const first=v.trip;cars.update(.1,MON+TETSUO_OUT+2);assert.equal(v.trip,first);const position=v.g.position.clone();cars.update(.1,MON+TETSUO_BACK+30);assert.equal(v.trip,first);assert.ok(position.distanceTo(v.g.position)<1,'Clock jumps cannot teleport a car');
  cars.traffic.finish(v);assert.equal(v.where,'waiting-ferry');assert.equal(cars.prepareCrossing('airport'),false);assert.equal(v.trip.reverse,true);
- const start=v.g.position.clone();for(let i=0;i<20;i++)cars.update(.1,720);assert.ok(v.g.position.distanceTo(start)>.1,'Actually drives along the ramp');assert.ok(v.g.position.distanceTo(start)<3,'No jump from shore to deck');
+ const start=v.g.position.clone();for(let i=0;i<20;i++)cars.update(.1,MON+TETSUO_OUT+5);assert.ok(v.g.position.distanceTo(start)>.1,'Actually drives along the ramp');assert.ok(v.g.position.distanceTo(start)<3,'No jump from shore to deck');
  cars.traffic.finish(v);assert.equal(v.where,'aboard');assert.equal(cars.prepareCrossing('airport'),true);assert.ok(cars.drivers.has(v));
  const local=v.g.position.clone();ferry.ferry.worldToLocal(local);assert.ok(Math.abs(local.z-FERRY_VEHICLE_DECK_Z)<.01);assert.ok(local.z-v.length/2>FERRY_DECKS.car.aft&&local.z+v.length/2<FERRY_DECKS.car.fore,'On the car deck, between the aft mooring station and the bow houses');
  sailCargo(s,v,'airport',{onPassage:()=>{assert.ok(v.g.position.distanceTo(start)>40);assert.equal(people[0].g.parent,ferry.ferry,'The same driver travels in passenger space');}});
  cars.traffic.finish(v);assert.equal(v.where,'airport');assert.equal(v.stageOrigin,undefined);
- cars.update(.1,800);cars.traffic.finish(v);assert.equal(v.where,'waiting-ferry');cars.prepareCrossing('town');cars.traffic.finish(v);assert.equal(v.where,'aboard');assert.equal(cars.prepareCrossing('town'),true);
+ cars.update(.1,MON+TETSUO_BACK);cars.traffic.finish(v);assert.equal(v.where,'waiting-ferry');cars.prepareCrossing('town');cars.traffic.finish(v);assert.equal(v.where,'aboard');assert.equal(cars.prepareCrossing('town'),true);
  sailCargo(s,v,'town');cars.traffic.finish(v);assert.equal(v.where,'quay');assert.equal(people[0].g.parent,cars.group.parent);assert.equal(people[0].g.userData.inVehicle,undefined);
- cars.update(.1,900);assert.equal(v.trip,null,'The completed job stays parked');
+ cars.update(.1,MON+10*60);assert.equal(v.trip,null,'The completed job stays parked');
 });
 test('the complete combined-ferry cargo round trip finishes by ordinary timesteps without teleporting endpoints',()=>{
  const s=cargoFixture(),{cars}=s,v=cars.islanders[0],driver=s.people[0].g;
@@ -83,22 +88,22 @@ test('the complete combined-ferry cargo round trip finishes by ordinary timestep
  stepUntil(()=>v.where==='aboard','airport');assert.ok(cars.prepareCrossing('airport'));
  sailCargo(s,v,'airport');stepUntil(()=>v.where==='airport');assert.equal(driver.parent,v.g);
  // Wait for his authored return appointment on the same clock; no berth or journey setter.
- s.until(()=>s.minutes>=v.appointment.back,{seconds:3600,step:1});
+ s.until(()=>s.minutes>=MON+v.appointment.back,{seconds:3600,step:1});
  stepUntil(()=>v.where==='aboard','town');assert.ok(cars.prepareCrossing('town'));
  sailCargo(s,v,'town');stepUntil(()=>v.where==='quay');
  assert.equal(cars.drivers.has(v),false);assert.equal(cars.loadingVehicles,0);
  assert.equal(driver.parent,s.group);assert.equal(driver.userData.inVehicle,undefined);assert.equal(driver.userData.ferryPassenger,undefined);
 });
 test('airport couriers stage through a clear aisle with the complete parked fleet present',()=>{
- for(const owner of ['Thao','Reiko','Mrs Sato','Nhung']){
+ for(const owner of ['Thao','Mrs Sato','Nhung']){
   const {cars,people}=fixture(),v=cars.fleet.find(v=>v.owner===owner);for(const p of people)p.g.position.set(-30,0,30);
-  for(let i=0;i<9000&&v.where!=='waiting-ferry';i++)cars.update(1/60,v.appointment.leave);
+  for(let i=0;i<9000&&v.where!=='waiting-ferry';i++)cars.update(1/60,onItsDay(v.appointment));
   assert.equal(v.where,'waiting-ferry',`${owner} cannot leave its bay: ${v.blocker?.owner||v.blocker}`);
   assert.ok(cars.drivers.has(v));
  }
 });
-test('every airport bay has clear entry and departure paths when the other five bays are occupied',()=>{
- for(let bay=0;bay<6;bay++){
+test('every airport bay has clear entry and departure paths when the other bays are occupied',()=>{
+ for(let bay=0;bay<5;bay++){
   const {cars,people}=fixture(),all=[...cars.islanders,...cars.fleet],v=all[bay];for(const p of people)p.g.position.set(-30,0,30);
   all.forEach((other,i)=>cars.traffic.park(other,airportVehicleBay(i)));assert.ok(cars.drivers.board(v));
   const drive=lane=>{cars.traffic.drive(v,cars.network.path([lane]));for(let i=0;i<9000&&v.trip;i++)cars.traffic.update(1/60);assert.equal(v.trip,null,`${lane} blocked by ${v.blocker?.owner||v.blocker}`);};
@@ -145,19 +150,21 @@ test('borrowing and releasing preserves the existing resident and restores occup
 });
 test('a scheduled offscreen worker can drive the errand while active interiors retain their resident',()=>{
  const {cars,people}=fixture(),v=cars.fleet[0],person=people.find(p=>p.profile.name==='Thao');person.g.visible=false;person.g.userData.indoors='work';
- cars.update(.1,630);assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
+ cars.update(.1,onItsDay(v.appointment));assert.ok(v.trip);assert.equal(person.g.parent,v.g);assert.equal(person.g.visible,true);assert.equal(person.g.userData.inVehicle,v.id);
  cars.drivers.release(v,{restore:true});assert.equal(person.g.visible,false);assert.equal(person.g.userData.indoors,'work');
  person.g.userData.inWorkplace=true;assert.equal(cars.drivers.board(v),false,'An active room keeps its avatar');delete person.g.userData.inWorkplace;person.g.visible=true;assert.equal(cars.drivers.board(v),false,'Visible indoor activity is not interrupted');
 });
 test('absence releases the same borrowed residents and settles cars in their connected home bays',()=>{
  const {cars,people}=fixture(),islander=cars.islanders[0],courier=cars.fleet[0];
  const originals=people.map(p=>({g:p.g,parent:p.g.parent,position:p.g.position.clone(),visible:p.g.visible}));
- cars.update(.1,630);cars.update(.1,690);cars.traffic.finish(islander);cars.prepareCrossing('airport');cars.traffic.finish(islander);assert.equal(islander.where,'aboard');assert.ok(cars.drivers.has(courier));
- cars.reconcileAbsent(800);
+ cars.update(.1,MON+TETSUO_OUT);cars.traffic.finish(islander);cars.prepareCrossing('airport');cars.traffic.finish(islander);assert.equal(islander.where,'aboard');
+ // (the courier's errand the same day, while his truck is still on the deck: a car aboard is not restaged by the clock)
+ cars.update(.1,MON+courier.appointment.leave);assert.equal(islander.where,'aboard');assert.ok(cars.drivers.has(courier));
+ cars.reconcileAbsent(MON+15*60);
  for(const v of [...cars.islanders,...cars.fleet]){assert.equal(v.trip,null);assert.equal(v.transfer,null);assert.equal(v.shipDestination,null);assert.equal(v.stageOrigin,undefined);assert.equal(cars.drivers.has(v),false);assert.equal(v.shore,v.home);assert.equal(v.solid.x,v.g.position.x);assert.equal(v.solid.z,v.g.position.z);}
  for(const before of originals){assert.equal(before.g.parent,before.parent);assert.deepEqual(before.g.position.toArray(),before.position.toArray());assert.equal(before.g.visible,before.visible);assert.equal(before.g.userData.inVehicle,undefined);}
  assert.equal(cars.pendingVehicleJourney(),null);assert.equal(cars.loadingVehicles,0);
- cars.update(.1,690);assert.ok(islander.trip,'An eligible errand can resume after offline reconciliation');assert.ok(cars.drivers.has(islander));
+ cars.update(.1,WED+TETSUO_OUT);assert.ok(islander.trip,'An eligible errand can resume after offline reconciliation');assert.ok(cars.drivers.has(islander));
 });
 test('seated adult heads and shoulders fit within every hollow cabin',()=>{
  installDOM();for(const kind of Object.keys(DRIVER_SEATS)){

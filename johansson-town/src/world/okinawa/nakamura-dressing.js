@@ -251,7 +251,9 @@ export function nakamuraBuilding(kit,{trim=0x3f7f86}={}){
    for(let i=0;i<n;i++){const z=z0r+(n>1?i*(z1r-z0r)/(n-1):0)+(r.next()-.5)*.14,yy=y+(r.next()-.5)*.12,sz=.3+r.next()*.12,sy=.26+r.next()*.08;
     kit.sphere(1,-W-.12,yy,z,leaf[i%3],{sx:.2,sy,sz,detail:1});
     for(let k=0;k<3;k++)kit.sphere(.065,-W-.27,yy+(k-1)*sy*.5,z+(k%2?.6:-.5)*sz*.6,flower[(k+i)%3],{detail:0});}
-  solids.push(kit.rect(x0-.02,-W,z0-.02,z1+.02,.95,'nakamura-planter'));
+  // To the shop-house's own collider (houses.js: the wall plus 5 cm), which already holds the 3 cm behind the trough: the
+  // trough's solid meets the building's, it does not run into it.
+  solids.push(kit.rect(x0-.02,-W-.05,z0-.02,z1+.02,.95,'nakamura-planter'));
  }
 
  // Right flank (the drinks machines' side): the stair window, the meters, the cider tin, the crates, the hibiscus.

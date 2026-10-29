@@ -42,8 +42,12 @@ test('the catch story brags about pier fish, and the old spellings are gone from
  assert.deepEqual(fish,fishAt('pier').filter(f=>f.id!=='mijun').map(f=>f.name),'the story brags about every pier fish but the mijun');
  const quay=readFileSync(new URL('../src/world/okinawa/quarters.js',import.meta.url),'utf8');
  const people=readFileSync(new URL('../src/people/neighbours.js',import.meta.url),'utf8');
- for(const old of ['Irabuchar','Irabu-chā','"Seika','cuttlefish'])assert.equal((quay+people).includes(old),false,old);
- assert.ok(quay.includes('Irabuchā ¥1,200')&&quay.includes('Sēika ¥1,500'));
+ // The quay's price list is on the fish auction's own noticeboard, built by auction-board.js for the quay
+ // (briefs/HANDOFF-AUCTION-BOARD-2026-10-25.md); quarters.js only places it. It used to be written in quarters.js.
+ const board=readFileSync(new URL('../src/world/auction-board.js',import.meta.url),'utf8');
+ assert.ok(quay.includes('buildAuctionBoard('),'the quay still puts up the auction board');
+ for(const old of ['Irabuchar','Irabu-chā','"Seika','cuttlefish'])assert.equal((quay+board+people).includes(old),false,old);
+ assert.ok(board.includes('Irabuchā ¥1,200')&&board.includes('Sēika ¥1,500'));
 });
 
 test('what lies on the ice is what is really there', () => {

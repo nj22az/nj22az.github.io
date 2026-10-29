@@ -67,12 +67,14 @@ test('with the model running, pairs get conversations written ahead, and a chat 
 test('without the model nothing is fetched, and neighbours chat often, on varied subjects',()=>{
  let asked=0;const writer=createNeighbourWriter({mind:{ready:false,complete:async()=>{asked++;return null;}}});
  const scene=new THREE.Scene(),names=['Nhung','Hiroshi'];
- const world={people:names.map((name,i)=>{const g=new THREE.Group();g.userData.name=name;g.position.set(i*4,0,-4);scene.add(g);return {g,profile:PROFILES.find(p=>p.name===name)};})};
+ // Two metres apart: speakers stand 0.85–2.8 m from each other since the NPC social restoration of 25 October 2026
+ // (briefs/HANDOFF-NPC-SOCIAL-2026-10-25.md, CHAT_REACH.apart 4.6 → 2.8). At the old 4 m they were out of reach.
+ const world={people:names.map((name,i)=>{const g=new THREE.Group();g.userData.name=name;g.position.set(i*2,0,-4);scene.add(g);return {g,profile:PROFILES.find(p=>p.name===name)};})};
  const chats=createNeighbourChats({world,observer:()=>new THREE.Vector3(),writer,random:seeded(5)});
  const topics=[];let last=-1;
  for(let t=0;t<600;t+=.5){chats.update(.5,600+t/60);if(chats.count!==last&&chats.current){topics.push(chats.current.topic);last=chats.count;}}
  assert.equal(asked,0);
  assert.ok(topics.length>=12,`${topics.length} chats in ten minutes`);
  assert.ok(new Set(topics).size>=8,'varied: '+topics.join());
- assert.ok(CHAT_REACH.apart>3.2&&CHAT_REACH.cooldown<45);
+ assert.ok(CHAT_REACH.near<=.85&&CHAT_REACH.apart>=2.8&&CHAT_REACH.cooldown<45,'the reach the 25 October restoration records: 0.85–2.8 m');
 });

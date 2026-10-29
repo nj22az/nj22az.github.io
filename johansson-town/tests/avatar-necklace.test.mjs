@@ -58,7 +58,10 @@ test('the necklace is sized to the body, child to grown-up, and stays one part o
  assert.ok(Math.abs(child.radius/adult.radius-kc/ka)<1e-9);assert.ok(Math.abs(child.pendant.size/adult.pendant.size-kc/ka)<1e-9);
  for(const top of ['blouse','tee','police']){
   const a=buildAvatar(wearing(top),{shadows:false,faceSize:64});
-  let draws=0;a.root.traverse(o=>{if(o.isMesh&&o.visible&&!o.userData.outline&&!/Glasses|Sculpted/.test(o.name))draws++;});
+  // The rigged eyes (eyes3d.js) are a draw of their own, on for everyone since the owner's word of 25 October 2026 ("I think
+  // it looks better already": commit 4ad3b4e6, briefs/HANDOFF-AVATAR-EYES-2026-10-25.md); tests/eyes3d.test.mjs holds both
+  // eyes to one draw. The body and the head are still the two draws counted here.
+  let draws=0;a.root.traverse(o=>{if(o.isMesh&&o.visible&&!o.userData.outline&&!/Glasses|Sculpted/.test(o.name)&&o!==a.eyes3d?.mesh)draws++;});
   assert.equal(draws,2,top);for(const v of a.body.geometry.attributes.position.array)assert.ok(Number.isFinite(v));a.dispose();
  }
 });

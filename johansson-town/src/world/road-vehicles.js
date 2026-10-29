@@ -7,7 +7,10 @@ import {createShopGlass} from './shop-glass.js';
 // clear glass, so the actual resident drivers show); the parked cars are the same bodies built into a street kit
 // (buildParkedVehicle: tinted glass, no cabin inside, merged with the quarter so they cost no draw call of their own).
 export const VEHICLE_SIZE=Object.freeze({'kei truck':Object.freeze({length:3.4,width:1.48}),'kei car':Object.freeze({length:3.3,width:1.4}),car:Object.freeze({length:3.9,width:1.62}),'delivery truck':Object.freeze({length:4.9,width:1.95})});
-export const DRIVER_SEATS=Object.freeze({car:{x:-.34,y:.46,z:.05,roof:1.78},'kei car':{x:-.31,y:.46,z:-.05,roof:1.74},'kei truck':{x:-.32,y:.56,z:.8,roof:1.91},'delivery truck':{x:-.38,y:.72,z:1.65,roof:2.22}});
+// (floor: the top of the cab's floor under the driver's feet, measured by a ray down the footwell: 0.265 in all four; a
+// driver's feet were set on 0.22 and his soles stood 4 to 8 cm into it. The kei truck's driver sits 0.27 from the middle,
+// not 0.32: its front wheels lie under the footwell, and the outer foot stood 3 cm into the tyre)
+export const DRIVER_SEATS=Object.freeze({car:{x:-.34,y:.46,z:.05,roof:1.78,floor:.265},'kei car':{x:-.31,y:.46,z:-.05,roof:1.74,floor:.265},'kei truck':{x:-.27,y:.56,z:.8,roof:1.91,floor:.265},'delivery truck':{x:-.38,y:.72,z:1.65,roof:2.22,floor:.265}});
 
 /**
  * The two hatchbacks' bodies, as side profiles [z, y]: the 3.9 m compact and the tall 3.3 m kei car of the 1993 kind
@@ -141,7 +144,8 @@ function sculpt(kind,colour,{emit,pane,interior=true,cargo='parts',bonnet='shut'
  // The dash under the windscreen's foot; separate seats, rear seat for the hatchbacks and the steering wheel.
  box(w-.14,.12,.17,0,belt-.05,frontBottom-.12,trim);
  if(interior){
-  for(const x of [-.34,.34]){box(.49,.11,.46,x,seat.y-.055,seat.z,0x4d555b);box(.47,.43,.09,x,seat.y+.21,seat.z-.28,0x4d555b);box(.25,.17,.12,x,seat.y+.48,seat.z-.29,0x4d555b);}
+  // (the seats under where the driver and his passenger sit)
+  for(const x of [seat.x,-seat.x]){box(.49,.11,.46,x,seat.y-.055,seat.z,0x4d555b);box(.47,.43,.09,x,seat.y+.21,seat.z-.28,0x4d555b);box(.25,.17,.12,x,seat.y+.48,seat.z-.29,0x4d555b);}
   if(hatch){box(w-.45,.09,.36,0,.46,rearBottom+.34,0x4d555b);box(w-.45,.35,.09,0,.65,rearBottom+.16,0x4d555b);}
   const steering=new THREE.TorusGeometry(.13,.022,6,12);steering.rotateX(.6);steering.translate(seat.x,belt+.10,seat.z+.32);add(steering,trim);
   rod([seat.x,belt+.10,seat.z+.32],[seat.x,belt-.13,seat.z+.46],.025,trim);

@@ -180,12 +180,12 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
  // The parapet. Low enough to see the water over, solid enough to stop at.
  const stone=new THREE.MeshStandardMaterial({color:0xa8a293,roughness:.92});
  const cap=new THREE.MeshStandardMaterial({color:0x8e897c,roughness:.86});
- const parapet=(w,d,x,z)=>{
+ const parapet=(w,d,x,z,id='east-seawall')=>{
   const body=new THREE.Mesh(new THREE.BoxGeometry(w,wall.height,d),stone);
   body.position.set(x,wall.height/2,z);body.castShadow=!!shadows;body.receiveShadow=!!shadows;group.add(body);
   const coping=new THREE.Mesh(new THREE.BoxGeometry(w+.14,.1,d+.14),cap);
   coping.position.set(x,wall.height+.05,z);coping.receiveShadow=!!shadows;group.add(coping);
-  colliders.push({id:'east-seawall',x,z,w:w+.14,d:d+.14,height:wall.height+.1});
+  colliders.push({id,x,z,w:w+.14,d:d+.14,height:wall.height+.1});
  };
  // Real openings in the mesh and collision wall lead down to the sand.
  let wallFrom=-36;
@@ -194,6 +194,11 @@ export function buildEastLawn({parent,colliders=[],shadows=false,heightAt=null,p
   if(wallTo>wallFrom)parapet(wall.depth,wallTo-wallFrom,wall.x,(wallFrom+wallTo)/2);
   wallFrom=access.z+access.half;
  }
+ // The south return along the auction apron, as the plan above says (EAST_LAWN.wall.southFrom): it was never built, and
+ // the strip between the lawn's south edge and the quay's north edge (z -38.9 to -38) lay open 0.4 m deep, from the
+ // truck gate east to the seawall (Kōji stepped into it on his way to the ice plant). The wall fills the whole strip.
+ // (3 cm into the lawn, so its face lies behind the lawn's stone edging rather than on its plane)
+ {const z0=-38.9,z1=EAST_LAWN.minZ+.03,x0=wall.southFrom,x1=wall.x-wall.depth/2;parapet(x1-x0,z1-z0,(x0+x1)/2,(z0+z1)/2,'east-lawn-south-return');}
 
 
 

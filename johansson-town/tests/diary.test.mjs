@@ -11,7 +11,9 @@ test('a day is remembered by its most significant moment',()=>{
  recordMoment(state,m,{text:'Ukui: the last night of Obon, and the eisa. Thao said: “Stand back.”',kind:'happening'});
  recordMoment(state,m,{text:'Gave Thao a plum rice ball.',kind:'gift'});
  const page=diaryPage(state,m);
- assert.match(page,/^Sunday 17 August 1997/);
+ // The device calendar (the owner, 26 October 2026; johansson-town/AGENTS.md, briefs/HANDOFF-DEVICE-CALENDAR-2026-10-26.md):
+ // the page carries the real date, and 17 August 2026 is a Monday. It used to read "Sunday 17 August 1997".
+ assert.match(page,/^Monday 17 August 2026/);
  assert.ok(page.indexOf('eisa')<page.indexOf('plum rice ball'),'the happening leads the page');
 });
 

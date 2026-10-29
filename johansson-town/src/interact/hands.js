@@ -1,5 +1,8 @@
 import * as THREE from '../../vendor/three.module.js';
-import {consumptionPhase,drinkTilt} from '../avatars/consume.js';
+import {consumptionPhase} from '../avatars/consume.js';
+// (the player's own sip, seen from the eyes: the can or glass turned up toward them as far as before, 1.1 rad full to 1.5
+// for the last of it; a resident's sip (consume.js drinkTilt) tips a full glass far less, with the head going back)
+const firstPersonTilt=(prop,k)=>(1.1+.4*(1-Math.min(1,Math.max(0,prop?.userData?.portion??1))))*k;
 import {createDrinkProp,setPropPortion,updatePropPortion,disposeServing} from '../people/izakaya-beer.js';
 
 export function createHands({scene,camera,say,consume,onDrink=()=>{},canColour=null}){
@@ -22,5 +25,5 @@ export function createHands({scene,camera,say,consume,onDrink=()=>{},canColour=n
   g.userData.bite=true;sipProp=g;g.position.set(.08,-.34,-.42);g.rotation.set(.15,0,-.05);view.add(g);sipT=SIP;return true;
  }
  function drinkCan(){if(!name||drink>0||drop>0)return false;if(!consume(name)){hold.visible=false;name=null;return false;}drink=.85;onDrink();return true;}
- return {offer,drink:drinkCan,set firstPersonVisible(value){view.visible=!!value;},sip,bite,get held(){return name;},get canDrink(){return !!name&&drop<=0&&drink<=0;},update(dt){if(sipT>0&&sipProp){sipT=Math.max(0,sipT-dt);const bite=!!sipProp.userData.bite,{lift:k,swallow}=consumptionPhase(SIP-sipT,SIP);sipProp.position.set(.08-.06*k,-.34+.2*k,-.42+.08*k);sipProp.rotation.set(.15+(bite?.25*k:-2*drinkTilt(sipProp,k)),0,-.05);if(!bite){setPropPortion(sipProp,THREE.MathUtils.lerp(sipProp.userData.startPortion,sipProp.userData.finishPortion,swallow));updatePropPortion(sipProp,dt);}else if(sipT<.5){sipProp.children.at(-1).scale.setScalar(Math.max(0,sipT/.5));}if(sipT===0){disposeServing(sipProp);sipProp=null;}}if(drop>0){drop-=dt;dropped.position.y=dropped.position.y-dt*.5;if(drop<=0){dropped.visible=false;hold.visible=true;if(autoDrink){autoDrink=false;drinkCan();}}}if(drink>0){drink=Math.max(0,drink-dt);hold.position.y=-.29+Math.sin((.85-drink)/.85*Math.PI)*.22;hold.rotation.z=-.15+Math.sin((.85-drink)/.85*Math.PI)*.8;if(drink===0){hold.visible=false;say('The empty can goes back in your bag.',3);name=null;}}}};
+ return {offer,drink:drinkCan,set firstPersonVisible(value){view.visible=!!value;},sip,bite,get held(){return name;},get canDrink(){return !!name&&drop<=0&&drink<=0;},update(dt){if(sipT>0&&sipProp){sipT=Math.max(0,sipT-dt);const bite=!!sipProp.userData.bite,{lift:k,swallow}=consumptionPhase(SIP-sipT,SIP);sipProp.position.set(.08-.06*k,-.34+.2*k,-.42+.08*k);sipProp.rotation.set(.15+(bite?.25*k:firstPersonTilt(sipProp,k)),0,-.05);if(!bite){setPropPortion(sipProp,THREE.MathUtils.lerp(sipProp.userData.startPortion,sipProp.userData.finishPortion,swallow));updatePropPortion(sipProp,dt);}else if(sipT<.5){sipProp.children.at(-1).scale.setScalar(Math.max(0,sipT/.5));}if(sipT===0){disposeServing(sipProp);sipProp=null;}}if(drop>0){drop-=dt;dropped.position.y=dropped.position.y-dt*.5;if(drop<=0){dropped.visible=false;hold.visible=true;if(autoDrink){autoDrink=false;drinkCan();}}}if(drink>0){drink=Math.max(0,drink-dt);hold.position.y=-.29+Math.sin((.85-drink)/.85*Math.PI)*.22;hold.rotation.z=-.15+Math.sin((.85-drink)/.85*Math.PI)*.8;if(drink===0){hold.visible=false;say('The empty can goes back in your bag.',3);name=null;}}}};
 }

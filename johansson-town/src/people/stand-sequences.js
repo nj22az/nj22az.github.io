@@ -1,3 +1,4 @@
+import {SATO_KITCHEN as K} from '../world/sato-ramen-layout.js';
 /**
  * The stand sequences of the residents' days (stand-points.js; New Yokosuka's measured routines, docs/research/
  * new-yokosuka-lessons.md §2.3, §3.2, §6, C6). Each sequence is a list of points walked in order and looped while the
@@ -41,17 +42,19 @@ export const STAND_SEQUENCES=Object.freeze(Object.fromEntries([
   pt(-2.0,-2.0,N,[300,900],'reading the page’s proofs for corrections','the back bench again, for the corrections in Nhung’s hand',{pose:'Use'}),
  ]),
  // ── Sato Ramen's kitchen (world/sato-ramen-layout.js SATO_KITCHEN; people/ramen-kitchen.js walks the aisle) ──
+ // Each point is a station of the compact kitchen's aisle (art/izakaya/compact/plan.json ramenStaff), so the points move
+ // with the measured plan; the pass is behind the counter between the boiler and the pots.
  seq('ramen-stock','ramen','Mrs Sato','Before lunch the stock pot is the kitchen: bones in at seven, skimmed and topped up all morning.',[
-  pt(8.6,-4.95,N,[600,1500],'skimming the stock pots','the stock pots on the back line',{pose:'Use',station:'pots'}),
-  pt(6.95,-4.95,N,[300,900],'cutting the chashu and the spring onion for lunch','the prep board at the west end of the line',{pose:'Use',station:'prep'}),
-  pt(7.7,-4.95,N,[120,300],'checking the noodle boiler is up to heat','the noodle boiler, lit an hour before lunch',{pose:'Use',station:'boiler'}),
+  pt(...K.pots,N,[600,1500],'skimming the stock pots','the stock pots on the back line',{pose:'Use',station:'pots'}),
+  pt(...K.prep,N,[300,900],'cutting the chashu and the spring onion for lunch','the prep board at the west end of the line',{pose:'Use',station:'prep'}),
+  pt(...K.boiler,N,[120,300],'checking the noodle boiler is up to heat','the noodle boiler, lit an hour before lunch',{pose:'Use',station:'boiler'}),
  ]),
  seq('ramen-lunch','ramen','Mrs Sato','Between orders at lunch she is never still: pots, board, toppings, the counter wiped.',[
-  pt(8.6,-4.95,N,[120,420],'stirring the stock pots','the stock pots on the back line, kept at a simmer through lunch',{pose:'Use',station:'pots'}),
-  pt(6.95,-4.95,N,[120,300],'chopping spring onion','the prep board, where the onion and the chashu are cut as the bowls go out',{pose:'Use',station:'prep'}),
-  pt(9.8,-4.95,N,[60,240],'laying out the toppings','the topping tray at the east end of the line',{pose:'Use',station:'toppings'}),
-  pt(8.3,-3.72,S,[60,180],'wiping down the counter','the pass, over the counter to the stools, wiped after every bowl',{pose:'Wipe',tool:'cloth',station:'pass'}),
-  pt(7.7,-4.95,N,[60,180],'checking the noodle boiler','the boiler, kept at the boil through lunch',{pose:'Use',station:'boiler'}),
+  pt(...K.pots,N,[120,420],'stirring the stock pots','the stock pots on the back line, kept at a simmer through lunch',{pose:'Use',station:'pots'}),
+  pt(...K.prep,N,[120,300],'chopping spring onion','the prep board, where the onion and the chashu are cut as the bowls go out',{pose:'Use',station:'prep'}),
+  pt(...K.toppings,N,[60,240],'laying out the toppings','the topping tray at the east end of the line',{pose:'Use',station:'toppings'}),
+  pt((K.boiler[0]+K.pots[0])/2,K.passZ,S,[60,180],'wiping down the counter','the pass, over the counter to the stools, wiped after every bowl',{pose:'Wipe',tool:'cloth',station:'pass'}),
+  pt(...K.boiler,N,[60,180],'checking the noodle boiler','the boiler, kept at the boil through lunch',{pose:'Use',station:'boiler'}),
  ]),
  // ── Minato Police Station (world/interiors/police-station.js STATION_ROOM; ground floor) ──
  seq('station-desk','koban','Officer Mori','The desk shift is the counter, the window where the police box used to be, and the notice board people read while they wait.',[

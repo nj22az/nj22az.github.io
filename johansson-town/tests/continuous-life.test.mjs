@@ -17,6 +17,7 @@ import {createBusinesses} from '../src/world/businesses.js';
 import {circleHitsRect} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 import {MARKET_THRESHOLD} from '../src/world/town-grid.js';
+import {FUJITA_HOURS} from '../src/world/fujita-routine.js';
 
 installDOM();globalThis.self=globalThis;
 const actualSites=createBusinesses(),actualWorld=createTown({scene:new THREE.Scene(),sites:actualSites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>null});
@@ -136,9 +137,13 @@ test('the hidden town advances Fujita to bed without updating exterior decoratio
  let pictures=0;const original=world.portShed.tick;
  world.portShed.tick=(...args)=>{pictures++;return original.apply(world.portShed,args);};
  try{
-  world.updateLife(0,0,.5,1409);
+  // Bedtime is a quarter to one since Fujita became the Minato Maru's master and the last boat back lands him after
+  // eleven (docs/CAST-CONSOLIDATION.md §3; src/world/fujita-day.js FUJITA_DAY.end, src/world/fujita-routine.js
+  // FUJITA_HOURS). The test used to cross 23:30, his old bedtime; it now crosses the routine's own.
+  const bed=FUJITA_HOURS.bedtime;
+  world.updateLife(0,0,.5,bed-1);
   assert.equal(world.portShed.routine.state,'watching');
-  for(let i=0;i<600;i++)world.updateLife(.1,i*.1,.5,1410+i/600);
+  for(let i=0;i<600;i++)world.updateLife(.1,i*.1,.5,bed+i/600);
   assert.equal(world.portShed.routine.state,'sleeping');
   assert.equal(world.portShed.fujita.userData.sleeping,true);
   assert.equal(pictures,0,'The unseen TV and decorative props are not refreshed');

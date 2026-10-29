@@ -1,4 +1,4 @@
-import {townDate,townDay,okinawaSeason} from '../town-clock.js';
+import {townDate,townDay,okinawaSeason,townCalendarAt} from '../town-clock.js';
 
 /**
  * Johansson's diary: one page a day.
@@ -62,7 +62,10 @@ export function recordMoment(state,minutes,{text,kind='note',weight,who,news,id}
  for(const d of Object.keys(diary.moments))if(+d<day-14)delete diary.moments[d];
 }
 
-const DATE_LINE=minutes=>{const {month,day,weekday}=townDate(minutes);return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][weekday]+' '+day+' '+['January','February','March','April','May','June','July','August','September','October','November','December'][month-1]+' 1997';};
+// The page's year is the device's own, like its weekday (the owner, 26 October 2026: "they use normal date device date,
+// they only live like it's the 90's"; johansson-town/AGENTS.md). A fixed 1997 put the real weekday beside a year it
+// does not belong to ("Monday 17 August 1997").
+const DATE_LINE=minutes=>{const {month,day,weekday}=townDate(minutes),year=townCalendarAt(minutes).date.getFullYear();return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][weekday]+' '+day+' '+['January','February','March','April','May','June','July','August','September','October','November','December'][month-1]+' '+year;};
 
 /**
  * The page for the day `minutes` falls on. Once a day has been written it stays written;

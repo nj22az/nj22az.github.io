@@ -7,6 +7,8 @@ import {eveningNews} from '../src/feed/evening-news.js';
 import {diaryPage} from '../src/progression/diary.js';
 import {openYear} from '../src/progression/year-loop.js';
 
+// Day 3 of the local days since 1970 is Sunday 4 January 1970: the device calendar keeps real weekdays and no longer
+// projects them into 1997, when 4 January was a Saturday (the owner, 26 October 2026; johansson-town/AGENTS.md).
 const minutes=3*1440+12*60+40;
 const shot=(people=['Thao'],place={id:'izakaya',title:'Minato Izakaya'})=>({w:PHOTO_W,h:PHOTO_H,shades:packShades(new Uint8Array(PHOTO_W*PHOTO_H).fill(2)),palette:'green',day:3,minutes:12*60+40,place,people,note:''});
 const make=saved=>{const dom=installDOM(saved);const acts=createActivities({say(){},onWeather(){},onTime(){},getMinutes:()=>minutes});return {dom,acts};};
@@ -14,7 +16,7 @@ const make=saved=>{const dom=installDOM(saved);const acts=createActivities({say(
 test('a kept photo is saved with the player, comes back after a reload, and the Field book opens the album',()=>{
  const {dom,acts}=make();
  const r=acts.keepPhoto(shot());
- assert.equal(r.ok,true);assert.equal(r.text,'Kept: Thao · Minato Izakaya · Saturday 4 January, 12:40.');
+ assert.equal(r.ok,true);assert.equal(r.text,'Kept: Thao · Minato Izakaya · Sunday 4 January, 12:40.');
  assert.equal(acts.album.length,1);acts.save();
  const again=make(Object.fromEntries(dom.storage));
  assert.deepEqual(again.acts.album.map(p=>[p.id,p.people,p.place.title]),[['ph1',['Thao'],'Minato Izakaya']]);

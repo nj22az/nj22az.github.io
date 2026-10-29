@@ -218,8 +218,11 @@ export function laundryFrontage({origin=LAUNDRY_FRAME.origin,shadows=false}={}){
  const pane=(x0,x1,z)=>{const g=new THREE.PlaneGeometry(x1-x0,2.24);g.translate((x0+x1)/2,1.47,z);return g;};
  const panes=new THREE.Mesh(mergeGeometries([pane(-open+.05,DOOR[0]-.045,PANE_Z),pane(DOOR[1]+.045,open-.05,PANE_Z),pane(DOOR[0]-1.03,DOOR[0]-.05,D-.48)]),glass);
  panes.name='Coin laundry glass';panes.renderOrder=2;group.add(panes);
- // The vinyl floor, lit by the tubes: its own mesh, so it takes no shadow of the street's wires through the glass.
- const floorMaterial=new THREE.MeshStandardMaterial({color:0xd6d4ca,roughness:.85,emissive:new THREE.Color(0xfff4e0),emissiveIntensity:.1});
+ // The vinyl floor, lit by the tubes: its own mesh, so it takes no shadow of the street's wires through the glass. It is
+ // laid 4 mm over the shop-house's concrete floor (houses.js), as sheet vinyl is, so it is drawn as a covering, offset in
+ // depth (as lane-edges.js's decals are): otherwise the two faces flicker against each other from the street.
+ const floorMaterial=new THREE.MeshStandardMaterial({color:0xd6d4ca,roughness:.85,emissive:new THREE.Color(0xfff4e0),emissiveIntensity:.1,
+  polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  {const g=new THREE.PlaneGeometry(open*2,D-.53-(back+.06));g.rotateX(-Math.PI/2);g.translate(0,F+.004,((D-.53)+(back+.06))/2);
   const vinyl=new THREE.Mesh(g,floorMaterial);vinyl.name='Coin laundry vinyl floor';vinyl.receiveShadow=false;group.add(vinyl);}
  // The tubes: three fittings across the ceiling, always on.

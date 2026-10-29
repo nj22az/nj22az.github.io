@@ -16,12 +16,13 @@ test('leaving an interior releases resources immediately and preserves borrowed 
   const released=[];for(const [resource,label] of [[ownedGeometry,'geometry'],[ownedMaterial,'material'],[ownedTexture,'texture'],[borrowed.geometry,'borrowed geometry'],[borrowed.material,'borrowed material']])resource.addEventListener('dispose',()=>released.push(label));
   const calls=[],noop=()=>{},service={restore:noop,cancel:noop,dispose:noop,clear:noop,hide:noop};
   const persistent={userData:{persistentShop:true,hit:{inside:true}}},temporary={userData:{hit:{inside:true}}};
+  // clearRoom() cancels the third-person Johansson's table drink (game.js `johansson?.cancelTableDrink()`); he is null here.
   const context={THREE,current:{id},room,roomColliders:[{}],interactables:[persistent,temporary],boxCache:new Map(),town:{visible:false},indoorCeilings:{},activeRoomLayout:{dispose:()=>calls.push('room disposed')},
    townSections:{invalidate:()=>calls.push('outside cache invalidated')},shopStreetView:{dispose:()=>calls.push('portal disposed')},showShopThroughWindow:()=>calls.push('live storefront'),sakuraShop:{hide:noop},
    replayInterrupted:noop,lowerPocket:noop,spawnScene:null,photoStudio:null,photoReturning:false,NAHA_ARRIVALS:{id:'arrivals'},CITY_RESTAURANT:{id:'restaurant'},activities:{state:{},close:noop},wearSwim:noop,inspector:null,resetInput:noop,
    document:{body:{classList:{remove:noop}}},$:()=>({classList:{add:noop}}),seated:true,parkSeat:{},active:{},yaw:.3,pitch:.1,hands:{},thirdPerson:false,syncView:noop,placeAtEntrance:noop,
    roomToStreet:y=>y,player:new THREE.Object3D(),yAxis:new THREE.Vector3(0,1,0),say:noop,syncExteriorPlace:()=>'',finishDungeon:noop,
-   izakayaTV:null,storeService:null,ramenPlayerService:null,venueService:null,beerService:null,workplaceResidents:service,bookshopCustomers:service,neighbourChats:service,chatBubble:service,izakayaGuests:service,onsenGuests:service,homeGuests:service,hideRamen:noop};
+   johansson:null,izakayaTV:null,storeService:null,ramenPlayerService:null,venueService:null,beerService:null,workplaceResidents:service,bookshopCustomers:service,neighbourChats:service,chatBubble:service,izakayaGuests:service,onsenGuests:service,homeGuests:service,hideRamen:noop};
   vm.runInNewContext(identity+clear+'\n'+leave+'\nleaveRoom();',context);
   assert.equal(context.current,null);assert.equal(room.children.length,0,'Closed interior is not retained while outdoors');
   assert.deepEqual(released.sort(),['geometry','material','texture']);
@@ -31,7 +32,10 @@ test('leaving an interior releases resources immediately and preserves borrowed 
 });
 
 test('the actual indoor simulation advances time and resident controllers while player input is paused',()=>{
- const calls={life:0,cast:0,neighbours:0,shop:0};const noop=()=>{},service={update:noop,sync:noop};
+ // Neighbour chats are cancelled whenever they cannot run (paused, catching up or off the budget: game.js advanceTown,
+ // since the NPC social restoration of 25 October 2026, briefs/HANDOFF-NPC-SOCIAL-2026-10-25.md), so the service has
+ // `cancel` as the game's own does. The third-person Johansson model (game.js `johansson`) is null until it is first shown.
+ const calls={life:0,cast:0,neighbours:0,shop:0};const noop=()=>{},service={update:noop,sync:noop,cancel:noop};
  const start=source.indexOf('function advanceTown('),end=source.indexOf('/** Keeps the town on the device clock',start);
  const simStart=source.indexOf('function simulate(frameDt'),simEnd=source.indexOf('\nconst absence=',simStart);
  const context={minutes:145,elapsed:0,accumulator:0,saveTick:0,SIM_STEP:1/60,MAX_FRAME_DT:.1,townClock:{speed:1},current:{id:'market'},catchingUp:false,

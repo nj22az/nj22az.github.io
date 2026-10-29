@@ -43,7 +43,10 @@ test('face repainting stays cached and preserves the two-draw avatar and current
  assert.equal(avatar.paintFace({expression:'surprised'}),true);
  assert.equal(avatar.paintFace({talk:1}),true);
  assert.equal(avatar.paintFace({talk:1}),false);
- let draws=0,lines=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
+ // The rigged eyes (eyes3d.js) are a draw of their own, on for everyone since the owner's word of 25 October 2026 ("I think
+ // it looks better already": commit 4ad3b4e6, briefs/HANDOFF-AVATAR-EYES-2026-10-25.md); tests/eyes3d.test.mjs holds both
+ // eyes to one draw. The body and the head are still the two draws counted here.
+ let draws=0,lines=0;avatar.root.traverse(o=>{if(o.isMesh&&o.visible&&o!==avatar.eyes3d?.mesh)(o.userData.outline?lines++:draws++);});assert.equal(draws,2);assert.equal(lines,2,"body and head each carry one ink shell");
  avatar.dispose();
 });
 
