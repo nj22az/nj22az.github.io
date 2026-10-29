@@ -630,3 +630,13 @@ fringe reading as close-cropped felt in wide shots; Fujita not yet run with `--f
 5. The earlier Pixar Johansson route (the free sculpt, separate shirt and shorts) is kept in the studio repo out of the
    game; its last fixes of the morning (the wrist graft, the hand straight at rest, a wrist weight ramp) live in the
    shared code and serve the Meshy route.
+
+
+## 29 October 2026: Sakura can handling — investigation only
+
+Owner requested Thuận pick up, hold and return a canned drink naturally at Sakura, preserving stock and routines, with actual-game movement screenshots and verified integration.
+
+Investigated main at `bbea598ea7ece51ddb574c91e04201d718fc780f`. No implementation, PR, screenshots, or release was produced in this pass; the request remains open. The older open note above saying her fingers are a later step is stale: the 27 October beer section and `assets/avatars/pixar/thuan.json` record her finger bones. `node --test tests/pixar-thuan.test.mjs` passed 6/6 on the inspected checkout; this is not a can-contact or game interaction test.
+
+`src/people/retail-clerk.js` and `shop-retail.js` set `shop-<id>` held items and shelf reach flags; `src/avatars/actors.js` does not currently create a prop for that kind. Shelf goods are instanced in `sakura-interior.js` and controlled by stock counts, so a pickup needs a reversible visual reservation of the specific occupied instance, with cancellation and concurrent stock changes handled without changing the ledger. Use the existing hand/IK and grip code, and interrupt safely for customer service, shift changes, leaving the shop and save/reload. Verify reachable placement, hand and finger contacts, fixture clearance, stock conservation and normal routines in the built game; capture reach, grasp, lift, hold, return and release from informative views. Run focused tests, runtime build and the World guard before integration.
+
