@@ -52,8 +52,12 @@ grown-ups. Full record, the selection rules and every id: [docs/research/costume
 - CI guard (`node tools/ci-guard.mjs`, 91 files with the new one): 457/459 before the final runtime rebuild. The two
   failures: the runtime check (source changed after the build; rebuilt again last, see the commit) and
   `no-z-fighting.test.mjs`, which runs out of memory at node's default 2 GB heap **on untouched `main` too** in this
-  container; with `NODE_OPTIONS=--max-old-space-size=8192` it passes 13/13 on both. The final full-suite numbers are in
-  the commit message and the section below.
+  container; with `NODE_OPTIONS=--max-old-space-size=8192` it passes 13/13 on both. After the final rebuild
+  `runtime-package.test.mjs` passes 4/4 (published as `23a8f59`).
+- Full suite (`tests/*.test.mjs`, 454 files, 6 GB heap): 2,248 of 2,262 tests pass, 6 fail in 5 files, and **each of
+  the 6 fails the same way on untouched `main`** (`3e4a432`, run in a separate worktree): `architect-masterplan` (a
+  building's circuit to Main Street), `izakaya-lived-in` (props on furniture), `onsen-seats`, `pole-hug` (2) and
+  `resident-guide` (published photo articles). None reads the wardrobe; they are not in the CI guard.
 - Pictures: every set rendered front, back and walking on Ms Ganaha and looked at; Johansson Studio opened in Chromium,
   the sets found by search ("gingham", "tiered", "cherry", "Ganaha") and Cherry bench put on, with no page errors.
 - Not done: a physical phone or the Linux edition; the live game's own maker on a device.
