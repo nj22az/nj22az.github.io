@@ -79,9 +79,13 @@ async function run({label,width,height,dpr,mobile,portrait}){
    if(!await page.isVisible('#amountRow'))await page.click('.layer-pick >> nth=1');
    await page.fill('#amount','60');
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.layers[1].amount),.6);
-   // The settings row, behind the chevron: the date stamp on, the Print frame.
+   // The settings row, behind the chevron: the date stamp on, the Print frame from the frame sheet (every frame, drawn
+   // on the picture as it is).
    await page.click('#settingsToggle');await page.waitForSelector('#settings:not([hidden])');
    await page.click('#stamp');await page.click('#frameSetting');
+   await page.waitForSelector('#frameSheet[open] .frame-choice[data-frame="print"]');
+   assert.ok(await page.locator('#cameraFrames .frame-choice').count()>=10,'the drawn and the pixel frames are offered');
+   await page.click('#cameraFrames .frame-choice[data-frame="print"]');await page.waitForFunction(()=>!document.querySelector('#frameSheet').open);
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.frame),'print');
    assert.equal(await page.locator('#settingsStatus svg').count(),2,'the frame and the date show beside the chevron');
    await page.waitForTimeout(600);await shot('3-mix');
@@ -316,9 +320,114 @@ async function firstScreen({label,width,height}){
  }finally{await browser.close();}
 }
 
+// The printer every saved photo comes out of, and Memory with the album's own photos and with a sticker sheet (the owner,
+// 29 October 2026: "the mini games and the printer animation when saving … memory with our own photos or with the
+// stickers"), at an iPhone's Safari size.
+async function playAndPrint({label,width,height}){
+ const y4m=join(temp,`${label}.y4m`);let fake=[];
+ try{execFileSync('ffmpeg',['-loglevel','error','-y','-loop','1','-i',photo,'-t','1','-r','10','-vf','crop=ih*3/4:ih,scale=720:960,format=yuv420p',y4m]);fake=[`--use-file-for-fake-video-capture=${y4m}`];}catch{}
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',...fake]});
+ try{
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true,permissions:['camera']});
+  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  await page.goto(`${server.url}camera/`);
+  await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
+  await check(`${label}: the shutter prints the photo, and the print lands in the album`,async()=>{
+   const out=await page.evaluate(async()=>{
+    const pc=window.pocketCamera,seen={scene:false,paper:false,steps:new Set()};
+    const watch=setInterval(()=>{const sc=document.querySelector('.printer-scene'),p=document.querySelector('.printer-paper');if(sc)seen.scene=true;if(p){seen.paper=true;seen.steps.add(getComputedStyle(p).transform);}},40);
+    const before=pc.state.shots.length,t=performance.now();await pc.takePhoto();clearInterval(watch);
+    return {scene:seen.scene,paper:seen.paper,steps:seen.steps.size,ms:performance.now()-t,kept:pc.state.shots.length-before,left:!!document.querySelector('.printer-scene,.printer-flyer'),roll:!document.querySelector('#roll img').hidden};
+   });
+   assert.ok(out.scene&&out.paper,'the printer and its paper showed');
+   assert.ok(out.steps>4,`the paper fed out in steps (${out.steps} positions seen)`);
+   assert.equal(out.kept,1,'the photo is in the album');assert.equal(out.left,false,'nothing of the printer is left');assert.ok(out.roll,'the thumbnail shows it');
+  });
+  await check(`${label}: a tap skips the printer; Print off saves without it`,async()=>{
+   const out=await page.evaluate(async()=>{
+    const pc=window.pocketCamera,shooting=pc.takePhoto();let t=0;
+    await new Promise(r=>{const w=setInterval(()=>{const sc=document.querySelector('.printer-scene');if(sc){clearInterval(w);setTimeout(()=>{t=performance.now();sc.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));r();},500);}},20);});
+    await shooting;const skipped=performance.now()-t;
+    document.querySelector('#printSetting').click();
+    let printed=false;const w=setInterval(()=>{if(document.querySelector('.printer-scene'))printed=true;},20);
+    await pc.takePhoto();clearInterval(w);const off=pc.state.printer;document.querySelector('#printSetting').click();
+    return {skipped,printed,off,on:pc.state.printer};
+   });
+   // After the tap only the tear and the flight are left (0.7 s; more in software graphics).
+   assert.ok(out.skipped<1800,`a tap skipped to the tear (${Math.round(out.skipped)} ms after it)`);
+   assert.equal(out.printed,false,'no printer with Print off');assert.equal(out.off,false);assert.equal(out.on,true,'Print back on');
+  });
+  // Six photos of their own for the album, as the photographer would bring in.
+  await page.evaluate(async()=>{
+   const blob=await (await fetch('/assets/images/nils-lake-hero-optimized.jpg')).blob();
+   await window.pocketCamera.useFiles([0,1,2,3,4,5].map(i=>new File([blob],`lake-${i}.jpg`,{type:'image/jpeg',lastModified:Date.now()-i*1000})));
+  });
+  await page.waitForFunction(()=>window.pocketCamera.state.mode==='album',null,{timeout:60000});
+  await check(`${label}: Memory with the album's own photos: the board fits, a miss turns back, the last pair wins`,async()=>{
+   await page.locator('#playMemory').tap();
+   await page.waitForSelector('.memory-deck[data-deck="photos"]:not([disabled])',{timeout:15000});
+   await page.locator('.memory-deck[data-deck="photos"]').tap();await page.locator('.memory-pairs button',{hasText:/^6$/}).tap();
+   await page.locator('.memory-play').tap();await page.waitForSelector('.memory-card');await page.waitForTimeout(300);
+   const fit=await page.evaluate(()=>{const s=document.querySelector('.memory-stage').getBoundingClientRect();return [...document.querySelectorAll('.memory-card')].every(c=>{const r=c.getBoundingClientRect();return r.width>40&&r.left>=s.left-.5&&r.right<=s.right+.5&&r.top>=s.top-.5&&r.bottom<=s.bottom+.5;});});
+   assert.ok(fit,'every card is whole on the screen and not tiny');
+   const pairs=await page.evaluate(()=>window.pocketCamera.memory.game.cards.map(c=>c.pair));
+   const other=pairs.findIndex((p,i)=>i>0&&p!==pairs[0]),third=pairs.findIndex((p,i)=>i>0&&i!==other&&p!==pairs[0]&&p!==pairs[other]);
+   const card=i=>page.locator('.memory-card').nth(i);
+   await card(0).tap();await card(other).tap();
+   // A third card straight away turns the two that did not match back.
+   await card(third).tap();
+   const after=await page.evaluate(()=>window.pocketCamera.memory.game.cards.filter(c=>c.up&&!c.matched).length);
+   assert.equal(after,1,'only the third card is up');
+   await page.waitForTimeout(900);
+   // The third card is still up: its partner first, then every other pair.
+   for(const p of [pairs[third],...new Set(pairs.filter(q=>q!==pairs[third]))]){
+    const both=pairs.map((q,i)=>q===p?i:-1).filter(i=>i>=0);
+    for(const i of both){if(!(await page.evaluate(i=>window.pocketCamera.memory.game.cards[i].up,i)))await card(i).tap();}
+    await page.waitForTimeout(60);
+   }
+   await page.waitForSelector('.memory-win:not([hidden])',{timeout:8000});
+   const out=await page.evaluate(()=>({game:window.pocketCamera.memory.game,best:JSON.parse(localStorage.getItem('office-pocket-camera')).memoryBest,cheer:!!document.querySelector('.memory-cheer')}));
+   assert.equal(out.game.found,6);assert.ok(out.game.over);assert.ok(out.best['photos:6'],'the best game is kept');assert.ok(out.cheer,'a resident cheers');
+  });
+  await check(`${label}: Memory with a sticker sheet, 12 pairs`,async()=>{
+   await page.locator('.memory-win button',{hasText:'Other cards'}).tap();
+   await page.locator('.memory-deck[data-deck="set:Thuan"]').tap();await page.locator('.memory-pairs button',{hasText:/^12$/}).tap();
+   await page.locator('.memory-play').tap();await page.waitForSelector('.memory-card');
+   const out=await page.evaluate(()=>{const g=window.pocketCamera.memory.game,ids=new Set(g.cards.map(c=>c.item.id));return {n:g.cards.length,ids:ids.size,kind:document.querySelector('.memory-board').className};});
+   assert.equal(out.n,24);assert.equal(out.ids,12);assert.match(out.kind,/deck-sticker/);
+   await page.locator('#closeMemory').tap();await page.waitForFunction(()=>window.pocketCamera.state.mode==='album');
+  });
+  await check(`${label}: the pixel frames, drawn in Python, close round every shape and are kept in the save`,async()=>{
+   await page.locator('#closeAlbum').tap();await page.waitForFunction(()=>window.pocketCamera.state.camera.running,null,{timeout:20000});
+   const out=await page.evaluate(async()=>{
+    const {FRAMES,drawFrame,frameInner}=await import('/camera/frames.js?v=20261029f'),report={};
+    for(const f of FRAMES.filter(f=>f.pixel))for(const [w,h] of [[960,720],[720,960],[1280,720]]){
+     const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');drawFrame(g,f.id,w,h);
+     const d=g.getImageData(0,0,w,h).data,inner=frameInner(f.id,w,h);let open=0,seen=0;
+     for(let y=0;y<h;y+=3)for(let x=0;x<w;x+=3){const inBorder=x<inner.x-1||x>inner.x+inner.w+1||y<inner.y-1||y>inner.y+inner.h+1;if(inBorder){seen++;if(d[(y*w+x)*4+3]<255)open++;}}
+     const mid=d[((h>>1)*w+(w>>1))*4+3];
+     report[`${f.id} ${w}x${h}`]={open,seen,mid,border:Math.round(inner.x)};
+    }
+    const pc=window.pocketCamera;pc.state.printer=false;pc.state.camera.recipe.frame='harbour';
+    await pc.takePhoto();pc.state.camera.recipe.frame='none';pc.state.printer=true;
+    const shot=pc.state.shots[0],bmp=await createImageBitmap(shot.photo),c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;
+    const g=c.getContext('2d');g.drawImage(bmp,0,0);const side=[...g.getImageData(Math.round(bmp.width*.03),Math.round(bmp.height*.5),1,1).data];
+    return {report,pixel:FRAMES.filter(f=>f.pixel).map(f=>f.id),side,frame:shot.recipe.frame};
+   });
+   assert.deepEqual(out.pixel,['pocket','harbour','sakura','ticket','matsuri','haisai']);
+   for(const [k,r] of Object.entries(out.report)){assert.equal(r.open,0,`${k}: ${r.open} of ${r.seen} border pixels open`);assert.equal(r.mid,0,`${k}: the photo's middle is clear`);assert.ok(r.border>30,`${k}: a border of ${r.border} px`);}
+   assert.equal(out.frame,'harbour');
+   // The harbour's sky down the left side (#9fd0ee), not the photo, in the saved JPEG.
+   assert.ok(Math.abs(out.side[0]-159)<14&&Math.abs(out.side[1]-208)<14&&Math.abs(out.side[2]-238)<14,`the saved photo has the frame's sky at its side (${out.side.slice(0,3)})`);
+  });
+  await check(`${label}: printer and Memory without page errors`,async()=>assert.deepEqual(errors,[]));
+ }finally{await browser.close();}
+}
+
 try{
  await firstScreen({label:'iPhone Safari',width:390,height:664});
  await firstScreen({label:'iPhone SE Safari',width:375,height:560});
+ await playAndPrint({label:'iPhone Safari',width:390,height:664});
  await run({label:'phone',width:390,height:844,dpr:2,mobile:true,portrait:true});
  await run({label:'desktop',width:1280,height:800,dpr:1,mobile:false,portrait:false});
  console.log(`${results.length} checks pass`);

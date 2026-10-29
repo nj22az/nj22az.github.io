@@ -8,7 +8,8 @@ screen: use Apple design", then "Bring the die cut stickers to the camera app", 
 be designer for Gameboy camera and DS camera and a comic Artist" and "I want to be able to use my own photos too"; then,
 from an iPhone, "the Ui needs improvement", "Fuji shouldn't be cropped off like that we should use the whole screen
 intelligently", "Replace Fuji with a random sticker when you start" and "It should be installable as iPhone app web page
-too on the Home Screen draw a Camera icon with Python".
+too on the Home Screen draw a Camera icon with Python"; then "Can you add the mini games and the printer animation
+when saving ? I want memory with our own photos or with the stickers".
 
 ## What it does
 
@@ -21,6 +22,17 @@ too on the Home Screen draw a Camera icon with Python".
   deeper foot), **Panel** (a comic panel's hand-inked border on white), **Film** (a 35 mm frame with its sprocket holes
   and edge print, turning with the picture). Drawn over the picture's edges in the viewfinder and in the save alike;
   the date stays in the picture's own corner, stickers and balloons may cross the border as a balloon breaks a panel.
+- **Pixel frames**, drawn in Python by `tools/draw-camera-frames.py` (the owner: "Draw our own frames in Python") in
+  the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
+  (the Pocket Look's greens, the little camera), **Harbour** (the ferry, the lighthouse, gulls and the sun),
+  **Sakura** (a branch in blossom), **Ticket** (Minato to Kitano-jima, perforated and stamped), **Matsuri**
+  (lanterns and fireworks) and **Haisai** (Fuji, redrawn in four shades from his own sticker, waving from the corner).
+  Each is a sheet of pieces in `frames/` (corners, edges that repeat, scenes set against an edge) that `frames.js`
+  lays out for the photo's own shape and enlarges with hard pixel edges, never stretched. In the camera, **Frame** in
+  the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
+  `python3 tools/draw-camera-frames.py --preview out.png` draws them on a photo at three shapes;
+  `python3 tools/draw-camera-frames.test.py` checks that the files are the drawing and every border is whole.
+  (Frames from a Game Boy Camera project were looked at and not used: no licence, and others' marks and art.)
 - **Mirror** lens: **Twin** (the left half mirrored onto the right) and **Quad** (one quarter into four), the trick
   lenses of the hand-held cameras, before the Looks so they draw the mirrored picture.
 - **Mix**: up to three Looks stacked, each with its own intensity (tap the chosen one again in the camera; there the
@@ -49,6 +61,18 @@ too on the Home Screen draw a Camera icon with Python".
   recipe, so **Edit** starts again from the original with every Look, setting and sticker where it was. Share (the
   system sheet, so a phone can save to Photos) or download.
 
+- **The printer** (`printer.js`): every photo saved, from the shutter or the editor's Save, comes out of a little
+  printer first, as the hand-held camera's photos came out of its printer: a white toy printer in the icon's plastic
+  rises, the photo feeds up out of the slot in the motor's small steps on warm paper (its light blinks, it buzzes), is
+  torn off against the slot's teeth and flies into the album's thumbnail, or onto the photo after Save. About three
+  seconds; a tap skips to the tear; **Print** in the settings row turns it off for quick shooting; nothing plays with
+  reduced motion. The viewfinder holds still behind it, so the print moves smoothly.
+- **Memory** (`memory.js`, the game pad at the top of the album, or Play Memory in an empty album): pairs of cards
+  face down, turn two, keep them if they match. Play with **your own photos** (at least six in the album), one of
+  the residents' sticker sheets (**Thuan**, **Fuji**, **Thuan & Nils**) or **your own stickers**; 6, 8, 10 or 12
+  pairs. The board takes the grid that gives the cards the most room on the screen; a third card turns two that did
+  not match back at once; moves and time are counted, the best game for each set of cards and size is kept, and a
+  resident cheers the last pair.
 - **Home Screen app** (`manifest.webmanifest`, `sw.js`, `icons/`): Share, then Add to Home Screen, on an iPhone (or
   Install on Android and desktop Chrome) gives Pocket Camera its own icon and a full screen without the browser. The
   icon is drawn in code by `tools/draw-camera-icon.py` (a white toy camera on graphite, the lens ringed in the camera's
@@ -106,9 +130,13 @@ node camera/tests/camera.browser.mjs         # real Chromium with a fake camera,
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (42 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+The browser check (48 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
 its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
-starting the camera, the manifest, its icons at their sizes and the offline worker. Then, at phone and desktop size, it
+starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
+steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,
+the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
+Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
+saved JPEG). Then, at phone and desktop size, it
 compiles and draws all 19 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a
