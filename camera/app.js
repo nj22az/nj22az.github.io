@@ -6,12 +6,12 @@
 import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029b';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,listMine,addMine,deleteMine} from './album.js?v=20261029b';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029i';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029k';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029i';
 import {createPrinter} from './printer.js?v=20261029e';
-import {createMemory} from './memory.js?v=20261029e';
+import {createMemory} from './memory.js?v=20261029k';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -144,6 +144,27 @@ function fitFrame(frame,stage,aspect){
  frame.style.fontSize=`${fh*.045}px`;
  return {width:fw,height:fh};
 }
+/*
+ * A short screen (a phone's browser with its toolbars, the owner's iPhone) gives the picture the whole width: the Looks
+ * float over its foot, the strip folded behind the Look's name until it is asked for (swiping across the picture still
+ * steps through the Looks). A tall one keeps the tray under the picture.
+ */
+let trayBelow=139;
+function compactCamera(aspect){
+ const cam=$('camera'),stage=$('cameraStage');
+ const on=state.mode==='camera'&&!wide.matches&&!cam.classList.contains('idle');
+ if(on&&!cam.classList.contains('compact'))trayBelow=tray.offsetHeight||trayBelow;
+ const full=stage.clientHeight+(cam.classList.contains('compact')?0:tray.offsetHeight);
+ const compact=on&&full-trayBelow<stage.clientWidth/aspect-1;
+ if(compact!==cam.classList.contains('compact')){cam.classList.toggle('compact',compact);if(!compact)showLooks(false);}
+}
+const isCompact=()=>$('camera').classList.contains('compact');
+/** Unfolds or folds the strip of Looks over the picture (a short screen only). */
+function showLooks(open){
+ const cam=$('camera');if(cam.classList.contains('looks-open')===open)return;
+ cam.classList.toggle('looks-open',open);
+ if(open){showAmountRow(false);renderStripSelection();refreshThumbs(true);}
+}
 function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}}
 function placeCanvas(frame){if(canvas.parentElement!==frame)frame.prepend(canvas);frameArt(frame).key='';}
 /** The frame over the picture (frames.js), drawn at the screen's detail; only again when the frame or the size changes. */
@@ -194,7 +215,12 @@ function renderLayers(){
   const wrap=document.createElement('span');wrap.className=`layer${i===ctx.active?' active':''}${layers.length>1?' removable':''}`;
   const pick=document.createElement('button');pick.type='button';pick.className='layer-pick';pick.textContent=lookLabel(layer.look);
   pick.setAttribute('aria-pressed',String(i===ctx.active));pick.setAttribute('aria-label',`Look ${i+1}: ${LOOKS[layer.look].label}${layer.amount<1?`, ${Math.round(layer.amount*100)}%`:''}`);
-  pick.addEventListener('click',()=>{if(ctx.active===i){toggleAmount();return;}ctx.active=i;trayChanged({thumbs:true});});
+  // On a short screen the Look's name unfolds the strip first; tapped again, its intensity.
+  pick.addEventListener('click',()=>{
+   if(state.mode==='camera'&&isCompact()&&!$('camera').classList.contains('looks-open')){ctx.active=i;showLooks(true);trayChanged({thumbs:true});return;}
+   if(ctx.active===i){toggleAmount();return;}ctx.active=i;trayChanged({thumbs:true});
+  });
+  if(i===ctx.active)pick.insertAdjacentHTML('beforeend','<svg class="more" aria-hidden="true"><use href="#i-chevron"/></svg>');
   const remove=document.createElement('button');remove.type='button';remove.className='layer-remove';remove.innerHTML=icon('x');
   remove.setAttribute('aria-label',`Remove ${LOOKS[layer.look].label} from the mix`);
   remove.addEventListener('click',()=>removeLayer(i));
@@ -234,7 +260,7 @@ const wide=matchMedia('(min-width:1000px) and (min-aspect-ratio:5/4)');
 function showAmountRow(show){
  // Beside the picture (a wide window) there is room for both.
  const row=$('amountRow'),inCamera=state.mode==='camera'&&!wide.matches;
- if(inCamera&&show)row.style.height=`${strip.offsetHeight}px`;else row.style.height='';
+ if(inCamera&&show&&strip.offsetHeight)row.style.height=`${strip.offsetHeight}px`;else row.style.height='';
  row.hidden=!show;strip.hidden=inCamera&&show;
 }
 function toggleAmount(){if(state.mode==='camera')showAmountRow($('amountRow').hidden);}
@@ -264,6 +290,7 @@ function addLayer(){
  const partner=MIXES.find(([,base,over])=>base===top&&!used.has(over)&&tiles.has(over));
  const next=partner?partner[2]:FINISHERS.find(n=>!used.has(n)&&tiles.has(n))||'crt';
  ctx.recipe.layers.push({look:next,amount:partner?partner[3]:1});ctx.active=ctx.recipe.layers.length-1;
+ if(state.mode==='camera'&&isCompact())showLooks(true);
  trayChanged({thumbs:true,announce:true});
  layersEl.querySelectorAll('.layer')[ctx.active]?.classList.add('enter');
 }
@@ -360,6 +387,7 @@ function drawCamera(t){
  // that is not on screen).
  if(videoFresh||v.currentTime!==uploadedAt){engine.setSource('live',v,v.videoWidth,v.videoHeight);videoFresh=false;uploadedAt=v.currentTime;}
  const crop=cameraCrop(),pw=crop.w*v.videoWidth,ph=crop.h*v.videoHeight;
+ compactCamera(pw/ph);
  const box=fitFrame($('cameraFrame'),$('cameraStage'),pw/ph);
  // The viewfinder is drawn at the screen's own detail, no finer than the camera and no finer than the device keeps up with.
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(ph,box.height*dpr,lines);
@@ -429,7 +457,7 @@ function setShutter(kind){
 }
 /** The first screen: the greeting, without the Look tray (nothing to see it on yet), the shutter starting the camera. */
 function showWelcome(note){
- $('welcome').hidden=false;$('zoom').hidden=true;$('camera').classList.add('idle');setShutter(canStart()?'start':'off');
+ $('welcome').hidden=false;$('zoom').hidden=true;$('camera').classList.remove('compact','looks-open');$('camera').classList.add('idle');setShutter(canStart()?'start':'off');
  if(note)$('welcomeNote').textContent=note;
  fitFrame($('cameraFrame'),$('cameraStage'),3/4);
 }
@@ -461,6 +489,12 @@ function renderCameraChips(){
  renderExposure();
  stampOverlay($('cameraFrame'),r.stamp,new Date(),r.frame);
 }
+/** One panel at a time: a sheet coming up puts away the settings row, the intensity and the strip of Looks. */
+function openSheet(sheet){
+ showSettings(false);
+ if(state.mode==='camera'){showAmountRow(false);showLooks(false);}
+ sheet.showModal();
+}
 function showSettings(open){
  $('settings').hidden=!open;$('settingsToggle').setAttribute('aria-expanded',String(open));$('settingsToggle').classList.toggle('open',open);
 }
@@ -475,7 +509,7 @@ $('frameSetting').addEventListener('click',()=>{sound('tick');openFrameSheet();}
 function openFrameSheet(){
  const c=state.camera,preview=c.running?lookPreview({source:'live',crop:squareCrop(cameraCrop(),videoSize()),mirror:c.mirror,recipe:c.recipe},132):null;
  renderFrameChoices($('cameraFrames'),c.recipe.frame,preview,id=>{changeSetting(()=>{c.recipe.frame=id;});$('frameSheet').close();});
- $('frameSheet').showModal();
+ openSheet($('frameSheet'));
  requestAnimationFrame(()=>$('cameraFrames').querySelector('[aria-checked="true"]')?.scrollIntoView({inline:'center',block:'nearest'}));
 }
 $('frameSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
@@ -518,7 +552,7 @@ function gestures(stage,{onDoubleTap,onDrag}={}){
   if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.4&&dt<700){stepLook(dx<0?1:-1);return;}
   if(Math.hypot(dx,dy)<10&&dt<300){
    const now=performance.now();
-   if(now-lastTap<320){lastTap=0;onDoubleTap?.();}else{lastTap=now;if(state.mode==='camera'){showAmountRow(false);showSettings(false);}}
+   if(now-lastTap<320){lastTap=0;onDoubleTap?.();}else{lastTap=now;if(state.mode==='camera'){showAmountRow(false);showSettings(false);showLooks(false);}}
   }
  });
  stage.addEventListener('pointercancel',()=>{start=null;});
@@ -742,7 +776,7 @@ $('editPhoto').addEventListener('click',async()=>{
 function confirmDelete(message,label,then){
  const sheet=$('deleteSheet');$('deleteMessage').textContent=message;$('deleteConfirm').textContent=label;
  sheet.onclose=()=>{if(sheet.returnValue==='delete')then();};
- sheet.returnValue='';sheet.showModal();
+ sheet.returnValue='';openSheet(sheet);
 }
 $('deletePhoto').addEventListener('click',()=>confirmDelete('This photo will be deleted from this device.','Delete Photo',async()=>{
  if(!state.viewing)return;
@@ -914,7 +948,7 @@ function askLettering({text='',style='balloon:speech',title='What do they say?'}
  $('textSheetTitle').textContent=title;field.value=text;sheet.returnValue='';paint();
  return new Promise(resolve=>{
   sheet.onclose=()=>resolve(sheet.returnValue==='ok'&&field.value.trim()?{text:field.value.trim(),style:chosen}:null);
-  sheet.showModal();requestAnimationFrame(()=>{field.focus();field.select();});
+  openSheet(sheet);requestAnimationFrame(()=>{field.focus();field.select();});
  });
 }
 // Return finishes the words (Shift+Return starts a new line).
@@ -974,12 +1008,20 @@ function removeMine(id){
   cameraStickers.select(null);editStickers.select(null);remember();renderStickerPicker();
  });
 }
+/** The residents' sheets by tab: one tab a resident, their other sheets under theirs (the manifest's `tab`). */
+function stickerTabs(manifest){
+ const tabs=[];
+ for(const set of manifest.sets){const name=set.tab||set.name,tab=tabs.find(t=>t.name===name);if(tab)tab.sets.push(set);else tabs.push({name,sets:[set]});}
+ return tabs;
+}
 async function renderStickerPicker(){
  const grid=$('stickerGrid'),sets=$('stickerSets');
  let manifest;
  try{manifest=await loadStickerSets();}catch{grid.innerHTML='<p class="fine">The stickers could not be loaded.</p>';return;}
+ const tabs=stickerTabs(manifest);
  sets.textContent='';
- ['Lettering',...manifest.sets.map(s=>s.name),'Mine'].forEach((name,i)=>{
+ // Text first (balloons, captions, words alone): a short name, so every tab fits across a phone.
+ ['Text',...tabs.map(t=>t.name),'Mine'].forEach((name,i)=>{
   const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;
   b.setAttribute('aria-selected',String(i===stickerSet));b.addEventListener('click',()=>{sound('tick');stickerSet=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
   sets.append(b);
@@ -996,7 +1038,7 @@ async function renderStickerPicker(){
   }
   return;
  }
- if(stickerSet===manifest.sets.length+1){
+ if(stickerSet===tabs.length+1){
   const make=(label,glyph,fn,aria)=>{const b=document.createElement('button');b.type='button';b.className='sticker-choice make';b.innerHTML=`${icon(glyph)}<span>${label}</span>`;b.setAttribute('aria-label',aria);b.addEventListener('click',fn);grid.append(b);};
   make('From a photo','photo',()=>$('stickerFile').click(),'Make a sticker from one of your photos');
   if(navigator.clipboard?.read)make('Paste','paste',pasteSticker,'Paste a picture or a lifted subject as a sticker');
@@ -1011,12 +1053,16 @@ async function renderStickerPicker(){
   grid.append(note);
   return;
  }
- for(const s of manifest.sets[stickerSet-1].stickers){
-  const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
-  b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
-  b.innerHTML=`<img src="${s.thumbUrl}" alt="" loading="lazy" decoding="async" width="${Math.round(256*s.width/Math.max(s.width,s.height))}" height="${Math.round(256*s.height/Math.max(s.width,s.height))}">`;
-  grid.append(b);
- }
+ (tabs[stickerSet-1]?.sets||[]).forEach((set,k)=>{
+  // The resident's own sheet first; each of their other sheets under its name.
+  if(k>0){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
+  for(const s of set.stickers){
+   const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
+   b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
+   b.innerHTML=`<img src="${s.thumbUrl}" alt="" loading="lazy" decoding="async" width="${Math.round(256*s.width/Math.max(s.width,s.height))}" height="${Math.round(256*s.height/Math.max(s.width,s.height))}">`;
+   grid.append(b);
+  }
+ });
 }
 $('stickerGrid').addEventListener('click',async e=>{
  const gone=e.target.closest('.mine-remove');if(gone){e.stopPropagation();removeMine(gone.closest('.sticker-choice').dataset.id);return;}
@@ -1031,7 +1077,7 @@ $('stickerGrid').addEventListener('click',async e=>{
  sound('pop');
 });
 function openStickerSheet(){
- const sheet=$('stickerSheet');sheet.append($('stickerPicker'));renderStickerPicker();sheet.showModal();
+ const sheet=$('stickerSheet');sheet.append($('stickerPicker'));renderStickerPicker();openSheet(sheet);
 }
 $('stickerSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 function renderAdjusters(){
@@ -1068,6 +1114,7 @@ addEventListener('keydown',e=>{
  }
  if(state.mode==='camera'){
   if(e.key==='Escape'&&!$('settings').hidden){e.preventDefault();showSettings(false);return;}
+  if(e.key==='Escape'&&$('camera').classList.contains('looks-open')){e.preventDefault();showLooks(false);return;}
   if((e.key===' '||e.key==='Enter')&&!e.target.closest?.('button,a')){e.preventDefault();takePhoto();}
   else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&!e.target.closest?.('.strip')){e.preventDefault();stepLook(e.key==='ArrowRight'?1:-1);}
  }else if(e.key==='Escape'){

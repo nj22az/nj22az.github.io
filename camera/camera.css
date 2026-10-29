@@ -396,3 +396,54 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .camera #amountRow{box-sizing:border-box;padding:0 12px 0 24px}
 .amount-done{color:var(--accent);font-weight:600;font-size:15px}
 .editor .amount-done{display:none}
+
+/* ---------- The reassessment of 29 October 2026 (the owner: "The app UI needs reassessment", then "Push") ---------- */
+/* A short screen: the picture takes the width and the Looks float over its foot (app.js compactCamera); the strip
+   unfolds from the Look's name. */
+.camera .dock{position:relative}
+.camera.compact .tray{position:absolute;left:0;right:0;bottom:100%;z-index:3;padding:34px 0 6px;background:linear-gradient(to top,rgba(0,0,0,.58),rgba(0,0,0,.26) 55%,transparent);pointer-events:none}
+.camera.compact .tray>*{pointer-events:auto}
+.camera.compact:not(.looks-open) .strip{display:none}
+.camera.compact .mix,.camera.compact .shuffle,.camera.compact .add-layer{background:rgba(28,28,30,.55);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.camera.compact .add-layer{padding-right:12px}
+.camera.compact .zoom{bottom:64px}
+.camera.compact .exposure-chip{bottom:68px}
+/* The zoom steps aside while the tray is open over the picture. */
+.camera.compact.looks-open .zoom,.camera.compact:has(#amountRow:not([hidden])) .zoom{opacity:0;pointer-events:none}
+.layer-pick .more{display:none}
+.camera.compact:not(.looks-open) .layer.active:not(.removable) .layer-pick .more{display:inline-block;width:13px;height:13px;margin-left:4px;vertical-align:-1px;transform:rotate(180deg);stroke-width:2.6}
+/* The first screen starts the camera with its own button: no shutter under it, and no empty album corner. */
+.camera.idle .shutter{visibility:hidden}
+.camera.idle .controls:has(.roll img[hidden]){display:none}
+/* The frame sheet: one strip of every frame, the next one showing at the edge. */
+.frame-sheet .frame-choice canvas{width:68px;height:68px}
+/* A chosen sticker: remove and flip at its top, its words below; pinched to resize on a touch screen, so the corner
+   handle is for a mouse. */
+@media (pointer:coarse){.sticker.selected .sticker-handle{display:none}}
+.sticker>.sticker-say{width:auto;padding:0 10px 0 7px;gap:4px;border-radius:15px;font-size:12px;font-weight:700;letter-spacing:-.01em}
+.sticker.selected>.sticker-say:not([hidden]){display:inline-flex;align-items:center}
+/* One photo: actions in white, Delete in red, as Photos has them; yellow is for what is chosen. */
+.toolbar button{color:var(--label)}
+.toolbar #deletePhoto{color:#ff453a}
+/* The residents' tabs: their other sheets under their names. */
+.sticker-heading{grid-column:1/-1;margin:10px 2px 0;font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--label-2)}
+#panelStickers .sticker-grid{grid-auto-columns:min-content}
+#panelStickers .sticker-choice{width:56px}
+#panelStickers .sticker-heading{grid-column:auto;grid-row:1/-1;margin:0 2px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;text-align:center;white-space:nowrap}
+/* Memory's decks: a soft card until its picture is in. */
+.memory-fan i{background:rgba(244,241,232,.16);transition:background-color .3s}
+.memory-fan i.loaded{background:#f4f1e8}
+.memory-fan img{opacity:0;transition:opacity .3s}
+.memory-fan i.loaded img{opacity:1}
+/* Rows that fit the width of any phone held upright (the owner: "Make the Ui more adaptive parts are truncated in
+   portrait"): the seven settings, the sticker tabs and the six adjustments share the width instead of running off it. */
+.setting{width:min(58px,calc((100vw - 44px)/7));font-size:min(11px,2.9vw)}
+.setting i{width:min(42px,calc((100vw - 44px)/7 - 6px));height:min(42px,calc((100vw - 44px)/7 - 6px))}
+.sticker-sets{gap:clamp(4px,1.4vw,6px);padding:0 12px}
+.sticker-sets button{flex:0 1 auto;min-width:0;padding:0 clamp(7px,2.4vw,13px);font-size:clamp(12px,3.3vw,13px)}
+.adjuster{width:min(60px,calc((100vw - 44px)/6))}
+.adjuster i{width:min(50px,calc((100vw - 44px)/6 - 8px));height:min(50px,calc((100vw - 44px)/6 - 8px))}
+/* The tab row keeps its height however short the sheet (a row that scrolls sideways could otherwise give it up). */
+.sticker-sets{flex:none;min-height:30px}
+/* Four and a half frames across the sheet at any width, so the next one always shows at the edge. */
+.frame-sheet .frame-choice canvas{width:calc((min(420px,100vw - 16px) - 72px)/4.5);height:calc((min(420px,100vw - 16px) - 72px)/4.5)}

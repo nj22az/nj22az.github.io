@@ -41,15 +41,25 @@ when saving ? I want memory with our own photos or with the stickers".
   town ("Toy town" Print + Miniature, "Cartridge TV" 16-bit + Old TV, "Ink & wash" …; `MIXES` in `app.js`, with the
   pairs left out and why); "Mix" adds a Look's partner from those first. Thumbnails show the picture itself in every
   Look, over the layers before the one being chosen.
+- **On a phone's browser** (a short screen: Safari with its toolbars) the picture takes the whole width and the Look
+  row sits on its foot; the strip of Looks unfolds from the Look's name (the little chevron) and folds again at a tap
+  on the picture; swiping across the picture steps through the Looks. On a tall screen (the Home Screen app) the tray
+  stays under the picture. Every row fits across a phone held upright, 320 to 430 points wide: the seven settings,
+  the sticker tabs, the six adjustments. One panel at a time: a sheet coming up puts the settings row away. The
+  first screen has one way to start the camera (no shutter under it). In one photo, Download and Edit are white and
+  Delete red; the album's Play opens Memory.
 - **Editor** (a photo from the device, or any photo in the album): Looks, Adjust (Light, Contrast, Colour, Warmth,
   Pattern, the size of dots, strokes and lines, and Detail, how many lines the drawn Looks ink), Stickers, Frame (the
   frames over the photo itself, Mirror, the date stamp); hold the picture to see the original.
 - **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
-  draws them), **World Thuan** (hers), **Cartoon Thuan** and **Thuan & Nils**, on the viewfinder or a photo. Drag; pinch and turn with two fingers;
-  the corner handle turns and resizes with a mouse; wheel resizes, Shift+wheel turns; arrows nudge, Delete removes.
-- **Lettering** (`lettering.js`, the first sheet): Speech, Shout, Thought and Caption with the photographer's own words,
+  draws them), and under Thuan's tab her other sheets, each under its name: **World Thuan** (hers), **Cartoon Thuan** and
+  **Thuan & Nils**. One tab a resident: Text · Thuan · Johansson · Thao · Mine, all across the phone. On the viewfinder
+  or a photo: drag; pinch and turn with two fingers; a chosen sticker has remove and flip at its top and, if it has
+  words of its own, Say below; the corner handle (a mouse only) turns and resizes; wheel resizes, Shift+wheel turns;
+  arrows nudge, Delete removes.
+- **Text** (`lettering.js`, the first sheet): Speech, Shout, Thought and Caption with the photographer's own words,
   lettered as a letterer does (balanced lines in an oval, one closed outline round balloon and tail, a shout in
   capitals in a burst, a thought with its bubbles, a caption box) in Baloo 2, the face the residents' stickers are
   lettered in; drawn from paths, sharp at any size. The tail turns with the flip button, the words change with Aa or a
@@ -138,7 +148,7 @@ node camera/tests/camera.browser.mjs         # real Chromium with a fake camera,
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (49 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+The browser check (50 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
 its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
 starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
 steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,

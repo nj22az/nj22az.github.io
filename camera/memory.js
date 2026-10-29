@@ -60,7 +60,7 @@ export function createMemory(root,{sources,cheer=()=>null,sound=()=>{},store,onP
    const ok=d.items.length>=PAIRS[0],b=document.createElement('button');b.type='button';b.className='memory-deck';b.setAttribute('role','radio');
    b.setAttribute('aria-checked',String(d.id===choice.source));b.disabled=!ok;b.dataset.deck=d.id;
    const fan=document.createElement('span');fan.className=`memory-fan deck-${d.kind}`;fan.setAttribute('aria-hidden','true');
-   for(const item of d.items.slice(0,3)){const card=document.createElement('i');const img=document.createElement('img');img.alt='';img.decoding='async';img.src=urlFor(item);card.append(img);fan.append(card);}
+   for(const item of d.items.slice(0,3)){const card=document.createElement('i');const img=document.createElement('img');img.alt='';img.decoding='async';img.src=urlFor(item);img.addEventListener('load',()=>card.classList.add('loaded'),{once:true});if(img.complete&&img.naturalWidth)card.classList.add('loaded');card.append(img);fan.append(card);}
    if(!d.items.length)fan.classList.add('empty');
    const name=document.createElement('span');name.className='memory-deck-name';name.textContent=d.name;
    const note=document.createElement('span');note.className='memory-deck-note';

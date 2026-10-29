@@ -105,7 +105,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null}
     el=document.createElement('div');el.className=`sticker${balloon?' balloon':''}`;el.tabIndex=0;el.setAttribute('role','button');
     el.innerHTML=`${balloon?'<canvas aria-hidden="true"></canvas>':'<img alt="" draggable="false">'}<button type="button" class="sticker-remove" aria-label="Remove">${icon('x')}</button>`
      +`<button type="button" class="sticker-flip" aria-label="${balloon?'Turn the tail the other way':'Flip sticker'}">${icon('flip-h')}</button><span class="sticker-handle" aria-hidden="true">${icon('resize')}</span>`
-     +(balloon?`<button type="button" class="sticker-text" aria-label="Change the words">${icon('text')}</button>`:`<button type="button" class="sticker-say">${icon('say')}</button>`);
+     +(balloon?`<button type="button" class="sticker-text" aria-label="Change the words">${icon('text')}</button>`:`<button type="button" class="sticker-say">${icon('say')}<span>Say</span></button>`);
     el.addEventListener('focus',()=>select(els.indexOf(el)));
     if(balloon)el.addEventListener('dblclick',()=>{const k=els.indexOf(el);if(k>=0)editText(k,list()[k]);});
     if(stale)stale.replaceWith(el);else layer.append(el);

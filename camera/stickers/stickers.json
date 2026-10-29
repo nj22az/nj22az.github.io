@@ -6,6 +6,7 @@
    "id": "thuan-blender",
    "name": "Thuan",
    "who": "Thuan",
+   "tab": "Thuan",
    "stickers": [
     {
      "id": "thuan-blender/v-wave",
@@ -85,6 +86,7 @@
    "id": "johansson-pixar",
    "name": "Johansson",
    "who": "Johansson",
+   "tab": "Johansson",
    "stickers": [
     {
      "id": "johansson-pixar/Wave",
@@ -308,6 +310,7 @@
    "id": "thao-pixar",
    "name": "Thao",
    "who": "Thao",
+   "tab": "Thao",
    "stickers": [
     {
      "id": "thao-pixar/Wave",
@@ -531,6 +534,7 @@
    "id": "thuan-pixar",
    "name": "World Thuan",
    "who": "Thuan",
+   "tab": "Thuan",
    "stickers": [
     {
      "id": "thuan-pixar/Fume",
@@ -772,6 +776,7 @@
    "id": "thuan",
    "name": "Cartoon Thuan",
    "who": "Thuan",
+   "tab": "Thuan",
    "stickers": [
     {
      "id": "thuan/Fume",
@@ -1013,6 +1018,7 @@
    "id": "thuan-nils",
    "name": "Thuan & Nils",
    "who": "",
+   "tab": "Thuan",
    "stickers": [
     {
      "id": "thuan-nils/Walk",

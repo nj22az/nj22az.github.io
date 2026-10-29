@@ -18,15 +18,16 @@ from pathlib import Path
 
 from PIL import Image
 
-SETS = [  # (folder in art/stickers, name in the picker, who they are: "What does Thuan say?")
+SETS = [  # (folder in art/stickers, name in the picker, who they are: "What does Thuan say?", the tab it is under)
     # The camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not important
-    # for the camera app", "Use Johansson , Thuan and Thao"), first in their 3D bodies.
-    ('thuan-blender', 'Thuan', 'Thuan'),       # her Blender doll, 3d/cast ("blender Thuan the one that looks like a real doll")
-    ('johansson-pixar', 'Johansson', 'Johansson'),
-    ('thao-pixar', 'Thao', 'Thao'),
-    ('thuan-pixar', 'World Thuan', 'Thuan'),   # her Pixar body in World (the owner: "Bring Pixar Thuan too")
-    ('thuan', 'Cartoon Thuan', 'Thuan'),       # her cartoon of 19 October, with the same poses and lines
-    ('thuan-nils', 'Thuan & Nils', ''),
+    # for the camera app", "Use Johansson , Thuan and Thao"): one tab each, first in their 3D bodies; Thuan's other
+    # sheets are under hers, each with its name over it.
+    ('thuan-blender', 'Thuan', 'Thuan', 'Thuan'),       # her Blender doll, 3d/cast ("blender Thuan the one that looks like a real doll")
+    ('johansson-pixar', 'Johansson', 'Johansson', 'Johansson'),
+    ('thao-pixar', 'Thao', 'Thao', 'Thao'),
+    ('thuan-pixar', 'World Thuan', 'Thuan', 'Thuan'),   # her Pixar body in World (the owner: "Bring Pixar Thuan too")
+    ('thuan', 'Cartoon Thuan', 'Thuan', 'Thuan'),       # her cartoon of 19 October, with the same poses and lines
+    ('thuan-nils', 'Thuan & Nils', '', 'Thuan'),
 ]
 PLACE, THUMB = 1024, 256
 OUT = Path(__file__).resolve().parent.parent / 'camera' / 'stickers'
@@ -43,7 +44,7 @@ def main(studio):
     root = Path(studio) / 'art' / 'stickers'
     commit = subprocess.run(['git', '-C', str(studio), 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
     manifest = {'source': f'nj22az/jojo art/stickers/*/plain at {commit or "unknown"}', 'lettered': False, 'sets': []}
-    for folder, name, who in SETS:
+    for folder, name, who, tab in SETS:
         data = json.loads((root / folder / 'stickers.json').read_text(encoding='utf-8'))
         (OUT / folder).mkdir(parents=True, exist_ok=True)
         entries = []
@@ -62,7 +63,7 @@ def main(studio):
                             'width': width, 'height': height, 'line': sticker.get('line', ''),
                             # what a sticker with no line shows is said by its label ("Waving")
                             'gloss': sticker.get('gloss') or sticker.get('label', '')})
-        manifest['sets'].append({'id': folder, 'name': name, 'who': who, 'stickers': entries})
+        manifest['sets'].append({'id': folder, 'name': name, 'who': who, 'tab': tab, 'stickers': entries})
         print(f'{name}: {len(entries)} stickers')
     (OUT / 'stickers.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
 

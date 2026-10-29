@@ -43,6 +43,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
    await page.waitForFunction(()=>document.querySelector('#cameraFrame canvas')?.width>100,null,{timeout:20000});
    await page.waitForTimeout(1500);await shot('1-camera');
+   assert.equal(await app(()=>document.querySelector('#camera').classList.contains('compact')),false,'a tall screen keeps the Looks under the picture');
   });
   await check(`${label}: every World Look compiles and draws the camera picture`,async()=>{
    const out=await app(()=>{
@@ -89,7 +90,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.frame),'print');
    assert.equal(await page.locator('#settingsStatus svg').count(),2,'the frame and the date show beside the chevron');
    await page.waitForTimeout(600);await shot('3-mix');
-   await page.click('#settingsToggle');assert.equal(await page.isHidden('#settings'),true);
+   assert.equal(await page.isHidden('#settings'),true,'the frame sheet put the settings row away: one panel at a time');
   });
   await check(`${label}: the curated dice rolls a named mix`,async()=>{
    const before=await app(()=>JSON.stringify(window.pocketCamera.state.camera.recipe.layers));
@@ -163,13 +164,27 @@ async function run({label,width,height,dpr,mobile,portrait}){
    assert.deepEqual(await app(()=>window.pocketCamera.state.edit.recipe.layers.map(l=>l.look)),['pocket','crt']);
    await page.waitForSelector('#editFrame .sticker img[src*="johansson-pixar"]');
    await page.waitForSelector('#editFrame .sticker.balloon canvas');
-   await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Cartoon Thuan")');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
-   await page.click('#panelStickers .sticker-choice >> nth=3');
-   const handle=page.locator('#editFrame .sticker.selected .sticker-handle');await handle.waitFor();
-   const h=await handle.boundingBox();
-   await page.mouse.move(h.x+h.width/2,h.y+h.height/2);await page.mouse.down();await page.mouse.move(h.x+h.width/2+40,h.y+h.height/2-10,{steps:6});await page.mouse.up();
+   // Thuan's tab: her own sheet, then her other sheets under their names (the cartoon one among them).
+   await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Thuan")');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
+   assert.deepEqual(await app(()=>[...document.querySelectorAll('#panelStickers .sticker-heading')].map(h=>h.textContent)),['World Thuan','Cartoon Thuan','Thuan & Nils'],'her other sheets under their names');
+   await page.click('#panelStickers .sticker-choice[data-id^="thuan/"] >> nth=3');
+   if(mobile){
+    // A touch screen has no corner handle: two fingers spread the sticker.
+    if(await app(()=>matchMedia('(pointer:coarse)').matches))assert.equal(await page.isVisible('#editFrame .sticker.selected .sticker-handle'),false,'no corner handle on a touch screen');
+    await app(()=>{
+     const el=document.querySelector('#editFrame .sticker.selected'),r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+     const fire=(type,id,x,y,target=el)=>target.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:id===21,clientX:x,clientY:y,bubbles:true,cancelable:true}));
+     fire('pointerdown',21,cx,cy-20);fire('pointerdown',22,cx,cy+20);
+     for(let k=1;k<=5;k++){fire('pointermove',22,cx,cy+20+k*10,window);fire('pointermove',21,cx,cy-20-k*10,window);}
+     fire('pointerup',22,cx,cy+70,window);fire('pointerup',21,cx,cy-70,window);
+    });
+   }else{
+    const handle=page.locator('#editFrame .sticker.selected .sticker-handle');await handle.waitFor();
+    const h=await handle.boundingBox();
+    await page.mouse.move(h.x+h.width/2,h.y+h.height/2);await page.mouse.down();await page.mouse.move(h.x+h.width/2+40,h.y+h.height/2-10,{steps:6});await page.mouse.up();
+   }
    const st=await app(()=>window.pocketCamera.state.edit.recipe.stickers);
-   assert.equal(st.length,3);assert.ok(st[2].size>.42,'the handle made it bigger');assert.ok(st[2].id.startsWith('thuan/'));
+   assert.equal(st.length,3);assert.ok(st[2].size>.42,mobile?'the pinch made it bigger':'the handle made it bigger');assert.ok(st[2].id.startsWith('thuan/'));
    await page.waitForTimeout(300);await shot('7b-editor-stickers');
    await page.click('#tabLooks');
    await page.waitForTimeout(1500);await shot('7-editor');
@@ -287,7 +302,7 @@ async function firstScreen({label,width,height}){
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`${server.url}camera/`);
   await page.waitForFunction(()=>!document.querySelector('#welcome').hidden&&document.querySelector('#welcomeSticker').complete&&!document.querySelector('#welcomeSticker').hidden,null,{timeout:20000});
-  await check(`${label}: the greeting fits whole, the strip waits, the shutter starts the camera`,async()=>{
+  await check(`${label}: the greeting fits whole, the strip waits, its button starts the camera`,async()=>{
    const out=await page.evaluate(()=>{
     const stage=document.querySelector('#cameraStage').getBoundingClientRect(),inside=[];
     for(const el of document.querySelectorAll('#welcome > *')){
@@ -295,18 +310,19 @@ async function firstScreen({label,width,height}){
      inside.push({el:el.id||el.className||el.tagName,ok:r.top>=stage.top-.5&&r.bottom<=stage.bottom+.5&&r.left>=stage.left-.5&&r.right<=stage.right+.5});
     }
     const sticker=document.querySelector('#welcomeSticker').getBoundingClientRect();
+    const shutter=document.querySelector('#shutter');
     return {inside,sticker:sticker.height,tray:getComputedStyle(document.querySelector('#tray')).display,
-     shutter:{disabled:document.querySelector('#shutter').disabled,label:document.querySelector('#shutter').getAttribute('aria-label')}};
+     shutter:shutter.offsetParent!==null&&getComputedStyle(shutter).visibility!=='hidden'};
    });
    for(const i of out.inside)assert.ok(i.ok,`${i.el} inside the stage`);
    assert.ok(out.inside.some(i=>/actions/.test(i.el)),'the buttons are shown');
    assert.ok(out.sticker>=60,`the greeting sticker is shown whole and not tiny (${Math.round(out.sticker)} px)`);
    assert.equal(out.tray,'none','no Look strip before there is a picture');
-   assert.deepEqual(out.shutter,{disabled:false,label:'Start camera'});
+   assert.equal(out.shutter,false,'one way to start the camera: no shutter under the greeting');
    await context.grantPermissions(['camera']);
-   await page.locator('#shutter').tap();
+   await page.locator('#startCamera').tap();
    await page.waitForFunction(()=>window.pocketCamera.state.camera.running,null,{timeout:20000});
-   assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('#tray')).display!=='none'&&document.querySelector('#shutter').getAttribute('aria-label')),'Take photo');
+   assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('#tray')).display!=='none'&&document.querySelector('#shutter').offsetParent!==null&&document.querySelector('#shutter').getAttribute('aria-label')),'Take photo');
   });
   await check(`${label}: the Home Screen app's manifest and icons`,async()=>{
    const out=await page.evaluate(async()=>{
@@ -336,6 +352,35 @@ async function playAndPrint({label,width,height}){
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto(`${server.url}camera/`);
   await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
+  await check(`${label}: the picture takes the whole width; the Looks unfold from the Look's name`,async()=>{
+   await page.waitForFunction(()=>document.querySelector('#camera').classList.contains('compact'),null,{timeout:10000});
+   const look=()=>page.evaluate(()=>{const f=document.querySelector('#cameraFrame').getBoundingClientRect(),t=document.querySelector('#tray').getBoundingClientRect();
+    return {frame:Math.round(f.width),screen:innerWidth,strip:getComputedStyle(document.querySelector('#strip')).display,open:document.querySelector('#camera').classList.contains('looks-open'),trayOver:t.top>=f.top&&t.top<f.bottom-30&&t.bottom<=f.bottom+4};});
+   let v=await look();
+   assert.ok(v.frame>=v.screen-2,`the picture is the screen's width (${v.frame} of ${v.screen} px)`);
+   assert.equal(v.strip,'none','the strip is folded');assert.ok(v.trayOver,'the Look row is on the picture');
+   await page.locator('#layers .layer.active .layer-pick').tap();
+   v=await look();assert.ok(v.open&&v.strip!=='none','the Look name unfolds the strip');
+   await page.locator('#strip .tile[data-look="sepia"]').tap();
+   assert.equal(await page.evaluate(()=>window.pocketCamera.state.camera.recipe.layers[0].look),'sepia');
+   const f=await page.locator('#cameraFrame').boundingBox();await page.touchscreen.tap(f.x+f.width/2,f.y+f.height*.3);
+   await page.waitForFunction(()=>!document.querySelector('#camera').classList.contains('looks-open'));
+   await page.locator('#layers .layer.active .layer-pick').tap();await page.locator('#strip .tile[data-look="pocket"]').tap();
+   await page.touchscreen.tap(f.x+f.width/2,f.y+f.height*.3);
+   // Every row fits across the phone held upright: nothing runs off its edge (the owner: "parts are truncated in portrait").
+   const fits=sel=>page.evaluate(sel=>{const e=document.querySelector(sel),r=e.getBoundingClientRect();
+    return e.scrollWidth<=e.clientWidth+1&&[...e.children].every(k=>{const q=k.getBoundingClientRect();return q.left>=Math.max(r.left,0)-1&&q.right<=Math.min(r.right,innerWidth)+1&&k.scrollWidth<=k.clientWidth+1;});},sel);
+   await page.locator('#settingsToggle').tap();assert.ok(await fits('#settings'),'all seven settings fit across');await page.locator('#settingsToggle').tap();
+   await page.locator('.sticker-button').tap();await page.waitForSelector('#stickerSheet[open] .sticker-choice');
+   assert.ok(await fits('#stickerSets'),'every sticker tab fits across');
+   assert.ok(await page.$$eval('#stickerSets button',b=>b.every(x=>x.getBoundingClientRect().height>=28)),'the tabs keep their height');
+   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Mine'],'a tab a resident');
+   await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#stickerSheet').open);
+   // A sheet puts the settings row away: one panel at a time.
+   await page.locator('#settingsToggle').tap();await page.locator('#frameSetting').tap();await page.waitForSelector('#frameSheet[open]');
+   assert.equal(await page.isHidden('#settings'),true,'the settings row is put away when a sheet comes up');
+   await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#frameSheet').open);
+  });
   await check(`${label}: the shutter prints the photo, and the print lands in the album`,async()=>{
    const out=await page.evaluate(async()=>{
     const pc=window.pocketCamera,seen={scene:false,paper:false,steps:new Set()};
@@ -365,7 +410,7 @@ async function playAndPrint({label,width,height}){
   // without text and we can add any text as another sticker", "Or without the balloon too").
   await check(`${label}: words alone, a resident's own words, and lettering that changes its style`,async()=>{
    await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:'Lettering'}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Text$/}).tap();
    await page.locator('.sticker-choice.lettering[data-id="balloon:words"]').tap();
    await page.waitForSelector('#textSheet[open]');
    assert.equal(await page.getAttribute('#letteringStyles [data-style="balloon:words"]','aria-checked'),'true','Words is chosen in the sheet');
@@ -374,7 +419,7 @@ async function playAndPrint({label,width,height}){
    let last=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
    assert.equal(last.id,'balloon:words');assert.equal(last.text,'Nankurunaisa!');assert.ok(last.y>.6,'words alone go low, as a caption');
    // A resident's sticker, chosen, offers their own line: as a speech balloon, or here as words alone under them.
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Cartoon Thuan$/}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Thuan$/}).tap();
    await page.locator('.sticker-choice[data-id="thuan/Wave"]').tap();
    await page.waitForSelector('#cameraFrame .sticker.selected .sticker-say');
    const line=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
