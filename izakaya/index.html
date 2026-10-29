@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141821">
+<meta name="color-scheme" content="dark">
+<title>Minato izakaya · The Office of Nils Johansson</title>
+<meta name="description" content="Walk round Minato, the harbour izakaya of Johansson World, on the night Johansson, Thao and Thuận raise their beers: the light worked out in Blender and painted into the room.">
+<meta property="og:title" content="Minato izakaya">
+<meta property="og:description" content="A night at Minato: Johansson, Thao and Thuận raise their beers. Walk round the room.">
+<meta property="og:image" content="https://nj22az.github.io/izakaya/preview.jpg">
+<meta property="og:url" content="https://nj22az.github.io/izakaya/">
+<link rel="canonical" href="https://nj22az.github.io/izakaya/">
+<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+<link rel="stylesheet" href="izakaya.css?v=20261029a">
+<script type="importmap">{"imports": {"three": "/johansson-town/vendor/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="scene" aria-label="Minato izakaya, in 3D"></canvas>
+
+<div id="loading" class="loading">
+ <img src="preview.jpg" alt="" class="poster">
+ <div class="loading-card">
+  <p class="loading-title">Minato</p>
+  <p class="loading-note" id="loading-note">Setting the room…</p>
+  <div class="bar"><span id="bar"></span></div>
+ </div>
+</div>
+
+<header class="chrome top">
+ <a class="chip" href="/" aria-label="Back to the Office">← Office</a>
+ <span class="chip name">Minato · the toast</span>
+ <button class="chip" id="reset" type="button" aria-label="Back to the opening view">Back to the toast</button>
+</header>
+
+<p class="chrome hint" id="hint"></p>
+<div id="stick" class="stick" aria-hidden="true"><span></span></div>
+
+<script type="module" src="izakaya.js?v=20261029a"></script>
+</body>
+</html>
