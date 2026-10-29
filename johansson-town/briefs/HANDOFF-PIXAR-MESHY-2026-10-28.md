@@ -48,6 +48,22 @@ it to the game too".
   bench by the game's own interaction (a scratch run of the audit harness), his thighs along the seat.
 - Published: the branch merged with `main` and pushed to `main` on the owner's word.
 
+## 29 October 2026, later: his hands on his knees when he sits
+
+The owner, of him on a bench: "How about his hands shouldn't they rest on his knees when sitting like that". Seated, his
+hands floated in front of his belly. Measured in the game: his shoulder is 0.64 m from his knee, his arm reaches 0.48 m
+to the wrist, and the chair sit (`src/avatars/animate.js` `chairShape`) held the cartoon's round mitten a hand's length
+over the lap: the reach (`reachFor`) keeps a mitten's middle 0.7 of a hand off the body, sampled as a 23 cm ball.
+
+- A Pixar body now rests its palms on its thighs by the knees (`CHAIR_SIT.pixar.rest`): the farthest point of `along`
+  (85 % of the way from the hip to the knee first) the arm reaches, with the trunk leaned in by one of `leans` if it must
+  (shared by the spine and the chest, the head kept level); the arm is solved with the trunk as it is drawn (the slump
+  and the lean), which it was not before. Johansson reaches 85 % with no lean.
+- `reachFor` takes `flat` (a thin hand sampled at [its thickness, its width] of the mitten's round) and `clear` (how near
+  its middle may come to the body). The cartoon bodies' mittens are as before.
+- Checked: on the quay bench and the sea-wall bench by the game's own interaction (`--source`), the palms on the knees,
+  fingers over them, from the side, front and three-quarter.
+
 ## Open
 
 - A faint crease under the nose, where the moustache's sculpted volume met the nose, shows only close up.
