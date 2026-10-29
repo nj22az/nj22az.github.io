@@ -4,7 +4,7 @@
 .comic-ui{position:absolute;inset:0;pointer-events:none}
 .comic-ui svg{display:block;width:100%;height:100%;overflow:visible}
 .comic-ui polygon{fill:none;stroke:none}
-.comic-ui polygon.empty{fill:rgba(255,253,246,.0);stroke:rgba(21,18,15,.28);stroke-width:1;stroke-dasharray:5 5;vector-effect:non-scaling-stroke}
+.comic-ui polygon.empty{stroke:rgba(21,18,15,.28);stroke-width:1;stroke-dasharray:5 5;vector-effect:non-scaling-stroke}
 .comic-ui polygon.chosen{stroke:var(--accent);stroke-width:3;stroke-dasharray:none;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
 .comic-ui .plus circle{fill:rgba(21,18,15,.72)}
 .comic-ui .plus path{stroke:#fff;stroke-width:2.4;stroke-linecap:round;vector-effect:non-scaling-stroke}
@@ -40,12 +40,21 @@
 .comic-choice img{aspect-ratio:4/3;height:auto;border-radius:9px;object-fit:cover;background:#2c2c2e}
 .comic-choice span{font-size:11px;font-weight:600;color:var(--label-2);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .comic-sheet .sticker-sets{padding-top:4px;padding-bottom:6px}
+.comic-tabs{display:flex;gap:inherit;flex:0 1 auto;min-width:0}
 
-/* The camera shooting a panel: the way back to the comic in place of the website's, and nothing that leaves it. */
+/* The camera shooting a panel: the way back to the comic in place of the website's, and nothing that leaves it; no
+   frame or date either, since the page has its own borders. */
 .camera.for-panel .camera-home,.camera.for-panel #import,.camera.for-panel #roll{visibility:hidden}
+.camera.for-panel #frameSetting,.camera.for-panel #stamp{display:none}
 .camera .bar{position:relative}
 .panel-back{position:absolute;left:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:2px;height:44px;font-size:17px;color:var(--accent)}
 .panel-back em{margin-left:8px;padding:2px 8px;border-radius:9px;background:#2a2a2c;color:#fff;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.02em}
+/* On a phone narrower than 390 points the word goes, as the Office link's does, so the panel stays clear of the
+   settings' chevron; it is still read out. */
+@media (max-width:389px){
+ .panel-back span{position:absolute;clip:rect(0 0 0 0);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+ .panel-back em{margin-left:2px}
+}
 
 /* The album's way in. */
 .comic-entry .arcade-entry-icon{background:#f6d477;color:#181818;letter-spacing:0}

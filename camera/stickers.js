@@ -90,8 +90,9 @@ function clipped(g,points,draw){
  g.save();g.beginPath();g.moveTo(...points[0]);for(const p of points.slice(1))g.lineTo(...p);g.closePath();g.clip();draw();g.restore();
 }
 const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
-// Small enough for a mark by a face in a 4-koma's panel; normalRecipe (looks-gl.js) keeps the same range.
-const SIZE=[.015,1.6];
+// The smallest a sticker is made by hand: on a photo, one a finger can still pick up (6% of the picture's height); on a
+// comic's page, small enough for a mark by a face in a 4-koma's panel, the range normalRecipe (looks-gl.js) keeps.
+const SMALLEST=.06,SMALLEST_ON_A_PAGE=.015,LARGEST=1.6;
 const icon=name=>`<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;
 
 /**
@@ -106,7 +107,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null,
  // The lines are painted on one canvas over the whole picture, under every sticker; each has a clear circle to hold.
  const art=document.createElement('canvas');art.className='effects-art';art.setAttribute('aria-hidden','true');layer.append(art);
  let selected=null,gesture=null;
- const els=[];
+ const els=[],sized=v=>clamp(v,area()?SMALLEST_ON_A_PAGE:SMALLEST,LARGEST);
  function paintEffects(){
   // No larger than a phone can keep (a comic's page zoomed in on one panel is several screens across).
   const fw=frame.clientWidth,fh=frame.clientHeight,dpr=Math.min(3,devicePixelRatio||1,Math.sqrt(8e6/Math.max(1,fw*fh)));
@@ -263,12 +264,12 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null,
   if(gesture.mode==='handle'){
    const c={x:rect.left+from.x*rect.width,y:rect.top+from.y*rect.height},p=now[0],q=was[0];
    const d0=Math.hypot(q.x-c.x,q.y-c.y)||1,d=Math.hypot(p.x-c.x,p.y-c.y);
-   s.size=clamp(from.size*d/d0,...SIZE);
+   s.size=sized(from.size*d/d0);
    s.angle=from.angle+(Math.atan2(p.y-c.y,p.x-c.x)-Math.atan2(q.y-c.y,q.x-c.x))*180/Math.PI;
   }else if(now.length>=2){
    const [a,b]=now,[a0,b0]=was;
    const d0=Math.hypot(b0.x-a0.x,b0.y-a0.y)||1,d=Math.hypot(b.x-a.x,b.y-a.y);
-   s.size=clamp(from.size*d/d0,...SIZE);
+   s.size=sized(from.size*d/d0);
    s.angle=from.angle+(Math.atan2(b.y-a.y,b.x-a.x)-Math.atan2(b0.y-a0.y,b0.x-a0.x))*180/Math.PI;
    s.x=clamp(from.x+((a.x+b.x)-(a0.x+b0.x))/2/rect.width,-.2,1.2);s.y=clamp(from.y+((a.y+b.y)-(a0.y+b0.y))/2/rect.height,-.2,1.2);
   }else{
@@ -285,7 +286,7 @@ export function createStickerLayer(frame,{list,changed,editText=()=>{},say=null,
  frame.addEventListener('wheel',e=>{
   const el=e.target.closest('.sticker');if(!el)return;
   e.preventDefault();const i=els.indexOf(el);if(i!==selected)select(i);const s=list()[selected];
-  if(e.shiftKey)s.angle+=e.deltaY*.15;else s.size=clamp(s.size*Math.exp(-e.deltaY*.0015),...SIZE);
+  if(e.shiftKey)s.angle+=e.deltaY*.15;else s.size=sized(s.size*Math.exp(-e.deltaY*.0015));
   place(els[selected],s);if(isBalloon(s.id))paintBalloon(els[selected],s);if(isEffect(s.id))paintEffects();changed();
  },{passive:false});
 

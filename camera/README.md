@@ -164,8 +164,10 @@ pinch and turn everything. So the comic lives in the camera and is made with its
 - **A tap on an empty panel** asks what fills it: **Places** (Minato's own rooms and streets as the storyteller
   photographed them, `johansson-town/assets/images/feed/`: nineteen places, Wide, Close, Low and High under the page),
   **Album**, **Camera** (the camera opens for that panel, in its own Looks, mix and stickers, without its frame or date;
-  the shutter puts the photo in the panel, keeps it in the album, and brings the comic back) or **Photos** (the
-  device's).
+  the tap itself starts it, so a phone that has not yet allowed the camera asks then; the shutter puts the photo in the
+  panel, keeps it in the album, and brings the comic back; if the camera is refused, the greeting's Your photos fills
+  the panel instead) or **Photos** (the device's). A picture pasted or dropped while a comic is open fills the chosen
+  panel; it never replaces the page.
 - **In a panel**: drag the picture to move it, pinch to zoom it (it always covers its panel); tap a panel to choose it;
   tap twice, or the magnifier, to zoom the page in on it, which is how a small panel is lettered on a phone; Escape or
   the magnifier again shows the whole page.
@@ -177,10 +179,12 @@ pinch and turn everything. So the comic lives in the camera and is made with its
 - **The Looks draw over the whole page**: Manga or Comic dots make the town's rooms and the photos one comic. The page
   is drawn in two parts so a Look never smudges the paper: the pictures run on under the gutters as a printer's bleed,
   go through the Looks, then the paper and the borders are laid over them, then the stickers.
-- **Saved** as a page 3000 pixels on its long side, through the printer, into the album, with what fills each panel (a
-  place is fetched again; the other pictures are kept, no larger than 2048 pixels), so **Edit** opens it again panel by
-  panel. A layout changed and changed back keeps the panels' pictures. Places a comic has used are kept by the offline
-  worker.
+- **Saved** as a page 3000 pixels on its long side, through the printer, into the album, with what fills each panel, so
+  **Edit** opens it again panel by panel: every panel's picture is kept, no larger than 2048 pixels; a place is fetched
+  again, and its kept copy used when it cannot be (offline and not kept, or renamed in World); a panel whose picture is
+  not found keeps what it named, to be found the next time. A layout changed and changed back keeps the panels'
+  pictures. Places a comic has used are kept by the offline worker. A panel's picture is let go as soon as it is
+  replaced or cleared, and every picture when the comic is left, as an iPhone has little memory to spare.
 
 ## How it works
 

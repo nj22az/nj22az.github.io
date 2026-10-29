@@ -9,6 +9,8 @@ import {COMIC_LAYOUTS,comicLayout,pageSize,pageGeometry,panelAt,panelArea,normal
 const views=JSON.parse(readFileSync(new URL('../../johansson-town/assets/images/feed/views.json',import.meta.url)));
 let n=0;const ok=(name,fn)=>{fn();n++;console.log(`ok  ${name}`);};
 const box=pts=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);return {x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};};
+// A point inside a convex polygon: on the same side of every edge.
+const within=(pts,x,y)=>new Set(pts.map(([x0,y0],i)=>{const [x1,y1]=pts[(i+1)%pts.length];return Math.sign((x1-x0)*(y-y0)-(y1-y0)*(x-x0));})).size===1;
 
 ok('eight layouts, each with a page shape and panels; the default is one of them',()=>{
  assert.deepEqual(COMIC_LAYOUTS.map(l=>l.id),['one','strip','four','koma','rows','hero','action','inset']);
@@ -40,11 +42,13 @@ ok('the panels stay inside the page and its margin, and do not overlap (an inset
  for(const l of COMIC_LAYOUTS){
   const {width,height}=pageSize(l.id),g=pageGeometry(l.id,width,height);
   for(const p of g.panels)for(const [x,y] of p.points)assert.ok(x>=g.margin-.01&&x<=width-g.margin+.01&&y>=g.margin-.01&&y<=height-g.margin+.01,l.id);
-  // A grid of points: none is in two panels that are not an inset over its splash.
+  // A grid of points: none is in two panels that are not an inset over its splash (each panel asked on its own).
+  let found=0;
   for(let y=5;y<height;y+=97)for(let x=5;x<width;x+=97){
-   const i=panelAt(l.id,width,height,x,y);
-   if(i>=0)assert.ok(g.panels[i].inset||g.panels.every((q,j)=>j===i||q.inset||panelAt(l.id,width,height,x,y)===i),l.id);
+   const holding=g.panels.filter(p=>!p.inset&&within(p.points,x,y)).length;found+=holding;
+   assert.ok(holding<=1,`${l.id}: (${x}, ${y}) is in ${holding} panels`);
   }
+  assert.ok(found>0,`${l.id}: the grid finds its panels`);
  }
 });
 ok('a point in a panel finds it, insets first; a gutter finds none',()=>{

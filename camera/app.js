@@ -6,12 +6,12 @@
 import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029u';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029u';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029v';
 import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
-import {COMIC_LAYOUTS,comicLayout,normalComic,pageSize,pageGeometry,panelAt,panelArea,composePage,drawComicFrame,moveView,layoutIcon,loadPlaces,placeView,statureOf,standInPanel} from './comic.js?v=20261029a';
+import {COMIC_LAYOUTS,comicLayout,normalComic,pageSize,pageGeometry,panelAt,panelArea,composePage,drawComicFrame,moveView,layoutIcon,loadPlaces,placeView,statureOf,standInPanel} from './comic.js?v=20261029b';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
@@ -461,7 +461,8 @@ function drawEditor(){
  setCanvasSize(h*e.width/e.height,h);
  const recipe=e.comparing?normalRecipe():e.recipe;
  dirty=!engine.draw(recipe,{source:'edit'});
- paintFrame($('editFrame'),e.recipe.frame,e.comparing,e.comic?.layout);
+ // Held for the original, a comic's page keeps its paper and borders: the pictures' bleed under them is not the page.
+ paintFrame($('editFrame'),e.recipe.frame,e.comparing&&!e.comic,e.comic?.layout);
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing,e.taken,e.recipe.frame);
 }
 addEventListener('resize',invalidate);
@@ -530,8 +531,9 @@ function renderCameraChips(){
  setting('stamp',{label:'Date',on:r.stamp,aria:`Date stamp: ${r.stamp?'on':'off'}`});
  setting('printSetting',{label:'Print',on:state.printer,aria:`Printer when saving: ${state.printer?'on':'off'}`});
  setting('soundSetting',{label:state.sound?'Sound':'Muted',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
- // What is switched on, beside the chevron, so it is never a surprise in the photo.
- const status=[c.timer&&'timer',r.frame!=='none'&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
+ // What is switched on, beside the chevron, so it is never a surprise in the photo. A panel's shot has no frame or date
+ // of its own (comic.css hides those two settings then).
+ const status=[c.timer&&'timer',r.frame!=='none'&&!panelShoot&&'frame',r.trick!=='none'&&'mirror',r.stamp&&!panelShoot&&'date'].filter(Boolean);
  $('settingsStatus').innerHTML=status.map(icon).join('');
  $('settingsToggle').classList.toggle('busy',status.length>0);
  $('zoom').textContent=`${c.zoom}×`;$('zoom').setAttribute('aria-label',`Zoom ${c.zoom}×`);
@@ -688,6 +690,8 @@ function printStamp(g,{x:left,y:top,w,h},date){
  g.shadowColor='rgba(255,120,30,.55)';g.shadowBlur=size*.5;g.shadowOffsetY=0;g.fillStyle='#ff9a3c';g.fillText(text,x,y);
  g.restore();
 }
+/** Lets a picture's memory go at once (an iPhone has little to spare): a bitmap closed, a canvas emptied. */
+function release(image){if(image instanceof HTMLCanvasElement)image.width=image.height=0;else image?.close?.();}
 /** Any picture file to something the engine can read, the right way up, no larger than a save may be. */
 async function decode(blob){
  let picture,width,height;
@@ -704,9 +708,9 @@ async function decode(blob){
  if(fit.width!==width){
   const c=document.createElement('canvas');c.width=fit.width;c.height=fit.height;
   const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(picture,0,0,fit.width,fit.height);
-  picture.close?.();picture=c;width=fit.width;height=fit.height;
+  release(picture);picture=c;width=fit.width;height=fit.height;
  }
- return {picture,width,height,close:()=>picture.close?.()};
+ return {picture,width,height,close:()=>release(picture)};
 }
 
 /** The largest rectangle of shape `aspect` inside `r`, less `pad` all round, centred: where a photo shows. */
@@ -758,13 +762,15 @@ function renderGrid(){
 $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)openViewer(b.dataset.id);});
 
 function show(mode){
- if(panelShoot&&mode!=='camera'&&mode!=='editor')endPanelShoot(false);
+ if(panelShoot&&mode!=='camera')endPanelShoot(false);
  state.mode=mode;
  for(const id of ['camera','editor','album','viewer','memory','cardsHub','cardGame'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
  if(mode==='editor'){$('panelLooks').append(tray);placeCanvas($('editFrame'));$('panelStickers').append($('stickerPicker'));}
  if(mode==='camera'||mode==='editor'){buildTrayFor();}
- if(mode==='camera'){renderCameraChips();if(!state.camera.running)maybeStartCamera();else{refreshThumbs(true);schedule();}}
+ // A panel's shot starts the camera from the very tap that asked for it, so an iPhone that has not yet allowed the
+ // camera asks now, rather than showing the greeting (whose Your photos would leave the comic).
+ if(mode==='camera'){renderCameraChips();if(!state.camera.running)(panelShoot?startCamera:maybeStartCamera)();else{refreshThumbs(true);schedule();}}
  else if(state.camera.running)stopCamera();
  if(mode!=='camera')showSettings(false);
  invalidate();
@@ -852,10 +858,15 @@ function download(file){const a=document.createElement('a');a.href=URL.createObj
 function offerFile(blob){download(new File([blob],fileName(),{type:'image/jpeg'}));toast('Saved as a file');}
 $('sharePhoto').addEventListener('click',()=>state.viewing&&sharePhoto(state.viewing));
 $('editPhoto').addEventListener('click',async()=>{
- const shot=state.viewing;if(!shot)return;
- if(shot.recipe?.comic){await openComicShot(shot);return;}
- const picture=await decode(shot.source||shot.photo);
- openEditor({...picture,recipe:shot.source?shot.recipe:normalRecipe(),shotId:shot.id,taken:new Date(shot.taken||shot.created),sourceBlob:shot.source||shot.photo});
+ const shot=state.viewing,button=$('editPhoto');if(!shot)return;
+ // Opened once however often it is tapped (a comic's places can take a moment), and not at all if the photo was left.
+ button.disabled=true;
+ try{
+  if(shot.recipe?.comic){await openComicShot(shot);return;}
+  const picture=await decode(shot.source||shot.photo);
+  if(state.mode!=='viewer'||state.viewing?.id!==shot.id){picture.close();return;}
+  openEditor({...picture,recipe:shot.source?shot.recipe:normalRecipe(),shotId:shot.id,taken:new Date(shot.taken||shot.created),sourceBlob:shot.source||shot.photo});
+ }finally{button.disabled=!engine||engine.lost();}
 });
 /** The action sheet for anything that cannot be undone. */
 function confirmDelete(message,label,then){
@@ -884,6 +895,10 @@ const mainLook=()=>[{look:state.camera.recipe.layers[0]?.look||'none',amount:1}]
 async function useFiles(files){
  files=files.filter(isPicture);
  if(!files.length)return;
+ // With a comic open, or a panel being shot for it (the greeting's Your photos, a paste, a drop), the picture fills the
+ // panel: it never replaces the page.
+ const e=comicEdit();
+ if(e){const i=panelShoot?panelShoot.i:e.comic.selected??0;if(panelShoot)endPanelShoot(true);await fillPanel(i,{ref:'own',blob:files[0]});return;}
  if(files.length===1){await editFile(files[0]);return;}
  await addToAlbum(files);
 }
@@ -922,7 +937,7 @@ async function editFile(file){
 }
 function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob,comic=null}){
  if(!engine)return;
- state.edit?.picture?.close?.();endComic();
+ release(state.edit?.picture);endComic();
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode,comic};
  // A comic's page has panels in place of a frame (no frame, mirror or date of its own).
  $('tabComic').hidden=!comic;$('tabFrame').hidden=!!comic;
@@ -932,7 +947,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob,comic=n
 }
 function closeEditor(){
  if(state.edit?.saving)return;
- const from=state.edit?.from;engine?.dropSource('edit');state.edit?.picture?.close?.();endComic();state.edit=null;
+ const from=state.edit?.from;engine?.dropSource('edit');release(state.edit?.picture);endComic();state.edit=null;
  if(from==='viewer'&&state.viewing)openViewer(state.viewing.id);else if(from==='album')openAlbum();else show('camera');
 }
 $('cancelEdit').addEventListener('click',closeEditor);
@@ -982,11 +997,12 @@ $('saveEdit').addEventListener('click',async()=>{
   const page=e.comic?await savedPage(e,recipe):null;
   const {photo,thumb}=page?page.finished:await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
   const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
-  const extra=page?{source:page.source,panels:page.panels,width:e.width,height:e.height}:{};
+  // A comic has no source of its own: it opens again from its panels.
+  const extra=page?{source:null,panels:page.panels,width:e.width,height:e.height}:{};
   let shot;
   if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...extra});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime(),...extra});
-  engine.dropSource('edit');e.picture?.close?.();endComic();state.edit=null;
+  engine.dropSource('edit');release(e.picture);endComic();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
   if(printing)await printing;
   if(shot)toast('Saved to the album');
@@ -1235,29 +1251,33 @@ const panelCount=e=>comicLayout(e.comic.layout).panels.length;
 const emptySlot=()=>({ref:null,view:{x:.5,y:.5,zoom:1},picture:null,place:null});
 function padSlots(comic){while(comic.slots.length<comicLayout(comic.layout).panels.length)comic.slots.push(emptySlot());}
 /** A picture for a panel: the right way up, no larger than a panel needs; `blob` is what a saved comic keeps of it. */
-async function panelPicture(blob,keep=true){
+async function panelPicture(blob){
  const d=await decode(blob);let {picture,width,height}=d;
  const s=Math.min(1,PANEL_SIDE/Math.max(width,height));
  if(s<1){
   const c=document.createElement('canvas');c.width=Math.round(width*s);c.height=Math.round(height*s);
   const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(picture,0,0,c.width,c.height);d.close();picture=c;width=c.width;height=c.height;
  }
- return {image:picture,width,height,blob:keep?blob:null,shrunk:s<1};
+ return {image:picture,width,height,blob,shrunk:s<1};
 }
-/** What a panel's `ref` names, as a picture: one of the places (fetched again), else the picture the comic kept. */
+/**
+ * What a panel's `ref` names, as a picture: one of the places fetched again, else the picture the comic kept (of a place
+ * too, so a place offline and not kept, or renamed in World, never empties a panel).
+ */
 async function refPicture(ref,kept){
  if(!ref)return null;
  if(ref.startsWith('place:')){
-  const found=await placeView(ref);if(!found)return null;
-  const r=await fetch(found.view.url);if(!r.ok)throw new Error('The place could not be loaded');
-  return {...await panelPicture(await r.blob(),false),place:found.view,placeName:found.place.name};
+  const found=await placeView(ref).catch(()=>null),r=found&&await fetch(found.view.url).catch(()=>null);
+  const blob=r?.ok?await r.blob().catch(()=>kept):kept;if(!blob)throw new Error('The place could not be loaded');
+  return {...await panelPicture(blob),place:found?.view||null,placeName:found?.place.name};
  }
  if(kept)return panelPicture(kept);
  if(ref.startsWith('shot:')){const s=await getShot(ref.slice(5)).catch(()=>null);return s?panelPicture(s.photo):null;}
  return null;
 }
 const comicPictures=e=>e.comic.slots.slice(0,panelCount(e)).map(s=>s.picture?{...s.picture,view:s.view}:null);
-const comicRecipe=e=>normalComic({layout:e.comic.layout,panels:e.comic.slots.slice(0,panelCount(e)).map(s=>({ref:s.picture?s.ref:null,view:s.view}))});
+// A panel whose picture could not be found keeps its ref, to be found again the next time.
+const comicRecipe=e=>normalComic({layout:e.comic.layout,panels:e.comic.slots.slice(0,panelCount(e)).map(s=>({ref:s.ref,view:s.view}))});
 /** The lines of a sticker stay inside the panel their centre is in. */
 const comicClip=layout=>(s,w,h)=>{const i=panelAt(layout,w,h,s.x*w,s.y*h);return i<0?null:pageGeometry(layout,w,h).panels[i].points;};
 
@@ -1265,7 +1285,7 @@ const comicClip=layout=>(s,w,h)=>{const i=panelAt(layout,w,h,s.x*w,s.y*h);return
 function openComic({recipe=null,slots=[],shotId=null,taken=new Date()}={}){
  if(!engine||engine.lost())return;
  const layout=comicLayout(recipe?.comic?.layout||store.read().comicLayout).id,size=pageSize(layout,Math.min(4096,engine.maxTexture));
- const comic={layout,slots,selected:0,focus:null,work:document.createElement('canvas')};padSlots(comic);
+ const comic={layout,slots,selected:0,focus:null,work:document.createElement('canvas'),asked:[]};padSlots(comic);
  openEditor({picture:comic.work,width:size.width,height:size.height,recipe:recipe||{layers:[{look:'none',amount:1}]},shotId,taken,sourceBlob:null,comic});
 }
 $('openComic').addEventListener('click',()=>{sound('tick');openComic();});
@@ -1277,9 +1297,10 @@ async function openComicShot(shot){
   const slot={...emptySlot(),ref:p.ref,view:p.view};
   if(!p.ref)return slot;
   try{const pic=await refPicture(p.ref,shot.panels?.[i]);if(pic){slot.picture=pic;slot.place=pic.place||null;}else lost++;}catch{lost++;}
-  if(!slot.picture)slot.ref=null;
   return slot;
  }));
+ // Left meanwhile (back to the album, another photo): nothing opens, and what was found is let go.
+ if(state.mode!=='viewer'||state.viewing?.id!==shot.id){for(const s of slots)release(s.picture?.image);if($('toast').textContent==='Opening the comic…')$('toast').classList.remove('show');return;}
  toast(lost?`${lost===1?'A panel’s picture':`${lost} panels’ pictures`} could not be found`:'Comic opened',{ms:lost?2600:900});
  openComic({recipe:shot.recipe,slots,shotId:shot.id,taken:new Date(shot.taken||shot.created)});
 }
@@ -1349,37 +1370,51 @@ function focusPanel(on){
 }
 // The page zoomed in on a panel, or the whole page again; the balloons drawn again at their new size.
 function refocus(){invalidate();requestAnimationFrame(()=>requestAnimationFrame(()=>editStickers.render()));}
+// The panel's latest choice is the one that counts: a fill still loading (a slow place) is let go when it lands late.
+const ask=(e,i)=>e.comic.asked[i]=(e.comic.asked[i]||0)+1;
 /** The chosen panel filled: with a picture from the album, one of the places or the photographer's own. */
 async function fillPanel(i,{ref,blob=null}){
- const e=comicEdit();if(!e)return;
+ const e=comicEdit();if(!e||i<0||i>=panelCount(e))return;
+ const asked=ask(e,i),latest=()=>comicEdit()===e&&e.comic.asked[i]===asked&&i<panelCount(e);
  try{
   const pic=ref.startsWith('place:')?await refPicture(ref):await panelPicture(blob);
-  if(comicEdit()!==e||!pic)return;
+  if(!pic)return;
+  if(!latest()){release(pic.image);return;}
+  release(e.comic.slots[i]?.picture?.image);
   e.comic.slots[i]={ref,view:{x:.5,y:.5,zoom:1},picture:pic,place:pic.place||null};
   e.comic.selected=i;composeComic();renderComicPanel();sound('pop');
   if(!store.read().comicTold){store.write({...store.read(),comicTold:true});toast('Drag the picture to move it, pinch to zoom; tap twice to zoom in on the panel',{ms:3600});}
- }catch(err){console.error(err);toast('That picture could not be opened');}
+ }catch(err){console.error(err);if(latest())toast('That picture could not be opened');}
 }
 $('comicFill').addEventListener('click',()=>{const e=comicEdit();if(e)openComicSheet(e.comic.selected??0);});
 $('comicFocus').addEventListener('click',()=>{const e=comicEdit();if(!e)return;sound('tick');focusPanel(e.comic.focus==null);});
-$('comicClear').addEventListener('click',()=>{const e=comicEdit();if(!e)return;sound('tick');e.comic.slots[e.comic.selected??0]=emptySlot();composeComic();renderComicPanel();});
+$('comicClear').addEventListener('click',()=>{
+ const e=comicEdit();if(!e)return;sound('tick');
+ const i=e.comic.selected??0;ask(e,i);release(e.comic.slots[i]?.picture?.image);e.comic.slots[i]=emptySlot();composeComic();renderComicPanel();
+});
 
 // The sheet a panel is filled from: Minato's places first (the town's own rooms and streets), the album, own photos.
-let comicSource='places',comicTarget=0,comicSheetAt=0;
+let comicSource='places',comicTarget=0,comicSheetAt=0,comicSheetRun=0,comicURLs=[];
 function openComicSheet(i){
  comicTarget=i;$('comicSheetTitle').textContent=`Panel ${i+1}`;renderComicSheet();openSheet($('comicSheet'));comicSheetAt=performance.now();
 }
+// The album's thumbnails are let go when the sheet is drawn again or closes (those never scrolled to never load).
+const dropComicURLs=()=>{comicURLs.forEach(u=>URL.revokeObjectURL(u));comicURLs=[];};
 async function renderComicSheet(){
- const tabs=$('comicSources'),grid=$('comicGrid');tabs.textContent='';
+ // Only the latest drawing fills the grid: two taps on Places while the places load would list each place twice.
+ const run=++comicSheetRun,row=$('comicSources'),grid=$('comicGrid');row.textContent='';dropComicURLs();
+ // Places and Album are tabs over the grid; Camera and Photos are buttons that go and get a picture.
+ const tabs=document.createElement('div');tabs.className='comic-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Pictures');row.append(tabs);
  for(const [id,name] of [['places','Places'],['album','Album'],['camera','Camera'],['photos','Photos']]){
   if(id==='camera'&&!canStart())continue;
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;b.setAttribute('aria-selected',String(id===comicSource));
+  const tab=id==='places'||id==='album',b=document.createElement('button');b.type='button';b.textContent=name;
+  if(tab){b.setAttribute('role','tab');b.setAttribute('aria-selected',String(id===comicSource));}
   b.addEventListener('click',()=>{
    sound('tick');
    if(id==='photos'){$('comicFile').value='';$('comicFile').click();return;}
    if(id==='camera'){$('comicSheet').close();shootPanel(comicTarget);return;}
    comicSource=id;renderComicSheet();
-  });tabs.append(b);
+  });(tab?tabs:row).append(b);
  }
  grid.textContent='';grid.scrollTo?.({top:0});
  const choice=(label,src,pick)=>{
@@ -1390,14 +1425,13 @@ async function renderComicSheet(){
  if(comicSource==='album'){
   if(!state.shots.length){grid.innerHTML='<p class="sticker-note">No photos in the album yet. Take some with the camera, or choose Your photos.</p>';return;}
   for(const shot of state.shots){
-   const url=URL.createObjectURL(shot.thumb||shot.photo);
-   const b=choice(shot.sampleLabel||new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'short'}),url,()=>fillPanel(comicTarget,{ref:`shot:${shot.id}`,blob:shot.photo}));
-   b.querySelector('img').addEventListener('load',()=>URL.revokeObjectURL(url),{once:true});
+   const url=URL.createObjectURL(shot.thumb||shot.photo);comicURLs.push(url);
+   choice(shot.sampleLabel||new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'short'}),url,()=>fillPanel(comicTarget,{ref:`shot:${shot.id}`,blob:shot.photo}));
   }
   return;
  }
- let list;try{list=await loadPlaces();}catch{grid.innerHTML='<p class="sticker-note">Minato’s places could not be loaded. Try again with a connection.</p>';return;}
- if(comicSource!=='places')return;
+ let list;try{list=await loadPlaces();}catch{if(run===comicSheetRun)grid.innerHTML='<p class="sticker-note">Minato’s places could not be loaded. Try again with a connection.</p>';return;}
+ if(run!==comicSheetRun)return;
  for(const p of list)choice(p.name,p.thumb,()=>fillPanel(comicTarget,{ref:`place:${p.id}/${p.views[0].id}`}));
  const note=document.createElement('p');note.className='sticker-note';
  note.textContent='The town’s own rooms and streets, as the storyteller photographs them. Choose the angle under the page; a resident’s sticker stands on the floor.';
@@ -1423,6 +1457,7 @@ $('backToComic').addEventListener('click',()=>{sound('tick');endPanelShoot(true)
 $('comicFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f&&isPicture(f)){$('comicSheet').close();fillPanel(comicTarget,{ref:'own',blob:f});}});
 // A tap on the backdrop closes it, but not the click of the very tap on a panel that opened it.
 $('comicSheet').addEventListener('click',e=>{if(e.target===e.currentTarget&&performance.now()-comicSheetAt>500)e.currentTarget.close();});
+$('comicSheet').addEventListener('close',dropComicURLs);
 
 /** A resident added to a panel showing one of the places stands on its floor, at their height there. */
 function comicStand(id,aspect){
@@ -1441,21 +1476,24 @@ function comicStand(id,aspect){
  const toPage=(x,y)=>{const r=frame.getBoundingClientRect(),e=state.edit;return {x:(x-r.left)/r.width*e.width,y:(y-r.top)/r.height*e.height,k:e.width/r.width};};
  const restart=()=>{const e=comicEdit();if(!touch||!e)return;touch.view={...e.comic.slots[touch.i].view};touch.start=new Map(touch.pointers);};
  frame.addEventListener('pointerdown',ev=>{
-  const e=comicEdit();if(!e||ev.target.closest('.sticker,button'))return;
+  // A finger the stickers took (on a sticker, or a second one beside the sticker being moved) is theirs alone.
+  const e=comicEdit();if(!e||ev.defaultPrevented||editStickers.busy||ev.target.closest('.sticker,button'))return;
   ev.stopPropagation();
+  // A gesture on a page since closed (the editor left mid-touch) is forgotten, so this is a first finger.
+  if(touch&&touch.e!==e)touch=null;
   if(touch){if(touch.pointers.size===1){touch.pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});touch.moved=true;restart();}return;}
   const p=toPage(ev.clientX,ev.clientY),i=panelAt(e.comic.layout,e.width,e.height,p.x,p.y);if(i<0)return;
-  touch={i,pointers:new Map([[ev.pointerId,{x:ev.clientX,y:ev.clientY}]]),moved:false,at:{x:ev.clientX,y:ev.clientY}};restart();
+  touch={e,i,pointers:new Map([[ev.pointerId,{x:ev.clientX,y:ev.clientY}]]),moved:false,at:{x:ev.clientX,y:ev.clientY}};restart();
   try{frame.setPointerCapture(ev.pointerId);}catch{}
  });
  frame.addEventListener('pointermove',ev=>{
-  const e=comicEdit();if(!touch||!e||!touch.pointers.has(ev.pointerId))return;
+  const e=comicEdit();if(!touch||touch.e!==e||!touch.pointers.has(ev.pointerId))return;
   touch.pointers.set(ev.pointerId,{x:ev.clientX,y:ev.clientY});
   const slot=e.comic.slots[touch.i];if(!slot?.picture)return;
   const now=[...touch.pointers.values()],was=[...touch.pointers.keys()].map(id=>touch.start.get(id));
   if(!touch.moved&&Math.hypot(now[0].x-touch.at.x,now[0].y-touch.at.y)<6)return;
   touch.moved=true;
-  const box=pageGeometry(e.comic.layout,e.width,e.height).panels[touch.i].box,{k}=toPage(0,0);
+  const box=pageGeometry(e.comic.layout,e.width,e.height).panels[touch.i]?.box,{k}=toPage(0,0);if(!box)return;
   let move;
   if(now.length>=2){
    const [a,b]=now,[a0,b0]=was,d0=Math.hypot(b0.x-a0.x,b0.y-a0.y)||1,c0=toPage((a0.x+b0.x)/2,(a0.y+b0.y)/2);
@@ -1468,43 +1506,44 @@ function comicStand(id,aspect){
   if(!touch||!touch.pointers.has(ev.pointerId))return;
   touch.pointers.delete(ev.pointerId);
   if(touch.pointers.size){restart();return;}
-  const t=touch;touch=null;const e=comicEdit();if(!e)return;
+  const t=touch;touch=null;const e=comicEdit();if(!e||t.e!==e||t.i>=panelCount(e))return;
   if(t.moved){composeComic();return;}
-  if(ev.type==='pointercancel')return;
+  // A cancelled touch, or a captured one lost, is not a tap.
+  if(ev.type!=='pointerup')return;
   const now=performance.now(),twice=lastTap.i===t.i&&now-lastTap.t<320;lastTap={t:now,i:t.i};
   choosePanel(t.i);
   if(!e.comic.slots[t.i]?.picture){sound('tick');openComicSheet(t.i);return;}
   if(twice){lastTap={t:0,i:-1};sound('tick');focusPanel(e.comic.focus==null);}
  };
- frame.addEventListener('pointerup',end);frame.addEventListener('pointercancel',end);
+ frame.addEventListener('pointerup',end);frame.addEventListener('pointercancel',end);frame.addEventListener('lostpointercapture',end);
 }
 /**
- * The page at full size through its recipe (to which it adds the comic): the finished photo, the page without its Looks
- * (the album's source) and what each panel keeps of its picture (nothing for a place, which is fetched again).
+ * The page at full size through its recipe (to which it adds the comic): the finished photo, and what each panel keeps
+ * of its picture (a place's too, should it not be found again), from which Edit opens it again.
  */
 async function savedPage(e,recipe){
  recipe.comic=comicRecipe(e);
  const page=document.createElement('canvas');page.width=e.width;page.height=e.height;
- composePage(page.getContext('2d'),recipe.comic.layout,e.width,e.height,comicPictures(e));
- engine.setSource('comic-page',page,e.width,e.height);
- let finished;
- try{finished=await finishPhoto(engine.render(recipe,{source:'comic-page',width:e.width,height:e.height}),recipe,e.taken);}
- finally{engine.dropSource('comic-page');}
  try{
+  composePage(page.getContext('2d'),recipe.comic.layout,e.width,e.height,comicPictures(e));
+  engine.setSource('comic-page',page,e.width,e.height);
+  let finished;
+  try{finished=await finishPhoto(engine.render(recipe,{source:'comic-page',width:e.width,height:e.height}),recipe,e.taken);}
+  finally{engine.dropSource('comic-page');}
   const kept=async pic=>{
    if(pic.blob&&!pic.shrunk)return pic.blob;
    const c=document.createElement('canvas');c.width=pic.width;c.height=pic.height;c.getContext('2d').drawImage(pic.image,0,0);
    try{return await toBlob(c,'image/jpeg',.9);}finally{c.width=c.height=0;}
   };
-  const panels=await Promise.all(e.comic.slots.slice(0,panelCount(e)).map(s=>!s.picture||s.place?null:kept(s.picture)));
-  return {finished,source:await toBlob(page,'image/jpeg',.9),panels};
+  const panels=await Promise.all(e.comic.slots.slice(0,panelCount(e)).map(s=>s.picture?kept(s.picture):null));
+  return {finished,panels};
  }finally{page.width=page.height=0;}
 }
 /** The editor leaving a comic: the page back to its own size, the panels' pictures let go. */
 function endComic(){
  const f=$('editFrame');f.classList.remove('focused');f.style.removeProperty('--tx');f.style.removeProperty('--ty');
  const ui=f.querySelector('.comic-ui');if(ui)ui.hidden=true;
- for(const s of state.edit?.comic?.slots||[])s.picture?.image?.close?.();
+ for(const s of state.edit?.comic?.slots||[])release(s.picture?.image);
 }
 /** The page sized for the stage, or zoomed in on the chosen panel, which is then in the middle of the stage. */
 function fitComic(e){

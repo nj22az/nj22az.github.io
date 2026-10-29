@@ -53,7 +53,6 @@ function down(aspect,shares,make){return cutAxis(aspect,true,shares,make);}
 function rect(x0,y0,x1,y1){return [[x0,y0],[x1,y0],[x1,y1],[x0,y1]];}
 export const DEFAULT_LAYOUT='hero';
 export const comicLayout=id=>COMIC_LAYOUTS.find(l=>l.id===id)||COMIC_LAYOUTS.find(l=>l.id===DEFAULT_LAYOUT);
-export const isComic=recipe=>!!recipe?.comic;
 
 /** A page's size in pixels for a save: its long side 3000, within what the device can draw. */
 export function pageSize(layoutId,limit=3000){
