@@ -9,8 +9,9 @@ plan, the Meshy audit and what was built; `checks.md`; `sources/task.md` the own
 
 Current work is on **`codex/kissa-higa-review`**, branched from `claude/great-sagan-mvc9bb`. The base advanced by a
 document-only independent-review note during this session; that note, `a78098332c48d933ee871ac784dda2ef95eb9cc2`, is
-included. The fixes are **`75a8e72bdc2e4324f724de4e00843ad01ed8db3e`**. The runtime, accepted photographs and this
-handover follow in the evidence commit. The draft PR targets **`claude/great-sagan-mvc9bb`**, never `main`.
+included. The fixes are **`75a8e72bdc2e4324f724de4e00843ad01ed8db3e`**. The runtime, accepted photographs and handover are
+**`50fee3d3748101a1d1591f5a0581dd90f112d370`**. [**Draft PR #404**](https://github.com/nj22az/nj22az.github.io/pull/404) targets
+**`claude/great-sagan-mvc9bb`**, from `codex/kissa-higa-review`, never `main`.
 **Nothing has been merged or published; only the owner can authorise publication.**
 
 The review read `89d99d7` independently, excluding generated runtime, `index.html`, `sw.js` and `resident-guide.js`.
@@ -63,6 +64,8 @@ Japanese fallback font was installed in the capture environment only; no font or
   The hanging cartoon feet remain the explicit owner decision above.
 - `git diff --check`: clean. No test was weakened. No Meshy call, credit spend, new model or new scene prop asset.
 
+Hosted verification: at the 30 October 12:08 UTC read, [World guard run 41053053294](https://github.com/nj22az/nj22az.github.io/actions/runs/41053053294) on `50fee3d3` was **in progress**. The PR was confirmed draft, open, conflict-free and unmerged, with the correct base/head. Hosted CI is not claimed green; re-check the current PR head before any merge.
+
 Logs, exact commands and evidence index: [`docs/qa/kissa-higa/review/`](../docs/qa/kissa-higa/review/README.md).
 Resident JSON and photographs: [`review-live/`](../docs/qa/kissa-higa/review-live/).
 
@@ -92,7 +95,11 @@ settles the remaining decisions and asks for publication if desired; hardware/de
 | `dda83ff` | The map of every place that said the shop was shut, the plan, Meshy's costs. |
 | `cff7b18` | The Meshy audit: 105 credits, nine props tried, photographed beside code versions in the real shop. |
 | `89d99d7` | Kissa Higa built. |
-| (this note's commit) | The handover, and photographs re-shot from the final build. |
+| `67e6629b` | Original build handover and photographs. |
+| `a7809833` | Initial independent-review findings, included as the review base. |
+| `75a8e72bdc2e4324f724de4e00843ad01ed8db3e` | Codex fixes and regression tests. |
+| `50fee3d3748101a1d1591f5a0581dd90f112d370` | Final runtime, accepted backdrops, live/static evidence, logs and updated handover. |
+| Following documentation commit in [draft PR #404](https://github.com/nj22az/nj22az.github.io/pull/404) | PR link and exact evidence commit recorded; game/build unchanged. |
 
 ## Original build description (`89d99d7`; timings below are historical)
 

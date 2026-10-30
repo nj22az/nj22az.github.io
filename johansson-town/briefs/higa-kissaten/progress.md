@@ -302,3 +302,9 @@ No seat height changed: the established 0.21–0.25 m cartoon shoe gap remains t
 garden half and Yui's earlier breakfast choice remain open as recorded above. No Meshy calls, credits or new models.
 No phone, physical device, hardware GPU, installed Linux edition or Studio sync was checked. No merge or publication;
 the draft targets the source branch, and `main` is untouched by this work.
+
+PR/commit record: [draft PR #404](https://github.com/nj22az/nj22az.github.io/pull/404), head `codex/kissa-higa-review`, base
+`claude/great-sagan-mvc9bb`; fixes `75a8e72b`, evidence/runtime `50fee3d3748101a1d1591f5a0581dd90f112d370`.
+Confirmed open, draft, conflict-free and unmerged. Hosted World guard was in progress at the 12:08 UTC read;
+only the local 482/482 result is claimed green here. The following documentation commit records this link; no game
+source, runtime or accepted photograph changes after validation. Re-check current hosted checks before any merge.
