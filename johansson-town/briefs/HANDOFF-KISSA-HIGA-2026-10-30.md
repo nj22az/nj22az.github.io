@@ -90,14 +90,68 @@ Node 22, swiftshader; no GPU and no physical device.
 - The Linux edition is not rebuilt, and Studio (`jojo`) is not synced.
 - The town's money model is closed (22 October), so the kissaten's takings are not in it.
 - No Pixar Grandmother Higa: the owner's 24 October plan builds heads from the owner's picture.
-- **The independent code review was still running at handover.** Its findings, if any, are not in this commit; the next
-  session runs one (below).
+
+## Independent review (30 October 2026, night): findings to fix
+
+A separate reviewer read `89d99d7`. It confirmed these are right:
+- the frame conversions, every yaw, the minute boundaries and weekdays, and the supply timing;
+- every collider against what is drawn, and the clear doorway;
+- that no test assertion was weakened.
+
+It found the following, **not fixed yet**. Item 1 was re-checked in this session.
+
+1. **Blocker: Tetsuo and Officer Mori never come.**
+   - Both are in the walking street cast, so the game plans them with `social.js` `residentPlan`, not `canonicalDay`.
+   - There `homeRoutine` (`social.js` ~469) sends them home before `shopDayPlan` (~479) is read. `home-life.js` has Mori
+     asleep 07:00–15:00 and Tetsuo asleep 02:20–10:20.
+   - Re-checked: `residentPlan` gives both "sleeping at home" at 07:40–08:50 on a Monday, while `canonicalDay` says
+     `kissa-higa`.
+   - `kissaFront` (`quarters.js`) and the story place still name them, and `kissa-higa.test.mjs` passes because it asks
+     `canonicalDay`.
+   - Fix: put the kissaten visit ahead of `homeRoutine` and make their sleep hours agree, or pick regulars from the
+     canonical neighbours. Have the front prompt name only bodies actually present. Test `residentPlan` for every regular.
+2. **Blocker: the player can be shut inside.**
+   - `game.js` `evictIfClosed` does nothing for this room, and nothing checks for the player when the shutter comes down.
+   - Example: sit at the table at 09:40 and stand at 09:47. The player is walled in until 06:52 on the next weekday.
+   - Fix: hold the shutter (and the doors' solid) while anyone is inside the room's rectangle, or move the player to
+     `KISSA_KEEPER.front` with a line from her. Test it.
+3. **The prompts inside work through the shut shutter.** Prompts reach 3.1 m with no line-of-sight check: "Sit at the
+   table", the records and the jar can be reached from the pavement. Fix: show and allow them only while `kissaPassable`.
+4. **The shutter rolls for 4 real minutes.** `roll:4` is in town minutes, and the default clock runs at real speed
+   (speeds 1, 2 and 4). Nakamura's takes 0.15. Fix: a shorter roll, keeping the `out`/`shutterDown` margins.
+5. **Ms Ganaha turns round in the street.** Her visit ends at 07:55, then her day sends her home before the laundry at
+   08:00. Fix: `to:480`.
+6. **The story place doesn't fit its shot.** Its shot is at 07:40 on a Thursday, but it lists Tetsuo and Mori, and
+   "nodding off over the toast". Fix: regulars from `kissaPeopleAt(shot.time)`, with a test.
+7. **`replan` reaches the whole town** (`neighbours.js` ~213).
+   - Twice a weekday it clears the whole cache and resets every canonical neighbour: a stall risk on phones, and
+     out-of-view walkers jump to their targets.
+   - A resident seated on a stand-seat gets a path blocked by their own seat's collider.
+   - The street cast's cache (`schedules.js` 93) is never cleared.
+   - Fix: replan only those whose target is within about 12 m of the door, and skip anyone seated.
+8. **Things that appear or vanish with nobody doing it.**
+   - The A-board is out from 07:00 to 09:30, but nobody carries it.
+   - The paper vanishes as soon as the roll starts.
+   - The tubes are on while she is outside (06:50–06:54, 09:40–09:48).
+   - The front prompt says "read the paper on the shutter" while the shutter is up (06:54–07:00, 09:30–09:48).
+9. **Mori takes Tetsuo's stool in the same minute** (510). Leave about 5 minutes between them once item 1 is fixed.
+10. **Small points.**
+    - The A-board stands in front of the left door leaf (the way in narrows to about 1.4 m); move it beside the door.
+    - The cup-shelf uprights stand 4 cm outside its collider.
+    - In `live/02` Grandmother Higa is half hidden behind the register; a stand point near local x −0.9 shows her.
+11. **Decisions.**
+    - Decision 3 is half built (no lunch round).
+    - Decision 4 (Yui at the counter) had no recommendation and was decided for the owner.
+    - Both are now flagged in the task folder.
+12. **The feet.** The live report's foot bones (0.33 m on the stools, 0.17 m on the bench) compare different bodies: the
+    bench sitter was the Pixar Tetsuo. The same-body figure is from `tests/seating-contact.mjs` `shoeHeight`: Miss Higa
+    0.231 m at 0.44 and 0.251 m at 0.46. The AGENTS.md line that said "seated feet reach the floor" is corrected.
 
 ## Next
 
 1. The owner reviews the kissaten (and the fish market, also on this branch) from the photographs, and says whether to
    publish.
-2. An independent review of `89d99d7`, with any findings fixed (see the Codex prompt below).
+2. Fix the review's findings above, blockers first (the Codex prompt below).
 3. Capture the storyteller's backdrops (`tools/render-feed-backdrops.mjs`, places `kissa-higa` and `higa-liquor`), then
    set `captured:true`.
 4. Phone and real-GPU checks; then publish on the owner's word (merge to `main`, rebuild the runtime, run the CI guard,
@@ -107,36 +161,49 @@ Node 22, swiftshader; no GPU and no physical device.
 
 ```text
 Continue the Johansson World work on branch claude/great-sagan-mvc9bb in nj22az/nj22az.github.io. Work on a branch of
-your own made from it (codex/kissa-higa-review) and open a draft PR into claude/great-sagan-mvc9bb, not into main. Do
-not merge or push to main: main deploys the site, and the owner publishes only on their own word.
+your own made from it (codex/kissa-higa-fixes) and open a draft PR into claude/great-sagan-mvc9bb, not into main. Do not
+merge or push to main: main deploys the site, and the owner publishes only on their own word.
 
 Read first, in order: HANDOVER.md; AGENTS.md (the handover rules); johansson-town/AGENTS.md (above all "Owner's
-decision — 30 October 2026: Kissa Higa in the shut Higa Liquor"); johansson-town/briefs/HANDOFF-KISSA-HIGA-2026-10-30.md;
-johansson-town/briefs/higa-kissaten/progress.md and checks.md. The owner's rules in the root CLAUDE.md hold: no glitches,
-clipping, floating or unnatural behaviour; nothing random (every item has a who, a why and a where); tests may be updated
-for a decided change, never weakened.
+decision — 30 October 2026: Kissa Higa in the shut Higa Liquor"); johansson-town/briefs/HANDOFF-KISSA-HIGA-2026-10-30.md,
+especially "Independent review: findings to fix"; johansson-town/briefs/higa-kissaten/progress.md and checks.md. The
+owner's rules in the root CLAUDE.md hold: no glitches, clipping, floating or unnatural behaviour; nothing random (every
+item has a who, a why and a where); tests may be updated for a decided change, never weakened.
 
-Kissa Higa (src/commerce/kissa-higa.js) is built and pushed in commit 89d99d7, with the CI guard at 473/473. Do this:
+Kissa Higa (src/commerce/kissa-higa.js) is built in commit 89d99d7; the CI guard is at 473/473. An independent review
+found problems that are not fixed. Do this, in order, each fix with a test where a test can hold it:
 
-1. Review 89d99d7 independently (ignore johansson-town/runtime/, index.html, sw.js, resident-guide.js: build output).
-   Look for: wrong shop-frame conversions (world x = 9.55 - local z, world z = 8.4 + local x, the frame turned -PI/2);
-   yaw signs (stand-points.js yawFacing = atan2(-dx,-dz)); off-by-one minutes in the hours and the shutter (town day 0 is
-   a Thursday; the hooks get absolute town minutes); anyone shut inside when the shutter comes down; regulars clashing
-   with their other rows in cast.js or sharing a seat; side effects of neighbours.js replan (it resets every non-stair
-   neighbour's journey when the way in opens or shuts); items through each other or through walls; colliders that do not
-   match what is drawn; rules text (CLAUDE.md, johansson-town/AGENTS.md) that disagrees with the code. Fix what is real,
-   each fix with a test where a test can hold it.
-2. Check the residents in the running game at 08:35 on a Monday (town day 4) and on a Wednesday (day 6) with
-   tools/kissa-higa-live.mjs (change its times or add a run): Officer Mori on stool-2 and Tetsuo before him. On a rota
-   week 1 day (town day 11, a Monday), Ms Uezu at chair-1. Look at every photograph at full size before you call it right.
-3. Capture the storyteller's backdrops for the places kissa-higa and higa-liquor (src/feed/places.js, captured:false)
-   with tools/render-feed-backdrops.mjs, look at them, and set captured:true only if they read.
-4. Do not change seat heights for the cartoon residents' hanging feet. The handover measures 0.21–0.25 m on every
-   chair-height seat in town; it is the owner's call, so report it.
-5. Before you finish: npm run build:runtime (from johansson-town/); NODE_OPTIONS=--max-old-space-size=6144 node
-   tools/ci-guard.mjs, all green; update the handover note and HANDOVER.md with what changed, the commits, the checks you
-   actually ran and their results, and what is still open. Say plainly what you did not check (no phone, no physical
-   device in a cloud session).
+1. Blocker: Tetsuo and Officer Mori are street-cast walkers planned by src/people/social.js residentPlan, where
+   homeRoutine (home-life.js sleep hours) sends them home before shopDayPlan is read, so they never come to the kissaten.
+   Make the kissaten visit win in residentPlan (and make their home-life sleep hours agree with it), or replace them with
+   canonical neighbours, as their days make sense. Add a test that asks residentPlan for every street-cast regular. Make
+   quarters.js kissaFront name only people actually there.
+2. Blocker: the player can be shut inside (stand up after 09:46; game.js evictIfClosed does nothing for this room). Hold
+   the shutter and the door solid while the player or anyone is inside the room, or move them out to KISSA_KEEPER.front
+   with a line from Grandmother Higa. Test it.
+3. The inside prompts (order, the table, the records, the jar in quarters.js higaPrompts) only while kissaPassable.
+4. The shutter's roll: KISSA.roll is 4 town minutes, which is 4 real minutes at the default speed. Make it short (Nakamura's
+   is 0.15) and keep the margins: she is out before it comes down.
+5. Ms Ganaha's visit to:480, so she goes straight to the laundry. Leave about 5 minutes between Tetsuo leaving stool-2 and
+   Officer Mori taking it.
+6. The story place kissa-higa (src/feed/places.js): its regulars and doings from who is really there at its shot time
+   (kissaPeopleAt), with a test.
+7. neighbours.js replan: only residents whose target is near the kissaten's door (about 12 m), and never someone seated;
+   check the street cast's route cache in schedules.js too.
+8. Nothing appears or vanishes with nobody doing it: the A-board carried out and in by Grandmother Higa (or set out when
+   she lifts the shutter and taken in when she pulls it down), the tubes on only while she is inside, the paper rolling
+   with the shutter, the front prompt's text matching the shutter's state. Move the A-board beside the door, not in front
+   of a leaf; widen the cup-shelf collider to its uprights; move her stand point so the register does not hide her
+   (about local x -0.9), checking it stays clear of solids and reachable on the neighbours' 0.5 m grid.
+9. Check it all in the running game with tools/kissa-higa-live.mjs (from johansson-town/; change its times or add runs):
+   a Monday at 07:45 and 08:40 (town day 4), a Wednesday (day 6), a rota-week-1 Monday (day 11) for Ms Uezu at chair-1,
+   and the shutter coming down at 09:44 with the player sitting at the table. Look at every photograph at full size.
+   Re-shoot the static photos with tools/kissa-higa-photos.mjs after.
+10. Do not change seat heights for the cartoon residents' hanging feet (0.21-0.25 m on every chair-height seat in town;
+    the owner's call). Do not spend Meshy credits or add new assets without the owner's word.
 
-Do not spend Meshy credits or add new assets without the owner's word.
+Before you finish: npm run build:runtime (from johansson-town/); NODE_OPTIONS=--max-old-space-size=6144 node
+tools/ci-guard.mjs, all green; update the handover note (mark each review item fixed or not, with how) and HANDOVER.md,
+with the commits, the checks you actually ran and their results, and what is still open. Say plainly what you did not
+check (no phone, no physical device in a cloud session).
 ```

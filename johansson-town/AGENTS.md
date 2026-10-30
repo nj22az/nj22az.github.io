@@ -301,7 +301,8 @@ self-audit: `briefs/higa-kissaten/progress.md`). This supersedes the shut-front 
   home), Ms Ganaha before the laundry, Tetsuo three mornings a week, Officer Mori before he sleeps, Ms Uezu on her weeks
   off watch (`KISSA_REGULARS`; `people/shop-days.js` seats them).
 - **The room** (`world/okinawa/higa-liquor-dressing.js`): the counter is the coffee counter; a ledge at 0.74 m with three
-  0.46 m stools (the izakaya's pairing, so seated feet reach the floor; no bar stools); two siphons, a kettle, the cup shelf,
+  0.46 m stools (the izakaya's pairing, the seat height the town's sitting poses are made for; no bar stools; cartoon
+  residents' shoes hang about 0.25 m off the floor on them, as they hang 0.23 m on the town's 0.44 m benches); two siphons, a kettle, the cup shelf,
   the family kusu kept; a table for two by the police-station wall; the record player and her husband's 45s; a green
   awning and an A-board. The record player, the bentwood chairs and the hand grinder are Meshy models
   (`kissa-higa-props.js`, `assets/models/kissaten/`), chosen by the audit in `docs/qa/kissaten-meshy/`; everything else is

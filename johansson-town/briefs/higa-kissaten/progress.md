@@ -2,9 +2,10 @@
 
 ## Task
 See `sources/task.md`. The owner, 30 October 2026: the shut Higa Liquor becomes a kissaten, kept by **Grandmother Higa
-in the mornings**. Nothing is built yet: this folder holds the map of every place that says the shop is shut, the plan,
-and what Meshy could make for it. The owner reviews the plan before any build. Branch `claude/great-sagan-mvc9bb`
-(on top of the fish-market rework, not on `main`).
+in the mornings**. This folder holds the map of every place that said the shop was shut, the plan, the Meshy audit and,
+since the owner's "work accordingly to your own recommendations", what was built (commit `89d99d7`; "Built" below), with
+the independent review's findings still to fix (see the handover, `../HANDOFF-KISSA-HIGA-2026-10-30.md`). Branch
+`claude/great-sagan-mvc9bb` (on top of the fish-market rework, not on `main`).
 
 ## Completed (30 October 2026)
 - Meshy checked: `MESHY_API_KEY` is set in the environment (its value never printed); Meshy CLI 0.4.0 through
@@ -87,7 +88,7 @@ every line about the *building* being shut, dark, unkept or "for good" has to ch
   `linux-port/acceptance-0.2.18.md`, `world/index.html`'s release notes, `docs/CAST-CONSOLIDATION*.md`,
   `MINATO-CONSOLIDATION.md`; studio repo `jojo` `research/mario-artist/report.md` 140 (a research note).
 
-## The plan (for the owner's review; nothing built)
+## The plan (written before the build; what was built is under "Built" below)
 
 ### Who, when, and why it works
 - **Grandmother Higa** opens at **07:00** and shuts at **09:30**, washes up and walks up Kitano Road to Umi-no-yu for the
@@ -223,8 +224,11 @@ and decide from the audits and proceed". The five decisions, taken as recommende
 1. **Kissa Higa (喫茶ひが)**, the name on the fascia, the awning and the paper.
 2. **Monday to Friday**, 07:00–09:30.
 3. **Her garden round** after an earlier breakfast (she is up at 05:30), before she opens; the long round at the weekend.
-4. **Yui at the counter: yes.** With her grandmother behind the counter from seven, Yui's breakfast at home has nobody at
-   it; her morning set at the counter replaces it, and she walks on to school.
+   This departs from the recommendation (a short round before opening and the rest at lunch): the lunch half is not
+   built, so on weekdays her round is 06:15–06:45 only.
+4. **Yui at the counter: yes.** The plan gave no recommendation here; this was decided for the owner, on the reasoning
+   that with her grandmother behind the counter from seven, Yui's breakfast at home has nobody at it. Her morning set at
+   the counter replaces it, and she walks on to school. The owner may reverse it.
 5. **Her husband's records**: Okinawan min'yō and enka on 45s.
 
 What changed (commit `89d99d7` on `claude/great-sagan-mvc9bb`; the handover is [HANDOFF-KISSA-HIGA-2026-10-30.md](../HANDOFF-KISSA-HIGA-2026-10-30.md)):
