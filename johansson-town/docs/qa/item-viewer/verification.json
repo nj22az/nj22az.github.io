@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-30",
+  "branch": "codex/item-magazine-viewer",
+  "base_commit": "1d355885",
+  "runtime_source_sha256": "247e6c3ef33bc9669e184213fd8f171591d0f4241e961e64adda456985dcaff7",
+  "runtime_build": {
+    "passed": true,
+    "modules": 655,
+    "previous_main_runtime_entries_retained": 35
+  },
+  "guard": {
+    "passed": true,
+    "tests": 500,
+    "files": 94,
+    "elapsed_seconds": 502,
+    "heap_mb": 6144,
+    "test_concurrency": 2
+  },
+  "browser": {
+    "environment": "Cloud browser, real components in local normal-button harness",
+    "webgl_available": false,
+    "physical_device": false,
+    "verified": [
+      "Desktop poster zoom to 150%",
+      "Poster WebP download",
+      "Both product label pages and label PNG download via buildPack/2D reader",
+      "Magazine page 2/8 and native Back to rack",
+      "Poster gallery native Back",
+      "390 x 844 CSS layout after zoom: all controls visible, card scrollHeight/clientHeight 790/790, scrollTop 0"
+    ],
+    "not_verified": [
+      "Whole World entry and in-room artwork",
+      "Actual 3D product overlay",
+      "Physical iPhone/iPad Safari touch hardware",
+      "Steam Deck or packaged Linux"
+    ]
+  },
+  "artwork": {
+    "new_images": 7,
+    "canvas_fallbacks": [
+      "shimakaze",
+      "minato-tsuru"
+    ],
+    "existing_slots": "stair and hall only",
+    "new_office_or_storage_slots": false,
+    "full_image_bytes": 8218414,
+    "preview_bytes": 132432
+  },
+  "published": false
+}

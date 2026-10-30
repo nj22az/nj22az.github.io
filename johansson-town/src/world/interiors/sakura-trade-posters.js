@@ -1,4 +1,5 @@
 import * as THREE from '../../../vendor/three.module.js';
+import {assetURL} from '../../assets.js';
 
 /**
  * The trade posters on Sakura's staff walls, and the drink stock in the office hall (drawing SK-ST-003 rev A). The owner,
@@ -73,6 +74,15 @@ const CASE_PRINTS=['umineko-gift','shimakaze-case','tsuru-case','kitano-case','u
 
 const JP_SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif',JP_SANS='"Hiragino Sans","Yu Gothic","Noto Sans CJK JP",sans-serif',LATIN='"Futura","Avenir Next","Helvetica Neue",sans-serif';
 const PW=1000,PH=1414,COLS=3,CELL=[360,509];
+
+/** The owner's Artlist prints, 30 October 2026. Two proofs retain their correct canvas art until their lettering is fixed. */
+export const SAKURA_TRADE_ART=Object.freeze(Object.fromEntries(['umineko-draft','umineko-black','umineko-gift','kitano-12','nami-sour','asagao-rouge','asagao-uv'].map(id=>[id,Object.freeze({image:`graphics/sakura-trade/${id}.webp`,preview:`graphics/sakura-trade/${id}-small.webp`})])));
+const posterTitle=id=>({'umineko-draft':'UMINEKO Draft','umineko-black':'UMINEKO Black','umineko-gift':'UMINEKO gift sets','kitano-12':'KITANO 12 pure malt',shimakaze:'SHIMAKAZE awamori','minato-tsuru':'MINATO-TSURU sake','nami-sour':'NAMI SOUR lemon','asagao-rouge':'ASAGAO Coral Bay Red','asagao-uv':'ASAGAO UV Milk'})[id];
+/** The original, unlit artwork for inspection and downloads, never an enlarged crop of the wall atlas. */
+export function tradePosterPages(){return SAKURA_TRADE_POSTERS.map(p=>({
+ title:posterTitle(p.id),filename:'sakura-'+p.id,width:PW,height:PH,
+ ...(SAKURA_TRADE_ART[p.id]?{image:assetURL(SAKURA_TRADE_ART[p.id].image)}:{draw(g,w,h){g.save();g.scale(w/PW,h/PH);DESIGNS[p.id](g);g.restore();}}),
+ }));}
 
 /** Text scaled down to fit `max` wide. */
 function text(g,s,x,y,{size=60,font=LATIN,weight='bold',colour='#222',align='center',max=900,spacing=0}={}){
@@ -253,7 +263,7 @@ const CASES={
  'black-case'(g,w,h){g.fillStyle='#24231f';g.fillRect(0,0,w,h);g.fillStyle='#c9a24a';g.fillRect(0,h*.82,w,h*.06);text(g,'UMINEKO BLACK',w*.36,h*.6,{size:h*.34,colour:'#c9a24a',max:w*.62});text(g,'黒 350ml × 24',w*.86,h*.6,{size:h*.14,font:JP_SANS,colour:'#efe4c8',max:w*.24});},
 };
 
-let posterTexture=null,caseTexture=null;
+let posterTexture=null,caseTexture=null,posterReadiness=null,posterPrepared=false;
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
 const tex=c=>{const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
 /** The nine designs on one sheet, three by three (one texture, one draw for every poster in a room). */
@@ -261,8 +271,26 @@ function posterSheet(){
  if(posterTexture)return posterTexture;
  const c=canvas(CELL[0]*COLS,CELL[1]*3),g=c.getContext('2d');
  SAKURA_TRADE_POSTERS.forEach((p,i)=>{g.save();g.translate((i%COLS)*CELL[0],Math.floor(i/COLS)*CELL[1]);g.scale(CELL[0]/PW,CELL[1]/PH);g.beginPath();g.rect(0,0,PW,PH);g.clip();DESIGNS[p.id](g);g.restore();});
- return posterTexture=tex(c);
+ posterTexture=tex(c);
+ // Small previews keep wall decoration cheap. The full original is loaded only when a player looks at that print.
+ // Contain the 3:4 image inside B2 paper: no stretched lettering or cropped brand names.
+ const loads=[];
+ if(globalThis.Image)SAKURA_TRADE_POSTERS.forEach((p,i)=>{const art=SAKURA_TRADE_ART[p.id];if(!art)return;
+  loads.push(new Promise(resolve=>{const image=new Image();let done=false;
+   const finish=()=>{if(done)return;done=true;clearTimeout(timer);image.onload=image.onerror=null;resolve();};
+   // A failed/offline image keeps its complete canvas design. Late responses after the deadline never swap art in view.
+   const timer=setTimeout(finish,12000);
+   image.onload=()=>{if(done)return;const x=(i%COLS)*CELL[0],y=Math.floor(i/COLS)*CELL[1],s=Math.min(CELL[0]/image.naturalWidth,CELL[1]/image.naturalHeight),w=image.naturalWidth*s,h=image.naturalHeight*s;
+    g.fillStyle='#f3ecd8';g.fillRect(x,y,...CELL);g.drawImage(image,x+(CELL[0]-w)/2,y+(CELL[1]-h)/2,w,h);posterTexture.needsUpdate=true;finish();};
+   image.onerror=finish;image.src=assetURL(art.preview);
+  }));
+ });
+ posterReadiness=Promise.all(loads).then(()=>{posterPrepared=true;return true;});
+ return posterTexture;
 }
+/** Room loading waits for previews before opening: no canvas-to-new-print swap in front of the player. */
+export function preloadTradePosters(){posterSheet();return posterReadiness;}
+export const tradePostersReady=()=>posterPrepared;
 const CASE_CELL=256;
 /** The case fronts, each in a 256 px square cell at its face's proportions. */
 function caseSheet(){
@@ -289,11 +317,12 @@ const decal=map=>new THREE.MeshStandardMaterial({map,roughness:.75,polygonOffset
  * The posters of one room ('stair' or 'hall'), moved by `shift` (the office storey's frame for the stair). Returns the
  * paper, one mesh on the sheet (or null without a page), and the push pins' geometry for the caller's red plastic.
  */
-export function buildTradePosters(room,{shift=[0,0,0]}={}){
+export function buildTradePosters(room,{shift=[0,0,0],parent=null,register=null,onView=null}={}){
  const {w,h}=POSTER_SIZE,papers=[],pins=[];
  for(const p of SAKURA_POSTER_WALLS.filter(p=>p.room===room)){
   const n=out(p.face),at=[p.at[0]+shift[0]+n[0]*.001,p.at[1]+shift[1],p.at[2]+shift[2]+n[2]*.001];
   papers.push(placed(into(new THREE.PlaneGeometry(w,h),posterUV(p.id)),p.face,at));
+  if(parent&&register&&onView){const anchor=new THREE.Object3D();anchor.position.set(...at);anchor.name='Look at '+posterTitle(p.id)+' poster';anchor.userData.npcInteraction=false;parent.add(anchor);register(anchor,anchor.name,()=>onView(p.id),true);}
   for(const [a,b] of [[-1,-1],[-1,1],[1,-1],[1,1]]){
    const head=new THREE.CylinderGeometry(.006,.006,.005,8);head.rotateX(Math.PI/2);head.translate(a*(w/2-.025),b*(h/2-.025),.0035);
    pins.push(placed(head,p.face,at));

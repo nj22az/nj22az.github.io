@@ -25,6 +25,9 @@ import {pendingTownAbsence} from './src/people/town-absence.js';
 import {createShopLedgerView} from './src/commerce/shop-ledger.js';
 import {createPaperworkView} from './src/commerce/paperwork.js';
 import {createMagazineReader} from './src/ui/magazine-reader.js';
+import {createPrintViewer} from './src/ui/print-viewer.js';
+import {createReaderHistory} from './src/ui/reader-history.js';
+import {tradePosterPages,SAKURA_TRADE_POSTERS} from './src/world/interiors/sakura-trade-posters.js';
 import {townCalendarAt} from './src/town-clock.js';
 import {happeningLine,happeningOutcome} from './src/people/happenings.js';
 import {impressionLine,restoreImpressions} from './src/people/impressions.js';
@@ -97,7 +100,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   const realShop=createShopify(SHOPIFY_CONFIG);let modalRevision=0;
   let awaySince=0,returnDay=null;
   let pendingAbsence=0,ledgerView=null,magazineView=null,yearTurned=false;let state={...defaults},timer=null,modalOpen=false,previousFocus=null,radioStation=0;
-  let woodlandView=null,woodlandHistoryBack=null;
+  let woodlandView=null;
 
   try {
     // A new real year starts the island's 1997 over, keeping friendships, the bag, money and decorating (year-loop.js).
@@ -179,13 +182,13 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     }
     proceed();return true;
   }
-  function close(){disposeWoodlandViewer();dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
+  function close(){disposeWoodlandViewer();dialogueBox.close();modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view','print-view');modal.classList.remove('sakura-records');workshopUI.dispose();modalRevision++;townAudio.stopSpeech();clearInterval(timer);timer=null;modalOpen=false;modal.classList.add('hidden');modal.classList.remove('conversation');modal.classList.remove('office-records');document.body.classList.remove('conversation-open');onConversation(null);window.__JOHANSSON_CHARACTER_CONTROL__?.setExpression?.('Thuan',null);previousFocus?.focus?.();}
   // options.mood: how Thuan's face looks for this line (her lines only; others release it).
   function show(title,text,buttons=[],options={}){
     disposeWoodlandViewer();
     if(window.johanssonDesktop&&window.johanssonLinuxWorld)buttons=window.johanssonLinuxWorld.conversationActions(title,buttons,options);
     modal.classList.remove('bag-view','flyer-view','letter-view','pocket-album-view','resident-record');ledgerView=null;modal.classList.remove('sakura-records');workshopUI.dispose();modal.classList.remove('office-records');
-    magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view');
+    magazineView?.dispose();magazineView=null;modal.classList.remove('magazine-view','print-view');
     modalRevision++;const revision=modalRevision;
     townAudio.stopSpeech();clearInterval(timer);timer=null;if(!modalOpen){onOpen();previousFocus=document.activeElement;}modalOpen=true;document.exitPointerLock?.();
     heading.textContent=title;delete heading.dataset.hearts;delete heading.dataset.level;body.classList.remove('signal');body.replaceChildren();
@@ -416,30 +419,9 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     image.width=2048;image.height=1365;image.style.cssText='display:block;width:100%;height:auto;max-width:720px;margin:8px auto';body.append(image);
   }
   function disposeWoodlandViewer(){
-    const view=woodlandView;if(!view)return;
-    woodlandView=null;window.removeEventListener('message',view.message);window.removeEventListener('popstate',view.pop);
+    const view=woodlandView;if(!view)return;woodlandView=null;
+    window.removeEventListener('message',view.message);view.disposeHistory?.();
     view.frame.remove();modal.classList.remove('woodland-view');
-    // Back closes this temporary view instead of leaving the running World. Only
-    // consume our own entry; an unrelated navigation/history state is never changed.
-    if(view.historyPushed&&window.history?.state?.johanssonDiorama===view.token){
-      // Traversal is asynchronous. A quick close/reopen must finish this Back
-      // before the next viewer pushes its own entry or listens for Back.
-      const pending={pop:null};
-      pending.pop=()=>{
-        if(woodlandHistoryBack!==pending)return;
-        window.removeEventListener('popstate',pending.pop);woodlandHistoryBack=null;
-        if(woodlandView)pushWoodlandHistory(woodlandView);
-      };
-      woodlandHistoryBack=pending;window.addEventListener('popstate',pending.pop);
-      try{window.history.back();}catch{pending.pop();}
-    }
-  }
-  function pushWoodlandHistory(view){
-    if(woodlandView!==view||woodlandHistoryBack)return;
-    try{
-      window.history.pushState({...window.history.state,johanssonDiorama:view.token},'',location.href);
-      view.historyPushed=true;window.addEventListener('popstate',view.pop);
-    }catch{/* The visible close control also works if this host has no history. */}
   }
   function woodlandViewer(){
     show(WOODLAND_POSTER.title,'',[]);
@@ -448,14 +430,14 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     url.searchParams.set('embedded','1');url.searchParams.set('token',token);
     const frame=document.createElement('iframe');frame.title='Johansson woodland · interactive diorama';frame.src=url.href;
     frame.setAttribute('aria-busy','true');frame.setAttribute('allow','fullscreen');frame.className='woodland-viewer';
-    const view={frame,token,historyPushed:false,message:null,pop:null};
+    const view={frame,token,disposeHistory:null,message:null};
     view.message=event=>{
       if(woodlandView!==view||event.source!==frame.contentWindow||event.origin!==origin||event.data?.token!==token)return;
       if(event.data.type==='johansson-diorama-close')close();
       else if(event.data.type==='johansson-diorama-ready')frame.setAttribute('aria-busy','false');
     };
-    view.pop=event=>{if(woodlandView===view&&event.state?.johanssonDiorama!==token){view.historyPushed=false;close();}};
-    woodlandView=view;window.addEventListener('message',view.message);pushWoodlandHistory(view);
+    woodlandView=view;window.addEventListener('message',view.message);
+    view.disposeHistory=createReaderHistory(()=>{if(woodlandView===view)close();},{key:'johanssonDiorama',token});
     modal.classList.add('woodland-view');body.replaceChildren(frame);
   }
   function sakuraFlyer(location='Bag'){
@@ -468,6 +450,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     ]);
     modal.classList.add('flyer-view');
     const image=document.createElement('img');image.src=FLYER_PATH;image.alt=FLYER_PAPER.text;image.width=900;image.height=1280;image.style.cssText='display:block;width:100%;height:auto;max-width:620px;margin:12px auto;box-shadow:0 4px 18px #0003';body.append(image);
+    const look=document.createElement('button');look.type='button';look.textContent='Look closer · zoom and download';look.onclick=()=>printView('Sakura shop flyer',[{image:FLYER_PATH,title:'Sakura shop flyer',filename:'sakura-shop-flyer'}],0,()=>sakuraFlyer(location));body.append(look);
   }
   function bagItem(item){
     if(item===MINATO_RECIPE_CARD){show(MINATO_RECIPE_CARD,MINATO_MEMORY_STORY,[['Back to the bag',bag],['Close',close]]);return;}
@@ -1271,8 +1254,17 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   }
   // 立ち読み at the magazine rack: today's issues, then page by page (src/ui/magazine-reader.js).
   function magazineRack(){
-    show("Sakura · Magazines/Newspapers",'',[['Put it back',close]]);modal.classList.add('magazine-view');
+    show("Sakura · Magazines/Newspapers",'',[['Put it back',close]]);modal.classList.add('magazine-view','print-view');
     magazineView=createMagazineReader({date:townCalendarAt(getMinutes()).date,buy:(title,issue)=>sellAtTill(`${title.name} ${issue.dateLine}`,title.price,Math.round(title.price*.75))});body.replaceChildren(magazineView.element);
+  }
+  function printView(title,pages,index=0,back=null){
+    show(title,'',[]);modal.classList.add('print-view');
+    magazineView=createPrintViewer({title,pages,index,onClose:back||close});body.replaceChildren(magazineView.element);
+    magazineView.element.querySelector('.pv-stage')?.focus();
+  }
+  function tradePoster(id){
+    const index=SAKURA_TRADE_POSTERS.findIndex(p=>p.id===id);if(index<0)return;
+    printView('Sakura · Supplier posters',tradePosterPages(),index);
   }
   function shopLedger(){
     if(getSocialContext().inside!=='market'){receipt('Sakura sales ledger','The stock and sales books are in the back office at Sakura.');return;}
@@ -1457,6 +1449,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
       case 'store-item':storeItem(detail);break;
       case 'shop-ledger':shopLedger();break;
       case 'magazine-rack':magazineRack();break;
+      case 'trade-poster':tradePoster(name);break;
       case 'sakura-hot-snacks':thuanConversation('hot-case');break;
       case 'store-catalogue':show('Thuan’s mail-order book',realShop.enabled?'Real-world products. Current prices and Shopify checkout are shown separately from town yen.':'A pink ribbon marks the next page. Thuan is still preparing the mail-order selection.',[...STORE_ITEMS.filter(i=>realShop.enabled&&SHOPIFY_CONFIG.products[i.id]).map(i=>[i.name,()=>realProduct(i)]),['Close',close]]);break;
       case 'travel-progress':show('Earn your town shortcuts',travelStatusText(state),[['Back to exploring',close]]);break;
@@ -1524,5 +1517,5 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
 
   if(Number.isFinite(state.minutes))onTime({restore:state.minutes});townAudio.setEnabled(state.sound);
   $('#soundButton').textContent=state.sound?'On':'Off';radioStation=state.radioStation||0;save();{const label=onWeather?.('start');if(typeof label==='string')$('#weatherButton').textContent=label;}
-  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,saveBeforeLeaving,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get viewerActive(){return !!woodlandView;},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
+  return {action,documentArchive,inventory,bag,residentRecord,residentRecords,canResidentRecord,close,save,saveBeforeLeaving,keepPhoto,letGoPhoto,pocketAlbum,get album(){return state.pocketAlbum||[];},post,deliverPost,favourCard,get unreadPost(){return unreadCount(ensurePost(state).box);},spend,players,menu:show,dialogue:dialogueBox,onsenPaid:()=>state.onsenPaidDay===Math.floor(getMinutes()/1440),thuanStory,konbiniCounter,konbiniBasket,takeAbsence(){const elapsed=pendingAbsence;pendingAbsence=0;return elapsed;},note,inspectItem,openURL,quietRead,footstep(material){townAudio.step(material);},get paused(){return modalOpen;},get viewerActive(){return !!(woodlandView||magazineView);},get state(){return state;},visit(id){if(!state.visited.includes(id)){state.visited.push(id);save();}},tick(dt){ledgerView?.update();if(advancePrint(state,dt)){save();say('Your Form 3D model is ready. Collect it at the workshop.',5);}}};
 }

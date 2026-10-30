@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {installDOM} from './fixtures.mjs';
+import {existsSync,readFileSync} from 'node:fs';
 
 // Sakura's staff walls (drawing SK-ST-003): the brewers', distillers' and Asagao's posters up the stair and in the hall,
 // and the drink stock outside the office (the owner, 27 October 2026: "Put more advertisement posters on the walls in the
 // hallway and stair case ... I want liquor and beer boxes in the hallway outside the office").
 installDOM();
-const {SAKURA_TRADE_POSTERS:D,SAKURA_POSTER_WALLS:P,POSTER_SIZE:S,SAKURA_HALL_STOCK:K,buildTradePosters}=await import('../src/world/interiors/sakura-trade-posters.js');
+const {SAKURA_TRADE_POSTERS:D,SAKURA_POSTER_WALLS:P,POSTER_SIZE:S,SAKURA_HALL_STOCK:K,buildTradePosters,SAKURA_TRADE_ART,tradePosterPages}=await import('../src/world/interiors/sakura-trade-posters.js');
 const {SAKURA_STAIR_TRIM:T,SAKURA_STAIRWELL:W}=await import('../src/world/interiors/sakura-stairs.js');
 const {buildSakuraOfficeRoom,SAKURA_UPSTAIRS:U}=await import('../src/world/interiors/sakura-office-room.js');
 
@@ -66,4 +67,22 @@ test('built: one paper mesh per room, four pins a poster, the cases solid and pr
  const names=[];room.traverse(o=>names.push(o.name));
  assert.ok(names.includes('Sakura trade posters · hall')&&names.includes('Hall stock case prints'));
  for(const k of K)assert.ok(solids.some(([x,z])=>Math.abs(x-(k.at[0]+(k.face==='+x'?1:-1)*k.size[0]/2))<1e-6&&Math.abs(z-k.at[1])<1e-6),`${k.print} is solid`);
+});
+
+test('the reader has every campaign, seven complete images and two correct drawn originals',()=>{
+ const pages=tradePosterPages();assert.equal(pages.length,D.length);
+ assert.equal(Object.keys(SAKURA_TRADE_ART).length,7);
+ assert.equal(pages.filter(p=>p.image).length,7);
+ for(const id of ['shimakaze','minato-tsuru']){const page=pages[D.findIndex(p=>p.id===id)];assert.equal(typeof page.draw,'function');assert.equal(page.image,undefined,'unapproved lettering proofs never reach the game');}
+ for(const [id,art] of Object.entries(SAKURA_TRADE_ART)){
+  const page=pages[D.findIndex(p=>p.id===id)];assert.ok(page.image.endsWith(art.image));
+  for(const path of [art.image,art.preview]){const url=new URL('../assets/'+path,import.meta.url);assert.ok(existsSync(url),path);const bytes=readFileSync(url);assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');}
+ }
+});
+
+test('each hall print has its own look prompt opening that campaign in the supplier collection',()=>{
+ const parent=new THREE.Group(),registered=[],opened=[];
+ buildTradePosters('hall',{parent,register:(object,label,fn)=>registered.push({object,label,fn}),onView:id=>opened.push(id)});
+ const placements=P.filter(p=>p.room==='hall');assert.equal(registered.length,placements.length);
+ registered.forEach((entry,i)=>{assert.equal(entry.object.parent,parent);assert.equal(entry.object.userData.npcInteraction,false);assert.match(entry.label,/Look at .* poster/);entry.fn();assert.equal(opened[i],placements[i].id);});
 });

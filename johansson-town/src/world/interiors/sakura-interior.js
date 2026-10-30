@@ -1,3 +1,4 @@
+import {preloadTradePosters} from './sakura-trade-posters.js';
 import {buildSakuraBaskets} from './sakura-baskets.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSpecialsBoard} from './sakura-specials-board.js';
@@ -192,7 +193,7 @@ export function buildSakuraInterior({room,reg,action,exit,stair=()=>{}}){
   }
  };
  let mounted=false,disposed=false,last='';
- return {smallOffice,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{decorations.tick(time);life.tick(time);smallOffice.tick(time,minutes,dt);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
+ return {smallOffice,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{decorations.tick(time);life.tick(time);smallOffice.tick(time,minutes,dt);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready,preloadTradePosters()]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};
