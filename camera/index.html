@@ -19,13 +19,13 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261030crop1">
+<link rel="stylesheet" href="camera.css?v=20261030refine1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
 <link rel="stylesheet" href="blackjack.css?v=20261029a">
-<link rel="stylesheet" href="solitaire.css?v=20261029a">
-<link rel="stylesheet" href="game-room-refresh.css?v=20261029c">
+<link rel="stylesheet" href="solitaire.css?v=20261030share1">
+<link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
 </head>
@@ -162,6 +162,7 @@
    <div class="panel" id="panelStickers" role="tabpanel" aria-labelledby="tabStickers" hidden></div>
    <div class="panel" id="panelFrame" role="tabpanel" aria-labelledby="tabFrame" hidden>
     <div class="frame-choices" id="frameChoices" role="radiogroup" aria-label="Frame"></div>
+    <div class="option-row"><span id="paperLabel">Paper</span><div class="mini-seg paper-choices" id="paperChoices" role="radiogroup" aria-labelledby="paperLabel"></div></div>
     <div class="option-row"><span id="mirrorLabel">Mirror</span><div class="mini-seg" id="mirrorChoices" role="radiogroup" aria-labelledby="mirrorLabel"></div></div>
     <div class="option-row"><span id="stampLabel">Date stamp</span><button type="button" class="switch" id="editStamp" role="switch" aria-checked="false" aria-labelledby="stampLabel"></button></div>
    </div>
@@ -264,6 +265,7 @@
 <dialog class="sheet sticker-sheet frame-sheet" id="frameSheet" aria-label="Frames">
  <header><h2>Frame</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
  <div class="frame-choices" id="cameraFrames" role="radiogroup" aria-label="Frame"></div>
+ <div class="option-row"><span id="cameraPaperLabel">Paper</span><div class="mini-seg paper-choices" id="cameraPaperChoices" role="radiogroup" aria-labelledby="cameraPaperLabel"></div></div>
 </dialog>
 
 <dialog class="sheet text-sheet" id="textSheet" aria-labelledby="textSheetTitle">
@@ -288,6 +290,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261030crop1"></script>
+<script type="module" src="app.js?v=20261030refine1"></script>
 </body>
 </html>

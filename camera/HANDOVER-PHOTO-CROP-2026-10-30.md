@@ -1,5 +1,8 @@
 # Pocket Camera: crop imported photos and save smaller files — 30 October 2026
 
+**Later corrections, branch only:** [Save/Share, Solitaire, wax Crayon and Paper handover](HANDOVER-REFINEMENTS-2026-10-30.md).
+The crop publication below remains live; the later changes await review/publication.
+
 Owner: “Cropping photos doesn’t work in the Johansson camera app? I want to be able to zoom and crop when I use my
 own photos”; then “And the saved image is too big should use better compression while keeping excellent quality”.
 

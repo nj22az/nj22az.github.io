@@ -1,6 +1,6 @@
 /**
- * The printer: every photo saved comes out of a little printer first, as the hand-held camera's photos came out of
- * its printer on a roll of thermal paper (the owner, 29 October 2026: "the printer animation when saving"). A white toy
+ * The printer accompanies Share (the owner, 30 October: Save only saves to the app's album; printing opens Share).
+ * Its animation never holds up the native share sheet. A white toy
  * printer in the app icon's plastic rises at the foot of the screen; the photo feeds up out of its slot in the
  * stepper motor's small jerks, on warm paper, while its light blinks and it buzzes; it is torn off against the slot's
  * teeth (a serrated edge) and flies to where the photo now lives: the album's thumbnail, or the photo itself.
@@ -15,7 +15,7 @@ function torn(teeth=22,depth=2.6){
 }
 
 export function createPrinter({sound=()=>{},reduceMotion=false}={}){
- let running=null;
+ let running=null,cancelPrint=null;
  /**
   * Prints `src` (an image URL, the photo as saved, width × height). `to()` gives the rectangle the print flies into
   * (asked when it flies, so the screen underneath may change while it prints); without it the print is lifted away.
@@ -40,21 +40,25 @@ export function createPrinter({sound=()=>{},reduceMotion=false}={}){
   Object.assign(paper.style,{width:`${paperW}px`,height:`${paperH}px`});
   Object.assign(sheet.style,{padding:`${margin}px ${margin}px ${margin*1.6}px`,clipPath:torn()});
   img.src=src;
-  let skip=false,feed=null;
+  let skip=false,feed=null,cancelled=false,motor=null;
+  cancelPrint=()=>{cancelled=true;for(const el of [scene,body,paper])for(const a of el.getAnimations())a.cancel();scene.remove();paper.remove();};
   scene.addEventListener('pointerdown',()=>{skip=true;feed?.finish();});
   document.body.append(scene);
   try{
    await img.decode().catch(()=>{});
+   if(cancelled)return false;
    // The printer rises; then the feed, a step at a time, with the motor's buzz on every other step.
    scene.animate([{opacity:0},{opacity:1}],{duration:220,fill:'forwards'});
    await body.animate([{transform:`translateY(${ph0*1.6}px)`},{transform:'translateY(0)'}],{duration:skip?1:380,easing:'cubic-bezier(.32,1.3,.5,1)',fill:'forwards'}).finished;
    const steps=Math.max(24,Math.min(64,Math.round(paperH/7))),feedMs=Math.min(2200,1300+paperH*1.6);
    scene.classList.add('printing');
    feed=paper.animate([{transform:`translateY(${paperH}px)`},{transform:'translateY(0)'}],{duration:skip?1:feedMs,easing:`steps(${steps},end)`,fill:'forwards'});
-   let step=0;const motor=setInterval(()=>{if(step++%2===0)sound('feed');},feedMs/steps);
+   let step=0;motor=setInterval(()=>{if(step++%2===0)sound('feed');},feedMs/steps);
    await feed.finished.catch(()=>{});clearInterval(motor);
+   if(cancelled)return false;
    scene.classList.remove('printing');
    if(!skip)await wait(220);
+   if(cancelled)return false;
    // Torn off against the teeth: a tug up and a little twist.
    sound('tear');navigator.vibrate?.(8);
    await paper.animate([{transform:'translateY(0)'},{transform:'translate(-3px,-14px) rotate(-2.5deg)'}],{duration:170,easing:'ease-out',fill:'forwards'}).finished;
@@ -74,7 +78,8 @@ export function createPrinter({sound=()=>{},reduceMotion=false}={}){
    }
    flyer.remove();
    return true;
-  }finally{scene.remove();paper.remove();running=null;done();}
+  }catch(err){if(cancelled)return false;throw err;}
+  finally{clearInterval(motor);scene.remove();paper.remove();running=null;cancelPrint=null;done();}
  }
- return {print,get busy(){return !!running;}};
+ return {print,cancel(){cancelPrint?.();},get busy(){return !!running;}};
 }

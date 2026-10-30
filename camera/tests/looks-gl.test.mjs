@@ -30,6 +30,7 @@ assert.equal(r.adjust.light,1);assert.equal(r.adjust.pattern,0);assert.equal(r.s
 assert.deepEqual(normalRecipe().layers,[{look:'none',amount:1}]);
 assert.deepEqual(normalRecipe().stickers,[]);
 assert.equal(normalRecipe().frame,'none');assert.equal(normalRecipe().trick,'none');assert.equal(normalRecipe().adjust.detail,0);
+assert.equal(normalRecipe().paper,'none');assert.equal(normalRecipe({paper:'rough'}).paper,'rough');assert.equal(normalRecipe({paper:'other'}).paper,'none');
 assert.equal(normalRecipe({frame:'panel',trick:'twin',adjust:{detail:-3}}).trick,'twin');
 assert.equal(normalRecipe({frame:'<b>',trick:'spin'}).frame,'none');assert.equal(normalRecipe({trick:'spin'}).trick,'none');
 assert.equal(normalRecipe({adjust:{detail:-3}}).adjust.detail,-1);
