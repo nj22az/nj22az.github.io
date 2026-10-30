@@ -95,3 +95,25 @@ Same branch, `claude/great-sagan-mvc9bb`; nothing in the game changed, nothing p
 - **Next:** the owner answers five decisions in the plan (the name, the days, her garden round, Yui at the counter, the
   records) and says whether to build. The fish-market review and its publishing still wait on the owner too.
 
+## Update, 30 October 2026 (evening): the Meshy audit for the kissaten
+
+The owner: "Use my credits on meshy audit where it would make the scene better". Same branch; nothing in the game
+changed; nothing published.
+
+- **Spent 105 credits** (2,753 → 2,648): nine props shaped with Meshy's smart topology (5 each), six coloured (10 each).
+  The siphon, the morning set and a table fortune machine failed at the shape stage and were not coloured.
+- **Photographed in the real shut shop**, Meshy beside code, in World's own light and ink:
+  `tools/kissaten-meshy-look.mjs` → `johansson-town/docs/qa/kissaten-meshy/` (`pair-*.jpg`).
+- **Verdict:**
+  - Meshy for the bentwood chairs, the record player and the hand grinder (curved, open, detailed things seen from the
+    street or the counter);
+  - a tie on the kettle;
+  - code for the stools, cups, siphons and the morning plate.
+  - This replaces the first answer ("all code"), which was a guess before the test.
+- **Files:** the six models at 1024 px in `johansson-town/art/kissaten/meshy/` (190–280 KB each), with
+  `provenance.json` (prompts, task ids, triangles, credits, verdicts); `tools/shrink-glb-textures.py`.
+- **Not proposed:** a Meshy body for Grandmother Higa (the owner's plan of 24 October reuses the Pixar bodies with new
+  heads).
+- **Next:** unchanged. The owner's five decisions and the word to build; the Meshy winners go in with the build (512 px,
+  colliders, a look under the ink at phone size).
+

@@ -10,6 +10,9 @@ and what Meshy could make for it. The owner reviews the plan before any build. B
 - Meshy checked: `MESHY_API_KEY` is set in the environment (its value never printed); Meshy CLI 0.4.0 through
   `npm exec`, production API (`api.meshy.ai`); one free `balance` call answered: **2,753 credits**. Nothing generated.
 - The map (below), redone in full from `git grep` over the whole repository and the studio repo `jojo`.
+- The Meshy audit (later the same day, on the owner's "Use my credits on meshy audit where it would make the scene
+  better"): nine props tried, six coloured, 105 credits; photographed beside code versions in the real shop. See
+  "What Meshy can make" below.
 - The cast's mornings swept (every resident, 06:30–10:00 every half hour, a Monday, a Saturday and a Sunday, from
   `canonicalDay`), so the kissaten's regulars come from their own days.
 - The plan and the Meshy/code split (below).
@@ -122,7 +125,7 @@ A new account in `merchandising.js`: milk bread and milk (existing lines), plus 
 Naha, on the ferry) and eggs, which Sakura also sells over its counter. Ice comes from Kōji's ice plant. The town's
 money model stays closed (22 October); the kissaten's takings are not added to it unless the owner asks.
 
-### The building (World, drawn in code)
+### The building (World)
 - **Shutter up 06:50–09:40** on the kissaten's days, down at all other hours, following the clock as Nakamura's does
   (`nakamura-dressing.js` 388–400). The doors slide open; the tubes light (no point light: phone budget).
 - **A new paper on the shutter** in her brush hand: 喫茶 朝7時〜9時半, and お酒は さくら商店へ kept, so the old regulars
@@ -130,15 +133,15 @@ money model stays closed (22 October); the kissaten's takings are not added to i
 - **The awning re-covered in green canvas**, its valance 喫茶 ひが · コーヒー · モーニング; the upright sign "Awamori"
   becomes コーヒー; the sugidama (the sake seller's sign) comes down.
 - **An A-board** on the pavement in hours (モーニング ¥300), clear of the footway, the bench and the bicycle.
-- **Inside**, in the room as it stands (4.1 × 5.75 m; the counter across the back is 2.47 m long and 0.95 m high):
-  - the counter becomes the coffee counter: two siphons on spirit lamps, a kettle on a gas ring, a hand grinder, the
-    register and her abacus kept;
+- **Inside**, in the room as it stands (4.1 × 5.75 m; the counter across the back is 2.47 m long, its top 0.95 m above the 8 cm shop floor):
+  - the counter becomes the coffee counter: two siphons on spirit lamps, a kettle on a gas ring, the hand grinder
+    (Meshy), the register and her abacus kept;
   - four stools along its front (0.6 m apart);
   - the dear-bottle shelf behind it becomes the cup shelf;
   - the family kusu stays in its corner with its 非売品 card, under the nose of the morning crowd;
-  - the record player and her late husband's records (he drove the island bus) on a low cabinet where the awamori jars
-    stood, beside the counter where she can reach it;
-  - a table for two by the window, where the bottle shelves were;
+  - the record player (Meshy) and her late husband's records (he drove the island bus) on a low cabinet where the
+    awamori jars stood, beside the counter where she can reach it;
+  - a table for two by the window, where the bottle shelves were, with two bentwood chairs (Meshy);
   - the cold case and the delivery book go.
 - Buy prompts for the three items (closed text outside hours), sit prompts on the stools and the table; every new thing
   a solid with its own collider; the room reachable in hours.
@@ -167,45 +170,56 @@ Ganaha. The evening place keeps the bench. Story hooks from what the town alread
 
 ## What Meshy can make, and what should be drawn in code
 
-Prices from Meshy's own planner (`meshy make … --dry-run`, which calls nothing) and its price list
-(<https://docs.meshy.ai/en/api/pricing>, read 30 October 2026). Balance: 2,753 credits.
+### First answer (before any test), now superseded
+Before anything was generated this note said: draw all of it in code for World, and keep Meshy for the Pixar work. The
+reasons were heavy, irregular meshes that ink badly, glass baked as paint, and the phone budget. The owner then asked
+(30 October): "Use my credits on meshy audit where it would make the scene better". The test below replaces the guess.
 
-| Meshy step | Credits |
-| --- | --- |
-| Text to 3D: preview (mesh) + refine (texture) | 20 + 10 = 30 |
-| Image to 3D, textured (meshy-6 / 7.1) | 30 (mesh only 20; meshy-6-lite 5–15) |
-| Retexture | 10 |
-| Remesh (polygon budget) / UV unwrap | 5 each |
-| Convert / resize | 1 each |
-| Rigging (humanoid) / animation | 5 / 3 an action |
-| Text to image (concept) | 3–9 |
+### The audit (30 October 2026): the same props twice in the real shop
+Meshy's **smart topology** (`meshy-t2.5`) makes clean low-poly models to a face target, so the "heavy mesh" worry
+did not hold. A prop costs **5 credits for the shape and 10 for its colour**: 15 in all, and the shape can be judged
+before the colour is paid for.
 
-**For World (the cartoon three.js town on `main`): draw all of it in code.** Cups and saucers, the siphons, the record
-player, the stools, the table and chairs, the A-board and the lettering.
-- The town's cel and ink passes are tuned to the kit's clean, low shapes (`okinawa/kit.js`). A Meshy model carries
-  baked colour and a dense, irregular mesh; it inks badly and looks unlike the kit props beside it.
-- Glass: the siphons, the cups' shine and the door panes are the town's shop-glass material; Meshy bakes glass as
-  opaque paint.
-- Phone budget: the whole kissaten in code is a few thousand vertices. One standard Meshy model runs to tens of
-  thousands of triangles; smart topology can hold 100–15,000 triangles, but each prop would still need a collider made
-  by hand and its texture re-banded for the cel look.
-- The tests (collisions, Z-fighting, ground clearance) measure the kit's own geometry.
+Nine shapes were made and six were coloured: **105 credits** (2,753 → 2,648). Every prompt, task id, triangle count and
+verdict is in `art/kissaten/meshy/provenance.json`.
 
-**Where Meshy earns its credits:**
-- **A Pixar Grandmother Higa**, as Thao and Johansson were made from the owner's Meshy models: image to 3D, textured,
-  then rigged in Blender by the studio's own scripts (`jojo` `3d/cast/game_meshy.py`), or Meshy's rigging. About
-  30 + 5 = 35 credits, from a reference image (the owner's, or a concept at 3–9 credits).
-- **The Pixar kissaten's props in Blender** (studio repo `jojo`, branch `pixar`, for stills and films), where detail
-  shows: the record player, a bentwood chair, a hand coffee grinder, a cast-iron stool base. About 30 each, 5 more for a
-  remesh: about 140 credits for the four.
-- Not Meshy even there: the siphons and the cups. They are glass and turned shapes, quicker and truer modelled in
-  Blender (screw/lathe) with a real glass shader.
+`tools/kissaten-meshy-look.mjs` photographs the shut Higa Liquor in World's own renderer (the real town, the cel and ink
+passes, 08:00). For the photographs only, the shutter is lifted and the tubes lit. The same props stand on the real
+counter and floor twice, once from Meshy and once drawn in code with the kit's primitives, at real size. The room is
+still dressed as the liquor shop. Photographs: `docs/qa/kissaten-meshy/` (`pair-*.jpg`, Meshy left, code right).
 
-All of it: about 175 credits, 6% of the balance. Nothing has been generated; each step waits for the owner's word.
+| Prop | Triangles | Verdict | Why |
+| --- | --- | --- | --- |
+| Bentwood chair | 3,100 | **Meshy** | Reads as a bentwood café chair from the street and from inside; the code chair reads as a ladder, or a letter d. |
+| Record player | 2,563 | **Meshy** | The open lid, the record and its red label, the knobs; the code one is a flat box. |
+| Hand grinder | 2,505 | **Meshy** | The drawer and its knob, the bowl, the crank; the code one is a dark cube with a disc. |
+| Gooseneck kettle | 2,076 | Tie | Its spout rises from the base as a real one does; at room distance the code kettle reads as well. A white enamel kettle (the steel came out white). |
+| Cup and saucer | 1,548 | Code | Nicer up close (handle, spoon) but mug-tall against its saucer, and there are many of them; at a distance both read the same. |
+| Counter stool | 2,017 | Code | The shape is right, but the seat's colour map has painted streaks that read as scratches under the ink; a lathe draws a clean seat. |
+| Siphon | — | Code | Meshy made two separate gadgets, and glass comes baked as paint. Rejected at the shape stage (5 credits). |
+| Morning set | — | Code | The toast came as two blobs and there was no egg cup. Rejected at the shape stage. |
+| Table fortune machine | — | Not drawn | An unreadable blob. Rejected at the shape stage. |
+
+**What the test shows:**
+- Meshy makes the scene better where a thing is **curved, open or detailed and big enough to be seen**: the chairs and
+  the record player from the street, the grinder at the counter.
+- Code stays better for **turned, plain or glass things** (stools, cups, siphons, plates) and for anything lettered.
+- A pink telephone was not made: Minato already has the town's pink telephone (`izakaya-play.js`).
+
+**What a Meshy prop needs before it goes into World** (part of the build, not done yet):
+- its colour map shrunk to 512 px (the files here are at 1024 px, 190–280 KB each);
+- a collider drawn by hand to the measured size;
+- a check under the ink at phone size;
+- a `who / why / where` record, like every other piece.
+
+**Still for Meshy, later:** the Pixar kissaten in Blender (studio repo `jojo`, `pixar`) can take the same three winners at
+standard quality (30 credits each). A Pixar Grandmother Higa is **not** proposed as a Meshy body: the owner's 24 October
+plan reuses the Pixar bodies with new heads, and a head would come from the owner's picture.
 
 ## Next action
 The owner answers the five decisions and says whether to build. Then, in this order: the data module (hours, menu,
-regulars, supplies) with its tests; the dressing and the frontage on the clock; her day and the regulars' days; the
+regulars, supplies) with its tests; the dressing and the frontage on the clock, with the Meshy chair, record player and
+grinder prepared for World (512 px, colliders, a look under the ink at phone size); her day and the regulars' days; the
 storyteller place and its backdrop; the guide and the rules text; the tests in section B updated with dated notes (none
 weakened); `npm run build:runtime`; the CI guard with CI's heap; photos at 07:40 and 10:00, looked at. Publishing to
 `main` only on the owner's word.
