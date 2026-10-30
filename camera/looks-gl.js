@@ -14,10 +14,13 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
+import {FILM_GLOW,COLOUR_FILM_BODY} from './photo-bodies.js?v=20261030e';
+
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
 // Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
 // dots, a blueprint and night vision.
 export const LOOKS=Object.freeze({...WORLD_LOOKS,
+ colourFilm:Object.freeze({label:'Colour film',short:'Colour film',hint:'Quiet grain and warm halation around bright lights.'}),
  adventureInk:Object.freeze({label:'Adventure Ink',short:'Adventure',hint:'Bright cel colours and clean manga-inspired ink.'}),
  instant:Object.freeze({label:'Instant film',short:'Instant',hint:'An instant print: a soft matte fade, warm light, a leak of light in the corner.'}),
  camcorder:Object.freeze({label:'VHS camcorder',short:'VHS',hint:'A home video tape of the 80s: colours that bleed, soft lines, a wobble at the foot.'}),
@@ -38,13 +41,13 @@ export const LOOKS=Object.freeze({...WORLD_LOOKS,
  sixtyFourBit:Object.freeze({label:'64-bit',short:'64-bit',hint:'The cartridge console of 1996: small textures filtered smooth, soft haze and a fine dither.'}),
 });
 /** The World Look whose little house stands in for a camera-only Look until its live thumbnail is drawn. */
-export const LOOK_STANDIN=Object.freeze({adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
+export const LOOK_STANDIN=Object.freeze({colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
  colourHandheld:'snes',redVisor:'riso',risoPinkBlue:'riso',risoRedNavy:'riso',risoBlackPink:'riso',risoThree:'riso',eightBit:'snes',thirtyTwoBit:'snes',sixtyFourBit:'tilt'});
 
 
 // An instant print: a gentle S curve, then a matte fade (blacks lifted, whites softened), cool shadows and warm
 // highlights, a leak of orange light from the top right corner, soft corners and a fine grain.
-const INSTANT_BODY=`
+const INSTANT_BODY=`${FILM_GLOW}
 void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
@@ -67,6 +70,7 @@ void main(){
  c=mix(c,vec3(.93,.9,.84),(1.0-smoothstep(.0,.025,edge))*.35);
  vec2 v=vUv-.5;
  c*=1.0-dot(v,v)*.5;
+ c=1.0-(1.0-c)*(1.0-filmHalation(vUv,u)*.65);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
 // A home video tape: the picture split into brightness and colour as a VHS recorder does, the colour smeared and late
@@ -1069,7 +1073,7 @@ ${i===n-1?`  k=max(k,lineAt(uv,u,1.8,.02,.04)*.95);
 /** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon,
  * Stamp, Line drawing, Pencil manga, Manga, Sketchbook, Woodblock print, Pocket and Watercolour keep World's names and
  * swatches but draw a photograph with these, made for one. */
-const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
+const CAMERA_BODIES={colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
  colourHandheld:HANDHELD_COLOUR_BODY,eightBit:EIGHT_BIT_BODY,
  ...Object.fromEntries(Object.entries(RISO_INKS).map(([name,inks])=>[name,risoBody(inks)])),thirtyTwoBit:THIRTY_TWO_BIT_BODY,sixtyFourBit:SIXTY_FOUR_BIT_BODY,redVisor:RED_VISOR_BODY};
 
