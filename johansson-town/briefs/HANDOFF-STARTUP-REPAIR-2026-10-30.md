@@ -5,11 +5,35 @@ Owner: game does not start properly and kicks the player out; audit and remedy. 
 ## Branch and scope
 
 `codex/world-startup-repair`, from production `ff76aee1a30ff1d000bd5bb9ecf0475543915899`.
-[Draft PR #413](https://github.com/nj22az/nj22az.github.io/pull/413), into `main`. Not merged or published.
+[PR #413](https://github.com/nj22az/nj22az.github.io/pull/413), into `main`; ready for review. Not merged or published.
 Code candidate `6d064234099d943d00e991d8455467063877de9b`, exact tested tree `4a87db3b53d49f27010f728619683b0ef6637f28`.
 Current main `87f47e8f6e5fafdb586ac723e9aa3cc704d11345` is merged into this branch: preserve the concurrent Lightpanda
 documentation and Blender sign correction. The handover conflict retains both entries. No running World source changed
 in that main update. The separate Izakaya CAD repair (#410) is not included. No character, scene, shader-quality or Linux release change.
+
+## Final verification — 31 October 2026
+
+**Completed and pushed; not published.** Final app code: `4a37c11da8c0674145e4b3ad03facc28d223158e`.
+Tested code plus explicit cartoon-quality assertions: `6d43b4283f1035b1afb3e5e7169f7eaec2d5064d`.
+Runtime source SHA-256: `6873e9c7ca4e9ba346ff2d05e8c5263d7904e579fdedc3e03df3ada171fa7fdc`.
+The following documentation/evidence commit changes no source, tests or runtime.
+
+- **Full World guard: 513/513, 99 files, passed** locally (219 s) and in hosted
+  [run 41136194829](https://github.com/nj22az/nj22az.github.io/actions/runs/41136194829) (356 s).
+- **All eight iPhone-profile WebKit/Mesa scenarios passed**, zero page errors and zero failed requests: cold start,
+  advancing live frames, landscape/portrait rotation, warm reload, real Izakaya entry, saved discovery, forced real GPU
+  context loss during startup, and the ordinary entry URL after a seeded twelve-hour absence.
+- The seeded twelve-hour return completed Entering in **22,762 ms**. The earlier ordinary-clock return had taken
+  **139,799 ms**; its gap and opening differed, so these are recorded test cases, not a controlled hardware benchmark.
+- Every launch explicitly retained **cartoon ink, colour grade, HDR and four-sample antialiasing**. No normal graphics
+  profile, lighting, texture/model resolution or scene geometry is reduced. Cold-start program count was 133 in this
+  run (timing of streaming affects the count; do not treat it as a hardware-memory measurement).
+- [`iphone-final.json`](../docs/qa/startup-2026-10-30/iphone-final.json) retains the complete report, timings and graphics
+  states. [Original report and five PNGs](https://github.com/nj22az/nj22az.github.io/actions/runs/41136194829/artifacts/13017012512).
+  The final portrait and actual-clock night opening were opened and inspected: the real game and current resident,
+  with the cartoon appearance retained. This is desktop WebKit mobile emulation, not a physical iPhone photograph.
+- The unchanged published main boot graph is retained for cached clients. Final runtime-package checks pass; 35
+  manifest entries. Authored-file whitespace and JavaScript syntax checks pass. No merge to main or new Linux release.
 
 ## Owner's visual constraint — 31 October 2026
 
@@ -104,7 +128,7 @@ and harbour, not a blank or loading frame. The baseline does **not** reproduce t
   The final code candidate is `4a37c11da8c0674145e4b3ad03facc28d223158e`, exact tree `429840f50166cd6272eec5f6017da60af8cf0b8f`.
   It is rerun with the deterministic twelve-hour absence, a strict startup-time assertion and explicit full-cartoon checks.
 - Authored-file whitespace and JavaScript syntax checks passed.
-- Complete local guard: **505/505 passed, 96 files, 208 seconds**.
+- Earlier correction guard: **505/505 passed, 96 files, 208 seconds**. The final source passes **513/513** above.
 - Full-game CPU wiring/interior smoke plus runtime package: **5/5 passed**, 159.8 seconds. The fixture reports its
   existing placements-fetch warning; stability checks pass. It substitutes the renderer and does not establish GPU acceptance.
 
@@ -112,4 +136,5 @@ and harbour, not a blank or loading frame. The baseline does **not** reproduce t
 
 A desktop WebKit engine with a mobile profile does not model iOS jetsam/process limits, Mobile Safari's exact GPU
 implementation, or the owner's existing tabs, saved state and network. No physical iPhone/iPad/Steam Deck claim.
-Inspect the corrected CI result and captures, then publish only under the owner's instruction for `main`.
+The corrected source and captures are verified above. Next: publish the reviewed repair on the owner's instruction,
+then verify the actual phone's original failure on the deployed build. Its OS-level kick-out remains unobserved here.

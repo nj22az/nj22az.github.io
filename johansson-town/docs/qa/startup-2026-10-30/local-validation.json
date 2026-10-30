@@ -21,5 +21,25 @@
       "failed": 0
     }
   ],
-  "physicalDevice": false
+  "physicalDevice": false,
+  "final": {
+    "codeCommit": "4a37c11da8c0674145e4b3ad03facc28d223158e",
+    "testedCommit": "6d43b4283f1035b1afb3e5e7169f7eaec2d5064d",
+    "localGuard": {
+      "passed": 513,
+      "failed": 0,
+      "files": 99,
+      "seconds": 219.268
+    },
+    "hostedGuard": {
+      "passed": 513,
+      "failed": 0,
+      "files": 99,
+      "seconds": 356,
+      "workflow": "https://github.com/nj22az/nj22az.github.io/actions/runs/41136194829"
+    },
+    "focusedChecks": 54,
+    "iphoneScenarios": 8,
+    "physicalDevice": false
+  }
 }
