@@ -1,8 +1,8 @@
 {
   "title": "Minato and Sato — compact shared restaurant",
-  "planRevision": 8,
+  "planRevision": 9,
   "dimensions": {
-    "revision": 8,
+    "revision": 9,
     "title": "Minato and Sato — compact shared restaurant",
     "owner": "Thao; Mrs Sato operates the lunch counter",
     "purpose": "A small harbour gathering place with a shared kitchen, usable seats, guest WC and deliberate storage.",
@@ -441,7 +441,15 @@
         "who": "Customers of both businesses",
         "why": "A real guest facility reached from the dining side, separate from food preparation."
       }
-    ]
+    ],
+    "joinery": {
+      "doorJamb": 0.055,
+      "doorHead": 0.075,
+      "windowFrame": 0.055,
+      "serviceJamb": 0.05,
+      "serviceHead": 0.07,
+      "wcJamb": 0.05
+    }
   },
   "units": "metres; Three.js x,y,z; Blender x,-z,y",
   "notes": [
@@ -500,9 +508,9 @@
         ],
         "lens": 24
       },
-      "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass",
-      "planRevision": 7,
-      "sha256": "c0e4d423f28770000f0e9b6a0100125d73618735b612c0e8f6d5e75307733672"
+      "planRevision": 9,
+      "sha256": "8c05af893e789c839a7f8cbf042f7b9c5787613920a5b89ece131289db2a7456",
+      "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass"
     },
     {
       "file": "counter.png",
@@ -520,9 +528,9 @@
         ],
         "lens": 27
       },
-      "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass",
-      "planRevision": 7,
-      "sha256": "02873bee90279de0b38a480479029de9c3179ae3f1889636786f96536f3d75bb"
+      "planRevision": 9,
+      "sha256": "d1c78c4eac9a6864656156c27f502066e035a540ec71fe63e64bd2850a4d0d34",
+      "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass"
     },
     {
       "file": "overhead.png",
@@ -541,18 +549,17 @@
         "ortho": 16.0,
         "cutaway": true
       },
-      "planRevision": 8,
-      "sha256": "0da8c27a3b6d462d2deab77fa46d6e567e8be34ef95257a344db8ce1d3ae5a49",
+      "planRevision": 9,
+      "sha256": "85e93265868fcb5112eed37fd0c606ef45ea18e6c38ad405815debc925279bcd",
       "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass"
     }
   ],
   "renderPlanRevisions": [
-    7,
-    8
+    9
   ],
   "editable": {
-    "meshes": 918,
-    "triangles": 50520,
+    "meshes": 926,
+    "triangles": 51000,
     "bounds": {
       "min": [
         -4.230000019073486,
@@ -569,7 +576,7 @@
   },
   "export": {
     "meshes": 35,
-    "triangles": 51675,
+    "triangles": 52155,
     "bounds": {
       "min": [
         -4.230000019073486,
@@ -577,7 +584,7 @@
         -3.9000000953674316
       ],
       "max": [
-        6.010000705718994,
+        6.010000228881836,
         3.009999990463257,
         3.6000001430511475
       ]
@@ -585,15 +592,15 @@
     "materials": 33,
     "file": "minato-interior-compact.glb",
     "path": "assets/models/izakaya/minato-interior-compact.glb",
-    "bytes": 3844416,
+    "bytes": 3872380,
     "primitives": 35,
-    "sha256": "e1871d277c1be9490044d274dc532b8d47990c8e242f1bcbd04e6d2c3862992d"
+    "sha256": "313776b898e9bdc535ce5bae7d9e0abd04addddcdfc1c5f8be8776acc82ee44b"
   },
   "blend": "minato-compact.blend",
-  "blendSha256": "19827605f7a16709ab464eee8a9bddcd20b402bc9f5b6f09f91a041d1576cf6a",
+  "blendSha256": "154be1f877a9473a65387fa63de581e833a3a3fa1cbddb988cbacdeb5c45a6c2",
   "inputs": {
-    "art/izakaya/compact/plan.json": "9e240c025dd0bd2ac5b1a73e57497765332ccbabb33fed27ad71548de437100b",
-    "tools/blender/build-minato-compact.py": "7ae4dce65cdba9e391f48af43ec094d45d78c2d9ec09a5a4d8667d13b7e81ec5",
+    "art/izakaya/compact/plan.json": "42cc52f4145fd1d44701170c2693b5edff093f71d8de8733c4db679dee766b41",
+    "tools/blender/build-minato-compact.py": "184ab2eddb70378e8f53c96b21a0e8c7a98554cd83e0cfbf77ca603251038e06",
     "tools/blender/build-minato-walnut.py": "3cc9231318ccc961e0158d15c7a9113365ae92c65ecea495676095c3e7610049",
     "assets/models/izakaya/minato-walnut-backbar.glb": "4fc640430634e0bf17da87d80bf3c6ccb39d2c7f52a4a6a67861438caba96e43",
     "art/izakaya/compact/minato-signs.otf": "76766701cd570ed46ca63bc5122c144fb269c9288d385817939af3fe941957b2"

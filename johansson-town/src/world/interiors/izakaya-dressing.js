@@ -173,7 +173,7 @@ export function buildIzakayaDressing(room,{collider,layout={}}={}){
  }
  // The bottle keep: two boards on brackets, the bottles in a row, tags on their necks.
  const K=layout.keepShelf||KEEP_SHELF;
- for(const y of K.levels){box(K.depth,.03,K.width,K.x+K.depth/2,y-.015,K.z,0x6e4c30);box(.04,.12,.03,K.x+.02,y-.08,K.z-K.width/2+.08,0x3a2a1c);box(.04,.12,.03,K.x+.02,y-.08,K.z+K.width/2-.08,0x3a2a1c);}
+ for(const y of K.levels){box(K.depth,.03,K.width,K.x+K.depth/2,y-.015,K.z,0x6e4c30);box(.04,.11,.03,K.x+.02,y-.085,K.z-K.width/2+.08,0x3a2a1c);box(.04,.11,.03,K.x+.02,y-.085,K.z+K.width/2-.08,0x3a2a1c);}
  const bottle=new THREE.LatheGeometry([[0,0],[.031,0],[.043,.005],[.045,.024],[.044,.23],[.039,.247],[.027,.267],[.019,.279],[.017,.331],[.019,.334],[.019,.349],[0,.349]].map(([r,y])=>new THREE.Vector2(r,y)),16);
  const bottles=new THREE.InstancedMesh(bottle,new THREE.MeshStandardMaterial({roughness:.22,metalness:.05}),BOTTLE_KEEP.length);bottles.name='Minato bottle keep';
  const dummy=new THREE.Object3D(),perRow=Math.ceil(BOTTLE_KEEP.length/K.levels.length),spacing=(K.width-.12)/perRow;
@@ -195,7 +195,7 @@ export function buildIzakayaDressing(room,{collider,layout={}}={}){
  const caddy=(x,y,z,yaw=0)=>item('Condiment caddy '+x+','+z,{x,y:y+.002,z,yaw},p=>{
   // A shallow cedar carrier, with real open containers supported by its base.
   localBox(.38,.006,.096,p,0x63472d,.05,.003);for(const dz of [-.046,.046])localBox(.38,.014,.004,p,0x9a6c3e,.05,.013,dz);
-  for(const dx of [-.138,.238])localBox(.004,.014,.092,p,0x9a6c3e,dx,.013);
+  for(const dx of [-.138,.238])localBox(.004,.014,.088,p,0x9a6c3e,dx,.013);
   // Pressed glass soy bottle, a black screw lid and its short pour spout.
   lathe([[0,.006],[.019,.006],[.024,.013],[.024,.072],[.018,.087],[.012,.091],[.012,.106],[0,.106]],p,0x482a18,-.095);
   localCyl(.015,.009,p,0x211d17,-.095,.106);ring(.015,.0011,p,0x746650,-.095,.108);
@@ -214,9 +214,9 @@ export function buildIzakayaDressing(room,{collider,layout={}}={}){
    piece(new THREE.CylinderGeometry(.0005,.00085,.055,5).rotateZ((i%3-1)*.05),p,solids,0xc19b57,.028+Math.cos(a)*r,.05,Math.sin(a)*r);
   }
   // A hollow chopstick box with individual bamboo pairs and a notch at each end.
-  localBox(.192,.004,.071,p,0x775031,.141,.008);for(const dz of [-.034,.034])localBox(.192,.039,.004,p,0x99693b,.141,.0295,dz);
-  for(const dx of [.047,.235]){localBox(.004,.02,.067,p,0x99693b,dx,.02);for(const dz of [-.026,.026])localBox(.004,.014,.015,p,0x99693b,dx,.037,dz);}
-  for(let i=0;i<10;i++)piece(new THREE.CylinderGeometry(.0013,.0022,.176,6).rotateZ(Math.PI/2).rotateY((i%3-1)*.012),p,solids,i%2?0xcbb079:0xb88d51,.141,.013+Math.floor(i/5)*.005,-.022+(i%5)*.0105);
+  localBox(.188,.004,.071,p,0x775031,.141,.008);for(const dz of [-.034,.034])localBox(.188,.039,.004,p,0x99693b,.141,.0295,dz);
+  for(const dx of [.049,.233]){localBox(.004,.02,.064,p,0x99693b,dx,.02);for(const dz of [-.026,.026])localBox(.004,.014,.012,p,0x99693b,dx,.037,dz);}
+  for(let i=0;i<10;i++)piece(new THREE.CylinderGeometry(.0013,.0022,.176,6).rotateZ(Math.PI/2),p,solids,i%2?0xcbb079:0xb88d51,.141,.013+Math.floor(i/5)*.005,-.022+(i%5)*.0105);
  });
  const caddies=layout.caddies||[
   ...[-3.05,-1.55,-.05,1.45].map(x=>[x,FURNITURE_HEIGHTS.serviceCounter,-2.24,0]),
@@ -232,8 +232,10 @@ export function buildIzakayaDressing(room,{collider,layout={}}={}){
   roundedBox(.254,.142,.006,.002,p,0xced4c8,0,.106,.116);roundedBox(.213,.078,.003,.001,p,0xb3bdb5,-.004,.111,.121);
   for(const dy of [.057,.155])localBox(.014,.025,.012,p,0x8e9a91,-.131,dy,.12,glaze);
   tube([[.118,.067,.12],[.12,.08,.133],[.12,.132,.133],[.118,.145,.12]],.0045,p,0x687a75);
-  for(let i=0;i<8;i++)localBox(.0015,.014,.052,p,0x7f897e,-.1508,.06,-.059+i*.014,glaze);
-  ball(.005,p,0x74ad55,.095,.053,.124,1,1,.3);decal('warmer',.198,.043,p,-.012,.106,.123);
+  // Eight separate louvers fixed to the case; the old 52 mm strips overlapped
+  // on a 14 mm pitch and shared the case's side plane.
+  for(let i=0;i<8;i++)localBox(.004,.014,.006,p,0x7f897e,-.152,.06,-.059+i*.014,glaze);
+  ball(.005,p,0x74ad55,.095,.053,.124,1,1,.3);decal('warmer',.198,.043,p,-.012,.106,.126);
  });
  // Red lanterns along the counter, between the bell pendants.
  const paperRadius=y=>.102-.044*(Math.abs(y)/.13)**3;
@@ -280,7 +282,8 @@ export function buildIzakayaDressing(room,{collider,layout={}}={}){
   const q={x:p.x+.168*p.scale,y:p.y+.176*p.scale,z:p.z-.069*p.scale,yaw:Math.PI,scale:p.scale};
   lathe([[0,0],[.021,0],[.032,.012],[.034,.075],[.026,.091],[.014,.105],[.014,.134],[.017,.137],[.017,.143],[.010,.143],[.009,.109],[0,.012]],q,0xd5c59e);
   wrap('flask',.0345,.059,q,0,.051,0,1.65);ring(.015,.0012,q,0x8d7351,0,.138);
-  roundedBox(.063,.098,.014,.004,p,0x987640,-.151,.337,-.139,solids);decal('bill',.055,.09,{...p,yaw:Math.PI},.151,.337,.148);
+  const book=new THREE.BoxGeometry(.063,.098,.014);book.setIndex(Array.from(book.index.array).slice(0,30));
+  piece(book,p,solids,0x987640,-.151,.337,-.139);decal('bill',.063,.098,{...p,yaw:Math.PI},.151,.337,.146);
  });
  if(collider){collider(T.x,T.z,.42,.38,.8);collider(K.x+K.depth/2,K.z,K.depth,K.width,2.0);}
  const group=new THREE.Group();group.name='Minato 1997 dressing';room.add(group);

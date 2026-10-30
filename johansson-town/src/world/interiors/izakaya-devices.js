@@ -3,6 +3,9 @@ import {mergeGeometries} from '../../../vendor/BufferGeometryUtils.js';
 
 const V=(x,y)=>new THREE.Vector2(x,y);
 function rounded(w,h,r){
+ // A radius larger than half the thin panel made the outline cross itself;
+ // ExtrudeGeometry then produced overlapping front/back triangles.
+ r=Math.min(r,w/2,h/2);
  const s=new THREE.Shape(),x=-w/2,y=-h/2;
  s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);
  s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
@@ -40,7 +43,10 @@ export function buildIzakayaDevices(room,P,K){
   box('plastic',.28,.145,.224,0xe090a2,P,0,.108,-.005,.025);
   // Raised coin mechanism and cradle sit behind the dialing panel.
   box('plastic',.085,.09,.08,0xd27691,P,-.084,.204,.058,.01);
-  box('metal',.06,.047,.003,0xb5b7af,P,-.084,.206,.016);
+  const coinPlate=box('metal',.06,.047,.003,0xb5b7af,P,-.084,.206,.016);
+  // This is a face plate fixed to the coin housing, not a closed metal block
+  // with another rear face competing against the housing's recess.
+  coinPlate.setIndex([...coinPlate.index.array.slice(0,24),...coinPlate.index.array.slice(30)]);
   box('plastic',.026,.003,.004,0x252629,P,-.084,.216,.013);
   box('metal',.033,.015,.003,0x6b6c68,P,-.084,.193,.012);
   for(const x of [-.09,.09])box('plastic',.036,.034,.047,0xaa536f,P,x,.189,-.005,.008);
@@ -54,8 +60,9 @@ export function buildIzakayaDevices(room,P,K){
   box('plastic',.106,.085,.005,0xa95372,P,.029,.10,-.119,.008);
   for(let row=0;row<4;row++)for(let col=0;col<3;col++){
    const x=.029+(1-col)*.027,y=.131-row*.02;
-   box('plastic',.022,.015,.008,0xf0ded5,P,x,y,-.124,.003);
-   box('plastic',.006,.002,.001,0x635052,P,x,y,-.129);
+   // The printed digit is the keycap's front face, not an overlay on it.
+   const key=new THREE.BoxGeometry(.022,.015,.008);key.setIndex(Array.from(key.index.array).slice(0,30));
+   add('plastic',key,0xf0ded5,P,x,y,-.124);
   }
   box('metal',.046,.021,.007,0xadb2aa,P,-.081,.069,-.121,.003);
   box('plastic',.035,.008,.002,0x323331,P,-.081,.071,-.126);
@@ -83,7 +90,7 @@ export function buildIzakayaDevices(room,P,K){
   box('plastic',.403,.281,.009,0x181f21,K,-.009,K.h+.208,-.199,.023);
   for(const x of [.145,.183])cyl('plastic',.012,.009,0xa69d87,K,x,K.h+.047,-.2,'z');
   box('paper',.004,.004,.002,0x90b379,K,.211,K.h+.048,-.208);
-  for(let i=0;i<9;i++)box('plastic',.067,.006,.002,0x202426,K,-.155,K.h+.019+i*.007,-.201);
+  for(let i=0;i<9;i++)box('plastic',.067,.004,.002,0x202426,K,-.155,K.h+.019+i*.007,-.207);
   for(const x of [-.21,.21])for(let i=0;i<8;i++)box('plastic',.002,.05,.005,0x24292a,K,x,K.h+.22,.006+i*.02);
   // Microphones have tapered grips, rounded mesh heads, collars and leads.
   for(const x of [-.21,.21]){
@@ -109,7 +116,7 @@ export function buildIzakayaDevices(room,P,K){
  const labels=[];
  for(let row=0;row<4;row++)for(let col=0;col<3;col++){
   ctx.fillText(digits[row*3+col],40+col*80,48+row*64);
-  const g=new THREE.PlaneGeometry(.022,.015).rotateY(Math.PI).translate(P.x+.029+(1-col)*.027,P.y+.131-row*.02,P.z-.1296);
+  const g=new THREE.PlaneGeometry(.022,.015).rotateY(Math.PI).translate(P.x+.029+(1-col)*.027,P.y+.131-row*.02,P.z-.128);
   const uv=g.attributes.uv;for(let i=0;i<uv.count;i++){uv.setXY(i,(col*80+uv.getX(i)*80)/512,1-(row*64+(1-uv.getY(i))*64)/256);}labels.push(g);
  }
  const card=new THREE.PlaneGeometry(.058,.084).rotateY(Math.PI).translate(P.x-.081,P.y+.128,P.z-.1205);

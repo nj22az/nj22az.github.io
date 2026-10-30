@@ -1484,6 +1484,7 @@ async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawn
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
+ try{
  current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=arrival?.at||activeRoomLayout?.spawn||[0,0,4.3];
  // The storeys drawn for where he arrives (a room of more than one storey shows the floor he stands on), before the first frame.
  activeRoomLayout?.follow?.({x:spawn[0],y:spawn[1]??0,z:spawn[2]});
@@ -1497,7 +1498,16 @@ async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawn
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
  yaw=Number.isFinite(arrival?.yaw)?arrival.yaw:roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
- pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title;$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
+ pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title;$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;
+ }catch(error){
+  // A rejected room build must not leave the frame loop inside a half-built
+  // venue. Restore the normal street lifetime and keep the door usable.
+  console.error('Could not enter '+s.id,error);
+  leaveRoom();yaw=streetYaw;pitch=streetPitch;player.quaternion.setFromAxisAngle(yAxis,yaw);
+  resetInput();say('Could not open '+s.title+'. You are safely outside. Please try the door again.',6);
+  return false;
+ }
+}
 function leaveRoom(destination=null){if(!current)return;if(current.linuxResidence)linuxLife?.leaveHome();replayInterrupted();lowerPocket();spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}wearSwim(false);inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');seated=false;parkSeat=null;active=null;const s=sharedDining(current)&&['izakaya','ramen'].includes(destination)?SITES.find(site=>site.id===destination)||current:current;
  const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;
  // A closed room has no renderer or interaction lifetime. Restore its borrowed

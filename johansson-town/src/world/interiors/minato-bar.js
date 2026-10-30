@@ -221,7 +221,9 @@ export function buildMinatoBar(room){
 function jug(){
  const g=new THREE.Group();g.name='Oolong jug';
  const glass=new THREE.Mesh(new THREE.CylinderGeometry(.052,.056,.22,20,1,true),new THREE.MeshStandardMaterial({color:0xd8e4dc,transparent:true,opacity:.35,roughness:.1,side:THREE.DoubleSide,depthWrite:false}));glass.position.y=.11;glass.name='Oolong jug glass';
- const tea=new THREE.Mesh(new THREE.CylinderGeometry(.048,.052,.17,20),new THREE.MeshStandardMaterial({color:0x7b3d16,roughness:.25}));tea.position.y=.088;tea.name='Oolong in the jug';
+ // Leave glass thickness at the widest base too; the old tea column nearly
+ // touched the tapered shell and flashed through it at an oblique angle.
+ const tea=new THREE.Mesh(new THREE.CylinderGeometry(.046,.049,.17,20),new THREE.MeshStandardMaterial({color:0x7b3d16,roughness:.25}));tea.position.y=.091;tea.name='Oolong in the jug';
  const lid=new THREE.Mesh(new THREE.CylinderGeometry(.054,.054,.014,20),new THREE.MeshStandardMaterial({color:0x2b2926,roughness:.5}));lid.position.y=.227;lid.name='Oolong jug lid';
  g.add(glass,tea,lid);g.userData.grip={radius:.056,height:.11};g.userData.spout=[0,.23,-.05];return g;
 }

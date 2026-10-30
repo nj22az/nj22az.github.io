@@ -464,6 +464,7 @@ def floor_rect(room,name,bounds,wood=False):
 
 def shell(room):
     p=room.plan;m=room.materials
+    j=p['joinery'];dj,dh,wf=j['doorJamb'],j['doorHead'],j['windowFrame'];sj,sh=j['serviceJamb'],j['serviceHead']
     main,annex=p['main'],p['ramen'];f=room.floor;h=p['ceilingY'];t=p['wallThickness']
     room.current_purpose='The compact building envelope; doors and window are actual openings and every walking area has continuous ground.'
     poly=p['floorPolygon']
@@ -475,9 +476,11 @@ def shell(room):
     floor_rect(room,'Main kitchen quarry tiles',(main['minX'],main['maxX'],main['minZ'],-1.8))
     floor_rect(room,'Sato quarry tiles',(main['maxX'],annex['maxX'],annex['minZ'],annex['maxZ']))
     e=p['entrance'];re=p['ramenEntrance'];w=p['window']
-    front_openings=[(e['position'][0]-e['width']/2,e['position'][0]+e['width']/2,f,e['height']),
-                    (re['position'][0]-re['width']/2,re['position'][0]+re['width']/2,f,re['height']),
-                    (w['position'][0]-w['width']/2,w['position'][0]+w['width']/2,w['position'][1]-w['height']/2,w['position'][1]+w['height']/2)]
+    # Rough openings include the joinery. The clear door/window sizes stay as
+    # measured; wall reveals must not occupy the jambs' visible end faces.
+    front_openings=[(d['position'][0]-d['width']/2-dj,d['position'][0]+d['width']/2+dj,f,d['height']+dh) for d in (e,re)]
+    front_openings.append((w['position'][0]-w['width']/2-wf,w['position'][0]+w['width']/2+wf,
+                           w['position'][1]-w['height']/2-wf,w['position'][1]+w['height']/2+wf))
     wall(room,'Street facade','X',main['minX']-t,annex['maxX']+t,main['maxZ']+t/2,t,front_openings,cutaway=True)
     wall(room,'Minato west wall','Z',main['minZ'],main['maxZ'],main['minX']-t/2,t)
     wall(room,'Minato rear wall','X',main['minX']-t,main['maxX']+t,main['minZ']-t/2,t)
@@ -485,18 +488,19 @@ def shell(room):
     wall(room,'Sato rear wall','X',main['maxX']+t,annex['maxX']+t,annex['minZ']-t/2,t,finish='Sato sage plaster')
     wall(room,'Sato east wall','Z',annex['minZ'],annex['maxZ'],annex['maxX']+t/2,t,finish='Sato sage plaster',cutaway=True)
     c=p['connection']
-    wall(room,'Shared service wall','Z',annex['minZ'],annex['maxZ'],c['x'],annex['minX']-main['maxX'],[(c['minZ'],c['maxZ'],f,c['height'])])
+    wall(room,'Shared service wall','Z',annex['minZ'],annex['maxZ'],c['x'],annex['minX']-main['maxX'],[(c['minZ']-sj,c['maxZ']+sj,f,c['height']+sh)])
     # Architraves are outside the clear apertures, leaving their specified width intact.
     for title,door in [('Minato entrance',e),('Sato entrance',re)]:
         x=door['position'][0];z=door['position'][2]-.028;ww=door['width'];hh=door['height']
-        for side in (-1,1):room.box(title+' jamb',(.055,hh-f,.095),(x+side*(ww/2+.0275),(hh+f)/2,z),m['Honey cedar'],.004)
-        room.box(title+' lintel',(ww+.11,.075,.10),(x,hh+.0375,z),m['Honey cedar'],.004)
+        for side in (-1,1):room.box(title+' jamb',(dj,hh-f,.095),(x+side*(ww/2+dj/2),(hh+f)/2,z),m['Honey cedar'],.004)
+        room.box(title+' lintel',(ww+2*dj,dh,.10),(x,hh+dh/2,z),m['Honey cedar'],.004)
         # Entry leaves retract into their wall pockets. No visible plane occupies
         # either entry or the neighbouring street-window aperture.
     x,y,z=w['position'];ww=w['width'];hh=w['height']
     for side in (-1,1):
-        room.box('Window side jamb',(.055,hh+.11,.15),(x+side*(ww/2+.0275),y,z+.04),m['Honey cedar'],.003)
-        room.box('Window head or sill',(ww+.11,.055,.15),(x,y+side*(hh/2+.0275),z+.04),m['Honey cedar'],.003)
+        # Butt the jambs into the head and sill; no crossed timber boxes.
+        room.box('Window side jamb',(wf,hh,.15),(x+side*(ww/2+wf/2),y,z+.04),m['Honey cedar'],.003)
+        room.box('Window head or sill',(ww+2*wf,wf,.15),(x,y+side*(hh/2+wf/2),z+.04),m['Honey cedar'],.003)
     room.box('Window central mullion',(.035,hh,.10),(x,y,z+.06),m['Honey cedar'],.002)
     # Head beams stop at wall faces. Ceiling panels are a separate export role.
     for zz in (-2.85,-.15,2.65):
@@ -506,9 +510,9 @@ def shell(room):
         obj=room.box('Fitted plaster ceiling',(bounds['maxX']-bounds['minX'],.07,bounds['maxZ']-bounds['minZ']),((bounds['minX']+bounds['maxX'])/2,h+.035,(bounds['minZ']+bounds['maxZ'])/2),m['Warm lime plaster'])
         obj['role']='ceiling';room.ceilings.append(obj)
     # Framed open service connection, with kitchen signage facing both businesses.
-    for zz in (c['minZ']-.025,c['maxZ']+.025):
-        room.box('Shared kitchen passage jamb',(.32,c['height']-f,.05),(c['x'],(c['height']+f)/2,zz),m['Honey cedar'],.002)
-    room.box('Shared kitchen passage lintel',(.32,.07,c['maxZ']-c['minZ']+.10),(c['x'],c['height']+.035,(c['minZ']+c['maxZ'])/2),m['Honey cedar'],.002)
+    for zz in (c['minZ']-sj/2,c['maxZ']+sj/2):
+        room.box('Shared kitchen passage jamb',(.32,c['height']-f,sj),(c['x'],(c['height']+f)/2,zz),m['Honey cedar'],.002)
+    room.box('Shared kitchen passage lintel',(.32,sh,c['maxZ']-c['minZ']+2*sj),(c['x'],c['height']+sh/2,(c['minZ']+c['maxZ'])/2),m['Honey cedar'],.002)
 
 
 def steel_unit(room,name,x,z,width,depth,top,front=1,doors=True):
@@ -593,7 +597,7 @@ def kitchen(room):
     for lo,hi in ((.13,.80),(.82,sh-.018)):
         room.box('Cold store insulated door',(sw-.03,hi-lo,.035),(sx,(lo+hi)/2,sz+sd/2+.008),m['Enamel cream'],.012,omit=('back',))
         room.rod('Cold store vertical pull',(sx+sw*.31,lo+.12,sz+sd/2+.045),(sx+sw*.31,hi-.12,sz+sd/2+.045),.013,m['Dark fittings'])
-    room.text('Cold store stock label','冷蔵', (sx,1.77,sz+sd/2+.027),.10,m['Ink'])
+    room.text('Cold store stock label','冷蔵', (sx,1.77,sz+sd/2+.033),.10,m['Ink'])
     # Rear combined stainless unit: left basin, small range, fryer at right.
     s=p['sink'];sx,_,sz=s['position'];st=s['top']
     steel_unit(room,'Rear washing and cooking unit',sx,sz,s['width'],s['depth'],st)
@@ -653,8 +657,14 @@ def sato(room):
         room.lathe('Stock pot lid knob',[(.022,0),(.026,.035),(0,.035)],(xx,pt+.325,pz),m['Dark fittings'],16)
         for side in (-1,1):room.rod('Stock pot side handle',(xx+side*.145,pt+.21,pz-.035),(xx+side*.20,pt+.21,pz+.035),.009,m['Dark fittings'])
     for xx in (5.02,5.24):
-        room.box('Sato topping pan',(.18,.07,.32),(xx,pt+.035,pz),m['Brushed kitchen steel'],.015)
-        room.box('Sato toppings',(.15,.012,.27),(xx,pt+.073,pz),m['Food green' if xx<5.1 else 'Food cream'],.01,omit=('bottom',))
+        # An open steel pan, with the food below its rim. A closed solid pan
+        # previously ran through the toppings and flashed at the bevels.
+        room.box('Sato topping pan bottom',(.18,.012,.32),(xx,pt+.006,pz),m['Brushed kitchen steel'],.003)
+        for dx in (-.084,.084):
+            room.box('Sato topping pan side',(.012,.058,.32),(xx+dx,pt+.041,pz),m['Brushed kitchen steel'],.003)
+        for dz in (-.154,.154):
+            room.box('Sato topping pan end',(.156,.058,.012),(xx,pt+.041,pz+dz),m['Brushed kitchen steel'],.003)
+        room.box('Sato toppings',(.15,.012,.27),(xx,pt+.052,pz),m['Food green' if xx<5.1 else 'Food cream'],.005,omit=('bottom',))
     room.box('Sato hot water urn',(.29,.42,.28),(5.60,pt+.21,pz),m['Enamel cream'],.035)
     room.rod('Sato urn spout',(5.60,pt+.15,pz+.145),(5.60,pt+.15,pz+.22),.018,m['Dark fittings'])
     # High rack and real brackets above the prep run, with stacked service bowls.
@@ -672,20 +682,21 @@ def sato(room):
 
 def toilet(room):
     p=room.plan;wc=p['wc'];m=room.materials;f=room.floor;t=p['wallThickness']
+    jamb=p['joinery']['wcJamb']
     room.current_purpose='Guest toilet serving both businesses; accessible from the dining side, with a real basin, pan, mirror and folding doorway.'
     wall(room,'WC north partition','X',wc['minX']-t/2,wc['maxX'],wc['minZ'],t)
-    wall(room,'WC west partition','Z',wc['minZ']+t/2,wc['maxZ'],wc['minX'],t,[(wc['doorZ']-wc['doorWidth']/2,wc['doorZ']+wc['doorWidth']/2,f,2.10)])
+    wall(room,'WC west partition','Z',wc['minZ']+t/2,wc['maxZ'],wc['minX'],t,[(wc['doorZ']-wc['doorWidth']/2-jamb,wc['doorZ']+wc['doorWidth']/2+jamb,f,2.10)])
     # Two 0.43 m leaves fold into 0.43 m of the available 0.77 m side wall.
     # This is a full-width operable leaf arrangement, not an undersized slider.
-    for zz in (wc['doorZ']-wc['doorWidth']/2-.025,wc['doorZ']+wc['doorWidth']/2+.025):
-        room.box('WC door jamb',(.18,2.10-f,.05),(wc['doorX'],(2.10+f)/2,zz),m['Honey cedar'],.004)
+    for zz in (wc['doorZ']-wc['doorWidth']/2-jamb/2,wc['doorZ']+wc['doorWidth']/2+jamb/2):
+        room.box('WC door jamb',(.18,2.10-f,jamb),(wc['doorX'],(2.10+f)/2,zz),m['Honey cedar'],.004)
     room.box('WC folding door guide',(.055,.045,1.305),(wc['doorX']-.105,2.145,2.4725),m['Dark fittings'],.003)
     for dx in (-.105,-.155):
         room.box('WC parked folding leaf',(.025,2.035,.43),(wc['doorX']+dx,1.0675,2.91),m['Honey cedar'],.004)
     for yy in (.28,1.00,1.80):room.rod('WC folding door hinge',(wc['doorX']-.13,yy,3.125),(wc['doorX']-.13,yy+.07,3.125),.009,m['Aged brass'])
     room.rod('WC recessed door handle',(wc['doorX']-.173,.93,2.75),(wc['doorX']-.173,1.12,2.75),.007,m['Dark fittings'])
     room.box('WC door sign support',(.04,.22,.56),(wc['doorX']-.10,2.37,wc['doorZ']),m['Paper'],.004)
-    room.text('Guest washroom sign','手洗い',(wc['doorX']-.123,2.37,wc['doorZ']),.14,m['Ink'],yaw=math.pi/2)
+    room.text('Guest washroom sign','手洗い',(wc['doorX']-.128,2.37,wc['doorZ']),.14,m['Ink'],yaw=-math.pi/2)
     tx,ty,tz=wc['toilet']
     room.lathe('WC porcelain pedestal',[(.12,0),(.14,.05),(.105,.23),(.16,.33)],(tx,ty,tz),m['Cream ceramic'],24,1.2)
     room.lathe('WC porcelain bowl',[(.14,0),(.20,.11),(.205,.16),(.18,.19),(.155,.17),(.09,.055),(0,.045)],(tx,ty+.24,tz-.10),m['Cream ceramic'],28,1.42)
@@ -775,6 +786,20 @@ def seated_scale_reference(room):
     room.current_owner='Thao'
 
 
+def review_runtime_poster(room):
+    """Show the application's Artlist print in Blender reviews, once only.
+
+    The running game hangs this in izakaya-posters.js, so it must not enter
+    the GLB as a second poster laid on the same wall.
+    """
+    x,y,z=5.845,1.85,1.06;w,h=1.08,1.44
+    mat=room.material('Review Sango Quay print','#ffffff',.9,texture=room.root/'assets/graphics/izakaya/sango-quay-artlist.webp')
+    obj=room.mesh('Runtime Sango Quay print - review only',[(x,y-h/2,z-w/2),(x,y-h/2,z+w/2),(x,y+h/2,z+w/2),(x,y+h/2,z-w/2)],[(0,1,2,3)],mat)
+    uv=obj.data.uv_layers.new(name='UVMap')
+    for i,co in enumerate(((0,0),(1,0),(1,1),(0,1))):uv.data[i].uv=co
+    obj['reviewOnly']=True
+
+
 def main():
     args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
     parser=argparse.ArgumentParser(description=__doc__)
@@ -790,7 +815,7 @@ def main():
     previous_report=json.loads((out/'compact-report.json').read_text()) if (out/'compact-report.json').exists() else {}
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.context.preferences.filepaths.save_version=0
-    room=CompactRoom(root,plan,out);room.palette();shell(room);counter=furnish(room);seated_scale_reference(room)
+    room=CompactRoom(root,plan,out);room.palette();shell(room);counter=furnish(room);review_runtime_poster(room);seated_scale_reference(room)
     camera=prepare_render(room,opt.samples,opt.width,opt.height)
     views=[{'name':'entry','at':[.08,1.59,3.10],'target':[-1.67,1.23,-1.40],'lens':24},
            {'name':'counter','at':[-3.66,1.55,1.06],'target':[-1.38,1.27,-2.76],'lens':27},
