@@ -62,7 +62,7 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 [data-theme="mossy"] {
   --ink:            #000000;
   --ink-light:      #666666;
-  --ink-faint:      #999999;
+  --ink-faint:      #6b6b6b;
   --surface:        #ffffff;
   --surface-raised: #f7f8f9;
   --surface-card:   #ffffff;
@@ -83,9 +83,9 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 
 /* ── Cute theme ── */
 [data-theme="cute"] {
-  --ink:            #777777;
-  --ink-light:      #777777;
-  --ink-faint:      #9a9a9a;
+  --ink:            #6e6e6e;
+  --ink-light:      #6e6e6e;
+  --ink-faint:      #6d6d6d;
   --surface:        #ffffff;
   --surface-raised: #f7f7f7;
   --surface-card:   #ffffff;
@@ -108,8 +108,8 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 /* ── Colorgrid theme ── */
 [data-theme="colorgrid"] {
   --ink:            #313131;
-  --ink-light:      #7a7a7a;
-  --ink-faint:      #a4a4a4;
+  --ink-light:      #636363;
+  --ink-faint:      #636363;
   --surface:        #ffffff;
   --surface-raised: #eeeeee;
   --surface-card:   #ffffff;
@@ -133,7 +133,7 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 [data-theme="crimson"] {
   --ink:            #333333;
   --ink-light:      #555555;
-  --ink-faint:      #777777;
+  --ink-faint:      #6f6f6f;
   --surface:        #ffffff;
   --surface-raised: #faf9f5;
   --surface-card:   #ffffff;
@@ -181,7 +181,7 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 [data-theme="clarity"] {
   --ink:            #1a1a1a;
   --ink-light:      #666666;
-  --ink-faint:      #888888;
+  --ink-faint:      #6b6b6b;
   --surface:        #f2f2f2;
   --surface-raised: #ffffff;
   --surface-card:   #ffffff;
@@ -205,7 +205,7 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 [data-theme="horizon"] {
   --ink:            #2d3133;
   --ink-light:      #5f6365;
-  --ink-faint:      #838484;
+  --ink-faint:      #6d6e6e;
   --surface:        #ffffff;
   --surface-raised: #f3f5fa;
   --surface-card:   #ffffff;
@@ -229,7 +229,7 @@ button { border: none; background: none; cursor: pointer; font: inherit; color: 
 [data-theme="swift"] {
   --ink:            #212121;
   --ink-light:      #4d4d4d;
-  --ink-faint:      #666666;
+  --ink-faint:      #5c5c5c;
   --surface:        #ffffff;
   --surface-raised: #fff8cd;
   --surface-card:   #ffffff;

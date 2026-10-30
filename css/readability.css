@@ -1,0 +1,81 @@
+/*
+ * Readability fixes — 30 October 2026.
+ * From a UI/UX audit of the homepage (ui-ux-pro-max checklist: contrast 4.5:1
+ * for text, 3:1 for large headings; no text under 12px for labels; 44px touch
+ * targets) run in all eleven themes at desktop and phone sizes.
+ * Each colour is a darker shade of the theme's own colour, picked only as
+ * dark as WCAG AA needs. Loaded last from styles.css; remove the import to undo.
+ */
+
+/* ---- Contrast: accent colours used as small text ---- */
+[data-theme="mossy"] .location-label,
+[data-theme="mossy"] .read-all a { color: #047f36; }
+
+[data-theme="cute"] .location-label { color: #277786; }
+[data-theme="cute"] .read-all a { color: #cb2e6a; }
+[data-theme="cute"] .section-header h2 { color: #3196a9; }
+[data-theme="cute"] .location-name { color: #6e6e6e; }
+
+[data-theme="colorgrid"] .location-label,
+[data-theme="colorgrid"] .read-all a,
+[data-theme="colorgrid"] .section-label-bar { color: #266886; }
+
+[data-theme="crimson"] .location-label,
+[data-theme="crimson"] .section-label-bar,
+[data-theme="crimson"] .section-subtitle,
+[data-theme="crimson"] .read-all a { color: #e10000; }
+
+[data-theme="swift"] .location-label,
+[data-theme="swift"] .section-label-bar,
+[data-theme="swift"] .section-subtitle,
+[data-theme="swift"] .read-all a { color: #0059ba; }
+
+[data-theme="botanical"] .location-label,
+[data-theme="botanical"] .read-all a { color: #7d6800; }
+
+/* Popwave: pink text on white, and white text on pink */
+[data-theme="popwave"] .section-subtitle,
+[data-theme="popwave"] #about-role,
+[data-theme="popwave"] #about-location,
+[data-theme="popwave"] .about-identity-copy strong,
+[data-theme="popwave"] #projects .px-connections h3,
+[data-theme="popwave"] #projects .px-channel-links a,
+[data-theme="popwave"] .blog-read { color: #d00c6a; }
+[data-theme="popwave"] .section-mint,
+[data-theme="popwave"] .site-footer { background: #d80d6c; }
+
+/* Footer small print on the red and pink footers */
+[data-theme="crimson"] .footer-bottom,
+[data-theme="popwave"] .footer-bottom { color: #ffffff; }
+
+/* ---- Minimum text size for labels and captions (12px) ---- */
+/* (The hero eyebrow keeps its 10px on phones: at 12px it wraps one word onto a second line.) */
+html body .office-port .office-port-next,
+html body .office-port-caption,
+html body .psst-note small,
+html body .whisper-note small,
+html body .location-label,
+html body .location-status,
+html body .footer-bottom,
+html body #projects .px-card-meta,
+html body #projects .px-eyebrow,
+html body #projects .px-scene-title span,
+html body #projects .px-preview figcaption,
+html body #projects .px-lesson-tag,
+html body #projects .px-platforms span { font-size: 12px; }
+
+/* ---- Touch targets: 44px on touch screens ---- */
+@media (pointer: coarse) {
+  .footer-nav a,
+  .footer-links a,
+  .footer-bottom a,
+  .read-all a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  body #projects .px-day-switch button { min-height: 44px; }
+}
+
+/* Popwave: the seal sat white on the white identity card (invisible). */
+[data-theme="popwave"] .section-mint .about-identity .about-logo { color: #d00c6a; }

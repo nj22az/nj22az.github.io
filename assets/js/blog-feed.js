@@ -29,7 +29,7 @@
       article.appendChild(meta);
       var heading=node(root.dataset.heading || 'h3'), link=node('a','',p.title);link.href=safeUrl(p.url);heading.appendChild(link);article.appendChild(heading);
       article.appendChild(node('p','',p.excerpt));
-      var actions=node('div','blog-feed-links'), read=node('a','blog-read',p.part?'Read part '+p.part+' →':'Read article →');read.href=safeUrl(p.url);read.hreflang='en';actions.appendChild(read);
+      var actions=node('div','blog-feed-links'), read=node('a','blog-read',p.part?'Read part '+p.part+' →':'Read article →');read.href=safeUrl(p.url);read.hreflang='en';read.setAttribute('aria-label',(p.part?'Read part '+p.part:'Read article')+': '+p.title);actions.appendChild(read);
       if(p.svUrl){var sv=node('a','blog-swedish','Svenska');sv.href=safeUrl(p.svUrl);sv.hreflang='sv';sv.lang='sv';sv.setAttribute('aria-label','Read this article in Swedish');actions.appendChild(sv);}
       article.appendChild(actions);
       // A rubber-stamp picture of Minato, printed in the page's theme colour (css/blog-stamps.css).
