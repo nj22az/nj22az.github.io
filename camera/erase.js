@@ -74,7 +74,8 @@ export function createEraser(frame,{edit,changed,busy=()=>{},failed=()=>{}}){
  art.addEventListener('pointerup',lift);art.addEventListener('pointercancel',()=>{if(!working){stroke=null;paint();}});
 
  async function fill(s){
-  const e=edit(),W=e.width,H=e.height,r=Math.max(2,s.r*Math.min(W,H)),pts=s.points.map(p=>[p.x*W,p.y*H]);
+  const e=edit(),W=e.width,H=e.height,c=e.recipe.crop;
+  const r=Math.max(2,s.r*Math.min(c.w*W,c.h*H)),pts=s.points.map(p=>[(c.x+p.x*c.w)*W,(c.y+p.y*c.h)*H]);
   let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
   for(const [x,y] of pts){x0=Math.min(x0,x-r);y0=Math.min(y0,y-r);x1=Math.max(x1,x+r);y1=Math.max(y1,y+r);}
   x0=Math.max(0,Math.floor(x0));y0=Math.max(0,Math.floor(y0));x1=Math.min(W,Math.ceil(x1));y1=Math.min(H,Math.ceil(y1));

@@ -1,0 +1,47 @@
+{
+  "publication_commit": "0cd8408ba5656e2ed2639824d43524531e183c2b",
+  "results": [
+    {
+      "path": "camera/index.html",
+      "url": "https://nj22az.github.io/camera/?v=20261030crop1",
+      "bytes": 22631,
+      "sha256": "ed47dc13ca329f1986a5af2596d38cf701d27b51230f93ae2c287c589863ef90",
+      "matches": true
+    },
+    {
+      "path": "camera/app.js",
+      "url": "https://nj22az.github.io/camera/app.js?v=20261030crop1",
+      "bytes": 85016,
+      "sha256": "b43e0575d784e746f68b864da4412100d87828bb8fbcf8b6c2dada5c24c310bd",
+      "matches": true
+    },
+    {
+      "path": "camera/camera.css",
+      "url": "https://nj22az.github.io/camera/camera.css?v=20261030crop1",
+      "bytes": 44925,
+      "sha256": "52ceb8b274af6033b25a1459be576f4fafe6db956d7db814b36884ac1c36347c",
+      "matches": true
+    },
+    {
+      "path": "camera/crop.js",
+      "url": "https://nj22az.github.io/camera/crop.js?v=20261030crop1",
+      "bytes": 3741,
+      "sha256": "4bb4f8a153815593515d0b26c6133fd2fdc8216953f29e2fcab10cd5e2536804",
+      "matches": true
+    },
+    {
+      "path": "camera/erase.js",
+      "url": "https://nj22az.github.io/camera/erase.js?v=20261030crop1",
+      "bytes": 7188,
+      "sha256": "8eb7469636c97937339ffdfda0b32f98c0aaf819f6b0d6853229acbb1f011592",
+      "matches": true
+    },
+    {
+      "path": "camera/looks-gl.js",
+      "url": "https://nj22az.github.io/camera/looks-gl.js?v=20261030crop1",
+      "bytes": 92630,
+      "sha256": "61bfb44ea42af735d922798d606b5fa95319c6cede5251ebc4686b1cdb53428d",
+      "matches": true
+    }
+  ]
+}

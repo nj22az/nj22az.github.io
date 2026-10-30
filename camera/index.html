@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261029u">
+<link rel="stylesheet" href="camera.css?v=20261030crop1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -127,12 +127,22 @@
   <div class="dock" id="editDock">
    <div class="segmented" role="tablist" aria-label="Edit">
     <button type="button" role="tab" id="tabLooks" aria-selected="true" aria-controls="panelLooks">Looks</button>
+    <button type="button" role="tab" id="tabCrop" aria-selected="false" aria-controls="panelCrop">Crop</button>
     <button type="button" role="tab" id="tabAdjust" aria-selected="false" aria-controls="panelAdjust">Adjust</button>
     <button type="button" role="tab" id="tabErase" aria-selected="false" aria-controls="panelErase">Erase</button>
     <button type="button" role="tab" id="tabStickers" aria-selected="false" aria-controls="panelStickers">Stickers</button>
     <button type="button" role="tab" id="tabFrame" aria-selected="false" aria-controls="panelFrame">Frame</button>
    </div>
    <div class="panel" id="panelLooks" role="tabpanel" aria-labelledby="tabLooks"></div>
+   <div class="panel crop-panel" id="panelCrop" role="tabpanel" aria-labelledby="tabCrop" hidden>
+    <p class="erase-hint">Pinch to zoom. Drag to position.</p>
+    <div class="crop-shapes mini-seg" id="cropShapes" role="radiogroup" aria-label="Crop shape"></div>
+    <div class="slider-row">
+     <input type="range" id="cropZoom" min="100" max="400" step="1" value="100" aria-label="Photo zoom">
+     <output id="cropZoomValue" for="cropZoom">1.0×</output>
+     <button type="button" class="text-button" id="cropReset">Reset</button>
+    </div>
+   </div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
     <div class="adjusters" id="adjusters" role="radiogroup" aria-label="Adjustment"></div>
     <div class="slider-row">
@@ -278,6 +288,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261030b"></script>
+<script type="module" src="app.js?v=20261030crop1"></script>
 </body>
 </html>

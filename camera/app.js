@@ -3,7 +3,8 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030b';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030crop1';
+import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029t';
@@ -11,7 +12,7 @@ import {makeSticker} from './cutout.js?v=20261029b';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
-import {createEraser} from './erase.js?v=20261029a';
+import {createEraser} from './erase.js?v=20261030crop1';
 import {createPrinter} from './printer.js?v=20261029e';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
@@ -375,7 +376,7 @@ function drawThumbs(){
  if(t-thumbsAt<(live?700:120))return;
  const ctx=current(),source=live?'live':'edit';
  if(!engine.hasSource(source))return;
- const crop=squareCrop(live?cameraCrop():{x:0,y:0,w:1,h:1},live?videoSize():{width:state.edit.width,height:state.edit.height});
+ const crop=squareCrop(live?cameraCrop():ctx.recipe.crop,live?videoSize():{width:state.edit.width,height:state.edit.height});
  // Only the kind on show: a few Looks at a time, which is also the phone's battery spared.
  // None at all while the strip is folded over the picture: it draws them when it unfolds.
  const folded=live&&isCompact()&&!$('camera').classList.contains('looks-open');
@@ -453,14 +454,15 @@ function govern(t){
 }
 function drawEditor(){
  const e=state.edit;
- const box=fitFrame($('editFrame'),$('editStage'),e.width/e.height);
- const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(e.height,box.height*dpr,2048/Math.max(1,e.width/e.height),2048);
- setCanvasSize(h*e.width/e.height,h);
+ const crop=e.recipe.crop,pw=crop.w*e.width,ph=crop.h*e.height,aspect=pw/ph;
+ const box=fitFrame($('editFrame'),$('editStage'),aspect);
+ const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(ph,box.height*dpr,2048/Math.max(1,aspect),2048);
+ setCanvasSize(h*aspect,h);
  // While erasing, the photo as it is under the Looks: no mirror trick, and no frame or date over its edges.
  const recipe=e.comparing?normalRecipe():e.erasing?{...e.recipe,trick:'none'}:e.recipe;
- dirty=!engine.draw(recipe,{source:'edit'});
- paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing);
- stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing,e.taken,e.recipe.frame);
+ dirty=!engine.draw(recipe,{source:'edit',crop});
+ paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing||e.cropping);
+ stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing&&!e.cropping,e.taken,e.recipe.frame);
 }
 addEventListener('resize',invalidate);
 
@@ -641,13 +643,14 @@ async function takePhoto(){
   const taken=new Date(),recipe=normalRecipe(c.recipe);
   engine.setSource('still',still,size.width,size.height);
   let finished;
-  try{finished=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);}
+  const output=photoSize(size.width,size.height);
+  try{finished=await finishPhoto(engine.render(recipe,{source:'still',...output}),recipe,taken);}
   finally{engine.dropSource('still');}
   const {photo,thumb}=finished,source=await toBlob(still,'image/jpeg',.92);still.width=still.height=0;
   // Printed, then into the album's thumbnail; the thumbnail changes when the print lands in it.
-  const printing=printPhoto(photo,size.width,size.height,()=>$('roll').getBoundingClientRect());
+  const printing=printPhoto(photo,output.width,output.height,()=>$('roll').getBoundingClientRect());
   if(!printing)flyToRoll(photo);
-  await keep({photo,source,thumb,recipe,width:size.width,height:size.height,taken:taken.getTime()},{roll:!printing});
+  await keep({photo,source,thumb,recipe,...output,taken:taken.getTime()},{roll:!printing});
   if(printing){await printing;renderRoll(true);}
  }catch(err){console.error(err);toast('The photo could not be saved');}
  finally{c.busy=false;$('shutter').classList.remove('waiting');$('count').textContent='';}
@@ -671,6 +674,8 @@ function flyToRoll(blob){
 
 // ---------- Finishing a photo ----------
 const toBlob=(c,type,q)=>new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error('Encoding failed')),type,q));
+// A detailed photo for Photos and sharing, without a 16 MP download. Source pictures keep their editing resolution.
+const photoSize=(width,height)=>exportSize(width,height,Math.min(2560,engine.maxTexture));
 /** Pixels from the engine to a JPEG and its album thumbnail: the stickers stuck on, then the date if asked. */
 async function finishPhoto(pixels,recipe,date){
  const c=document.createElement('canvas');c.width=pixels.width;c.height=pixels.height;
@@ -680,7 +685,7 @@ async function finishPhoto(pixels,recipe,date){
  if(missing)toast(missing===1?'A sticker could not be loaded and is left off':`${missing} stickers could not be loaded and are left off`,{ms:2600});
  if(recipe.stamp)printStamp(g,frameInner(recipe.frame,c.width,c.height),date);
  try{
-  const photo=await toBlob(c,'image/jpeg',.92);
+  const photo=await toBlob(c,'image/jpeg',.88);
   const s=Math.min(c.width,c.height),t=document.createElement('canvas');t.width=t.height=320;
   t.getContext('2d').drawImage(c,(c.width-s)/2,(c.height-s)/2,s,s,0,0,320,320);
   return {photo,thumb:await toBlob(t,'image/jpeg',.8)};
@@ -904,11 +909,12 @@ async function addToAlbum(files){
     const picture=await decode(file);
     engine.setSource('import',picture.picture,picture.width,picture.height);
     let finished;
-    try{finished=await finishPhoto(engine.render(recipe,{source:'import',width:picture.width,height:picture.height}),recipe,new Date(file.lastModified||Date.now()));}
+    const output=photoSize(picture.width,picture.height);
+    try{finished=await finishPhoto(engine.render(recipe,{source:'import',...output}),recipe,new Date(file.lastModified||Date.now()));}
     finally{engine.dropSource('import');}
-    const source=picture.picture instanceof HTMLCanvasElement?await toBlob(picture.picture,'image/jpeg',.92):file;
+    const source=file;
     picture.close();
-    await keep({...finished,source,recipe,width:picture.width,height:picture.height,taken:file.lastModified||Date.now()});done++;
+    await keep({...finished,source,recipe,...output,taken:file.lastModified||Date.now()});done++;
    }catch(err){console.error(err);failed++;}
    await nextFrame();
   }
@@ -921,7 +927,7 @@ async function editFile(file){
  try{
   const picture=await decode(file);
   const recipe=normalRecipe({layers:mainLook(),stamp:false});
-  const sourceBlob=picture.picture instanceof HTMLCanvasElement?await toBlob(picture.picture,'image/jpeg',.92):file;
+  const sourceBlob=file;
   openEditor({...picture,recipe,shotId:null,taken:new Date(file.lastModified||Date.now()),sourceBlob});
  }catch{toast('That picture could not be opened');}
 }
@@ -951,7 +957,7 @@ function lookPreview({source,recipe,crop,mirror},size){
 /** The photo being edited as it will be saved, squared from its middle. */
 function editPreview(size){
  const e=state.edit;if(!e)return null;
- return lookPreview({source:'edit',recipe:e.recipe,crop:squareCrop({x:0,y:0,w:1,h:1},{width:e.width,height:e.height})},size);
+ return lookPreview({source:'edit',recipe:e.recipe,crop:squareCrop(e.recipe.crop,{width:e.width,height:e.height})},size);
 }
 /** Every frame as a choice, drawn over `preview`; `pick(id)` when one is chosen. */
 function renderFrameChoices(box,current,preview,pick){
@@ -984,11 +990,12 @@ $('saveEdit').addEventListener('click',async()=>{
   const recipe=normalRecipe(e.recipe);
   // An erased photo keeps its erased picture as its source, so it opens again as it was left.
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
-  const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
-  const printing=printPhoto(photo,e.width,e.height,()=>fitInside($('viewerStage').getBoundingClientRect(),e.width/e.height,8));
+  const output=photoSize(recipe.crop.w*e.width,recipe.crop.h*e.height);
+  const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',crop:recipe.crop,...output}),recipe,e.taken);
+  const printing=printPhoto(photo,output.width,output.height,()=>fitInside($('viewerStage').getBoundingClientRect(),output.width/output.height,8));
   let shot;
-  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...(e.erased?{source:e.sourceBlob}:{})});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
-  else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,width:e.width,height:e.height,taken:e.taken.getTime()});
+  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...output,...(e.erased?{source:e.sourceBlob}:{})});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
+  else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
   if(printing)await printing;
@@ -1001,32 +1008,65 @@ $('saveEdit').addEventListener('click',async()=>{
  const stage=$('editStage');let holding=null,at=null;
  const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing){state.edit.comparing=false;$('original').hidden=true;editStickers.hidden=false;invalidate();}};
  stage.addEventListener('pointerdown',e=>{
-  if(!state.edit||e.target.closest('button')||state.edit.erasing)return;
+  if(!state.edit||e.target.closest('button')||state.edit.erasing||state.edit.cropping)return;
   at={x:e.clientX,y:e.clientY};
   holding=setTimeout(()=>{if(!state.edit)return;state.edit.comparing=true;$('original').hidden=false;editStickers.hidden=true;invalidate();},140);
  });
  // A swipe is not a hold.
  stage.addEventListener('pointermove',e=>{if(holding&&at&&Math.hypot(e.clientX-at.x,e.clientY-at.y)>10){clearTimeout(holding);holding=null;}});
  for(const type of ['pointerup','pointercancel','pointerleave'])stage.addEventListener(type,end);
- gestures(stage,{onTap:e=>{if(state.edit&&!state.edit.erasing)focusTap(e,state.edit.recipe,'editFrame');}});
+ gestures(stage,{onTap:e=>{if(state.edit&&!state.edit.erasing&&!state.edit.cropping)focusTap(e,state.edit.recipe,'editFrame');}});
 }
 function selectTab(tab){
- for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabErase','panelErase','erase'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
+ for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabCrop','panelCrop','crop'],['tabAdjust','panelAdjust','adjust'],['tabErase','panelErase','erase'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
   $(id).setAttribute('aria-selected',String(tab===name));$(panel).hidden=tab!==name;
  }
  // Erasing paints on the photo itself: the stickers step aside (they are not erased) and come back after.
  const erasing=tab==='erase';
- if(state.edit){state.edit.erasing=erasing;editStickers.hidden=erasing;if(erasing)editStickers.select(null);}
+ const cropping=tab==='crop';
+ if(state.edit){state.edit.erasing=erasing;state.edit.cropping=cropping;editStickers.hidden=erasing||cropping;if(erasing||cropping)editStickers.select(null);}
+ $('editFrame').classList.toggle('cropping',cropping);$('editFrame').tabIndex=cropping?0:-1;
  eraser.active=erasing;invalidate();
  if(tab==='looks')requestAnimationFrame(()=>renderStripSelection());
  if(tab==='stickers')renderStickerPicker();
  if(tab==='frame')renderFramePanel();
+ if(cropping)renderCropPanel();
 }
 $('tabLooks').addEventListener('click',()=>selectTab('looks'));
+$('tabCrop').addEventListener('click',()=>selectTab('crop'));
 $('tabAdjust').addEventListener('click',()=>selectTab('adjust'));
 $('tabErase').addEventListener('click',()=>selectTab('erase'));
 $('tabStickers').addEventListener('click',()=>selectTab('stickers'));
 $('tabFrame').addEventListener('click',()=>selectTab('frame'));
+
+// Crop stays in the recipe; changing shape or zoom always works from the whole source photo.
+const CROP_SHAPES=['Original','1:1','4:3','3:4','16:9','9:16'];
+function renderCropPanel(){
+ const e=state.edit;if(!e)return;
+ const c=e.recipe.crop,aspect=c.w*e.width/(c.h*e.height),choices=$('cropShapes');
+ choices.textContent='';
+ for(const shape of CROP_SHAPES){
+  const [a,b]=shape.split(':').map(Number),ratio=shape==='Original'?e.width/e.height:a/b;
+  const button=document.createElement('button');button.type='button';button.textContent=shape;button.dataset.shape=shape;button.setAttribute('role','radio');
+  button.setAttribute('aria-checked',String(Math.abs(aspect-ratio)<.001&&(shape==='Original'||Math.abs(aspect-e.width/e.height)>=.001)));
+  button.addEventListener('click',()=>{if(e.saving)return;setEditCrop(cropAtAspect(e.width,e.height,ratio,cropZoom(e.width,e.height,e.recipe.crop),e.recipe.crop.x+e.recipe.crop.w/2,e.recipe.crop.y+e.recipe.crop.h/2));renderCropPanel();});
+  choices.append(button);
+ }
+ renderCropZoom();
+}
+function renderCropZoom(){
+ const e=state.edit;if(!e)return;const zoom=cropZoom(e.width,e.height,e.recipe.crop);
+ $('cropZoom').value=String(Math.round(zoom*100));$('cropZoomValue').textContent=`${zoom.toFixed(1)}×`;
+}
+function setEditCrop(crop){
+ const e=state.edit;if(!e||e.saving)return;e.recipe.crop=normalCrop(crop);renderCropZoom();refreshThumbs(true);invalidate();
+}
+$('cropZoom').addEventListener('input',event=>{
+ const e=state.edit;if(!e)return;const c=e.recipe.crop;
+ setEditCrop(cropAtAspect(e.width,e.height,c.w*e.width/(c.h*e.height),+event.target.value/100,c.x+c.w/2,c.y+c.h/2));
+});
+$('cropReset').addEventListener('click',()=>{setEditCrop(normalCrop());renderCropPanel();});
+bindCropGestures($('editFrame'),{edit:()=>state.edit,changed:setEditCrop});
 
 // ---------- Stickers ----------
 /**
