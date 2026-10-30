@@ -77,3 +77,21 @@ A full map of every place that says the shop is shut was started and stopped unf
 
 Meshy: the owner is adding `MESHY_API_KEY` to the cloud environment's variables (30 October); a new session reads it.
 
+## Update, 30 October 2026 (later session): Meshy checked, the map redone, the kissaten planned
+
+Same branch, `claude/great-sagan-mvc9bb`; nothing in the game changed, nothing published. The task folder is
+[`briefs/higa-kissaten/`](higa-kissaten/progress.md) (`progress.md`, `checks.md`, `sources/task.md`).
+
+- **Meshy works.** `MESHY_API_KEY` is set (never printed); Meshy CLI 0.4.0 runs through
+  `npm exec --yes --package=meshy-cli@0.4.0 -- meshy`; one free `balance` call: 2,753 credits. Costs, from Meshy's
+  planner and price list: a textured model 30 credits (text or image), a remesh 5, rigging 5. Nothing generated.
+- **The map** of every place that says Higa Liquor is shut, in four parts: code and data to change, tests that state it,
+  rules and documents, and what stays (every line about the *drink* moving to Sakura stays true).
+- **The plan**: Grandmother Higa, 07:00–09:30, Monday to Friday (Saturday she opens Johansson Mart at 08:45); her garden
+  round split round it; regulars from their own days (Officer Mori next door before he sleeps, Tetsuo, Ms Ganaha, Ms
+  Uezu on her weeks off); a ¥300 morning set, blend and iced coffee; Sakura Trading supplies bread, milk, coffee beans
+  and eggs, the ice plant the ice. All of it drawn in code for World; Meshy only for a Pixar Grandmother Higa and the
+  Pixar kissaten's props in Blender (about 175 credits in all).
+- **Next:** the owner answers five decisions in the plan (the name, the days, her garden round, Yui at the counter, the
+  records) and says whether to build. The fish-market review and its publishing still wait on the owner too.
+
