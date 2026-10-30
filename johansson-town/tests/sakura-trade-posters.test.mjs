@@ -17,6 +17,7 @@ test('every poster and every case has its reason, and every design hangs somewhe
  for(const k of K)assert.ok(k.why,k.print);
  for(const d of D)assert.ok(P.some(p=>p.id===d.id),`${d.id} hangs`);
  for(const p of P)assert.ok(D.some(d=>d.id===p.id),`${p.id} is a design`);
+ for(const p of P.filter(p=>p.room==='office'||p.room==='stockroom'))assert.ok(p.who&&p.why&&p.lookAt,`${p.room}/${p.id} records purpose and access`);
 });
 
 /** Distance from a point to the handrail's centre line. */
@@ -69,11 +70,12 @@ test('built: one paper mesh per room, four pins a poster, the cases solid and pr
  for(const k of K)assert.ok(solids.some(([x,z])=>Math.abs(x-(k.at[0]+(k.face==='+x'?1:-1)*k.size[0]/2))<1e-6&&Math.abs(z-k.at[1])<1e-6),`${k.print} is solid`);
 });
 
-test('the reader has every campaign, seven complete images and two correct drawn originals',()=>{
+test('the reader has every approved model campaign as a complete source image',()=>{
  const pages=tradePosterPages();assert.equal(pages.length,D.length);
- assert.equal(Object.keys(SAKURA_TRADE_ART).length,7);
- assert.equal(pages.filter(p=>p.image).length,7);
- for(const id of ['shimakaze','minato-tsuru']){const page=pages[D.findIndex(p=>p.id===id)];assert.equal(typeof page.draw,'function');assert.equal(page.image,undefined,'unapproved lettering proofs never reach the game');}
+ assert.deepEqual(Object.keys(SAKURA_TRADE_ART).sort(),D.map(p=>p.id).sort());
+ assert.equal(pages.filter(p=>p.image).length,9);
+ assert.equal(pages.filter(p=>p.draw).length,0,'the corrected sake and UV revisions replace the interim designs');
+ assert.ok(Object.values(SAKURA_TRADE_ART).every(art=>art.image.endsWith('-models-r1.webp')&&art.preview.endsWith('-models-r1-small.webp')),'full and preview images share one revision');
  for(const [id,art] of Object.entries(SAKURA_TRADE_ART)){
   const page=pages[D.findIndex(p=>p.id===id)];assert.ok(page.image.endsWith(art.image));
   for(const path of [art.image,art.preview]){const url=new URL('../assets/'+path,import.meta.url);assert.ok(existsSync(url),path);const bytes=readFileSync(url);assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');}

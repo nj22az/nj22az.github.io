@@ -2,7 +2,7 @@
   "date": "2026-10-30",
   "branch": "codex/item-magazine-viewer",
   "base_commit": "1d355885",
-  "runtime_source_sha256": "247e6c3ef33bc9669e184213fd8f171591d0f4241e961e64adda456985dcaff7",
+  "runtime_source_sha256": "7ae70f1e0976950cc51649f507a10d5f8a55bf0aea040b690f89a9d45fb2bee4",
   "runtime_build": {
     "passed": true,
     "modules": 655,
@@ -10,9 +10,9 @@
   },
   "guard": {
     "passed": true,
-    "tests": 500,
-    "files": 94,
-    "elapsed_seconds": 502,
+    "tests": 502,
+    "files": 95,
+    "elapsed_seconds": 435,
     "heap_mb": 6144,
     "test_concurrency": 2
   },
@@ -33,18 +33,75 @@
       "Actual 3D product overlay",
       "Physical iPhone/iPad Safari touch hardware",
       "Steam Deck or packaged Linux"
-    ]
+    ],
+    "reader_ui_qa_before_art_revision": true
   },
   "artwork": {
-    "new_images": 7,
-    "canvas_fallbacks": [
-      "shimakaze",
-      "minato-tsuru"
+    "new_images": 9,
+    "model": "adult Japanese women",
+    "revision": "models-r1",
+    "footer_only_cleanup": [
+      "minato-tsuru",
+      "asagao-uv"
     ],
-    "existing_slots": "stair and hall only",
-    "new_office_or_storage_slots": false,
-    "full_image_bytes": 8218414,
-    "preview_bytes": 132432
+    "additional_artlist_credits_for_cleanup": 0,
+    "canvas_fallbacks": "all nine complete procedural designs remain only for preview failure/timeout",
+    "original_slots": 10,
+    "new_slots": {
+      "upstairs_office": 3,
+      "ground_stockroom": 3
+    },
+    "closed_upper_stores_opened": false,
+    "full_image_bytes": 7835326,
+    "preview_bytes": 247590,
+    "decoded_hash_checked_webps": 18
   },
-  "published": false
+  "published": false,
+  "previous_feature_guard": {
+    "passed": true,
+    "tests": 500,
+    "files": 94,
+    "elapsed_seconds": 502,
+    "heap_mb": 6144,
+    "test_concurrency": 2
+  },
+  "verified_upstream_main": "ff76aee1",
+  "placement_checks": {
+    "cad": {
+      "passed": 33,
+      "total": 33,
+      "drawing": "SK-ST-004 A"
+    },
+    "focused_tests": {
+      "passed": 43,
+      "total": 43
+    },
+    "strict_z_fighting": {
+      "passed": 13,
+      "total": 13,
+      "elapsed_seconds": 110.497
+    },
+    "new_print_sight_rays": 54,
+    "new_print_wall_support_rays": 54,
+    "clear_reachable_anchors": 6,
+    "player_radius": 0.28,
+    "fixture_geometry": {
+      "shop_before": {
+        "draws": 729,
+        "triangles": 313991
+      },
+      "shop_after": {
+        "draws": 731,
+        "triangles": 314381
+      },
+      "office_before": {
+        "draws": 33,
+        "triangles": 10796
+      },
+      "office_after": {
+        "draws": 34,
+        "triangles": 11186
+      }
+    }
+  }
 }

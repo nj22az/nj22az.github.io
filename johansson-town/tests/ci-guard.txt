@@ -5,6 +5,7 @@ runtime-package.test.mjs
 print-viewer.test.mjs
 magazines.test.mjs
 sakura-trade-posters.test.mjs
+sakura-poster-walls.test.mjs
 town-clock.test.mjs
 device-calendar.test.mjs
 cargo-berth.test.mjs
