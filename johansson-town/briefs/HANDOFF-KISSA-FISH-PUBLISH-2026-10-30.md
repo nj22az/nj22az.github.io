@@ -21,7 +21,8 @@ this PR and its evidence pointer. Hosted publication checks are pending; no merg
   reviewed runtime, captures and evidence: `50fee3d3748101a1d1591f5a0581dd90f112d370`.
 - The main merge preserves the newer Pocket Camera work. The sole conflict was the handover index: resolved by keeping
   main's current entries and adding the café/market entries. `camera/` is byte-identical to current main.
-- `johansson-town/src`, tests and assets are byte-identical to the reviewed branch. The runtime is rebuilt from that
+- `johansson-town/src` and assets are byte-identical to the reviewed branch. The sole later test-fixture correction is
+  described below; production input and gameplay code are unchanged. The runtime is rebuilt from that
   same World source, keeping the previous published main chunks for clients still finishing an old load.
 - This publishes the fish market's co-op counter and its existing displays/dressing, plus Kissa Higa. It does not invent
   or change other town stalls, and does not create a Linux release or sync Studio.
@@ -48,6 +49,22 @@ this PR and its evidence pointer. Hosted publication checks are pending; no merg
 
 **Publication PR, merge commit, hosted checks and live delivery:** pending. No publication success is claimed until
 those are verified and recorded in the follow-up below.
+
+## Publication CI finding: deterministic controller fixture
+
+The first publication [World guard](https://github.com/nj22az/nj22az.github.io/actions/runs/41081356763) passed.
+The extra [Linux regression job](https://github.com/nj22az/nj22az.github.io/actions/runs/41081356967) failed its input smoke:
+“Unmapped Linux left stick moves the actual player”. Seven controlled opening diagnostics isolated the fish-auction
+arrival; all six other sampled docks moved 0.34095 m in the same input sequence. The failure reproduces identically
+on unchanged main `37befc31`: the player starts beside an occupied mark, finds a nearby standing point, and forward
+movement stops after **0.0273095 m**. Static collision at the initial mark is clear; resident avoidance stops the step.
+This is a nondeterministic test setup, not a café/fish-market controller regression.
+
+`tests/controller-game.test.mjs` now requests the existing clear ferry opening explicitly and asserts the initial
+`[-1.5, -72.7]` position. **Every existing stick, menu, pause/resume and 30/60/90 Hz assertion is retained unchanged.**
+No controller, spawn, collision or other production code is changed. The corrected input smoke passes on both the
+publication candidate and unchanged main (results/logs in the evidence folder). The fresh hosted check result is
+recorded in the publication follow-up.
 
 ## Remaining limits and owner decisions
 
