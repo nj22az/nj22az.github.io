@@ -62,3 +62,16 @@ void main(){
  // Texel-centre addressing preserves black/white endpoints; hardware interpolates all three colour axes.
  gl_FragColor=vec4(texture(tGrade,c*(31.0/32.0)+vec3(.5/32.0)).rgb,1.0);
 }`;
+
+export const MAC_BODY=`
+float ordered8(ivec2 p){
+ int rank=0;
+ for(int bit=0;bit<3;bit++){int x=(p.x>>bit)&1,y=(p.y>>bit)&1;rank=rank*4+((x^y)*2+y);}
+ return (float(rank)+.5)/64.0;
+}
+void main(){
+ float cell=max(1.0,floor(3.0*unit()));ivec2 pixel=ivec2(floor(vUv*uResolution/cell));
+ vec2 uv=(vec2(pixel)+.5)*cell/uResolution;float l=luma(texture2D(tDiffuse,uv).rgb);
+ float ink=step(ordered8(pixel),l);
+ gl_FragColor=vec4(vec3(ink),1.0);
+}`;
