@@ -306,8 +306,9 @@ export function buildSakuraOfficeRoom({room,reg,action,collider=()=>{},downstair
  // What the storey holds besides its furniture: each piece with its owner and its reason (sakura-office-dressing.js).
  buildSakuraOfficeDressing({room,box,cyl,anchor,action,paint});
  // The hall's trade posters and the drink stock outside the office (SK-ST-003, sakura-trade-posters.js).
- {const {paper,pins}=buildTradePosters('hall');if(paper)room.add(paper);
-  const red=mat(0xc23a2e);for(const g of pins){const m=new THREE.Mesh(g,red);m.name='Poster pin';room.add(m);}
+ {const red=mat(0xc23a2e);
+  for(const area of ['hall','office']){const {paper,pins}=buildTradePosters(area,{parent:room,register:reg,onView:id=>action('trade-poster',id)});if(paper)room.add(paper);
+   for(const g of pins){const m=new THREE.Mesh(g,red);m.name='Poster pin';room.add(m);}}
   buildSakuraHallStock({room,box,collider});}
  const fill=new THREE.HemisphereLight(0xffefd7,0x7e8071,1.2);fill.name='Sakura office steady indoor fill';room.add(fill);
  // The tubes' warm white as the shop's (sakura-interior.js): while the office shared the shop's room it was lit by both;

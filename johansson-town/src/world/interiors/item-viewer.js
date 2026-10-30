@@ -7,6 +7,7 @@ import {getLabelMaterial,packagingSlot,ATLAS_COLS,ATLAS_ROWS,ATLAS_SPAN} from '.
 import {STORE_BRANDS} from '../../commerce/brands.js';
 import {stockSpec} from '../../commerce/shop-stock.js';
 import {PRODUCTS,PRODUCT_BY_ID,PRINTS} from '../../commerce/products-data.js';
+import {createPrintViewer} from '../../ui/print-viewer.js';
 
 /**
  * Picking something off the shelf to look at it.
@@ -45,6 +46,11 @@ const CSS=`
 #itemViewer button.iv-buy:hover{background:var(--ivgh)}
 #itemViewer .iv-close{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;width:44px;height:44px;min-height:0;padding:0;border-radius:8px;background:#fff;font-size:20px;box-shadow:0 2px 8px rgb(0 0 0 / .08)}
 #itemViewer .iv-hint{position:absolute;top:max(18px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:rgb(0 0 0 / .45);color:#fff;font-size:12px;white-space:nowrap;pointer-events:none}
+#itemViewer .iv-view-tools{position:absolute;top:max(58px,calc(env(safe-area-inset-top) + 44px));display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:0 8px}
+#itemViewer .iv-view-tools button{min-height:44px;background:#fff}
+#itemViewer .iv-paper{position:absolute;inset:0;z-index:2;background:#f5f4ee;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));box-sizing:border-box;touch-action:pan-y}
+#itemViewer .iv-paper .pv-stage{height:clamp(180px,calc(100dvh - 230px),820px)}
+#itemViewer .iv-paper[hidden]{display:none}
 `;
 
 
@@ -89,12 +95,13 @@ export function buildPack(target,options={}){
  else if(!drawFreshLabel(ctx,id,label.width,label.height))ctx.drawImage(atlas,col*TW,row*TH,TW,TH,0,0,label.width,label.height);
  const map=new THREE.CanvasTexture(label);map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=renderer?.capabilities?.getMaxAnisotropy?.()||4;
  // The original painting, cut from its sheet at full size (a painted label says which sheet and which cell).
- if(painted&&!labelCanvas)sourceImage('konbini/'+SOURCES[painted.sheet]).then(image=>{
+ let labelReady=Promise.resolve();
+ if(painted&&!labelCanvas)labelReady=sourceImage('konbini/'+SOURCES[painted.sheet]).then(image=>{
   if(!image)return;const cw=image.width/ATLAS_COLS,ch=image.height/4;
   ctx.drawImage(image,painted.cell%ATLAS_COLS*cw,Math.floor(painted.cell/ATLAS_COLS)*ch,cw,ch,0,0,label.width,label.height);map.needsUpdate=true;
  });
  // A label designed in Studio: the picture it was baked as, at full size.
- if(designed&&!labelCanvas)sourceImage(designed.image).then(image=>{if(!image)return;ctx.drawImage(image,0,0,label.width,label.height);map.needsUpdate=true;});
+ if(designed&&!labelCanvas)labelReady=sourceImage(designed.image).then(image=>{if(!image)return;ctx.drawImage(image,0,0,label.width,label.height);map.needsUpdate=true;});
  const body=t.body.clone(),group=new THREE.Group(),inner=new THREE.Group();
  inner.add(new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55})));
  inner.add(new THREE.Mesh(art,new THREE.MeshStandardMaterial({map,roughness:.42,emissive:0xffffff,emissiveMap:map,emissiveIntensity:.35})));
@@ -118,6 +125,7 @@ export function buildPack(target,options={}){
  // Lidded packs are printed on top: held up and tilted to you, so the lid is what you read.
  if(draft?TOP_SHAPES.has(draft.pack.shape):TOP_PRINTED.has(id))group.rotation.x=Math.PI*.38;
  group.userData.radius=size.length()/2;
+ group.userData.frontLabel=label;group.userData.frontLabelReady=labelReady;group.userData.backLabel=backMap.image;
  group.userData.dispose=()=>{body.dispose();art.dispose();map.dispose();backMap.dispose();panel?.geometry.dispose();backMaterial.dispose();inner.traverse(o=>{if(o.isMesh)o.material.dispose();});};
  return group;
 }
@@ -125,6 +133,7 @@ export function createItemViewer({onClose=()=>{}}={}){
  if(!document.getElementById('itemViewerStyle')){const s=document.createElement('style');s.id='itemViewerStyle';s.textContent=CSS;document.head.append(s);}
  const root=document.createElement('section');root.id='itemViewer';root.hidden=true;root.setAttribute('role','dialog');root.setAttribute('aria-label','Looking at an item');
  root.innerHTML=`<canvas aria-hidden="true"></canvas><div class="iv-hint">Drag to turn it · pinch to look closer</div>
+ <div class="iv-view-tools"><button class="iv-zoom-out" aria-label="Zoom out">−</button><button class="iv-zoom-in" aria-label="Zoom in">+</button><button class="iv-reset">Fit item</button><button class="iv-read">Read label</button></div>
  <button class="iv-close" aria-label="Put it back">×</button>
  <div class="iv-card"><div class="iv-brand"></div><div class="iv-row"><div class="iv-name"></div><div class="iv-price"></div></div><p class="iv-line"></p>
  <div class="iv-actions"><button class="iv-turn">Turn over</button><button class="iv-back">Put back</button><button class="iv-talk">Ask Thuan</button><button class="iv-buy">Into basket</button></div></div>`;
@@ -137,11 +146,13 @@ export function createItemViewer({onClose=()=>{}}={}){
  const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(.6,1,1.4);scene.add(key);
  const rim=new THREE.DirectionalLight(0xfff0d0,1.2);rim.position.set(-1,.4,-1);scene.add(rim);
  const pivot=new THREE.Group();scene.add(pivot);
- let held=null,item=null,raf=0,yaw=0,pitch=0,targetYaw=0,targetPitch=0,zoom=1,targetZoom=1,last=0,idle=0;
+ let held=null,item=null,raf=0,yaw=0,pitch=0,targetYaw=0,targetPitch=0,zoom=1,targetZoom=1,last=0,idle=0,paperView=null,previousFocus=null;
+ const paper=document.createElement('div');paper.className='iv-paper';paper.hidden=true;root.append(paper);
  const pointers=new Map();let drag=null,pinch=null;
  function resize(){const w=root.clientWidth||innerWidth,h=root.clientHeight||innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
  function frame(time){
   raf=requestAnimationFrame(frame);const dt=Math.min(.05,(time-last)/1000||0);last=time;idle+=dt;
+  if(paperView)return;
   if(!drag&&!pinch&&idle>2.5)targetYaw+=dt*.25;
   yaw+=(targetYaw-yaw)*Math.min(1,dt*10);pitch+=(targetPitch-pitch)*Math.min(1,dt*10);zoom+=(targetZoom-zoom)*Math.min(1,dt*8);
   pivot.rotation.set(pitch,yaw,0);
@@ -151,7 +162,7 @@ export function createItemViewer({onClose=()=>{}}={}){
   renderer.render(scene,camera);
  }
  function open(data){
-  close(true);item=data;const id=data.productId||data.id;
+  close(true);previousFocus=document.activeElement;item=data;const id=data.productId||data.id;
   const spec=stockSpec(id)||{},brand=STORE_BRANDS[id==='bun'?'buns':id]||{};
   held=buildPack(id,renderer);pivot.add(held);
   yaw=targetYaw=-.35;pitch=targetPitch=.12;zoom=targetZoom=1;idle=0;
@@ -165,13 +176,27 @@ export function createItemViewer({onClose=()=>{}}={}){
   $('.iv-buy').textContent=spec.cost!=null?'Into basket · ¥'+spec.cost:'Into basket';
   $('.iv-talk').hidden=!(data.canTalk?.()??true);
   root.hidden=false;resize();last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(frame);
+  $('.iv-read').disabled=false;$('.iv-read').textContent='Read label';
   $('.iv-back').focus({preventScroll:true});
  }
  function close(silent=false){
-  if(!held)return;cancelAnimationFrame(raf);pivot.remove(held);held.userData.dispose();held=null;root.hidden=true;
+  if(!held)return;closePaper(false);pointers.clear();drag=pinch=null;cancelAnimationFrame(raf);pivot.remove(held);held.userData.dispose();held=null;root.hidden=true;
   const was=item;item=null;if(!silent)onClose(was);
+  if(!silent)previousFocus?.focus?.({preventScroll:true});
+ }
+ function closePaper(focus=true){paperView?.dispose();paperView=null;paper.replaceChildren();paper.hidden=true;if(focus&&held)$('.iv-read').focus();}
+ async function readLabel(){
+  if(!held)return;const holding=held;$('.iv-read').disabled=true;$('.iv-read').textContent='Loading label…';
+  await holding.userData.frontLabelReady;
+  if(held!==holding)return;$('.iv-read').disabled=false;$('.iv-read').textContent='Read label';closePaper(false);const id=item.productId||item.id,name=$('.iv-name').textContent;
+  const pages=[['Front label',held.userData.frontLabel],['Back label',held.userData.backLabel]].filter(([,c])=>c).map(([title,c],i)=>({title:name+' · '+title,filename:id+'-'+(i?'back':'front'),width:c.width,height:c.height,draw(g,w,h){g.drawImage(c,0,0,w,h);}}));
+  paperView=createPrintViewer({title:name,pages,onClose:()=>closePaper()});paper.replaceChildren(paperView.element);paper.hidden=false;paperView.element.querySelector('.pv-stage')?.focus();
  }
  $('.iv-close').onclick=$('.iv-back').onclick=()=>close();
+ $('.iv-read').onclick=readLabel;
+ $('.iv-zoom-in').onclick=()=>{targetZoom=Math.min(3,targetZoom*1.35);idle=0;};
+ $('.iv-zoom-out').onclick=()=>{targetZoom=Math.max(.7,targetZoom/1.35);idle=0;};
+ $('.iv-reset').onclick=()=>{yaw=targetYaw=-.35;pitch=targetPitch=.12;zoom=targetZoom=1;idle=0;};
  $('.iv-turn').onclick=()=>{targetYaw+=Math.PI;idle=0;};
  $('.iv-buy').onclick=()=>{const buy=item?.onBuy;close();buy?.();};
  $('.iv-talk').onclick=()=>{const talk=item?.onTalk;close();talk?.();};
@@ -184,7 +209,9 @@ export function createItemViewer({onClose=()=>{}}={}){
  canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
  canvas.addEventListener('wheel',e=>{e.preventDefault();idle=0;targetZoom=THREE.MathUtils.clamp(targetZoom*Math.exp(-e.deltaY*.0015),.7,3);},{passive:false});
  root.addEventListener('keydown',e=>{
-  if(e.key==='Escape'||e.key==='q'||e.key==='Q'){e.preventDefault();close();}
+  if(paperView){if(e.key==='Escape'){e.preventDefault();closePaper();}else if(e.key==='Tab'){const items=[paper.querySelector('.pv-stage'),...paper.querySelectorAll('button')].filter(b=>b&&!b.hidden&&!b.disabled),i=items.indexOf(document.activeElement);e.preventDefault();items[(i+(e.shiftKey?-1:1)+items.length)%items.length]?.focus();}e.stopPropagation();return;}
+  if(e.key==='Tab'){const buttons=[...root.querySelectorAll('button')].filter(b=>!b.hidden&&!b.disabled&&!paper.contains(b)),i=buttons.indexOf(document.activeElement);e.preventDefault();buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length]?.focus();}
+  else if(e.key==='Escape'||e.key==='q'||e.key==='Q'){e.preventDefault();close();}
   else if(e.key==='ArrowLeft'){targetYaw-=.3;idle=0;}else if(e.key==='ArrowRight'){targetYaw+=.3;idle=0;}
   else if(e.key==='ArrowUp'){targetPitch-=.2;idle=0;}else if(e.key==='ArrowDown'){targetPitch+=.2;idle=0;}
   e.stopPropagation();

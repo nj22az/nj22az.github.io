@@ -1,3 +1,4 @@
+import {preloadTradePosters,mountTradePosters} from './sakura-trade-posters.js';
 import {buildSakuraBaskets} from './sakura-baskets.js';
 import * as THREE from '../../../vendor/three.module.js';
 import {buildSpecialsBoard} from './sakura-specials-board.js';
@@ -179,6 +180,8 @@ export function buildSakuraInterior({room,reg,action,exit,stair=()=>{}}){
  // Back-room cartons: open Thuan's Storage restock (navigate, not iframe).
  // Stock cartons carry the same generated Sakura label as delivered cartons.
  const carton=shopProductTemplate('stock');for(const z of [-5.95,-6.25])for(const x of [.15,.65,1.15]){const group=new THREE.Group();group.position.set(x,.25,z);room.add(group);group.add(new THREE.Mesh(carton.body,materials[0]),new THREE.Mesh(carton.art,materials[1]));}
+ // SK-ST-004: supplier campaigns above the stockroom's old stand-ups, with clear aisle Look anchors.
+ mountTradePosters('stockroom',{parent:room,register:reg,onView:id=>action('trade-poster',id)});
  // Bright, even konbini light: warm white from the tubes, a pale floor bounce rather
  // than the old green-grey, so the shop reads cheerful instead of dim.
  const fill=new THREE.HemisphereLight(PALETTE.sakuraTube,0xd8d2c4,1.7);room.add(fill);
@@ -192,7 +195,7 @@ export function buildSakuraInterior({room,reg,action,exit,stair=()=>{}}){
   }
  };
  let mounted=false,disposed=false,last='';
- return {smallOffice,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{decorations.tick(time);life.tick(time);smallOffice.tick(time,minutes,dt);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready]);if(disposed)return false;if(ok&&!mounted){
+ return {smallOffice,dispose:()=>{disposed=true;life.dispose();smallOffice.dispose();},cashDrawer:equipment.getObjectByName('Sakura cash drawer'),officeDoor:life.officeDoor,frontDoor:life.frontDoor,loadBackRooms:life.loadBackRooms,layout,unitPositions,unitApproaches,refrigerator,updateLighting,decorations,tick:(time,minutes,dt)=>{decorations.tick(time);life.tick(time);smallOffice.tick(time,minutes,dt);},accessShelf:id=>refrigerator.open(SAKURA_SHELVES[id]?.fridge),advertising:ads,ready:async()=>{const [ok]=await Promise.all([preloadSakuraInterior(),life.ready,capStand.ready,preloadTradePosters()]);if(disposed)return false;if(ok&&!mounted){
    const interior=model.clone(true);
    interior.traverse(o=>{if(o.isMesh&&o.name==='sakura-light'){
     const prepare=m=>{const mat=m.clone();mat.emissive.set(PALETTE.sakuraTube);mat.emissiveIntensity=lightLevel;return mat;};

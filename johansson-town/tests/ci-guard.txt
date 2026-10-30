@@ -2,6 +2,10 @@
 # One file of johansson-town/tests/ per line. Every file here passes on main; keep it that way.
 # When a known-failing test is fixed, add it here. Run locally: node tools/ci-guard.mjs
 runtime-package.test.mjs
+print-viewer.test.mjs
+magazines.test.mjs
+sakura-trade-posters.test.mjs
+sakura-poster-walls.test.mjs
 town-clock.test.mjs
 device-calendar.test.mjs
 cargo-berth.test.mjs

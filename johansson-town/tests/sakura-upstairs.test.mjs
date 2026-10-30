@@ -73,7 +73,7 @@ test('every upstairs prompt is in English and reachable from the floor',()=>{
  const labels=up4.map(p=>p.label);
  for(const l of ['Sit at the harbour desk','Read the till ledger','Make office tea','Look over Main Street','Look over the harbour','Lie down for a minute','Look in the decorations store','Look in the archive','Look at the shoe cabinet','Evacuate by the fire escape','Go downstairs'])assert.ok(labels.includes(l),l);
  for(const p of up4){
-  assert.match(p.label,/^[A-Za-z’' ]+$/,'English prompt: '+p.label);
+  assert.match(p.label,/^[A-Za-z0-9’' ]+$/,'English prompt (including campaign numbers): '+p.label);
   const w=p.o.getWorldPosition(new THREE.Vector3());
   assert.ok(reach.near(w.x,w.z,1.3),p.label+' has a reachable standing place within reach');
   assert.ok(w.y<1.6,p.label+' is within reach height');

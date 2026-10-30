@@ -1,3 +1,4 @@
+import {preloadTradePosters,tradePostersReady} from './world/interiors/sakura-trade-posters.js';
 import {canonicalResidentName} from './desktop/life-state.js';
 import {createLinuxLife} from './desktop/life.js';
 import {buildLinuxBedroom} from './desktop/bedroom.js';
@@ -1457,8 +1458,8 @@ const massageChair=()=>seated&&current?.id==='onsen'&&parkSeat?.seatId==='massag
  * never opens with a seat over nothing.
  */
 const ROOM_ASSETS={onsen:ONSEN_ASSETS};
-const roomAssetsReady=s=>(!s.industrialWorkshop||workshopPropsReady())&&(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
-const loadRoomAssets=s=>Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[])]).then(all=>all.every(Boolean));
+const roomAssetsReady=s=>(s.id!=='sakura-office'||tradePostersReady())&&(!s.industrialWorkshop||workshopPropsReady())&&(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
+const loadRoomAssets=s=>Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[]),...(s.id==='sakura-office'?[preloadTradePosters()]:[])]).then(all=>all.every(Boolean));
 let roomAssetsTry=0;
 /** `arrival`: where he comes in and which way he faces, when it is not the room's door (Sakura's stair, sakura-stairs.js). */
 async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
