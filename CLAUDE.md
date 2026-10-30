@@ -146,9 +146,10 @@ that makes more or better stories.
   books and supplies the stationery and office goods Front-Row did; Front-Row is the town paper's print room in the
   evenings, and Sakura shuts on Saturdays. Higa Liquor has closed (the owner, 22 October 2026): Sakura sells all the
   alcohol over its counter and supplies it to Minato, Sato Ramen, the Coral Bay Bar on Kitano-jima and Mr Fujita's shed
-  on Sakura Trading's round, Kōji's on his weeks ashore (`commerce/trade-round.js`); the shop stands shut with a notice
-  on its shutter, and Grandmother Higa keeps only the bathhouse. Blue Coral on Rainflower Lane is the town's only
-  ice-cream shop.
+  on Sakura Trading's round, Kōji's on his weeks ashore (`commerce/trade-round.js`); the liquor shop stays shut. Since
+  30 October 2026 its room is **Kissa Higa**, Grandmother Higa's morning coffee shop, 07:00–09:30 on weekdays, before she
+  keeps the bath (`commerce/kissa-higa.js`; no alcohol: the drink stays Sakura's). Blue Coral on Rainflower Lane is the
+  town's only ice-cream shop.
 
 **Workflow (the owner, 24 October 2026; AGENTS.md):** Codex prototypes detailed three.js rooms and characters on
 `development`; Claude takes them to Pixar standard in Blender (`nj22az/jojo`, branch `pixar`); `main` keeps the

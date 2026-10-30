@@ -6,13 +6,14 @@ import {householdFor,householdNames} from './households.js';
 const minute=m=>((m%1440)+1440)%1440;
 export function sleepHours(profile){
  if(profile.canonicalDay&&CANONICAL_REST[profile.name])return CANONICAL_REST[profile.name];
- if(profile.name==='Officer Mori')return {sleep:420,wake:900};
+ // Kissa Higa (30 October 2026): his morning set is before bed at nine, not in the middle of a seven-o'clock sleep.
+ if(profile.name==='Officer Mori')return {sleep:540,wake:900};
  // On the island he lives in the office and keeps the ship's day, the last boat fast by half past ten (social.js HARBOUR_MASTER_DAY).
  if((profile.name==='Harbour master'))return {sleep:1380,wake:330};
  if(profile.name==='Thao')return {sleep:240,wake:720};
- // The radio shift runs past midnight. Keep the two hours of
- // after-work errands, then eight hours at home instead of the old day shift bedtimes.
- if(profile.name==='Tetsuo')return {sleep:140,wake:620};
+ // His authored cast day has the radio bench from nine and home at 22:30; the old 17:00–midnight shift left him asleep
+ // through the decided Kissa Higa breakfasts. Keep eight hours overnight, then breakfast at home or at her counter.
+ if(profile.name==='Tetsuo')return {sleep:1380,wake:420};
  // Chin is the ferry's motorman (ferry-crew.js FERRY_WORKING_DAY: signed on 06:05, off 23:15 after the last boat back, then the izakaya).
  if(profile.name==='Chin')return {sleep:1425,wake:300};
  // The doctor is on call: to bed at eleven, after the Wednesday laundry (coin-laundry.js) and the clinic's medicines off

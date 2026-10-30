@@ -259,7 +259,7 @@ sells and supplies all alcohol, Kōji's round becomes Sakura Trading's, and the 
 This supersedes the liquor-shop parts of the 21 October decision above (its bench and coin laundry stand). The task folder
 is `briefs/higa-liquor-closes/`.
 
-- **Higa Liquor is shut for good** (`commerce/higa-liquor.js`): the shutter down at every hour, the doors shut, the lights
+- **Higa Liquor is shut for good** (superseded for the building by Kissa Higa, 30 October 2026, below) (`commerce/higa-liquor.js`): the shutter down at every hour, the doors shut, the lights
   off, a hand-written 閉店のお知らせ taped to the shutter (`HIGA_NOTICE`: thanks, and お酒は さくら商店へ), read from the
   street; no new geometry. The fittings and the family kusu stay inside behind the shutter. The 留守 card, the hours and
   the counter's menu are gone; its sign stays up.
@@ -282,6 +282,36 @@ is `briefs/higa-liquor-closes/`.
   Yui no longer minds a counter on Saturdays.
 - **The yuntaku bench stays**: Tetsuo and Mac still sit out front of an evening with a bottle from Sakura; the bench no
   longer depends on the shop's hours.
+
+## Owner's decision — 30 October 2026: Kissa Higa in the shut Higa Liquor
+
+The owner, 30 October 2026: "Since the liquor store is closed maybe it can be replaced by one of the buildings maybe the
+cafe"; Grandmother Higa to keep it in the mornings; then "work accordingly to your own recommendations" (the plan and the
+self-audit: `briefs/higa-kissaten/progress.md`). This supersedes the shut-front parts of the 22 October decision above
+(the shutter down at every hour, no new geometry, Grandmother Higa keeping only the bathhouse); its drink parts stand.
+
+- **Kissa Higa (喫茶ひが)** (`commerce/kissa-higa.js`): Monday to Friday, open 07:00–09:30; Grandmother Higa at the front
+  from 06:45, the shutter up at 06:50 over nine seconds, behind the counter until 09:40, out on the pavement while the shutter comes down
+  (09:44, over nine seconds), and up Kitano Road to the bath at 09:50. If anyone is still inside or crossing the threshold, she waits
+  outside with the shutter and doors open; after the last body clears she takes nine seconds to lower it, then leaves.
+  Saturdays she opens Johansson Mart at 08:45; Sunday is her morning off. She is up at half past five, her garden round before opening (`canonical-rest.js`, `cast.js`).
+- **The menu**: the morning set (blend, thick toast, boiled egg), blend coffee and iced coffee, ¥300 each. **No alcohol.**
+  Bread and milk on Sakura's account, taken at its till at five the afternoon before (Sakura is shut before nine); beans,
+  eggs and butter with Sakura Trading's Monday order (`merchandising.js` ACCOUNTS.sakura `kissa-higa`).
+- **The regulars come from their own days**: Yui's breakfast at the counter before school (it replaces her breakfast at
+  home), Ms Ganaha before the laundry, Tetsuo three mornings a week, Officer Mori before he sleeps, Ms Uezu on her weeks
+  off watch (`KISSA_REGULARS`; `people/shop-days.js` seats them). The live street controller reads these breakfasts before
+  home preparation: Tetsuo sleeps 23:00–07:00 and opens his radio bench at 09:00 (his `cast.js` day); Mori sleeps
+  09:00–15:00, after the morning set and before his desk duty.
+- **The room** (`world/okinawa/higa-liquor-dressing.js`): the counter is the coffee counter; a ledge at 0.74 m with three
+  0.46 m stools (the izakaya's pairing; no bar stools). Cartoon shoes still hang 0.21–0.25 m above the floor on
+  chair-height seats across town; seat heights stay unchanged pending the owner's decision. Two siphons, a kettle, the cup
+  shelf and the family kusu stay; a table for two by the police-station wall; the record player and her husband's 45s; a green
+  awning and an A-board. The record player, the bentwood chairs and the hand grinder are Meshy models
+  (`kissa-higa-props.js`, `assets/models/kissaten/`), chosen by the audit in `docs/qa/kissaten-meshy/`; everything else is
+  drawn in code. The shutter, doors, tubes and board follow the clock, and the neighbours re-plan their routes when the
+  way in opens or shuts.
+- **The bench out front stays** for the evening.
 
 ## Owner's decision — 22 October 2026 (night): the money model is closed for now
 

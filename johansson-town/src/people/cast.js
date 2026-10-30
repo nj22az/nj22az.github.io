@@ -68,11 +68,16 @@ export const CAST=Object.freeze([
   day:[['07:00','kitahama-3','breakfast'],['08:15','school','school'],['15:30','quay','watching the boats come in'],['17:00','park','football in the park'],['18:30','kitahama-3','home']]}),
  // The Higas, in Nishi-machi.
  person('Miss Higa',{sex:'f',age:29,home:'higa',work:'school',family:'Higa',was:['Mrs Higa','Yonamine-sensei'],purpose:'teaches the island school; keeps the bandai at Umi-no-yu in the evenings and at weekends',
-  day:[['07:00','higa','breakfast with her grandmother'],['08:00','school','teaching'],['15:30','school','marking'],['17:00','onsen','the bandai at Umi-no-yu'],['22:00','higa','home']]}),
- // Higa Liquor closed on 22 October 2026 (the owner: Sakura sells and supplies the drink; commerce/higa-liquor.js), and
- // Grandmother Higa keeps only the bathhouse: the bandai by day, from the bath's opening at ten, Yui from five.
- person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'onsen',family:'Higa',purpose:'owns Umi-no-yu and keeps its bandai by day, 10:00–17:00; her liquor shop on Main Street stands shut, its trade Sakura’s; since 27 October 2026 she keeps the till at Johansson Mart in Kitahama on weekday evenings and Saturdays, when Sakura is shut',
-  day:[['07:00','higa','the garden across the lane: the vines, the beds and the altar flowers',{stand:'higa-garden'}],['08:30','higa','the verandah'],['10:00','onsen','the bandai at Umi-no-yu, the bath’s opening'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa','home to the verandah']]}),
+  // On weekdays her breakfast is at her grandmother's counter at Kissa Higa (commerce/kissa-higa.js), and she walks on to
+  // school from there.
+  day:[['07:00','higa','breakfast with her grandmother'],['07:45','school','the walk to school'],['08:00','school','teaching'],['15:30','school','marking'],['17:00','onsen','the bandai at Umi-no-yu'],['22:00','higa','home']]}),
+ // Higa Liquor closed on 22 October 2026 (the owner: Sakura sells and supplies the drink; commerce/higa-liquor.js); the
+ // bath is hers by day, from its opening at ten, Yui's from five. Since 30 October 2026 the shut shop is Kissa Higa, hers
+ // from 06:45 to 09:50 on weekdays (commerce/kissa-higa.js; canonical-day.js puts her behind its counter), so her garden
+ // round starts after her breakfast (up at half past five, canonical-rest.js) and on weekdays ends when she goes down to
+ // open the shutter.
+ person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'onsen',family:'Higa',purpose:'owns Umi-no-yu and keeps its bandai by day, 10:00–17:00; keeps Kissa Higa, the morning coffee shop in her old liquor shop on Main Street, 07:00–09:30 on weekdays (the drink is Sakura’s); since 27 October 2026 she keeps the till at Johansson Mart in Kitahama on weekday evenings and Saturdays, when Sakura is shut',
+  day:[['06:00','higa','the garden across the lane: the vines, the beds and the altar flowers',{stand:'higa-garden'}],['08:30','higa','the verandah'],['10:00','onsen','the bandai at Umi-no-yu, the bath’s opening'],['12:00','higa','lunch'],['13:00','onsen','the bandai at Umi-no-yu'],['17:00','higa','home to the verandah']]}),
  // The Front-Row yard. Tetsuo keeps the island's electrics since the power house lost its keeper (roster.js RETIRED).
  person('Tetsuo',{sex:'m',age:40,home:'resident-home-kenji',work:'workshop',family:'Chinen',purpose:'radio repairer at the Chin & Tetsuo workshop; the ferry’s electrician under contract; tends the onsen’s boiler and pumps and the power house’s switchboard',
   day:[['07:30','resident-home-kenji','breakfast'],['09:00','workshop','the radio bench'],['13:00','ferry','the ferry’s workshop while she lies alongside'],['18:00','onsen','the boiler lit for the evening and the pumps'],['18:30','higa-bench','a bottle from Sakura on the bench outside the shut Higa Liquor, in earshot of the burner'],['20:00','onsen','the boiler, and closing up at ten'],['22:30','resident-home-kenji','home']]}),
@@ -241,7 +246,8 @@ export const PLACES=Object.freeze({
  'kitano-pier':{name:'Kitano-jima ferry pier',keepers:['Kai']},
  warehouse:{name:'Quay Warehouse and the Sakura depot',keepers:['Harbour master','Thuan']},
  // The owner, 22 October 2026: Higa Liquor closes; Sakura sells and supplies all the alcohol (commerce/higa-liquor.js).
- 'higa-liquor':{name:'Higa Liquor',closed:'Shut for good: the drink is Sakura’s, over its counter and from its depot, and Grandmother Higa keeps the bath'},
+ // 30 October 2026: the room is Kissa Higa, Grandmother Higa's in the mornings (commerce/kissa-higa.js).
+ 'kissa-higa':{name:'Kissa Higa',keepers:['Grandmother Higa']},
  // Nobody keeps these any more (docs/CAST-PLAN.md section 3, who goes).
  'yonamine-fish':{name:'Yonamine Fresh Fish',closed:'Mrs Yonamine has gone; the morning catch is sold at the auction'},
  'aragaki-sweets':{name:'Aragaki Confectionery',closed:'Mr Arakaki has gone'},
