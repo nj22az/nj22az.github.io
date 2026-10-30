@@ -1,7 +1,8 @@
 # Fish market rework and sale counter — 30 October 2026
 
-**Publication update, 30 October 2026:** the owner's subsequent **“Push”** authorises publication. Current candidate,
-checks and delivery state are in [the combined publication handover](HANDOFF-KISSA-FISH-PUBLISH-2026-10-30.md).
+**Published, 30 October 2026:** on the owner’s **“Push”**, [PR #407](https://github.com/nj22az/nj22az.github.io/pull/407)
+merged into main as `1c4d6c33d5f0447676cb4edcb22a25480e6e1adc`. Pages and source guard passed; 92/92 checked live files
+match. Full check scope and limits are in [the publication handover](HANDOFF-KISSA-FISH-PUBLISH-2026-10-30.md).
 Earlier unpublished/awaiting-owner statements below describe the earlier review stage.
 
 The owner, 30 October 2026, after the survey of xiaoninemao/japanese-miniature-scenes

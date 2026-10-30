@@ -5,9 +5,11 @@ pushed on their branches but were not on `main` or live. This is the publication
 It supersedes the earlier “awaiting the owner's word” status for this scope; the remaining design decisions below are
 not silently resolved by publication.
 
-[**Publication PR #407**](https://github.com/nj22az/nj22az.github.io/pull/407) targets `main` from `codex/kissa-higa-publication` (ready for review, not a draft).
+[**Publication PR #407**](https://github.com/nj22az/nj22az.github.io/pull/407) **merged into `main` as
+`1c4d6c33d5f0447676cb4edcb22a25480e6e1adc`** on the owner’s “Push”.
 Prepared combined snapshot: `c86c9a0ff10cdc703f4c3c696f12ce0a678655d1`; the following documentation commit only records
-this PR and its evidence pointer. Hosted publication checks are pending; no merge/deployment success is claimed yet.
+this PR and its evidence pointer. Final pre-merge head: `089f1294fa36d175f9956ac9a951934bd439740c` (the deterministic
+controller fixture correction). The merge tree exactly matched that tested head. Publication results follow below.
 
 ## Candidate and scope
 
@@ -47,8 +49,36 @@ this PR and its evidence pointer. Hosted publication checks are pending; no merg
 - Authored-file whitespace check (`git diff origin/main HEAD --check -- . ':!johansson-town/runtime'`): clean.
   Existing generated shader-string whitespace is preserved in the runtime.
 
-**Publication PR, merge commit, hosted checks and live delivery:** pending. No publication success is claimed until
-those are verified and recorded in the follow-up below.
+## Verified publication
+
+- **Live:** https://nj22az.github.io/johansson-town/ ; merge `1c4d6c33d5f0447676cb4edcb22a25480e6e1adc`, PR #407.
+- Final PR [World guard 41083420592](https://github.com/nj22az/nj22az.github.io/actions/runs/41083420592):
+  **482/482, 91 files, success in 359 s**. Log: `publication/hosted-world-guard.txt`.
+- Post-merge [World guard 41084575777](https://github.com/nj22az/nj22az.github.io/actions/runs/41084575777): **success**.
+- Post-merge [island tree review 41084575881](https://github.com/nj22az/nj22az.github.io/actions/runs/41084575881): **success**.
+- [Pages deployment 41084570648](https://github.com/nj22az/nj22az.github.io/actions/runs/41084570648): **success** for that merge.
+- **92/92 checked deployed files match the merge byte for byte**: changed source/assets/guide/entry points and current
+  runtime dependencies. `publication/delivery.json` records every expected/observed SHA-256 and HTTP result.
+- The deployed runtime source fingerprint is `116a61c368eaeb4b9d57762f1aed26e1c5581704f734b27057861acbe8610d3a`.
+- Browser smoke: **passed**, Chromium 153/SwiftShader, 960 × 640, using a loopback mirror of verified deployed bytes.
+  All **98 requested files (25,615,415 bytes)** were fetched from Pages over the configured, verified HTTPS connection
+  and compared with the merge before serving. `mirror-requests.json` records them; all match, no failed requests.
+  The café is open at 07:42 with four model instances loaded; the fish counter's wares are shown at 07:40 and hidden
+  at 10:00 on Monday day 4. No page errors. `live-smoke.json` records the exact scope and state.
+- Both new photographs, `live-cafe-0742.jpg` and `live-fish-counter-0740.jpg`, were inspected at their original 960 × 640
+  resolution. They show the café in use and the co-op counter with its fish on ice. The earlier complete resident audit
+  remains the evidence for the exact Monday/Wednesday/rota-week seat handovers and closing safety.
+- **Direct live-origin browser verification was not completed.** Chromium first lacked the cloud proxy connection,
+  then its certificate trust. Automatic approval review rejected a proposed persistent user NSS trust-store change
+  because it would broaden trust beyond this one browser run. That change was not performed or retried. The verified
+  public-byte mirror above was the safer alternative; its Python HTTPS fetches used the inherited certificate bundle.
+- Hosted [Linux acceptance 41083420584](https://github.com/nj22az/nj22az.github.io/actions/runs/41083420584): controller/
+  gameplay regressions, package build, facial visibility, controller recovery, native startup/disk saves and offline
+  checks passed at the last step read; the full resident/controller acceptance was still running. It is **not claimed
+  fully green** here, and no new public Linux release was made. `publication-pr-checks.json` records the last workflow state.
+- This following documentation/evidence commit records publication and adds the two inspected captures and reports.
+  It does not change World source, runtime, tests, game assets, the camera or the installed Linux edition.
+
 
 ## Publication CI finding: deterministic controller fixture
 

@@ -79,3 +79,16 @@ The owner said “Push” after the branch-only status was explained. Publicatio
 fish-market/co-op-counter work with current main. [The publication handover](../HANDOFF-KISSA-FISH-PUBLISH-2026-10-30.md)
 is the current source for the candidate, exact checks, merge and live-delivery verification. The earlier unpublished
 state above is historical. The foot-gap/garden/Yui decisions and physical-device limits remain open.
+
+### Published and verified
+
+[PR #407](https://github.com/nj22az/nj22az.github.io/pull/407) merged into main as
+`1c4d6c33d5f0447676cb4edcb22a25480e6e1adc` on the owner’s “Push”. Final PR World guard 482/482; post-merge World guard,
+island review and Pages passed. 92/92 checked deployed files match; verified public-byte mirror smoke passes, 98/98
+requested files matched and both new captures inspected at full size. The direct live-origin browser check was not
+completed: automatic review rejected the persistent certificate trust-store change, and the verified mirror was used.
+The pre-existing controller fixture failure reproduces on unchanged main; the clear ferry fixture retains every
+original assertion and adds a starting-position assertion. The hosted Linux workflow’s earlier acceptance stages pass;
+its full resident/controller acceptance was still running at the last check. No new public Linux package, physical
+device check, Meshy spend or Studio sync. See [the current publication handover](../HANDOFF-KISSA-FISH-PUBLISH-2026-10-30.md)
+for exact runs, logs, remaining decisions and scope.
