@@ -92,3 +92,59 @@ smile one shape, a few bold wrinkles instead of a scatter); focus on the subject
 Silhouette contours (fix 3) were tried as a wider colour edge thinned to its crest and left out: no visible gain on the
 test portraits for about thirty more samples a pixel. A subject mask is the way to outline a person against a
 background of their own colour and light.
+
+## Codex re-judgement of rounds three and four (30 October 2026)
+
+One Codex reviewer, making a separate pass in each README persona; these are **not independent human reviews** or
+claims that the named artists reviewed the app. Round three is `3a54aa6cf`; round four is `507dad865` (the shader
+bytes at handover `1ed9a7ef`). All six test photos were fetched successfully with `camera-test-photos.py`, rendered
+1080 lines tall in the full build, and inspected at 240-line phone-sheet size and in unscaled 300 × 300 detail crops.
+The changed seven Looks were rendered again from round three; the other 27 share exactly the same shader and
+prepare-pass bytes between the rounds, so their round-four renders serve both. Miniature's default render is
+unchanged; its extra point is for the now user-placeable band, not better optical defocus. Software Chromium 133 /
+SwiftShader is the renderer; this does not verify phone speed, the LIGHT builds or a 12 MP save.
+
+Detail crops (x0,y0,x1,y1): restaurant `240,210,540,510`; braids `300,300,600,600`; hat `600,200,900,500`;
+café `350,400,650,700`; garden `600,400,900,700`; night `450,350,750,650`. A score assesses the medium and all six
+subjects together; it is not an image-similarity score. Earlier scores remain above for comparison.
+
+| Look | Round 3 | Round 4 | Persona's remaining objection |
+|---|---:|---:|---|
+| Manga | 5 | 5 | Takahashi/Toriyama: smile clearer, good black clothes; face silhouette disappears into light background; garden still busy; no hair highlight cuts |
+| Pencil manga | 4 | 4 | Inoue/mangaka's pencils: graphite distinct from pen, but the face disappears and darks do not have enough graphite weight |
+| Line drawing | 4 | 4 | Moebius: café structure reads; disconnected face, too many little garden marks and directional hatching still changes abruptly |
+| Sketchbook | 6 | 6 | Urban Sketcher: margin and wash work; too many mechanical marks in the elderly face and foliage |
+| Pencil crayon | 3 | 3 | Picture-book illustrator: crosshatched mesh and pale scratch grain still dominate; colour too grey, especially garden; teeth individually overdrawn |
+| Adventure Ink | 4 | 5 | Toriyama colour pages: cleaner cheeks, but still a treated photograph rather than clearly chosen cel planes; weak person silhouettes |
+| Cartoon | 3 | 4 | TV anime colourist: round four clears some tooth gaps; skin still orange and elderly wrinkles/pores too heavily inked; lost silhouette |
+| Comic dots | 5 | 5 | Comic printer: four plates now read; elderly face and foliage too noisy, keyline sometimes broken |
+| Watercolour | 5 | 5 | Potter/watercolourist: white paper and coloured glazes; wash rims too mechanically repeat the photographic tonal islands |
+| Oil painting | 6 | 6 | Hopper: convincing quieter masses and coloured night; canvas still very faint, facial planes sometimes soft blocks |
+| Heavy brush | 4 | 4 | Van Gogh: visible directional dabs, but a fine repeated bristle carpet; orange skin and too little variation of stroke scale |
+| Woodblock | 4 | 4 | Hasui/Hiroshige: bokashi works; grey/cream islands on cheeks, broken keyline, too much foliage detail |
+| Rubber stamp | 4 | 4 | Eki-stamp designer: busy garden becomes ink thicket; teeth are carved separately; station-stamp economy not reached |
+| Blueprint | 7 | 7 | Atkins/engineer: coherent coat and paper margin; photographic rather than contact-print silhouettes |
+| Natural | 8 | 8 | iPhone photographer: framing and detail retained; real-device colour handling unverified |
+| Black & white | 7 | 7 | Moriyama: useful strong darks and mid-tone grain; still rather tidy at phone size |
+| Sepia | 5 | 5 | Meiji studio: all six veiled in brown, deepest values need more separation |
+| Instant film | 7 | 7 | Wenders: restrained fade, readable portrait; bottom developer edge still rather regular |
+| Miniature | 5 | 6 | Barbieri: tap now chooses the plane, but coarse blur and wide sharp band weaken the model illusion |
+| Night vision | 6 | 6 | Wildlife cameraman: tube and amplification work; bright halo at tube rim competes with subject |
+| Pocket | 7 | 7 | Game Boy Camera team: four greens and readable coarse faces; ordered texture is strong on garden |
+| Colour hand-held | 4 | 4 | GBC pixel artist: useful shared ramps; cafe tiles clash and elderly skin drops to grey/brown |
+| Red visor | 5 | 5 | Virtual Boy artist: LED gaps and blacks work; face lacks the intentional shape economy of console art |
+| 8-bit | 4 | 4 | Famicom artist: colour budget works, but dominant orange and noisy facial shadow boundaries |
+| 16-bit | 6 | 6 | Super Famicom artist: richer material ramps, good café; green/orange foliage and skin texture too photographic |
+| 32-bit | 4 | 4 | PS1 artist: framing preserved, coarse texels and warp visible; a photograph on a mesh cannot imply all scene geometry |
+| 64-bit | 4 | 4 | N64 texture artist: smooth three-point smear visible; reads as low resolution photo more than authored texture |
+| Old TV | 6 | 6 | Shōwa family: glowing and softer; bright face can still bloom too much |
+| VHS camcorder | 5 | 5 | Sports-day parent: colour trails and foot tear; still too clean/uniform over most of the field |
+| Risograph | 6 | 6 | Zine maker: inks overprint correctly; screen is fine and photographic at phone size |
+| Riso pink & blue | 6 | 6 | Zine maker: attractive violet overprint; middle skin values lack a more deliberate separation |
+| Riso red & navy | 6 | 6 | Zine maker: useful dark ink and warm lights; still fine photographic screen |
+| Riso black & pink | 5 | 5 | Zine maker: recognisable duotone; pink dominates busy scenes, dark masses not decisive enough |
+| Riso three-colour | 6 | 6 | Zine maker: fuller colour without third black; busiest and most expensive of the separations |
+
+Next work, in score order after the person-mask investigation: **Crayon (3)**; **Cartoon, Pencil manga, Line drawing,
+Heavy brush, Woodblock, Stamp (4)**. The console rows above have faults too, but the standing Open/Partly drawing and
+print backlog takes precedence. No row is closed solely because code changed.
