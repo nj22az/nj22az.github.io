@@ -36,8 +36,8 @@ The focused cloud browser check measured about 619 ms cold including runtime/mod
 energy, warm inference, thermal or frame-rate measurements are claimed.
 
 Quality boundary: this is a close-person model, not precise matting. It can lose fingers, hat brims and occluded
-parts, join neighbouring objects, or miss distant people, especially in poor light. Components below 2% of the
-picture and components without a majority of confident interior pixels are removed. A soft model edge is cleaned
+parts, join neighbouring objects, or miss distant people, especially in poor light. Components below 5% of the
+picture and components without 75% confident interior pixels are removed. A soft model edge is cleaned
 and lightly blurred, then each medium inks its .5 boundary. This improves separation but does not locate a jaw or
 nose inside the person, and is not sufficient for hair highlight cuts. Live masks are deferred until phone costs and
 motion alignment can be checked; never put an old asynchronous mask over a newer video frame.

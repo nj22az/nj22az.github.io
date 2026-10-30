@@ -287,62 +287,33 @@ vec3 celBase(vec2 uv,float u,out float material){
 // enough apart to read as strokes on a phone, and carry the photo's colour as pencils do: a vivid pigment with paper
 // between the strokes, as much of it as the tone needs, and a darker pencil crossing the shadows. The edges of the
 // picture are left lighter, as a drawing is finished in the middle first.
-const CRAYON_BODY=`${PHOTO_STROKES}
-// Coloured pencil as it really lies on paper: not lanes of separate strokes but a grain streaked along the direction
-// of the hand, the wax catching the tooth's peaks first and filling the hollows as it is pressed harder, with the
-// strokes' ends showing as faint ridges.
-float pencilGrain(vec2 p,float a,float cover,float seed,float tooth){
- vec2 d=vec2(cos(a),sin(a));
- vec2 r=vec2(dot(p,d),dot(p,vec2(-d.y,d.x)));
- float streak=noise(vec2(r.x*.06,r.y*.75)+seed)*.42+noise(vec2(r.x*.025,r.y*.28)+seed*2.0)*.3+tooth*.18;
- float ends=pencilLane(p,d,6.0,seed)*.22;
- float edge=1.0-cover*.82;
- return smoothstep(edge-.16,edge+.16,streak+ends+.02)*step(.003,cover);
-}
+const CRAYON_BODY=`${PHOTO_STROKES}${PHOTO_LINES}${PHOTO_CEL}
 void main(){
- float u=unit();
- vec2 p=vUv*uResolution/u;
- // A drawing is kept lighter than life in the middle tones (a face is not hatched dark); its blacks stay black.
+ float u=unit();vec2 p=vUv*uResolution/u;
  vec3 c=texture2D(tDiffuse,vUv).rgb;
- float l=luma(c);
- c=clamp(c*pow(max(l,.002),.9)/max(l,.002),0.0,1.0);
- l=luma(c);
- float tooth=noise(p*.9)*.6+noise(p*2.3)*.4;
- vec3 paper=vec3(.975,.962,.93)-.035*tooth;
- // Finished in the middle, lighter towards the edges; a dark part is drawn in full wherever it is (a night sky).
- vec2 v=(vUv-.5)*2.0;
- float finish=mix(mix(.5,1.0,1.0-smoothstep(.5,1.1,length(v))),1.0,1.0-smoothstep(.12,.4,l));
- // The strokes run along the picture's shapes where it has clear ones, and on the hand's natural diagonal elsewhere.
- float a=flowAngle(vUv,u);
- // Two pencils for every colour. The first lays the colour itself, at a light value, vivid, with paper between the
- // strokes, as much as that tone needs; the second, a darker pencil of the same colour, crosses it in the shadows.
- // A colour is trusted less the darker it is: the faint tint of a black is the camera's noise, not a colour.
- float top=max(c.r,max(c.g,c.b)),sat=(top-min(c.r,min(c.g,c.b)))/max(top,.04)*smoothstep(.05,.3,top);
- vec3 hue=mix(vec3(1.0),c/max(top,.04),smoothstep(.05,.3,top));
- vec3 light=mix(vec3(1.0),hue,min(1.0,sat*1.35))*max(top,.8);
- vec3 absorb=clamp(1.0-light/paper,0.0,1.0);
- float need=max(absorb.r,max(absorb.g,absorb.b));
- vec3 pigment=1.0-absorb/max(need,.06)*.72;
- float cover1=min(need/.72,.78)*finish;
- float m1=pencilGrain(p,a,cover1,1.0,tooth);
- vec3 col=paper*mix(vec3(1.0),pigment,m1);
- vec3 shade=mix(mix(vec3(1.0),hue,sat),vec3(.92,.9,1.0),.3*(1.0-sat))*mix(.13,.45,smoothstep(.04,.4,l));
- float after=luma(paper*mix(vec3(1.0),pigment,cover1));
- float cover2=clamp((after-l)/max(after-luma(shade*paper),.05),0.0,mix(.9,.78,smoothstep(.06,.2,l)))*finish;
- float m2=pencilGrain(p,a+1.1,cover2,40.0,tooth);
- col*=mix(vec3(1.0),shade,m2);
- // The darkest parts are burnished: pressed hard with the dark pencil until the strokes close up, the tooth still
- // catching a few flecks of paper.
- float burnish=(1.0-smoothstep(.03,.14,l))*finish*mix(.7,.95,smoothstep(.2,.6,tooth));
- col=mix(col,paper*shade*1.15,burnish);
- // Lines: only the clear edges, in the dark pencil, wobbling a little as a hand-drawn line does.
- vec2 wobble=(vec2(noise(p*.05),noise(p*.05+17.0))-.5)*uTexel*2.5*u;
- float e=smoothstep(.45,1.0,edges(vUv+wobble,1.5*u,1.0))*(.55+.45*noise(p*.3));
+ c=celSmooth(vUv,3.0*u,c,45.0);
 #ifndef LIGHT
- e=max(e,spotBlack(vUv,u)*.9);
+ c=celSmooth(vUv,7.0*u,c,32.0);
 #endif
- col=mix(col,shade*.8,clamp(e,0.0,1.0)*.85*mix(.7,1.0,finish));
- gl_FragColor=vec4(col,1.0);
+ // Build the colour with overlapping translucent pigment, rather than white scratch marks across a photograph.
+ float l=luma(c),a=flowAngle(vUv,u);
+ vec2 dir=vec2(cos(a),sin(a)),side=vec2(-dir.y,dir.x);
+ float along=dot(p,dir),across=dot(p,side)+(noise(p*.014)-.5)*5.0;
+ float streak=noise(vec2(along*.018,across*.42))*.6+noise(vec2(along*.05,across*.9)+13.0)*.4;
+ float tooth=noise(p*.9)*.6+noise(p*2.3)*.4;
+ vec3 paper=vec3(.98,.97,.94)-.018*(tooth-.5);
+ // Saturated layered pencils, with complementary violet in deep shadows; a black garment stays a dark mass.
+ vec3 pigment=clamp(mix(vec3(l),c,1.08),.018,1.0);
+ pigment=pow(pigment,vec3(.88));
+ pigment=mix(pigment,pigment*vec3(.9,.86,1.08),(1.0-smoothstep(.08,.3,l))*.22);
+ float pressure=.68+.60*streak+.15*(tooth-.5);
+ vec3 col=paper*exp(log(pigment)*pressure);
+ // The pencil leaves a little paper only in the highlights; deep values are burnished, not crosshatched pale.
+ float fleck=smoothstep(.62,.92,tooth)*smoothstep(.45,.9,l)*.13;
+ col=mix(col,paper,fleck);
+ float line=inked(vUv,u,1.8,.045,.06,.3);
+ col=mix(col,pigment*.45,line*.55);
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
 // The rubber stamp for a photograph. World's Stamp inks everything darker than one grey; on a photo a dark wall or
 // background then became one block that swallowed the hair and the shoulder against it, a shaded cheek a blot, and the
@@ -355,6 +326,7 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  vec3 raw=texture2D(tDiffuse,vUv).rgb;
+ raw=mix(raw,ringColour(vUv,3.5*u),.55);
  float l=luma(raw);
  // What is round this point, near and wider.
  float near=0.0,wide=0.0;
@@ -376,7 +348,7 @@ void main(){
  tone+=(noise(p*.55)-.5)*.025;
  // The pressure across the print: heavier on one side, and in broad patches.
  float press=clamp(.5+.8*dot(vUv-.5,vec2(.8,-.6))+.5*(noise(p*.004)-.5)+.25*(noise(p*.012+7.0)-.5),0.0,1.0);
- float cut=.32+.03*(press-.5);
+ float cut=.25+.025*(press-.5);
  float w=max(fwidth(tone)*.8,.006);
  float fill=1.0-smoothstep(cut-w,cut+w,tone);
  // Ink gathers at the cut edges. Where the pressure was light it thins in a mottle and misses the paper in ragged
@@ -389,7 +361,7 @@ void main(){
  float deposit=fill*(.84+.06*fibre+.1*mix(mottle,1.0,press))*mix(1.0,starved,(1.0-smoothstep(.0,.45,press))*.75*(1.0-rim))+rim*.14;
  // Carved lines and the small dark marks of a face, which the carver keeps.
  // The carved lines: the drawing the carver keeps, faces included (no blots where a mouth's corner is dark).
- float line=max(lineAt(vUv,u,2.0,.02,.05),contour(vUv,u))*(.85+.15*fibre);
+ float line=inked(vUv,u,2.6,.032,.055,.55)*(.9+.1*fibre);
  deposit=max(deposit,line*mix(.7,.95,press));
  vec3 paper=vec3(.985,.965,.90)-.025*(fibre-.5),ink=vec3(.49,.09,.16);
  gl_FragColor=vec4(mix(paper,ink,clamp(deposit,0.0,1.0)),1.0);
@@ -408,7 +380,7 @@ void main(){
  float l=luma(texture2D(tDiffuse,vUv).rgb);
  vec3 paper=vec3(.985,.975,.95)-.035*noise(p*.45);
  // The outline first, heavier on a strong edge, its pressure changing along it; only edges wider than a hair.
- float line=inked(vUv,u,2.0,.016,.05,1.0)*(.75+.25*noise(p*.35));
+ float line=inked(vUv,u,2.6,.028,.055,.65)*(.85+.15*noise(p*.20));
  // Shading in the shadows only, the light left as paper: long strokes along the form, crossed in the darks. (Ink Looks
  // see the picture exposed to a middle grey, so a black shirt arrives at about a quarter.)
  float f=finished(vUv,.35,l),a=flowAngle(vUv,u);
@@ -436,9 +408,10 @@ void main(){
  // Graphite smudged into a soft tone under the strokes, as a mangaka's pencils are: the shadow a grey wash of lead with
  // the paper's tooth in it, the strokes darker over it; graphite grey, never printer's black.
  float tooth=noise(p*1.4)*.5+noise(p*.6)*.5;
- float smudge=(1.0-smoothstep(.12,.46,k))*.42*f*(.8+.2*tooth);
+ float smudge=(1.0-smoothstep(.12,.46,k))*.26*f*(.8+.2*tooth);
  float ink=max(max(line*.95,smudge),shade*mix(.7,.9,1.0-smoothstep(.05,.2,k))*lead);
- gl_FragColor=vec4(mix(vec3(.985,.98,.97),vec3(.29,.29,.3),clamp(ink,0.0,1.0)),1.0);
+ ink=max(ink,(1.0-smoothstep(.10,.30,k))*(.84+.12*tooth));
+ gl_FragColor=vec4(mix(vec3(.985,.98,.97),vec3(.13,.13,.15),clamp(ink,0.0,1.0)),1.0);
 }`;
 // Manga: black ink, screentone and hatching, one bit as printed. The tones are cut from a simplified picture (an
 // artist screens shapes, not every grain): paper, a light screen, a dark screen, the dark screen hatched, solid black.
@@ -470,6 +443,8 @@ void main(){
  float ink=mix(mangaDots(p,.2,6.0)*light,mangaDots(p,.5,6.0),dark);
  ink=max(max(ink,mangaHatch(p,vec2(.7071,-.7071),7.0)*hatched),black);
  // Dots, lines and fills are ink or paper; only their edges are smoothed, never a grey wash under them.
+ float shine=smoothstep(.045,.11,l-wide)*smoothstep(.10,.19,l)*(1.0-smoothstep(.27,.34,l));
+ ink*=1.0-shine*black*.9;
  ink=max(ink,line);
  gl_FragColor=vec4(vec3(1.0-clamp(ink,0.0,1.0)),1.0);
 }`;
@@ -536,7 +511,11 @@ void main(){
  vec3 raw=texture2D(tDiffuse,vUv).rgb;
  vec3 c=raw*.2+ringColour(vUv,4.0*u)*.4+ringColour(vUv,9.0*u)*.4;
  float l=luma(c);
- vec3 col=printInk(clamp(mix(vec3(l),c,1.25),0.0,1.0));
+ vec3 col=printInk(clamp(mix(vec3(l),c,1.15),0.0,1.0));
+ // Flesh is printed with the warm blocks, not the neutral-grey block, when the source itself is warm.
+ float flesh=smoothstep(.04,.12,c.r-c.b)*(1.0-smoothstep(-.04,.02,c.g-c.r))*smoothstep(.23,.48,l);
+ vec3 skin=l<.45?vec3(.54,.35,.23):l<.66?vec3(.78,.57,.44):vec3(.92,.78,.63);
+ col=mix(col,skin,flesh*.8);
  // Bokashi: an even sky (dark at night, pale by day) in the upper picture is printed as a graded band, deep at the top
  // and fading towards the horizon, as Hiroshige's skies and Hasui's night streets are.
  float even=1.0-smoothstep(.03,.1,abs(l-around(vUv,u,10.0)));
@@ -550,7 +529,7 @@ void main(){
  float grain=noise(vec2(p.x*.04,p.y*.9))*.6+noise(p*.5)*.4;
  col*=.94+.08*grain;
  vec2 key=vUv+vec2(.9,-.65)*uTexel*u;
- float e=max(lineAt(key,u,2.0,.018,.05),contour(key,u)*.8);
+ float e=inked(key,u,2.2,.028,.055,.65);
  col=mix(col,vec3(.13,.11,.10),clamp(e,0.0,1.0));
  gl_FragColor=vec4(col,1.0);
 }`;
@@ -647,14 +626,14 @@ void main(){
  vec2 p=vUv*uResolution/u;
  float a=flowAngle(vUv,u)+1.5708;
  vec2 dir=vec2(cos(a),sin(a)),side=vec2(-dir.y,dir.x);
- float S=9.0,L=19.0,W=6.5;
+ float S=12.0,L=28.0,W=9.0;
  vec2 cell=floor(p/S);
  vec3 col=vec3(0.0);float best=-1.0,ridge=0.0;
  for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){
   vec2 c=cell+vec2(float(i),float(j));
   vec2 centre=(c+.5+(vec2(hash(c),hash(c+7.3))-.5)*.9)*S;
   vec2 d=p-centre;
-  float len=L*mix(.75,1.2,hash(c+3.1)),along=dot(d,dir),across=dot(d,side);
+  float len=L*mix(.6,1.5,hash(c+3.1)),along=dot(d,dir),across=dot(d,side);
   float hw=W*.5*mix(.8,1.15,hash(c+5.7))*(1.0-.35*smoothstep(.2,.5,abs(along)/len));
   if(abs(along)<len*.5&&abs(across)<hw){
    float z=hash(c+11.9);
@@ -667,10 +646,10 @@ void main(){
  col=max(col,vec3(.05,.08,.2)*(1.0-smoothstep(.02,.08,luma(col))));
  // The bristles' grooves along the stroke, and the light catching its raised edge.
  float bristle=noise(vec2(dot(p,side)*1.3,dot(p,dir)*.08));
- col*=(.9+.16*bristle)*(1.0+.08*ridge*step(0.0,best));
+ col*=(.96+.08*bristle)*(1.0+.06*ridge*step(0.0,best));
  // Colour lifted, warm in the light, cool in the shade.
  float l=luma(col);
- col=clamp(mix(vec3(l),col,1.3)+vec3(.05,.03,-.05)*(l-.4),0.0,1.0);
+ col=clamp(mix(vec3(l),col,1.12)+vec3(.025,.015,-.025)*(l-.4),0.0,1.0);
  col=mix(col,col*vec3(.75,.85,1.15),(1.0-smoothstep(.1,.4,l))*.5);
  float line=lineAt(vUv,u,2.0,.025,.06)*.75;
  col=mix(col,vec3(.12,.2,.38),line);
@@ -986,14 +965,14 @@ void main(){
  // Exactly two values per colour: the base (the material's own light) and a shadow, cooler and darker, cut hard.
  float value=m*1.14+.09;
  vec3 base=hue*value;base/=max(1.0,max(base.r,max(base.g,base.b)));
- base=mix(vec3(luma(base)),base,1.15);
+ base=mix(vec3(luma(base)),base,.98);
  vec3 shade=base*vec3(.68,.68,.82);
  float d=l-m*.84,w=max(fwidth(d),.004);
  vec3 col=mix(shade,base,smoothstep(-w,w,d));
  // The outline: thick and steady on the silhouettes and the strongest features only, never on texture.
  vec2 wob=(vec2(noise(p*.035),noise(p*.035+9.0))-.5)*uTexel*2.0*u;
  // Found at twice the scale, so a mark a few pixels wide (a wrinkle, a pore) is no outline; shapes are.
- float line=inked(vUv+wob,u*2.0,3.0,.07,.06,.8);
+ float line=inked(vUv+wob,u*2.4,3.0,.085,.07,.45);
  col=mix(col,vec3(.16,.12,.13),smoothstep(.4,.7,line));
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
@@ -1140,12 +1119,21 @@ const PHOTO_EDITS={
  // in an upright photo a person's face, in its upper third (the band fell on a necklace and blurred the face), and a
  // little above the middle in a wide one.
  tilt:[['c=mix(vec3(l),c,1.45);\n c=(c-0.5)*1.12+0.53;','c=mix(vec3(l),c,1.12);\n c=(c-0.5)*1.04+0.53;'],
-  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uFocusY>=0.0?uFocusY:uResolution.y>uResolution.x*1.05?0.66:0.54));']],
+  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uFocusY>=0.0?uFocusY:uResolution.y>uResolution.x*1.05?0.66:0.54));'],
+  ['float radius=smoothstep(0.07,0.42,away)*16.0*u;','float radius=smoothstep(0.04,0.40,away)*24.0*u;'],
+  ['for(int i=1;i<24;i++){\n   float fi=float(i),r=sqrt(fi/24.0)*radius,a=fi*2.39996;',`#ifdef LIGHT
+  const int TAPS=16;
+#else
+  const int TAPS=48;
+#endif
+  for(int i=1;i<TAPS;i++){
+   float fi=float(i),r=sqrt(fi/float(TAPS))*radius,a=fi*2.39996;`]],
  oil:[
   ['col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);','col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.24,0.42,light)*near*.6);'],
   ['col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);','col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.2,0.36,dark)*near*0.6);'],
   ['col=mix(vec3(luma(col)),col,1.35);\n col=(col-0.5)*1.1+0.5;','col=mix(vec3(luma(col)),col,1.15);\n col=mix(vec3(.05,.09,.11),vec3(.97,.95,.88),col);'],
-  ['col*=1.0+thinPaint*((stroke-.5)*.035+(weave-.5)*.016);','col*=1.0+mix(.6,1.0,thinPaint)*((stroke-.5)*.07+(weave-.5)*.025);'],
+  ['float stroke=noise(vec2(q.x*0.035,q.y*0.32));','float stroke=noise(vec2(q.x*0.025,q.y*0.18));'],
+  ['col*=1.0+thinPaint*((stroke-.5)*.035+(weave-.5)*.016);','col*=1.0+mix(.6,1.0,thinPaint)*((stroke-.5)*.12+(weave-.5)*.035);'],
  ],
 };
 /** World's fragment for a Look as GLSL ES 3.00, mixed into its input by uAmount; null for Natural. */

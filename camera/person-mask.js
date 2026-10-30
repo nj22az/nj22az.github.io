@@ -19,7 +19,7 @@ export function cleanPersonMask(values,width,height){
     seen[j]=1;queue[tail++]=j;
    }
   }
-  if(tail<n*.02||strong<tail*.5)continue;
+  if(tail<n*.05||strong<tail*.75)continue;
   kept+=tail;for(let k=0;k<tail;k++)keep[queue[k]]=1;
  }
  if(!kept)return null;
