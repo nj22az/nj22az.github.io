@@ -36,7 +36,7 @@ try{
    const img=new Image();img.src=photo;await img.decode();
    const iw=img.naturalWidth,ih=img.naturalHeight,H=lines,W=Math.round(lines*iw/ih);
    const gl=document.createElement('canvas');gl.width=W;gl.height=H;
-   const engine=createLookEngine(gl,{light}),revision=engine.setSource('photo',img,iw,ih);
+   const engine=createLookEngine(gl,{light});await engine.loadLuts();const revision=engine.setSource('photo',img,iw,ih);
    if(person){
     const {createPersonMasker}=await import('/camera/person-mask.js');
     const masker=createPersonMasker(),mask=await masker.mask(img);

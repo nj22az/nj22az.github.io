@@ -53,3 +53,12 @@ void main(){
  c+=(hash(floor(vUv*uResolution/u))-.5)*.035;
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
+
+export const LUT_LOOKS=Object.freeze({warmSlide:'warm-slide',softNegative:'soft-negative'});
+export const LUT_BODY=`
+uniform highp sampler3D tGrade;
+void main(){
+ vec3 c=clamp(texture2D(tDiffuse,vUv).rgb,0.0,1.0);
+ // Texel-centre addressing preserves black/white endpoints; hardware interpolates all three colour axes.
+ gl_FragColor=vec4(texture(tGrade,c*(31.0/32.0)+vec3(.5/32.0)).rgb,1.0);
+}`;

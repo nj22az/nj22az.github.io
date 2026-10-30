@@ -14,12 +14,14 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
-import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY} from './photo-bodies.js?v=20261030e';
+import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY,LUT_BODY,LUT_LOOKS} from './photo-bodies.js?v=20261030e';
 
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
 // Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
 // dots, a blueprint and night vision.
 export const LOOKS=Object.freeze({...WORLD_LOOKS,
+ warmSlide:Object.freeze({label:'Warm slide film',short:'Warm slide',hint:'A warm, clear slide-film colour grade with firmer shadows.'}),
+ softNegative:Object.freeze({label:'Soft negative film',short:'Soft negative',hint:'A softer portrait-film grade with gentle blacks and warm highlights.'}),
  disposable:Object.freeze({label:'Disposable camera',short:'Disposable',hint:'A cheap 1990s lens: curved edges, colour fringes and soft corners. Date uses the camera setting.'}),
  colourFilm:Object.freeze({label:'Colour film',short:'Colour film',hint:'Quiet grain and warm halation around bright lights.'}),
  adventureInk:Object.freeze({label:'Adventure Ink',short:'Adventure',hint:'Bright cel colours and clean manga-inspired ink.'}),
@@ -42,7 +44,7 @@ export const LOOKS=Object.freeze({...WORLD_LOOKS,
  sixtyFourBit:Object.freeze({label:'64-bit',short:'64-bit',hint:'The cartridge console of 1996: small textures filtered smooth, soft haze and a fine dither.'}),
 });
 /** The World Look whose little house stands in for a camera-only Look until its live thumbnail is drawn. */
-export const LOOK_STANDIN=Object.freeze({disposable:'instant',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
+export const LOOK_STANDIN=Object.freeze({warmSlide:'sepia',softNegative:'sepia',disposable:'sepia',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
  colourHandheld:'snes',redVisor:'riso',risoPinkBlue:'riso',risoRedNavy:'riso',risoBlackPink:'riso',risoThree:'riso',eightBit:'snes',thirtyTwoBit:'snes',sixtyFourBit:'tilt'});
 
 
@@ -1074,7 +1076,7 @@ ${i===n-1?`  k=max(k,lineAt(uv,u,1.8,.02,.04)*.95);
 /** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon,
  * Stamp, Line drawing, Pencil manga, Manga, Sketchbook, Woodblock print, Pocket and Watercolour keep World's names and
  * swatches but draw a photograph with these, made for one. */
-const CAMERA_BODIES={disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
+const CAMERA_BODIES={warmSlide:LUT_BODY,softNegative:LUT_BODY,disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
  colourHandheld:HANDHELD_COLOUR_BODY,eightBit:EIGHT_BIT_BODY,
  ...Object.fromEntries(Object.entries(RISO_INKS).map(([name,inks])=>[name,risoBody(inks)])),thirtyTwoBit:THIRTY_TWO_BIT_BODY,sixtyFourBit:SIXTY_FOUR_BIT_BODY,redVisor:RED_VISOR_BODY};
 
@@ -1292,6 +1294,23 @@ export function createLookEngine(canvas,{light=false}={}){
  const triangle=gl.createBuffer();
  gl.bindBuffer(gl.ARRAY_BUFFER,triangle);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
  const programs=new Map(),sources=new Map(),targets=new Map();
+ const grades=new Map();let gradePromise,gradeError=false;
+ function loadLuts(){
+  return gradePromise??=Promise.all(Object.entries(LUT_LOOKS).map(async([name,file])=>{
+   const image=new Image();image.src=new URL(`./luts/${file}.png?v=20261030e`,import.meta.url).href;await image.decode();
+   if(image.naturalWidth!==1024||image.naturalHeight!==32)throw new Error('Invalid film grade');
+   const c=document.createElement('canvas');c.width=1024;c.height=32;const ctx=c.getContext('2d');ctx.drawImage(image,0,0);
+   const strip=ctx.getImageData(0,0,1024,32).data,data=new Uint8Array(32*32*32*4);
+   for(let b=0;b<32;b++)for(let g=0;g<32;g++)for(let r=0;r<32;r++){
+    const from=(g*1024+b*32+r)*4,to=((b*32+g)*32+r)*4;data.set(strip.subarray(from,from+4),to);
+   }
+   c.width=c.height=0;if(gl.isContextLost())return;
+   const t=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_3D,t);
+   gl.texParameteri(gl.TEXTURE_3D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_3D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+   for(const axis of [gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T,gl.TEXTURE_WRAP_R])gl.texParameteri(gl.TEXTURE_3D,axis,gl.CLAMP_TO_EDGE);
+   gl.texImage3D(gl.TEXTURE_3D,0,gl.RGBA8,32,32,32,0,gl.RGBA,gl.UNSIGNED_BYTE,data);gl.activeTexture(gl.TEXTURE0);grades.set(name,t);
+  })).catch(error=>{gradeError=true;throw error;});
+ }
 
  function shader(type,text){const s=gl.createShader(type);gl.shaderSource(s,text);gl.compileShader(s);return s;}
  function build(key,fragment){
@@ -1430,6 +1449,7 @@ export function createLookEngine(canvas,{light=false}={}){
    f1(u.uPersonMirror,person.mirror?1:0);f1(u.uPersonTrick,TRICKS.indexOf(person.trick||'none'));
    gl.activeTexture(gl.TEXTURE0);
   }
+  if(u.tGrade){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_3D,grades.get(person.look));gl.uniform1i(u.tGrade,3);gl.activeTexture(gl.TEXTURE0);}
  };
 
  /**
@@ -1440,6 +1460,7 @@ export function createLookEngine(canvas,{light=false}={}){
  function run(recipe,{source,crop={x:0,y:0,w:1,h:1},mirror=false,width,height,output=null,viewport,targetName='view',full=false,tile=0,layers=recipe.layers,expose=false}){
   if(!sources.has(source)||gl.isContextLost())return false;
   const active=layers.filter(l=>l.look!=='none'&&l.amount>0);
+  if(active.some(l=>LUT_LOOKS[l.look]&&!grades.has(l.look))){if(full)throw new Error('Film grades are not ready');return false;}
   const entries=active.map(l=>full?look(l.look,true):(ready(request(l.look))?look(l.look):undefined));
   if(entries.some(e=>e===undefined))return false;
   if(full&&entries.some(e=>!e))throw new Error(`${active[entries.indexOf(null)].look} cannot be drawn on this device`);
@@ -1453,18 +1474,18 @@ export function createLookEngine(canvas,{light=false}={}){
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
   steps.forEach(({layer,entry},i)=>{
    const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick}),tile);
+   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick,look:layer.look}),tile);
    read=1-read;
   });
   return intoPair?p.items[read].f:true;
  }
 
  return {
-  gl,maxTexture,
+  gl,maxTexture,loadLuts,
   setSource,setPersonMask,dropSource,hasSource:name=>sources.has(name),
   sourceSize:name=>{const s=sources.get(name);return s?{width:s.width,height:s.height}:null;},
   /** Starts compiling Looks in the background. */
-  warm(names){if(parallel)for(const n of names)if(n!=='none')request(n);},
+  warm(names){if(names.some(n=>LUT_LOOKS[n]))loadLuts().catch(()=>{});if(parallel)for(const n of names)if(n!=='none')request(n);},
   isReady:name=>name==='none'||ready(request(name)),
   /** Draws a recipe on the canvas at the canvas's own size. */
   draw(recipe,options){
@@ -1490,12 +1511,13 @@ export function createLookEngine(canvas,{light=false}={}){
    let budget=parallel?Infinity:3;
    names.forEach((name,i)=>{
     if(name==='none'){const copy=fixed('copy',COPY);if(copy)pass(copy,base.items[0].t,atlas.items[0].f,[i*size,0,size,size]);return;}
+    if(LUT_LOOKS[name]&&!grades.has(name)){missing.push(name);loadLuts().catch(()=>{});return;}
     const e=programs.get(lookKey(name,false));
     if(!e&&budget<=0){missing.push(name);return;}
     if(!e)budget--;
     if(!ready(request(name))){missing.push(name);return;}
     const entry=look(name);if(!entry){missing.push(name);return;}
-    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick}));
+    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick,look:name}));
    });
    const pixels=new Uint8Array(w*h*4);
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
@@ -1514,7 +1536,7 @@ export function createLookEngine(canvas,{light=false}={}){
     return {width,height,data:flipRows(pixels,width,height)};
    }finally{release('export');}
   },
-  failed:name=>!!programs.get(lookKey(name,false))?.failed,
+  failed:name=>!!programs.get(lookKey(name,false))?.failed||!!(LUT_LOOKS[name]&&gradeError),
   lost:()=>gl.isContextLost(),
  };
 }

@@ -90,7 +90,7 @@ function ensureEditPerson(){
  return e.personPromise;
 }
 function startEngine(){
- try{engine=createLookEngine(canvas,{light:coarse});engine.warm(LOOK_NAMES);return true;}
+ try{engine=createLookEngine(canvas,{light:coarse});engine.warm(LOOK_NAMES);engine.loadLuts().then(()=>{refreshThumbs(true);invalidate();}).catch(()=>{toast('Film grades could not load');});return true;}
  catch{engine=null;return false;}
 }
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();setShutter('off');$('saveEdit').disabled=true;toast('Graphics restarted');});
@@ -116,7 +116,7 @@ const mixLabel=recipe=>recipe.layers.map(l=>lookLabel(l.look)).join(' + ');
  */
 const LOOK_GROUPS=(()=>{
  const groups=[
-  {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','colourFilm','disposable','tilt','nightVision']},
+  {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','colourFilm','disposable','warmSlide','softNegative','tilt','nightVision']},
   {id:'games',label:'Games',looks:['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit']},
   {id:'80s',label:'80s',looks:['crt','camcorder']},
   {id:'drawn',label:'Drawn',looks:['lines','sketchbook','crayon','pencilManga','manga','flat','adventureInk','halftone']},
