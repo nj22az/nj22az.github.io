@@ -238,6 +238,17 @@ all the paint; no saturation burn), and the camera refuses to start if World cha
 line finder sees a point a little soft (no line for a hair's gap or a grain of granite) and does not draw a light,
 thin mark inside a bright area (teeth); the shared hatching follows the picture's form and stays in the shadows.
 
+Round two (after the owner's "Push then work the rest", the same day): **Cartoon** and **Adventure Ink** are cel builds
+(`PHOTO_CEL`: an edge-keeping material colour, a base and one hard shadow per material, Adventure Ink's small highlight,
+a brush-pen outline thick for Cartoon and fine for Adventure Ink); **Sepia** (blue-sensitive plate, chocolate blacks,
+a portrait lens's soft fall-off, a faded album border), **Instant film** (soft, no grain, the developer uneven at the
+bottom edge, no leak), **Blueprint** (a brushed coat with a bare-paper margin), **Old TV** (bright, a smooth rounded
+screen, composite softness, bloom) and **16-bit** (material ramps in 15-bit colour) are the camera's own; Crayon's
+strokes are a grain streaked along the hand; Sketchbook leaves a ragged paper margin; 32-bit's mesh tilts enough to
+kink; Miniature's band sits on an upright photo's upper third. Every line Look draws through `inked()`: the lines and
+contours, except a mark among bright, little-coloured neighbours lighter than their surroundings, so a row of teeth is
+one white shape.
+
 ## Erase
 
 The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint

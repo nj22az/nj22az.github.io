@@ -41,64 +41,31 @@ export const LOOKS=Object.freeze({...WORLD_LOOKS,
 export const LOOK_STANDIN=Object.freeze({adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
  colourHandheld:'snes',redVisor:'riso',risoPinkBlue:'riso',risoRedNavy:'riso',risoBlackPink:'riso',risoThree:'riso',eightBit:'snes',thirtyTwoBit:'snes',sixtyFourBit:'tilt'});
 
-// Clean coloured-comic panels: preserve the photo's hue, group the light into five gentle cel bands, and keep small
-// dark details (especially eyes) as well as colour boundaries. No copied characters, art or shader code is used.
-const ADVENTURE_BODY=`
-// Smooth small photo texture while keeping strong boundaries. A five-tap, edge-aware brush makes a more legible
-// colour cel than posterising the original pixel noise. Five taps per probe keeps the live-camera cost bounded.
-vec3 adventureSmooth(vec2 p,float radius){
- vec3 c=texture2D(tDiffuse,p).rgb;
- vec2 d=uTexel*radius;
- vec3 a=texture2D(tDiffuse,p+vec2(d.x,0.0)).rgb;
- vec3 b=texture2D(tDiffuse,p-vec2(d.x,0.0)).rgb;
- vec3 e=texture2D(tDiffuse,p+vec2(0.0,d.y)).rgb;
- vec3 f=texture2D(tDiffuse,p-vec2(0.0,d.y)).rgb;
- vec3 da=a-c,db=b-c,de=e-c,df=f-c;
- float wa=exp(-dot(da,da)*16.0),wb=exp(-dot(db,db)*16.0);
- float we=exp(-dot(de,de)*16.0),wf=exp(-dot(df,df)*16.0);
- return (c+a*wa+b*wb+e*we+f*wf)/(1.0+wa+wb+we+wf);
-}
-void main(){
- float u=unit();
- vec3 orig=texture2D(tDiffuse,vUv).rgb;
- vec3 source=adventureSmooth(vUv,2.1*u);
- float l=luma(source);
- float band=.14+.15*smoothstep(.18,.25,l)+.19*smoothstep(.36,.43,l)
-   +.21*smoothstep(.57,.64,l)+.18*smoothstep(.77,.84,l);
- // A shared gain keeps skin and strong colours in hue; gentle transitions prevent speckles near a tone boundary.
- float target=mix(l,band,.68);
- vec3 col=source*(target/max(l,.035));
- col/=max(1.0,max(col.r,max(col.g,col.b)));
- col=clamp(mix(vec3(luma(col)),col,1.11)*1.04,0.0,1.0);
- // Ink only broad, stable differences between smoothed regions, not tiny photo texture.
- vec2 t=uTexel*2.0*u;
- vec3 gx=adventureSmooth(vUv+vec2(t.x,0.0),2.1*u)-adventureSmooth(vUv-vec2(t.x,0.0),2.1*u);
- vec3 gy=adventureSmooth(vUv+vec2(0.0,t.y),2.1*u)-adventureSmooth(vUv-vec2(0.0,t.y),2.1*u);
- float strength=length(vec2(length(gx),length(gy)))*.577;
- float ink=smoothstep(.14,.38,strength)*.72;
- // Restore very dark marks only, preserving eyes and thin lettering without outlining every bit of texture.
- float dark=1.0-smoothstep(.025,.15,luma(orig));
- col=mix(col,orig,dark*.80);
- col=mix(col,vec3(.09,.095,.12),ink);
- gl_FragColor=vec4(col,1.0);
-}`;
 
 // An instant print: a gentle S curve, then a matte fade (blacks lifted, whites softened), cool shadows and warm
 // highlights, a leak of orange light from the top right corner, soft corners and a fine grain.
 const INSTANT_BODY=`
 void main(){
  float u=unit();
- vec3 c=texture2D(tDiffuse,vUv).rgb;
+ vec2 p=vUv*uResolution/u;
+ // Instant film is soft and has no grain: the picture a little blurred, its dyes a gentle mottle.
+ vec3 c=texture2D(tDiffuse,vUv).rgb*.4;
+ for(int i=0;i<6;i++){float a=float(i)*1.0472;c+=texture2D(tDiffuse,vUv+vec2(cos(a),sin(a))*uTexel*1.6*u).rgb*.1;}
  float l=luma(c);
- c=mix(vec3(l),c,.78);
- c=mix(c,c*c*(3.0-2.0*c),.45);
- c=mix(vec3(.16,.13,.15),vec3(.97,.91,.78),c);
- c+=vec3(.06,.025,-.05)*smoothstep(.4,1.0,l)+vec3(-.03,.01,.05)*(1.0-smoothstep(0.0,.45,l));
- vec2 q=(vUv-vec2(1.02,1.02))*vec2(1.5,1.0);
- c+=vec3(.75,.30,.08)*exp(-dot(q,q)*3.2)*.7;
+ c=mix(vec3(l),c,.8);
+ c=mix(c,c*c*(3.0-2.0*c),.4);
+ // The matte fade: blacks lifted to a teal-black, whites softened to cream; warm highlights, cool shadows.
+ c=mix(vec3(.12,.15,.15),vec3(.97,.92,.8),c);
+ c+=vec3(.05,.02,-.04)*smoothstep(.45,1.0,l)+vec3(-.03,.01,.02)*(1.0-smoothstep(0.0,.4,l));
+ c*=1.0+(noise(p*.012)-.5)*.06;
+ // The developer spreads from the pod at the bottom edge and thins out: the picture there develops unevenly, a warm
+ // pale band with a ragged top, and the very edges a little lighter. No light leaks: the film is sealed.
+ float edge=min(min(vUv.x,1.0-vUv.x),1.0-vUv.y);
+ float bottom=vUv.y+(noise(vec2(p.x*.02,3.0))-.5)*.035;
+ c=mix(c,vec3(.95,.85,.68),(1.0-smoothstep(.0,.06,bottom))*.55);
+ c=mix(c,vec3(.93,.9,.84),(1.0-smoothstep(.0,.025,edge))*.35);
  vec2 v=vUv-.5;
- c*=1.0-dot(v,v)*.8;
- c+=(hash(floor(vUv*uResolution/(1.4*u)))-.5)*.06;
+ c*=1.0-dot(v,v)*.5;
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
 // A home video tape: the picture split into brightness and colour as a VHS recorder does, the colour smeared and late
@@ -131,12 +98,20 @@ void main(){
 const CYANOTYPE_BODY=`
 void main(){
  float u=unit();
+ vec2 p=vUv*uResolution/u;
  float l=pow(smoothstep(.04,.96,luma(texture2D(tDiffuse,vUv).rgb)),.85);
- vec3 deep=vec3(.03,.17,.36),mid=vec3(.13,.39,.62),paper=vec3(.90,.94,.95);
+ // The sensitiser brushed on by hand: its edge ragged with the brush's strokes, a margin of bare paper outside it, and
+ // the coat uneven inside it, thicker in streaks along the brush.
+ float brush=noise(vec2(p.x*.004,p.y*.06))*.6+noise(vec2(p.x*.02,p.y*.2))*.4;
+ vec2 e=min(vUv,1.0-vUv)*vec2(uResolution.x/uResolution.y,1.0);
+ float coat=smoothstep(.0,.025,min(e.x,e.y)-.018-.022*brush);
+ vec3 deep=vec3(.03,.16,.36),mid=vec3(.13,.39,.62),paper=vec3(.95,.95,.92);
  vec3 col=l<.5?mix(deep,mid,l*2.0):mix(mid,paper,(l-.5)*2.0);
- col+=(noise(vUv*uResolution/(3.0*u))-.5)*.05;
- vec2 v=vUv-.5;
- col*=1.0-dot(v,v)*.35;
+ col=mix(col,col*.93,(brush-.5)*.6);
+ // The paper's fibre in the blue, and the bare paper warm and clear where it was washed out.
+ float fibre=noise(p*.8)*.5+noise(vec2(p.x*2.2,p.y*.4))*.5;
+ col*=1.0+(fibre-.5)*.06;
+ col=mix(vec3(.96,.95,.91)+(fibre-.5)*.03,col,coat);
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
 // Night vision: the picture's light amplified into green phosphor, the bright parts glowing out a little, grain and
@@ -226,14 +201,55 @@ float inkLine(float l,float m,float threshold,float soft){return smoothstep(thre
 // A line at uv: the point itself is seen a little soft (a gap between teeth, a pore or a grain of granite is narrower than
 // a pen line and is not drawn), against the rings round it at radius r.
 float lineAt(vec2 uv,float u,float r,float threshold,float soft){
- float c=luma(texture2D(tDiffuse,uv).rgb)*.4+ringLuma(uv,1.4*u)*.6;
+ float c=luma(texture2D(tDiffuse,uv).rgb)*.3+ringLuma(uv,1.7*u)*.7;
  // Teeth are one white shape: a light, thin mark inside a bright area is not drawn (an eye or a lip line is darker).
- float bright=smoothstep(.6,.78,ringLuma(uv,4.0*u))*smoothstep(.3,.45,c);
+ float bright=smoothstep(.46,.64,ringLuma(uv,4.0*u))*smoothstep(.24,.38,c);
  return inkLine(c,around(uv,u,r),threshold,soft)*(1.0-.85*bright);
 }
 // A contour where colours meet strongly, on both sides, so a silhouette is kept where the tone of one side takes over
 // (a neckline against a black top, a pale cheek against a pale wall).
 float contour(vec2 uv,float u){return smoothstep(.45,.85,edges(uv,1.2*u,1.0));}
+// The drawing of a face as an inker draws it: the lines and contours, except inside a row of teeth. Where the brightest
+// thing a few pixels round is white with little colour (a tooth) and the mark itself is not truly dark (the shaded gap
+// between two teeth, not the dark of the mouth or a lash), nothing is drawn, so the teeth are one white shape.
+float inked(vec2 uv,float u,float r,float threshold,float soft,float contourAmount){
+ float line=max(lineAt(uv,u,r,threshold,soft),contour(uv,u)*contourAmount);
+ vec3 brightest=vec3(0.0);
+ for(int k=0;k<8;k++){float a=float(k)*.785398;vec3 c=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*3.0*u).rgb;if(luma(c)>luma(brightest))brightest=c;}
+ // A tooth is judged against its surroundings (warm light tints teeth too, and an exposed picture lightens skin): far
+ // less coloured than the skin and lips round it, and lighter than them.
+ vec3 round=ringColour(uv,8.0*u);
+ float chroma=(max(brightest.r,max(brightest.g,brightest.b))-min(brightest.r,min(brightest.g,brightest.b)))/max(luma(brightest),.05);
+ float roundChroma=(max(round.r,max(round.g,round.b))-min(round.r,min(round.g,round.b)))/max(luma(round),.05);
+ float tooth=smoothstep(.34,.5,luma(brightest))*(1.0-smoothstep(.62,.9,chroma/max(roundChroma,.05)))
+  *smoothstep(.0,.06,luma(brightest)-luma(round));
+ float here=luma(texture2D(tDiffuse,uv).rgb);
+ return line*(1.0-.9*tooth*smoothstep(.14,.24,here));
+}
+`;
+// Cel colour for a photograph, as an anime colour designer sets a character: each material one flat base colour and
+// one hard shadow (a cooler, darker version of the same colour), the boundary anti-aliased, the photo's texture gone.
+// The base is the colour round a point among pixels like it (an edge-keeping average on two rings); the material's
+// own lightness, wider still, decides what is lit and what is in shadow.
+const PHOTO_CEL=`
+vec3 celSmooth(vec2 uv,float r,vec3 c0,float k){
+ vec3 s=c0;float w=1.0;
+ for(int i=0;i<8;i++){float a=float(i)*.785398+.2;vec3 c=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*r).rgb;vec3 d=c-c0;float e=exp(-dot(d,d)*k);s+=c*e;w+=e;}
+ return s/w;
+}
+vec3 celBase(vec2 uv,float u,out float material){
+ vec3 c=texture2D(tDiffuse,uv).rgb;
+ vec3 b=celSmooth(uv,2.5*u,c,40.0);
+#ifndef LIGHT
+ b=celSmooth(uv,6.0*u,b,30.0);
+#endif
+ vec3 m=celSmooth(uv,13.0*u,b,14.0);
+#ifndef LIGHT
+ m=celSmooth(uv,26.0*u,m,10.0);
+#endif
+ material=luma(m);
+ return b;
+}
 `;
 // Pencil crayon for a photograph (the owner, 30 October 2026: "Proceed"). World's Crayon lays its strokes along the
 // town's walls and floors, from depth and normals a photo does not have; on a photo it fell back to two fixed diagonal
@@ -243,6 +259,17 @@ float contour(vec2 uv,float u){return smoothstep(.45,.85,edges(uv,1.2*u,1.0));}
 // between the strokes, as much of it as the tone needs, and a darker pencil crossing the shadows. The edges of the
 // picture are left lighter, as a drawing is finished in the middle first.
 const CRAYON_BODY=`${PHOTO_STROKES}
+// Coloured pencil as it really lies on paper: not lanes of separate strokes but a grain streaked along the direction
+// of the hand, the wax catching the tooth's peaks first and filling the hollows as it is pressed harder, with the
+// strokes' ends showing as faint ridges.
+float pencilGrain(vec2 p,float a,float cover,float seed,float tooth){
+ vec2 d=vec2(cos(a),sin(a));
+ vec2 r=vec2(dot(p,d),dot(p,vec2(-d.y,d.x)));
+ float streak=noise(vec2(r.x*.06,r.y*.75)+seed)*.42+noise(vec2(r.x*.025,r.y*.28)+seed*2.0)*.3+tooth*.18;
+ float ends=pencilLane(p,d,6.0,seed)*.22;
+ float edge=1.0-cover*.82;
+ return smoothstep(edge-.16,edge+.16,streak+ends+.02)*step(.003,cover);
+}
 void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
@@ -268,18 +295,16 @@ void main(){
  float need=max(absorb.r,max(absorb.g,absorb.b));
  vec3 pigment=1.0-absorb/max(need,.06)*.72;
  float cover1=min(need/.72,.78)*finish;
- float m1=pencilLayer(p,a,6.5,cover1,1.0);
- m1*=mix(.3+.7*smoothstep(.2,.75,tooth),1.0,cover1*cover1);
+ float m1=pencilGrain(p,a,cover1,1.0,tooth);
  vec3 col=paper*mix(vec3(1.0),pigment,m1);
  vec3 shade=mix(mix(vec3(1.0),hue,sat),vec3(.92,.9,1.0),.3*(1.0-sat))*mix(.13,.45,smoothstep(.04,.4,l));
  float after=luma(paper*mix(vec3(1.0),pigment,cover1));
  float cover2=clamp((after-l)/max(after-luma(shade*paper),.05),0.0,mix(.9,.78,smoothstep(.06,.2,l)))*finish;
- float m2=pencilLayer(p,a+1.1,5.5,cover2,40.0);
- m2*=mix(.25+.75*smoothstep(.25,.8,tooth),1.0,cover2*cover2);
+ float m2=pencilGrain(p,a+1.1,cover2,40.0,tooth);
  col*=mix(vec3(1.0),shade,m2);
  // The darkest parts are burnished: pressed hard with the dark pencil until the strokes close up, the tooth still
  // catching a few flecks of paper.
- float burnish=(1.0-smoothstep(.05,.2,l))*finish*mix(.7,.95,smoothstep(.2,.6,tooth));
+ float burnish=(1.0-smoothstep(.03,.14,l))*finish*mix(.7,.95,smoothstep(.2,.6,tooth));
  col=mix(col,paper*shade*1.15,burnish);
  // Lines: only the clear edges, in the dark pencil, wobbling a little as a hand-drawn line does.
  vec2 wobble=(vec2(noise(p*.05),noise(p*.05+17.0))-.5)*uTexel*2.5*u;
@@ -354,7 +379,7 @@ void main(){
  float l=luma(texture2D(tDiffuse,vUv).rgb);
  vec3 paper=vec3(.985,.975,.95)-.035*noise(p*.45);
  // The outline first, heavier on a strong edge, its pressure changing along it; only edges wider than a hair.
- float line=max(lineAt(vUv,u,2.0,.016,.05),contour(vUv,u))*(.75+.25*noise(p*.35));
+ float line=inked(vUv,u,2.0,.016,.05,1.0)*(.75+.25*noise(p*.35));
  // Shading in the shadows only, the light left as paper: long strokes along the form, crossed in the darks. (Ink Looks
  // see the picture exposed to a middle grey, so a black shirt arrives at about a quarter.)
  float f=finished(vUv,.35,l),a=flowAngle(vUv,u);
@@ -370,7 +395,7 @@ void main(){
  vec2 p=vUv*uResolution/u;
  float l=luma(texture2D(tDiffuse,vUv).rgb);
  float m=around(vUv,u,1.8);
- float line=max(lineAt(vUv,u,1.8,.016,.035),contour(vUv,u))*(.82+.18*noise(p*.9));
+ float line=inked(vUv,u,1.8,.016,.035,1.0)*(.82+.18*noise(p*.9));
  // The deepest values are the densest strokes, not a fill: three layers along the form, crossing, pressed harder the
  // darker it is, until they close up in the blacks with the paper's tooth still showing.
  float f=finished(vUv,.4,l),a=flowAngle(vUv,u),k=mix(l,m,.5);
@@ -397,7 +422,7 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  float l=luma(texture2D(tDiffuse,vUv).rgb);
- float line=max(lineAt(vUv,u,1.8,.018,.035),contour(vUv,u));
+ float line=inked(vUv,u,1.8,.018,.035,1.0);
  // The tones are given to masses, not to the photo's grain: a surface is one tone.
 #ifdef LIGHT
  float wide=ringLuma(vUv,5.0*u);
@@ -439,13 +464,17 @@ void main(){
  // A darker rim where a layer dried, and the pigment settling in the paper's grain.
  float rim=(1.0-smoothstep(.0,.04,.50-loose))*a2+(1.0-smoothstep(.0,.04,.28-loose))*a3;
  float grain=1.0-(1.0-noise(p*.6)*noise(p*.23+5.0))*.08*a1;
- vec3 col=paper*mix(vec3(1.0),wash,a1)*grain*(1.0-.07*clamp(rim,0.0,1.0));
+ // The wash stops short of the page's edges in a ragged line, as a sketch on site leaves the margins as paper.
+ vec2 e=min(vUv,1.0-vUv)*vec2(uResolution.x/uResolution.y,1.0);
+ float page=smoothstep(.0,.025,min(e.x,e.y)-.02-.035*noise(p*.01+4.0));
+ vec3 col=paper*mix(vec3(1.0),wash,a1*page)*grain*(1.0-.07*clamp(rim,0.0,1.0)*page);
  // Graphite does the drawing: lines broken along their length and porous, and the pencil shading the darks.
  float f=finished(vUv,.4,l),a=flowAngle(vUv,u);
  float line=lineAt(vUv,u,2.0,.016,.05)*mix(.45,1.0,smoothstep(.25,.5,noise(p*.06+3.0)))*(.7+.3*noise(p*.9));
  float shade=pencilLayer(p,a,4.2,(1.0-smoothstep(.1,.3,l))*.7*f,4.0);
  shade=max(shade,pencilLayer(p,a+1.1,3.8,(1.0-smoothstep(.04,.18,l))*.7*f,7.0));
- col=mix(col,vec3(.24,.22,.23),clamp(max(line,shade*.6),0.0,1.0)*.9);
+ // Past the wash's edge the pencil trails off: a few lines, no shading.
+ col=mix(col,vec3(.24,.22,.23),clamp(max(line*mix(.45,1.0,page),shade*.6*page),0.0,1.0)*.9);
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
 // Woodblock print for a photograph. World's print gives each pixel the nearest of ten inks, judged mostly by lightness,
@@ -523,6 +552,52 @@ void main(){
  float grain=noise(p*.42)*.45+noise(p*.85)*.35+hash(floor(p*.7))*.2-.5;
  x+=grain*(.03+.17*x*(1.0-x)*4.0*.5);
  gl_FragColor=vec4(vec3(clamp(x,0.0,1.0)),1.0);
+}`;
+// Sepia, judged as a Meiji studio portrait photographer: the plates were blue-sensitive (a blue cloth prints pale, a
+// brown face and red lips dark), the print is a toned silver print with its blacks a low chocolate that keeps some
+// separation, and a portrait lens softens and darkens towards the edges.
+const SEPIA_BODY=`${PHOTO_LINES}
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ vec2 v=vUv-.5;
+ float soft=smoothstep(.15,.55,length(v));
+ vec3 c=mix(texture2D(tDiffuse,vUv).rgb,ringColour(vUv,2.5*u),soft*.8);
+ float l=clamp(dot(c,vec3(.12,.28,.6))*1.15+.02,0.0,1.0);
+ l=clamp((l-.48)*1.08+.5,0.0,1.0);
+ vec3 shadow=vec3(.2,.13,.09),mid=vec3(.6,.43,.28),paper=vec3(.96,.91,.8);
+ vec3 col=l<.5?mix(shadow,mid,smoothstep(.0,.5,l)):mix(mid,paper,smoothstep(.5,1.0,l));
+ col*=1.0-dot(v,v)*.9;
+ // The album print faded at its borders, and the paper's own fibre.
+ vec2 e=min(vUv,1.0-vUv);
+ col=mix(col,paper*.97,(1.0-smoothstep(.0,.05,min(e.x,e.y)))*.35);
+ col*=1.0+(noise(p*.7)-.5)*.03;
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}`;
+// Old TV, judged as a family watching a Shōwa-era set: a bright, glowing picture on a curved tube with strongly rounded
+// corners and a smooth edge, the composite signal soft along each line, scanlines that widen where the picture is
+// bright, and lights that bloom.
+const CRT_BODY=`${PHOTO_LINES}
+void main(){
+ float u=unit();
+ vec2 q=vUv*2.0-1.0;
+ q*=1.0+dot(q,q)*vec2(.035,.05);
+ vec2 uv=q*.5+.5;
+ vec2 a=abs(q)-vec2(.86,.8);
+ float box=length(max(a,0.0))-.14+min(max(a.x,a.y),0.0);
+ float screen=1.0-smoothstep(-.012,.004,box);
+ vec2 h=vec2(uTexel.x*2.2*u,0.0);
+ vec3 c=texture2D(tDiffuse,uv).rgb*.4+(texture2D(tDiffuse,uv+h).rgb+texture2D(tDiffuse,uv-h).rgb)*.22+texture2D(tDiffuse,uv-h*2.5).rgb*.16;
+ float fringe=dot(q,q)*1.2*uTexel.x;
+ c.r=mix(c.r,texture2D(tDiffuse,uv+vec2(fringe,0.0)).r,.6);c.b=mix(c.b,texture2D(tDiffuse,uv-vec2(fringe,0.0)).b,.6);
+ c+=max(vec3(0.0),ringColour(uv,6.0*u)-.65)*.6;
+ float lines=uResolution.y/max(2.0,floor(uResolution.y/270.0+.5));
+ float y=fract(uv.y*lines),bright=luma(c);
+ float scan=mix(.62,1.0,smoothstep(.5-.35*bright-.12,.5,1.0-abs(y-.5)*2.0+.0));
+ c*=scan*1.28;
+ vec2 v=uv*(1.0-uv.yx);
+ c*=pow(clamp(v.x*v.y*20.0,0.0,1.0),.12);
+ gl_FragColor=vec4(clamp(c,0.0,1.0)*screen,1.0);
 }`;
 // Heavy brush for a photograph, after Van Gogh: distinct dabs of loaded paint, each one colour, laid along the form
 // (round a hat's cone, down a braid), overlapping in a random order, with the bristles' ridges in them and gaps of the
@@ -602,6 +677,43 @@ vec3 cellColour(vec2 centre,vec2 size){
   +texture2D(tDiffuse,centre+vec2(q.x,-q.y)).rgb+texture2D(tDiffuse,centre+vec2(-q.x,q.y)).rgb)*.25;
 }
 `;
+// 16-bit, judged as Super Famicom pixel artists: 15-bit colour in palettes of shades per material, each a five-step
+// ramp from dark to light (skin, wood, foliage, grass, sky, water, stone grey, red, violet, gold), a pixel taking its
+// colour's ramp and the nearest step, with a light ordered dither and a dark outline at the strongest edges.
+const SNES_BODY=`${CONSOLE_GRID}
+vec3 snesRamp(int r,float t){
+ vec3 dark,light;
+ if(r==0){dark=vec3(.36,.18,.14);light=vec3(1.0,.86,.72);}
+ else if(r==1){dark=vec3(.24,.13,.08);light=vec3(.86,.6,.36);}
+ else if(r==2){dark=vec3(.06,.18,.12);light=vec3(.62,.84,.4);}
+ else if(r==3){dark=vec3(.08,.12,.32);light=vec3(.7,.86,1.0);}
+ else if(r==4){dark=vec3(.04,.18,.26);light=vec3(.5,.84,.86);}
+ else if(r==5){dark=vec3(.1,.1,.14);light=vec3(.96,.96,.94);}
+ else if(r==6){dark=vec3(.32,.04,.08);light=vec3(1.0,.5,.42);}
+ else if(r==7){dark=vec3(.18,.08,.3);light=vec3(.94,.6,.98);}
+ else {dark=vec3(.3,.18,.02);light=vec3(1.0,.94,.5);}
+ vec3 mid=r==5?vec3(.52,.52,.56):r==0?vec3(.86,.56,.42):r==1?vec3(.6,.36,.2):r==2?vec3(.24,.52,.26):r==3?vec3(.24,.42,.8)
+  :r==4?vec3(.12,.5,.6):r==6?vec3(.86,.16,.16):r==7?vec3(.58,.3,.78):vec3(.9,.66,.12);
+ return t<.5?mix(dark,mid,t*2.0):mix(mid,light,t*2.0-1.0);
+}
+void main(){
+ float px=max(2.0,floor(uResolution.y/224.0+.5));
+ vec2 cell=floor(vUv*uResolution/px),size=vec2(px)/uResolution;
+ vec3 c=cellColour((cell+.5)*size,size);
+ float top=max(c.r,max(c.g,c.b)),low=min(c.r,min(c.g,c.b)),sat=(top-low)/max(top,.05)*smoothstep(.06,.25,top);
+ float h=0.0;
+ if(top>low){vec3 q=(c-low)/(top-low);h=top==c.r?mod(q.g-q.b,6.0):top==c.g?2.0+q.b-q.r:4.0+q.r-q.g;h=mod(h*60.0,360.0);}
+ float rh[9];rh[0]=22.0;rh[1]=28.0;rh[2]=110.0;rh[3]=220.0;rh[4]=190.0;rh[5]=0.0;rh[6]=358.0;rh[7]=285.0;rh[8]=48.0;
+ float rs[9];rs[0]=.5;rs[1]=.68;rs[2]=.6;rs[3]=.6;rs[4]=.6;rs[5]=0.0;rs[6]=.95;rs[7]=.55;rs[8]=.8;
+ int ramp=5;float d=1e9;
+ if(sat>.12)for(int i=0;i<9;i++){if(i==5)continue;float e=abs(h-rh[i]);e=min(e,360.0-e)/40.0+abs(sat-rs[i])*1.4;if(e<d){d=e;ramp=i;}}
+ float t=clamp(pow(luma(c),.9)+(bayer4(cell)-.5)*.16,0.0,1.0);
+ t=floor(t*4.0+.5)/4.0;
+ vec3 col=floor(snesRamp(ramp,t)*31.0+.5)/31.0;
+ float boundary=edges((cell+.5)*size,px,.3);
+ col=mix(col,snesRamp(ramp,0.0)*.6,step(.82,boundary)*.8);
+ gl_FragColor=vec4(col,1.0);
+}`;
 // The colour hand-held of 1998: 160 by 144 pixels, and every 8 by 8 tile drawn from a palette of its own of four
 // colours. A photo on it is a mosaic of tiles, each in four shades of the colour it mostly is, dithered; 15-bit colour.
 const HANDHELD_COLOUR_BODY=`${CONSOLE_GRID}
@@ -693,17 +805,18 @@ float psDither(vec2 cell){
 // snapped to whole screen pixels (the console had no sub-pixel precision), and the texture laid across each triangle
 // without perspective correction, so straight lines kink where the triangles meet.
 vec2 psProject(vec2 g){
- vec2 q=g/vec2(5.0,4.0)*2.0-1.0;
- float w=1.0+.2*q.y;
- return (q/w*1.12)*.5+.5;
+ vec2 q=g/vec2(4.0,3.0)*2.0-1.0;
+ float w=1.0+.42*q.y;
+ return (q/w*1.42)*.5+.5;
 }
 void main(){
  vec2 screen=vec2(320.0,240.0);
  vec2 cell=floor(vUv*screen),s=(cell+.5)/screen;
  // Which triangle this pixel lies in: the inverse of the tilt gives the picture point, and so the mesh cell.
- vec2 q=(s*2.0-1.0)/1.12;
- float y=q.y/(1.0-.2*q.y);
- vec2 g=(vec2(q.x*(1.0+.2*y),y)*.5+.5)*vec2(5.0,4.0);
+ // The mesh is seen just large enough that its far edge reaches the top of the screen.
+ vec2 q=(s*2.0-1.0)/1.42;
+ float y=q.y/(1.0-.42*q.y);
+ vec2 g=(vec2(q.x*(1.0+.42*y),y)*.5+.5)*vec2(4.0,3.0);
  vec2 i=floor(g),f=fract(g);
  vec2 a=i,b=i+vec2(1.0,0.0),c=i+vec2(0.0,1.0);
  if(f.x+f.y>1.0){a=i+vec2(1.0,1.0);b=i+vec2(0.0,1.0);c=i+vec2(1.0,0.0);}
@@ -711,7 +824,7 @@ void main(){
  vec2 v0=pb-pa,v1=pc-pa,v2=s-pa;
  float den=v0.x*v1.y-v1.x*v0.y;
  float wb=(v2.x*v1.y-v1.x*v2.y)/den,wc=(v0.x*v2.y-v2.x*v0.y)/den;
- vec2 uv=(a+(b-a)*wb+(c-a)*wc)/vec2(5.0,4.0);
+ vec2 uv=(a+(b-a)*wb+(c-a)*wc)/vec2(4.0,3.0);
  // Textures smaller than the screen and never filtered: texels of two by two pixels.
  vec2 tex=vec2(160.0,120.0),tc=(floor(uv*tex)+.5)/tex;
  vec3 col=cellColour(tc,1.0/tex);
@@ -786,7 +899,7 @@ void main(){
  col*=mix(vec3(1.0),vec3(1.0,.88,.06),comicDot(px,0.0,cell,tint(cmy.z)));
  col*=mix(vec3(1.0),vec3(.12,.11,.13),comicDot(px,.79,cell,tint(black)));
  // The keyline: the drawing, solid on the black plate.
- float line=max(lineAt(vUv,u,1.8,.02,.04),contour(vUv,u));
+ float line=inked(vUv,u,1.8,.02,.04,1.0);
  col=mix(col,vec3(.1,.09,.11),clamp(line,0.0,1.0));
  gl_FragColor=vec4(col,1.0);
 }`;
@@ -808,6 +921,48 @@ void main(){
  // P43 phosphor: yellow-green, washing towards a pale green in the brightest parts.
  vec3 col=mix(vec3(.42,1.0,.22)*l,vec3(.85,1.0,.75),smoothstep(.85,1.3,l)*.6)*tube;
  gl_FragColor=vec4(clamp(col+vec3(0.0,.02,0.0),0.0,1.0),1.0);
+}`;
+// Cartoon, judged as a TV anime colour designer (Crayon Shin-chan, Doraemon): a base and one shadow per material, a
+// thick brush-pen outline on every silhouette, nothing of the photo's grain.
+const CARTOON_BODY=`${PHOTO_LINES}${PHOTO_CEL}
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ float m;vec3 b=celBase(vUv,u,m);
+ float l=luma(b);
+ vec3 hue=b/max(l,.03);
+ float value=mix(m,floor(m*5.0+.5)/5.0,.6)*1.05+.05;
+ vec3 base=hue*value;base/=max(1.0,max(base.r,max(base.g,base.b)));
+ base=mix(vec3(luma(base)),base,1.12);
+ vec3 shade=base*vec3(.7,.68,.8);
+ float d=l-m*.9,w=max(fwidth(d),.004);
+ vec3 col=mix(shade,base,smoothstep(-w,w,d));
+ // The outline: thick, steady, closing every silhouette.
+ vec2 wob=(vec2(noise(p*.035),noise(p*.035+9.0))-.5)*uTexel*2.0*u;
+ float line=inked(vUv+wob,u,2.8,.035,.05,1.0);
+ col=mix(col,vec3(.16,.12,.13),smoothstep(.3,.65,line));
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}`;
+// Adventure Ink, judged as Akira Toriyama's colour pages: bright cel colours, a base, one hard shadow and a small
+// highlight on what shines, and a confident ink contour, finer than the Cartoon's, with the eyes kept as ink.
+const ADVENTURE_BODY=`${PHOTO_LINES}${PHOTO_CEL}
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ float m;vec3 b=celBase(vUv,u,m);
+ float l=luma(b);
+ vec3 hue=b/max(l,.03);
+ float value=mix(m,floor(m*6.0+.5)/6.0,.5)*1.08+.06;
+ vec3 base=hue*value;base/=max(1.0,max(base.r,max(base.g,base.b)));
+ base=clamp(mix(vec3(luma(base)),base,1.3),0.0,1.0);
+ vec3 shade=base*vec3(.66,.64,.78);
+ float d=l-m*.88,w=max(fwidth(d),.004);
+ vec3 col=mix(shade,base,smoothstep(-w,w,d));
+ float shine=l-m*1.28;
+ col=mix(col,mix(base,vec3(1.0),.55),smoothstep(-w,w,shine)*step(.55,l));
+ float line=inked(vUv,u,2.0,.025,.04,.9);
+ col=mix(col,vec3(.08,.07,.09),smoothstep(.3,.6,line));
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
 // Risograph, in the duplicator's own inks (the owner, 30 October 2026: "I do love Risograph can there be several
 // variations on Risograph?"). A Riso prints one drum per ink, each ink translucent over the one before, so a photo is
@@ -875,7 +1030,7 @@ ${i===n-1?`  k=max(k,lineAt(uv,u,1.8,.02,.04)*.95);
 /** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon,
  * Stamp, Line drawing, Pencil manga, Manga, Sketchbook, Woodblock print, Pocket and Watercolour keep World's names and
  * swatches but draw a photograph with these, made for one. */
-const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,
+const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
  colourHandheld:HANDHELD_COLOUR_BODY,eightBit:EIGHT_BIT_BODY,
  ...Object.fromEntries(Object.entries(RISO_INKS).map(([name,inks])=>[name,risoBody(inks)])),thirtyTwoBit:THIRTY_TWO_BIT_BODY,sixtyFourBit:SIXTY_FOUR_BIT_BODY,redVisor:RED_VISOR_BODY};
 
@@ -897,7 +1052,10 @@ const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;\nfloat unit(){r
 // brushwork in all of the paint.
 const PHOTO_EDITS={
  // Miniature, judged as Olivo Barbieri: the model look is bright, flat light, not burnt skin.
- tilt:[['c=mix(vec3(l),c,1.45);\n c=(c-0.5)*1.12+0.53;','c=mix(vec3(l),c,1.12);\n c=(c-0.5)*1.04+0.53;']],
+ // The plane of focus where the subject is: in an upright photo a person's face is in its upper third, not at the
+ // middle (the band fell on a necklace and blurred the face); a wide photo keeps the middle.
+ tilt:[['c=mix(vec3(l),c,1.45);\n c=(c-0.5)*1.12+0.53;','c=mix(vec3(l),c,1.12);\n c=(c-0.5)*1.04+0.53;'],
+  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uResolution.y>uResolution.x*1.05?0.66:0.46));']],
  oil:[
   ['col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);','col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.24,0.42,light)*near*.6);'],
   ['col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);','col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.2,0.36,dark)*near*0.6);'],
@@ -941,7 +1099,7 @@ export const lookDrawsLines=name=>name==='adventureInk'||(name!=='none'&&lookUse
  * photo before its dither (src/photo/pocket-camera.js), a picture is exposed for them first: its average brought to
  * the town's middle.
  */
-export const INK_LOOKS=Object.freeze(['pocket','snes','lines','manga','print','riso','pencilManga','stamp','cyanotype','nightVision','risoPinkBlue','risoRedNavy','risoBlackPink','risoThree']);
+export const INK_LOOKS=Object.freeze(['pocket','lines','manga','print','riso','pencilManga','stamp','cyanotype','nightVision','risoPinkBlue','risoRedNavy','risoBlackPink','risoThree']);
 
 /** A recipe with every field present and in range. */
 export function normalRecipe(recipe={}){

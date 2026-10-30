@@ -20,7 +20,8 @@ for(const name of LOOK_NAMES.filter(n=>n!=='none'))for(const light of [false,tru
 assert.ok(lookDrawsLines('manga')&&!lookDrawsLines('mono')&&!lookDrawsLines('none'));
 assert.ok(LOOK_NAMES.includes('adventureInk')&&lookDrawsLines('adventureInk'));
 assert.equal(normalRecipe({layers:[{look:'adventureInk'}]}).layers[0].look,'adventureInk');
-assert.ok(photoFragment('adventureInk').includes('vec3(.09,.095,.12)'));
+// Adventure Ink and Cartoon are cel builds for photographs: a base and a shadow per material, and an ink line.
+for(const name of ['adventureInk','flat'])assert.ok(photoFragment(name).includes('celBase(')&&photoFragment(name).includes('lineAt('),name);
 
 
 const r=normalRecipe({layers:[{look:'manga',amount:2},{look:'nope'},{look:'crt'},{look:'oil'}],adjust:{light:5,pattern:'x'}});
