@@ -120,7 +120,7 @@ const LOOK_GROUPS=(()=>{
   {id:'games',label:'Games',looks:['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit','macOneBit','vgaAdventure']},
   {id:'80s',label:'80s',looks:['crt','camcorder']},
   {id:'drawn',label:'Drawn',looks:['lines','sketchbook','crayon','pencilManga','manga','flat','adventureInk','halftone']},
-  {id:'painted',label:'Painted',looks:['watercolour','oil','brushOil']},
+  {id:'painted',label:'Painted',looks:['watercolour','oil','brushOil','animeBackground']},
   {id:'print',label:'Print',looks:['print','stamp','cyanotype']},
   {id:'riso',label:'Riso',looks:['riso','risoPinkBlue','risoRedNavy','risoBlackPink','risoThree']},
  ].map(g=>({...g,looks:g.looks.filter(n=>LOOK_NAMES.includes(n))}));

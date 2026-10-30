@@ -103,3 +103,62 @@ void main(){
  }
  gl_FragColor=vec4(best,1.0);
 }`;
+
+// Fresh analytic approximation of Kyprianidis/Kang/Döllner (2009): smoothed structure tensor, an oriented ellipse,
+// eight overlapping Gaussian angular/radial sectors, and a low-variance weighted blend. No reference code port.
+export const KUWAHARA=`
+vec3 anisotropicPaint(vec2 uv,float reach){
+ float xx=0.0,yy=0.0,xy=0.0;vec2 tex=uTexel*unit();
+ for(int k=0;k<5;k++){
+  vec2 offset=k==0?vec2(0.0):k==1?vec2(3.0,0.0):k==2?vec2(-3.0,0.0):k==3?vec2(0.0,3.0):vec2(0.0,-3.0);
+  vec2 q=uv+offset*tex;float w=k==0?.4:.15;
+  vec3 gx=texture2D(tDiffuse,q+vec2(tex.x,0.0)).rgb-texture2D(tDiffuse,q-vec2(tex.x,0.0)).rgb;
+  vec3 gy=texture2D(tDiffuse,q+vec2(0.0,tex.y)).rgb-texture2D(tDiffuse,q-vec2(0.0,tex.y)).rgb;
+  xx+=dot(gx,gx)*w;yy+=dot(gy,gy)*w;xy+=dot(gx,gy)*w;
+ }
+ float trace=xx+yy,coherence=clamp(sqrt((xx-yy)*(xx-yy)+4.0*xy*xy)/max(trace,1e-5),0.0,.9);
+ float angle=trace>1e-5?.5*atan(2.0*xy,xx-yy)+1.5707963:0.0;
+ vec2 along=vec2(cos(angle),sin(angle)),across=vec2(-along.y,along.x);
+ mat2 ellipse=mat2(along*mix(1.0,1.9,coherence),across*mix(1.0,.65,coherence));
+ vec3 sum[8],square[8];float weights[8];
+ for(int s=0;s<8;s++){sum[s]=vec3(0.0);square[s]=vec3(0.0);weights[s]=0.0;}
+#ifdef LIGHT
+ const int R=2;
+#else
+ const int R=4;
+#endif
+ for(int y=-R;y<=R;y++)for(int x=-R;x<=R;x++){
+  vec2 q=vec2(float(x),float(y))/float(R);float r2=dot(q,q);if(r2>1.0)continue;
+  vec3 c=texture2D(tDiffuse,uv+(ellipse*q)*tex*8.0*reach).rgb;
+  float a=atan(q.y,q.x+1e-7),radial=exp(-r2*2.2);
+  for(int s=0;s<8;s++){
+   float difference=abs(mod(a-float(s)*.78539816+3.14159265,6.2831853)-3.14159265);
+   float w=r2<.001?1.0:radial*exp(-difference*difference/ .30);
+   sum[s]+=c*w;square[s]+=c*c*w;weights[s]+=w;
+  }
+ }
+ vec3 paint=vec3(0.0);float total=0.0;
+ for(int s=0;s<8;s++){
+  vec3 mean=sum[s]/max(weights[s],1e-5),variance=max(vec3(0.0),square[s]/max(weights[s],1e-5)-mean*mean);
+  float w=1.0/(1.0+pow(sqrt(luma(variance))*18.0,4.0));paint+=mean*w;total+=w;
+ }
+ return paint/max(total,1e-5);
+}
+`;
+export const OIL_BODY=`${KUWAHARA}
+void main(){
+ vec3 raw=texture2D(tDiffuse,vUv).rgb,col=anisotropicPaint(vUv,1.0);
+ float feature=smoothstep(.12,.28,abs(luma(raw)-luma(col)));col=mix(col,raw,feature*.4);
+ col=mix(vec3(.035,.06,.07),vec3(.98,.965,.92),col);
+ vec2 p=vUv*uResolution/unit(),q=mat2(.8,-.6,.6,.8)*p;
+ col*=1.0+(noise(vec2(q.x*.025,q.y*.18))-.5)*.08+(sin(p.x*1.9)*sin(p.y*1.9))*.012;
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}`;
+export const ANIME_BODY=`${KUWAHARA}
+void main(){
+ vec3 c=anisotropicPaint(vUv,1.4);float l=luma(c),plane=floor(l*11.0+.5)/11.0;
+ c*=mix(1.0,plane/max(l,.02),.3);c=pow(max(c,vec3(0.0)),vec3(.94));
+ c=mix(vec3(luma(c)),c,1.04);c+=vec3(.025,.025,.01)*smoothstep(.3,.8,l);
+ c=mix(c,vec3(.98,.97,.92),smoothstep(.78,1.0,l)*.045);
+ gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
+}`;

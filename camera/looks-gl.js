@@ -14,12 +14,13 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
-import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY,LUT_BODY,LUT_LOOKS,MAC_BODY,VGA_BODY} from './photo-bodies.js?v=20261030e';
+import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY,LUT_BODY,LUT_LOOKS,MAC_BODY,VGA_BODY,OIL_BODY,ANIME_BODY} from './photo-bodies.js?v=20261030e';
 
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
 // Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
 // dots, a blueprint and night vision.
 export const LOOKS=Object.freeze({...WORLD_LOOKS,
+ animeBackground:Object.freeze({label:'Anime background',short:'Anime BG',hint:'Luminous painted planes, softened along the forms, without cartoon outlines.'}),
  vgaAdventure:Object.freeze({label:'VGA adventure',short:'VGA',hint:'A painted adventure background: 200 rows and a cabinet of 256 colours.'}),
  macOneBit:Object.freeze({label:'1-bit Mac',short:'1-bit Mac',hint:'Black ink and white pixels, with an eight-by-eight ordered screen.'}),
  warmSlide:Object.freeze({label:'Warm slide film',short:'Warm slide',hint:'A warm, clear slide-film colour grade with firmer shadows.'}),
@@ -46,7 +47,7 @@ export const LOOKS=Object.freeze({...WORLD_LOOKS,
  sixtyFourBit:Object.freeze({label:'64-bit',short:'64-bit',hint:'The cartridge console of 1996: small textures filtered smooth, soft haze and a fine dither.'}),
 });
 /** The World Look whose little house stands in for a camera-only Look until its live thumbnail is drawn. */
-export const LOOK_STANDIN=Object.freeze({vgaAdventure:'snes',macOneBit:'pocket',warmSlide:'sepia',softNegative:'sepia',disposable:'sepia',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
+export const LOOK_STANDIN=Object.freeze({animeBackground:'watercolour',vgaAdventure:'snes',macOneBit:'pocket',warmSlide:'sepia',softNegative:'sepia',disposable:'sepia',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
  colourHandheld:'snes',redVisor:'riso',risoPinkBlue:'riso',risoRedNavy:'riso',risoBlackPink:'riso',risoThree:'riso',eightBit:'snes',thirtyTwoBit:'snes',sixtyFourBit:'tilt'});
 
 
@@ -1078,7 +1079,7 @@ ${i===n-1?`  k=max(k,lineAt(uv,u,1.8,.02,.04)*.95);
 /** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon,
  * Stamp, Line drawing, Pencil manga, Manga, Sketchbook, Woodblock print, Pocket and Watercolour keep World's names and
  * swatches but draw a photograph with these, made for one. */
-const CAMERA_BODIES={vgaAdventure:VGA_BODY,macOneBit:MAC_BODY,warmSlide:LUT_BODY,softNegative:LUT_BODY,disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
+const CAMERA_BODIES={animeBackground:ANIME_BODY,oil:OIL_BODY,vgaAdventure:VGA_BODY,macOneBit:MAC_BODY,warmSlide:LUT_BODY,softNegative:LUT_BODY,disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
  colourHandheld:HANDHELD_COLOUR_BODY,eightBit:EIGHT_BIT_BODY,
  ...Object.fromEntries(Object.entries(RISO_INKS).map(([name,inks])=>[name,risoBody(inks)])),thirtyTwoBit:THIRTY_TWO_BIT_BODY,sixtyFourBit:SIXTY_FOUR_BIT_BODY,redVisor:RED_VISOR_BODY};
 
@@ -1137,13 +1138,7 @@ const PHOTO_EDITS={
 #endif
   for(int i=1;i<TAPS;i++){
    float fi=float(i),r=sqrt(fi/float(TAPS))*radius,a=fi*2.39996;`]],
- oil:[
-  ['col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);','col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.24,0.42,light)*near*.6);'],
-  ['col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);','col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.2,0.36,dark)*near*0.6);'],
-  ['col=mix(vec3(luma(col)),col,1.35);\n col=(col-0.5)*1.1+0.5;','col=mix(vec3(luma(col)),col,1.15);\n col=mix(vec3(.05,.09,.11),vec3(.97,.95,.88),col);'],
-  ['float stroke=noise(vec2(q.x*0.035,q.y*0.32));','float stroke=noise(vec2(q.x*0.025,q.y*0.18));'],
-  ['col*=1.0+thinPaint*((stroke-.5)*.035+(weave-.5)*.016);','col*=1.0+mix(.6,1.0,thinPaint)*((stroke-.5)*.12+(weave-.5)*.035);'],
- ],
+
 };
 /** World's fragment for a Look as GLSL ES 3.00, mixed into its input by uAmount; null for Natural. */
 export function photoFragment(name,{light=false}={}){
@@ -1180,7 +1175,7 @@ void main(){lookMain();${subject}vec3 before=texture(tDiffuse,vUv).rgb;fragColor
 }
 
 /** Whether a Look draws outlines (and so wants camera noise smoothed away first). */
-export const lookDrawsLines=name=>name==='adventureInk'||(name!=='none'&&lookUsesDepth(name));
+export const lookDrawsLines=name=>name==='adventureInk'||name==='animeBackground'||(name!=='none'&&lookUsesDepth(name));
 /**
  * The Looks that print a picture in a few inks at fixed thresholds. World's town is bright and evenly lit, and they
  * are set for it; a photo of a shady garden would print almost solid. So, as the town's Pocket camera exposes each
