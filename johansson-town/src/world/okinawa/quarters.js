@@ -11,7 +11,8 @@ import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {buildAuctionBoard} from '../auction-board.js';
 import {buildWestShore} from '../west-shore.js';
-import {fishAt} from './fish.js';
+import {buildFishMarket,fishCounterOpen,FISH_COUNTER,SORTING_STACK,QUAY_EDGE} from '../fish-market.js';
+import {fishById} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
 import {utakiStones,NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
@@ -78,12 +79,15 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
- buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
+ const fishMarket=buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720,eastQuayBoat:(x,z,ry,opts)=>{
   // Her bow along the plan's +x turned by ry (as props.js drew her); she lies quay side to, her lines to the kerb.
   const face=EAST_QUAY.minZ-.45,side=Math.cos(ry)>0?-1:1,gap=face-(z+opts.beam/2);
   const boat=buildFishingBoat({...opts,shadows,name:opts.look.name,quayFenders:{side,radius:Math.min(.22,gap/2)}});boat.position.set(x,SEA_LEVEL,z);boat.rotation.y=ry+Math.PI/2;group.add(boat);boat.updateMatrixWorld(true);
   for(const f of boat.userData.fairleads){const p=boat.localToWorld(new THREE.Vector3(...f)),ring=[p.x+(p.x>x?1.2:-1.2),.22,EAST_QUAY.minZ-.25];kit.box(.12,.05,.12,ring[0],.205,ring[2],0x2b2f30);group.add(new THREE.Mesh(hangingRope(p.toArray(),ring,{sag:.08}),ropeMaterial));}
  }});
+ // The fish counter's wares are out while it is open (fish-market.js fishCounterOpen).
+ fishMarket.wares.visible=fishCounterOpen(world.minutes??720);
+ (world.hourly??=[]).push(minutes=>{fishMarket.wares.visible=fishCounterOpen(minutes);});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,(KITAHAMA.y||0)+GROUND_LAYER.lane)}),KITAHAMA.y);
@@ -445,16 +449,16 @@ export const AUCTION_VENDING=Object.freeze({x:EAST_QUAY.ice.minX-.05-.03-VENDING
  who:'the fishermen up from the boats, the ice plant’s men and the auction’s buyers',
  why:'Machines stand against a wall, on somebody’s supply: here the ice plant’s, on its west wall where the lane from the boats meets the walk to the gate. The boats are in by five and the bell goes at six, so a hot J-Coffee before it and a cold one after the floor is hosed. North of the ice door, so the forklift’s run to the boats stays clear; off the auction floor, which is for the catch.'});
 
-function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuayBoat}){
+function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,getMinutes,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  // The apron, the gate's paving and the quay's coping are the harbour's ground (ground-plan-harbour.js), run on east
  // to the oil jetty; here the edge's collider, its bollards and the tyres hung on its face. East of x 41.4 the walkable
  // quay (layout.js eastQuayAt) stops at the coping on its own.
  solid({id:'east-quay-edge',x:(Q.minX+Q.maxX)/2,z:Q.minZ-.25,w:Q.maxX-Q.minX+.4,d:.3,height:.4});
- for(const x of [39.5]){
-  kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});
-  solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});
-  kit.cyl(.3,.3,.28,x+1.6,-.35,Q.minZ-.55,0x1f2124,{rx:Math.PI/2,segments:10});
+ // The bollard; the tyres hung on the face and the line coiled beside it are the fish market's (fish-market.js QUAY_EDGE).
+ {const {x,z}=QUAY_EDGE.bollard;
+  kit.cyl(.16,.2,.42,x,.24,z,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,z,0x3a3f42,{segments:10});
+  solid({id:'bollard',x,z,w:.45,d:.45,height:.5});
  }
  // The auction shed: open sides, a painted floor, a steel roof on H-section columns.
  kit.block(S.minX,S.maxX,lane,lane+.1,S.minZ,S.maxZ,0x5f8a7a);
@@ -462,7 +466,7 @@ function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuay
  for(let x=S.minX+.15;x<=S.maxX;x+=(S.maxX-S.minX-.3)/3)for(const z of [S.minZ+.15,S.maxZ-.15])cols.push([x,z]);
  for(const [x,z] of cols){kit.box(.22,S.height,.22,x,S.height/2,z,0x5e7078,{finish:'metal'});solid({id:'auction-column',x,z,w:.3,d:.3,height:S.height});}
  kit.gableRoof(S.maxX-S.minX,S.maxZ-S.minZ,.9,(S.minX+S.maxX)/2,S.height,(S.minZ+S.maxZ)/2,0x7a8f96,{overhang:.7});
- for(let x=S.minX-.6;x<S.maxX+.7;x+=.45)kit.box(.04,.04,S.maxZ-S.minZ+1.4,x,S.height+.46,(S.minZ+S.maxZ)/2,0x6c8088,{rx:0});
+ // Its corrugation ribs, ridge cap, gutters and downpipes are drawn with the fish market (fish-market.js roofWater).
  // The roof is solid to the lens, eaves to ridge with its purlins: the fish-auction opening's arrival shot began over it
  // and came down through it between two purlins (the creator, 2026-10-19, on his phone: "I spawned in a beam"). An
  // overhead collider (minY above a standing head), so nobody walking under the roof meets it (physics.js
@@ -471,22 +475,20 @@ function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuay
  kit.sign(fascia({jp:"Port Fisheries Association Auction market",en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:"Fish"}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
  // The sign on the fascia, solid to the lens the same way (the lens came down past it a hand's width off).
  solid({id:'auction-sign',x:(S.minX+S.maxX)/2,z:S.maxZ+.02,w:6,d:.12,minY:S.height-.75,height:.9});
- // Inside: rows of crates with the morning's catch, a scale and the price board.
- // The crates are sorted by kind, as at a real auction: one fish to a crate, the auction's fish in turn (fish.js). What
- // is left now is the fish nobody bid for: the tuna (laid out whole, never crated) and the squid went first.
- const r=rng(77),crated=fishAt('auction').filter(f=>f.id!=='maguro'&&f.id!=='seika');
- for(let row=0;row<3;row++)for(let k=0;k<6;k++){
-  const x=S.minX+1.2+k*1.1,z=S.minZ+2+row*1.8,fish=crated[(row*6+k)%crated.length];
-  kit.box(.72,.26,.46,x,lane+.23,z,0x2f6fb8);
-  // (two draws a fish, as before, so the crates' jitter and everything drawn after them stay where they were)
-  for(let f=0;f<3;f++){const dz=(r.next()-.5)*.2;r.next();kit.sphere(.1,x-.2+f*.2,lane+.38,z+dz,fish.colour,{sx:2.2,sy:.7,finish:'gloss'});}
- }
- solid({id:'auction-catch',x:S.minX+1.2+2.75,z:S.minZ+2+1.8,w:6.4,d:4.2,height:.5});
- kit.box(.6,.9,.6,S.maxX-1.2,.55,S.minZ+1.2,0xc9cdd0,{finish:'metal'});
+ // Inside: the morning's catch laid a lot to a box on ice, the scale, the hose and the drain, the boots, the bell, the
+ // lamps, the buyers' packed boxes and the co-op's sale counter (fish-market.js). What is left in the boxes is the fish
+ // nobody bid for: the tuna (laid out whole, never boxed) and the squid went first.
+ const market=buildFishMarket(kit,solid,group);
  // The same supported, glazed cabinet as the harbour noticeboard; both posts meet the auction floor.
  const board=buildAuctionBoard();group.add(board.object);solid(board.collider);
  inspect((S.minX+S.maxX)/2,1.2,S.maxZ+1,'Inspect the auction shed',"Minato fish auction · Auction market",
-  'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the crates went unsold, and will be somebody\'s supper: gurukun, Okinawa\'s own red fish; irabuchā, the blue parrotfish; mībai and shichūmachi. The maguro went first, and so did the sēika, a diamond squid the size of a cat.');
+  'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the boxes went unsold, and will be somebody\'s supper: gurukun, Okinawa\'s own red fish; irabuchā, the blue parrotfish; mībai and shichūmachi. The maguro went first, and so did the sēika, a diamond squid the size of a cat. A slip under each box\'s lip says whose catch it is: the Daisan Minatomaru\'s from the reef and the deep-drop lines, Kōji\'s from his sabani.');
+ // The co-op's sale counter (fish-market.js FISH_COUNTER): a kilo of what the buyers left, while Kōji keeps it.
+ const C=FISH_COUNTER,counterShut=()=>onAction?.('read','The fish counter is closed','Kōji sells what the buyers left from 07:00, when the floor is washed, until he goes to the ice plant at nine; not on his weeks as the ferry\'s bosun.');
+ C.sells.forEach((sale,i)=>{
+  const fish=fishById(sale.fish),name=fish.name[0].toUpperCase()+fish.name.slice(1),title=`Fish counter · ${name}`;
+  anchor(C.x+(i?.45:-.18),1.1,C.z+C.d/2+.9,`Buy a kilo of ${fish.name}`,()=>fishCounterOpen(getMinutes())?onAction?.('buy',title,{cost:sale.kilo,item:sale.item,text:sale.text}):counterShut());
+ });
  // The ice plant: a tall concrete block with its chute swung out over the quay.
  kit.block(I.minX,I.maxX,0,I.height,I.minZ,I.maxZ,0xd8d4ca);
  kit.block(I.minX-.05,I.maxX+.05,0,.4,I.minZ-.05,I.maxZ+.05,0xb3ad9f);
@@ -501,22 +503,23 @@ function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuay
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant',"Minato ice plant · Ice factory",
   'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
- // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (it
- // has one tyre, at x 41.1) and tied to ringbolts in the kerb fore and aft.
+ // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (its
+ // tyres hang east of them, fish-market.js QUAY_EDGE) and tied to ringbolts in the kerb fore and aft.
  eastQuayBoat(24.6,Q.minZ-2.1,0,{length:8,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[0]});
  eastQuayBoat(33.6,Q.minZ-2.2,Math.PI,{length:7.2,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[1]});
  // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
  // the plant's wall), and Kōji loads ice there.
- // The boxes Kōji sorts the catch into, just inside the shed's front beside him, between two
- // of its columns. In front of the shed they stood through one column and left 1 m of the
- // walk between the shed and the parapet, from the lawn gate to the ice plant.
- solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
+ // The boxes Kōji sorts the catch into, behind the sale counter beside where he stands to sort (fish-market.js
+ // SORTING_STACK), standing on the floor. In front of the shed they stood through one column and left 1 m of the walk
+ // between the shed and the parapet, from the lawn gate to the ice plant.
+ solid(fishCrates(kit,SORTING_STACK.x,SORTING_STACK.z,{rows:SORTING_STACK.rows,cols:SORTING_STACK.cols,y:SORTING_STACK.y,seed:31}));
  vending(AUCTION_VENDING.x,AUCTION_VENDING.z,AUCTION_VENDING.ry,AUCTION_VENDING.y);   // on the quay's paving (the lane layer), not sunk in it
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Daisan Minatomaru, the third fishing boat of the name (the town ferry is the Minato Maru), is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
+ return market;
 }
 
 /** The four bicycles in the west yard's shed, of the people who live and work round the yard. */

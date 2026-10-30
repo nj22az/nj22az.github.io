@@ -52,12 +52,18 @@ try{
  const shots=[
   ['01-high-from-lawn',[12,13,-28],[26,1,-44]],
   ['02-gate-eye',[19.8,1.6,-39.2],[25,1,-44]],
-  ['03-crates-close',[22.4,2.1,-40.9],[24.2,.3,-43.5]],
+  // From 30 October 2026 the sale counter stands where this lens stood; it looks from the walk beside the counter instead.
+  ['03-crates-close',[25,2.1,-40.2],[25.3,.3,-43.4]],
   ['04-from-sea',[27,5,-60],[28,2,-43]],
   ['05-high-iso',[42,16,-26],[28,1,-45]],
+  // The sale counter is open 07:00-09:00 on Kōji's weeks ashore (fish-market.js fishCounterOpen): photographed at 07:40.
+  ['06-counter-open',[22.6,1.6,-38.3],[22.2,.95,-41.2],7*60+40],
+  ['07-wash-corner',[25.6,1.7,-45.2],[22,.5,-46.4]],
+  ['08-scale-and-bell',[25.8,1.7,-44.6],[28.4,1,-46.2]],
+  ['09-quay-edge',[37.6,1.7,-46.6],[40,0,-49.8]],
  ];
- for(const [name,pos,at] of shots.filter(s=>!process.env.PHOTO_ONLY||process.env.PHOTO_ONLY.split(',').includes(s[0]))){
-  await page.evaluate(v=>window.capture(v),{pos,at,m:NOON});await page.locator('canvas').screenshot({path:`${out}/${name}.jpg`,type:'jpeg',quality:86});console.log('wrote',name);
+ for(const [name,pos,at,m=NOON] of shots.filter(s=>!process.env.PHOTO_ONLY||process.env.PHOTO_ONLY.split(',').includes(s[0]))){
+  await page.evaluate(v=>window.capture(v),{pos,at,m});await page.locator('canvas').screenshot({path:`${out}/${name}.jpg`,type:'jpeg',quality:86});console.log('wrote',name);
  }
  await writeFile(`${out}/report.json`,JSON.stringify({phase,viewport:[900,600],physicalDevice:false,scope:'East-quay fish auction; static createTown scene with cel and ink passes and the sea; no simulation or streamed detail models',errors},null,2)+'\n');
  if(errors.length)throw Error(errors.join('\n'));

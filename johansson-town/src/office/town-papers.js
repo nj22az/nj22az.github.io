@@ -254,6 +254,13 @@ export const TOWN_PAPERS=[
     "source": "notice:Kitahama notice board"
   },
   {
+    "type": "Notice",
+    "title": "The fish counter is closed",
+    "organisation": "Town Services",
+    "text": "Kōji sells what the buyers left from 07:00, when the floor is washed, until he goes to the ice plant at nine; not on his weeks as the ferry's bosun.",
+    "source": "notice:The fish counter is closed"
+  },
+  {
     "type": "Flyer",
     "title": "Umi-no-yu notice",
     "organisation": "Town Services",

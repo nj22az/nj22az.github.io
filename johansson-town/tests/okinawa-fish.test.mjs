@@ -53,10 +53,11 @@ test('the catch story brags about pier fish, and the old spellings are gone from
 test('what lies on the ice is what is really there', () => {
  const houses=readFileSync(new URL('../src/world/okinawa/houses.js',import.meta.url),'utf8');
  const quay=readFileSync(new URL('../src/world/okinawa/quarters.js',import.meta.url),'utf8');
- // Yonamine's counter: no seasonal fry and no squid in the row of fish; the auction's crates: no tuna and no squid,
- // and the inspect text says those went first.
+ const market=readFileSync(new URL('../src/world/fish-market.js',import.meta.url),'utf8');
+ // Yonamine's counter: no seasonal fry and no squid in the row of fish; the auction's boxes (fish-market.js since
+ // 30 October 2026): no tuna and no squid, and the inspect text says those went first.
  assert.match(houses,/fishAt\('yonamine'\)\.filter\(f=>f\.id!=='suku'&&f\.id!=='seika'\)/);
- assert.match(quay,/fishAt\('auction'\)\.filter\(f=>f\.id!=='maguro'&&f\.id!=='seika'\)/);
+ assert.match(market,/fishAt\('auction'\)\.filter\(f=>f\.id!=='maguro'&&f\.id!=='seika'\)/);
  assert.match(quay,/The maguro went first, and so did the sēika/);
  assert.equal(fishById('kachu').kana,'カチュー','small kana where the word has them');
 });

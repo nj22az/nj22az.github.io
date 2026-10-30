@@ -4,7 +4,8 @@ The owner, 30 October 2026: "<https://github.com/xiaoninemao/japanese-miniature-
 enhance a building or scene in Johansson's world I think spontaneous the fish market can be reworked".
 
 Researched 30 October 2026 from the repository's `main` (`2e2fa20`, 19 September 2026) against World `main` (`5572f46`).
-Nothing has been built from it yet; this note is the survey and the fish-market brief.
+This note is the survey and the fish-market brief. The brief was built the same day ("Work accordingly to your
+recommendations"; "I like the sale counter"): see [Built](#built-30-october-2026).
 
 ## What it is
 
@@ -76,8 +77,7 @@ Each item says who it is for and why it stands where it does (CLAUDE.md, "Nothin
 
 1. **The catch, drawn properly (a correction to the cartoon World, like the 25 October board).** Hollow blue co-op boxes
    on the auction floor, each on a bed of ice from the plant next door; two or three fish a box, drawn as fish in their
-   `fish.js` colours and kinds (`fishAt('auction')`), the maguro laid whole on the floor as the code already says it
-   should be. A lot ticket on each box (the boat and the weight), so the catch says whose it is. Build `fish(kind)` and
+   `fish.js` colours and kinds (`fishAt('auction')`); no maguro or sēika, which the shed's text says went first. A lot ticket on each box (the boat and the weight), so the catch says whose it is. Build `fish(kind)` and
    `fishBox()` once and share them with the izakaya, the anglers' catch and the comic stills, so the storyteller can use
    them too.
 2. **The working shed.** A dial platform scale for the grey box. A hose reel and a floor drain, and a wet floor after
@@ -99,6 +99,34 @@ Each item says who it is for and why it stands where it does (CLAUDE.md, "Nothin
 
 Not taken: the stall's name and sign, its lean-to stall in place of our co-op shed, its square base, its wooden pier.
 
+### Built (30 October 2026)
+
+`src/world/fish-market.js`, placed by `buildEastQuay` (`okinawa/quarters.js`); measured by `tests/fish-market.test.mjs`.
+
+- **The catch:** 16 hollow co-op boxes (base, walls, a lighter lip) on beds of ice, two to six fish each by size, drawn
+  as fish (body, darker back, paler belly, forked tail, eye), laid head to the left and belly to the viewer as a Japanese
+  fishmonger lays them. Each lot records the boat that landed it, by how `fish.js` says it is caught (`LAID`,
+  `LANDED_BY`); the slip under each box's lip is plain paper, too small to letter. Two lots of the old 18 gave their bay
+  to the counter. Kōji's stack of empties stood 16 cm sunk in the floor and through the corner lot; it now stands on the
+  floor behind the counter, beside where he sorts (`neighbours.js` [23.4, -41.7], which no solid touches any more).
+- **The working shed:** a 30 kg platform scale with a painted dial (needle at nought) for the grey box; the tap, hose
+  reel, trench drain and a damp band round it (always damp, not yet tied to the clock); three pairs of white boots upside
+  down on a rack; the brass hand bell on the seaward column; three enamel lamps that light at dusk; lidded polystyrene
+  boxes packed for the izakaya and Sato Ramen. The level bars that stood clear of the roof at the eaves are now ribs down
+  both slopes, with a ridge cap, gutters along both eaves and downpipes down the two lane-end columns.
+- **The sale counter (鮮魚直売):** in the landward west bay, its front on the walk from the lawn gate. A cabinet in the
+  co-op's blue under a steel top, a sink with a gooseneck tap, an ice tray in two halves, a 5 kg dial scale to the
+  customer, and its board on the front column. It sells gurukun and irabuchā by the kilo at the auction board's prices
+  (¥900 and ¥1,200), the two kinds the board prices. Kōji keeps it from 07:00, when the floor is washed, until he goes
+  to the ice plant at nine, on his weeks ashore (`fishCounterOpen`; on his relief weeks he is the ferry's bosun). The
+  fish and price cards on the ice are out only while it is open; outside the hours the prompt says when it opens.
+  Placed from the layout data and checked by the tests; no CAD drawing was made.
+- **The quay edge:** three tyres on ropes from kerb rings, east of the boats, where the one disc-shaped tyre hung
+  without a rope; the spare line coiled on the paving beside the bollard and made fast round it.
+
+Cost: about 38,000 more vertices than the old crates (the town is about 2.9 million); the test holds the market under
+56,000. Not done: lettering on the slips and packed boxes, a board that changes daily, the wet floor following the clock.
+
 ### Stories it opens (from what the town already holds)
 
 - Boats in by five, the bell at six, the hose at seven: whoever is standing on the floor at seven gets wet.
@@ -111,8 +139,8 @@ Not taken: the stall's name and sign, its lean-to stall in place of our co-op sh
 
 The owner, 24 October: `main` keeps the simplified cartoon World until the Pixar world is complete; Codex prototypes
 detailed three.js rooms on `development`; Claude takes them to Pixar standard in Blender. Items 1, 2 and 4 are corrections
-to the cartoon World's look and fit `main`. Item 3 is a new place: the owner's decision, then CAD, then the build. The
-brief stands for a Pixar fish market later.
+to the cartoon World's look and fit `main`. Item 3 is a new place: the owner chose it on 30 October ("I like the sale
+counter"). The brief stands for a Pixar fish market later.
 
 Before and after: `node tools/fish-market-photos.mjs after` (from `johansson-town/`) photographs the same five spots.
 

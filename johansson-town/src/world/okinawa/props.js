@@ -149,13 +149,13 @@ export function gasBottles(kit,x,z,{ry=0}={}){
  return solid;
 }
 
-/** The blue plastic fish crates a harbour street has everywhere, stacked. */
-export function fishCrates(kit,x,z,{ry=0,rows=2,cols=2,height=3,seed=11}={}){
+/** The blue plastic fish crates a harbour street has everywhere, stacked; `y` is what they stand on. */
+export function fishCrates(kit,x,z,{ry=0,rows=2,cols=2,height=3,seed=11,y=0}={}){
  const r=rng(seed);
  kit.at(x,z,ry,()=>{
   for(let c=0;c<cols;c++)for(let q=0;q<rows;q++){
    const n=1+Math.floor(r.next()*height);
-   for(let k=0;k<n;k++)kit.box(.62,.26,.42,c*.66,.13+k*.27,q*.46,k%2?0x2f6fb8:0x3a7cc2);
+   for(let k=0;k<n;k++)kit.box(.62,.26,.42,c*.66,y+.13+k*.27,q*.46,k%2?0x2f6fb8:0x3a7cc2);
   }
  });
  let solid;kit.at(x,z,ry,()=>{solid=kit.rect(-.35,cols*.66-.3,-.25,rows*.46-.2,1,'fish-crates');});
