@@ -6,11 +6,14 @@ own photos”; then “And the saved image is too big should use better compress
 ## Branch and publication
 
 `codex/pocket-camera-photo-crop`, based on production `main` `1d355885` (current camera code `37befc31`). Implementation
-commit **`268b1cd6d6d3670c760c0b5742dfc7e206168c92`**, [draft PR #408](https://github.com/nj22az/nj22az.github.io/pull/408)
+commit **`268b1cd6d6d3670c760c0b5742dfc7e206168c92`**, [PR #408](https://github.com/nj22az/nj22az.github.io/pull/408)
 into `main`. All 13 uploaded blob hashes and the complete tree match the tested local snapshot (`683bb0df`). The
 command-line push lacked credentials; delivery used the connected GitHub Git-object API with a checked branch lease.
-Review branch only. No merge or push to main; publication awaits the owner's explicit word. The Looks work on other branches is
-separate; no World source or camera Look shader body was changed here.
+**Published on the owner's “Publish”, 30 October 2026:** PR #408 merged to `main` as
+**`0cd8408ba5656e2ed2639824d43524531e183c2b`**. [Pages run 41092437147](https://github.com/nj22az/nj22az.github.io/actions/runs/41092437147)
+completed successfully. **6/6 changed live runtime files match the tested local versions byte-for-byte**: page,
+app, CSS, crop, eraser and engine. [Public-file hashes and URLs](qa/2026-10-30-crop/live-files.json).
+The Looks work on other branches is separate; no World source or camera Look shader body was changed here.
 
 ## What changed
 
@@ -75,8 +78,8 @@ encoding loss, not detail removed by resizing; the new download has fewer pixels
 
 ## Remaining and next action
 
-Review the branch and draft PR; publish only on the owner's explicit instruction. After publication, check the live
-version and the owner's own photo on iPhone Safari/Home Screen and iPad. Physical Apple devices, Safari's JPEG encoder,
+The live code is verified at https://nj22az.github.io/camera/. Next, check the owner's own photo on iPhone
+Safari/Home Screen and iPad. Physical Apple devices, Safari's JPEG encoder,
 camera permission flow and hardware frame rate have not been tested here. Browser tests use emulated viewports and
 real Chromium touch events; they do not establish physical iPhone acceptance. Lost-context restoration remains an
 existing SwiftShader limitation. The independent Look persona backlog and Minato mode are unchanged.
