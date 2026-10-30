@@ -1,5 +1,9 @@
 # Pocket Camera Looks: handover to Codex — 30 October 2026
 
+**Latest branch work:** [Save/Share, phone Solitaire, wax Crayon and Paper](HANDOVER-REFINEMENTS-2026-10-30.md),
+`codex/pocket-camera-save-share`. Crayon's new artist audit is in `AUDIT-LOOKS-2026-10-30.md`; the other Looks backlog
+is preserved. These later corrections are not published yet.
+
 **Later, 30 October: photo crop and smaller exports are published** to `main` as `0cd8408b`, PR #408,
 on the owner's “Publish”. Pages passed and all six changed live runtime files match the tested versions. Read [the crop handover](HANDOVER-PHOTO-CROP-2026-10-30.md) for the controls, compression,
 checks and source-retention behaviour. No Look shader body was changed by that work.

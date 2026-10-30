@@ -5,7 +5,7 @@
 //   node tools/render-camera-looks.mjs --looks crayon,stamp --out <dir> [--lines 1080] [--light] photo.jpg ...
 // Each picture is drawn at its own shape, `--lines` tall (the camera sizes every pattern to the picture's height, so
 // 1080 lines stands for the viewfinder and a save alike). `--light` draws the phone's light builds instead of the full;
-// `--focus 0.3` places Miniature's plane of focus as a tap would (a height from the foot).
+// `--focus 0.3` places Miniature's plane of focus as a tap would (a height from the foot); `--paper rough` chooses stock.
 import {createRequire} from 'node:module';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {basename,extname,join,resolve} from 'node:path';
@@ -13,7 +13,7 @@ import {fileURLToPath} from 'node:url';
 import {serveGame} from '../johansson-town/tools/mcp/static-server.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 
-const args=process.argv.slice(2),photos=[],opt={looks:'crayon,stamp',out:'camera-looks',lines:'1080',light:false,focus:'-1'};
+const args=process.argv.slice(2),photos=[],opt={looks:'crayon,stamp',out:'camera-looks',lines:'1080',light:false,focus:'-1',paper:'none'};
 for(let i=0;i<args.length;i++){const a=args[i];if(a==='--light')opt.light=true;else if(a.startsWith('--'))opt[a.slice(2)]=args[++i];else photos.push(a);}
 if(!photos.length){console.error('Usage: node tools/render-camera-looks.mjs --looks crayon,stamp --out <dir> photo.jpg ...');process.exit(2);}
 const looks=opt.looks.split(','),lines=Number(opt.lines),focus=Number(opt.focus),out=resolve(opt.out);
@@ -29,7 +29,7 @@ try{
  await page.goto(`${server.url}camera/looks-gl.js`);
  for(const file of photos){
   const photo=`data:image/jpeg;base64,${(await readFile(file)).toString('base64')}`;
-  const shots=await page.evaluate(async({photo,looks,lines,light,focus})=>{
+  const shots=await page.evaluate(async({photo,looks,lines,light,focus,paper})=>{
    const {createLookEngine,normalRecipe}=await import('/camera/looks-gl.js');
    const img=new Image();img.src=photo;await img.decode();
    const iw=img.naturalWidth,ih=img.naturalHeight,H=lines,W=Math.round(lines*iw/ih);
@@ -42,17 +42,17 @@ try{
     if(light){
      // The light build as the viewfinder draws it: compile, then draw onto the canvas and read it back.
      engine.warm([look]);
-     const recipe=normalRecipe({layers:[{look}],focus});
+     const recipe=normalRecipe({layers:[{look}],focus,paper});
      for(let i=0;i<400&&!engine.draw(recipe,{source:'photo'});i++)await new Promise(r=>setTimeout(r,25));
      const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(gl,0,0);
      shots.push({look,url:c.toDataURL('image/png'),ms:performance.now()-t0});continue;
     }
-    px=engine.render(normalRecipe({layers:[{look}],focus}),{source:'photo',width:W,height:H});
+    px=engine.render(normalRecipe({layers:[{look}],focus,paper}),{source:'photo',width:W,height:H});
     const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(new ImageData(px.data,W,H),0,0);
     shots.push({look,url:c.toDataURL('image/png'),ms:performance.now()-t0});
    }
    return shots;
-  },{photo,looks,lines,light:opt.light,focus});
+  },{photo,looks,lines,light:opt.light,focus,paper:opt.paper});
   const name=basename(file,extname(file));
   for(const s of shots){
    await writeFile(join(out,`${name}--${s.look}.png`),Buffer.from(s.url.split(',')[1],'base64'));

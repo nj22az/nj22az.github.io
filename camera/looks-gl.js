@@ -281,69 +281,55 @@ vec3 celBase(vec2 uv,float u,out float material){
  return b;
 }
 `;
-// Pencil crayon for a photograph (the owner, 30 October 2026: "Proceed"). World's Crayon lays its strokes along the
-// town's walls and floors, from depth and normals a photo does not have; on a photo it fell back to two fixed diagonal
-// grids four pixels apart, an even mesh over face and background alike, with the colour washed to grey. Here the
-// strokes follow the picture's own shapes (the direction of its edges, in four directions blended), are long and far
-// enough apart to read as strokes on a phone, and carry the photo's colour as pencils do: a vivid pigment with paper
-// between the strokes, as much of it as the tone needs, and a darker pencil crossing the shadows. The edges of the
-// picture are left lighter, as a drawing is finished in the middle first.
+// Wax crayon for photographs: broad, overlapping strokes retain the colour mass. Pigment catches the tooth,
+// fills it as pressure builds, and burnishes in dark passages. Paper stock is a separate optional finishing pass.
 const CRAYON_BODY=`${PHOTO_STROKES}
-// Coloured pencil as it really lies on paper: not lanes of separate strokes but a grain streaked along the direction
-// of the hand, the wax catching the tooth's peaks first and filling the hollows as it is pressed harder, with the
-// strokes' ends showing as faint ridges.
-float pencilGrain(vec2 p,float a,float cover,float seed,float tooth){
- vec2 d=vec2(cos(a),sin(a));
- vec2 r=vec2(dot(p,d),dot(p,vec2(-d.y,d.x)));
- float streak=noise(vec2(r.x*.06,r.y*.75)+seed)*.42+noise(vec2(r.x*.025,r.y*.28)+seed*2.0)*.3+tooth*.18;
- float ends=pencilLane(p,d,6.0,seed)*.22;
- float edge=1.0-cover*.82;
- return smoothstep(edge-.16,edge+.16,streak+ends+.02)*step(.003,cover);
+vec3 waxColour(vec2 uv,float u){
+ vec3 centre=texture2D(tDiffuse,uv).rgb,sum=centre*2.0;float total=2.0;
+ // Keep edges while grouping photographic pores and grain into coloured strokes.
+ for(int i=0;i<8;i++){
+  float a=float(i)*.785398+.2;
+  vec3 c=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*u*4.5).rgb;
+  vec3 delta=c-centre;float w=exp(-dot(delta,delta)*24.0);sum+=c*w;total+=w;
+#ifndef LIGHT
+  vec3 wide=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*u*10.0).rgb;
+  delta=wide-centre;w=exp(-dot(delta,delta)*36.0)*.5;sum+=wide*w;total+=w;
+#endif
+ }
+ return sum/total;
 }
 void main(){
- float u=unit();
- vec2 p=vUv*uResolution/u;
- // A drawing is kept lighter than life in the middle tones (a face is not hatched dark); its blacks stay black.
- vec3 c=texture2D(tDiffuse,vUv).rgb;
- float l=luma(c);
- c=clamp(c*pow(max(l,.002),.9)/max(l,.002),0.0,1.0);
- l=luma(c);
- float tooth=noise(p*.9)*.6+noise(p*2.3)*.4;
- vec3 paper=vec3(.975,.962,.93)-.035*tooth;
- // Finished in the middle, lighter towards the edges; a dark part is drawn in full wherever it is (a night sky).
- vec2 v=(vUv-.5)*2.0;
- float finish=mix(mix(.5,1.0,1.0-smoothstep(.5,1.1,length(v))),1.0,1.0-smoothstep(.12,.4,l));
- // The strokes run along the picture's shapes where it has clear ones, and on the hand's natural diagonal elsewhere.
- float a=flowAngle(vUv,u);
- // Two pencils for every colour. The first lays the colour itself, at a light value, vivid, with paper between the
- // strokes, as much as that tone needs; the second, a darker pencil of the same colour, crosses it in the shadows.
- // A colour is trusted less the darker it is: the faint tint of a black is the camera's noise, not a colour.
- float top=max(c.r,max(c.g,c.b)),sat=(top-min(c.r,min(c.g,c.b)))/max(top,.04)*smoothstep(.05,.3,top);
- vec3 hue=mix(vec3(1.0),c/max(top,.04),smoothstep(.05,.3,top));
- vec3 light=mix(vec3(1.0),hue,min(1.0,sat*1.35))*max(top,.8);
- vec3 absorb=clamp(1.0-light/paper,0.0,1.0);
- float need=max(absorb.r,max(absorb.g,absorb.b));
- vec3 pigment=1.0-absorb/max(need,.06)*.72;
- float cover1=min(need/.72,.78)*finish;
- float m1=pencilGrain(p,a,cover1,1.0,tooth);
- vec3 col=paper*mix(vec3(1.0),pigment,m1);
- vec3 shade=mix(mix(vec3(1.0),hue,sat),vec3(.92,.9,1.0),.3*(1.0-sat))*mix(.13,.45,smoothstep(.04,.4,l));
- float after=luma(paper*mix(vec3(1.0),pigment,cover1));
- float cover2=clamp((after-l)/max(after-luma(shade*paper),.05),0.0,mix(.9,.78,smoothstep(.06,.2,l)))*finish;
- float m2=pencilGrain(p,a+1.1,cover2,40.0,tooth);
- col*=mix(vec3(1.0),shade,m2);
- // The darkest parts are burnished: pressed hard with the dark pencil until the strokes close up, the tooth still
- // catching a few flecks of paper.
- float burnish=(1.0-smoothstep(.03,.14,l))*finish*mix(.7,.95,smoothstep(.2,.6,tooth));
- col=mix(col,paper*shade*1.15,burnish);
- // Lines: only the clear edges, in the dark pencil, wobbling a little as a hand-drawn line does.
- vec2 wobble=(vec2(noise(p*.05),noise(p*.05+17.0))-.5)*uTexel*2.5*u;
- float e=smoothstep(.45,1.0,edges(vUv+wobble,1.5*u,1.0))*(.55+.45*noise(p*.3));
-#ifndef LIGHT
- e=max(e,spotBlack(vUv,u)*.9);
-#endif
- col=mix(col,shade*.8,clamp(e,0.0,1.0)*.85*mix(.7,1.0,finish));
- gl_FragColor=vec4(col,1.0);
+ float u=unit();vec2 p=vUv*uResolution/u;
+ vec3 under=waxColour(vUv,u);
+ // Colour is already in the underdrawing: a pale peach or blue must not vanish into unmarked paper.
+ float a=flowAngle(vUv,u);vec2 d=vec2(cos(a),sin(a)),n=vec2(-d.y,d.x);
+ vec2 r=vec2(dot(p,d),dot(p,n));
+ r.y+=(noise(p*.012)-.5)*7.0;
+ float lane=floor(r.y/13.0),travel=r.x+hash(vec2(lane,8.0))*48.0;
+ vec2 cell=floor(vec2(travel/48.0,r.y/13.0)),f=fract(vec2(travel/48.0,r.y/13.0));
+ vec2 shift=(.5-f.x)*48.0*d+(.5-f.y)*13.0*n;
+ vec3 laid=texture2D(tDiffuse,vUv+shift*uTexel*u*.65).rgb;
+ float edge=length(laid-under);
+ float strokeBody=smoothstep(.0,.2,f.x)*(1.0-smoothstep(.75,1.0,f.x))*smoothstep(.0,.2,f.y)*(1.0-smoothstep(.75,1.0,f.y));
+ vec3 c=mix(under,laid,strokeBody*(.45-.35*smoothstep(.08,.30,edge)));
+ // A small set of wax mixtures, blended by pressure rather than a continuous photographic gradient.
+ c=mix(c,floor(c*12.0+.5)/12.0,.28);
+ float l=luma(c);c=clamp(mix(vec3(l),c,1.10*smoothstep(.035,.17,l))*.99+.008,0.0,1.0);
+ // Broad side-of-crayon marks with rounded, overlapping ends, not crossed pencil lanes.
+ float end=smoothstep(.0,.14,f.x)*(1.0-smoothstep(.80,1.0,f.x));
+ float side=smoothstep(.0,.12,f.y)*(1.0-smoothstep(.85,1.0,f.y));
+ float pressure=mix(.55,1.0,hash(cell+vec2(4.0,19.0)))*mix(.72,1.0,end*side);
+ float tooth=noise(p*1.45)*.55+noise(p*.63+7.0)*.45;
+ float striae=noise(vec2(r.x*.12,r.y*1.6)+13.0);
+ float shadow=1.0-smoothstep(.12,.55,l);
+ // Successive wax layers leave little paper in the lights and almost none in a burnished dark.
+ float deposit=.78+.20*pressure+.16*(tooth-.5)+.10*(striae-.5);
+ deposit=mix(deposit,.974+.025*(tooth-.5),shadow*.85);
+ vec3 paper=vec3(.988,.982,.968);
+ vec3 col=mix(paper,c,clamp(deposit,0.0,1.0));
+ // A shallow wax ridge changes pressure, not the drawing's hue or its outline.
+ col*=1.0+(pressure-.72)*.075+(striae-.5)*.045;
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
 // The rubber stamp for a photograph. World's Stamp inks everything darker than one grey; on a photo a dark wall or
 // background then became one block that swallowed the hair and the shoulder against it, a shaded cheek a blot, and the
@@ -1162,6 +1148,7 @@ export const lookDrawsLines=name=>name==='adventureInk'||(name!=='none'&&lookUse
  * the town's middle.
  */
 export const INK_LOOKS=Object.freeze(['pocket','lines','manga','print','riso','pencilManga','stamp','cyanotype','nightVision','redVisor','risoPinkBlue','risoRedNavy','risoBlackPink','risoThree']);
+export const PAPERS=Object.freeze([{id:'none',label:'None'},{id:'drawing',label:'Drawing'},{id:'rough',label:'Rough'},{id:'warm',label:'Warm'}]);
 
 /** A recipe with every field present and in range. */
 export function normalRecipe(recipe={}){
@@ -1175,7 +1162,7 @@ export function normalRecipe(recipe={}){
  const stickers=(Array.isArray(recipe.stickers)?recipe.stickers:[]).filter(s=>typeof s?.id==='string').slice(0,40)
   .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
    ...(s.id.startsWith('balloon:')?{text:String(s.text??'').slice(0,140)}:{})}));
- return {layers,crop:normalCrop(recipe.crop),
+ return {layers,crop:normalCrop(recipe.crop),paper:PAPERS.some(p=>p.id===recipe.paper)?recipe.paper:'none',
   adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0),detail:n(a.detail,-1,1,0)},
   stamp:!!recipe.stamp,stickers,
   // The print's border (frames.js) and the trick lens.
@@ -1257,6 +1244,23 @@ void main(){
 const COPY=`#version 300 es
 precision highp float;in vec2 vUv;out vec4 fragColor;uniform sampler2D tDiffuse;
 void main(){fragColor=vec4(texture(tDiffuse,vUv).rgb,1.0);}`;
+
+// Optional stock after all Looks, before frames/lettering/stickers. No texture asset or network request.
+const PAPER=`#version 300 es
+precision highp float;in vec2 vUv;out vec4 fragColor;
+uniform sampler2D tDiffuse;uniform vec2 uResolution;uniform float uStock;
+float phash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float pnoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(phash(i),phash(i+vec2(1,0)),f.x),mix(phash(i+vec2(0,1)),phash(i+vec2(1,1)),f.x),f.y);}
+void main(){
+ vec3 c=texture(tDiffuse,vUv).rgb;
+ vec2 p=vUv*uResolution/max(.5,uResolution.y/1080.0);
+ float fine=pnoise(p*1.4)*.6+pnoise(p*.58+9.0)*.4;
+ float rough=pnoise(p*.35)*.65+pnoise(p*.8+11.0)*.35;
+ float fibre=pnoise(vec2(p.x*.12,p.y*1.9)+23.0);
+ float relief=uStock<1.5?(fine-.5)*.055:uStock<2.5?(rough-.5)*.17+(fine-.5)*.045:(fine-.5)*.07+(fibre-.5)*.035;
+ vec3 tint=uStock>2.5?vec3(.99,.958,.875):uStock>1.5?vec3(.985,.978,.954):vec3(.995,.993,.985);
+ fragColor=vec4(clamp(c*tint*(1.0+relief),0.0,1.0),1.0);
+}`;
 
 /**
  * The engine on one canvas. `light` asks for the versions of the heavy Looks a phone or tablet can afford in the
@@ -1386,6 +1390,7 @@ export function createLookEngine(canvas,{light=false}={}){
   f1(u.uLines,1080*2**-pattern);f1(u.uUnitFloor,floor);
   f1(u.uComic,1);f1(u.uSkyDepth,120);f1(u.uFocusDistance,6);f1(u.uFocusRange,3);f1(u.uNear,.05);f1(u.uFar,60);
  };
+ const paperUniforms=(recipe,w,h)=>u=>{gl.uniform2f(u.uResolution,w,h);f1(u.uStock,PAPERS.findIndex(p=>p.id===recipe.paper));};
 
  /**
   * Runs a recipe from a source into `output` (a framebuffer, null for the canvas, or 'pair' to leave the result in the
@@ -1402,13 +1407,16 @@ export function createLookEngine(canvas,{light=false}={}){
   if(!prep)return false;
   const steps=active.map((l,i)=>({layer:l,entry:entries[i]})).filter(s=>s.entry);
   const smooth=steps.some(s=>lookDrawsLines(s.layer.look)),auto=expose||steps.some(s=>INK_LOOKS.includes(s.layer.look));
+  if(recipe.paper&&recipe.paper!=='none'){
+   const entry=fixed('paper',PAPER);if(!entry)return false;steps.push({entry,paper:true});
+  }
   const vp=viewport||[0,0,width,height];
   if(!steps.length&&!intoPair){pass(prep,src,output,vp,prepare(recipe,source,crop,mirror,width,height,false,auto),tile);return true;}
   const p=pair(targetName,width,height);let read=0;
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
-  steps.forEach(({layer,entry},i)=>{
+  steps.forEach(({layer,entry,paper},i)=>{
    const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1),tile);
+   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],paper?paperUniforms(recipe,width,height):lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1),tile);
    read=1-read;
   });
   return intoPair?p.items[read].f:true;
@@ -1435,7 +1443,7 @@ export function createLookEngine(canvas,{light=false}={}){
    if(!sources.has(source)||gl.isContextLost())return null;
    const n=names.length,w=size*n,h=size,atlas=pair('atlas',w,h),missing=[];
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.viewport(0,0,w,h);gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);
-   const before={...recipe,layers:recipe.layers.slice(0,layer)};
+   const before={...recipe,paper:'none',layers:recipe.layers.slice(0,layer)};
    // Two pictures to draw the tiles over: as the layers before leave it, and exposed for an ink Look, as choosing one
    // would expose it.
    const base=pair('thumb-base',size,size);
@@ -1452,8 +1460,13 @@ export function createLookEngine(canvas,{light=false}={}){
     const entry=look(name);if(!entry){missing.push(name);return;}
     pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1));
    });
+   let result=atlas.items[0].f;
+   if(recipe.paper&&recipe.paper!=='none'){
+    const paper=fixed('paper',PAPER);if(!paper)return null;
+    pass(paper,atlas.items[0].t,atlas.items[1].f,[0,0,w,h],paperUniforms(recipe,w,h));result=atlas.items[1].f;
+   }
    const pixels=new Uint8Array(w*h*4);
-   gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+   gl.bindFramebuffer(gl.FRAMEBUFFER,result);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
    return {width:w,height:h,data:flipRows(pixels,w,h),missing};
   },
   /** The recipe at full quality and full size, as pixels (rows top first). */
