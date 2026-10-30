@@ -1,0 +1,64 @@
+name: Pocket Camera regression
+
+on:
+  pull_request:
+    paths: ['camera/**', 'tools/render-camera-looks.mjs', '.github/workflows/pocket-camera.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pocket-camera-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  camera:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CODEX_PRIMARY_RUNTIME_NODE_MODULES: /tmp/camera-test-runtime/node_modules
+      CAMERA_BASELINE: /tmp/camera-main-engine.js
+      CAMERA_MAIN_ENGINE: /tmp/camera-main-engine.js
+      CAMERA_REFINE_ENGINE: /tmp/camera-refine-engine.js
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            camera
+            tools
+            johansson-town/src/render
+            johansson-town/src/ui
+            johansson-town/tools/mcp
+            assets/images
+            assets/mascots
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Browser dependencies
+        run: |
+          npm install --prefix /tmp/camera-test-runtime --no-save --no-package-lock playwright@1.62.1
+          /tmp/camera-test-runtime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Prior engines for compatibility checks
+        run: |
+          git fetch --no-tags --depth=1 origin 87f47e8f6e5fafdb586ac723e9aa3cc704d11345 3af0bae6324fe73f974bd00bc371c6555d7f1e58
+          git show 87f47e8f6e5fafdb586ac723e9aa3cc704d11345:camera/looks-gl.js > "$CAMERA_MAIN_ENGINE"
+          git show 3af0bae6324fe73f974bd00bc371c6555d7f1e58:camera/looks-gl.js > "$CAMERA_REFINE_ENGINE"
+      - name: Unit, module and syntax checks
+        run: |
+          for test in camera/tests/*.test.mjs; do node "$test"; done
+          for source in camera/*.js camera/tests/*.browser.mjs tools/render-camera-looks.mjs; do node --check "$source"; done
+          git diff --check
+      - name: Combined browser regressions (Chromium emulation; Share mocked)
+        run: |
+          mkdir -p /tmp/camera-results
+          for suite in camera crop enhance save-share-layout paper integration; do
+            export CAMERA_SHOTS="/tmp/camera-results/$suite"
+            node "camera/tests/$suite.browser.mjs" | tee "/tmp/camera-results/$suite.log"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pocket-camera-chromium-evidence
+          path: /tmp/camera-results
+          retention-days: 14

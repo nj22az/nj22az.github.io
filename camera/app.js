@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030crop1';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261030rc1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
@@ -13,7 +13,7 @@ import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261030crop1';
-import {createPrinter} from './printer.js?v=20261029e';
+import {createPrinter} from './printer.js?v=20261030share1';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
 import {createBlackjack} from './blackjack.js?v=20261029b';
@@ -59,14 +59,14 @@ const state={
  edit:null,
  shots:[],viewing:null,
  sound:saved.sound!==false,
- // Every photo saved comes out of the printer first (printer.js); the settings row turns it off for quick shooting.
+ // Printing belongs to Share; saving a photo goes straight to the app's album.
  printer:saved.printer!==false,
 };
 state.camera.recipe.stamp=!!saved.stamp;
 const current=()=>state.mode==='editor'?state.edit:state.camera;
 function remember(){
  const c=state.camera,r=c.recipe;
- store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick},ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,printer:state.printer});
+ store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,printer:state.printer});
 }
 
 // ---------- The engine and its canvas ----------
@@ -161,7 +161,7 @@ function sound(kind){
  if(!['tick','feed','flip'].includes(kind))navigator.vibrate?.(kind==='shutter'?12:6);
 }
 
-// The printer every saved photo comes out of (printer.js).
+// The optional printer animation accompanies Share, without delaying the phone's share sheet.
 const printer=createPrinter({sound,reduceMotion});
 
 // ---------- Laying out the picture ----------
@@ -459,7 +459,7 @@ function drawEditor(){
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(ph,box.height*dpr,2048/Math.max(1,aspect),2048);
  setCanvasSize(h*aspect,h);
  // While erasing, the photo as it is under the Looks: no mirror trick, and no frame or date over its edges.
- const recipe=e.comparing?normalRecipe():e.erasing?{...e.recipe,trick:'none'}:e.recipe;
+ const recipe=e.comparing?normalRecipe():e.erasing?{...e.recipe,trick:'none',paper:'none'}:e.recipe;
  dirty=!engine.draw(recipe,{source:'edit',crop});
  paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing||e.cropping);
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing&&!e.cropping,e.taken,e.recipe.frame);
@@ -525,13 +525,13 @@ function renderCameraChips(){
  const c=state.camera,r=c.recipe,frame=FRAMES.find(f=>f.id===r.frame);
  setting('timer',{label:c.timer?`${c.timer}s`:'Timer',on:c.timer>0,aria:`Self-timer: ${c.timer?`${c.timer} seconds`:'off'}`});
  setting('ratio',{label:c.ratio,aria:`Picture shape: ${c.ratio}`});
- setting('frameSetting',{label:r.frame==='none'?'Frame':frame.label,on:r.frame!=='none',aria:`Frame: ${frame.label}`});
+ setting('frameSetting',{label:r.frame==='none'?'Frame':frame.label,on:r.frame!=='none'||r.paper!=='none',aria:`Frame: ${frame.label}; paper: ${PAPERS.find(p=>p.id===r.paper).label}`});
  setting('mirrorSetting',{label:r.trick==='none'?'Mirror':TRICK_LABELS[r.trick],on:r.trick!=='none',aria:`Mirror lens: ${TRICK_LABELS[r.trick]}`});
  setting('stamp',{label:'Date',on:r.stamp,aria:`Date stamp: ${r.stamp?'on':'off'}`});
- setting('printSetting',{label:'Print',on:state.printer,aria:`Printer when saving: ${state.printer?'on':'off'}`});
+ setting('printSetting',{label:'Print',on:state.printer,aria:`Printer when sharing: ${state.printer?'on':'off'}`});
  setting('soundSetting',{label:state.sound?'Sound':'Muted',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
  // What is switched on, beside the chevron, so it is never a surprise in the photo.
- const status=[c.timer&&'timer',r.frame!=='none'&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
+ const status=[c.timer&&'timer',(r.frame!=='none'||r.paper!=='none')&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
  $('settingsStatus').innerHTML=status.map(icon).join('');
  $('settingsToggle').classList.toggle('busy',status.length>0);
  $('zoom').textContent=`${c.zoom}×`;$('zoom').setAttribute('aria-label',`Zoom ${c.zoom}×`);
@@ -558,6 +558,7 @@ $('frameSetting').addEventListener('click',()=>{sound('tick');openFrameSheet();}
 function openFrameSheet(){
  const c=state.camera,preview=c.running?lookPreview({source:'live',crop:squareCrop(cameraCrop(),videoSize()),mirror:c.mirror,recipe:c.recipe},132):null;
  renderFrameChoices($('cameraFrames'),c.recipe.frame,preview,id=>{changeSetting(()=>{c.recipe.frame=id;});$('frameSheet').close();});
+ renderPaperChoices($('cameraPaperChoices'),c.recipe.paper,id=>{changeSetting(()=>{c.recipe.paper=id;refreshThumbs(true);});openFrameSheet();});
  openSheet($('frameSheet'));
  requestAnimationFrame(()=>$('cameraFrames').querySelector('[aria-checked="true"]')?.scrollIntoView({inline:'center',block:'nearest'}));
 }
@@ -647,15 +648,12 @@ async function takePhoto(){
   try{finished=await finishPhoto(engine.render(recipe,{source:'still',...output}),recipe,taken);}
   finally{engine.dropSource('still');}
   const {photo,thumb}=finished,source=await toBlob(still,'image/jpeg',.92);still.width=still.height=0;
-  // Printed, then into the album's thumbnail; the thumbnail changes when the print lands in it.
-  const printing=printPhoto(photo,output.width,output.height,()=>$('roll').getBoundingClientRect());
-  if(!printing)flyToRoll(photo);
-  await keep({photo,source,thumb,recipe,...output,taken:taken.getTime()},{roll:!printing});
-  if(printing){await printing;renderRoll(true);}
- }catch(err){console.error(err);toast('The photo could not be saved');}
+  await keep({photo,source,thumb,recipe,...output,taken:taken.getTime()});
+  flyToRoll(photo);
+ }catch(err){console.error(err);toast('The photo could not be saved to the app album');}
  finally{c.busy=false;$('shutter').classList.remove('waiting');$('count').textContent='';}
 }
-/** Plays the printer for a saved photo when it is on; a promise for its landing, or null when it does not play. */
+/** Plays the printer during Share; its animation never delays navigator.share's user gesture. */
 function printPhoto(blob,width,height,to){
  if(!state.printer||reduceMotion||printer.busy)return null;
  const url=URL.createObjectURL(blob);
@@ -741,10 +739,8 @@ async function loadShots(){
  // Do not hold up the album while samples download. An unavailable asset is retried on a later visit.
  try{await ensureAlbumSamples();await refreshShots();}catch{/* The owner's photos remain usable offline. */}
 }
-async function keep(shot,{roll=true}={}){
- if(!albumOK){offerFile(shot.photo);return null;}
- try{const r=await addShot(shot);albumRevision++;state.shots.unshift(r);if(roll)renderRoll(true);keepAlbum();return r;}
- catch{albumOK=false;offerFile(shot.photo);return null;}
+async function keep(shot){
+ const r=await addShot(shot);albumOK=true;albumRevision++;state.shots.unshift(r);renderRoll(true);keepAlbum();return r;
 }
 let rollURL;
 function renderRoll(pop=false){
@@ -854,13 +850,24 @@ async function openViewer(id){
 $('closeViewer').addEventListener('click',openAlbum);
 function canShareFiles(file){try{return !!navigator.share&&!!navigator.canShare?.({files:[file]});}catch{return false;}}
 function fileName(shot){const d=new Date(shot?.taken||Date.now()),ext=shot?.photo?.type==='image/png'?'png':'jpg';return `pocket-camera-${d.toISOString().slice(0,19).replace(/[:T]/g,'-')}.${ext}`;}
+let sharing=false;
 async function sharePhoto(shot){
+ if(sharing)return;
  const file=new File([shot.photo],fileName(shot),{type:shot.photo.type||'image/jpeg'});
- if(canShareFiles(file)){try{await navigator.share({files:[file],title:'Pocket Camera'});}catch(err){if(err?.name!=='AbortError')download(file);}return;}
- download(file);
+ sharing=true;$('sharePhoto').disabled=true;
+ let printing;
+ try{
+  printing=printPhoto(file,shot.width,shot.height,()=>$('viewerImage').getBoundingClientRect());
+  // Open within the original tap: waiting for the animation first can consume Safari's transient activation.
+  if(canShareFiles(file))await navigator.share({files:[file],title:'Pocket Camera'});
+  else download(file);
+ }catch(err){if(err?.name!=='AbortError')toast('Sharing could not be opened. Please try again.');}
+ finally{
+  printer.cancel();if(printing)await printing;
+  sharing=false;$('sharePhoto').disabled=false;
+ }
 }
 function download(file){const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
-function offerFile(blob){download(new File([blob],fileName(),{type:'image/jpeg'}));toast('Saved as a file');}
 $('sharePhoto').addEventListener('click',()=>state.viewing&&sharePhoto(state.viewing));
 $('editPhoto').addEventListener('click',async()=>{
  const shot=state.viewing;if(!shot)return;
@@ -900,7 +907,7 @@ async function useFiles(files){
 let importing=false;
 async function addToAlbum(files){
  if(importing||!engine)return;importing=true;
- const c=state.camera.recipe,recipe=normalRecipe({layers:mainLook(),frame:c.frame,stamp:c.stamp,adjust:{light:c.adjust.light}});
+ const c=state.camera.recipe,recipe=normalRecipe({layers:mainLook(),frame:c.frame,paper:c.paper,stamp:c.stamp,adjust:{light:c.adjust.light}});
  let done=0,failed=0;
  try{
   for(const file of files){
@@ -926,7 +933,7 @@ async function editFile(file){
  if(!isPicture(file)){toast('That is not a picture');return;}
  try{
   const picture=await decode(file);
-  const recipe=normalRecipe({layers:mainLook(),stamp:false});
+  const recipe=normalRecipe({layers:mainLook(),paper:state.camera.recipe.paper,stamp:false});
   const sourceBlob=file;
   openEditor({...picture,recipe,shotId:null,taken:new Date(file.lastModified||Date.now()),sourceBlob});
  }catch{toast('That picture could not be opened');}
@@ -980,6 +987,11 @@ function renderFramePanel(){
   const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.trick===t));b.dataset.trick=t;b.textContent=TRICK_LABELS[t];seg.append(b);
  }
  $('editStamp').setAttribute('aria-checked',String(e.recipe.stamp));
+ renderPaperChoices($('paperChoices'),e.recipe.paper,id=>{if(e.saving)return;e.recipe.paper=id;renderFramePanel();refreshThumbs(true);invalidate();});
+}
+function renderPaperChoices(box,current,pick){
+ box.textContent='';
+ for(const p of PAPERS){const b=document.createElement('button');b.type='button';b.textContent=p.label;b.dataset.paper=p.id;b.setAttribute('role','radio');b.setAttribute('aria-checked',String(current===p.id));b.addEventListener('click',()=>{sound('tick');pick(p.id);});box.append(b);}
 }
 $('mirrorChoices').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');state.edit.recipe.trick=b.dataset.trick;renderFramePanel();refreshThumbs(true);invalidate();});
 $('editStamp').addEventListener('click',()=>{const e=state.edit;if(!e)return;sound('tick');e.recipe.stamp=!e.recipe.stamp;renderFramePanel();invalidate();});
@@ -992,15 +1004,13 @@ $('saveEdit').addEventListener('click',async()=>{
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const output=photoSize(recipe.crop.w*e.width,recipe.crop.h*e.height);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',crop:recipe.crop,...output}),recipe,e.taken);
-  const printing=printPhoto(photo,output.width,output.height,()=>fitInside($('viewerStage').getBoundingClientRect(),output.width/output.height,8));
   let shot;
   if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...output,...(e.erased?{source:e.sourceBlob}:{})});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
   else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
-  if(printing)await printing;
-  if(shot)toast('Saved to the album');
- }catch(err){console.error(err);toast('The photo could not be saved');}
+  if(shot)toast('Saved to the app album');
+ }catch(err){console.error(err);toast('The photo could not be saved to the app album');}
  finally{e.saving=false;button.disabled=false;$('cancelEdit').disabled=false;button.textContent='Save';}
 });
 // Hold the picture to see the original.
@@ -1248,6 +1258,7 @@ function openStickerSheet(){
 $('stickerSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 function renderAdjusters(){
  const e=state.edit,box=$('adjusters');box.textContent='';
+ renderEnhance();
  for(const a of ADJUSTMENTS){
   const v=e.recipe.adjust[a.key],b=document.createElement('button');b.type='button';b.className=`adjuster${v<0?' neg':''}${v?' changed':''}`;b.dataset.key=a.key;
   b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.adjust===a.key));b.title=a.hint||a.label;
@@ -1267,6 +1278,25 @@ $('adjustSlider').addEventListener('input',ev=>{
 });
 $('adjustSlider').addEventListener('change',()=>refreshThumbs(true));
 $('adjustSlider').addEventListener('dblclick',()=>setAdjust(0));
+
+// Optional correction belongs to the recipe, not the source: off restores it exactly, and re-edit never stacks it.
+function renderEnhance(){
+ const amount=Math.round((state.edit?.recipe.enhance||0)*100);
+ $('enhancePhoto').setAttribute('aria-checked',String(amount>0));
+ $('enhanceStrength').value=amount;$('enhanceValue').textContent=amount?`${amount}%`:'Off';
+}
+function setEnhance(amount){
+ const e=state.edit;if(!e||e.saving)return;
+ if(e.recipe.enhance)e.enhanceAmount=e.recipe.enhance;
+ e.recipe.enhance=Math.max(0,Math.min(1,amount));if(amount>0)e.enhanceAmount=e.recipe.enhance;
+ renderEnhance();invalidate();
+}
+$('enhancePhoto').addEventListener('click',()=>{
+ const e=state.edit;if(!e||e.saving)return;
+ setEnhance(e.recipe.enhance?0:e.enhanceAmount||.65);refreshThumbs(true);sound('tick');
+});
+$('enhanceStrength').addEventListener('input',ev=>setEnhance(+ev.target.value/100));
+$('enhanceStrength').addEventListener('change',()=>refreshThumbs(true));
 
 // ---------- Keys, drops, the page coming and going ----------
 addEventListener('keydown',e=>{

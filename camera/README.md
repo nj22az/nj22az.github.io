@@ -58,6 +58,13 @@ when saving ? I want memory with our own photos or with the stickers".
   Applies to camera captures, edited photos and batch imports. Sources retain their editing resolution (up to
   4,096 pixels decoded); exports' dimensions in the album match the actual JPEG. Existing saved photos change only
   when saved again from the editor.
+- **Enhance photo** in Adjust: an optional switch and 0–100% strength (65% on first use). Gentle edge-preserving
+  smoothing, bounded luminance sharpening, crop-aware tone correction and restrained colour, applied before the Looks
+  and manual adjustments. Hold the photo to compare with the original; switch off to restore the unenhanced result.
+  The recipe retains the strength and re-edit starts from the retained source. Processing stays on the device, with
+  no downloads or uploads. This is conventional photographic correction, not AI reconstruction or upscaling.
+  No code, models or binaries from Merserk's Visual Enhancer are included: its Windows/DLSS/DirectML dependencies
+  do not run in this browser, and its source licence restricts redistribution and hosted equivalents.
 - **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
@@ -84,12 +91,16 @@ when saving ? I want memory with our own photos or with the stickers".
   recipe, so **Edit** starts again from the original with every Look, setting and sticker where it was. Share (the
   system sheet, so a phone can save to Photos or choose a social app) or download.
 
-- **The printer** (`printer.js`): every photo saved, from the shutter or the editor's Save, comes out of a little
-  printer first, as the hand-held camera's photos came out of its printer: a white toy printer in the icon's plastic
-  rises, the photo feeds up out of the slot in the motor's small steps on warm paper (its light blinks, it buzzes), is
-  torn off against the slot's teeth and flies into the album's thumbnail, or onto the photo after Save. About three
-  seconds; a tap skips to the tear; **Print** in the settings row turns it off for quick shooting; nothing plays with
-  reduced motion. The viewfinder holds still behind it, so the print moves smoothly.
+- **Save and Share**: Save and the shutter store photos directly in the app's album. **Share** opens the phone's
+  system sheet, where Photos/Save Image and other apps are available. The optional printer accompanies Share and
+  never delays the share call; **Print** switches that animation off, and reduced motion skips it. Cancelling Share
+  removes the printer without downloading or resaving. Unsupported file-sharing browsers offer Download. A failed
+  album save keeps the edit open and reports the error, without substituting a download.
+- **Paper** under Frame, in the editor and the camera's Frame sheet: None, Drawing, Rough or Warm. A deterministic
+  paper finish after the Looks, before frames, date and stickers. It follows the photo into the album and re-edit;
+  camera paper is remembered. None is the default and adds no pass or texture.
+- **Solitaire** fits its seven columns to the available board width, including narrow phones. Short landscape
+  screens use smaller cards; long runs scroll vertically. Rotation and browser-height changes retain the game.
 - **Memory** (`memory.js`, the game pad at the top of the album, or Play Memory in an empty album): pairs of cards
   face down, turn two, keep them if they match. Play with **your own photos** (at least six in the album), one of
   the residents' sticker sheets (each of the sheets above) or **your own stickers**; 6, 8, 10 or 12
@@ -146,11 +157,9 @@ even diagonal mesh over face and background alike with the colour washed to grey
 arm in front of it, blotted cheeks and a sandpaper speckle. The camera now draws both with its own versions
 (`CRAYON_BODY`, `STAMP_BODY` in `looks-gl.js`), under World's names and swatches; World's town Looks are unchanged.
 
-- **Pencil crayon:** strokes that follow the picture's clear edges (four directions blended, the hand's diagonal
-  elsewhere), long and far enough apart to read as strokes on a phone; two pencils per colour, the colour itself at a
-  light value with paper between the strokes and a darker pencil of the same colour crossing the shadows, so a navy
-  scarf stays navy and a black top black; a dark's faint tint is taken as noise, not colour (a night sky stays black);
-  the middle tones a little lighter than life (faces are not hatched dark); the picture's edges left lighter.
+- **Crayon:** wax pigment built in broad overlapping marks, with an edge-preserving colour underdrawing, lighter
+  tooth and denser burnished darks. Colour fills the form rather than remaining isolated pencil scratches; pale
+  skin retains its colour, and black cloth is a dark mass. Optional paper stock is chosen separately under Frame.
 - **Rubber stamp:** each tone judged against what is round it, so a light shape keeps its edge against a dark one and a
   soft shadow on a face is not darkened into a blot; the ink pressed harder on one side of the print, pooled at the cut
   edges, thinning in a mottle and missing the paper in ragged patches where the pressure was light.
@@ -347,12 +356,20 @@ techniques, drawn here:
   The Blender Thuan is rendered in Cycles by the studio's `3d/cast/shots_stickers.py`; the others by World's avatar
   code (`art/stickers/render.mjs`).
 
+## Integration candidate — 30 October 2026
+
+The combined Save/Share and Enhance review is recorded in [the integration handover](HANDOVER-INTEGRATION-2026-10-30.md), with [actual comparisons and phone-sized screenshots](qa/2026-10-30-integration/README.md). It retains the published crop/compression path. The separate #405 photographic-Look/person-mask development is not included. Main publication requires the owner's explicit instruction.
+
 ## Checks
 
 ```
 node camera/tests/looks-gl.test.mjs          # every Look converts; recipe, sizes, rows
 node camera/tests/crop.test.mjs              # crop bounds, shapes, zoom and recipe round trips
 node camera/tests/crop.browser.mjs           # gestures, source contact, saved pixels, compression and original retention
+node camera/tests/save-share-layout.browser.mjs # album-only saves, native-share mock, cancellation/failure and phone Solitaire sizing
+node camera/tests/enhance.browser.mjs         # reversible strength, crop/export, prior-engine parity
+node camera/tests/integration.browser.mjs     # full/LIGHT matrix, mixed thumbnails, exact JPEG/Share bytes, retained recipes
+node camera/tests/paper.browser.mjs           # paper preview/export agreement, colour/black retention, persistence and controls
 node camera/tests/blackjack.test.mjs         # scores and hand flow
 node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)
