@@ -1,0 +1,1 @@
+person-mask browser: local inference, same-colour outline, crop/mirror/Twin, thumbnail and stale-mask checks pass {"plain":246,"outlined":50,"inside":247,"mirror":50,"mirrorOld":246,"twin":50,"crop":28,"thumb":93,"stale":false,"cleared":246,"modelMs":744.9000000059605,"modelEmpty":true,"modelReady":true}

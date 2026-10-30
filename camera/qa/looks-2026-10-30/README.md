@@ -1,7 +1,7 @@
 # Looks review evidence, 30 October 2026
 
 Review branch `codex/pocket-camera-looks`, based on `claude/friendly-darwin-a4e3re` at `1ed9a7ef`.
-Implementation `45a7f51f`; no publication to main. Each pair is **round four | Codex's change**.
+Implementation `f59b2e10`; no publication to main. The original before/after sheets pair **round four | Codex's first pass**.
 
 - [Portraits, phone size](portraits-before-after.jpg): three portraits, six Looks.
 - [Scenes, phone size](scenes-before-after.jpg): café, garden and night, seven Looks.
@@ -34,3 +34,22 @@ Photo credits and changes:
 
 Mask research, exact asset sizes/hashes, Apache licence and phone limitations:
 [person-mask dependency note](../../vendor/person-mask/README.md).
+
+## Owner-list extension
+
+Final runtime `c67237c4`, [draft PR #405](https://github.com/nj22az/nj22az.github.io/pull/405). The same six sources and
+crop coordinates were used. Ten changed/new Looks × six were rendered full and LIGHT; VGA and Anime were rerendered
+on all six after refinement. Phone sheets and unscaled crops were inspected for each. One Codex reviewer used the
+README personas; this is not endorsement by the named artists or an independent human panel.
+
+- [Film Looks](new-film-looks.jpg): Natural, Colour film, Disposable, Warm slide, Soft negative and Instant; all six.
+- [Digital and painted Looks](new-digital-looks.jpg): 1-bit Mac, VGA adventure, Anime background, Glitch and Oil; all six.
+- [Oil before/after](oil-before-after.jpg): the preceding camera Oil versus the eight-sector camera body; all six.
+- [Final UI log](camera.browser.txt): 56/56, all 42 Looks drawn.
+- [Functional shader/pipeline log](photo-pipeline.browser.txt) and [real local mask log](person-mask.browser.txt).
+- [First-pass UI log](camera.browser-round5.txt): the earlier 34-Look runtime.
+- [Initial extension UI failure](camera.browser-first-extension-run.txt): Memory fit failed under concurrent large-image
+  load; the final full run passed unchanged bounds. The cause is unknown, not claimed fixed.
+
+Software large-output checks also completed for Oil, Anime and Glitch at 3000×4000. Inputs were enlarged bench
+photographs, not native 12 MP captures. Nothing here measures iPhone frame rate, memory or Safari compatibility.

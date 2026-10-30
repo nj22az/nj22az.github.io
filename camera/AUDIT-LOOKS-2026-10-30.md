@@ -151,8 +151,8 @@ print backlog takes precedence. No row is closed solely because code changed.
 
 ## Codex's next pass, on `codex/pocket-camera-looks` (not published)
 
-Commits `160cd50d` (local still-photo person mask) and `45a7f51f` (ranked refinements), after the re-audit
-`0f1b56e0`. Claude's later publication note `37befc31` was integrated as `03164642`; it changes documentation only,
+Commits `9483698f` (local still-photo person mask) and `f59b2e10` (ranked refinements), after the re-audit
+`53fc3edc`. Claude's later publication note `37befc31` was integrated as `04afb613`; it changes documentation only,
 not these tested shaders. It reports round four already published by Claude; none of this Codex pass is published.
 
 The person model was investigated **before adoption**: 249,537-byte Selfie Segmenter, Apache-2.0; its complete local
@@ -193,3 +193,50 @@ and whitespace checks pass; additional person-mask unit/browser checks pass. Fiv
 native 12 MP iPhone input**. Full details are in the handover and QA evidence. Physical iPhone frame rates, memory,
 thermal behaviour, first download/offline reuse and native-resolution photos remain unverified. Next: the owner
 tests the review branch on iPhone; then the three 4-point rows above, without losing readable facial features.
+
+## The owner's shader-list extension — 30 October 2026
+
+Read from upstream handover `bcfbbfcd`, integrated before implementation. The requested build order is represented
+by the implementation commits: Colour film `2debf445`; Disposable `c7a5fb5b`; original LUT grades `59464005`;
+1-bit Mac `910071bb`; VGA adventure `91ae88f3`; Anime background/shared eight-sector Oil `47e878c9`;
+multi-pass Glitch `060b12a7`; final refinements/tests `c67237c4`. Connected-upload commit identities are recorded in
+the handover; verification uses identical source/tree bytes. No World shader changed and nothing here is published.
+
+All eight additions have README judges. One Codex reviewer assessed all six photos in those personas, at phone-sheet
+size and in unscaled 300 × 300 subject/detail crops, then checked LIGHT versions. New Looks were compared with
+Natural and their medium's demands, not assigned a fictitious before-score. Oil/Instant were compared with the prior
+pass. VGA initially made false yellow/red islands on restaurant skin; coherent warm material ramps removed those.
+Anime initially looked too much like Oil; larger planes and a brighter, quieter wash now separate it. Both were
+re-rendered/reviewed on all six after refinement. Full/LIGHT outputs for Disposable, both LUTs, Mac and VGA are
+pixel-identical on the six photos. The five other LIGHT builds were inspected separately; phone-live Glitch is
+intentionally Natural while its editor/save uses the full sort.
+
+| Look | Judge | Score | Assessment / remaining fault |
+|---|---|---:|---|
+| Colour film | Saul Leiter / colour-negative photographer | 7 | Restrained skin, grain and a local warm halo; no orange veil. Halation is deliberately subtle at phone size; real highlights/phone colour still need the owner's review |
+| Disposable camera | 1990s teenager | 6 | Friends remain recognisable, cheap-lens corners and architectural curve/fringe read at 1:1. The effect is fairly restrained on a phone; flash is a 2D approximation |
+| Warm slide film | travel slide photographer | 6 | Warmer, firmer colour while keeping the scene; warm restaurant lighting can still overstate orange skin. Generic creative grade, not a measured film stock |
+| Soft negative film | portrait photographer / darkroom printer | 7 | Gentle toe and ceiling, quieter colour, believable skin on the set. Subtle by design; native iPhone wide-gamut handling remains unverified |
+| 1-bit Mac | Susan Kare / monochrome bitmap artists | 7 | Actual black/white pixels, an 8×8 ordered screen and readable portraits; dense foliage still looks like a processed photograph rather than chosen bitmap marks |
+| VGA adventure | Mark Ferrari | 5 | 200 rows, at most 256 palette colours, coherent warm skin/wood ramps; far cleaner skin after refinement. Still too much photographic grain and abrupt material-ramp boundaries, rather than an authored adventure background |
+| Anime background | Kazuo Oga | 6 | Calmer large planes, brighter foliage and a clear difference from Oil without character outlines. Some faces become patchwork and the café still needs more deliberate shape selection |
+| Glitch | Kim Asendorf | 5 | Real luminance sorting, legible untouched black/white barriers and coloured streaks. Fixed 16-cell run boundaries make an obvious curtain/grid; longer subject-led runs remain open |
+| Oil painting (existing) | Edward Hopper | 6 → 6 | Eight Gaussian sectors replace four rectangular winner-takes-all sectors; texture smooths without losing the scene. Technically better abstraction, but the overall artist score is unchanged: still too photographic on a phone |
+| Instant film (existing) | Wim Wenders | 7 → 7 | A weaker local halation term added without a light leak; development/fade retained. No overall score change |
+
+Old TV already has CRT curve/fringe/scanlines and is retained; Line drawing already uses DoG-style sampling and is
+retained, with its unresolved 4/10 face/readability faults above. No duplicate CRT/Ink sketch was created.
+
+Licences were checked before implementation ([primary-source record](SHADER-SOURCES-2026-10-30.md)); all new shader
+code and LUT data are written here, with no code port. Neither lygia nor Filters4Processing was copied. The tentative
+BSD description of android-gpuimage in the handover was corrected to its current README's Apache-2.0 statement.
+
+Verification on the final runtime: 56/56 UI checks, all **42** Looks compiled/drawn; conversion, single-address module,
+syntax, whitespace and mask checks pass. New functional browser checks prove identity-LUT axes/interpolation,
+distinct real grades, exactly two Mac colours/half-grey coverage, the VGA colour limit, a genuinely sorted run with
+its original value set, correct intensity mixing, unchanged barrier blocks, phone-live bypass/full phone save,
+local warm halation and reduced material noise in Oil. Python regenerates all three LUT strips pixel-for-pixel.
+Oil, Anime and Glitch completed 3000 × 4000 software output stress tests from the enlarged bench source; this is
+not native iPhone input. Physical speed, memory, heat, offline first-use, wide-gamut photos and native saves remain
+unverified. A first UI run failed Memory's existing card-fit assertion during concurrent 12 MP rendering; the final
+complete run passed the same bounds. Cause is not established and no Memory code or fit limit was changed.

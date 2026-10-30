@@ -411,7 +411,7 @@ steps, the print lands in the album, a tap skips it, Print off saves without it)
 the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
 the cartoon Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
 saved JPEG). Then, at phone and desktop size, it
-compiles and draws all 34 Looks on the camera picture, starts
+compiles and draws all 42 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, taps Miniature's focus onto the picture (and not without Miniature), sticks on a sticker (dragged, then pinched with two fingers) and a
 lettered balloon, takes the photo (the print's border is in the saved file), re-edits it from its source (Film frame,

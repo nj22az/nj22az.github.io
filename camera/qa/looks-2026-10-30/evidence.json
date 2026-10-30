@@ -1,7 +1,6 @@
 {
   "renderer": "Chromium 133.0.6943.0 / SwiftShader",
   "base": "1ed9a7ef",
-  "implementation": "45a7f51f",
   "round3": "3a54aa6cf",
   "round4": "507dad865",
   "photos": {
@@ -65,5 +64,67 @@
     }
   },
   "physical_iphone_tested": false,
-  "live_person_mask": false
+  "live_person_mask": false,
+  "first_pass_implementation": "f59b2e10",
+  "implementation": "c67237c47ce7cc20ddc9502fe5af19574bf2429a",
+  "review_pr": "https://github.com/nj22az/nj22az.github.io/pull/405",
+  "extension": {
+    "full_renders": 60,
+    "light_renders": 60,
+    "refined_on_all_six": [
+      "vgaAdventure",
+      "animeBackground"
+    ],
+    "new_looks": {
+      "colourFilm": 7,
+      "disposable": 6,
+      "warmSlide": 6,
+      "softNegative": 7,
+      "macOneBit": 7,
+      "vgaAdventure": 5,
+      "animeBackground": 6,
+      "glitch": 5
+    },
+    "existing_scores": {
+      "oil": [
+        6,
+        6
+      ],
+      "instant": [
+        7,
+        7
+      ]
+    },
+    "camera_browser_checks": 56,
+    "total_looks": 42,
+    "full_light_pixel_identical_on_six": [
+      "disposable",
+      "warmSlide",
+      "softNegative",
+      "macOneBit",
+      "vgaAdventure"
+    ],
+    "functional_checks": {
+      "identity_lut_max_channel_error": 2,
+      "vga_fixture_colours": 191,
+      "mac_half_grey_white_pixels_of_64": 32,
+      "sorting_mix_max_error": 0.5,
+      "sorting_barrier_error": 0,
+      "oil_noise_before": 1197,
+      "oil_noise_after": 662
+    },
+    "output_stress": {
+      "width": 3000,
+      "height": 4000,
+      "source": "1440 px bench photograph upscaled: not native 12 MP input",
+      "ms_including_compile_readback_png": {
+        "oil": 35661,
+        "animeBackground": 34380,
+        "glitch": 3049
+      }
+    },
+    "initial_memory_fit_failure": "First concurrent extension run failed; final standalone complete run passed the same bounds. Cause unestablished; no Memory implementation/tolerance changed.",
+    "phone_live_glitch": "bypass; frozen editor/save uses full sorting",
+    "judge": "one Codex persona review, not independent artists"
+  }
 }
