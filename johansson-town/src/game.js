@@ -183,7 +183,7 @@ const paintLoading=()=>new Promise(resolve=>{requestAnimationFrame(()=>setTimeou
 loadingProgress?.complete('code');loadingProgress?.watch(THREE.DefaultLoadingManager);
 const launchReport=createLaunchReport({storage:(()=>{try{return globalThis.localStorage;}catch{return null;}})(),events:globalThis});
 let firstPlayFrame=false,reportNextAt=0;
-const startupRecovery=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
+const startupRecovery=window.__JOHANSSON_STARTUP_RECOVERY__||createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 // A full-effects retry is one attempt, never a permanent override of recovery.
 if(new URLSearchParams(location.search).get('graphics')==='full'){const url=new URL(location.href);url.searchParams.delete('graphics');history.replaceState(history.state,'',url);}
@@ -375,7 +375,19 @@ function buildInk(){
 buildInk();
 loadingProgress?.complete('graphics');
 // One lifecycle below owns both context events and pauses every render path.
-let graphicsLifecycle=null;
+let graphicsReady=false,graphicsLifecycle=null;
+// Listen before the first loading yield: a lost context during town construction
+// needs preventDefault too. Gameplay callbacks wait until their state exists.
+graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>graphicsReady&&started,
+ setRunning:value=>{if(graphicsReady)started=value;window.__JOHANSSON_RUNNING__=value;},
+ save:()=>{if(graphicsReady)activities.save();},resetInput:()=>{if(graphicsReady)resetInput();},suspendInput:()=>{if(graphicsReady)gamepadInput.suspend();},
+ dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
+ restoreGraphics:()=>{redrawReleasedCanvases();if(graphicsReady){const below=world.ferry?.ferry?.userData.belowDeck;if(below){below.uploaded=false;for(const p of below.plates.children)if(p.material.map)p.material.map.userData.uploaded=false;}}renderer.setRenderTarget?.(null);if(graphicsReady)resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();if(graphicsReady)setTime();},
+ resetClock:()=>{if(graphicsReady)clock.getDelta();},followClock:()=>{if(graphicsReady)followClock();},
+ onLost:()=>{launchReport.stage('Graphics context lost');const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
+ onRestored:()=>{launchReport.stage('Graphics context restored');const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
+ onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
+});
 window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){return inkRecovery.failures;},get inkRetrying(){return !pipeline&&inkRecovery.retrying;},cel:celPass.stats,
  get scale(){return pipeline?pipeline.width/Math.max(1,renderer.getDrawingBufferSize(new THREE.Vector2()).x):1;},
  // What the east lawn's planting is actually wearing. The shrubs take the park's own
@@ -423,7 +435,7 @@ function islandDrawn(){
 }
 function firstFrameReady(){
  if(!started||firstPlayFrame||roomLoading||catchingUp)return;
- firstPlayFrame=true;islandDrawn();loadingProgress?.complete('frame');
+ firstPlayFrame=true;startupRecovery.running();islandDrawn();loadingProgress?.complete('frame');
 }
 /**
  * The ferry's engine-room plates (ferry-model.js belowDeck) are drawn only with the lens inside her hull, no higher
@@ -1994,7 +2006,7 @@ let opening=beginAtOpening();
 if(window.johanssonDesktop){const cp=recoverSakuraBenchCheckpoint(activities.state.desktopCheckpoint);if(cp!==activities.state.desktopCheckpoint)activities.state.desktopCheckpoint=cp;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
  seated=false;parkSeat=null;player.position.set(cp.x,groundHeight(cp.x,cp.z),cp.z);yaw=cp.yaw;pitch=Number.isFinite(cp.pitch)?Math.max(-1.25,Math.min(1.15,cp.pitch)):0;opening={caption:'Welcome back. Your island progress is restored.'};
 }}
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
 if(playingResident()){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 
@@ -2157,16 +2169,7 @@ const contextRail=createContextRail({onAction:(id,event)=>{
  return completion;
 }});
 
-graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>started,
- setRunning:value=>{started=value;window.__JOHANSSON_RUNNING__=value;},
- save:()=>activities.save(),resetInput,suspendInput:()=>gamepadInput.suspend(),
- dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
- restoreGraphics:()=>{redrawReleasedCanvases();{const below=world.ferry?.ferry?.userData.belowDeck;if(below){below.uploaded=false;for(const p of below.plates.children)if(p.material.map)p.material.map.userData.uploaded=false;}}renderer.setRenderTarget?.(null);resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();setTime();},
- resetClock:()=>clock.getDelta(),followClock,
- onLost:()=>{const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
- onRestored:()=>{const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
- onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
-});
+graphicsReady=true;
 function resizeRenderer(){if(concert?.active){concert.render();return;}const view=conversationViewport(innerWidth,innerHeight);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
 function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.g),...(world.neighbours||[])])if(g.userData.playerConversation){delete g.userData.playerConversation;delete g.userData.chatHold;delete g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
  if(name&&!conversationName){conversationSide=0;shotCut=true;conversationShot='speaker';conversationCamera={rotation:camera.quaternion.clone(),playerVisible:player.visible};johansson?.play('Nod');}

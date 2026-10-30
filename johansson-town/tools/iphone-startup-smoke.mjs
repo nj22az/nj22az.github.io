@@ -26,7 +26,7 @@ const step=(name,data={})=>{const item={name,seconds:+((Date.now()-started)/1000
 const state=()=>page.evaluate(()=>{
  const a=window.__JOHANSSON_AUDIT__,r=a?.renderer;
  return {running:!!window.__JOHANSSON_RUNNING__,safe:window.__JOHANSSON_SAFE_GRAPHICS__,loading:window.__JOHANSSON_LOADING__?.snapshot(),
-  room:a?.roomNavigation?.id||null,blocked:a?.blocked,player:a?.player?.position?.toArray?.(),
+  room:a?.roomNavigation?.id||null,blocked:a?.blocked,player:a?.player?.position,
   graphics:window.__JOHANSSON_LOOK__?.state,render:a?.renderInfo,frames:r?.info?.render?.frame,
   canvas:{width:document.querySelector('#game')?.width,height:document.querySelector('#game')?.height},
   fatal:document.querySelector('#fatal:not(.hidden)')?.textContent,
@@ -48,6 +48,27 @@ try{
  await context.addInitScript(()=>{
   if(!localStorage.getItem('johansson-town-clock'))localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));
   Element.prototype.requestFullscreen=async()=>{};
+  // Exercise a real context loss at the first loading yield, before town construction.
+  if(localStorage.getItem('iphone-test-early-loss')==='1'){
+   localStorage.removeItem('iphone-test-early-loss');
+   const original=HTMLCanvasElement.prototype.getContext;
+   HTMLCanvasElement.prototype.getContext=function(kind,...args){
+    const gl=original.call(this,kind,...args);
+    if(this.id==='game'&&kind==='webgl2'&&gl&&!window.__IPHONE_CONTEXT_TEST__){
+     const extension=gl.getExtension('WEBGL_lose_context');
+     const result=window.__IPHONE_CONTEXT_TEST__={supported:!!extension,lost:0,restored:0,prevented:false};
+     if(extension){
+      this.addEventListener('webglcontextlost',event=>{
+       result.lost++;
+       queueMicrotask(()=>{result.prevented=event.defaultPrevented;setTimeout(()=>extension.restoreContext(),300);});
+      });
+      this.addEventListener('webglcontextrestored',()=>result.restored++);
+      setTimeout(()=>extension.loseContext(),0);
+     }
+    }
+    return gl;
+   };
+  }
  });
  page=await context.newPage();
  page.on('pageerror',error=>report.errors.push(error.message));
@@ -70,6 +91,18 @@ try{
  await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation?.id==='izakaya'&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,null,{timeout:120000});
  const room=await state();assert.equal(room.running,true);assert.equal(room.fatal,undefined);step('entered Izakaya',room);
  await page.screenshot({path:resolve(out,'izakaya.png')});
+  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.save());
+  await boot(true);
+  assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.visited.includes('izakaya')),true,'Room discovery survives reload');
+  step('saved room discovery survives reload',await state());
+  await page.evaluate(()=>localStorage.setItem('iphone-test-early-loss','1'));
+  await boot(true);
+  const recovery=await page.evaluate(()=>window.__IPHONE_CONTEXT_TEST__);
+  assert.equal(recovery.supported,true,'The simulation must expose real graphics loss');
+  assert.equal(recovery.lost,1);assert.equal(recovery.prevented,true,'A loading-screen context loss must permit restoration');
+  assert.equal(recovery.restored,1);assert.equal((await state()).graphics.hdr,true,'Full HDR/ink returns after restoration');
+  step('real context loss during startup recovers',{recovery,...await state()});
+  await page.screenshot({path:resolve(out,'restored-startup.png')});
  assert.deepEqual(report.errors,[],'No uncaught errors or page crash');
  assert.deepEqual(report.consoleErrors.filter(m=>/shader error|VALIDATE_STATUS|WebGL.*(?:error|lost)/i.test(m)),[],'No graphics errors');
  report.passed=true;

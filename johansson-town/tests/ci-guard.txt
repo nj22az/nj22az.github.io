@@ -101,3 +101,9 @@ pixar-thuan.test.mjs
 pixar-johansson.test.mjs
 pixar-skin.test.mjs
 wave-gesture.test.mjs
+
+canvas-release.test.mjs
+graphics-lifecycle.test.mjs
+startup-recovery.test.mjs
+loading-progress.test.mjs
+startup-failure.test.mjs
