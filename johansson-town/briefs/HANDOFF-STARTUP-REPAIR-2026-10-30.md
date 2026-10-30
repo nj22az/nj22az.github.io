@@ -6,7 +6,10 @@ Owner: game does not start properly and kicks the player out; audit and remedy. 
 
 `codex/world-startup-repair`, from production `ff76aee1a30ff1d000bd5bb9ecf0475543915899`.
 [Draft PR #413](https://github.com/nj22az/nj22az.github.io/pull/413), into `main`. Not merged or published.
-The separate Izakaya CAD repair (#410) is not included. No character, scene, shader-quality or Linux release change.
+Code candidate `6d064234099d943d00e991d8455467063877de9b`, exact tested tree `4a87db3b53d49f27010f728619683b0ef6637f28`.
+Current main `87f47e8f6e5fafdb586ac723e9aa3cc704d11345` is merged into this branch: preserve the concurrent Lightpanda
+documentation and Blender sign correction. The handover conflict retains both entries. No running World source changed
+in that main update. The separate Izakaya CAD repair (#410) is not included. No character, scene, shader-quality or Linux release change.
 
 ## Findings and corrections
 
@@ -55,7 +58,9 @@ and harbour, not a blank or loading frame. The baseline does **not** reproduce t
 - The expanded WebKit run additionally checks save persistence and a real forced context loss during loading, with
   the driver's `WEBGL_lose_context` extension. Its result will be recorded after the corrected candidate runs.
 - Authored-file whitespace and JavaScript syntax checks passed.
-- Complete local guard and full-game CPU smoke were launched; final results are pending below.
+- Complete local guard: **505/505 passed, 96 files, 208 seconds**.
+- Full-game CPU wiring/interior smoke plus runtime package: **5/5 passed**, 159.8 seconds. The fixture reports its
+  existing placements-fetch warning; stability checks pass. It substitutes the renderer and does not establish GPU acceptance.
 
 ## Remaining acceptance
 

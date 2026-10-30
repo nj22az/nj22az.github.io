@@ -1,0 +1,25 @@
+{
+  "codeCommit": "6d064234099d943d00e991d8455467063877de9b",
+  "testedTree": "4a87db3b53d49f27010f728619683b0ef6637f28",
+  "checks": [
+    {
+      "command": "NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs",
+      "passed": 505,
+      "failed": 0,
+      "files": 96,
+      "seconds": 208.266
+    },
+    {
+      "command": "node --test tests/runtime-package.test.mjs tests/boot.test.mjs",
+      "passed": 5,
+      "failed": 0,
+      "seconds": 159.762
+    },
+    {
+      "command": "focused runtime/package/canvas/lifecycle/loading/startup tests",
+      "passed": 27,
+      "failed": 0
+    }
+  ],
+  "physicalDevice": false
+}
