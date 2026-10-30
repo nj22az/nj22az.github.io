@@ -1,0 +1,15 @@
+ok  Save persists only in the app album, with no printer, share or download
+ok  Share opens from the original tap and prints without delaying the share call
+ok  cancelling Share cleans up the printer without downloading or resaving
+ok  a rejected share is retryable and never triggers a download
+ok  unsupported file sharing offers Download only from the export button
+ok  album failure preserves the edit and never substitutes a phone download
+ok  Solitaire fits iphone-portrait-browser and keeps its game during resizing
+ok  Solitaire fits iphone-portrait-full and keeps its game during resizing
+ok  Solitaire fits iphone-landscape and keeps its game during resizing
+ok  Solitaire fits small-phone and keeps its game during resizing
+ok  Solitaire fits phone and keeps its game during resizing
+ok  Solitaire fits tablet and keeps its game during resizing
+ok  Solitaire fits desktop and keeps its game during resizing
+ok  no page errors
+14/14 save/share/layout checks passed

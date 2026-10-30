@@ -30,6 +30,11 @@ assert.equal(r.adjust.light,1);assert.equal(r.adjust.pattern,0);assert.equal(r.s
 assert.deepEqual(normalRecipe().layers,[{look:'none',amount:1}]);
 assert.deepEqual(normalRecipe().stickers,[]);
 assert.equal(normalRecipe().frame,'none');assert.equal(normalRecipe().trick,'none');assert.equal(normalRecipe().adjust.detail,0);
+assert.equal(normalRecipe().paper,'none');assert.equal(normalRecipe({paper:'rough'}).paper,'rough');assert.equal(normalRecipe({paper:'other'}).paper,'none');
+// Old albums stay unenhanced; malformed recipes cannot send invalid strength to the GPU.
+assert.equal(normalRecipe().enhance,0);
+for(const [value,expected] of [[-.5,0],[2,1],['0.37',.37],[NaN,0],[Infinity,0]])assert.equal(normalRecipe({enhance:value}).enhance,expected);
+assert.equal(normalRecipe(JSON.parse(JSON.stringify(normalRecipe({enhance:.65})))).enhance,.65);
 assert.equal(normalRecipe({frame:'panel',trick:'twin',adjust:{detail:-3}}).trick,'twin');
 assert.equal(normalRecipe({frame:'<b>',trick:'spin'}).frame,'none');assert.equal(normalRecipe({trick:'spin'}).trick,'none');
 assert.equal(normalRecipe({adjust:{detail:-3}}).adjust.detail,-1);

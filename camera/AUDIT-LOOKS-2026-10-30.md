@@ -1,5 +1,33 @@
 # Pocket Camera Looks, audited by their own users — 30 October 2026
 
+## Later owner's review: wax crayon and optional paper (branch only)
+
+The owner supplied an iPhone screenshot of a blonde portrait: diagonal brown cuts over the face, almost white hair
+and clothes, and background specks. Asked to “Audit as a crayon artist”, then asked for paper textures as an option.
+This pass is **this agent's artistic review**, not an independent reviewer or a claim of professional authorship.
+The raw portrait behind the screenshot was not supplied, so it was used to diagnose the faults; before/after renders
+use the six established bench photographs, not the already-filtered screenshot as a new source.
+
+Branch `codex/pocket-camera-save-share`, pending review/publication. [Review proof](qa/2026-10-30-refinements/crayon-review.jpg).
+
+| Artist's criterion | Published → revised (subjective /10) | Revision and remaining limit |
+| --- | --- | --- |
+| Wax rather than pencil hatching | 3 → 7 | Removed crossed pencil grain and edge ink; broad, overlapping side strokes with wax ridges and pressure. Procedural marks still follow local image gradients rather than a drawn anatomical plan. |
+| Layered pigment and values | 3 → 8 | A colour underdrawing retains pale tones; layered wax fills darks without a white lattice. No automatic exposure of Crayon. |
+| Faces and quiet backgrounds | 3 → 7 | Edge-preserving colour grouping retains eyes, lips and glasses without scratching pores across the face or printing contour specks on the background. Some fine edges remain photographic. |
+| Surface choice | 2 → 7 | None, Drawing, Rough and Warm are explicit options. Paper is a separate finish; the model approximates texture and colour, not physical pigment transport. |
+
+Three visual iterations were judged on portrait-restaurant, portrait-braids, portrait-hat, café, garden and night:
+the first retained colour but was too photographic; the second produced rectangular colour tiles and was rejected;
+the final feathers stroke boundaries and moderates the palette. Full and LIGHT builds were compared at phone size
+and the portraits at 1:1. Rough stock was also rendered on all six. No other Look body or World shader was changed.
+Physical iPhone frame rates and the owner's original unfiltered portrait remain unverified.
+
+The proof's portrait is Pexels 28890349, Ozan Çulha (Pexels licence), as recorded in `tools/camera-test-photos.py`.
+The wider bench's sources and licences remain recorded there; its other photographs are not duplicated in the repo.
+
+---
+
 The owner: "Yes proceed but you need audit yourself imagine you are a professional designer and you would pay a lot of
 money for this app", then "Identify who is the user for each shader, audit as this user. Manga is Rumiko Takahashi and
 Akira Toriyama for instance". Four independent reviewers, each in the persona of a Look's users (the table in

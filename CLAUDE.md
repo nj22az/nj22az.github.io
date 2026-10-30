@@ -201,6 +201,8 @@ updated the hotel feed my notes can be used to crafting a blog post always", "Li
 
 **REA** (reverse engineering for agents, `morluto/rea`) is a permanent development tool, registered as the `rea` MCP server in `.mcp.json` at a pinned version. Read the REA section of [AGENTS.md](AGENTS.md) for what to use it on and its limits.
 
+**Lightpanda** (headless browser for agents, `lightpanda-io/browser`, AGPL-3.0) is a development resource for fast DOM and script-output checks of the static site (`fetch --dump markdown`, CDP via `serve`, MCP via `mcp`). No rendering: never use it as visual, WebGL or layout evidence, and never bundle it. Install and limits are in the Lightpanda section of [AGENTS.md](AGENTS.md).
+
 ## Shared coding discipline
 
 Read [AGENTS.md](AGENTS.md) for the owner-adopted working rules based on multica-ai/andrej-karpathy-skills. For Johansson World also read [johansson-town/AGENTS.md](johansson-town/AGENTS.md), including the latest household and ship-role decisions. Preserve the existing project guidance above; the owner's more recent explicit decisions take precedence over older character descriptions.

@@ -2,7 +2,11 @@
 
 The owner asked for interior adverts for Sakura's upper office, hall and storage, using Artlist, then: "I want to improve the look at item function in the game I want to be able to take a look and enjoy zoom in, download etc like a virtual magazine".
 
-## State
+## Publication — 31 October 2026
+
+The owner explicitly authorised publication: “Push to main”. PR #409 was marked ready after the exact `415f1d60` candidate passed hosted World guard [41099425611](https://github.com/nj22az/nj22az.github.io/actions/runs/41099425611) and Linux console acceptance [41099425539](https://github.com/nj22az/nj22az.github.io/actions/runs/41099425539). Production advanced to `cf86ea2a` with Pocket Camera publication, tool documentation and the Blender washroom-sign builder correction. The only overlapping path is `HANDOVER.md`; the reconciliation preserves current main and adds this feature’s index row. Shipped World source, runtime and all artwork stay byte-identical to the tested candidate. Merge and Pages verification are pending at this writing; the limitations below remain.
+
+## Preparation history
 
 Prepared on `codex/item-magazine-viewer` from production `main`, fast-forwarded to `1d355885` (verified Kissa Higa/fish-market publication notes). Draft [PR #409](https://github.com/nj22az/nj22az.github.io/pull/409), feature commit `744e9037e9e2c5fa036b124f9d6d9a181b51f88d`. Not merged or published; the owner has not authorised publication. The GitHub app published a tree exactly equal to locally tested `b567ccf7` (tree `1eefb66d1c0058461aa952b8eb613ba339c2e533`), after shell Git lacked write credentials. The final artwork and six wall placements are implementation commit `0aee301ab2ec2cf5e63d2942b119f5dd3609aa3e`, whose tree `df15e6322970ad3076d75c95c528930c366365da` exactly matches locally tested `ee8420e4`. Current main `ff76aee1` was merged into this draft to resolve the handover index’s modify/delete conflict; the feature row and main’s Pocket Camera publication notes are both retained. This brings only already-published Camera files into branch ancestry; World source/runtime is unchanged by the merge and the tested runtime source hash below still matches. The later owner instructions — “They should have pretty Japanese girls in the ads” and “So pls update the walls” — are implemented below with adult Japanese models and six measured physical wall placements. The existing draft is updated; main remains untouched. Last fetched main `ff76aee1` differs from the feature base only in Pocket Camera and handover files; no newer World or Studio code/runtime is replaced.
 
@@ -48,4 +52,4 @@ The earlier reader UI cloud browser visual review used the actual components and
 
 ## Next
 
-Review the draft PR, verify the 3D product view and actual room art on a WebGL-capable browser, then publish only on the owner's word. All nine art revisions and the requested office/stockroom wall placements are included. No further generation, new rooms, Linux release or main publication is authorised by this draft.
+Merge the owner-authorised PR and verify Pages deployment and public runtime/artwork bytes. Then verify the 3D product view and actual room art on a WebGL-capable browser. All nine art revisions and the requested office/stockroom wall placements are included. No new generation, rooms or Linux release is part of this publication.

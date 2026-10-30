@@ -16,4 +16,11 @@ for(const file of fs.readdirSync(dir).filter(f=>f.endsWith('.js'))){
 }
 for(const [name,versions] of seen)
  assert.equal(versions.size,1,`${name} is imported at ${[...versions].map(([v,f])=>`${v||'no version'} (${f.join(', ')})`).join(' and ')}`);
+// The page, app and renderer are one release: a stale page must not select either feature branch's old module.
+const page=fs.readFileSync(path.join(dir,'index.html'),'utf8');
+const appVersion=page.match(/src="app\.js(\?v=[\w-]+)"/)?.[1];
+const cssVersion=page.match(/href="camera\.css(\?v=[\w-]+)"/)?.[1];
+assert.ok(appVersion,'the app has a page cache key');
+assert.equal(cssVersion,appVersion,'the controls and app ship together');
+assert.deepEqual([...seen.get('looks-gl.js').keys()],[appVersion],'the combined renderer shares the app release key');
 console.log(`modules: ${seen.size} camera modules, each at one address`);

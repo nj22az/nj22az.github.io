@@ -1,0 +1,698 @@
+[
+  {
+    "id": "thuan-blender/v-wave",
+    "radius": 4.608,
+    "removed": 379241,
+    "subject_pixels": 153455
+  },
+  {
+    "id": "thuan-blender/wave",
+    "radius": 4.608,
+    "removed": 376023,
+    "subject_pixels": 159098
+  },
+  {
+    "id": "thuan-blender/stand",
+    "radius": 4.608,
+    "removed": 299028,
+    "subject_pixels": 152003
+  },
+  {
+    "id": "thuan-blender/peace",
+    "radius": 4.608,
+    "removed": 313078,
+    "subject_pixels": 147350
+  },
+  {
+    "id": "thuan-blender/double-v",
+    "radius": 4.608,
+    "removed": 315662,
+    "subject_pixels": 148059
+  },
+  {
+    "id": "thuan-blender/thumbs-up",
+    "radius": 4.608,
+    "removed": 329471,
+    "subject_pixels": 152403
+  },
+  {
+    "id": "thuan-blender/fist-pump",
+    "radius": 4.608,
+    "removed": 354231,
+    "subject_pixels": 155426
+  },
+  {
+    "id": "thuan-blender/salute",
+    "radius": 4.608,
+    "removed": 322781,
+    "subject_pixels": 157337
+  },
+  {
+    "id": "johansson-pixar/Wave",
+    "radius": 4.608,
+    "removed": 375637,
+    "subject_pixels": 169192
+  },
+  {
+    "id": "johansson-pixar/Salute",
+    "radius": 4.608,
+    "removed": 329729,
+    "subject_pixels": 173761
+  },
+  {
+    "id": "johansson-pixar/HandsOnHips",
+    "radius": 4.608,
+    "removed": 370713,
+    "subject_pixels": 176816
+  },
+  {
+    "id": "johansson-pixar/Laugh",
+    "radius": 4.608,
+    "removed": 346985,
+    "subject_pixels": 167264
+  },
+  {
+    "id": "johansson-pixar/Think",
+    "radius": 4.608,
+    "removed": 334886,
+    "subject_pixels": 161723
+  },
+  {
+    "id": "johansson-pixar/ScratchHead",
+    "radius": 4.608,
+    "removed": 354765,
+    "subject_pixels": 180023
+  },
+  {
+    "id": "johansson-pixar/Shrug",
+    "radius": 4.608,
+    "removed": 462446,
+    "subject_pixels": 163444
+  },
+  {
+    "id": "johansson-pixar/Stretch",
+    "radius": 4.608,
+    "removed": 490124,
+    "subject_pixels": 151732
+  },
+  {
+    "id": "johansson-pixar/Clap",
+    "radius": 4.608,
+    "removed": 345845,
+    "subject_pixels": 155390
+  },
+  {
+    "id": "johansson-pixar/Cheer",
+    "radius": 4.608,
+    "removed": 512239,
+    "subject_pixels": 152137
+  },
+  {
+    "id": "johansson-pixar/Bow",
+    "radius": 4.608,
+    "removed": 343903,
+    "subject_pixels": 190031
+  },
+  {
+    "id": "johansson-pixar/JawDrop",
+    "radius": 4.608,
+    "removed": 392380,
+    "subject_pixels": 178537
+  },
+  {
+    "id": "johansson-pixar/Facepalm",
+    "radius": 4.608,
+    "removed": 326828,
+    "subject_pixels": 172884
+  },
+  {
+    "id": "johansson-pixar/OhNo",
+    "radius": 4.608,
+    "removed": 313531,
+    "subject_pixels": 161878
+  },
+  {
+    "id": "johansson-pixar/Shush",
+    "radius": 4.608,
+    "removed": 256301,
+    "subject_pixels": 156071
+  },
+  {
+    "id": "johansson-pixar/Flex",
+    "radius": 4.608,
+    "removed": 480267,
+    "subject_pixels": 178104
+  },
+  {
+    "id": "johansson-pixar/PointLaugh",
+    "radius": 4.608,
+    "removed": 270766,
+    "subject_pixels": 161580
+  },
+  {
+    "id": "johansson-pixar/FistPump",
+    "radius": 4.608,
+    "removed": 281043,
+    "subject_pixels": 136289
+  },
+  {
+    "id": "johansson-pixar/JumpForJoy",
+    "radius": 4.608,
+    "removed": 777715,
+    "subject_pixels": 198090
+  },
+  {
+    "id": "johansson-pixar/StartledJump",
+    "radius": 4.608,
+    "removed": 660534,
+    "subject_pixels": 185007
+  },
+  {
+    "id": "johansson-pixar/Sneak",
+    "radius": 4.608,
+    "removed": 439552,
+    "subject_pixels": 157007
+  },
+  {
+    "id": "johansson-pixar/Huff",
+    "radius": 4.608,
+    "removed": 304640,
+    "subject_pixels": 153398
+  },
+  {
+    "id": "johansson-pixar/Eyeroll",
+    "radius": 4.608,
+    "removed": 425896,
+    "subject_pixels": 162597
+  },
+  {
+    "id": "johansson-pixar/Seethe",
+    "radius": 4.608,
+    "removed": 358596,
+    "subject_pixels": 170766
+  },
+  {
+    "id": "thao-pixar/Wave",
+    "radius": 4.608,
+    "removed": 340269,
+    "subject_pixels": 147627
+  },
+  {
+    "id": "thao-pixar/Peace",
+    "radius": 4.608,
+    "removed": 324351,
+    "subject_pixels": 153424
+  },
+  {
+    "id": "thao-pixar/Coy",
+    "radius": 4.608,
+    "removed": 277219,
+    "subject_pixels": 135997
+  },
+  {
+    "id": "thao-pixar/Heart",
+    "radius": 4.608,
+    "removed": 288936,
+    "subject_pixels": 136594
+  },
+  {
+    "id": "thao-pixar/DoubleCheek",
+    "radius": 4.608,
+    "removed": 362619,
+    "subject_pixels": 138019
+  },
+  {
+    "id": "thao-pixar/CheekRest",
+    "radius": 4.608,
+    "removed": 343310,
+    "subject_pixels": 146666
+  },
+  {
+    "id": "thao-pixar/HeelKick",
+    "radius": 4.608,
+    "removed": 300900,
+    "subject_pixels": 123752
+  },
+  {
+    "id": "thao-pixar/Tada",
+    "radius": 4.608,
+    "removed": 740413,
+    "subject_pixels": 142860
+  },
+  {
+    "id": "thao-pixar/Laugh",
+    "radius": 4.608,
+    "removed": 308319,
+    "subject_pixels": 139917
+  },
+  {
+    "id": "thao-pixar/Clap",
+    "radius": 4.608,
+    "removed": 305312,
+    "subject_pixels": 134424
+  },
+  {
+    "id": "thao-pixar/Think",
+    "radius": 4.608,
+    "removed": 296753,
+    "subject_pixels": 134757
+  },
+  {
+    "id": "thao-pixar/Shrug",
+    "radius": 4.608,
+    "removed": 403837,
+    "subject_pixels": 139268
+  },
+  {
+    "id": "thao-pixar/JawDrop",
+    "radius": 4.608,
+    "removed": 396650,
+    "subject_pixels": 142660
+  },
+  {
+    "id": "thao-pixar/OhNo",
+    "radius": 4.608,
+    "removed": 292764,
+    "subject_pixels": 129767
+  },
+  {
+    "id": "thao-pixar/HideFace",
+    "radius": 4.608,
+    "removed": 262986,
+    "subject_pixels": 121706
+  },
+  {
+    "id": "thao-pixar/Shush",
+    "radius": 4.608,
+    "removed": 203737,
+    "subject_pixels": 132810
+  },
+  {
+    "id": "thao-pixar/Huff",
+    "radius": 4.608,
+    "removed": 220465,
+    "subject_pixels": 127332
+  },
+  {
+    "id": "thao-pixar/Eyeroll",
+    "radius": 4.608,
+    "removed": 364449,
+    "subject_pixels": 139118
+  },
+  {
+    "id": "thao-pixar/PointLaugh",
+    "radius": 4.608,
+    "removed": 255063,
+    "subject_pixels": 137624
+  },
+  {
+    "id": "thao-pixar/JumpForJoy",
+    "radius": 4.608,
+    "removed": 730720,
+    "subject_pixels": 172059
+  },
+  {
+    "id": "thao-pixar/StartledJump",
+    "radius": 4.608,
+    "removed": 582762,
+    "subject_pixels": 149649
+  },
+  {
+    "id": "thao-pixar/Sneak",
+    "radius": 4.608,
+    "removed": 423104,
+    "subject_pixels": 135578
+  },
+  {
+    "id": "thao-pixar/Skip",
+    "radius": 4.608,
+    "removed": 413086,
+    "subject_pixels": 136149
+  },
+  {
+    "id": "thao-pixar/Swoon",
+    "radius": 4.608,
+    "removed": 436287,
+    "subject_pixels": 125181
+  },
+  {
+    "id": "thuan-pixar/Fume",
+    "radius": 4.608,
+    "removed": 323963,
+    "subject_pixels": 170349
+  },
+  {
+    "id": "thuan-pixar/ShakeFists",
+    "radius": 4.608,
+    "removed": 367934,
+    "subject_pixels": 172692
+  },
+  {
+    "id": "thuan-pixar/Scold",
+    "radius": 4.608,
+    "removed": 310600,
+    "subject_pixels": 162581
+  },
+  {
+    "id": "thuan-pixar/Scold-sister",
+    "radius": 4.608,
+    "removed": 310600,
+    "subject_pixels": 162581
+  },
+  {
+    "id": "thuan-pixar/Huff",
+    "radius": 4.608,
+    "removed": 274114,
+    "subject_pixels": 154553
+  },
+  {
+    "id": "thuan-pixar/Eyeroll",
+    "radius": 4.608,
+    "removed": 330474,
+    "subject_pixels": 162234
+  },
+  {
+    "id": "thuan-pixar/Seethe",
+    "radius": 4.608,
+    "removed": 285886,
+    "subject_pixels": 171349
+  },
+  {
+    "id": "thuan-pixar/Seethe-late",
+    "radius": 4.608,
+    "removed": 285886,
+    "subject_pixels": 171349
+  },
+  {
+    "id": "thuan-pixar/JawDrop",
+    "radius": 4.608,
+    "removed": 351764,
+    "subject_pixels": 171898
+  },
+  {
+    "id": "thuan-pixar/Facepalm",
+    "radius": 4.608,
+    "removed": 334304,
+    "subject_pixels": 161555
+  },
+  {
+    "id": "thuan-pixar/OhNo",
+    "radius": 4.608,
+    "removed": 318446,
+    "subject_pixels": 167392
+  },
+  {
+    "id": "thuan-pixar/HideFace",
+    "radius": 4.608,
+    "removed": 268028,
+    "subject_pixels": 151203
+  },
+  {
+    "id": "thuan-pixar/Shush",
+    "radius": 4.608,
+    "removed": 250082,
+    "subject_pixels": 159999
+  },
+  {
+    "id": "thuan-pixar/Salute",
+    "radius": 4.608,
+    "removed": 249636,
+    "subject_pixels": 162802
+  },
+  {
+    "id": "thuan-pixar/Swoon",
+    "radius": 4.608,
+    "removed": 453396,
+    "subject_pixels": 164239
+  },
+  {
+    "id": "thuan-pixar/Flex",
+    "radius": 4.608,
+    "removed": 385118,
+    "subject_pixels": 175811
+  },
+  {
+    "id": "thuan-pixar/PointLaugh",
+    "radius": 4.608,
+    "removed": 280443,
+    "subject_pixels": 155353
+  },
+  {
+    "id": "thuan-pixar/FistPump",
+    "radius": 4.608,
+    "removed": 268381,
+    "subject_pixels": 147457
+  },
+  {
+    "id": "thuan-pixar/JumpForJoy",
+    "radius": 4.608,
+    "removed": 660881,
+    "subject_pixels": 196896
+  },
+  {
+    "id": "thuan-pixar/StartledJump",
+    "radius": 4.608,
+    "removed": 532011,
+    "subject_pixels": 172649
+  },
+  {
+    "id": "thuan-pixar/Sneak",
+    "radius": 4.608,
+    "removed": 380729,
+    "subject_pixels": 156703
+  },
+  {
+    "id": "thuan-pixar/Heart",
+    "radius": 4.608,
+    "removed": 272368,
+    "subject_pixels": 159247
+  },
+  {
+    "id": "thuan-pixar/Wave",
+    "radius": 4.608,
+    "removed": 314861,
+    "subject_pixels": 174263
+  },
+  {
+    "id": "thuan-pixar/Bow",
+    "radius": 4.608,
+    "removed": 331339,
+    "subject_pixels": 174910
+  },
+  {
+    "id": "thuan-pixar/Tada",
+    "radius": 4.608,
+    "removed": 665872,
+    "subject_pixels": 164592
+  },
+  {
+    "id": "thuan-pixar/stand",
+    "radius": 4.608,
+    "removed": 236020,
+    "subject_pixels": 175248
+  },
+  {
+    "id": "thuan/Fume",
+    "radius": 4.608,
+    "removed": 326775,
+    "subject_pixels": 251125
+  },
+  {
+    "id": "thuan/ShakeFists",
+    "radius": 4.608,
+    "removed": 356206,
+    "subject_pixels": 248011
+  },
+  {
+    "id": "thuan/Scold",
+    "radius": 4.608,
+    "removed": 245631,
+    "subject_pixels": 237446
+  },
+  {
+    "id": "thuan/Scold-sister",
+    "radius": 4.608,
+    "removed": 245631,
+    "subject_pixels": 237446
+  },
+  {
+    "id": "thuan/Huff",
+    "radius": 4.608,
+    "removed": 234254,
+    "subject_pixels": 210729
+  },
+  {
+    "id": "thuan/Eyeroll",
+    "radius": 4.608,
+    "removed": 328942,
+    "subject_pixels": 233443
+  },
+  {
+    "id": "thuan/Seethe",
+    "radius": 4.608,
+    "removed": 272088,
+    "subject_pixels": 250805
+  },
+  {
+    "id": "thuan/Seethe-late",
+    "radius": 4.608,
+    "removed": 272088,
+    "subject_pixels": 250805
+  },
+  {
+    "id": "thuan/JawDrop",
+    "radius": 4.608,
+    "removed": 335245,
+    "subject_pixels": 237551
+  },
+  {
+    "id": "thuan/Facepalm",
+    "radius": 4.608,
+    "removed": 275973,
+    "subject_pixels": 240608
+  },
+  {
+    "id": "thuan/OhNo",
+    "radius": 4.608,
+    "removed": 332396,
+    "subject_pixels": 241563
+  },
+  {
+    "id": "thuan/HideFace",
+    "radius": 4.608,
+    "removed": 254986,
+    "subject_pixels": 213703
+  },
+  {
+    "id": "thuan/Shush",
+    "radius": 4.608,
+    "removed": 237655,
+    "subject_pixels": 228855
+  },
+  {
+    "id": "thuan/Salute",
+    "radius": 4.608,
+    "removed": 224964,
+    "subject_pixels": 231039
+  },
+  {
+    "id": "thuan/Swoon",
+    "radius": 4.608,
+    "removed": 446877,
+    "subject_pixels": 229019
+  },
+  {
+    "id": "thuan/Flex",
+    "radius": 4.608,
+    "removed": 369959,
+    "subject_pixels": 251799
+  },
+  {
+    "id": "thuan/PointLaugh",
+    "radius": 4.608,
+    "removed": 288988,
+    "subject_pixels": 218365
+  },
+  {
+    "id": "thuan/FistPump",
+    "radius": 4.608,
+    "removed": 261588,
+    "subject_pixels": 223209
+  },
+  {
+    "id": "thuan/JumpForJoy",
+    "radius": 4.608,
+    "removed": 552894,
+    "subject_pixels": 255811
+  },
+  {
+    "id": "thuan/StartledJump",
+    "radius": 4.608,
+    "removed": 484098,
+    "subject_pixels": 253893
+  },
+  {
+    "id": "thuan/Sneak",
+    "radius": 4.608,
+    "removed": 348410,
+    "subject_pixels": 198814
+  },
+  {
+    "id": "thuan/Heart",
+    "radius": 4.608,
+    "removed": 255991,
+    "subject_pixels": 229815
+  },
+  {
+    "id": "thuan/Wave",
+    "radius": 4.608,
+    "removed": 283779,
+    "subject_pixels": 246943
+  },
+  {
+    "id": "thuan/Bow",
+    "radius": 4.608,
+    "removed": 424276,
+    "subject_pixels": 308126
+  },
+  {
+    "id": "thuan/Tada",
+    "radius": 4.608,
+    "removed": 594539,
+    "subject_pixels": 244644
+  },
+  {
+    "id": "thuan/stand",
+    "radius": 4.608,
+    "removed": 219785,
+    "subject_pixels": 241807
+  },
+  {
+    "id": "thuan-nils/Walk",
+    "radius": 4.608,
+    "removed": 226429,
+    "subject_pixels": 236711
+  },
+  {
+    "id": "thuan-nils/Run",
+    "radius": 4.608,
+    "removed": 284265,
+    "subject_pixels": 240336
+  },
+  {
+    "id": "thuan-nils/Dash",
+    "radius": 4.608,
+    "removed": 371205,
+    "subject_pixels": 245986
+  },
+  {
+    "id": "thuan-nils/hug",
+    "radius": 4.608,
+    "removed": 314319,
+    "subject_pixels": 448405
+  },
+  {
+    "id": "thuan-nils/kiss",
+    "radius": 4.608,
+    "removed": 536924,
+    "subject_pixels": 404926
+  },
+  {
+    "id": "thuan-nils/fight",
+    "radius": 4.608,
+    "removed": 400589,
+    "subject_pixels": 385683
+  },
+  {
+    "id": "thuan-nils/shove",
+    "radius": 4.608,
+    "removed": 339083,
+    "subject_pixels": 371545
+  },
+  {
+    "id": "thuan-nils/back-to-back",
+    "radius": 4.608,
+    "removed": 375338,
+    "subject_pixels": 389232
+  }
+]
