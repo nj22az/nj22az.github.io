@@ -116,7 +116,7 @@ const mixLabel=recipe=>recipe.layers.map(l=>lookLabel(l.look)).join(' + ');
  */
 const LOOK_GROUPS=(()=>{
  const groups=[
-  {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','colourFilm','tilt','nightVision']},
+  {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','colourFilm','disposable','tilt','nightVision']},
   {id:'games',label:'Games',looks:['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit']},
   {id:'80s',label:'80s',looks:['crt','camcorder']},
   {id:'drawn',label:'Drawn',looks:['lines','sketchbook','crayon','pencilManga','manga','flat','adventureInk','halftone']},

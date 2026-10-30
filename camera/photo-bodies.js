@@ -36,3 +36,20 @@ void main(){
  float grain=(noise(p*.62)*.55+hash(floor(p*.9))*.45-.5)*(.018+.027*4.0*l*(1.0-l));
  gl_FragColor=vec4(clamp(c+grain,0.0,1.0),1.0);
 }`;
+
+export const DISPOSABLE_BODY=`
+void main(){
+ float u=unit();vec2 p=(vUv-.5)*vec2(uResolution.x/uResolution.y,1.0);
+ float r2=dot(p,p),corner=.25*(1.0+pow(uResolution.x/uResolution.y,2.0));
+ vec2 uv=.5+(vUv-.5)*(1.0+.20*r2)/(1.0+.20*corner);
+ float outer=smoothstep(.10,.48,r2);vec2 fringe=(vUv-.5)*.004*outer;
+ vec3 c=texture2D(tDiffuse,uv).rgb*.5;
+ for(int i=0;i<6;i++){float a=float(i)*1.0472;c+=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*u*mix(.35,2.8,outer)).rgb/12.0;}
+ c.r=mix(c.r,texture2D(tDiffuse,uv+fringe).r,.65);
+ c.b=mix(c.b,texture2D(tDiffuse,uv-fringe).b,.65);
+ // A small direct flash reaches the centre; the cheap lens falls off towards the corners.
+ c*=.83+.27*exp(-r2*4.0);c+=vec3(.018,.022,.008)*exp(-r2*6.0);
+ c=mix(vec3(.035,.045,.038),vec3(.98,.96,.87),c);
+ c+=(hash(floor(vUv*uResolution/u))-.5)*.035;
+ gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
+}`;
