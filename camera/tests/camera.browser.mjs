@@ -103,7 +103,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.click('#lookGroups button[data-group="80s"]');
    assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['crt','camcorder'],'80s: Old TV and the VHS camcorder');
    await page.click('#lookGroups button[data-group="games"]');
-   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['pocket','snes'],'the game consoles together');
+   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit'],'the game consoles together');
    await page.click('#lookGroups button[data-group="80s"]');
    await page.click('.tile[data-look="crt"]');
    const layers=await app(()=>window.pocketCamera.state.camera.recipe.layers.map(l=>l.look));

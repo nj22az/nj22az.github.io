@@ -151,6 +151,56 @@ To judge a Look on real photographs, `node tools/render-camera-looks.mjs --looks
 draws them through the camera's own engine (`--light` for the phone builds); render into one folder before a change
 and another after.
 
+## Who each Look is for
+
+The owner (30 October 2026): "Identify who is the user for each shader, audit as this user. Manga is Rumiko Takahashi
+and Akira Toriyama for instance." Every Look is judged through the eyes of the people its medium belongs to, on real
+photographs (portraits, a café, a garden, a night street), at viewfinder size and at 1:1. A change to a Look is shown
+to its judge before it ships (`tools/render-camera-looks.mjs`, then a before/after sheet).
+
+| Kind | Look | Judged as |
+|---|---|---|
+| Photo | Natural | an iPhone photographer: nothing lost or shifted |
+| | Black & white | Daidō Moriyama |
+| | Sepia | a Meiji-era studio portrait photographer; the family album |
+| | Instant film | Wim Wenders and his Polaroids |
+| | Miniature | Olivo Barbieri's tilt-shift cities |
+| | Night vision | a wildlife cameraman filming through an image intensifier |
+| Games | Pocket | the Game Boy Camera's team and its players (1998) |
+| | Colour hand-held | Game Boy Color pixel artists (the Pokémon Gold and Silver years) |
+| | Red visor | the Virtual Boy (Gunpei Yokoi) |
+| | 8-bit | Famicom pixel artists |
+| | 16-bit | Super Famicom pixel artists (Chrono Trigger, with Toriyama's designs) |
+| | 32-bit | PlayStation artists and today's PS1-look community |
+| | 64-bit | Nintendo 64 texture artists (Mario 64, Ocarina of Time) |
+| 80s | Old TV | a family watching a Shōwa-era television |
+| | VHS camcorder | a parent filming a 1980s school sports day |
+| Drawn | Manga | Rumiko Takahashi and Akira Toriyama: the printed tankōbon page |
+| | Pencil manga | the same mangaka's pencils before inking; Takehiko Inoue's pencil work |
+| | Line drawing | Moebius |
+| | Sketchbook | an architect sketching on site; the Urban Sketchers |
+| | Pencil crayon | a picture-book illustrator in coloured pencil |
+| | Adventure Ink | Akira Toriyama's colour pages |
+| | Cartoon | a TV anime colour designer (Crayon Shin-chan, Doraemon) |
+| | Comic dots | the printers of 1960s colour comics; Roy Lichtenstein |
+| Painted | Watercolour | Beatrix Potter; a modern urban watercolourist |
+| | Oil painting | Edward Hopper |
+| | Heavy brush | Vincent van Gogh |
+| Print | Woodblock | Hokusai, Hiroshige and Kawase Hasui |
+| | Risograph | a zine maker at a Risograph studio |
+| | Rubber stamp | the designers and collectors of Japanese station stamps (eki stamps) |
+| | Blueprint | Anna Atkins; an engineer's blueprint |
+
+## The game consoles
+
+The owner (30 October 2026): "I want more video game shaders, n64, Gameboy color, PlayStation etc". Five camera-only
+Looks join Pocket and 16-bit under Games, each drawing a photo under its machine's real picture constraints, never named
+after it (as with Pocket and 16-bit): **Colour hand-held** (160×144, every 8×8 tile in four shades of its own colour,
+15-bit), **Red visor** (384×224, four shades of LED red on black, the dark between the pixels), **8-bit** (256×240 wide
+pixels, every colour from the fixed palette of fifty-odd, ordered dither), **32-bit** (320×240, unfiltered texels, the
+graphics chip's four-by-four dither before the colour is cut) and **64-bit** (a small texture three-point filtered, the
+haze of a fogged world, 16-bit colour with a fine noise dither).
+
 ## Erase
 
 The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint
@@ -240,7 +290,7 @@ steps, the print lands in the album, a tap skips it, Print off saves without it)
 the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
 the cartoon Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
 saved JPEG). Then, at phone and desktop size, it
-compiles and draws all 25 Looks on the camera picture, starts
+compiles and draws all 30 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a
 lettered balloon, takes the photo (the print's border is in the saved file), re-edits it from its source (Film frame,

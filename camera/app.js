@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261029s';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030a';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029t';
@@ -100,7 +100,7 @@ const mixLabel=recipe=>recipe.layers.map(l=>lookLabel(l.look)).join(' + ');
 const LOOK_GROUPS=(()=>{
  const groups=[
   {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','tilt','nightVision']},
-  {id:'games',label:'Games',looks:['pocket','snes']},
+  {id:'games',label:'Games',looks:['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit']},
   {id:'80s',label:'80s',looks:['crt','camcorder']},
   {id:'drawn',label:'Drawn',looks:['lines','sketchbook','crayon','pencilManga','manga','flat','adventureInk','halftone']},
   {id:'painted',label:'Painted',looks:['watercolour','oil','brushOil']},
