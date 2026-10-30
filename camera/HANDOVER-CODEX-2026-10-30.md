@@ -184,3 +184,27 @@ node camera/tests/camera.browser.mjs     # 56 checks, about 5 minutes, Chromium 
    row in [../HANDOVER.md](../HANDOVER.md) with commits, checks run and what is still unverified.
 
 The test photos' sources and licences are in `tools/camera-test-photos.py`; they are not kept in the repository.
+
+## The owner's shader list (30 October 2026, evening), for Codex to build
+
+The owner sent a list of photo-editor shaders and reference repositories and asked for them. Half already exist in the
+camera; improve those rather than add duplicates. Each new Look gets a judge in README "Who each Look is for", a kind in
+`LOOK_GROUPS`, a stand-in swatch in `LOOK_STANDIN`, and the same render / judge / checks loop as above.
+
+| Shader | Already in the camera | What to do |
+|---|---|---|
+| Kuwahara, generalized anisotropic | World's Oil is a 4-sector Kuwahara steered by the structure tensor | Give Oil (via `PHOTO_EDITS` or a camera body) 8 Gaussian-weighted sectors (Kyprianidis); its judge asked for exactly that. A new **Anime background** Look (judge: Kazuo Oga, Ghibli backgrounds) from the same filter, flatter and brighter |
+| Film halation and bloom | Black & white's halation term only | A new **Colour film** Look: bright areas thresholded, blurred wide, tinted red-orange, screened back; also add halation to Instant film |
+| Bayer dither and palettes | Pocket, Red visor, 8-bit, Colour hand-held use `bayer4` | New: **1-bit Mac** (judge: Susan Kare; black and white, 8×8 ordered dither) and **VGA adventure** (judge: Mark Ferrari; a 256-colour painted-background palette) |
+| Chromatic aberration and barrel distortion | Old TV has a fringe and a curve | A new **Disposable camera** Look (judge: a 1990s teenager's disposable camera): barrel warp, radial RGB split, soft corners, flash fall-off, date stamp from the existing setting |
+| CRT scanlines and phosphor mask | Old TV | Leave as it is, or an **Arcade** variant with a slot mask and stronger bloom |
+| Pixel sorting | none | A new **Glitch** Look (judge: Kim Asendorf). Needs more than one pass: the engine runs one pass per Look but already has ping-pong pairs in `run()`; add multi-pass support for a Look first, keep it out of the phone viewfinder if it is slow |
+| 3D LUT colour grading | none | WebGL2 has `texImage3D`/`sampler3D`. Generate LUTs **ourselves** in Python (a `tools/` script, 32³, stored as PNG strips) and give them generic names (Warm slide film, Soft negative film…), not film brands, whose names are trademarks and whose LUT files carry licences. One body, many Looks |
+| Sobel / DoG edge sketch | `lineAt` in `PHOTO_LINES` is DoG-style already | An XDoG threshold (soft tanh step) could replace or join `lineAt` for an **Ink sketch** Look; judge it against Line drawing so they differ |
+
+**References: study, never paste without checking the licence.** The camera's code is written fresh (looks-gl.js
+says so). Verify each licence before porting a line, and credit a port in the code: evanw/glfx.js (MIT, as I recall),
+pmndrs/postprocessing (zlib, as I recall), BradLarson/GPUImage3 and cats-oss/android-gpuimage (BSD-style, attribution
+needed); patriciogonzalezvivo/lygia is under the Prosperity/Patron licences (not free for commercial use: read it, do
+not copy); SableRaf/Filters4Processing collects Shadertoy shaders, often CC BY-NC-SA (non-commercial, share-alike: do
+not copy).
