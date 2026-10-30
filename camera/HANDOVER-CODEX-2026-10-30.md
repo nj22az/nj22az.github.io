@@ -9,12 +9,11 @@ backlog. The day's full history is the first section of [HANDOVER-2026-10-29.md]
 
 | | Commit | State |
 |---|---|---|
-| `main` (the live site) | `3a54aa6cf` | Rounds one to three: published on the owner's word ("Push then work the rest", "Yes then proceed") |
-| `claude/friendly-darwin-a4e3re` | `507dad865` | Round four on top, **not published**: strokes not specks, the cel Looks' despeckle, tap to focus Miniature |
-| This handover and its two tools | the commit after `507dad865` | Same branch |
+| `main` (the live site) | `1ed9a7ef2` | Rounds one to four and this handover, all published on the owner's word ("Push then work the rest", "Yes then proceed", and "Yes" to publishing round four, 30 October) |
+| `claude/friendly-darwin-a4e3re` | the same, plus this note's update | Claude's working branch |
 
-Publishing round four (or anything after it) to `main` needs the owner's explicit word. Branch off
-`claude/friendly-darwin-a4e3re`; `main` fast-forwards to it today.
+Anything you do next goes to `main` only on the owner's explicit word. Branch off `main` or
+`claude/friendly-darwin-a4e3re` (they are the same code).
 
 ## What the owner asked, in order (30 October 2026)
 
