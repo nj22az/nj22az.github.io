@@ -59,3 +59,21 @@ Run in this cloud session (Node 22, swiftshader; no GPU browser, no physical dev
   exported for them.
 - Cost: about +38,000 vertices (town about 2.9 million); the test caps the market at 56,000.
 - Next: the owner reviews the after photos; publish to `main` only on the owner's word.
+
+## Next task, not started: a kissaten in the shut Higa Liquor (the owner's decision, 30 October 2026)
+
+The owner: "Since the liquor store is closed maybe it can be replaced by one of the buildings maybe the cafe" (the
+Afternoon Kissaten of the survey). Asked who keeps it, the owner chose **Grandmother Higa, mornings**: a morning-set
+kissaten (coffee, thick toast, boiled egg) about 07:00–09:30 in her own shop-house (plot `higa-saketen`, EAST_ROW), before
+she keeps Umi-no-yu's bandai (10:00–17:00); she also keeps Johansson Mart's till on weekday evenings and Saturdays.
+
+Plan (nothing built): shutter up in her hours, a green awning and a 喫茶 sign for the old fascia, a pavement A-board, a
+counter with siphons on spirit lamps, cups, a back bar and a record player, counter seats; menu morning set, coffee and
+iced coffee; no alcohol (it stays Sakura's, the 22 October ruling); keep the family kusu behind the counter and the
+yuntaku bench. Supplies from Sakura Trading (merchandising.js). Must change with it: `commerce/higa-liquor.js` and
+`okinawa/higa-liquor-dressing.js`, Grandmother Higa's day (cast.js, canonical-day.js), `tests/higa-liquor-laundry.test.mjs`
+(in the CI guard), cast.js PLACES 'higa-liquor', and the root CLAUDE.md and AGENTS.md text that the shop "stands shut".
+A full map of every place that says the shop is shut was started and stopped unfinished; redo it first.
+
+Meshy: the owner is adding `MESHY_API_KEY` to the cloud environment's variables (30 October); a new session reads it.
+
