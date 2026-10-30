@@ -20,7 +20,7 @@ export const STREET_LOTS=Object.freeze([
  Object.freeze({
   id:'higa-crate-yard',formerly:'yonamine',use:'crate-yard',name:'Higa Liquor’s crate yard',
   rect:rect(-15.9,-8.25,9.35,15.25),walls:Object.freeze({north:'block',south:'block',east:'block',west:'block'}),gates:Object.freeze({east:Object.freeze([[10.8,13.2]])}),
-  owner:'Grandmother Higa (her shop across Main Street is shut)',users:'Sakura Trading, which rents it since Higa Liquor closed (22 October 2026)',
+  owner:'Grandmother Higa (her old liquor shop across Main Street is Kissa Higa in the mornings)',users:'Sakura Trading, which rents it since Higa Liquor closed (22 October 2026)',
   why:'The drink trade is Sakura Trading’s now, and its depot on the quay has no room for empties. The round’s empties come back in crates and wait here, stacked, for the brewery’s boat, as they did for the Higas.',
   hours:'The round’s empties stacked at half past eleven on Tuesdays and Fridays (commerce/trade-round.js).',
   stories:['children counting bottles','the clink at half past eleven on a round day','a crate tower after a festival'],

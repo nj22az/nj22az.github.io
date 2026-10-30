@@ -458,6 +458,9 @@ export function residentPlan(profile,minutes,rain=false,state=null){
  if(profile?.name==='Chin'&&onWatch(minutes))return {...ABOARD_AS_MOTORMAN};
  // Thuan's weekend is on Kitano-jima, before anything else is read.
  if(profile?.name==='Thuan'){const weekend=thuanWeekendPlan(minutes);if(weekend)return weekend;}
+ // Kissa Higa is breakfast, replacing the home breakfast/preparation rather than losing to it. The street cast does
+ // not use canonicalDay like the secondary neighbours: its actual planner must read the decided visit too.
+ {const breakfast=shopDayPlan(profile?.name,minutes);if(breakfast?.place==='kissa-higa')return breakfast;}
  // A worker straight off the ship takes a break on the quay's shared spots (quay-breaks.js: Chin, after he signs off);
  // the harbour agent's is read inside his own day, below the ferry's call for her lines.
  if(!rain&&profile?.name!=='Harbour master'){const quayBreak=quayBreakPlan(profile?.name,minutes);if(quayBreak)return quayBreak;}

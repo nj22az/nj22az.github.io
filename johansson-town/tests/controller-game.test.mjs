@@ -7,6 +7,9 @@ import {installDOM} from './fixtures.mjs';
 // Only rendering, asset transport and browser APIs are replaced in this smoke.
 test('controller and camera controls boot in the game, pause movement in settings and resume cleanly',async()=>{
  installDOM();globalThis.innerHeight=768;globalThis.matchMedia=()=>({matches:false});globalThis.addEventListener=()=>{};
+ // 30 October 2026 publication: the random opening can put this input smoke beside an occupied fish-auction mark.
+ // The same 2.7 cm stop reproduces on unchanged main. Use the clear ferry landing; keep every control assertion.
+ location.search='?spawn=ferry';location.href+=location.search;
  globalThis.requestAnimationFrame=()=>1;globalThis.cancelAnimationFrame=()=>{};document.querySelectorAll=()=>[];
  document.head=document.createElement('head');document.getElementById=id=>document.querySelector('#'+id);document.hidden=false;window.devicePixelRatio=1;
  let pads=[];Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>pads});
@@ -19,6 +22,7 @@ test('controller and camera controls boot in the game, pause movement in setting
  source+='\nexport {camera,player,activities,cameraControls,touchSticks,controllerFrame,updateController,simulate,controlsAllowed,resetInput,centreCamera,keys};export const stand=()=>{seated=false;parkSeat=null;};export const resetMovementSample=()=>{walkMotion.reset();accumulator=0;};';
  try{
   const api=await import(data(source));assert.equal(window.__JOHANSSON_RUNNING__,true);assert.equal(window.__JOHANSSON_STABILITY__.ok,true,window.__JOHANSSON_STABILITY__.failures.join(', '));api.stand();assert.ok(api.controlsAllowed());
+  assert.deepEqual([api.player.position.x,api.player.position.z],[-1.5,-72.7],'the controller smoke starts on its clear ferry landing');
   const p={id:'CPU standard pad',index:0,mapping:'standard',connected:true,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};pads=[p];api.updateController(1/60);
   p.axes=[0,0,1,.2];api.updateController(1/60);const before=api.camera.quaternion.clone();api.simulate(.1);assert.ok(api.camera.quaternion.angleTo(before)>.05,'Right stick turns the actual game camera');
   api.cameraControls.open();assert.equal(api.controlsAllowed(),false);api.resetInput();assert.deepEqual(api.touchSticks.move,{x:0,y:0});

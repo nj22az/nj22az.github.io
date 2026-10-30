@@ -61,7 +61,7 @@ Kitano-jima's terrain, outline, trails and plantings are `src/world/tropical-isl
    stands, the island landscape, the countryside, the brick planters, Blue Coral, the Rainflower lane and the
    izakaya frontage. Glowing or rain-darkened materials stay live. This saves 5–8 % of draw calls in every view
    measured. The rest of the cost is the outline and shadow passes, which a later phase should target.
-4. **Life on Kitano-jima.** The Coral Bay Bar is supplied by Higa Liquor (Umineko lager) and Sakura Trading
+4. **Life on Kitano-jima.** The Coral Bay Bar is supplied by Sakura Trading (its Umineko lager was Higa Liquor's until the shop closed, 22 October 2026)
    (juice). It rents out parasols. Jun eats his lunch on the sand. Coral Bay and the utaki are storyteller places
    with captured backdrops.
 5. **Detail.** `vegetation-kit.js` grows plants from their anatomy in the cel-shaded style:
@@ -102,7 +102,7 @@ Okinawan buraku of the seventies to nineties (`fumoto-layout.js`, `okinawa/fumot
   with lit windows that follow farmers' hours. Grandmother Tokashiki keeps the co-op store; Old Mr Zukeran feeds his
   goats, weeds the garden and plays the sanshin under the gajumaru in the evening. Both are in the resident guide
   with portraits and photographs.
-- **Trade.** The co-op buys its everyday goods from Sakura Trading and its awamori and beer from Higa Liquor
+- **Trade.** The co-op buys its everyday goods from Sakura Trading and its awamori and beer from Sakura Trading too (Higa Liquor's until the shop closed, 22 October 2026)
   (`merchandising.js`), collected on Wednesdays by the store's van. The Ishimines' tofu is made for its counter.
 - **Stories.** The square is a storyteller place (`fumoto-square`) with captured backdrops.
 - **Survey.** No door is unreachable. The goat pen is closed on purpose, like the Ōshiro cattle pen.

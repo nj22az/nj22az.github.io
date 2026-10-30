@@ -11,8 +11,9 @@ const shifts={
  // terminal meanwhile); the evening after he signs off is his, the workshop bench and the izakaya.
  Chin:{arrival:360,start:365,finish:1395,departure:1320},
  'Mrs Sato':{arrival:510,start:540,finish:1260,departure:1320},
- // Tetsuo lives in the Front-Row yard (never takes the boat): lunch at Sato, the bench from five until midnight (the workshop's evening).
- Tetsuo:{arrival:870,start:1020,finish:1440,departure:1950},
+ // The 30 October Kissa Higa mornings use his cast.js day: breakfast before the radio bench at nine, then the boiler
+ // and the yuntaku bench after six. He lives in the yard and never takes these legacy ferry arrival/departure slots.
+ Tetsuo:{arrival:510,start:540,finish:1080,departure:1590},
  // Thao takes the morning service so her Konbini errand and park walk happen before
  // Minato opens. Her return service is the next morning after the night shift.
  Thao:{arrival:510,start:960,finish:1620,departure:1950},

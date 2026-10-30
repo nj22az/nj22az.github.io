@@ -11,7 +11,8 @@ import * as THREE from '../../../vendor/three.module.js';
 import {createKit,rng} from './kit.js';
 import {buildAuctionBoard} from '../auction-board.js';
 import {buildWestShore} from '../west-shore.js';
-import {fishAt} from './fish.js';
+import {buildFishMarket,fishCounterOpen,FISH_COUNTER,SORTING_STACK,QUAY_EDGE} from '../fish-market.js';
+import {fishById} from './fish.js';
 import {createMaterials} from '../../render/materials.js';
 import {utakiStones,NISHI,EAST_ROW,YARD_ROW,EAST_QUAY,EAST_BACK,GATEBALL,GATEBALL_ACTIVE,GOYA,KITAHAMA} from './layout.js';
 import {fascia,vertical,nameplate,poster,coralStone,roofTile,flowerBlock,coralSand} from './signs.js';
@@ -33,9 +34,11 @@ import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
 import {dessertShopOpen} from '../blue-coral-shop.js';
-import {higaFrontage} from './higa-liquor-dressing.js';
+import {higaFrontage,higaPoint} from './higa-liquor-dressing.js';
+import {buildKissaProps} from './kissa-higa-props.js';
 import {laundryFrontage,LAUNDRY_BENCH,laundryPoint} from './coin-laundry-dressing.js';
-import {HIGA_NOTICE,YUNTAKU,yuntakuSeatAt} from '../../commerce/higa-liquor.js';
+import {HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../../commerce/higa-liquor.js';
+import {KISSA,KISSA_NOTICE,KISSA_MENU,KISSA_RECORDS,KISSA_SEATS,kissaOpen,kissaPassable,kissaShutterDown,inKissaHiga} from '../../commerce/kissa-higa.js';
 import {laundryNotices,laundryMachinesAt,LAUNDRY_MANGA} from '../../commerce/coin-laundry.js';
 
 /**
@@ -46,7 +49,7 @@ import {laundryNotices,laundryMachinesAt,LAUNDRY_MANGA} from '../../commerce/coi
  * @param {object} world the town being built (group, colliders, hourly, details)
  * @param {object} options register, onAction, shadows
  */
-export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={}){
+export function buildOkinawaQuarters(world,{register,onAction,shadows=false,getPlayerPosition=()=>null}={}){
  const group=new THREE.Group();group.name='Okinawan quarters';world.group.add(group);
  const kit=createKit({shadows});
  const plaster=createMaterials().material('plaster');
@@ -55,7 +58,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  kit.surface('tile',{map:roofTile(),metres:.9,roughness:.8,side:THREE.DoubleSide});
  kit.surface('hana',{map:flowerBlock(),metres:.42});
  kit.surface('sand',{map:coralSand(),metres:3.2,roughness:1});
- const colliders=[];
+ const colliders=[],kissaPrompts=[];
  const solid=list=>{for(const c of [].concat(list))if(c)colliders.push(c);};
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
@@ -75,15 +78,19 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  // North of the seawall the shore is the west-shore bank, in the same coral stone. See west-shore.js.
  buildWestShore(kit,solid,{anchor,onAction,group});
  buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes:()=>world.minutes??720});
- buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
+ buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720,kissaPrompts,
+  getHiga:()=>world.quarters?.higa,getPeople:()=>[...(world.people||[]).map(p=>p.g),...(world.neighbours||[])]});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
- buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuayBoat:(x,z,ry,opts)=>{
+ const fishMarket=buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720,eastQuayBoat:(x,z,ry,opts)=>{
   // Her bow along the plan's +x turned by ry (as props.js drew her); she lies quay side to, her lines to the kerb.
   const face=EAST_QUAY.minZ-.45,side=Math.cos(ry)>0?-1:1,gap=face-(z+opts.beam/2);
   const boat=buildFishingBoat({...opts,shadows,name:opts.look.name,quayFenders:{side,radius:Math.min(.22,gap/2)}});boat.position.set(x,SEA_LEVEL,z);boat.rotation.y=ry+Math.PI/2;group.add(boat);boat.updateMatrixWorld(true);
   for(const f of boat.userData.fairleads){const p=boat.localToWorld(new THREE.Vector3(...f)),ring=[p.x+(p.x>x?1.2:-1.2),.22,EAST_QUAY.minZ-.25];kit.box(.12,.05,.12,ring[0],.205,ring[2],0x2b2f30);group.add(new THREE.Mesh(hangingRope(p.toArray(),ring,{sag:.08}),ropeMaterial));}
  }});
+ // The fish counter's wares are out while it is open (fish-market.js fishCounterOpen).
+ fishMarket.wares.visible=fishCounterOpen(world.minutes??720);
+ (world.hourly??=[]).push(minutes=>{fishMarket.wares.visible=fishCounterOpen(minutes);});
  buildWires(kit,solid);
  // Kitahama stands on the island's ground, below the old town's datum.
  kit.at(0,0,0,()=>buildKitahama(kit,solid,{anchor,inspect,onAction,vending:(x,z,ry)=>vending(x,z,ry,(KITAHAMA.y||0)+GROUND_LAYER.lane)}),KITAHAMA.y);
@@ -96,10 +103,17 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  const old=dressOldTown(kit,solid,{inspect,anchor,onAction,vending,group});
 
  const {meshes,materials}=kit.finish(group,'Okinawan quarter');
- // Higa Liquor's front, shut for good with its notice on the shutter (higa-liquor-dressing.js), and what follows the clock
- // at the coin laundry: the machines turning, the baskets, the misted glass and the day's notices (coin-laundry-dressing.js).
- const higa=higaFrontage({shadows}),coinLaundry=laundryFrontage({shadows});group.add(higa.group,coinLaundry.group);
- colliders.push(higa.shutterSolid,higa.doorSolid);
+ // Kissa Higa's front in the old Higa Liquor, which follows its clock (higa-liquor-dressing.js higaFrontage: the shutter,
+ // the doors, the tubes, the lamps and the board), its three Meshy models streamed in near it (kissa-higa-props.js), and
+ // what follows the clock at the coin laundry: the machines turning, the baskets, the misted glass and the day's notices
+ // (coin-laundry-dressing.js).
+ const higa=higaFrontage({shadows,getOccupants:()=>[getPlayerPosition(),...(world.people||[]).map(p=>p.g),...(world.neighbours||[])]
+  .filter(g=>g&&(!g.isObject3D||g.visible&&!g.userData.indoors&&!g.userData.inHome&&!g.userData.aboardFerry))
+  .map(g=>g.position||g)}),coinLaundry=laundryFrontage({shadows});group.add(higa.group,coinLaundry.group);
+ buildKissaProps({world,frontage:higa,shadows});
+ higa.update(world.minutes??720);
+ for(const p of kissaPrompts)p.visible=higa.shutterSolid.minY>100;
+ colliders.push(higa.shutterSolid,higa.doorSolid,higa.aboardSolid);
  world.colliders.push(...colliders);
  // Windows light up and the lamps come on at dusk, like the rest of the town.
  (world.hourly??=[]).push(minutes=>{
@@ -108,6 +122,9 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   if(materials.lamp)materials.lamp.emissiveIntensity=.1+glow*1.6;
   for(const machine of vendings)machine.userData.night?.(glow);   // the drinks machines' light on the pavement
   old.shutter.update(minutes);
+  // The kissaten's way in opening or shutting: the residents' routes are searched again (game.js, neighbours.replan).
+  if(higa.update(minutes))world.passagesChanged=true;
+  for(const p of kissaPrompts)p.visible=higa.shutterSolid.minY>100;
   coinLaundry.update(minutes,world.laundryWash||null);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
@@ -301,10 +318,11 @@ const SHOPS=Object.freeze({
   buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
- // Higa Liquor, shut for good (the owner, 22 October 2026; commerce/higa-liquor.js): the shutter is down under its own
- // canvas awning (higa-liquor-dressing.js), the closing notice on it, and the drink is Sakura's. The sign stays up.
- 'higa-saketen':{interior:'liquor',awning:false,jp:"Higa Liquor Store",en:'Higa liquor · closed',bg:'#f7ead6',accent:'#8a3b2e',upright:"Awamori",uprightBg:'#8a3b2e',
-  inspect:{label:'Read the notice on the shutter',title:'Higa Liquor · closing notice',text:HIGA_NOTICE.en}},
+ // Kissa Higa in the old Higa Liquor (commerce/kissa-higa.js, 30 October 2026): Grandmother Higa's morning coffee shop,
+ // weekdays 07:00–09:30, under its own green canvas awning (higa-liquor-dressing.js). The liquor shop stays shut and the
+ // drink is Sakura's (22 October 2026); the fascia is repainted with the kissaten's name.
+ 'higa-saketen':{interior:'kissaten',awning:false,jp:"Kissa Higa",en:'Kissa Higa · morning coffee',bg:'#f2ead6',accent:'#2f5d46',upright:"Coffee",uprightBg:'#2f5d46',
+  inspect:{label:'Look at Kissa Higa',title:'Kissa Higa',text:KISSA_NOTICE.en}},
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
  // sign stays up.
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
@@ -316,7 +334,7 @@ const SHOPS=Object.freeze({
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench under the noticeboard, with a shelf of old manga and a sign about not leaving washing overnight that everybody ignores. It smells of warm cotton.'}},
 });
 
-function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>720}){
+function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>720,getHiga=()=>null,getPeople=()=>[],kissaPrompts=[]}){
  const spec=SHOPS[plot.id],w=plot.maxZ-plot.minZ-.1,d=frame.depth;
  const sign=fascia({jp:spec.jp,en:spec.en,bg:spec.bg,accent:spec.accent,mark:spec.mark||''});
  const upright=vertical({jp:spec.upright,bg:spec.uprightBg});
@@ -324,28 +342,52 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
  if(plot.id==='nakamura')return; // One shared dessert menu owns all orders.
- const act=spec.buy?.action?()=>onAction?.(spec.buy.action):spec.buy?buy(spec.buy):plot.id==='coin-laundry'?()=>onAction?.('inspect',spec.inspect.title,laundryLook(getMinutes())):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
+ const act=plot.id==='higa-saketen'?()=>kissaFront(getMinutes(),onAction,{front:getHiga(),people:getPeople()}):spec.buy?.action?()=>onAction?.(spec.buy.action):spec.buy?buy(spec.buy):plot.id==='coin-laundry'?()=>onAction?.('inspect',spec.inspect.title,laundryLook(getMinutes())):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
  for(const m of spec.more||[])anchor(front+out*.9,1.1,z+m.dz,m.label,buy(m));
- if(plot.id==='higa-saketen')higaPrompts({anchor,onAction,getMinutes});
+ if(plot.id==='higa-saketen')higaPrompts({anchor,onAction,getMinutes,getHiga,kissaPrompts});
  if(plot.id==='coin-laundry')laundryPrompts({anchor,onAction,getMinutes});
 }
 
 /** A prompt only the player uses: residents never pick it as something to do in their free time (town-activities.js). */
 const private_=a=>{if(a)a.userData.npcInteraction=false;return a;};
+/** What the front of Kissa Higa says at this minute: who is in through the open doors, or the paper on the shutter. */
+function kissaFront(minutes,onAction,{front=null,people=[]}={}){
+ const down=front?(front.shutter.visible?front.shutter.scale.y:0):kissaShutterDown(minutes);
+ if(!kissaOpen(minutes)){
+  if(down===1)return onAction?.('read','Kissa Higa · the paper on the shutter',KISSA_NOTICE.en);
+  return onAction?.('read','Kissa Higa · '+(minutes%1440<KISSA.open?'opening up':'closing up'),
+   (minutes%1440<KISSA.open?'Grandmother Higa is opening up. ':'Morning service has finished; Grandmother Higa waits until everyone is out before closing. ')+KISSA_NOTICE.en);
+ }
+ const present=people.filter(g=>g.visible&&!g.userData.indoors&&!g.userData.inHome&&inKissaHiga(g.position)).map(g=>g.userData.name||g.name);
+ const keeper=present.includes(KISSA.keeper),regulars=present.filter(n=>n!==KISSA.keeper);
+ onAction?.('inspect','Kissa Higa',`Through the open doors: the coffee counter, two siphons on their spirit lamps and the smell of toast. ${keeper?'Grandmother Higa is behind the counter. ':''}${regulars.length?regulars.join(' and ')+(regulars.length>1?' are':' is')+' in.':'The customer seats are free.'} Morning set, blend or iced coffee, ¥300 each, until half past nine.`);
+}
 /**
- * The shut Higa Liquor's bench out front (commerce/higa-liquor.js YUNTAKU), a seat at any hour: the shop's counter, its
- * delivery book and the family kusu are behind the shutter now.
+ * The bench out front (commerce/higa-liquor.js YUNTAKU), a seat at any hour; and inside Kissa Higa, in its hours
+ * (commerce/kissa-higa.js): ordering at the counter's open end, the table's near chair, the records and the family kusu.
  */
-function higaPrompts({anchor,onAction,getMinutes}){
+function higaPrompts({anchor,onAction,getMinutes,getHiga,kissaPrompts}){
  const P=YUNTAKU.seats.player,seat=private_(anchor(P.at[0]-.55,1,P.at[1],'Sit on the bench outside Higa Liquor',()=>{
   const m=getMinutes(),here=YUNTAKU.sitters.filter(s=>yuntakuSeatAt(s.name,m)).map(s=>s.name);
-  onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each from Sakura, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of the shut shop. Of an evening the men still sit here with a bottle, bought at Sakura now.');}));
+  onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each from Sakura, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of Kissa Higa, its shutter down by evening. Of an evening the men still sit here with a bottle, bought at Sakura now.');}));
  // The player's end of the bench; Tetsuo's is the other (YUNTAKU.seats.tetsuo): the bench is two places already. Facing the
  // street as Tetsuo does (P.yaw), with the shop at the back: it faced the shop's wall, and a body slid forward to the seat's
  // front edge (seatFront) would have gone into the backrest.
  if(seat)seat.userData.seat={id:'higa-yuntaku-bench',position:[P.at[0],0,P.at[1]],stand:[P.stand[0],0,P.stand[1]],surfaceY:P.height,eyeY:1.1,yaw:P.yaw,pitch:-.03,front:P.at[0]-(YUNTAKU.bench.x-YUNTAKU.bench.depth/2)};
+ // Inside Kissa Higa (the shop-house frame, higa-liquor-dressing.js higaPoint). Outside its hours the room is behind the
+ // shutter and the doors; ordering says when it opens.
+ const passable=()=>{const h=getHiga();return h?h.shutterSolid.minY>100:kissaPassable(getMinutes());};
+ const inside=(x,z,y,label,fn)=>{const [wx,wz]=higaPoint(x,z),a=private_(anchor(wx,y,wz,label,()=>passable()?fn():closed()));
+  if(a){a.visible=passable();kissaPrompts.push(a);}return a;};
+ const closed=()=>onAction?.('read','Kissa Higa is closed','Grandmother Higa serves from 7:00 to 9:30, Monday to Friday. '+KISSA_NOTICE.en);
+ KISSA_MENU.forEach((item,i)=>inside(-.1+i*.3,.3,1.1,item.label,()=>kissaOpen(getMinutes())?onAction?.('buy','Kissa Higa · '+item.name,{cost:item.cost,item:item.item,text:item.text}):closed()));
+ // The table's near chair is the player's (Ms Uezu takes the far one on her weeks off: KISSA_SEATS chair-1).
+ const C=KISSA_SEATS['chair-0'],chair=inside(.8,1.5,1,'Sit at the table in Kissa Higa',()=>onAction?.('seat','Kissa Higa · the table','A bentwood chair at the round table by the wall, under the photograph of the island bus. The cane seat creaks the way they all do.'));
+ if(chair)chair.userData.seat={id:'kissa-chair-0',position:[C.at[0],0,C.at[1]],stand:[C.stand[0],0,C.stand[1]],surfaceY:C.height+.08,eyeY:1.1,yaw:C.yaw,pitch:-.03,front:C.front};
+ inside(-1.4,1.6,1.1,'Look at the records',()=>onAction?.('read','Kissa Higa · the records',KISSA_RECORDS.text));
+ inside(-1.3,.95,1.2,'Ask about the jar behind the counter',()=>onAction?.('read','The Higa family kusu',HIGA_KUSU.neverSold+' '+HIGA_KUSU.why));
 }
 /** What the laundry looks like through the glass at this minute: which machines are turning, and whose. */
 function laundryLook(minutes){
@@ -365,9 +407,9 @@ function laundryPrompts({anchor,onAction,getMinutes}){
   {length:LAUNDRY_BENCH.x1-LAUNDRY_BENCH.x0,front:LAUNDRY_BENCH.z1-(LAUNDRY_BENCH.seats[0].at[0]-laundryPoint(0,0)[0]),places:LAUNDRY_BENCH.seats.map(s=>({position:[s.at[0],0,s.at[1]],stand:[s.stand[0],0,s.stand[1]]}))});
 }
 
-function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
+function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes,getHiga,getPeople,kissaPrompts}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
- for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
+ for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes,getHiga,getPeople,kissaPrompts});
  // The strip of ground between the pavement and each shop front is Main Street's concrete back strip, laid with the
  // street by the ground generator (ground-plan.js); Kitano Road crosses the row where the old lane was.
  // (Their aprons are Main Street's back strip now, laid with the street: ground-plan.js.)
@@ -445,16 +487,16 @@ export const AUCTION_VENDING=Object.freeze({x:EAST_QUAY.ice.minX-.05-.03-VENDING
  who:'the fishermen up from the boats, the ice plant’s men and the auction’s buyers',
  why:'Machines stand against a wall, on somebody’s supply: here the ice plant’s, on its west wall where the lane from the boats meets the walk to the gate. The boats are in by five and the bell goes at six, so a hot J-Coffee before it and a cold one after the floor is hosed. North of the ice door, so the forklift’s run to the boats stays clear; off the auction floor, which is for the catch.'});
 
-function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuayBoat}){
+function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,getMinutes,eastQuayBoat}){
  const Q=EAST_QUAY,S=Q.shed,I=Q.ice,lane=GROUND_LAYER.apron;
  // The apron, the gate's paving and the quay's coping are the harbour's ground (ground-plan-harbour.js), run on east
  // to the oil jetty; here the edge's collider, its bollards and the tyres hung on its face. East of x 41.4 the walkable
  // quay (layout.js eastQuayAt) stops at the coping on its own.
  solid({id:'east-quay-edge',x:(Q.minX+Q.maxX)/2,z:Q.minZ-.25,w:Q.maxX-Q.minX+.4,d:.3,height:.4});
- for(const x of [39.5]){
-  kit.cyl(.16,.2,.42,x,.24,Q.minZ+.35,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,Q.minZ+.35,0x3a3f42,{segments:10});
-  solid({id:'bollard',x,z:Q.minZ+.35,w:.45,d:.45,height:.5});
-  kit.cyl(.3,.3,.28,x+1.6,-.35,Q.minZ-.55,0x1f2124,{rx:Math.PI/2,segments:10});
+ // The bollard; the tyres hung on the face and the line coiled beside it are the fish market's (fish-market.js QUAY_EDGE).
+ {const {x,z}=QUAY_EDGE.bollard;
+  kit.cyl(.16,.2,.42,x,.24,z,0x3a3f42,{segments:10});kit.cyl(.24,.24,.08,x,.47,z,0x3a3f42,{segments:10});
+  solid({id:'bollard',x,z,w:.45,d:.45,height:.5});
  }
  // The auction shed: open sides, a painted floor, a steel roof on H-section columns.
  kit.block(S.minX,S.maxX,lane,lane+.1,S.minZ,S.maxZ,0x5f8a7a);
@@ -462,7 +504,7 @@ function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuay
  for(let x=S.minX+.15;x<=S.maxX;x+=(S.maxX-S.minX-.3)/3)for(const z of [S.minZ+.15,S.maxZ-.15])cols.push([x,z]);
  for(const [x,z] of cols){kit.box(.22,S.height,.22,x,S.height/2,z,0x5e7078,{finish:'metal'});solid({id:'auction-column',x,z,w:.3,d:.3,height:S.height});}
  kit.gableRoof(S.maxX-S.minX,S.maxZ-S.minZ,.9,(S.minX+S.maxX)/2,S.height,(S.minZ+S.maxZ)/2,0x7a8f96,{overhang:.7});
- for(let x=S.minX-.6;x<S.maxX+.7;x+=.45)kit.box(.04,.04,S.maxZ-S.minZ+1.4,x,S.height+.46,(S.minZ+S.maxZ)/2,0x6c8088,{rx:0});
+ // Its corrugation ribs, ridge cap, gutters and downpipes are drawn with the fish market (fish-market.js roofWater).
  // The roof is solid to the lens, eaves to ridge with its purlins: the fish-auction opening's arrival shot began over it
  // and came down through it between two purlins (the creator, 2026-10-19, on his phone: "I spawned in a beam"). An
  // overhead collider (minY above a standing head), so nobody walking under the roof meets it (physics.js
@@ -471,22 +513,20 @@ function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuay
  kit.sign(fascia({jp:"Port Fisheries Association Auction market",en:'Minato fisheries co-op · fish auction',bg:'#eef3f1',accent:'#2f6f8a',mark:"Fish"}),6,.9,(S.minX+S.maxX)/2,S.height-.3,S.maxZ+.02,{name:'auction sign'});
  // The sign on the fascia, solid to the lens the same way (the lens came down past it a hand's width off).
  solid({id:'auction-sign',x:(S.minX+S.maxX)/2,z:S.maxZ+.02,w:6,d:.12,minY:S.height-.75,height:.9});
- // Inside: rows of crates with the morning's catch, a scale and the price board.
- // The crates are sorted by kind, as at a real auction: one fish to a crate, the auction's fish in turn (fish.js). What
- // is left now is the fish nobody bid for: the tuna (laid out whole, never crated) and the squid went first.
- const r=rng(77),crated=fishAt('auction').filter(f=>f.id!=='maguro'&&f.id!=='seika');
- for(let row=0;row<3;row++)for(let k=0;k<6;k++){
-  const x=S.minX+1.2+k*1.1,z=S.minZ+2+row*1.8,fish=crated[(row*6+k)%crated.length];
-  kit.box(.72,.26,.46,x,lane+.23,z,0x2f6fb8);
-  // (two draws a fish, as before, so the crates' jitter and everything drawn after them stay where they were)
-  for(let f=0;f<3;f++){const dz=(r.next()-.5)*.2;r.next();kit.sphere(.1,x-.2+f*.2,lane+.38,z+dz,fish.colour,{sx:2.2,sy:.7,finish:'gloss'});}
- }
- solid({id:'auction-catch',x:S.minX+1.2+2.75,z:S.minZ+2+1.8,w:6.4,d:4.2,height:.5});
- kit.box(.6,.9,.6,S.maxX-1.2,.55,S.minZ+1.2,0xc9cdd0,{finish:'metal'});
+ // Inside: the morning's catch laid a lot to a box on ice, the scale, the hose and the drain, the boots, the bell, the
+ // lamps, the buyers' packed boxes and the co-op's sale counter (fish-market.js). What is left in the boxes is the fish
+ // nobody bid for: the tuna (laid out whole, never boxed) and the squid went first.
+ const market=buildFishMarket(kit,solid,group);
  // The same supported, glazed cabinet as the harbour noticeboard; both posts meet the auction floor.
  const board=buildAuctionBoard();group.add(board.object);solid(board.collider);
  inspect((S.minX+S.maxX)/2,1.2,S.maxZ+1,'Inspect the auction shed',"Minato fish auction · Auction market",
-  'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the crates went unsold, and will be somebody\'s supper: gurukun, Okinawa\'s own red fish; irabuchā, the blue parrotfish; mībai and shichūmachi. The maguro went first, and so did the sēika, a diamond squid the size of a cat.');
+  'The boats are in by five and the auction is at six: a bell, a man with a clipboard shouting numbers too fast for anyone but the buyers, and a floor hosed down by seven. What is left in the boxes went unsold, and will be somebody\'s supper: gurukun, Okinawa\'s own red fish; irabuchā, the blue parrotfish; mībai and shichūmachi. The maguro went first, and so did the sēika, a diamond squid the size of a cat. A slip under each box\'s lip says whose catch it is: the Daisan Minatomaru\'s from the reef and the deep-drop lines, Kōji\'s from his sabani.');
+ // The co-op's sale counter (fish-market.js FISH_COUNTER): a kilo of what the buyers left, while Kōji keeps it.
+ const C=FISH_COUNTER,counterShut=()=>onAction?.('read','The fish counter is closed','Kōji sells what the buyers left from 07:00, when the floor is washed, until he goes to the ice plant at nine; not on his weeks as the ferry\'s bosun.');
+ C.sells.forEach((sale,i)=>{
+  const fish=fishById(sale.fish),name=fish.name[0].toUpperCase()+fish.name.slice(1),title=`Fish counter · ${name}`;
+  anchor(C.x+(i?.45:-.18),1.1,C.z+C.d/2+.9,`Buy a kilo of ${fish.name}`,()=>fishCounterOpen(getMinutes())?onAction?.('buy',title,{cost:sale.kilo,item:sale.item,text:sale.text}):counterShut());
+ });
  // The ice plant: a tall concrete block with its chute swung out over the quay.
  kit.block(I.minX,I.maxX,0,I.height,I.minZ,I.maxZ,0xd8d4ca);
  kit.block(I.minX-.05,I.maxX+.05,0,.4,I.minZ-.05,I.maxZ+.05,0xb3ad9f);
@@ -501,22 +541,23 @@ function buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,eastQuay
  inspect(I.minX-1,1.2,I.minZ+2.7,'Inspect the ice plant',"Minato ice plant · Ice factory",
   'Block ice, crushed ice, flake ice. The chute swings out over the boats and fills a hold in four minutes with a roar you can hear out on the ferry. Inside it is winter all year; the men who work it wear jumpers in August and sit out on the quay at lunch to thaw.');
  // Boats lying to the quay, a forklift, crates, the fuel pump.
- // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (it
- // has one tyre, at x 41.1) and tied to ringbolts in the kerb fore and aft.
+ // Two inshore boats lie here, drawn like the main quay's (harbour-boats.js), each on fat fenders against the face (its
+ // tyres hang east of them, fish-market.js QUAY_EDGE) and tied to ringbolts in the kerb fore and aft.
  eastQuayBoat(24.6,Q.minZ-2.1,0,{length:8,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[0]});
  eastQuayBoat(33.6,Q.minZ-2.2,Math.PI,{length:7.2,beam:2.3,look:EAST_QUAY_BOAT_LOOKS[1]});
  // The forklift runs ice from the plant's door to the boats. Between runs it waits on the
  // quay side of the plant, along its wall under the chute, forks to the west: parked in the
  // lane between the shed and the plant it stood in front of the ice door (and 0.3 m into
  // the plant's wall), and Kōji loads ice there.
- // The boxes Kōji sorts the catch into, just inside the shed's front beside him, between two
- // of its columns. In front of the shed they stood through one column and left 1 m of the
- // walk between the shed and the parapet, from the lawn gate to the ice plant.
- solid(fishCrates(kit,Q.minX+2.62,Q.maxZ-2.53,{rows:2,cols:2,seed:31}));
+ // The boxes Kōji sorts the catch into, behind the sale counter beside where he stands to sort (fish-market.js
+ // SORTING_STACK), standing on the floor. In front of the shed they stood through one column and left 1 m of the walk
+ // between the shed and the parapet, from the lawn gate to the ice plant.
+ solid(fishCrates(kit,SORTING_STACK.x,SORTING_STACK.z,{rows:SORTING_STACK.rows,cols:SORTING_STACK.cols,y:SORTING_STACK.y,seed:31}));
  vending(AUCTION_VENDING.x,AUCTION_VENDING.z,AUCTION_VENDING.ry,AUCTION_VENDING.y);   // on the quay's paving (the lane layer), not sunk in it
  inspect(24.6,1,Q.minZ+.9,'Look at the boats',"Daisan Minatomaru · Minato Maru No. 3",
   'The Daisan Minatomaru, the third fishing boat of the name (the town ferry is the Minato Maru), is back from the reef with her hold iced and her deck hosed. Her skipper is asleep in the wheelhouse with the radio on. The red boat further along goes out for squid at night and has its lamps strung along a boom.');
  anchor(29.5,1,Q.minZ+.9,'Fish from the east quay',()=>onAction?.('fishing'));
+ return market;
 }
 
 /** The four bicycles in the west yard's shed, of the people who live and work round the yard. */

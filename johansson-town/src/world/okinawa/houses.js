@@ -165,9 +165,9 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  * `stock` fills the shop with shelves of colour; `sign` and `upright` are textures.
  */
 export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,interior='shelves',stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
- // Higa Liquor and the coin laundry are rooms you walk into (higa-liquor-dressing.js, coin-laundry-dressing.js): their
+ // Kissa Higa (the old Higa Liquor) and the coin laundry are rooms you walk into (higa-liquor-dressing.js, coin-laundry-dressing.js): their
  // shop floor runs back to the storeroom; every other shop-house keeps the 2.2 m slot.
- const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=interior==='liquor'?HIGA_FRAME.back:interior==='laundry'?LAUNDRY_FRAME.back:D-2.2;
+ const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=interior==='kissaten'?HIGA_FRAME.back:interior==='laundry'?LAUNDRY_FRAME.back:D-2.2;
  // The body, stopping short of the front so the shop floor is a real room.
  if(interior==='zenzai'){
   // An independent stairwell inside the retained footprint, beside the counter.
@@ -178,7 +178,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  }else kit.block(-W,W,0,H,-D,back,colour,'plaster');
  kit.block(-W,-open,0,ground,back,D,colour,'plaster');kit.block(open,W,0,ground,back,D,colour,'plaster');
  kit.block(-W,W,ground,H,back,D,colour,'plaster');
- const fitted=interior==='liquor'||interior==='zenzai'||interior==='laundry',floor=.08;
+ const fitted=interior==='kissaten'||interior==='zenzai'||interior==='laundry',floor=.08;
  if(fitted){
   // The foundation belongs under the walls, not across the open shop floor. The
   // old 30 cm plinth buried the 8 cm tiles and was too tall for the walking surface.
@@ -211,7 +211,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   furniture.push(...nakamuraBuilding(kit,{trim}));
  }
  // Their bands, hoods, flank windows, sashes and (Higa's) awning, crates, bench and stools.
- if(interior==='liquor')furniture.push(...higaBuilding(kit,{trim}));
+ if(interior==='kissaten')furniture.push(...higaBuilding(kit,{trim}));
  if(interior==='laundry')furniture.push(...laundryBuilding(kit,{trim}));
  // The rolled-up shutter's box over the opening, and the fascia board above it.
  kit.block(-open,open,ground-.42,ground-.08,D-.35,D-.05,0x8e9699,'metal');
@@ -230,7 +230,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  }
  // (Nakamura's hangs lower, between the windows under their hoods: nakamura-dressing.js.)
  // (Nakamura's hangs lower; Higa Liquor's and the laundry's upper floors are stores, with no cooler, and their windows have hoods.)
- if(!['zenzai','liquor','laundry'].includes(interior))kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
+ if(!['zenzai','kissaten','laundry'].includes(interior))kit.box(.72,.5,.26,0,ground+2.25,D+.14,0xe2e0d8);
  // The tall board stands off the front corner, square to it, so it reads from up and
  // down the street.
  if(upright){
@@ -392,7 +392,7 @@ export function potPlant(kit,x,z,{seed=9,size=.35}={}){
  * because a fish shop that looks like a general store is a general store.
  */
 function shopInterior(kit,kind,{open,back,D,r,stock}){
- const furniture=[],fitted=kind==='liquor'||kind==='zenzai';
+ const furniture=[],fitted=kind==='kissaten'||kind==='zenzai';
  const shelves=(levels=4,colours=stock,tall=false)=>{
   let top=0;
   for(let level=0;level<levels;level++){
@@ -476,8 +476,8 @@ function shopInterior(kit,kind,{open,back,D,r,stock}){
  }else if(kind==='laundry'){
   // The coin laundry's machines, bench, board, manga, change machine, powder box and folding counter (coin-laundry-dressing.js).
   furniture.push(...laundryInterior(kit));
- }else if(kind==='liquor'){
-  // Higa Liquor's counter, shelves, cold case, jars and the family kusu (higa-liquor-dressing.js).
+ }else if(kind==='kissaten'){
+  // Kissa Higa's counter and ledge, stools, siphons, cup shelf, record cabinet, table and the family kusu (higa-liquor-dressing.js).
   furniture.push(...higaInterior(kit));
  }else{
   shelves();

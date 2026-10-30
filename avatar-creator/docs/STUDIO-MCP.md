@@ -133,7 +133,7 @@ The rules every product change keeps:
   stands where it does, each in at least four words.
 - **No real brands**, in any name, line, flash, flavour, label word or word printed on a picture ("Orion lager",
   "オリオン" are refused).
-- Prices are whole yen from ¥10 to ¥5000. All alcohol comes from Higa Liquor.
+- Prices are whole yen from ¥10 to ¥5000. All alcohol comes from Sakura Trading (supplier `sakura`) since Higa Liquor closed (22 October 2026).
 - Every shelf stays full and no shelf is booked twice; a line stands at most two deep in the cold cabinet and the
   chiller, three on a gondola board.
 - A product's id and the name old saves keep in the bag never change. **Renaming a product is not switched on yet**,

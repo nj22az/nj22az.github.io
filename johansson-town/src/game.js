@@ -1046,7 +1046,7 @@ characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
 // Who is simulated in full this frame: everybody on Linux; on the web, whoever is near or in view (edition.js).
 const observerAt={x:0,z:0,inside:false},attention=createAttention({camera,getObserver:()=>{const at=current?doors.get(current.id):player.position;if(!at)return null;observerAt.x=at.x;observerAt.z=at.z;observerAt.inside=!!current;return observerAt;}});
-neighbours=createNeighbours({parent:town,register:reg,characters,attends:g=>attention.attends(g),getRain:()=>weather,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>(!c.only||c.only==='resident')&&standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
+neighbours=createNeighbours({parent:town,register:reg,characters,getKissaClosing:()=>!!world.quarters?.higa?.closingHeld,attends:g=>attention.attends(g),getRain:()=>weather,getState:()=>activities.state,blocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>(!c.only||c.only==='resident')&&standingHitsRect(x,z,r,groundHeight(x,z),c)),onAction:(kind,name)=>{
  const who=neighbours.talkTo(name,player.position);if(who)characters.gesture(who);activities.action(kind,name);
 }});
 world.neighbours=neighbours.entities;world.homeNeighbours=neighbours.people;
@@ -1767,6 +1767,11 @@ function finishPlayerStep(dt,fromX,fromZ){
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 function setTime({updateHours=true}={}){
  if(updateHours)world.updateHours?.(minutes);
+ // A way in opened or shut (Kissa Higa's doors on its clock, okinawa/quarters.js): the neighbours search their routes again.
+ if(world.passagesChanged){world.passagesChanged=false;
+  const door=world.quarters?.higa?.shutterSolid,region=door?{at:[door.x,door.z],radius:12}:{};
+  neighbours?.replan?.(region);castAI?.replan?.(region);
+ }
  const c=duskClock(minutes,{rain:weather,inside:!!current});
  const day=c.day;
  const overcast=weatherKind==='cloudy'&&!current;

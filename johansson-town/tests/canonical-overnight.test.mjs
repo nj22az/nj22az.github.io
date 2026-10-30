@@ -8,6 +8,7 @@ import {canonicalDay} from '../src/people/canonical-day.js';
 import {activeResidentHome} from '../src/people/home-directory.js';
 import {sleepHours} from '../src/people/home-life.js';
 import {WORLD_CAST} from '../src/people/residents.js';
+import {kissaVisitAt} from '../src/commerce/kissa-higa.js';
 import {FERRY_PEOPLE} from '../src/people/ferry-crew.js';
 
 const minute=m=>((m%1440)+1440)%1440;
@@ -25,7 +26,10 @@ test('secondary residents stay at their assigned home across midnight until morn
    const plan=canonicalDay(p.name,sleep+dt);assert.equal(plan.place,'home',p.name+' at '+minute(sleep+dt));
    assert.equal(plan.rest,'sleep');assert.deepEqual(plan.target,[home.x,home.z]);
   }
-  for(const dt of [0,14,15,44])assert.equal(canonicalDay(p.name,wake+dt).place,'home',p.name+' wakes and has breakfast before leaving');
+  // Since 30 October 2026 a regular's breakfast can be at Kissa Higa's counter instead (Yui on weekdays;
+  // commerce/kissa-higa.js), exactly when the kissaten's data says so; never their sleep or their waking.
+  for(const dt of [0,14,15,44]){const m=wake+dt,there=dt>=15&&kissaVisitAt(p.name,m);
+   assert.equal(canonicalDay(p.name,m).place,there?'kissa-higa':'home',p.name+(there?' has breakfast at the Kissa Higa counter':' wakes and has breakfast before leaving'));}
  }
 });
 test('residents enter only at their own door and later leave from it without a position jump',()=>{

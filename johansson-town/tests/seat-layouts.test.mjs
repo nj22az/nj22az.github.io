@@ -62,15 +62,18 @@ test('every outdoor public seat has physical support and a clear standing point'
   'Sit under the harbour cherry','Sit beside the garden pond','Sit under the gajumaru',
   // The drinks corner on the old post-office lot (okinawa/lots.js POST_OFFICE): its bench beside the machines.
   'drinks-corner-bench',
-  // Higa Liquor's evening bench and the coin laundry's bench (#314).
-  'higa-yuntaku-bench','coin-laundry-bench',
+  // Higa Liquor's evening bench and the coin laundry's bench (#314); the table's near chair inside Kissa Higa (30 October
+  // 2026; the stools and the far chair are the regulars', commerce/kissa-higa.js KISSA_SEATS).
+  'higa-yuntaku-bench','coin-laundry-bench','kissa-chair-0',
  ];
  assert.deepEqual(seats.map(t=>t.object.userData.seat.id||t.label).sort(),expected.sort(),'Every retained public bench, bath seat and airport gate offers its seat');
- validateSeats(world.group,seats,world.colliders,{streamed:new Set(['Soak your feet in the footbath','Cool off on the bench'])});
+ // Kissa Higa's chair is a streamed Meshy model (kissa-higa-props.js): its seat height is measured on the model itself in
+ // tests/kissa-higa.test.mjs.
+ validateSeats(world.group,seats,world.colliders,{streamed:new Set(['Soak your feet in the footbath','Cool off on the bench','Sit at the table in Kissa Higa'])});
  // Every public bench seats two side by side (the owner, 21 October 2026), or more by its length; where its front edge is
  // goes with it (seatFront). Higa Liquor's bench is two places already (YUNTAKU: Tetsuo's and this), the footbath's rim,
  // the beach chairs and Umi-no-yu's bench are single seats.
- const single=new Set(['beach-chair-0','beach-chair-1','Soak your feet in the footbath','Cool off on the bench','higa-yuntaku-bench','Sit on the staff bench']);
+ const single=new Set(['beach-chair-0','beach-chair-1','Soak your feet in the footbath','Cool off on the bench','higa-yuntaku-bench','Sit on the staff bench','kissa-chair-0']);
  for(const t of seats){const s=t.object.userData.seat,key=s.id||t.label;if(single.has(key))continue;
   assert.ok(s.slots?.length>=2,key+' seats two side by side');assert.ok(s.front>0&&s.front<.35,key+' says where its front edge is');}
  assert.equal(PARK_BENCH.yaw,Math.PI/2,'Harbour bench faces away from its east backrest');

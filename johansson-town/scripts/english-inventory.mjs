@@ -29,8 +29,12 @@ const scenery=new Set(['src/world/okinawa/kitahama-shop.js','src/world/interiors
  'src/world/harbour-noticeboard.js',
  // Higa Liquor's and the coin laundry's painted lettering (the valance, the tin, the cards, the jar tags, the machine
  // numbers, the price list) and their items' period notes; the 留守 card's and the noticeboard's headings, each with the
- // English the player reads beside it (`en`, `title`, `text`).
- 'src/world/okinawa/higa-liquor-dressing.js','src/world/okinawa/coin-laundry-dressing.js','src/commerce/higa-liquor.js','src/commerce/coin-laundry.js']);
+ // English the player reads beside it (`en`, `title`, `text`). Kissa Higa in the same room (commerce/kissa-higa.js, 30 October
+ // 2026): its name, the paper on the shutter and the menu's 喫茶ひが / モーニング lines, each with its English (`name`, `en`).
+ 'src/world/okinawa/higa-liquor-dressing.js','src/world/okinawa/coin-laundry-dressing.js','src/commerce/higa-liquor.js','src/commerce/coin-laundry.js','src/commerce/kissa-higa.js',
+ // The fish counter's board heading (鮮魚直売) on the auction shed's column, printed above its English lines; the price
+ // cards' kana come from fish.js. The prompts and the buy text are English (fish-market.js, okinawa/quarters.js).
+ 'src/world/fish-market.js']);
 // Compact Minato’s panel() paints only physical mesh textures (book, recipe, hours, mascot).
 // Its action titles and dialogue are still scanned, like every other control string.
 const values=[];for(const path of files){if(path==='src/people/voice-lines.js'||scenery.has(path))continue;const src=await readFile(new URL(path,root),'utf8');const ast=parseAst(src);function walk(n){if(!n||typeof n!=='object')return;if(n.type==='CallExpression'&&(n.callee?.name==='plate'||n.callee?.name==='plateTexture'||path==='src/world/interiors/minato-compact-room.js'&&n.callee?.name==='panel'))return;if(n.type==='CallExpression'&&n.callee?.property?.name==='fillText')return;if(n.type==='Literal'&&typeof n.value==='string'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value))values.push({path,start:n.start,end:n.end,value:n.value});if(n.type==='TemplateElement'&&/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(n.value.raw))values.push({path,start:n.start,end:n.end,value:n.value.raw,template:true});for(const [k,v] of Object.entries(n)){if(k==='raw')continue;if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v);}}walk(ast);}
