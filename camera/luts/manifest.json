@@ -1,0 +1,10 @@
+{
+  "size": 32,
+  "layout": "x=blue*32+red,y=green",
+  "space": "creative display RGB; not a measured film-stock emulation",
+  "grades": [
+    "warm-slide",
+    "soft-negative"
+  ],
+  "identity": "test reference"
+}

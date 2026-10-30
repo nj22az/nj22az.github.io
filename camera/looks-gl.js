@@ -14,12 +14,22 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
+import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY,LUT_BODY,LUT_LOOKS,MAC_BODY,VGA_BODY,OIL_BODY,ANIME_BODY,GLITCH_BODY,SORT_STAGES} from './photo-bodies.js?v=20261030e';
+
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
 // Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
 // dots, a blueprint and night vision.
 export const LOOKS=Object.freeze({...WORLD_LOOKS,
+ glitch:Object.freeze({label:'Glitch',short:'Glitch',hint:'Colour streaks sorted by light. On phones this is applied in the photo editor and saved photo.'}),
+ animeBackground:Object.freeze({label:'Anime background',short:'Anime BG',hint:'Luminous painted planes, softened along the forms, without cartoon outlines.'}),
+ vgaAdventure:Object.freeze({label:'VGA adventure',short:'VGA',hint:'A painted adventure background: 200 rows and a cabinet of 256 colours.'}),
+ macOneBit:Object.freeze({label:'1-bit Mac',short:'1-bit Mac',hint:'Black ink and white pixels, with an eight-by-eight ordered screen.'}),
+ warmSlide:Object.freeze({label:'Warm slide film',short:'Warm slide',hint:'A warm, clear slide-film colour grade with firmer shadows.'}),
+ softNegative:Object.freeze({label:'Soft negative film',short:'Soft negative',hint:'A softer portrait-film grade with gentle blacks and warm highlights.'}),
+ disposable:Object.freeze({label:'Disposable camera',short:'Disposable',hint:'A cheap 1990s lens: curved edges, colour fringes and soft corners. Date uses the camera setting.'}),
+ colourFilm:Object.freeze({label:'Colour film',short:'Colour film',hint:'Quiet grain and warm halation around bright lights.'}),
  adventureInk:Object.freeze({label:'Adventure Ink',short:'Adventure',hint:'Bright cel colours and clean manga-inspired ink.'}),
- instant:Object.freeze({label:'Instant film',short:'Instant',hint:'An instant print: a soft matte fade, warm light, a leak of light in the corner.'}),
+ instant:Object.freeze({label:'Instant film',short:'Instant',hint:'A soft matte print, uneven dye and warm halation around bright lights.'}),
  camcorder:Object.freeze({label:'VHS camcorder',short:'VHS',hint:'A home video tape of the 80s: colours that bleed, soft lines, a wobble at the foot.'}),
  halftone:Object.freeze({label:'Comic dots',short:'Dots',hint:'A printed comic page: the picture in cyan, magenta, yellow and black dots.'}),
  cyanotype:Object.freeze({label:'Blueprint',short:'Blueprint',hint:'A cyanotype: Prussian blue and paper white, as an engineer\'s plans were printed.'}),
@@ -38,13 +48,13 @@ export const LOOKS=Object.freeze({...WORLD_LOOKS,
  sixtyFourBit:Object.freeze({label:'64-bit',short:'64-bit',hint:'The cartridge console of 1996: small textures filtered smooth, soft haze and a fine dither.'}),
 });
 /** The World Look whose little house stands in for a camera-only Look until its live thumbnail is drawn. */
-export const LOOK_STANDIN=Object.freeze({adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
+export const LOOK_STANDIN=Object.freeze({glitch:'crt',animeBackground:'watercolour',vgaAdventure:'snes',macOneBit:'pocket',warmSlide:'sepia',softNegative:'sepia',disposable:'sepia',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
  colourHandheld:'snes',redVisor:'riso',risoPinkBlue:'riso',risoRedNavy:'riso',risoBlackPink:'riso',risoThree:'riso',eightBit:'snes',thirtyTwoBit:'snes',sixtyFourBit:'tilt'});
 
 
 // An instant print: a gentle S curve, then a matte fade (blacks lifted, whites softened), cool shadows and warm
 // highlights, a leak of orange light from the top right corner, soft corners and a fine grain.
-const INSTANT_BODY=`
+const INSTANT_BODY=`${FILM_GLOW}
 void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
@@ -67,6 +77,7 @@ void main(){
  c=mix(c,vec3(.93,.9,.84),(1.0-smoothstep(.0,.025,edge))*.35);
  vec2 v=vUv-.5;
  c*=1.0-dot(v,v)*.5;
+ c=1.0-(1.0-c)*(1.0-filmHalation(vUv,u)*.65);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
 // A home video tape: the picture split into brightness and colour as a VHS recorder does, the colour smeared and late
@@ -287,62 +298,33 @@ vec3 celBase(vec2 uv,float u,out float material){
 // enough apart to read as strokes on a phone, and carry the photo's colour as pencils do: a vivid pigment with paper
 // between the strokes, as much of it as the tone needs, and a darker pencil crossing the shadows. The edges of the
 // picture are left lighter, as a drawing is finished in the middle first.
-const CRAYON_BODY=`${PHOTO_STROKES}
-// Coloured pencil as it really lies on paper: not lanes of separate strokes but a grain streaked along the direction
-// of the hand, the wax catching the tooth's peaks first and filling the hollows as it is pressed harder, with the
-// strokes' ends showing as faint ridges.
-float pencilGrain(vec2 p,float a,float cover,float seed,float tooth){
- vec2 d=vec2(cos(a),sin(a));
- vec2 r=vec2(dot(p,d),dot(p,vec2(-d.y,d.x)));
- float streak=noise(vec2(r.x*.06,r.y*.75)+seed)*.42+noise(vec2(r.x*.025,r.y*.28)+seed*2.0)*.3+tooth*.18;
- float ends=pencilLane(p,d,6.0,seed)*.22;
- float edge=1.0-cover*.82;
- return smoothstep(edge-.16,edge+.16,streak+ends+.02)*step(.003,cover);
-}
+const CRAYON_BODY=`${PHOTO_STROKES}${PHOTO_LINES}${PHOTO_CEL}
 void main(){
- float u=unit();
- vec2 p=vUv*uResolution/u;
- // A drawing is kept lighter than life in the middle tones (a face is not hatched dark); its blacks stay black.
+ float u=unit();vec2 p=vUv*uResolution/u;
  vec3 c=texture2D(tDiffuse,vUv).rgb;
- float l=luma(c);
- c=clamp(c*pow(max(l,.002),.9)/max(l,.002),0.0,1.0);
- l=luma(c);
- float tooth=noise(p*.9)*.6+noise(p*2.3)*.4;
- vec3 paper=vec3(.975,.962,.93)-.035*tooth;
- // Finished in the middle, lighter towards the edges; a dark part is drawn in full wherever it is (a night sky).
- vec2 v=(vUv-.5)*2.0;
- float finish=mix(mix(.5,1.0,1.0-smoothstep(.5,1.1,length(v))),1.0,1.0-smoothstep(.12,.4,l));
- // The strokes run along the picture's shapes where it has clear ones, and on the hand's natural diagonal elsewhere.
- float a=flowAngle(vUv,u);
- // Two pencils for every colour. The first lays the colour itself, at a light value, vivid, with paper between the
- // strokes, as much as that tone needs; the second, a darker pencil of the same colour, crosses it in the shadows.
- // A colour is trusted less the darker it is: the faint tint of a black is the camera's noise, not a colour.
- float top=max(c.r,max(c.g,c.b)),sat=(top-min(c.r,min(c.g,c.b)))/max(top,.04)*smoothstep(.05,.3,top);
- vec3 hue=mix(vec3(1.0),c/max(top,.04),smoothstep(.05,.3,top));
- vec3 light=mix(vec3(1.0),hue,min(1.0,sat*1.35))*max(top,.8);
- vec3 absorb=clamp(1.0-light/paper,0.0,1.0);
- float need=max(absorb.r,max(absorb.g,absorb.b));
- vec3 pigment=1.0-absorb/max(need,.06)*.72;
- float cover1=min(need/.72,.78)*finish;
- float m1=pencilGrain(p,a,cover1,1.0,tooth);
- vec3 col=paper*mix(vec3(1.0),pigment,m1);
- vec3 shade=mix(mix(vec3(1.0),hue,sat),vec3(.92,.9,1.0),.3*(1.0-sat))*mix(.13,.45,smoothstep(.04,.4,l));
- float after=luma(paper*mix(vec3(1.0),pigment,cover1));
- float cover2=clamp((after-l)/max(after-luma(shade*paper),.05),0.0,mix(.9,.78,smoothstep(.06,.2,l)))*finish;
- float m2=pencilGrain(p,a+1.1,cover2,40.0,tooth);
- col*=mix(vec3(1.0),shade,m2);
- // The darkest parts are burnished: pressed hard with the dark pencil until the strokes close up, the tooth still
- // catching a few flecks of paper.
- float burnish=(1.0-smoothstep(.03,.14,l))*finish*mix(.7,.95,smoothstep(.2,.6,tooth));
- col=mix(col,paper*shade*1.15,burnish);
- // Lines: only the clear edges, in the dark pencil, wobbling a little as a hand-drawn line does.
- vec2 wobble=(vec2(noise(p*.05),noise(p*.05+17.0))-.5)*uTexel*2.5*u;
- float e=smoothstep(.45,1.0,edges(vUv+wobble,1.5*u,1.0))*(.55+.45*noise(p*.3));
+ c=celSmooth(vUv,3.0*u,c,45.0);
 #ifndef LIGHT
- e=max(e,spotBlack(vUv,u)*.9);
+ c=celSmooth(vUv,7.0*u,c,32.0);
 #endif
- col=mix(col,shade*.8,clamp(e,0.0,1.0)*.85*mix(.7,1.0,finish));
- gl_FragColor=vec4(col,1.0);
+ // Build the colour with overlapping translucent pigment, rather than white scratch marks across a photograph.
+ float l=luma(c),a=flowAngle(vUv,u);
+ vec2 dir=vec2(cos(a),sin(a)),side=vec2(-dir.y,dir.x);
+ float along=dot(p,dir),across=dot(p,side)+(noise(p*.014)-.5)*5.0;
+ float streak=noise(vec2(along*.018,across*.42))*.6+noise(vec2(along*.05,across*.9)+13.0)*.4;
+ float tooth=noise(p*.9)*.6+noise(p*2.3)*.4;
+ vec3 paper=vec3(.98,.97,.94)-.018*(tooth-.5);
+ // Saturated layered pencils, with complementary violet in deep shadows; a black garment stays a dark mass.
+ vec3 pigment=clamp(mix(vec3(l),c,1.08),.018,1.0);
+ pigment=pow(pigment,vec3(.88));
+ pigment=mix(pigment,pigment*vec3(.9,.86,1.08),(1.0-smoothstep(.08,.3,l))*.22);
+ float pressure=.68+.60*streak+.15*(tooth-.5);
+ vec3 col=paper*exp(log(pigment)*pressure);
+ // The pencil leaves a little paper only in the highlights; deep values are burnished, not crosshatched pale.
+ float fleck=smoothstep(.62,.92,tooth)*smoothstep(.45,.9,l)*.13;
+ col=mix(col,paper,fleck);
+ float line=inked(vUv,u,1.8,.045,.06,.3);
+ col=mix(col,pigment*.45,line*.55);
+ gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
 // The rubber stamp for a photograph. World's Stamp inks everything darker than one grey; on a photo a dark wall or
 // background then became one block that swallowed the hair and the shoulder against it, a shaded cheek a blot, and the
@@ -355,6 +337,7 @@ void main(){
  float u=unit();
  vec2 p=vUv*uResolution/u;
  vec3 raw=texture2D(tDiffuse,vUv).rgb;
+ raw=mix(raw,ringColour(vUv,3.5*u),.55);
  float l=luma(raw);
  // What is round this point, near and wider.
  float near=0.0,wide=0.0;
@@ -376,7 +359,7 @@ void main(){
  tone+=(noise(p*.55)-.5)*.025;
  // The pressure across the print: heavier on one side, and in broad patches.
  float press=clamp(.5+.8*dot(vUv-.5,vec2(.8,-.6))+.5*(noise(p*.004)-.5)+.25*(noise(p*.012+7.0)-.5),0.0,1.0);
- float cut=.32+.03*(press-.5);
+ float cut=.25+.025*(press-.5);
  float w=max(fwidth(tone)*.8,.006);
  float fill=1.0-smoothstep(cut-w,cut+w,tone);
  // Ink gathers at the cut edges. Where the pressure was light it thins in a mottle and misses the paper in ragged
@@ -389,7 +372,7 @@ void main(){
  float deposit=fill*(.84+.06*fibre+.1*mix(mottle,1.0,press))*mix(1.0,starved,(1.0-smoothstep(.0,.45,press))*.75*(1.0-rim))+rim*.14;
  // Carved lines and the small dark marks of a face, which the carver keeps.
  // The carved lines: the drawing the carver keeps, faces included (no blots where a mouth's corner is dark).
- float line=max(lineAt(vUv,u,2.0,.02,.05),contour(vUv,u))*(.85+.15*fibre);
+ float line=inked(vUv,u,2.6,.032,.055,.55)*(.9+.1*fibre);
  deposit=max(deposit,line*mix(.7,.95,press));
  vec3 paper=vec3(.985,.965,.90)-.025*(fibre-.5),ink=vec3(.49,.09,.16);
  gl_FragColor=vec4(mix(paper,ink,clamp(deposit,0.0,1.0)),1.0);
@@ -408,7 +391,7 @@ void main(){
  float l=luma(texture2D(tDiffuse,vUv).rgb);
  vec3 paper=vec3(.985,.975,.95)-.035*noise(p*.45);
  // The outline first, heavier on a strong edge, its pressure changing along it; only edges wider than a hair.
- float line=inked(vUv,u,2.0,.016,.05,1.0)*(.75+.25*noise(p*.35));
+ float line=inked(vUv,u,2.6,.028,.055,.65)*(.85+.15*noise(p*.20));
  // Shading in the shadows only, the light left as paper: long strokes along the form, crossed in the darks. (Ink Looks
  // see the picture exposed to a middle grey, so a black shirt arrives at about a quarter.)
  float f=finished(vUv,.35,l),a=flowAngle(vUv,u);
@@ -436,9 +419,10 @@ void main(){
  // Graphite smudged into a soft tone under the strokes, as a mangaka's pencils are: the shadow a grey wash of lead with
  // the paper's tooth in it, the strokes darker over it; graphite grey, never printer's black.
  float tooth=noise(p*1.4)*.5+noise(p*.6)*.5;
- float smudge=(1.0-smoothstep(.12,.46,k))*.42*f*(.8+.2*tooth);
+ float smudge=(1.0-smoothstep(.12,.46,k))*.26*f*(.8+.2*tooth);
  float ink=max(max(line*.95,smudge),shade*mix(.7,.9,1.0-smoothstep(.05,.2,k))*lead);
- gl_FragColor=vec4(mix(vec3(.985,.98,.97),vec3(.29,.29,.3),clamp(ink,0.0,1.0)),1.0);
+ ink=max(ink,(1.0-smoothstep(.10,.30,k))*(.84+.12*tooth));
+ gl_FragColor=vec4(mix(vec3(.985,.98,.97),vec3(.13,.13,.15),clamp(ink,0.0,1.0)),1.0);
 }`;
 // Manga: black ink, screentone and hatching, one bit as printed. The tones are cut from a simplified picture (an
 // artist screens shapes, not every grain): paper, a light screen, a dark screen, the dark screen hatched, solid black.
@@ -470,6 +454,8 @@ void main(){
  float ink=mix(mangaDots(p,.2,6.0)*light,mangaDots(p,.5,6.0),dark);
  ink=max(max(ink,mangaHatch(p,vec2(.7071,-.7071),7.0)*hatched),black);
  // Dots, lines and fills are ink or paper; only their edges are smoothed, never a grey wash under them.
+ float shine=smoothstep(.045,.11,l-wide)*smoothstep(.10,.19,l)*(1.0-smoothstep(.27,.34,l));
+ ink*=1.0-shine*black*.9;
  ink=max(ink,line);
  gl_FragColor=vec4(vec3(1.0-clamp(ink,0.0,1.0)),1.0);
 }`;
@@ -536,7 +522,11 @@ void main(){
  vec3 raw=texture2D(tDiffuse,vUv).rgb;
  vec3 c=raw*.2+ringColour(vUv,4.0*u)*.4+ringColour(vUv,9.0*u)*.4;
  float l=luma(c);
- vec3 col=printInk(clamp(mix(vec3(l),c,1.25),0.0,1.0));
+ vec3 col=printInk(clamp(mix(vec3(l),c,1.15),0.0,1.0));
+ // Flesh is printed with the warm blocks, not the neutral-grey block, when the source itself is warm.
+ float flesh=smoothstep(.04,.12,c.r-c.b)*(1.0-smoothstep(-.04,.02,c.g-c.r))*smoothstep(.23,.48,l);
+ vec3 skin=l<.45?vec3(.54,.35,.23):l<.66?vec3(.78,.57,.44):vec3(.92,.78,.63);
+ col=mix(col,skin,flesh*.8);
  // Bokashi: an even sky (dark at night, pale by day) in the upper picture is printed as a graded band, deep at the top
  // and fading towards the horizon, as Hiroshige's skies and Hasui's night streets are.
  float even=1.0-smoothstep(.03,.1,abs(l-around(vUv,u,10.0)));
@@ -550,7 +540,7 @@ void main(){
  float grain=noise(vec2(p.x*.04,p.y*.9))*.6+noise(p*.5)*.4;
  col*=.94+.08*grain;
  vec2 key=vUv+vec2(.9,-.65)*uTexel*u;
- float e=max(lineAt(key,u,2.0,.018,.05),contour(key,u)*.8);
+ float e=inked(key,u,2.2,.028,.055,.65);
  col=mix(col,vec3(.13,.11,.10),clamp(e,0.0,1.0));
  gl_FragColor=vec4(col,1.0);
 }`;
@@ -647,14 +637,14 @@ void main(){
  vec2 p=vUv*uResolution/u;
  float a=flowAngle(vUv,u)+1.5708;
  vec2 dir=vec2(cos(a),sin(a)),side=vec2(-dir.y,dir.x);
- float S=9.0,L=19.0,W=6.5;
+ float S=12.0,L=28.0,W=9.0;
  vec2 cell=floor(p/S);
  vec3 col=vec3(0.0);float best=-1.0,ridge=0.0;
  for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){
   vec2 c=cell+vec2(float(i),float(j));
   vec2 centre=(c+.5+(vec2(hash(c),hash(c+7.3))-.5)*.9)*S;
   vec2 d=p-centre;
-  float len=L*mix(.75,1.2,hash(c+3.1)),along=dot(d,dir),across=dot(d,side);
+  float len=L*mix(.6,1.5,hash(c+3.1)),along=dot(d,dir),across=dot(d,side);
   float hw=W*.5*mix(.8,1.15,hash(c+5.7))*(1.0-.35*smoothstep(.2,.5,abs(along)/len));
   if(abs(along)<len*.5&&abs(across)<hw){
    float z=hash(c+11.9);
@@ -667,10 +657,10 @@ void main(){
  col=max(col,vec3(.05,.08,.2)*(1.0-smoothstep(.02,.08,luma(col))));
  // The bristles' grooves along the stroke, and the light catching its raised edge.
  float bristle=noise(vec2(dot(p,side)*1.3,dot(p,dir)*.08));
- col*=(.9+.16*bristle)*(1.0+.08*ridge*step(0.0,best));
+ col*=(.96+.08*bristle)*(1.0+.06*ridge*step(0.0,best));
  // Colour lifted, warm in the light, cool in the shade.
  float l=luma(col);
- col=clamp(mix(vec3(l),col,1.3)+vec3(.05,.03,-.05)*(l-.4),0.0,1.0);
+ col=clamp(mix(vec3(l),col,1.12)+vec3(.025,.015,-.025)*(l-.4),0.0,1.0);
  col=mix(col,col*vec3(.75,.85,1.15),(1.0-smoothstep(.1,.4,l))*.5);
  float line=lineAt(vUv,u,2.0,.025,.06)*.75;
  col=mix(col,vec3(.12,.2,.38),line);
@@ -986,14 +976,14 @@ void main(){
  // Exactly two values per colour: the base (the material's own light) and a shadow, cooler and darker, cut hard.
  float value=m*1.14+.09;
  vec3 base=hue*value;base/=max(1.0,max(base.r,max(base.g,base.b)));
- base=mix(vec3(luma(base)),base,1.15);
+ base=mix(vec3(luma(base)),base,.98);
  vec3 shade=base*vec3(.68,.68,.82);
  float d=l-m*.84,w=max(fwidth(d),.004);
  vec3 col=mix(shade,base,smoothstep(-w,w,d));
  // The outline: thick and steady on the silhouettes and the strongest features only, never on texture.
  vec2 wob=(vec2(noise(p*.035),noise(p*.035+9.0))-.5)*uTexel*2.0*u;
  // Found at twice the scale, so a mark a few pixels wide (a wrinkle, a pore) is no outline; shapes are.
- float line=inked(vUv+wob,u*2.0,3.0,.07,.06,.8);
+ float line=inked(vUv+wob,u*2.4,3.0,.085,.07,.45);
  col=mix(col,vec3(.16,.12,.13),smoothstep(.4,.7,line));
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
@@ -1090,7 +1080,7 @@ ${i===n-1?`  k=max(k,lineAt(uv,u,1.8,.02,.04)*.95);
 /** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon,
  * Stamp, Line drawing, Pencil manga, Manga, Sketchbook, Woodblock print, Pocket and Watercolour keep World's names and
  * swatches but draw a photograph with these, made for one. */
-const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
+const CAMERA_BODIES={glitch:GLITCH_BODY,animeBackground:ANIME_BODY,oil:OIL_BODY,vgaAdventure:VGA_BODY,macOneBit:MAC_BODY,warmSlide:LUT_BODY,softNegative:LUT_BODY,disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
  colourHandheld:HANDHELD_COLOUR_BODY,eightBit:EIGHT_BIT_BODY,
  ...Object.fromEntries(Object.entries(RISO_INKS).map(([name,inks])=>[name,risoBody(inks)])),thirtyTwoBit:THIRTY_TWO_BIT_BODY,sixtyFourBit:SIXTY_FOUR_BIT_BODY,redVisor:RED_VISOR_BODY};
 
@@ -1103,7 +1093,31 @@ export const TRICKS=Object.freeze(['none','twin','quad']);
 export const MAX_SIDE=4096,MAX_PIXELS=16e6;
 
 const WORLD_UNIT='float unit(){return max(1.0,uResolution.y/1080.0);}';
-const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;uniform float uFocusY;\nfloat unit(){return max(uUnitFloor,uResolution.y/uLines);}';
+const PHOTO_UNIT=`uniform float uLines,uUnitFloor,uFocusY;
+float unit(){return max(uUnitFloor,uResolution.y/uLines);}
+uniform sampler2D tPerson;
+uniform float uHasPerson,uPersonMirror,uPersonTrick;
+uniform vec4 uPersonCrop;
+float personAt(vec2 p){
+ if(uPersonTrick>.5)p.x=.5-abs(p.x-.5);
+ if(uPersonTrick>1.5)p.y=.5+abs(p.y-.5);
+ vec2 q=vec2(p.x,1.0-p.y);if(uPersonMirror>.5)q.x=1.0-q.x;
+ return texture2D(tPerson,uPersonCrop.xy+q*uPersonCrop.zw).r;
+}
+float personEdge(vec2 p,float radius){
+ if(uHasPerson<.5)return 0.0;
+ vec2 d=uTexel*radius*unit();
+ float a=personAt(p+vec2(d.x,0.0)),b=personAt(p-vec2(d.x,0.0));
+ float c=personAt(p+vec2(0.0,d.y)),e=personAt(p-vec2(0.0,d.y));
+ float hi=max(max(a,b),max(c,e)),lo=min(min(a,b),min(c,e));
+ float aa=max(fwidth(personAt(p)),.015);
+ return smoothstep(.5-aa,.5+aa,hi)*(1.0-smoothstep(.5-aa,.5+aa,lo));
+}`;
+
+// Each medium inks the same person boundary with its own pencil/ink, with a narrow paper cut in dark-on-dark areas.
+const PERSON_INKS={manga:['0.0','1.0',2.5],pencilManga:['.29,.29,.3','.985,.98,.97',2.0],lines:['.06,.06,.08','.985,.975,.95',2.2],
+ sketchbook:['.24,.22,.23','.98,.96,.91',1.6],crayon:['.18,.16,.22','.975,.962,.93',1.8],flat:['.16,.12,.13','1.0',3.2],
+ adventureInk:['.08,.07,.09','1.0',2.2],halftone:['.1,.09,.11','.98,.96,.90',2.4],print:['.13,.11,.10','.95,.91,.81',1.8],stamp:['.49,.09,.16','.985,.965,.90',2.2]};
 
 // Small changes to a World Look for photographs, by exact replacement of its own lines (World's source stays the one
 // copy; a line World changes makes the camera refuse to start rather than draw something else). Oil painting, judged as
@@ -1116,13 +1130,16 @@ const PHOTO_EDITS={
  // in an upright photo a person's face, in its upper third (the band fell on a necklace and blurred the face), and a
  // little above the middle in a wide one.
  tilt:[['c=mix(vec3(l),c,1.45);\n c=(c-0.5)*1.12+0.53;','c=mix(vec3(l),c,1.12);\n c=(c-0.5)*1.04+0.53;'],
-  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uFocusY>=0.0?uFocusY:uResolution.y>uResolution.x*1.05?0.66:0.54));']],
- oil:[
-  ['col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);','col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.24,0.42,light)*near*.6);'],
-  ['col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);','col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.2,0.36,dark)*near*0.6);'],
-  ['col=mix(vec3(luma(col)),col,1.35);\n col=(col-0.5)*1.1+0.5;','col=mix(vec3(luma(col)),col,1.15);\n col=mix(vec3(.05,.09,.11),vec3(.97,.95,.88),col);'],
-  ['col*=1.0+thinPaint*((stroke-.5)*.035+(weave-.5)*.016);','col*=1.0+mix(.6,1.0,thinPaint)*((stroke-.5)*.07+(weave-.5)*.025);'],
- ],
+  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uFocusY>=0.0?uFocusY:uResolution.y>uResolution.x*1.05?0.66:0.54));'],
+  ['float radius=smoothstep(0.07,0.42,away)*16.0*u;','float radius=smoothstep(0.04,0.40,away)*24.0*u;'],
+  ['for(int i=1;i<24;i++){\n   float fi=float(i),r=sqrt(fi/24.0)*radius,a=fi*2.39996;',`#ifdef LIGHT
+  const int TAPS=16;
+#else
+  const int TAPS=48;
+#endif
+  for(int i=1;i<TAPS;i++){
+   float fi=float(i),r=sqrt(fi/float(TAPS))*radius,a=fi*2.39996;`]],
+
 };
 /** World's fragment for a Look as GLSL ES 3.00, mixed into its input by uAmount; null for Natural. */
 export function photoFragment(name,{light=false}={}){
@@ -1140,6 +1157,12 @@ export function photoFragment(name,{light=false}={}){
   world=world.slice(0,main)+own;
  }
  const body=world.replace('#include <packing>','').replace(WORLD_UNIT,PHOTO_UNIT).replace(/void\s+main\s*\(\s*\)/,'void lookMain()');
+ const ink=PERSON_INKS[name],subject=ink?`
+ if(uHasPerson>.5){
+  float line=personEdge(vUv,${ink[2].toFixed(2)}),rim=personEdge(vUv,${(ink[2]+1.4).toFixed(2)});
+  lookColor.rgb=mix(lookColor.rgb,vec3(${ink[1]}),rim*(1.0-line)*(1.0-smoothstep(.15,.35,luma(lookColor.rgb))));
+  lookColor.rgb=mix(lookColor.rgb,vec3(${ink[0]}),line*.95);
+ }`:'';
  return `#version 300 es
 precision highp float;precision highp int;
 #define varying in
@@ -1149,11 +1172,15 @@ vec4 lookColor;
 ${body}
 uniform float uAmount;
 out highp vec4 fragColor;
-void main(){lookMain();vec3 before=texture(tDiffuse,vUv).rgb;fragColor=vec4(mix(before,clamp(lookColor.rgb,0.0,1.0),uAmount),1.0);}`;
+void main(){lookMain();${subject}vec3 before=texture(tDiffuse,vUv).rgb;float alpha=1.0;
+${name==='glitch'?`#ifndef LIGHT
+ before=texture(tSortBase,vUv).rgb;alpha=uSortFinal==1?1.0:lookColor.a;
+#endif`:''}
+fragColor=vec4(mix(before,clamp(lookColor.rgb,0.0,1.0),uAmount),alpha);}`;
 }
 
 /** Whether a Look draws outlines (and so wants camera noise smoothed away first). */
-export const lookDrawsLines=name=>name==='adventureInk'||(name!=='none'&&lookUsesDepth(name));
+export const lookDrawsLines=name=>name==='adventureInk'||name==='animeBackground'||(name!=='none'&&lookUsesDepth(name));
 /**
  * The Looks that print a picture in a few inks at fixed thresholds. World's town is bright and evenly lit, and they
  * are set for it; a photo of a shady garden would print almost solid. So, as the town's Pocket camera exposes each
@@ -1269,6 +1296,23 @@ export function createLookEngine(canvas,{light=false}={}){
  const triangle=gl.createBuffer();
  gl.bindBuffer(gl.ARRAY_BUFFER,triangle);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
  const programs=new Map(),sources=new Map(),targets=new Map();
+ const grades=new Map();let gradePromise,gradeError=false;
+ function loadLuts(){
+  return gradePromise??=Promise.all(Object.entries(LUT_LOOKS).map(async([name,file])=>{
+   const image=new Image();image.src=new URL(`./luts/${file}.png?v=20261030e`,import.meta.url).href;await image.decode();
+   if(image.naturalWidth!==1024||image.naturalHeight!==32)throw new Error('Invalid film grade');
+   const c=document.createElement('canvas');c.width=1024;c.height=32;const ctx=c.getContext('2d');ctx.drawImage(image,0,0);
+   const strip=ctx.getImageData(0,0,1024,32).data,data=new Uint8Array(32*32*32*4);
+   for(let b=0;b<32;b++)for(let g=0;g<32;g++)for(let r=0;r<32;r++){
+    const from=(g*1024+b*32+r)*4,to=((b*32+g)*32+r)*4;data.set(strip.subarray(from,from+4),to);
+   }
+   c.width=c.height=0;if(gl.isContextLost())return;
+   const t=gl.createTexture();gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_3D,t);
+   gl.texParameteri(gl.TEXTURE_3D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_3D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+   for(const axis of [gl.TEXTURE_WRAP_S,gl.TEXTURE_WRAP_T,gl.TEXTURE_WRAP_R])gl.texParameteri(gl.TEXTURE_3D,axis,gl.CLAMP_TO_EDGE);
+   gl.texImage3D(gl.TEXTURE_3D,0,gl.RGBA8,32,32,32,0,gl.RGBA,gl.UNSIGNED_BYTE,data);gl.activeTexture(gl.TEXTURE0);grades.set(name,t);
+  })).catch(error=>{gradeError=true;throw error;});
+ }
 
  function shader(type,text){const s=gl.createShader(type);gl.shaderSource(s,text);gl.compileShader(s);return s;}
  function build(key,fragment){
@@ -1330,14 +1374,29 @@ export function createLookEngine(canvas,{light=false}={}){
  function setSource(name,element,width,height){
   let s=sources.get(name);
   if(!s){s={t:texture()};sources.set(name,s);}
-  gl.bindTexture(gl.TEXTURE_2D,s.t);
+  if(s.person){gl.deleteTexture(s.person);s.person=null;}
+  s.revision=(s.revision||0)+1;
+  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,s.t);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,element);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
   s.width=width;s.height=height;
+  return s.revision;
  }
- function dropSource(name){const s=sources.get(name);if(s){gl.deleteTexture(s.t);sources.delete(name);}}
+ function setPersonMask(name,mask,revision){
+  const s=sources.get(name);if(!s||s.revision!==revision||gl.isContextLost())return false;
+  if(s.person){gl.deleteTexture(s.person);s.person=null;}
+  if(!mask)return true;
+  const {width,height,pixels}=mask;
+  if(!width||!height||pixels.length!==width*height)throw new Error('Invalid person mask');
+  gl.activeTexture(gl.TEXTURE0);s.person=texture();
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.R8,width,height,0,gl.RED,gl.UNSIGNED_BYTE,pixels);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT,4);
+  return true;
+ }
+ function dropSource(name){const s=sources.get(name);if(s){gl.deleteTexture(s.t);if(s.person)gl.deleteTexture(s.person);sources.delete(name);}}
 
  // One full-screen pass, into a framebuffer (or the canvas) over a viewport, in tiles when asked so that a large
  // save never hands the GPU one draw long enough for the system to reset it.
@@ -1379,11 +1438,24 @@ export function createLookEngine(canvas,{light=false}={}){
    f1(u.uLight,a.light);f1(u.uContrast,a.contrast);f1(u.uColour,a.colour);f1(u.uWarmth,a.warmth);
   };
  }
- const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1)=>u=>{
+ const emptyPerson=texture(1,1);
+ const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1,person={})=>u=>{
   f1(u.uAmount,amount);f1(u.uFocusY,focus);if(u.uTexel)gl.uniform2f(u.uTexel,1/w,1/h);if(u.uResolution)gl.uniform2f(u.uResolution,w,h);
   // Pattern: -1 finer, +1 coarser, a factor of two either way.
   f1(u.uLines,1080*2**-pattern);f1(u.uUnitFloor,floor);
   f1(u.uComic,1);f1(u.uSkyDepth,120);f1(u.uFocusDistance,6);f1(u.uFocusRange,3);f1(u.uNear,.05);f1(u.uFar,60);
+  if(u.tPerson){
+   gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,sources.get(person.source)?.person||emptyPerson);gl.uniform1i(u.tPerson,1);
+   f1(u.uHasPerson,sources.get(person.source)?.person?1:0);
+   const c=person.crop||{x:0,y:0,w:1,h:1};gl.uniform4f(u.uPersonCrop,c.x,c.y,c.w,c.h);
+   f1(u.uPersonMirror,person.mirror?1:0);f1(u.uPersonTrick,TRICKS.indexOf(person.trick||'none'));
+   gl.activeTexture(gl.TEXTURE0);
+  }
+  if(u.tGrade){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_3D,grades.get(person.look));gl.uniform1i(u.tGrade,3);gl.activeTexture(gl.TEXTURE0);}
+  if(u.tSortBase){
+   gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,person.sortBase);gl.uniform1i(u.tSortBase,2);gl.activeTexture(gl.TEXTURE0);
+   gl.uniform1i(u.uSortSize,person.size);gl.uniform1i(u.uSortStride,person.stride);gl.uniform1i(u.uSortFinal,person.sortFinal?1:0);
+  }
  };
 
  /**
@@ -1394,6 +1466,7 @@ export function createLookEngine(canvas,{light=false}={}){
  function run(recipe,{source,crop={x:0,y:0,w:1,h:1},mirror=false,width,height,output=null,viewport,targetName='view',full=false,tile=0,layers=recipe.layers,expose=false}){
   if(!sources.has(source)||gl.isContextLost())return false;
   const active=layers.filter(l=>l.look!=='none'&&l.amount>0);
+  if(active.some(l=>LUT_LOOKS[l.look]&&!grades.has(l.look))){if(full)throw new Error('Film grades are not ready');return false;}
   const entries=active.map(l=>full?look(l.look,true):(ready(request(l.look))?look(l.look):undefined));
   if(entries.some(e=>e===undefined))return false;
   if(full&&entries.some(e=>!e))throw new Error(`${active[entries.indexOf(null)].look} cannot be drawn on this device`);
@@ -1406,19 +1479,29 @@ export function createLookEngine(canvas,{light=false}={}){
   const p=pair(targetName,width,height);let read=0;
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
   steps.forEach(({layer,entry},i)=>{
-   const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1),tile);
-   read=1-read;
+   const sorting=layer.look==='glitch'&&(full||!light),stages=sorting?SORT_STAGES:[{}];
+   let sortBase;
+   if(sorting){
+    const saved=pair(targetName+'-sort',width,height),copy=fixed('copy',COPY);sortBase=saved.items[0].t;
+    pass(copy,p.items[read].t,saved.items[0].f,[0,0,width,height],null,tile);
+   }
+   stages.forEach((stage,j)=>{
+    const sortFinal=j===stages.length-1,last=i===steps.length-1&&sortFinal&&!intoPair;
+    pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],
+     lookUniforms(sortFinal?layer.amount:1,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,
+      {source,crop,mirror,trick:recipe.trick,look:layer.look,sortBase,sortFinal,...stage}),tile);
+    read=1-read;
+   });
   });
   return intoPair?p.items[read].f:true;
  }
 
  return {
-  gl,maxTexture,
-  setSource,dropSource,hasSource:name=>sources.has(name),
+  gl,maxTexture,loadLuts,
+  setSource,setPersonMask,dropSource,hasSource:name=>sources.has(name),
   sourceSize:name=>{const s=sources.get(name);return s?{width:s.width,height:s.height}:null;},
   /** Starts compiling Looks in the background. */
-  warm(names){if(parallel)for(const n of names)if(n!=='none')request(n);},
+  warm(names){if(names.some(n=>LUT_LOOKS[n]))loadLuts().catch(()=>{});if(parallel)for(const n of names)if(n!=='none')request(n);},
   isReady:name=>name==='none'||ready(request(name)),
   /** Draws a recipe on the canvas at the canvas's own size. */
   draw(recipe,options){
@@ -1444,12 +1527,18 @@ export function createLookEngine(canvas,{light=false}={}){
    let budget=parallel?Infinity:3;
    names.forEach((name,i)=>{
     if(name==='none'){const copy=fixed('copy',COPY);if(copy)pass(copy,base.items[0].t,atlas.items[0].f,[i*size,0,size,size]);return;}
+    if(name==='glitch'){
+     const ok=run({...before,layers:[...before.layers,{look:name,amount:1}]},{source,crop,mirror,width:size,height:size,
+      output:atlas.items[0].f,viewport:[i*size,0,size,size],targetName:'thumb-sort',full:source!=='live'});
+     if(!ok)missing.push(name);return;
+    }
+    if(LUT_LOOKS[name]&&!grades.has(name)){missing.push(name);loadLuts().catch(()=>{});return;}
     const e=programs.get(lookKey(name,false));
     if(!e&&budget<=0){missing.push(name);return;}
     if(!e)budget--;
     if(!ready(request(name))){missing.push(name);return;}
     const entry=look(name);if(!entry){missing.push(name);return;}
-    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1));
+    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick,look:name}));
    });
    const pixels=new Uint8Array(w*h*4);
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
@@ -1466,9 +1555,9 @@ export function createLookEngine(canvas,{light=false}={}){
     // A context lost while drawing reads back nothing: never hand that on as a black photo.
     if(gl.isContextLost())throw new Error('The graphics were lost');
     return {width,height,data:flipRows(pixels,width,height)};
-   }finally{release('export');}
+   }finally{release('export');release('export-sort');}
   },
-  failed:name=>!!programs.get(lookKey(name,false))?.failed,
+  failed:name=>!!programs.get(lookKey(name,false))?.failed||!!(LUT_LOOKS[name]&&gradeError),
   lost:()=>gl.isContextLost(),
  };
 }

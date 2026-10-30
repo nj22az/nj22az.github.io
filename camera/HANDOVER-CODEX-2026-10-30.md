@@ -9,11 +9,143 @@ backlog. The day's full history is the first section of [HANDOVER-2026-10-29.md]
 
 | | Commit | State |
 |---|---|---|
-| `main` (the live site) | `1ed9a7ef2` | Rounds one to four and this handover, all published on the owner's word ("Push then work the rest", "Yes then proceed", and "Yes" to publishing round four, 30 October) |
-| `claude/friendly-darwin-a4e3re` | the same, plus this note's update | Claude's working branch |
+| `main` (the live site; last checked) | `37befc31` | Rounds one to four and this handover, all published on the owner's word ("Push then work the rest", "Yes then proceed", and "Yes" to publishing round four, 30 October) |
+| `claude/friendly-darwin-a4e3re` | `bcfbbfcd` | Claude's working branch, with the owner shader-list brief; same runtime as main |
 
 Anything you do next goes to `main` only on the owner's explicit word. Branch off `main` or
 `claude/friendly-darwin-a4e3re` (they are the same code).
+
+## Codex continuation — 30 October 2026 (review branch, not published)
+
+**Latest:** the shader-list extension and final verification below supersede the runtime/check counts in this first pass.
+
+- **Branch:** `codex/pocket-camera-looks`, created at `1ed9a7ef` from `claude/friendly-darwin-a4e3re`.
+- **Commits:** `53fc3edc` (all 34 Looks re-judged for rounds three/four); `9483698f` (local still-photo person masks);
+  `f59b2e10` (ranked pencil/ink/print/paint refinements, smoother Miniature). `04afb613` integrates Claude's newer
+  documentation-only `37befc31`. Runtime bytes tested below are exactly `f59b2e10`; later changes are review notes,
+  evidence and render-tool documentation. Draft review targets Claude's branch. **No Codex push or merge to main.**
+- **Current upstream observation:** `main` and Claude's branch both at `37befc31` when checked. Its handover says Claude
+  published round four at `1ed9a7ef2` on the owner's word. That is historical publication, not permission for this pass.
+- **Cache keys:** `app.js?v=20261030d`, `looks-gl.js?v=20261030d`, `person-mask.js?v=20261030d`;
+  the unchanged worker is `person-mask-worker.js?v=20261030c`.
+- **Evidence and scores:** [audit](AUDIT-LOOKS-2026-10-30.md), [review sheets and input provenance](qa/looks-2026-10-30/README.md).
+
+Done in the requested order: a separate persona pass on rounds three/four (one Codex reviewer, no claimed independent
+human panel), then a size/licence/cost investigation before adopting the mask; then Crayon (3), the 4-point drawing
+and print backlog, Manga, Oil and Miniature. The audit records actual new scores, including unchanged scores.
+All changes stay in the camera's own bodies/PHOTO_EDITS. **World's `src/render/looks.js` is byte-for-byte unchanged.**
+
+The person model is MediaPipe Selfie Segmenter float16 v1, with Tasks Vision 0.10.21, Apache-2.0. The model is
+249,537 bytes; all four local assets total 10,165,743 bytes (3,200,243 under local gzip, not measured host transfer).
+No CDN or photo upload. A worker takes a frozen snapshot with its longest side at most 256 px, one inference at a
+ time, with a 15-second failure fallback. Only drawn/print still recipes load it. Crop, mirror, Twin/Quad, thumbnails,
+Erase, source revision invalidation and context restoration are wired. [Exact assets, licences and costs](vendor/person-mask/README.md).
+The first prototype's small café-chair false positive was rejected by requiring a substantial, confident component;
+the six-photo set now retains foreground people only in its three portraits. **No live-video mask** is used: motion
+alignment and iPhone cost remain open, and preview/live silhouette therefore differs from the frozen-photo editor.
+
+**Checks actually run and passed on these runtime bytes:**
+
+| Check | Result |
+|---|---|
+| `python3 tools/camera-test-photos.py /tmp/camera-bench/in` | All six available; source hashes in evidence.json |
+| `node tools/render-camera-looks.mjs` | Round-four 204 full outputs; round-three's changed seven Looks rendered on all six; final 13 affected Looks × six = 78 full outputs with real local mask |
+| `python3 tools/camera-look-sheet.py` | Before/after phone sheets and unscaled crops generated and visually inspected on all six for the affected Looks |
+| Same render command with `--light --person` | 78 LIGHT still-editor outputs, inspected; no flat/black output. LIGHT/full differ on faces and remain separately limited |
+| `node camera/tests/looks-gl.test.mjs` | Pass: 33 shader Looks plus Natural, conversion/recipe/size/rows |
+| `node camera/tests/modules.test.mjs` | Pass: 15 camera modules, each at one address |
+| `node --check camera/looks-gl.js camera/app.js` and separate `node --check camera/app.js` | Pass; app checked separately because Node checks one input file |
+| `git diff --check` | Pass |
+| `node camera/tests/camera.browser.mjs` | **56/56**, Chromium 133 + SwiftShader + ffmpeg fake camera; [first-pass log](qa/looks-2026-10-30/camera.browser-round5.txt) |
+| `node camera/tests/person-mask.test.mjs` | Pass: confidence, components, soft boundary, recipe and unsupported-device fallback |
+| `node camera/tests/person-mask.browser.mjs` | Pass: real local model, same-colour outline, crop/mirror/Twin, thumbnails, stale-mask rejection, no external request/page error |
+| Converted shader numeric `smoothstep` bounds scan | No constant equal/reversed bounds, full and LIGHT, all 34 Looks |
+| Five `--lines 4000` renders | Manga, Heavy brush, Riso three-colour, Oil, Miniature each produced non-black 3000 × 4000 outputs. Compile/render/readback/PNG: 16.52, 10.79, 9.98, 14.34, 9.80 s in software under concurrent load. Source enlarged from 1440 px, **not a native 12 MP input** |
+
+Runtime setup used packaged Chromium 133 after the environment's Playwright browser download returned an invalid
+archive. This is a reproducible software compile/draw check, not Safari. The focused real-model check measured
+roughly 0.62–1.56 s cold under different concurrent loads; prototype warm calls were 23–52 ms with 256-px-width inputs.
+Neither is an iPhone benchmark. No test was weakened or removed.
+
+**Still unverified/open:** physical iPhone Safari/Home Screen use, first-load download/offline reuse of the model,
+worker compatibility/memory/thermal impact, native-resolution iPhone import/save, actual heavy-Look frame rates,
+context recovery on a device (SwiftShader does not restore it), moving-person mask alignment. Small/distant people,
+fingers, hat edges and occlusion can fail segmentation. Line drawing, Stamp and Heavy brush remain 4/10; their face
+readability is not solved. Crayon is still too photographic, the cel Looks still retain photographic colour planes,
+Manga's hair highlights are not semantically placed, and foliage simplification remains open.
+
+**Next:** ask the owner to test the review build on iPhone: viewfinder smoothness of Heavy brush, Oil, Riso three-colour
+and the drawn Looks; a native 12 MP import/save; first-mask delay and contour quality on a same-colour background;
+Miniature tap focus and save. Then work the three 4-point rows without losing eyes/nose/mouth. Publish only after
+an explicit new owner instruction. The older next-steps list below remains historical context.
+
+## Shader-list extension and final review — 30 October 2026
+
+**Draft [PR #405](https://github.com/nj22az/nj22az.github.io/pull/405)**: `codex/pocket-camera-looks` →
+`claude/friendly-darwin-a4e3re`. The branch incorporates upstream's owner list at `bcfbbfcd` (merge `af8ad8f0`).
+Last observed upstream: `main` `37befc31`, Claude `bcfbbfcd`. **No Codex change is published to main.**
+
+Implementation order and commits:
+
+| Commit | Change |
+|---|---|
+| `2debf445` | Colour film; local halation also added to existing Instant film |
+| `c7a5fb5b` | Disposable camera: barrel warp, radial fringe, soft corners and flash fall-off |
+| `59464005` | Original Python-generated 32³ LUTs; Warm slide film and Soft negative film; real WebGL2 3D textures |
+| `910071bb` | 1-bit Mac, true black/white with 8×8 Bayer dither |
+| `91ae88f3` | VGA adventure, original 16 × 16 material ramps and 200-row rendering |
+| `47e878c9` | Eight overlapping Gaussian sectors shared by camera-only Oil and new Anime background |
+| `060b12a7` | Multi-pass engine and real bounded 16-cell bitonic pixel sorting for Glitch |
+| `c67237c4` | Final skin/plane refinements, judges, licence record and functional/UI checks |
+
+The total is **42 Looks**. Oil and Instant were improved rather than duplicated; existing Old TV supplies CRT and
+Line drawing supplies DoG-style sampling. The shared Kuwahara is an authored tensor-steered Gaussian-sector
+approximation, not a claim of an exact reference implementation. Glitch sorts only fully eligible 16-cell blocks;
+black/white barrier blocks remain unchanged. It bypasses phone live preview and runs in the frozen editor/save,
+with a short explanation when selected. The LUTs are generic creative sRGB grades, not branded or measured stocks.
+
+New bodies are in `photo-bodies.js`, imported by `looks-gl.js`. World's shader file is unchanged. Current cache keys:
+`app.js`, `looks-gl.js`, `photo-bodies.js` **20261030e**; unchanged person-mask module **20261030d**, worker **20261030c**.
+Every new Look has its README judge. All six photographs were assessed at phone size and 1:1, including LIGHT:
+[extension scores and faults](AUDIT-LOOKS-2026-10-30.md#the-owners-shader-list-extension--30-october-2026),
+[review sheets, credits and logs](qa/looks-2026-10-30/README.md).
+
+**Checks actually run on final runtime `c67237c4` (identical local tested tree):**
+
+| Check | Result |
+|---|---|
+| Six-photo fetch/render/sheet loop | Pass; 10 changed/new Looks × six = 60 full + 60 LIGHT outputs, then all-six VGA/Anime refinements and phone/unscaled inspection |
+| `node camera/tests/looks-gl.test.mjs` | Pass: 41 shader Looks plus Natural |
+| `node camera/tests/modules.test.mjs` | Pass: 16 camera modules, each at one address |
+| `node --check camera/looks-gl.js camera/app.js`, separate app and photo-bodies checks | Pass |
+| `git diff --check` | Pass |
+| `node camera/tests/camera.browser.mjs` | **56/56**, now requires exactly 42 Looks and draws every one; [final log](qa/looks-2026-10-30/camera.browser.txt) |
+| `node camera/tests/photo-pipeline.browser.mjs` | Pass: identity LUT axes/endpoints/interpolation (≤2 levels), distinct grades, Mac two colours/32 of 64 white at half grey, VGA ≤256 (fixture 191), sorted value set, mix error ≤0.5, unchanged barriers, phone bypass/full save, local warm halo, Oil noise 1197→662 |
+| `node camera/tests/person-mask.test.mjs` / `.browser.mjs` | Both pass; actual local model, transforms/lifecycle, no external requests; final cold software call about 745 ms |
+| `python3 tools/build-camera-luts.py` | All three regenerated PNGs pixel-identical |
+| Full/LIGHT comparison | Disposable, both LUTs, Mac and VGA pixel-identical on all six; Colour film, Instant, Oil, Anime and Glitch inspected separately |
+| Converted shader constant `smoothstep` scan / stand-in validation | No equal/reversed constant bounds, full/LIGHT; all swatches name an existing World Look |
+| Oil, Anime, Glitch at 3000 × 4000 | All completed; 35.66, 34.38, 3.05 s including compile/readback/PNG under concurrent software load. Enlarged 1440-px source, **not native 12 MP input**, and not a frame-rate benchmark |
+
+An initial extension UI run failed Memory's existing card-fit assertion during concurrent large-image rendering;
+the standalone final full run passed the same bounds. No Memory implementation or fit tolerance changed. Cause is
+**not established**; [failed run](qa/looks-2026-10-30/camera.browser-first-extension-run.txt) is retained beside the passing log.
+
+The ordinary git transport could read but could not authenticate a push. The connected GitHub API uploaded the
+commits, checking every blob and resulting tree SHA against the tested local objects. API commit identities differ
+because commit metadata is generated there; the table above gives the actual GitHub commits. No source changed in
+that transfer. Licences were checked before implementation; [source record](SHADER-SOURCES-2026-10-30.md).
+All shader/LUT work is authored here. Neither lygia nor Filters4Processing was copied.
+
+**Still unverified:** physical iPhone Safari/Home Screen frame rate, native-resolution/wide-gamut imports and saves,
+mask first-download/offline reuse, worker compatibility, memory/thermal impact, real context restoration and moving
+person masks. Still masks are implemented; live masks are deferred. Existing Lines, Stamp and Heavy brush remain
+4/10; VGA and Glitch 5/10 have their stated faults. A passing compile/draw test is not artistic or device acceptance.
+
+**Owner test requested:** use the review branch on iPhone; compare Heavy brush, Oil, Anime background, Riso three-colour
+and the drawn Looks in the viewfinder; take and edit a Glitch photo; import/save a native 12 MP image; try first-mask
+delay and a person against clothes/background of matching colour and brightness; check Miniature focus/save.
+Then address the three 4-point rows and Glitch run boundaries. Any main publication requires a new explicit owner message.
 
 ## What the owner asked, in order (30 October 2026)
 

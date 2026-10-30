@@ -1,0 +1,30 @@
+ok  iPhone Safari: the greeting fits whole, the strip waits, its button starts the camera
+ok  iPhone Safari: the Home Screen app's manifest and icons
+ok  iPhone Safari: first screen without page errors
+ok  iPhone SE Safari: the greeting fits whole, the strip waits, its button starts the camera
+ok  iPhone SE Safari: the Home Screen app's manifest and icons
+ok  iPhone SE Safari: first screen without page errors
+ok  iPhone Safari: both samples seed once and stay deleted
+ok  iPhone Safari: the picture takes the whole width; the Looks unfold from the Look's name
+ok  iPhone Safari: the shutter prints the photo, and the print lands in the album
+ok  iPhone Safari: a tap skips the printer; Print off saves without it
+ok  iPhone Safari: words alone, a resident's own words, and lettering that changes its style
+ok  iPhone Safari: a manga moment: focus lines on a face, a sound effect, an emotion mark, kept in the save
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: every card is whole on the screen and not tiny
+    at file:///workspace/scratch/06e2f33c94f9/pocket-camera/camera/tests/camera.browser.mjs:580:11
+    at async check (file:///workspace/scratch/06e2f33c94f9/pocket-camera/camera/tests/camera.browser.mjs:23:30)
+    at async playAndPrint (file:///workspace/scratch/06e2f33c94f9/pocket-camera/camera/tests/camera.browser.mjs:574:3)
+    at async file:///workspace/scratch/06e2f33c94f9/pocket-camera/camera/tests/camera.browser.mjs:639:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

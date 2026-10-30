@@ -12,51 +12,51 @@ in a conical hat, a café, a shady garden, a night street in Osaka), at phone si
 
 | Look | Judge | Score | What they demanded | Status |
 |---|---|---|---|---|
-| Manga | Takahashi, Toriyama | 4 | Close the face with one contour; teeth one white shape; black clothes and hair solid black with highlight cuts; one tone per surface, no salt-and-pepper granite or static garden || Partly: blacks solid, masses one tone, contours both sides, anti-aliased screens; teeth one shape where they are bright (round two). Hair highlight cuts not done |
-| Pencil manga | the same, in pencil; Inoue | 3 | Deep shadows as broken graphite strokes, not grey smudges; the darkest values the densest strokes; same face faults || Partly: shadows are three layers of strokes along the form; teeth as Manga (round two) |
-| Line drawing | Moebius | 3 | Long strokes following the form, only in shadow, light left as paper; no hatching rain on lit walls; a few deliberate wrinkle lines || Partly: strokes follow the form, shadows only; teeth as Manga (round two). Wrinkle economy not done |
-| Sketchbook | an Urban Sketcher | 4 | Darks in Payne's grey or indigo, not slate or cobalt; no hatching on lit skin; leave paper at the margins and the highlights unpainted || Fixed (round two): Payne's grey darks, shading in shadows only, the wash stops short of a ragged paper margin where the pencil trails off |
-| Pencil crayon | a picture-book illustrator | 2 | Strokes that curve with the form, not a straight lattice; saturated layered colour, darks from complementaries || Rebuilt (round two): grain streaked along the hand, paper showing, no lattice; darks burnished |
-| Adventure Ink | Toriyama's colour pages | 3 | A confident ink contour on every silhouette; a base colour and one hard shadow; teeth one shape || Rebuilt (round two): cel colour (a base, one hard shadow, a highlight) from an edge-keeping material colour, fine ink contour, teeth one shape |
-| Cartoon | a TV anime colour designer | 3 | A base and one shadow per material; thick outlines; no jagged tone edges; no photo texture || Rebuilt (round two): a base and one shadow per material, thick brush-pen outline, no photo texture |
-| Comic dots | 1960s comic printers; Lichtenstein | 1 | Stop brightening (it doubled the light and erased faces); a working cyan plate; solid black; a black keyline; anti-aliased dots || Rebuilt: no exposure, fixed-step tints, solids, keyline, anti-aliased dots |
+| Manga | Takahashi, Toriyama | 4 | Close the face with one contour; teeth one white shape; black clothes and hair solid black with highlight cuts; one tone per surface, no salt-and-pepper granite or static garden | Partly: blacks solid, masses one tone, contours both sides, anti-aliased screens; teeth one shape where they are bright (round two). Hair highlight cuts not done |
+| Pencil manga | the same, in pencil; Inoue | 3 | Deep shadows as broken graphite strokes, not grey smudges; the darkest values the densest strokes; same face faults | Partly: shadows are three layers of strokes along the form; teeth as Manga (round two) |
+| Line drawing | Moebius | 3 | Long strokes following the form, only in shadow, light left as paper; no hatching rain on lit walls; a few deliberate wrinkle lines | Partly: strokes follow the form, shadows only; teeth as Manga (round two). Wrinkle economy not done |
+| Sketchbook | an Urban Sketcher | 4 | Darks in Payne's grey or indigo, not slate or cobalt; no hatching on lit skin; leave paper at the margins and the highlights unpainted | Fixed (round two): Payne's grey darks, shading in shadows only, the wash stops short of a ragged paper margin where the pencil trails off |
+| Pencil crayon | a picture-book illustrator | 2 | Strokes that curve with the form, not a straight lattice; saturated layered colour, darks from complementaries | Rebuilt (round two): grain streaked along the hand, paper showing, no lattice; darks burnished |
+| Adventure Ink | Toriyama's colour pages | 3 | A confident ink contour on every silhouette; a base colour and one hard shadow; teeth one shape | Rebuilt (round two): cel colour (a base, one hard shadow, a highlight) from an edge-keeping material colour, fine ink contour, teeth one shape |
+| Cartoon | a TV anime colour designer | 3 | A base and one shadow per material; thick outlines; no jagged tone edges; no photo texture | Rebuilt (round two): a base and one shadow per material, thick brush-pen outline, no photo texture |
+| Comic dots | 1960s comic printers; Lichtenstein | 1 | Stop brightening (it doubled the light and erased faces); a working cyan plate; solid black; a black keyline; anti-aliased dots | Rebuilt: no exposure, fixed-step tints, solids, keyline, anti-aliased dots |
 
 ## Painted and print
 
 | Look | Judge | Score | What they demanded | Status |
 |---|---|---|---|---|
-| Watercolour | Beatrix Potter; an urban watercolourist | 3 | No outline round every patch; darks as transparent indigo or sepia glazes, not grey mud; paper left white || Rebuilt: no outlines, glazed darks, paper white, granulation |
-| Oil painting | Edward Hopper | 4 | No clipping to black and white (a night is deep green-blue); no white specks or halos; strokes on canvas || Partly (World lines replaced): coloured darks, no clipping, fewer specks, brushwork everywhere. Canvas strokes still faint |
-| Heavy brush | Van Gogh | 3 | Distinct directional dabs following the form; no black blotches at mouth corners; lifted, complementary colour || Rebuilt: distinct dabs along the form, no mouth blots, lifted colour, Prussian-blue line |
-| Woodblock | Hokusai, Hiroshige, Hasui | 4 | A graded sky (bokashi) at night and by day; fewer, cleaner blocks; a fine key-block line on the face || Partly: graded sky (bokashi) by day and night, bigger blocks, key line. Some grey patches on skin remain |
-| Risograph | a zine maker | 4 | Darks as the two inks overprinted, not mid coral; a grainy stochastic screen, not a round-dot grid; colours separated by hue || Rebuilt as a family of five (overprinted darks, grain screen, separation by ink) |
-| Rubber stamp | eki-stamp designers | 5 | Much less ink (a carved line drawing with a few solid masses); wear as starved ink on the light side, not round holes; teeth one shape || Partly: less ink, starved grain instead of holes, carved lines, no mouth blots. Still heavy on busy dark scenes |
-| Blueprint | Anna Atkins | 7 | Paper white clear, not fogged; a brush-coated border and paper fibre || Fixed (round two): a brush-coated border with a bare-paper margin, uneven coat, paper fibre, the paper clear and warm |
+| Watercolour | Beatrix Potter; an urban watercolourist | 3 | No outline round every patch; darks as transparent indigo or sepia glazes, not grey mud; paper left white | Rebuilt: no outlines, glazed darks, paper white, granulation |
+| Oil painting | Edward Hopper | 4 | No clipping to black and white (a night is deep green-blue); no white specks or halos; strokes on canvas | Partly (World lines replaced): coloured darks, no clipping, fewer specks, brushwork everywhere. Canvas strokes still faint |
+| Heavy brush | Van Gogh | 3 | Distinct directional dabs following the form; no black blotches at mouth corners; lifted, complementary colour | Rebuilt: distinct dabs along the form, no mouth blots, lifted colour, Prussian-blue line |
+| Woodblock | Hokusai, Hiroshige, Hasui | 4 | A graded sky (bokashi) at night and by day; fewer, cleaner blocks; a fine key-block line on the face | Partly: graded sky (bokashi) by day and night, bigger blocks, key line. Some grey patches on skin remain |
+| Risograph | a zine maker | 4 | Darks as the two inks overprinted, not mid coral; a grainy stochastic screen, not a round-dot grid; colours separated by hue | Rebuilt as a family of five (overprinted darks, grain screen, separation by ink) |
+| Rubber stamp | eki-stamp designers | 5 | Much less ink (a carved line drawing with a few solid masses); wear as starved ink on the light side, not round holes; teeth one shape | Partly: less ink, starved grain instead of holes, carved lines, no mouth blots. Still heavy on busy dark scenes |
+| Blueprint | Anna Atkins | 7 | Paper white clear, not fogged; a brush-coated border and paper fibre | Fixed (round two): a brush-coated border with a bare-paper margin, uneven coat, paper fibre, the paper clear and warm |
 
 ## Photo
 
 | Look | Judge | Score | What they demanded | Status |
 |---|---|---|---|---|
-| Natural | an iPhone photographer | 8 | A sharper resize of a tall photo into the frame || Fixed (round two): a photo made smaller is supersampled from the mipmap level twice the picture's size and lightly sharpened (Lanczos-like); detail on the night street 11.2 → 14.3 against Lanczos's 15.1; at 1:1 unchanged |
-| Black & white | Daidō Moriyama | 5 | Real grain, clumped and strongest in the mid-greys; a softer toe (36% pure black); halation round lights || Rebuilt: grain, softer toe, halation |
-| Sepia | a Meiji studio photographer | 5 | Blue-sensitive grey conversion; chocolate blacks with separation, not a red-brown slab; soft edges and fall-off || Rebuilt (round two): blue-sensitive grey, chocolate blacks with separation, soft edges and fall-off, faded album border |
-| Instant film | Wim Wenders | 6 | No light leak (integral film is sealed): uneven development at the bottom edge instead; no grain; teal-black shadows || Rebuilt (round two): soft, no grain, dye mottle, teal-black shadows, the developer uneven at the bottom edge, no light leak |
-| Miniature | Olivo Barbieri | 4 | The plane of focus on the subject, not fixed mid-frame; no saturation burn; smooth round defocus || Partly: no saturation burn; round two puts the sharp band on an upright photo's upper third (the face). Tap to place it, and a smoother blur, still open |
-| Night vision | a night wildlife cameraman | 4 | Automatic brightness, not a hard clip at mid-grey; halos round lights; scintillation and honeycomb, not scanlines; yellow-green phosphor || Rebuilt: automatic brightness, halos, scintillation, honeycomb, P43 yellow-green |
+| Natural | an iPhone photographer | 8 | A sharper resize of a tall photo into the frame | Fixed (round two): a photo made smaller is supersampled from the mipmap level twice the picture's size and lightly sharpened (Lanczos-like); detail on the night street 11.2 → 14.3 against Lanczos's 15.1; at 1:1 unchanged |
+| Black & white | Daidō Moriyama | 5 | Real grain, clumped and strongest in the mid-greys; a softer toe (36% pure black); halation round lights | Rebuilt: grain, softer toe, halation |
+| Sepia | a Meiji studio photographer | 5 | Blue-sensitive grey conversion; chocolate blacks with separation, not a red-brown slab; soft edges and fall-off | Rebuilt (round two): blue-sensitive grey, chocolate blacks with separation, soft edges and fall-off, faded album border |
+| Instant film | Wim Wenders | 6 | No light leak (integral film is sealed): uneven development at the bottom edge instead; no grain; teal-black shadows | Rebuilt (round two): soft, no grain, dye mottle, teal-black shadows, the developer uneven at the bottom edge, no light leak |
+| Miniature | Olivo Barbieri | 4 | The plane of focus on the subject, not fixed mid-frame; no saturation burn; smooth round defocus | Partly: no saturation burn; round two puts the sharp band on an upright photo's upper third (the face). Tap to place it, and a smoother blur, still open |
+| Night vision | a night wildlife cameraman | 4 | Automatic brightness, not a hard clip at mid-grey; halos round lights; scintillation and honeycomb, not scanlines; yellow-green phosphor | Rebuilt: automatic brightness, halos, scintillation, honeycomb, P43 yellow-green |
 
 ## Games and 80s
 
 | Look | Judge | Score | What they demanded | Status |
 |---|---|---|---|---|
-| Pocket | the Game Boy Camera's team | 7 | 112 rows (the camera's 128×112), so the big pixels show; ease the top of the curve on faces || Fixed: 112 rows, an easier curve on faces |
-| Colour hand-held | Game Boy Color artists | 4 | Eight shared four-colour ramps, not a palette per tile; little or no dither; bright tiles keep their full colour || Rebuilt: eight shared ramps by hue and strength, flat colour, checker only at shade boundaries |
-| Red visor | Virtual Boy | 5 | Mostly black (no exposure to middle grey); the gap between LED rows actually drawn, as horizontal lines || Fixed: darkened, row gaps drawn |
-| 8-bit | Famicom artists | 4 | One sub-palette per 16×16 block (three colours of one hue column plus black); hue-first matching, no grey sludge; night in black || Rebuilt: one sub-palette per 16×16 block from a hue column, black backdrop |
-| 16-bit | Super Famicom artists | 6 | Fuller ramps (purple, magenta, blue, neutral grey); no teal specks in skin || Rebuilt (round two): nine five-step material ramps in 15-bit colour, light dither, not exposed |
-| 32-bit | PlayStation artists | 3 | 5-bit colour (it kept 4); affine texture warp on a coarse snapped mesh; coarser texels || Fixed (round two): a 4×3 mesh tilted enough that the affine kinks show, fitted to the screen |
-| 64-bit | Nintendo 64 texture artists | 3 | Much smaller, quantised textures so the three-point smear shows; fog only in the distance, never over blacks || Fixed: 48-texel 15-bit texture under the three-point filter; fog only in the distance |
-| Old TV | a Shōwa family | 5 | Brighter (a set glows); a smooth rounded screen edge, not a staircase; composite softness and glow || Rebuilt (round two): bright, rounded smooth screen edge, composite softness, scanlines widening in the light, bloom |
-| VHS camcorder | a parent at sports day | 4 | Colour trailing to the right, not the left; rare white dropout streaks, not star dots; one clear head-switch hook at the foot || Fixed: colour trails right, rare white dropout streaks, one hook at the foot |
+| Pocket | the Game Boy Camera's team | 7 | 112 rows (the camera's 128×112), so the big pixels show; ease the top of the curve on faces | Fixed: 112 rows, an easier curve on faces |
+| Colour hand-held | Game Boy Color artists | 4 | Eight shared four-colour ramps, not a palette per tile; little or no dither; bright tiles keep their full colour | Rebuilt: eight shared ramps by hue and strength, flat colour, checker only at shade boundaries |
+| Red visor | Virtual Boy | 5 | Mostly black (no exposure to middle grey); the gap between LED rows actually drawn, as horizontal lines | Fixed: darkened, row gaps drawn |
+| 8-bit | Famicom artists | 4 | One sub-palette per 16×16 block (three colours of one hue column plus black); hue-first matching, no grey sludge; night in black | Rebuilt: one sub-palette per 16×16 block from a hue column, black backdrop |
+| 16-bit | Super Famicom artists | 6 | Fuller ramps (purple, magenta, blue, neutral grey); no teal specks in skin | Rebuilt (round two): nine five-step material ramps in 15-bit colour, light dither, not exposed |
+| 32-bit | PlayStation artists | 3 | 5-bit colour (it kept 4); affine texture warp on a coarse snapped mesh; coarser texels | Fixed (round two): a 4×3 mesh tilted enough that the affine kinks show, fitted to the screen |
+| 64-bit | Nintendo 64 texture artists | 3 | Much smaller, quantised textures so the three-point smear shows; fog only in the distance, never over blacks | Fixed: 48-texel 15-bit texture under the three-point filter; fog only in the distance |
+| Old TV | a Shōwa family | 5 | Brighter (a set glows); a smooth rounded screen edge, not a staircase; composite softness and glow | Rebuilt (round two): bright, rounded smooth screen edge, composite softness, scanlines widening in the light, bloom |
+| VHS camcorder | a parent at sports day | 4 | Colour trailing to the right, not the left; rare white dropout streaks, not star dots; one clear head-switch hook at the foot | Fixed: colour trails right, rare white dropout streaks, one hook at the foot |
 
 ## Round two re-audit and round three (30 October 2026)
 
@@ -92,3 +92,151 @@ smile one shape, a few bold wrinkles instead of a scatter); focus on the subject
 Silhouette contours (fix 3) were tried as a wider colour edge thinned to its crest and left out: no visible gain on the
 test portraits for about thirty more samples a pixel. A subject mask is the way to outline a person against a
 background of their own colour and light.
+
+## Codex re-judgement of rounds three and four (30 October 2026)
+
+One Codex reviewer, making a separate pass in each README persona; these are **not independent human reviews** or
+claims that the named artists reviewed the app. Round three is `3a54aa6cf`; round four is `507dad865` (the shader
+bytes at handover `1ed9a7ef`). All six test photos were fetched successfully with `camera-test-photos.py`, rendered
+1080 lines tall in the full build, and inspected at 240-line phone-sheet size and in unscaled 300 × 300 detail crops.
+The changed seven Looks were rendered again from round three; the other 27 share exactly the same shader and
+prepare-pass bytes between the rounds, so their round-four renders serve both. Miniature's default render is
+unchanged; its extra point is for the now user-placeable band, not better optical defocus. Software Chromium 133 /
+SwiftShader is the renderer; this does not verify phone speed, the LIGHT builds or a 12 MP save.
+
+Detail crops (x0,y0,x1,y1): restaurant `240,210,540,510`; braids `300,300,600,600`; hat `600,200,900,500`;
+café `350,400,650,700`; garden `600,400,900,700`; night `450,350,750,650`. A score assesses the medium and all six
+subjects together; it is not an image-similarity score. Earlier scores remain above for comparison.
+
+| Look | Round 3 | Round 4 | Persona's remaining objection |
+|---|---:|---:|---|
+| Manga | 5 | 5 | Takahashi/Toriyama: smile clearer, good black clothes; face silhouette disappears into light background; garden still busy; no hair highlight cuts |
+| Pencil manga | 4 | 4 | Inoue/mangaka's pencils: graphite distinct from pen, but the face disappears and darks do not have enough graphite weight |
+| Line drawing | 4 | 4 | Moebius: café structure reads; disconnected face, too many little garden marks and directional hatching still changes abruptly |
+| Sketchbook | 6 | 6 | Urban Sketcher: margin and wash work; too many mechanical marks in the elderly face and foliage |
+| Pencil crayon | 3 | 3 | Picture-book illustrator: crosshatched mesh and pale scratch grain still dominate; colour too grey, especially garden; teeth individually overdrawn |
+| Adventure Ink | 4 | 5 | Toriyama colour pages: cleaner cheeks, but still a treated photograph rather than clearly chosen cel planes; weak person silhouettes |
+| Cartoon | 3 | 4 | TV anime colourist: round four clears some tooth gaps; skin still orange and elderly wrinkles/pores too heavily inked; lost silhouette |
+| Comic dots | 5 | 5 | Comic printer: four plates now read; elderly face and foliage too noisy, keyline sometimes broken |
+| Watercolour | 5 | 5 | Potter/watercolourist: white paper and coloured glazes; wash rims too mechanically repeat the photographic tonal islands |
+| Oil painting | 6 | 6 | Hopper: convincing quieter masses and coloured night; canvas still very faint, facial planes sometimes soft blocks |
+| Heavy brush | 4 | 4 | Van Gogh: visible directional dabs, but a fine repeated bristle carpet; orange skin and too little variation of stroke scale |
+| Woodblock | 4 | 4 | Hasui/Hiroshige: bokashi works; grey/cream islands on cheeks, broken keyline, too much foliage detail |
+| Rubber stamp | 4 | 4 | Eki-stamp designer: busy garden becomes ink thicket; teeth are carved separately; station-stamp economy not reached |
+| Blueprint | 7 | 7 | Atkins/engineer: coherent coat and paper margin; photographic rather than contact-print silhouettes |
+| Natural | 8 | 8 | iPhone photographer: framing and detail retained; real-device colour handling unverified |
+| Black & white | 7 | 7 | Moriyama: useful strong darks and mid-tone grain; still rather tidy at phone size |
+| Sepia | 5 | 5 | Meiji studio: all six veiled in brown, deepest values need more separation |
+| Instant film | 7 | 7 | Wenders: restrained fade, readable portrait; bottom developer edge still rather regular |
+| Miniature | 5 | 6 | Barbieri: tap now chooses the plane, but coarse blur and wide sharp band weaken the model illusion |
+| Night vision | 6 | 6 | Wildlife cameraman: tube and amplification work; bright halo at tube rim competes with subject |
+| Pocket | 7 | 7 | Game Boy Camera team: four greens and readable coarse faces; ordered texture is strong on garden |
+| Colour hand-held | 4 | 4 | GBC pixel artist: useful shared ramps; cafe tiles clash and elderly skin drops to grey/brown |
+| Red visor | 5 | 5 | Virtual Boy artist: LED gaps and blacks work; face lacks the intentional shape economy of console art |
+| 8-bit | 4 | 4 | Famicom artist: colour budget works, but dominant orange and noisy facial shadow boundaries |
+| 16-bit | 6 | 6 | Super Famicom artist: richer material ramps, good café; green/orange foliage and skin texture too photographic |
+| 32-bit | 4 | 4 | PS1 artist: framing preserved, coarse texels and warp visible; a photograph on a mesh cannot imply all scene geometry |
+| 64-bit | 4 | 4 | N64 texture artist: smooth three-point smear visible; reads as low resolution photo more than authored texture |
+| Old TV | 6 | 6 | Shōwa family: glowing and softer; bright face can still bloom too much |
+| VHS camcorder | 5 | 5 | Sports-day parent: colour trails and foot tear; still too clean/uniform over most of the field |
+| Risograph | 6 | 6 | Zine maker: inks overprint correctly; screen is fine and photographic at phone size |
+| Riso pink & blue | 6 | 6 | Zine maker: attractive violet overprint; middle skin values lack a more deliberate separation |
+| Riso red & navy | 6 | 6 | Zine maker: useful dark ink and warm lights; still fine photographic screen |
+| Riso black & pink | 5 | 5 | Zine maker: recognisable duotone; pink dominates busy scenes, dark masses not decisive enough |
+| Riso three-colour | 6 | 6 | Zine maker: fuller colour without third black; busiest and most expensive of the separations |
+
+Next work, in score order after the person-mask investigation: **Crayon (3)**; **Cartoon, Pencil manga, Line drawing,
+Heavy brush, Woodblock, Stamp (4)**. The console rows above have faults too, but the standing Open/Partly drawing and
+print backlog takes precedence. No row is closed solely because code changed.
+
+## Codex's next pass, on `codex/pocket-camera-looks` (not published)
+
+Commits `9483698f` (local still-photo person mask) and `f59b2e10` (ranked refinements), after the re-audit
+`53fc3edc`. Claude's later publication note `37befc31` was integrated as `04afb613`; it changes documentation only,
+not these tested shaders. It reports round four already published by Claude; none of this Codex pass is published.
+
+The person model was investigated **before adoption**: 249,537-byte Selfie Segmenter, Apache-2.0; its complete local
+runtime is 10,165,743 bytes (local gzip estimate 3,200,243). The official phone benchmark, exact pinned assets,
+licence/notices, measured cloud cost and limits are in [the dependency note](vendor/person-mask/README.md). It runs
+in a worker on frozen photos only, at a maximum side of 256 px. A mask belongs to one source revision, follows crop,
+mirror and Twin/Quad, and is cleared after source replacement/Erase. Thumbnails and full saves use it. The live camera
+does not use an asynchronous old mask. Initial trials put an outline on a café chair: the retained component must
+now occupy at least 5% of the picture with 75% confident interior pixels. The three test portraits retain their
+people; café, garden and night retain no substantial person. Faraway/small people and thin parts are still a limit.
+
+The reviewer re-inspected **all six photos for each of the 13 affected Looks**, full builds at phone-sheet size and
+at the same unscaled detail crops, then compared 78 LIGHT outputs. [Selected before/after sheets and provenance](qa/looks-2026-10-30/README.md).
+These are the same single reviewer's judgements, not an independent second reviewer or physical phone acceptance.
+
+| Look | Round 4 → this pass | Result and what stays open |
+|---|---:|---|
+| Pencil crayon | 3 → 5 | Translucent pigment and directional pressure replace the scratch lattice; colour survives in all six subjects, teeth no longer individually outlined. Still too photographic at phone size; stronger hand-drawn shape selection remains open |
+| Cartoon | 4 → 5 | Less pore/wrinkle ink, restrained saturation, a complete outer silhouette. Still many photographic material colours rather than authored flat cel planes |
+| Pencil manga | 4 → 5 | Graphite dark masses have more weight and the person is closed. Face interior still too faint on the two younger portraits |
+| Line drawing | 4 → 4 | Outer person contour fixed; fewer fine marks. No overall score gain: eyes/nose/mouth still need more deliberate readable strokes; garden still too busy. **Open** |
+| Heavy brush | 4 → 4 | Larger, more varied dabs and quieter bristles, less orange amplification. No overall score gain: faces can become indistinct, including in LIGHT. **Open** |
+| Woodblock | 4 → 5 | Warm blocks replace neutral islands on skin, tooth-safe keyline, clearer shapes. Warm highlights on foliage and an over-simplified face still need work |
+| Rubber stamp | 4 → 4 | Less ink, simpler carving, no individual carved teeth, person separated. No overall score gain: too few facial features and still a fine scatter in the garden. **Open** |
+| Manga | 5 → 6 | Outer person contour and narrow paper separation in dark masses; local source highlights can cut a black fill. Hair-specific highlight placement and intentional garden tone masses remain open |
+| Adventure Ink | 5 → 5 | Person boundary gained; interior colour/rendering remains too photographic |
+| Comic dots | 5 → 5 | Person boundary gained; elderly face and foliage still busy |
+| Sketchbook | 6 → 6 | Person boundary gained; wash and margin unchanged; wrinkle economy remains open |
+| Oil painting | 6 → 6 | Broader, more visible canvas brush texture through exact PHOTO_EDITS; coloured shadows kept. Texture still subtle on a phone and some facial planes too blocky |
+| Miniature | 6 → 6 | Rounder 48-tap full blur, 16-tap LIGHT blur, narrower sharp band; tap focus preserved. Still a 2D focus-plane approximation; real phone cost unverified |
+
+All other scores remain as in the round-three/four table. Work started with the lowest score, then the 4-point
+drawing/print rows, then Manga, Oil and Miniature. No unchanged score above is presented as an overall quality gain.
+
+Verification: all 34 Looks compile/draw in the unchanged 56-check browser suite; conversion, module identity, syntax
+and whitespace checks pass; additional person-mask unit/browser checks pass. Five 3000 × 4000 stress outputs
+(Manga, Heavy brush, Riso three-colour, Oil, Miniature) completed, using the 1440-px bench source enlarged, **not a
+native 12 MP iPhone input**. Full details are in the handover and QA evidence. Physical iPhone frame rates, memory,
+thermal behaviour, first download/offline reuse and native-resolution photos remain unverified. Next: the owner
+tests the review branch on iPhone; then the three 4-point rows above, without losing readable facial features.
+
+## The owner's shader-list extension — 30 October 2026
+
+Read from upstream handover `bcfbbfcd`, integrated before implementation. The requested build order is represented
+by the implementation commits: Colour film `2debf445`; Disposable `c7a5fb5b`; original LUT grades `59464005`;
+1-bit Mac `910071bb`; VGA adventure `91ae88f3`; Anime background/shared eight-sector Oil `47e878c9`;
+multi-pass Glitch `060b12a7`; final refinements/tests `c67237c4`. Connected-upload commit identities are recorded in
+the handover; verification uses identical source/tree bytes. No World shader changed and nothing here is published.
+
+All eight additions have README judges. One Codex reviewer assessed all six photos in those personas, at phone-sheet
+size and in unscaled 300 × 300 subject/detail crops, then checked LIGHT versions. New Looks were compared with
+Natural and their medium's demands, not assigned a fictitious before-score. Oil/Instant were compared with the prior
+pass. VGA initially made false yellow/red islands on restaurant skin; coherent warm material ramps removed those.
+Anime initially looked too much like Oil; larger planes and a brighter, quieter wash now separate it. Both were
+re-rendered/reviewed on all six after refinement. Full/LIGHT outputs for Disposable, both LUTs, Mac and VGA are
+pixel-identical on the six photos. The five other LIGHT builds were inspected separately; phone-live Glitch is
+intentionally Natural while its editor/save uses the full sort.
+
+| Look | Judge | Score | Assessment / remaining fault |
+|---|---|---:|---|
+| Colour film | Saul Leiter / colour-negative photographer | 7 | Restrained skin, grain and a local warm halo; no orange veil. Halation is deliberately subtle at phone size; real highlights/phone colour still need the owner's review |
+| Disposable camera | 1990s teenager | 6 | Friends remain recognisable, cheap-lens corners and architectural curve/fringe read at 1:1. The effect is fairly restrained on a phone; flash is a 2D approximation |
+| Warm slide film | travel slide photographer | 6 | Warmer, firmer colour while keeping the scene; warm restaurant lighting can still overstate orange skin. Generic creative grade, not a measured film stock |
+| Soft negative film | portrait photographer / darkroom printer | 7 | Gentle toe and ceiling, quieter colour, believable skin on the set. Subtle by design; native iPhone wide-gamut handling remains unverified |
+| 1-bit Mac | Susan Kare / monochrome bitmap artists | 7 | Actual black/white pixels, an 8×8 ordered screen and readable portraits; dense foliage still looks like a processed photograph rather than chosen bitmap marks |
+| VGA adventure | Mark Ferrari | 5 | 200 rows, at most 256 palette colours, coherent warm skin/wood ramps; far cleaner skin after refinement. Still too much photographic grain and abrupt material-ramp boundaries, rather than an authored adventure background |
+| Anime background | Kazuo Oga | 6 | Calmer large planes, brighter foliage and a clear difference from Oil without character outlines. Some faces become patchwork and the café still needs more deliberate shape selection |
+| Glitch | Kim Asendorf | 5 | Real luminance sorting, legible untouched black/white barriers and coloured streaks. Fixed 16-cell run boundaries make an obvious curtain/grid; longer subject-led runs remain open |
+| Oil painting (existing) | Edward Hopper | 6 → 6 | Eight Gaussian sectors replace four rectangular winner-takes-all sectors; texture smooths without losing the scene. Technically better abstraction, but the overall artist score is unchanged: still too photographic on a phone |
+| Instant film (existing) | Wim Wenders | 7 → 7 | A weaker local halation term added without a light leak; development/fade retained. No overall score change |
+
+Old TV already has CRT curve/fringe/scanlines and is retained; Line drawing already uses DoG-style sampling and is
+retained, with its unresolved 4/10 face/readability faults above. No duplicate CRT/Ink sketch was created.
+
+Licences were checked before implementation ([primary-source record](SHADER-SOURCES-2026-10-30.md)); all new shader
+code and LUT data are written here, with no code port. Neither lygia nor Filters4Processing was copied. The tentative
+BSD description of android-gpuimage in the handover was corrected to its current README's Apache-2.0 statement.
+
+Verification on the final runtime: 56/56 UI checks, all **42** Looks compiled/drawn; conversion, single-address module,
+syntax, whitespace and mask checks pass. New functional browser checks prove identity-LUT axes/interpolation,
+distinct real grades, exactly two Mac colours/half-grey coverage, the VGA colour limit, a genuinely sorted run with
+its original value set, correct intensity mixing, unchanged barrier blocks, phone-live bypass/full phone save,
+local warm halation and reduced material noise in Oil. Python regenerates all three LUT strips pixel-for-pixel.
+Oil, Anime and Glitch completed 3000 × 4000 software output stress tests from the enlarged bench source; this is
+not native iPhone input. Physical speed, memory, heat, offline first-use, wide-gamut photos and native saves remain
+unverified. A first UI run failed Memory's existing card-fit assertion during concurrent 12 MP rendering; the final
+complete run passed the same bounds. Cause is not established and no Memory code or fit limit was changed.

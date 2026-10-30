@@ -63,8 +63,8 @@ async function run({label,width,height,dpr,mobile,portrait}){
    if(!mobile)assert.equal(await app(()=>document.querySelector('#camera').classList.contains('compact')),false,'a wide window keeps the Looks off the picture');
   });
   await check(`${label}: every World Look compiles and draws the camera picture`,async()=>{
-   const out=await app(()=>{
-    const {engine,state}=window.pocketCamera,report={};
+   const out=await app(async()=>{
+    const {engine,state}=window.pocketCamera,report={};await engine.loadLuts();
     for(const tile of document.querySelectorAll('.tile')){
      const look=tile.dataset.look,px=engine.render({...state.camera.recipe,layers:[{look,amount:1}]},{source:'live',width:96,height:72});
      let sum=0,sq=0;for(let i=0;i<px.data.length;i+=4){const l=(px.data[i]+px.data[i+1]+px.data[i+2])/3;sum+=l;sq+=l*l;}
@@ -72,7 +72,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
     }
     return report;
    });
-   assert.ok(Object.keys(out).length>=25,`${Object.keys(out).length} Looks offered (World's, Adventure Ink and the camera's five)`);
+   assert.equal(Object.keys(out).length,42,'all 42 World and camera Looks are offered and drawn');
    for(const [look,r] of Object.entries(out)){assert.equal(r.failed,false,`${look} compiled`);assert.ok(r.spread>3,`${look} draws a picture, not a flat colour (${r.spread.toFixed(1)})`);}
   });
   await check(`${label}: two camera starts at once leave one camera running`,async()=>{
@@ -101,9 +101,9 @@ async function run({label,width,height,dpr,mobile,portrait}){
    const kinds=await app(()=>[...document.querySelectorAll('#lookGroups button')].map(b=>b.textContent));
    assert.deepEqual(kinds,['Photo','Games','80s','Drawn','Painted','Print','Riso']);
    await page.click('#lookGroups button[data-group="80s"]');
-   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['crt','camcorder'],'80s: Old TV and the VHS camcorder');
+   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['crt','camcorder','glitch'],'80s: Old TV, VHS and Glitch');
    await page.click('#lookGroups button[data-group="games"]');
-   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit'],'the game consoles together');
+   assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit','macOneBit','vgaAdventure'],'the console and computer pixel Looks together');
    await page.click('#lookGroups button[data-group="80s"]');
    await page.click('.tile[data-look="crt"]');
    const layers=await app(()=>window.pocketCamera.state.camera.recipe.layers.map(l=>l.look));
@@ -576,8 +576,8 @@ async function playAndPrint({label,width,height}){
    await page.waitForSelector('.memory-deck[data-deck="photos"]:not([disabled])',{timeout:15000});
    await page.locator('.memory-deck[data-deck="photos"]').tap();await page.locator('.memory-pairs button',{hasText:/^6$/}).tap();
    await page.locator('.memory-play').tap();await page.waitForSelector('.memory-card');await page.waitForTimeout(300);
-   const fit=await page.evaluate(()=>{const s=document.querySelector('.memory-stage').getBoundingClientRect();return [...document.querySelectorAll('.memory-card')].every(c=>{const r=c.getBoundingClientRect();return r.width>40&&r.left>=s.left-.5&&r.right<=s.right+.5&&r.top>=s.top-.5&&r.bottom<=s.bottom+.5;});});
-   assert.ok(fit,'every card is whole on the screen and not tiny');
+   const fit=await page.evaluate(()=>{const s=document.querySelector('.memory-stage').getBoundingClientRect(),bad=[...document.querySelectorAll('.memory-card')].map(c=>c.getBoundingClientRect()).filter(r=>!(r.width>40&&r.left>=s.left-.5&&r.right<=s.right+.5&&r.top>=s.top-.5&&r.bottom<=s.bottom+.5));return {stage:s.toJSON(),bad:bad.map(r=>r.toJSON())};});
+   assert.equal(fit.bad.length,0,`every card is whole on the screen and not tiny: ${JSON.stringify(fit)}`);
    const pairs=await page.evaluate(()=>window.pocketCamera.memory.game.cards.map(c=>c.pair));
    const other=pairs.findIndex((p,i)=>i>0&&p!==pairs[0]),third=pairs.findIndex((p,i)=>i>0&&i!==other&&p!==pairs[0]&&p!==pairs[other]);
    const card=i=>page.locator('.memory-card').nth(i);
