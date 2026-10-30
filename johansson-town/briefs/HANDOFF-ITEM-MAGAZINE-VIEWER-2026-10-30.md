@@ -4,7 +4,7 @@ The owner asked for interior adverts for Sakura's upper office, hall and storage
 
 ## State
 
-Prepared on `codex/item-magazine-viewer` from production `main`, fast-forwarded to `1d355885` (verified Kissa Higa/fish-market publication notes). Not merged or published; the owner has not authorised publication. A draft PR will carry the completed candidate.
+Prepared on `codex/item-magazine-viewer` from production `main`, fast-forwarded to `1d355885` (verified Kissa Higa/fish-market publication notes). Draft [PR #409](https://github.com/nj22az/nj22az.github.io/pull/409), feature commit `744e9037e9e2c5fa036b124f9d6d9a181b51f88d`. Not merged or published; the owner has not authorised publication. The GitHub app published a tree exactly equal to locally tested `b567ccf7` (tree `1eefb66d1c0058461aa952b8eb613ba339c2e533`), after shell Git lacked write credentials. This follow-up records the PR and new art direction only.
 
 ## What changed
 
@@ -16,6 +16,8 @@ Prepared on `codex/item-magazine-viewer` from production `main`, fast-forwarded 
 - Flat readers hold the hidden World renderer and simulation while open; the 3D product renderer also holds while its flat labels are open.
 
 ## Art and physical placement
+
+**Latest owner direction, after validation:** the adverts should feature attractive adult Japanese women. The seven product-only pictures below are interim and must be replaced after the revised Artlist batch is approved and checked. This does not block the reader feature review, and no additional generation or credit spend was authorised here.
 
 The existing nine fictional campaigns remain canonical. Seven reviewed Artlist pictures replace their existing stair/hall atlas cells: UMINEKO Draft, Black, gift sets; KITANO 12; NAMI SOUR; ASAGAO rouge and UV milk. Full 1728 x 2304 WebP images are loaded only for inspection (8,218,414 bytes total); seven 360 x 480 previews total 132,432 bytes for wall decoration. B2 wall cells contain the 3:4 picture with narrow cream margins, preserving every letter without stretching or cropping. Existing poster meshes, push pins, positions and colliders stay unchanged.
 
