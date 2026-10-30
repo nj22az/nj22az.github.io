@@ -251,6 +251,12 @@ one white shape. The first pass makes a photo smaller as a Lanczos resize would 
 the picture's size, lightly sharpened) instead of the GPU's blend between levels, which lost about a quarter of a tall
 photo's fine detail; Looks that read their source softer on purpose (the line Looks) are unchanged.
 
+Round three (after a second persona re-audit, scores and ranked fixes in the audit file): teeth no longer zipped in any
+line Look (a mark that is itself light is not drawn); Cartoon and Adventure Ink, and Line drawing and Pencil manga, made
+distinct; 8-bit held to the console's four sub-palettes and 13 colours; 32-bit keeps the photographer's framing (a
+wobbling snapped mesh, not a tilt); 64-bit filtered smoothly; Riso grain on a 2 px interleaved-gradient screen; and the
+photo, print and TV Looks adjusted as listed there.
+
 ## Erase
 
 The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint
