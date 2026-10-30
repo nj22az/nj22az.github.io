@@ -1,5 +1,9 @@
 # Pocket Camera Looks: handover to Codex — 30 October 2026
 
+**Later, 30 October: photo crop and smaller exports** are implemented on `codex/pocket-camera-photo-crop`, pending
+review and publication. Read [the crop handover](HANDOVER-PHOTO-CROP-2026-10-30.md) for the controls, compression,
+checks and source-retention behaviour. No Look shader body was changed by that work.
+
 Claude's work on the camera's Looks (shaders) this day, handed to Codex to continue. Read this, then
 [README.md](README.md) (sections "Pencil crayon and Rubber stamp…", "Who each Look is for", "The game consoles", "Riso",
 "Rebuilt for their judges" and its rounds) and [AUDIT-LOOKS-2026-10-30.md](AUDIT-LOOKS-2026-10-30.md), the standing

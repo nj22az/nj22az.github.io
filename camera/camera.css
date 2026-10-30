@@ -492,5 +492,12 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .erase-panel .slider-row{gap:12px}
 .erase-label{flex:none;font-size:13px;font-weight:650;color:var(--label-2)}
 /* The editor's five tabs (Looks, Adjust, Erase, Stickers, Frame) in one row across any phone. */
-.segmented{grid-template-columns:repeat(5,1fr)}
+.segmented{grid-template-columns:1fr .9fr 1.1fr 1fr 1.35fr 1fr;width:min(420px,calc(100% - 16px))}
 .segmented button{min-width:0;padding:0 2px;font-size:min(13px,3.4vw);white-space:nowrap;overflow:hidden;text-overflow:clip}
+.crop-shapes{display:flex;max-width:calc(100% - 24px);margin:8px auto;width:max-content;overflow-x:auto}
+.crop-shapes button{min-height:36px;padding:0 9px;white-space:nowrap;font-size:12px}
+.crop-panel .slider-row{gap:10px}
+.crop-panel .erase-hint{margin:14px 12px 6px;text-align:center;font-size:14px;color:var(--label-2)}
+.frame.cropping{cursor:grab;touch-action:none;outline:1px solid rgba(255,255,255,.85)}
+.frame.cropping:active{cursor:grabbing}
+.frame.cropping::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent calc(100%/3 - .5px),#ffffff70 calc(100%/3 - .5px),#ffffff70 calc(100%/3 + .5px),transparent calc(100%/3 + .5px),transparent calc(200%/3 - .5px),#ffffff70 calc(200%/3 - .5px),#ffffff70 calc(200%/3 + .5px),transparent calc(200%/3 + .5px)),linear-gradient(to bottom,transparent calc(100%/3 - .5px),#ffffff70 calc(100%/3 - .5px),#ffffff70 calc(100%/3 + .5px),transparent calc(100%/3 + .5px),transparent calc(200%/3 - .5px),#ffffff70 calc(200%/3 - .5px),#ffffff70 calc(200%/3 + .5px),transparent calc(200%/3 + .5px))}

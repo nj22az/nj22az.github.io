@@ -50,6 +50,14 @@ when saving ? I want memory with our own photos or with the stickers".
 - **Editor** (a photo from the device, or any photo in the album): Looks, Adjust (Light, Contrast, Colour, Warmth,
   Pattern, the size of dots, strokes and lines, and Detail, how many lines the drawn Looks ink), Stickers, Frame (the
   frames over the photo itself, Mirror, the date stamp); hold the picture to see the original.
+- **Crop** in the editor: pinch to zoom from 1× to 4× and drag the photo into position, or use the zoom slider.
+  Original, square, 4:3, 3:4, 16:9 and 9:16 shapes; Reset restores the whole photo. A mouse can drag or wheel to zoom;
+  arrow keys move the crop. The crop is kept with the recipe and restored on re-edit; Looks, frames, stickers and
+  Erase all use the same cropped area. Imported originals are kept byte-for-byte until an Erase changes the source.
+- **Smaller saves**: JPEG quality 0.88, at most 2,560 pixels on the long edge, without enlarging small photos.
+  Applies to camera captures, edited photos and batch imports. Sources retain their editing resolution (up to
+  4,096 pixels decoded); exports' dimensions in the album match the actual JPEG. Existing saved photos change only
+  when saved again from the editor.
 - **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
@@ -343,6 +351,8 @@ techniques, drawn here:
 
 ```
 node camera/tests/looks-gl.test.mjs          # every Look converts; recipe, sizes, rows
+node camera/tests/crop.test.mjs              # crop bounds, shapes, zoom and recipe round trips
+node camera/tests/crop.browser.mjs           # gestures, source contact, saved pixels, compression and original retention
 node camera/tests/blackjack.test.mjs         # scores and hand flow
 node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)
