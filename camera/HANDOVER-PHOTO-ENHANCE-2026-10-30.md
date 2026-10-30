@@ -1,5 +1,7 @@
 # Pocket Camera: Enhance photo — 30 October 2026
 
+**Publication update — 31 October:** the owner’s “Push to main” authorised publication. [PR #414](https://github.com/nj22az/nj22az.github.io/pull/414) is merged as `cf86ea2a`; strict **143/143** browser checks and Pages deployment passed. Read the [publication handover](HANDOVER-PUBLICATION-2026-10-31.md) for the current state and remaining device limits. Review-only statements below describe the earlier stage. #405 remains separate.
+
 **Combined review, later on 30 October:** [integration candidate](HANDOVER-INTEGRATION-2026-10-30.md) combines #411 and #412 on current main, preserving #408. It is not published; #405 stays separate. Use that note for combined checks and next steps.
 
 Owner: “Can you use this to add a enhance photo option in Johansson Camera”, linking

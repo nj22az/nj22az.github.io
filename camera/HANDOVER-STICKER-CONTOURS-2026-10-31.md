@@ -1,5 +1,7 @@
 # Pocket Camera: thin sticker contours — 31 October 2026
 
+**Publication update — 31 October:** the owner’s “Push to main” authorised publication. [PR #414](https://github.com/nj22az/nj22az.github.io/pull/414) is merged as `cf86ea2a`; strict **143/143** browser checks and Pages deployment passed. Read the [publication handover](HANDOVER-PUBLICATION-2026-10-31.md) for the current state and remaining device limits. Review-only statements below describe the earlier stage. #405 remains separate.
+
 ## Current review and authority
 
 The owner's follow-up during the integration task: “The stickers still have to big white outline it should be more

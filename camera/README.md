@@ -356,11 +356,11 @@ techniques, drawn here:
   The Blender Thuan is rendered in Cycles by the studio's `3d/cast/shots_stickers.py`; the others by World's avatar
   code (`art/stickers/render.mjs`).
 
-## Integration candidate — 30 October 2026
+## Combined release — published 31 October 2026
 
-**31 October:** [thin sticker contours](HANDOVER-STICKER-CONTOURS-2026-10-31.md) join the same review PR: all 116 supplied stickers plus thumbnails, and a 0.45% rim for newly made custom stickers. Figure positions and saved IDs remain stable. [Actual comparisons](qa/2026-10-31-contours/README.md).
+**31 October:** [PR #414](https://github.com/nj22az/nj22az.github.io/pull/414) is merged and published on the owner’s “Push to main”. [Publication handover](HANDOVER-PUBLICATION-2026-10-31.md); strict **143/143** browser checks and Pages deployment passed. [Thin sticker contours](HANDOVER-STICKER-CONTOURS-2026-10-31.md) are included: all 116 supplied stickers plus thumbnails, and a 0.45% rim for newly made custom stickers. Figure positions and saved IDs remain stable. [Actual comparisons](qa/2026-10-31-contours/README.md).
 
-The combined Save/Share and Enhance review is recorded in [the integration handover](HANDOVER-INTEGRATION-2026-10-30.md), with [actual comparisons and phone-sized screenshots](qa/2026-10-30-integration/README.md). It retains the published crop/compression path. The separate #405 photographic-Look/person-mask development is not included. Main publication requires the owner's explicit instruction.
+The combined Save/Share and Enhance review is recorded in [the integration handover](HANDOVER-INTEGRATION-2026-10-30.md), with [actual comparisons and phone-sized screenshots](qa/2026-10-30-integration/README.md). It retains the published crop/compression path. The separate #405 photographic-Look/person-mask development is not included. Physical iPhone/iPad Safari and actual Photos sharing remain unverified; screenshots and native-Share mocks are browser emulation.
 
 ## Checks
 

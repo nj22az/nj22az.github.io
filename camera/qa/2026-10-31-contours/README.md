@@ -36,3 +36,9 @@ Early hosted green statuses masked a portrait fixture failure behind a logging p
 
 See [handover](../../HANDOVER-STICKER-CONTOURS-2026-10-31.md) for exact prior commits, cache keys, checks, early-generation
 corrections and the old custom-sticker limitation. The original integration evidence is [here](../2026-10-30-integration/README.md).
+
+## Publication — 31 October 2026
+
+The owner authorised “Push to main”; PR #414 merged as `cf86ea2a1e156155185f681007d870fca2161c44`. The exact tested candidate tree is preserved. [Strict hosted run 41140070128](https://github.com/nj22az/nj22az.github.io/actions/runs/41140070128) passed **143/143 browser checks** plus unit/module/syntax checks. [Pages run 41144262613](https://github.com/nj22az/nj22az.github.io/actions/runs/41144262613) succeeded.
+
+[Public-file verification](publication-files.json): **244/244** canonical/keyed HTTPS responses return 200 and match the tested file hashes and byte lengths, including all 232 sticker assets, changed root camera runtime, catalogue, and unchanged crop/Erase modules. This checks deployed bytes; photographic/phone visual evidence above is Chromium/SwiftShader emulation, not physical Safari. [Publication handover](../../HANDOVER-PUBLICATION-2026-10-31.md).
