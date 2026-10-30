@@ -38,11 +38,12 @@ try{
  report.bodies=await page.evaluate(async(names)=>{
   const T=await import('/johansson-town/vendor/three.module.js'),{buildAvatar}=await import('/johansson-town/src/avatars/build.js'),{recipeFor}=await import('/johansson-town/src/avatars/cast.js');
   const {createAvatarAnimator:after}=await import('/johansson-town/src/avatars/animate.js'),{createAvatarAnimator:before}=await import('/johansson-town/src/avatars/animate-before.js');
-  const audit=window.__JOHANSSON_AUDIT__;audit.renderFrozen=false;audit.teleport(2.5,14,0);audit.setTime(10002*1440+12*60);
+  const audit=window.__JOHANSSON_AUDIT__;audit.renderFrozen=false;audit.teleport(-2.75,14,0);audit.setTime(10002*1440+12*60);
+  const ground=audit.player.position[1];
   const player=window.__JOHANSSON_MODEL__;player.root.visible=false;let scene=player.root;while(scene.parent)scene=scene.parent;
   const variants={};for(const [key,create] of Object.entries({before,after})){
    const group=new T.Group();scene.add(group);const cast=names.map((name,i)=>{
-    const avatar=buildAvatar(recipeFor(name),{shadows:true}),holder=new T.Group();holder.add(avatar.root);holder.position.set(.7+i*1.15,0,14);group.add(holder);
+    const avatar=buildAvatar(recipeFor(name),{shadows:true}),holder=new T.Group();holder.add(avatar.root);holder.position.set(-4.4+i*1.1,ground,14);group.add(holder);
     return {avatar,holder,anim:create(avatar,{random:()=>.5,initialTime:0})};});variants[key]={group,cast};
   }
   let time=0,travel=0;
@@ -56,7 +57,7 @@ try{
    },
    show(variant,view='pedestrian'){
     for(const [key,v] of Object.entries(variants))v.group.visible=key===variant;
-    const z=14-travel;const cameras={pedestrian:{pos:[-1.5,1.8,z-7],at:[2.4,.75,z]},overhead:{pos:[2.4,8,z-3],at:[2.4,.4,z]},phone:{pos:[-1.5,2.2,z-10],at:[2.4,.75,z]}};
+    const z=14-travel;const cameras={pedestrian:{pos:[-6,1.4,z-4.5],at:[-2.75,.6,z]},overhead:{pos:[-2.75,7,z-3],at:[-2.75,.3,z]},phone:{pos:[-2.75,1.2,z-7.5],at:[-2.75,.6,z]}};
     audit.camera=cameras[view];audit.render();
    }
   };
@@ -66,8 +67,8 @@ try{
  const stills=process.argv.includes('--stills');
  const views=async()=>{
   for(const view of ['pedestrian','overhead']){await take('after',view,resolve(out,view+'.png'));report.views.push({view,width:960,height:540});}
-  await page.setViewportSize({width:390,height:844});await take('after','phone',resolve(out,'phone.png'));report.views.push({view:'phone',width:390,height:844});
-  await page.setViewportSize({width:960,height:540});
+  await page.setViewportSize({width:390,height:844});await page.evaluate(async()=>{await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);});await take('after','phone',resolve(out,'phone.png'));report.views.push({view:'phone',width:390,height:844});
+  await page.setViewportSize({width:960,height:540});await page.evaluate(async()=>{await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);});
  };
  if(!stills){
   for(let frame=0;frame<report.seconds*report.fps;frame++){
@@ -76,7 +77,7 @@ try{
    if(frame===53)await views();
    if(frame%24===0)console.log('Captured second '+frame/24);
   }
- }else {await page.evaluate(()=>window.__GAIT_REVIEW__.at(2.2));await views();}
+ }else {await page.evaluate(()=>window.__GAIT_REVIEW__.at(4.25));await views();}
 }finally{await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');await browser.close();server.close();}
 if(report.errors.length)throw Error(report.errors.join('\n'));
 console.log('Review complete');

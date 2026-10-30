@@ -19,7 +19,8 @@ export function slides(name,speed,{seconds=4,stop=false,stopAt=seconds,fps=60,he
  const avatar=buildAvatar(recipeFor(name),{shadows:false,...(pixar===false?{pixar:null}:{})});
  const anim=createAvatarAnimator(avatar,{random:()=>.5,initialTime:0}),holder=new THREE.Group();holder.rotation.y=heading;holder.add(avatar.root);
  const m=avatar.measure,cy=m.foot*.62-m.foot-m.legR*.75,cz=m.legR*.55,rz=m.legR*2.3*.85,p=new THREE.Vector3(),down=new Map(),done=[];
- const supports=footSupports(avatar)(),previous=new Map();let popAt=0,penetration=0,pop=0,surfaceWorst=0,stopWorst=0,travel=0;
+ const supports=footSupports(avatar)(),previous=new Map();let standHip=0,lastHip=null,hipDrop=0,hipJump=0;
+ let popAt=0,penetration=0,pop=0,surfaceWorst=0,stopWorst=0,travel=0;
  const surfaceDown=new Map(),finishSurface=s=>{surfaceWorst=Math.max(surfaceWorst,s.d);};
  const finish=s=>{done.push(s.d);if(s.stop)stopWorst=Math.max(stopWorst,s.d);};
  const dt=1/fps,total=(stop?stopAt+1.2:seconds),warmup=.5;
@@ -27,6 +28,8 @@ export function slides(name,speed,{seconds=4,stop=false,stopAt=seconds,fps=60,he
   const t=frame/fps-warmup,v=t>=0&&(!stop||t<stopAt)?(pace?pace(t):speed):0;
   travel+=v*dt;holder.position.set(-Math.sin(heading)*travel,0,-Math.cos(heading)*travel);
   anim.update(dt,{speed:v,expression:'neutral'});holder.updateMatrixWorld(true);
+  avatar.bones.hips.getWorldPosition(p);
+  if(t<0)standHip=p.y;else{hipDrop=Math.max(hipDrop,standHip-p.y);if(lastHip!==null)hipJump=Math.max(hipJump,Math.abs(p.y-lastHip));}lastHip=p.y;
   for(const b of ['footL','footR'])for(const dz of [-rz,rz]){
    p.set(0,cy,cz+dz).applyMatrix4(avatar.bones[b].matrixWorld);const k=b+dz,s=down.get(k);
    if(t<0)continue;
@@ -50,7 +53,7 @@ export function slides(name,speed,{seconds=4,stop=false,stopAt=seconds,fps=60,he
  for(const s of surfaceDown.values())finishSurface(s);
  avatar.dispose?.();
  return {name,speed,worst:Math.max(0,...done)*1000,mean:done.length?done.reduce((a,b)=>a+b,0)/done.length*1000:0,
-  surfaceWorst:surfaceWorst*1000,contacts:done.length,stopWorst:stopWorst*1000,penetration:penetration*1000,pop:pop*1000,popAt};
+  surfaceWorst:surfaceWorst*1000,contacts:done.length,stopWorst:stopWorst*1000,penetration:penetration*1000,pop:pop*1000,popAt,hipDrop:hipDrop*1000,hipJump:hipJump*1000,reach:(avatar.bones.kneeL.position.length()+avatar.bones.footL.position.length())*1000};
 }
 
 if(process.argv[1]?.endsWith('gait-feet.mjs')){

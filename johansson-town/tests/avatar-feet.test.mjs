@@ -36,9 +36,28 @@ test('the live Pixar Thuan and Johansson use their own measured bones and shoe s
 });
 
 
-test('changing pace and interrupting a stop preserve contacts and continuous soles',()=>{
- for(const name of GAIT_NAMES){
-  planted(slides(name,3.5,{seconds:6,pixar:false,pace:t=>t<1?1.3:t<3?3.5:Math.max(0,3.5-(t-3)*2)}));
-  planted(slides(name,3.5,{seconds:5,pixar:false,pace:t=>t<1?1.3:t<1.1?0:t<2.1?3.5:t<3?0:t<4?1.3:0}));
+function changingPace(name,pixar=false){
+ const cases=[
+  slides(name,3.5,{seconds:6,pixar,pace:t=>t<1?1.3:t<3?3.5:Math.max(0,3.5-(t-3)*2)}),
+  slides(name,3.5,{seconds:5,pixar,pace:t=>t<1?1.3:t<1.1?0:t<2.1?3.5:t<3?0:t<4?1.3:0}),
+ ];
+ for(const r of cases){planted(r);
+  assert.ok(r.hipDrop<r.reach*.4,`${name}: pelvis collapses ${r.hipDrop} mm during transition`);
+  assert.ok(r.hipJump<50,`${name}: pelvis jumps ${r.hipJump} mm during transition`);
+ }
+}
+test('changing pace and interrupting a stop preserve contacts and continuous soles',async()=>{
+ for(const name of GAIT_NAMES)changingPace(name);
+ for(const name of ['Thuan','Johansson']){await providePixarBodyInNode(name);changingPace(name,true);}
+});
+
+test('running keeps the pelvis up without abrupt body-height changes',async()=>{
+ for(const name of GAIT_NAMES){const r=slides(name,3.5,{pixar:false});
+  assert.ok(r.hipDrop<r.reach*.3,`${name}: pelvis drops ${r.hipDrop} mm`);
+  assert.ok(r.hipJump<40,`${name}: pelvis jumps ${r.hipJump} mm/frame`);
+ }
+ for(const name of ['Thuan','Johansson']){await providePixarBodyInNode(name);const r=slides(name,3.5);
+  assert.ok(r.hipDrop<r.reach*.3,`${name} Pixar: pelvis drops ${r.hipDrop} mm`);
+  assert.ok(r.hipJump<40,`${name} Pixar: pelvis jumps ${r.hipJump} mm/frame`);
  }
 });

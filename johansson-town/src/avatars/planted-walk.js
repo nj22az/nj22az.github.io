@@ -13,7 +13,7 @@ export function createPlantedWalk(avatar){
  const legs=['L','R'].map((side,i)=>({side,thigh:bones['thigh'+side],knee:bones['knee'+side],foot:bones['foot'+side],
   upper:bones['knee'+side].position.length(),lower:bones['foot'+side].position.length(),
   anchor:new THREE.Vector3(),from:new THREE.Vector3(),end:new THREE.Vector3(),at:new THREE.Vector3(),
-  flat:new THREE.Quaternion(),rotation:new THREE.Quaternion(),fromRotation:new THREE.Quaternion(),samples:[],previous:-1,swing:false,pitch:0,start:DUTY,known:false,early:false,index:i}));
+  flat:new THREE.Quaternion(),rotation:new THREE.Quaternion(),fromRotation:new THREE.Quaternion(),samples:[],previous:-1,swing:false,pitch:0,start:DUTY,known:false,early:false,first:true,stanceFrom:0,index:i}));
  const reach=Math.min(...legs.map(l=>l.upper+l.lower)),sole=m.foot*.62-m.foot-m.legR*.75,toe=m.legR*(.55+2.3*.85);
  const supports=footSupports(avatar)();
  for(const l of legs){
@@ -28,7 +28,7 @@ export function createPlantedWalk(avatar){
  const v=new THREE.Vector3(),a=new THREE.Vector3(),b=new THREE.Vector3(),dir=new THREE.Vector3(),pole=new THREE.Vector3(),hip=new THREE.Vector3();
  const q=new THREE.Quaternion(),yaw=new THREE.Quaternion(),inverse=new THREE.Quaternion(),pitch=new THREE.Quaternion();
  let kickSide=-1,kickWeight=0;
- let active=false,phase=0,step=0,span=0,lift=0,reserve=0,toeOut=0,backwards=false,stopping=false,stopLeg=0,stopTime=0,stopIndex=0,settled=false;
+ let active=false,phase=0,step=0,span=0,lift=0,duty=DUTY,reserve=0,toeOut=0,backwards=false,stopping=false,stopLeg=0,stopTime=0,stopIndex=0,settled=false;
  function frame(){
   root.updateWorldMatrix(true,false);root.getWorldQuaternion(yaw);
   facing.set(0,0,1).applyQuaternion(yaw);facing.y=0;facing.normalize();
@@ -50,10 +50,10 @@ export function createPlantedWalk(avatar){
  }
  function low(l){let y=Infinity;for(const p of l.samples)y=Math.min(y,v.copy(p).applyQuaternion(l.rotation).y);return y;}
  function swing(l,s,height,floor){
-  const h=smooth((s-.1)/.8);l.at.lerpVectors(l.from,l.end,h);
+  const h=smooth(s);l.at.lerpVectors(l.from,l.end,h);
   l.rotation.slerpQuaternions(l.fromRotation,l.flat,h);
   const start=l.from.y+lowAtStart(l)-floor;
-  l.at.y=floor+Math.max(start*(1-h),height*Math.sin(Math.PI*s))-low(l);
+  l.at.y=floor+Math.max(start*(1-h),height*Math.pow(Math.max(0,Math.sin(Math.PI*s)),.65))-low(l);
  }
  function lowAtStart(l){let y=Infinity;for(const p of l.samples)y=Math.min(y,v.copy(p).applyQuaternion(l.fromRotation).y);return y;}
  function recovery(l,floor){l.from.copy(l.at);l.fromRotation.copy(l.rotation);rest(l,l.end);l.end.y=floor-sole;}
@@ -74,9 +74,12 @@ export function createPlantedWalk(avatar){
   /** Distance advances the clock; the upper-body animation uses exactly this same phase. */
   advance(dt,speed,A,gait,strideStyle,backing=false){
    backwards=backing;toeOut=gait.toe;kickWeight=0;
-   const wanted=reach*Math.sin(A)*strideStyle;
-   span=active?span+(wanted-span)*(1-Math.exp(-dt*3)):wanted;step=span/DUTY;
-   lift=Math.max(.04,m.k*(.035+.02*gait.lift));reserve=.01*m.k+(speed>2.6?.055:.025)*m.k*gait.bounce;
+   if(stopping&&settled)active=false;
+   // A run gains distance during flight, not by stretching the planted leg out to 55 degrees and dropping the hips.
+   const run=A>.75,wanted=reach*Math.sin(A*(run?.32:1))*strideStyle,wantedDuty=run?.16:DUTY;
+   const blend=1-Math.exp(-dt*3);
+   span=active?span+(wanted-span)*blend:wanted;step=active?step+(wanted/wantedDuty-step)*blend:wanted/wantedDuty;duty=span/step;
+   lift=Math.max(.04,m.k*(.035+.02*gait.lift));reserve+=((.01*m.k+(run?.055:.025)*m.k*gait.bounce)-reserve)*(1-Math.exp(-dt*14));
    const starting=!active||stopping;
    if(!active){phase=.25;active=true;stopping=false;settled=false;for(const l of legs)l.previous=-1;}
    if(stopping){phase=stopLeg===0?.65:.15;stopping=false;settled=false;for(const l of legs)l.previous=-1;}
@@ -85,7 +88,7 @@ export function createPlantedWalk(avatar){
    return phase*Math.PI*2;
   },
   kick(side,weight){kickSide=side;kickWeight=weight;},
-  reset(){active=false;stopping=false;settled=false;virtual.set(0,0,0);observed=false;for(const l of legs)l.known=false;},
+  reset(){active=false;stopping=false;settled=false;virtual.set(0,0,0);observed=false;reserve=0;for(const l of legs)l.known=false;},
   apply(dt,moving,floor=0){
    if(!active){
     frame();root.updateWorldMatrix(true,true);
@@ -110,26 +113,35 @@ export function createPlantedWalk(avatar){
      if(l.previous<0){
       if(l.known){l.anchor.copy(l.at);l.flat.copy(l.rotation);l.anchor.y=ground-low(l);}
       else{l.foot.getWorldPosition(l.at);l.foot.getWorldQuaternion(l.rotation);l.anchor.copy(l.at);l.flat.copy(l.rotation);l.anchor.y=ground-low(l);}
-      l.swing=false;l.early=false;l.start=f>=DUTY?f:DUTY;
+      l.swing=false;l.early=false;l.first=true;l.stanceFrom=f<duty?f:0;l.start=f>=duty?f:duty;
      }
-     if(l.swing&&f<l.previous){l.anchor.copy(l.end);l.swing=false;l.early=false;l.start=DUTY;}
-     if(!l.swing&&f<DUTY){
+     if(l.swing&&f<l.previous){l.anchor.copy(l.end);l.swing=false;l.early=false;l.first=false;l.stanceFrom=0;l.start=duty;}
+     if(!l.swing&&f<duty){
       l.thigh.getWorldPosition(hip).add(virtual);
-      if((l.at.x-hip.x)*forward.x+(l.at.z-hip.z)*forward.z<0&&Math.hypot(l.at.x-hip.x,l.at.z-hip.z)>(l.upper+l.lower)*.8){l.early=true;l.start=f;}
+      if((l.at.x-hip.x)*forward.x+(l.at.z-hip.z)*forward.z<0&&Math.hypot(l.at.x-hip.x,l.at.z-hip.z)>(l.upper+l.lower)*.5){l.early=true;l.start=f;}
      }
-     if(f<DUTY&&!l.early){
-      ankle(l,ROLL*smooth((f/DUTY-.6)/.4));
+     if(f<duty&&!l.early&&!l.swing){
+      const rollStart=.6*smooth((duty-.16)/(DUTY-.16));
+      const stance=(f-l.stanceFrom)/Math.max(.01,duty-l.stanceFrom);
+      ankle(l,ROLL*smooth((stance-rollStart)/(1-rollStart)));
      }else{
       if(!l.swing){
-       l.from.copy(l.at);l.fromRotation.copy(l.rotation);flat(l);l.end.copy(origin).addScaledVector(sideways,l.thigh.position.x).addScaledVector(forward,span+step*2*(1-f));
+       l.start=f;l.from.copy(l.at);l.fromRotation.copy(l.rotation);flat(l);l.end.copy(origin).addScaledVector(sideways,l.thigh.position.x).addScaledVector(forward,span+step*2*(1-f));
        l.end.y=origin.y-root.position.y+floor-sole;l.swing=true;
       }
       const s=(f-l.start)/(1-l.start);
       // A change of pace may revise an airborne landing, while there is still clearance to do so.
       // Freeze it before the final descent so neither a slowing body nor smoothing can drag a sole in.
       if(s<.8){a.copy(origin).addScaledVector(sideways,l.thigh.position.x).addScaledVector(forward,span+step*2*(1-f));a.y=l.end.y;l.end.lerp(a,1-Math.exp(-dt*12));}
-      swing(l,s,lift,ground);
+      swing(l,s,l.first?Math.min(.04,lift):lift,ground);
       if(l.index===kickSide&&kickWeight>0){const e=kickWeight*Math.sin(Math.PI*s);l.at.addScaledVector(forward,.06*m.k*e);l.at.y+=.02*m.k*e;}
+      // Flight must not pull the pelvis into a squat during a change of pace. Only redirect a clear airborne shoe;
+      // commit the nearer landing before descent, rather than pulling a planted foot towards the body.
+      if(l.at.y+low(l)>ground+.015){
+       l.thigh.getWorldPosition(hip).add(virtual);const dx=l.at.x-hip.x,dz=l.at.z-hip.z,d=Math.hypot(dx,dz),limit=(l.upper+l.lower)*.65;
+       if(d>limit){const x=hip.x+dx*limit/d,z=hip.z+dz*limit/d;
+        if(s>.7){l.end.x+=x-l.at.x;l.end.z+=z-l.at.z;}l.at.x=x;l.at.z=z;}
+      }
      }
      l.previous=f;
     }
