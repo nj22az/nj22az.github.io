@@ -80,6 +80,29 @@ The newest note for Nhung the doctor and Higa Liquor is the [22 October 2026 nig
 
 The Linux controller note contains newer merge and release information than the morning World note. Real-device confirmation of right-stick camera control on Bluetooth and Steam Deck remains outstanding; follow that note's reproduction steps. Its evening update: a saved Look axis past the pad's axes now falls back to the right stick (`84baf00`, for 0.2.17, unreleased; it rides the Nhung doctor PR from `claude/clever-ride-qdpo8s`).
 
+## Session handover — 30 October 2026, branch `claude/admiring-heisenberg-ynv4ds`: SenseNova Code2Video assessed (research only)
+
+The owner asked whether [OpenSenseNova/SenseNova-6.8-Code2Video](https://github.com/OpenSenseNova/SenseNova-6.8-Code2Video)
+can improve the films. It has two parts. The first is a 27B open model (BF16, fine-tuned from Qwen3.8-27B, Apache 2.0). It
+is served on 4 GPUs with a 512K context, and a run takes 10+ hours and 2,000+ turns. The second is a Claude Code skill,
+`skills/code-video`, with eight craft guides.
+**Verdict: do not adopt the model.** It drives Claude Code the way we already do, and its own README says it is behind the
+strongest proprietary models and recommends Claude Opus 5.5 for prompt enhancement. It cannot run on the owner's M1 Pro
+or in cloud sessions (no GPU). It has no benchmark.
+The skill's core is already in `jojo/remotion`, mostly stronger: frame = f(t) and `verify`, segments with fingerprints,
+`shots`/`look`, −14 LUFS and true-peak limits, and `collide` with `--cam-clear`. Its three.js guide does not cover toon
+shading, GLB loading or post-processing, and nothing in it covers Blender or the Pixar path.
+**Worth taking (proposed, not built):**
+1. A measured foot-slide check in `collide.mjs` (a planted foot stays within a few mm).
+2. Action strips at 0.1 s around fast moments, to add to `look.py`'s 2 s sheet.
+3. A "cold read" step in `REVIEW.md` and the shot-checker: describe the still as a stranger before reading the brief.
+4. A silhouette test for key poses.
+5. Acting timings to check against FilmCast: reactions a few frames late, people in a group 3–6 frames apart, faces 4–8
+   frames to change, seeded blinks and breathing in holds.
+6. A check that each sound lands on its motion's contact frame.
+Nothing was changed apart from this note, and nothing was run beyond reading the README, the SKILL.md, the character and
+three.js guides, the model card and our own film tools. Next: the owner chooses which of 1–6 to build, if any.
+
 ## Session handover — 24 October 2026 (night), branch `claude/peaceful-johnson-103tja`: Linux 0.2.19
 
 #393 (Vy cel-shaded) is merged as `94613e2`. The owner: "Linux is still 0.2.18" and "Yes build it pls". Prepared as 0.2.18
