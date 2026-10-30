@@ -1139,15 +1139,33 @@ uniform vec4 uCrop;
 uniform float uMirror,uSmooth,uAuto,uBias,uTrick,uLight,uContrast,uColour,uWarmth;
 uniform vec2 uStep;
 uniform float uMeanLod;
+uniform vec3 uDown;
 float luma(vec3 c){return dot(c,vec3(.2126,.7152,.0722));}
-vec3 at(vec2 p){
+vec2 sourceAt(vec2 p){
  if(uTrick>.5)p.x=.5-abs(p.x-.5);
  if(uTrick>1.5)p.y=.5+abs(p.y-.5);
  vec2 q=vec2(p.x,1.0-p.y);if(uMirror>.5)q.x=1.0-q.x;
- return texture(tSource,uCrop.xy+q*uCrop.zw,uBias).rgb;
+ return uCrop.xy+q*uCrop.zw;
+}
+vec3 at(vec2 p){return texture(tSource,sourceAt(p),uBias).rgb;}
+// A photo made smaller for the picture, as sharp as it can be: four samples a quarter of a pixel either side, each from
+// the mipmap level twice the picture's size (the GPU's own blend between levels softens a picture shrunk by less than
+// half, losing about a quarter of its fine detail).
+vec3 downsized(vec2 p){
+ vec2 c=sourceAt(p),d=uDown.xy*.25;
+ return (textureLod(tSource,c+d,uDown.z).rgb+textureLod(tSource,c-d,uDown.z).rgb
+  +textureLod(tSource,c+vec2(d.x,-d.y),uDown.z).rgb+textureLod(tSource,c+vec2(-d.x,d.y),uDown.z).rgb)*.25;
+}
+// With the small negative lobes of a Lanczos filter: the picture against the four pixels round it, a little sharpened.
+vec3 resized(vec2 p){
+ vec3 c=downsized(p);
+ vec2 o=uDown.xy/uCrop.zw;
+ vec3 ring=(downsized(p+vec2(o.x,0.0))+downsized(p-vec2(o.x,0.0))+downsized(p+vec2(0.0,o.y))+downsized(p-vec2(0.0,o.y)))*.25;
+ return clamp(c+(c-ring)*.32,0.0,1.0);
 }
 void main(){
- vec3 c=at(vUv);
+ // (A picture not made smaller, or one a Look smooths or reads softer, is read as it is.)
+ vec3 c=uSmooth>0.0||uBias>0.0||uDown.z<0.0?at(vUv):resized(vUv);
  if(uSmooth>0.0){
   // Edge-keeping smoothing on two rings: neighbours much unlike the centre count for little.
   vec3 sum=c;float total=1.0;
@@ -1288,6 +1306,9 @@ export function createLookEngine(canvas,{light=false}={}){
   const smoothing=smooth?Math.min(1,1-d):0,reach=2**-d;
   return u=>{
    f1(u.uBias,bias);f1(u.uMeanLod,meanLod);
+   // One picture pixel in the source's coordinates, and the level twice the picture's size to sample it from.
+   const shrink=Math.max(crop.w*s.width/w,crop.h*s.height/h);
+   if(u.uDown)gl.uniform3f(u.uDown,crop.w/w,crop.h/h,shrink>1.05?Math.max(0,Math.log2(shrink)-1):-1);
    gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smoothing);f1(u.uAuto,auto?1:0);
    f1(u.uTrick,TRICKS.indexOf(recipe.trick||'none'));
    // Smoothing reaches about a thousandth of the picture's height, whatever its size.

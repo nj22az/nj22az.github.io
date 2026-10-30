@@ -37,7 +37,7 @@ in a conical hat, a café, a shady garden, a night street in Osaka), at phone si
 
 | Look | Judge | Score | What they demanded | Status |
 |---|---|---|---|---|
-| Natural | an iPhone photographer | 8 | A sharper resize of a tall photo into the frame || Open (the engine samples a tall photo through its mipmap; a Lanczos-quality resize needs the prepare pass) |
+| Natural | an iPhone photographer | 8 | A sharper resize of a tall photo into the frame || Fixed (round two): a photo made smaller is supersampled from the mipmap level twice the picture's size and lightly sharpened (Lanczos-like); detail on the night street 11.2 → 14.3 against Lanczos's 15.1; at 1:1 unchanged |
 | Black & white | Daidō Moriyama | 5 | Real grain, clumped and strongest in the mid-greys; a softer toe (36% pure black); halation round lights || Rebuilt: grain, softer toe, halation |
 | Sepia | a Meiji studio photographer | 5 | Blue-sensitive grey conversion; chocolate blacks with separation, not a red-brown slab; soft edges and fall-off || Rebuilt (round two): blue-sensitive grey, chocolate blacks with separation, soft edges and fall-off, faded album border |
 | Instant film | Wim Wenders | 6 | No light leak (integral film is sealed): uneven development at the bottom edge instead; no grain; teal-black shadows || Rebuilt (round two): soft, no grain, dye mottle, teal-black shadows, the developer uneven at the bottom edge, no light leak |

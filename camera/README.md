@@ -247,7 +247,9 @@ screen, composite softness, bloom) and **16-bit** (material ramps in 15-bit colo
 strokes are a grain streaked along the hand; Sketchbook leaves a ragged paper margin; 32-bit's mesh tilts enough to
 kink; Miniature's band sits on an upright photo's upper third. Every line Look draws through `inked()`: the lines and
 contours, except a mark among bright, little-coloured neighbours lighter than their surroundings, so a row of teeth is
-one white shape.
+one white shape. The first pass makes a photo smaller as a Lanczos resize would (four samples from the mipmap level twice
+the picture's size, lightly sharpened) instead of the GPU's blend between levels, which lost about a quarter of a tall
+photo's fine detail; Looks that read their source softer on purpose (the line Looks) are unchanged.
 
 ## Erase
 
