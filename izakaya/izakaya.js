@@ -19,6 +19,17 @@ camera.rotation.order = 'YXZ';
 
 // Blender (x, y, z) to three.js (x, z, -y), as the glTF exporter turns them
 const fromBlender = ([x, y, z]) => new THREE.Vector3(x, z, -y);
+// the jugs: their glass's reflections (IOR, strength; the handle's, solid glass, stronger) and each one's beer: its own
+// glow at its foot and under its foam (sRGB, as the page draws it) and how much of what is behind shows through it; set
+// so that the opening view's jugs read as the still's (fitted at each jug's top and foot, the hue kept one amber:
+// through Thuận's beer the still shows her face)
+const GLASS_IOR = 1.05, GLASS_ENV = 0.8, HANDLE_ENV = 2.5;
+const BEER_THROUGH = 0.12;
+const BEER = {
+  johansson: {foot: [172, 113, 67], top: [212, 131, 85]},
+  thao: {foot: [176, 123, 43], top: [175, 99, 16]},
+  thuan: {foot: [156, 99, 39], top: [163, 112, 48]},
+};
 
 const info = await fetch('walk.json').then(r => r.json());
 const walkBits = Uint8Array.from(atob(info.walk), c => c.charCodeAt(0));
@@ -82,38 +93,56 @@ room.scene.traverse(o => {
 });
 scene.add(room.scene);
 
-// the glass and the beer, lit by the room itself (a cube photographed once where the three sit)
-const cube = new THREE.WebGLCubeRenderTarget(256, {type: THREE.HalfFloatType});
-const cubeCam = new THREE.CubeCamera(0.05, 40, cube);
-cubeCam.position.copy(fromBlender([-1.9, 0.6, 1.05]));
-scene.add(cubeCam);
-cubeCam.update(renderer, scene);
-// (the still's beer is a clear gold lit through, its glass bright at the rims: the light is the beer's own here, as
-// nothing else lights the page)
-// (glass only reflects: no colour of its own, its reflections added over what is behind, faint face on and bright at the
-// rims; a white glass took the room's light as a matte surface would and turned the beer milky)
-const glass = new THREE.MeshStandardMaterial({color: 0x000000, roughness: 0.05, metalness: 0, envMap: cube.texture,
-  envMapIntensity: 0.7, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false});
-// the beer unlit, as the still shows it: amber, lighter and yellower toward the glass's foot (measured on the still's
-// jugs: (195, 125, 45) in the middle, (210, 150, 62) low), along each jug's own axis
-const beer = new THREE.MeshBasicMaterial({vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false});
+// the glass and the beer, lit by the room itself: a cube photographed once where each jug stands (one cube for the
+// three gave every jug the reflections by Johansson's, under the lamp)
+const owner = o => (/^(johansson|thao|thuan)/i.exec(o.name) || /^(johansson|thao|thuan)/i.exec(o.parent?.name || '') || [])[1]?.toLowerCase();
+live.scene.updateMatrixWorld(true);
+const jugs = {};
+live.scene.traverse(o => {
+  if (!o.isMesh || !owner(o)) return;
+  (jugs[owner(o)] ||= new THREE.Box3()).union(new THREE.Box3().setFromObject(o));
+});
+const cubes = {};
+for (const [who, box] of Object.entries(jugs)) {
+  const target = new THREE.WebGLCubeRenderTarget(256, {type: THREE.HalfFloatType});
+  const cubeCam = new THREE.CubeCamera(0.05, 40, target);
+  box.getCenter(cubeCam.position);
+  scene.add(cubeCam);
+  cubeCam.update(renderer, scene);
+  scene.remove(cubeCam);
+  cubes[who] = target.texture;
+}
+// (glass only reflects: no colour of its own, its reflections added over what is behind. The page blends in screen
+// values, not in light, so a reflection adds as much over the bright beer as over black: face on a clear glass must add
+// next to nothing, its rims much. An IOR near 1 leaves the face-on reflection at the Fresnel curve's floor and the rims
+// at its full rise; with glass's own 1.5 the four faces of each jug's wall turned the beer a pale yellow, the foam white)
+const glasses = {};
+const glassFor = (who, handle) => (glasses[who + handle] ||= new THREE.MeshPhysicalMaterial({color: 0x000000,
+  roughness: 0.05, metalness: 0, ior: GLASS_IOR, envMap: cubes[who], envMapIntensity: handle ? HANDLE_ENV : GLASS_ENV,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false}));
+// the beer glowing, as the still's does in the room's light, with a little of what is behind it seen through (Johansson's
+// forearm, the wall, the counter): drawn = glow + behind x BEER_THROUGH. Opaque it read as a flat paint; as a filter
+// over what is behind, Thuận's shirt buttons showed through hers
 const linear = c => c.map(v => ((v / 255 + 0.055) / 1.055) ** 2.4);
-const BEER_TOP = linear([188, 112, 32]), BEER_LOW = linear([212, 152, 64]);
-function shadeBeer(mesh) {
+function shadeBeer(mesh, {foot, top}) {
   const g = mesh.geometry, pos = g.attributes.position;
   g.computeBoundingBox();
-  const {min, max} = g.boundingBox, col = new Float32Array(pos.count * 3);
+  const {min, max} = g.boundingBox, col = new Float32Array(pos.count * 3), lo = linear(foot), hi = linear(top);
   for (let i = 0; i < pos.count; i++) {
     const t = THREE.MathUtils.clamp((pos.getY(i) - min.y) / (max.y - min.y || 1), 0, 1);
-    for (let k = 0; k < 3; k++) col[i * 3 + k] = BEER_LOW[k] + (BEER_TOP[k] - BEER_LOW[k]) * t;
+    for (let k = 0; k < 3; k++) col[i * 3 + k] = lo[k] + (hi[k] - lo[k]) * t;
   }
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
 }
+const beer = new THREE.MeshBasicMaterial({vertexColors: true, transparent: true, opacity: BEER_THROUGH, depthWrite: false,
+  blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor,
+  blendDst: THREE.SrcAlphaFactor});
 live.scene.traverse(o => {
   if (!o.isMesh) return;
   const isBeer = /beer/i.test(o.name) || /beer/i.test(o.parent?.name || '');
-  if (isBeer) shadeBeer(o);
-  o.material = isBeer ? beer : glass;
+  const who = owner(o) || 'johansson';
+  if (isBeer) shadeBeer(o, BEER[who] || BEER.johansson);
+  o.material = isBeer ? beer : glassFor(who, /handle/i.test(o.name + (o.parent?.name || '')));
   o.renderOrder = isBeer ? 1 : 2;
   triangles += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3;
 });
@@ -223,6 +252,7 @@ if (params.has('audit')) {
     place(x, y) { if (!walkable(x, y)) return false; camera.position.x = x; camera.position.z = -y; dirty = true; return true; },
     walkable,
     toStart,
+    scene,
     render() { camera.rotation.set(pitch, yaw, 0); renderer.render(scene, camera); },
     stats() { return {triangles: Math.round(triangles), calls: renderer.info.render.calls, textures: renderer.info.memory.textures,
       geometries: renderer.info.memory.geometries, half}; },
