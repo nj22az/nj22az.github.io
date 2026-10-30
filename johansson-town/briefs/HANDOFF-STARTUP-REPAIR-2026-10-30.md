@@ -18,9 +18,11 @@ The exact physical-device kick-out is not reproduced. Confirmed defects, rather 
 - The released-canvas registry retained disposed room textures, canvases and redraw closures. A context restore
   repainted those obsolete pictures. The regression first failed on unchanged code: all 12 disposed entries remained.
   Disposal now unregisters them and releases their canvases. The same regression passes with zero retained entries.
-- The WebGL lifecycle listened only after town construction and shader warm-up. A context lost during those loading
-  stages could miss the `preventDefault` that permits restoration. The listener now attaches before the first loading
-  yield, and defers callbacks that need gameplay state until that state exists. It records loss/restore locally.
+- World's own WebGL lifecycle listened only after town construction and shader warm-up. Loss/restoration during
+  those loading stages missed the game's pause, pipeline rebuild and released-canvas redraw. Three.js already handles
+  the underlying context's `preventDefault`; the missing part was the game's own state and resources. Its listener now
+  attaches before the first loading yield and defers callbacks that need gameplay state until that state exists.
+  It records loss/restore locally.
 - The interrupted-start marker began in `game.js`, after the Pixar models loaded. It now starts in `boot.js` before
   model fetch/decoding; the game reuses it, and an import retry cannot count the page twice. The 45-second settling
   period begins after an actual playable frame, rather than on the START click.
@@ -55,8 +57,16 @@ and harbour, not a blank or loading frame. The baseline does **not** reproduce t
 - Focused source/package/loader/lifecycle/canvas checks: **27/27 passed** locally.
 - New early graphics-loss ordering test failed before moving the lifecycle and passed afterwards.
 - All five startup/lifecycle/canvas test files are now in the World guard, rather than outside it.
-- The expanded WebKit run additionally checks save persistence and a real forced context loss during loading, with
-  the driver's `WEBGL_lose_context` extension. Its result will be recorded after the corrected candidate runs.
+- Corrected source plus current main: `8dedc787cabdb54020d360100a9a793d5a135397`, tree
+  `1fbf00304e9b0edbdde1ea58afbcf159ec319898`, [run 41133019214](https://github.com/nj22az/nj22az.github.io/actions/runs/41133019214).
+  **Full hosted World guard passed (505/505)**. All seven WebKit scenario checks completed, including persisted discovery and a real forced loading-screen context
+  loss/restoration with HDR restored. **The job failed its final no-error assertion**: a bentwood-chair blob texture
+  was cancelled by a fixture reload; WebKit reported an access-control error from the outgoing document. Report:
+  `docs/qa/startup-2026-10-30/iphone-stress-first.json`; original artifact `13013808600`. The restored startup capture
+  was inspected: the harbour and current character render normally after the real GPU loss.
+- The fixture now waits for in-flight network/decode work before planned reloads, and records error phase/time/stack.
+  Every error assertion remains; no exception text is suppressed. A repeat also checks the ordinary URL with the real
+  device clock and an unforced opening, beyond the deterministic ferry fixture. Final result pending.
 - Authored-file whitespace and JavaScript syntax checks passed.
 - Complete local guard: **505/505 passed, 96 files, 208 seconds**.
 - Full-game CPU wiring/interior smoke plus runtime package: **5/5 passed**, 159.8 seconds. The fixture reports its

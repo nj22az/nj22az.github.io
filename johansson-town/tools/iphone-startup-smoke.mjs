@@ -32,9 +32,16 @@ const state=()=>page.evaluate(()=>{
   fatal:document.querySelector('#fatal:not(.hidden)')?.textContent,
   launch:JSON.parse(localStorage.getItem('johansson-loading-report-v1')||'null')};
 });
-const boot=async(reload=false)=>{
+const boot=async(reload=false,natural=false)=>{
+ // Finish this page's detail decodes before a planned reload. WebKit otherwise
+ // reports the outgoing document's cancelled blob texture as an access-control error.
+ // Keep all error assertions: no message is filtered out or discarded.
+ if(report.steps.length){
+  await page.waitForLoadState('networkidle',{timeout:60000});
+  await page.waitForFunction(()=>!window.__JOHANSSON_STREAMING__?.active,null,{timeout:60000});
+ }
  if(reload)await page.reload({waitUntil:'domcontentloaded'});
- else await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&spawn=ferry&cinematic=off`,{waitUntil:'domcontentloaded'});
+ else await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/${natural?'':'?audit&spawn=ferry&cinematic=off'}`,{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__JOHANSSON_LOADING__?.snapshot().ready||window.__JOHANSSON_LOADING__?.snapshot().error,null,{timeout:240000});
  const ready=await state();assert.equal(ready.loading?.error,null,JSON.stringify(ready));
  await page.locator('#enter').tap();
@@ -71,7 +78,7 @@ try{
   }
  });
  page=await context.newPage();
- page.on('pageerror',error=>report.errors.push(error.message));
+ page.on('pageerror',error=>report.errors.push({message:error.message,stack:error.stack,seconds:+((Date.now()-started)/1000).toFixed(2),lastStep:report.steps.at(-1)?.name}));
  page.on('console',message=>{if(message.type()==='error')report.consoleErrors.push(message.text());});
  page.on('requestfailed',request=>report.failedRequests.push({url:request.url(),failure:request.failure()?.errorText}));
  page.on('crash',()=>report.errors.push('BROWSER PAGE CRASHED'));
@@ -91,18 +98,22 @@ try{
  await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation?.id==='izakaya'&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,null,{timeout:120000});
  const room=await state();assert.equal(room.running,true);assert.equal(room.fatal,undefined);step('entered Izakaya',room);
  await page.screenshot({path:resolve(out,'izakaya.png')});
-  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.save());
-  await boot(true);
-  assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.visited.includes('izakaya')),true,'Room discovery survives reload');
-  step('saved room discovery survives reload',await state());
-  await page.evaluate(()=>localStorage.setItem('iphone-test-early-loss','1'));
-  await boot(true);
-  const recovery=await page.evaluate(()=>window.__IPHONE_CONTEXT_TEST__);
-  assert.equal(recovery.supported,true,'The simulation must expose real graphics loss');
-  assert.equal(recovery.lost,1);assert.equal(recovery.prevented,true,'A loading-screen context loss must permit restoration');
-  assert.equal(recovery.restored,1);assert.equal((await state()).graphics.hdr,true,'Full HDR/ink returns after restoration');
-  step('real context loss during startup recovers',{recovery,...await state()});
-  await page.screenshot({path:resolve(out,'restored-startup.png')});
+ await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.save());
+ await boot(true);
+ assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.state.visited.includes('izakaya')),true,'Room discovery survives reload');
+ step('saved room discovery survives reload',await state());
+ await page.evaluate(()=>localStorage.setItem('iphone-test-early-loss','1'));
+ await boot(true);
+ const recovery=await page.evaluate(()=>window.__IPHONE_CONTEXT_TEST__);
+ assert.equal(recovery.supported,true,'The simulation must expose real graphics loss');
+ assert.equal(recovery.lost,1);assert.equal(recovery.prevented,true,'A loading-screen context loss must permit restoration');
+ assert.equal(recovery.restored,1);assert.equal((await state()).graphics.hdr,true,'Full HDR/ink returns after restoration');
+ step('real context loss during startup recovers',{recovery,...await state()});
+ await page.screenshot({path:resolve(out,'restored-startup.png')});
+ await page.evaluate(()=>localStorage.setItem('johansson-town-clock',JSON.stringify({start:'real',speed:1})));
+ await boot(false,true);
+ step('ordinary URL with real clock and natural opening',await state());
+ await page.screenshot({path:resolve(out,'natural-opening.png')});
  assert.deepEqual(report.errors,[],'No uncaught errors or page crash');
  assert.deepEqual(report.consoleErrors.filter(m=>/shader error|VALIDATE_STATUS|WebGL.*(?:error|lost)/i.test(m)),[],'No graphics errors');
  report.passed=true;
