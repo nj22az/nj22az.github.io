@@ -84,7 +84,7 @@ when saving ? I want memory with our own photos or with the stickers".
   owner, 29 October 2026: "main look and then we play with it in the app"); a second or third Look is added in the
   editor.
 - **Your own stickers** (`cutout.js`, the sheet **Mine**): any photo becomes a die-cut sticker with the studio's white
-  border, grey cut line and shadow; a picture with a transparent background (a subject lifted from a photo with Copy
+  contour and restrained shadow; a picture with a transparent background (a subject lifted from a photo with Copy
   on an iPhone, iPad or Mac, then **Paste**) is cut round its own outline, any other with rounded corners. Kept on the
   device with the album; deleting one takes it off the viewfinder too, and saved photos keep it.
 - **Album**: two sample photos (the original and Adventure Ink) are added once, including to existing albums. They can be edited or deleted; deleted samples do not reappear. Kept in this browser (IndexedDB), nothing uploaded. Each photo keeps its untouched picture and its
@@ -358,6 +358,8 @@ techniques, drawn here:
 
 ## Integration candidate — 30 October 2026
 
+**31 October:** [thin sticker contours](HANDOVER-STICKER-CONTOURS-2026-10-31.md) join the same review PR: all 116 supplied stickers plus thumbnails, and a 0.45% rim for newly made custom stickers. Figure positions and saved IDs remain stable. [Actual comparisons](qa/2026-10-31-contours/README.md).
+
 The combined Save/Share and Enhance review is recorded in [the integration handover](HANDOVER-INTEGRATION-2026-10-30.md), with [actual comparisons and phone-sized screenshots](qa/2026-10-30-integration/README.md). It retains the published crop/compression path. The separate #405 photographic-Look/person-mask development is not included. Main publication requires the owner's explicit instruction.
 
 ## Checks
@@ -368,6 +370,7 @@ node camera/tests/crop.test.mjs              # crop bounds, shapes, zoom and rec
 node camera/tests/crop.browser.mjs           # gestures, source contact, saved pixels, compression and original retention
 node camera/tests/save-share-layout.browser.mjs # album-only saves, native-share mock, cancellation/failure and phone Solitaire sizing
 node camera/tests/enhance.browser.mjs         # reversible strength, crop/export, prior-engine parity
+node camera/tests/sticker-contour.browser.mjs # catalogue, pale shoes, thin own-sticker rims and preview/export
 node camera/tests/integration.browser.mjs     # full/LIGHT matrix, mixed thumbnails, exact JPEG/Share bytes, retained recipes
 node camera/tests/paper.browser.mjs           # paper preview/export agreement, colour/black retention, persistence and controls
 node camera/tests/blackjack.test.mjs         # scores and hand flow

@@ -52,7 +52,7 @@ jobs:
       - name: Combined browser regressions (Chromium emulation; Share mocked)
         run: |
           mkdir -p /tmp/camera-results
-          for suite in camera crop enhance save-share-layout paper integration; do
+          for suite in camera crop enhance save-share-layout paper integration sticker-contour; do
             export CAMERA_SHOTS="/tmp/camera-results/$suite"
             node "camera/tests/$suite.browser.mjs" | tee "/tmp/camera-results/$suite.log"
           done
