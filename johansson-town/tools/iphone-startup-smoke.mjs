@@ -1,0 +1,81 @@
+// Run in CI with WebKit/Mesa and an iPhone profile; this does not model iOS process limits.
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {resolve,extname} from 'node:path';
+import {webkit,chromium,devices} from 'playwright';
+
+const site=resolve(new URL('../..',import.meta.url).pathname);
+const out=resolve(process.env.IPHONE_OUTPUT||resolve(site,'johansson-town/output/iphone-startup'));
+await mkdir(out,{recursive:true});
+const engine=process.env.IPHONE_ENGINE||'webkit';
+const report={engine,profile:'iPhone 13',physicalDevice:false,notes:['Desktop WebKit/Chromium with iPhone viewport, DPR, touch and user agent. Not physical iOS Safari or its memory limits.'],steps:[],errors:[],consoleErrors:[],failedRequests:[]};
+const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wasm':'application/wasm'};
+const server=createServer(async(req,res)=>{
+ try{
+  const pathname=decodeURIComponent(new URL(req.url,'http://local').pathname);
+  const file=resolve(site,'.'+pathname+(pathname.endsWith('/')?'index.html':''));
+  if(!file.startsWith(site+'/'))throw Error('Outside repository');
+  const body=await readFile(file);res.writeHead(200,{'content-type':types[extname(file)]||'application/octet-stream','cache-control':'no-store'});res.end(body);
+ }catch{res.writeHead(404);res.end();}
+});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+let browser,page;
+const started=Date.now();
+const step=(name,data={})=>{const item={name,seconds:+((Date.now()-started)/1000).toFixed(2),...data};report.steps.push(item);console.log(JSON.stringify(item));};
+const state=()=>page.evaluate(()=>{
+ const a=window.__JOHANSSON_AUDIT__,r=a?.renderer;
+ return {running:!!window.__JOHANSSON_RUNNING__,safe:window.__JOHANSSON_SAFE_GRAPHICS__,loading:window.__JOHANSSON_LOADING__?.snapshot(),
+  room:a?.roomNavigation?.id||null,blocked:a?.blocked,player:a?.player?.position?.toArray?.(),
+  graphics:window.__JOHANSSON_LOOK__?.state,render:a?.renderInfo,frames:r?.info?.render?.frame,
+  canvas:{width:document.querySelector('#game')?.width,height:document.querySelector('#game')?.height},
+  fatal:document.querySelector('#fatal:not(.hidden)')?.textContent,
+  launch:JSON.parse(localStorage.getItem('johansson-loading-report-v1')||'null')};
+});
+const boot=async(reload=false)=>{
+ if(reload)await page.reload({waitUntil:'domcontentloaded'});
+ else await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&spawn=ferry&cinematic=off`,{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.__JOHANSSON_LOADING__?.snapshot().ready||window.__JOHANSSON_LOADING__?.snapshot().error,null,{timeout:240000});
+ const ready=await state();assert.equal(ready.loading?.error,null,JSON.stringify(ready));
+ await page.locator('#enter').tap();
+ await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__?.snapshot().completed===10&&!window.__JOHANSSON_AUDIT__?.blocked.catchingUp,null,{timeout:180000});
+ assert.equal((await state()).fatal,undefined,'No fatal overlay after START');
+};
+try{
+ browser=await (engine==='webkit'?webkit:chromium).launch(engine==='webkit'?{headless:false}:{headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+ const context=await browser.newContext({...devices['iPhone 13'],serviceWorkers:'block'});
+ await context.route('https://fonts.googleapis.com/**',r=>r.fulfill({contentType:'text/css',body:''}));
+ await context.addInitScript(()=>{
+  if(!localStorage.getItem('johansson-town-clock'))localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));
+  Element.prototype.requestFullscreen=async()=>{};
+ });
+ page=await context.newPage();
+ page.on('pageerror',error=>report.errors.push(error.message));
+ page.on('console',message=>{if(message.type()==='error')report.consoleErrors.push(message.text());});
+ page.on('requestfailed',request=>report.failedRequests.push({url:request.url(),failure:request.failure()?.errorText}));
+ page.on('crash',()=>report.errors.push('BROWSER PAGE CRASHED'));
+ await boot();step('cold-start portrait',await state());
+ await page.screenshot({path:resolve(out,'portrait.png')});
+ const frame=(await state()).frames;
+ await page.waitForFunction(before=>window.__JOHANSSON_AUDIT__.renderer.info.render.frame>before+20,frame,{timeout:60000});
+ step('live frame loop advances',await state());
+ await page.setViewportSize({width:844,height:390});
+ await page.waitForFunction(()=>document.querySelector('#game').width>document.querySelector('#game').height);
+ step('landscape',await state());await page.screenshot({path:resolve(out,'landscape.png')});
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForFunction(()=>document.querySelector('#game').height>document.querySelector('#game').width);
+ await boot(true);step('warm reload',await state());
+ // Existing audit entry calls the same enterRoom path as the door. No mocked renderer/scene.
+ await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.setTime(4*1440+20*60+30);await a.enter('izakaya');});
+ await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation?.id==='izakaya'&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,null,{timeout:120000});
+ const room=await state();assert.equal(room.running,true);assert.equal(room.fatal,undefined);step('entered Izakaya',room);
+ await page.screenshot({path:resolve(out,'izakaya.png')});
+ assert.deepEqual(report.errors,[],'No uncaught errors or page crash');
+ assert.deepEqual(report.consoleErrors.filter(m=>/shader error|VALIDATE_STATUS|WebGL.*(?:error|lost)/i.test(m)),[],'No graphics errors');
+ report.passed=true;
+}catch(error){report.passed=false;report.failure=error.message;process.exitCode=1;
+ if(page)try{report.failureState=await state();await page.screenshot({path:resolve(out,'failure.png'),timeout:15000});}catch(diagnostic){report.diagnosticFailure=diagnostic.message;}
+}finally{
+ console.log(JSON.stringify(report));await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');
+ await browser?.close();await new Promise(resolve=>server.close(resolve));
+}
