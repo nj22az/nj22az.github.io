@@ -38,7 +38,7 @@ import {higaFrontage,higaPoint} from './higa-liquor-dressing.js';
 import {buildKissaProps} from './kissa-higa-props.js';
 import {laundryFrontage,LAUNDRY_BENCH,laundryPoint} from './coin-laundry-dressing.js';
 import {HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../../commerce/higa-liquor.js';
-import {KISSA,KISSA_NOTICE,KISSA_MENU,KISSA_RECORDS,KISSA_SEATS,kissaOpen,kissaPeopleAt} from '../../commerce/kissa-higa.js';
+import {KISSA,KISSA_NOTICE,KISSA_MENU,KISSA_RECORDS,KISSA_SEATS,kissaOpen,kissaPassable,kissaShutterDown,inKissaHiga} from '../../commerce/kissa-higa.js';
 import {laundryNotices,laundryMachinesAt,LAUNDRY_MANGA} from '../../commerce/coin-laundry.js';
 
 /**
@@ -49,7 +49,7 @@ import {laundryNotices,laundryMachinesAt,LAUNDRY_MANGA} from '../../commerce/coi
  * @param {object} world the town being built (group, colliders, hourly, details)
  * @param {object} options register, onAction, shadows
  */
-export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={}){
+export function buildOkinawaQuarters(world,{register,onAction,shadows=false,getPlayerPosition=()=>null}={}){
  const group=new THREE.Group();group.name='Okinawan quarters';world.group.add(group);
  const kit=createKit({shadows});
  const plaster=createMaterials().material('plaster');
@@ -58,7 +58,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  kit.surface('tile',{map:roofTile(),metres:.9,roughness:.8,side:THREE.DoubleSide});
  kit.surface('hana',{map:flowerBlock(),metres:.42});
  kit.surface('sand',{map:coralSand(),metres:3.2,roughness:1});
- const colliders=[];
+ const colliders=[],kissaPrompts=[];
  const solid=list=>{for(const c of [].concat(list))if(c)colliders.push(c);};
  const anchor=(x,y,z,label,fn)=>{const a=new THREE.Object3D();a.position.set(x,y,z);group.add(a);register?.(a,label,fn);return a;};
  const inspect=(x,y,z,label,title,text)=>anchor(x,y,z,label,()=>onAction?.('inspect',title,text));
@@ -78,7 +78,8 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  // North of the seawall the shore is the west-shore bank, in the same coral stone. See west-shore.js.
  buildWestShore(kit,solid,{anchor,onAction,group});
  buildYardRow(kit,solid,{anchor,inspect,onAction,getMinutes:()=>world.minutes??720});
- buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720});
+ buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720,kissaPrompts,
+  getHiga:()=>world.quarters?.higa,getPeople:()=>[...(world.people||[]).map(p=>p.g),...(world.neighbours||[])]});
  buildEastBack(kit,solid,{anchor,inspect,onAction});
  if(GATEBALL_ACTIVE)buildGateball(kit,solid,{anchor,inspect,onAction});
  const fishMarket=buildEastQuay(kit,solid,{group,anchor,inspect,onAction,vending,getMinutes:()=>world.minutes??720,eastQuayBoat:(x,z,ry,opts)=>{
@@ -106,9 +107,12 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
  // the doors, the tubes, the lamps and the board), its three Meshy models streamed in near it (kissa-higa-props.js), and
  // what follows the clock at the coin laundry: the machines turning, the baskets, the misted glass and the day's notices
  // (coin-laundry-dressing.js).
- const higa=higaFrontage({shadows}),coinLaundry=laundryFrontage({shadows});group.add(higa.group,coinLaundry.group);
+ const higa=higaFrontage({shadows,getOccupants:()=>[getPlayerPosition(),...(world.people||[]).map(p=>p.g),...(world.neighbours||[])]
+  .filter(g=>g&&(!g.isObject3D||g.visible&&!g.userData.indoors&&!g.userData.inHome&&!g.userData.aboardFerry))
+  .map(g=>g.position||g)}),coinLaundry=laundryFrontage({shadows});group.add(higa.group,coinLaundry.group);
  buildKissaProps({world,frontage:higa,shadows});
  higa.update(world.minutes??720);
+ for(const p of kissaPrompts)p.visible=higa.shutterSolid.minY>100;
  colliders.push(higa.shutterSolid,higa.doorSolid,higa.aboardSolid);
  world.colliders.push(...colliders);
  // Windows light up and the lamps come on at dusk, like the rest of the town.
@@ -120,6 +124,7 @@ export function buildOkinawaQuarters(world,{register,onAction,shadows=false}={})
   old.shutter.update(minutes);
   // The kissaten's way in opening or shutting: the residents' routes are searched again (game.js, neighbours.replan).
   if(higa.update(minutes))world.passagesChanged=true;
+  for(const p of kissaPrompts)p.visible=higa.shutterSolid.minY>100;
   coinLaundry.update(minutes,world.laundryWash||null);
  });
  if(!vendingReady())for(const machine of vendings)(world.details??=[]).push({id:'okinawa-vending-'+machine.id,x:machine.position.x,z:machine.position.z,radius:44,load:()=>hydrateVending(machine,{shadows})});
@@ -329,7 +334,7 @@ const SHOPS=Object.freeze({
   inspect:{label:'Look into the coin laundry',title:'Coin laundry',text:'Four washers, two dryers and a bench under the noticeboard, with a shelf of old manga and a sign about not leaving washing overnight that everybody ignores. It smells of warm cotton.'}},
 });
 
-function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>720}){
+function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>720,getHiga=()=>null,getPeople=()=>[],kissaPrompts=[]}){
  const spec=SHOPS[plot.id],w=plot.maxZ-plot.minZ-.1,d=frame.depth;
  const sign=fascia({jp:spec.jp,en:spec.en,bg:spec.bg,accent:spec.accent,mark:spec.mark||''});
  const upright=vertical({jp:spec.upright,bg:spec.uprightBg});
@@ -337,27 +342,33 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
  const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
  if(plot.id==='nakamura')return; // One shared dessert menu owns all orders.
- const act=plot.id==='higa-saketen'?()=>kissaFront(getMinutes(),onAction):spec.buy?.action?()=>onAction?.(spec.buy.action):spec.buy?buy(spec.buy):plot.id==='coin-laundry'?()=>onAction?.('inspect',spec.inspect.title,laundryLook(getMinutes())):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
+ const act=plot.id==='higa-saketen'?()=>kissaFront(getMinutes(),onAction,{front:getHiga(),people:getPeople()}):spec.buy?.action?()=>onAction?.(spec.buy.action):spec.buy?buy(spec.buy):plot.id==='coin-laundry'?()=>onAction?.('inspect',spec.inspect.title,laundryLook(getMinutes())):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.
  anchor(front+out*.9,1.1,z+(spec.anchorDz||0),(spec.buy||spec.inspect).label,act);
  for(const m of spec.more||[])anchor(front+out*.9,1.1,z+m.dz,m.label,buy(m));
- if(plot.id==='higa-saketen')higaPrompts({anchor,onAction,getMinutes});
+ if(plot.id==='higa-saketen')higaPrompts({anchor,onAction,getMinutes,getHiga,kissaPrompts});
  if(plot.id==='coin-laundry')laundryPrompts({anchor,onAction,getMinutes});
 }
 
 /** A prompt only the player uses: residents never pick it as something to do in their free time (town-activities.js). */
 const private_=a=>{if(a)a.userData.npcInteraction=false;return a;};
 /** What the front of Kissa Higa says at this minute: who is in through the open doors, or the paper on the shutter. */
-function kissaFront(minutes,onAction){
- if(!kissaOpen(minutes))return onAction?.('read','Kissa Higa · the paper on the shutter',KISSA_NOTICE.en);
- const regulars=kissaPeopleAt(minutes).filter(n=>n!==KISSA.keeper);
- onAction?.('inspect','Kissa Higa',`Through the open doors: Grandmother Higa behind the counter, two siphons bubbling on their spirit lamps and the smell of toast. ${regulars.length?regulars.join(' and ')+(regulars.length>1?' are':' is')+' in.':'Nobody in yet but her.'} Morning set, blend or iced coffee, ¥300 each, until half past nine.`);
+function kissaFront(minutes,onAction,{front=null,people=[]}={}){
+ const down=front?(front.shutter.visible?front.shutter.scale.y:0):kissaShutterDown(minutes);
+ if(!kissaOpen(minutes)){
+  if(down===1)return onAction?.('read','Kissa Higa · the paper on the shutter',KISSA_NOTICE.en);
+  return onAction?.('read','Kissa Higa · '+(minutes%1440<KISSA.open?'opening up':'closing up'),
+   (minutes%1440<KISSA.open?'Grandmother Higa is opening up. ':'Morning service has finished; Grandmother Higa waits until everyone is out before closing. ')+KISSA_NOTICE.en);
+ }
+ const present=people.filter(g=>g.visible&&!g.userData.indoors&&!g.userData.inHome&&inKissaHiga(g.position)).map(g=>g.userData.name||g.name);
+ const keeper=present.includes(KISSA.keeper),regulars=present.filter(n=>n!==KISSA.keeper);
+ onAction?.('inspect','Kissa Higa',`Through the open doors: the coffee counter, two siphons on their spirit lamps and the smell of toast. ${keeper?'Grandmother Higa is behind the counter. ':''}${regulars.length?regulars.join(' and ')+(regulars.length>1?' are':' is')+' in.':'The customer seats are free.'} Morning set, blend or iced coffee, ¥300 each, until half past nine.`);
 }
 /**
  * The bench out front (commerce/higa-liquor.js YUNTAKU), a seat at any hour; and inside Kissa Higa, in its hours
  * (commerce/kissa-higa.js): ordering at the counter's open end, the table's near chair, the records and the family kusu.
  */
-function higaPrompts({anchor,onAction,getMinutes}){
+function higaPrompts({anchor,onAction,getMinutes,getHiga,kissaPrompts}){
  const P=YUNTAKU.seats.player,seat=private_(anchor(P.at[0]-.55,1,P.at[1],'Sit on the bench outside Higa Liquor',()=>{
   const m=getMinutes(),here=YUNTAKU.sitters.filter(s=>yuntakuSeatAt(s.name,m)).map(s=>s.name);
   onAction?.('seat','Higa Liquor’s bench',here.length?`You sit down at the end of the bench. ${here.join(' and ')} ${here.length>1?'are':'is'} already here with a bottle each from Sakura, talking about nothing in particular, which is the point.`:'A timber bench and two upturned beer crates in front of Kissa Higa, its shutter down by evening. Of an evening the men still sit here with a bottle, bought at Sakura now.');}));
@@ -367,7 +378,9 @@ function higaPrompts({anchor,onAction,getMinutes}){
  if(seat)seat.userData.seat={id:'higa-yuntaku-bench',position:[P.at[0],0,P.at[1]],stand:[P.stand[0],0,P.stand[1]],surfaceY:P.height,eyeY:1.1,yaw:P.yaw,pitch:-.03,front:P.at[0]-(YUNTAKU.bench.x-YUNTAKU.bench.depth/2)};
  // Inside Kissa Higa (the shop-house frame, higa-liquor-dressing.js higaPoint). Outside its hours the room is behind the
  // shutter and the doors; ordering says when it opens.
- const inside=(x,z,y,label,fn)=>{const [wx,wz]=higaPoint(x,z);return private_(anchor(wx,y,wz,label,fn));};
+ const passable=()=>{const h=getHiga();return h?h.shutterSolid.minY>100:kissaPassable(getMinutes());};
+ const inside=(x,z,y,label,fn)=>{const [wx,wz]=higaPoint(x,z),a=private_(anchor(wx,y,wz,label,()=>passable()?fn():closed()));
+  if(a){a.visible=passable();kissaPrompts.push(a);}return a;};
  const closed=()=>onAction?.('read','Kissa Higa is closed','Grandmother Higa serves from 7:00 to 9:30, Monday to Friday. '+KISSA_NOTICE.en);
  KISSA_MENU.forEach((item,i)=>inside(-.1+i*.3,.3,1.1,item.label,()=>kissaOpen(getMinutes())?onAction?.('buy','Kissa Higa · '+item.name,{cost:item.cost,item:item.item,text:item.text}):closed()));
  // The table's near chair is the player's (Ms Uezu takes the far one on her weeks off: KISSA_SEATS chair-1).
@@ -394,9 +407,9 @@ function laundryPrompts({anchor,onAction,getMinutes}){
   {length:LAUNDRY_BENCH.x1-LAUNDRY_BENCH.x0,front:LAUNDRY_BENCH.z1-(LAUNDRY_BENCH.seats[0].at[0]-laundryPoint(0,0)[0]),places:LAUNDRY_BENCH.seats.map(s=>({position:[s.at[0],0,s.at[1]],stand:[s.stand[0],0,s.stand[1]]}))});
 }
 
-function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes}){
+function buildEastRow(kit,solid,{anchor,inspect,onAction,vending,getMinutes,getHiga,getPeople,kissaPrompts}){
  const depth=EAST_ROW.maxX-EAST_ROW.minX,x=(EAST_ROW.minX+EAST_ROW.maxX)/2;
- for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes});
+ for(const plot of EAST_ROW.plots)shopFront(kit,solid,plot,{x,ry:-Math.PI/2,depth,front:EAST_ROW.minX,out:-1},{anchor,inspect,onAction,getMinutes,getHiga,getPeople,kissaPrompts});
  // The strip of ground between the pavement and each shop front is Main Street's concrete back strip, laid with the
  // street by the ground generator (ground-plan.js); Kitano Road crosses the row where the old lane was.
  // (Their aprons are Main Street's back strip now, laid with the street: ground-plan.js.)

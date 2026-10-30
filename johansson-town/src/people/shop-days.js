@@ -38,13 +38,15 @@ const SEAT_OF=Object.freeze({'Ms Uezu':0,Nhung:0,Thao:1});
  * into a world target for Kōji's drops (canonical-day.js points). Plans carry a `stand` ({yaw, pose, seat?, held?}) the
  * walkers stand or sit on (schedules.js standOnPoint, neighbours.js standAtPoint).
  */
-export function shopDayPlan(name,minutes,{pointFor=()=>null}={}){
+export function shopDayPlan(name,minutes,{pointFor=()=>null,kissaClosingHeld=false}={}){
  if(!name)return null;
  const m=minute(minutes);
  // Sakura Trading's round, Kōji's on his weeks ashore.
  if(name==='Kōji'){const leg=roundAt(minutes);if(leg){const target=leg.point?[...leg.point]:pointFor(leg.place);if(target)return {place:'trade-round',target,activity:leg.activity};}}
  // Kissa Higa of a weekday morning: Grandmother Higa behind the counter, then up Kitano Road to open the bath at ten.
  if(name===KISSA.keeper){
+  if(kissaClosingHeld)return {place:'kissa-higa',target:[...KISSA_KEEPER.front],activity:'waiting for the last customer, then closing Kissa Higa',
+   stand:Object.freeze({yaw:KISSA_KEEPER.frontYaw,pose:'Interact',why:'Nobody is shut inside: she waits outside until the room and doorway are clear.'})};
   if(kissaOnDuty(minutes)){
    // At the front while the shutter goes up and comes down (she is out before it does: commerce/kissa-higa.js KISSA),
    // behind the counter between.

@@ -73,7 +73,7 @@ export const CAST=Object.freeze([
   day:[['07:00','higa','breakfast with her grandmother'],['07:45','school','the walk to school'],['08:00','school','teaching'],['15:30','school','marking'],['17:00','onsen','the bandai at Umi-no-yu'],['22:00','higa','home']]}),
  // Higa Liquor closed on 22 October 2026 (the owner: Sakura sells and supplies the drink; commerce/higa-liquor.js); the
  // bath is hers by day, from its opening at ten, Yui's from five. Since 30 October 2026 the shut shop is Kissa Higa, hers
- // from 06:50 to 09:45 on weekdays (commerce/kissa-higa.js; canonical-day.js puts her behind its counter), so her garden
+ // from 06:45 to 09:50 on weekdays (commerce/kissa-higa.js; canonical-day.js puts her behind its counter), so her garden
  // round starts after her breakfast (up at half past five, canonical-rest.js) and on weekdays ends when she goes down to
  // open the shutter.
  person('Grandmother Higa',{sex:'f',age:78,home:'higa',work:'onsen',family:'Higa',purpose:'owns Umi-no-yu and keeps its bandai by day, 10:00–17:00; keeps Kissa Higa, the morning coffee shop in her old liquor shop on Main Street, 07:00–09:30 on weekdays (the drink is Sakura’s); since 27 October 2026 she keeps the till at Johansson Mart in Kitahama on weekday evenings and Saturdays, when Sakura is shut',

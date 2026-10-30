@@ -8,13 +8,24 @@ import {rotaWeek} from '../src/people/ferry-crew.js';
 import {KISSA,KISSA_MENU,KISSA_NOTICE,KISSA_SEATS,KISSA_KEEPER,KISSA_REGULARS,KISSA_SUPPLY,kissaOpen,kissaOnDuty,kissaShutterDown,
  kissaPassable,kissaVisitAt,kissaPeopleAt} from '../src/commerce/kissa-higa.js';
 import {canonicalDay} from '../src/people/canonical-day.js';
+import {createNeighbours} from '../src/people/neighbours.js';
+import {residentPlan} from '../src/people/social.js';
+import {WORLD_CAST} from '../src/people/residents.js';
+import {homeRoutine} from '../src/people/home-life.js';
+import {createCastAI} from '../src/people/schedules.js';
+import {createKissaClosing,inKissaHiga} from '../src/commerce/kissa-higa.js';
+import {higaFrontage} from '../src/world/okinawa/higa-liquor-dressing.js';
+import {createTown} from '../src/world/town.js';
+import {createBusinesses} from '../src/world/businesses.js';
+import {createNavigation} from '../src/people/navmesh.js';
+import {standingHitsRect} from '../physics.js';
 import {castMember} from '../src/people/cast.js';
 import {ACCOUNTS} from '../src/commerce/merchandising.js';
 import {sakuraTillOpen} from '../src/commerce/sakura-rota.js';
 import {feedPlace} from '../src/feed/places.js';
 import {createKit,trs} from '../src/world/okinawa/kit.js';
 import {shopHouse} from '../src/world/okinawa/houses.js';
-import {HIGA_FRAME,KISSA_MODELS,KISSA_CHAIRS,higaPoint} from '../src/world/okinawa/higa-liquor-dressing.js';
+import {HIGA_FRAME,HIGA_ATLAS,KISSA_MODELS,KISSA_CHAIRS,higaPoint} from '../src/world/okinawa/higa-liquor-dressing.js';
 
 /**
  * Kissa Higa, Grandmother Higa's morning coffee shop in the old Higa Liquor (the owner, 30 October 2026;
@@ -46,7 +57,7 @@ test('the shutter goes up while she is at the front, and comes down only once sh
  for(let m=KISSA.shutterUp;m<KISSA.shutterUp+KISSA.roll;m++)assert.ok(kissaShutterDown(at(tue,0,m+1))<=kissaShutterDown(at(tue,0,m)),'rolls up steadily');
  assert.ok(KISSA.arrive<KISSA.shutterUp,'she is at the front before it goes up');
  assert.ok(KISSA.out+3<=KISSA.shutterDown,'she is out three minutes before it starts down');
- assert.ok(kissaPassable(at(tue,0,KISSA.out))&&kissaPassable(at(tue,0,KISSA.shutterDown+1)),'and the way out is open while she goes');
+ assert.ok(kissaPassable(at(tue,0,KISSA.out))&&kissaPassable(at(tue,0,KISSA.shutterDown+KISSA.roll*.3)),'and the way out is open while she goes');
  assert.ok(!kissaPassable(at(tue,0,KISSA.leave)),'shut by the time she goes up to the bath');
  assert.ok(kissaPassable(at(tue,0,KISSA.open))&&kissaPassable(at(tue,0,KISSA.close-1)),'open the whole time it serves');
 });
@@ -92,11 +103,155 @@ test('nobody shares a seat, and everybody seated is there while it is open',()=>
  }
 });
 
+test('a shutter replan leaves a seated neighbour on the same seat, attended or out of sight',()=>{
+ let attended=true;
+ const system=createNeighbours({parent:new THREE.Group(),attends:()=>attended});
+ const yui=system.people.find(p=>p.spec.name==='Miss Higa');system.people.splice(0,system.people.length,yui);
+ const time=4*DAY+440;
+ for(let i=0;i<200;i++)system.update(.1,time);
+ assert.equal(yui.g.userData.standSeat?.key,'kissa-stool-1');
+ const before=yui.g.position.clone(),key=yui.phaseKey;
+ for(const visible of [true,false]){
+  attended=visible;system.replan();
+  for(let i=0;i<10;i++)system.update(.1,time);
+  assert.ok(yui.g.position.distanceTo(before)<1e-9,'a seated body does not walk or jump to its standing point');
+  assert.equal(yui.phaseKey,key);assert.equal(yui.g.userData.standSeat?.key,'kissa-stool-1');
+  assert.equal(yui.g.userData.walking,false);
+ }
+});
+
+test('a kissaten passage change leaves distant neighbours’ journeys intact',()=>{
+ const system=createNeighbours({parent:new THREE.Group()});system.update(0,4*DAY+500);
+ const door=[5.85,8.4],near=p=>Math.hypot(p[0]-door[0],p[1]-door[1])<=12;
+ const far=system.people.find(p=>!p.spec.stair&&!p.g.userData.standSeat&&!near([p.g.position.x,p.g.position.z])&&!near(p.target)&&!p.path?.some(near));
+ assert.ok(far,'there is an unrelated resident outside the shop’s area');
+ const key=far.phaseKey,path=far.path;
+ system.replan({at:door,radius:12});
+ assert.equal(far.phaseKey,key,far.spec.name+' keeps the same journey');assert.equal(far.path,path);
+ assert.equal(system.people.find(p=>p.spec.name===KISSA.keeper).phaseKey,null,'the keeper’s local path is invalidated');
+});
+
+test('closed-shutter prompts are hidden and refuse actions; the frontage names actual bodies',()=>{
+ globalThis.self=globalThis;const entries=[],actions=[];
+ const world=createTown({scene:new THREE.Scene(),sites:createBusinesses(),mobile:true,shadows:false,
+  register:(o,label,fn)=>entries.push({o,label,fn}),enter(){},onAction:(...args)=>actions.push(args),getPlayerPosition:()=>null});
+ const inside=entries.filter(e=>KISSA_MENU.some(i=>i.label===e.label)||['Sit at the table in Kissa Higa','Look at the records','Ask about the jar behind the counter'].includes(e.label));
+ assert.equal(inside.length,6);
+ const time=m=>{world.minutes=4*DAY+m;world.updateHours(world.minutes);};
+ time(600);
+ for(const e of inside){assert.equal(e.o.visible,false,e.label+' is not offered through steel');e.fn();assert.equal(actions.at(-1)[0],'read','a stale action cannot seat or sell');}
+ time(462);for(const e of inside)assert.equal(e.o.visible,true,e.label+' is offered with the doors open');
+ const look=entries.find(e=>e.label==='Look at Kissa Higa'),body=world.people.find(p=>p.profile.name==='Tetsuo').g;
+ for(const p of world.people)p.g.visible=false;
+ body.visible=true;body.position.set(...[KISSA_SEATS['stool-2'].at[0],.08,KISSA_SEATS['stool-2'].at[1]]);
+ look.fn();assert.match(actions.at(-1)[2],/Tetsuo is in/);assert.doesNotMatch(actions.at(-1)[2],/Miss Higa|Ms Ganaha|Officer Mori/);
+ time(415);look.fn();assert.match(actions.at(-1)[1],/opening up/,'the paper is rolled away before service');
+ time(580);look.fn();assert.match(actions.at(-1)[1],/closing up/,'the shutter is still up after service');
+ const board=world.quarters.higa.aboardSolid,door=world.quarters.higa.doorSolid;
+ assert.ok(Math.abs(board.z-door.z)>door.d/2+board.d/2,'the board is beside the leaf, not across its opening');
+ for(const c of world.quarters.colliders.filter(c=>['higa-empties','higa-liquor-bicycle'].includes(c.id)))
+  assert.ok(Math.abs(board.x-c.x)>=(board.w+c.w)/2||Math.abs(board.z-c.z)>=(board.d+c.d)/2,'the board clears '+c.id);
+ const local=world.colliders.filter(c=>Math.abs(c.x-8)<8&&Math.abs(c.z-8)<8),nav=createNavigation((x,z,r)=>local.some(c=>standingHitsRect(x,z,r,.08,c)),{step:.5});
+ const path=nav.path({x:5,z:8.4},{x:KISSA_KEEPER.at[0],z:KISSA_KEEPER.at[1]});
+ assert.deepEqual(path.at(-1),[...KISSA_KEEPER.at],'the more visible keeper mark is reachable on the neighbours’ 0.5 m grid');
+});
+
+test('the notice rolls on its slats without shrinking; the lamps and board follow the keeper’s opening and closing',()=>{
+ const front=higaFrontage(),mon=4*DAY;
+ front.update(mon+409);const base=front.paper.geometry.attributes.position.array.slice();
+ front.update(mon+KISSA.shutterUp+KISSA.roll/2);
+ assert.equal(front.paper.visible,true,'the paper remains attached halfway through the roll');
+ const moved=front.paper.geometry.attributes.position.array;
+ for(let i=1;i<moved.length;i+=3)assert.ok(Math.abs(moved[i]-base[i]-1.62)<1e-5,'each paper corner rises on the same slats');
+ assert.equal(front.lights.emissiveIntensity,0,'she is outside while opening');assert.equal(front.aboard.visible,true);
+ front.update(mon+420);assert.equal(front.paper.visible,false);assert.equal(front.lights.emissiveIntensity,1);
+ front.update(mon+582);assert.equal(front.lights.emissiveIntensity,0,'she is outside after washing up');
+ front.update(mon+584+KISSA.roll);assert.equal(front.aboard.visible,false,'she takes the board in at the closing operation');
+});
+
+test('shop-frame conversions and facings point at the counter, table and shutter',()=>{
+ const frame=new THREE.Matrix4().makeRotationY(-Math.PI/2);frame.setPosition(9.55,0,8.4);
+ for(const [x,z] of [[-1.66,.44],[1.3,2.7],[-.55,-1.15],[.3,4.12]]){
+  const p=new THREE.Vector3(x,0,z).applyMatrix4(frame);
+  assert.ok(Math.hypot(p.x-higaPoint(x,z)[0],p.z-higaPoint(x,z)[1])<1e-9);
+ }
+ const facing=(at,yaw,to)=>{
+  const dx=to[0]-at[0],dz=to[1]-at[1],dot=(-Math.sin(yaw)*dx-Math.cos(yaw)*dz)/Math.hypot(dx,dz);
+  assert.ok(dot>.999,'yawFacing convention faces its intended object');
+ };
+ for(const s of Object.values(KISSA_SEATS))facing(s.at,s.yaw,s.height===.46?higaPoint(s.at[1]-8.4,-.45):higaPoint(1.3,2.1));
+ facing(KISSA_KEEPER.at,KISSA_KEEPER.yaw,higaPoint(-.9,.44));
+ facing(KISSA_KEEPER.front,KISSA_KEEPER.frontYaw,higaPoint(.3,3.7));
+ for(const d of [4,6,11]){
+  assert.equal(townCalendarAt(d*DAY).weekday,d===6?3:1);
+  for(const m of [419.999,420,569.999,570])assert.equal(kissaOpen(d*DAY+m),m>=420&&m<570);
+  assert.equal(kissaVisitAt('Tetsuo',d*DAY+504.999)?.id,'stool-2');
+  assert.equal(kissaVisitAt('Tetsuo',d*DAY+505),null);
+  assert.equal(kissaVisitAt('Officer Mori',d*DAY+510)?.id,'stool-2');
+ }
+});
+
+test('the actual street planner seats Tetsuo and Mori too, and their sleep does not overlap a visit',()=>{
+ for(const day of [4,6,11])for(const name of ['Tetsuo','Officer Mori']){
+  const profile=WORLD_CAST.find(p=>p.name===name);
+  for(let m=420;m<570;m++){
+   const visit=kissaVisitAt(name,day*DAY+m);if(!visit)continue;
+   assert.notEqual(homeRoutine(profile,day*DAY+m).id,'sleep',name+' is awake for breakfast');
+   const plan=residentPlan(profile,day*DAY+m);
+   assert.equal(plan.place,'kissa-higa',name+' uses the running street planner, not just canonicalDay');
+   assert.equal(plan.stand.seat.key,'kissa-'+visit.id);
+  }
+  if(name==='Officer Mori')assert.equal(homeRoutine(profile,day*DAY+540).id,'sleep','Mori goes to bed after the morning set');
+  else assert.equal(residentPlan(profile,day*DAY+540).place,'work','Tetsuo opens the radio bench at nine');
+ }
+});
+
+test('street walkers discard a cached closed entrance when the passage opens; sitters stay seated',()=>{
+ const profile=WORLD_CAST.find(p=>p.name==='Tetsuo'),g=new THREE.Group();g.userData.name=profile.name;
+ let closed=true;
+ const system=createCastAI({world:{people:[{g,profile}],homes:new Map()},player:{position:new THREE.Vector3(100,0,100)},
+  state:()=>({residentLocations:{Tetsuo:{position:[4,8]}}}),paused:()=>false,
+  collides:(x,z,r)=>closed&&Math.abs(x-6)<.2+r});
+ const time=4*DAY+500;
+ for(let i=0;i<10;i++)system.update(.1,time,false);
+ assert.equal(g.userData.standSeat,undefined,'the closed frontage stops the journey');
+ closed=false;system.replan();
+ for(let i=0;i<300;i++)system.update(.1,time,false);
+ assert.equal(g.userData.standSeat?.key,'kissa-stool-2','the open entrance is searched afresh');
+ const at=g.position.clone();system.replan();system.update(.1,time,false);
+ assert.ok(g.position.distanceTo(at)<1e-9,'a main-cast sitter also stays on the seat');
+ const front=higaFrontage();front.update(4*DAY+409);
+ assert.equal(front.update(4*DAY+410),true,'putting out the A-board invalidates paths too');
+ front.update(4*DAY+411);assert.equal(front.update(4*DAY+412),false,'an unchanged board does not restart journeys each frame');
+ assert.equal(front.update(4*DAY+584),true,'taking it in invalidates the cached obstacle');
+});
+
+test('the drawn shutter and doors stay open for an occupant, then close slowly with the keeper still outside',()=>{
+ const mon=4*DAY;let people=[{x:8,y:.08,z:8.4}];
+ const front=higaFrontage({getOccupants:()=>people});
+ front.update(mon+580);front.update(mon+590);
+ assert.equal(front.shutter.visible,false,'a customer is not shut in at 09:50');
+ assert.ok(front.shutterSolid.minY>100&&front.doorSolid.minY>100,'both colliders allow egress');
+ assert.equal(front.closingHeld,true);assert.equal(front.aboard.visible,false,'service still ends at 09:30');
+ assert.deepEqual(canonicalDay(KISSA.keeper,mon+590,false,{kissaClosingHeld:true}).target,[...KISSA_KEEPER.front]);
+ assert.equal(inKissaHiga({x:5.6,y:.08,z:8.4}),true,'a body crossing the threshold has not cleared it');
+ assert.equal(inKissaHiga({x:5.4,y:0,z:8.4}),false,'a body wholly on the pavement has cleared it');
+ assert.equal(inKissaHiga({x:8,y:3.4,z:8.4}),false,'the upper floor is not a customer');
+ people=[];front.update(mon+591);assert.equal(front.shutter.visible,false,'no instant slam after they step out');
+ front.update(mon+591+KISSA.roll/2);assert.ok(Math.abs(front.shutter.scale.y-.5)<1e-8);assert.equal(front.closingHeld,true);
+ front.update(mon+591+KISSA.roll+.001);assert.equal(front.shutter.scale.y,1);assert.equal(front.closingHeld,false);
+ assert.equal(canonicalDay(KISSA.keeper,mon+595).place,'onsen','her normal day resumes');
+ const closing=createKissaClosing();closing.update(mon+590,true);closing.update(mon+591);
+ assert.equal(closing.update(mon+592,true),0,'someone re-entering stops the close');
+ assert.equal(closing.update(5*DAY,true),0,'a clock/day change cannot shut somebody in either');
+ assert.equal(closing.update(6*DAY+600),1,'another day resets the delay');
+});
+
 test('the seats are where the room draws them, at the heights the room has',async()=>{
  const near=(a,b,what)=>assert.ok(Math.hypot(a[0]-b[0],a[1]-b[1])<1e-9,what+': '+a+' versus '+b);
  [-1.66,-1.12,-.58].forEach((x,i)=>near(KISSA_SEATS['stool-'+i].at,higaPoint(x,.44),'stool '+i));
  KISSA_CHAIRS.forEach(c=>near(KISSA_SEATS[c.id].at,higaPoint(c.at[0],c.at[2]),c.id));
- near(KISSA_KEEPER.at,higaPoint(-.55,-1.15),'the keeper');
+ near(KISSA_KEEPER.at,higaPoint(-.9,-1.15),'the keeper');
  // The stools' tops, as drawn: a ray down onto the built room at each seat.
  const kit=createKit(),group=new THREE.Group(),frame={x:HIGA_FRAME.origin[0],z:HIGA_FRAME.origin[1],yaw:-Math.PI/2};
  kit.at(frame.x,frame.z,frame.yaw,()=>shopHouse(kit,{w:HIGA_FRAME.W*2,d:HIGA_FRAME.D*2,interior:'kissaten',seed:41,awning:false}),0);
@@ -122,6 +277,15 @@ test('the menu: the coffee at one price, the morning set at the coffee’s; Engl
  assert.ok(!/[぀-ヿ一-龯]/.test(KISSA_NOTICE.en));assert.match(KISSA_NOTICE.en,/7:00 to 9:30, Monday to Friday/);
 });
 
+test('each printed sign has its own atlas rectangle, so the shutter notice cannot overwrite the menu',()=>{
+ const regions=Object.entries(HIGA_ATLAS).filter(([,v])=>Array.isArray(v));
+ for(const [id,[x,y,w,h]] of regions){
+  assert.ok(x>=0&&y>=0&&x+w<=HIGA_ATLAS.w&&y+h<=HIGA_ATLAS.h,id+' fits the sheet');
+  for(const [other,[xx,yy,ww,hh]] of regions)if(id<other)
+   assert.ok(x+w<=xx||xx+ww<=x||y+h<=yy||yy+hh<=y,id+' and '+other+' do not paint over one another');
+ }
+});
+
 test('its bread and milk are on Sakura’s account, taken at the till the afternoon before; Sakura is shut before nine',()=>{
  const a=ACCOUNTS.sakura['kissa-higa'];assert.ok(a,'Kissa Higa has an account');assert.equal(a.owner,KISSA.keeper);
  assert.deepEqual(a.lines,['bread','milk']);assert.ok(a.goods.some(g=>/beans/.test(g))&&a.goods.some(g=>/eggs/.test(g)));
@@ -143,6 +307,7 @@ test('three Meshy models, light enough for a phone, each with its provenance; th
  }
  const place=feedPlace('kissa-higa');assert.ok(place,'a story place');
  for(const name of place.regulars)assert.ok(name===KISSA.keeper||KISSA_REGULARS.some(r=>r.name===name),name+' is there by the data');
- assert.ok(kissaOpen(place.shot.time),'its shot is in its hours (town day 0 is a Thursday)');
+ assert.ok(kissaOpen(place.shot.time),'its shot is in its hours');
+ assert.deepEqual(place.regulars,kissaPeopleAt(place.shot.time),'the story cast is actually there at the photographed time');
  assert.ok(!place.things.join(' ').match(/[぀-ヿ一-龯]/),'its things read English');
 });

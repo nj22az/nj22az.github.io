@@ -64,11 +64,11 @@ try{
   ['03-counter-0740',[-.85,1.3,.95],[-1.1,1.0,-.4],at(TUE,7,40)],
   ['04-table-records-0740',[-1.0,1.4,2.7],[1.2,.7,1.4],at(TUE,7,40)],
   ['05-records-close-0740',[-.9,1.25,1.7],[-1.86,.85,1.6],at(TUE,7,40)],
-  ['06-shutter-rising-0652',[.2,1.6,8.2],[-.2,1.4,1.0],at(TUE,6,52)],
+  ['06-shutter-rising-0650',[.2,1.6,8.2],[-.2,1.4,1.0],at(TUE,6,50)+.075],
   ['07-street-shut-1200',[.2,1.6,8.2],[-.2,1.4,1.0],at(TUE,12,0)],
   ['08-notice-close-1200',[-.4,1.5,5.0],[-.55,1.4,3.7],at(TUE,12,0)],
   ['09-saturday-0740',[.2,1.6,8.2],[-.2,1.4,1.0],at(SAT,7,40)],
-  ['10-a-board-0740',[-2.2,1.2,5.6],[-.62,.4,4.25],at(TUE,7,40)],
+  ['10-a-board-0740',[-2.2,1.2,5.6],[-1.55,.4,4.65],at(TUE,7,40)],
  ];
  for(const [name,pos,look,m] of shots.filter(s=>!process.env.PHOTO_ONLY||process.env.PHOTO_ONLY.split(',').includes(s[0]))){
   await page.evaluate(v=>window.capture(v),{pos,at:look,m});await page.locator('canvas').screenshot({path:`${out}/${name}.jpg`,type:'jpeg',quality:86});console.log('wrote',name);

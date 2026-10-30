@@ -134,7 +134,7 @@ const faceAlong=(g,dx,dz)=>{if(dx||dz)g.rotation.y=Math.atan2(dx,dz)+Math.PI;};
  * @param {(kind:string,name:string)=>void} options.onAction
  * @param {{attach:Function}} [options.characters]
  */
-export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false,getState=()=>({}),attends=()=>true}={}){
+export function createNeighbours({parent,register,onAction,characters,blocked=()=>false,getRain=()=>false,getState=()=>({}),attends=()=>true,getKissaClosing=()=>false}={}){
  const people=NEIGHBOURS.map((spec,i)=>{
   const g=new THREE.Group();g.name=spec.name;g.userData.name=spec.name;g.userData.neighbour=true;
   g.userData.activity=spec.role;g.userData.socialPose=spec.pose||null;
@@ -208,9 +208,16 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
   entities:people.map(p=>p.g),
   /**
    * New walls (Kitano-jima built on demand) or a way in opened or shut (Kissa Higa's doors on its clock): forget which
-   * ground was clear, and plan each walk again from where they are (a canonical day's walk is searched again next frame; a climb up an indoor stair is left to finish).
+   * ground was clear, and plan each walk again from where they are. A sitter has no journey to restart: its target is
+   * the standing point, not the seat. Restarting it made an unseen sitter jump off the seat with the seated flag still
+   * set. A climb up an indoor stair is also left to finish.
    */
-  replan(){navigation.clearCache?.();for(const p of people){if(p.routine)p.path=navigation.path(p.g.position,{x:p.routine.at[0],z:p.routine.at[1]});else if(!p.spec?.stair)p.phaseKey=null;}},
+  replan({at=null,radius=12}={}){navigation.clearCache?.();for(const p of people){
+   if(p.g.userData.standSeat)continue;
+   const near=point=>point&&Math.hypot(point[0]-at[0],point[1]-at[1])<=radius;
+   if(at&&!near([p.g.position.x,p.g.position.z])&&!near(p.target)&&!p.path?.some(near))continue;
+   if(p.routine)p.path=navigation.path(p.g.position,{x:p.routine.at[0],z:p.routine.at[1]});else if(!p.spec?.stair)p.phaseKey=null;
+  }},
   /** Turn to whoever is talking to them, and stop walking while they do. */
   talkTo(name,to){
    const p=people.find(p=>p.spec.name===name);if(!p)return null;
@@ -229,13 +236,14 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
     const {g,spec}=p;
     if(g.userData.inHome)continue;
     if(spec.canonical){
-     const phase=canonicalDay(spec.name,minutes,getRain());
+     const phase=canonicalDay(spec.name,minutes,getRain(),{kissaClosingHeld:getKissaClosing()});
      if(!phase?.target){g.visible=false;continue;}
      if(spec.walk&&phase.place==='main-street'){
       let stop=p.roundIndex||0;
       if(p.initialised&&!p.path?.length&&Math.hypot(g.position.x-spec.route[stop][0],g.position.z-spec.route[stop][1])<.12)stop=(stop+1)%spec.route.length;
       p.roundIndex=stop;phase.target=[...spec.route[stop]];
      }else p.roundIndex=0;
+     p.target=phase.target;
      const key=phase.place+':'+phase.target.join(',');
      if(spec.stair){stairDay(p,phase,key,dt);continue;}
      if(!p.initialised){
