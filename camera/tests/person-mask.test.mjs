@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {cleanPersonMask,recipeNeedsPerson,createPersonMasker} from '../person-mask.js';
+assert.equal(cleanPersonMask(new Float32Array(400),20,20),null,'no person stays empty');
+assert.equal(cleanPersonMask(new Float32Array(400).fill(.6),20,20),null,'an uncertain field is not a person');
+assert.equal(cleanPersonMask(new Float32Array(400).fill(NaN),20,20),null,'invalid confidence is not foreground');
+const values=new Float32Array(400);
+for(let y=4;y<16;y++)for(let x=2;x<9;x++)values[y*20+x]=.98;
+values[398]=1;values[399]=1;
+const mask=cleanPersonMask(values,20,20);
+assert.equal(mask.pixels[10*20+5],255,'substantial confident body kept');
+assert.equal(mask.pixels[399],0,'tiny background suggestion removed');
+assert.ok(mask.pixels[4*20+2]>0&&mask.pixels[4*20+2]<255,'boundary softened');
+assert.equal(cleanPersonMask(values,21,20),null,'wrong-sized mask refused');
+assert.ok(recipeNeedsPerson({layers:[{look:'manga',amount:1}]}));
+assert.ok(!recipeNeedsPerson({layers:[{look:'none',amount:1},{look:'flat',amount:0}]}));
+assert.equal(await createPersonMasker().mask({width:1,height:1}),null,'unsupported environment keeps normal drawing');
+console.log('person-mask: confidence, components, boundary, recipe and unsupported-device checks pass');

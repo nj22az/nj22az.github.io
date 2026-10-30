@@ -3,7 +3,8 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030b';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030c';
+import {createPersonMasker,recipeNeedsPerson} from './person-mask.js?v=20261030c';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029t';
@@ -72,6 +73,22 @@ function remember(){
 const canvas=document.createElement('canvas');
 canvas.setAttribute('aria-label','Viewfinder');
 let engine=null;
+const personMasker=createPersonMasker();
+async function maskStill(source,picture,recipe,revision){
+ if(!recipeNeedsPerson(recipe))return;
+ const target=engine,mask=await personMasker.mask(picture);
+ if(engine===target)target?.setPersonMask(source,mask,revision);
+}
+function ensureEditPerson(){
+ const e=state.edit;if(!e||!recipeNeedsPerson(e.recipe))return Promise.resolve();
+ if(e.personPromise)return e.personPromise;
+ const target=engine,picture=e.picture,revision=e.revision;
+ e.personPromise=personMasker.mask(picture).then(mask=>{
+  if(state.edit!==e||e.picture!==picture||engine!==target||e.revision!==revision)return;
+  target.setPersonMask('edit',mask,revision);refreshThumbs(true);invalidate();
+ });
+ return e.personPromise;
+}
 function startEngine(){
  try{engine=createLookEngine(canvas,{light:coarse});engine.warm(LOOK_NAMES);return true;}
  catch{engine=null;return false;}
@@ -79,7 +96,7 @@ function startEngine(){
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();setShutter('off');$('saveEdit').disabled=true;toast('Graphics restarted');});
 canvas.addEventListener('webglcontextrestored',()=>{
  startEngine();
- if(state.edit)engine?.setSource('edit',state.edit.picture,state.edit.width,state.edit.height);
+ if(state.edit){state.edit.revision=engine?.setSource('edit',state.edit.picture,state.edit.width,state.edit.height);state.edit.personPromise=null;ensureEditPerson();}
  setShutter(state.camera.running?'shoot':$('welcome').hidden||!canStart()?'off':'start');$('saveEdit').disabled=false;refreshThumbs(true);
  invalidate();
 });
@@ -453,6 +470,7 @@ function govern(t){
 }
 function drawEditor(){
  const e=state.edit;
+ ensureEditPerson();
  const box=fitFrame($('editFrame'),$('editStage'),e.width/e.height);
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(e.height,box.height*dpr,2048/Math.max(1,e.width/e.height),2048);
  setCanvasSize(h*e.width/e.height,h);
@@ -639,9 +657,9 @@ async function takePhoto(){
   sound('shutter');flash();
   await nextFrame();
   const taken=new Date(),recipe=normalRecipe(c.recipe);
-  engine.setSource('still',still,size.width,size.height);
+  const revision=engine.setSource('still',still,size.width,size.height);
   let finished;
-  try{finished=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);}
+  try{await maskStill('still',still,recipe,revision);finished=await finishPhoto(engine.render(recipe,{source:'still',width:size.width,height:size.height}),recipe,taken);}
   finally{engine.dropSource('still');}
   const {photo,thumb}=finished,source=await toBlob(still,'image/jpeg',.92);still.width=still.height=0;
   // Printed, then into the album's thumbnail; the thumbnail changes when the print lands in it.
@@ -902,9 +920,9 @@ async function addToAlbum(files){
    toast(`Adding ${done+failed+1} of ${files.length} in ${mixLabel(recipe)}…`,{ms:60000});
    try{
     const picture=await decode(file);
-    engine.setSource('import',picture.picture,picture.width,picture.height);
+    const revision=engine.setSource('import',picture.picture,picture.width,picture.height);
     let finished;
-    try{finished=await finishPhoto(engine.render(recipe,{source:'import',width:picture.width,height:picture.height}),recipe,new Date(file.lastModified||Date.now()));}
+    try{await maskStill('import',picture.picture,recipe,revision);finished=await finishPhoto(engine.render(recipe,{source:'import',width:picture.width,height:picture.height}),recipe,new Date(file.lastModified||Date.now()));}
     finally{engine.dropSource('import');}
     const source=picture.picture instanceof HTMLCanvasElement?await toBlob(picture.picture,'image/jpeg',.92):file;
     picture.close();
@@ -929,7 +947,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  if(!engine)return;
  state.edit?.picture?.close?.();
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
- engine.setSource('edit',picture,width,height);
+ state.edit.revision=engine.setSource('edit',picture,width,height);
  eraser.reset();$('eraseUndo').disabled=true;
  show('editor');selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
@@ -982,6 +1000,7 @@ $('saveEdit').addEventListener('click',async()=>{
  const button=$('saveEdit');e.saving=true;button.disabled=true;$('cancelEdit').disabled=true;button.textContent='Saving…';await nextFrame();
  try{
   const recipe=normalRecipe(e.recipe);
+  await ensureEditPerson();
   // An erased photo keeps its erased picture as its source, so it opens again as it was left.
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',width:e.width,height:e.height}),recipe,e.taken);
@@ -1073,7 +1092,7 @@ const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?
 // Erase (erase.js): paint over what should go; the editor's picture changes, the Looks redraw over it.
 const eraser=createEraser($('editFrame'),{
  edit:()=>state.edit,
- changed:picture=>{const e=state.edit;if(!e)return;e.erased=true;engine.setSource('edit',picture,e.width,e.height);$('eraseUndo').disabled=!eraser.canUndo;refreshThumbs(true);invalidate();},
+ changed:picture=>{const e=state.edit;if(!e)return;e.erased=true;e.revision=engine.setSource('edit',picture,e.width,e.height);e.personPromise=null;ensureEditPerson();$('eraseUndo').disabled=!eraser.canUndo;refreshThumbs(true);invalidate();},
  busy:on=>{$('eraseHint').textContent=on?'Erasing…':'Paint over what should go.';$('saveEdit').disabled=on;$('cancelEdit').disabled=on;if(!on)sound('pop');},
  failed:()=>toast('That could not be erased'),
 });

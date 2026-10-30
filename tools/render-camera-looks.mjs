@@ -13,8 +13,8 @@ import {fileURLToPath} from 'node:url';
 import {serveGame} from '../johansson-town/tools/mcp/static-server.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 
-const args=process.argv.slice(2),photos=[],opt={looks:'crayon,stamp',out:'camera-looks',lines:'1080',light:false,focus:'-1'};
-for(let i=0;i<args.length;i++){const a=args[i];if(a==='--light')opt.light=true;else if(a.startsWith('--'))opt[a.slice(2)]=args[++i];else photos.push(a);}
+const args=process.argv.slice(2),photos=[],opt={looks:'crayon,stamp',out:'camera-looks',lines:'1080',light:false,person:false,focus:'-1'};
+for(let i=0;i<args.length;i++){const a=args[i];if(a==='--light'||a==='--person')opt[a.slice(2)]=true;else if(a.startsWith('--'))opt[a.slice(2)]=args[++i];else photos.push(a);}
 if(!photos.length){console.error('Usage: node tools/render-camera-looks.mjs --looks crayon,stamp --out <dir> photo.jpg ...');process.exit(2);}
 const looks=opt.looks.split(','),lines=Number(opt.lines),focus=Number(opt.focus),out=resolve(opt.out);
 await mkdir(out,{recursive:true});
@@ -29,12 +29,19 @@ try{
  await page.goto(`${server.url}camera/looks-gl.js`);
  for(const file of photos){
   const photo=`data:image/jpeg;base64,${(await readFile(file)).toString('base64')}`;
-  const shots=await page.evaluate(async({photo,looks,lines,light,focus})=>{
+  const shots=await page.evaluate(async({photo,looks,lines,light,focus,person})=>{
    const {createLookEngine,normalRecipe}=await import('/camera/looks-gl.js');
    const img=new Image();img.src=photo;await img.decode();
    const iw=img.naturalWidth,ih=img.naturalHeight,H=lines,W=Math.round(lines*iw/ih);
    const gl=document.createElement('canvas');gl.width=W;gl.height=H;
-   const engine=createLookEngine(gl,{light});engine.setSource('photo',img,iw,ih);
+   const engine=createLookEngine(gl,{light}),revision=engine.setSource('photo',img,iw,ih);
+   if(person){
+    const {createPersonMasker}=await import('/camera/person-mask.js');
+    const masker=createPersonMasker(),mask=await masker.mask(img);
+    if(!masker.ready)throw new Error('Person model unavailable: do not judge this as a masked render');
+    masker.close();
+    engine.setPersonMask('photo',mask,revision);
+   }
    const shots=[];
    for(const look of looks){
     const t0=performance.now();
@@ -52,7 +59,7 @@ try{
     shots.push({look,url:c.toDataURL('image/png'),ms:performance.now()-t0});
    }
    return shots;
-  },{photo,looks,lines,light:opt.light,focus});
+  },{photo,looks,lines,light:opt.light,focus,person:opt.person});
   const name=basename(file,extname(file));
   for(const s of shots){
    await writeFile(join(out,`${name}--${s.look}.png`),Buffer.from(s.url.split(',')[1],'base64'));

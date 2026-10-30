@@ -1103,7 +1103,31 @@ export const TRICKS=Object.freeze(['none','twin','quad']);
 export const MAX_SIDE=4096,MAX_PIXELS=16e6;
 
 const WORLD_UNIT='float unit(){return max(1.0,uResolution.y/1080.0);}';
-const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;uniform float uFocusY;\nfloat unit(){return max(uUnitFloor,uResolution.y/uLines);}';
+const PHOTO_UNIT=`uniform float uLines,uUnitFloor,uFocusY;
+float unit(){return max(uUnitFloor,uResolution.y/uLines);}
+uniform sampler2D tPerson;
+uniform float uHasPerson,uPersonMirror,uPersonTrick;
+uniform vec4 uPersonCrop;
+float personAt(vec2 p){
+ if(uPersonTrick>.5)p.x=.5-abs(p.x-.5);
+ if(uPersonTrick>1.5)p.y=.5+abs(p.y-.5);
+ vec2 q=vec2(p.x,1.0-p.y);if(uPersonMirror>.5)q.x=1.0-q.x;
+ return texture2D(tPerson,uPersonCrop.xy+q*uPersonCrop.zw).r;
+}
+float personEdge(vec2 p,float radius){
+ if(uHasPerson<.5)return 0.0;
+ vec2 d=uTexel*radius*unit();
+ float a=personAt(p+vec2(d.x,0.0)),b=personAt(p-vec2(d.x,0.0));
+ float c=personAt(p+vec2(0.0,d.y)),e=personAt(p-vec2(0.0,d.y));
+ float hi=max(max(a,b),max(c,e)),lo=min(min(a,b),min(c,e));
+ float aa=max(fwidth(personAt(p)),.015);
+ return smoothstep(.5-aa,.5+aa,hi)*(1.0-smoothstep(.5-aa,.5+aa,lo));
+}`;
+
+// Each medium inks the same person boundary with its own pencil/ink, with a narrow paper cut in dark-on-dark areas.
+const PERSON_INKS={manga:['0.0','1.0',2.5],pencilManga:['.29,.29,.3','.985,.98,.97',2.0],lines:['.06,.06,.08','.985,.975,.95',2.2],
+ sketchbook:['.24,.22,.23','.98,.96,.91',1.6],crayon:['.18,.16,.22','.975,.962,.93',1.8],flat:['.16,.12,.13','1.0',3.2],
+ adventureInk:['.08,.07,.09','1.0',2.2],halftone:['.1,.09,.11','.98,.96,.90',2.4],print:['.13,.11,.10','.95,.91,.81',1.8],stamp:['.49,.09,.16','.985,.965,.90',2.2]};
 
 // Small changes to a World Look for photographs, by exact replacement of its own lines (World's source stays the one
 // copy; a line World changes makes the camera refuse to start rather than draw something else). Oil painting, judged as
@@ -1140,6 +1164,12 @@ export function photoFragment(name,{light=false}={}){
   world=world.slice(0,main)+own;
  }
  const body=world.replace('#include <packing>','').replace(WORLD_UNIT,PHOTO_UNIT).replace(/void\s+main\s*\(\s*\)/,'void lookMain()');
+ const ink=PERSON_INKS[name],subject=ink?`
+ if(uHasPerson>.5){
+  float line=personEdge(vUv,${ink[2].toFixed(2)}),rim=personEdge(vUv,${(ink[2]+1.4).toFixed(2)});
+  lookColor.rgb=mix(lookColor.rgb,vec3(${ink[1]}),rim*(1.0-line)*(1.0-smoothstep(.15,.35,luma(lookColor.rgb))));
+  lookColor.rgb=mix(lookColor.rgb,vec3(${ink[0]}),line*.95);
+ }`:'';
  return `#version 300 es
 precision highp float;precision highp int;
 #define varying in
@@ -1149,7 +1179,7 @@ vec4 lookColor;
 ${body}
 uniform float uAmount;
 out highp vec4 fragColor;
-void main(){lookMain();vec3 before=texture(tDiffuse,vUv).rgb;fragColor=vec4(mix(before,clamp(lookColor.rgb,0.0,1.0),uAmount),1.0);}`;
+void main(){lookMain();${subject}vec3 before=texture(tDiffuse,vUv).rgb;fragColor=vec4(mix(before,clamp(lookColor.rgb,0.0,1.0),uAmount),1.0);}`;
 }
 
 /** Whether a Look draws outlines (and so wants camera noise smoothed away first). */
@@ -1330,14 +1360,29 @@ export function createLookEngine(canvas,{light=false}={}){
  function setSource(name,element,width,height){
   let s=sources.get(name);
   if(!s){s={t:texture()};sources.set(name,s);}
-  gl.bindTexture(gl.TEXTURE_2D,s.t);
+  if(s.person){gl.deleteTexture(s.person);s.person=null;}
+  s.revision=(s.revision||0)+1;
+  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,s.t);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
   gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,element);
   gl.generateMipmap(gl.TEXTURE_2D);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
   s.width=width;s.height=height;
+  return s.revision;
  }
- function dropSource(name){const s=sources.get(name);if(s){gl.deleteTexture(s.t);sources.delete(name);}}
+ function setPersonMask(name,mask,revision){
+  const s=sources.get(name);if(!s||s.revision!==revision||gl.isContextLost())return false;
+  if(s.person){gl.deleteTexture(s.person);s.person=null;}
+  if(!mask)return true;
+  const {width,height,pixels}=mask;
+  if(!width||!height||pixels.length!==width*height)throw new Error('Invalid person mask');
+  gl.activeTexture(gl.TEXTURE0);s.person=texture();
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.R8,width,height,0,gl.RED,gl.UNSIGNED_BYTE,pixels);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT,4);
+  return true;
+ }
+ function dropSource(name){const s=sources.get(name);if(s){gl.deleteTexture(s.t);if(s.person)gl.deleteTexture(s.person);sources.delete(name);}}
 
  // One full-screen pass, into a framebuffer (or the canvas) over a viewport, in tiles when asked so that a large
  // save never hands the GPU one draw long enough for the system to reset it.
@@ -1379,11 +1424,19 @@ export function createLookEngine(canvas,{light=false}={}){
    f1(u.uLight,a.light);f1(u.uContrast,a.contrast);f1(u.uColour,a.colour);f1(u.uWarmth,a.warmth);
   };
  }
- const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1)=>u=>{
+ const emptyPerson=texture(1,1);
+ const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1,person={})=>u=>{
   f1(u.uAmount,amount);f1(u.uFocusY,focus);if(u.uTexel)gl.uniform2f(u.uTexel,1/w,1/h);if(u.uResolution)gl.uniform2f(u.uResolution,w,h);
   // Pattern: -1 finer, +1 coarser, a factor of two either way.
   f1(u.uLines,1080*2**-pattern);f1(u.uUnitFloor,floor);
   f1(u.uComic,1);f1(u.uSkyDepth,120);f1(u.uFocusDistance,6);f1(u.uFocusRange,3);f1(u.uNear,.05);f1(u.uFar,60);
+  if(u.tPerson){
+   gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,sources.get(person.source)?.person||emptyPerson);gl.uniform1i(u.tPerson,1);
+   f1(u.uHasPerson,sources.get(person.source)?.person?1:0);
+   const c=person.crop||{x:0,y:0,w:1,h:1};gl.uniform4f(u.uPersonCrop,c.x,c.y,c.w,c.h);
+   f1(u.uPersonMirror,person.mirror?1:0);f1(u.uPersonTrick,TRICKS.indexOf(person.trick||'none'));
+   gl.activeTexture(gl.TEXTURE0);
+  }
  };
 
  /**
@@ -1407,7 +1460,7 @@ export function createLookEngine(canvas,{light=false}={}){
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
   steps.forEach(({layer,entry},i)=>{
    const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1),tile);
+   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick}),tile);
    read=1-read;
   });
   return intoPair?p.items[read].f:true;
@@ -1415,7 +1468,7 @@ export function createLookEngine(canvas,{light=false}={}){
 
  return {
   gl,maxTexture,
-  setSource,dropSource,hasSource:name=>sources.has(name),
+  setSource,setPersonMask,dropSource,hasSource:name=>sources.has(name),
   sourceSize:name=>{const s=sources.get(name);return s?{width:s.width,height:s.height}:null;},
   /** Starts compiling Looks in the background. */
   warm(names){if(parallel)for(const n of names)if(n!=='none')request(n);},
@@ -1449,7 +1502,7 @@ export function createLookEngine(canvas,{light=false}={}){
     if(!e)budget--;
     if(!ready(request(name))){missing.push(name);return;}
     const entry=look(name);if(!entry){missing.push(name);return;}
-    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1));
+    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick}));
    });
    const pixels=new Uint8Array(w*h*4);
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
