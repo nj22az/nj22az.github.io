@@ -5,6 +5,10 @@ pushed on their branches but were not on `main` or live. This is the publication
 It supersedes the earlier “awaiting the owner's word” status for this scope; the remaining design decisions below are
 not silently resolved by publication.
 
+[**Publication PR #407**](https://github.com/nj22az/nj22az.github.io/pull/407) targets `main` from `codex/kissa-higa-publication` (ready for review, not a draft).
+Prepared combined snapshot: `c86c9a0ff10cdc703f4c3c696f12ce0a678655d1`; the following documentation commit only records
+this PR and its evidence pointer. Hosted publication checks are pending; no merge/deployment success is claimed yet.
+
 ## Candidate and scope
 
 - Publication branch: `codex/kissa-higa-publication`, from `main` at
