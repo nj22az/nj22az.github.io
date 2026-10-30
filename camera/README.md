@@ -128,6 +128,29 @@ open kind's thumbnails are drawn, and none while the strip is folded over the pi
 More until it is given a kind (`LOOK_GROUPS` in `app.js`). New dice mixes: Home video (Instant and VHS), Comic book
 (Cartoon and Comic dots), Engineer's plan (Line drawing and Blueprint), Night watch (Night vision and Old TV).
 
+## Pencil crayon and Rubber stamp, made for photographs
+
+World's Looks are written for the town: its Crayon lays strokes along each wall and floor from the scene's depth and
+normals, and its Stamp inks everything darker than one grey. A photograph has neither depth nor normals, and the owner's
+iPhone review (30 October 2026: "does the shaders need improvement?", then "Proceed") showed what that does: Crayon an
+even diagonal mesh over face and background alike with the colour washed to grey, Stamp a dark wall that swallowed the
+arm in front of it, blotted cheeks and a sandpaper speckle. The camera now draws both with its own versions
+(`CRAYON_BODY`, `STAMP_BODY` in `looks-gl.js`), under World's names and swatches; World's town Looks are unchanged.
+
+- **Pencil crayon:** strokes that follow the picture's clear edges (four directions blended, the hand's diagonal
+  elsewhere), long and far enough apart to read as strokes on a phone; two pencils per colour, the colour itself at a
+  light value with paper between the strokes and a darker pencil of the same colour crossing the shadows, so a navy
+  scarf stays navy and a black top black; a dark's faint tint is taken as noise, not colour (a night sky stays black);
+  the middle tones a little lighter than life (faces are not hatched dark); the picture's edges left lighter.
+- **Rubber stamp:** each tone judged against what is round it, so a light shape keeps its edge against a dark one and a
+  soft shadow on a face is not darkened into a blot; the ink pressed harder on one side of the print, pooled at the cut
+  edges, thinning in a mottle and missing the paper in ragged patches where the pressure was light.
+
+Both have a phone build for the viewfinder (`#ifndef LIGHT`: fewer samples, no spot blacks); a save uses the full one.
+To judge a Look on real photographs, `node tools/render-camera-looks.mjs --looks crayon,stamp --out <folder> <photos>`
+draws them through the camera's own engine (`--light` for the phone builds); render into one folder before a change
+and another after.
+
 ## Erase
 
 The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint

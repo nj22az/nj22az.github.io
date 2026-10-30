@@ -160,8 +160,149 @@ void main(){
  float tube=1.0-smoothstep(.42,.72,length(v));
  gl_FragColor=vec4(clamp(vec3(.10,1.0,.32)*l*tube+vec3(0.0,.03,0.0),0.0,1.0),1.0);
 }`;
-/** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). */
-const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY};
+// Pencil crayon for a photograph (the owner, 30 October 2026: "Proceed"). World's Crayon lays its strokes along the
+// town's walls and floors, from depth and normals a photo does not have; on a photo it fell back to two fixed diagonal
+// grids four pixels apart, an even mesh over face and background alike, with the colour washed to grey. Here the
+// strokes follow the picture's own shapes (the direction of its edges, in four directions blended), are long and far
+// enough apart to read as strokes on a phone, and carry the photo's colour as pencils do: a vivid pigment with paper
+// between the strokes, as much of it as the tone needs, and a darker pencil crossing the shadows. The edges of the
+// picture are left lighter, as a drawing is finished in the middle first.
+const CRAYON_BODY=`
+// One layer of pencil strokes along dir: a value per pixel, 1 on a stroke's middle line, falling to 0 at its sides,
+// so a tone is drawn by keeping what is above (1 - cover). Each stroke has its own length, start and pressure.
+float pencilLane(vec2 p,vec2 dir,float spacing,float seed){
+ float along=dot(p,dir),across=dot(p,vec2(-dir.y,dir.x));
+ across+=(noise(vec2(along*.03,seed))-.5)*spacing*.9+(noise(vec2(along*.11,seed+2.0))-.5)*spacing*.25;
+ float lane=floor(across/spacing),f=fract(across/spacing);
+ float len=mix(30.0,64.0,hash(vec2(lane,seed+3.0)));
+ float s=along/len+hash(vec2(lane,seed+5.0));
+ float ph=fract(s);
+ float pressure=mix(.55,1.0,hash(vec2(lane+floor(s)*17.0,seed+9.0)));
+ float taper=smoothstep(0.0,.14,ph)*(1.0-smoothstep(.80,1.0,ph));
+ float body=1.0-abs(f-.5)*2.0;
+ return body*(.75+.25*body)*mix(.35,1.0,taper)*pressure;
+}
+// Strokes in the direction a (radians), drawn from the four directions 45 degrees apart either side of it, so the
+// pattern holds together however the direction turns across the picture.
+float pencilLayer(vec2 p,float a,float spacing,float cover,float seed){
+ float b=mod(a,3.14159265)/.78539816,i=mod(floor(b),4.0),j=mod(i+1.0,4.0),t=smoothstep(.2,.8,fract(b));
+ vec2 d0=vec2(cos(i*.78539816),sin(i*.78539816)),d1=vec2(cos(j*.78539816),sin(j*.78539816));
+ float s0=pencilLane(p,d0,spacing,seed+i*13.0),s1=pencilLane(p,d1,spacing,seed+j*13.0);
+ float edge=1.0-cover,soft=.16;
+ return mix(smoothstep(edge-soft,edge+soft,s0),smoothstep(edge-soft,edge+soft,s1),t)*step(.003,cover);
+}
+// The direction of the picture's edges here (doubled, so a line and its reverse agree), weighted by how clear it is.
+vec2 pencilFlow(vec2 uv,float r){
+ vec2 t=uTexel*r;
+ float gx=luma(texture2D(tDiffuse,uv+vec2(t.x,0.0)).rgb)-luma(texture2D(tDiffuse,uv-vec2(t.x,0.0)).rgb);
+ float gy=luma(texture2D(tDiffuse,uv+vec2(0.0,t.y)).rgb)-luma(texture2D(tDiffuse,uv-vec2(0.0,t.y)).rgb);
+ return vec2(gy*gy-gx*gx,-2.0*gx*gy);
+}
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ // A drawing is kept lighter than life in the middle tones (a face is not hatched dark); its blacks stay black.
+ vec3 c=texture2D(tDiffuse,vUv).rgb;
+ float l=luma(c);
+ c=clamp(c*pow(max(l,.002),.9)/max(l,.002),0.0,1.0);
+ l=luma(c);
+ float tooth=noise(p*.9)*.6+noise(p*2.3)*.4;
+ vec3 paper=vec3(.975,.962,.93)-.035*tooth;
+ // Finished in the middle, lighter towards the edges; a dark part is drawn in full wherever it is (a night sky).
+ vec2 v=(vUv-.5)*2.0;
+ float finish=mix(mix(.5,1.0,1.0-smoothstep(.5,1.1,length(v))),1.0,1.0-smoothstep(.12,.4,l));
+ // The strokes run along the picture's shapes where it has clear ones, and on the hand's natural diagonal elsewhere.
+ vec2 flow=pencilFlow(vUv,4.0*u);
+#ifndef LIGHT
+ flow+=pencilFlow(vUv,11.0*u)*1.6;
+#endif
+ float clear=smoothstep(.006,.03,length(flow));
+ vec2 natural=vec2(cos(2.0*1.0472),sin(2.0*1.0472));
+ vec2 dir2=mix(natural,normalize(flow+1e-6),clear*.75);
+ float a=.5*atan(dir2.y,dir2.x);
+ // Two pencils for every colour. The first lays the colour itself, at a light value, vivid, with paper between the
+ // strokes, as much as that tone needs; the second, a darker pencil of the same colour, crosses it in the shadows.
+ // A colour is trusted less the darker it is: the faint tint of a black is the camera's noise, not a colour.
+ float top=max(c.r,max(c.g,c.b)),sat=(top-min(c.r,min(c.g,c.b)))/max(top,.04)*smoothstep(.05,.3,top);
+ vec3 hue=mix(vec3(1.0),c/max(top,.04),smoothstep(.05,.3,top));
+ vec3 light=mix(vec3(1.0),hue,min(1.0,sat*1.35))*max(top,.8);
+ vec3 absorb=clamp(1.0-light/paper,0.0,1.0);
+ float need=max(absorb.r,max(absorb.g,absorb.b));
+ vec3 pigment=1.0-absorb/max(need,.06)*.72;
+ float cover1=min(need/.72,.78)*finish;
+ float m1=pencilLayer(p,a,6.5,cover1,1.0);
+ m1*=mix(.3+.7*smoothstep(.2,.75,tooth),1.0,cover1*cover1);
+ vec3 col=paper*mix(vec3(1.0),pigment,m1);
+ vec3 shade=mix(mix(vec3(1.0),hue,sat),vec3(.92,.9,1.0),.3*(1.0-sat))*mix(.13,.45,smoothstep(.04,.4,l));
+ float after=luma(paper*mix(vec3(1.0),pigment,cover1));
+ float cover2=clamp((after-l)/max(after-luma(shade*paper),.05),0.0,mix(.9,.78,smoothstep(.06,.2,l)))*finish;
+ float m2=pencilLayer(p,a+.75,5.5,cover2,40.0);
+ m2*=mix(.25+.75*smoothstep(.25,.8,tooth),1.0,cover2*cover2);
+ col*=mix(vec3(1.0),shade,m2);
+ // Lines: only the clear edges, in the dark pencil, wobbling a little as a hand-drawn line does.
+ vec2 wobble=(vec2(noise(p*.05),noise(p*.05+17.0))-.5)*uTexel*2.5*u;
+ float e=smoothstep(.45,1.0,edges(vUv+wobble,1.5*u,1.0))*(.55+.45*noise(p*.3));
+#ifndef LIGHT
+ e=max(e,spotBlack(vUv,u)*.9);
+#endif
+ col=mix(col,shade*.8,clamp(e,0.0,1.0)*.85*mix(.7,1.0,finish));
+ gl_FragColor=vec4(col,1.0);
+}`;
+// The rubber stamp for a photograph. World's Stamp inks everything darker than one grey; on a photo a dark wall or
+// background then became one block that swallowed the hair and the shoulder against it, a shaded cheek a blot, and the
+// ink was a fine speckle everywhere, sandpaper rather than rubber. Here each tone is judged against what is round it
+// (a light shape keeps its edge against a dark one, a soft shadow on a face is not darkened), and the ink is laid as a
+// stamp lays it: pressed harder on one side of the print than the other, pooled darker at the cut edges, and missing in
+// clumps where the rubber did not meet the paper, with the paper's own fibre under it.
+const STAMP_BODY=`
+void main(){
+ float u=unit();
+ vec2 p=vUv*uResolution/u;
+ vec3 raw=texture2D(tDiffuse,vUv).rgb;
+ float l=luma(raw);
+ // What is round this point, near and wider.
+ float near=0.0,wide=0.0;
+ for(int k=0;k<8;k++){
+  vec2 d=vec2(cos(float(k)*.785398+.2),sin(float(k)*.785398+.2))*uTexel*u;
+  near+=luma(texture2D(tDiffuse,vUv+d*9.0).rgb);
+#ifndef LIGHT
+  wide+=luma(texture2D(tDiffuse,vUv+d*26.0).rgb);
+#endif
+ }
+#ifdef LIGHT
+ float around=near/8.0;
+#else
+ float around=near/16.0+wide/16.0;
+#endif
+ // Lifted where lighter than its surroundings (a shoulder against a dark wall stays paper), darkened only a little
+ // where darker (a soft shadow on a cheek does not become a blot).
+ float tone=l+1.25*max(0.0,l-around)-.3*max(0.0,around-l);
+ tone+=(noise(p*.55)-.5)*.025;
+ // The pressure across the print: heavier on one side, and in broad patches.
+ float press=clamp(.5+.8*dot(vUv-.5,vec2(.8,-.6))+.5*(noise(p*.004)-.5)+.25*(noise(p*.012+7.0)-.5),0.0,1.0);
+ float cut=.41+.03*(press-.5);
+ float w=max(fwidth(tone)*.8,.006);
+ float fill=1.0-smoothstep(cut-w,cut+w,tone);
+ // Ink gathers at the cut edges. Where the pressure was light it thins in a mottle and misses the paper in ragged
+ // patches, never at an edge; under it, the paper's fibre.
+ float rim=fill*(1.0-smoothstep(.0,.07,cut-tone));
+ float mottle=noise(p*.03)*.6+noise(p*.075)*.4;
+ float clumps=noise(p*.045)*.55+noise(p*.13)*.3+noise(p*.45)*.15;
+ float voids=smoothstep(.65+.34*press,.71+.34*press,clumps)*(1.0-rim);
+ float fibre=noise(p*1.6)*.5+noise(p*.7)*.5;
+ float deposit=fill*(.74+.1*fibre+.16*mix(mottle,1.0,press))*(1.0-voids*.88)+rim*.14;
+ // Carved lines and the small dark marks of a face, which the carver keeps.
+ float line=smoothstep(.45,.9,edges(vUv,1.9*u,1.0))*(.85+.15*fibre);
+ deposit=max(deposit,line*mix(.75,.95,press));
+#ifndef LIGHT
+ deposit=max(deposit,spotBlack(vUv,u)*.95);
+#endif
+ vec3 paper=vec3(.985,.965,.90)-.025*(fibre-.5),ink=vec3(.49,.09,.16);
+ gl_FragColor=vec4(mix(paper,ink,clamp(deposit,0.0,1.0)),1.0);
+}`;
+/** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon
+ * and Stamp keep World's names and swatches but draw a photograph with these, made for one. */
+const CAMERA_BODIES={adventureInk:ADVENTURE_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY};
 
 /** In the order World's menu offers them. */
 export const LOOK_NAMES=Object.freeze(Object.keys(LOOKS));
@@ -313,8 +454,9 @@ export function createLookEngine(canvas,{light=false}={}){
   for(let i=0;i<count;i++){const name=gl.getActiveUniform(entry.program,i).name;u[name]=gl.getUniformLocation(entry.program,name);}
   entry.uniforms=u;return entry;
  }
- // Only the Looks with a lighter build (#ifdef LIGHT: Oil, Heavy brush) have two programs on a phone.
- const lighter=new Map(),hasLight=name=>{if(!lighter.has(name))lighter.set(name,/#ifdef LIGHT/.test(photoFragment(name)||''));return lighter.get(name);};
+ // Only the Looks with a lighter build (#ifdef or #ifndef LIGHT: Oil, Heavy brush, Crayon, Stamp) have two programs on a
+ // phone.
+ const lighter=new Map(),hasLight=name=>{if(!lighter.has(name))lighter.set(name,/#ifn?def LIGHT/.test(photoFragment(name)||''));return lighter.get(name);};
  const lookKey=(name,full)=>name+(full||!light||!hasLight(name)?':full':':light');
  /** Starts compiling a Look without waiting for it (thumbnails ask for every Look at once). */
  function request(name,full=false){
