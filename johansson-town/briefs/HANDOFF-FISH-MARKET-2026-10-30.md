@@ -117,3 +117,9 @@ changed; nothing published.
 - **Next:** unchanged. The owner's five decisions and the word to build; the Meshy winners go in with the build (512 px,
   colliders, a look under the ink at phone size).
 
+
+## Update, 30 October 2026 (night): Kissa Higa built
+
+The kissaten is built on this branch (commit `89d99d7`) and has its own handover:
+[HANDOFF-KISSA-HIGA-2026-10-30.md](HANDOFF-KISSA-HIGA-2026-10-30.md). The fish market's own state is unchanged: it waits
+for the owner's review, and is published only on the owner's word.

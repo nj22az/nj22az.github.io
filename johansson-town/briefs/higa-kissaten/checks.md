@@ -27,3 +27,22 @@ The first photographs set the counter props 8 cm into the counter: the harness h
 fitted interior stands on the 8 cm shop floor (`houses.js` 197). Corrected to floor + 0.95 and photographed again.
 
 Not done: no build into the game, no CI guard run (no game code changed), no phone or real-GPU look.
+
+## The build (30 October 2026, evening)
+
+| Check | Command | Result |
+| --- | --- | --- |
+| The tests around the change | `node --test` on 32 files (the Higa, seats, cast, merchandising, feed, routes, neighbours tests) | the tests stating the shut shop failed as the map said; updated with dated notes, none weakened |
+| The new test | `node --test tests/kissa-higa.test.mjs` | 9/9 |
+| English | `node --test tests/english-language.test.mjs` | 1/1 (the kissaten's data listed as scenery: its Japanese is on the sign, the paper and the menu) |
+| Z-fighting, open and shut | `node --test --test-name-pattern="Kissa Higa and the coin laundry" tests/no-z-fighting.test.mjs` | 1/1 at 07:40, 14:00 and 22:00 |
+| Full CI guard, CI's heap | `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs` | first 472/473 (`no-z-fighting` still asserting the shut front; fixed), then **473/473, 91 files, 364 s** |
+| Guide portraits | `TOWN_CHROMIUM_PATH=/opt/pw-browsers/chromium node tools/render-resident-guide.mjs` | 25 rendered; only Mr Fujita's image changed, and it caught him mid-blink, so the old image was kept (the fingerprint covers source files, not images) |
+| Runtime | `npm run build:runtime` | built; boot `boot-BK2UaaMs.js` |
+| Static photographs | `node tools/kissa-higa-photos.mjs after` | ten views, looked at; re-shot after the last fixes |
+| Live game | `node tools/kissa-higa-live.mjs` | Tuesday 07:42: Grandmother Higa at her place, Yui on stool-1, Ms Ganaha on stool-0; the bench baseline at 19:41 |
+| Routes into the room | a script: `createNavigation(blocked,{step:.5})` on the built town's solids at 07:40 | all seven targets arrive (the keeper, her front, three stools' and two chairs' stand points) |
+| Seated shoes | a script with `tests/seating-contact.mjs` `shoeHeight` | Miss Higa 0.231 m at 0.44, 0.251 m at 0.46; Officer Mori 0.209 / 0.229 m: the town's cartoon bodies hang their feet on every chair-height seat |
+
+Not done: a phone or a real GPU, physical devices, the Linux edition, the storyteller's backdrops; and the independent
+review, still running at handover.

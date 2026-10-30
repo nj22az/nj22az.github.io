@@ -216,7 +216,58 @@ still dressed as the liquor shop. Photographs: `docs/qa/kissaten-meshy/` (`pair-
 standard quality (30 credits each). A Pixar Grandmother Higa is **not** proposed as a Meshy body: the owner's 24 October
 plan reuses the Pixar bodies with new heads, and a head would come from the owner's picture.
 
-## Next action
+## Built (30 October 2026, evening): the owner's "work accordingly to your own recommendations"
+
+The owner: "I need you to work automatically can you work accordingly to your own recommendations pls audit yourself
+and decide from the audits and proceed". The five decisions, taken as recommended:
+1. **Kissa Higa (喫茶ひが)**, the name on the fascia, the awning and the paper.
+2. **Monday to Friday**, 07:00–09:30.
+3. **Her garden round** after an earlier breakfast (she is up at 05:30), before she opens; the long round at the weekend.
+4. **Yui at the counter: yes.** With her grandmother behind the counter from seven, Yui's breakfast at home has nobody at
+   it; her morning set at the counter replaces it, and she walks on to school.
+5. **Her husband's records**: Okinawan min'yō and enka on 45s.
+
+What changed (commit `89d99d7` on `claude/great-sagan-mvc9bb`; the handover is [HANDOFF-KISSA-HIGA-2026-10-30.md](../HANDOFF-KISSA-HIGA-2026-10-30.md)):
+- `src/commerce/kissa-higa.js` (new): the hours and the shutter's timing, the paper on the shutter, the menu (three
+  items at ¥300, no alcohol), the supplies, the records, the seats and the keeper's two places, the regulars from their
+  own days, `kissaOpen`, `kissaOnDuty`, `kissaShutterDown`, `kissaPassable`, `kissaVisitAt`, `kissaPeopleAt`.
+- `src/world/okinawa/higa-liquor-dressing.js`: the dressing list, the left-out list, the lettering (green valance, hours
+  card, menu, coffee poster, A-board, paper, bus photograph), the interior, the green awning (the sugidama gone), and the
+  front's `update(minutes)` on the kissaten's clock.
+- `src/world/okinawa/kissa-higa-props.js` (new): the three Meshy models streamed near the shop, with code stand-ins.
+- `assets/models/kissaten/` (new): the record player, the bentwood chair and the hand grinder at 512 px.
+- `src/world/okinawa/quarters.js`, `houses.js`, `signs.js`: the sign, the prompts (order, the table, the records, the
+  jar), the clock hook, the interior kind `kissaten`.
+- People: `cast.js` (her day, Yui's walk to school, `PLACES['kissa-higa']`), `canonical-rest.js` (up at 05:30),
+  `canonical-day.js` (a kissaten breakfast replaces breakfast at home), `shop-days.js` (the keeper and the regulars),
+  `roster.js`, `home-directory.js`; `neighbours.js` `replan` and `game.js` `passagesChanged` (routes searched again
+  when the way in opens or shuts).
+- `merchandising.js` (Kissa Higa's account), `feed/places.js` (a morning story place; the bench's renamed), her guide
+  article (`guide/articles.mjs`, `tools/apply-articles.mjs`, `guide/residents.json`, portraits fingerprint), rules
+  (root `CLAUDE.md`, `johansson-town/AGENTS.md`), stale documents fixed.
+- Tests: `tests/kissa-higa.test.mjs` (new, in the CI guard); updated with dated notes, none weakened:
+  `higa-liquor-laundry`, `higa-shop-collision`, `no-z-fighting`, `canonical-overnight`, `okinawa-quarters`,
+  `seat-layouts`.
+- Tools: `tools/kissa-higa-photos.mjs` (static town), `tools/kissa-higa-live.mjs` (the running game with residents).
+
+Corrections found by the self-audit while building, each before the commit:
+- **Bread from a shut shop:** she bought bread at Sakura's back door at 06:45, when Sakura opens at nine. She now takes it
+  at the till at five the afternoon before. The ice from the quay went the same way: it now comes from a fridge-freezer
+  behind the counter.
+- **Shut in:** the shutter would have come down with her inside. She now steps out first.
+- **The paper in mid-air:** the paper on the shutter would have hung in the doorway once the shutter rolled up. It is now
+  shown only while the shutter is down.
+- **Invisible glass:** the siphons' glass vanished, leaving the coffee floating. It is now tinted glass that shows.
+- **Bar stools:** stools at bar height would have left seated feet in the air. The ledge and stools now use the izakaya's
+  0.74/0.46 m pairing.
+- **The ledge** blocked the walk to the register; it is shorter.
+- **Breakfast at home:** the rest's breakfast phase hid Yui's counter breakfast. A kissaten visit now replaces it.
+- **No time in the garden:** her garden round had five minutes. She is up at 05:30.
+
+Open: see the handover's "Known limits" and "Next".
+
+## Next action (superseded by the build)
+
 The owner answers the five decisions and says whether to build. Then, in this order: the data module (hours, menu,
 regulars, supplies) with its tests; the dressing and the frontage on the clock, with the Meshy chair, record player and
 grinder prepared for World (512 px, colliders, a look under the ink at phone size); her day and the regulars' days; the
