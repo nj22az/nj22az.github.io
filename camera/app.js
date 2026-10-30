@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030crop1';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030enhance1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
@@ -1248,6 +1248,7 @@ function openStickerSheet(){
 $('stickerSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 function renderAdjusters(){
  const e=state.edit,box=$('adjusters');box.textContent='';
+ renderEnhance();
  for(const a of ADJUSTMENTS){
   const v=e.recipe.adjust[a.key],b=document.createElement('button');b.type='button';b.className=`adjuster${v<0?' neg':''}${v?' changed':''}`;b.dataset.key=a.key;
   b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.adjust===a.key));b.title=a.hint||a.label;
@@ -1267,6 +1268,25 @@ $('adjustSlider').addEventListener('input',ev=>{
 });
 $('adjustSlider').addEventListener('change',()=>refreshThumbs(true));
 $('adjustSlider').addEventListener('dblclick',()=>setAdjust(0));
+
+// Optional correction belongs to the recipe, not the source: off restores it exactly, and re-edit never stacks it.
+function renderEnhance(){
+ const amount=Math.round((state.edit?.recipe.enhance||0)*100);
+ $('enhancePhoto').setAttribute('aria-checked',String(amount>0));
+ $('enhanceStrength').value=amount;$('enhanceValue').textContent=amount?`${amount}%`:'Off';
+}
+function setEnhance(amount){
+ const e=state.edit;if(!e||e.saving)return;
+ if(e.recipe.enhance)e.enhanceAmount=e.recipe.enhance;
+ e.recipe.enhance=Math.max(0,Math.min(1,amount));if(amount>0)e.enhanceAmount=e.recipe.enhance;
+ renderEnhance();invalidate();
+}
+$('enhancePhoto').addEventListener('click',()=>{
+ const e=state.edit;if(!e||e.saving)return;
+ setEnhance(e.recipe.enhance?0:e.enhanceAmount||.65);refreshThumbs(true);sound('tick');
+});
+$('enhanceStrength').addEventListener('input',ev=>setEnhance(+ev.target.value/100));
+$('enhanceStrength').addEventListener('change',()=>refreshThumbs(true));
 
 // ---------- Keys, drops, the page coming and going ----------
 addEventListener('keydown',e=>{
