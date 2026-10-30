@@ -13,7 +13,7 @@ export function createPlantedWalk(avatar){
  const legs=['L','R'].map((side,i)=>({side,thigh:bones['thigh'+side],knee:bones['knee'+side],foot:bones['foot'+side],
   upper:bones['knee'+side].position.length(),lower:bones['foot'+side].position.length(),
   anchor:new THREE.Vector3(),from:new THREE.Vector3(),end:new THREE.Vector3(),at:new THREE.Vector3(),
-  flat:new THREE.Quaternion(),rotation:new THREE.Quaternion(),fromRotation:new THREE.Quaternion(),samples:[],previous:-1,swing:false,pitch:0,start:DUTY,known:false,early:false,first:true,stanceFrom:0,index:i}));
+  flat:new THREE.Quaternion(),rotation:new THREE.Quaternion(),fromRotation:new THREE.Quaternion(),samples:[],drawn:[],previous:-1,swing:false,pitch:0,start:DUTY,known:false,early:false,first:true,stanceFrom:0,index:i}));
  const reach=Math.min(...legs.map(l=>l.upper+l.lower)),sole=m.foot*.62-m.foot-m.legR*.75,toe=m.legR*(.55+2.3*.85);
  const supports=footSupports(avatar)();
  for(const l of legs){
@@ -21,14 +21,14 @@ export function createPlantedWalk(avatar){
   // Only the lower silhouette can support the shoe. Cache its vertices, plus the film checker's heel and toe.
   const points=new Set();for(let i=0;i<=16;i++){const angle=ROLL*i/16;let best=null,low=Infinity;
    for(const p of samples){const y=p.y*Math.cos(angle)-p.z*Math.sin(angle);if(y<low){low=y;best=p;}}if(best)points.add(best);}
-  l.samples=[...points,new THREE.Vector3(0,sole,m.legR*.55-m.legR*2.3*.85),new THREE.Vector3(0,sole,toe)];
+  l.drawn=[...points];l.samples=[...l.drawn,new THREE.Vector3(0,sole,m.legR*.55-m.legR*2.3*.85),new THREE.Vector3(0,sole,toe)];
  }
  const lastOrigin=new THREE.Vector3(),facing=new THREE.Vector3();let observed=false;
  const origin=new THREE.Vector3(),forward=new THREE.Vector3(),sideways=new THREE.Vector3(),virtual=new THREE.Vector3();
  const v=new THREE.Vector3(),a=new THREE.Vector3(),b=new THREE.Vector3(),dir=new THREE.Vector3(),pole=new THREE.Vector3(),hip=new THREE.Vector3();
  const q=new THREE.Quaternion(),yaw=new THREE.Quaternion(),inverse=new THREE.Quaternion(),pitch=new THREE.Quaternion();
  let kickSide=-1,kickWeight=0;
- let active=false,phase=0,step=0,span=0,lift=0,duty=DUTY,reserve=0,toeOut=0,backwards=false,stopping=false,stopLeg=0,stopTime=0,stopIndex=0,settled=false;
+ let active=false,phase=0,step=0,span=0,lift=0,duty=DUTY,reserve=0,toeOut=0,backwards=false,stopping=false,stopLeg=0,stopTime=0,stopIndex=0,stopLanding=false,stopDuration=.3,settled=false;
  function frame(){
   root.updateWorldMatrix(true,false);root.getWorldQuaternion(yaw);
   facing.set(0,0,1).applyQuaternion(yaw);facing.y=0;facing.normalize();
@@ -48,6 +48,7 @@ export function createPlantedWalk(avatar){
   // Terminal stance pivots about the toe, rather than sliding a pitched heel along the floor.
   v.set(0,sole,toe);l.at.copy(l.anchor).add(a.copy(v).applyQuaternion(l.flat)).sub(v.applyQuaternion(l.rotation));
  }
+ function drawnLow(l){let y=Infinity;for(const p of l.drawn)y=Math.min(y,v.copy(p).applyQuaternion(l.rotation).y);return y;}
  function low(l){let y=Infinity;for(const p of l.samples)y=Math.min(y,v.copy(p).applyQuaternion(l.rotation).y);return y;}
  function swing(l,s,height,floor){
   const h=smooth(s);l.at.lerpVectors(l.from,l.end,h);
@@ -101,12 +102,20 @@ export function createPlantedWalk(avatar){
    if(!moving&&!stopping){
     stopping=true;stopTime=0;stopIndex=0;settled=false;
     // Finish the airborne foot, then lift the other into its standing place. Never blend a sole across the floor.
-    stopLeg=legs[1].swing?1:0;recovery(legs[stopLeg],ground);
+    const left=legs[0].at.y+drawnLow(legs[0])-ground,right=legs[1].at.y+drawnLow(legs[1])-ground;
+    stopLanding=left>.005&&right>.005;stopDuration=stopLanding?.12:.3;
+    stopLeg=stopLanding?(left<right?0:1):(legs[1].swing?1:0);recovery(legs[stopLeg],ground);
    }
    for(const l of legs){
     if(stopping){
      if(!settled&&l.index===stopLeg){
-      stopTime+=dt;const s=Math.min(1,stopTime/.3);swing(l,s,lift,ground);l.swing=s<1;
+      stopTime+=dt;const s=Math.min(1,stopTime/stopDuration);swing(l,s,lift,ground);l.swing=s<1;
+      // A run can stop during flight: land the lower shoe promptly, then recover the other with support.
+      if(stopLanding&&stopIndex===0){
+       const h=smooth(s/.9),start=l.from.y+lowAtStart(l)-ground;
+       l.at.lerpVectors(l.from,l.end,h);l.rotation.slerpQuaternions(l.fromRotation,l.flat,h);
+       l.at.y=ground+Math.max(start*(1-h),.02*smooth(s/.15)*smooth((1-s)/.2))-low(l);
+      }
      }else if(!l.swing)ankle(l,l.pitch);
     }else{
      const f=(phase+l.index*.5)%1;
@@ -146,10 +155,10 @@ export function createPlantedWalk(avatar){
      l.previous=f;
     }
    }
-   for(const l of legs)l.at.y=Math.max(l.at.y,ground-low(l));
-   if(stopping&&!settled&&stopTime>=.3){
+   for(const l of legs){const y=ground-drawnLow(l);l.at.y=l.swing?Math.max(l.at.y,y):y;}
+   if(stopping&&!settled&&stopTime>=stopDuration){
     const l=legs[stopLeg];l.anchor.copy(l.end);l.pitch=0;
-    if(stopIndex++===0){stopLeg=1-stopLeg;stopTime=0;recovery(legs[stopLeg],ground);}else settled=true;
+    if(stopIndex++===0){stopLeg=1-stopLeg;stopTime=0;stopDuration=.3;recovery(legs[stopLeg],ground);}else settled=true;
    }
    // The support's reach sets the body's height. Toe-off raises the trailing ankle before the next foot lands.
    // Keep a little flex at full extension, and retain the animator's own hip bounce beneath this ceiling.

@@ -5,6 +5,7 @@ import {providePixarBodyInNode} from './pixar-fixture.mjs';
 
 function planted(r){
  const label=`${r.name} ${r.speed} m/s`;
+ assert.ok(r.landingDelay<=167,`${label}: both feet suspended for ${r.landingDelay} ms after stopping`);
  assert.ok(r.contacts>=4,`${label}: must actually put both shoes down`);
  assert.ok(r.worst<10,`${label}: heel/toe slides ${r.worst} mm`);
  assert.ok(r.surfaceWorst<10,`${label}: drawn sole slides ${r.surfaceWorst} mm`);

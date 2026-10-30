@@ -19,7 +19,7 @@ export function slides(name,speed,{seconds=4,stop=false,stopAt=seconds,fps=60,he
  const avatar=buildAvatar(recipeFor(name),{shadows:false,...(pixar===false?{pixar:null}:{})});
  const anim=createAvatarAnimator(avatar,{random:()=>.5,initialTime:0}),holder=new THREE.Group();holder.rotation.y=heading;holder.add(avatar.root);
  const m=avatar.measure,cy=m.foot*.62-m.foot-m.legR*.75,cz=m.legR*.55,rz=m.legR*2.3*.85,p=new THREE.Vector3(),down=new Map(),done=[];
- const supports=footSupports(avatar)(),previous=new Map();let standHip=0,lastHip=null,hipDrop=0,hipJump=0;
+ const supports=footSupports(avatar)(),previous=new Map();let landingDelay=0,landed=false,standHip=0,lastHip=null,hipDrop=0,hipJump=0;
  let popAt=0,penetration=0,pop=0,surfaceWorst=0,stopWorst=0,travel=0;
  const surfaceDown=new Map(),finishSurface=s=>{surfaceWorst=Math.max(surfaceWorst,s.d);};
  const finish=s=>{done.push(s.d);if(s.stop)stopWorst=Math.max(stopWorst,s.d);};
@@ -33,13 +33,14 @@ export function slides(name,speed,{seconds=4,stop=false,stopAt=seconds,fps=60,he
   for(const b of ['footL','footR'])for(const dz of [-rz,rz]){
    p.set(0,cy,cz+dz).applyMatrix4(avatar.bones[b].matrixWorld);const k=b+dz,s=down.get(k);
    if(t<0)continue;
-   penetration=Math.max(penetration,-p.y);
+   // These film probes are bounding-box corners, not skin vertices: only the drawn shoe defines penetration.
    if(Math.abs(p.y)>.01){if(s)finish(s);down.delete(k);continue;}
    if(!s)down.set(k,{x:p.x,z:p.z,d:0,stop:stop&&t>=stopAt});
    else{const d=Math.hypot(p.x-s.x,p.z-s.z);s.d=Math.max(s.d,d);s.stop||=stop&&t>=stopAt;}
   }
+  let lowest=Infinity;
   for(const {bone,samples} of supports)for(let i=0;i<samples.length;i++){
-   p.copy(samples[i]).applyMatrix4(bone.matrixWorld);const k=bone.name+i;
+   p.copy(samples[i]).applyMatrix4(bone.matrixWorld);lowest=Math.min(lowest,p.y);const k=bone.name+i;
    if(t>=0){penetration=Math.max(penetration,-p.y);if(previous.has(k)){const jump=Math.abs(p.y-previous.get(k));if(jump>pop){pop=jump;popAt=t;}}}
    previous.set(k,p.y);
    if(t<0)continue;
@@ -48,12 +49,13 @@ export function slides(name,speed,{seconds=4,stop=false,stopAt=seconds,fps=60,he
    else if(!s)surfaceDown.set(k,{x:p.x,z:p.z,d:0});
    else {const d=Math.hypot(p.x-s.x,p.z-s.z);s.d=Math.max(s.d,d);}
   }
+  if(stop&&t>=stopAt&&!landed){landingDelay=Math.max(0,t-stopAt)*1000;if(lowest<=.01)landed=true;else landingDelay+=dt*1000;}
  }
  for(const s of down.values())finish(s);
  for(const s of surfaceDown.values())finishSurface(s);
  avatar.dispose?.();
  return {name,speed,worst:Math.max(0,...done)*1000,mean:done.length?done.reduce((a,b)=>a+b,0)/done.length*1000:0,
-  surfaceWorst:surfaceWorst*1000,contacts:done.length,stopWorst:stopWorst*1000,penetration:penetration*1000,pop:pop*1000,popAt,hipDrop:hipDrop*1000,hipJump:hipJump*1000,reach:(avatar.bones.kneeL.position.length()+avatar.bones.footL.position.length())*1000};
+  surfaceWorst:surfaceWorst*1000,contacts:done.length,stopWorst:stopWorst*1000,penetration:penetration*1000,pop:pop*1000,popAt,landingDelay,hipDrop:hipDrop*1000,hipJump:hipJump*1000,reach:(avatar.bones.kneeL.position.length()+avatar.bones.footL.position.length())*1000};
 }
 
 if(process.argv[1]?.endsWith('gait-feet.mjs')){
