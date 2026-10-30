@@ -11,6 +11,13 @@ Current main `87f47e8f6e5fafdb586ac723e9aa3cc704d11345` is merged into this bran
 documentation and Blender sign correction. The handover conflict retains both entries. No running World source changed
 in that main update. The separate Izakaya CAD repair (#410) is not included. No character, scene, shader-quality or Linux release change.
 
+## Owner's visual constraint — 31 October 2026
+
+The owner: “Don’t revert to bad graphics we need it to feel like we are playing a cartoon”. The normal rendering
+profile, cartoon ink and colour grade, HDR, four-sample antialiasing, lighting, complete models and full-resolution
+textures are retained. The iPhone test now explicitly asserts ink, grade, HDR and four samples after every launch,
+including after forced context restoration. Work is confined to scheduling, resource lifetime and unnecessary warm-up.
+
 ## Reproduced startup stall and final correction
 
 The ordinary real-clock URL exposed the significant fault that a fixed-clock/ferry fixture missed: the simulated
@@ -94,7 +101,8 @@ and harbour, not a blank or loading frame. The baseline does **not** reproduce t
   device clock and an unforced opening, beyond the deterministic ferry fixture. That repeat **passed all eight scenarios**, with zero page errors and failed requests:
   [run 41133968473](https://github.com/nj22az/nj22az.github.io/actions/runs/41133968473), artifact `13014388815`.
   Its ordinary-clock Entering delay exposed the 140-second scheduling defect fixed in the final candidate above.
-  The final candidate is rerun with the deterministic twelve-hour absence and a strict startup-time assertion.
+  The final code candidate is `4a37c11da8c0674145e4b3ad03facc28d223158e`, exact tree `429840f50166cd6272eec5f6017da60af8cf0b8f`.
+  It is rerun with the deterministic twelve-hour absence, a strict startup-time assertion and explicit full-cartoon checks.
 - Authored-file whitespace and JavaScript syntax checks passed.
 - Complete local guard: **505/505 passed, 96 files, 208 seconds**.
 - Full-game CPU wiring/interior smoke plus runtime package: **5/5 passed**, 159.8 seconds. The fixture reports its

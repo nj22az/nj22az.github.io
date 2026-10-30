@@ -46,7 +46,12 @@ const boot=async(reload=false,natural=false)=>{
  const ready=await state();assert.equal(ready.loading?.error,null,JSON.stringify(ready));
  await page.locator('#enter').tap();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_LOADING__?.snapshot().completed===10&&!window.__JOHANSSON_AUDIT__?.blocked.catchingUp,null,{timeout:180000});
- assert.equal((await state()).fatal,undefined,'No fatal overlay after START');
+ const playing=await state();
+ assert.equal(playing.fatal,undefined,'No fatal overlay after START');
+ assert.equal(playing.graphics?.ink,true,'Every launch retains the cartoon ink pass');
+ assert.equal(playing.graphics?.grade,true,'Every launch retains the cartoon colour grade');
+ assert.equal(playing.graphics?.hdr,true,'Every launch retains HDR');
+ assert.equal(playing.graphics?.samples,4,'Every launch retains four-sample antialiasing');
 };
 try{
  browser=await (engine==='webkit'?webkit:chromium).launch(engine==='webkit'?{headless:false}:{headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
