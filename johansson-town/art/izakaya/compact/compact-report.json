@@ -509,7 +509,7 @@
         "lens": 24
       },
       "planRevision": 9,
-      "sha256": "8c05af893e789c839a7f8cbf042f7b9c5787613920a5b89ece131289db2a7456",
+      "sha256": "e78ad0bc7ad6f0f469b0cf65d96bf6e56a5f09eb6a33237cf9d577eb30dddd52",
       "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass"
     },
     {
@@ -529,7 +529,7 @@
         "lens": 27
       },
       "planRevision": 9,
-      "sha256": "d1c78c4eac9a6864656156c27f502066e035a540ec71fe63e64bd2850a4d0d34",
+      "sha256": "7782b449c276f744265f5e32b3f81b89e5631a5dfc3088335d31fb6816de0bd9",
       "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass"
     },
     {
@@ -550,7 +550,7 @@
         "cutaway": true
       },
       "planRevision": 9,
-      "sha256": "85e93265868fcb5112eed37fd0c606ef45ea18e6c38ad405815debc925279bcd",
+      "sha256": "4ec6678f8aab5680e6e6bf565a4c0b1b95ad63cf507db13151153b3582d84f4c",
       "renderer": "Blender Cycles; architectural prototype lighting, not the game ink pass"
     }
   ],
@@ -594,13 +594,13 @@
     "path": "assets/models/izakaya/minato-interior-compact.glb",
     "bytes": 3872380,
     "primitives": 35,
-    "sha256": "313776b898e9bdc535ce5bae7d9e0abd04addddcdfc1c5f8be8776acc82ee44b"
+    "sha256": "a553f23a384f3ad21eae495497a40bd5b1250afe096907e0cd03db26b28dff4a"
   },
   "blend": "minato-compact.blend",
-  "blendSha256": "154be1f877a9473a65387fa63de581e833a3a3fa1cbddb988cbacdeb5c45a6c2",
+  "blendSha256": "6e02a646f3088c80320521ecd23e7a0c36382b29bf5cedb602326fadcfddb4bf",
   "inputs": {
     "art/izakaya/compact/plan.json": "42cc52f4145fd1d44701170c2693b5edff093f71d8de8733c4db679dee766b41",
-    "tools/blender/build-minato-compact.py": "184ab2eddb70378e8f53c96b21a0e8c7a98554cd83e0cfbf77ca603251038e06",
+    "tools/blender/build-minato-compact.py": "2cb7d6c3183a6720ae76fa31f57443bb445a4598567f8c8825c2b52d12a73817",
     "tools/blender/build-minato-walnut.py": "3cc9231318ccc961e0158d15c7a9113365ae92c65ecea495676095c3e7610049",
     "assets/models/izakaya/minato-walnut-backbar.glb": "4fc640430634e0bf17da87d80bf3c6ccb39d2c7f52a4a6a67861438caba96e43",
     "art/izakaya/compact/minato-signs.otf": "76766701cd570ed46ca63bc5122c144fb269c9288d385817939af3fe941957b2"

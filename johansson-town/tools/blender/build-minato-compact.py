@@ -664,7 +664,7 @@ def sato(room):
             room.box('Sato topping pan side',(.012,.058,.32),(xx+dx,pt+.041,pz),m['Brushed kitchen steel'],.003)
         for dz in (-.154,.154):
             room.box('Sato topping pan end',(.156,.058,.012),(xx,pt+.041,pz+dz),m['Brushed kitchen steel'],.003)
-        room.box('Sato toppings',(.15,.012,.27),(xx,pt+.052,pz),m['Food green' if xx<5.1 else 'Food cream'],.005,omit=('bottom',))
+        room.box('Sato toppings',(.15,.046,.27),(xx,pt+.035,pz),m['Food green' if xx<5.1 else 'Food cream'],.005,omit=('bottom',))
     room.box('Sato hot water urn',(.29,.42,.28),(5.60,pt+.21,pz),m['Enamel cream'],.035)
     room.rod('Sato urn spout',(5.60,pt+.15,pz+.145),(5.60,pt+.15,pz+.22),.018,m['Dark fittings'])
     # High rack and real brackets above the prep run, with stacked service bowls.

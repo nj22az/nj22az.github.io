@@ -269,6 +269,17 @@ test('the prep board, its bowls and knife share no flickering plane',()=>{
  assert.deepEqual(found.map(describe),[]);
 });
 
+test('Sato toppings fill the real pans from their bottoms to below their rims',()=>{
+ const top=P.ramenPrep.top,z=P.ramenPrep.position[2];
+ for(const [x,finish] of [[5.02,'Food green'],[5.24,'Food cream']]){
+  const points=pointsIn(finish,{minX:x-.076,maxX:x+.076,minZ:z-.136,maxZ:z+.136,minY:top,maxY:top+.10});
+  assert.ok(points.length,'The topping has real volume inside its pan');
+  const base=Math.min(...points.map(p=>p.y)),upper=Math.max(...points.map(p=>p.y));
+  assert.ok(Math.abs(base-down(room,x,z,top+.013))<.0005,'Food rests on the actual pan bottom');
+  assert.ok(upper<=top+.0585&&upper<top+.07,'The heap stays below the steel rim');
+ }
+});
+
 // Thao's drinks station (minato-bar.js) stands on clear worktop: nothing of the fitted room or its dressing (the
 // oshibori warmer, the prep board, the grill) is under the rack, the pour or the tap, and nothing of it flickers.
 test('the drinks station stands on clear worktop, its glasses apart, sharing no plane with the room',async()=>{
