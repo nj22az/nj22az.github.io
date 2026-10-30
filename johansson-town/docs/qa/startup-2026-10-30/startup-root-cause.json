@@ -1,0 +1,24 @@
+{
+  "physicalDevice": false,
+  "reproduced": "Extended START delay after an hours-old save returns to real time",
+  "enteringMsBefore": 139799,
+  "workflow": "https://github.com/nj22az/nj22az.github.io/actions/runs/41133968473",
+  "simulationStepMinutes": 0.2,
+  "before": {
+    "budgetMs": 4,
+    "maxSteps": 40
+  },
+  "afterDuringStartup": {
+    "budgetMs": 32,
+    "maxSteps": 320
+  },
+  "duringPlay": {
+    "budgetMs": 4,
+    "maxSteps": 40
+  },
+  "equivalence": "Regression compares every dt and every saved pending remainder, not just final totals",
+  "decodedCharacterAtlasRGBABytes": 101711872,
+  "modelLoadConcurrencyBefore": 6,
+  "modelLoadConcurrencyAfter": 2,
+  "limitation": "The OS killing a physical iPhone page remains unobserved"
+}

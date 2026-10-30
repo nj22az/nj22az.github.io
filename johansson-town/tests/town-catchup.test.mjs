@@ -18,6 +18,21 @@ test('expensive simulation yields at the time budget and resumes the exact remai
  assert.equal(pendingTownAbsence(saved,3000),job.pending+2);
  job.add(2);while(job.pending)job.tick();assert.ok(Math.abs(total-12)<1e-6);
 });
+
+test('startup batches preserve every simulation step while avoiding hundreds of loading renders',()=>{
+ const run=options=>{
+  const steps=[];let frames=0,clock=0;
+  const job=createTownCatchup({now:()=>clock,advance:(dt,pending)=>{steps.push([dt,pending]);clock+=1;}});
+  job.add(720);while(job.pending){job.tick(options);frames++;}
+  return {steps,frames};
+ };
+ const ordinary=run(),startup=run({budgetMs:32,maxSteps:320});
+ assert.deepEqual(startup.steps,ordinary.steps,'Clock, schedules, saved remainder and elapsed activity time are identical');
+ assert.ok(startup.frames<=ordinary.frames/7,'Loading needs at least seven times fewer full scene renders');
+ const job=createTownCatchup({now:()=>0,advance(){}});job.add(1440);
+ assert.equal(job.tick({budgetMs:32,maxSteps:320}),320,'The loading batch still has a hard step cap');
+ assert.equal(job.tick(),40,'Normal gameplay immediately returns to its original budget');
+});
 test('corrupt saves and repeated long absences remain bounded',()=>{
  assert.equal(pendingTownAbsence({savedAt:1000,pendingTownMinutes:Infinity},2000),1);
  assert.equal(pendingTownAbsence({savedAt:1000,pendingTownMinutes:-10},2000),1);

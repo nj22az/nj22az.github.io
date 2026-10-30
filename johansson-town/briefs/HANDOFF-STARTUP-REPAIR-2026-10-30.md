@@ -11,9 +11,34 @@ Current main `87f47e8f6e5fafdb586ac723e9aa3cc704d11345` is merged into this bran
 documentation and Blender sign correction. The handover conflict retains both entries. No running World source changed
 in that main update. The separate Izakaya CAD repair (#410) is not included. No character, scene, shader-quality or Linux release change.
 
+## Reproduced startup stall and final correction
+
+The ordinary real-clock URL exposed the significant fault that a fixed-clock/ferry fixture missed: the simulated
+phone spent **139,799 ms (about 140 seconds)** between START and its first playable frame. Its title/preview had
+already finished; it was replaying hours of missed town time, not downloading the game. See
+[`startup-root-cause.json`](../docs/qa/startup-2026-10-30/startup-root-cause.json) and
+[`iphone-recovery-passed.json`](../docs/qa/startup-2026-10-30/iphone-recovery-passed.json), the final natural-clock case.
+
+The catch-up scheduler allowed only 4 ms / 40 steps between full scene renders. At software phone frame rates,
+drawing the loading scene dominated the wait. Until the first playable frame, the exact same 0.2-minute simulation
+steps now receive 32 ms / 320 steps per batch. Once playable, the original 4 ms / 40-step budget returns. A regression
+compares every step and every saved remainder for a twelve-hour return; none is dropped and no background process
+is disabled. A second check retains the hard cap and the immediate return to the normal budget.
+
+Also corrected two avoidable memory/compilation peaks: six full character models previously loaded concurrently
+(their decoded base colour images alone are 97 MiB); two jobs now run at once, retaining every original model and
+texture. Shader warm-up now excludes hidden subtrees, including unused outfits and closed interiors, instead of
+Three.js compile() traversing them all. They compile normally if shown. The initial-frame breadcrumb is written once,
+rather than synchronously rewriting localStorage on every stalled frame; “Playing” is recorded only after play begins.
+
+The iPhone fixture now deliberately seeds a twelve-hour absence at the device's current civil time, enters through
+the ordinary URL with a natural opening, and fails if Entering takes a minute. This reproduces the return condition
+at any hour, including after midnight. Final focused checks after these changes: **54/54 passed**. The final runtime
+has been rebuilt while retaining the currently published main graph, rather than an unpublished intermediate build.
+
 ## Findings and corrections
 
-The exact physical-device kick-out is not reproduced. Confirmed defects, rather than a speculative crash diagnosis:
+The long startup delay is reproduced above. An OS-level physical-device kick-out is not observed. Other confirmed defects:
 
 - The released-canvas registry retained disposed room textures, canvases and redraw closures. A context restore
   repainted those obsolete pictures. The regression first failed on unchanged code: all 12 disposed entries remained.
@@ -66,7 +91,10 @@ and harbour, not a blank or loading frame. The baseline does **not** reproduce t
   was inspected: the harbour and current character render normally after the real GPU loss.
 - The fixture now waits for in-flight network/decode work before planned reloads, and records error phase/time/stack.
   Every error assertion remains; no exception text is suppressed. A repeat also checks the ordinary URL with the real
-  device clock and an unforced opening, beyond the deterministic ferry fixture. Final result pending.
+  device clock and an unforced opening, beyond the deterministic ferry fixture. That repeat **passed all eight scenarios**, with zero page errors and failed requests:
+  [run 41133968473](https://github.com/nj22az/nj22az.github.io/actions/runs/41133968473), artifact `13014388815`.
+  Its ordinary-clock Entering delay exposed the 140-second scheduling defect fixed in the final candidate above.
+  The final candidate is rerun with the deterministic twelve-hour absence and a strict startup-time assertion.
 - Authored-file whitespace and JavaScript syntax checks passed.
 - Complete local guard: **505/505 passed, 96 files, 208 seconds**.
 - Full-game CPU wiring/interior smoke plus runtime package: **5/5 passed**, 159.8 seconds. The fixture reports its

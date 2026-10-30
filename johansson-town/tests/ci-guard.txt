@@ -107,3 +107,6 @@ graphics-lifecycle.test.mjs
 startup-recovery.test.mjs
 loading-progress.test.mjs
 startup-failure.test.mjs
+pixar-startup-memory.test.mjs
+compile-visible.test.mjs
+town-catchup.test.mjs

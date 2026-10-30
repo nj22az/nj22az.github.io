@@ -16,9 +16,9 @@ export function createTownCatchup({advance,now=()=>performance.now(),budgetMs=4,
  let pending=0;
  return {get pending(){return pending;},add(seconds){
   if(Number.isFinite(seconds)&&seconds>0)pending=Math.min(MAX_ABSENCE_MINUTES,pending+seconds);
- },tick(){
+ },tick({budgetMs:frameBudget=budgetMs,maxSteps:stepLimit=maxSteps}={}){
   const start=now();let steps=0;
-  while(pending>0&&steps<maxSteps&&(steps===0||now()-start<budgetMs)){
+  while(pending>0&&steps<stepLimit&&(steps===0||now()-start<frameBudget)){
    const dt=Math.min(.2,pending);pending=Math.max(0,pending-dt);if(pending<1e-9)pending=0;
    advance(dt,pending);steps++;
   }

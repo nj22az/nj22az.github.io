@@ -110,9 +110,16 @@ try{
  assert.equal(recovery.restored,1);assert.equal((await state()).graphics.hdr,true,'Full HDR/ink returns after restoration');
  step('real context loss during startup recovers',{recovery,...await state()});
  await page.screenshot({path:resolve(out,'restored-startup.png')});
- await page.evaluate(()=>localStorage.setItem('johansson-town-clock',JSON.stringify({start:'real',speed:1})));
+ await page.evaluate(()=>{
+  const a=window.__JOHANSSON_AUDIT__,now=new Date(),real=(now.getTime()-now.getTimezoneOffset()*60000)/60000;
+  // Reproduce a twelve-hour return at any time of day, including after midnight.
+  a.setTime(real-720);a.activities.state.clockAhead=0;a.activities.save();
+  localStorage.setItem('johansson-town-clock',JSON.stringify({start:'real',speed:1}));
+ });
  await boot(false,true);
- step('ordinary URL with real clock and natural opening',await state());
+ const natural=await state(),enteringMs=natural.loading.timings.frame.end-natural.loading.timings.frame.start;
+ assert.ok(enteringMs<60000,'A twelve-hour return must not strand START for minutes: '+enteringMs+' ms');
+ step('ordinary URL with twelve-hour absence and natural opening',{enteringMs,...natural});
  await page.screenshot({path:resolve(out,'natural-opening.png')});
  assert.deepEqual(report.errors,[],'No uncaught errors or page crash');
  assert.deepEqual(report.consoleErrors.filter(m=>/shader error|VALIDATE_STATUS|WebGL.*(?:error|lost)/i.test(m)),[],'No graphics errors');

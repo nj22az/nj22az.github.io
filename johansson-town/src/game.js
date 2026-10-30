@@ -7,6 +7,7 @@ import {BUDGET} from './edition.js';
 import {createAttention} from './people/attention.js';
 import {setStandFilter} from './people/full-life.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
+import {withVisibleMaterials} from './render/compile-visible.js';
 import {createResolutionGovernor} from './render/resolution-governor.js';
 import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
@@ -182,7 +183,7 @@ const loadingProgress=window.__JOHANSSON_LOADING__;
 const paintLoading=()=>new Promise(resolve=>{requestAnimationFrame(()=>setTimeout(resolve,0));setTimeout(resolve,120);});
 loadingProgress?.complete('code');loadingProgress?.watch(THREE.DefaultLoadingManager);
 const launchReport=createLaunchReport({storage:(()=>{try{return globalThis.localStorage;}catch{return null;}})(),events:globalThis});
-let firstPlayFrame=false,reportNextAt=0;
+let firstPlayFrame=false,firstFrameReported=false,reportNextAt=0;
 const startupRecovery=window.__JOHANSSON_STARTUP_RECOVERY__||createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 // A full-effects retry is one attempt, never a permanent override of recovery.
@@ -337,7 +338,9 @@ function compileTown(object,{async=false}={}){
  const previous=renderer.getRenderTarget();
  try{
   if(pipeline)renderer.setRenderTarget(pipeline.sceneTarget);
-  if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
+  withVisibleMaterials(object,()=>{
+   if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
+  });
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
 /**
@@ -2328,7 +2331,10 @@ function advanceAbsentTown(townMinutes){
  absence.add(townMinutes);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
 }
 function catchUpFrame(){
- absence.tick();catchingUp=absence.pending>0;
+ // Before the first playable frame there is no live input to protect. Give the
+ // exact same .2-minute steps more of this loading frame, rather than spending
+ // minutes drawing the island between tiny 4 ms batches after a long absence.
+ absence.tick(firstPlayFrame?undefined:{budgetMs:32,maxSteps:320});catchingUp=absence.pending>0;
  if(!catchingUp){activities.save();clock.getDelta();}
 }
 
@@ -2756,11 +2762,11 @@ function renderTitle(dt){
 }
 
 function renderOutdoor(){
-  const first=started&&!firstPlayFrame;if(first)launchReport.stage('Rendering first gameplay frame');
+  if(started&&!firstFrameReported){firstFrameReported=true;launchReport.stage('Rendering first gameplay frame');}
   const audit=window.__JOHANSSON_AUDIT__?.camera;
   if(audit){camera.position.set(...audit.pos);camera.lookAt(...audit.at);camera.updateMatrixWorld();}
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
-  if(started&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
+  if(started&&firstPlayFrame&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the
