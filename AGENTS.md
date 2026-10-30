@@ -48,6 +48,30 @@ applications, .NET assemblies and websites, with the evidence for each conclusio
   anti-cheat circumvention, no cheats, no reproducing another product's code or assets. Learn how a feature works,
   then build our own. Record what was inspected and why with the work.
 
+## Development tool: Lightpanda, a headless browser for agents — 30 October 2026
+
+The owner: "https://github.com/lightpanda-io/browser Can you add this as a resource in my nj22az repo". Lightpanda
+(AGPL-3.0, Zig, V8 for JavaScript, beta) is a headless browser built for agents and automation. It runs a page's
+JavaScript and gives back the resulting DOM as HTML or Markdown, over a CDP server, an MCP server or the command line.
+It has **no graphics engine**: no WebGL, no layout, no picture.
+
+- **Install** (no npm package; rolling `nightly` release; Linux needs glibc):
+  `curl -L -o lightpanda https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-x86_64-linux && chmod a+x lightpanda`
+  (macOS: `brew install lightpanda-io/browser/lightpanda`, or the `lightpanda-aarch64-macos` asset). Set
+  `LIGHTPANDA_DISABLE_TELEMETRY=true`; it reports usage otherwise.
+- **Use:** `lightpanda fetch --dump markdown <url>` reads a page after its scripts run; `lightpanda serve --host 127.0.0.1
+  --port 9222` is a CDP endpoint for `puppeteer-core` (`puppeteer.connect({ browserWSEndpoint: "ws://127.0.0.1:9222" })`);
+  `lightpanda mcp` is an MCP server over stdio (`--port 9223` for HTTP). It is **not** in `.mcp.json`: unlike REA it is
+  a downloaded binary whose path differs per machine, so register it locally (`"command": "/path/to/lightpanda", "args": ["mcp"]`).
+- **Verified here, 30 October 2026:** nightly `1.1.0-nightly.11326+948d77378` on Linux x86_64 read the homepage from
+  `python3 -m http.server` in 0.07 s, including the nav that `shared.js` injects.
+- **What it is for:** fast checks of the static site's DOM and script output (nav and footer on every page, links,
+  `/blog/`, `/hotels/`, page text, crawls) where a full Chromium is slow or unavailable. **Not** for World, Studio,
+  Pocket Camera or any visual, WebGL, layout or screenshot check: use Chromium/Playwright and the devices for those,
+  and never report a Lightpanda run as visual evidence.
+- **AGPL-3.0:** use it as an outside tool only. Never vendor, bundle or ship its code or binary in this repo or in the
+  Linux edition.
+
 ## Hotels & Parking
 
 The register is its own section of the site, at `/hotels/` (folder `hotels/`, page built by `tools/build-hotels.py`,
