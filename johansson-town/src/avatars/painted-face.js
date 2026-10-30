@@ -96,10 +96,11 @@ export function rigPaintedFace(geometry,card,paint,{make=(g,m)=>new THREE.Mesh(g
   get frame(){return now;},
   /** Show a frame by name (unknown names leave the face as it is), unless one is held. */
   set(name){if(!held&&name!==now)show(name);},
-  /** Her gaze, as World's (x toward her left, y down; -1..1), unless one is held. */
-  look(x,y){if(!heldLook)aim(x,y);},
+  /** Her gaze, as World's (x toward her left, y down; -1..1), unless one is held; where World's is near ahead, the
+   * frame's own (shy looks down and aside, sad down: the second audit found shy's eyes ahead in the game). */
+  look(x,y){if(heldLook)return;const own=M.look?.[now]||[0,0];aim(Math.abs(+x||0)>.15?x:own[0],Math.abs(+y||0)>.15?y:own[1]);},
   /** Hold a frame (and a gaze) whatever her feelings say, for a photograph; hold(null) lets go. */
-  hold(name,look=null){held=name||null;heldLook=look;if(held)show(held);if(look)aim(look[0],look[1]);},
+  hold(name,look=null){held=name||null;heldLook=look;if(held)show(held);if(look)aim(look[0],look[1]);else if(held)aim(...(M.look?.[held]||[0,0]));},
   /** The gaze uniform (metres on the face), for tests. */
   get gaze(){return uniforms.uGaze.value.clone();},
   get slots(){return uniforms.uSlots.value.clone();},

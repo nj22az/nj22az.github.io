@@ -74,6 +74,9 @@ test('a frame and a gaze set the shader\'s slots and irises; a held frame stays'
  face.hold('happy',[-.5,0]);face.set('sad');face.look(1,1);
  assert.equal(face.frame,'happy','held');assert.ok(Math.abs(face.gaze.x+.5*rx)<1e-9,'the held gaze');
  face.hold(null);face.set('sad');assert.equal(face.frame,'sad','let go');
+ // (where World's gaze is near ahead, the frame's own: sad looks down)
+ face.look(0,0);assert.ok(face.gaze.y<0,'sad looks down of its own');
+ face.look(.8,0);assert.ok(face.gaze.x>0,'World\'s gaze, where it has one, wins');
  assert.equal(face.mesh.material.transparent,true);assert.equal(face.mesh.material.depthWrite,false);
  assert.equal(face.mesh.userData.paintedFace,face,'reachable from the mesh, for photographs');
  face.dispose();
