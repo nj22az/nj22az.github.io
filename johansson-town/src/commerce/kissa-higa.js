@@ -24,13 +24,13 @@ export const KISSA=Object.freeze({
  /** Monday to Friday (Date weekdays). On Saturdays she opens Johansson Mart at 08:45 (kitahama-shop.js SHOP_DUTY); Sunday is her morning off. */
  days:Object.freeze([1,2,3,4,5]),
  /**
-  * Her morning, in minutes: at the front at 06:45, the shutter up 06:50–06:54 and the doors open, open 07:00 to 09:30,
-  * washing up until 09:40, then out on the pavement to pull the shutter down (09:44–09:48), and up Kitano Road to the
+  * Her morning, in minutes: at the front at 06:45, the shutter up at 06:50 over nine seconds and the doors open, open 07:00 to 09:30,
+  * washing up until 09:40, then out on the pavement to pull the shutter down (09:44, over nine seconds), and up Kitano Road to the
   * bath at 09:50. She is out before it comes down, so nobody is shut in.
   */
  arrive:405,shutterUp:410,open:420,close:570,out:580,shutterDown:584,leave:590,
- /** The shutter takes four minutes up or down, by hand (the same steel as Nakamura's). */
- roll:4,
+ /** The shutter takes nine seconds up or down, by hand (the same steel as Nakamura's). */
+ roll:.15,
  why:'The shop stood shut with its counter and its jar inside, and the mornings before the bath opens at ten were Grandmother Higa’s own. Nobody on the island could sit over a coffee: Sato Ramen pours urn coffee with lunch. So the shutter goes up at seven on weekdays, and the counter has her behind it again.',
  period:'Morning service (モーニング): from the 1950s a kissaten gave toast and a boiled egg free with the morning coffee, for people on their way to work.',
 });
@@ -43,7 +43,7 @@ export function kissaOpen(minutes){const m=minute(minutes);return kissaDay(minut
 /** Grandmother Higa's time at the kissaten, at its front or behind its counter: 06:45 to 09:50 on its days. */
 export function kissaOnDuty(minutes){const m=minute(minutes);return kissaDay(minutes)&&m>=KISSA.arrive&&m<KISSA.leave;}
 /**
- * How far down the shutter is, 1 down and 0 up: up from 06:50 over four minutes, down from 09:44 over four, down all day
+ * How far down the shutter is, 1 down and 0 up: up from 06:50 over nine seconds, down from 09:44 over nine seconds, down all day
  * on Saturdays and Sundays (Nakamura's rule, nakamura-dressing.js nakamuraShutterDown).
  */
 export function kissaShutterDown(minutes){
@@ -56,6 +56,36 @@ export function kissaShutterDown(minutes){
 }
 /** True while the shutter is up far enough to walk under and the doors are open (Nakamura's rule: down past 40%, shut). */
 export const kissaPassable=minutes=>kissaShutterDown(minutes)<=.4;
+
+/** The shop floor and threshold in world coordinates; a whole body must clear the shutter before it closes. */
+export function inKissaHiga({x,y=0,z},radius=.32){
+ return y<2.3&&x>9.55-3.7-radius&&x<9.55+1.9+radius&&z>8.4-2.07-radius&&z<8.4+2.07+radius;
+}
+/**
+ * She never shuts somebody in. If a customer or late walker is still inside, she waits at the front; when the last
+ * body clears the threshold she takes the usual nine seconds to lower it, then walks to the bath. Orders still end
+ * at 09:30. Seeking backwards or to another day resets the delay (the audit and a restored clock can do either).
+ */
+export function createKissaClosing(){
+ let waiting=false,released=null,last=null;
+ return {
+  get waiting(){return waiting;},
+  update(minutes,occupied=false){
+   if(last!==null&&(minutes<last||Math.floor(minutes/1440)!==Math.floor(last/1440))){waiting=false;released=null;}
+   last=minutes;
+   const scheduled=kissaShutterDown(minutes);
+   if(scheduled===0&&minute(minutes)<KISSA.shutterDown){waiting=false;released=null;return 0;}
+   if(occupied){waiting=true;released=null;return 0;}
+   if(waiting&&released===null)released=minutes;
+   if(released!==null){
+    const down=Math.min(1,Math.max(0,(minutes-released)/KISSA.roll));
+    if(down===1){waiting=false;released=null;}
+    return down;
+   }
+   return scheduled;
+  },
+ };
+}
 
 /**
  * The paper on the shutter, in her brush hand, read when it is down: the name, the hours, and where the drink is now (the
@@ -107,8 +137,8 @@ export const KISSA_RECORDS=Object.freeze({
 
 /**
  * The seats, in the world. The three stools stand along the customers' ledge in front of the counter (0.74 m on the
- * 8 cm shop floor, the izakaya's counter height, with seats at 0.46 m like its stools: a resident sits with their feet on
- * the floor, where a bar stool would leave them hanging); the ledge stops short of the register, where customers pay at
+ * 8 cm shop floor, the izakaya's counter height, with seats at 0.46 m like its stools; the cartoon bodies still leave their
+ * shoes 0.21–0.25 m above the floor on chair-height seats across town, pending the owner’s decision); the ledge stops short of the register, where customers pay at
  * the counter's open end. The two bentwood chairs (the Meshy model, its seat 0.42 m up) stand at the table by the
  * police-station wall: the near one the player's, the far one Ms Uezu's on her weeks off. `at` is where the sitter sits, `stand`
  * where they stand up to, `height` the seat above the shop floor, `yaw` the way they face (stand-points.js yawFacing),
@@ -125,7 +155,7 @@ export const KISSA_SEATS=Object.freeze({
  * Where Grandmother Higa stands behind the counter, facing the ledge (round the counter's open end); and on the pavement
  * before the door, facing the shutter, while she lifts it and pulls it down.
  */
-export const KISSA_KEEPER=Object.freeze({at:local(-.55,-1.15),yaw:Math.PI/2,front:local(.3,4.12),frontYaw:-Math.PI/2});
+export const KISSA_KEEPER=Object.freeze({at:local(-.9,-1.15),yaw:Math.PI/2,front:local(.3,4.12),frontYaw:-Math.PI/2});
 
 /**
  * The regulars, from their own days (cast.js; the morning sweep of 30 October 2026 in briefs/higa-kissaten/progress.md):
@@ -134,12 +164,12 @@ export const KISSA_KEEPER=Object.freeze({at:local(-.55,-1.15),yaw:Math.PI/2,fron
 export const KISSA_REGULARS=Object.freeze([
  Object.freeze({name:'Miss Higa',seat:'stool-1',from:435,to:465,order:'morning-set',
   why:'Her grandmother is at the counter from seven now, so Yui’s breakfast is too: the morning set on the stool her grandmother keeps for her, before the walk to school at eight.'}),
- Object.freeze({name:'Ms Ganaha',seat:'stool-0',from:452,to:475,order:'blend',
+ Object.freeze({name:'Ms Ganaha',seat:'stool-0',from:452,to:480,order:'blend',
   why:'A blend at the end of the ledge before she opens up the coin laundry across Main Street at eight.'}),
- Object.freeze({name:'Tetsuo',seat:'stool-2',from:460,to:510,order:'morning-set',days:Object.freeze([1,3,5]),
+ Object.freeze({name:'Tetsuo',seat:'stool-2',from:460,to:505,order:'morning-set',days:Object.freeze([1,3,5]),
   why:'Three mornings a week he takes his breakfast here instead of at home: the bath’s boiler is up the road, and the stool next to Yui’s is the one Grandmother Higa sets his cup at.'}),
  Object.freeze({name:'Officer Mori',seat:'stool-2',from:510,to:540,order:'morning-set',
-  why:'Next door from the station after the night patrol: the morning set on the stool nearest the station, Tetsuo’s until half past eight, then upstairs to sleep at nine.'}),
+  why:'Next door from the station after the night patrol: the morning set on the stool nearest the station, Tetsuo’s until 08:25, with five minutes to clear it before Mori, then upstairs to sleep at nine.'}),
  Object.freeze({name:'Ms Uezu',seat:'chair-1',from:480,to:540,order:'iced',offWatch:true,
   why:'On her weeks off watch (the ferry’s rota): an iced coffee at the table with the town paper, the one morning hour she is not on the deck.'}),
 ]);

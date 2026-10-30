@@ -1,3 +1,5 @@
+import {kissaPeopleAt} from '../commerce/kissa-higa.js';
+const KISSA_STORY_TIME=4*1440+462; // Monday 07:42: Yui, Ganaha and Tetsuo overlap before school and work.
 import {HARBOUR_POND,HARBOUR_PARK_SEATS} from '../world/harbour-park-plan.js';
 
 /**
@@ -88,16 +90,16 @@ export const FEED_PLACES=Object.freeze([
  // October its room is Kissa Higa, Grandmother Higa's on weekday mornings (commerce/kissa-higa.js): a morning place, with
  // its regulars from their own days, and the bench out front an evening one. Street shots, waiting for
  // `render-feed-backdrops.mjs kissa-higa higa-liquor coin-laundry`.
- {id:'kissa-higa',name:'Kissa Higa, Grandmother Higa’s morning coffee shop in the old liquor shop',short:'Kissa Higa',kind:'shop',regulars:['Grandmother Higa','Miss Higa','Tetsuo','Officer Mori','Ms Ganaha'],captured:false,
+ {id:'kissa-higa',name:'Kissa Higa, Grandmother Higa’s morning coffee shop in the old liquor shop',short:'Kissa Higa',kind:'shop',regulars:kissaPeopleAt(KISSA_STORY_TIME),captured:true,
   things:['the two siphons on their spirit lamps','the morning set: thick toast and a boiled egg','the white enamel kettle','the hand grinder','the record player and her husband’s 45s','the photograph of the island bus','the family kusu with its not-for-sale card','the stools along the ledge','the bentwood chairs at the table','the A-board on the pavement','the week’s town paper on the rack'],
-  doing:['ordering the morning set','waiting for the siphon to draw','reading the town paper at the ledge','asking for the record with the writing on the sleeve','being told the jar is not for sale','nodding off over the toast after the night patrol','pretending not to notice which stool Grandmother Higa keeps for Yui'],
+  doing:['ordering the morning set','waiting for the siphon to draw','reading the town paper at the ledge','asking for the record with the writing on the sleeve','being told the jar is not for sale','pretending not to notice which stool Grandmother Higa keeps for Yui'],
   activity:{hold:['coffee'],chance:.7,sit:.6},
-  shot:{at:[8.85,7.8],camera:{pos:[6.45,1.55,9.3],at:[9.85,.8,7.7]},time:460}},
- {id:'higa-liquor',name:'the bench outside Kissa Higa',short:'the bench outside Kissa Higa',kind:'shop',regulars:['Tetsuo','Mac'],captured:false,
+  shot:{at:[8.85,7.8],camera:{pos:[6.45,1.55,9.3],at:[9.85,.8,7.7]},time:KISSA_STORY_TIME}},
+ {id:'higa-liquor',name:'the bench outside Kissa Higa',short:'the bench outside Kissa Higa',kind:'shop',regulars:['Tetsuo','Mac'],captured:true,
   things:['the shutter, down for the evening','the kissaten’s paper on it, still sending the drink to Sakura','the crates of empties','the bench out front','the crate stools','the enamel awamori tin left up on the flank'],
   doing:['sitting on the bench with a bottle from Sakura','pointing a visitor down the street to Sakura','counting the empties back','asking after the old jar','arguing about whether the coffee or the beer came first'],
   activity:{hold:['bottle','can'],chance:.6,sit:.4},
-  shot:{at:[3.3,8.4],camera:{pos:[-1.5,1.7,4.5],at:[7.5,1.8,8.8]},time:1110}},
+  shot:{at:[3.5,10.5],camera:{pos:[2.7,1.6,10.7],at:[6,1.1,8.7]},time:1110}},
  {id:'coin-laundry',name:'the coin laundry',short:'the laundry',kind:'shop',regulars:['Ms Ganaha','Thao','Ms Uezu','Nhung'],captured:false,
   things:['the noticeboard','the missing-cat notice','the found blue sandal','the manga shelf','the vinyl bench','the change machine','dryer 2, which eats coins','the folding counter','the powder box','a basket of somebody’s washing'],
   doing:['waiting for the spin','reading a manga on the bench','pinning up a notice','folding warm towels at the window','feeding coins into the dryer','reading the noticeboard','emptying the coin boxes'],

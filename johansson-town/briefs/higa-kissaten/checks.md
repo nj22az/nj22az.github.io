@@ -46,3 +46,29 @@ Not done: no build into the game, no CI guard run (no game code changed), no pho
 
 Not done: a phone or a real GPU, physical devices, the Linux edition, the storyteller's backdrops; and the independent
 review, still running at handover.
+
+## Codex review (30 October 2026; Node 24.22.1, Chromium 153, SwiftShader)
+
+| Check | Command / evidence | Result |
+| --- | --- | --- |
+| Focused schedules, feed, collision and frontage regressions | `node --test tests/feed-storyteller.test.mjs tests/feed-seating.test.mjs tests/kissa-higa.test.mjs tests/higa-shop-collision.test.mjs tests/higa-liquor-laundry.test.mjs` | **51/51** |
+| Accepted places and final runtime | `node --test tests/feed-storyteller.test.mjs tests/feed-seating.test.mjs tests/runtime-package.test.mjs` | **16/16** |
+| Runtime | `npm run build:runtime` | **passed**, `boot-DfkZ-ZpG.js`; source SHA-256 `116a61c368eaeb4b9d57762f1aed26e1c5581704f734b27057861acbe8610d3a` |
+| Full CI guard | `NODE_OPTIONS=--max-old-space-size=6144 node tools/ci-guard.mjs` | **482/482, 91 files, all green in 248 s** |
+| Built live residents | `CHROMIUM_PATH=… node tools/kissa-higa-live.mjs docs/qa/kissa-higa/review-live` | **passed**: days 4, 6 and 11, Tetsuo stool-2 at 08:20 then Mori at 08:35; Ms Uezu chair-1 on day 11; no page errors |
+| Closing with a customer | same live run; `review-live/report.json`, `closing-held-0952.jpg`, `closing-clear-0957.jpg` | **passed**: shutter up, both solids passable while occupied; keeper waits outside; closes after release |
+| Refreshed static photographs | `CHROMIUM_PATH=… node tools/kissa-higa-photos.mjs after` | ten, existing models loaded; no page errors; source scene, no residents |
+| Storyteller backdrops | `TOWN_CHROMIUM_PATH=… node tools/render-feed-backdrops.mjs --source kissa-higa higa-liquor` | eight views, two thumbnails, eight depth maps and seat metadata; final empty-set open/shut assertions pass, no page errors; both flags true after inspection |
+| Visual inspection | each final file opened at original resolution | all 21 live and ten static photographs, eight 1600×1200 backdrop views, both thumbnails inspected; accepted for their stated scope; cartoon feet unchanged |
+| Whitespace | `git diff --check` | clean |
+
+Fixes: `75a8e72b`, on `codex/kissa-higa-review`, intended draft target `claude/great-sagan-mvc9bb`; no merge to main.
+Logs and evidence index: [`docs/qa/kissa-higa/review/`](../../docs/qa/kissa-higa/review/README.md).
+No Meshy calls or credit spend. No phone/iPad, physical device, hardware GPU, touch-control check, Linux packaging,
+Studio sync or public deployment. The original sessions and their historical results above are preserved.
+
+PR/commit record: [draft PR #404](https://github.com/nj22az/nj22az.github.io/pull/404), head `codex/kissa-higa-review`, base
+`claude/great-sagan-mvc9bb`; fixes `75a8e72b`, evidence/runtime `50fee3d3748101a1d1591f5a0581dd90f112d370`.
+Confirmed open, draft, conflict-free and unmerged. Hosted World guard was in progress at the 12:08 UTC read;
+only the local 482/482 result is claimed green here. The following documentation commit records this link; no game
+source, runtime or accepted photograph changes after validation. Re-check current hosted checks before any merge.

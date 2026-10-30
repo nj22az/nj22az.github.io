@@ -59,10 +59,17 @@ try{
  await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/?audit&visual-audit`);
  await page.locator('#enter').click();
  await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&window.__JOHANSSON_AUDIT__&&!window.__JOHANSSON_AUDIT__.blocked.catchingUp,null,{timeout:240000});
+ // Draw only the requested stills; the frozen RAF may keep streaming, without continuously re-rendering the town.
+ await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.renderFrozen=false;});
  await page.addStyleTag({content:'body>*:not(#game){visibility:hidden!important}#game{visibility:visible!important}'});
  const settle=async()=>{await page.waitForFunction(()=>!window.__JOHANSSON_AUDIT__.blocked.roomLoading&&!window.__JOHANSSON_STREAMING__?.active);await page.waitForTimeout(2500);};
  const hideCast=()=>page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;
   for(const h of [a.hands,a.hands?.group,a.hands?.root])if(h?.isObject3D)h.visible=false;
+  // These are empty story sets: hide the actual resident roots too, so a previous fixture’s hidden keeper cannot hold
+  // the evening shutter open. Re-sample that frontage after removing occupancy, without advancing the story’s time.
+  for(const g of [...a.world.people.map(p=>p.g),...(a.world.neighbours||[])])g.visible=false;
+  if(a.johansson?.root)a.johansson.root.visible=false;
+  const h=a.world.quarters?.higa,t=JSON.parse(window.render_game_to_text()).minutes;if(h){h.update(t-.001);h.update(t);}
   a.scene.traverse(o=>{if(o.isSkinnedMesh)o.visible=false;if(o.isBone)o.traverse(c=>{if(c.isMesh)c.visible=false;});});});
 
  /** The camera the game is drawing with now, as position and look-at. */
@@ -143,9 +150,10 @@ try{
 
  const capture=async(place,name)=>{
   await hideCast();
+  if(place.id==='higa-liquor'||place.id==='kissa-higa'){const shut=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.world.quarters.higa.shutter.scale.y>=.999);if(shut!==(place.id==='higa-liquor'))throw Error(place.id+': frontage does not match its story time');}
   await page.evaluate(()=>window.__JOHANSSON_AUDIT__.render());
   if(seatsOnly){const seats=await page.evaluate(seatScan);const view=views[place.id]?.[name];if(view){view.seats=seats;delete view.spots.seat;}console.log('Seats:',place.id,name,seats.length);return;}
-  const png=resolve(out,'.capture.png');await page.locator('#game').screenshot({path:png});
+  const png=resolve(out,'.capture.png');await page.screenshot({path:png,clip:{x:0,y:0,width:W,height:H},animations:'disabled'});
   webp(png,resolve(out,`${place.id}-${name}.webp`),{quality:80});
   if(name==='wide')webp(png,resolve(out,place.id+'.webp'),{quality:78,resize:[960,720]});
   await unlink(png);
@@ -182,7 +190,9 @@ try{
     return {at,camera:{pos:[cam[0],shot.lane.height,cam[1]],at:[look[0],1.2,look[1]]}};
    },shot);
    await page.evaluate(({at,camera})=>{const a=window.__JOHANSSON_AUDIT__;a.teleport(...at);a.camera=camera;a.render();},view);
-   await settle();await variations(place);
+   await settle();
+   if(place.id==='kissa-higa')await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.scene.getObjectByName('Kissa Higa models')?.children.length===4);
+   await variations(place);
    await page.evaluate(()=>{window.__JOHANSSON_AUDIT__.camera=null;});
   }
   await writeFile(viewsPath,JSON.stringify(views)+'\n');

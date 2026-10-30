@@ -242,11 +242,13 @@ test('the front follows Kissa Higa’s clock: open on a weekday morning, the shu
   assert.equal(blocked(),true,`nobody walks in at ${h}:${m}`);assert.equal(higa.shutter.visible,true,'the shutter is down');assert.equal(higa.lights.emissiveIntensity,0,'and the lights are off');
   assert.equal(higa.aboard.visible,false,'the board is in');assert.equal(board(),false);assert.equal(higa.paper.visible,true,'the paper is on the shutter');
  }
- // The way in opens once the shutter is up past 40% (06:53) and shuts once it is down past it (09:46); update says so.
- assert.equal(higa.update(at(wed,6,52)),false);assert.equal(blocked(),true,'half up at 6:52: not yet');
- assert.equal(higa.update(at(wed,6,54)),true,'the way in opened');assert.equal(blocked(),false);
- assert.equal(higa.update(at(wed,9,45)),false,'still open at 9:45, while she is out on the pavement');
- assert.equal(higa.update(at(wed,9,47)),true,'the way in shut');assert.equal(blocked(),true);
+ // 30 October review: the hand-pulled roll is nine seconds (0.15 town minute), with the A-board set out/taken in
+ // by the keeper at the front. Keep the actual fractional-minute passage and obstacle assertions.
+ assert.equal(higa.update(at(wed,6,49)),false);assert.equal(blocked(),true);
+ assert.equal(higa.update(at(wed,6,50)+.04),true,'the board is put out');assert.equal(blocked(),true,'not high enough yet');
+ assert.equal(higa.update(at(wed,6,50)+.1),true,'the way in opened');assert.equal(blocked(),false);
+ assert.equal(higa.update(at(wed,9,44)+.04),true,'the board is taken in');assert.equal(blocked(),false,'the bottom rail is still high');
+ assert.equal(higa.update(at(wed,9,44)+.1),true,'the way in shut');assert.equal(blocked(),true);
  // The notice is taped to the shutter's face, in front of the steel and not through it.
  const notice=HIGA_LETTERING.notice,face=HIGA_FRAME.D-.15+.01;
  assert.ok(notice.at[2]>face&&notice.at[2]-face<.01,'the notice sits on the shutter');

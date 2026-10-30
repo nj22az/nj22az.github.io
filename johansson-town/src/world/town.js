@@ -315,7 +315,7 @@ export function createTown(options){
    world.onsen=buildParkOnsen(world,{register:options.register,onAction:options.onAction,enter:options.enter,sites:options.sites,shadows:options.shadows});
    // The streets that fill the rest of the island in: Nishi-machi behind the west
    // yard, and shop-houses along both kerbs of Main Street. See okinawa/layout.js.
-   world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows});
+   world.quarters=buildOkinawaQuarters(world,{register:options.register,onAction:options.onAction,shadows:options.shadows,getPlayerPosition:options.getPlayerPosition});
    // Halloween on Sakura Street: the children's walk's lanterns, paper ghosts and the drinks machine's cord reel
    // (hidden until the season or a story stages it). See halloween.js.
    world.halloween=buildHalloween(world,{shadows:options.shadows});

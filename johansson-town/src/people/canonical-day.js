@@ -17,7 +17,7 @@ import {quayBreakPlan} from './quay-breaks.js';
 import {shopDayPlan,LAUNDRY_STANDS} from './shop-days.js';
 import {kitahamaShopOnDuty,kitahamaShopOpen,DOOR_POINT as KITAHAMA_SHOP_DOOR} from '../world/okinawa/kitahama-shop.js';
 import {YUNTAKU} from '../commerce/higa-liquor.js';
-import {KISSA_KEEPER,kissaVisitAt} from '../commerce/kissa-higa.js';
+import {KISSA,KISSA_KEEPER,kissaVisitAt} from '../commerce/kissa-higa.js';
 import {EAST_QUAY} from '../world/okinawa/layout.js';
 
 const HOME_TARGETS=new Map();
@@ -45,11 +45,12 @@ export function canonicalDestination(name,place){
 }
 /** Shared by the street neighbour and the same actor borrowed into its private room. */
 const DAYS=new Map(CAST.map(p=>[p.name,p.day.map(([time,place,activity])=>({from:minute(time),place,activity})).sort((a,b)=>a.from-b.from)]));
-export function canonicalDay(name,minutes,rain=false){
+export function canonicalDay(name,minutes,rain=false,{kissaClosingHeld=false}={}){
  const p=castMember(name);if(!p)return null;
  const m=((minutes%1440)+1440)%1440,phases=DAYS.get(p.name);
  const phase=phases.filter(s=>s.from<=m).at(-1)||phases.at(-1),isHome=(phase.place===p.home||p.alsoAt.includes(phase.place))&&!/sweeping|the garden|at her gate/.test(phase.activity)&&(p.home!==p.work||/home|breakfast|asleep|sleep/.test(phase.activity));
  const homePlan=activity=>{const h=activeTarget(name);return {place:'home',target:[h.x,h.z],activity,rain:!!rain};};
+ if(name===KISSA.keeper&&kissaClosingHeld)return shopDayPlan(name,minutes,{kissaClosingHeld:true});
  // The bosun's rota (ferry-crew.js bosunFor): Ms Uezu's week on and week off, Kōji her relief. On his week the ship has
  // him for her whole working day (FERRY_WORKING_DAY, the crew controller draws him aboard and hides this body), so he
  // is never at the auction, the ice plant or his own sabani while he is signed on, and his fisherman's early night

@@ -278,3 +278,33 @@ grinder prepared for World (512 px, colliders, a look under the ink at phone siz
 storyteller place and its backdrop; the guide and the rules text; the tests in section B updated with dated notes (none
 weakened); `npm run build:runtime`; the CI guard with CI's heap; photos at 07:40 and 10:00, looked at. Publishing to
 `main` only on the owner's word.
+
+## Codex independent review (30 October 2026; unpublished)
+
+Branch `codex/kissa-higa-review`, from `claude/great-sagan-mvc9bb` including its independent-review note `a7809833`.
+Fix commit `75a8e72bdc2e4324f724de4e00843ad01ed8db3e`. The [handover's Codex review](../HANDOFF-KISSA-HIGA-2026-10-30.md#codex-review--30-october-2026-unpublished)
+marks every initial finding fixed or still open, including the additional overlapping print-atlas regions.
+
+The actual street planner now brings Tetsuo and Mori; their sleep and Tetsuo's workshop shift agree with the authored
+day. Tetsuo leaves five minutes before Mori. Ganaha goes directly to the laundry. The frontage holds its shutter and
+colliders for anyone inside, with the keeper waiting outside. Closed prompts recheck access. Replanning reaches local
+walks in both controllers and leaves sitters and distant journeys alone. Board, tubes, paper and prompt text follow the
+keeper's opening/closing operations; the board, shelf collider and keeper mark are corrected and tested.
+
+Final runtime built (`boot-DfkZ-ZpG.js`). Focused tests 51/51; feed/runtime acceptance 16/16; full guard:
+**482/482, 91 files, all green in 248 s**. Built live checks passed at 08:20/08:35 on days 4, 6 and 11, with Ms Uezu on chair-1 on day 11;
+closing held safely with the player inside at 09:52, then closed after release. No page errors. All 21 live and ten
+refreshed static photographs were inspected at full size. Both storyteller places now have eight accepted backdrop
+views, two thumbnails, depth and seat metadata, and `captured:true`. Evidence and logs:
+[`docs/qa/kissa-higa/review/`](../../docs/qa/kissa-higa/review/README.md).
+
+No seat height changed: the established 0.21–0.25 m cartoon shoe gap remains the owner's decision. The unbuilt lunch
+garden half and Yui's earlier breakfast choice remain open as recorded above. No Meshy calls, credits or new models.
+No phone, physical device, hardware GPU, installed Linux edition or Studio sync was checked. No merge or publication;
+the draft targets the source branch, and `main` is untouched by this work.
+
+PR/commit record: [draft PR #404](https://github.com/nj22az/nj22az.github.io/pull/404), head `codex/kissa-higa-review`, base
+`claude/great-sagan-mvc9bb`; fixes `75a8e72b`, evidence/runtime `50fee3d3748101a1d1591f5a0581dd90f112d370`.
+Confirmed open, draft, conflict-free and unmerged. Hosted World guard was in progress at the 12:08 UTC read;
+only the local 482/482 result is claimed green here. The following documentation commit records this link; no game
+source, runtime or accepted photograph changes after validation. Re-check current hosted checks before any merge.

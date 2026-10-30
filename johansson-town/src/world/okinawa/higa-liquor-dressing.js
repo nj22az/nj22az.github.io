@@ -4,7 +4,7 @@ import {createKit,paint} from './kit.js';
 import {japaneseSign,signText} from './signs.js';
 import {createShopGlass} from '../shop-glass.js';
 import {YUNTAKU} from '../../commerce/higa-liquor.js';
-import {KISSA_NOTICE,KISSA_MENU,KISSA_RECORDS,kissaShutterDown,kissaOnDuty,kissaOpen} from '../../commerce/kissa-higa.js';
+import {KISSA,KISSA_NOTICE,KISSA_MENU,KISSA_RECORDS,kissaDay,createKissaClosing,inKissaHiga,kissaOnDuty,kissaOpen} from '../../commerce/kissa-higa.js';
 
 /**
  * Higa Liquor (比嘉酒店), dressed as the 1990s island liquor shop it is (the owner, 21 October 2026: "I see the liquor
@@ -46,7 +46,7 @@ const item=o=>Object.freeze({...o,at:Object.freeze(o.at)});
 /**
  * Every new thing in, on and around the shop, by who it is for and why it is where it is. `at` is its middle in the
  * shop-house's frame; `build` says whether it is part of the building, the shop's fittings, a prop outside, or a thing
- * that followed the hours until the shop shut and stands still now (commerce/higa-liquor.js).
+ * that follows the kissaten’s opening hours (commerce/kissa-higa.js).
  */
 export const HIGA_DRESSING=Object.freeze([
  // The building.
@@ -71,10 +71,10 @@ export const HIGA_DRESSING=Object.freeze([
  item({id:'empties',side:'front',at:[-1.33,.45,4.11],build:'prop',who:'the brewery’s boat, and Kōji’s round',why:'Yellow crates of empty large bottles stacked by the door on the Kitano Road side: the bench’s returns, bought at Sakura and left here for Kōji to carry across to the crate yard when the round brings its empties back at half past eleven.',period:'Returnable large bottles in twenty-bottle crates, ¥5 back on each, were how beer was sold.'}),
  item({id:'bicycle',side:'front',at:[-2.08,.5,4.85],build:'prop',who:'Grandmother Higa',why:'The old black delivery bicycle, nose-in to the pier at the Kitano Road corner, clear of the door and the bench.',period:'The shopkeeper’s heavy carrier bicycle.'}),
  item({id:'yuntaku-bench',side:'front',at:[1.68,.22,4.23],build:'prop',who:'the evening regulars (YUNTAKU)',why:'A timber bench (縁台) against the police-station end of the front and two upturned beer crates for stools: where men still sit with a bottle of an evening, bought at Sakura since the shop shut.',period:'Benches in front of island shops, and talking on them (ゆんたく), are Okinawan evenings.'}),
- item({id:'a-board',side:'front',at:[-.62,.33,D+.4],build:'open-hours',who:'people on Main Street',why:'A folding board (A看板) put out under the awning in the kissaten’s hours, beside the door on the Kitano Road side and turned along the footway so it is read walking either way: 喫茶ひが, モーニング ¥300, toast and a boiled egg. Taken in at half past nine.',period:'Every kissaten put a board out in the morning.'}),
+ item({id:'a-board',side:'front',at:[-1.55,.33,D+.8],build:'open-hours',who:'people on Main Street',why:'A folding board (A看板) put out under the awning in the kissaten’s hours, beside the fixed pane and the empties on the Kitano Road side, clear of both door leaves and turned along the footway so it is read walking either way: 喫茶ひが, モーニング ¥300, toast and a boiled egg. Set out when she lifts the shutter and taken in when she pulls it down.',period:'Every kissaten put a board out in the morning.'}),
  // The kissaten inside.
  item({id:'counter',side:'inside',at:[-.84,.48,-.45],build:'fitting',who:'Grandmother Higa',why:'The old wooden counter across the back, facing the door, is the coffee counter: her worktop at 95 cm with the siphons, the kettle, the grinder, the register and her abacus. Its end is open on the police-station side so she can come round, and customers pay there.',period:'The keeper’s counter at the back, facing the door.'}),
- item({id:'ledge',side:'inside',at:[-1.16,.72,0],build:'fitting',who:'the regulars',why:'A ledge 74 cm high along the counter’s front, the izakaya’s counter height, so a resident on a 46 cm stool sits with their feet on the floor; it stops short of the register, where customers pay.',period:'A kissaten’s counter seats, at the height a short island grandmother can serve over.'}),
+ item({id:'ledge',side:'inside',at:[-1.16,.72,0],build:'fitting',who:'the regulars',why:'A ledge 74 cm high along the counter’s front, the izakaya’s counter height, paired with 46 cm stools as at the izakaya; it stops short of the register, where customers pay.',period:'A kissaten’s counter seats, at the height a short island grandmother can serve over.'}),
  item({id:'stools',side:'inside',at:[-1.12,.23,.44],build:'fitting',who:'the regulars (KISSA_REGULARS)',why:'Three round stools in red vinyl on chrome feet along the ledge: Ms Ganaha’s, Yui’s, and the one Tetsuo has before Officer Mori.',period:'Red vinyl and chrome, the seventies counter stool.'}),
  item({id:'siphons',side:'inside',at:[-1.33,1.1,-.45],build:'fitting',who:'Grandmother Higa',why:'Two glass siphons on spirit lamps on the worktop: the coffee is made a cup at a time, the water climbing into the top bowl and falling back dark. Their glass is the frontage’s; the lamps burn while the shop is open.',period:'The siphon was the kissaten’s showpiece from the sixties.'}),
  item({id:'kettle',side:'inside',at:[-1.86,1.05,-.5],build:'fitting',who:'Grandmother Higa',why:'A white enamel kettle with a gooseneck spout on a gas ring at the Kitano Road end of the worktop: the siphons’ water, poured hot so the lamps have less to do.',period:'An enamel kettle on a single gas ring.'}),
@@ -102,8 +102,9 @@ export const HIGA_LEFT_OUT=Object.freeze([
 
 const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif',GOTHIC='"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 /** The shop's lettering on one 1024×512 sheet, so every card, poster, board and tin is one draw call. Regions in pixels. */
-const ATLAS=Object.freeze({w:1024,h:512,valance:[0,0,1024,96],tin:[0,112,320,200],hours:[336,112,160,220],menu:[512,112,200,280],poster:[728,112,200,280],
- aboard:[0,330,128,180],kusu:[300,404,96,108],notice:[420,330,128,176],photo:[560,400,120,96]});
+export const HIGA_ATLAS=Object.freeze({w:1024,h:512,valance:[0,0,1024,96],tin:[0,112,320,200],hours:[336,112,160,220],menu:[512,112,200,280],poster:[728,112,200,280],
+ aboard:[0,330,128,180],kusu:[300,404,96,108],notice:[152,330,128,176],photo:[560,400,120,96]});
+const ATLAS=HIGA_ATLAS;
 
 function paintLettering(){
  return paint(ATLAS.w,ATLAS.h,ctx=>{
@@ -230,7 +231,7 @@ export function higaInterior(kit){
   for(const x of [x0-.02,x1+.02])kit.box(.04,1.95,.24,x,.975,zc,0x5d3f28);
   for(const y of [1.0,1.45])for(let i=0;i<5;i++){const x=x0+.1+i*.175;kit.cyl(.06,.06,.012,x,y+.006,zc,0xf4f2ec,{segments:12});kit.cyl(.035,.03,.06,x,y+.042,zc,0xf4f2ec,{segments:10});}
   for(let i=0;i<3;i++)kit.cyl(.07,.07,.16,x0+.17+i*.28,1.98,zc,[0x8a5a2a,0x2f5d46,0xb8302a][i],{segments:12,finish:'gloss'});
-  solids.push(kit.rect(x0,x1,back,z1+.02,2.3,'kissa-cup-shelf'));}
+  solids.push(kit.rect(x0-.04,x1+.04,back,z1+.02,2.3,'kissa-cup-shelf'));}
  {const x=-1.62,z=-1.42;
   kit.box(.62,.25,.62,x,.125,z,0x4a3324);kit.sphere(.27,x,.55,z,0x8a5a3c,{sy:1.15,detail:2});
   kit.cyl(.1,.13,.12,x,.88,z,0x8a5a3c,{segments:12});kit.cyl(.14,.14,.04,x,.96,z,0xa07a4a,{segments:12});
@@ -368,19 +369,19 @@ function norenCloth(){
  * mesh), the two door leaves, the roller shutter with the kissaten's paper on it, the tubes and the spirit lamps' flames,
  * the storeroom's noren, the A-board and the lettering sheet. `update(minutes)` follows Kissa Higa's clock
  * (commerce/kissa-higa.js): the shutter rolls up and down, the doors slide open while it is up, the tubes light while
- * Grandmother Higa is in, the lamps burn and the board is out while it is open. It returns true when the way in has
- * opened or shut, so the residents' routes can be searched again.
+ * Grandmother Higa is in, the lamps burn and the board is out while it is open. It returns true when the way in or the A-board obstacle changes, so nearby routes can be searched again.
  */
-export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=false}={}){
+export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=false,getOccupants=()=>[]}={}){
  const group=new THREE.Group();group.name='Kissa Higa frontage';group.position.set(origin[0],0,origin[1]);group.rotation.y=-Math.PI/2;
  group.userData.placeId='kissa-higa';
  const F=HIGA_FRAME.floor,sheet=paintLettering(),letters=new THREE.MeshStandardMaterial({map:sheet,roughness:.8});
  const {notice,...fixedLettering}=HIGA_LETTERING;
  const lettering=new THREE.Mesh(mergeGeometries(Object.values(fixedLettering).map(q=>letteringQuad(ATLAS[q.r],q.w,q.h,q.at,q.ry))),letters);
  lettering.name='Kissa Higa lettering (valance, tin, cards, poster, menu, photograph)';lettering.receiveShadow=true;group.add(lettering);
- // The paper taped to the shutter: its own quad, shown only while the shutter is all the way down (it would hang in the
- // doorway otherwise; a paper on a rolling shutter goes up into the box with the slats).
+ // The paper taped to the shutter: its own quad, travelling with the slats and cropped at the roller box.
  const paper=new THREE.Mesh(letteringQuad(ATLAS[notice.r],notice.w,notice.h,notice.at,notice.ry),letters);paper.name='Kissa Higa notice';paper.receiveShadow=true;group.add(paper);
+ const paperPositions=paper.geometry.attributes.position,paperUV=paper.geometry.attributes.uv,paperBaseY=Array.from({length:paperPositions.count},(_,i)=>paperPositions.getY(i));
+ const v0=Math.min(...Array.from({length:paperUV.count},(_,i)=>paperUV.getY(i))),v1=Math.max(...Array.from({length:paperUV.count},(_,i)=>paperUV.getY(i)));
  // The glass: the two fixed panes (clear shop glass, drawn after the room), and the siphons' flasks, top bowls, tubes and
  // lamps in a glass that shows (a faint blue tint and its own sheen): in the clear shop glass the flasks vanished and the
  // coffee in them hung in the air.
@@ -436,20 +437,25 @@ export function higaFrontage({origin=HIGA_FRAME.origin,trim=0x8a3b2e,shadows=fal
  const shutterSolid={id:'higa-shutter',x:front.x,z:front.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:0};
  const doorSolid={id:'higa-doors',x:doorway.x,z:doorway.z,w:.12,d:DOOR*2,height:DOOR_H,minY:0};
  const aboardSolid={id:'kissa-a-board',x:board.x,z:board.z,w:.44,d:.34,height:.7,minY:1e3};
- let passage=null;
+ let passage=null,boardOut=null;const closing=createKissaClosing();
  const update=minutes=>{
-  const down=kissaShutterDown(minutes),open=kissaOpen(minutes),pass=down<=.4;
+  const occupied=getOccupants().some(p=>p&&inKissaHiga(p)),down=closing.update(minutes,occupied),open=kissaOpen(minutes),pass=down<=.4;
+  const m=((minutes%1440)+1440)%1440,boardVisible=kissaDay(minutes)&&m>=KISSA.shutterUp&&m<KISSA.shutterDown;
   shutter.visible=down>0;shutter.scale.y=Math.max(down,.001);shutter.position.set(0,opening.head-tall*down/2,opening.z);
   steel.repeat.set(1,Math.max(down,.001));steel.offset.set(0,0);
   shutterSolid.minY=pass?1e3:0;doorSolid.minY=pass?1e3:0;
   for(const {leaf,s} of leaves)leaf.position.set(s*(pass?DOOR*1.5:DOOR/2),0,LEAF_Z);
-  lit.emissiveIntensity=kissaOnDuty(minutes)&&down<1?1:0;
-  flames.visible=open;aboard.visible=open;aboardSolid.minY=open?0:1e3;
-  paper.visible=down===1;
-  const changed=passage!==null&&passage!==pass;passage=pass;return changed;
+  lit.emissiveIntensity=down<1&&(occupied||kissaOnDuty(minutes)&&m>=KISSA.shutterUp+KISSA.roll&&m<KISSA.out)?1:0;
+  flames.visible=open;aboard.visible=boardVisible;aboardSolid.minY=boardVisible?0:1e3;
+  // The sheet travels up on its slats and is cropped at the shutter box, keeping its printed size.
+  const lift=tall*(1-down),bottom=notice.at[1]+lift-notice.h/2;
+  paper.visible=down>0&&bottom<opening.head;
+  for(let i=0;i<paperPositions.count;i++){const y=Math.min(opening.head,paperBaseY[i]+lift);paperPositions.setY(i,y);paperUV.setY(i,v0+(v1-v0)*Math.max(0,Math.min(1,(y-bottom)/notice.h)));}
+  paperPositions.needsUpdate=paperUV.needsUpdate=true;paper.geometry.computeBoundingSphere();
+  const changed=passage!==null&&(passage!==pass||boardOut!==boardVisible);passage=pass;boardOut=boardVisible;return changed;
  };
  update(720);
- return {group,leaves:leaves.map(l=>l.leaf),shutter,lights:lit,noren,flames,aboard,paper,lettering,shutterSolid,doorSolid,aboardSolid,update};
+ return {group,leaves:leaves.map(l=>l.leaf),shutter,lights:lit,noren,flames,aboard,paper,lettering,shutterSolid,doorSolid,aboardSolid,update,get closingHeld(){return closing.waiting;}};
 }
 /** The A-board's place, in the shop-house frame: under the awning beside the door on the Kitano Road side. */
-const ABOARD=Object.freeze({x:-.62,z:D+.4});
+const ABOARD=Object.freeze({x:-1.55,z:D+.8});

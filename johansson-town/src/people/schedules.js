@@ -302,7 +302,16 @@ export function createCastAI({world,player,state,paused,collides,getObserverPosi
  // and pointed at the shelter, which stopped being behind the bus when the bus stopped
  // coming down to the shelter.
  const alightingPoint=()=>(world.ferry||world.bus)?.door||transitStop().arrival;
- return {update(dt,minutes,rain){if(paused())return;
+ return {
+ replan({at=null,radius=12}={}){
+  navigation.clearCache();if(!at){routes.clear();return;}
+  const near=point=>point&&Math.hypot(point[0]-at[0],point[1]-at[1])<=radius;
+  for(const p of world.people){const g=p.g;if(g.userData.standSeat)continue;
+   const route=routes.get(g),target=residentPlan(p.profile,clockMinutes,false,state())?.target;
+   if(near([g.position.x,g.position.z])||near(target)||route?.points?.some(near))routes.delete(g);
+  }
+ },
+ update(dt,minutes,rain){if(paused())return;
   // Drink wears off on the town clock for everyone (drunk.js), wherever they are.
   const passed=Number.isFinite(clockMinutes)?minutes-clockMinutes:0;
   if(passed>0)for(const p of world.people){const u=p.g?.userData;if(u?.tipsy)u.tipsy=soberUp(u.tipsy,passed);}
