@@ -14,12 +14,13 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 
-import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY,LUT_BODY,LUT_LOOKS,MAC_BODY,VGA_BODY,OIL_BODY,ANIME_BODY} from './photo-bodies.js?v=20261030e';
+import {FILM_GLOW,COLOUR_FILM_BODY,DISPOSABLE_BODY,LUT_BODY,LUT_LOOKS,MAC_BODY,VGA_BODY,OIL_BODY,ANIME_BODY,GLITCH_BODY,SORT_STAGES} from './photo-bodies.js?v=20261030e';
 
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
 // Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
 // dots, a blueprint and night vision.
 export const LOOKS=Object.freeze({...WORLD_LOOKS,
+ glitch:Object.freeze({label:'Glitch',short:'Glitch',hint:'Colour streaks sorted by light. On phones this is applied in the photo editor and saved photo.'}),
  animeBackground:Object.freeze({label:'Anime background',short:'Anime BG',hint:'Luminous painted planes, softened along the forms, without cartoon outlines.'}),
  vgaAdventure:Object.freeze({label:'VGA adventure',short:'VGA',hint:'A painted adventure background: 200 rows and a cabinet of 256 colours.'}),
  macOneBit:Object.freeze({label:'1-bit Mac',short:'1-bit Mac',hint:'Black ink and white pixels, with an eight-by-eight ordered screen.'}),
@@ -47,7 +48,7 @@ export const LOOKS=Object.freeze({...WORLD_LOOKS,
  sixtyFourBit:Object.freeze({label:'64-bit',short:'64-bit',hint:'The cartridge console of 1996: small textures filtered smooth, soft haze and a fine dither.'}),
 });
 /** The World Look whose little house stands in for a camera-only Look until its live thumbnail is drawn. */
-export const LOOK_STANDIN=Object.freeze({animeBackground:'watercolour',vgaAdventure:'snes',macOneBit:'pocket',warmSlide:'sepia',softNegative:'sepia',disposable:'sepia',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
+export const LOOK_STANDIN=Object.freeze({glitch:'crt',animeBackground:'watercolour',vgaAdventure:'snes',macOneBit:'pocket',warmSlide:'sepia',softNegative:'sepia',disposable:'sepia',colourFilm:'sepia',adventureInk:'flat',instant:'sepia',camcorder:'crt',halftone:'riso',cyanotype:'mono',nightVision:'pocket',
  colourHandheld:'snes',redVisor:'riso',risoPinkBlue:'riso',risoRedNavy:'riso',risoBlackPink:'riso',risoThree:'riso',eightBit:'snes',thirtyTwoBit:'snes',sixtyFourBit:'tilt'});
 
 
@@ -1079,7 +1080,7 @@ ${i===n-1?`  k=max(k,lineAt(uv,u,1.8,.02,.04)*.95);
 /** The camera's own Looks: each a main of its own over World's shared helpers (Cartoon's program supplies them). Crayon,
  * Stamp, Line drawing, Pencil manga, Manga, Sketchbook, Woodblock print, Pocket and Watercolour keep World's names and
  * swatches but draw a photograph with these, made for one. */
-const CAMERA_BODIES={animeBackground:ANIME_BODY,oil:OIL_BODY,vgaAdventure:VGA_BODY,macOneBit:MAC_BODY,warmSlide:LUT_BODY,softNegative:LUT_BODY,disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
+const CAMERA_BODIES={glitch:GLITCH_BODY,animeBackground:ANIME_BODY,oil:OIL_BODY,vgaAdventure:VGA_BODY,macOneBit:MAC_BODY,warmSlide:LUT_BODY,softNegative:LUT_BODY,disposable:DISPOSABLE_BODY,colourFilm:COLOUR_FILM_BODY,adventureInk:ADVENTURE_BODY,flat:CARTOON_BODY,instant:INSTANT_BODY,camcorder:CAMCORDER_BODY,halftone:HALFTONE_BODY,cyanotype:CYANOTYPE_BODY,nightVision:NIGHT_BODY,crayon:CRAYON_BODY,stamp:STAMP_BODY,lines:LINES_BODY,pencilManga:PENCIL_MANGA_BODY,manga:MANGA_BODY,sketchbook:SKETCHBOOK_BODY,print:PRINT_BODY,pocket:POCKET_BODY,watercolour:WATERCOLOUR_BODY,brushOil:BRUSH_OIL_BODY,mono:MONO_BODY,sepia:SEPIA_BODY,crt:CRT_BODY,snes:SNES_BODY,
  colourHandheld:HANDHELD_COLOUR_BODY,eightBit:EIGHT_BIT_BODY,
  ...Object.fromEntries(Object.entries(RISO_INKS).map(([name,inks])=>[name,risoBody(inks)])),thirtyTwoBit:THIRTY_TWO_BIT_BODY,sixtyFourBit:SIXTY_FOUR_BIT_BODY,redVisor:RED_VISOR_BODY};
 
@@ -1171,7 +1172,11 @@ vec4 lookColor;
 ${body}
 uniform float uAmount;
 out highp vec4 fragColor;
-void main(){lookMain();${subject}vec3 before=texture(tDiffuse,vUv).rgb;fragColor=vec4(mix(before,clamp(lookColor.rgb,0.0,1.0),uAmount),1.0);}`;
+void main(){lookMain();${subject}vec3 before=texture(tDiffuse,vUv).rgb;float alpha=1.0;
+${name==='glitch'?`#ifndef LIGHT
+ before=texture(tSortBase,vUv).rgb;alpha=uSortFinal==1?1.0:lookColor.a;
+#endif`:''}
+fragColor=vec4(mix(before,clamp(lookColor.rgb,0.0,1.0),uAmount),alpha);}`;
 }
 
 /** Whether a Look draws outlines (and so wants camera noise smoothed away first). */
@@ -1447,6 +1452,10 @@ export function createLookEngine(canvas,{light=false}={}){
    gl.activeTexture(gl.TEXTURE0);
   }
   if(u.tGrade){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_3D,grades.get(person.look));gl.uniform1i(u.tGrade,3);gl.activeTexture(gl.TEXTURE0);}
+  if(u.tSortBase){
+   gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,person.sortBase);gl.uniform1i(u.tSortBase,2);gl.activeTexture(gl.TEXTURE0);
+   gl.uniform1i(u.uSortSize,person.size);gl.uniform1i(u.uSortStride,person.stride);gl.uniform1i(u.uSortFinal,person.sortFinal?1:0);
+  }
  };
 
  /**
@@ -1470,9 +1479,19 @@ export function createLookEngine(canvas,{light=false}={}){
   const p=pair(targetName,width,height);let read=0;
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
   steps.forEach(({layer,entry},i)=>{
-   const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,{source,crop,mirror,trick:recipe.trick,look:layer.look}),tile);
-   read=1-read;
+   const sorting=layer.look==='glitch'&&(full||!light),stages=sorting?SORT_STAGES:[{}];
+   let sortBase;
+   if(sorting){
+    const saved=pair(targetName+'-sort',width,height),copy=fixed('copy',COPY);sortBase=saved.items[0].t;
+    pass(copy,p.items[read].t,saved.items[0].f,[0,0,width,height],null,tile);
+   }
+   stages.forEach((stage,j)=>{
+    const sortFinal=j===stages.length-1,last=i===steps.length-1&&sortFinal&&!intoPair;
+    pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],
+     lookUniforms(sortFinal?layer.amount:1,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,
+      {source,crop,mirror,trick:recipe.trick,look:layer.look,sortBase,sortFinal,...stage}),tile);
+    read=1-read;
+   });
   });
   return intoPair?p.items[read].f:true;
  }
@@ -1508,6 +1527,11 @@ export function createLookEngine(canvas,{light=false}={}){
    let budget=parallel?Infinity:3;
    names.forEach((name,i)=>{
     if(name==='none'){const copy=fixed('copy',COPY);if(copy)pass(copy,base.items[0].t,atlas.items[0].f,[i*size,0,size,size]);return;}
+    if(name==='glitch'){
+     const ok=run({...before,layers:[...before.layers,{look:name,amount:1}]},{source,crop,mirror,width:size,height:size,
+      output:atlas.items[0].f,viewport:[i*size,0,size,size],targetName:'thumb-sort',full:source!=='live'});
+     if(!ok)missing.push(name);return;
+    }
     if(LUT_LOOKS[name]&&!grades.has(name)){missing.push(name);loadLuts().catch(()=>{});return;}
     const e=programs.get(lookKey(name,false));
     if(!e&&budget<=0){missing.push(name);return;}
@@ -1531,7 +1555,7 @@ export function createLookEngine(canvas,{light=false}={}){
     // A context lost while drawing reads back nothing: never hand that on as a black photo.
     if(gl.isContextLost())throw new Error('The graphics were lost');
     return {width,height,data:flipRows(pixels,width,height)};
-   }finally{release('export');}
+   }finally{release('export');release('export-sort');}
   },
   failed:name=>!!programs.get(lookKey(name,false))?.failed||!!(LUT_LOOKS[name]&&gradeError),
   lost:()=>gl.isContextLost(),

@@ -162,3 +162,38 @@ void main(){
  c=mix(c,vec3(.98,.97,.92),smoothstep(.78,1.0,l)*.045);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
+
+export const SORT_STAGES=Object.freeze([2,4,8,16].flatMap(size=>{
+ const stages=[];for(let stride=size/2;stride>=1;stride/=2)stages.push(Object.freeze({size,stride}));return stages;
+}));
+export const GLITCH_BODY=`
+#ifndef LIGHT
+uniform sampler2D tSortBase;
+uniform int uSortSize,uSortStride,uSortFinal;
+#endif
+void main(){
+#ifdef LIGHT
+ // Sorting is a still-photo treatment on a phone; never run ten passes on its live camera.
+ gl_FragColor=texture2D(tDiffuse,vUv);
+#else
+ float cell=max(1.0,floor(4.0*unit()));int column=int(floor(vUv.x*uResolution.x/cell));
+ int index=column&15,block=column-index,partner=block+(index^uSortStride);
+ vec2 ownUV=vec2((float(column)+.5)*cell/uResolution.x,vUv.y);
+ vec2 otherUV=vec2((float(partner)+.5)*cell/uResolution.x,vUv.y);
+ vec4 own=texture2D(tDiffuse,ownUV);float eligible=own.a;
+ if(uSortSize==2){
+  eligible=1.0;
+  // Entire 16-cell runs qualify, so comparison exchanges never jump over a black/white barrier.
+  for(int i=0;i<16;i++){
+   vec2 uv=vec2((float(block+i)+.5)*cell/uResolution.x,vUv.y);
+   float l=luma(texture2D(tSortBase,uv).rgb);
+   if(l<.08||l>.92||uv.x>1.0)eligible=0.0;
+  }
+ }
+ if(eligible<.5){gl_FragColor=vec4(texture2D(tSortBase,vUv).rgb,0.0);return;}
+ vec3 other=texture2D(tDiffuse,otherUV).rgb;
+ bool ascending=(index&uSortSize)==0,lower=(index&uSortStride)==0,takeMinimum=ascending==lower;
+ bool exchange=takeMinimum?luma(own.rgb)>luma(other):luma(own.rgb)<luma(other);
+ gl_FragColor=vec4(exchange?other:own.rgb,1.0);
+#endif
+}`;

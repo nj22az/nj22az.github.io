@@ -118,7 +118,7 @@ const LOOK_GROUPS=(()=>{
  const groups=[
   {id:'photo',label:'Photo',looks:['none','mono','sepia','instant','colourFilm','disposable','warmSlide','softNegative','tilt','nightVision']},
   {id:'games',label:'Games',looks:['pocket','colourHandheld','redVisor','eightBit','snes','thirtyTwoBit','sixtyFourBit','macOneBit','vgaAdventure']},
-  {id:'80s',label:'80s',looks:['crt','camcorder']},
+  {id:'80s',label:'80s',looks:['crt','camcorder','glitch']},
   {id:'drawn',label:'Drawn',looks:['lines','sketchbook','crayon','pencilManga','manga','flat','adventureInk','halftone']},
   {id:'painted',label:'Painted',looks:['watercolour','oil','brushOil','animeBackground']},
   {id:'print',label:'Print',looks:['print','stamp','cyanotype']},
@@ -476,7 +476,7 @@ function drawEditor(){
  setCanvasSize(h*e.width/e.height,h);
  // While erasing, the photo as it is under the Looks: no mirror trick, and no frame or date over its edges.
  const recipe=e.comparing?normalRecipe():e.erasing?{...e.recipe,trick:'none'}:e.recipe;
- dirty=!engine.draw(recipe,{source:'edit'});
+ dirty=!engine.draw(recipe,{source:'edit',full:recipe.layers.some(l=>l.look==='glitch'&&l.amount>0)});
  paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing);
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing,e.taken,e.recipe.frame);
 }
