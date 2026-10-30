@@ -103,6 +103,21 @@ shading, GLB loading or post-processing, and nothing in it covers Blender or the
 Nothing was changed apart from this note, and nothing was run beyond reading the README, the SKILL.md, the character and
 three.js guides, the model card and our own film tools. Next: the owner chooses which of 1–6 to build, if any.
 
+**Then built (the owner: "Proceed" on 1–3), in `nj22az/jojo`, branch `claude/admiring-heisenberg-ynv4ds` (`fa416be`,
+pushed, no PR):**
+- The foot-slide check in `remotion/scripts/collide.mjs` (with `feet.mjs`).
+- Action strips: `film.mjs <id> strips`, `moments.mjs` and `look.py --strips`.
+- The cold read: `remotion/REVIEW.md` and the shot-checker.
+- A separate review's fixes. Among them, an older hole: a killed collide worker used to leave a remembered pass.
+
+The handoff with all evidence is `jojo/quality/glitch-checks/progress.md` and `checks.md`. Results on The Haunted
+Vending Machine: no body collisions, but 62 real foot slides. The runners of the flee skate, up to 1.1 m.
+
+**This matters for World.** The cause is World's gait: in `johansson-town/src/avatars/animate.js:684–686` a run moves
+the body 2.6 leg lengths a step while its legs swing about 1.6. As a hard gate, this blocks rendering that film, and
+probably every film with running, until the gait keeps its feet planted. Open for the owner: a hard gate now, or a
+warning until World's gait is fixed.
+
 ## Session handover — 24 October 2026 (night), branch `claude/peaceful-johnson-103tja`: Linux 0.2.19
 
 #393 (Vy cel-shaded) is merged as `94613e2`. The owner: "Linux is still 0.2.18" and "Yes build it pls". Prepared as 0.2.18
