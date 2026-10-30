@@ -5,8 +5,11 @@ own photos”; then “And the saved image is too big should use better compress
 
 ## Branch and publication
 
-`codex/pocket-camera-photo-crop`, based on production `main` `1d355885` (current camera code `37befc31`). Review branch
-only. No merge or push to main; publication awaits the owner's explicit word. The Looks work on other branches is
+`codex/pocket-camera-photo-crop`, based on production `main` `1d355885` (current camera code `37befc31`). Implementation
+commit **`268b1cd6d6d3670c760c0b5742dfc7e206168c92`**, [draft PR #408](https://github.com/nj22az/nj22az.github.io/pull/408)
+into `main`. All 13 uploaded blob hashes and the complete tree match the tested local snapshot (`683bb0df`). The
+command-line push lacked credentials; delivery used the connected GitHub Git-object API with a checked branch lease.
+Review branch only. No merge or push to main; publication awaits the owner's explicit word. The Looks work on other branches is
 separate; no World source or camera Look shader body was changed here.
 
 ## What changed
