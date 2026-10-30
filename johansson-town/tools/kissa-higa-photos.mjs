@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {spawn} from 'node:child_process';
 import {resolve} from 'node:path';
 // Photographs Kissa Higa in the old Higa Liquor (commerce/kissa-higa.js, briefs/higa-kissaten/) from fixed spots at
-// 900 x 600: the street and the room open at 07:40 on a weekday, the shutter going up at 06:52, the shut front at noon
+// 900 x 600: the street and the room open at 07:40 on a weekday, the shutter halfway up at 06:50:04.5, the shut front at noon
 // and on a Saturday morning. Built like fish-market-photos.mjs: the real createTown scene, the town's own ground, the cel
 // and ink passes, no simulation and no residents; the three Meshy models are placed directly (kissa-higa-props.js), not
 // streamed (the page's base is the game's, so assets/ resolves as it does in the game). It runs in a cloud session under

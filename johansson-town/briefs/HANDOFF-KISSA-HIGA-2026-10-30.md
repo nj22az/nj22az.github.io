@@ -5,6 +5,77 @@ Branch `claude/great-sagan-mvc9bb` (nj22az.github.io), on top of the fish-market
 only on the owner's word. The task folder is [`higa-kissaten/`](higa-kissaten/progress.md) (`progress.md` the map, the
 plan, the Meshy audit and what was built; `checks.md`; `sources/task.md` the owner's words).
 
+## Codex review — 30 October 2026 (unpublished)
+
+Current work is on **`codex/kissa-higa-review`**, branched from `claude/great-sagan-mvc9bb`. The base advanced by a
+document-only independent-review note during this session; that note, `a78098332c48d933ee871ac784dda2ef95eb9cc2`, is
+included. The fixes are **`75a8e72bdc2e4324f724de4e00843ad01ed8db3e`**. The runtime, accepted photographs and this
+handover follow in the evidence commit. The draft PR targets **`claude/great-sagan-mvc9bb`**, never `main`.
+**Nothing has been merged or published; only the owner can authorise publication.**
+
+The review read `89d99d7` independently, excluding generated runtime, `index.html`, `sw.js` and `resident-guide.js`.
+The frame conversion (`x = 9.55 - local z`, `z = 8.4 + local x`, rotation −π/2), `yawFacing` signs, absolute-minute
+hooks, Thursday day zero, weekday boundaries and supplies were checked. No conversion or yaw defect was found.
+Regression tests now hold the frame, facings and fractional minute boundaries as well as the fixes below.
+
+| Initial finding | Current disposition |
+| --- | --- |
+| 1. Tetsuo and Mori never come | **Fixed.** The actual street `residentPlan` reads the kissaten visit before home preparation. Sleep agrees: Tetsuo 23:00–07:00; Mori 09:00–15:00. Tetsuo's obsolete commuter shift now agrees with his authored 09:00 radio-bench day. Tests ask the actual street planner, not just `canonicalDay`; all three live cases pass. The front prompt names bodies actually present. |
+| 2. A customer shut inside | **Fixed.** Occupancy of the room and threshold holds both shutter and door collider open. It includes the player and visible residents, excludes the upper floor, and restarts the normal nine-second close only after the last body clears. Grandmother Higa waits at the front, then resumes her bathhouse day. Tests cover re-entry, time seeks and day changes. Live: held at 09:52, closed after the player leaves, photographed at 09:57. |
+| 3. Inside prompts through steel | **Fixed.** All six anchors are hidden while the actual frontage is impassable; stale callbacks recheck access before selling, seating or reading. Tested. |
+| 4. Four-minute shutter | **Fixed.** `roll:.15`: nine real seconds at the default clock speed. Starts remain 06:50 and 09:44; the keeper's safety margins remain. Fractional-roll tests replace obsolete timing assertions, with dated explanations. |
+| 5. Ganaha turns back home | **Fixed.** Breakfast ends at 08:00, directly into her laundry round. Tested. |
+| 6. Story cast disagrees with shot | **Fixed.** Monday day 4, 07:42; regulars derive from `kissaPeopleAt(shot.time)`. The Mori-specific dozing line is removed. Tested. Both places now have accepted captures and `captured:true`. |
+| 7. Whole-town replan | **Fixed.** Navigation caches are invalidated in both resident controllers. Only current positions, targets or paths near the changed entrance (12 m) restart; seated neighbours keep their seat, and stairs finish normally. Distant journeys and seated bodies are tested. The A-board's obstacle changes also invalidate local routes. |
+| 8. Board, tubes, paper and text | **Fixed.** The board is put out and taken in at the keeper's shutter operations. Tubes follow her inside phase or actual occupancy. The paper translates with the slats and is cropped by the top box without shrinking. Opening/closing prompts no longer offer the rolled-away notice. Tests and refreshed stills hold these states. |
+| 9. Shared-minute stool handover | **Fixed.** Tetsuo leaves at 08:25, Mori starts at 08:30; five clear minutes. Per-minute seat exclusivity and live 08:20/08:35 checks pass. |
+| 10. Board, shelf, keeper | **Fixed.** Board at local (−1.55, 4.65), beside the leaf and clear of the empties and bicycle; shelf collider includes its uprights; keeper at local (−0.9, −1.15), visible beside the register and reachable on the 0.5 m navigation grid. Tested and photographed. |
+| 11. Garden and Yui decisions | **Still open to the owner.** The weekday lunch half of the garden round is not built. Yui's counter breakfast remains the earlier builder's choice without a specific recommendation; the owner may reverse it. No additional decision is inferred here. |
+| 12. Cartoon feet | **Reported, unchanged.** Chair-height cartoon seats across town leave shoes about 0.21–0.25 m off the floor. These are the same-body shoe measurements in the original checks, not a comparison of unlike foot bones. No seat height was changed. Rules and source comments no longer promise feet on the floor. |
+| Additional independent finding: print atlas overlap | **Fixed.** The shutter notice's atlas region overlapped the menu/hours print. It now has its own unused rectangle. A pairwise atlas-bounds test reproduced the overlap and holds the separation. The refreshed notice, menu and hours photographs read. |
+
+### Checks actually completed in this review
+
+Cloud Linux, Node **24.22.1**, Chromium **153** with software WebGL (SwiftShader), no physical device. The existing
+Japanese fallback font was installed in the capture environment only; no font or model was added to the game.
+
+- `npm run build:runtime`: **passed**; entry `boot-DfkZ-ZpG.js`, source SHA-256
+  `116a61c368eaeb4b9d57762f1aed26e1c5581704f734b27057861acbe8610d3a`.
+- Final focused suite (feed storyteller/seating, Kissa Higa, Higa collisions and laundry): **51/51**.
+- After enabling the accepted backdrops, feed storyteller/seating and runtime-package: **16/16**.
+- Exact required full guard: **482/482, 91 files, all green in 248 s**.
+- Built running game: `CHROMIUM_PATH=… node tools/kissa-higa-live.mjs docs/qa/kissa-higa/review-live`:
+  **passed**, no page errors. Monday day 4 and Wednesday day 6: Tetsuo on `kissa-stool-2` at 08:20, Mori there at
+  08:35, Tetsuo no longer seated. Rota week 1 Monday day 11: the same, plus Ms Uezu on `kissa-chair-1` at both times.
+  These are the running controllers, not posed residents. The 09:52 occupancy hold keeps both collider minimum heights
+  at 1000 and the visible shutter up; the 09:57 photograph shows it down after release. The evening baseline is 19:41:
+  Tetsuo sits on the existing bench; Mac stands beside it in this run.
+- Static source scene: `CHROMIUM_PATH=… node tools/kissa-higa-photos.mjs after`: **10 photographs**, models loaded,
+  no page errors. This is the source town with cel/ink rendering and directly loaded props, not a resident simulation.
+  The obsolete 06:52 rising-shutter photograph is replaced by 06:50:04.5, halfway through the new roll.
+- Backdrops: `TOWN_CHROMIUM_PATH=… node tools/render-feed-backdrops.mjs --source kissa-higa higa-liquor`:
+  **eight views**, two thumbnails and eight packed depth maps plus `views.json`; no page errors. The four morning and
+  four evening colour views (1600 × 1200) and both thumbnails were inspected at full size before setting the flags.
+  Depth maps are 800 × 600 with nonconstant packed depth. The evening camera is now beside the bench, clear of the
+  road sign; capture hides whole resident roots and re-samples the empty room so a hidden keeper cannot hold it open.
+- **Every final photograph was opened at its original resolution:** 21 live, 10 static, eight backdrop views, and both
+  backdrop thumbnails. The live close-up of Ms Uezu frames the seat and body; the top of her cap is outside that lens.
+  The hanging cartoon feet remain the explicit owner decision above.
+- `git diff --check`: clean. No test was weakened. No Meshy call, credit spend, new model or new scene prop asset.
+
+Logs, exact commands and evidence index: [`docs/qa/kissa-higa/review/`](../docs/qa/kissa-higa/review/README.md).
+Resident JSON and photographs: [`review-live/`](../docs/qa/kissa-higa/review-live/).
+
+Preliminary captures are not acceptance evidence: an early live run timed out after the three resident cases; an early
+backdrop attempt stalled in continuous rendering; the next evening set had a hidden morning keeper holding the shutter
+open and a road sign in front. The final complete runs above replace them. No green result is claimed for those
+attempts.
+
+**Not checked:** a phone, iPad, physical device, touch controls or hardware GPU in this cloud session; Linux packaging or
+installed edition; Studio (`jojo`) sync; public Pages deployment (none requested or performed). The public-holiday layer
+is still absent, the money model remains closed, and no Pixar Grandmother Higa was added. Next: owner reviews the draft,
+settles the remaining decisions and asks for publication if desired; hardware/device checks remain outstanding.
+
 ## The owner's words
 
 - 30 October: "Since the liquor store is closed maybe it can be replaced by one of the buildings maybe the cafe";
@@ -23,7 +94,7 @@ plan, the Meshy audit and what was built; `checks.md`; `sources/task.md` the own
 | `89d99d7` | Kissa Higa built. |
 | (this note's commit) | The handover, and photographs re-shot from the final build. |
 
-## What Kissa Higa is
+## Original build description (`89d99d7`; timings below are historical)
 
 The data is in `src/commerce/kissa-higa.js`; the ruling is in `johansson-town/AGENTS.md`, "Owner's decision — 30 October
 2026".
@@ -59,7 +130,7 @@ The data is in `src/commerce/kissa-higa.js`; the ruling is in `johansson-town/AG
 - **Her guide article** is rewritten.
 - **Rules.** Root `CLAUDE.md` and `johansson-town/AGENTS.md` are updated.
 
-## Checks, run in this cloud session
+## Original build checks (previous session)
 
 Node 22, swiftshader; no GPU and no physical device.
 
@@ -78,7 +149,7 @@ Node 22, swiftshader; no GPU and no physical device.
 - **Meshy:** 105 credits spent (2,753 → 2,648); `art/kissaten/meshy/provenance.json` holds every prompt, task id and
   verdict.
 
-## Known limits, for the owner
+## Original build limits (current disposition above)
 
 - **Cartoon residents' shoes hang 0.21–0.25 m** above the floor on every chair-height seat in town: 0.23 m on the 0.44 m
   benches, 0.25 m on these 0.46 m stools. It comes from the cartoon bodies' short legs. Their feet would only reach the
@@ -91,14 +162,14 @@ Node 22, swiftshader; no GPU and no physical device.
 - The town's money model is closed (22 October), so the kissaten's takings are not in it.
 - No Pixar Grandmother Higa: the owner's 24 October plan builds heads from the owner's picture.
 
-## Independent review (30 October 2026, night): findings to fix
+## Initial independent review (30 October 2026, night)
 
 A separate reviewer read `89d99d7`. It confirmed these are right:
 - the frame conversions, every yaw, the minute boundaries and weekdays, and the supply timing;
 - every collider against what is drawn, and the clear doorway;
 - that no test assertion was weakened.
 
-It found the following, **not fixed yet**. Item 1 was re-checked in this session.
+It recorded the following at base `a7809833`. **Current fixed/open dispositions are in the Codex review above.** Item 1 was re-checked by the original reviewer.
 
 1. **Blocker: Tetsuo and Officer Mori never come.**
    - Both are in the walking street cast, so the game plans them with `social.js` `residentPlan`, not `canonicalDay`.
@@ -149,15 +220,12 @@ It found the following, **not fixed yet**. Item 1 was re-checked in this session
 
 ## Next
 
-1. The owner reviews the kissaten (and the fish market, also on this branch) from the photographs, and says whether to
-   publish.
-2. Fix the review's findings above, blockers first (the Codex prompt below).
-3. Capture the storyteller's backdrops (`tools/render-feed-backdrops.mjs`, places `kissa-higa` and `higa-liquor`), then
-   set `captured:true`.
-4. Phone and real-GPU checks; then publish on the owner's word (merge to `main`, rebuild the runtime, run the CI guard,
-   check Pages).
+1. Review the draft into `claude/great-sagan-mvc9bb` and the evidence above; no merge has been performed.
+2. Owner decisions: the cartoon foot gap, the unbuilt lunch garden round, and Yui's counter breakfast.
+3. Phone, touch and hardware-GPU checks remain outstanding.
+4. Publication to `main` only on the owner's explicit word, with its build, guard and Pages checks then.
 
-## Prompt for Codex
+## Original continuation prompt (historical; this review uses `codex/kissa-higa-review`)
 
 ```text
 Continue the Johansson World work on branch claude/great-sagan-mvc9bb in nj22az/nj22az.github.io. Work on a branch of

@@ -75,12 +75,12 @@ try{
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.teleport(4.9,8.4);a.setTime(11*1440+593);a.step(1000);a.setTime(11*1440+597);a.step(1000);});
  await closeShot('closing-clear-0957');
  assert.equal(await page.evaluate(()=>window.__JOHANSSON_AUDIT__.world.quarters.higa.closingHeld),false,'she finishes after the customer leaves');
- // The baseline: the bench out front at 19:40, Tetsuo on the bench (0.44 m) and Mac on a crate (0.31 m), seats the town
- // already uses, measured the same way.
+ // The baseline: the bench out front at 19:41, Tetsuo on the town's existing 0.44 m bench, measured the same way.
+ // Mac's attendance follows his rota; this case does not require him to occupy his 0.31 m crate.
  await run(11*1440+19*60+40,24);
  const evening=await census('higa-bench');
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera={pos:[3.0,.9,11.6],at:[5.0,.4,9.8]};a.render();});
- await page.locator('canvas').first().screenshot({path:`${out}/05-live-bench-baseline-1940.jpg`,type:'jpeg',quality:86});
+ await page.locator('canvas').first().screenshot({path:`${out}/05-live-bench-baseline-1941.jpg`,type:'jpeg',quality:86});
  const report={time:'Exact frozen-clock captures; residents advanced by the running game simulation',viewport:[960,640],physicalDevice:false,cases,closing:{safety,keeper:closingHeld},evening,errors};
  await writeFile(`${out}/report.json`,JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({cases,evening},null,1));

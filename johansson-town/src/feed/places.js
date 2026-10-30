@@ -90,12 +90,12 @@ export const FEED_PLACES=Object.freeze([
  // October its room is Kissa Higa, Grandmother Higa's on weekday mornings (commerce/kissa-higa.js): a morning place, with
  // its regulars from their own days, and the bench out front an evening one. Street shots, waiting for
  // `render-feed-backdrops.mjs kissa-higa higa-liquor coin-laundry`.
- {id:'kissa-higa',name:'Kissa Higa, Grandmother Higa’s morning coffee shop in the old liquor shop',short:'Kissa Higa',kind:'shop',regulars:kissaPeopleAt(KISSA_STORY_TIME),captured:false,
+ {id:'kissa-higa',name:'Kissa Higa, Grandmother Higa’s morning coffee shop in the old liquor shop',short:'Kissa Higa',kind:'shop',regulars:kissaPeopleAt(KISSA_STORY_TIME),captured:true,
   things:['the two siphons on their spirit lamps','the morning set: thick toast and a boiled egg','the white enamel kettle','the hand grinder','the record player and her husband’s 45s','the photograph of the island bus','the family kusu with its not-for-sale card','the stools along the ledge','the bentwood chairs at the table','the A-board on the pavement','the week’s town paper on the rack'],
   doing:['ordering the morning set','waiting for the siphon to draw','reading the town paper at the ledge','asking for the record with the writing on the sleeve','being told the jar is not for sale','pretending not to notice which stool Grandmother Higa keeps for Yui'],
   activity:{hold:['coffee'],chance:.7,sit:.6},
   shot:{at:[8.85,7.8],camera:{pos:[6.45,1.55,9.3],at:[9.85,.8,7.7]},time:KISSA_STORY_TIME}},
- {id:'higa-liquor',name:'the bench outside Kissa Higa',short:'the bench outside Kissa Higa',kind:'shop',regulars:['Tetsuo','Mac'],captured:false,
+ {id:'higa-liquor',name:'the bench outside Kissa Higa',short:'the bench outside Kissa Higa',kind:'shop',regulars:['Tetsuo','Mac'],captured:true,
   things:['the shutter, down for the evening','the kissaten’s paper on it, still sending the drink to Sakura','the crates of empties','the bench out front','the crate stools','the enamel awamori tin left up on the flank'],
   doing:['sitting on the bench with a bottle from Sakura','pointing a visitor down the street to Sakura','counting the empties back','asking after the old jar','arguing about whether the coffee or the beer came first'],
   activity:{hold:['bottle','can'],chance:.6,sit:.4},
