@@ -9,10 +9,10 @@ Main remains `87f47e8f6e5fafdb586ac723e9aa3cc704d11345`; no main push, merge or 
 
 Read with [the integration handover](HANDOVER-INTEGRATION-2026-10-30.md), which records source PRs #411/#412 and the
 deliberate exclusion of #405. Initial implementation `983ed88d5d381f480ad44784bdfb34edb68830ee`; delivery note
-`6cdf69ae5faab1353b9b220b96af7c44d939e8c0`. That version's **hosted camera regression passed**
+`6cdf69ae5faab1353b9b220b96af7c44d939e8c0`. That version's **workflow reported green; this was later found to be an incomplete pass**
 ([run 41135753566](https://github.com/nj22az/nj22az.github.io/actions/runs/41135753566)). The follow-up travels with this
 note; PR #414 records its exact final head and the new hosted result. Do not represent the earlier run as testing the
-later asset changes.
+later asset changes. Full-log audit subsequently found a portrait-layout fixture timeout masked by the logging pipe in both early runs; those green statuses are not accepted as full camera passes.
 
 ## What changed
 
@@ -64,6 +64,12 @@ also produced six empty local files; the final generator encodes/verifies before
 asset was decoded and hashed. Those failed intermediate assets were never uploaded to the review branch.
 
 Actual comparisons/screens and the final local logs: [evidence](qa/2026-10-31-contours/README.md).
+
+## Hosted gate correction after full-log audit
+
+The green status on run 41139190457 masked a camera suite failure: Bash used `-e` without `pipefail`, so `node ... | tee ...` returned the successful logger status. The other six suites passed, while camera stopped at the portrait compact-layout fixture. [Original excerpt](qa/2026-10-31-contours/ci-wrapper-first.log) is retained. The local Chromium 133 camera run remains 56/56; the early hosted statuses are not complete camera acceptance.
+
+The workflow now sets **`set -euo pipefail`**, verified by injecting exit 23 through `tee` and requiring exit 23. It explicitly installs and verifies ffmpeg. The portrait fixture now requires its upright Y4M feed, instead of silently falling back to Chromium's landscape test picture, and reports actual video/viewport dimensions on a layout timeout. Every existing layout assertion is retained. The strict hosted rerun is the acceptance gate; PR #414 records its exact final head and result. A local run of the stricter fixture was also launched. No product code or main publication changed during this correction.
 
 ## Remaining and next action
 

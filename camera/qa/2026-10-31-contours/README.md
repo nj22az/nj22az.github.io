@@ -32,5 +32,7 @@ CAMERA_SHOTS=/tmp/contour-shots node camera/tests/sticker-contour.browser.mjs
 
 Source: existing website sticker art, originally from `nj22az/jojo art/stickers/*/plain at 7803e69`; no character repainting,
 new model generation or studio modification. The future studio-to-web builder uses the same recut helper.
+Early hosted green statuses masked a portrait fixture failure behind a logging pipe. The final workflow propagates failures with `pipefail`, explicitly supplies ffmpeg and retains all layout assertions. [Original CI excerpt](ci-wrapper-first.log); PR #414 carries the strict rerun result.
+
 See [handover](../../HANDOVER-STICKER-CONTOURS-2026-10-31.md) for exact prior commits, cache keys, checks, early-generation
 corrections and the old custom-sticker limitation. The original integration evidence is [here](../2026-10-30-integration/README.md).

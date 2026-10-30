@@ -1,6 +1,6 @@
 # Pocket Camera integration candidate — 30 October 2026
 
-**31 October follow-up in the same PR #414:** [narrow sticker contours](HANDOVER-STICKER-CONTOURS-2026-10-31.md). The initial integrated candidate passed hosted run 41135753566. The follow-up preserves this integration, uses release key `20261031rc2`, and adds four contour checks; see the newer note and PR for its checks/status.
+**31 October follow-up in the same PR #414:** [narrow sticker contours](HANDOVER-STICKER-CONTOURS-2026-10-31.md). The initial hosted run reported green, but later log audit found a portrait-fixture failure masked by its logging pipe. The strict gate correction is recorded in the newer handover. The follow-up preserves this integration, uses release key `20261031rc2`, and adds four contour checks; see the newer note and PR for its checks/status.
 
 ## State and scope
 

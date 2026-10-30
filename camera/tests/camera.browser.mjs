@@ -415,8 +415,11 @@ async function firstScreen({label,width,height}){
 // 29 October 2026: "the mini games and the printer animation when saving … memory with our own photos or with the
 // stickers"), at an iPhone's Safari size.
 async function playAndPrint({label,width,height}){
- const y4m=join(temp,`${label}.y4m`);let fake=[];
- try{execFileSync('ffmpeg',['-loglevel','error','-y','-loop','1','-i',photo,'-t','1','-r','10','-vf','crop=ih*3/4:ih,scale=720:960,format=yuv420p',y4m]);fake=[`--use-file-for-fake-video-capture=${y4m}`];}catch{}
+ // This layout fixture requires an upright feed. Chromium's fallback test pattern is landscape, which cannot
+ // exercise the compact portrait assertions. Missing ffmpeg must fail here instead of silently changing the fixture.
+ const y4m=join(temp,`${label}.y4m`);
+ execFileSync('ffmpeg',['-loglevel','error','-y','-loop','1','-i',photo,'-t','1','-r','10','-vf','crop=ih*3/4:ih,scale=720:960,format=yuv420p',y4m]);
+ const fake=[`--use-file-for-fake-video-capture=${y4m}`];
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',...fake]});
  try{
   const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true,permissions:['camera']});
@@ -425,7 +428,10 @@ async function playAndPrint({label,width,height}){
   await clearSamplesForRegression(page,label);
   await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
   await check(`${label}: the picture takes the whole width; the Looks unfold from the Look's name`,async()=>{
-   await page.waitForFunction(()=>document.querySelector('#camera').classList.contains('compact'),null,{timeout:10000});
+   await page.waitForFunction(()=>document.querySelector('#camera').classList.contains('compact'),null,{timeout:10000}).catch(async error=>{
+    const actual=await page.evaluate(()=>({video:[document.querySelector('#video').videoWidth,document.querySelector('#video').videoHeight],viewport:[innerWidth,innerHeight],camera:document.querySelector('#camera').className}));
+    throw new Error(`Portrait camera fixture did not become compact: ${JSON.stringify(actual)}`,{cause:error});
+   });
    const look=()=>page.evaluate(()=>{const f=document.querySelector('#cameraFrame').getBoundingClientRect(),t=document.querySelector('#tray').getBoundingClientRect();
     return {frame:Math.round(f.width),screen:innerWidth,strip:getComputedStyle(document.querySelector('#strip')).display,open:document.querySelector('#camera').classList.contains('looks-open'),trayOver:t.top>=f.top&&t.top<f.bottom-30&&t.bottom<=f.bottom+4};});
    let v=await look();

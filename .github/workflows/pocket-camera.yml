@@ -39,6 +39,8 @@ jobs:
         run: |
           npm install --prefix /tmp/camera-test-runtime --no-save --no-package-lock playwright@1.62.1
           /tmp/camera-test-runtime/node_modules/.bin/playwright install --with-deps chromium
+          sudo apt-get install --yes ffmpeg
+          ffmpeg -version
       - name: Prior engines for compatibility checks
         run: |
           git fetch --no-tags --depth=1 origin 87f47e8f6e5fafdb586ac723e9aa3cc704d11345 3af0bae6324fe73f974bd00bc371c6555d7f1e58
@@ -51,6 +53,7 @@ jobs:
           git diff --check
       - name: Combined browser regressions (Chromium emulation; Share mocked)
         run: |
+          set -euo pipefail
           mkdir -p /tmp/camera-results
           for suite in camera crop enhance save-share-layout paper integration sticker-contour; do
             export CAMERA_SHOTS="/tmp/camera-results/$suite"
