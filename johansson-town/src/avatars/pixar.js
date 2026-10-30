@@ -37,7 +37,7 @@ import {rigPaintedFace,frameFor,paintedFaceWanted} from './painted-face.js';
 
 /** The Pixar bodies there are: resident name → their files under assets/ (the GLB and its card) and the GLB's version
  *  (the first characters of its SHA-256: a new export is fetched fresh, never an old one from a cache). */
-export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'3cdc730c8c',face:'9a5ecc68d3'}),
+export const PIXAR_BODIES=Object.freeze({Thuan:Object.freeze({path:'avatars/pixar/thuan',version:'3cdc730c8c',face:'e04db790f8'}),
  Johansson:Object.freeze({path:'avatars/pixar/johansson',version:'ad4813d010'}),
  Thao:Object.freeze({path:'avatars/pixar/thao',version:'c41a269523'}),
  // (the clones of Meshy Johansson: jojo game_meshy.py tetsuo / fujita, the owner, 27 October 2026)
