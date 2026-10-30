@@ -685,7 +685,8 @@ def toilet(room):
     for yy in (.28,1.00,1.80):room.rod('WC folding door hinge',(wc['doorX']-.13,yy,3.125),(wc['doorX']-.13,yy+.07,3.125),.009,m['Aged brass'])
     room.rod('WC recessed door handle',(wc['doorX']-.173,.93,2.75),(wc['doorX']-.173,1.12,2.75),.007,m['Dark fittings'])
     room.box('WC door sign support',(.04,.22,.56),(wc['doorX']-.10,2.37,wc['doorZ']),m['Paper'],.004)
-    room.text('Guest washroom sign','手洗い',(wc['doorX']-.123,2.37,wc['doorZ']),.14,m['Ink'],yaw=math.pi/2)
+    # The sign is on the dining side (-X) of its support, so it faces -X: yaw +pi/2 turned it into the board.
+    room.text('Guest washroom sign','手洗い',(wc['doorX']-.123,2.37,wc['doorZ']),.14,m['Ink'],yaw=-math.pi/2)
     tx,ty,tz=wc['toilet']
     room.lathe('WC porcelain pedestal',[(.12,0),(.14,.05),(.105,.23),(.16,.33)],(tx,ty,tz),m['Cream ceramic'],24,1.2)
     room.lathe('WC porcelain bowl',[(.14,0),(.20,.11),(.205,.16),(.18,.19),(.155,.17),(.09,.055),(0,.045)],(tx,ty+.24,tz-.10),m['Cream ceramic'],28,1.42)
