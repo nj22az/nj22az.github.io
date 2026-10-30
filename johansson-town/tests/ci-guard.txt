@@ -20,6 +20,7 @@ lot-dressing.test.mjs
 harbour-park-rework.test.mjs
 nakamura-dressing.test.mjs
 higa-liquor-laundry.test.mjs
+kissa-higa.test.mjs
 police-station.test.mjs
 police-station-dressing.test.mjs
 sakura-back.test.mjs

@@ -29,8 +29,9 @@ const scenery=new Set(['src/world/okinawa/kitahama-shop.js','src/world/interiors
  'src/world/harbour-noticeboard.js',
  // Higa Liquor's and the coin laundry's painted lettering (the valance, the tin, the cards, the jar tags, the machine
  // numbers, the price list) and their items' period notes; the 留守 card's and the noticeboard's headings, each with the
- // English the player reads beside it (`en`, `title`, `text`).
- 'src/world/okinawa/higa-liquor-dressing.js','src/world/okinawa/coin-laundry-dressing.js','src/commerce/higa-liquor.js','src/commerce/coin-laundry.js',
+ // English the player reads beside it (`en`, `title`, `text`). Kissa Higa in the same room (commerce/kissa-higa.js, 30 October
+ // 2026): its name, the paper on the shutter and the menu's 喫茶ひが / モーニング lines, each with its English (`name`, `en`).
+ 'src/world/okinawa/higa-liquor-dressing.js','src/world/okinawa/coin-laundry-dressing.js','src/commerce/higa-liquor.js','src/commerce/coin-laundry.js','src/commerce/kissa-higa.js',
  // The fish counter's board heading (鮮魚直売) on the auction shed's column, printed above its English lines; the price
  // cards' kana come from fish.js. The prompts and the buy text are English (fish-market.js, okinawa/quarters.js).
  'src/world/fish-market.js']);

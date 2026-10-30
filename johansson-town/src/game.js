@@ -1767,6 +1767,8 @@ function finishPlayerStep(dt,fromX,fromZ){
 const fmt=m=>`${String(Math.floor((m%1440)/60)).padStart(2,'0')}:${String(Math.floor(m%60)).padStart(2,'0')}`;
 function setTime({updateHours=true}={}){
  if(updateHours)world.updateHours?.(minutes);
+ // A way in opened or shut (Kissa Higa's doors on its clock, okinawa/quarters.js): the neighbours search their routes again.
+ if(world.passagesChanged){world.passagesChanged=false;neighbours?.replan?.();}
  const c=duskClock(minutes,{rain:weather,inside:!!current});
  const day=c.day;
  const overcast=weatherKind==='cloudy'&&!current;

@@ -69,7 +69,7 @@ export const CORE=Object.freeze([
  who('yui',{name:'Yui',fullName:'Yui Higa',sex:'f',age:29,nationality:'Japanese',was:['Yonamine-sensei','Mrs Higa','Miss Higa'],avatar:'Miss Higa',home:'higa',
   role:'the island’s schoolteacher; Gran Higa’s granddaughter; helps at the bathhouse after school and at weekends'}),
  who('gran-higa',{name:'Gran Higa',fullName:'Grandmother Higa',sex:'f',age:78,nationality:'Japanese',was:['Grandmother Higa'],avatar:'Grandmother Higa',home:'higa',
-  role:'owns Umi-no-yu and keeps it by day; her liquor shop is shut, its trade Sakura’s (the owner, 22 October 2026); the family’s ties in town'}),
+  role:'owns Umi-no-yu and keeps it by day; her liquor shop is shut, its trade Sakura’s (the owner, 22 October 2026), and its room is Kissa Higa, her morning coffee shop on weekdays (30 October 2026); the family’s ties in town'}),
  who('tetsu',{name:'Tetsu',fullName:'Tetsuo Chinen',sex:'m',age:40,nationality:'Japanese',was:['Tetsuo'],avatar:'Tetsuo',shore:['electrician'],home:'resident-home-kenji',
   role:'electrician; workshop partner of Chin; maintains the ship’s electrical equipment, the bathhouse’s plant and the island’s electrical systems'}),
  who('aki',{name:'Aki',fullName:'Aki Sato',sex:'f',age:68,nationality:'Japanese',was:['Mrs Sato'],avatar:'Mrs Sato',home:'kitahama-2',

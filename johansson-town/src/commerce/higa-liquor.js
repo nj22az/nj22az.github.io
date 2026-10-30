@@ -4,27 +4,19 @@
  * liquor too", and the answers that settled it: Higa Liquor closes; Sakura sells all the alcohol over its counter
  * (commerce/konbini.js SAKURA_BOTTLES) and supplies Minato, Sato Ramen and the Coral Bay Bar from its depot
  * (merchandising.js ACCOUNTS.sakura, `alcohol`); Kōji's round becomes Sakura Trading's (commerce/trade-round.js);
- * Grandmother Higa keeps only the bathhouse; the building stands shut, with a notice on the shutter that the drink is at
- * Sakura. Until then (from 21 October) it was open 9–12 and 17–20 round her afternoon at the bandai, Yui minding it on
- * Saturdays.
+ * Grandmother Higa kept only the bathhouse, and the building stood shut with a closing notice on the shutter. Until then
+ * (from 21 October) it was open 9–12 and 17–20 round her afternoon at the bandai, Yui minding it on Saturdays.
  *
- * What is left of it is here: the notice, the family kusu still behind the counter, and the yuntaku bench out front.
+ * Since 30 October 2026 the room is Kissa Higa, Grandmother Higa's morning coffee shop (commerce/kissa-higa.js): the
+ * liquor shop stays closed and the drink stays Sakura's. What is left of the liquor shop is here: the family kusu still
+ * behind the counter, and the yuntaku bench out front.
  */
 const minute=m=>((m%1440)+1440)%1440;
 
 /**
- * The notice on the shutter: a sheet of paper in Grandmother Higa's brush hand, taped at its corners. Japanese on the
- * paper (the World's signs are), English for the player.
- */
-export const HIGA_NOTICE=Object.freeze({jp:'閉店のお知らせ',jpLines:Object.freeze(['長年のご愛顧','ありがとうございました','お酒は さくら商店へ']),
- en:'Closing notice. Thank you for your custom over the years. For beer, awamori and sake, please go to Sakura Shōten, down Main Street towards the harbour. The Higa family',
- who:'Grandmother Higa',why:'The shop has shut for good: the drink is Sakura’s now, over its counter and from its depot, and Grandmother Higa keeps the bath. The notice tells the regulars where to go.',
- period:'A 閉店のお知らせ (closing notice), written by hand and taped to the shutter, is how a small Japanese shop said goodbye and pointed its customers on.'});
-
-/**
  * The family kusu (古酒): aged awamori in a clay jar behind the counter, the one thing in the shop that was never sold, and
- * still behind the counter of the shut shop: Grandmother Higa says it has stood there since the year it was laid down and
- * will not be moved before Yui's wedding. A story hook, and why the jar never had a price.
+ * still behind the counter now that the counter serves coffee: Grandmother Higa says it has stood there since the year it
+ * was laid down and will not be moved before Yui's wedding. A story hook, and why the jar never had a price.
  */
 export const HIGA_KUSU=Object.freeze({id:'higa-kusu',jp:'古酒',name:'The Higa family kusu',
  vessel:'a three-shō (5.4 litre) jar of unglazed nanban-yaki clay, its wooden lid tied down with hemp cord and a paper seal',
@@ -38,8 +30,8 @@ export const HIGA_KUSU=Object.freeze({id:'higa-kusu',jp:'古酒',name:'The Higa 
 
 /**
  * The yuntaku bench (ゆんたく: Okinawan for sitting and talking) in front of the shop: a timber bench against the
- * police-station end of the front and two upturned beer crates for stools. The shop has shut, the bench has not: men
- * still sit there of an evening with a bottle, bought at Sakura's till before it shuts at eight (on Saturdays, when
+ * police-station end of the front and two upturned beer crates for stools. The liquor shop has shut, the bench has not
+ * (the kissaten is a morning's, and its shutter is down by evening): men still sit there of an evening with a bottle, bought at Sakura's till before it shuts at eight (on Saturdays, when
  * Sakura is shut all day, the one they bought on Friday). Who sits there comes
  * from their own days (people/cast.js): Tetsuo between the bath's boiler checks, Mac after the ship's engine room and
  * before his one beer at Minato. Mr Fujita's crate is the empty one: the owner's ruling of 19 October 2026 has him sober

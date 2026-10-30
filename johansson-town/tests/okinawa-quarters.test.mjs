@@ -114,13 +114,15 @@ test('the neighbours can be walked up to, and the walkers keep to the ground',as
   }
  }
  assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length,'Two neighbours share a name');
- // Every neighbour keeps the cast's canonical day (neighbours.js builds NEIGHBOURS from cast.js): Grandmother Higa is on
- // her verandah at nine, at the bath's bandai from ten (her liquor shop is shut since 22 October 2026) and asleep at home
- // at eleven at night; `hours` no longer hides a canonical neighbour.
+ // Every neighbour keeps the cast's canonical day (neighbours.js builds NEIGHBOURS from cast.js): Grandmother Higa is
+ // behind Kissa Higa's counter at nine on a weekday (commerce/kissa-higa.js, 30 October 2026) and on her verandah at nine
+ // on a Sunday, at the bath's bandai from ten, and asleep at home at eleven at night; `hours` no longer hides a canonical
+ // neighbour. Town day 0 (1 January 1970) is a Thursday, day 3 a Sunday.
  const {canonicalDay}=await import('../src/people/canonical-day.js');
  const higa=NEIGHBOURS.find(n=>n.name==='Grandmother Higa');assert.ok(higa.canonical);
  assert.ok(neighbourAwake(higa,9*60),'Grandmother Higa is about at nine');
- assert.equal(canonicalDay('Grandmother Higa',9*60).place,'home','Grandmother Higa is on her verandah at nine');
+ assert.equal(canonicalDay('Grandmother Higa',9*60).place,'kissa-higa','Grandmother Higa is behind Kissa Higa’s counter at nine on a Thursday');
+ assert.equal(canonicalDay('Grandmother Higa',3*1440+9*60).place,'home','and on her verandah at nine on a Sunday');
  assert.equal(canonicalDay('Grandmother Higa',10*60+30).place,'onsen','and at the bandai from the bath’s opening');
  const night=canonicalDay('Grandmother Higa',23*60);assert.equal(night.place,'home');assert.equal(night.rest,'sleep','Grandmother Higa is asleep at home at eleven');
 });

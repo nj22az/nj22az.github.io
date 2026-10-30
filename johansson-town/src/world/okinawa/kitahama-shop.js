@@ -30,7 +30,7 @@ export const SHOP=F({
  name:'Johansson Mart',jp:'ヨハンソンマート',branch:'北浜店',branchEnglish:'Kitahama',
  company:'Johansson Mart (a Johansson company; this universe’s Acme)',
  keeper:'Grandmother Higa',
- why:'Sakura is the island’s shop and shuts on Saturdays (the owner, 22 October 2026) and at 20:30. The town wanted somewhere for milk, bread, a bento and a beer when Sakura is shut, and Grandmother Higa, whose liquor shop on Main Street stands shut since its trade went to Sakura, wanted a counter again. The chain lets a franchise keep its own hours on a small island.',
+ why:'Sakura is the island’s shop and shuts on Saturdays (the owner, 22 October 2026) and at 20:30. The town wanted somewhere for milk, bread, a bento and a beer when Sakura is shut, and Grandmother Higa, whose liquor shop on Main Street had shut when its trade went to Sakura, wanted a counter again (since 30 October 2026 its room is hers again in the mornings, as Kissa Higa). The chain lets a franchise keep its own hours on a small island.',
  site:'the east end of the north block (lots.js kitahama-north-block): the corner of the cross lane and the approach, the one road a car comes into Kitahama by, so the van unloads at the door and nothing drives further in.',
 });
 

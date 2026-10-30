@@ -6,7 +6,8 @@ import {townCalendarAt} from '../src/town-clock.js';
 import {rotaWeek} from '../src/people/ferry-crew.js';
 import {ACCOUNTS} from '../src/commerce/merchandising.js';
 import * as higaLiquor from '../src/commerce/higa-liquor.js';
-import {HIGA_NOTICE,HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../src/commerce/higa-liquor.js';
+import {HIGA_KUSU,YUNTAKU,yuntakuSeatAt} from '../src/commerce/higa-liquor.js';
+import {KISSA_NOTICE,KISSA_MENU,KISSA_SEATS,KISSA_KEEPER} from '../src/commerce/kissa-higa.js';
 import {TRADE_ROUND,roundAt,roundToday,roundDropsOn,roundDeliveryBook,kojiAshore} from '../src/commerce/trade-round.js';
 import {SAKURA_BOTTLES} from '../src/commerce/konbini.js';
 import {FERRY_TIMETABLE,timetableBerth} from '../src/world/ferry-timetable.js';
@@ -25,9 +26,10 @@ import {seatEdge} from './seat-edge.mjs';
 /**
  * Higa Liquor and the coin laundry (the owner, 21 October 2026; AGENTS.md): the laundry's keeper, its washing days, the
  * machines turning on the clock and the noticeboard's story hooks, and the bench of an evening. Higa Liquor is shut for
- * good since 22 October 2026 (the owner: Sakura sells and supplies all the alcohol, Kōji's round is Sakura Trading's, the
- * building stands shut with a notice on it): its notice, the round and the shut front are checked here too. Every number
- * here is the data's, so the world and the stories read the same.
+ * good as a liquor shop since 22 October 2026 (the owner: Sakura sells and supplies all the alcohol, Kōji's round is
+ * Sakura Trading's); since 30 October its room is Kissa Higa, Grandmother Higa's on weekday mornings (commerce/kissa-higa.js;
+ * tests/kissa-higa.test.mjs): the round, the paper on the shutter and the front on the kissaten's clock are checked here
+ * too. Every number here is the data's, so the world and the stories read the same.
  */
 installDOM();
 const DAY=1440;
@@ -38,26 +40,30 @@ function dayWith(weekday,ashore=null){
 }
 const at=(day,h,m=0)=>day+h*60+m;
 
-test('Higa Liquor is shut for good: no hours and no card, a closing notice that sends the regulars to Sakura',()=>{
- for(const gone of ['higaLiquorState','higaLiquorOpen','higaLiquorKeeper','higaShutterDown','higaDoorsShut','higaRusuCard','HIGA_LIQUOR_HOURS','HIGA_RUSU_CARD','HIGA_COUNTER','HIGA_ROUND'])
+test('Higa Liquor stays shut as a liquor shop: no hours of its own, no alcohol at Kissa Higa, and the paper on the shutter still sends the drink to Sakura',()=>{
+ for(const gone of ['higaLiquorState','higaLiquorOpen','higaLiquorKeeper','higaShutterDown','higaDoorsShut','higaRusuCard','HIGA_LIQUOR_HOURS','HIGA_RUSU_CARD','HIGA_COUNTER','HIGA_ROUND','HIGA_NOTICE'])
   assert.equal(higaLiquor[gone],undefined,gone+' went with the shop');
- assert.equal(HIGA_NOTICE.jp,'閉店のお知らせ');assert.ok(HIGA_NOTICE.jpLines.some(l=>/さくら商店/.test(l)),'the paper on the shutter points to Sakura');
- assert.match(HIGA_NOTICE.en,/Sakura Shōten/);assert.ok(!/[぀-ヿ一-龯]/.test(HIGA_NOTICE.en),'the player reads English');
- assert.equal(HIGA_NOTICE.who,'Grandmother Higa');
+ // (30 October 2026: the closing notice is the kissaten's paper now, which keeps its last line.)
+ assert.equal(KISSA_NOTICE.jp,'喫茶ひが');assert.ok(KISSA_NOTICE.jpLines.some(l=>/さくら商店/.test(l)),'the paper on the shutter points to Sakura');
+ assert.match(KISSA_NOTICE.en,/Sakura Shōten/);assert.ok(!/[぀-ヿ一-龯]/.test(KISSA_NOTICE.en),'the player reads English');
+ assert.equal(KISSA_NOTICE.who,'Grandmother Higa');
+ for(const item of KISSA_MENU)assert.doesNotMatch(item.name+item.text,/beer|lager|awamori|sake|shōchū|whisky/i,item.name+' is not drink: the drink is Sakura’s');
  // What the counter sold, Sakura sells at its till, at the Higas' prices.
  assert.deepEqual(SAKURA_BOTTLES.map(b=>[b.id,b.cost]),[['awamori-mini',600],['umineko-large',330],['sake-cup',220]]);
 });
 
 // Higa Liquor stays shut (22 October 2026). Since 27 October Grandmother Higa also keeps Johansson Mart's till in Kitahama on
-// weekday evenings and Saturdays, when Sakura is shut and Miss Higa has the bandai (world/okinawa/kitahama-shop.js).
-test('nobody keeps the shut liquor shop: Grandmother Higa keeps the bath and Johansson Mart’s till, and Yui no counter on Saturdays',()=>{
+// weekday evenings and Saturdays, when Sakura is shut and Miss Higa has the bandai (world/okinawa/kitahama-shop.js); since
+// 30 October she keeps Kissa Higa in the old shop's room on weekday mornings (commerce/kissa-higa.js).
+test('nobody keeps the liquor counter: Grandmother Higa keeps Kissa Higa on weekday mornings, the bath and Johansson Mart’s till, and Yui no counter on Saturdays',()=>{
  const wed=dayWith(3),sat=dayWith(6),sun=dayWith(0);
- for(const [name,day,h,place] of [['Grandmother Higa',wed,10,'onsen'],['Grandmother Higa',wed,14,'onsen'],['Grandmother Higa',wed,18,'kitahama-shop'],['Grandmother Higa',wed,21,'home'],
+ for(const [name,day,h,place] of [['Grandmother Higa',wed,7.5,'kissa-higa'],['Grandmother Higa',wed,9,'kissa-higa'],['Grandmother Higa',wed,10,'onsen'],['Grandmother Higa',wed,14,'onsen'],['Grandmother Higa',wed,18,'kitahama-shop'],['Grandmother Higa',wed,21,'home'],
   ['Grandmother Higa',sat,10,'kitahama-shop'],['Grandmother Higa',sat,18,'kitahama-shop'],['Grandmother Higa',sun,18,'home'],['Miss Higa',sat,10,'onsen'],['Miss Higa',sat,18,'onsen']])
   assert.equal(canonicalDay(name,at(day,h)).place,place,`${name} at ${h} on ${townCalendarAt(day).weekday}`);
  for(let d=10000;d<10007;d++)for(const p of CAST)for(let m=0;m<DAY;m+=30)assert.notEqual(canonicalDay(p.name,d*DAY+m)?.place,'higa-liquor',p.name+' is never behind the shut counter');
  for(const p of CAST)assert.ok(!p.day.some(r=>r[1]==='higa-liquor'),p.name+'’s day has no counter');
- assert.ok(PLACES['higa-liquor'].closed&&!PLACES['higa-liquor'].keepers,'the place is closed, and keeps nobody');
+ for(const [day,h] of [[sat,7.5],[sun,7.5],[wed,12],[wed,18]])assert.notEqual(canonicalDay('Grandmother Higa',at(day,h)).place,'kissa-higa','Kissa Higa is a weekday morning’s');
+ assert.equal(PLACES['higa-liquor'],undefined,'the liquor shop is no place to go');assert.deepEqual(PLACES['kissa-higa'].keepers,['Grandmother Higa']);
  assert.equal(castMember('Grandmother Higa').work,'onsen');
 });
 
@@ -198,10 +204,15 @@ test('the people modules’ numbers are the buildings’ (shop-days.js, stand-se
 test('every place somebody stands is clear of every solid, and every seat is on something',()=>{
  const stands=[['Kōji loading at the depot',TRADE_ROUND.load.at],['the crate yard',TRADE_ROUND.empties.point],
   ...Object.entries(YUNTAKU.seats).map(([k,s])=>['bench '+k,s.stand]),...Object.entries(LAUNDRY_STANDS).map(([k,s])=>['laundry '+k,s.at]),
-  ...LAUNDRY_SEATS.map(s=>['laundry bench',s.stand])];
+  ...LAUNDRY_SEATS.map(s=>['laundry bench',s.stand]),
+  // Kissa Higa (30 October 2026): where Grandmother Higa stands behind the counter and at the shutter, and where each
+  // regular stands up to from their stool or chair.
+  ['Grandmother Higa behind the counter',KISSA_KEEPER.at],['Grandmother Higa at the shutter',KISSA_KEEPER.front],
+  ...Object.entries(KISSA_SEATS).map(([k,s])=>['Kissa Higa '+k,s.stand])];
  for(const [what,[x,z]] of stands)assert.deepEqual(solidAt(x,z).map(c=>c.id),[],what+' is clear');
  for(const [k,s] of Object.entries(YUNTAKU.seats))assert.ok(solidAt(...s.at,.05).some(c=>/higa-bench|higa-crate-stool/.test(c.id)),k+' sits on the bench or a crate');
  for(const s of LAUNDRY_SEATS)assert.ok(solidAt(...s.at,.05).some(c=>c.id==='laundry-bench'),'on the laundry bench');
+ for(const [k,s] of Object.entries(KISSA_SEATS))assert.ok(solidAt(...s.at,.05).some(c=>c.id===(k.startsWith('stool')?'kissa-stool':'kissa-chair')),k+' sits on its stool or chair');
 });
 
 test('the bench’s front edge is where its slats end: the sitters’ shins hang in front of it, not through the top',()=>{
@@ -215,14 +226,27 @@ test('the bench’s front edge is where its slats end: the sitters’ shins hang
  }
 });
 
-test('the shut front at every hour: the shutter down, the doors shut, the lights off, the notice on the shutter',()=>{
- const {higa,coinLaundry}=world.quarters,wed=dayWith(3),doorway=[5.9,8.4];
+// Since 30 October 2026 the front follows Kissa Higa's clock (commerce/kissa-higa.js): open on weekday mornings, shut with
+// the paper on the shutter the rest of the time, as the liquor shop's front was at every hour.
+test('the front follows Kissa Higa’s clock: open on a weekday morning, the shutter down with its paper the rest of the time',()=>{
+ const {higa,coinLaundry}=world.quarters,wed=dayWith(3),sat=dayWith(6),doorway=[5.9,8.4];
  const blocked=()=>world.colliders.some(c=>(c.id==='higa-doors'||c.id==='higa-shutter')&&standingHitsRect(doorway[0]+.25,doorway[1],.28,0,c));
- assert.equal(higa.update,undefined,'nothing on the front follows the clock');assert.equal(higa.card,undefined,'no 留守 card');
- for(const [h,m] of [[10,0],[14,0],[18,30],[22,0]]){
-  for(const hourly of world.hourly)hourly(at(wed,h,m));
+ const board=()=>world.colliders.some(c=>c.id==='kissa-a-board'&&(c.minY??0)<1);
+ assert.equal(higa.card,undefined,'no 留守 card');
+ for(const hourly of world.hourly)hourly(at(wed,7,40));
+ assert.equal(blocked(),false,'in through the open doors at 7:40 on a Wednesday');assert.equal(higa.shutter.visible,false,'the shutter is up');
+ assert.equal(higa.lights.emissiveIntensity,1,'the tubes are on');assert.equal(higa.aboard.visible,true,'the board is out');assert.equal(board(),true,'and solid');
+ assert.equal(higa.paper.visible,false,'the paper is up with the shutter');
+ for(const [day,h,m] of [[wed,10,0],[wed,14,0],[wed,18,30],[wed,22,0],[sat,7,40]]){
+  for(const hourly of world.hourly)hourly(at(day,h,m));
   assert.equal(blocked(),true,`nobody walks in at ${h}:${m}`);assert.equal(higa.shutter.visible,true,'the shutter is down');assert.equal(higa.lights.emissiveIntensity,0,'and the lights are off');
+  assert.equal(higa.aboard.visible,false,'the board is in');assert.equal(board(),false);assert.equal(higa.paper.visible,true,'the paper is on the shutter');
  }
+ // The way in opens once the shutter is up past 40% (06:53) and shuts once it is down past it (09:46); update says so.
+ assert.equal(higa.update(at(wed,6,52)),false);assert.equal(blocked(),true,'half up at 6:52: not yet');
+ assert.equal(higa.update(at(wed,6,54)),true,'the way in opened');assert.equal(blocked(),false);
+ assert.equal(higa.update(at(wed,9,45)),false,'still open at 9:45, while she is out on the pavement');
+ assert.equal(higa.update(at(wed,9,47)),true,'the way in shut');assert.equal(blocked(),true);
  // The notice is taped to the shutter's face, in front of the steel and not through it.
  const notice=HIGA_LETTERING.notice,face=HIGA_FRAME.D-.15+.01;
  assert.ok(notice.at[2]>face&&notice.at[2]-face<.01,'the notice sits on the shutter');

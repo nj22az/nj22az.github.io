@@ -5,16 +5,19 @@ import {installDOM} from './fixtures.mjs';
 import {createKit,trs} from '../src/world/okinawa/kit.js';
 import {shopHouse} from '../src/world/okinawa/houses.js';
 import {HIGA_FRAME} from '../src/world/okinawa/higa-liquor-dressing.js';
+import {KISSA_KEEPER} from '../src/commerce/kissa-higa.js';
 import {createWalkSurface} from '../src/world/walk-surface.js';
 import {canStepBetween,standingHitsRect,sweepFraction} from '../physics.js';
 
-// Higa Liquor is a room you walk into since 21 October 2026 (higa-liquor-dressing.js): the counter across the back, the
-// 一升瓶 shelves up the police-station wall, the cold case and the jars on the Kitano Road wall, the family kusu behind
-// the counter. Its fittings are drawn and collide in the same frame, standing on the 8 cm floor.
+// Higa Liquor is a room you walk into since 21 October 2026 (higa-liquor-dressing.js); since 30 October 2026 it is Kissa
+// Higa (commerce/kissa-higa.js): the counter across the back with the customers' ledge and three stools in front of it,
+// the cup shelf and the family kusu behind it, the record cabinet and the paper rack on the Kitano Road wall, the table
+// and its chairs by the police-station wall. Its fittings are drawn and collide in the same frame, standing on the 8 cm
+// floor.
 installDOM();
 const w=HIGA_FRAME.W*2,d=HIGA_FRAME.D*2,D=HIGA_FRAME.D,floor=HIGA_FRAME.floor;
 const higaFrame={x:HIGA_FRAME.origin[0],z:HIGA_FRAME.origin[1],y:0,yaw:-Math.PI/2};
-function build(frame=higaFrame,interior='liquor'){
+function build(frame=higaFrame,interior='kissaten'){
  const kit=createKit(),group=new THREE.Group(),matrix=trs(frame.x,frame.y,frame.z,0,frame.yaw);
  let colliders;
  kit.at(frame.x,frame.z,frame.yaw,()=>{colliders=shopHouse(kit,{w,d,interior,seed:41,awning:false});},frame.y);
@@ -26,19 +29,19 @@ function build(frame=higaFrame,interior='liquor'){
 const higa=build();
 const near=(actual,expected,label)=>assert.ok(Math.abs(actual-expected)<1e-5,`${label}: ${actual} versus ${expected}`);
 
-test('the counter, the shelves, the cold case, the jars and the kusu are solid in Higa’s rotated frame',()=>{
- for(const id of ['liquor-counter','liquor-shelves','liquor-fridge','liquor-kame','liquor-kusu','liquor-back-shelf'])assert.ok(higa.colliders.some(c=>c.id===id),id);
- const counter=higa.colliders.find(c=>c.id==='liquor-counter');
- const at=higa.point(-1,0,-.45);assert.equal(standingHitsRect(at.x,at.z,.28,floor,counter),true);
- const shelf=higa.colliders.find(c=>c.id==='liquor-shelves'),s=higa.point(1.87,0,2.2);
- assert.equal(standingHitsRect(s.x,s.z,.28,floor,shelf),true);
+test('the counter, the ledge, the stools, the cup shelf, the kusu, the record cabinet, the table and its chairs are solid in Higa’s rotated frame',()=>{
+ for(const id of ['kissa-counter','kissa-ledge','kissa-stool','kissa-cup-shelf','kissa-kusu','kissa-record-cabinet','kissa-record-crate','kissa-paper-rack','kissa-table','kissa-chair'])assert.ok(higa.colliders.some(c=>c.id===id),id);
+ assert.equal(higa.colliders.filter(c=>c.id==='kissa-stool').length,3,'three stools');assert.equal(higa.colliders.filter(c=>c.id==='kissa-chair').length,2,'two chairs');
+ assert.ok(higa.colliders.every(c=>!c.id.startsWith('liquor-')),'the liquor fittings are gone');
+ for(const [id,x,z] of [['kissa-counter',-1,-.45],['kissa-ledge',-1,0],['kissa-table',1.3,2.1]]){
+  const solid=higa.colliders.find(c=>c.id===id),at=higa.point(x,0,z);assert.equal(standingHitsRect(at.x,at.z,.28,floor,solid),true,id);}
 });
 
 test('drawn counter and shelf faces match their colliders after rotation and elevation',()=>{
  for(const frame of [higaFrame,{x:-12,z:3,y:.7,yaw:.37},{x:2,z:-4,y:0,yaw:0}]){
   const shop=frame===higaFrame?higa:build(frame);
   // [collider, where the ray starts (local), which way it looks (local)]
-  for(const [id,from,dir] of [['liquor-counter',[-1.0,floor+.5,D-.5],[0,0,-1]],['liquor-shelves',[0,floor+1.01,2.2],[1,0,0]]]){
+  for(const [id,from,dir] of [['kissa-counter',[-1.0,floor+.5,D-.5],[0,0,-1]],['kissa-ledge',[-1.0,floor+.725,D-.5],[0,0,-1]],['kissa-table',[.4,floor+.705,2.1],[1,0,0]]]){
    const collider=shop.colliders.find(c=>c.id===id);
    const ray=new THREE.Raycaster(shop.point(...from),shop.direction(...dir));
    const hit=ray.intersectObject(shop.group,true)[0];
@@ -80,7 +83,8 @@ test('the customer walks in through the doorway to the counter and stops before 
 
 test('the keeper reaches her place behind the counter round its open end',()=>{
  const blocked=(x,z)=>higa.colliders.some(c=>standingHitsRect(x,z,.3,floor,c));
- const legs=[[9.2,9.9],[10.9,9.9],[10.85,8.5]];let from={x:9.2,z:8.4};
+ // (30 October 2026: on to Kissa Higa's keeper's place, commerce/kissa-higa.js KISSA_KEEPER.)
+ const legs=[[9.2,9.9],[10.9,9.9],[10.85,8.5],KISSA_KEEPER.at];let from={x:9.2,z:8.4};
  for(const [x,z] of legs){assert.equal(sweepFraction(from,{x,z},blocked,.04),1,`clear to ${x}, ${z}`);from={x,z};}
 });
 
@@ -88,7 +92,7 @@ test('the other shop-house types keep their three shell colliders and open custo
  for(const kind of ['zenzai','post','fish','sweets','laundry','shelves']){
   const shop=build({x:0,z:0,y:0,yaw:0},kind);
   assert.equal(shop.colliders.filter(c=>c.id==='shop-house').length,3,`${kind}: shell is retained`);
-  assert.ok(shop.colliders.every(c=>!c.id.startsWith('liquor-')),`${kind}: no liquor fittings added`);
+  assert.ok(shop.colliders.every(c=>!c.id.startsWith('liquor-')&&!c.id.startsWith('kissa-')),`${kind}: no liquor or kissaten fittings added`);
   assert.equal(shop.colliders.some(c=>standingHitsRect(0,D-.2,.28,0,c)),false,`${kind}: frontage stays open`);
  }
 });

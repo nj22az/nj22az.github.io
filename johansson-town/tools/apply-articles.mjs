@@ -31,8 +31,9 @@ const FIX={
  'Mrs Sato':{friend:'Thao',role:'Ramen cook',place:'Sato Ramen'},
  'Miss Higa':{friend:'Tetsuo',role:'Schoolteacher; keeps the Umi-no-yu bandai in the evenings and at weekends',place:'The island school and the Umi-no-yu bandai',portrait:'assets/images/residents/higa.webp',
   islandPersonality:{title:'Teacher by day, keeper of the bandai by night',traits:['Patient','observant','dry'],habit:'Marks the class’s homework at the bandai between customers.',ambition:'Send every pupil in her class on to the mainland high school able to read, reckon and swim.',favourite:'The rock bath after dark, once the boiler is running sweet'}},
- // Her liquor shop shut on 22 October 2026 (the owner; commerce/higa-liquor.js): the bath is hers to keep.
- 'Grandmother Higa':{friend:'Mr Fujita',role:'Owner of Umi-no-yu',place:'Umi-no-yu and her Nishi-machi verandah'},
+ // Her liquor shop shut on 22 October 2026 (the owner; commerce/higa-liquor.js); its room is Kissa Higa on weekday
+ // mornings since 30 October (commerce/kissa-higa.js), and the bath is hers by day.
+ 'Grandmother Higa':{friend:'Mr Fujita',role:'Owner of Umi-no-yu and Kissa Higa',place:'Umi-no-yu, Kissa Higa on weekday mornings, and her Nishi-machi verandah'},
  'Mrs Nakamura':{friend:'Thuan'},
  'Kōji':{friend:'Ms Uezu',role:'Fisherman and relief bosun',place:'The fish auction quay and his sabani on the west quay',
   islandPersonality:{title:'The keen-eyed sorter',traits:['Quick','observant','ambitious'],habit:'Can spot a mixed crate before it reaches his sorting bench.',ambition:'Bring the sabani in with a catch worth the auction’s first call.',favourite:'The moment the morning catch is laid out'}},

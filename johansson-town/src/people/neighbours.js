@@ -206,8 +206,11 @@ export function createNeighbours({parent,register,onAction,characters,blocked=()
    return [spec.name,{position:h?[h.x,h.z]:[g.position.x,g.position.z],indoors:home?'home':null,place:g.userData.place}];
   }));},
   entities:people.map(p=>p.g),
-  /** New walls (Kitano-jima built on demand): forget which ground was clear, and plan each walk again from where they are. */
-  replan(){navigation.clearCache?.();for(const p of people)if(p.routine)p.path=navigation.path(p.g.position,{x:p.routine.at[0],z:p.routine.at[1]});},
+  /**
+   * New walls (Kitano-jima built on demand) or a way in opened or shut (Kissa Higa's doors on its clock): forget which
+   * ground was clear, and plan each walk again from where they are (a canonical day's walk is searched again next frame; a climb up an indoor stair is left to finish).
+   */
+  replan(){navigation.clearCache?.();for(const p of people){if(p.routine)p.path=navigation.path(p.g.position,{x:p.routine.at[0],z:p.routine.at[1]});else if(!p.spec?.stair)p.phaseKey=null;}},
   /** Turn to whoever is talking to them, and stop walking while they do. */
   talkTo(name,to){
    const p=people.find(p=>p.spec.name===name);if(!p)return null;

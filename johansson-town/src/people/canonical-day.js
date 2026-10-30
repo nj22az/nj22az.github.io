@@ -17,6 +17,7 @@ import {quayBreakPlan} from './quay-breaks.js';
 import {shopDayPlan,LAUNDRY_STANDS} from './shop-days.js';
 import {kitahamaShopOnDuty,kitahamaShopOpen,DOOR_POINT as KITAHAMA_SHOP_DOOR} from '../world/okinawa/kitahama-shop.js';
 import {YUNTAKU} from '../commerce/higa-liquor.js';
+import {KISSA_KEEPER,kissaVisitAt} from '../commerce/kissa-higa.js';
 import {EAST_QUAY} from '../world/okinawa/layout.js';
 
 const HOME_TARGETS=new Map();
@@ -32,7 +33,7 @@ const points={izakaya:IZAKAYA_DOOR,sakura:MARKET_THRESHOLD,market:MARKET_THRESHO
  'sato-ramen':RAMEN_DOOR,books:TOWN_DESTINATIONS.books,workshop:TOWN_DESTINATIONS.workshop,
  zenzai:NAKAMURA_DESSERTS.staffAt,'blue-coral':NAKAMURA_DESSERTS.staffAt,
  'fish-auction':[25,-39.6],'ice-plant':ICE_DOOR,boatyard:[-31.8,-45],sea:[-31.8,-45],
- 'higa-bench':YUNTAKU.seats.mac.stand,'coin-laundry':LAUNDRY_STANDS.W2.at,clinic:[34.1,35.1],'cargo-yard':[17,-40],
+ 'higa-bench':YUNTAKU.seats.mac.stand,'kissa-higa':KISSA_KEEPER.at,'coin-laundry':LAUNDRY_STANDS.W2.at,clinic:[34.1,35.1],'cargo-yard':[17,-40],
  'power-station':[SCHOOL.powerHouse.door[0]+.6,SCHOOL.powerHouse.door[1]-.9],quay:[20,-40],
  'main-street':[1,0],seawall:[-36.7,-20],'net-ground':[-28.4,7.6],'kitano-pier':airportWorld(...KITANO_PIER_STAND)};
 export function canonicalDestination(name,place){
@@ -58,13 +59,15 @@ export function canonicalDay(name,minutes,rain=false){
   if(m<FERRY_WORKING_DAY.signOn-15)return homePlan('a late start on his relief week; the sabani stays on the quay');
  }
  const rest=canonicalRest(name,minutes);
- if(rest)return {...homePlan(rest.activity),rest:rest.id};
+ // Breakfast at Kissa Higa's counter instead of at home, for a regular whose morning it is (Yui on weekdays; shop-days.js).
+ if(rest&&!(rest.id==='breakfast'&&kissaVisitAt(name,minutes)))return {...homePlan(rest.activity),rest:rest.id};
  // Johansson Mart, Kitahama (world/okinawa/kitahama-shop.js; the owner, 27 October 2026): Grandmother Higa keeps its till
- // on weekday evenings and Saturdays, when Sakura is shut and Miss Higa has the bandai. It comes before the shut Higa
- // Liquor's bench: while the shop has her, she is behind its counter.
+ // on weekday evenings and Saturdays, when Sakura is shut and Miss Higa has the bandai. It comes before the shops below:
+ // while the shop has her, she is behind its counter (its hours and Kissa Higa's mornings never meet).
  if(name==='Grandmother Higa'&&kitahamaShopOnDuty(minutes))return {place:'kitahama-shop',target:[...KITAHAMA_SHOP_DOOR],
   activity:kitahamaShopOpen(minutes)?'the till at Johansson Mart':'taking in the van’s cases at Johansson Mart',rain:!!rain};
- // Sakura Trading's round, the bench outside the shut Higa Liquor, and washing day at the coin laundry (shop-days.js).
+ // Sakura Trading's round, Kissa Higa's mornings, the bench outside it of an evening, and washing day at the coin laundry
+ // (shop-days.js).
  const shop=shopDayPlan(name,minutes,{pointFor:place=>points[place]?[...points[place]]:null});
  if(shop){if(shop.home)return homePlan(shop.activity);return {...shop,target:shop.target||[...points[shop.place]],rain:!!rain};}
  const weekday=townCalendarAt(minutes).weekday,weekend=weekday===0||weekday===6;

@@ -72,7 +72,7 @@ Naha arrivals and the city restaurant also have separate travel-scene interiors.
 | Rainflower Florist | Open pavilion/counter with furnishings; no separate enclosed room |
 | Nakamura Zenzai / Blue Coral | Open public counter; the residence upstairs is separately enterable |
 | Post office | Street counter/mailboxes; the residential room above is separate |
-| Higa Liquor | Storefront/counter; no dedicated public room in the entry dispatcher |
+| Kissa Higa (the old Higa Liquor, 30 October 2026) | A walk-in room on the street: the coffee counter, the ledge and stools, the table; no dedicated room in the entry dispatcher |
 | Power station | Exterior equipment/site; no dedicated room in the entry dispatcher |
 | Fish auction / ice plant / boatyard | Working scenery and interactions; no dedicated entered room in the current dispatcher |
 | Kitano airport | Runway/airport scenery; Naha arrivals is a different travel scene |
