@@ -75,3 +75,31 @@ void main(){
  float ink=step(ordered8(pixel),l);
  gl_FragColor=vec4(vec3(ink),1.0);
 }`;
+
+// An authored cabinet of sixteen material ramps, sixteen shades each (at most 256 RGB colours).
+export const VGA_BODY=`
+vec3 adventureRamp(int family,float shade){
+ vec3 hues[16];
+ hues[0]=vec3(.46,.46,.47);hues[1]=vec3(.73,.48,.34);hues[2]=vec3(.55,.29,.22);hues[3]=vec3(.75,.26,.27);
+ hues[4]=vec3(.77,.56,.18);hues[5]=vec3(.66,.65,.28);hues[6]=vec3(.35,.52,.23);hues[7]=vec3(.17,.39,.29);
+ hues[8]=vec3(.16,.49,.49);hues[9]=vec3(.23,.48,.68);hues[10]=vec3(.22,.29,.57);hues[11]=vec3(.41,.31,.57);
+ hues[12]=vec3(.61,.31,.53);hues[13]=vec3(.80,.47,.59);hues[14]=vec3(.56,.46,.33);hues[15]=vec3(.36,.38,.43);
+ vec3 base=hues[family];
+ return shade<8.0?mix(vec3(.018,.019,.026),base,pow(shade/8.0,.88)):mix(base,vec3(.97,.955,.91),pow((shade-8.0)/7.0,1.12));
+}
+void main(){
+ vec2 grid=vec2(floor(200.0*uResolution.x/uResolution.y),200.0),cell=floor(vUv*grid);
+ vec3 c=texture2D(tDiffuse,(cell+.5)/grid).rgb;float l=luma(c);
+ c=clamp(c+(bayer4(cell)-.5)*.025,0.0,1.0);
+ vec3 best=vec3(0.0);float distance=1e5;
+ for(int family=0;family<16;family++){
+  float mid=luma(adventureRamp(family,8.0));
+  float shade=l<mid?8.0*pow(clamp((l-.02)/max(.01,mid-.02),0.0,1.0),1.0/.88):8.0+7.0*pow(clamp((l-mid)/max(.01,.955-mid),0.0,1.0),1.0/1.12);
+  for(int next=0;next<2;next++){
+   vec3 p=adventureRamp(family,clamp(floor(shade)+float(next),0.0,15.0)),d=c-p;
+   vec3 metric=vec3(luma(d)*1.5,d.r-d.b,d.g-(d.r+d.b)*.5);float error=dot(metric,metric);
+   if(error<distance){distance=error;best=p;}
+  }
+ }
+ gl_FragColor=vec4(best,1.0);
+}`;
