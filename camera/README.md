@@ -58,6 +58,13 @@ when saving ? I want memory with our own photos or with the stickers".
   Applies to camera captures, edited photos and batch imports. Sources retain their editing resolution (up to
   4,096 pixels decoded); exports' dimensions in the album match the actual JPEG. Existing saved photos change only
   when saved again from the editor.
+- **Enhance photo** in Adjust: an optional switch and 0–100% strength (65% on first use). Gentle edge-preserving
+  smoothing, bounded luminance sharpening, crop-aware tone correction and restrained colour, applied before the Looks
+  and manual adjustments. Hold the photo to compare with the original; switch off to restore the unenhanced result.
+  The recipe retains the strength and re-edit starts from the retained source. Processing stays on the device, with
+  no downloads or uploads. This is conventional photographic correction, not AI reconstruction or upscaling.
+  No code, models or binaries from Merserk's Visual Enhancer are included: its Windows/DLSS/DirectML dependencies
+  do not run in this browser, and its source licence restricts redistribution and hosted equivalents.
 - **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World

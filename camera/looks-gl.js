@@ -1175,7 +1175,7 @@ export function normalRecipe(recipe={}){
  const stickers=(Array.isArray(recipe.stickers)?recipe.stickers:[]).filter(s=>typeof s?.id==='string').slice(0,40)
   .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
    ...(s.id.startsWith('balloon:')?{text:String(s.text??'').slice(0,140)}:{})}));
- return {layers,crop:normalCrop(recipe.crop),
+ return {layers,crop:normalCrop(recipe.crop),enhance:n(recipe.enhance,0,1,0),
   adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0),detail:n(a.detail,-1,1,0)},
   stamp:!!recipe.stamp,stickers,
   // The print's border (frames.js) and the trick lens.
@@ -1204,6 +1204,8 @@ uniform float uMirror,uSmooth,uAuto,uBias,uTrick,uLight,uContrast,uColour,uWarmt
 uniform vec2 uStep;
 uniform float uMeanLod;
 uniform vec3 uDown;
+uniform float uEnhance,uEnhanceLod;
+uniform vec2 uEnhanceStep;
 float luma(vec3 c){return dot(c,vec3(.2126,.7152,.0722));}
 vec2 sourceAt(vec2 p){
  if(uTrick>.5)p.x=.5-abs(p.x-.5);
@@ -1227,6 +1229,28 @@ vec3 resized(vec2 p){
  vec3 ring=(downsized(p+vec2(o.x,0.0))+downsized(p-vec2(o.x,0.0))+downsized(p+vec2(0.0,o.y))+downsized(p-vec2(0.0,o.y)))*.25;
  return clamp(c+(c-ring)*.32,0.0,1.0);
 }
+// Our own photographic correction, before the Looks. No model, invented detail or enlargement. All measurements
+// use the visible crop; flat, dark areas are smoothed gently and strong edges are kept out of the sharpening.
+vec3 enhanced(vec3 c){
+ vec3 mean=vec3(0.0);
+ for(int j=0;j<3;j++)for(int i=0;i<3;i++)mean+=textureLod(tSource,uCrop.xy+(vec2(i,j)+.5)/3.0*uCrop.zw,uMeanLod).rgb;
+ float gamma=clamp(log(.48)/log(clamp(luma(mean/9.0),.02,.98)),.84,1.12);
+ vec3 sum=c,ring=vec3(0.0);float total=1.0;
+ for(int k=0;k<8;k++){
+  float a=float(k)*.785398;
+  vec3 n=textureLod(tSource,sourceAt(vUv+vec2(cos(a),sin(a))*uEnhanceStep),uEnhanceLod).rgb;
+  vec3 d=n-c;float w=exp(-dot(d,d)*2400.0);sum+=n*w;total+=w;ring+=n;
+ }
+ vec3 clean=mix(c,sum/total,.4*uEnhance);
+ float detail=luma(c-ring/8.0);
+ detail*=smoothstep(.008,.035,abs(detail))*(1.0-smoothstep(.12,.28,abs(detail)));
+ clean+=vec3(clamp(detail,-.018,.018)*uEnhance*.65);
+ float y=clamp(luma(clean),0.0,1.0),tone=pow(y,gamma);
+ tone+=.06*(tone-.5)*tone*(1.0-tone);
+ clean*=mix(1.0,clamp(tone/max(y,.015),.85,1.5),uEnhance);
+ float saturation=max(clean.r,max(clean.g,clean.b))-min(clean.r,min(clean.g,clean.b));
+ return clamp(mix(vec3(luma(clean)),clean,1.0+.05*uEnhance*(1.0-smoothstep(.15,.6,saturation))),0.0,1.0);
+}
 void main(){
  // (A picture not made smaller, or one a Look smooths or reads softer, is read as it is.)
  vec3 c=uSmooth>0.0||uBias>0.0||uDown.z<0.0?at(vUv):resized(vUv);
@@ -1239,6 +1263,7 @@ void main(){
   }
   c=mix(c,sum/total,uSmooth);
  }
+ if(uEnhance>0.0)c=enhanced(c);
  if(uAuto>0.0){
   // The average of the part of the picture that is kept (the crop, so the viewfinder and the save agree), from nine
   // samples of a mipmap about a third of it across.
@@ -1372,6 +1397,8 @@ export function createLookEngine(canvas,{light=false}={}){
    f1(u.uBias,bias);f1(u.uMeanLod,meanLod);
    // One picture pixel in the source's coordinates, and the level twice the picture's size to sample it from.
    const shrink=Math.max(crop.w*s.width/w,crop.h*s.height/h);
+   f1(u.uEnhance,recipe.enhance||0);f1(u.uEnhanceLod,Math.max(0,Math.log2(shrink)));
+   if(u.uEnhanceStep)gl.uniform2f(u.uEnhanceStep,Math.max(1/w,1/(crop.w*s.width)),Math.max(1/h,1/(crop.h*s.height)));
    if(u.uDown)gl.uniform3f(u.uDown,crop.w/w,crop.h/h,shrink>1.05?Math.max(0,Math.log2(shrink)-1):-1);
    gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smoothing);f1(u.uAuto,auto?1:0);
    f1(u.uTrick,TRICKS.indexOf(recipe.trick||'none'));

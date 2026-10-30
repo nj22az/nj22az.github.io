@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261030crop1">
+<link rel="stylesheet" href="camera.css?v=20261030enhance1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -144,6 +144,13 @@
     </div>
    </div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
+    <div class="option-row enhance-heading"><span id="enhanceLabel">Enhance photo</span><button type="button" class="switch" id="enhancePhoto" role="switch" aria-checked="false" aria-labelledby="enhanceLabel" aria-describedby="enhanceHint"></button></div>
+    <div class="slider-row enhance-strength">
+     <label for="enhanceStrength">Strength</label>
+     <input type="range" id="enhanceStrength" min="0" max="100" step="1" value="0">
+     <output id="enhanceValue" for="enhanceStrength">Off</output>
+    </div>
+    <p class="enhance-hint" id="enhanceHint">Tone, colour and detail. Hold photo to see the original.</p>
     <div class="adjusters" id="adjusters" role="radiogroup" aria-label="Adjustment"></div>
     <div class="slider-row">
      <input type="range" id="adjustSlider" min="-100" max="100" step="1" value="0" aria-label="Light">
@@ -288,6 +295,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261030crop1"></script>
+<script type="module" src="app.js?v=20261030enhance1"></script>
 </body>
 </html>
