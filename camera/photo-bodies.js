@@ -83,7 +83,7 @@ vec3 adventureRamp(int family,float shade){
  hues[0]=vec3(.46,.46,.47);hues[1]=vec3(.73,.48,.34);hues[2]=vec3(.55,.29,.22);hues[3]=vec3(.75,.26,.27);
  hues[4]=vec3(.77,.56,.18);hues[5]=vec3(.66,.65,.28);hues[6]=vec3(.35,.52,.23);hues[7]=vec3(.17,.39,.29);
  hues[8]=vec3(.16,.49,.49);hues[9]=vec3(.23,.48,.68);hues[10]=vec3(.22,.29,.57);hues[11]=vec3(.41,.31,.57);
- hues[12]=vec3(.61,.31,.53);hues[13]=vec3(.80,.47,.59);hues[14]=vec3(.56,.46,.33);hues[15]=vec3(.36,.38,.43);
+ hues[12]=vec3(.61,.31,.53);hues[13]=vec3(.80,.47,.59);hues[14]=vec3(.85,.58,.39);hues[15]=vec3(.36,.38,.43);
  vec3 base=hues[family];
  return shade<8.0?mix(vec3(.018,.019,.026),base,pow(shade/8.0,.88)):mix(base,vec3(.97,.955,.91),pow((shade-8.0)/7.0,1.12));
 }
@@ -92,7 +92,10 @@ void main(){
  vec3 c=texture2D(tDiffuse,(cell+.5)/grid).rgb;float l=luma(c);
  c=clamp(c+(bayer4(cell)-.5)*.025,0.0,1.0);
  vec3 best=vec3(0.0);float distance=1e5;
+ bool warm=c.r>c.g*1.08&&c.g>c.b*1.08&&c.r<c.g*6.0;
  for(int family=0;family<16;family++){
+  // One coherent flesh/wood family for warm materials, rather than alternating yellow and magenta on a face.
+  if(warm&&family!=1&&family!=2&&family!=14)continue;
   float mid=luma(adventureRamp(family,8.0));
   float shade=l<mid?8.0*pow(clamp((l-.02)/max(.01,mid-.02),0.0,1.0),1.0/.88):8.0+7.0*pow(clamp((l-mid)/max(.01,.955-mid),0.0,1.0),1.0/1.12);
   for(int next=0;next<2;next++){
@@ -156,9 +159,9 @@ void main(){
 }`;
 export const ANIME_BODY=`${KUWAHARA}
 void main(){
- vec3 c=anisotropicPaint(vUv,1.4);float l=luma(c),plane=floor(l*11.0+.5)/11.0;
- c*=mix(1.0,plane/max(l,.02),.3);c=pow(max(c,vec3(0.0)),vec3(.94));
- c=mix(vec3(luma(c)),c,1.04);c+=vec3(.025,.025,.01)*smoothstep(.3,.8,l);
+ vec3 c=anisotropicPaint(vUv,2.0);float l=luma(c),plane=floor(l*8.0+.5)/8.0;
+ c*=mix(1.0,plane/max(l,.02),.55);c=pow(max(c,vec3(0.0)),vec3(.91));
+ c=mix(vec3(luma(c)),c,.98);c+=vec3(.035,.035,.015)*smoothstep(.3,.8,l);
  c=mix(c,vec3(.98,.97,.92),smoothstep(.78,1.0,l)*.045);
  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
 }`;
