@@ -99,7 +99,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    // The Looks come in kinds; a kind shows only its own (the owner: "game consoles can stay with each other and vhs for
    // 80's"), and the kind of the chosen Look is the one open.
    const kinds=await app(()=>[...document.querySelectorAll('#lookGroups button')].map(b=>b.textContent));
-   assert.deepEqual(kinds,['Photo','Games','80s','Drawn','Painted','Print']);
+   assert.deepEqual(kinds,['Photo','Games','80s','Drawn','Painted','Print','Riso']);
    await page.click('#lookGroups button[data-group="80s"]');
    assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['crt','camcorder'],'80s: Old TV and the VHS camcorder');
    await page.click('#lookGroups button[data-group="games"]');

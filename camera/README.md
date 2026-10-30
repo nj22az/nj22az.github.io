@@ -122,7 +122,8 @@ The strip shows one kind at a time (the owner: "make sub menu organisation so it
 consoles can stay with each other and vhs for 80's or so"): **Photo** (Natural, Black & white, Sepia, Instant,
 Miniature, Night vision), **Games** (Pocket, 16-bit), **80s** (Old TV, VHS), **Drawn** (Line drawing, Sketchbook, Pencil
 crayon, Pencil manga, Manga, Cartoon, Adventure Ink, Comic dots), **Painted** (Watercolour, Oil, Heavy brush) and
-**Print** (Woodblock, Risograph, Rubber stamp, Blueprint). The kind of the chosen Look is the one open and keeps its name
+**Print** (Woodblock, Rubber stamp, Blueprint), and since 30 October **Riso** (five Risographs, below) and the five
+consoles under **Games**. The kind of the chosen Look is the one open and keeps its name
 in yellow while another is looked at; a swipe across the picture goes through every Look, kind after kind; only the
 open kind's thumbnails are drawn, and none while the strip is folded over the picture. A Look World adds later goes under
 More until it is given a kind (`LOOK_GROUPS` in `app.js`). New dice mixes: Home video (Instant and VHS), Comic book
@@ -195,11 +196,47 @@ to its judge before it ships (`tools/render-camera-looks.mjs`, then a before/aft
 
 The owner (30 October 2026): "I want more video game shaders, n64, Gameboy color, PlayStation etc". Five camera-only
 Looks join Pocket and 16-bit under Games, each drawing a photo under its machine's real picture constraints, never named
-after it (as with Pocket and 16-bit): **Colour hand-held** (160×144, every 8×8 tile in four shades of its own colour,
-15-bit), **Red visor** (384×224, four shades of LED red on black, the dark between the pixels), **8-bit** (256×240 wide
-pixels, every colour from the fixed palette of fifty-odd, ordered dither), **32-bit** (320×240, unfiltered texels, the
-graphics chip's four-by-four dither before the colour is cut) and **64-bit** (a small texture three-point filtered, the
-haze of a fogged world, 16-bit colour with a fine noise dither).
+after it (as with Pocket and 16-bit), and reworked the same day after their own artists' audit:
+
+- **Colour hand-held**: 144 lines; eight shared four-colour ramps (skin, leaves, sky and water, wood, red, violet, grey,
+  sunlight), each 8×8 tile taking the ramp nearest its hue and strength; flat colour, a checker only where two shades
+  meet; 15-bit.
+- **Red visor**: 224 rows of LED red in four shades on black, the gap between rows drawn; darkened, never exposed up.
+- **8-bit**: 224 lines of wide pixels; one sub-palette per 16×16 block (three rows of one hue column of the console's
+  palette, or its greys, plus the black backdrop), so the blocks clash as the console's did.
+- **32-bit**: 320×240; the photo as a textured wall seen at a slight tilt on a coarse mesh, its corners snapped to
+  whole pixels and the texture laid without perspective correction (lines kink at the triangles); unfiltered 2×2
+  texels; the graphics chip's four-by-four dither, then five bits a channel.
+- **64-bit**: a texture about 48 texels tall, cut to 15-bit, smeared by the three-point filter; fog only at the top of
+  the picture and never over blacks; 16-bit with a fine noise dither.
+- Pocket now has the camera's 112 rows. VHS colour trails to the right (it ran left), dropouts are rare white streaks,
+  and the head switch makes one hook at the foot.
+
+## Riso
+
+The owner (30 October 2026): "I do love Risograph can there be several variations on Risograph?" Five Risographs, in
+their own kind: **Risograph** (World's coral and teal, now printed the camera's way), **Riso pink & blue**
+(fluorescent pink and blue), **Riso red & navy** (bright red and federal blue), **Riso black & pink** (a duotone: pink
+for the middle tones, black for the shadows) and **Riso three-colour** (yellow, fluorescent pink and blue, the whole
+picture in Riso inks). One separation serves them all (`risoBody` in `looks-gl.js`): overprinted inks multiply, which in
+optical density is a sum, so each point's amounts are solved exactly (least squares, kept between none and full), and
+the darks are the inks printed over each other, never a third black. Each drum prints a little out of register through
+Riso's grain screen (a stochastic dither, not a dot grid), with roller streaks along the feed and a starved mottle in
+big solids; the darkest drum carries the contours. A new ink pair is one line in `RISO_INKS`.
+
+## Rebuilt for their judges (30 October 2026)
+
+After the audits in [AUDIT-LOOKS-2026-10-30.md](AUDIT-LOOKS-2026-10-30.md), the camera draws these with its own
+versions (World's town Looks unchanged): **Comic dots** (no exposure; flat colour in tints of fixed steps on four
+plates, dot gain, solids and a black keyline), **Watercolour** (three transparent washes keeping their colour, glazed
+darks in indigo or sepia, a soft rim where a wash dried, paper left white, no outlines), **Heavy brush** (distinct dabs
+along the form, each one colour, bristle grooves, Prussian-blue drawing), **Black & white** (Moriyama: grain strongest
+in the middle greys, a softer toe, halation), **Night vision** (automatic brightness, halos, scintillation and the
+fibre plate's honeycomb, P43 yellow-green). Oil painting and Miniature keep World's shaders with a few of their lines
+replaced (`PHOTO_EDITS`: Hopper's coloured darks without clipping, no white specks or mouth-corner blots, brushwork in
+all the paint; no saturation burn), and the camera refuses to start if World changes one of those lines. The shared
+line finder sees a point a little soft (no line for a hair's gap or a grain of granite) and does not draw a light,
+thin mark inside a bright area (teeth); the shared hatching follows the picture's form and stays in the shadows.
 
 ## Erase
 
@@ -290,7 +327,7 @@ steps, the print lands in the album, a tap skips it, Print off saves without it)
 the board whole on the screen, a miss turned back by a third card, the win and the best game kept; a 12-pair game with
 the cartoon Thuan's sheet) and the pixel frames (every border closed at three shapes, the photo clear, the Harbour frame in a
 saved JPEG). Then, at phone and desktop size, it
-compiles and draws all 30 Looks on the camera picture, starts
+compiles and draws all 34 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
 settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a
 lettered balloon, takes the photo (the print's border is in the saved file), re-edits it from its source (Film frame,
