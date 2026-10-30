@@ -142,6 +142,19 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.click('#exposureChip');
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.adjust.light),0);assert.equal(await page.isHidden('#exposureChip'),true);
   });
+  await check(`${label}: a tap puts Miniature's focus on the subject, and only with Miniature on`,async()=>{
+   const before=await app(()=>JSON.stringify(window.pocketCamera.state.camera.recipe.layers));
+   const f=await page.locator('#cameraFrame').boundingBox();
+   // Without Miniature a tap only folds the panels.
+   await page.mouse.click(f.x+f.width*.5,f.y+f.height*.25);await page.waitForTimeout(420);
+   assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.focus),-1);
+   await page.evaluate(()=>{const r=window.pocketCamera.state.camera.recipe;r.layers=[{look:'tilt',amount:1}];});
+   await page.mouse.click(f.x+f.width*.5,f.y+f.height*.25);await page.waitForTimeout(420);
+   const focus=await app(()=>window.pocketCamera.state.camera.recipe.focus);
+   assert.ok(Math.abs(focus-.75)<.03,`a tap a quarter down focuses three quarters up (${focus})`);
+   assert.equal(await page.textContent('#toast'),'Focus here');
+   await page.evaluate(b=>{const r=window.pocketCamera.state.camera.recipe;r.layers=JSON.parse(b);r.focus=-1;},before);
+  });
   await check(`${label}: a die-cut sticker on the viewfinder, dragged into place`,async()=>{
    await page.click('.sticker-button');await page.waitForSelector('#stickerSheet[open] .sticker-choice');
    await page.click('#stickerSets button:text-is("Johansson")');await page.waitForSelector('.sticker-choice[data-id^="johansson-pixar/"]');

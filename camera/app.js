@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030a';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,normalRecipe,exportSize} from './looks-gl.js?v=20261030b';
 import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261029t';
@@ -582,8 +582,8 @@ function setExposure(v){
 }
 $('exposureChip').addEventListener('click',()=>{sound('tick');setExposure(0);remember();});
 
-// Swipe across the picture for the next Look; tap twice to turn the camera round.
-function gestures(stage,{onDoubleTap,onDrag}={}){
+// Swipe across the picture for the next Look; tap twice to turn the camera round; tap once to focus Miniature.
+function gestures(stage,{onDoubleTap,onDrag,onTap}={}){
  let start=null,lastTap=0;
  stage.addEventListener('pointerdown',e=>{if(e.target.closest('button,.settings,.erase-paint'))return;start={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId,dragging:false};});
  stage.addEventListener('pointermove',e=>{
@@ -599,13 +599,26 @@ function gestures(stage,{onDoubleTap,onDrag}={}){
   if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.4&&dt<700){stepLook(dx<0?1:-1);return;}
   if(Math.hypot(dx,dy)<10&&dt<300){
    const now=performance.now();
-   if(now-lastTap<320){lastTap=0;onDoubleTap?.();}else{lastTap=now;if(state.mode==='camera'){showAmountRow(false);showSettings(false);showLooks(false);}}
+   if(now-lastTap<320){lastTap=0;onDoubleTap?.();}else{lastTap=now;onTap?.(e);if(state.mode==='camera'){showAmountRow(false);showSettings(false);showLooks(false);}}
   }
  });
  stage.addEventListener('pointercancel',()=>{start=null;});
 }
+/**
+ * Miniature's plane of focus where the picture is tapped (the owner's judge for it, Olivo Barbieri: the band belongs on
+ * the subject, not at a fixed height), while Miniature is in the recipe. Returns whether the tap was taken.
+ */
+function focusTap(e,recipe,frame){
+ if(!recipe.layers.some(l=>l.look==='tilt'&&l.amount>0)||e.target.closest('.sticker'))return false;
+ const r=$(frame).getBoundingClientRect();
+ if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom||!r.height)return false;
+ recipe.focus=Math.round((1-(e.clientY-r.top)/r.height)*100)/100;
+ sound('tick');toast('Focus here');invalidate();
+ return true;
+}
 gestures($('cameraStage'),{
  onDoubleTap:()=>{if(state.camera.running&&!$('flip').hidden)$('flip').click();},
+ onTap:e=>{if(focusTap(e,state.camera.recipe,'cameraFrame'))refreshThumbs();},
  // The whole height of the picture is the whole range of light.
  onDrag:{begin:()=>state.camera.recipe.adjust.light,move:(from,dy)=>setExposure(from-dy/($('cameraFrame').clientHeight||1)*2),end:remember},
 });
@@ -995,7 +1008,7 @@ $('saveEdit').addEventListener('click',async()=>{
  // A swipe is not a hold.
  stage.addEventListener('pointermove',e=>{if(holding&&at&&Math.hypot(e.clientX-at.x,e.clientY-at.y)>10){clearTimeout(holding);holding=null;}});
  for(const type of ['pointerup','pointercancel','pointerleave'])stage.addEventListener(type,end);
- gestures(stage);
+ gestures(stage,{onTap:e=>{if(state.edit&&!state.edit.erasing)focusTap(e,state.edit.recipe,'editFrame');}});
 }
 function selectTab(tab){
  for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabAdjust','panelAdjust','adjust'],['tabErase','panelErase','erase'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){

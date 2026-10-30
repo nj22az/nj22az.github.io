@@ -257,6 +257,16 @@ distinct; 8-bit held to the console's four sub-palettes and 13 colours; 32-bit k
 wobbling snapped mesh, not a tilt); 64-bit filtered smoothly; Riso grain on a 2 px interleaved-gradient screen; and the
 photo, print and TV Looks adjusted as listed there.
 
+Round four (published round three, then "proceed"): every line Look draws strokes, not specks (`inked()` keeps a mark
+only where the drawing carries on a few pixels along its own direction; the phone's viewfinder skips the test, a save
+draws it); Cartoon and Adventure Ink paint a cheek, not its pores (a point darker than the ring round it takes the ring's
+colour before the cel colour is set), and Cartoon finds its outline at twice the scale, so it outlines shapes and its
+smile is one shape. **Miniature's focus is tapped:** with Miniature in the recipe, a single tap on the picture (camera or
+editor) puts the plane of focus at that height (`recipe.focus`, a height from the foot, -1 for the automatic band);
+"Focus here" confirms it. Tried and left out: a busyness measure (the camera's own smoothing leaves a wrinkled cheek and
+a lip line measuring alike) and a wider colour silhouette (no visible gain for thirty more samples a pixel); outlines
+round a person against a background of their own colour and light need a subject mask.
+
 ## Erase
 
 The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint
@@ -339,7 +349,7 @@ node camera/tests/camera.browser.mjs         # real Chromium with a fake camera,
 CAMERA_SHOTS=/tmp/shots node camera/tests/camera.browser.mjs   # and screenshots of each step
 ```
 
-The browser check (53 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
+The browser check (56 checks) first opens the first screen at the sizes an iPhone's Safari really leaves (390×664 with
 its toolbar, 375×560 on an iPhone SE): the greeting whole inside the picture's space, no Look tray yet, the shutter
 starting the camera, the manifest, its icons at their sizes and the offline worker; then the printer (it feeds in
 steps, the print lands in the album, a tap skips it, Print off saves without it) and Memory (six photos of their own,
@@ -348,7 +358,7 @@ the cartoon Thuan's sheet) and the pixel frames (every border closed at three sh
 saved JPEG). Then, at phone and desktop size, it
 compiles and draws all 34 Looks on the camera picture, starts
 the camera twice at once (one camera stays on), mixes by hand and by the dice, sets the Print frame and the date in the
-settings row, drags light up and puts it back, sticks on a sticker (dragged, then pinched with two fingers) and a
+settings row, drags light up and puts it back, taps Miniature's focus onto the picture (and not without Miniature), sticks on a sticker (dragged, then pinched with two fingers) and a
 lettered balloon, takes the photo (the print's border is in the saved file), re-edits it from its source (Film frame,
 Twin, Pattern, Detail, Light, a third sticker resized by its handle, hold for the original, Cancel held while saving),
 imports one photo and then two at once, makes own stickers from a cut-out and a photo and deletes one, deletes a photo,

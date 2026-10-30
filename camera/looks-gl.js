@@ -221,6 +221,18 @@ float contour(vec2 uv,float u){return smoothstep(.45,.85,edges(uv,1.2*u,1.0));}
 // between two teeth, not the dark of the mouth or a lash), nothing is drawn, so the teeth are one white shape.
 float inked(vec2 uv,float u,float r,float threshold,float soft,float contourAmount){
  float line=max(lineAt(uv,u,r,threshold,soft),contour(uv,u)*contourAmount);
+#ifndef LIGHT
+ // A pen draws strokes, not specks: a mark is kept only where the drawing carries on a few pixels along its own direction
+ // (one side is enough, so a line's end stays). A dash shorter than about twelve pixels, a pore, a grain of granite or a
+ // fleck of foliage is left out. The phone's viewfinder skips it; a save draws it.
+ vec2 t=uTexel*1.5*u;
+ float gx=luma(texture2D(tDiffuse,uv+vec2(t.x,0.0)).rgb)-luma(texture2D(tDiffuse,uv-vec2(t.x,0.0)).rgb);
+ float gy=luma(texture2D(tDiffuse,uv+vec2(0.0,t.y)).rgb)-luma(texture2D(tDiffuse,uv-vec2(0.0,t.y)).rgb);
+ vec2 along=normalize(vec2(-gy,gx)+vec2(1e-5,0.0))*uTexel*6.0*u;
+ float on=max(max(lineAt(uv+along,u,r,threshold,soft),contour(uv+along,u)*contourAmount),
+  max(lineAt(uv-along,u,r,threshold,soft),contour(uv-along,u)*contourAmount));
+ line*=smoothstep(.15,.45,on);
+#endif
  vec3 brightest=vec3(0.0);
  for(int k=0;k<8;k++){float a=float(k)*.785398;vec3 c=texture2D(tDiffuse,uv+vec2(cos(a),sin(a))*uTexel*3.0*u).rgb;if(luma(c)>luma(brightest))brightest=c;}
  // A tooth is judged against its surroundings (warm light tints teeth too, and an exposed picture lightens skin): far
@@ -251,6 +263,11 @@ vec3 celSmooth(vec2 uv,float r,vec3 c0,float k){
 }
 vec3 celBase(vec2 uv,float u,out float material){
  vec3 c=texture2D(tDiffuse,uv).rgb;
+ // A colourist paints the cheek, not its pores and wrinkles: a point darker than the ring round it is a thin dark mark
+ // (narrower than the ring) and takes the ring's colour; a large dark area, whose ring is dark too, keeps its own. The
+ // ink line draws the marks that matter.
+ vec3 ring=ringColour(uv,2.5*u);
+ c=mix(c,ring,smoothstep(.03,.1,luma(ring)-luma(c)));
  vec3 b=celSmooth(uv,2.5*u,c,40.0);
 #ifndef LIGHT
  b=celSmooth(uv,6.0*u,b,30.0);
@@ -975,7 +992,8 @@ void main(){
  vec3 col=mix(shade,base,smoothstep(-w,w,d));
  // The outline: thick and steady on the silhouettes and the strongest features only, never on texture.
  vec2 wob=(vec2(noise(p*.035),noise(p*.035+9.0))-.5)*uTexel*2.0*u;
- float line=max(inked(vUv+wob,u,3.2,.09,.06,0.0),contour(vUv+wob,u)*.85);
+ // Found at twice the scale, so a mark a few pixels wide (a wrinkle, a pore) is no outline; shapes are.
+ float line=inked(vUv+wob,u*2.0,3.0,.07,.06,.8);
  col=mix(col,vec3(.16,.12,.13),smoothstep(.4,.7,line));
  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
 }`;
@@ -1085,7 +1103,7 @@ export const TRICKS=Object.freeze(['none','twin','quad']);
 export const MAX_SIDE=4096,MAX_PIXELS=16e6;
 
 const WORLD_UNIT='float unit(){return max(1.0,uResolution.y/1080.0);}';
-const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;\nfloat unit(){return max(uUnitFloor,uResolution.y/uLines);}';
+const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;uniform float uFocusY;\nfloat unit(){return max(uUnitFloor,uResolution.y/uLines);}';
 
 // Small changes to a World Look for photographs, by exact replacement of its own lines (World's source stays the one
 // copy; a line World changes makes the camera refuse to start rather than draw something else). Oil painting, judged as
@@ -1094,10 +1112,11 @@ const PHOTO_UNIT='uniform float uLines;uniform float uUnitFloor;\nfloat unit(){r
 // brushwork in all of the paint.
 const PHOTO_EDITS={
  // Miniature, judged as Olivo Barbieri: the model look is bright, flat light, not burnt skin.
- // The plane of focus where the subject is: in an upright photo a person's face is in its upper third, not at the
- // middle (the band fell on a necklace and blurred the face); a wide photo keeps the middle.
+ // The plane of focus where the subject is: where the photographer tapped (uFocusY, the height from the foot), or else
+ // in an upright photo a person's face, in its upper third (the band fell on a necklace and blurred the face), and a
+ // little above the middle in a wide one.
  tilt:[['c=mix(vec3(l),c,1.45);\n c=(c-0.5)*1.12+0.53;','c=mix(vec3(l),c,1.12);\n c=(c-0.5)*1.04+0.53;'],
-  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uResolution.y>uResolution.x*1.05?0.66:0.54));']],
+  ['float away=abs(vUv.y-0.46);','float away=abs(vUv.y-(uFocusY>=0.0?uFocusY:uResolution.y>uResolution.x*1.05?0.66:0.54));']],
  oil:[
   ['col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.1,0.22,light)*near);','col=mix(col,vec3(0.97,0.95,0.9),smoothstep(0.24,0.42,light)*near*.6);'],
   ['col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.1,0.22,dark)*near*0.9);','col=mix(col,vec3(0.16,0.12,0.11),smoothstep(0.2,0.36,dark)*near*0.6);'],
@@ -1160,6 +1179,8 @@ export function normalRecipe(recipe={}){
   stamp:!!recipe.stamp,stickers,
   // The print's border (frames.js) and the trick lens.
   frame:typeof recipe.frame==='string'&&/^[a-z]{1,20}$/.test(recipe.frame)?recipe.frame:'none',
+  // Where Miniature's plane of focus lies, as a height from the picture's foot (0 to 1); -1 lets it find the subject.
+  focus:n(recipe.focus,-1,1,-1),
   trick:TRICKS.includes(recipe.trick)?recipe.trick:'none'};
 }
 
@@ -1358,8 +1379,8 @@ export function createLookEngine(canvas,{light=false}={}){
    f1(u.uLight,a.light);f1(u.uContrast,a.contrast);f1(u.uColour,a.colour);f1(u.uWarmth,a.warmth);
   };
  }
- const lookUniforms=(amount,w,h,pattern,floor=.5)=>u=>{
-  f1(u.uAmount,amount);if(u.uTexel)gl.uniform2f(u.uTexel,1/w,1/h);if(u.uResolution)gl.uniform2f(u.uResolution,w,h);
+ const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1)=>u=>{
+  f1(u.uAmount,amount);f1(u.uFocusY,focus);if(u.uTexel)gl.uniform2f(u.uTexel,1/w,1/h);if(u.uResolution)gl.uniform2f(u.uResolution,w,h);
   // Pattern: -1 finer, +1 coarser, a factor of two either way.
   f1(u.uLines,1080*2**-pattern);f1(u.uUnitFloor,floor);
   f1(u.uComic,1);f1(u.uSkyDepth,120);f1(u.uFocusDistance,6);f1(u.uFocusRange,3);f1(u.uNear,.05);f1(u.uFar,60);
@@ -1386,7 +1407,7 @@ export function createLookEngine(canvas,{light=false}={}){
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
   steps.forEach(({layer,entry},i)=>{
    const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern),tile);
+   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1),tile);
    read=1-read;
   });
   return intoPair?p.items[read].f:true;
@@ -1428,7 +1449,7 @@ export function createLookEngine(canvas,{light=false}={}){
     if(!e)budget--;
     if(!ready(request(name))){missing.push(name);return;}
     const entry=look(name);if(!entry){missing.push(name);return;}
-    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35));
+    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1));
    });
    const pixels=new Uint8Array(w*h*4);
    gl.bindFramebuffer(gl.FRAMEBUFFER,atlas.items[0].f);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,pixels);

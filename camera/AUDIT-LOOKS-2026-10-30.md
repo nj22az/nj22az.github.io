@@ -84,4 +84,11 @@ Also from its table: Stamp's solids are solid (starved ink only at the light-pre
 curve harder and its grain visible on a phone; Sepia's faded edge a soft rounded print, not a bevel; Blueprint's brush
 marks run along each edge; Night vision's tube is round on upright photos too; Red visor is exposed and then set low,
 so faces read as dim red; 16-bit's dither is light enough that skin is flat; Pocket's edge enhancement is stronger.
-Round three has not been re-judged by a reviewer yet.
+Round three has not been re-judged by a reviewer yet. Round three is published (`main` `3a54aa6cf`).
+
+Round four, on the reviewer's remaining items: specks (fix 2) — strokes, not specks, in every line Look (a continuity
+test), and the cel Looks paint over thin dark marks before colouring; Cartoon's outline found at twice the scale (its
+smile one shape, a few bold wrinkles instead of a scatter); focus on the subject (fix 8) — a tap places Miniature's band.
+Silhouette contours (fix 3) were tried as a wider colour edge thinned to its crest and left out: no visible gain on the
+test portraits for about thirty more samples a pixel. A subject mask is the way to outline a person against a
+background of their own colour and light.
