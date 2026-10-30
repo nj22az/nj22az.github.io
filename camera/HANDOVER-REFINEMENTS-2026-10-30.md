@@ -10,6 +10,9 @@ After the crop/compression release, the owner requested, in this order:
 4. Paper textures should be an option.
 
 Branch **`codex/pocket-camera-save-share`**, from `main` **`ff76aee1`**. Earlier crop release PR #408 remains live.
+Implementation **`1802c9d6caf5788f00a799c52ce5f471277844ec`**, [draft PR #411](https://github.com/nj22az/nj22az.github.io/pull/411)
+into `main`. All **22 uploaded blobs** and complete tree **`ccaff534f4ba5afec93fe3592f2ea4e6b57b9a27`** match the tested
+local snapshot exactly. Delivered using the connected GitHub Git-object API with a checked branch-head lease.
 These changes are **not published**; the previous “Publish” authorised that earlier release. No main merge here.
 
 ## Implemented
@@ -63,4 +66,4 @@ The review proof credits Ozan Çulha / Pexels 28890349. Other bench images remai
 Review the branch and draft PR, then publish only on the owner's explicit instruction. After publication, test the
 native iPhone Save Image sheet, cancellation, browser/Home Screen rotation and the owner's unfiltered portrait.
 Physical Safari behaviour, hardware frame rates and the actual phone Photos app remain unverified. The wider Looks
-backlog and Minato mode remain separate. Handover delivery details will identify exact commits and PR.
+backlog and Minato mode remain separate. PR #411 is the concrete review target; no deployment was triggered here.
