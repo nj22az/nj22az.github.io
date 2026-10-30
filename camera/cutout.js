@@ -2,7 +2,7 @@
  * The photographer's own die-cut stickers, from their own pictures. A picture with a transparent background (a subject
  * lifted from a photo on an iPhone, iPad or Mac, "Copy Subject", then pasted; or any cut-out PNG) is cut round its own
  * outline; any other photo becomes a rounded photo sticker. Either way it gets what the studio's stickers have
- * (art/stickers/compose.py): a white die-cut border, a fine grey cut line and a soft shadow. Done here, on this device.
+ * a narrow white contour following the silhouette, with a restrained shadow. Done here, on this device.
  */
 const LONGEST=1024;
 
@@ -29,8 +29,8 @@ export async function makeSticker(file){
   const r=Math.min(w,h)*.09;
   ag.globalCompositeOperation='destination-in';ag.beginPath();ag.roundRect(0,0,w,h,r);ag.fill();ag.globalCompositeOperation='source-over';
  }
- const m=Math.max(w,h),border=Math.max(8,Math.round(m*.035)),line=Math.max(1.5,m*.0035),shadow=Math.round(m*.03);
- const pad=border+line+shadow*2;
+ const m=Math.max(w,h),border=Math.max(1,m*.0045),shadow=Math.max(1,m*.002);
+ const pad=Math.ceil(border+shadow*2+1);
  const out=document.createElement('canvas');out.width=w+2*pad;out.height=h+2*pad;
  const g=out.getContext('2d');
  // The shape grown by the border: the picture's own silhouette stamped all round it at the border's reach.
@@ -43,9 +43,9 @@ export async function makeSticker(file){
   gg.drawImage(s,pad,pad);
   return grown;
  };
- const cut=shape('#9a958d',border+line),paper=shape('#ffffff',border);
- g.save();g.shadowColor='rgba(0,0,0,.28)';g.shadowBlur=shadow;g.shadowOffsetY=shadow*.35;g.drawImage(cut,0,0);g.restore();
- g.drawImage(paper,0,0);g.drawImage(art,pad,pad);
+ const paper=shape('#ffffff',border);
+ g.save();g.shadowColor='rgba(0,0,0,.14)';g.shadowBlur=shadow;g.shadowOffsetY=shadow*.35;g.drawImage(paper,0,0);g.restore();
+ g.drawImage(art,pad,pad);
  const blob=await new Promise((res,rej)=>out.toBlob(b=>b?res(b):rej(new Error('Encoding failed')),'image/png'));
  const size={width:out.width,height:out.height};
  art.width=art.height=out.width=out.height=0;

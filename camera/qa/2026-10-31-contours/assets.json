@@ -1,0 +1,1858 @@
+[
+  {
+    "path": "camera/stickers/thuan-blender/v-wave.webp",
+    "sha256": "43887fa368760434171f5d95af058c7cc8be16adca5fdfaf9e63bd5028511630",
+    "dimensions": [
+      523,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/v-wave.thumb.webp",
+    "sha256": "22f02483b9b27b53c33a5936380f3f01a4981b7229e19fc4ee91051ad7793938",
+    "dimensions": [
+      131,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/wave.webp",
+    "sha256": "d403dcc1053e9d81c1f13c01914900ad39874d1fc951ff5317ef5ff7dde59889",
+    "dimensions": [
+      525,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/wave.thumb.webp",
+    "sha256": "886afeb109d30a7f900292ed223ac3d9fd0d3d0f6815789a4fd94fd51db136ae",
+    "dimensions": [
+      131,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/stand.webp",
+    "sha256": "327e3faaa54f83bb9fd50116195426b69b0d2de546fcc468c7d1fef3246719a3",
+    "dimensions": [
+      443,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/stand.thumb.webp",
+    "sha256": "07f384a12c5f87c393161e5a8fa6c334e129631e8d5bfea23770bcb5f5280ed8",
+    "dimensions": [
+      111,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/peace.webp",
+    "sha256": "27538f6975e69840560492bac10b9d0e6f2513a818b4a34b8ff58ef16efd6bce",
+    "dimensions": [
+      452,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/peace.thumb.webp",
+    "sha256": "aeebaf08e55bd807e014a861f05503ecf15be0040c1144d20d4aa2f813b7ee8a",
+    "dimensions": [
+      113,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/double-v.webp",
+    "sha256": "4ae1bc16b78ef751312804f77e445db4e0df7297e21d12f0a62c8ce43d99b62f",
+    "dimensions": [
+      455,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/double-v.thumb.webp",
+    "sha256": "9b6d33fa956dc0deab47f98d565d5f4d5020ef24f7aa7c26fa3e17626ff77b5a",
+    "dimensions": [
+      114,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/thumbs-up.webp",
+    "sha256": "6987363019b83ae52c68d5e56ec99da1f150c9ab25377f66927be18d739e557a",
+    "dimensions": [
+      473,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/thumbs-up.thumb.webp",
+    "sha256": "ed3f4de251e7b59bef818421b4a91cd0d39278fb8377bc6bce899a1c94861a51",
+    "dimensions": [
+      118,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/fist-pump.webp",
+    "sha256": "fc18dfd5d7fb77047f18736ab3ab7f3a771455e5c028411621e217092aadf10e",
+    "dimensions": [
+      500,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/fist-pump.thumb.webp",
+    "sha256": "7405669866a0b032173c7623fa3f6b415d4fa8a22d633cddb29d3dab5659f184",
+    "dimensions": [
+      125,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/salute.webp",
+    "sha256": "46d0fc9be696834fee1f7950e9def8ee65e2aa22194da3f8ab44d2f9fb0c4e5d",
+    "dimensions": [
+      471,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-blender/salute.thumb.webp",
+    "sha256": "cc75017164927375bfeffd7dfd0ccc298b4d02bfd9fbbb0828d049ed4b980a44",
+    "dimensions": [
+      118,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Wave.webp",
+    "sha256": "3a46a3f9c611a2d7d0fcadad99874e921fdd35f8052d591aa40515017e194958",
+    "dimensions": [
+      535,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Wave.thumb.webp",
+    "sha256": "10e27a407a1c2495aa31331c9e4ae8e830ae749b8f0f275af7604349c31cf7c3",
+    "dimensions": [
+      134,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Salute.webp",
+    "sha256": "bdde16b72e4d941b8887ad698f70bbd54ef7528fb0ea44bf100ad29b37eff591",
+    "dimensions": [
+      494,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Salute.thumb.webp",
+    "sha256": "fbde172a59d93e528e84a65b3a39190c894ec5fb4090fff821f752d1bd206308",
+    "dimensions": [
+      123,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/HandsOnHips.webp",
+    "sha256": "7631565f331ce3ec07da8637b58544430bcdf561c6c81be55768b0dd83cfec85",
+    "dimensions": [
+      538,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/HandsOnHips.thumb.webp",
+    "sha256": "b22c72cb52dabd4a41df28d888a8597bda3b1beec5fd417b8af1e4be7b6b4b13",
+    "dimensions": [
+      134,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Laugh.webp",
+    "sha256": "b9b373c7f57d88964cdd57f97cf5bd59e9010c91e0f18c428d7e8d36fe8aebff",
+    "dimensions": [
+      505,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Laugh.thumb.webp",
+    "sha256": "5dc371863acb5e8f747f327df679f99df06803cf747521fac0d0b5544adf8603",
+    "dimensions": [
+      126,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Think.webp",
+    "sha256": "716eddf053b0fbc63048a33aaa31f4527620bc36b58386be29b8dff56688e8bc",
+    "dimensions": [
+      488,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Think.thumb.webp",
+    "sha256": "c1a337404e60fba4c064d5a4c9311a53d13a834aa48fe501626f33165031e24d",
+    "dimensions": [
+      122,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/ScratchHead.webp",
+    "sha256": "c789cb4abd515ac9849bf59a99756b27d8d398c26a06cb6335bdafc1e90dffcf",
+    "dimensions": [
+      525,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/ScratchHead.thumb.webp",
+    "sha256": "61ca79a4574827721e3c6b00bd059b184a87cf7aa8c224a80c4f10ec5c88de25",
+    "dimensions": [
+      131,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Shrug.webp",
+    "sha256": "379ebfdc8fcdb8c48e5c2b0c5c88afcb58543c36c6e23248e4a60f302591b14f",
+    "dimensions": [
+      614,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Shrug.thumb.webp",
+    "sha256": "ed895f47f3e6492e5fabe8e90772150cab4188d78ceb80df5b593d012bbd7d4c",
+    "dimensions": [
+      153,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Stretch.webp",
+    "sha256": "2d572780429339254d691df76b2198b10d8faa2b175c288e4327ae0d45b0b940",
+    "dimensions": [
+      630,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Stretch.thumb.webp",
+    "sha256": "548239864c9c3a031106c848fffa7bc70feedf79504a42370ae9e3d8acaca299",
+    "dimensions": [
+      157,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Clap.webp",
+    "sha256": "4a793178b7cf0983e7817ddfb08adc7a86f8f3c03166493b9ff3b01786f011d5",
+    "dimensions": [
+      492,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Clap.thumb.webp",
+    "sha256": "4688b5b23fd8d687d69bb96c844662eb185f731e8a27f7cbbddea3f9f2e7db15",
+    "dimensions": [
+      123,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Cheer.webp",
+    "sha256": "27a7f5ad41f5e522c4700f28970650b84ed5295a90f35d9268efdf1c4bbb8241",
+    "dimensions": [
+      652,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Cheer.thumb.webp",
+    "sha256": "507f91366ac97a69438763f0af7257af7707a9a9bf3bc6209706a197b7197c50",
+    "dimensions": [
+      163,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Bow.webp",
+    "sha256": "bc0344936ac92900fea33e9ac45d2ad4934edd2c082775bfb94d126581bf73d5",
+    "dimensions": [
+      524,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Bow.thumb.webp",
+    "sha256": "1415e350ce81943348bb03ede9fe8a476010b170b761d07d5067eade69f056d9",
+    "dimensions": [
+      131,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/JawDrop.webp",
+    "sha256": "0d68f2f0dda1131d9cf9eef93dcbaeecf6cbcf0a05cea7d42246b474fb7b494a",
+    "dimensions": [
+      560,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/JawDrop.thumb.webp",
+    "sha256": "706b39fc62ea74be24c21952a8eecb3176d348d62f8f66d3aaaae57fe17dc11a",
+    "dimensions": [
+      140,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Facepalm.webp",
+    "sha256": "6550c58f65e96e1abd37eb00a428ac1bd8719879345287efa5757fbd08d33bc8",
+    "dimensions": [
+      491,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Facepalm.thumb.webp",
+    "sha256": "7755c40e1edc4d581632f2e582ee0d0f4f81483cf0e6794e0acb200039392c19",
+    "dimensions": [
+      123,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/OhNo.webp",
+    "sha256": "83b959bf49f727c484167bd56e7a809a8a156ddd7d4582903a8628d6e82af538",
+    "dimensions": [
+      467,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/OhNo.thumb.webp",
+    "sha256": "9ae4c391b7d956ee269acc93a1fbd151becfba36ff06cee3e880077d428a6905",
+    "dimensions": [
+      117,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Shush.webp",
+    "sha256": "e3b092f4bd2bb04ebd7283322ac74289bba0947452cdac35ed1ff3f5e8f8d563",
+    "dimensions": [
+      405,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Shush.thumb.webp",
+    "sha256": "0d22602337a5d54481a897c4fd46c5ad3aadeb177d95d9901a2ed97d9bf4a3c3",
+    "dimensions": [
+      101,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Flex.webp",
+    "sha256": "0f92fb7df4e4dab38c28b69e9bf64db25cdd67ae57c114e2d0ac9b6ee6bebe9e",
+    "dimensions": [
+      647,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Flex.thumb.webp",
+    "sha256": "983d827b783632522afa6dfad101d9736f8ebe92a3c6a9b2f5fe41a92701272f",
+    "dimensions": [
+      162,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/PointLaugh.webp",
+    "sha256": "a34cfbfa8cb94af809db2610d71f1d6f2435a3ca39f8a533623282dc8b5a4d6c",
+    "dimensions": [
+      425,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/PointLaugh.thumb.webp",
+    "sha256": "6806ea8da1763eb5cbd5e6e042dfe454d744ee52b088ed6041058e30a386f7bb",
+    "dimensions": [
+      106,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/FistPump.webp",
+    "sha256": "d1503369252f01d8730d5419bbe60139accb4adcf2b9ff9f2afb8a2102325419",
+    "dimensions": [
+      410,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/FistPump.thumb.webp",
+    "sha256": "c173f9b04997c3c21520dabf83fd063180cf678f18e58f8de135c235a9be1971",
+    "dimensions": [
+      102,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/JumpForJoy.webp",
+    "sha256": "d66159f742962f81c6a14f63763406f87437b8e72375175d0c9358774100d0fd",
+    "dimensions": [
+      957,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/JumpForJoy.thumb.webp",
+    "sha256": "5b4ea9978149928d1afb7be1d749cd32d3090639b39e0523c4cafe344218b533",
+    "dimensions": [
+      239,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/StartledJump.webp",
+    "sha256": "2f3f1ada5b5226c44aed314865852e9909dd28aa1ac76ca745e3731b4de19eb5",
+    "dimensions": [
+      830,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/StartledJump.thumb.webp",
+    "sha256": "fd1d363cd51ebb572c511718ec5e2317715b26246e0d739814b572118adc47cb",
+    "dimensions": [
+      207,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Sneak.webp",
+    "sha256": "057eef695d1fffd9e56415d674f28e1fe2db6cb2e786d1beaf507e31825aab79",
+    "dimensions": [
+      586,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Sneak.thumb.webp",
+    "sha256": "82c7fb2a79c02ce6f3053320c541a5c515224b54a70991e144ec4367092c1ffc",
+    "dimensions": [
+      146,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Huff.webp",
+    "sha256": "f98eebcd08ed5569d32546f1f516835c89a9b960aa1e85f975d6653e40c834bb",
+    "dimensions": [
+      450,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Huff.thumb.webp",
+    "sha256": "5eede67c3ffbe02f0eef189de86251eef49fa5f358c2823d94d4540e4a0de84a",
+    "dimensions": [
+      112,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Eyeroll.webp",
+    "sha256": "90c22cd19d09b0c70cdb466ce950f0a88e275a15319664538dc7b35751b2fc00",
+    "dimensions": [
+      578,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Eyeroll.thumb.webp",
+    "sha256": "ae071cabccac20713f0b6e08d56ad3e82f90b2a01d8e7161b36cdb6cd0f10ab2",
+    "dimensions": [
+      144,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Seethe.webp",
+    "sha256": "6bf58154738d2f43c4ef14ebac0cf8e0e531e19708d0272bd75be5d71f32a9c5",
+    "dimensions": [
+      520,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/johansson-pixar/Seethe.thumb.webp",
+    "sha256": "d1c4c428e004032e4864237704c866e8ca7b79bf218054f7317ed026e963a302",
+    "dimensions": [
+      130,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Wave.webp",
+    "sha256": "128859a2cdad301458cad5941215c3e7217314925a968a1d01f0b745c82f6371",
+    "dimensions": [
+      479,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Wave.thumb.webp",
+    "sha256": "577775457ee85a29e6b7dd2f991c10b62545b7eb6c8fc0960907befaac3d479c",
+    "dimensions": [
+      120,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Peace.webp",
+    "sha256": "c4fb4f35d675f8d4d7ad623e5dd4f1cd36056125495bf9315f65625a4e82d113",
+    "dimensions": [
+      469,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Peace.thumb.webp",
+    "sha256": "1738dd36f0f45985fcee1485763e2f73bcb5cf096e5a0039b65f64dbb1464dda",
+    "dimensions": [
+      117,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Coy.webp",
+    "sha256": "57a7261e763cdddc655d849a8acfdfff32c2452665d634403bdd7a723c3a94fb",
+    "dimensions": [
+      406,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Coy.thumb.webp",
+    "sha256": "8b62250856953921cdc446309253ac25bda9f8c43d6116937d82882a0e1433ca",
+    "dimensions": [
+      101,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Heart.webp",
+    "sha256": "ba5532f36cfe496fb905dfef8de2e0aa5452b86bd9735bd0a3eb78d20ebfe209",
+    "dimensions": [
+      418,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Heart.thumb.webp",
+    "sha256": "28e1013f526ab8ba60fde5f0b1fff61de8dd996bfb3ef0bd58de49a5452b23c6",
+    "dimensions": [
+      104,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/DoubleCheek.webp",
+    "sha256": "96d584e3e6a515599ee92b5fa597f375b7560665539e2b114dbe3b3d48d4c148",
+    "dimensions": [
+      491,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/DoubleCheek.thumb.webp",
+    "sha256": "1035c2182c136ba851955eb8acd4e1a2d1b18cbfda2bf57c6651e712338e7113",
+    "dimensions": [
+      123,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/CheekRest.webp",
+    "sha256": "afbba4ee31ba346372b28c0fd4e6f9e303a22cbf45fb355c1b1130773bd4b47a",
+    "dimensions": [
+      481,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/CheekRest.thumb.webp",
+    "sha256": "726c3cf2a22ba34f63ed7b97d0c2a16224e675acc9ad1c950fa3a437425ecba4",
+    "dimensions": [
+      120,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/HeelKick.webp",
+    "sha256": "e592890bac426e5fcd321087e8bf2d6ceb60017f1ac663633df67da53d60fe8e",
+    "dimensions": [
+      417,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/HeelKick.thumb.webp",
+    "sha256": "46a0baae62bc24d88d49e7442828fcc4e6c3129986de6ac02b159c8dd3a10d54",
+    "dimensions": [
+      104,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Tada.webp",
+    "sha256": "8f9bb033997e57b72f6179f516d020e419064da9d72e8ea19d7806bf73115f30",
+    "dimensions": [
+      866,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Tada.thumb.webp",
+    "sha256": "a6b7165a79e55636798c885da83cfefffd22aa6e53c2b511a4b0a377b7817420",
+    "dimensions": [
+      216,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Laugh.webp",
+    "sha256": "7ed6a4e588af7b68cfd0e69c7d781b157661bf664b49f23232ca3add97c9127c",
+    "dimensions": [
+      440,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Laugh.thumb.webp",
+    "sha256": "c48ff2a032b74c110b006a27cbb169c963bdefab6754618dc8df205c9a74fd7d",
+    "dimensions": [
+      110,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Clap.webp",
+    "sha256": "88d5931b6dedf2f6963c415c1e78748ae14d0f95daa2abacadbf96f5782c4cbd",
+    "dimensions": [
+      432,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Clap.thumb.webp",
+    "sha256": "7530a34d67a16bb8553f4d2f5745d352754888349c561c66c257c5d5478dde91",
+    "dimensions": [
+      108,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Think.webp",
+    "sha256": "12ecc0003bc039a833a88866c6be1049acce240045d839b7772318dae3b767c9",
+    "dimensions": [
+      424,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Think.thumb.webp",
+    "sha256": "0d642ccbbad6738eb103fcdb756a416a088ff310dbac5c08e76e7da0d0f3343c",
+    "dimensions": [
+      106,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Shrug.webp",
+    "sha256": "d1d8af32cb4b2e6fc95b9ab5dfd348002a17ce3e7ad89a7683c016104f597b2e",
+    "dimensions": [
+      533,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Shrug.thumb.webp",
+    "sha256": "439cdcb3b4279a1089e0271ba68e63fe39eda5e306171dd9d34b1ecf4afbd6d2",
+    "dimensions": [
+      133,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/JawDrop.webp",
+    "sha256": "b8c92164a4ea62768fd16d3991dad9d70c1d1c668c52c2393679f550a695ee6d",
+    "dimensions": [
+      529,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/JawDrop.thumb.webp",
+    "sha256": "aa1b01faa343e28bb1d7964a6d5abedab9d3b06baad269aa6b5f6c7a58547040",
+    "dimensions": [
+      132,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/OhNo.webp",
+    "sha256": "daae632450f5c203fe1c7f38a03a474a1014a035ee6ff01413b7ec273cf36bae",
+    "dimensions": [
+      415,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/OhNo.thumb.webp",
+    "sha256": "90841d56c5c1588d3b38153fad2b8e202b4b7abca274d0c2be7f6ca99a961064",
+    "dimensions": [
+      104,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/HideFace.webp",
+    "sha256": "b36700b9d493a5a427c3eaf7cf684fffa61316a1c3b1782ac89b65e54365ac70",
+    "dimensions": [
+      378,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/HideFace.thumb.webp",
+    "sha256": "19ab631c47d7d3587cfa21de876a7a751f5eee941443ee60efaad6cbc01b6334",
+    "dimensions": [
+      94,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Shush.webp",
+    "sha256": "85bd376f39ff1f4afc6eb3621b414e26c52ad0846315832190263dd132d20f73",
+    "dimensions": [
+      331,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Shush.thumb.webp",
+    "sha256": "00277f63f07cf85e449ee09e0e698a9df605f303621e947764a4a5abdfc8a010",
+    "dimensions": [
+      83,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Huff.webp",
+    "sha256": "388b3d22b1cd5d3c0e47fa3eeeea21ddffd8711b9ab351ca8d1cd7d4f7e30311",
+    "dimensions": [
+      342,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Huff.thumb.webp",
+    "sha256": "7e1f1b7d09baff16a08964671289549a28bcd310549d420a21c76cd6175d99b9",
+    "dimensions": [
+      85,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Eyeroll.webp",
+    "sha256": "1ccc310ec7190de97a88cf11d3c1fd849659b48c447a76ef755ad7bed1dcbee9",
+    "dimensions": [
+      495,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Eyeroll.thumb.webp",
+    "sha256": "18bcffd8c28da296947e31429793c455a16f1142b6dc1793cd4590ff60d4f608",
+    "dimensions": [
+      124,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/PointLaugh.webp",
+    "sha256": "7ef32029d2dec2a0ff4ae8ed2c647b626e37c19784d4d7cf617cf73db0a93ce9",
+    "dimensions": [
+      386,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/PointLaugh.thumb.webp",
+    "sha256": "db48f6ee53c5e76593fadff59444b835909fc58fa4a4789468584fbd97369f13",
+    "dimensions": [
+      96,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/JumpForJoy.webp",
+    "sha256": "b2e4f272ef671f29574f54fd57f17a6c12606de17cc2e11cc9fcc56f80fe7d54",
+    "dimensions": [
+      885,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/JumpForJoy.thumb.webp",
+    "sha256": "3e0fabd0cf89558a5c2f5e2bdac8dc2c3fe9eb7d88195725aa332c8b802a4a9e",
+    "dimensions": [
+      221,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/StartledJump.webp",
+    "sha256": "30b83e2505155fe071578b69bbd2ababbd815e696f8dd6956dcde95ed6706474",
+    "dimensions": [
+      719,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/StartledJump.thumb.webp",
+    "sha256": "a07bd2ae3f6b3247e72c789b97404d97ddec9a809c8d3839b15ac55dc20e4a2a",
+    "dimensions": [
+      180,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Sneak.webp",
+    "sha256": "7780bad38b4272b7942ec734e649c404abfffdbfda87b8db9a4e9414b6a002a1",
+    "dimensions": [
+      549,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Sneak.thumb.webp",
+    "sha256": "aae3a01207f42bb618f86e0aae94f6f9647ff56dcf3792846a91066fceecb8f1",
+    "dimensions": [
+      137,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Skip.webp",
+    "sha256": "dbc42c62f2f3f03dfcfa14f23c6a2155ad421806251867dfed4f0163d01f3a2b",
+    "dimensions": [
+      539,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Skip.thumb.webp",
+    "sha256": "0b74c8a9156a27596de80b96888de0b75b543232719840e60b4d4d92900bd939",
+    "dimensions": [
+      135,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Swoon.webp",
+    "sha256": "9394504321bd4e0f380d13ac792bbae402207255ca07d08666c24c9897e68196",
+    "dimensions": [
+      551,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thao-pixar/Swoon.thumb.webp",
+    "sha256": "3f002f5b5e676e064645b65731a08d9cfff2803125e44d9cdc9c78935e00c1c2",
+    "dimensions": [
+      138,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Fume.webp",
+    "sha256": "44f81ca5a83192c8e1ecf81f2534efa8519837b634fea746f0bdc75d5f6141f6",
+    "dimensions": [
+      486,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Fume.thumb.webp",
+    "sha256": "04f1a2f2d6bf90234b64c77a82da8f4da3ec6386f196cd86e5d7c7a6b6b693b5",
+    "dimensions": [
+      121,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/ShakeFists.webp",
+    "sha256": "21e9c31db0cba58bf9a9c3b3b1e519203fa4c339c664e48ebe1ce325a1a16942",
+    "dimensions": [
+      531,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/ShakeFists.thumb.webp",
+    "sha256": "8bf0c26749b5fcbc1d20b200d2ee1be2e483647a4a7115837fd7eb4303b90f87",
+    "dimensions": [
+      133,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Scold.webp",
+    "sha256": "198c1c50b34d8e4a7efc3e7bf93222ad7eacc1146d5f6d2c3ce1035883db3c5c",
+    "dimensions": [
+      465,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Scold.thumb.webp",
+    "sha256": "c1665022618eb40e26ee6b83c04e4d881e1d6bc69e087c0944ee133527e13117",
+    "dimensions": [
+      116,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Scold-sister.webp",
+    "sha256": "198c1c50b34d8e4a7efc3e7bf93222ad7eacc1146d5f6d2c3ce1035883db3c5c",
+    "dimensions": [
+      465,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Scold-sister.thumb.webp",
+    "sha256": "c1665022618eb40e26ee6b83c04e4d881e1d6bc69e087c0944ee133527e13117",
+    "dimensions": [
+      116,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Huff.webp",
+    "sha256": "de652b3737f3b92f32a06bb40f3b5c40bc5247286ed4f87876d3fee96b9c43b4",
+    "dimensions": [
+      421,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Huff.thumb.webp",
+    "sha256": "afba9aa356c60bfb9a134bed7a78b8cd58a47ce80d86cd36891b22eb0ea75ea3",
+    "dimensions": [
+      105,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Eyeroll.webp",
+    "sha256": "b9451bab5d5eb03dc1ca05025b36dd9238ca2c3e3c3cfb1b30af04841a6bfacf",
+    "dimensions": [
+      484,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Eyeroll.thumb.webp",
+    "sha256": "5e6de29eed9e24818ea45149298d157cb7576971c10604a352c7cdef3bfd341f",
+    "dimensions": [
+      121,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Seethe.webp",
+    "sha256": "15047b07b1aa10817dcce347e12034d4a2d7962ed4e20344a3e7938c68316d0b",
+    "dimensions": [
+      449,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Seethe.thumb.webp",
+    "sha256": "a84d64b89bc062a725bb56c4da8a52aa9e5be6959ec85fef814bf1d8ada460e6",
+    "dimensions": [
+      112,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Seethe-late.webp",
+    "sha256": "15047b07b1aa10817dcce347e12034d4a2d7962ed4e20344a3e7938c68316d0b",
+    "dimensions": [
+      449,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Seethe-late.thumb.webp",
+    "sha256": "a84d64b89bc062a725bb56c4da8a52aa9e5be6959ec85fef814bf1d8ada460e6",
+    "dimensions": [
+      112,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/JawDrop.webp",
+    "sha256": "bd7b23902ecd6d72dde7a3a01a861279281bfa1ea950b0fc0c4233d68255e573",
+    "dimensions": [
+      514,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/JawDrop.thumb.webp",
+    "sha256": "042d89acf646b8a65a3205e70b114539ecd4574ac42a4202dec99c840faebf0a",
+    "dimensions": [
+      128,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Facepalm.webp",
+    "sha256": "a89f7698bff34aae6377a8b85f6e85358d3848930a7ce91498f904308921ffb6",
+    "dimensions": [
+      487,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Facepalm.thumb.webp",
+    "sha256": "869c7a21cbe22f2ce44f91a085f08586613fc8364a95d4ebc572994950957409",
+    "dimensions": [
+      122,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/OhNo.webp",
+    "sha256": "d891113af77de70ef8808024b91d2fdb331a7c915769a198156d145ed79079a5",
+    "dimensions": [
+      477,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/OhNo.thumb.webp",
+    "sha256": "6215d03adc618a8475309375b8dba6d2f1e1daf949af805248ba18adba983e49",
+    "dimensions": [
+      119,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/HideFace.webp",
+    "sha256": "03ef1a1bff5203cd75fbfaacaa47d0c6b7f27b30b4c888a8a755d693849c736f",
+    "dimensions": [
+      412,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/HideFace.thumb.webp",
+    "sha256": "67b32585e76050cb79591244d87b2b3599099062c2ed61d2598d394c0a6a0546",
+    "dimensions": [
+      103,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Shush.webp",
+    "sha256": "bb4cc60fa50936e750eedc6607dc69bd8a855be77f07db10fe405091f3660790",
+    "dimensions": [
+      403,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Shush.thumb.webp",
+    "sha256": "9d5265f98b255722095855925be63ecbcdd464a3441cd5ebe195349c506b0a20",
+    "dimensions": [
+      101,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Salute.webp",
+    "sha256": "eaf9a0df4252a6ded24662e2194f82989eb6b0b834ea3e491842672d906b6f56",
+    "dimensions": [
+      405,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Salute.thumb.webp",
+    "sha256": "7722e523709ff9fed5012a1b6aad70b512b144a61bca28d67badd55cc0e49b8a",
+    "dimensions": [
+      101,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Swoon.webp",
+    "sha256": "da9fdbf1f7ab97e002a49aeba3a51cc956a6f29937dd79373c6bb55af53c7b51",
+    "dimensions": [
+      606,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Swoon.thumb.webp",
+    "sha256": "6aef0692cbeb56589a0a6c864e6918034244b753488e8e1946ca6a00e83e8433",
+    "dimensions": [
+      151,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Flex.webp",
+    "sha256": "b0c48d6f95fa4a6f01925cf13b55a1a8f94de85dadccaac29bf36ae38b53f73f",
+    "dimensions": [
+      551,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Flex.thumb.webp",
+    "sha256": "d7696abe80b79a5091e3cc70322d68ed17bf4fd3c7bc425b1a528b188c2a06f6",
+    "dimensions": [
+      138,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/PointLaugh.webp",
+    "sha256": "97a0fbfc60eb36b5ba35f82dc051d45035b6f8853ae0487b90af5b86c0311f2c",
+    "dimensions": [
+      428,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/PointLaugh.thumb.webp",
+    "sha256": "0b0ead792fc321c1325d7be0e0e98747f38c30ce8f20f8cc14fa5fa77fe61290",
+    "dimensions": [
+      107,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/FistPump.webp",
+    "sha256": "c301219c03c9074c221841cff02709be5b202bbb84c7dcd8a6977c2f4c36345f",
+    "dimensions": [
+      409,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/FistPump.thumb.webp",
+    "sha256": "1633cecc16b87b596371e4cb0659334b21e109513cb334eeda9570421d0fae76",
+    "dimensions": [
+      102,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/JumpForJoy.webp",
+    "sha256": "da59c65425ce064e8640cc423c2174536153521593b5228f51e34d658e812557",
+    "dimensions": [
+      841,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/JumpForJoy.thumb.webp",
+    "sha256": "9d8b160409726413ecce28104bc0dcf97bad8c5da9cc4be76ed5301ff811a280",
+    "dimensions": [
+      210,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/StartledJump.webp",
+    "sha256": "183d9ebcea39c580beb3a927a81dd69a7f207ebdd127a10d9d7f17dd9bc90f8a",
+    "dimensions": [
+      692,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/StartledJump.thumb.webp",
+    "sha256": "7177b248b68c809811e9983b640b1034f9e49d2646e3fa6a39c5b983b0b2a49c",
+    "dimensions": [
+      173,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Sneak.webp",
+    "sha256": "83231821592dfcde9bc323f18709d1207d78728752622b45385ebd828f69d996",
+    "dimensions": [
+      528,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Sneak.thumb.webp",
+    "sha256": "1724d447f7f8e00748ed5451654f6beea244b98ab3780897219b7d0f362f331d",
+    "dimensions": [
+      132,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Heart.webp",
+    "sha256": "4fc8b3ff787855ca8ab370d7deb5494162978960cc88705719ca48817838538e",
+    "dimensions": [
+      424,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Heart.thumb.webp",
+    "sha256": "d7f6feb1d7ac0dd94801a878517e3d068b72f3c443ea7a61dc284ad88585d8dc",
+    "dimensions": [
+      106,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Wave.webp",
+    "sha256": "b0d40fb899705cfafdd055e055782440a4d1255233a3fd94e50bb578600d94ae",
+    "dimensions": [
+      480,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Wave.thumb.webp",
+    "sha256": "e252830fb8ba687f040f4e9ce9fbe9fff41ac5c7f2b0852b2a1da516a80cf4ea",
+    "dimensions": [
+      120,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Bow.webp",
+    "sha256": "b9f9071126ae98a5c64e204d540c966c5665d33ef902adc1faa80d02122eec9a",
+    "dimensions": [
+      497,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Bow.thumb.webp",
+    "sha256": "754aef13922ff4798a4fb842c90333d065f9a483729b081f5a34c9fc06d9b717",
+    "dimensions": [
+      124,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Tada.webp",
+    "sha256": "640fa415adec15cdd98b60dbde7a5782efeebb100f69240781f1ca58cef7bc5a",
+    "dimensions": [
+      814,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/Tada.thumb.webp",
+    "sha256": "012dc4f7bc019d61b257ff8746631c77ccab24881aafe08c500a17d83e17af16",
+    "dimensions": [
+      203,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/stand.webp",
+    "sha256": "c84a3eab56cfb85dc287c36490cf0e64b482d3a3b0f59482ed472cdc5187296b",
+    "dimensions": [
+      404,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-pixar/stand.thumb.webp",
+    "sha256": "282616bac4eae3f6f3fdec1872d332ed0000ffadcd7d983437edf7e9d06ea650",
+    "dimensions": [
+      101,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Fume.webp",
+    "sha256": "f67676397dde81eead38ac1e15fe1df816e0cac0e9b1cd897d9f26d07e1dc32b",
+    "dimensions": [
+      567,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Fume.thumb.webp",
+    "sha256": "14aa2cdb83c0fd1b9b7e533f310550baffb1714d8567bfe0f3281b3f3c65469a",
+    "dimensions": [
+      142,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/ShakeFists.webp",
+    "sha256": "8407d231ecc5d15cf9dcf0d0dbf53007b8a3cc360bc413e3fe3fe5d4ee35d4cc",
+    "dimensions": [
+      593,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/ShakeFists.thumb.webp",
+    "sha256": "9e6f7d6203bd32aff8bfc891e17bdc356b89b4d3773acd7d9815a5bc4add1140",
+    "dimensions": [
+      148,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Scold.webp",
+    "sha256": "246ea9b848d9333df50170e7ba4fd461a1d60aebb1a66c6a264cc8ad43a97b95",
+    "dimensions": [
+      474,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Scold.thumb.webp",
+    "sha256": "8a95f877c502c4319770f130c4a1c2317737fe5c691344e7cdc56576f365b91f",
+    "dimensions": [
+      118,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Scold-sister.webp",
+    "sha256": "246ea9b848d9333df50170e7ba4fd461a1d60aebb1a66c6a264cc8ad43a97b95",
+    "dimensions": [
+      474,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Scold-sister.thumb.webp",
+    "sha256": "8a95f877c502c4319770f130c4a1c2317737fe5c691344e7cdc56576f365b91f",
+    "dimensions": [
+      118,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Huff.webp",
+    "sha256": "5ed37870ff9c73e5a6be34a325dc72b5214f8cf344b7fff517f854d071ce95f1",
+    "dimensions": [
+      437,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Huff.thumb.webp",
+    "sha256": "2f354ca0a87aac089a7259142020cf76b740b90af1b8a1f90a53d43e0c8c1be9",
+    "dimensions": [
+      109,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Eyeroll.webp",
+    "sha256": "f0e89758eeff2bb22d0288981307f0e7e64d43c3e39493da4974a42fbe472058",
+    "dimensions": [
+      552,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Eyeroll.thumb.webp",
+    "sha256": "667004c3a8c9b472f5326792cf4aa3eae7c07c303e18289b6b186ea0f4495126",
+    "dimensions": [
+      138,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Seethe.webp",
+    "sha256": "aa955620a25074ff1285ec1882286465217959249dcedc3782acd5d70f92b5b3",
+    "dimensions": [
+      513,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Seethe.thumb.webp",
+    "sha256": "6dfd263d4f3c35e03c67597212b0db18b126da1cb204f9651af6bbaecb2c69c8",
+    "dimensions": [
+      128,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Seethe-late.webp",
+    "sha256": "aa955620a25074ff1285ec1882286465217959249dcedc3782acd5d70f92b5b3",
+    "dimensions": [
+      513,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Seethe-late.thumb.webp",
+    "sha256": "6dfd263d4f3c35e03c67597212b0db18b126da1cb204f9651af6bbaecb2c69c8",
+    "dimensions": [
+      128,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/JawDrop.webp",
+    "sha256": "9a1f4a0221ceae65b3a4561fb6f770f2126d4dbfcaf1d5fdf8241150b20fc533",
+    "dimensions": [
+      562,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/JawDrop.thumb.webp",
+    "sha256": "9d730110049bf2a5bb4e5128582dd558e1db21e71a5301420d82aa9a0377ef6e",
+    "dimensions": [
+      140,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Facepalm.webp",
+    "sha256": "3f3273acc50ba66d127532f826be40a8fe7034daa025931e8969c7424bf9633f",
+    "dimensions": [
+      507,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Facepalm.thumb.webp",
+    "sha256": "099f7700a8e9939896497123d3d510ca099c4e5e60042b7257585979351decfd",
+    "dimensions": [
+      127,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/OhNo.webp",
+    "sha256": "1e136d3f9033b9ec5a2f7dd7a68b81097c54ff31caa88355f1644b5cf9fb50e7",
+    "dimensions": [
+      563,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/OhNo.thumb.webp",
+    "sha256": "c559bae7d02929104b4338ad9ca2505583155094227032d0675f1ba9b8e8bcbb",
+    "dimensions": [
+      141,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/HideFace.webp",
+    "sha256": "26c0d8771a19edefcb09dcfe0ab4377f1e5cb7adf72e05fc098f3408174fc63c",
+    "dimensions": [
+      460,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/HideFace.thumb.webp",
+    "sha256": "290dffebd0be966c9edff14d1e375e699d550b23dabbcc9ff4dd1fa8cee6b5ea",
+    "dimensions": [
+      115,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Shush.webp",
+    "sha256": "ba661596bfae551eda0e97aabcd9995aae5befe9c690f620815682ed34806c66",
+    "dimensions": [
+      458,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Shush.thumb.webp",
+    "sha256": "000e4eee8beba29e9a6de1c95b2e5b8fbd8fdf27edf58c8aa29cfa90f2c7fc7b",
+    "dimensions": [
+      114,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Salute.webp",
+    "sha256": "db86949f141c7b81dbd708530d7c880d034d60c84bafcd32f3fb0d9d9b1ad6cd",
+    "dimensions": [
+      448,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Salute.thumb.webp",
+    "sha256": "7b3a803632f29a2794e8fe07a65f2d73ab83562f352296a03be1eda5b4eee437",
+    "dimensions": [
+      112,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Swoon.webp",
+    "sha256": "3f4111a503d68d7a76dac34fc2cc38cd4068de33142ab664807e2acac6708818",
+    "dimensions": [
+      663,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Swoon.thumb.webp",
+    "sha256": "7d5b391c1dd4d62bc6453f1ce48b8117cd541d121c2b092e9a3dab134d3bb533",
+    "dimensions": [
+      166,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Flex.webp",
+    "sha256": "bb905e11005fe35b6dde808fe435fadb4c43818375c643748e10a693ed47de27",
+    "dimensions": [
+      610,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Flex.thumb.webp",
+    "sha256": "58f26552cc9c024715a33b00df99112575fca74033a1348aa7be75e4a1afc457",
+    "dimensions": [
+      152,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/PointLaugh.webp",
+    "sha256": "0d9fa7cd878ee8543de34aae8c3e1abbaf515292d0bb7c987b0aa95572474844",
+    "dimensions": [
+      498,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/PointLaugh.thumb.webp",
+    "sha256": "347e0c08d10162755dcda32b3a76df490df5b50cc9089b8de64a37f8fd923a27",
+    "dimensions": [
+      124,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/FistPump.webp",
+    "sha256": "187135ef5bfc275840c5325afa1e806b76f2b041dde250864719f23c1f1b8ef3",
+    "dimensions": [
+      476,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/FistPump.thumb.webp",
+    "sha256": "0d575efb936d1c824adf5f9f602b4ad0640d87a41bbee42031d9c29742ee0326",
+    "dimensions": [
+      119,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/JumpForJoy.webp",
+    "sha256": "6a6ed4523d1b0e5225a59b6ade5e3006823eb5abdf67ebbe0ca1c836684e4e8f",
+    "dimensions": [
+      793,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/JumpForJoy.thumb.webp",
+    "sha256": "70400265b283e94d596bfb5716b03d16085f3b0933abe363ed29b0d0e20f0a34",
+    "dimensions": [
+      198,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/StartledJump.webp",
+    "sha256": "5af45c34f5d8f796103485de07883b6703fae693d5939118e86f30cb8e449c63",
+    "dimensions": [
+      724,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/StartledJump.thumb.webp",
+    "sha256": "e33b504b2a89ce2969abf1c8cdab2c96a456c1d07e23a85ed5fcab89e21ac15c",
+    "dimensions": [
+      181,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Sneak.webp",
+    "sha256": "c32b7c28ce923d019dfc8b9dfc9ac383150ceb48c85bdff9473480df706e104a",
+    "dimensions": [
+      537,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Sneak.thumb.webp",
+    "sha256": "49664ca701575616d2b01d23cb3d857d5868cf9fc9dfcf0b8ac4f98d8e7d87d7",
+    "dimensions": [
+      134,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Heart.webp",
+    "sha256": "08545a9c337890c1cf1098a478108b4a0d59d99d1268838e0cc1a6347bfd4fcd",
+    "dimensions": [
+      477,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Heart.thumb.webp",
+    "sha256": "7907fa341a256d377c0ac5a24aa02b9d49b29119ee5b03383ceef85acb65bcfe",
+    "dimensions": [
+      119,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Wave.webp",
+    "sha256": "415961de6125336a961516478d04b821e4690534f26fe36fe4596c88b11170d9",
+    "dimensions": [
+      521,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Wave.thumb.webp",
+    "sha256": "c0deea69faaf2813c1a18310305c2432a872557e50ba0e642f8dcd720298d3ca",
+    "dimensions": [
+      130,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Bow.webp",
+    "sha256": "7a6f5403bdf7f5bad59fcc3f489400635ee9058289b7267cab69a707cfdbc779",
+    "dimensions": [
+      718,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Bow.thumb.webp",
+    "sha256": "cce0b0dce50ac8068b3bbc70cea93885faa03a06f40991b9e976dbbc8202190b",
+    "dimensions": [
+      179,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Tada.webp",
+    "sha256": "e407f55415e2eb127e44bbf1930cd97722cd892c58c0d510e905dadda8135590",
+    "dimensions": [
+      823,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/Tada.thumb.webp",
+    "sha256": "07eb72b9331a6d8bceff2602daa3b3d44befcc368cf5d2482ae0deac42be0551",
+    "dimensions": [
+      206,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/stand.webp",
+    "sha256": "2c2bcad6f83b560ab855b6743c131b9a75ee2253536b70b7917211c38d79402e",
+    "dimensions": [
+      453,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan/stand.thumb.webp",
+    "sha256": "173a438f623445fd59f46768e5d9a3e0de8acbf346171ae588b01e1a4f7cc553",
+    "dimensions": [
+      113,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/Walk.webp",
+    "sha256": "2e8b616c3f6d4df317742519c62de810cc74e3164cb163c9853afb6d946e1946",
+    "dimensions": [
+      455,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/Walk.thumb.webp",
+    "sha256": "a1309e99a0e2e1e5576b28f2ce3b394f0f7ba952e666ef7dec37cb13cc79c177",
+    "dimensions": [
+      114,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/Run.webp",
+    "sha256": "ef71fcd43e819d341bb0086135c565992efd4c47c3dfe1a4adf469d7a54c1c60",
+    "dimensions": [
+      515,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/Run.thumb.webp",
+    "sha256": "79c1a00348b310510a420f4ad4a53f845ee2beddfff84a36e5e681e646035798",
+    "dimensions": [
+      129,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/Dash.webp",
+    "sha256": "3fcfa260a4cfe18fbc9294474bc8031d6a821f5a1049478f4af8b34717506005",
+    "dimensions": [
+      606,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/Dash.thumb.webp",
+    "sha256": "cfdee455d201444d5b9d9ecc4cad5028f72e1f4f16a3b2cee0041d222a4fddbb",
+    "dimensions": [
+      151,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/hug.webp",
+    "sha256": "25c52228f9927057abdb137172de46a4d1f38e9b1b7ede82168bbdc2a8e93730",
+    "dimensions": [
+      749,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/hug.thumb.webp",
+    "sha256": "335028a8bbf14820c90fc3c2a45f80357d5bb3e4aed98ff5c3b3441d1a147efd",
+    "dimensions": [
+      187,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/kiss.webp",
+    "sha256": "ead00fbebe4d951e003b74c625d9804df7f56068e4589bfb802846c4ec8aeb01",
+    "dimensions": [
+      924,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/kiss.thumb.webp",
+    "sha256": "cb6db25ea0833e8291b2de6e7ed903cdcebcbfb99837044b0a901b05faadce25",
+    "dimensions": [
+      231,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/fight.webp",
+    "sha256": "7b612fa090b95077ea92ba8021ea7c1fe2d5444bb9d1af8d9599f41aee5bc7fd",
+    "dimensions": [
+      771,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/fight.thumb.webp",
+    "sha256": "374c491fdd97c0ac067050246544772502843020c086fff15889a3ee57c648ec",
+    "dimensions": [
+      193,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/shove.webp",
+    "sha256": "6a999366df065c6c2c4f8860a189ca56509654309990d516719b7c5abd6b201d",
+    "dimensions": [
+      697,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/shove.thumb.webp",
+    "sha256": "123e2a1eff84be1b44b119c609ce330d770e9374c0c9435cbad748b762fb8661",
+    "dimensions": [
+      174,
+      256
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/back-to-back.webp",
+    "sha256": "6094d119d255e438a2f1e2c58ce5f8e5bae5090ff31f99daa23dc2ec84ebaa22",
+    "dimensions": [
+      750,
+      1024
+    ]
+  },
+  {
+    "path": "camera/stickers/thuan-nils/back-to-back.thumb.webp",
+    "sha256": "b84cafc940a86d3c609154fd4a9c214c19983923660b8220741f58495e042a48",
+    "dimensions": [
+      187,
+      256
+    ]
+  }
+]

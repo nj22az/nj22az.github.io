@@ -8,7 +8,8 @@ picker, in camera/stickers/ and its manifest stickers.json.
 The camera's stickers are the figures alone, without their lettering (the owner, 29 October 2026: "Make the stickers
 without text and we can add any text as another sticker"): the studio cuts them with `compose.py … --plain` into each
 set's `plain/` folder (art/stickers/README.md). Each keeps its line and its English gloss in the manifest, for its label
-and for the speech balloon the camera offers with those words. Nothing about the art is changed here, only its size.
+and for the speech balloon the camera offers with those words. The baked paper surround is recut into the camera's
+narrow silhouette contour; enclosed white clothing is retained. Figure/canvas placement is kept.
 Run it again after the studio adds or re-cuts a sticker; the manifest records the commit it came from.
 """
 import json
@@ -17,6 +18,7 @@ import sys
 from pathlib import Path
 
 from PIL import Image
+from camera_sticker_contours import contour, save_webp, STYLE_ID
 
 SETS = [  # (folder in art/stickers, name in the picker, who they are: "What does Thuan say?", the tab it is under)
     # The camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not important
@@ -36,14 +38,14 @@ OUT = Path(__file__).resolve().parent.parent / 'camera' / 'stickers'
 def webp(image, side, path):
     copy = image.copy()
     copy.thumbnail((side, side), Image.LANCZOS)
-    copy.save(path, 'WEBP', quality=82, method=6)
+    save_webp(copy, path)
     return copy.size
 
 
 def main(studio):
     root = Path(studio) / 'art' / 'stickers'
     commit = subprocess.run(['git', '-C', str(studio), 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
-    manifest = {'source': f'nj22az/jojo art/stickers/*/plain at {commit or "unknown"}', 'lettered': False, 'sets': []}
+    manifest = {'source': f'nj22az/jojo art/stickers/*/plain at {commit or "unknown"}', 'lettered': False, 'contour': STYLE_ID, 'sets': []}
     for folder, name, who, tab in SETS:
         data = json.loads((root / folder / 'stickers.json').read_text(encoding='utf-8'))
         (OUT / folder).mkdir(parents=True, exist_ok=True)
@@ -55,10 +57,11 @@ def main(studio):
                 sys.exit(f'{png} is missing: cut the set without lettering in the studio first (compose.py … --plain)')
             image = Image.open(png).convert('RGBA')
             image = image.crop(image.getchannel('A').getbbox())
+            image, _ = contour(image)
             width, height = webp(image, PLACE, OUT / folder / f'{key}.webp')
             webp(image, THUMB, OUT / folder / f'{key}.thumb.webp')
             # The studio's commit on each picture's address, so a browser that kept an earlier cut fetches the new one.
-            stamp = f'?v={commit}' if commit else ''
+            stamp = f'?v={commit}-{STYLE_ID}'
             entries.append({'id': f'{folder}/{key}', 'src': f'{folder}/{key}.webp{stamp}', 'thumb': f'{folder}/{key}.thumb.webp{stamp}',
                             'width': width, 'height': height, 'line': sticker.get('line', ''),
                             # what a sticker with no line shows is said by its label ("Waving")

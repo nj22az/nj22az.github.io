@@ -31,18 +31,16 @@
 .blackjack-actions{margin:0 auto auto;gap:10px}
 .blackjack-actions .button,.memory .button{min-height:48px;border:2px solid #253f3d;border-radius:11px;background:#fff4dd;color:#253f3d;box-shadow:0 4px 0 #253f3d;font-weight:850}
 .blackjack-actions .primary,.memory .button.primary{background:#f5c86f;color:#253f3d}.blackjack-actions .button:active,.memory .button:active{transform:translateY(3px);box-shadow:0 1px 0 #253f3d}
-/* A scrollable felt board keeps rank labels and card tabs legible on a phone. */
+/* The felt board fits all seven columns; long runs remain vertically scrollable. */
 .solitaire-game{background:#d5e6cf;color:#24483f}
 .sol-toolbar{padding:10px 14px;background:#fff1d4;border-bottom:2px solid #d0b58e}
 .sol-instructions{color:#466056;font-size:13px;font-weight:700}.sol-reset{background:#f2c675;border:2px solid #274844;border-radius:10px;box-shadow:0 3px 0 #274844}
 .sol-scroll{background:radial-gradient(ellipse at 50% 0%,#9bc7ae,#70a390);padding:14px 12px 18px}
-.sol-board{--sol-card-width:clamp(56px,calc((100vw - 78px)/7),100px);min-width:428px;max-width:760px}
-.sol-top,.sol-columns{gap:6px}.sol-top{margin-bottom:14px}.sol-card-button{border-radius:6px}
-.sol-tableau-card:not(:first-child){margin-top:max(-103%,calc(44px - 140%))}
+.sol-top{margin-bottom:14px}.sol-card-button{border-radius:6px}
 .sol-placeholder{background:rgba(255,250,223,.15);border:2px dashed rgba(36,72,63,.5);border-radius:8px;color:#315f51}
 .sol-card-button.is-selected{outline:3px solid #ffd675;outline-offset:3px;box-shadow:0 0 0 5px #355b4c;z-index:10}.sol-status{padding:10px 14px;background:#24483f;color:#fff4dc}
 .playing-card{border-radius:7px;box-shadow:0 3px 0 rgba(28,65,57,.55),0 4px 12px rgba(28,65,57,.14)}
-@media(max-width:600px){.sol-board{--sol-card-width:56px}.sol-scroll{padding:10px}.sol-card-button .playing-card:not(.face-down)::before{content:attr(data-index) ' ' attr(data-suit);position:absolute;z-index:1;top:3px;left:3px;display:block;min-width:25px;padding:2px 3px;border-radius:3px;background:#fff8e8;color:#214b49;font:900 13px/1 ui-sans-serif,system-ui,sans-serif;white-space:nowrap;box-shadow:0 0 0 1px #fff8e8}.sol-card-button .playing-card.red-suit::before{color:#b74d42}}
+@media(max-width:600px){.sol-scroll{padding:10px}.sol-card-button .playing-card:not(.face-down)::before{content:attr(data-index) ' ' attr(data-suit);position:absolute;z-index:1;top:3px;left:3px;display:block;min-width:25px;padding:2px 3px;border-radius:3px;background:#fff8e8;color:#214b49;font:900 13px/1 ui-sans-serif,system-ui,sans-serif;white-space:nowrap;box-shadow:0 0 0 1px #fff8e8}.sol-card-button .playing-card.red-suit::before{color:#b74d42}}
 /* Memory remains sized by its own board algorithm, with a calmer framed play surface. */
 .memory{background:#e9dbb9}.memory .memory-choose{padding-top:18px}.memory .memory-lead{color:#294b42;font-size:15px;font-weight:750}
 .memory .memory-deck{background:#fff7e4;border-color:#9aaf95;border-radius:12px;box-shadow:0 3px 0 #b1a685}
@@ -52,6 +50,8 @@
 .memory .memory-status{padding:10px 16px;background:#25483f;color:#f0ebcf;font-weight:750}.memory .memory-face,.memory .memory-back{border-radius:8px}
 @media(max-height:600px){.blackjack-layout{padding:8px 12px 12px;gap:6px}.blackjack-table{gap:6px;padding:7px}.blackjack-hand{padding:6px 10px;gap:4px}.blackjack-cards{min-height:70px}.blackjack-cards>*{width:clamp(56px,12vh,80px)}.blackjack-message{font-size:14px}.game-room-intro{min-height:110px;padding:14px}.game-room-mascot{height:90px}}
 @media(prefers-reduced-motion:reduce){.game-choice{transition:none}}
+/* A short landscape screen needs smaller cards as well as seven columns that fit its width. */
+@media(orientation:landscape) and (max-height:500px){.sol-board{max-width:min(560px,115svh);--sol-back-step:8px;--sol-step:20px}.sol-toolbar{padding:6px 12px}.sol-instructions{max-width:65ch;font-size:12px}.sol-status{padding:6px 12px;min-height:32px}}
 /* Keep the section label clear of the introduction and show all three choices on short phones. */
 .cards-hub-content > p.game-room-label{margin:20px 0 9px;line-height:1.2}
 @media(max-height:600px){.cards-hub-content{padding-top:12px;padding-bottom:14px}.game-room-intro{min-height:96px}.game-room-intro h1{font-size:28px}.cards-hub-content > p.game-room-label{margin:14px 0 7px}.game-choice{min-height:68px;padding:7px 12px;margin-bottom:7px}.choice-symbol{height:46px;width:46px}.game-choice small{font-size:12px}.game-room-mascot{height:70px}}

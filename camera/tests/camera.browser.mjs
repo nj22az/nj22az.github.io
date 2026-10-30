@@ -415,8 +415,11 @@ async function firstScreen({label,width,height}){
 // 29 October 2026: "the mini games and the printer animation when saving … memory with our own photos or with the
 // stickers"), at an iPhone's Safari size.
 async function playAndPrint({label,width,height}){
- const y4m=join(temp,`${label}.y4m`);let fake=[];
- try{execFileSync('ffmpeg',['-loglevel','error','-y','-loop','1','-i',photo,'-t','1','-r','10','-vf','crop=ih*3/4:ih,scale=720:960,format=yuv420p',y4m]);fake=[`--use-file-for-fake-video-capture=${y4m}`];}catch{}
+ // This layout fixture requires an upright feed. Chromium's fallback test pattern is landscape, which cannot
+ // exercise the compact portrait assertions. Missing ffmpeg must fail here instead of silently changing the fixture.
+ const y4m=join(temp,`${label}.y4m`);
+ execFileSync('ffmpeg',['-loglevel','error','-y','-loop','1','-i',photo,'-t','1','-r','10','-vf','crop=ih*3/4:ih,scale=720:960,format=yuv420p',y4m]);
+ const fake=[`--use-file-for-fake-video-capture=${y4m}`];
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream',...fake]});
  try{
   const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:2,isMobile:true,hasTouch:true,permissions:['camera']});
@@ -425,7 +428,10 @@ async function playAndPrint({label,width,height}){
   await clearSamplesForRegression(page,label);
   await page.waitForFunction(()=>window.pocketCamera?.state.camera.running,null,{timeout:20000});
   await check(`${label}: the picture takes the whole width; the Looks unfold from the Look's name`,async()=>{
-   await page.waitForFunction(()=>document.querySelector('#camera').classList.contains('compact'),null,{timeout:10000});
+   await page.waitForFunction(()=>document.querySelector('#camera').classList.contains('compact'),null,{timeout:10000}).catch(async error=>{
+    const actual=await page.evaluate(()=>({video:[document.querySelector('#video').videoWidth,document.querySelector('#video').videoHeight],viewport:[innerWidth,innerHeight],camera:document.querySelector('#camera').className}));
+    throw new Error(`Portrait camera fixture did not become compact: ${JSON.stringify(actual)}`,{cause:error});
+   });
    const look=()=>page.evaluate(()=>{const f=document.querySelector('#cameraFrame').getBoundingClientRect(),t=document.querySelector('#tray').getBoundingClientRect();
     return {frame:Math.round(f.width),screen:innerWidth,strip:getComputedStyle(document.querySelector('#strip')).display,open:document.querySelector('#camera').classList.contains('looks-open'),trayOver:t.top>=f.top&&t.top<f.bottom-30&&t.bottom<=f.bottom+4};});
    let v=await look();
@@ -453,30 +459,36 @@ async function playAndPrint({label,width,height}){
    assert.equal(await page.isHidden('#settings'),true,'the settings row is put away when a sheet comes up');
    await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#frameSheet').open);
   });
-  await check(`${label}: the shutter prints the photo, and the print lands in the album`,async()=>{
+  await check(`${label}: the shutter saves straight to the app album without printing`,async()=>{
    const out=await page.evaluate(async()=>{
     const pc=window.pocketCamera,seen={scene:false,paper:false,steps:new Set()};
     const watch=setInterval(()=>{const sc=document.querySelector('.printer-scene'),p=document.querySelector('.printer-paper');if(sc)seen.scene=true;if(p){seen.paper=true;seen.steps.add(getComputedStyle(p).transform);}},40);
     const before=pc.state.shots.length,t=performance.now();await pc.takePhoto();clearInterval(watch);
     return {scene:seen.scene,paper:seen.paper,steps:seen.steps.size,ms:performance.now()-t,kept:pc.state.shots.length-before,left:!!document.querySelector('.printer-scene,.printer-flyer'),roll:!document.querySelector('#roll img').hidden};
    });
-   assert.ok(out.scene&&out.paper,'the printer and its paper showed');
-   assert.ok(out.steps>4,`the paper fed out in steps (${out.steps} positions seen)`);
+   assert.equal(out.scene,false,'capture does not print');assert.equal(out.paper,false);
    assert.equal(out.kept,1,'the photo is in the album');assert.equal(out.left,false,'nothing of the printer is left');assert.ok(out.roll,'the thumbnail shows it');
   });
-  await check(`${label}: a tap skips the printer; Print off saves without it`,async()=>{
-   const out=await page.evaluate(async()=>{
-    const pc=window.pocketCamera,shooting=pc.takePhoto();let t=0;
-    await new Promise(r=>{const w=setInterval(()=>{const sc=document.querySelector('.printer-scene');if(sc){clearInterval(w);setTimeout(()=>{t=performance.now();sc.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));r();},500);}},20);});
-    await shooting;const skipped=performance.now()-t;
-    document.querySelector('#printSetting').click();
-    let printed=false;const w=setInterval(()=>{if(document.querySelector('.printer-scene'))printed=true;},20);
-    await pc.takePhoto();clearInterval(w);const off=pc.state.printer;document.querySelector('#printSetting').click();
-    return {skipped,printed,off,on:pc.state.printer};
+  await check(`${label}: Share opens from the tap while its printer feeds; a tap skips; Print off shares without it`,async()=>{
+   await page.evaluate(()=>{
+    window.photoShares=0;Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>true});
+    Object.defineProperty(navigator,'share',{configurable:true,value:()=>{window.photoShares++;return new Promise(resolve=>window.finishPhotoShare=resolve);}});
    });
+   await page.click('#roll');await page.click('#grid button:first-child');await page.click('#sharePhoto');
+   await page.waitForSelector('.printer-scene.printing');
+   const positions=await page.evaluate(async()=>{const transforms=new Set();for(let i=0;i<10;i++){transforms.add(getComputedStyle(document.querySelector('.printer-paper')).transform);await new Promise(r=>setTimeout(r,50));}return transforms.size;});
+   assert.ok(positions>4,'the Share printer feeds in steps');assert.equal(await page.evaluate(()=>window.photoShares),1,'the share sheet opens without waiting for printing');
+   const t=Date.now();await page.locator('.printer-scene').tap();await page.waitForFunction(()=>!window.pocketCamera.printer.busy);const skipped=Date.now()-t;
+   await page.evaluate(()=>window.finishPhotoShare());await page.waitForFunction(()=>!document.querySelector('#sharePhoto').disabled);
+   await page.evaluate(()=>document.querySelector('#printSetting').click());await page.click('#sharePhoto');
+   const out=await page.evaluate(()=>({printed:!!document.querySelector('.printer-scene'),off:window.pocketCamera.state.printer,shares:window.photoShares}));
+   await page.evaluate(()=>{window.finishPhotoShare();document.querySelector('#printSetting').click();});
+   await page.waitForFunction(()=>!document.querySelector('#sharePhoto').disabled);
    // After the tap only the tear and the flight are left (0.7 s; more in software graphics).
-   assert.ok(out.skipped<1800,`a tap skipped to the tear (${Math.round(out.skipped)} ms after it)`);
-   assert.equal(out.printed,false,'no printer with Print off');assert.equal(out.off,false);assert.equal(out.on,true,'Print back on');
+   assert.ok(skipped<1800,`a tap skipped to the tear (${Math.round(skipped)} ms after it)`);
+   assert.equal(out.printed,false,'no printer with Print off');assert.equal(out.off,false);assert.equal(out.shares,2,'Print off still opens Share');assert.equal(await page.evaluate(()=>window.pocketCamera.state.printer),true,'Print back on');
+   await page.evaluate(()=>{delete navigator.share;delete navigator.canShare;});
+   await page.click('#closeViewer');await page.click('#closeAlbum');await page.evaluate(()=>window.pocketCamera.takePhoto());
   });
   // The residents' stickers are figures without words; words are stickers of their own (the owner: "Make the stickers
   // without text and we can add any text as another sticker", "Or without the balloon too").
