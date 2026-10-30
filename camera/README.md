@@ -267,6 +267,24 @@ editor) puts the plane of focus at that height (`recipe.focus`, a height from th
 a lip line measuring alike) and a wider colour silhouette (no visible gain for thirty more samples a pixel); outlines
 round a person against a background of their own colour and light need a subject mask.
 
+## Still-photo person contours (review branch)
+
+The Codex Looks pass on `codex/pocket-camera-looks` (30 October, **not published**) adds a local **person contour for
+still photos**. When an imported/album photo uses a drawn or print Look, a small person model runs once in a worker,
+and that medium inks the boundary even where clothing or skin matches the background. A frozen shutter photo is
+handled the same way. Everything runs on the device; the first use loads the 10.17 MB pinned local runtime/model,
+then the existing offline cache retains it. Unsupported devices or a failed load keep the ordinary Look. The mask
+is reused across adjustments, follows crop/mirror/trick lenses, and is replaced after Erase or a different photo.
+The live viewfinder keeps its existing contour until motion alignment and cost are tested on real phones. Thin
+parts, hats, occlusion and distant people can be imperfect. [Dependency size, licence and limits](vendor/person-mask/README.md).
+
+This pass also replaces Crayon's scratch lattice with layered pigment, gives Pencil manga darker graphite, reduces
+small ink marks and Stamp's ink coverage, warms Woodblock's skin blocks, varies Heavy brush's dabs, quiets Cartoon's
+skin texture, strengthens Oil's canvas texture and smooths Miniature's blur. Oil and Miniature remain exact
+`PHOTO_EDITS`; World is unchanged. [Scores and unresolved faults](AUDIT-LOOKS-2026-10-30.md#codexs-next-pass-on-codexpocket-camera-looks-not-published)
+include the Looks whose overall scores did not improve. The test-render tool accepts `--person` for the still-photo
+mask; `--light --person` models the phone's editor, not a masked live viewfinder.
+
 ## Erase
 
 The editor's **Erase** tab (`erase.js`; the owner, 29 October 2026: "The eraser works better than the cutouts"): paint
@@ -318,15 +336,16 @@ techniques, drawn here:
 | `stickers/` | Web copies of the studio's sticker sheets and `stickers.json` (built, see below) |
 | `preview.jpg`, `card.webp`, `card-narrow.webp` | Link preview and the homepage card, from `tools/render-camera-preview.mjs` |
 
-- **The shaders are World's, imported, never copied**: `looks-gl.js` imports `johansson-town/src/render/looks.js` and
-  builds each Look without depth (the picture-only build Studio's comic panels use), as GLSL ES 3.00, wrapped so it
-  mixes into what came before. A new or changed Look in World appears here with no change.
+- **The camera keeps World's names and swatches, with photo-specific shader bodies**: `looks-gl.js` imports
+  `johansson-town/src/render/looks.js` for the shared helpers. `CAMERA_BODIES` supplies the camera's drawn/print/game
+  treatments; Oil and Miniature use exact `PHOTO_EDITS`. Each becomes GLSL ES 3.00 without scene depth or normals,
+  wrapped for mixing. World is never changed for a photo treatment.
 - **One replacement in World's source**: `unit()` (patterns sized to a 1080-line screen) follows the picture's height,
   so dots and strokes cover the same share of the viewfinder, a thumbnail and a 12-megapixel save. The Node test fails
   if World's `unit()` changes and the replacement stops matching.
 - **First pass (ours)**: crop, mirror, the Mirror lens, Light/Contrast/Colour/Warmth; for Looks that draw lines a light
-  edge-keeping smoothing so camera noise is not inked (Detail widens or removes it); for the ink Looks (`INK_LOOKS`: Pocket, 16-bit, Lines, Manga, Print, Riso,
-  Pencil manga, Stamp) the photo is exposed to the town's middle first, as World's Pocket camera exposes each photo,
+  edge-keeping smoothing so camera noise is not inked (Detail widens or removes it); for `INK_LOOKS` the photo is
+  exposed to the town's middle first, as World's Pocket camera exposes each photo,
   because their fixed thresholds were set for the bright town and print a shady photo almost solid.
 - **Phones** draw the viewfinder with World's light versions of the heavy Looks (Oil, Heavy brush) and a resolution
   that drops when frames come slowly; every save uses the full versions at full size (up to 4096 px, 16 MP), drawn in

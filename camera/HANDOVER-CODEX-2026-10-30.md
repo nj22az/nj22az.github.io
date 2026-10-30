@@ -15,6 +15,68 @@ backlog. The day's full history is the first section of [HANDOVER-2026-10-29.md]
 Anything you do next goes to `main` only on the owner's explicit word. Branch off `main` or
 `claude/friendly-darwin-a4e3re` (they are the same code).
 
+## Codex continuation — 30 October 2026 (review branch, not published)
+
+- **Branch:** `codex/pocket-camera-looks`, created at `1ed9a7ef` from `claude/friendly-darwin-a4e3re`.
+- **Commits:** `0f1b56e0` (all 34 Looks re-judged for rounds three/four); `160cd50d` (local still-photo person masks);
+  `45a7f51f` (ranked pencil/ink/print/paint refinements, smoother Miniature). `03164642` integrates Claude's newer
+  documentation-only `37befc31`. Runtime bytes tested below are exactly `45a7f51f`; later changes are review notes,
+  evidence and render-tool documentation. Draft review targets Claude's branch. **No Codex push or merge to main.**
+- **Current upstream observation:** `main` and Claude's branch both at `37befc31` when checked. Its handover says Claude
+  published round four at `1ed9a7ef2` on the owner's word. That is historical publication, not permission for this pass.
+- **Cache keys:** `app.js?v=20261030d`, `looks-gl.js?v=20261030d`, `person-mask.js?v=20261030d`;
+  the unchanged worker is `person-mask-worker.js?v=20261030c`.
+- **Evidence and scores:** [audit](AUDIT-LOOKS-2026-10-30.md), [review sheets and input provenance](qa/looks-2026-10-30/README.md).
+
+Done in the requested order: a separate persona pass on rounds three/four (one Codex reviewer, no claimed independent
+human panel), then a size/licence/cost investigation before adopting the mask; then Crayon (3), the 4-point drawing
+and print backlog, Manga, Oil and Miniature. The audit records actual new scores, including unchanged scores.
+All changes stay in the camera's own bodies/PHOTO_EDITS. **World's `src/render/looks.js` is byte-for-byte unchanged.**
+
+The person model is MediaPipe Selfie Segmenter float16 v1, with Tasks Vision 0.10.21, Apache-2.0. The model is
+249,537 bytes; all four local assets total 10,165,743 bytes (3,200,243 under local gzip, not measured host transfer).
+No CDN or photo upload. A worker takes a frozen snapshot with its longest side at most 256 px, one inference at a
+ time, with a 15-second failure fallback. Only drawn/print still recipes load it. Crop, mirror, Twin/Quad, thumbnails,
+Erase, source revision invalidation and context restoration are wired. [Exact assets, licences and costs](vendor/person-mask/README.md).
+The first prototype's small café-chair false positive was rejected by requiring a substantial, confident component;
+the six-photo set now retains foreground people only in its three portraits. **No live-video mask** is used: motion
+alignment and iPhone cost remain open, and preview/live silhouette therefore differs from the frozen-photo editor.
+
+**Checks actually run and passed on these runtime bytes:**
+
+| Check | Result |
+|---|---|
+| `python3 tools/camera-test-photos.py /tmp/camera-bench/in` | All six available; source hashes in evidence.json |
+| `node tools/render-camera-looks.mjs` | Round-four 204 full outputs; round-three's changed seven Looks rendered on all six; final 13 affected Looks × six = 78 full outputs with real local mask |
+| `python3 tools/camera-look-sheet.py` | Before/after phone sheets and unscaled crops generated and visually inspected on all six for the affected Looks |
+| Same render command with `--light --person` | 78 LIGHT still-editor outputs, inspected; no flat/black output. LIGHT/full differ on faces and remain separately limited |
+| `node camera/tests/looks-gl.test.mjs` | Pass: 33 shader Looks plus Natural, conversion/recipe/size/rows |
+| `node camera/tests/modules.test.mjs` | Pass: 15 camera modules, each at one address |
+| `node --check camera/looks-gl.js camera/app.js` and separate `node --check camera/app.js` | Pass; app checked separately because Node checks one input file |
+| `git diff --check` | Pass |
+| `node camera/tests/camera.browser.mjs` | **56/56**, Chromium 133 + SwiftShader + ffmpeg fake camera; [full log](qa/looks-2026-10-30/camera.browser.txt) |
+| `node camera/tests/person-mask.test.mjs` | Pass: confidence, components, soft boundary, recipe and unsupported-device fallback |
+| `node camera/tests/person-mask.browser.mjs` | Pass: real local model, same-colour outline, crop/mirror/Twin, thumbnails, stale-mask rejection, no external request/page error |
+| Converted shader numeric `smoothstep` bounds scan | No constant equal/reversed bounds, full and LIGHT, all 34 Looks |
+| Five `--lines 4000` renders | Manga, Heavy brush, Riso three-colour, Oil, Miniature each produced non-black 3000 × 4000 outputs. Compile/render/readback/PNG: 16.52, 10.79, 9.98, 14.34, 9.80 s in software under concurrent load. Source enlarged from 1440 px, **not a native 12 MP input** |
+
+Runtime setup used packaged Chromium 133 after the environment's Playwright browser download returned an invalid
+archive. This is a reproducible software compile/draw check, not Safari. The focused real-model check measured
+roughly 0.62–1.56 s cold under different concurrent loads; prototype warm calls were 23–52 ms with 256-px-width inputs.
+Neither is an iPhone benchmark. No test was weakened or removed.
+
+**Still unverified/open:** physical iPhone Safari/Home Screen use, first-load download/offline reuse of the model,
+worker compatibility/memory/thermal impact, native-resolution iPhone import/save, actual heavy-Look frame rates,
+context recovery on a device (SwiftShader does not restore it), moving-person mask alignment. Small/distant people,
+fingers, hat edges and occlusion can fail segmentation. Line drawing, Stamp and Heavy brush remain 4/10; their face
+readability is not solved. Crayon is still too photographic, the cel Looks still retain photographic colour planes,
+Manga's hair highlights are not semantically placed, and foliage simplification remains open.
+
+**Next:** ask the owner to test the review build on iPhone: viewfinder smoothness of Heavy brush, Oil, Riso three-colour
+and the drawn Looks; a native 12 MP import/save; first-mask delay and contour quality on a same-colour background;
+Miniature tap focus and save. Then work the three 4-point rows without losing eyes/nose/mouth. Publish only after
+an explicit new owner instruction. The older next-steps list below remains historical context.
+
 ## What the owner asked, in order (30 October 2026)
 
 1. Two iPhone screenshots (Stamp, Crayon on a portrait): "does the shaders need improvement? Or how do you see" → "Proceed".

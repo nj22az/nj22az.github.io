@@ -6,6 +6,8 @@
 // Each picture is drawn at its own shape, `--lines` tall (the camera sizes every pattern to the picture's height, so
 // 1080 lines stands for the viewfinder and a save alike). `--light` draws the phone's light builds instead of the full;
 // `--focus 0.3` places Miniature's plane of focus as a tap would (a height from the foot).
+// `--person` runs the local person model first, as the still-photo editor does. With --light this models the phone's
+// editor, not its live viewfinder (live video does not use a mask). An unavailable model fails this test render.
 import {createRequire} from 'node:module';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {basename,extname,join,resolve} from 'node:path';

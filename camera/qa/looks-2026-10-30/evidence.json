@@ -1,0 +1,69 @@
+{
+  "renderer": "Chromium 133.0.6943.0 / SwiftShader",
+  "base": "1ed9a7ef",
+  "implementation": "45a7f51f",
+  "round3": "3a54aa6cf",
+  "round4": "507dad865",
+  "photos": {
+    "garden": "aca08674df71cb08d67ebe94f5dfba04d8d286eee8a55fc8cd56d5e3bc722294",
+    "portrait-restaurant": "6856c2735e9af52f40f1d18225b20f26792b9b495eec79d7a6012b168b73a4e4",
+    "night": "9d5bea88d25a841fb62825fa598599738da7b512b357120b2cee32a1d32066e6",
+    "portrait-braids": "a43cee150b6eb707c7ecdc9e856d5d0dde89a5372d6bf1eea18412f7df947647",
+    "portrait-hat": "98597f49cd81eff9fb98fef24d3201635263948c4f0f1a9d8f0d16dec0768b08",
+    "cafe": "4203fbd500bffb95b804cfa6d8e62bb8c10f3900186126c97e455d45139b3197"
+  },
+  "full_renders": 78,
+  "light_renders": 78,
+  "crop_pixels": {
+    "portrait-restaurant": [
+      240,
+      210,
+      540,
+      510
+    ],
+    "portrait-braids": [
+      300,
+      300,
+      600,
+      600
+    ],
+    "portrait-hat": [
+      600,
+      200,
+      900,
+      500
+    ],
+    "cafe": [
+      350,
+      400,
+      650,
+      700
+    ],
+    "garden": [
+      600,
+      400,
+      900,
+      700
+    ],
+    "night": [
+      450,
+      350,
+      750,
+      650
+    ]
+  },
+  "output_stress": {
+    "width": 3000,
+    "height": 4000,
+    "source": "1440 px bench photograph upscaled: not native 12 MP input",
+    "ms_including_compile_readback_png": {
+      "manga": 16522,
+      "brushOil": 10791,
+      "risoThree": 9978,
+      "oil": 14340,
+      "tilt": 9804
+    }
+  },
+  "physical_iphone_tested": false,
+  "live_person_mask": false
+}
