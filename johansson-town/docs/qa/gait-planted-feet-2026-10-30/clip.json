@@ -1,0 +1,20 @@
+{
+  "programs": [],
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 540,
+      "r_frame_rate": "24/1",
+      "nb_frames": "156"
+    }
+  ],
+  "format": {
+    "duration": "6.500000"
+  },
+  "implementation": "0d38b1017e27b5e97f523146f496f616d48d7c1e",
+  "sha256": "b7377735e7e15ad76e3081a01a1b816fe020837380edafab6ea13e317d8a9f56",
+  "file_size": 4562056,
+  "library_file_id": "libfile_5aa456b4f438819198846d363da4be0f",
+  "library_version": 1
+}

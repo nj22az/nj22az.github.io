@@ -1,0 +1,50 @@
+{
+  "base": "37befc31",
+  "source": true,
+  "physicalDevice": false,
+  "renderer": "software Chromium",
+  "fps": 24,
+  "seconds": 6.5,
+  "names": [
+    "Thuan",
+    "Harbour master",
+    "Vy",
+    "Grandmother Higa"
+  ],
+  "errors": [],
+  "views": [
+    {
+      "view": "pedestrian",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "view": "overhead",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "view": "phone",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "bodies": [
+    {
+      "name": "Thuan",
+      "body": "Pixar"
+    },
+    {
+      "name": "Harbour master",
+      "body": "cartoon"
+    },
+    {
+      "name": "Vy",
+      "body": "cartoon"
+    },
+    {
+      "name": "Grandmother Higa",
+      "body": "cartoon"
+    }
+  ]
+}
