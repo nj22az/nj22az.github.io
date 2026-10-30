@@ -118,6 +118,16 @@ the body 2.6 leg lengths a step while its legs swing about 1.6. As a hard gate, 
 probably every film with running, until the gait keeps its feet planted. Open for the owner: a hard gate now, or a
 warning until World's gait is fixed.
 
+**The owner ruled: "Warn, and fix the gait next".**
+- **The warning: done.** In jojo `2c5e82b`, slides are WARN lines in the films; `--strict` fails on them.
+- **The gait: started, then reverted on purpose.** World's walk is unchanged on this branch. A planted stance foot was
+  solved (within 16 mm), but the swing could not be: with a flat stance foot, a swinging leg hangs lower than the leg
+  behind it. The attempt traded the slide for a 25 cm pop at each landing.
+- What the next session needs:
+  - the measurements, the cause, what was learnt and the design (two-bone IK, heel rise at toe-off, a swing arch):
+    [the gait handoff](johansson-town/briefs/HANDOFF-GAIT-PLANTED-FEET-2026-10-30.md);
+  - the measuring tool, `johansson-town/tools/gait-feet.mjs`.
+
 ## Session handover — 24 October 2026 (night), branch `claude/peaceful-johnson-103tja`: Linux 0.2.19
 
 #393 (Vy cel-shaded) is merged as `94613e2`. The owner: "Linux is still 0.2.18" and "Yes build it pls". Prepared as 0.2.18
