@@ -15,3 +15,7 @@ node --test tests/izakaya-backbar.test.mjs tests/shared-dining-entry.test.mjs te
 ```
 
 See the dated handover for checks, exact implementation and review state, and outstanding physical-device validation.
+
+Final source/model commit: `5faffbe831a7224a154fb6b2241ed4b645268708`, [draft PR #410](https://github.com/nj22az/nj22az.github.io/pull/410). The geometry result counts 108,355 triangles, including instance repetitions. The focused repair checks pass 24/24, including food supported on the real topping-pan bottoms; package/language checks pass 5/5. The service/food/drink/layout selection passes 70/70, and the isolated town-wide surface suite passes 13/13. The combined local guard was interrupted by the memory limit, so it is not claimed as a successful invocation. The complete hosted guard passed on both the initial implementation and final model update; the dated handover links the CI runs.
+
+No fresh browser walkthrough or physical-device pass is claimed. The owner's exact reported crash remains unreproduced, and the draft has not changed the live game.
