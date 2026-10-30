@@ -2,7 +2,7 @@ import * as THREE from '../../vendor/three.module.js';
 
 /** The points of the shoes (or bare feet) each foot bone carries rigidly, in the bone's own frame, from the meshes drawn now
  *  (worked out again when the outfit changes): a function giving [{bone, samples}]. */
-function footSupports(avatar){
+export function footSupports(avatar){
  const point=new THREE.Vector3();
  let signature='',supports=[];
  return ()=>{

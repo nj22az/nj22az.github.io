@@ -100,3 +100,7 @@ pixar-thuan.test.mjs
 pixar-johansson.test.mjs
 pixar-skin.test.mjs
 wave-gesture.test.mjs
+
+# Measured foot contacts, plus the residents' distinct walking styles.
+avatar-feet.test.mjs
+avatar-gait.test.mjs

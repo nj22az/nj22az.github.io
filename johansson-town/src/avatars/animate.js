@@ -10,6 +10,7 @@ import {PAIR_POSES,PAIR_ROLES,fitPair,solveRole,playPair,placePair} from './pair
 export {FUN_POSES,STILL_AT,PAIR_POSES,playPair,placePair,fitPair};
 import {createSeatSupport} from './seat-support.js';
 import {gaitOf} from './gait.js';
+import {createPlantedWalk} from './planted-walk.js';
 import {DUTY_BELT} from './police-data.js';
 import {bodyVolume} from './build.js';
 import {storyProps,pocketSpot,PAPER,posedPoints} from './story-props.js';
@@ -357,7 +358,7 @@ export const EMOTION_GESTURE=Object.freeze({happy:'Hop',laugh:'Laugh',sad:'Slump
  */
 export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bowDepth=1,initialTime}={}){
  const {bones,measure:m}=avatar;
- const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar);
+ const groundFeet=createFootGrounder(avatar),groundLying=createLieGrounder(avatar),walkFeet=createPlantedWalk(avatar);
  const supportSeat=createSeatSupport(avatar),findUnderside=createUndersideFinder(avatar),findSoles=createSoleFinder(avatar);
  const style=bodyLanguage(avatar.recipe?.profile||{},avatar.recipe?.name);
  const pick=list=>list[Math.floor(random()*list.length)];
@@ -370,7 +371,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
  // baton and the radio instead of through them (police-data.js DUTY_BELT.armClear).
  const clear=avatar.recipe?.outfit?.belt==='duty'?DUTY_BELT.armClear:0;
  // How they walk (gait.js): their type, their age and, for a few, their own way of going.
- const gait=gaitOf(avatar.recipe,individual);
+ const gait=gaitOf(avatar.recipe,individual),runGait={...gait,carry:'swing',lean:gait.lean*.5,sway:gait.sway*.5};
  let ticIn=gait.ticEvery[0]+random()*(gait.ticEvery[1]-gait.ticEvery[0]),tic=null,ticT=0;
  // Listening (body-language.js listen): which way their head leans, and their two habits:
  // the one their personality has, and one that is just theirs.
@@ -596,7 +597,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   else if(kind==='hum')add('head',0,0,Math.sin(time*6)*.14*e);
   else if(kind==='watch'){set('shoulderL',-1.15*e,0,.15+.25*e);set('elbowL',-.25-1.45*e);add('head',.3*e,.35*e,0);}
   else if(kind==='hair'){set('shoulderR',-2.1*e,0,-.12-.35*e);set('elbowR',-.25-1.55*e);add('head',0,0,-.1*e);}
-  else if(kind==='kick'){add(sp>0?'thighL':'thighR',-.55*e,0,0);}
+  else if(kind==='kick'){add(sp>0?'thighL':'thighR',-.55*e,0,0);walkFeet.kick(sp>0?0:1,e);}
   else if(kind==='skip'){add('shoulderL',0,0,.35*e);add('shoulderR',0,0,-.35*e);}
  }
 
@@ -650,6 +651,9 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   const chairBlend=Number.isFinite(s.chairBlend)?THREE.MathUtils.clamp(s.chairBlend,0,1):(s.seated?1:0);
   const onChair=chairBlend>0||s.seated;
   const speed=s.speed||0,moving=speed>.08&&!s.seated&&!s.riding;
+  // Authored counter work has its own toe rises and measured hand/furniture contacts (work-hands.js).
+  // Keep that existing performance, like the other named poses, outside ordinary locomotion.
+  const workPose=!!(avatar.workHands?.R||avatar.workHands?.L);
   // Arms hang a little out from the body, the way a toy's do.
   set('shoulderL',0,0,.13+clear);set('shoulderR',0,0,-.13-clear);set('elbowL',-.12);set('elbowR',-.12);
   if(s.riding){
@@ -719,12 +723,13 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   }else if(moving){
    // Walking and running: short legs, a quick step and a proper bounce.
    // Their own gait (gait.js) shapes every part of the step; running evens people out.
-   const run=s.running||speed>2.6,G=run?{...gait,carry:'swing',lean:gait.lean*.5,sway:gait.sway*.5}:gait;
+   const run=s.running||speed>2.6,G=run?runGait:gait;
    // Backing out of a room with a bow (BowWalk): small steps, taken backwards (the step cycle runs the other way).
    const backing=!run&&gesture?.name==='BowWalk',small=backing?.55:1;
-   const stride=m.leg*(run?2.6:1.7)*strideStyle*G.stride*small;
-   phase+=(backing?-1:1)*speed/stride*Math.PI*2*dt*.5;
-   const A=(run?.95:Math.min(.62,.25+speed*.3))*Math.sqrt(G.stride)*(backing?.6:1),sp=Math.sin(phase),cp=Math.cos(phase);
+   const A=(run?.95:Math.min(.62,.25+speed*.3))*Math.sqrt(G.stride)*(backing?.6:1);
+   if(!s.airborne&&!s.climbing&&!s.pose&&!gesture&&!workPose)phase=walkFeet.advance(dt,speed,A,G,strideStyle*small,backing);
+   else phase+=(backing?-1:1)*speed/(m.leg*(run?2.6:1.7)*strideStyle*G.stride*small)*Math.PI*dt;
+   const sp=Math.sin(phase),cp=Math.cos(phase);
    set('thighL',-sp*A,G.toe,0);set('thighR',sp*A,-G.toe,0);
    set('kneeL',(Math.max(0,Math.sin(phase-.9))*A*1.5+.05)*G.lift);set('kneeR',(Math.max(0,Math.sin(phase+Math.PI-.9))*A*1.5+.05)*G.lift);
    set('footL',sp*A*.3);set('footR',-sp*A*.3);
@@ -962,6 +967,7 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
   // free hand is a stiff starfish"); what it holds closes it further (consume.js, table-drink.js set the grip after this).
   if(avatar.pixar?.grip){avatar.pixar.grip('L',s.heldProp?.userData?.food?1:.28);if(!consumption&&!s.heldProp)avatar.pixar.grip('R',.28);}
   avatar.seatLevel=null;
+  if(onChair||s.riding||s.sleeping||lie)walkFeet.reset();
   if(onChair&&!s.riding){
    // Keep sit/stand transitions continuous and use the actual clothing surface
    // as the contact point. Camera eye height never determines this support.
@@ -980,7 +986,11 @@ export function createAvatarAnimator(avatar,{lively=false,random=Math.random,bow
    avatar.seatLevel=chairBlend<1?null:(Number.isFinite(s.seatHeight)?s.seatHeight:.45)-avatar.root.position.y;
   }else if(!s.riding&&!s.sleeping&&!lie){
    avatar.pixar?.seat?.(0);
-   groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)||!!FUN_POSES[gesture?.name]?.airborne});
+   const planted=!s.airborne&&!s.climbing&&!ownLegs&&!kneel&&!s.pose&&!gesture&&!workPose;
+   if(!planted)walkFeet.reset();
+   const walking=planted&&walkFeet.apply(dt,moving,s.floorHeight||0);
+   if(walking)for(const j of LEG_JOINTS){const r=bones[j].rotation;current[j].set(r.x,r.y,r.z);}
+   if(!walking)groundFeet(s.floorHeight||0,{airborne:!!s.airborne||['Jump','Tackle','Cheer','Hop','Gasp'].includes(gesture?.name)||!!FUN_POSES[gesture?.name]?.airborne});
    // Kneeling rests on the knees as well as the toes: nothing on the body (a boot's leg, a knee in thick cloth) goes
    // below the floor; whichever is lowest touches it.
    if(kneel>0){const up=groundLying(s.floorHeight||0);if(up>0)avatar.root.position.y+=up;}
