@@ -1,5 +1,20 @@
 # Pocket Camera MCP — 31 October 2026
 
+The owner subsequently instructed **“Push to main”**: [PR #418](https://github.com/nj22az/nj22az.github.io/pull/418) is
+**merged and deployed**, main **`bd0507162dfa9d60cd891fd707893a7e22bcb618`**, identical tree to all-green reviewed
+head **`d56ea1226b58738b7f313ce1c9765c9894684395`**. Keys, including the adapter's renderer import, align at
+**`20261031audit2`**. Exact-head MCP **41196615769**, job **124523951297**, passed **15/15 units + 20/20 real
+acceptance checks**, with zero npm vulnerabilities on fresh installation; Camera/UI/audit **275/275**, World guard,
+automated WebKit **and Linux full acceptance passed**. Pages **41199773205** passed.
+The [current publication handover](HANDOVER-DESIGN-AUDIT-2026-10-31.md) records exact source/check/deployment details
+and the public-file verification. Older review/pending states below are historical.
+
+**Connection remains local:** the SDK acceptance client connects; the owner's installed host and this chat are still
+unconnected. Pull main, install pinned dependencies/Chromium, register/reconnect the absolute server path in
+[MCP.md](MCP.md), and prove eleven-tool discovery plus a generated-image cycle in that host. Merging does not connect
+Photos or an existing browser album. Preview shares pixels with the host, the session album is temporary, and approved
+imports, copy-save and explicit save/export/close remain. Physical Safari/native Share/camera and AR remain open.
+
 The owner subsequently authorised the three [UI layout fixes](HANDOVER-DESIGN-AUDIT-2026-10-31.md). This follow-up
 keeps draft PR #418 and aligns all release/import keys at **`20261031audit2`**. Exact source **`9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e`**
 passes **15/15 units + 20/20 actual MCP/Camera checks**, run **41195476147**, job **124520658675**, with **zero npm

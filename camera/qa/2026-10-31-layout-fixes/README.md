@@ -1,6 +1,12 @@
 # Pocket Camera layout-fix evidence — 31 October 2026
 
-[Current handover](../../HANDOVER-DESIGN-AUDIT-2026-10-31.md) · [Draft PR #418](https://github.com/nj22az/nj22az.github.io/pull/418).
+**Published:** PR #418 merged on the owner's “Push to main”, main **bd0507162dfa9d60cd891fd707893a7e22bcb618**,
+identical tree to final all-green reviewed **d56ea122**. Exact-head **275 Camera/UI/audit + 15/20 MCP** checks,
+World guard/automated WebKit and Linux full acceptance passed. Pages **41199773205** passed. [publication.json](publication.json)
+records **42/42 live-address matches** and exact source/check/deployment details; original screenshot snapshots below
+retain the state when they were captured.
+
+[Current handover](../../HANDOVER-DESIGN-AUDIT-2026-10-31.md) · [Merged PR #418](https://github.com/nj22az/nj22az.github.io/pull/418).
 Exact tested/screenshot source: **9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e**.
 The preceding before screenshots use **d9a9f25b525a6d403b2c352d78745d78463f6a7f**; published main stays **83783c93**.
 

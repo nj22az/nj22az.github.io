@@ -1,0 +1,462 @@
+{
+  "pr": 418,
+  "authorization": "Owner: Push to main",
+  "merged": true,
+  "merge_commit": "bd0507162dfa9d60cd891fd707893a7e22bcb618",
+  "parent": "83783c93448d1be251a61c213959448e1d21c971",
+  "tested_head": "d56ea1226b58738b7f313ce1c9765c9894684395",
+  "tested_runtime_source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e",
+  "tree": "e74f9ebf7f01cc20e49e409b133aec201b9a97f8",
+  "release_key": "20261031audit2",
+  "merge_tree_matches_tested": true,
+  "checks": {
+    "camera": {
+      "run": 41196615845,
+      "job": 124523951952,
+      "passed": 143,
+      "recipe_combinations": 816,
+      "preview_export_pairs": 408,
+      "historical_comparisons": 68
+    },
+    "ui": {
+      "run": 41196615845,
+      "job": 124523952008,
+      "passed": 82
+    },
+    "audit": {
+      "run": 41196615845,
+      "job": 124523951770,
+      "passed": 50
+    },
+    "mcp": {
+      "run": 41196615769,
+      "job": 124523951297,
+      "unit_passed": 15,
+      "acceptance_passed": 20,
+      "npm_findings": 0
+    },
+    "world": {
+      "run": 41196615766,
+      "guard_job": 124523951382,
+      "webkit_job": 124523951569,
+      "status": "success"
+    },
+    "linux": {
+      "run": 41196615798,
+      "job": 124524246015,
+      "status": "success",
+      "full_acceptance": true,
+      "binary_released": false
+    }
+  },
+  "pages": {
+    "run": 41199773205,
+    "build": 124533102487,
+    "report": 124533347677,
+    "deploy": 124533347723,
+    "status": "success"
+  },
+  "post_merge_world": {
+    "run": 41199773766,
+    "status": "in_progress",
+    "counted_as_pass": false
+  },
+  "connection": {
+    "verified": "Official SDK acceptance client; eleven tools and generated-image cycle",
+    "owner_installed_host": false,
+    "this_chat": false,
+    "personal_photos": false,
+    "live_browser_album": false
+  },
+  "physical_safari": false,
+  "physical_camera": false,
+  "physical_native_share": false,
+  "ar": "Proposal only; no architecture/model/permission added",
+  "public_verification": {
+    "verified_at": "2026-10-31T12:11:58.360037+00:00",
+    "source": "bd0507162dfa9d60cd891fd707893a7e22bcb618",
+    "release_key": "20261031audit2",
+    "checked": 42,
+    "matched": 42,
+    "files": [
+      {
+        "url": "https://nj22az.github.io/camera/",
+        "file": "camera/index.html",
+        "expected_sha256": "2c31be5c67d65e39849993275790c8076c865340b39b25057f6aaba3514ada74",
+        "status": 200,
+        "bytes": 26967,
+        "actual_sha256": "2c31be5c67d65e39849993275790c8076c865340b39b25057f6aaba3514ada74",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/album.js?v=20261029c",
+        "file": "camera/album.js",
+        "expected_sha256": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a",
+        "status": 200,
+        "bytes": 5423,
+        "actual_sha256": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/app.js",
+        "file": "camera/app.js",
+        "expected_sha256": "0de6826db43f945d2febc9fe41a54a0e46042358bb76265a8b84c3cc4101ccc5",
+        "status": 200,
+        "bytes": 90682,
+        "actual_sha256": "0de6826db43f945d2febc9fe41a54a0e46042358bb76265a8b84c3cc4101ccc5",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/app.js?v=20261031audit2",
+        "file": "camera/app.js",
+        "expected_sha256": "0de6826db43f945d2febc9fe41a54a0e46042358bb76265a8b84c3cc4101ccc5",
+        "status": 200,
+        "bytes": 90682,
+        "actual_sha256": "0de6826db43f945d2febc9fe41a54a0e46042358bb76265a8b84c3cc4101ccc5",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/blackjack.css?v=20261029a",
+        "file": "camera/blackjack.css",
+        "expected_sha256": "390fbbab518e439dac43dd5df4faa15ea8cd9e8c91793b8986456af36cfbe47d",
+        "status": 200,
+        "bytes": 1745,
+        "actual_sha256": "390fbbab518e439dac43dd5df4faa15ea8cd9e8c91793b8986456af36cfbe47d",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/blackjack.js?v=20261029b",
+        "file": "camera/blackjack.js",
+        "expected_sha256": "f6cb801223a245c273d8f68e0aec2eb2a97079dd251fdc2a24c301c0ad4688c2",
+        "status": 200,
+        "bytes": 4604,
+        "actual_sha256": "f6cb801223a245c273d8f68e0aec2eb2a97079dd251fdc2a24c301c0ad4688c2",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/camera-black.css?v=20261029a",
+        "file": "camera/camera-black.css",
+        "expected_sha256": "c9e69033dee9f5fa940a37dbf43598e8194e0b22f148bf2bed315cbed9fa446b",
+        "status": 200,
+        "bytes": 5347,
+        "actual_sha256": "c9e69033dee9f5fa940a37dbf43598e8194e0b22f148bf2bed315cbed9fa446b",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/camera-refresh.css?v=20261029a",
+        "file": "camera/camera-refresh.css",
+        "expected_sha256": "3e9cde2ec1c5d399c0c26031e346fdc7908bb471e67876da75c5a73ef40a32c8",
+        "status": 200,
+        "bytes": 3713,
+        "actual_sha256": "3e9cde2ec1c5d399c0c26031e346fdc7908bb471e67876da75c5a73ef40a32c8",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/camera-ui.css",
+        "file": "camera/camera-ui.css",
+        "expected_sha256": "ccf2db33222a182dfc11765c2074aab5436a17884516a0ae1e715557504aad54",
+        "status": 200,
+        "bytes": 21826,
+        "actual_sha256": "ccf2db33222a182dfc11765c2074aab5436a17884516a0ae1e715557504aad54",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/camera-ui.css?v=20261031audit2",
+        "file": "camera/camera-ui.css",
+        "expected_sha256": "ccf2db33222a182dfc11765c2074aab5436a17884516a0ae1e715557504aad54",
+        "status": 200,
+        "bytes": 21826,
+        "actual_sha256": "ccf2db33222a182dfc11765c2074aab5436a17884516a0ae1e715557504aad54",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/camera.css?v=20261031audit2",
+        "file": "camera/camera.css",
+        "expected_sha256": "489db586aa3909438591f07994d010dd3a856ef8f54164ee3f2ddb0dce945df4",
+        "status": 200,
+        "bytes": 45329,
+        "actual_sha256": "489db586aa3909438591f07994d010dd3a856ef8f54164ee3f2ddb0dce945df4",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/card-games.css?v=20261029a",
+        "file": "camera/card-games.css",
+        "expected_sha256": "e63d539e1cda8b46fa73024a1fe64da5b4b0eb4278e32885196054930cf60017",
+        "status": 200,
+        "bytes": 2037,
+        "actual_sha256": "e63d539e1cda8b46fa73024a1fe64da5b4b0eb4278e32885196054930cf60017",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/crop.js?v=20261030crop1",
+        "file": "camera/crop.js",
+        "expected_sha256": "4bb4f8a153815593515d0b26c6133fd2fdc8216953f29e2fcab10cd5e2536804",
+        "status": 200,
+        "bytes": 3741,
+        "actual_sha256": "4bb4f8a153815593515d0b26c6133fd2fdc8216953f29e2fcab10cd5e2536804",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/cutout.js?v=20261031-contour1",
+        "file": "camera/cutout.js",
+        "expected_sha256": "9cd25be52ea39bf8cb830e2074faa666b721cbd23c9628aa4a9a89dfdaefd19e",
+        "status": 200,
+        "bytes": 3228,
+        "actual_sha256": "9cd25be52ea39bf8cb830e2074faa666b721cbd23c9628aa4a9a89dfdaefd19e",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/effects.js?v=20261029b",
+        "file": "camera/effects.js",
+        "expected_sha256": "62222c5dff67c73abcb2bb85c141b9a4a02b88c80cae4c4895a8acf0f37688b6",
+        "status": 200,
+        "bytes": 3680,
+        "actual_sha256": "62222c5dff67c73abcb2bb85c141b9a4a02b88c80cae4c4895a8acf0f37688b6",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/erase.js?v=20261030crop1",
+        "file": "camera/erase.js",
+        "expected_sha256": "8eb7469636c97937339ffdfda0b32f98c0aaf819f6b0d6853229acbb1f011592",
+        "status": 200,
+        "bytes": 7188,
+        "actual_sha256": "8eb7469636c97937339ffdfda0b32f98c0aaf819f6b0d6853229acbb1f011592",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/frames.js?v=20261029f",
+        "file": "camera/frames.js",
+        "expected_sha256": "7a15179a13d624b0062f9c50627ec6ee8a4655f58adbfb15d9b02e88acb37961",
+        "status": 200,
+        "bytes": 7782,
+        "actual_sha256": "7a15179a13d624b0062f9c50627ec6ee8a4655f58adbfb15d9b02e88acb37961",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/game-room-refresh.css?v=20261030share1",
+        "file": "camera/game-room-refresh.css",
+        "expected_sha256": "1327d3d49df6d6dc70a44d5b200bb89ce43b0c720eb6a8fdc8e325eb59314b3f",
+        "status": 200,
+        "bytes": 9009,
+        "actual_sha256": "1327d3d49df6d6dc70a44d5b200bb89ce43b0c720eb6a8fdc8e325eb59314b3f",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/index.html",
+        "file": "camera/index.html",
+        "expected_sha256": "2c31be5c67d65e39849993275790c8076c865340b39b25057f6aaba3514ada74",
+        "status": 200,
+        "bytes": 26967,
+        "actual_sha256": "2c31be5c67d65e39849993275790c8076c865340b39b25057f6aaba3514ada74",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/lettering.js?v=20261029t",
+        "file": "camera/lettering.js",
+        "expected_sha256": "d648658022d9c21a45852f2bf76041b296518736b63d2197d8ccb49709eee8c2",
+        "status": 200,
+        "bytes": 11779,
+        "actual_sha256": "d648658022d9c21a45852f2bf76041b296518736b63d2197d8ccb49709eee8c2",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/look-icons.js",
+        "file": "camera/look-icons.js",
+        "expected_sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+        "status": 200,
+        "bytes": 3602,
+        "actual_sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/look-icons.js?v=20261031audit2",
+        "file": "camera/look-icons.js",
+        "expected_sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+        "status": 200,
+        "bytes": 3602,
+        "actual_sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/looks-gl.js",
+        "file": "camera/looks-gl.js",
+        "expected_sha256": "effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9",
+        "status": 200,
+        "bytes": 93799,
+        "actual_sha256": "effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/looks-gl.js?v=20261031audit2",
+        "file": "camera/looks-gl.js",
+        "expected_sha256": "effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9",
+        "status": 200,
+        "bytes": 93799,
+        "actual_sha256": "effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/memory-retro.css?v=20261029a",
+        "file": "camera/memory-retro.css",
+        "expected_sha256": "5b6a5a0833427689880065cd7b2286df69436d1ea5a7ef97d56cf3e50040d709",
+        "status": 200,
+        "bytes": 3458,
+        "actual_sha256": "5b6a5a0833427689880065cd7b2286df69436d1ea5a7ef97d56cf3e50040d709",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/memory.js?v=20261029q",
+        "file": "camera/memory.js",
+        "expected_sha256": "8bbec8926caa854fc0d3838af63e2e2089dd4f6961368b9171ed1ef593f993ee",
+        "status": 200,
+        "bytes": 12809,
+        "actual_sha256": "8bbec8926caa854fc0d3838af63e2e2089dd4f6961368b9171ed1ef593f993ee",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/playing-cards.js?v=20261029b",
+        "file": "camera/playing-cards.js",
+        "expected_sha256": "ecab46b1d8518ca2f55ab019e6ff85a219f8ebea0363abddc53c95dbfeb056ce",
+        "status": 200,
+        "bytes": 1554,
+        "actual_sha256": "ecab46b1d8518ca2f55ab019e6ff85a219f8ebea0363abddc53c95dbfeb056ce",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/printer.js?v=20261030share1",
+        "file": "camera/printer.js",
+        "expected_sha256": "b593b329d53a4d866cf573474fff9bf2a11783a461fadbf0db2d511f72ba73e0",
+        "status": 200,
+        "bytes": 6467,
+        "actual_sha256": "b593b329d53a4d866cf573474fff9bf2a11783a461fadbf0db2d511f72ba73e0",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/social-share.css?v=20261029a",
+        "file": "camera/social-share.css",
+        "expected_sha256": "f3b797985251d310259772e89b0e3b04a3e64f644799706496dc9f7b5aef4fdc",
+        "status": 200,
+        "bytes": 1232,
+        "actual_sha256": "f3b797985251d310259772e89b0e3b04a3e64f644799706496dc9f7b5aef4fdc",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/social-share.js?v=20261029a",
+        "file": "camera/social-share.js",
+        "expected_sha256": "5f859c2bc993dbc994773e451263c131271213cdb4f1d7ae0b3fb23fd92c35f6",
+        "status": 200,
+        "bytes": 3811,
+        "actual_sha256": "5f859c2bc993dbc994773e451263c131271213cdb4f1d7ae0b3fb23fd92c35f6",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/solitaire.css?v=20261030share1",
+        "file": "camera/solitaire.css",
+        "expected_sha256": "68036d7e14072e48c8c1b0f0ea19f17eeec1eb204f30922f65f4e0818921e6a6",
+        "status": 200,
+        "bytes": 2388,
+        "actual_sha256": "68036d7e14072e48c8c1b0f0ea19f17eeec1eb204f30922f65f4e0818921e6a6",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/solitaire.js?v=20261029c",
+        "file": "camera/solitaire.js",
+        "expected_sha256": "f895aa4be3f7741a53a4f47a80dd431326896cb3b227e64bdbca7b75163f02df",
+        "status": 200,
+        "bytes": 8377,
+        "actual_sha256": "f895aa4be3f7741a53a4f47a80dd431326896cb3b227e64bdbca7b75163f02df",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/stickers.js?v=20261031-contour1",
+        "file": "camera/stickers.js",
+        "expected_sha256": "1db73d5c397fe59f13f1257ea89a503634e5b78b4aa3b5af16362398545c59ea",
+        "status": 200,
+        "bytes": 17085,
+        "actual_sha256": "1db73d5c397fe59f13f1257ea89a503634e5b78b4aa3b5af16362398545c59ea",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/camera/sw.js",
+        "file": "camera/sw.js",
+        "expected_sha256": "88abe5f18f434bcb682ad679c68d1291c6c5d49ecad53320b900e4996d09bfb3",
+        "status": 200,
+        "bytes": 1590,
+        "actual_sha256": "88abe5f18f434bcb682ad679c68d1291c6c5d49ecad53320b900e4996d09bfb3",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/src/render/illustration-modules.js",
+        "file": "johansson-town/src/render/illustration-modules.js",
+        "expected_sha256": "945f0c6c52a16dbe23ddd99741959577fc22a86a53f7ca7fb9b0748a66c5cca6",
+        "status": 200,
+        "bytes": 1806,
+        "actual_sha256": "945f0c6c52a16dbe23ddd99741959577fc22a86a53f7ca7fb9b0748a66c5cca6",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/src/render/looks.js?v=20261029-camera",
+        "file": "johansson-town/src/render/looks.js",
+        "expected_sha256": "78f7a9c2c8f291d23f59fee6b5842dc0ed6c547c5af1867722cd8459d43a615a",
+        "status": 200,
+        "bytes": 29954,
+        "actual_sha256": "78f7a9c2c8f291d23f59fee6b5842dc0ed6c547c5af1867722cd8459d43a615a",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/src/render/print-media-shaders.js",
+        "file": "johansson-town/src/render/print-media-shaders.js",
+        "expected_sha256": "1c681adc3fa818f1f50d8ab2a5412f5d138110d3e41ffc6edfd681f311bd134b",
+        "status": 200,
+        "bytes": 5293,
+        "actual_sha256": "1c681adc3fa818f1f50d8ab2a5412f5d138110d3e41ffc6edfd681f311bd134b",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/tools/camera/policy.mjs",
+        "file": "johansson-town/tools/camera/policy.mjs",
+        "expected_sha256": "a5bb27a534c4801f1c7b63d7a267f499d9f42652f7296b0ce4007f7f8e7af446",
+        "status": 200,
+        "bytes": 6415,
+        "actual_sha256": "a5bb27a534c4801f1c7b63d7a267f499d9f42652f7296b0ce4007f7f8e7af446",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/tools/camera/preview.mjs",
+        "file": "johansson-town/tools/camera/preview.mjs",
+        "expected_sha256": "97121c17b085deee527c2b8bd6daff8059eb3aaf79d30d9bfb8932a659233fd1",
+        "status": 200,
+        "bytes": 3400,
+        "actual_sha256": "97121c17b085deee527c2b8bd6daff8059eb3aaf79d30d9bfb8932a659233fd1",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/tools/camera/server.mjs",
+        "file": "johansson-town/tools/camera/server.mjs",
+        "expected_sha256": "987c13bdb77db614bd2d132540fe6029d6b593088bb971015e06122a6ebea12f",
+        "status": 200,
+        "bytes": 3381,
+        "actual_sha256": "987c13bdb77db614bd2d132540fe6029d6b593088bb971015e06122a6ebea12f",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/tools/camera/session.mjs",
+        "file": "johansson-town/tools/camera/session.mjs",
+        "expected_sha256": "2602e11bfd6fc7799b9169ed8d894e42dd851e809852e3ebc98f65cd3d203e9b",
+        "status": 200,
+        "bytes": 10942,
+        "actual_sha256": "2602e11bfd6fc7799b9169ed8d894e42dd851e809852e3ebc98f65cd3d203e9b",
+        "match": true
+      },
+      {
+        "url": "https://nj22az.github.io/johansson-town/tools/camera/tools.mjs",
+        "file": "johansson-town/tools/camera/tools.mjs",
+        "expected_sha256": "8f61a94b96688aeb17f62aca2ba7432d8ddeba2290bbf5a461f45b8c37805d3b",
+        "status": 200,
+        "bytes": 3922,
+        "actual_sha256": "8f61a94b96688aeb17f62aca2ba7432d8ddeba2290bbf5a461f45b8c37805d3b",
+        "match": true
+      }
+    ]
+  }
+}

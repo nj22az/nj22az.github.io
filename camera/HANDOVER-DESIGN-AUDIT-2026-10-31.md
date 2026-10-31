@@ -1,5 +1,44 @@
 # Pocket Camera design/shader audit — 31 October 2026
 
+## Published on the owner's “Push to main” — 31 October 2026
+
+The owner explicitly instructed **“Push to main”**. [PR #418](https://github.com/nj22az/nj22az.github.io/pull/418) is
+**merged and closed**, squash commit **`bd0507162dfa9d60cd891fd707893a7e22bcb618`**, parent
+`83783c93448d1be251a61c213959448e1d21c971`. Its tree **`e74f9ebf7f01cc20e49e409b133aec201b9a97f8`** is identical
+to final reviewed head **`d56ea1226b58738b7f313ce1c9765c9894684395`**. The merge used an expected-head guard;
+no review comments or threads were outstanding. Existing local changes/media temporary files remain preserved.
+
+The release includes the stable 32-bit photo geometry, 34 original shader symbols and all three layout fixes below.
+Frame keeps 216 px photo height on the phone and 448 px on iPad mini, categories use one scrollable row, and each
+Look/Original can scroll fully into its reserved rail. App/style/renderer/icon and adapter import keys align at
+**`20261031audit2`**. Existing album originals, Save copy, approved imports and explicit save/export/close remain.
+
+Final checks on the exact reviewed head **d56ea122**, all successful:
+
+- Camera **41196615845**: regression **124523951952**, **143/143**; UI **124523952008**, **82/82**; shader audit
+  **124523951770**, **50/50**: **275/275**, retaining all 816 combinations, 408 preview/export pairs and 68 baselines.
+- MCP **41196615769**, job **124523951297**: **15/15 units + 20/20 actual MCP/Camera acceptance**, zero npm findings
+  on fresh installation. Prior exact-runtime screenshots and generated-image export were inspected and retained below.
+- World **41196615766**: guard **124523951382** and automated iPhone WebKit **124523951569** passed.
+- Linux **41196615798**, job **124524246015**: **full console acceptance passed**. This supersedes all pending Linux
+  states below, including the earlier layout-source checkpoint. No new Linux binary release was published.
+
+Pages **41199773205** for the merge **passed**: build **124533102487**, report **124533347677**, deploy **124533347723**.
+**42/42 public HTTPS addresses match the release byte-for-byte**, including the bare Camera entry, actual module/style
+URLs, raw app/renderer/UI/icon files, service worker and adapter modules. [Publication receipt](qa/2026-10-31-layout-fixes/publication.json)
+records SHA-256, exact URLs and deployment/jobs. This proves served bytes, not a physical-device or installed-client test.
+Post-merge World run **41199773766** is independent of the passing PR checks and is not counted as passed at this checkpoint.
+
+**Separate states:** source is implemented, merged and deployed; the official SDK acceptance client connects and
+completes the generated-image cycle. The owner's installed MCP host and this chat remain unconnected. Physical
+iPhone 17/iPad mini Safari/camera/native Share remain untested; AR remains a proposal with no new model/architecture.
+The temporary session album, preview-pixel disclosure and export-before-close boundary remain in force.
+
+The publication follow-up changes only handovers and the verification receipt, preserving the tested runtime. Keep
+the older review notes below as history; their “draft/not published” labels describe the earlier checkpoints.
+**Next:** inspect post-merge checks, test on the owner's physical devices and complete local MCP-host setup from
+[MCP.md](MCP.md); assess AR exports only under a separately agreed scope.
+
 Owner: “Why does 32 bit produce a warped image? … audit … as a Nintendo designer … UI and the icons … shaders … screenshots.”
 
 ## Owner-authorised layout fixes — 31 October 2026
