@@ -1,5 +1,7 @@
 # Pocket Camera MCP — 31 October 2026
 
+A subsequent [design/shader audit](HANDOVER-DESIGN-AUDIT-2026-10-31.md) is on review branch `codex/pocket-camera-design-audit`, not main. Its app/renderer/style and adapter import keys use `20261031audit1`; published main remains `20261031ui1`. Local policy checks pass; hosted acceptance for the new review is pending. Privacy and local stdio boundaries are retained.
+
 The subsequent [Camera UI release](HANDOVER-UI-REVIEW-2026-10-31.md) is **published via PR #417**, main
 **`51f071309f6b9e1dbd6977595004c6c60602a0ee`**, identical to tested `dd5997a775736f5990044ea9b2a210fc47a68211`.
 App/main-style/renderer URL keys and the adapter import align at **`20261031ui1`**; renderer source and local stdio

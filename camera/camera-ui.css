@@ -1,5 +1,5 @@
 /* Approved 31 October UI: real Camera controls, with the existing renderer and albums. */
-:root{--bg:#0d0e10;--surface:#1c1e21;--surface-2:#292c30;--separator:#383b40;--label:#faf9f6;--label-2:#c5c7cc;--label-3:#b7babf;--camera-rail:max(48px,3rem)}
+:root{--bg:#0d0e10;--surface:#1c1e21;--surface-2:#292c30;--separator:#383b40;--label:#faf9f6;--label-2:#c5c7cc;--label-3:#b7babf;--camera-rail:max(56px,3.5rem)}
 .app{height:100dvh;bottom:auto;background:var(--bg)}
 .camera,.editor,.album,.viewer{font-size:1rem;line-height:1.4}
 .camera button,.editor button,.album button,.viewer button{min-height:44px;min-width:44px}

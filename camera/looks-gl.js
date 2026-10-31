@@ -839,30 +839,13 @@ float psDither(vec2 cell){
  float r3=m.x<.5?3.0:m.x<1.5?-1.0:m.x<2.5?2.0:-2.0;
  return m.y<.5?r0:m.y<1.5?r1:m.y<2.5?r2:r3;
 }
-// The photo as the console drew a textured surface: a mesh of triangles whose corners wobble (its vertices were
-// snapped to whole screen pixels and computed in fixed point, so they never sat quite where they belonged), the
-// texture laid across each triangle without perspective correction. Straight lines in the photo kink where the
-// triangles meet, and the photographer's framing is kept.
-vec2 psCorner(vec2 g){
- vec2 j=(vec2(hash(g+3.7),hash(g+9.1))-.5)*vec2(.05,.06);
- if(g.x<.5||g.x>5.5)j.x=0.0;if(g.y<.5||g.y>3.5)j.y=0.0;
- return floor((g/vec2(6.0,4.0)+j)*vec2(320.0,240.0)+.5)/vec2(320.0,240.0);
-}
+// A photo has no 3D surface: retain its geometry. The earlier wobbled triangle mesh bent faces and straight
+// lines; the console character comes from coarse texels, five-bit colour and its ordered dither instead.
 void main(){
- vec2 screen=vec2(320.0,240.0);
+ vec2 screen=vec2(max(1.0,floor(240.0*uResolution.x/uResolution.y)),240.0);
  vec2 cell=floor(vUv*screen),s=(cell+.5)/screen;
- // The mesh cell this pixel falls in, and the triangle of it, taken from the undisturbed grid; the texture coordinates
- // are the grid's, the corners the wobbling ones.
- vec2 g=s*vec2(6.0,4.0),i=floor(g),f=fract(g);
- vec2 a=i,b=i+vec2(1.0,0.0),c=i+vec2(0.0,1.0);
- if(f.x+f.y>1.0){a=i+vec2(1.0,1.0);b=i+vec2(0.0,1.0);c=i+vec2(1.0,0.0);}
- vec2 pa=psCorner(a),pb=psCorner(b),pc=psCorner(c);
- vec2 v0=pb-pa,v1=pc-pa,v2=s-pa;
- float den=v0.x*v1.y-v1.x*v0.y;
- float wb=(v2.x*v1.y-v1.x*v2.y)/den,wc=(v0.x*v2.y-v2.x*v0.y)/den;
- vec2 uv=clamp((a+(b-a)*wb+(c-a)*wc)/vec2(6.0,4.0),0.0,1.0);
- // Textures smaller than the screen and never filtered: texels of two by two pixels.
- vec2 tex=vec2(160.0,120.0),tc=(floor(uv*tex)+.5)/tex;
+ // Keep texels square for portrait, landscape and cropped photographs alike.
+ vec2 tex=max(vec2(1.0),floor(screen*.5)),tc=(floor(s*tex)+.5)/tex;
  vec3 col=cellColour(tc,1.0/tex);
  col=clamp(mix(vec3(luma(col)),col,1.15),0.0,1.0);
  // 15-bit colour: the graphics chip's four by four dither added, then five bits a channel.
