@@ -41,18 +41,30 @@ const settleLoads=async()=>{
 const exitThroughDoor=async()=>{
  await settleLoads();
  const approach=await page.evaluate(()=>{
-  const a=window.__JOHANSSON_AUDIT__,nav=a.roomNavigation;if(!nav)throw Error('No current room to exit');
+  const a=window.__JOHANSSON_AUDIT__,nav=a.roomNavigation;
+  const diagnostic={navigation:nav,player:a.player,layout:{bounds:a.layout?.bounds,spawn:a.layout?.spawn,exit:a.layout?.exit},candidates:[]};
+  if(!nav)return {...diagnostic,error:'No current room to exit'};
   const exit=nav.exit,spawn=nav.spawn,dx=spawn[0]-exit[0],dz=spawn[2]-exit[2],length=Math.hypot(dx,dz);
-  if(!length)throw Error('No authored inward doorway direction for '+nav.id);
+  if(!length)return {...diagnostic,error:'No authored inward doorway direction for '+nav.id};
   const candidates=[spawn,...[.65,.85,1.05,1.2].flatMap(d=>[0,-.2,.2].map(side=>[
    exit[0]+dx/length*d-dz/length*side,spawn[1],exit[2]+dz/length*d+dx/length*side]))];
-  const at=candidates.find(p=>{
-   const n=a.navigation(p[0],p[2]);return Math.hypot(p[0]-exit[0],p[2]-exit[2])<1.3&&!n.staticBlocked&&!n.residentBlocked&&(!a.layout.exitSiteAt||a.layout.exitSiteAt(p[0],p[2])===nav.id);
+  diagnostic.candidates=candidates.map(standing=>{
+   const probe=a.navigation(standing[0],standing[2]),distance=Math.hypot(standing[0]-exit[0],standing[2]-exit[2]);
+   const exitSite=a.layout.exitSiteAt?.(standing[0],standing[2])??null;
+   return {standing,distance,probe,exitSite,clear:distance<1.3&&!probe.staticBlocked&&!probe.residentBlocked&&(!a.layout.exitSiteAt||exitSite===nav.id)};
   });
-  if(!at)throw Error('No clear standing point inside the authored '+nav.id+' exit');
+  const blockers=new Set(diagnostic.candidates.flatMap(c=>c.probe.residents));
+  diagnostic.blockingResidents=[...a.world.people.map(p=>p.g),...(a.world.neighbours||[])]
+   .filter(g=>blockers.has(g.userData.name||g.name)).map(g=>({name:g.userData.name||g.name,
+    position:g.position.toArray(),worldPosition:g.getWorldPosition(g.position.clone()).toArray(),parent:g.parent?.name,
+    visible:g.visible,inIzakaya:g.userData.inIzakaya??false,inRamen:g.userData.inRamen??false,
+    indoors:g.userData.indoors??null,activity:g.userData.activity??null,roomTransition:g.userData.roomTransition??null}));
+  const at=diagnostic.candidates.find(p=>p.clear)?.standing;
+  if(!at)return {...diagnostic,error:'No clear standing point inside the authored '+nav.id+' exit'};
   a.camera=null;a.stand(...at,Math.atan2(at[0]-exit[0],at[2]-exit[2]));a.hud.photo(false);a.hud.wake();a.step(0);
-  return {room:nav.id,exit,standing:at,probe:a.navigation(at[0],at[2])};
+  return {...diagnostic,room:nav.id,exit,standing:at,probe:a.navigation(at[0],at[2])};
  });
+ if(approach.error){report.exitApproachFailure=approach;step('authored dining exit approach failed',approach);assert.fail(approach.error);}
  step('approach authored dining exit',approach);
  // The actual context control is offered only near a door. Do not force a hidden/disabled control.
  await page.waitForFunction(()=>{const b=document.querySelector('#exitRoomButton');return b&&!b.hidden&&!b.disabled&&b.getClientRects().length>0&&!document.querySelector('#contextActions').hidden;},null,{timeout:30000});
