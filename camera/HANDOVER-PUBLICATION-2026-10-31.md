@@ -1,5 +1,13 @@
 # Pocket Camera publication — 31 October 2026
 
+## MCP continuation — separate review, not published
+
+The owner's subsequent request, “Mcp wire the Johansson camera web app”, is implemented in
+[draft PR #416](https://github.com/nj22az/nj22az.github.io/pull/416), branch `codex/pocket-camera-mcp`.
+Read [the MCP handover](HANDOVER-MCP-2026-10-31.md) and [connection instructions](MCP.md) for the local stdio adapter,
+its eleven tools and **9/9 unit + 16/16 real MCP/Camera acceptance checks**. It does not replace or alter the published
+Camera runtime described below. The temporary MCP album is not the user's iPhone or personal-browser album.
+
 ## Published on the owner's instruction
 
 The owner explicitly instructed **“Push to main”**, superseding the earlier review-only hold.
