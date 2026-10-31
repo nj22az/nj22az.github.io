@@ -120,7 +120,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    assert.ok(await page.locator('#cameraFrames .frame-choice').count()>=10,'the drawn and the pixel frames are offered');
    await page.click('#cameraFrames .frame-choice[data-frame="print"]');await page.waitForFunction(()=>!document.querySelector('#frameSheet').open);
    assert.equal(await app(()=>window.pocketCamera.state.camera.recipe.frame),'print');
-   assert.equal(await page.locator('#settingsStatus svg').count(),2,'the frame and the date show beside the chevron');
+   assert.equal(await page.locator('#settingsStatus svg').count(),2,'the frame and date remain in the accessible settings state');
    await page.waitForTimeout(600);await shot('3-mix');
    assert.equal(await page.isHidden('#settings'),true,'the frame sheet put the settings row away: one panel at a time');
   });
@@ -433,10 +433,10 @@ async function playAndPrint({label,width,height}){
     throw new Error(`Portrait camera fixture did not become compact: ${JSON.stringify(actual)}`,{cause:error});
    });
    const look=()=>page.evaluate(()=>{const f=document.querySelector('#cameraFrame').getBoundingClientRect(),t=document.querySelector('#tray').getBoundingClientRect();
-    return {frame:Math.round(f.width),screen:innerWidth,strip:getComputedStyle(document.querySelector('#strip')).display,open:document.querySelector('#camera').classList.contains('looks-open'),trayOver:t.top>=f.top&&t.top<f.bottom-30&&t.bottom<=f.bottom+4};});
+    return {frame:Math.round(f.width),screen:document.querySelector('#cameraPictureArea').clientWidth,fill:Math.max(f.width/document.querySelector('#cameraPictureArea').clientWidth,f.height/document.querySelector('#cameraPictureArea').clientHeight),strip:getComputedStyle(document.querySelector('#strip')).display,open:document.querySelector('#camera').classList.contains('looks-open'),trayOutside:t.top>=f.bottom-1||t.left>=f.right-1||t.right<=f.left+1};});
    let v=await look();
-   assert.ok(v.frame>=v.screen-2,`the picture is the screen's width (${v.frame} of ${v.screen} px)`);
-   assert.equal(v.strip,'none','the strip is folded');assert.ok(v.trayOver,'the Look row is on the picture');
+   assert.ok(v.fill>.98,`the picture fills its area beside the shader rail (${v.frame} of ${v.screen} px)`);
+   assert.equal(v.strip,'none','the strip is folded');assert.ok(v.trayOutside,'the Look row stays outside the picture');
    await page.locator('#layers .layer.active .layer-pick').tap();
    v=await look();assert.ok(v.open&&v.strip!=='none','the Look name unfolds the strip');
    await page.locator('#lookGroups button[data-group="photo"]').tap();await page.locator('#strip .tile[data-look="sepia"]').tap();

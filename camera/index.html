@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261031rc2">
+<link rel="stylesheet" href="camera.css?v=20261031ui1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -28,10 +28,12 @@
 <link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
+<link rel="stylesheet" href="camera-ui.css?v=20261031ui1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
  <defs>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 4.5 7.5 12l7.5 7.5"/></symbol>
   <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M18.6 6.4l1.4-1.4"/></symbol>
   <symbol id="i-ratio" viewBox="0 0 24 24"><rect x="4" y="6.5" width="16" height="11" rx="2.6"/></symbol>
@@ -68,39 +70,43 @@
  </defs>
 </svg>
 
-<div class="app" id="app">
+<div class="app" id="app" data-mode="camera">
  <!-- Camera -->
  <section class="screen camera" id="camera" aria-label="Camera">
-  <header class="bar">
-   <div class="camera-home"><a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a><span class="camera-mark">POCKET CAMERA</span></div>
-   <!-- As on an iPhone: the settings hide behind a chevron; what is switched on shows beside it, in yellow. -->
-   <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus"></span><svg><use href="#i-chevron"/></svg></button>
-   <button type="button" class="photos-button" id="import" aria-label="Your photos: choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
+  <header class="bar camera-bar">
+   <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
+   <h1 class="camera-mark">Pocket Camera</h1>
+   <div class="camera-header-actions">
+    <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus" aria-hidden="true"></span><svg><use href="#i-settings"/></svg></button>
+    <button type="button" class="photos-button" id="import" aria-label="Choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
+   </div>
   </header>
   <div class="stage" id="cameraStage">
    <div class="settings" id="settings" role="group" aria-label="Camera settings" hidden>
-    <button type="button" class="setting" id="timer"><i><svg><use href="#i-timer"/></svg></i><span>Timer</span></button>
-    <button type="button" class="setting" id="ratio"><i><svg><use href="#i-ratio"/></svg></i><span>4:3</span></button>
-    <button type="button" class="setting" id="frameSetting"><i><svg><use href="#i-frame"/></svg></i><span>Frame</span></button>
-    <button type="button" class="setting" id="mirrorSetting"><i><svg><use href="#i-mirror"/></svg></i><span>Mirror</span></button>
-    <button type="button" class="setting" id="stamp"><i><svg><use href="#i-date"/></svg></i><span>Date</span></button>
-    <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><span>Print</span></button>
-    <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><span>Sound</span></button>
+    <div class="settings-heading"><h2>Camera settings</h2><button type="button" class="text-button" id="settingsDone">Done</button></div>
+    <button type="button" class="setting" id="timer"><i><svg><use href="#i-timer"/></svg></i><small class="setting-title">Timer</small><span>Timer</span></button>
+    <button type="button" class="setting" id="ratio"><i><svg><use href="#i-ratio"/></svg></i><small class="setting-title">Photo shape</small><span>4:3</span></button>
+    <button type="button" class="setting" id="frameSetting"><i><svg><use href="#i-frame"/></svg></i><small class="setting-title">Frame & paper</small><span>Frame</span></button>
+    <button type="button" class="setting" id="mirrorSetting"><i><svg><use href="#i-mirror"/></svg></i><small class="setting-title">Mirror</small><span>Mirror</span></button>
+    <button type="button" class="setting" id="stamp"><i><svg><use href="#i-date"/></svg></i><small class="setting-title">Date stamp</small><span>Date</span></button>
+    <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><small class="setting-title">Print when sharing</small><span>Print</span></button>
+    <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
    </div>
-   <div class="frame" id="cameraFrame">
+   <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
     <button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button>
     <button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button>
     <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
    </div>
+   </div><aside class="look-rail" id="cameraLookRail" aria-label="Active Looks"></aside></div>
    <div class="welcome" id="welcome" hidden>
-    <img class="welcome-sticker" id="welcomeSticker" alt="" hidden>
-    <h1>Pocket Camera</h1>
-    <p>Every Look from Johansson World, on your camera and your own photos.</p>
+    <div class="welcome-hero" aria-hidden="true"><img class="welcome-print" src="samples/default-adventure.png" alt="" decoding="async"><img class="welcome-sticker" id="welcomeSticker" alt="" hidden></div>
+    <div class="welcome-copy"><h2>Make it yours.</h2><p>Take a photo. Try a Look.</p></div>
     <div class="welcome-actions">
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
-     <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Your photos</button>
+     <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Choose a photo</button>
     </div>
-    <p class="fine" id="welcomeNote">Photos stay on this device. Nothing is uploaded.</p>
+    <p class="fine" id="welcomeNote">Photos stay on this device.</p>
+    <button type="button" class="welcome-album" id="welcomeAlbum"><img id="welcomeAlbumThumb" alt="" hidden><span><strong>Your album</strong><small id="welcomeAlbumCount">Saved photos, all in one place</small></span><svg><use href="#i-back"/></svg></button>
    </div>
    <div class="count" id="count" aria-live="assertive"></div>
   </div>
@@ -117,12 +123,12 @@
  <section class="screen editor" id="editor" aria-label="Edit photo" hidden>
   <header class="bar">
    <button type="button" class="text-button" id="cancelEdit">Cancel</button>
-   <span></span>
-   <button type="button" class="pill-button" id="saveEdit">Save</button>
+   <h2>Edit photo</h2>
+   <button type="button" class="pill-button" id="saveEdit">Save copy</button>
   </header>
   <div class="stage" id="editStage">
-   <div class="frame" id="editFrame"></div>
-   <div class="badge-original" id="original" hidden>ORIGINAL</div>
+   <div class="picture-area" id="editPictureArea"><div class="frame" id="editFrame"></div></div>
+   <aside class="look-rail editor-rail" aria-label="Photo Looks and comparison"><div id="editLookRail"></div><button type="button" class="compare-original" id="compareOriginal" aria-label="Compare original" aria-pressed="false"><svg><use href="#i-photo"/></svg><span>Original</span></button><span class="rail-original" id="original" hidden>Original</span></aside>
   </div>
   <div class="dock" id="editDock">
    <div class="segmented" role="tablist" aria-label="Edit">
@@ -144,17 +150,17 @@
     </div>
    </div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
-    <div class="option-row enhance-heading"><span id="enhanceLabel">Enhance photo</span><button type="button" class="switch" id="enhancePhoto" role="switch" aria-checked="false" aria-labelledby="enhanceLabel" aria-describedby="enhanceHint"></button></div>
-    <div class="slider-row enhance-strength">
+    <div class="option-row enhance-heading"><span id="enhanceLabel">Enhance photo<small id="enhanceHint">Tone, colour and detail.</small></span><button type="button" class="text-button enhance-amount" id="enhanceAmount" aria-label="Enhance strength" aria-expanded="false" aria-controls="enhanceStrengthRow"><output id="enhanceValue" for="enhanceStrength">Off</output></button><button type="button" class="switch" id="enhancePhoto" role="switch" aria-checked="false" aria-labelledby="enhanceLabel" aria-describedby="enhanceHint"></button></div>
+    <div class="slider-row enhance-strength" id="enhanceStrengthRow" hidden>
      <label for="enhanceStrength">Strength</label>
      <input type="range" id="enhanceStrength" min="0" max="100" step="1" value="0">
-     <output id="enhanceValue" for="enhanceStrength">Off</output>
     </div>
-    <p class="enhance-hint" id="enhanceHint">Tone, colour and detail. Hold photo to see the original.</p>
     <div class="adjusters" id="adjusters" role="radiogroup" aria-label="Adjustment"></div>
-    <div class="slider-row">
+    <div class="slider-row adjustment-strength" id="adjustmentSliderRow">
+     <label id="adjustLabel" for="adjustSlider">Light</label>
      <input type="range" id="adjustSlider" min="-100" max="100" step="1" value="0" aria-label="Light">
      <output id="adjustValue">0</output>
+     <button type="button" class="text-button" id="adjustReset">Reset</button>
     </div>
    </div>
    <!-- Erase: paint over what should go; it is filled from the picture round it (PhotoCraft's Content-Aware Fill). -->
@@ -180,14 +186,14 @@
  <section class="screen album" id="album" aria-label="Album" hidden>
   <header class="bar">
    <button type="button" class="back" id="closeAlbum"><svg><use href="#i-back"/></svg><span>Camera</span></button>
-   <h2>Album</h2>
+   <h2>Your album</h2>
    <div class="bar-actions">
     <button type="button" class="round" id="playMemory" aria-label="Play Memory with your photos or the stickers" title="Memory"><svg><use href="#i-game"/></svg></button>
     <button type="button" class="photos-button" id="albumImport" aria-label="Add your own photos"><svg><use href="#i-plus"/></svg><span>Add</span></button>
    </div>
   </header>
   <div class="album-scroll">
-   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
+
    <div class="grid" id="grid"></div>
    <div class="album-empty" id="albumEmpty" hidden>
     <img class="empty-sticker" id="emptySticker" alt="" hidden>
@@ -198,6 +204,7 @@
     </div>
    </div>
    <p class="fine album-note" id="albumNote"></p>
+   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
   </div>
  </section>
 
@@ -297,6 +304,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261031rc2"></script>
+<script type="module" src="app.js?v=20261031ui1"></script>
 </body>
 </html>

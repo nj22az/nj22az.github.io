@@ -3,9 +3,9 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031rc2';
+import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031ui1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
-import {listShots,getShot,addShot,updateShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
+import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
@@ -88,7 +88,9 @@ canvas.addEventListener('webglcontextrestored',()=>{
 // ---------- Small helpers ----------
 let toastTimer;
 function toast(text,{look=false,ms=1400}={}){
- const t=$('toast');t.textContent=text;t.classList.toggle('look',look);t.classList.add('show');
+ const t=$('toast'),screen=$(state.mode),host=state.mode==='editor'?$('editDock'):state.mode==='camera'?$('cameraDock'):screen;
+ if(host&&t.parentElement!==host)host.prepend(t);
+ t.textContent=text;t.classList.toggle('look',look);t.classList.add('show');
  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),ms);
 }
 const lookLabel=name=>LOOKS[name]?.short||name;
@@ -225,10 +227,30 @@ function stampOverlay(frame,on,date,frameId='none'){
 // ---------- The Look tray ----------
 const tray=$('tray'),strip=$('strip'),layersEl=$('layers');
 const tiles=new Map();
+const GROUP_GLYPHS={
+ photo:'M4 6h4l2-2h4l2 2h4v14H4z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
+ games:'M6 6h12l4 12-3 2-4-4H9l-4 4-3-2z M7 9v5M4.5 11.5h5M16 10h.01M18 13h.01',
+ '80s':'M3 7h18v14H3z M7 2l5 5 5-5M7 11h7v6H7zM18 11h.01M18 16h.01',
+ drawn:'m4 17 12-13 4 4L8 21H3z M13 7l4 4',
+ painted:'m14 3 7 3-10 11-4-3z M7 15c-5-2-6 3-4 6 4 1 8-1 7-5',
+ print:'M7 7V3h10v4M6 17H3V8h18v9h-3M7 14h10v7H7z',
+ riso:'M14 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0 M20 15a5 5 0 1 1-10 0 5 5 0 0 1 10 0 M12 15a5 5 0 1 1-10 0 5 5 0 0 1 10 0',
+ more:'M5 12h.01M12 12h.01M19 12h.01',
+};
+function groupIcon(id){return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="${GROUP_GLYPHS[id]||GROUP_GLYPHS.more}"/></svg>`;}
+function renderLookRail(ctx){
+ const box=$(state.mode==='editor'?'editLookRail':'cameraLookRail');box.textContent='';
+ ctx.recipe.layers.forEach((layer,i)=>{
+  const b=document.createElement('button');b.type='button';b.className='rail-look swatch';b.setAttribute('aria-label',`Look ${i+1}: ${LOOKS[layer.look].label}`);b.setAttribute('aria-pressed',String(i===ctx.active));b.title=LOOKS[layer.look].label;
+  b.innerHTML=lookSwatch(LOOK_STANDIN[layer.look]||layer.look,`rail-${state.mode}-${i}-${layer.look}`);
+  const label=document.createElement('span');label.textContent=lookLabel(layer.look);b.append(label);
+  b.addEventListener('click',()=>{ctx.active=i;if(state.mode==='editor')selectTab('looks');else showLooks(true);trayChanged({thumbs:true});});box.append(b);
+ });
+}
 function buildGroups(){
  const row=$('lookGroups');row.textContent='';
  for(const g of LOOK_GROUPS){
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.textContent=g.label;
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${groupIcon(g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
   b.setAttribute('aria-label',`${g.label}: ${g.looks.map(n=>LOOKS[n].label).join(', ')}`);
   b.addEventListener('click',()=>{sound('tick');shownGroup=g.id;renderStripSelection();refreshThumbs(true);});
   row.append(b);
@@ -248,12 +270,12 @@ function buildStrip(){
  }
 }
 function renderLayers(){
- const ctx=current(),{layers}=ctx.recipe;layersEl.textContent='';
+ const ctx=current(),{layers}=ctx.recipe;layersEl.textContent='';renderLookRail(ctx);
  // The Looks of one mix sit together in one capsule, as the segments of one control: the chosen one is lit.
  const mix=document.createElement('span');mix.className='mix';layersEl.append(mix);
  layers.forEach((layer,i)=>{
   const wrap=document.createElement('span');wrap.className=`layer${i===ctx.active?' active':''}${layers.length>1?' removable':''}`;
-  const pick=document.createElement('button');pick.type='button';pick.className='layer-pick';pick.textContent=lookLabel(layer.look);
+  const pick=document.createElement('button');pick.type='button';pick.className='layer-pick swatch';pick.innerHTML=`${lookSwatch(LOOK_STANDIN[layer.look]||layer.look,`mix-${i}-${layer.look}`)}<span class="layer-name">${lookLabel(layer.look)}</span>`;
   pick.setAttribute('aria-pressed',String(i===ctx.active));pick.setAttribute('aria-label',`Look ${i+1}: ${LOOKS[layer.look].label}${layer.amount<1?`, ${Math.round(layer.amount*100)}%`:''}`);
   // On a short screen the Look's name unfolds the strip first; tapped again, its intensity.
   pick.addEventListener('click',()=>{
@@ -435,7 +457,7 @@ function drawCamera(t){
  if(videoFresh||v.currentTime!==uploadedAt){engine.setSource('live',v,v.videoWidth,v.videoHeight);videoFresh=false;uploadedAt=v.currentTime;}
  const crop=cameraCrop(),pw=crop.w*v.videoWidth,ph=crop.h*v.videoHeight;
  compactCamera(pw/ph);
- const box=fitFrame($('cameraFrame'),$('cameraStage'),pw/ph);
+ const box=fitFrame($('cameraFrame'),$('cameraPictureArea'),pw/ph);
  // The viewfinder is drawn at the screen's own detail, no finer than the camera and no finer than the device keeps up with.
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(ph,box.height*dpr,lines);
  setCanvasSize(h*pw/ph,h);
@@ -455,7 +477,7 @@ function govern(t){
 function drawEditor(){
  const e=state.edit;
  const crop=e.recipe.crop,pw=crop.w*e.width,ph=crop.h*e.height,aspect=pw/ph;
- const box=fitFrame($('editFrame'),$('editStage'),aspect);
+ const box=fitFrame($('editFrame'),$('editPictureArea'),aspect);
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(ph,box.height*dpr,2048/Math.max(1,aspect),2048);
  setCanvasSize(h*aspect,h);
  // While erasing, the photo as it is under the Looks: no mirror trick, and no frame or date over its edges.
@@ -508,7 +530,7 @@ function setShutter(kind){
 function showWelcome(note){
  $('welcome').hidden=false;$('zoom').hidden=true;$('camera').classList.remove('compact','looks-open');$('camera').classList.add('idle');setShutter(canStart()?'start':'off');
  if(note)$('welcomeNote').textContent=note;
- fitFrame($('cameraFrame'),$('cameraStage'),3/4);
+ fitFrame($('cameraFrame'),$('cameraPictureArea'),3/4);
 }
 $('startCamera').addEventListener('click',startCamera);
 $('flip').addEventListener('click',()=>{
@@ -523,13 +545,13 @@ function setting(id,{label,on,icon,aria}){
 }
 function renderCameraChips(){
  const c=state.camera,r=c.recipe,frame=FRAMES.find(f=>f.id===r.frame);
- setting('timer',{label:c.timer?`${c.timer}s`:'Timer',on:c.timer>0,aria:`Self-timer: ${c.timer?`${c.timer} seconds`:'off'}`});
+ setting('timer',{label:c.timer?`${c.timer}s`:'Off',on:c.timer>0,aria:`Self-timer: ${c.timer?`${c.timer} seconds`:'off'}`});
  setting('ratio',{label:c.ratio,aria:`Picture shape: ${c.ratio}`});
- setting('frameSetting',{label:r.frame==='none'?'Frame':frame.label,on:r.frame!=='none'||r.paper!=='none',aria:`Frame: ${frame.label}; paper: ${PAPERS.find(p=>p.id===r.paper).label}`});
- setting('mirrorSetting',{label:r.trick==='none'?'Mirror':TRICK_LABELS[r.trick],on:r.trick!=='none',aria:`Mirror lens: ${TRICK_LABELS[r.trick]}`});
- setting('stamp',{label:'Date',on:r.stamp,aria:`Date stamp: ${r.stamp?'on':'off'}`});
- setting('printSetting',{label:'Print',on:state.printer,aria:`Printer when sharing: ${state.printer?'on':'off'}`});
- setting('soundSetting',{label:state.sound?'Sound':'Muted',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
+ setting('frameSetting',{label:frame.label,on:r.frame!=='none'||r.paper!=='none',aria:`Frame: ${frame.label}; paper: ${PAPERS.find(p=>p.id===r.paper).label}`});
+ setting('mirrorSetting',{label:TRICK_LABELS[r.trick],on:r.trick!=='none',aria:`Mirror lens: ${TRICK_LABELS[r.trick]}`});
+ setting('stamp',{label:r.stamp?'On':'Off',on:r.stamp,aria:`Date stamp: ${r.stamp?'on':'off'}`});
+ setting('printSetting',{label:state.printer?'On':'Off',on:state.printer,aria:`Printer when sharing: ${state.printer?'on':'off'}`});
+ setting('soundSetting',{label:state.sound?'On':'Off',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
  // What is switched on, beside the chevron, so it is never a surprise in the photo.
  const status=[c.timer&&'timer',(r.frame!=='none'||r.paper!=='none')&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
  $('settingsStatus').innerHTML=status.map(icon).join('');
@@ -548,6 +570,7 @@ function showSettings(open){
  $('settings').hidden=!open;$('settingsToggle').setAttribute('aria-expanded',String(open));$('settingsToggle').classList.toggle('open',open);
 }
 $('settingsToggle').addEventListener('click',()=>{sound('tick');showSettings($('settings').hidden);});
+$('settingsDone').addEventListener('click',()=>{showSettings(false);$('settingsToggle').focus();});
 const cycle=(list,value)=>list[(list.indexOf(value)+1)%list.length];
 // The row shows each value as it changes, so a change needs no message of its own.
 function changeSetting(fn){fn();sound('tick');renderCameraChips();remember();invalidate();}
@@ -747,6 +770,8 @@ function renderRoll(pop=false){
  const img=$('roll').querySelector('img'),latest=state.shots[0];
  if(rollURL)URL.revokeObjectURL(rollURL);rollURL=null;
  if(latest){rollURL=URL.createObjectURL(latest.thumb||latest.photo);img.src=rollURL;img.hidden=false;}else img.hidden=true;
+ const welcomeThumb=$('welcomeAlbumThumb');welcomeThumb.hidden=img.hidden;if(!img.hidden)welcomeThumb.src=img.src;else welcomeThumb.removeAttribute('src');
+ $('welcomeAlbumCount').textContent=state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · on this device`:'Saved photos, all in one place';
  $('roll').setAttribute('aria-label',`Album, ${state.shots.length} ${state.shots.length===1?'photo':'photos'}`);
  if(pop){const r=$('roll');r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');}
 }
@@ -758,7 +783,9 @@ function renderGrid(){
   const b=document.createElement('button');b.type='button';b.dataset.id=shot.id;
   const url=URL.createObjectURL(shot.thumb||shot.photo);gridURLs.push(url);
   b.setAttribute('aria-label',shot.sampleLabel||`Photo, ${mixLabel(normalRecipe(shot.recipe))}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
-  b.innerHTML=`<img src="${url}" alt="" loading="lazy" decoding="async">`;grid.append(b);
+  b.innerHTML=`<img src="${url}" alt="" loading="lazy" decoding="async">`;
+  const label=document.createElement('strong');label.textContent=shot.sampleLabel||mixLabel(normalRecipe(shot.recipe));b.append(label);
+  const detail=document.createElement('small');detail.textContent=shot.sampleLabel?'Sample photo':new Date(shot.taken||shot.created).toLocaleDateString();b.append(detail);grid.append(b);
  }
  $('albumEmpty').hidden=state.shots.length>0;
  $('albumNote').textContent=albumOK?(state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · kept in this browser on this device`:''):'This browser does not keep an album here; photos are offered as files instead.';
@@ -766,7 +793,7 @@ function renderGrid(){
 $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)openViewer(b.dataset.id);});
 
 function show(mode){
- state.mode=mode;
+ state.mode=mode;$('app').dataset.mode=mode;
  for(const id of ['camera','editor','album','viewer','memory','cardsHub','cardGame'])$(id).hidden=id!==mode;
  if(mode==='camera'){$('cameraDock').prepend(tray);placeCanvas($('cameraFrame'));}
  if(mode==='editor'){$('panelLooks').append(tray);placeCanvas($('editFrame'));$('panelStickers').append($('stickerPicker'));}
@@ -787,6 +814,7 @@ async function maybeStartCamera(){
  if(granted||store.read().cameraAllowed&&!coarse)startCamera();else showWelcome();
 }
 $('roll').addEventListener('click',openAlbum);
+$('welcomeAlbum').addEventListener('click',openAlbum);
 function openAlbum(){show('album');renderGrid();}
 $('closeAlbum').addEventListener('click',()=>show('camera'));
 
@@ -944,7 +972,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
  engine.setSource('edit',picture,width,height);
  eraser.reset();$('eraseUndo').disabled=true;
- show('editor');selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
+ show('editor');showEnhanceStrength(false);$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
@@ -1004,23 +1032,28 @@ $('saveEdit').addEventListener('click',async()=>{
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const output=photoSize(recipe.crop.w*e.width,recipe.crop.h*e.height);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',crop:recipe.crop,...output}),recipe,e.taken);
-  let shot;
-  if(e.shotId&&albumOK){shot=await updateShot(e.shotId,{photo,thumb,recipe,...output,...(e.erased?{source:e.sourceBlob}:{})});albumRevision++;state.shots=state.shots.map(s=>s.id===shot.id?shot:s);renderRoll();}
-  else shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime()});
+  const shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
   if(shot)toast('Saved to the app album');
  }catch(err){console.error(err);toast('The photo could not be saved to the app album');}
- finally{e.saving=false;button.disabled=false;$('cancelEdit').disabled=false;button.textContent='Save';}
+ finally{e.saving=false;button.disabled=false;$('cancelEdit').disabled=false;button.textContent='Save copy';}
 });
+// Comparison state is shared by the labelled side button and the existing hold gesture.
+function comparePhoto(on,pinned=false){
+ const e=state.edit;if(!e)return;e.comparing=on;e.comparePinned=pinned;
+ $('compareOriginal').setAttribute('aria-pressed',String(on));$('original').hidden=!on;
+ editStickers.hidden=on||e.erasing||e.cropping;invalidate();
+}
+$('compareOriginal').addEventListener('click',()=>{const on=!state.edit?.comparePinned;comparePhoto(on,on);});
 // Hold the picture to see the original.
 {
  const stage=$('editStage');let holding=null,at=null;
- const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing){state.edit.comparing=false;$('original').hidden=true;editStickers.hidden=false;invalidate();}};
+ const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing&&!state.edit.comparePinned)comparePhoto(false);};
  stage.addEventListener('pointerdown',e=>{
   if(!state.edit||e.target.closest('button')||state.edit.erasing||state.edit.cropping)return;
   at={x:e.clientX,y:e.clientY};
-  holding=setTimeout(()=>{if(!state.edit)return;state.edit.comparing=true;$('original').hidden=false;editStickers.hidden=true;invalidate();},140);
+  holding=setTimeout(()=>{if(!state.edit)return;comparePhoto(true);},140);
  });
  // A swipe is not a hold.
  stage.addEventListener('pointermove',e=>{if(holding&&at&&Math.hypot(e.clientX-at.x,e.clientY-at.y)>10){clearTimeout(holding);holding=null;}});
@@ -1034,7 +1067,7 @@ function selectTab(tab){
  // Erasing paints on the photo itself: the stickers step aside (they are not erased) and come back after.
  const erasing=tab==='erase';
  const cropping=tab==='crop';
- if(state.edit){state.edit.erasing=erasing;state.edit.cropping=cropping;editStickers.hidden=erasing||cropping;if(erasing||cropping)editStickers.select(null);}
+ if(state.edit){state.edit.erasing=erasing;state.edit.cropping=cropping;comparePhoto(false);editStickers.hidden=erasing||cropping;if(erasing||cropping)editStickers.select(null);}
  $('editFrame').classList.toggle('cropping',cropping);$('editFrame').tabIndex=cropping?0:-1;
  eraser.active=erasing;invalidate();
  if(tab==='looks')requestAnimationFrame(()=>renderStripSelection());
@@ -1264,13 +1297,19 @@ function renderAdjusters(){
   b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.adjust===a.key));b.title=a.hint||a.label;
   b.style.setProperty('--v',String(Math.abs(v)*(v<0?-1:1)));
   b.innerHTML=`<i>${icon(a.icon)}</i><span>${a.label}</span>`;
-  b.addEventListener('click',()=>{if(e.adjust===a.key&&v!==0){setAdjust(0);}else{e.adjust=a.key;renderAdjusters();}});
+  b.addEventListener('click',()=>{showEnhanceStrength(false);if(e.adjust===a.key&&v!==0){setAdjust(0);}else{e.adjust=a.key;renderAdjusters();}});
   box.append(b);
  }
  const s=$('adjustSlider'),v=Math.round(e.recipe.adjust[e.adjust]*100),info=ADJUSTMENTS.find(a=>a.key===e.adjust);
- s.value=v;s.setAttribute('aria-label',info.label);$('adjustValue').textContent=v>0?`+${v}`:v;
+ s.value=v;s.setAttribute('aria-label',info.label);$('adjustLabel').textContent=info.label;$('adjustValue').textContent=v>0?`+${v}`:v;
  s.classList.add('centred');s.style.setProperty('--from',`${Math.min(50,50+v/2)}%`);s.style.setProperty('--to',`${Math.max(50,50+v/2)}%`);
 }
+function showEnhanceStrength(open){
+ $('enhanceStrengthRow').hidden=!open;$('adjustmentSliderRow').hidden=open;
+ $('enhanceAmount').setAttribute('aria-expanded',String(open));invalidate();
+}
+$('enhanceAmount').addEventListener('click',()=>showEnhanceStrength($('enhanceStrengthRow').hidden));
+$('adjustReset').addEventListener('click',()=>{if(state.edit)setAdjust(0);});
 function setAdjust(value){const e=state.edit;e.recipe.adjust[e.adjust]=value;renderAdjusters();refreshThumbs();invalidate();}
 $('adjustSlider').addEventListener('input',ev=>{
  let v=+ev.target.value;if(Math.abs(v)<3)v=0;

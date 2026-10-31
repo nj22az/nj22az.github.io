@@ -55,7 +55,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/camera-results
-          for suite in camera crop enhance save-share-layout paper integration sticker-contour; do
+          for suite in camera crop enhance save-share-layout paper integration sticker-contour ui; do
             export CAMERA_SHOTS="/tmp/camera-results/$suite"
             node "camera/tests/$suite.browser.mjs" | tee "/tmp/camera-results/$suite.log"
           done
