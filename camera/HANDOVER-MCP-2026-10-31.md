@@ -1,5 +1,23 @@
 # Pocket Camera MCP — 31 October 2026
 
+## Merge instruction and Linux fixture correction — 31 October 2026
+
+The owner subsequently instructed **“Merge”**, authorising PR #416 into `main` and its normal Pages deployment.
+Verified review head `5095bb659ad51aae8ce8e40a7930362baa28d00f`: MCP **41169932260**, Camera regression
+**41169932106**, and World guard/native WebKit **41169932042** all passed. There were no comments or review threads.
+Linux **41169932045**, job **124445677667**, failed in `steam-deck/tools/console-smoke.cjs:206`: it timed out waiting
+for `[data-person="Mai"]`, after controls/layout, native saves and offline checks passed.
+
+The failing fixture is byte-identical on unchanged `main` `f49f22ba` and the review head (blob
+`fb4087d54f963ea8f5d86340c040be000a44f0fc`). The live cast already excludes Mai and Mrs Nakamura under the owner's
+31 October retirement decision. The test's exact roster assertion had passed; its later hard-coded child selection
+was stale. Replace that selection with the active nine-year-old pupil **Riku**, retain the bed, stick-to-wake,
+outdoor exit and full-roster checks, and add explicit active-resident and avatar assertions. No game or release
+behaviour changes, no skipped coverage or enlarged timeouts. Re-run Linux acceptance before the authorised merge.
+Local preflight: **42/42** existing Steam Deck tests passed, console script syntax and `git diff --check` passed;
+Riku is in the live playable roster, sleeps at 01:00 and has the occupied home `kitahama-3`.
+The final merge commit, check outcome and deployment result follow below once verified.
+
 ## Continuation review — 31 October 2026
 
 The owner explicitly requested continuation of draft PR #416, not a rebuild, merge or publication.
