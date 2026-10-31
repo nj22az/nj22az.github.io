@@ -93,11 +93,9 @@
     <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
    </div>
    <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
-    <button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button>
-    <button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button>
     <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
    </div>
-   </div><aside class="look-rail" id="cameraLookRail" aria-label="Active Looks"></aside></div>
+   </div><aside class="look-rail camera-rail" aria-label="Active Looks and camera controls"><div id="cameraLookRail"></div><button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button><button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button></aside></div>
    <div class="welcome" id="welcome" hidden>
     <div class="welcome-hero" aria-hidden="true"><img class="welcome-print" src="samples/default-adventure.png" alt="" decoding="async"><img class="welcome-sticker" id="welcomeSticker" alt="" hidden></div>
     <div class="welcome-copy"><h2>Make it yours.</h2><p>Take a photo. Try a Look.</p></div>

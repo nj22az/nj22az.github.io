@@ -100,7 +100,7 @@
 .camera.idle .camera-view{display:none}.picture-area{display:grid;place-items:center;min-width:0;min-height:0;width:100%;height:100%;position:relative}
 .editor>.stage{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:10px}
 .look-rail{display:flex;flex-direction:column;gap:8px;align-items:center;align-self:stretch;min-height:0;max-height:100%;overflow:auto;scrollbar-width:thin}
-#editLookRail{display:flex;flex-direction:column;gap:8px;width:100%}
+#editLookRail,#cameraLookRail{display:flex;flex-direction:column;gap:8px;width:100%}
 .rail-look{flex:none;width:48px;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:var(--surface);padding:5px 2px;color:var(--label-3)}
 .rail-look svg{width:28px;height:28px;flex:none}.rail-look span{font-size:.625rem;line-height:1.25;max-width:100%;overflow-wrap:anywhere}
 .rail-look[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -119,6 +119,11 @@
 .camera.compact .tray{position:static;padding:6px 0 0;background:none;pointer-events:auto}
 .camera.compact.looks-open .tray{background:none}
 .camera .look-groups{flex-wrap:wrap}.camera .look-groups button{padding:6px 8px}
+.camera-rail .zoom,.camera-rail .exposure-chip{position:static;flex:none;width:48px;min-height:48px;height:auto;transform:none;margin:0;border-radius:12px;background:var(--surface);opacity:1;pointer-events:auto;font-size:.8125rem;padding:6px 2px;box-shadow:none}
+.camera-rail .zoom{margin-top:auto}.camera.compact.looks-open .camera-rail .zoom{opacity:1;pointer-events:auto}
+.camera .sticker>button,.editor .sticker>button{min-width:30px;min-height:30px}
+/* One selected shader name, rather than repeating it in the mix, group and thumbnail rows. */
+.layer-name,.tile:not(:focus-visible) .name,.look-groups button:not(:focus-visible) .group-name,.rail-look:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 @media(max-height:620px){
  .welcome{gap:14px;padding:16px 20px}.welcome-hero{height:100px}.welcome-copy h2{font-size:1.75rem}.welcome .welcome-sticker{min-height:72px}.welcome-print{width:118px;border-width:5px;border-bottom-width:17px}
  .editor>.stage{padding:10px 20px;min-height:96px}.editor .panel{padding:8px 12px}.editor .tile{width:60px;min-width:60px}.editor .tile .face{width:52px;height:52px}.editor .strip{gap:6px;padding:4px 0}
