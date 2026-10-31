@@ -214,7 +214,24 @@ try{
      assert.ok(face.x>.1&&face.x<.7&&face.y>0&&face.y<.5,JSON.stringify(face));
      const modelLoaded=await page.evaluate(()=>performance.getEntriesByType('resource').some(r=>new URL(r.name).pathname==='/camera/vendor/facefinder.bin'));
      assert.equal(modelLoaded,true,'the actual bundled face model was used');
-     await page.fill('#makeupSkin','30');await page.fill('#makeupLips','40');await page.fill('#makeupBlush','25');await page.click('#makeupFace');
+     // Detection supplies approximate bounds. Align this tilted, smiling face using the same controls as the user.
+     await page.fill('#makeupAngle','15');
+     const frame=await page.locator('#editFrame').boundingBox();assert.ok(frame);
+     for(const [name,x,y] of [['left-eye',348,327],['right-eye',479,363],['mouth',377,460]]){
+      const handle=await page.locator(`#makeupGuide [data-handle="${name}"]`).boundingBox();assert.ok(handle,name);
+      await page.mouse.move(handle.x+handle.width/2,handle.y+handle.height/2);await page.mouse.down();
+      await page.mouse.move(frame.x+x/640*frame.width,frame.y+y/960*frame.height,{steps:5});await page.mouse.up();
+     }
+     await page.fill('#makeupMouthWidth','48');await page.fill('#makeupMouthHeight','17');
+     const aligned=await page.evaluate(()=>window.pocketCamera.state.edit.recipe.makeup.face);
+     assert.equal(aligned.angle,15);assert.equal(aligned.mouth.w,.48);assert.equal(aligned.mouth.h,.17);
+     const mapped=await page.evaluate(()=>{
+      const e=window.pocketCamera.state.edit,f=e.recipe.makeup.face,a=f.angle*Math.PI/180;
+      return [...f.eyes,f.mouth].map(p=>{const dx=(p.x-.5)*f.w*e.width,dy=(p.y-.5)*f.h*e.height;return {x:(f.x+f.w/2)*e.width+dx*Math.cos(a)-dy*Math.sin(a),y:(f.y+f.h/2)*e.height+dx*Math.sin(a)+dy*Math.cos(a)};});
+     });
+     for(const [i,[x,y]] of [[348,327],[479,363],[377,460]].entries())assert.ok(Math.hypot(mapped[i].x-x,mapped[i].y-y)<8,JSON.stringify(mapped));
+     if(shots)await page.screenshot({path:join(shots,'portrait-aligned-guide.png')});
+     await page.fill('#makeupSkin','30');await page.fill('#makeupLips','30');await page.fill('#makeupBlush','25');await page.click('#makeupFace');
      await page.waitForFunction(()=>!window.pocketCamera.state.edit.makeupDirty);
      assert.deepEqual(await imageHash(page),raw,'real portrait source remains unchanged');
      if(shots){await page.screenshot({path:join(shots,'portrait-after.png')});await page.locator('#editFrame').screenshot({path:join(shots,'portrait-after-photo.png')});}

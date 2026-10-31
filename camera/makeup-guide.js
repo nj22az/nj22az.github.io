@@ -8,7 +8,9 @@ export function createMakeupGuide(frame,{edit,changed=()=>{}}){
  const layer=document.createElement('div');layer.id='makeupGuide';layer.className='makeup-guide';layer.hidden=true;
  layer.setAttribute('role','group');layer.setAttribute('aria-label','Align face, eyes and mouth');
  const svg=document.createElementNS(SVG,'svg');svg.classList.add('makeup-guide-svg');svg.setAttribute('aria-hidden','true');
- const outline=document.createElementNS(SVG,'path');outline.classList.add('makeup-guide-outline');svg.append(outline);layer.append(svg);
+ const outline=document.createElementNS(SVG,'path');outline.classList.add('makeup-guide-outline');
+ const mouthOutline=document.createElementNS(SVG,'path');mouthOutline.classList.add('makeup-guide-outline','makeup-guide-mouth');mouthOutline.style.strokeDasharray='none';
+ svg.append(outline,mouthOutline);layer.append(svg);
  const definitions=[
   ['face','Move face guide','M5 12h14M12 5v14M5 12l3-3M5 12l3 3M19 12l-3-3M19 12l-3 3M12 5l-3 3M12 5l3 3M12 19l-3-3M12 19l3-3'],
   ['resize','Resize face guide','M7 17 17 7M7 11v6h6M11 7h6v6'],
@@ -109,6 +111,15 @@ export function createMakeupGuide(frame,{edit,changed=()=>{}}){
    const t=i/64*2*Math.PI,p=view(toSource(e,f,{x:.5+.5*Math.cos(t),y:.5+.5*Math.sin(t)}));
    return `${i?'L':'M'}${(p.x*w).toFixed(2)} ${(p.y*h).toFixed(2)}`;
   });outline.setAttribute('d',points.join(' ')+'Z');
+  // Outline the tint's unfeathered lip shape, so width/height alignment is visible before applying colour.
+  const mouth={...defaults.mouth,...f.mouth},lip=[];
+  for(let side=0;side<2;side++)for(let i=0;i<=32;i++){
+   const x=side?1-i/16:-1+i/16,shape=Math.max(0,1-x*x);
+   const y=side?.55*shape:-.45*shape*(.65+.35*Math.sin(Math.abs(x)*Math.PI));
+   const p=view(toSource(e,f,{x:mouth.x+x*mouth.w/2,y:mouth.y+y*mouth.h}));
+   lip.push(`${lip.length?'L':'M'}${(p.x*w).toFixed(2)} ${(p.y*h).toFixed(2)}`);
+  }
+  mouthOutline.setAttribute('d',lip.join(' ')+'Z');
   for(const [name,b] of handles){
    const p=view(toSource(e,f,feature(f,name))),outside=p.x<0||p.x>1||p.y<0||p.y>1;
    // The move handle stays reachable if a new crop has moved the face outside the visible photograph.

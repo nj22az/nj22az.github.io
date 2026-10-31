@@ -13,7 +13,7 @@ Implementation commit: `62a02e33`, verification follow-up `3e02e612`. The approv
 Adjust → Makeup offers independent Skin, Lips and Blush strengths, three shades, Find face, Align face and Reset.
 Native FaceDetector is used if available, with a pinned MIT picojs classifier bundled for browsers including Safari
 that lack that API. Detection selects the largest clear frontal face. No detected face means no cosmetic placement
-until the user explicitly aligns the guide. Draggable/keyboard face, resize, eye and mouth handles plus angle support
+until the user explicitly aligns the guide. Draggable/keyboard face, resize, eye and mouth handles plus angle and lip width/height support
 source-normalized alignment through cropping. Facial geometry is unchanged. Lip placement is an adjustable template,
 not semantic lip segmentation; the guide should be reviewed. Strength zero preserves the original pixels. Preview is
 limited to 1,280 px; native decoded source is processed immediately before export. Recipe/source persist on re-edit.
@@ -31,7 +31,7 @@ runtime/offline bundle. Runtime release keys are `20261031retouch1`.
 
 ## Verification
 
-Local: all fourteen Camera unit suites pass, including 9 makeup, 6 spot-analysis, 5 actual-classifier, 8 simulated-DOM guide and 7 offline-update lifecycle checks, module consistency,
+Local: all fourteen Camera unit suites pass, including 9 makeup, 6 spot-analysis, 5 actual-classifier, 9 simulated-DOM guide and 7 offline-update lifecycle checks, module consistency,
 offline inventory/hash and syntax/diff checks. Actual classifier independently detected the established Pexels portrait
 and rejected the harbour sample in Node/canvas-shim checks. These are not visual browser evidence.
 
@@ -61,3 +61,19 @@ and needs replacing/updating from the repository.
 
 Open the authorised draft PR to trigger the Camera workflow. Complete the CI/browser review, inspect its actual screenshots and correct any failures before marking ready. The attached change package contains the binary patch, current changed files, exact source commit, validation logs and this handover; no browser screenshots are claimed or included.
 Publication requires the owner's explicit instruction; this branch does not change the live site.
+
+## First review-branch browser run
+
+PR [#422](https://github.com/nj22az/nj22az.github.io/pull/422), initial remote source `c551232c529199d7c91c3610e5e8dfbcda934576`,
+exact local tree `ae4fda7cb62b0e328d9231e1ee277c3737427363`. Camera run `41235818118`: Retouch **36/36**, job
+`124639261164`; UI **82/82**, `124639261050`; shader audit **50/50**, `124639261231`; Smart **14/14**, `124639261192`.
+Retouch screenshots were downloaded with ZIP hash/CRC/path checks and inspected. The unadjusted tilted portrait showed
+why an automatic bounding box is not a precise lip mask. The next candidate adds guide-only lip width/height controls
+and a drawn mask boundary; the portrait check now aligns eyes/mouth/angle through the real controls before colouring.
+The initial unaligned picture is diagnostic, not a claim of automatic makeup quality.
+
+Two initial integration failures are corrected in the next candidate: MCP's renderer import still named the prior
+release key (policy 14/15; `124639260546`), now aligned without changing assertions; and offline check10 measured the
+stalled fetch together with the Node/browser scheduling round trip. Its unchanged 4,500 ms threshold now measures the
+actual fetch/body operation inside the browser and logs both timings. The worker's three-second fallback is unchanged;
+the rerun must verify the diagnosis. First9 offline checks passed before that failure (`124639261178`).

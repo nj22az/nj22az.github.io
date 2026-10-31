@@ -1243,6 +1243,10 @@ function renderMakeup(message){
  $('makeupSummary').textContent=m.skin||m.lips||m.blush?'On':'Off';
  $('makeupFace').setAttribute('aria-pressed',String(!!e.aligning));$('makeupAngleRow').hidden=!e.aligning;
  $('makeupAngle').value=m.face?.angle||0;$('makeupAngleValue').textContent=(m.face?.angle||0)+'°';
+ for(const [name,key] of [['Width','w'],['Height','h']]){
+  const value=Math.round((m.face?.mouth[key]||(key==='w'?.36:.08))*1000)/10;
+  $('makeupMouth'+name+'Row').hidden=!e.aligning;$('makeupMouth'+name).value=value;$('makeupMouth'+name+'Value').textContent=value+'%';
+ }
  $('makeupDetect').disabled=!!e.detecting;$('makeupDetect').textContent=e.detecting?'Finding…':'Find face';
  for(const b of document.querySelectorAll('.makeup-shades button'))b.setAttribute('aria-pressed',String(b.dataset.shade===m.shade));
  if(message)$('makeupHint').textContent=message;
@@ -1286,6 +1290,9 @@ document.querySelector('.makeup-shades').addEventListener('click',ev=>{
  e.recipe.makeup.shade=b.dataset.shade;e.makeupDirty=true;renderMakeup();refreshThumbs(true);invalidate();
 });
 $('makeupAngle').addEventListener('input',ev=>{const e=state.edit;if(!e?.recipe.makeup.face||e.saving)return;e.recipe.makeup.face.angle=+ev.target.value;e.makeupDirty=true;renderMakeup();invalidate();});
+for(const [name,key] of [['Width','w'],['Height','h']])$('makeupMouth'+name).addEventListener('input',ev=>{
+ const e=state.edit;if(!e?.recipe.makeup.face||e.saving)return;e.recipe.makeup.face.mouth[key]=ev.target.value/100;e.makeupDirty=true;renderMakeup();invalidate();
+});
 $('makeupReset').addEventListener('click',()=>{const e=state.edit;if(!e||e.saving)return;e.detecting=null;e.recipe.makeup=normaliseMakeup({face:e.recipe.makeup.face});e.makeupDirty=true;setMakeupAlignment(false);refreshThumbs(true);invalidate();});
 // Erase (erase.js): paint over what should go; the editor's picture changes, the Looks redraw over it.
 const eraser=createEraser($('editFrame'),{

@@ -69,7 +69,8 @@ when saving ? I want memory with our own photos or with the stickers".
   do not run in this browser, and its source licence restricts redistribution and hosted equivalents.
 - **Makeup** in Adjust: Skin, Lips and Blush strengths with Rose, Peach and Berry colours. Find face uses
   a bundled offline frontal-face classifier; Align face moves/resizes the guide and independently positions both eyes
-  and the mouth. Drag handles or use arrow keys (Shift for larger steps); Angle handles tilted faces. Check placement
+  and the mouth. Drag handles or use arrow keys (Shift for larger steps); Angle handles tilted faces. Lip width/height
+  and the drawn lip outline fit the mask to a smile. Check placement
   before colouring. Effects preserve the original source and face geometry; Reset switches all effects off while
   retaining placement. Preview is bounded to 1,280 pixels; Save copy applies the recipe to the full decoded source.
   Original compares the source before makeup. Lip colour uses an adjustable template, not semantic lip segmentation.

@@ -75,7 +75,11 @@ try{
   await page.setViewportSize({width:744,height:980});await page.click('#settingsToggle');await page.locator('#offlineSetting').scrollIntoViewIfNeeded();const rect=await page.locator('#offlineSetting').boundingBox();assert.ok(rect.width>=44&&rect.height>=44&&rect.x>=0&&rect.x+rect.width<=744);await page.screenshot({path:join(shots,'mini-ready-offline.png')});await page.click('#settingsDone');
  });
  await check('a stalled online request falls back to the installed snapshot',async()=>{
-  await context.setOffline(false);stall='/camera/samples/default-adventure.png';const time=Date.now();assert.ok(await page.evaluate(async()=>{const r=await fetch('/camera/samples/default-adventure.png?stall-test');return r.ok&&(await r.blob()).size>0;}));assert.ok(Date.now()-time<4500);stall='';
+  await context.setOffline(false);stall='/camera/samples/default-adventure.png';const time=Date.now();
+  const result=await page.evaluate(async()=>{const start=performance.now(),r=await fetch('/camera/samples/default-adventure.png?stall-test'),blob=await r.blob();return {ok:r.ok,bytes:blob.size,elapsed:performance.now()-start};});
+  // Measure the operation in its browser clock; remote-control dispatch can wait behind renderer startup work.
+  console.log('stalled-fetch timing '+JSON.stringify({...result,nodeRoundtrip:Date.now()-time}));
+  assert.ok(result.ok&&result.bytes>0);assert.ok(result.elapsed<4500,JSON.stringify(result));stall='';
  });
  await check('missing cached files are detected and repaired without touching the album',async()=>{
   await page.evaluate(async()=>{const c=await caches.open((await caches.keys()).find(k=>k.startsWith('pocket-camera-')));await c.delete('/camera/stickers/thao-pixar/Peace.webp');navigator.serviceWorker.controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});});await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry');

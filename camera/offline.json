@@ -1,6 +1,6 @@
 {
   "version": "20261031retouch1",
-  "bytes": 22673621,
+  "bytes": 22675392,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "21bdef5766c26a8c955d9f79e708bda96ad806cfd227ebda142f509dbf8abf57",
-      "bytes": 101599
+      "sha256": "4a1fcfdd8adddecce114f51204a750894727a0c6d3253c9622aaf82f701705f0",
+      "bytes": 102148
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -199,8 +199,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "60d2e81db6fb18639fd8a93981a44934960f01bbc37e30457e46bb0b9f270749",
-      "bytes": 29776
+      "sha256": "aab015158652ea1777ff8128f235a357be861c08e5f15f75f151b138d138785f",
+      "bytes": 30248
     },
     {
       "url": "/camera/lettering.js",
@@ -219,8 +219,8 @@
     },
     {
       "url": "/camera/makeup-guide.js",
-      "sha256": "c58884cd97e697e6dcd286e4d01840daa93b6666b170543d89a3750f4d12fff0",
-      "bytes": 6810
+      "sha256": "e3f1550de8da6ce75b71d0bd5fac8253bcdbf176ccfe31ce50e8a1ff9e6565c9",
+      "bytes": 7560
     },
     {
       "url": "/camera/makeup.js",

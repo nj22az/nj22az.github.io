@@ -81,6 +81,20 @@ test('a rotated face is positioned in physical source pixels before cropping',()
  near(parseFloat(f.handles.get('left-eye').style.top),(y/750-.1)/.5*100);
 });
 
+test('the visible mouth boundary follows lip width, height, position, crop and physical angle',()=>{
+ const f=fixture();f.guide.active=true;const mouth=f.layer.children[0].children[1];
+ const points=()=>[...mouth.attributes.d.matchAll(/[ML](-?[\d.]+) (-?[\d.]+)/g)].map(m=>[+m[1],+m[2]]);
+ let p=points();assert.deepEqual(p[0],[156.8,240]);assert.deepEqual(p[32],[243.2,240]);
+ const bounds=()=>{const p=points();return {w:Math.max(...p.map(p=>p[0]))-Math.min(...p.map(p=>p[0])),h:Math.max(...p.map(p=>p[1]))-Math.min(...p.map(p=>p[1]))};};
+ const before=bounds();f.edit.recipe.makeup.face.mouth={x:.5,y:.75,w:.18,h:.16};f.guide.render();
+ const after=bounds();assert.ok(Math.abs(after.w-before.w/2)<.02);assert.ok(Math.abs(after.h-before.h*2)<.03);
+ f.edit.recipe.makeup.face.angle=30;f.guide.render();p=points();
+ // The resized left mouth corner is source (423,375), rotated about source face centre (450,300).
+ const x=450-27*Math.sqrt(3)/2-37.5,y=300-13.5+75*Math.sqrt(3)/2;
+ assert.ok(Math.abs(p[0][0]-(x/1000-.2)/.5*400)<.01);assert.ok(Math.abs(p[0][1]-(y/750-.1)/.5*300)<.01);
+ assert.equal(mouth.style.strokeDasharray,'none');
+});
+
 test('source replacement, editor replacement and saving cancel pending pointer edits',()=>{
  for(const change of [f=>{f.edit.picture={};},f=>{f.replace({...f.edit});},f=>{f.edit.saving=true;}]){
   const f=fixture();f.guide.active=true;down(f,'left-eye');const original=JSON.stringify(f.edit.recipe);
