@@ -1032,7 +1032,7 @@ $('saveEdit').addEventListener('click',async()=>{
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const output=photoSize(recipe.crop.w*e.width,recipe.crop.h*e.height);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',crop:recipe.crop,...output}),recipe,e.taken);
-  const shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime()});
+  const shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime(),edited:Date.now()});
   engine.dropSource('edit');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
   if(shot)toast('Saved to the app album');

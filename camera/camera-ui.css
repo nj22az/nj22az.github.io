@@ -124,6 +124,16 @@
 .camera .sticker>button,.editor .sticker>button{min-width:30px;min-height:30px}
 /* One selected shader name, rather than repeating it in the mix, group and thumbnail rows. */
 .layer-name,.tile:not(:focus-visible) .name,.look-groups button:not(:focus-visible) .group-name,.rail-look:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.editor{overflow-y:auto}
+.editor .segmented{grid-template-columns:repeat(6,minmax(0,1fr));padding:8px 12px;gap:4px}
+.editor .segmented button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:6px 2px;font-size:.75rem}
+.editor .segmented button svg{width:22px;height:22px;flex:none}.editor .segmented button span{max-width:100%;overflow-wrap:anywhere}
+.editor .segmented button:not([aria-selected=true]):not(:focus-visible) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+@media(min-width:850px){.editor .look-groups{gap:0}}
+@media(min-width:850px) and (max-height:420px){
+ .editor .panel{padding:12px}.editor .look-groups{padding:0}.editor .strip{padding:4px 0}
+ .editor .tile{width:44px;min-width:44px}.editor .tile .face{width:40px;height:40px}
+}
 @media(max-height:620px){
  .welcome{gap:14px;padding:16px 20px}.welcome-hero{height:100px}.welcome-copy h2{font-size:1.75rem}.welcome .welcome-sticker{min-height:72px}.welcome-print{width:118px;border-width:5px;border-bottom-width:17px}
  .editor>.stage{padding:10px 20px;min-height:96px}.editor .panel{padding:8px 12px}.editor .tile{width:60px;min-width:60px}.editor .tile .face{width:52px;height:52px}.editor .strip{gap:6px;padding:4px 0}

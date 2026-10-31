@@ -30,7 +30,7 @@ try{
    });await capture('welcome');
    await page.evaluate(async()=>{const b=await(await fetch('/camera/samples/default-original.png')).blob();await window.pocketCamera.editFile(new File([b],'approved-test.png',{type:'image/png'}));});
    await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
-   await check('all six edit tools keep full labels and touch targets',async()=>{
+   await check('all six edit tools keep accessible names and touch targets',async()=>{
     const r=await page.locator('#editDock .segmented').evaluate(el=>({overflow:el.scrollWidth-el.clientWidth,buttons:[...el.children].map(b=>{const r=b.getBoundingClientRect();return {text:b.textContent,width:r.width,height:r.height,clipped:b.scrollWidth>b.clientWidth+1,left:r.left,right:r.right,top:r.top,bottom:r.bottom};})}));
     assert.deepEqual(r.buttons.map(b=>b.text),['Looks','Crop','Adjust','Erase','Stickers','Frame']);
     assert.ok(r.overflow<=1);for(const b of r.buttons)assert.ok(b.width>=44&&b.height>=44&&!b.clipped&&b.left>=0&&b.right<=width+1&&b.top>=0&&b.bottom<=height+1,JSON.stringify(b));
@@ -59,8 +59,8 @@ try{
     const first=await page.evaluate(async()=>{const s=window.pocketCamera.state.viewing;return {id:s.id,count:window.pocketCamera.state.shots.length,photo:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await s.photo.arrayBuffer()))],source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await s.source.arrayBuffer()))]};});
     await page.click('#editPhoto');await page.click('#tabAdjust');await page.click('.adjuster[data-key="light"]');await page.fill('#adjustSlider','14');
     assert.equal(await page.textContent('#saveEdit'),'Save copy');await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
-    const after=await page.evaluate(async id=>{const a=window.pocketCamera,old=a.state.shots.find(s=>s.id===id),s=a.state.viewing;return {id:s.id,count:a.state.shots.length,oldPhoto:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await old.photo.arrayBuffer()))],source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await s.source.arrayBuffer()))]};},first.id);
-    assert.notEqual(after.id,first.id);assert.equal(after.count,first.count+1);assert.deepEqual(after.oldPhoto,first.photo);assert.deepEqual(after.source,first.source);
+    const after=await page.evaluate(async id=>{const a=window.pocketCamera,old=a.state.shots.find(s=>s.id===id),s=a.state.viewing;return {id:s.id,edited:!!s.edited,count:a.state.shots.length,oldPhoto:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await old.photo.arrayBuffer()))],source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await s.source.arrayBuffer()))]};},first.id);
+    assert.notEqual(after.id,first.id);assert.equal(after.edited,true);assert.equal(after.count,first.count+1);assert.deepEqual(after.oldPhoto,first.photo);assert.deepEqual(after.source,first.source);
    });
    if(label==='iphone-17')await check('enlarged text reflows without losing tool labels',async()=>{
     await page.click('#editPhoto');await page.addStyleTag({content:'html{font-size:200%}'});
