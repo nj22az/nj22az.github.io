@@ -2,7 +2,7 @@
 
 Owner: “Why does 32 bit produce a warped image? … audit … as a Nintendo designer … UI and the icons … shaders … screenshots.”
 
-## Owner-authorised layout fixes — 31 October 2026, verification in progress
+## Owner-authorised layout fixes — 31 October 2026
 
 The owner followed the audit with **“Implement the fixes”**. Continue draft PR #418 from verified head
 `aa6c38213f38da3ee11027e2947fdad9ed1589ae`. Its Camera, MCP, World guard/WebKit **and Linux full acceptance all passed**;
@@ -14,22 +14,75 @@ Look rail that scrolls independently of the clipped photo stage. Touch scrolling
 while photo gestures stay on the picture. Frame/Paper/Mirror/date recipe semantics, Save copy and the corrected 32-bit
 renderer remain. Cache keys, including MCP, align at **`20261031audit2`**; no dependencies or AR implementation added.
 
-The UI suite adds checks across eight viewport cases for Frame photo size, finish recipe controls, one-row categories,
-Mine/Thuan access, all three Looks and Original, plus 200% text rail access. The prior 57 UI assertions and the entire
-143 Camera/50 shader audit/15+20 MCP coverage remain; the core Mirror test now opens its explicit mode control.
-Local syntax/module/game unit checks and **15/15 MCP policy checks pass**. Hosted follow-up results, measurements and
-fresh screenshots are pending. Do not count the new UI checks or physical Safari as passed yet. Main is unchanged.
+Implementation source **`f38127e1fbe9504c8f9c131ae390f3210983c8e8`** passed the 50-case shader audit and 15+20 MCP
+checks. The new UI assertion caught Paper controls extending below the panel in the 874×340 case. Follow-up
+**`9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e`**, tree **`b3695dc5dae3bd48484b26c27e9d7e359e10c151`**, uses compact
+landscape frame thumbnails and confines camera/editor gesture listeners to their picture area. The original failure
+assertion remains. Rail checks also intersect the rail, stage and viewport and prove that a long press on the rail
+does not compare/edit the photo. The core Mirror test now opens its explicit mode control; no assertions were removed.
 
-Next: inspect the hosted follow-up, remedy failures without weakening coverage, inspect actual phone/tablet and export
-images, then update this section with exact source/results/evidence and deliver the new screenshots. Publication
-still requires the owner's subsequent word; AR remains the separate proposal below.
+Current source **9e28f6d4** results:
+
+- Camera run **41195476077**: Camera job **124520778612**, **143/143 passed**; UI job **124520778456**, **82/82 passed**,
+  retaining the previous 57 checks and adding 25 for the three findings; shader audit job **124520778264**, **50/50 passed**.
+  This is **275/275 Camera/UI/audit checks**, including all **816 recipe combinations**, **408 full preview/export
+  pairs** and **68 historical comparisons**, on the exact final runtime/test source.
+- MCP run **41195476147**, job **124520658675**: **15/15 units + 20/20 real MCP/Camera checks passed**, no skips.
+  Fresh pinned installation reports **zero npm vulnerabilities**. Generated-image previews and exported JPEG inspected.
+- Local game units, syntax/module checks (**16 single-address modules**) and **15/15 MCP policy checks passed**.
+- World **41195476103**: automated iPhone WebKit job **124520789047** and guard **124520788694** both passed.
+  Linux full acceptance **41195476135**, job **124520836704**, was still in the native/disk-save stage, not counted as
+  passed. No World source or Linux release changed.
+
+All three UI findings are fixed in the review. Settled UI measurements:
+
+| Available viewport | Looks photo height | Frame photo height | Result |
+| --- | --- | --- | --- |
+| iPhone 17, 402×700 | 216 | **216** (was 149) | Full photo size retained |
+| iPhone 17, 402×874 | 216 | 216 | Retained |
+| iPhone landscape, 874×340 | 228 | 228 | Paper controls fully inside their panel |
+| iPad mini, 744×980 | 448 | **448** (was 400) | Full photo size retained |
+| iPad landscape, 1133×650 | 506 | 506 | Retained |
+| Compact iPad, 768×1024 | 466 | 466 | Retained |
+| Small phone, 320×568 | 138 | 160 | Frame provides more photo space |
+| Resized iPad, 507×740 | 294 | 294 | Retained |
+
+Every case has **one category row**, all three Looks and Original reachable fully within the visible rail/stage/view,
+and zero photo-stage scroll. The enlarged-text case also passes. On short windows the rail/category strip intentionally
+scrolls; the claim is full access to each control, not simultaneous visibility of every control. Paper/Mirror/date
+change the actual recipe, and Save copy still retains the original bytes and previous album entry.
+
+Verified artifacts:
+
+| Run / artifact | Contents | SHA-256 |
+| --- | --- | --- |
+| 41195476077 / **13041141097** | 82 UI checks, eight viewports and 200% text | `66e9f2edc537916f02f5d187be1531c3d5d5b76affc6eb72b0bb317cbf9ad7c2` |
+| 41195476077 / **13040511160** | 50 shader checks, 34 actual outputs/icons, 24 panel captures | `a9f34a6dc3e356f9edf1cc07619ef80005878999ce616bdba7ffccb4ef46d651` |
+| 41195476147 / **13040361138** | MCP previews, saved JPEG and 20-check receipt | `7fae06699f3e82a95db68033057a1ee4a6a271c2440df9268e8af52d1189119c` |
+| 41195476077 / **13040388063** | Original 143-check regression ZIP, retained as a companion download | `1bc256fd573ababbb5ca5c2bd64f577cbce58566b01d48c93a5f188f6f8b5f2d` |
+
+Downloads passed SHA-256, ZIP CRC and safe-path checks. Actual phone Frame/Stickers, iPad mini Frame, landscape Frame,
+small-phone three-Look and 200% text captures and MCP before/after/export were visually inspected. The renderer body
+is byte-identical to the accepted 32-bit correction (`effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9`).
+The [layout evidence receipt](qa/2026-10-31-layout-fixes/README.md) records the completed delivery and reproduction.
+
+**Remaining:** current Linux full acceptance, physical iPhone 17/iPad mini Safari/native Share/camera checks and the
+owner's installed MCP connection. Only the SDK acceptance client is connected. Main stays
+`83783c93`/`20261031ui1`; draft PR #418 is not merged or published. AR remains the separate proposal below.
+
+**Next:** owner reviews the delivered new screenshots and decides publication; inspect Linux full acceptance to completion.
+Do not merge or publish without a subsequent instruction. Physical-device/installed-host checks and any
+AR asset export/placement proof remain separate next actions.
+
+## Initial design audit — source and historical evidence
+
 Published main, verified again on 31 October: **`83783c93448d1be251a61c213959448e1d21c971`**, UI release PR #417
 (`51f07130`). [Draft PR #418](https://github.com/nj22az/nj22az.github.io/pull/418), branch
 `codex/pocket-camera-design-audit`, is **open, unmerged and not published**, with no comments/reviews at verification.
 Existing local Camera/World work and unrelated media temporary files are preserved in separate worktrees.
 
 Runtime implementation: **`26f576481cbcbf2b5fec1af02e4053aa4b12d9e5`**. Full Camera/UI/audit verification:
-**`ff5bd139125988b0a270e7d991cb2ed026518fab`**. Strengthened real full/LIGHT preview audit and current screenshot
+**`ff5bd139125988b0a270e7d991cb2ed026518fab`**. Strengthened real full/LIGHT preview audit and initial screenshot
 source: **`d9a9f25b525a6d403b2c352d78745d78463f6a7f`**, tree **`8e19fdecc584e4b245864cdf5322be2474436208`**.
 The six changed runtime files are byte-identical across these three commits; later changes corrected audit drivers.
 
@@ -112,7 +165,10 @@ Audit/UI/MCP images and the exported JPEG were visually inspected. In particular
 grid are real render differences; the 34-output sheet, icon sheet, iPad mini, Frame, Stickers, small-phone and 200%-text
 screenshots were checked. [Evidence receipt and reproduction](qa/2026-10-31-design/README.md) records the final delivery.
 
-## Remaining UI findings — do not claim a finished design
+## Original UI findings — fixed by the owner-authorised follow-up above
+
+These describe the initial audit source d9a9f25b, before the subsequent implementation. Keep this history; the current
+results and remaining device/connection limits are at the top of this note.
 
 1. **Frame takes too much phone canvas.** At a settled 402×700 viewport, Looks shows a **288×216** photo, but Frame
    shows **198×149** (31% less height). At 744×980, iPad mini drops from **598×448** to **533×400**. Proposal:
