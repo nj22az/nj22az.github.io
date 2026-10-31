@@ -156,23 +156,27 @@ const checkRoomLifetime=async()=>{
   // work settles, then drive the real renderer explicitly; this prevents unrelated detail arrivals
   // from changing resource counts during the bounded comparison. Restore the previous pause state below.
   await page.evaluate(()=>{document.documentElement.dataset.desktopMenu='open';window.__JOHANSSON_AUDIT__.renderFrozen=false;});
-  // One fresh common exterior baseline follows the ENTIRE warm-up sequence. An earlier per-venue
-  // sample must not exclude shared resources first uploaded by the other venue's final warm-up.
-  const baseline=await exteriorState();
-  assert.equal(baseline.roomChildren,0);assert.equal(baseline.roomVisible,false);assert.equal(baseline.portalBytes,0);
-  assert.equal(baseline.gpuError,0,'The settled exterior baseline has no graphics error');
-  report.roomLifetime={warmupCycles:2,checkedCycles:3,warmups,baseline,cycles:[]};
+  // Baselines are fresh matching venue visits AFTER the entire warm-up and stream freeze.
+  // The same exterior camera can retain a different bounded state after each doorway; compare like with like.
+  const settledExterior=await exteriorState();
+  assert.equal(settledExterior.roomChildren,0);assert.equal(settledExterior.roomVisible,false);assert.equal(settledExterior.portalBytes,0);
+  assert.equal(settledExterior.gpuError,0,'The settled exterior has no graphics error');
+  const baselines={};report.roomLifetime={warmupCycles:2,checkedCycles:3,warmups,settledExterior,baselines,cycles:[]};
+  for(const venue of ['sakura-office','izakaya']){
+   baselines[venue]=await visit(venue,'baseline',0);
+   assert.deepEqual(baselines[venue].stream,streaming,'No concurrent detail loads during the matching baseline pass');
+  }
   for(let cycle=0;cycle<3;cycle++)for(const venue of ['sakura-office','izakaya']){
    const sample=await visit(venue,'check',cycle);report.roomLifetime.cycles.push(sample);
   }
-  const base=resources(baseline);
+  const base=Object.fromEntries(Object.entries(baselines).map(([venue,sample])=>[venue,resources(sample.exterior)]));
   report.roomLifetime.growth=report.roomLifetime.cycles.map(sample=>({cycle:sample.cycle,venue:sample.venue,
-   delta:Object.fromEntries(Object.entries(resources(sample.exterior)).map(([key,value])=>[key,value-base[key]]))}));
+   delta:Object.fromEntries(Object.entries(resources(sample.exterior)).map(([key,value])=>[key,value-base[sample.venue][key]]))}));
   step('room resource growth after all checked cycles',{baseline:base,growth:report.roomLifetime.growth});
   for(const sample of report.roomLifetime.cycles){
    assert.deepEqual(sample.stream,streaming,'No concurrent detail loads during the resource comparison');
-   const actual=resources(sample.exterior);
-   for(const key of Object.keys(actual))assert.ok(actual[key]<=base[key],sample.venue+' retains '+key+' after warm-up: '+JSON.stringify({cycle:sample.cycle,baseline:base,actual}));
+   const actual=resources(sample.exterior),baseline=base[sample.venue];
+   for(const key of Object.keys(actual))assert.ok(actual[key]<=baseline[key],sample.venue+' retains '+key+' after warm-up: '+JSON.stringify({cycle:sample.cycle,baseline,actual}));
   }
  }finally{
   await page.evaluate(value=>{
