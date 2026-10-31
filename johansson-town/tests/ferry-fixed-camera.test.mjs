@@ -105,7 +105,9 @@ test('raised-deck boarding meets the pier and the forward crew station remains o
  const p=run.ferry.localToWorld(new T.Vector3(...CREW_POSTS.bow.pos));
  const door=run.ferry.localToWorld(new T.Vector3(-2.95,-1,10.9-17.25));
  const {AIRPORT_FERRY_PORTS}=await import('./src/world/airport-ferry.js');const shore=AIRPORT_FERRY_PORTS.town,landing=walk.floorAt(shore.landing[0],shore.landing[1],shore.height,.3);
- console.log(JSON.stringify({length:GANGWAY_LENGTH,toeGap:toe.y-groundHeight(toe.x,toe.z),station:walk.move(p.x,p.y,p.z,p.x,p.z,.18)?.ok,helmetDoorClear:!walk.blocked(door.x,door.y,door.z,.28,2),shoreIsGangway:landing?.floor.part==='gangway'}));
+ const {FERRY_LADDER}=await import('./src/world/ferry-inspect.js');const {OPENINGS}=await import('./src/world/openings.js');const opening=OPENINGS.find(o=>o.id==='ferry');
+ const ladderLandingsClear=Object.values(FERRY_LADDER).every(l=>{const p=run.ferry.localToWorld(new T.Vector3(...l.to));return !walk.blocked(p.x,p.y,p.z,.28,1.82);});
+ console.log(JSON.stringify({length:GANGWAY_LENGTH,toeGap:toe.y-groundHeight(toe.x,toe.z),station:walk.move(p.x,p.y,p.z,p.x,p.z,.18)?.ok,helmetDoorClear:!walk.blocked(door.x,door.y,door.z,.28,2),shoreIsGangway:landing?.floor.part==='gangway',ladderLandingsClear,openingMatchesShore:opening.stand.every((v,i)=>Math.abs(v-shore.landing[i])<1e-8)}));
  `],{cwd:new URL('..',import.meta.url),encoding:'utf8'}));
- assert.equal(result.length,4);assert.ok(Math.abs(result.toeGap)<.001);assert.equal(result.station,true);assert.equal(result.shoreIsGangway,false,'The waiting point is beyond the gangway foot');assert.equal(result.helmetDoorClear,true,'2 m standing envelope clears the control-booth door');
+ assert.equal(result.length,4);assert.ok(Math.abs(result.toeGap)<.001);assert.equal(result.station,true);assert.equal(result.shoreIsGangway,false,'The waiting point is beyond the gangway foot');assert.equal(result.ladderLandingsClear,true,'Both ladder prompt destinations clear the standing body');assert.equal(result.openingMatchesShore,true,'Ferry arrivals use the safe shore point');assert.equal(result.helmetDoorClear,true,'2 m standing envelope clears the control-booth door');
 });

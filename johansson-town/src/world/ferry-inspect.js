@@ -107,9 +107,10 @@ export const FERRY_INSPECT=Object.freeze([
  * prompt takes you down the ladder to the floor plates, and at its foot one brings you back up to the car deck. The
  * ladder can still be walked. `to` is where you stand after, in her frame, `yaw` the way you face (π looks forward).
  */
+const ENGINE_DOOR_Z=(FERRY_ENGINE_ROOM.door[0]+FERRY_ENGINE_ROOM.door[1])/2;
 export const FERRY_LADDER=Object.freeze({
- down:Object.freeze({at:Object.freeze([2.7,CAR+1.3,Z(6.85)]),label:'Down to the engine room',to:Object.freeze([3.575,FP,Z(8.9)]),yaw:Math.PI,
+ down:Object.freeze({at:Object.freeze([2.7,CAR+1.3,ENGINE_DOOR_Z]),label:'Down to the engine room',to:Object.freeze([3.575,FP,Z(8.9)]),yaw:Math.PI,
   note:'Down the ladder to the floor plates. Ear defenders on: two diesels run here.'}),
- up:Object.freeze({at:Object.freeze([3.575,FP+1.2,Z(9.1)]),label:'Up to the car deck',to:Object.freeze([2.9,CAR,Z(6.8)]),yaw:Math.PI/2,
+ up:Object.freeze({at:Object.freeze([3.575,FP+1.2,Z(9.1)]),label:'Up to the car deck',to:Object.freeze([2.9,CAR,ENGINE_DOOR_Z]),yaw:Math.PI/2,
   note:'Up the ladder and out through the casing door. Ear defenders off.'}),
 });

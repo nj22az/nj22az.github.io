@@ -40,7 +40,7 @@
       "sha256": "abd571737638d83c94d44b0fea9cd23204a041147b73940d010f14cc4c8661c9"
     }
   },
-  "runtime_source_sha256": "97611d6e5bf6947695c579307cc0c89d7bea01fbc4a0c2f26db35ea685652436",
+  "runtime_source_sha256": "0d57eb775277981ad81b2ce93ebddf43ec6e200d61c327e8187e49a66894e005",
   "hosted_graphics_acceptance": "Post-publication status is in the root handover and release-evidence/minato-engine-room-2026-10-31/publication.json",
   "physical_device_acceptance": false,
   "local_browser_limit": "Chromium download returned an invalid/truncated ZIP; no local WebGL success claimed",
@@ -50,5 +50,6 @@
   "source_commit": "2bb7bb35aab07b5859b6124559f435146c8b57f2",
   "verified_source_tree": "88b7b1e427bacc78711dcb50bcb78447e736ae4f",
   "local_tested_snapshot": "6b0652d5948f263a19248ea6526ae4caa39c06a9",
-  "github_object_verification": "56 new blobs and 41 reused blobs form an implementation tree identical to the tested local tree"
+  "github_object_verification": "56 new blobs and 41 reused blobs form an implementation tree identical to the tested local tree",
+  "arrival_followup": "arrival-followup.json: focused 12/12 and runtime 4/4 pass; hosted follow-up results in root publication evidence"
 }

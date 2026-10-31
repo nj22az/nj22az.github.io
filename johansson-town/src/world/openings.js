@@ -1,3 +1,4 @@
+import {FERRY_H1} from './ferry-engine-room-plan.js';
 import {izakayaOpen,inTimeRange} from '../people/social.js';
 import {satoRamenOpen} from './sato-ramen-layout.js';
 import {CARGO_CALLS} from './cargo-shipping.js';
@@ -22,10 +23,10 @@ export const OPENINGS=Object.freeze([
  {id:'park-bench',weight:2,hours:[360,1260],dry:true,seat:'Sit and watch the town and harbour',caption:'Harbour Park · the rooftops and the port below.'},
  {id:'seawall',weight:1,hours:[330,1170],dry:true,stand:[32.1,-4],facing:-Math.PI/2,caption:'The seawall · the tide on the sand below.'},
  // Just off the ferry, at the gangway's foot on the outer pier (her port door, z −72.7 since the bigger ship), facing the town:
- // on the gangway's line, a metre past its foot (x −2.54). Until 21 October 2026 he stood at −3, −73.9, beside the foot with
+ // beyond the complete gangway sweep, at the shared shore waiting point. Until 21 October 2026 he stood at −3, −73.9, beside the foot with
  // the gangway's south rail half a metre in front of him whenever she was alongside: the first step towards the town met
  // the rail (the owner: "the railing by the ships at the dock you can get stuck when spawning there").
- {id:'ferry',docks:true,weight:2,hours:[450,1350],stand:[-1.5,-72.7],facing:Math.PI,caption:'Off the ferry · the quay, and Main Street beyond it.'},
+ {id:'ferry',docks:true,weight:2,hours:[450,1350],stand:[FERRY_H1.shore.landingX,-72.7],facing:Math.PI,caption:'Off the ferry · the quay, and Main Street beyond it.'},
  // On the outer pier abreast of her bridge, looking across at the Minato Maru alongside (ferry.js: she lies at x −8.64).
  {id:'minato-maru',docks:true,weight:2,hours:[0,1440],when:c=>c.ferryAlongside,stand:[1.2,-66],facing:Math.PI/2,caption:'The outer pier · the Minato Maru alongside, bound for Kitano-jima.'},
  // On the pier's east side while the island cargo boat is alongside (cargo-shipping.js CARGO_CALLS), watching her unload.

@@ -190,17 +190,17 @@ const checkRoomLifetime=async()=>{
 const checkFerryRoom=async()=>{
  const saved=await page.evaluate(()=>{
   const a=window.__JOHANSSON_AUDIT__,saved={player:a.player,frozen:a.frozen,camera:a.camera??null,view:a.mouse.thirdPerson,fov:a.ferryCamera.fov,zoom:a.ferryCamera.zoom};
-  a.activities.close();a.frozen=true;a.camera=null;a.setTime(600);
-  a.world.ferry.parkAt('town');a.world.ferry.update(0,600,0);return saved;
+  a.activities.close();a.frozen=true;a.camera=null;a.setTime(515);
+  a.world.ferry.parkAt('town');a.world.ferry.update(0,515,0);a.step(50);return saved;
  });
  const place=point=>page.evaluate(([X,Y,Z])=>{
-  const a=window.__JOHANSSON_AUDIT__,ship=a.world.ferry.ferry;ship.updateMatrixWorld(true);
+  const a=window.__JOHANSSON_AUDIT__;a.step(20);const ship=a.world.ferry.ferry;ship.updateMatrixWorld(true);
   const p=ship.localToWorld(ship.position.clone().set(Y,Z-1.9,X-17.25));a.stand(p.x,p.y,p.z,0);a.step(20);
-  return {camera:a.ferryCamera,deck:a.probe(p.x,p.y+1,p.z).deck,view:a.mouse.thirdPerson};
+  return {camera:a.ferryCamera,deck:a.probe(p.x,p.y+1,p.z).deck,view:a.mouse.thirdPerson,player:a.player.position,expected:p.toArray(),berth:a.world.ferry.berth};
  },point);
  try{
   step('ferry recording starts',{reviewPlacement:true,movement:'normal keyboard input with deterministic simulation steps'});
-  const first=await place([11.1,0,.9]);assert.equal(first.camera.active,true);assert.equal(first.camera.id,'engines-aft');
+  const first=await place([11.1,0,.9]);step('ferry first placement',first);assert.equal(first.camera.active,true,JSON.stringify(first));assert.equal(first.camera.id,'engines-aft');
   await page.waitForFunction(()=>{const s=window.__JOHANSSON_AUDIT__.world.ferry.ferry.userData.engineRoomH1;return s.loaded||s.error;},null,{timeout:60000});
   await settleLoads();
   const asset=await page.evaluate(()=>{

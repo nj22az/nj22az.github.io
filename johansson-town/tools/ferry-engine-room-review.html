@@ -14,7 +14,7 @@ const frame=document.querySelector('iframe'),status=document.querySelector('outp
 const stops=[['Main engines',[11.1,0,.9]],['Engine service side',[13.1,0,.9]],['Control booth',[9.2,-3.1,.9]],['Auxiliaries',[16.7,0,.9]],['Workshop',[21,0,.9]],['Engine store',[21.4,-1.4,.9]],['Electrical workshop',[24,0,.9]]];
 function place(cad){
  const a=frame.contentWindow.__JOHANSSON_AUDIT__;if(!a)return;
- a.activities.close();a.frozen=false;a.camera=null;a.setTime(600);a.world.ferry.parkAt('town');a.world.ferry.update(0,600,0);
+ a.activities.close();a.frozen=false;a.camera=null;a.setTime(515);a.world.ferry.parkAt('town');a.world.ferry.update(0,515,0);a.step(50);
  const ship=a.world.ferry.ferry;ship.updateMatrixWorld(true);const p=ship.localToWorld(ship.position.clone().set(...h1ToLocal(cad)));a.stand(p.x,p.y,p.z,0);a.step(20);frame.focus();
 }
 for(const [name,point] of stops){const b=document.createElement('button');b.textContent=name;b.onclick=()=>place(point);document.querySelector('nav').append(b);}
