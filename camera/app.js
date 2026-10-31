@@ -176,11 +176,8 @@ function fitFrame(frame,stage,aspect){
  frame.style.fontSize=`${fh*.045}px`;
  return {width:fw,height:fh};
 }
-/*
- * A short screen (a phone's browser with its toolbars, the owner's iPhone) gives the picture the whole width: the Looks
- * float over its foot, the strip folded behind the Look's name until it is asked for (swiping across the picture still
- * steps through the Looks). A tall one keeps the tray under the picture.
- */
+/* Compact cameras fold the Look catalogue behind the selected icon. The rail and controls stay outside
+ * the picture; wide windows keep the catalogue beside it. Rendering quality is shared by every layout. */
 let trayBelow=139;
 function compactCamera(aspect){
  const cam=$('camera'),stage=$('cameraStage');
@@ -191,7 +188,7 @@ function compactCamera(aspect){
  if(compact!==cam.classList.contains('compact')){cam.classList.toggle('compact',compact);if(!compact)showLooks(false);}
 }
 const isCompact=()=>$('camera').classList.contains('compact');
-/** Unfolds or folds the strip of Looks over the picture (a short screen only). */
+/** Unfolds or folds the compact camera catalogue. */
 function showLooks(open){
  const cam=$('camera');if(cam.classList.contains('looks-open')===open)return;
  cam.classList.toggle('looks-open',open);

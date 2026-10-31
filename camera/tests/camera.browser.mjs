@@ -291,7 +291,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.waitForTimeout(1500);await shot('10-import');
    await page.click('#saveEdit');await page.waitForSelector('#viewer:not([hidden])',{timeout:60000});
    const n=await app(async()=>{const s=window.pocketCamera.state.shots;const b=await createImageBitmap(s[0].photo);return {count:s.length,w:b.width,h:b.height};});
-   assert.equal(n.count,2);assert.deepEqual([n.w,n.h],[1920,1440]);
+   assert.equal(n.count,3,'capture, edited copy and imported photo remain separate');assert.deepEqual([n.w,n.h],[1920,1440]);
    // The erased picture is the photo's own now: opened again, it is as it was left.
    const source=await app(async()=>{const b=await createImageBitmap(window.pocketCamera.state.shots[0].source),c=document.createElement('canvas');c.width=b.width;c.height=b.height;const g=c.getContext('2d');g.drawImage(b,0,0);return [...g.getImageData(Math.round(.73*b.width),Math.round(.66*b.height),1,1).data].slice(0,3);});
    assert.ok(source.every((v,i)=>Math.abs(v-kept[i])<14),`the saved source is the erased picture (${source} ~ ${kept})`);

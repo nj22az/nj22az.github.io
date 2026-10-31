@@ -64,10 +64,10 @@
 .editor .tile .face{width:64px;height:64px}.editor .tile .name{white-space:normal;overflow:visible;text-overflow:unset;line-height:1.3;overflow-wrap:anywhere}
 .editor .slider-row{min-height:44px;padding:0;gap:10px}.editor input[type=range]{min-height:44px}
 .editor .slider-row output{font-size:.8125rem}.editor .slider-row label{font-size:.8125rem}
-.editor .adjusters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 0}
+.editor .adjusters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:8px 0}
 .editor .adjuster{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:7px;width:auto;min-width:0;min-height:44px;padding:8px 6px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
 .editor .adjuster>:first-child,.editor .adjuster>:last-child{margin:0}
-.editor .adjuster i{display:none}.editor .adjuster span{white-space:normal;overflow-wrap:anywhere}
+.editor .adjuster i{position:static;display:grid;place-items:center;width:24px;height:24px;background:none;transform:none}.editor .adjuster i::before{display:none}.editor .adjuster i svg{width:22px;height:22px}.editor .adjuster span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 .editor .adjuster[aria-checked=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .editor .enhance-heading{padding:0;min-height:44px;gap:10px}.editor .enhance-heading>span{flex:1;font-size:.9375rem}
 .editor .enhance-amount{font-size:.8125rem;color:var(--accent);padding:6px;min-width:44px}
