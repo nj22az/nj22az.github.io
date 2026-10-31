@@ -14,6 +14,8 @@ Work branch: `codex/sakura-izakaya-resident-repair`, from production `8124d06ca0
 - Sakura's stair transition ignored a false readiness result, discarded its loaded storey and announced arrival even after failure. Failed prerequisites now keep the original floor, return the player to its safe stair arrival and clear passage/input state for a retry. Successful swaps dispose the preceding room once.
 - Sakura's cached poster/case atlases were disposed by office cleanup despite also belonging to the persistent shop. The shared textures now declare that ownership. The regression first reproduced three poster and one case disposal event; five office build/cleanup cycles now preserve the cached atlases while disposing room-owned resources.
 
+- The extended native WebKit run then exposed a real five-geometry increase on each izakaya visit. Actual fitted-GLB/real-clearRoom probes confirmed five private edited-index wrappers escaped cleanup under a shared-model ancestor, plus six extracted door/bottle geometries. `liftPiece.dispose()` now restores the cached source, detaches borrowed attributes before releasing its private index, frees extracted geometry and guards late service callbacks. Three actual-room cycles release all eleven private geometries exactly once, with cached geometry/morph/index/material data untouched. Existing bar/backbar/lifetime checks pass 30/30.
+
 These are reproduced code/resource faults. They do not establish the exact cause of an OS-level physical iPhone page closure; that reported failure remains distinct from the automated checks below.
 
 ## Facilities before residents
@@ -31,6 +33,12 @@ The full-game CPU boot/interior smoke passed **1/1 in 157.9 seconds**: actual ro
 Hosted WebKit first entered the actual izakaya with full ink/grade/HDR/four samples and no uncaught page errors. It then failed trying to tap the intentionally hidden exit button away from the door, while rendering continued. [Original artifact](https://github.com/nj22az/nj22az.github.io/actions/runs/41149922029/artifacts/13021869779), report `docs/qa/room-crash-family-2026-10-31/iphone-first-report.json`. The actual izakaya capture was opened and inspected. The fixture follow-up approaches the authored door before tapping the real control; all error/graphics assertions remain. This failed fixture run is not claimed as browser acceptance.
 
 Full evidence: `docs/qa/room-crash-family-2026-10-31/verification.json`, `guard.txt`, `guard-first.txt`, `cpu-boot.txt`, `resident-guide.txt` and `build.txt`. The browser fixture extends the existing iPhone-profile WebKit/Mesa acceptance with repeated office/izakaya entries and bounded post-warm-up texture/geometry/canvas counts, all prior graphics/error assertions retained. Extending a fixture is not a passed browser run. Physical iPhone/iPad/Steam Deck acceptance remains unverified. No new Linux release, Studio sync or paid asset generation.
+
+## Final bar-lifetime follow-up
+
+The third hosted run ([41151434104](https://github.com/nj22az/nj22az.github.io/actions/runs/41151434104), artifact 13023137637) successfully rendered both actual rooms and both selected office prints, with no page errors/failed requests. Office and close-up print captures were opened and inspected. Resource tracing found the private bar geometry retention above. Its stale per-venue baseline was also corrected to a common exterior baseline after the whole warm-up; all three measured pairs are now collected before the unchanged zero-growth assertions. Transient doorway traffic can clear for up to ten seconds under unchanged collision/site checks; permanent blockage still fails with full diagnostics.
+
+The preceding 559-check/source-hash/CPU results describe the candidate before this bar-lifetime correction. Final rebuilt-source guard, CPU smoke and native repeat results are pending; `guard-before-bar-fix.txt` and `cpu-boot-before-bar-fix.txt` preserve the preceding evidence.
 
 ## Next
 

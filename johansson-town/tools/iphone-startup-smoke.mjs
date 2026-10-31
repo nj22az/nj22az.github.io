@@ -40,7 +40,7 @@ const settleLoads=async()=>{
 };
 const exitThroughDoor=async()=>{
  await settleLoads();
- const approach=await page.evaluate(()=>{
+ const probeApproach=()=>page.evaluate(()=>{
   const a=window.__JOHANSSON_AUDIT__,nav=a.roomNavigation;
   const diagnostic={navigation:nav,player:a.player,layout:{bounds:a.layout?.bounds,spawn:a.layout?.spawn,exit:a.layout?.exit},candidates:[]};
   if(!nav)return {...diagnostic,error:'No current room to exit'};
@@ -64,6 +64,14 @@ const exitThroughDoor=async()=>{
   a.camera=null;a.stand(...at,Math.atan2(at[0]-exit[0],at[2]-exit[2]));a.hud.photo(false);a.hud.wake();a.step(0);
   return {...diagnostic,room:nav.id,exit,standing:at,probe:a.navigation(at[0],at[2])};
  });
+ const began=Date.now();let approach=await probeApproach(),attempts=1;
+ const firstBlockers=approach.blockingResidents;
+ // Guests arrive through this same doorway. Give ordinary traffic a bounded chance to move,
+ // reusing every native collision/resident/site predicate; a permanently blocked exit still fails.
+ while(approach.error&&approach.candidates.length&&Date.now()-began<10000){
+  await new Promise(resolve=>setTimeout(resolve,250));approach=await probeApproach();attempts++;
+ }
+ approach.wait={milliseconds:Date.now()-began,attempts,firstBlockers};
  if(approach.error){report.exitApproachFailure=approach;step('authored dining exit approach failed',approach);assert.fail(approach.error);}
  step('approach authored dining exit',approach);
  // The actual context control is offered only near a door. Do not force a hidden/disabled control.
@@ -102,6 +110,9 @@ const checkRoomLifetime=async()=>{
  const settle=settleLoads;
  const streamState=()=>page.evaluate(()=>{const s=window.__JOHANSSON_STREAMING__;return {active:s.active,loaded:[...s.loaded].sort(),failed:[...s.failed].sort(),retries:s.retries};});
  const resources=value=>({textures:value.render.textures,geometries:value.render.geometries,releasedCanvases:value.render.releasedCanvases});
+ const exteriorState=()=>page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera={pos:[8,2,-21],at:[-12,1.6,-27.3]};a.render();return {
+  roomChildren:a.room.children.length,roomVisible:a.room.visible,portalBytes:window.__JOHANSSON_SHOP_VIEW__.cacheBytes,
+  gpuError:a.renderer.getContext().getError(),render:a.renderInfo};});
  const visit=async(venue,phase,cycle)=>{
   await page.evaluate(async id=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;if(id==='sakura-office')await a.enterInside(id);else await a.enter(id);},venue);
   await page.waitForFunction(id=>window.__JOHANSSON_AUDIT__.roomNavigation?.id===id&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,venue,{timeout:120000});
@@ -124,9 +135,7 @@ const checkRoomLifetime=async()=>{
   });
   // Warm-up exits may expose a different street detail radius. Finish those loads before sampling too.
   await settle();
-  const exterior=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.render();return {
-   roomChildren:a.room.children.length,roomVisible:a.room.visible,portalBytes:window.__JOHANSSON_SHOP_VIEW__.cacheBytes,
-   gpuError:a.renderer.getContext().getError(),render:a.renderInfo};});
+  const exterior=await exteriorState();
   assert.equal(exterior.roomChildren,0,venue+' exit releases room objects');assert.equal(exterior.roomVisible,false,venue+' exit hides the empty room');
   assert.equal(exterior.portalBytes,0,venue+' exit releases private window index buffers');
   assert.equal(exterior.gpuError,0,venue+' exit leaves no graphics error');
@@ -140,19 +149,30 @@ const checkRoomLifetime=async()=>{
   await settle();
   // Warm every venue before establishing its post-exit baseline. The second pass includes any shared
   // resources first requested by the other venue, so their first allocation cannot look like a leak.
-  const baselines={};
-  for(let cycle=0;cycle<2;cycle++)for(const venue of ['sakura-office','izakaya'])baselines[venue]=await visit(venue,'warmup',cycle);
+  const warmups=[];
+  for(let cycle=0;cycle<2;cycle++)for(const venue of ['sakura-office','izakaya'])warmups.push(await visit(venue,'warmup',cycle));
   await settle();const streaming=await streamState();assert.equal(streaming.active,null);
   // Frozen audit frames still update the detail streamer. Pause the existing main loop only after its
   // work settles, then drive the real renderer explicitly; this prevents unrelated detail arrivals
   // from changing resource counts during the bounded comparison. Restore the previous pause state below.
   await page.evaluate(()=>{document.documentElement.dataset.desktopMenu='open';window.__JOHANSSON_AUDIT__.renderFrozen=false;});
-  report.roomLifetime={warmupCycles:2,checkedCycles:3,baselines,cycles:[]};
+  // One fresh common exterior baseline follows the ENTIRE warm-up sequence. An earlier per-venue
+  // sample must not exclude shared resources first uploaded by the other venue's final warm-up.
+  const baseline=await exteriorState();
+  assert.equal(baseline.roomChildren,0);assert.equal(baseline.roomVisible,false);assert.equal(baseline.portalBytes,0);
+  assert.equal(baseline.gpuError,0,'The settled exterior baseline has no graphics error');
+  report.roomLifetime={warmupCycles:2,checkedCycles:3,warmups,baseline,cycles:[]};
   for(let cycle=0;cycle<3;cycle++)for(const venue of ['sakura-office','izakaya']){
    const sample=await visit(venue,'check',cycle);report.roomLifetime.cycles.push(sample);
+  }
+  const base=resources(baseline);
+  report.roomLifetime.growth=report.roomLifetime.cycles.map(sample=>({cycle:sample.cycle,venue:sample.venue,
+   delta:Object.fromEntries(Object.entries(resources(sample.exterior)).map(([key,value])=>[key,value-base[key]]))}));
+  step('room resource growth after all checked cycles',{baseline:base,growth:report.roomLifetime.growth});
+  for(const sample of report.roomLifetime.cycles){
    assert.deepEqual(sample.stream,streaming,'No concurrent detail loads during the resource comparison');
-   const actual=resources(sample.exterior),baseline=resources(baselines[venue].exterior);
-   for(const key of Object.keys(actual))assert.ok(actual[key]<=baseline[key],venue+' retains '+key+' after warm-up: '+JSON.stringify({baseline,actual}));
+   const actual=resources(sample.exterior);
+   for(const key of Object.keys(actual))assert.ok(actual[key]<=base[key],sample.venue+' retains '+key+' after warm-up: '+JSON.stringify({cycle:sample.cycle,baseline:base,actual}));
   }
  }finally{
   await page.evaluate(value=>{

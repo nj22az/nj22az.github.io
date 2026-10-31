@@ -55,5 +55,16 @@
     "job": 124383749667,
     "conclusion": "success",
     "candidate": "c7002c843934d1c8d5b83219486477b1ea3a0e3f"
+  },
+  "before_bar_fix": true,
+  "final_bar_fix": {
+    "private_index_wrappers": 5,
+    "extracted_geometries": 6,
+    "undisposed_after": 0,
+    "three_cycles_tested": true,
+    "focused_checks_passed": 30,
+    "final_guard": "pending",
+    "final_cpu": "pending",
+    "final_native": "pending"
   }
 }

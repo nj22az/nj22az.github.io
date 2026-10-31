@@ -99,7 +99,7 @@ function empty(kind){const g=createDrinkProp(kind);setPropPortion(g,0,{immediate
  */
 export function liftPiece(root,parts,pivot,name){
  root.updateMatrixWorld(true);
- const piece=new THREE.Group();piece.name=name;piece.position.set(...pivot);const saved=[];
+ const piece=new THREE.Group();piece.name=name;piece.position.set(...pivot);const saved=[],ownedIndices=[];let disposed=false;
  const key=s=>s.replace(/[^a-z]/gi,'').toLowerCase(),a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),mid=new THREE.Vector3();
  root.traverse(mesh=>{
   if(!mesh.isMesh||!mesh.geometry.index)return;
@@ -111,7 +111,7 @@ export function liftPiece(root,parts,pivot,name){
   }
   if(!picked.length)return;
   // Its own index only: the vertices stay the cached model's, shared by every visit (tests/izakaya-backbar.test.mjs).
-  if(!mesh.userData.ownIndex){const own=new THREE.BufferGeometry();for(const n of Object.keys(g.attributes))own.setAttribute(n,g.attributes[n]);own.setIndex(g.index.clone());for(const group of g.groups)own.addGroup(group.start,group.count,group.materialIndex);own.boundingBox=g.boundingBox;own.boundingSphere=g.boundingSphere;mesh.geometry=own;mesh.userData.ownIndex=true;}
+  if(!mesh.userData.ownIndex){const own=new THREE.BufferGeometry();for(const n of Object.keys(g.attributes))own.setAttribute(n,g.attributes[n]);own.setIndex(g.index.clone());for(const group of g.groups)own.addGroup(group.start,group.count,group.materialIndex);own.boundingBox=g.boundingBox;own.boundingSphere=g.boundingSphere;ownedIndices.push({mesh,source:g,geometry:own});mesh.geometry=own;mesh.userData.ownIndex=true;}
   const own=mesh.geometry.index,copy=new THREE.BufferGeometry(),names=Object.keys(g.attributes);
   for(const n of names){const src=g.attributes[n],out=new Float32Array(picked.length*3*src.itemSize);
    picked.forEach((t,i)=>{for(let k=0;k<3;k++)for(let s=0;s<src.itemSize;s++)out[(i*3+k)*src.itemSize+s]=src.getComponent(index.getX(t+k),s);});
@@ -124,14 +124,28 @@ export function liftPiece(root,parts,pivot,name){
  const hide=on=>{for(const {own,picked,before} of saved){picked.forEach((t,i)=>{const v=on?before[i][0]:null;for(let k=0;k<3;k++)own.setX(t+k,on?v:before[i][k]);});own.needsUpdate=true;}};
  return {piece,found:saved.length>0,
   /** The piece leaves the baked mesh: from now on only `piece` draws it. */
-  take(){piece.position.set(...pivot);piece.rotation.set(0,0,0);hide(true);root.add(piece);},
+  take(){if(disposed)return;piece.position.set(...pivot);piece.rotation.set(0,0,0);hide(true);root.add(piece);},
   /** Back where it was baked: the copy goes and the room draws it again. */
-  restore(){piece.removeFromParent();hide(false);}};
+  restore(){piece.removeFromParent();if(!disposed)hide(false);},
+  dispose(){
+   if(disposed)return;piece.removeFromParent();hide(false);disposed=true;
+   // These extracted triangles and the added inner face belong to this piece.
+   // Their materials still belong to the fitted model or the room's bar group.
+   const copies=new Set();piece.traverse(o=>{if(o.isMesh)copies.add(o.geometry);});copies.forEach(g=>g.dispose());piece.clear();
+   for(const {mesh,source,geometry} of ownedIndices){
+    if(mesh.geometry===geometry){mesh.geometry=source;delete mesh.userData.ownIndex;}
+    // The wrapper owns its index, but borrows the cached model's vertex buffers.
+    // As with shop-street-batches, detach those before Three's disposal handler.
+    for(const key of Object.keys(geometry.attributes))geometry.deleteAttribute(key);
+    geometry.morphAttributes={};geometry.dispose();
+   }
+  }};
 }
 
 /** Minato's drinks station, built into the fitted room. */
 export function buildMinatoBar(room){
  const B=MINATO_BAR,group=new THREE.Group();group.name='Minato drinks station';room.add(group);
+ let disposed=false;
  const metal=steel(),dark=new THREE.MeshStandardMaterial({color:0x2b2926,roughness:.55}),liner=new THREE.MeshStandardMaterial({color:0xdfe3df,roughness:.6,side:THREE.BackSide});
  // The glass rack: a perforated steel tray on the worktop.
  // A steel tray with a ribbed rubber bar mat: the glasses rest on the round ribs' crests (no flat face to share), 3 mm
@@ -180,11 +194,12 @@ export function buildMinatoBar(room){
  const [bx,by,bz]=B.shelf.bottle;
  const bottle=liftPiece(room,[['Bottle bodies',p=>Math.hypot(p.x-bx,p.z-bz)<.075&&p.y>by-.01&&p.y<by+.42],['Bottle labels',p=>Math.hypot(p.x-bx,p.z-bz)<.075&&p.y>by-.01&&p.y<by+.42]],[bx,by,bz],'Sango Quay bottle');
  // Without the fitted room (a test's bare room) the bottle is a plain one of the same size.
- if(!bottle.found)cyl(bottle.piece,'Sango Quay bottle stand-in',.035,.30,[0,.15,0],new THREE.MeshStandardMaterial({color:0x8a6a3a}));
+ const fallbackMaterial=!bottle.found?new THREE.MeshStandardMaterial({color:0x8a6a3a}):null;
+ if(fallbackMaterial)cyl(bottle.piece,'Sango Quay bottle stand-in',.035,.30,[0,.15,0],fallbackMaterial);
  bottle.piece.userData.grip={radius:.036,height:.07};
  // Out of the shelf and at the front of the slate, where she takes it from and puts it back.
  const inUse=new THREE.Vector3(...B.shelf.inUse);bottle.take();bottle.piece.position.copy(inUse);bottle.piece.rotation.set(0,0,0);
- bottle.home=()=>{group.attach(bottle.piece);bottle.piece.position.copy(inUse);bottle.piece.rotation.set(0,0,0);};bottle.piece.userData.spout=[0,.30,0];
+ bottle.home=()=>{if(disposed)return;group.attach(bottle.piece);bottle.piece.position.copy(inUse);bottle.piece.rotation.set(0,0,0);};bottle.piece.userData.spout=[0,.30,0];
  let doorAngle=0,leverAngle=0;
  // Every place holds its item until she takes it; she refills an empty place when she is back at her station.
  const fill=slot=>{slot.item=slot.make();slot.item.position.set(...slot.home);group.add(slot.item);};
@@ -215,7 +230,7 @@ export function buildMinatoBar(room){
   /** Where her hand meets the door's pull, as it is now. */
   doorPull(){room.updateMatrixWorld(true);const p=door.piece.parent?door.piece:null,local=new THREE.Vector3(D.width*.86,1.06,.04);
    if(p)return p.localToWorld(local);return local.applyAxisAngle(new THREE.Vector3(0,1,0),D.open*doorAngle).add(new THREE.Vector3(doorX,0,doorZ));},
-  dispose(){door.restore();bottle.restore();}};
+  dispose(){if(disposed)return;disposed=true;door.dispose();bottle.dispose();fallbackMaterial?.dispose();}};
 }
 /** Cold oolong tea in a glass jug with a lid, as a 1997 counter kept it. */
 function jug(){
