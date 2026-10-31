@@ -3,10 +3,10 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,LOOK_STANDIN,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031ui1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031audit2';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
-import {lookSwatch} from '../johansson-town/src/ui/look-picker.js?v=20261029-camera';
+import {lookIcon} from './look-icons.js?v=20261031audit2';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
@@ -239,10 +239,13 @@ function renderLookRail(ctx){
  const box=$(state.mode==='editor'?'editLookRail':'cameraLookRail');box.textContent='';
  ctx.recipe.layers.forEach((layer,i)=>{
   const b=document.createElement('button');b.type='button';b.className='rail-look swatch';b.setAttribute('aria-label',`Look ${i+1}: ${LOOKS[layer.look].label}`);b.setAttribute('aria-pressed',String(i===ctx.active));b.title=LOOKS[layer.look].label;
-  b.innerHTML=lookSwatch(LOOK_STANDIN[layer.look]||layer.look,`rail-${state.mode}-${i}-${layer.look}`);
+  b.innerHTML=lookIcon(layer.look);
   const label=document.createElement('span');label.textContent=lookLabel(layer.look);b.append(label);
   b.addEventListener('click',()=>{ctx.active=i;if(state.mode==='editor')selectTab('looks');else showLooks(true);trayChanged({thumbs:true});});box.append(b);
  });
+ // Reveal the selected Look inside its rail; never scroll the photograph's stage.
+ const rail=box.parentElement,active=box.children[ctx.active];
+ if(active&&rail.clientHeight){const a=active.getBoundingClientRect(),r=rail.getBoundingClientRect();rail.scrollTop+=a.top<r.top?a.top-r.top:a.bottom>r.bottom?a.bottom-r.bottom:0;}
 }
 function buildGroups(){
  const row=$('lookGroups');row.textContent='';
@@ -259,8 +262,8 @@ function buildStrip(){
  for(const name of offered()){
   const b=document.createElement('button');b.type='button';b.className='tile';b.setAttribute('role','radio');b.dataset.look=name;
   b.title=LOOKS[name].hint;b.setAttribute('aria-label',LOOKS[name].label);
-  // World's own picture of the Look (the same little house in each style) until the live one is drawn.
-  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookSwatch(LOOK_STANDIN[name]||name,`cam-${name}`);
+  // A medium-specific symbol until the live photograph thumbnail is ready.
+  const face=document.createElement('span');face.className='face swatch';face.innerHTML=lookIcon(name);
   const c=document.createElement('canvas');c.width=c.height=THUMB;face.append(c);
   const s=document.createElement('span');s.className='name';s.textContent=lookLabel(name);
   b.append(face,s);strip.append(b);tiles.set(name,{button:b,canvas:c,drawn:false});
@@ -272,7 +275,7 @@ function renderLayers(){
  const mix=document.createElement('span');mix.className='mix';layersEl.append(mix);
  layers.forEach((layer,i)=>{
   const wrap=document.createElement('span');wrap.className=`layer${i===ctx.active?' active':''}${layers.length>1?' removable':''}`;
-  const pick=document.createElement('button');pick.type='button';pick.className='layer-pick swatch';pick.innerHTML=`${lookSwatch(LOOK_STANDIN[layer.look]||layer.look,`mix-${i}-${layer.look}`)}<span class="layer-name">${lookLabel(layer.look)}</span>`;
+  const pick=document.createElement('button');pick.type='button';pick.className='layer-pick swatch';pick.innerHTML=`${lookIcon(layer.look)}<span class="layer-name">${lookLabel(layer.look)}</span>`;
   pick.setAttribute('aria-pressed',String(i===ctx.active));pick.setAttribute('aria-label',`Look ${i+1}: ${LOOKS[layer.look].label}${layer.amount<1?`, ${Math.round(layer.amount*100)}%`:''}`);
   // On a short screen the Look's name unfolds the strip first; tapped again, its intensity.
   pick.addEventListener('click',()=>{
@@ -639,7 +642,7 @@ function focusTap(e,recipe,frame){
  sound('tick');toast('Focus here');invalidate();
  return true;
 }
-gestures($('cameraStage'),{
+gestures($('cameraPictureArea'),{
  onDoubleTap:()=>{if(state.camera.running&&!$('flip').hidden)$('flip').click();},
  onTap:e=>{if(focusTap(e,state.camera.recipe,'cameraFrame'))refreshThumbs();},
  // The whole height of the picture is the whole range of light.
@@ -969,7 +972,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
  engine.setSource('edit',picture,width,height);
  eraser.reset();$('eraseUndo').disabled=true;
- show('editor');showEnhanceStrength(false);$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
+ show('editor');showEnhanceStrength(false);selectFrameFinish('paper');$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
@@ -1018,6 +1021,13 @@ function renderPaperChoices(box,current,pick){
  box.textContent='';
  for(const p of PAPERS){const b=document.createElement('button');b.type='button';b.textContent=p.label;b.dataset.paper=p.id;b.setAttribute('role','radio');b.setAttribute('aria-checked',String(current===p.id));b.addEventListener('click',()=>{sound('tick');pick(p.id);});box.append(b);}
 }
+function selectFrameFinish(name){
+ for(const [id,panel,kind] of [['framePaper','paperOptions','paper'],['frameMirror','mirrorOptions','mirror']]){
+  $(id).setAttribute('aria-pressed',String(name===kind));$(panel).hidden=name!==kind;
+ }
+}
+$('framePaper').addEventListener('click',()=>selectFrameFinish('paper'));
+$('frameMirror').addEventListener('click',()=>selectFrameFinish('mirror'));
 $('mirrorChoices').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');state.edit.recipe.trick=b.dataset.trick;renderFramePanel();refreshThumbs(true);invalidate();});
 $('editStamp').addEventListener('click',()=>{const e=state.edit;if(!e)return;sound('tick');e.recipe.stamp=!e.recipe.stamp;renderFramePanel();invalidate();});
 $('saveEdit').addEventListener('click',async()=>{
@@ -1045,7 +1055,7 @@ function comparePhoto(on,pinned=false){
 $('compareOriginal').addEventListener('click',()=>{const on=!state.edit?.comparePinned;comparePhoto(on,on);});
 // Hold the picture to see the original.
 {
- const stage=$('editStage');let holding=null,at=null;
+ const stage=$('editPictureArea');let holding=null,at=null;
  const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing&&!state.edit.comparePinned)comparePhoto(false);};
  stage.addEventListener('pointerdown',e=>{
   if(!state.edit||e.target.closest('button')||state.edit.erasing||state.edit.cropping)return;
@@ -1220,12 +1230,14 @@ async function renderStickerPicker(){
  try{manifest=await loadStickerSets();}catch{grid.innerHTML='<p class="fine">The stickers could not be loaded.</p>';return;}
  const tabs=stickerTabs(manifest);
  sets.textContent='';
- // Text first (balloons, captions, words alone): a short name, so every tab fits across a phone.
+ // One scrollable category row; reveal the selected category without scrolling the photo.
  ['Text',...tabs.map(t=>t.name),'Mine'].forEach((name,i)=>{
   const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;
   b.setAttribute('aria-selected',String(i===stickerSet));b.addEventListener('click',()=>{sound('tick');stickerSet=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
   sets.append(b);
  });
+ const selected=sets.children[stickerSet];
+ if(selected){const b=selected.getBoundingClientRect(),r=sets.getBoundingClientRect();sets.scrollLeft+=b.left<r.left?b.left-r.left:b.right>r.right?b.right-r.right:0;}
  grid.textContent='';
  if(stickerSet===0){
   await loadLetteringFont();

@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261031ui1">
+<link rel="stylesheet" href="camera.css?v=20261031audit2">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
-<link rel="stylesheet" href="camera-ui.css?v=20261031ui1">
+<link rel="stylesheet" href="camera-ui.css?v=20261031audit2">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -60,6 +60,7 @@
   <symbol id="i-resize" viewBox="0 0 24 24"><path d="M7 17 17 7M11 7h6v6M13 17H7v-6"/></symbol>
   <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
   <symbol id="i-frame" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.4"/><rect x="7" y="7" width="10" height="8" rx="1"/></symbol>
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5Z M15 3v5h4M8 12h8M8 16h6"/></symbol>
   <symbol id="i-mirror" viewBox="0 0 24 24"><path d="M12 2.8v18.4" stroke-dasharray="2.2 2.4"/><path d="M9.2 6.2a6 6 0 0 0 0 11.6M14.8 6.2a6 6 0 0 1 0 11.6"/><circle cx="7.6" cy="10.6" r=".9" class="fill"/><circle cx="16.4" cy="10.6" r=".9" class="fill"/></symbol>
   <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
   <symbol id="i-sound-off" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z"/><path d="m15.5 9.5 5 5M20.5 9.5l-5 5"/></symbol>
@@ -176,9 +177,15 @@
    <div class="panel" id="panelStickers" role="tabpanel" aria-labelledby="tabStickers" hidden></div>
    <div class="panel" id="panelFrame" role="tabpanel" aria-labelledby="tabFrame" hidden>
     <div class="frame-choices" id="frameChoices" role="radiogroup" aria-label="Frame"></div>
-    <div class="option-row"><span id="paperLabel">Paper</span><div class="mini-seg paper-choices" id="paperChoices" role="radiogroup" aria-labelledby="paperLabel"></div></div>
-    <div class="option-row"><span id="mirrorLabel">Mirror</span><div class="mini-seg" id="mirrorChoices" role="radiogroup" aria-labelledby="mirrorLabel"></div></div>
-    <div class="option-row"><span id="stampLabel">Date stamp</span><button type="button" class="switch" id="editStamp" role="switch" aria-checked="false" aria-labelledby="stampLabel"></button></div>
+    <div class="frame-finishes">
+     <div class="frame-finish-choices" role="group" aria-label="Finish controls">
+      <button type="button" id="framePaper" aria-pressed="true" aria-controls="paperOptions" title="Paper"><svg aria-hidden="true"><use href="#i-paper"/></svg><span id="paperLabel">Paper</span></button>
+      <button type="button" id="frameMirror" aria-pressed="false" aria-controls="mirrorOptions" title="Mirror"><svg aria-hidden="true"><use href="#i-mirror"/></svg><span id="mirrorLabel">Mirror</span></button>
+     </div>
+     <button type="button" class="frame-stamp" id="editStamp" role="switch" aria-checked="false" aria-label="Date stamp" title="Date stamp"><svg aria-hidden="true"><use href="#i-date"/></svg></button>
+    </div>
+    <div id="paperOptions"><div class="mini-seg paper-choices" id="paperChoices" role="radiogroup" aria-labelledby="paperLabel"></div></div>
+    <div id="mirrorOptions" hidden><div class="mini-seg" id="mirrorChoices" role="radiogroup" aria-labelledby="mirrorLabel"></div></div>
    </div>
   </div>
  </section>
@@ -305,6 +312,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261031ui1"></script>
+<script type="module" src="app.js?v=20261031audit2"></script>
 </body>
 </html>

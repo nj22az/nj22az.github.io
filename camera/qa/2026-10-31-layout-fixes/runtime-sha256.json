@@ -1,0 +1,36 @@
+{
+  "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e",
+  "tree": "b3695dc5dae3bd48484b26c27e9d7e359e10c151",
+  "files": [
+    {
+      "path": "camera/app.js",
+      "bytes": 90682,
+      "sha256": "0de6826db43f945d2febc9fe41a54a0e46042358bb76265a8b84c3cc4101ccc5"
+    },
+    {
+      "path": "camera/camera-ui.css",
+      "bytes": 21826,
+      "sha256": "ccf2db33222a182dfc11765c2074aab5436a17884516a0ae1e715557504aad54"
+    },
+    {
+      "path": "camera/index.html",
+      "bytes": 26967,
+      "sha256": "2c31be5c67d65e39849993275790c8076c865340b39b25057f6aaba3514ada74"
+    },
+    {
+      "path": "camera/looks-gl.js",
+      "bytes": 93799,
+      "sha256": "effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9"
+    },
+    {
+      "path": "camera/look-icons.js",
+      "bytes": 3602,
+      "sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935"
+    },
+    {
+      "path": "johansson-town/tools/camera/session.mjs",
+      "bytes": 10942,
+      "sha256": "2602e11bfd6fc7799b9169ed8d894e42dd851e809852e3ebc98f65cd3d203e9b"
+    }
+  ]
+}

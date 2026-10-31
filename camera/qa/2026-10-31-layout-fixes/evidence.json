@@ -1,0 +1,2046 @@
+{
+  "schema": 1,
+  "repository": "nj22az/nj22az.github.io",
+  "pr": 418,
+  "branch": "codex/pocket-camera-design-audit",
+  "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e",
+  "tree": "b3695dc5dae3bd48484b26c27e9d7e359e10c151",
+  "first_layout_source": "f38127e1fbe9504c8f9c131ae390f3210983c8e8",
+  "parent": "aa6c38213f38da3ee11027e2947fdad9ed1589ae",
+  "before_screenshots_source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f",
+  "published_main": "83783c93448d1be251a61c213959448e1d21c971",
+  "release_keys": {
+    "review": "20261031audit2",
+    "published": "20261031ui1"
+  },
+  "checks": {
+    "camera": {
+      "status": "success",
+      "run": 41195476077,
+      "job": 124520778612,
+      "passed": 143,
+      "recipe_combinations": 816,
+      "full_preview_export_pairs": 408,
+      "historical_comparisons": 68
+    },
+    "ui": {
+      "passed": 82,
+      "run": 41195476077,
+      "job": 124520778456
+    },
+    "audit": {
+      "passed": 50,
+      "run": 41195476077,
+      "job": 124520778264
+    },
+    "mcp_unit": {
+      "passed": 15,
+      "run": 41195476147,
+      "job": 124520658675
+    },
+    "mcp_acceptance": {
+      "passed": 20,
+      "run": 41195476147,
+      "job": 124520658675
+    },
+    "npm_findings": 0,
+    "world": {
+      "run": 41195476103,
+      "status": "success"
+    },
+    "linux": {
+      "run": 41195476135,
+      "status": "in_progress",
+      "counted_as_pass": false,
+      "job": 124520836704,
+      "last_active_stage": "Verify native application and disk saves"
+    }
+  },
+  "artifacts": [
+    {
+      "id": 13041141097,
+      "name": "pocket-camera-camera-ui-evidence",
+      "bytes": 11810634,
+      "sha256": "66e9f2edc537916f02f5d187be1531c3d5d5b76affc6eb72b0bb317cbf9ad7c2",
+      "run": 41195476077,
+      "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e"
+    },
+    {
+      "id": 13040511160,
+      "name": "pocket-camera-camera-audit-evidence",
+      "bytes": 13543900,
+      "sha256": "a9f34a6dc3e356f9edf1cc07619ef80005878999ce616bdba7ffccb4ef46d651",
+      "run": 41195476077,
+      "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e"
+    },
+    {
+      "id": 13040388063,
+      "name": "pocket-camera-camera-evidence",
+      "bytes": 29012196,
+      "sha256": "1bc256fd573ababbb5ca5c2bd64f577cbce58566b01d48c93a5f188f6f8b5f2d",
+      "run": 41195476077,
+      "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e"
+    },
+    {
+      "id": 13040361138,
+      "name": "camera-mcp-evidence",
+      "bytes": 588352,
+      "sha256": "7fae06699f3e82a95db68033057a1ee4a6a271c2440df9268e8af52d1189119c",
+      "run": 41195476147,
+      "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e"
+    }
+  ],
+  "limits": {
+    "physical_safari": false,
+    "physical_native_share": false,
+    "physical_camera": false,
+    "owner_installed_mcp_host": false,
+    "personal_photos": false,
+    "live_browser_album": false,
+    "connection": "Official SDK acceptance client only; eleven tools"
+  },
+  "publication": {
+    "merged": false,
+    "published": false,
+    "main_unchanged": true
+  },
+  "ar": {
+    "status": "Proposal only; no implementation"
+  },
+  "resolved_findings": [
+    "Frame photo size preserved with Paper/Mirror mode and Date icon",
+    "Sticker categories occupy one scrollable row; Mine/Thuan fully reachable",
+    "Three Looks and Original fully reachable within rail/stage/viewport, including 200% text; rail press never compares photo"
+  ],
+  "first_failure": {
+    "source": "f38127e1fbe9504c8f9c131ae390f3210983c8e8",
+    "run": 41195144428,
+    "job": 124519696422,
+    "result": "Landscape Paper controls extended below panel. Fixed with compact frame thumbnails; all assertions retained."
+  },
+  "ui_measurements": [
+    {
+      "label": "iphone-17",
+      "width": 402,
+      "height": 700,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 216,
+        "frameHeight": 216
+      },
+      "stickerCategories": {
+        "tops": [
+          397,
+          397,
+          397,
+          397,
+          397,
+          397
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 264,
+              "top": 82,
+              "right": 378,
+              "bottom": 346,
+              "left": 322
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 402,
+              "height": 300,
+              "top": 64,
+              "right": 402,
+              "bottom": 364,
+              "left": 0
+            },
+            "button": {
+              "x": 322,
+              "y": 186,
+              "width": 56,
+              "height": 53.5,
+              "top": 186,
+              "right": 378,
+              "bottom": 239.5,
+              "left": 322
+            },
+            "icon": {
+              "x": 336,
+              "y": 191,
+              "width": 28,
+              "height": 28,
+              "top": 191,
+              "right": 364,
+              "bottom": 219,
+              "left": 336
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 264,
+              "top": 82,
+              "right": 378,
+              "bottom": 346,
+              "left": 322
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 402,
+              "height": 300,
+              "top": 64,
+              "right": 402,
+              "bottom": 364,
+              "left": 0
+            },
+            "button": {
+              "x": 322,
+              "y": 134,
+              "width": 56,
+              "height": 53.5,
+              "top": 134,
+              "right": 378,
+              "bottom": 187.5,
+              "left": 322
+            },
+            "icon": {
+              "x": 336,
+              "y": 139,
+              "width": 28,
+              "height": 28,
+              "top": 139,
+              "right": 364,
+              "bottom": 167,
+              "left": 336
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 264,
+              "top": 82,
+              "right": 378,
+              "bottom": 346,
+              "left": 322
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 402,
+              "height": 300,
+              "top": 64,
+              "right": 402,
+              "bottom": 364,
+              "left": 0
+            },
+            "button": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 53.5,
+              "top": 82,
+              "right": 378,
+              "bottom": 135.5,
+              "left": 322
+            },
+            "icon": {
+              "x": 336,
+              "y": 87,
+              "width": 28,
+              "height": 28,
+              "top": 87,
+              "right": 364,
+              "bottom": 115,
+              "left": 336
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 322,
+            "y": 82,
+            "width": 56,
+            "height": 264,
+            "top": 82,
+            "right": 378,
+            "bottom": 346,
+            "left": 322
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 402,
+            "height": 300,
+            "top": 64,
+            "right": 402,
+            "bottom": 364,
+            "left": 0
+          },
+          "button": {
+            "x": 322,
+            "y": 276,
+            "width": 56,
+            "height": 48,
+            "top": 276,
+            "right": 378,
+            "bottom": 324,
+            "left": 322
+          }
+        }
+      },
+      "largeTextRail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 266,
+              "y": 126.78125,
+              "width": 112,
+              "height": 144.828125,
+              "top": 126.78125,
+              "right": 378,
+              "bottom": 271.609375,
+              "left": 266
+            },
+            "stage": {
+              "x": 0,
+              "y": 108.78125,
+              "width": 402,
+              "height": 180.828125,
+              "top": 108.78125,
+              "right": 402,
+              "bottom": 289.609375,
+              "left": 0
+            },
+            "button": {
+              "x": 266,
+              "y": 203.78125,
+              "width": 112,
+              "height": 66,
+              "top": 203.78125,
+              "right": 378,
+              "bottom": 269.78125,
+              "left": 266
+            },
+            "icon": {
+              "x": 308,
+              "y": 208.78125,
+              "width": 28,
+              "height": 28,
+              "top": 208.78125,
+              "right": 336,
+              "bottom": 236.78125,
+              "left": 308
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 266,
+              "y": 126.78125,
+              "width": 112,
+              "height": 144.828125,
+              "top": 126.78125,
+              "right": 378,
+              "bottom": 271.609375,
+              "left": 266
+            },
+            "stage": {
+              "x": 0,
+              "y": 108.78125,
+              "width": 402,
+              "height": 180.828125,
+              "top": 108.78125,
+              "right": 402,
+              "bottom": 289.609375,
+              "left": 0
+            },
+            "button": {
+              "x": 266,
+              "y": 151.78125,
+              "width": 112,
+              "height": 66,
+              "top": 151.78125,
+              "right": 378,
+              "bottom": 217.78125,
+              "left": 266
+            },
+            "icon": {
+              "x": 308,
+              "y": 156.78125,
+              "width": 28,
+              "height": 28,
+              "top": 156.78125,
+              "right": 336,
+              "bottom": 184.78125,
+              "left": 308
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 266,
+              "y": 126.78125,
+              "width": 112,
+              "height": 144.828125,
+              "top": 126.78125,
+              "right": 378,
+              "bottom": 271.609375,
+              "left": 266
+            },
+            "stage": {
+              "x": 0,
+              "y": 108.78125,
+              "width": 402,
+              "height": 180.828125,
+              "top": 108.78125,
+              "right": 402,
+              "bottom": 289.609375,
+              "left": 0
+            },
+            "button": {
+              "x": 266,
+              "y": 126.78125,
+              "width": 112,
+              "height": 66,
+              "top": 126.78125,
+              "right": 378,
+              "bottom": 192.78125,
+              "left": 266
+            },
+            "icon": {
+              "x": 308,
+              "y": 131.78125,
+              "width": 28,
+              "height": 28,
+              "top": 131.78125,
+              "right": 336,
+              "bottom": 159.78125,
+              "left": 308
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 266,
+            "y": 126.78125,
+            "width": 112,
+            "height": 144.828125,
+            "top": 126.78125,
+            "right": 378,
+            "bottom": 271.609375,
+            "left": 266
+          },
+          "stage": {
+            "x": 0,
+            "y": 108.78125,
+            "width": 402,
+            "height": 180.828125,
+            "top": 108.78125,
+            "right": 402,
+            "bottom": 289.609375,
+            "left": 0
+          },
+          "button": {
+            "x": 266,
+            "y": 209.78125,
+            "width": 112,
+            "height": 62,
+            "top": 209.78125,
+            "right": 378,
+            "bottom": 271.78125,
+            "left": 266
+          }
+        }
+      }
+    },
+    {
+      "label": "iphone-17-full",
+      "width": 402,
+      "height": 874,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 216,
+        "frameHeight": 216
+      },
+      "stickerCategories": {
+        "tops": [
+          571,
+          571,
+          571,
+          571,
+          571,
+          571
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 438,
+              "top": 82,
+              "right": 378,
+              "bottom": 520,
+              "left": 322
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 402,
+              "height": 474,
+              "top": 64,
+              "right": 402,
+              "bottom": 538,
+              "left": 0
+            },
+            "button": {
+              "x": 322,
+              "y": 186,
+              "width": 56,
+              "height": 53.5,
+              "top": 186,
+              "right": 378,
+              "bottom": 239.5,
+              "left": 322
+            },
+            "icon": {
+              "x": 336,
+              "y": 191,
+              "width": 28,
+              "height": 28,
+              "top": 191,
+              "right": 364,
+              "bottom": 219,
+              "left": 336
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 438,
+              "top": 82,
+              "right": 378,
+              "bottom": 520,
+              "left": 322
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 402,
+              "height": 474,
+              "top": 64,
+              "right": 402,
+              "bottom": 538,
+              "left": 0
+            },
+            "button": {
+              "x": 322,
+              "y": 134,
+              "width": 56,
+              "height": 53.5,
+              "top": 134,
+              "right": 378,
+              "bottom": 187.5,
+              "left": 322
+            },
+            "icon": {
+              "x": 336,
+              "y": 139,
+              "width": 28,
+              "height": 28,
+              "top": 139,
+              "right": 364,
+              "bottom": 167,
+              "left": 336
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 438,
+              "top": 82,
+              "right": 378,
+              "bottom": 520,
+              "left": 322
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 402,
+              "height": 474,
+              "top": 64,
+              "right": 402,
+              "bottom": 538,
+              "left": 0
+            },
+            "button": {
+              "x": 322,
+              "y": 82,
+              "width": 56,
+              "height": 53.5,
+              "top": 82,
+              "right": 378,
+              "bottom": 135.5,
+              "left": 322
+            },
+            "icon": {
+              "x": 336,
+              "y": 87,
+              "width": 28,
+              "height": 28,
+              "top": 87,
+              "right": 364,
+              "bottom": 115,
+              "left": 336
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 322,
+            "y": 82,
+            "width": 56,
+            "height": 438,
+            "top": 82,
+            "right": 378,
+            "bottom": 520,
+            "left": 322
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 402,
+            "height": 474,
+            "top": 64,
+            "right": 402,
+            "bottom": 538,
+            "left": 0
+          },
+          "button": {
+            "x": 322,
+            "y": 450,
+            "width": 56,
+            "height": 48,
+            "top": 450,
+            "right": 378,
+            "bottom": 498,
+            "left": 322
+          }
+        }
+      }
+    },
+    {
+      "label": "iphone-17-landscape",
+      "width": 874,
+      "height": 340,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 228,
+        "frameHeight": 228
+      },
+      "stickerCategories": {
+        "tops": [
+          86,
+          86,
+          86,
+          86,
+          86,
+          86
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 450,
+              "y": 88,
+              "width": 56,
+              "height": 228,
+              "top": 88,
+              "right": 506,
+              "bottom": 316,
+              "left": 450
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 530,
+              "height": 276,
+              "top": 64,
+              "right": 530,
+              "bottom": 340,
+              "left": 0
+            },
+            "button": {
+              "x": 450,
+              "y": 192,
+              "width": 56,
+              "height": 53.5,
+              "top": 192,
+              "right": 506,
+              "bottom": 245.5,
+              "left": 450
+            },
+            "icon": {
+              "x": 464,
+              "y": 197,
+              "width": 28,
+              "height": 28,
+              "top": 197,
+              "right": 492,
+              "bottom": 225,
+              "left": 464
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 450,
+              "y": 88,
+              "width": 56,
+              "height": 228,
+              "top": 88,
+              "right": 506,
+              "bottom": 316,
+              "left": 450
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 530,
+              "height": 276,
+              "top": 64,
+              "right": 530,
+              "bottom": 340,
+              "left": 0
+            },
+            "button": {
+              "x": 450,
+              "y": 140,
+              "width": 56,
+              "height": 53.5,
+              "top": 140,
+              "right": 506,
+              "bottom": 193.5,
+              "left": 450
+            },
+            "icon": {
+              "x": 464,
+              "y": 145,
+              "width": 28,
+              "height": 28,
+              "top": 145,
+              "right": 492,
+              "bottom": 173,
+              "left": 464
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 450,
+              "y": 88,
+              "width": 56,
+              "height": 228,
+              "top": 88,
+              "right": 506,
+              "bottom": 316,
+              "left": 450
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 530,
+              "height": 276,
+              "top": 64,
+              "right": 530,
+              "bottom": 340,
+              "left": 0
+            },
+            "button": {
+              "x": 450,
+              "y": 88,
+              "width": 56,
+              "height": 53.5,
+              "top": 88,
+              "right": 506,
+              "bottom": 141.5,
+              "left": 450
+            },
+            "icon": {
+              "x": 464,
+              "y": 93,
+              "width": 28,
+              "height": 28,
+              "top": 93,
+              "right": 492,
+              "bottom": 121,
+              "left": 464
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 450,
+            "y": 88,
+            "width": 56,
+            "height": 228,
+            "top": 88,
+            "right": 506,
+            "bottom": 316,
+            "left": 450
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 530,
+            "height": 276,
+            "top": 64,
+            "right": 530,
+            "bottom": 340,
+            "left": 0
+          },
+          "button": {
+            "x": 450,
+            "y": 253.5,
+            "width": 56,
+            "height": 48,
+            "top": 253.5,
+            "right": 506,
+            "bottom": 301.5,
+            "left": 450
+          }
+        }
+      }
+    },
+    {
+      "label": "ipad-mini",
+      "width": 744,
+      "height": 980,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 448,
+        "frameHeight": 448
+      },
+      "stickerCategories": {
+        "tops": [
+          672.109375,
+          672.109375,
+          672.109375,
+          672.109375,
+          672.109375,
+          672.109375
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 648,
+              "y": 92,
+              "width": 56,
+              "height": 515.109375,
+              "top": 92,
+              "right": 704,
+              "bottom": 607.109375,
+              "left": 648
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 744,
+              "height": 571.109375,
+              "top": 64,
+              "right": 744,
+              "bottom": 635.109375,
+              "left": 0
+            },
+            "button": {
+              "x": 648,
+              "y": 196,
+              "width": 56,
+              "height": 53.5,
+              "top": 196,
+              "right": 704,
+              "bottom": 249.5,
+              "left": 648
+            },
+            "icon": {
+              "x": 662,
+              "y": 201,
+              "width": 28,
+              "height": 28,
+              "top": 201,
+              "right": 690,
+              "bottom": 229,
+              "left": 662
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 648,
+              "y": 92,
+              "width": 56,
+              "height": 515.109375,
+              "top": 92,
+              "right": 704,
+              "bottom": 607.109375,
+              "left": 648
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 744,
+              "height": 571.109375,
+              "top": 64,
+              "right": 744,
+              "bottom": 635.109375,
+              "left": 0
+            },
+            "button": {
+              "x": 648,
+              "y": 144,
+              "width": 56,
+              "height": 53.5,
+              "top": 144,
+              "right": 704,
+              "bottom": 197.5,
+              "left": 648
+            },
+            "icon": {
+              "x": 662,
+              "y": 149,
+              "width": 28,
+              "height": 28,
+              "top": 149,
+              "right": 690,
+              "bottom": 177,
+              "left": 662
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 648,
+              "y": 92,
+              "width": 56,
+              "height": 515.109375,
+              "top": 92,
+              "right": 704,
+              "bottom": 607.109375,
+              "left": 648
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 744,
+              "height": 571.109375,
+              "top": 64,
+              "right": 744,
+              "bottom": 635.109375,
+              "left": 0
+            },
+            "button": {
+              "x": 648,
+              "y": 92,
+              "width": 56,
+              "height": 53.5,
+              "top": 92,
+              "right": 704,
+              "bottom": 145.5,
+              "left": 648
+            },
+            "icon": {
+              "x": 662,
+              "y": 97,
+              "width": 28,
+              "height": 28,
+              "top": 97,
+              "right": 690,
+              "bottom": 125,
+              "left": 662
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 648,
+            "y": 92,
+            "width": 56,
+            "height": 515.109375,
+            "top": 92,
+            "right": 704,
+            "bottom": 607.109375,
+            "left": 648
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 744,
+            "height": 571.109375,
+            "top": 64,
+            "right": 744,
+            "bottom": 635.109375,
+            "left": 0
+          },
+          "button": {
+            "x": 648,
+            "y": 537.109375,
+            "width": 56,
+            "height": 48,
+            "top": 537.109375,
+            "right": 704,
+            "bottom": 585.109375,
+            "left": 648
+          }
+        }
+      }
+    },
+    {
+      "label": "ipad-mini-landscape",
+      "width": 1133,
+      "height": 650,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 506,
+        "frameHeight": 506
+      },
+      "stickerCategories": {
+        "tops": [
+          90,
+          90,
+          90,
+          90,
+          90,
+          90
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 709,
+              "y": 88,
+              "width": 56,
+              "height": 538,
+              "top": 88,
+              "right": 765,
+              "bottom": 626,
+              "left": 709
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 789,
+              "height": 586,
+              "top": 64,
+              "right": 789,
+              "bottom": 650,
+              "left": 0
+            },
+            "button": {
+              "x": 709,
+              "y": 192,
+              "width": 56,
+              "height": 53.5,
+              "top": 192,
+              "right": 765,
+              "bottom": 245.5,
+              "left": 709
+            },
+            "icon": {
+              "x": 723,
+              "y": 197,
+              "width": 28,
+              "height": 28,
+              "top": 197,
+              "right": 751,
+              "bottom": 225,
+              "left": 723
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 709,
+              "y": 88,
+              "width": 56,
+              "height": 538,
+              "top": 88,
+              "right": 765,
+              "bottom": 626,
+              "left": 709
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 789,
+              "height": 586,
+              "top": 64,
+              "right": 789,
+              "bottom": 650,
+              "left": 0
+            },
+            "button": {
+              "x": 709,
+              "y": 140,
+              "width": 56,
+              "height": 53.5,
+              "top": 140,
+              "right": 765,
+              "bottom": 193.5,
+              "left": 709
+            },
+            "icon": {
+              "x": 723,
+              "y": 145,
+              "width": 28,
+              "height": 28,
+              "top": 145,
+              "right": 751,
+              "bottom": 173,
+              "left": 723
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 709,
+              "y": 88,
+              "width": 56,
+              "height": 538,
+              "top": 88,
+              "right": 765,
+              "bottom": 626,
+              "left": 709
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 789,
+              "height": 586,
+              "top": 64,
+              "right": 789,
+              "bottom": 650,
+              "left": 0
+            },
+            "button": {
+              "x": 709,
+              "y": 88,
+              "width": 56,
+              "height": 53.5,
+              "top": 88,
+              "right": 765,
+              "bottom": 141.5,
+              "left": 709
+            },
+            "icon": {
+              "x": 723,
+              "y": 93,
+              "width": 28,
+              "height": 28,
+              "top": 93,
+              "right": 751,
+              "bottom": 121,
+              "left": 723
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 709,
+            "y": 88,
+            "width": 56,
+            "height": 538,
+            "top": 88,
+            "right": 765,
+            "bottom": 626,
+            "left": 709
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 789,
+            "height": 586,
+            "top": 64,
+            "right": 789,
+            "bottom": 650,
+            "left": 0
+          },
+          "button": {
+            "x": 709,
+            "y": 556,
+            "width": 56,
+            "height": 48,
+            "top": 556,
+            "right": 765,
+            "bottom": 604,
+            "left": 709
+          }
+        }
+      }
+    },
+    {
+      "label": "ipad-compact",
+      "width": 768,
+      "height": 1024,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 466,
+        "frameHeight": 466
+      },
+      "stickerCategories": {
+        "tops": [
+          716.109375,
+          716.109375,
+          716.109375,
+          716.109375,
+          716.109375,
+          716.109375
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 672,
+              "y": 92,
+              "width": 56,
+              "height": 559.109375,
+              "top": 92,
+              "right": 728,
+              "bottom": 651.109375,
+              "left": 672
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 768,
+              "height": 615.109375,
+              "top": 64,
+              "right": 768,
+              "bottom": 679.109375,
+              "left": 0
+            },
+            "button": {
+              "x": 672,
+              "y": 196,
+              "width": 56,
+              "height": 53.5,
+              "top": 196,
+              "right": 728,
+              "bottom": 249.5,
+              "left": 672
+            },
+            "icon": {
+              "x": 686,
+              "y": 201,
+              "width": 28,
+              "height": 28,
+              "top": 201,
+              "right": 714,
+              "bottom": 229,
+              "left": 686
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 672,
+              "y": 92,
+              "width": 56,
+              "height": 559.109375,
+              "top": 92,
+              "right": 728,
+              "bottom": 651.109375,
+              "left": 672
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 768,
+              "height": 615.109375,
+              "top": 64,
+              "right": 768,
+              "bottom": 679.109375,
+              "left": 0
+            },
+            "button": {
+              "x": 672,
+              "y": 144,
+              "width": 56,
+              "height": 53.5,
+              "top": 144,
+              "right": 728,
+              "bottom": 197.5,
+              "left": 672
+            },
+            "icon": {
+              "x": 686,
+              "y": 149,
+              "width": 28,
+              "height": 28,
+              "top": 149,
+              "right": 714,
+              "bottom": 177,
+              "left": 686
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 672,
+              "y": 92,
+              "width": 56,
+              "height": 559.109375,
+              "top": 92,
+              "right": 728,
+              "bottom": 651.109375,
+              "left": 672
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 768,
+              "height": 615.109375,
+              "top": 64,
+              "right": 768,
+              "bottom": 679.109375,
+              "left": 0
+            },
+            "button": {
+              "x": 672,
+              "y": 92,
+              "width": 56,
+              "height": 53.5,
+              "top": 92,
+              "right": 728,
+              "bottom": 145.5,
+              "left": 672
+            },
+            "icon": {
+              "x": 686,
+              "y": 97,
+              "width": 28,
+              "height": 28,
+              "top": 97,
+              "right": 714,
+              "bottom": 125,
+              "left": 686
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 672,
+            "y": 92,
+            "width": 56,
+            "height": 559.109375,
+            "top": 92,
+            "right": 728,
+            "bottom": 651.109375,
+            "left": 672
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 768,
+            "height": 615.109375,
+            "top": 64,
+            "right": 768,
+            "bottom": 679.109375,
+            "left": 0
+          },
+          "button": {
+            "x": 672,
+            "y": 581.109375,
+            "width": 56,
+            "height": 48,
+            "top": 581.109375,
+            "right": 728,
+            "bottom": 629.109375,
+            "left": 672
+          }
+        }
+      }
+    },
+    {
+      "label": "small-phone",
+      "width": 320,
+      "height": 568,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 138,
+        "frameHeight": 160
+      },
+      "stickerCategories": {
+        "tops": [
+          269,
+          269,
+          269,
+          269,
+          269,
+          269
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 244,
+              "y": 74,
+              "width": 56,
+              "height": 138,
+              "top": 74,
+              "right": 300,
+              "bottom": 212,
+              "left": 244
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 320,
+              "height": 158,
+              "top": 64,
+              "right": 320,
+              "bottom": 222,
+              "left": 0
+            },
+            "button": {
+              "x": 244,
+              "y": 156,
+              "width": 56,
+              "height": 53.5,
+              "top": 156,
+              "right": 300,
+              "bottom": 209.5,
+              "left": 244
+            },
+            "icon": {
+              "x": 258,
+              "y": 161,
+              "width": 28,
+              "height": 28,
+              "top": 161,
+              "right": 286,
+              "bottom": 189,
+              "left": 258
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 244,
+              "y": 74,
+              "width": 56,
+              "height": 138,
+              "top": 74,
+              "right": 300,
+              "bottom": 212,
+              "left": 244
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 320,
+              "height": 158,
+              "top": 64,
+              "right": 320,
+              "bottom": 222,
+              "left": 0
+            },
+            "button": {
+              "x": 244,
+              "y": 104,
+              "width": 56,
+              "height": 53.5,
+              "top": 104,
+              "right": 300,
+              "bottom": 157.5,
+              "left": 244
+            },
+            "icon": {
+              "x": 258,
+              "y": 109,
+              "width": 28,
+              "height": 28,
+              "top": 109,
+              "right": 286,
+              "bottom": 137,
+              "left": 258
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 244,
+              "y": 74,
+              "width": 56,
+              "height": 138,
+              "top": 74,
+              "right": 300,
+              "bottom": 212,
+              "left": 244
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 320,
+              "height": 158,
+              "top": 64,
+              "right": 320,
+              "bottom": 222,
+              "left": 0
+            },
+            "button": {
+              "x": 244,
+              "y": 74,
+              "width": 56,
+              "height": 53.5,
+              "top": 74,
+              "right": 300,
+              "bottom": 127.5,
+              "left": 244
+            },
+            "icon": {
+              "x": 258,
+              "y": 79,
+              "width": 28,
+              "height": 28,
+              "top": 79,
+              "right": 286,
+              "bottom": 107,
+              "left": 258
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 244,
+            "y": 74,
+            "width": 56,
+            "height": 138,
+            "top": 74,
+            "right": 300,
+            "bottom": 212,
+            "left": 244
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 320,
+            "height": 158,
+            "top": 64,
+            "right": 320,
+            "bottom": 222,
+            "left": 0
+          },
+          "button": {
+            "x": 244,
+            "y": 163.5,
+            "width": 56,
+            "height": 48,
+            "top": 163.5,
+            "right": 300,
+            "bottom": 211.5,
+            "left": 244
+          }
+        }
+      }
+    },
+    {
+      "label": "resized-ipad",
+      "width": 507,
+      "height": 740,
+      "passed": true,
+      "framePhoto": {
+        "looksHeight": 294,
+        "frameHeight": 294
+      },
+      "stickerCategories": {
+        "tops": [
+          437,
+          437,
+          437,
+          437,
+          437,
+          437
+        ],
+        "targets": true,
+        "overflow": 0,
+        "pan": "pan-x pan-y"
+      },
+      "rail": {
+        "looks": [
+          {
+            "index": 2,
+            "rail": {
+              "x": 427,
+              "y": 82,
+              "width": 56,
+              "height": 304,
+              "top": 82,
+              "right": 483,
+              "bottom": 386,
+              "left": 427
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 507,
+              "height": 340,
+              "top": 64,
+              "right": 507,
+              "bottom": 404,
+              "left": 0
+            },
+            "button": {
+              "x": 427,
+              "y": 186,
+              "width": 56,
+              "height": 53.5,
+              "top": 186,
+              "right": 483,
+              "bottom": 239.5,
+              "left": 427
+            },
+            "icon": {
+              "x": 441,
+              "y": 191,
+              "width": 28,
+              "height": 28,
+              "top": 191,
+              "right": 469,
+              "bottom": 219,
+              "left": 441
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 1,
+            "rail": {
+              "x": 427,
+              "y": 82,
+              "width": 56,
+              "height": 304,
+              "top": 82,
+              "right": 483,
+              "bottom": 386,
+              "left": 427
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 507,
+              "height": 340,
+              "top": 64,
+              "right": 507,
+              "bottom": 404,
+              "left": 0
+            },
+            "button": {
+              "x": 427,
+              "y": 134,
+              "width": 56,
+              "height": 53.5,
+              "top": 134,
+              "right": 483,
+              "bottom": 187.5,
+              "left": 427
+            },
+            "icon": {
+              "x": 441,
+              "y": 139,
+              "width": 28,
+              "height": 28,
+              "top": 139,
+              "right": 469,
+              "bottom": 167,
+              "left": 441
+            },
+            "stageScroll": 0,
+            "inside": true
+          },
+          {
+            "index": 0,
+            "rail": {
+              "x": 427,
+              "y": 82,
+              "width": 56,
+              "height": 304,
+              "top": 82,
+              "right": 483,
+              "bottom": 386,
+              "left": 427
+            },
+            "stage": {
+              "x": 0,
+              "y": 64,
+              "width": 507,
+              "height": 340,
+              "top": 64,
+              "right": 507,
+              "bottom": 404,
+              "left": 0
+            },
+            "button": {
+              "x": 427,
+              "y": 82,
+              "width": 56,
+              "height": 53.5,
+              "top": 82,
+              "right": 483,
+              "bottom": 135.5,
+              "left": 427
+            },
+            "icon": {
+              "x": 441,
+              "y": 87,
+              "width": 28,
+              "height": 28,
+              "top": 87,
+              "right": 469,
+              "bottom": 115,
+              "left": 441
+            },
+            "stageScroll": 0,
+            "inside": true
+          }
+        ],
+        "original": {
+          "inside": true,
+          "rail": {
+            "x": 427,
+            "y": 82,
+            "width": 56,
+            "height": 304,
+            "top": 82,
+            "right": 483,
+            "bottom": 386,
+            "left": 427
+          },
+          "stage": {
+            "x": 0,
+            "y": 64,
+            "width": 507,
+            "height": 340,
+            "top": 64,
+            "right": 507,
+            "bottom": 404,
+            "left": 0
+          },
+          "button": {
+            "x": 427,
+            "y": 316,
+            "width": 56,
+            "height": 48,
+            "top": 316,
+            "right": 483,
+            "bottom": 364,
+            "left": 427
+          }
+        }
+      }
+    }
+  ],
+  "shader_geometry": [
+    {
+      "width": 640,
+      "height": 480,
+      "light": false,
+      "before": {
+        "vertical": 24,
+        "horizontal": 22,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": 0,
+      "zeroMatches": true
+    },
+    {
+      "width": 640,
+      "height": 480,
+      "light": true,
+      "before": {
+        "vertical": 24,
+        "horizontal": 22,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": null,
+      "zeroMatches": true
+    },
+    {
+      "width": 480,
+      "height": 640,
+      "light": false,
+      "before": {
+        "vertical": 18,
+        "horizontal": 28,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": 0,
+      "zeroMatches": true
+    },
+    {
+      "width": 480,
+      "height": 640,
+      "light": true,
+      "before": {
+        "vertical": 18,
+        "horizontal": 28,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": null,
+      "zeroMatches": true
+    },
+    {
+      "width": 800,
+      "height": 450,
+      "light": false,
+      "before": {
+        "vertical": 30,
+        "horizontal": 19.5,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": 0,
+      "zeroMatches": true
+    },
+    {
+      "width": 800,
+      "height": 450,
+      "light": true,
+      "before": {
+        "vertical": 30,
+        "horizontal": 19.5,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": null,
+      "zeroMatches": true
+    },
+    {
+      "width": 450,
+      "height": 800,
+      "light": false,
+      "before": {
+        "vertical": 17,
+        "horizontal": 33.5,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": 0,
+      "zeroMatches": true
+    },
+    {
+      "width": 450,
+      "height": 800,
+      "light": true,
+      "before": {
+        "vertical": 17,
+        "horizontal": 33.5,
+        "missing": 0
+      },
+      "after": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "exportAfter": {
+        "vertical": 0,
+        "horizontal": 0,
+        "missing": 0
+      },
+      "previewExportMax": null,
+      "zeroMatches": true
+    }
+  ],
+  "shader_quality": {
+    "levels": 32,
+    "ditherLevels": 2,
+    "maxQuantizationError": 0,
+    "opaque": true,
+    "repeat": true
+  },
+  "verified_at": "2026-10-31T11:19:43.293269+00:00",
+  "delivery": {
+    "primary": "Pocket-Camera-layout-fixes.zip",
+    "companion": "Pocket-Camera-layout-regression-evidence.zip",
+    "purpose": "Actual UI/shader/MCP captures and original 143-check archive; no Git repository duplicated"
+  }
+}
