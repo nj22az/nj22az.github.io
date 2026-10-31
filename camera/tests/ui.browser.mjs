@@ -70,6 +70,8 @@ try{
     await page.click('#editPhoto');await page.addStyleTag({content:'html{font-size:200%}'});
     const r=await page.locator('#editDock .segmented').evaluate(el=>({overflow:el.scrollWidth-el.clientWidth,clipped:[...el.children].filter(b=>b.scrollWidth>b.clientWidth+1).map(b=>b.textContent)}));
     assert.ok(r.overflow<=1);assert.deepEqual(r.clipped,[]);
+    const wrapped=await page.locator('#editor').evaluate(el=>[...el.querySelectorAll('.bar h2,.segmented button[aria-selected=true] span,.rail-look[aria-pressed=true] span')].filter(e=>e.getBoundingClientRect().height>parseFloat(getComputedStyle(e).lineHeight)+1).map(e=>e.textContent));
+    assert.deepEqual(wrapped,[],'short active labels never split into fragments at enlarged text');
     await page.waitForFunction(()=>{const p=document.querySelector('#editPictureArea').getBoundingClientRect(),f=document.querySelector('#editFrame').getBoundingClientRect();return f.left>=p.left-1&&f.right<=p.right+1&&f.top>=p.top-1&&f.bottom<=p.bottom+1;});
     await capture('large-text');
    });

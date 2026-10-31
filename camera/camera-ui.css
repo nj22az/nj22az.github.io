@@ -1,5 +1,5 @@
 /* Approved 31 October UI: real Camera controls, with the existing renderer and albums. */
-:root{--bg:#0d0e10;--surface:#1c1e21;--surface-2:#292c30;--separator:#383b40;--label:#faf9f6;--label-2:#c5c7cc;--label-3:#b7babf}
+:root{--bg:#0d0e10;--surface:#1c1e21;--surface-2:#292c30;--separator:#383b40;--label:#faf9f6;--label-2:#c5c7cc;--label-3:#b7babf;--camera-rail:max(48px,3rem)}
 .app{height:100dvh;bottom:auto;background:var(--bg)}
 .camera,.editor,.album,.viewer{font-size:1rem;line-height:1.4}
 .camera button,.editor button,.album button,.viewer button{min-height:44px;min-width:44px}
@@ -41,7 +41,7 @@
 .camera .setting>span{max-width:110px;white-space:normal;text-align:right;color:var(--label-3)}
 .camera .setting.on>span{color:var(--accent)}
 /* Editing: icon controls with full accessible names and a clear active label. */
-.editor>.bar{grid-template-columns:auto minmax(0,1fr) auto}
+.editor>.bar{grid-template-columns:auto minmax(0,1fr) auto}.editor .bar h2{overflow-wrap:normal}
 .editor .text-button{font-size:.9375rem}.editor .pill-button{font-size:.875rem;min-height:44px;height:auto;padding:10px 14px;border-radius:15px;max-width:130px;white-space:normal;line-height:1.3}
 .editor>.stage{padding:18px 24px;min-height:110px;flex:1;touch-action:none}
 .editor .frame{border-radius:9px}
@@ -49,7 +49,7 @@
 .compare-original[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .editor>.dock{display:flex;flex-direction:column;flex:none;min-height:0;max-height:calc(100dvh - 190px - env(safe-area-inset-top) - env(safe-area-inset-bottom));width:100%;max-width:none;padding:0;background:var(--surface)}
 .editor .panel{order:0;min-height:0;max-height:calc(100dvh - 302px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:12px 16px;background:var(--surface);border-top:1px solid var(--separator);border-radius:25px 25px 0 0;flex:0 1 auto}
-.editor .segmented{order:1;flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;width:100%;margin:0;padding:8px 12px;border-radius:0;background:#121315;border-top:1px solid var(--separator);box-shadow:none}
+.editor .segmented{order:1;flex:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(max(44px,2.75rem),1fr));gap:4px;width:100%;margin:0;padding:8px 12px;border-radius:0;background:#121315;border-top:1px solid var(--separator);box-shadow:none}
 .editor .segmented button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;height:auto;min-width:0;padding:6px 2px;border-radius:12px;font-size:.75rem;line-height:1.35;white-space:normal;overflow:visible;text-overflow:unset;overflow-wrap:anywhere;background:none;box-shadow:none}
 .editor .segmented button[aria-selected=true]{background:#383225;color:var(--accent);box-shadow:none}
 .editor .tray{padding:0}.editor .layers{height:auto;min-height:44px;flex-wrap:wrap;padding:0 0 6px;gap:6px}
@@ -63,7 +63,7 @@
 .editor .tile{width:72px;min-width:72px;font-size:.75rem;height:auto;overflow:visible}
 .editor .tile .face{width:64px;height:64px}.editor .tile .name{white-space:normal;overflow:visible;text-overflow:unset;line-height:1.3;overflow-wrap:anywhere}
 .editor .slider-row{min-height:44px;padding:0;gap:10px}.editor input[type=range]{min-height:44px}
-.editor .slider-row output{font-size:.8125rem}.editor .slider-row label{font-size:.8125rem}
+.editor .slider-row output{width:auto;min-width:3ch;flex:none;font-size:.8125rem}.editor .slider-row label{font-size:.8125rem}
 .editor .adjusters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:8px 0}
 .editor .adjuster{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:7px;width:auto;min-width:0;min-height:44px;padding:8px 6px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
 .editor .adjuster>:first-child,.editor .adjuster>:last-child{margin:0}
@@ -98,15 +98,15 @@
 .album .bar{grid-template-columns:auto minmax(0,1fr) auto}.album .bar h2{white-space:normal}.album .album-note{font-size:.8125rem;line-height:1.5}
 .viewer .toolbar{max-width:520px;padding:12px 24px}.viewer .toolbar button{font-size:.8125rem;line-height:1.4;min-height:60px}
 /* A reserved side rail says which shaders are active without painting over the canvas. */
-.camera-view{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) 48px;gap:8px;padding:12px}
+.camera-view{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:8px;padding:12px}
 .camera.idle .camera-view{display:none}.picture-area{display:grid;place-items:center;min-width:0;min-height:0;width:100%;height:100%;position:relative}
-.editor>.stage{display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) 48px;gap:10px}
+.editor>.stage{display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:10px}
 .look-rail{display:flex;flex-direction:column;gap:8px;align-items:center;align-self:stretch;min-height:0;max-height:100%;overflow:auto;scrollbar-width:thin}
 #editLookRail,#cameraLookRail{display:flex;flex-direction:column;gap:8px;width:100%}
-.rail-look{flex:none;width:48px;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:var(--surface);padding:5px 2px;color:var(--label-3)}
-.rail-look svg{width:28px;height:28px;flex:none}.rail-look span{font-size:.625rem;line-height:1.25;max-width:100%;overflow-wrap:anywhere}
+.rail-look{flex:none;width:var(--camera-rail);min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:var(--surface);padding:5px 2px;color:var(--label-3)}
+.rail-look svg{width:28px;height:28px;flex:none}.rail-look span{font-size:.625rem;line-height:1.25;max-width:100%;overflow-wrap:normal}
 .rail-look[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.editor .compare-original{position:static;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;min-height:48px;padding:6px 2px;margin-top:auto;box-shadow:none;background:var(--surface)}
+.editor .compare-original{position:static;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:var(--camera-rail);min-height:48px;padding:6px 2px;margin-top:auto;box-shadow:none;background:var(--surface)}
 .compare-original svg{width:22px;height:22px}.compare-original span,.rail-original{font-size:.625rem;line-height:1.4;overflow-wrap:anywhere;max-width:100%}
 .editor .layer-pick>svg{width:24px;height:24px;flex:none}.editor .layer-pick{display:flex;align-items:center;gap:6px}
 .editor .look-groups{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
@@ -120,13 +120,13 @@
 .camera.compact .tray{position:static;padding:6px 0 0;background:none;pointer-events:auto}
 .camera.compact.looks-open .tray{background:none}
 .camera .look-groups{flex-wrap:wrap}.camera .look-groups button{padding:6px 8px}
-.camera-rail .zoom,.camera-rail .exposure-chip{position:static;flex:none;width:48px;min-height:48px;height:auto;transform:none;margin:0;border-radius:12px;background:var(--surface);opacity:1;pointer-events:auto;font-size:.8125rem;padding:6px 2px;box-shadow:none}
+.camera-rail .zoom,.camera-rail .exposure-chip{position:static;flex:none;width:var(--camera-rail);min-height:48px;height:auto;transform:none;margin:0;border-radius:12px;background:var(--surface);opacity:1;pointer-events:auto;font-size:.8125rem;padding:6px 2px;box-shadow:none}
 .camera-rail .zoom{margin-top:auto}.camera.compact.looks-open .camera-rail .zoom{opacity:1;pointer-events:auto}
 .camera .sticker>button,.editor .sticker>button{min-width:30px;min-height:30px}
 /* One selected shader name, rather than repeating it in the mix, group and thumbnail rows. */
 .layer-name,.tile:not(:focus-visible) .name,.look-groups button:not(:focus-visible) .group-name,.rail-look:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 .editor{overflow-y:auto}
-.editor .segmented button svg{width:22px;height:22px;flex:none}.editor .segmented button span{max-width:100%;overflow-wrap:anywhere}
+.editor .segmented button svg{width:22px;height:22px;flex:none}.editor .segmented button span{max-width:100%;overflow-wrap:normal}
 .editor .segmented button:not([aria-selected=true]):not(:focus-visible) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 @media(min-width:850px){.editor .look-groups{gap:0}}
 @media(max-height:620px){
@@ -137,14 +137,14 @@
 @media(min-width:700px) and (min-height:700px){
  .welcome{width:min(640px,100%);padding:40px 32px;gap:28px}.welcome-hero{height:280px}.welcome-print{width:230px;margin-right:70px}.welcome .welcome-sticker{height:240px;max-height:240px;right:15%;bottom:18px}.welcome-copy h2{font-size:2.625rem}.welcome-copy p{font-size:1.125rem}
  .editor>.stage{padding:28px 40px}.editor>.dock{max-height:50%;width:min(100%,744px);align-self:center}.editor .panel{max-height:calc(50dvh - 76px);padding:16px 24px}
- .editor .segmented{grid-template-columns:repeat(6,minmax(0,1fr));padding:12px 24px}.editor .segmented button{min-height:48px;font-size:.875rem}
+ .editor .segmented{padding:12px 24px}.editor .segmented button{min-height:48px;font-size:.875rem}
  .album .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 18px}.album .album-scroll{padding:32px}
 }
 @media(min-width:850px){
  .editor{display:grid;grid-template-columns:minmax(0,1fr) 344px;grid-template-rows:auto minmax(0,1fr)}
  .editor>.bar{grid-column:1/-1;grid-row:1}.editor>.stage{grid-column:1;grid-row:2;min-height:0;padding:24px}
  .editor>.dock{grid-column:2;grid-row:2;width:100%;max-height:none;align-self:stretch;display:flex;justify-content:flex-start;padding:0;border-left:1px solid var(--separator)}
- .editor .panel{flex:1;max-height:none;border-radius:0;border-top:0;padding:16px;overflow:auto}.editor .segmented{grid-template-columns:repeat(6,minmax(0,1fr));padding:8px 12px}
+ .editor .panel{flex:1;max-height:none;border-radius:0;border-top:0;padding:16px;overflow:auto}.editor .segmented{padding:8px 12px}
  .editor .segmented button{min-height:64px;font-size:.75rem}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}
  .editor .strip{flex-wrap:nowrap;justify-content:flex-start}.editor .layers{flex-wrap:wrap;padding:0;min-height:44px}
  .camera.idle{display:flex}.camera.idle .stage{padding:0;grid-column:auto;grid-row:auto}
