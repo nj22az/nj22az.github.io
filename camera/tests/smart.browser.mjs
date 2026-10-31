@@ -7,9 +7,13 @@ import {join} from 'node:path';
 import {serveGame} from '../../johansson-town/tools/mcp/static-server.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright':'playwright');
 const root=fileURLToPath(new URL('../../',import.meta.url)),shots=process.env.CAMERA_SHOTS||'/tmp/camera-smart';await mkdir(shots,{recursive:true});
+// Reuse the public portrait source documented by tools/camera-test-photos.py; never substitute a failed decode.
+const portraitURL='https://images.pexels.com/photos/29747506/pexels-photo-29747506.jpeg?auto=compress&cs=tinysrgb&w=1600';
+const response=await fetch(portraitURL);assert.ok(response.ok,'portrait test source is available');const portrait=Buffer.from(await response.arrayBuffer());
+assert.ok(portrait[0]===255&&portrait[1]===216&&portrait.length>10000,'portrait fixture is a real JPEG');await writeFile(join(shots,'portrait-source.jpg'),portrait);
 const server=await serveGame({root,mounts:['camera','johansson-town','assets']});
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-const results={checks:[],photos:[],physicalSafari:false},check=async(name,fn)=>{await fn();results.checks.push(name);console.log('ok '+name);};
+const results={checks:[],photos:[],portraitSource:portraitURL,physicalSafari:false},check=async(name,fn)=>{await fn();results.checks.push(name);console.log('ok '+name);};
 let context;
 try{
  context=await browser.newContext({viewport:{width:402,height:700},isMobile:true,hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'});
@@ -18,7 +22,8 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>window.pocketCamera?.state.shots.length>=2);
  await page.evaluate(()=>{
   window.smartFixture=async(kind)=>{
-   if(['cafe','garden','portrait'].includes(kind)){const url={cafe:'/camera/samples/default-original.png',garden:'/assets/images/nils-lake-hero.jpg',portrait:'/assets/images/nils-profile.jpg'}[kind];const b=await(await fetch(url)).blob();return new File([b],kind+'.jpg',{type:b.type||'image/jpeg'});}
+   if(kind==='portrait'){const data=Uint8Array.from(atob(window.smartPortrait),c=>c.charCodeAt(0));return new File([data],'portrait.jpg',{type:'image/jpeg'});}
+   if(['cafe','garden'].includes(kind)){const url={cafe:'/camera/samples/default-original.png',garden:'/assets/images/nils-lake-hero.jpg'}[kind];const response=await fetch(url);if(!response.ok)throw Error('Missing '+kind+' fixture');const b=await response.blob();return new File([b],kind+'.jpg',{type:b.type||'image/jpeg'});}
    const c=document.createElement('canvas');c.width=640;c.height=480;const g=c.getContext('2d'),dark=kind==='dark',offset=dark?12:180;
    const gradient=g.createLinearGradient(0,0,640,480);gradient.addColorStop(0,`rgb(${offset},${offset+5},${offset+12})`);gradient.addColorStop(1,`rgb(${offset+35},${offset+38},${offset+42})`);g.fillStyle=gradient;g.fillRect(0,0,640,480);
    for(let y=0;y<4;y++)for(let x=0;x<6;x++){g.fillStyle=`rgb(${offset+x*4},${offset+y*7},${offset+12})`;g.fillRect(24+x*100,30+y*106,72,70);}
@@ -27,8 +32,10 @@ try{
   const e=window.pocketCamera.engine,draw=e.draw.bind(e);e.draw=(recipe,options)=>{const ready=draw(recipe,options);if(ready)window.smartDrawn=JSON.stringify(recipe);return ready;};
   let live=0;const make=e.gl.createTexture.bind(e.gl),drop=e.gl.deleteTexture.bind(e.gl);e.gl.createTexture=()=>{live++;return make();};e.gl.deleteTexture=t=>{if(t)live--;return drop(t);};
   const sample=e.sample.bind(e);e.sample=(...args)=>{const count=live,w=e.gl.canvas.width,h=e.gl.canvas.height,out=sample(...args);if(live!==count||w!==e.gl.canvas.width||h!==e.gl.canvas.height)throw Error('Sampling leaked a texture or resized the picture');return out;};
+  window.smartProof=()=>{const a=window.pocketCamera,e=a.state.edit,crop=e.recipe.crop,width=768,height=Math.round(width*crop.h*e.height/(crop.w*e.width)),pixels=a.engine.render(e.recipe,{source:'edit',crop,width,height}),c=document.createElement('canvas');c.width=width;c.height=height;c.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(pixels.data),width,height),0,0);return c.toDataURL('image/jpeg',.9);};
  });
- const importPhoto=async kind=>{await page.evaluate(async kind=>window.pocketCamera.editFile(await window.smartFixture(kind)),kind);await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor'&&window.smartDrawn===JSON.stringify(window.pocketCamera.state.edit.recipe));};
+ await page.evaluate(data=>window.smartPortrait=data,portrait.toString('base64'));
+ const importPhoto=async kind=>{await page.evaluate(async kind=>{const a=window.pocketCamera,file=await window.smartFixture(kind);await a.editFile(file);if(a.state.edit?.sourceBlob!==file)throw Error('Import did not open '+kind);},kind);await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor'&&window.smartDrawn===JSON.stringify(window.pocketCamera.state.edit.recipe));};
  const match=async()=>{
   await page.click('.shuffle:not(.sticker-button)');
   await page.waitForFunction(()=>window.pocketCamera.state.edit?.smartMatch&&document.querySelector('.shuffle').getAttribute('aria-busy')==='false',{},{timeout:10000});
@@ -37,14 +44,16 @@ try{
  };
  for(const kind of ['cafe','garden','portrait','dark','bright'])await check(`${kind}: actual-photo search ranks bounded previews and preserves source/crop/overlays`,async()=>{
   await importPhoto(kind);
-  const before=await page.evaluate(async()=>{const a=window.pocketCamera,e=a.state.edit;const {loadStickerSets}=await import('/camera/stickers.js?v=20261031-contour1');await loadStickerSets();a.editStickers.add('johansson-pixar/Wave');e.recipe.crop={x:.08,y:.08,w:.84,h:.84};e.recipe.frame='print';e.recipe.paper='warm';e.recipe.stamp=true;a.chooseLook('mono');a.chooseLook('none');return {recipe:JSON.stringify(e.recipe),source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await e.sourceBlob.arrayBuffer()))]};});
+  const before=await page.evaluate(async()=>{const a=window.pocketCamera,e=a.state.edit;const {loadStickerSets}=await import('/camera/stickers.js?v=20261031-contour1');await loadStickerSets();a.editStickers.add('johansson-pixar/Wave');a.editStickers.select(null);e.recipe.crop={x:.08,y:.08,w:.84,h:.84};e.recipe.frame='print';e.recipe.paper='warm';e.recipe.stamp=true;a.chooseLook('mono');a.chooseLook('none');return {recipe:JSON.stringify(e.recipe),source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await e.sourceBlob.arrayBuffer()))]};});
   await page.waitForFunction(()=>window.smartDrawn===JSON.stringify(window.pocketCamera.state.edit.recipe));
+  const beforeImage=await page.evaluate(()=>window.smartProof());await writeFile(join(shots,kind+'-before.jpg'),Buffer.from(beforeImage.split(',')[1],'base64'));
   await page.locator('#editFrame').screenshot({path:join(shots,kind+'-before.png')});const requestStart=requests.length;
   const result=await match(),old=JSON.parse(before.recipe);assert.ok(result.match.tested>=1&&result.match.tested<=16);assert.ok(result.match.score>=.5&&result.match.score<=1);
   for(const key of ['crop','frame','paper','stamp','stickers','trick','focus'])assert.deepEqual(result.recipe[key],old[key],key);
   const source=await page.evaluate(async()=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',await window.pocketCamera.state.edit.sourceBlob.arrayBuffer()))]);assert.deepEqual(source,before.source);
   assert.ok(requests.slice(requestStart).every(r=>r.method==='GET'&&r.url.startsWith(server.url)),'no upload or external service used');
   if(kind==='dark')assert.ok(result.recipe.adjust.light>0);if(kind==='bright')assert.ok(result.recipe.adjust.light<0);
+  const afterImage=await page.evaluate(()=>window.smartProof());await writeFile(join(shots,kind+'-after.jpg'),Buffer.from(afterImage.split(',')[1],'base64'));
   await page.locator('#editFrame').screenshot({path:join(shots,kind+'-after.png')});await page.screenshot({path:join(shots,kind+'-iphone.png')});results.photos.push({kind,...result});
   await page.click('.undo-shuffle');assert.deepEqual(await page.evaluate(()=>window.pocketCamera.state.edit.recipe),old,'Undo restores every setting');
  });

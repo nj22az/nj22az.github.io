@@ -47,7 +47,8 @@ export function photoCandidates(photo,{random=Math.random,previous,available=()=
   const adjust={...tuning.adjust};
   // Small search steps preserve the direction of the photo's tonal correction.
   for(const key of ['light','contrast','colour','warmth'])adjust[key]=clamp(adjust[key]+(r()-.5)*.05,-1,1);
-  out.push({name,layers:[{look:a,amount:.58+r()*.35},{look:b,amount:clamp(strength*(.4+r()*.45),.06,.85)}],adjust,enhance:tuning.enhance});
+  const cap={camcorder:.25,crt:.45,tilt:.4}[b]??.85;
+  out.push({name,layers:[{look:a,amount:.58+r()*.35},{look:b,amount:clamp(strength*(.4+r()*.45),.06,cap)}],adjust,enhance:tuning.enhance});
  }
  if(previous?.layers?.every(l=>available(l.look)))for(const direction of [-1,1])out.push({name:previous.name,
   layers:previous.layers.map(l=>({...l,amount:clamp(l.amount+direction*.06,.05,1)})),
@@ -68,7 +69,8 @@ export function scorePhoto(reference,result,layers){
  const tone=1-clamp(Math.abs(result.median-clamp(reference.median,.32,.68))*1.6);
  const range=reference.range<.03?1:clamp(result.range/Math.max(.15,reference.range*.6));
  const colour=1-clamp((result.saturation-.88)*3),style=clamp((difference/64)/.08);
- const score=.42*structure+.21*tone+.17*range+.1*colour+.1*style-.4*clipping;
+ const detail=reference.edge<.004?1:clamp(result.edge/(reference.edge*.55));
+ const score=.42*structure+.21*tone+.17*range+.1*colour+.1*style-.4*clipping-.12*(1-detail);
  return Number.isFinite(score)?clamp(score):0;
 }
 
