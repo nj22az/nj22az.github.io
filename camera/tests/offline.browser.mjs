@@ -81,6 +81,10 @@ try{
   await page.evaluate(async()=>{const c=await caches.open((await caches.keys()).find(k=>k.startsWith('pocket-camera-')));await c.delete('/camera/stickers/thao-pixar/Peace.webp');navigator.serviceWorker.controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});});await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry');
   await page.click('#settingsToggle');await page.click('#offlineSetting');await ready();assert.ok(await page.evaluate(async id=>!!(await(await import('/camera/album.js?v=20261029c')).getShot(id)),saved.id));
  });
+ await check('a removed offline cache is rebuilt and survives another offline browser restart',async()=>{
+  await page.evaluate(async()=>{await caches.delete((await caches.keys()).find(k=>k.startsWith('pocket-camera-')));navigator.serviceWorker.controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});});await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry');await page.click('#offlineSetting');await ready();
+  await context.close();await boot();await context.setOffline(true);await page.goto(url+'/camera/?restart=2');await ready();assert.ok(await page.evaluate(id=>window.pocketCamera.state.shots.some(s=>s.id===id),saved.id));
+ });
  await check('no uncaught application errors',async()=>assert.deepEqual(errors,[]));
  console.log(results.checks.length+'/'+results.checks.length+' offline checks passed');
 }finally{await writeFile(join(shots,'offline-results.json'),JSON.stringify(results,null,2));await context?.close();await new Promise(r=>proxy.close(r));await origin.close();await rm(profile,{recursive:true,force:true});}

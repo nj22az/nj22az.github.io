@@ -1,6 +1,6 @@
 {
   "version": "20261031offline1",
-  "bytes": 22385195,
+  "bytes": 22385224,
   "files": [
     {
       "url": "/camera/album.js",
@@ -234,8 +234,8 @@
     },
     {
       "url": "/camera/offline.js",
-      "sha256": "b76c8dbf96f740ef53458ef4d03feed2090a5d4737ffceb62fe979639af9a08a",
-      "bytes": 1952
+      "sha256": "52f39236bba6f555ce00ef3bc1de32a39c945a59fef1837806254955e7487ade",
+      "bytes": 1981
     },
     {
       "url": "/camera/playing-cards.js",

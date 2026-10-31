@@ -13,6 +13,6 @@ export function prepareOffline(button){
   try{registration=await navigator.serviceWorker.register(new URL('./sw.js',import.meta.url));watch(registration.installing);registration.addEventListener('updatefound',()=>watch(registration.installing));await navigator.serviceWorker.ready;ask();}
   catch{set('retry','Retry offline download');}
  }
- button.addEventListener('click',async()=>{if(registration){set('preparing','Downloading offline files');try{await registration.update();navigator.serviceWorker.controller?.postMessage({type:'CAMERA_OFFLINE_REPAIR'});}catch{set('retry','Retry offline download');}}else start();});
+ button.addEventListener('click',async()=>{if(!registration?.active){registration=null;start();return;}set('preparing','Downloading offline files');try{await registration.update();navigator.serviceWorker.controller?.postMessage({type:'CAMERA_OFFLINE_REPAIR'});}catch{set('retry','Retry offline download');}});
  start();
 }

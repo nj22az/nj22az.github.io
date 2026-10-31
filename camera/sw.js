@@ -1,5 +1,5 @@
 // Atomic, verified offline bundle. Regenerate with node tools/build-camera-offline.mjs.
-const BUILD='32bcbea0aff8ff28af599464e0514416595f26feeae06f506f9f857a66b71d45';
+const BUILD='6849a49ead7a9382afa18ee306618e3ea5f66773b4510072407dab48e0651d95';
 const CACHE='pocket-camera-'+BUILD.slice(0,20),META='/camera/offline.json';
 const digest=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
 let manifest;
@@ -39,8 +39,8 @@ self.addEventListener('message',event=>{
  if(!['CAMERA_OFFLINE_STATUS','CAMERA_OFFLINE_REPAIR'].includes(event.data?.type))return;
  event.waitUntil((async()=>{
   if(event.data.type==='CAMERA_OFFLINE_REPAIR')try{
-   const cache=await caches.open(CACHE);let m;try{m=await bundle();}catch{const remote=await remoteManifest();m=remote.m;await download(m,cache,true);await cache.put(META,new Response(remote.bytes,{headers:{'Content-Type':'application/json'}}));manifest=Promise.resolve(m);}
-   await download(m,cache,true);
+   const {bytes,m}=await remoteManifest(),cache=await caches.open(CACHE);await download(m,cache,true);
+   await cache.put(META,new Response(bytes,{headers:{'Content-Type':'application/json'}}));manifest=Promise.resolve(m);
   }catch{/* Ready stays false until every asset is present. */}
   event.source?.postMessage(await status());
  })());
