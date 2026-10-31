@@ -1,9 +1,11 @@
 # Pocket Camera MCP — 31 October 2026
 
-The subsequent [photo-aware Surprise review](HANDOVER-SMART-SHUFFLE-2026-10-31.md) aligns the adapter renderer
-import at **`20261031smart1`** on a review branch only. Local policy/lifecycle/cache-key checks pass **15/15**;
-new hosted acceptance is pending. No MCP tools or connection/privacy boundaries change. Main remains the published
-`20261031audit2` release described below. This review is not deployed or connected to the owner's installed host.
+The subsequent [photo-aware Surprise review](HANDOVER-SMART-SHUFFLE-2026-10-31.md), [draft PR #419](https://github.com/nj22az/nj22az.github.io/pull/419),
+aligns the adapter renderer import at **`20261031smart1`** on a review branch only. Source **`b795c7a02a721ff538b435e9aacd6126b3a868a8`**,
+MCP run **41206756330**, job **124553287604**, passes **15/15 units + 20/20 real acceptance checks**, with **zero npm
+vulnerabilities** on fresh installation and local audit. Generated-image previews and exported JPEG were inspected and
+retained. No MCP tools or connection/privacy boundaries change. Main remains the published `20261031audit2` release
+below. This photo-aware review is not deployed; the owner's installed host and this chat remain unconnected.
 
 The owner subsequently instructed **“Push to main”**: [PR #418](https://github.com/nj22az/nj22az.github.io/pull/418) is
 **merged and deployed**, main **`bd0507162dfa9d60cd891fd707893a7e22bcb618`**, identical tree to all-green reviewed
