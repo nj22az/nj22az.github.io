@@ -1,0 +1,102 @@
+{
+  "release": "Minato Maru H1-F1 engine room",
+  "owner_instruction": "Implement and push to main",
+  "source_commit": "390fc31a80ea6c6656b258f4f744918cc155ba0d",
+  "source_tree": "a11fac6a3c41deda812e09a1deffc87c6ac89a85",
+  "game": "https://nj22az.github.io/johansson-town/",
+  "default_enabled": true,
+  "working_headroom_mm": 2400,
+  "fixed_camera_views": 8,
+  "Blender_GLB": {
+    "meshes": 2,
+    "triangles": 80376,
+    "bytes": 3587152,
+    "sha256": "6ee5d7362b402701b9ee9be8a7f3486464542f1b3687723e52d95da3dd516af9"
+  },
+  "native_source": "johansson-town/art/ferry-engine-room/Minato_Maru_Engine_Room_H1.blend",
+  "guard": {
+    "source_commit": "390fc31a80ea6c6656b258f4f744918cc155ba0d",
+    "workflow": "https://github.com/nj22az/nj22az.github.io/actions/runs/41206534077",
+    "job_id": 124552628350,
+    "conclusion": "success",
+    "tests": 569,
+    "pass": 569,
+    "fail": 0,
+    "files": 110,
+    "seconds": 380,
+    "log_summary": [
+      "2026-10-31T13:46:09.7044743Z \u2139 tests 569",
+      "2026-10-31T13:46:09.7045180Z \u2139 pass 569",
+      "2026-10-31T13:46:09.7045384Z \u2139 fail 0",
+      "2026-10-31T13:46:09.7046277Z \u2139 duration_ms 380192.679746",
+      "2026-10-31T13:46:09.7095549Z ci-guard: 110 files, all green in 380s"
+    ]
+  },
+  "phone": {
+    "source_commit": "390fc31a80ea6c6656b258f4f744918cc155ba0d",
+    "status": "passed",
+    "workflow": "https://github.com/nj22az/nj22az.github.io/actions/runs/41206534077",
+    "job_id": 124552628554,
+    "physical_device": false,
+    "duration_seconds": 519.51,
+    "artifact": {
+      "id": 13044534859,
+      "bytes": 35665350,
+      "sha256": "0e01127696a826d5fc60076cc38c772926302a299c86135796a9dd953a9c8556",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41206534077/artifacts/13044534859",
+      "zip_CRC_verified": true
+    },
+    "report": "webkit-390fc31a-report.json",
+    "engine_room": "Real GLB loaded with two meshes and 80376 triangles, GPU error zero, ordinary movement, V, all eight cameras and view restoration pass.",
+    "dining_exit_hit_tests": "passed with native taps",
+    "room_lifetime": "Two warm-up rounds, matching baselines, three repeated visits per venue; six comparisons retain zero textures/geometries/released canvases.",
+    "other_checks": "Cold/warm start, rotation, saved discovery, real startup WebGL context-loss recovery and ordinary twelve-hour return pass.",
+    "errors": []
+  },
+  "deployment": {
+    "conclusion": "success",
+    "workflow": "https://github.com/nj22az/nj22az.github.io/actions/runs/41206532989"
+  },
+  "public_bytes": {
+    "original_release_unique_files": 97,
+    "matches": 97,
+    "retained_previous_production_JS": 62,
+    "final_touch_requests": 4,
+    "final_touch_matches": 4,
+    "records": [
+      "public-files.json",
+      "touch-public-files.json"
+    ]
+  },
+  "captures": {
+    "source_commit": "390fc31a80ea6c6656b258f4f744918cc155ba0d",
+    "game_source_and_runtime_identical_to_final_source": true,
+    "files": {
+      "ferry-engines-phone.png": {
+        "bytes": 814922,
+        "sha256": "ba03e8a3a468375d1a8c058ff38db321c21ab5ba2ed39ad8de59ccb65f72aef8"
+      },
+      "ferry-control-phone.png": {
+        "bytes": 1023323,
+        "sha256": "ad98ce0c1865131ec27ea1b3ec4699c7a357c22c918a4e0bfbab39ef7c6b9d78"
+      }
+    },
+    "kind": "actual compiled game, WebGL on Linux WebKit with iPhone 13 emulation"
+  },
+  "prior_native_artifact": {
+    "run_id": 41205773666,
+    "artifact_id": 13043703529,
+    "zip_bytes": 16555282,
+    "zip_sha256": "03d2772796f8e8022f0f113379c7c053f9e83444c8f00300ce151ee002d6be69",
+    "zip_CRC_verified": true,
+    "engine_room_section": "passed",
+    "later_phone_failure": "Invisible movement zone intercepted dining exit. Corrected in final source.",
+    "report": "webkit-baf0da1a-report.json"
+  },
+  "limits": [
+    "Physical iPhone/iPad testing remains unverified.",
+    "A tablet-size resize of the phone context left unused white area and is not accepted as tablet proof.",
+    "Fictional game geometry; original real-vessel engineering holds remain open."
+  ],
+  "checked_utc": "2026-10-31T13:51:16.474Z"
+}
