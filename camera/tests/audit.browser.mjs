@@ -57,7 +57,8 @@ try{
   };
   for(const [w,h] of [[640,480],[480,640],[800,450],[450,800]]){
    const source=document.createElement('canvas');source.width=w*2;source.height=h*2;const g=source.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,source.width,source.height);g.fillStyle='#000';
-   for(let i=1;i<8;i++){g.fillRect(i*source.width/8-source.width*.006,0,source.width*.012,source.height);g.fillRect(0,i*source.height/8-source.height*.006,source.width,source.height*.012);}
+   // Lines span at least two retro texels even in 9:16; test bending rather than sub-texel aliasing.
+   for(let i=1;i<8;i++){g.fillRect(i*source.width/8-source.width*.0175,0,source.width*.035,source.height);g.fillRect(0,i*source.height/8-source.height*.0175,source.width,source.height*.035);}
    for(const light of [false,true]){
     const a=now.createLookEngine(document.createElement('canvas'),{light}),b=before.createLookEngine(document.createElement('canvas'),{light});a.setSource('chart',source,source.width,source.height);b.setSource('chart',source,source.width,source.height);
     const recipe=now.normalRecipe({layers:[{look:'thirtyTwoBit',amount:1}]}),opts={source:'chart',width:w,height:h};
