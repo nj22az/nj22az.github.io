@@ -642,7 +642,7 @@ function focusTap(e,recipe,frame){
  sound('tick');toast('Focus here');invalidate();
  return true;
 }
-gestures($('cameraStage'),{
+gestures($('cameraPictureArea'),{
  onDoubleTap:()=>{if(state.camera.running&&!$('flip').hidden)$('flip').click();},
  onTap:e=>{if(focusTap(e,state.camera.recipe,'cameraFrame'))refreshThumbs();},
  // The whole height of the picture is the whole range of light.
@@ -1055,7 +1055,7 @@ function comparePhoto(on,pinned=false){
 $('compareOriginal').addEventListener('click',()=>{const on=!state.edit?.comparePinned;comparePhoto(on,on);});
 // Hold the picture to see the original.
 {
- const stage=$('editStage');let holding=null,at=null;
+ const stage=$('editPictureArea');let holding=null,at=null;
  const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing&&!state.edit.comparePinned)comparePhoto(false);};
  stage.addEventListener('pointerdown',e=>{
   if(!state.edit||e.target.closest('button')||state.edit.erasing||state.edit.cropping)return;

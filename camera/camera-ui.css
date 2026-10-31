@@ -163,6 +163,7 @@
 @media(min-width:850px) and (max-height:420px){
  .editor .panel{padding:12px}.editor .look-groups{padding:0}.editor .strip{padding:4px 0}
  .editor .tile{width:44px;min-width:44px}.editor .tile .face{width:40px;height:40px}
+ .editor .frame-choice canvas{width:40px;height:40px}.editor .frame-choices{padding:4px 0;gap:8px}.frame-finishes{margin-block:4px}
 }
 @media(max-width:359px){.camera .bar,.editor .bar,.album .bar{padding-inline:12px}.camera .photos-button{width:44px;padding:0;justify-content:center}.camera .photos-button span{display:none}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}.editor .segmented{padding-inline:10px}}
 /* Larger user text and short windows reflow rather than clipping fixed-height rows. */

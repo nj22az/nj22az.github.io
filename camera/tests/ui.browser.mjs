@@ -21,14 +21,16 @@ async function reachableRail(page){
  const looks=[];
  for(const index of [2,1,0]){
   await page.locator('#editLookRail button').nth(index).click();await settleEditor(page);
-  const row=await page.locator('#editLookRail button').nth(index).evaluate(b=>{const rail=b.closest('.look-rail').getBoundingClientRect(),r=b.getBoundingClientRect(),svg=b.querySelector('svg').getBoundingClientRect(),stage=document.querySelector('#editStage');return {rail:rail.toJSON(),button:r.toJSON(),icon:svg.toJSON(),stageScroll:stage.scrollTop,inside:r.top>=rail.top-1&&r.bottom<=rail.bottom+1&&svg.top>=rail.top-1&&svg.bottom<=rail.bottom+1};});
+  const row=await page.locator('#editLookRail button').nth(index).evaluate(b=>{const rail=b.closest('.look-rail').getBoundingClientRect(),r=b.getBoundingClientRect(),svg=b.querySelector('svg').getBoundingClientRect(),stage=document.querySelector('#editStage'),s=stage.getBoundingClientRect(),top=Math.max(0,rail.top,s.top),bottom=Math.min(innerHeight,rail.bottom,s.bottom);return {rail:rail.toJSON(),stage:s.toJSON(),button:r.toJSON(),icon:svg.toJSON(),stageScroll:stage.scrollTop,inside:r.top>=top-1&&r.bottom<=bottom+1&&svg.top>=top-1&&svg.bottom<=bottom+1};});
   assert.ok(row.inside&&row.stageScroll===0,JSON.stringify(row));
   looks.push({index,...row});
  }
  await page.click('#compareOriginal');await settleEditor(page);
  assert.equal(await page.getAttribute('#compareOriginal','aria-pressed'),'true');
- const original=await page.locator('#compareOriginal').evaluate(b=>{const rail=b.closest('.look-rail').getBoundingClientRect(),r=b.getBoundingClientRect();return {inside:r.top>=rail.top-1&&r.bottom<=rail.bottom+1,rail:rail.toJSON(),button:r.toJSON()};});
+ const original=await page.locator('#compareOriginal').evaluate(b=>{const rail=b.closest('.look-rail').getBoundingClientRect(),r=b.getBoundingClientRect(),stage=document.querySelector('#editStage').getBoundingClientRect();return {inside:r.top>=Math.max(0,rail.top,stage.top)-1&&r.bottom<=Math.min(innerHeight,rail.bottom,stage.bottom)+1,rail:rail.toJSON(),stage:stage.toJSON(),button:r.toJSON()};});
  assert.ok(original.inside,JSON.stringify(original));await page.click('#compareOriginal');
+ await page.dispatchEvent('.editor-rail','pointerdown',{pointerId:11,clientX:1,clientY:1});await page.waitForTimeout(180);
+ assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.comparing),false,'holding the rail never compares or edits the photograph');await page.dispatchEvent('.editor-rail','pointerup',{pointerId:11});
  await page.locator('#editLookRail button').first().click();await settleEditor(page);
  return {looks,original};
 }
