@@ -1,0 +1,177 @@
+# Pocket Camera MCP — 31 October 2026
+
+## Merge instruction and Linux fixture correction — 31 October 2026
+
+The owner subsequently instructed **“Merge”**, authorising PR #416 into `main` and its normal Pages deployment.
+Verified review head `5095bb659ad51aae8ce8e40a7930362baa28d00f`: MCP **41169932260**, Camera regression
+**41169932106**, and World guard/native WebKit **41169932042** all passed. There were no comments or review threads.
+Linux **41169932045**, job **124445677667**, failed in `steam-deck/tools/console-smoke.cjs:206`: it timed out waiting
+for `[data-person="Mai"]`, after controls/layout, native saves and offline checks passed.
+
+The failing fixture is byte-identical on unchanged `main` `f49f22ba` and the review head (blob
+`fb4087d54f963ea8f5d86340c040be000a44f0fc`). The live cast already excludes Mai and Mrs Nakamura under the owner's
+31 October retirement decision. The test's exact roster assertion had passed; its later hard-coded child selection
+was stale. Replace that selection with the active nine-year-old pupil **Riku**, retain the bed, stick-to-wake,
+outdoor exit and full-roster checks, and add explicit active-resident and avatar assertions. No game or release
+behaviour changes, no skipped coverage or enlarged timeouts. Re-run Linux acceptance before the authorised merge.
+Local preflight: **42/42** existing Steam Deck tests passed, console script syntax and `git diff --check` passed;
+Riku is in the live playable roster, sleeps at 01:00 and has the occupied home `kitahama-3`.
+The final merge commit, check outcome and deployment result follow below once verified.
+
+## Continuation review — 31 October 2026
+
+The owner explicitly requested continuation of draft PR #416, not a rebuild, merge or publication.
+Verified starting head **`3267eff1993bf276a0ee6700407f23a0fa8cbfa6`**; PR remains open/draft, with no conversation
+comments or review threads at this review. MCP run **41167700821**, Camera regression **41167700721** and World guard
+**41167700698** report success. Linux run **41167700800** initially reported `in_progress` at its final full-world
+acceptance step and subsequently finished **cancelled**; it is not counted as passed. There were no local tracked changes at checkout. An unrelated untracked Sjöskolan
+temporary video file is preserved and excluded from this work.
+
+Changes in this review:
+
+- Check original PNG/JPEG/WebP dimensions before importing. The old post-import check saw the app's already reduced
+  dimensions (at most 16 megapixels) and could not enforce the promised 48-megapixel limit. Failed imports preserve
+  the existing edit. Approved file reads also check the opened file identity and reject final symlink replacements.
+- Use a Camera-only preview server: public resources and five shared shader/UI modules; no repository/dependency
+  exposure, foreign Host/Origin, cross-site fetches or preview symlinks. The old shared server was demonstrated reading
+  a synthetic file through a symlink outside its mount. World's shared development server and runtime are unchanged.
+- Increase the bounded stdio input buffer to fit 20 MiB of image bytes encoded as base64. The SDK's default was only
+  10 MiB. Close the isolated session on transport closure/errors as well as ordinary disconnect and signals.
+- Expand units from 9 to **15** and real acceptance from 16 to **20** checks. The latter now loads the actual
+  `.mcp.json` registration from outside the checkout, exercises both approved-file and base64 import, three Looks,
+  all six adjustments, a real frame, oversized-import preservation, strict schemas and session separation.
+- Apply only **Vite 7.3.6 → 7.3.7**, **Zod 4.6.5 → 4.6.6**, and transitive **source-map-js 1.2.1 → 1.2.2**.
+  No unrelated package resolutions change. Audit dependency paths and applicability are in the review evidence.
+- Root HANDOVER.md now links directly to this note, preserving the separate published release entries.
+
+Local checks: **15/15 unit/lifecycle checks pass**, all seven adapter modules pass syntax checks, and `git diff --check`
+passes. The post-update `npm audit --prefix johansson-town --json` reports **zero vulnerabilities** (before: three high).
+Local real-browser acceptance initializes and discovers all eleven tools but cannot open Chromium: the managed executor
+denies Chromium's required Unix socket (`process_singleton_posix.cc`, `socket(): Operation not permitted`). The default
+Playwright download also returned invalid ZIPs; a valid official Chromium 149.0.7827.55 archive was obtained and tested,
+which exposed the socket restriction. Do not present the two successful discovery checks as a completed editing cycle.
+
+### Verified source and results
+
+Review implementation: **`23ead95974b5362aa1042b9368fb89b630de4108`**, tree
+**`0213ec74fa7b75edefa176a95f4b24e355ad6901`**, parent `3267eff1993bf276a0ee6700407f23a0fa8cbfa6`.
+The final handover/evidence follow-up changes documentation and retained test records only.
+The unauthenticated shell Git push was unavailable; the connected GitHub API created the identical verified tree,
+and advanced only `codex/pocket-camera-mcp` without force. The local checkout was aligned only after tree equality
+was verified; the unrelated untracked file remains present.
+
+**Hosted MCP:** [run 41169563788](https://github.com/nj22az/nj22az.github.io/actions/runs/41169563788), job
+**124444372569**, **15/15 units + 20/20 real MCP-to-Camera acceptance**, no skips. The full log confirms a fresh
+`npm ci` with **zero vulnerabilities** and tests merge candidate **`ce31b6ce1e3f93db55b64214a7998bf888283a51`**
+(`23ead959` into `f49f22ba`). This supersedes the original implementation's 9/16 totals below.
+
+[Artifact 13030695442](https://github.com/nj22az/nj22az.github.io/actions/runs/41169563788/artifacts/13030695442)
+contains before/after previews, saved JPEG and `results.json`. Its downloaded ZIP matches both the upload log and
+GitHub digest: **`16566b783e6df279e232b5948770a79c70e06535e61cf14692280336b4960efc`**.
+All three images were opened and inspected: default Pocket rendering, cropped three-Look treatment with Drawing
+paper and a Print border, and the corresponding **256 × 192 JPEG**. These are synthetic functional checks, not a
+photographic art audit. A durable copy is retained as
+[camera-mcp-review-evidence.zip](https://chatgpt.com/library?file_id=libfile_d1ef221fa6d48191af1c756a8e87fec8&account_id=personal).
+The machine-readable result and dependency/security review are also in
+[qa/2026-10-31-mcp-review/](qa/2026-10-31-mcp-review/README.md).
+
+**Local compatibility:** full World guard **560/560**, **109 files**, **309 seconds**, no skips or failures, with a
+6 GiB Node heap. Existing Town/Studio MCP checks: **21 passed, 1 skipped, 0 failures**. The skipped check is the existing
+opt-in After effects browser acceptance (`STUDIO_BROWSER_TEST` was not enabled); do not count it as passed.
+Both logs are retained with the review evidence.
+
+At the post-review check, Camera regression **41169563798**, hosted World guard/WebKit **41169563894**, and Linux
+acceptance **41169563914** were still running, with no reported failure. Do not describe their wrapper state as success.
+The documentation follow-up may create newer runs; inspect the latest PR head before any merge. Earlier Linux run
+**41167700800** ended cancelled, with all preceding setup and acceptance stages successful; its final full-world
+acceptance did not complete.
+
+### Implemented, tested, connected, published
+
+- **Implemented:** existing local stdio adapter continued, with the four boundary/lifecycle corrections above;
+  eleven tools and the actual Camera renderer retained. Only the three audited dependency resolutions changed.
+- **Tested:** 15 units and 20 complete browser acceptance checks passed in hosted Chromium; local World guard passes.
+  The local managed-executor browser remains blocked by its Unix-socket policy. Physical Safari/iPhone remains untested.
+- **Connected:** the official SDK acceptance client discovers and exercises the real `.mcp.json` server from outside
+  the repository. The owner's installed host and this ChatGPT session are **not connected**. Remaining local step:
+  register Node with the absolute `johansson-town/tools/camera/server.mjs` path in the owner's stdio-capable host,
+  reconnect, verify the eleven tools, and run the generated-image cycle there before using personal images.
+- **Published:** **no**. Draft PR #416 stays open; no merge, main push, Pages deployment, auto-merge, release or live
+  Camera/World runtime change was made.
+
+**Next action:** inspect final checks on the latest draft head, then complete the owner's local MCP-host connection
+using [MCP.md](MCP.md). Investigate a failed check if one appears; do not merge or publish without a new owner instruction.
+
+## Request, branch and review
+
+Owner: **“Mcp wire the Johansson camera web app.”**
+
+[Draft PR #416](https://github.com/nj22az/nj22az.github.io/pull/416), branch `codex/pocket-camera-mcp`, based on `main`
+**`f49f22ba82e6d4b1fd9b5033f8bddc4d3eed903f`**. Implementation commit:
+**`daaa219ee6a5ea8bf665b739909a89f238548b99`**, tree `01387594f5b74fb2f2282be6beefd6ec9889a7f7`.
+The original follow-up `3267eff1` was documentation only. The continuation implementation and evidence above supersede
+that adapter snapshot; the original acceptance remains useful history.
+
+This is review work, **not merged or published**. The prior Camera release via #414 stays intact. No Camera runtime,
+shader, CSS, service worker, sticker asset, World runtime or existing album migration is changed.
+The existing publication handover remains the root HANDOVER.md index's published Camera entry and now links to this
+separate MCP continuation. Read [MCP.md](MCP.md) for setup, tool boundaries and operation.
+
+## Implemented
+
+- `.mcp.json`: dedicated `johansson-camera` entry, retaining Town Audit, Studio and REA.
+- `johansson-town/tools/camera/`: lazy isolated browser session, eleven SDK-registered stdio tools, strict schemas,
+  validation, file-import restrictions, serialization, cancellation and cleanup.
+- The existing `window.pocketCamera` bridge and actual DOM controls perform edits. The original Save handler performs
+  final rendering and JPEG encoding. Every MCP save is a copy. Export preserves the exact saved bytes.
+- State/catalog, import, recipe editing, preview, album metadata, original-source re-edit, save-copy, export and close.
+- No hardware capture, personal browser/phone connection, arbitrary URL import, native Share, delete or publication.
+- Temporary album only; exports survive closure but must be moved out of the OS temporary directory for durability.
+- `policy.test.mjs`: validation and lifecycle checks. `acceptance.mjs`: official client -> stdio -> actual Camera.
+- `.github/workflows/camera-mcp.yml`: bounded PR acceptance and evidence artifact.
+
+## Completed verification
+
+**Local:** 9/9 Node unit tests passed, including invalid image payloads, import traversal and symlink escape rejection,
+recipe bounds, tool inventory, required save/export/close confirmation, startup failure cleanup and cancellation during
+a delayed browser launch. All six new `.mjs` files passed `node --check`.
+
+**Hosted:** [Pocket Camera MCP run 41167521955](https://github.com/nj22az/nj22az.github.io/actions/runs/41167521955),
+job **124438197590**, completed successfully on 31 October 2026 at 04:12 UTC. The full job log confirms **9/9 unit tests
+and 16/16 real MCP/Camera acceptance checks**, with no skipped acceptance steps. GitHub tested merge candidate
+`17a0023dd5b227278b786bfd89aa103dc6d9415b` (implementation `daaa219e` into base `f49f22ba`).
+
+The acceptance run verified initialization and discovery of eleven tools, explicit errors before open, actual WebGL
+startup, current app catalog, image import, real preview PNGs, two-Look editing with adjustments/Enhance/crop/paper,
+invalid-edit rejection without recipe mutation, changed rendered output, Save confirmation, actual 256 x 192 JPEG
+output from a cropped 320 x 240 source, album metadata, exact saved-byte exports to distinct filenames, original-source
+re-edit and copy-save preserving the earlier photo, no uncaught page errors, and explicit close retaining exports.
+
+[Evidence artifact 13029866176](https://github.com/nj22az/nj22az.github.io/actions/runs/41167521955/artifacts/13029866176)
+contains `before.png`, `after.png`, `saved.jpg` and `results.json`. Downloaded ZIP SHA-256 verified against the job log:
+`706b8c1bcd991bea30a10d34b493d0d9994e68b7bd6de1aa9e8dc04ba4e0e76e`.
+All three images were opened and inspected: the generated checker/gradient fixture renders in the default Pocket Look,
+then with the requested crop and mixed treatment; the JPEG contains the resulting crop. This is a synthetic functional
+fixture, not a photographic art-quality audit or exhaustive coverage of all Looks/frame combinations.
+
+The separate existing Camera regression/World/Linux jobs are not included in these MCP acceptance totals.
+Chromium/SwiftShader acceptance is **not** a physical Safari, iPhone/iPad, native-sharing or user's installed-MCP-host test.
+
+## Historical open findings before the continuation review
+
+The dependency installation reports **three high-severity npm audit findings in the existing pinned dependency tree**.
+No dependency versions or lockfile were changed. The install log does not identify the affected packages or establish
+reachability from this adapter; run `npm audit --prefix johansson-town` and triage separately before wider distribution.
+Do not equate functional acceptance with a clean security audit. The workflow also reports existing v4 actions' Node 20
+runtime deprecation (the runner executes them on Node 24); all steps completed successfully.
+
+Review PR #416 and connect the local host from this branch after installing dependencies/Chromium. The adapter deliberately
+references published Camera module cache keys `20261031rc2`, `20261029f` and `20261029c`; keep them aligned when Camera
+modules change. Existing app release evidence remains in [the publication handover](HANDOVER-PUBLICATION-2026-10-31.md).
+
+The tool scope excludes sticker/lettering authoring, Erase painting and mini-games. Browser-native WebMCP and a hosted
+HTTP MCP endpoint are also not implemented. Do not claim all app functions or the user's live phone tab are wired.
+
+Publication requires a separate owner instruction. A local MCP host can use this branch independently of GitHub Pages
+after dependency/browser installation and reconnection. No host connection has been installed on the owner's computer
+or into the current chat by this task.

@@ -12,6 +12,12 @@
         "johansson-town/tools/studio/server.mjs"
       ]
     },
+    "johansson-camera": {
+      "command": "node",
+      "args": [
+        "johansson-town/tools/camera/server.mjs"
+      ]
+    },
     "rea": {
       "command": "npx",
       "args": [

@@ -203,10 +203,12 @@ const {rectanglesSeparated}=require('./layout-acceptance.cjs');
  await tap(1);await page.waitForFunction(()=>JSON.parse(window.render_game_to_text()).room===null);assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'B leaves the home at its door without a mouse');
  await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Officer%20Mori"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.active==='Officer Mori'&&!window.johanssonLinuxWorld.busy);
  assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Night patrol does not spawn asleep');
- await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator('[data-person="Mai"]').click();await page.waitForFunction(()=>window.johanssonLinuxWorld?.inBed&&!window.johanssonLinuxWorld.busy);await page.screenshot({path:path.join(out,'10-mai-own-bed.png')});
+ // Mai retired with her mother on 31 October. Keep the child-bed and stick-to-wake coverage using the live pupil Riku.
+ const sleepingChild='Riku';assert.ok(expectedNames.includes(sleepingChild),'The sleeping child fixture is a current resident');
+ await tap(9);await page.locator('#desktopTabs [data-tab=people]').click();await page.locator(`[data-person="${encodeURIComponent(sleepingChild)}"]`).click();await page.waitForFunction(name=>window.johanssonLinuxWorld?.active===name&&window.johanssonLinuxWorld.inBed&&!window.johanssonLinuxWorld.busy,sleepingChild);assert.equal(await page.evaluate(()=>window.__JOHANSSON_MODEL__.avatar.recipe.name),identityOf(sleepingChild).avatar);await page.screenshot({path:path.join(out,'10-riku-own-bed.png')});
  await axes([0,-1,0,0]);await axes([0,0,0,0]);assert.equal(await page.evaluate(()=>window.johanssonLinuxWorld.inBed),false,'Left stick gets up safely beside the bed');
  // Recipe-only selection does not spawn each resident. Start it outdoors so
- // checkpoint() cannot assign Mai's bedroom to the identities being sampled.
+ // checkpoint() cannot assign Riku's bedroom to the identities being sampled.
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());await sampled();
  assert.equal(await page.evaluate(()=>JSON.parse(window.render_game_to_text()).room),null,'Recipe sampling starts outdoors');
  const selectable=await page.evaluate(async()=>{const api=window.johanssonLinuxWorld,result=[];for(const person of api.roster){await api.select(person.name,{started:false});result.push({name:api.active,model:window.__JOHANSSON_MODEL__.avatar.recipe.name});}return result;});

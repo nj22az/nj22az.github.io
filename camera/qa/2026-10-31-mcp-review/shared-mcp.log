@@ -1,0 +1,30 @@
+﹣ MCP After effects exports, replaces text/assets and reopens the layered project (1.493085ms) # SKIP
+✔ actual MCP stdio handshake lists bounded tools, rejects invalid controls and returns missing-session errors (259.022389ms)
+✔ failed browser startup and cancellation during launch release the preview and any late browser (2.45114ms)
+✔ coarse clear cell centers cannot claim access through an intervening thin wall; a gentle slope remains walkable (0.924766ms)
+✔ an MCP route stops at a real doorway instead of interpreting later world waypoints as room coordinates (0.500116ms)
+✔ navigation components preserve real walls and reject height jumps above standing step limit (0.554786ms)
+✔ MCP preview accepts a directory URL path, serves game bytes only and handles actual binary range requests (64.983487ms)
+✔ door transitions do not invent a travelled distance between world and room coordinates (1.236773ms)
+✔ MCP honours the cinematic lock while allowing normal movement on a walking ferry crossing (0.286231ms)
+✔ workflow discovery routes agents to registered tools and preserves creator approval (620.858991ms)
+✔ model snapping is available through the real MCP protocol with strict schemas and no writes (17.226176ms)
+✔ portable rooms cross the real MCP boundary with dry runs, stale-edit rejection and explicit file exchange (96.148222ms)
+✔ World purpose and existing-film tools are available through MCP without a second renderer (55.43536ms)
+✔ native World room tools expose strict revision and floating-compatible draft boundaries (28.922821ms)
+✔ the server answers initialize quickly, reads the throwaway copy, and lists every tool with honest hints (128.013542ms)
+✔ look, change with a dry run, say yes (the draft), publish, then reset and publish: looks.json is byte-identical again (592.737814ms)
+✔ two changes to one person at once both apply, each with its own id and its own reason (369.254682ms)
+✔ Studio-only characters have a profile of their own; a resident can never be deleted; problems come back in words (1018.052064ms)
+✔ render_portrait refuses an unknown pose in words, before any browser starts (46.817365ms)
+✔ validate and publish_check report in plain words (346.502082ms)
+✔ the headless page's server serves only World and Studio, never a path that climbs out (53.323626ms)
+✔ products: list, get with its references, change a price (dry run, draft, publish, and back), add a flavour, and refusals in words (1363.641021ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 5255.079602
