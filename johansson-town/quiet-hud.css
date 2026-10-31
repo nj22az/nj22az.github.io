@@ -27,6 +27,8 @@
  --hud-top:max(16px,env(safe-area-inset-top));
  --hud-bottom:max(16px,calc(env(safe-area-inset-bottom) + 8px));
 }
+/* Visible actions take taps before the overlapping movement thumb zone (mobile: z13). */
+.touch-controls #hud{z-index:14}
 html.hud-idle{--hud-dim:var(--hud-idle)}
 html.hud-photo{--hud-dim:0}
 

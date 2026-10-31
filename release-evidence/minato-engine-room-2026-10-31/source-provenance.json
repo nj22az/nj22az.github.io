@@ -1,0 +1,15 @@
+{
+  "initial_source_commit": "2bb7bb35aab07b5859b6124559f435146c8b57f2",
+  "access_correction_commit": "baf0da1a0745bad6238811bdfae26c4df4aebe67",
+  "touch_correction_commit": "390fc31a80ea6c6656b258f4f744918cc155ba0d",
+  "touch_correction_tree": "a11fac6a3c41deda812e09a1deffc87c6ac89a85",
+  "game_source_unchanged_from_access_correction": true,
+  "complete_runtime_tree_unchanged_from_access_correction": true,
+  "runtime_source_sha256": "0d57eb775277981ad81b2ce93ebddf43ec6e200d61c327e8187e49a66894e005",
+  "original_production_JS_verified": 62,
+  "public_file_verification": "public-files.json: 97/97 actual public bodies match the repository bytes",
+  "hosted_graphics_capture_note": "Captures run the actual compiled game and WebGL, rather than a Blender preview. Linux WebKit with device emulation; not physical iOS.",
+  "tablet_acceptance": "Not established. A tablet-size resize of the iPhone emulation produced unused white area; it is retained in the native artifact as diagnostic evidence, not accepted as a tablet result. Phone captures use the full native viewport.",
+  "presented_phone_captures_source": "390fc31a80ea6c6656b258f4f744918cc155ba0d",
+  "full_hosted_phone_acceptance": "passed, including all eight engine-room views and the later room/exit/resource/context-loss/absence checks"
+}
