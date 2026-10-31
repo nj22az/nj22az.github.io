@@ -12,12 +12,32 @@ const server=await serveGame({root,mounts:['camera','johansson-town','assets']})
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const results=[];let checks=0;
 const cases=[['iphone-17',402,700],['iphone-17-full',402,874],['iphone-17-landscape',874,340],['ipad-mini',744,980],['ipad-mini-landscape',1133,650],['ipad-compact',768,1024],['small-phone',320,568],['resized-ipad',507,740]];
+async function settleEditor(page){
+ await page.locator('#editor').evaluate(el=>Promise.allSettled(el.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished)));
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ await page.waitForFunction(()=>{const a=window.pocketCamera.state.edit,p=document.querySelector('#editPictureArea').getBoundingClientRect(),f=document.querySelector('#editFrame').getBoundingClientRect(),aspect=a.recipe.crop.w*a.width/(a.recipe.crop.h*a.height),w=Math.min(p.width,p.height*aspect);return Math.abs(f.width-Math.floor(w))<=1&&Math.abs(f.height-Math.floor(w/aspect))<=1;});
+}
+async function reachableRail(page){
+ const looks=[];
+ for(const index of [2,1,0]){
+  await page.locator('#editLookRail button').nth(index).click();await settleEditor(page);
+  const row=await page.locator('#editLookRail button').nth(index).evaluate(b=>{const rail=b.closest('.look-rail').getBoundingClientRect(),r=b.getBoundingClientRect(),svg=b.querySelector('svg').getBoundingClientRect(),stage=document.querySelector('#editStage');return {rail:rail.toJSON(),button:r.toJSON(),icon:svg.toJSON(),stageScroll:stage.scrollTop,inside:r.top>=rail.top-1&&r.bottom<=rail.bottom+1&&svg.top>=rail.top-1&&svg.bottom<=rail.bottom+1};});
+  assert.ok(row.inside&&row.stageScroll===0,JSON.stringify(row));
+  looks.push({index,...row});
+ }
+ await page.click('#compareOriginal');await settleEditor(page);
+ assert.equal(await page.getAttribute('#compareOriginal','aria-pressed'),'true');
+ const original=await page.locator('#compareOriginal').evaluate(b=>{const rail=b.closest('.look-rail').getBoundingClientRect(),r=b.getBoundingClientRect();return {inside:r.top>=rail.top-1&&r.bottom<=rail.bottom+1,rail:rail.toJSON(),button:r.toJSON()};});
+ assert.ok(original.inside,JSON.stringify(original));await page.click('#compareOriginal');
+ await page.locator('#editLookRail button').first().click();await settleEditor(page);
+ return {looks,original};
+}
 try{
  for(const [label,width,height] of cases){
   const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},sound:false,printer:false})));
-  const check=async(name,fn)=>{await fn();checks++;console.log(`ok  ${label}: ${name}`);};
+  const measurements={},check=async(name,fn)=>{await fn();checks++;console.log(`ok  ${label}: ${name}`);};
   const capture=async name=>{if(shots)await page.screenshot({path:join(shots,`${label}-${name}.png`)});};
   try{
    await page.goto(server.url+'camera/');await page.waitForFunction(()=>window.pocketCamera?.state.shots.length>=2);
@@ -58,6 +78,38 @@ try{
      assert.deepEqual(clipped,[],'the Enhance heading and adjustment controls remain inside their panel after resetting');
     }
    });await capture('adjust');
+   await check('Frame keeps the Looks photo size and every finish still edits its recipe',async()=>{
+    await page.click('#tabLooks');await settleEditor(page);const before=await page.locator('#editFrame').evaluate(e=>e.getBoundingClientRect().height);
+    await page.click('#tabFrame');await settleEditor(page);
+    const height=await page.locator('#editFrame').evaluate(e=>e.getBoundingClientRect().height);assert.ok(height>=before-1,JSON.stringify({before,height}));
+    measurements.framePhoto={looksHeight:before,frameHeight:height};
+    const controls=await page.locator('#panelFrame').evaluate(p=>{const bounds=p.getBoundingClientRect();return [...p.querySelectorAll('.frame-finishes button,#paperChoices button')].map(b=>{const r=b.getBoundingClientRect();return {name:b.getAttribute('aria-label')||b.textContent,width:r.width,height:r.height,inside:r.left>=bounds.left&&r.right<=bounds.right&&r.top>=bounds.top&&r.bottom<=bounds.bottom};});});
+    assert.ok(controls.every(b=>b.width>=44&&b.height>=44&&b.inside),JSON.stringify(controls));
+    assert.equal(await page.getAttribute('#framePaper','aria-pressed'),'true');assert.ok(await page.locator('#mirrorOptions').isHidden());
+    await page.click('#paperChoices [data-paper="rough"]');assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.paper),'rough');
+    await page.click('#paperChoices [data-paper="none"]');await capture('frame');
+    await page.click('#frameMirror');assert.ok(await page.locator('#paperOptions').isHidden());
+    await page.click('#mirrorChoices [data-trick="twin"]');assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.trick),'twin');
+    await capture('frame-mirror');await page.click('#mirrorChoices [data-trick="none"]');
+    await page.click('#editStamp');assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.stamp),true);assert.equal(await page.getAttribute('#editStamp','aria-checked'),'true');await page.click('#editStamp');
+    await page.click('#framePaper');await settleEditor(page);
+    assert.ok(await page.locator('#editStage').evaluate(e=>getComputedStyle(e).overflowY==='clip'));
+   });
+   await check('sticker categories use one scrollable row and reveal Mine and Thuan',async()=>{
+    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===6);
+    const row=await page.locator('#stickerSets').evaluate(el=>{const rs=[...el.children].map(b=>b.getBoundingClientRect());return {tops:rs.map(r=>r.top),targets:rs.every(r=>r.width>=44&&r.height>=44),overflow:document.documentElement.scrollWidth-innerWidth,pan:getComputedStyle(document.querySelector('#panelStickers')).touchAction};});
+    assert.ok(Math.max(...row.tops)-Math.min(...row.tops)<=1&&row.targets&&row.overflow<=1&&row.pan.includes('pan-x'),JSON.stringify(row));
+    measurements.stickerCategories=row;
+    for(const name of ['Mine','Thuan']){
+     await page.getByRole('tab',{name,exact:true}).click();await page.waitForFunction(name=>document.querySelector('#stickerSets [aria-selected=true]')?.textContent===name,name);
+     const inside=await page.locator('#stickerSets [aria-selected=true]').evaluate(b=>{const r=b.getBoundingClientRect(),p=b.parentElement.getBoundingClientRect();return r.left>=p.left-1&&r.right<=p.right+1;});assert.equal(inside,true,name);
+    }
+    await capture('stickers');
+   });
+   await check('all three Looks and Original are reachable without scrolling the photo',async()=>{
+    await page.click('#tabLooks');await page.evaluate(()=>{const a=window.pocketCamera;a.addLayer();a.chooseLook('thirtyTwoBit');});
+    assert.equal(await page.locator('#editLookRail button').count(),3);measurements.rail=await reachableRail(page);await capture('three-look-rail');
+   });
    await check('Save copy preserves the earlier album entry and original bytes',async()=>{
     await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
     const first=await page.evaluate(async()=>{const s=window.pocketCamera.state.viewing;return {id:s.id,count:window.pocketCamera.state.shots.length,photo:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await s.photo.arrayBuffer()))],source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await s.source.arrayBuffer()))]};});
@@ -74,8 +126,9 @@ try{
     assert.deepEqual(wrapped,[],'short active labels never split into fragments at enlarged text');
     await page.waitForFunction(()=>{const p=document.querySelector('#editPictureArea').getBoundingClientRect(),f=document.querySelector('#editFrame').getBoundingClientRect();return f.left>=p.left-1&&f.right<=p.right+1&&f.top>=p.top-1&&f.bottom<=p.bottom+1;});
     await capture('large-text');
+    await check('three Looks and Original remain reachable at 200% text',async()=>{measurements.largeTextRail=await reachableRail(page);await capture('large-text-rail');});
    });
-   await check('no page errors',async()=>assert.deepEqual(errors,[]));results.push({label,width,height,passed:true});
+   await check('no page errors',async()=>assert.deepEqual(errors,[]));results.push({label,width,height,passed:true,...measurements});
   }finally{await context.close();}
  }
  console.log(`${checks}/${checks} UI checks passed`);

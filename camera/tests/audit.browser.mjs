@@ -39,7 +39,7 @@ try{
  const current=await pageFor(),{page}=current,errors=[];page.on('pageerror',e=>errors.push(e.message));
  await choose(page,{id:'thirtyTwoBit',label:'32-bit'});await page.screenshot({path:join(shots,'iphone-after-32bit.png')});
  results.geometry=await page.evaluate(async()=>{
-  const now=await import('/camera/looks-gl.js?v=20261031audit1'),before=await import('/camera/audit-before-engine.js'),rows=[];
+  const now=await import('/camera/looks-gl.js?v=20261031audit2'),before=await import('/camera/audit-before-engine.js'),rows=[];
   const measure=({data,width:w,height:h})=>{
    const vertical=[],horizontal=[];
    const dark=(x,y)=>{const i=(y*w+x)*4;return data[i]<100&&data[i+1]<100&&data[i+2]<100;};
@@ -78,13 +78,13 @@ try{
  }
  await check('32-bit retains five-bit colour, ordered dither and deterministic pixels',async()=>{
   const quality=await page.evaluate(async()=>{
-   const m=await import('/camera/looks-gl.js?v=20261031audit1'),e=m.createLookEngine(document.createElement('canvas')),c=document.createElement('canvas');c.width=640;c.height=480;const g=c.getContext('2d'),gradient=g.createLinearGradient(0,0,440,0);gradient.addColorStop(0,'#000');gradient.addColorStop(1,'#fff');g.fillStyle=gradient;g.fillRect(0,0,640,480);g.fillStyle='#808080';g.fillRect(440,0,200,480);
+   const m=await import('/camera/looks-gl.js?v=20261031audit2'),e=m.createLookEngine(document.createElement('canvas')),c=document.createElement('canvas');c.width=640;c.height=480;const g=c.getContext('2d'),gradient=g.createLinearGradient(0,0,440,0);gradient.addColorStop(0,'#000');gradient.addColorStop(1,'#fff');g.fillStyle=gradient;g.fillRect(0,0,640,480);g.fillStyle='#808080';g.fillRect(440,0,200,480);
    e.setSource('quality',c,640,480);const r=m.normalRecipe({layers:[{look:'thirtyTwoBit'}]}),o={source:'quality',width:320,height:240},a=e.render(r,o).data,b=e.render(r,o).data,levels=new Set(),dither=new Set();let maxQuantizationError=0,opaque=true;
    for(let y=0;y<240;y++)for(let x=0;x<320;x++){const i=(y*320+x)*4,v=a[i];levels.add(v);maxQuantizationError=Math.max(maxQuantizationError,Math.abs(v-Math.round(Math.round(v*31/255)*255/31)));opaque&&=a[i+3]===255;if(x>240&&x<280&&y>80&&y<120)dither.add(v);}
    e.gl.getExtension('WEBGL_lose_context')?.loseContext();return {levels:levels.size,ditherLevels:dither.size,maxQuantizationError,opaque,repeat:a.every((v,i)=>v===b[i])};
   });assert.ok(quality.levels>=28&&quality.levels<=32,JSON.stringify(quality));assert.equal(quality.ditherLevels,2);assert.ok(quality.maxQuantizationError<=1);assert.equal(quality.opaque,true);assert.equal(quality.repeat,true);results.quality=quality;
  });
- const names=await page.evaluate(async()=>{const{LOOKS}=await import('/camera/looks-gl.js?v=20261031audit1');return Object.entries(LOOKS).map(([id,x])=>({id,label:x.label}));});
+ const names=await page.evaluate(async()=>{const{LOOKS}=await import('/camera/looks-gl.js?v=20261031audit2');return Object.entries(LOOKS).map(([id,x])=>({id,label:x.label}));});
  const symbols=[];
  for(const [index,name] of names.entries())await check(name.id==='none'?'Natural disables irrelevant strength':`actual UI selects ${name.label} and its intensity`,async()=>{
   await choose(page,name);assert.equal(await page.locator(`.tile[data-look="${name.id}"]`).getAttribute('aria-checked'),'true');
@@ -94,11 +94,11 @@ try{
   if(name.id==='none'){assert.equal(await page.locator('#amount').isDisabled(),true);return;}
   await page.fill('#amount','0');await page.waitForFunction(id=>window.auditDrawn?.[0]?.look===id&&window.auditDrawn[0].amount===0,name.id);
   assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.layers[0].amount),0);
-  const zero=await page.evaluate(async()=>{const a=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031audit1'),r=a.state.edit.recipe,opts={source:'edit',crop:r.crop,width:160,height:120},x=a.engine.render(r,opts).data,y=a.engine.render(m.normalRecipe({crop:r.crop}),opts).data;return x.every((v,i)=>v===y[i]);});assert.equal(zero,true,`${name.label}: 0% restores the original pixels`);await page.fill('#amount','100');
+  const zero=await page.evaluate(async()=>{const a=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031audit2'),r=a.state.edit.recipe,opts={source:'edit',crop:r.crop,width:160,height:120},x=a.engine.render(r,opts).data,y=a.engine.render(m.normalRecipe({crop:r.crop}),opts).data;return x.every((v,i)=>v===y[i]);});assert.equal(zero,true,`${name.label}: 0% restores the original pixels`);await page.fill('#amount','100');
  });
  await check('effect symbols are complete and visually distinct in markup',async()=>{assert.equal(symbols.length,34);assert.equal(new Set(symbols.map(x=>x.vector)).size,34);});
  const board=await page.evaluate(async()=>{
-  const a=window.pocketCamera,{LOOKS,normalRecipe}=await import('/camera/looks-gl.js?v=20261031audit1'),{lookIcon}=await import('/camera/look-icons.js?v=20261031audit1');
+  const a=window.pocketCamera,{LOOKS,normalRecipe}=await import('/camera/looks-gl.js?v=20261031audit2'),{lookIcon}=await import('/camera/look-icons.js?v=20261031audit2');
   const c=document.createElement('canvas');c.width=1196;c.height=920;const g=c.getContext('2d');g.fillStyle='#0d0e10';g.fillRect(0,0,c.width,c.height);g.fillStyle='#faf9f6';g.font='bold 24px sans-serif';g.fillText('Pocket Camera · all 34 actual shader outputs',20,35);g.font='14px sans-serif';g.fillStyle='#b7babf';g.fillText('One source photograph · 100% · no Enhance, paper, frame or overlays',20,59);
   const icons=document.createElement('canvas');icons.width=1196;icons.height=700;const ig=icons.getContext('2d');ig.fillStyle='#1c1e21';ig.fillRect(0,0,icons.width,icons.height);ig.fillStyle='#faf9f6';ig.font='bold 24px sans-serif';ig.fillText('Shader symbols · medium, colour and console codes',20,36);
   for(const [i,[name,info]] of Object.entries(LOOKS).entries()){

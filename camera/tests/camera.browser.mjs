@@ -233,7 +233,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.waitForTimeout(300);await shot('7b-editor-stickers');
    await page.click('#tabLooks');
    await page.waitForTimeout(1500);await shot('7-editor');
-   await page.click('#tabFrame');await page.click('.frame-choice[data-frame="film"]');await page.click('#mirrorChoices button[data-trick="twin"]');
+   await page.click('#tabFrame');await page.click('.frame-choice[data-frame="film"]');await page.click('#frameMirror');await page.click('#mirrorChoices button[data-trick="twin"]');
    await page.waitForTimeout(600);await shot('7c-frame-tab');
    await page.click('#tabAdjust');await page.click('.adjuster[data-key="pattern"]');await page.fill('#adjustSlider','80');
    await page.click('.adjuster[data-key="detail"]');await page.fill('#adjustSlider','-50');

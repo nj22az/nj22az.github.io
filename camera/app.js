@@ -3,10 +3,10 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031audit1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031audit2';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
-import {lookIcon} from './look-icons.js?v=20261031audit1';
+import {lookIcon} from './look-icons.js?v=20261031audit2';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
@@ -243,6 +243,9 @@ function renderLookRail(ctx){
   const label=document.createElement('span');label.textContent=lookLabel(layer.look);b.append(label);
   b.addEventListener('click',()=>{ctx.active=i;if(state.mode==='editor')selectTab('looks');else showLooks(true);trayChanged({thumbs:true});});box.append(b);
  });
+ // Reveal the selected Look inside its rail; never scroll the photograph's stage.
+ const rail=box.parentElement,active=box.children[ctx.active];
+ if(active&&rail.clientHeight){const a=active.getBoundingClientRect(),r=rail.getBoundingClientRect();rail.scrollTop+=a.top<r.top?a.top-r.top:a.bottom>r.bottom?a.bottom-r.bottom:0;}
 }
 function buildGroups(){
  const row=$('lookGroups');row.textContent='';
@@ -969,7 +972,7 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
  engine.setSource('edit',picture,width,height);
  eraser.reset();$('eraseUndo').disabled=true;
- show('editor');showEnhanceStrength(false);$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
+ show('editor');showEnhanceStrength(false);selectFrameFinish('paper');$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
@@ -1018,6 +1021,13 @@ function renderPaperChoices(box,current,pick){
  box.textContent='';
  for(const p of PAPERS){const b=document.createElement('button');b.type='button';b.textContent=p.label;b.dataset.paper=p.id;b.setAttribute('role','radio');b.setAttribute('aria-checked',String(current===p.id));b.addEventListener('click',()=>{sound('tick');pick(p.id);});box.append(b);}
 }
+function selectFrameFinish(name){
+ for(const [id,panel,kind] of [['framePaper','paperOptions','paper'],['frameMirror','mirrorOptions','mirror']]){
+  $(id).setAttribute('aria-pressed',String(name===kind));$(panel).hidden=name!==kind;
+ }
+}
+$('framePaper').addEventListener('click',()=>selectFrameFinish('paper'));
+$('frameMirror').addEventListener('click',()=>selectFrameFinish('mirror'));
 $('mirrorChoices').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');state.edit.recipe.trick=b.dataset.trick;renderFramePanel();refreshThumbs(true);invalidate();});
 $('editStamp').addEventListener('click',()=>{const e=state.edit;if(!e)return;sound('tick');e.recipe.stamp=!e.recipe.stamp;renderFramePanel();invalidate();});
 $('saveEdit').addEventListener('click',async()=>{
@@ -1220,12 +1230,14 @@ async function renderStickerPicker(){
  try{manifest=await loadStickerSets();}catch{grid.innerHTML='<p class="fine">The stickers could not be loaded.</p>';return;}
  const tabs=stickerTabs(manifest);
  sets.textContent='';
- // Text first (balloons, captions, words alone): a short name, so every tab fits across a phone.
+ // One scrollable category row; reveal the selected category without scrolling the photo.
  ['Text',...tabs.map(t=>t.name),'Mine'].forEach((name,i)=>{
   const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;
   b.setAttribute('aria-selected',String(i===stickerSet));b.addEventListener('click',()=>{sound('tick');stickerSet=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
   sets.append(b);
  });
+ const selected=sets.children[stickerSet];
+ if(selected){const b=selected.getBoundingClientRect(),r=sets.getBoundingClientRect();sets.scrollLeft+=b.left<r.left?b.left-r.left:b.right>r.right?b.right-r.right:0;}
  grid.textContent='';
  if(stickerSet===0){
   await loadLetteringFont();

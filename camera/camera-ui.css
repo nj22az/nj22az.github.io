@@ -82,11 +82,17 @@
 .editor .crop-shapes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:none;width:100%;overflow:visible;margin:12px 0;box-shadow:none;background:none;padding:0}
 .editor .crop-shapes button{min-height:44px;padding:8px 4px;white-space:normal;font-size:.8125rem;border-radius:10px;background:var(--surface-2)}
 .editor .frame-choices{padding:8px 0}.editor .frame-choice{min-height:44px;font-size:.75rem}
+.frame-finishes,.frame-finish-choices{display:flex;align-items:center;gap:6px}.frame-finishes{margin:6px 0}.frame-finish-choices{flex:1}
+.editor .frame-finish-choices button,.editor .frame-stamp{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 12px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
+.frame-finishes svg{width:22px;height:22px;flex:none}.frame-finish-choices button[aria-pressed=true],.frame-stamp[aria-checked=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.frame-finish-choices button:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 .editor .option-row{padding-inline:0}.editor .paper-choices,.editor #mirrorChoices{flex-wrap:wrap;height:auto}
 .editor .mini-seg button{min-height:44px;height:auto;font-size:.8125rem;white-space:normal;overflow-wrap:anywhere}
-.editor #panelFrame .option-row:has(.mini-seg){flex-direction:column;align-items:stretch;gap:8px;padding-block:8px}
-.editor .paper-choices{width:100%;min-width:0;grid-template-columns:repeat(4,minmax(0,1fr))}.editor #mirrorChoices{width:100%;min-width:0;grid-template-columns:repeat(3,minmax(0,1fr))}
-.editor .sticker-sets{display:flex;flex-wrap:wrap;padding:0;gap:4px}.editor .sticker-sets button{flex:1 0 auto;min-height:44px;height:auto;font-size:.8125rem;padding:8px;white-space:normal}
+.editor .paper-choices{width:100%;min-width:0;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(64px,4rem)),1fr))}.editor #mirrorChoices{width:100%;min-width:0;grid-template-columns:repeat(3,minmax(0,1fr))}
+.editor #panelFrame .mini-seg button{padding-inline:6px}
+.editor #panelStickers{touch-action:pan-x pan-y}
+.editor .sticker-sets{display:flex;flex-wrap:nowrap;padding:0 0 4px;gap:4px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;touch-action:pan-x}.editor .sticker-sets button{flex:none;min-height:44px;height:auto;font-size:.8125rem;padding:8px;white-space:nowrap}
+.editor .sticker-sets>:first-child,.editor .sticker-sets>:last-child{margin:0}
 .editor .sticker-grid{padding-inline:0}.editor .erase-hint{font-size:.875rem;line-height:1.5;margin:8px 0}
 /* Saved photos remain first; games stay in their existing secondary destination. */
 .album .album-scroll{padding:24px 20px}.album .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px;max-width:960px;margin:auto}
@@ -100,9 +106,10 @@
 /* A reserved side rail says which shaders are active without painting over the canvas. */
 .camera-view{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:8px;padding:12px}
 .camera.idle .camera-view{display:none}.picture-area{display:grid;place-items:center;min-width:0;min-height:0;width:100%;height:100%;position:relative}
-.editor>.stage{display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:10px}
-.look-rail{display:flex;flex-direction:column;gap:8px;align-items:center;align-self:stretch;min-height:0;max-height:100%;overflow:auto;scrollbar-width:thin}
-#editLookRail,#cameraLookRail{display:flex;flex-direction:column;gap:8px;width:100%}
+.editor>.stage{display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:10px;overflow:clip;touch-action:auto}
+.camera:not(.idle)>.stage{touch-action:auto}.picture-area{touch-action:none}
+.look-rail{display:flex;flex-direction:column;justify-content:flex-start;gap:8px;align-items:center;align-self:start;min-height:0;height:100%;max-height:100%;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scroll-padding-block:2px;touch-action:pan-y}
+#editLookRail,#cameraLookRail{display:flex;flex:none;flex-direction:column;gap:8px;width:100%}
 .rail-look{flex:none;width:var(--camera-rail);min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:var(--surface);padding:5px 2px;color:var(--label-3)}
 .rail-look svg{width:28px;height:28px;flex:none}.rail-look span{font-size:.625rem;line-height:1.25;max-width:100%;overflow-wrap:normal}
 .rail-look[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}

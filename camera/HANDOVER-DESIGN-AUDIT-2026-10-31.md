@@ -1,6 +1,28 @@
 # Pocket Camera design/shader audit — 31 October 2026
 
 Owner: “Why does 32 bit produce a warped image? … audit … as a Nintendo designer … UI and the icons … shaders … screenshots.”
+
+## Owner-authorised layout fixes — 31 October 2026, verification in progress
+
+The owner followed the audit with **“Implement the fixes”**. Continue draft PR #418 from verified head
+`aa6c38213f38da3ee11027e2947fdad9ed1589ae`. Its Camera, MCP, World guard/WebKit **and Linux full acceptance all passed**;
+this newer Linux success supersedes the pending status in the historical evidence below.
+
+The follow-up implements the three listed UI findings: compact Paper/Mirror mode controls with an icon Date switch;
+one horizontally scrollable sticker-category row that reveals the selection; and an explicitly bounded, nonshrinking
+Look rail that scrolls independently of the clipped photo stage. Touch scrolling is allowed on the rail/categories
+while photo gestures stay on the picture. Frame/Paper/Mirror/date recipe semantics, Save copy and the corrected 32-bit
+renderer remain. Cache keys, including MCP, align at **`20261031audit2`**; no dependencies or AR implementation added.
+
+The UI suite adds checks across eight viewport cases for Frame photo size, finish recipe controls, one-row categories,
+Mine/Thuan access, all three Looks and Original, plus 200% text rail access. The prior 57 UI assertions and the entire
+143 Camera/50 shader audit/15+20 MCP coverage remain; the core Mirror test now opens its explicit mode control.
+Local syntax/module/game unit checks and **15/15 MCP policy checks pass**. Hosted follow-up results, measurements and
+fresh screenshots are pending. Do not count the new UI checks or physical Safari as passed yet. Main is unchanged.
+
+Next: inspect the hosted follow-up, remedy failures without weakening coverage, inspect actual phone/tablet and export
+images, then update this section with exact source/results/evidence and deliver the new screenshots. Publication
+still requires the owner's subsequent word; AR remains the separate proposal below.
 Published main, verified again on 31 October: **`83783c93448d1be251a61c213959448e1d21c971`**, UI release PR #417
 (`51f07130`). [Draft PR #418](https://github.com/nj22az/nj22az.github.io/pull/418), branch
 `codex/pocket-camera-design-audit`, is **open, unmerged and not published**, with no comments/reviews at verification.
@@ -25,7 +47,7 @@ The six changed runtime files are byte-identical across these three commits; lat
    All six panels and both device orientations were captured. Actual photo thumbnails remain; these are original
    medium symbols and console codes, not copied platform assets.
 
-App/main-style/renderer and adapter URL keys on this branch are `20261031audit1`; published main remains `20261031ui1`.
+The initial audit used `20261031audit1`; the owner-authorised layout follow-up uses `20261031audit2`. Published main remains `20261031ui1`.
 The new icon module replaces the Camera's dependency on World's UI-house swatches. MCP architecture, approved imports,
 copy-save, explicit export/close and preview-pixel disclosure remain unchanged. Existing albums/source JPEGs are not rewritten.
 

@@ -1,5 +1,10 @@
 # Pocket Camera MCP — 31 October 2026
 
+The owner subsequently authorised the three [UI layout fixes](HANDOVER-DESIGN-AUDIT-2026-10-31.md). This follow-up
+keeps draft PR #418 and aligns all release/import keys at **`20261031audit2`**. Local **15/15 policy/lifecycle checks**
+pass; the fresh hosted acceptance is pending. Source parent `aa6c3821` passed Camera, MCP, World/WebKit and Linux full
+acceptance. Nothing in this follow-up connects the owner's host or publishes main; the previous records below are historical.
+
 A subsequent [design/shader audit](HANDOVER-DESIGN-AUDIT-2026-10-31.md), [draft PR #418](https://github.com/nj22az/nj22az.github.io/pull/418), is on review branch `codex/pocket-camera-design-audit`, not main. Its app/renderer/style and adapter import keys use `20261031audit1`; published main remains `20261031ui1`. On review source `d9a9f25b`, MCP run **41190783298**, job **124506977996**, passes **15/15 units + 20/20** actual MCP/Camera checks; fresh pinned installation reports **zero npm vulnerabilities**. Generated-image preview/export evidence was inspected. The SDK acceptance client connects; the owner's installed host and this chat remain unconnected. Approved imports, copy-save, explicit save/export/close, pixel disclosure and temporary-album/local stdio boundaries are retained. No AR service or browser/Photos connection was added.
 
 The subsequent [Camera UI release](HANDOVER-UI-REVIEW-2026-10-31.md) is **published via PR #417**, main
