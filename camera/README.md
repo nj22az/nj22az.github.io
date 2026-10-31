@@ -36,10 +36,12 @@ when saving ? I want memory with our own photos or with the stickers".
 - **Mirror** lens: **Twin** (the left half mirrored onto the right) and **Quad** (one quarter into four), the trick
   lenses of the hand-held cameras, before the Looks so they draw the mirrored picture.
 - **Mix**: up to three Looks stacked, each with its own intensity (tap the chosen one again in the camera; there the
-  slider stands in for the strip). The dice rolls one of sixteen **named mixes** chosen by eye on a real photo and on the
-  town ("Toy town" Print + Miniature, "Cartridge TV" 16-bit + Old TV, "Ink & wash" …; `MIXES` in `app.js`, with the
-  pairs left out and why); "Mix" adds a Look's partner from those first. Thumbnails show the picture itself in every
-  Look, over the layers before the one being chosen.
+  slider stands in for the strip). On the live camera the dice rolls one of twenty named, curated mixes
+  (`MIXES` in `smart-shuffle.js`); "Mix" adds a Look's partner from those first. In the photo editor the dice compares
+  small previews of that original photo, chooses among high-ranking mixes and tunes their strengths, adjustments and
+  Enhance. Repeated clicks explore variations; Undo Surprise restores the preceding Look/settings. Processing stays
+  on the device. This screens for usable tone, colour and structure; it cannot guarantee personal taste. Thumbnails
+  show the picture itself in every Look, over the layers before the one being chosen.
 - **On a phone's browser** (a short screen: Safari with its toolbars) the picture takes the whole width and the Look
   row sits on its foot; the strip of Looks unfolds from the Look's name (the little chevron) and folds again at a tap
   on the picture; swiping across the picture steps through the Looks. On a tall screen (the Home Screen app) the tray

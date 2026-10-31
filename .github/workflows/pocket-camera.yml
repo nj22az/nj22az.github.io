@@ -25,6 +25,8 @@ jobs:
             suites: ui
           - job: camera-audit
             suites: audit
+          - job: camera-smart
+            suites: smart
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:

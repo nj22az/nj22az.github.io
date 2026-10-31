@@ -44,7 +44,7 @@ export class CameraSession{
   });return {...state,errors:[...this.errors]};
  }
  async catalog(){return this.requirePage().evaluate(async()=>{
-  const [{LOOKS,LOOK_NAMES,PAPERS},{FRAMES}]=await Promise.all([import('/camera/looks-gl.js?v=20261031audit2'),import('/camera/frames.js?v=20261029f')]);
+  const [{LOOKS,LOOK_NAMES,PAPERS},{FRAMES}]=await Promise.all([import('/camera/looks-gl.js?v=20261031smart1'),import('/camera/frames.js?v=20261029f')]);
   return {looks:LOOK_NAMES.map(id=>({id,label:LOOKS[id].label})),papers:PAPERS.map(({id,label})=>({id,label})),frames:FRAMES.map(({id,label})=>({id,label})),adjustments:['light','contrast','colour','warmth','pattern','detail'],crop:'x/y/w/h are fractions of the original image, not screen pixels.'};
  });}
  async requireEditor(){
