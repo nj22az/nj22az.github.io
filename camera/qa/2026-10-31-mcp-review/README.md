@@ -59,3 +59,20 @@ Hosted rerun, final source commit, retained images and their inspection are reco
 [the handover](../../HANDOVER-MCP-2026-10-31.md). The 20-check acceptance suite reads the real `.mcp.json` registration
 and launches its absolute server path from outside the repository. It remains an acceptance client, not an installed
 connection on the owner's computer or a tool connection in this chat. Physical Safari/iPhone remains untested.
+
+## Completed hosted verification
+
+Implementation **`23ead95974b5362aa1042b9368fb89b630de4108`**, tree **`0213ec74fa7b75edefa176a95f4b24e355ad6901`**.
+[Run 41169563788](https://github.com/nj22az/nj22az.github.io/actions/runs/41169563788), job **124444372569**, passed
+**15/15 units and 20/20 real MCP/Camera checks**, without skips. `hosted-results.json` is the exact successful result.
+GitHub tested merge candidate `ce31b6ce1e3f93db55b64214a7998bf888283a51` into base `f49f22ba`.
+
+[Full image artifact](https://github.com/nj22az/nj22az.github.io/actions/runs/41169563788/artifacts/13030695442), ZIP
+SHA-256 **`16566b783e6df279e232b5948770a79c70e06535e61cf14692280336b4960efc`**, checked against the downloaded bytes,
+upload log and GitHub's digest. Before/after previews and the 256 × 192 JPEG were all visually inspected. The default
+Pocket image changes to the requested cropped, three-Look image with Drawing paper and the Print border, and the
+saved JPEG contains that same crop/treatment. This is a synthetic fixture, not an art-quality audit.
+
+`world-guard.log` records **560/560** passing tests across **109 files**, in 309 seconds.
+`shared-mcp.log` records **21 passed, 1 skipped, 0 failed**; the existing opt-in After effects browser test was skipped
+because `STUDIO_BROWSER_TEST` was not enabled. No test assertions or budgets were weakened.

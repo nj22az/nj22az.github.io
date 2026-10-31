@@ -5,8 +5,8 @@
 The owner explicitly requested continuation of draft PR #416, not a rebuild, merge or publication.
 Verified starting head **`3267eff1993bf276a0ee6700407f23a0fa8cbfa6`**; PR remains open/draft, with no conversation
 comments or review threads at this review. MCP run **41167700821**, Camera regression **41167700721** and World guard
-**41167700698** report success. Linux run **41167700800** still reports `in_progress` at its final full-world acceptance
-step; it is not counted as passed. There were no local tracked changes at checkout. An unrelated untracked Sjöskolan
+**41167700698** report success. Linux run **41167700800** initially reported `in_progress` at its final full-world
+acceptance step and subsequently finished **cancelled**; it is not counted as passed. There were no local tracked changes at checkout. An unrelated untracked Sjöskolan
 temporary video file is preserved and excluded from this work.
 
 Changes in this review:
@@ -33,8 +33,56 @@ denies Chromium's required Unix socket (`process_singleton_posix.cc`, `socket():
 Playwright download also returned invalid ZIPs; a valid official Chromium 149.0.7827.55 archive was obtained and tested,
 which exposed the socket restriction. Do not present the two successful discovery checks as a completed editing cycle.
 
-The final post-review commit, hosted acceptance result/evidence, World guard result and image inspection are recorded
-below when available. Publication and the owner's installed-client connection remain separate, outstanding states.
+### Verified source and results
+
+Review implementation: **`23ead95974b5362aa1042b9368fb89b630de4108`**, tree
+**`0213ec74fa7b75edefa176a95f4b24e355ad6901`**, parent `3267eff1993bf276a0ee6700407f23a0fa8cbfa6`.
+The final handover/evidence follow-up changes documentation and retained test records only.
+The unauthenticated shell Git push was unavailable; the connected GitHub API created the identical verified tree,
+and advanced only `codex/pocket-camera-mcp` without force. The local checkout was aligned only after tree equality
+was verified; the unrelated untracked file remains present.
+
+**Hosted MCP:** [run 41169563788](https://github.com/nj22az/nj22az.github.io/actions/runs/41169563788), job
+**124444372569**, **15/15 units + 20/20 real MCP-to-Camera acceptance**, no skips. The full log confirms a fresh
+`npm ci` with **zero vulnerabilities** and tests merge candidate **`ce31b6ce1e3f93db55b64214a7998bf888283a51`**
+(`23ead959` into `f49f22ba`). This supersedes the original implementation's 9/16 totals below.
+
+[Artifact 13030695442](https://github.com/nj22az/nj22az.github.io/actions/runs/41169563788/artifacts/13030695442)
+contains before/after previews, saved JPEG and `results.json`. Its downloaded ZIP matches both the upload log and
+GitHub digest: **`16566b783e6df279e232b5948770a79c70e06535e61cf14692280336b4960efc`**.
+All three images were opened and inspected: default Pocket rendering, cropped three-Look treatment with Drawing
+paper and a Print border, and the corresponding **256 × 192 JPEG**. These are synthetic functional checks, not a
+photographic art audit. A durable copy is retained as
+[camera-mcp-review-evidence.zip](https://chatgpt.com/library?file_id=libfile_d1ef221fa6d48191af1c756a8e87fec8&account_id=personal).
+The machine-readable result and dependency/security review are also in
+[qa/2026-10-31-mcp-review/](qa/2026-10-31-mcp-review/README.md).
+
+**Local compatibility:** full World guard **560/560**, **109 files**, **309 seconds**, no skips or failures, with a
+6 GiB Node heap. Existing Town/Studio MCP checks: **21 passed, 1 skipped, 0 failures**. The skipped check is the existing
+opt-in After effects browser acceptance (`STUDIO_BROWSER_TEST` was not enabled); do not count it as passed.
+Both logs are retained with the review evidence.
+
+At the post-review check, Camera regression **41169563798**, hosted World guard/WebKit **41169563894**, and Linux
+acceptance **41169563914** were still running, with no reported failure. Do not describe their wrapper state as success.
+The documentation follow-up may create newer runs; inspect the latest PR head before any merge. Earlier Linux run
+**41167700800** ended cancelled, with all preceding setup and acceptance stages successful; its final full-world
+acceptance did not complete.
+
+### Implemented, tested, connected, published
+
+- **Implemented:** existing local stdio adapter continued, with the four boundary/lifecycle corrections above;
+  eleven tools and the actual Camera renderer retained. Only the three audited dependency resolutions changed.
+- **Tested:** 15 units and 20 complete browser acceptance checks passed in hosted Chromium; local World guard passes.
+  The local managed-executor browser remains blocked by its Unix-socket policy. Physical Safari/iPhone remains untested.
+- **Connected:** the official SDK acceptance client discovers and exercises the real `.mcp.json` server from outside
+  the repository. The owner's installed host and this ChatGPT session are **not connected**. Remaining local step:
+  register Node with the absolute `johansson-town/tools/camera/server.mjs` path in the owner's stdio-capable host,
+  reconnect, verify the eleven tools, and run the generated-image cycle there before using personal images.
+- **Published:** **no**. Draft PR #416 stays open; no merge, main push, Pages deployment, auto-merge, release or live
+  Camera/World runtime change was made.
+
+**Next action:** inspect final checks on the latest draft head, then complete the owner's local MCP-host connection
+using [MCP.md](MCP.md). Investigate a failed check if one appears; do not merge or publish without a new owner instruction.
 
 ## Request, branch and review
 
@@ -43,7 +91,8 @@ Owner: **“Mcp wire the Johansson camera web app.”**
 [Draft PR #416](https://github.com/nj22az/nj22az.github.io/pull/416), branch `codex/pocket-camera-mcp`, based on `main`
 **`f49f22ba82e6d4b1fd9b5033f8bddc4d3eed903f`**. Implementation commit:
 **`daaa219ee6a5ea8bf665b739909a89f238548b99`**, tree `01387594f5b74fb2f2282be6beefd6ec9889a7f7`.
-The follow-up handover change is documentation only; the tested adapter code is unchanged.
+The original follow-up `3267eff1` was documentation only. The continuation implementation and evidence above supersede
+that adapter snapshot; the original acceptance remains useful history.
 
 This is review work, **not merged or published**. The prior Camera release via #414 stays intact. No Camera runtime,
 shader, CSS, service worker, sticker asset, World runtime or existing album migration is changed.
