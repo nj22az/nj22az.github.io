@@ -76,6 +76,8 @@ const exitThroughDoor=async()=>{
  step('approach authored dining exit',approach);
  // The actual context control is offered only near a door. Do not force a hidden/disabled control.
  await page.waitForFunction(()=>{const b=document.querySelector('#exitRoomButton');return b&&!b.hidden&&!b.disabled&&b.getClientRects().length>0&&!document.querySelector('#contextActions').hidden;},null,{timeout:30000});
+ const hit=await page.evaluate(()=>{const b=document.querySelector('#exitRoomButton'),r=b.getBoundingClientRect(),target=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {buttonContainsTarget:b.contains(target),target:target?.id||target?.tagName};});
+ step('native dining exit hit target',hit);assert.equal(hit.buttonContainsTarget,true,'The visible exit receives touches: '+JSON.stringify(hit));
  await page.locator('#exitRoomButton').tap();
  await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation===null,null,{timeout:30000});
  await settleLoads();
