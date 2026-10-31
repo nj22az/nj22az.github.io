@@ -32,13 +32,40 @@ const state=()=>page.evaluate(()=>{
   fatal:document.querySelector('#fatal:not(.hidden)')?.textContent,
   launch:JSON.parse(localStorage.getItem('johansson-loading-report-v1')||'null')};
 });
+const settleLoads=async()=>{
+ await page.waitForLoadState('networkidle',{timeout:60000});
+ await page.waitForFunction(()=>!window.__JOHANSSON_STREAMING__?.active&&!window.__JOHANSSON_AUDIT__?.blocked.roomLoading,null,{timeout:60000});
+ // A completed model decode can start image/media requests after the first idle observation.
+ await page.waitForLoadState('networkidle',{timeout:60000});
+};
+const exitThroughDoor=async()=>{
+ await settleLoads();
+ const approach=await page.evaluate(()=>{
+  const a=window.__JOHANSSON_AUDIT__,nav=a.roomNavigation;if(!nav)throw Error('No current room to exit');
+  const exit=nav.exit,spawn=nav.spawn,dx=spawn[0]-exit[0],dz=spawn[2]-exit[2],length=Math.hypot(dx,dz);
+  if(!length)throw Error('No authored inward doorway direction for '+nav.id);
+  const candidates=[spawn,...[.65,.85,1.05,1.2].flatMap(d=>[0,-.2,.2].map(side=>[
+   exit[0]+dx/length*d-dz/length*side,spawn[1],exit[2]+dz/length*d+dx/length*side]))];
+  const at=candidates.find(p=>{
+   const n=a.navigation(p[0],p[2]);return Math.hypot(p[0]-exit[0],p[2]-exit[2])<1.3&&!n.staticBlocked&&!n.residentBlocked&&(!a.layout.exitSiteAt||a.layout.exitSiteAt(p[0],p[2])===nav.id);
+  });
+  if(!at)throw Error('No clear standing point inside the authored '+nav.id+' exit');
+  a.camera=null;a.stand(...at,Math.atan2(at[0]-exit[0],at[2]-exit[2]));a.hud.photo(false);a.hud.wake();a.step(0);
+  return {room:nav.id,exit,standing:at,probe:a.navigation(at[0],at[2])};
+ });
+ step('approach authored dining exit',approach);
+ // The actual context control is offered only near a door. Do not force a hidden/disabled control.
+ await page.waitForFunction(()=>{const b=document.querySelector('#exitRoomButton');return b&&!b.hidden&&!b.disabled&&b.getClientRects().length>0&&!document.querySelector('#contextActions').hidden;},null,{timeout:30000});
+ await page.locator('#exitRoomButton').tap();
+ await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation===null,null,{timeout:30000});
+ await settleLoads();
+};
 const boot=async(reload=false,natural=false)=>{
  // Finish this page's detail decodes before a planned reload. WebKit otherwise
  // reports the outgoing document's cancelled blob texture as an access-control error.
  // Keep all error assertions: no message is filtered out or discarded.
  if(report.steps.length){
-  await page.waitForLoadState('networkidle',{timeout:60000});
-  await page.waitForFunction(()=>!window.__JOHANSSON_STREAMING__?.active,null,{timeout:60000});
+  await settleLoads();
  }
  if(reload)await page.reload({waitUntil:'domcontentloaded'});
  else await page.goto(`http://127.0.0.1:${server.address().port}/johansson-town/${natural?'':'?audit&spawn=ferry&cinematic=off'}`,{waitUntil:'domcontentloaded'});
@@ -60,10 +87,7 @@ const checkRoomLifetime=async()=>{
    hasMenu:Object.hasOwn(d,'desktopMenu'),menu:d.desktopMenu??null};
   a.frozen=true;a.renderFrozen=true;return value;
  });
- const settle=async()=>{
-  await page.waitForLoadState('networkidle',{timeout:60000});
-  await page.waitForFunction(()=>!window.__JOHANSSON_STREAMING__?.active&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,null,{timeout:60000});
- };
+ const settle=settleLoads;
  const streamState=()=>page.evaluate(()=>{const s=window.__JOHANSSON_STREAMING__;return {active:s.active,loaded:[...s.loaded].sort(),failed:[...s.failed].sort(),retries:s.retries};});
  const resources=value=>({textures:value.render.textures,geometries:value.render.geometries,releasedCanvases:value.render.releasedCanvases});
  const visit=async(venue,phase,cycle)=>{
@@ -79,7 +103,10 @@ const checkRoomLifetime=async()=>{
    for(const view of views){a.camera=view;a.render();await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}
   },venue);
   const indoor=await state();assert.equal(indoor.fatal,undefined);assert.equal(indoor.running,true);
+  await settle(); // Finish requests triggered by the rendered room/TV before intentionally disposing it.
   await page.evaluate(async()=>{
+   // This frozen resource loop deliberately invokes the real leaveRoom lifecycle directly;
+   // the live dining-door button is exercised separately before freezing the simulation.
    const a=window.__JOHANSSON_AUDIT__;a.leave();a.camera={pos:[8,2,-21],at:[-12,1.6,-27.3]};a.render();
    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   });
@@ -177,8 +204,7 @@ try{
  // doors, an actual exit, re-entry, then the upstairs office. A successful first
  // entry alone misses disposed/shared textures and old room resources on return.
  for(const id of ['ramen','izakaya']){
-  await page.locator('#exitRoomButton').tap();
-  await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation===null,null,{timeout:30000});
+  await exitThroughDoor();
   await page.evaluate(async id=>window.__JOHANSSON_AUDIT__.enter(id),id);
   await page.waitForFunction(id=>window.__JOHANSSON_AUDIT__.roomNavigation?.id===id&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,id,{timeout:120000});
   const entered=await state(),before=entered.frames;
@@ -186,7 +212,8 @@ try{
   assert.equal(entered.running,true);assert.equal(entered.fatal,undefined);
   step(id==='ramen'?'Sato door after Izakaya exit':'Izakaya re-entry after Sato exit',entered);
  }
- await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.leave();await a.enterInside('sakura-office');});
+ await exitThroughDoor();
+ await page.evaluate(async()=>window.__JOHANSSON_AUDIT__.enterInside('sakura-office'));
  await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation?.id==='sakura-office'&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,null,{timeout:120000});
  const officePrints=await page.evaluate(()=>{
   const a=window.__JOHANSSON_AUDIT__,slots=[{name:'UMINEKO Black',at:[1.18,1.5,3.25]},{name:'KITANO 12 pure malt',at:[5.15,1.5,3.2]}];
@@ -200,6 +227,7 @@ try{
   await page.screenshot({path:resolve(out,'office-'+name+'.png')});
  }
  await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.hud.photo(false);a.frozen=false;});
+ await settleLoads();
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.leave());
  await checkRoomLifetime();
  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.activities.save());

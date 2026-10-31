@@ -1,5 +1,8 @@
 # Sakura's two office posters and Minato's dining repair — 31 October 2026
 
+**Current continuation, 31 October 2026:** [Room recovery and Nakamura retirement](HANDOFF-ROOM-CRASH-FAMILY-2026-10-31.md), PR #415, integrates this work with current main, safe stair/load retry and shared atlas ownership. The original verification and delivery history below remain historical.
+
+
 ## Scope and delivery
 
 Owner: “Pick the best two posters you made and decorate the upstairs office from Sakura”. Follow-up: the game crashes on entering the izakaya; draw it in CAD and rebuild without Z-fighting, with Meshy or Artlist available for assets.
