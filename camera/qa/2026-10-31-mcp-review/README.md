@@ -1,5 +1,23 @@
 # Pocket Camera MCP continuation review — 31 October 2026
 
+## Merge and deployment
+
+The owner's **“Merge”** instruction was carried out through PR #416. Main squash commit
+**`ffc02e29ff14a632cf05ae99f691b009af09f7c2`** has the exact tree of PR head
+**`c689ee0ac837bfa6a143cf47e4700ee4de3a9c02`**: `a50322bba3909057f1b17e9f4259eccc2dc0ded1`.
+The final follow-up is documentation/evidence only. [Pages run 41173645390](https://github.com/nj22az/nj22az.github.io/actions/runs/41173645390)
+passed build, deploy and report. `publication-files.json` records **13/13** HTTPS files matching the merge byte for
+byte, including six preserved Camera runtime/entry files and all seven adapter modules.
+
+The last PR MCP run **41172757953** passes **15/15 + 20/20**; Camera **41172757896** passes **143/143**, and World
+guard/native WebKit **41172757870** passes. Existing Steam Deck tests pass **42/42** locally.
+
+The initial Linux failure waited for retired Mai; that stale test was identical on unchanged main. It now uses the
+live child Riku, retaining bed/wake/exit/full-roster assertions and adding active-resident/avatar assertions. Linux
+**41172757918 attempt 1** then hit a native GPU-process crash before full-console acceptance; the renderer, Electron
+version and workflow are unchanged. Attempt 2 is running after a failed-job retry. No full Linux pass or physical
+device/client connection is claimed; follow [the current handover](../../HANDOVER-MCP-2026-10-31.md).
+
 Scope: PR #416, `codex/pocket-camera-mcp`, starting at `3267eff1993bf276a0ee6700407f23a0fa8cbfa6`.
 The review changes the local adapter, tests, its CI checkout and three affected package resolutions. Camera and World
 runtime source/assets, the existing release, `.mcp.json`'s eleven-tool architecture and publication state are preserved.

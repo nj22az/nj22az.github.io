@@ -60,8 +60,8 @@ not a full-resolution export.
   do not describe that as entirely private/on-device AI processing.
 - This is local MCP, not a hosted HTTP connector and not browser-native WebMCP. No public endpoint or API key is added.
 - Sticker/lettering authoring, Erase brush painting and mini-game controls are not exposed by this first adapter.
-- `main` and GitHub Pages are unchanged until separately approved for publication. Local MCP can be used from the
-  review branch without publishing the website.
+- The adapter source is on `main` through PR #416, merged on the owner's instruction. Pull main before local setup.
+  The website's Camera renderer remains unchanged; merging does not create a hosted MCP connection.
 
 ## Checks
 

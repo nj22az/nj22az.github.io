@@ -1,6 +1,50 @@
 # Pocket Camera MCP — 31 October 2026
 
-## Merge instruction and Linux fixture correction — 31 October 2026
+## Merged on the owner's instruction — 31 October 2026
+
+The owner instructed **“Merge”**. [PR #416](https://github.com/nj22az/nj22az.github.io/pull/416) is **merged and closed**,
+squash commit **`ffc02e29ff14a632cf05ae99f691b009af09f7c2`** on `main`, parent
+`f49f22ba82e6d4b1fd9b5033f8bddc4d3eed903f`. The merge tree **`a50322bba3909057f1b17e9f4259eccc2dc0ded1`** is identical
+to the reviewed head **`c689ee0ac837bfa6a143cf47e4700ee4de3a9c02`**. The merge used an expected-head guard and did not
+change runtime files. Existing local changes remain preserved.
+
+Final PR checks on `c689ee0a`:
+
+- **MCP 41172757953**, job **124454030492**: **15/15 units + 20/20 real MCP/Camera checks**, no skips; fresh install
+  reports **zero npm vulnerabilities**.
+- **Camera regression 41172757896**, job **124454030217**: **143/143** browser checks (56 + 33 + 22 + 14 + 5 + 9 + 4),
+  plus its unit/module/syntax checks, passed.
+- **World 41172757870**: guard job **124454030173** and native WebKit/iPhone-simulation job **124454030285** passed.
+  This is automated WebKit, not a physical iPhone test.
+- **Linux 41172757918, attempt 1**, job **124454030269**: build, facial visibility and controller recovery passed.
+  Native startup reported stability success, then its GPU process exited with `UnknownVizError` and lost WebGL
+  before the native/disk-save stage completed. Offline/full-console stages were therefore not run. The Linux
+  renderer, native entry point, Electron version and CI workflow are unchanged from main. Do not call this pass.
+  The failed job was retried unchanged; **attempt 2**, job **124456571536**, remains in progress at this handover.
+  The earlier retired-Mai test failure was separately corrected below. Full acceptance of the Riku replacement
+  remains unverified until the retry reaches and completes that stage.
+
+The merge proceeded under the owner's explicit instruction after the passing Camera/MCP/World checks and triage
+of the unchanged Linux renderer's CI GPU crash. No checks, assertions, timeouts or graphics settings were weakened.
+No new Linux binary release was published.
+
+Pages deployment for the merge: [run 41173645390](https://github.com/nj22az/nj22az.github.io/actions/runs/41173645390).
+The build, deploy and report jobs **all passed**. Post-merge World run **41173645762** is independent of the passing
+PR guard and was still running at the handover check. Exact public-file verification is retained in
+[publication-files.json](qa/2026-10-31-mcp-review/publication-files.json); this is byte verification, not another
+physical-device or installed-client test. **13/13** checked HTTPS public files match the merge exactly: six unchanged
+Camera entry/renderer/album/worker/frame files and all seven adapter modules. The final follow-up changes only
+handover/documentation and this evidence.
+
+**Connection remains local:** the adapter source and `.mcp.json` are on main. The owner's installed MCP client and
+this chat are still unconnected; pull main, install the pinned dependencies/Chromium and register/reconnect the
+absolute Node server path as described in [MCP.md](MCP.md). Merging does not create a hosted HTTP MCP endpoint.
+The previous Camera UI/renderer, temporary-album boundaries and preview-pixel disclosure remain in force.
+
+**Next action:** inspect Linux retry 41172757918 (attempt 2) to completion and investigate any remaining failure
+without weakening coverage; complete the owner's local MCP-host setup. Do not claim physical Safari acceptance.
+
+## Pre-merge preparation and Linux fixture correction — 31 October 2026
 
 The owner subsequently instructed **“Merge”**, authorising PR #416 into `main` and its normal Pages deployment.
 Verified review head `5095bb659ad51aae8ce8e40a7930362baa28d00f`: MCP **41169932260**, Camera regression
@@ -86,7 +130,7 @@ The documentation follow-up may create newer runs; inspect the latest PR head be
 **41167700800** ended cancelled, with all preceding setup and acceptance stages successful; its final full-world
 acceptance did not complete.
 
-### Implemented, tested, connected, published
+### Historical review states — before the owner's merge instruction
 
 - **Implemented:** existing local stdio adapter continued, with the four boundary/lifecycle corrections above;
   eleven tools and the actual Camera renderer retained. Only the three audited dependency resolutions changed.
@@ -102,7 +146,7 @@ acceptance did not complete.
 **Next action:** inspect final checks on the latest draft head, then complete the owner's local MCP-host connection
 using [MCP.md](MCP.md). Investigate a failed check if one appears; do not merge or publish without a new owner instruction.
 
-## Request, branch and review
+## Original request, branch and review
 
 Owner: **“Mcp wire the Johansson camera web app.”**
 
@@ -112,7 +156,7 @@ Owner: **“Mcp wire the Johansson camera web app.”**
 The original follow-up `3267eff1` was documentation only. The continuation implementation and evidence above supersede
 that adapter snapshot; the original acceptance remains useful history.
 
-This is review work, **not merged or published**. The prior Camera release via #414 stays intact. No Camera runtime,
+The original review was not merged or published; the current merge status is recorded above. The prior Camera release via #414 stays intact. No Camera runtime,
 shader, CSS, service worker, sticker asset, World runtime or existing album migration is changed.
 The existing publication handover remains the root HANDOVER.md index's published Camera entry and now links to this
 separate MCP continuation. Read [MCP.md](MCP.md) for setup, tool boundaries and operation.

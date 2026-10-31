@@ -1,12 +1,21 @@
 # Pocket Camera publication — 31 October 2026
 
-## MCP continuation — separate review, not published
+## Local MCP adapter source — merged on 31 October 2026
 
 The owner's subsequent request, “Mcp wire the Johansson camera web app”, is implemented in
-[draft PR #416](https://github.com/nj22az/nj22az.github.io/pull/416), branch `codex/pocket-camera-mcp`.
+[PR #416](https://github.com/nj22az/nj22az.github.io/pull/416), squash-merged to main as
+**`ffc02e29ff14a632cf05ae99f691b009af09f7c2`** on the owner's subsequent **“Merge”** instruction.
 Read [the MCP handover](HANDOVER-MCP-2026-10-31.md) and [connection instructions](MCP.md) for the local stdio adapter,
-its eleven tools and **9/9 unit + 16/16 real MCP/Camera acceptance checks**. It does not replace or alter the published
-Camera runtime described below. The temporary MCP album is not the user's iPhone or personal-browser album.
+its eleven tools and **15/15 unit + 20/20 real MCP/Camera acceptance checks**, clean npm audit, and current Linux retry.
+The existing **143/143** Camera browser checks and World guard/native WebKit also passed on the merged candidate.
+The adapter source is available on main; it still requires a local stdio-capable host and does not create a public
+HTTP MCP service or connect the owner's device. It does not replace or alter the published Camera runtime below.
+The temporary MCP album is not the user's iPhone or personal-browser album.
+
+The merge's [Pages build/deploy/report jobs passed](https://github.com/nj22az/nj22az.github.io/actions/runs/41173645390).
+The [merge verification](qa/2026-10-31-mcp-review/publication-files.json) confirms **13/13** checked public files match
+the merged bytes. A local MCP
+client connection remains a separate setup step; the Linux rerun and physical-device limits remain in the handover.
 
 ## Published on the owner's instruction
 
