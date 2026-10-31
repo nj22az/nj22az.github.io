@@ -1,3 +1,5 @@
+import {FERRY_H1_ENABLED,FERRY_H1} from './ferry-engine-room-plan.js';
+import {pipePreviewSegments} from './ferry-pipe-routes.js';
 import * as THREE from '../../vendor/three.module.js';
 import {releaseAfterUpload} from '../render/canvas-release.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
@@ -53,7 +55,7 @@ export const FERRY_CASINGS=Object.freeze({inner:2.75,aft:CAS0,fore:CAS1,top:CAS_
  passage:Object.freeze({from:GATE.from,to:GATE.to,height:2.2}),
  bowHouses:Object.freeze({inner:2.25,aft:BH0,fore:BH1,top:BH_TOP})});
 /** The gangway: 2 m of aluminium plank with hand rails. */
-export const GANGWAY_LENGTH=2;
+export const GANGWAY_LENGTH=FERRY_H1_ENABLED?FERRY_H1.gangwayLength:2;
 
 /**
  * The car deck's working fittings, as the creator's photographs of a working road ferry show them (2026-10-13): the
@@ -554,15 +556,29 @@ export function buildFerryModel({shadows=false}={}){
 
  // ---- The houses, casings, stairs, ladders and everything inside them: ferry-interior.js, drawn here as it is walked.
  const SAL=FERRY_DECKS.saloon,DH0=SAL.aft,DH1=SAL.fore,dw=SAL.width/2,dhTop=BRIDGE-.25;
- for(const b of FERRY_INTERIOR.boxes)if(b.draw!==false)kit.block(b.cls,b.a,b.b,b.hex);
- for(const r of FERRY_INTERIOR.bars)kit.bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
- for(const c of FERRY_INTERIOR.cyls)kit.cyl(c.cls,c.rt,c.rb,c.h,c.pos,c.hex,c.rot,c.seg);
+ const h1Point=p=>p[2]+HALF>=6.35&&p[2]+HALF<=26.06&&p[1]+DRAFT>=.65&&p[1]+DRAFT<=3.62;
+ const h1Kit=FERRY_H1_ENABLED?createKit(shadows):null,h1Root=FERRY_H1_ENABLED?new THREE.Group():null;
+ const previewStart=FERRY_H1_ENABLED?FERRY_INTERIOR.bars.length-pipePreviewSegments(FERRY_INTERIOR.pipes).length:Infinity;
+ for(const b of FERRY_INTERIOR.boxes)if(b.draw!==false)(h1Kit&&(h1Point(b.a)||h1Point(b.b))?h1Kit:kit).block(b.cls,b.a,b.b,b.hex);
+ for(const [index,r]of FERRY_INTERIOR.bars.entries()){
+  const h1=h1Kit&&(h1Point(r.a)||h1Point(r.b));if(h1&&index>=previewStart)continue;
+  (h1?h1Kit:kit).bar(r.cls,r.a,r.b,r.r,r.hex,r.r>.2?14:6);
+ }
+ for(const c of FERRY_INTERIOR.cyls){const h1=h1Kit&&h1Point(c.pos);if(h1&&['pipe bend','penetration'].includes(c.name))continue;(h1?h1Kit:kit).cyl(c.cls,c.rt,c.rb,c.h,c.pos,c.hex,c.rot,c.seg);}
+ if(h1Root){
+  h1Root.name='Engine room H1 / CAD';ferry.add(h1Root);const fallback=new THREE.Group();h1Root.add(fallback);h1Kit.finish(fallback);
+  const state={loaded:false,pending:null,error:null,group:h1Root,ensure(){return this.pending??=import('./ferry-engine-room-asset.js').then(m=>m.loadFerryEngineRoomH1(h1Root,fallback,this)).catch(error=>{this.error=String(error?.message||error);return false;});}};
+  ferry.userData.engineRoomH1=state;
+  // Two nearest CAD fixtures light the room. A constant active count limits phone shader cost.
+  state.lights=FERRY_H1.luminaires.map(([X,P])=>{const light=new THREE.PointLight(0xffe4b4,2.2,7,2);light.position.set(P,Y([9.5,12.5,24.4].includes(X)?3.5:3.38),Z(X));light.visible=false;h1Root.add(light);return light;});
+  state.illuminate=p=>{let first=null,second=null,d1=Infinity,d2=Infinity;for(const light of state.lights){const d=light.position.distanceToSquared(p);if(d<d1){second=first;d2=d1;first=light;d1=d;}else if(d<d2){second=light;d2=d;}}for(const light of state.lights)light.visible=light===first||light===second;};h1Root.visible=false;
+ }
  // Maker's plates and labels (johansson-marine.js): lettering on a plate, drawn as its own small textured plane.
  // The engine room's plates lie wholly below the car deck, where nothing outside the hull sees them: game.js draws
  // them (and first uploads their pictures) only with the camera aboard (updateBelowDeck), not every frame she is in view.
  const belowDeck=new THREE.Group();belowDeck.name='Engine room plates';ferry.add(belowDeck);
  ferry.userData.belowDeck={plates:belowDeck,halfBeam:HB,halfLength:HALF,carDeck:CAR};
- const livePlates=[];for(const pl of FERRY_INTERIOR.plates){const hidden=pl.pos[1]+Math.max(pl.w,pl.h)/2<CAR,m=plateMesh(pl,{deferred:hidden});if(m){(hidden?belowDeck:ferry).add(m);if(m.userData.live)livePlates.push(m.userData.live);}}
+ const livePlates=[];for(const pl of FERRY_INTERIOR.plates){if(FERRY_H1_ENABLED&&['chequer','grating'].includes(pl.kind)&&h1Point(pl.pos))continue;const hidden=pl.pos[1]+Math.max(pl.w,pl.h)/2<CAR,m=plateMesh(pl,{deferred:hidden});if(m){(hidden?belowDeck:ferry).add(m);if(m.userData.live)livePlates.push(m.userData.live);}}
  /** Shows the plant's readings (ferry-plant.js readings()) on every live dial and the alarm matrix; returns how many were redrawn. */
  const bridgeEquipment=buildFerryBridge(ferry,kit,{floor:BRIDGE,fore:FERRY_HOUSE.fore,aft:FERRY_HOUSE.wheelhouseAft});
  ferry.userData.bridgeEquipment=bridgeEquipment;
@@ -787,7 +803,7 @@ export function buildFerryModel({shadows=false}={}){
  ferry.userData.passengerDeck=FERRY_DECKS.passenger;
  // ---- The gangway, run out from the port casing's door to the pier while she is boarding.
  const gangway=new THREE.Group();gangway.name='Ferry gangway';gangway.visible=false;ferry.add(gangway);
- {const k4=createKit(shadows),G=GANGWAY_LENGTH;k4.box('paint',[G,.06,1.4],[G/2,0,0],0x9aa3a2);for(let i=0;i<8;i++)k4.box('metal',[.04,.03,1.36],[.15+i*.25,.045,0],STEEL);
+ {const k4=createKit(shadows),G=GANGWAY_LENGTH;k4.box('paint',[G,.06,1.4],[G/2,0,0],0x9aa3a2);for(let i=0;i<(FERRY_H1_ENABLED?16:8);i++)k4.box('metal',[.04,.03,1.36],[.15+i*.25,.045,0],STEEL);
   for(const dz of [-.68,.68]){k4.box('metal',[G,.04,.04],[G/2,.9,dz],WHITE);for(const x of [.1,G/2,G-.1])k4.box('metal',[.03,.9,.03],[x,.45,dz],WHITE);}k4.finish(gangway);}
  gangway.position.set(halfBreadth(GANGWAY_Z)-.05,CAR,GANGWAY_Z);gangway.rotation.z=-.2;
  ferry.userData.gangway=gangway;
@@ -795,6 +811,7 @@ export function buildFerryModel({shadows=false}={}){
  /** Its foot rests on the pier (`pierY`, world) as she moves, the way the ramp rests on the quay. */
  ferry.userData.restGangway=(pierY,length=GANGWAY_LENGTH)=>{
   ferry.updateMatrixWorld(true);const e=ferry.matrixWorld.elements,g=gangway.position;
+  if(FERRY_H1_ENABLED){const head=e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13],A=length*e[1]+.03*e[5],B=length*e[5]-.03*e[1];gangway.rotation.z=Math.atan2(B,A)-Math.acos(Math.max(-1,Math.min(1,(pierY-head)/Math.hypot(A,B))));return;}
   const K=pierY+.03-(e[1]*g.x+e[5]*g.y+e[9]*g.z+e[13]),Rg=Math.hypot(e[1],e[5]);
   gangway.rotation.z=Math.atan2(e[5],e[1])-Math.acos(Math.max(-1,Math.min(1,K/(length*Rg))));
  };

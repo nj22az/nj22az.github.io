@@ -37,7 +37,7 @@ test('the ferry lies alongside the pier for each sailing, boarded from the pier 
  assert.ok(FERRY_BERTH.gangwayZ>OUTER_PIER.z-OUTER_PIER.length/2+.5);
  // The gangway's foot and the queue are on the pier's deck, where people can stand.
  const {ferry}=run(0,1);
- for(let i=0;i<4;i++){const [x,z]=ferry.queueSpot(i);assert.equal(routeAt(x,z,.3)?.id,'outer-pier','Queue place '+i+' is off the pier');}
+ for(let i=0;i<24;i++){const [x,z]=ferry.queueSpot(i);assert.equal(routeAt(x,z,.3)?.id,'outer-pier','Queue place '+i+' is off the pier');}
  assert.deepEqual(ferry.door,[...FERRY_TERMINAL.queue]);
  // And it goes away again: out of sight between sailings.
  assert.ok(seen.filter(s=>s.m<HARBOUR_LINE[0]-FERRY_TIMES.arrive-1).every(s=>!s.visible));
@@ -122,10 +122,10 @@ test('she rides the water: rolls at her period, a little alongside and more at s
  const flapEnd=new THREE.Vector3();
  for(let i=0;i<400;i++){r.update(.1,600,i*.1);r.ferry.userData.flap.updateMatrixWorld(true);toe.set(0,0,0).applyMatrix4(r.ferry.userData.flap.matrixWorld);flapEnd.set(0,0,FERRY_RAMP.flap).applyMatrix4(r.ferry.userData.flap.matrixWorld);
   assert.ok(Math.abs(flapEnd.y-toe.y)<.01,'the flap lies flat on the landing');
-  r.ferry.userData.gangway.updateMatrixWorld(true);foot.set(GANGWAY_LENGTH,0,0).applyMatrix4(r.ferry.userData.gangway.matrixWorld);
+  r.ferry.userData.gangway.updateMatrixWorld(true);foot.set(GANGWAY_LENGTH,.03,0).applyMatrix4(r.ferry.userData.gangway.matrixWorld);
   low=Math.min(low,toe.y);high=Math.max(high,toe.y);footLow=Math.min(footLow,foot.y);footHigh=Math.max(footHigh,foot.y);moved=Math.max(moved,Math.abs(r.ferry.position.y-(SEA_LEVEL+FERRY_HULL.origin)));}
  assert.ok(moved>.005,'she does heave alongside');assert.ok(high-low<.002,'the ramp toe rides up and down on the quay ('+(high-low).toFixed(3)+' m)');assert.ok(footHigh-footLow<.002,'the gangway foot rides on the pier');
- assert.ok(Math.abs(low-(MINATO_BERTH.landing.top+.05))<.01,'the leaf rests on the landing plate');assert.ok(Math.abs(footLow-(OUTER_PIER.height+.03))<.01,'the gangway rests on the pier');
+ assert.ok(Math.abs(low-(MINATO_BERTH.landing.top+.05))<.01,'the leaf rests on the landing plate');assert.ok(Math.abs(footLow-OUTER_PIER.height)<.01,'the gangway rests on the pier');
 });
 
 test('her lights, engines and whistle: lit under way after dark, quiet on shore power at night, signals as she leaves and passes the breakwater',()=>{

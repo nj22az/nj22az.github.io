@@ -1,3 +1,4 @@
+import {groundHeight} from '../world/layout.js';
 import {buildPlane,AIRPORT_ISLAND} from '../world/airport-island.js';
 import {airportWorld} from '../world/airport-ground.js';
 import {AIRPORT_FERRY,AIRPORT_FERRY_PORTS,registerAirportFerryPier} from '../world/airport-ferry.js';
@@ -6,7 +7,7 @@ import {buildQuickCrossings,QUICK_CROSSING} from '../world/ferry-quick-crossing.
 import {nextSailing,timetableBerth,ferryTimetableText,placeName,FERRY_WARNING_MINUTES} from '../world/ferry-timetable.js';
 import {serviceTime} from '../people/commuter-schedule.js';
 import {crewRoute} from '../people/ferry-crew-walk.js';
-import {GANGWAY_Z,FERRY_DECKS,FERRY_HULL} from '../world/ferry-model.js';
+import {GANGWAY_Z,GANGWAY_LENGTH,FERRY_RAMP,FERRY_DECKS,FERRY_HULL} from '../world/ferry-model.js';
 import * as THREE from '../../vendor/three.module.js';
 import {AIRPORT_LANDING,AIRPORT_HEIGHT,AIRPORT_COUNTER} from '../world/airport-ground.js';
 import {islandState,buyFerry,FERRY_FARE,ferryArrival,buyFlight,checkIn,boardFlight,flightArrival,finishRepair,completeProject,DEVELOPMENT_PROJECTS,projectReady,stamp,flightTimes} from './services.js';
@@ -48,13 +49,20 @@ export function createIslandPlay({world,player,camera,activities,aboard=()=>fals
  function clearAccess(){
   if(world.traffic?.loadingVehicles||ferryRun.loadingVehicles)return 'A vehicle is still on the loading route.';
   if(walk)return 'Walking a passenger off the '+(ferryRun.berth==='town'?'gangway':'ramp')+'.';
-  boat.updateWorldMatrix(true,false);const p=boat.worldToLocal(player.position.clone());
-  const y=boat.userData.deckY??1.1,deck=FERRY_DECKS.car.y,port=AIRPORT_FERRY_PORTS[ferryRun.berth],shore=[port.landing[0],port.height,port.landing[1]];
-  const onRamp=Math.abs(p.y-y)<1.2&&Math.abs(p.x)<2.5&&p.z>16.7&&p.z<24,onGangway=Math.abs(p.y-y)<1.2&&p.x>3.8&&p.x<6.5&&p.z>-4.1&&p.z<-2.3;
-  if(onGangway){walk={why:'gangway',route:p.x<5.15?[{local:[3.25,deck,GANGWAY_Z]}]:[{world:shore}],index:0};return 'Clearing the passenger gangway before it is stowed.';}
-  if(onRamp){
-   const toe=boat.localToWorld(new THREE.Vector3(0,0,FERRY_HULL.length/2+7.2));
-   walk={why:'ramp',route:p.z<20.3?[{local:[0,deck,FERRY_HULL.length/2-1.05]}]:[{world:ferryRun.berth==='airport'?shore:[toe.x,0,toe.z]}],index:0};
+  boat.updateWorldMatrix(true,true);
+  const deck=FERRY_DECKS.car.y,port=AIRPORT_FERRY_PORTS[ferryRun.berth],shore=[port.landing[0],port.height,port.landing[1]];
+  const onSurface=(object,length,width,height)=>{
+   if(!object)return null;const p=object.worldToLocal(player.position.clone());
+   return p.x>=-width/2&&p.x<=width/2&&p.z>=0&&p.z<=length&&Math.abs(p.y-height)<.35?p:null;
+  };
+  const gangway=boat.userData.gangway,q=gangway?.worldToLocal(player.position.clone());
+  const onGangway=q&&q.x>=0&&q.x<=GANGWAY_LENGTH&&Math.abs(q.z)<.7&&Math.abs(q.y-.03)<.35;
+  if(onGangway){walk={why:'gangway',route:q.x<GANGWAY_LENGTH/2?[{local:[3.25,deck,GANGWAY_Z]}]:[{world:shore}],index:0};return 'Clearing the passenger gangway before it is stowed.';}
+  const leaf=onSurface(boat.userData.ramp,FERRY_RAMP.leaf,FERRY_RAMP.width,.07),flap=onSurface(boat.userData.flap,FERRY_RAMP.flap,FERRY_RAMP.flapWidth,.05);
+  if(leaf||flap){
+   const progress=leaf?leaf.z:FERRY_RAMP.leaf+flap.z;
+   const toe=boat.userData.flap.localToWorld(new THREE.Vector3(0,.05,FERRY_RAMP.flap+.6));
+   walk={why:'ramp',route:progress<(FERRY_RAMP.leaf+FERRY_RAMP.flap)/2?[{local:[0,deck,FERRY_HULL.length/2-1.05]}]:[{world:ferryRun.berth==='airport'?shore:[toe.x,groundHeight(toe.x,toe.z),toe.z]}],index:0};
    return 'Clearing the bow ramp before it is raised.';
   }
   return true;

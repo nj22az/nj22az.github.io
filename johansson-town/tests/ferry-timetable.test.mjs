@@ -1,3 +1,4 @@
+import {GANGWAY_LENGTH,FERRY_RAMP} from '../src/world/ferry-model.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
@@ -30,7 +31,7 @@ function walkOff(f,{seconds=240}={}){
  assert.equal(f.play.walking,false,'the walk ends');
 }
 const stageAt=(f,stage)=>{let at=null;f.until(()=>{if(at===null&&f.run.operation?.stage===stage)at=f.minutes;return at!==null;},{seconds:1800,step:.25});return at;};
-const onGangway=f=>{f.run.ferry.updateWorldMatrix(true,false);const p=f.run.ferry.worldToLocal(f.player.position.clone());return p.x>3.8&&p.x<6.5&&p.z>-4.1&&p.z<-2.3;};
+const onGangway=f=>{f.run.ferry.updateWorldMatrix(true,true);const p=f.run.ferry.userData.gangway.worldToLocal(f.player.position.clone());return p.x>=0&&p.x<=GANGWAY_LENGTH&&Math.abs(p.y-.03)<.35&&Math.abs(p.z)<.7;};
 
 test('one timetable from the Harbour Line: three calls at Minato, the first boat out and the last boat back, overnight at Minato',()=>{
  assert.equal(FERRY_TIMETABLE.length,HARBOUR_LINE.length*2+2);
@@ -92,10 +93,10 @@ test('Stay aboard: he crosses on his own feet, lands at the advertised time at K
  const p=f.player.position;assert.ok(Math.hypot(p.x-port.airport.landing[0],p.z-port.airport.landing[1])<.05,'ashore on Kitano-jima’s pier');assert.equal(f.aboard(),false);
 });
 
-for(const [end,x] of [['pier',port.town.landing[0]-1.4],['deck',port.town.landing[0]-2.9]])
+for(const [end,fraction] of [['pier',.8],['deck',.2]])
  test('on the gangway as it closes, he is walked to the nearer end ('+end+') before it moves; she does not wait for him',()=>{
   const f=ferryServiceFixture({minute:DEPARTS-1});f.tick(.2);
-  f.player.position.set(x,port.town.height+.03,port.town.landing[1]);f.walk.update();assert.ok(onGangway(f),'standing on the gangway');
+  f.run.ferry.updateWorldMatrix(true,true);f.player.position.copy(f.run.ferry.userData.gangway.localToWorld(new THREE.Vector3(GANGWAY_LENGTH*fraction,.03,0)));f.walk.update();assert.ok(onGangway(f),'standing on the gangway');
   f.until(()=>f.run.operation?.stage==='closing-access',{seconds:300,step:.1});
   for(let i=0;i<200&&f.run.operation?.stage==='closing-access';i++){
    if(f.play.walking)walkOff(f);else f.tick(.1);
@@ -103,6 +104,17 @@ for(const [end,x] of [['pier',port.town.landing[0]-1.4],['deck',port.town.landin
   }
   assert.equal(onGangway(f),false);assert.equal(f.aboard(),end==='deck');
   const sails=stageAt(f,'passage');assert.ok(sails<DEPARTS+5,'she sails on time');
+ });
+
+for(const [end,part,fraction,height]of [['deck','ramp',.2,.07],['pier','flap',.8,.05]])
+ test('a passenger on the bow '+part+' clears to the nearer '+end+' before it is raised',()=>{
+  const f=ferryServiceFixture({minute:DEPARTS-1});f.tick(.2);f.run.ferry.updateWorldMatrix(true,true);
+  const object=f.run.ferry.userData[part],length=part==='ramp'?FERRY_RAMP.leaf:FERRY_RAMP.flap;
+  f.player.position.copy(object.localToWorld(new THREE.Vector3(0,height,length*fraction)));f.walk.update();
+  f.until(()=>f.play.walking||f.run.operation?.stage==='raising-ramp',{seconds:300,step:.1});
+  assert.equal(f.play.walking,true,'The passenger is cleared before ramp motion');
+  walkOff(f);assert.equal(f.aboard(),end==='deck');
+  const sails=stageAt(f,'passage');assert.ok(sails<DEPARTS+5,'Clearing preserves the sailing time');
  });
 
 test('the chief’s watch: Mac’s while Johansson is ashore or off duty, Johansson’s aboard in working hours, and the ship never waits for him',()=>{

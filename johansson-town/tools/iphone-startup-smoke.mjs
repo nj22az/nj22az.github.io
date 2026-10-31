@@ -20,7 +20,7 @@ const server=createServer(async(req,res)=>{
  }catch{res.writeHead(404);res.end();}
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-let browser,page;
+let browser,page,context;
 const started=Date.now();
 const step=(name,data={})=>{const item={name,seconds:+((Date.now()-started)/1000).toFixed(2),...data};report.steps.push(item);console.log(JSON.stringify(item));};
 const state=()=>page.evaluate(()=>{
@@ -186,9 +186,60 @@ const checkRoomLifetime=async()=>{
   },saved);
  }
 };
+// Exercise the production ferry through its real frame loop, GLB request and camera controls.
+const checkFerryRoom=async()=>{
+ const saved=await page.evaluate(()=>{
+  const a=window.__JOHANSSON_AUDIT__,saved={player:a.player,frozen:a.frozen,camera:a.camera??null,view:a.mouse.thirdPerson,fov:a.ferryCamera.fov,zoom:a.ferryCamera.zoom};
+  a.activities.close();a.frozen=true;a.camera=null;a.setTime(600);
+  a.world.ferry.parkAt('town');a.world.ferry.update(0,600,0);return saved;
+ });
+ const place=point=>page.evaluate(([X,Y,Z])=>{
+  const a=window.__JOHANSSON_AUDIT__,ship=a.world.ferry.ferry;ship.updateMatrixWorld(true);
+  const p=ship.localToWorld(ship.position.clone().set(Y,Z-1.9,X-17.25));a.stand(p.x,p.y,p.z,0);a.step(20);
+  return {camera:a.ferryCamera,deck:a.probe(p.x,p.y+1,p.z).deck,view:a.mouse.thirdPerson};
+ },point);
+ try{
+  step('ferry recording starts',{reviewPlacement:true,movement:'normal keyboard input with deterministic simulation steps'});
+  const first=await place([11.1,0,.9]);assert.equal(first.camera.active,true);assert.equal(first.camera.id,'engines-aft');
+  await page.waitForFunction(()=>{const s=window.__JOHANSSON_AUDIT__.world.ferry.ferry.userData.engineRoomH1;return s.loaded||s.error;},null,{timeout:60000});
+  await settleLoads();
+  const asset=await page.evaluate(()=>{
+   const a=window.__JOHANSSON_AUDIT__,s=a.world.ferry.ferry.userData.engineRoomH1,model=s.group.getObjectByName('Minato Maru H1-F1 / Blender CAD');let meshes=0,triangles=0,groupMeshes=0;
+   s.group.traverse(o=>{if(o.isMesh)groupMeshes++;});model?.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;}});a.render();
+   return {loaded:s.loaded,error:s.error,meshes,groupMeshes,triangles,gpuError:a.renderer.getContext().getError()};
+  });
+  assert.equal(asset.loaded,true,JSON.stringify(asset));assert.equal(asset.meshes,2);assert.equal(asset.groupMeshes,2,'The retained fallback is removed after loading');assert.equal(asset.triangles,80376);assert.equal(asset.gpuError,0);
+  step('default ferry Blender asset loaded',asset);await page.screenshot({path:resolve(out,'ferry-engines-phone.png')});
+  // Retain real rendered gameplay for the owner's review; movement uses normal keyboard input.
+  await page.waitForTimeout(1500);
+  const beforeMove=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.player.position);
+  await page.keyboard.down('w');
+  try{for(let frame=0;frame<24;frame++){await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(25));await page.waitForTimeout(50);}}finally{await page.keyboard.up('w');}
+  const afterMove=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.player.position);
+  assert.ok(Math.hypot(afterMove[0]-beforeMove[0],afterMove[2]-beforeMove[2])>.03,'Normal movement input moves Johansson inside the engine room');
+  step('ferry recorded keyboard movement',{before:beforeMove,after:afterMove});
+  await page.waitForTimeout(1500);
+  await page.keyboard.press('v');
+  const cycled=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__;a.step(20);return {camera:a.ferryCamera,view:a.mouse.thirdPerson};});
+  assert.equal(cycled.camera.id,'engines-fore');assert.equal(cycled.view,saved.view,'Cycling preserves the saved first/third-person preference');
+  const stops=[['control',[9.2,-3.1,.9]],['engines-fore',[13.1,0,.9]],['aux',[16.7,0,.9]],['workshop',[21,0,.9]],['store',[21.4,-1.4,.9]],['electrical',[24,0,.9]],['workshop-entry',[19.3,0,.9]]],views=[];
+  for(const [id,point]of stops){const result=await place(point);assert.equal(result.camera.active,true,id);assert.equal(result.camera.id,id);assert.equal(result.view,saved.view);views.push({id,...result});if(id==='control')await page.screenshot({path:resolve(out,'ferry-control-phone.png')});await page.waitForTimeout(1500);}
+  step('all eight production ferry cameras checked',{views});await page.waitForTimeout(1500);
+  await place([11.1,0,.9]);await page.setViewportSize({width:744,height:1133});
+  await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(20));await page.screenshot({path:resolve(out,'ferry-tablet-viewport.png')});await page.waitForTimeout(1500);
+  await page.setViewportSize({width:390,height:844});
+ }finally{
+  const restored=await page.evaluate(saved=>{
+   const a=window.__JOHANSSON_AUDIT__;a.camera=null;a.stand(...saved.player.position,saved.player.yaw);a.step(20);
+   const state={camera:a.ferryCamera,view:a.mouse.thirdPerson};a.camera=saved.camera;a.frozen=saved.frozen;return state;
+  },saved);
+  assert.equal(restored.camera.active,false);assert.equal(restored.view,saved.view);assert.ok(Math.abs(restored.camera.fov-saved.fov)<.00001);assert.equal(restored.camera.zoom,saved.zoom);
+  step('ordinary ferry view restored',restored);
+ }
+};
 try{
  browser=await (engine==='webkit'?webkit:chromium).launch(engine==='webkit'?{headless:false}:{headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
- const context=await browser.newContext({...devices['iPhone 13'],serviceWorkers:'block'});
+ context=await browser.newContext({...devices['iPhone 13'],serviceWorkers:'block',recordVideo:{dir:resolve(out,'recordings'),size:{width:744,height:1133}}});
  await context.route('https://fonts.googleapis.com/**',r=>r.fulfill({contentType:'text/css',body:''}));
  await context.addInitScript(()=>{
   if(!localStorage.getItem('johansson-town-clock'))localStorage.setItem('johansson-town-clock',JSON.stringify({start:'12:20',speed:1}));
@@ -231,6 +282,7 @@ try{
  await page.setViewportSize({width:390,height:844});
  await page.waitForFunction(()=>document.querySelector('#game').height>document.querySelector('#game').width);
  await boot(true);step('warm reload',await state());
+ await checkFerryRoom();
  // Existing audit entry calls the same enterRoom path as the door. No mocked renderer/scene.
  await page.evaluate(async()=>{const a=window.__JOHANSSON_AUDIT__;a.setTime(4*1440+20*60+30);await a.enter('izakaya');});
  await page.waitForFunction(()=>window.__JOHANSSON_AUDIT__.roomNavigation?.id==='izakaya'&&!window.__JOHANSSON_AUDIT__.blocked.roomLoading,null,{timeout:120000});
@@ -296,5 +348,5 @@ try{
  if(page)try{report.failureState=await state();await page.screenshot({path:resolve(out,'failure.png'),timeout:15000});}catch(diagnostic){report.diagnosticFailure=diagnostic.message;}
 }finally{
  console.log(JSON.stringify(report));await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2)+'\n');
- await browser?.close();await new Promise(resolve=>server.close(resolve));
+ await context?.close();await browser?.close();await new Promise(resolve=>server.close(resolve));
 }

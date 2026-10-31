@@ -1,3 +1,4 @@
+import {FERRY_H1} from './ferry-engine-room-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
 import {waveHeight,SEA_LEVEL,setOceanHole} from './ocean.js';
@@ -48,11 +49,11 @@ export const FERRY_TERMINAL=Object.freeze({
  id:'ferry-terminal',x:(PORT_BUILDING.hall.minX+PORT_BUILDING.hall.maxX)/2,z:(PORT_BUILDING.hall.minZ+PORT_BUILDING.hall.maxZ)/2,
  minX:PORT_BUILDING.hall.minX,maxX:PORT_BUILDING.hall.maxX,minZ:PORT_BUILDING.hall.minZ,maxZ:PORT_BUILDING.hall.maxZ,
  /** The gangway's foot on the pier, which is where the queue starts. */
- queue:Object.freeze([PIER_WEST+.6,FERRY_BERTH.gangwayZ]),
+ queue:Object.freeze([FERRY_H1.shore.queueX,FERRY_BERTH.gangwayZ]),
  /** Where somebody waiting stands: under the hall's canopy, off the pier. */
  platform:PORT_BUILDING.platform,
  /** Where the people it brought step onto the pier: the open pier end, clear of the crate stack. */
- arrival:Object.freeze([PIER_WEST+.9,FERRY_BERTH.gangwayZ-.7]),
+ arrival:Object.freeze([FERRY_H1.shore.arrivalX,FERRY_BERTH.gangwayZ-.7]),
  driver:PORT_BUILDING.driver,
  exit:PORT_BUILDING.platform,
 });
@@ -333,7 +334,7 @@ export function createFerryRun({parent,shadows=false,colliders,register=null,onA
   },
   get door(){return [...DOOR];},
   /** A queue across the pier end from the gangway, south of the crate stack and clear of the bollards. */
-  queueSpot(place=0){return [DOOR[0]+place*.75,DOOR[1]-.35-(place%2)*.3];},
+  queueSpot(place=0){return [DOOR[0]+(place%3)*.75,DOOR[1]-.35-Math.floor(place/3)*.85];},
   /** On board: the deck beyond the gangway. */
   get doorway(){return [FERRY_BERTH.x+FERRY.beam/2-.9,FERRY_BERTH.gangwayZ];},
   get boarding(){return run.canLoad&&berth==='town';},

@@ -1,3 +1,4 @@
+import {FERRY_H1} from './ferry-engine-room-plan.js';
 import * as THREE from '../../vendor/three.module.js';
 import {AIRPORT_ISLAND,AIRPORT_JETTY} from './airport-island.js';
 import {AIRPORT_LANDING,AIRPORT_LANDING_HEIGHT,airportWorld} from './airport-ground.js';
@@ -27,11 +28,11 @@ const polyLength=(keys,from,to)=>{let L=0;for(let k=from+1;k<=to;k++)L+=Math.hyp
 /** At Kitano-jima she lies bow to the jetty's west face, 1.9 m off it, with her ramp down on it. */
 const AIRPORT_BERTH_U=AIRPORT_JETTY.minX-1.9-FERRY_HULL.length/2;
 export const AIRPORT_FERRY_PORTS=Object.freeze({
- // Where he waits for her at Minato: on the gangway's line, a metre past its foot on the pier (x −2.54), clear of its rails.
+ // Wait on the pier beyond the complete 4 m gangway sweep, clear of its foot and rails.
  // Until 21 October 2026 it was at x −3.2, 0.7 m short of that line, inside the south rail's footprint once she ran the
  // gangway out (ferry-walk.js), so he was penned against it (the owner: "the railing by the ships at the dock you can
  // get stuck when spawning there").
- town:Object.freeze({title:'Minato–Kitano-jima shared ferry',landing:Object.freeze([-1.5,BERTH_Z+GANGWAY_Z]),height:.098,berth:Object.freeze([BERTH_X,BERTH_Z]),yaw:0}),
+ town:Object.freeze({title:'Minato–Kitano-jima shared ferry',landing:Object.freeze([FERRY_H1.shore.landingX,BERTH_Z+GANGWAY_Z]),height:.098,berth:Object.freeze([BERTH_X,BERTH_Z]),yaw:0}),
  airport:Object.freeze({title:'Kitano-jima shared ferry pier',landing:AIRPORT_LANDING,height:AIRPORT_LANDING_HEIGHT,berth:Object.freeze(airportWorld(AIRPORT_BERTH_U,31)),yaw:AIRPORT_ISLAND.yaw+Math.PI/2}),
 });
 const BERTH_YAW=(AIRPORT_ISLAND.yaw+Math.PI/2)*180/Math.PI;

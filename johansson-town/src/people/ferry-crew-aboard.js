@@ -1,6 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_DAY} from '../world/ferry-ship.js';
 import {FERRY_ENGINE_ROOM} from '../world/ferry-interior.js';
+import {FERRY_CASINGS} from '../world/ferry-model.js';
 import {FERRY_CREW,FERRY_WATCH,FERRY_RELIEF,FERRY_PEOPLE,crewFor,onWatch} from './ferry-crew.js';
 import {crewRoute,stepCrewRoute,crewBlocked,crewObstacleAt} from './ferry-crew-walk.js';
 import {createFerryShoreCrew} from './ferry-shore-crew.js';
@@ -16,7 +17,7 @@ export const CREW_POSTS=Object.freeze({
  'engine-room':{pos:[-3.1,FP,Z(10.4)],yaw:Math.PI/2},
  'steering-gear':{pos:[0,FP,Z(9.6)],yaw:0},
  stern:{pos:[1.2,CAR,Z(1.6)],yaw:0},
- bow:{pos:[3.55,3.56,16.35],yaw:Math.PI/2},
+ bow:{pos:[3.55,FERRY_CASINGS.bowHouses.top+.06,16.35],yaw:Math.PI/2},
  gangway:{pos:[3.4,CAR,Z(12.6)],yaw:Math.PI},
  'car-deck':{pos:[0,CAR,Z(18.5)],yaw:Math.PI},
  ramp:{pos:[2.75,CAR,11.35],yaw:Math.PI},

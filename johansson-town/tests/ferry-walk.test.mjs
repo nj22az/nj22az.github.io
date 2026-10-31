@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createFerryRun} from '../src/world/ferry.js';
 import {createFerryWalk,FERRY_FLOORS,FERRY_STEP} from '../src/world/ferry-walk.js';
-import {FERRY_DECKS,FERRY_CASINGS,GATE,FERRY_HULL} from '../src/world/ferry-model.js';
+import {FERRY_DECKS,FERRY_CASINGS,GATE,FERRY_HULL,GANGWAY_LENGTH} from '../src/world/ferry-model.js';
 import {groundHeight} from '../src/world/layout.js';
 import {townBoundsBlocked} from '../physics.js';
 import {ferryServiceFixture} from './ferry-service-fixture.mjs';
@@ -43,7 +43,7 @@ test('alongside at Minato: up the gangway from the pier, through the gate, the p
  const {run,walk,colliders}=alongside();
  const g=run.ferry.userData.gangway;g.updateMatrixWorld(true);
  const gw=(x,z)=>new THREE.Vector3(x,.03,z).applyMatrix4(g.matrixWorld);
- const onPier=gw(2.6,0),top=gw(.2,0),passage=world(run,3.6,FERRY_DECKS.car.y,GATE.z),foyer=world(run,3.4,FERRY_DECKS.car.y,GATE.z-1.6),door=world(run,2.4,FERRY_DECKS.car.y,GATE.z-2.3),lane=world(run,1.4,FERRY_DECKS.car.y,GATE.z-3);
+ const onPier=gw(GANGWAY_LENGTH+.6,0),top=gw(.2,0),passage=world(run,3.6,FERRY_DECKS.car.y,GATE.z),foyer=world(run,3.4,FERRY_DECKS.car.y,GATE.z-1.6),door=world(run,2.4,FERRY_DECKS.car.y,GATE.z-2.3),lane=world(run,1.4,FERRY_DECKS.car.y,GATE.z-3);
  const r=stroll(walk,colliders,[onPier.x,onPier.z],[[top.x,top.z],[passage.x,passage.z],[foyer.x,foyer.z],[door.x,door.z],[lane.x,lane.z]]);
  assert.equal(r.stopped,null,'stopped at '+r.stopped+' '+[r.x,r.y,r.z].map(n=>n.toFixed(2)));
  const ids=[...new Set(r.trail.map(t=>t[3]))];
@@ -170,14 +170,14 @@ test('the walls keep you in: no walking through the house\'s side, into the toil
 test('down into the engine room: the casing P door, the ladder through the car deck, round the engines to the control booth',()=>{
  const {run,walk,colliders}=alongside();const Zs=zy=>zy-HALF,car=FERRY_DECKS.car.y;
  const W=(x,zy)=>{const p=world(run,x,car,Zs(zy));return [p.x,p.z];};
- const start=world(run,2.3,car,Zs(6.9));
- const r=stroll(walk,colliders,[start.x,start.z,start.y],[W(3.575,6.9),W(3.575,8.65),W(3.575,9.6),W(3.1,9.65),W(2.9,10.5),W(2.9,13.0),W(2.9,13.68),W(0,13.68),W(0,10.0),W(0,13.68),W(-2.85,13.68),W(-2.85,11.3),W(-2.95,11.2),W(-2.95,10.6),W(-2.8,10.55)]);
+ const start=world(run,2.3,car,Zs(5.85));
+ const r=stroll(walk,colliders,[start.x,start.z,start.y],[W(3.575,5.85),W(3.575,8.65),W(3.575,9.6),W(3.1,9.65),W(2.9,10.5),W(2.9,13.0),W(2.9,13.68),W(0,13.68),W(0,10.0),W(0,13.68),W(-2.85,13.68),W(-2.85,11.3),W(-2.95,11.2),W(-2.95,10.6),W(-2.8,10.55)]);
  assert.equal(r.stopped,null,'stopped at '+r.stopped+' local '+walk.local('ship',r.x,r.y,r.z).map(n=>n.toFixed(2)));
  const ids=[...new Set(r.trail.map(t=>t[3]))];
  for(const id of ['er-entrance','er-ladder','engine-room','control-booth'])assert.ok(ids.includes(id),id+' in '+ids);
  for(let i=1;i<r.trail.length;i++)assert.ok(Math.abs(r.trail[i][1]-r.trail[i-1][1])<.16,'no jump at step '+i+' ('+r.trail[i-1][3]+' to '+r.trail[i][3]+')');
  // And back up to the car deck.
- const back=stroll(walk,colliders,[r.x,r.z,r.y],[W(-2.95,10.6),W(-2.95,11.2),W(-2.85,11.3),W(-2.85,13.68),W(2.9,13.68),W(2.9,10.5),W(3.1,9.65),W(3.575,9.6),W(3.575,8.65),W(3.575,6.9),W(2.3,6.9)]);
+ const back=stroll(walk,colliders,[r.x,r.z,r.y],[W(-2.95,10.6),W(-2.95,11.2),W(-2.85,11.3),W(-2.85,13.68),W(2.9,13.68),W(2.9,10.5),W(3.1,9.65),W(3.575,9.6),W(3.575,8.65),W(3.575,5.85),W(2.3,5.85)]);
  assert.equal(back.stopped,null,'back: stopped at '+back.stopped+' local '+walk.local('ship',back.x,back.y,back.z).map(n=>n.toFixed(2)));
  assert.ok(Math.abs(back.y-start.y)<.02,'on the car deck again');
  // Nobody walks through an engine, nor from the car deck down through the deck anywhere but the hatch.
