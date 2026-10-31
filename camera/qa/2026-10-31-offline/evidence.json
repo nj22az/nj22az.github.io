@@ -1,0 +1,119 @@
+{
+  "source": "ef4962533e9274051d2ac6670ecf7ceb324ba2cd",
+  "merge": "a1125c62e38e9dcb507f6bd73dce1003cad1cee6",
+  "tree": "697943460292524ef78c2c12a702f31f9537d4bb",
+  "release": "20261031offline1",
+  "pr": 420,
+  "browser_checks": 302,
+  "run": 41228514057,
+  "jobs": {
+    "camera": {
+      "id": 124617806746,
+      "passed": 143
+    },
+    "ui": {
+      "id": 124617806893,
+      "passed": 82
+    },
+    "shader_audit": {
+      "id": 124617806947,
+      "passed": 50
+    },
+    "smart": {
+      "id": 124617806997,
+      "passed": 14
+    },
+    "offline": {
+      "id": 124617806923,
+      "passed": 13
+    }
+  },
+  "bundle": {
+    "files": 316,
+    "bytes": 22385224,
+    "manifest_sha256": "6849a49ead7a9382afa18ee306618e3ea5f66773b4510072407dab48e0651d95"
+  },
+  "mcp": {
+    "run": 41228514058,
+    "job": 124617601234,
+    "units": 15,
+    "acceptance": 20,
+    "tools": 11,
+    "vulnerabilities": 0,
+    "artifact": 13052338513,
+    "sha256": "224d1512eca3ba59164ed6f6cf7f5cc8cc983ebfa07cf101d352307bf2940f13"
+  },
+  "world": {
+    "run": 41228514034,
+    "guard_job": 124617834338,
+    "guard_passed": 569,
+    "webkit_job": 124617834083,
+    "webkit": "passed",
+    "physical_device": false
+  },
+  "linux": {
+    "run": 41228514049,
+    "job": 124617601131,
+    "status": "failed",
+    "failures": [
+      "controller-game old ferry landing x=-1.5, actual x=0.3",
+      "housing-consolidation counts moving ferry meshes on post-office-lot"
+    ],
+    "baseline_reproduction": "../2026-10-31-smart-surprise/unchanged-main-world.log"
+  },
+  "pages": {
+    "run": 41229423812,
+    "build": 124620289748,
+    "report": 124620536971,
+    "deploy": 124620537045,
+    "status": "passed"
+  },
+  "public_requests": {
+    "matched": 324,
+    "total": 324,
+    "evidence": "publication.json"
+  },
+  "artifacts": [
+    {
+      "id": 13052847129,
+      "kind": "camera",
+      "sha256": "c7a888c38041d30a6ea580c591d33612f9bdb4524cecce5e9c81fc79d0019d7f"
+    },
+    {
+      "id": 13052826555,
+      "kind": "offline",
+      "sha256": "8f32b5ab8a9d9139fa63162b042dea5c19010c295992201796fc3e82f4c573d2"
+    },
+    {
+      "id": 13052488251,
+      "kind": "ui",
+      "sha256": "8f4d0876873bddb180269f2d68a6ab2f45c228199034d8f17f8d9f9cd11aad14"
+    },
+    {
+      "id": 13052478131,
+      "kind": "audit",
+      "sha256": "37039ebe3ee0c107da31b10e0759fc5677761b62ac2be50d70076b5b9520d67f"
+    },
+    {
+      "id": 13052214029,
+      "kind": "smart",
+      "sha256": "39690e15d42cdbd02a35db864338ff6206293f5e4bda700e28011c35721e9775"
+    }
+  ],
+  "connection": {
+    "sdk_acceptance_client": "connected and tested",
+    "plugin_creator": "installed",
+    "camera_plugin_created_by_this_task": false,
+    "verified_tunnel": null,
+    "this_chat": "not connected",
+    "owner_installed_host": "not verified/connected"
+  },
+  "visual_review": [
+    "phone offline readiness",
+    "phone editor",
+    "tablet offline readiness",
+    "offline saved JPEG",
+    "MCP generated-image before/after/export"
+  ],
+  "physical_safari": false
+}

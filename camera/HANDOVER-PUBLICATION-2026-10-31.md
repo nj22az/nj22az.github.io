@@ -1,5 +1,21 @@
 # Pocket Camera publication — 31 October 2026
 
+## Current release: complete offline Camera and Smart Surprise — #420
+
+The owner requested publication, direct MCP connection and offline use. Smart Surprise **#419** merged as **e0e749cc**;
+complete offline **#420** is now **merged and deployed**, main **a1125c62e38e9dcb507f6bd73dce1003cad1cee6**, identical tree
+to source **ef4962533e9274051d2ac6670ecf7ceb324ba2cd**. Keys, including the adapter, align at **20261031offline1**.
+
+**302/302 browser checks** include 13 genuine offline checks, all 316 cached assets and two cold browser restarts.
+MCP **15/15 units + 20/20 acceptance**, World **569/569** and automated WebKit pass; audit zero. Linux retains two unchanged
+World fixture failures. Pages **41229423812** passed; [324/324 public requests match](qa/2026-10-31-offline/publication.json).
+[Current handover](HANDOVER-OFFLINE-2026-10-31.md) and [actual screenshots/evidence](qa/2026-10-31-offline/README.md) record
+exact commits, jobs, archive digests and remaining physical Safari/connection limits. Plugin Creator is installed; the
+SDK acceptance client connects, while this chat and the owner's Camera host remain unconnected. No hosted MCP server.
+
+Open online once and wait for the Settings download icon to become a checkmark; keep browser site data for offline use.
+The following entries preserve previous release history and are superseded by the current release above.
+
 ## Icon UI — published via PR #417
 
 The owner approved **“Push to main this looks good”**, then asked for fewer words, icon-coded shaders and status

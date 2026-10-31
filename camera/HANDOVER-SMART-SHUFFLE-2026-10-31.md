@@ -1,5 +1,26 @@
 # Pocket Camera photo-aware Surprise — 31 October 2026
 
+## Published on the owner's instruction
+
+The owner instructed **“Push to main”**. [PR #419](https://github.com/nj22az/nj22az.github.io/pull/419) is merged at
+**e0e749cc143f88e4ee7662d24f02c398204bdd88**, identical tree **e5be89a9a1b31e02d98648efb57bc9fed9b3df17** to reviewed
+head **a20a25fdb92bffd393ec967701792ae319a443b6**, preserving concurrent main **fee38241**.
+
+Latest exact-head checks: Camera **41208139819**, all four jobs passed (**143 + 82 + 50 + 14 = 289/289**); MCP
+**41208139842**, job **124557349988**, **15/15 units + 20/20 actual acceptance**, fresh install audit zero; World
+**41208139808**, guard **124557349897** and automated WebKit **124557350147**, passed. Linux **41208139856**,
+job **124557350180**, still fails the same two unchanged World tests below. No assertions or tests were weakened.
+
+Pages **41226967552** build **124613034824**, report **124613308550**, deploy **124613308574** passed.
+[All 33/33 checked public files](qa/2026-10-31-smart-surprise/publication.json) match the tested runtime,
+key **20261031smart1**. The subsequent [offline release](HANDOVER-OFFLINE-2026-10-31.md) is now published via **#420**, main **a1125c62**;
+its current key is **20261031offline1**, with **302/302 browser checks** and **324/324 public requests verified**.
+The initial 33-file report above is historical publication evidence for #419.
+
+The SDK acceptance client connects; the owner's installed client and this chat remain unconnected. Plugin Creator
+is installed, but no reachable Camera plugin/tunnel has been registered. Physical Safari acceptance remains open.
+The following review sections are preserved as implementation history, superseded by the publication state above.
+
 ## Implemented, review only
 
 The owner wants any uploaded photo to guide combinations of Looks and settings, with later dice clicks exploring

@@ -1,5 +1,20 @@
 # Pocket Camera MCP — 31 October 2026
 
+The owner instructed **“Push to main”** and requested full offline use. [PR #420](https://github.com/nj22az/nj22az.github.io/pull/420)
+is **merged and deployed** at **a1125c62e38e9dcb507f6bd73dce1003cad1cee6**, identical tree to reviewed **ef4962533e9274051d2ac6670ecf7ceb324ba2cd**.
+App/renderer/adapter imports align at **20261031offline1**. MCP **41228514058**, job **124617601234**, passed
+**15/15 units + 20/20 actual acceptance**, fresh install and local audit **zero vulnerabilities**. Camera **302/302**,
+World **569/569** and automated WebKit passed; Linux repeats two unchanged World failures. Pages **41229423812** passed;
+[324/324 public requests match](qa/2026-10-31-offline/publication.json). Actual generated-image previews/JPEG and offline
+screenshots/export were inspected and retained. [Current offline/publication handover](HANDOVER-OFFLINE-2026-10-31.md).
+
+**Connection remains separate:** the official SDK acceptance client connects. Plugin Creator is installed; the owner's
+Camera host and this chat remain unconnected until a real running host/private tunnel and workspace registration are
+configured and verified. [MCP.md](MCP.md) records current local desktop and ChatGPT web setup. The server is still local
+stdio in an isolated browser; no hosted endpoint, Safari/Photos access, new MCP tool or privacy/confirmation change was
+added. Session album is temporary; export before close. Preview sends image pixels to the connected host. Physical
+Safari/native Share/hardware camera remain untested. Earlier review/pending sections below are historical.
+
 The subsequent [photo-aware Surprise review](HANDOVER-SMART-SHUFFLE-2026-10-31.md), [draft PR #419](https://github.com/nj22az/nj22az.github.io/pull/419),
 aligns the adapter renderer import at **`20261031smart1`** on a review branch only. Source **`b795c7a02a721ff538b435e9aacd6126b3a868a8`**,
 MCP run **41206756330**, job **124553287604**, passes **15/15 units + 20/20 real acceptance checks**, with **zero npm

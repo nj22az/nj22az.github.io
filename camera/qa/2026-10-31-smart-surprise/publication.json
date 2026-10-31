@@ -1,0 +1,239 @@
+{
+  "source": "e0e749cc143f88e4ee7662d24f02c398204bdd88",
+  "key": "20261031smart1",
+  "results": [
+    {
+      "path": "camera/album.js",
+      "status": 200,
+      "sha256": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a",
+      "expected": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a",
+      "matches": true
+    },
+    {
+      "path": "camera/app.js",
+      "status": 200,
+      "sha256": "78fcadf9082c60de3163b3ef7efa683db2b59a7a0f85385930dab94de166b42a",
+      "expected": "78fcadf9082c60de3163b3ef7efa683db2b59a7a0f85385930dab94de166b42a",
+      "matches": true
+    },
+    {
+      "path": "camera/blackjack.css",
+      "status": 200,
+      "sha256": "390fbbab518e439dac43dd5df4faa15ea8cd9e8c91793b8986456af36cfbe47d",
+      "expected": "390fbbab518e439dac43dd5df4faa15ea8cd9e8c91793b8986456af36cfbe47d",
+      "matches": true
+    },
+    {
+      "path": "camera/blackjack.js",
+      "status": 200,
+      "sha256": "f6cb801223a245c273d8f68e0aec2eb2a97079dd251fdc2a24c301c0ad4688c2",
+      "expected": "f6cb801223a245c273d8f68e0aec2eb2a97079dd251fdc2a24c301c0ad4688c2",
+      "matches": true
+    },
+    {
+      "path": "camera/camera-black.css",
+      "status": 200,
+      "sha256": "c9e69033dee9f5fa940a37dbf43598e8194e0b22f148bf2bed315cbed9fa446b",
+      "expected": "c9e69033dee9f5fa940a37dbf43598e8194e0b22f148bf2bed315cbed9fa446b",
+      "matches": true
+    },
+    {
+      "path": "camera/camera-refresh.css",
+      "status": 200,
+      "sha256": "3e9cde2ec1c5d399c0c26031e346fdc7908bb471e67876da75c5a73ef40a32c8",
+      "expected": "3e9cde2ec1c5d399c0c26031e346fdc7908bb471e67876da75c5a73ef40a32c8",
+      "matches": true
+    },
+    {
+      "path": "camera/camera-ui.css",
+      "status": 200,
+      "sha256": "a2adb3bc4feeb220826799c3ef5ecd60f0c9d8c933ed1b875195b869a7900d7c",
+      "expected": "a2adb3bc4feeb220826799c3ef5ecd60f0c9d8c933ed1b875195b869a7900d7c",
+      "matches": true
+    },
+    {
+      "path": "camera/camera.css",
+      "status": 200,
+      "sha256": "489db586aa3909438591f07994d010dd3a856ef8f54164ee3f2ddb0dce945df4",
+      "expected": "489db586aa3909438591f07994d010dd3a856ef8f54164ee3f2ddb0dce945df4",
+      "matches": true
+    },
+    {
+      "path": "camera/card-games.css",
+      "status": 200,
+      "sha256": "e63d539e1cda8b46fa73024a1fe64da5b4b0eb4278e32885196054930cf60017",
+      "expected": "e63d539e1cda8b46fa73024a1fe64da5b4b0eb4278e32885196054930cf60017",
+      "matches": true
+    },
+    {
+      "path": "camera/crop.js",
+      "status": 200,
+      "sha256": "4bb4f8a153815593515d0b26c6133fd2fdc8216953f29e2fcab10cd5e2536804",
+      "expected": "4bb4f8a153815593515d0b26c6133fd2fdc8216953f29e2fcab10cd5e2536804",
+      "matches": true
+    },
+    {
+      "path": "camera/cutout.js",
+      "status": 200,
+      "sha256": "9cd25be52ea39bf8cb830e2074faa666b721cbd23c9628aa4a9a89dfdaefd19e",
+      "expected": "9cd25be52ea39bf8cb830e2074faa666b721cbd23c9628aa4a9a89dfdaefd19e",
+      "matches": true
+    },
+    {
+      "path": "camera/effects.js",
+      "status": 200,
+      "sha256": "62222c5dff67c73abcb2bb85c141b9a4a02b88c80cae4c4895a8acf0f37688b6",
+      "expected": "62222c5dff67c73abcb2bb85c141b9a4a02b88c80cae4c4895a8acf0f37688b6",
+      "matches": true
+    },
+    {
+      "path": "camera/erase-worker.js",
+      "status": 200,
+      "sha256": "5f0b5738e4ba266638ec9f36b18ace021c5f5b3252c2625baa24c43c6159dbc1",
+      "expected": "5f0b5738e4ba266638ec9f36b18ace021c5f5b3252c2625baa24c43c6159dbc1",
+      "matches": true
+    },
+    {
+      "path": "camera/erase.js",
+      "status": 200,
+      "sha256": "8eb7469636c97937339ffdfda0b32f98c0aaf819f6b0d6853229acbb1f011592",
+      "expected": "8eb7469636c97937339ffdfda0b32f98c0aaf819f6b0d6853229acbb1f011592",
+      "matches": true
+    },
+    {
+      "path": "camera/frames.js",
+      "status": 200,
+      "sha256": "7a15179a13d624b0062f9c50627ec6ee8a4655f58adbfb15d9b02e88acb37961",
+      "expected": "7a15179a13d624b0062f9c50627ec6ee8a4655f58adbfb15d9b02e88acb37961",
+      "matches": true
+    },
+    {
+      "path": "camera/game-room-refresh.css",
+      "status": 200,
+      "sha256": "1327d3d49df6d6dc70a44d5b200bb89ce43b0c720eb6a8fdc8e325eb59314b3f",
+      "expected": "1327d3d49df6d6dc70a44d5b200bb89ce43b0c720eb6a8fdc8e325eb59314b3f",
+      "matches": true
+    },
+    {
+      "path": "camera/index.html",
+      "status": 200,
+      "sha256": "b3e60bf45082f580eb1e64e036354cd49f07deef99e835ae431bc2614b4d4764",
+      "expected": "b3e60bf45082f580eb1e64e036354cd49f07deef99e835ae431bc2614b4d4764",
+      "matches": true
+    },
+    {
+      "path": "camera/lettering.js",
+      "status": 200,
+      "sha256": "d648658022d9c21a45852f2bf76041b296518736b63d2197d8ccb49709eee8c2",
+      "expected": "d648658022d9c21a45852f2bf76041b296518736b63d2197d8ccb49709eee8c2",
+      "matches": true
+    },
+    {
+      "path": "camera/look-icons.js",
+      "status": 200,
+      "sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+      "expected": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+      "matches": true
+    },
+    {
+      "path": "camera/looks-gl.js",
+      "status": 200,
+      "sha256": "0b5f8d5acc5260b71d54bf8fb3d8f350412854e65630686aa13a77ddf725c5fb",
+      "expected": "0b5f8d5acc5260b71d54bf8fb3d8f350412854e65630686aa13a77ddf725c5fb",
+      "matches": true
+    },
+    {
+      "path": "camera/memory-retro.css",
+      "status": 200,
+      "sha256": "5b6a5a0833427689880065cd7b2286df69436d1ea5a7ef97d56cf3e50040d709",
+      "expected": "5b6a5a0833427689880065cd7b2286df69436d1ea5a7ef97d56cf3e50040d709",
+      "matches": true
+    },
+    {
+      "path": "camera/memory.js",
+      "status": 200,
+      "sha256": "8bbec8926caa854fc0d3838af63e2e2089dd4f6961368b9171ed1ef593f993ee",
+      "expected": "8bbec8926caa854fc0d3838af63e2e2089dd4f6961368b9171ed1ef593f993ee",
+      "matches": true
+    },
+    {
+      "path": "camera/minato.js",
+      "status": 200,
+      "sha256": "b65299cd2c25c84b262042947bd50a1cc0634a6ecb000042ec41d701ca9b1b8a",
+      "expected": "b65299cd2c25c84b262042947bd50a1cc0634a6ecb000042ec41d701ca9b1b8a",
+      "matches": true
+    },
+    {
+      "path": "camera/playing-cards.js",
+      "status": 200,
+      "sha256": "ecab46b1d8518ca2f55ab019e6ff85a219f8ebea0363abddc53c95dbfeb056ce",
+      "expected": "ecab46b1d8518ca2f55ab019e6ff85a219f8ebea0363abddc53c95dbfeb056ce",
+      "matches": true
+    },
+    {
+      "path": "camera/printer.js",
+      "status": 200,
+      "sha256": "b593b329d53a4d866cf573474fff9bf2a11783a461fadbf0db2d511f72ba73e0",
+      "expected": "b593b329d53a4d866cf573474fff9bf2a11783a461fadbf0db2d511f72ba73e0",
+      "matches": true
+    },
+    {
+      "path": "camera/smart-shuffle.js",
+      "status": 200,
+      "sha256": "2b187518dfb35c8a1e4ba89f6cb9fd139142841ee9304c3b3967b29786f364ab",
+      "expected": "2b187518dfb35c8a1e4ba89f6cb9fd139142841ee9304c3b3967b29786f364ab",
+      "matches": true
+    },
+    {
+      "path": "camera/social-share.css",
+      "status": 200,
+      "sha256": "f3b797985251d310259772e89b0e3b04a3e64f644799706496dc9f7b5aef4fdc",
+      "expected": "f3b797985251d310259772e89b0e3b04a3e64f644799706496dc9f7b5aef4fdc",
+      "matches": true
+    },
+    {
+      "path": "camera/social-share.js",
+      "status": 200,
+      "sha256": "5f859c2bc993dbc994773e451263c131271213cdb4f1d7ae0b3fb23fd92c35f6",
+      "expected": "5f859c2bc993dbc994773e451263c131271213cdb4f1d7ae0b3fb23fd92c35f6",
+      "matches": true
+    },
+    {
+      "path": "camera/solitaire.css",
+      "status": 200,
+      "sha256": "68036d7e14072e48c8c1b0f0ea19f17eeec1eb204f30922f65f4e0818921e6a6",
+      "expected": "68036d7e14072e48c8c1b0f0ea19f17eeec1eb204f30922f65f4e0818921e6a6",
+      "matches": true
+    },
+    {
+      "path": "camera/solitaire.js",
+      "status": 200,
+      "sha256": "f895aa4be3f7741a53a4f47a80dd431326896cb3b227e64bdbca7b75163f02df",
+      "expected": "f895aa4be3f7741a53a4f47a80dd431326896cb3b227e64bdbca7b75163f02df",
+      "matches": true
+    },
+    {
+      "path": "camera/stickers.js",
+      "status": 200,
+      "sha256": "1db73d5c397fe59f13f1257ea89a503634e5b78b4aa3b5af16362398545c59ea",
+      "expected": "1db73d5c397fe59f13f1257ea89a503634e5b78b4aa3b5af16362398545c59ea",
+      "matches": true
+    },
+    {
+      "path": "camera/sw.js",
+      "status": 200,
+      "sha256": "88abe5f18f434bcb682ad679c68d1291c6c5d49ecad53320b900e4996d09bfb3",
+      "expected": "88abe5f18f434bcb682ad679c68d1291c6c5d49ecad53320b900e4996d09bfb3",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/tools/camera/session.mjs",
+      "status": 200,
+      "sha256": "60f663d31986a918742ed5dffd84d1ea773e8d99e13ae02724eac5637291af32",
+      "expected": "60f663d31986a918742ed5dffd84d1ea773e8d99e13ae02724eac5637291af32",
+      "matches": true
+    }
+  ],
+  "matched": 33,
+  "total": 33
+}

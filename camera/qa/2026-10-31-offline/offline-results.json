@@ -1,0 +1,22 @@
+{
+  "checks": [
+    "a failed first download does not claim offline readiness or remove previous caches/album",
+    "retry downloads a complete verified bundle and preserves other app data",
+    "cold navigation with a query works with the network disabled",
+    "every offline asset, including never-used stickers/fonts/wasm, has its exact bytes offline",
+    "the camera viewfinder starts offline with a generated test camera",
+    "photo import, all Looks, Smart Surprise, crop, overlays and JPEG save-copy work offline",
+    "Erase worker and its WASM start for the first time while offline",
+    "card games start and their image sheets decode offline",
+    "a fresh browser process reopens the offline app and retains both saved photos",
+    "a stalled online request falls back to the installed snapshot",
+    "missing cached files are detected and repaired without touching the album",
+    "a removed offline cache is rebuilt and survives another offline browser restart",
+    "no uncaught application errors"
+  ],
+  "physicalSafari": false,
+  "bundle": {
+    "files": 316,
+    "bytes": 22385224
+  }
+}

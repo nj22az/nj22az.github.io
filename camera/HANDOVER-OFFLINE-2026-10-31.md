@@ -1,58 +1,79 @@
-# Pocket Camera complete offline use — 31 October 2026
+# Pocket Camera complete offline release — 31 October 2026
 
-## Current review
+## Published on the owner's instruction
 
-The owner requested “Push to main”, then direct MCP connection and complete offline use. Smart Surprise PR #419
-is merged at **e0e749cc143f88e4ee7662d24f02c398204bdd88**, identical tree to reviewed **a20a25fdb92bffd393ec967701792ae319a443b6**.
-Its Pages **41226967552** build/report/deploy passed. Exact-head Camera **41208139819** and MCP **41208139842** passed;
-World guard/WebKit **41208139808** passed. Linux **41208139856** repeats the two documented unchanged main failures.
+The owner instructed **“Push to main”**, then requested direct MCP connection and complete offline use. Smart Surprise
+[PR #419](https://github.com/nj22az/nj22az.github.io/pull/419) was merged first at **e0e749cc143f88e4ee7662d24f02c398204bdd88**;
+its Pages **41226967552** and [33/33 initial public-byte checks](qa/2026-10-31-smart-surprise/publication.json) passed.
 
-This offline follow-up is on **codex/pocket-camera-offline**, based on that merge, **not yet published**. It preserves
-Smart Surprise, originals, album/copy-save, frames, stickers and the existing local stdio adapter. No World runtime or
-shader is edited. Release/import keys align at **20261031offline1**, including the adapter renderer import.
+The offline follow-up [PR #420](https://github.com/nj22az/nj22az.github.io/pull/420) is now **merged and deployed** at
+**a1125c62e38e9dcb507f6bd73dce1003cad1cee6**, identical tree **697943460292524ef78c2c12a702f31f9537d4bb** to all-Camera-green reviewed source
+**ef4962533e9274051d2ac6670ecf7ceb324ba2cd**. Branch: **codex/pocket-camera-offline**. Earlier source **defa72b79a8b35d44f2f69572b21225b42162b62**
+caught an interrupted-first-install retry error; it was corrected without weakening the test. Release/import keys,
+including the adapter renderer import, align at **20261031offline1**. Existing World work and local changes are preserved.
 
-## What changed
+## Delivered behaviour
 
-The former worker cached only visited files. The new worker downloads a complete **316-file / 22.4 MB** public runtime
-bundle: code, shared shader modules, all supplied stickers/thumbnails, frames, fonts, samples, card sheets and Erase WASM.
-`node tools/build-camera-offline.mjs` regenerates **camera/offline.json** and its exact worker digest after runtime asset
-changes. Unit checks reject stale or oversized bundles. No personal pictures, album, QA or World scene/models enter it.
+The previous worker retained only files already visited. This release prepares **316 public files / 22,385,224 bytes**:
+code, shared shader modules, every supplied sticker/thumbnail, frames, fonts, samples, card sheets and Erase worker/WASM.
+It verifies the manifest and every file digest before activation; failed installations retain the previous cache.
+Readiness/retry appears as one 44px Settings icon with an accessible label, without covering the photograph. Missing files
+and complete cache removal can be repaired. Only Camera caches are cleaned; IndexedDB and other apps' data remain.
 
-Install verifies each file digest and only activates after completion, retaining the preceding cache on failure. Updates
-clean only Pocket Camera caches. Network-first fetches retain live online updates and fall back to the complete snapshot,
-including versioned requests and query-bearing navigation; stalled requests have a three-second limit. Settings has one
-44px icon for preparation, readiness or retry, with accessible labels. Missing cache entries can be detected and repaired.
-Album data remains in IndexedDB and is never cleared by the worker.
+Online requests retain live network-first behaviour, with complete cached fallback for versioned requests, query navigation
+and a three-second stalled-request limit. Open online once and wait for the download icon to become a checkmark; then
+startup, camera, local imports, Looks/Smart, editing, overlays, Erase, JPEG copies, album and games need no network.
+Initial download and retained browser site data are required. Smart Surprise works on-device; it needs no online model.
 
-Initial download requires a connection. The browser must retain its site data; removing it also removes offline files.
-No claim of first-ever offline installation, physical Safari acceptance or offline ChatGPT/AI model operation is made.
-Smart Surprise and photo processing already run on-device and need no online model.
+Regenerate with **node tools/build-camera-offline.mjs** after changing runtime assets. The generated **camera/offline.json**
+and worker digest are checked by **camera/tests/offline.test.mjs**. All 18 imported Camera modules have one address. No
+runtime dependency, World shader/runtime edit, hardware capture tool, native Share tool, public MCP service or AR is added.
 
-## Verification so far
+## Actual verification
 
-- Local Camera units/module consistency/syntax/diff checks pass, including offline inventory/hash checks and Smart 7/7.
-- MCP policy/lifecycle/cache keys: **15/15 pass**. Fresh pinned dependencies installed; no dependency upgrades.
-- New hosted suite pending: failed install + retry, previous cache/album preservation, every cached byte without network,
-  query navigation, generated camera viewfinder, all Looks/Smart/crop/stickers/save, first-use Erase/WASM, games,
-  cold browser restart, phone/tablet controls, stalled fetch fallback, repair and application errors.
-- Existing 289 Camera browser checks and real MCP acceptance are retained and will rerun. Local Chromium cannot launch
-  in this managed environment (Unix-socket restriction); use hosted Actions, not a security bypass.
+On **ef496253**, [Camera run 41228514057](https://github.com/nj22az/nj22az.github.io/actions/runs/41228514057):
 
-## MCP connection state
+- Core **143/143**, job **124617806746**; UI **82/82**, **124617806893**; shader audit **50/50**, **124617806947**;
+  Smart **14/14**, **124617806997**; offline **13/13**, **124617806923**: **302/302 browser checks**, no skips.
+- Offline checks prove failed install/retry; existing/other cache and album retention; every asset's exact bytes without
+  network; query navigation; generated camera viewfinder; every Look/Smart/crop/sticker/JPEG save; first-use Erase/WASM;
+  games; two cold browser process restarts; phone/tablet controls; stalled fetch fallback and cache repair. No page errors.
+- All local Camera units, offline inventory/hash, 18-module consistency, syntax and diff checks pass, including Smart 7/7.
+- [MCP 41228514058](https://github.com/nj22az/nj22az.github.io/actions/runs/41228514058), job **124617601234**:
+  **15/15 units + 20/20 actual SDK-to-Camera acceptance**; eleven tools discovered and generated-image workflow proved.
+  Fresh pinned install and independent local JSON audit: **zero npm vulnerabilities**.
+- [World 41228514034](https://github.com/nj22az/nj22az.github.io/actions/runs/41228514034): guard **569/569**, job
+  **124617834338**, and automated WebKit/iPhone-profile startup **124617834083**, passed. These are not physical devices.
+- Linux **41228514049**, **124617601131**, repeats two pre-existing World failures: controller smoke expects old landing
+  x=-1.5, actual x=0.3; housing consolidation counts moving ferry meshes on post-office-lot. Both were reproduced on pristine
+  base main; [retained log](qa/2026-10-31-smart-surprise/unchanged-main-world.log). No assertions changed. No Linux release.
 
-Plugin Creator was installed at the owner's request. This is **not** an installed Johansson Camera plugin or a successful
-Camera tool call from this chat. The existing adapter runs as a local stdio process in an isolated Chromium session;
-its SDK acceptance client is verified. It does not attach to the owner's Safari tab, Photos or browser album.
+Pages **41229423812**: build **124620289748**, report **124620536971**, deploy **124620537045**, all passed.
+[324/324 canonical/versioned public requests](qa/2026-10-31-offline/publication.json) match the tested runtime, including all
+316 bundle files, worker, manifest and app entrypoints. [Evidence, screenshots and archive links](qa/2026-10-31-offline/README.md)
+retain exact jobs and hashes; all six CI ZIPs were downloaded, SHA-256/CRC/path verified and retained. Actual offline
+phone/tablet controls, editor and saved JPEG, plus MCP generated-image previews/export, were inspected. The final
+handover/evidence commit changes no tested runtime. Post-merge World checks are independent of the passing source jobs.
 
-Official OpenAI guidance: ChatGPT web uses plugins rather than reading the repository's `.mcp.json` or local Codex config.
-An existing stdio server can remain private through **Secure MCP Tunnel**, requiring a running host, a tunnel associated
-with the intended ChatGPT workspace, its restricted runtime credential, and custom-plugin registration. None is configured
-or verified here. No endpoint, tunnel identity, authentication or installation is invented. See [MCP.md](MCP.md) for the
-exact remaining connection steps. Local desktop registration is possible on a host that can run the existing server.
+## Connection and physical-device limits
+
+The **SDK acceptance client connects**. Plugin Creator was installed at the owner's request. The owner's installed Camera
+MCP host and this chat remain **unconnected**: no actual reachable Camera host/tunnel and workspace plugin registration
+has been verified. The existing stdio server runs an isolated Chromium session and does not attach to Safari, Photos or
+an existing browser album. ChatGPT web does not read repository .mcp.json or local Codex configuration.
+
+The documented private route is a running local host plus **Secure MCP Tunnel**, associated with the intended Platform
+organisation and ChatGPT workspace, its restricted runtime credential and custom-plugin registration. Neither a host nor
+a tunnel identity/authentication is invented or exposed. See [MCP.md](MCP.md) for exact setup and verification steps. A
+local desktop client can use the existing stdio command directly. Approved imports, pixel-preview disclosure, temporary
+MCP album and explicit save/export/close remain. Export before close. Installing Plugin Creator alone is not Camera setup.
+
+Physical iPhone 17/iPad mini Safari, actual hardware camera and native Share remain untested. Browser storage eviction can
+remove offline files; keeping site data is required. No offline ChatGPT model or new hosted architecture is claimed.
 
 ## Next action
 
-Run hosted offline and existing Camera/MCP suites, inspect offline screenshots and JPEG, retain evidence and update this
-note with exact commits/results. The owner has authorised publication; publish the verified offline follow-up to main and
-verify Pages/public bytes. Keep concurrent handovers and unrelated World work intact. Connect the chat only after a real
-reachable host/tunnel and workspace registration are available; do not describe the SDK test client as the owner's client.
+Use the live Camera once online until the Settings checkmark appears, then test a physical iPhone/iPad offline. To finish
+MCP connection, use a persistent host that can run Node/Chromium, configure its private tunnel and workspace registration,
+and prove eleven-tool discovery plus the generated-image workflow from that host/chat. Resolve the independent Linux
+World fixtures in their own work; preserve the published Camera and concurrent World release.
