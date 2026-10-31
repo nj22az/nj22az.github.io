@@ -1,6 +1,10 @@
 # Startup crash audit and iPhone simulation — 30 October 2026
 
-**Current continuation, 31 October 2026:** [Room recovery and Nakamura retirement](HANDOFF-ROOM-CRASH-FAMILY-2026-10-31.md), PR #415, integrates this work with current main, safe stair/load retry and shared atlas ownership. The original verification and delivery history below remain historical.
+**Published status, 31 October 2026:** This work is merged and live through [PR #415](https://github.com/nj22az/nj22az.github.io/pull/415), main `4a06f5fcc9f60ce447a6a28b915b3f8d087a087c`. Its tree `dbe595ac4a19f6390ba5613558d8e64803a6fb68` is identical to native-passed candidate `b8a3174e`. Earlier review PRs [#410](https://github.com/nj22az/nj22az.github.io/pull/410) and [#413](https://github.com/nj22az/nj22az.github.io/pull/413) are closed and superseded by #415.
+
+**Latest handover:** [Room recovery and Nakamura retirement](HANDOFF-ROOM-CRASH-FAMILY-2026-10-31.md). Final guard: **560/560, 109 files**; native iPhone-profile WebKit run **41153437339 passed**, including three visit pairs with zero resource growth; Pages deployment **41154350179 succeeded**; public verification **63/63 passed**. The owner's physical iPhone failure remains unobserved.
+
+**Historical record:** The original branch, review, verification and unpublished-delivery statements below describe their earlier stages and are preserved as history. Use the latest handover above for current continuation and publication state.
 
 
 **Combined follow-up, 31 October 2026:** see [Sakura/izakaya integration](HANDOFF-SAKURA-IZAKAYA-INTEGRATION-2026-10-31.md). `codex/sakura-office-izakaya-review` brings the three candidates together, with exactly KITANO 12 and UMINEKO Black in the upstairs office. The original results below describe this branch independently; combined results and publication state are in the new note.
