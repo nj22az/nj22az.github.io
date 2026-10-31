@@ -43,3 +43,22 @@ measurements, screenshot inspection, final findings and artifact IDs are pending
 Next: inspect hosted results and actual screenshots, correct verified defects, then give the owner the audit and before/after
 captures for review. Main publication requires a subsequent owner instruction. Physical Safari and the installed MCP host
 remain untested/unconnected; no personal Photos library or live browser album is attached.
+
+## Subsequent AR question — research, not implementation
+
+The owner asked about placing Blender-rendered Thuan and Thao in the real world and augmenting the camera view.
+The current app already composites 2D character stickers over camera/photos; these do not track a floor or table.
+Existing source includes Blender Thuan cut-outs, `johansson-town/assets/avatars/pixar/{thuan,thao}.glb` and Thuan
+figurine GLBs. These are source assets to assess, not verified AR-ready exports. No USDZ was found in that inventory.
+
+For iPhone/iPad, the proposed supported 3D route is a fully clothed, correctly scaled Blender-to-USDZ export launched
+with Safari AR Quick Look, with short baked animations. A PNG alone remains a flat cut-out. WebKit's March 2026
+response says WebXR is unsupported on iOS; an interactive scene that navigates a room or handles complex occlusion
+would need a separate native ARKit/RealityKit assessment. No AR architecture, camera permission, new model or hosted
+service was added by this audit. This remains a proposal pending scope agreement and device testing.
+
+Primary references checked:
+- https://developer.apple.com/quick-look-gallery/
+- https://developer.apple.com/documentation/arkit/previewing-a-model-with-ar-quick-look
+- https://webkit.org/blog/8421/viewing-augmented-reality-assets-in-safari-for-ios/
+- https://bugs.webkit.org/show_bug.cgi?id=309550 (WebKit maintainer response, 11 March 2026)

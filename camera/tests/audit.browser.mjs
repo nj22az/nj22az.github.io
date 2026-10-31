@@ -27,8 +27,9 @@ async function pageFor({before=false,width=402,height=700}={}){
 }
 async function choose(page,name){
  const group=await page.locator('#lookGroups button').evaluateAll((bs,name)=>bs.find(b=>b.getAttribute('aria-label').split(': ').slice(1).join(': ').split(', ').includes(name))?.dataset.group,name.label);
- assert.ok(group,name.id);await page.click(`#lookGroups [data-group="${group}"]`);await page.click(`.tile[data-look="${name.id}"]`);await page.fill('#amount','100');
- await page.waitForFunction(id=>window.auditDrawn?.length===1&&window.auditDrawn[0].look===id&&window.auditDrawn[0].amount===1,name.id);
+ assert.ok(group,name.id);await page.click(`#lookGroups [data-group="${group}"]`);await page.click(`.tile[data-look="${name.id}"]`);if(name.id!=='none')await page.fill('#amount','100');
+ await page.waitForFunction(id=>window.auditDrawn?.length===1&&window.auditDrawn[0].look===id&&(id==='none'||window.auditDrawn[0].amount===1),name.id);
+ await page.locator('#lookGroups').evaluate(el=>Promise.allSettled(el.getAnimations({subtree:true}).map(a=>a.finished)));
 }
 try{
  const old=await pageFor({before:true});
@@ -84,11 +85,12 @@ try{
  });
  const names=await page.evaluate(async()=>{const{LOOKS}=await import('/camera/looks-gl.js?v=20261031audit1');return Object.entries(LOOKS).map(([id,x])=>({id,label:x.label}));});
  const symbols=[];
- for(const [index,name] of names.entries())await check(`actual UI selects ${name.label} and its intensity`,async()=>{
+ for(const [index,name] of names.entries())await check(name.id==='none'?'Natural disables irrelevant strength':`actual UI selects ${name.label} and its intensity`,async()=>{
   await choose(page,name);assert.equal(await page.locator(`.tile[data-look="${name.id}"]`).getAttribute('aria-checked'),'true');
   const icon=await page.locator('#editLookRail svg').evaluate(svg=>({look:svg.dataset.look,vector:svg.innerHTML}));assert.equal(icon.look,name.id);symbols.push(icon);
   const label=await page.locator('#editLookRail span').evaluate(e=>({overflow:e.scrollWidth-e.clientWidth,rect:e.getBoundingClientRect().toJSON()}));assert.ok(label.overflow<=1,name.label);
   await page.screenshot({path:join(shots,'shaders',`${String(index+1).padStart(2,'0')}-${name.id}.png`)});
+  if(name.id==='none'){assert.equal(await page.locator('#amount').isDisabled(),true);return;}
   await page.fill('#amount','0');await page.waitForFunction(id=>window.auditDrawn?.[0]?.look===id&&window.auditDrawn[0].amount===0,name.id);
   assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.layers[0].amount),0);
   const zero=await page.evaluate(async()=>{const a=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031audit1'),r=a.state.edit.recipe,opts={source:'edit',crop:r.crop,width:160,height:120},x=a.engine.render(r,opts).data,y=a.engine.render(m.normalRecipe({crop:r.crop}),opts).data;return x.every((v,i)=>v===y[i]);});assert.equal(zero,true,`${name.label}: 0% restores the original pixels`);await page.fill('#amount','100');
