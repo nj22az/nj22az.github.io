@@ -77,3 +77,19 @@ release key (policy 14/15; `124639260546`), now aligned without changing asserti
 stalled fetch together with the Node/browser scheduling round trip. Its unchanged 4,500 ms threshold now measures the
 actual fetch/body operation inside the browser and logs both timings. The worker's three-second fallback is unchanged;
 the rerun must verify the diagnosis. First9 offline checks passed before that failure (`124639261178`).
+
+## Second review run and final integration corrections
+
+Remote source `09d9b3ca776238ff35b8391b89461a6b801b699a`, exact local tree
+`5056c3594062327f75a86f03f3a294daef7cdc08`, Camera run `41236318240`: offline **13/13**,
+job `124640745461`, verified stalled-fetch browser duration **3,365.4 ms** (Node roundtrip 3,367 ms), below the unchanged
+4,500 ms limit. Cache repair and two cold restarts pass. UI, shader audit and Smart also pass.
+Retouch passed the first35 checks; final real-portrait alignment caught a test-harness timing error: the first handle
+was sampled before the Angle control's next-frame guide redraw. The final harness uses normal locator hover/stability
+before pointerdown; source-coordinate assertions/targets are unchanged. Native mask rendering and source tests passed.
+
+MCP run `41236318163` passed all15 existing policy checks, then its actual session failed to load because preview's
+nested-directory allowlist blocked the new pico module. Final correction permits exactly four detector vendor assets
+with explicit MIME types. It does not broaden vendor/binary serving. A new HTTP policy check proves exact byte/MIME/HEAD
+behaviour and denial of other files and symlinks; all **16/16 policy checks pass locally**. The final candidate must
+rerun real SDK-to-Camera acceptance. These corrections do not alter Camera's runtime from `09d9b3ca`.

@@ -216,10 +216,10 @@ try{
      assert.equal(modelLoaded,true,'the actual bundled face model was used');
      // Detection supplies approximate bounds. Align this tilted, smiling face using the same controls as the user.
      await page.fill('#makeupAngle','15');
-     const frame=await page.locator('#editFrame').boundingBox();assert.ok(frame);
      for(const [name,x,y] of [['left-eye',348,327],['right-eye',479,363],['mouth',377,460]]){
-      const handle=await page.locator(`#makeupGuide [data-handle="${name}"]`).boundingBox();assert.ok(handle,name);
-      await page.mouse.move(handle.x+handle.width/2,handle.y+handle.height/2);await page.mouse.down();
+      // Hover waits for the handle to settle after rotation before choosing the pointer's starting position.
+      await page.locator(`#makeupGuide [data-handle="${name}"]`).hover();
+      const frame=await page.locator('#editFrame').boundingBox();assert.ok(frame);await page.mouse.down();
       await page.mouse.move(frame.x+x/640*frame.width,frame.y+y/960*frame.height,{steps:5});await page.mouse.up();
      }
      await page.fill('#makeupMouthWidth','48');await page.fill('#makeupMouthHeight','17');
