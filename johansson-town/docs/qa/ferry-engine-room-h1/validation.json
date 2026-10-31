@@ -119,5 +119,9 @@
   "publication_base": "a30fb308700921e36032d1fdcd11dd78edd7dcab",
   "original_h1_implementation_commit": "e43e6ff292bda94b5918dcb881acc8692e1b450b",
   "blender_compressed_reopen": "pass: 1290 editable source components; 8 locked CAD camera positions, aims and vertical fields of view",
-  "glb_rebuild_reproducibility": "pass: final rebuild SHA256 matches the tested GLB byte-for-byte"
+  "glb_rebuild_reproducibility": "pass: final rebuild SHA256 matches the tested GLB byte-for-byte",
+  "implementation_commit": "091b24d31a808854740c59da920ed0771f5d2133",
+  "verified_source_tree": "6b3a2fe881006a29a6df3eecfa6099c4c61326eb",
+  "local_verified_snapshot": "ba863e5f631dedef14483344f94ab4ca275e03cb",
+  "github_blob_and_tree_verification": "all 53 changed source/artifact blobs and the complete implementation tree match local Git objects"
 }

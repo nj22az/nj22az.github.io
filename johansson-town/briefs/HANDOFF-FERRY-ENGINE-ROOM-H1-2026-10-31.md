@@ -2,7 +2,7 @@
 
 **Latest owner decision: "Make the assets in blender don't care about mushy now".** The active workflow is Blender only. Meshy and its former sign-in handoff are superseded. H1-F1 refines and applies the measured assets without changing the machinery arrangement or camera design.
 
-Development only, opt-in `?engine-room-h1`. H1-F1 follows development `a30fb308700921e36032d1fdcd11dd78edd7dcab`; original H1 implementation is `e43e6ff292bda94b5918dcb881acc8692e1b450b`. Exact current source/tree publication evidence belongs in `docs/qa/ferry-engine-room-h1/validation.json`. Preserve the owner's main/development/pixar workflow; no main promotion or Linux release is included. Main was read at `83783c93448d1be251a61c213959448e1d21c971` during this pass.
+Development only, opt-in `?engine-room-h1`. H1-F1 implementation: [091b24d3](https://github.com/nj22az/nj22az.github.io/commit/091b24d31a808854740c59da920ed0771f5d2133), verified source tree 6b3a2fe881006a29a6df3eecfa6099c4c61326eb. All 53 changed blobs and the complete tree match the tested local Git snapshot. It follows development `a30fb308700921e36032d1fdcd11dd78edd7dcab`; original H1 implementation is `e43e6ff292bda94b5918dcb881acc8692e1b450b`. Exact current source/tree publication evidence belongs in `docs/qa/ferry-engine-room-h1/validation.json`. Preserve the owner's main/development/pixar workflow; no main promotion or Linux release is included. Main was read at `83783c93448d1be251a61c213959448e1d21c971` during this pass.
 
 ## Delivered assets
 
