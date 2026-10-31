@@ -1,0 +1,41 @@
+{
+  "source": "9e28f6d4d3bf137f4d1b27b9e54d07190dc1c34e",
+  "delivery": "Seven files successfully saved. Durable links supplied directly to owner. Original pixels/archives preserved.",
+  "files": [
+    {
+      "name": "Pocket-Camera-layout-fixes.zip",
+      "bytes": 26603531,
+      "sha256": "3088cec2d46c6f74c8df281c75b03852e8abc469edaaa511d7dfd2a7fa913688"
+    },
+    {
+      "name": "Pocket-Camera-layout-regression-evidence.zip",
+      "bytes": 29012196,
+      "sha256": "1bc256fd573ababbb5ca5c2bd64f577cbce58566b01d48c93a5f188f6f8b5f2d"
+    },
+    {
+      "name": "Pocket-Camera-iPhone-17-frame-fixed.png",
+      "bytes": 111207,
+      "sha256": "0582ab6f86f0615bba9525df08af77ea08f43df7988cdc178bf0449fc8e883a0"
+    },
+    {
+      "name": "Pocket-Camera-iPad-mini-frame-fixed.png",
+      "bytes": 408070,
+      "sha256": "c55422f0b6923043e357994bad7de56f3c02abce90fc389907f543447fd6f1bb"
+    },
+    {
+      "name": "Pocket-Camera-stickers-fixed.png",
+      "bytes": 116959,
+      "sha256": "c74871635ae4504517b709567ce04cf849dbadc67ee632ec733e2d8ef6d81b0a"
+    },
+    {
+      "name": "Pocket-Camera-small-screen-rail-fixed.png",
+      "bytes": 65910,
+      "sha256": "a6cad12fff77e12db084f5b306b97bbf81ff379e3196dddaa546957d26b9e368"
+    },
+    {
+      "name": "Pocket-Camera-iPhone-17-frame-before.png",
+      "bytes": 101755,
+      "sha256": "f9802de9403bf48cefbaf23ac4a87eab525c6546a53d9350db1ce149ca3b5c16"
+    }
+  ]
+}

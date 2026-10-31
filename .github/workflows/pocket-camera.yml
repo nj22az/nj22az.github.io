@@ -23,6 +23,8 @@ jobs:
             suites: camera crop enhance save-share-layout paper integration sticker-contour
           - job: camera-ui
             suites: ui
+          - job: camera-audit
+            suites: audit
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -30,6 +32,7 @@ jobs:
       CAMERA_BASELINE: /tmp/camera-main-engine.js
       CAMERA_MAIN_ENGINE: /tmp/camera-main-engine.js
       CAMERA_REFINE_ENGINE: /tmp/camera-refine-engine.js
+      CAMERA_AUDIT_BASELINE: /tmp/camera-audit-baseline
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,6 +59,14 @@ jobs:
           git fetch --no-tags --depth=1 origin 87f47e8f6e5fafdb586ac723e9aa3cc704d11345 3af0bae6324fe73f974bd00bc371c6555d7f1e58
           git show 87f47e8f6e5fafdb586ac723e9aa3cc704d11345:camera/looks-gl.js > "$CAMERA_MAIN_ENGINE"
           git show 3af0bae6324fe73f974bd00bc371c6555d7f1e58:camera/looks-gl.js > "$CAMERA_REFINE_ENGINE"
+      - name: Published source for the before/after audit
+        if: matrix.job == 'camera-audit'
+        run: |
+          git fetch --no-tags --depth=1 origin 83783c93448d1be251a61c213959448e1d21c971
+          mkdir -p "$CAMERA_AUDIT_BASELINE"
+          for file in index.html app.js camera-ui.css looks-gl.js; do
+            git show "83783c93448d1be251a61c213959448e1d21c971:camera/$file" > "$CAMERA_AUDIT_BASELINE/$file"
+          done
       - name: Unit, module and syntax checks
         run: |
           for test in camera/tests/*.test.mjs; do node "$test"; done

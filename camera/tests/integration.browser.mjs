@@ -35,7 +35,7 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  await check('all 34 published Looks combine with enhancement and every stock, full and LIGHT',async()=>{
   const report=await page.evaluate(async()=>{
-   const m=await import('/camera/looks-gl.js?v=20261031ui1');
+   const m=await import('/camera/looks-gl.js?v=20261031audit2');
    const source=await createImageBitmap(await(await fetch('/camera/samples/default-original.png')).blob());
    const crop={x:.13,y:.07,w:.7,h:.8},results=[];
    for(const light of [false,true]){
@@ -64,9 +64,9 @@ try{
   if(shots)await writeFile(join(shots,'render-matrix.json'),JSON.stringify(report,null,2));
   console.log(`    ${report.rows.length} combinations; 408 full preview/export pixel comparisons`);
  });
- if(process.env.CAMERA_MAIN_ENGINE||process.env.CAMERA_REFINE_ENGINE)await check('off/None preserves prior Look pixels except the intentionally rebuilt Crayon',async()=>{
+ if(process.env.CAMERA_MAIN_ENGINE||process.env.CAMERA_REFINE_ENGINE)await check('off/None preserves prior Look pixels except rebuilt Crayon and geometry-corrected 32-bit',async()=>{
   const result=await page.evaluate(async baselines=>{
-   const m=await import('/camera/looks-gl.js?v=20261031ui1'),e=m.createLookEngine(document.createElement('canvas'));
+   const m=await import('/camera/looks-gl.js?v=20261031audit2'),e=m.createLookEngine(document.createElement('canvas'));
    const source=await createImageBitmap(await(await fetch('/camera/samples/default-original.png')).blob());
    e.setSource('test',source,source.width,source.height);const rows=[];
    for(const label of baselines){
@@ -81,12 +81,12 @@ try{
    }
    e.gl.getExtension('WEBGL_lose_context')?.loseContext();source.close();return rows;
   },[['main',process.env.CAMERA_MAIN_ENGINE],['refine',process.env.CAMERA_REFINE_ENGINE]].filter(([,v])=>v).map(([k])=>k));
-  for(const r of result)if(r.label==='main'&&r.look==='crayon')assert.ok(r.max>0);else assert.equal(r.max,0,JSON.stringify(r));
+  for(const r of result)if(r.look==='thirtyTwoBit'||r.label==='main'&&r.look==='crayon')assert.ok(r.max>0);else assert.equal(r.max,0,JSON.stringify(r));
   console.log(`    ${result.length} baseline comparisons`);
  });
  await check('enhanced mixed-Look thumbnails apply paper once, after the Looks',async()=>{
   const result=await page.evaluate(async()=>{
-   const m=await import('/camera/looks-gl.js?v=20261031ui1'),e=m.createLookEngine(document.createElement('canvas'));
+   const m=await import('/camera/looks-gl.js?v=20261031audit2'),e=m.createLookEngine(document.createElement('canvas'));
    const source=await createImageBitmap(await(await fetch('/camera/samples/default-original.png')).blob());e.setSource('test',source,source.width,source.height);
    const crop={x:.2,y:.1,w:.6,h:.8},rows=[];
    // One tile per call keeps the stock's texture origin the same as the reference; 540 px makes both pattern floors equal.
@@ -129,7 +129,7 @@ try{
   assert.equal(await page.locator('#original').isVisible(),true);
   await page.waitForFunction(()=>!!window.integrationComparison);
   const difference=await page.evaluate(async()=>{
-   const {engine,state}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031ui1'),{raw,width,height}=window.integrationComparison;
+   const {engine,state}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031audit2'),{raw,width,height}=window.integrationComparison;
    engine.draw=window.integrationDraw;
    const shown=m.flipRows(raw,width,height),reference=engine.render(m.normalRecipe(),{source:'edit',crop:state.edit.recipe.crop,width,height}).data;
    let max=0;for(let i=0;i<shown.length;i++)max=Math.max(max,Math.abs(shown[i]-reference[i]));return max;
