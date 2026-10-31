@@ -2,7 +2,7 @@
 // Studio or with the johansson-studio tools (avatar-creator/docs/STUDIO-MCP.md). CI refuses a copy that does not match the data.
 const freeze=value=>{if(value&&typeof value==='object'){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;};
 /** The sha256 of the products, prints and retired lines (their canonical JSON). */
-export const FINGERPRINT='05b6d8a09295b486d839fdbbe19d8e674ebb869a61826392abd0926aca094d9f';
+export const FINGERPRINT='5d63789e46f47a0f469ba646c9dfa1c95f11746366f857284eef9cb478f8e0fc';
 /** Sakura Shōten's products, in the order Thuan walks the floor (data/studio/products.json says what every field is). */
 export const PRODUCTS=freeze([
  {
@@ -307,7 +307,7 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "drinks",
    "for": [
-    "Mrs Nakamura"
+    "Nhung"
    ],
    "why": "Mandarin juice for a child’s lunch, or a breakfast in a hurry.",
    "placed": "Low in the juice column, at a child’s reach."
@@ -915,7 +915,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "fresh",
    "for": [
-    "Mrs Nakamura",
     "Ms Ganaha"
    ],
    "why": "Milk bread for tomorrow’s breakfast.",
@@ -1293,7 +1292,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "pantry",
    "for": [
-    "Mrs Nakamura",
     "Mrs Sato"
    ],
    "why": "Curry roux for a family dinner; Mrs Sato swears it is not for the shop.",
@@ -1931,7 +1929,6 @@ export const PRODUCTS=freeze([
   "purpose": {
    "zone": "daily",
    "for": [
-    "Mrs Nakamura",
     "Miss Higa"
    ],
    "why": "Laundry powder: the bathhouse towels and a family’s week.",

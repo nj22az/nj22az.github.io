@@ -28,8 +28,8 @@ test('all eight posts are held by the roster’s holders, under the names the li
   assert.ok(!FERRY_CREW.some(c=>c.name===old)&&!FERRY_SHORE.some(s=>s.name===old),old+' is no longer a body');
   assert.equal(castMember(old)?.name,now);assert.ok(castMember(now).supporting);
  }
- // 25 since Dr Ken retired into Nhung (22 October 2026, roster.js RETIRED).
- assert.equal(ROSTER.length,25);assert.equal(new Set(ROSTER.map(p=>p.name)).size,25,'25 unique display names');
+ // The Nakamura family retired on 31 October 2026; all eight ship posts remain unchanged.
+ assert.equal(ROSTER.length,23);assert.equal(new Set(ROSTER.map(p=>p.name)).size,23,'23 unique display names');
 });
 
 test('the shore roles: Jack holds the berth and Minato’s lines, Kai the Kitano lines, Mika the tickets; Tetsu is contract, never crew; Mac the relief',()=>{

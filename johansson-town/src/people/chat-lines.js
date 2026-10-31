@@ -86,16 +86,16 @@ export const TOPICS=Object.freeze([
    'Tell it the shop is shut.'),
   close:T('I named it Mochi. We are best friends now.','I will not sleep tonight, {b}.','That is my plan for most things.','It is learning nothing from me.')},
  {id:'icecream',open:T(
-   'Blue Coral has a new flavour! Purple sweet potato! Purple!',
-   'They have run out of beni-imo at Blue Coral. My whole day is ruined.',
-   'Thinking about a Blue Coral ice cream. It is that kind of afternoon.',
-   'I have had three Blue Coral ice creams this week. For research.'),
+   'Blue Coral is closed. I still remember the purple sweet potato flavour.',
+   'No beni-imo scoop today. Blue Coral needs a keeper.',
+   'Thinking about an ice cream for the day Blue Coral opens again.',
+   'I have checked the closed Blue Coral shutter three times this week. For research.'),
   reply:T(
-   'Let us get two each! One for each hand!',
+   'When it opens again, two each. One for each hand!',
    'Some days only ice cream understands.',
    'Every afternoon is that kind of afternoon.',
    'Chocolate. It is the only honest flavour.'),
-  close:T('Race you there, {b}!','You understand me, {b}.','I am already walking that way.','I will report my findings.')},
+  close:T('We can wait, {b}.','You understand me, {b}.','I will walk through the park instead.','I will report when the shutter opens.')},
  {id:'karaoke',open:T(
    'Karaoke at the izakaya tonight! I have been practising in the shower!',
    'I am singing at the izakaya tonight. I have chosen a ballad. A very sad one.',

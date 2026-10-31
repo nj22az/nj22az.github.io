@@ -1,18 +1,44 @@
 /** Regenerate portraits using the same buildAvatar(recipeFor(name)) as the game.
- * Requires Playwright and Chromium as authoring tools, never visitor dependencies.
+ * Rendering requires Playwright and Chromium as authoring tools, never visitor dependencies.
  * node tools/render-resident-guide.mjs
+ * node tools/render-resident-guide.mjs --catalogue-only (retain proven, unchanged portraits; no browser)
  */
 import {createServer} from 'node:http';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {resolve,extname} from 'node:path';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
+import {runInNewContext} from 'node:vm';
 const root=resolve(new URL('..',import.meta.url).pathname),require=createRequire(import.meta.url);
+const catalogue=JSON.parse(await readFile(resolve(root,'guide/residents.json'),'utf8'));
+const only=new Set(process.argv.slice(2));
+if(only.delete('--catalogue-only')){
+ if(only.size)throw Error('--catalogue-only cannot select portraits to render');
+ const manifest=JSON.parse(await readFile(resolve(root,'guide/portraits.json'),'utf8')),context={window:{}};
+ runInNewContext(await readFile(resolve(root,'resident-guide.js'),'utf8'),context,{timeout:1000});
+ const previous=context.window.JOHANSSON_RESIDENT_GUIDE;
+ if(!Array.isArray(previous)||previous.length!==manifest.count||!manifest.sourceFiles.includes('guide/residents.json'))throw Error('Invalid previous portrait catalogue/provenance; use the real renderer.');
+ const oldGuide=JSON.stringify(previous,null,1)+'\n',priorHash=createHash('sha256'),currentHash=createHash('sha256');
+ for(const path of manifest.sourceFiles){
+  const bytes=await readFile(resolve(root,path));
+  priorHash.update(path+'\0').update(path==='guide/residents.json'?oldGuide:bytes).update('\0');
+  currentHash.update(path+'\0').update(bytes).update('\0');
+ }
+ const sha256=currentHash.digest('hex');
+ if(sha256===manifest.sha256&&manifest.count===catalogue.length&&JSON.stringify(previous)===JSON.stringify(catalogue)){
+  console.log('Catalogue already current; retained portrait provenance unchanged.');process.exit(0);
+ }
+ if(priorHash.digest('hex')!==manifest.sha256)throw Error('Portrait visual sources changed or previous provenance is invalid; use the real renderer.');
+ const portraits=new Map(previous.map(r=>[r.name,r.portrait]));
+ if(new Set(catalogue.map(r=>r.name)).size!==catalogue.length||catalogue.some(r=>!portraits.has(r.name)||portraits.get(r.name)!==r.portrait))throw Error('Catalogue-only mode cannot add names or change portrait paths; use the real renderer.');
+ await writeFile(resolve(root,'resident-guide.js'),'// Generated from guide/residents.json by tools/render-resident-guide.mjs.\nwindow.JOHANSSON_RESIDENT_GUIDE = '+JSON.stringify(catalogue)+';\n');
+ await writeFile(resolve(root,'guide/portraits.json'),JSON.stringify({sourceFiles:manifest.sourceFiles,sha256,count:catalogue.length,
+  retainedPortraits:{previousSha256:manifest.sha256,previousCount:manifest.count,count:catalogue.length,rendered:0}},null,2)+'\n');
+ console.log('Retained',catalogue.length,'existing portraits; updated catalogue only, no rendering.');process.exit(0);
+}
 let playwright;
 try { playwright=require('playwright'); }
 catch(error) { if(!process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES)throw error; playwright=require(resolve(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'playwright')); }
-const catalogue=JSON.parse(await readFile(resolve(root,'guide/residents.json'),'utf8'));
-const only=new Set(process.argv.slice(2));
 const server=createServer(async(req,res)=>{
  try {
   const path=resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));

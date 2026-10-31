@@ -25,7 +25,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['restocking the biscuit aisle','taping up the sale poster','arguing with the price gun','counting onigiri','dusting the potted palm','reading the staff roster'],
   activity:{hold:['can','coffee'],chance:.4,sit:0},
   shot:{room:'market'}},
- {id:'sakura-street',name:'outside Sakura Shōten',short:'Sakura',kind:'outdoor',regulars:['Thuan','Vy','Mrs Nakamura'],
+ {id:'sakura-street',name:'outside Sakura Shōten',short:'Sakura',kind:'outdoor',regulars:['Thuan','Vy'],
   things:['the parcel sign','the vending machine','the bus stop sign','the shop awning','the bicycle rack'],
   doing:['waiting for the bus','carrying out a delivery crate','reading the shop window','sheltering under the awning'],
   activity:{hold:['can','coffee'],chance:.7,sit:0},
@@ -53,15 +53,15 @@ export const FEED_PLACES=Object.freeze([
   shot:{room:'onsen'}},
  // The town hall's place is the Community Hall's kitchen since the mayor's office went (21 October 2026,
  // briefs/town-hall-zone.md phase M); its backdrops were shot on 22 October 2026 (node tools/render-feed-backdrops.mjs town-hall).
- {id:'town-hall',name:'the Community Hall',short:'the town hall',kind:'civic',regulars:['Nhung','Mrs Nakamura'],captured:true,
+ {id:'town-hall',name:'the Community Hall',short:'the town hall',kind:'civic',regulars:['Nhung'],captured:true,
   things:['the document register','the request box','the booking sheet','the rice cookers','the work islands','the aprons on their pegs'],
-  doing:['filing a request at the register','putting a request in the box','booking the stoves for Saturday','reading the booking sheet','waiting for the rice to cook','tying on an apron'],
+  doing:['filing a request at the register','putting a request in the box','booking the stoves for Saturday','reading the booking sheet','reading the kitchen closure notice','looking at the stored equipment'],
   activity:{hold:['coffee'],chance:.5,sit:0},
   // (from the dish cupboards, across both work islands to the back wall and the WC door)
   shot:{room:'community-kitchen',camera:{pos:[-2.5,1.6,2.2],at:[2.5,1.0,-.4]}}},
  // Since the campus was split into its own buildings (briefs/town-hall-zone.md, phase S): the school and the clinic are
  // places of their own, shot on 22 October 2026 (node tools/render-feed-backdrops.mjs school clinic).
- {id:'school',name:'Minato Elementary School',short:'the school',kind:'civic',regulars:['Miss Higa','Vy','Riku','Mai'],captured:true,
+ {id:'school',name:'Minato Elementary School',short:'the school',kind:'civic',regulars:['Miss Higa','Vy','Riku'],captured:true,
   things:['the blackboard','the class board','the attendance book','the serving table','the cubbies','the class TV and its VHS deck','the milk crate'],
   doing:['copying the kanji off the blackboard','serving the kyūshoku','reading the class board','watching a video on the class TV','putting a bag in the cubbies','calling the register from the attendance book'],
   activity:{hold:['book'],chance:.4,sit:.5},
@@ -120,7 +120,7 @@ export const FEED_PLACES=Object.freeze([
   doing:['waiting for the gangway','watching the ramp come down','backing a kei truck aboard','reading the name on her bow','reading the draft marks','coiling the bow line','waving from the wheelhouse wing','counting the cars aboard'],
   activity:{hold:['can','coffee'],chance:.5,sit:0},
   shot:{at:[-2.6,-60.5],camera:{pos:[-1,1.7,-55.2],at:[-7.6,2.2,-64.5]},time:900}},
- {id:'park',name:'Harbour Park',short:'the park',kind:'outdoor',regulars:['Vy','Grandmother Higa','Mai','Riku','Thao'],
+ {id:'park',name:'Harbour Park',short:'the park',kind:'outdoor',regulars:['Vy','Grandmother Higa','Riku','Thao'],
   things:['the park bench','the raised walk','the banyan tree','a lost umbrella','the drinking fountain'],
   doing:['playing jan-ken-pon','doing homework on the bench','walking the raised path','resting under the banyan tree'],
   activity:{hold:['can','coffee'],chance:.6,sit:.55},

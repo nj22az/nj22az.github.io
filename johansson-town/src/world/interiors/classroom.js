@@ -10,8 +10,7 @@ import {townCalendarAt} from '../../town-clock.js';
  * The Years 5–6 classroom in the town hall (港町役場), on the ground floor, the sea side at
  * the back and the veranda and forecourt at the front.
  *
- * Twelve pupils in a combined fifth-and-sixth-grade class, which is what a school of
- * thirty-one children has. The room follows the school day: lessons in rows facing the
+ * A small combined fifth-and-sixth-grade class. The room follows the school day: lessons in rows facing the
  * board; at 12:20 the chime, the desks pushed into han of four, the lunch squad in white
  * smocks ladling out of aluminium cauldrons at the front, いただきます, and the teacher
  * eating what they eat; then the desks shoved to the back for sōji; afternoon lessons;
@@ -72,14 +71,12 @@ const SERIF='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
 const HAND='"Klee","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans CJK JP",sans-serif';
 
 /**
- * Eight pupils, the Years 5–6 of a small island school, each from a household that lives
- * on the island (Nishi-machi, the east row and the east-back houses), so every child in
- * the room goes home to a door you can find.
+ * The Years 5–6 pupils of a small island school. Retired children do not leave a second body in this room.
  */
 const PUPILS=[
  ["Kinjo Yui",true,0xe98c9a,0x2d3a52,0x3f6fb0],["Higa Kenta",false,0x3f7fc0,0x2c2f36,0x3f6fb0],["Oshiro Sakura",true,0xf2d57e,0x4a5f8a,0xc2453b],
  ["Miyagi Daiki",false,0x4f9a6a,0x2d3a52,0xc2453b],["Tamaki Miyu",true,0xb99ad8,0x2c2f36,0x3f6fb0],["Arakaki Ryo",false,0xe0e0dc,0x3b4a62,0xc2453b],
- ["Nakasone Taku",false,0xd9723c,0x2c2f36,0xc2453b],["Nakamura Mai",true,0xf3a65a,0x2d3a52,0x3f6fb0],
+ ["Nakasone Taku",false,0xd9723c,0x2c2f36,0xc2453b],
 ];
 export const CLASS_SIZE=PUPILS.length;
 export const PUPIL_NAMES=Object.freeze(PUPILS.map(p=>p[0]));
@@ -428,7 +425,7 @@ export function buildClassroom({room,reg,action,exit,calendar=minutes=>townCalen
   const chalk=(t,x,y,size,col='rgba(244,242,232,.92)',align='left')=>{ctx.fillStyle=col;ctx.font=`bold ${size}px ${HAND}`;ctx.textAlign=align;ctx.fillText(t,x,y,align==='right'?x-30:w-x-30);};
   const d=cal.date,wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
   chalk(`${d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} (${wd})`,w-40,60,40,undefined,'right');
-  chalk("Day shift",w-120,130,32,'rgba(240,214,90,.95)','right');chalk("Tamaki/Nakamura",w-40,172,32,undefined,'right');
+  chalk("Day shift",w-120,130,32,'rgba(240,214,90,.95)','right');chalk("Tamaki",w-40,172,32,undefined,'right');
   const menu=menuForWeekday(d.getDay());
   if(phase==='lesson'||phase==='morning'){
    chalk("Arithmetic　Division of fractions",60,70,48,'rgba(240,214,90,.95)');

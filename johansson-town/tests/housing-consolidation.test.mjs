@@ -25,11 +25,11 @@ installDOM();globalThis.self=globalThis;
 const sites=createBusinesses(),world=createTown({scene:new THREE.Scene(),sites,mobile:true,shadows:false,register(){},enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
 
 // Dr Kakazu retired into Nhung on 22 October 2026 (the owner), and the doctor's flat with him: 20 core, 12 Minato homes.
-test('20 core residents have 12 occupied Minato primary homes and one shared tropical home; the five supporting crew have quarters, not households',()=>{
- assert.equal(CAST.length,25);assert.equal(CAST.filter(p=>!p.supporting).length,20);
- // 13 primary home ids (roster.js HOUSEHOLDS): 12 standing on Minato and the Kitano house; nobody names a retired home.
- const core=CAST.filter(p=>!p.supporting),primaries=new Set(core.map(p=>p.home));assert.equal(primaries.size,13);
- assert.equal([...primaries].filter(id=>{const h=ISLAND_HOUSEHOLDS.find(h=>h.id===id);return h.island==='minato'&&!h.retired;}).length,12);
+test('18 core residents have 11 occupied Minato primary homes and one shared tropical home; the five supporting crew have quarters, not households',()=>{
+ assert.equal(CAST.length,23);assert.equal(CAST.filter(p=>!p.supporting).length,18);
+ // Twelve primary home ids: eleven occupied on Minato and the Kitano house; nobody names a retired home.
+ const core=CAST.filter(p=>!p.supporting),primaries=new Set(core.map(p=>p.home));assert.equal(primaries.size,12);
+ assert.equal([...primaries].filter(id=>{const h=ISLAND_HOUSEHOLDS.find(h=>h.id===id);return h.island==='minato'&&!h.retired;}).length,11);
  assert.ok([...primaries].every(id=>!ISLAND_HOUSEHOLDS.find(h=>h.id===id).retired),'no retired home is anybody’s');
  assert.deepEqual(CAST.filter(p=>p.home==='kitano-1').map(p=>p.name),['Johansson','Thuan']);
  assert.deepEqual(CAST.filter(p=>p.home==='kitahama-3').map(p=>p.name),['Nhung','Kōji','Riku'],'Nhung’s family is one household');
@@ -38,9 +38,9 @@ test('20 core residents have 12 occupied Minato primary homes and one shared tro
  for(const name of ['Grandmother Sakurai','Mr Higa Jr','Reiko','Barfly','Dr Kakazu'])assert.equal(homeForResident(name),null,name+' is retired and has no home record');
  // The roster's 13 households are in the registry member for member (brief §13), and nothing else is occupied.
  const live=new Map(CORE_HOUSEHOLDS.map(h=>[h.home,h.residents.map(n=>identityOf(n).id).sort()]));
- assert.equal(ROSTER_HOUSEHOLDS.length,13);
+ assert.equal(ROSTER_HOUSEHOLDS.length,12);
  for(const h of ROSTER_HOUSEHOLDS)assert.deepEqual(live.get(h.home),[...h.members].sort(),h.home);
- assert.deepEqual(CORE_HOUSEHOLDS.filter(h=>!ROSTER_HOUSEHOLDS.some(r=>r.home===h.home)).map(h=>h.home),[],'no household outside the roster’s 13');
+ assert.deepEqual(CORE_HOUSEHOLDS.filter(h=>!ROSTER_HOUSEHOLDS.some(r=>r.home===h.home)).map(h=>h.home),[],'no household outside the roster’s 12');
  // Quarters (island-households.js SUPPORTING_QUARTERS; roster.js QUARTERS): the two cabins aboard and the Shiroma house.
  assert.deepEqual(SUPPORTING_QUARTERS.map(h=>h.home).sort(),['ferry-crew-cabin','ferry-officer-cabin','kitano-2']);
  assert.deepEqual(SUPPORTING_QUARTERS.flatMap(h=>h.residents).sort(),['Aya','Jun','Kai','Ren','Ryo']);
@@ -270,5 +270,5 @@ test('the retired neighbours have no body: nobody walks the postman’s round, t
  const neighbours=createNeighbours({parent:new THREE.Group()});neighbours.update(0,540);
  for(const r of RETIRED)assert.ok(!neighbours.people.some(p=>p.spec.name===r.name),r.name+' has no street body');
  assert.ok(NEIGHBOURS.every(n=>!isRetired(n.name)&&!n.walk),'no neighbour walks a round the roster retired');
- assert.deepEqual(NEIGHBOURS.map(n=>n.name),['Vy','Kōji','Riku','Miss Higa','Grandmother Higa','Mrs Nakamura','Mai','Mac','Ms Uezu','Ms Ganaha']);
+ assert.deepEqual(NEIGHBOURS.map(n=>n.name),['Vy','Kōji','Riku','Miss Higa','Grandmother Higa','Mac','Ms Uezu','Ms Ganaha']);
 });

@@ -106,9 +106,9 @@ export const ACCOUNTS=Object.freeze({
   // The Community Hall's account, the community kitchen's, took on the mayor's office's when the office went
   // (21 October 2026, briefs/town-hall-zone.md phase M): the tea and crackers for the register's visitors, and the
   // wreaths and bunting for the town's ceremonies, which the hall holds now.
-  'community-kitchen':{name:'the Community Hall',owner:'Mrs Nakamura',lines:['curry','soy','tuna','rice','tea','crackers','tissues'],decor:['ceremony wreaths','festival bunting'],stationery:['A4 copy paper','envelopes','account ledgers','cellophane tape'],
-   why:'The Saturday curry for the whole street and onigiri for the volunteers; tea, rice crackers and tissues for whoever comes to the register or the assembly. Wreaths and bunting for openings, prize days and the town\u2019s festivals. Paper, envelopes and ledgers for the register, the minutes, the town accounts and the notice board.',
-   delivery:'Friday evening, so the pot can start early; the wreaths the morning of each ceremony.'},
+  'community-kitchen':{name:'the Community Hall',contact:'the Community Hall register',kitchenClosed:true,lines:['tea','crackers','tissues'],decor:['ceremony wreaths','festival bunting'],stationery:['A4 copy paper','envelopes','account ledgers','cellophane tape'],
+   why:'The family-run kitchen programme is closed pending staffing; tea, rice crackers and tissues remain for whoever comes to the register or the assembly. Wreaths and bunting for openings, prize days and the town\u2019s festivals. Paper, envelopes and ledgers for the register, the minutes, the town accounts and the notice board.',
+   delivery:'Paper and refreshments for the register when required; the wreaths the morning of each ceremony. No kitchen food order while the programme is closed.'},
   school:{name:'the island school',contact:'the head teacher',lines:['milk','tissues'],decor:['sports day bunting','graduation flowers'],stationery:['exercise books','pencils','glue'],
    why:'School milk, and tissues every hay-fever season. Bunting for sports day in the autumn and flowers for the graduation in March. A new term’s exercise books, and the glue that is always running out.',
    delivery:'First thing on Mondays, by the school gate; the bunting and the flowers the day before, with the children helping to carry.'},

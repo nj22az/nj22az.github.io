@@ -2,7 +2,7 @@
  * What grows in Harbour Park, who keeps it and why: the data the park is planted from (park.js), the guide board reads
  * and the storyteller can use. The owner, 21 October 2026, on the park rework: lawns as clear edged beds, flower borders
  * along the walks, a koi pond with lily pads, the footbath, a big shade tree with its bench and lamp; "nothing random":
- * every bed has a keeper from the cast (src/people/roster.js) and every plant is one an Okinawan park grows, flowering in
+ * each active keeper comes from the cast (src/people/roster.js); a vacant assignment is recorded explicitly. Every plant is one an Okinawan park grows, flowering in
  * its own months by the town's calendar (town-clock.js), never all year because it looks nice.
  *
  * The beds are the rulebook's garden earth (ground-standard.js, 25 mm proud of the lawn), laid by the ground generator
@@ -30,13 +30,13 @@ export const PARK_PLANTS=Object.freeze({
 });
 
 /**
- * The beds. `plants`: [kind, x, z] in town coordinates, each on its bed's earth. `keeper` is a roster id; `tends` is
- * when they see to it (no walk to it is scheduled yet: the people's days are cast.js's).
+ * The beds. `plants`: [kind, x, z] in town coordinates, each on its bed's earth. `keeper` is a roster id or null while
+ * unassigned; `tends` records a keeper's time (no walk to it is scheduled yet: the people's days are cast.js's).
  */
 export const HARBOUR_PARK_BEDS=Object.freeze([
  Object.freeze({id:'entrance-bed',title:'Entrance bed',bounds:rect(8.6,11.8,-19.4,-18.7),
-  keeper:'emi',tends:'09:30, before Nakamura opens',
-  why:'The bed between the gate and Nakamura’s bench: it is what her customers look at with their zenzai, so Mrs Nakamura waters it before she opens, with the shop’s hose.',
+  keeper:null,maintenance:'unassigned',tends:'No watering round assigned',
+  why:'The planted bed between the gate and the closed dessert counter stays in place. Its keeper assignment is vacant until the facilities have an agreed maintenance plan.',
   plants:Object.freeze([['ixora',9.1,-19.05],['lily',9.9,-19.05],['ixora',10.7,-19.05],['lily',11.4,-19.05]].map(Object.freeze))}),
  Object.freeze({id:'main-street-border',title:'Main Street border',bounds:rect(6.15,7.45,-33,-27.3),
   keeper:'thuan',tends:'08:40, before Sakura opens',
@@ -72,7 +72,7 @@ export const PARK_GUIDE_BOARD=Object.freeze({jp:'港公園',en:'Minato Harbour P
   {jp:'海の湯',en:'Umi-no-yu',at:[25.2,-20.6],colour:'#fff',size:20},{jp:'足湯',en:'Footbath',at:[16.3,-18.7]},
   {jp:'鯉の池',en:'Koi pond',at:[26,-31]},{jp:'緋寒桜',en:'Kanhizakura (the harbour cherry)',at:[12,-28]},
   {jp:'拝所',en:'Shrine',at:[10.8,-35]},{jp:'ガジュマル',en:'Gajumaru',at:[HARBOUR_SHADE_TREE.x,HARBOUR_SHADE_TREE.z]},
-  {jp:'甘味処',en:'Sweets (Nakamura)',at:[8.4,-16.4]},{jp:'浜へ',en:'To the beach',at:[31.5,-11.6]},{jp:'岸壁',en:'The quay',at:[20.3,-35.6]},
+  {jp:'甘味処（休業）',en:'Dessert counter (closed)',at:[8.4,-16.4]},{jp:'浜へ',en:'To the beach',at:[31.5,-11.6]},{jp:'岸壁',en:'The quay',at:[20.3,-35.6]},
  ].map(Object.freeze)),
  notices:Object.freeze([
   Object.freeze({jp:'海の湯・足湯 10:00〜22:00　足湯は住民無料',en:'Umi-no-yu and its footbath 10:00–22:00; the footbath is free for residents'}),

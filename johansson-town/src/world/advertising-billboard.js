@@ -31,7 +31,9 @@ export function createIzakayaTV({parent,position=[5.94,2.72,-3.65],yaw=-Math.PI/
  const led=new THREE.Mesh(new THREE.SphereGeometry(.006,6,4),new THREE.MeshBasicMaterial({color:0xbca46a}));led.position.set(.323,-.245,.273);group.add(led);
  for(const x of [-.29,.29])box([.055,.038,.30],[x,-.328,-.04],metal,'TV feet');
  box([1.0,.055,.68],[0,-.374,-.055],cabinet,'Television shelf');
- for(const x of [-.33,.33]){box([.035,.31,.035],[x,-.55,-.34],metal,'Wall bracket');box([.035,.035,.46],[x,-.413,-.125],metal,'Shelf support');}
+ // The horizontal arm meets the front of its wall plate, rather than crossing
+ // through it with both steel side faces at the same depth.
+ for(const x of [-.33,.33]){box([.035,.31,.035],[x,-.55,-.34],metal,'Wall bracket');box([.035,.035,.4425],[x,-.413,-.10125],metal,'Shelf support');}
  const texture=new THREE.VideoTexture(video);texture.colorSpace=THREE.SRGBColorSpace;texture.minFilter=THREE.LinearFilter;texture.magFilter=THREE.LinearFilter;
  video.muted=true;video.defaultMuted=true;video.playsInline=true;video.preload='none';video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
  let order=[],current=-1,visible=false,playingRequest=false,blocked=false,disposed=false,poster=null,failed=new Set();

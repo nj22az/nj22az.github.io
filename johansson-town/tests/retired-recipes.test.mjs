@@ -16,7 +16,7 @@ installDOM();
 const retired=RETIRED.map(p=>p.name);
 
 test('the retired keep a buildable drawing, walk and costume, and no live list names them',()=>{
- assert.equal(retired.length,11);assert.deepEqual(RETIRED_RECIPE_NAMES,retired);
+ assert.equal(retired.length,13);assert.deepEqual(RETIRED_RECIPE_NAMES,retired);
  for(const name of retired){
   const recipe=recipeFor(name);assert.ok(recipe?.outfit&&recipe.name===name,name+' still builds for Studio and history');
   assert.equal(castMember(name),null,name+' has no body in the cast');
@@ -25,7 +25,7 @@ test('the retired keep a buildable drawing, walk and costume, and no live list n
   assert.ok(!FEED_PLACES.some(p=>p.regulars.includes(name)),name+' is a regular in a story place');
  }
  const by=(a,b)=>a.localeCompare(b);
- assert.deepEqual(Object.keys(RETIRED_RECIPES).sort(by),['Grandmother Chinen','Grandmother Sakurai','Mr Higa Jr','Mr Ōshiro','Mr Shimabukuro','Mrs Kinjō','Postman Tōma','Reiko','Dr Kakazu'].sort(by),'the nine drawn retired');
+ assert.deepEqual(Object.keys(RETIRED_RECIPES).sort(by),['Grandmother Chinen','Grandmother Sakurai','Mr Higa Jr','Mr Ōshiro','Mr Shimabukuro','Mrs Kinjō','Postman Tōma','Reiko','Dr Kakazu','Mrs Nakamura','Mai'].sort(by),'the eleven drawn retired');
  assert.deepEqual(Object.keys(RETIRED_GAITS).sort(by),['Barfly','Mr Ōshiro','Reiko'].sort(by));
  assert.deepEqual(gaitOf(recipeFor('Reiko'),()=>.5).tics,RETIRED_GAITS.Reiko.tics,'Reiko still walks as herself');
  assert.deepEqual(Object.keys(RETIRED_COSTUMES).sort(),['Bus driver','Reiko']);
@@ -34,8 +34,8 @@ test('the retired keep a buildable drawing, walk and costume, and no live list n
  assert.ok(Object.keys(COSTUMES).every(n=>!retired.includes(n)));
 });
 
-test('every live list is exactly the 25, by the names World uses, and Studio groups the crew by them',()=>{
- assert.equal(CAST_NAMES.length,25);assert.equal(CORE.length+SUPPORTING.length,25);
+test('every live list is exactly the 23, by the names World uses, and Studio groups the crew by them',()=>{
+ assert.equal(CAST_NAMES.length,23);assert.equal(CORE.length+SUPPORTING.length,23);
  for(const name of CAST_NAMES)assert.ok(RESIDENT_NAMES.includes(name),name+' is missing from the Studio lists');
  for(const name of RESIDENT_NAMES)assert.ok(!retired.includes(name));
  assert.deepEqual([...RESIDENT_GROUPS.crew].sort(),['Aya','Jun','Kai','Mac','Ms Ganaha','Ms Uezu','Ren','Ryo'],'the crew group names the people, not the job roles or the old surname');

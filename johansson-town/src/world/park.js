@@ -171,14 +171,14 @@ function cherryText(minutes){
 }
 function guideText(){
  return 'Minato Harbour Park. Straight on from the gate is Umi-no-yu, the sea-water bath (10:00–22:00), with its footbath beside the porch: free for residents in the bath’s hours. '
-  +'On the right of the gate, Nakamura’s red parasol and bench, for zenzai and Blue Coral ice cream (10:00–19:00). '
+  +'On the right of the gate, the dessert counter is closed pending a keeper; its bench remains a public seat. '
   +'On the left, the walk under the harbour cherry to the garden shrine, the koi pond and the quay. From the footbath the walk goes on to the beach and the gajumaru’s bench. '
-  +'Grandmother Higa keeps the koi and the gettō by the bath, Mrs Nakamura the bed at the gate, and Thuan the border along Main Street, with plants from Sakura.';
+  +'Grandmother Higa keeps the koi and the gettō by the bath, and Thuan the border along Main Street, with plants from Sakura. The entrance bed has no assigned keeper.';
 }
 function bedText(bed,minutes){
  const {flowering,leaf}=bedNow(bed,minutes),name=k=>PARK_PLANTS[k].name;
  const now=[flowering.length?'In flower: '+flowering.map(name).join(', ')+'.':'',leaf.length?'In leaf: '+leaf.map(name).join(', ')+'.':''].filter(Boolean).join(' ');
- return now+' Kept by '+keeperName(bed.keeper)+', at '+bed.tends+'. '+bed.why;
+ return now+(bed.keeper?' Kept by '+keeperName(bed.keeper)+', at '+bed.tends+'. ':' No keeper is assigned. ')+bed.why;
 }
 
 /** The board's face: the park's name over a map of the park drawn from its plan, in Japanese, the map turned to the reader. */

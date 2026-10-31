@@ -36,9 +36,9 @@ export function giftReaction(item,{giftsToday=0}={}){
  if(WORKSHOP_MODELS.some(model=>model.name===item))
   return {mood:'happy',text:"Wow, that's amazing!\nYou printed this? It is going on the shelf by the till, where everyone can see it. The assistant manager will be jealous."};
  if(item==='Zenzai')
-  return {mood:'happy',text:"Zenzai! Before it melts!\nZenzai from Nakamura’s! Quick, before it melts — no, you have a spoon too. We share. That is the rule with zenzai."};
+  return {mood:'happy',text:"Zenzai! Before it melts!\nQuick, before it melts — no, you have a spoon too. We share. That is the rule with zenzai."};
  if(item==='Sata andagi')
-  return {mood:'happy',text:"Sata Andagi!\nStill warm! Nakamura-san’s from the community kitchen are the best on the island. My grandmother said they smile when they are done properly. Look — this one is smiling."};
+  return {mood:'happy',text:"Sata Andagi!\nStill warm! My grandmother said they smile when they are done properly. Look — this one is smiling."};
  if(item==='Awamori miniature')
   return {mood:'shy',text:"Awamori? Already…\nAwamori? Are you trying to get the shopkeeper drunk? I will keep it for after closing. Maybe we open it together."};
  if(item==='Tuna head')

@@ -1,0 +1,2 @@
+✔ actual ambient neighbours block the player and appear in the same MCP navigation query (12.75583ms)
+✔ the frozen audit loop still draws the title until START, so the island is marked drawn (5.921032ms)

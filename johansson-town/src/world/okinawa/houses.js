@@ -164,7 +164,7 @@ export function concreteHouse(kit,{w=7.6,d=7,colour=C.concrete,seed=2}={}){
  * and an awning, a tall board on the corner, windows above and a tank on the roof.
  * `stock` fills the shop with shelves of colour; `sign` and `upright` are textures.
  */
-export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,interior='shelves',stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
+export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,upright,awning=true,seed=3,interior='shelves',occupied=true,stock=[0xd9b04a,0x5f8fb8,0xc0543e,0x6ea05a,0xe8e2d0]}={}){
  // Kissa Higa (the old Higa Liquor) and the coin laundry are rooms you walk into (higa-liquor-dressing.js, coin-laundry-dressing.js): their
  // shop floor runs back to the storeroom; every other shop-house keeps the 2.2 m slot.
  const r=rng(seed),W=w/2,D=d/2,ground=3.3,H=6.1,open=W-.38,back=interior==='kissaten'?HIGA_FRAME.back:interior==='laundry'?LAUNDRY_FRAME.back:D-2.2;
@@ -187,10 +187,11 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   kit.block(-W-.02,-open-.02,0,.3,back,D+.02,0xb3ad9f);
   kit.block(open+.02,W+.02,0,.3,back,D+.02,0xb3ad9f);
  }else kit.block(-W-.02,W+.02,0,.3,-D-.02,D+.02,0xb3ad9f);
- // Inside: floor, back wall, shelves of goods, a counter; lit, so it glows at night.
+ // A vacant facility keeps its fitted surfaces but has no artificial room light at dusk.
+ const roomFinish=occupied?'glow':'matte',windowFinish=occupied?'window':'matte';
  kit.block(-open,open,fitted?0:.02,floor,back,fitted?D+.02:D-.05,0x9d9486);
- kit.block(-open,interior==='zenzai'?1.03:open,floor,ground-.3,back,back+.06,0xefe6d2,'glow');
- kit.block(-open,open,ground-.3,ground,back,D-.3,0xd8d2c4,'glow');
+ kit.block(-open,interior==='zenzai'?1.03:open,floor,ground-.3,back,back+.06,0xefe6d2,roomFinish);
+ kit.block(-open,open,ground-.3,ground,back,D-.3,0xd8d2c4,roomFinish);
  let furniture;
  // Draw and collide fittings in the same local frame, standing on the finished
  // floor. Other shop-house interiors retain their existing layout.
@@ -208,7 +209,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   furniture.push(kit.rect(1.13,W+.05,-D-.05,-2.85,H+.6,'nakamura-stair-rear'),kit.rect(W-.2,W+.05,-2.85,back,H+.6,'nakamura-stair-side'),kit.rect(1.03,1.12,-2.85,D,ground,'nakamura-stair-partition'),...rails);
 
   // Nakamura's slab band, coping, hoods, side and back windows, services and plants (nakamura-dressing.js).
-  furniture.push(...nakamuraBuilding(kit,{trim}));
+  furniture.push(...nakamuraBuilding(kit,{trim,occupied}));
  }
  // Their bands, hoods, flank windows, sashes and (Higa's) awning, crates, bench and stools.
  if(interior==='kissaten')furniture.push(...higaBuilding(kit,{trim}));
@@ -224,7 +225,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
  // Upstairs: two windows with their frames, a sill each, and a wall-hung air conditioner.
  for(const x of [-W*.48,W*.48]){
   kit.box(1.7,1.25,.06,x,ground+1.55,D+.03,0xb8bec0,{finish:'metal'});
-  kit.box(1.56,1.12,.05,x,ground+1.55,D+.05,C.glass,{finish:'window'});
+  kit.box(1.56,1.12,.05,x,ground+1.55,D+.05,C.glass,{finish:windowFinish});
   kit.box(.04,1.12,.06,x,ground+1.55,D+.07,0xb8bec0,{finish:'metal'});
   kit.box(1.8,.07,.18,x,ground+.9,D+.08,0xc9c2b4);
  }
@@ -252,7 +253,7 @@ export function shopHouse(kit,{w=6.4,d=7.4,colour=0xe9dfc4,trim=0x3f7f86,sign,up
   const x=side*(W+.03);
   kit.rod([side*(W+.08),0,-D+.25],[side*(W+.08),H+.45,-D+.25],.05,0x9aa3a0);
   kit.box(.05,.66,.56,x,ground+1.7,-D*.55,0xb8bec0,{finish:'metal'});
-  kit.box(.05,.56,.46,x+side*.01,ground+1.7,-D*.55,0xc9d6d8,{finish:'glow'});
+  kit.box(.05,.56,.46,x+side*.01,ground+1.7,-D*.55,0xc9d6d8,{finish:roomFinish});
   kit.box(.02,.28,d-.3,side*(W+.004),H-.12,0,0xbdb4a2);
  }
  const adSide=r.next()>.5?1:-1,ad=WALL_ADS[Math.floor(r.next()*WALL_ADS.length)%WALL_ADS.length];

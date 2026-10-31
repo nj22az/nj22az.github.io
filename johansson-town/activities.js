@@ -770,7 +770,6 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   // to sell. See src/people/neighbours.js.
   const neighbourTurns=new Map();
   const NEIGHBOUR_SALES=Object.freeze({
-   'Mrs Nakamura':['A zenzai, please · ¥250',250,'Zenzai','She shaves the ice straight into the glass, spoons the beans over and pushes it across. “Eat it before it eats you.”'],
    // The auction sells the morning's mozuku by the tray now that Yonamine Fresh Fish has closed (cast.js PLACES).
    'Kōji':[['I’ll take the tuna head',0,'Tuna head','He wraps it in two newspapers and a plastic bag, and it is still looking at you. “Soup,” he says. “Trust me.”'],
     ['A tray of mozuku · ¥200',200,'Mozuku','A tray of this morning’s mozuku from the auction, in vinegar, wrapped in newspaper. “Good for everything,” he says.']],
@@ -978,13 +977,13 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
     const dishes=menu?.jp?.join('、')||'';
     show("School lunch · Kyūshoku",'Higa-sensei waves you over: "There is always a spare tray. Sit with han three." The lunch squad, in white smocks and caps and gauze masks, ladles it out: '+(menu?.en||'')+'.',[
       ["Take a tray · Enjoy your meal",()=>{onTime(phase==='serving'?30:18);note("Ate kyūshoku with the Years 5–6 class: "+dishes+'.');
-        show("Enjoy your meal!",'Twelve voices and one teacher, all at once. '+(menu?.en?menu.en[0].toUpperCase()+menu.en.slice(1):'')+". The bottle of milk is cold, and finishing it before you leave the table is not optional. Across the han, Kenta is trying to trade his goya to anyone who will take it. At the end: Thank you for the meal, trays stacked, milk bottles rinsed at the corridor taps, and everybody is already rolling up their sleeves for sōji.",[['Help with sōji',()=>{onTime(15);receipt('Sōji','Desks to the back, brooms down the rows, wet rags pushed along the floorboards at a run. The class finishes in fifteen minutes flat and the floor shines.');}],['Thank the class',close]]);}],
+        show("Enjoy your meal!",'The class and their teacher, all at once. '+(menu?.en?menu.en[0].toUpperCase()+menu.en.slice(1):'')+". The bottle of milk is cold, and finishing it before you leave the table is not optional. Across the han, Kenta is trying to trade his goya to anyone who will take it. At the end: Thank you for the meal, trays stacked, milk bottles rinsed at the corridor taps, and everybody is already rolling up their sleeves for sōji.",[['Help with sōji',()=>{onTime(15);receipt('Sōji','Desks to the back, brooms down the rows, wet rags pushed along the floorboards at a run. The class finishes in fifteen minutes flat and the floor shines.');}],['Thank the class',close]]);}],
       ['Just watch',close]]);
   }
   // The class pantry. Anyone can use it after school, if they leave it as they found it and
   // put something in the ingredients jar.
   const PANTRY_DISHES=[
-    ['Sata andagi',100,25,'Balls of dough dropped into the oil, turning themselves over as they puff and crack open. Crisp outside, cake inside. Mai says hers are the best and they are.'],
+    ['Sata andagi',100,25,'Balls of dough dropped into the oil, turning themselves over as they puff and crack open. Crisp outside, cake inside.'],
     ['Onigiri',50,10,'Rice from the class cooker, salt on your palms, a strip of nori. Three triangles, slightly lopsided, wrapped in a sheet of the class\'s newspaper.'],
     ['Barley tea',20,8,'A kettle of mugicha, poured into the big plastic jug and set in a bowl of tap water to cool. It tastes of every summer afternoon.'],
     ['Goya champuru',150,20,'Bitter melon, tofu, egg and a few slices of luncheon meat, stir-fried in the big pan on the gas ring. The bitterness is the point, says Sensei.'],
@@ -1001,7 +1000,7 @@ export function createActivities({say,onLaundry=()=>{},onKaraoke=null,getResiden
   function schoolTeacher(phase){
     const lines={
       morning:'"Good morning! You are early. The children will be in soon -- they walk along the seawall, which they are not supposed to."',
-      lesson:'"We are dividing fractions. The sixth-graders help the fifth-graders; with twelve of them in one room, everyone teaches someone."',
+      lesson:'"We are dividing fractions. The sixth-graders help the fifth-graders; in a small class, everyone teaches someone."',
       'lesson-pm':'"Social studies: the fishing co-op. Half their parents are in it, so the children correct me."',
       serving:'"The lunch squad is serving. Wait your turn -- and if you are staying, there is a spare tray."',
       lunch:'"We eat together. It is a lesson too: gratitude, manners, and nothing left on the plate."',

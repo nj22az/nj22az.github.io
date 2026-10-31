@@ -34,15 +34,11 @@ const FIX={
  // Her liquor shop shut on 22 October 2026 (the owner; commerce/higa-liquor.js); its room is Kissa Higa on weekday
  // mornings since 30 October (commerce/kissa-higa.js), and the bath is hers by day.
  'Grandmother Higa':{friend:'Mr Fujita',role:'Owner of Umi-no-yu and Kissa Higa',place:'Umi-no-yu, Kissa Higa on weekday mornings, and her Nishi-machi verandah'},
- 'Mrs Nakamura':{friend:'Thuan'},
  'Kōji':{friend:'Ms Uezu',role:'Fisherman and relief bosun',place:'The fish auction quay and his sabani on the west quay',
   islandPersonality:{title:'The keen-eyed sorter',traits:['Quick','observant','ambitious'],habit:'Can spot a mixed crate before it reaches his sorting bench.',ambition:'Bring the sabani in with a catch worth the auction’s first call.',favourite:'The moment the morning catch is laid out'}},
  Riku:{friend:'Vy'},
- Vy:{friend:'Mai'},
- // The eleven who joined the guide in phase 5: the ship's people, the port clerk, the doctor, Mai and the relief engineer.
- Mai:{friend:'Vy',role:'Island school pupil',place:'Island school, Blue Coral and Harbour Park',portrait:'assets/images/residents/mai.webp',
-  dailyLife:'The rabbit is fed. Now the hard half of the homework. Vy says so.',
-  islandPersonality:{title:'The rabbit’s keeper',traits:['Loyal','careful','quietly funny'],habit:'Feeds the class rabbit before the bell and says goodbye to it after.',ambition:'Keep the rabbit through the summer and Vy through the kanji test.',favourite:'Whatever scoop is left once Vy has the guava'}},
+ Vy:{friend:null,place:'Island school and Harbour Park'},
+ // The eleven who joined the guide in phase 5: the ship's people, the port clerk, the doctor and the relief engineer.
  Mac:{friend:'Ms Ganaha',role:'Relief engineer of the Minato Maru',place:'The engine room, and Kitahama Heights A',portrait:'assets/images/residents/mac.webp',
   dailyLife:'She is running fine. She is running my way, which is the same thing.',
   islandPersonality:{title:'The engineer who stayed',traits:['Exacting','loud','loyal'],habit:'Puts his reading glasses on for the gauges and takes them off before anybody sees.',ambition:'Hand the engine room over one day in better order than he found it.',favourite:'The one beer at Minato, counted'}},

@@ -27,25 +27,34 @@ test('the shop has a visible stepable floor rather than the old 30 cm foundation
  const hit=ray.intersectObject(group,true)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-.08)<1e-5,hit.point.y);
 });
 
-test('Mrs Nakamura walks through her door, climbs, rests upstairs and returns to work',()=>{
- const neighbours=createNeighbours({parent:new THREE.Group()}),p=neighbours.people.find(p=>p.spec.name==='Mrs Nakamura');
- neighbours.update(0,1139);assert.equal(p.g.visible,true);
- let climbed=false;
- for(let i=0;i<400;i++){neighbours.update(.1,1140);if(p.g.visible&&p.g.position.y>2)climbed=true;}
- assert.equal(climbed,true);assert.equal(p.g.visible,false);assert.ok(Math.abs(p.g.position.y-3.3)<.025);
- for(let i=0;i<400;i++)neighbours.update(.1,2040);
- assert.equal(p.g.visible,true);assert.ok(p.g.position.distanceTo(new THREE.Vector3(...nakamuraPoint(0,.08,2.05)))<.03);
+test('the vacant shop retains its complete shell without illuminated rooms or windows',()=>{
+ const build=occupied=>{const k=createKit(),g=new THREE.Group();k.at(P.x,P.z,-Math.PI/2,()=>shopHouse(k,{w:P.w,d:P.d,interior:'zenzai',occupied}));const result=k.finish(g);g.updateMatrixWorld(true);let triangles=0;g.traverse(o=>{if(o.isMesh)triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;});return {g,result,triangles,box:new THREE.Box3().setFromObject(g)};};
+ const staffed=build(true),vacant=build(false);
+ assert.ok(staffed.result.materials.window?.userData.windowInterior,'staffed buildings retain the normal window rendering');
+ assert.ok(staffed.result.materials.glow,'staffed buildings retain their light surfaces');
+ assert.equal(vacant.result.materials.window,undefined);assert.equal(vacant.result.materials.glow,undefined);
+ assert.equal(vacant.triangles,staffed.triangles,'no facility geometry removed');
+ assert.ok(vacant.box.min.distanceTo(staffed.box.min)<1e-6&&vacant.box.max.distanceTo(staffed.box.max)<1e-6,'the retained shell has the same bounds');
 });
 
-test('the built town keeps the menu, family threshold, stairs and dessert bench accessible',async()=>{
+test('the retired ice-cream family has no street bodies at the retained shop',()=>{
+ const neighbours=createNeighbours({parent:new THREE.Group()});
+ for(const minutes of [600,720,1139,1140,2040]){
+  neighbours.update(.1,minutes);
+  assert.equal(neighbours.people.some(p=>['Mrs Nakamura','Mai'].includes(p.spec.name)),false);
+ }
+});
+
+test('the built town retains the vacant shop shell, notices, stairs and public bench without a family home entry',async()=>{
  globalThis.self=globalThis;
  const {createTown}=await import('../src/world/town.js');
  const {createIslandBusinesses}=await import('../src/world/businesses.js');
  const prompts=[],world=createTown({scene:new THREE.Scene(),sites:createIslandBusinesses(),mobile:true,shadows:false,kitano:'distant',register:(o,label,run)=>prompts.push({o,label,run}),enter(){},onAction(){},getPlayerPosition:()=>new THREE.Vector3()});
  for(const v of NAKAMURA_GO_HOME){assert.equal(world.colliders.some(c=>standingHitsRect(v[0],v[2],.30,v[1],c)),false,'Town route '+v);}
- for(const label of ['Order at Nakamura · zenzai & ice cream','Read the Nakamura family nameplate','Sit beside Nakamura with your dessert']){
+ for(const label of ['Read the dessert counter notice','Read the upstairs vacancy notice','Sit beside Nakamura with your dessert']){
   const prompt=prompts.find(p=>p.label===label);assert.ok(prompt,label);
   const p=prompt.o.getWorldPosition(new THREE.Vector3());assert.equal(world.colliders.some(c=>standingHitsRect(p.x,p.z,.30,0,c)),false,label);
  }
- assert.ok(world.landmarks.some(p=>p.id==='home-nakamura'&&p.residents.includes('Mai')));
+ assert.equal(world.landmarks.some(p=>p.id==='home-nakamura'),false);
+ assert.ok(world.landmarks.some(p=>p.id==='nakamura'&&/vacant/.test(p.line)));
 });

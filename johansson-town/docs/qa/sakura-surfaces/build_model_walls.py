@@ -1,4 +1,4 @@
-"""SK-ST-004 rev A: measured elevations before adding six B2 wall prints.
+"""SK-ST-004 rev B: two selected office prints and three stockroom prints.
 
 Run from anywhere. The JSON records source measurements, not a redesigned room.
 Writes a self-contained SVG and numeric separation checks beside this script.
@@ -13,7 +13,7 @@ data = json.loads((here / 'sakura-model-walls.json').read_text())
 w, h = data['paper']['width'], data['paper']['height']
 checks, svg = [], ['<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="940" viewBox="0 0 1000 940">',
     '<rect width="1000" height="940" fill="#faf7ec"/><g font-family="sans-serif" fill="#292c28">',
-    '<text x="35" y="35" font-size="20">SK-ST-004 rev A · Sakura supplier wall prints · 30 October 2026</text>',
+    f'<text x="35" y="35" font-size="20">SK-ST-004 rev {data["revision"]} · Sakura supplier wall prints · {data["date"]}</text>',
     '<text x="35" y="58" font-size="13">Measured elevations in metres · B2 515 × 728 mm · 1 mm paper offset; doors and furniture retained</text>']
 
 for row, wall in enumerate(data['walls']):
@@ -46,7 +46,7 @@ for row, wall in enumerate(data['walls']):
             checks.append({'check': f'{poster["id"]} clear of {feature["id"]}', 'ok': gap >= .08, 'gap_mm': round(gap*1000, 2)})
     svg.append(f'<text x="{ox}" y="{base+20}" font-size="12">along x {x0:.2f}…{x1:.2f} · ceiling {wall["height"]:.2f} m · anchors in JSON</text>')
 svg.append('</g></svg>')
-(here / 'Sakura-Model-Walls-Rev-A.svg').write_text('\n'.join(svg)+'\n')
+(here / f'Sakura-Model-Walls-Rev-{data["revision"]}.svg').write_text('\n'.join(svg)+'\n')
 (here / 'checks-model-walls.json').write_text(json.dumps(checks, indent=2)+'\n')
 print(f'{sum(c["ok"] for c in checks)}/{len(checks)} measured checks pass')
 if not all(c['ok'] for c in checks):

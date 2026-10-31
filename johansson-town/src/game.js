@@ -1,4 +1,5 @@
 import {preloadTradePosters,tradePostersReady} from './world/interiors/sakura-trade-posters.js';
+import {BLUE_CORAL} from './world/blue-coral-shop.js';
 import {canonicalResidentName} from './desktop/life-state.js';
 import {createLinuxLife} from './desktop/life.js';
 import {buildLinuxBedroom} from './desktop/bedroom.js';
@@ -8,8 +9,9 @@ import {BUDGET} from './edition.js';
 import {createAttention} from './people/attention.js';
 import {setStandFilter} from './people/full-life.js';
 import {createStartupRecovery,graphicsProfile,drawingDpr} from './render/startup-recovery.js';
+import {withVisibleMaterials} from './render/compile-visible.js';
 import {createResolutionGovernor} from './render/resolution-governor.js';
-import {redrawReleasedCanvases,paintBack} from './render/canvas-release.js';
+import {redrawReleasedCanvases,paintBack,releasedCanvasCount} from './render/canvas-release.js';
 import {CAST_RECIPES,recipeFor} from './avatars/cast.js';
 import {createLensOcclusion} from './render/lens-occlusion.js';
 import {houseboatCabinAt} from './world/fujita-houseboat.js';
@@ -183,8 +185,8 @@ const loadingProgress=window.__JOHANSSON_LOADING__;
 const paintLoading=()=>new Promise(resolve=>{requestAnimationFrame(()=>setTimeout(resolve,0));setTimeout(resolve,120);});
 loadingProgress?.complete('code');loadingProgress?.watch(THREE.DefaultLoadingManager);
 const launchReport=createLaunchReport({storage:(()=>{try{return globalThis.localStorage;}catch{return null;}})(),events:globalThis});
-let firstPlayFrame=false,reportNextAt=0;
-const startupRecovery=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
+let firstPlayFrame=false,firstFrameReported=false,reportNextAt=0;
+const startupRecovery=window.__JOHANSSON_STARTUP_RECOVERY__||createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 window.__JOHANSSON_SAFE_GRAPHICS__=startupRecovery.safe;
 // A full-effects retry is one attempt, never a permanent override of recovery.
 if(new URLSearchParams(location.search).get('graphics')==='full'){const url=new URL(location.href);url.searchParams.delete('graphics');history.replaceState(history.state,'',url);}
@@ -338,7 +340,9 @@ function compileTown(object,{async=false}={}){
  const previous=renderer.getRenderTarget();
  try{
   if(pipeline)renderer.setRenderTarget(pipeline.sceneTarget);
-  if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
+  withVisibleMaterials(object,()=>{
+   if(async)renderer.compileAsync?.(object,camera,scene)?.catch?.(()=>{});else renderer.compile(object,camera);
+  });
  }catch{}finally{renderer.setRenderTarget(previous);}
 }
 /**
@@ -376,7 +380,19 @@ function buildInk(){
 buildInk();
 loadingProgress?.complete('graphics');
 // One lifecycle below owns both context events and pauses every render path.
-let graphicsLifecycle=null;
+let graphicsReady=false,graphicsLifecycle=null;
+// Listen before the first loading yield: a lost context during town construction
+// needs preventDefault too. Gameplay callbacks wait until their state exists.
+graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>graphicsReady&&started,
+ setRunning:value=>{if(graphicsReady)started=value;window.__JOHANSSON_RUNNING__=value;},
+ save:()=>{if(graphicsReady)activities.save();},resetInput:()=>{if(graphicsReady)resetInput();},suspendInput:()=>{if(graphicsReady)gamepadInput.suspend();},
+ dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
+ restoreGraphics:()=>{redrawReleasedCanvases();if(graphicsReady){const below=world.ferry?.ferry?.userData.belowDeck;if(below){below.uploaded=false;for(const p of below.plates.children)if(p.material.map)p.material.map.userData.uploaded=false;}}renderer.setRenderTarget?.(null);if(graphicsReady)resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();if(graphicsReady)setTime();},
+ resetClock:()=>{if(graphicsReady)clock.getDelta();},followClock:()=>{if(graphicsReady)followClock();},
+ onLost:()=>{launchReport.stage('Graphics context lost');const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
+ onRestored:()=>{launchReport.stage('Graphics context restored');const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
+ onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
+});
 window.__JOHANSSON_LOOK__={get ink(){return !!pipeline;},get inkFailures(){return inkRecovery.failures;},get inkRetrying(){return !pipeline&&inkRecovery.retrying;},cel:celPass.stats,
  get scale(){return pipeline?pipeline.width/Math.max(1,renderer.getDrawingBufferSize(new THREE.Vector2()).x):1;},
  // What the east lawn's planting is actually wearing. The shrubs take the park's own
@@ -424,7 +440,7 @@ function islandDrawn(){
 }
 function firstFrameReady(){
  if(!started||firstPlayFrame||roomLoading||catchingUp)return;
- firstPlayFrame=true;islandDrawn();loadingProgress?.complete('frame');
+ firstPlayFrame=true;startupRecovery.running();islandDrawn();loadingProgress?.complete('frame');
 }
 /**
  * The ferry's engine-room plates (ferry-model.js belowDeck) are drawn only with the lens inside her hull, no higher
@@ -718,7 +734,7 @@ function advanceWeather(){
  loadingProgress?.start('town');
  await paintLoading();
  launchReport.stage('Building town');
- const world=createTown({scene:town,desktop:!!window.johanssonDesktop,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='dessert-menu'){activities.menu(args[1],'Mrs Nakamura serves shaved ice, warm andagi and Blue Coral scoops. Open 10:00–19:00.',[...args[2].map(p=>[p.title+' · ¥'+p.cost,()=>world.blueCoral.isOpen()?activities.action('buy',p.title,p):activities.action('read','Nakamura is closed','The counter closes at 19:00 and opens at 10:00.')]),['Keep walking',activities.close]]);return;}if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
+ const world=createTown({scene:town,desktop:!!window.johanssonDesktop,sites:SITES,mobile,shadows,kitano:'distant',maxAnisotropy:renderer.capabilities.getMaxAnisotropy(),register:reg,enter:s=>crossThreshold(()=>enterRoom(s)),getPlayerPosition:()=>current?null:player.position,onAction:(...args)=>{if(islandPlay?.action(...args))return;if(args[0]==='dessert-menu'){const closed=()=>activities.action('read','Nakamura is closed',BLUE_CORAL.closedNotice),open=()=>BLUE_CORAL.staffed&&world.blueCoral?.isOpen();if(!open()){closed();return;}activities.menu(args[1],'The dessert counter is open.',[...args[2].map(p=>[p.title+' · ¥'+p.cost,()=>open()?activities.action('buy',p.title,p):closed()]),['Keep walking',activities.close]]);return;}if(args[0]==='ferry-ladder'){ferryLadder(args[1]);return;}if(args[0]==='plant'){plantStation(args[1]);return;}if(args[0]==='resident'){const person=world.people.find(p=>p.g.userData.name===args[1]);if(person?.g.userData.sleeping){say(args[1]+' is sleeping. You can stay and watch the morning routine.',4);return;}if(person?.g.userData.waking||person?.g.userData.roomTransition){say(args[1]+' is '+person.g.userData.activity+'.',3);return;}if(person){person.g.userData.facePlayerUntil=performance.now()+1600;characters?.gesture(person.g);}}if(args[1]==='Convex traffic mirror')world.beats?.mirror();activities.action(...args);}});
  // Colliders by where they are, for the camera, walking and residents (collider-grid.js).
  const colliderGrid=createColliderGrid(world.colliders);
  loadingProgress?.complete('town');
@@ -1378,7 +1394,7 @@ function takeSakuraStair(direction){
  // The other storey starts loading now, while he climbs: the walk is the loading screen.
  const target=up?SAKURA_OFFICE_SITE:SITES.find(s=>s.id==='market');
  stairPassage={up,target,path,lengths,total:lengths.reduce((a,b)=>a+b,0),t:0,switching:false,cutting:false,look:null,
-  camera:up?SAKURA_STAIR_CLIMB.camera.shop:{...SAKURA_STAIR_CLIMB.camera.office,at:toOffice(SAKURA_STAIR_CLIMB.camera.office.at),aim:toOffice(SAKURA_STAIR_CLIMB.camera.office.aim)},ready:(up?loadRoomAssets(target):sakuraShop.ready()).catch(()=>false)};
+  camera:up?SAKURA_STAIR_CLIMB.camera.shop:{...SAKURA_STAIR_CLIMB.camera.office,at:toOffice(SAKURA_STAIR_CLIMB.camera.office.at),aim:toOffice(SAKURA_STAIR_CLIMB.camera.office.aim)},ready:(up?loadRoomAssets(target):sakuraShop.ready()).catch(error=>{console.error('Could not load '+target.id,error);return false;})};
  return true;
 }
 /** One step of the climb: along the path at a walking pace, facing the way he goes. */
@@ -1403,17 +1419,28 @@ function placePassageView(dt){
 /** At the end of the walk: if the other storey is still loading he waits there, in view; then the cut and his arrival. */
 async function finishStairPassage(){
  const S=stairPassage,up=S.up,veil=$('#threshold'),end=SAKURA_STAIR_PASSAGE[up?'head':'foot'].arrive;
- await S.ready;S.cutting=true;
- veil.style.transition=`opacity ${SAKURA_STAIR_CLIMB.cut/2}s linear`;veil.classList.add('on');
- await new Promise(r=>setTimeout(r,SAKURA_STAIR_CLIMB.cut*500));
+ const retreat=()=>{
+  if(current?.id!==(up?'market':'sakura-office'))return;
+  const back=SAKURA_STAIR_PASSAGE[up?'foot':'head'].arrive;
+  player.position.set(...back.at);yaw=back.yaw;pitch=0;player.quaternion.setFromAxisAngle(yAxis,yaw);syncView();
+ };
  try{
-  sakuraStairArrival=!up;leaveRoom();
-  await enterRoom(S.target,{at:[...end.at],yaw:end.yaw});
+  if(!await S.ready){retreat();say('Could not open '+S.target.title+'. Please try the stairs again.',5);return false;}
+  S.cutting=true;
+  veil.style.transition=`opacity ${SAKURA_STAIR_CLIMB.cut/2}s linear`;veil.classList.add('on');
+  await new Promise(r=>setTimeout(r,SAKURA_STAIR_CLIMB.cut*500));
+  // Keep the current storey until the other room's prerequisites have succeeded.
+  // roomShell retires it once; a failed preload leaves a usable room to return to.
+  sakuraStairArrival=!up;
+  if(await enterRoom(S.target,{at:[...end.at],yaw:end.yaw})===false){retreat();return false;}
   // His own camera behind him at once, level: the stair camera's aim must not carry into the first frame upstairs.
   pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);if(thirdPerson){thirdDistance=2.2;placeThirdPerson(1);}
   say(up?'Sakura · the office upstairs.':'Sakura · the stockroom.',2);
+  return true;
+ }catch(error){
+  console.error('Could not use Sakura stairs',error);retreat();say('Could not open '+S.target.title+'. Please try the stairs again.',5);return false;
  }finally{
-  sakuraStairArrival=false;stairPassage=null;stairArmed=false;playerSpeed=0;
+  sakuraStairArrival=false;stairPassage=null;stairArmed=false;playerSpeed=0;resetInput();
   veil.style.transition=`opacity ${SAKURA_STAIR_CLIMB.cut/2}s linear`;veil.classList.remove('on');setTimeout(()=>{veil.style.transition='';},400);
  }
 }
@@ -1459,32 +1486,44 @@ const massageChair=()=>seated&&current?.id==='onsen'&&parkSeat?.seatId==='massag
  */
 const ROOM_ASSETS={onsen:ONSEN_ASSETS};
 const roomAssetsReady=s=>(s.id!=='sakura-office'||tradePostersReady())&&(!s.industrialWorkshop||workshopPropsReady())&&(ROOM_ASSETS[s.id]||[]).every(assetLoaded);
-const loadRoomAssets=s=>Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[]),...(s.id==='sakura-office'?[preloadTradePosters()]:[])]).then(all=>all.every(Boolean));
+async function loadRoomAssets(s){
+ try{
+  const all=await Promise.all([...(ROOM_ASSETS[s.id]||[]).map(id=>loadAsset(id)),...(s.industrialWorkshop?[preloadWorkshopProps()]:[]),...(s.id==='sakura-office'?[preloadTradePosters()]:[])]);
+  return all.every(Boolean);
+ }catch(error){console.error('Could not load room assets for '+s.id,error);return false;}
+}
 let roomAssetsTry=0;
 /** `arrival`: where he comes in and which way he faces, when it is not the room's door (Sakura's stair, sakura-stairs.js). */
-async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawnScene?.cancel('room');
- if(roomLoading)return;
+async function enterRoom(s,arrival=null){
+ if(roomLoading)return false;
+ roomLoading=true;
+ try{
+ replayInterrupted();lowerPocket();spawnScene?.cancel('room');
  s=SITES.find(site=>site.id===businessId(s.id))||s;
  if(playingResident()&&s.id===linuxLife.current().home.siteId&&(s.isResidence||s.homeOwner||s.familyHome||s.id==='mayor-home'))s=linuxOwnHomeSite(linuxLife.current());
- if(s.id==='market'){roomLoading=true;resetInput();let ready=false;try{ready=await sakuraShop.ready();}finally{roomLoading=false;}if(!ready){say('Could not open Sakura. Please try the door again.',5);return;}}
+ try{
+ resetInput();
+ if(s.id==='market'&&!await sakuraShop.ready()){say('Could not open Sakura. Please try the door again.',5);return false;}
  // Buildings remain accessible; business hours govern staff and service only.
  if((s.id==='izakaya'||(s.id==='ramen'))&&!izakayaReady('interior')){
-  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
-  try{await preloadIzakaya(['interior']);}finally{roomLoading=false;}
-  if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return;}
+  say('Opening '+s.title+'…',20);
+  await preloadIzakaya(['interior']);
+  if(!izakayaReady('interior')){say('Could not open '+s.title+'. Please try the door again.',5);return false;}
  }
  // Johansson Mart's models are shared with the street; wait for them at the door so the room never opens empty.
  if(s.id==='kitahama-shop'){
-  roomLoading=true;resetInput();let ready=false;try{ready=await kitahamaShopRoomReady();}finally{roomLoading=false;}
-  if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
+  if(!await kitahamaShopRoomReady()){say('Could not open '+s.title+'. Please try the door again.',5);return false;}
  }
  if(!roomAssetsReady(s)){
-  roomLoading=true;resetInput();say('Opening '+s.title+'…',20);
-  let ready=false;try{ready=await loadRoomAssets(s);}finally{roomLoading=false;}
-  if(!ready){say('Could not open '+s.title+'. Please try the door again.',5);return;}
+  say('Opening '+s.title+'…',20);
+  if(!await loadRoomAssets(s)){say('Could not open '+s.title+'. Please try the door again.',5);return false;}
+ }
+ }catch(error){
+  console.error('Could not load '+s.id,error);say('Could not open '+s.title+'. Please try the door again.',5);return false;
  }
  parkSeat=null;seated=false;activities.close();if(!photoStudio?.active&&!photoReturning)activities.visit(s.id);
  const streetYaw=yaw,streetPitch=pitch;
+ try{
  current=s;roomShell(s);addRoomProps(s);content=buildBusinessContent({site:s,room,register:reg,onAction:activities.action,onInspect:item=>inspector.open(item)});if(!activeRoomLayout?.storeys)room.traverse(o=>{if(!o.isMesh||o.userData.sharedAsset)return;const b=o.geometry?.parameters;if(b?.height<.25&&o.position.y>3.8||o.position.z>6&&o.position.y>1||o.position.x>6&&o.position.y>1){o.userData.cutaway=true;o.layers.set(0);}});indoorCeilings=createIndoorCeilings(room,{from:activeRoomLayout?.ceilingsFrom});const spawn=arrival?.at||activeRoomLayout?.spawn||[0,0,4.3];
  // The storeys drawn for where he arrives (a room of more than one storey shows the floor he stands on), before the first frame.
  activeRoomLayout?.follow?.({x:spawn[0],y:spawn[1]??0,z:spawn[2]});
@@ -1498,7 +1537,18 @@ async function enterRoom(s,arrival=null){replayInterrupted();lowerPocket();spawn
  // level pitch is the single thing that most makes an interior read as a different
  // place: you walk in looking where you were looking, not where the room says.
  yaw=Number.isFinite(arrival?.yaw)?arrival.yaw:roomyHeading(streetToRoom(streetYaw,s,activeRoomLayout));player.quaternion.setFromAxisAngle(yAxis,yaw);
- pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title;$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;}
+ pitch=THREE.MathUtils.clamp(streetPitch,-.55,.55);$('#exitRoomButton').classList.remove('hidden');syncView();active=null;$('#place').textContent=s.title;$('#placeSub').textContent=`${s.jp} · ${s.sub}`;$('#timeText').textContent=s.line;if(!s.arrival)say(s.id==='crystal-room'&&activeRoomLayout?'The timber door closes. Something here does not belong to the street.':`${s.title} · Explore the room. Tap objects nearby to examine them.`,s.id==='crystal-room'?5:3);camera.position.copy(player.position);camera.position.y+=1.7;
+ }catch(error){
+  // A rejected room build must not leave the frame loop inside a half-built
+  // venue. Restore the normal street lifetime and keep the door usable.
+  console.error('Could not enter '+s.id,error);
+  leaveRoom();yaw=streetYaw;pitch=streetPitch;player.quaternion.setFromAxisAngle(yAxis,yaw);
+  resetInput();say('Could not open '+s.title+'. You are safely outside. Please try the door again.',6);
+  return false;
+ }
+ return true;
+ }finally{roomLoading=false;}
+}
 function leaveRoom(destination=null){if(!current)return;if(current.linuxResidence)linuxLife?.leaveHome();replayInterrupted();lowerPocket();spawnScene?.cancel('room');if(!photoStudio?.active&&!photoReturning&&current.id===NAHA_ARRIVALS.id&&activities.state.island?.journey.location==='naha'){islandPlay.returnFlight();return;}wearSwim(false);inspector?.close();activities.close();resetInput();$('#directory').classList.add('hidden');document.body.classList.remove('town-menu-open');$('#exitRoomButton').classList.add('hidden');seated=false;parkSeat=null;active=null;const s=sharedDining(current)&&['izakaya','ramen'].includes(destination)?SITES.find(site=>site.id===destination)||current:current;
  const roomYaw=yaw,roomPitch=pitch,roomLayout=activeRoomLayout;
  // A closed room has no renderer or interaction lifetime. Restore its borrowed
@@ -1995,7 +2045,7 @@ let opening=beginAtOpening();
 if(window.johanssonDesktop){const cp=recoverSakuraBenchCheckpoint(activities.state.desktopCheckpoint);if(cp!==activities.state.desktopCheckpoint)activities.state.desktopCheckpoint=cp;if(cp&&!cp.ship&&[cp.x,cp.z,cp.yaw].every(Number.isFinite)&&Math.abs(cp.x)<1000&&Math.abs(cp.z)<1000&&!environmentBlocked(cp.x,cp.z,PLAYER_RADIUS)){
  seated=false;parkSeat=null;player.position.set(cp.x,groundHeight(cp.x,cp.z),cp.z);yaw=cp.yaw;pitch=Number.isFinite(cp.pitch)?Math.max(-1.25,Math.min(1.15,cp.pitch)):0;opening={caption:'Welcome back. Your island progress is restored.'};
 }}
-started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;startupRecovery.running();camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
+started=true;controlsTouchedAt=performance.now();if(mobile){touchSticks.hint(true);stickHintUntil=performance.now()+4500;}if(!window.__JOHANSSON_BOOTING__)$('#start').classList.add('hidden');$('#hud').classList.remove('hidden');window.__JOHANSSON_RUNNING__=true;camera.position.copy(player.position);camera.position.y+=seated?(parkSeat?.eyeY??1.16):1.7;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);say(opening?.caption||'Welcome to Minato.',5);runStabilityChecks();
 if(playingResident()){linuxLife.start().then(placed=>{if(!placed){if(opening?.room)openInside(opening);else startArrivalScene(opening);}}).catch(error=>say(error.message,6));}else if(opening?.room)openInside(opening);else startArrivalScene(opening);
 }
 
@@ -2158,16 +2208,7 @@ const contextRail=createContextRail({onAction:(id,event)=>{
  return completion;
 }});
 
-graphicsLifecycle=createGraphicsLifecycle({canvas,getRunning:()=>started,
- setRunning:value=>{started=value;window.__JOHANSSON_RUNNING__=value;},
- save:()=>activities.save(),resetInput,suspendInput:()=>gamepadInput.suspend(),
- dropPipeline:()=>{const old=pipeline;pipeline=null;try{old?.dispose();}finally{renderPlain();}},
- restoreGraphics:()=>{redrawReleasedCanvases();{const below=world.ferry?.ferry?.userData.belowDeck;if(below){below.uploaded=false;for(const p of below.plates.children)if(p.material.map)p.material.map.userData.uploaded=false;}}renderer.setRenderTarget?.(null);resizeRenderer();inkRecovery.restored();if(!buildInk())inkRecovery.failed();setTime();},
- resetClock:()=>clock.getDelta(),followClock,
- onLost:()=>{const d=$('#fatal');if(d){d.classList.remove('hidden');d.querySelector('p').textContent='Graphics paused safely. Your town will resume when the display recovers.';d.querySelector('button').hidden=true;}},
- onRestored:()=>{const d=$('#fatal');if(d){d.classList.add('hidden');d.querySelector('button').hidden=false;}},
- onError:(error,phase)=>{console.warn('Graphics '+phase+':',error.message);if(phase==='restore'){const d=$('#fatal');if(d){d.querySelector('p').textContent='Graphics are still paused. Retry when the display is available.';d.querySelector('button').hidden=false;}}}
-});
+graphicsReady=true;
 function resizeRenderer(){if(concert?.active){concert.render();return;}const view=conversationViewport(innerWidth,innerHeight);renderer.setPixelRatio(renderDpr());renderer.setSize(view.width,view.height,false);canvas.style.width=view.width+'px';canvas.style.height=view.height+'px';camera.aspect=view.width/view.height;camera.updateProjectionMatrix()}
 function setConversation(name,text=''){for(const g of [...world.people.map(p=>p.g),...(world.neighbours||[])])if(g.userData.playerConversation){delete g.userData.playerConversation;delete g.userData.chatHold;delete g.userData.speakingUntil;}if(name){neighbourChats.cancel();chatBubble.hide();}
  if(name&&!conversationName){conversationSide=0;shotCut=true;conversationShot='speaker';conversationCamera={rotation:camera.quaternion.clone(),playerVisible:player.visible};johansson?.play('Nod');}
@@ -2326,7 +2367,10 @@ function advanceAbsentTown(townMinutes){
  absence.add(townMinutes);activities.state.pendingTownMinutes=absence.pending;catchingUp=absence.pending>0;
 }
 function catchUpFrame(){
- absence.tick();catchingUp=absence.pending>0;
+ // Before the first playable frame there is no live input to protect. Give the
+ // exact same .2-minute steps more of this loading frame, rather than spending
+ // minutes drawing the island between tiny 4 ms batches after a long absence.
+ absence.tick(firstPlayFrame?undefined:{budgetMs:32,maxSteps:320});catchingUp=absence.pending>0;
  if(!catchingUp){activities.save();clock.getDelta();}
 }
 
@@ -2514,7 +2558,7 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  /** What the renderer is carrying: shader programs, draw calls, triangles, geometries, textures. */
  get programKeys(){return (renderer.info.programs||[]).map(p=>p.name+' | '+p.cacheKey.slice(0,600));},
  get lightBudget(){return lightBudget.most;},
- get renderInfo(){const i=renderer.info;return {programs:i.programs?.length??0,calls:i.render.calls,triangles:i.render.triangles,geometries:i.memory.geometries,textures:i.memory.textures};},
+ get renderInfo(){const i=renderer.info;return {programs:i.programs?.length??0,calls:i.render.calls,triangles:i.render.triangles,geometries:i.memory.geometries,textures:i.memory.textures,releasedCanvases:releasedCanvasCount()};},
  concert:()=>openKaraoke(),
  get concertState(){return concert?.snapshot()||{active:false};},
  photo:()=>openPhotoStudio(),
@@ -2754,11 +2798,11 @@ function renderTitle(dt){
 }
 
 function renderOutdoor(){
-  const first=started&&!firstPlayFrame;if(first)launchReport.stage('Rendering first gameplay frame');
+  if(started&&!firstFrameReported){firstFrameReported=true;launchReport.stage('Rendering first gameplay frame');}
   const audit=window.__JOHANSSON_AUDIT__?.camera;
   if(audit){camera.position.set(...audit.pos);camera.lookAt(...audit.at);camera.updateMatrixWorld();}
   present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
-  if(started&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
+  if(started&&firstPlayFrame&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
 // Open on the device's clock: a save from earlier today is fast-forwarded to now so the

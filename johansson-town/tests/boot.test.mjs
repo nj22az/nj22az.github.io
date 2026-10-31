@@ -31,9 +31,9 @@ import {residentCards,canonicalHomeSites} from '../src/people/home-directory.js'
 // Explicit post-consolidation addresses: removing a working door still fails this smoke.
 // Keep the visit expectation tied to this independent inventory, not the runtime's SITES.
 // The doctor's flat (home-clinic) went with Dr Kakazu on 22 October 2026: Nhung, the doctor now, lives at 3 Kitahama.
-const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','izakaya','kitahama-shop','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
-// Thirteen core households plus supporting accommodation and duty berths (CAST-CONSOLIDATION-REPORT.md; roster.js HOUSEHOLDS).
-const EXPECTED_HOME_DESTINATIONS=['ferry-chief-cabin','ferry-crew-cabin','ferry-engineer-duty-berth','ferry-officer-cabin','fujita-houseboat','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','home-nakamura','koban','mayor-home','office','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan'];
+const EXPECTED_SITES=['clinic','community-kitchen','form3d','frontrow','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','izakaya','kitahama-shop','koban','market','mayor-home','office','onsen','ramen','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan','school'];
+// Twelve core households after the 31 October Nakamura retirement, plus supporting accommodation and duty berths (CAST-CONSOLIDATION-REPORT.md; roster.js HOUSEHOLDS).
+const EXPECTED_HOME_DESTINATIONS=['ferry-chief-cabin','ferry-crew-cabin','ferry-engineer-duty-berth','ferry-officer-cabin','fujita-houseboat','home-higa','home-kitahama-3','home-kitahama-8','home-kitahama-flat-3','home-kitahama-flat-4','home-kitano-2','koban','mayor-home','office','resident-home-kenji','resident-home-mrs-sato','resident-home-thuan'];
 const root=resolve(new URL('..',import.meta.url).pathname);
 const fixtures=await import(pathToFileURL(resolve(root,'tests/fixtures.mjs')).href);
 import {provideCatalog} from './catalog-fixture.mjs';
@@ -129,7 +129,9 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
     const {circleHitsRect}=await import('../physics.js?snappy=1');
     assert.deepEqual(api.SITES.map(s=>s.id).sort(),EXPECTED_SITES);
-    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','ferry-terminal','fujita-houseboat','harbour-park','home-higa','home-kitahama-flat-3','home-kitahama-flat-4','home-nakamura','nakamura','warehouse']);
+    assert.equal(api.SITES.some(s=>s.id==='home-nakamura'),false,'The retired family has no live residence entry');
+    assert.equal(api.world.people.some(p=>['Mrs Nakamura','Mai'].includes(p.profile.name)),false,'The retired ice-cream family is not spawned');
+    assert.deepEqual(api.world.landmarks.map(s=>s.id).sort(),['airport-island','ferry-terminal','fujita-houseboat','harbour-park','home-higa','home-kitahama-flat-3','home-kitahama-flat-4','nakamura','warehouse']);
     assert.deepEqual(api.world.harbourShops.map(s=>s.id).sort(),['form3d','frontrow','office']);
     assert.ok(api.world.group.getObjectByName('west-shop:frontrow'));
     assert.equal(api.world.group.getObjectByName('west-shop:form3d'),undefined,'Only one bookshop/workshop exterior');

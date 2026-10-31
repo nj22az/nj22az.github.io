@@ -15,13 +15,13 @@ import {planHeight} from '../src/world/layout.js';
 import {standingHitsRect,townBoundsBlocked,canStepBetween} from '../physics.js';
 import {installDOM} from './fixtures.mjs';
 
-test('all 25 cast members have one canonical primary home; shared households map once; the crew’s cabins are aboard; no card points at a retired home',()=>{
+test('all 23 cast members have one canonical primary home; shared households map once; the crew’s cabins are aboard; no card points at a retired home',()=>{
  const cards=residentCards(),targets=canonicalHomeSites(cards);
- // 25 since Dr Kakazu retired into Nhung (22 October 2026, roster.js RETIRED).
- assert.equal(cards.length,25);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
- // The 13 households' homes and Kai's rented Shiroma house are the shore home pins (phase 4: no retired flat, no removed house;
+ // The Nakamura family retired on 31 October 2026 (roster.js RETIRED).
+ assert.equal(cards.length,23);assert.deepEqual(cards.map(c=>c.name),CAST.map(c=>c.name));
+ // The 12 households' homes and Kai's rented Shiroma house are the shore home pins (phase 4: no retired flat, no removed house;
  // the doctor's flat went with Dr Kakazu on 22 October 2026); the four who live aboard point at the terminal.
- assert.equal(targets.filter(t=>!t.aboard).length,14);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
+ assert.equal(targets.filter(t=>!t.aboard).length,13);assert.equal(new Set(targets.map(t=>t.homeId)).size,targets.length);
  for(const name of ['Ryo','Ren','Aya','Jun'])assert.equal(cards.find(c=>c.name===name).home.aboard,true,name+' sleeps aboard');
  assert.equal(cards.find(c=>c.name==='Kai').home.id,'kitano-2');assert.equal(cards.find(c=>c.name==='Kai').home.target.id,'home-kitano-2');
  for(const card of cards){
@@ -56,14 +56,14 @@ test('all 25 cast members have one canonical primary home; shared households map
 test('Find person uses live world transforms, exterior doors for indoor actors, and labelled schedule fallbacks',()=>{
  const scene=new THREE.Group(),indoor=new THREE.Group(),hidden=new THREE.Group();scene.add(indoor,hidden);hidden.visible=false;
  const thuan=new THREE.Group();thuan.userData={name:'Thuan',inMarket:true,activity:'Restocking the shelf'};thuan.position.set(1,0,1);indoor.add(thuan);
- const vy=new THREE.Group();vy.userData={name:'Vy',activity:'Walking with Mai'};vy.position.set(2,.2,3);scene.position.set(8,0,10);scene.add(vy);
- const mai=new THREE.Group();mai.userData={name:'Mai'};mai.position.set(1,0,1);hidden.add(mai);scene.updateMatrixWorld(true);
+ const vy=new THREE.Group();vy.userData={name:'Vy',activity:'Walking through the park'};vy.position.set(2,.2,3);scene.position.set(8,0,10);scene.add(vy);
+ const teacher=new THREE.Group();teacher.userData={name:'Miss Higa'};teacher.position.set(1,0,1);hidden.add(teacher);scene.updateMatrixWorld(true);
  const sites=[{id:'market',title:'Sakura Shōten',door:[-5.5,0,-28.5]},{id:'ferry-terminal',title:'Port Terminal',door:[-38,0,-50]}];
- const landmarks=[{id:'nakamura',title:'Nakamura · zenzai & Blue Coral',x:7.35,y:0,z:-10.55}];
- const cards=residentCards({sites,landmarks,people:[{g:thuan}],neighbours:[{g:vy},{g:mai}],minutes:960});
+ const landmarks=[{id:'school',title:'Minato Elementary School',x:23,y:0,z:35}];
+ const cards=residentCards({sites,landmarks,people:[{g:thuan}],neighbours:[{g:vy},{g:teacher}],minutes:960});
  const t=cards.find(c=>c.name==='Thuan');assert.equal(t.current.source,'live');assert.equal(t.current.locationLabel,'Sakura Shōten');assert.deepEqual(t.personTarget.door,sites[0].door);assert.equal(t.home.id,'kitano-1');
  const v=cards.find(c=>c.name==='Vy');assert.equal(v.current.source,'live');assert.deepEqual(v.personTarget.door,[10,.2,13]);
- const m=cards.find(c=>c.name==='Mai');assert.equal(m.current.source,'schedule');assert.equal(m.personTarget.id,'nakamura');assert.equal(m.current.locationLabel,landmarks[0].title);
+ const teacherCard=cards.find(c=>c.name==='Miss Higa');assert.equal(teacherCard.current.source,'schedule');assert.equal(teacherCard.personTarget.id,'school');assert.equal(teacherCard.current.locationLabel,landmarks[0].title);
  thuan.userData={name:'Thuan',inHome:true};
  const atHome=residentCards({sites,people:[{g:thuan}],minutes:1380}).find(c=>c.name==='Thuan');
  assert.equal(atHome.personTarget.homeId,'kitano-1');assert.equal(atHome.homeTarget.homeId,'kitano-1');assert.notDeepEqual(atHome.personTarget.door,[1,0,1]);

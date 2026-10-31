@@ -1,25 +1,25 @@
 [
   {
-    "check": "office-front/umineko-gift: supported inside wall",
+    "check": "office-front/umineko-black: supported inside wall",
     "ok": true
   },
   {
-    "check": "umineko-gift clear of town window",
+    "check": "umineko-black clear of town window",
     "ok": true,
     "gap_mm": 162.5
   },
   {
-    "check": "umineko-gift clear of ledger shelf",
+    "check": "umineko-black clear of ledger shelf",
     "ok": true,
     "gap_mm": 121.0
   },
   {
-    "check": "umineko-gift clear of filing and archive tube",
+    "check": "umineko-black clear of filing and archive tube",
     "ok": true,
     "gap_mm": 3457.5
   },
   {
-    "check": "umineko-gift clear of calendar",
+    "check": "umineko-black clear of calendar",
     "ok": true,
     "gap_mm": 4452.5
   },
@@ -46,30 +46,6 @@
     "check": "kitano-12 clear of calendar",
     "ok": true,
     "gap_mm": 482.5
-  },
-  {
-    "check": "office-back/asagao-rouge: supported inside wall",
-    "ok": true
-  },
-  {
-    "check": "asagao-rouge clear of open office door",
-    "ok": true,
-    "gap_mm": 2302.5
-  },
-  {
-    "check": "asagao-rouge clear of wall cupboard",
-    "ok": true,
-    "gap_mm": 192.5
-  },
-  {
-    "check": "asagao-rouge clear of fridge",
-    "ok": true,
-    "gap_mm": 236.0
-  },
-  {
-    "check": "asagao-rouge clear of departures whiteboard frame",
-    "ok": true,
-    "gap_mm": 227.5
   },
   {
     "check": "stockroom-rear/minato-tsuru: supported inside wall",

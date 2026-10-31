@@ -150,3 +150,23 @@ test('shared street views and television work through either entrance during eit
   vm.runInNewContext(helpers+tv,c);assert.equal(update.active,id!=='market'&&minutes!==600,id+' at '+minutes);
  }
 });
+
+test('a failed room build returns to the street and leaves the entrance usable',async()=>{
+ const enter=between('async function enterRoom(','\nfunction leaveRoom(');
+ for(const id of ['izakaya','ramen']){
+  const site={id,title:id==='izakaya'?'Minato Izakaya':'Sato Ramen'},fault=Error('Injected interior setup failure'),calls=[];
+  const c={SITES:[site],businessId:id=>id,current:null,roomLoading:false,photoStudio:null,photoReturning:false,
+   replayInterrupted:noop,lowerPocket:noop,spawnScene:null,playingResident:()=>false,izakayaReady:()=>true,
+   roomAssetsReady:()=>true,activities:{state:{},close:noop,visit:noop},parkSeat:{},seated:true,
+   yaw:.7,pitch:.12,player:new THREE.Object3D(),yAxis:new THREE.Vector3(0,1,0),resetInput:()=>calls.push('input'),
+   roomShell:()=>{throw fault;},console:{error:(message,error)=>calls.push([message,error])},
+   leaveRoom:()=>{calls.push('street');c.current=null;},say:message=>calls.push(message)};
+  vm.createContext(c);vm.runInContext(enter,c);
+  assert.equal(await c.enterRoom(site),false,'A failed entry resolves without an unhandled rejection');
+  assert.equal(c.current,null);assert.equal(c.seated,false);assert.equal(c.parkSeat,null);
+  assert.equal(c.yaw,.7);assert.equal(c.pitch,.12);
+  assert.ok(calls.includes('street'));assert.ok(calls.includes('input'));
+  assert.ok(calls.some(value=>Array.isArray(value)&&value[1]===fault),'Keep the original exception for diagnosis');
+  assert.ok(calls.at(-1).includes('safely outside'));
+ }
+});

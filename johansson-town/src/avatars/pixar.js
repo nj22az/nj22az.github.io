@@ -100,8 +100,13 @@ export async function loadPixarBodies({search,timeout=20000}={}){
    loaded.set(name,preparePixarBody(card,gltf.scene));
   }catch(error){console.warn('Pixar body unavailable: '+name,error);}
  };
+ // Each resident has a 2048² colour atlas (six bodies are about 97 MiB decoded,
+ // before GPU copies and loader working buffers). Keep the complete models and
+ // texture resolution, but do not fetch/parse/decode all six at once on startup.
+ let next=0;
+ const worker=async()=>{while(next<names.length)await load(names[next++]);};
  let timer;
- await Promise.race([Promise.all(names.map(load)),new Promise(resolve=>{timer=setTimeout(()=>{console.warn('Pixar bodies: not in hand after',timeout,'ms; drawing the cartoon');resolve();},timeout);})]);
+ await Promise.race([Promise.all(Array.from({length:Math.min(2,names.length)},worker)),new Promise(resolve=>{timer=setTimeout(()=>{console.warn('Pixar bodies: not in hand after',timeout,'ms; drawing the cartoon');resolve();},timeout);})]);
  clearTimeout(timer);
  return [...loaded.keys()];
 }

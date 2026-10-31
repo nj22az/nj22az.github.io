@@ -11,7 +11,7 @@ import {WORLD_CAST,ACTIVE_RESIDENT_NAMES} from '../src/people/residents.js';
 import {FERRY_PEOPLE} from '../src/people/ferry-crew.js';
 import {PUPIL_NAMES} from '../src/world/interiors/classroom.js';
 
-// Who the world still shows that the plan's batch 2 replaces: the classroom's eight pupils become Vy, Riku and Mai.
+// Who the world still shows that the plan's batch 2 replaces: the old classroom pupils await their separate consolidation.
 const BATCH_2=new Set(PUPIL_NAMES.filter(n=>!castMember(n)));
 const hhmm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
 // Nobody in the cast names a retired home: the retired identities have no body since phase 4.
@@ -89,8 +89,8 @@ test('the registry is built from the cast: one home each, empty standing homes t
  assert.deepEqual(CAST.filter(homeGone).map(p=>p.name),[],'nobody in the cast names a retired home');
 });
 
-test('the retired identities (phase 4’s ten, and Dr Kakazu into Nhung) have no body, household, shift, nameplate, place or relationship anywhere',()=>{
- assert.equal(RETIRED.length,11);
+test('the retired identities (including the two Nakamuras) have no body, household, shift, nameplate, place or relationship anywhere',()=>{
+ assert.equal(RETIRED.length,13);
  const bodies=[...NEIGHBOURS.map(n=>n.name),...WORLD_CAST.map(p=>p.name),...FERRY_PEOPLE];
  for(const r of RETIRED){
   for(const name of [r.name,...r.was,r.id]){
@@ -108,7 +108,7 @@ test('the retired identities (phase 4’s ten, and Dr Kakazu into Nhung) have no
  // No duplicate bodies: a street neighbour is never also a walking resident, and every neighbour is one body.
  assert.equal(new Set(NEIGHBOURS.map(n=>n.name)).size,NEIGHBOURS.length);
  for(const n of NEIGHBOURS)assert.ok(!WORLD_CAST.some(p=>p.name===n.name),n.name+' has one body');
- assert.equal(CAST.filter(p=>!p.supporting).length,20);assert.equal(CAST.length,25);
+ assert.equal(CAST.filter(p=>!p.supporting).length,18);assert.equal(CAST.length,23);
 });
 
 test('the guide shows only the cast',async()=>{

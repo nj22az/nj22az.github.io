@@ -79,7 +79,7 @@ export function buildVyFamilyHome({room,reg,action,collider=()=>{},exit=()=>{}})
  reg(radio,'Inspect Vy’s cassette player',()=>action('inspect','Pink cassette player','Chin repaired this cassette player for Vy. Her favourite tape is labelled in her own handwriting.'),true);
  box([.23,.3,.1],[.22,1.1,-.35],0x835545,'Vy school satchel');
  anchor([.65,.85,-.35],'Look at Vy’s school bag',()=>action('inspect','Vy’s school satchel','Her notebook, pencil case and tomorrow’s school books. Ten kanji still need practising.'));
- anchor([2.25,.95,-.65],'Read Vy’s homework',()=>action('read','Vy’s homework','Miss Higa has set ten kanji and a page of fractions. Mai’s name is written beside Saturday’s Blue Coral visit.'));
+ anchor([2.25,.95,-.65],'Read Vy’s homework',()=>action('read','Vy’s homework','Miss Higa has set ten kanji and a page of fractions. A bookmark marks the next page to practise.'));
  // Window and folded pink curtains. No balcony or kitchen invented inside her room.
  for(const x of [.2,1.35,2.5])box([.035,1.35,.05],[x,1.475,-2.75],0xaaaeb0,'Window sash');
  for(const y of [.8,2.15])box([2.3,.035,.05],[1.35,y,-2.75],0xaaaeb0,'Window sash');

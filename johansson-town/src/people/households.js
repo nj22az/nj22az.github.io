@@ -25,7 +25,7 @@ export const HOME_ALIASES=Object.freeze({
  // The mayor's office went on 21 October 2026 (briefs/town-hall-zone.md, phase M): a save inside it, a visit to it or a
  // target at its door lands at the Community Hall's, the community kitchen, where the town's register is.
  'mayor-office':'community-kitchen',
- shimabukuro:'ferry-terminal','home-shimabukuro':'ferry-terminal','home-izakaya':'izakaya',
+ shimabukuro:'ferry-terminal','home-shimabukuro':'ferry-terminal','home-izakaya':'izakaya','home-nakamura':'nakamura',
  'yuri-home':'resident-home-thuan','resident-home-nao':'resident-home-thuan',
  'resident-home-thao':'resident-home-thuan','resident-home-chin':'resident-home-thuan',
  'resident-home-tetsuo':'resident-home-kenji',

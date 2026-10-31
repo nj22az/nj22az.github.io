@@ -1,5 +1,8 @@
 # Handover: item artwork as a virtual magazine - 30 October 2026
 
+**Combined follow-up, 31 October 2026:** see [Sakura/izakaya integration](HANDOFF-SAKURA-IZAKAYA-INTEGRATION-2026-10-31.md). `codex/sakura-office-izakaya-review` brings the three candidates together, with exactly KITANO 12 and UMINEKO Black in the upstairs office. The original results below describe this branch independently; combined results and publication state are in the new note.
+
+
 The owner asked for interior adverts for Sakura's upper office, hall and storage, using Artlist, then: "I want to improve the look at item function in the game I want to be able to take a look and enjoy zoom in, download etc like a virtual magazine".
 
 ## Publication — 31 October 2026

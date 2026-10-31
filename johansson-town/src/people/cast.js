@@ -55,7 +55,7 @@ export const CAST=Object.freeze([
  person('Chin',{sex:'m',age:36,home:'kitahama-1',work:'ferry',family:'Nguyen',purpose:'motorman of the Minato Maru; mechanical repairman at the Chin & Tetsuo workshop between watches; Thao’s husband and Vy’s father',
   day:[['05:30','kitahama-1','breakfast'],['06:05','ferry','signing on: the generators with the chief'],['12:00','ferry','lunch in the mess, alongside'],['13:00','ferry','machinery rounds and the afternoon sailings'],['23:15','izakaya','a late supper at Thao’s counter, off the last boat'],['23:45','kitahama-1','home']]}),
  person('Vy',{sex:'f',age:11,home:'kitahama-1',work:'school',family:'Nguyen',purpose:'Thao and Chin’s daughter; a pupil at the island school',
-  day:[['07:00','kitahama-1','breakfast'],['08:15','school','school'],['15:30','blue-coral','an ice cream with Mai'],['16:20','park','homework in the park'],['18:30','kitahama-1','home']]}),
+  day:[['07:00','kitahama-1','breakfast'],['08:15','school','school'],['15:30','park','a walk through Harbour Park after school'],['16:20','park','homework in the park'],['18:30','kitahama-1','home']]}),
  // Nhung lives at 3 Kitahama with Kōji and Riku (docs/CAST-CONSOLIDATION.md §7, phase 3): her room with Reiko at
  // 1 Front-Row Yard is history, their friendship is not. Since 22 October 2026 (the owner) she is the island doctor,
  // Dr Kakazu's post and patients hers (people/clinic-hours.js): surgery weekdays and Saturday morning, and the town's
@@ -90,10 +90,6 @@ export const CAST=Object.freeze([
  // agent, an American former merchant seaman long settled here; the town still calls him the harbour master.
  person('Harbour master',{sex:'m',age:58,home:'office',work:'office',family:'Reed',purpose:'harbour agent: runs the harbour office, the berth radio, the moorings, the cargo yard and the freight book, and takes the Minato Maru’s lines at every call; an American former merchant seaman, long settled here',
   day:[['06:00','office','the morning boats'],['12:00','sato-ramen','ramen, every day'],['13:00','quay','the quay round with the freight book',{stand:'harbour-round'}],['15:00','office','the freight book and the berth radio'],['18:00','office','the evening boat'],['21:00','office','home behind the screen']]}),
- person('Mrs Nakamura',{sex:'f',age:40,home:'nakamura',work:'zenzai',family:'Nakamura',purpose:'keeps Nakamura Zenzai and the Blue Coral ice-cream counter; runs the community kitchen; Mai’s mother',
-  day:[['06:00','zenzai','the beans on'],['10:00','zenzai','shaved ice and zenzai'],['15:00','blue-coral','the ice-cream counter, for the school crowd'],['19:00','nakamura','home with Mai']]}),
- person('Mai',{sex:'f',age:10,home:'nakamura',work:'school',family:'Nakamura',was:['Nakamura Mai'],purpose:'Mrs Nakamura’s daughter; a pupil at the island school; Vy’s best friend',
-  day:[['07:00','nakamura','breakfast'],['08:15','school','school'],['15:30','blue-coral','an ice cream with Vy'],['16:20','park','homework in the park'],['18:30','nakamura','home']]}),
  // The ferry and the port.
  // Mac Turner (docs/CAST-CONSOLIDATION.md §4): the relief engineer, renamed from Mr Nakandakari in phase 2 with his new
  // biography; an American who came with the diesels in the seventies and stayed. Kitahama Heights A (the logical id
@@ -162,17 +158,13 @@ export const RELATIONSHIPS=Object.freeze([
  pair('Nhung','Riku','mother and son','Bedtime stories, and the stethoscope he is not allowed to borrow.'),
  pair('Kōji','Riku','father and son','Riku wants to go out on the boat.','Riku is not allowed on the boat until he can swim to the buoy.'),
  pair('Vy','Riku','cousins and classmates','The only two in the class with the same grandmother.','A rivalry at school.'),
- pair('Vy','Mai','best friends','Blue Coral after school.'),
- pair('Riku','Mai','classmates','Football in the park.','Mai always takes Vy’s side.'),
  pair('Miss Higa','Tetsuo','a slow spark','At the onsen after hours: he fixes the boiler, she pretends not to watch.','Neither will say it.'),
  pair('Miss Higa','Grandmother Higa','granddaughter and grandmother','The Higa house and the bath.','Grandmother wants her married.'),
  pair('Miss Higa','Vy','teacher and pupil','Vy asks the most questions.'),
  pair('Miss Higa','Riku','teacher and pupil','Riku talks in class.','He is moved to the front row every week.'),
- pair('Miss Higa','Mai','teacher and pupil','Mai keeps the class rabbit.'),
  pair('Grandmother Higa','Tetsuo','employer','He keeps her boiler running for a bath and supper.','She pushes her granddaughter at him.'),
  pair('Mrs Sato','Harbour master','old flames','Widow and widower; he eats her ramen every day and never says why.','The thing they never say.'),
  pair('Thao','Mrs Sato','rivals','The evening crowd: izakaya against ramen.','They fall out, then make up over a delivery.'),
- pair('Mrs Nakamura','Mai','mother and daughter','The beans on at six.'),
  pair('Chin','Tetsuo','partners','The workshop, since school; Tetsuo keeps the bench while Chin is aboard.','The odd quarrel over a botched job.'),
  pair('Kōji','Ms Uezu','deck hands','He relieves her every other week.'),
  pair('Mac','Tetsuo','relief engineer and contract electrician','The ship’s switchboard.','Mac guards his switchboard.'),
@@ -184,14 +176,11 @@ export const RELATIONSHIPS=Object.freeze([
  pair('Nhung','Mrs Sato','the doctor everyone feeds','The bowl Mrs Sato sends over when surgery runs late, which Nhung is not allowed to pay for.'),
  pair('Nhung','Grandmother Higa','doctor and patient','Her blood pressure.','She ignores Nhung’s advice.'),
  pair('Harbour master','Mr Fujita','harbour master and linesman','Every call of the Minato Maru.'),
- pair('Mrs Nakamura','Vy','her daughter’s best friend','The pink guava scoop kept aside.'),
  // Phase 4 (roster.js RETIRED): the pairs that replace the retired people's. Nhung's paper takes Reiko's place with
  // Officer Mori; Mac is the night patrol's beer count at Minato; the two Heights neighbours; the port's two clerks.
  pair('Nhung','Officer Mori','the paper, the law and the night telephone','She wants his stories for the town’s paper; after dark both are on call.','He wants her to print fewer of them.'),
  pair('Officer Mori','Mac','the late hours','Mori stops at Minato on the night patrol; Mac has his one beer there.','Mori counts it.'),
  pair('Officer Mori','Mrs Sato','lunch at one','The same shoyu ramen every day of the year.','She wants him to try the miso once.'),
- pair('Mrs Nakamura','Thuan','Sunday regulars','Thuan orders the small zenzai and eats half of hers.','Half of whose zenzai.'),
- pair('Mrs Nakamura','Thao','the supper and the dessert','Minato sends its guests across the park for a zenzai after supper.'),
  pair('Ms Ganaha','Harbour master','the ferry desk and the office radio','The sailing list and the berth, every call.','Who tells the passengers why she is late.'),
  pair('Ms Ganaha','Mac','next door at the Heights','A and B, one roof.','His generator stories through the party wall.'),
  // The supporting crew (phase 2): the ship's two departments and the shore ends of her lines.
@@ -233,8 +222,8 @@ export const PLACES=Object.freeze({
  onsen:{name:'Umi-no-yu',keepers:['Grandmother Higa','Miss Higa','Tetsuo']},
  // The owner, 21 October 2026: the coin laundry gets a keeper from the cast (commerce/coin-laundry.js LAUNDRY_KEEPER).
  'coin-laundry':{name:'Coin laundry',keepers:['Ms Ganaha']},
- zenzai:{name:'Nakamura Zenzai and the community kitchen',keepers:['Mrs Nakamura']},
- 'blue-coral':{name:'Blue Coral',keepers:['Mrs Nakamura']},
+ zenzai:{name:'Nakamura Zenzai',closed:'The dessert counter is vacant until it has a keeper'},
+ 'blue-coral':{name:'Blue Coral',closed:'The dessert counter is vacant until it has a keeper'},
  // Unmanned since phase 4: Tetsuo keeps its switchboard under contract, as he keeps the ship's and the bathhouse's.
  'power-station':{name:'Power station',keepers:['Tetsuo']},
  // Kōji's own sabani on the west quay; Chin mends the boats between watches.

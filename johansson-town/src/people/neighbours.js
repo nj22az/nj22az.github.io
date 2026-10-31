@@ -7,17 +7,11 @@ import {createNavigation} from './navmesh.js';
 import * as THREE from '../../vendor/three.module.js';
 import {inGateball,COURT_TERRACE} from '../world/park-layout.js';
 import {GROUND_LAYER} from '../world/ground-layers.js';
-import {NAKAMURA_GO_HOME,NAKAMURA_HOME_DOOR} from '../world/nakamura-plan.js';
-import {NAKAMURA_DESSERTS,HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
+import {HARBOUR_PARK_STUDY} from '../world/harbour-park-plan.js';
 import {kitahamaHomeFor} from '../world/kitahama-layout.js';
 const VY_HOME=Object.freeze(kitahamaHomeFor('Vy').door),RIKU_HOME=Object.freeze(kitahamaHomeFor('Riku').door);
-/**
- * Homes reached by an indoor route rather than a street door, by household (cast.js `home`). The canonical day's home
- * target is the route's family doorway; from there, or from behind the counter, the resident follows the measured route
- * up the stair and rests upstairs, and comes back down it to the counter or the doorway. `door` is the doorway's index
- * in `route`. Only the Nakamura house has one: Mrs Nakamura and Mai live above the dessert shop (nakamura-plan.js).
- */
-export const STAIR_HOMES=Object.freeze({nakamura:Object.freeze({route:NAKAMURA_GO_HOME,door:NAKAMURA_GO_HOME.indexOf(NAKAMURA_HOME_DOOR)})});
+/** No occupied household currently uses an indoor stair route. The vacant Nakamura building is retained. */
+export const STAIR_HOMES=Object.freeze({});
 
 /**
  * The people who live and work in the new streets.
@@ -47,25 +41,17 @@ const ALL_NEIGHBOURS=Object.freeze([
    'These are shima-rakkyō beans — no, you are right, rakkyō is an onion. I have been saying it wrong for seventy years and nobody corrects a grandmother.',
    'The bus? Eight minutes to, eight minutes past. I can hear it in the tunnel before it comes out. My husband drove that bus for thirty years.',
    'When the typhoon comes you close the amado, fill the bath with water and wait. The house has been here since before the war. It knows what to do.']},
- {name:'Mrs Nakamura',look:'Yoshiko',height:1.52,role:'serving zenzai and Blue Coral ice cream',at:NAKAMURA_DESSERTS.staffAt,y:.08,face:[-1,0],pose:'Idle',hours:[[0,1440]],
-  routine:[{from:0,at:[NAKAMURA_HOME_DOOR[0],NAKAMURA_HOME_DOOR[2]],route:NAKAMURA_GO_HOME,role:'at home upstairs with Mai',home:true},
-   {from:H(10),at:NAKAMURA_DESSERTS.staffAt,route:[...NAKAMURA_GO_HOME].reverse().concat([[NAKAMURA_DESSERTS.staffAt[0],.08,NAKAMURA_DESSERTS.staffAt[1]]]),role:'serving zenzai and Blue Coral ice cream'},
-   {from:H(19),at:[NAKAMURA_HOME_DOOR[0],NAKAMURA_HOME_DOOR[2]],route:NAKAMURA_GO_HOME,role:'closing the counter and going upstairs',home:true}],
-  lines:[
-   "Welcome! Zenzai? Kintoki beans, cooked since six this morning. The ice is from the plant on the quay, shaved to order. ¥250.",
-   'Thuan-chan comes on Sundays and orders the small one and then eats half of mine. Tell her I said so.',
-   'Since 1972 on this corner. Zenzai, sata andagi and Blue Coral scoops all come from this counter now. Mai and Vy usually arrive together after school.']},
  {name:'Kōji',look:'Daichi',height:1.7,role:'sorting the catch',at:[23.4,-41.7],face:[0,-1],pose:'Interact',hours:[[H(5),H(12)]],
   lines:[
    'Auction is done, bro. What is left goes to Mrs Sato or to the freezer. You want a tuna head? Free. Great for soup. Nobody ever takes the tuna head.',
    'The Minato Maru came in at four with a full hold and the skipper is asleep on the wheel. That is the life.']},
  // Vy lives with Thao and Chin at 1 Kitahama. School is off-scene until it has a current public entrance.
  {name:'Vy',look:'Vy',height:1.56,role:'at home with Thao and Chin',at:VY_HOME,home:VY_HOME,face:[0,-1],hours:[[H(7),H(20)]],
-  routine:[{from:0,at:VY_HOME,face:[0,-1],role:'at home at 1 Kitahama',home:true},{from:H(7,40),at:[VY_HOME[0]+1.0,VY_HOME[1]-.8],face:[0,-1],role:'leaving for school'},{from:H(8,15),at:VY_HOME,face:[0,-1],role:'at school',away:true},{from:H(15,30),at:NAKAMURA_DESSERTS.approach,face:[1,0],role:'eating a Blue Coral ice cream with Mai'},{from:H(16,20),at:HARBOUR_PARK_STUDY[0],face:[-1,0],role:'doing her homework in Harbour Park'},{from:H(18,30),at:VY_HOME,face:[0,-1],role:'home with Thao and Chin at 1 Kitahama',home:true}],
+  routine:[{from:0,at:VY_HOME,face:[0,-1],role:'at home at 1 Kitahama',home:true},{from:H(7,40),at:[VY_HOME[0]+1.0,VY_HOME[1]-.8],face:[0,-1],role:'leaving for school'},{from:H(8,15),at:VY_HOME,face:[0,-1],role:'at school',away:true},{from:H(15,30),at:HARBOUR_PARK_STUDY[0],face:[1,0],role:'walking through Harbour Park after school'},{from:H(16,20),at:HARBOUR_PARK_STUDY[0],face:[-1,0],role:'doing her homework in Harbour Park'},{from:H(18,30),at:VY_HOME,face:[0,-1],role:'home with Thao and Chin at 1 Kitahama',home:true}],
   lines:[
-   'Ice cream before homework. It is a rule. I made the rule, but it is still a rule.',
+   'A walk before homework. It is a rule. I made the rule, but it is still a rule.',
    'My parents are Thao and Chin. Our home is 1 Kitahama. Aunt Thuan lives on Kitano-jima and comes over on the boat every day.',
-   'Mrs Nakamura saves me the pink Blue Coral scoop. Mai and I share the walk to Harbour Park afterwards.',
+   'Blue Coral is closed now. I walk to Harbour Park after school and find a place for my homework.',
    'The pond is right beside the bathhouse now. I can finish my homework while everybody goes for a soak.']},
 ]);
 /** Who is about today. Everyone here is in the cast (cast.js); the plan's batch 2 moves them onto its schedules. */

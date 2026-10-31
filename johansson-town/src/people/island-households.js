@@ -57,7 +57,8 @@ export const ISLAND_HOMES=Object.freeze([
  ...[['nakasone','Nakasone'],['miyagi','Miyagi']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id,{retired:true})),
  // Save-era identities remain recognisable after the two empty buildings are removed.
  ...[['tamaki','Tamaki'],['kamiya','Kamiya']].map(([id,name])=>home(id,name+' house, east back','East back','home-'+id,{retired:true})),
- home('nakamura','Above Nakamura Zenzai','Main Street','home-nakamura'),
+ // The family retired on 31 October 2026. The building and flat stay vacant, with no private home entrance.
+ home('nakamura','Former flat above Nakamura Zenzai','Main Street','home-nakamura',{retired:true,retainedBuilding:true}),
  // Removed in phase 4 (addendum 3): the former post-office shop-house on Main Street came down once the counter was the terminal's.
  home('shimabukuro','Former flat above the post office','Main Street','home-shimabukuro',{retired:true}),
  home('arakaki','Above Aragaki Confectionery Store','Main Street','home-arakaki',{retired:true}),
@@ -113,7 +114,7 @@ export function homeNameplate(id){
 }
 export function residentsLine(id){
  const h=householdAtHome(id);if(!h)return '';
- if(h.retired)return h.address+'. This former home has been removed and has no current household.';
+ if(h.retired)return h.address+(h.retainedBuilding?'. The building remains vacant and has no current household.':'. This former home has been removed and has no current household.');
  if(h.toLet)return h.address+'. Vacant — ask at the town hall.';
  if(h.status==='building')return h.units.map(unit=>unit.address.replace(/,.*$/,'')+': '+(unit.toLet?'vacant':unit.residents.join(' & '))).join('\n');
  return h.address+'\n'+h.members.map(m=>m.name+' — '+m.purpose+(m.secondary?' (duty berth; primary home ashore)':'')).join('\n');

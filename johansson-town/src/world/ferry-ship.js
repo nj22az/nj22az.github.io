@@ -271,7 +271,7 @@ export const FERRY_LOADS=Object.freeze([
  load('bridge-electronics','Bridge electronics (radar, autopilot, echo sounder, GPS, NAVTEX, PA)','wheelhouse','LB','105',1,.75,7.9,[.8,.8,.4,.1],''),
  load('room-ac','Room air conditioners (bridge, mess, cabins)','mess','LB','105',4,1,11.2,[3,3,3,1.5],''),
  load('galley-appliances','Galley appliances (rice cooker, microwave, pot, fridge, hood)','galley','LB','105',1,4,38.1,[1.2,.4,1.6,1.2],'',2),
- load('kiosk','Kiosk (ice-cream freezer, showcase, hot water)','lobby','LB','105',1,1.9,18.1,[1.1,.9,1.1,.7],'Blue Coral’s cups and Mrs Nakamura’s andagi',1),
+ load('kiosk','Kiosk (ice-cream freezer, showcase, hot water)','lobby','LB','105',1,1.9,18.1,[1.1,.9,1.1,.7],'Packaged Blue Coral cups and ferry snacks',1),
  load('vending','Drink vending machines','lobby','LB','105',2,.6,6.7,[.7,.7,.7,.7],'Canned coffee and tea',1),
  load('tv','Carpet-room television','carpet-room','LB','105',1,.08,.8,[.1,.1,.1],''),
  load('toilet-fans','Toilet exhaust fans','toilets','LB','105',2,.15,1.7,[.3,.3,.3,.1],''),

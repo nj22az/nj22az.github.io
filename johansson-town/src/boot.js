@@ -1,4 +1,7 @@
 import {installIconControls} from './ui/icon-controls.js';
+import {createStartupRecovery} from './render/startup-recovery.js';
+// Count interruptions during model download/decoding too, before game.js exists.
+window.__JOHANSSON_STARTUP_RECOVERY__??=createStartupRecovery({storage:(()=>{try{return globalThis.sessionStorage;}catch{return null;}})(),search:location.search,events:globalThis});
 // Pixar Thuan's model starts downloading at once, beside the controls; the town waits for it below (src/avatars/pixar.js).
 const pixarBodies=new URLSearchParams(location.search).get('pixar')==='0'?null
  :import('./avatars/pixar.js').then(p=>p.loadPixarBodies()).catch(error=>console.warn('Pixar bodies unavailable:',error));

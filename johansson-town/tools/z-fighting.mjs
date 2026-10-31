@@ -90,11 +90,14 @@ export function coplanarOverlaps(root,{regions=null,tolerance=.005,minArea=.0004
  const found=new Map(),u=new THREE.Vector3(),v=new THREE.Vector3(),centre=new THREE.Vector3();
  for(const list of buckets.values()){
   if(list.length<2)continue;
-  const N=list[0].n;u.set(Math.abs(N.y)<.9?0:1,Math.abs(N.y)<.9?1:0,0).cross(N).normalize();v.crossVectors(N,u);
-  for(const t of list){t.uv=t.pts.map(p=>[p.dot(u),p.dot(v)]);t.min=[Math.min(...t.uv.map(p=>p[0])),Math.min(...t.uv.map(p=>p[1]))];t.max=[Math.max(...t.uv.map(p=>p[0])),Math.max(...t.uv.map(p=>p[1]))];}
-  list.sort((x,y)=>x.d-y.d);
+  // Use the bucket's canonical direction, so an early tiny bevel does not
+  // tilt the projection of every long horizontal floor or vertical wall.
+  const N=new THREE.Vector3(q(list[0].n.x),q(list[0].n.y),q(list[0].n.z)).normalize();u.set(Math.abs(N.y)<.9?0:1,Math.abs(N.y)<.9?1:0,0).cross(N).normalize();v.crossVectors(N,u);
+  for(const t of list){t.uv=t.pts.map(p=>[p.dot(u),p.dot(v)]);t.min=[Math.min(...t.uv.map(p=>p[0])),Math.min(...t.uv.map(p=>p[1]))];t.max=[Math.max(...t.uv.map(p=>p[0])),Math.max(...t.uv.map(p=>p[1]))];t.lo=Math.min(...t.pts.map(p=>p.dot(N)));t.hi=Math.max(...t.pts.map(p=>p.dot(N)));}
+  list.sort((x,y)=>x.lo-y.lo);
   for(let i=0;i<list.length;i++){const s=list[i];
-   for(let j=i+1;j<list.length&&list[j].d-s.d<=tolerance;j++){const t=list[j];
+   for(let j=i+1;j<list.length&&list[j].lo<=s.hi+tolerance;j++){const t=list[j];
+    if(t.hi<s.lo-tolerance)continue;
     if(t.id===s.id&&t.mesh===s.mesh&&s.pts.every((p,k)=>p.equals(t.pts[k])))continue;
     if(s.n.dot(t.n)<.9998||(!keepIdentical&&s.look===t.look))continue;
     // Two see-through layers that write no depth both draw, in their fixed order: they cannot fight each other.
@@ -102,18 +105,33 @@ export function coplanarOverlaps(root,{regions=null,tolerance=.005,minArea=.0004
     // A decal and anything drawn with another offset are told apart by the offset, not by depth.
     if(s.off!==t.off)continue;
     if(s.max[0]<=t.min[0]||t.max[0]<=s.min[0]||s.max[1]<=t.min[1]||t.max[1]<=s.min[1])continue;
-    const poly=overlapPolygon(s.uv,t.uv),area=polygonArea(poly);if(area<1e-6)continue;
+    let poly=overlapPolygon(s.uv,t.uv);
+    if(poly.length<3)continue;
+    // Nearly parallel faces have different normals: comparing their plane
+    // constants alone is translation-dependent. A tapered chopstick 12 mm
+    // above a caddy was reported as coplanar because its world x offset
+    // cancelled the height. Measure depth at the actual overlap instead,
+    // retaining the part of a crossing pair which really is within tolerance.
+    const height=(tri,p)=>(tri.d-tri.n.dot(u)*p[0]-tri.n.dot(v)*p[1])/tri.n.dot(N);
+    const gap=p=>height(s,p)-height(t,p);
+    if(s.n.distanceToSquared(t.n)<1e-16){
+     if(Math.abs(gap(poly[0]))>tolerance+1e-9)continue;
+    }else{
+     poly=clipHalfPlane(poly,p=>tolerance-gap(p));
+     poly=clipHalfPlane(poly,p=>tolerance+gap(p));
+    }
+    const area=polygonArea(poly);if(area<1e-6)continue;
     // Seen at all? Points of the overlap 1.5 mm in front of it, each inside some closed solid or not.
-    {const cx=poly.reduce((v,p)=>v+p[0],0)/poly.length,cy=poly.reduce((v,p)=>v+p[1],0)/poly.length,d=(s.d+t.d)/2+.0015;
-     const seen=[[cx,cy],...poly.map(p=>[cx+(p[0]-cx)*.8,cy+(p[1]-cy)*.8])].some(([pu,pv])=>{sample.copy(u).multiplyScalar(pu).addScaledVector(v,pv).addScaledVector(s.n,d-(u.dot(s.n)*pu+v.dot(s.n)*pv));sample.x+=1.3e-5;sample.z+=.7e-5;return !insideSolid(sample);});
+    {const cx=poly.reduce((v,p)=>v+p[0],0)/poly.length,cy=poly.reduce((v,p)=>v+p[1],0)/poly.length;
+     const seen=[[cx,cy],...poly.map(p=>[cx+(p[0]-cx)*.8,cy+(p[1]-cy)*.8])].some(([pu,pv])=>{const d=(height(s,[pu,pv])+height(t,[pu,pv]))/2+.0015;sample.copy(u).multiplyScalar(pu).addScaledVector(v,pv).addScaledVector(N,d);sample.x+=1.3e-5;sample.z+=.7e-5;return !insideSolid(sample);});
      if(!seen&&!keepHidden)continue;}
     const [p,r]=s.src<=t.src?[s,t]:[t,s],key=p.src+' | '+r.src+' | '+q(s.n.x)+','+q(s.n.y)+','+q(s.n.z);
     const f=found.get(key)??found.set(key,{a:p.src,b:r.src,same:s.mesh===t.mesh,area:0,gap:0,normal:s.n.toArray().map(x=>+x.toFixed(3)),at:s.pts[0].toArray().map(x=>+x.toFixed(2))}).get(key);
-    f.area+=area;f.gap=Math.max(f.gap,Math.abs(t.d-s.d));
+    f.area+=area;f.gap=Math.max(f.gap,...poly.map(p=>Math.abs(gap(p))));
     // The middle of all the overlaps, weighted by their areas: where on the plan the pair fights.
     // Accumulated as plain numbers (the town has millions of overlaps to weigh; nothing is allocated per overlap).
     {let cx=0,cy=0;for(const p of poly){cx+=p[0];cy+=p[1];}cx/=poly.length;cy/=poly.length;
-     const c=centre.copy(u).multiplyScalar(cx).addScaledVector(v,cy);c.addScaledVector(s.n,s.d-c.dot(s.n));
+     const c=centre.copy(u).multiplyScalar(cx).addScaledVector(v,cy).addScaledVector(N,height(s,[cx,cy]));
      f.sx=(f.sx||0)+c.x*area;f.sy=(f.sy||0)+c.y*area;f.sz=(f.sz||0)+c.z*area;}
     if(detail){const bb=x=>{const lo=[0,1,2].map(k=>Math.min(...x.pts.map(p=>p.getComponent(k)))),hi=[0,1,2].map(k=>Math.max(...x.pts.map(p=>p.getComponent(k))));return lo.map((v,k)=>v.toFixed(3)+'..'+hi[k].toFixed(3)).join(' ');};(f.boxes??=[]).length<6&&f.boxes.push([bb(p),bb(r)]);}
    }
@@ -136,3 +154,12 @@ function overlapPolygon(A,B){
  return out;
 }
 function cross(p,q,sp,sq){const t=sp/(sp-sq);return [p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t];}
+
+function clipHalfPlane(input,side){
+ const out=[];
+ for(let i=0;i<input.length;i++){
+  const p=input[(i+input.length-1)%input.length],q=input[i],sp=side(p),sq=side(q);
+  if(sq>=0){if(sp<0)out.push(cross(p,q,sp,sq));out.push(q);}else if(sp>=0)out.push(cross(p,q,sp,sq));
+ }
+ return out;
+}

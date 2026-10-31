@@ -33,7 +33,7 @@ import {MAIN_ROAD} from '../main-road.js';
 import {WEST_YARD} from '../west-yard.js';
 import {createVendingMachine,vendingReady,hydrateVending,VENDING_MACHINE} from '../vending.js';
 import {windowGlow} from '../../render/dusk.js';
-import {dessertShopOpen} from '../blue-coral-shop.js';
+import {dessertShopOpen,BLUE_CORAL} from '../blue-coral-shop.js';
 import {higaFrontage,higaPoint} from './higa-liquor-dressing.js';
 import {buildKissaProps} from './kissa-higa-props.js';
 import {laundryFrontage,LAUNDRY_BENCH,laundryPoint} from './coin-laundry-dressing.js';
@@ -315,7 +315,7 @@ function buildPromenade(kit,solid,{anchor,onAction}){
 
 const SHOPS=Object.freeze({
  nakamura:{interior:'zenzai',jp:"Nakamura Zenzai",en:'Nakamura · zenzai & Blue Coral',bg:'#f6efd9',accent:'#2f7fa8',mark:"Ice",upright:"Zenzai",uprightBg:'#2f7fa8',
-  buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter. Mrs Nakamura has been making it on this corner since the Americans left.'},
+  buy:{label:'Buy a zenzai',title:"Nakamura Zenzai · Nakamura Zenzai",cost:250,item:'Zenzai',text:'Okinawan zenzai: a mountain of shaved ice over sweet kintoki beans and little white mochi, in a glass bowl that sweats on the counter.'},
   // The island's one sweet counter: when Aragaki Confectionery shut, Mrs Nakamura took on the sata andagi.
   more:[{label:'Buy sata andagi',title:"Nakamura Zenzai · sata andagi",cost:120,item:'Sata andagi',text:'Okinawan doughnuts, fried in the back in the morning until they crack open and smile, to the recipe from the old sweet shop over the road. Three to a paper bag, still warm, sugar on your fingers.',dz:1.3}]},
  // Kissa Higa in the old Higa Liquor (commerce/kissa-higa.js, 30 October 2026): Grandmother Higa's morning coffee shop,
@@ -326,7 +326,7 @@ const SHOPS=Object.freeze({
  // Aragaki Confectionery, closed (cast.js PLACES): nobody keeps it, and nobody lives behind it. The faded
  // sign stays up.
  arakaki:{interior:'sweets',awning:false,jp:"Aragaki Confectionery Store",en:'Arakaki sweets · closed',bg:'#efe6cf',accent:'#5f7d76',upright:"Sweets",uprightBg:'#8a9a94',
-  inspect:{label:'Look at the old sweet shop',title:"Aragaki Confectionery · the old sweet shop",text:'The shutter is down, and nobody lives behind it now; the faded sign is all that is left of the shop. Its sata andagi recipe went over the road: Mrs Nakamura fries it every morning.'}},
+  inspect:{label:'Look at the old sweet shop',title:"Aragaki Confectionery · the old sweet shop",text:'The shutter is down, and nobody lives behind it now; the faded sign remains. Both old dessert counters await a new keeper.'}},
  // Yonamine Fresh Fish, closed (cast.js PLACES): nobody keeps it; the morning catch is sold at the auction.
  yonamine:{interior:'fish',anchorDz:2.3,jp:"Yonamine Fresh Fish Store",en:'Yonamine fish',bg:'#eef4f2',accent:'#9a4a2a',mark:"Fish",upright:"Fresh fish",uprightBg:'#9a4a2a',
   inspect:{label:'Look at the old fish shop',title:"Yonamine Fresh Fish · closed",text:'The shop is shut, and nobody keeps it now. The morning catch goes to the fish auction on the east quay instead: irabuchā, the blue parrotfish; gurukun, red on the ice though they are blue in the sea; and a taman from the night anglers.'}},
@@ -338,9 +338,9 @@ function shopFront(kit,solid,plot,frame,{anchor,inspect,onAction,getMinutes=()=>
  const spec=SHOPS[plot.id],w=plot.maxZ-plot.minZ-.1,d=frame.depth;
  const sign=fascia({jp:spec.jp,en:spec.en,bg:spec.bg,accent:spec.accent,mark:spec.mark||''});
  const upright=vertical({jp:spec.upright,bg:spec.uprightBg});
- kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,awning:spec.awning!==false,seed:plot.minZ*7|0})));
+ kit.at(frame.x,(plot.minZ+plot.maxZ)/2,frame.ry,()=>solid(shopHouse(kit,{w,d,colour:plot.colour,trim:plot.trim,sign,upright,interior:spec.interior,occupied:plot.id!=='nakamura'||BLUE_CORAL.staffed,awning:spec.awning!==false,seed:plot.minZ*7|0})));
  const front=frame.front,out=frame.out,z=(plot.minZ+plot.maxZ)/2;
- const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed','Mrs Nakamura serves zenzai, sata andagi and Blue Coral ice cream from 10:00 to 19:00.'):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
+ const buy=item=>()=>plot.id==='nakamura'&&!dessertShopOpen(getMinutes())?onAction?.('read','Nakamura is closed',BLUE_CORAL.closedNotice):onAction?.('buy',item.title,{cost:item.cost,item:item.item,text:item.text});
  if(plot.id==='nakamura')return; // One shared dessert menu owns all orders.
  const act=plot.id==='higa-saketen'?()=>kissaFront(getMinutes(),onAction,{front:getHiga(),people:getPeople()}):spec.buy?.action?()=>onAction?.(spec.buy.action):spec.buy?buy(spec.buy):plot.id==='coin-laundry'?()=>onAction?.('inspect',spec.inspect.title,laundryLook(getMinutes())):()=>onAction?.('inspect',spec.inspect.title,spec.inspect.text);
  // Off to one side where somebody works the counter, so talking to them wins over the shop.

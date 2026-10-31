@@ -2,6 +2,17 @@
 
 Read the repository's [AGENTS.md](../AGENTS.md) and [CLAUDE.md](../CLAUDE.md). Their working discipline applies here.
 
+## Owner's decision — 31 October 2026: facilities before population
+
+The owner: “remove the ice cream family now there are too much unimportant people on the island we need to build facilities before we populate them”.
+
+- Retire exactly Emi Nakamura (`emi`, live name Mrs Nakamura) and Mai Nakamura (`mai`, live name Mai) from active island life, schedules, households and resident-facing choices. Preserve their historical recipes/assets for existing creative work and migrate old saves through the retired-identity registry.
+- Keep the Nakamura dessert counter and Blue Coral facilities. They are vacant and closed until staffed by a later owner decision; do not assign another resident merely to fill the vacancy or serve purchases through an absent keeper. The former home is no longer a resident address.
+- Pause Emi's community-kitchen programme while retaining the town hall, register and clinic. Remove present-day claims that Emi or Mai works, studies or lives on the island; do not invent replacement friendships or staff.
+- Build and validate facilities before adding residents. This decision supersedes older active cast/household totals and the Nakamura family's staffing in the 19 October consolidation.
+
+See [the room-crash and family-retirement handover](briefs/HANDOFF-ROOM-CRASH-FAMILY-2026-10-31.md) for implementation, migration and verification.
+
 ## Owner's decision — 26 October 2026: the device calendar
 
 The owner: "they use normal date device date, they only live like it’s the 90’s".
