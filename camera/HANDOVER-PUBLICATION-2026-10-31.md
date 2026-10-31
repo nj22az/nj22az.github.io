@@ -1,5 +1,26 @@
 # Pocket Camera publication — 31 October 2026
 
+## Icon UI — published via PR #417
+
+The owner approved **“Push to main this looks good”**, then asked for fewer words, icon-coded shaders and status
+beside the canvas. [PR #417](https://github.com/nj22az/nj22az.github.io/pull/417) is merged as
+**`51f071309f6b9e1dbd6977595004c6c60602a0ee`**, with the exact tree of tested
+**`dd5997a775736f5990044ea9b2a210fc47a68211`**. The real existing Camera now uses icon controls with one active
+label, a reserved shader/comparison rail, adaptive phone/tablet layouts and immutable Save copy. The renderer,
+34 Looks/three-layer mixes, originals, crop, Enhance, stickers, paper, games and direct-tap Share remain.
+Page/app/main-style/renderer URL keys and local adapter import are **`20261031ui1`**; sticker keys remain unchanged.
+
+**143/143 Camera + 57/57 UI checks**, **15/15 MCP units + 20/20 real acceptance**, **560/560 World guard** and
+automated World WebKit passed; npm audit reports **zero findings**. Actual screenshots and JPEG were inspected.
+[Pages 41184647837](https://github.com/nj22az/nj22az.github.io/actions/runs/41184647837) passed; **44/44** checked
+public addresses match the tested runtime. [Open the updated Camera](https://nj22az.github.io/camera/?v=20261031ui1).
+
+[Current UI handover](HANDOVER-UI-REVIEW-2026-10-31.md) records exact jobs, artifacts, limits and next actions;
+[publication evidence](qa/2026-10-31-ui/publication.json) retains hashes. Physical iPhone 17/iPad mini Safari/native
+Share and the owner's installed MCP host remain unverified. Linux full World acceptance is still running after
+its build/controller/native/offline stages passed. No Linux release or hosted MCP service was published.
+The following sections preserve earlier release history; this UI supersedes their previous control layout and keys.
+
 ## Local MCP adapter source — merged on 31 October 2026
 
 The owner's subsequent request, “Mcp wire the Johansson camera web app”, is implemented in

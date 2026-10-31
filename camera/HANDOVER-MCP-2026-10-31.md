@@ -1,6 +1,20 @@
 # Pocket Camera MCP — 31 October 2026
 
-The owner subsequently approved [the Camera UI implementation](HANDOVER-UI-REVIEW-2026-10-31.md) and instructed “Push to main”. App/renderer URL/style keys and the adapter import are aligned at `20261031ui1`; the renderer code and local stdio/privacy boundaries are retained. Hosted verification/publication is recorded in that UI handover.
+The subsequent [Camera UI release](HANDOVER-UI-REVIEW-2026-10-31.md) is **published via PR #417**, main
+**`51f071309f6b9e1dbd6977595004c6c60602a0ee`**, identical to tested `dd5997a775736f5990044ea9b2a210fc47a68211`.
+App/main-style/renderer URL keys and the adapter import align at **`20261031ui1`**; renderer source and local stdio
+privacy boundaries remain. Latest MCP run **41183839641**, job **124486593146**, passed **15/15 units + 20/20** real
+acceptance checks with **zero npm findings**. Camera **143/143**, target-layout UI **57/57**, World **560/560** and
+automated World WebKit passed. [Pages](https://github.com/nj22az/nj22az.github.io/actions/runs/41184647837) passed;
+[44/44 public-address checks](qa/2026-10-31-ui/publication.json) match the release, including the adapter import key.
+
+**Connection remains separate:** the official SDK acceptance client discovers all eleven tools and completes a
+generated-image cycle. The owner's installed MCP host and this chat remain unconnected; use the absolute Node
+server path and reconnect as described in [MCP.md](MCP.md), then prove discovery/import/edit/preview/save/export.
+Physical iPhone/iPad Safari/native Share remain untested. The temporary album, approved-image imports, pixel-preview
+disclosure and explicit save/export/close confirmation are unchanged. There is no hosted HTTP endpoint or personal
+Photos/browser connection. Linux **41183839640** has passed build/faces/controller/native/offline stages; full World
+acceptance remains running at publication. No Linux binary was released. This supersedes the older retry state below.
 
 ## Merged on the owner's instruction — 31 October 2026
 
