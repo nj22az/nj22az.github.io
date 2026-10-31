@@ -81,3 +81,22 @@ This proves the acceptance client's connection; it does not install the server i
 the tools to this ChatGPT conversation. To complete that connection, configure a local stdio-capable host to run
 Node with the absolute server path, reconnect it, and verify that all eleven `camera_*` tools are discovered.
 Then run the generated-image workflow before approving any personal image for preview.
+
+## Connecting this server to ChatGPT web
+
+The existing server is local stdio; the public `/camera/` URL is **not** an MCP endpoint. ChatGPT web does not read
+this repository's `.mcp.json` or local Codex configuration. Installing Plugin Creator alone does not connect Camera.
+[Official connection guidance](https://learn.chatgpt.com/docs/extend/mcp).
+
+To retain local hosting, [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels) can
+forward the existing stdio process through outbound HTTPS. A persistent host must run Node, the pinned dependencies,
+Chromium and `tunnel-client`. The owner must select the intended Platform organisation and ChatGPT workspace, create
+or reuse a tunnel with the appropriate Read/Manage/Use roles, and supply its runtime credential through secure setup.
+Use the actual absolute server path as the stdio command; run the tunnel client's doctor/readiness checks, then add the
+same tunnel under ChatGPT Plugins → Add custom MCP server → Tunnel. Confirm actual eleven-tool discovery and a
+generated-image import/edit/preview/save/export cycle in that chat before calling the connection complete.
+
+No tunnel, external host, hosted HTTP server or Camera plugin has been provisioned by this repository change. Keep the
+existing approved-folder and confirmation rules. Tunnel messages have a documented 10 MiB envelope limit: for large
+photos prefer approved local-path import rather than large base64 messages. MCP preview still sends image pixels to
+the connected host, and its temporary album requires export before closing. The offline web app itself needs no MCP.

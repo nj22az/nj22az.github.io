@@ -3,11 +3,12 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031smart1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031offline1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
-import {lookIcon} from './look-icons.js?v=20261031smart1';
-import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031smart1';
+import {lookIcon} from './look-icons.js?v=20261031offline1';
+import {prepareOffline} from './offline.js?v=20261031offline1';
+import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031offline1';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
@@ -1422,7 +1423,7 @@ for(const element of [document.body,$('cameraPictureArea'),$('editPictureArea')]
 // On the Home Screen the camera is an app of its own: no way back to the website is needed, and it works offline (sw.js).
 const standalone=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
 document.documentElement.classList.toggle('standalone',standalone);
-if('serviceWorker' in navigator)navigator.serviceWorker.register(new URL('./sw.js',import.meta.url)).catch(()=>{});
+prepareOffline($('offlineSetting'));
 loadShots();
 if(!startEngine()){
  showWelcome();

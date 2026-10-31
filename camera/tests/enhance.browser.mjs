@@ -58,7 +58,7 @@ try{
    if(shots)await page.screenshot({path:join(shots,`${label}-enhance.png`)});
    if(label==='desktop')await check('GPU correction is visible and deterministic; switching off restores the original output',async()=>{
     const result=await page.evaluate(async withBaseline=>{
-     const {engine}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031smart1'),c=window.enhanceFixture;
+     const {engine}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031offline1'),c=window.enhanceFixture;
      engine.setSource('bench',c,c.width,c.height);const options={source:'bench',width:480,height:360};
      const raw=m.normalRecipe(),off=engine.render(raw,options),on=engine.render({...raw,enhance:1},options),again=engine.render({...raw,enhance:1},options),restored=engine.render({...raw,enhance:0},options);
      let changed=0,same=true,repeat=true,sum=0,delta=0;
@@ -78,7 +78,7 @@ try{
    if(label==='desktop'&&shots)await check('real photographs render at preview and export sizes',async()=>{
     for(const [name,url] of [['harbour','/camera/samples/default-original.png'],['garden','/assets/images/nils-lake-hero-optimized.jpg']]){
      const result=await page.evaluate(async({url})=>{
-      const img=await createImageBitmap(await(await fetch(url)).blob()),{engine}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031smart1');
+      const img=await createImageBitmap(await(await fetch(url)).blob()),{engine}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031offline1');
       engine.setSource('photograph',img,img.width,img.height);const w=720,h=Math.round(w*img.height/img.width),c=document.createElement('canvas');c.width=w*2;c.height=h+32;const g=c.getContext('2d');
       const r=m.normalRecipe(),off=engine.render(r,{source:'photograph',width:w,height:h}),on=engine.render({...r,enhance:.65},{source:'photograph',width:w,height:h});
       g.fillStyle='#202020';g.fillRect(0,0,c.width,c.height);g.fillStyle='#fff';g.font='16px sans-serif';g.fillText('Original',12,22);g.fillText('Enhance 65%',w+12,22);
@@ -95,7 +95,7 @@ try{
    await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
    await check('cropped JPEG contains the enhancement and retains the exact source',async()=>{
     const result=await page.evaluate(async()=>{
-     const {state,engine}=window.pocketCamera,s=state.viewing,m=await import('/camera/looks-gl.js?v=20261031smart1');
+     const {state,engine}=window.pocketCamera,s=state.viewing,m=await import('/camera/looks-gl.js?v=20261031offline1');
      const source=await createImageBitmap(s.source);engine.setSource('check',source,source.width,source.height);
      const pixels=engine.render(m.normalRecipe(s.recipe),{source:'check',crop:s.recipe.crop,width:s.width,height:s.height});
      const img=await createImageBitmap(s.photo),c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d');g.drawImage(img,0,0);const jpg=g.getImageData(0,0,c.width,c.height).data;

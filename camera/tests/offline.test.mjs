@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {build,root} from '../../tools/build-camera-offline.mjs';
+const b=await build(),actual=await readFile(root+'camera/offline.json','utf8');
+assert.equal(actual,b.manifest,'regenerate the complete offline bundle after changing Camera assets');
+assert.ok((await readFile(root+'camera/sw.js','utf8')).includes("const BUILD='"+b.build+"';"),'the worker pins the exact manifest');
+const m=JSON.parse(actual);assert.ok(m.files.length>280&&m.bytes<30*1024*1024);assert.equal(new Set(m.files.map(f=>f.url)).size,m.files.length);
+for(const f of m.files)assert.ok(!/\/qa\/|HANDOVER|\.mcp|node_modules|\/runtime\//.test(f.url),f.url);
+for(const required of ['/camera/offline.js','/camera/smart-shuffle.js','/camera/erase-worker.js','/camera/pocket-algo.wasm','/camera/cards/playing-cards.png','/johansson-town/src/render/illustration-modules.js'])assert.ok(m.files.some(f=>f.url===required),required);
+console.log('offline: complete current assets, digest pin, size and public-only scope pass');

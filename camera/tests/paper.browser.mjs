@@ -12,7 +12,7 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  await check('each paper renders deterministically; rough stock has more tooth; None preserves the photo',async()=>{
   const report=await page.evaluate(async()=>{
-   const {createLookEngine,normalRecipe,PAPERS,flipRows}=await import('/camera/looks-gl.js?v=20261031smart1');
+   const {createLookEngine,normalRecipe,PAPERS,flipRows}=await import('/camera/looks-gl.js?v=20261031offline1');
    const canvas=document.createElement('canvas');canvas.width=192;canvas.height=144;
    const source=document.createElement('canvas');source.width=192;source.height=144;const g=source.getContext('2d');
    for(const [i,colour] of ['#000','#fff','#888','#356fca'].entries()){g.fillStyle=colour;g.fillRect(i*48,0,48,144);}

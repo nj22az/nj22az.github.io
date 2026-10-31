@@ -171,3 +171,5 @@
 /* Larger user text and short windows reflow rather than clipping fixed-height rows. */
 @media(max-height:500px) and (max-width:849px){.editor{overflow:auto}.editor>.stage{flex:none;min-height:160px}.editor>.dock{flex:none;max-height:none}.editor .panel{max-height:none;overflow:visible}.welcome{justify-content:flex-start}}
 @media(prefers-reduced-motion:reduce){.welcome-sticker{animation:none}}
+
+.settings-heading{flex-wrap:wrap}.settings-heading h2{flex:1}.settings-heading .offline-setting{flex:none;width:44px;height:44px;padding:10px}.offline-setting svg{width:24px;height:24px}.offline-setting:disabled{opacity:1}.offline-setting[data-state="preparing"]{opacity:.5}
