@@ -1303,7 +1303,7 @@ const eraser=createEraser($('editFrame'),{
   items.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.textContent=String(i+1);b.setAttribute('aria-label',`Heal suggested spot ${i+1}`);b.addEventListener('click',()=>eraser.healSuggestion(i));list.append(b);});
   $('eraseHint').textContent=items.length?'Tap a numbered spot to heal it, or paint over another area.':'Paint over what should go.';
  },
- busy:on=>{$('eraseHint').textContent=on?'Working…':'Tap a suggested spot, or paint over what should go.';$('saveEdit').disabled=on;$('cancelEdit').disabled=on;$('eraseSuggest').disabled=on;$('eraseUndo').disabled=on||!eraser.canUndo;for(const b of $('eraseSuggestions').children)b.disabled=on;if(!on)sound('pop');},
+ busy:on=>{$('eraseHint').textContent=on?'Working…':$('eraseSuggestions').childElementCount?'Tap a numbered spot to heal it, or paint over another area.':'Paint over what should go.';$('saveEdit').disabled=on;$('cancelEdit').disabled=on;$('eraseSuggest').disabled=on;$('eraseUndo').disabled=on||!eraser.canUndo;for(const b of $('eraseSuggestions').children)b.disabled=on;if(!on)sound('pop');},
  failed:()=>toast('That could not be erased'),
 });
 $('eraseSuggest').addEventListener('click',async()=>{

@@ -31,7 +31,7 @@ runtime/offline bundle. Runtime release keys are `20261031retouch1`.
 
 ## Verification
 
-Local: all fourteen Camera unit suites pass, including 9 makeup, 6 spot-analysis, 5 actual-classifier, 9 simulated-DOM guide and 7 offline-update lifecycle checks, module consistency,
+Local: all fifteen Camera unit suites pass, including 9 makeup, 6 spot-analysis, 5 actual-classifier, 9 simulated-DOM guide and 7 offline-update lifecycle and 6 worker deadline checks, module consistency,
 offline inventory/hash and syntax/diff checks. Actual classifier independently detected the established Pexels portrait
 and rejected the harbour sample in Node/canvas-shim checks. These are not visual browser evidence.
 
@@ -93,3 +93,22 @@ nested-directory allowlist blocked the new pico module. Final correction permits
 with explicit MIME types. It does not broaden vendor/binary serving. A new HTTP policy check proves exact byte/MIME/HEAD
 behaviour and denial of other files and symlinks; all **16/16 policy checks pass locally**. The final candidate must
 rerun real SDK-to-Camera acceptance. These corrections do not alter Camera's runtime from `09d9b3ca`.
+
+## Third review run and deadline correction
+
+Remote `7263b2012709459ce5673ec8e122e96854a38bd3`, exact local tree
+`2fc6da1b6fe3dd73a34ee34390cdd27010407293`: MCP run `41236772835`, job `124642110571`, passed **16/16 policy +
+20/20 actual SDK/Camera acceptance**, no skips/page errors. Retouch `41236772830`, `124642110802`, passed **36/36**;
+aligned real-portrait pictures were inspected and lip tint is contained, with teeth/skin detail retained. Visual QA
+found the SVG outline inherited the generic 22 px icon size. The final CSS selector now overrides that rule; the
+browser suite checks full-frame SVG dimensions and visible face/lip paths. Core Camera also found idle Erase text
+still suggested tapping when no suggestions existed; the idle state now correctly offers painting, retaining the
+existing manual-brush test without changing its assertion.
+
+Repeating offline exposed a real deadline gap (5,670.9 ms for a stalled request): manifest/cache preparation and fetch
+abort acknowledgement were outside the old timeout. The final worker starts the three-second deadline immediately,
+prepares cache/manifest alongside the network and races the network against the deadline. It does not await abort
+acknowledgement before using a verified cached response. Normal network success remains first; unlisted resources
+retain normal network behaviour. Six focused worker checks cover slow preparation and abort-ignoring fetch, exact
+three-second fallback, fast success, unlisted passthrough, failed network, missing cache and scope. The browser timing
+limit remains **4,500 ms**; cached responses expose worker timing diagnostics. Final browser rerun remains necessary.

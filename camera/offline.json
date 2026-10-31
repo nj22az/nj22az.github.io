@@ -1,6 +1,6 @@
 {
   "version": "20261031retouch1",
-  "bytes": 22675392,
+  "bytes": 22675483,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "4a1fcfdd8adddecce114f51204a750894727a0c6d3253c9622aaf82f701705f0",
-      "bytes": 102148
+      "sha256": "8bae1306202cdb4ca282fc7743f8101b30d97aa43038228bbb59b55bb1515b3c",
+      "bytes": 102225
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -39,8 +39,8 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "a299a926d390ec20f03752730531682e3c47fe68a52e4878e902bcd8cbe16076",
-      "bytes": 24868
+      "sha256": "0d47e7f8e05f73bb2b8c212ba5457fea9b5d4fe6c477ac8681560ec4f0b793e8",
+      "bytes": 24882
     },
     {
       "url": "/camera/camera.css",

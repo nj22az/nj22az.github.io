@@ -230,6 +230,17 @@ try{
       return [...f.eyes,f.mouth].map(p=>{const dx=(p.x-.5)*f.w*e.width,dy=(p.y-.5)*f.h*e.height;return {x:(f.x+f.w/2)*e.width+dx*Math.cos(a)-dy*Math.sin(a),y:(f.y+f.h/2)*e.height+dx*Math.sin(a)+dy*Math.cos(a)};});
      });
      for(const [i,[x,y]] of [[348,327],[479,363],[377,460]].entries())assert.ok(Math.hypot(mapped[i].x-x,mapped[i].y-y)<8,JSON.stringify(mapped));
+     const geometry=await page.evaluate(()=>{
+      const box=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
+      const frame=document.querySelector('#editFrame'),svg=document.querySelector('#makeupGuide .makeup-guide-svg');
+      return {frame:box(frame),svg:box(svg),paths:[...svg.querySelectorAll('path')].map(p=>({...box(p),stroke:getComputedStyle(p).stroke,strokeWidth:parseFloat(getComputedStyle(p).strokeWidth)}))};
+     });
+     assert.ok(Math.abs(geometry.svg.width-geometry.frame.width)<2&&Math.abs(geometry.svg.height-geometry.frame.height)<2,JSON.stringify(geometry));
+     assert.equal(geometry.paths.length,2);const [oval,lip]=geometry.paths;
+     assert.ok(oval.width>geometry.frame.width*.25&&oval.height>geometry.frame.height*.25,'the face outline occupies the photograph, not an icon-sized SVG');
+     assert.ok(lip.width>50&&lip.height>15,'the adjustable lip outline is visibly large enough to align');
+     for(const path of geometry.paths)assert.ok(path.stroke!=='none'&&path.strokeWidth>=1);
+     assert.ok(Math.hypot(lip.x+lip.width/2-(geometry.frame.x+377/640*geometry.frame.width),lip.y+lip.height/2-(geometry.frame.y+460/960*geometry.frame.height))<15,'the lip outline surrounds the positioned mouth');
      if(shots)await page.screenshot({path:join(shots,'portrait-aligned-guide.png')});
      await page.fill('#makeupSkin','30');await page.fill('#makeupLips','30');await page.fill('#makeupBlush','25');await page.click('#makeupFace');
      await page.waitForFunction(()=>!window.pocketCamera.state.edit.makeupDirty);

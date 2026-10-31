@@ -76,7 +76,7 @@ try{
  });
  await check('a stalled online request falls back to the installed snapshot',async()=>{
   await context.setOffline(false);stall='/camera/samples/default-adventure.png';const time=Date.now();
-  const result=await page.evaluate(async()=>{const start=performance.now(),r=await fetch('/camera/samples/default-adventure.png?stall-test'),blob=await r.blob();return {ok:r.ok,bytes:blob.size,elapsed:performance.now()-start};});
+  const result=await page.evaluate(async()=>{const start=performance.now(),r=await fetch('/camera/samples/default-adventure.png?stall-test'),blob=await r.blob();return {ok:r.ok,bytes:blob.size,elapsed:performance.now()-start,workerTiming:r.headers.get('Server-Timing')};});
   // Measure the operation in its browser clock; remote-control dispatch can wait behind renderer startup work.
   console.log('stalled-fetch timing '+JSON.stringify({...result,nodeRoundtrip:Date.now()-time}));
   assert.ok(result.ok&&result.bytes>0);assert.ok(result.elapsed<4500,JSON.stringify(result));stall='';
