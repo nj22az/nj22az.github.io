@@ -41,10 +41,14 @@
     }
   },
   "runtime_source_sha256": "97611d6e5bf6947695c579307cc0c89d7bea01fbc4a0c2f26db35ea685652436",
-  "hosted_graphics_acceptance": "pending publication workflow",
+  "hosted_graphics_acceptance": "Post-publication status is in the root handover and release-evidence/minato-engine-room-2026-10-31/publication.json",
   "physical_device_acceptance": false,
   "local_browser_limit": "Chromium download returned an invalid/truncated ZIP; no local WebGL success claimed",
   "prior_failed_guard": "guard-before-boarding.log: four legacy boarding/clearing assumptions corrected before the final green run",
   "publication_parent": "93519733462cd7b88c43f7639bae4124ca3ff8f6",
-  "rebase_verification": "Game src tree identical to the 569-test snapshot; later Pocket Camera update and session tool retained"
+  "rebase_verification": "Game src tree identical to the 569-test snapshot; later Pocket Camera update and session tool retained",
+  "source_commit": "2bb7bb35aab07b5859b6124559f435146c8b57f2",
+  "verified_source_tree": "88b7b1e427bacc78711dcb50bcb78447e736ae4f",
+  "local_tested_snapshot": "6b0652d5948f263a19248ea6526ae4caa39c06a9",
+  "github_object_verification": "56 new blobs and 41 reused blobs form an implementation tree identical to the tested local tree"
 }

@@ -2,6 +2,8 @@
 
 Owner instruction: **“Implement and push to main.”** This authorises promoting this ferry room from the Blender H1-F1 prototype. It supersedes the development-only status in the [asset handover](HANDOFF-FERRY-ENGINE-ROOM-H1-2026-10-31.md). It does not promote other development prototypes.
 
+**Published to main on the owner’s instruction.** Implementation commit [2bb7bb35](https://github.com/nj22az/nj22az.github.io/commit/2bb7bb35aab07b5859b6124559f435146c8b57f2), verified source tree 88b7b1e427bacc78711dcb50bcb78447e736ae4f. All changed source/artifact blobs and the complete tree match local Git objects. This implementation and its publication metadata are delivered together. Hosted checks, public-byte verification and game captures are recorded in the root index after deployment.
+
 The release was tested against main `83783c93448d1be251a61c213959448e1d21c971`, then rebased onto current main `93519733462cd7b88c43f7639bae4124ca3ff8f6`. The later Pocket Camera publication and session tool are retained; the tested game source tree is identical after this rebase, using the verified Blender assets from development `a443706edada96233e1fb46fc22098d0f588ea76` / asset source `091b24d31a808854740c59da920ed0771f5d2133`. Current publication, workflow and live-file status is recorded in the [root handover index](../../HANDOVER.md) and release evidence linked there.
 
 ## Delivered behaviour
