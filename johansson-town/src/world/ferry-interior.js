@@ -1,3 +1,4 @@
+import {FERRY_H1_ENABLED,FERRY_H1} from './ferry-engine-room-plan.js';
 import {FERRY_SHIP,FERRY_HEIGHTS,FERRY_ELECTRICS} from './ferry-ship.js';
 import {JOHANSSON_MARINE,makerPlate,WORDMARK} from './johansson-marine.js';
 import {FERRY_PIPING} from './ferry-piping.js';
@@ -64,10 +65,10 @@ const S=FERRY_STAIRS;
  * above the floor plates' level, so its after end is at 8.5, the shafts running aft from there under the fresh-water
  * tanks.) Its way in is the casing P door at z 6.6–7.4 and a ladder down through a hatch in the car deck.
  */
-export const FERRY_ENGINE_ROOM=Object.freeze({aft:Z(8.5),fore:Z(14),floor:Y(.9),deckhead:CAR-.2,side:3.98,
- entrance:Object.freeze([Z(6.25),Z(7.4)]),door:Object.freeze([Z(6.3),Z(7.4)]),
+export const FERRY_ENGINE_ROOM=Object.freeze({aft:Z(8.5),fore:Z(14),floor:Y(.9),deckhead:CAR-(FERRY_H1_ENABLED?.4:.2),side:3.98,
+ entrance:Object.freeze((FERRY_H1_ENABLED?FERRY_H1.ladder.entrance:[6.25,7.4]).map(Z)),door:Object.freeze((FERRY_H1_ENABLED?FERRY_H1.ladder.door:[6.3,7.4]).map(Z)),
  /** The ladder: its head on the car deck at z 7.0, its foot on the floor plates at z 8.6; the hatch it goes down. */
- ladder:Object.freeze({x:Object.freeze([3.2,3.95]),head:Z(7),foot:Z(8.6)}),hatch:Object.freeze({x:Object.freeze([3.15,HB-.07]),z:Object.freeze([Z(7),Z(9)])}),
+ ladder:Object.freeze({x:Object.freeze(FERRY_H1_ENABLED?[...FERRY_H1.ladder.bounds]:[3.2,3.95]),head:Z(FERRY_H1_ENABLED?6.4:7),foot:Z(8.6)}),hatch:Object.freeze({x:Object.freeze([3.15,HB-.07]),z:Object.freeze([Z(FERRY_H1_ENABLED?6.4:7),Z(9)])}),
 });
 const ER=FERRY_ENGINE_ROOM;
 /**
@@ -75,9 +76,9 @@ const ER=FERRY_ENGINE_ROOM;
  * levels and have many rooms"): through the watertight sliding door at Fr 28 the auxiliary machinery room (z 14–19), then
  * through the door at Fr 38 the workshop to port and the engine store to starboard (z 19–22.5), all on the floor plates.
  */
-export const FERRY_MACHINERY_SPACES=Object.freeze({auxFore:Z(19),storeFore:Z(22.5),ewFore:Z(26),wtDoor:Object.freeze({w:.8,h:1.9}),door38:Object.freeze({w:.75,h:1.85}),
+export const FERRY_MACHINERY_SPACES=Object.freeze({auxFore:Z(19),storeFore:Z(22.5),ewFore:Z(26),wtDoor:Object.freeze({w:.8,h:FERRY_H1_ENABLED?2.1:1.9}),door38:Object.freeze({w:.75,h:FERRY_H1_ENABLED?2.1:1.85}),
  /** The door at Fr 45, the workshop's forward bulkhead to the electrical workshop: between the store's mesh and the bench. */
- door45:Object.freeze({x:.25,w:.7,h:1.85}),partition:-.5,partitionAft:Z(20.1)});
+ door45:Object.freeze({x:.25,w:.7,h:FERRY_H1_ENABLED?2.1:1.85}),partition:-.5,partitionAft:Z(20.1)});
 const MS=FERRY_MACHINERY_SPACES,WT_W=MS.wtDoor.w,WT_H=MS.wtDoor.h;
 /** Model-linked arrangement review data. Clearances are measured/reserved values, never OEM overhaul minima. */
 export const FERRY_ENGINEERING_ARRANGEMENT=Object.freeze({
@@ -88,10 +89,10 @@ export const FERRY_ENGINEERING_ARRANGEMENT=Object.freeze({
  mainForwardServiceBand:Object.freeze({longitudinal:Object.freeze([13.0,14.0]),width:1.0,verification:'clear after genset relocation; supplier overhaul procedure unverified'}),
  auxiliaryGeneratorAccess:Object.freeze({centreAisle:1.0,sideAisle:1.035,verification:'model footprint clearance, not supplier minimum'}),
  generatorEnvelope:Object.freeze({room:'aux-room',longitudinal:Object.freeze([15.2,16.05]),port:Object.freeze([.55,2.4]),starboard:Object.freeze([-2.4,-.55]),bedHeight:.2}),
- primaryLadder:Object.freeze({width:.75,head:7,foot:8.6,verification:'model walk tested; real escape compliance unresolved'}),
+ primaryLadder:Object.freeze({width:FERRY_H1_ENABLED?.8:.75,head:FERRY_H1_ENABLED?6.4:7,foot:8.6,verification:'model walk tested; real escape compliance unresolved'}),
  escape:Object.freeze({location:'aft starboard',ladderWidth:.4,verification:'decorative ladder; no complete protected trunk/hatch/operating arrangement verified'}),
  removal:Object.freeze({verification:'unresolved: no engineered removable hatch, lifting beam, rigging or machinery-to-weather removal route'}),
- overheadService:Object.freeze({verification:'unresolved: 1.9 m nominal room height is not a demonstrated engine-overhaul clearance'}),
+ overheadService:Object.freeze({verification:FERRY_H1_ENABLED?'H1: 2.4 m working envelope reserved; complete service routing and OEM overhaul clearances unresolved':'unresolved: 1.9 m nominal room height is not a demonstrated engine-overhaul clearance'}),
 });
 /** The floors below the car deck, where the engines are heard: whoever stands on one wears ear defenders (game.js). */
 export const BELOW_DECK_FLOORS=Object.freeze(['er-ladder','er-ladder-foot','engine-room','control-booth','aux-room','workshop','electrical-workshop']);
@@ -198,7 +199,7 @@ export const FERRY_INTERIOR=(()=>{
    deco([Math.min(s*.4,s*2.74),CAR+2.1,LL1-.16],[Math.max(s*.4,s*2.74),CAR+2.16,LL1-.06],STEEL);
    // A bench along each casing between its doors (port: aft of the engine room's door and forward of it; starboard:
    // aft of the escape door and forward of the store's).
-   for(const [z0,z1] of s>0?[[Z(3.2),Z(6.0)],[Z(7.7),Z(11.0)]]:[[Z(3.2),Z(6.0)],[Z(9.2),Z(11.0)]]){
+   for(const [z0,z1] of s>0?(FERRY_H1_ENABLED?FERRY_H1.portLobbyBenches.map(p=>p.map(Z)):[[Z(3.2),Z(6.0)],[Z(7.7),Z(11.0)]]):[[Z(3.2),Z(6.0)],[Z(9.2),Z(11.0)]]){
     box([Math.min(s*(CAS_IN-.5),s*(CAS_IN-.06)),CAR,z0],[Math.max(s*(CAS_IN-.5),s*(CAS_IN-.06)),CAR+.45,z1],TEAK,{name:'drivers’ bench'});
     deco([Math.min(s*(CAS_IN-.14),s*(CAS_IN-.06)),CAR+.45,z0],[Math.max(s*(CAS_IN-.14),s*(CAS_IN-.06)),CAR+.95,z1],TEAK);
     for(const z of [z0+.1,z1-.1])deco([Math.min(s*(CAS_IN-.46),s*(CAS_IN-.1)),CAR,z-.03],[Math.max(s*(CAS_IN-.46),s*(CAS_IN-.1)),CAR+.42,z+.03],STEEL);}
@@ -604,7 +605,7 @@ export const FERRY_INTERIOR=(()=>{
   // The ladder trunk under the car deck, from the hatch to the engine room's aft bulkhead.
   for(const x of [L.x[0]-.06,L.x[1]+.03])box([x,y0,L.head],[x+.04,y1,a],WHITE,{name:'ladder trunk'});
   box([L.x[0]-.06,y1,L.head],[L.x[1]+.07,CAR-.02,L.head+.04],WHITE,{solid:false,camera:true,name:'ladder trunk'});
-  {const n=10,rise=CAR-y0,run=L.foot-L.head;for(let i=1;i<n;i++){const fr=i/n;deco([L.x[0]+.03,CAR-rise*fr-.03,L.head+run*fr-.07],[L.x[1]-.03,CAR-rise*fr,L.head+run*fr+.07],STEEL,{cls:'metal'});}
+  {const n=FERRY_H1_ENABLED?FERRY_H1.ladder.risers:10,rise=CAR-y0,run=L.foot-L.head;for(let i=1;i<n;i++){const fr=i/n;deco([L.x[0]+.03,CAR-rise*fr-.03,L.head+run*fr-.07],[L.x[1]-.03,CAR-rise*fr,L.head+run*fr+.07],STEEL,{cls:'metal'});}
    for(const x of [L.x[0]+.02,L.x[1]-.02]){bar([x,CAR,L.head],[x,y0,L.foot],.03,STEEL);bar([x,CAR+.9,L.head],[x,y0+.9,L.foot],.02,YELLOW,'paint');}}
   // The ladder's own volume keeps the lens out (batch 6f): at its foot the camera stood under the rungs looking up through them.
   box([L.x[0]-.06,y0,L.head-.1],[L.x[1]+.07,CAR,L.foot+.1],STEEL,{solid:false,camera:true,draw:false,name:'ladder volume'});
@@ -619,7 +620,13 @@ export const FERRY_INTERIOR=(()=>{
   // The forward bulkhead (Fr 28) with the watertight sliding door on the centreline to the auxiliary machinery room (6q).
   wall('x',-W,W,f,f+.06,y0-.1,y1,[doorAt(0,WT_W,y0,WT_H)],0xe8e6dc);
   box([-W,y1,a],[W,CAR-.02,f],0xd8d6cc,{solid:false,camera:true,name:'engine room deckhead'});
-  box([-W,y0-.06,a],[W,y0,f],0x8c9193,{solid:false,camera:false,name:'floor plates'});
+  if(FERRY_H1_ENABLED){
+   // CAD H1: real open grating, supported at the same +900 working level.
+   for(const [x0,x1,z0,z1]of [[-W,W,a,Z(9.3)],[-W,W,Z(12.4),f],[-W,-.63,Z(9.3),Z(12.4)],[.63,W,Z(9.3),Z(12.4)]])box([x0,y0-.06,z0],[x1,y0,z1],0x8c9193,{solid:false,camera:false,name:'floor plates'});
+   box([-W,Y(.68),a],[W,Y(.7),f],0x7a2a1e,{solid:false,camera:false,name:'tank top'});
+   for(let z=Z(9.3);z<Z(12.4);z+=.05)deco([-.63,y0-.03,z],[.63,y0,z+.006],STEEL,{cls:'metal',name:'bearing grating bar'});
+   for(const x of [-.63,-.21,.21,.63])deco([x-.008,y0-.05,Z(9.3)],[x+.008,y0-.03,Z(12.4)],STEEL,{cls:'metal',name:'grating support'});
+  }else box([-W,y0-.06,a],[W,y0,f],0x8c9193,{solid:false,camera:false,name:'floor plates'});
   // Chequer plate (the photographs: raised diamonds, a seam at every plate), everywhere but the booth's own floor.
   floorPlate('chequer',-2.35,W,a,f,y0+.002);floorPlate('chequer',-W,-2.35,Z(10.9)+T/2,f,y0+.002);
   // Gratings over the bilge (the creator's photographs, 2026-10-12, "upper grating": the walkway between the engines is
@@ -657,7 +664,7 @@ export const FERRY_INTERIOR=(()=>{
     box([X[0]+.08,y0+.22,E0],[X[1]-.08,y0+.55,E1],GRND,{name:'main engine sump'});
     box([X[0],y0+.55,E0],[X[1],y0+1.12,E1],GRN,{name:'main engine'});
     for(let i=0;i<heads;i++){const dz=E0+.25+i*pitch+pitch/2;
-     if(s<0&&i===3){                                                                                                     // No.4 door is off the starboard engine (the photographs: the cams and the red inside)
+     if(s<0&&i===3&&!FERRY_H1_ENABLED){                                                                                                     // No.4 door is off the starboard engine (the photographs: the cams and the red inside)
       cyl(.09,.09,.006,[cx+inb*1.012,y0+.82,dz],0x7a2a1e,{rot:[0,0,Math.PI/2],seg:12,cls:'paint',name:'crankcase opening'});cyl(.1,.1,.006,[cx+inb*1.003,y0+.82,dz],0x15181a,{rot:[0,0,Math.PI/2],seg:12,name:'crankcase opening'});
       cyl(.03,.03,.05,[cx+inb*1.05,y0+.86,dz-.03],0xb8bcbe,{rot:[0,0,Math.PI/2],seg:8,name:'camshaft'});cyl(.03,.03,.05,[cx+inb*1.05,y0+.86,dz+.03],0xb8bcbe,{rot:[0,0,Math.PI/2],seg:8,name:'camshaft'});
       cyl(.02,.045,.05,[cx+inb*1.05,y0+.86,dz],0xb8bcbe,{rot:[0,0,Math.PI/2],seg:8,name:'cam lobe'});cyl(.04,.04,.03,[cx+inb*1.04,y0+.76,dz],0x8d9492,{rot:[0,0,Math.PI/2],seg:8,name:'crank web'});
@@ -777,7 +784,7 @@ export const FERRY_INTERIOR=(()=>{
   // pumps, the general-service pump, the bilge pump, the sanitary pump, the hydrophore set), the fuel service tank
   // in the forward corner.
   {const B0=Z(8.6),B1=Z(10.9),BI=-2.35;
-   wall('x',-W,BI,B1-T/2,B1+T/2,y0,y1,[doorAt(-2.95,.7,y0,1.85)],0xd8d2c0);
+   wall('x',-W,BI,B1-T/2,B1+T/2,y0,y1,[doorAt(-2.95,.7,y0,FERRY_H1_ENABLED?FERRY_H1.boothDoorHeight:1.85)],0xd8d2c0);
    wall('z',a,B1,BI-T/2,BI+T/2,y0,y1,[{s0:Z(9.2),s1:Z(10.5),y0:y0+1.0,y1:y0+1.7,glass:true}],0xd8d2c0);
    deco([-W,y0+.003,a],[BI,y0+.008,B1],0x7d7a6c);
    // The main switchboard, Johansson Marine JE-440 (the photographs: a board of round meters, lamps and handles),
@@ -869,11 +876,12 @@ export const FERRY_INTERIOR=(()=>{
   // step over), and the cable trays along the deckhead from the switchboard to the generators and the pumps.
   for(const s of [1,-1]){const X=S2(s,.65,2.45),z0=Z(9.3),z1=Z(12.4);
    const posts=[[X[0],z0],[X[1],z0],[X[0],z1],[X[1],z1],[X[0],(z0+z1)/2],[X[1],(z0+z1)/2]];
+   if(FERRY_H1_ENABLED){const ix=s*.65;for(let i=posts.length-1;i>=0;i--)if(Math.abs(posts[i][0]-ix)<.001&&posts[i][1]>Z(FERRY_H1.serviceOpening.from)&&posts[i][1]<Z(FERRY_H1.serviceOpening.to))posts.splice(i,1);posts.push([ix,Z(FERRY_H1.serviceOpening.from)],[ix,Z(FERRY_H1.serviceOpening.to)]);}
    for(const [px,pz] of posts)bar([px,y0,pz],[px,y0+.95,pz],.02,YELLOW,'paint');
-   for(const h of [.5,.95]){bar([X[0],y0+h,z0],[X[0],y0+h,z1],.018,YELLOW,'paint');bar([X[1],y0+h,z0],[X[1],y0+h,z1],.018,YELLOW,'paint');bar([X[0],y0+h,z0],[X[1],y0+h,z0],.018,YELLOW,'paint');bar([X[0],y0+h,z1],[X[1],y0+h,z1],.018,YELLOW,'paint');}
-   box([X[0]-.02,y0,z0-.02],[X[0]+.02,y0+.95,z1+.02],YELLOW,{draw:false,camera:false,name:'engine rail'});box([X[1]-.02,y0,z0-.02],[X[1]+.02,y0+.95,z1+.02],YELLOW,{draw:false,camera:false,name:'engine rail'});
+   for(const h of [.5,.95]){for(const rx of X){if(FERRY_H1_ENABLED&&Math.abs(rx-s*.65)<.001){bar([rx,y0+h,z0],[rx,y0+h,Z(FERRY_H1.serviceOpening.from)],.018,YELLOW,'paint');bar([rx,y0+h,Z(FERRY_H1.serviceOpening.to)],[rx,y0+h,z1],.018,YELLOW,'paint');}else bar([rx,y0+h,z0],[rx,y0+h,z1],.018,YELLOW,'paint');}bar([X[0],y0+h,z0],[X[1],y0+h,z0],.018,YELLOW,'paint');bar([X[0],y0+h,z1],[X[1],y0+h,z1],.018,YELLOW,'paint');}
+   for(const rx of X){const runs=FERRY_H1_ENABLED&&Math.abs(rx-s*.65)<.001?[[z0-.02,Z(FERRY_H1.serviceOpening.from)+.02],[Z(FERRY_H1.serviceOpening.to)-.02,z1+.02]]:[[z0-.02,z1+.02]];for(const [ra,rb]of runs)box([rx-.02,y0,ra],[rx+.02,y0+.95,rb],YELLOW,{draw:false,camera:false,name:'engine rail'});}
    box([X[0],y0,z0-.02],[X[1],y0+.95,z0+.02],YELLOW,{draw:false,camera:false,name:'engine rail'});box([X[0],y0,z1-.02],[X[1],y0+.95,z1+.02],YELLOW,{draw:false,camera:false,name:'engine rail'});
-   deco([s*2.6-.15,y1-.3,a+.2],[s*2.6+.15,y1-.22,f-.2],0x8c9193,{cls:'metal'});for(let z=a+.6;z<f;z+=.5)deco([s*2.6-.16,y1-.32,z-.01],[s*2.6+.16,y1-.2,z+.01],0x6f7476,{cls:'metal'});
+   deco([s*2.6-.15,y1-.3,a+.2],[s*2.6+.15,y1-.22,f-.2],0x8c9193,{cls:'metal'});for(let z=a+.6;z<f;z+=.5)deco([s*2.6-.16,y1-(FERRY_H1_ENABLED?.28:.32),z-.01],[s*2.6+.16,y1-.2,z+.01],0x6f7476,{cls:'metal'});
   }
   // What a watchkeeper works with. The sea chests, low against her sides forward, their suction valves and strainers
   // (the cooling and fire pumps draw through them); each main engine's local control stand at its gearbox, for
@@ -1137,6 +1145,8 @@ export const FERRY_INTERIOR=(()=>{
   floor('workshop',[-W,W],[A1-.4,F1+.1],y0,(x,z,r)=>{if(z<A1+.06+r)return Math.abs(x)<=MS.door38.w/2-r+.06;if(z>F1-r)return Math.abs(x-MS.door45.x)<=MS.door45.w/2-r+.06;return Math.abs(x)<=W-r;});
   floor('electrical-workshop',[-W,W],[F1-.4,MS.ewFore],y0,(x,z,r)=>{if(z<F1+.06+r)return Math.abs(x-MS.door45.x)<=MS.door45.w/2-r+.06;return Math.abs(x)<=W-r&&z<=MS.ewFore-r;});
  }
+ // H1-03: five new fluorescent fittings; four retained main/electrical fittings are above.
+ if(FERRY_H1_ENABLED)for(const [X,Y]of FERRY_H1.luminaires){if([9.5,12.5,24.4].includes(X))continue;deco([Y-.1,3.4-SH.draft,Z(X)-.3],[Y+.1,3.45-SH.draft,Z(X)+.3],0xf6f1e2,{name:'H1 fluorescent fitting'});}
  // ---- The pipes, from the diagrams (6r-1). The anchors the machines did not set themselves: the tanks under the plates
  // (a flanged stub on the tank top, under the gratings), the sea-water crossover, the overboards, the bilge wells, the
  // risers and deck connections that leave the space (a penetration flange), the hydrophore's pressure tank; then every

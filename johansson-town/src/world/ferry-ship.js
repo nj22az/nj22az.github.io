@@ -1,3 +1,4 @@
+import {FERRY_H1_ENABLED,FERRY_H1} from './ferry-engine-room-plan.js';
 /**
  * The Minato Maru (みなと丸), Minato-chō's town ferry to Kitano-jima, as she is designed: what she
  * is, how she is laid out deck by deck, what drives her, what her switchboard feeds and what she
@@ -35,11 +36,11 @@ export const FERRY_SHIP=Object.freeze({
  rules:'Fictional narrative reference to Japanese inspection and NK class; no actual flag, class or construction approval has been obtained',
  area:'Limited coastal (gentei engan)',
  grossTons:199,
- length:34.5,lengthBP:31,beam:8.4,depth:3,
+ length:34.5,lengthBP:31,beam:8.4,depth:3+(FERRY_H1_ENABLED?1:0),
  /** Draft at full load, and as she usually floats in service. */
  draft:1.9,serviceDraft:1.7,
  /** The car deck above the waterline at full load: depth less draft. */
- freeboard:1.1,
+ freeboard:1.1+(FERRY_H1_ENABLED?1:0),
  /** Tonnes: geometry displacement at the design immersion; legacy assumed
   * lightship and arithmetic residual are NOT certified deadweight/cargo limits.
   * The former 283 t operating target cannot float this loft at 1.9 m. */
@@ -58,14 +59,14 @@ export const FERRY_SHIP=Object.freeze({
 
 /** Heights above the keel (m), deck by deck, and the points on the mast that the rules care about. */
 export const FERRY_HEIGHTS=Object.freeze({
- tankTop:.7,floorPlates:.9,carDeck:3,passengerDeck:7.4,bridgeDeck:10,compassDeck:12.4,
- funnelTop:12,mastheadLight:15,mastTop:17,bridgeEye:11.6,
+ tankTop:.7,floorPlates:.9,carDeck:3+(FERRY_H1_ENABLED?1:0),passengerDeck:7.4+(FERRY_H1_ENABLED?1:0),bridgeDeck:10+(FERRY_H1_ENABLED?1:0),compassDeck:12.4+(FERRY_H1_ENABLED?1:0),
+ funnelTop:12+(FERRY_H1_ENABLED?1:0),mastheadLight:15+(FERRY_H1_ENABLED?1:0),mastTop:17+(FERRY_H1_ENABLED?1:0),bridgeEye:11.6+(FERRY_H1_ENABLED?1:0),
 });
 
 /** A shipyard point (x across, + port; y above the keel; z forward of the transom) in the model's frame. */
 export const toShip=([x,y,z],ship=FERRY_SHIP)=>[x,y-ship.draft,z-ship.length/2];
 
-const space=(id,deck,z,x,y,what,why,extra={})=>Object.freeze({id,deck,z:Object.freeze(z),x:Object.freeze(x),y:Object.freeze(y),what,why,...extra});
+const space=(id,deck,z,x,y,what,why,extra={})=>Object.freeze({id,deck,z:Object.freeze(z),x:Object.freeze(x),y:Object.freeze(FERRY_H1_ENABLED&&['engine-room','control-booth','aux-room','workshop','engine-store','electrical-workshop','void'].includes(id)?[y[0],FERRY_H1.deckhead]:y),what,why,...extra});
 const H=FERRY_HEIGHTS,DECKHOUSE=6.8,BRIDGEHOUSE=6;
 /**
  * The general arrangement, deck by deck: every space with where it is (z and x ranges, and its floor

@@ -1,0 +1,55 @@
+{
+  "artifacts": {
+    "assets/models/ferry-engine-room/minato-engine-room-h1.glb": {
+      "bytes": 2900808,
+      "sha256": "ccdf91b567457ee3f0c154995b1caa024479efa4a9dc339e11af7d62b05f3468"
+    },
+    "art/ferry-engine-room/Minato_Maru_Engine_Room_H1.blend": {
+      "bytes": 585402,
+      "sha256": "9b62b0f54d714345a58b0a1ae56e922962923c0edb374bd2f5b17abf0d05e1a6"
+    },
+    "art/ferry-engine-room/geometry-h1.json": {
+      "bytes": 268804,
+      "sha256": "5fb45afaa9c41d2b01a52bcf0b66161a106293cff0dad779d6484b22e8ba1d44"
+    },
+    "art/ferry-engine-room/cad/Minato_Maru_Engine_Room_H1_Implementation.pdf": {
+      "bytes": 518315,
+      "sha256": "796c70a59d0143846f3536cd1413d42c58fda434c0a38223684f0954ce4577d2"
+    },
+    "art/ferry-engine-room/cad/JS127-ER-H1-03.dxf": {
+      "bytes": 59765,
+      "sha256": "f9f2957ab1d861d509069a052897703223991b153c0516b1a3ebcb3497361ef1"
+    }
+  },
+  "glb_meshes": 1,
+  "glb_primitives": 1,
+  "glb_triangles": 32408,
+  "pdf_pages": 15,
+  "pdf_page_mm": [
+    594,
+    420
+  ],
+  "camera_count": 8,
+  "working_clearance_m": 2.4,
+  "nominal_height_m": 2.7,
+  "ferry_and_camera_checks": "7/7 pass; includes 2 m standing envelope at booth door",
+  "runtime_package_checks": "4/4 pass",
+  "h1_vessel_walk_checks": "7/7 pass",
+  "final_guard": {
+    "files": 93,
+    "tests": 482,
+    "passed": 482,
+    "failed": 0,
+    "seconds": 545,
+    "node_heap_mb": 6144,
+    "concurrency": 2
+  },
+  "browser_graphics": "WebGL context creation failed; GL_VENDOR Disabled",
+  "game_visual_acceptance": false,
+  "meshy_assets_generated": false,
+  "meshy_block": "Google human-verification challenge, then expired sign-in session",
+  "real_ship_engineering_acceptance": false,
+  "runtime_source_sha256": "15bcdec13eab04a1e7564dc0515fe7ed8caebadc7cbf141d0f1d38449b2ced0f",
+  "implementation_commit": "ddf80fe33c9d75915affa026ecba0d45d14171d1",
+  "blender_compressed_reopen": "pass: 1290 source components, 8 CAD cameras"
+}

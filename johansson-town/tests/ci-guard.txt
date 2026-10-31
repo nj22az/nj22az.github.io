@@ -115,3 +115,5 @@ avatar-expressions.test.mjs
 
 # Original opt-in coordinated eye, neck and body attention.
 attention-rig.test.mjs
+
+ferry-fixed-camera.test.mjs

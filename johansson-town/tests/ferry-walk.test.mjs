@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three.module.js';
 import {createFerryRun} from '../src/world/ferry.js';
 import {createFerryWalk,FERRY_FLOORS,FERRY_STEP} from '../src/world/ferry-walk.js';
-import {FERRY_DECKS,FERRY_CASINGS,GATE,FERRY_HULL} from '../src/world/ferry-model.js';
+import {FERRY_DECKS,FERRY_CASINGS,GATE,FERRY_HULL,GANGWAY_LENGTH} from '../src/world/ferry-model.js';
 import {groundHeight} from '../src/world/layout.js';
 import {townBoundsBlocked} from '../physics.js';
 import {ferryServiceFixture} from './ferry-service-fixture.mjs';
@@ -43,7 +43,7 @@ test('alongside at Minato: up the gangway from the pier, through the gate, the p
  const {run,walk,colliders}=alongside();
  const g=run.ferry.userData.gangway;g.updateMatrixWorld(true);
  const gw=(x,z)=>new THREE.Vector3(x,.03,z).applyMatrix4(g.matrixWorld);
- const onPier=gw(2.6,0),top=gw(.2,0),passage=world(run,3.6,FERRY_DECKS.car.y,GATE.z),foyer=world(run,3.4,FERRY_DECKS.car.y,GATE.z-1.6),door=world(run,2.4,FERRY_DECKS.car.y,GATE.z-2.3),lane=world(run,1.4,FERRY_DECKS.car.y,GATE.z-3);
+ const onPier=gw(GANGWAY_LENGTH+.6,0),top=gw(.2,0),passage=world(run,3.6,FERRY_DECKS.car.y,GATE.z),foyer=world(run,3.4,FERRY_DECKS.car.y,GATE.z-1.6),door=world(run,2.4,FERRY_DECKS.car.y,GATE.z-2.3),lane=world(run,1.4,FERRY_DECKS.car.y,GATE.z-3);
  const r=stroll(walk,colliders,[onPier.x,onPier.z],[[top.x,top.z],[passage.x,passage.z],[foyer.x,foyer.z],[door.x,door.z],[lane.x,lane.z]]);
  assert.equal(r.stopped,null,'stopped at '+r.stopped+' '+[r.x,r.y,r.z].map(n=>n.toFixed(2)));
  const ids=[...new Set(r.trail.map(t=>t[3]))];
