@@ -14,6 +14,7 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 import {normalCrop} from './crop.js?v=20261030crop1';
+import {normaliseMakeup} from './makeup.js?v=20261031retouch1';
 
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
 // Adventure Ink came with the owner's "Yes add" (29 October 2026): an instant print, an 80s camcorder tape, comic
@@ -1145,7 +1146,7 @@ export function normalRecipe(recipe={}){
  const stickers=(Array.isArray(recipe.stickers)?recipe.stickers:[]).filter(s=>typeof s?.id==='string').slice(0,40)
   .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
    ...(s.id.startsWith('balloon:')?{text:String(s.text??'').slice(0,140)}:{})}));
- return {layers,crop:normalCrop(recipe.crop),enhance:n(recipe.enhance,0,1,0),paper:PAPERS.some(p=>p.id===recipe.paper)?recipe.paper:'none',
+ return {layers,crop:normalCrop(recipe.crop),makeup:normaliseMakeup(recipe.makeup),enhance:n(recipe.enhance,0,1,0),paper:PAPERS.some(p=>p.id===recipe.paper)?recipe.paper:'none',
   adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0),detail:n(a.detail,-1,1,0)},
   stamp:!!recipe.stamp,stickers,
   // The print's border (frames.js) and the trick lens.

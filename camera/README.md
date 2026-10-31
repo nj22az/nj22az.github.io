@@ -67,6 +67,18 @@ when saving ? I want memory with our own photos or with the stickers".
   no downloads or uploads. This is conventional photographic correction, not AI reconstruction or upscaling.
   No code, models or binaries from Merserk's Visual Enhancer are included: its Windows/DLSS/DirectML dependencies
   do not run in this browser, and its source licence restricts redistribution and hosted equivalents.
+- **Makeup** in Adjust: Skin, Lips and Blush strengths with Rose, Peach and Berry colours. Find face uses
+  a bundled offline frontal-face classifier; Align face moves/resizes the guide and independently positions both eyes
+  and the mouth. Drag handles or use arrow keys (Shift for larger steps); Angle handles tilted faces. Check placement
+  before colouring. Effects preserve the original source and face geometry; Reset switches all effects off while
+  retaining placement. Preview is bounded to 1,280 pixels; Save copy applies the recipe to the full decoded source.
+  Original compares the source before makeup. Lip colour uses an adjustable template, not semantic lip segmentation.
+- **Smart Erase**: Erase → Find spots marks up to twelve small, isolated contrast spots. Tap a numbered marker or its
+  accessible numbered button to heal that area with the existing content-aware fill; nothing changes until selected.
+  The manual brush remains available for larger distractions, with exact Undo during the editing session. This is
+  local spot analysis, not automatic person/object recognition; inspect suggestions before removing them. Faces and
+  texture can contain intentional details. Large removals and complicated backgrounds can need several brush passes.
+  Makeup, detection and healing run on device and work after the offline download completes.
 - **Stickers**: the camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
@@ -400,8 +412,16 @@ one is not checked; real phones (iPhone Safari, Android Chrome) and their frame 
 ## Complete offline bundle
 
 After the first complete online download, the Settings download icon becomes **Ready offline**. Startup, local photo
-imports, Looks/Smart Surprise, editing, stickers, frames, Erase, album saves and games use a verified 22.4 MB bundle.
+imports, Looks/Smart Surprise, editing, stickers, frames, Erase, album saves and games use a verified 22.7 MB bundle.
 Keep the browser's site data. An incomplete download remains retryable and never replaces the previous complete cache.
 Regenerate `camera/offline.json` and the worker digest with `node tools/build-camera-offline.mjs` after changing runtime
 assets; `camera/tests/offline.test.mjs` rejects a stale bundle. Test real offline behaviour with
 `CAMERA_SHOTS=./camera-offline-evidence node camera/tests/offline.browser.mjs`. Physical Safari acceptance remains open.
+
+To update an existing Home Screen copy after a release, connect to the internet and reload/reopen the app. In Settings,
+wait for the offline-ready checkmark. This release checks for updates on page/foreground resume and reconnection;
+a verified newer worker enables **Update** in Settings. That action refreshes the app only after an open edit, import,
+capture or share is finished. It never clears the album. Existing older releases need a normal online page reload to
+receive this update control; simply reconnecting a suspended old page does not guarantee a UI refresh. Do not remove
+the Home Screen app or clear site data to update. A separately downloaded ZIP/source copy needs its files replaced
+or updated from the repository; it does not receive website releases automatically.

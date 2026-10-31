@@ -96,6 +96,23 @@
 .editor .sticker-sets{display:flex;flex-wrap:nowrap;padding:0 0 4px;gap:4px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;touch-action:pan-x}.editor .sticker-sets button{flex:none;min-height:44px;height:auto;font-size:.8125rem;padding:8px;white-space:nowrap}
 .editor .sticker-sets>:first-child,.editor .sticker-sets>:last-child{margin:0}
 .editor .sticker-grid{padding-inline:0}.editor .erase-hint{font-size:.875rem;line-height:1.5;margin:8px 0}
+/* Retouch controls stay in Adjust and Erase; the photograph keeps its existing space. */
+.editor .makeup-heading{min-height:44px;gap:8px}.makeup-heading output{margin-left:auto;font-size:.8125rem;color:var(--label-2)}
+.editor .makeup-open,.retouch-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 10px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
+.makeup-open svg,.retouch-actions svg{width:22px;height:22px;flex:none}
+.retouch-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.retouch-hint{font-size:.75rem;line-height:1.5;color:var(--label-2);margin:6px 0}
+.makeup-controls{padding:4px 0 10px;border-bottom:1px solid var(--separator)}
+.makeup-sliders label,.makeup-angle{display:grid;grid-template-columns:3.2em minmax(0,1fr) 3em;gap:8px;align-items:center;font-size:.8125rem;min-height:44px}
+.makeup-sliders input,.makeup-angle input{width:100%;min-width:0}.makeup-sliders output,.makeup-angle output{text-align:right;font-size:.75rem}
+.makeup-shades{display:flex;gap:6px;margin:4px 0}.makeup-shades button,.erase-suggestions button{min-height:44px;min-width:44px;border-radius:10px;padding:8px 12px;background:var(--surface-2);font-size:.8125rem}
+.makeup-shades button[aria-pressed=true],.makeup-open[aria-expanded=true],#makeupFace[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.erase-suggestions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.erase-suggestions:empty{display:none}
+.makeup-guide{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}.makeup-guide[hidden]{display:none}
+.makeup-guide-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.makeup-guide-outline{fill:none;stroke:#fff;stroke-width:1.5;stroke-dasharray:5 4;filter:drop-shadow(0 1px 1px #111)}
+.makeup-guide-handle{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;min-height:44px;border-radius:50%;background:rgba(20,20,24,.72);color:white;pointer-events:auto;touch-action:none;display:grid;place-items:center;border:1px solid rgba(255,255,255,.85)}
+.makeup-guide-handle[hidden]{display:none}.makeup-guide-handle:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.makeup-guide-handle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6}
 /* Saved photos remain first; games stay in their existing secondary destination. */
 .album .album-scroll{padding:24px 20px}.album .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px;max-width:960px;margin:auto}
 .album .grid button{aspect-ratio:auto;min-width:0;overflow:visible;text-align:left;display:flex;flex-direction:column;align-items:stretch;gap:6px;background:none}
@@ -173,3 +190,4 @@
 @media(prefers-reduced-motion:reduce){.welcome-sticker{animation:none}}
 
 .settings-heading{flex-wrap:wrap}.settings-heading h2{flex:1}.settings-heading .offline-setting{flex:none;width:44px;height:44px;padding:10px}.offline-setting svg{width:24px;height:24px}.offline-setting:disabled{opacity:1}.offline-setting[data-state="preparing"]{opacity:.5}
+.settings-heading .offline-setting[data-state="update"]{display:inline-flex;align-items:center;gap:6px;width:auto;color:var(--accent);font-size:.8125rem}
