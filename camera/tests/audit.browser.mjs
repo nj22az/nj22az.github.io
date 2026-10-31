@@ -63,8 +63,9 @@ try{
    for(const light of [false,true]){
     const a=now.createLookEngine(document.createElement('canvas'),{light}),b=before.createLookEngine(document.createElement('canvas'),{light});a.setSource('chart',source,source.width,source.height);b.setSource('chart',source,source.width,source.height);
     const recipe=now.normalRecipe({layers:[{look:'thirtyTwoBit',amount:1}]}),opts={source:'chart',width:w,height:h};
-    const fresh=a.render(recipe,opts),old=b.render(recipe,opts),zero=a.render(now.normalRecipe({layers:[{look:'thirtyTwoBit',amount:0}]}),opts),natural=a.render(now.normalRecipe(),opts);
-    const row={width:w,height:h,light,before:measure(old),after:measure(fresh),zeroMatches:zero.data.every((n,i)=>n===natural.data[i])};
+    const preview=async(e,m)=>{e.gl.canvas.width=w;e.gl.canvas.height=h;let ready=false;for(let i=0;i<400&&!ready;i++){ready=e.draw(recipe,{source:'chart'});if(!ready)await new Promise(r=>setTimeout(r,10));}if(!ready)throw Error('32-bit preview did not compile');const px=new Uint8Array(w*h*4);e.gl.readPixels(0,0,w,h,e.gl.RGBA,e.gl.UNSIGNED_BYTE,px);return {width:w,height:h,data:m.flipRows(px,w,h)};};
+    const fresh=await preview(a,now),old=await preview(b,before),exported=a.render(recipe,opts),zero=a.render(now.normalRecipe({layers:[{look:'thirtyTwoBit',amount:0}]}),opts),natural=a.render(now.normalRecipe(),opts);
+    const row={width:w,height:h,light,before:measure(old),after:measure(fresh),exportAfter:measure(exported),previewExportMax:light?null:fresh.data.reduce((max,v,i)=>Math.max(max,Math.abs(v-exported.data[i])),0),zeroMatches:zero.data.every((n,i)=>n===natural.data[i])};
     if(w===640&&!light){const image=px=>{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').putImageData(new ImageData(px,w,h),0,0);return c.toDataURL();};row.beforePNG=image(old.data);row.afterPNG=image(fresh.data);}
     rows.push(row);a.gl.getExtension('WEBGL_lose_context')?.loseContext();b.gl.getExtension('WEBGL_lose_context')?.loseContext();
    }
@@ -72,7 +73,7 @@ try{
   return rows;
  });
  for(const row of results.geometry){
-  await check(`32-bit geometry ${row.width}x${row.height} ${row.light?'LIGHT':'full'}`,async()=>{const texel=Math.max(row.width/Math.max(1,Math.floor(120*row.width/row.height)),row.height/120);assert.equal(row.after.missing,0);assert.ok(Number.isFinite(row.after.vertical)&&Number.isFinite(row.after.horizontal)&&row.after.vertical<=texel&&row.after.horizontal<=texel,JSON.stringify(row));assert.ok(row.before.vertical>texel||row.before.horizontal>texel||row.before.missing>0,'published shader visibly bends the chart');assert.equal(row.zeroMatches,true);});
+  await check(`32-bit geometry ${row.width}x${row.height} ${row.light?'LIGHT':'full'}`,async()=>{const texel=Math.max(row.width/Math.max(1,Math.floor(120*row.width/row.height)),row.height/120);assert.equal(row.after.missing,0);assert.equal(row.exportAfter.missing,0);assert.ok(row.exportAfter.vertical<=texel&&row.exportAfter.horizontal<=texel);if(!row.light)assert.ok(row.previewExportMax<=1);assert.ok(Number.isFinite(row.after.vertical)&&Number.isFinite(row.after.horizontal)&&row.after.vertical<=texel&&row.after.horizontal<=texel,JSON.stringify(row));assert.ok(row.before.vertical>texel||row.before.horizontal>texel||row.before.missing>0,'published shader visibly bends the chart');assert.equal(row.zeroMatches,true);});
   if(row.beforePNG){await png('geometry-before.png',row.beforePNG);await png('geometry-after.png',row.afterPNG);delete row.beforePNG;delete row.afterPNG;}
  }
  await check('32-bit retains five-bit colour, ordered dither and deterministic pixels',async()=>{
