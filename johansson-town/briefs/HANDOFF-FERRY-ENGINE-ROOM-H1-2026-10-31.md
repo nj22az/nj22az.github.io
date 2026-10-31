@@ -2,7 +2,7 @@
 
 The owner requested a physically credible engine room before adding/removing equipment, then increased headroom, Blender and Meshy implementation, application to World, and attractive locked cameras for exploration.
 
-Development only, opt-in `?engine-room-h1`. Implementation commit: `ddf80fe33c9d75915affa026ecba0d45d14171d1`, based on `1ff451effda177451af67f4ab3e3a5b0f6367a5a`. Main was checked at `faca8c535cef6927f243d7daff46d131d363d78e`; no main merge, Pages deployment, Pixar-branch or Linux release is included. Preserve the owner's three-branch workflow.
+Development only, opt-in `?engine-room-h1`. Implementation commit: `e43e6ff292bda94b5918dcb881acc8692e1b450b`, based on `1ff451effda177451af67f4ab3e3a5b0f6367a5a`. Main was checked at `faca8c535cef6927f243d7daff46d131d363d78e`; no main merge, Pages deployment, Pixar-branch or Linux release is included. Preserve the owner's three-branch workflow. The GitHub source tree `3d23c15890b9f92cd02d6f07a8c79225740c4f38` matches the verified local snapshot byte-for-byte. Publication uses the connected GitHub app because the command-line connection has no write credentials.
 
 ## Delivered geometry and CAD
 

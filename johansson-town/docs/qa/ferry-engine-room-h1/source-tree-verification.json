@@ -1,0 +1,9 @@
+{
+  "source_commit": "e43e6ff292bda94b5918dcb881acc8692e1b450b",
+  "source_tree": "3d23c15890b9f92cd02d6f07a8c79225740c4f38",
+  "local_snapshot": "45e58f833151c4cafaa10a393dcab7d82e9cc4ad",
+  "all_78_blob_hashes_match": true,
+  "complete_tree_matches": true,
+  "branch": "development",
+  "main_changed": false
+}

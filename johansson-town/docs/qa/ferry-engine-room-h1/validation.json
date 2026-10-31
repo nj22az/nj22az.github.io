@@ -50,6 +50,9 @@
   "meshy_block": "Google human-verification challenge, then expired sign-in session",
   "real_ship_engineering_acceptance": false,
   "runtime_source_sha256": "15bcdec13eab04a1e7564dc0515fe7ed8caebadc7cbf141d0f1d38449b2ced0f",
-  "implementation_commit": "ddf80fe33c9d75915affa026ecba0d45d14171d1",
-  "blender_compressed_reopen": "pass: 1290 source components, 8 CAD cameras"
+  "implementation_commit": "e43e6ff292bda94b5918dcb881acc8692e1b450b",
+  "blender_compressed_reopen": "pass: 1290 source components, 8 CAD cameras",
+  "verified_source_tree": "3d23c15890b9f92cd02d6f07a8c79225740c4f38",
+  "local_verified_snapshot": "45e58f833151c4cafaa10a393dcab7d82e9cc4ad",
+  "github_blob_and_tree_verification": "all 78 uploaded blobs and the complete source tree match local Git objects"
 }
