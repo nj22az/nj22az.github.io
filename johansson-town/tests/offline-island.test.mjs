@@ -60,7 +60,9 @@ test('failed replacement retains the previous complete island; successful replac
  await update.worker.start();assert.equal(update.worker.snapshot().stage,'error');assert.equal(await (await update.worker.fallback(navigation('./'))).text(),contents['index.html']);
  const retry=fixture({disk:old.disk,manifest:manifest('two',changed),fetchFile:async url=>new Response(changed[new URL(url).pathname.slice('/johansson-town/'.length)])});
  await retry.worker.start();assert.equal(retry.worker.snapshot().stage,'ready');assert.equal(retry.requests.length,1);assert.equal(await (await retry.worker.fallback(navigation('./'))).text(),changed['index.html']);
- assert.deepEqual(await old.disk.keys(),['johansson-town-offline-v1-two']);
+ assert.deepEqual(await old.disk.keys(),['johansson-town-offline-v1-one','johansson-town-offline-v1-two'],'One predecessor remains for tabs holding its lazy chunks');
+ const oldCache=await old.disk.open('johansson-town-offline-v1-one'),oldMarker=await (await oldCache.match(scope+'__offline_ready__')).json();oldMarker.created=Number.MAX_SAFE_INTEGER;await oldCache.put(scope+'__offline_ready__',new Response(JSON.stringify(oldMarker)));
+ const next=fixture({disk:old.disk,manifest:manifest('three',changed),fetchFile:async()=>{throw Error('All bytes should be reused');}});await next.worker.start();assert.equal(next.requests.length,0);assert.equal(next.worker.snapshot().stage,'ready');assert.deepEqual(await old.disk.keys(),['johansson-town-offline-v1-two','johansson-town-offline-v1-three']);
 });
 test('full device storage is actionable and never damages another app cache',async()=>{
  const f=fixture();await (await f.disk.open('pocket-camera-private')).put(scope+'fixture',new Response('preserve'));f.disk.fail=true;

@@ -52,11 +52,14 @@ globalThis.createTownOffline=function({scope,manifest,storage=caches,fetchFile=f
   }));
   if(paused)return publish({stage:'paused'});
   if(failure)throw failure;
-  const record={version:manifest.version,created:Date.now(),files:manifest.files};
+  const previous=[];for(const key of others){const record=await readRecord(await storage.open(key));if(record?.version)previous.push({key,record});}
+  const record={version:manifest.version,generation:Math.max(0,...previous.map(p=>p.record.generation||0))+1,created:Date.now(),files:manifest.files};
   // Atomic publication: a failed or interrupted replacement keeps the previous complete island.
   await cache.put(marker,new Response(JSON.stringify(record),{headers:{'Content-Type':'application/json'}}));
   checked=true;snapshotList=null;publish({stage:'ready',done:files.length,bytes:manifest.bytes});
-  await Promise.allSettled(others.map(key=>storage.delete(key)));
+  // A tab opened before an update can still ask for its old lazy chunks. Retain one complete predecessor.
+  previous.sort((a,b)=>(b.record.generation||0)-(a.record.generation||0)||b.record.created-a.record.created);const keep=previous[0]?.key;
+  await Promise.allSettled(others.filter(key=>key!==keep).map(key=>storage.delete(key)));
   return {...state};
  }
  function start(){
@@ -68,7 +71,7 @@ globalThis.createTownOffline=function({scope,manifest,storage=caches,fetchFile=f
  async function readSnapshots(){
   const records=[];
   for(const key of (await storage.keys()).filter(key=>key.startsWith(prefix))){const cache=await storage.open(key),record=await readRecord(cache);if(record?.version&&Array.isArray(record.files))records.push({cache,record});}
-  return records.sort((a,b)=>b.record.created-a.record.created);
+  return records.sort((a,b)=>Number(b.record.version===manifest.version)-Number(a.record.version===manifest.version)||(b.record.generation||0)-(a.record.generation||0)||b.record.created-a.record.created);
  }
  const snapshots=()=>snapshotList||(snapshotList=readSnapshots().catch(error=>{snapshotList=null;throw error;}));
  async function fallback(request){

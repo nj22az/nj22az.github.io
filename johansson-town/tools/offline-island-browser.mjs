@@ -24,6 +24,8 @@ async function launch(offline=false){
  const options={...devices['iPad Mini'],viewport:{width:744,height:1133},screen:{width:744,height:1133},deviceScaleFactor:2,serviceWorkers:'allow',headless:engine!=='webkit'};
  if(engine==='chromium')options.args=['--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage'];
  context=await (engine==='webkit'?webkit:chromium).launchPersistentContext(profile,options);
+ // Software rendering and the existing synchronous island construction can exceed Playwright's 30 s default.
+ context.setDefaultTimeout(120000);
  await context.route('https://fonts.googleapis.com/**',route=>route.fulfill({contentType:'text/css',body:''}));
  await context.setOffline(offline);page=context.pages()[0]||await context.newPage();
  page.on('pageerror',error=>report.errors.push({phase,message:error.message}));
@@ -41,6 +43,8 @@ async function boot(path=''){
 try{
  await launch();await page.goto(base,{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>!!navigator.serviceWorker.controller,null,{timeout:60000});
+ await page.waitForFunction(()=>window.__JOHANSSON_LOADING__?.snapshot().ready||window.__JOHANSSON_LOADING__?.snapshot().error,null,{timeout:240000});
+ assert.equal(await page.evaluate(()=>window.__JOHANSSON_LOADING__.snapshot().error),null);
  await page.evaluate(()=>localStorage.setItem('offline-audit-sentinel','keep this save data'));
  await page.locator('#titleOffline').tap();await page.waitForFunction(()=>!document.querySelector('#offlineDownload').disabled);
  await page.screenshot({path:resolve(out,'ipad-download-before.png')});
@@ -84,6 +88,6 @@ try{
  const engineRoom=await page.evaluate(()=>{const a=window.__JOHANSSON_AUDIT__,state=a.world.ferry.ferry.userData.engineRoomH1,model=state.group.getObjectByName('Minato Maru H1-F1 / Blender CAD');let meshes=0,triangles=0;model?.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;}});return {loaded:state.loaded,error:state.error,meshes,triangles,gpuError:a.renderer.getContext().getError()};});
  assert.equal(engineRoom.loaded,true);assert.equal(engineRoom.error,null);assert.equal(engineRoom.meshes,2);assert.equal(engineRoom.triangles,80376);assert.equal(engineRoom.gpuError,0);step('default Blender ferry and all eight cameras work offline',{...engineRoom,views});
  assert.equal(offlineSuccesses,0,'Server supplied no successful response after disconnecting');assert.deepEqual(report.failedLocal,[]);assert.deepEqual(report.errors,[]);assert.ok(report.offlineResponses.some(url=>url.includes('minato-engine-room-h1-f1.glb')));report.passed=true;
-}catch(error){failure=error;report.passed=false;report.failure={message:error.message,stack:error.stack};if(page)await page.screenshot({path:resolve(out,'failure.png')}).catch(()=>{});}
+}catch(error){failure=error;report.passed=false;report.failure={message:error.message,stack:error.stack};if(page){report.failureUI=await page.evaluate(()=>({loading:window.__JOHANSSON_LOADING__?.snapshot(),dialog:document.querySelector('#offlineIsland')?.outerHTML,buttons:[...document.querySelectorAll('#offlineIsland button')].map(b=>({id:b.id,disabled:b.disabled,hidden:b.hidden,rect:b.getBoundingClientRect().toJSON(),visibility:getComputedStyle(b).visibility,display:getComputedStyle(b).display}))})).catch(()=>null);await page.screenshot({path:resolve(out,'failure.png')}).catch(()=>{});}}
 finally{report.offlineServerSuccesses=offlineSuccesses;report.uniqueOfflineResponses=[...new Set(report.offlineResponses)].length;delete report.offlineResponses;await writeFile(resolve(out,'results.json'),JSON.stringify(report,null,2)+'\n');await context?.close();await new Promise(resolve=>server.close(resolve));}
 if(failure)throw failure;
