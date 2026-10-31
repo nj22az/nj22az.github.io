@@ -135,3 +135,34 @@ the complete Camera runtime bundle is byte-identical to the accepted `749e4112` 
 Linux retains the two previously reproduced main failures: controller smoke expects x=-1.5 at its landing but actual
 x=0.3; housing's post-office-lot counts the moving Minato Maru paint/metal meshes. No World runtime, fixture expectation
 or Linux release is changed by this Camera work.
+
+## Verified review delivery — 31 October 2026
+
+Review branch is pushed; [PR #422](https://github.com/nj22az/nj22az.github.io/pull/422) remains unmerged. Final tested
+source `15712ac437b5befd7c163150857326f5eacaab48`, exact local tree `b4c5895d96d2e8dca9fbcb786c7c7be2814abf05`.
+The complete Camera runtime is byte-identical to fully regression-tested `749e4112`; only browser fixtures and this
+handover changed. Later handover-only commits do not alter that runtime.
+
+Final focused Camera run [41238456158](https://github.com/nj22az/nj22az.github.io/actions/runs/41238456158):
+- Retouch **40/40**, job `124647076331`: makeup, native manual strokes and touch targets, exact Undo, alignment,
+  native-resolution JPEG/source persistence, cancellation and bundled face detector.
+- Offline **13/13**, job `124647076194`: verified full bundle, import/edit/save/games, repair and cold restarts.
+  Isolated stalled request: browser **3,003.7 ms**, headers 3,002.3 ms, body 1.4 ms; worker **3,000.3 ms**.
+  Both original 4,500 ms browser limit and new 3,200 ms worker limit pass.
+- Audit and Smart pass; duplicate full/UI runs were still running when these focused results were recorded.
+  Their unchanged runtime already passed the full143/UI82/audit50/Smart14 checks in `41237541775` above.
+
+Retouch artifact `13055458969`, SHA256 `48920f2cdd1302007d105496c5ae103d5aed321e982c5377b98f3e2bb33ec795`;
+offline artifact `13056516586`, SHA256 `d5835d624cd56ac6e641dd04f0263cb833528ac66a774fda8621b00145acaff8`.
+Final runtime screenshots from `749e4112` were inspected; the fifth candidate changes no displayed controls or pixels.
+All fifteen local Camera unit suites pass. MCP16/20 and World569 passing evidence are recorded above; source-equivalent
+reruns are independent. Chromium's core suite could not exercise two context-restoration branches on this runner;
+physical iPad/iPhone Safari, hardware camera and native Photos/Share remain unverified. Linux's two known World failures
+remain unchanged. No assertion thresholds were relaxed, no World shaders/runtime changed, and no main/Pages release
+was performed.
+
+The owner approved a review-branch push. Next: publish only on an explicit main-publication instruction, then verify
+Pages/public bytes and an actual Home Screen update. For the existing Home Screen copy, save edits, connect online,
+fully close/reopen (reload if needed), then wait for the offline-ready tick in Camera settings. The new Update action
+is available after this release is installed. It preserves the album; clearing site data or reinstalling is unnecessary.
+Downloaded source/ZIP copies require updating/replacing files separately.
