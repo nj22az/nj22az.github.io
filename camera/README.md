@@ -396,3 +396,12 @@ Twin, Pattern, Detail, Light, a third sticker resized by its handle, hold for th
 imports one photo and then two at once, makes own stickers from a cut-out and a photo and deletes one, deletes a photo,
 reloads (album and own stickers kept), loses the graphics and takes no black photo, and requires no page errors. It runs in software WebGL (SwiftShader), which never restores a lost context, so the camera coming back after
 one is not checked; real phones (iPhone Safari, Android Chrome) and their frame rates are not covered by it either.
+
+## Complete offline bundle
+
+After the first complete online download, the Settings download icon becomes **Ready offline**. Startup, local photo
+imports, Looks/Smart Surprise, editing, stickers, frames, Erase, album saves and games use a verified 22.4 MB bundle.
+Keep the browser's site data. An incomplete download remains retryable and never replaces the previous complete cache.
+Regenerate `camera/offline.json` and the worker digest with `node tools/build-camera-offline.mjs` after changing runtime
+assets; `camera/tests/offline.test.mjs` rejects a stale bundle. Test real offline behaviour with
+`CAMERA_SHOTS=./camera-offline-evidence node camera/tests/offline.browser.mjs`. Physical Safari acceptance remains open.

@@ -2,7 +2,7 @@ name: Pocket Camera regression
 
 on:
   pull_request:
-    paths: ['camera/**', 'tools/render-camera-looks.mjs', '.github/workflows/pocket-camera.yml']
+    paths: ['camera/**', 'tools/render-camera-looks.mjs', 'tools/build-camera-offline.mjs', '.github/workflows/pocket-camera.yml']
   workflow_dispatch:
 
 permissions:
@@ -27,6 +27,8 @@ jobs:
             suites: audit
           - job: camera-smart
             suites: smart
+          - job: camera-offline
+            suites: offline
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
