@@ -115,6 +115,9 @@ try{
   await check(`${label}: all six tool panels retain their controls`,async()=>{
    for(const tab of ['Looks','Crop','Adjust','Erase','Stickers','Frame']){
     await ui.page.click('#tab'+tab);
+    await ui.page.locator('#editor').evaluate(el=>Promise.allSettled(el.getAnimations({subtree:true}).filter(a=>a.effect?.getComputedTiming().iterations!==Infinity).map(a=>a.finished)));
+    await ui.page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    await ui.page.waitForFunction(()=>{const a=window.pocketCamera.state.edit,p=document.querySelector('#editPictureArea').getBoundingClientRect(),f=document.querySelector('#editFrame').getBoundingClientRect(),aspect=a.recipe.crop.w*a.width/(a.recipe.crop.h*a.height),w=Math.min(p.width,p.height*aspect);return Math.abs(f.width-Math.floor(w))<=1&&Math.abs(f.height-Math.floor(w/aspect))<=1;});
     const row=await ui.page.evaluate(()=>{const photo=document.querySelector('#editFrame').getBoundingClientRect(),rail=document.querySelector('.editor-rail').getBoundingClientRect();return {horizontalOverflow:document.documentElement.scrollWidth-innerWidth,picture:{width:photo.width,height:photo.height},railOutside:rail.left>=photo.right-1,tools:[...document.querySelectorAll('#editDock .segmented button')].map(b=>{const r=b.getBoundingClientRect();return {name:b.getAttribute('aria-label'),width:r.width,height:r.height,left:r.left,right:r.right,top:r.top,bottom:r.bottom};})};});
     assert.ok(row.horizontalOverflow<=1&&row.railOutside,JSON.stringify(row));assert.ok(row.tools.every(b=>b.width>=44&&b.height>=44&&b.left>=0&&b.right<=width+1&&b.top>=0&&b.bottom<=height+1),JSON.stringify(row));results.layouts.push({label,width,height,tab,...row});
     await ui.page.screenshot({path:join(shots,'layouts',`${label}-${tab.toLowerCase()}.png`)});
