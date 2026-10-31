@@ -72,15 +72,24 @@ test('H1 access uses the relocated side door and full top landing, then returns 
  assert.ok(Math.abs(result.endHeight-4)<.02);
 });
 
-test('the shipped Blender GLB keeps CAD units, source bounds and finite normals in a single mesh',async()=>{
- const bytes=readFileSync(new URL('../assets/models/ferry-engine-room/minato-engine-room-h1.glb',import.meta.url));
+test('the shipped Blender GLB keeps CAD units, source bounds and finite normals within two surface groups',async()=>{
+ const bytes=readFileSync(new URL('../assets/models/ferry-engine-room/minato-engine-room-h1-f1.glb',import.meta.url));
  const {scene}=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');
- const meshes=[];scene.traverse(o=>{if(o.isMesh)meshes.push(o);});assert.equal(meshes.length,1);
+ const meshes=[];scene.traverse(o=>{if(o.isMesh)meshes.push(o);});assert.equal(meshes.length,2);
  const bounds=new THREE.Box3().setFromObject(scene),source=JSON.parse(readFileSync(new URL('../art/ferry-engine-room/geometry-h1.json',import.meta.url)));
  for(const b of source.boxes)for(const p of [b.a,b.b])assert.ok(bounds.clone().expandByScalar(.00001).containsPoint(new THREE.Vector3(...p)),b.name||'CAD box');
- const n=meshes[0].geometry.attributes.normal,p=meshes[0].geometry.attributes.position;
- for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));assert.ok(Math.abs(Math.hypot(n.getX(i),n.getY(i),n.getZ(i))-1)<.002);}
+ let triangles=0;
+ for(const mesh of meshes){
+  const {normal:n,position:p,color:c}=mesh.geometry.attributes;
+  assert.equal(c.normalized,true);assert.ok(c.array instanceof Uint8Array);assert.equal(mesh.geometry.attributes.uv,undefined);
+  for(let i=0;i<p.count;i++){assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));assert.ok(Math.abs(Math.hypot(n.getX(i),n.getY(i),n.getZ(i))-1)<.002);}
+  triangles+=mesh.geometry.index.count/3;
+ }
+ assert.ok(triangles<100_000);
+ for(const [i,v]of meshes.map(m=>m.material.metalness).sort().entries())assert.ok(Math.abs(v-[.05,.55][i])<1e-6);
  assert.ok(bounds.getSize(new THREE.Vector3()).x>7.9);assert.ok(bytes.length<4_000_000);
+ const audit=JSON.parse(readFileSync(new URL('../docs/qa/ferry-engine-room-h1/blender-finish-audit.json',import.meta.url)));
+ assert.equal(audit.outward_faces_failed,0);assert.ok(audit.outward_faces_checked>10_000);assert.equal(audit.source_components,1290);
 });
 
 test('raised-deck boarding meets the pier and the forward crew station remains on its actual floor',()=>{

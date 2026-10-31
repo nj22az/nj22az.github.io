@@ -10,6 +10,7 @@ const data={revision:'C-H1',basis:FERRY_H1,shots:FERRY_H1_SHOTS,
  bars:bars.filter(b=>(inside(b.a)||inside(b.b))),
  cyls:i.cyls.filter(c=>inside(c.pos)&&!['pipe bend','penetration'].includes(c.name)),
  plates:i.plates.filter(p=>inside(p.pos)),
+ glass:i.glass.filter(p=>inside(p.pos)),
  caveat:'Source-derived Blender study. Preview-only pipes excluded. No selected OEM or fabrication approval.'};
 fs.mkdirSync('art/ferry-engine-room',{recursive:true});
 fs.writeFileSync('art/ferry-engine-room/geometry-h1.json',JSON.stringify(data));

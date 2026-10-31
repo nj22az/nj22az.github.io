@@ -1,9 +1,10 @@
 {
-  "revision": "H1-03/04/05",
+  "revision": "H1-03/04/05/06",
   "sheets": [
     "H1-03",
     "H1-04",
-    "H1-05"
+    "H1-05",
+    "H1-06"
   ],
   "camera_count": 8,
   "units": "mm",
@@ -17,6 +18,7 @@
   "rail_gap_mm": 800,
   "door_height_mm": 2100,
   "working_clear_mm": 2400,
+  "maximum_inward_bevel_mm": 6.0,
   "luminaire_centres": [
     [
       9.5,

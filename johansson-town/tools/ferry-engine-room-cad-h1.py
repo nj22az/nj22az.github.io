@@ -180,6 +180,48 @@ ms.add_line((40000,4000),(40000+reach,1998),dxfattribs={'layer':'ACCESS'})
 for a,b in [((39300,4000),(40000,4000)),((41800,1998),(45000,1998)),((40000,4900),(40000+reach,2898))]:ms.add_line(a,b,dxfattribs={'layer':'ACCESS'})
 sloped=ms.add_aligned_dim(p1=(40000,4000),p2=(40000+reach,1998),distance=300,text='4000 GANGWAY',dxfattribs={'layer':'DIMENSIONS'},override={'dimtxt':65,'dimasz':65});sloped.render()
 native_dim((40000,1998),(40000+reach,1998),(40000,1400),f'{reach:.0f} REACH')
+pdf.showPage()
+# Surface finish is specified before Blender construction; it changes no envelope.
+F=json.loads((OUT/'finish-h1-f1.json').read_text())
+rect(12,12,570,396);text(24,392,'MINATO MARU / BLENDER ASSET FINISH',6,True)
+text(24,382,'JS127-ER-H1-06  |  H1-F1 surface detail  |  31 October 2026  |  mm',3.5,True)
+text(24,371,'Retain the H1 equipment, machinery axes, access openings and 2,400 clear working envelope.',3.2)
+text(35,348,'TYPICAL EQUIPMENT EDGE / 1:2',4,True)
+text(35,336,'Illustrative 600 x 400 envelope; actual part dimensions remain source-derived.',3)
+# Rounded outline strictly inside the original box. Six millimetres is a maximum.
+x,y,w,h,r=35,112,300,200,3
+rect(x,y,w,h,'#b9c8c1')
+path=pdf.beginPath();path.moveTo((x+r)*mm,y*mm);path.lineTo((x+w-r)*mm,y*mm)
+path.arcTo((x+w-2*r)*mm,y*mm,(x+w)*mm,(y+2*r)*mm,startAng=270,extent=90)
+path.lineTo((x+w)*mm,(y+h-r)*mm);path.arcTo((x+w-2*r)*mm,(y+h-2*r)*mm,(x+w)*mm,(y+h)*mm,startAng=0,extent=90)
+path.lineTo((x+r)*mm,(y+h)*mm);path.arcTo(x*mm,(y+h-2*r)*mm,(x+2*r)*mm,(y+h)*mm,startAng=90,extent=90)
+path.lineTo(x*mm,(y+r)*mm);path.arcTo(x*mm,y*mm,(x+2*r)*mm,(y+2*r)*mm,startAng=180,extent=90);path.close()
+pdf.setStrokeColor('#217f99');pdf.setLineWidth(.6*mm);pdf.drawPath(path)
+dim((x,y),(x+w,y),96,'600 source envelope / no growth')
+text(35,77,'R6 MAX / inward cut; two bevel segments. Limit further to 10% of smallest part dimension.',3)
+text(35,65,'Exclude floors, bulkheads, deckhead, partitions, sides, trunks and casings.',3)
+text(360,348,'DIAL FACE / 2:1',4,True)
+pdf.setStrokeColor('#284a4b');pdf.circle(445*mm,240*mm,100*mm)
+pdf.circle(445*mm,240*mm,90*mm)
+for j in range(11):
+ a=math.radians(225-270*j/10)
+ line((445+74*math.cos(a),240+74*math.sin(a)),(445+83*math.cos(a),240+83*math.sin(a)))
+a=math.radians(225-270*.55);line((445,240),(445+72*math.cos(a),240+72*math.sin(a)),'#b33f37',.8)
+text(421,209,'LO PRESS / bar',3)
+text(360,129,'100 source dial; static source reading in Blender.',3)
+text(360,117,'World retains its live gauges and labels.',3)
+for k,n in enumerate(['Source colours retained; paint and bare-metal materials.',
+'Short-range contact shade: 220 radius / 22% maximum.',
+'Round cylinders: 24 sides; bars: 12 sides; outward faces.',
+'No new machinery, pipe routes, fake logos or dirt decals.',
+'Blender only. Owner supersedes the former Meshy step.']):text(360,97-k*12,n,2.9)
+doc.layers.new('FINISH',dxfattribs={'color':4})
+for a,b in [((50006,0),(50594,0)),((50600,6),(50600,394)),((50594,400),(50006,400)),((50000,394),(50000,6))]:ms.add_line(a,b,dxfattribs={'layer':'FINISH'})
+for center,start in [((50594,6),270),((50594,394),0),((50006,394),90),((50006,6),180)]:ms.add_arc(center,6,start,start+90,dxfattribs={'layer':'FINISH'})
+native_dim((50000,0),(50600,0),(50000,-80),'600 SOURCE ENVELOPE')
+ms.add_circle((51000,200),50,dxfattribs={'layer':'FINISH'})
+ms.add_circle((51000,200),45,dxfattribs={'layer':'FINISH'})
+ms.add_text('R6 MAX INWARD / H1-F1 / BLENDER ONLY',dxfattribs={'height':20,'insert':(50000,500),'layer':'FINISH'})
 pdf.showPage();pdf.save()
 with zipfile.ZipFile(OUT/'Minato_Maru_RevC_H1_Checkpoint.zip')as archive:
  checkpoint=PdfReader(io.BytesIO(archive.read('Minato_Maru_Engine_Room_RevC_H1/Minato_Maru_Engine_Room_RevC_H1.pdf')))
@@ -191,11 +233,12 @@ layout.add_viewport(center=(150,198),size=(250,350),view_center_point=(11250,0),
 layout.add_viewport(center=(435,290),size=(250,180),view_center_point=(31100,2450),view_height=3600)
 for name,views in [
  ('A2_H1_04_ACCESS',[((170,230),(250,260),(7400,22600),5200),((440,220),(270,160),(7000,3100),4800)]),
- ('A2_H1_05_BOARDING',[((220,230),(350,260),(42200,3400),5200)])]:
+ ('A2_H1_05_BOARDING',[((220,230),(350,260),(42200,3400),5200)]),
+ ('A2_H1_06_FINISH',[((280,230),(500,300),(50550,220),750)])]:
  lay=doc.layouts.new(name);lay.page_setup(size=(594,420),margins=(12,12,12,12),units='mm')
  lay.add_text('MINATO MARU / '+name+' / mm',dxfattribs={'height':4,'insert':(20,385)})
  for center,size,view,height in views:lay.add_viewport(center=center,size=size,view_center_point=view,view_height=height)
 issues=doc.audit();assert not issues.errors and not issues.fixes
 out=OUT/'JS127-ER-H1-03.dxf';doc.saveas(out);reopened=ezdxf.readfile(out);assert reopened.units==4 and not reopened.audit().errors
-(OUT/'audit-h1-03.json').write_text(json.dumps({'revision':'H1-03/04/05','sheets':['H1-03','H1-04','H1-05'],'camera_count':len(D['cameras']),'units':'mm','pdf_mm':[594,420],'plan_scale':25,'dxf_errors':len(issues.errors),'dxf_fixes':len(issues.fixes),'rail_gap_mm':800,'door_height_mm':2100,'working_clear_mm':2400,'luminaire_centres':B['luminaires'],'holds':['structure','stability','berth','complete pipe routing','fire volume','emergency escape','OEM removal procedure']},indent=2))
-print('H1-03/04/05 CAD written; native 800 / 1150 / 2200 / 2400 dimensions; DXF clean')
+(OUT/'audit-h1-03.json').write_text(json.dumps({'revision':'H1-03/04/05/06','sheets':['H1-03','H1-04','H1-05','H1-06'],'camera_count':len(D['cameras']),'units':'mm','pdf_mm':[594,420],'plan_scale':25,'dxf_errors':len(issues.errors),'dxf_fixes':len(issues.fixes),'rail_gap_mm':800,'door_height_mm':2100,'working_clear_mm':2400,'maximum_inward_bevel_mm':F['edge_detail']['equipment_box_bevel_max']*1000,'luminaire_centres':B['luminaires'],'holds':['structure','stability','berth','complete pipe routing','fire volume','emergency escape','OEM removal procedure']},indent=2))
+print('H1-03/04/05/06 CAD written; measured access and inward finish details; DXF clean')

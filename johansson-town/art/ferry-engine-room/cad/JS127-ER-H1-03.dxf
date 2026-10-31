@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461345.4237152776
+2461345.6114930557
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461345.4237152776
+2461345.6114930557
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-163
+185
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{D395972A-222F-4E65-8A9B-0F7A6D719BB6}
+{5EC1296E-D5C0-4548-8EC3-7103E3725BEF}
   9
 $VERSIONGUID
   2
-{58BE41B4-BFD9-4A1C-AEB6-9EFABA026909}
+{CFF8BF21-DE7D-4B52-8DDF-328E54D2E42A}
   9
 $EXTNAMES
 290
@@ -1323,9 +1323,9 @@ ISM
   0
 CLASS
   1
-LAYOUT
+ACDBPLACEHOLDER
   2
-AcDbLayout
+AcDbPlaceHolder
   3
 ObjectDBX Classes
  90
@@ -1339,9 +1339,9 @@ ObjectDBX Classes
   0
 CLASS
   1
-ACDBPLACEHOLDER
+LAYOUT
   2
-AcDbPlaceHolder
+AcDbLayout
   3
 ObjectDBX Classes
  90
@@ -1549,7 +1549,7 @@ LAYER
 100
 AcDbSymbolTable
  70
-7
+8
   0
 LAYER
   5
@@ -1721,6 +1721,30 @@ Continuous
 347
 21
   0
+LAYER
+  5
+14A
+330
+1
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+  2
+FINISH
+ 70
+0
+ 62
+4
+  6
+Continuous
+370
+-3
+390
+13
+347
+21
+  0
 ENDTAB
   0
 TABLE
@@ -1821,7 +1845,7 @@ ACAD
   0
 APPID
   5
-160
+182
 330
 3
 100
@@ -1835,7 +1859,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-161
+183
 330
 3
 100
@@ -2011,7 +2035,7 @@ BLOCK_RECORD
 100
 AcDbSymbolTable
  70
-14
+16
   0
 BLOCK_RECORD
   5
@@ -2235,7 +2259,27 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-14A
+154
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+*D9
+340
+0
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+165
 330
 9
 100
@@ -2245,7 +2289,7 @@ AcDbBlockTableRecord
   2
 *Paper_Space0
 340
-14D
+168
  70
 0
 280
@@ -2255,7 +2299,7 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-151
+16C
 330
 9
 100
@@ -2265,7 +2309,7 @@ AcDbBlockTableRecord
   2
 *Paper_Space1
 340
-154
+16F
  70
 0
 280
@@ -2275,7 +2319,7 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-159
+174
 330
 9
 100
@@ -2285,7 +2329,27 @@ AcDbBlockTableRecord
   2
 *Paper_Space2
 340
-15C
+177
+ 70
+0
+280
+1
+281
+0
+  0
+BLOCK_RECORD
+  5
+17B
+330
+9
+100
+AcDbSymbolTableRecord
+100
+AcDbBlockTableRecord
+  2
+*Paper_Space3
+340
+17E
  70
 0
 280
@@ -4561,9 +4625,247 @@ AcDbBlockEnd
   0
 BLOCK
   5
-14B
+155
 330
-14A
+154
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+*D9
+ 70
+1
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+*D9
+  1
+
+  0
+LINE
+  5
+157
+330
+154
+100
+AcDbEntity
+  8
+0
+100
+AcDbLine
+ 10
+50000.0
+ 20
+0.0
+ 30
+0.0
+ 11
+50000.0
+ 21
+-80.0
+ 31
+0.0
+  0
+LINE
+  5
+158
+330
+154
+100
+AcDbEntity
+  8
+0
+100
+AcDbLine
+ 10
+50600.0
+ 20
+0.0
+ 30
+0.0
+ 11
+50600.0
+ 21
+-80.0
+ 31
+0.0
+  0
+INSERT
+  5
+159
+330
+154
+100
+AcDbEntity
+  8
+DIMENSIONS
+100
+AcDbBlockReference
+  2
+_CLOSEDFILLED
+ 10
+50000.0
+ 20
+-80.0
+ 30
+0.0
+ 41
+65.0
+ 42
+65.0
+ 50
+180.0
+  0
+INSERT
+  5
+15B
+330
+154
+100
+AcDbEntity
+  8
+DIMENSIONS
+100
+AcDbBlockReference
+  2
+_CLOSEDFILLED
+ 10
+50600.0
+ 20
+-80.0
+ 30
+0.0
+ 41
+65.0
+ 42
+65.0
+  0
+LINE
+  5
+15D
+330
+154
+100
+AcDbEntity
+  8
+0
+100
+AcDbLine
+ 10
+50065.0
+ 20
+-80.00000000000001
+ 30
+0.0
+ 11
+50535.0
+ 21
+-80.0
+ 31
+0.0
+  0
+MTEXT
+  5
+15E
+330
+154
+100
+AcDbEntity
+  8
+DIMENSIONS
+100
+AcDbMText
+ 10
+50300.0
+ 20
+-46.875
+ 30
+0.0
+ 40
+65.0
+ 71
+5
+  1
+600 SOURCE ENVELOPE
+  0
+POINT
+  5
+15F
+330
+154
+100
+AcDbEntity
+  8
+Defpoints
+100
+AcDbPoint
+ 10
+50000.0
+ 20
+-80.0
+ 30
+0.0
+  0
+POINT
+  5
+160
+330
+154
+100
+AcDbEntity
+  8
+Defpoints
+100
+AcDbPoint
+ 10
+50000.0
+ 20
+0.0
+ 30
+0.0
+  0
+POINT
+  5
+161
+330
+154
+100
+AcDbEntity
+  8
+Defpoints
+100
+AcDbPoint
+ 10
+50600.0
+ 20
+0.0
+ 30
+0.0
+  0
+ENDBLK
+  5
+156
+330
+154
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+166
+330
+165
 100
 AcDbEntity
   8
@@ -4587,9 +4889,9 @@ AcDbBlockBegin
   0
 VIEWPORT
   5
-14E
+169
 330
-14A
+165
 100
 AcDbEntity
  67
@@ -4691,9 +4993,9 @@ AcDbViewport
   0
 VIEWPORT
   5
-14F
+16A
 330
-14A
+165
 100
 AcDbEntity
  67
@@ -4795,9 +5097,9 @@ AcDbViewport
   0
 VIEWPORT
   5
-150
+16B
 330
-14A
+165
 100
 AcDbEntity
  67
@@ -4899,9 +5201,9 @@ AcDbViewport
   0
 ENDBLK
   5
-14C
+167
 330
-14A
+165
 100
 AcDbEntity
   8
@@ -4911,9 +5213,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-152
+16D
 330
-151
+16C
 100
 AcDbEntity
   8
@@ -4937,9 +5239,9 @@ AcDbBlockBegin
   0
 VIEWPORT
   5
-155
+170
 330
-151
+16C
 100
 AcDbEntity
  67
@@ -5041,9 +5343,9 @@ AcDbViewport
   0
 TEXT
   5
-156
+171
 330
-151
+16C
 100
 AcDbEntity
  67
@@ -5067,9 +5369,9 @@ AcDbText
   0
 VIEWPORT
   5
-157
+172
 330
-151
+16C
 100
 AcDbEntity
  67
@@ -5171,9 +5473,9 @@ AcDbViewport
   0
 VIEWPORT
   5
-158
+173
 330
-151
+16C
 100
 AcDbEntity
  67
@@ -5275,9 +5577,9 @@ AcDbViewport
   0
 ENDBLK
   5
-153
+16E
 330
-151
+16C
 100
 AcDbEntity
   8
@@ -5287,9 +5589,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-15A
+175
 330
-159
+174
 100
 AcDbEntity
   8
@@ -5313,9 +5615,9 @@ AcDbBlockBegin
   0
 VIEWPORT
   5
-15D
+178
 330
-159
+174
 100
 AcDbEntity
  67
@@ -5417,9 +5719,9 @@ AcDbViewport
   0
 TEXT
   5
-15E
+179
 330
-159
+174
 100
 AcDbEntity
  67
@@ -5443,9 +5745,9 @@ AcDbText
   0
 VIEWPORT
   5
-15F
+17A
 330
-159
+174
 100
 AcDbEntity
  67
@@ -5547,9 +5849,281 @@ AcDbViewport
   0
 ENDBLK
   5
-15B
+176
 330
-159
+174
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockEnd
+  0
+BLOCK
+  5
+17C
+330
+17B
+100
+AcDbEntity
+  8
+0
+100
+AcDbBlockBegin
+  2
+*Paper_Space3
+ 70
+0
+ 10
+0.0
+ 20
+0.0
+ 30
+0.0
+  3
+*Paper_Space3
+  1
+
+  0
+VIEWPORT
+  5
+17F
+330
+17B
+100
+AcDbEntity
+ 67
+1
+  8
+VIEWPORTS
+100
+AcDbViewport
+ 10
+285.0
+ 20
+198.0
+ 30
+0.0
+ 40
+653.4000000000001
+ 41
+462.00000000000006
+ 68
+1
+ 69
+1
+ 12
+285.0
+ 22
+198.0
+ 13
+0.0
+ 23
+0.0
+ 14
+10.0
+ 24
+10.0
+ 15
+10.0
+ 25
+10.0
+ 16
+0.0
+ 26
+0.0
+ 36
+1.0
+ 17
+0.0
+ 27
+0.0
+ 37
+0.0
+ 42
+50.0
+ 43
+0.0
+ 44
+0.0
+ 45
+462.00000000000006
+ 50
+0.0
+ 51
+0.0
+ 72
+100
+ 90
+557088
+  1
+
+281
+0
+ 71
+0
+ 74
+0
+110
+0.0
+120
+0.0
+130
+0.0
+111
+1.0
+121
+0.0
+131
+0.0
+112
+0.0
+122
+1.0
+132
+0.0
+ 79
+0
+146
+0.0
+282
+0
+  0
+TEXT
+  5
+180
+330
+17B
+100
+AcDbEntity
+ 67
+1
+  8
+0
+100
+AcDbText
+ 10
+20.0
+ 20
+385.0
+ 30
+0.0
+ 40
+4.0
+  1
+MINATO MARU / A2_H1_06_FINISH / mm
+100
+AcDbText
+  0
+VIEWPORT
+  5
+181
+330
+17B
+100
+AcDbEntity
+ 67
+1
+  8
+VIEWPORTS
+100
+AcDbViewport
+ 10
+280.0
+ 20
+230.0
+ 30
+0.0
+ 40
+500.0
+ 41
+300.0
+ 68
+2
+ 69
+3
+ 12
+50550.0
+ 22
+220.0
+ 13
+0.0
+ 23
+0.0
+ 14
+10.0
+ 24
+10.0
+ 15
+10.0
+ 25
+10.0
+ 16
+0.0
+ 26
+0.0
+ 36
+1.0
+ 17
+0.0
+ 27
+0.0
+ 37
+0.0
+ 42
+50.0
+ 43
+0.0
+ 44
+0.0
+ 45
+750.0
+ 50
+0.0
+ 51
+0.0
+ 72
+100
+ 90
+0
+  1
+
+281
+0
+ 71
+0
+ 74
+0
+110
+0.0
+120
+0.0
+130
+0.0
+111
+1.0
+121
+0.0
+131
+0.0
+112
+0.0
+122
+1.0
+132
+0.0
+ 79
+0
+146
+0.0
+282
+0
+  0
+ENDBLK
+  5
+17D
+330
+17B
 100
 AcDbEntity
   8
@@ -9899,6 +10473,340 @@ DSTYLE
 1002
 }
   0
+LINE
+  5
+14B
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbLine
+ 10
+50006.0
+ 20
+0.0
+ 30
+0.0
+ 11
+50594.0
+ 21
+0.0
+ 31
+0.0
+  0
+LINE
+  5
+14C
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbLine
+ 10
+50600.0
+ 20
+6.0
+ 30
+0.0
+ 11
+50600.0
+ 21
+394.0
+ 31
+0.0
+  0
+LINE
+  5
+14D
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbLine
+ 10
+50594.0
+ 20
+400.0
+ 30
+0.0
+ 11
+50006.0
+ 21
+400.0
+ 31
+0.0
+  0
+LINE
+  5
+14E
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbLine
+ 10
+50000.0
+ 20
+394.0
+ 30
+0.0
+ 11
+50000.0
+ 21
+6.0
+ 31
+0.0
+  0
+ARC
+  5
+14F
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbCircle
+ 10
+50594.0
+ 20
+6.0
+ 30
+0.0
+ 40
+6.0
+100
+AcDbArc
+ 50
+270.0
+ 51
+360.0
+  0
+ARC
+  5
+150
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbCircle
+ 10
+50594.0
+ 20
+394.0
+ 30
+0.0
+ 40
+6.0
+100
+AcDbArc
+ 50
+0.0
+ 51
+90.0
+  0
+ARC
+  5
+151
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbCircle
+ 10
+50006.0
+ 20
+394.0
+ 30
+0.0
+ 40
+6.0
+100
+AcDbArc
+ 50
+90.0
+ 51
+180.0
+  0
+ARC
+  5
+152
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbCircle
+ 10
+50006.0
+ 20
+6.0
+ 30
+0.0
+ 40
+6.0
+100
+AcDbArc
+ 50
+180.0
+ 51
+270.0
+  0
+DIMENSION
+  5
+153
+330
+17
+100
+AcDbEntity
+  8
+DIMENSIONS
+100
+AcDbDimension
+280
+0
+  2
+*D9
+  3
+Standard
+ 10
+50000.0
+ 20
+-80.0
+ 30
+0.0
+ 11
+50300.0
+ 21
+-46.875
+ 31
+0.0
+ 70
+32
+ 71
+5
+  1
+600 SOURCE ENVELOPE
+100
+AcDbAlignedDimension
+ 13
+50000.0
+ 23
+0.0
+ 33
+0.0
+ 14
+50600.0
+ 24
+0.0
+ 34
+0.0
+ 50
+0.0
+100
+AcDbRotatedDimension
+1001
+ACAD
+1000
+DSTYLE
+1002
+{
+1070
+140
+1040
+65.0
+1070
+41
+1040
+65.0
+1002
+}
+  0
+CIRCLE
+  5
+162
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbCircle
+ 10
+51000.0
+ 20
+200.0
+ 30
+0.0
+ 40
+50.0
+  0
+CIRCLE
+  5
+163
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbCircle
+ 10
+51000.0
+ 20
+200.0
+ 30
+0.0
+ 40
+45.0
+  0
+TEXT
+  5
+164
+330
+17
+100
+AcDbEntity
+  8
+FINISH
+100
+AcDbText
+ 10
+50000.0
+ 20
+500.0
+ 30
+0.0
+ 40
+20.0
+  1
+R6 MAX INWARD / H1-F1 / BLENDER ONLY
+100
+AcDbText
+  0
 ENDSEC
   0
 SECTION
@@ -10003,15 +10911,19 @@ Layout1
   3
 A2_PLAN_1_25
 350
-14D
+168
   3
 A2_H1_04_ACCESS
 350
-154
+16F
   3
 A2_H1_05_BOARDING
 350
-15C
+177
+  3
+A2_H1_06_FINISH
+350
+17E
   0
 DICTIONARY
   5
@@ -10901,7 +11813,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-162
+184
   0
 DICTIONARYVAR
   5
@@ -10913,11 +11825,11 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-10-31T07:10:09.242496+00:00
+1.4.4 @ 2026-10-31T11:40:33.483741+00:00
   0
 LAYOUT
   5
-14D
+168
 330
 D
 100
@@ -11039,13 +11951,13 @@ A2_PLAN_1_25
  76
 1
 330
-14A
+165
 331
-14E
+169
   0
 LAYOUT
   5
-154
+16F
 330
 D
 100
@@ -11167,13 +12079,13 @@ A2_H1_04_ACCESS
  76
 1
 330
-151
+16C
 331
-155
+170
   0
 LAYOUT
   5
-15C
+177
 330
 D
 100
@@ -11295,13 +12207,141 @@ A2_H1_05_BOARDING
  76
 1
 330
-159
+174
 331
-15D
+178
+  0
+LAYOUT
+  5
+17E
+330
+D
+100
+AcDbPlotSettings
+  1
+
+  2
+DWG to PDF.pc3
+  4
+ezdxf_(594.00_x_420.00_MM)
+  6
+
+ 40
+12.0
+ 41
+12.0
+ 42
+12.0
+ 43
+12.0
+ 44
+594.0
+ 45
+420.0
+ 46
+0.0
+ 47
+0.0
+ 48
+0.0
+ 49
+0.0
+140
+0.0
+141
+0.0
+142
+1.0
+143
+1.0
+ 70
+672
+ 72
+1
+ 73
+0
+ 74
+5
+  7
+
+ 75
+16
+ 76
+0
+ 77
+2
+ 78
+300
+147
+1.0
+148
+0.0
+149
+0.0
+100
+AcDbLayout
+  1
+A2_H1_06_FINISH
+ 70
+1
+ 71
+6
+ 10
+-12.0
+ 20
+-12.0
+ 11
+582.0
+ 21
+408.0
+ 12
+0.0
+ 22
+0.0
+ 32
+0.0
+ 14
+1e+20
+ 24
+1e+20
+ 34
+1e+20
+ 15
+-1e+20
+ 25
+-1e+20
+ 35
+-1e+20
+146
+0.0
+ 13
+0.0
+ 23
+0.0
+ 33
+0.0
+ 16
+1.0
+ 26
+0.0
+ 36
+0.0
+ 17
+0.0
+ 27
+1.0
+ 37
+0.0
+ 76
+1
+330
+17B
+331
+17F
   0
 DICTIONARYVAR
   5
-162
+184
 330
 2D
 100
@@ -11309,7 +12349,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-10-31T07:10:09.295315+00:00
+1.4.4 @ 2026-10-31T11:40:33.565650+00:00
   0
 ENDSEC
   0

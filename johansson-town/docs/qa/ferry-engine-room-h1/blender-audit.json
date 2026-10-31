@@ -83,5 +83,6 @@
       "transforms_locked": true
     }
   ],
-  "Meshy": "No generated Meshy assets; account connection pending"
+  "workflow": "Blender only, per owner instruction 31 October 2026",
+  "finish_revision": "H1-F1"
 }
