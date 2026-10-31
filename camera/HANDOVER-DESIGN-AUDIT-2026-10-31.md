@@ -1,8 +1,15 @@
 # Pocket Camera design/shader audit — 31 October 2026
 
 Owner: “Why does 32 bit produce a warped image? … audit … as a Nintendo designer … UI and the icons … shaders … screenshots.”
-Current published main at audit start: `83783c93448d1be251a61c213959448e1d21c971`, UI release PR #417 (`51f07130`).
-Work is on `codex/pocket-camera-design-audit`, isolated from existing local changes. This new review is not published.
+Published main, verified again on 31 October: **`83783c93448d1be251a61c213959448e1d21c971`**, UI release PR #417
+(`51f07130`). [Draft PR #418](https://github.com/nj22az/nj22az.github.io/pull/418), branch
+`codex/pocket-camera-design-audit`, is **open, unmerged and not published**, with no comments/reviews at verification.
+Existing local Camera/World work and unrelated media temporary files are preserved in separate worktrees.
+
+Runtime implementation: **`26f576481cbcbf2b5fec1af02e4053aa4b12d9e5`**. Full Camera/UI/audit verification:
+**`ff5bd139125988b0a270e7d991cb2ed026518fab`**. Strengthened real full/LIGHT preview audit and current screenshot
+source: **`d9a9f25b525a6d403b2c352d78745d78463f6a7f`**, tree **`8e19fdecc584e4b245864cdf5322be2474436208`**.
+The six changed runtime files are byte-identical across these three commits; later changes corrected audit drivers.
 
 ## Findings and review implementation
 
@@ -15,7 +22,8 @@ Work is on `codex/pocket-camera-design-audit`, isolated from existing local chan
    Camera symbol catalog: original medium pictograms, ink colours and distinct 8/16/32/64 codes. Actual-photo thumbnails,
    selected names, accessible names and existing controls remain. No Nintendo/Sony marks or assets were copied.
 3. The rail grows from 48 to 56 CSS pixels so short selected names fit; it still reserves space outside the photo.
-   All six panels and both device orientations will be captured to audit control size, overflow and photo/tool balance.
+   All six panels and both device orientations were captured. Actual photo thumbnails remain; these are original
+   medium symbols and console codes, not copied platform assets.
 
 App/main-style/renderer and adapter URL keys on this branch are `20261031audit1`; published main remains `20261031ui1`.
 The new icon module replaces the Camera's dependency on World's UI-house swatches. MCP architecture, approved imports,
@@ -33,16 +41,81 @@ Primary references:
 
 `camera/tests/audit.browser.mjs` compares the exact published source against the review, renders a geometric grid in four
 aspects/full and LIGHT, clicks all 34 real shader choices and their strength controls, captures all six panels at four
-phone/tablet viewport cases, and creates actual-renderer shader/icon sheets. Zero strength must restore exact source pixels.
+phone/tablet viewport cases, and creates actual-renderer shader/icon sheets. Zero strength must equal Natural at the
+matched render size; this is not an original JPEG byte-identity claim.
 The existing full Camera/UI and MCP suites are retained. Historical pixel comparisons still check all 34 Looks; only the
 intentional Crayon and repaired 32-bit differences are asserted as differences, with 32-bit geometry checked separately.
 
-Local syntax, module consistency (16 modules), conversion and 15/15 MCP policy checks pass. Hosted checks, exact image
-measurements, screenshot inspection, final findings and artifact IDs are pending; do not count them as passed.
+Local syntax, module consistency (16 modules), conversion and **15/15 MCP policy checks** pass. The cloud shell cannot
+launch Chromium because its required local socket is blocked. Browser verification uses actual hosted Chromium/SwiftShader,
+without a sandbox/security workaround. Browser chrome/native Share and physical-device performance are not simulated claims.
 
-Next: inspect hosted results and actual screenshots, correct verified defects, then give the owner the audit and before/after
-captures for review. Main publication requires a subsequent owner instruction. Physical Safari and the installed MCP host
-remain untested/unconnected; no personal Photos library or live browser album is attached.
+## Actual results and evidence
+
+- On **ff5bd139**, Camera run **41189994682**, job **124504730033**, passed **143/143** existing checks
+  (56 + 33 + 22 + 14 + 5 + 9 + 4), including **816 combinations**, **408 preview/export pairs** and **68 historical
+  comparisons**. Its 57 UI and 50 audit checks also passed: **250/250 Camera/UI/audit**. World guard/WebKit
+  **41189994659** passed. Linux **41189994689** was cancelled, not passed.
+- On **d9a9f25**, Camera run **41190783338**, Camera job **124506978428**, passed **143/143**; UI job **124506978220**,
+  **57/57**; audit job **124506978340**, **50/50**: **250/250** on the exact final screenshot/test source. The audit
+  now reads the real full/LIGHT preview canvas, rather than treating the always-full export path as a LIGHT preview.
+  The rerun retains all **816 combinations**, **408 full preview/export pairs** and **68 prior-engine comparisons**.
+- MCP **41190783298**, job **124506977996**, passed **15/15 units + 20/20 actual MCP/Camera checks**. A fresh pinned
+  dependency installation reports **zero npm vulnerabilities**. The official SDK client discovers all eleven tools and
+  proves generated-image import/edit/preview/Save copy/export, original-source re-edit and explicit close/session isolation.
+- World **41190783269** guard and automated iPhone WebKit startup/room acceptance passed. Linux **41190783339** was
+  still running; do not count full console acceptance as passed. No World source or Linux binary release changed.
+
+Real preview charts at 640×480, 480×640, 800×450 and 450×800 show baseline vertical line-centroid spread **17–30 px**
+and horizontal spread **19.5–33.5 px**. Review full/LIGHT previews and exports measure **0 px** on both axes with
+**zero missing markers**. Full preview/export maximum channel difference is **0**. Markers span at least two retro
+texels; this proves removal of the mesh bend, not preservation of sub-texel detail. The quality chart retains **32 grey
+levels**, **two dither values** on a flat patch, opaque pixels and exact deterministic repeats.
+
+All **34 real UI choices** were selected; **33 effect sliders** exercised 0/100%, and Natural's irrelevant slider is
+correctly disabled. At 0%, each matches Natural at 160×120. The 34 symbol definitions are distinct and have accessible
+button names. Save copy retains its source and produces a JPEG. The contact sheet is a one-scene identity/control audit,
+not a fresh all-photo aesthetic approval of every medium. Old TV/VHS keep their intended optical distortions.
+
+Artifacts (SHA-256 verified after download, ZIP integrity/path checks passed):
+
+| Run / artifact | Contents | SHA-256 |
+| --- | --- | --- |
+| 41190783338 / **13038722765** | 50-case audit, before/after, grid, 34-Look/icon sheets, 34 editor views, 24 panel views | `4e38d1e11bed6561312db78403a3a1e6e2943c05744b3dac7a7613e686cb18e1` |
+| 41190783338 / **13038473448** | 57-case UI suite, 25 screenshots including small phone and 200% text | `aaa93e0a36158970afb43530784d6cdc7075bf3bc7245cb577451b7015d495be` |
+| 41190783298 / **13038328674** | MCP before/after PNG, exported JPEG, 20-check receipt | `f7a83b147c401645e18603903cc652f65475efe2160aa1034a884988bd7ee2ab` |
+| 41190783338 / **13039035960** | Passing 143-check Camera suite on the final source; original ZIP retained in delivery | `bfb6deadffa3276397cde8ffda2f4b52c4b08b3a234e70f1d9b2012ad58ba02d` |
+
+Audit/UI/MCP images and the exported JPEG were visually inspected. In particular, the 32-bit before/after and straight
+grid are real render differences; the 34-output sheet, icon sheet, iPad mini, Frame, Stickers, small-phone and 200%-text
+screenshots were checked. [Evidence receipt and reproduction](qa/2026-10-31-design/README.md) records the final delivery.
+
+## Remaining UI findings — do not claim a finished design
+
+1. **Frame takes too much phone canvas.** At a settled 402×700 viewport, Looks shows a **288×216** photo, but Frame
+   shows **198×149** (31% less height). At 744×980, iPad mini drops from **598×448** to **533×400**. Proposal:
+   compact/disclose Paper/Mirror/date settings and preserve preview height. This redesign is not implemented.
+2. **Sticker categories waste a row.** “Mine” wraps to a full-width second row on the phone. Proposal: balanced resident
+   categories or thumbnails with one selected label. Not implemented.
+3. **Short multi-Look rails clip visible content.** The 320×568 two-Look capture clips part of the first Print symbol;
+   at 200% text, Original partly extends past the visible rail. Existing tests check label wrapping, target sizes and
+   photo bounds, not every rail child's visible bounds. Proposal: anchor overflowing content at its start and verify
+   scrolling/access for three Looks and Original. Do not interpret 57 passing checks as proof of no truncation.
+
+No page-wide horizontal overflow was measured in the 24 settled panel cases; all six destination buttons remain at
+least 44×44 and inside the viewport. This does not resolve the specific rail and canvas-balance findings above.
+
+**Connection and publication remain separate:** the owner's installed MCP host and this chat are unconnected; no
+personal Photos library or live Safari album is attached. The remaining local step is to install pinned dependencies
+and Chromium on the owner's machine, register/reconnect the absolute Node server path from [MCP.md](MCP.md), and prove
+tool discovery plus a generated-image cycle in that host. The automated SDK client is the only verified connection.
+Physical iPhone 17/iPad mini Safari/native Share and real camera performance remain untested. Published main stays
+`20261031ui1`; the review uses `20261031audit1`. Main publication requires a subsequent owner instruction.
+
+**Next action:** review the delivered screenshots and three UI findings, then refine Frame/category/short-rail layouts
+with focused visibility checks; agree an AR placement scope and assess source exports on both target devices. Keep all
+work on the review branch and preserve existing Camera/World releases. Do not silently introduce hosted MCP, WebMCP,
+hardware capture or personal-browser access.
 
 ## Subsequent AR question — research, not implementation
 

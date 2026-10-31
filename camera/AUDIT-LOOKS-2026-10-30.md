@@ -1,5 +1,10 @@
 # Pocket Camera Looks, audited by their own users — 30 October 2026
 
+**Later 32-bit review, 31 October:** [the current design/shader audit](HANDOVER-DESIGN-AUDIT-2026-10-31.md)
+explains the mesh-warp complaint and verifies a geometry-preserving 32-bit correction in draft PR #418. Its real
+before/after evidence supersedes the historical preference for a wobbled mesh below. That review is not yet published;
+keep the original artistic history, and do not reintroduce photo bending without an explicit owner decision.
+
 ## Later owner's review: wax crayon and optional paper (branch only)
 
 The owner supplied an iPhone screenshot of a blonde portrait: diagonal brown cuts over the face, almost white hair
