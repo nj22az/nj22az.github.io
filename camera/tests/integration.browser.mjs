@@ -35,7 +35,7 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  await check('all 34 published Looks combine with enhancement and every stock, full and LIGHT',async()=>{
   const report=await page.evaluate(async()=>{
-   const m=await import('/camera/looks-gl.js?v=20261031rc2');
+   const m=await import('/camera/looks-gl.js?v=20261031ui1');
    const source=await createImageBitmap(await(await fetch('/camera/samples/default-original.png')).blob());
    const crop={x:.13,y:.07,w:.7,h:.8},results=[];
    for(const light of [false,true]){
@@ -66,7 +66,7 @@ try{
  });
  if(process.env.CAMERA_MAIN_ENGINE||process.env.CAMERA_REFINE_ENGINE)await check('off/None preserves prior Look pixels except the intentionally rebuilt Crayon',async()=>{
   const result=await page.evaluate(async baselines=>{
-   const m=await import('/camera/looks-gl.js?v=20261031rc2'),e=m.createLookEngine(document.createElement('canvas'));
+   const m=await import('/camera/looks-gl.js?v=20261031ui1'),e=m.createLookEngine(document.createElement('canvas'));
    const source=await createImageBitmap(await(await fetch('/camera/samples/default-original.png')).blob());
    e.setSource('test',source,source.width,source.height);const rows=[];
    for(const label of baselines){
@@ -86,7 +86,7 @@ try{
  });
  await check('enhanced mixed-Look thumbnails apply paper once, after the Looks',async()=>{
   const result=await page.evaluate(async()=>{
-   const m=await import('/camera/looks-gl.js?v=20261031rc2'),e=m.createLookEngine(document.createElement('canvas'));
+   const m=await import('/camera/looks-gl.js?v=20261031ui1'),e=m.createLookEngine(document.createElement('canvas'));
    const source=await createImageBitmap(await(await fetch('/camera/samples/default-original.png')).blob());e.setSource('test',source,source.width,source.height);
    const crop={x:.2,y:.1,w:.6,h:.8},rows=[];
    // One tile per call keeps the stock's texture origin the same as the reference; 540 px makes both pattern floors equal.
@@ -103,7 +103,7 @@ try{
  });
  await page.setInputFiles('#picker',join(root,'camera/samples/default-original.png'));await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
  await page.click('#tabCrop');await page.click('#cropShapes [data-shape="3:4"]');await page.fill('#cropZoom','150');
- await page.click('#tabAdjust');await page.click('#enhancePhoto');await page.fill('#enhanceStrength','57');
+ await page.click('#tabAdjust');await page.click('#enhancePhoto');await page.click('#enhanceAmount');await page.fill('#enhanceStrength','57');
  await page.click('#tabFrame');await page.click('#paperChoices [data-paper="rough"]');
  await page.click('#tabLooks');await page.click('#lookGroups [data-group="drawn"]');await page.click('.tile[data-look="crayon"]');
  await page.click('.add-layer');await page.click('#lookGroups [data-group="riso"]');await page.click('.tile[data-look="risoPinkBlue"]');await page.fill('#amount','25');
@@ -129,7 +129,7 @@ try{
   assert.equal(await page.locator('#original').isVisible(),true);
   await page.waitForFunction(()=>!!window.integrationComparison);
   const difference=await page.evaluate(async()=>{
-   const {engine,state}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031rc2'),{raw,width,height}=window.integrationComparison;
+   const {engine,state}=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031ui1'),{raw,width,height}=window.integrationComparison;
    engine.draw=window.integrationDraw;
    const shown=m.flipRows(raw,width,height),reference=engine.render(m.normalRecipe(),{source:'edit',crop:state.edit.recipe.crop,width,height}).data;
    let max=0;for(let i=0;i<shown.length;i++)max=Math.max(max,Math.abs(shown[i]-reference[i]));return max;
@@ -168,7 +168,9 @@ try{
   const before=await page.evaluate(async()=>({id:window.pocketCamera.state.viewing.id,hash:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await window.pocketCamera.state.viewing.photo.arrayBuffer()))]}));
   await page.click('#editPhoto');await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
   const after=await page.evaluate(async()=>({id:window.pocketCamera.state.viewing.id,hash:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await window.pocketCamera.state.viewing.photo.arrayBuffer()))]}));
-  assert.deepEqual(after,before);
+  assert.notEqual(after.id,before.id,'Save copy creates another album entry');
+  assert.deepEqual(after.hash,before.hash,'identical recipes keep identical saved pixels');
+  assert.ok(await page.evaluate(id=>window.pocketCamera.state.shots.some(s=>s.id===id),before.id),'the earlier copy remains in the album');
  });
  await page.click('#editPhoto');await page.click('#tabAdjust');
  await check('re-edit, cancellation and reload preserve paper, mix, crop and enhancement independently',async()=>{

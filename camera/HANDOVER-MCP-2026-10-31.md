@@ -1,5 +1,7 @@
 # Pocket Camera MCP — 31 October 2026
 
+The owner subsequently approved [the Camera UI implementation](HANDOVER-UI-REVIEW-2026-10-31.md) and instructed “Push to main”. App/renderer URL/style keys and the adapter import are aligned at `20261031ui1`; the renderer code and local stdio/privacy boundaries are retained. Hosted verification/publication is recorded in that UI handover.
+
 ## Merged on the owner's instruction — 31 October 2026
 
 The owner instructed **“Merge”**. [PR #416](https://github.com/nj22az/nj22az.github.io/pull/416) is **merged and closed**,

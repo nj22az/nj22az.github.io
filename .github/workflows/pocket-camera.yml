@@ -14,6 +14,15 @@ concurrency:
 
 jobs:
   camera:
+    name: ${{ matrix.job }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job: camera
+            suites: camera crop enhance save-share-layout paper integration sticker-contour
+          - job: camera-ui
+            suites: ui
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -42,6 +51,7 @@ jobs:
           sudo apt-get install --yes ffmpeg
           ffmpeg -version
       - name: Prior engines for compatibility checks
+        if: matrix.job == 'camera'
         run: |
           git fetch --no-tags --depth=1 origin 87f47e8f6e5fafdb586ac723e9aa3cc704d11345 3af0bae6324fe73f974bd00bc371c6555d7f1e58
           git show 87f47e8f6e5fafdb586ac723e9aa3cc704d11345:camera/looks-gl.js > "$CAMERA_MAIN_ENGINE"
@@ -55,13 +65,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/camera-results
-          for suite in camera crop enhance save-share-layout paper integration sticker-contour; do
+          for suite in ${{ matrix.suites }}; do
             export CAMERA_SHOTS="/tmp/camera-results/$suite"
             node "camera/tests/$suite.browser.mjs" | tee "/tmp/camera-results/$suite.log"
           done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: pocket-camera-chromium-evidence
+          name: pocket-camera-${{ matrix.job }}-evidence
           path: /tmp/camera-results
           retention-days: 14
