@@ -78,6 +78,15 @@ function panel(parent,name,size,position,lines,yaw=0,options={}){
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(...size),new THREE.MeshStandardMaterial({map:printTexture(lines,options),roughness:.92}));
  mesh.name=name;mesh.position.set(...position);mesh.rotation.y=yaw;parent.add(mesh);return mesh;
 }
+// Printed faces belong to the solid they finish. Stacking a separate paper plane
+// a millimetre over the wood/pages competed for depth on the owner's phone.
+function printedBox(parent,name,size,position,lines,face,options={}){
+ const edge=new THREE.MeshStandardMaterial({color:options.paper||'#644e37',roughness:.9});
+ const materials=Array(6).fill(edge);
+ materials[face]=new THREE.MeshStandardMaterial({map:printTexture(lines,options),roughness:.92});
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),materials);
+ mesh.name=name;mesh.position.set(...position);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);return mesh;
+}
 
 /** Small waiting shell using the same fitted footprint, only if the GLB is unavailable. */
 function fallback(room){
@@ -111,8 +120,7 @@ function discoveries(room,anchor,action,exploration){
  const [gx,gy,gz]=P.details.guestbook;
  meshBox(group,'Guestbook lower cover',[.18,.004,.24],[gx,gy-.002,gz],0x644e37);
  meshBox(group,'Guestbook pages',[.172,.022,.232],[gx,gy+.011,gz],0xdfd1ad);
- const cover=panel(group,'First Lantern Night guestbook cover',[.18,.24],[gx,gy+.023,gz],['初めての提灯の夜','窓と歌','おいしいごはん','思い出を覚える人'],0,{width:256,height:384});
- cover.rotation.x=-Math.PI/2;
+ printedBox(group,'First Lantern Night guestbook cover',[.18,.004,.24],[gx,gy+.024,gz],['初めての提灯の夜','窓と歌','おいしいごはん','思い出を覚える人'],2,{width:256,height:384});
  const [rx,ry,rz]=P.details.radio,radioBase=ry-.12,shelfDepth=rz-P.main.minZ+.13;
  meshBox(group,'Kitchen radio wall shelf',[.76,.035,shelfDepth],[rx,radioBase-.0175,P.main.minZ+shelfDepth/2],0x65503b);
  for(const dx of [-.27,.27])meshBox(group,'Radio shelf bracket',[.025,.18,.04],[rx+dx,radioBase-.10,P.main.minZ+.025],0x493f32);
@@ -122,9 +130,8 @@ function discoveries(room,anchor,action,exploration){
  for(const dx of [.135,.245]){
   const knob=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,.02,16),new THREE.MeshStandardMaterial({color:0xd1c4a6,roughness:.5}));knob.rotation.x=Math.PI/2;knob.position.set(rx+dx,ry-.064,rz+.103);group.add(knob);
  }
- const [px,py,pz]=P.details.recipe,backDepth=pz-P.main.minZ-.001;
- meshBox(group,'Recipe card backing',[.31,.39,backDepth],[px,py,P.main.minZ+backDepth/2],0x6f5b42);
- panel(group,'House recipe card',[.285,.365],[px,py,pz],['港のたれ','醤油・みりん・砂糖','最終の船を待つ人に','温かい一皿を'],0,{width:384,height:512});
+ const [px,py,pz]=P.details.recipe,backDepth=pz-P.main.minZ;
+ printedBox(group,'House recipe card',[.31,.39,backDepth],[px,py,P.main.minZ+backDepth/2],['港のたれ','醤油・みりん・砂糖','最終の船を待つ人に','温かい一皿を'],4,{width:384,height:512});
  panel(group,'Old ferry ticket',[.19,.075],[wx+w/2-.16,wy-h/2+.11,wz-.035],['LAST BOAT · 1997'],Math.PI,{width:256,height:96});
  const positions={guestbook:[gx,.91,gz],window:[wx,1.55,wz-.33],radio:[rx,2.15,rz+.45],recipe:[px,1.60,pz+.42]};
  const memories=exploration?createMinatoMemories({...exploration,onCurtain:curtainOpen}):null;

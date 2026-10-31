@@ -40,7 +40,7 @@ export const SAKURA_TRADE_POSTERS=Object.freeze([
 /**
  * Where each hangs: stair/stockroom use the shop frame, hall/office the upstairs frame. `at` is the centre on the
  * wall's face, `face` the way it looks. Optional `lookAt` is the clear standing/interaction point in front of furniture.
- * SK-ST-004 records the six new office/stockroom wall elevations and measured clearances. The stair's step up the flights, each
+ * SK-ST-004 rev B records the two selected office prints and three stockroom prints, with measured clearances. The stair's step up the flights, each
  * 120 mm over the handrail at its higher edge (the rail climbs across a poster's width), as posters along a stair hang; the hall's at eye height, clear of doors, switches and the cabinet.
  */
 export const SAKURA_POSTER_WALLS=Object.freeze([
@@ -55,8 +55,7 @@ export const SAKURA_POSTER_WALLS=Object.freeze([
  {id:'asagao-uv',room:'hall',at:[-2.0,1.5,.85],face:'+x',wall:'hall, west wall, over the spirits'},
  {id:'umineko-draft',room:'hall',at:[.7,1.55,-3.95],face:'-x',wall:'hall, east wall, over the shoe cabinet'},
  {id:'kitano-12',room:'office',at:[5.15,2.3,4.49],face:'-z',lookAt:[5.15,1.5,3.2],wall:'office, front wall above the filing cabinet',who:'Thuan',why:'The distiller’s gift campaign over the order files, clear of the archive tube and the harbour calendar.'},
- {id:'umineko-gift',room:'office',at:[1.18,2.3,4.49],face:'-z',lookAt:[1.18,1.5,3.25],wall:'office, front wall above the ledger shelf',who:'Thuan',why:'The year-end order campaign above this year’s binders, outside the street window and away from the sliding door.'},
- {id:'asagao-rouge',room:'office',at:[4.25,1.8,.55],face:'+z',lookAt:[4.25,1.5,1.6],wall:'office, back wall above the fridge',who:'Thuan',why:'Asagao’s rep left a sample advert where Thuan takes her tea break, in the free strip between the cupboard and departures board.'},
+ {id:'umineko-black',room:'office',at:[1.18,2.3,4.49],face:'-z',lookAt:[1.18,1.5,3.25],wall:'office, front wall above the ledger shelf',who:'Thuan',why:'Selected with KITANO 12 by the owner’s two-poster brief, 31 October 2026: the brewery’s harbour-at-dusk campaign balances the amber whisky print across the street window, above the order binders and near its sample cases in the hall.'},
  {id:'minato-tsuru',room:'stockroom',at:[-.1,1.78,-6.86],face:'+z',lookAt:[-.1,1.5,-5.4],wall:'ground stockroom, rear wall east of the stairwell',who:'shop staff',why:'The brewer’s winter campaign over the low stock cartons, seen while checking the incoming sake order.'},
  {id:'nami-sour',room:'stockroom',at:[1.6,2.08,-6.86],face:'+z',lookAt:[1.6,1.5,-5.4],wall:'ground stockroom, rear wall above the cola standee',who:'shop staff',why:'The sample-case promotion joins the old campaign stand-ups, with its paper kept above their silhouettes.'},
  {id:'asagao-uv',room:'stockroom',at:[2.35,2.08,-6.86],face:'+z',lookAt:[2.35,1.5,-5.4],wall:'ground stockroom, rear wall above Jaga-bō',who:'shop staff',why:'Last summer’s UV campaign is stored on the wall above the retired standee, clear of the delivery door.'},
@@ -274,7 +273,9 @@ const CASES={
 
 let posterTexture=null,caseTexture=null,posterReadiness=null,posterPrepared=false;
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
-const tex=c=>{const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
+// These module-cached atlases outlive any one room. The persistent shop and both storeys borrow their paint;
+// clearRoom may dispose each room's material/geometry, but must leave these shared GPU textures alive.
+const tex=c=>{const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;t.userData.sharedAsset=true;return t;};
 /** The nine designs on one sheet, three by three (one texture, one draw for every poster in a room). */
 function posterSheet(){
  if(posterTexture)return posterTexture;

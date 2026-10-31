@@ -65,7 +65,7 @@ function assertWallAndSight(f,prints){
 
 test('the approved office and storage campaigns are physically present and fitted to existing walls',async()=>{
  const stock=await stockroom(),upper=upstairs();
- for(const [f,kind,ids] of [[stock,'stockroom',['minato-tsuru','nami-sour','asagao-uv']],[upper,'office',['kitano-12','umineko-gift','asagao-rouge']]]){
+ for(const [f,kind,ids] of [[stock,'stockroom',['minato-tsuru','nami-sour','asagao-uv']],[upper,'office',['kitano-12','umineko-black']]]){
   const prints=posters(f,kind);
   assert.deepEqual(prints.map(p=>p.spec.id).sort(),ids.sort(),'each agreed campaign has a physical slot in '+kind);
   assertWallAndSight(f,prints);

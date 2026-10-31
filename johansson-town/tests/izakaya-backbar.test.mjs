@@ -195,6 +195,32 @@ test('the replacement shares no visible plane with the room, fitted props or run
  assert.deepEqual(scan(room).filter(concernsReplacement).map(describe),[]);
 });
 
+test('the whole fitted dining room and its runtime details have no competing planes',()=>{
+ // Cabinet-only regions missed the owner's window/door surrounds, phone,
+ // guestbook, recipe, towel warmer and small printed products.
+ assert.deepEqual(coplanarOverlaps(room,{tolerance:.002,minArea:.0005,keepIdentical:true}).map(describe),[]);
+});
+
+test('the whole-room scan catches a new wall print accidentally laid in the plaster',()=>{
+ const pane=new THREE.Mesh(new THREE.PlaneGeometry(.4,.3),new THREE.MeshStandardMaterial({color:0xff00ff}));
+ pane.name='Accidental plaster overlay';pane.rotation.y=-Math.PI/2;pane.position.set(2.3195,2.55,.60);room.add(pane);
+ try{
+  const found=coplanarOverlaps(room,{tolerance:.002,minArea:.0005,keepIdentical:true});
+  assert.ok(found.some(f=>(f.a+f.b).includes(pane.name)&&f.area>.10),'The real shared wall remains protected');
+ }finally{pane.removeFromParent();pane.geometry.dispose();pane.material.dispose();}
+});
+
+test('the depth scan measures tapered faces at their overlap, independent of world position',()=>{
+ const group=new THREE.Group(),mat=new THREE.MeshStandardMaterial({color:0xdddddd,side:THREE.DoubleSide});
+ const base=new THREE.Mesh(new THREE.PlaneGeometry(.4,.4).rotateX(-Math.PI/2),mat);base.position.set(-3,0,0);group.add(base);
+ const above=base.clone();above.material=mat.clone();above.rotation.z=.004;above.position.y=.012;group.add(above);
+ assert.deepEqual(coplanarOverlaps(group,{tolerance:.002,minArea:.0005,keepIdentical:true}),[],
+  'A 12 mm gap cannot become a depth conflict when a surface is away from the origin');
+ above.position.y=.0005;
+ assert.ok(coplanarOverlaps(group,{tolerance:.002,minArea:.0005,keepIdentical:true}).length,
+  'The same slightly sloping face half a millimetre above the base is still detected');
+});
+
 test('the furniture scan detects an accidentally doubled counter finish',()=>{
  const group=new THREE.Group();group.add(models[1].clone(true));
  const sheet=new THREE.Mesh(new THREE.PlaneGeometry(1,.3).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0xffffff}));
@@ -241,6 +267,17 @@ test('the otoshi bowls on the prep board stand apart, and the knife lies on the 
 test('the prep board, its bowls and knife share no flickering plane',()=>{
  const found=coplanarOverlaps(room,{regions:[{...BOARD,minY:.9}],tolerance:.002,minArea:.0005,keepIdentical:true});
  assert.deepEqual(found.map(describe),[]);
+});
+
+test('Sato toppings fill the real pans from their bottoms to below their rims',()=>{
+ const top=P.ramenPrep.top,z=P.ramenPrep.position[2];
+ for(const [x,finish] of [[5.02,'Food green'],[5.24,'Food cream']]){
+  const points=pointsIn(finish,{minX:x-.076,maxX:x+.076,minZ:z-.136,maxZ:z+.136,minY:top,maxY:top+.10});
+  assert.ok(points.length,'The topping has real volume inside its pan');
+  const base=Math.min(...points.map(p=>p.y)),upper=Math.max(...points.map(p=>p.y));
+  assert.ok(Math.abs(base-down(room,x,z,top+.013))<.0005,'Food rests on the actual pan bottom');
+  assert.ok(upper<=top+.0585&&upper<top+.07,'The heap stays below the steel rim');
+ }
 });
 
 // Thao's drinks station (minato-bar.js) stands on clear worktop: nothing of the fitted room or its dressing (the

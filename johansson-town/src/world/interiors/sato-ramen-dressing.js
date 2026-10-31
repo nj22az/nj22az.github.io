@@ -93,7 +93,7 @@ export function buildSatoRamenDressing(room,{anchor,action,collider,layout={}}={
  // The okamochi by the door: an aluminium box with a sliding front and a handle on top.
  const O=layout.okamochi||OKAMOCHI,base=O.y||0;
  box(O.w,O.h,O.d,O.x,base+O.h/2,O.z,0xc9ced2);box(O.w-.04,O.h-.08,.004,O.x,base+O.h/2,O.z-O.d/2-.002,0xb4babf);
- box(.04,.12,.04,O.x-O.w*.30,base+O.h+.06,O.z,0x9aa0a6);box(.04,.12,.04,O.x+O.w*.30,base+O.h+.06,O.z,0x9aa0a6);box(O.w*.70,.03,.04,O.x,base+O.h+.12,O.z,0x9aa0a6);
+ box(.04,.12,.04,O.x-O.w*.30,base+O.h+.06,O.z,0x9aa0a6);box(.04,.12,.04,O.x+O.w*.30,base+O.h+.06,O.z,0x9aa0a6);box(O.w*.60-.04,.03,.04,O.x,base+O.h+.105,O.z,0x9aa0a6);
  if(collider)collider(O.x,O.z,O.w,O.d,.6);
  const group=new THREE.Group();group.name='Sato Ramen 1997 dressing';room.add(group);
  const texture=sheet();

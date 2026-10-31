@@ -368,7 +368,7 @@ export function buildSchool(world,options){
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1.9,SCHOOL.gate.z-.9],'Greet the shisa',say('Shisa on the gateposts',
   'A pair of glazed shisa, one on each post: the one on the right with its mouth open to take in good fortune, the one on the left with its mouth shut to keep it. Somebody has put a hibiscus flower behind the left one\'s ear.'));
  anchor([SCHOOL.gate.x-SCHOOL.gate.half,1,SCHOOL.gate.z-.7],'Read the gate plates',say("Minato Elementary School · Minato Community Hall",
-  'One gate for three buildings in a row on the old school\'s footprint: the island school with its clock (eight pupils, the 5th and 6th years together), the Community Hall with its kitchen, the town\'s register and the meeting room, and the clinic with the doctor\'s flat at the east end. Narrow passages run between them to the lane behind.'));
+  'One gate for three buildings in a row on the old school\'s footprint: the island school with its clock (the 5th and 6th years together), the Community Hall with its kitchen, the town\'s register and the meeting room, and the clinic with the doctor\'s flat at the east end. Narrow passages run between them to the lane behind.'));
  anchor([SCHOOL.wash.x,1,SCHOOL.wash.z-.8],'Rinse your feet at the taps',()=>options.onAction?.('school-taps'));
  anchor([(SCHOOL.bikeShed.minX+SCHOOL.bikeShed.maxX)/2,1,SCHOOL.bikeShed.minZ+.4],'Look at the bicycles',say('Bike shed',
   'Bicycles under a zinc roof rusted through at the ribs: the town office\'s errand bicycle, Miss Higa\'s, and two pupils\' with their names in marker on the mudguards.'));
@@ -385,7 +385,7 @@ export function buildSchool(world,options){
  // The door. The school keeps a site like any building in town, so the map, the
  // directory and the doorway carry you in and out the way they do everywhere else.
  const door=[SCHOOL.genkan.x,0,B.minZ-.7];
- const site={id:'school',title:'Minato Elementary School',jp:"School · Classroom",sub:"Years 5–6 · 8 PUPILS",x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
+ const site={id:'school',title:'Minato Elementary School',jp:"School · Classroom",sub:"Years 5–6",x:SCHOOL.genkan.x,z:B.minZ-.7,color:0x587a6a,accent:'#2d5a4c',
   line:'Lessons 8:30–15:30 · kyūshoku 12:20 · visitors sign in at the staff room',door,exitPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],
   approachPosition:[SCHOOL.genkan.x,0,B.minZ-1.4],entryFacing:Math.PI,opens:'07:30'};
  options.sites.push(site);

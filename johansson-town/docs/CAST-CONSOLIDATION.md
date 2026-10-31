@@ -2,6 +2,10 @@
 
 Implementation brief for a coding agent. Prepared 19 October 2026 by the owner. Adopted as the plan of record the same day, with the addendum at the end (the owner's later rulings, which win where they differ from the body).
 
+## Later owner decision — 31 October 2026
+
+The owner retired Emi and Mai Nakamura and prioritised facilities before further population. The live registry now has **18 core + 5 supporting identities, 13 retired identities and 12 core households**. The retained dessert/ice-cream premises are vacant and closed; the former family home is no longer an occupied address. Civic services and the clinic remain. Historical recipes and existing creative assets remain available. No replacement resident, staff assignment or friendship is implied. Current implementation and save compatibility: [room-crash/family handover](../briefs/HANDOFF-ROOM-CRASH-FAMILY-2026-10-31.md). The dated audit and original plan below remain historical context; this ruling supersedes their active Nakamura-family entries and totals.
+
 ## 1. TASK AND AUTHORITY
 
 Implement a smaller, coherent population and a more compact town in https://github.com/nj22az/nj22az.github.io, project directory `johansson-town/`.

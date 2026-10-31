@@ -15,9 +15,9 @@ import {recipeFor} from '../src/avatars/cast.js';
 const homes=new Map(ISLAND_HOMES.map(h=>[h.home,h]));
 
 // Dr Ken retired into Nhung on 22 October 2026 (the owner): the brief's 21 core are 20.
-test('20 core and 5 supporting identities; 25 unique short display names; ids are machine keys, never names',()=>{
- assert.equal(CORE.length,20);assert.equal(SUPPORTING.length,5);assert.equal(ROSTER.length,25);
- assert.equal(new Set(ROSTER.map(p=>p.name)).size,25);
+test('18 core and 5 supporting identities; 23 unique short display names; ids are machine keys, never names',()=>{
+ assert.equal(CORE.length,18);assert.equal(SUPPORTING.length,5);assert.equal(ROSTER.length,23);
+ assert.equal(new Set(ROSTER.map(p=>p.name)).size,23);
  assert.equal(new Set([...ROSTER,...RETIRED].map(p=>p.id)).size,36,'every id once, the retired included');
  for(const p of [...ROSTER,...RETIRED]){
   assert.match(p.id,/^[a-z][a-z0-9-]*$/,p.id+' is a machine key');
@@ -26,10 +26,10 @@ test('20 core and 5 supporting identities; 25 unique short display names; ids ar
  }
  for(const p of CORE)assert.equal(p.category,'core');for(const p of SUPPORTING)assert.equal(p.category,'supporting');
  // The brief's display names, in its order (§4 and §5).
- assert.deepEqual(CORE.map(p=>p.name),['Nils','Thuan','Thao','Chin','Vy','Nhung','Koji','Riku','Yui','Gran Higa','Tetsu','Aki','Mori','Emi','Mai','Fuji','Jack','Mac','Nao','Mika']);
+ assert.deepEqual(CORE.map(p=>p.name),['Nils','Thuan','Thao','Chin','Vy','Nhung','Koji','Riku','Yui','Gran Higa','Tetsu','Aki','Mori','Fuji','Jack','Mac','Nao','Mika']);
  assert.deepEqual(SUPPORTING.map(p=>p.name),['Ryo','Ren','Aya','Jun','Kai']);
  // Ages are the source's (cast.js); children keep theirs.
- assert.equal(identityOf('vy').age,11);assert.equal(identityOf('riku').age,9);assert.equal(identityOf('mai').age,10);
+ assert.equal(identityOf('vy').age,11);assert.equal(identityOf('riku').age,9);assert.ok(isRetired('mai'));
 });
 
 test('every name, full name, historical name and id maps to exactly one identity',()=>{
@@ -55,34 +55,36 @@ test('the save-era names of the sisters (Yui, Aya, Nao) are not roster aliases: 
  assert.ok(!formerNames('Miss Higa').includes('Yui'));assert.ok(formerNames('Mr Fujita').includes('Fuji'));
 });
 
-test('exactly 13 core households with the listed members (the doctor’s flat went with Dr Ken); every core person in one; homes stand in the registry',()=>{
- assert.equal(HOUSEHOLDS.length,13);
+test('exactly 12 core households with the listed members (the doctor and Nakamura homes retired); every core person in one; homes stand in the registry',()=>{
+ assert.equal(HOUSEHOLDS.length,12);
  const expected={'kitano-1':['nils','thuan'],'kitahama-1':['thao','chin','vy'],'kitahama-3':['nhung','koji','riku'],higa:['yui','gran-higa'],'resident-home-kenji':['tetsu'],
-  'kitahama-2':['aki'],koban:['mori'],office:['jack'],nakamura:['emi','mai'],'kitahama-flat-3':['mac'],'kitahama-flat-4':['mika'],'kitahama-8':['nao'],'fujita-houseboat':['fuji']};
+  'kitahama-2':['aki'],koban:['mori'],office:['jack'],'kitahama-flat-3':['mac'],'kitahama-flat-4':['mika'],'kitahama-8':['nao'],'fujita-houseboat':['fuji']};
  assert.deepEqual(Object.fromEntries(HOUSEHOLDS.map(h=>[h.home,[...h.members]])),expected);
- const placed=HOUSEHOLDS.flatMap(h=>h.members);assert.equal(new Set(placed).size,20);assert.equal(placed.length,20);
+ const placed=HOUSEHOLDS.flatMap(h=>h.members);assert.equal(new Set(placed).size,18);assert.equal(placed.length,18);
  for(const p of CORE){assert.equal(householdOf(p.id)?.home,p.home,p.id+' sleeps where the household says');assert.equal(p.household,p.home);}
  for(const h of HOUSEHOLDS){const reg=homes.get(h.home);assert.ok(reg&&!reg.retired&&!reg.secondaryOnly,h.home+' is a standing primary home in the registry');}
- assert.equal(HOUSEHOLDS.filter(h=>homes.get(h.home).island==='minato').length,12);
+ assert.equal(HOUSEHOLDS.filter(h=>homes.get(h.home).island==='minato').length,11);
  // Nobody keeps a secondary shore room (addendum 4), and shipboard berths add no household.
  for(const p of ROSTER){assert.equal(p.room,null,p.id);if(p.berth)assert.ok(QUARTERS.find(q=>q.id===p.berth)?.aboard,p.id+'’s berth is aboard');}
  for(const p of SUPPORTING){assert.equal(p.household,null,p.id+' is not a household');assert.ok(p.berth||p.home,p.id+' has quarters');assert.ok(QUARTERS.some(q=>q.who.includes(p.id)),p.id+' is in QUARTERS');}
  assert.equal(identityOf('kai').home,'kitano-2');assert.ok(homes.get('kitano-2'));
 });
 
-test('every retired identity has a transfer to active people and a former home that goes',()=>{
- assert.equal(RETIRED.length,11);
+test('every retired identity records its disposition and a retiring home registration',()=>{
+ assert.equal(RETIRED.length,13);
  // Dr Kakazu's old name resolves to his retired record, and Nhung holds his post.
  assert.equal(identityOf('Dr Kakazu')?.id,'dr-ken');assert.equal(identityOf('Dr Ken')?.id,'dr-ken');assert.deepEqual([...identityOf('dr-ken').transfer.to],['nhung']);
  for(const p of RETIRED){
   assert.equal(p.category,'retired');assert.ok(isRetired(p.id)&&isRetired(p.name));
-  assert.ok(p.transfer.to.length&&p.transfer.purpose.length>10,p.id+' has a transfer');
+  assert.ok(p.transfer.purpose.length>10,p.id+' has a disposition');
+  if(['emi','mai'].includes(p.id))assert.deepEqual(p.transfer.to,[],p.id+' has no invented successor');
+  else assert.ok(p.transfer.to.length,p.id+' has its original transfer');
   for(const to of p.transfer.to)assert.ok(ROSTER.some(q=>q.id===to),p.id+' transfers to '+to+', an active identity');
   assert.ok(homes.get(p.home),p.id+'’s former home '+p.home+' is a registry id');
   assert.ok(RETIRED_HOME_IDS.includes(p.home),p.home+' is a retiring home record');
   assert.ok(!HOUSEHOLDS.some(h=>h.members.includes(p.id)),p.id+' is in no household');
  }
- assert.deepEqual(RETIRED.map(p=>p.name),['Bus driver','Mr Higa Jr','Grandmother Sakurai','Grandmother Chinen','Postman Tōma','Mr Shimabukuro','Mr Ōshiro','Mrs Kinjō','Barfly','Reiko','Dr Kakazu']);
+ assert.deepEqual(RETIRED.map(p=>p.name),['Bus driver','Mr Higa Jr','Grandmother Sakurai','Grandmother Chinen','Postman Tōma','Mr Shimabukuro','Mr Ōshiro','Mrs Kinjō','Barfly','Reiko','Dr Kakazu','Mrs Nakamura','Mai']);
  // The brief's cautions (§6): Fuji keeps Shiosai, not the captain's house; Chin keeps 1 Kitahama, not the flat.
  assert.equal(identityOf('fuji').home,'fujita-houseboat');assert.equal(identityOf('chin').home,'kitahama-1');
  assert.equal(identityOf('thuan').role.includes('owns'),true);assert.ok(!identityOf('chin').role.toLowerCase().includes('sakura'));
@@ -105,7 +107,7 @@ test('the eight ship posts are the manning plan’s keys, each with a holder, re
 
 test('retiring homes resolve to a retained public place; a home that stays resolves to itself',()=>{
  for(const id of ['kitahama-4','kitahama-5','kitahama-6','kinjo','oshiro','resident-home-aya','kitano-3','kitahama-flat-1','kitahama-flat-2','shimabukuro'])assert.ok(RETIRED_HOME_IDS.includes(id),id);
- for(const id of RETIRED_HOME_IDS){assert.ok(homes.get(id),id+' is a registry id today');assert.notEqual(retiredHomeFallback('home-'+id),'home-'+id,id);if(id!=='izakaya'&&id!=='clinic')assert.notEqual(retiredHomeFallback(id),id,id);}
+ for(const id of RETIRED_HOME_IDS){assert.ok(homes.get(id),id+' is a registry id today');assert.notEqual(retiredHomeFallback('home-'+id),'home-'+id,id);if(!['izakaya','clinic','nakamura'].includes(id))assert.notEqual(retiredHomeFallback(id),id,id);}
  assert.equal(retiredHomeFallback('izakaya'),'izakaya','the izakaya stays as a business; only Barfly’s home registration retires');
  assert.equal(retiredHomeFallback('clinic'),'clinic','the clinic stays; only the doctor’s flat behind it retires (22 October 2026)');assert.equal(retiredHomeFallback('home-clinic'),'clinic');
  assert.equal(retiredHomeFallback('home-kitahama-4'),'community-kitchen');assert.equal(retiredHomeFallback('post-office'),'ferry-terminal');assert.equal(retiredHomeFallback('rainflower-florist'),'market');assert.equal(retiredHomeFallback('home-izakaya'),'izakaya');
@@ -121,7 +123,7 @@ test('phase 2: every person resolves to one body in cast.js; the supporting crew
  for(const p of SUPPORTING){const live=castMember(p.name);assert.equal(live?.name,p.name,p.name+' has a body of their own');assert.ok(live.supporting,p.name+' is marked supporting in the cast');for(const w of p.was)assert.equal(castMember(w)?.name,p.name,w+' resolves to '+p.name);}
  for(const p of RETIRED)for(const name of [p.name,p.id,...p.was])assert.equal(castMember(name),null,name+' has no body (phase 4)');
  for(const name of CAST_NAMES)assert.equal(castMember(name).name,name,'cast.js lookups are untouched');
- assert.equal(CAST.length,25,'the 20 core and the five supporting crew');
+ assert.equal(CAST.length,23,'the 18 core and the five supporting crew');
  assert.equal(CAST.filter(p=>p.supporting).length,5);
  const bare=r=>JSON.stringify({...r,name:null});
  // Emi is the one display name that already has a drawing of its own (the old townsfolk profile, Mrs Kinjō's look): it keeps it until phase 5.

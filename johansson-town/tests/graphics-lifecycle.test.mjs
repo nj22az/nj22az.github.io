@@ -53,3 +53,10 @@ test('the game uses one lifecycle and retains a plain fallback without an automa
  assert.match(source,/function loop\(\)\{requestAnimationFrame\(loop\);if\(graphicsLifecycle\?\.lost\)\{clock\.getDelta\(\);return;\}/,'The loss pause also covers photo studio rendering');
  assert.doesNotMatch(source,/location\.reload\(\)/);
 });
+
+test('context recovery is listening before town construction and shader warm-up yield',async()=>{
+ const source=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
+ const installed=source.indexOf('graphicsLifecycle=createGraphicsLifecycle(');
+ assert.ok(installed>0&&installed<source.indexOf("launchReport.stage('Building town')"),'A loss during the loading screen must be eligible for restoration');
+ assert.ok(installed<source.indexOf("loadingProgress?.start('shaders')"));
+});

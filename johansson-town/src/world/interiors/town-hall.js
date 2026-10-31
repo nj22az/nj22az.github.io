@@ -82,21 +82,19 @@ function plate(group,text,{w,h,at,ry=0,bg='#f3f0e4',fg='#23302a',font=GOTHIC,siz
  */
 export const PETITIONS=Object.freeze([
  'From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.',
- "From Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.",
  'From the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.',
  'From the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.',
  'From Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.',
 ]);
 
 /**
- * 調理室, the community centre's kitchen: where Mrs Nakamura and the women's association fry sata andagi
- * for the eisa night, the class cooks once a term, and anybody can book the stoves for a
+ * 調理室, the community centre's kitchen: the class cooks once a term, and anybody can book the stoves for a
  * family occasion. Two long steel work islands, a row of gas rings and the big rice
  * cookers, the sink run under the window, a fridge, the dish cupboards, and the booking
  * sheet on the wall.
  */
 export const KITCHEN_BOOKINGS=Object.freeze([
- "Saturday: Women's Association, andagi for the eisa night (Mrs Nakamura)",
+ "Saturday: available to book; no group assigned",
  "Sunday: Higa family, 33rd anniversary memorial lunch",
  "Wednesday: Years 5–6 cooking class, goya champurū (Higa-sensei)",
  "Friday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
@@ -136,7 +134,7 @@ export function buildCommunityKitchen({room,reg,action,collider=()=>{}}){
  anchor([-hw+.7,1.2,.4],'Look through the minutes',()=>action('read','Town assembly minutes, 1997','Item 3: the power house\'s second diesel set to be overhauled before typhoon season; the old barber\'s shop to be let to the post office. Item 5: the ferry company asks for a longer ramp so the new cargo trucks can board. Item 7: Mrs Sato\'s complaint about the gulls, again. Item 9: the sewage works on Kitano-jima to be inspected by the prefecture in November.'));
  anchor([hw-.5,1.0,-.1],'Read the requests in the box',()=>action('read','Requests to the town assembly',PETITIONS.join('\n\n')));
  anchor([hw-.5,1.4,1],'Read the booking sheet',()=>action('read',"Community Kitchen · bookings this week",KITCHEN_BOOKINGS.join('\n')));
- anchor([1.2,1,.7],'Look at the work islands',()=>action('inspect','Community kitchen',"Stainless steel worn soft at the edges, a ring of oil round the back burner that no amount of scrubbing will lift, and the smell of yesterday's andagi. A notice in Mrs Nakamura's hand: Return used items to their original locations -- put things back where you found them."));
+ anchor([1.2,1,.7],'Look at the work islands',()=>action('inspect','Community kitchen',"Stainless steel worn soft at the edges, a ring of oil round the back burner that no amount of scrubbing will lift. The kitchen notice reads: Return used items to their original locations -- put things back where you found them."));
  anchor([1.85,1.2,-hd+.8],'Look at the rice cookers',()=>action('inspect','Rice cookers','Two five-litre gas rice cookers, enough for the whole island at a funeral or a wedding. The newer one is from 1984.'));
  return {...layoutFor(),kitchen:true};
 }
@@ -253,7 +251,7 @@ export function buildClinic({room,reg,action,collider=()=>{},doctorIn=()=>true})
  anchor([1.45,1.6,-hd+.5],'Look at the X-ray',()=>action('inspect','Chest film',"Somebody's ribs on the lightbox, a name in marker on the corner tape: Fujita. The doctor has drawn a small circle on the left lung and written old · old, nothing to worry about, with a smiling face."));
  anchor([mx+.5,1.3,mz],'Look in the medicine cabinet',()=>action('read','Medicine cabinet',"Brown bottles and white boxes behind glass, every shelf labelled in the doctor's neat katakana: Antipyretic for fevers, Stomach medicine for stomachs, the habu antivenom in the fridge underneath (two vials, checked monthly, the date on the door), seasickness tablets for the ferry, sting cream for jellyfish season, and one shelf that just says Children · children."));
  anchor([1.5,1,2.0],'Weigh yourself',()=>action('inspect','Scales','The needle swings and settles at 84 kilograms.'+(here?' The doctor, without turning round: "Shoes on, Mayor. Call it eighty-three."':' Shoes on, so call it eighty-three.')));
- anchor([cx+.3,.9,-1.2],'Look at the couch',()=>action('inspect','Examination couch','Green vinyl under a roll of paper sheet, the curtain on its rail half drawn. Vy, Riku and Mai have each had a splinter out here, and Kōji, the island’s one fisherman, a fish hook, twice.'));
+ anchor([cx+.3,.9,-1.2],'Look at the couch',()=>action('inspect','Examination couch','Green vinyl under a roll of paper sheet, the curtain on its rail half drawn. Vy and Riku have each had a splinter out here, and Kōji, the island’s one fisherman, a fish hook, twice.'));
  anchor([1.2,1.6,hd-.4],'Read the clinic hours',()=>action('read',"Minato Clinic · Minato Clinic",CLINIC_HOURS.join('\n')));
  const layout={...layoutFor(),clinic:true};
  if(doctor){const animator=doctor.animator;layout.tick=(dt)=>animator.update(Math.min(.1,dt||0),{speed:0,seated:true,seatHeight:.47,expression:'smile'});layout.tick(0);}

@@ -191,7 +191,11 @@ export function buildServingDrink(kind,{held=false}={}){
   }
   const x=held?0:.05;hollowGlass(glass,.03,.09,x);fill(.025,.062,.041,x,0xc18c36,true);rimHeight=.09;
  }else if(kind==='can'){
-  metal.lathe([[0,0],[.027,0],[.03,.004],[.031,.011],[.033,.016],[.033,.108],[.03,.117],[.029,.121],[0,.121]],0xc6c8b5);metal.ring(.03,.0012,C.steel,0,.121);metal.cyl(.026,.001,0xa1aa9e,0,.120);metal.ball(.006,0x343b32,0,.121,.012,1,.13,1.65);metal.add(new THREE.TorusGeometry(.007,.0018,4,16).rotateX(Math.PI/2).scale(1,1,1.35),0xc6c8b5,0,.124,-.003);metal.ball(.002,C.steel,0,.124,-.005,1,.4,1);productLabel(group,1,.03325,.087,0,.061,0,Math.PI*2);rimHeight=.124;
+  // Printed aluminium is the cylindrical side itself. The previous second
+  // cylinder was only 0.25 mm outside the metal and flickered in the cold store.
+  metal.lathe([[0,0],[.027,0],[.03,.004],[.031,.011],[.033,.016]],0xc6c8b5);
+  metal.lathe([[.033,.108],[.03,.117],[.029,.121],[0,.121]],0xc6c8b5);
+  metal.ring(.03,.0012,C.steel,0,.121);metal.cyl(.026,.001,0xa1aa9e,0,.120);metal.ball(.006,0x343b32,0,.121,.012,1,.13,1.65);metal.add(new THREE.TorusGeometry(.007,.0018,4,16).rotateX(Math.PI/2).scale(1,1,1.35),0xc6c8b5,0,.124,-.003);metal.ball(.002,C.steel,0,.124,-.005,1,.4,1);productLabel(group,1,.033,.092,0,.062,0,Math.PI*2);rimHeight=.124;
  }else if(kind==='coffee'){
   const offset=held?0:.012;if(!held)plate(china,.126,.126);
   china.lathe([[0,0],[.025,0],[.027,.006],[.036,.066],[.036,.071],[.033,.073],[.030,.069],[.023,.013],[0,.013]],C.china,0,offset);china.add(new THREE.TorusGeometry(.019,.0045,6,20,Math.PI).rotateZ(-Math.PI/2),C.china,.033,.038+offset);fill(.029,.044,.04+offset,0,0x4a3020);rimHeight=.073+offset;

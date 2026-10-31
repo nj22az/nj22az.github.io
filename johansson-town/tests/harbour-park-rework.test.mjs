@@ -41,14 +41,19 @@ test('every walk in the park ends on another walk, the forecourt or the town’s
  }
 });
 
-test('the beds have keepers from the cast and reasons, their plants are Okinawan, in their beds and in season by the calendar',()=>{
+test('the beds record living keepers or an explicit vacancy, with Okinawan plants in their beds and seasons',()=>{
  for(const [kind,p] of Object.entries(PARK_PLANTS)){
   assert.ok(p.jp&&p.why.length>40,kind+' says what it is and why it is here');
   assert.ok(p.flowers.length>0&&p.flowers.every(m=>Number.isInteger(m)&&m>=1&&m<=12),kind+' flowers in real months');
  }
  for(const bed of HARBOUR_PARK_BEDS){
-  const who=identityOf(bed.keeper);assert.ok(who&&!isRetired(bed.keeper),bed.id+' is kept by a living resident');
-  assert.ok(bed.why.length>60&&/\d\d:\d\d/.test(bed.tends),bed.id+' says why, and when it is tended');
+  if(bed.id==='entrance-bed'){
+   assert.equal(bed.keeper,null,'the retired shopkeeper is not silently replaced');assert.equal(bed.maintenance,'unassigned');assert.match(bed.tends,/No watering round/);
+  }else{
+   const who=identityOf(bed.keeper);assert.ok(who&&!isRetired(bed.keeper),bed.id+' is kept by a living resident');
+   assert.match(bed.tends,/\d\d:\d\d/,bed.id+' says when it is tended');
+  }
+  assert.ok(bed.why.length>60,bed.id+' says why it remains');
   for(const [kind,x,z] of bed.plants){assert.ok(PARK_PLANTS[kind],kind);assert.ok(inside(bed.bounds,x,z),`${kind} at ${x}, ${z} stands in ${bed.id}`);}
   // A bed is a bed in the lawn: a strip of turf between it and every walk's setts.
   const b=bed.bounds;for(let x=b.minX;x<=b.maxX+1e-9;x+=.1)for(let z=b.minZ;z<=b.maxZ+1e-9;z+=.1){
@@ -82,7 +87,8 @@ test('the cherry flowers and sheds its petals only in its season, and the beds s
 test('the landmarks’ prompts work: the guide, the beds, the trees, the bench and feeding the koi',()=>{
  const {world,ask,hour}=park(on(10,21,12));
  const guide=ask('Read the park guide');assert.equal(guide[0],'read');assert.match(guide[2],/Umi-no-yu/);assert.doesNotMatch(guide[2],/Rainflower/,'the florist retired on 19 October');
- for(const bed of HARBOUR_PARK_BEDS){const a=ask('Look at the '+bed.title.toLowerCase());assert.match(a[2],new RegExp(identityOf(bed.keeper).avatar));}
+ for(const bed of HARBOUR_PARK_BEDS){const a=ask('Look at the '+bed.title.toLowerCase());assert.match(a[2],bed.keeper?new RegExp(identityOf(bed.keeper).avatar):/No keeper is assigned/);}
+ assert.doesNotMatch(guide[2],/Mrs Nakamura|\bMai\b/);assert.match(guide[2],/dessert counter is closed/);
  assert.match(ask('Look at the entrance bed')[2],/In flower: ixora/);assert.match(ask('Look at the entrance bed')[2],/In leaf: Easter lily/);
  assert.match(ask('Look up into the harbour cherry')[2],/green tree/);hour(on(2,5,12));assert.match(ask('Look up into the harbour cherry')[2],/in flower/);hour(on(10,21,12));
  assert.match(ask('Look up into the gajumaru')[2],/gajumaru/);

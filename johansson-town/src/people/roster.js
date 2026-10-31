@@ -1,7 +1,7 @@
 /**
  * The consolidated cast, as data (docs/CAST-CONSOLIDATION.md: the owner's brief of 19 October 2026, the addendum
- * winning where they differ). One identity record per person: 20 core and 5 supporting identities, the eleven retired
- * ones and where their purpose went, the 13 core households, the supporting quarters, the eight ship posts and the
+ * winning where they differ). One identity record per person: 18 core and 5 supporting identities, the thirteen retired
+ * ones and where their purpose went, the 12 core households, the supporting quarters, the eight ship posts and the
  * shore roles. This is what the phases switch the game over to (the brief, "How it is run": 2 the ship, 3 the
  * households, 4 the removals, 5 the stories and directories, all done). The game reads it for name resolution (cast.js
  * castMember, renamed.js formerNames, avatars/cast.js recipeFor) and the save migration (save.js migrateCast); from
@@ -21,8 +21,8 @@
  *  - Yui, Aya and Nao, three of the brief's display names, are the sisters' names in the oldest saves (renamed.js:
  *    Yui and Yuri were Thuan, Aya was Nhung, Nao was Thao). Those are save-era aliases only: they are not `was` here,
  *    and save.js applies them once, to saves written before this roster (castRevision 1). From this roster on Yui is
- *    the teacher, Aya the purser and Nao the bosun. Emi is likewise an old townsfolk profile (profiles.json); it now
- *    names Mrs Nakamura, and only her `was` names migrate, never a bare display name that is not yet live.
+ *    the teacher, Aya the purser and Nao the bosun. The old townsfolk drawing Emi (profiles.json) remains historical artwork.
+ *    Emi Nakamura and Mai retired on 31 October 2026, with every name of theirs resolving to the retired record.
  *  - The manning plan's post key stays `oiler` (world/ferry-ship.js FERRY_MANNING; ferry-operations.js tasks and
  *    scenarios key on it). The post's title is Motorman; SHIP_POST_ALIASES maps `motorman` to it, the brief's
  *    compatibility layer, so no machinery task or safe-departure check changes with the label.
@@ -50,7 +50,7 @@ const who=(id,o)=>Object.freeze({id,name:o.name,fullName:o.fullName||o.name,cate
  post:o.post||null,relief:o.relief||null,shore:Object.freeze(o.shore||[]),home:o.home||null,berth:o.berth||null,
  room:o.room||null,oldHomes:Object.freeze(o.oldHomes||[]),household:o.household===undefined?o.home||null:o.household});
 
-/** The core residents (brief §4: 21, Dr Ken retired into Nhung on 22 October 2026), in the brief's order. */
+/** The core residents (brief §4: 21, less Dr Ken and the retired Nakamura family), in the brief's order. */
 export const CORE=Object.freeze([
  who('nils',{name:'Nils',fullName:'Nils Johansson',sex:'m',nationality:'Swedish',was:['Johansson'],avatar:'Johansson',post:'chief',home:'kitano-1',berth:'ferry-chief-cabin',oldHomes:['ferry'],
   role:'the player; Swedish chief engineer of the Minato Maru; married to Thuan'}),
@@ -76,9 +76,6 @@ export const CORE=Object.freeze([
   role:'owns Sato Ramen, which keeps its name; stays ashore'}),
  who('mori',{name:'Mori',fullName:'Officer Mori',sex:'m',age:45,nationality:'Japanese',was:['Officer Mori'],avatar:'Officer Mori',home:'koban',
   role:'the island’s police officer; the desk and the night patrol; his accommodation moves into the police station to come (addendum 1), koban staying his home id'}),
- who('emi',{name:'Emi',fullName:'Emi Nakamura',sex:'f',age:40,nationality:'Japanese',was:['Mrs Nakamura'],avatar:'Mrs Nakamura',home:'nakamura',
-  role:'keeps the dessert counter (Nakamura Zenzai and Blue Coral) and the community kitchen; Mai’s mother'}),
- who('mai',{name:'Mai',fullName:'Mai Nakamura',sex:'f',age:10,was:['Nakamura Mai'],avatar:'Mai',home:'nakamura',role:'Emi’s daughter; a pupil at the island school; Vy’s best friend'}),
  who('fuji',{name:'Fuji',fullName:'Fujita',sex:'m',age:63,nationality:'Japanese',was:['Mr Fujita'],avatar:'Mr Fujita',post:'master',home:'fujita-houseboat',
   role:'master of the Minato Maru; sober on watch, the shed and the beer only after he signs off; lives aboard Shiosai'}),
  who('jack',{name:'Jack',fullName:'Jack Reed',sex:'m',age:58,nationality:'American',was:['Harbour master'],avatar:'Harbour master',shore:['port','linesman'],home:'office',
@@ -104,7 +101,7 @@ export const ROSTER=Object.freeze([...CORE,...SUPPORTING]);
 
 /**
  * The retired core identities (brief §6's ten, and Dr Ken on 22 October 2026): who takes over what they did, and the home each leaves. A retired person
- * keeps no body, schedule, home, shift, directory entry or scene; their purpose moves, their home goes (RETIRED_HOMES),
+ * keeps no body, schedule, home, shift, directory entry or scene; their former work is transferred or explicitly left vacant, their home registration retires (RETIRED_HOMES),
  * their relationships are rewritten by phase 4, and only coherent historical mentions remain.
  */
 const gone=(id,o)=>Object.freeze({id,name:o.name,category:'retired',was:Object.freeze(o.was||[]),home:o.home,
@@ -124,9 +121,13 @@ export const RETIRED=Object.freeze([
  // patients and evenings go to her. His flat behind the clinic goes with him; in RETIRED_HOMES `clinic` lands on itself,
  // because the id also names the clinic, which stays: a saved `clinic` or `home-clinic` lands at the clinic's door.
  gone('dr-ken',{name:'Dr Kakazu',was:['Dr Ken','Dr Ken Kakazu'],home:'clinic',to:['nhung'],purpose:'the island doctor: the clinic, its hours, house calls and the night telephone'}),
+ // The owner, 31 October 2026: remove the ice-cream family and finish facilities before adding people.
+ // No resident inherits their work or family: the dessert counter and upstairs flat remain vacant.
+ gone('emi',{name:'Mrs Nakamura',was:['Emi','Emi Nakamura'],home:'nakamura',to:[],purpose:'the dessert counter, upstairs flat and community-kitchen programme wait for future staffing; no replacement resident is assigned'}),
+ gone('mai',{name:'Mai',was:['Nakamura Mai','Mai Nakamura'],home:'nakamura',to:[],purpose:'the daughter retires with her mother; her school and friendship roles are not transferred to another child'}),
 ]);
 
-/** The core households (brief §7's 14 less the doctor's flat, 22 October 2026; addendum 1, 4 and 6): primary homes and who sleeps there. */
+/** The core households (brief §7's 14 less the doctor's flat and the Nakamura household; addendum 1, 4 and 6): primary homes and who sleeps there. */
 const household=(home,members,note)=>Object.freeze({home,members:Object.freeze(members),note});
 export const HOUSEHOLDS=Object.freeze([
  household('kitano-1',['nils','thuan'],'Johansson & Thuan’s house on Kitano-jima; Nils’s cabin aboard is duty accommodation, not a home'),
@@ -137,7 +138,6 @@ export const HOUSEHOLDS=Object.freeze([
  household('kitahama-2',['aki'],'2 Kitahama'),
  household('koban',['mori'],'Mori’s accommodation moves inside the police station built next to the kōban, a later job; koban stays the logical id (addendum 1)'),
  household('office',['jack'],'the Harbour Office residence'),
- household('nakamura',['emi','mai'],'above the dessert business'),
  household('kitahama-flat-3',['mac'],'one of the two attached ground-floor houses Kitahama Heights becomes (addendum 6); the id is kept for migration'),
  household('kitahama-flat-4',['mika'],'the other attached ground-floor house; the id is kept for migration'),
  household('kitahama-8',['nao'],'8 Kitahama'),
@@ -194,6 +194,8 @@ export const RETIRED_HOMES=Object.freeze({
  shimabukuro:'ferry-terminal','post-office':'ferry-terminal',florist:'market','rainflower-florist':'market',izakaya:'izakaya',
  // The doctor's flat (Dr Kakazu, retired 22 October 2026): the clinic itself stays, so the id lands on itself.
  clinic:'clinic',
+ // Only the Nakamura household retires. The dessert building stays, vacant; old home links land at its public frontage.
+ nakamura:'nakamura',
 });
 /** The home records that retire: the service ids above are counters, not homes; izakaya's building stays, Barfly's registration goes. */
 export const RETIRED_HOME_IDS=Object.freeze(Object.keys(RETIRED_HOMES).filter(id=>!['post-office','florist','rainflower-florist'].includes(id)));
@@ -220,7 +222,7 @@ export const namesOf=key=>{const p=identityOf(key);return p?[p.name,...(p.fullNa
 
 /** The roster as a document: docs/cast-roster.json mirrors it (tools/write-cast-roster.mjs; tests/roster.test.mjs keeps them equal). */
 export const rosterDocument=()=>({
- status:'phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 25 (the eleven retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md',
+ status:'31 October 2026: 18 core and 5 supporting residents; the Nakamura family retires without successors while its facilities remain vacant. The 13 retired identities retain historical drawings (avatars/cast.js RETIRED_RECIPES); the consolidation report is docs/CAST-CONSOLIDATION-REPORT.md',
  canonDate:'2026-10-19',source:'docs/CAST-CONSOLIDATION.md',counts:{core:CORE.length,supporting:SUPPORTING.length,retired:RETIRED.length,households:HOUSEHOLDS.length},
  core:CORE,supporting:SUPPORTING,retired:RETIRED,households:HOUSEHOLDS,quarters:QUARTERS,shipPosts:SHIP_POSTS,shipPostAliases:SHIP_POST_ALIASES,shoreRoles:SHORE_ROLES,retiredHomes:RETIRED_HOMES,
 });

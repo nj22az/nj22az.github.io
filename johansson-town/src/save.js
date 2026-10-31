@@ -75,7 +75,7 @@ export function migrateHousing(saved){
  *    today (cast.js liveNameFor), so it follows each phase's renames by itself: 'Mr Fujita' stays 'Mr Fujita' until
  *    cast.js calls him Fuji, then moves. A retired person's record (a location, a friendship, a treat, a greeting, an
  *    impression, a relationship pair, a bookshop job, an errand) is dropped, since they have no body (phase 4, castRevision
- *    2); a display name that is not live yet ('Emi' before phase 5) is left alone, it may be somebody else's.
+ *    2); the Nakamura family's names retire too (31 October 2026, castRevision 3). Other display names not yet live are left alone.
  *  - Homes: a saved location that names a home that goes (RETIRED_HOMES) lands at a retained public place, whether or
  *    not the building still stands (since phase 4 none of them does: 4, 5 and 6 Kitahama, the Kinjō and Ōshiro houses,
  *    1 Front-Row Yard and the Chinen house at the town hall; the flat over the former post office at the terminal, where
@@ -83,10 +83,10 @@ export function migrateHousing(saved){
  *    3 Kitahama).
  *  - Prose: notes, the shop ledger and the archive read the historical names as the live ones, except the player's,
  *    whose surname is in 'Johansson Harbour Office' and the like.
- * Revisions: 1 the roster and its aliases (phase 1); 2 the retirements (phase 4). Every step is a no-op on a save that
+ * Revisions: 1 the roster and its aliases (phase 1); 2 the retirements (phase 4); 3 the Nakamura family retirement. Every step is a no-op on a save that
  * has had it, so the stamp records what the save has been through, not what still has to run.
  */
-export const CAST_REVISION=2,SAVE_ERA_REVISION=1;
+export const CAST_REVISION=3,SAVE_ERA_REVISION=1;
 const historical=key=>{const who=identityOf(key);return who&&(who.category==='retired'||who.id===key||who.was.includes(key))?who:null;};
 /** Where a record under `key` sits now: itself, the live name, or null for a retired person with no body. */
 export function castKey(key){
@@ -106,7 +106,9 @@ export function migrateCast(saved){
  for(const key of ['residentLocations','residentLife','friendship','treats','greeted','impressions'])renameKeys(saved[key],castKey);
  renameKeys(saved.relationships,k=>{const ids=k.split('|');if(ids.length!==2)return k;const now=ids.map(castKey);return now.includes(null)?null:[...new Set(now)].length<2?null:now.sort().join('|');});
  renameKeys(saved.bookshop?.completed,k=>{const at=k.lastIndexOf(':');if(at<0)return k;const now=castKey(k.slice(at+1));return now===null?null:k.slice(0,at+1)+now;});
- if(typeof saved.errand?.from==='string'){const now=castKey(saved.errand.from);if(now===null)delete saved.errand;else saved.errand.from=now;}
+ for(const field of ['from','to'])if(typeof saved.errand?.[field]==='string'){
+  const now=castKey(saved.errand[field]);if(now===null){delete saved.errand;break;}saved.errand[field]=now;
+ }
  const prose=proseRenamer();
  if(Array.isArray(saved.notes))saved.notes=[...new Set(saved.notes.map(prose))];
  for(const record of Object.values(saved.residentLife||{}))if(Array.isArray(record?.activities))record.activities=record.activities.map(prose);

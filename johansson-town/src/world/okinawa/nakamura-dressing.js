@@ -45,7 +45,8 @@ export const NAKAMURA_OPEN_SIGNS=Object.freeze({
  */
 export const NAKAMURA_SHUTTER=Object.freeze({roll:.15,after:.25});
 /** How far down the shutter is at `minutes`: 0 up (hidden in its box), 1 down to the floor. */
-export function nakamuraShutterDown(minutes,{open,close},{roll,after}=NAKAMURA_SHUTTER){
+export function nakamuraShutterDown(minutes,{open,close,staffed},{roll,after}=NAKAMURA_SHUTTER){
+ if(staffed===false)return 1;
  const m=((minutes%1440)+1440)%1440;
  if(m>=open&&m<open+roll)return 1-(m-open)/roll;
  if(m>=open&&m<close+after)return 0;
@@ -139,11 +140,11 @@ const MINCHO='"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif',GOTH
  */
 const ATLAS=Object.freeze({w:1024,h:512,menu:[0,0,1024,256],tin:[0,272,320,200],plate:[352,272,256,128]});
 
-function paintLettering(menu,{open,close}){
+function paintLettering(menu,{open,close,staffed}){
  return paint(ATLAS.w,ATLAS.h,(ctx)=>{
   // The menu: wooden tags hung in a row, each a name written down it and the price under it, and the hours at the end.
   {const [x0,y0,w,h]=ATLAS.menu;ctx.fillStyle='#6e4f33';ctx.fillRect(x0,y0,w,h);
-   const tags=[...menu.map(p=>({name:japaneseSign(p.item),price:kanjiPrice(p.cost)})),{name:'営業',price:hoursTag(open,close),hours:true}];
+   const tags=[...menu.map(p=>({name:japaneseSign(p.item),price:kanjiPrice(p.cost)})),{name:staffed===false?'休業中':'営業',price:staffed===false?'CLOSED':hoursTag(open,close),hours:true}];
    const gap=10,tw=(w-gap*(tags.length+1))/tags.length;
    tags.forEach((t,i)=>{
     const x=x0+gap+i*(tw+gap),y=y0+12,th=h-24;
@@ -163,8 +164,8 @@ function paintLettering(menu,{open,close}){
   // The family's nameplate (表札): cypress, the name in brush letters, the romaji small under it.
   {const [x0,y0,w,h]=ATLAS.plate;ctx.fillStyle='#d8bb8a';ctx.fillRect(x0,y0,w,h);ctx.strokeStyle='rgba(90,60,30,.3)';ctx.lineWidth=2;
    for(let y=y0+14;y<y0+h;y+=17){ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0+w,y+3);ctx.stroke();}
-   ctx.fillStyle='#2a1e14';ctx.textAlign='center';ctx.textBaseline='middle';signText(ctx,japaneseSign('Nakamura'),x0+w/2,y0+h*.42,w-30,64,MINCHO);
-   signText(ctx,'NAKAMURA',x0+w/2,y0+h*.82,w-40,20,GOTHIC);}
+   ctx.fillStyle='#2a1e14';ctx.textAlign='center';ctx.textBaseline='middle';signText(ctx,staffed===false?'空室':japaneseSign('Nakamura'),x0+w/2,y0+h*.42,w-30,64,MINCHO);
+   signText(ctx,staffed===false?'VACANT':'NAKAMURA',x0+w/2,y0+h*.82,w-40,20,GOTHIC);}
  });
 }
 
@@ -188,7 +189,8 @@ export const NAKAMURA_LETTERING=Object.freeze({
  * The building's own articulation and the static props, drawn into the quarter's kit (one batch with the rest of the
  * street, so none of it is a draw call of its own). Called from shopHouse inside its frame. Returns colliders.
  */
-export function nakamuraBuilding(kit,{trim=0x3f7f86}={}){
+export function nakamuraBuilding(kit,{trim=0x3f7f86,occupied=true}={}){
+ const windowFinish=occupied?'window':'matte',lightFinish=occupied?'glow':'matte';
  const solids=[],band=0xd2c9b2,hood=0xd8d2c4,sill=0xc9c2b4,alu=0xb8bec0,glass=0x5d7a84,frost=0xdfe6e4,timber=0x8a6641,dark=0x5d4431;
  // The slab band at the first floor, on the flanks and the back (the fascia's trim is the front's).
  kit.block(-W-.025,-W,3.17,3.33,-D,D,band);kit.block(W,W+.025,3.17,3.33,-D,D,band);kit.block(-W-.025,W+.025,3.17,3.33,-D-.025,-D,band);
@@ -223,7 +225,7 @@ export function nakamuraBuilding(kit,{trim=0x3f7f86}={}){
  // Left flank (park side): the front room's window, the kitchen window, the bougainvillea.
  const sideWindow=(x,z,y,wz,hy,s)=>{ // s: -1 the left flank, +1 the right
   kit.box(.05,hy+.12,wz+.12,x+s*.025,y,z,alu,{finish:'metal'});
-  kit.box(.04,hy-.02,wz-.02,x+s*.04,y,z,glass,{finish:'window'});
+  kit.box(.04,hy-.02,wz-.02,x+s*.04,y,z,glass,{finish:windowFinish});
   kit.box(.05,hy-.02,.04,x+s*.065,y,z,alu,{finish:'metal'});
   kit.box(.16,.06,wz+.2,x+s*.08,y-hy/2-.09,z,sill);
   kit.box(.32,.08,wz+.3,x+s*.16,y+hy/2+.1,z,hood);
@@ -232,7 +234,7 @@ export function nakamuraBuilding(kit,{trim=0x3f7f86}={}){
  // The front room is the corner room: its other window looks up Main Street over the drinks machines.
  sideWindow(W,1.5,4.85,1.2,1.1,1);
  {const z=-.35,y=1.55,blue=0x2f6f9a;
-  kit.box(.05,1.0,1.22,-W-.025,y,z,blue);kit.box(.04,.86,1.08,-W-.04,y,z,frost,{finish:'glow'});kit.box(.05,.86,.04,-W-.065,y,z,blue);
+  kit.box(.05,1.0,1.22,-W-.025,y,z,blue);kit.box(.04,.86,1.08,-W-.04,y,z,frost,{finish:lightFinish});kit.box(.05,.86,.04,-W-.065,y,z,blue);
   kit.box(.14,.05,1.3,-W-.07,y-.525,z,sill);kit.box(.36,.08,1.4,-W-.18,2.14,z,hood);
   for(let i=0;i<7;i++)kit.rod([-W-.115,1.07,z-.51+i*.17],[-W-.115,2.03,z-.51+i*.17],.012,0x8e979a);
   for(const yy of [1.12,1.98])kit.box(.03,.03,1.16,-W-.115,yy,z,0x8e979a,{finish:'metal'});
@@ -257,7 +259,7 @@ export function nakamuraBuilding(kit,{trim=0x3f7f86}={}){
  }
 
  // Right flank (the drinks machines' side): the stair window, the meters, the cider tin, the crates, the hibiscus.
- {kit.box(.05,.68,.58,W+.025,2.75,.2,alu,{finish:'metal'});kit.box(.04,.56,.46,W+.04,2.75,.2,0xc9d6d8,{finish:'glow'});
+ {kit.box(.05,.68,.58,W+.025,2.75,.2,alu,{finish:'metal'});kit.box(.04,.56,.46,W+.04,2.75,.2,0xc9d6d8,{finish:lightFinish});
   kit.box(.24,.06,.7,W+.12,3.12,.2,hood);}
  {const z=2.62;kit.box(.16,.48,.36,W+.08,1.8,z,0x9a958a);
   for(const y of [1.92,1.68])kit.cyl(.07,.07,.02,W+.17,y,z,0x3a4448,{rz:Math.PI/2,segments:12});
@@ -276,10 +278,10 @@ export function nakamuraBuilding(kit,{trim=0x3f7f86}={}){
  // Back: the kitchen door with its hood and step, Mai's window, her cooler's outdoor unit, the gas.
  {const x=-.9;
   kit.box(1.0,2.1,.06,x,1.05,-D-.03,alu,{finish:'metal'});kit.box(.86,2.0,.04,x,1.02,-D-.07,0x7b8f8a);
-  kit.box(.2,.9,.02,x-.2,1.45,-D-.1,0xc9d6d8,{finish:'glow'});kit.box(.03,.18,.05,x+.33,1.0,-D-.115,0xd8dcdc,{finish:'metal'});
+  kit.box(.2,.9,.02,x-.2,1.45,-D-.1,0xc9d6d8,{finish:lightFinish});kit.box(.03,.18,.05,x+.33,1.0,-D-.115,0xd8dcdc,{finish:'metal'});
   kit.box(1.2,.08,.55,x,2.26,-D-.275,hood);kit.box(1.0,.15,.4,x,.075,-D-.2,0xc4c0b4);
   solids.push(kit.rect(x-.52,x+.52,-D-.42,-D,.5,'nakamura-back-step'));
-  kit.box(1.32,1.22,.05,x,4.85,-D-.025,alu,{finish:'metal'});kit.box(1.18,1.08,.04,x,4.85,-D-.04,glass,{finish:'window'});
+  kit.box(1.32,1.22,.05,x,4.85,-D-.025,alu,{finish:'metal'});kit.box(1.18,1.08,.04,x,4.85,-D-.04,glass,{finish:windowFinish});
   kit.box(.04,1.08,.05,x,4.85,-D-.065,alu,{finish:'metal'});kit.box(1.4,.06,.16,x,4.21,-D-.08,sill);kit.box(1.5,.08,.32,x,5.49,-D-.16,hood);}
  {const x=1.35,y=4.4;kit.box(.7,.44,.26,x,y,-D-.16,0xe2e0d8);
   for(const dx of [-.28,.28]){kit.box(.04,.04,.3,x+dx,y-.24,-D-.15,alu,{finish:'metal'});kit.rod([x+dx,y-.24,-D-.28],[x+dx,y-.5,-D-.01],.015,alu);}
@@ -395,6 +397,7 @@ export function nakamuraFrontage({menu,hours,shadows=false,origin=[9.55,-11.7],t
  const shutterSolid={id:'nakamura-shutter',x:door.x,z:door.z,w:.1,d:opening.x1-opening.x0,height:ground-.42,minY:1e3};
  let shown=null,lowered=null;
  const update=(minutes,open)=>{
+  if(hours.staffed===false)open=false;
   const glow=open?windowGlow(minutes):0;lit.emissiveIntensity=glow*.85;
   const down=nakamuraShutterDown(minutes,hours);
   if(down!==lowered){lowered=down;shutter.visible=down>0;shutter.position.y=opening.foot+tall/2+(1-down)*travel;shutterSolid.minY=down>.4?0:1e3;}

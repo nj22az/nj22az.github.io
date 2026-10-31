@@ -48,8 +48,6 @@ export const BELONGINGS=Object.freeze({
   tale:'Miss Higa finishes a clue in it before taking coins.'}],
  'Grandmother Higa':[{what:'old bus cap',from:'family',keeps:'on the hook inside her front door',canon:false,
   tale:'Her husband wore it for thirty years on the island bus.'}],
- 'Mrs Nakamura':[{what:'bean ladle',from:'family',keeps:'on the hook over the bean pot',canon:false,
-  tale:'Her mother’s ladle: the beans on at six since 1972.'}],
  Kōji:[{what:'tally board',from:'work',keeps:'on his sorting bench',canon:false,
   tale:'Kōji marks every sorted crate on it before dawn.'}],
  Riku:[{what:'football',from:'own',keeps:'beside the front door at 3 Kitahama',canon:true,
@@ -57,9 +55,7 @@ export const BELONGINGS=Object.freeze({
  Vy:[{what:'satchel',from:'own',keeps:'over her shoulder',canon:true,
   tale:'It is full of kanji, minus the ten Vy has not learned.'}],
  // The eleven who joined the guide in phase 5 of docs/CAST-CONSOLIDATION.md: the ship's people, the port clerk, the
- // doctor, Mai and the relief engineer, each with the one thing their work or their day puts in their hand.
- Mai:[{what:'rabbit-feed tin',from:'own',keeps:'under the class rabbit’s hutch',canon:false,
-  tale:'The rabbit eats before the class does, every morning.'}],
+ // doctor and the relief engineer, each with the one thing their work or their day puts in their hand.
  Mac:[{what:'reading glasses',from:'own',keeps:'in his boiler-suit breast pocket',canon:false,
   tale:'He needs them for the gauges and denies it.'}],
  'Ms Uezu':[{what:'marlinspike',from:'work',keeps:'on her belt, aft',canon:false,
@@ -83,3 +79,11 @@ export const BELONGINGS=Object.freeze({
 /** A resident's things (empty if they have none on record). */
 export const belongingsOf=name=>BELONGINGS[name]||[];
 
+
+/** The retired family’s belongings stay as historical story material, never in the live inventory. */
+export const RETIRED_BELONGINGS=Object.freeze({
+ 'Mrs Nakamura':[{what:'bean ladle',from:'family',keeps:'on the hook over the bean pot',canon:false,
+  tale:'Her mother’s ladle: the beans on at six since 1972.'}],
+ Mai:[{what:'rabbit-feed tin',from:'own',keeps:'under the class rabbit’s hutch',canon:false,
+  tale:'The rabbit eats before the class does, every morning.'}],
+});

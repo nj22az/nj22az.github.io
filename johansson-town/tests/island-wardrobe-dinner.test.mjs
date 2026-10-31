@@ -7,7 +7,7 @@ import {normalizeRecipe,encodeRecipe,decodeRecipe} from '../src/avatars/recipe.j
 import {buildAvatar} from '../src/avatars/build.js';
 import {createAvatarAnimator} from '../src/avatars/animate.js';
 import {buildCityRestaurant} from '../src/world/interiors/city-restaurant.js';
-import {buildBlueCoralShop} from '../src/world/blue-coral-shop.js';
+import {buildBlueCoralShop,NAKAMURA_MENU} from '../src/world/blue-coral-shop.js';
 import {circleHitsRect} from '../physics.js';
 installDOM();
 test('all original sets preserve identity and build finite animated clothing for both silhouettes',()=>{
@@ -34,17 +34,17 @@ test('Thuan greets served food, presents her own plate and releases it before ea
 // (docs/qa/iphone-colour-nakamura-2026-10-18.md: "One hours-aware menu replaces five overlapping purchase points"), and
 // since 21 October the frontage owns the parasol's canopy and the roller shutter (#305, nakamura-dressing.js). Those are
 // the only solids it adds: the canopy above head height, the shutter only while it is down.
-test('Blue Coral uses Nakamura’s frontage and the advertised price and hours without a second attendant',()=>{
+test('Blue Coral retains its original frontage and menu while vacant, without an attendant or purchases',()=>{
  const world={colliders:[]},group=new THREE.Group(),anchors=[],actions=[];
  const shop=buildBlueCoralShop({world,group,register:(object,label,fn)=>anchors.push({object,label,fn}),onAction:(...args)=>actions.push(args)});
  assert.equal(shop.merged,true);assert.equal(shop.landmark.id,'nakamura');
  assert.deepEqual(world.colliders.map(c=>c.id).sort(),['nakamura-parasol-canopy','nakamura-shutter'],'No second shop or counter blocks the frontage');
  const canopy=world.colliders.find(c=>c.id==='nakamura-parasol-canopy'),shutter=world.colliders.find(c=>c.id==='nakamura-shutter');
- shop.update(12*60);assert.ok(canopy.minY>=2,'people walk under the open parasol');assert.ok(shutter.minY>100,'the shutter is up while she is open');
+ shop.update(12*60);assert.ok(canopy.minY>100,'the parasol is put away');assert.equal(shutter.minY,0,'the vacant counter remains shut at noon');
  assert.equal(anchors.some(a=>/attendant/i.test(a.label)),false);assert.ok(group.getObjectByName('Nakamura lettering (menu tags, cider tin, nameplate)'));
- const order=anchors.filter(a=>/^Order at Nakamura/.test(a.label));assert.equal(order.length,1,'one menu, one purchase point');
- const buy=order[0];shop.update(10*60);buy.fn();assert.equal(actions.at(-1)[0],'dessert-menu','open from 10:00');
- const scoop=actions.at(-1)[2].find(p=>p.item==='Blue Coral ice cream');assert.ok(scoop);assert.equal(scoop.cost,150);
- shop.update(19*60);buy.fn();assert.equal(actions.at(-1)[0],'read');assert.match(actions.at(-1)[1],/closed/);
+ assert.equal(anchors.filter(a=>/^Order at Nakamura/.test(a.label)).length,0,'no unstaffed purchase point');
+ const notice=anchors.find(a=>a.label==='Read the dessert counter notice');assert.ok(notice);
+ const scoop=NAKAMURA_MENU.find(p=>p.item==='Blue Coral ice cream');assert.ok(scoop);assert.equal(scoop.cost,150,'retain the original fitted menu for future facility work');
+ for(const minutes of [10*60,12*60,19*60]){shop.update(minutes);notice.fn();assert.equal(actions.at(-1)[0],'read');assert.match(actions.at(-1)[1],/closed/);}
  shop.update(20*60);assert.equal(shutter.minY,0,'the shutter is down after hours');assert.ok(canopy.minY>100,'the parasol is put away');
 });

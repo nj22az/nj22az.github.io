@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-31",
+  "branch": "codex/sakura-izakaya-resident-repair",
+  "pr": 415,
+  "code_commit": "c7002c843934d1c8d5b83219486477b1ea3a0e3f",
+  "local_code_commit": "b520f593fd11090c000cac85b118c3bd6fe554ed",
+  "identical_tree": "5246d70a528b881c8e38f80f259bf2bd4c204466",
+  "base_main": "8124d06ca0bd90606a737c3856c7a9da968fd15a",
+  "runtime_source_sha256": "36477c6e752e8248d041589741b508a1b99a1e3e73e6caacee28601700adb360",
+  "published_cache_entries_retained": 35,
+  "guard": {
+    "files": 108,
+    "tests": 559,
+    "passed": 559,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "seconds": 387,
+    "heap_mb": 6144,
+    "file_concurrency": 2
+  },
+  "cpu_boot": {
+    "passed": 1,
+    "failed": 0,
+    "seconds": 157.9,
+    "renderer": "substituted; actual game, geometry, simulation, room and save code"
+  },
+  "active_roster": {
+    "core": 18,
+    "supporting": 5,
+    "retired": 13,
+    "core_households": 12,
+    "guide_residents": 23
+  },
+  "world_library": {
+    "checks_passed": 3,
+    "retired_live_entries_absent": true
+  },
+  "portrait_catalogue": {
+    "checks_passed": 8,
+    "rendered": 0,
+    "existing_portraits_retained": 23
+  },
+  "hosted_first": {
+    "run": 41149922029,
+    "iphone_job": 124383749886,
+    "artifact": 13021869779,
+    "passed": false,
+    "reason": "Fixture tapped intentionally hidden context exit button away from door; no page error, normal Izakaya rendering/frames continued. Follow-up approaches authored door."
+  },
+  "physical_iphone": "unobserved; no physical-device claim",
+  "publication": "not merged or deployed",
+  "hosted_guard": {
+    "run": 41149922029,
+    "job": 124383749667,
+    "conclusion": "success",
+    "candidate": "c7002c843934d1c8d5b83219486477b1ea3a0e3f"
+  },
+  "before_bar_fix": true,
+  "final_bar_fix": {
+    "private_index_wrappers": 5,
+    "extracted_geometries": 6,
+    "undisposed_after": 0,
+    "three_cycles_tested": true,
+    "focused_checks_passed": 30,
+    "final_guard": "pending",
+    "final_cpu": "pending",
+    "final_native": "pending"
+  }
+}

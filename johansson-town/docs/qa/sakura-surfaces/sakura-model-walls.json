@@ -1,13 +1,13 @@
 {
   "drawing": "SK-ST-004",
-  "revision": "A",
-  "date": "2026-10-30",
+  "revision": "B",
+  "date": "2026-10-31",
   "units": "metres",
   "paper": {
     "width": 0.515,
     "height": 0.728
   },
-  "scope": "Six supplier prints only; office/storey and shop frames differ. Existing stair/hall unchanged. No doors, furniture, switches, colliders or routes moved.",
+  "scope": "Two selected office prints (KITANO 12 and UMINEKO Black), three existing stockroom additions; office/storey and shop frames differ. Existing stair/hall unchanged. No doors, furniture, switches, colliders or routes moved.",
   "walls": [
     {
       "id": "office-front",
@@ -60,7 +60,7 @@
       ],
       "posters": [
         {
-          "id": "umineko-gift",
+          "id": "umineko-black",
           "at": [
             1.18,
             2.3,
@@ -136,21 +136,7 @@
           ]
         }
       ],
-      "posters": [
-        {
-          "id": "asagao-rouge",
-          "at": [
-            4.25,
-            1.8,
-            0.55
-          ],
-          "lookAt": [
-            4.25,
-            1.5,
-            1.6
-          ]
-        }
-      ]
+      "posters": []
     },
     {
       "id": "stockroom-rear",

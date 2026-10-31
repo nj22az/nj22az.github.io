@@ -24,17 +24,10 @@ export const TOWN_PAPERS=[
   },
   {
     "type": "Notice",
-    "title": "Nakamura is closed",
+    "title": "Vacant flat · upstairs",
     "organisation": "Town Services",
-    "text": "Open 10:00–19:00. Mrs Nakamura and Mai live upstairs; the separate family door is beside the counter.",
-    "source": "notice:Nakamura is closed"
-  },
-  {
-    "type": "Notice",
-    "title": "Nakamura family · upstairs",
-    "organisation": "Town Services",
-    "text": "Mrs Nakamura and Mai live above the shop. The separate front door leads to their private stairwell. Mrs Nakamura closes the counter at 19:00 and walks upstairs.",
-    "source": "notice:Nakamura family · upstairs"
+    "text": "The flat is empty. Its separate stairwell and rooms are retained for future use.",
+    "source": "notice:Vacant flat · upstairs"
   },
   {
     "type": "Notice",
@@ -208,7 +201,7 @@ export const TOWN_PAPERS=[
     "type": "Notice",
     "title": "Vy’s homework",
     "organisation": "Town Services",
-    "text": "Miss Higa has set ten kanji and a page of fractions. Mai’s name is written beside Saturday’s Blue Coral visit.",
+    "text": "Miss Higa has set ten kanji and a page of fractions. A bookmark marks the next page to practise.",
     "source": "notice:Vy’s homework"
   },
   {
@@ -299,14 +292,14 @@ export const TOWN_PAPERS=[
     "title": "Requests to the town assembly",
     "type": "Notice",
     "organisation": "Community Hall",
-    "text": "From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom Mrs Nakamura, Nakamura Zenzai: The street lamp outside the east row has flickered since the rain. Customers say it makes the zenzai look grey.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
+    "text": "From Tetsuo, for the power house next door: The second diesel set needs new injectors before typhoon season. The parts come on the Thursday ferry if the town pays this week.\n\nFrom the Higa household, Nishi-machi: May the children use the town hall field on Sunday for eisa practice? Grandmother Higa will supervise. Loudly.\n\nFrom the ferry company: The new cargo trucks are heavier. We ask the town to strengthen the quay apron where the ramp lands.\n\nFrom Thuan, Sakura Shōten: A request for a bench at the bus stop by the ferry. People wait there with their shopping.",
     "source": "notice:Requests to the town assembly"
   },
   {
     "title": "Community kitchen bookings",
     "type": "Schedule",
     "organisation": "Community Hall",
-    "text": "Saturday: Women's Association, andagi for the eisa night (Mrs Nakamura)\n\nSunday: Higa family, 33rd anniversary memorial lunch\n\nWednesday: Years 5–6 cooking class, goya champurū (Higa-sensei)\n\nFriday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
+    "text": "Saturday: available to book; no group assigned\n\nSunday: Higa family, 33rd anniversary memorial lunch\n\nWednesday: Years 5–6 cooking class, goya champurū (Higa-sensei)\n\nFriday: open to all, 18:00 -- bring your own fish (Kōji has promised tuna)",
     "source": "notice:Community kitchen bookings"
   },
   {

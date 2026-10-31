@@ -1,12 +1,12 @@
 {
- "status": "phase 5 of docs/CAST-CONSOLIDATION.md, the last: the stories, the guide, the directories, the Studio lists and the docs name exactly these 25 (the eleven retired keep only drawings for history, avatars/cast.js RETIRED_RECIPES); the report is docs/CAST-CONSOLIDATION-REPORT.md",
+ "status": "31 October 2026: 18 core and 5 supporting residents; the Nakamura family retires without successors while its facilities remain vacant. The 13 retired identities retain historical drawings (avatars/cast.js RETIRED_RECIPES); the consolidation report is docs/CAST-CONSOLIDATION-REPORT.md",
  "canonDate": "2026-10-19",
  "source": "docs/CAST-CONSOLIDATION.md",
  "counts": {
-  "core": 20,
+  "core": 18,
   "supporting": 5,
-  "retired": 11,
-  "households": 13
+  "retired": 13,
+  "households": 12
  },
  "core": [
   {
@@ -219,7 +219,7 @@
     "Grandmother Higa"
    ],
    "avatar": "Grandmother Higa",
-   "role": "owns Umi-no-yu and keeps it by day; her liquor shop is shut, its trade Sakura’s (the owner, 22 October 2026); the family’s ties in town",
+   "role": "owns Umi-no-yu and keeps it by day; her liquor shop is shut, its trade Sakura’s (the owner, 22 October 2026), and its room is Kissa Higa, her morning coffee shop on weekdays (30 October 2026); the family’s ties in town",
    "post": null,
    "relief": null,
    "shore": [],
@@ -296,50 +296,6 @@
    "room": null,
    "oldHomes": [],
    "household": "koban"
-  },
-  {
-   "id": "emi",
-   "name": "Emi",
-   "fullName": "Emi Nakamura",
-   "category": "core",
-   "sex": "f",
-   "age": 40,
-   "nationality": "Japanese",
-   "was": [
-    "Mrs Nakamura"
-   ],
-   "avatar": "Mrs Nakamura",
-   "role": "keeps the dessert counter (Nakamura Zenzai and Blue Coral) and the community kitchen; Mai’s mother",
-   "post": null,
-   "relief": null,
-   "shore": [],
-   "home": "nakamura",
-   "berth": null,
-   "room": null,
-   "oldHomes": [],
-   "household": "nakamura"
-  },
-  {
-   "id": "mai",
-   "name": "Mai",
-   "fullName": "Mai Nakamura",
-   "category": "core",
-   "sex": "f",
-   "age": 10,
-   "nationality": null,
-   "was": [
-    "Nakamura Mai"
-   ],
-   "avatar": "Mai",
-   "role": "Emi’s daughter; a pupil at the island school; Vy’s best friend",
-   "post": null,
-   "relief": null,
-   "shore": [],
-   "home": "nakamura",
-   "berth": null,
-   "room": null,
-   "oldHomes": [],
-   "household": "nakamura"
   },
   {
    "id": "fuji",
@@ -724,6 +680,34 @@
     ],
     "purpose": "the island doctor: the clinic, its hours, house calls and the night telephone"
    }
+  },
+  {
+   "id": "emi",
+   "name": "Mrs Nakamura",
+   "category": "retired",
+   "was": [
+    "Emi",
+    "Emi Nakamura"
+   ],
+   "home": "nakamura",
+   "transfer": {
+    "to": [],
+    "purpose": "the dessert counter, upstairs flat and community-kitchen programme wait for future staffing; no replacement resident is assigned"
+   }
+  },
+  {
+   "id": "mai",
+   "name": "Mai",
+   "category": "retired",
+   "was": [
+    "Nakamura Mai",
+    "Mai Nakamura"
+   ],
+   "home": "nakamura",
+   "transfer": {
+    "to": [],
+    "purpose": "the daughter retires with her mother; her school and friendship roles are not transferred to another child"
+   }
   }
  ],
  "households": [
@@ -788,14 +772,6 @@
     "jack"
    ],
    "note": "the Harbour Office residence"
-  },
-  {
-   "home": "nakamura",
-   "members": [
-    "emi",
-    "mai"
-   ],
-   "note": "above the dessert business"
   },
   {
    "home": "kitahama-flat-3",
@@ -989,6 +965,7 @@
   "florist": "market",
   "rainflower-florist": "market",
   "izakaya": "izakaya",
-  "clinic": "clinic"
+  "clinic": "clinic",
+  "nakamura": "nakamura"
  }
 }

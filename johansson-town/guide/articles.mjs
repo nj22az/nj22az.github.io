@@ -113,7 +113,7 @@ export const ARTICLES={
   headline:'By day the blackboard, by night the bandai',
   standfirst:'Miss Higa teaches the island school until half past three. From five she takes your coins at Umi-no-yu, and she still notices who has not done their homework.',
   body:[
-   'The island school is one room and one small mixed class, and Miss Higa teaches all of it. Vy asks the most questions. Riku talks, and is moved to the front row every week. Mai keeps the class rabbit, which is the best-behaved pupil and knows it. Miss Higa is twenty-nine, marks until five, and then walks down to the bath.',
+   'The island school is one room and one small mixed class, and Miss Higa teaches all of it. Vy asks the most questions. Riku talks, and is moved to the front row every week. Miss Higa is twenty-nine, marks until five, and then walks down to the bath.',
    'The bandai is a raised seat by the door of Umi-no-yu, the island’s bathhouse. From up there you can see over the counter, which is the point of a bandai. Three hundred yen, swimwear in the bath, please: it is a family bath. In the evenings and at weekends she keeps it, with the marking on her knee and the crossword under the marking.',
    'The bath is her grandmother’s, and so is the opinion that Miss Higa should be married by now. Grandmother Higa says it at breakfast and again over supper. After hours Tetsuo comes to tend the boiler and the pumps. He fixes things; she does the till and pretends not to watch. He takes longer over the pressure gauge than any gauge needs. Neither of them has said a word about it, and the whole of Nishi-machi is waiting.',
   ],
@@ -130,17 +130,6 @@ export const ARTICLES={
   ],
   quote:'You are the one who talks to the girl at Sakura every day. Good. Somebody should.',
   photos:[shot('Wave','smile','cream','sepia','Sit a moment. The verandah, Nishi-machi.'),shot('Point','thinking','mint','film','That is not a shallot.')],
- },
- 'Mrs Nakamura':{
-  headline:'Zenzai since 1972, and the shaving machine still sounds like a tractor',
-  standfirst:'Mrs Nakamura has the beans on at six, the ice-cream counter open at three and the community kitchen’s andagi in the fryer whenever the town needs feeding.',
-  body:[
-   'Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop. Thuan comes on Sundays, orders the small one and eats half of hers.',
-   'At three she crosses to Blue Coral and opens the ice-cream counter for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, upstairs over the shop, and does it the way she does everything, early and without fuss.',
-   'She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Minato sends its guests across the park for a zenzai after supper, and the street lamp outside the east row, which has flickered since the rain, is on her list for the town hall.',
-  ],
-  quote:'Zenzai is not fast food. Sit down.',
-  photos:[shot('Bow','smile','polka','vivid','Welcome! Zenzai?'),shot('Laugh','laugh','peach','warm','Half past three: two ice creams, one of them guava.',{with:'Mai'})],
  },
  'Kōji':{
   headline:'The case for tuna-head soup',
@@ -165,26 +154,15 @@ export const ARTICLES={
   photos:[shot('Point','neutral','sky','film','That one is coming in first.'),shot('HandsOnHips','happy','cream','warm','On the quay with Dad, after the auction.',{with:'Kōji'})],
  },
  Vy:{
-  headline:'Ice cream before homework: the rule Vy made and keeps',
-  standfirst:'The island school is out at half past three. By four Vy is at the Blue Coral counter, satchel full of kanji, and the pink guava scoop is waiting.',
+  headline:'A walk before homework: the rule Vy made and keeps',
+  standfirst:'The island school is out at half past three. Vy walks through Harbour Park with a satchel full of kanji, then spreads her homework across a bench.',
   body:[
-   'Vy is eleven and in Miss Higa’s class at the island school, where she asks the most questions and would like that noted. Her first stop on the way home is Blue Coral, where Mrs Nakamura keeps the pink guava scoop aside for her. Mrs Nakamura says this is good customer service. Vy says it is a contract.',
-   'Then she and Mai spread their homework across a park bench and do the hard half first, or say they will. When she is thinking she counts the pleats in her skirt. When she is not, she is keeping score for the three sisters’ jan-ken-pon in the park, all of whom claim to be winning.',
+   'Vy is eleven and in Miss Higa’s class at the island school, where she asks the most questions and would like that noted. After school she walks through Harbour Park; the Blue Coral counter is closed while it waits for a keeper.',
+   'Then she spreads her homework across a park bench and does the hard half first, or says she will. When she is thinking she counts the pleats in her skirt. When she is not, she is keeping score for the three sisters’ jan-ken-pon in the park, all of whom claim to be winning.',
    'Home is 1 Kitahama with her parents, Thao and Chin. Her aunt Thuan lives on Kitano-jima and comes over on the boat every day. Vy would like to be a ferry captain, or a translator, or both on alternate days. She has told Mr Fujita so. He has told her the bridge is not for passengers.',
   ],
   quote:'Homework is easier with guava. That is not an opinion, it is research.',
-  photos:[shot('Peace','happy','mint','vivid','After school, guava in hand.'),shot('Think','thinking','cream','film','The hard half first. Probably.')],
- },
- Mai:{
-  headline:'The keeper of the class rabbit',
-  standfirst:'Mai is ten, lives above the zenzai shop, and takes Vy’s side in everything. The rabbit, she says, is the best-behaved pupil in the school, and the rabbit agrees.',
-  body:[
-   'Mai keeps the class rabbit, which means she arrives at school before the bell to feed it and leaves after the bell to say goodbye to it. Miss Higa says the rabbit is the best-behaved pupil in the room. Mai has never argued with that.',
-   'At half past three she and Vy, her best friend, are at her mother’s Blue Coral counter, where the pink guava scoop is already Vy’s and Mai has whatever is left. Then homework on a park bench, the hard half first. Riku, in the same class, says Mai always takes Vy’s side. Mai says that is because Vy is always right.',
-   'Home is upstairs over Nakamura Zenzai with her mother, who has the beans on at six. On a hot Sunday she walks to Kitahama in her sundress to see Vy, and on festival nights she is in the community kitchen with a tray of andagi, pretending not to eat them.',
-  ],
-  quote:'The rabbit does its homework. I checked.',
-  photos:[shot('Heart','happy','hearts','vivid','After school, at her mother’s counter.'),shot('Peace','laugh','mint','warm','Homework. The hard half first.',{with:'Vy'})],
+  photos:[shot('Peace','happy','mint','vivid','After school, on the park walk.'),shot('Think','thinking','cream','film','The hard half first. Probably.')],
  },
  Mac:{
   headline:'Mac Turner came with the diesels and stayed',
@@ -293,6 +271,29 @@ export const ARTICLES={
  * to the guide (tools/apply-articles.mjs reads ARTICLES only), so no story summons them.
  */
 export const RETIRED_ARTICLES={
+ 'Mrs Nakamura':{
+  headline:'Zenzai since 1972, and the shaving machine still sounds like a tractor',
+  standfirst:'Mrs Nakamura has the beans on at six, the ice-cream counter open at three and the community kitchen’s andagi in the fryer whenever the town needs feeding.',
+  body:[
+   'Kintoki beans, cooked since six. The ice comes from the plant on the quay, and the old shaving machine roars like a tractor; she trusts its work completely. There has been zenzai on this corner since 1972, and she has no plans to stop. Thuan comes on Sundays, orders the small one and eats half of hers.',
+   'At three she crosses to Blue Coral and opens the ice-cream counter for the school crowd. Her daughter Mai arrives at half past with Vy, her best friend, and the pink guava scoop is already set aside. Mrs Nakamura is bringing Mai up on her own, upstairs over the shop, and does it the way she does everything, early and without fuss.',
+   'She also runs the community kitchen. When there is a festival, a funeral or a typhoon, the andagi come from her fryer, by the hundred. Minato sends its guests across the park for a zenzai after supper, and the street lamp outside the east row, which has flickered since the rain, is on her list for the town hall.',
+  ],
+  quote:'Zenzai is not fast food. Sit down.',
+  photos:[shot('Bow','smile','polka','vivid','Welcome! Zenzai?'),shot('Laugh','laugh','peach','warm','Half past three: two ice creams, one of them guava.',{with:'Mai'})],
+ },
+ Mai:{
+  headline:'The keeper of the class rabbit',
+  standfirst:'Mai is ten, lives above the zenzai shop, and takes Vy’s side in everything. The rabbit, she says, is the best-behaved pupil in the school, and the rabbit agrees.',
+  body:[
+   'Mai keeps the class rabbit, which means she arrives at school before the bell to feed it and leaves after the bell to say goodbye to it. Miss Higa says the rabbit is the best-behaved pupil in the room. Mai has never argued with that.',
+   'At half past three she and Vy, her best friend, are at her mother’s Blue Coral counter, where the pink guava scoop is already Vy’s and Mai has whatever is left. Then homework on a park bench, the hard half first. Riku, in the same class, says Mai always takes Vy’s side. Mai says that is because Vy is always right.',
+   'Home is upstairs over Nakamura Zenzai with her mother, who has the beans on at six. On a hot Sunday she walks to Kitahama in her sundress to see Vy, and on festival nights she is in the community kitchen with a tray of andagi, pretending not to eat them.',
+  ],
+  quote:'The rabbit does its homework. I checked.',
+  photos:[shot('Heart','happy','hearts','vivid','After school, at her mother’s counter.'),shot('Peace','laugh','mint','warm','Homework. The hard half first.',{with:'Vy'})],
+ },
+
  'Dr Kakazu':{
   headline:'The doctor who is not allowed to pay for lunch',
   standfirst:'Dr Kakazu came from Naha for a two-year posting at the town hall clinic. He has learned that on this island the patients feed the doctor.',

@@ -21,7 +21,7 @@ const ROLES=Object.freeze({Johansson:'Chief engineer',Thuan:'Sakura owner',Thao:
  Vy:'School pupil',Nhung:'Doctor, and the town’s paper','Kōji':'Fisherman and catch sorter',Riku:'School pupil','Miss Higa':'Teacher and bathhouse attendant',
  'Grandmother Higa':'Bathhouse owner',Tetsuo:'Radio repairer and electrician','Mrs Sato':'Ramen cook',
  'Officer Mori':'Police officer','Harbour master':'Harbour master',
- 'Mrs Nakamura':'Zenzai and ice-cream shopkeeper',Mai:'School pupil',Mac:'Relief engineer',
+ Mac:'Relief engineer',
  'Ms Uezu':'Ferry bosun','Ms Ganaha':'Port clerk: tickets, parcels and post','Mr Fujita':'Ferry master',
  Ryo:'Ferry chief officer',Ren:'Ferry deck hand',Aya:'Ferry purser',Jun:'Ferry cook-steward',Kai:'Kitano line hand'});
 // The post and parcel counter is at the Port Terminal (phase 3), so a saved 'post-office' points there; the flowers are
@@ -84,7 +84,7 @@ function recordForHome(h,siteIndex){
  if(!h)return null;
  // A retired home's target is the public place its records land at (the registered site when the town is built).
  const site=h.retired?h.fallback?siteIndex.get(h.fallback):null:siteIndex.get(canonicalHomeId(h.entranceSiteId)),fallback=homeGeometry(h),p=sitePoint(site)||fallback;
- const directions=h.retired?h.address+' has been removed; ask at '+(site?.title||'the town hall')+'.':
+ const directions=h.retired?h.retainedBuilding?h.address+' is vacant; the building remains and has no private home entrance.':h.address+' has been removed; ask at '+(site?.title||'the town hall')+'.':
   h.aboard?'The home is aboard the Minato Maru. Start at the Port Terminal and check where the ferry is berthed.':
   h.island==='kitano'?'Take the ferry to Kitano-jima, then follow the hamlet lane to '+h.address+'.':
   h.unit?h.address+' · its own gate and front door on Fukugi Lane.':

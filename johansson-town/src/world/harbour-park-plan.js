@@ -21,7 +21,8 @@ export const HARBOUR_PARK_STUDY=Object.freeze([point(9.1,-27.4),point(10.6,-26.7
  * the lawn is the lawn again, and a saved destination or photo at the old id lands at Sakura (HARBOUR_PARK_ALIASES).
  */
 export const FORMER_FLORIST=Object.freeze({id:'rainflower-florist',name:'Rainflower Florist',bounds:rect(19,23,15.4,18.6),removed:'2026-10-19, phase 4'});
-export const NAKAMURA_DESSERTS=Object.freeze({id:'nakamura',alias:'blue-coral',name:'Nakamura · zenzai & Blue Coral',owner:'Mrs Nakamura',x:5.7,z:-10.9,approach:point(4.5,-10.0),staffAt:point(7.5,-11.7),open:600,close:1140});
+// The family retired on the owner's decision of 31 October 2026. Keep the facility and its fitted counter, not a service without a keeper.
+export const NAKAMURA_DESSERTS=Object.freeze({id:'nakamura',alias:'blue-coral',name:'Nakamura · zenzai & Blue Coral',owner:null,staffed:false,status:'vacant',closedNotice:'The dessert counter is closed until it has a keeper. The shop and upstairs flat are vacant.',x:5.7,z:-10.9,approach:point(4.5,-10.0),staffAt:point(7.5,-11.7),open:600,close:1140});
 const inside=(b,x,z,pad=0)=>x>=b.minX-pad&&x<=b.maxX+pad&&z>=b.minZ-pad&&z<=b.maxZ+pad;
 export const inHarbourPark=(x,z,pad=0)=>inside(HARBOUR_PARK_MAIN,x,z,pad)||inside(HARBOUR_PARK_EXTENSION,x,z,pad);
 export const harbourPondAt=(x,z,pad=0)=>((x-HARBOUR_POND.x)/(HARBOUR_POND.rx+pad))**2+((z-HARBOUR_POND.z)/(HARBOUR_POND.rz+pad))**2<1;

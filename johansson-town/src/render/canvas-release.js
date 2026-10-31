@@ -18,7 +18,16 @@ function paint(entry){
 export function releaseAfterUpload(texture,redraw,{width,height,deferred=false}={}){
  const canvas=texture.image,entry={texture,canvas,redraw,width:width??canvas.width,height:height??canvas.height,deferred};
  entries.set(texture,entry);
- texture.onUpdate=()=>{if(released.has(entry))return;canvas.width=canvas.height=1;released.add(entry);};
+ let disposed=false;
+ texture.onUpdate=()=>{if(disposed||released.has(entry))return;canvas.width=canvas.height=1;released.add(entry);};
+ const dispose=()=>{
+  disposed=true;released.delete(entry);entries.delete(texture);
+  texture.removeEventListener('dispose',dispose);texture.onUpdate=null;
+  canvas.width=canvas.height=1;
+ };
+ // A room can go away before the next context loss. Keeping its entry here kept
+ // the texture, canvas and painter alive, then repainted a room nobody used.
+ texture.addEventListener('dispose',dispose);
  if(deferred){canvas.width=canvas.height=1;released.add(entry);}
  return texture;
 }

@@ -220,20 +220,20 @@ test('every way in leads to a fully functional interior: it builds, he arrives o
  assert.deepEqual(failures,[],'\n  '+failures.join('\n  '));
 });
 
-test('the Nakamura family\'s door takes him up their own stair to the flat, not into the treads',async()=>{
- const s=WAYS_IN.find(w=>w.site.id==='home-nakamura')?.site;assert.ok(s,'the family door is a way in');
- // The door faces into the building (its frame's +x from Main Street): entryFacing is the heading of a man walking in,
- // and with it reversed he arrived looking back out at the stairwell's open end and left 0.6 m into the shop.
- const {NAKAMURA_PLAN,NAKAMURA_HOME_DOOR}=await import('../src/world/nakamura-plan.js');
- assert.ok(-Math.sin(s.entryFacing)*(NAKAMURA_PLAN.x-NAKAMURA_HOME_DOOR[0])>0,'he walks in towards the building, not out of it');
- // The game takes the step inside by his feet's own rules (game.js enterRoom → room-arrival.js stepInside with roomStep).
+test('the retired Nakamura home has no way in while its vacant facility notice remains accessible',()=>{
+ // The owner retired the family on 31 October 2026. The retained shop-house is not a live residence, and a historical
+ // home id must not recreate a door into its flat. Its physical staircase remains covered by nakamura-shop.test.mjs.
+ assert.equal(WAYS_IN.some(w=>w.site.id==='home-nakamura'||w.site.homeId==='nakamura'),false);
+ assert.equal(SITES.some(s=>s.id==='home-nakamura'||s.homeId==='nakamura'),false);
+ assert.equal(world.landmarks.some(s=>s.id==='home-nakamura'),false);
+ const facility=world.landmarks.find(s=>s.id==='nakamura');assert.ok(facility,'retain the public facility');
+ assert.equal(facility.owner,null);assert.match(facility.line,/closed.*keeper.*vacant/);
+ const notice=prompts.find(p=>p.label==='Read the upstairs vacancy notice');assert.ok(notice);
+ entered=null;notice.fn();assert.equal(entered,null,'the vacancy notice does not enter a residence');
+ const at=notice.o.getWorldPosition(new THREE.Vector3());
+ assert.equal(world.colliders.some(c=>standingHitsRect(at.x,at.z,R,0,c)),false,'read the vacancy notice from clear public ground');
+ // All remaining live interiors still take the step inside by the feet's own rules.
  assert.match(slice('async function enterRoom(','\nfunction leaveRoom('),/stepInside\([^;]*\{step:roomStep/);
- const {layout,colliders}=buildRoom(s),{step}=roomRules(layout,colliders);
- const arrived=stepInside([layout.spawn[0],layout.spawn[1]??0,layout.spawn[2]],layout.yaw??0,{step});
- assert.ok(layout.walk.floorAt(arrived[0],arrived[2],arrived[1]),'on a floor: '+arrived);
- // Up the flight to the landing and the flat, and back down to the foyer.
- const floors=floorsReached(layout.walk,step,arrived,layout.bounds);
- for(const id of ['foyer','private-stair','upper-landing','private-flat'])assert.ok(floors.has(id),'reaches '+id);
 });
 
 /** Every point the game starts him or puts him outdoors. */

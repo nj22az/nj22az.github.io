@@ -1,7 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import {createStartupRecovery,graphicsProfile} from '../src/render/startup-recovery.js';
 const fixture=()=>{const data=new Map(),listeners=new Map(),callbacks=new Map();let id=0;return {storage:{getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)},events:{addEventListener:(k,f)=>listeners.set(k,f),removeEventListener:k=>listeners.delete(k)},schedule:f=>{callbacks.set(++id,f);return id;},cancel:i=>callbacks.delete(i),hide:()=>listeners.get('pagehide')?.(),settle:()=>[...callbacks.values()].forEach(f=>f())};};
+test('model-stage interruptions are counted by the same attempt used in the game',async()=>{
+ const boot=await readFile(new URL('../src/boot.js',import.meta.url),'utf8'),game=await readFile(new URL('../src/game.js',import.meta.url),'utf8');
+ const marker=boot.indexOf('__JOHANSSON_STARTUP_RECOVERY__??=createStartupRecovery(');
+ assert.ok(marker>=0&&marker<boot.indexOf("import('./avatars/pixar.js')"),'Start the marker before downloading or parsing character models');
+ assert.match(game,/startupRecovery=window\.__JOHANSSON_STARTUP_RECOVERY__\|\|createStartupRecovery/,'Do not double-count one page as two attempts');
+ const f=fixture();createStartupRecovery({...f,now:()=>1000});createStartupRecovery({...f,now:()=>1100});
+ assert.equal(createStartupRecovery({...f,now:()=>1200}).recovering,true,'Two processes killed before game construction recover on the third attempt');
+ const ready=game.slice(game.indexOf('function firstFrameReady(){'),game.indexOf('const lensInShip='));
+ assert.match(ready,/startupRecovery\.running\(\)/,'A launch only settles after a playable frame');
+ const enter=game.slice(game.indexOf('function enterWorld(){'),game.indexOf('function desktopCheckpoint(){'));
+ assert.doesNotMatch(enter,/startupRecovery\.running\(\)/,'Clicking START without a drawn frame cannot settle the attempt');
+});
 test('two processes killed in a row select recovery on the next launch, and it says so',()=>{
  const f=fixture(),first=createStartupRecovery({...f,now:()=>1000});assert.equal(first.safe,false);first.entering();first.running();
  const second=createStartupRecovery({...f,now:()=>1100});assert.equal(second.interrupted,true);assert.equal(second.safe,false,'one interruption is often a moment');

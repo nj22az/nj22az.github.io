@@ -37,25 +37,25 @@ test('the shop’s signs are Japanese, from the names and the menu the game alre
  assert.deepEqual(NAKAMURA_MENU.map(p=>p.cost),[250,120,150,120,100],'the prices are the game’s');
 });
 
-test('the noren, the lanterns and the parasol follow the counter’s hours',()=>{
- const f=nakamuraFrontage({menu:NAKAMURA_MENU,hours:BLUE_CORAL});
- const at=minutes=>{f.update(minutes,dessertShopOpen(minutes));return {noren:f.noren.visible,parasol:f.parasol.visible,lamp:f.lanterns.emissiveIntensity,canopyMinY:f.canopy.minY};};
- assert.deepEqual(at(9*60),{noren:false,parasol:false,lamp:0,canopyMinY:1e3},'not yet open');
- assert.deepEqual(at(12*60),{noren:true,parasol:true,lamp:0,canopyMinY:NAKAMURA_PARASOL.rim},'open at noon, lanterns dark by day');
- const dusk=at(18*60+30);assert.equal(dusk.noren,true);assert.ok(dusk.lamp>.5,'lit at dusk while she is serving');
- assert.deepEqual(at(19*60+30),{noren:false,parasol:false,lamp:0,canopyMinY:1e3},'closed: taken in and dark');
+test('the retained fittings keep their measured day/night states when explicitly staffed',()=>{
+ const f=nakamuraFrontage({menu:NAKAMURA_MENU,hours:{...BLUE_CORAL,staffed:true}});
+ const at=(minutes,open)=>{f.update(minutes,open);return {noren:f.noren.visible,parasol:f.parasol.visible,lamp:f.lanterns.emissiveIntensity,canopyMinY:f.canopy.minY};};
+ assert.deepEqual(at(9*60,false),{noren:false,parasol:false,lamp:0,canopyMinY:1e3},'not yet open');
+ assert.deepEqual(at(12*60,true),{noren:true,parasol:true,lamp:0,canopyMinY:NAKAMURA_PARASOL.rim},'open at noon, lanterns dark by day');
+ const dusk=at(18*60+30,true);assert.equal(dusk.noren,true);assert.ok(dusk.lamp>.5,'lit at dusk while staffed');
+ assert.deepEqual(at(19*60+30,false),{noren:false,parasol:false,lamp:0,canopyMinY:1e3},'closed: taken in and dark');
  // People walk under the canopy; the camera does not go through it.
  const c={...f.canopy,minY:NAKAMURA_PARASOL.rim};
  assert.equal(standingHitsRect(c.x,c.z,.3,0,c),false,'a person stands under the parasol');
  assert.ok(c.minY>1.9,'its rim is over anyone’s head');
 });
 
-test('after hours the shutter is down and the ice flag in; open, the shutter is up and the flag out',()=>{
- const f=nakamuraFrontage({menu:NAKAMURA_MENU,hours:BLUE_CORAL});
- const at=minutes=>{f.update(minutes,dessertShopOpen(minutes));return {flag:f.flag.visible,shutter:f.shutter.visible,solid:f.shutterSolid.minY===0};};
+test('the retained shutter rolls through clear fitted positions when explicitly staffed',()=>{
+ const hours={...BLUE_CORAL,staffed:true},f=nakamuraFrontage({menu:NAKAMURA_MENU,hours});
+ const at=(minutes,open=false)=>{f.update(minutes,open);return {flag:f.flag.visible,shutter:f.shutter.visible,solid:f.shutterSolid.minY===0};};
  assert.deepEqual(at(9*60),{flag:false,shutter:true,solid:true},'before ten: shut');
- assert.deepEqual(at(12*60),{flag:true,shutter:false,solid:false},'noon: open');
- assert.deepEqual(at(18*60+40),{flag:true,shutter:false,solid:false},'twenty to seven: still serving');
+ assert.deepEqual(at(12*60,true),{flag:true,shutter:false,solid:false},'noon: open');
+ assert.deepEqual(at(18*60+40,true),{flag:true,shutter:false,solid:false},'twenty to seven: still serving');
  assert.deepEqual(at(20*60+30),{flag:false,shutter:true,solid:true},'half past eight: shut');
  assert.deepEqual(at(2*60),{flag:false,shutter:true,solid:true},'the small hours: shut');
  // Shut, the shutter runs from the floor into the wall over its box.
@@ -63,10 +63,10 @@ test('after hours the shutter is down and the ice flag in; open, the shutter is 
  assert.ok(box.min.y<.08&&box.max.y>NAKAMURA_FRAME.ground,'from the floor into the wall over the box: no slot of lit ceiling over it');
  // It rolls, it does not pop: half-way through the roll it is half-way down, and it starts once she is out.
  const {open,close}=BLUE_CORAL,{roll,after}=NAKAMURA_SHUTTER;
- assert.equal(nakamuraShutterDown(open,BLUE_CORAL),1);assert.ok(Math.abs(nakamuraShutterDown(open+roll/2,BLUE_CORAL)-.5)<1e-9);assert.equal(nakamuraShutterDown(open+roll,BLUE_CORAL),0);
- assert.equal(nakamuraShutterDown(close+after*.99,BLUE_CORAL),0,'she has not stepped out yet');
- assert.ok(Math.abs(nakamuraShutterDown(close+after+roll/2,BLUE_CORAL)-.5)<1e-9);assert.equal(nakamuraShutterDown(close+after+roll,BLUE_CORAL),1);
- let last=1;for(let m=open;m<=open+roll;m+=roll/20){const d=nakamuraShutterDown(m,BLUE_CORAL);assert.ok(d<=last+1e-12);last=d;}
+ assert.equal(nakamuraShutterDown(open,hours),1);assert.ok(Math.abs(nakamuraShutterDown(open+roll/2,hours)-.5)<1e-9);assert.equal(nakamuraShutterDown(open+roll,hours),0);
+ assert.equal(nakamuraShutterDown(close+after*.99,hours),0,'the exit delay is retained');
+ assert.ok(Math.abs(nakamuraShutterDown(close+after+roll/2,hours)-.5)<1e-9);assert.equal(nakamuraShutterDown(close+after+roll,hours),1);
+ let last=1;for(let m=open;m<=open+roll;m+=roll/20){const d=nakamuraShutterDown(m,hours);assert.ok(d<=last+1e-12);last=d;}
  assert.ok(roll*60/4>=1&&roll*60<=15,'one to fifteen seconds at the town clock’s speeds');
  // Up, it is hidden inside the box and the wall over it: its foot is above the box's underside.
  f.update(close+after+roll*.001,false);assert.ok(new THREE.Box3().setFromObject(f.shutter).min.y>2.85,'barely started: still in the box');
@@ -74,14 +74,21 @@ test('after hours the shutter is down and the ice flag in; open, the shutter is 
  assert.ok(Math.abs(f.shutter.position.z-(NAKAMURA_FRAME.D-.15))<1e-9);
 });
 
-test('closed, ordering is refused',async()=>{
+test('the vacant facility stays visibly closed and refuses orders at every hour',async()=>{
  const {buildBlueCoralShop}=await import('../src/world/blue-coral-shop.js');
  const regs=[],actions=[],world={group:new THREE.Group()};
  const shop=buildBlueCoralShop({world,register:(o,label,fn)=>regs.push({label,fn}),onAction:(...a)=>actions.push(a)});
  assert.ok(world.colliders.some(c=>c.id==='nakamura-shutter'));
- shop.update(20*60+30);regs.find(r=>/^Order at Nakamura/.test(r.label)).fn();
- assert.equal(actions.at(-1)[0],'read');assert.match(actions.at(-1)[1],/closed/);
- shop.update(12*60);regs.find(r=>/^Order at Nakamura/.test(r.label)).fn();assert.equal(actions.at(-1)[0],'dessert-menu');
+ assert.equal(BLUE_CORAL.staffed,false);assert.equal(BLUE_CORAL.owner,null);assert.equal(BLUE_CORAL.status,'vacant');
+ for(let minutes=0;minutes<1440;minutes+=15){
+  shop.update(minutes);regs.find(r=>r.label==='Read the dessert counter notice').fn();
+  assert.equal(shop.isOpen(),false);assert.equal(dessertShopOpen(minutes),false);
+  assert.equal(actions.at(-1)[0],'read');assert.match(actions.at(-1)[1],/closed/);assert.match(actions.at(-1)[2],/vacant/);
+  assert.equal(shop.frontage.shutter.visible,true);assert.equal(shop.frontage.shutterSolid.minY,0);
+  for(const thing of ['noren','flag','parasol'])assert.equal(shop.frontage[thing].visible,false);
+ }
+ shop.frontage.update(720,true);assert.equal(shop.frontage.flag.visible,false,'a stale open flag cannot reopen an unstaffed shop');
+ assert.equal(world.landmarks.some(p=>p.id==='home-nakamura'),false,'no occupied residence doorway');
 });
 
 test('the parasol table is at the dessert bench’s shop end, and the bench is still free to sit at',()=>{
@@ -110,8 +117,8 @@ test('nothing new stands in a route, a prompt, the family’s way home or a park
  for(let z=-12;z<=-8.5;z+=.1)assert.equal(mine.some(c=>circleHitsRect(4.5,z,.28,c)),false,'pavement '+z.toFixed(1));
  // The canopy is a camera-only collider while the parasol is up.
  assert.ok(world.colliders.some(c=>c.id==='nakamura-parasol-canopy'));
- // By day the shutter is up and nobody's way: its collider is off.
- assert.equal(world.colliders.find(c=>c.id==='nakamura-shutter').minY,1e3);
+ // Vacant: the shutter blocks the closed counter at noon as well as at night.
+ assert.equal(world.colliders.find(c=>c.id==='nakamura-shutter').minY,0);
  // After hours the bench is still a seat, and the shutter does not stand in its way.
  world.blueCoral.update(20*60+30);prompts.find(p=>p.label==='Sit beside Nakamura with your dessert').fn();assert.equal(actions.at(-1)[0],'seat');
  assert.equal(standingHitsRect(6.5,-17.6,.30,0,world.colliders.find(c=>c.id==='nakamura-shutter')),false);
