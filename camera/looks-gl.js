@@ -1493,6 +1493,16 @@ export function createLookEngine(canvas,{light=false}={}){
    }finally{release('export');}
   },
   failed:name=>!!programs.get(lookKey(name,false))?.failed,
+  /** A bounded preview readback for photo-aware suggestions; never resizes the visible canvas. */
+  sample(recipe,{source,crop,mirror,width=128,height=128}){
+   if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||width>128||height>128)throw new RangeError('Preview samples are limited to 128 pixels per side');
+   try{
+    const result=run(recipe,{source,crop,mirror,width,height,output:'pair',targetName:'sample'});
+    if(!result||gl.isContextLost())return null;
+    const data=new Uint8Array(width*height*4);gl.bindFramebuffer(gl.FRAMEBUFFER,result);gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,data);
+    return gl.isContextLost()?null:{width,height,data:flipRows(data,width,height)};
+   }finally{release('sample');}
+  },
   lost:()=>gl.isContextLost(),
  };
 }

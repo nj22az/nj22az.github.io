@@ -3,10 +3,11 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031audit2';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031smart1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
-import {lookIcon} from './look-icons.js?v=20261031audit2';
+import {lookIcon} from './look-icons.js?v=20261031smart1';
+import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031smart1';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
@@ -28,14 +29,6 @@ const RATIOS=['4:3','1:1','16:9'],TIMERS=[0,3,10],ZOOMS=[1,2,3];
 // The dice's mixes, chosen by eye on a real photo and on the town (as the hand-held cameras' lenses were chosen, not
 // drawn at random): each a base and a Look over it, with its name. Pairs that came out as noise or mush were left out:
 // Crayon or Riso over ink, Miniature over Pocket's pixels, Stamp over Sepia, Heavy brush through the TV.
-const MIXES=[
- ['Ink & wash','watercolour','lines',.7],['Comic colour','watercolour','manga',.5],['Sunday comic','flat','manga',.45],
- ['Pencil & wash','watercolour','pencilManga',.5],['Inked oils','oil','manga',.4],['Line & colour','flat','lines',.6],
- ['Cartridge TV','snes','crt',1],['Hand-held TV','pocket','crt',1],['Late show','mono','crt',1],['Old reel','sepia','crt',.8],
- ['Toy town','print','tilt',1],['Model village','watercolour','tilt',1],['Diorama','oil','tilt',1],["Architect's model",'sketchbook','tilt',1],
- ['Two-colour print','lines','riso',1],['Poster','print','riso',.6],
- ['Home video','instant','camcorder',1],['Comic book','flat','halftone',1],["Engineer's plan",'lines','cyanotype',1],['Night watch','nightVision','crt',.8],
-];
 // What "Mix" puts over a Look first: its partner from a mix above, or one that reads well over most.
 const FINISHERS=['crt','tilt','riso','manga','lines','sepia','mono','stamp'];
 const ADJUSTMENTS=[
@@ -73,8 +66,9 @@ function remember(){
 const canvas=document.createElement('canvas');
 canvas.setAttribute('aria-label','Viewfinder');
 let engine=null;
+let smartTask=null;
 function startEngine(){
- try{engine=createLookEngine(canvas,{light:coarse});engine.warm(LOOK_NAMES);return true;}
+ try{engine=createLookEngine(canvas,{light:coarse});engine.warm(['instant','mono',...LOOK_NAMES]);return true;}
  catch{engine=null;return false;}
 }
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();setShutter('off');$('saveEdit').disabled=true;toast('Graphics restarted');});
@@ -293,9 +287,19 @@ function renderLayers(){
   add.setAttribute('aria-label','Mix in another Look over this one');add.addEventListener('click',addLayer);layersEl.append(add);
  }
  const dice=document.createElement('button');dice.type='button';dice.className='shuffle';dice.innerHTML=icon('dice');
- dice.setAttribute('aria-label','Surprise me: a random mix');dice.title='Surprise me';
+ const matching=state.mode==='editor'&&smartTask?.ctx===ctx&&!smartTask.cancelled;
+ dice.setAttribute('aria-label',state.mode==='editor'?'Surprise me: match this photo':'Surprise me: a random mix');dice.title='Surprise me';
+ dice.disabled=!!matching;dice.setAttribute('aria-busy',String(!!matching));
  dice.addEventListener('click',()=>{dice.classList.remove('roll-dice');void dice.offsetWidth;dice.classList.add('roll-dice');shuffle();});
  layersEl.append(dice);
+ if(state.mode==='editor'&&ctx.smartPrevious&&ctx.smartPicture===ctx.picture){
+  const undo=document.createElement('button');undo.type='button';undo.className='undo-shuffle';undo.innerHTML=icon('undo');
+  undo.setAttribute('aria-label','Undo Surprise');undo.title='Undo Surprise';undo.addEventListener('click',()=>{
+   if(ctx!==current()||ctx.smartPicture!==ctx.picture||ctx.saving)return;
+   if(smartTask?.ctx===ctx)smartTask.cancelled=true;
+   ctx.recipe=normalRecipe({...ctx.recipe,...ctx.smartPrevious});ctx.smartPrevious=null;ctx.smartMatch=null;ctx.active=0;renderAdjusters();renderFramePanel();trayChanged({thumbs:true});
+  });layersEl.append(undo);
+ }
  if(state.mode==='camera'){
   const sticker=document.createElement('button');sticker.type='button';sticker.className='shuffle sticker-button';sticker.innerHTML=icon('sticker');
   sticker.setAttribute('aria-label','Stickers');sticker.title='Stickers';sticker.addEventListener('click',openStickerSheet);layersEl.append(sticker);
@@ -366,6 +370,7 @@ function removeLayer(i){
 }
 let lastMix=-1;
 function shuffle(){
+ if(state.mode==='editor')return matchPhoto();
  const ctx=current(),choices=MIXES.map((m,i)=>i).filter(i=>i!==lastMix&&tiles.has(MIXES[i][1])&&tiles.has(MIXES[i][2]));
  if(!choices.length)return;
  const i=choices[Math.floor(Math.random()*choices.length)],[name,base,over,amount]=MIXES[i];lastMix=i;
@@ -373,6 +378,36 @@ function shuffle(){
  trayChanged({thumbs:true});
  toast(`${name} · ${mixLabel(ctx.recipe)}`,{look:true,ms:1300});sound('tick');
 }
+/** Search from the current photo source, applying only one result after all work is still relevant. */
+async function matchPhoto(){
+ const ctx=state.edit,e=engine;if(!ctx||ctx.saving||!e||e.lost())return null;
+ if(smartTask)smartTask.cancelled=true;
+ const before=JSON.stringify(ctx.recipe),task={ctx,cancelled:false,picture:ctx.picture};smartTask=task;renderLayers();
+ const valid=()=>!task.cancelled&&state.mode==='editor'&&state.edit===ctx&&engine===e&&!e.lost()&&!ctx.saving&&!ctx.erasing&&!ctx.cropping&&ctx.picture===task.picture&&JSON.stringify(ctx.recipe)===before;
+ const started=performance.now(),original=normalRecipe(ctx.recipe),crop=original.crop,aspect=crop.w*ctx.width/(crop.h*ctx.height);
+ const width=Math.max(1,Math.round(Math.min(128,128*aspect))),height=Math.max(1,Math.round(Math.min(128,128/aspect))),options={source:'edit',crop,width,height};
+ try{
+  await nextFrame();if(!valid())return null;
+  const sample=e.sample(normalRecipe({trick:original.trick,paper:original.paper}),options);if(!sample)return null;
+  const reference=measureImage(sample),plans=photoCandidates(reference,{previous:ctx.smartMatch,available:name=>tiles.has(name)&&!e.failed(name)}),queue=[...plans],scored=[];
+  let attempts=0;
+  while(queue.length&&attempts++<48&&performance.now()-started<1800){
+   if(!valid())return null;
+   const candidate=queue.shift(),recipe=normalRecipe({...original,...candidate}),pixels=e.sample(recipe,options);
+   if(pixels&&!candidate.layers.some(l=>e.failed(l.look)))scored.push({...candidate,score:scorePhoto(reference,measureImage(pixels),candidate.layers)});
+   else if(!candidate.layers.some(l=>e.failed(l.look)))queue.push(candidate);
+   await nextFrame();
+  }
+  if(!valid())return null;
+  const picked=choosePhotoCandidate(scored,{lastName:ctx.smartLastName});
+  if(!picked){toast('The Looks are still getting ready. Try again.');return null;}
+  ctx.smartPrevious={layers:original.layers,adjust:original.adjust,enhance:original.enhance};ctx.smartPicture=ctx.picture;ctx.recipe=normalRecipe({...original,layers:picked.layers,adjust:picked.adjust,enhance:picked.enhance});ctx.active=0;ctx.smartLastName=picked.name;
+  ctx.smartMatch={...picked,tested:scored.length,elapsedMs:performance.now()-started,candidates:scored};
+  renderAdjusters();renderFramePanel();trayChanged({thumbs:true});toast(`${picked.name} · ${mixLabel(ctx.recipe)}`,{look:true,ms:1300});sound('tick');return ctx.smartMatch;
+ }catch(error){if(valid()){console.error(error);toast('That mix could not be tried. Your edit is unchanged.');}return null;}
+ finally{if(smartTask===task){smartTask=null;if(state.edit===ctx&&state.mode==='editor')renderLayers();}invalidate();}
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&smartTask){smartTask.cancelled=true;if(state.mode==='editor')renderLayers();}});
 strip.addEventListener('click',e=>{const t=e.target.closest('.tile');if(t){sound('tick');chooseLook(t.dataset.look);}});
 strip.addEventListener('keydown',e=>{
  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;

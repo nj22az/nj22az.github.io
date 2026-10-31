@@ -1,0 +1,386 @@
+{
+  "source": "b795c7a02a721ff538b435e9aacd6126b3a868a8",
+  "base": "baf0da1a0745bad6238811bdfae26c4df4aebe67",
+  "branch": "codex/pocket-camera-smart-shuffle",
+  "pr": 419,
+  "published": false,
+  "camera_run": 41206756507,
+  "jobs": {
+    "smart": {
+      "id": 124553604278,
+      "status": "passed",
+      "checks": 14
+    },
+    "ui": {
+      "id": 124553604287,
+      "status": "passed",
+      "checks": 82
+    },
+    "audit": {
+      "id": 124553604087,
+      "status": "passed",
+      "checks": 50
+    },
+    "camera": {
+      "id": 124553604355,
+      "status": "passed",
+      "checks": 143
+    }
+  },
+  "new_units": 7,
+  "mcp": {
+    "run": 41206756330,
+    "job": 124553287604,
+    "units": 15,
+    "acceptance": 20,
+    "status": "passed",
+    "npm_vulnerabilities": 0,
+    "artifact": 13043559795,
+    "sha256": "be788a462bebfc60183cfbb0151a38c9e6f3ab9482b8a6693736fd265b94b076"
+  },
+  "smart_artifact": {
+    "id": 13044900413,
+    "sha256": "6acf2a460edd29828d99d57d5c8d6d805a60b02f502d66c775b136269781fe52",
+    "checks": [
+      "cafe: actual-photo search ranks bounded previews and preserves source/crop/overlays",
+      "garden: actual-photo search ranks bounded previews and preserves source/crop/overlays",
+      "portrait: actual-photo search ranks bounded previews and preserves source/crop/overlays",
+      "dark: actual-photo search ranks bounded previews and preserves source/crop/overlays",
+      "bright: actual-photo search ranks bounded previews and preserves source/crop/overlays",
+      "new clicks explore the original source and keep GPU sample resources bounded",
+      "manual changes during search cancel its pending result",
+      "Undo Surprise preserves later frame and crop edits",
+      "a replacement photo cannot receive an old search result",
+      "backgrounding cancels search without changing the recipe",
+      "Save during search keeps the explicit current edit and completes normally",
+      "a matched edit saves a new JPEG with retained original and re-editable settings",
+      "Undo and smart controls remain reachable at phone/tablet sizes and large text",
+      "no uncaught page errors"
+    ]
+  },
+  "photos": [
+    {
+      "kind": "cafe",
+      "name": "Soft photo",
+      "score": 0.9274172362285403,
+      "tested": 14,
+      "elapsed_ms": 605.2000000000116,
+      "recipe": {
+        "layers": [
+          {
+            "look": "instant",
+            "amount": 0.8158211091952398
+          },
+          {
+            "look": "mono",
+            "amount": 0.09650850812299176
+          }
+        ],
+        "crop": {
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.84,
+          "h": 0.84
+        },
+        "enhance": 0.22164705882352942,
+        "paper": "warm",
+        "adjust": {
+          "light": 0.07834846156680335,
+          "contrast": -0.025109078785924988,
+          "colour": -0.0315909004042828,
+          "warmth": -0.016615921388261512,
+          "pattern": 0,
+          "detail": 0.04
+        },
+        "stamp": true,
+        "stickers": [
+          {
+            "id": "johansson-pixar/Wave",
+            "x": 0.5,
+            "y": 0.56,
+            "size": 0.42,
+            "angle": -8,
+            "flip": false
+          }
+        ],
+        "frame": "print",
+        "focus": -1,
+        "trick": "none"
+      }
+    },
+    {
+      "kind": "garden",
+      "name": "Soft photo",
+      "score": 0.9678542809297648,
+      "tested": 14,
+      "elapsed_ms": 485.79999999998836,
+      "recipe": {
+        "layers": [
+          {
+            "look": "instant",
+            "amount": 0.8965969160152598
+          },
+          {
+            "look": "mono",
+            "amount": 0.06562777404254304
+          }
+        ],
+        "crop": {
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.84,
+          "h": 0.84
+        },
+        "enhance": 0.2710588235294118,
+        "paper": "warm",
+        "adjust": {
+          "light": 0.21721336025775717,
+          "contrast": 0.012737422348958827,
+          "colour": -0.057747875272705806,
+          "warmth": -0.022804646182661426,
+          "pattern": 0,
+          "detail": 0.04
+        },
+        "stamp": true,
+        "stickers": [
+          {
+            "id": "johansson-pixar/Wave",
+            "x": 0.5,
+            "y": 0.56,
+            "size": 0.42,
+            "angle": 2,
+            "flip": false
+          }
+        ],
+        "frame": "print",
+        "focus": -1,
+        "trick": "none"
+      }
+    },
+    {
+      "kind": "portrait",
+      "name": "Soft photo",
+      "score": 0.9778724672685448,
+      "tested": 14,
+      "elapsed_ms": 562,
+      "recipe": {
+        "layers": [
+          {
+            "look": "instant",
+            "amount": 0.864359940025024
+          },
+          {
+            "look": "mono",
+            "amount": 0.06
+          }
+        ],
+        "crop": {
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.84,
+          "h": 0.84
+        },
+        "enhance": 0.28047058823529414,
+        "paper": "warm",
+        "adjust": {
+          "light": 0.22457732702326025,
+          "contrast": -0.03852144430870845,
+          "colour": -0.05096398592105847,
+          "warmth": -0.05740030012426794,
+          "pattern": 0,
+          "detail": 0.04
+        },
+        "stamp": true,
+        "stickers": [
+          {
+            "id": "johansson-pixar/Wave",
+            "x": 0.5,
+            "y": 0.56,
+            "size": 0.42,
+            "angle": -7.8,
+            "flip": false
+          }
+        ],
+        "frame": "print",
+        "focus": -1,
+        "trick": "none"
+      }
+    },
+    {
+      "kind": "dark",
+      "name": "Soft photo",
+      "score": 0.9094933580959744,
+      "tested": 14,
+      "elapsed_ms": 439.8999999999942,
+      "recipe": {
+        "layers": [
+          {
+            "look": "instant",
+            "amount": 0.7811120964074507
+          },
+          {
+            "look": "mono",
+            "amount": 0.06264115923224017
+          }
+        ],
+        "crop": {
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.84,
+          "h": 0.84
+        },
+        "enhance": 0.31223529411764706,
+        "paper": "warm",
+        "adjust": {
+          "light": 0.3183382361428812,
+          "contrast": 0.14990736329010415,
+          "colour": 0.014658289366157951,
+          "warmth": -0.015275293539762926,
+          "pattern": 0,
+          "detail": 0.04
+        },
+        "stamp": true,
+        "stickers": [
+          {
+            "id": "johansson-pixar/Wave",
+            "x": 0.5,
+            "y": 0.56,
+            "size": 0.42,
+            "angle": -2.3,
+            "flip": false
+          }
+        ],
+        "frame": "print",
+        "focus": -1,
+        "trick": "none"
+      }
+    },
+    {
+      "kind": "bright",
+      "name": "Poster",
+      "score": 0.8904023107276129,
+      "tested": 14,
+      "elapsed_ms": 447.29999999998836,
+      "recipe": {
+        "layers": [
+          {
+            "look": "print",
+            "amount": 0.6633466107025742
+          },
+          {
+            "look": "riso",
+            "amount": 0.47127698024036363
+          }
+        ],
+        "crop": {
+          "x": 0.08,
+          "y": 0.08,
+          "w": 0.84,
+          "h": 0.84
+        },
+        "enhance": 0.2771764705882353,
+        "paper": "warm",
+        "adjust": {
+          "light": -0.2074184275834511,
+          "contrast": 0.12137515278519406,
+          "colour": 0.05087011657407018,
+          "warmth": -0.011293464034189838,
+          "pattern": 0,
+          "detail": 0.04
+        },
+        "stamp": true,
+        "stickers": [
+          {
+            "id": "johansson-pixar/Wave",
+            "x": 0.5,
+            "y": 0.56,
+            "size": 0.42,
+            "angle": 3,
+            "flip": false
+          }
+        ],
+        "frame": "print",
+        "focus": -1,
+        "trick": "none"
+      }
+    }
+  ],
+  "portrait": {
+    "url": "https://images.pexels.com/photos/29747506/pexels-photo-29747506.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    "credit": "Vladislav Anchuk / Pexels 29747506; Pexels licence; source already documented in tools/camera-test-photos.py",
+    "sha256": "91da29f39e7c1272f7ab26b423f67d66561ce07bdc135f06d5e5ffc0bf1924e9"
+  },
+  "layout": {
+    "phone": [
+      402,
+      700
+    ],
+    "tablet": [
+      744,
+      980
+    ],
+    "small": [
+      320,
+      568
+    ],
+    "text_percent": 200,
+    "physical_devices": false
+  },
+  "world": {
+    "run": 41206756327,
+    "guard": "passed",
+    "webkit": "passed",
+    "linux_run": 41206756376,
+    "linux_job": 124553287888,
+    "linux_status": "failed",
+    "unchanged_base_reproduction": {
+      "tests": 13,
+      "passed": 11,
+      "failed": 2,
+      "log": "unchanged-main-world.log",
+      "failures": [
+        "controller-game.test.mjs: expected ferry landing x=-1.5; main now returns x=0.3",
+        "housing-consolidation.test.mjs: moving Minato Maru paint/metal counted on post-office-lot"
+      ]
+    },
+    "guard_job": 124553593640,
+    "guard_checks": 569,
+    "webkit_job": 124553593418
+  },
+  "connection": {
+    "sdk_acceptance": "connected and tested",
+    "owner_installed_host": "unconnected",
+    "this_chat": "unconnected",
+    "hosted_http": false
+  },
+  "images_inspected": [
+    "five-source before/after engine renders",
+    "actual portrait",
+    "phone and tablet controls",
+    "320px and 200% text controls",
+    "saved JPEG",
+    "MCP generated-image before/after and exported JPEG"
+  ],
+  "browser_total": 289,
+  "artifacts": [
+    {
+      "id": 13045260037,
+      "name": "ui",
+      "bytes": 11810008,
+      "sha256": "76f9e00b118ae8d0ee8b1a89c13ce12eec3a71fef9c656c1c4282ab4ac5a3f46"
+    },
+    {
+      "id": 13044756678,
+      "name": "audit",
+      "bytes": 13543516,
+      "sha256": "4e3df0b96d0530fc426f6d3bacbfcda46d351351dd79735056c62177b4070bc8"
+    },
+    {
+      "id": 13044593503,
+      "name": "camera",
+      "bytes": 29130217,
+      "sha256": "706bcec5906047843c74a8572fb598bb21cd53470e67f016378ffa897af8ce49"
+    }
+  ],
+  "main_last_verified": "fee38241fcd3198522298137e6de1b9299b6a955"
+}
