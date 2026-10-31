@@ -40,7 +40,7 @@
 .camera .setting-title{font:inherit;color:var(--label);white-space:normal;overflow-wrap:anywhere}
 .camera .setting>span{max-width:110px;white-space:normal;text-align:right;color:var(--label-3)}
 .camera .setting.on>span{color:var(--accent)}
-/* Editing: six complete tool labels, with a useful picture above the controls. */
+/* Editing: icon controls with full accessible names and a clear active label. */
 .editor>.bar{grid-template-columns:auto minmax(0,1fr) auto}
 .editor .text-button{font-size:.9375rem}.editor .pill-button{font-size:.875rem;min-height:44px;height:auto;padding:10px 14px;border-radius:15px;max-width:130px;white-space:normal;line-height:1.3}
 .editor>.stage{padding:18px 24px;min-height:110px;flex:1;touch-action:none}
@@ -49,8 +49,8 @@
 .compare-original[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .editor>.dock{display:flex;flex-direction:column;flex:none;min-height:0;max-height:calc(100dvh - 190px - env(safe-area-inset-top) - env(safe-area-inset-bottom));width:100%;max-width:none;padding:0;background:var(--surface)}
 .editor .panel{order:0;min-height:0;max-height:calc(100dvh - 302px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:12px 16px;background:var(--surface);border-top:1px solid var(--separator);border-radius:25px 25px 0 0;flex:0 1 auto}
-.editor .segmented{order:1;flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%;margin:0;padding:8px 16px 12px;border-radius:0;background:#121315;border-top:1px solid var(--separator);box-shadow:none}
-.editor .segmented button{min-height:44px;height:auto;min-width:0;padding:8px 5px;border-radius:12px;font-size:.8125rem;line-height:1.35;white-space:normal;overflow:visible;text-overflow:unset;overflow-wrap:anywhere;background:none;box-shadow:none}
+.editor .segmented{order:1;flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;width:100%;margin:0;padding:8px 12px;border-radius:0;background:#121315;border-top:1px solid var(--separator);box-shadow:none}
+.editor .segmented button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;height:auto;min-width:0;padding:6px 2px;border-radius:12px;font-size:.75rem;line-height:1.35;white-space:normal;overflow:visible;text-overflow:unset;overflow-wrap:anywhere;background:none;box-shadow:none}
 .editor .segmented button[aria-selected=true]{background:#383225;color:var(--accent);box-shadow:none}
 .editor .tray{padding:0}.editor .layers{height:auto;min-height:44px;flex-wrap:wrap;padding:0 0 6px;gap:6px}
 .editor .mix{display:flex;flex-wrap:wrap;max-width:100%;border-radius:12px}
@@ -77,13 +77,15 @@
 .editor .switch::after{width:24px;height:24px;left:3px;top:10px;transform:none}.editor .switch[aria-checked=true]::after{transform:translateX(18px)}
 .editor #enhanceHint{display:block;font-size:.75rem;line-height:1.4;color:var(--label-3);font-weight:400;margin-top:2px}
 .editor .enhance-hint{font-size:.75rem;line-height:1.5;text-align:left;margin:6px 0;color:var(--label-3)}
-.editor .enhance-strength{margin-top:8px}.editor .adjustment-strength{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:0 8px}
+.editor .enhance-strength{margin-top:8px}.editor .adjustment-strength{height:auto;min-height:88px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:0 8px}
 .editor .adjustment-strength input{grid-column:1/-1;grid-row:2;width:100%}.editor .adjustment-strength output{grid-column:2;grid-row:1}.editor .adjustment-strength button{grid-column:3;grid-row:1;color:var(--accent);font-size:.8125rem}
 .editor .crop-shapes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:none;width:100%;overflow:visible;margin:12px 0;box-shadow:none;background:none;padding:0}
 .editor .crop-shapes button{min-height:44px;padding:8px 4px;white-space:normal;font-size:.8125rem;border-radius:10px;background:var(--surface-2)}
 .editor .frame-choices{padding:8px 0}.editor .frame-choice{min-height:44px;font-size:.75rem}
 .editor .option-row{padding-inline:0}.editor .paper-choices,.editor #mirrorChoices{flex-wrap:wrap;height:auto}
-.editor .mini-seg button{min-height:44px;height:auto;font-size:.8125rem;white-space:normal}
+.editor .mini-seg button{min-height:44px;height:auto;font-size:.8125rem;white-space:normal;overflow-wrap:anywhere}
+.editor #panelFrame .option-row:has(.mini-seg){flex-direction:column;align-items:stretch;gap:8px;padding-block:8px}
+.editor .paper-choices{width:100%;min-width:0;grid-template-columns:repeat(4,minmax(0,1fr))}.editor #mirrorChoices{width:100%;min-width:0;grid-template-columns:repeat(3,minmax(0,1fr))}
 .editor .sticker-sets{display:flex;flex-wrap:wrap;padding:0;gap:4px}.editor .sticker-sets button{flex:1 0 auto;min-height:44px;height:auto;font-size:.8125rem;padding:8px;white-space:normal}
 .editor .sticker-grid{padding-inline:0}.editor .erase-hint{font-size:.875rem;line-height:1.5;margin:8px 0}
 /* Saved photos remain first; games stay in their existing secondary destination. */
@@ -96,9 +98,9 @@
 .album .bar{grid-template-columns:auto minmax(0,1fr) auto}.album .bar h2{white-space:normal}.album .album-note{font-size:.8125rem;line-height:1.5}
 .viewer .toolbar{max-width:520px;padding:12px 24px}.viewer .toolbar button{font-size:.8125rem;line-height:1.4;min-height:60px}
 /* A reserved side rail says which shaders are active without painting over the canvas. */
-.camera-view{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px;padding:12px}
+.camera-view{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) 48px;gap:8px;padding:12px}
 .camera.idle .camera-view{display:none}.picture-area{display:grid;place-items:center;min-width:0;min-height:0;width:100%;height:100%;position:relative}
-.editor>.stage{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:10px}
+.editor>.stage{display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) 48px;gap:10px}
 .look-rail{display:flex;flex-direction:column;gap:8px;align-items:center;align-self:stretch;min-height:0;max-height:100%;overflow:auto;scrollbar-width:thin}
 #editLookRail,#cameraLookRail{display:flex;flex-direction:column;gap:8px;width:100%}
 .rail-look{flex:none;width:48px;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:var(--surface);padding:5px 2px;color:var(--label-3)}
@@ -107,7 +109,6 @@
 .editor .compare-original{position:static;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;min-height:48px;padding:6px 2px;margin-top:auto;box-shadow:none;background:var(--surface)}
 .compare-original svg{width:22px;height:22px}.compare-original span,.rail-original{font-size:.625rem;line-height:1.4;overflow-wrap:anywhere;max-width:100%}
 .editor .layer-pick>svg{width:24px;height:24px;flex:none}.editor .layer-pick{display:flex;align-items:center;gap:6px}
-.layer:not(.active) .layer-name,.tile:not([aria-checked=true]):not(:focus-visible) .name,.look-groups button:not([aria-selected=true]):not(:focus-visible) .group-name{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 .editor .look-groups{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
 .look-groups button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:44px;min-height:44px;flex:none}
 .look-groups button>svg{width:22px;height:22px}.editor .look-groups button{padding:7px 9px}
@@ -125,15 +126,9 @@
 /* One selected shader name, rather than repeating it in the mix, group and thumbnail rows. */
 .layer-name,.tile:not(:focus-visible) .name,.look-groups button:not(:focus-visible) .group-name,.rail-look:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 .editor{overflow-y:auto}
-.editor .segmented{grid-template-columns:repeat(6,minmax(0,1fr));padding:8px 12px;gap:4px}
-.editor .segmented button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:6px 2px;font-size:.75rem}
 .editor .segmented button svg{width:22px;height:22px;flex:none}.editor .segmented button span{max-width:100%;overflow-wrap:anywhere}
 .editor .segmented button:not([aria-selected=true]):not(:focus-visible) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
 @media(min-width:850px){.editor .look-groups{gap:0}}
-@media(min-width:850px) and (max-height:420px){
- .editor .panel{padding:12px}.editor .look-groups{padding:0}.editor .strip{padding:4px 0}
- .editor .tile{width:44px;min-width:44px}.editor .tile .face{width:40px;height:40px}
-}
 @media(max-height:620px){
  .welcome{gap:14px;padding:16px 20px}.welcome-hero{height:100px}.welcome-copy h2{font-size:1.75rem}.welcome .welcome-sticker{min-height:72px}.welcome-print{width:118px;border-width:5px;border-bottom-width:17px}
  .editor>.stage{padding:10px 20px;min-height:96px}.editor .panel{padding:8px 12px}.editor .tile{width:60px;min-width:60px}.editor .tile .face{width:52px;height:52px}.editor .strip{gap:6px;padding:4px 0}
@@ -149,14 +144,18 @@
  .editor{display:grid;grid-template-columns:minmax(0,1fr) 344px;grid-template-rows:auto minmax(0,1fr)}
  .editor>.bar{grid-column:1/-1;grid-row:1}.editor>.stage{grid-column:1;grid-row:2;min-height:0;padding:24px}
  .editor>.dock{grid-column:2;grid-row:2;width:100%;max-height:none;align-self:stretch;display:flex;justify-content:flex-start;padding:0;border-left:1px solid var(--separator)}
- .editor .panel{flex:1;max-height:none;border-radius:0;border-top:0;padding:16px;overflow:auto}.editor .segmented{grid-template-columns:repeat(3,minmax(0,1fr));padding:8px 12px 12px}
- .editor .segmented button{min-height:44px;font-size:.8125rem}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .editor .panel{flex:1;max-height:none;border-radius:0;border-top:0;padding:16px;overflow:auto}.editor .segmented{grid-template-columns:repeat(6,minmax(0,1fr));padding:8px 12px}
+ .editor .segmented button{min-height:64px;font-size:.75rem}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}
  .editor .strip{flex-wrap:nowrap;justify-content:flex-start}.editor .layers{flex-wrap:wrap;padding:0;min-height:44px}
  .camera.idle{display:flex}.camera.idle .stage{padding:0;grid-column:auto;grid-row:auto}
  .welcome{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto auto auto auto;align-content:center;gap:20px 40px;max-width:1000px;width:100%;padding:32px 48px}
  .welcome-hero{grid-column:1;grid-row:1/5;height:100%;min-height:300px;max-height:420px}.welcome-copy{grid-column:2;grid-row:1}.welcome-actions{grid-column:2;grid-row:2}.welcome .fine{grid-column:2;grid-row:3}.welcome-album{grid-column:2;grid-row:4}
  .welcome .welcome-sticker{height:225px;max-height:225px;right:9%;bottom:24px}.welcome-print{width:210px;margin-right:50px}.welcome-copy h2{font-size:2.25rem}
  .album .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(min-width:850px) and (max-height:420px){
+ .editor .panel{padding:12px}.editor .look-groups{padding:0}.editor .strip{padding:4px 0}
+ .editor .tile{width:44px;min-width:44px}.editor .tile .face{width:40px;height:40px}
 }
 @media(max-width:359px){.camera .bar,.editor .bar,.album .bar{padding-inline:12px}.camera .photos-button{width:44px;padding:0;justify-content:center}.camera .photos-button span{display:none}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}.editor .segmented{padding-inline:10px}}
 /* Larger user text and short windows reflow rather than clipping fixed-height rows. */

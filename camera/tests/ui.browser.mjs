@@ -53,6 +53,10 @@ try{
     await page.fill('#enhanceStrength','57');assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.enhance),.57);
     await page.click('.adjuster[data-key="warmth"]');assert.ok(await page.locator('#adjustSlider').isVisible());assert.ok(await page.locator('#enhanceStrength').isHidden());
     await page.fill('#adjustSlider','22');await page.click('#adjustReset');assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.adjust.warmth),0);
+    if(height>=560){
+     const clipped=await page.locator('#panelAdjust').evaluate(p=>{const r=p.getBoundingClientRect();return [...p.querySelectorAll('#enhanceLabel,#enhancePhoto,#adjustSlider,#adjustLabel,#adjustReset')].filter(e=>{const b=e.getBoundingClientRect();return b.top<r.top||b.bottom>r.bottom||b.left<r.left||b.right>r.right;}).map(e=>e.id);});
+     assert.deepEqual(clipped,[],'the Enhance heading and adjustment controls remain inside their panel after resetting');
+    }
    });await capture('adjust');
    await check('Save copy preserves the earlier album entry and original bytes',async()=>{
     await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
@@ -65,7 +69,9 @@ try{
    if(label==='iphone-17')await check('enlarged text reflows without losing tool labels',async()=>{
     await page.click('#editPhoto');await page.addStyleTag({content:'html{font-size:200%}'});
     const r=await page.locator('#editDock .segmented').evaluate(el=>({overflow:el.scrollWidth-el.clientWidth,clipped:[...el.children].filter(b=>b.scrollWidth>b.clientWidth+1).map(b=>b.textContent)}));
-    assert.ok(r.overflow<=1);assert.deepEqual(r.clipped,[]);await capture('large-text');
+    assert.ok(r.overflow<=1);assert.deepEqual(r.clipped,[]);
+    await page.waitForFunction(()=>{const p=document.querySelector('#editPictureArea').getBoundingClientRect(),f=document.querySelector('#editFrame').getBoundingClientRect();return f.left>=p.left-1&&f.right<=p.right+1&&f.top>=p.top-1&&f.bottom<=p.bottom+1;});
+    await capture('large-text');
    });
    await check('no page errors',async()=>assert.deepEqual(errors,[]));results.push({label,width,height,passed:true});
   }finally{await context.close();}

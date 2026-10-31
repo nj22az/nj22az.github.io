@@ -1368,7 +1368,8 @@ document.addEventListener('visibilitychange',()=>{
  if(document.hidden){if(state.camera.running){stopCamera();state.camera.resume=true;}}
  else if(state.camera.resume&&state.mode==='camera'){state.camera.resume=false;startCamera();}
 });
-new ResizeObserver(invalidate).observe(document.body);
+const layoutObserver=new ResizeObserver(invalidate);
+for(const element of [document.body,$('cameraPictureArea'),$('editPictureArea')])layoutObserver.observe(element);
 
 // ---------- Start ----------
 // On the Home Screen the camera is an app of its own: no way back to the website is needed, and it works offline (sw.js).
