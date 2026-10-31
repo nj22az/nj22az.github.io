@@ -112,3 +112,26 @@ acknowledgement before using a verified cached response. Normal network success 
 retain normal network behaviour. Six focused worker checks cover slow preparation and abort-ignoring fetch, exact
 three-second fallback, fast success, unlisted passthrough, failed network, missing cache and scope. The browser timing
 limit remains **4,500 ms**; cached responses expose worker timing diagnostics. Final browser rerun remains necessary.
+
+## Fourth runtime acceptance and isolated final timing check
+
+Remote `749e4112d9e6949e0dec76f7e48b6666049f6920`, exact local tree
+`bc3009a117e9e5eb664d2df1e456b2890f153786`, Camera run `41237541775`: full core **143/143**
+(job `124644372475`, all seven suites), UI **82/82** (`124644372689`), shader audit **50/50** (`124644372647`),
+Smart **14/14** (`124644372654`) and retouch **36/36** (`124644372739`) pass. Final aligned-guide and portrait
+screenshots were ZIP-hash/CRC/path verified and inspected; full-size face/lip outlines and contained tint are correct.
+MCP `41237541882`, `124644372672`, passes **16/16 policy + 20/20 real acceptance**. World guard `41237541780`,
+`124644729113`, passes **569/569**. Physical iPhone/iPad Safari remains untested.
+
+Worker diagnostics proved the new timeout itself completed at **3,000.3 ms**, manifest 0.2 ms/cache 5.2 ms. The browser
+received it at 6,298.8 ms while its cold-start 1,920 px fake-camera feed and software shader compilation were active.
+The final timing fixture enters the real Album (stopping the camera), waits for shader preparation and measures the
+same real stalled request. It retains **4,500 ms browser fetch/body limit**, adds **3,200 ms worker limit**, and logs
+headers/body/worker/Node stages. This isolates network-deadline acceptance from an unrelated GPU workload; the live
+camera and cold startup are still covered elsewhere in the unchanged full suite. The retouch suite also adds four
+native manual-brush/idle-prompt/exact-Undo cases, for **40** checks. These final edits change tests/documentation only:
+the complete Camera runtime bundle is byte-identical to the accepted `749e4112` source.
+
+Linux retains the two previously reproduced main failures: controller smoke expects x=-1.5 at its landing but actual
+x=0.3; housing's post-office-lot counts the moving Minato Maru paint/metal meshes. No World runtime, fixture expectation
+or Linux release is changed by this Camera work.

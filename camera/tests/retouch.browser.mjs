@@ -127,6 +127,16 @@ try{
     assert.notDeepEqual(await imageHash(page),eraseBefore,'tapping the visible ring invokes healing');
     await page.click('#eraseUndo');assert.deepEqual(await imageHash(page),eraseBefore,'ring healing also has exact Undo');
    });
+   await check(`${label}: the manual brush heals a dragged stroke and returns to its idle hint`,async()=>{
+    assert.equal(await page.locator('#eraseSuggestions button').count(),0,'manual painting starts without suggested targets');
+    const before=await imageHash(page),overlay=await page.locator('#editFrame .erase-paint').boundingBox();assert.ok(overlay);
+    await page.mouse.move(overlay.x+overlay.width*.42,overlay.y+overlay.height/2);await page.mouse.down();
+    await page.mouse.move(overlay.x+overlay.width*.58,overlay.y+overlay.height/2,{steps:6});await page.mouse.up();
+    await page.waitForFunction(()=>!document.querySelector('#eraseUndo').disabled&&document.querySelector('#eraseHint').textContent.startsWith('Paint'));
+    assert.notDeepEqual(await imageHash(page),before,'a real painted stroke heals the source');
+    if(shots)await page.screenshot({path:join(shots,`${label}-manual-erased.png`)});
+    await page.click('#eraseUndo');assert.deepEqual(await imageHash(page),before,'manual healing has exact Undo');
+   });
    if(label==='desktop'){
     await check('cropped healing, exact undo and interrupted operations preserve the source',async()=>{
      const result=await page.evaluate(async()=>{
