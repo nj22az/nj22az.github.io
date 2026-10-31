@@ -1,0 +1,70 @@
+# Johansson Camera MCP
+
+A local **stdio MCP server** for Pocket Camera. It drives the real `/camera/` editor in an isolated Chromium session;
+there is no second renderer and no change to the published app. The SDK, Zod and Playwright versions already pinned
+in `johansson-town/package-lock.json` are reused.
+
+## Install and connect
+
+From the repository checkout containing this work:
+
+```sh
+npm ci --prefix johansson-town
+cd johansson-town && npx playwright install chromium && cd ..
+node johansson-town/tools/camera/server.mjs
+```
+
+The last command waits for an MCP client on stdin; it is not a web server URL. `.mcp.json` registers the server as
+`johansson-camera`. Restart or reconnect the local MCP host after pulling the branch. A host launched outside the
+repository should use the **absolute path** to `johansson-town/tools/camera/server.mjs` as its Node argument.
+
+For path-based imports, set `CAMERA_MCP_INPUT_DIR` in the host's server environment to a folder containing only images
+you approve for this workflow. Paths are resolved inside that folder; traversal and symlink escapes are rejected.
+Without that setting, `camera_import` accepts padded base64 image bytes instead. Imports accept PNG, JPEG or WebP,
+up to 20 MiB and 48 megapixels. They never fetch arbitrary URLs. `CHROMIUM_EXECUTABLE` optionally selects an installed
+Chromium executable; otherwise Playwright's browser is used.
+
+## Workflow
+
+1. `camera_open`, then `camera_catalog` to inspect the app's real choices.
+2. `camera_import` with `path` or `data`, then `camera_edit` with an `edit` object.
+3. `camera_preview` to inspect the actual editor picture.
+4. On the user's save/export instruction: `camera_save({confirm:true})`, then
+   `camera_export({id:"<returned photo id>",confirm:true})`.
+5. Export every photo to retain, then `camera_close({confirm:true})`.
+
+Edits support one to three Look layers (`look`, `amount`), the app's six adjustments, Enhance, paper, frame and a crop
+rectangle (`x`, `y`, `w`, `h`, each a fraction of the original image). Call the catalog rather than guessing IDs.
+`camera_state` reports the current recipe and page errors. `camera_album` lists session photo metadata;
+`camera_open_photo` uses the app's original-source re-editing. Opening another image while editing requires an
+explicit `discard:true`, or save first.
+
+Save always makes a **new copy** through the normal Save handler: original source, recipe, crop, Enhance, Looks,
+paper, overlays and JPEG compression remain the app's responsibility. Export writes exactly the saved image bytes
+under a unique filename, returns its SHA-256 and never overwrites a file. The preview is a screenshot of the editor,
+not a full-resolution export.
+
+## Boundaries
+
+- This is **not** a connection to the user's iPhone, Safari tab, Photos library or existing browser album.
+- The isolated browser album is temporary. Closing, cancellation or disconnect discards it. Exported files survive
+  close, but are in the operating system's temporary directory: move them somewhere durable.
+- No hardware-camera permission, native Share, automatic upload, delete-photo, arbitrary JavaScript or publish tool.
+- The page is limited to its local preview origin. A requested preview sends image pixels to the connected AI host;
+  do not describe that as entirely private/on-device AI processing.
+- This is local MCP, not a hosted HTTP connector and not browser-native WebMCP. No public endpoint or API key is added.
+- Sticker/lettering authoring, Erase brush painting and mini-game controls are not exposed by this first adapter.
+- `main` and GitHub Pages are unchanged until separately approved for publication. Local MCP can be used from the
+  review branch without publishing the website.
+
+## Checks
+
+```sh
+node --test johansson-town/tools/camera/policy.test.mjs
+CAMERA_MCP_EVIDENCE_DIR=./camera-mcp-evidence node johansson-town/tools/camera/acceptance.mjs
+```
+
+The acceptance script uses the official MCP client over stdio, a generated test image and the actual app. It checks
+initialization/discovery, import, edits, rejected edits, preview pixels, copy-save, exact-byte export, retained sources,
+no page errors and cleanup. The PR workflow runs both and uploads the images/report. Chromium/SwiftShader is not a
+physical Safari or iPhone test. See [the current handover](HANDOVER-MCP-2026-10-31.md) for checks actually completed.

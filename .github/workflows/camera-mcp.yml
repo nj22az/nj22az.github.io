@@ -1,0 +1,49 @@
+name: Pocket Camera MCP
+on:
+  pull_request:
+    paths:
+      - '.mcp.json'
+      - 'camera/**'
+      - 'johansson-town/tools/camera/**'
+      - 'johansson-town/tools/mcp/static-server.mjs'
+      - 'johansson-town/package*.json'
+      - '.github/workflows/camera-mcp.yml'
+permissions:
+  contents: read
+jobs:
+  mcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /camera/
+            /assets/
+            /johansson-town/package.json
+            /johansson-town/package-lock.json
+            /johansson-town/src/
+            /johansson-town/vendor/
+            /johansson-town/tools/camera/
+            /johansson-town/tools/mcp/static-server.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: johansson-town/package-lock.json
+      - run: npm ci --prefix johansson-town
+      - run: npx playwright install --with-deps chromium
+        working-directory: johansson-town
+      - name: Policy and lifecycle unit checks
+        run: node --test johansson-town/tools/camera/policy.test.mjs
+      - name: Real MCP client and actual Camera acceptance
+        run: node johansson-town/tools/camera/acceptance.mjs
+        env:
+          CAMERA_MCP_EVIDENCE_DIR: camera-mcp-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: camera-mcp-evidence
+          path: camera-mcp-evidence/
+          if-no-files-found: warn
