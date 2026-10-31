@@ -17,8 +17,8 @@ export class CameraSession{
   const generation=++this.generation;let preview,browser;
   const check=()=>{if(this.generation!==generation)throw Error('Camera session startup was cancelled.');};
   try{
-   const serve=this.serve||(await import('../mcp/static-server.mjs')).serveGame;
-   preview=await serve({root:this.root,mounts:['camera','johansson-town','assets']});check();this.preview=preview;
+   const serve=this.serve||(await import('./preview.mjs')).serveCamera;
+   preview=await serve({root:this.root});check();this.preview=preview;
    const launch=this.launch||((options)=>import('playwright').then(({chromium})=>chromium.launch(options)));
    browser=await launch({headless,executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});check();this.browser=browser;
    this.context=await this.browser.newContext({viewport:{width:1280,height:900},deviceScaleFactor:1,serviceWorkers:'block',acceptDownloads:false});check();
@@ -59,7 +59,6 @@ export class CameraSession{
    const app=window.pocketCamera,before=app.state.edit;
    await app.editFile(new File([Uint8Array.from(atob(data),c=>c.charCodeAt(0))],name,{type:mimeType}));
    if(!app.state.edit||app.state.edit===before)throw Error('Camera could not decode this image. The previous edit was preserved.');
-   if(app.state.edit.width*app.state.edit.height>48000000){document.getElementById('cancelEdit').click();throw Error('Use an image no larger than 48 megapixels.');}
   },{data:image.bytes.toString('base64'),mimeType:image.mimeType,name:image.name||name});
   return this.state();
  }

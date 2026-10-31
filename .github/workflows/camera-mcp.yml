@@ -26,7 +26,7 @@ jobs:
             /johansson-town/src/
             /johansson-town/vendor/
             /johansson-town/tools/camera/
-            /johansson-town/tools/mcp/static-server.mjs
+            /.mcp.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22

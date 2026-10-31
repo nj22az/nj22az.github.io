@@ -24,6 +24,12 @@ Without that setting, `camera_import` accepts padded base64 image bytes instead.
 up to 20 MiB and 48 megapixels. They never fetch arbitrary URLs. `CHROMIUM_EXECUTABLE` optionally selects an installed
 Chromium executable; otherwise Playwright's browser is used.
 
+The 48-megapixel limit is checked from the original PNG/JPEG/WebP header before the app decodes or downsizes it.
+Keep the approved directory under your control; do not let an untrusted process replace its contents while importing.
+The stdio input buffer accommodates a full 20 MiB image after base64 encoding, with a bounded allowance for JSON.
+The private preview serves Camera resources and its five shared shader/UI modules only. It rejects foreign Hosts,
+foreign Origins, cross-site requests and symlinked preview files; it does not serve dependencies or the input directory.
+
 ## Workflow
 
 1. `camera_open`, then `camera_catalog` to inspect the app's real choices.
@@ -68,3 +74,10 @@ The acceptance script uses the official MCP client over stdio, a generated test 
 initialization/discovery, import, edits, rejected edits, preview pixels, copy-save, exact-byte export, retained sources,
 no page errors and cleanup. The PR workflow runs both and uploads the images/report. Chromium/SwiftShader is not a
 physical Safari or iPhone test. See [the current handover](HANDOVER-MCP-2026-10-31.md) for checks actually completed.
+
+The client reads this checkout's `.mcp.json` registration and launches its absolute server path from outside the
+repository. It tests both generated base64 bytes and a generated file in a temporary approved input directory.
+This proves the acceptance client's connection; it does not install the server in the owner's MCP host or expose
+the tools to this ChatGPT conversation. To complete that connection, configure a local stdio-capable host to run
+Node with the absolute server path, reconnect it, and verify that all eleven `camera_*` tools are discovered.
+Then run the generated-image workflow before approving any personal image for preview.

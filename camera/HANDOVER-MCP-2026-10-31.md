@@ -1,5 +1,41 @@
 # Pocket Camera MCP — 31 October 2026
 
+## Continuation review — 31 October 2026
+
+The owner explicitly requested continuation of draft PR #416, not a rebuild, merge or publication.
+Verified starting head **`3267eff1993bf276a0ee6700407f23a0fa8cbfa6`**; PR remains open/draft, with no conversation
+comments or review threads at this review. MCP run **41167700821**, Camera regression **41167700721** and World guard
+**41167700698** report success. Linux run **41167700800** still reports `in_progress` at its final full-world acceptance
+step; it is not counted as passed. There were no local tracked changes at checkout. An unrelated untracked Sjöskolan
+temporary video file is preserved and excluded from this work.
+
+Changes in this review:
+
+- Check original PNG/JPEG/WebP dimensions before importing. The old post-import check saw the app's already reduced
+  dimensions (at most 16 megapixels) and could not enforce the promised 48-megapixel limit. Failed imports preserve
+  the existing edit. Approved file reads also check the opened file identity and reject final symlink replacements.
+- Use a Camera-only preview server: public resources and five shared shader/UI modules; no repository/dependency
+  exposure, foreign Host/Origin, cross-site fetches or preview symlinks. The old shared server was demonstrated reading
+  a synthetic file through a symlink outside its mount. World's shared development server and runtime are unchanged.
+- Increase the bounded stdio input buffer to fit 20 MiB of image bytes encoded as base64. The SDK's default was only
+  10 MiB. Close the isolated session on transport closure/errors as well as ordinary disconnect and signals.
+- Expand units from 9 to **15** and real acceptance from 16 to **20** checks. The latter now loads the actual
+  `.mcp.json` registration from outside the checkout, exercises both approved-file and base64 import, three Looks,
+  all six adjustments, a real frame, oversized-import preservation, strict schemas and session separation.
+- Apply only **Vite 7.3.6 → 7.3.7**, **Zod 4.6.5 → 4.6.6**, and transitive **source-map-js 1.2.1 → 1.2.2**.
+  No unrelated package resolutions change. Audit dependency paths and applicability are in the review evidence.
+- Root HANDOVER.md now links directly to this note, preserving the separate published release entries.
+
+Local checks: **15/15 unit/lifecycle checks pass**, all seven adapter modules pass syntax checks, and `git diff --check`
+passes. The post-update `npm audit --prefix johansson-town --json` reports **zero vulnerabilities** (before: three high).
+Local real-browser acceptance initializes and discovers all eleven tools but cannot open Chromium: the managed executor
+denies Chromium's required Unix socket (`process_singleton_posix.cc`, `socket(): Operation not permitted`). The default
+Playwright download also returned invalid ZIPs; a valid official Chromium 149.0.7827.55 archive was obtained and tested,
+which exposed the socket restriction. Do not present the two successful discovery checks as a completed editing cycle.
+
+The final post-review commit, hosted acceptance result/evidence, World guard result and image inspection are recorded
+below when available. Publication and the owner's installed-client connection remain separate, outstanding states.
+
 ## Request, branch and review
 
 Owner: **“Mcp wire the Johansson camera web app.”**
@@ -54,7 +90,7 @@ fixture, not a photographic art-quality audit or exhaustive coverage of all Look
 The separate existing Camera regression/World/Linux jobs are not included in these MCP acceptance totals.
 Chromium/SwiftShader acceptance is **not** a physical Safari, iPhone/iPad, native-sharing or user's installed-MCP-host test.
 
-## Open findings and next action
+## Historical open findings before the continuation review
 
 The dependency installation reports **three high-severity npm audit findings in the existing pinned dependency tree**.
 No dependency versions or lockfile were changed. The install log does not identify the affected packages or establish
