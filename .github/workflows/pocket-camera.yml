@@ -79,7 +79,7 @@ jobs:
         run: |
           git fetch --no-tags --depth=1 origin ab35ac3e9cc7d6dadac8c05178a04da42cef50da
           mkdir -p "$CAMERA_ICON_BASELINE"
-          for file in index.html app.js camera.css camera-ui.css; do
+          for file in index.html app.js camera.css camera-ui.css looks-gl.js; do
             git show "ab35ac3e9cc7d6dadac8c05178a04da42cef50da:camera/$file" > "$CAMERA_ICON_BASELINE/$file"
           done
       - name: Unit, module and syntax checks

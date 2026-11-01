@@ -38,7 +38,7 @@ async function createPage(width,height,old=false){
  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sound:false,printer:false,timer:0,recipe:{layers:[{look:'none',amount:1}]}})));
  if(old){
   // Overlay the exact reviewed pre-change assets; all remaining assets are unchanged runtime dependencies.
-  const before=new Map();for(const name of ['index.html','app.js','camera.css','camera-ui.css'])before.set(name,await readFile(join(baseline,name)));
+  const before=new Map();for(const name of ['index.html','app.js','camera.css','camera-ui.css','looks-gl.js'])before.set(name,await readFile(join(baseline,name)));
   await page.route('**/camera/**',async route=>{const path=new URL(route.request().url()).pathname,name=path==='/camera/'?'index.html':path.slice('/camera/'.length),body=before.get(name);if(body)await route.fulfill({body,contentType:name.endsWith('.html')?'text/html':name.endsWith('.css')?'text/css':'application/javascript'});else await route.continue();});
  }
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>window.pocketCamera?.engine&&window.pocketCamera.state.shots.length>=2);await settle(page);await page.locator('#startCamera').scrollIntoViewIfNeeded();
@@ -77,7 +77,7 @@ try{
    await check(name+' preserves tab hierarchy, selected state and stable targets',async()=>{
     const tabs=['#tabLooks','#tabCrop','#tabAdjust','#tabErase','#tabStickers','#tabFrame'],initial=await dockTargets(page,tabs);
     await targets(page,tabs);
-    assert.deepEqual(await page.locator('#editDock [role=tab]').allTextContents(),['Looks','Crop','Adjust','Erase','Stickers','Frame']);
+    assert.deepEqual(await page.locator('#editDock > .segmented [role=tab]').allTextContents(),['Looks','Crop','Adjust','Erase','Stickers','Frame']);
     for(const [id,label] of [['tabLooks','Looks'],['tabAdjust','Adjust'],['tabErase','Erase']]){
      await page.getByRole('tab',{name:label,exact:true}).click();await settle(page);assert.equal(await page.locator('#'+id).getAttribute('aria-selected'),'true');
      const icon=await page.locator('#'+id+' svg.action-icon').boundingBox();assert.equal(icon.width,32);assert.equal(icon.height,32);

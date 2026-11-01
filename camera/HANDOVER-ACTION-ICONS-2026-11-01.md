@@ -57,3 +57,17 @@ No new runtime file is required. Offline tests and the worker digest pin are reg
 Next: run the established GitHub review workflows, inspect actual phone/tablet captures and 24/32 px icon states,
 correct observed defects, then update this note with exact results before marking the PR ready. Main publication
 requires the owner's instruction.
+
+## First hosted candidate
+
+PR [#424](https://github.com/nj22az/nj22az.github.io/pull/424), source `9f7cb2976bd4ee607cf017e21fc9959323f91e5c`,
+exact local/remote tree `0d3b73217645246a040d5b1fc3e5c789ab105905`. Camera run `41315411450`:
+existing UI **82/82**, shader audit **50/50**, Smart **14/14** and offline **13/13** passed. MCP run
+`41315411233` passed. The first focused action suite captured all four baseline viewports, then caught a harness
+selector that included the seven photographic category tabs as well as six tool tabs. It is now scoped to the
+actual action-tab row; the six-tool assertion remains unchanged. Baseline overlay also includes the unchanged renderer
+with its original release import key, avoiding duplicate old/new module addresses. Runtime bytes are unchanged.
+
+The separate Linux workflow `41315411398` retains exactly the two previously documented World failures: controller
+spawn `[0.3,-72.7]` versus `[-1.5,-72.7]`, and Minato Maru paint/metal at the post-office lot. No World runtime/test
+change is made by this task. Core, retouch/screens and World guard results follow below.
