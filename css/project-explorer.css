@@ -5,16 +5,16 @@
 #projects .px-intro p{font:400 16px/1.65 var(--font-body);color:var(--ink-light);max-width:37ch;margin:0}
 #projects .px-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
 #projects .px-filters{display:flex;gap:8px;flex-wrap:wrap}
-#projects .px-filters button{min-height:56px;min-width:100px;padding:10px 16px;text-align:left;border:1px solid #d9dfdd;border-radius:10px;background:#fffef9;color:#344a4d;font:700 14px/1.4 var(--font-body);cursor:pointer}
+#projects .px-filters button{min-height:56px;min-width:100px;padding:10px 16px;text-align:left;border:1px solid var(--border);border-radius:10px;background:var(--surface-card);color:var(--ink);font:700 14px/1.4 var(--font-body);cursor:pointer}
 #projects .px-filters button small{display:block;font-size:12px;font-weight:400}
 #projects .px-filters button span{font-size:12px;font-weight:500;margin-left:8px}
-#projects .px-filters button[aria-pressed=true]{background:#245e64;border-color:#245e64;color:#fff}
+#projects .px-filters button[aria-pressed=true]{background:#245e64;border-color:var(--accent);color:#fff}
 #projects #project-count{font:400 13px/1.5 var(--font-body);color:var(--ink-light);margin:0}
 #projects .px-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
-#projects .px-card{min-width:0;border:1px solid #dbe1dd;border-radius:16px;background:#fffef9;color:#202b36;overflow:hidden;display:flex;flex-direction:column;isolation:isolate}
+#projects .px-card{min-width:0;border:1px solid var(--border);border-radius:16px;background:var(--surface-card);color:var(--ink);overflow:hidden;display:flex;flex-direction:column;isolation:isolate}
 #projects .px-card[hidden]{display:none!important}
 /* Definite frames prevent a portrait image's intrinsic ratio from expanding an auto grid row. */
-#projects .px-preview{position:relative;height:224px;min-height:0;min-width:0;margin:0;overflow:hidden;flex-shrink:0;color:#245e64}
+#projects .px-preview{position:relative;height:224px;min-height:0;min-width:0;margin:0;overflow:hidden;flex-shrink:0;color:var(--accent)}
 #projects .px-preview figcaption{position:absolute;bottom:10px;left:16px;font:500 12px/1.4 var(--font-body);z-index:1}
 #projects .px-world{background:#93cad9}
 #projects .px-world img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 59%}
@@ -23,56 +23,56 @@
 #projects .px-scene-title{position:absolute;left:18px;bottom:35px;z-index:1;color:#fff;text-shadow:0 1px 4px #0005}
 #projects .px-scene-title span{display:block;font:700 11px/1.4 var(--font-body);letter-spacing:.06em;margin-bottom:4px}
 #projects .px-scene-title b{font:750 25px/1.15 var(--font-display)}
-#projects .px-day-switch{position:absolute;right:12px;top:12px;z-index:1;display:flex;gap:2px;padding:3px;background:#fffef9ee;border-radius:10px}
+#projects .px-day-switch{position:absolute;right:12px;top:12px;z-index:1;display:flex;gap:2px;padding:3px;background:var(--surface-card);border-radius:10px}
 #projects .px-day-switch button{min-width:48px;min-height:44px;padding:8px;border-radius:8px;color:#254c56;font:600 13px/1.3 var(--font-body)}
 #projects .px-day-switch button[aria-pressed=true]{background:#245e64;color:#fff}
 #projects .px-camera{background:#000}
 #projects .px-camera picture{display:block;height:100%}
 #projects .px-camera img{width:100%;height:100%;object-fit:cover;object-position:center}
 #projects .px-copy{padding:20px 24px 24px;min-width:0}
-#projects .px-card-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#53616c;font:500 12px/1.4 var(--font-body);margin-bottom:4px}
-#projects .px-card-meta span:first-child{font-weight:700;color:#245e64}
+#projects .px-card-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--ink-light);font:500 12px/1.4 var(--font-body);margin-bottom:4px}
+#projects .px-card-meta span:first-child{font-weight:700;color:var(--accent)}
 #projects .px-mascot-title{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:12px;align-items:center;margin:8px 0 12px;min-height:64px}
 #projects .px-mascot{width:44px;height:64px;object-fit:contain}
-#projects .px-eyebrow{font:650 10px/1.4 var(--font-body);letter-spacing:.06em;color:#53616c;margin:0 0 5px}
-#projects .px-card h3{font:800 clamp(22px,2vw,27px)/1.2 var(--font-display);letter-spacing:-.02em;margin:0;color:#202b36;overflow-wrap:break-word}
+#projects .px-eyebrow{font:650 10px/1.4 var(--font-body);letter-spacing:.06em;color:var(--ink-light);margin:0 0 5px}
+#projects .px-card h3{font:800 clamp(22px,2vw,27px)/1.2 var(--font-display);letter-spacing:-.02em;margin:0;color:var(--ink);overflow-wrap:break-word}
 #projects .px-card h3 a{color:inherit;text-decoration:none}
 #projects .px-card h3 a:hover{text-decoration:underline}
-#projects .px-summary{font:400 16px/1.6 var(--font-body);color:#53616c;margin:0 0 12px}
-#projects .px-facts{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 13px/1.5 var(--font-body);color:#53616c;margin-bottom:12px}
-#projects .px-details{border-block:1px solid #dbe1dd;margin-bottom:16px;font:400 14px/1.65 var(--font-body)}
-#projects .px-details summary{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px;cursor:pointer;list-style:none;color:#344a4d;font-weight:600}
+#projects .px-summary{font:400 16px/1.6 var(--font-body);color:var(--ink-light);margin:0 0 12px}
+#projects .px-facts{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 13px/1.5 var(--font-body);color:var(--ink-light);margin-bottom:12px}
+#projects .px-details{border-block:1px solid var(--border);margin-bottom:16px;font:400 14px/1.65 var(--font-body)}
+#projects .px-details summary{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px;cursor:pointer;list-style:none;color:var(--ink);font-weight:600}
 #projects .px-details summary::-webkit-details-marker{display:none}
 #projects .px-details summary>span{font-size:20px}
 #projects .px-details[open] summary>span{transform:rotate(45deg)}
-#projects .px-detail-content{padding:4px 0 16px;color:#53616c}
+#projects .px-detail-content{padding:4px 0 16px;color:var(--ink-light)}
 #projects .px-detail-content ul{padding-left:20px;margin:0 0 12px;display:grid;gap:6px}
 #projects .px-detail-content p{margin:0}
 #projects .px-card-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px}
 #projects .px-open{display:inline-flex;align-items:center;justify-content:space-between;gap:14px;min-height:44px;padding:10px 14px;border-radius:8px;background:#245e64;color:#fff;font:650 14px/1.4 var(--font-body);text-decoration:none;max-width:100%}
 #projects .px-open:hover{background:#194b50}
 #projects .px-open svg,#projects .px-platform-link svg,#projects .px-private-course svg{width:18px;height:18px;flex:none}
-#projects .px-secondary{display:inline-flex;align-items:center;min-height:44px;font:600 13px/1.4 var(--font-body);color:#245e64;text-decoration:underline;text-underline-offset:3px}
-#projects .px-platform-link{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:44px;margin-top:12px;padding-top:12px;border-top:1px solid #dbe1dd;color:#245e64;font:650 13px/1.5 var(--font-body);text-decoration:none}
-#projects .px-platform-link span{font-size:12px;font-weight:400;color:#53616c}
-#projects .px-private-course{display:flex;align-items:center;gap:10px;min-height:52px;margin-top:12px;padding-top:10px;border-top:1px solid #dbe1dd;color:#245e64;font:650 14px/1.4 var(--font-body);text-decoration:none}
+#projects .px-secondary{display:inline-flex;align-items:center;min-height:44px;font:600 13px/1.4 var(--font-body);color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+#projects .px-platform-link{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:44px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);color:var(--accent);font:650 13px/1.5 var(--font-body);text-decoration:none}
+#projects .px-platform-link span{font-size:12px;font-weight:400;color:var(--ink-light)}
+#projects .px-private-course{display:flex;align-items:center;gap:10px;min-height:52px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);color:var(--accent);font:650 14px/1.4 var(--font-body);text-decoration:none}
 #projects .px-private-course img{width:32px;height:48px;object-fit:contain;flex:none}
-#projects .px-private-course small{display:block;color:#53616c;font-size:12px;font-weight:400}
+#projects .px-private-course small{display:block;color:var(--ink-light);font-size:12px;font-weight:400}
 #projects .px-private-course svg{margin-left:auto}
 #projects .px-platform-link:hover,#projects .px-private-course:hover{text-decoration:underline}
 #projects .px-maintenance{background:#eaf1ed;padding:20px;display:grid;place-items:center}
 #projects .px-mini-window{width:100%;max-width:390px;padding:14px 16px;border:1px solid #ccd9d1;border-radius:10px;background:#fff;font-family:var(--font-body)}
 #projects .px-mini-title{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.4}
 #projects .px-mini-mark{display:grid;place-items:center;width:24px;height:28px;flex:none;background:#245e64;color:#fff;border-radius:4px}
-#projects .px-mini-label{margin-left:auto;font-size:10px;color:#53616c}
+#projects .px-mini-label{margin-left:auto;font-size:10px;color:var(--ink-light)}
 #projects .px-mini-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
 #projects .px-mini-metrics strong{display:block;font-size:22px;line-height:1.1}
 #projects .px-mini-metrics span{font-size:12px;line-height:1.3}
-#projects .px-mini-task{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #dbe1dd;padding-top:8px}
+#projects .px-mini-task{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--border);padding-top:8px}
 #projects .px-mini-task b,#projects .px-mini-task small{display:block;font-size:12px;line-height:1.4}
-#projects .px-mini-task small{color:#53616c}
+#projects .px-mini-task small{color:var(--ink-light)}
 #projects .px-mini-task button{flex:none;min-height:44px;padding:8px;border-radius:6px;background:#245e64;color:#fff;font-size:12px}
-#projects .px-preview-note{font-size:11px;line-height:1.4;color:#53616c;margin:6px 0 0}
+#projects .px-preview-note{font-size:11px;line-height:1.4;color:var(--ink-light);margin:6px 0 0}
 #projects .px-course{padding:20px 24px 34px;background:#e9f2ec}
 #projects .px-lesson-tag{font:700 11px/1.4 var(--font-body);letter-spacing:.06em}
 #projects .px-course svg{display:block;width:100%;height:132px;margin-top:4px}
@@ -91,11 +91,11 @@
 #projects .px-calculation b{font-size:12px;font-weight:600}
 #projects .px-calculation i{font:400 14px/1.4 Georgia,serif}
 #projects .px-calculation strong{font-size:19px}
-#projects .px-connections{display:flex;justify-content:space-between;align-items:center;gap:24px;border-top:1px solid #dbe1dd;margin-top:28px;padding-top:24px;text-align:left}
+#projects .px-connections{display:flex;justify-content:space-between;align-items:center;gap:24px;border-top:1px solid var(--border);margin-top:28px;padding-top:24px;text-align:left}
 #projects .px-connections h3{font:700 16px/1.4 var(--font-body);margin:0 0 4px}
-#projects .px-connections p{font:400 14px/1.6 var(--font-body);color:#53616c;margin:0}
+#projects .px-connections p{font:400 14px/1.6 var(--font-body);color:var(--ink-light);margin:0}
 #projects .px-channel-links{display:flex;flex-wrap:wrap;gap:8px 20px}
-#projects .px-channel-links a{display:inline-flex;align-items:center;min-height:44px;gap:8px;font:600 14px/1.4 var(--font-body);color:#245e64}
+#projects .px-channel-links a{display:inline-flex;align-items:center;min-height:44px;gap:8px;font:600 14px/1.4 var(--font-body);color:var(--accent)}
 #projects .px-channel-links a:hover{text-decoration:underline}
 #projects .px-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 #projects .px-fallback ul{padding-left:20px}
@@ -106,3 +106,7 @@
 /* Compact labels stay whole at 320 px; artwork captions do not collide with lighting controls. */
 #projects .px-maintenance{height:auto;min-height:224px}
 @media(max-width:420px){#projects .px-filters button{padding-inline:6px;font-size:12px;overflow-wrap:normal;word-break:normal}#projects .px-world .px-scene-title{display:none}}
+
+/* Product illustrations retain their own light palettes in either appearance. */
+#projects .px-mini-window{color:#202b36}
+#projects .px-mini-window :is(.px-mini-label,.px-mini-task small,.px-preview-note){color:#53616c}

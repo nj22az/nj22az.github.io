@@ -1,23 +1,25 @@
+body.office-home{--ink:#202b36;--ink-light:#53616c;--ink-faint:#53616c;--surface:#f8f7f2;--surface-raised:#f0f2ed;--surface-card:#fffef9;--surface-hover:#e8eeea;--surface-mint:#eef2eb;--border:#dbe1dd;--border-hover:#a7bbb5;--accent:#245e64;--accent-hover:#194b50;--divider:#dbe1dd;--font-display:"Nunito",system-ui,-apple-system,sans-serif;--font-body:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--max-w:1200px;color:var(--ink);background:var(--surface);letter-spacing:normal;word-break:normal;overflow-wrap:break-word}
+
 /* Homepage opening: a quiet, consistent frame across the selectable themes. */
-body.office-home .site-nav{height:60px;background:#f8f7f2f5;border-bottom:1px solid #202b3620;box-shadow:none;color:#202b36}
+body.office-home .site-nav{height:60px;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:none;color:var(--ink)}
 body.office-home .nav-inner{max-width:1248px;padding-inline:24px;gap:16px;min-width:0}
-body.office-home .nav-brand{color:#202b36;min-width:0}
+body.office-home .nav-brand{color:var(--ink);min-width:0}
 body.office-home .nav-brand svg{display:block;max-width:100%;height:auto}
-body.office-home .nav-hamburger{width:44px;height:44px;background:#ffe032;color:#202b36;border:1px solid #202b3630;box-shadow:none;transform:none}
+body.office-home .nav-hamburger{width:44px;height:44px;background:#ffe032;color:#202b36;border:1px solid var(--border);box-shadow:none;transform:none}
 body.office-home .menu-overlay{top:68px}
-body.office-home .office-hero{padding:84px 24px 24px;min-height:0;background:#f8f7f2;color:#202b36;text-align:left;overflow:visible}
-.office-home .office-opening{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:center;gap:32px;max-width:1200px;margin:0 auto;padding:28px;border:1px solid #202b361c;border-radius:28px;background:#fffef9}
+body.office-home .office-hero{padding:84px 24px 24px;min-height:0;background:var(--surface);color:var(--ink);text-align:left;overflow:visible}
+.office-home .office-opening{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);align-items:center;gap:32px;max-width:1200px;margin:0 auto;padding:28px;border:1px solid var(--border);border-radius:28px;background:var(--surface-card)}
 .office-home .office-introduction{min-width:0;padding:8px 0 8px 8px}
-.office-home .office-eyebrow{margin:0 0 18px;font:700 11px/1.6 var(--font-body,system-ui,sans-serif);letter-spacing:.1em;text-transform:uppercase;color:#53616c}
+.office-home .office-eyebrow{margin:0 0 18px;font:700 11px/1.6 var(--font-body,system-ui,sans-serif);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light)}
 .office-home .office-eyebrow::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;background:#ffe032;border:1px solid #8c7814;border-radius:50%}
-.office-home .office-heading{margin:0 0 18px;padding:0;font:800 clamp(28px,3.35vw,46px)/1.09 var(--font-display,system-ui,sans-serif);letter-spacing:-.035em;color:#202b36;overflow-wrap:normal;text-wrap:balance}
-.office-home .office-summary{max-width:32ch;margin:0 0 24px;font:400 16px/1.6 var(--font-body,system-ui,sans-serif);color:#53616c}
+.office-home .office-heading{margin:0 0 18px;padding:0;font:800 clamp(28px,3.35vw,46px)/1.09 var(--font-display,system-ui,sans-serif);letter-spacing:-.035em;color:var(--ink);overflow-wrap:normal;text-wrap:balance}
+.office-home .office-summary{max-width:32ch;margin:0 0 24px;font:400 16px/1.6 var(--font-body,system-ui,sans-serif);color:var(--ink-light)}
 .office-home .office-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
 .office-home .office-explore,.office-home .office-about{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;font:700 14px/1.3 var(--font-body,system-ui,sans-serif);text-decoration:none}
-.office-home .office-explore{padding:12px 18px;border:1px solid #202b3626;border-radius:999px;background:#ffe032;color:#202b36}
+.office-home .office-explore{padding:12px 18px;border:1px solid var(--border);border-radius:999px;background:#ffe032;color:#202b36}
 .office-home .office-explore:hover{background:#f5d51c}
 .office-home .office-explore svg{width:18px;height:18px;flex:none}
-.office-home .office-about{color:#33434f;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#33434f55}
+.office-home .office-about{color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--border-hover)}
 .office-home .office-about:hover{text-decoration-color:currentColor}
 .office-home .office-actions a:focus-visible{outline:3px solid #0067c7;outline-offset:4px}
 .office-home .office-opening>.office-port{width:100%;max-width:none;margin:0;padding:0;animation:none;align-self:center}
@@ -43,23 +45,62 @@ body.office-home .office-hero{padding:84px 24px 24px;min-height:0;background:#f8
 
 
 /* One recognisable office identity; project applications retain their own designs. */
-body.office-home{--ink:#202b36;--ink-light:#53616c;--ink-faint:#53616c;--surface:#f8f7f2;--surface-raised:#f0f2ed;--surface-card:#fffef9;--surface-hover:#e8eeea;--surface-mint:#eef2eb;--border:#dbe1dd;--border-hover:#a7bbb5;--accent:#245e64;--accent-hover:#194b50;--divider:#dbe1dd;--font-display:"Nunito",system-ui,-apple-system,sans-serif;--font-body:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--max-w:1200px;color:var(--ink);background:var(--surface);letter-spacing:normal;word-break:normal;overflow-wrap:break-word}
 body.office-home .office-eyebrow::before{display:none}
-body.office-home .section-subtitle{color:#245e64;font:700 11px/1.5 var(--font-body);letter-spacing:.08em}
-body.office-home .section-divider{max-width:1152px;margin:0 auto;border:0;border-top:1px solid #dbe1dd}
-body.office-home .section-alt{background:#fffef9}
+body.office-home .section-subtitle{color:var(--accent);font:700 11px/1.5 var(--font-body);letter-spacing:.08em}
+body.office-home .section-divider{max-width:1152px;margin:0 auto;border:0;border-top:1px solid var(--border)}
+body.office-home .section-alt{background:var(--surface-card)}
 body.office-home .section-header{text-align:left;max-width:760px;margin:0 0 24px}
-body.office-home .section-header h2,body.office-home .about-content h2{font:800 clamp(28px,3vw,38px)/1.2 var(--font-display);letter-spacing:-.02em;color:#202b36}
-body.office-home .section-header p{font:400 16px/1.65 var(--font-body);color:#53616c;margin-top:8px}
+body.office-home .section-header h2,body.office-home .about-content h2{font:800 clamp(28px,3vw,38px)/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink)}
+body.office-home .section-header p{font:400 16px/1.65 var(--font-body);color:var(--ink-light);margin-top:8px}
 body.office-home .section-decor,body.office-home .about-blobs{display:none}
 body.office-home #blog,body.office-home #about,body.office-home #locations{padding-block:48px}
 body.office-home .blog-feed-item{padding-block:22px}
 body.office-home .blog-feed-item>p{max-width:68ch}
 body.office-home .blog-feed-item :is(h2,h3){font:750 clamp(22px,2.2vw,28px)/1.3 var(--font-display);max-width:46ch}
-body.office-home .blog-feed-links a{color:#245e64}
+body.office-home .blog-feed-links a{color:var(--accent)}
 body.office-home .blog-feed-meta{font-size:13px}
 body.office-home .office-heading{text-wrap:balance}
 body.office-home .about-bio{max-width:65ch;font-size:17px;line-height:1.7}
 body.office-home .locations-grid{gap:24px}
 @media(max-width:760px){body.office-home #blog,body.office-home #about,body.office-home #locations{padding-block:36px}}
-body.office-home .site-nav{background:#f8f7f2}
+body.office-home .site-nav{background:var(--surface)}
+
+/* Appearance belongs to the Office, leaving each application’s theme intact. */
+html[data-office-mode=light]{color-scheme:light;background:#f8f7f2}
+html[data-office-mode=dark]{color-scheme:dark;background:#141d24}
+html[data-office-mode=dark] body.office-home{--ink:#edf2ef;--ink-light:#b9c8cc;--ink-faint:#b9c8cc;--surface:#141d24;--surface-raised:#1c2932;--surface-card:#202e37;--surface-hover:#293e48;--surface-mint:#18272e;--border:#3d525b;--border-hover:#72978f;--accent:#99d5c9;--accent-hover:#b9e9de;--accent-glow:#29443f;--divider:#3d525b}
+body.office-home .office-appearance-toggle{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:10px;border:1px solid var(--border);border-radius:50%;background:var(--surface-card);color:var(--ink);cursor:pointer}
+body.office-home .office-appearance-toggle svg{width:22px;height:22px}
+body.office-home .office-appearance-toggle:hover{background:var(--surface-hover)}
+body.office-home .office-appearance-toggle:focus-visible{outline:3px solid #559fe5;outline-offset:3px}
+/* Calendar CSS loads later; the page root provides sufficient specificity. */
+html[data-office-mode] body.office-home .office-quick-links a{color:var(--ink)}
+html[data-office-mode] body.office-home .office-quick-links a:hover{background:var(--surface-hover)}
+html[data-office-mode] body.office-home .office-calendar{color:var(--ink)}
+html[data-office-mode] body.office-home :is(.office-calendar-toggle,.office-calendar-panel){background:var(--surface-card);border-color:var(--border)}
+html[data-office-mode] body.office-home .office-calendar-toggle time{color:var(--ink-light);border-color:var(--border)}
+html[data-office-mode=dark] body.office-home :is(.menu-overlay,.location-card,.site-footer){background:var(--surface-card);border-color:var(--border)}
+html[data-office-mode=dark] body.office-home :is(.menu-overlay-body,.menu-row,.section-mint){background:var(--surface-raised);color:var(--ink)}
+html[data-office-mode=dark] body.office-home :is(.menu-row:hover,.btn-secondary:hover){background:var(--surface-hover);color:var(--ink)}
+html[data-office-mode=dark] body.office-home :is(.about-logo,.location-name,.btn-secondary){color:var(--ink)}
+html[data-office-mode=dark] body.office-home :is(.office-calendar-heading h2,.office-calendar-panel button,.office-calendar-location select){color:var(--ink)}
+html[data-office-mode=dark] body.office-home :is(.office-calendar-location select,.office-calendar-heading button,.office-calendar-footer button){background:var(--surface-raised);border-color:var(--border)}
+html[data-office-mode=dark] body.office-home :is(.office-calendar-kicker,.office-calendar-panel th,.office-calendar-key,.office-calendar-footer,.office-calendar-note,.office-calendar-holiday-status){color:var(--ink-light)}
+html[data-office-mode=dark] body.office-home .office-calendar-detail{background:var(--surface-raised);border-color:var(--border);color:var(--ink)}
+html[data-office-mode=dark] body.office-home .office-calendar-detail small{color:var(--ink-light)}
+html[data-office-mode=dark] body.office-home .office-calendar-panel td button{background:var(--surface-raised);color:var(--ink-light)}
+html[data-office-mode=dark] body.office-home .office-calendar-panel td .available{background:#29463b;color:#d3efdc}
+html[data-office-mode=dark] body.office-home .office-calendar-panel td .holiday{background:#52372c;color:#ffe2c8}
+html[data-office-mode=dark] body.office-home .office-calendar-panel td .today{background:#ffe032;color:#17212a;opacity:1;font-weight:900}
+html[data-office-mode=dark] body.office-home :is(a,button,summary,select):focus-visible{outline-color:#86c2ff}
+html[data-office-mode=dark] #projects :is(.px-filters button[aria-pressed=true],.px-open,.px-mini-task button,.px-mini-mark,.px-day-switch button[aria-pressed=true]){background:#245e64;color:#fff;border-color:#72978f}
+html[data-office-mode=dark] #projects .px-day-switch button:not([aria-pressed=true]){color:var(--ink)}
+/* These are product illustrations, not application-wide appearance changes. */
+html[data-office-mode=dark] #projects :is(.px-maintenance,.px-course){background:#223a35;color:#c1e4d6}
+html[data-office-mode=dark] #projects .px-preview-note{color:var(--ink-light)}
+html[data-office-mode=dark] #projects .px-book{background:#3c302c;color:#ecd5c5}
+html[data-office-mode=dark] #projects .px-stepwise{background:#302e44;color:#e2dafa}
+html[data-office-mode=dark] #projects .px-calculation>span{background:#ffffff0d}
+/* Let the brand yield space to three 44 px controls on the smallest phones. */
+@media(max-width:360px){html[data-office-mode] body.office-home .nav-inner{column-gap:8px}html[data-office-mode] body.office-home .nav-actions{gap:4px}}
+html[data-office-mode=dark] #projects .px-course svg circle{fill:#223a35}

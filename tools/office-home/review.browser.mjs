@@ -12,10 +12,32 @@ async function pageFor(context,url){const page=await context.newPage();await pag
 try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await pageFor(context,old.url);await page.goto(old.url);await page.locator('.px-card').first().waitFor();const beforeHeight=await page.locator('#project-grid').evaluate(el=>el.getBoundingClientRect().height);await context.close();
  for(const [profile,width,height,zoom] of [['desktop',1440,1000,1],['ipad-portrait',768,1024,1],['ipad-landscape',1024,768,1],['phone',390,844,1],['small-phone',320,844,1],['desktop-200pct',720,500,2]]){
-  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:zoom,reducedMotion:'reduce',hasTouch:profile!=='desktop'&&zoom===1}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:zoom,reducedMotion:'reduce',colorScheme:'light',hasTouch:profile!=='desktop'&&zoom===1}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
   await page.goto(current.url);await page.locator('.px-card').first().waitFor();
   assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity');
   await page.evaluate(()=>localStorage.setItem('nj-theme','popwave'));await page.reload();await page.locator('.px-card').first().waitFor();assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity','Homepage remains stable despite a saved alternate theme');assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave','Homepage preserves other-page preference');
+  const appearance=page.locator('.office-appearance-toggle');
+  assert.equal(await page.locator('html').getAttribute('data-office-mode'),'light');
+  await appearance.focus();await page.keyboard.press('Enter');
+  assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark');
+  assert.equal(await appearance.getAttribute('aria-pressed'),'true');
+  await page.reload();await page.locator('.px-card').first().waitFor();
+  assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark','Explicit mode persists');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#141d24');
+  await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-home.png')});
+  await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-projects.png')});
+  const darkLayout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,background:getComputedStyle(document.body).backgroundColor,button:document.querySelector('.office-appearance-toggle').getBoundingClientRect().width}));
+  assert.equal(darkLayout.background,'rgb(20, 29, 36)');assert(!darkLayout.overflow);assert(darkLayout.button>=44);
+  const header=await page.locator('.nav-actions').evaluate(e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}));assert(header.left>=0&&header.right<=width,'Header controls fit');
+  await page.locator('.office-calendar-toggle').click();assert(await page.locator('.office-calendar-panel').isVisible());await page.locator('.office-calendar-toggle').click();
+  await page.locator('#nav-hamburger').click();assert.equal(await page.locator('#menu-overlay').getAttribute('aria-hidden'),'false');await page.keyboard.press('Escape');
+  await page.locator('[data-project-filter="create"]').click();assert.equal(await page.locator('.px-card:visible').count(),3);await page.locator('[data-project-filter="all"]').click();
+  await appearance.click();assert.equal(await page.locator('html').getAttribute('data-office-mode'),'light');
+  await page.emulateMedia({colorScheme:'dark'});assert.equal(await page.locator('html').getAttribute('data-office-mode'),'light','Explicit choice overrides system');
+  await page.evaluate(()=>localStorage.removeItem('nj-office-appearance'));await page.reload();await page.locator('.px-card').first().waitFor();
+  assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark','System dark on first visit');
+  await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.officeMode==='light');
   assert.equal(await page.locator('.px-card').count(),6);assert(!requests.some(u=>/harbour.scene.gz|three.module|\/johansson-town\/runtime\//.test(u)),'Apps and 3D remain deferred');
   // 200% desktop zoom equivalent: half the CSS viewport, double device pixel density.
   // Unlike CSS zoom, this also exercises the responsive media queries used by browser zoom.
