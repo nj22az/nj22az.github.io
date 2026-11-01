@@ -25,7 +25,7 @@ try{
   assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark','Explicit mode persists');
   await appearance.waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave');
-  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#141d24');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#000000');
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-home.png')});
   await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-projects.png')});
   const contrasts=await page.evaluate(()=>{
@@ -33,7 +33,7 @@ try{
     return [['.px-summary','.px-card'],['.px-mini-window .px-preview-note','.px-mini-window'],['.nav-hamburger','.nav-hamburger']].map(([fg,bg])=>{const a=lum(getComputedStyle(document.querySelector(fg)).color),b=lum(getComputedStyle(document.querySelector(bg)).backgroundColor);return {selector:fg,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};});
   });assert(contrasts.every(x=>x.ratio>=4.5),JSON.stringify(contrasts));
   const darkLayout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,background:getComputedStyle(document.body).backgroundColor,button:document.querySelector('.office-appearance-toggle').getBoundingClientRect().width}));
-  assert.equal(darkLayout.background,'rgb(20, 29, 36)');assert(!darkLayout.overflow);assert(darkLayout.button>=44);
+  assert.equal(darkLayout.background,'rgb(0, 0, 0)');assert(!darkLayout.overflow);assert(darkLayout.button>=44);
   const header=await page.locator('.nav-actions').evaluate(e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}));assert(header.left>=0&&header.right<=width,'Header controls fit');
   await page.locator('.office-calendar-toggle').click();assert(await page.locator('.office-calendar-panel').isVisible());await page.locator('.office-calendar-toggle').click();
   await page.locator('#nav-hamburger').click();assert.equal(await page.locator('#menu-overlay').getAttribute('aria-hidden'),'false');await page.keyboard.press('Escape');
