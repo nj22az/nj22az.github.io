@@ -42,7 +42,7 @@ try{
   await page.emulateMedia({colorScheme:'dark'});assert.equal(await page.locator('html').getAttribute('data-office-mode'),'light','Explicit choice overrides system');
   await page.evaluate(()=>localStorage.removeItem('nj-office-appearance'));await page.reload();await page.locator('.px-card').first().waitFor();
   assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark','System dark on first visit');
-  await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.officeMode==='light');
+  await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.officeMode==='light'&&getComputedStyle(document.querySelector('.office-heading')).color===getComputedStyle(document.querySelector('#project-heading')).color);
   assert.equal(await page.locator('.px-card').count(),6);assert(!requests.some(u=>/harbour.scene.gz|three.module|\/johansson-town\/runtime\//.test(u)),'Apps and 3D remain deferred');
   // 200% desktop zoom equivalent: half the CSS viewport, double device pixel density.
   // Unlike CSS zoom, this also exercises the responsive media queries used by browser zoom.
