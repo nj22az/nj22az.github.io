@@ -20,6 +20,7 @@
   /* ── Theme ── */
 
   var THEME_KEY = "nj-theme";
+  var lockedTheme = document.documentElement.getAttribute("data-theme-lock");
   var DESIGN_VER = "nj-design-v3";
   var THEMES = [
     {
@@ -101,12 +102,17 @@
     }
   ];
 
+  if (!THEMES.some(function (theme) { return theme.id === lockedTheme; })) lockedTheme = null;
+
   // One-time migration marker retained for earlier collections.
-  if (!localStorage.getItem(DESIGN_VER)) {
-    localStorage.setItem(DESIGN_VER, "1");
-  }
+  try {
+    if (!localStorage.getItem(DESIGN_VER)) {
+      localStorage.setItem(DESIGN_VER, "1");
+    }
+  } catch (error) { /* Navigation must remain available when storage is blocked. */ }
 
   function getTheme() {
+    if (THEMES.some(function (theme) { return theme.id === lockedTheme; })) return lockedTheme;
     if (window.NJThemeVisit) return window.NJThemeVisit.get();
 
     var storedTheme = localStorage.getItem(THEME_KEY);
@@ -115,9 +121,12 @@
   }
 
   function applyTheme(theme) {
+    if (THEMES.some(function (item) { return item.id === lockedTheme; })) theme = lockedTheme;
     var selectedTheme = THEMES.find(function (item) { return item.id === theme; }) || THEMES[0];
     document.documentElement.setAttribute("data-theme", selectedTheme.id);
-    if (window.NJThemeVisit) {
+    if (lockedTheme) {
+      // A section's fixed design must not change the visitor's other-page preference.
+    } else if (window.NJThemeVisit) {
       window.NJThemeVisit.remember(selectedTheme.id);
     } else {
       localStorage.setItem(THEME_KEY, selectedTheme.id);
@@ -146,7 +155,7 @@
 
   /* ── Navigation — theme-aware hamburger + overlay ── */
 
-  var navIcons = { home: "home", projects: "notebook", shop: "store", blog: "wordpress", journal: "wordpress", about: "user", locations: "mappin" };
+  var navIcons = { home: "home", projects: "notebook", shop: "store", blog: "wordpress", hotels: "bed", journal: "wordpress", about: "user", locations: "mappin" };
 
   function navLink(item, isHome) {
     var href = item.url || (isHome ? "#" + item.id : "/#" + item.id);
@@ -188,7 +197,7 @@
     overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.filter(function (n) {
-      return !compactOffice || !["home", "projects", "world", "blog", "linux-port", "course"].includes(n.id);
+      return !compactOffice || !["home", "projects", "world", "blog", "hotels", "linux-port", "course"].includes(n.id);
     }).map(function (n) {
       var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";
@@ -236,6 +245,7 @@
       '</div>';
 
     document.body.appendChild(overlay);
+    if (lockedTheme) overlay.querySelector('.menu-theme').hidden = true;
 
     // Backdrop for click-outside-to-close
     var backdrop = document.createElement("div");
@@ -385,4 +395,5 @@
   window.siteIcon = icon;
 
 })();
+
 

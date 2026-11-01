@@ -2,7 +2,7 @@ name: Office homepage design review
 on:
   push:
     branches: [development, main]
-    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
+    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'shared.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
 permissions:
   contents: read
 jobs:
@@ -34,7 +34,7 @@ jobs:
       - name: Prepare exact published source plus homepage-only candidate
         run: |
           mkdir -p /tmp/office-baseline/css /tmp/office-baseline/assets/js
-          for file in index.html css/project-explorer.css css/office-home.css assets/js/project-explorer.js assets/js/office-appearance.js; do
+          for file in index.html css/project-explorer.css css/office-home.css assets/js/project-explorer.js assets/js/office-appearance.js shared.js; do
             if [ -f "published-source/$file" ]; then cp "published-source/$file" "/tmp/office-baseline/$file"; fi
             cp "$file" "published-source/$file"
           done
