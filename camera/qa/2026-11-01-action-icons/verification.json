@@ -1,0 +1,86 @@
+{
+  "baseline": "ab35ac3e9cc7d6dadac8c05178a04da42cef50da",
+  "verified_source": "e67f63bb8d90dc062a6cb7ada0f8094a2864d9f2",
+  "verified_tree": "909d709eb17ca81234d98cc795d216e51a6e6988",
+  "pr": 424,
+  "version": "2026.11.01.4",
+  "cache_key": "20261101icons1",
+  "camera_run": 41315825688,
+  "browser_checks": {
+    "capture_edit": 56,
+    "crop": 33,
+    "enhance": 22,
+    "save_share_layout": 14,
+    "paper": 5,
+    "integration": 9,
+    "sticker_contour": 4,
+    "existing_ui": 82,
+    "action_icons": 32,
+    "shader_audit": 50,
+    "smart": 14,
+    "offline": 13,
+    "retouch": 40,
+    "screen_settings": 5
+  },
+  "browser_total": 379,
+  "unit_suites": 16,
+  "mcp": {
+    "run": 41315825547,
+    "policy": 16,
+    "acceptance": 20
+  },
+  "world_guard": {
+    "run": 41315825603,
+    "job": 124875643277,
+    "passed": 580
+  },
+  "linux": {
+    "run": 41315825642,
+    "known_failures": [
+      "controller spawn [0.3,-72.7] vs [-1.5,-72.7]",
+      "Minato Maru paint/metal counted at post-office-lot"
+    ]
+  },
+  "ui_artifact": {
+    "id": 13086883459,
+    "zip_sha256": "9ffebd5c476786b209cd9cb24dc45cee402f5acf2e6be4c3c813d172974436fd",
+    "crc_verified": true
+  },
+  "viewports": [
+    [
+      402,
+      874
+    ],
+    [
+      874,
+      402
+    ],
+    [
+      744,
+      1133
+    ],
+    [
+      1133,
+      744
+    ]
+  ],
+  "png_captures": 44,
+  "physical_safari": false,
+  "unexercised_chromium_context_restore_branches": 2,
+  "keyline_contrast": {
+    "normal": 18.37,
+    "selected": 12.1,
+    "secondary": 13.34
+  },
+  "runtime_sha256": {
+    "camera/index.html": "e40f600f33322030a049602ceb758a7db9a7eb8649df070a55feef598771a937",
+    "camera/app.js": "748dcc8dd1b4452fbfddf7651b4483a50785ebd2bb31e537ede7cdc327510b5f",
+    "camera/camera-ui.css": "4231857cb1aab7301c3f5b39dcf4cbd254402a8660fab788ea2a6d4e9df728dd",
+    "camera/looks-gl.js": "5d7ddf27260bd5b3d53358af1d35b123a2a6ed9e21b5d0a4d893ace766cb97eb",
+    "camera/offline.json": "6d25d5ccc475ff6f7af201f7654c68e00089c75d182e2e7abc5136dda612e957",
+    "camera/sw.js": "402ad2b224f880d53e54573aa05ded37534d239faca9b734e978d92d641edbdc",
+    "camera/look-settings.js": "17354dd584a12da7f830287a8e3afa85c8138a6a23528b7aa146ef59ee38b912",
+    "camera/look-icons.js": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+    "camera/album.js": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a"
+  }
+}

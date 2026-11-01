@@ -8,7 +8,7 @@ and inspected at full resolution. The vector artwork is original; no Nintendo as
 
 Branch: `codex/pocket-camera-colour-actions`, based on main `ab35ac3e9cc7d6dadac8c05178a04da42cef50da`.
 Main already contains PR #423 / `v2026.11.01.3`. This candidate is **v2026.11.01.4**, cache key `20261101icons1`.
-**Review only; not merged or published.** Exact PR, source and hosted verification will be recorded below.
+**Review only; not merged or published.** PR #424. Final verified runtime and results are recorded below.
 
 ## Control mapping
 
@@ -71,3 +71,30 @@ with its original release import key, avoiding duplicate old/new module addresse
 The separate Linux workflow `41315411398` retains exactly the two previously documented World failures: controller
 spawn `[0.3,-72.7]` versus `[-1.5,-72.7]`, and Minato Maru paint/metal at the post-office lot. No World runtime/test
 change is made by this task. Core, retouch/screens and World guard results follow below.
+
+## Verified review delivery
+
+PR [#424](https://github.com/nj22az/nj22az.github.io/pull/424), verified source
+`e67f63bb8d90dc062a6cb7ada0f8094a2864d9f2`, tree `909d709eb17ca81234d98cc795d216e51a6e6988`.
+All six Camera jobs in **41315825688** passed: **379 reported browser checks**, including **143** core combined,
+**82** existing UI, **32** icons, **50** shader audit, **14** Smart, **13** offline, **40** retouch and **5** screen settings.
+All **16** local Camera unit suites pass. MCP **41315825547** passed **16 policy + 20 actual SDK/Camera acceptance**.
+World guard job **124875643277**, run **41315825603**, passed **580/580**. The long separate World browser jobs
+are independent and are not claimed as completed here. Linux's two known World failures remain unchanged.
+
+The complete runtime is byte-identical to initial source `9f7cb297`; the second candidate changed the focused
+fixture/workflow baseline and handover only. The final evidence commit also changes **documentation/images only**.
+Exact hashes, artifact identity, screenshots and all verification limits are in
+[the reviewed evidence](qa/2026-11-01-action-icons/README.md).
+
+Actual baseline/after screenshots cover 402 × 874, 874 × 402, 744 × 1133 and 1133 × 744 viewports: **44 PNGs**.
+The UI ZIP's SHA256, CRC and paths were verified, then phone Looks, tablet Adjust, settings, disabled Undo,
+viewer and landscape layouts were inspected. Independent visual review found no material defects.
+No clipping/crowding observed; selected outlines and active names remain clear. All 12 symbols were checked
+at 24/32 px, and real disabled/selected states, at least 44 px targets, layout stability and immutable album copies pass.
+The keyline's contrast is **18.37:1** on the normal surface and **12.10:1** on the selected surface.
+
+Physical Safari/native camera/share/Home Screen checks remain open. Two Chromium lost-context restoration branches
+could not be exercised; other recovery/black-photo checks passed. The old missing-photo report remains unresolved.
+No main publication or Pages change was performed. Next: owner reviews PR #424 and the before/after evidence;
+merge/publish only on their instruction, then verify public bytes and a real installed-app update.
