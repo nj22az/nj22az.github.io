@@ -13,7 +13,7 @@
     var dark = (preference || (system.matches ? 'dark' : 'light')) === 'dark';
     root.setAttribute('data-office-mode', dark ? 'dark' : 'light');
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = dark ? '#141d24' : '#f8f7f2';
+    if (meta) meta.content = dark ? '#000000' : '#f8f7f2';
     if (!button) return;
     button.setAttribute('aria-pressed', String(dark));
     button.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');

@@ -35,3 +35,7 @@ Captures are from the accepted candidate with the exact published runtime files.
 - [Public integrity verification](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/public-files.json)
 
 No open implementation blocker. Next acceptance step is an owner review on physical iPad/iPhone Safari.
+
+## Owner correction — true black, 2 November 2026
+
+The owner requested true black. Dark page, header, hero, cards, menu and calendar surfaces now use `#000000`, with neutral borders and a subtle grey hover state. Browser theme colour is also black. Light mode, saved preferences and illustrative artwork remain as before. Cache keys advanced; syntax checks pass; browser suite now asserts `rgb(0, 0, 0)`. Publication verification follows.

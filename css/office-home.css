@@ -67,8 +67,8 @@ body.office-home .site-nav{background:var(--surface)}
 
 /* Appearance belongs to the Office, leaving each application’s theme intact. */
 html[data-office-mode=light]{color-scheme:light;background:#f8f7f2}
-html[data-office-mode=dark]{color-scheme:dark;background:#141d24}
-html[data-office-mode=dark] body.office-home{--ink:#edf2ef;--ink-light:#b9c8cc;--ink-faint:#b9c8cc;--surface:#141d24;--surface-raised:#1c2932;--surface-card:#202e37;--surface-hover:#293e48;--surface-mint:#18272e;--border:#3d525b;--border-hover:#72978f;--accent:#99d5c9;--accent-hover:#b9e9de;--accent-glow:#29443f;--divider:#3d525b}
+html[data-office-mode=dark]{color-scheme:dark;background:#000000}
+html[data-office-mode=dark] body.office-home{--ink:#edf2ef;--ink-light:#b9c8cc;--ink-faint:#b9c8cc;--surface:#000000;--surface-raised:#000000;--surface-card:#000000;--surface-hover:#141414;--surface-mint:#000000;--border:#333333;--border-hover:#72978f;--accent:#99d5c9;--accent-hover:#b9e9de;--accent-glow:#29443f;--divider:#333333}
 body.office-home .office-appearance-toggle{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:10px;border:1px solid var(--border);border-radius:50%;background:var(--surface-card);color:var(--ink);cursor:pointer}
 body.office-home .office-appearance-toggle svg{width:22px;height:22px}
 body.office-home .office-appearance-toggle:hover{background:var(--surface-hover)}
