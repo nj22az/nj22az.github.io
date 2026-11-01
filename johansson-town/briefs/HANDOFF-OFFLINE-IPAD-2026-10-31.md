@@ -36,3 +36,27 @@ Keep the app's website data. Safari can remove data under device storage pressur
 ## Next action
 
 Complete hosted offline and regression checks, inspect screenshots, retain evidence, update this handover with exact commits/results, and obtain publication authority before merging this World change.
+
+## Acceptance continuation — 1 November 2026
+
+The owner asked this thread to proceed with the acceptance work in PR #421, branch
+`codex/town-offline-audit`, from head `4d2f7223`. No publication is included in this continuation.
+
+Reviewed both saved artifacts from run [41235803744](https://github.com/nj22az/nj22az.github.io/actions/runs/41235803744):
+- Chromium artifact `13055991362`: Pause became hidden after the download completed; Done occupied its old target.
+  This is a real-input test race, not evidence that the download itself failed.
+- WebKit artifact `13055532209`: no page errors or failed local requests; at the five-minute deadline it had
+  verified 288/602 files (64,526,241 bytes), and the subsequent screenshot showed 292 files. The download was
+  making progress; offline boot/exploration had not been reached. Artifact source is GitHub's synthetic PR merge.
+
+The browser fixture now holds one real server response until the native Pause interaction is complete.
+It neither mocks the worker nor substitutes asset bytes. Resuming releases the response; all files must still
+pass the original size/SHA-256 proof with networking disabled. Readiness now has a fifteen-minute outer bound,
+a three-minute no-progress failure, and logged byte/timing observations. Workflow budget is 45 minutes for
+download plus the existing cold restarts, save/rotation/input, unvisited rooms and eight ferry views.
+Browser contexts record WebM video alongside the existing screenshots and JSON evidence.
+
+Local policy/inventory and runtime-package tests: **14/14 pass**; browser script syntax passes.
+No gameplay runtime, geometry, graphics, save logic or Linux assertions changed. Hosted reruns and visual review
+remain required; physical iPadOS Safari is still untested. Main has since published Camera retouch via #422;
+this branch must retain that publication when integration is prepared.
