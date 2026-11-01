@@ -105,9 +105,11 @@
   if (!THEMES.some(function (theme) { return theme.id === lockedTheme; })) lockedTheme = null;
 
   // One-time migration marker retained for earlier collections.
-  if (!localStorage.getItem(DESIGN_VER)) {
-    localStorage.setItem(DESIGN_VER, "1");
-  }
+  try {
+    if (!localStorage.getItem(DESIGN_VER)) {
+      localStorage.setItem(DESIGN_VER, "1");
+    }
+  } catch (error) { /* Navigation must remain available when storage is blocked. */ }
 
   function getTheme() {
     if (THEMES.some(function (theme) { return theme.id === lockedTheme; })) return lockedTheme;
@@ -393,4 +395,5 @@
   window.siteIcon = icon;
 
 })();
+
 
