@@ -208,3 +208,33 @@ The existing unsaved-edit/import/capture/share reload protections are retained. 
 removed. Cache/renderer/MCP keys are `20261101ui2`; manifest hashes and worker pin regenerated.
 Validation: HTML footer/header/unique-ID checks, JS syntax, inventory/hash checks and all **7/7 offline-update lifecycle
 checks** pass. Physical iPad layout remains untested. Pages/public confirmation follows deployment.
+
+## Look families and adjustable screens — 1 November 2026 (in review)
+
+Owner requested consolidated shaders with relevant settings, game-system selection and Game Boy Pocket/Light variants.
+Work is on local `codex/pocket-camera-screen-settings`, based on main `d1d7cf3292cc61c6d8c8cec2ce9aa447b3fc3e2a`.
+Handheld, console and Riso variants share one visible tile per family; a labelled Look settings button opens their model,
+system or ink-palette selector. Pocket/Light use distinct camera-only four-shade palettes. Game/VHS layers can add an
+LCD/CRT finish with four bounded controls, without consuming a mix layer. Old TV adjusts its existing tube rather than
+adding another one. Old recipes keep their layer shape and original appearance; settings are per layer and survive
+normalisation/JSON/storage. Same-family variants keep screen controls; switching to a separate Look clears them.
+Preview, selected thumbnails, export and original comparison follow the same recipe pipeline. World source unchanged.
+Release footer `v2026.11.01.3`, runtime/MCP key `20261101screen1`; regenerated offline inventory: 325 assets.
+
+Initial checks: all existing unit suites and 5 new family/settings checks pass; JS syntax and diff whitespace pass.
+Browser rendering, responsive sheet, session persistence and full regressions are pending CI; physical Safari untested.
+The reported missing earlier photos remains **unresolved**: no storage schema/key/record deletion changes made. Owner is
+checking Safari versus Home Screen storage; do not tell them the photos were recovered or advise clearing site data.
+Next: run the real Chromium suites, fix observed failures, publish only a verified change and record exact remote state.
+
+First CI candidate `05d60a546e44fa27ff35fac936d6613cf2713f26`, PR #423, run `41273296456`, caught a missing app
+import for the new settings helpers, which prevented initialisation. Fixed before publication. The footer-only release
+`d1d7cf3` is verified live: index, UI stylesheet, app, manifest and worker match exact released bytes. Shader/browser
+checks are being rerun on the corrected candidate. Console dropdown uses system names; scanlines use a quarter-cycle
+phase so two-pixel rows remain visible rather than sampling cosine at its zero crossings.
+
+Second candidate `d84691942e89a83b282db229b971ca4481fe6791`, run `41273483056`: audit passed; all 40 retouch
+checks and the first two new screen checks passed (actual render/palette/zero bypass/thumbnails/family controls).
+Smart's broad `.shuffle` selector also matched the settings icon: gave settings its own visual class, preserving the
+existing dice contract. New responsive checks now wait for dynamic viewport units to settle after mobile resize;
+the persistence test also reopens the stored photo through Album → Edit after reloading the page.

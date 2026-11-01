@@ -27,7 +27,9 @@ async function pageFor({before=false,width=402,height=700}={}){
 }
 async function choose(page,name){
  const group=await page.locator('#lookGroups button').evaluateAll((bs,name)=>bs.find(b=>b.getAttribute('aria-label').split(': ').slice(1).join(': ').split(', ').includes(name))?.dataset.group,name.label);
- assert.ok(group,name.id);await page.click(`#lookGroups [data-group="${group}"]`);await page.click(`.tile[data-look="${name.id}"]`);if(name.id!=='none')await page.fill('#amount','100');
+ assert.ok(group,name.id);await page.click(`#lookGroups [data-group="${group}"]`);const tile=page.locator(`.tile[data-look="${name.id}"]`);
+ if(await tile.isVisible())await tile.click();
+ else{const family=await page.evaluate(async id=>(await import('/camera/look-settings.js?v=20261101screen1')).familyFor(id).looks,name.id);const visible=page.locator(family.map(id=>`.tile[data-look="${id}"]:visible`).join(',')).first();await visible.click();await page.click('.look-settings-button');await page.selectOption('#lookVariant',name.id);await page.click('#lookSettingsSheet .done');}if(name.id!=='none')await page.fill('#amount','100');
  await page.waitForFunction(id=>window.auditDrawn?.length===1&&window.auditDrawn[0].look===id&&(id==='none'||window.auditDrawn[0].amount===1),name.id);
  await page.locator('#lookGroups').evaluate(el=>Promise.allSettled(el.getAnimations({subtree:true}).map(a=>a.finished)));
 }

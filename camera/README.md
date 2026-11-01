@@ -426,3 +426,20 @@ capture or share is finished. It never clears the album. Existing older releases
 receive this update control; simply reconnecting a suspended old page does not guarantee a UI refresh. Do not remove
 the Home Screen app or clear site data to update. A separately downloaded ZIP/source copy needs its files replaced
 or updated from the repository; it does not receive website releases automatically.
+
+### Look settings — 1 November 2026
+
+The Games strip has one **Handheld** tile and one **Game system** tile. Tap the sliders beside the selected mix layer:
+Handheld offers Game Boy, Game Boy Pocket, Game Boy Light, Game Boy Colour and Red visor; Game system offers the
+8-bit, 16-bit, 32-bit and 64-bit renderers. Riso's five ink palettes now share one tile and an Ink palette selector.
+Existing recipe IDs and rendering defaults remain supported. Pocket and Light are camera-only four-shade LCD palettes.
+
+Games and VHS can have an optional LCD or CRT finish with Scanlines, Glow, Screen curve and Pixel / phosphor grid.
+Old TV adjusts its native CRT pass instead of applying a second tube. Original keeps the existing Look's appearance;
+Reset removes its custom settings. Model/system changes within one family keep the screen controls; choosing a
+separate Look clears them. These controls do not consume a Mix layer. Settings travel with camera preferences and
+saved photo recipes, through previews, thumbnails and exports. World shaders are unchanged.
+
+`look-settings.js` owns family/variant metadata and bounded recipe options. `tests/look-settings.test.mjs` checks
+compatibility and persistence; `tests/screens.browser.mjs` exercises real WebGL and the family controls, a page-reload
+album round trip, camera preferences and narrow/tablet layouts. Chromium emulation does not verify physical Safari.
