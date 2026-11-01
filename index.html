@@ -23,12 +23,13 @@
   <link rel="stylesheet" href="/styles.css?v=linux-port-20261017">
   <link rel="stylesheet" href="/css/project-explorer.css?v=camera-026">
   <link rel="stylesheet" href="/css/office-mascots.css?v=2">
-  <link rel="stylesheet" href="/css/office-port.css?v=video-2">
+  <link rel="stylesheet" href="/css/office-port.css?v=diorama-20261101a">
   <link rel="stylesheet" href="/css/office-home.css?v=calendar-2">
   <link rel="stylesheet" href="/css/office-calendar.css?v=20261024-world">
   <link rel="stylesheet" href="/css/office-private-course.css?v=1">
   <link rel="stylesheet" href="/css/office-camera-psst.css?v=1">
-  <script src="/assets/js/office-port.js?v=wheelhouse-025" defer></script>
+  <script src="/assets/js/office-port.js?v=diorama-20261101a" defer></script>
+  <script src="/assets/js/office-diorama.js?v=20261101a" defer></script>
   <script src="/assets/js/shopify-book-price.js" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
 
@@ -56,6 +57,28 @@
       <figure class="office-port" id="office-port" aria-label="An arrival at Minato port in Johansson World">
         <img src="/assets/office-port/harbour.webp" alt="The quay, boats and harbour buildings at Minato port in Johansson World" width="960" height="540" loading="eager" fetchpriority="high" decoding="async">
         <div class="office-port-stage" id="office-port-stage" data-port-stage></div>
+        <button class="harbour-open" type="button" data-diorama-open aria-expanded="false" aria-controls="harbour-diorama" hidden>Explore harbour</button>
+        <div class="harbour-diorama" id="harbour-diorama" data-diorama hidden>
+          <div class="harbour-canvas" data-diorama-stage></div>
+          <div class="harbour-top"><span>MINATO · 3D</span><button type="button" data-diorama-close>Close</button></div>
+          <div class="harbour-bottom">
+            <p id="harbour-help" role="status" aria-live="polite">Opening Minato harbour…</p>
+            <div class="harbour-tools" role="group" aria-label="Harbour views">
+              <button type="button" data-harbour-view="quay" aria-pressed="true">Quay</button>
+              <button type="button" data-harbour-view="ferry" aria-pressed="false">Ferry</button>
+              <button type="button" data-harbour-view="port" aria-pressed="false">Overview</button>
+              <a href="/world/">Enter World ↗</a>
+            </div>
+            <div class="harbour-navigation" role="group" aria-label="Harbour camera">
+              <button type="button" data-harbour-action="left" aria-label="Look left">←</button>
+              <button type="button" data-harbour-action="right" aria-label="Look right">→</button>
+              <button type="button" data-harbour-action="in" aria-label="Zoom in">+</button>
+              <button type="button" data-harbour-action="out" aria-label="Zoom out">−</button>
+              <button type="button" data-harbour-action="reset">Reset</button>
+              <a href="/camera/">Pocket Camera</a><a href="/elteknik/">Electrical book</a>
+            </div>
+          </div>
+        </div>
         <figcaption><span class="office-port-caption"><span data-resident>Minato port · Johansson World</span></span><span class="office-port-controls"><button type="button" hidden data-port-play aria-controls="office-port-stage" aria-label="Play arrival" title="Play arrival"><svg data-icon="play" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 4 14 8-14 8Z"/></svg><svg data-icon="pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg></button><button type="button" class="office-port-next" data-next-arrival hidden>Another arrival</button></span></figcaption>
       </figure>
       </div>
