@@ -95,3 +95,8 @@ landscape canvas, touch, saved reload and room assertions remain. This is browse
 not a change to physical iPad orientation handling. Full room/ferry acceptance remains open.
 The deterministic worker regression also covers a corrupt complete-cache scan: an older scan may neither
 overwrite resumed readiness nor delete the newly repaired ready marker. All **15/15** local checks pass.
+
+Source review also confirms RUN is intentionally hidden while idle (`control-visibility.js`).
+The fixture now holds the normal W movement input while tapping RUN, releasing it in `finally`;
+it does not force the button visible or bypass its hit target. This verifies a real touch action
+with normal keyboard movement; physical joystick ergonomics remain part of the iPad audit.

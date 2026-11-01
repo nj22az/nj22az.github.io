@@ -87,7 +87,10 @@ try{
  await page.evaluate(async()=>{if(document.fullscreenElement||document.webkitFullscreenElement){const exit=document.exitFullscreen||document.webkitExitFullscreen;if(exit)await exit.call(document);}});
  await page.waitForFunction(()=>!document.fullscreenElement&&!document.webkitFullscreenElement);
  await page.setViewportSize({width:1133,height:744});await page.waitForFunction(()=>document.querySelector('#game').width>document.querySelector('#game').height);await page.screenshot({path:resolve(out,'ipad-offline-town-landscape.png')});
- const run=page.locator('#run'),before=await run.getAttribute('aria-pressed');await run.tap();assert.notEqual(await run.getAttribute('aria-pressed'),before);step('cold offline restart; ordinary URL, rotation and touch control');
+ const run=page.locator('#run'),before=await run.getAttribute('aria-pressed');
+ // RUN is intentionally contextual: walk through normal input before tapping its real touch target.
+ await page.keyboard.down('w');try{await run.tap();}finally{await page.keyboard.up('w');}
+ assert.notEqual(await run.getAttribute('aria-pressed'),before);step('cold offline restart; ordinary URL, rotation and touch control');
  await page.evaluate(()=>dispatchEvent(new Event('johansson-save')));
  const save=await page.evaluate(()=>JSON.parse(localStorage.getItem('johansson-town-1988-v5')));assert.ok(save&&Number.isFinite(save.yen),'The actual game writes a save');
  await settle();await context.close();context=null;await launch(true);
