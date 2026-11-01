@@ -78,7 +78,7 @@ try{
   await page.reload();await page.waitForFunction(()=>!!window.pocketCamera?.engine&&window.pocketCamera.state.shots.length>=2);
   const stored=await page.evaluate(async id=>{const {getShot}=await import('/camera/album.js?v=20261029c');const s=await getShot(id);return {layers:s.recipe.layers,source:s.source?.size,photo:s.photo?.size};},id);
   assert.deepEqual(stored.layers,expected);assert.ok(stored.source>0&&stored.photo>0);
-  await page.click('#welcomeAlbum');await page.click(`#grid [data-id="${id}"]`);await page.click('#editPhoto');
+  await page.locator('#roll:visible, #welcomeAlbum:visible').first().click();await page.click(`#grid [data-id="${id}"]`);await page.click('#editPhoto');
   await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
   assert.deepEqual(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.layers),expected);
   await page.reload();await page.waitForFunction(()=>!!window.pocketCamera?.engine);
