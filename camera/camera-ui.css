@@ -220,4 +220,5 @@
 .screen-control input{grid-column:1/-1;width:100%;min-height:44px;margin:0}
 .screen-control output{font-variant-numeric:tabular-nums;color:var(--label-2)}
 .look-settings-body p{font-size:13px;line-height:1.4;color:var(--label-2)}
-.look-settings-button{margin-left:0;min-width:44px;min-height:44px}
+.look-settings-button{flex:none;display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--fill);color:var(--label)}
+.look-settings-button svg{width:21px;height:21px}

@@ -288,7 +288,7 @@ function renderLayers(){
  });
  const selected=layers[ctx.active];
  if(hasLookSettings(selected.look)){
-  const settings=document.createElement('button');settings.type='button';settings.className='shuffle look-settings-button';settings.innerHTML=icon('settings');
+  const settings=document.createElement('button');settings.type='button';settings.className='look-settings-button';settings.innerHTML=icon('settings');
   settings.setAttribute('aria-label','Look settings');settings.title='Look settings';settings.addEventListener('click',openLookSettings);layersEl.append(settings);
  }
  if(layers.length<MAX_LAYERS){

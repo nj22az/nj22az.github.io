@@ -61,6 +61,8 @@ try{
  await check('settings sheet fits narrow phones and tablets, with accessible controls',async()=>{
   for(const [width,height] of [[320,568],[844,390],[820,1180]]){
    await page.setViewportSize({width,height});
+   // Dynamic viewport units settle on the following layout frame after a mobile resize.
+   await page.waitForFunction(({width,height})=>{const r=document.querySelector('#lookSettingsSheet').getBoundingClientRect();return r.y>=0&&r.bottom<=height+1&&r.right<=width+1;},{width,height},{timeout:3000});
    const r=await page.locator('#lookSettingsSheet').evaluate(el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,overflow:el.scrollWidth-el.clientWidth};});
    assert.ok(r.x>=0&&r.y>=0&&r.right<=width+1&&r.bottom<=height+1&&r.overflow<=1,JSON.stringify(r));
    assert.equal(await page.getByLabel('Scanlines',{exact:true}).getAttribute('type'),'range');
@@ -76,6 +78,10 @@ try{
   await page.reload();await page.waitForFunction(()=>!!window.pocketCamera?.engine&&window.pocketCamera.state.shots.length>=2);
   const stored=await page.evaluate(async id=>{const {getShot}=await import('/camera/album.js?v=20261029c');const s=await getShot(id);return {layers:s.recipe.layers,source:s.source?.size,photo:s.photo?.size};},id);
   assert.deepEqual(stored.layers,expected);assert.ok(stored.source>0&&stored.photo>0);
+  await page.click('#welcomeAlbum');await page.click(`#grid [data-id="${id}"]`);await page.click('#editPhoto');
+  await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
+  assert.deepEqual(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.layers),expected);
+  await page.reload();await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  });
  await check('camera model and finish settings survive a new session, and Reset restores the original',async()=>{
   await page.evaluate(async()=>{window.pocketCamera.chooseLook('pocket');await window.pocketCamera.startCamera();});await page.waitForFunction(()=>window.pocketCamera.state.camera.running);await page.locator('#cameraLookRail button').first().click();await page.click('.look-settings-button');

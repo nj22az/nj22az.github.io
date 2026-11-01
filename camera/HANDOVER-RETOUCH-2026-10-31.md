@@ -232,3 +232,9 @@ import for the new settings helpers, which prevented initialisation. Fixed befor
 `d1d7cf3` is verified live: index, UI stylesheet, app, manifest and worker match exact released bytes. Shader/browser
 checks are being rerun on the corrected candidate. Console dropdown uses system names; scanlines use a quarter-cycle
 phase so two-pixel rows remain visible rather than sampling cosine at its zero crossings.
+
+Second candidate `d84691942e89a83b282db229b971ca4481fe6791`, run `41273483056`: audit passed; all 40 retouch
+checks and the first two new screen checks passed (actual render/palette/zero bypass/thumbnails/family controls).
+Smart's broad `.shuffle` selector also matched the settings icon: gave settings its own visual class, preserving the
+existing dice contract. New responsive checks now wait for dynamic viewport units to settle after mobile resize;
+the persistence test also reopens the stored photo through Album → Edit after reloading the page.
