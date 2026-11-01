@@ -11,13 +11,14 @@ const old=await serve(true),current=await serve(),browser=await chromium.launch(
 async function pageFor(context,url){const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());return page;}
 try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await pageFor(context,old.url);await page.goto(old.url);await page.locator('.px-card').first().waitFor();const beforeHeight=await page.locator('#project-grid').evaluate(el=>el.getBoundingClientRect().height);await context.close();
- for(const [profile,width,height,zoom] of [['desktop',1440,1000,1],['ipad-portrait',768,1024,1],['ipad-landscape',1024,768,1],['phone',390,844,1],['small-phone',320,844,1],['desktop-200pct',1440,1000,2]]){
-  const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce',hasTouch:profile!=='desktop'&&zoom===1}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+ for(const [profile,width,height,zoom] of [['desktop',1440,1000,1],['ipad-portrait',768,1024,1],['ipad-landscape',1024,768,1],['phone',390,844,1],['small-phone',320,844,1],['desktop-200pct',720,500,2]]){
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:zoom,reducedMotion:'reduce',hasTouch:profile!=='desktop'&&zoom===1}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
   await page.goto(current.url);await page.locator('.px-card').first().waitFor();
   assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity');
   await page.evaluate(()=>localStorage.setItem('nj-theme','popwave'));await page.reload();await page.locator('.px-card').first().waitFor();assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity','Homepage remains stable despite a saved alternate theme');assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave','Homepage preserves other-page preference');
   assert.equal(await page.locator('.px-card').count(),6);assert(!requests.some(u=>/harbour.scene.gz|three.module|\/johansson-town\/runtime\//.test(u)),'Apps and 3D remain deferred');
-  if(zoom!==1)await page.evaluate(()=>document.documentElement.style.zoom='2');
+  // 200% desktop zoom equivalent: half the CSS viewport, double device pixel density.
+  // Unlike CSS zoom, this also exercises the responsive media queries used by browser zoom.
   const headings=await page.locator('.office-heading,#project-heading').evaluateAll(els=>els.map(e=>getComputedStyle(e).color));assert.equal(headings[0],headings[1]);
   for(const [filter,count] of [['explore',1],['create',3],['learn',2],['all',6]]){await page.locator('[data-project-filter="'+filter+'"]').click();assert.equal(await page.locator('.px-card:visible').count(),count);assert.equal(await page.locator('[data-project-filter="'+filter+'"]').getAttribute('aria-pressed'),'true');}
   await page.locator('[data-town-light="night"]').click();assert.match(await page.locator('#px-town-view').getAttribute('src'),/night/);await page.locator('[data-town-light="day"]').click();
