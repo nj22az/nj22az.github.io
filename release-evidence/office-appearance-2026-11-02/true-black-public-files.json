@@ -1,0 +1,17 @@
+[
+  {
+    "path": "index.html",
+    "matches": true,
+    "sha256": "acf8952a7d4cd8c51fab41f60be014d1ecd086d4a05ef810157ac0c7a1e7dec0"
+  },
+  {
+    "path": "css/office-home.css",
+    "matches": true,
+    "sha256": "c65f96d8c731fad54049869c08bc1b6ecb00d3b32d78f5bb09ff2040d5479cd4"
+  },
+  {
+    "path": "assets/js/office-appearance.js",
+    "matches": true,
+    "sha256": "cdca839f9b195a7ef27e7109c944e785209e1da49421a736753ff71ef195704e"
+  }
+]
