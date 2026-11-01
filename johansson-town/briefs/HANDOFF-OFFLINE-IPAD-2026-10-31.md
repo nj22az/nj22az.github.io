@@ -100,3 +100,18 @@ Source review also confirms RUN is intentionally hidden while idle (`control-vis
 The fixture now holds the normal W movement input while tapping RUN, releasing it in `finally`;
 it does not force the button visible or bypass its hit target. This verifies a real touch action
 with normal keyboard movement; physical joystick ergonomics remain part of the iPad audit.
+
+## Corrected quiet-HUD acceptance target
+
+Head `5cd365c1` passes hosted guard and the complete WebKit phone flow (`41273442254`).
+Chromium `124750788075` (`41273442307`, artifact `13070144789`) again passes all offline bytes and
+ordinary-URL cold boot, and now passes desktop rotation. It fails tapping RUN. Source and actual
+landscape screenshot show this is the wrong fixture target: `quiet-hud.css:81` deliberately sets
+`#run{display:none!important}`; its preceding comment says pushing the movement stick runs.
+The earlier fixture change based only on control-visibility.js was insufficient.
+
+The fixture now holds normal movement and taps the visible Jump target. A passive capture listener
+asserts a trusted pointerdown with pointerType touch; it never forces visibility or invokes a handler.
+This checks touch delivery alongside normal keyboard movement, not physical joystick ergonomics or jump height.
+Extra failure diagnostics retain the root class, mobile controls and focus. The worker/runtime is unchanged
+from `43642b31`; further ordinary save reload and actual offline room/ferry acceptance are still required.
