@@ -226,3 +226,9 @@ Browser rendering, responsive sheet, session persistence and full regressions ar
 The reported missing earlier photos remains **unresolved**: no storage schema/key/record deletion changes made. Owner is
 checking Safari versus Home Screen storage; do not tell them the photos were recovered or advise clearing site data.
 Next: run the real Chromium suites, fix observed failures, publish only a verified change and record exact remote state.
+
+First CI candidate `05d60a546e44fa27ff35fac936d6613cf2713f26`, PR #423, run `41273296456`, caught a missing app
+import for the new settings helpers, which prevented initialisation. Fixed before publication. The footer-only release
+`d1d7cf3` is verified live: index, UI stylesheet, app, manifest and worker match exact released bytes. Shader/browser
+checks are being rerun on the corrected candidate. Console dropdown uses system names; scanlines use a quarter-cycle
+phase so two-pixel rows remain visible rather than sampling cosine at its zero crossings.

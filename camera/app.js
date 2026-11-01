@@ -4,6 +4,7 @@
  * browser's own storage (album.js) until shared.
  */
 import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101screen1';
+import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookIcon} from './look-icons.js?v=20261031retouch1';

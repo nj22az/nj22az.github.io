@@ -1263,7 +1263,7 @@ const COPY=`#version 300 es
 precision highp float;in vec2 vUv;out vec4 fragColor;uniform sampler2D tDiffuse;
 void main(){fragColor=vec4(texture(tDiffuse,vUv).rgb,1.0);}`;
 
-// Optional stock after all Looks, before frames/lettering/stickers. No texture asset or network request.
+// Optional screen finish immediately after its own layer. No external texture or time animation.
 const DISPLAY=`#version 300 es
 precision highp float;
 uniform sampler2D tDiffuse;
@@ -1283,7 +1283,7 @@ void main(){
   +texture(tDiffuse,uv+vec2(0,stepUV.y)).rgb+texture(tDiffuse,uv-vec2(0,stepUV.y)).rgb)*.25;
  c+=max(vec3(0),halo-.55)*uScreen.y*.5;
  float rows=min(270.0,uResolution.y*.5);
- float scan=.5+.5*cos(uv.y*rows*6.2831853);
+ float scan=.5+.5*cos((uv.y*rows-.25)*6.2831853);
  c*=1.0-uScreen.x*.32*scan;
  // LCD has a square cell grid; CRT has coloured phosphor columns.
  vec2 cell=fract(uv*vec2(rows*uResolution.x/uResolution.y,rows));
@@ -1295,6 +1295,7 @@ void main(){
  fragColor=vec4(mix(original,clamp(c,0.0,1.0),uStrength),1);
 }`;
 
+// Optional stock after all Looks, before frames/lettering/stickers.
 const PAPER=`#version 300 es
 precision highp float;in vec2 vUv;out vec4 fragColor;
 uniform sampler2D tDiffuse;uniform vec2 uResolution;uniform float uStock;

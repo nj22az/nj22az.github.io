@@ -1,7 +1,7 @@
 /** Camera-only Look families. Old recipe IDs remain valid; choices live inside one mix layer. */
 export const FAMILIES=Object.freeze([
  {id:'handheld',label:'Handheld',choice:'Handheld model',looks:['pocket','colourHandheld','redVisor'],variants:[['pocket','Game Boy'],['pocket:pocket','Game Boy Pocket'],['pocket:light','Game Boy Light'],['colourHandheld','Game Boy Colour'],['redVisor','Red visor']]},
- {id:'console',label:'Game system',choice:'Game system',looks:['eightBit','snes','thirtyTwoBit','sixtyFourBit'],variants:[['eightBit','8-bit console'],['snes','16-bit console'],['thirtyTwoBit','32-bit console'],['sixtyFourBit','64-bit console']]},
+ {id:'console',label:'Game system',choice:'Game system',looks:['eightBit','snes','thirtyTwoBit','sixtyFourBit'],variants:[['eightBit','NES / Famicom'],['snes','Super Nintendo'],['thirtyTwoBit','PlayStation'],['sixtyFourBit','Nintendo 64']]},
  {id:'riso',label:'Riso',choice:'Ink palette',looks:['riso','risoPinkBlue','risoRedNavy','risoBlackPink','risoThree'],variants:[['riso','Coral & teal'],['risoPinkBlue','Pink & blue'],['risoRedNavy','Red & navy'],['risoBlackPink','Black & pink'],['risoThree','Three-colour']]},
 ]);
 export const familyFor=look=>FAMILIES.find(f=>f.looks.includes(look));
