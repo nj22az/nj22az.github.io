@@ -1,0 +1,57 @@
+name: Office homepage design review
+on:
+  push:
+    branches: [development, main]
+    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'assets/js/project-explorer.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
+permissions:
+  contents: read
+jobs:
+  homepage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            assets/js
+            css
+            tools/office-home
+      - uses: actions/checkout@v4
+        with:
+          ref: 0f13c23b6700b4d0ab28e1808d801f5d51e4e111
+          path: published-source
+          sparse-checkout: |
+            assets
+            css
+            camera
+            elteknik/files
+            johansson-town/assets/images/title
+            johansson-town/vendor
+            johansson-town/src/render
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Prepare exact published source plus homepage-only candidate
+        run: |
+          mkdir -p /tmp/office-baseline/css /tmp/office-baseline/assets/js
+          for file in index.html css/project-explorer.css css/office-home.css assets/js/project-explorer.js; do
+            cp "published-source/$file" "/tmp/office-baseline/$file"
+            cp "$file" "published-source/$file"
+          done
+          node --check assets/js/project-explorer.js
+      - name: Browser tools
+        run: |
+          npm install --prefix /tmp/office-runtime --no-save --no-package-lock playwright@1.61.0
+          /tmp/office-runtime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Project controls, layouts, preserved theme preference and 200 percent zoom
+        env:
+          OFFICE_TEST_RUNTIME: /tmp/office-runtime
+          OFFICE_SOURCE_ROOT: ${{ github.workspace }}/published-source
+          OFFICE_BASELINE_ROOT: /tmp/office-baseline
+          OFFICE_OUTPUT: ${{ github.workspace }}/release-evidence/office-home-2026-11-01
+        run: node tools/office-home/review.browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: office-home-design-review
+          path: release-evidence/office-home-2026-11-01/
