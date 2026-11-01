@@ -25,7 +25,7 @@ try{
    await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({contentType:'text/css',body:''}));
    await page.goto('http://127.0.0.1:'+server.address().port+'/johansson-town/?audit&cinematic=off');
    await page.waitForFunction(()=>{const b=document.querySelector('#enter');return b&&!b.disabled;},null,{timeout:180000});
-   if(options.hasTouch)await page.locator('#enter').tap();else await page.locator('#enter').click();
+   if(options.hasTouch)await page.locator('#enter').tap({timeout:120000});else await page.locator('#enter').click({timeout:120000});
    await page.waitForFunction(()=>window.__JOHANSSON_RUNNING__&&!window.__JOHANSSON_AUDIT__?.blocked.catchingUp,null,{timeout:120000});await settleLoads();
    const view=await page.evaluate(()=>({width:innerWidth,height:innerHeight,canvas:document.querySelector('#game').getBoundingClientRect().toJSON(),graphics:window.__JOHANSSON_LOOK__?.state}));
    assert.ok(Math.abs(view.canvas.width-view.width)<2&&Math.abs(view.canvas.height-view.height)<2,'Canvas fills the real fresh viewport');

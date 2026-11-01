@@ -1,3 +1,4 @@
+import {createFerryExplorationUI} from '../src/ui/ferry-exploration.js';
 import {runInNewContext} from 'node:vm';
 import {createMotion,createAutoRun} from '../src/input/touch-feel.js';
 import test from 'node:test';
@@ -99,4 +100,21 @@ test('opening and closing machinery inspection between frames clears residual wa
  }
  ctx.inspectFerryMachinery();ctx.inspectFerryMachinery();assert.equal(ctx.ferryExplorer.mode,'walk');
  const remaining=walkMotion.update(0,0,.02);assert.equal(remaining.x,0);assert.equal(remaining.y,0);assert.equal(touchAutoRun.running,false);assert.equal(resets,2);
+});
+
+test('the exploration panel opens once and keeps its mouse target through repeated updates',()=>{
+ const elements=new Map();let root,replacements=0,prevented=0;
+ const element=()=>({value:'',setAttribute(){},addEventListener(){},append(){},querySelector(key){if(!elements.has(key))elements.set(key,element());return elements.get(key);}});
+ const doc={head:element(),body:element(),documentElement:{classList:{toggle(){}}},createElement(tag){const e=element();if(tag==='details'){root=e;e.open=false;}return e;}};
+ const explorer={active:true,mode:'walk',floor:'engine-room',local:new T.Vector3(0,-1,11.1-17.25),heading:0,precision:false,nearby:()=>[]};
+ const ui=createFerryExplorationUI({explorer,doc}),summary=elements.get('summary');let text='';
+ Object.defineProperty(summary,'textContent',{get:()=>text,set:v=>{text=v;replacements++;}});
+ ui.update(0);summary.onclick({preventDefault(){prevented++;}});assert.equal(root.open,true);assert.equal(prevented,1);
+ for(let i=1;i<=20;i++)ui.update(i*160);
+ assert.equal(root.open,true);assert.equal(replacements,1,'An unchanged live label must keep the same DOM target');
+ elements.get('[data-precision]').onclick();assert.equal(explorer.precision,true);ui.update(3400);assert.equal(root.open,true);
+ summary.onclick({preventDefault(){prevented++;}});ui.update(3600);assert.equal(root.open,false);assert.equal(prevented,2);
+ elements.get('[data-guide]').onclick();ui.update(3800);const count=replacements;
+ for(let i=1;i<=5;i++)ui.update(3800+i*160);
+ assert.equal(replacements,count,'Guidance computes and writes one final label, without resetting it each tick');
 });
