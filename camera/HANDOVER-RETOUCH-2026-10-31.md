@@ -238,3 +238,30 @@ checks and the first two new screen checks passed (actual render/palette/zero by
 Smart's broad `.shuffle` selector also matched the settings icon: gave settings its own visual class, preserving the
 existing dice contract. New responsive checks now wait for dynamic viewport units to settle after mobile resize;
 the persistence test also reopens the stored photo through Album → Edit after reloading the page.
+
+## Look settings published and verified — 1 November 2026
+
+**Published to main** through PR #423, squash merge `dedc09d38ad76365febb445954ccdd92dea4d5f7`.
+Verified candidate `cb494abe436fefa8b237f127d3534f71c092038e`; merge tree matches exactly:
+`d684dd1b86bdfe2dd6806c13ea6bec707f466981`. Earlier failing candidates were never published.
+Footer version **v2026.11.01.3**, cache key `20261101screen1`, 325 offline assets.
+Pages deployment `41274730014` succeeded. All seven changed public runtime files (index, app, UI CSS, Look settings,
+renderer, inventory and worker) match the exact released SHA256 bytes. The preceding footer-only release was also
+verified live before this publication.
+
+Final validation on the exact candidate: all six Camera jobs green in `41274028916`; Camera MCP `41274028869` and
+World guard `41274028841` green. New settings units **5/5**, real-WebGL/settings/session browser checks **5/5**;
+retouch **40/40**, UI **82/82**, visual/shader audit **50/50**, Smart **14/14**, offline **13/13**. The complete existing
+capture/edit suite passed, as did crop **33/33**, Enhance **22/22**, save/share/layout **14/14**, paper **5/5**, combined
+integration **9/9** and sticker contours **4/4**. Tablet settings screenshot inspected; narrow phone and landscape sheet
+geometry tested after viewport layout settles. Physical iPhone/iPad Safari remains untested.
+Linux acceptance `41274028820` retains exactly the two documented World failures: ferry controller spawn
+`[0.3,-72.7]` versus `[-1.5,-72.7]`, and Minato Maru paint/metal meshes counted at post-office-lot. No World runtime
+source changed; no unrelated assertion was weakened.
+
+Same-browser save → reload → Album → Edit retains the original image and complete system/screen recipe. Camera
+model/finish preferences also survive a new session and Reset restores defaults. This does **not** establish the cause
+of the owner's missing earlier photos: that issue remains unresolved. Album schema, keys and deletion behaviour were
+not changed. Next: owner checks the installed/Safari context and physical-device appearance; if the same context still
+misses photos, investigate database read/resume failures without clearing data. The settings footer offers Update when
+an independently verified newer offline release is ready. This recording change updates documentation only.
