@@ -65,3 +65,19 @@ Integration follows current main `d328e45c` (including the standalone Camera ver
 Only the handover index conflicted; both Camera publication and this offline review entry are retained.
 The local browser attempt is blocked by missing WebKit system libraries; Chromium's download is unavailable.
 Git HTTPS has no write credential; the connected GitHub API transfers exact local tree objects.
+
+## Verified status-scan race and worker fix — 1 November 2026
+
+Head `14fb4edd` passed the hosted guard **579/579**, run `41271993488`, job `124746487612`.
+Linux `41271993491` repeats exactly the two baseline assertions. Chromium offline job `124746487922`,
+run `41271993565`, exercised Pause but later reported **paused, 601/602 files**, despite Resume.
+Its three-minute stall assertion correctly failed; [artifact 13069288463](https://github.com/nj22az/nj22az.github.io/actions/runs/41271993565/artifacts/13069288463) retains video, JSON and screenshots.
+
+A deterministic regression now reproduces the product race: seed a partial cache, block its first inspection
+hash, finish a resumed download, then release the old inspection. Before the fix, that older inspection
+overwrites `ready` with `paused`. The worker now increments a revision on Start/Pause and discards stale
+inspection state/marker mutations. The regression passes, with all **15/15** local offline/package tests.
+The required runtime build succeeds; its unrelated pruning of retained historic chunks was reverted,
+so previously published JS chunks remain byte-identical. The offline manifest is regenerated for the worker.
+This changes offline state coordination only; gameplay, graphics, saves and Linux fixtures remain untouched.
+Hosted graphical acceptance must still pass on the new head; the previous 579 result is historical.

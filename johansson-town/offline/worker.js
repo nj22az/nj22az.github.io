@@ -3,7 +3,7 @@ globalThis.createTownOffline=function({scope,manifest,storage=caches,fetchFile=f
  const prefix='johansson-town-offline-v1-',name=prefix+manifest.version;
  const url=path=>new URL(path,scope).href,marker=url('__offline_ready__');
  const files=manifest.files.map(file=>({...file,key:url(file.url)}));
- let task=null,inspection=null,paused=false,checked=false,snapshotList=null,controllers=new Set();
+ let revision=0,task=null,inspection=null,paused=false,checked=false,snapshotList=null,controllers=new Set();
  let state={version:manifest.version,stage:'available',done:0,total:files.length,bytes:0,totalBytes:manifest.bytes,error:null};
  const publish=patch=>{state={...state,...patch};notify({...state});return {...state};};
  const hash=async bytes=>Array.from(new Uint8Array(await digest(bytes)),b=>b.toString(16).padStart(2,'0')).join('');
@@ -14,16 +14,19 @@ globalThis.createTownOffline=function({scope,manifest,storage=caches,fetchFile=f
  }
  async function readRecord(cache){try{return await (await cache.match(marker))?.json();}catch{return null;}}
  async function inspect(){
+  // A status request may still be hashing a partial snapshot when Resume starts.
+  const observed=revision,current=()=>observed===revision;
+  const inspected=patch=>current()?publish(patch):({...state});
   const cache=await storage.open(name),record=await readRecord(cache);
   if(record?.version===manifest.version){
    // Check the bytes again after a worker restart. A marker alone never proves completeness.
    let done=0,bytes=0;
-   for(const file of files){if(!await valid(await cache.match(file.key),file)){await cache.delete(marker);snapshotList=null;return publish({stage:'paused',done,bytes});}done++;bytes+=file.bytes;}
-   checked=true;return publish({stage:'ready',done,bytes});
+   for(const file of files){if(!await valid(await cache.match(file.key),file)){if(!current())return {...state};await cache.delete(marker);if(!current())return {...state};snapshotList=null;return inspected({stage:'paused',done,bytes});}done++;bytes+=file.bytes;}
+   if(!current())return {...state};checked=true;return inspected({stage:'ready',done,bytes});
   }
   const keys=new Set((await cache.keys()).map(request=>request.url));let done=0,bytes=0;
   for(const file of files)if(keys.has(file.key)&&await valid(await cache.match(file.key),file)){done++;bytes+=file.bytes;}
-  if(done)return publish({stage:'paused',done,bytes});
+  if(done)return inspected({stage:'paused',done,bytes});
   return {...state};
  }
  function status(){if(task||checked)return Promise.resolve({...state});return inspection||(inspection=inspect().finally(()=>{inspection=null;}));}
@@ -64,10 +67,11 @@ globalThis.createTownOffline=function({scope,manifest,storage=caches,fetchFile=f
  }
  function start(){
   if(task)return task;
+  revision++;
   task=download().catch(error=>publish({stage:'error',error:error?.name==='QuotaExceededError'?'Not enough device storage. Free some space, then retry.':error?.message||'Download interrupted. Reconnect and retry.'})).finally(()=>{task=null;});
   return task;
  }
- function pause(){paused=true;for(const controller of controllers)controller.abort();return {...state};}
+ function pause(){revision++;paused=true;for(const controller of controllers)controller.abort();return {...state};}
  async function readSnapshots(){
   const records=[];
   for(const key of (await storage.keys()).filter(key=>key.startsWith(prefix))){const cache=await storage.open(key),record=await readRecord(cache);if(record?.version&&Array.isArray(record.files))records.push({cache,record});}

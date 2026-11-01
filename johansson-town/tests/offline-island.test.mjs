@@ -19,7 +19,7 @@ function storage(){
 function fixture(options={}){
  const disk=options.disk||storage(),requests=[],updates=[];
  const fetchFile=async(url,init)=>{requests.push({url,credentials:init.credentials});if(options.fetchFile)return options.fetchFile(url,init);const path=new URL(url).pathname.slice('/johansson-town/'.length);return new Response(contents[path]||'missing',{status:contents[path]?200:404});};
- const worker=globalThis.createTownOffline({scope,manifest:options.manifest||manifest(),storage:disk,fetchFile,digest:bytes=>webcrypto.subtle.digest('SHA-256',bytes),notify:s=>{updates.push(s);options.notify?.(s);}});
+ const worker=globalThis.createTownOffline({scope,manifest:options.manifest||manifest(),storage:disk,fetchFile,digest:options.digest||(bytes=>webcrypto.subtle.digest('SHA-256',bytes)),notify:s=>{updates.push(s);options.notify?.(s);}});
  return {worker,disk,requests,updates};
 }
 const navigation=path=>({url:new URL(path,scope).href,method:'GET',mode:'navigate',headers:new Headers()});
@@ -91,4 +91,17 @@ test('generated inventory matches every published byte and excludes authoring so
  const walk=async path=>{for(const entry of await readdir(new URL(path,root),{withFileTypes:true})){const p=path+'/'+entry.name;if(entry.name==='source'||/\.blend\d?$|\.py$/.test(entry.name))continue;if(entry.isDirectory())await walk(p);else assert.ok(m.files.some(f=>f.url===p),'All playable island assets included: '+p);}};await walk('assets');
  const runtime=JSON.parse(await readFile(new URL('runtime/.vite/manifest.json',root),'utf8'));for(const entry of Object.values(runtime))assert.ok(m.files.some(f=>f.url==='runtime/'+entry.file),'Lazy runtime included: '+entry.file);
  const html=await readFile(new URL('index.html',root),'utf8');for(const [,path] of html.matchAll(/(?:src|href)="\.\/([^"?]+\.(?:js|css))(?:\?[^"]*)?"/g))assert.ok(m.files.some(f=>f.url===path),'Page dependency: '+path);
+});
+
+test('a slow partial-cache status scan cannot overwrite a resumed download readiness',async()=>{
+ const disk=storage(),cache=await disk.open('johansson-town-offline-v1-one');
+ await cache.put(scope+'index.html',new Response(contents['index.html']));
+ let release,entered,calls=0;const blocked=new Promise(r=>{release=r;}),started=new Promise(r=>{entered=r;});
+ const f=fixture({disk,digest:async bytes=>{if(++calls===1){entered();await blocked;}return webcrypto.subtle.digest('SHA-256',bytes);}});
+ const inspecting=f.worker.status();await started;
+ await f.worker.start();assert.equal(f.worker.snapshot().stage,'ready');
+ release();await inspecting;
+ assert.equal(f.worker.snapshot().stage,'ready','The older inspection must not restore paused progress');
+ assert.equal((await f.worker.status()).done,4);
+ assert.equal(await (await f.worker.fallback(navigation('./'))).text(),contents['index.html']);
 });
