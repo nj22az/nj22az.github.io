@@ -3,7 +3,7 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101ui2';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101screen1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookIcon} from './look-icons.js?v=20261031retouch1';
@@ -285,6 +285,11 @@ function renderLayers(){
   remove.addEventListener('click',()=>removeLayer(i));
   wrap.append(pick,remove);mix.append(wrap);
  });
+ const selected=layers[ctx.active];
+ if(hasLookSettings(selected.look)){
+  const settings=document.createElement('button');settings.type='button';settings.className='shuffle look-settings-button';settings.innerHTML=icon('settings');
+  settings.setAttribute('aria-label','Look settings');settings.title='Look settings';settings.addEventListener('click',openLookSettings);layersEl.append(settings);
+ }
  if(layers.length<MAX_LAYERS){
   const add=document.createElement('button');add.type='button';add.className='add-layer';add.innerHTML=`${icon('plus')}<span>Mix</span>`;
   add.setAttribute('aria-label','Mix in another Look over this one');add.addEventListener('click',addLayer);layersEl.append(add);
@@ -311,7 +316,8 @@ function renderLayers(){
 function renderStripSelection({scroll=true}={}){
  const ctx=current(),look=ctx.recipe.layers[ctx.active].look,group=LOOK_GROUPS.find(g=>g.id===shownGroup)||groupOf(look);
  for(const b of $('lookGroups').children){const on=b.dataset.group===group.id;b.setAttribute('aria-selected',String(on));b.classList.toggle('has-look',groupOf(look).id===b.dataset.group);}
- for(const [name,t] of tiles){const on=name===look;t.button.setAttribute('aria-checked',String(on));t.button.tabIndex=on||(!group.looks.includes(look)&&name===group.looks[0])?0:-1;t.button.hidden=!group.looks.includes(name);}
+ for(const [name,t] of tiles){const on=name===look;t.button.setAttribute('aria-checked',String(on));t.button.tabIndex=on||(!group.looks.includes(look)&&name===group.looks[0])?0:-1;t.button.hidden=!group.looks.includes(name)||!familyTileVisible(name,look);
+  const family=familyFor(name);if(family){t.button.querySelector('.name').textContent=family.label;t.button.setAttribute('aria-label',`${family.label}: ${LOOKS[name].label}`);}}
  if(group.id!==strip.dataset.group){strip.dataset.group=group.id;strip.scrollLeft=0;}
  if(scroll){const t=tiles.get(look)?.button;if(t)scrollTileIntoView(t);}
 }
@@ -348,7 +354,7 @@ function trayChanged({thumbs=false,announce=false,scroll=true}={}){
 function chooseLook(name,{announce=true}={}){
  const ctx=current(),layer=ctx.recipe.layers[ctx.active];
  if(layer.look===name){toggleAmount();return;}
- layer.look=name;layer.amount=1;
+ layer.look=name;layer.amount=1;delete layer.handheld;delete layer.screen;
  trayChanged({announce});
  // The Looks after this layer are drawn over it, so their thumbnails do not change; the ones before do not either.
 }
@@ -608,6 +614,55 @@ function openSheet(sheet){
  if(state.mode==='camera'){showAmountRow(false);showLooks(false);}
  sheet.showModal();
 }
+// A sheet edits the chosen layer in place. Ignore late events if its photo/layer has changed.
+let lookSettingsTarget=null;
+const SCREEN_CONTROLS=[['scanlines','Scanlines'],['glow','Glow'],['curve','Screen curve'],['mask','Pixel / phosphor grid']];
+function settingsLayer(){
+ const t=lookSettingsTarget;
+ return t&&current()===t.ctx&&t.ctx.recipe.layers[t.index]===t.layer&&(!t.ctx.saving)?t.layer:null;
+}
+function updateLookSettings(){
+ if(!settingsLayer())return;
+ trayChanged({thumbs:true});
+}
+function renderLookSettings(){
+ const layer=settingsLayer();if(!layer)return;
+ const family=familyFor(layer.look),variant=$('lookVariant');
+ $('lookSettingsTitle').textContent=family?.label||LOOKS[layer.look].short||LOOKS[layer.look].label;
+ $('lookVariantRow').hidden=!family;variant.replaceChildren();
+ if(family){
+  $('lookVariantLabel').textContent=family.choice;
+  for(const [value,label] of family.variants){const option=document.createElement('option');option.value=value;option.textContent=label;variant.append(option);}
+  variant.value=variantFor(layer);
+ }
+ const screen=normalScreen(layer.screen),enabled=hasScreen(layer.look);
+ $('lookScreenControls').hidden=!enabled;$('screenFinish').value=screen.mode;
+ $('screenFinish').querySelector('[value="lcd"]').disabled=layer.look==='crt';
+ for(const [key] of SCREEN_CONTROLS){
+  const input=$(`screen-${key}`);input.value=Math.round(screen[key]*100);input.disabled=screen.mode==='none';
+  $(`screen-${key}-value`).textContent=`${input.value}%`;
+ }
+ $('lookSettingsHint').textContent=family?.id==='riso'?'Choose the inks. Pattern and paper remain available in Adjust and Frame.':layer.look==='crt'?'Original keeps the Old TV finish. Custom CRT adjusts its screen.':'Choose a system, then its screen finish. These settings use no extra mix layer.';
+}
+function openLookSettings(){
+ const ctx=current(),layer=ctx?.recipe.layers[ctx.active];if(!layer||!hasLookSettings(layer.look))return;
+ lookSettingsTarget={ctx,index:ctx.active,layer};renderLookSettings();openSheet($('lookSettingsSheet'));
+}
+$('lookVariant').addEventListener('change',e=>{const layer=settingsLayer();if(layer&&selectVariant(layer,e.target.value)){renderLookSettings();updateLookSettings();}});
+$('screenFinish').addEventListener('change',e=>{const layer=settingsLayer();if(!layer)return;layer.screen=screenDefaults(e.target.value);renderLookSettings();updateLookSettings();});
+for(const [key,label] of SCREEN_CONTROLS){
+ const row=document.createElement('label');row.className='screen-control';row.htmlFor=`screen-${key}`;
+ row.innerHTML=`<span>${label}</span><output id="screen-${key}-value" for="screen-${key}"></output><input id="screen-${key}" type="range" min="0" max="100" step="1">`;
+ row.querySelector('input').setAttribute('aria-label',label);
+ row.querySelector('input').addEventListener('input',e=>{
+  const layer=settingsLayer();if(!layer)return;
+  layer.screen={...normalScreen(layer.screen),[key]:Number(e.target.value)/100};
+  $(`screen-${key}-value`).textContent=`${e.target.value}%`;updateLookSettings();
+ });$('screenSliders').append(row);
+}
+$('lookSettingsReset').addEventListener('click',()=>{const layer=settingsLayer();if(!layer)return;delete layer.screen;delete layer.handheld;renderLookSettings();updateLookSettings();});
+$('lookSettingsSheet').addEventListener('close',()=>{lookSettingsTarget=null;});
+$('lookSettingsSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 function showSettings(open){
  $('settings').hidden=!open;$('settingsToggle').setAttribute('aria-expanded',String(open));$('settingsToggle').classList.toggle('open',open);
 }
@@ -966,7 +1021,7 @@ const isPicture=file=>file.type.startsWith('image/')||/\.(jpe?g|png|webp|gif|avi
  * whole mix, which the dice make of two (the owner, 29 October 2026: "Why are two effects chosen at standard when I open
  * one of my photos?", then "main look and then we play with it in the app").
  */
-const mainLook=()=>[{look:state.camera.recipe.layers[0]?.look||'none',amount:1}];
+const mainLook=()=>[{...state.camera.recipe.layers[0],look:state.camera.recipe.layers[0]?.look||'none',amount:1}];
 /** The photographer's own photos: one opens in the editor; several go straight into the album, in the camera's main Look. */
 async function useFiles(files){
  files=files.filter(isPicture);

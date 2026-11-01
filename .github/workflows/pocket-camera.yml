@@ -30,7 +30,7 @@ jobs:
           - job: camera-offline
             suites: offline
           - job: camera-retouch
-            suites: retouch
+            suites: retouch screens
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:

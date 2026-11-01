@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261101ui2">
+<link rel="stylesheet" href="camera.css?v=20261101screen1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
-<link rel="stylesheet" href="camera-ui.css?v=20261101ui2">
+<link rel="stylesheet" href="camera-ui.css?v=20261101screen1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -98,7 +98,7 @@
     <button type="button" class="setting" id="stamp"><i><svg><use href="#i-date"/></svg></i><small class="setting-title">Date stamp</small><span>Date</span></button>
     <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><small class="setting-title">Print when sharing</small><span>Print</span></button>
     <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
-    <footer class="settings-footer"><small class="camera-version">v2026.11.01.2</small><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
+    <footer class="settings-footer"><small class="camera-version">v2026.11.01.3</small><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
    </div>
    <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
     <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
@@ -310,6 +310,19 @@
  <div class="option-row"><span id="cameraPaperLabel">Paper</span><div class="mini-seg paper-choices" id="cameraPaperChoices" role="radiogroup" aria-labelledby="cameraPaperLabel"></div></div>
 </dialog>
 
+<dialog class="sheet sticker-sheet look-settings-sheet" id="lookSettingsSheet" aria-labelledby="lookSettingsTitle">
+ <header><h2 id="lookSettingsTitle">Look settings</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
+ <div class="look-settings-body">
+  <label class="look-setting-select" id="lookVariantRow"><span id="lookVariantLabel">Game system</span><select id="lookVariant"></select></label>
+  <div id="lookScreenControls">
+   <label class="look-setting-select"><span>Screen finish</span><select id="screenFinish"><option value="none">Original</option><option value="lcd">LCD</option><option value="crt">CRT</option></select></label>
+   <div id="screenSliders"></div>
+  </div>
+  <p id="lookSettingsHint"></p>
+  <button type="button" class="text-button" id="lookSettingsReset">Reset settings</button>
+ </div>
+</dialog>
+
 <dialog class="sheet text-sheet" id="textSheet" aria-labelledby="textSheetTitle">
  <form method="dialog">
   <h2 id="textSheetTitle">What do they say?</h2>
@@ -332,6 +345,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261101ui2"></script>
+<script type="module" src="app.js?v=20261101screen1"></script>
 </body>
 </html>

@@ -106,7 +106,7 @@ try{
  await page.click('#tabAdjust');await page.click('#enhancePhoto');await page.click('#enhanceAmount');await page.fill('#enhanceStrength','57');
  await page.click('#tabFrame');await page.click('#paperChoices [data-paper="rough"]');
  await page.click('#tabLooks');await page.click('#lookGroups [data-group="drawn"]');await page.click('.tile[data-look="crayon"]');
- await page.click('.add-layer');await page.click('#lookGroups [data-group="riso"]');await page.click('.tile[data-look="risoPinkBlue"]');await page.fill('#amount','25');
+ await page.click('.add-layer');await page.click('#lookGroups [data-group="riso"]');await page.click('.tile[data-look="riso"]');await page.click('.look-settings-button');await page.selectOption('#lookVariant','risoPinkBlue');await page.click('#lookSettingsSheet .done');await page.fill('#amount','25');
  await page.click('#tabFrame');
  const expected=await page.evaluate(async()=>{const e=window.pocketCamera.state.edit;return {recipe:JSON.parse(JSON.stringify(e.recipe)),source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await e.sourceBlob.arrayBuffer()))]};});
  await check('Original bypasses Enhance, mixed Looks and stock together while preserving the crop',async()=>{

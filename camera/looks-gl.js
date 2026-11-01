@@ -14,6 +14,7 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 import {normalCrop} from './crop.js?v=20261030crop1';
+import {layerOptions,screenActive,normalScreen} from './look-settings.js?v=20261101screen1';
 import {normaliseMakeup} from './makeup.js?v=20261031retouch1';
 
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
@@ -547,6 +548,7 @@ void main(){
 // camera sharpened its picture before it dithered it instead: here each cell is the average of its own pixels,
 // sharpened against the cells round it, then dithered into the four greens.
 const POCKET_BODY=`${PHOTO_LINES}
+uniform float uHandheld;
 void main(){
  float px=max(2.0,floor(uResolution.y/112.0+.5));
  vec2 cell=floor(vUv*uResolution/px);
@@ -557,6 +559,9 @@ void main(){
  l=smoothstep(.08,.98,l);
  float shade=floor(clamp(l*3.0+bayer4(cell)-.5,0.0,3.0)+.5);
  vec3 c=shade<.5?vec3(24.0,48.0,32.0):shade<1.5?vec3(62.0,98.0,56.0):shade<2.5?vec3(130.0,158.0,76.0):vec3(200.0,212.0,138.0);
+ // Pocket's neutral LCD and Light's turquoise illumination share the same four-shade image.
+ if(uHandheld>.5&&uHandheld<1.5)c=shade<.5?vec3(30,38,36):shade<1.5?vec3(87,99,92):shade<2.5?vec3(156,170,153):vec3(213,222,194);
+ if(uHandheld>1.5)c=shade<.5?vec3(8,49,49):shade<1.5?vec3(27,96,83):shade<2.5?vec3(65,157,130):vec3(128,216,172);
  gl_FragColor=vec4(c/255.0,1.0);
 }`;
 // Black and white as Daidō Moriyama's pushed film (30 October 2026): the contrast up, the blacks kept with a little
@@ -604,23 +609,27 @@ void main(){
 // corners and a smooth edge, the composite signal soft along each line, scanlines that widen where the picture is
 // bright, and lights that bloom.
 const CRT_BODY=`${PHOTO_LINES}
+uniform vec4 uNativeScreen;
 void main(){
  float u=unit();
  vec2 q=vUv*2.0-1.0;
- q*=1.0+dot(q,q)*vec2(.035,.05);
+ q*=1.0+dot(q,q)*vec2(.035,.05)*uNativeScreen.z;
  vec2 uv=q*.5+.5;
  vec2 a=abs(q)-vec2(.86,.8);
  float box=length(max(a,0.0))-.14+min(max(a.x,a.y),0.0);
- float screen=1.0-smoothstep(-.012,.004,box);
+ float screen=mix(1.0,1.0-smoothstep(-.012,.004,box),uNativeScreen.z);
  vec2 h=vec2(uTexel.x*3.4*u,0.0);
  vec3 c=texture2D(tDiffuse,uv).rgb*.4+(texture2D(tDiffuse,uv+h).rgb+texture2D(tDiffuse,uv-h).rgb)*.22+texture2D(tDiffuse,uv-h*2.5).rgb*.16;
  float fringe=dot(q,q)*1.2*uTexel.x;
  c.r=mix(c.r,texture2D(tDiffuse,uv+vec2(fringe,0.0)).r,.6);c.b=mix(c.b,texture2D(tDiffuse,uv-vec2(fringe,0.0)).b,.6);
- c+=max(vec3(0.0),ringColour(uv,6.0*u)-.6)*.7+max(vec3(0.0),ringColour(uv,14.0*u)-.62)*.5;
+ c+=(max(vec3(0.0),ringColour(uv,6.0*u)-.6)*.7+max(vec3(0.0),ringColour(uv,14.0*u)-.62)*.5)*uNativeScreen.y;
  float lines=uResolution.y/max(2.0,floor(uResolution.y/270.0+.5));
  float y=fract(uv.y*lines),bright=luma(c);
  float scan=mix(.62,1.0,smoothstep(.5-.35*bright-.12,.5,1.0-abs(y-.5)*2.0+.0));
- c*=scan*1.28;
+ c*=mix(1.0,scan*1.28,uNativeScreen.x);
+ float column=mod(floor(uv.x*min(810.0,uResolution.x)),3.0);
+ vec3 phosphor=column<1.0?vec3(1,.78,.78):column<2.0?vec3(.78,1,.78):vec3(.78,.78,1);
+ c*=mix(vec3(1),phosphor,uNativeScreen.w);
  vec2 v=uv*(1.0-uv.yx);
  c*=pow(clamp(v.x*v.y*20.0,0.0,1.0),.12);
  gl_FragColor=vec4(clamp(c,0.0,1.0)*screen,1.0);
@@ -1138,7 +1147,7 @@ export const PAPERS=Object.freeze([{id:'none',label:'None'},{id:'drawing',label:
 export function normalRecipe(recipe={}){
  const n=(v,lo,hi,d)=>Number.isFinite(+v)?Math.min(hi,Math.max(lo,+v)):d;
  const layers=(Array.isArray(recipe.layers)?recipe.layers:[]).slice(0,3)
-  .map(l=>({look:Object.hasOwn(LOOKS,l?.look)?l.look:'none',amount:n(l?.amount,0,1,1)}));
+  .map(l=>({look:Object.hasOwn(LOOKS,l?.look)?l.look:'none',amount:n(l?.amount,0,1,1),...layerOptions(l)}));
  if(!layers.length)layers.push({look:'none',amount:1});
  const a=recipe.adjust||{};
  // Stickers (stickers.js): centre, height as a share of the picture's height, angle in degrees, mirrored or not; a
@@ -1255,6 +1264,37 @@ precision highp float;in vec2 vUv;out vec4 fragColor;uniform sampler2D tDiffuse;
 void main(){fragColor=vec4(texture(tDiffuse,vUv).rgb,1.0);}`;
 
 // Optional stock after all Looks, before frames/lettering/stickers. No texture asset or network request.
+const DISPLAY=`#version 300 es
+precision highp float;
+uniform sampler2D tDiffuse;
+uniform vec2 uResolution;
+uniform vec4 uScreen;
+uniform float uLCD;
+uniform float uStrength;
+in vec2 vUv;out vec4 fragColor;
+void main(){
+ vec2 q=vUv*2.0-1.0;
+ q*=1.0+dot(q,q)*vec2(.035,.05)*uScreen.z;
+ vec2 uv=q*.5+.5;
+ vec3 original=texture(tDiffuse,vUv).rgb,c=texture(tDiffuse,uv).rgb;
+ // Four neighbouring samples give a restrained phosphor/backlight bloom.
+ vec2 stepUV=vec2(uResolution.y/uResolution.x,1.0)/540.0;
+ vec3 halo=(texture(tDiffuse,uv+vec2(stepUV.x,0)).rgb+texture(tDiffuse,uv-vec2(stepUV.x,0)).rgb
+  +texture(tDiffuse,uv+vec2(0,stepUV.y)).rgb+texture(tDiffuse,uv-vec2(0,stepUV.y)).rgb)*.25;
+ c+=max(vec3(0),halo-.55)*uScreen.y*.5;
+ float rows=min(270.0,uResolution.y*.5);
+ float scan=.5+.5*cos(uv.y*rows*6.2831853);
+ c*=1.0-uScreen.x*.32*scan;
+ // LCD has a square cell grid; CRT has coloured phosphor columns.
+ vec2 cell=fract(uv*vec2(rows*uResolution.x/uResolution.y,rows));
+ float grid=smoothstep(.04,.15,cell.x)*(1.0-smoothstep(.85,.96,cell.y)*.3);
+ float column=mod(floor(uv.x*min(810.0,uResolution.x)),3.0);
+ vec3 phosphor=column<1.0?vec3(1,.78,.78):column<2.0?vec3(.78,1,.78):vec3(.78,.78,1);
+ c*=mix(vec3(1),uLCD>.5?vec3(clamp(grid,.0,1.0)):phosphor,uScreen.w);
+ if(any(lessThan(uv,vec2(0)))||any(greaterThan(uv,vec2(1))))c=vec3(0);
+ fragColor=vec4(mix(original,clamp(c,0.0,1.0),uStrength),1);
+}`;
+
 const PAPER=`#version 300 es
 precision highp float;in vec2 vUv;out vec4 fragColor;
 uniform sampler2D tDiffuse;uniform vec2 uResolution;uniform float uStock;
@@ -1395,12 +1435,15 @@ export function createLookEngine(canvas,{light=false}={}){
    f1(u.uLight,a.light);f1(u.uContrast,a.contrast);f1(u.uColour,a.colour);f1(u.uWarmth,a.warmth);
   };
  }
- const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1)=>u=>{
+ const lookUniforms=(amount,w,h,pattern,floor=.5,focus=-1,layer={})=>u=>{
+  if(u.uNativeScreen){const s=layer.screen?.mode==='crt'?normalScreen(layer.screen):{scanlines:1,glow:1,curve:1,mask:0};gl.uniform4f(u.uNativeScreen,s.scanlines,s.glow,s.curve,s.mask);}
+  f1(u.uHandheld,layer.handheld==='light'?2:layer.handheld==='pocket'?1:0);
   f1(u.uAmount,amount);f1(u.uFocusY,focus);if(u.uTexel)gl.uniform2f(u.uTexel,1/w,1/h);if(u.uResolution)gl.uniform2f(u.uResolution,w,h);
   // Pattern: -1 finer, +1 coarser, a factor of two either way.
   f1(u.uLines,1080*2**-pattern);f1(u.uUnitFloor,floor);
   f1(u.uComic,1);f1(u.uSkyDepth,120);f1(u.uFocusDistance,6);f1(u.uFocusRange,3);f1(u.uNear,.05);f1(u.uFar,60);
  };
+ const displayUniforms=(layer,w,h)=>u=>{const s=normalScreen(layer.screen);gl.uniform2f(u.uResolution,w,h);gl.uniform4f(u.uScreen,s.scanlines,s.glow,s.curve,s.mask);f1(u.uLCD,s.mode==='lcd'?1:0);f1(u.uStrength,layer.amount);};
  const paperUniforms=(recipe,w,h)=>u=>{gl.uniform2f(u.uResolution,w,h);f1(u.uStock,PAPERS.findIndex(p=>p.id===recipe.paper));};
 
  /**
@@ -1416,7 +1459,11 @@ export function createLookEngine(canvas,{light=false}={}){
   if(full&&entries.some(e=>!e))throw new Error(`${active[entries.indexOf(null)].look} cannot be drawn on this device`);
   const prep=fixed('prepare',PREPARE),src=sources.get(source).t,intoPair=output==='pair';
   if(!prep)return false;
-  const steps=active.map((l,i)=>({layer:l,entry:entries[i]})).filter(s=>s.entry);
+  const steps=[];
+  for(let i=0;i<active.length;i++){
+   const layer=active[i];if(entries[i])steps.push({layer,entry:entries[i]});
+   if(entries[i]&&screenActive(layer)){const entry=fixed('display',DISPLAY);if(!entry)return false;steps.push({layer,entry,display:true});}
+  }
   const smooth=steps.some(s=>lookDrawsLines(s.layer.look)),auto=expose||steps.some(s=>INK_LOOKS.includes(s.layer.look));
   if(recipe.paper&&recipe.paper!=='none'){
    const entry=fixed('paper',PAPER);if(!entry)return false;steps.push({entry,paper:true});
@@ -1425,9 +1472,9 @@ export function createLookEngine(canvas,{light=false}={}){
   if(!steps.length&&!intoPair){pass(prep,src,output,vp,prepare(recipe,source,crop,mirror,width,height,false,auto),tile);return true;}
   const p=pair(targetName,width,height);let read=0;
   pass(prep,src,p.items[0].f,[0,0,width,height],prepare(recipe,source,crop,mirror,width,height,smooth,auto),tile);
-  steps.forEach(({layer,entry,paper},i)=>{
+  steps.forEach(({layer,entry,paper,display},i)=>{
    const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],paper?paperUniforms(recipe,width,height):lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1),tile);
+   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],paper?paperUniforms(recipe,width,height):display?displayUniforms(layer,width,height):lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,layer),tile);
    read=1-read;
   });
   return intoPair?p.items[read].f:true;
@@ -1469,7 +1516,12 @@ export function createLookEngine(canvas,{light=false}={}){
     if(!e)budget--;
     if(!ready(request(name))){missing.push(name);return;}
     const entry=look(name);if(!entry){missing.push(name);return;}
-    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,atlas.items[0].f,[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1));
+    const selected=recipe.layers[layer],tileLayer=selected?.look===name?{...selected,amount:1}:{look:name,amount:1};
+    const display=screenActive(tileLayer)?fixed('display',DISPLAY):null;
+    if(screenActive(tileLayer)&&!display){missing.push(name);return;}
+    const target=display?pair('thumb-display',size,size).items[0]:null;
+    pass(entry,base.items[INK_LOOKS.includes(name)?1:0].t,target?target.f:atlas.items[0].f,target?[0,0,size,size]:[i*size,0,size,size],lookUniforms(1,size,size,recipe.adjust.pattern,.35,recipe.focus??-1,tileLayer));
+    if(display)pass(display,target.t,atlas.items[0].f,[i*size,0,size,size],displayUniforms(tileLayer,size,size));
    });
    let result=atlas.items[0].f;
    if(recipe.paper&&recipe.paper!=='none'){
