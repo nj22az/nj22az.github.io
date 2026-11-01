@@ -1,0 +1,185 @@
+{
+  "website": {
+    "evidence_id": "ev_96575b0d083e5fefd189babadc74b342a945fdd3d53c3519af1a7bf7b776c636",
+    "statistics": {
+      "relevant_files": 18,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 30698,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 4,
+      "skipped_javascript_files": 0,
+      "visited_ast_nodes": 3721,
+      "findings": 5,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "source_selection": {
+      "requested_paths": [
+        "theme-bootstrap.js",
+        "assets/js/project-explorer.js",
+        "assets/js/office-diorama.js",
+        "shared.js"
+      ],
+      "unselected_files": 14
+    },
+    "semantic_node_count": 2355,
+    "relations": 2091,
+    "selected": [
+      {
+        "id": "jsrg_node_40a2d0021c270b015288c83a84ff2ec769d1a1154b62a4a62b9addc611ba5278",
+        "kind": "function",
+        "label": "getPageTheme",
+        "source": "theme-bootstrap.js",
+        "range": {
+          "start": {
+            "line": 55,
+            "column": 2
+          },
+          "end": {
+            "line": 67,
+            "column": 3
+          }
+        }
+      },
+      {
+        "id": "jsrg_node_48546ddccc3a805da242ddd284086eb2abd0986b268be853d44db590af4a7f8d",
+        "kind": "function",
+        "label": "chooseDifferentTheme",
+        "source": "theme-bootstrap.js",
+        "range": {
+          "start": {
+            "line": 48,
+            "column": 2
+          },
+          "end": {
+            "line": 53,
+            "column": 3
+          }
+        }
+      },
+      {
+        "id": "jsrg_node_9c4571e03af908d1c19834525d72d8a19bde5c543a3d0a078cb154919f406e43",
+        "kind": "function",
+        "label": "randomIndex",
+        "source": "theme-bootstrap.js",
+        "range": {
+          "start": {
+            "line": 26,
+            "column": 2
+          },
+          "end": {
+            "line": 35,
+            "column": 3
+          }
+        }
+      },
+      {
+        "id": "jsrg_node_9f58717b1b3a111957730d36fa0c2072e6078328935a7d359cc85711f9069f9a",
+        "kind": "function",
+        "label": "preview",
+        "source": "assets/js/project-explorer.js",
+        "range": {
+          "start": {
+            "line": 10,
+            "column": 2
+          },
+          "end": {
+            "line": 18,
+            "column": 3
+          }
+        }
+      },
+      {
+        "id": "jsrg_node_bb72239c4e65c792d05aab40cdb4a31053ccdc60e2059bdfa9f01814a8c96374",
+        "kind": "function",
+        "label": "applyTheme",
+        "source": "shared.js",
+        "range": {
+          "start": {
+            "line": 121,
+            "column": 2
+          },
+          "end": {
+            "line": 135,
+            "column": 3
+          }
+        }
+      }
+    ],
+    "limitations": [
+      "Caller-selected source analysis leaves 14 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ]
+  },
+  "gallery": {
+    "evidence_id": "ev_72da5b1868b4a6bb61e01e207b2b26c444bc8fa29fbba442b134e6c69bd7ff48",
+    "statistics": {
+      "relevant_files": 6,
+      "nested_asar_containers": 0,
+      "text_bytes_read": 1106,
+      "invalid_utf8_files": 0,
+      "parsed_javascript_files": 1,
+      "skipped_javascript_files": 0,
+      "visited_ast_nodes": 215,
+      "findings": 0,
+      "modules": 0,
+      "parse_failures": 0
+    },
+    "source_selection": {
+      "requested_paths": [
+        "inline-0.js"
+      ],
+      "unselected_files": 5
+    },
+    "semantic_node_count": 140,
+    "relations": 70,
+    "selected": [
+      {
+        "id": "jsrg_node_73aa67f7646de0a015b297b94f23b3327db9ca2c66cb6caee25316a146bca162",
+        "kind": "function",
+        "label": "openModal",
+        "source": "inline-0.js",
+        "range": {
+          "start": {
+            "line": 15,
+            "column": 0
+          },
+          "end": {
+            "line": 20,
+            "column": 1
+          }
+        }
+      },
+      {
+        "id": "jsrg_node_f882b890abf03d408aecaac6ea166b8f6522553f23289391cb269c8543bab2e9",
+        "kind": "function",
+        "label": "closeModal",
+        "source": "inline-0.js",
+        "range": {
+          "start": {
+            "line": 21,
+            "column": 0
+          },
+          "end": {
+            "line": 25,
+            "column": 1
+          }
+        }
+      }
+    ],
+    "limitations": [
+      "Caller-selected source analysis leaves 5 inventoried files outside analysis scope. Inventory identity covers the complete artifact; relationships through unselected sources remain unknown.",
+      "CommonJS and ESM binding relationships were recovered from inert syntax and resolved only within the inventoried artifact container.",
+      "Graph coverage is incomplete; unavailable facts remain explicit and must not be read as absence.",
+      "JavaScript and HTML were parsed as inert text; bundle bootstrap code was never executed.",
+      "Static imports, entrypoints, workers, endpoints, and storage relationships do not prove runtime execution.",
+      "Static paths and relationships may remain unresolved when expressions are dynamic or obfuscated.",
+      "Webpack/Rspack factories were recovered from AST literals; REA did not invoke push handlers or bundle bootstrap code."
+    ]
+  }
+}

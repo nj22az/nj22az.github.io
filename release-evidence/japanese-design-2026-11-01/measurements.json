@@ -1,0 +1,50 @@
+{
+  "method": "Read-only DOM and computed-style observations of the production homepage in the cloud browser; a single desktop state, not a cross-device audit",
+  "document_width_px": 1348,
+  "selected_theme_text_color": "rgb(242, 21, 127)",
+  "hero_background": "rgb(248, 247, 242)",
+  "hero_text_color": "rgb(32, 43, 54)",
+  "project_section_height_px": 3652.28125,
+  "project_grid_height_px": 3075.609375,
+  "cards": [
+    {
+      "title": "Johansson World",
+      "width_px": 1132,
+      "height_px": 1006.4375,
+      "details_open": false
+    },
+    {
+      "title": "Pocket Camera",
+      "width_px": 554,
+      "height_px": 760.890625,
+      "details_open": false
+    },
+    {
+      "title": "Maintenance Desk",
+      "width_px": 554,
+      "height_px": 780.890625,
+      "details_open": false
+    },
+    {
+      "title": "Sj\u00f6skolan \u00b7 Electrical engineering",
+      "width_px": 554,
+      "height_px": 760.890625,
+      "details_open": false
+    },
+    {
+      "title": "Elteknik och ell\u00e4ra",
+      "width_px": 554,
+      "height_px": 760.890625,
+      "details_open": false
+    },
+    {
+      "title": "StepWise",
+      "width_px": 1132,
+      "height_px": 455.390625,
+      "details_open": false
+    }
+  ],
+  "card_summary_font_px": 15,
+  "camera_promotion_band_height_px": 116,
+  "private_course_band_height_px": 100
+}

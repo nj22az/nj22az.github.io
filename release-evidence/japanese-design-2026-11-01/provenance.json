@@ -1,0 +1,8 @@
+{
+  "website_commit": "0f13c23b6700b4d0ab28e1808d801f5d51e4e111",
+  "gallery_commit": "22301516890616a0f8f61e012c365f4d0eb6d478",
+  "gallery_html_sha256": "1ecaba4cabf7c16b336eb205a76958f169deb960b7ee5269a012c7c8f1b45a94",
+  "inline_scripts": 1,
+  "rea_version": "6.7.0",
+  "method": "Static source analysis; no target scripts executed"
+}
