@@ -1,0 +1,233 @@
+{
+  "result": "passed",
+  "profiles": [
+    {
+      "profile": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "buttons": [
+          {
+            "label": "Close",
+            "width": 66.453125,
+            "height": 44
+          },
+          {
+            "label": "Quay",
+            "width": 56.296875,
+            "height": 44
+          },
+          {
+            "label": "Ferry",
+            "width": 57.515625,
+            "height": 44
+          },
+          {
+            "label": "Overview",
+            "width": 85.25,
+            "height": 44
+          },
+          {
+            "label": "←",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "→",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "+",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "−",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "Reset",
+            "width": 60.40625,
+            "height": 44
+          }
+        ]
+      },
+      "sceneRequests": 3
+    },
+    {
+      "profile": "ipad-portrait",
+      "width": 768,
+      "height": 1024,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "buttons": [
+          {
+            "label": "Close",
+            "width": 66.453125,
+            "height": 44
+          },
+          {
+            "label": "Quay",
+            "width": 56.296875,
+            "height": 44
+          },
+          {
+            "label": "Ferry",
+            "width": 57.515625,
+            "height": 44
+          },
+          {
+            "label": "Overview",
+            "width": 85.25,
+            "height": 44
+          },
+          {
+            "label": "←",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "→",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "+",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "−",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "Reset",
+            "width": 60.40625,
+            "height": 44
+          }
+        ]
+      },
+      "sceneRequests": 3
+    },
+    {
+      "profile": "ipad-landscape",
+      "width": 1024,
+      "height": 768,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "buttons": [
+          {
+            "label": "Close",
+            "width": 66.453125,
+            "height": 44
+          },
+          {
+            "label": "Quay",
+            "width": 56.296875,
+            "height": 44
+          },
+          {
+            "label": "Ferry",
+            "width": 57.515625,
+            "height": 44
+          },
+          {
+            "label": "Overview",
+            "width": 85.25,
+            "height": 44
+          },
+          {
+            "label": "←",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "→",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "+",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "−",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "Reset",
+            "width": 60.40625,
+            "height": 44
+          }
+        ]
+      },
+      "sceneRequests": 3
+    },
+    {
+      "profile": "phone",
+      "width": 390,
+      "height": 844,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "buttons": [
+          {
+            "label": "Close",
+            "width": 66.453125,
+            "height": 44
+          },
+          {
+            "label": "Quay",
+            "width": 49.4375,
+            "height": 44
+          },
+          {
+            "label": "Ferry",
+            "width": 50.5625,
+            "height": 44
+          },
+          {
+            "label": "Overview",
+            "width": 75.984375,
+            "height": 44
+          },
+          {
+            "label": "←",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "→",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "+",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "−",
+            "width": 44,
+            "height": 44
+          },
+          {
+            "label": "Reset",
+            "width": 53.203125,
+            "height": 44
+          }
+        ]
+      },
+      "sceneRequests": 3
+    }
+  ]
+}
