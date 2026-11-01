@@ -21,6 +21,13 @@ try{
   await page.getByRole('button',{name:'Explore harbour',exact:true}).click();
   await page.getByText('Drag to look around · choose a view below',{exact:true}).waitFor({timeout:90000});
   const canvas=page.locator('[data-diorama-stage] canvas');assert(await canvas.isVisible());
+  if(profile==='desktop'){
+   const still=await canvas.screenshot();await page.waitForTimeout(150);assert(still.equals(await canvas.screenshot()),'Reduced motion holds the scene still');
+   await page.emulateMedia({reducedMotion:'no-preference'});const before=await canvas.screenshot();await page.waitForTimeout(250);assert(!before.equals(await canvas.screenshot()),'Water animates when motion is allowed');
+   await page.emulateMedia({reducedMotion:'reduce'});
+   const box=await canvas.boundingBox();await page.mouse.move(box.x+box.width*.4,box.y+box.height*.5);await page.mouse.down();await page.mouse.move(box.x+box.width*.6,box.y+box.height*.5);await page.mouse.up();
+   await page.getByRole('button',{name:'Reset',exact:true}).click();
+  }
   for(const view of ['Quay','Ferry','Overview']){
    await page.locator('[data-diorama]').getByRole('button',{name:view,exact:true}).click();
    await page.waitForTimeout(180);await page.screenshot({path:resolve(out,profile+'-'+view.toLowerCase()+'.png')});
