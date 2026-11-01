@@ -81,3 +81,17 @@ The required runtime build succeeds; its unrelated pruning of retained historic 
 so previously published JS chunks remain byte-identical. The offline manifest is regenerated for the worker.
 This changes offline state coordination only; gameplay, graphics, saves and Linux fixtures remain untouched.
 Hosted graphical acceptance must still pass on the new head; the previous 579 result is historical.
+
+## Offline cold boot verified; desktop rotation fixture correction
+
+Worker-fix head `43642b31` passes hosted guard **580/580** (`41272794713`, job `124748828897`).
+Chromium offline job `124749064088` (`41272794686`) now passes Pause/Resume, all **602 files /
+137,189,946 bytes** with networking disabled, and the ordinary-URL cold offline boot; page errors are empty
+and the server supplies zero successful responses after disconnecting. Its artifact `13070127948`
+contains the actual offline portrait screenshot and recordings. It then fails at the desktop viewport
+resize: Chromium refuses Browser.setWindowBounds while Start Exploring's native fullscreen is active.
+The harness now exits standard/prefixed DOM fullscreen before changing its desktop viewport; the same
+landscape canvas, touch, saved reload and room assertions remain. This is browser-fixture correction,
+not a change to physical iPad orientation handling. Full room/ferry acceptance remains open.
+The deterministic worker regression also covers a corrupt complete-cache scan: an older scan may neither
+overwrite resumed readiness nor delete the newly repaired ready marker. All **15/15** local checks pass.

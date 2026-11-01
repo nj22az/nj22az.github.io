@@ -93,15 +93,20 @@ test('generated inventory matches every published byte and excludes authoring so
  const html=await readFile(new URL('index.html',root),'utf8');for(const [,path] of html.matchAll(/(?:src|href)="\.\/([^"?]+\.(?:js|css))(?:\?[^"]*)?"/g))assert.ok(m.files.some(f=>f.url===path),'Page dependency: '+path);
 });
 
-test('a slow partial-cache status scan cannot overwrite a resumed download readiness',async()=>{
- const disk=storage(),cache=await disk.open('johansson-town-offline-v1-one');
- await cache.put(scope+'index.html',new Response(contents['index.html']));
- let release,entered,calls=0;const blocked=new Promise(r=>{release=r;}),started=new Promise(r=>{entered=r;});
- const f=fixture({disk,digest:async bytes=>{if(++calls===1){entered();await blocked;}return webcrypto.subtle.digest('SHA-256',bytes);}});
- const inspecting=f.worker.status();await started;
- await f.worker.start();assert.equal(f.worker.snapshot().stage,'ready');
- release();await inspecting;
- assert.equal(f.worker.snapshot().stage,'ready','The older inspection must not restore paused progress');
- assert.equal((await f.worker.status()).done,4);
- assert.equal(await (await f.worker.fallback(navigation('./'))).text(),contents['index.html']);
+test('a stale status scan cannot overwrite resumed readiness or delete its new marker',async()=>{
+ for(const complete of [false,true]){
+  const disk=storage(),cache=await disk.open('johansson-town-offline-v1-one');
+  if(complete){await fixture({disk}).worker.start();await cache.put(scope+'index.html',new Response('x'.repeat(contents['index.html'].length)));}
+  else await cache.put(scope+'index.html',new Response(contents['index.html']));
+  let release,entered,calls=0;const blocked=new Promise(r=>{release=r;}),started=new Promise(r=>{entered=r;});
+  const f=fixture({disk,digest:async bytes=>{if(++calls===1){entered();await blocked;}return webcrypto.subtle.digest('SHA-256',bytes);}});
+  const inspecting=f.worker.status();await started;
+  await f.worker.start();assert.equal(f.worker.snapshot().stage,'ready');
+  release();await inspecting;
+  assert.equal(f.worker.snapshot().stage,'ready','The older inspection must not restore paused progress');
+  assert.equal((await f.worker.status()).done,4);
+  // A new worker must still find the new complete marker, including after a corrupt-cache repair.
+  const restarted=fixture({disk});assert.equal((await restarted.worker.status()).stage,'ready');
+  assert.equal(await (await restarted.worker.fallback(navigation('./'))).text(),contents['index.html']);
+ }
 });

@@ -83,6 +83,9 @@ try{
  await boot();assert.equal(await page.evaluate(()=>!!window.__JOHANSSON_AUDIT__),false,'Ordinary game URL boots without audit hooks');
  assert.equal(await page.evaluate(()=>localStorage.getItem('offline-audit-sentinel')),'keep this save data');
  await page.screenshot({path:resolve(out,'ipad-offline-town-portrait.png')});
+ // Start Exploring enters fullscreen from the real touch gesture. Desktop CDP cannot resize that window.
+ await page.evaluate(async()=>{if(document.fullscreenElement||document.webkitFullscreenElement){const exit=document.exitFullscreen||document.webkitExitFullscreen;if(exit)await exit.call(document);}});
+ await page.waitForFunction(()=>!document.fullscreenElement&&!document.webkitFullscreenElement);
  await page.setViewportSize({width:1133,height:744});await page.waitForFunction(()=>document.querySelector('#game').width>document.querySelector('#game').height);await page.screenshot({path:resolve(out,'ipad-offline-town-landscape.png')});
  const run=page.locator('#run'),before=await run.getAttribute('aria-pressed');await run.tap();assert.notEqual(await run.getAttribute('aria-pressed'),before);step('cold offline restart; ordinary URL, rotation and touch control');
  await page.evaluate(()=>dispatchEvent(new Event('johansson-save')));
