@@ -68,7 +68,7 @@ export async function checkFerryExploration({page,out,step,settleLoads,touch=tru
   await button('#ferryExplore > summary');await button('#ferryExplore [data-out]');await button('#ferryExplore [data-in]');await button('#ferryExplore > summary');
   const afterOrbit=await page.evaluate(()=>window.__JOHANSSON_AUDIT__.lens.position);assert.ok(Math.hypot(...afterOrbit.map((v,i)=>v-beforeOrbit[i]))>.005,'Inspection actually orbits the machine');
   const inspection=await camera();await page.screenshot({path:resolve(out,'ferry-inspect-'+profile+'.png')});await page.keyboard.press('Escape');await page.evaluate(()=>window.__JOHANSSON_AUDIT__.step(20));
-  const returned=await camera();assert.equal(returned.mode,'walk');assert.ok(Math.hypot(...returned.local.map((v,i)=>v-feet[i]))<.02,'Inspection returns to the original standing point');step('ferry machinery orbit zoom and return',{profile,focus:inspection.id});
+  const returned=await camera();assert.equal(returned.mode,'walk');assert.ok(Math.hypot(...returned.local.map((v,i)=>v-feet[i]))<.02,'Inspection returns to the original standing point: '+JSON.stringify({feet,returned:returned.local}));step('ferry machinery orbit zoom and return',{profile,focus:inspection.id});
   await button('#ferryExplore > summary');await button('#ferryExplore [data-guide]');
   await page.waitForFunction(()=>document.querySelector('#ferryExplore [data-map] svg polyline'));await page.screenshot({path:resolve(out,'ferry-map-'+profile+'.png')});
   await button('#ferryExplore [data-guide]');await button('#ferryExplore > summary');

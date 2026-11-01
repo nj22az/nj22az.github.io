@@ -1,3 +1,5 @@
+import {runInNewContext} from 'node:vm';
+import {createMotion,createAutoRun} from '../src/input/touch-feel.js';
 import test from 'node:test';
 import {readFileSync} from 'node:fs';
 import {GLTFLoader} from '../vendor/GLTFLoader.js';
@@ -82,4 +84,19 @@ test('a real visible Blender machinery surface resolves to inspection data at ph
    if(hit&&hit.point.y>-.65&&hit.point.y<1.4&&hit.point.distanceTo(at)<1.5)picked=true;
   }assert.equal(picked,true,'Machinery can be picked at aspect '+aspect);
  }
+});
+
+// Mode changes can happen between simulation frames, before the locked update resets easing.
+test('opening and closing machinery inspection between frames clears residual walking',()=>{
+ const source=readFileSync(new URL('../src/game.js',import.meta.url),'utf8');
+ const walkMotion=createMotion(),touchAutoRun=createAutoRun();walkMotion.update(0,1,.1);touchAutoRun.update(1,.3);
+ let resets=0;const ctx={walkMotion,touchAutoRun,resetInput:()=>resets++,ferryExploreActive:()=>true,ferryExplorer:{mode:'walk',nearby:()=>[{}],inspect(){this.mode='inspect';return true;},walk(){this.mode='walk';}},say:()=>{}};
+ for(const name of ['resetFerryInput','inspectFerryMachinery']){
+  const start=source.indexOf('function '+name+'('),end=source.indexOf('\n}',start)+2;
+  // The reset helper is intentionally a one-line function.
+  const text=name==='resetFerryInput'?source.slice(start,source.indexOf('\n',start)):source.slice(start,end);
+  runInNewContext(text,ctx);
+ }
+ ctx.inspectFerryMachinery();ctx.inspectFerryMachinery();assert.equal(ctx.ferryExplorer.mode,'walk');
+ const remaining=walkMotion.update(0,0,.02);assert.equal(remaining.x,0);assert.equal(remaining.y,0);assert.equal(touchAutoRun.running,false);assert.equal(resets,2);
 });

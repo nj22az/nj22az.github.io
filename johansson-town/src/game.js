@@ -1653,7 +1653,7 @@ function ferryExploreActive(){
  ferryExplorer??=createFerryExploration(camera);
  const active=ferryExplorer.sync({ship:current?null:world.ferry?.ferry,position:player.position,deck:current?null:deckUnder(),
   override:!!(freeCamera.active||inspector?.active||photoStudio?.active||pocket?.raised||conversationName||islandPlay?.cinematic||window.__JOHANSSON_AUDIT__?.camera)});
- if(active&&!ferryExplorerUI)ferryExplorerUI=createFerryExplorationUI({explorer:ferryExplorer,onChange:()=>resetInput()});
+ if(active&&!ferryExplorerUI)ferryExplorerUI=createFerryExplorationUI({explorer:ferryExplorer,onChange:()=>resetFerryInput()});
  ferryExplorerUI?.update(performance.now(),yaw);
  return active;
 }
@@ -1669,12 +1669,13 @@ function applyFerryCamera(){
  const now=performance.now(),dt=ferryRenderAt===null?1/60:Math.min(.1,Math.max(0,(now-ferryRenderAt)/1000));ferryRenderAt=now;
  return ferryExplorer.apply({yaw,pitch,dt,fov:cameraControls.settings.fov});
 }
-function changeView(){if(ferryExploreActive()){say(ferryExplorer.overview(),2);resetInput();return;}setThirdPerson(!thirdPerson);}
+function resetFerryInput(){walkMotion.reset();touchAutoRun.reset();resetInput();}
+function changeView(){if(ferryExploreActive()){say(ferryExplorer.overview(),2);resetFerryInput();return;}setThirdPerson(!thirdPerson);}
 function inspectFerryMachinery(){
  if(!ferryExploreActive())return false;
  if(ferryExplorer.mode==='inspect')ferryExplorer.walk();
  else if(!ferryExplorer.inspect(ferryExplorer.nearby()[0]))say('Move closer to machinery, or tap its visible surface.',3);
- resetInput();return true;
+ resetFerryInput();return true;
 }
 function shipRoom(){const d=current?null:deckUnder();return !!d&&[1.95,2.2,2.45,2.65].some(h=>ferryWalk.cameraBlocked(player.position.x,player.position.z,d.y+h,.05));}
 /** The ground under the player's feet: her deck aboard, the town's otherwise. */
@@ -2190,7 +2191,7 @@ canvas.addEventListener('click',event=>{
  if(ferryExploreActive()){
   if(ferryExplorer.mode!=='walk')return;
   const p=world.ferry.ferry.worldToLocal(hit.point.clone()),target=ferryExplorer.targetAt(p);
-  if(!object?.userData.hit?.label?.startsWith('Talk to ')&&target&&p.y>-.65&&p.y<1.4&&ferryExplorer.inspect(target,p)){resetInput();return;}
+  if(!object?.userData.hit?.label?.startsWith('Talk to ')&&target&&p.y>-.65&&p.y<1.4&&ferryExplorer.inspect(target,p)){resetFerryInput();return;}
  }
 
  // Batched street props keep their action on a separate anchor. Resolve that anchor
@@ -2228,7 +2229,7 @@ document.addEventListener('keydown',e=>{
   if(e.code==='KeyF'||e.code==='Escape'){e.preventDefault();if(!e.repeat)lowerPocket();return;}
   if(!['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyI','KeyJ','KeyK','KeyL','ShiftLeft','ShiftRight'].includes(e.code))return;
  }
- if(e.code==='Escape'){if(ferryExploreActive()&&ferryExplorer.mode!=='walk'){ferryExplorer.walk();resetInput();return;}toggleDir(false);return;}
+ if(e.code==='Escape'){if(ferryExploreActive()&&ferryExplorer.mode!=='walk'){ferryExplorer.walk();resetFerryInput();return;}toggleDir(false);return;}
  if(e.code==='KeyC'&&!e.repeat){openCamera();return;}
  if(e.code==='KeyP'&&!e.repeat){openPhotoStudio();return;}
  if(e.code==='KeyO'&&!e.repeat){openFreeCamera();return;}
