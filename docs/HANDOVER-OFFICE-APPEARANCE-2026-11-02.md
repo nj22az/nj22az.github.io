@@ -20,4 +20,18 @@ Physical iPhone/iPad Safari remains unverified. The hosted suite uses Chromium w
 
 ### Accepted candidate
 
-[Office appearance review 41361025170](https://github.com/nj22az/nj22az.github.io/actions/runs/41361025170) passed all six profiles in both appearances, explicit persistence, device following and override, keyboard activation, core text contrast ≥4.5:1, header/control bounds, calendar/menu controls, all project actions, and blocked-storage switching. All 24 viewport screenshots were captured. [Harbour regression 41361025172](https://github.com/nj22az/nj22az.github.io/actions/runs/41361025172) passed. Publication checks will be recorded after deployment.
+[Office appearance review 41361025170](https://github.com/nj22az/nj22az.github.io/actions/runs/41361025170) passed all six profiles in both appearances, explicit persistence, device following and override, keyboard activation, core text contrast ≥4.5:1, header/control bounds, calendar/menu controls, all project actions, and blocked-storage switching. All 24 viewport screenshots were captured. [Harbour regression 41361025172](https://github.com/nj22az/nj22az.github.io/actions/runs/41361025172) passed. Production runtime source: `005d4ec6e1838d18102b4ee3fe3a35b3230f640b` on main. [Production Office review 41361197140](https://github.com/nj22az/nj22az.github.io/actions/runs/41361197140), [production harbour review 41361197152](https://github.com/nj22az/nj22az.github.io/actions/runs/41361197152) and [Pages deployment 41361197316](https://github.com/nj22az/nj22az.github.io/actions/runs/41361197316) all passed. All five changed public runtime files match the accepted source byte-for-byte. The live header switch was clicked and the dark page background verified as `rgb(20, 29, 36)`.
+
+### Saved evidence
+
+Captures are from the accepted candidate with the exact published runtime files. Hosted third-party fonts and maps are blocked; these screenshots use the fallback font. Core contrast assertions cover project summaries, the maintenance preview caption and yellow menu text, rather than whole-site certification.
+
+- [Desktop home](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/desktop-dark-home.webp)
+- [Desktop projects](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/desktop-dark-projects.webp)
+- [iPad portrait](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/ipad-portrait-dark-home.webp)
+- [Phone](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/phone-dark-home.webp)
+- [320 px phone](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/small-phone-dark-home.webp)
+- [Six-profile results](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/results.json)
+- [Public integrity verification](https://github.com/nj22az/nj22az.github.io/blob/main/release-evidence/office-appearance-2026-11-02/public-files.json)
+
+No open implementation blocker. Next acceptance step is an owner review on physical iPad/iPhone Safari.
