@@ -14,7 +14,8 @@ const report={physicalDevice:false,engine:'WebKit / software graphics',profiles:
 try{
  browser=await webkit.launch({headless:false});
  const profiles=[['ipad-portrait',{...devices['iPad Mini'],viewport:{width:744,height:1133},screen:{width:744,height:1133}}],['ipad-landscape',{...devices['iPad Mini'],viewport:{width:1133,height:744},screen:{width:1133,height:744}}],['desktop',{viewport:{width:1280,height:800},deviceScaleFactor:1,hasTouch:false,isMobile:false}]];
- for(const [name,options] of profiles){
+ const requested=process.argv[2];if(requested&&!profiles.some(([name])=>name===requested))throw Error('Unknown exploration profile: '+requested);
+ for(const [name,options] of profiles.filter(([name])=>!requested||name===requested)){
   const dir=resolve(out,name);await mkdir(dir,{recursive:true});const entry={name,viewport:options.viewport,steps:[],errors:[]};report.profiles.push(entry);
   const context=await browser.newContext({...options,serviceWorkers:'block',recordVideo:{dir:resolve(dir,'recordings'),size:options.viewport}}),page=await context.newPage();
   page.on('pageerror',e=>entry.errors.push(e.message));
