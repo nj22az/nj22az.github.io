@@ -69,6 +69,37 @@ test('Camera preview serves only public app resources and rejects foreign hosts,
   for(const path of ['camera/.private.js','camera/samples/linked.png','johansson-town/node_modules/private.js','AGENTS.md'])assert.equal((await fetch(new URL(path,preview.url))).status,404,path);
  }finally{await preview?.close();await rm(root,{recursive:true,force:true});}
 });
+test('Camera preview permits only the exact bundled detector assets with their own MIME types',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'camera-detector-preview-'));let preview;
+ const assets=[
+  ['pico.js','text/javascript',Buffer.from('export const detectorFixture=true;')],
+  ['facefinder.bin','application/octet-stream',Buffer.from([0,127,128,255,10,0])],
+  ['pico.NOTICE.txt','text/plain',Buffer.from('Detector fixture provenance')],
+  ['pico.LICENSE.txt','text/plain',Buffer.from('MIT fixture licence')],
+ ];
+ try{
+  const vendor=join(root,'camera','vendor');await mkdir(vendor,{recursive:true});await mkdir(join(root,'camera','samples'));
+  for(const [name,,bytes] of assets)await writeFile(join(vendor,name),bytes);
+  for(const name of ['private.js','.private.js','other.bin'])await writeFile(join(vendor,name),'private fixture');
+  await writeFile(join(root,'camera','elsewhere.bin'),'private binary');await writeFile(join(root,'camera','samples','elsewhere.bin'),'private binary');
+  await writeFile(join(root,'outside.bin'),'outside fixture');
+  preview=await serveCamera({root});
+  for(const [name,mime,bytes] of assets){
+   const response=await fetch(new URL('camera/vendor/'+name,preview.url));
+   assert.equal(response.status,200,name);assert.equal(response.headers.get('content-type'),mime,name);
+   assert.equal(response.headers.get('x-content-type-options'),'nosniff');assert.equal(response.headers.get('cache-control'),'no-store');
+   assert.deepEqual(Buffer.from(await response.arrayBuffer()),bytes,name);
+   const head=await fetch(new URL('camera/vendor/'+name,preview.url),{method:'HEAD'});
+   assert.equal(head.status,200,name);assert.equal(head.headers.get('content-type'),mime,name);assert.equal((await head.arrayBuffer()).byteLength,0);
+  }
+  for(const path of ['camera/vendor/private.js','camera/vendor/.private.js','camera/vendor/other.bin','camera/elsewhere.bin','camera/samples/elsewhere.bin']){
+   assert.equal((await fetch(new URL(path,preview.url))).status,404,path);
+  }
+  // An allowlisted name still cannot expose a link outside the public app resources.
+  await rm(join(vendor,'facefinder.bin'));await symlink(join(root,'outside.bin'),join(vendor,'facefinder.bin'));
+  assert.equal((await fetch(new URL('camera/vendor/facefinder.bin',preview.url))).status,404);
+ }finally{await preview?.close();await rm(root,{recursive:true,force:true});}
+});
 test('valid edit preserves explicit values',()=>{
  const edit={layers:[{look:'crayon',amount:.65}],adjust:{light:-.2},enhance:0,paper:'none',frame:'none',crop:{x:.1,y:.2,w:.8,h:.7}};
  assert.equal(validateEdit(edit,catalog),edit);

@@ -60,3 +60,8 @@ Local policy/inventory and runtime-package tests: **14/14 pass**; browser script
 No gameplay runtime, geometry, graphics, save logic or Linux assertions changed. Hosted reruns and visual review
 remain required; physical iPadOS Safari is still untested. Main has since published Camera retouch via #422;
 this branch must retain that publication when integration is prepared.
+
+Integration follows current main `d328e45c` (including the standalone Camera version/header).
+Only the handover index conflicted; both Camera publication and this offline review entry are retained.
+The local browser attempt is blocked by missing WebKit system libraries; Chromium's download is unavailable.
+Git HTTPS has no write credential; the connected GitHub API transfers exact local tree objects.

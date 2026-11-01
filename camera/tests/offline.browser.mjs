@@ -75,7 +75,18 @@ try{
   await page.setViewportSize({width:744,height:980});await page.click('#settingsToggle');await page.locator('#offlineSetting').scrollIntoViewIfNeeded();const rect=await page.locator('#offlineSetting').boundingBox();assert.ok(rect.width>=44&&rect.height>=44&&rect.x>=0&&rect.x+rect.width<=744);await page.screenshot({path:join(shots,'mini-ready-offline.png')});await page.click('#settingsDone');
  });
  await check('a stalled online request falls back to the installed snapshot',async()=>{
-  await context.setOffline(false);stall='/camera/samples/default-adventure.png';const time=Date.now();assert.ok(await page.evaluate(async()=>{const r=await fetch('/camera/samples/default-adventure.png?stall-test');return r.ok&&(await r.blob()).size>0;}));assert.ok(Date.now()-time<4500);stall='';
+  // This checks the network deadline. Album stops the resumed live camera through the real UI; let cold shader
+  // compilation finish so a simultaneous 1920px software-rendered feed does not delay response delivery to the page.
+  await page.click('#roll');await page.waitForFunction(()=>window.pocketCamera.state.mode==='album'&&!window.pocketCamera.state.camera.running);
+  const names=await page.evaluate(async()=>{const key=new URL(document.querySelector('script[src*="app.js"]').src).search;return (await import('/camera/looks-gl.js'+key)).LOOK_NAMES;});
+  await page.waitForFunction(names=>names.every(name=>window.pocketCamera.engine.isReady(name)),names,{timeout:60000});
+  await page.evaluate(()=>window.pocketCamera.engine.gl.finish());
+  await context.setOffline(false);stall='/camera/samples/default-adventure.png';const time=Date.now();
+  const result=await page.evaluate(async()=>{const start=performance.now(),r=await fetch('/camera/samples/default-adventure.png?stall-test'),headersAt=performance.now(),blob=await r.blob(),end=performance.now();return {ok:r.ok,bytes:blob.size,elapsed:end-start,headersElapsed:headersAt-start,bodyElapsed:end-headersAt,workerTiming:r.headers.get('Server-Timing')};});
+  console.log('stalled-fetch timing '+JSON.stringify({...result,nodeRoundtrip:Date.now()-time}));
+  assert.ok(result.ok&&result.bytes>0);assert.ok(result.elapsed<4500,JSON.stringify(result));
+  const worker=Number(result.workerTiming?.match(/(?:^|, )camera;dur=([\d.]+)/)?.[1]);assert.ok(Number.isFinite(worker)&&worker<=3200,JSON.stringify(result));stall='';
+  await page.click('#closeAlbum');
  });
  await check('missing cached files are detected and repaired without touching the album',async()=>{
   await page.evaluate(async()=>{const c=await caches.open((await caches.keys()).find(k=>k.startsWith('pocket-camera-')));await c.delete('/camera/stickers/thao-pixar/Peace.webp');navigator.serviceWorker.controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});});await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry');

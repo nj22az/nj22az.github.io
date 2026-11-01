@@ -1,6 +1,6 @@
 {
-  "version": "20261031offline1",
-  "bytes": 22385224,
+  "version": "20261101ui1",
+  "bytes": 22676027,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "40b1811a0e99284e22df4e9fd26a16b04bf9ffeac906cfd6ddf52b6aaa636fa7",
-      "bytes": 93828
+      "sha256": "fdcb5e1286a53dfb38f1cb0554e2a5f6a244956cf07791db2ada7b76f61e524d",
+      "bytes": 102220
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -39,8 +39,8 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "ddd795f7d423ca673c4470a66e29cd4225ea299c9e7508a01d12deb7ca97bf67",
-      "bytes": 22336
+      "sha256": "d80a2e53cd9d9ff1ffdf36589efad2e1d213afebb54b55ba08e214de6a840979",
+      "bytes": 25395
     },
     {
       "url": "/camera/camera.css",
@@ -94,8 +94,13 @@
     },
     {
       "url": "/camera/erase.js",
-      "sha256": "8eb7469636c97937339ffdfda0b32f98c0aaf819f6b0d6853229acbb1f011592",
-      "bytes": 7188
+      "sha256": "ba84a76ab02c3eb4eac19e6d559ac0d6e13c4d30ce075f8c82699423c01f15ce",
+      "bytes": 12787
+    },
+    {
+      "url": "/camera/face-detect.js",
+      "sha256": "67635471e70c5f588ca3ef2db5eb5898962586aa761fe3ea8755738a4b1f57ba",
+      "bytes": 2345
     },
     {
       "url": "/camera/fonts/baloo2.woff2",
@@ -194,8 +199,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "25a3fbe40478aedec2436909afe28f6c72587b356bfe5c2c03fb9c3672577bac",
-      "bytes": 27387
+      "sha256": "3b2bf6cc77145e9401529da09df2581884ce87b3190a5b3efa38daef9c666331",
+      "bytes": 30284
     },
     {
       "url": "/camera/lettering.js",
@@ -209,8 +214,18 @@
     },
     {
       "url": "/camera/looks-gl.js",
-      "sha256": "0b5f8d5acc5260b71d54bf8fb3d8f350412854e65630686aa13a77ddf725c5fb",
-      "bytes": 94560
+      "sha256": "6039445ad091620755f09efe69b01cf5fec260cd541c9a026dbefe13c73c5b83",
+      "bytes": 94662
+    },
+    {
+      "url": "/camera/makeup-guide.js",
+      "sha256": "e3f1550de8da6ce75b71d0bd5fac8253bcdbf176ccfe31ce50e8a1ff9e6565c9",
+      "bytes": 7560
+    },
+    {
+      "url": "/camera/makeup.js",
+      "sha256": "68f3060dde55aea3a581c451013e1416c366ab961e0d125fb58e2d1cccfd000e",
+      "bytes": 8142
     },
     {
       "url": "/camera/manifest.webmanifest",
@@ -234,8 +249,8 @@
     },
     {
       "url": "/camera/offline.js",
-      "sha256": "52f39236bba6f555ce00ef3bc1de32a39c945a59fef1837806254955e7487ade",
-      "bytes": 1981
+      "sha256": "71fc17c9133d2cb138c34797923e042e4b68466bbd4a34a9ada417418bb32dbe",
+      "bytes": 3989
     },
     {
       "url": "/camera/playing-cards.js",
@@ -256,6 +271,11 @@
       "url": "/camera/printer.js",
       "sha256": "b593b329d53a4d866cf573474fff9bf2a11783a461fadbf0db2d511f72ba73e0",
       "bytes": 6467
+    },
+    {
+      "url": "/camera/retouch-analysis.js",
+      "sha256": "ae74b63fa4d02c3a4bd45221c5e90aab22b0ac8c56dc39ed1d89f9e4064d0042",
+      "bytes": 3027
     },
     {
       "url": "/camera/samples/default-adventure.png",
@@ -1566,6 +1586,26 @@
       "url": "/camera/stickers/thuan/stand.webp",
       "sha256": "2c2bcad6f83b560ab855b6743c131b9a75ee2253536b70b7917211c38d79402e",
       "bytes": 114712
+    },
+    {
+      "url": "/camera/vendor/facefinder.bin",
+      "sha256": "d8014993e7298c7b1865d1f8b855d6dbf4ec5c808bf879e2091ab6837abf90cd",
+      "bytes": 239632
+    },
+    {
+      "url": "/camera/vendor/pico.LICENSE.txt",
+      "sha256": "3769f26981094bcd4e45134dc3101f9e2fbde28c2bfe15534557b4c089f2f521",
+      "bytes": 1072
+    },
+    {
+      "url": "/camera/vendor/pico.NOTICE.txt",
+      "sha256": "99d571dd87b76aa8f06dea0b7b17c2d92aeb4f4aebe96631bd5435d30e4ff098",
+      "bytes": 1361
+    },
+    {
+      "url": "/camera/vendor/pico.js",
+      "sha256": "47ac5090f6c5387ba26644bc5e42c46a61931918099e9a686c0bddc92b91be38",
+      "bytes": 5607
     },
     {
       "url": "/johansson-town/src/render/illustration-modules.js",

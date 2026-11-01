@@ -1,0 +1,20 @@
+Pocket Camera local frontal-face detection
+
+pico.js: Nenad Markus, MIT (upstream readme explicitly states MIT).
+Source: https://github.com/nenadmarkus/picojs
+Pinned commit: afffa50ec4134a47005f2cbf8112eaa69f65f37e
+Upstream pico.js SHA-256: 785b981cc79e5fa3f7557dc3fa7773629d7529994d7627de41b77d8687649309
+Local changes: declare pico as an ES module export; scope the unused detection-memory loop variable.
+
+facefinder.bin: pre-trained frontal-face cascade distributed in the MIT-licensed pico repository.
+Source: https://github.com/nenadmarkus/pico/blob/7d550c78b2c31a4e1dfc5bcdfe9da013297b5cc8/rnt/cascades/facefinder
+Pinned commit: 7d550c78b2c31a4e1dfc5bcdfe9da013297b5cc8
+Unmodified model SHA-256: d8014993e7298c7b1865d1f8b855d6dbf4ec5c808bf879e2091ab6837abf90cd
+Licence: pico.LICENSE.txt, Copyright (c) 2013 Nenad Markus.
+
+Method: N. Markus, M. Frljak, I. S. Pandzic, J. Ahlberg and R. Forchheimer,
+"Object Detection with Pixel Intensity Comparisons Organized in Decision Trees", https://arxiv.org/abs/1305.4537
+
+The detector uses a downsampled grayscale copy of the photo, entirely on the device. It detects approximately frontal
+faces, not identities or demographic attributes. Profile, small, tilted or obscured faces may need manual placement.
+Detected bounds are approximate and should be reviewed before makeup is applied. No images leave the device.

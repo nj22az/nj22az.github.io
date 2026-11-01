@@ -3,18 +3,20 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261031offline1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101ui1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
-import {lookIcon} from './look-icons.js?v=20261031offline1';
-import {prepareOffline} from './offline.js?v=20261031offline1';
-import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031offline1';
+import {lookIcon} from './look-icons.js?v=20261031retouch1';
+import {prepareOffline} from './offline.js?v=20261031retouch1';
+import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
-import {createEraser} from './erase.js?v=20261030crop1';
+import {createEraser} from './erase.js?v=20261031retouch1';
+import {normaliseMakeup,applyMakeup,detectMakeupFace} from './makeup.js?v=20261031retouch1';
+import {createMakeupGuide} from './makeup-guide.js?v=20261031retouch1';
 import {createPrinter} from './printer.js?v=20261030share1';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
@@ -75,7 +77,7 @@ function startEngine(){
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();setShutter('off');$('saveEdit').disabled=true;toast('Graphics restarted');});
 canvas.addEventListener('webglcontextrestored',()=>{
  startEngine();
- if(state.edit)engine?.setSource('edit',state.edit.picture,state.edit.width,state.edit.height);
+ if(state.edit){state.edit.makeupDirty=true;updateEditSource();}
  setShutter(state.camera.running?'shoot':$('welcome').hidden||!canStart()?'off':'start');$('saveEdit').disabled=false;refreshThumbs(true);
  invalidate();
 });
@@ -429,6 +431,7 @@ let thumbsAt=0,thumbsDue=false;
 function refreshThumbs(now=false){thumbsDue=true;if(now)thumbsAt=0;schedule();}
 function drawThumbs(){
  if(!engine||!thumbsDue)return;
+ if(state.mode==='editor')updateEditSource();
  const t=performance.now();
  const live=state.mode==='camera';
  if(t-thumbsAt<(live?700:120))return;
@@ -512,13 +515,16 @@ function govern(t){
 }
 function drawEditor(){
  const e=state.edit;
+ updateEditSource();
  const crop=e.recipe.crop,pw=crop.w*e.width,ph=crop.h*e.height,aspect=pw/ph;
  const box=fitFrame($('editFrame'),$('editPictureArea'),aspect);
  const dpr=Math.min(devicePixelRatio||1,3),h=Math.min(ph,box.height*dpr,2048/Math.max(1,aspect),2048);
  setCanvasSize(h*aspect,h);
  // While erasing, the photo as it is under the Looks: no mirror trick, and no frame or date over its edges.
- const recipe=e.comparing?normalRecipe():e.erasing?{...e.recipe,trick:'none',paper:'none'}:e.recipe;
- dirty=!engine.draw(recipe,{source:'edit',crop});
+ const plain=e.comparing||e.erasing||e.aligning;
+ const recipe=plain?normalRecipe():e.recipe;
+ dirty=!engine.draw(recipe,{source:e.makeupRendered&&(e.comparing||e.erasing)?'edit-original':'edit',crop});
+ makeupGuide.render();
  paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing||e.cropping);
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing&&!e.cropping,e.taken,e.recipe.frame);
 }
@@ -1004,16 +1010,18 @@ async function editFile(file){
 }
 function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  if(!engine)return;
+ makeupGuide.reset();
  state.edit?.picture?.close?.();
- state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode};
- engine.setSource('edit',picture,width,height);
+ state.edit={picture,width,height,recipe:normalRecipe(recipe),active:0,shotId,taken,sourceBlob,comparing:false,adjust:'light',from:state.mode,makeupDirty:true,aligning:false};
+ updateEditSource();
  eraser.reset();$('eraseUndo').disabled=true;
+ $('makeupControls').hidden=true;$('makeupPhoto').setAttribute('aria-expanded','false');renderMakeup();
  show('editor');showEnhanceStrength(false);selectFrameFinish('paper');$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
 function closeEditor(){
  if(state.edit?.saving)return;
- const from=state.edit?.from;engine?.dropSource('edit');state.edit?.picture?.close?.();state.edit=null;
+ const from=state.edit?.from;eraser.reset();makeupGuide.reset();engine?.dropSource('edit');engine?.dropSource('edit-original');state.edit?.picture?.close?.();state.edit=null;
  if(from==='viewer'&&state.viewing)openViewer(state.viewing.id);else if(from==='album')openAlbum();else show('camera');
 }
 $('cancelEdit').addEventListener('click',closeEditor);
@@ -1067,16 +1075,18 @@ $('frameMirror').addEventListener('click',()=>selectFrameFinish('mirror'));
 $('mirrorChoices').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');state.edit.recipe.trick=b.dataset.trick;renderFramePanel();refreshThumbs(true);invalidate();});
 $('editStamp').addEventListener('click',()=>{const e=state.edit;if(!e)return;sound('tick');e.recipe.stamp=!e.recipe.stamp;renderFramePanel();invalidate();});
 $('saveEdit').addEventListener('click',async()=>{
- const e=state.edit;if(!e||e.saving)return;
+ const e=state.edit;if(!e||e.saving||eraser.working||eraser.analyzing||e.detecting)return;
  const button=$('saveEdit');e.saving=true;button.disabled=true;$('cancelEdit').disabled=true;button.textContent='Saving…';await nextFrame();
  try{
+  setMakeupAlignment(false);
   const recipe=normalRecipe(e.recipe);
   // An erased photo keeps its erased picture as its source, so it opens again as it was left.
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const output=photoSize(recipe.crop.w*e.width,recipe.crop.h*e.height);
+  updateEditSource(true);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',crop:recipe.crop,...output}),recipe,e.taken);
   const shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime(),edited:Date.now()});
-  engine.dropSource('edit');e.picture?.close?.();state.edit=null;
+  eraser.reset();makeupGuide.reset();engine.dropSource('edit');engine.dropSource('edit-original');e.picture?.close?.();state.edit=null;
   if(shot){state.viewing=shot;await openViewer(shot.id);}else show('camera');
   if(shot)toast('Saved to the app album');
  }catch(err){console.error(err);toast('The photo could not be saved to the app album');}
@@ -1086,7 +1096,7 @@ $('saveEdit').addEventListener('click',async()=>{
 function comparePhoto(on,pinned=false){
  const e=state.edit;if(!e)return;e.comparing=on;e.comparePinned=pinned;
  $('compareOriginal').setAttribute('aria-pressed',String(on));$('original').hidden=!on;
- editStickers.hidden=on||e.erasing||e.cropping;invalidate();
+ editStickers.hidden=on||e.erasing||e.cropping||e.aligning;makeupGuide.active=e.aligning&&!on;invalidate();
 }
 $('compareOriginal').addEventListener('click',()=>{const on=!state.edit?.comparePinned;comparePhoto(on,on);});
 // Hold the picture to see the original.
@@ -1094,7 +1104,7 @@ $('compareOriginal').addEventListener('click',()=>{const on=!state.edit?.compare
  const stage=$('editPictureArea');let holding=null,at=null;
  const end=()=>{clearTimeout(holding);holding=null;if(state.edit?.comparing&&!state.edit.comparePinned)comparePhoto(false);};
  stage.addEventListener('pointerdown',e=>{
-  if(!state.edit||e.target.closest('button')||state.edit.erasing||state.edit.cropping)return;
+  if(!state.edit||e.target.closest('button')||state.edit.erasing||state.edit.cropping||state.edit.aligning)return;
   at={x:e.clientX,y:e.clientY};
   holding=setTimeout(()=>{if(!state.edit)return;comparePhoto(true);},140);
  });
@@ -1104,6 +1114,8 @@ $('compareOriginal').addEventListener('click',()=>{const on=!state.edit?.compare
  gestures(stage,{onTap:e=>{if(state.edit&&!state.edit.erasing&&!state.edit.cropping)focusTap(e,state.edit.recipe,'editFrame');}});
 }
 function selectTab(tab){
+ if(state.edit&&tab!=='adjust'){state.edit.detecting=null;setMakeupAlignment(false);}
+ if(tab!=='erase')eraser.clearSuggestions();
  for(const [id,panel,name] of [['tabLooks','panelLooks','looks'],['tabCrop','panelCrop','crop'],['tabAdjust','panelAdjust','adjust'],['tabErase','panelErase','erase'],['tabStickers','panelStickers','stickers'],['tabFrame','panelFrame','frame']]){
   $(id).setAttribute('aria-selected',String(tab===name));$(panel).hidden=tab!==name;
  }
@@ -1116,6 +1128,7 @@ function selectTab(tab){
  if(tab==='looks')requestAnimationFrame(()=>renderStripSelection());
  if(tab==='stickers')renderStickerPicker();
  if(tab==='frame')renderFramePanel();
+ if(tab==='adjust')renderMakeup();
  if(cropping)renderCropPanel();
 }
 $('tabLooks').addEventListener('click',()=>selectTab('looks'));
@@ -1196,13 +1209,109 @@ async function sayLettering(layer,i,info){
 const cameraStickers=createStickerLayer($('cameraFrame'),{list:()=>state.camera.recipe.stickers,changed:remember,editText:(i,s)=>editBalloonText(cameraStickers,i,s),say:(i,info)=>sayLettering(cameraStickers,i,info)});
 const editStickers=createStickerLayer($('editFrame'),{list:()=>state.edit?.recipe.stickers||[],changed:()=>{},editText:(i,s)=>editBalloonText(editStickers,i,s),say:(i,info)=>sayLettering(editStickers,i,info)});
 const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?cameraStickers:null;
+// Makeup is prepared once when its controls or the underlying photo change. The recipe retains the source and
+// placement, so colour/smoothing remain reversible after saving and reopening a copy.
+function updateEditSource(full=false){
+ const e=state.edit;if(!e||!engine||engine.lost()||(!e.makeupDirty&&e.makeupFull===full))return;
+ const m=e.recipe.makeup,active=!!m.face&&(m.skin||m.lips||m.blush);
+ let source=e.picture;
+ if(active&&!full&&Math.max(e.width,e.height)>1280){
+  if(!e.makeupPreview||e.makeupPreviewDirty){
+   const c=e.makeupPreview||document.createElement('canvas'),scale=1280/Math.max(e.width,e.height);
+   c.width=Math.round(e.width*scale);c.height=Math.round(e.height*scale);c.getContext('2d').drawImage(e.picture,0,0,c.width,c.height);
+   e.makeupPreview=c;e.makeupPreviewDirty=false;
+  }
+  source=e.makeupPreview;
+ }
+ const prepared=active?applyMakeup(source,m,e.makeupCanvas):e.picture;
+ e.makeupRendered=prepared!==e.picture;
+ if(e.makeupRendered){
+  e.makeupCanvas=prepared;
+  if(!engine.hasSource('edit-original')||e.originalRevision!==e.sourceRevision){engine.setSource('edit-original',e.picture,e.width,e.height);e.originalRevision=e.sourceRevision;}
+ }
+ else{engine.dropSource('edit-original');if(e.makeupCanvas){e.makeupCanvas.width=e.makeupCanvas.height=1;e.makeupCanvas=null;}}
+ engine.setSource('edit',prepared,prepared.width,prepared.height);e.makeupDirty=false;e.makeupFull=full;
+}
+const makeupGuide=createMakeupGuide($('editFrame'),{edit:()=>state.edit,changed:()=>{const e=state.edit;if(!e||e.saving)return;e.makeupDirty=true;renderMakeup();refreshThumbs(true);invalidate();}});
+function renderMakeup(message){
+ const e=state.edit;if(!e)return;
+ const m=normaliseMakeup(e.recipe.makeup),placed=!!m.face;
+ for(const [name,key] of [['Skin','skin'],['Lips','lips'],['Blush','blush']]){
+  $('makeup'+name).value=Math.round(m[key]*100);$('makeup'+name).disabled=!placed||e.saving;
+  $('makeup'+name+'Value').textContent=Math.round(m[key]*100)+'%';
+ }
+ $('makeupSummary').textContent=m.skin||m.lips||m.blush?'On':'Off';
+ $('makeupFace').setAttribute('aria-pressed',String(!!e.aligning));$('makeupAngleRow').hidden=!e.aligning;
+ $('makeupAngle').value=m.face?.angle||0;$('makeupAngleValue').textContent=(m.face?.angle||0)+'°';
+ for(const [name,key] of [['Width','w'],['Height','h']]){
+  const value=Math.round((m.face?.mouth[key]||(key==='w'?.36:.08))*1000)/10;
+  $('makeupMouth'+name+'Row').hidden=!e.aligning;$('makeupMouth'+name).value=value;$('makeupMouth'+name+'Value').textContent=value+'%';
+ }
+ $('makeupDetect').disabled=!!e.detecting;$('makeupDetect').textContent=e.detecting?'Finding…':'Find face';
+ for(const b of document.querySelectorAll('.makeup-shades button'))b.setAttribute('aria-pressed',String(b.dataset.shade===m.shade));
+ if(message)$('makeupHint').textContent=message;
+ else if(e.aligning)$('makeupHint').textContent='Drag the oval, eyes and lips into place. Resize from the corner.';
+ else if(!placed)$('makeupHint').textContent='Find a face, or align the guide manually.';
+ else $('makeupHint').textContent='Check eye and lip alignment before adding colour.';
+}
+function setMakeupAlignment(on){
+ const e=state.edit;if(!e)return;
+ if(on&&!e.recipe.makeup.face){
+  const c=e.recipe.crop;e.recipe.makeup.face=normaliseMakeup({face:{x:c.x+c.w*.25,y:c.y+c.h*.12,w:c.w*.5,h:c.h*.76}}).face;
+ }
+ e.aligning=!!on;makeupGuide.active=!!on;
+ editStickers.hidden=!!on||e.comparing||e.erasing||e.cropping;
+ renderMakeup();invalidate();
+}
+async function findMakeupFace(){
+ const e=state.edit;if(!e||e.saving||e.detecting||eraser.working)return;
+ const source=e.picture,task={};e.detecting=task;renderMakeup('Finding a face on this device…');
+ try{
+  await nextFrame();const result=await detectMakeupFace(source);
+  if(state.edit!==e||e.picture!==source||e.detecting!==task||e.saving||$('panelAdjust').hidden||$('makeupControls').hidden)return;
+  if(result.face){e.recipe.makeup.face=result.face;e.makeupDirty=true;setMakeupAlignment(true);renderMakeup('Face found. Align the eyes and lips, then adjust the effects.');}
+  else renderMakeup('No clear face found. Use Align face to place the guide manually.');
+ }catch{if(state.edit===e)renderMakeup('Face detection is unavailable. Use Align face.');}
+ finally{if(state.edit===e&&e.detecting===task){e.detecting=null;const hint=$('makeupHint').textContent;renderMakeup(hint);invalidate();}}
+}
+$('makeupPhoto').addEventListener('click',()=>{
+ const e=state.edit;if(!e||e.saving)return;
+ const open=$('makeupControls').hidden;$('makeupControls').hidden=!open;$('makeupPhoto').setAttribute('aria-expanded',String(open));
+ if(!open){e.detecting=null;setMakeupAlignment(false);}else if(!e.recipe.makeup.face)findMakeupFace();
+});
+$('makeupDetect').addEventListener('click',findMakeupFace);
+$('makeupFace').addEventListener('click',()=>{if(state.edit&&!state.edit.saving){state.edit.detecting=null;setMakeupAlignment(!state.edit.aligning);}});
+for(const [name,key] of [['Skin','skin'],['Lips','lips'],['Blush','blush']])$('makeup'+name).addEventListener('input',ev=>{
+ const e=state.edit;if(!e||e.saving||!e.recipe.makeup.face)return;
+ e.recipe.makeup[key]=ev.target.value/100;e.makeupDirty=true;renderMakeup();invalidate();refreshThumbs(true);
+});
+document.querySelector('.makeup-shades').addEventListener('click',ev=>{
+ const b=ev.target.closest('button'),e=state.edit;if(!b||!e||e.saving)return;
+ e.recipe.makeup.shade=b.dataset.shade;e.makeupDirty=true;renderMakeup();refreshThumbs(true);invalidate();
+});
+$('makeupAngle').addEventListener('input',ev=>{const e=state.edit;if(!e?.recipe.makeup.face||e.saving)return;e.recipe.makeup.face.angle=+ev.target.value;e.makeupDirty=true;renderMakeup();invalidate();});
+for(const [name,key] of [['Width','w'],['Height','h']])$('makeupMouth'+name).addEventListener('input',ev=>{
+ const e=state.edit;if(!e?.recipe.makeup.face||e.saving)return;e.recipe.makeup.face.mouth[key]=ev.target.value/100;e.makeupDirty=true;renderMakeup();invalidate();
+});
+$('makeupReset').addEventListener('click',()=>{const e=state.edit;if(!e||e.saving)return;e.detecting=null;e.recipe.makeup=normaliseMakeup({face:e.recipe.makeup.face});e.makeupDirty=true;setMakeupAlignment(false);refreshThumbs(true);invalidate();});
 // Erase (erase.js): paint over what should go; the editor's picture changes, the Looks redraw over it.
 const eraser=createEraser($('editFrame'),{
  edit:()=>state.edit,
- changed:picture=>{const e=state.edit;if(!e)return;e.erased=true;engine.setSource('edit',picture,e.width,e.height);$('eraseUndo').disabled=!eraser.canUndo;refreshThumbs(true);invalidate();},
- busy:on=>{$('eraseHint').textContent=on?'Erasing…':'Paint over what should go.';$('saveEdit').disabled=on;$('cancelEdit').disabled=on;if(!on)sound('pop');},
+ changed:picture=>{const e=state.edit;if(!e)return;e.erased=true;e.detecting=null;e.sourceRevision=(e.sourceRevision||0)+1;e.makeupDirty=true;e.makeupPreviewDirty=true;updateEditSource();$('eraseUndo').disabled=!eraser.canUndo;refreshThumbs(true);invalidate();},
+ suggestionsChanged:items=>{
+  const list=$('eraseSuggestions');list.textContent='';$('eraseClear').hidden=!items.length;
+  items.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.textContent=String(i+1);b.setAttribute('aria-label',`Heal suggested spot ${i+1}`);b.addEventListener('click',()=>eraser.healSuggestion(i));list.append(b);});
+  $('eraseHint').textContent=items.length?'Tap a numbered spot to heal it, or paint over another area.':'Paint over what should go.';
+ },
+ busy:on=>{$('eraseHint').textContent=on?'Working…':$('eraseSuggestions').childElementCount?'Tap a numbered spot to heal it, or paint over another area.':'Paint over what should go.';$('saveEdit').disabled=on;$('cancelEdit').disabled=on;$('eraseSuggest').disabled=on;$('eraseUndo').disabled=on||!eraser.canUndo;for(const b of $('eraseSuggestions').children)b.disabled=on;if(!on)sound('pop');},
  failed:()=>toast('That could not be erased'),
 });
+$('eraseSuggest').addEventListener('click',async()=>{
+ if(!state.edit||state.edit.saving||eraser.working||eraser.analyzing)return;
+ const e=state.edit,count=await eraser.analyze();
+ if(state.edit===e&&!count)$('eraseHint').textContent='No isolated spots found. Paint over an area to remove it.';
+});
+$('eraseClear').addEventListener('click',()=>eraser.clearSuggestions());
 $('eraseSize').addEventListener('input',e=>{eraser.size=e.target.value;});
 $('eraseUndo').addEventListener('click',()=>{if(eraser.working)return;sound('tick');eraser.undo();$('eraseUndo').disabled=!eraser.canUndo;});
 // The sheets: Lettering first (balloons and captions), then the residents' sheets, then the photographer's own.
@@ -1384,6 +1493,7 @@ $('enhanceStrength').addEventListener('change',()=>refreshThumbs(true));
 
 // ---------- Keys, drops, the page coming and going ----------
 addEventListener('keydown',e=>{
+ if(e.defaultPrevented)return;
  if(e.target.closest?.('input,textarea,select,dialog'))return;
  const layer=stickerLayer();
  if(layer?.selected!=null){
@@ -1423,7 +1533,7 @@ for(const element of [document.body,$('cameraPictureArea'),$('editPictureArea')]
 // On the Home Screen the camera is an app of its own: no way back to the website is needed, and it works offline (sw.js).
 const standalone=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
 document.documentElement.classList.toggle('standalone',standalone);
-prepareOffline($('offlineSetting'));
+prepareOffline($('offlineSetting'),{canReload:()=>!state.edit&&!state.camera.busy&&!importing&&!sharing});
 loadShots();
 if(!startEngine()){
  showWelcome();

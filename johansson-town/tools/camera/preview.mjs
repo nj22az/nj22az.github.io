@@ -5,10 +5,17 @@ import {resolve,extname} from 'node:path';
 import {pipeline} from 'node:stream/promises';
 
 const TYPES={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.wasm':'application/wasm','.woff2':'font/woff2','.webmanifest':'application/manifest+json'};
+// Only these bundled detector assets are public. Other vendor code and binary files remain private.
+const VENDOR=new Map([
+ ['/camera/vendor/pico.js','text/javascript'],
+ ['/camera/vendor/facefinder.bin','application/octet-stream'],
+ ['/camera/vendor/pico.NOTICE.txt','text/plain'],
+ ['/camera/vendor/pico.LICENSE.txt','text/plain'],
+]);
 const SHARED=new Set(['render/looks.js','render/print-media-shaders.js','render/illustration-modules.js','ui/look-picker.js','ui/icons.js'].map(file=>'/johansson-town/src/'+file));
 function publicFile(path){
  if(path.split('/').some(part=>part.startsWith('.')))return false;
- if(SHARED.has(path))return true;
+ if(SHARED.has(path)||VENDOR.has(path))return true;
  if(!path.startsWith('/camera/'))return false;
  const parts=path.slice(8).split('/');
  return (parts.length===1?parts[0]==='index.html'||/\.(js|css|png|jpg|webp|wasm|webmanifest)$/.test(parts[0]):['assets','cards','fonts','frames','icons','samples','stickers'].includes(parts[0]))&&!!TYPES[extname(path)];
@@ -32,7 +39,7 @@ export async function serveCamera({root}){
    if(!info.isFile()||current!==file)throw Error('Not a public regular file.');
    const verify=await open(current,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
    try{const now=await verify.stat();if(info.dev!==now.dev||info.ino!==now.ino)throw Error('File changed while opening.');}finally{await verify.close();}
-   res.writeHead(200,{'Content-Type':TYPES[extname(file)],'Content-Length':info.size,'Cache-Control':'no-store','Cross-Origin-Resource-Policy':'same-origin','X-Content-Type-Options':'nosniff','Content-Security-Policy':"frame-ancestors 'none'"});
+   res.writeHead(200,{'Content-Type':VENDOR.get(path)||TYPES[extname(file)],'Content-Length':info.size,'Cache-Control':'no-store','Cross-Origin-Resource-Policy':'same-origin','X-Content-Type-Options':'nosniff','Content-Security-Policy':"frame-ancestors 'none'"});
    if(req.method==='HEAD'){res.end();return;}
    await pipeline(handle.createReadStream({autoClose:false}),res);
   }catch{if(res.headersSent)res.destroy();else{res.writeHead(404);res.end();}}
