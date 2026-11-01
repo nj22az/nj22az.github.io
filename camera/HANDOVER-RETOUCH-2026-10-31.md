@@ -189,3 +189,11 @@ Safari standalone class and the display-mode media query. Browser navigation and
 remain. Release/cache keys and MCP renderer import align at `20261101ui1`; offline inventory/hash/worker pin regenerated.
 Static HTML/CSS/release-key/inventory checks and JS syntax pass. This small follow-up needs Pages/public confirmation;
 physical standalone header layout remains untested.
+
+## Versioned header verified live — 1 November 2026
+
+Header release `c95f0ad3a660f6d2e5fba92b3d9d03a21d9551d5` deployed successfully through Pages `41271756061`.
+Five public runtime files (index, UI stylesheet, app, offline manifest and service worker) match their exact released
+SHA256 hashes. Visible release is **v2026.11.01.1**; offline cache release is `20261101ui1`. Makeup/eraser were already
+verified with all324 public bundle files before this header-only follow-up. This recording commit changes no runtime.
+Physical iPad standalone layout remains untested; Safari standalone class and display-mode CSS routes are both present.
