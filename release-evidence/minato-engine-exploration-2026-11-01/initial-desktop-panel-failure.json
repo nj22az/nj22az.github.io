@@ -1,0 +1,109 @@
+{
+  "physicalDevice": false,
+  "engine": "WebKit / software graphics",
+  "profiles": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "steps": [
+        {
+          "name": "fresh viewport and full graphics",
+          "seconds": 60.86,
+          "width": 1280,
+          "height": 800,
+          "canvas": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 800,
+            "top": 0,
+            "right": 1280,
+            "bottom": 800,
+            "left": 0
+          },
+          "graphics": {
+            "ink": true,
+            "grade": true,
+            "fxaa": true,
+            "scale": 1.25,
+            "samples": 4,
+            "hdr": true,
+            "look": "none",
+            "focusDistance": 0,
+            "focusRange": 3,
+            "focusMode": 0
+          }
+        },
+        {
+          "name": "ferry Blender asset and interior rendering",
+          "seconds": 76.87,
+          "profile": "desktop",
+          "loaded": true,
+          "error": null,
+          "meshes": 2,
+          "groupMeshes": 2,
+          "triangles": 80376,
+          "gpuError": 0,
+          "render": {
+            "programs": 175,
+            "calls": 123,
+            "triangles": 719892,
+            "geometries": 1304,
+            "textures": 458,
+            "releasedCanvases": 246
+          }
+        },
+        {
+          "name": "ferry normal movement",
+          "seconds": 101.65,
+          "profile": "desktop",
+          "before": [
+            1.7763568394002505e-15,
+            -1,
+            -6.150000000000006
+          ],
+          "after": [
+            -1.1784999287556277e-7,
+            -1.0000195891368928,
+            -6.647479694658729
+          ],
+          "distance": 0.4974796946587376
+        },
+        {
+          "name": "ferry free look and standing stability",
+          "seconds": 119.59,
+          "profile": "desktop",
+          "driftMetres": 7.479706906001381e-14
+        },
+        {
+          "name": "ferry ordinary lens restored",
+          "seconds": 161.43,
+          "profile": "desktop",
+          "camera": {
+            "active": false,
+            "mode": "walk",
+            "id": null,
+            "local": [
+              7.105427357601002e-15,
+              -0.9999999999999994,
+              -6.150000000000006
+            ],
+            "precision": false,
+            "fov": 65,
+            "zoom": 1
+          },
+          "view": true
+        }
+      ],
+      "errors": [],
+      "passed": false,
+      "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#ferryExplore [data-precision]')\n    - locator resolved to <button type=\"button\" data-precision=\"\" aria-pressed=\"false\">Precision speed</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    10 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n    - waiting for element to be visible, enabled and stable\n\n    at button (/home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-check.mjs:6:83)\n    at checkFerryExploration (/home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-check.mjs:45:74)\n    at async file:///home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-smoke.mjs:33:4"
+    }
+  ],
+  "passed": false,
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#ferryExplore [data-precision]')\n    - locator resolved to <button type=\"button\" data-precision=\"\" aria-pressed=\"false\">Precision speed</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    10 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n    - waiting for element to be visible, enabled and stable\n\n    at button (/home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-check.mjs:6:83)\n    at checkFerryExploration (/home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-check.mjs:45:74)\n    at async file:///home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-smoke.mjs:33:4",
+  "seconds": 167.39
+}

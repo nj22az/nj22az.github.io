@@ -1,0 +1,174 @@
+{
+  "physicalDevice": false,
+  "engine": "WebKit / software graphics",
+  "profiles": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "steps": [
+        {
+          "name": "fresh viewport and full graphics",
+          "seconds": 81.07,
+          "width": 1280,
+          "height": 800,
+          "canvas": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 800,
+            "top": 0,
+            "right": 1280,
+            "bottom": 800,
+            "left": 0
+          },
+          "graphics": {
+            "ink": true,
+            "grade": true,
+            "fxaa": true,
+            "scale": 1.25,
+            "samples": 4,
+            "hdr": true,
+            "look": "none",
+            "focusDistance": 0,
+            "focusRange": 3,
+            "focusMode": 0
+          }
+        },
+        {
+          "name": "ferry Blender asset and interior rendering",
+          "seconds": 101.62,
+          "profile": "desktop",
+          "loaded": true,
+          "error": null,
+          "meshes": 2,
+          "groupMeshes": 2,
+          "triangles": 80376,
+          "gpuError": 0,
+          "render": {
+            "programs": 174,
+            "calls": 122,
+            "triangles": 719444,
+            "geometries": 1303,
+            "textures": 459,
+            "releasedCanvases": 246
+          }
+        },
+        {
+          "name": "ferry normal movement",
+          "seconds": 133.46,
+          "profile": "desktop",
+          "before": [
+            1.7763568394002505e-15,
+            -1,
+            -6.150000000000006
+          ],
+          "after": [
+            -1.1784999287556277e-7,
+            -1.0000195891368928,
+            -6.647479694658729
+          ],
+          "distance": 0.4974796946587376
+        },
+        {
+          "name": "ferry free look and standing stability",
+          "seconds": 156.18,
+          "profile": "desktop",
+          "driftMetres": 7.479706906001381e-14
+        },
+        {
+          "name": "ferry precision movement",
+          "seconds": 223.62,
+          "profile": "desktop",
+          "before": [
+            7.105427357601002e-15,
+            -0.9999999999999994,
+            -6.150000000000006
+          ],
+          "after": [
+            4.4692745504448794e-8,
+            -1.0000074925538358,
+            -6.324117732898998
+          ],
+          "distance": 0.17411773289899773
+        },
+        {
+          "name": "ferry machinery orbit zoom and return",
+          "seconds": 374.6,
+          "profile": "desktop",
+          "focus": "main-engine"
+        },
+        {
+          "name": "ferry manual views and room transitions",
+          "seconds": 515.21,
+          "profile": "desktop",
+          "views": [
+            "engines-aft",
+            "engines-fore",
+            "control",
+            "aux",
+            "workshop",
+            "store",
+            "electrical",
+            "workshop-entry"
+          ],
+          "rooms": [
+            "engine-room",
+            "control-booth",
+            "aux-room",
+            "workshop",
+            "electrical-workshop"
+          ]
+        },
+        {
+          "name": "ferry frame pacing observation",
+          "seconds": 527.92,
+          "profile": "desktop",
+          "hostedSoftwareRendering": true,
+          "medianMs": 881,
+          "p95Ms": 1155,
+          "samples": [
+            1155,
+            947,
+            921,
+            883,
+            881,
+            876,
+            882,
+            876,
+            880,
+            881,
+            876,
+            876
+          ],
+          "physicalDevice": false
+        },
+        {
+          "name": "ferry ordinary lens restored",
+          "seconds": 530.89,
+          "profile": "desktop",
+          "camera": {
+            "active": false,
+            "mode": "walk",
+            "id": null,
+            "local": [
+              8.881784197001254e-15,
+              -0.9999999999999998,
+              6.749999999999995
+            ],
+            "precision": false,
+            "fov": 65,
+            "zoom": 1
+          },
+          "view": true
+        }
+      ],
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "seconds": 533.72
+}

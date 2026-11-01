@@ -1,0 +1,174 @@
+{
+  "physicalDevice": false,
+  "engine": "WebKit / software graphics",
+  "profiles": [
+    {
+      "name": "ipad-landscape",
+      "viewport": {
+        "width": 1133,
+        "height": 744
+      },
+      "steps": [
+        {
+          "name": "fresh viewport and full graphics",
+          "seconds": 88.68,
+          "width": 1133,
+          "height": 744,
+          "canvas": {
+            "x": 0,
+            "y": 0,
+            "width": 1133,
+            "height": 744,
+            "top": 0,
+            "right": 1133,
+            "bottom": 744,
+            "left": 0
+          },
+          "graphics": {
+            "ink": true,
+            "grade": true,
+            "fxaa": true,
+            "scale": 1,
+            "samples": 4,
+            "hdr": true,
+            "look": "none",
+            "focusDistance": 0,
+            "focusRange": 3,
+            "focusMode": 0
+          }
+        },
+        {
+          "name": "ferry Blender asset and interior rendering",
+          "seconds": 111.93,
+          "profile": "ipad-landscape",
+          "loaded": true,
+          "error": null,
+          "meshes": 2,
+          "groupMeshes": 2,
+          "triangles": 80376,
+          "gpuError": 0,
+          "render": {
+            "programs": 174,
+            "calls": 120,
+            "triangles": 719440,
+            "geometries": 1212,
+            "textures": 456,
+            "releasedCanvases": 245
+          }
+        },
+        {
+          "name": "ferry normal movement",
+          "seconds": 154.59,
+          "profile": "ipad-landscape",
+          "before": [
+            1.7763568394002505e-15,
+            -1,
+            -6.150000000000006
+          ],
+          "after": [
+            -1.1784999287556277e-7,
+            -1.0000195891368928,
+            -6.647479694658729
+          ],
+          "distance": 0.4974796946587376
+        },
+        {
+          "name": "ferry free look and standing stability",
+          "seconds": 183.78,
+          "profile": "ipad-landscape",
+          "driftMetres": 7.479706906001381e-14
+        },
+        {
+          "name": "ferry precision movement",
+          "seconds": 267.03,
+          "profile": "ipad-landscape",
+          "before": [
+            7.105427357601002e-15,
+            -0.9999999999999994,
+            -6.150000000000006
+          ],
+          "after": [
+            4.4692745504448794e-8,
+            -1.0000074925538358,
+            -6.324117732898998
+          ],
+          "distance": 0.17411773289899773
+        },
+        {
+          "name": "ferry machinery orbit zoom and return",
+          "seconds": 470.48,
+          "profile": "ipad-landscape",
+          "focus": "main-engine"
+        },
+        {
+          "name": "ferry manual views and room transitions",
+          "seconds": 649.2,
+          "profile": "ipad-landscape",
+          "views": [
+            "engines-aft",
+            "engines-fore",
+            "control",
+            "aux",
+            "workshop",
+            "store",
+            "electrical",
+            "workshop-entry"
+          ],
+          "rooms": [
+            "engine-room",
+            "control-booth",
+            "aux-room",
+            "workshop",
+            "electrical-workshop"
+          ]
+        },
+        {
+          "name": "ferry frame pacing observation",
+          "seconds": 666.69,
+          "profile": "ipad-landscape",
+          "hostedSoftwareRendering": true,
+          "medianMs": 1235,
+          "p95Ms": 1451,
+          "samples": [
+            1451,
+            1275,
+            1214,
+            1232,
+            1233,
+            1244,
+            1230,
+            1221,
+            1236,
+            1235,
+            1235,
+            1237
+          ],
+          "physicalDevice": false
+        },
+        {
+          "name": "ferry ordinary lens restored",
+          "seconds": 669.57,
+          "profile": "ipad-landscape",
+          "camera": {
+            "active": false,
+            "mode": "walk",
+            "id": null,
+            "local": [
+              3.5527136788005e-15,
+              -0.9999999999999998,
+              6.750000000000012
+            ],
+            "precision": false,
+            "fov": 65,
+            "zoom": 1
+          },
+          "view": true
+        }
+      ],
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "seconds": 672.85
+}
