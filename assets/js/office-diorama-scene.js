@@ -23,7 +23,7 @@ export async function createHarbourDiorama({host,signal,onError}){
  let renderer,group,frame=0,disposed=false,active=false,last=0,time=0,dirty=true;
  const scene=new THREE.Scene(),sky=new THREE.Color('#a6d9f0');scene.background=sky;scene.fog=new THREE.Fog('#a6d9f0',65,150);
  const camera=new THREE.PerspectiveCamera(48,16/9,.2,260),target=new THREE.Vector3();
- const views={quay:{target:[0,2,-57],radius:36,theta:1.12,phi:1.1},ferry:{target:[-7,4,-62],radius:31,theta:2.3,phi:1.02},port:{target:[0,1,-48],radius:48,theta:.65,phi:.65}};
+ const views={quay:{target:[0,2,-57],radius:36,theta:1.12,phi:1.1},ferry:{target:[-7,4,-62],radius:43,theta:2.3,phi:1.02},port:{target:[0,1,-48],radius:48,theta:.65,phi:.65}};
  let view='quay',theta=0,phi=0,radius=0,pointer=null;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  function dispose(){
@@ -56,13 +56,13 @@ export async function createHarbourDiorama({host,signal,onError}){
   if(action==='left')theta-=.12;if(action==='right')theta+=.12;
   if(action==='in')radius=Math.max(views[view].radius*.75,radius-3);
   if(action==='out')radius=Math.min(views[view].radius*1.3,radius+3);
-  if(action==='reset')setView(view);update();
+  if(action==='reset')setView(view);theta=THREE.MathUtils.clamp(theta,views[view].theta-.65,views[view].theta+.65);update();
  }
  const water=new THREE.Mesh(new THREE.PlaneGeometry(450,450),new THREE.ShaderMaterial({uniforms:{time:{value:0}},vertexShader:'varying vec3 p;void main(){vec4 w=modelMatrix*vec4(position,1.);p=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',fragmentShader:`
  varying vec3 p;uniform float time;
  void main(){float wave=sin(p.x*1.7+time*.65)*sin(p.z*1.1-time*.45);
- vec3 c=mix(vec3(.045,.51,.61),vec3(.13,.71,.74),wave*.5+.5);
- c+=smoothstep(.94,1.,wave)*.12;
+ vec3 c=mix(vec3(.06,.53,.62),vec3(.075,.56,.65),wave*.5+.5);
+ c+=smoothstep(.985,1.,wave)*.08;
  float fog=smoothstep(65.,150.,distance(p,cameraPosition));
  gl_FragColor=vec4(mix(c,vec3(.65,.85,.94),fog),1.);
  #include <tonemapping_fragment>
@@ -78,7 +78,7 @@ export async function createHarbourDiorama({host,signal,onError}){
   observer=new ResizeObserver(resize);observer.observe(host);setView('quay');resize();
   await renderer.compileAsync(scene,camera);render();if(shaderFailed)throw Error('Harbour shader failed');
   canvas.addEventListener('pointerdown',event=>{if(!event.isPrimary)return;pointer={id:event.pointerId,x:event.clientX,y:event.clientY,theta,phi};canvas.setPointerCapture(event.pointerId);});
-  canvas.addEventListener('pointermove',event=>{if(pointer?.id!==event.pointerId)return;theta=pointer.theta-(event.clientX-pointer.x)/400;phi=THREE.MathUtils.clamp(pointer.phi-(event.clientY-pointer.y)/500,.55,1.25);update();});
+  canvas.addEventListener('pointermove',event=>{if(pointer?.id!==event.pointerId)return;theta=THREE.MathUtils.clamp(pointer.theta-(event.clientX-pointer.x)/400,views[view].theta-.65,views[view].theta+.65);phi=THREE.MathUtils.clamp(pointer.phi-(event.clientY-pointer.y)/500,.55,1.25);update();});
   canvas.addEventListener('pointerup',()=>{pointer=null;});canvas.addEventListener('pointercancel',()=>{pointer=null;});canvas.addEventListener('lostpointercapture',()=>{pointer=null;});
   canvas.addEventListener('keydown',event=>{const action={ArrowLeft:'left',ArrowRight:'right','+':'in','=':'in','-':'out',Home:'reset'}[event.key];if(action){event.preventDefault();control(action);}else if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();phi=THREE.MathUtils.clamp(phi+(event.key==='ArrowUp'?-.08:.08),.55,1.25);update();}});
   canvas.addEventListener('webglcontextlost',event=>{if(!disposed){event.preventDefault();fail();}});
