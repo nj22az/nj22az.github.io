@@ -1,0 +1,26 @@
+[
+  {
+    "path": "index.html",
+    "matches": true,
+    "bytes": 15299,
+    "sha256": "c677c093f455a4fa628aa3ee3b34a79b9495ee479bd44c381ab9ddf74f51902e"
+  },
+  {
+    "path": "css/project-explorer.css",
+    "matches": true,
+    "bytes": 11907,
+    "sha256": "7f2681d89cc6f2bd8d86561a0cdba687bb77d376faff92cf3f83e22c7ef077e3"
+  },
+  {
+    "path": "css/office-home.css",
+    "matches": true,
+    "bytes": 5886,
+    "sha256": "44a2a592be6334f4df9b4ab824df85dbff395e26b1c06c21ccbf1e939115f9e8"
+  },
+  {
+    "path": "assets/js/project-explorer.js",
+    "matches": true,
+    "bytes": 10268,
+    "sha256": "f92ecd9f22d8199d5c07867572d2be99783f7b12056bdd42ad9efeddf750334a"
+  }
+]
