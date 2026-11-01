@@ -197,3 +197,14 @@ Five public runtime files (index, UI stylesheet, app, offline manifest and servi
 SHA256 hashes. Visible release is **v2026.11.01.1**; offline cache release is `20261101ui1`. Makeup/eraser were already
 verified with all324 public bundle files before this header-only follow-up. This recording commit changes no runtime.
 Physical iPad standalone layout remains untested; Safari standalone class and display-mode CSS routes are both present.
+
+## Settings footer — 1 November 2026
+
+Owner screenshot correction: move version to the Camera settings footer, with an explicit Update action there when a
+new release is ready. Header version removed; footer now displays **v2026.11.01.2**, with the existing guarded offline
+button alongside it. New-version state shows a labelled Update button. Ready/download/retry states retain the offline
+indicator. Footer uses remaining settings height and scrolls normally on short screens; setting rows do not shrink.
+The existing unsaved-edit/import/capture/share reload protections are retained. Standalone Office navigation remains
+removed. Cache/renderer/MCP keys are `20261101ui2`; manifest hashes and worker pin regenerated.
+Validation: HTML footer/header/unique-ID checks, JS syntax, inventory/hash checks and all **7/7 offline-update lifecycle
+checks** pass. Physical iPad layout remains untested. Pages/public confirmation follows deployment.

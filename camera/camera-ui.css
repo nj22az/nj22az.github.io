@@ -202,3 +202,10 @@
  .camera .camera-bar{grid-template-columns:minmax(0,1fr) auto}
  .camera-mark{text-align:left}
 }
+
+/* Version and offline update action belong at the foot of Camera settings. */
+.settings-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;margin-top:auto;padding:20px 0 0;border-top:1px solid var(--separator)}
+.settings-footer .camera-version{font-size:.8125rem;line-height:1.5}
+.settings-footer .offline-setting{display:grid;place-items:center;flex:none;min-width:44px;min-height:44px;padding:10px;color:var(--accent);border-radius:12px}
+.settings-footer .offline-setting[data-state="update"]{display:inline-flex;align-items:center;gap:8px;width:auto;padding:10px 16px;background:var(--surface-2);font-size:.875rem;font-weight:650}
+.camera .settings>.setting{flex-shrink:0}

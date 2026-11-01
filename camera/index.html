@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261101ui1">
+<link rel="stylesheet" href="camera.css?v=20261101ui2">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
-<link rel="stylesheet" href="camera-ui.css?v=20261101ui1">
+<link rel="stylesheet" href="camera-ui.css?v=20261101ui2">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -82,7 +82,7 @@
  <section class="screen camera" id="camera" aria-label="Camera">
   <header class="bar camera-bar">
    <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
-   <h1 class="camera-mark">Pocket Camera<small class="camera-version">v2026.11.01.1</small></h1>
+   <h1 class="camera-mark">Pocket Camera</h1>
    <div class="camera-header-actions">
     <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus" aria-hidden="true"></span><svg><use href="#i-settings"/></svg></button>
     <button type="button" class="photos-button" id="import" aria-label="Choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
@@ -90,7 +90,7 @@
   </header>
   <div class="stage" id="cameraStage">
    <div class="settings" id="settings" role="group" aria-label="Camera settings" hidden>
-    <div class="settings-heading"><h2>Camera settings</h2><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button><button type="button" class="text-button" id="settingsDone">Done</button></div>
+    <div class="settings-heading"><h2>Camera settings</h2><button type="button" class="text-button" id="settingsDone">Done</button></div>
     <button type="button" class="setting" id="timer"><i><svg><use href="#i-timer"/></svg></i><small class="setting-title">Timer</small><span>Timer</span></button>
     <button type="button" class="setting" id="ratio"><i><svg><use href="#i-ratio"/></svg></i><small class="setting-title">Photo shape</small><span>4:3</span></button>
     <button type="button" class="setting" id="frameSetting"><i><svg><use href="#i-frame"/></svg></i><small class="setting-title">Frame & paper</small><span>Frame</span></button>
@@ -98,6 +98,7 @@
     <button type="button" class="setting" id="stamp"><i><svg><use href="#i-date"/></svg></i><small class="setting-title">Date stamp</small><span>Date</span></button>
     <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><small class="setting-title">Print when sharing</small><span>Print</span></button>
     <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
+    <footer class="settings-footer"><small class="camera-version">v2026.11.01.2</small><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
    </div>
    <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
     <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
@@ -331,6 +332,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261101ui1"></script>
+<script type="module" src="app.js?v=20261101ui2"></script>
 </body>
 </html>
