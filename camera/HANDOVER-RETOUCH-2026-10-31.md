@@ -5,8 +5,12 @@ allow the selected area to be removed with a click.
 
 ## State
 
-Branch `codex/pocket-camera-retouch`, based on verified `main` `3869b9df`. Implementation is for review. On 31 October the owner explicitly approved pushing the review branch ("Push but how do I update my locally saved version"). No main merge or Pages deployment is included in that review-branch approval. The current offline release and World files are retained.
-Implementation commit: `62a02e33`, verification follow-up `3e02e612`. The approved branch is being uploaded through the connected GitHub API because ordinary git push has no HTTPS credential in this executor. Every uploaded blob and final tree are compared with local Git object hashes. PR/check results follow below.
+**Merged to main on 1 November 2026**, on the owner's explicit instruction "Push to main".
+PR #422 squash merge: `5daae17d4eaae2cece40e45180f405caa7ed63ef`. The merged tree equals the reviewed
+`99229e2e` source. Final head CI completed successfully: Camera `41238712880`, MCP `41238712756`,
+World guard `41238712762`. Linux retains the two documented baseline failures; no Linux release is changed.
+Pages deployment `41271304970` is in progress; hosted-byte verification follows after deployment.
+Historical review-run notes below preserve earlier pending states and are superseded by this section.
 
 ## Behaviour
 
@@ -166,3 +170,9 @@ Pages/public bytes and an actual Home Screen update. For the existing Home Scree
 fully close/reopen (reload if needed), then wait for the offline-ready tick in Camera settings. The new Update action
 is available after this release is installed. It preserves the album; clearing site data or reinstalling is unnecessary.
 Downloaded source/ZIP copies require updating/replacing files separately.
+
+## Main publication — 1 November 2026
+
+The owner explicitly authorised main publication. PR #422 is merged as `5daae17d4eaae2cece40e45180f405caa7ed63ef`.
+No implementation changed after the passing review-head checks. Deployment and hosted-byte checks are being verified
+against the exact merged Camera manifest and assets. Physical iPad/iPhone Safari and native Share remain unverified.
