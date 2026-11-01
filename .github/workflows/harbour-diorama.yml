@@ -1,0 +1,43 @@
+name: Homepage harbour review
+on:
+  push:
+    branches: [development, main]
+    paths: ['assets/js/office-diorama*', 'assets/js/office-port.js', 'css/office-port.css', 'index.html', 'tools/office-port/**', '.github/workflows/harbour-diorama.yml']
+  pull_request:
+    paths: ['assets/js/office-diorama*', 'assets/js/office-port.js', 'css/office-port.css', 'index.html', 'tools/office-port/**', '.github/workflows/harbour-diorama.yml']
+permissions:
+  contents: read
+jobs:
+  harbour:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            assets
+            css
+            tools/office-port
+            johansson-town/vendor
+            johansson-town/src/render
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Controller and syntax checks
+        run: |
+          node tools/office-port/controller.test.cjs
+          node --check assets/js/office-diorama.js
+          node --check assets/js/office-diorama-scene.js
+      - name: Install hosted browser
+        run: |
+          npm install --prefix /tmp/harbour-runtime --no-save --no-package-lock playwright@1.61.0
+          /tmp/harbour-runtime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Render desktop, iPad and phone and test fallback
+        env:
+          DIORAMA_TEST_RUNTIME: /tmp/harbour-runtime
+        run: node tools/office-port/diorama.browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: homepage-harbour-review
+          path: release-evidence/harbour-diorama-2026-11-01/
