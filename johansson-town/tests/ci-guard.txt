@@ -127,3 +127,4 @@ resident-guide.test.mjs
 minato-bar-lifetime.test.mjs
 
 ferry-fixed-camera.test.mjs
+offline-island.test.mjs

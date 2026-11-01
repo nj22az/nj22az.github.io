@@ -1,0 +1,46 @@
+name: Johansson World offline iPad
+on:
+  pull_request:
+    paths: ['johansson-town/**', '.github/workflows/town-offline.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: town-offline-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  offline-ipad:
+    name: Offline iPad (${{ matrix.engine }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    env:
+      LIBGL_ALWAYS_SOFTWARE: '1'
+      ISLAND_ENGINE: ${{ matrix.engine }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: johansson-town/package-lock.json
+      - name: Pinned tools
+        working-directory: johansson-town
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps ${{ matrix.engine }}
+      - name: Download policy and published inventory
+        working-directory: johansson-town
+        run: node --test tests/offline-island.test.mjs tests/runtime-package.test.mjs
+      - name: Complete download, cold offline restarts and real town exploration
+        working-directory: johansson-town
+        run: xvfb-run -a node tools/offline-island-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: offline-ipad-${{ matrix.engine }}
+          path: johansson-town/output/offline-island/
+          if-no-files-found: warn
