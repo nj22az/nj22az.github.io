@@ -2,6 +2,8 @@
 
 Owner: the room looks better but is difficult to explore; the camera jitters. The proposed free-look walk, stable ship-relative lens, proper collision, machinery inspection and labelled ladder guide were authorised with **“Implement”**. This follows the owner's existing instruction to implement and publish this engine-room work on main. It supersedes the default locked-camera behaviour in the [H1-F1 release handover](HANDOFF-FERRY-ENGINE-ROOM-MAIN-2026-10-31.md); the measured layout, Blender source, GLB, headroom and original engineering holds remain unchanged.
 
+Source implementation `8bdf28c6073775fb4f87115ba2aff37b3be13ca7`, tree `3ee34359570f63166d22f9f8e5c31bded82373f0`; identical to local source snapshot `f6b4f142ccbbb06f8e334a896911251c4b1a705d`. Prepared from current main `027f3e3f8a1dc993d3801f415fc57c5f6e0ea855`, preserving its newer Pocket Camera metadata. Publication, hosted checks and actual captures are recorded in the root handover/release evidence.
+
 ## Behaviour
 
 - Default **Explore** uses freely controlled looking at a fixed eye height, 1 m/s walking and 0.35 m/s precision speed. The left thumb moves without automatic steering or running; the open view looks. Keyboard WASD/right-drag/IJKL and controller looking remain available. No head bob, automatic camera cut or automatic recentering below deck. Third-person preference outside the room is retained.

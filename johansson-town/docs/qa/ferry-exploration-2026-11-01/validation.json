@@ -35,5 +35,9 @@
     "files": 111,
     "seconds": 350,
     "note": "The final focused checks also include the subsequent route-entry and real-GLB pick cases. Hosted checks pin the final published source."
-  }
+  },
+  "source_commit": "8bdf28c6073775fb4f87115ba2aff37b3be13ca7",
+  "verified_source_tree": "3ee34359570f63166d22f9f8e5c31bded82373f0",
+  "local_tested_snapshot": "f6b4f142ccbbb06f8e334a896911251c4b1a705d",
+  "publication_parent": "027f3e3f8a1dc993d3801f415fc57c5f6e0ea855"
 }
