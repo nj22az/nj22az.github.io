@@ -3,8 +3,8 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101screen1';
-import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101icons1';
+import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101icons1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
 import {lookIcon} from './look-icons.js?v=20261031retouch1';
@@ -117,7 +117,9 @@ const groupOf=name=>LOOK_GROUPS.find(g=>g.looks.includes(name))||LOOK_GROUPS[0];
 const offered=()=>LOOK_GROUPS.flatMap(g=>g.looks).filter(n=>!engine?.failed(n));
 // The kind the strip shows: the chosen Look's, until another kind is tapped.
 let shownGroup=null;
-function icon(name){return `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;}
+// Action artwork stays separate from lookIcon()/groupIcon(), which describe photographic media.
+const ACTION_ICONS=new Set(['camera','look','edit','erase','timer','trash','printer','colour','game','sound','sound-off','undo','pattern']);
+function icon(name){return `<svg${ACTION_ICONS.has(name)?' class="action-icon"':''} aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const nextFrame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
 /** The date as an old film camera printed it, as the hotel photos show it: ’26 10 29. */

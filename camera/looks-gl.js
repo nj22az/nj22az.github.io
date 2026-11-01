@@ -14,7 +14,7 @@
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
 import {normalCrop} from './crop.js?v=20261030crop1';
-import {layerOptions,screenActive,normalScreen} from './look-settings.js?v=20261101screen1';
+import {layerOptions,screenActive,normalScreen} from './look-settings.js?v=20261101icons1';
 import {normaliseMakeup} from './makeup.js?v=20261031retouch1';
 
 // Camera-only original Looks. They build on World's shared sampling helpers, without adding World Looks. The five after
