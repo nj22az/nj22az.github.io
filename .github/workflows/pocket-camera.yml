@@ -22,7 +22,7 @@ jobs:
           - job: camera
             suites: camera crop enhance save-share-layout paper integration sticker-contour
           - job: camera-ui
-            suites: ui
+            suites: ui action-icons
           - job: camera-audit
             suites: audit
           - job: camera-smart
@@ -39,6 +39,7 @@ jobs:
       CAMERA_MAIN_ENGINE: /tmp/camera-main-engine.js
       CAMERA_REFINE_ENGINE: /tmp/camera-refine-engine.js
       CAMERA_AUDIT_BASELINE: /tmp/camera-audit-baseline
+      CAMERA_ICON_BASELINE: /tmp/camera-icon-baseline
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,6 +73,14 @@ jobs:
           mkdir -p "$CAMERA_AUDIT_BASELINE"
           for file in index.html app.js camera-ui.css looks-gl.js; do
             git show "83783c93448d1be251a61c213959448e1d21c971:camera/$file" > "$CAMERA_AUDIT_BASELINE/$file"
+          done
+      - name: Exact pre-change icon UI for before/after captures
+        if: matrix.job == 'camera-ui'
+        run: |
+          git fetch --no-tags --depth=1 origin ab35ac3e9cc7d6dadac8c05178a04da42cef50da
+          mkdir -p "$CAMERA_ICON_BASELINE"
+          for file in index.html app.js camera.css camera-ui.css; do
+            git show "ab35ac3e9cc7d6dadac8c05178a04da42cef50da:camera/$file" > "$CAMERA_ICON_BASELINE/$file"
           done
       - name: Unit, module and syntax checks
         run: |

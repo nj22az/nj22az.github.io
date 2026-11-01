@@ -15,7 +15,7 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  await check('all systems and finishes compile; zero finish is exact, each control changes pixels, and thumbnails include the selected finish',async()=>{
   const result=await page.evaluate(async()=>{
-   const m=await import('/camera/looks-gl.js?v=20261101screen1'),settings=await import('/camera/look-settings.js?v=20261101screen1');
+   const m=await import('/camera/looks-gl.js?v=20261101icons1'),settings=await import('/camera/look-settings.js?v=20261101icons1');
    const canvas=document.createElement('canvas');canvas.width=320;canvas.height=240;
    const source=document.createElement('canvas');source.width=320;source.height=240;const g=source.getContext('2d');
    const gradient=g.createLinearGradient(0,0,320,240);gradient.addColorStop(0,'#103c8a');gradient.addColorStop(.4,'#eee59a');gradient.addColorStop(1,'#e9307a');g.fillStyle=gradient;g.fillRect(0,0,320,240);g.fillStyle='#101010';g.fillRect(130,65,50,110);

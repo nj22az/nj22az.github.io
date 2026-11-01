@@ -1,6 +1,6 @@
 {
-  "version": "20261101screen1",
-  "bytes": 22689594,
+  "version": "20261101icons1",
+  "bytes": 22698743,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "d70e49707e9cf7dfa98b074c5392d64308329c43156c81008e173fa2a84f10dd",
-      "bytes": 106517
+      "sha256": "748dcc8dd1b4452fbfddf7651b4483a50785ebd2bb31e537ede7cdc327510b5f",
+      "bytes": 106822
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -39,8 +39,8 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "05c1e710a11454618ceecf395d37df77431cdfcc325c6aa0b66462d2f6e389d6",
-      "bytes": 27315
+      "sha256": "4231857cb1aab7301c3f5b39dcf4cbd254402a8660fab788ea2a6d4e9df728dd",
+      "bytes": 28672
     },
     {
       "url": "/camera/camera.css",
@@ -199,8 +199,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "345b443df873a7b827282d495860d37e4d7cc0122e1e5a568ff8854312437df0",
-      "bytes": 31217
+      "sha256": "e40f600f33322030a049602ceb758a7db9a7eb8649df070a55feef598771a937",
+      "bytes": 38705
     },
     {
       "url": "/camera/lettering.js",
@@ -219,8 +219,8 @@
     },
     {
       "url": "/camera/looks-gl.js",
-      "sha256": "23019b61cfc2d87aba888b10a2b3c26227037c5a7eda722e4d5eb04497c4bb9a",
-      "bytes": 98157
+      "sha256": "5d7ddf27260bd5b3d53358af1d35b123a2a6ed9e21b5d0a4d893ace766cb97eb",
+      "bytes": 98156
     },
     {
       "url": "/camera/makeup-guide.js",
