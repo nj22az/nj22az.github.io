@@ -176,3 +176,16 @@ Downloaded source/ZIP copies require updating/replacing files separately.
 The owner explicitly authorised main publication. PR #422 is merged as `5daae17d4eaae2cece40e45180f405caa7ed63ef`.
 No implementation changed after the passing review-head checks. Deployment and hosted-byte checks are being verified
 against the exact merged Camera manifest and assets. Physical iPad/iPhone Safari and native Share remain unverified.
+
+## Published retouch and visible version — 1 November 2026
+
+Retouch deployment `41271379148` succeeded at documentation source `e6820b0d`. All **324/324 public bundle files**
+match the merged manifest; the public manifest matches source and the worker pins its exact SHA256. Public worker blob
+`1c29dea4af3cbe594c6fe32781e9a16e15835896` matches main. No physical-device claim is made.
+
+The owner then requested a visible version number and removal of Office navigation from the installed web app.
+Header now shows **v2026.11.01.1**. Standalone CSS removes the Office link and its empty column, using both the existing
+Safari standalone class and the display-mode media query. Browser navigation and internal Album/Camera back controls
+remain. Release/cache keys and MCP renderer import align at `20261101ui1`; offline inventory/hash/worker pin regenerated.
+Static HTML/CSS/release-key/inventory checks and JS syntax pass. This small follow-up needs Pages/public confirmation;
+physical standalone header layout remains untested.

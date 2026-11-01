@@ -191,3 +191,14 @@
 
 .settings-heading{flex-wrap:wrap}.settings-heading h2{flex:1}.settings-heading .offline-setting{flex:none;width:44px;height:44px;padding:10px}.offline-setting svg{width:24px;height:24px}.offline-setting:disabled{opacity:1}.offline-setting[data-state="preparing"]{opacity:.5}
 .settings-heading .offline-setting[data-state="update"]{display:inline-flex;align-items:center;gap:6px;width:auto;color:var(--accent);font-size:.8125rem}
+
+/* Installed Camera has its own header, without website navigation. */
+.camera-version{display:block;font-size:11px;line-height:1.5;font-weight:500;letter-spacing:0;color:var(--label-2)}
+.standalone .camera-bar>a.back{display:none}
+.standalone .camera .camera-bar{grid-template-columns:minmax(0,1fr) auto}
+.standalone .camera-mark{text-align:left}
+@media (display-mode:standalone){
+ .camera-bar>a.back{display:none}
+ .camera .camera-bar{grid-template-columns:minmax(0,1fr) auto}
+ .camera-mark{text-align:left}
+}
