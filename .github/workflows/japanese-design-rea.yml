@@ -1,0 +1,53 @@
+name: Japanese design REA review
+on:
+  push:
+    branches: [development]
+    paths: ['.github/workflows/japanese-design-rea.yml']
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 0f13c23b6700b4d0ab28e1808d801f5d51e4e111
+          path: website-source
+          sparse-checkout: |
+            assets/js
+            css
+      - uses: actions/checkout@v4
+        with:
+          repository: kzhrknt/awesome-design-md-jp
+          path: gallery-source
+          sparse-checkout: |
+            gallery.html
+            design-md/muji
+            design-md/nintendo
+            design-md/note
+            design-md/hoshinoresorts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Record source identities and extract the gallery's original inline script
+        run: |
+          mkdir -p out
+          python - <<'PY'
+          import hashlib,json,re,subprocess
+          from pathlib import Path
+          p=Path('gallery-source/gallery.html')
+          text=p.read_text()
+          scripts=re.findall(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>',text,re.S|re.I)
+          for i,s in enumerate(scripts):Path(f'gallery-source/inline-{i}.js').write_text(s)
+          Path('out/provenance.json').write_text(json.dumps({'website_commit':subprocess.check_output(['git','-C','website-source','rev-parse','HEAD'],text=True).strip(),'gallery_commit':subprocess.check_output(['git','-C','gallery-source','rev-parse','HEAD'],text=True).strip(),'gallery_html_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'inline_scripts':len(scripts),'rea_version':'6.7.0','method':'Static source analysis; no target scripts executed'},indent=2))
+          PY
+      - name: Analyse the published website with pinned REA
+        run: npx -y rea-agents@6.7.0 analyze-javascript-application "$GITHUB_WORKSPACE/website-source" --source-path theme-bootstrap.js --source-path assets/js/project-explorer.js --source-path assets/js/office-diorama.js --source-path shared.js --max-semantic-nodes 30000 --format json > out/rea-website.json
+      - name: Analyse the gallery interaction script with pinned REA
+        run: npx -y rea-agents@6.7.0 analyze-javascript-application "$GITHUB_WORKSPACE/gallery-source" --source-path inline-0.js --max-semantic-nodes 5000 --format json > out/rea-gallery.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: japanese-design-rea-evidence
+          path: out/
