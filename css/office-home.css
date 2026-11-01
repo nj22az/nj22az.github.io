@@ -104,3 +104,4 @@ html[data-office-mode=dark] #projects .px-calculation>span{background:#ffffff0d}
 /* Let the brand yield space to three 44 px controls on the smallest phones. */
 @media(max-width:360px){html[data-office-mode] body.office-home .nav-inner{column-gap:8px}html[data-office-mode] body.office-home .nav-actions{gap:4px}}
 html[data-office-mode=dark] #projects .px-course svg circle{fill:#223a35}
+html[data-office-mode=dark] #projects .px-mini-window .px-preview-note{color:#53616c}

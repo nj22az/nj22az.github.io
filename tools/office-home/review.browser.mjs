@@ -23,10 +23,15 @@ try{
   assert.equal(await appearance.getAttribute('aria-pressed'),'true');
   await page.reload();await page.locator('.px-card').first().waitFor();
   assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark','Explicit mode persists');
+  await appearance.waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave');
   assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#141d24');
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-home.png')});
   await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-projects.png')});
+  const contrasts=await page.evaluate(()=>{
+    function lum(c){const v=c.match(/[\d.]+/g).slice(0,3).map(Number).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;});return .2126*v[0]+.7152*v[1]+.0722*v[2];}
+    return [['.px-summary','.px-card'],['.px-mini-window .px-preview-note','.px-mini-window'],['.nav-hamburger','.nav-hamburger']].map(([fg,bg])=>{const a=lum(getComputedStyle(document.querySelector(fg)).color),b=lum(getComputedStyle(document.querySelector(bg)).backgroundColor);return {selector:fg,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};});
+  });assert(contrasts.every(x=>x.ratio>=4.5),JSON.stringify(contrasts));
   const darkLayout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,background:getComputedStyle(document.body).backgroundColor,button:document.querySelector('.office-appearance-toggle').getBoundingClientRect().width}));
   assert.equal(darkLayout.background,'rgb(20, 29, 36)');assert(!darkLayout.overflow);assert(darkLayout.button>=44);
   const header=await page.locator('.nav-actions').evaluate(e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}));assert(header.left>=0&&header.right<=width,'Header controls fit');
@@ -55,5 +60,8 @@ try{
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-home.png')});await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-projects.png')});
   assert.deepEqual(errors,[]);results.push({profile,width,height,zoom,result:'passed',layout});await context.close();
  }
+ const blocked=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark',reducedMotion:'reduce'});
+ await blocked.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new Error('Storage unavailable');}}));
+ const blockedPage=await pageFor(blocked,current.url);await blockedPage.goto(current.url);await blockedPage.locator('.office-appearance-toggle').click();assert.equal(await blockedPage.locator('html').getAttribute('data-office-mode'),'light','Toggle works when storage is unavailable');await blocked.close();
  await writeFile(resolve(out,'results.json'),JSON.stringify({result:'passed',baselineDesktopGridHeight:beforeHeight,profiles:results},null,2));console.log(JSON.stringify({beforeHeight,profiles:results.map(x=>({profile:x.profile,gridHeight:x.layout.gridHeight}))}));
 }finally{await browser.close();for(const s of [old.server,current.server]){s.closeAllConnections();await new Promise(r=>s.close(r));}}
