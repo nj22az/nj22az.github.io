@@ -29,6 +29,8 @@ jobs:
             suites: smart
           - job: camera-offline
             suites: offline
+          - job: camera-retouch
+            suites: retouch
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:

@@ -19,7 +19,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261031offline1">
+<link rel="stylesheet" href="camera.css?v=20261031retouch1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261029a">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
 <link rel="stylesheet" href="camera-black.css?v=20261029a">
-<link rel="stylesheet" href="camera-ui.css?v=20261031offline1">
+<link rel="stylesheet" href="camera-ui.css?v=20261031retouch1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -37,6 +37,7 @@
   <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 3v15h15M3 6h15v15"/></symbol>
   <symbol id="i-erase" viewBox="0 0 24 24"><path d="m9 4 11 9-7 8H8l-6-6Z M5 12l9 8"/></symbol>
   <symbol id="i-offline-ready" viewBox="0 0 24 24"><path d="M4 5h16v14H4Z"/><path d="m7 12 3 3 7-7"/></symbol>
+  <symbol id="i-update" viewBox="0 0 24 24"><path d="M20 10a8 8 0 0 0-13.7-3.7L3 10m0-6v6h6M4 14a8 8 0 0 0 13.7 3.7L21 14m0 6v-6h-6"/></symbol>
   <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 4.5 7.5 12l7.5 7.5"/></symbol>
   <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M18.6 6.4l1.4-1.4"/></symbol>
@@ -89,7 +90,7 @@
   </header>
   <div class="stage" id="cameraStage">
    <div class="settings" id="settings" role="group" aria-label="Camera settings" hidden>
-    <div class="settings-heading"><h2>Camera settings</h2><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg></button><button type="button" class="text-button" id="settingsDone">Done</button></div>
+    <div class="settings-heading"><h2>Camera settings</h2><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button><button type="button" class="text-button" id="settingsDone">Done</button></div>
     <button type="button" class="setting" id="timer"><i><svg><use href="#i-timer"/></svg></i><small class="setting-title">Timer</small><span>Timer</span></button>
     <button type="button" class="setting" id="ratio"><i><svg><use href="#i-ratio"/></svg></i><small class="setting-title">Photo shape</small><span>4:3</span></button>
     <button type="button" class="setting" id="frameSetting"><i><svg><use href="#i-frame"/></svg></i><small class="setting-title">Frame & paper</small><span>Frame</span></button>
@@ -154,6 +155,20 @@
     </div>
    </div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
+    <div class="option-row makeup-heading"><button type="button" class="text-button makeup-open" id="makeupPhoto" aria-expanded="false" aria-controls="makeupControls"><svg aria-hidden="true"><use href="#i-edit"/></svg>Makeup</button><output id="makeupSummary">Off</output></div>
+    <div id="makeupControls" class="makeup-controls" hidden>
+     <div class="retouch-actions"><button type="button" class="text-button" id="makeupDetect">Find face</button><button type="button" class="text-button" id="makeupFace" aria-pressed="false">Align face</button><button type="button" class="text-button" id="makeupReset">Reset</button></div>
+     <p class="retouch-hint" id="makeupHint" role="status">Find a face, or align the guide manually.</p>
+     <div class="makeup-sliders">
+      <label for="makeupSkin">Skin<input type="range" id="makeupSkin" min="0" max="100" value="0" disabled><output id="makeupSkinValue" for="makeupSkin">0%</output></label>
+      <label for="makeupLips">Lips<input type="range" id="makeupLips" min="0" max="100" value="0" disabled><output id="makeupLipsValue" for="makeupLips">0%</output></label>
+      <label for="makeupBlush">Blush<input type="range" id="makeupBlush" min="0" max="100" value="0" disabled><output id="makeupBlushValue" for="makeupBlush">0%</output></label>
+     </div>
+     <div class="makeup-shades" role="group" aria-label="Makeup colour"><button type="button" data-shade="rose" aria-pressed="true">Rose</button><button type="button" data-shade="peach" aria-pressed="false">Peach</button><button type="button" data-shade="berry" aria-pressed="false">Berry</button></div>
+     <label class="makeup-angle" id="makeupAngleRow" hidden>Angle<input type="range" id="makeupAngle" min="-45" max="45" step="1" value="0"><output id="makeupAngleValue" for="makeupAngle">0°</output></label>
+     <label class="makeup-angle" id="makeupMouthWidthRow" hidden>Lip width<input type="range" id="makeupMouthWidth" min="12" max="60" step="1" value="36"><output id="makeupMouthWidthValue" for="makeupMouthWidth">36%</output></label>
+     <label class="makeup-angle" id="makeupMouthHeightRow" hidden>Lip height<input type="range" id="makeupMouthHeight" min="2.5" max="20" step="0.5" value="8"><output id="makeupMouthHeightValue" for="makeupMouthHeight">8%</output></label>
+    </div>
     <div class="option-row enhance-heading"><span class="enhance-copy"><span id="enhanceLabel">Enhance</span><small id="enhanceHint">Tone, colour and detail.</small></span><button type="button" class="text-button enhance-amount" id="enhanceAmount" aria-label="Enhance strength" aria-expanded="false" aria-controls="enhanceStrengthRow"><output id="enhanceValue" for="enhanceStrength">Off</output></button><button type="button" class="switch" id="enhancePhoto" role="switch" aria-checked="false" aria-labelledby="enhanceLabel" aria-describedby="enhanceHint"></button></div>
     <div class="slider-row enhance-strength" id="enhanceStrengthRow" hidden>
      <label for="enhanceStrength">Strength</label>
@@ -169,6 +184,8 @@
    </div>
    <!-- Erase: paint over what should go; it is filled from the picture round it (PhotoCraft's Content-Aware Fill). -->
    <div class="panel erase-panel" id="panelErase" role="tabpanel" aria-labelledby="tabErase" hidden>
+    <div class="retouch-actions"><button type="button" class="text-button" id="eraseSuggest"><svg aria-hidden="true"><use href="#i-erase"/></svg>Find spots</button><button type="button" class="text-button" id="eraseClear" hidden>Clear suggestions</button></div>
+    <div class="erase-suggestions" id="eraseSuggestions" role="group" aria-label="Suggested spots"></div>
     <p class="erase-hint" id="eraseHint">Paint over what should go.</p>
     <div class="slider-row">
      <span class="erase-label" aria-hidden="true">Brush</span>
@@ -314,6 +331,6 @@
 <input type="file" id="stickerFile" accept="image/*" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261031offline1"></script>
+<script type="module" src="app.js?v=20261031retouch1"></script>
 </body>
 </html>

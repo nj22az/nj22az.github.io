@@ -14,7 +14,8 @@ export async function build(){
  for(const name of await readdir(path.join(root,'camera')))if(name!=='sw.js'&&/\.(js|css|webmanifest|wasm|png|svg|webp|jpg)$/.test(name))await add('camera/'+name);
  await add('camera/index.html');await add('johansson-town/src/render/looks.js');
  async function folder(dir){for(const e of await readdir(path.join(root,dir),{withFileTypes:true})){const name=dir+'/'+e.name;if(e.isDirectory())await folder(name);else if(!/\.txt$/.test(name))await add(name);}}
- for(const dir of ['assets','icons','stickers','cards','samples','fonts','frames'])await folder('camera/'+dir);
+ for(const dir of ['assets','icons','stickers','cards','samples','fonts','frames','vendor'])await folder('camera/'+dir);
+ for(const name of ['pico.LICENSE.txt','pico.NOTICE.txt'])await add('camera/vendor/'+name);
  const files=[];for(const name of [...names].sort()){const bytes=await readFile(path.join(root,name));files.push({url:'/'+name,sha256:hash(bytes),bytes:bytes.length});}
  const manifest=JSON.stringify({version,bytes:files.reduce((sum,f)=>sum+f.bytes,0),files},null,2)+'\n';return {manifest,build:hash(manifest)};
 }
