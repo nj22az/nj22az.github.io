@@ -62,3 +62,4 @@ body.office-home .office-heading{text-wrap:balance}
 body.office-home .about-bio{max-width:65ch;font-size:17px;line-height:1.7}
 body.office-home .locations-grid{gap:24px}
 @media(max-width:760px){body.office-home #blog,body.office-home #about,body.office-home #locations{padding-block:36px}}
+body.office-home .site-nav{background:#f8f7f2}
