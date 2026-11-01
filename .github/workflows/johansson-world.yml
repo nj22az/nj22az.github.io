@@ -41,6 +41,32 @@ jobs:
           name: iphone-startup
           path: johansson-town/output/iphone-startup/
           if-no-files-found: warn
+  ferry-exploration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: johansson-town/package-lock.json
+      - name: Install WebKit exploration tools
+        working-directory: johansson-town
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps webkit
+      - name: Real engine-room exploration on fresh iPad and desktop contexts
+        working-directory: johansson-town
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: xvfb-run -a node tools/ferry-exploration-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ferry-exploration
+          path: johansson-town/output/ferry-exploration/
+          if-no-files-found: warn
   guard:
     runs-on: ubuntu-24.04
     timeout-minutes: 15

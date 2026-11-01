@@ -124,6 +124,7 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     // (window.document), so the model is read from disk and handed over, as the room tests do (catalog-fixture.mjs).
     const {ONSEN_ASSETS}=await import('../src/world/interiors/onsen.js');
     await provideCatalog(...ONSEN_ASSETS);
+    source+='\nexport {applyFerryCamera,ferryExploreActive,changeView,inspectFerryMachinery};export const reviewFerryExplorer=()=>ferryExplorer;\n';
     const api=await import(dataModule(source));
     const {Vector3}=await import(threeUrl);
     const {BOOKSHOP_WORKSHOP_ROOM}=await import('../src/world/bookshop-workshop-layout.js');
@@ -333,6 +334,23 @@ test('Published island boots, shares the wooden bookshop/workshop and visits eve
     assert.equal(JSON.stringify(api.activities.state.sakura),savedShop,'Entering does not replay sales');
     for(const site of interiors){api.reviewSetMinutes(180);await api.enterRoom(site);api.simulate(.1);assert.equal(api.reviewCurrentRoom()?.id,site.id,'Overnight entry: '+site.id);api.leaveRoom();}
     api.runStabilityChecks();assert.equal(window.__JOHANSSON_STABILITY__.ok,true,'Post-walkthrough stability: '+JSON.stringify(window.__JOHANSSON_STABILITY__.failures));
+    // Exercise the actual walking/controller/render wiring below deck after the ordinary town tour.
+    api.leaveRoom();api.reviewSetMinutes(515);api.world.ferry.parkAt('town');api.world.ferry.update(0,515,0);api.simulate(.05);
+    const ship=api.world.ferry.ferry;ship.updateMatrixWorld(true);api.player.position.copy(ship.localToWorld(new Vector3(0,-1,11.1-17.25)));api.reviewSetYaw(.4);
+    api.simulate(.05);api.applyFerryCamera();assert.equal(api.ferryExploreActive(),true);const explore=api.reviewFerryExplorer();assert.equal(explore.mode,'walk');assert.equal(explore.id,null);
+    const start=ship.worldToLocal(api.player.position.clone());api.keys.KeyW=true;
+    for(let i=0;i<36;i++){api.simulate(1/60);api.applyFerryCamera();}api.keys.KeyW=false;
+    const after=ship.worldToLocal(api.player.position.clone());assert.ok(after.distanceTo(start)>.2&&after.distanceTo(start)<.8,'Engine-room walking uses a comfortable speed');
+    for(let i=0;i<30;i++){api.simulate(1/60);api.applyFerryCamera();}
+    const idle=ship.worldToLocal(api.camera.position.clone());let drift=0;
+    for(let i=0;i<90;i++){api.simulate(1/60);api.applyFerryCamera();drift=Math.max(drift,ship.worldToLocal(api.camera.position.clone()).distanceTo(idle));}
+    assert.ok(drift<.01,'Standing camera stays still relative to the ferry: '+drift);
+    const feet=ship.worldToLocal(api.player.position.clone());assert.equal(api.inspectFerryMachinery(),true);assert.equal(explore.mode,'inspect');
+    for(let i=0;i<12;i++){explore.orbit(.03,.01);explore.zoom(.98);api.simulate(1/60);api.applyFerryCamera();}
+    api.inspectFerryMachinery();api.applyFerryCamera();assert.equal(explore.mode,'walk');assert.ok(ship.worldToLocal(api.player.position.clone()).distanceTo(feet)<.01,'Inspection returns to the same standing place');
+    const views=new Set();for(let i=0;i<8;i++){api.changeView();api.applyFerryCamera();views.add(explore.id);}assert.equal(views.size,8,'All saved views are manually available');
+    explore.walk();api.applyFerryCamera();assert.equal(explore.mode,'walk');
+    console.log('Engine-room controller review',JSON.stringify({walkingMetres:after.distanceTo(start),idleDriftMetres:drift,manualViews:views.size}));
     globalThis.fetch=originalFetch;
   }catch(error){throw quietDataUrlError(error);}
 });

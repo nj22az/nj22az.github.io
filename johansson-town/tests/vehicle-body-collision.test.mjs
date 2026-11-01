@@ -109,7 +109,7 @@ test('clicking a seated driver cannot open a conversation or walk into the cab',
  driver.userData.hit={label:'Talk to Tetsuo',fn(){talked++;}};driver.userData.inVehicle='owned-car-1';
  const mesh=new THREE.Object3D();driver.add(mesh);
  class Raycaster{setFromCamera(){}intersectObjects(){return [{object:mesh,distance:1,point:new THREE.Vector3()}];}}
- const ctx={THREE:{...THREE,Raycaster},canvas:{addEventListener(type,fn){clicked=fn;},getBoundingClientRect(){return {left:0,top:0,width:500,height:500};}},controlsAllowed:()=>true,touchSticks:{suppressClick:()=>false},spawnScene:null,pocket:null,seated:false,current:null,active:null,yaw:0,scene:{children:[]},player:{position:new THREE.Vector3()},camera:{position:new THREE.Vector3()},interactables:[driver],pointWalk:{cancel(){},walk(){walked++;return true;}}};
+ const ctx={ferryExploreActive:()=>false,THREE:{...THREE,Raycaster},canvas:{addEventListener(type,fn){clicked=fn;},getBoundingClientRect(){return {left:0,top:0,width:500,height:500};}},controlsAllowed:()=>true,touchSticks:{suppressClick:()=>false},spawnScene:null,pocket:null,seated:false,current:null,active:null,yaw:0,scene:{children:[]},player:{position:new THREE.Vector3()},camera:{position:new THREE.Vector3()},interactables:[driver],pointWalk:{cancel(){},walk(){walked++;return true;}}};
  runInNewContext(handler,ctx);clicked({button:0,clientX:250,clientY:250});
  assert.equal(talked,0);assert.equal(walked,0);
  delete driver.userData.inVehicle;clicked({button:0,clientX:250,clientY:250});assert.equal(talked,1,'ordinary walking resident remains clickable');

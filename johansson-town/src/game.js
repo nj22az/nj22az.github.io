@@ -1,7 +1,8 @@
 import {preloadTradePosters,tradePostersReady} from './world/interiors/sakura-trade-posters.js';
 import {BLUE_CORAL} from './world/blue-coral-shop.js';
 import {FERRY_H1_ENABLED} from './world/ferry-engine-room-plan.js';
-import {createFerryFixedCamera} from './render/ferry-fixed-camera.js';
+import {createFerryExploration,withFerryInteriorView} from './render/ferry-exploration.js';
+import {createFerryExplorationUI} from './ui/ferry-exploration.js';
 import {canonicalResidentName} from './desktop/life-state.js';
 import {createLinuxLife} from './desktop/life.js';
 import {buildLinuxBedroom} from './desktop/bedroom.js';
@@ -552,7 +553,7 @@ document.documentElement.classList.toggle('touch-controls',touch);
 function centreCamera(){spawnScene?.cancel();pitch=0;camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
 function controlsAllowed(){return document.documentElement.dataset.desktopMenu!=='open'&&!concert?.active&&!concertLoading&&!islandPlay?.cinematic&&!spawnScene?.holding&&!photoStudio?.active&&!photoLoading&&!photoReturning&&started&&!document.hidden&&!roomLoading&&!activities?.paused&&!inspector?.active&&!itemViewer?.active&&!cameraControls.active&&$('#directory').classList.contains('hidden')&&$('#qte').classList.contains('hidden');}
 // Swipes scale to the screen and barely tip the view when they are mostly sideways (input/touch-feel.js).
-function dragLook(dx,dy){if(ferryCameraLocked())return;spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
+function dragLook(dx,dy){if(ferryExploreActive()&&ferryExplorer.mode==='inspect'){const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);ferryExplorer.orbit(-turn.yaw,-turn.pitch);return;}if(ferryCameraLocked())return;spawnScene?.cancel();const turn=swipeLook(dx,dy,innerWidth,cameraControls.settings);yaw+=turn.yaw;pitch=THREE.MathUtils.clamp(pitch+turn.pitch,-1.25,1.15);}
 const walkMotion=createMotion(),touchAutoRun=createAutoRun();
 const touchSticks=createTouchSticks({canvas,movePad:$('#stick'),stickBase:$('#stickBase'),stickKnob:$('#knob'),enabled:controlsAllowed,onDrag:dragLook});
 async function openPhotoStudio(){if(concert?.active||concertLoading)return;spawnScene?.cancel('photo');
@@ -604,6 +605,7 @@ $('#photoButton').onclick=openPhotoStudio;
 const freeCamera=createFreeCamera({canvas:renderer.domElement,settings:()=>cameraControls.settings,look:{id:()=>look,label:()=>LOOKS[look].label,next:nextLook},icon:name=>uiIcon(name),swatch:id=>lookSwatch(id,'free'),onChange:()=>resetInput()});
 function openFreeCamera(){
  if(!started||freeCamera.active||photoLoading||photoStudio?.active||inspector?.active||itemViewer?.active||concert?.active||roomLoading||catchingUp||activities?.paused)return;
+ if(inspectFerryMachinery())return;
  toggleDir(false);cameraControls.close();if(pocket?.raised)lowerPocket();spawnScene?.cancel('free camera');
  const view=new THREE.Euler().setFromQuaternion(camera.quaternion,'YXZ'),feet=player.position.y;
  // Seen from outside he has to be there, in the first-person view too; the hands at the lens are not.
@@ -1040,7 +1042,7 @@ function followOnsenWear(){const w=onsenWear();if(w&&w!==bathWear){bathWear=w;jo
 function updateJohansson(dt){
  for(const entity of linuxBorrowed.keys())entity.visible=false;
  const ferryView=islandPlay?.phase==='ferry'&&islandPlay.cinematic;
- hands.firstPersonVisible=!ferryCameraLocked()&&!freeCamera.active&&!thirdPerson&&!johansson?.drinking&&!spawnScene?.active&&!islandPlay?.cinematic&&current?.id!==CITY_RESTAURANT.id;
+ hands.firstPersonVisible=!ferryCameraLocked()&&!freeCamera.active&&(!thirdPerson||ferryExplorer?.active&&ferryExplorer.mode==='walk')&&!johansson?.drinking&&!spawnScene?.active&&!islandPlay?.cinematic&&current?.id!==CITY_RESTAURANT.id;
  if((ferryView||ferryCameraLocked())&&!johansson)ensureJohansson();
  if(!johansson)return;
  followOnsenWear();
@@ -1054,14 +1056,14 @@ function updateJohansson(dt){
  const partner=conversationName?(conversationName==='Thuan'?storeClerk:world.people.find(p=>p.g.userData.name===conversationName)?.g):null;
  if(partner){partner.getWorldPosition(lookPoint);lookPoint.y+=1.5;johansson.lookAt(lookPoint);}else johansson.lookAt(spawnScene?.gaze||null);
  setSwingFocus(camera.position);
- johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,seatFront:seated?parkSeat?.front:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,firstPersonDrinking:!ferryCameraLocked()&&!thirdPerson&&started&&!inspector?.active&&!spawnScene?.active,visible:ferryCameraLocked()||freeCamera.active||!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active});
+ johansson.update(dt,{sleeping:!!linuxLife?.inBed,speed:ferryView?0:playerSpeed,running:!ferryView&&playerRunning,seated,seatHeight:seated&&parkSeat?parkSeat.surfaceY-r.position.y:undefined,seatFront:seated?parkSeat?.front:undefined,tipsy,airborne:!ferryView&&!!characters?.jumping,firstPersonDrinking:!ferryCameraLocked()&&(!thirdPerson||ferryExplorer?.active&&ferryExplorer.mode==='walk')&&started&&!inspector?.active&&!spawnScene?.active,visible:!(ferryExplorer?.active&&ferryExplorer.mode!=='overview')&&(ferryCameraLocked()||freeCamera.active||!!linuxLife?.inBed||islandPlay?.phase!=='flight'&&((thirdPerson&&(current?thirdDistance>=.5:shipRoom()||houseboatCabin()?thirdDistance>=HEAD_CAM:!lensInsideHead()))||spawnScene?.active||ferryView)&&started&&!inspector?.active)});
  // Sakura: one thing in his hand, more in a basket, until he pays (shop-carry.js).
  shopCarry.sync(activities?.state?.konbini?.basket,current?.id==='market'&&johansson.ready);
 }
 if(thirdPerson)setThirdPerson(true,false);
 loadingProgress?.start('residents');
 await paintLoading();
-characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
+characters=createCharacters({mobile,shadows,onJump:()=>johansson?.jump(),canJump:()=>!ferryExplorer?.active&&!seated&&!pocket?.raised&&controlsAllowed(),isBlocked:(x,z,r)=>townBoundsBlocked(x,z,r)||colliderGrid.some(x,z,r,c=>circleHitsRect(x,z,r,c)),onError:(name,error)=>console.warn('Character construction failed:',name,error)});characters.attach(player,'player',1.82);world.people.forEach(p=>characters.attach(p.g,p.g.userData.name,p.profile?.height));
 // The people of the new streets: shopkeepers at their counters, the old men at gateball,
 // Grandmother Higa on her verandah, a postman on his round. See people/neighbours.js.
 // Who is simulated in full this frame: everybody on Linux; on the web, whoever is near or in view (edition.js).
@@ -1645,17 +1647,35 @@ function updateEarDefenders(){
  */
 const HEAD_CAM=.85;
 /** In one of her rooms: aboard, with a deckhead over him within about 2–2.7 m (the lens keeps under it, and comes in closer). */
-let ferryFixedCamera=null,ferryCameraWasLocked=false;
-function ferryCameraLocked(){
+let ferryExplorer=null,ferryExplorerUI=null,ferryViewMode=null,ferryRenderAt=null;
+function ferryExploreActive(){
  if(!FERRY_H1_ENABLED)return false;
- ferryFixedCamera??=createFerryFixedCamera(camera);
- const locked=ferryFixedCamera.sync({ship:current?null:world.ferry?.ferry,position:player.position,deck:current?null:deckUnder(),
-  override:!!(freeCamera.active||inspector?.active||photoStudio?.active||pocket?.raised||islandPlay?.cinematic||window.__JOHANSSON_AUDIT__?.camera)});
- if(locked!==ferryCameraWasLocked){const b=$('#viewButton');if(b){b.textContent=locked?'Camera angle':thirdPerson?'Behind him':'His own eyes';if(locked)b.removeAttribute('aria-pressed');else b.setAttribute('aria-pressed',String(thirdPerson));}ferryCameraWasLocked=locked;}
+ ferryExplorer??=createFerryExploration(camera);
+ const active=ferryExplorer.sync({ship:current?null:world.ferry?.ferry,position:player.position,deck:current?null:deckUnder(),
+  override:!!(freeCamera.active||inspector?.active||photoStudio?.active||pocket?.raised||conversationName||islandPlay?.cinematic||window.__JOHANSSON_AUDIT__?.camera)});
+ if(active&&!ferryExplorerUI)ferryExplorerUI=createFerryExplorationUI({explorer:ferryExplorer,onChange:()=>resetInput()});
+ ferryExplorerUI?.update(performance.now(),yaw);
+ return active;
+}
+function ferryCameraLocked(){
+ const active=ferryExploreActive(),mode=active?ferryExplorer.mode:'outside',locked=active&&mode!=='walk';
+ if(mode!==ferryViewMode){const b=$('#viewButton');if(b){b.textContent=active?(locked?'Next saved angle':'Saved engine-room views'):thirdPerson?'Behind him':'His own eyes';if(active)b.removeAttribute('aria-pressed');else b.setAttribute('aria-pressed',String(thirdPerson));}ferryViewMode=mode;}
  return locked;
 }
-function applyFerryCamera(){if(ferryCameraLocked())return ferryFixedCamera.apply();return false;}
-function changeView(){if(ferryCameraLocked()){say(ferryFixedCamera.cycle(),2);return;}setThirdPerson(!thirdPerson);}
+function applyFerryCamera(){
+ // Refresh floor transforms after her final motion, before the one rendered lens update.
+ if(!current&&ferryWalk&&ferryExplorer?.active)ferryWalk.update();
+ if(!ferryExploreActive()){ferryRenderAt=null;return false;}
+ const now=performance.now(),dt=ferryRenderAt===null?1/60:Math.min(.1,Math.max(0,(now-ferryRenderAt)/1000));ferryRenderAt=now;
+ return ferryExplorer.apply({yaw,pitch,dt,fov:cameraControls.settings.fov});
+}
+function changeView(){if(ferryExploreActive()){say(ferryExplorer.overview(),2);resetInput();return;}setThirdPerson(!thirdPerson);}
+function inspectFerryMachinery(){
+ if(!ferryExploreActive())return false;
+ if(ferryExplorer.mode==='inspect')ferryExplorer.walk();
+ else if(!ferryExplorer.inspect(ferryExplorer.nearby()[0]))say('Move closer to machinery, or tap its visible surface.',3);
+ resetInput();return true;
+}
 function shipRoom(){const d=current?null:deckUnder();return !!d&&[1.95,2.2,2.45,2.65].some(h=>ferryWalk.cameraBlocked(player.position.x,player.position.z,d.y+h,.05));}
 /** The ground under the player's feet: her deck aboard, the town's otherwise. */
 function playerGround(){if(current)return roomWalk()?roomWalk().floorBelow(player.position.x,player.position.z,player.position.y)?.y??player.position.y:0;const d=deckUnder();return d?d.y:groundHeight(player.position.x,player.position.z);}
@@ -1708,6 +1728,8 @@ function unstuckPlayer(forceStreet=false){
  {const deck=forceStreet?null:deckUnder();if(deck){
   const clear=(px,pz)=>{const m=ferryWalk.move(x,deck.y,z,px,pz,PLAYER_RADIUS);return m?.ok&&Math.abs(m.y-deck.y)<.3&&!environmentBlocked(px,pz,PLAYER_RADIUS,'player',m.y)&&!occupiedByPerson(px,pz);};
   if(clear(x,z))return;
+  // A passing crew member must not make the viewpoint teleport to another cell.
+  if(ferryExplorer?.active&&ferryWalk.move(x,deck.y,z,x,z,PLAYER_RADIUS)?.ok&&!environmentBlocked(x,z,PLAYER_RADIUS,'player',deck.y))return;
   for(let r=.25;r<=4;r+=.25)for(let i=0,n=Math.max(8,Math.round(r*14));i<n;i++){const a=i/n*Math.PI*2,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;if(clear(px,pz)){player.position.set(px,ferryWalk.floorAt(px,pz,deck.y).y,pz);return;}}
   return;}}
  if(!environmentBlocked(x,z)&&!occupiedByPerson(x,z)&&(!roomWalk()||roomWalk().floorAt(x,z,player.position.y)))return;
@@ -1767,15 +1789,16 @@ function updatePlayer(dt){
  if(!seated)unstuckPlayer();
  if(replayPlayer){const frame=replayPlayer.next();if(frame)return replayStep(frame);stopReplay('played to the end');}
  const fromX=player.position.x,fromZ=player.position.z;
- const lockedFerry=ferryCameraLocked();
+ const lockedFerry=ferryCameraLocked(),exploring=ferryExplorer?.active;
  const lookX=controllerFrame.look.x+touchSticks.look.x+(keys.KeyL?1:0)-(keys.KeyJ?1:0),lookY=controllerFrame.look.y+touchSticks.look.y+(keys.KeyK?1:0)-(keys.KeyI?1:0);
+ if(lockedFerry){if(ferryExplorer.mode==='inspect')ferryExplorer.orbit(lookX*dt*1.6,lookY*dt*1.6*(cameraControls.settings.invertY?-1:1));walkMotion.reset();playerSpeed=0;finishPlayerStep(dt,fromX,fromZ);return;}
  if(!lockedFerry)({yaw,pitch}=lookStep(yaw,pitch,THREE.MathUtils.clamp(lookX,-1,1),THREE.MathUtils.clamp(lookY,-1,1),dt,cameraControls.settings));
  let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-touchSticks.move.y-controllerFrame.move.y;
  let s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+touchSticks.move.x+controllerFrame.move.x;
  if(Math.hypot(f,s)>.05){spawnScene?.cancel();if(seated)standUp();pointWalk.cancel();hushSubtitle();}
  if(Math.hypot(lookX,lookY)>.05)spawnScene?.cancel();
  const walking=pointWalk.direction(player.position,dt,current);
- const movementYaw=lockedFerry?ferryFixedCamera.heading(Math.hypot(f,s)>.05||!!walking):yaw;
+ const movementYaw=yaw;
  walkMarker.visible=pointWalk.active;
  if(pointWalk.destination)walkMarker.position.set(pointWalk.destination.x,(current?0:groundHeight(pointWalk.destination.x,pointWalk.destination.z))+.05,pointWalk.destination.z);
  if(walking){
@@ -1785,7 +1808,7 @@ function updatePlayer(dt){
  if(seated){s=0;f=0;}
  // On touch: the stick steers as well as walks, and pushed to its rim it runs.
  const thumb=touchSticks.moving&&!seated,thumbPush=Math.hypot(touchSticks.move.x,touchSticks.move.y);
- if(thumb&&!lockedFerry)yaw+=steerYaw(touchSticks.move,dt,{looking:touchSticks.looking});
+ if(thumb&&!lockedFerry&&!exploring)yaw+=steerYaw(touchSticks.move,dt,{looking:touchSticks.looking});
  const thumbRun=thumb?touchAutoRun.update(thumbPush,dt):(touchAutoRun.reset(),false);
  // Eased, so walking starts and stops like a person rather than a switch.
  if(move2.set(s,f).lengthSq()>1)move2.normalize();
@@ -1795,7 +1818,7 @@ function updatePlayer(dt){
  if(moveVec.lengthSq()>.0001){
   // Drunk, the feet do not quite go where they are pointed: the way home wanders.
   const drunk=Math.min(1,tipsy/DRUNK);wander=drunk>0?(Math.sin(elapsed*1.3)*.32+Math.sin(elapsed*.47+1)*.22)*drunk:0;
-  running=!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||thumbRun||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
+  running=!exploring&&!!(keys.ShiftLeft||keys.ShiftRight||touchRunning||thumbRun||controllerFrame.held[4]||activities.state.sprintUntil>performance.now());
   stepFeet(dt,wander,running);
  }
  if(replayRecorder?.open)replayRecorder.add({f:move2.y,s:move2.x,yaw,pitch,running,walking:!!walking,x:player.position.x,z:player.position.z,dt,wander});
@@ -1804,10 +1827,10 @@ function updatePlayer(dt){
 /** Moves the feet along moveVec for one step (wander: a drink's turn off the line), stopped by walls. */
 function stepFeet(dt,wander,running){
  if(wander)moveVec.applyAxisAngle(yAxis,wander);
- const speed=(running?5.2:3)*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;
- const stoppedX=collides(nx,player.position.z),stoppedZ=collides(player.position.x,nz);
- if(!stoppedX)player.position.x=nx;
- if(!stoppedZ)player.position.z=nz;
+ const exploring=ferryExplorer?.active,precision=!!(keys.AltLeft||keys.AltRight);
+ const speed=(exploring?(precision ? .35 : ferryExplorer.speed):(running?5.2:3))*dt,nx=player.position.x+moveVec.x*speed,nz=player.position.z+moveVec.z*speed;
+ const stoppedX=collides(nx,player.position.z),streetStoppedZ=exploring?false:collides(player.position.x,nz);if(!stoppedX)player.position.x=nx;
+ const stoppedZ=exploring?collides(player.position.x,nz):streetStoppedZ;if(!stoppedZ)player.position.z=nz;
  if(stoppedX||stoppedZ)reachTheTunnelMouth(nx,nz);
  turnQ.setFromAxisAngle(yAxis,Math.atan2(-moveVec.x,-moveVec.z));player.quaternion.slerp(turnQ,1-Math.pow(.001,dt));playerRunning=running;
 }
@@ -1825,7 +1848,7 @@ function replayStep(frame){
  finishPlayerStep(dt,fromX,fromZ);
 }
 function finishPlayerStep(dt,fromX,fromZ){
- if(ferryCameraLocked()){playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);player.visible=false;ferryFixedCamera.apply();return;}
+ if(ferryExploreActive()){playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);player.visible=false;return;}
  playerSpeed=THREE.MathUtils.damp(playerSpeed,Math.hypot(player.position.x-fromX,player.position.z-fromZ)/Math.max(dt,1e-3),12,dt);
 
  player.visible=false;camera.position.copy(player.position).add(fwVec.set(0,seated?(parkSeat?parkSeat.eyeY-player.position.y:1.15):(playingResident()?ensureJohansson().avatar.height*.92:1.7)+(cameraControls.settings.bob&&move2.lengthSq()>.02?Math.sin(elapsed*11)*.018:0),0));camera.rotation.order='YXZ';const sway=Math.min(1,tipsy/DRUNK);camera.rotation.set(pitch+Math.sin(elapsed*.9)*.012*sway,yaw+Math.sin(elapsed*.55)*.02*sway,Math.sin(elapsed*.7)*.025*sway);if(thirdPerson)placeThirdPerson(dt);else if(current)camera.position.y=Math.min(camera.position.y,indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y)??Infinity);
@@ -2117,6 +2140,29 @@ if(startupRecovery.recovering){
  document.body.append(restore);
 }
 addEventListener('johansson-title-weather',()=>{if(!started)startWeather();});
+// Inspection owns canvas gestures while active. It never feeds the walking thumb or click-to-walk.
+const ferryInspectPointers=new Map();
+const inspectingFerry=()=>ferryExplorer?.active&&ferryExplorer.mode==='inspect';
+canvas.addEventListener('pointerdown',e=>{
+ if(!inspectingFerry()||!controlsAllowed())return;
+ e.stopImmediatePropagation();e.preventDefault();canvas.setPointerCapture?.(e.pointerId);
+ ferryInspectPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+},{capture:true});
+canvas.addEventListener('pointermove',e=>{
+ if(!ferryInspectPointers.has(e.pointerId))return;
+ if(!inspectingFerry()||!controlsAllowed()){ferryInspectPointers.clear();return;}
+ e.stopImmediatePropagation();e.preventDefault();
+ const old=ferryInspectPointers.get(e.pointerId),before=[...ferryInspectPointers.values()];
+ const gap=before.length===2?Math.hypot(before[0].x-before[1].x,before[0].y-before[1].y):0;
+ ferryInspectPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(ferryInspectPointers.size===1){const turn=swipeLook(e.clientX-old.x,e.clientY-old.y,innerWidth,cameraControls.settings);ferryExplorer.orbit(-turn.yaw,-turn.pitch);}
+ else if(gap){const [a,b]=[...ferryInspectPointers.values()],next=Math.hypot(a.x-b.x,a.y-b.y);if(next>8)ferryExplorer.zoom(THREE.MathUtils.clamp(gap/next,.85,1.18));}
+},{capture:true});
+for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,e=>{
+ if(ferryInspectPointers.delete(e.pointerId)){e.stopImmediatePropagation();if(e.cancelable)e.preventDefault();}
+},{capture:true});
+canvas.addEventListener('wheel',e=>{if(inspectingFerry()&&controlsAllowed()){e.preventDefault();e.stopImmediatePropagation();ferryExplorer.zoom(Math.exp(THREE.MathUtils.clamp(e.deltaY,-80,80)*.0015));}},{capture:true,passive:false});
+addEventListener('blur',()=>ferryInspectPointers.clear());
 let mouseLooking=false,mouseLast=null;
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{
@@ -2141,6 +2187,12 @@ canvas.addEventListener('click',event=>{
  const hit=hits[0];if(!hit)return;
  let object=hit.object;while(object&&!object.userData.hit)object=object.parent;
  if(object?.userData.inVehicle)return;
+ if(ferryExploreActive()){
+  if(ferryExplorer.mode!=='walk')return;
+  const p=world.ferry.ferry.worldToLocal(hit.point.clone()),target=ferryExplorer.targetAt(p);
+  if(!object?.userData.hit?.label?.startsWith('Talk to ')&&target&&p.y>-.65&&p.y<1.4&&ferryExplorer.inspect(target,p)){resetInput();return;}
+ }
+
  // Batched street props keep their action on a separate anchor. Resolve that anchor
  // only close to the visible surface, so hidden actions cannot be clicked through walls.
  if(!object){let best=36;for(const candidate of interactables){
@@ -2176,7 +2228,7 @@ document.addEventListener('keydown',e=>{
   if(e.code==='KeyF'||e.code==='Escape'){e.preventDefault();if(!e.repeat)lowerPocket();return;}
   if(!['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyI','KeyJ','KeyK','KeyL','ShiftLeft','ShiftRight'].includes(e.code))return;
  }
- if(e.code==='Escape'){toggleDir(false);return;}
+ if(e.code==='Escape'){if(ferryExploreActive()&&ferryExplorer.mode!=='walk'){ferryExplorer.walk();resetInput();return;}toggleDir(false);return;}
  if(e.code==='KeyC'&&!e.repeat){openCamera();return;}
  if(e.code==='KeyP'&&!e.repeat){openPhotoStudio();return;}
  if(e.code==='KeyO'&&!e.repeat){openFreeCamera();return;}
@@ -2558,8 +2610,9 @@ if(new URLSearchParams(location.search).has('audit'))window.__JOHANSSON_AUDIT__=
  get lensOcclusion(){return lensOcclusion;},
  /** For the audit: the lens's own tests at a point (what stops the boom), and whether he is in one of the ferry's rooms. */
  probe(x,y,z,r=.16){return {blocked:cameraBlocked(x,z,y,r),room:shipRoom(),deck:deckUnder()?.floor?.id??null,aboardSolid:!!deckUnder()&&ferryWalk.cameraBlocked(x,z,y,r)};},
- get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
- get ferryCamera(){return {active:!!ferryFixedCamera?.active,id:ferryFixedCamera?.id??null,fov:camera.fov,zoom:camera.zoom};},
+ get lens(){return {position:camera.position.toArray(),rotation:camera.rotation.toArray().slice(0,3),quaternion:camera.quaternion.toArray(),distance:thirdDistance,ceiling:current?indoorCeilings?.limit(camera.position.x,camera.position.z,player.position.y):null,blocked:cameraBlocked(camera.position.x,camera.position.z,camera.position.y,.16)};},
+ get ferryCamera(){return {active:!!ferryExplorer?.active,mode:ferryExplorer?.mode??null,id:ferryExplorer?.id??null,local:ferryExplorer?.local.toArray()??null,precision:ferryExplorer?.precision??false,fov:camera.fov,zoom:camera.zoom};},
+ get ferryInspectPoints(){return ferryExplorer?.nearby().map(t=>{const p=world.ferry.ferry.localToWorld(new THREE.Vector3(...t.pos)).project(camera);return {id:t.id,label:t.label,x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2,inView:Math.abs(p.x)<.9&&Math.abs(p.y)<.9&&p.z> -1&&p.z<1};})||[];},
  get mouse(){return {walking:pointWalk.active,destination:pointWalk.destination,yaw,pitch,thirdPerson};},
  camera:null,
  step(milliseconds){
@@ -2819,7 +2872,10 @@ function renderOutdoor(){
   if(started&&!firstFrameReported){firstFrameReported=true;launchReport.stage('Rendering first gameplay frame');}
   const audit=window.__JOHANSSON_AUDIT__?.camera;
   if(audit){camera.position.set(...audit.pos);camera.lookAt(...audit.at);camera.updateMatrixWorld();}
-  present(()=>townSections.render({renderer,scene,camera,town,position:player.position}));
+  present(()=>{const draw=()=>townSections.render({renderer,scene,camera,town,position:player.position});
+   if(ferryExplorer?.active&&!ferryExplorer.floor?.startsWith('er-'))return withFerryInteriorView(town,world.ferry.ferry,[...world.people.map(p=>p.g),...(world.neighbours||[])],draw);
+   return draw();
+  });
   if(started&&firstPlayFrame&&performance.now()>=reportNextAt){reportNextAt=performance.now()+5000;const buffer=renderer.getDrawingBufferSize(new THREE.Vector2());launchReport.stage(graphics.postprocess?'Playing':'Playing · single pass',{textures:renderer.info.memory?.textures,geometries:renderer.info.memory?.geometries,programs:renderer.info.programs?.length,drawCalls:renderer.info.render?.calls,triangles:renderer.info.render?.triangles,bufferWidth:buffer.x,bufferHeight:buffer.y});}
   if(window.__JOHANSSON_STARTUP__&&!window.__JOHANSSON_STARTUP__.firstFrameMs){window.__JOHANSSON_STARTUP__.firstFrameMs=performance.now()-window.__JOHANSSON_STARTUP__.startedAt;window.__JOHANSSON_STARTUP__.stage='playing';}
 }
