@@ -67,6 +67,14 @@ when saving ? I want memory with our own photos or with the stickers".
   no downloads or uploads. This is conventional photographic correction, not AI reconstruction or upscaling.
   No code, models or binaries from Merserk's Visual Enhancer are included: its Windows/DLSS/DirectML dependencies
   do not run in this browser, and its source licence restricts redistribution and hosted equivalents.
+- **Pop** in Adjust (the owner, 2 November 2026: "how about actual photo enhancements to make a photo 'pop' better"):
+  a switch and 0–100% strength (50% on first use), beside Enhance and after it. A photographer's hand edit in one
+  control, on the GPU from the photo's own pixels, before the Looks: midtone **clarity** against the picture's large
+  shapes (a soft blur from the source's mipmap, about a 48th of the crop across, so the viewfinder, thumbnails and a
+  tiled 16 MP save agree), dark places opened a little and bright places held back (a dark, quiet background stays
+  dark), a gentle S-curve for depth, and **vibrance**: dull colours gain more than vivid ones. Skin (warm hues in skin's
+  balance) is spared most of the clarity and the vibrance, so faces keep their hue and smoothness. Off is the photo
+  exactly; the strength is kept in the recipe and re-edit restores it. Enhance cleans and corrects; Pop is the look.
 - **Makeup** in Adjust: Skin, Lips and Blush strengths with Rose, Peach and Berry colours. Find face uses
   a bundled offline frontal-face classifier; Align face moves/resizes the guide and independently positions both eyes
   and the mouth. Drag handles or use arrow keys (Shift for larger steps); Angle handles tilted faces. Lip width/height
@@ -443,6 +451,7 @@ node camera/tests/zip.test.mjs                 # the backup ZIP: round trip, che
 node camera/tests/backup.browser.mjs           # backup sheet, share/download, byte-for-byte restore, never replacing newer edits
 node camera/tests/face-stamps.test.mjs         # face stickers' recipe, World's parts and the face geometry
 node camera/tests/face-stamps.browser.mjs      # brows, eyes, shine and hats on the real portrait; finishes, save, re-edit, phone width
+node camera/tests/pop.browser.mjs              # Pop: exact when off, contrast and colour, skin and dark backgrounds, any size, the row
 node camera/tests/blackjack.test.mjs         # scores and hand flow
 node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)

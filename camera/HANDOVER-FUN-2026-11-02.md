@@ -1,16 +1,18 @@
-# Pocket Camera album backup, face stickers and Halloween — 2 November 2026
+# Pocket Camera album backup, face stickers, Halloween and Pop — 2 November 2026
 
 The owner (2 November 2026), after the [professional-editor audit](AUDIT-PRO-EDITOR-2026-11-02.md): "Yes start with
 backup plus brows, eyes and Halloween, implement if you make new things back into Johansson World, make parts in
 blender". Earlier the same day: "I also want fun effects like Manga eyes, evil eyebrows, Halloween cute stickers etc
 (maybe things can be brought from the avatar creator and Johansson World?)" and "Imagine using stickers for the
-eyebrows from the avatar creator".
+eyebrows from the avatar creator". Later: "how about actual photo enhancements to make a photo 'pop' better".
 
 ## State
 
-Branch `claude/laughing-brahmagupta-ybyndm`, not merged, not published. The visible version is `v2026.11.02.1` and the
-release key `20261102fun1`. Main publication needs the owner's explicit word, then Pages and public-byte verification.
-Results of every check run are under Verification below; physical iPhone/iPad Safari is untested.
+Branch `claude/laughing-brahmagupta-ybyndm`, **not merged, not published**. Visible version `v2026.11.02.1`, release
+key `20261102fun1` (one unreleased release for everything below). Commits: `40976c06` backup and face stickers,
+`93933e45` World cat ears and pail fix, `54afa8cb` README, `9d8dc294` seven sticker tabs, `3bcd38eb` Halloween in
+Blender (Camera sheet, World bats and sweets), then Pop and this handover. Main publication needs the owner's explicit
+word, then Pages and public-byte verification. Physical iPhone/iPad Safari is untested.
 
 ## What was built
 
@@ -34,53 +36,64 @@ Brows · Eyes · Shine · Hat; Drawn on / Sticker). See the README section "Face
   the MCP preview allowlist now include exactly that file.
 - The residents' 256-unit face is laid on the photo by its two eyes (similarity transform from the guide's eye points).
   Brows are 1.8× a resident's and the mood turns them 0.55× as far (evil ≈ 30°): visually checked on the real portrait;
-  at face.js's full turn the long brows stood on end.
+  at face.js's full turn the long brows stood on end. Shine is never rimmed and sits under drawn eyes.
 - Drawn on: drawn into the edit source after the makeup pass (makeup is not recomputed when only stickers change), so
   the Looks restyle them (Manga inks them). Sticker: an overlay canvas in the editor (`.stamps-art`) and `finishPhoto`
   prints them after the frame, with a white die-cut rim and a soft shadow.
 - `recipe.stamps` is normalised in `looks-gl.js normalRecipe` (kept with every photo, re-edit restores it).
 
-### Halloween (Blender parts, Camera sheet, World)
-See "Blender and Studio" below for what the helper produced and published.
+### Halloween, made in Blender
+- **Camera**: `camera/stickers/halloween.json` + `halloween/` (8 stickers, the **Season** tab), rendered by
+  `tools/blender/render-halloween-stickers.py` (Blender 5.2 as a Python module, Cycles, Freestyle line in World's face
+  ink, the residents' thin rim). World's pumpkin lantern, jack-o'-lantern, obake, witch hat and pumpkin stem; new cat
+  ears, paper bat and wrapped sweets. The three headpieces carry measured `hat` crown/width, used by Face stickers' Hat.
+  Kind `season`: never a Memory deck or a greeting. The tab is Season (not Halloween) so seven tabs fit a 390-point
+  phone; the shared tab padding/type shrink slightly (11.9 px there). Later season sheets go under the same tab.
+- **World catalogue** (Johansson Studio's pipeline, all 12 Studio checks passed, published v1):
+  `halloween-paper-bat` (0.238 × 0.099 × 0.031 m, 752 triangles, anchor `hang`) and `halloween-sweets` (41 sweets,
+  0.25 × 0.057 × 0.256 m, 2,952 triangles, one draw call). Builders in `assets/catalog/<id>/source/build-*.py`.
+  **Studio's input cards could not be pushed to `nj22az/jojo`** (the session's permission check refused push access);
+  they are kept as `assets/catalog/<id>/source/studio-asset.json`. To restore them in Studio: copy that file to
+  `jojo/town-studio/assets/<id>/asset.json` and `source/model.glb` to `.../<id>/model.glb` (byte-identical to Studio's).
+- **World placement** (`src/world/halloween.js`): six bats on cotton threads from the lantern string, every other gap
+  (fixed thread lengths and turns; each thread added only with its bat's model); the sweets on the lid of the two-high
+  crate stack, between the pails, at a child's reach. Models load the first time the season shows. Not on the shutter:
+  Sakura's shutter is up in shop hours (9:00–20:30), lantern-time included.
+- **Cat ears** costume: `storyProps(avatar).give('catEars')`, band fitted to the head's own shape (`shapeHeadPoint`),
+  ears sized from the head; rendered on Tetsuo, a child and Officer Mori (no gap at the temples).
+- **Fixed floating**: the jack-o'-lantern builder floated every pail 3–4 cm and its stem 3.6 cm above the pumpkin; two
+  frontage pails stood over the wrong crate stacks (one 26 cm up). Now the builder stands on its origin, the stem sits
+  in the top, `SAKURA_CRATES`/`crateTops()` are shared by the crates and the staging, and tests hold pails and stem.
+  Studio's registry height for the pail is updated (0.247 → 0.203 m).
+- Pre-existing, **not changed**: the four cardboard obake are on the shutter's plane; with the shutter up they stand
+  about 20 cm in front of the open glass. Needs an owner decision.
 
-### World (johansson-town)
-- **Cat ears**: a new Halloween costume, `storyProps(avatar).give('catEars')` (`buildCostume`), with who/why/where in
-  `STORY_PROPS`. The band follows the head's own shape (`shapeHeadPoint`, as the catalogue's hats are fitted) 6 mm off
-  the scalp; the ears are sized from the head. Rendered on Tetsuo, a child and Officer Mori: no gap at the temples.
-- **Paper bats** (catalogue `halloween-paper-bat`): six hung on cotton threads from the lantern string, every other gap
-  between the lanterns, fixed thread lengths and turns. Not on the shutter: the shutter is rolled up while Sakura is open
-  (9:00–20:30), lantern-time included. Each thread is added only with its bat's model.
-- **Wrapped sweets** (catalogue `halloween-sweets`): on the lid of the two-high crate stack, between the pails, 58 cm up.
-- Both models are fetched the first time the season shows, never the rest of the year.
-- **Fixed: floating pails.** `buildJackOLantern` put the lobes' bottoms a quarter of r above its origin, so every pail
-  floated 3–4 cm (the ring round the machine, the pole's foot, the bin); two frontage pails were also placed over the
-  wrong crate stacks (one 26 cm in the air). The builder now stands on its origin (same size for Studio's registry), and
-  the pails stand on the real surfaces: `SAKURA_CRATES` and `crateTops()` are now exported from `old-town.js` and used by
-  both the crates and the staging. A test checks every pail rests within 3 mm.
-- Pre-existing, **not changed**: the four cardboard obake are "taped to the shutter" 2 cm in front of its plane, so while
-  the shutter is up (shop hours, lantern-time included) they stand about 20 cm in front of the open glass. Needs an owner
-  decision (tape them to the glass when open, or show them only after closing).
+### Pop (Camera)
+`looks-gl.js popped()` and an Adjust row beside Enhance (switch, 0–100%, 50% first). In the first pass after Enhance,
+from the photo's own pixels: midtone clarity against a soft mipmap blur about a 48th of the crop across (so preview,
+thumbnails and a tiled save agree), a little shadow opening only where there is detail, held highlights, a gentle
+S-curve, and vibrance; skin is spared most clarity and vibrance. First version lifted a moody portrait's background
+and texture; tuned after looking (`/tmp` renders not kept). `recipe.pop` in `normalRecipe`; off is byte-exact.
 
 ## Verification
 
-Commits so far: `40976c06` (Camera backup and face stickers), `93933e45` (World cat ears, pail fix, runtime rebuilt).
-Run locally in this cloud session (Chromium 153 headless, SwiftShader; not a phone):
-- Camera units: zip **7/7**, face-stamps **6/6**, modules, offline inventory; MCP policy **16/16**.
-- Camera browser: backup **7/7**, face-stamps **10/10** (hats pending the sheet), retouch **40/40**, UI **82/82**,
-  crop **33/33**, save/share/layout **14/14**, paper **5/5**, integration **8/8** (its prior-engine comparisons need
-  CI's baseline files), sticker contours **4/4**, Smart **14/14**, screens **5/5**.
-- The main camera suite and Enhance failed only on console 404s for `stickers/halloween.json`, which the Blender helper
-  had not yet written; they are to be rerun once the sheet exists.
-- World: halloween-street **11/11** (with the pails test), runtime-package **4/4** after `npm run build:runtime`,
-  fujitas-back-moves **18/18**, asset-modeller **6/6**, wardrobe-catalogue **8/8**, resident-guide-catalogue **6/6**.
-- Not run: the full World guard, MCP real acceptance, offline browser suite, physical devices.
-
-In progress (uncommitted at this point): the bats and sweets placement in `halloween.js` and its test (need the
-catalogue cards Studio publishes), the Blender sheet and catalogue assets. `jojo` push access was refused by the
-session's permission check, so the Studio cards (`town-studio/assets/halloween-*`) cannot be pushed from here.
+Run locally in this cloud session (headless Chromium 153 with SwiftShader; not a phone, not Safari):
+- Camera units: zip **7/7**, face-stamps **6/6**, looks-gl, modules, offline inventory; MCP policy **16/16**.
+- Camera browser on the Halloween commit `3bcd38eb`: main camera **56/56**, face stickers **11/11** (hats included),
+  offline **13/13**, backup **7/7**, Enhance **22/22**, retouch **40/40**, UI **82/82**, crop **33/33**,
+  save/share/layout **14/14**, paper **5/5**, integration **8/8** (its prior-engine comparisons need CI's baseline
+  files), sticker contours **4/4**, Smart **14/14**, screens **5/5**; **real MCP/Camera acceptance 20/20**.
+- Pop: pop **5/5**; the affected suites after Pop are recorded in the Pop commit message.
+- World: halloween-street **12/12**, catalogue **7/7** (`build-catalog --check` current), runtime-package **4/4** after
+  `npm run build:runtime`, fujitas-back-moves **18/18**, asset-modeller **6/6**, wardrobe-catalogue **8/8**,
+  resident-guide-catalogue **6/6**. `onsen-seats` fails 1/2 **identically on the starting main `4f545da`** (Nhung's
+  seated body outside the massage chair's keep-clear); not in the guard, not touched.
+- Not run: the full World guard (z-fighting needs CI's heap), Linux acceptance, physical devices.
 
 ## Next
 
-1. Owner review of the stickers and the World bats/sweets/cat ears; then publication on the owner's word.
-2. Physical iPhone: backup Save to Files and restore, Home Screen vs Safari albums, face stickers' performance.
-3. The audit's remaining Phase 0/1 items: EXIF capture date, undo/redo, Face pack (landmarks), Hide my brows.
+1. Owner review: face stickers on their own photos, the Season sheet, Pop, and World's bats/sweets/cat ears.
+2. Publication on the owner's word; then Pages and public bytes.
+3. Commit the Studio cards into `jojo` from a session with push access (see above).
+4. Physical iPhone: backup Save to Files and restore, Home Screen vs Safari albums, face stickers and Pop speed.
+5. Audit's remaining items: EXIF capture date, undo/redo, Face pack (landmarks), Hide my brows; the obake decision.

@@ -32,7 +32,7 @@ jobs:
           - job: camera-retouch
             suites: retouch screens
           - job: camera-face-backup
-            suites: face-stamps backup
+            suites: face-stamps backup pop
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:

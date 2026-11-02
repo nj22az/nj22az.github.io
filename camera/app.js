@@ -1708,7 +1708,7 @@ function openStickerSheet(){
 $('stickerSheet').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
 function renderAdjusters(){
  const e=state.edit,box=$('adjusters');box.textContent='';
- renderEnhance();
+ renderEnhance();renderPop();
  for(const a of ADJUSTMENTS){
   const v=e.recipe.adjust[a.key],b=document.createElement('button');b.type='button';b.className=`adjuster${v<0?' neg':''}${v?' changed':''}`;b.dataset.key=a.key;
   b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.adjust===a.key));b.title=a.hint||a.label;
@@ -1721,11 +1721,13 @@ function renderAdjusters(){
  s.value=v;s.setAttribute('aria-label',info.label);$('adjustLabel').textContent=info.label;$('adjustValue').textContent=v>0?`+${v}`:v;
  s.classList.add('centred');s.style.setProperty('--from',`${Math.min(50,50+v/2)}%`);s.style.setProperty('--to',`${Math.max(50,50+v/2)}%`);
 }
-function showEnhanceStrength(open){
- $('enhanceStrengthRow').hidden=!open;$('adjustmentSliderRow').hidden=open;
- $('enhanceAmount').setAttribute('aria-expanded',String(open));invalidate();
+function showEnhanceStrength(open,which='enhance'){
+ // One strength open at a time (Enhance's or Pop's), in place of the adjustment's slider.
+ for(const k of ['enhance','pop']){const on=open&&k===which;$(k+'StrengthRow').hidden=!on;$(k+'Amount').setAttribute('aria-expanded',String(on));}
+ $('adjustmentSliderRow').hidden=open;invalidate();
 }
 $('enhanceAmount').addEventListener('click',()=>showEnhanceStrength($('enhanceStrengthRow').hidden));
+$('popAmount').addEventListener('click',()=>showEnhanceStrength($('popStrengthRow').hidden,'pop'));
 $('adjustReset').addEventListener('click',()=>{if(state.edit)setAdjust(0);});
 function setAdjust(value){const e=state.edit;e.recipe.adjust[e.adjust]=value;renderAdjusters();refreshThumbs();invalidate();}
 $('adjustSlider').addEventListener('input',ev=>{
@@ -1753,6 +1755,24 @@ $('enhancePhoto').addEventListener('click',()=>{
 });
 $('enhanceStrength').addEventListener('input',ev=>setEnhance(+ev.target.value/100));
 $('enhanceStrength').addEventListener('change',()=>refreshThumbs(true));
+// Pop, the same way: in the recipe, off restores the photo exactly, the last strength comes back when switched on again.
+function renderPop(){
+ const amount=Math.round((state.edit?.recipe.pop||0)*100);
+ $('popPhoto').setAttribute('aria-checked',String(amount>0));
+ $('popStrength').value=amount;$('popValue').textContent=amount?`${amount}%`:'Off';
+}
+function setPop(amount){
+ const e=state.edit;if(!e||e.saving)return;
+ if(e.recipe.pop)e.popAmount=e.recipe.pop;
+ e.recipe.pop=Math.max(0,Math.min(1,amount));if(amount>0)e.popAmount=e.recipe.pop;
+ renderPop();invalidate();
+}
+$('popPhoto').addEventListener('click',()=>{
+ const e=state.edit;if(!e||e.saving)return;
+ setPop(e.recipe.pop?0:e.popAmount||.5);refreshThumbs(true);sound('tick');
+});
+$('popStrength').addEventListener('input',ev=>setPop(+ev.target.value/100));
+$('popStrength').addEventListener('change',()=>refreshThumbs(true));
 
 // ---------- Keys, drops, the page coming and going ----------
 addEventListener('keydown',e=>{

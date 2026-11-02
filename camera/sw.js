@@ -1,5 +1,5 @@
 // Atomic, verified offline bundle. Regenerate with node tools/build-camera-offline.mjs.
-const BUILD='4f0544657cf6542bad651a52dc866b8b8aac078ea4ed2d7331f01c38111d5c76';
+const BUILD='afd0aa56a8518730923f5d9862ad132a5f4f92842db8e23c732d211e7de82247';
 const CACHE='pocket-camera-'+BUILD.slice(0,20),META='/camera/offline.json';
 const digest=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
 let manifest;

@@ -188,6 +188,12 @@
      <label for="enhanceStrength">Strength</label>
      <input type="range" id="enhanceStrength" min="0" max="100" step="1" value="0">
     </div>
+    <!-- Pop (looks-gl.js popped): clarity, open shadows, held highlights, depth and vibrance that spares skin. -->
+    <div class="option-row enhance-heading pop-heading"><span class="enhance-copy"><span id="popLabel">Pop</span><small id="popHint">Clarity, depth and colour that stands out.</small></span><button type="button" class="text-button enhance-amount" id="popAmount" aria-label="Pop strength" aria-expanded="false" aria-controls="popStrengthRow"><output id="popValue" for="popStrength">Off</output></button><button type="button" class="switch" id="popPhoto" role="switch" aria-checked="false" aria-labelledby="popLabel" aria-describedby="popHint"></button></div>
+    <div class="slider-row enhance-strength" id="popStrengthRow" hidden>
+     <label for="popStrength">Strength</label>
+     <input type="range" id="popStrength" min="0" max="100" step="1" value="0">
+    </div>
     <div class="adjusters" id="adjusters" role="radiogroup" aria-label="Adjustment"></div>
     <div class="slider-row adjustment-strength" id="adjustmentSliderRow">
      <label id="adjustLabel" for="adjustSlider">Light</label>

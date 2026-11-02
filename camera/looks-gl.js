@@ -1156,7 +1156,7 @@ export function normalRecipe(recipe={}){
  const stickers=(Array.isArray(recipe.stickers)?recipe.stickers:[]).filter(s=>typeof s?.id==='string').slice(0,40)
   .map(s=>({id:s.id,x:n(s.x,-.2,1.2,.5),y:n(s.y,-.2,1.2,.5),size:n(s.size,.06,1.6,.42),angle:n(s.angle,-3600,3600,0),flip:!!s.flip,
    ...(s.id.startsWith('balloon:')?{text:String(s.text??'').slice(0,140)}:{})}));
- return {layers,crop:normalCrop(recipe.crop),makeup:normaliseMakeup(recipe.makeup),stamps:normaliseStamps(recipe.stamps),enhance:n(recipe.enhance,0,1,0),paper:PAPERS.some(p=>p.id===recipe.paper)?recipe.paper:'none',
+ return {layers,crop:normalCrop(recipe.crop),makeup:normaliseMakeup(recipe.makeup),stamps:normaliseStamps(recipe.stamps),enhance:n(recipe.enhance,0,1,0),pop:n(recipe.pop,0,1,0),paper:PAPERS.some(p=>p.id===recipe.paper)?recipe.paper:'none',
   adjust:{light:n(a.light,-1,1,0),contrast:n(a.contrast,-1,1,0),colour:n(a.colour,-1,1,0),warmth:n(a.warmth,-1,1,0),pattern:n(a.pattern,-1,1,0),detail:n(a.detail,-1,1,0)},
   stamp:!!recipe.stamp,stickers,
   // The print's border (frames.js) and the trick lens.
@@ -1187,6 +1187,8 @@ uniform float uMeanLod;
 uniform vec3 uDown;
 uniform float uEnhance,uEnhanceLod;
 uniform vec2 uEnhanceStep;
+uniform float uPop,uPopLod;
+uniform vec2 uPopStep;
 float luma(vec3 c){return dot(c,vec3(.2126,.7152,.0722));}
 vec2 sourceAt(vec2 p){
  if(uTrick>.5)p.x=.5-abs(p.x-.5);
@@ -1232,6 +1234,38 @@ vec3 enhanced(vec3 c){
  float saturation=max(clean.r,max(clean.g,clean.b))-min(clean.r,min(clean.g,clean.b));
  return clamp(mix(vec3(luma(clean)),clean,1.0+.05*uEnhance*(1.0-smoothstep(.15,.6,saturation))),0.0,1.0);
 }
+// Pop (the owner, 2 November 2026: "how about actual photo enhancements to make a photo 'pop' better"): a photo made to
+// stand out as a photographer does it by hand, from its own pixels, before the Looks. All of it is measured against the
+// picture's large shapes: a soft blur of the source from its mipmap, about a 48th of the crop across, so the viewfinder,
+// a thumbnail and a tiled 16 MP save see the same shapes.
+//  - clarity: the midtones' local contrast against those shapes, never in deep shadow or bright highlight (no halo
+//    round a window, no grain lifted out of black);
+//  - shadows and highlights: what is dark in a dark place opened, what is bright in a bright place held back, so the
+//    stronger contrast neither crushes nor clips;
+//  - depth: a gentle S-curve;
+//  - vibrance: dull colours gain more than vivid ones, and skin (warm hues in skin's balance) least of all.
+// Luminance is changed by a ratio, so hues stay where they were.
+float skinness(vec3 c){
+ float span=max(c.r-c.b,1e-4),k=(c.r-c.g)/span;
+ return step(c.b,c.g)*step(c.g,c.r)*smoothstep(.04,.12,c.r-c.b)*smoothstep(.12,.25,k)*(1.0-smoothstep(.6,.75,k))*smoothstep(.15,.3,c.r);
+}
+vec3 popped(vec3 c){
+ vec3 base=vec3(0.0);
+ for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++)base+=textureLod(tSource,sourceAt(vUv+vec2(float(i),float(j))*uPopStep),uPopLod).rgb;
+ base/=9.0;
+ float y=clamp(luma(c),0.0,1.0),by=clamp(luma(base),0.0,1.0),k=uPop,skin=skinness(c);
+ // (skin keeps most of its smoothness: clarity on a face is pores, not shape)
+ float mid=smoothstep(.04,.3,y)*(1.0-smoothstep(.7,.96,y))*(1.0-.6*skin);
+ float yc=y+clamp(y-by,-.2,.2)*.7*k*mid;
+ // (shadows opened a little, and only where there is something in them: a dark, quiet background stays dark)
+ yc+=.07*k*(1.0-smoothstep(.05,.45,by))*(1.0-yc)*smoothstep(.06,.2,yc);
+ yc-=.12*k*smoothstep(.55,.95,by)*yc*smoothstep(.75,1.0,yc);
+ yc+=.35*k*(yc-.5)*yc*(1.0-yc);
+ vec3 res=c*clamp(yc/max(y,.01),.6,1.8);
+ float sat=max(res.r,max(res.g,res.b))-min(res.r,min(res.g,res.b));
+ float vib=.55*k*(1.0-smoothstep(.05,.7,sat))*(1.0-.75*skin);
+ return clamp(mix(vec3(luma(res)),res,1.0+vib),0.0,1.0);
+}
 void main(){
  // (A picture not made smaller, or one a Look smooths or reads softer, is read as it is.)
  vec3 c=uSmooth>0.0||uBias>0.0||uDown.z<0.0?at(vUv):resized(vUv);
@@ -1245,6 +1279,7 @@ void main(){
   c=mix(c,sum/total,uSmooth);
  }
  if(uEnhance>0.0)c=enhanced(c);
+ if(uPop>0.0)c=popped(c);
  if(uAuto>0.0){
   // The average of the part of the picture that is kept (the crop, so the viewfinder and the save agree), from nine
   // samples of a mipmap about a third of it across.
@@ -1417,6 +1452,7 @@ export function createLookEngine(canvas,{light=false}={}){
  function prepare(recipe,source,crop,mirror,w,h,smooth,auto){
   const a=recipe.adjust,s=sources.get(source);
   const meanLod=Math.max(0,Math.log2(Math.max(crop.w*s.width,crop.h*s.height)/3));
+  const popLod=Math.max(0,Math.log2(Math.max(crop.w*s.width,crop.h*s.height)/48));
   // A Look that draws lines finds them in the detail of a picture about as tall as its patterns are sized for (the
   // viewfinder's): a larger save reads its source that much softer, so its lines are the viewfinder's lines, not the
   // floor's grain as well. Patterns, outlines and dots are still drawn at the save's full size.
@@ -1428,6 +1464,9 @@ export function createLookEngine(canvas,{light=false}={}){
    // One picture pixel in the source's coordinates, and the level twice the picture's size to sample it from.
    const shrink=Math.max(crop.w*s.width/w,crop.h*s.height/h);
    f1(u.uEnhance,recipe.enhance||0);f1(u.uEnhanceLod,Math.max(0,Math.log2(shrink)));
+   // Pop's large shapes: the source's mipmap level about 48 texels across the crop, one of its texels as a step.
+   f1(u.uPop,recipe.pop||0);f1(u.uPopLod,popLod);
+   if(u.uPopStep)gl.uniform2f(u.uPopStep,2**popLod/(crop.w*s.width),2**popLod/(crop.h*s.height));
    if(u.uEnhanceStep)gl.uniform2f(u.uEnhanceStep,Math.max(1/w,1/(crop.w*s.width)),Math.max(1/h,1/(crop.h*s.height)));
    if(u.uDown)gl.uniform3f(u.uDown,crop.w/w,crop.h/h,shrink>1.05?Math.max(0,Math.log2(shrink)-1):-1);
    gl.uniform4f(u.uCrop,crop.x,crop.y,crop.w,crop.h);f1(u.uMirror,mirror?1:0);f1(u.uSmooth,smoothing);f1(u.uAuto,auto?1:0);

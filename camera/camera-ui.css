@@ -77,7 +77,7 @@
 .editor .switch::before{content:"";position:absolute;inset:8px 0;background:var(--surface-2);border-radius:20px}
 .editor .switch[aria-checked=true]{background:transparent}.editor .switch[aria-checked=true]::before{background:var(--accent)}
 .editor .switch::after{width:24px;height:24px;left:3px;top:10px;transform:none}.editor .switch[aria-checked=true]::after{transform:translateX(18px)}
-.editor #enhanceHint{display:block;font-size:.75rem;line-height:1.4;color:var(--label-3);font-weight:400;margin-top:2px}
+.editor #enhanceHint,.editor #popHint{display:block;font-size:.75rem;line-height:1.4;color:var(--label-3);font-weight:400;margin-top:2px}
 .editor .enhance-hint{font-size:.75rem;line-height:1.5;text-align:left;margin:6px 0;color:var(--label-3)}
 .editor .enhance-strength{margin-top:8px}.editor .adjustment-strength{height:auto;min-height:88px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:0 8px}
 .editor .adjustment-strength input{grid-column:1/-1;grid-row:2;width:100%}.editor .adjustment-strength output{grid-column:2;grid-row:1}.editor .adjustment-strength button{grid-column:3;grid-row:1;color:var(--accent);font-size:.8125rem}
