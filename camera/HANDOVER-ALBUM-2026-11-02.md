@@ -164,3 +164,9 @@ This is an origin-unavailability test, not an identical substitute for a real Ai
 Chromium retains its browser-offline emulation. No data/cache/backup assertion is removed or weakened.
 The separate Linux job repeats exactly its two documented World fixture failures: ferry spawn[0.3,-72.7] versus
 [-1.5,-72.7], and ferry paint/metal counted at the post-office lot. No World runtime or assertion is changed here.
+
+Independent final review found a further asynchronous freshness race: a commit could invalidate a backup while it
+was still encoding, before its download URL existed. Preparation now captures an invalidation generation and refuses
+to publish the file if a commit/fresh read changed it during encoding. A delayed-encoding regression covers this.
+Album-controller units now **17/17**; all19 suites and regenerated offline hashes pass. This changes only which prepared
+snapshot is offered; stored photos and restore inputs remain untouched.

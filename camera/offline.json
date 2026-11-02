@@ -1,6 +1,6 @@
 {
   "version": "20261102album1",
-  "bytes": 22709407,
+  "bytes": 22709623,
   "files": [
     {
       "url": "/camera/album-backup.js",
@@ -14,8 +14,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "24e5c086fa0123188d848a331f401554d79539d3a37710fe057eb2a76ddf8097",
-      "bytes": 112329
+      "sha256": "d1a13c56a3fd1072c8cd1ab7a94466a9f3b05c52dce930f22a0d8cf954966c62",
+      "bytes": 112545
     },
     {
       "url": "/camera/assets/memory-card-back.png",

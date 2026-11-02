@@ -849,8 +849,9 @@ function fitInside(r,aspect,pad=0){
 
 // ---------- Album ----------
 let albumOK=false,albumRevision=0,albumReading=null,albumLoading=false,albumError=null,albumRead=false,albumBusy=false;
-let albumPersistence=null,backupURL=null;
+let albumPersistence=null,backupURL=null,backupGeneration=0;
 function discardPreparedBackup(){
+ backupGeneration++;
  if(backupURL){URL.revokeObjectURL(backupURL);backupURL=null;$('albumBackupMessage').textContent='The album changed. Prepare a new backup.';}
  $('albumDownload').hidden=true;
 }
@@ -932,8 +933,10 @@ $('albumRetry').addEventListener('click',()=>{void refreshShots();});
 $('albumBackup').addEventListener('click',async()=>{
  if(albumBusy)return;albumBusy=true;renderAlbumStatus();$('albumBackupMessage').textContent='Preparing backup…';
  discardPreparedBackup();$('albumBackupMessage').textContent='Preparing backup…';
+ const generation=backupGeneration;
  try{
   const backup=await makeAlbumBackup();
+  if(generation!==backupGeneration){$('albumBackupMessage').textContent='The album changed while preparing. Prepare a new backup.';return;}
   if(backupURL)URL.revokeObjectURL(backupURL);backupURL=URL.createObjectURL(backup);
   const link=$('albumDownload');link.href=backupURL;link.download=`pocket-camera-${new Date().toISOString().slice(0,10)}.pocket-camera.json`;link.hidden=false;
   $('albumBackupMessage').textContent=`Backup prepared at ${new Date().toLocaleTimeString()}. Tap Save backup and keep the file in Files.`;

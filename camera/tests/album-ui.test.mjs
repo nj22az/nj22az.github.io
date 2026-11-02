@@ -29,7 +29,7 @@ function fixture(options={}){
  const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
  get('roll').append(new Element('img'));
  const state={mode:'album',shots:[],viewing:null},calls={reads:0,seeds:0,adds:0,deletes:0,urls:[],revoked:[],toasts:[],confirmation:null};
- const context=vm.createContext({Blob,Date,URL:{createObjectURL(blob){assert.ok(blob instanceof Blob);const url='blob:fixture-'+calls.urls.length;calls.urls.push({url,blob});return url;},revokeObjectURL:url=>calls.revoked.push(url)},navigator:{standalone:!!options.standalone},location:{origin:'https://camera.test'},matchMedia:()=>({matches:false}),document:{createElement:tag=>new Element(tag)},$:get,state,normalRecipe,mixLabel:r=>r.layers.map(l=>LOOKS[l.look]?.short||l.look).join(' + '),listShots:async()=>{calls.reads++;return options.read?options.read():options.rows||[];},addShot:async row=>{calls.adds++;return options.add?options.add(row):{...row,id:'new',created:1235};},deleteShot:async id=>{calls.deletes++;if(options.deleteError)throw options.deleteError;},keepAlbum:async()=>({supported:true,persisted:false}),ensureAlbumSamples:async()=>{calls.seeds++;},makeAlbumBackup:async()=>new Blob(['backup']),restoreAlbumBackup:async()=>({added:0,stickersAdded:0,skipped:0,stickersSkipped:0}),loadMine:async()=>{},show:mode=>{state.mode=mode;},toast:text=>calls.toasts.push(text),confirmDelete:(message,label,then)=>{calls.confirmation=then;},console});
+ const context=vm.createContext({Blob,Date,URL:{createObjectURL(blob){assert.ok(blob instanceof Blob);const url='blob:fixture-'+calls.urls.length;calls.urls.push({url,blob});return url;},revokeObjectURL:url=>calls.revoked.push(url)},navigator:{standalone:!!options.standalone},location:{origin:'https://camera.test'},matchMedia:()=>({matches:false}),document:{createElement:tag=>new Element(tag)},$:get,state,normalRecipe,mixLabel:r=>r.layers.map(l=>LOOKS[l.look]?.short||l.look).join(' + '),listShots:async()=>{calls.reads++;return options.read?options.read():options.rows||[];},addShot:async row=>{calls.adds++;return options.add?options.add(row):{...row,id:'new',created:1235};},deleteShot:async id=>{calls.deletes++;if(options.deleteError)throw options.deleteError;},keepAlbum:async()=>({supported:true,persisted:false}),ensureAlbumSamples:async()=>{calls.seeds++;},makeAlbumBackup:async()=>options.backup?options.backup():new Blob(['backup']),restoreAlbumBackup:async()=>({added:0,stickersAdded:0,skipped:0,stickersSkipped:0}),loadMine:async()=>{},show:mode=>{state.mode=mode;},toast:text=>calls.toasts.push(text),confirmDelete:(message,label,then)=>{calls.confirmation=then;},console});
  const api=vm.runInContext(album+'\n'+openAlbum+'\n'+deletion+'\n({refreshShots,loadShots,keep,renderGrid,renderRoll,openAlbum,get reading(){return albumReading;},get ok(){return albumOK;},get revision(){return albumRevision;}})',context);
  return {api,elements,get,state,calls,options};
 }
@@ -99,4 +99,11 @@ test('a committed new save retires the previously prepared backup instead of off
  const f=fixture({rows:[photo('old')]});await f.api.refreshShots();await f.get('albumBackup').click();
  assert.equal(f.get('albumDownload').hidden,false);const previous=f.get('albumDownload').href;await f.api.keep(photo('input'));
  assert.equal(f.get('albumDownload').hidden,true);assert.ok(f.calls.revoked.includes(previous));assert.match(f.get('albumBackupMessage').textContent,/album changed/);
+});
+
+test('an album change during asynchronous encoding cannot publish the older backup snapshot',async()=>{
+ const backup=deferred(),f=fixture({rows:[photo('old')],backup:()=>backup.promise});await f.api.refreshShots();
+ const pending=f.get('albumBackup').click();await tick();await f.api.keep(photo('input'));
+ backup.resolve(new Blob(['old snapshot']));await pending;assert.equal(f.get('albumDownload').hidden,true);
+ assert.match(f.get('albumBackupMessage').textContent,/album changed while preparing/);
 });

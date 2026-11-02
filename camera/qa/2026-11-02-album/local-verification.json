@@ -4,7 +4,7 @@
   "unit_suites": 19,
   "storage_fault_checks": 25,
   "backup_checks": 13,
-  "album_ui_checks": 16,
+  "album_ui_checks": 17,
   "syntax": "passed",
   "module_addresses": "passed",
   "offline_manifest": "326 assets; exact inventory and worker digest checked",
