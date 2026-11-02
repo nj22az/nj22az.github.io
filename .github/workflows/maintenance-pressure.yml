@@ -1,0 +1,18 @@
+name: Maintenance classification and pressure evidence
+on:
+  push:
+    paths: ['maintenance-demo/**', '.github/workflows/maintenance-pressure.yml']
+  pull_request:
+    paths: ['maintenance-demo/**', '.github/workflows/maintenance-pressure.yml']
+jobs:
+  classification-and-records:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: maintenance-demo
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Equipment classification and maintenance acceptance
+        run: node --test maintenance-demo/tests/*.test.mjs
