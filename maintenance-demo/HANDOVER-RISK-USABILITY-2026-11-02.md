@@ -1,6 +1,6 @@
 # Maintenance planner — guided risk assessment
 
-Date: 2 November 2026 (Stockholm). Runtime release `2026.11.02.5`. Base: main `314a014c7c1860bdd730dee1efb3289e49344c5f`. The owner asked for a clearer risk matrix and an app usable without introductory training. Previous classification/evidence work and production verification: [classification handover](HANDOVER-CLASSIFICATION-2026-11-02.md).
+Date: 2 November 2026 (Stockholm). Runtime release `2026.11.02.6`. Base: main `314a014c7c1860bdd730dee1efb3289e49344c5f`. The owner asked for a clearer risk matrix and an app usable without introductory training. Previous classification/evidence work and production verification: [classification handover](HANDOVER-CLASSIFICATION-2026-11-02.md).
 
 ## Delivered behaviour
 
@@ -37,3 +37,8 @@ Only the maintenance files and the root handover pointer are delivered; do not m
 Initial runtime `d552ab59931372359f1689bde9e2e22afbdae347` published to main. Hosted tests [41406221377](https://github.com/nj22az/nj22az.github.io/actions/runs/41406221377) and [Pages 41406220384](https://github.com/nj22az/nj22az.github.io/actions/runs/41406220384) passed. Actual published Chrome interactions confirmed unanswered new ratings, rare/fatal arithmetic and warning, saving an incomplete draft, pressure-use prompt expansion, missing-owner/deadline prevention, and successful linked-action creation after supplying them. All test records were explicitly marked QA/fictional in the isolated cloud browser, not seeded into source.
 
 The visual review found two readability improvements and they are included in release .5: Priority review now leads the score heading whenever the serious-harm override applies, rather than displaying a lower-priority heading above a warning. The optional matrix retains a 520px minimum table width and scrolls within its own wrapper on phones, keeping labels legible rather than compressing six columns into 290px. A regression assertion covers the rare/fatal result heading. Final local suite: 301/301 passed. Initial document/dialog width checks: 390/390 and 349/349 at phone width; 768/768 and 663/663 at tablet width. Final .5 deployment, narrow-table scrolling and desktop checks follow the correction publication. Physical Safari and first-time-user acceptance remain unverified.
+
+
+Release .5 runtime `508a8ca59e91ef27cf6273af077c114dff4a981f` passed hosted tests [41406821284](https://github.com/nj22az/nj22az.github.io/actions/runs/41406821284) and [Pages 41406820309](https://github.com/nj22az/nj22az.github.io/actions/runs/41406820309). Four changed/added public runtime files matched local bytes. The rare/fatal result displayed Priority review as its heading in the published browser. The older generic responsive runner retained a cached .4 index in its frame; it is not evidence that the final .5 table was visually checked on a phone.
+
+Release .6 adds a dedicated [risk layout review](tests/risk-review.html) with the app release query in the frame to avoid that stale-index ambiguity. The phone risk-page heading and buttons are stacked so that the introductory text has the full width. The assessment rules and data model are unchanged. Final layout observations and publication state are appended below.
