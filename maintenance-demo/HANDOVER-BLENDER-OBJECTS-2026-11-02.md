@@ -23,3 +23,10 @@ See [Blender authoring instructions](blender/README.md). Add a named collection 
 - New JS passes `node --check`; `git diff --check` passes.
 
 Publication and actual browser acceptance are recorded below when complete. Physical Safari, real equipment/model resemblance and first-time-user acceptance remain unverified. The generic models do not replace measurements or source documents.
+
+
+## Published library and editable-source follow-up
+
+Runtime source `dbff840f90874575154ca609ff214226a27f20ea` published to main. Hosted acceptance [41426636230](https://github.com/nj22az/nj22az.github.io/actions/runs/41426636230) and [Pages 41426635812](https://github.com/nj22az/nj22az.github.io/actions/runs/41426635812) passed. Actual published Chrome interaction verified four library cards, loaded images, Add to inventory, empty technical and inspection fields, live visual switching, and saving a clearly marked QA inventory item with its selected image. All five displayed inventory images (four demo plus QA record) loaded. This QA record is fictional and local to the isolated cloud browser.
+
+The source follow-up opens the Blender library with the pump selected, other equipment collections hidden from the viewport and a camera framed for the pump. This avoids overlapping assemblies or a probe-scale render view when the source is opened. The exporter unhides the target collection before exporting. A real Blender re-open/export test of the initially hidden generator passed with the retained 1.500 × 0.7275 × 1.067m bounds. This changes the Blender startup state and exporter/source files; the app geometry exports and rendering thumbnails are unchanged. The release-specific object layout runner is tests/object-review.html. Final responsive/public-byte observations follow deployment of this source follow-up.

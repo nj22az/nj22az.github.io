@@ -2,6 +2,8 @@
 
 Four original illustrative models: centrifugal pump, compressor/receiver, generator and temperature probe/readout. Each is an editable collection in **equipment-library.blend**, with matching GLB and rendered thumbnail. Metre units, ground at Z=0, centred around X/Y=0. The geometry is generic; it is not a manufacturer drawing, pressure design or statement about a real asset.
 
+The source opens with the pump visible and selected. Enable another equipment collection in the Blender Outliner to edit it; hide the previous collection to inspect one assembly at a time. The assemblies share a consistent origin for export.
+
 ## Use in the app
 
 Open **Objects**, choose **Add to inventory**, then enter the physical item's name, unique tag, location and actual source data. An existing asset has a **Visual model** selector. Visual selection changes no classification, evidence, maintenance interval, inspection date or hold. Multiple inventory records can use the same model. Existing records without a model remain supported.

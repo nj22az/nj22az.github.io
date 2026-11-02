@@ -132,6 +132,7 @@ report=[]
 for spec in items:
  col=bpy.data.collections.get(spec['collection'])
  if not col:raise RuntimeError('Missing collection '+spec['collection'])
+ col.hide_viewport=False
  for item in items:bpy.data.collections[item['collection']].hide_render=item['id']!=spec['id']
  bpy.ops.object.select_all(action='DESELECT')
  for o in col.all_objects:o.hide_set(False);o.select_set(True)
@@ -142,7 +143,15 @@ for spec in items:
  bpy.ops.export_scene.gltf(filepath=str(APP/'models'/f'{spec["id"]}.glb'),export_format='GLB',use_selection=True,export_apply=True,export_extras=False)
  scene.render.filepath=str(APP/'images'/f'{spec["id"]}.png');bpy.ops.render.render(write_still=True)
  report.append({'id':spec['id'],'boundsMetres':[round(x,4) for x in size],'parts':len(col.all_objects),'glbBytes':(APP/'models'/f'{spec["id"]}.glb').stat().st_size})
-for item in items:bpy.data.collections[item['collection']].hide_render=item['id']!='pump'
+for item in items:
+ c=bpy.data.collections[item['collection']];c.hide_render=item['id']!=items[0]['id'];c.hide_viewport=item['id']!=items[0]['id']
+bpy.ops.object.select_all(action='DESELECT')
+first=bpy.data.collections[items[0]['collection']]
+for o in first.all_objects:o.hide_set(False);o.select_set(True)
+bpy.context.view_layer.update()
+points=[o.matrix_world@Vector(c) for o in first.all_objects for c in o.bound_box]
+lo=Vector(tuple(min(p[i] for p in points) for i in range(3)));hi=Vector(tuple(max(p[i] for p in points) for i in range(3)));size=hi-lo;target=(hi+lo)/2
+camera.location=target+Vector((2.7,-3.8,2.7))*max(size);camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.ortho_scale=max(size)*1.65
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'equipment-library.blend'),compress=True)
 (ROOT/'geometry-review.json').write_text(json.dumps(report,indent=2))
 public=[{'id':s['id'],'label':s['label'],'image':f'./images/{s["id"]}.png','model':f'./models/{s["id"]}.glb'} for s in items]
