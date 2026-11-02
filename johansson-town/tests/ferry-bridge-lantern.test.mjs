@@ -9,7 +9,7 @@ import {FERRY_INTERIOR} from '../src/world/ferry-interior.js';
 import {FERRY_ELECTRICS} from '../src/world/ferry-ship.js';
 import {BRIDGE_LANTERN_PLAN as PLAN} from '../src/world/ferry-bridge-lantern-plan.js';
 installDOM();
-const file=new URL('../assets/models/ferry-bridge/bridge-lantern-v1.glb',import.meta.url);
+const file=new URL('../assets/models/ferry-bridge/bridge-lantern-v2.glb',import.meta.url);
 const load=async()=>{const bytes=await readFile(file);return new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');};
 
 test('healthy native Blender asset has three bounded meshes and a complete separate return',async()=>{
@@ -20,6 +20,8 @@ test('healthy native Blender asset has three bounded meshes and a complete separ
  const meta=JSON.parse(await readFile(new URL('../art/ferry-bridge-lantern/scene.json',import.meta.url),'utf8'));
  assert.ok(meta.sourceComponents.some(n=>n==='F1_intact_fuse_element'));assert.ok(!meta.sourceComponents.some(n=>/poor_contact|selected_contact/.test(n)));
  for(const label of Object.values(meta.labels)){assert.ok(label.up[1]>.999,'native text is upright');assert.ok(label.normal[2]<-.999,'native text faces the operator');}
+ assert.deepEqual(Object.values(meta.visibleText).sort(),['+','12 V','−'].sort(),'ordinary battery markings only');
+ assert.ok(!meta.sourceComponents.some(n=>/Practice_circuit_label_plate|Independent_12V_label|Independent_source_label/.test(n)),'teaching plaque is physically absent');
  assert.deepEqual(PLAN.wires.sourceToFuse[0],[2.8352,1.17,-.3092]);assert.deepEqual(PLAN.wires.returnToSource.at(-1),[2.7176,1.17,-.3092]);
  const next=new Map(PLAN.connections);let at='B1.P';for(let i=0;i<7;i++)at=next.get(at);assert.equal(at,'B1.N');assert.equal(PLAN.connections.length,7);
  assert.equal(PLAN.independentSourceV,12);assert.equal(PLAN.shipDCV,FERRY_ELECTRICS.batteries.volts);assert.equal(PLAN.shipDCV,24);
@@ -29,6 +31,7 @@ test('healthy native Blender asset has three bounded meshes and a complete separ
 
 test('actual ferry retains all navigation lights and existing floor/collision layout',()=>{
  const f=buildFerryModel(),state=f.userData.bridgeEquipment.practiceCircuit;
+ assert.ok(state.group.getObjectByName('Battery voltage marking'));assert.equal(state.group.getObjectByName('Independent practice circuit label'),undefined);
  assert.equal(state.pending,null,'no added startup request');assert.equal(state.loaded,false);assert.ok(state.group.parent===f.userData.bridgeEquipment.group);
  for(const [name,color] of [['Masthead light',0xfff6d8],['Port sidelight',0xff3a2a],['Starboard sidelight',0x2aff70],['Stern light',0xfff6d8]])assert.equal(f.getObjectByName(name).userData.on,color);
  assert.equal(FERRY_INTERIOR.boxes.some(o=>o.name==='independent 12 V practice cabinet'),false);assert.match(PLAN.placement,/Existing wheelhouse console/);

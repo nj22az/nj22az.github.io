@@ -27,7 +27,7 @@ export function buildBridgePracticeCircuit(parent){
  const glass=new THREE.Mesh(new THREE.CylinderGeometry(.094,.094,.232,12),new THREE.MeshStandardMaterial({color:0xa1d9db,transparent:true,opacity:.32,depthWrite:false,roughness:.2}));glass.position.set(3.95,1.212,-.95);fallback.add(glass);
  const state={group,loaded:false,pending:null,error:null,plan:PLAN,ensure(){
   return this.pending??=import('../../vendor/GLTFLoader.js').then(async({GLTFLoader})=>{
-   const gltf=await new GLTFLoader().loadAsync(assetURL('models/ferry-bridge/bridge-lantern-v1.glb'));
+   const gltf=await new GLTFLoader().loadAsync(assetURL('models/ferry-bridge/bridge-lantern-v2.glb'));
    const bounds=new THREE.Box3().setFromObject(gltf.scene);if(bounds.isEmpty()||!bounds.min.toArray().concat(bounds.max.toArray()).every(Number.isFinite))throw Error('Invalid bridge practice asset');
    let meshes=0,triangles=0;gltf.scene.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;o.castShadow=o.receiveShadow=true;}});
    if(meshes!==3||triangles>20000)throw Error('Unexpected bridge practice mesh budget');
@@ -44,9 +44,9 @@ export function buildBridgePracticeCircuit(parent){
   if(eye.y>-.5&&eye.y<3.5&&eye.distanceToSquared(centre)<144)state.ensure();
  };
  if(typeof document!=='undefined'){
-  const c=document.createElement('canvas');c.width=768;c.height=160;const x=c.getContext('2d');x.fillStyle='#e7efec';x.fillRect(0,0,c.width,c.height);x.fillStyle='#17313b';x.textAlign='center';x.font='bold 57px sans-serif';x.fillText('12 V ÖVNINGSKRETS',384,65);x.font='34px sans-serif';x.fillText('EGET BATTERI · TVÅ LEDARE',384,125);
+  const c=document.createElement('canvas');c.width=256;c.height=96;const x=c.getContext('2d');x.fillStyle='#1c303e';x.fillRect(0,0,c.width,c.height);x.fillStyle='#f0ece0';x.textAlign='center';x.font='bold 64px sans-serif';x.fillText('12 V',128,71);
   const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;
-  const label=new THREE.Mesh(new THREE.PlaneGeometry(1.15,.21),new THREE.MeshBasicMaterial({map:texture}));label.position.set(1.8,.61,-.719);label.rotation.y=Math.PI;label.name='Independent practice circuit label';fallback.add(label);
+  const label=new THREE.Mesh(new THREE.PlaneGeometry(.13,.05),new THREE.MeshBasicMaterial({map:texture}));label.position.set(2.78,1.10,-.429);label.rotation.y=Math.PI;label.name='Battery voltage marking';fallback.add(label);
  }
  group.userData.bridgePracticeCircuit=state;return state;
 }

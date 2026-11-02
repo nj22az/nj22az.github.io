@@ -16,4 +16,4 @@ f.traverse(o=>{if(!o.isMesh)return;const g=o.geometry,index=g.index,p=g.attribut
  }
  if(points.length)data.push({name:o.name||'current game geometry',points,colours,glass:!!m.transparent,opacity:m.opacity??1});
 });
-const dir=new URL('../docs/qa/bridge-lantern-2026-11-02/',import.meta.url);await mkdir(dir,{recursive:true});await writeFile(new URL('bridge-source-geometry.json',dir),JSON.stringify(data));console.log('Exported',data.length,'game meshes',data.reduce((n,m)=>n+m.points.length/9,0),'triangles');
+const dir=new URL('../docs/qa/bridge-polish-2026-11-02/',import.meta.url);await mkdir(dir,{recursive:true});await writeFile(new URL('bridge-source-geometry.json',dir),JSON.stringify(data));console.log('Exported',data.length,'game meshes',data.reduce((n,m)=>n+m.points.length/9,0),'triangles');

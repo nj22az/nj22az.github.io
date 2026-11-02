@@ -12,7 +12,11 @@ test('bridge follows heading and each engine order without changing the plant',(
  const f=buildFerryModel(),b=f.userData.bridgeEquipment,p=createPlant({minutes:700});p.routine(700);p.tick(1);
  p.setTelegraph('mainP','HALF AHEAD');p.setTelegraph('mainS','SLOW ASTERN');const r=p.readings();f.userData.readPlant(r);
  assert.equal(b.levers[0].pivot.rotation.x,orderAngle('HALF AHEAD'));assert.equal(b.levers[1].pivot.rotation.x,orderAngle('SLOW ASTERN'));
- b.update(.2,{rain:true,powered:true});assert.notEqual(b.wipers[0].rotation.z,-.4);b.update(.2,{rain:true,powered:false});assert.equal(b.wipers[0].rotation.z,-.4);
+ const parked=b.wiperRig.plan.park;assert.equal(b.wipers[0].rotation.z,parked);
+ b.update(.2,{rain:true,powered:true});assert.notEqual(b.wipers[0].rotation.z,parked);
+ const wetAngle=b.wipers[0].rotation.z;b.update(.2,{rain:true,powered:false});assert.equal(b.wipers[0].rotation.z,wetAngle,'power loss holds the actual blade pose');
+ b.update(.2,{rain:false,powered:false});assert.equal(b.wipers[0].rotation.z,wetAngle,'unpowered blades cannot park themselves');
+ for(let i=0;i<180;i++)b.update(1/60,{rain:false,powered:true});assert.ok(Math.abs(b.wipers[0].rotation.z-parked)<1e-6,'powered dry wipers return to park');
  assert.equal(p.readings().telegraph.mainS,'SLOW ASTERN');
 });
 test('CRT aperture, helm and chart are visible equipment in the actual model',()=>{

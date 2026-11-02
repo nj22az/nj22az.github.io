@@ -1,5 +1,5 @@
 {
-  "revision": "bridge-lantern-v1",
+  "revision": "bridge-lantern-v2",
   "units": "m",
   "frame": "ship local +X port +Y up +Z forward; origin at bridge floor/forward wall",
   "ownership": "Nils Johansson",
@@ -214,8 +214,6 @@
     "F1_output_screw",
     "F1_output_screw_slot",
     "Fuse_holder_support",
-    "Independent_12V_label",
-    "Independent_source_label",
     "L1_bulb_glass",
     "L1_bulb_socket",
     "L1_filament",
@@ -241,36 +239,11 @@
     "Paired_cable_clip.001",
     "Paired_wall_gland_0",
     "Paired_wall_gland_1",
-    "Practice_circuit_label_plate",
     "W1_battery_to_intact_fuse",
     "W2_intact_fuse_to_lamp",
     "W3_lamp_return_to_battery"
   ],
   "labels": {
-    "Independent_12V_label": {
-      "up": [
-        -3.821371353845884e-15,
-        1.0,
-        -4.371138828673793e-08
-      ],
-      "normal": [
-        -8.742277657347586e-08,
-        -4.371138828673793e-08,
-        -1.0
-      ]
-    },
-    "Independent_source_label": {
-      "up": [
-        -3.821371353845884e-15,
-        1.0,
-        -4.371138828673793e-08
-      ],
-      "normal": [
-        -8.742277657347586e-08,
-        -4.371138828673793e-08,
-        -1.0
-      ]
-    },
     "Battery_nameplate": {
       "up": [
         -3.821371353845884e-15,
@@ -284,6 +257,11 @@
       ]
     }
   },
-  "gameAssetBytes": 692060,
-  "triangles": 10968
+  "visibleText": {
+    "Battery_minus": "−",
+    "Battery_nameplate": "12 V",
+    "Battery_plus": "+"
+  },
+  "gameAssetBytes": 311964,
+  "triangles": 4916
 }

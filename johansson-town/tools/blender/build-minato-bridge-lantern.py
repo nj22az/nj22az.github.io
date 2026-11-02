@@ -147,9 +147,7 @@ gbox('Battery_wall_tray',(2.78,1.00,-.35),(.25,.04,.20),'metal',.004)
 gbox('Battery_wall_bracket_back',(2.91,.87,-.35),(.025,.18,.20),'metal',.004)
 for z in [-.42,-.28]:wire('Battery_tray_diagonal_support',[B((2.90,.81,z)),B((2.66,.98,z))],'metal',.009)
 gbox('Fuse_holder_support',(1.80,.80,-.708),(.24,.10,.03),'cream',.004)
-gbox('Practice_circuit_label_plate',(1.8,.61,-.711),(1.15,.21,.01),'white',.008)
-text('Independent_12V_label','12 V ÖVNINGSKRETS',B((1.8,.64,-.719)),.073,'dark',(math.pi/2,0,math.pi))
-text('Independent_source_label','EGET BATTERI · TVÅ LEDARE',B((1.8,.57,-.719)),.047,'dark',(math.pi/2,0,math.pi))
+# Ordinary equipment marking only; no teaching plaque on the real bridge.
 bpy.data.objects['Battery_nameplate'].location=B((2.78,1.10,-.429));bpy.data.objects['Battery_nameplate'].rotation_euler=(math.pi/2,0,math.pi)
 
 positive=[(2.8352,1.17,-.3092),(2.8352,1.17,-.48),(2.8352,1.025,-.48),(2.8352,1.025,-.715),(1.704,1.025,-.715),(1.704,.80,-.749)]
@@ -165,7 +163,7 @@ for i,p in enumerate([(3,.82,-.18),(3,.85,-.15)]):
  o=cyl('Paired_wall_gland_'+str(i),B(p),.014,.19,'metal','X')
 for x in [3.3,3.7]:gbox('Paired_cable_clip',(x,.835,-.165),(.03,.07,.07),'metal',.003)
 
-meta={'revision':'bridge-lantern-v1','units':'m','frame':'ship local +X port +Y up +Z forward; origin at bridge floor/forward wall',
+meta={'revision':'bridge-lantern-v2','units':'m','frame':'ship local +X port +Y up +Z forward; origin at bridge floor/forward wall',
  'ownership':'Nils Johansson','healthy':True,'independentSourceV':12,'shipDCV':24,'canonicalNavigationLightsChanged':False,
  'bookSource':'blender-illustrationer/reality-scenes/lantern-path/build_lantern.py',
  'componentScales':{'battery':.24,'fuseHolder':.20,'lamp':.40},
@@ -176,7 +174,8 @@ meta={'revision':'bridge-lantern-v1','units':'m','frame':'ship local +X port +Y 
 s['ownership']='Nils Johansson';s['circuit']=json.dumps(meta,ensure_ascii=False)
 bpy.context.view_layer.update()
 def game_vector(v):return [v.x,v.z,-v.y]
-meta['labels']={n:{'up':game_vector((bpy.data.objects[n].matrix_world.to_3x3()@Vector((0,1,0))).normalized()),'normal':game_vector((bpy.data.objects[n].matrix_world.to_3x3()@Vector((0,0,1))).normalized())}for n in ['Independent_12V_label','Independent_source_label','Battery_nameplate']}
+meta['labels']={n:{'up':game_vector((bpy.data.objects[n].matrix_world.to_3x3()@Vector((0,1,0))).normalized()),'normal':game_vector((bpy.data.objects[n].matrix_world.to_3x3()@Vector((0,0,1))).normalized())}for n in ['Battery_nameplate']}
+meta['visibleText']={o.name:o.data.body for o in bpy.data.objects if o.type=='FONT'}
 # Save editable parts before reducing game draw calls. No render-only context,
 # fault patches, cameras or book values are exported into the game.
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'Minato_Maru_Bridge_Lantern.blend'))
@@ -212,7 +211,7 @@ objects=[merge(opaque,'Healthy 12 V practice equipment',paint),merge(glass,'Prac
 for o in objects:o['healthy']=True;o['independent12VPracticeCircuit']=True
 bpy.ops.object.select_all(action='DESELECT')
 for o in objects:o.select_set(True)
-asset=OUT.parents[1]/'assets/models/ferry-bridge/bridge-lantern-v1.glb';asset.parent.mkdir(parents=True,exist_ok=True)
+asset=OUT.parents[1]/'assets/models/ferry-bridge/bridge-lantern-v2.glb';asset.parent.mkdir(parents=True,exist_ok=True)
 bpy.ops.export_scene.gltf(filepath=str(asset),export_format='GLB',use_selection=True,export_extras=True,export_yup=True,export_cameras=False,export_lights=False,export_materials='EXPORT')
 meta['gameAssetBytes']=asset.stat().st_size
 for o in objects:o.data.calc_loop_triangles()
