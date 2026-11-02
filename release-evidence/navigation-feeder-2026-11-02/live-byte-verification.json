@@ -1,0 +1,98 @@
+{
+  "implementationCommit": "ebe94688d88a3553605107672e141ae85430418d",
+  "scope": "Public resource byte verification with release query; not a browser/device test",
+  "matches": 10,
+  "total": 10,
+  "resources": [
+    {
+      "path": "index.html",
+      "url": "https://nj22az.github.io/johansson-town/index.html?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "0801b813f1186e07a35ab2e647bcb6ff5a203bf3cb44d964d37b2b2ecafa3946",
+      "status": 200,
+      "bytes": 46314,
+      "actualSha256": "0801b813f1186e07a35ab2e647bcb6ff5a203bf3cb44d964d37b2b2ecafa3946",
+      "matches": true
+    },
+    {
+      "path": "sw.js",
+      "url": "https://nj22az.github.io/johansson-town/sw.js?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "2e5145dfe5ced1e5e1514f092974aef021daa545434117193196e7810e7b7aa7",
+      "status": 200,
+      "bytes": 2308,
+      "actualSha256": "2e5145dfe5ced1e5e1514f092974aef021daa545434117193196e7810e7b7aa7",
+      "matches": true
+    },
+    {
+      "path": "runtime/source.json",
+      "url": "https://nj22az.github.io/johansson-town/runtime/source.json?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "dcd9406066fbe925952290860853d794f7a44ca5d2011a3e9652cd21b14dcdab",
+      "status": 200,
+      "bytes": 83,
+      "actualSha256": "dcd9406066fbe925952290860853d794f7a44ca5d2011a3e9652cd21b14dcdab",
+      "matches": true
+    },
+    {
+      "path": "assets/models/ferry-bridge/navigation-feeder-v2.glb",
+      "url": "https://nj22az.github.io/johansson-town/assets/models/ferry-bridge/navigation-feeder-v2.glb?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "f6188705d85feec26f081292b52cc30bb852c6e90c43f7f799ccacd46eab4376",
+      "status": 200,
+      "bytes": 111440,
+      "actualSha256": "f6188705d85feec26f081292b52cc30bb852c6e90c43f7f799ccacd46eab4376",
+      "matches": true
+    },
+    {
+      "path": "assets/models/ferry-bridge/bridge-wipers-v1.glb",
+      "url": "https://nj22az.github.io/johansson-town/assets/models/ferry-bridge/bridge-wipers-v1.glb?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "317574e7030012e919c18acb5b74445a3f82fde48ee576e1773bb7808c1adc1d",
+      "status": 200,
+      "bytes": 124792,
+      "actualSha256": "317574e7030012e919c18acb5b74445a3f82fde48ee576e1773bb7808c1adc1d",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-model.js",
+      "url": "https://nj22az.github.io/johansson-town/src/world/ferry-model.js?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "94f7ad1f81fcbf64b7d4e5874f9802a4957f468ceddfb08d86a177cfe35acfb2",
+      "status": 200,
+      "bytes": 75779,
+      "actualSha256": "94f7ad1f81fcbf64b7d4e5874f9802a4957f468ceddfb08d86a177cfe35acfb2",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge-lantern.js",
+      "url": "https://nj22az.github.io/johansson-town/src/world/ferry-bridge-lantern.js?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "50d25a0efaffc81887900132376b9a1c8364739590fbb297aeabcec047e5d0b4",
+      "status": 200,
+      "bytes": 5339,
+      "actualSha256": "50d25a0efaffc81887900132376b9a1c8364739590fbb297aeabcec047e5d0b4",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge-lantern-plan.js",
+      "url": "https://nj22az.github.io/johansson-town/src/world/ferry-bridge-lantern-plan.js?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "3be4474e341b39f7f4b74f6d3a6d3e41442372cf54b159d7065a0bdd2179bb75",
+      "status": 200,
+      "bytes": 5847,
+      "actualSha256": "3be4474e341b39f7f4b74f6d3a6d3e41442372cf54b159d7065a0bdd2179bb75",
+      "matches": true
+    },
+    {
+      "path": "runtime/boot-ChmrkJDQ.js",
+      "url": "https://nj22az.github.io/johansson-town/runtime/boot-ChmrkJDQ.js?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "b3a6246bbecc1d92113c6f8f32b28a968a93deea605250bff34a2de848e56cf2",
+      "status": 200,
+      "bytes": 4746,
+      "actualSha256": "b3a6246bbecc1d92113c6f8f32b28a968a93deea605250bff34a2de848e56cf2",
+      "matches": true
+    },
+    {
+      "path": "runtime/fish-CGZEMB_y.js",
+      "url": "https://nj22az.github.io/johansson-town/runtime/fish-CGZEMB_y.js?release=ebe94688d88a3553605107672e141ae85430418d",
+      "expectedSha256": "bb868c8c3320942c4cbfd96fd24b143abf165b73a3014356ad9cab4f5e31ed08",
+      "status": 200,
+      "bytes": 532578,
+      "actualSha256": "bb868c8c3320942c4cbfd96fd24b143abf165b73a3014356ad9cab4f5e31ed08",
+      "matches": true
+    }
+  ]
+}

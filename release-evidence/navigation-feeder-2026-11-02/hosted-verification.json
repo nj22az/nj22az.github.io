@@ -1,0 +1,45 @@
+{
+  "implementationCommit": "ebe94688d88a3553605107672e141ae85430418d",
+  "worldRunId": 41544026746,
+  "pagesRunId": 41544025331,
+  "pagesConclusion": "success",
+  "worldJobs": [
+    {
+      "id": 125615275291,
+      "name": "ferry-exploration (ipad-landscape)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125615275644,
+      "name": "iphone-startup",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125615275667,
+      "name": "guard",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125615275675,
+      "name": "ferry-exploration (desktop)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 125615275932,
+      "name": "ferry-exploration (ipad-portrait)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "guard": {
+    "tests": 591,
+    "passed": 591,
+    "files": 113,
+    "durationSeconds": 376
+  },
+  "physicalDeviceTested": false
+}
