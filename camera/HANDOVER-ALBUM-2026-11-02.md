@@ -149,3 +149,18 @@ its replacement. The test incorrectly compared those replies with the retired ob
 and re-requests status on controllerchange. Exact BUILD/cache/version/data/offline assertions remain.
 The Album shortcut's screen-reader label now also distinguishes unavailable/loading from a zero-photo count;
 the initial-failure regression asserts this. The offline manifest/digest is regenerated; all19 unit suites pass.
+
+Final preservation follow-up: a prepared backup download is retired after committed saves/deletes/restores or a fresh
+album read, so the UI cannot offer an old snapshot as the current album after data changes. A focused regression
+verifies this; album-controller units now **16/16**. All19 unit suites pass and offline hashes are regenerated.
+
+Fourth source `2d540601d066b626ebaf12e58e4e22a08c7dac3c`: **25/25 Chromium album checks pass**, including
+cross-version activation, portable restore/conflicts and two offline cold starts. The WebKit failure now occurs at
+warm offline navigation, after correct readiness. This matches [Playwright #42775](https://github.com/microsoft/playwright/issues/42775):
+the affected offline emulation rejects even a literal service-worker Response. The issue is now closed, but this
+project's pinned1.62.1 remains affected. WebKit's fixture now destroys all origin HTTP connections instead, keeps that
+cut across cold starts, and checks newly blocked requests plus zero successful HTTP responses in each phase.
+This is an origin-unavailability test, not an identical substitute for a real Airplane Mode/installed Safari test.
+Chromium retains its browser-offline emulation. No data/cache/backup assertion is removed or weakened.
+The separate Linux job repeats exactly its two documented World fixture failures: ferry spawn[0.3,-72.7] versus
+[-1.5,-72.7], and ferry paint/metal counted at the post-office lot. No World runtime or assertion is changed here.

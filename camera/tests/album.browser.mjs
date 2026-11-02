@@ -25,16 +25,32 @@ assert.match(legacySource,/const CACHE='pocket-camera-1'/,'use the actual publis
 const baselineApp=process.env.CAMERA_ALBUM_BASELINE_APP?await readFile(process.env.CAMERA_ALBUM_BASELINE_APP,'utf8'):null;
 if(expectBug)assert.ok(reproOnly&&baselineApp&&engineName==='chromium','baseline defect mode requires the published app, repro-only mode and Chromium');
 const origin=await serveGame({root,mounts:['camera','johansson-town','assets']});
-let legacy=false;
+let legacy=false,networkBlocked=false;
+// Playwright 1.62.1 WebKit offline emulation rejects even literal service-worker responses (microsoft/playwright#42775).
+// For WebKit, cut the origin's HTTP transport instead; this tests cached fallback, not a physical Airplane Mode toggle.
+const offlineTransport={mode:engineName==='webkit'?'origin transport failure':'Chromium offline emulation',blockedRequests:0,httpSuccesses:0,checks:[]};
 const proxy=createServer((req,res)=>{
+ res.on('finish',()=>{if(networkBlocked&&res.statusCode>=200&&res.statusCode<400)offlineTransport.httpSuccesses++;});
+ if(networkBlocked){offlineTransport.blockedRequests++;req.socket.destroy();return;}
  const path=new URL(req.url,'http://local').pathname;
  if(path==='/camera/album-harness'){res.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'});res.end('<!doctype html><title>Disposable album regression fixture</title>');return;}
  if(path==='/camera/sw.js'&&legacy||path==='/camera/app.js'&&baselineApp){res.writeHead(200,{'Content-Type':'text/javascript','Cache-Control':'no-store'});res.end(path.endsWith('sw.js')?legacySource:baselineApp);return;}
  const request=get(new URL(req.url,origin.url),up=>{res.writeHead(up.statusCode,up.headers);up.pipe(res);});request.on('error',()=>res.destroy());
 });
 await new Promise(resolve=>proxy.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+proxy.address().port;
-const results={engine:engineName,physicalSafari:false,ui:engineName==='chromium',checks:[],workerEvents:[],consoleErrors:[]},profiles=[];
+const results={engine:engineName,physicalSafari:false,ui:engineName==='chromium',checks:[],workerEvents:[],consoleErrors:[],offlineTransport},profiles=[];
 let context,page;
+async function setNetworkOffline(value){
+ if(engineName==='webkit'){networkBlocked=value;if(value)proxy.closeAllConnections();}
+ else await context.setOffline(value);
+}
+function verifyOfflineTransport(label){
+ if(engineName!=='webkit')return;
+ const previous=offlineTransport.checks.at(-1)?.blockedRequests||0;
+ assert.ok(offlineTransport.blockedRequests>previous,'the origin rejected HTTP requests during '+label);
+ assert.equal(offlineTransport.httpSuccesses,0,'no successful HTTP responses were served during the origin transport cut');
+ offlineTransport.checks.push({label,blockedRequests:offlineTransport.blockedRequests,httpSuccesses:offlineTransport.httpSuccesses});
+}
 const check=async(name,fn)=>{await fn();results.checks.push(name);console.log('ok '+name);};
 const options={viewport:{width:402,height:874},isMobile:true,hasTouch:true,reducedMotion:'reduce',serviceWorkers:reproOnly?'block':'allow',...(engineName==='chromium'?{executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']}: {})};
 async function boot(profile){
@@ -212,17 +228,20 @@ try{
      container.addEventListener('message',reply);container.addEventListener('controllerchange',ask);container.startMessages?.();ask();
     }),candidate);
     await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='ready',null,{timeout:60000});
-    await context.setOffline(true);await page.goto(url+'/camera/?album-offline-session=warm');await readyUI();
-    await page.waitForFunction(id=>window.pocketCamera.state.shots.some(s=>s.id===id),id,{timeout:60000});await context.setOffline(false);
+    await setNetworkOffline(true);await page.goto(url+'/camera/?album-offline-session=warm');await readyUI();
+    await page.waitForFunction(id=>window.pocketCamera.state.shots.some(s=>s.id===id),id,{timeout:60000});verifyOfflineTransport('warm navigation');await setNetworkOffline(false);
     assertRecords(complete,await snapshot());assert.equal(await page.evaluate(()=>caches.open('album-unrelated-fixture').then(c=>c.match('/untouched')).then(r=>r.text())),'untouched');
    });
    await check('two offline cold starts reopen old photographs and export their originals without network',async()=>{
+    await setNetworkOffline(true);
     for(let session=0;session<2;session++){
-     await context.close();await boot(dir);await context.setOffline(true);await page.goto(url+'/camera/?album-offline-session='+session);await readyUI();
+     await context.close();await boot(dir);await setNetworkOffline(true);await page.goto(url+'/camera/?album-offline-session='+session);await readyUI();
      await page.waitForFunction(id=>window.pocketCamera.state.shots.some(s=>s.id===id),id,{timeout:60000});
      assertRecords(complete,await snapshot());
      const bytes=await page.evaluate(address=>import(address).then(m=>m.makeAlbumBackup()).then(f=>f.size),backupAddress);assert.ok(bytes>0);
+     verifyOfflineTransport('cold restart '+session);
     }
+    await setNetworkOffline(false);
    });
   }
   await context.close();context=null;legacy=false;

@@ -850,6 +850,10 @@ function fitInside(r,aspect,pad=0){
 // ---------- Album ----------
 let albumOK=false,albumRevision=0,albumReading=null,albumLoading=false,albumError=null,albumRead=false,albumBusy=false;
 let albumPersistence=null,backupURL=null;
+function discardPreparedBackup(){
+ if(backupURL){URL.revokeObjectURL(backupURL);backupURL=null;$('albumBackupMessage').textContent='The album changed. Prepare a new backup.';}
+ $('albumDownload').hidden=true;
+}
 const albumBlob=value=>value instanceof Blob&&value.size>0;
 const albumThumb=shot=>[shot?.thumb,shot?.photo,shot?.source].find(albumBlob);
 const albumLabel=shot=>{try{return mixLabel(normalRecipe(shot.recipe||{}));}catch{return 'Saved photo';}};
@@ -874,7 +878,7 @@ async function refreshShots(){
   try{
    let revision,shots;
    do{revision=albumRevision;shots=await listShots();}while(revision!==albumRevision);
-   state.shots=shots;albumOK=true;albumError=null;albumRead=true;
+   discardPreparedBackup();state.shots=shots;albumOK=true;albumError=null;albumRead=true;
    renderRoll();if(state.mode==='album')renderGrid();
    return true;
   }catch(error){
@@ -891,7 +895,7 @@ async function loadShots(){
  try{await ensureAlbumSamples();await refreshShots();}catch{/* The owner's photos remain usable offline. */}
 }
 async function keep(shot){
- const r=await addShot(shot);albumRevision++;state.shots.unshift(r);renderRoll(true);void updateAlbumPersistence();return r;
+ const r=await addShot(shot);discardPreparedBackup();albumRevision++;state.shots.unshift(r);renderRoll(true);void updateAlbumPersistence();return r;
 }
 async function updateAlbumPersistence(){albumPersistence=await keepAlbum();renderAlbumStatus();}
 let rollURL;
@@ -927,8 +931,7 @@ $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)o
 $('albumRetry').addEventListener('click',()=>{void refreshShots();});
 $('albumBackup').addEventListener('click',async()=>{
  if(albumBusy)return;albumBusy=true;renderAlbumStatus();$('albumBackupMessage').textContent='Preparing backup…';
- $('albumDownload').hidden=true;
- if(backupURL){URL.revokeObjectURL(backupURL);backupURL=null;}
+ discardPreparedBackup();$('albumBackupMessage').textContent='Preparing backup…';
  try{
   const backup=await makeAlbumBackup();
   if(backupURL)URL.revokeObjectURL(backupURL);backupURL=URL.createObjectURL(backup);
@@ -942,7 +945,7 @@ $('albumBackupPicker').addEventListener('change',async event=>{
  const file=event.target.files?.[0];if(!file||albumBusy)return;
  albumBusy=true;renderAlbumStatus();$('albumBackupMessage').textContent='Checking backup…';
  try{
-  const result=await restoreAlbumBackup(file);albumRevision++;await refreshShots();await loadMine();
+  const result=await restoreAlbumBackup(file);discardPreparedBackup();albumRevision++;await refreshShots();await loadMine();
   $('albumBackupMessage').textContent=`Restored ${result.added} photos and ${result.stickersAdded} stickers. ${result.skipped+result.stickersSkipped} identical records already present. Existing records were preserved.`;
   void updateAlbumPersistence();
  }catch(error){$('albumBackupMessage').textContent=`Restore failed. Existing records were preserved. ${error.message||''}`;}
@@ -1070,7 +1073,7 @@ $('deletePhoto').addEventListener('click',()=>confirmDelete('This photo will be 
  if(!state.viewing)return;
  const id=state.viewing.id;
  try{await deleteShot(id);}catch(error){toast(`Photo could not be deleted. ${albumErrorText(error)}`);return;}
- albumRevision++;
+ discardPreparedBackup();albumRevision++;
  state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
 }));
 

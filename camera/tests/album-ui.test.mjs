@@ -94,3 +94,9 @@ test('a delete completing during an older read cannot resurrect the deleted row'
 test('a recipe that throws during normalisation uses a fallback label without hiding later rows',async()=>{
  const malformed={...photo('bad-recipe'),recipe:{layers:[{look:'none',amount:1n}]}},valid=photo('valid'),f=fixture({rows:[malformed,valid]});await f.api.refreshShots();assert.equal(f.api.ok,true);assert.deepEqual(f.get('grid').children.map(b=>b.dataset.id),['bad-recipe','valid']);assert.equal(f.get('grid').children[0].children.find(e=>e.tagName==='strong').textContent,'Saved photo');assert.equal(f.state.shots[0].recipe.layers[0].amount,1n);
 });
+
+test('a committed new save retires the previously prepared backup instead of offering stale data',async()=>{
+ const f=fixture({rows:[photo('old')]});await f.api.refreshShots();await f.get('albumBackup').click();
+ assert.equal(f.get('albumDownload').hidden,false);const previous=f.get('albumDownload').href;await f.api.keep(photo('input'));
+ assert.equal(f.get('albumDownload').hidden,true);assert.ok(f.calls.revoked.includes(previous));assert.match(f.get('albumBackupMessage').textContent,/album changed/);
+});
