@@ -129,3 +129,15 @@ had been aligned already). Both album imports now match the app. Local MCP execu
 dependencies and is not a pass; the initial PR wording that grouped it with local passing checks is superseded here.
 The follow-up also downloads a real backup through the UI, restores through its file picker, checks no duplication,
 and records phone/tablet backup and error screenshots. These are generated fixture data, not personal photographs.
+
+Second source `3b5601c70712364787ab19df4f0aaef86d61c26d`, tree `bfbbf7fe35c746a2970cdbcfe56f87c3be02c276`:
+MCP [41395754296](https://github.com/nj22az/nj22az.github.io/actions/runs/41395754296) now passes **16/16 policy +
+20/20 real Camera acceptance**. Chromium passed the five real album UI cases, including backup download/file-picker
+restore and exact no-duplicate verification. Phone error/backup and tablet backup screenshots were downloaded with
+artifact SHA-256/ZIP CRC/path checks and visually inspected; the status, retained rows and controls are readable.
+The stronger minimal-harness worker check still timed out awaiting its readiness message on both engines, despite
+an exact active/cache predicate. No cold-restart pass is claimed from either incomplete album job. The next test-only
+follow-up inspects Chromium's live worker BUILD, starts message delivery explicitly, loads the actual app before the
+message handshake, and logs worker errors/replies/controller states to distinguish a fixture issue from runtime loss.
+The existing full offline suite passed on the unchanged runtime in the first run; this is separate from the new
+uncompleted cross-version fixture. No assertion, photograph hash comparison or runtime worker is weakened/changed.

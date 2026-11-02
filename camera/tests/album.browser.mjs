@@ -33,11 +33,16 @@ const proxy=createServer((req,res)=>{
  const request=get(new URL(req.url,origin.url),up=>{res.writeHead(up.statusCode,up.headers);up.pipe(res);});request.on('error',()=>res.destroy());
 });
 await new Promise(resolve=>proxy.listen(0,'127.0.0.1',resolve));const url='http://127.0.0.1:'+proxy.address().port;
-const results={engine:engineName,physicalSafari:false,ui:engineName==='chromium',checks:[]},profiles=[];
+const results={engine:engineName,physicalSafari:false,ui:engineName==='chromium',checks:[],workerEvents:[],consoleErrors:[]},profiles=[];
 let context,page;
 const check=async(name,fn)=>{await fn();results.checks.push(name);console.log('ok '+name);};
 const options={viewport:{width:402,height:874},isMobile:true,hasTouch:true,reducedMotion:'reduce',serviceWorkers:reproOnly?'block':'allow',...(engineName==='chromium'?{executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']}: {})};
-async function boot(profile){context=await browserType.launchPersistentContext(profile,options);page=context.pages()[0]||await context.newPage();}
+async function boot(profile){
+ context=await browserType.launchPersistentContext(profile,options);
+ context.on('serviceworker',worker=>{results.workerEvents.push({event:'created',url:worker.url()});worker.on('close',()=>results.workerEvents.push({event:'closed',url:worker.url()}));});
+ context.on('console',message=>{if(message.type()==='error'&&results.consoleErrors.length<100)results.consoleErrors.push(message.text());});
+ page=context.pages()[0]||await context.newPage();
+}
 async function profile(){const dir=await mkdtemp(join(tmpdir(),'camera-album-'));profiles.push(dir);await boot(dir);return dir;}
 async function harness(){await page.goto(url+'/camera/album-harness');}
 async function seed(version,label){
@@ -188,13 +193,17 @@ try{
      const cache=await caches.open(name),response=await cache.match('/camera/offline.json');if(!response)return false;
      const manifest=await response.json(),keys=new Set((await cache.keys()).map(k=>new URL(k.url).pathname));return manifest.version===expected.version&&manifest.files.every(f=>keys.has(f.url))&&!names.includes('pocket-camera-1');
     },candidate,{timeout:120000});
+    results.workerInspection=await Promise.all(context.serviceWorkers().map(worker=>worker.evaluate(()=>({url:self.location.href,build:typeof BUILD==='string'?BUILD:null,cache:typeof CACHE==='string'?CACHE:null})).catch(error=>({url:worker.url(),error:error.message}))));
+    if(engineName==='chromium')assert.ok(results.workerInspection.some(worker=>worker.build===candidate.build),'an inspected worker executes the candidate BUILD');
+    await page.goto(url+'/camera/');await readyUI();
     results.updatedController=await page.evaluate(expected=>new Promise((resolve,reject)=>{
-     const controller=navigator.serviceWorker.controller,timer=setTimeout(()=>finish(new Error('Activated candidate worker did not confirm readiness')),10000);
-     const finish=error=>{clearTimeout(timer);navigator.serviceWorker.removeEventListener('message',reply);if(error)reject(error);};
-     function reply(event){if(event.source!==controller||event.data?.type!=='CAMERA_OFFLINE_STATUS')return;const status=event.data;if(!status.ready||status.version!==expected.version){finish(new Error('Activated worker reported the wrong offline release'));return;}finish();resolve(status);}
-     navigator.serviceWorker.addEventListener('message',reply);controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});
+     const container=navigator.serviceWorker,controller=container.controller,observed=[];
+     const timer=setTimeout(async()=>{const reg=await container.getRegistration('/camera/');finish(new Error('Activated candidate worker did not confirm readiness: '+JSON.stringify({expected,controller:{url:controller?.scriptURL,state:controller?.state},active:{url:reg?.active?.scriptURL,state:reg?.active?.state},installing:reg?.installing?.state,waiting:reg?.waiting?.state,observed})));},10000);
+     const finish=error=>{clearTimeout(timer);container.removeEventListener('message',reply);if(error)reject(error);};
+     function reply(event){observed.push({source:event.source?.scriptURL,current:event.source===controller,data:event.data});if(event.source!==controller||event.data?.type!=='CAMERA_OFFLINE_STATUS')return;const status=event.data;if(!status.ready||status.version!==expected.version){finish(new Error('Activated worker reported the wrong offline release: '+JSON.stringify(observed)));return;}finish();resolve({...status,observed});}
+     container.addEventListener('message',reply);container.startMessages?.();controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});
     }),candidate);
-    await page.goto(url+'/camera/');await readyUI();await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='ready',null,{timeout:60000});
+    await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='ready',null,{timeout:60000});
     await context.setOffline(true);await page.goto(url+'/camera/?album-offline-session=warm');await readyUI();
     await page.waitForFunction(id=>window.pocketCamera.state.shots.some(s=>s.id===id),id,{timeout:60000});await context.setOffline(false);
     assertRecords(complete,await snapshot());assert.equal(await page.evaluate(()=>caches.open('album-unrelated-fixture').then(c=>c.match('/untouched')).then(r=>r.text())),'untouched');
