@@ -100,8 +100,8 @@ function sakuraShopfront(kit,solid,{inspect,anchor,onAction,vending,group}){
   solid({id:'sakura-bin',x:bx,z:bz,w:.5,d:.56,height:.8});
   anchor(bx+.6,1,bz,'Return empty cans',()=>onAction?.('recycle-cans'));}
  // Drink crates stacked the way empties are, against the glass beyond the vending machines.
- const crateAt=[[0,0,0],[0,1,0],[0,2,0],[0,0,.56],[0,1,.56],[.02,0,1.1]];
- crateAt.forEach(([dx,ly,dz],i)=>{kit.box(.46,.28,.5,front+.3+dx,.14+ly*.28,S.minZ+3.4+dz,i%2?0x2f6fb8:0xc8392e);kit.box(.4,.04,.44,front+.3+dx,.28+ly*.28,S.minZ+3.4+dz,0x2f3140);});
+ {const C=SAKURA_CRATES,[cw,ch,cd]=C.crate,[lw,lh,ld]=C.lid;
+ C.at.forEach(([dx,ly,dz],i)=>{kit.box(cw,ch,cd,C.x+dx,ch/2+ly*ch,C.z+dz,i%2?0x2f6fb8:0xc8392e);kit.box(lw,lh,ld,C.x+dx,ch+ly*ch,C.z+dz,0x2f3140);});}
  solid({id:'sakura-crates',x:front+.3,z:S.minZ+3.95,w:.55,d:1.7,height:.9});
  // A trestle of fruit and island vegetables either side of the door's north.
  const tz=door+doorClear+1.2;
@@ -162,6 +162,21 @@ export const SAKURA_BIKES=Object.freeze([
 
 /** Sakura's footprint and the height of its roof slab, as the storefront builds them. */
 export const SAKURA_BOX=Object.freeze({minX:-18.45,maxX:-7.45,minZ:-34.43,maxZ:-20.17,roof:4.01});
+/**
+ * The drink crates stacked against the glass beyond the vending machines, the way empties are: [dx, layer, dz] from the
+ * foot of the first stack (x, z). A crate is 0.46 × 0.28 × 0.50 m and its lid 0.40 × 0.04 × 0.44 m, centred on its top
+ * (half sunk into it). Three stacks: three high, two high, one high. The Halloween walk's things stand on their lids
+ * (halloween.js): crateTops() says where each stack's top is.
+ */
+export const SAKURA_CRATES=Object.freeze({x:SAKURA_BOX.maxX+.3,z:SAKURA_BOX.minZ+3.4,crate:Object.freeze([.46,.28,.5]),lid:Object.freeze([.4,.04,.44]),
+ at:Object.freeze([[0,0,0],[0,1,0],[0,2,0],[0,0,.56],[0,1,.56],[.02,0,1.1]].map(a=>Object.freeze(a)))});
+/** Each stack's top lid, tallest first: its centre (x, z), the height of its top face and its size (w along x, d along z). */
+export function crateTops(C=SAKURA_CRATES){
+ const stacks=new Map();
+ for(const [dx,ly,dz] of C.at){const key=dx+','+dz;stacks.set(key,Math.max(stacks.get(key)??-1,ly));}
+ return [...stacks].map(([key,ly])=>{const [dx,dz]=key.split(',').map(Number);
+  return Object.freeze({x:C.x+dx,z:C.z+dz,top:Math.round((C.crate[1]*(ly+1)+C.lid[1]/2)*1e6)/1e6,w:C.lid[0],d:C.lid[2],layers:ly+1});}).sort((a,b)=>b.top-a.top);
+}
 /** How far the storefront's side walls stand outside SAKURA_BOX (storefront.js: an 18 cm wall outside the plan line). */
 export const SAKURA_SIDE_WALL=.18;
 /**

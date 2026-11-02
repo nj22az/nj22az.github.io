@@ -76,14 +76,19 @@ export function buildPumpkinLantern({r=.19}={}){
  return g;
 }
 
-/** A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face, a small glow round it. Origin on the ground. */
+/**
+ * A plastic jack-o'-lantern (a sweets pail, lit inside by a little torch): solid, ribbed, a carved face, a small glow
+ * round it. Origin on the ground: the lobes' bottoms touch y = 0 (they once stood a quarter of r above it, so every pail
+ * floated 3 to 4 cm over the pavement, the crates and the bin).
+ */
 export function buildJackOLantern({r=.16}={}){
  const g=new THREE.Group();g.name='Jack-o’-lantern';
  const skin=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0xfff4b0,side:THREE.DoubleSide,toneMapped:false});   // lit from inside: bright skin, a glowing face
- for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.6,14,10),[1,.68,.24],[.93,.42,.08]),skin,Math.cos(a)*r*.42,r*.82,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
- mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,r*1.62,0);
- mesh(g,pumpkinFace(r*1.35),face,0,r*.82,r*.99,'Jack-o’-lantern face');
- const halo=buildHalo(r*4.2,.42);halo.position.set(0,r*.85,0);g.add(halo);
+ const cy=r*.57;   // the lobes' middle: a lobe is r·0.6 round, squashed to 0.95, so its bottom is on the ground
+ for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.6,14,10),[1,.68,.24],[.93,.42,.08]),skin,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
+ mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,cy+r*.8,0);
+ mesh(g,pumpkinFace(r*1.35),face,0,cy,r*.99,'Jack-o’-lantern face');
+ const halo=buildHalo(r*4.2,.42);halo.position.set(0,cy+r*.03,0);g.add(halo);
  return g;
 }
 

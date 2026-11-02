@@ -1,7 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {applyCelShading} from '../render/cel.js';
 import {townDate} from '../town-clock.js';
-import {SAKURA_BOX,SAKURA_VENDING} from './okinawa/old-town.js';
+import {SAKURA_BOX,SAKURA_VENDING,crateTops} from './okinawa/old-town.js';
 import {VENDING_MACHINE,vendingPoints,vendingToWorld} from './vending.js';
 import {buildFujitaDream} from './fujita-dream.js';
 import {std,mesh,buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel,buildJCoffeeCan,J_COFFEE_CAN} from './halloween-props.js';
@@ -51,6 +51,16 @@ export const HALLOWEEN=Object.freeze({
  reel:Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.42,SAKURA_VENDING.y,SAKURA_BOX.minZ+.8]),why:'Kōji’s cord reel from his boat shed, half coiled: the lanterns and the machine both plugged into it.'}),
  nobori:Object.freeze([SAKURA_BOX.maxX+.95,SAKURA_BOX.minZ+.45]),
  pools:Object.freeze([-32.4,-29.1,-25.6,-22.1]),   // the four shared lights of the lanterns' warm pools (z along the string)
+ // The jack-o'-lantern pails on the frontage, each standing on something: the three-high stack of drinks crates and the
+ // one-high one (old-town.js SAKURA_CRATES; the two-high stack between them holds the sweets), the bin's lid on its
+ // opening (old-town.js: the lid's top 0.77 m, the opening's rim 0.782 m, 8 cm round), and the pavement at the nobori
+ // pole's foot. [x, y, z] is where the pail's bottom stands, r its size, ry its turn.
+ pails:(()=>{const [high,,low]=crateTops();return Object.freeze([
+  Object.freeze({at:Object.freeze([high.x,high.top,high.z]),r:.15,ry:Math.PI/2,on:'the three-high stack of crates'}),
+  Object.freeze({at:Object.freeze([low.x,low.top,low.z]),r:.12,ry:Math.PI/2+.3,on:'the one-high stack of crates'}),
+  Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.4,.782,-29.4]),r:.13,ry:Math.PI/2-.2,on:'the bin’s lid, over its opening'}),
+  Object.freeze({at:Object.freeze([SAKURA_BOX.maxX+.95+.12,SAKURA_VENDING.y,SAKURA_BOX.minZ+.45-.22]),r:.14,ry:Math.PI/2-.4,on:'the pavement at the nobori pole’s foot'}),
+ ]);})(),
  poolIntensity:4,
  seance:Object.freeze({centre:Object.freeze([-5.75,-32.6]),radius:.72,candles:8}),
 });
@@ -188,7 +198,7 @@ export function buildHalloween(world,{shadows=false}={}){
  const ring=new THREE.Group();ring.name='Jack-o’-lanterns round the machine';group.add(ring);
  for(let i=0;i<7;i++){const a=-1.15+i*2.3/6,r=.95;add(buildJackOLantern({r:i%2?.14:.17}),M.front+Math.cos(a)*r,G,M.z+Math.sin(a)*r,Math.PI/2-a*.6,ring);}
  const deco=new THREE.Group();deco.name='Jack-o’-lanterns on the frontage';group.add(deco);
- for(const [x,y,z,r,ry] of [[S.maxX+.32,.84,-30.75,.15,Math.PI/2],[S.maxX+.32,.84,-30.2,.12,Math.PI/2+.3],[S.maxX+.4,.78,-29.4,.13,Math.PI/2-.2],[H.nobori[0]+.12,H.ground,H.nobori[1]-.22,.14,Math.PI/2-.4]])add(buildJackOLantern({r}),x,y,z,ry,deco);
+ for(const {at:[x,y,z],r,ry} of H.pails)add(buildJackOLantern({r}),x,y,z,ry,deco);
  const peek=add(buildObake({h:.36}),M.x+.12,M.top,M.z-.36,Math.PI/2);peek.name='Plush ghost peeking';peek.rotation.z=-.18;   // on top of the machine, leaning out over its front edge
  const can=new THREE.Group();can.name='A can in the take-out pocket';group.add(can);
  // the free can: a J-Coffee, lying on the pocket's floor behind the smoked flap (vending.js takeOut), across the machine

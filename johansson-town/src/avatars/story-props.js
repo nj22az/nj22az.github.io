@@ -3,6 +3,7 @@ import {celFrom} from '../render/cel.js';
 import {bodyVolume} from './build.js';
 import {faceLayout} from './face.js';
 import {faceObjectPoint} from './face-objects.js';
+import {shapeHeadPoint} from './head-profile.js';
 
 /**
  * Small things the story puts on a body, each with its reason (nothing is random), built light for phones: a handful of
@@ -14,7 +15,7 @@ import {faceObjectPoint} from './face-objects.js';
  *   storyProps(avatar).give('basketOnHead')   a locker basket upside down on the head, resting on the head (or its towel)
  *   storyProps(avatar).give('newspaper')      the evening paper, folded, held open between the two mittens while reading
  *   storyProps(avatar).give('paperback')      Miss Higa's novel, open in her right mitten (the film turns it to her facing)
- *   storyProps(avatar).give('pumpkinSuit')    a Halloween costume (also 'ghostSheet', 'witchHat'): buildCostume
+ *   storyProps(avatar).give('pumpkinSuit')    a Halloween costume (also 'ghostSheet', 'witchHat', 'catEars'): buildCostume
  *   storyProps(avatar).give('dryerCord')      the vanity dryer's cord, wound round the body and its pinned arms
  *   storyProps(avatar).give('safetyGlasses')  clear safety glasses over his own glasses (WORK_KIT)
  *   storyProps(avatar).give('headlamp')       a headlamp on an elastic band round the head, lit, with its own light (WORK_KIT)
@@ -40,6 +41,8 @@ export const STORY_PROPS=Object.freeze({
   where:'A white sheet from the shoulders to the knees, its hem wavy, and a hood round the head open at the face.'}),
  witchHat:Object.freeze({who:'A child on the Halloween walk',why:'A witch for the children’s walk: a pointed black hat with a purple band.',
   where:'On the crown of the head, tipped a little back.'}),
+ catEars:Object.freeze({who:'A child on the Halloween walk',why:'A black cat for the children’s walk, after Kuro the Tamashiros’ dog’s black coat: the quickest costume there is, a headband with two felt ears, from Sakura’s decorations shelf. Pocket Camera has the same headband as a face sticker (modelled in Blender).',
+  where:'A thin black band over the crown from ear to ear, its two pointed felt ears, pink inside, standing up either side of the top of the head.'}),
  dryerCord:Object.freeze({who:'Thao',why:'Spinning round in the dark with her dryer still in her hand, she winds herself up in its own cord, like a parcel.',
   where:'From the dryer’s handle in her right mitten, four turns round her and her arms from under the arms to the hips, then away to the socket.'}),
  // Tetsuo's work kit for an open board (WORK_KIT): what he puts on before his hands go inside one.
@@ -187,6 +190,7 @@ export function buildPaperback(){
  *   ghostSheet   on the hips bone: a white sheet from the shoulders to the knees with a wavy hem; and on the head
  *                bone a hood round the head, open at the face
  *   witchHat     on the head bone: a black cone hat with a brim and a purple band
+ *   catEars      on the head bone: a thin black band over the crown and two black felt ears, pink inside
  * Each returns {parts: [[bone, object], ...]}; in the hips' and the head's bone frames the body's front is +z.
  */
 export function buildCostume(avatar,kind){
@@ -241,6 +245,24 @@ export function buildCostume(avatar,kind){
   const cone=add(hat,new THREE.ConeGeometry(R*.78,R*2.2,24),black,0,top-.03*k+R*1.1,0);cone.rotation.x=.12;
   add(hat,new THREE.CylinderGeometry(R*.76,R*.79,.05*k,24),band,0,top+.0*k,0);
   hat.rotation.x=.12;parts.push(['head',hat]);
+ }else if(kind==='catEars'){
+  const band=new THREE.Group();band.name='Cat ears';
+  const black=mat(0x24222a,{roughness:.85,side:THREE.DoubleSide}),pink=mat(0xf2a3a8,{roughness:.9,side:THREE.DoubleSide});
+  // On this head's own shape (head-profile.js, as the catalogue's hats are fitted), 6 mm off the scalp: a point on the unit
+  // head at angle t from the top (−π/2 the left ear, π/2 the right), a little behind the crown, where a headband sits.
+  const S=[m.headSX*m.Rh,(m.headSY||1)*m.Rh,m.Rh*.98],cy=m.headCentre-m.headY,lift=1+.006/m.Rh,R=m.Rh*Math.max(m.headSX,1);
+  const onHead=t=>{const u=new THREE.Vector3(Math.sin(t),Math.cos(t),-.12).normalize();shapeHeadPoint(u,m.profile);return new THREE.Vector3(u.x*S[0]*lift,cy+u.y*S[1]*lift,u.z*S[2]*lift);};
+  const arc=[];for(let i=0;i<=24;i++)arc.push(onHead(-Math.PI/2+i/24*Math.PI));
+  add(band,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arc),48,.008*k,6,false),black);
+  // the ears: flat pointed felt triangles standing on the band either side of the top, turned out a little, pink inside
+  // (sized from the head, as a headband's ears are made for a head: about a third of its radius tall)
+  const ear=(w,h)=>{const sh=new THREE.Shape();sh.moveTo(-w/2,0);sh.lineTo(0,h);sh.lineTo(w/2,0);sh.closePath();return sh;};
+  for(const side of [-1,1]){
+   const a=side*.5,e=new THREE.Group();e.position.copy(onHead(a)).setY(e.position.y-.012*k);e.rotation.z=-a*.5;band.add(e);
+   add(e,new THREE.ExtrudeGeometry(ear(R*.34,R*.38),{depth:.006*k,bevelEnabled:false}),black,0,0,-.003*k);   // the felt, 6 mm thick
+   add(e,new THREE.ShapeGeometry(ear(R*.19,R*.22)),pink,0,R*.055,.0035*k);                                   // its pink inside, on the front
+  }
+  parts.push(['head',band]);
  }else throw new Error('No costume "'+kind+'"');
  return {parts};
 }
@@ -590,7 +612,7 @@ export function storyProps(avatar){
    else if(kind==='headlamp'){o=buildHeadlamp(avatar);avatar.bones.head.add(o);o.userData.headlamp.setOn(options.on!==false);}
    else if(kind==='gloves'){o=new THREE.Group();o.name='Rubber gloves';o.userData.parts=['L','R'].map(s=>{const gl=buildGlove(avatar,s);avatar.bones['hand'+s].add(gl);return gl;});avatar.root.add(o);}
    else if(kind==='voltageTester'){o=buildTester();o.position.copy(fistSpot(avatar));o.rotation.x=Math.PI/2;avatar.bones.handR.add(o);o.userData.at='R';o.userData.tester.setReading(options.reading||0);}
-   else if(kind==='pumpkinSuit'||kind==='ghostSheet'||kind==='witchHat'){o=new THREE.Group();o.name=kind;const c=buildCostume(avatar,kind);
+   else if(kind==='pumpkinSuit'||kind==='ghostSheet'||kind==='witchHat'||kind==='catEars'){o=new THREE.Group();o.name=kind;const c=buildCostume(avatar,kind);
     for(const [bone,part] of c.parts){avatar.bones[bone].add(part);}o.userData.parts=c.parts;avatar.root.add(o);}
    else throw new Error('No story prop "'+kind+'" (story-props.js STORY_PROPS)');
    o.userData.storyProp=kind;held.set(kind,o);return o;

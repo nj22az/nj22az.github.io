@@ -6,7 +6,7 @@ import {createVendingMachine} from '../src/world/vending.js';
 import {buildJCoffeeCan,J_COFFEE_CAN} from '../src/world/halloween-props.js';
 import {VENDING_PRODUCTS} from '../src/commerce/vending-catalogue.js';
 import {buildHalloween,HALLOWEEN,HALLOWEEN_ELECTRICS as E,cordResistance,lanternCurrent,reelVolts,lanternBrightness,cordHeat,buildObake,buildDog,buildPumpkinLantern} from '../src/world/halloween.js';
-import {SAKURA_BOX} from '../src/world/okinawa/old-town.js';
+import {SAKURA_BOX,crateTops} from '../src/world/okinawa/old-town.js';
 
 installDOM();
 
@@ -87,12 +87,24 @@ test('the figures: a cute obake, Kuro the dog and a pumpkin lantern, each whole'
  const l=buildPumpkinLantern(),lb=box(l);assert.ok(lb.max.y<=.02&&lb.min.y>-.45,'a lantern hangs below its hook');
 });
 
-test('the costumes fit the body that wears them: the pumpkin suit, the ghost sheet (over Mori’s cap) and the witch hat',async()=>{
+test('every jack-o’-lantern pail stands on what is under it: the crates, the bin’s lid, the pavement, never floating',()=>{
+ const {h}=town(),deco=h.group.getObjectByName('Jack-o’-lanterns on the frontage'),ring=h.group.getObjectByName('Jack-o’-lanterns round the machine');
+ assert.equal(deco.children.length,HALLOWEEN.pails.length);
+ HALLOWEEN.pails.forEach((p,i)=>{const b=box(deco.children[i]);assert.ok(Math.abs(b.min.y-p.at[1])<.003,`the pail on ${p.on}: its bottom ${b.min.y.toFixed(3)} on ${p.at[1]}`);});
+ const tops=crateTops();
+ for(const p of HALLOWEEN.pails.filter(p=>/crates/.test(p.on))){
+  const lid=tops.find(t=>Math.abs(t.x-p.at[0])<1e-6&&Math.abs(t.z-p.at[2])<1e-6);assert.ok(lid,'on a stack’s lid');assert.equal(lid.top,p.at[1]);
+  assert.ok(p.r<=lid.w/2&&p.r<=lid.d/2,`a pail ${2*p.r} m across fits its ${lid.w} × ${lid.d} m lid`);
+ }
+ for(const pail of ring.children)assert.ok(Math.abs(box(pail).min.y-HALLOWEEN.ground)<.003,'the ring stands on the pavement');
+});
+
+test('the costumes fit the body that wears them: the pumpkin suit, the ghost sheet (over Mori’s cap), the witch hat and the cat ears',async()=>{
  const {buildAvatar}=await import('../src/avatars/build.js'),{recipeFor}=await import('../src/avatars/cast.js'),{normalizeRecipe}=await import('../src/avatars/recipe.js'),{storyProps,STORY_PROPS}=await import('../src/avatars/story-props.js');
- for(const kind of ['pumpkinSuit','ghostSheet','witchHat'])assert.ok(STORY_PROPS[kind]?.why.length>40,kind+' has its reason');
+ for(const kind of ['pumpkinSuit','ghostSheet','witchHat','catEars'])assert.ok(STORY_PROPS[kind]?.why.length>40,kind+' has its reason');
  for(const [who,recipe] of [['Tetsuo',recipeFor('Tetsuo')],['Officer Mori',recipeFor('Officer Mori')],['a child',normalizeRecipe({name:'Walk child',age:'child'})]]){
   const a=buildAvatar(recipe,{shadows:false}),m=a.measure;a.root.updateMatrixWorld(true);
-  for(const kind of ['pumpkinSuit','ghostSheet','witchHat']){
+  for(const kind of ['pumpkinSuit','ghostSheet','witchHat','catEars']){
    const o=storyProps(a).give(kind);a.root.updateMatrixWorld(true);
    const parts=o.userData.parts;assert.ok(parts.length>=1,who+' '+kind);
    const b=new THREE.Box3();for(const [,p] of parts)b.expandByObject(p);
@@ -104,6 +116,9 @@ test('the costumes fit the body that wears them: the pumpkin suit, the ghost she
     const front=new THREE.Vector3(0,(crown.min.y+crown.max.y)/2,-2),ray=new THREE.Raycaster(front,new THREE.Vector3(0,0,1));
     const hit=ray.intersectObject(hood,true)[0],face=ray.intersectObject(a.face.head,true)[0];assert.ok(face&&(!hit||hit.distance>face.distance),who+': the face shows through the hood’s opening');}
    if(kind==='witchHat')assert.ok(b.min.y>m.headCentre-.05&&b.max.y>m.headCentre+m.Rh,who+': the hat on the crown');
+   if(kind==='catEars'){const crown=new THREE.Box3().setFromObject(a.face.head);
+    assert.ok(b.max.y>crown.max.y+.03,who+': the ears stand up above the crown');assert.ok(b.min.y>m.headCentre-m.Rh*m.headSY*.4,who+': the band ends at the ears, not under the chin');
+    assert.ok(b.max.x-b.min.x>(crown.max.x-crown.min.x)*.9&&b.max.x-b.min.x<(crown.max.x-crown.min.x)*1.3,who+': ear to ear, as wide as the head');}
    storyProps(a).take(kind);for(const [,p] of parts)assert.equal(p.parent,null,'taken off whole');
   }
   a.dispose();
