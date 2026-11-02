@@ -1,5 +1,5 @@
 /* Build stamps this identifier; saved games remain in localStorage. */
-const VERSION = '25c7d7ca124940d4dd9f';
+const VERSION = '49d6643ded87aaa14305';
 const PREFIX='johansson-town-';
 const CACHE=PREFIX+VERSION;
 const SCOPE=new URL('./',self.location.href).href;

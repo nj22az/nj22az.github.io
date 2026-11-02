@@ -1,3 +1,7 @@
+## Latest bridge correction · 2 November 2026
+
+**Published and verified:** [actual navigation-lantern supply](johansson-town/briefs/HANDOFF-NAVIGATION-FEEDER-2026-11-02.md), implementation [`ebe94688`](https://github.com/nj22az/nj22az.github.io/commit/ebe94688d88a3553605107672e141ae85430418d). The independent battery/practice lamp is replaced by the existing green starboard lantern’s real 105 V AC ESB feeder; the book retains its explicitly separate 12 V DC calculation model. Pantograph wipers are unchanged. [Closing release evidence](release-evidence/navigation-feeder-2026-11-02/README.md): local29/29; hosted guard591/591 across113files; all five hosted guard/WebKit jobs passed; Pages succeeded;10/10public resource hashes match. This closing update changes only root documentation/evidence, not tested World sources or runtime.
+
 # Latest handovers
 
 Start here on every task, then read the latest applicable notes below. Maintain this index whenever a new note supersedes one of these. For an area without a note, create and link one when handing over work. Dates alone do not settle conflicting information: verify current branches, PRs, checks and releases.

@@ -582,7 +582,7 @@ export function buildFerryModel({shadows=false}={}){
  /** Shows the plant's readings (ferry-plant.js readings()) on every live dial and the alarm matrix; returns how many were redrawn. */
  const bridgeEquipment=buildFerryBridge(ferry,kit,{floor:BRIDGE,fore:FERRY_HOUSE.fore,aft:FERRY_HOUSE.wheelhouseAft});
  ferry.userData.bridgeEquipment=bridgeEquipment;
- ferry.userData.readPlant=readings=>{bridgeEquipment.readPlant(readings);ferry.userData.bridgePowered=readings.board.live;let n=0;for(const l of livePlates)if(l.show(liveValue(readings,l.key)))n++;return n;};
+ ferry.userData.readPlant=readings=>{bridgeEquipment.readPlant(readings);ferry.userData.bridgePowered=readings.board.live;ferry.userData.setNavigationSupply?.(readings.board.live||readings.board.emergency);let n=0;for(const l of livePlates)if(l.show(liveValue(readings,l.key)))n++;return n;};
  ferry.userData.livePlates=livePlates;
  for(const g of FERRY_INTERIOR.glass){win(g.size,g.pos,g.rot);
   // Each pane in an anodised frame, 5 cm, standing 1 cm proud of the plating: no window is a hole in a flat wall.
@@ -675,8 +675,10 @@ export function buildFerryModel({shadows=false}={}){
  // ---- Navigation lights (COLREG): masthead white at 15 m above the keel, sidelights at the wings' ends (red to
  // port, green to starboard), the stern light on the stern rail.
  const lamp=(colour,pos,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.13,.16,.13),new THREE.MeshBasicMaterial({color:0x333333}));m.position.set(...pos);m.name=name;m.userData.on=colour;ferry.add(m);return m;};
- const navLights=[lamp(0xfff6d8,[0,masthead,mastZ+.12],'Masthead light'),lamp(0xff3a2a,[HB-.02,BRIDGE+1.3,DH1-.25],'Port sidelight'),lamp(0x2aff70,[-(HB-.02),BRIDGE+1.3,DH1-.25],'Starboard sidelight'),lamp(0xfff6d8,[0,PASS+1.2,-HALF+.08],'Stern light')];
- for(const side of [1,-1])kit.box('paint',[.03,.3,.7],[side*(HB-.12),BRIDGE+1.3,DH1-.55],0x111111);
+ const navLights=[lamp(0xfff6d8,[0,masthead,mastZ+.12],'Masthead light'),lamp(0xff3a2a,[HB-.02,BRIDGE+1.3,DH1-.25],'Port sidelight'),bridgeEquipment.navigationFeeder.lamp,lamp(0xfff6d8,[0,PASS+1.2,-HALF+.08],'Stern light')];
+ // Port retains its original sector screen; the native starboard housing owns
+ // its screens, so no second black board intersects that replacement.
+ kit.box('paint',[.03,.3,.7],[(HB-.12),BRIDGE+1.3,DH1-.55],0x111111);
  // ---- Painted words and marks.
  const marks=markings();
  if(marks){
@@ -838,7 +840,10 @@ export function buildFerryModel({shadows=false}={}){
   }
   const powered=readings?.board?.live??speed>0;radar.rotation.y+=dt*(powered?2.6:0);bridgeEquipment.update(dt,{yaw:ferry.rotation.y,rain:ferry.userData.bridgeRain||false,powered});
  };
- ferry.userData.setNavigationLights=on=>{for(const l of navLights)l.material.color.setHex(on?l.userData.on:0x333333);};
+ let navigationCommand=false,navigationSupply=true;
+ const applyNavigationLights=()=>{const on=navigationCommand&&navigationSupply;bridgeEquipment.navigationFeeder.setLights(on,navigationCommand);for(const l of navLights)if(l!==bridgeEquipment.navigationFeeder.lamp)l.material.color.setHex(on?l.userData.on:0x333333);};
+ ferry.userData.setNavigationSupply=on=>{navigationSupply=!!on;applyNavigationLights();};
+ ferry.userData.setNavigationLights=on=>{navigationCommand=!!on;applyNavigationLights();};
  ferry.userData.setCabinLights=level=>{glassMat.emissiveIntensity=.55*Math.max(0,Math.min(1,level));};
  /** The ramp floodlights (FERRY_LOADS `floodlights`), lit with the deck lights after dark. */
  ferry.userData.setFloodlights=on=>{for(const l of floodLenses)l.material.emissiveIntensity=on?1.2:0;};

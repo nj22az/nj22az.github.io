@@ -448,7 +448,7 @@ export const FERRY_INTERIOR=(()=>{
  deco([-.12,BRIDGE+.75,DH1-1.52],[.12,BRIDGE+.9,DH1-1.5],0xf0ece0);
  deco([1.3,BRIDGE+1.0,DH1-.5],[1.75,BRIDGE+1.25,DH1-.28],DARK);bar([1.52,BRIDGE+1.25,DH1-.4],[1.52,BRIDGE+1.33,DH1-.4],.045,DARK);bar([1.52,BRIDGE+1.1,DH1-.27],[1.52,BRIDGE+1.2,DH1-.22],.02,DARK);
  bar([2.1,BRIDGE+1.0,DH1-.4],[2.1,BRIDGE+1.28,DH1-.45],.012,STEEL);bar([2.1,BRIDGE+1.28,DH1-.45],[2.1,BRIDGE+1.32,DH1-.45],.035,DARK);
- deco([-2.6,BRIDGE+1.0,DH1-.6],[-1.5,BRIDGE+1.2,DH1-.3],0xd8d2c0);for(let i=0;i<6;i++){const kx=-2.5+i*.18;deco([kx,BRIDGE+1.2,DH1-.5],[kx+.08,BRIDGE+1.23,DH1-.42],[RED,0x2aff70,0xf6f1e2,0xf6f1e2,RED,0x2aff70][i]);}
+ // Navigation-light enclosure and controls are supplied by ferry-bridge-lantern.js.
  for(const kx of [-2.5,-2.1,-1.7])bar([kx,BRIDGE+1.0,DH1-.2],[kx,BRIDGE+1.0,DH1-.18],.06,0xf0ece0);
  deco([-2.9,BRIDGE+1.0,DH1-T-.12],[2.9,BRIDGE+1.03,DH1-T],0xd8d2c0);
  bar([-2.1,BRIDGE+1.03,DH1-.24],[-1.75,BRIDGE+1.03,DH1-.24],.045,DARK);bar([-2.1,BRIDGE+1.03,DH1-.17],[-1.75,BRIDGE+1.03,DH1-.17],.045,DARK);
