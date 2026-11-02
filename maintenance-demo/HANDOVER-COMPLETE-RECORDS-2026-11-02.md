@@ -1,6 +1,6 @@
 # Maintenance planner — complete equipment dossiers and retained reports
 
-2 November 2026, release `2026.11.02.9`. Owner request: “I want all information available, even test results, and absolutely everything”. Base: main `61d4c7789915c245d5e4dc9d0bf10bded649b9a0`. Prior work: [Blender object library](HANDOVER-BLENDER-OBJECTS-2026-11-02.md), [guided risk assessment](HANDOVER-RISK-USABILITY-2026-11-02.md).
+2 November 2026, release `2026.11.02.10`. Owner request: “I want all information available, even test results, and absolutely everything”. Base: main `61d4c7789915c245d5e4dc9d0bf10bded649b9a0`. Prior work: [Blender object library](HANDOVER-BLENDER-OBJECTS-2026-11-02.md), [guided risk assessment](HANDOVER-RISK-USABILITY-2026-11-02.md).
 
 ## Delivered behaviour
 
@@ -18,8 +18,17 @@ Complete programme backups and per-item exports include referenced file bytes. M
 
 ## Validation actually run before publication
 
-`node --test maintenance-demo/tests/*.test.mjs`: **319/319 pass**. Includes all earlier AFS boundary/evidence/lifecycle checks plus numerical/unknown comparisons, correction cycles/cross-asset links, document review requirements, complete bundle preservation and ownership, file-byte round trips, missing/corrupt file refusal, failed transactions and metadata saves, legacy and version-2 backup restoration, failed-test follow-up and unchanged inspection/maintenance records. New JS modules pass `node --check`; `git diff --check` passes.
+`node --test maintenance-demo/tests/*.test.mjs`: **321/321 pass**. Includes all earlier AFS boundary/evidence/lifecycle checks plus numerical/unknown comparisons, correction cycles/cross-asset links, document review requirements, complete bundle preservation and ownership, file-byte round trips, missing/corrupt file refusal, failed transactions and metadata saves, legacy and version-2 backup restoration, failed-test follow-up and unchanged inspection/maintenance records. New JS modules pass `node --check`; `git diff --check` passes.
 
 The documented synthetic UI fixture `tests/record-review.html` supports phone/tablet/desktop inspection and a clearly marked synthetic report attachment. Its verification action reads the actual retained IndexedDB bytes, checks SHA-256 and exercises the complete archive round trip without replacing workspace metadata. Actual production-browser and deployment results follow below. No physical Safari or real equipment certification is claimed.
 
 Implementation: [record guide](docs/COMPLETE-RECORDS.md), record-core.mjs, record-files.mjs, record-ui.mjs, records.css. No external libraries or model files added. Existing browser-local data are normalised in place without changing the original key. Only maintenance files and this handover index row are published; other project areas remain outside this change.
+
+
+## Initial production checks and data-preservation refinement
+
+Initial source `2a219513a0edb6017418fc941b2fd46f8108e7ba` published to main. Hosted [319-test acceptance 41433870370](https://github.com/nj22az/nj22az.github.io/actions/runs/41433870370) and [Pages 41433870150](https://github.com/nj22az/nj22az.github.io/actions/runs/41433870150) passed. Actual published Chrome retained a synthetic QA text report through the document form. Its file bytes and SHA-256 passed the archive round-trip check both before and after reloading the page. This fixture did not replace workspace metadata. A recorded test with two readings (6 outside 1–5, 5 exactly at the upper boundary) preserved the declared Pass, displayed the outside/within comparisons and opened a High/Open corrective action. All QA content was labelled synthetic, not actual equipment evidence.
+
+Release .10 leads a conflicting result with Review required rather than leading with the declared Pass. The declared result and original measurements are still retained. Engineering field labels now include the known PS/TS/volume/operating-hour units. Retained file metadata also captures the available original File modification timestamp for new uploads.
+
+A snapshot guard now blocks an older open workspace/form from overwriting newer localStorage data. A storage-change notice offers reload and export of the current view, retaining unsaved form text for copying; it does not automatically discard a stale view. New record, pressure-record, restore and ordinary save paths share this check, and submit capture prevents stale form handlers from running. This is a browser-local stale-write guard, not authenticated multi-user collaboration. Regression tests confirm that a newer tab's saved metadata survives a stale result submission, and that the conflict warning does not rewrite the declared outcome. Final local suite: 321/321 passed. Final deployment and browser observations are appended after publication.
