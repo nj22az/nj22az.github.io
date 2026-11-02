@@ -15,12 +15,6 @@
     "src/people/resident-personalities.js",
     "src/render/cel.js"
   ],
-  "sha256": "3cdc5c7c6f97c0e1071d159355775a3f139c70365b3aaaeede46322170bb5133",
-  "count": 23,
-  "retainedPortraits": {
-    "previousSha256": "65697b0e6f7444556d67500d3217746a57202960ea1312dbc73098048f170898",
-    "previousCount": 25,
-    "count": 23,
-    "rendered": 0
-  }
+  "sha256": "ed11ad573e590edb37cf9d00d32236da2a61fc450f3732c1a163a12838ddd1a8",
+  "count": 23
 }
