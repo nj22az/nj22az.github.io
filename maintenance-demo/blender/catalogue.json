@@ -1,0 +1,6 @@
+[
+ {"id":"pump","label":"Centrifugal pump","collection":"pump","kind":"pump","envelopeMm":[1200,480,600]},
+ {"id":"compressor","label":"Air compressor and receiver","collection":"compressor","kind":"compressor","envelopeMm":[1400,600,1250]},
+ {"id":"generator","label":"Standby generator","collection":"generator","kind":"generator","envelopeMm":[1500,750,1100]},
+ {"id":"probe","label":"Temperature probe and readout","collection":"probe","kind":"probe","envelopeMm":[500,220,150]}
+]
