@@ -10,8 +10,8 @@
   },
   "world": {
     "id": 41521961658,
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658",
     "canonicalGuard": {
       "status": "completed",
@@ -30,8 +30,8 @@
     "explorationProfiles": [
       {
         "name": "ferry-exploration (ipad-portrait)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982490"
       },
       {
@@ -46,7 +46,9 @@
         "conclusion": "success",
         "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982542"
       }
-    ]
+    ],
+    "allFiveJobsPassed": true,
+    "finalStatusVerifiedBy": "Root independently read GitHub workflow jobs and all job steps"
   },
   "treeReview": {
     "id": 41521961866,
@@ -108,5 +110,5 @@
       "matches": true
     }
   ],
-  "verifiedAtUTC": "2026-11-02T20:57:33.120Z"
+  "verifiedAtUTC": "2026-11-02T21:00:33.472Z"
 }
