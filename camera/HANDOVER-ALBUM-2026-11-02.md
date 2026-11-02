@@ -109,3 +109,23 @@ an OS restart, normal Update action, Airplane Mode cold launch and backup→File
 Compare record IDs plus original/finished/thumbnail hashes and recipes. Do not experiment destructively on the owner's
 only photo copy. The unused updateShot helper retains its pre-existing last-writer-wins read/put race; no active
 application path calls it, and this work does not introduce an overwrite-in-place UI.
+
+## First hosted review and follow-up
+
+Draft PR [#425](https://github.com/nj22az/nj22az.github.io/pull/425), initial source
+`5589834467675b3457b010ebf032d380d7ec81e0`, exact tree `3724eba595174ba67c327cd2acd31a11250f732b`.
+Run [41395300147](https://github.com/nj22az/nj22az.github.io/actions/runs/41395300147) **positively reproduced the
+published display defect** against exact base app `e00b7167`: the stored image/hash remained intact, its displayed
+row was absent, and opening Album issued no new read. The candidate passed the corresponding four UI recovery cases.
+UI82, shader audit50, Smart14, retouch40/screens5 and offline13 passed in this initial run.
+The new Chromium/WebKit storage jobs passed old-schema/reloads/three-process/abort/backup/worker-cache checks but failed
+the first cold offline navigation. Their first cache-completeness predicate was not sufficient evidence of activated
+worker readiness. The follow-up requires the exact active/controller identity, candidate BUILD/manifest version,
+a readiness reply from that controller, actual online app startup, and a same-process offline navigation before closing
+and reopening. All original data/hash/cache assertions remain; no runtime worker change is made. Result pending.
+
+MCP run 41395299991 passed15 policy tests and caught the adapter's remaining old **album** query key (the renderer key
+had been aligned already). Both album imports now match the app. Local MCP execution was blocked by missing SDK
+dependencies and is not a pass; the initial PR wording that grouped it with local passing checks is superseded here.
+The follow-up also downloads a real backup through the UI, restores through its file picker, checks no duplication,
+and records phone/tablet backup and error screenshots. These are generated fixture data, not personal photographs.

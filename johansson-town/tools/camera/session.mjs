@@ -88,7 +88,7 @@ export class CameraSession{
   return {image:(await this.page.locator('#editFrame').screenshot({type:'png',animations:'disabled'})).toString('base64'),mimeType:'image/png',data:{kind:'Editor preview; use Save then Export for the final JPEG.',...await this.state()}};
  }
  async album(){return this.requirePage().evaluate(async()=>{
-  const {listShots}=await import('/camera/album.js?v=20261029c');
+  const {listShots}=await import('/camera/album.js?v=20261102album1');
   return (await listShots()).slice(0,200).map(s=>({id:s.id,width:s.width,height:s.height,created:s.created,taken:s.taken,bytes:s.photo?.size,mimeType:s.photo?.type,recipe:s.recipe}));
  });}
  async openPhoto({id,discard=false}){
@@ -116,7 +116,7 @@ export class CameraSession{
  async exportPhoto({id,confirm=false}){
   if(!confirm)throw Error('Export writes the selected photo to a local file. Pass confirm:true after the user requests an export.');
   const photo=await this.requirePage().evaluate(async id=>{
-   const {getShot}=await import('/camera/album.js?v=20261029c'),shot=await getShot(id);
+   const {getShot}=await import('/camera/album.js?v=20261102album1'),shot=await getShot(id);
    if(!shot)throw Error('Photo is not in this MCP session album.');
    const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result.split(',')[1]);r.onerror=()=>reject(Error('Could not read saved image.'));r.readAsDataURL(shot.photo);});
    return {data,mimeType:shot.photo.type,width:shot.width,height:shot.height};

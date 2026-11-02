@@ -17,6 +17,7 @@ const root=fileURLToPath(new URL('../../',import.meta.url)),output=process.env.C
 await mkdir(output,{recursive:true});
 const appSource=await readFile(join(root,'camera/app.js'),'utf8'),albumAddress='/camera/'+appSource.match(/from '\.\/(album\.js\?v=[\w-]+)'/)[1];
 const backupAddress='/camera/'+appSource.match(/from '\.\/(album-backup\.js\?v=[\w-]+)'/)[1];
+const candidate={build:(await readFile(join(root,'camera/sw.js'),'utf8')).match(/const BUILD='([^']+)'/)[1],version:JSON.parse(await readFile(join(root,'camera/offline.json'),'utf8')).version};
 const reproOnly=process.env.CAMERA_ALBUM_REPRO_ONLY==='1';
 const expectBug=process.env.CAMERA_ALBUM_EXPECT_BUG==='1';
 const legacySource=process.env.CAMERA_ALBUM_LEGACY_WORKER?await readFile(process.env.CAMERA_ALBUM_LEGACY_WORKER,'utf8'):execFileSync('git',['show','cf86ea2a1e156155185f681007d870fca2161c44:camera/sw.js'],{cwd:root,encoding:'utf8'});
@@ -104,6 +105,7 @@ async function uiRecovery(){
   await page.waitForFunction(()=>document.querySelector('#albumStatus').dataset.state==='error');
   assert.ok(await page.locator('#albumRetry').isVisible());assert.equal(await page.locator('#albumEmpty').isVisible(),false);
   assert.ok(await page.evaluate(id=>window.pocketCamera.state.shots.some(s=>s.id===id),id));
+  await page.screenshot({path:join(output,'album-read-error-phone.png')});
   assertRecords(before,await snapshot());await page.evaluate(()=>{window.__albumReadFails=false;});await page.click('#albumRetry');await page.waitForFunction(()=>document.querySelector('#albumStatus').dataset.state==='ready');
  });
  await check('failed deletion keeps the photograph and does not announce success',async()=>{
@@ -122,6 +124,18 @@ async function uiRecovery(){
   assert.ok(await page.locator('#grid [data-id="'+id+'"]').isVisible());
   assert.equal(await page.locator('#grid button').count(),await page.evaluate(()=>window.pocketCamera.state.shots.length));
   assertRecords(before,await snapshot());
+ });
+ await check('the album backup controls download a complete file and restore it without duplicate photographs',async()=>{
+  const beforeRestore=await snapshot();await page.click('.album-storage summary');await page.click('#albumBackup');
+  await page.locator('#albumDownload').waitFor({state:'visible'});await page.locator('.album-storage').scrollIntoViewIfNeeded();
+  await page.screenshot({path:join(output,'album-backup-phone.png')});
+  const waiting=page.waitForEvent('download');await page.click('#albumDownload');const download=await waiting;
+  assert.match(download.suggestedFilename(),/\.pocket-camera\.json$/);const backupPath=join(output,'album-ui-backup.pocket-camera.json');await download.saveAs(backupPath);const buffer=await readFile(backupPath);
+  const decoded=await page.evaluate(async({address,data})=>{const m=await import(address),backup=await m.decodeAlbumBackup(new Blob([new Uint8Array(data)],{type:'application/json'}));return {photos:backup.shots.length,stickers:backup.stickers.length};},{address:backupAddress,data:Array.from(buffer)});
+  assert.equal(decoded.photos,beforeRestore.data.shots.length);assert.equal(decoded.stickers,beforeRestore.data.stickers.length);
+  const choosing=page.waitForEvent('filechooser');await page.click('#albumRestore');await(await choosing).setFiles({name:download.suggestedFilename(),mimeType:'application/json',buffer});
+  await page.waitForFunction(()=>document.querySelector('#albumBackupMessage').textContent.startsWith('Restored 0 photos'));
+  assert.deepEqual(await snapshot(),beforeRestore);await page.setViewportSize({width:744,height:1133});await page.locator('.album-storage').scrollIntoViewIfNeeded();await page.screenshot({path:join(output,'album-backup-tablet.png')});
  });
  await context.close();context=null;
 }
@@ -161,17 +175,28 @@ try{
   if(version===1){
    await check('the actual published PR #414 worker installs without touching existing photographs',async()=>{
     await page.evaluate(async()=>{await navigator.serviceWorker.register('/camera/sw.js',{updateViaCache:'none'});await navigator.serviceWorker.ready;});await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
-    await page.evaluate(()=>fetch('/camera/samples/default-original.png'));assertRecords(complete,await snapshot());
+    await page.evaluate(async()=>{window.__albumLegacyController=navigator.serviceWorker.controller;await fetch('/camera/samples/default-original.png');});assertRecords(complete,await snapshot());
    });
    await check('updating that worker to the candidate verified bundle preserves every old record and other apps caches',async()=>{
     await page.evaluate(async()=>{await(await caches.open('album-unrelated-fixture')).put('/untouched',new Response('untouched'));});
     legacy=false;
     await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration('/camera/');await reg.update();});
-    await page.waitForFunction(async()=>{
-     const names=await caches.keys(),name=names.find(n=>n.startsWith('pocket-camera-')&&n!=='pocket-camera-1');if(!name)return false;
+    await page.waitForFunction(async expected=>{
+     const reg=await navigator.serviceWorker.getRegistration('/camera/'),controller=navigator.serviceWorker.controller;
+     if(!reg||reg.installing||reg.waiting||reg.active?.state!=='activated'||controller!==reg.active||controller===window.__albumLegacyController)return false;
+     const names=await caches.keys(),name='pocket-camera-'+expected.build.slice(0,20);if(!names.includes(name))return false;
      const cache=await caches.open(name),response=await cache.match('/camera/offline.json');if(!response)return false;
-     const manifest=await response.json(),keys=new Set((await cache.keys()).map(k=>new URL(k.url).pathname));return manifest.files.every(f=>keys.has(f.url))&&!names.includes('pocket-camera-1');
-    },null,{timeout:120000});
+     const manifest=await response.json(),keys=new Set((await cache.keys()).map(k=>new URL(k.url).pathname));return manifest.version===expected.version&&manifest.files.every(f=>keys.has(f.url))&&!names.includes('pocket-camera-1');
+    },candidate,{timeout:120000});
+    results.updatedController=await page.evaluate(expected=>new Promise((resolve,reject)=>{
+     const controller=navigator.serviceWorker.controller,timer=setTimeout(()=>finish(new Error('Activated candidate worker did not confirm readiness')),10000);
+     const finish=error=>{clearTimeout(timer);navigator.serviceWorker.removeEventListener('message',reply);if(error)reject(error);};
+     function reply(event){if(event.source!==controller||event.data?.type!=='CAMERA_OFFLINE_STATUS')return;const status=event.data;if(!status.ready||status.version!==expected.version){finish(new Error('Activated worker reported the wrong offline release'));return;}finish();resolve(status);}
+     navigator.serviceWorker.addEventListener('message',reply);controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});
+    }),candidate);
+    await page.goto(url+'/camera/');await readyUI();await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='ready',null,{timeout:60000});
+    await context.setOffline(true);await page.goto(url+'/camera/?album-offline-session=warm');await readyUI();
+    await page.waitForFunction(id=>window.pocketCamera.state.shots.some(s=>s.id===id),id,{timeout:60000});await context.setOffline(false);
     assertRecords(complete,await snapshot());assert.equal(await page.evaluate(()=>caches.open('album-unrelated-fixture').then(c=>c.match('/untouched')).then(r=>r.text())),'untouched');
    });
    await check('two offline cold starts reopen old photographs and export their originals without network',async()=>{
