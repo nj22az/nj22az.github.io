@@ -10,6 +10,6 @@ Published source implementation [`390ff7fcfa68d050023d885b80bbab158d639fdb`](htt
 
 The wipers share four articulated mesh parts across three units, with 4,080 total triangles. Tests check actual pane/frame dimensions, 281 fallback poses, 41 loaded-native hinge/rubber poses, full linkage closure and blade clearance, weather/power behaviour, smooth parking and pose-preserving lazy replacement. Power loss holds the pose. The 12 V hardware, canonical 24 V ship system, original navigation lights, instruments and walking layout remain unchanged.
 
-Browser profile status at this record: ferry-exploration (desktop): in_progress; ferry-exploration (ipad-portrait): success; iphone-startup: success; ferry-exploration (ipad-landscape): in_progress. No overall workflow pass is claimed while profiles remain pending. Hosted software-browser jobs and Blender proofs are not physical-device tests.
+All five [hosted World workflow jobs completed successfully](https://github.com/nj22az/nj22az.github.io/actions/runs/41532037902): canonical guard, iPhone startup/reload/room, desktop exploration, iPad portrait exploration and iPad landscape exploration. No browser profiles remain pending. Hosted software-browser jobs and Blender proofs are not physical-device tests.
 
 [Implementation handover](../../johansson-town/briefs/HANDOFF-BRIDGE-WIPERS-2026-11-02.md) · [Wiper proofs and source checks](../../johansson-town/docs/qa/bridge-wipers-2026-11-02/README.md) · [Sign-free console](../../johansson-town/docs/qa/bridge-polish-2026-11-02/console-final.png).
