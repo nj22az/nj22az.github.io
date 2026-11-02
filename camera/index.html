@@ -158,7 +158,8 @@
     </div>
    </div>
    <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
-    <div class="option-row makeup-heading"><button type="button" class="text-button makeup-open" id="makeupPhoto" aria-expanded="false" aria-controls="makeupControls"><svg aria-hidden="true"><use href="#i-edit"/></svg>Makeup</button><output id="makeupSummary">Off</output></div>
+    <!-- Makeup and Face stickers share one row (and one face guide); each shows whether it is on under its name. -->
+    <div class="option-row retouch-headings"><button type="button" class="text-button makeup-open" id="makeupPhoto" aria-expanded="false" aria-controls="makeupControls"><svg aria-hidden="true"><use href="#i-edit"/></svg><span class="retouch-title">Makeup<output id="makeupSummary">Off</output></span></button><button type="button" class="text-button makeup-open" id="funPhoto" aria-expanded="false" aria-controls="funControls"><svg aria-hidden="true"><use href="#i-face"/></svg><span class="retouch-title">Face stickers<output id="funSummary">Off</output></span></button></div>
     <div id="makeupControls" class="makeup-controls" hidden>
      <div class="retouch-actions"><button type="button" class="text-button" id="makeupDetect">Find face</button><button type="button" class="text-button" id="makeupFace" aria-pressed="false">Align face</button><button type="button" class="text-button" id="makeupReset">Reset</button></div>
      <p class="retouch-hint" id="makeupHint" role="status">Find a face, or align the guide manually.</p>
@@ -173,7 +174,6 @@
      <label class="makeup-angle" id="makeupMouthHeightRow" hidden>Lip height<input type="range" id="makeupMouthHeight" min="2.5" max="20" step="0.5" value="8"><output id="makeupMouthHeightValue" for="makeupMouthHeight">8%</output></label>
     </div>
     <!-- Face stickers (face-stamps.js): the residents' brows and eyes and the Halloween headpieces, on Makeup's face guide. -->
-    <div class="option-row makeup-heading fun-heading"><button type="button" class="text-button makeup-open" id="funPhoto" aria-expanded="false" aria-controls="funControls"><svg aria-hidden="true"><use href="#i-face"/></svg>Face stickers</button><output id="funSummary">Off</output></div>
     <div id="funControls" class="makeup-controls fun-controls" hidden>
      <div class="retouch-actions"><button type="button" class="text-button" id="funDetect">Find face</button><button type="button" class="text-button" id="funAlign" aria-pressed="false">Align face</button><button type="button" class="text-button" id="funReset">Reset</button></div>
      <p class="retouch-hint" id="funHint" role="status">Find a face, or align the guide manually.</p>
@@ -189,7 +189,7 @@
      <input type="range" id="enhanceStrength" min="0" max="100" step="1" value="0">
     </div>
     <!-- Pop (looks-gl.js popped): clarity, open shadows, held highlights, depth and vibrance that spares skin. -->
-    <div class="option-row enhance-heading pop-heading"><span class="enhance-copy"><span id="popLabel">Pop</span><small id="popHint">Clarity, depth and colour that stands out.</small></span><button type="button" class="text-button enhance-amount" id="popAmount" aria-label="Pop strength" aria-expanded="false" aria-controls="popStrengthRow"><output id="popValue" for="popStrength">Off</output></button><button type="button" class="switch" id="popPhoto" role="switch" aria-checked="false" aria-labelledby="popLabel" aria-describedby="popHint"></button></div>
+    <div class="option-row enhance-heading pop-heading"><span class="enhance-copy"><span id="popLabel">Pop</span><small id="popHint">Clarity, depth and colour.</small></span><button type="button" class="text-button enhance-amount" id="popAmount" aria-label="Pop strength" aria-expanded="false" aria-controls="popStrengthRow"><output id="popValue" for="popStrength">Off</output></button><button type="button" class="switch" id="popPhoto" role="switch" aria-checked="false" aria-labelledby="popLabel" aria-describedby="popHint"></button></div>
     <div class="slider-row enhance-strength" id="popStrengthRow" hidden>
      <label for="popStrength">Strength</label>
      <input type="range" id="popStrength" min="0" max="100" step="1" value="0">

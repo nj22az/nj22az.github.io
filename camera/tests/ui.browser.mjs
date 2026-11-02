@@ -98,7 +98,7 @@ try{
     assert.ok(await page.locator('#editStage').evaluate(e=>getComputedStyle(e).overflowY==='clip'));
    });
    await check('sticker categories use one scrollable row and reveal Mine and Thuan',async()=>{
-    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===6);
+    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===7);
     const row=await page.locator('#stickerSets').evaluate(el=>{const rs=[...el.children].map(b=>b.getBoundingClientRect());return {tops:rs.map(r=>r.top),targets:rs.every(r=>r.width>=44&&r.height>=44),overflow:document.documentElement.scrollWidth-innerWidth,pan:getComputedStyle(document.querySelector('#panelStickers')).touchAction};});
     assert.ok(Math.max(...row.tops)-Math.min(...row.tops)<=1&&row.targets&&row.overflow<=1&&row.pan.includes('pan-x'),JSON.stringify(row));
     measurements.stickerCategories=row;

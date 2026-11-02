@@ -251,3 +251,8 @@
 .fun-sliders label{grid-template-columns:4em minmax(0,1fr) 3.6em}
 .stamps-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .stamps-art[hidden]{display:none}
+/* Makeup and Face stickers side by side: a name and, under it, whether it is on (a 320-point phone keeps both whole). */
+.editor .retouch-headings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-height:44px}
+.editor .retouch-headings .makeup-open{justify-content:flex-start;min-width:0;text-align:left}
+.retouch-title{display:grid;min-width:0;line-height:1.25}
+.retouch-title output{font-size:.6875rem;font-weight:400;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

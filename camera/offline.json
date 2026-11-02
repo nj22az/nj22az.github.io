@@ -1,6 +1,6 @@
 {
   "version": "20261102fun1",
-  "bytes": 23443810,
+  "bytes": 23444444,
   "files": [
     {
       "url": "/camera/album.js",
@@ -44,8 +44,8 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "4d7e4fb7486e3dacedfe3553b5b9fd69c1b069b856c0dca548cbd1de5514c89f",
-      "bytes": 30219
+      "sha256": "fea9da009ed9afed86b04d31f809f6c9f4d7d470892c9e7ab82b10fe82ef5804",
+      "bytes": 30741
     },
     {
       "url": "/camera/camera.css",
@@ -209,8 +209,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "32b49ff69f715f783ed1398b9ad0f6ee20cfa96988f0a8c800339fdf59dd4da9",
-      "bytes": 35972
+      "sha256": "87f021a8a06bc33115a2a04f406c5c5742c48f03d35ec7b36dce139831a9ddb0",
+      "bytes": 36084
     },
     {
       "url": "/camera/lettering.js",
