@@ -371,6 +371,19 @@ turned, scaled and moved so its eyes are the photo's eyes. Everything is vector,
 16 MP save is sharp. The recipe keeps `stamps` with the photo; Original hides them; Reset takes them all off; the
 original photo is never changed. Nothing is uploaded and no model is downloaded: the same bundled detector as Makeup.
 
+## Halloween, made in Blender
+
+The owner: "make parts in blender", "implement if you make new things back into Johansson World". The **Halloween**
+sticker tab (`stickers/halloween.json`, kind `season`: never a Memory deck or a greeting) has eight parts modelled and
+rendered in Blender by `tools/blender/render-halloween-stickers.py` (Cycles, a Freestyle ink line in World's face ink
+`#2b2623`, the residents' thin die-cut rim): World's own Halloween redrawn from its code (the paper pumpkin lantern, the
+jack-o'-lantern, the plush obake, the witch hat, the pumpkin suit's stem cap) and three new things, the cat ears, a
+paper bat and wrapped sweets. The three headpieces carry `hat` (the crown's place on the picture and the share of its
+width that is a head's width, measured from the models), which the Face stickers' Hat places on a face. The new
+things went back into Johansson World: the bat and the sweets as Johansson Studio catalogue assets (built in Blender by
+`johansson-town/assets/catalog/<id>/source/build-*.py`, checked, exported and published by Studio), hung on Sakura's
+lantern string and heaped on its crates; the cat ears as a Halloween costume (`storyProps(avatar).give('catEars')`).
+
 ## How it works
 
 | File | Purpose |
