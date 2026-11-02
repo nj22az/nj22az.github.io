@@ -36,7 +36,7 @@
   },
   "independentReview": "Approved by physical_model_v4; no remaining P1/P2",
   "physicalDevice": "not tested",
-  "localGuard": "incomplete aggregate after agent interruption;13no-z and7NPC seating checks passed; hosted guard is authoritative",
+  "localGuard": "incomplete aggregate after agent interruption;13 no-z and 7 NPC seating checks passed; hosted guard is authoritative",
   "publicBytes": [
     {
       "path": "index.html",
