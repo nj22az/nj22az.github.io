@@ -5,7 +5,7 @@ import * as THREE from '../vendor/three.module.js';
 import {buildFerryModel,FERRY_DECKS} from '../src/world/ferry-model.js';
 import {FERRY_HOUSE} from '../src/world/ferry-interior.js';
 installDOM();
-const f=buildFerryModel(),b=f.userData.bridgeEquipment;b.group.remove(b.practiceCircuit.group);f.updateMatrixWorld(true);
+const f=buildFerryModel(),b=f.userData.bridgeEquipment;b.navigationFeeder.group.remove(b.navigationFeeder.group.getObjectByName('Navigation feeder fallback'));b.navigationFeeder.group.remove(b.navigationFeeder.group.getObjectByName('Navigation light panel markings'));f.updateMatrixWorld(true);
 const data=[];
 f.traverse(o=>{if(!o.isMesh)return;const g=o.geometry,index=g.index,p=g.attributes.position,c=g.attributes.color,m=o.material;if(Array.isArray(m))return;
  const points=[],colours=[],colour=m.color?.toArray()||[.7,.7,.7];
@@ -16,4 +16,4 @@ f.traverse(o=>{if(!o.isMesh)return;const g=o.geometry,index=g.index,p=g.attribut
  }
  if(points.length)data.push({name:o.name||'current game geometry',points,colours,glass:!!m.transparent,opacity:m.opacity??1});
 });
-const dir=new URL('../docs/qa/bridge-polish-2026-11-02/',import.meta.url);await mkdir(dir,{recursive:true});await writeFile(new URL('bridge-source-geometry.json',dir),JSON.stringify(data));console.log('Exported',data.length,'game meshes',data.reduce((n,m)=>n+m.points.length/9,0),'triangles');
+const dir=new URL('../docs/qa/navigation-feeder-2026-11-02/',import.meta.url);await mkdir(dir,{recursive:true});await writeFile(new URL('bridge-source-geometry.json',dir),JSON.stringify(data));console.log('Exported',data.length,'game meshes',data.reduce((n,m)=>n+m.points.length/9,0),'triangles');

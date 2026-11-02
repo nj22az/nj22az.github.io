@@ -1,3 +1,7 @@
+## Latest bridge correction · 2 November 2026
+
+[Actual navigation-lantern supply](johansson-town/briefs/HANDOFF-NAVIGATION-FEEDER-2026-11-02.md): replaces the independent practice installation with the real 105 V AC ESB feeder to the existing green starboard sidelight; book retains its separate given 12 V DC model. Preserves the pantograph wipers. Publication/check status is recorded in [closing release evidence](release-evidence/navigation-feeder-2026-11-02/README.md).
+
 # Latest handovers
 
 Start here on every task, then read the latest applicable notes below. Maintain this index whenever a new note supersedes one of these. For an area without a note, create and link one when handing over work. Dates alone do not settle conflicting information: verify current branches, PRs, checks and releases.
