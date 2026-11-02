@@ -28,4 +28,4 @@ The earlier Blender review-import pose mismatch was fixed before freeze, and all
 Wiper GLB SHA-256: `317574e7030012e919c18acb5b74445a3f82fde48ee576e1773bb7808c1adc1d`.
 Lantern v2 GLB SHA-256: `237050a588216dddf5011d68bd4a955c571193a13f644177f0f45c830b2090a0` (311,964 bytes, 4,916 triangles, three meshes).
 
-The source/runtime implementation commit and exact current publication/check state are recorded in the root handover index and closing release evidence. Use fresh compare-and-swap with `force=false`; preserve newer main work if the lease changes. Canonical game entry: [Johansson World](https://nj22az.github.io/johansson-town/).
+Source/runtime implementation: [`390ff7fcfa68d050023d885b80bbab158d639fdb`](https://github.com/nj22az/nj22az.github.io/commit/390ff7fcfa68d050023d885b80bbab158d639fdb). The following metadata commit changes no tested runtime/source. Exact current publication/check state is recorded in the root handover index and closing release evidence. Use fresh compare-and-swap with `force=false`; preserve newer main work if the lease changes. Canonical game entry: [Johansson World](https://nj22az.github.io/johansson-town/).
