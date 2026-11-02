@@ -65,3 +65,7 @@ Review implementation `a71b7cc0a32f1fdb8bf792b2fa0fb912562b61f6` was saved to th
 ## Main publication authorised
 
 The owner explicitly authorised publication on 2 November 2026: “Push to main”. The bounded maintenance directory and its dedicated acceptance workflow are being transferred from development `ec675a411ea416812e4935e558a0bbbe7da97631` onto main `e00b7167a768469d21b99946f3d4cb60cd252411`. Other development changes are excluded. The unchanged runtime was retested: 292/292 pass. Production deployment and public-byte verification are checked after the publication commit; actual Safari translation and real equipment verification remain outstanding.
+
+## Production verification complete
+
+Published runtime commit `85551236a1b2b624c5a47ce70b4188526769130f`. Hosted maintenance tests [41399563923](https://github.com/nj22az/nj22az.github.io/actions/runs/41399563923) and [Pages deployment 41399563576](https://github.com/nj22az/nj22az.github.io/actions/runs/41399563576) both completed successfully. All 11 production runtime files (index, eight modules, two stylesheets) matched the tested local bytes with a publication verification query. The first request before deployment still served the previous version, as expected. Production URL: https://nj22az.github.io/maintenance-demo/. Safari native translation and real equipment validation remain unverified. This documentation follow-up changes no application runtime bytes.
