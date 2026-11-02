@@ -23,6 +23,6 @@ Proofs: [console](../docs/qa/bridge-lantern-2026-11-02/console-final.png), [circ
 
 ## Publication state
 
-Authorised for atomic publication from fresh main 4f545da4b6c441d1c36dd8eb34db44b1a480879d. Exact implementation commit and release/check status are recorded in the root handover index. Fast-forward only; no force push and no additional remote branch. Canonical game entry is [Johansson World](https://nj22az.github.io/johansson-town/).
+Implementation commit: [`7e362dc956032af6d710b31597b4852e411995ee`](https://github.com/nj22az/nj22az.github.io/commit/7e362dc956032af6d710b31597b4852e411995ee). Authorised for atomic publication from fresh main `4f545da4b6c441d1c36dd8eb34db44b1a480879d`; the following metadata commit changes no tested runtime/source. Current release/check status is recorded in the root handover index. Fast-forward only; no force push and no additional remote branch. Canonical game entry [Johansson World](https://nj22az.github.io/johansson-town/) was verified HTTP 200 from this environment.
 
 Next: monitor the automatically triggered hosted full guard and Pages deployment, and verify the public versioned GLB plus rebuilt page/source bytes. Physical-device visual review remains distinct from these checks.
