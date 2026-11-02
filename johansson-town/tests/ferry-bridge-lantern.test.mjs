@@ -9,7 +9,7 @@ import {createPlant} from '../src/world/ferry-plant.js';
 import {FERRY_ELECTRICS} from '../src/world/ferry-ship.js';
 import {BRIDGE_LANTERN_PLAN as PLAN} from '../src/world/ferry-bridge-lantern-plan.js';
 installDOM();
-const file=new URL('../assets/models/ferry-bridge/navigation-feeder-v1.glb',import.meta.url);
+const file=new URL('../assets/models/ferry-bridge/navigation-feeder-v2.glb',import.meta.url);
 const load=async()=>{const b=await readFile(file);return new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'');};
 test('native feeder replaces practice equipment with actual ESB branch and existing starboard lamp',async()=>{
  const {scene}=await load(),meshes=[];scene.traverse(o=>{if(o.isMesh)meshes.push(o);});assert.equal(meshes.length,2);
@@ -52,4 +52,21 @@ test('operator-facing canvas labels map to actual physical switch centers',()=>{
    assert.ok(point.y<pivot.y&&point.y>pivot.y-.08,'channel label is below lever and above fuse caps');
   }
  }finally{Element.prototype.getContext=old;}
+});
+
+test('lantern screen plates meet without overlapping coplanar top faces',()=>{
+ const a=PLAN.parts.find(p=>p.name==='L1_inboard_screen'),b=PLAN.parts.find(p=>p.name==='L1_aft_screen');
+ const overlap=a.d.map((d,i)=>Math.min(a.p[i]+d/2,b.p[i]+b.d[i]/2)-Math.max(a.p[i]-d/2,b.p[i]-b.d[i]/2));
+ assert.ok(overlap.some(d=>d<1e-10),'screen plate volumes must not overlap');
+ assert.ok(Math.abs(a.p[2]-a.d[2]/2-(b.p[2]+b.d[2]/2))<1e-10,'inboard screen ends exactly at aft screen face');
+});
+
+test('replacement sidelight has no intersecting legacy starboard sector board',()=>{
+ const f=buildFerryModel(),b=f.userData.bridgeEquipment.group;f.updateMatrixWorld(true);
+ const origin=b.getWorldPosition(new THREE.Vector3()),point=new THREE.Vector3();let legacyCorner=false;
+ f.traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){
+  point.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld).sub(origin);
+  if(Math.abs(point.x+4.095)<1e-5&&Math.abs(point.y-1.45)<1e-5&&Math.abs(point.z+.9)<1e-5)legacyCorner=true;
+ }});
+ assert.equal(legacyCorner,false,'the original overlapping black screen must be removed when its fixture is replaced');
 });

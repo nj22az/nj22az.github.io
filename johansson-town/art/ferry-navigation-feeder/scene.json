@@ -1,5 +1,5 @@
 {
-  "revision": "navigation-feeder-v1",
+  "revision": "navigation-feeder-v2",
   "supply": {
     "board": "ESB",
     "volts": 105,
@@ -457,12 +457,12 @@
       "p": [
         -4.07,
         1.32,
-        -0.32
+        -0.27125
       ],
       "d": [
         0.025,
         0.24,
-        0.34
+        0.2425
       ],
       "color": 1450533
     },

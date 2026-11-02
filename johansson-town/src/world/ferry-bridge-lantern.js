@@ -33,7 +33,7 @@ export function buildBridgeNavigationFeeder(parent){
  const setLights=(value,command=value)=>{on=!!value;lamp.material.color.setHex(on?l.on:0x333333);if(nativeLamp)nativeLamp.material.color.setHex(on?l.on:0x333333);for(const t of toggles)t.rotation.x=command?-.45:.45;};
  const state={group,lamp,loaded:false,pending:null,error:null,plan:PLAN,setLights,ensure(){
   return this.pending??=import('../../vendor/GLTFLoader.js').then(async({GLTFLoader})=>{
-   const gltf=await new GLTFLoader().loadAsync(assetURL('models/ferry-bridge/navigation-feeder-v1.glb'));
+   const gltf=await new GLTFLoader().loadAsync(assetURL('models/ferry-bridge/navigation-feeder-v2.glb'));
    const bounds=new THREE.Box3().setFromObject(gltf.scene);if(bounds.isEmpty()||!bounds.min.toArray().concat(bounds.max.toArray()).every(Number.isFinite))throw Error('Invalid navigation feeder asset');
    let meshes=0,triangles=0;gltf.scene.traverse(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;o.castShadow=o.receiveShadow=true;if(o.name==='Starboard_sidelight'||o.name==='Starboard sidelight')nativeLamp=o;}});
    if(meshes!==2||triangles>12000||!nativeLamp)throw Error('Unexpected navigation feeder asset');

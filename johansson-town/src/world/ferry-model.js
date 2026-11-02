@@ -676,7 +676,9 @@ export function buildFerryModel({shadows=false}={}){
  // port, green to starboard), the stern light on the stern rail.
  const lamp=(colour,pos,name)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.13,.16,.13),new THREE.MeshBasicMaterial({color:0x333333}));m.position.set(...pos);m.name=name;m.userData.on=colour;ferry.add(m);return m;};
  const navLights=[lamp(0xfff6d8,[0,masthead,mastZ+.12],'Masthead light'),lamp(0xff3a2a,[HB-.02,BRIDGE+1.3,DH1-.25],'Port sidelight'),bridgeEquipment.navigationFeeder.lamp,lamp(0xfff6d8,[0,PASS+1.2,-HALF+.08],'Stern light')];
- for(const side of [1,-1])kit.box('paint',[.03,.3,.7],[side*(HB-.12),BRIDGE+1.3,DH1-.55],0x111111);
+ // Port retains its original sector screen; the native starboard housing owns
+ // its screens, so no second black board intersects that replacement.
+ kit.box('paint',[.03,.3,.7],[(HB-.12),BRIDGE+1.3,DH1-.55],0x111111);
  // ---- Painted words and marks.
  const marks=markings();
  if(marks){

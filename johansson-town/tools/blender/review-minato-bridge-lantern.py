@@ -17,7 +17,7 @@ for d in json.loads((OUT/'bridge-source-geometry.json').read_text()):
  v=mat.node_tree.nodes.new('ShaderNodeVertexColor');v.layer_name='Col';mat.node_tree.links.new(v.outputs['Color'],bs.inputs['Base Color'])
  if d['glass']:bs.inputs['Transmission Weight'].default_value=.85;bs.inputs['Roughness'].default_value=.12
  o=bpy.data.objects.new(d['name'],mesh);bpy.context.collection.objects.link(o);mesh.materials.append(mat)
-bpy.ops.import_scene.gltf(filepath=str(ROOT/'assets/models/ferry-bridge/navigation-feeder-v1.glb'))
+bpy.ops.import_scene.gltf(filepath=str(ROOT/'assets/models/ferry-bridge/navigation-feeder-v2.glb'))
 # Reproduce the runtime canvas panel text as editable Blender text for this
 # source-geometry proof (not a browser screenshot).
 for name,label,p,size in [('Header','NAVIGATION LIGHTS  105 V AC',(-2.05,1.245,-.622),.029)]+[(str(i),t,(-2.425+i*.27,1.158,-.622),.022)for i,t in enumerate(['STBD','PORT','MASTHEAD','STERN'])]:
