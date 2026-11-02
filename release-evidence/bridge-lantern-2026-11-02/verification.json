@@ -1,0 +1,78 @@
+{
+  "main": "eda9f03481b03ca2a989c56832836364c61c540b",
+  "implementation": "7e362dc956032af6d710b31597b4852e411995ee",
+  "game": "https://nj22az.github.io/johansson-town/",
+  "pages": {
+    "id": 41521959709,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521959709"
+  },
+  "world": {
+    "id": 41521961658,
+    "status": "in_progress",
+    "conclusion": null,
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658"
+  },
+  "treeReview": {
+    "id": 41521961866,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961866"
+  },
+  "focused": {
+    "pass": 9,
+    "fail": 0
+  },
+  "vesselWalk": {
+    "pass": 12,
+    "fail": 0
+  },
+  "glb": {
+    "bytes": 692060,
+    "triangles": 10968,
+    "meshes": 3,
+    "sha256": "77158376cc01d50bc5a8007217a3857faa5544b7c5ad934bd0f7f843bbd1f2ad"
+  },
+  "independentReview": "Approved by physical_model_v4; no remaining P1/P2",
+  "physicalDevice": "not tested",
+  "localGuard": "incomplete aggregate after agent interruption;13no-z and7NPC seating checks passed; hosted guard is authoritative",
+  "publicBytes": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 46314,
+      "sha256": "228372537277fada563e18b3e87afae5680b53c9bacfe5b7bae06da6a27ceaf6",
+      "matches": true
+    },
+    {
+      "path": "runtime/source.json",
+      "status": 200,
+      "bytes": 83,
+      "sha256": "e21113a303c0974f95e439cdde16211ec10d75570cf4885c860639538508c65e",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge.js",
+      "status": 200,
+      "bytes": 9069,
+      "sha256": "d39037acdd9805b62ccd015637d68082660aa4ff3e834a34ddd29dfe54a31abe",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge-lantern.js",
+      "status": 200,
+      "bytes": 5065,
+      "sha256": "56a9d914d2ca237245407e92ad08a4aef6adaa252cdfb421d76243f1feab916f",
+      "matches": true
+    },
+    {
+      "path": "assets/models/ferry-bridge/bridge-lantern-v1.glb",
+      "status": 200,
+      "bytes": 692060,
+      "sha256": "77158376cc01d50bc5a8007217a3857faa5544b7c5ad934bd0f7f843bbd1f2ad",
+      "matches": true
+    }
+  ],
+  "verifiedAtUTC": "2026-11-02T20:52:06.278Z"
+}
