@@ -197,11 +197,19 @@ try{
     if(engineName==='chromium')assert.ok(results.workerInspection.some(worker=>worker.build===candidate.build),'an inspected worker executes the candidate BUILD');
     await page.goto(url+'/camera/');await readyUI();
     results.updatedController=await page.evaluate(expected=>new Promise((resolve,reject)=>{
-     const container=navigator.serviceWorker,controller=container.controller,observed=[];
-     const timer=setTimeout(async()=>{const reg=await container.getRegistration('/camera/');finish(new Error('Activated candidate worker did not confirm readiness: '+JSON.stringify({expected,controller:{url:controller?.scriptURL,state:controller?.state},active:{url:reg?.active?.scriptURL,state:reg?.active?.state},installing:reg?.installing?.state,waiting:reg?.waiting?.state,observed})));},10000);
-     const finish=error=>{clearTimeout(timer);container.removeEventListener('message',reply);if(error)reject(error);};
-     function reply(event){observed.push({source:event.source?.scriptURL,current:event.source===controller,data:event.data});if(event.source!==controller||event.data?.type!=='CAMERA_OFFLINE_STATUS')return;const status=event.data;if(!status.ready||status.version!==expected.version){finish(new Error('Activated worker reported the wrong offline release: '+JSON.stringify(observed)));return;}finish();resolve({...status,observed});}
-     container.addEventListener('message',reply);container.startMessages?.();controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});
+     const container=navigator.serviceWorker,observed=[];let settled=false;
+     const ask=()=>{const current=container.controller;if(current&&current.state!=='redundant')current.postMessage({type:'CAMERA_OFFLINE_STATUS'});};
+     const timer=setTimeout(async()=>{const reg=await container.getRegistration('/camera/'),current=container.controller;finish(new Error('Activated candidate worker did not confirm readiness: '+JSON.stringify({expected,controller:{url:current?.scriptURL,state:current?.state},active:{url:reg?.active?.scriptURL,state:reg?.active?.state},installing:reg?.installing?.state,waiting:reg?.waiting?.state,observed})));},10000);
+     const finish=(error,status)=>{if(settled)return;settled=true;clearTimeout(timer);container.removeEventListener('message',reply);container.removeEventListener('controllerchange',ask);if(error)reject(error);else resolve(status);};
+     async function reply(event){
+      observed.push({source:event.source?.scriptURL,sourceState:event.source?.state,current:event.source===container.controller,data:event.data});
+      if(event.source!==container.controller||event.source?.state==='redundant'||event.data?.type!=='CAMERA_OFFLINE_STATUS')return;
+      const reg=await container.getRegistration('/camera/'),current=container.controller;
+      if(event.source!==current||current!==reg?.active||current?.state!=='activated'){ask();return;}
+      const status=event.data;if(!status.ready||status.version!==expected.version){finish(new Error('Activated worker reported the wrong offline release: '+JSON.stringify(observed)));return;}
+      finish(null,{...status,observed,controller:{url:current.scriptURL,state:current.state}});
+     }
+     container.addEventListener('message',reply);container.addEventListener('controllerchange',ask);container.startMessages?.();ask();
     }),candidate);
     await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='ready',null,{timeout:60000});
     await context.setOffline(true);await page.goto(url+'/camera/?album-offline-session=warm');await readyUI();

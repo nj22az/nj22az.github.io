@@ -141,3 +141,11 @@ follow-up inspects Chromium's live worker BUILD, starts message delivery explici
 message handshake, and logs worker errors/replies/controller states to distinguish a fixture issue from runtime loss.
 The existing full offline suite passed on the unchanged runtime in the first run; this is separate from the new
 uncompleted cross-version fixture. No assertion, photograph hash comparison or runtime worker is weakened/changed.
+
+Third source `bba11f09040c1f90e706afb5380ab06c148c55cb` confirmed the fixture fault: after online app registration,
+its captured controller became redundant while the active candidate sent three correct ready/version replies from
+its replacement. The test incorrectly compared those replies with the retired object. The follow-up tracks the
+**current** controller on every reply and after awaiting registration, requires current===active and activated,
+and re-requests status on controllerchange. Exact BUILD/cache/version/data/offline assertions remain.
+The Album shortcut's screen-reader label now also distinguishes unavailable/loading from a zero-photo count;
+the initial-failure regression asserts this. The offline manifest/digest is regenerated; all19 unit suites pass.

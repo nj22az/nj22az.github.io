@@ -901,7 +901,7 @@ function renderRoll(pop=false){
  if(latest){rollURL=URL.createObjectURL(albumThumb(latest));img.src=rollURL;img.hidden=false;}else img.hidden=true;
  const welcomeThumb=$('welcomeAlbumThumb');welcomeThumb.hidden=img.hidden;if(!img.hidden)welcomeThumb.src=img.src;else welcomeThumb.removeAttribute('src');
  $('welcomeAlbumCount').textContent=albumLoading?'Reading saved photos…':!albumOK?'Album unavailable · tap to retry':state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · on this device`:'Saved photos, all in one place';
- $('roll').setAttribute('aria-label',`Album, ${state.shots.length} ${state.shots.length===1?'photo':'photos'}`);
+ $('roll').setAttribute('aria-label',albumLoading?'Album, reading saved photos':!albumOK?'Album unavailable, retry':`Album, ${state.shots.length} ${state.shots.length===1?'photo':'photos'}`);
  if(pop){const r=$('roll');r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');}
 }
 let gridURLs=[];

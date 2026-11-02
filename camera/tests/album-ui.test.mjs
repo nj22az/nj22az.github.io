@@ -35,7 +35,7 @@ function fixture(options={}){
 }
 test('startup read failure shows unavailable state rather than an empty album',async()=>{
  const f=fixture({read:async()=>{throw new DOMException('closed','SecurityError');}});await f.api.loadShots();
- assert.equal(f.api.ok,false);assert.equal(f.get('albumStatus').dataset.state,'error');assert.match(f.get('albumStatusMessage').textContent,/could not be read.*SecurityError/);assert.equal(f.get('albumEmpty').hidden,true);assert.equal(f.get('albumRetry').hidden,false);assert.equal(f.get('albumBackup').disabled,true);assert.equal(f.calls.seeds,0);
+ assert.equal(f.api.ok,false);assert.equal(f.get('albumStatus').dataset.state,'error');assert.match(f.get('albumStatusMessage').textContent,/could not be read.*SecurityError/);assert.equal(f.get('albumEmpty').hidden,true);assert.equal(f.get('albumRetry').hidden,false);assert.equal(f.get('albumBackup').disabled,true);assert.equal(f.calls.seeds,0);assert.match(f.get('roll').attrs['aria-label'],/Album unavailable/);
 });
 test('a later successful retry displays preserved records',async()=>{
  const f=fixture({read:async()=>{throw new DOMException('closed','SecurityError');}});await f.api.refreshShots();f.options.read=async()=>[photo('old')];await f.api.refreshShots();
