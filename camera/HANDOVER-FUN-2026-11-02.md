@@ -11,7 +11,8 @@ eyebrows from the avatar creator". Later: "how about actual photo enhancements t
 Branch `claude/laughing-brahmagupta-ybyndm`, **not merged, not published**. Visible version `v2026.11.02.1`, release
 key `20261102fun1` (one unreleased release for everything below). Commits: `40976c06` backup and face stickers,
 `93933e45` World cat ears and pail fix, `54afa8cb` README, `9d8dc294` seven sticker tabs, `3bcd38eb` Halloween in
-Blender (Camera sheet, World bats and sweets), then Pop and this handover. Main publication needs the owner's explicit
+Blender (Camera sheet, World bats and sweets), `20878747` Pop, `b2501158` Makeup and Face stickers sharing one Adjust
+row (Pop's row had pushed the adjustment slider off a 320 × 560 phone; the photo also gains 45 px at 390 × 664). Main publication needs the owner's explicit
 word, then Pages and public-byte verification. Physical iPhone/iPad Safari is untested.
 
 ## What was built
@@ -83,7 +84,9 @@ Run locally in this cloud session (headless Chromium 153 with SwiftShader; not a
   offline **13/13**, backup **7/7**, Enhance **22/22**, retouch **40/40**, UI **82/82**, crop **33/33**,
   save/share/layout **14/14**, paper **5/5**, integration **8/8** (its prior-engine comparisons need CI's baseline
   files), sticker contours **4/4**, Smart **14/14**, screens **5/5**; **real MCP/Camera acceptance 20/20**.
-- Pop: pop **5/5**; the affected suites after Pop are recorded in the Pop commit message.
+- After Pop and the shared heading row (`b2501158`): Pop **5/5**, Enhance **22/22**, UI **82/82**, retouch **40/40**,
+  face stickers **11/11**, offline **13/13**; integration **8/8** after Pop. (The first Pop run caught both layout
+  failures: the slider off a 320 × 560 screen, and the UI suite's sticker-tab count; fixed, not relaxed.)
 - World: halloween-street **12/12**, catalogue **7/7** (`build-catalog --check` current), runtime-package **4/4** after
   `npm run build:runtime`, fujitas-back-moves **18/18**, asset-modeller **6/6**, wardrobe-catalogue **8/8**,
   resident-guide-catalogue **6/6**. `onsen-seats` fails 1/2 **identically on the starting main `4f545da`** (Nhung's
