@@ -129,3 +129,4 @@ minato-bar-lifetime.test.mjs
 ferry-fixed-camera.test.mjs
 
 ferry-exploration.test.mjs
+ferry-bridge-lantern.test.mjs

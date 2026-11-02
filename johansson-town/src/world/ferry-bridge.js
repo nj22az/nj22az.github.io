@@ -1,5 +1,6 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {buildBridgePracticeCircuit} from './ferry-bridge-lantern.js';
 
 // Equipment only: the shared interior remains the authority for floors and collisions.
 // +z forward, +x port. Instruments face aft towards the operator, never through a solid hood.
@@ -8,6 +9,7 @@ export const orderAngle=order=>order==='STOP'?0:(order.includes('ASTERN')?-1:1)*
 
 export function buildFerryBridge(parent,kit,{floor,fore,aft}){
  const group=new THREE.Group();group.name='Minato Maru bridge equipment';group.position.set(0,floor,fore);parent.add(group);
+ const practiceCircuit=buildBridgePracticeCircuit(group);
  const DARK=0x252e30,CREAM=0xd8d2c0,GREEN=0x52796f,BRASS=0xb08a4a,WOOD=0x765032;
  const pos=p=>[p[0],p[1]+floor,p[2]+fore];
  const box=(size,p,hex)=>kit.box('paint',size,pos(p),hex);
@@ -92,5 +94,5 @@ export function buildFerryBridge(parent,kit,{floor,fore,aft}){
   // No invented depth or seabed: unavailable until bathymetry is connected.
   text(sounder,powered?['ECHO SOUNDER','DEPTH —.— m','NO DEPTH DATA']:['POWER OFF']);
  };
- update(0);return {group,readPlant,update,levers,wheel,wipers,radar,sounder,chart};
+ update(0);return {group,readPlant,update,levers,wheel,wipers,radar,sounder,chart,practiceCircuit};
 }
