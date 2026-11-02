@@ -1,6 +1,6 @@
 {
   "version": "20261102fun1",
-  "bytes": 23444444,
+  "bytes": 23444536,
   "files": [
     {
       "url": "/camera/album.js",
@@ -49,8 +49,8 @@
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "015dcbbe4de2044ee2cfa59c4ea6e396c13eb7beac8595531baab82c3c658ba0",
-      "bytes": 45459
+      "sha256": "32ed1e9a4bb62ffe81a4bccedc3ab87e9ce474e83c0828e7e6214afe441c6eee",
+      "bytes": 45551
     },
     {
       "url": "/camera/card-games.css",

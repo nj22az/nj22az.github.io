@@ -485,9 +485,10 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker-choice.effect canvas{width:62%;aspect-ratio:1;border-radius:8px}
 #panelStickers .sticker-choice.effect{gap:1px;font-size:9px}
 /* Six sticker tabs (Text, Thuan, Johansson, Thao, Manga, Mine) across a phone from 360 points: tighter type and room. */
-.sticker-sets{gap:clamp(2px,.9vw,6px);padding:0 8px}
-/* Seven tabs since the Season sheet (2 November 2026): a little less padding and type, still 11.9 px on a 390-point iPhone. */
-.sticker-sets button{padding:0 clamp(5px,1.35vw,12px);font-size:clamp(11.5px,3.05vw,13px)}
+/* Seven tabs since the Season sheet (2 November 2026): less room between and round them and a little smaller type, so
+   they fit a 390-point phone in its own font and in a wide fallback (DejaVu Sans, Linux's) alike. */
+.sticker-sets{gap:clamp(2px,.5vw,6px);padding:0 4px}
+.sticker-sets button{padding:0 clamp(4px,1.2vw,12px);font-size:clamp(11.5px,2.95vw,13px)}
 /* Narrower than 340 points (the first iPhone SE) the row scrolls rather than squeeze a name. */
 @media (max-width:340px){.sticker-sets button{flex:none}}
 /* Erase (erase.js): the brush over the photo while the Erase tab is open; it breathes while the fill runs. */
