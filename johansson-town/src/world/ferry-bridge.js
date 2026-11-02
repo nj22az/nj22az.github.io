@@ -1,5 +1,7 @@
 import * as THREE from '../../vendor/three.module.js';
 import {mergeGeometries} from '../../vendor/BufferGeometryUtils.js';
+import {buildBridgePracticeCircuit} from './ferry-bridge-lantern.js';
+import {buildBridgeWipers} from './ferry-bridge-wipers.js';
 
 // Equipment only: the shared interior remains the authority for floors and collisions.
 // +z forward, +x port. Instruments face aft towards the operator, never through a solid hood.
@@ -8,6 +10,7 @@ export const orderAngle=order=>order==='STOP'?0:(order.includes('ASTERN')?-1:1)*
 
 export function buildFerryBridge(parent,kit,{floor,fore,aft}){
  const group=new THREE.Group();group.name='Minato Maru bridge equipment';group.position.set(0,floor,fore);parent.add(group);
+ const practiceCircuit=buildBridgePracticeCircuit(group);
  const DARK=0x252e30,CREAM=0xd8d2c0,GREEN=0x52796f,BRASS=0xb08a4a,WOOD=0x765032;
  const pos=p=>[p[0],p[1]+floor,p[2]+fore];
  const box=(size,p,hex)=>kit.box('paint',size,pos(p),hex);
@@ -52,12 +55,7 @@ export function buildFerryBridge(parent,kit,{floor,fore,aft}){
  batch(wheel);
  // Compass periscope's aft-facing card, below the overhead tube already in the interior.
  const compass=screen('Bridge compass card',.14,.08,[0,1.55,-1.405]);
- const wipers=[];
- for(const x of [-1.18,0,1.18]){
-  const pivot=new THREE.Group();pivot.name='Bridge wiper';pivot.position.set(x,1.88,-.09);group.add(pivot);
-  mesh(new THREE.BoxGeometry(.018,.55,.02),DARK,[0,-.275,0],'Wiper arm',pivot);
-  mesh(new THREE.BoxGeometry(.33,.025,.025),DARK,[0,-.55,0],'Wiper blade',pivot);batch(pivot);wipers.push(pivot);
- }
+ const wiperRig=buildBridgeWipers(group),wipers=wiperRig.wipers;
  kit.add('metal',new THREE.TorusGeometry(.22,.018,8,32),0x7d8586,pos([2.36,1.47,-.09]));
  kit.cyl('metal',.035,.035,.05,pos([2.36,1.47,-.1]),DARK,[Math.PI/2,0,0],10);
  // Pedestal chair rather than the old solid cuboid; its existing collision envelope is retained.
@@ -78,7 +76,7 @@ export function buildFerryBridge(parent,kit,{floor,fore,aft}){
  const readPlant=r=>{readings=r;for(const l of levers)l.pivot.rotation.x=orderAngle(r.telegraph[l.id]);};
  const update=(dt,{yaw=0,rain=false,powered=true}={})=>{
   elapsed+=Math.max(0,Math.min(dt, .1));acc+=dt;
-  for(const w of wipers)w.rotation.z=rain&&powered?Math.sin(elapsed*3.8)*.4:-.4;
+  wiperRig.update(dt,{rain,powered});
   // CRT redraws are capped at 8 Hz; no new canvases, textures, or timers per frame.
   if(acc<.125)return;acc=0;
   const heading=bridgeHeading(yaw),h=String(Math.round(heading)%360).padStart(3,'0'),r=readings;
@@ -92,5 +90,5 @@ export function buildFerryBridge(parent,kit,{floor,fore,aft}){
   // No invented depth or seabed: unavailable until bathymetry is connected.
   text(sounder,powered?['ECHO SOUNDER','DEPTH —.— m','NO DEPTH DATA']:['POWER OFF']);
  };
- update(0);return {group,readPlant,update,levers,wheel,wipers,radar,sounder,chart};
+ update(0);return {group,readPlant,update,levers,wheel,wipers,wiperRig,radar,sounder,chart,practiceCircuit};
 }
