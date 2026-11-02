@@ -452,7 +452,7 @@ async function playAndPrint({label,width,height}){
    await page.locator('.sticker-button').tap();await page.waitForSelector('#stickerSheet[open] .sticker-choice');
    assert.ok(await fits('#stickerSets'),'every sticker tab fits across');
    assert.ok(await page.$$eval('#stickerSets button',b=>b.every(x=>x.getBoundingClientRect().height>=28)),'the tabs keep their height');
-   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Manga','Mine'],'a tab a resident, and Manga');
+   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Season','Manga','Mine'],'a tab a resident, the season’s sheet, and Manga');
    await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#stickerSheet').open);
    // A sheet puts the settings row away: one panel at a time.
    await page.locator('#settingsToggle').tap();await page.locator('#frameSetting').tap();await page.waitForSelector('#frameSheet[open]');
@@ -534,9 +534,9 @@ async function playAndPrint({label,width,height}){
    const sheet=await page.evaluate(()=>({tabs:[...document.querySelectorAll('#stickerSets button')].map(b=>b.textContent),
     effects:[...document.querySelectorAll('.sticker-choice.effect')].map(b=>b.dataset.id),marks:document.querySelectorAll('.sticker-choice[data-id^="marks/"]').length,
     heading:[...document.querySelectorAll('#stickerGrid .sticker-heading')].map(h=>h.textContent)}));
-   assert.deepEqual(sheet.tabs,['Text','Thuan','Johansson','Thao','Manga','Mine']);
+   assert.deepEqual(sheet.tabs,['Text','Thuan','Johansson','Thao','Season','Manga','Mine']);
    assert.deepEqual(sheet.effects,['effect:focus','effect:speed']);assert.equal(sheet.marks,10);assert.deepEqual(sheet.heading,['Marks']);
-   assert.ok(await page.evaluate(()=>{const e=document.querySelector('#stickerSets'),r=e.getBoundingClientRect();return [...e.children].every(k=>{const q=k.getBoundingClientRect();return q.left>=r.left-1&&q.right<=r.right+1;});}),'six tabs fit across');
+   assert.ok(await page.evaluate(()=>{const e=document.querySelector('#stickerSets'),r=e.getBoundingClientRect();return [...e.children].every(k=>{const q=k.getBoundingClientRect();return q.left>=r.left-1&&q.right<=r.right+1;});}),'seven tabs fit across');
    await page.locator('.sticker-choice.effect[data-id="effect:focus"]').tap();
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='effect:focus'));
    // The lines: ink near the edges, the clear circle round their centre left clear.

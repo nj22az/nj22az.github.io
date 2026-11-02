@@ -4,6 +4,7 @@ import {townDate} from '../town-clock.js';
 import {SAKURA_BOX,SAKURA_VENDING,crateTops} from './okinawa/old-town.js';
 import {VENDING_MACHINE,vendingPoints,vendingToWorld} from './vending.js';
 import {buildFujitaDream} from './fujita-dream.js';
+import {placeAsset,assetPlacement} from '../catalog/catalog.js';
 import {std,mesh,buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel,buildJCoffeeCan,J_COFFEE_CAN} from './halloween-props.js';
 export {buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel};
 
@@ -23,6 +24,12 @@ export {buildPumpkinLantern,buildJackOLantern,buildObake,buildDog,buildCordReel}
  *   socket       the drinks machine's own outdoor socket (weatherproof, with its flip lid), on the corner pier south of
  *                the shutter; after the fix, beside it, a new outdoor socket with an RCD for the lanterns alone
  *   mist         cold air from the can chute meeting the warm, wet night: a low mist that creeps out on the pavement
+ *   bats         six black-card paper bats (Johansson Studio's halloween-paper-bat, built in Blender) hung on cotton
+ *                threads from the lantern string, in every other gap between the lanterns: Sakura has supplied the
+ *                town's decorations since Mrs Kinjō retired. On the string, not the shutter: the shutter is up while
+ *                the shop is open, lantern-time included
+ *   sweets       a heap of twist-wrapped boiled sweets (halloween-sweets, Blender) on the middle stack of drinks crates,
+ *                between the two crate pails, at a child's reach: the walk is for collecting sweets, and Sakura sells them
  *   story things the plastic jack-o'-lanterns ringed round the machine for the walk's photograph, a plush obake
  *                peeking from the crates, the séance's candle jars, Mrs Sato's salt cones (morijio), Thao's rice ball
  *                on a plate, Fujita's tin bucket, a can in the take-out pocket, and Kuro, the Tamashiros' black dog
@@ -55,6 +62,15 @@ export const HALLOWEEN=Object.freeze({
  // one-high one (old-town.js SAKURA_CRATES; the two-high stack between them holds the sweets), the bin's lid on its
  // opening (old-town.js: the lid's top 0.77 m, the opening's rim 0.782 m, 8 cm round), and the pavement at the nobori
  // pole's foot. [x, y, z] is where the pail's bottom stands, r its size, ry its turn.
+ // The paper bats on the lantern string: one in every other gap between the lanterns (which hang 1 m apart from z −33.12),
+ // each on its own length of cotton thread and turned a little as a thing on a thread turns, so the row is not a fence.
+ bats:Object.freeze({asset:'halloween-paper-bat',z:Object.freeze([-32.62,-30.62,-28.62,-26.62,-24.62,-22.62]),
+  thread:Object.freeze([.14,.2,.16,.22,.15,.19]),turn:Object.freeze([.25,-.2,.15,-.3,.2,-.1]),
+  why:'Sakura’s black-card bats, hung between the paper pumpkins so the walk’s string reads as Halloween from down the street, lit or dark.'}),
+ // The sweets: on the lid of the two-high stack of crates, between the pail on the three-high stack and the one on the
+ // one-high stack, 58 cm up: a child's reach.
+ sweets:(()=>{const [,middle]=crateTops();return Object.freeze({asset:'halloween-sweets',at:Object.freeze([middle.x,middle.top,middle.z]),ry:Math.PI/2,
+  why:'The walk is for collecting sweets: Sakura’s twist-wrapped boiled sweets, heaped where a child in costume can reach them.'});})(),
  pails:(()=>{const [high,,low]=crateTops();return Object.freeze([
   Object.freeze({at:Object.freeze([high.x,high.top,high.z]),r:.15,ry:Math.PI/2,on:'the three-high stack of crates'}),
   Object.freeze({at:Object.freeze([low.x,low.top,low.z]),r:.12,ry:Math.PI/2+.3,on:'the one-high stack of crates'}),
@@ -199,6 +215,23 @@ export function buildHalloween(world,{shadows=false}={}){
  for(let i=0;i<7;i++){const a=-1.15+i*2.3/6,r=.95;add(buildJackOLantern({r:i%2?.14:.17}),M.front+Math.cos(a)*r,G,M.z+Math.sin(a)*r,Math.PI/2-a*.6,ring);}
  const deco=new THREE.Group();deco.name='Jack-o’-lanterns on the frontage';group.add(deco);
  for(const {at:[x,y,z],r,ry} of H.pails)add(buildJackOLantern({r}),x,y,z,ry,deco);
+ // ---- the Blender-built things from Johansson Studio's catalogue: placed (and their models fetched) the first time the
+ // season shows, so the town does not download them the rest of the year. Their cel shading and shadows as the rest.
+ const finish=copy=>{applyCelShading(copy);copy.traverse(o=>{if(o.isMesh){o.castShadow=shadows&&!o.material.transparent;o.receiveShadow=true;}});};
+ const threadMat=std(0xe9e4d8,{roughness:.9});
+ /** Where each bat's thread is tied on the string, and where the asset stands so its hang point is at the thread's end. */
+ const batPlaces=H.bats.z.map((z,i)=>{
+  const [sx,sy]=sagAt(z),yaw=Math.PI/2+H.bats.turn[i],card=assetPlacement(H.bats.asset).card,[w,h]=card.size;void w;
+  const hang=card.anchors?.hang||[0,h,0],c=Math.cos(yaw),n=Math.sin(yaw),end=[sx,sy-H.bats.thread[i],z];
+  return Object.freeze({tie:Object.freeze([sx,sy,z]),end:Object.freeze(end),yaw,at:Object.freeze([end[0]-(hang[0]*c+hang[2]*n),end[1]-hang[1],end[2]-(-hang[0]*n+hang[2]*c)])});});
+ let placed=null;
+ const placeCatalogue=()=>{
+  if(placed)return;placed={bats:new THREE.Group(),assets:[]};placed.bats.name='Paper bats on the lantern string';group.add(placed.bats);
+  // each bat's thread goes up with its bat (never a thread hanging from nothing if a model cannot be had)
+  for(const b of batPlaces)placed.assets.push(placeAsset(H.bats.asset,{parent:placed.bats,x:b.at[0],y:b.at[1],z:b.at[2],yaw:b.yaw,
+   onModel:copy=>{finish(copy);const thread=cable([b.tie,b.end],.0008,threadMat);thread.name='Bat thread';thread.castShadow=false;placed.bats.add(thread);}}));
+  const [x,y,z]=H.sweets.at;placed.assets.push(placeAsset(H.sweets.asset,{parent:deco,x,y,z,yaw:H.sweets.ry,onModel:finish}));
+ };
  const peek=add(buildObake({h:.36}),M.x+.12,M.top,M.z-.36,Math.PI/2);peek.name='Plush ghost peeking';peek.rotation.z=-.18;   // on top of the machine, leaning out over its front edge
  const can=new THREE.Group();can.name='A can in the take-out pocket';group.add(can);
  // the free can: a J-Coffee, lying on the pocket's floor behind the smoked flap (vending.js takeOut), across the machine
@@ -253,7 +286,7 @@ export function buildHalloween(world,{shadows=false}={}){
  let pinned=false;
  const state={show:false,glow:0,machine:1,cable:'reel',mist:0,pocketMist:0,mistPhase:0,flap:0,pumpkins:false,deco:true,peek:false,can:false,candles:false,riceBall:false,salt:false,bucket:false,dog:false,dream:false};
  const apply=()=>{
-  group.visible=!!state.show;
+  group.visible=!!state.show;if(state.show)placeCatalogue();
   for(const l of lanterns)l.userData.lantern.setGlow(state.glow);
  const g=THREE.MathUtils.clamp(state.glow,0,1);for(const L of pools.children){L.intensity=H.poolIntensity*Math.pow(g,1.2);L.visible=g>0&&!!state.show;}
   reelWay.visible=state.cable==='reel';reel.visible=state.cable==='reel';fixedWay.visible=state.cable==='fixed';rcd.visible=state.cable==='fixed';
@@ -271,7 +304,7 @@ export function buildHalloween(world,{shadows=false}={}){
  };
  apply();
  const api={
-  group,lanterns,state,
+  group,lanterns,state,batPlaces,
   stage(s={}){pinned=true;Object.assign(state,{show:true},s);apply();return state;},
   release(){pinned=false;},
   /** The season: up from 24 October, the lanterns lit after six (until a story pins a moment). */

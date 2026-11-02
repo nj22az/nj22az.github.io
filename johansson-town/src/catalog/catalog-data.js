@@ -3,6 +3,137 @@
 const freeze=o=>{if(o&&typeof o==='object'){for(const v of Object.values(o))freeze(v);Object.freeze(o);}return o;};
 /** Johansson World's asset catalogue, by id (src/catalog/catalog.js places them). */
 export const CATALOG=freeze({
+ "halloween-paper-bat": {
+  "id": "halloween-paper-bat",
+  "name": "Paper bat",
+  "kind": "prop",
+  "version": 1,
+  "purpose": {
+   "for": "The children on Sakura Street's Halloween walk and the shopkeepers who decorate for it",
+   "why": "Sakura Shōten has supplied the town's decorations since Mrs Kinjō retired; black-card bats hung between the lanterns make the walk's string read as Halloween from down the street, lit or dark",
+   "where": "Hung on cotton threads from the lantern string along Sakura Shōten's awning, between the paper pumpkin lanterns, from 24 to 31 October"
+  },
+  "size": [0.2382,0.0985,0.0306],
+  "colours": {
+   "card": "#24222a",
+   "paper": "#f8f5ee"
+  },
+  "tags": ["Halloween","decoration","bat","black card","paper","lantern string","awning","Sakura Shōten","October","1997","children's walk"],
+  "checked": "2026-11-02T21:54:52.817Z",
+  "colliders": [
+   {
+    "name": "body",
+    "x": 0,
+    "z": 0.015,
+    "w": 0.238,
+    "d": 0.031,
+    "yaw": 0,
+    "minY": 0,
+    "height": 0.098
+   }
+  ],
+  "seats": [],
+  "spots": [],
+  "action": {
+   "kind": "none",
+   "label": ""
+  },
+  "anchors": {
+   "hang": [0,0.068,0],
+   "balance": [0,0.0455,0.0123],
+   "eyes": [0,0.045,0.0013],
+   "wing-tip-left": [0.1191,0.06,0.0297],
+   "wing-tip-right": [-0.1191,0.06,0.0297]
+  },
+  "parts": [],
+  "model": "halloween-paper-bat/model.glb",
+  "modelSha": "5cf3cb65ff1f",
+  "hero": "halloween-paper-bat/hero.png",
+  "measured": {
+   "size": [0.2382,0.0985,0.0306],
+   "body": {
+    "min": [-0.1191,0,0],
+    "max": [0.1191,0.0985,0.0306]
+   },
+   "all": {
+    "min": [-0.1191,0,0],
+    "max": [0.1191,0.0985,0.0306]
+   },
+   "triangles": 752,
+   "materials": 2,
+   "meshes": 3
+  },
+  "budget": {
+   "triangles": 1000,
+   "materials": 2
+  },
+  "published": "2026-11-02"
+ },
+ "halloween-sweets": {
+  "id": "halloween-sweets",
+  "name": "Wrapped sweets",
+  "kind": "prop",
+  "version": 1,
+  "purpose": {
+   "for": "The children in costume on the Halloween walk",
+   "why": "The walk is for collecting sweets; Sakura sells these twist-wrapped boiled sweets by the bag and heaps them out on the crates for the children to take",
+   "where": "Heaped on the lid of the middle stack of drinks crates by Sakura's machine, between the two jack-o'-lantern pails, at a child's reach (58 cm), where the walk passes"
+  },
+  "size": [0.2501,0.057,0.2564],
+  "colours": {
+   "orange": "#f28a1e",
+   "purple": "#8a55b8",
+   "green": "#8fcf3a",
+   "white": "#f4f1ea"
+  },
+  "tags": ["Halloween","sweets","boiled sweets","fruit sweets","wrapped","cellophane","drinks crates","Sakura Shōten","October","1997","children's walk"],
+  "checked": "2026-11-02T22:16:26.369Z",
+  "colliders": [
+   {
+    "name": "body",
+    "x": 0,
+    "z": 0,
+    "w": 0.25,
+    "d": 0.256,
+    "yaw": 0,
+    "minY": 0,
+    "height": 0.057
+   }
+  ],
+  "seats": [],
+  "spots": [],
+  "action": {
+   "kind": "none",
+   "label": ""
+  },
+  "anchors": {
+   "top": [0,0.057,0],
+   "rest": [0,0,0]
+  },
+  "parts": [],
+  "model": "halloween-sweets/model.glb",
+  "modelSha": "c3fed5830048",
+  "hero": "halloween-sweets/hero.png",
+  "measured": {
+   "size": [0.2501,0.057,0.2564],
+   "body": {
+    "min": [-0.125,0,-0.1282],
+    "max": [0.125,0.057,0.1282]
+   },
+   "all": {
+    "min": [-0.125,0,-0.1282],
+    "max": [0.125,0.057,0.1282]
+   },
+   "triangles": 2952,
+   "materials": 1,
+   "meshes": 1
+  },
+  "budget": {
+   "triangles": 3000,
+   "materials": 1
+  },
+  "published": "2026-11-02"
+ },
  "johansson-trucker": {
   "id": "johansson-trucker",
   "name": "Johansson trucker cap",

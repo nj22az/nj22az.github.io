@@ -29,7 +29,7 @@ const ENTRIES=[
    why:'Thirteen paper lanterns, a 25 W bulb in each, light the walk’s route on the last evening of October.',
    where:'On one string from the nobori pole by the drinks machine, along the front edge of Sakura Shōten’s awning (halloween.js).'},
   action:{kind:'look',label:'Look at the lantern'},tags:['Halloween','lantern','paper','Sakura Street']},
- {id:'jack-o-lantern-pail',name:'Plastic jack-o’-lantern pail',kind:'prop',size:[.32,.247,.318],glow:true,
+ {id:'jack-o-lantern-pail',name:'Plastic jack-o’-lantern pail',kind:'prop',size:[.32,.203,.318],glow:true,
   source:'world/halloween-props.js buildJackOLantern',load:()=>import('../world/halloween-props.js'),build:m=>m.buildJackOLantern(),
   purpose:{for:'The children collecting sweets on the Halloween walk, who carry the pails from shop to shop.',
    why:'A sweets pail lit inside by a little torch, so it glows in the walk’s photograph.',

@@ -1,6 +1,6 @@
 {
   "version": "20261102fun1",
-  "bytes": 22808639,
+  "bytes": 23439159,
   "files": [
     {
       "url": "/camera/album.js",
@@ -49,8 +49,8 @@
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "489db586aa3909438591f07994d010dd3a856ef8f54164ee3f2ddb0dce945df4",
-      "bytes": 45329
+      "sha256": "015dcbbe4de2044ee2cfa59c4ea6e396c13eb7beac8595531baab82c3c658ba0",
+      "bytes": 45459
     },
     {
       "url": "/camera/card-games.css",
@@ -331,6 +331,96 @@
       "url": "/camera/stickers.js",
       "sha256": "a70afea1dde84b69b90d2bdb5dd2395a99c8ff0880151734a24014b86d73380b",
       "bytes": 17480
+    },
+    {
+      "url": "/camera/stickers/halloween.json",
+      "sha256": "a6ac60f6817481b2c4cbefba39e94c722db66d342e50a324a1471ca472a8c29a",
+      "bytes": 2236
+    },
+    {
+      "url": "/camera/stickers/halloween/README.md",
+      "sha256": "e6d5556a69713befc086759d47958503924a6f5c32035106446eb59946c3ed7c",
+      "bytes": 3102
+    },
+    {
+      "url": "/camera/stickers/halloween/cat-ears.thumb.webp",
+      "sha256": "2147ce0e41a7d514db0c7fcc7322336024f86c345201abba8a3d0233aff7b0bb",
+      "bytes": 12158
+    },
+    {
+      "url": "/camera/stickers/halloween/cat-ears.webp",
+      "sha256": "9ed945957d665dab752efd41716d46b1283d3d62919f438c0b241bfbc948afee",
+      "bytes": 58352
+    },
+    {
+      "url": "/camera/stickers/halloween/jack-o-lantern.thumb.webp",
+      "sha256": "725b6bcabf2e596e5ed5750a6d4fab6e1cbc8261918370ba2768da1231855a95",
+      "bytes": 12978
+    },
+    {
+      "url": "/camera/stickers/halloween/jack-o-lantern.webp",
+      "sha256": "0a6439e05cb5eb9ab18e0a5c1da971205df58c108130aea4bf968b0c526b0798",
+      "bytes": 67184
+    },
+    {
+      "url": "/camera/stickers/halloween/obake.thumb.webp",
+      "sha256": "912cd60e60a9b53008adf39e21039ce2441032056b30076ee63dc3559f880840",
+      "bytes": 8848
+    },
+    {
+      "url": "/camera/stickers/halloween/obake.webp",
+      "sha256": "64187d7aae97944fb77bf55d1399763666a653d5d2848d78987f75f7e58c8c94",
+      "bytes": 42888
+    },
+    {
+      "url": "/camera/stickers/halloween/paper-bat.thumb.webp",
+      "sha256": "894329b79ad29abf3e6e6c79a0a5d0b46d50de01224a004f251d3d57bbda9d1d",
+      "bytes": 8362
+    },
+    {
+      "url": "/camera/stickers/halloween/paper-bat.webp",
+      "sha256": "f71d50938503ca1f8af4cc4e9486748c203b7759a2d89041f45455d3b6e3725f",
+      "bytes": 39066
+    },
+    {
+      "url": "/camera/stickers/halloween/pumpkin-cap.thumb.webp",
+      "sha256": "a1cd7f56212cab5fa1be627fb716ba558a906d3a82074e07f7ccc6377908a30b",
+      "bytes": 13164
+    },
+    {
+      "url": "/camera/stickers/halloween/pumpkin-cap.webp",
+      "sha256": "1f8a32ae6d6430595b4c292f1b6f18a270e216a5c11425428cf66694fc53bca5",
+      "bytes": 69102
+    },
+    {
+      "url": "/camera/stickers/halloween/pumpkin-lantern.thumb.webp",
+      "sha256": "eb4d404bcb81c9a71fd4df5510545689570e930652d973b65a26d0bd7ea60416",
+      "bytes": 16556
+    },
+    {
+      "url": "/camera/stickers/halloween/pumpkin-lantern.webp",
+      "sha256": "4b990006dd4b1b235008941f75d7e614e515cca888e53c8ee733b221474bd9d2",
+      "bytes": 86522
+    },
+    {
+      "url": "/camera/stickers/halloween/sweets.thumb.webp",
+      "sha256": "62f6d0885fb564f9e44a972fbedf7b5af38e2b00279e63b9636c918ced74c4fd",
+      "bytes": 20152
+    },
+    {
+      "url": "/camera/stickers/halloween/sweets.webp",
+      "sha256": "fda755a3f8d44c3b777c5ec8bd8a4ae7c42e0e5ab68a2a00fc842ed01ac6e5ba",
+      "bytes": 125322
+    },
+    {
+      "url": "/camera/stickers/halloween/witch-hat.thumb.webp",
+      "sha256": "f1d9a7622084ab4740ff8d1b68b76f9d803514adc8789cfd26607cb0ea890c66",
+      "bytes": 7432
+    },
+    {
+      "url": "/camera/stickers/halloween/witch-hat.webp",
+      "sha256": "a24d4b283631e49aa77df130867b6b94d7a852b3bcca436997029b8935b35ea9",
+      "bytes": 36966
     },
     {
       "url": "/camera/stickers/johansson-pixar/Bow.thumb.webp",

@@ -86,7 +86,9 @@ export function buildJackOLantern({r=.16}={}){
  const skin=new THREE.MeshBasicMaterial({color:0xffffff,vertexColors:true,toneMapped:false}),face=new THREE.MeshBasicMaterial({color:0xfff4b0,side:THREE.DoubleSide,toneMapped:false});   // lit from inside: bright skin, a glowing face
  const cy=r*.57;   // the lobes' middle: a lobe is r·0.6 round, squashed to 0.95, so its bottom is on the ground
  for(let i=0;i<7;i++){const a=i/7*Math.PI*2,lobe=mesh(g,glowShade(new THREE.SphereGeometry(r*.6,14,10),[1,.68,.24],[.93,.42,.08]),skin,Math.cos(a)*r*.42,cy,Math.sin(a)*r*.42);lobe.scale.set(1,.95,1);}
- mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,cy+r*.8,0);
+ // the stem on the pumpkin's top: on its axis that is between the lobes, 0.41 r above their middle (a lobe r·0.6 round,
+ // squashed to 0.95, 0.42 r off the axis), so the stem's foot sits 1 cm into it there instead of 3.6 cm above it
+ mesh(g,new THREE.CylinderGeometry(r*.07,r*.1,r*.35,8),std(0x4f7a32),0,cy+r*(.407-.06+.175),0);
  mesh(g,pumpkinFace(r*1.35),face,0,cy,r*.99,'Jack-o’-lantern face');
  const halo=buildHalo(r*4.2,.42);halo.position.set(0,cy+r*.03,0);g.add(halo);
  return g;

@@ -5,8 +5,9 @@ import {installDOM} from './fixtures.mjs';
 import {createVendingMachine} from '../src/world/vending.js';
 import {buildJCoffeeCan,J_COFFEE_CAN} from '../src/world/halloween-props.js';
 import {VENDING_PRODUCTS} from '../src/commerce/vending-catalogue.js';
-import {buildHalloween,HALLOWEEN,HALLOWEEN_ELECTRICS as E,cordResistance,lanternCurrent,reelVolts,lanternBrightness,cordHeat,buildObake,buildDog,buildPumpkinLantern} from '../src/world/halloween.js';
+import {buildHalloween,HALLOWEEN,HALLOWEEN_ELECTRICS as E,cordResistance,lanternCurrent,reelVolts,lanternBrightness,cordHeat,buildObake,buildDog,buildPumpkinLantern,buildJackOLantern} from '../src/world/halloween.js';
 import {SAKURA_BOX,crateTops} from '../src/world/okinawa/old-town.js';
+import {assetPlacement} from '../src/catalog/catalog.js';
 
 installDOM();
 
@@ -97,6 +98,33 @@ test('every jack-o’-lantern pail stands on what is under it: the crates, the b
   assert.ok(p.r<=lid.w/2&&p.r<=lid.d/2,`a pail ${2*p.r} m across fits its ${lid.w} × ${lid.d} m lid`);
  }
  for(const pail of ring.children)assert.ok(Math.abs(box(pail).min.y-HALLOWEEN.ground)<.003,'the ring stands on the pavement');
+ // the stem stands on the pumpkin: its foot in the top between the lobes (a ray down the axis meets the lobes there), not in the air
+ const pail=buildJackOLantern({r:.16});pail.updateMatrixWorld(true);
+ const stem=pail.children.find(c=>c.geometry?.type==='CylinderGeometry'),foot=new THREE.Box3().setFromObject(stem).min.y;
+ const top=new THREE.Raycaster(new THREE.Vector3(0,1,0),new THREE.Vector3(0,-1,0)).intersectObjects(pail.children.filter(c=>c.geometry?.type==='SphereGeometry'))[0].point.y;
+ assert.ok(foot<=top&&foot>top-.02,`the stem’s foot ${foot.toFixed(3)} on the pumpkin’s top ${top.toFixed(3)}`);
+});
+
+test('Sakura’s paper bats hang on cotton threads from the lantern string, between the lanterns and over people’s heads; the sweets lie on the middle crate lid',()=>{
+ const {h}=town(),bat=assetPlacement('halloween-paper-bat').card,sweets=assetPlacement('halloween-sweets').card;
+ for(const card of [bat,sweets])for(const k of ['for','why','where'])assert.ok(card.purpose[k].length>20,card.id+' '+k);
+ assert.equal(h.batPlaces.length,6);
+ const lanterns=h.lanterns.map(l=>l.position.z),[w,hh,d]=bat.size;
+ h.batPlaces.forEach((b,i)=>{
+  assert.ok(Math.abs(b.tie[1]-b.end[1]-HALLOWEEN.bats.thread[i])<1e-9&&b.tie[0]===b.end[0]&&b.tie[2]===b.end[2],'a thread hangs straight down');
+  // the bat's own floor is its lowest point: its bottom at least 1.95 m up, above every resident's head
+  assert.ok(b.at[1]>1.95,`bat ${i+1} hangs over people’s heads: its bottom ${b.at[1].toFixed(2)} m`);
+  // tied at its head between the ears (the card's hang anchor): the knot at the thread's end, the ears above it, all under the string
+  assert.ok(Math.abs(b.at[1]+bat.anchors.hang[1]-b.end[1])<1e-6,'the thread is tied at the bat’s hang point');
+  assert.ok(b.at[1]+hh<b.tie[1]-.03,'the whole bat hangs under the string');
+  // between two lanterns (each about 0.2 m round), never touching one, at any turn of the thread
+  const half=(w/2)*Math.abs(Math.sin(b.yaw))+(d/2)*Math.abs(Math.cos(b.yaw)),near=Math.min(...lanterns.map(z=>Math.abs(z-b.end[2])));
+  assert.ok(near-half>.2+.05,`bat ${i+1} clears the nearest lantern by ${(near-half-.2).toFixed(2)} m`);
+ });
+ const [,middle]=crateTops(),[x,y,z]=HALLOWEEN.sweets.at;
+ assert.deepEqual([x,y,z],[middle.x,middle.top,middle.z],'on the two-high stack’s lid');
+ assert.ok(sweets.size[0]<=middle.w&&sweets.size[2]<=middle.d,'the heap fits the lid');
+ for(const p of HALLOWEEN.pails.filter(p=>/crates/.test(p.on)))assert.ok(Math.abs(p.at[2]-z)>.3,'beside the pails, not under one');
 });
 
 test('the costumes fit the body that wears them: the pumpkin suit, the ghost sheet (over Mori’s cap), the witch hat and the cat ears',async()=>{
