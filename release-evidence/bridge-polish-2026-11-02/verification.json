@@ -1,0 +1,130 @@
+{
+  "implementation": "390ff7fcfa68d050023d885b80bbab158d639fdb",
+  "publishedRuntimeHead": "ef37e76fcd2aaaf6654ff84e1a7fb9fd47823d55",
+  "game": "https://nj22az.github.io/johansson-town/",
+  "recordedAtUTC": "2026-11-02T21:59:50.483Z",
+  "pages": {
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41532036449"
+  },
+  "canonicalGuard": {
+    "status": "completed",
+    "conclusion": "success",
+    "passed": 588,
+    "failed": 0,
+    "files": 113,
+    "seconds": 382,
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41532037902/job/125574424996"
+  },
+  "browserProfiles": [
+    {
+      "name": "ferry-exploration (desktop)",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41532037902/job/125574424543"
+    },
+    {
+      "name": "ferry-exploration (ipad-portrait)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41532037902/job/125574424932"
+    },
+    {
+      "name": "iphone-startup",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41532037902/job/125574425041"
+    },
+    {
+      "name": "ferry-exploration (ipad-landscape)",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41532037902/job/125574425094"
+    }
+  ],
+  "publicBytes": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 46314,
+      "sha256": "08583125b094e936338879cd918343bfc4a832941c28900df0684d44718bb625",
+      "matches": true
+    },
+    {
+      "path": "runtime/source.json",
+      "status": 200,
+      "bytes": 83,
+      "sha256": "34fabf77edc53586fc3701539c4d00474873c22d3b699da5c99928ccf8c3c6b8",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge.js",
+      "status": 200,
+      "bytes": 8804,
+      "sha256": "eb96cec9bb289563ffa6e6abfbcf64359914d4c3da584a6dff92233c6c72eaf1",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge-lantern.js",
+      "status": 200,
+      "bytes": 4965,
+      "sha256": "8e6d6456619652d19064e586ee77eff2a0918d5773811fb015d497c791e4a68c",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge-wipers.js",
+      "status": 200,
+      "bytes": 4245,
+      "sha256": "86eae1ee57f9f3f29ebd5f5c14f2ee1737626de05d2ebcbd3cfc781aabf078b3",
+      "matches": true
+    },
+    {
+      "path": "src/world/ferry-bridge-wipers-geometry.js",
+      "status": 200,
+      "bytes": 233400,
+      "sha256": "705622fdf5db67492c0cacc35d0aadaceb340c85135ea549792c7a62c69a6193",
+      "matches": true
+    },
+    {
+      "path": "assets/models/ferry-bridge/bridge-lantern-v2.glb",
+      "status": 200,
+      "bytes": 311964,
+      "sha256": "237050a588216dddf5011d68bd4a955c571193a13f644177f0f45c830b2090a0",
+      "matches": true
+    },
+    {
+      "path": "assets/models/ferry-bridge/bridge-wipers-v1.glb",
+      "status": 200,
+      "bytes": 124792,
+      "sha256": "317574e7030012e919c18acb5b74445a3f82fde48ee576e1773bb7808c1adc1d",
+      "matches": true
+    }
+  ],
+  "local": {
+    "featurePassed": 10,
+    "runtimePassed": 4,
+    "unchangedVesselWalkPassed": 12,
+    "productionRuntimeJSFilesPreserved": 148
+  },
+  "wipers": {
+    "sha256": "317574e7030012e919c18acb5b74445a3f82fde48ee576e1773bb7808c1adc1d",
+    "bytes": 124792,
+    "meshesPerUnit": 4,
+    "trianglesPerUnit": 1360,
+    "units": 3
+  },
+  "lantern": {
+    "sha256": "237050a588216dddf5011d68bd4a955c571193a13f644177f0f45c830b2090a0",
+    "bytes": 311964,
+    "meshes": 3,
+    "triangles": 4916,
+    "visibleText": [
+      "+",
+      "−",
+      "12 V"
+    ]
+  },
+  "review": "Independent Chief/physical_model_v4 and root visual approval; no remaining P1/P2",
+  "physicalDevice": "not tested"
+}
