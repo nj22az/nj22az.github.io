@@ -12,7 +12,41 @@
     "id": 41521961658,
     "status": "in_progress",
     "conclusion": null,
-    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658"
+    "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658",
+    "canonicalGuard": {
+      "status": "completed",
+      "conclusion": "success",
+      "passed": 583,
+      "failed": 0,
+      "files": 112,
+      "seconds": 367,
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982206"
+    },
+    "iphoneStartup": {
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982586"
+    },
+    "explorationProfiles": [
+      {
+        "name": "ferry-exploration (ipad-portrait)",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982490"
+      },
+      {
+        "name": "ferry-exploration (desktop)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982514"
+      },
+      {
+        "name": "ferry-exploration (ipad-landscape)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41521961658/job/125539982542"
+      }
+    ]
   },
   "treeReview": {
     "id": 41521961866,
@@ -36,7 +70,7 @@
   },
   "independentReview": "Approved by physical_model_v4; no remaining P1/P2",
   "physicalDevice": "not tested",
-  "localGuard": "incomplete aggregate after agent interruption;13 no-z and 7 NPC seating checks passed; hosted guard is authoritative",
+  "localGuard": "Incomplete aggregate after agent interruption; 13 no-z and 7 NPC seating checks passed. The successful hosted canonical guard is the full verification.",
   "publicBytes": [
     {
       "path": "index.html",
@@ -74,5 +108,5 @@
       "matches": true
     }
   ],
-  "verifiedAtUTC": "2026-11-02T20:52:06.278Z"
+  "verifiedAtUTC": "2026-11-02T20:57:33.120Z"
 }
