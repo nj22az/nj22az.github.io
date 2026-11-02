@@ -170,3 +170,11 @@ was still encoding, before its download URL existed. Preparation now captures an
 to publish the file if a commit/fresh read changed it during encoding. A delayed-encoding regression covers this.
 Album-controller units now **17/17**; all19 suites and regenerated offline hashes pass. This changes only which prepared
 snapshot is offered; stored photos and restore inputs remain untouched.
+
+On source `c77ea23eb57f090373311e03a71c362c8fab69fd`, WebKit job125122563585 completes **20/20** album checks,
+including origin-unavailable warm navigation, two cold browser restarts, all schema fixtures and portable restore.
+Chromium's four/five UI and early schema checks pass, but a second automatic app registration can still leave a
+waiting worker at the manual10-second handshake. The test now first waits for the actual app's existing60-second
+Ready-offline contract and a settled registration (no installing/waiting worker, current===activated active), then
+performs the exact-current readiness handshake. It inspects BUILD/CACHE again after this settles and records all
+worker identities/states on failure. The data/hash/offline criteria and bounded exact-response check remain.

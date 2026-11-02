@@ -92,6 +92,10 @@ function assertRecords(expected,actual){
 async function loadModule(){await page.evaluate(address=>import(address).then(m=>m.listShots()),albumAddress);}
 async function readyUI(){await page.waitForFunction(()=>!!window.pocketCamera,null,{timeout:60000});}
 async function albumUI(){const welcome=page.locator('#welcomeAlbum');if(await welcome.isVisible())await welcome.click();else await page.click('#roll');await page.waitForFunction(()=>window.pocketCamera.state.mode==='album');}
+async function inspectWorkers(label){
+ const workers=await Promise.all(context.serviceWorkers().map(worker=>worker.evaluate(()=>({url:self.location.href,build:typeof BUILD==='string'?BUILD:null,cache:typeof CACHE==='string'?CACHE:null,active:self.registration.active?.state,waiting:self.registration.waiting?.state,installing:self.registration.installing?.state})).catch(error=>({url:worker.url(),error:error.message}))));
+ (results.workerInspections??=[]).push({label,workers});return workers;
+}
 async function uiRecovery(){
  await profile();await harness();const id=await seed(3,'startup-read-failure'),before=await snapshot();
  await context.addInitScript(()=>{
@@ -209,9 +213,20 @@ try{
      const cache=await caches.open(name),response=await cache.match('/camera/offline.json');if(!response)return false;
      const manifest=await response.json(),keys=new Set((await cache.keys()).map(k=>new URL(k.url).pathname));return manifest.version===expected.version&&manifest.files.every(f=>keys.has(f.url))&&!names.includes('pocket-camera-1');
     },candidate,{timeout:120000});
-    results.workerInspection=await Promise.all(context.serviceWorkers().map(worker=>worker.evaluate(()=>({url:self.location.href,build:typeof BUILD==='string'?BUILD:null,cache:typeof CACHE==='string'?CACHE:null})).catch(error=>({url:worker.url(),error:error.message}))));
+    results.workerInspection=await inspectWorkers('before application navigation');
     if(engineName==='chromium')assert.ok(results.workerInspection.some(worker=>worker.build===candidate.build),'an inspected worker executes the candidate BUILD');
     await page.goto(url+'/camera/');await readyUI();
+    try{
+     await page.waitForFunction(async()=>{
+      const container=navigator.serviceWorker,reg=await container.getRegistration('/camera/'),controller=container.controller;
+      return document.querySelector('#offlineSetting').dataset.state==='ready'&&reg&&!reg.installing&&!reg.waiting&&reg.active?.state==='activated'&&controller===reg.active;
+     },null,{timeout:60000});
+    }catch(error){
+     const workers=await inspectWorkers('application readiness timeout'),state=await page.evaluate(async()=>{const container=navigator.serviceWorker,reg=await container.getRegistration('/camera/');return {offlineState:document.querySelector('#offlineSetting')?.dataset.state,offlineLabel:document.querySelector('#offlineSetting')?.title,controller:{url:container.controller?.scriptURL,state:container.controller?.state},active:{url:reg?.active?.scriptURL,state:reg?.active?.state},waiting:{url:reg?.waiting?.scriptURL,state:reg?.waiting?.state},installing:{url:reg?.installing?.scriptURL,state:reg?.installing?.state},controllerIsActive:container.controller===reg?.active};});
+     results.applicationReadinessFailure={workers,state};console.error('Album application readiness diagnostics '+JSON.stringify(results.applicationReadinessFailure));throw error;
+    }
+    const applicationWorkers=await inspectWorkers('after application registration settled');
+    if(engineName==='chromium')assert.ok(applicationWorkers.some(worker=>worker.build===candidate.build),'after app registration a live worker still executes the candidate BUILD');
     results.updatedController=await page.evaluate(expected=>new Promise((resolve,reject)=>{
      const container=navigator.serviceWorker,observed=[];let settled=false;
      const ask=()=>{const current=container.controller;if(current&&current.state!=='redundant')current.postMessage({type:'CAMERA_OFFLINE_STATUS'});};
