@@ -222,3 +222,32 @@
 .look-settings-body p{font-size:13px;line-height:1.4;color:var(--label-2)}
 .look-settings-button{flex:none;display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--fill);color:var(--label)}
 .look-settings-button svg{width:21px;height:21px}
+/* Album backup (backup.js): the album's entry and its sheet. */
+.album .backup-entry{margin-top:24px}.album .backup-entry+.arcade-entry{margin-top:12px}
+.backup-icon{background:#3a4a44;color:#f5d77b}.backup-icon svg{width:24px;height:24px}
+.backup-sheet form{gap:10px}
+.backup-where{margin:0;font-size:14px;line-height:1.45;color:var(--label-2);text-align:center}
+.backup-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.backup-stats div{padding:8px 10px;border-radius:10px;background:var(--surface-2)}
+.backup-stats dt{font-size:12px;color:var(--label-3)}.backup-stats dd{margin:2px 0 0;font-size:15px;font-weight:650;font-variant-numeric:tabular-nums}
+.backup-status{margin:0;min-height:1.4em;text-align:center}.backup-status.error{color:var(--red)}
+.backup-progress{width:100%;height:6px;accent-color:var(--accent)}
+.backup-actions{display:grid;gap:8px;justify-items:center}.backup-actions .pill-button{min-width:200px;min-height:44px;border-radius:22px}
+.backup-note{margin:0;line-height:1.45;text-align:center}
+/* Face stickers (face-stamps.js): the parts, the residents' brows and eyes on paper, the colours and the finish. */
+#funAlign[aria-pressed=true],#funPhoto[aria-expanded=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.mini-seg.fun-parts{grid-template-columns:repeat(4,1fr);margin:6px 0}.mini-seg.fun-finish{grid-template-columns:repeat(2,1fr);margin:8px 0 2px}
+.fun-parts button,.fun-finish button{min-height:44px;font-size:.8125rem}
+.fun-tiles{display:flex;gap:6px;overflow-x:auto;padding:4px 1px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fun-tiles::-webkit-scrollbar{display:none}
+.fun-tiles:empty{display:none}
+.fun-tile{flex:none;display:grid;grid-template-rows:auto auto;justify-items:center;gap:3px;width:68px;min-height:72px;padding:5px 4px 4px;border-radius:12px;background:var(--surface-2);font-size:.6875rem;line-height:1.2;color:var(--label-2)}
+.fun-tile canvas,.fun-tile img,.fun-tile .none{width:60px;height:40px;border-radius:8px;background:#efe4d2;object-fit:contain}
+.fun-tile .none{display:grid;place-items:center;color:#8a7a68;font-size:1.25rem}
+.fun-tile[aria-checked=true]{color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.fun-colours{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 4px}.fun-colours:empty{display:none}
+.fun-colours button{display:grid;place-items:center;min-width:44px;min-height:44px;border-radius:22px;background:transparent}
+.fun-colours button i{width:26px;height:26px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+.fun-colours button[aria-checked=true] i{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+.fun-sliders label{grid-template-columns:4em minmax(0,1fr) 3.6em}
+.stamps-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.stamps-art[hidden]{display:none}

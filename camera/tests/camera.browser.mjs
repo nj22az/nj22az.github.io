@@ -29,9 +29,9 @@ async function clearSamplesForRegression(page,label){
  await check(`${label}: both samples seed once and stay deleted`,async()=>{
   const before=await page.evaluate(()=>window.pocketCamera.state.shots.filter(s=>s.id.startsWith('sample:harbour-')).map(s=>({id:s.id,look:s.recipe.layers[0].look,source:s.source.size,photo:s.photo.size})));
   assert.equal(before.length,2);assert.deepEqual(new Set(before.map(s=>s.look)),new Set(['none','adventureInk']));assert.ok(before.every(s=>s.source>0&&s.photo>0));
-  await page.evaluate(async()=>{const album=await import('/camera/album.js?v=20261029c');for(const s of await album.listShots())if(s.id.startsWith('sample:harbour-'))await album.deleteShot(s.id);});
+  await page.evaluate(async()=>{const album=await import('/camera/album.js?v=20261102fun1');for(const s of await album.listShots())if(s.id.startsWith('sample:harbour-'))await album.deleteShot(s.id);});
   await page.reload();await page.waitForFunction(()=>!!window.pocketCamera,null,{timeout:20000});
-  const remaining=await page.evaluate(async()=>{const album=await import('/camera/album.js?v=20261029c');await album.ensureAlbumSamples();return (await album.listShots()).filter(s=>s.id.startsWith('sample:harbour-')).length;});
+  const remaining=await page.evaluate(async()=>{const album=await import('/camera/album.js?v=20261102fun1');await album.ensureAlbumSamples();return (await album.listShots()).filter(s=>s.id.startsWith('sample:harbour-')).length;});
   assert.equal(remaining,0,'deleted samples do not reappear');
  });
 }

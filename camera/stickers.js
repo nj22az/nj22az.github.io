@@ -20,14 +20,17 @@ const MANIFEST=new URL('./stickers/stickers.json?v=20261031-contour1',import.met
 // The camera's own sheet of manga marks (tools/draw-manga-marks.py): under the Manga tab with the lines, never a deck
 // for Memory or a greeting (its `kind`).
 const MARKS=new URL('./stickers/marks.json',import.meta.url);
+// The camera's Halloween sheet (tools/blender/render-halloween-stickers.py): World's Halloween things and new ones,
+// modelled in Blender. Its tab is Halloween; its headpieces (entries with `hat`) are also face stickers (face-stamps.js).
+const SEASON=new URL('./stickers/halloween.json',import.meta.url);
 let loading;
 const byId=new Map(),images=new Map();
 
 /** The sticker sets, loaded once. */
 export function loadStickerSets(){
  loading??=Promise.all([fetch(MANIFEST).then(r=>{if(!r.ok)throw new Error('No stickers');return r.json();}),
-  fetch(MARKS).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([m,own])=>{
-  if(own?.stickers?.length)m.sets.push(own);
+  fetch(MARKS).then(r=>r.ok?r.json():null).catch(()=>null),fetch(SEASON).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([m,...own])=>{
+  for(const sheet of own)if(sheet?.stickers?.length)m.sets.push(sheet);
   for(const set of m.sets)for(const s of set.stickers){
    s.url=new URL(`./stickers/${s.src}`,import.meta.url).href;s.thumbUrl=new URL(`./stickers/${s.thumb}`,import.meta.url).href;s.set=set.name;s.who=set.who??set.name;byId.set(s.id,s);
   }

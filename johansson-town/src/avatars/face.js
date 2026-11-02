@@ -204,7 +204,8 @@ export function drawFace(ctx,recipe,state={}){
  ctx.restore();
 }
 
-function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
+/** One eye, as drawFace draws it (also Pocket Camera's face stickers, camera/face-stamps.js). */
+export function drawEye(ctx,x,y,s,side,eyes,state,look,tilt,width=1){
  // The funny faces' eyes: the person's own eye under a lid or with a twinkle, or a symbol in its place.
  if(FUNNY_EYES.has(state)){funnyEye(ctx,x,y,s,side,eyes,state,look,tilt,width);return;}
  const style=eyes.style,line='#2b2623';
@@ -451,7 +452,8 @@ function drawMarks(ctx,L,skin,marks,mouthDY=0){
  ctx.restore();
 }
 
-function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
+/** One brow, as drawFace draws it (also Pocket Camera's face stickers, camera/face-stamps.js). */
+export function drawBrow(ctx,x,y,s,side,brows,tilt,mood){
  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
  // Positive mood tilts the inner end down (cross), negative lifts it (worried, sad). The inner end is toward the nose
  // (-side), and a positive canvas turn moves +x down: so the mood turns the brow by -side (it had the sign the wrong way

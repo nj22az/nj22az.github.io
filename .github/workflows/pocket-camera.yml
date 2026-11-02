@@ -2,7 +2,7 @@ name: Pocket Camera regression
 
 on:
   pull_request:
-    paths: ['camera/**', 'tools/render-camera-looks.mjs', 'tools/build-camera-offline.mjs', '.github/workflows/pocket-camera.yml']
+    paths: ['camera/**', 'tools/render-camera-looks.mjs', 'tools/build-camera-offline.mjs', 'johansson-town/src/avatars/face.js', '.github/workflows/pocket-camera.yml']
   workflow_dispatch:
 
 permissions:
@@ -31,6 +31,8 @@ jobs:
             suites: offline
           - job: camera-retouch
             suites: retouch screens
+          - job: camera-face-backup
+            suites: face-stamps backup
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -47,6 +49,7 @@ jobs:
             tools
             johansson-town/src/render
             johansson-town/src/ui
+            johansson-town/src/avatars
             johansson-town/tools/mcp
             assets/images
             assets/mascots

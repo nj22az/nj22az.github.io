@@ -105,6 +105,16 @@ when saving ? I want memory with our own photos or with the stickers".
 - **Album**: two sample photos (the original and Adventure Ink) are added once, including to existing albums. They can be edited or deleted; deleted samples do not reappear. Kept in this browser (IndexedDB), nothing uploaded. Each photo keeps its untouched picture and its
   recipe, so **Edit** starts again from the original with every Look, setting and sticker where it was. Share (the
   system sheet, so a phone can save to Photos or choose a social app) or download.
+- **Album backup** (`backup.js`, `zip.js`; the owner, 2 November 2026: "start with backup"): the album's **Album
+  backup** row opens a sheet that says where this album lives (on an iPhone the Home Screen app and Safari keep
+  separate albums), how many photos and own stickers it holds, the space used and whether the browser has promised to
+  keep it. **Back up album** packs one ZIP: every photo's untouched original, its finished picture and thumbnail, its
+  recipe (JSON) and the own stickers, each picture byte for byte and once only. **Save backup** then opens the share
+  sheet (Save to Files on an iPhone) or downloads it; two taps, because packing takes longer than a phone lets a tap
+  open the share sheet. **Restore from a backup** adds every photo and sticker the album does not have, by id, after
+  checking each picture's checksum; it never replaces or deletes one (a photo edited since keeps its newer self). A
+  damaged or foreign file is refused with a message. The row remembers the day of the last saved backup. Plain stored
+  ZIP, readable by any unzip tool; at most 4 GB and 65,535 files.
 
 - **Save and Share**: Save and the shutter store photos directly in the app's album. **Share** opens the phone's
   system sheet, where Photos/Save Image and other apps are available. The optional printer accompanies Share and
@@ -335,6 +345,32 @@ techniques, drawn here:
   !, ?, !?, gloom lines, blush and a music note, drawn in Python with an ink line and a white edge. They go in small,
   by a face, and are never a deck for Memory or a greeting.
 
+## Face stickers
+
+The owner (2 November 2026): "I also want fun effects like Manga eyes, evil eyebrows, Halloween cute stickers etc
+(maybe things can be brought from the avatar creator and Johansson World?)", then "Imagine using stickers for the
+eyebrows from the avatar creator". Adjust → **Face stickers** (`face-stamps.js`), on the same face guide as Makeup
+(Find face, or Align face and put the guide's two eyes on the photo's pupils):
+
+- **Brows**: the avatar creator's twelve brow styles, drawn by World's own face painter (`drawBrow` in
+  `johansson-town/src/avatars/face.js`, imported, never copied, so a brow redrawn in the Studio is redrawn here), with
+  **Mood** from Worried through Calm and Cross to **Evil** (face.js's own moods: angry 1.4, scheme 1.7, raging 1.9),
+  Size, Height and five inks (Ink, Brown, Ginger, Blonde, Witch). A photographed brow is about twice a resident's length,
+  so the mood turns it a little over half as far (evil about 30°, not 52°, which stood them on end).
+- **Eyes**: the residents' eyes over the photo's eyes (`drawEye`): Sparkle, Doe, Starry, and the funny faces' Hearts,
+  Stars, Dizzy, Shock and Bawling, with Size and World's iris colours.
+- **Shine**: manga catchlights in the photo's own eyes: the window's light high on the iris, on the same side in both
+  eyes, its small reflection low on the other side, and a little star when strong.
+- **Hat**: the Halloween sheet's headpieces (witch hat, cat ears, pumpkin stem), their crown on the head's crown
+  (1.75 eye-spans above the eyes), as wide as the head (2.4 eye-spans), at the eyes' angle; Size and Height.
+- **Finish**: **Drawn on** puts them into the picture before the Looks (Manga inks the brows, Pocket prints them in four
+  greens); **Sticker** lays them on top with the sheets' white die-cut rim, like the residents' stickers.
+
+The face is laid on the photo by its two eyes: the residents' 256-unit face (eyes 76 apart at y 104, brows at y 70) is
+turned, scaled and moved so its eyes are the photo's eyes. Everything is vector, drawn at the photo's own size, so a
+16 MP save is sharp. The recipe keeps `stamps` with the photo; Original hides them; Reset takes them all off; the
+original photo is never changed. Nothing is uploaded and no model is downloaded: the same bundled detector as Makeup.
+
 ## How it works
 
 | File | Purpose |
@@ -346,6 +382,8 @@ techniques, drawn here:
 | `frames.js` | The frames, drawn over a picture of any size |
 | `lettering.js` | Balloons and captions, laid out and drawn |
 | `cutout.js` | The photographer's own pictures to die-cut stickers |
+| `face-stamps.js` | Face stickers: World's brows and eyes, manga shine and Halloween hats on the face guide |
+| `backup.js`, `zip.js` | Album backup: one stored ZIP of originals, photos, recipes and own stickers; restore adds, never replaces |
 | `fonts/` | Baloo 2, subset to Latin and Vietnamese (SIL OFL 1.1, `OFL-Baloo2.txt`) |
 | `stickers/` | Web copies of the studio's sticker sheets and `stickers.json` (built, see below) |
 | `preview.jpg`, `card.webp`, `card-narrow.webp` | Link preview and the homepage card, from `tools/render-camera-preview.mjs` |
@@ -388,6 +426,10 @@ node camera/tests/enhance.browser.mjs         # reversible strength, crop/export
 node camera/tests/sticker-contour.browser.mjs # catalogue, pale shoes, thin own-sticker rims and preview/export
 node camera/tests/integration.browser.mjs     # full/LIGHT matrix, mixed thumbnails, exact JPEG/Share bytes, retained recipes
 node camera/tests/paper.browser.mjs           # paper preview/export agreement, colour/black retention, persistence and controls
+node camera/tests/zip.test.mjs                 # the backup ZIP: round trip, checksums, a standard reader, damage, foreign files
+node camera/tests/backup.browser.mjs           # backup sheet, share/download, byte-for-byte restore, never replacing newer edits
+node camera/tests/face-stamps.test.mjs         # face stickers' recipe, World's parts and the face geometry
+node camera/tests/face-stamps.browser.mjs      # brows, eyes, shine and hats on the real portrait; finishes, save, re-edit, phone width
 node camera/tests/blackjack.test.mjs         # scores and hand flow
 node camera/tests/solitaire.test.mjs         # Klondike dealing and move rules
 node camera/tests/camera.browser.mjs         # real Chromium with a fake camera, phone-browser sizes, phone and desktop (needs ffmpeg for the photo feed)

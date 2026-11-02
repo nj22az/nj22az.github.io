@@ -3,14 +3,14 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101screen1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261102fun1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
-import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
+import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
 import {lookIcon} from './look-icons.js?v=20261031retouch1';
 import {prepareOffline} from './offline.js?v=20261031retouch1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261031-contour1';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261102fun1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
 import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261029f';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
@@ -19,10 +19,12 @@ import {createEraser} from './erase.js?v=20261031retouch1';
 import {normaliseMakeup,applyMakeup,detectMakeupFace} from './makeup.js?v=20261031retouch1';
 import {createMakeupGuide} from './makeup-guide.js?v=20261031retouch1';
 import {createPrinter} from './printer.js?v=20261030share1';
+import {normaliseStamps,stampsActive,stampsSummary,drawFaceStamps,loadStampImages,stampImages,hatChoices,partPreview,moodLabel,BROW_STYLES,BROW_LABELS,BROW_COLOURS,EYE_STYLES,EYE_COLOURS} from './face-stamps.js?v=20261102fun1';
 import {createMemory} from './memory.js?v=20261029q';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
 import {createBlackjack} from './blackjack.js?v=20261029b';
 import {createSolitaire} from './solitaire.js?v=20261029c';
+import {makeBackup,restoreBackup,albumStorage,formatBytes} from './backup.js?v=20261102fun1';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -532,6 +534,7 @@ function drawEditor(){
  const recipe=plain?normalRecipe():e.recipe;
  dirty=!engine.draw(recipe,{source:e.makeupRendered&&(e.comparing||e.erasing)?'edit-original':'edit',crop});
  makeupGuide.render();
+ paintStamps();
  paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing||e.cropping);
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing&&!e.cropping,e.taken,e.recipe.frame);
 }
@@ -800,6 +803,12 @@ async function finishPhoto(pixels,recipe,date){
  const c=document.createElement('canvas');c.width=pixels.width;c.height=pixels.height;
  const g=c.getContext('2d');g.putImageData(new ImageData(pixels.data,pixels.width,pixels.height),0,0);
  drawFrame(g,recipe.frame,c.width,c.height);
+ // Face stickers with the sticker finish sit on the Looks like the other stickers (drawn ones are in the source already).
+ const stamps=normaliseStamps(recipe.stamps);
+ if(recipe.makeup?.face&&stamps.finish==='sticker'&&stampsActive(stamps)){
+  const images=await loadStampImages(stamps).catch(()=>stampImages),crop=recipe.crop||{x:0,y:0,w:1,h:1},sw=c.width/crop.w,sh=c.height/crop.h;
+  g.save();g.translate(-crop.x*sw,-crop.y*sh);drawFaceStamps(g,stamps,recipe.makeup.face,sw,sh,{images,finish:'sticker'});g.restore();
+ }
  const missing=await drawStickers(g,c.width,c.height,recipe.stickers);
  if(missing)toast(missing===1?'A sticker could not be loaded and is left off':`${missing} stickers could not be loaded and are left off`,{ms:2600});
  if(recipe.stamp)printStamp(g,frameInner(recipe.frame,c.width,c.height),date);
@@ -954,6 +963,70 @@ function openCardGame(kind){
  activeCardGame.start();
 }
 $('openCardGames').addEventListener('click',openCardsHub);
+
+// ---------- Album backup (backup.js) ----------
+// Two taps on purpose: packing a whole album takes longer than an iPhone keeps a tap's permission to open the share
+// sheet, so Back up album prepares the file and Save backup shares (Save to Files) or downloads it at once.
+let backupFile=null,backupBusy=false;
+const backupDay=iso=>{try{return new Date(iso).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});}catch{return '';}};
+function renderBackupSummary(){
+ const last=store.read().lastBackup;
+ $('backupSummary').textContent=last?`Last saved ${backupDay(last)} · save a new one, or restore`:'Save every photo and sticker to one file, or restore one';
+}
+function backupProgress(text,fraction=null){
+ const status=$('backupStatus'),bar=$('backupProgress');
+ status.textContent=text;status.classList.remove('error');bar.hidden=fraction==null;if(fraction!=null)bar.value=fraction;
+}
+function backupError(err){backupProgress('');$('backupStatus').textContent=err?.message||'The backup could not be made';$('backupStatus').classList.add('error');}
+function setBackupBusy(on){backupBusy=on;for(const id of ['backupMake','backupSave','backupRestore','backupDone'])$(id).disabled=on;}
+async function renderBackupInfo(){
+ const info=await albumStorage().catch(()=>null);
+ $('backupWhere').textContent=info?.standalone
+  ?'This album is kept by the Pocket Camera app on your Home Screen. Safari keeps a separate album for this site.'
+  :'This album is kept by this browser on this device. On an iPhone, the Home Screen app keeps a separate album.';
+ const rows=[['Photos',info?String(info.photos):'–'],['Your stickers',info?String(info.stickers):'–'],
+  ['Space used',info?.usage!=null?formatBytes(info.usage):'Not reported'],['Kept by the browser',info?.persisted===true?'Yes':info?.persisted===false?'Not guaranteed':'Not reported']];
+ $('backupStats').replaceChildren(...rows.map(([k,v])=>{const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=k;dd.textContent=v;row.append(dt,dd);return row;}));
+}
+function openBackup(){
+ sound('tick');backupFile=null;$('backupSave').hidden=true;$('backupMake').hidden=false;backupProgress('');
+ renderBackupInfo();openSheet($('backupSheet'));
+}
+function backupSaved(text){backupProgress(text);store.write({...store.read(),lastBackup:new Date().toISOString()});renderBackupSummary();}
+$('openBackup').addEventListener('click',openBackup);
+$('backupMake').addEventListener('click',async()=>{
+ if(backupBusy)return;setBackupBusy(true);
+ try{
+  const made=await makeBackup({version:$('camera')?.querySelector('.camera-version')?.textContent||'',progress:backupProgress});
+  backupFile=made.file;
+  backupProgress(`Ready: ${made.photos} ${made.photos===1?'photo':'photos'} and ${made.stickers} ${made.stickers===1?'sticker':'stickers'}, ${formatBytes(backupFile.size)}.`);
+  $('backupMake').hidden=true;$('backupSave').hidden=false;
+  $('backupSave').textContent=canShareFiles(backupFile)?'Save backup…':'Download backup';
+ }catch(err){backupError(err);}
+ finally{setBackupBusy(false);if(!$('backupSave').hidden)$('backupSave').focus();}
+});
+$('backupSave').addEventListener('click',()=>{
+ if(!backupFile||backupBusy)return;sound('tick');
+ if(canShareFiles(backupFile))navigator.share({files:[backupFile],title:'Pocket Camera backup'}).then(()=>backupSaved('Backup saved.'))
+  .catch(err=>{if(err?.name!=='AbortError'){download(backupFile);backupSaved('Backup downloaded.');}});
+ else{download(backupFile);backupSaved('Backup downloaded. Keep it somewhere safe.');}
+});
+$('backupRestore').addEventListener('click',()=>{if(!backupBusy)$('backupFile').click();});
+$('backupFile').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];e.target.value='';if(!file)return;
+ setBackupBusy(true);
+ try{
+  const r=await restoreBackup(file,{progress:backupProgress});
+  albumRevision++;await refreshShots();await loadMine();
+  const parts=[r.photos&&`${r.photos} ${r.photos===1?'photo':'photos'}`,r.stickers&&`${r.stickers} ${r.stickers===1?'sticker':'stickers'}`].filter(Boolean);
+  backupProgress(parts.length?`Restored ${parts.join(' and ')}${r.kept?`; ${r.kept} already in the album`:''}.`:'Everything in this backup is already in the album.');
+  renderBackupInfo();sound('pop');
+ }catch(err){backupError(err);}
+ finally{setBackupBusy(false);}
+});
+$('backupSheet').addEventListener('click',e=>{if(e.target===e.currentTarget&&!backupBusy)e.currentTarget.close();});
+$('backupSheet').addEventListener('cancel',e=>{if(backupBusy)e.preventDefault();});
+renderBackupSummary();
 $('closeCardsHub').addEventListener('click',openAlbum);
 $('closeCardGame').addEventListener('click',openCardsHub);
 $('chooseMemory').addEventListener('click',()=>openMemory(true));
@@ -1072,6 +1145,8 @@ function openEditor({picture,width,height,recipe,shotId,taken,sourceBlob}){
  updateEditSource();
  eraser.reset();$('eraseUndo').disabled=true;
  $('makeupControls').hidden=true;$('makeupPhoto').setAttribute('aria-expanded','false');renderMakeup();
+ $('funControls').hidden=true;$('funPhoto').setAttribute('aria-expanded','false');renderFun();
+ const opened=state.edit;loadStampImages(opened.recipe.stamps).then(()=>{if(state.edit===opened){opened.stampsDirty=true;invalidate();}}).catch(()=>{});
  show('editor');showEnhanceStrength(false);selectFrameFinish('paper');$('compareOriginal').setAttribute('aria-pressed','false');$('original').hidden=true;selectTab('looks');renderAdjusters();renderFramePanel();editStickers.select(null);
  if(state.edit.recipe.stickers.length)loadStickerSets().then(()=>editStickers.render()).catch(()=>{});
 }
@@ -1139,6 +1214,7 @@ $('saveEdit').addEventListener('click',async()=>{
   // An erased photo keeps its erased picture as its source, so it opens again as it was left.
   if(e.erased)e.sourceBlob=await toBlob(e.picture,'image/jpeg',.95);
   const output=photoSize(recipe.crop.w*e.width,recipe.crop.h*e.height);
+  await loadStampImages(recipe.stamps).catch(()=>{});e.stampsDirty=true;
   updateEditSource(true);
   const {photo,thumb}=await finishPhoto(engine.render(recipe,{source:'edit',crop:recipe.crop,...output}),recipe,e.taken);
   const shot=await keep({photo,source:e.sourceBlob,thumb,recipe,...output,taken:e.taken.getTime(),edited:Date.now()});
@@ -1268,10 +1344,16 @@ const stickerLayer=()=>state.mode==='editor'?editStickers:state.mode==='camera'?
 // Makeup is prepared once when its controls or the underlying photo change. The recipe retains the source and
 // placement, so colour/smoothing remain reversible after saving and reopening a copy.
 function updateEditSource(full=false){
- const e=state.edit;if(!e||!engine||engine.lost()||(!e.makeupDirty&&e.makeupFull===full))return;
+ const e=state.edit;if(!e||!engine||engine.lost()||(!e.makeupDirty&&!e.stampsDirty&&e.makeupFull===full))return;
  const m=e.recipe.makeup,active=!!m.face&&(m.skin||m.lips||m.blush);
+ // Face stickers drawn on the photo go in after the makeup, before the Looks; changing only them keeps the makeup pass.
+ const stamps=normaliseStamps(e.recipe.stamps),drawn=!!m.face&&stamps.finish==='drawn'&&stampsActive(stamps);
+ // (Turning drawn stickers on or off rebuilds the base: a large photo is previewed at 1,280 px while anything is drawn on it.)
+ if(!e.makeupDirty&&e.makeupFull===full&&e.makeupBase&&e.baseDrawn===drawn){
+  composeEditSource(e,stamps,drawn);e.stampsDirty=false;return;
+ }
  let source=e.picture;
- if(active&&!full&&Math.max(e.width,e.height)>1280){
+ if((active||drawn)&&!full&&Math.max(e.width,e.height)>1280){
   if(!e.makeupPreview||e.makeupPreviewDirty){
    const c=e.makeupPreview||document.createElement('canvas'),scale=1280/Math.max(e.width,e.height);
    c.width=Math.round(e.width*scale);c.height=Math.round(e.height*scale);c.getContext('2d').drawImage(e.picture,0,0,c.width,c.height);
@@ -1279,14 +1361,41 @@ function updateEditSource(full=false){
   }
   source=e.makeupPreview;
  }
- const prepared=active?applyMakeup(source,m,e.makeupCanvas):e.picture;
+ const base=active?applyMakeup(source,m,e.makeupCanvas):source;
+ if(active)e.makeupCanvas=base;else if(e.makeupCanvas){e.makeupCanvas.width=e.makeupCanvas.height=1;e.makeupCanvas=null;}
+ e.makeupBase=base;e.baseDrawn=drawn;e.makeupDirty=false;e.stampsDirty=false;e.makeupFull=full;
+ composeEditSource(e,stamps,drawn);
+}
+/** The edit source from the makeup pass and the drawn face stickers; the original is kept beside it for comparing. */
+function composeEditSource(e,stamps,drawn){
+ let prepared=drawn?e.makeupBase:e.makeupCanvas||e.picture;
+ if(drawn){
+  const c=e.stampCanvas||(e.stampCanvas=document.createElement('canvas')),w=prepared.width,h=prepared.height;
+  if(c.width!==w||c.height!==h){c.width=w;c.height=h;}
+  const g=c.getContext('2d');g.clearRect(0,0,w,h);g.drawImage(prepared,0,0,w,h);
+  drawFaceStamps(g,stamps,e.recipe.makeup.face,w,h,{images:stampImages,finish:'drawn'});   // a hat not loaded yet is drawn when it arrives (setStamps)
+  prepared=c;
+ }else if(e.stampCanvas){e.stampCanvas.width=e.stampCanvas.height=1;e.stampCanvas=null;}
  e.makeupRendered=prepared!==e.picture;
  if(e.makeupRendered){
-  e.makeupCanvas=prepared;
   if(!engine.hasSource('edit-original')||e.originalRevision!==e.sourceRevision){engine.setSource('edit-original',e.picture,e.width,e.height);e.originalRevision=e.sourceRevision;}
- }
- else{engine.dropSource('edit-original');if(e.makeupCanvas){e.makeupCanvas.width=e.makeupCanvas.height=1;e.makeupCanvas=null;}}
- engine.setSource('edit',prepared,prepared.width,prepared.height);e.makeupDirty=false;e.makeupFull=full;
+ }else engine.dropSource('edit-original');
+ engine.setSource('edit',prepared,prepared.width,prepared.height);
+}
+// Face stickers with the sticker finish: a layer over the photo in the editor, printed by finishPhoto on a save.
+const stampsArt=document.createElement('canvas');stampsArt.className='stamps-art';stampsArt.setAttribute('aria-hidden','true');stampsArt.hidden=true;
+$('editFrame').insertBefore(stampsArt,$('editFrame').querySelector('.stickers'));
+function paintStamps(){
+ const e=state.edit,art=stampsArt;if(!e){art.hidden=true;return;}
+ const stamps=normaliseStamps(e.recipe.stamps),face=e.recipe.makeup.face;
+ const show=!!face&&stamps.finish==='sticker'&&stampsActive(stamps)&&!e.comparing&&!e.erasing&&!e.cropping;
+ art.hidden=!show;if(!show)return;
+ const frame=$('editFrame'),dpr=Math.min(3,devicePixelRatio||1),w=Math.round(frame.clientWidth*dpr),h=Math.round(frame.clientHeight*dpr);
+ if(!w||!h)return;
+ if(art.width!==w||art.height!==h){art.width=w;art.height=h;}
+ const g=art.getContext('2d'),crop=e.recipe.crop,sw=w/crop.w,sh=h/crop.h;
+ g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,w,h);g.translate(-crop.x*sw,-crop.y*sh);
+ drawFaceStamps(g,stamps,face,sw,sh,{images:stampImages,finish:'sticker'});g.setTransform(1,0,0,1,0,0);
 }
 const makeupGuide=createMakeupGuide($('editFrame'),{edit:()=>state.edit,changed:()=>{const e=state.edit;if(!e||e.saving)return;e.makeupDirty=true;renderMakeup();refreshThumbs(true);invalidate();}});
 function renderMakeup(message){
@@ -1317,18 +1426,18 @@ function setMakeupAlignment(on){
  }
  e.aligning=!!on;makeupGuide.active=!!on;
  editStickers.hidden=!!on||e.comparing||e.erasing||e.cropping;
- renderMakeup();invalidate();
+ renderMakeup();renderFun();invalidate();
 }
 async function findMakeupFace(){
  const e=state.edit;if(!e||e.saving||e.detecting||eraser.working)return;
- const source=e.picture,task={};e.detecting=task;renderMakeup('Finding a face on this device…');
+ const source=e.picture,task={};e.detecting=task;faceMessage('Finding a face on this device…');
  try{
   await nextFrame();const result=await detectMakeupFace(source);
-  if(state.edit!==e||e.picture!==source||e.detecting!==task||e.saving||$('panelAdjust').hidden||$('makeupControls').hidden)return;
-  if(result.face){e.recipe.makeup.face=result.face;e.makeupDirty=true;setMakeupAlignment(true);renderMakeup('Face found. Align the eyes and lips, then adjust the effects.');}
-  else renderMakeup('No clear face found. Use Align face to place the guide manually.');
- }catch{if(state.edit===e)renderMakeup('Face detection is unavailable. Use Align face.');}
- finally{if(state.edit===e&&e.detecting===task){e.detecting=null;const hint=$('makeupHint').textContent;renderMakeup(hint);invalidate();}}
+  if(state.edit!==e||e.picture!==source||e.detecting!==task||e.saving||$('panelAdjust').hidden||($('makeupControls').hidden&&$('funControls').hidden))return;
+  if(result.face){e.recipe.makeup.face=result.face;e.makeupDirty=true;setMakeupAlignment(true);faceMessage('Face found. Check the eyes sit on the eyes, then choose.');}
+  else faceMessage('No clear face found. Use Align face to place the guide manually.');
+ }catch{if(state.edit===e)faceMessage('Face detection is unavailable. Use Align face.');}
+ finally{if(state.edit===e&&e.detecting===task){e.detecting=null;renderMakeup($('makeupHint').textContent);renderFun($('funHint').textContent);invalidate();}}
 }
 $('makeupPhoto').addEventListener('click',()=>{
  const e=state.edit;if(!e||e.saving)return;
@@ -1349,6 +1458,104 @@ $('makeupAngle').addEventListener('input',ev=>{const e=state.edit;if(!e?.recipe.
 for(const [name,key] of [['Width','w'],['Height','h']])$('makeupMouth'+name).addEventListener('input',ev=>{
  const e=state.edit;if(!e?.recipe.makeup.face||e.saving)return;e.recipe.makeup.face.mouth[key]=ev.target.value/100;e.makeupDirty=true;renderMakeup();invalidate();
 });
+/** One face guide, two sections: Find face speaks in both. */
+function faceMessage(text){renderMakeup(text);renderFun(text);}
+
+// ---------- Face stickers (face-stamps.js) ----------
+// The residents' brows and eyes and the Halloween headpieces, on the same face guide as Makeup. A style is chosen from
+// small pictures drawn by World's own face painter; sliders change the recipe without rebuilding the row they sit in.
+let funPart='brows',funTiles=[],funRender=0;
+const FUN_SLIDERS={
+ brows:[{key:'mood',label:'Mood',min:-150,max:190,step:5,get:s=>s.brows.mood*100,set:(s,v)=>{s.brows.mood=v/100;},text:v=>moodLabel(v/100)},
+  {key:'size',label:'Size',min:50,max:180,step:1,get:s=>s.brows.size*100,set:(s,v)=>{s.brows.size=v/100;},text:v=>Math.round(v)+'%'},
+  {key:'height',label:'Height',min:-100,max:100,step:1,get:s=>s.brows.height*100,set:(s,v)=>{s.brows.height=v/100;},text:v=>(v>0?'+':'')+Math.round(v)}],
+ eyes:[{key:'size',label:'Size',min:60,max:160,step:1,get:s=>s.eyes.size*100,set:(s,v)=>{s.eyes.size=v/100;},text:v=>Math.round(v)+'%'}],
+ shine:[{key:'shine',label:'Shine',min:0,max:100,step:1,get:s=>s.shine*100,set:(s,v)=>{s.shine=v/100;},text:v=>Math.round(v)+'%'}],
+ hat:[{key:'size',label:'Size',min:60,max:160,step:1,get:s=>s.hat.size*100,set:(s,v)=>{s.hat.size=v/100;},text:v=>Math.round(v)+'%'},
+  {key:'height',label:'Height',min:-100,max:100,step:1,get:s=>s.hat.height*100,set:(s,v)=>{s.hat.height=v/100;},text:v=>(v>0?'+':'')+Math.round(v)}],
+};
+const partOn=(s,part)=>part==='brows'?s.brows.style!=='none':part==='eyes'?s.eyes.style!=='none':part==='hat'?s.hat.id!=='none':true;
+/** Changes the face stickers; the first one on a photo without a placed face looks for the face first. */
+function setStamps(change,{rebuild=true}={}){
+ const e=state.edit;if(!e||e.saving)return null;
+ const s=normaliseStamps(e.recipe.stamps);change(s);e.recipe.stamps=s;e.stampsDirty=true;invalidate();
+ if(!e.recipe.makeup.face&&stampsActive(s)&&!e.detecting)findMakeupFace();
+ if(s.hat.id!=='none'&&!stampImages.has(s.hat.id))loadStampImages(s).then(()=>{if(state.edit===e){e.stampsDirty=true;invalidate();}}).catch(()=>toast('The hat could not be loaded'));
+ if(rebuild){renderFun();if(s.finish==='drawn')refreshThumbs(true);}
+ else $('funSummary').textContent=stampsSummary(s);
+ return s;
+}
+function renderFun(message){
+ const e=state.edit;if(!e)return;
+ const s=normaliseStamps(e.recipe.stamps),placed=!!e.recipe.makeup.face;
+ $('funSummary').textContent=stampsSummary(s);
+ $('funAlign').setAttribute('aria-pressed',String(!!e.aligning));
+ $('funDetect').disabled=!!e.detecting;$('funDetect').textContent=e.detecting?'Finding…':'Find face';
+ for(const b of $('funParts').children)b.setAttribute('aria-checked',String(b.dataset.part===funPart));
+ for(const b of $('funFinish').children)b.setAttribute('aria-checked',String(b.dataset.finish===s.finish));
+ if(message)$('funHint').textContent=message;
+ else if(e.aligning)$('funHint').textContent='Drag the oval and the two eyes onto the face: brows, eyes and hats follow the eyes.';
+ else if(!placed)$('funHint').textContent='Find a face, or align the guide manually.';
+ else $('funHint').textContent=funPart==='shine'?'A manga sparkle in the photo’s own eyes.':'Choose a style. Align face if it sits off.';
+ if(!$('funControls').hidden)renderFunPart(s);
+}
+function funTile(id,label,selected){
+ const b=document.createElement('button');b.type='button';b.className='fun-tile';b.setAttribute('role','radio');
+ b.setAttribute('aria-checked',String(selected));b.dataset.id=id;b.setAttribute('aria-label',label);b.title=label;return b;
+}
+function funLabel(b,label){const t=document.createElement('span');t.textContent=label;b.append(t);return b;}
+function noneTile(selected){const b=funTile('none','None',selected),n=document.createElement('span');n.className='none';n.setAttribute('aria-hidden','true');n.textContent='–';b.append(n);return funLabel(b,'None');}
+function drawFunTiles(s){for(const {canvas,part,id} of funTiles)partPreview(canvas,part,{...s,[part]:{...s[part],style:id}});}
+async function renderFunPart(s){
+ const part=funPart,run=++funRender,tiles=$('funTiles'),colours=$('funColours'),sliders=$('funSliders');
+ tiles.setAttribute('aria-label',{brows:'Brows',eyes:'Eyes',shine:'Shine',hat:'Hat'}[part]);
+ tiles.textContent='';colours.textContent='';sliders.textContent='';funTiles=[];
+ if(part==='brows'||part==='eyes'){
+  const list=part==='brows'?BROW_STYLES.map(id=>({id,label:BROW_LABELS[id]})):EYE_STYLES.map(x=>({id:x.id,label:x.label}));
+  tiles.append(noneTile(s[part].style==='none'));
+  for(const {id,label} of list){const b=funTile(id,label,s[part].style===id),c=document.createElement('canvas');c.width=120;c.height=80;b.append(c);funLabel(b,label);tiles.append(b);funTiles.push({canvas:c,part,id});}
+  drawFunTiles(s);
+  for(const c of part==='brows'?BROW_COLOURS:EYE_COLOURS){
+   const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.colour=c.id;b.setAttribute('aria-label',c.label);b.title=c.label;
+   b.setAttribute('aria-checked',String(s[part].colour===c.id));b.innerHTML='<i></i>';b.firstChild.style.setProperty('--swatch',c.colour);colours.append(b);
+  }
+  colours.setAttribute('aria-label',part==='brows'?'Brow colour':'Iris colour');
+ }else if(part==='hat'){
+  tiles.append(noneTile(s.hat.id==='none'));
+  let hats=[];try{hats=await hatChoices();}catch{hats=[];}
+  if(run!==funRender)return;
+  for(const h of hats){const b=funTile(h.id,h.gloss,s.hat.id===h.id),img=document.createElement('img');img.alt='';img.src=h.thumbUrl;b.append(img);funLabel(b,h.gloss);tiles.append(b);}
+  if(!hats.length){const p=document.createElement('p');p.className='fine';p.textContent='The hats could not be loaded.';tiles.append(p);}
+ }
+ for(const d of FUN_SLIDERS[part]){
+  const label=document.createElement('label'),input=document.createElement('input'),out=document.createElement('output');
+  input.type='range';input.min=d.min;input.max=d.max;input.step=d.step;input.value=Math.round(d.get(s));input.id='fun-'+part+'-'+d.key;input.dataset.key=d.key;
+  input.disabled=!partOn(s,part)&&part!=='shine';out.textContent=d.text(+input.value);out.setAttribute('for',input.id);
+  label.append(d.label,input,out);sliders.append(label);
+ }
+}
+$('funPhoto').addEventListener('click',()=>{
+ const e=state.edit;if(!e||e.saving)return;
+ const open=$('funControls').hidden;$('funControls').hidden=!open;$('funPhoto').setAttribute('aria-expanded',String(open));sound('tick');
+ if(open){renderFun();if(!e.recipe.makeup.face)findMakeupFace();}
+ else if($('makeupControls').hidden){e.detecting=null;setMakeupAlignment(false);}
+});
+$('funDetect').addEventListener('click',findMakeupFace);
+$('funAlign').addEventListener('click',()=>{if(state.edit&&!state.edit.saving){state.edit.detecting=null;setMakeupAlignment(!state.edit.aligning);}});
+$('funReset').addEventListener('click',()=>{if(!state.edit||state.edit.saving)return;sound('tick');setStamps(s=>Object.assign(s,normaliseStamps({finish:s.finish})));});
+$('funParts').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||!state.edit)return;sound('tick');funPart=b.dataset.part;renderFun();});
+$('funFinish').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;sound('tick');setStamps(s=>{s.finish=b.dataset.finish;});refreshThumbs(true);});
+$('funTiles').addEventListener('click',ev=>{
+ const b=ev.target.closest('.fun-tile');if(!b)return;sound('tick');const id=b.dataset.id;
+ setStamps(s=>{if(funPart==='hat')s.hat.id=id;else s[funPart].style=id;});
+});
+$('funColours').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;sound('tick');setStamps(s=>{s[funPart].colour=b.dataset.colour;});});
+$('funSliders').addEventListener('input',ev=>{
+ const input=ev.target;if(input.type!=='range')return;const d=FUN_SLIDERS[funPart].find(x=>x.key===input.dataset.key);if(!d)return;
+ const s=setStamps(x=>d.set(x,+input.value),{rebuild:false});if(!s)return;
+ input.nextElementSibling.textContent=d.text(+input.value);if(funPart==='brows')drawFunTiles(s);
+});
+$('funSliders').addEventListener('change',()=>{if(normaliseStamps(state.edit?.recipe.stamps).finish==='drawn')refreshThumbs(true);});
 $('makeupReset').addEventListener('click',()=>{const e=state.edit;if(!e||e.saving)return;e.detecting=null;e.recipe.makeup=normaliseMakeup({face:e.recipe.makeup.face});e.makeupDirty=true;setMakeupAlignment(false);refreshThumbs(true);invalidate();});
 // Erase (erase.js): paint over what should go; the editor's picture changes, the Looks redraw over it.
 const eraser=createEraser($('editFrame'),{
@@ -1413,7 +1620,7 @@ function removeMine(id){
  });
 }
 /** The residents' own sheets: Memory's decks and the greetings come from them, not from the manga marks. */
-const residentSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind!=='marks');
+const residentSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind!=='marks'&&set.kind!=='season');
 /**
  * The sheets by tab: one tab a resident, their other sheets under theirs (the manifest's `tab`), then Manga: the lines
  * (effects.js) and the marks.

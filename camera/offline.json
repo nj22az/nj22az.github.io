@@ -1,21 +1,26 @@
 {
-  "version": "20261101screen1",
-  "bytes": 22689594,
+  "version": "20261102fun1",
+  "bytes": 22808639,
   "files": [
     {
       "url": "/camera/album.js",
-      "sha256": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a",
-      "bytes": 5423
+      "sha256": "59b71fdf1381171fd9f0f8165cf67717bfa386a911462d0c939c684eae42ea4d",
+      "bytes": 6586
     },
     {
       "url": "/camera/app.js",
-      "sha256": "d70e49707e9cf7dfa98b074c5392d64308329c43156c81008e173fa2a84f10dd",
-      "bytes": 106517
+      "sha256": "393b95da509d26cee59fcf46da5179be439ae9af91c52d051a1d0d8389d25b19",
+      "bytes": 123096
     },
     {
       "url": "/camera/assets/memory-card-back.png",
       "sha256": "ef50d6d1f67297cab7b1c232895c4c21a989c667aff8cd23e3ef718be106ec58",
       "bytes": 697
+    },
+    {
+      "url": "/camera/backup.js",
+      "sha256": "8458d6c47787e47ccb0a7660f97f68f7463fb3bea9d7096a895760f36618978e",
+      "bytes": 6629
     },
     {
       "url": "/camera/blackjack.css",
@@ -39,8 +44,8 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "05c1e710a11454618ceecf395d37df77431cdfcc325c6aa0b66462d2f6e389d6",
-      "bytes": 27315
+      "sha256": "c66ec63f81d4a46bb0f0bc8646e270d9c9fa73b4503bdbc3d7137da45c36c29a",
+      "bytes": 30202
     },
     {
       "url": "/camera/camera.css",
@@ -101,6 +106,11 @@
       "url": "/camera/face-detect.js",
       "sha256": "67635471e70c5f588ca3ef2db5eb5898962586aa761fe3ea8755738a4b1f57ba",
       "bytes": 2345
+    },
+    {
+      "url": "/camera/face-stamps.js",
+      "sha256": "c48ee219fea71126e93b0e4ec844ffe471508a35af8a3772cfca1318325b6042",
+      "bytes": 14163
     },
     {
       "url": "/camera/fonts/baloo2.woff2",
@@ -199,8 +209,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "345b443df873a7b827282d495860d37e4d7cc0122e1e5a568ff8854312437df0",
-      "bytes": 31217
+      "sha256": "7998af9a47393ffa804b440f8d171c0d99bca1219f49c7def1dd6b071f1cfd4a",
+      "bytes": 35087
     },
     {
       "url": "/camera/lettering.js",
@@ -219,8 +229,8 @@
     },
     {
       "url": "/camera/looks-gl.js",
-      "sha256": "23019b61cfc2d87aba888b10a2b3c26227037c5a7eda722e4d5eb04497c4bb9a",
-      "bytes": 98157
+      "sha256": "4ad148a99b5225a3971f26b842736a8cfc0cac36c2eb0dbe89f19b14a80db13f",
+      "bytes": 98260
     },
     {
       "url": "/camera/makeup-guide.js",
@@ -319,8 +329,8 @@
     },
     {
       "url": "/camera/stickers.js",
-      "sha256": "1db73d5c397fe59f13f1257ea89a503634e5b78b4aa3b5af16362398545c59ea",
-      "bytes": 17085
+      "sha256": "a70afea1dde84b69b90d2bdb5dd2395a99c8ff0880151734a24014b86d73380b",
+      "bytes": 17480
     },
     {
       "url": "/camera/stickers/johansson-pixar/Bow.thumb.webp",
@@ -1611,6 +1621,16 @@
       "url": "/camera/vendor/pico.js",
       "sha256": "47ac5090f6c5387ba26644bc5e42c46a61931918099e9a686c0bddc92b91be38",
       "bytes": 5607
+    },
+    {
+      "url": "/camera/zip.js",
+      "sha256": "10846f9d5d4e2a8b33004255bd41325c2d0f41b7b00b3046469d5e911b112523",
+      "bytes": 5641
+    },
+    {
+      "url": "/johansson-town/src/avatars/face.js",
+      "sha256": "a7e295f80153466733273c2e322960e670b972144de952753d475429426fc7ef",
+      "bytes": 67615
     },
     {
       "url": "/johansson-town/src/render/illustration-modules.js",

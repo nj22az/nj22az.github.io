@@ -1,5 +1,5 @@
 // Atomic, verified offline bundle. Regenerate with node tools/build-camera-offline.mjs.
-const BUILD='e53d9b6ffe02467ed98a6d9991694dfdf7ec32cd9961a60f88cb39eef05e9f45';
+const BUILD='01b461769fa2a80f9c1e56ef27af0d63a80a655407c984008cf39463d4540101';
 const CACHE='pocket-camera-'+BUILD.slice(0,20),META='/camera/offline.json';
 const digest=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
 let manifest;
@@ -13,7 +13,7 @@ async function download(m,cache,missingOnly=false){
  const queue=[...m.files];
  await Promise.all(Array.from({length:6},async()=>{
   while(queue.length){const file=queue.shift(),url=new URL(file.url,self.location.origin);
-   if(url.origin!==self.location.origin||url.search||url.hash||!/^\/(camera\/|johansson-town\/src\/render\/)/.test(url.pathname))throw Error('Invalid offline asset');
+   if(url.origin!==self.location.origin||url.search||url.hash||!/^\/(camera\/|johansson-town\/src\/render\/|johansson-town\/src\/avatars\/face\.js$)/.test(url.pathname))throw Error('Invalid offline asset');
    if(missingOnly&&await cache.match(url))continue;
    const r=await fetch(url,{cache:'reload'});if(!r.ok||r.type==='opaque')throw Error('Offline asset unavailable: '+file.url);
    const data=await r.clone().arrayBuffer();if(await digest(data)!==file.sha256)throw Error('Offline asset is from another release: '+file.url);
@@ -46,7 +46,7 @@ self.addEventListener('message',event=>{
  })());
 });
 self.addEventListener('fetch',event=>{
- const r=event.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==self.location.origin||!/^\/(camera\/|johansson-town\/src\/render\/)/.test(u.pathname))return;
+ const r=event.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==self.location.origin||!/^\/(camera\/|johansson-town\/src\/render\/|johansson-town\/src\/avatars\/face\.js$)/.test(u.pathname))return;
  event.respondWith((async()=>{
   const started=performance.now(),path=r.mode==='navigate'&&u.pathname==='/camera/'?'/camera/index.html':u.pathname;
   let expired=false,known=false,timer,manifestTime=0,cacheTime=0,networkTime=0;

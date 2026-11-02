@@ -12,7 +12,8 @@ const VENDOR=new Map([
  ['/camera/vendor/pico.NOTICE.txt','text/plain'],
  ['/camera/vendor/pico.LICENSE.txt','text/plain'],
 ]);
-const SHARED=new Set(['render/looks.js','render/print-media-shaders.js','render/illustration-modules.js','ui/look-picker.js','ui/icons.js'].map(file=>'/johansson-town/src/'+file));
+// avatars/face.js: the residents' face painter, which draws the camera's face stickers (camera/face-stamps.js).
+const SHARED=new Set(['render/looks.js','render/print-media-shaders.js','render/illustration-modules.js','ui/look-picker.js','ui/icons.js','avatars/face.js'].map(file=>'/johansson-town/src/'+file));
 function publicFile(path){
  if(path.split('/').some(part=>part.startsWith('.')))return false;
  if(SHARED.has(path)||VENDOR.has(path))return true;

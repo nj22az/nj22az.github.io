@@ -27,16 +27,16 @@ try{
  await page.goto(url+'/camera/offline-seed');
  seed=await page.evaluate(async()=>{
   await(await caches.open('pocket-camera-1')).put('/camera/old',new Response('old'));await(await caches.open('unrelated-app')).put('/keep',new Response('keep'));
-  const {addShot}=await import('/camera/album.js?v=20261029c'),c=document.createElement('canvas');c.width=32;c.height=24;c.getContext('2d').fillRect(0,0,32,24);const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  const {addShot}=await import('/camera/album.js?v=20261102fun1'),c=document.createElement('canvas');c.width=32;c.height=24;c.getContext('2d').fillRect(0,0,32,24);const blob=await new Promise(r=>c.toBlob(r,'image/png'));
   return (await addShot({photo:blob,thumb:blob,source:blob,recipe:{layers:[{look:'none',amount:1}]},width:32,height:24})).id;
  });
  await check('a failed first download does not claim offline readiness or remove previous caches/album',async()=>{
   bad='/camera/stickers/thao-pixar/Peace.webp';await page.goto(url+'/camera/');await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry',null,{timeout:60000});
-  const state=await page.evaluate(async seed=>({old:await caches.has('pocket-camera-1'),other:await caches.has('unrelated-app'),photo:!!(await(await import('/camera/album.js?v=20261029c')).getShot(seed))}),seed);assert.deepEqual(state,{old:true,other:true,photo:true});
+  const state=await page.evaluate(async seed=>({old:await caches.has('pocket-camera-1'),other:await caches.has('unrelated-app'),photo:!!(await(await import('/camera/album.js?v=20261102fun1')).getShot(seed))}),seed);assert.deepEqual(state,{old:true,other:true,photo:true});
  });
  await check('retry downloads a complete verified bundle and preserves other app data',async()=>{
   bad='';await page.click('#settingsToggle');await page.click('#offlineSetting');await ready();
-  const state=await page.evaluate(async seed=>({old:await caches.has('pocket-camera-1'),other:await caches.has('unrelated-app'),photo:!!(await(await import('/camera/album.js?v=20261029c')).getShot(seed))}),seed);assert.deepEqual(state,{old:false,other:true,photo:true});
+  const state=await page.evaluate(async seed=>({old:await caches.has('pocket-camera-1'),other:await caches.has('unrelated-app'),photo:!!(await(await import('/camera/album.js?v=20261102fun1')).getShot(seed))}),seed);assert.deepEqual(state,{old:false,other:true,photo:true});
   await page.screenshot({path:join(shots,'phone-ready-offline.png')});await page.click('#settingsDone');
  });
  await check('cold navigation with a query works with the network disabled',async()=>{
@@ -59,7 +59,7 @@ try{
    const a=window.pocketCamera,e=a.state.edit,m=await import('/camera/looks-gl.js?v=20261031offline1');
    for(const look of m.LOOK_NAMES){const pixels=a.engine.render(m.normalRecipe({layers:[{look,amount:1}]}),{source:'edit',width:64,height:48});if(pixels.data.length!==64*48*4)throw Error('Failed '+look);}
    const source=e.sourceBlob;const match=await a.shuffle();if(!match)throw Error('No offline match');
-   const {loadStickerSets}=await import('/camera/stickers.js?v=20261031-contour1');await loadStickerSets();a.editStickers.add('thao-pixar/Peace');a.editStickers.select(null);e.recipe.crop={x:.1,y:.1,w:.8,h:.8};e.recipe.frame='harbour';e.recipe.paper='warm';a.chooseLook(e.recipe.layers[0].look);
+   const {loadStickerSets}=await import('/camera/stickers.js?v=20261102fun1');await loadStickerSets();a.editStickers.add('thao-pixar/Peace');a.editStickers.select(null);e.recipe.crop={x:.1,y:.1,w:.8,h:.8};e.recipe.frame='harbour';e.recipe.paper='warm';a.chooseLook(e.recipe.layers[0].look);
    return {sameSource:e.sourceBlob===source,looks:m.LOOK_NAMES.length,tested:match.tested,recipe:e.recipe};
   });assert.equal(result.sameSource,true);assert.ok(result.looks>=33&&result.tested>0);await page.screenshot({path:join(shots,'phone-offline-edit.png')});
   await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');saved=await page.evaluate(async()=>{const s=window.pocketCamera.state.viewing;return {id:s.id,type:s.photo.type,bytes:s.photo.size,source:s.source.size,data:await s.photo.arrayBuffer().then(b=>Array.from(new Uint8Array(b)))};});assert.equal(saved.type,'image/jpeg');assert.ok(saved.bytes>1000&&saved.source>1000);await writeFile(join(shots,'offline-saved.jpg'),Buffer.from(saved.data));
@@ -90,7 +90,7 @@ try{
  });
  await check('missing cached files are detected and repaired without touching the album',async()=>{
   await page.evaluate(async()=>{const c=await caches.open((await caches.keys()).find(k=>k.startsWith('pocket-camera-')));await c.delete('/camera/stickers/thao-pixar/Peace.webp');navigator.serviceWorker.controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});});await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry');
-  await page.click('#settingsToggle');await page.click('#offlineSetting');await ready();assert.ok(await page.evaluate(async id=>!!(await(await import('/camera/album.js?v=20261029c')).getShot(id)),saved.id));
+  await page.click('#settingsToggle');await page.click('#offlineSetting');await ready();assert.ok(await page.evaluate(async id=>!!(await(await import('/camera/album.js?v=20261102fun1')).getShot(id)),saved.id));
  });
  await check('a removed offline cache is rebuilt and survives another offline browser restart',async()=>{
   await page.evaluate(async()=>{await caches.delete((await caches.keys()).find(k=>k.startsWith('pocket-camera-')));navigator.serviceWorker.controller.postMessage({type:'CAMERA_OFFLINE_STATUS'});});await page.waitForFunction(()=>document.querySelector('#offlineSetting').dataset.state==='retry');await page.click('#offlineSetting');await ready();

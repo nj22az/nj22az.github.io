@@ -94,3 +94,25 @@ export async function addMine(sticker){
  await transact('readwrite',s=>s.put(record),true,MINE);return record;
 }
 export const deleteMine=id=>transact('readwrite',s=>s.delete(id),true,MINE);
+
+// ---- Backup (backup.js): everything the album keeps, and restoring it without replacing or deleting anything.
+/** The album's own markers (the samples' one-time seeding). */
+export const listMeta=()=>transact('readonly',s=>s.getAll(),true,META);
+const STORES={shots:STORE,stickers:MINE,meta:META};
+/**
+ * Puts a record back into the album only if its id is not there already; resolves true if it was added. A photo edited
+ * since the backup keeps its newer self, and nothing in the album is ever replaced or removed by a restore.
+ */
+export async function restoreRecord(kind,record){
+ const store=STORES[kind];
+ if(!store||typeof record?.id!=='string')throw new TypeError('Not an album record');
+ const d=await db();
+ return new Promise((resolve,reject)=>{
+  let tx,added=false;
+  try{tx=d.transaction(store,'readwrite');}catch(error){opening=null;reject(error);return;}
+  const s=tx.objectStore(store),check=s.getKey(record.id);
+  check.onsuccess=()=>{if(check.result===undefined){s.put(record);added=true;}};
+  tx.oncomplete=()=>resolve(added);
+  tx.onabort=tx.onerror=()=>reject(tx.error||check.error||new Error('The album could not be written'));
+ });
+}
