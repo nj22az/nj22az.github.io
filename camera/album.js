@@ -6,41 +6,100 @@
  */
 const DB='office-pocket-camera',STORE='shots',MINE='stickers',META='metadata';
 const SAMPLE_MARKER='samples:harbour-adventure:v1';
-let opening;
-
+let opening=null,connection=null;
+const STORAGE_TIMEOUT=10000;
+const storageError=(name,message)=>new DOMException(message,name);
+const reconnectable=error=>['InvalidStateError','UnknownError','AbortError','TimeoutError','TransactionInactiveError'].includes(error?.name);
+function forget(d){
+ if(connection===d){connection=null;opening=null;}
+ try{d?.close();}catch{}
+}
 function db(){
- opening??=new Promise((resolve,reject)=>{
-  // Version 3 records one-time sample seeding; existing albums and stickers stay in place.
-  const request=indexedDB.open(DB,3);
-  request.onupgradeneeded=()=>{
-   const d=request.result;
-   if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});
-   if(!d.objectStoreNames.contains(MINE))d.createObjectStore(MINE,{keyPath:'id'});
-   if(!d.objectStoreNames.contains(META))d.createObjectStore(META,{keyPath:'id'});
-  };
-  request.onsuccess=()=>{
-   const d=request.result;
-   // Safari can close the connection behind the page's back; the next call opens it again.
-   d.onclose=()=>{opening=null;};d.onversionchange=()=>{d.close();opening=null;};
-   resolve(d);
-  };
-  request.onerror=()=>{opening=null;reject(request.error);};
+ if(opening)return opening;
+ const attempt=new Promise((resolve,reject)=>{
+  let request,settled=false;
+  const timer=setTimeout(()=>fail(storageError('TimeoutError','The album did not respond. Try opening it again.')),STORAGE_TIMEOUT);
+  function fail(error){if(settled)return;settled=true;clearTimeout(timer);reject(error);}
+  function open(version){
+   try{request=version?indexedDB.open(DB,version):indexedDB.open(DB);}catch(error){fail(error);return;}
+   request.onblocked=()=>fail(storageError('BlockedError','Another Pocket Camera window is holding the album open. Close that window, then retry.'));
+   request.onupgradeneeded=()=>{
+    if(settled||!version){request.transaction.abort();return;}
+    // Version 3 only adds the sample marker store; no existing store or record is replaced.
+    const d=request.result;
+    if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});
+    if(!d.objectStoreNames.contains(MINE))d.createObjectStore(MINE,{keyPath:'id'});
+    if(!d.objectStoreNames.contains(META))d.createObjectStore(META,{keyPath:'id'});
+   };
+   request.onsuccess=()=>{
+    const d=request.result;
+    if(settled){d.close();return;}
+    if(![STORE,MINE,META].every(name=>d.objectStoreNames.contains(name))){d.close();fail(storageError('NotFoundError','This album uses an unsupported storage layout. Its data has been left in place.'));return;}
+    settled=true;clearTimeout(timer);connection=d;
+    // A late close event from an old handle must not invalidate a newer connection.
+    d.onclose=()=>forget(d);d.onversionchange=()=>forget(d);
+    resolve(d);
+   };
+   request.onerror=()=>{
+    // A newer installed app may already have upgraded the database. Read its existing stores without downgrading.
+    if(!settled&&version&&request.error?.name==='VersionError'){open();return;}
+    fail(request.error||storageError('UnknownError','The album could not be opened.'));
+   };
+  }
+  open(3);
  });
- return opening;
+ opening=attempt;
+ attempt.catch(()=>{if(opening===attempt)opening=null;});
+ return attempt;
 }
-/** One request in its own transaction, settled when the transaction is (a write is only kept once it completes). */
-async function transact(mode,work,retry=true,store=STORE){
- let tx;
- try{tx=(await db()).transaction(store,mode);}
- catch(err){opening=null;if(retry)return transact(mode,work,false,store);throw err;}
- return new Promise((resolve,reject)=>{
-  const r=work(tx.objectStore(store));
-  tx.oncomplete=()=>resolve(r.result);
-  tx.onabort=tx.onerror=()=>reject(tx.error||r.error||new Error('The album could not be written'));
- });
+function begin(d,stores,mode){
+ if(mode==='readwrite'){
+  if(d.version>3)throw storageError('VersionError','A newer Pocket Camera version owns this album. Export is available; update the app before saving changes.');
+  // Ask for a disk-backed commit where supported. Old engines reject the options argument.
+  try{return d.transaction(stores,mode,{durability:'strict'});}catch(error){if(error?.name!=='TypeError')throw error;}
+ }
+ return d.transaction(stores,mode);
 }
-/** Asks the browser to keep the album (Safari otherwise clears a site's storage after a week without a visit). */
-export function keepAlbum(){try{navigator.storage?.persist?.();}catch{}}
+/** Retry a read once on a stale connection. Never replay a write once its transaction has begun. */
+async function transaction(mode,stores,work,retry=true){
+ let d,tx;
+ try{d=await db();tx=begin(d,stores,mode);}
+ catch(error){
+  if(d)forget(d);
+  if(retry&&reconnectable(error))return transaction(mode,stores,work,false);
+  throw error;
+ }
+ try{return await new Promise((resolve,reject)=>{
+  let result,error,settled=false;
+  const finish=(failure)=>{if(settled)return;settled=true;clearTimeout(timer);if(failure)reject(failure);else{try{resolve(result());}catch(e){reject(e);}}};
+  const timer=setTimeout(()=>{
+   const failure=storageError('TimeoutError','The album did not respond. Its saved data has not been reset.');
+   try{tx.abort();}catch{}
+   finish(failure);
+  },STORAGE_TIMEOUT);
+  tx.oncomplete=()=>finish(error);
+  tx.onerror=e=>{error??=e.target?.error||tx.error;};
+  tx.onabort=()=>finish(error||tx.error||storageError('AbortError','The album operation was interrupted.'));
+  try{result=work(tx);}catch(e){error=e;try{tx.abort();}catch{finish(e);}}
+ });}catch(error){
+  if(reconnectable(error))forget(d);
+  if(mode==='readonly'&&retry&&reconnectable(error))return transaction(mode,stores,work,false);
+  throw error;
+ }
+}
+/** Settle on transaction completion: request success alone does not mean a photo was committed. */
+const transact=(mode,work,retry=true,store=STORE)=>transaction(mode,store,tx=>{
+ const request=work(tx.objectStore(store));return ()=>request.result;
+},retry);
+/** The returned permission is advisory. Browser-local photos still need an external backup. */
+export async function keepAlbum(){
+ try{
+  const storage=navigator.storage;
+  if(!storage?.persist)return {supported:false,persisted:false};
+  const persisted=await storage.persisted?.()||await storage.persist();
+  return {supported:true,persisted:!!persisted};
+ }catch{return {supported:true,persisted:false};}
+}
 
 /** Add the two sample pictures once per album, including existing albums.
  * The assets are fetched before opening the write transaction. The marker and both shots are committed together;
@@ -62,35 +121,57 @@ export async function ensureAlbumSamples(){
   {id:'sample:harbour-original:v1',sampleLabel:'Original sample',photo:original,source:original,thumb:original,recipe:{layers:[{look:'none',amount:1}]},width:512,height:384,taken,created:1},
   {id:'sample:harbour-adventure:v1',sampleLabel:'Adventure Ink sample',photo:adventure,source:original,thumb:adventure,recipe:{layers:[{look:'adventureInk',amount:1}]},width:512,height:384,taken,created:2}
  ];
- const d=await db();
- return new Promise((resolve,reject)=>{
-  let tx,added=false;
-  try{tx=d.transaction([META,STORE],'readwrite');}catch(error){opening=null;reject(error);return;}
+ return transaction('readwrite',[META,STORE],tx=>{
+  let added=false;
   const meta=tx.objectStore(META),shots=tx.objectStore(STORE),check=meta.get(SAMPLE_MARKER);
-  check.onsuccess=()=>{if(check.result)return;for(const sample of samples)shots.put(sample);meta.put({id:SAMPLE_MARKER});added=true;};
-  tx.oncomplete=()=>resolve(added);
-  tx.onabort=tx.onerror=()=>reject(tx.error||check.error||new Error('Sample photos could not be saved'));
+  check.onsuccess=()=>{
+   if(check.result)return;
+   for(const sample of samples){const existing=shots.get(sample.id);existing.onsuccess=()=>{if(!existing.result)shots.add(sample);};}
+   meta.add({id:SAMPLE_MARKER});added=true;
+  };
+  return ()=>added;
  });
 }
 
 /** Every shot, newest first. */
-export async function listShots(){return (await transact('readonly',s=>s.getAll())).sort((a,b)=>b.created-a.created);}
+export async function listShots(){return (await transact('readonly',s=>s.getAll())).sort((a,b)=>(b?.created||0)-(a?.created||0));}
 export const getShot=id=>transact('readonly',s=>s.get(id));
 /** Saves a new shot ({photo, source, thumb, recipe, width, height, taken}); returns it with its id. */
 export async function addShot(shot){
- const record={...shot,id:`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,created:Date.now()};
- await transact('readwrite',s=>s.put(record));return record;
+ const record={...shot,id:globalThis.crypto?.randomUUID?.()||`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,12)}`,created:Date.now()};
+ await transact('readwrite',s=>s.add(record));return record;
 }
 export async function updateShot(id,changes){
- const record={...await getShot(id),...changes,id,edited:Date.now()};
+ const saved=await getShot(id);
+ if(!saved)throw storageError('NotFoundError','That photo is no longer in this album.');
+ const record={...saved,...changes,id,edited:Date.now()};
  await transact('readwrite',s=>s.put(record));return record;
 }
 export const deleteShot=id=>transact('readwrite',s=>s.delete(id));
 
 /** The own stickers ({id, blob, width, height, created}), oldest first, as they were made. */
-export async function listMine(){return (await transact('readonly',s=>s.getAll(),true,MINE)).sort((a,b)=>a.created-b.created);}
+export async function listMine(){return (await transact('readonly',s=>s.getAll(),true,MINE)).sort((a,b)=>(a?.created||0)-(b?.created||0));}
 export async function addMine(sticker){
  const record={...sticker,id:`mine:${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,created:Date.now()};
- await transact('readwrite',s=>s.put(record),true,MINE);return record;
+ await transact('readwrite',s=>s.add(record),true,MINE);return record;
 }
 export const deleteMine=id=>transact('readwrite',s=>s.delete(id),true,MINE);
+
+
+/** One consistent snapshot, including originals, recipes, own stickers and seeding metadata. */
+export function snapshotAlbum(){
+ return transaction('readonly',[STORE,MINE,META],tx=>{
+  const shots=tx.objectStore(STORE).getAll(),stickers=tx.objectStore(MINE).getAll(),metadata=tx.objectStore(META).getAll();
+  return ()=>({shots:shots.result,stickers:stickers.result,metadata:metadata.result});
+ });
+}
+/** Add verified backup rows atomically. A photo/sticker ID collision aborts, never overwrites an existing row. */
+export function restoreAlbum({shots=[],stickers=[],metadata=[]}){
+ return transaction('readwrite',[STORE,MINE,META],tx=>{
+  for(const shot of shots)tx.objectStore(STORE).add(shot);
+  for(const sticker of stickers)tx.objectStore(MINE).add(sticker);
+  const meta=tx.objectStore(META);
+  for(const row of metadata){const existing=meta.get(row.id);existing.onsuccess=()=>{if(!existing.result)meta.add(row);};}
+  return ()=>({shots:shots.length,stickers:stickers.length});
+ });
+}

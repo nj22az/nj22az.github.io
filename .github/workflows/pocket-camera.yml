@@ -31,6 +31,12 @@ jobs:
             suites: offline
           - job: camera-retouch
             suites: retouch screens
+          - job: camera-album
+            suites: album
+            browser: chromium
+          - job: camera-album-webkit
+            suites: album
+            browser: webkit
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -39,6 +45,8 @@ jobs:
       CAMERA_MAIN_ENGINE: /tmp/camera-main-engine.js
       CAMERA_REFINE_ENGINE: /tmp/camera-refine-engine.js
       CAMERA_AUDIT_BASELINE: /tmp/camera-audit-baseline
+      CAMERA_ALBUM_ENGINE: ${{ matrix.browser || 'chromium' }}
+      CAMERA_ALBUM_LEGACY_WORKER: /tmp/camera-album-legacy-sw.js
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,9 +64,14 @@ jobs:
       - name: Browser dependencies
         run: |
           npm install --prefix /tmp/camera-test-runtime --no-save --no-package-lock playwright@1.62.1
-          /tmp/camera-test-runtime/node_modules/.bin/playwright install --with-deps chromium
+          /tmp/camera-test-runtime/node_modules/.bin/playwright install --with-deps ${{ matrix.browser || 'chromium' }}
           sudo apt-get install --yes ffmpeg
           ffmpeg -version
+      - name: Published worker for the data-preserving upgrade regression
+        if: matrix.suites == 'album'
+        run: |
+          git fetch --no-tags --depth=1 origin cf86ea2a1e156155185f681007d870fca2161c44
+          git show cf86ea2a1e156155185f681007d870fca2161c44:camera/sw.js > "$CAMERA_ALBUM_LEGACY_WORKER"
       - name: Prior engines for compatibility checks
         if: matrix.job == 'camera'
         run: |
@@ -78,7 +91,18 @@ jobs:
           for test in camera/tests/*.test.mjs; do node "$test"; done
           for source in camera/*.js camera/tests/*.browser.mjs tools/render-camera-looks.mjs; do node --check "$source"; done
           git diff --check
-      - name: Combined browser regressions (Chromium emulation; Share mocked)
+      - name: Confirm the published missing-photo display defect
+        if: matrix.job == 'camera-album'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin e00b7167a768469d21b99946f3d4cb60cd252411
+          git show e00b7167a768469d21b99946f3d4cb60cd252411:camera/app.js > /tmp/camera-album-baseline-app.js
+          mkdir -p /tmp/camera-results/album-baseline
+          CAMERA_ALBUM_BASELINE_APP=/tmp/camera-album-baseline-app.js \
+          CAMERA_ALBUM_REPRO_ONLY=1 CAMERA_ALBUM_EXPECT_BUG=1 \
+          CAMERA_SHOTS=/tmp/camera-results/album-baseline \
+          node camera/tests/album.browser.mjs | tee /tmp/camera-results/album-baseline.log
+      - name: Combined browser regressions (browser emulation; Share mocked)
         run: |
           set -euo pipefail
           mkdir -p /tmp/camera-results

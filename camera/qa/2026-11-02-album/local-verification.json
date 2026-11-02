@@ -1,0 +1,14 @@
+{
+  "base": "e00b7167a768469d21b99946f3d4cb60cd252411",
+  "branch": "codex/pocket-camera-album-preservation",
+  "unit_suites": 19,
+  "storage_fault_checks": 25,
+  "backup_checks": 13,
+  "album_ui_checks": 15,
+  "syntax": "passed",
+  "module_addresses": "passed",
+  "offline_manifest": "326 assets; exact inventory and worker digest checked",
+  "local_browser_checks": 0,
+  "local_browser_limitation": "Playwright Chromium and WebKit executables are absent; both stop before navigation. Hosted regression pending.",
+  "physical_iphone_ipad": false
+}

@@ -1,5 +1,9 @@
 /* Approved 31 October UI: real Camera controls, with the existing renderer and albums. */
 :root{--bg:#0d0e10;--surface:#1c1e21;--surface-2:#292c30;--separator:#383b40;--label:#faf9f6;--label-2:#c5c7cc;--label-3:#b7babf;--camera-rail:max(56px,3.5rem)}
+.album-status,.album-storage{margin:16px;padding:14px;border:1px solid var(--separator);border-radius:14px;background:var(--surface);font-size:.875rem;line-height:1.5;overflow-wrap:anywhere}
+.album-status p,.album-storage p{margin:0 0 10px}.album-storage summary{cursor:pointer;min-height:44px;display:list-item;padding:10px 0}
+.album-backup-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.album-backup-actions .text-button,.album-status .text-button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;border-radius:10px;background:var(--surface-2);color:var(--accent);text-decoration:none}
+.album .album-backup-actions [hidden]{display:none}.album .grid .album-unreadable{min-height:120px;background:var(--surface-2)}
 .app{height:100dvh;bottom:auto;background:var(--bg)}
 .camera,.editor,.album,.viewer{font-size:1rem;line-height:1.4}
 .camera button,.editor button,.album button,.viewer button{min-height:44px;min-width:44px}

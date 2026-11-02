@@ -3,10 +3,11 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261101screen1';
-import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize} from './looks-gl.js?v=20261102album1';
+import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261102album1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
-import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261029c';
+import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102album1';
+import {makeAlbumBackup,restoreAlbumBackup} from './album-backup.js?v=20261102album1';
 import {lookIcon} from './look-icons.js?v=20261031retouch1';
 import {prepareOffline} from './offline.js?v=20261031retouch1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
@@ -847,29 +848,59 @@ function fitInside(r,aspect,pad=0){
 }
 
 // ---------- Album ----------
-let albumOK=true,albumRevision=0;
+let albumOK=false,albumRevision=0,albumReading=null,albumLoading=false,albumError=null,albumRead=false,albumBusy=false;
+let albumPersistence=null,backupURL=null;
+const albumBlob=value=>value instanceof Blob&&value.size>0;
+const albumThumb=shot=>[shot?.thumb,shot?.photo,shot?.source].find(albumBlob);
+const albumLabel=shot=>{try{return mixLabel(normalRecipe(shot.recipe||{}));}catch{return 'Saved photo';}};
+const albumErrorText=error=>error?.name==='BlockedError'?'Close other Pocket Camera tabs, then retry.':error?.name==='QuotaExceededError'?'There is not enough browser storage. Save a backup before adding more photos.':'Retry, or close and reopen this existing app. Do not clear its website data.';
+function renderAlbumStatus(){
+ const status=$('albumStatus');status.dataset.state=albumLoading?'loading':albumOK?'ready':'error';
+ status.hidden=albumOK&&!albumLoading;
+ $('albumStatusMessage').textContent=albumLoading?'Reading the album…':`The album could not be read${albumError?.name?` (${albumError.name})`:''}. ${albumErrorText(albumError)}${state.shots.length?' The last readable photos are still shown.':''}`;
+ $('albumRetry').hidden=albumLoading||albumOK;$('albumRetry').disabled=albumLoading;
+ $('albumEmpty').hidden=!albumOK||albumLoading||state.shots.length>0;
+ $('albumBackup').disabled=albumBusy||albumLoading||!albumOK;
+ $('albumRestore').disabled=albumBusy||albumLoading;
+ const samples=state.shots.filter(s=>s.sampleLabel).length,unreadable=state.shots.filter(s=>!albumThumb(s)).length;
+ const context=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches?'Home Screen app':'Browser tab';
+ const persistence=albumPersistence?.persisted?'Persistent storage granted':albumPersistence?.supported?'Storage persistence not granted':'Storage persistence not confirmed';
+ $('albumStorageDetails').textContent=`${context} · ${location.origin} · ${albumRead?`${state.shots.length} stored records (${samples} samples)${unreadable?` · ${unreadable} without a readable image`:''}`:'Record count unavailable'} · ${persistence}. Photos are local to this browser or installed app. Safari and a Home Screen app can have separate albums. An empty album here does not establish that another album was deleted. Keep an independent backup in Files.`;
+}
 async function refreshShots(){
- let revision,shots;
- do{revision=albumRevision;shots=await listShots();}while(revision!==albumRevision);
- state.shots=shots;
- if(state.shots.length)keepAlbum();
- renderRoll();if(state.mode==='album')renderGrid();
+ if(albumReading)return albumReading;
+ albumLoading=true;renderAlbumStatus();
+ albumReading=(async()=>{
+  try{
+   let revision,shots;
+   do{revision=albumRevision;shots=await listShots();}while(revision!==albumRevision);
+   state.shots=shots;albumOK=true;albumError=null;albumRead=true;
+   renderRoll();if(state.mode==='album')renderGrid();
+   return true;
+  }catch(error){
+   // A failed read is not an empty database. Keep the last successful result and offer a real retry.
+   albumOK=false;albumError=error;renderRoll();return false;
+  }finally{albumLoading=false;albumReading=null;renderRoll();renderAlbumStatus();}
+ })();
+ return albumReading;
 }
 async function loadShots(){
- try{await refreshShots();}catch{albumOK=false;state.shots=[];renderRoll();return;}
+ if(!await refreshShots())return;
+ void updateAlbumPersistence();
  // Do not hold up the album while samples download. An unavailable asset is retried on a later visit.
  try{await ensureAlbumSamples();await refreshShots();}catch{/* The owner's photos remain usable offline. */}
 }
 async function keep(shot){
- const r=await addShot(shot);albumOK=true;albumRevision++;state.shots.unshift(r);renderRoll(true);keepAlbum();return r;
+ const r=await addShot(shot);albumRevision++;state.shots.unshift(r);renderRoll(true);void updateAlbumPersistence();return r;
 }
+async function updateAlbumPersistence(){albumPersistence=await keepAlbum();renderAlbumStatus();}
 let rollURL;
 function renderRoll(pop=false){
- const img=$('roll').querySelector('img'),latest=state.shots[0];
+ const img=$('roll').querySelector('img'),latest=state.shots.find(albumThumb);
  if(rollURL)URL.revokeObjectURL(rollURL);rollURL=null;
- if(latest){rollURL=URL.createObjectURL(latest.thumb||latest.photo);img.src=rollURL;img.hidden=false;}else img.hidden=true;
+ if(latest){rollURL=URL.createObjectURL(albumThumb(latest));img.src=rollURL;img.hidden=false;}else img.hidden=true;
  const welcomeThumb=$('welcomeAlbumThumb');welcomeThumb.hidden=img.hidden;if(!img.hidden)welcomeThumb.src=img.src;else welcomeThumb.removeAttribute('src');
- $('welcomeAlbumCount').textContent=state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · on this device`:'Saved photos, all in one place';
+ $('welcomeAlbumCount').textContent=albumLoading?'Reading saved photos…':!albumOK?'Album unavailable · tap to retry':state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · on this device`:'Saved photos, all in one place';
  $('roll').setAttribute('aria-label',`Album, ${state.shots.length} ${state.shots.length===1?'photo':'photos'}`);
  if(pop){const r=$('roll');r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');}
 }
@@ -879,16 +910,44 @@ function renderGrid(){
  const grid=$('grid');grid.textContent='';
  for(const shot of state.shots){
   const b=document.createElement('button');b.type='button';b.dataset.id=shot.id;
-  const url=URL.createObjectURL(shot.thumb||shot.photo);gridURLs.push(url);
-  b.setAttribute('aria-label',shot.sampleLabel||`Photo, ${mixLabel(normalRecipe(shot.recipe))}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
-  b.innerHTML=`<img src="${url}" alt="" loading="lazy" decoding="async">`;
-  const label=document.createElement('strong');label.textContent=shot.sampleLabel||mixLabel(normalRecipe(shot.recipe));b.append(label);
-  const detail=document.createElement('small');detail.textContent=shot.sampleLabel?'Sample photo':new Date(shot.taken||shot.created).toLocaleDateString();b.append(detail);grid.append(b);
+  const blob=albumThumb(shot),url=blob?URL.createObjectURL(blob):null;if(url)gridURLs.push(url);
+  b.setAttribute('aria-label',shot.sampleLabel||`Photo, ${albumLabel(shot)}, ${new Date(shot.taken||shot.created).toLocaleString()}`);
+  if(url){
+   const img=document.createElement('img');img.src=url;img.alt='';img.loading='lazy';img.decoding='async';
+   img.onerror=()=>{if(blob!==shot.photo&&albumBlob(shot.photo)){const fallback=URL.createObjectURL(shot.photo);gridURLs.push(fallback);img.onerror=null;img.src=fallback;}else{img.remove();b.classList.add('album-unreadable');}};
+   b.append(img);
+  }else b.classList.add('album-unreadable');
+  const label=document.createElement('strong');label.textContent=shot.sampleLabel||albumLabel(shot);b.append(label);
+  const detail=document.createElement('small');detail.textContent=!blob?'Image unavailable · included in backup':shot.sampleLabel?'Sample photo':new Date(shot.taken||shot.created).toLocaleDateString();b.append(detail);grid.append(b);
  }
- $('albumEmpty').hidden=state.shots.length>0;
- $('albumNote').textContent=albumOK?(state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · kept in this browser on this device`:''):'This browser does not keep an album here; photos are offered as files instead.';
+ $('albumNote').textContent=state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · kept in this browser on this device`:'';
+ renderAlbumStatus();
 }
 $('grid').addEventListener('click',e=>{const b=e.target.closest('button');if(b)openViewer(b.dataset.id);});
+$('albumRetry').addEventListener('click',()=>{void refreshShots();});
+$('albumBackup').addEventListener('click',async()=>{
+ if(albumBusy)return;albumBusy=true;renderAlbumStatus();$('albumBackupMessage').textContent='Preparing backup…';
+ $('albumDownload').hidden=true;
+ if(backupURL){URL.revokeObjectURL(backupURL);backupURL=null;}
+ try{
+  const backup=await makeAlbumBackup();
+  if(backupURL)URL.revokeObjectURL(backupURL);backupURL=URL.createObjectURL(backup);
+  const link=$('albumDownload');link.href=backupURL;link.download=`pocket-camera-${new Date().toISOString().slice(0,10)}.pocket-camera.json`;link.hidden=false;
+  $('albumBackupMessage').textContent=`Backup prepared at ${new Date().toLocaleTimeString()}. Tap Save backup and keep the file in Files.`;
+ }catch(error){$('albumBackupMessage').textContent=`Backup could not be prepared. ${error.message||albumErrorText(error)}`;}
+ finally{albumBusy=false;renderAlbumStatus();}
+});
+$('albumRestore').addEventListener('click',()=>{$('albumBackupPicker').value='';$('albumBackupPicker').click();});
+$('albumBackupPicker').addEventListener('change',async event=>{
+ const file=event.target.files?.[0];if(!file||albumBusy)return;
+ albumBusy=true;renderAlbumStatus();$('albumBackupMessage').textContent='Checking backup…';
+ try{
+  const result=await restoreAlbumBackup(file);albumRevision++;await refreshShots();await loadMine();
+  $('albumBackupMessage').textContent=`Restored ${result.added} photos and ${result.stickersAdded} stickers. ${result.skipped+result.stickersSkipped} identical records already present. Existing records were preserved.`;
+  void updateAlbumPersistence();
+ }catch(error){$('albumBackupMessage').textContent=`Restore failed. Existing records were preserved. ${error.message||''}`;}
+ finally{albumBusy=false;renderAlbumStatus();}
+});
 
 function show(mode){
  state.mode=mode;$('app').dataset.mode=mode;
@@ -913,7 +972,7 @@ async function maybeStartCamera(){
 }
 $('roll').addEventListener('click',openAlbum);
 $('welcomeAlbum').addEventListener('click',openAlbum);
-function openAlbum(){show('album');renderGrid();}
+function openAlbum(){show('album');renderGrid();void refreshShots();}
 $('closeAlbum').addEventListener('click',()=>show('camera'));
 
 
@@ -964,9 +1023,10 @@ $('chooseSolitaire').addEventListener('click',()=>openCardGame('solitaire'));
 let viewerURL;
 async function openViewer(id){
  const shot=state.shots.find(s=>s.id===id)||await getShot(id).catch(()=>null);if(!shot)return;
+ if(!albumBlob(shot.photo)){toast('This saved image cannot be opened. Back up the album to preserve its remaining data.');return;}
  state.viewing=shot;show('viewer');
  if(viewerURL)URL.revokeObjectURL(viewerURL);viewerURL=URL.createObjectURL(shot.photo);
- const img=$('viewerImage');img.src=viewerURL;img.alt=shot.sampleLabel||`Photo in ${mixLabel(normalRecipe(shot.recipe))}`;
+ const img=$('viewerImage');img.src=viewerURL;img.alt=shot.sampleLabel||`Photo in ${albumLabel(shot)}`;
  $('viewerTitle').textContent=shot.sampleLabel||new Date(shot.taken||shot.created).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});
  $('editPhoto').disabled=!engine||engine.lost();$('editPhoto').title=$('editPhoto').disabled?'Editing requires WebGL 2':'';
  const shareFile=new File([shot.photo],fileName(shot),{type:shot.photo.type||'image/jpeg'}),canShare=canShareFiles(shareFile);
@@ -1008,7 +1068,9 @@ function confirmDelete(message,label,then){
 }
 $('deletePhoto').addEventListener('click',()=>confirmDelete('This photo will be deleted from this device.','Delete Photo',async()=>{
  if(!state.viewing)return;
- const id=state.viewing.id;await deleteShot(id).catch(()=>{});albumRevision++;
+ const id=state.viewing.id;
+ try{await deleteShot(id);}catch(error){toast(`Photo could not be deleted. ${albumErrorText(error)}`);return;}
+ albumRevision++;
  state.shots=state.shots.filter(s=>s.id!==id);state.viewing=null;renderRoll();openAlbum();toast('Photo deleted');
 }));
 
@@ -1374,9 +1436,10 @@ $('eraseUndo').addEventListener('click',()=>{if(eraser.working)return;sound('tic
 let stickerSet=1,mine=[];
 async function loadMine(){
  try{
-  mine=await listMine();
-  for(const m of mine)if(!stickerById(m.id))registerSticker({id:m.id,url:URL.createObjectURL(m.blob),thumbUrl:null,width:m.width,height:m.height});
- }catch{mine=[];}
+  const stored=await listMine();
+  for(const m of stored)if(albumBlob(m.blob)&&!stickerById(m.id))registerSticker({id:m.id,url:URL.createObjectURL(m.blob),thumbUrl:null,width:m.width,height:m.height});
+  mine=stored;
+ }catch{/* A failed read must not erase the last successful sticker list. */}
 }
 /** A picture to a new own sticker, kept, and stuck on the picture at once. */
 async function stickerFromPicture(file){
@@ -1580,8 +1643,9 @@ addEventListener('paste',e=>{
 });
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){if(state.camera.running){stopCamera();state.camera.resume=true;}}
- else if(state.camera.resume&&state.mode==='camera'){state.camera.resume=false;startCamera();}
+ else{void refreshShots();if(state.camera.resume&&state.mode==='camera'){state.camera.resume=false;startCamera();}}
 });
+addEventListener('pageshow',()=>{if(!document.hidden)void refreshShots();});
 const layoutObserver=new ResizeObserver(invalidate);
 for(const element of [document.body,$('cameraPictureArea'),$('editPictureArea')])layoutObserver.observe(element);
 
@@ -1589,7 +1653,7 @@ for(const element of [document.body,$('cameraPictureArea'),$('editPictureArea')]
 // On the Home Screen the camera is an app of its own: no way back to the website is needed, and it works offline (sw.js).
 const standalone=navigator.standalone===true||matchMedia('(display-mode:standalone)').matches;
 document.documentElement.classList.toggle('standalone',standalone);
-prepareOffline($('offlineSetting'),{canReload:()=>!state.edit&&!state.camera.busy&&!importing&&!sharing});
+prepareOffline($('offlineSetting'),{canReload:()=>!state.edit&&!state.camera.busy&&!importing&&!sharing&&!albumBusy});
 loadShots();
 if(!startEngine()){
  showWelcome();
