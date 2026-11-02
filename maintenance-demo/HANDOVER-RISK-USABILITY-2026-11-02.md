@@ -1,6 +1,6 @@
 # Maintenance planner — guided risk assessment
 
-Date: 2 November 2026 (Stockholm). Runtime release `2026.11.02.4`. Base: main `314a014c7c1860bdd730dee1efb3289e49344c5f`. The owner asked for a clearer risk matrix and an app usable without introductory training. Previous classification/evidence work and production verification: [classification handover](HANDOVER-CLASSIFICATION-2026-11-02.md).
+Date: 2 November 2026 (Stockholm). Runtime release `2026.11.02.5`. Base: main `314a014c7c1860bdd730dee1efb3289e49344c5f`. The owner asked for a clearer risk matrix and an app usable without introductory training. Previous classification/evidence work and production verification: [classification handover](HANDOVER-CLASSIFICATION-2026-11-02.md).
 
 ## Delivered behaviour
 
@@ -23,10 +23,17 @@ Authoritative consolidated Arbetsmiljöverket pages checked on 2 November 2026:
 
 ## Verification and release state
 
-`node --test maintenance-demo/tests/*.test.mjs`: **300/300 passed**. New checks cover every score cell, unknown ratings, serious harm at a low score, incomplete/legacy assessments, planned-action validation and deduplication, retaining closed-action history and unchanged statutory/maintenance records. New modules pass `node --check`.
+`node --test maintenance-demo/tests/*.test.mjs`: **301/301 passed**. New checks cover every score cell, unknown ratings, serious harm at a low score, incomplete/legacy assessments, planned-action validation and deduplication, retaining closed-action history and unchanged statutory/maintenance records. New modules pass `node --check`.
 
 REA 6.7.0 was invoked on the two new modules. It inventoried the source but could not complete parsing because this executor's `ps` reports `fatal library error, lookup self`; REA returned `capability_unavailable` / `process-ownership`. This is not a passed REA audit. Ordinary Node checks and behavioural tests passed.
 
 Local visual review could not start: Playwright's browser binary is absent and its browser download returned an invalid archive. The available cloud browser cannot access the local port. Public production interaction, deployment and served-byte verification follow the bounded main publication. Do not describe responsive screenshots or physical Safari as passed until actually checked. No claim of first-time-user usability validation is made before a real user tries it.
 
 Only the maintenance files and the root handover pointer are delivered; do not merge the full development branch. This follows the owner's existing explicit instruction to publish the maintenance work to main. Runtime publication identifier and actual browser observations will be appended after verification.
+
+
+## Production review and readability correction
+
+Initial runtime `d552ab59931372359f1689bde9e2e22afbdae347` published to main. Hosted tests [41406221377](https://github.com/nj22az/nj22az.github.io/actions/runs/41406221377) and [Pages 41406220384](https://github.com/nj22az/nj22az.github.io/actions/runs/41406220384) passed. Actual published Chrome interactions confirmed unanswered new ratings, rare/fatal arithmetic and warning, saving an incomplete draft, pressure-use prompt expansion, missing-owner/deadline prevention, and successful linked-action creation after supplying them. All test records were explicitly marked QA/fictional in the isolated cloud browser, not seeded into source.
+
+The visual review found two readability improvements and they are included in release .5: Priority review now leads the score heading whenever the serious-harm override applies, rather than displaying a lower-priority heading above a warning. The optional matrix retains a 520px minimum table width and scrolls within its own wrapper on phones, keeping labels legible rather than compressing six columns into 290px. A regression assertion covers the rare/fatal result heading. Final local suite: 301/301 passed. Initial document/dialog width checks: 390/390 and 349/349 at phone width; 768/768 and 663/663 at tablet width. Final .5 deployment, narrow-table scrolling and desktop checks follow the correction publication. Physical Safari and first-time-user acceptance remain unverified.
