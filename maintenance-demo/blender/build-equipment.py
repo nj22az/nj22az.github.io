@@ -61,6 +61,8 @@ def pump():
  for x in [-.48,.45]:
   for y in [-.16,.16]:cyl('Anchor bolt',(x,y,.087),.014,.015,'dark',verts=6)
  motor(.25,.32)
+ box('Motor mounting sole',(.25,0,.095),(.30,.29,.03),'steel')
+ for y in [-.1,.1]:box('Coupling guard bracket',(-.1,y,.1225),(.14,.025,.085),'orange')
  box('Coupling guard',(-.1,0,.29),(.22,.24,.25),'orange')
  for x in [-.18,-.14,-.1,-.06]:box('Guard ventilation slot',(x,-.122,.32),(.014,.006,.12),'dark',.002)
  cyl('Volute casing',(-.35,0,.3),.19,.20,'teal','X');box('Pump pedestal',(-.35,0,.14),(.24,.23,.15),'teal')
@@ -73,6 +75,9 @@ def compressor():
  cyl('Receiver shell',(0,0,.40),.25,.98,'teal','X');sphere('Receiver end left',(-.49,0,.4),(.16,.25,.25),'teal');sphere('Receiver end right',(.49,0,.4),(.16,.25,.25),'teal')
  for x in [-.36,.36]:box('Receiver support',(x,0,.14),(.14,.40,.18),'dark');box('Anchored foot',(x,0,.035),(.22,.5,.07),'steel')
  box('Compressor deck',(0,0,.69),(1.0,.45,.055),'steel');motor(.27,.86,.13,.30)
+ box('Compressor crankcase',(-.215,0,.755),(.39,.26,.11),'teal')
+ cyl('Receiver inlet boss',(-.48,-.16,.62),.035,.10,'steel')
+ cyl('Gauge mounting boss',(.47,-.12,.62),.025,.12,'steel')
  for x in [-.3,-.13]:
   cyl('Compression cylinder',(x,0,.91),.075,.30,'dark')
   for z in [.78+i*.025 for i in range(10)]:cyl('Cylinder fin',(x,0,z),.1,.01,'steel')
@@ -99,10 +104,10 @@ def generator():
  cyl('Oil filter',(-.1,-.28,.55),.047,.17,'white');pipe('Coolant hose',[(-.48,.16,.88),(-.56,.19,.89),(-.61,.18,.78)],.025)
 
 def probe():
- box('Handheld readout',(-.12,0,.075),(.18,.28,.07),'dark',.02);box('Readout display',(-.12,-.035,.113),(.13,.10,.006),'screen',.006)
- for x in [-.17,-.12,-.07]:cyl('Readout button',(x,.065,.114),.013,.008,'orange')
- pipe('Flexible sensor cable',[(-.13,.14,.08),(-.05,.2,.04),(.1,.15,.025),(.12,-.03,.026),(.17,-.10,.035)],.006)
- cyl('Probe handle',(.23,-.10,.035),.024,.12,'dark','X');cyl('Probe stem',(.375,-.1,.035),.008,.18,'steel','X');sphere('Probe tip',(.465,-.1,.035),(.008,.008,.008),'steel')
+ box('Handheld readout',(-.12,0,.035),(.18,.28,.07),'dark',.02);box('Readout display',(-.12,-.035,.073),(.13,.10,.006),'screen',.006)
+ for x in [-.17,-.12,-.07]:cyl('Readout button',(x,.065,.074),.013,.008,'orange')
+ pipe('Flexible sensor cable',[(-.13,.14,.04),(-.05,.2,.02),(.1,.15,.008),(.12,-.03,.015),(.17,-.10,.024)],.006)
+ cyl('Probe handle',(.23,-.10,.024),.024,.12,'dark','X');cyl('Probe stem',(.375,-.1,.024),.008,.18,'steel','X');sphere('Probe tip',(.465,-.1,.024),(.008,.008,.008),'steel')
 
 if '--from-blend' not in args:
  for spec in items:

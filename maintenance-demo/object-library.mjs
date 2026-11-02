@@ -1,4 +1,4 @@
-import {OBJECT_MODELS} from './object-catalogue.mjs?v=2026.11.02.7';
+import {OBJECT_MODELS} from './object-catalogue.mjs?v=2026.11.02.8';
 export {OBJECT_MODELS};
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const DEMO_MODELS={'demo-pump':'pump','demo-compressor':'compressor','demo-generator':'generator','demo-sensor':'probe'};

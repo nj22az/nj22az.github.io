@@ -6,8 +6,8 @@
       0.4236,
       0.5975
     ],
-    "parts": 38,
-    "glbBytes": 409672
+    "parts": 41,
+    "glbBytes": 426896
   },
   {
     "id": "compressor",
@@ -16,8 +16,8 @@
       0.5263,
       1.1658
     ],
-    "parts": 69,
-    "glbBytes": 729376
+    "parts": 72,
+    "glbBytes": 764944
   },
   {
     "id": "generator",
@@ -32,11 +32,11 @@
   {
     "id": "probe",
     "boundsMetres": [
-      0.4312,
+      0.4306,
       0.22,
-      0.0675
+      0.0492
     ],
     "parts": 9,
-    "glbBytes": 134216
+    "glbBytes": 134196
   }
 ]
