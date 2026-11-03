@@ -12,8 +12,19 @@ Branch `claude/laughing-brahmagupta-ybyndm`, **not merged, not published**. Visi
 key `20261102fun1` (one unreleased release for everything below). Commits: `40976c06` backup and face stickers,
 `93933e45` World cat ears and pail fix, `54afa8cb` README, `9d8dc294` seven sticker tabs, `3bcd38eb` Halloween in
 Blender (Camera sheet, World bats and sweets), `20878747` Pop, `b2501158` Makeup and Face stickers sharing one Adjust
-row (Pop's row had pushed the adjustment slider off a 320 × 560 phone; the photo also gains 45 px at 390 × 664). Main publication needs the owner's explicit
-word, then Pages and public-byte verification. Physical iPhone/iPad Safari is untested.
+row (Pop's row had pushed the adjustment slider off a 320 × 560 phone; the photo also gains 45 px at 390 × 664). The
+owner asked for main ("can you push to main ?"): [PR #426](https://github.com/nj22az/nj22az.github.io/pull/426), with
+main merged in twice (`d74deebf`, then `d3e357b9` for the navigation feeder), CI fixes `cf52892e` (sticker tabs under
+CI's DejaVu Sans) and `d6a6d174` (resident-guide portraits: `face.js` is in their provenance hash; regenerated with the
+real renderer, 22 of 23 byte-identical, Mr Fujita's was stale since #415), and `1539cff5`. Physical iPhone/iPad Safari
+is untested.
+
+**World runtime chunks: keep main's.** `npm run build:runtime` keeps only this build's and the previous build's chunks,
+but main's navigation-feeder release deliberately retains every previously published chunk (172, byte for byte, in its
+release evidence) for pages still holding an older `index.html`. The rebuild after merging main pruned 137 of them;
+`1539cff5` restored them from main, so this release only adds its 14 new chunks. After any rebuild on a branch, restore
+main's chunks (`git diff --no-renames --diff-filter=D --name-only origin/main -- johansson-town/runtime | grep -v .vite |
+xargs git checkout origin/main --`) and check the PR deletes nothing there.
 
 ## What was built
 
@@ -91,12 +102,20 @@ Run locally in this cloud session (headless Chromium 153 with SwiftShader; not a
   `npm run build:runtime`, fujitas-back-moves **18/18**, asset-modeller **6/6**, wardrobe-catalogue **8/8**,
   resident-guide-catalogue **6/6**. `onsen-seats` fails 1/2 **identically on the starting main `4f545da`** (Nhung's
   seated body outside the massage chair's keep-clear); not in the guard, not touched.
-- Not run: the full World guard (z-fighting needs CI's heap), Linux acceptance, physical devices.
+- After merging main's navigation feeder (`d3e357b9`), locally: runtime-package **4/4**, halloween-street **12/12**,
+  catalogue **7/7**, ferry-bridge **2/2**, -lantern **6/6**, -wipers **5/5**, resident-guide **2/2**,
+  resident-guide-catalogue **6/6**, wardrobe-catalogue **8/8**, camera offline and modules.
+- Hosted CI on `d3e357b9`: World **guard** passed, **iphone-startup** and all three **ferry-exploration** profiles
+  (desktop, iPad portrait, iPad landscape) passed; Camera **camera**, **camera-ui**, **camera-retouch**,
+  **camera-smart**, **camera-offline**, **camera-audit**, **camera-face-backup** and **mcp** passed. **linux** 57/59: the
+  same two failures recorded on main in `camera/HANDOVER-RETOUCH-2026-10-31.md` (`controller-game` spawn `[0.3,-72.7]`
+  vs `[-1.5,-72.7]`; `housing-consolidation` Minato Maru paint/metal on post-office-lot); this PR touches neither.
+- Not run: physical devices.
 
 ## Next
 
 1. Owner review: face stickers on their own photos, the Season sheet, Pop, and World's bats/sweets/cat ears.
-2. Publication on the owner's word; then Pages and public bytes.
+2. Merge PR #426 once CI is green on its head (linux's two main failures excepted); then Pages and public bytes.
 3. Commit the Studio cards into `jojo` from a session with push access (see above).
 4. Physical iPhone: backup Save to Files and restore, Home Screen vs Safari albums, face stickers and Pop speed.
 5. Audit's remaining items: EXIF capture date, undo/redo, Face pack (landmarks), Hide my brows; the obake decision.
