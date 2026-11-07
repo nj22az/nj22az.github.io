@@ -1,0 +1,66 @@
+{
+ "chip": "Johansson SC-90, sc-90/chip.js",
+ "chipHash": "25a4f5047da02020",
+ "sampleRate": 48000,
+ "level": {
+  "rmsDb": -15,
+  "maxPeakDb": -1
+ },
+ "files": [
+  {
+   "id": "sakura-door",
+   "title": "Door chime",
+   "wav": "sakura-door.wav",
+   "mp3": "sakura-door.mp3",
+   "seconds": 1.992,
+   "peakDb": -1.7,
+   "rmsDb": -15,
+   "loop": false,
+   "spec": "6a413118b8127a69"
+  },
+  {
+   "id": "sakura-till",
+   "title": "Till “pi-pon”",
+   "wav": "sakura-till.wav",
+   "mp3": "sakura-till.mp3",
+   "seconds": 1.003,
+   "peakDb": -2.7,
+   "rmsDb": -15,
+   "loop": false,
+   "spec": "d12820b91ecc0b7b"
+  },
+  {
+   "id": "sakura-ident",
+   "title": "Shop jingle",
+   "wav": "sakura-ident.wav",
+   "mp3": "sakura-ident.mp3",
+   "seconds": 7.575,
+   "peakDb": -2.6,
+   "rmsDb": -15,
+   "loop": false,
+   "spec": "c1076d1adbf9d47b"
+  },
+  {
+   "id": "sakura-open",
+   "title": "Good morning",
+   "wav": "sakura-open.wav",
+   "mp3": "sakura-open.mp3",
+   "seconds": 4.983,
+   "peakDb": -5.9,
+   "rmsDb": -15,
+   "loop": false,
+   "spec": "e25690b757e1c8f0"
+  },
+  {
+   "id": "sakura-closing",
+   "title": "Closing waltz",
+   "wav": "sakura-closing.wav",
+   "mp3": "sakura-closing.mp3",
+   "seconds": 30,
+   "peakDb": -3.5,
+   "rmsDb": -15,
+   "loop": true,
+   "spec": "380dd878e85664c9"
+  }
+ ]
+}

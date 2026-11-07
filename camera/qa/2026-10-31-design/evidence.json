@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "verified_at": "2026-10-31T10:09:13Z",
+  "repository": "nj22az/nj22az.github.io",
+  "pr": 418,
+  "branch": "codex/pocket-camera-design-audit",
+  "source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f",
+  "source_tree": "8e19fdecc584e4b245864cdf5322be2474436208",
+  "published_main": "83783c93448d1be251a61c213959448e1d21c971",
+  "runtime_first_commit": "26f576481cbcbf2b5fec1af02e4053aa4b12d9e5",
+  "release_keys": {
+    "published": "20261031ui1",
+    "review": "20261031audit1"
+  },
+  "checks": {
+    "camera": {
+      "passed": 143,
+      "run": 41190783338,
+      "job": 124506978428,
+      "recipe_combinations": 816,
+      "full_preview_export_pairs": 408,
+      "baseline_comparisons": 68
+    },
+    "ui": {
+      "passed": 57,
+      "run": 41190783338,
+      "job": 124506978220
+    },
+    "design": {
+      "passed": 50,
+      "run": 41190783338,
+      "job": 124506978340
+    },
+    "mcp_unit": {
+      "passed": 15,
+      "run": 41190783298,
+      "job": 124506977996
+    },
+    "mcp_acceptance": {
+      "passed": 20,
+      "run": 41190783298,
+      "job": 124506977996
+    },
+    "npm_findings": 0,
+    "world": {
+      "run": 41190783269,
+      "guard": "success",
+      "automated_webkit": "success"
+    },
+    "linux": {
+      "run": 41190783339,
+      "status": "in_progress",
+      "last_active_stage": "Verify native application and disk saves",
+      "counted_as_pass": false
+    }
+  },
+  "artifacts": [
+    {
+      "id": 13039035960,
+      "name": "pocket-camera-camera-evidence",
+      "bytes": 28847647,
+      "sha256": "bfb6deadffa3276397cde8ffda2f4b52c4b08b3a234e70f1d9b2012ad58ba02d",
+      "run": 41190783338,
+      "source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f"
+    },
+    {
+      "id": 13038722765,
+      "name": "pocket-camera-camera-audit-evidence",
+      "bytes": 13492166,
+      "sha256": "4e38d1e11bed6561312db78403a3a1e6e2943c05744b3dac7a7613e686cb18e1",
+      "run": 41190783338,
+      "source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f"
+    },
+    {
+      "id": 13038473448,
+      "name": "pocket-camera-camera-ui-evidence",
+      "bytes": 4385441,
+      "sha256": "aaa93e0a36158970afb43530784d6cdc7075bf3bc7245cb577451b7015d495be",
+      "run": 41190783338,
+      "source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f"
+    },
+    {
+      "id": 13038328674,
+      "name": "camera-mcp-evidence",
+      "bytes": 588354,
+      "sha256": "f7a83b147c401645e18603903cc652f65475efe2160aa1034a884988bd7ee2ab",
+      "run": 41190783298,
+      "source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f"
+    }
+  ],
+  "measurement": {
+    "previews": [
+      "full",
+      "LIGHT"
+    ],
+    "aspects": [
+      [
+        640,
+        480
+      ],
+      [
+        480,
+        640
+      ],
+      [
+        800,
+        450
+      ],
+      [
+        450,
+        800
+      ]
+    ],
+    "before_vertical_spread_px": [
+      17,
+      30
+    ],
+    "before_horizontal_spread_px": [
+      19.5,
+      33.5
+    ],
+    "after_spread_px": 0,
+    "missing_markers": 0,
+    "full_preview_export_max_channel_difference": 0,
+    "grey_levels": 32,
+    "flat_patch_dither_values": 2,
+    "zero_strength": "Matches Natural at matched 160x120 render resolution; not original JPEG byte identity",
+    "chart_limit": "Markers cover at least two retro texels; not thin-detail preservation"
+  },
+  "open_ui_findings": [
+    "Frame photo height drops from 216 to149px at402x700; iPad448 to400px",
+    "Mine sticker category wraps to full second row",
+    "320x568 two-Look rail clips first symbol; at200% text Original partly out of visible rail"
+  ],
+  "connection": {
+    "verified": "Official SDK acceptance client only; eleven tools",
+    "owner_installed_host": false,
+    "this_chat": false,
+    "personal_photos": false,
+    "live_browser_album": false
+  },
+  "publication": {
+    "review_merged": false,
+    "review_published": false,
+    "main_unchanged": true
+  },
+  "ar": {
+    "status": "research/proposal only",
+    "current": "2D character stickers over camera/photos",
+    "proposed_first_step": "Fully clothed metre-scaled USDZ models via Apple AR Quick Look",
+    "not_added": [
+      "AR architecture",
+      "new models",
+      "new permissions",
+      "hosted MCP",
+      "WebMCP"
+    ],
+    "limits": "Quick Look has its own camera viewer; shader/anchored-3D integration and complex room interactions require separate assessment"
+  },
+  "physical_safari": false,
+  "physical_native_share": false,
+  "photo_source": "camera/samples/default-original.png (public repository sample)"
+}

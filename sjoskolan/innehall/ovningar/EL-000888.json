@@ -1,0 +1,170 @@
+{
+  "id": "EL-000888",
+  "titel": "Transportstyrelsens riktlinjer för elektrifiering av fartyg (2023)",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 1,
+  "granskning": {
+    "status": "utkast",
+    "kommentar": "Quiz vecka 42 (lärarens beslut 11 okt 2026: tio frågor per text, A–E, egna ord). Varje svar kontrollerat ordagrant mot PDF:en (citat och sida i lärarens facit). Facit finns bara hashat, klartexten utanför repot."
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-bildspel-v42-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Läs avsnitt 1–4.3, 4.4.5 och 6.6–6.15 (sidorna 4–10, 13 och 18–24 i pdf-läsaren). Svara på varje fråga med en bokstav. Frågorna säger var i texten du ska läsa.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Avsnitt 2. Ditt fartyg omfattas inte av TSFS 2017:26. Vad visar del 2 av riktlinjerna (kapitel 5)?",
+        "alternativ": [
+          "Hur man gör en förenklad riskhantering för batteriinstallationen.",
+          "Vilka regler som gäller för just den typen av fartyg.",
+          "Allmän vägledning om hela arbetet med att elektrifiera ett fartyg.",
+          "Hur fartyget ska kopplas till landström när det ligger i hamn."
+        ],
+        "ledtrad": "avsnitt 2 Syfte"
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Avsnitt 4.1. Det finns tre sätt att visa att fartyget uppfyller kraven. Vilket sätt är enklast i praktiken?",
+        "alternativ": [
+          "Att göra en noggrann riskanalys med vetenskapliga metoder.",
+          "Att samla in data från erfarenhet av drift.",
+          "Att bygga och utrusta fartyget enligt ett klassningssällskaps regler.",
+          "Att jämföra fartyget med ett annat, liknande fartyg som redan är godkänt."
+        ],
+        "ledtrad": "avsnitt 4.1 Verifiering"
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Avsnitt 4.2. Vad betyder termisk rusning i ett batteri?",
+        "alternativ": [
+          "Batteriet laddas ur så snabbt att spänningen sjunker under det tillåtna gränsvärdet.",
+          "Batteriet har mindre kapacitet nu än när det var nytt.",
+          "Laddaren ger för hög ström, så att säkringen till batteriet löser ut direkt.",
+          "Batteriet blir för varmt och energin släpps ut utan kontroll, som brand."
+        ],
+        "ledtrad": "avsnitt 4.2 Definitioner"
+      },
+      {
+        "id": "d",
+        "typ": "flerval",
+        "text": "Avsnitt 4.3.2. Vid en nödsituation bryter du batterisystemet (EES) med nödbrytaren. Vad ska då fortfarande fungera?",
+        "alternativ": [
+          "Funktionerna för larm, övervakning och kontroll.",
+          "Ingenting – allt blir strömlöst, även larm och övervakning.",
+          "Bara framdrivningen, så att fartyget kan manövreras.",
+          "Bara belysningen, så att man kan se i batterirummet."
+        ],
+        "ledtrad": "avsnitt 4.3.2 Batterier"
+      },
+      {
+        "id": "e",
+        "typ": "flerval",
+        "text": "Avsnitt 4.4.5. Gasdetektorn i batterirummet visar 30 % av LEL (undre explosionsgränsen). Vad ska då hända?",
+        "alternativ": [
+          "Ventilationen stängs av så att gasen stannar kvar i rummet, och batterierna fortsätter att ge ström som vanligt.",
+          "En brandpost i rummet startar automatiskt och kyler ner batterierna med sjövatten.",
+          "Larm i kontrollrummet, ventilationen körs och batterisystemet kopplas bort eller kan kopplas bort för hand.",
+          "Inget händer ännu, eftersom larm och bortkoppling kommer först när gasen har nått 100 % av LEL."
+        ],
+        "ledtrad": "avsnitt 4.4.5 Gasdetektering"
+      },
+      {
+        "id": "f",
+        "typ": "flerval",
+        "text": "Avsnitt 6.6.1. Batterisystemet (EES) ska provas ombord. Vilka handlingar om provningen ska Transportstyrelsen få?",
+        "alternativ": [
+          "En kopia av tillverkarens prov på fabriken, eftersom ett prov ombord inte behövs.",
+          "En plan för hur provet görs ombord och en rapport om resultatet.",
+          "En kort anteckning i maskindagboken, som visas upp vid nästa tillsyn.",
+          "Ett muntligt besked från installatören om att provet ombord gick bra."
+        ],
+        "ledtrad": "avsnitt 6.6.1 Dokumentation som behöver tas fram och lämnas till Transportstyrelsen"
+      },
+      {
+        "id": "g",
+        "typ": "flerval",
+        "text": "Avsnitt 6.7. Ombord finns många enfaslaster som ger övertoner. Vad kan hända med nolledaren?",
+        "alternativ": [
+          "Övertonerna tar ut varandra, så nolledaren får nästan ingen ström.",
+          "Inget, eftersom övertoner bara finns i fasledarna och inte i nolledaren.",
+          "Bara den 5:e övertonen hamnar i nolledaren, och den kan inte skada ledaren.",
+          "Den 3:e övertonen läggs ihop i nolledaren, som då kan bli överbelastad."
+        ],
+        "ledtrad": "avsnitt 6.7 Störningsfri drift – Övertoner"
+      },
+      {
+        "id": "h",
+        "typ": "flerval",
+        "text": "Avsnitt 6.10. Leverantören kan koppla upp sig mot batterisystemet på distans. Vem ansvarar för att fartyget drivs säkert?",
+        "alternativ": [
+          "Befälhavaren ombord, även när någon är uppkopplad på distans.",
+          "Leverantören, så länge den är uppkopplad mot systemet från land.",
+          "Transportstyrelsen, eftersom myndigheten har godkänt hela installationen.",
+          "Klassningssällskapet, eftersom det har typgodkänt batterierna och systemet."
+        ],
+        "ledtrad": "avsnitt 6.10 Styrning och diagnostik på distans"
+      },
+      {
+        "id": "i",
+        "typ": "flerval",
+        "text": "Avsnitt 6.14. En ny matros utan utbildning på batterisystemet vill titta in i batterirummet. Vad gäller?",
+        "alternativ": [
+          "Det går bra om dörren står öppen hela tiden, så att eventuell gas kan vädras ut direkt.",
+          "Det går bra när fartyget är i hamn och ingen laddning av batterierna pågår.",
+          "Bara personal med tillstånd och utbildning bör gå in, och rummet bör normalt vara låst.",
+          "Alla i besättningen får gå in, om de först har läst igenom varningsskylten vid dörren."
+        ],
+        "ledtrad": "avsnitt 6.14 Tillträde och varselmärkning"
+      },
+      {
+        "id": "j",
+        "typ": "flerval",
+        "text": "Avsnitt 6.15. Du ska sköta drift och underhåll av batterisystemet ombord. Vilken utbildning ska du ha?",
+        "alternativ": [
+          "En allmän elutbildning räcker, och den behöver bara göras en enda gång.",
+          "Utbildning på just det här batterisystemet, som görs om med några års mellanrum.",
+          "Bara en kurs i brandbekämpning, eftersom leverantören sköter resten av systemet på distans.",
+          "Ingen särskild utbildning behövs, om någon ombord redan är utbildad elektriker."
+        ],
+        "ledtrad": "avsnitt 6.15 Utbildning"
+      }
+    ],
+    "svarsformat": "Svara med A, B, C, D eller E i quizet."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "Transportstyrelsen, version 3.0 (2023-02-20)",
+        "roll": "quiz vecka 42, läses hemma"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "Transportstyrelsen, ”Transportstyrelsens riktlinjer för elektrifiering av fartyg”, version 3.0, 2023-02-20.",
+    "resurser": [
+      {
+        "url": "vecka-42/aktuell/Transportstyrelsen_riktlinjer_elektrifiering_fartyg_2023.pdf",
+        "titel": "Transportstyrelsens riktlinjer för elektrifiering av fartyg (PDF)",
+        "kortnamn": "riktlinjerna för elektrifiering"
+      }
+    ],
+    "losning_publik": false
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Saltade hashar i vecka-42/aktuell/quiz-nyckel.mjs; klartexten finns utanför repot (verktyg/inlamning/facit.py)."
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Johansson SC-90 · Sound Chip · The Office of Nils Johansson</title>
+  <meta name="description" content="The Johansson SC-90: a four-voice retro sound chip from Johansson Denki, and the jingles of Sakura Shōten, the konbini in Minato, played on it.">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="sc-90.css">
+  <script type="module" src="page.js"></script>
+</head>
+<body>
+  <header class="mast">
+    <a class="mast-id" href="/">
+      <span class="mast-mark" aria-hidden="true">NJ</span>
+      <span><small>THE OFFICE OF NILS JOHANSSON</small><strong>Johansson SC-90</strong></span>
+    </a>
+    <a class="mast-home" href="/">Home</a>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="maker">JOHANSSON DENKI · ヨハンソン電機 · 1990</p>
+      <h1>SC-90 sound chip</h1>
+      <p class="lede">Four voices on one chip, for the shop chimes, toys and game sets of Johansson World: two bright pulse voices for the tune and its harmony, a soft stepped triangle for the bass, and a noise voice for the drums. Its first job is the music of Sakura Shōten, the konbini in Minato.</p>
+      <ol class="voices-key">
+        <li><b>Pulse 1</b> the melody</li>
+        <li><b>Pulse 2</b> harmony, echo or chords</li>
+        <li><b>Triangle</b> the bass</li>
+        <li><b>Noise</b> the drums</li>
+      </ol>
+    </section>
+
+    <section class="jingles" aria-labelledby="jingles-title">
+      <h2 id="jingles-title">Sakura Shōten’s jingles</h2>
+      <p class="note">Five little tunes in C, the shop’s key, sharing one motif: the shop’s name sung on the Japanese major pentatonic, “sa-ku-ra shō-ten”. Each has its moment in the shop’s day. Listen to the recording, or play it live on the chip in your browser and switch its voices on and off to hear how it is made.</p>
+      <ul class="cards" id="jingles"></ul>
+      <p class="status" id="status" aria-live="polite"></p>
+    </section>
+
+    <section class="about" aria-labelledby="about-title">
+      <h2 id="about-title">How the chip makes its sound</h2>
+      <ul>
+        <li><strong>One clock.</strong> Every pitch is the chip’s 4 MHz clock divided by 16 and a whole number, so the highest notes sit a few cents off true, as on a real chip of its day: within 3 cents from C2 to C6.</li>
+        <li><strong>Pulse voices.</strong> A square wave whose “on” part can be an eighth, a quarter or half of each cycle: thin and nasal, bright, or round. The edges are band-limited, so the sound is clean and never fizzes.</li>
+        <li><strong>The triangle.</strong> Thirty-two 4-bit steps up and down: the soft, slightly grainy bass of the era.</li>
+        <li><strong>Noise.</strong> A 15-bit shift register, 32 767 steps before it repeats, shaped into a kick, a snare and hi-hats.</li>
+        <li><strong>The output.</strong> A blocking capacitor and a gentle roll-off above 10 kHz: the small speaker it was made for.</li>
+      </ul>
+      <p class="credit">An original Johansson Denki design in the manner of the sound chips in late-1980s game consoles and toys: no chip is emulated, and no melody is borrowed from a game, a composer or a shop. The first versions of these jingles, on the <a href="/polivoks/#jingles-title">Johansson PF-82</a> synthesiser, are kept there. Source: <a href="https://github.com/nj22az/nj22az.github.io/tree/main/sc-90">sc-90/</a>.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Johansson SC-90 · a Johansson Denki sound chip</span>
+    <a href="/">The Office of Nils Johansson</a>
+  </footer>
+</body>
+</html>

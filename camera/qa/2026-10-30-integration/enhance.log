@@ -1,0 +1,24 @@
+ok  phone: enhancement starts off and controls fit
+ok  phone: switch and strength change the saved recipe independently of manual adjustments
+ok  phone: hold compares with the original and releases without changing the recipe
+ok  phone: cropped JPEG contains the enhancement and retains the exact source
+ok  phone: re-edit restores strength without baking or accumulating it
+ok  small-phone: enhancement starts off and controls fit
+ok  small-phone: switch and strength change the saved recipe independently of manual adjustments
+ok  small-phone: hold compares with the original and releases without changing the recipe
+ok  small-phone: cropped JPEG contains the enhancement and retains the exact source
+ok  small-phone: re-edit restores strength without baking or accumulating it
+ok  tablet: enhancement starts off and controls fit
+ok  tablet: switch and strength change the saved recipe independently of manual adjustments
+ok  tablet: hold compares with the original and releases without changing the recipe
+ok  tablet: cropped JPEG contains the enhancement and retains the exact source
+ok  tablet: re-edit restores strength without baking or accumulating it
+ok  desktop: enhancement starts off and controls fit
+ok  desktop: switch and strength change the saved recipe independently of manual adjustments
+ok  desktop: hold compares with the original and releases without changing the recipe
+    {"changed":504000,"same":true,"repeat":true,"baselineCompared":true,"baseline":true,"meanDifference":13.043545524691359,"redLift":11.547390046296297,"failed":[],"white":[250,250,250],"black":[7,7,7]}
+ok  desktop: GPU correction is visible and deterministic; switching off restores the original output
+ok  desktop: real photographs render at preview and export sizes
+ok  desktop: cropped JPEG contains the enhancement and retains the exact source
+ok  desktop: re-edit restores strength without baking or accumulating it
+enhance: 22/22 browser checks passed

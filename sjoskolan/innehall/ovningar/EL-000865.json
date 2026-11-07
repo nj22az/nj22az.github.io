@@ -1,0 +1,38 @@
+{
+  "id": "EL-000865",
+  "titel": "Din tur: ventilationsfläkten",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En ventilationsfläkt har R = 110 Ω och X_{L} = 45 Ω och ligger på 230 V RMS. Räkna impedansen |Z| och strömmen I."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS impedans bild tur-z",
+        "revision": "ny",
+        "roll": "Din tur i genomgången och presentationen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "|Z| = √(110² + 45²) ≈ 118,8 Ω. I = 230/118,8 ≈ 1,94 A.",
+    "status": "migrerad"
+  }
+}

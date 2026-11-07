@@ -1,0 +1,5 @@
+ok  116 resident stickers and thumbnails load at unchanged dimensions with the new contour key
+ok  new cut-outs and photo stickers have a fine rim and transparent corners
+ok  the actual picker places the recut asset and export uses those same sticker pixels
+ok  no page errors
+4/4 sticker contour checks passed

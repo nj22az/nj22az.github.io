@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jonsson's Board</title>
+  <meta name="description" content="Quality 3D printed products made in Sweden. Order online and pay with Swish.">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/shop/assets/favicon.svg">
+  <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shop/styles.css">
+  <script src="/theme-bootstrap.js?v=random-2"></script>
+  <script src="/subpage-theme.js?v=random-2"></script>
+  <link rel="stylesheet" href="/subpage-theme.css">
+</head>
+<body>
+
+  <nav id="site-nav" class="site-nav"></nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="shop-hero-logo">
+          <img src="/shop/assets/logo.png" alt="Jonsson's Anslagstavla" id="shop-logo">
+        </div>
+        <div class="hero-text">
+          <p class="hero-role" data-i18n="location"></p>
+          <h1 class="hero-tagline" data-i18n="tagline"></h1>
+          <p class="hero-sub" data-i18n="description"></p>
+          <div class="hero-actions">
+            <a href="#products" class="btn-primary">
+              <span data-i18n="heroCtaBrowse">Browse Products</span>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#how-it-works" class="btn-secondary" data-i18n="heroCtaHow">How to Order</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Products -->
+    <section class="section" id="products">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-decor" id="decor-products"></div>
+          <h2 data-i18n="productsTitle"></h2>
+          <div class="section-subtitle" data-i18n="productsSubtitle"></div>
+          <p data-i18n="productsIntro"></p>
+        </div>
+
+        <div class="product-toolbar">
+          <div class="filter-pills" id="filter-pills"></div>
+          <div class="product-search-wrap">
+            <svg class="product-search-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="product-search" class="product-search" data-i18n-ph="searchPlaceholder" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="product-grid" id="product-grid"></div>
+        <p class="product-empty" id="product-empty" hidden></p>
+        <div id="custom-order-slot"></div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- How It Works -->
+    <section class="section section-alt" id="how-it-works">
+      <div class="container" style="position:relative; overflow:hidden;">
+        <div class="decor-blob decor-blob-md decor-blob-tr"></div>
+        <div class="section-header">
+          <div class="section-decor"></div>
+          <h2 data-i18n="howTitle"></h2>
+          <div class="section-subtitle" data-i18n="howSubtitle"></div>
+          <p data-i18n="howIntro"></p>
+        </div>
+        <div class="steps-grid" id="steps-grid"></div>
+        <div class="swish-banner">
+          <div class="swish-logo">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2ZM8 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm8-4c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"/></svg>
+          </div>
+          <div class="swish-text">
+            <strong data-i18n="swishTitle"></strong>
+            <span data-i18n="swishText"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- About -->
+    <section class="section section-mint" id="about">
+      <div class="container" style="position:relative;">
+        <div class="about-blobs">
+          <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
+          <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
+        </div>
+        <div class="shop-about-layout">
+          <div class="about-logos-row">
+            <div class="about-logo-img about-logo-jonsson">
+              <img src="/shop/assets/logo.png" alt="Jonsson">
+            </div>
+            <div class="about-logo-img about-logo-johansson">
+              <img src="/shop/assets/logo-johansson.png" alt="Johansson">
+            </div>
+          </div>
+          <div class="section-label-bar" data-i18n="aboutLabel"></div>
+          <p class="shop-about-bio" data-i18n="aboutBio"></p>
+          <span class="shop-about-location">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0ZM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+            <span data-i18n="location"></span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <!-- Order Modal -->
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal" id="order-modal">
+    <button class="modal-close" aria-label="Close">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 data-i18n="modalTitle"></h2>
+    <p class="modal-product-name"></p>
+    <form id="order-form" autocomplete="on">
+      <input type="hidden" id="order-product" name="product">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="order-name" data-i18n="formName"></label>
+          <input type="text" id="order-name" name="name" required autocomplete="name" data-i18n-ph="formNamePh">
+        </div>
+        <div class="form-group">
+          <label for="order-email" data-i18n="formEmail"></label>
+          <input type="email" id="order-email" name="email" required autocomplete="email" data-i18n-ph="formEmailPh">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="order-phone" data-i18n="formPhone"></label>
+          <input type="tel" id="order-phone" name="phone" autocomplete="tel" data-i18n-ph="formPhonePh">
+        </div>
+        <div class="form-group">
+          <label for="order-qty" data-i18n="formQty"></label>
+          <select id="order-qty" name="quantity" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10+</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="order-shipping" data-i18n="shippingLabel"></label>
+        <select id="order-shipping" name="shipping" required></select>
+        <p class="form-hint" data-i18n="shippingHelper"></p>
+      </div>
+      <div class="form-group">
+        <label for="order-message" data-i18n="formMessage"></label>
+        <textarea id="order-message" name="message" data-i18n-ph="formMessagePh"></textarea>
+      </div>
+      <div class="order-total-row">
+        <span class="order-total-label" data-i18n="orderTotal"></span>
+        <span class="order-total-value" id="order-total-value">—</span>
+      </div>
+      <button type="submit" class="btn-primary form-submit" id="order-submit">
+        <span class="form-submit-label" data-i18n="formSubmit"></span>
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="form-note" data-i18n="formNote" data-i18n-html></p>
+      <p class="form-note form-note-stripe" id="order-stripe-note" hidden data-i18n="checkoutPoweredBy"></p>
+    </form>
+  </div>
+
+  <script src="/shop/config.js"></script>
+  <script src="/shop/shop.js"></script>
+  <script>
+    // Decorative leaf icons above section headers
+    (function () {
+      var leafIcon = '<svg fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="' + SHOP.icons.leaf + '"/></svg>';
+      document.querySelectorAll(".section-decor").forEach(function (el) { el.innerHTML = leafIcon; });
+    })();
+  </script>
+</body>
+</html>

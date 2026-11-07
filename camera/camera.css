@@ -1,0 +1,579 @@
+/* Pocket Camera: Apple's camera and Photos conventions. System font, the camera's yellow for what is chosen, 44-point
+   touch targets, springy but brief motion.
+
+   The theme (the owner, 3 November 2026: "I need Dark and Light mode"): every colour of the chrome is one of these
+   tokens; dark is the default and light is the same set under html[data-theme=light]. The page's head script and
+   app.js (applyTheme) set the attribute from the Appearance setting (Auto follows the device). What sits on the photo
+   itself (the sticker handles, the face guide, the zoom button, the crop grid) keeps its own glass over the picture in
+   both. The games keep their illustrated paper palette in light and go black in dark (camera-black.css). */
+:root{
+ color-scheme:dark;
+ --bg:#0d0e10;--bar:#0d0e10;--surface:#1c1e21;--surface-2:#292c30;--well:#202022;--hero:#1a1c1f;
+ --fill:rgba(255,255,255,.10);--fill-strong:rgba(255,255,255,.16);
+ --label:#faf9f6;--label-2:#c5c7cc;--label-3:#b7babf;--separator:#383b40;--outline:rgba(255,255,255,.17);
+ --accent:#f6d477;--accent-fill:#f6d477;--on-accent:#181818;--accent-soft:#383225;
+ --chip-on:#f0f0ee;--chip-on-label:#181818;
+ --red:#ff8d83;--stamp:#ffbf77;
+ --shadow:rgba(0,0,0,.35);--overlay:rgba(0,0,0,.45);--shutter:#fafafa;--shutter-ring:#fafafa;
+ --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","Segoe UI",system-ui,sans-serif;
+ --spring:cubic-bezier(.32,1.3,.5,1);--ease:cubic-bezier(.25,.8,.25,1);
+}
+/* Light: warm paper and ink. The yellow stays the fill of the one main button; what is chosen reads in a deep amber,
+   so a chosen tab or tile is as readable on white as the yellow is on black (4.5:1 and better on every surface). */
+:root[data-theme=light]{
+ color-scheme:light;
+ --bg:#f4f3ef;--bar:#fbfaf7;--surface:#fff;--surface-2:#ebe9e3;--well:#ecebe6;--hero:#e8e5dc;
+ --fill:rgba(0,0,0,.06);--fill-strong:rgba(0,0,0,.10);
+ --label:#161616;--label-2:rgba(22,22,22,.72);--label-3:rgba(22,22,22,.56);--separator:rgba(0,0,0,.12);--outline:rgba(0,0,0,.12);
+ --accent:#8a6400;--accent-fill:#f6d477;--on-accent:#1a1500;--accent-soft:#fbf0c9;
+ --chip-on:#1c1c1e;--chip-on-label:#fff;
+ --red:#c0392b;
+ --shadow:rgba(0,0,0,.12);--overlay:rgba(0,0,0,.3);--shutter:#fff;--shutter-ring:rgba(0,0,0,.3);
+}
+/* Installed, the status bar is the system's own opaque bar coloured by theme-color (index.html: default, not
+   translucent): a dark band painted behind a translucent one was tried and iPadOS 26 drew its own scrim over it. */
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--label);overscroll-behavior:none}
+body{font:400 15px/1.35 var(--font);letter-spacing:-.01em;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;touch-action:manipulation}
+button:disabled{cursor:default}
+/* Icons; World's Look swatches draw with their own colours. */
+:not(.swatch)>svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg .fill{fill:currentColor;stroke:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+.app{position:fixed;inset:0;display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.screen{flex:1;min-height:0;display:flex;flex-direction:column}
+.video-source{position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none}
+
+/* Bars */
+.bar{flex:none;height:52px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:0 12px}
+.bar>:first-child{justify-self:start}.bar>:last-child{justify-self:end}
+.bar h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.02em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-spacer{width:44px}
+.back{display:inline-flex;align-items:center;gap:2px;height:44px;padding:0 8px 0 2px;color:var(--label);text-decoration:none;font-size:17px;letter-spacing:-.02em;border-radius:10px}
+.back svg{width:24px;height:24px;stroke-width:2.2}
+.standalone .camera .back{visibility:hidden}
+/* The settings chevron: what is switched on sits beside it in yellow. */
+.settings-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;min-width:44px;padding:0 10px;border-radius:18px;color:var(--label-2);transition:background-color .2s,color .2s,transform .25s var(--spring)}
+.settings-toggle.open,.settings-toggle.busy{background:var(--fill);color:var(--label)}
+.settings-toggle:active{transform:scale(.92)}
+.settings-toggle>svg{width:20px;height:20px;stroke-width:2.2;transition:transform .3s var(--spring)}
+.settings-toggle.open>svg{transform:rotate(180deg)}
+.settings-status{display:inline-flex;gap:4px;color:var(--accent)}
+.settings-status:empty{display:none}
+.settings-status svg{width:17px;height:17px;stroke-width:2}
+.settings{position:absolute;z-index:4;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:2px;max-width:calc(100% - 16px);padding:8px 6px;border-radius:20px;background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);box-shadow:0 8px 30px rgba(0,0,0,.35);overflow-x:auto;scrollbar-width:none;animation:drop .32s var(--spring)}
+.settings::-webkit-scrollbar{display:none}
+@keyframes drop{from{opacity:0;transform:translate(-50%,-10px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+.setting{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:58px;font-size:11px;font-weight:600;color:var(--label-2)}
+.setting i{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--fill);color:var(--label);transition:background-color .2s,color .2s,transform .25s var(--spring)}
+.setting:active i{transform:scale(.88)}
+.setting.on{color:var(--accent)}
+.setting.on i{background:var(--accent-fill);color:var(--on-accent)}
+.setting span{white-space:nowrap}
+.round{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--fill);transition:transform .25s var(--spring),background-color .2s}
+.round:active{transform:scale(.9)}
+.round.big{width:50px;height:50px}.round.big svg{width:26px;height:26px}
+.text-button{height:44px;padding:0 6px;font-size:17px;letter-spacing:-.02em}
+.photos-button{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 11px;border-radius:18px;background:var(--fill);font-size:15px;font-weight:600;letter-spacing:-.01em;transition:transform .25s var(--spring)}
+.photos-button:active{transform:scale(.93)}
+.photos-button svg{width:20px;height:20px}
+.pill-button{height:34px;padding:0 16px;border-radius:17px;background:var(--accent-fill);color:var(--on-accent);font-size:15px;font-weight:600;transition:transform .25s var(--spring),opacity .2s}
+.pill-button:active{transform:scale(.94)}
+.pill-button:disabled{opacity:.4}
+
+/* The stage holds the picture, centred and whole. */
+.stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;overflow:hidden;touch-action:none}
+#cameraStage{container-type:size}
+.frame{position:relative;overflow:hidden;background:#0c0c0d}
+.camera .frame{border-radius:4px}
+.frame canvas{display:block;width:100%;height:100%}
+.frame .date-stamp{position:absolute;right:3.5%;bottom:3%;font:700 1em/1 "Courier New",ui-monospace,monospace;letter-spacing:.06em;color:var(--stamp);text-shadow:0 0 .08em #3a1600,0 .08em .16em rgba(0,0,0,.85),0 0 .5em rgba(255,120,30,.5);white-space:pre;pointer-events:none}
+
+.welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;gap:clamp(6px,2.2cqh,14px);padding:20px 24px;padding:clamp(10px,3.5cqh,28px) 24px;overflow:hidden;text-align:center;background:radial-gradient(120% 80% at 50% 0%,#1d2a22 0%,#000 70%)}
+.welcome-sticker{flex:none;width:auto;height:clamp(72px,18vh,150px);height:clamp(0px,min(calc(100cqh - 300px),44cqh),280px);max-width:64%;object-fit:contain;margin-bottom:-4px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45));transform-origin:50% 90%;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.welcome h1{margin:0;font-size:30px;font-size:clamp(26px,6.4cqh,34px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.welcome p{margin:0;max-width:28ch;color:var(--label-2);font-size:17px;line-height:1.35}
+.welcome .fine{max-width:42ch;font-size:13px;color:var(--label-3)}
+.welcome-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px;width:min(260px,100%);margin:6px 0 2px}
+@container (max-height:380px){.welcome-sticker{display:none}.welcome .fine{display:none}}
+@container (max-height:250px){.welcome p{display:none}}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:24px;background:var(--fill-strong);font-size:17px;font-weight:600;letter-spacing:-.02em;transition:transform .25s var(--spring)}
+.button svg{width:20px;height:20px}
+.button:active{transform:scale(.95)}
+.button.primary{background:var(--accent-fill);color:var(--on-accent)}
+
+.count{position:absolute;inset:0;display:grid;place-items:center;font-size:120px;font-weight:200;letter-spacing:-.04em;pointer-events:none;text-shadow:0 2px 24px rgba(0,0,0,.4)}
+.count:empty{display:none}
+.count span{animation:count 1s var(--ease) both}
+@keyframes count{0%{transform:scale(1.6);opacity:0}18%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.85);opacity:0}}
+.zoom{position:absolute;z-index:1;left:50%;bottom:12px;transform:translateX(-50%);min-width:38px;height:38px;padding:0 10px;border-radius:19px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font-size:13px;font-weight:700;color:var(--accent);transition:transform .25s var(--spring)}
+.zoom:active{transform:translateX(-50%) scale(.9)}
+/* Light, as it is dragged: a sun on a track at the picture's right edge; a chip to put it back. */
+.exposure{position:absolute;z-index:3;right:10px;top:15%;bottom:15%;width:28px;display:flex;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.exposure.show{opacity:1;transition-duration:.08s}
+.exposure i{position:absolute;top:0;bottom:0;width:2px;border-radius:1px;background:rgba(255,214,10,.55)}
+.exposure svg{position:absolute;top:calc(var(--at,.5)*100% - 13px);width:26px;height:26px;color:var(--accent);filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));stroke-width:2}
+.exposure-chip{position:absolute;z-index:2;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px 0 8px;border-radius:15px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--accent);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.exposure-chip svg{width:16px;height:16px;stroke-width:2.2}
+.frame-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+/* The dock: everything under the picture. */
+.dock{flex:none;width:100%;max-width:760px;margin:0 auto}
+.controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:104px;padding:0 28px}
+.roll{justify-self:start;width:50px;height:50px;border-radius:10px;overflow:hidden;background:var(--surface);box-shadow:inset 0 0 0 1px var(--outline);transition:transform .25s var(--spring)}
+.roll:active{transform:scale(.92)}
+.roll img{display:block;width:100%;height:100%;object-fit:cover}
+.roll.pop{animation:pop .45s var(--spring)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.controls>:last-child{justify-self:end}
+.shutter{position:relative;width:76px;height:76px;border-radius:50%;border:4px solid var(--shutter-ring);transition:opacity .2s}
+.shutter::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--shutter);transition:transform .18s var(--ease),background-color .2s}
+.shutter:active::after{transform:scale(.86)}
+.shutter:disabled{opacity:.35}
+.shutter.waiting::after{background:var(--accent);animation:breathe 1s ease-in-out infinite alternate}
+@keyframes breathe{to{transform:scale(.8)}}
+
+/* The Look tray. */
+.tray{padding:6px 0 0}
+.camera.idle .tray{display:none}
+.layers{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.layers::-webkit-scrollbar{display:none}
+.mix{flex:none;display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:18px;background:var(--fill)}
+.layer{flex:none;display:inline-flex;align-items:center;height:32px;border-radius:16px;color:var(--label-2);transition:background-color .2s,color .2s,transform .3s var(--spring)}
+.layer.active{background:var(--chip-on);color:var(--chip-on-label)}
+.layer-pick{height:32px;padding:0 13px;font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.layer.active.removable .layer-pick{padding-right:4px}
+.layer-remove{display:none;place-items:center;width:28px;height:32px;margin-right:2px}
+.layer.active.removable .layer-remove{display:grid}
+.layer-remove svg{width:15px;height:15px;stroke-width:2.4}
+.add-layer{flex:none;display:inline-flex;align-items:center;gap:3px;height:36px;padding:0 10px 0 6px;border-radius:18px;color:var(--label);font-size:14px;font-weight:600;transition:transform .25s var(--spring)}
+.add-layer:active{transform:scale(.92)}
+.add-layer svg{width:16px;height:16px;stroke-width:2.2}
+.shuffle{flex:none;margin-left:auto;display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--fill);color:var(--label);transition:transform .25s var(--spring)}
+.shuffle:active{transform:scale(.9)}
+.shuffle svg{width:21px;height:21px}
+.shuffle+.shuffle{margin-left:0}
+.shuffle.roll-dice svg{animation:dice .6s var(--spring)}
+@keyframes dice{0%{transform:rotate(0) scale(.7)}100%{transform:rotate(360deg) scale(1)}}
+.layer.enter{animation:pop .4s var(--spring)}
+
+.strip{display:flex;gap:10px;overflow-x:auto;padding:8px 16px 10px;scroll-padding:0 16px;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x}
+.strip::-webkit-scrollbar{display:none}
+.tile{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:66px;color:var(--label-2);font-size:11px;font-weight:600;letter-spacing:0}
+.tile .face{position:relative;display:block;width:62px;height:62px;border-radius:14px;overflow:hidden;background:var(--surface);transition:transform .3s var(--spring),box-shadow .2s}
+.tile .face svg{display:block;width:100%;height:100%}
+.tile canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .35s var(--ease)}
+.tile canvas.drawn{opacity:1}
+.tile:active .face{transform:scale(.92)}
+.tile[aria-checked="true"]{color:var(--accent)}
+.tile[aria-checked="true"] .face{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+.tile .name{max-width:66px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.slider-row{display:flex;align-items:center;gap:14px;height:44px;padding:0 20px}
+.slider-row output{width:36px;text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--label-2)}
+input[type=range]{flex:1;min-width:0;height:44px;margin:0;background:transparent;-webkit-appearance:none;appearance:none;touch-action:pan-x}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--label) var(--fillTo,100%),var(--fill-strong) var(--fillTo,100%))}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--fill-strong)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--label)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-11px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.45),0 0 0 .5px rgba(0,0,0,.1)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border:0;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradient(90deg,var(--fill-strong) var(--from),var(--accent) var(--from),var(--accent) var(--to),var(--fill-strong) var(--to))}
+
+/* Stickers on the picture */
+.stickers{position:absolute;inset:0;pointer-events:none}
+.sticker{position:absolute;pointer-events:auto;touch-action:none;cursor:grab;outline:none}
+.sticker:active{cursor:grabbing}
+.sticker img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
+.sticker canvas{display:block;width:100%;height:100%;pointer-events:none}
+.sticker.flipped img{transform:scaleX(-1)}
+.sticker>button,.sticker-handle{position:absolute;display:none;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(28,28,30,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.sticker>button svg,.sticker-handle svg{width:16px;height:16px;stroke-width:2.2}
+.sticker-remove{left:-15px;top:-15px}.sticker-flip{right:-15px;top:-15px}.sticker-handle{right:-15px;bottom:-15px;cursor:nwse-resize}.sticker-text{left:-15px;bottom:-15px}
+.sticker-say{left:-15px;bottom:-15px}
+.sticker.selected>.sticker-say[hidden]{display:none}
+.sticker.selected::before{content:"";position:absolute;inset:-4px;border:1.5px dashed rgba(255,255,255,.9);border-radius:10px;box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
+.sticker.selected>button,.sticker.selected .sticker-handle{display:grid}
+.sticker.balloon.selected::before{border-radius:14px}
+
+/* The sticker sheets */
+.sticker-picker{display:flex;flex-direction:column;gap:8px;padding:10px 0 4px}
+.sticker-sets{display:flex;gap:6px;padding:0 16px;overflow-x:auto;scrollbar-width:none}
+.sticker-sets::-webkit-scrollbar{display:none}
+.sticker-sets>:first-child{margin-left:auto}.sticker-sets>:last-child{margin-right:auto}
+.sticker-sets button{flex:none;height:30px;padding:0 13px;border-radius:15px;background:var(--fill);font-size:13px;font-weight:600;white-space:nowrap}
+.sticker-sets button[aria-selected="true"]{background:var(--chip-on);color:var(--chip-on-label)}
+.sticker-sets button.locked{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:34px;padding:0 10px}.sticker-sets button.locked svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* The secret sheet's tab, before it is won: what it is and how to open it. */
+.sticker-locked{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 16px;text-align:center;color:var(--label-2);font-size:13px;line-height:1.4}
+.sticker-locked svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.sticker-locked p{margin:0;max-width:34ch}.sticker-locked-how{font-weight:700;color:var(--label)}
+/* In the editor's two-row strip the note is one wide card: the lock beside its two lines. */
+#panelStickers .sticker-locked{grid-row:1/-1;display:grid;grid-template-columns:24px 1fr;grid-template-rows:auto auto;align-content:center;column-gap:10px;row-gap:3px;width:min(320px,calc(100vw - 48px));padding:4px 8px;text-align:left;font-size:12px}
+#panelStickers .sticker-locked svg{grid-row:1/3;width:24px;height:24px}#panelStickers .sticker-locked p{max-width:none}
+.sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px;padding:4px 16px 12px;overflow-y:auto}
+.sticker-choice{display:block;height:96px;padding:6px;border-radius:14px;background:var(--surface);transition:transform .3s var(--spring),background-color .2s}
+.sticker-choice:active{transform:scale(.9)}
+.sticker-choice:hover{background:var(--surface-2)}
+.sticker-choice img{display:block;width:100%;height:100%;object-fit:contain}
+.sticker-choice.lettering{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.sticker-choice.lettering canvas{display:block;max-width:100%;min-height:0;flex:1;object-fit:contain;width:auto;height:auto;max-height:70%}
+.sticker-choice.lettering span{font-size:11px;font-weight:600;color:var(--label-2)}
+#panelStickers .sticker-choice.lettering span{display:none}
+/* The own sheet: make one from a photo, paste a lifted subject, and the ones made, each with its own remove. */
+.sticker-choice.make{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--label-3);background:none;color:var(--label-2);font-size:11px;font-weight:600}
+.sticker-choice.make svg{width:26px;height:26px}
+.sticker-choice.mine{position:relative}
+.sticker-choice .mine-remove{position:absolute;top:2px;right:2px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(28,28,30,.85);color:var(--label-2)}
+.sticker-choice .mine-remove svg{width:13px;height:13px;stroke-width:2.4}
+.sticker-note{grid-column:1/-1;margin:2px 4px 0;font-size:12px;color:var(--label-3);line-height:1.35}
+#panelStickers .sticker-note{display:none}
+#panelStickers .sticker-choice.lettering canvas{max-height:100%}
+#panelStickers .sticker-grid{grid-auto-flow:column;grid-template-columns:none;grid-template-rows:repeat(2,64px);grid-auto-columns:56px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain}
+#panelStickers .sticker-grid::-webkit-scrollbar{display:none}
+#panelStickers .sticker-choice{height:64px;padding:4px;border-radius:12px}
+.sticker-sheet{width:min(560px,calc(100% - 16px));max-height:min(72vh,640px);padding:0;background:var(--surface);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);border-radius:16px;overflow:hidden}
+.sticker-sheet[open]{display:flex;flex-direction:column}
+.sticker-sheet header{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 0 16px}
+.sticker-sheet h2{margin:0;font-size:17px;font-weight:600}
+.sticker-sheet .done{min-height:44px;background:none;color:var(--accent);font-weight:600;font-size:17px}
+.sticker-sheet .sticker-picker{min-height:0;flex:1}
+.sticker-sheet .sticker-grid{min-height:0}
+
+/* Editor */
+.editor .stage{padding:8px 12px}
+.badge-original{position:absolute;top:16px;left:50%;transform:translateX(-50%);padding:5px 10px;border-radius:6px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:11px;font-weight:700;letter-spacing:.08em}
+.segmented{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;width:min(360px,calc(100% - 24px));margin:6px auto 2px;padding:2px;border-radius:9px;background:var(--fill)}
+.segmented button{height:30px;border-radius:7px;font-size:13px;font-weight:600;color:var(--label-2);transition:background-color .2s,color .2s}
+.segmented button[aria-selected="true"]{background:var(--surface-2);color:var(--label);box-shadow:0 2px 6px var(--shadow)}
+.panel{min-height:178px;padding-bottom:8px}
+.adjusters{display:flex;gap:4px;padding:14px 12px 4px;overflow-x:auto;scrollbar-width:none}
+.adjusters::-webkit-scrollbar{display:none}
+.enhance-heading{padding-top:10px}
+.enhance-heading>span{font-weight:600}
+.enhance-strength{max-width:420px;margin:auto;gap:10px}
+.enhance-strength label{flex:none;font-size:12px;color:var(--label-2)}
+.enhance-hint{margin:0 12px;text-align:center;font-size:11px;line-height:1.4;color:var(--label-2)}
+/* Centred while they fit, scrolled from the first when they do not. */
+.adjusters>:first-child{margin-left:auto}.adjusters>:last-child{margin-right:auto}
+.adjuster{flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;width:60px;font-size:11px;font-weight:600;color:var(--label-2)}
+.adjuster i{position:relative;display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:conic-gradient(var(--ring,var(--label-2)) calc(var(--v,0)*1turn),transparent 0);transition:transform .3s var(--spring)}
+.adjuster i::before{content:"";position:absolute;inset:2px;border-radius:50%;background:var(--surface)}
+.adjuster i svg{position:relative;width:22px;height:22px}
+.adjuster.neg i{background:conic-gradient(from calc(var(--v)*1turn),var(--ring,var(--label-2)) calc(var(--v)*-1turn),transparent 0)}
+.adjuster[aria-checked="true"]{color:var(--accent)}
+.adjuster[aria-checked="true"] i{--ring:var(--accent);transform:scale(1.06)}
+.adjuster[aria-checked="true"] i::before{background:var(--surface-2)}
+.adjuster.changed:not([aria-checked="true"]) i{--ring:var(--label)}
+.editor .tray{padding-top:2px}
+
+/* The Frame tab */
+.frame-choices{display:flex;gap:10px;padding:12px 16px 6px;overflow-x:auto;scrollbar-width:none}
+.frame-sheet{max-height:none}
+.frame-sheet .frame-choices{padding:14px 16px 20px}
+.frame-sheet .frame-choice canvas{width:76px;height:76px}
+.frame-choices>:first-child{margin-left:auto}.frame-choices>:last-child{margin-right:auto}
+.frame-choice{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--label-2)}
+.frame-choice canvas{display:block;width:64px;height:64px;border-radius:12px;transition:box-shadow .2s,transform .3s var(--spring)}
+.frame-choice:active canvas{transform:scale(.92)}
+.frame-choice[aria-checked="true"]{color:var(--accent)}
+.frame-choice[aria-checked="true"] canvas{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+.option-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:420px;margin:0 auto;padding:6px 20px;font-size:15px}
+.mini-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px;border-radius:9px;background:var(--fill)}
+.mini-seg button{height:30px;padding:0 12px;border-radius:7px;font-size:13px;font-weight:600;color:var(--label-2)}
+.mini-seg button[aria-checked="true"]{background:var(--surface-2);color:var(--label);box-shadow:0 2px 6px var(--shadow)}
+.paper-choices{grid-template-columns:repeat(4,1fr)}
+.paper-choices button{padding:0 7px;font-size:12px}
+.switch{position:relative;width:51px;height:31px;border-radius:16px;background:var(--fill-strong);transition:background-color .25s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .3s var(--spring)}
+.switch[aria-checked="true"]{background:#30d158}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+
+/* Album */
+.album-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:2px}
+.grid button{position:relative;aspect-ratio:1;overflow:hidden;background:var(--surface)}
+.grid img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s var(--spring)}
+.grid button:active img{transform:scale(.95)}
+.album-empty{display:flex;flex-direction:column;align-items:center;gap:18px;padding:18vh 32px 32px;text-align:center}
+.album-empty p{margin:0;max-width:30ch;color:var(--label-2)}
+.empty-sticker{width:120px;height:auto;margin-bottom:-6px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));animation:bob 2.6s ease-in-out infinite}
+.album-empty strong{display:block;margin-bottom:6px;font-size:22px;color:var(--label);letter-spacing:-.02em}
+.album-note{margin:16px;text-align:center}
+.fine{font-size:13px;color:var(--label-3)}
+
+/* One photo */
+.viewer .stage{padding:8px}
+.viewer img{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;touch-action:pan-y}
+.toolbar{flex:none;display:grid;grid-template-columns:repeat(3,1fr);max-width:480px;width:100%;margin:0 auto;padding:6px 12px 10px}
+.toolbar button{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:52px;padding:6px 0;font-size:11px;font-weight:600;color:var(--accent);border-radius:12px}
+.toolbar button svg{width:26px;height:26px}
+.toolbar #deletePhoto{color:var(--label)}
+
+/* Messages and the shutter's flash */
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);z-index:20;max-width:calc(100% - 32px);padding:8px 16px;border-radius:18px;background:rgba(44,44,46,.82);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);font-size:15px;font-weight:600;letter-spacing:-.01em;text-align:center;opacity:0;transform:translate(-50%,-8px) scale(.96);transition:opacity .25s var(--ease),transform .35s var(--spring);pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast.look{font-size:20px;font-weight:700;letter-spacing:-.02em}
+/* A Pocket face beside a message (pocket-faces.js): the Game Boy Camera's own cells, kept crisp. */
+.toast.has-face{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 7px;text-align:left}
+.toast .toast-face{flex:none;width:48px;height:42px;border-radius:8px;image-rendering:pixelated;background:#182f20}
+.flash{position:fixed;inset:0;z-index:30;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash .5s ease-out}
+@keyframes flash{0%{opacity:.9}100%{opacity:0}}
+.flyer{position:fixed;z-index:25;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);pointer-events:none;object-fit:cover}
+
+/* The words for a balloon */
+.text-sheet{width:min(420px,calc(100% - 24px));margin:max(12px,env(safe-area-inset-top)) auto auto;margin-top:max(12px,10vh);padding:0;border:0;border-radius:16px;background:var(--surface);color:var(--label);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px)}
+.text-sheet::backdrop{background:var(--overlay)}
+.text-sheet form{display:grid;gap:12px;padding:18px 16px 14px}
+.text-sheet h2{margin:0;font-size:17px;font-weight:600;text-align:center}
+.text-sheet textarea{width:100%;min-height:76px;padding:10px 12px;border:0;border-radius:10px;background:var(--well);color:var(--label);font:600 19px/1.25 "Pocket Baloo",ui-rounded,system-ui,sans-serif;resize:none;-webkit-user-select:text;user-select:text}
+.text-sheet textarea:focus{outline:2px solid var(--accent);outline-offset:0}
+.sheet-buttons{display:flex;justify-content:space-between;align-items:center}
+.mini-seg.lettering-styles{grid-template-columns:repeat(5,1fr)}
+.lettering-styles button{padding:0 4px;font-size:12px}
+
+/* Action sheet */
+.sheet{width:min(420px,calc(100% - 16px));margin:auto auto max(8px,env(safe-area-inset-bottom));padding:0;border:0;border-radius:14px;background:transparent;color:var(--label)}
+.sheet::backdrop{background:var(--overlay)}
+#deleteSheet form{display:grid;gap:8px}
+#deleteSheet p{margin:0;padding:16px;border-radius:14px 14px 0 0;background:var(--surface-2);font-size:13px;color:var(--label-2);text-align:center}
+#deleteSheet button{min-height:56px;border-radius:14px;background:var(--surface-2);font-size:19px;font-weight:600;color:var(--accent)}
+#deleteSheet .danger{margin-top:-8px;border-radius:0 0 14px 14px;border-top:.5px solid var(--separator);font-weight:400;color:var(--red)}
+.noscript{padding:24px;text-align:center}
+
+/* Short screens: a lower dock, so the picture keeps its size. */
+@media (max-height:700px){.controls{height:88px}.shutter{width:66px;height:66px}.tile .face{width:54px;height:54px}.tile{width:58px}.panel{min-height:150px}}
+/* A wide window: the dock beside the picture, as on an iPad in landscape. */
+@media (min-width:1000px) and (min-aspect-ratio:5/4){
+ .camera,.editor{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:auto minmax(0,1fr)}
+ .camera>.bar,.editor>.bar{grid-column:1/-1}
+ .camera .dock,.editor .dock{grid-column:2;grid-row:2;display:flex;flex-direction:column;justify-content:center;max-width:none;padding:0 12px 24px 0}
+ .camera .stage,.editor .stage{grid-column:1;grid-row:2;padding:0 16px 24px}
+ .dock .strip{flex-wrap:wrap;overflow:visible;gap:12px 8px;justify-content:center;padding:10px 8px}
+ .dock .layers{flex-wrap:wrap;height:auto;min-height:40px;padding:0 8px}
+ .controls{order:3;padding:0 40px}
+ .editor .panel{min-height:0}
+}
+/* Memory (memory.js) */
+.bar-actions{display:flex;align-items:center;gap:8px}
+.bar .round{width:36px;height:36px}.bar .round svg{width:21px;height:21px}
+.empty-actions{display:flex;flex-direction:column;gap:10px;width:min(260px,100%)}
+.memory{position:relative}
+.memory-new{color:var(--accent);font-weight:600}
+.memory-setup{flex:1;min-height:0;display:flex;flex-direction:column}
+.memory-choose{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;gap:8px;padding:2px 16px 12px}
+.memory-go{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 16px 14px}
+.memory-lead{margin:2px 0 4px;color:var(--label-2);font-size:15px;text-align:center}
+.memory-setup h3{width:100%;max-width:520px;margin:6px 0 0;font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--label-3)}
+.memory-decks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:520px}
+.memory-deck{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px 9px;border-radius:14px;background:var(--surface);transition:transform .25s var(--spring),box-shadow .2s}
+.memory-deck:active{transform:scale(.96)}
+.memory-deck[aria-checked="true"]{box-shadow:0 0 0 2px var(--accent)}
+.memory-deck:disabled{opacity:.42}
+.memory-fan{position:relative;width:84px;height:58px;margin-bottom:6px}
+.memory-fan i{position:absolute;left:50%;bottom:0;width:37px;height:47px;margin-left:-18.5px;border-radius:7px;background:#f4f1e8;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.memory-fan i:nth-child(1){transform:translateX(-20px) rotate(-12deg)}
+.memory-fan i:nth-child(2){z-index:1;transform:translateY(-5px)}
+.memory-fan i:nth-child(3){transform:translateX(20px) rotate(12deg)}
+.memory-fan img{display:block;width:100%;height:100%;object-fit:contain;padding:3px}
+.memory-fan.deck-photo img{object-fit:cover;padding:0}
+.memory-fan.empty::before{content:"";position:absolute;left:23px;right:23px;top:6px;bottom:0;border:1.5px dashed var(--label-3);border-radius:8px}
+.memory-deck-name{max-width:100%;font-size:14px;font-weight:600;line-height:1.2;text-align:center}
+.memory-deck-note{font-size:11px;color:var(--label-2)}
+.mini-seg.memory-pairs{grid-template-columns:repeat(4,1fr);width:min(320px,100%)}
+.mini-seg button:disabled{opacity:.35}
+.memory-best{margin:0;font-size:13px;color:var(--label-2);font-variant-numeric:tabular-nums}
+.memory-play{min-width:240px}
+.memory-play:disabled{opacity:.4}
+.memory-stage{flex:1;min-height:0;display:grid;place-items:center;padding:6px 12px}
+.memory-board{display:grid;justify-content:center;align-content:center;perspective:1000px}
+.memory-card{position:relative;border-radius:12px;transition:transform .2s var(--spring),opacity .4s .5s}
+.memory-card:active{transform:scale(.95)}
+.memory-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.3,1.25,.5,1)}
+.memory-card.up .memory-inner,.memory-card.matched .memory-inner{transform:rotateY(180deg)}
+.memory-back,.memory-face{position:absolute;inset:0;border-radius:12px;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+/* The back: the app's lens, its yellow ring, on graphite. */
+.memory-card{container-type:size}
+.memory-back{background:radial-gradient(circle at center,#1c1c1e 0 12cqmin,var(--accent) 12.6cqmin 17cqmin,#1c1c1e 17.6cqmin 21cqmin,transparent 21.6cqmin),repeating-linear-gradient(135deg,#2f2f32 0 7px,#29292c 7px 14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 4px 12px rgba(0,0,0,.35)}
+.memory-face{transform:rotateY(180deg);background:#f4f1e8}
+.memory-face img{display:block;width:100%;height:100%;object-fit:contain;padding:7%;pointer-events:none;-webkit-user-drag:none}
+.memory-board.deck-photo .memory-face img{object-fit:cover;padding:0}
+/* A pair found stays face up and steps back, so the eye goes to what is left. */
+.memory-card.matched{opacity:.5;animation:pair .5s .3s var(--spring) both}
+@keyframes pair{0%{transform:scale(1)}40%{transform:scale(1.1)}100%{transform:scale(.96)}}
+.memory-card.miss{animation:miss .36s .38s ease-in-out}
+@keyframes miss{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.memory-status{flex:none;display:flex;justify-content:center;gap:18px;margin:0;padding:8px 16px 14px;font-size:13px;color:var(--label-2);font-variant-numeric:tabular-nums}
+.memory-status b{color:var(--label);font-weight:600}
+.memory-record{color:var(--label-3)}
+.memory-win{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);animation:rise .35s var(--ease)}
+@keyframes rise{from{opacity:0}to{opacity:1}}
+.memory-cheer{height:min(34vh,240px);width:auto;max-width:70%;object-fit:contain;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5));animation:cheer .7s var(--spring)}
+@keyframes cheer{0%{transform:scale(.3) rotate(-12deg);opacity:0}100%{transform:none;opacity:1}}
+.memory-win h3{margin:6px 0 0;font-size:28px;font-weight:700;letter-spacing:-.02em}
+.memory-win p{margin:0;color:var(--label-2);font-variant-numeric:tabular-nums}
+.memory-win-buttons{display:flex;flex-direction:column;gap:10px;width:min(260px,100%);margin-top:10px}
+
+/* The printer (printer.js): a white toy printer in the icon's plastic, the photo on warm paper. */
+.printer-scene{position:fixed;inset:0;z-index:28;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;cursor:pointer}
+.printer{position:absolute;background:linear-gradient(180deg,#fbfbfd 0%,#e6e6eb 60%,#cfcfd6 100%);box-shadow:0 22px 48px rgba(0,0,0,.5),inset 0 2px 0 #fff,inset 0 -5px 0 rgba(0,0,0,.08)}
+.printer-slot{position:absolute;left:9%;right:9%;top:17%;height:10%;border-radius:999px;background:#18181a;box-shadow:inset 0 2px 4px rgba(0,0,0,.75),0 1px 0 #fff;transition:box-shadow .3s}
+.printing .printer-slot{box-shadow:inset 0 2px 4px rgba(0,0,0,.75),0 1px 0 #fff,0 0 16px rgba(255,170,60,.5)}
+.printer-button{position:absolute;left:9%;bottom:22%;width:15%;height:13%;border-radius:999px;background:#c9c9d0;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 1px rgba(0,0,0,.15)}
+.printer-light{position:absolute;right:10%;bottom:26%;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(255,214,10,.8)}
+.printing .printer-light{animation:blink .3s steps(2,jump-none) infinite}
+@keyframes blink{50%{opacity:.25}}
+.printer-window{position:absolute;overflow:hidden}
+.printer-paper{position:absolute;left:8px;bottom:0;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+.printer-sheet{width:100%;height:100%;background:#f7f5ef}
+.printer-sheet img{display:block;width:100%;height:auto}
+.printer-flyer{position:fixed;z-index:29;pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;transition-duration:1ms!important}}
+/* In the camera the intensity slider stands in for the strip, at its height (app.js showAmountRow). */
+.camera #amountRow{box-sizing:border-box;padding:0 12px 0 24px}
+.amount-done{color:var(--accent);font-weight:600;font-size:15px}
+.editor .amount-done{display:none}
+
+/* ---------- The reassessment of 29 October 2026 (the owner: "The app UI needs reassessment", then "Push") ---------- */
+/* A short screen: the picture takes the width and the Looks float over its foot (app.js compactCamera); the strip
+   unfolds from the Look's name. */
+.camera .dock{position:relative}
+.camera.compact .tray{position:absolute;left:0;right:0;bottom:100%;z-index:3;padding:34px 0 6px;background:linear-gradient(to top,rgba(0,0,0,.58),rgba(0,0,0,.26) 55%,transparent);pointer-events:none}
+.camera.compact .tray>*{pointer-events:auto}
+.camera.compact:not(.looks-open) .strip{display:none}
+.camera.compact .mix,.camera.compact .shuffle,.camera.compact .add-layer{background:rgba(28,28,30,.55);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.camera.compact .add-layer{padding-right:12px}
+.camera.compact .zoom{bottom:64px}
+.camera.compact .exposure-chip{bottom:68px}
+/* The zoom steps aside while the tray is open over the picture. */
+.camera.compact.looks-open .zoom,.camera.compact:has(#amountRow:not([hidden])) .zoom{opacity:0;pointer-events:none}
+.layer-pick .more{display:none}
+.camera.compact:not(.looks-open) .layer.active:not(.removable) .layer-pick .more{display:inline-block;width:13px;height:13px;margin-left:4px;vertical-align:-1px;transform:rotate(180deg);stroke-width:2.6}
+/* The first screen starts the camera with its own button: no shutter under it, and no empty album corner. */
+.camera.idle .shutter{visibility:hidden}
+.camera.idle .controls:has(.roll img[hidden]){display:none}
+/* The frame sheet: one strip of every frame, the next one showing at the edge. */
+.frame-sheet .frame-choice canvas{width:68px;height:68px}
+/* A chosen sticker: remove and flip at its top, its words below; pinched to resize on a touch screen, so the corner
+   handle is for a mouse. */
+@media (pointer:coarse){.sticker.selected .sticker-handle{display:none}}
+.sticker>.sticker-say{width:auto;padding:0 10px 0 7px;gap:4px;border-radius:15px;font-size:12px;font-weight:700;letter-spacing:-.01em}
+.sticker.selected>.sticker-say:not([hidden]){display:inline-flex;align-items:center}
+/* One photo: actions in white, Delete in red, as Photos has them; yellow is for what is chosen. */
+.toolbar button{color:var(--label)}
+.toolbar #deletePhoto{color:var(--red,#ff453a)}
+/* The residents' tabs: their other sheets under their names. */
+.sticker-heading{grid-column:1/-1;margin:10px 2px 0;font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--label-2)}
+#panelStickers .sticker-grid{grid-auto-columns:min-content}
+#panelStickers .sticker-choice{width:56px}
+#panelStickers .sticker-heading{grid-column:auto;grid-row:1/-1;margin:0 2px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;text-align:center;white-space:nowrap}
+/* Ball (ball.js): the setup with the juggler's face, the LCD, the hands, the game over. */
+.ball-game{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;position:relative}
+.ball-setup{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:14px 16px 10px;overflow:auto}
+.ball-lead{margin:0;max-width:60ch;font-size:14px;line-height:1.45;color:var(--label-2)}
+.ball-setup h3{margin:4px 0 0;font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--label-2)}
+.ball-faces{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none}.ball-faces::-webkit-scrollbar{display:none}
+.ball-face{flex:none;display:flex;flex-direction:column;align-items:center;gap:5px;width:86px;padding:8px 4px;border-radius:14px;background:var(--surface);color:var(--label);font-size:11px;line-height:1.2;text-align:center}
+.ball-face img,.ball-pick-mark{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--well)}
+.ball-face span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ball-face[aria-checked="true"]{box-shadow:inset 0 0 0 2px var(--accent);color:var(--accent)}
+.ball-pick-mark{display:grid;place-items:center;background:var(--fill);font-size:28px;font-weight:300}
+.ball-note{margin:0;min-height:1.3em;font-size:12px;color:var(--label-3)}
+.ball-go{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 8px}
+.ball-best{margin:0;font-size:13px;color:var(--label-2)}.ball-play{min-width:240px}
+/* The booth: four faces from the front camera, each held in the oval (the Game Boy Camera's four blank ovals). */
+.ball-booth{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 16px;overflow:auto}
+.ball-booth-view{position:relative;width:min(100%,320px);aspect-ratio:1;border-radius:18px;overflow:hidden;background:#111}
+.ball-video{display:block;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.ball-oval{position:absolute;left:22%;top:14%;width:56%;height:72%;border:3px dashed rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+.ball-booth-count{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#fff;font-weight:700;text-shadow:0 1px 2px #000}
+.ball-booth-frames{display:flex;gap:8px;min-height:60px}.ball-booth-frames img{width:56px;height:56px;border-radius:50%;background:var(--well)}
+.ball-booth-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.ball-booth .button[hidden]{display:none}
+.ball-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;padding:clamp(12px,7vh,56px) 12px 12px;overflow:auto}
+.ball-lcd{display:block;border-radius:10px;box-shadow:inset 0 0 0 3px #6f765c,0 6px 18px rgba(0,0,0,.25);touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
+.ball-hands{display:flex;align-items:center;gap:10px;width:min(100%,640px)}
+.ball-hand{flex:none;min-height:44px;padding:0 14px;border-radius:12px;background:var(--surface);color:var(--label);font-weight:700}
+.ball-status{flex:1;margin:0;text-align:center;font-size:13px;font-weight:600;color:var(--label-2)}
+.ball-over{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:4px 0}
+.ball-over[hidden]{display:none}.ball-over h3{margin:0;font-size:22px}.ball-over p{margin:0;color:var(--label-2)}.ball-over-buttons{display:flex;gap:8px;margin-top:4px}
+/* Memory's decks: a soft card until its picture is in. */
+.memory-fan i{background:rgba(244,241,232,.16);transition:background-color .3s}
+.memory-fan i.loaded{background:#f4f1e8}
+.memory-fan img{opacity:0;transition:opacity .3s}
+.memory-fan i.loaded img{opacity:1}
+/* Rows that fit the width of any phone held upright (the owner: "Make the Ui more adaptive parts are truncated in
+   portrait"): the seven settings, the sticker tabs and the six adjustments share the width instead of running off it. */
+.setting{width:min(58px,calc((100vw - 44px)/7));font-size:min(11px,2.9vw)}
+.setting i{width:min(42px,calc((100vw - 44px)/7 - 6px));height:min(42px,calc((100vw - 44px)/7 - 6px))}
+.sticker-sets{gap:clamp(4px,1.4vw,6px);padding:0 12px}
+.sticker-sets button{flex:0 1 auto;min-width:0;padding:0 clamp(7px,2.4vw,13px);font-size:clamp(12px,3.3vw,13px)}
+.adjuster{width:min(60px,calc((100vw - 44px)/6))}
+.adjuster i{width:min(50px,calc((100vw - 44px)/6 - 8px));height:min(50px,calc((100vw - 44px)/6 - 8px))}
+/* The tab row keeps its height however short the sheet (a row that scrolls sideways could otherwise give it up). */
+.sticker-sets{flex:none;min-height:30px}
+/* Four and a half frames across the sheet at any width, so the next one always shows at the edge. */
+.frame-sheet .frame-choice canvas{width:calc((min(420px,100vw - 16px) - 72px)/4.5);height:calc((min(420px,100vw - 16px) - 72px)/4.5)}
+/* The kinds of Look over the strip (Photo, Games, 80s, Drawn, Painted, Print): one shown at a time, so the strip holds a
+   few Looks, not twenty-five. The kind that holds the chosen Look keeps its name in yellow while another is open. */
+.look-groups{display:flex;flex:none;gap:clamp(3px,1.2vw,6px);padding:6px 12px 0;min-height:28px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.look-groups::-webkit-scrollbar{display:none}
+/* Nine kinds sit in the middle where there is room and scroll from the first where there is not (the spacers give way
+   before the kinds do). */
+.look-groups::before,.look-groups::after{content:"";flex:1 0 0px}
+.look-groups button{flex:0 0 auto;height:28px;padding:0 clamp(7px,2.4vw,12px);border-radius:14px;color:var(--label-2);font-size:clamp(12px,3.3vw,13px);font-weight:650;white-space:nowrap;transition:background-color .2s,color .2s}
+.look-groups button[aria-selected="true"]{background:var(--chip-on);color:var(--chip-on-label)}
+.look-groups button.has-look:not([aria-selected="true"]){color:var(--accent)}
+.tile[hidden]{display:none}
+.camera.compact:not(.looks-open) .look-groups{display:none}
+.look-groups[hidden]{display:none}
+/* A kind's few Looks sit in the middle of the strip; a long kind still scrolls from its first. */
+.strip::before,.strip::after{content:"";flex:1 0 0px}
+/* Unfolded over the picture, the kinds and the strip have a deeper shade behind them, so their names read on a bright
+   picture. */
+.camera.compact.looks-open .tray{background:linear-gradient(to top,rgba(0,0,0,.8),rgba(0,0,0,.55) 72%,transparent)}
+/* Six ways to letter (Speech, Shout, Thought, Caption, Words, Sound), and a sound effect's ready-made words. */
+.mini-seg.lettering-styles{grid-template-columns:repeat(6,1fr)}
+.lettering-styles button{padding:0 2px;font-size:min(12px,3.1vw)}
+.sound-presets{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.sound-presets[hidden]{display:none}
+.sound-presets button{height:32px;padding:0 11px;border-radius:16px;background:var(--fill);color:var(--label);font:900 15px/1 "Pocket Kana","Pocket Baloo",system-ui,sans-serif}
+.sound-presets button:active{transform:scale(.94)}
+/* Manga's lines (effects.js): painted under every sticker; the clear circle is what is held, moved and pinched. */
+.effects-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.effects-art[hidden]{display:none}
+.sticker.effect{border-radius:50%}
+.sticker.effect.selected::before{border-radius:50%}
+/* The Manga tab: the lines first, each a small picture with its name, then the marks. */
+.sticker-choice.effect{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:650;color:var(--label-2)}
+.sticker-choice.effect canvas{width:62%;aspect-ratio:1;border-radius:8px}
+#panelStickers .sticker-choice.effect{gap:1px;font-size:9px}
+/* Six sticker tabs (Text, Thuan, Johansson, Thao, Manga, Mine) across a phone from 360 points: tighter type and room. */
+/* Seven tabs since the Season sheet (2 November 2026): less room between and round them and a little smaller type, so
+   they fit a 390-point phone in its own font and in a wide fallback (DejaVu Sans, Linux's) alike. */
+.sticker-sets{gap:clamp(2px,.5vw,6px);padding:0 4px}
+.sticker-sets button{padding:0 clamp(4px,1.2vw,12px);font-size:clamp(11.5px,2.95vw,13px)}
+/* Narrower than 340 points (the first iPhone SE) the row scrolls rather than squeeze a name. */
+@media (max-width:340px){.sticker-sets button{flex:none}}
+/* Erase (erase.js): the brush over the photo while the Erase tab is open; it breathes while the fill runs. */
+.erase-paint{position:absolute;inset:0;z-index:5;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.erase-paint[hidden]{display:none}
+.erase-paint.working{animation:erase-breathe .8s ease-in-out infinite alternate}
+@keyframes erase-breathe{from{opacity:1}to{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.erase-paint.working{animation:none;opacity:.6}}
+.erase-panel .erase-hint{margin:14px 16px 6px;text-align:center;font-size:14px;font-weight:600;color:var(--label-2)}
+.erase-panel .slider-row{gap:12px}
+.erase-label{flex:none;font-size:13px;font-weight:650;color:var(--label-2)}
+/* The editor's five tabs (Looks, Adjust, Erase, Stickers, Frame) in one row across any phone. */
+.segmented{grid-template-columns:1fr .9fr 1.1fr 1fr 1.35fr 1fr;width:min(420px,calc(100% - 16px))}
+.segmented button{min-width:0;padding:0 2px;font-size:min(13px,3.4vw);white-space:nowrap;overflow:hidden;text-overflow:clip}
+.crop-shapes{display:flex;max-width:calc(100% - 24px);margin:8px auto;width:max-content;overflow-x:auto}
+.crop-shapes button{min-height:36px;padding:0 9px;white-space:nowrap;font-size:12px}
+.crop-panel .slider-row{gap:10px}
+.crop-panel .erase-hint{margin:14px 12px 6px;text-align:center;font-size:14px;color:var(--label-2)}
+.frame.cropping{cursor:grab;touch-action:none;outline:1px solid rgba(255,255,255,.85)}
+.frame.cropping:active{cursor:grabbing}
+.frame.cropping::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent calc(100%/3 - .5px),#ffffff70 calc(100%/3 - .5px),#ffffff70 calc(100%/3 + .5px),transparent calc(100%/3 + .5px),transparent calc(200%/3 - .5px),#ffffff70 calc(200%/3 - .5px),#ffffff70 calc(200%/3 + .5px),transparent calc(200%/3 + .5px)),linear-gradient(to bottom,transparent calc(100%/3 - .5px),#ffffff70 calc(100%/3 - .5px),#ffffff70 calc(100%/3 + .5px),transparent calc(100%/3 + .5px),transparent calc(200%/3 - .5px),#ffffff70 calc(200%/3 - .5px),#ffffff70 calc(200%/3 + .5px),transparent calc(200%/3 + .5px))}

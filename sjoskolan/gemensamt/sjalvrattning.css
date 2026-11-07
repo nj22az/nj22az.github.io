@@ -1,0 +1,95 @@
+/* Självrättande inlämning (gemensamt/sjalvrattning-sida.mjs, verktyg/inlamning/sjalvrattning.py). Grundvärden ur
+   sjoskolan.css och DESIGN.md: 17 px text, fält 48 px, tryckytor minst 44 px, fokus från course.css.
+   Inga regler för alla span i ett block: oversattning.js lägger span runt tal med enhet (regel 14). */
+.ri-svar{margin:20px 0 0;padding:16px 18px 20px;background:var(--sj-soft,#edf4f9);border-radius:12px}
+.course-main .ri-svar h3{margin:0 0 4px;font-size:20px}
+.course-main .ri-svar h4{margin:22px 0 2px;font-size:18px}
+.ri-intro{margin:10px 0 4px!important;font-weight:700}
+.ri-falt{margin:16px 0 0;padding:0;border:0;min-width:0}
+.ri-falt > label:not(.ri-val),.ri-falt > legend{display:block;font-weight:700;line-height:1.4;margin:0 0 6px;padding:0}
+.ri-hjalp{margin:-2px 0 6px!important;font-size:15px;color:var(--sj-muted,#4d6579)}
+.ri-falt input[type=text],.ri-falt select,.ri-falt textarea,.ri-lamna input[type=text]{display:block;width:100%;min-height:48px;font:inherit;font-size:17px;line-height:1.5;padding:8px 12px;border:1px solid var(--sj-field,#5d7282);border-radius:8px;background:#fff;color:var(--sj-ink,#163248)}
+.ri-falt input.ri-tal{max-width:12em}
+.ri-falt select{max-width:22em}
+.ri-falt textarea{resize:vertical}
+.ri-textfalt input[type=text],.ri-textfalt textarea{max-width:46em}
+.ri-falt input[aria-invalid=true]{border:2px solid var(--sj-warn,#9a4a12)}
+.ri-val{display:flex;gap:12px;align-items:flex-start;min-height:44px;padding:10px 14px;margin:8px 0 0;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;cursor:pointer;line-height:1.45}
+.ri-val input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:var(--sj-blue,#064f91)}
+.ri-val:has(input:checked){border-color:var(--sj-blue,#064f91);box-shadow:inset 0 0 0 1px var(--sj-blue,#064f91)}
+.ri-besked{margin:6px 0 0!important;font-weight:700;min-height:0}
+.ri-besked:empty{display:none}
+.ri-besked.ratt{color:var(--sj-ok,#176844)}
+.ri-besked.fel,.ri-besked.ogiltig{color:var(--sj-warn,#9a4a12)}
+.ri-besked.tom,.ri-besked.saknas{color:var(--sj-muted,#4d6579);font-weight:400}
+.ri-pekare{margin:2px 0 0!important}
+.ri-plats{margin:14px 0 0;padding:0 16px 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff;min-width:0}
+/* Legenden flyter inne i rutan, så att en lång rubrik inte bryts över ramen. */
+.ri-plats > legend{float:left;width:100%;font-weight:700;padding:12px 0 0;margin:0;line-height:1.4}
+.ri-plats-rad{clear:both;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:0 20px}
+.ri-plats .ri-falt{margin-top:10px}
+.ri-knappar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:20px 0 0!important}
+.ri-summa{margin:0!important;font-weight:700;flex:1 1 16em}
+.ri-summa:empty{display:none}
+.ri-las{margin:20px 0 6px;padding:14px 16px;border-left:6px solid var(--sj-blue,#064f91);background:#fff;border-radius:8px}
+.ri-las > p{margin:0 0 8px}
+.ri-las .ri-knappar{margin:8px 0 0!important}
+.ri-las-hjalp,.ri-bock-las{font-size:15px;color:var(--sj-muted,#4d6579)}
+.ri-las-status{margin:8px 0 0!important;font-weight:700}
+.ri-las-status:empty{display:none}
+.ri-lista{margin:12px 0 0}
+.course-main .ri-lista h4{margin:0 0 4px}
+.course-main .ri-bocklista{list-style:none;margin:8px 0 0;padding:0}
+.course-main .ri-bocklista li{margin:0 0 10px}
+.ri-bock{display:flex;gap:12px;align-items:flex-start;min-height:44px;padding:8px 0;cursor:pointer;line-height:1.45}
+.ri-bock input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:var(--sj-blue,#064f91)}
+.ri-bock-las{margin:-6px 0 0 34px!important}
+.ri-bock-summa{font-weight:700;margin:4px 0 0!important}
+.ri-lamna{margin:40px 0 24px}
+.course-main .ri-lamna h2{margin-top:0}
+.ri-lamna label{display:block;font-weight:700;margin:0 0 6px}
+.ri-lamna input[type=text]{max-width:24em}
+.ri-namnfel{color:var(--sj-warn,#9a4a12);font-weight:700;margin:0!important}
+.ri-namnfel:empty,.ri-lagring:empty{display:none}
+.ri-lagring{font-weight:700;color:var(--sj-warn,#9a4a12)}
+.ri-resultat{margin:20px 0 0;padding:16px 18px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:#fff}
+.ri-resultat:focus{outline:none}
+.ri-resultat:focus-visible{outline:3px solid var(--sj-ink,#163248);outline-offset:2px;box-shadow:0 0 0 6px var(--sj-focus,#ffd43d)}
+.ri-stort{font-size:30px;font-weight:700;line-height:1.2;color:var(--sj-blue,#064f91);margin:0 0 8px!important}
+.ri-kortad{padding:10px 14px;border-left:6px solid var(--sj-warn,#9a4a12);background:#fff8f2;border-radius:8px}
+.ri-reserv{font-size:15px;color:var(--sj-muted,#4d6579)}
+/* course.css ger knappar i .course-reading ram och tar bort fetstilen (font:inherit). */
+body.course button.sj-btn{font-weight:700;line-height:1.2;min-height:48px;padding:10px 22px}
+body.course button.sj-btn.large{min-height:56px;padding:14px 28px}
+.course-reading .ri-textknapp{min-height:44px;padding:0 4px;border:0;border-radius:4px;background:none;color:var(--sj-blue,#064f91);font-weight:400;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ri-kopia{display:block;width:100%;min-height:10em;margin:8px 0 0;font:15px/1.4 Menlo,Consolas,monospace}
+/* Tre försök: kvarvarande försök står tyst efter beskedet. Rätt och låst fält går inte att ändra. */
+.ri-kvar{font-weight:400;color:var(--sj-muted,#4d6579);margin-left:.35em;white-space:nowrap}
+.ri-besked.last{color:var(--sj-warn,#9a4a12)}
+.ri-stangd input[readonly],.ri-stangd select:disabled{background:var(--sj-soft,#edf4f9);color:var(--sj-ink,#163248);opacity:1}
+.ri-stangd .ri-val{cursor:default}
+.ri-stangd .ri-val:not(:has(input:checked)){opacity:.7}
+/* Läs om veckan (överst när en fråga är låst) och quizens text. */
+.ri-lasom{margin:24px 0}
+.course-main .ri-lasom h2{margin-top:0}
+.course-main .ri-lasom-lista{list-style:none;margin:8px 0 12px;padding:0}
+.course-main .ri-lasom-lista li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;min-height:44px;margin:0;padding:6px 0;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.ri-lasstatus{color:var(--sj-muted,#4d6579);font-size:15px}
+.ri-lasstatus.ri-last{color:var(--sj-ok,#176844);font-weight:700}
+.ri-lasom-hjalp{font-size:15px;color:var(--sj-muted,#4d6579)}
+.ri-lasom-klart{font-weight:700;color:var(--sj-ok,#176844)}
+.ri-lasom-klart:empty{display:none}
+.ri-textlas{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin:6px 0 4px!important}
+.ri-kalla{font-size:15px;color:var(--sj-muted,#4d6579);margin:4px 0 8px!important}
+/* Delsidan: Har du läst hela del N? */
+.ri-lasdel{margin:32px 0 24px}
+.course-main .ri-lasdel h2{margin-top:0}
+.ri-lasdel-hjalp{color:var(--sj-muted,#4d6579);font-size:15px}
+.ri-lasdel-status{font-weight:700;min-height:1.4em}
+.sj-btn.ri-lasdel-knapp:disabled{opacity:.55;cursor:not-allowed;background:var(--sj-paper,#fff)}
+@media(max-width:767px){.ri-svar{padding:14px 12px 16px;margin-left:-4px;margin-right:-4px}.ri-plats{padding:0 12px 14px}.ri-knappar .sj-btn{flex:1 1 100%}}
+@media print{.ri-svar{background:none;border:1px solid #999}.ri-lamna,.ri-lasom,.ri-knappar{display:none!important}}
+/* Quizen (Quiz.html): bokstaven före alternativet är samma bokstav som i lärarens facit. */
+.ri-bokstav{flex:none;min-width:1.1em;font-weight:700}
+.ri-dok-oppna{margin:4px 0 12px!important}
+.ri-lasanvisning{font-weight:700}

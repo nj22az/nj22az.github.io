@@ -1,0 +1,103 @@
+{
+ "id": "halloween",
+ "name": "Halloween",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "source": "tools/blender/render-halloween-stickers.py",
+ "stickers": [
+  {
+   "id": "halloween/pumpkin-lantern",
+   "src": "halloween/pumpkin-lantern.webp?v=d45993aa",
+   "thumb": "halloween/pumpkin-lantern.thumb.webp?v=d45993aa",
+   "width": 1024,
+   "height": 966,
+   "line": "",
+   "gloss": "Paper pumpkin lantern"
+  },
+  {
+   "id": "halloween/jack-o-lantern",
+   "src": "halloween/jack-o-lantern.webp?v=ec8bc1e6",
+   "thumb": "halloween/jack-o-lantern.thumb.webp?v=ec8bc1e6",
+   "width": 1024,
+   "height": 823,
+   "line": "",
+   "gloss": "Jack-o'-lantern"
+  },
+  {
+   "id": "halloween/obake",
+   "src": "halloween/obake.webp?v=9d3b0210",
+   "thumb": "halloween/obake.thumb.webp?v=9d3b0210",
+   "width": 708,
+   "height": 1024,
+   "line": "",
+   "gloss": "Obake ghost"
+  },
+  {
+   "id": "halloween/witch-hat",
+   "src": "halloween/witch-hat.webp?v=0081380c",
+   "thumb": "halloween/witch-hat.thumb.webp?v=0081380c",
+   "width": 1024,
+   "height": 802,
+   "line": "",
+   "gloss": "Witch hat",
+   "hat": {
+    "crown": [
+     0.5,
+     0.9157
+    ],
+    "width": 0.6072
+   }
+  },
+  {
+   "id": "halloween/cat-ears",
+   "src": "halloween/cat-ears.webp?v=ab317168",
+   "thumb": "halloween/cat-ears.thumb.webp?v=ab317168",
+   "width": 1024,
+   "height": 708,
+   "line": "",
+   "gloss": "Cat ears",
+   "hat": {
+    "crown": [
+     0.5,
+     0.4583
+    ],
+    "width": 0.8785
+   }
+  },
+  {
+   "id": "halloween/pumpkin-cap",
+   "src": "halloween/pumpkin-cap.webp?v=8e687574",
+   "thumb": "halloween/pumpkin-cap.thumb.webp?v=8e687574",
+   "width": 1024,
+   "height": 523,
+   "line": "",
+   "gloss": "Pumpkin stem",
+   "hat": {
+    "crown": [
+     0.3231,
+     0.7771
+    ],
+    "width": 1.7658
+   }
+  },
+  {
+   "id": "halloween/paper-bat",
+   "src": "halloween/paper-bat.webp?v=44b0402e",
+   "thumb": "halloween/paper-bat.thumb.webp?v=44b0402e",
+   "width": 1024,
+   "height": 479,
+   "line": "",
+   "gloss": "Paper bat"
+  },
+  {
+   "id": "halloween/sweets",
+   "src": "halloween/sweets.webp?v=adc31af5",
+   "thumb": "halloween/sweets.thumb.webp?v=adc31af5",
+   "width": 1024,
+   "height": 701,
+   "line": "",
+   "gloss": "Wrapped sweets"
+  }
+ ]
+}

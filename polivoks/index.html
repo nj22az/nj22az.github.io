@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Johansson PF-82 · Polivoks Filter Synthesiser · The Office of Nils Johansson</title>
+  <meta name="description" content="The Johansson PF-82: a playable synthesiser from Johansson Denki, built around a part-by-part simulation of the Polivoks filter, with the imperfections of a real build and public-domain songs to play.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#121212">
+  <meta property="og:title" content="Johansson PF-82 · Polivoks Filter Synthesiser">
+  <meta property="og:description" content="A Johansson Denki synthesiser: the Polivoks filter simulated part by part, imperfections included, with public-domain songs to play.">
+  <meta property="og:url" content="https://nj22az.github.io/polivoks/">
+  <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="polivoks.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="mast">
+    <a class="mast-id" href="/">
+      <span class="mast-mark" aria-hidden="true">NJ</span>
+      <span><small>THE OFFICE OF NILS JOHANSSON</small><strong>Johansson PF-82</strong></span>
+    </a>
+    <a class="mast-home" href="/">Home</a>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="maker">JOHANSSON DENKI · ヨハンソン電機</p>
+      <h1>Johansson PF-82</h1>
+      <p class="lede">A synthesiser built around the Polivoks filter, simulated part by part, imperfections included.</p>
+      <p>The Polivoks gets its growl from an unusual filter: two programmable op-amps run without feedback as integrators, so their slew rate <em>is</em> the filter. The PF-82 simulates <a href="https://github.com/clarionut/Polivoks_filter">clarionut’s Eurorack version</a> of that circuit component by component and plays it with two oscillators, two envelopes and an LFO.</p>
+      <ol class="steps">
+        <li><strong>Power</strong> on, top right of the panel.</li>
+        <li><strong>Play</strong> the keys with the mouse, a touch screen, the <kbd>A</kbd>–<kbd>L</kbd> row (<kbd>Z</kbd>/<kbd>X</kbd> for octave) or a MIDI keyboard, or pick a <strong>song</strong>.</li>
+        <li><strong>Turn</strong> FREQUENCY and RESONANCE while it plays. Point at any control to see what it does.</li>
+      </ol>
+      <details class="glossary">
+        <summary>What do the words on the panel mean?</summary>
+        <dl>
+          <dt>Sound</dt><dd>A saved setting of every knob. Synth players call it a <em>patch</em>, after the cables of early synthesisers.</dd>
+          <dt>VCO, oscillator</dt><dd>Makes the raw tone, buzzy (saw), hollow (square), soft (triangle) or nasal (pulse). The PF-82 has two.</dd>
+          <dt>Mixer</dt><dd>Sets how much of each oscillator, and of noise, goes on to the filter.</dd>
+          <dt>VCF, filter</dt><dd>Takes brightness away from the tone. This is the Polivoks part. FREQUENCY sets how bright, RESONANCE makes it ring and, turned right up, whistle by itself.</dd>
+          <dt>VCA, amplifier</dt><dd>Sets how loud the sound is from moment to moment.</dd>
+          <dt>Envelope (ENV, ADSR)</dt><dd>How something moves each time you press a key: Attack (how fast it rises), Decay (how fast it falls), Sustain (the level it holds), Release (how long it fades after you let go). ENV 1 moves the filter, ENV 2 the loudness.</dd>
+          <dt>LFO</dt><dd>A slow wobble: vibrato on the pitch, or a wah on the filter.</dd>
+          <dt>CV</dt><dd>Control voltage: an electrical signal that turns a knob for you, as ENV 1 turns FREQUENCY on every note.</dd>
+          <dt>Jacks</dt><dd>The sockets on the filter. The lit OUT jack is the one you hear.</dd>
+          <dt>Glide, legato</dt><dd>Notes slide into each other; with legato on, a new note does not restart the envelopes.</dd>
+          <dt>Imperfections</dt><dd>What makes every real unit a little different: parts that are not exact, warming up, hum and hiss, worn knobs.</dd>
+        </dl>
+      </details>
+    </section>
+
+    <section class="view3d" aria-label="The Johansson PF-82 in 3D">
+      <div class="view3d-stage" id="view3d-stage"><p class="view3d-wait">The PF-82 in 3D appears here.</p></div>
+      <p class="view3d-note">Drag to look around · pinch, or Ctrl/⌘ and scroll, to zoom · drag a knob to turn it · click a selector, a jack or Power · play the keys · double-click to reset. Built from the CAD model in <a href="https://github.com/nj22az/nj22az.github.io/tree/main/cad/pf-82">cad/pf-82</a>.</p>
+    </section>
+
+    <section class="rack" aria-label="Johansson PF-82">
+      <div class="panel" id="panel">
+        <div class="panel-head">
+          <div class="brand">
+            <span class="wordmark">JOHANSSON</span>
+            <span class="model">PF-82</span>
+            <small data-en="POLIVOKS FILTER SYNTHESISER" data-ru="СИНТЕЗАТОР С ФИЛЬТРОМ ПОЛИВОКС">POLIVOKS FILTER SYNTHESISER</small>
+          </div>
+          <div class="head-ctl">
+            <label class="patch"><span data-en="SOUND" data-ru="ЗВУК">SOUND</span>
+              <select id="patch" aria-label="Sound"></select>
+            </label>
+            <div class="seg lang" role="group" aria-label="Panel language">
+              <button type="button" data-lang="en" aria-pressed="true">EN</button>
+              <button type="button" data-lang="ru" aria-pressed="false">РУ</button>
+            </div>
+            <button type="button" class="power" id="power" aria-pressed="false"><span class="led" aria-hidden="true"></span><span data-en="POWER" data-ru="СЕТЬ">POWER</span></button>
+          </div>
+        </div>
+        <div class="songbar">
+          <label class="patch"><span data-en="SONG" data-ru="ПЕСНЯ">SONG</span>
+            <select id="song" aria-label="Song"></select>
+          </label>
+          <button type="button" class="power play" id="play" aria-pressed="false"><span class="tri" aria-hidden="true"></span><span id="play-label">PLAY</span></button>
+          <div class="seg" role="group" aria-label="Song tempo" id="tempo"></div>
+          <p class="help" id="help" aria-live="polite">Point at a knob, switch or jack to see what it does.</p>
+        </div>
+        <div class="flow" aria-label="Signal flow: click a block to go to its module"><!-- art:signal-flow --><svg class="art-flow" viewBox="0 0 1180 250" role="img" aria-labelledby="art-flow-t"><title id="art-flow-t">Signal flow of the Johansson PF-82</title><desc>Audio: VCO 1 and VCO 2 into the mixer, the mixer into the Polivoks filter, the filter into the VCA, then out. Control: the keyboard sets the VCO pitch and, through TRACK, the filter's CV 2; the LFO feeds CV 2; envelope 1 feeds CV 1; envelope 2 opens the VCA.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z" fill="#eeebe4"/></marker></defs><a class="sf-block" href="#mod-vco1" data-mod="vco1"><title>1 VCO 1: open the module</title><rect class="sf-box" x="20" y="20" width="150" height="46" rx="8"/><text class="sf-num" x="32" y="40">1</text><text class="sf-title" x="54" y="40">VCO 1</text><text class="sf-sub" x="32" y="57">makes the tone</text></a><a class="sf-block" href="#mod-vco2" data-mod="vco2"><title>2 VCO 2: open the module</title><rect class="sf-box" x="20" y="80" width="150" height="46" rx="8"/><text class="sf-num" x="32" y="100">2</text><text class="sf-title" x="54" y="100">VCO 2</text><text class="sf-sub" x="32" y="117">a second tone</text></a><a class="sf-block" href="#mod-mix" data-mod="mix"><title>3 MIXER: open the module</title><rect class="sf-box" x="240" y="40" width="140" height="66" rx="8"/><text class="sf-num" x="252" y="60">3</text><text class="sf-title" x="274" y="60">MIXER</text><text class="sf-sub" x="252" y="77">blends the tones</text><text class="sf-sub" x="252" y="92">and the noise</text></a><a class="sf-block" href="#mod-flt" data-mod="flt"><title>4 VCF: open the module</title><rect class="sf-box sf-main" x="450" y="18" width="250" height="106" rx="8"/><text class="sf-num" x="462" y="48">4</text><text class="sf-title" x="484" y="48">VCF</text><text class="sf-sub" x="462" y="65">POLIVOKS FILTER</text><text class="sf-sub" x="462" y="80">shapes the tone:</text><text class="sf-sub" x="462" y="95">bright, dark, ringing</text></a><a class="sf-block" href="#mod-amp" data-mod="amp"><title>5 VCA: open the module</title><rect class="sf-box" x="770" y="40" width="140" height="66" rx="8"/><text class="sf-num" x="782" y="60">5</text><text class="sf-title" x="804" y="60">VCA</text><text class="sf-sub" x="782" y="77">sets the loudness</text></a><rect class="sf-box sf-out" x="980" y="48" width="110" height="50" rx="8"/><text class="sf-title" x="995" y="69">OUT</text><text class="sf-sub" x="995" y="86">to your speakers</text><a class="sf-block" href="#mod-voice" data-mod="voice"><title>8 KEYBOARD: open the module</title><rect class="sf-box" x="20" y="188" width="150" height="46" rx="8"/><text class="sf-num" x="32" y="208">8</text><text class="sf-title" x="54" y="208">KEYBOARD</text><text class="sf-sub" x="32" y="225">plays the notes</text></a><a class="sf-block" href="#mod-lfo" data-mod="lfo"><title>7 LFO: open the module</title><rect class="sf-box" x="450" y="188" width="112" height="46" rx="8"/><text class="sf-num" x="462" y="208">7</text><text class="sf-title" x="484" y="208">LFO</text><text class="sf-sub" x="462" y="225">a slow wobble</text></a><a class="sf-block" href="#mod-eg1" data-mod="eg1"><title>6 ENV 1: open the module</title><rect class="sf-box" x="588" y="188" width="112" height="46" rx="8"/><text class="sf-num" x="600" y="208">6</text><text class="sf-title" x="622" y="208">ENV 1</text><text class="sf-sub" x="600" y="225">moves the filter</text></a><a class="sf-block" href="#mod-amp" data-mod="amp"><title>5 ENV 2: open the module</title><rect class="sf-box" x="770" y="188" width="140" height="46" rx="8"/><text class="sf-num" x="782" y="208">5</text><text class="sf-title" x="804" y="208">ENV 2</text><text class="sf-sub" x="782" y="225">shapes the loudness</text></a><path class="audio" d="M170 43H205V64H236" marker-end="url(#arrow)"/><path class="audio" d="M170 103H205V82H236" marker-end="url(#arrow)"/><path class="audio" d="M380 73H446" marker-end="url(#arrow)"/><path class="audio sf-patched" d="M700 73H766" marker-end="url(#arrow)"/><text class="sf-port" id="sf-out" x="733" y="64" text-anchor="middle">LP OUT</text><path class="audio" d="M910 73H976" marker-end="url(#arrow)"/><path class="cv" d="M95 188V130" marker-end="url(#arrow)"/><text class="sf-port" x="103" y="162">PITCH</text><path class="cv" d="M506 188V128" marker-end="url(#arrow)"/><text class="sf-port" x="514" y="162">CV 2</text><path class="cv" d="M644 188V128" marker-end="url(#arrow)"/><text class="sf-port" x="652" y="162">CV 1</text><path class="cv" d="M840 188V110" marker-end="url(#arrow)"/><path class="cv" d="M170 211H420V150H502" marker-end="url(#arrow)"/><circle class="junction" cx="506" cy="150" r="3.5"/><text class="sf-port" x="232" y="204">TRACK → CV 2</text></svg><!-- /art:signal-flow --></div>
+        <div class="modules" id="modules"></div>
+      </div>
+
+      <div class="keys-wrap">
+        <div class="keys-bar">
+          <div class="seg" role="group" aria-label="Keyboard octave">
+            <button type="button" id="oct-down" aria-label="Octave down">−</button>
+            <output id="oct-show" aria-live="polite">C2</output>
+            <button type="button" id="oct-up" aria-label="Octave up">+</button>
+          </div>
+          <button type="button" class="plain" id="midi">MIDI</button>
+          <span class="status" id="status" role="status" aria-live="polite">Sound is off. Press Power.</span>
+        </div>
+        <div class="keys" id="keys" aria-label="Keyboard"></div>
+      </div>
+    </section>
+
+    <section class="bench" aria-label="Measurements">
+      <figure class="screen">
+        <canvas id="scope" width="640" height="300" aria-label="Oscilloscope"></canvas>
+        <figcaption>
+          <span class="screen-title">Oscilloscope</span>
+          <div class="seg small" role="group" aria-label="Oscilloscope probe" id="probe"></div>
+          <div class="seg small" role="group" aria-label="Time base" id="timebase"></div>
+        </figcaption>
+      </figure>
+      <figure class="screen">
+        <canvas id="spectrum" width="640" height="300" aria-label="Spectrum"></canvas>
+        <figcaption><span class="screen-title">Spectrum of the same probe</span><span class="screen-note">Dashed line: small-signal cutoff</span></figcaption>
+      </figure>
+      <div class="readout">
+        <h2>Inside the circuit</h2>
+        <dl id="readout"></dl>
+      </div>
+    </section>
+
+    <section class="service" aria-labelledby="service-title">
+      <div class="service-head">
+        <h2 id="service-title">Imperfections</h2>
+        <p>Every PF-82 is built from real parts. Choose how it was built and which one you are playing; the circuit’s own character stays in all of them.</p>
+      </div>
+      <div class="service-grid" id="service"></div>
+      <div class="sheet">
+        <h3>Unit sheet <span id="sheet-serial"></span></h3>
+        <dl id="sheet"></dl>
+      </div>
+    </section>
+
+    <section class="anatomy" aria-labelledby="anatomy-title">
+      <h2 id="anatomy-title">How the filter works</h2>
+      <div class="anatomy-art"><!-- art:filter-anatomy --><svg class="art-anatomy" viewBox="0 0 1180 470" role="img" aria-labelledby="art-anatomy-t"><title id="art-anatomy-t">Inside the PF-82 filter</title><desc>The control path sums FREQUENCY, CV 1 through the attenuverter, CV 2 and +12 V into U1B, whose feedback transistor Q1 turns current into an exponential Iset for both MC1776 integrators. The audio input and the low-pass feedback meet at U2's input; U2 integrates to the band-pass, U3 to the low-pass; the resonance pot feeds the band-pass back as damping. Buffers and an equal-power mixer give the three outputs. Amber notes mark where a real unit is imperfect.</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0 0L10 5L0 10z" fill="#eeebe4"/></marker></defs><rect class="an-bg" x="0" y="0" width="1180" height="470" rx="14"/><text class="an-head" x="28" y="40">INSIDE THE PF-82 FILTER</text><text class="an-sub" x="28" y="62">After clarionut’s Eurorack Polivoks filter; reference designators from his schematic.</text><text class="an-section" x="28" y="98">CONTROL</text><text class="an-label" x="28" y="126">FREQUENCY</text><text class="an-sub" x="110" y="126">RV1 · R2 180k</text><path class="audio thin" d="M262 122L282 165"/><text class="an-label" x="28" y="160">CV 1</text><text class="an-sub" x="110" y="160">U1A attenuverter · R6 47k</text><path class="audio thin" d="M262 156L282 165"/><text class="an-label" x="28" y="194">CV 2</text><text class="an-sub" x="110" y="194">R3 100k</text><path class="audio thin" d="M262 190L282 165"/><text class="an-label" x="28" y="228">+12 V</text><text class="an-sub" x="110" y="228">R7 100k</text><path class="audio thin" d="M262 224L282 165"/><circle class="art-sum" cx="296" cy="165" r="14"/><text class="an-label" x="296" y="170" text-anchor="middle">Σ</text><text class="an-imp" x="28" y="250">Ripple on +12 V</text><text class="an-imp" x="28" y="266">moves the cutoff</text><path class="audio" d="M296 179V238" marker-end="url(#arrow)"/><rect class="an-box" x="206" y="240" width="180" height="66" rx="8"/><text class="an-label" x="218" y="262">U1B + Q1 (2N3904)</text><text class="an-sub" x="218" y="279">exponential converter</text><text class="an-sub" x="218" y="295">R8 3k: ×2 per 5.9 µA</text><text class="an-imp" x="28" y="336">No temperature compensation:</text><text class="an-imp" x="28" y="352">+1.3 octaves per 10 °C</text><path class="cv" d="M386 273H420V330H770V212" marker-end="url(#arrow)"/><path class="cv" d="M570 330V212" marker-end="url(#arrow)"/><circle class="junction" cx="570" cy="330" r="3.5"/><text class="an-sub" x="440" y="348">Iset through R12 / R15 · the two chips share it unequally</text><text class="an-section" x="440" y="98">CORE</text><text class="an-label" x="430" y="186" text-anchor="end">AUDIO IN</text><text class="an-sub" x="430" y="202" text-anchor="end">RV3 · R4</text><path class="audio" d="M434 190H458" marker-end="url(#arrow)"/><circle class="art-sum" cx="472" cy="190" r="14"/><text class="an-label" x="472" y="195" text-anchor="middle">Σ</text><text class="an-sub" x="492" y="212">÷50</text><path class="audio" d="M486 190H516" marker-end="url(#arrow)"/><path class="art-amp" d="M520 150L520 230L610 190Z"/><text class="an-label" x="530" y="186">U2A</text><text class="an-sub" x="530" y="202">MC1776</text><circle class="junction" cx="650" cy="190" r="3.5"/><text class="an-label" x="652" y="180">BP</text><path class="audio" d="M610 190H716" marker-end="url(#arrow)"/><text class="an-sub" x="668" y="206" text-anchor="middle">÷48</text><path class="art-amp" d="M720 150L720 230L810 190Z"/><text class="an-label" x="730" y="186">U3A</text><text class="an-sub" x="730" y="202">MC1776</text><path class="audio" d="M810 190H850"/><circle class="junction" cx="850" cy="190" r="3.5"/><text class="an-label" x="852" y="180">LP</text><path class="audio" d="M650 190V134H472V172" marker-end="url(#arrow)"/><text class="an-label" x="560" y="126" text-anchor="middle">RV4 RESONANCE</text><path class="audio" d="M850 190V260H472V208" marker-end="url(#arrow)"/><text class="an-sub" x="600" y="254">R10 · LP back to U2</text><text class="an-imp" x="440" y="372">U2A, U3A run open loop: their slew limit is the growl,</text><text class="an-imp" x="440" y="390">and their second pole tips full RESONANCE into oscillation.</text><text class="an-section" x="900" y="98">OUTPUTS</text><path class="audio" d="M650 134V108H896" marker-end="url(#arrow)"/><rect class="an-box" x="900" y="86" width="120" height="40" rx="8"/><text class="an-label" x="912" y="104">×1.61 · U4B</text><text class="an-sub" x="912" y="119">C11 coupling</text><path class="audio" d="M1020 106H1060" marker-end="url(#arrow)"/><text class="an-label" x="1066" y="111">BP OUT</text><path class="audio" d="M850 190H896" marker-end="url(#arrow)"/><rect class="an-box" x="900" y="170" width="120" height="40" rx="8"/><text class="an-label" x="912" y="188">×1.33 · U4A</text><text class="an-sub" x="912" y="203">C12 coupling</text><path class="audio" d="M1020 190H1060" marker-end="url(#arrow)"/><text class="an-label" x="1066" y="195">LP OUT</text><rect class="an-box" x="900" y="250" width="120" height="40" rx="8"/><text class="an-label" x="912" y="268">RV5 · U4C · U4D</text><text class="an-sub" x="912" y="283">equal-power mix</text><text class="an-sub" x="894" y="262" text-anchor="end">BP</text><text class="an-sub" x="894" y="284" text-anchor="end">LP</text><path class="audio" d="M1020 270H1060" marker-end="url(#arrow)"/><text class="an-label" x="1066" y="275">MIX OUT</text><text class="an-imp" x="900" y="318">Buffers clip near ±10.5 V</text><text class="an-imp" x="862" y="240">Integrators stop at the ±11 V rails</text><text class="an-imp" x="28" y="420">Every pot: ±20 % and its end resistance; worn wipers lift for a moment when turned.</text><text class="an-sub" x="28" y="448">White: audio and control voltages · dashed: the Iset current · amber: where a real unit is imperfect.</text></svg><!-- /art:filter-anatomy --></div>
+    </section>
+
+    <section class="jingles" aria-labelledby="jingles-title">
+      <h2 id="jingles-title">Sakura Shōten’s jingles</h2>
+      <p class="credit">Five little tunes for Sakura Shōten, the konbini in Minato: the door melody, the till, the shop jingle between songs on its radio, the morning wake-up as the shutter goes up and the waltz that closes the day. Each has its moment in the shop’s hours and a reason for its notes. All are new tunes, and all keep to the Ryukyu scale of Okinawan island songs, C E F G B.</p>
+      <p class="credit">The recordings were made on the shop’s own PF-82, serial <span id="jingles-unit">13715</span>, picked for its two oscillators, which stay within 2 cents of each other from C3 to C6. “Play on the PF-82” plays the same notes on yours, with your unit’s own tuning; set its serial under Imperfections to hear the shop’s. The closing waltz loops.</p>
+      <p class="credit">These are the first versions. The shop now plays brighter, easier ones, written after the manner of 1980s game music, on Johansson Denki’s four-voice <a href="/sc-90/">SC-90 sound chip</a>; these stay here for anyone who wants the PF-82’s sound.</p>
+      <ul class="songbook" id="jingles" aria-labelledby="jingles-title"></ul>
+    </section>
+
+    <section class="about" aria-labelledby="about-title">
+      <h2 id="about-title">What is simulated</h2>
+      <ul>
+        <li><strong>Exponential converter.</strong> Q1 (2N3904) sits in U1B’s feedback with R8 across its base and emitter, so the summed input current sets V<sub>BE</sub> and the cutoff doubles every 5.9 µA. That is 0.594 V on CV2: a 1 V/octave keyboard over-tracks 1.68 times. Nothing compensates for temperature, so the cutoff rises about 1.3 octaves per 10 °C.</li>
+        <li><strong>The core.</strong> Two MC1776 run open loop as integrators behind 1/50 and 1/48 dividers. The tanh of their input pairs is the slew limit: loud signals and high resonance bend both the pitch and the shape. Their outputs stop at the ±12 V rails.</li>
+        <li><strong>Resonance.</strong> RV4 feeds the band-pass back as damping. The op-amps’ second pole adds a little negative damping, so the filter breaks into oscillation near the end of the knob and, turned fully, screams into the rails almost an octave below its small-signal cutoff.</li>
+        <li><strong>The two chips are not twins.</strong> Q1’s collector current divides between their Iset pins through R12 and R15, by the chips’ mismatch at low currents and by the resistors at high currents.</li>
+        <li><strong>Outputs.</strong> AC coupling, the ×1.61 band-pass and ×1.33 low-pass buffers (they clip on ±12 V), and the equal-power LP/BP mixer around RV5.</li>
+        <li><strong>A built unit.</strong> Resistors at 1 % or 5 %, pots at ±20 % with end resistance and pot loading, transistor and op-amp spreads and offsets, the regulator’s accuracy, warm-up, mains ripple on +12 V, hiss that rises as the cutoff falls, and worn wipers that lift for a moment when turned.</li>
+        <li><strong>Not from the Polivoks.</strong> The oscillators, envelopes, LFO and amplifier around the filter are the PF-82’s own simple design, with their own small drift. Parasitic capacitance, ageing and the 776’s output stage at very low bias are not modelled.</li>
+      </ul>
+      <h2 id="songbook-title">The song book</h2>
+      <p class="credit">Public-domain music, in the PF-82’s own single-line transcriptions. Choosing a song loads the sound it was arranged for; change anything while it plays.</p>
+      <ul class="songbook" id="songbook" aria-labelledby="songbook-title"></ul>
+      <p class="credit">The PF-82 is a Johansson Denki instrument, the maker of everything electric in <a href="/johansson-world/">Johansson World</a>. Circuit reference: <a href="https://github.com/clarionut/Polivoks_filter">clarionut/Polivoks_filter</a>, schematic at commit <code>9c155cf</code>. Only its schematic was read; no code, panel artwork or files are copied. The original instrument is the Polivoks designed by Vladimir Kuzmin and made by Formanta from 1982. The derivation, the measurements and the drawing script are in the <a href="https://github.com/nj22az/nj22az.github.io/tree/main/polivoks">source folder</a>.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Johansson PF-82 · a Johansson Denki instrument</span>
+    <a href="/">The Office of Nils Johansson</a>
+  </footer>
+</body>
+</html>

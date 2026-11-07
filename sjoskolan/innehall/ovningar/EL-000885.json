@@ -1,0 +1,81 @@
+{
+  "id": "EL-000885",
+  "titel": "Tången med flera varv",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 2,
+  "granskning": {
+    "status": "utkast",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Ett DC-aggregat driver 1,8 A genom en labbsladd. Vad visar tången med sladden två varv genom käften, och med sladden vikt som en hårnål?",
+    "samband": [
+      "Tången visar summan av strömmarna genom käften"
+    ],
+    "givet": "Tångstationen på skyddsklenspänning. Tången nollställd i läget DC A. Strömmen 1,8 A.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Varje gång sladden passerar käften räknas strömmen en gång, med sin riktning.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna hur många gånger strömmen passerar käften och åt vilket håll.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Två varv: samma ström passerar käften två gånger åt samma håll. 2) Hårnål: strömmen passerar en gång åt varje håll. Exempel med andra tal: 0,8 A och fyra varv ger 4 · 0,8 = 3,2 A.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Två varv: 2 · 1,8 = 3,6 A. Hårnål: +1,8 − 1,8 = 0 A, eftersom strömmen går genom käften en gång åt varje håll.",
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 3.6,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A"
+      }
+    ],
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q9",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 31 och 32",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

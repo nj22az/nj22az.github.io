@@ -1,0 +1,103 @@
+{
+  "id": "EL-000891",
+  "titel": "Varvtal och eftersläpning",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 2,
+  "granskning": {
+    "status": "utkast",
+    "numeriskt_kontrollerad": true,
+    "kommentar": "Kursvariant av EL-000165. Alla beräkningssteg kan visas på lektionen utan samma svar som veckans andra övningar eller motorinlämningen. Bokens ursprungliga uppgift behålls separat."
+  },
+  "larande": {
+    "mal": [
+      "LM-1"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-kurs-v43-02",
+      "T-bildspel-v43-02"
+    ]
+  },
+  "parametrar": {
+    "f": {
+      "varde": 60,
+      "enhet": "Hz"
+    },
+    "poler": {
+      "varde": 10,
+      "beskrivning": "Antal poler, inte polpar"
+    },
+    "n": {
+      "varde": 684,
+      "enhet": "r/min"
+    }
+  },
+  "uppgift": {
+    "fraga": "En tiopolig asynkronmotor ombord matas med 60 Hz och går med 684 r/min. Beräkna det synkrona varvtalet och eftersläpningen i procent.",
+    "samband": [
+      "n_{s} = 120f/p",
+      "s% = 100 · (n_{s} − n)/n_{s}"
+    ],
+    "givet": "Ombord. f = 60 Hz, p = 10 och n = 684 r/min. Motorn går som motor, alltså inte som generator.",
+    "instruktion": "Visa insättningen i båda formlerna och skillnaden i r/min. Ange synkront varvtal i r/min och eftersläpning i procent med en decimal."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "n är rotorns verkliga varvtal. n_{s} är magnetfältets synkrona varvtal. p är antalet poler, inte antalet polpar.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Räkna först ut n_{s}. Dra sedan rotorns varvtal från fältets varvtal, dela skillnaden med n_{s} och multiplicera med 100.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "Räkna med samma metod som i genomgångens exempel 2, med andra tal: en åttapolig motor på 60 Hz går med 873 r/min. Då är n_{s} = 120 · 60/8 = 900 r/min. Skillnaden är 900 − 873 = 27 r/min och s = 100 · 27/900 = 3,0 %. Använd sedan metoden med uppgiftens egna tal. Rimlighet: i den angivna motordriften går rotorn långsammare än fältet.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "n_{s} = 120 · 60/10 = 720 r/min. Skillnaden är n_{s} − n = 720 − 684 = 36 r/min. s = 100 · 36/720 = 5,0 %. Rotorn går långsammare än fältet och eftersläpningen är några procent, vilket är rimligt för den angivna motordriften.",
+    "svar": [
+      {
+        "storhet": "n_{s}",
+        "varde": 720,
+        "avrundning": "heltal",
+        "enhet": "r/min",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "berakning": "motor.synkronvarv"
+      },
+      {
+        "storhet": "s",
+        "varde": 5,
+        "avrundning": "1 decimaler",
+        "enhet": "%",
+        "tolerans": {
+          "rel": 0.02
+        }
+      }
+    ],
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt), omräknat för kursvarianten 2026-10-19."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "EL-000165",
+        "roll": "ursprunglig motorövning; separat kursvariant för vecka 43"
+      },
+      {
+        "kalla": "vecka-43/aktuell/Del_2.html#v43_02-q5",
+        "roll": "övning 2.5 med bibehållet ankare och nummer"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson.",
+    "losning_publik": true
+  }
+}

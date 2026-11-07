@@ -1,0 +1,55 @@
+{
+  "implementationCommit": "aa792244c914eec604b0aac4e5fb18ccaa4119cd",
+  "checkedOn": "2026-10-25",
+  "pagesRun": 40160561135,
+  "pagesConclusion": "success",
+  "hotelCount": 32,
+  "verifiedMapLocations": 32,
+  "remainingUnmapped": [],
+  "confirmedFreeOptions": 31,
+  "coordinateSource": "16 official Scandic property-specific map-view hotel markers; existing 16 points preserved",
+  "parkingFieldsPreserved": true,
+  "csvColumns": 37,
+  "localTests": 11,
+  "chromiumChecks": 28,
+  "viewportWidths": [
+    1440,
+    834,
+    390,
+    320
+  ],
+  "realDevicesTested": false,
+  "realGpsTested": false,
+  "publicFiles": [
+    {
+      "path": "blog/hotels/index.html",
+      "httpSuccess": true,
+      "matchesTestedBytes": true,
+      "sha256": "f9a0d3dbec50d7b506c1c94cdc4b7ae368253d3e292b980fe62ca2097bacda61"
+    },
+    {
+      "path": "blog/hotels/hotels.json",
+      "httpSuccess": true,
+      "matchesTestedBytes": true,
+      "sha256": "6c3a770f1a9725ea4eba3876fb073729ffaeb8a502bd955e1f0a0462d4787877"
+    },
+    {
+      "path": "blog/hotels/hotel-reviews.csv",
+      "httpSuccess": true,
+      "matchesTestedBytes": true,
+      "sha256": "a56bcb87ceb226e4eee1def2a9422d414f9460955574844672a3824f771d1c41"
+    },
+    {
+      "path": "blog/hotels/hotels-map.js",
+      "httpSuccess": true,
+      "matchesTestedBytes": true,
+      "sha256": "37091e29d7dda990f1af0d6162fa35b983cc1d35bfd7bdb4250d989ab65b8b9c"
+    },
+    {
+      "path": "css/hotels.css",
+      "httpSuccess": true,
+      "matchesTestedBytes": true,
+      "sha256": "cb1d093028d4cc237610c0aca3a4f4021096a369cf8e0e6d321a4283ab105732"
+    }
+  ]
+}

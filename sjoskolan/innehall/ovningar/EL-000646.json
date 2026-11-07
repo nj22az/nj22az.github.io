@@ -1,0 +1,66 @@
+{
+  "id": "EL-000646",
+  "titel": "Multimetern visar 24,00 V",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Noggrannhet enligt specifikationen: ±(0,5 % av avläst värde + 2 siffror) Upplösning: 0,01 V ”2 siffror” = två steg i sista siffran. 1. Beräkna procentdelen i volt. 2. Beräkna två steg i sista siffran i volt. 3. Addera delarna till en felgräns. Beräkna intervallets lägsta och högsta spänning. Skriv enheten i varje beräkningssteg."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 47 och facit bild 48",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "Procentdel: 0,005 · 24,00 V = 0,12 V Två steg i sista siffran: 2 · 0,01 V = 0,02 V Sammanlagd felgräns: ±(0,12 V + 0,02 V) = ±0,14 V Intervall enligt specifikationen: 23,86–24,14 V.",
+    "status": "migrerad",
+    "kalla": "Facitbild 48",
+    "svar": [
+      {
+        "storhet": "δ",
+        "varde": 0.14,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.001
+        },
+        "berakning": "matosakerhet.grans"
+      }
+    ]
+  },
+  "parametrar": {
+    "U": {
+      "varde": 24.0
+    },
+    "rel": {
+      "varde": 0.005
+    },
+    "siffror": {
+      "varde": 2
+    },
+    "upplosning": {
+      "varde": 0.01
+    }
+  }
+}

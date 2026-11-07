@@ -1,0 +1,99 @@
+{
+  "commit": "ffc02e29ff14a632cf05ae99f691b009af09f7c2",
+  "checked_at": "2026-10-31T07:46:32.767036+02:00",
+  "passed": 13,
+  "total": 13,
+  "files": [
+    {
+      "path": "camera/index.html",
+      "status": 200,
+      "match": true,
+      "bytes": 23624,
+      "sha256": "30497f9082f7618ed84fe5116b491e7fc8ba821aa9131e0f0440da61e3766a7d"
+    },
+    {
+      "path": "camera/app.js",
+      "status": 200,
+      "match": true,
+      "bytes": 86624,
+      "sha256": "45d11101e7c166f11667dbbd414ebd62a73981835b4c91b4afaebde4273b6bdb"
+    },
+    {
+      "path": "camera/looks-gl.js",
+      "status": 200,
+      "match": true,
+      "bytes": 94728,
+      "sha256": "c519ecdd627f214c82e02a8840ee42f6f80276564be83ae1df5cebea12a2559c"
+    },
+    {
+      "path": "camera/sw.js",
+      "status": 200,
+      "match": true,
+      "bytes": 1590,
+      "sha256": "88abe5f18f434bcb682ad679c68d1291c6c5d49ecad53320b900e4996d09bfb3"
+    },
+    {
+      "path": "camera/album.js",
+      "status": 200,
+      "match": true,
+      "bytes": 5423,
+      "sha256": "1b0e5ad69e4b158392a946fcc1dafef12cfe03e1d0185d319546b98474b9cd9a"
+    },
+    {
+      "path": "camera/frames.js",
+      "status": 200,
+      "match": true,
+      "bytes": 7782,
+      "sha256": "7a15179a13d624b0062f9c50627ec6ee8a4655f58adbfb15d9b02e88acb37961"
+    },
+    {
+      "path": "johansson-town/tools/camera/server.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 3381,
+      "sha256": "987c13bdb77db614bd2d132540fe6029d6b593088bb971015e06122a6ebea12f"
+    },
+    {
+      "path": "johansson-town/tools/camera/session.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 10939,
+      "sha256": "2f30bcd86e71f7a354f1afbda4f38a29d353499359cede8460b7ca7aec02e794"
+    },
+    {
+      "path": "johansson-town/tools/camera/tools.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 3922,
+      "sha256": "8f61a94b96688aeb17f62aca2ba7432d8ddeba2290bbf5a461f45b8c37805d3b"
+    },
+    {
+      "path": "johansson-town/tools/camera/policy.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 6415,
+      "sha256": "a5bb27a534c4801f1c7b63d7a267f499d9f42652f7296b0ce4007f7f8e7af446"
+    },
+    {
+      "path": "johansson-town/tools/camera/preview.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 3400,
+      "sha256": "97121c17b085deee527c2b8bd6daff8059eb3aaf79d30d9bfb8932a659233fd1"
+    },
+    {
+      "path": "johansson-town/tools/camera/policy.test.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 11059,
+      "sha256": "4c1e77ccd80cf62e119d7302cf5ab8613dd8ce83fb7c015f23d5f85a52e25073"
+    },
+    {
+      "path": "johansson-town/tools/camera/acceptance.mjs",
+      "status": 200,
+      "match": true,
+      "bytes": 8709,
+      "sha256": "cabebdda7f88543c168838c2b588f17afbb5f86f96ff208d0083615ca9313d8e"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2000" viewBox="0 0 1400 2000" role="img" aria-labelledby="title desc">
+<title id="title">Elteknik och ellära för sjöfart och industri — Nils Johansson</title>
+<desc id="desc">Ett mörkblått och varmt vitt läroboksomslag med tydlig typografi och ett trefasschema med kontaktor och motor.</desc>
+<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#cbd5c6" stroke-width="1" opacity=".45"/></pattern></defs>
+<rect width="1400" height="2000" fill="#f5f1e6"/>
+<rect width="1400" height="1040" fill="#173c44"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<path d="M112 92h72" stroke="#e5c85e" stroke-width="8"/>
+<text x="112" y="155" font-size="25" letter-spacing="5" fill="#d5dfd8">EN PRAKTISK LÄROBOK</text>
+<g font-size="176" font-weight="700" letter-spacing="-7" fill="#fffdf3"><text x="100" y="355">Elteknik</text><text x="100" y="545">och ellära</text></g>
+<text x="112" y="665" font-size="57" fill="#e7ede0">för sjöfart och industri</text>
+<text x="112" y="750" font-size="27" letter-spacing="1.5" fill="#aec3c2">FRÅN GRUNDER TILL FELSÖKNING</text>
+<rect x="96" y="840" width="1208" height="700" rx="10" fill="#e8eddf"/>
+<rect x="96" y="840" width="1208" height="700" rx="10" fill="url(#grid)"/>
+<text x="144" y="918" font-size="23" font-weight="700" letter-spacing="3" fill="#46615a">TREFAS / STYRNING / MÄTTEKNIK</text>
+<g fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<path d="M220 1050H450M450 1050l80-44M548 1050H800" stroke="#a37042"/>
+<path d="M220 1200H450M450 1200l80-44M548 1200H720" stroke="#2f5360"/>
+<path d="M220 1350H450M450 1350l80-44M548 1350H800" stroke="#7a8c86"/>
+<path d="M490 1015V1378" stroke="#8b9e90" stroke-width="3" stroke-dasharray="10 10"/>
+<circle cx="900" cy="1200" r="180" fill="#f5f5e9" stroke="#2f5360" stroke-width="6"/>
+</g>
+<g fill="#46615a" font-size="31"><text x="144" y="1060">L1</text><text x="144" y="1210">L2</text><text x="144" y="1360">L3</text><text x="470" y="982">K1</text></g>
+<g fill="#173c44" text-anchor="middle"><text x="900" y="1220" font-size="114" font-weight="700">M</text><text x="900" y="1300" font-size="54">3~</text></g>
+<g fill="#173c44" font-size="35"><text x="112" y="1660">Teori och genomräknade exempel.</text><text x="112" y="1715">240 övningar med fullständiga lösningar.</text></g>
+<text x="108" y="1850" font-size="76" font-weight="700" letter-spacing="-2" fill="#173c44">Nils Johansson</text>
+<path d="M112 1910h1176" stroke="#819b8b" stroke-width="2"/>
+<g font-size="21" font-weight="700" letter-spacing="2" fill="#4a665b"><text x="112" y="1955">24 KAPITEL</text><text x="1288" y="1955" text-anchor="end">FÖRSTA UPPLAGAN / 2026</text></g>
+</g></svg>

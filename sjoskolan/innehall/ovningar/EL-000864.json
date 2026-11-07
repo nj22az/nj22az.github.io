@@ -1,0 +1,38 @@
+{
+  "id": "EL-000864",
+  "titel": "Din tur: momentanvärde i vägguttaget",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "fordjupning",
+    "teori": [
+      "T-bildspel-v40-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vägguttaget hemma: U = 230 V RMS och f = 50 Hz. Hur stor är spänningen u efter t = 3,0 ms? Räknaren ska stå i RAD."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS sinus bild tur-moment",
+        "revision": "ny",
+        "roll": "Din tur i genomgången och presentationen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "û = √2 · 230 ≈ 325 V. Vinkeln 2π · 50 · 0,003 ≈ 0,942 rad. u ≈ 325 · sin(0,942) ≈ 263 V. Står räknaren i DEG blir svaret fel, cirka 5,3 V.",
+    "status": "migrerad"
+  }
+}

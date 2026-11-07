@@ -1,0 +1,34 @@
+ok  phone: crop controls fit the screen and start at the whole photo
+ok  phone: zoom and drag change the photo without starting Original comparison
+ok  phone: two actual touch points pinch the photo and one remaining finger can drag
+ok  phone: Erase and Undo address the cropped source, without touching another part of it
+ok  phone: saved JPEG has the selected crop and correct dimensions; source is retained
+ok  phone: reopening restores the crop, and Reset reveals the entire source
+ok  phone: uncropped exports stop at 2560 pixels without enlarging the source
+ok  phone: no page errors
+ok  small-phone: crop controls fit the screen and start at the whole photo
+ok  small-phone: zoom and drag change the photo without starting Original comparison
+ok  small-phone: two actual touch points pinch the photo and one remaining finger can drag
+ok  small-phone: Erase and Undo address the cropped source, without touching another part of it
+ok  small-phone: saved JPEG has the selected crop and correct dimensions; source is retained
+ok  small-phone: reopening restores the crop, and Reset reveals the entire source
+ok  small-phone: uncropped exports stop at 2560 pixels without enlarging the source
+ok  small-phone: no page errors
+ok  tablet: crop controls fit the screen and start at the whole photo
+ok  tablet: zoom and drag change the photo without starting Original comparison
+ok  tablet: two actual touch points pinch the photo and one remaining finger can drag
+ok  tablet: Erase and Undo address the cropped source, without touching another part of it
+ok  tablet: saved JPEG has the selected crop and correct dimensions; source is retained
+ok  tablet: reopening restores the crop, and Reset reveals the entire source
+ok  tablet: uncropped exports stop at 2560 pixels without enlarging the source
+ok  tablet: no page errors
+ok  desktop: crop controls fit the screen and start at the whole photo
+ok  desktop: zoom and drag change the photo without starting Original comparison
+ok  desktop: two actual touch points pinch the photo and one remaining finger can drag
+ok  desktop: Erase and Undo address the cropped source, without touching another part of it
+ok  desktop: saved JPEG has the selected crop and correct dimensions; source is retained
+ok  desktop: reopening restores the crop, and Reset reveals the entire source
+ok  desktop: uncropped exports stop at 2560 pixels without enlarging the source
+ok  desktop: no page errors
+ok  compression: 3004907 to 1165147 bytes (61.2% smaller); 39.17 dB PSNR; source byte-exact
+crop browser: 33/33 checks passed

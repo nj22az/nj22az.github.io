@@ -1,0 +1,26 @@
+{
+  "captured": "2026-10-24",
+  "source": "Johansson World compiled runtime",
+  "runtime": {
+    "sha256": "e823d15f1c8df9ded483f49add28f507669675b790a8aae8e29a45c6516c8c83"
+  },
+  "camera": {
+    "pos": [
+      4,
+      3.5,
+      -36
+    ],
+    "at": [
+      -12,
+      2.8,
+      -27.3
+    ]
+  },
+  "viewport": [
+    1600,
+    1000
+  ],
+  "time": 14403600,
+  "command": "TOWN_CHROMIUM_PATH=/path/to/chromium node johansson-town/tools/cloud-boot-smoke.mjs --world-hero /path/to/output",
+  "pageErrors": []
+}

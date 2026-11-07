@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Face pack check</title>
+<style>
+ body{margin:0;padding:16px;font:15px/1.4 -apple-system,system-ui,sans-serif;background:#111;color:#eee}
+ h1{font-size:18px;margin:0 0 8px}
+ p{margin:6px 0}
+ canvas{display:block;max-width:100%;height:auto;border-radius:8px;background:#000;margin:12px 0}
+ button,input{font:inherit}
+ button{min-height:44px;padding:0 16px;border-radius:12px;border:0;background:#f5d76e;color:#111;font-weight:700;margin-right:8px}
+ pre{white-space:pre-wrap;font-size:12px;color:#bbb}
+ .ok{color:#8fe3a1}.bad{color:#ff8a80}
+</style>
+</head>
+<body>
+<h1>Face pack check</h1>
+<p>Does this phone run the face finder? Tap <b>Try the sample</b>, or choose a photo of your own. Nothing leaves the phone.</p>
+<p><button id="sample">Try the sample</button><input type="file" id="pick" accept="image/*"></p>
+<p id="status">Not started.</p>
+<canvas id="out" width="2" height="2"></canvas>
+<pre id="log"></pre>
+<script type="module">
+ const $=id=>document.getElementById(id),log=(t,cls)=>{const line=document.createElement('div');if(cls)line.className=cls;line.textContent=t;$('log').append(line);};
+ log('Browser: '+navigator.userAgent);
+ log('WebAssembly SIMD: '+(WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]))?'yes':'no (the finder needs it)'));
+ let pack;
+ async function run(source,label){
+  $('status').textContent='Loading the face finder…';
+  try{
+   pack??=await import('../face-pack.js?v=check'+Date.now());
+   const t0=performance.now();const faces=await pack.findFaces(source);const t1=performance.now();
+   const again=await pack.findFaces(source);const t2=performance.now();
+   $('status').textContent=`${label}: ${faces.length} face${faces.length===1?'':'s'}; first run ${Math.round(t1-t0)} ms (loading included), second ${Math.round(t2-t1)} ms.`;
+   log(`${label}: ${faces.length} faces, first ${Math.round(t1-t0)} ms, second ${Math.round(t2-t1)} ms, detect ${Math.round(again.ms)} ms`,faces.length?'ok':'bad');
+   const W=source.width,H=source.height,k=Math.min(1,1024/Math.max(W,H)),c=$('out');c.width=Math.round(W*k);c.height=Math.round(H*k);
+   const g=c.getContext('2d');g.drawImage(source,0,0,c.width,c.height);g.lineWidth=2;g.strokeStyle='#5ef2b0';g.fillStyle='#ffd54f';
+   for(const f of faces){
+    for(const key of ['lipsOuter','lipsInner','eyeL','eyeR','browL','browR','oval']){g.beginPath();f[key].forEach(([x,y],i)=>g[i?'lineTo':'moveTo'](x*c.width,y*c.height));g.closePath();g.stroke();}
+    for(const e of f.eyes){g.beginPath();g.arc(e.x*c.width,e.y*c.height,e.r*c.width,0,Math.PI*2);g.stroke();}
+    for(const key of ['noseTip','chin','forehead','cheekL','cheekR']){const [x,y]=f[key];g.beginPath();g.arc(x*c.width,y*c.height,3,0,Math.PI*2);g.fill();}
+    log(`face: mouth open ${f.open}, smile ${f.smile}, points ${JSON.stringify(f).length} bytes`);
+   }
+  }catch(err){$('status').textContent='The face finder failed: '+(err?.message||err);$('status').className='bad';log(String(err?.stack||err),'bad');}
+ }
+ $('sample').addEventListener('click',async()=>{const img=await createImageBitmap(await (await fetch('./fixtures/portrait-braids.jpg')).blob());run(img,'Sample portrait');});
+ $('pick').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;const img=await createImageBitmap(file);run(img,file.name);});
+</script>
+</body>
+</html>

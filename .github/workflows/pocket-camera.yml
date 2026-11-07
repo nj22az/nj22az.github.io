@@ -1,0 +1,101 @@
+name: Pocket Camera regression
+
+on:
+  pull_request:
+    paths: ['camera/**', 'tools/render-camera-looks.mjs', 'tools/build-camera-offline.mjs', 'johansson-town/src/avatars/face.js', '.github/workflows/pocket-camera.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pocket-camera-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  camera:
+    name: ${{ matrix.job }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job: camera
+            suites: camera crop enhance save-share-layout paper integration sticker-contour
+          - job: camera-ui
+            suites: ui
+          - job: camera-audit
+            suites: audit
+          - job: camera-smart
+            suites: smart
+          - job: camera-offline
+            suites: offline
+          - job: camera-retouch
+            suites: retouch screens
+          - job: camera-face-backup
+            suites: face-stamps backup pop zoom album faces ball
+          - job: camera-face-auto
+            suites: face-pack auto theme defaults background comic
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CODEX_PRIMARY_RUNTIME_NODE_MODULES: /tmp/camera-test-runtime/node_modules
+      CAMERA_BASELINE: /tmp/camera-main-engine.js
+      CAMERA_MAIN_ENGINE: /tmp/camera-main-engine.js
+      CAMERA_REFINE_ENGINE: /tmp/camera-refine-engine.js
+      CAMERA_AUDIT_BASELINE: /tmp/camera-audit-baseline
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            camera
+            tools
+            assets/images
+            assets/mascots
+      - uses: actions/checkout@v4
+        with:
+          repository: nj22az/johansson-town
+          path: johansson-town
+          sparse-checkout: |
+            src/render
+            src/ui
+            src/avatars
+            tools/mcp
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Browser dependencies
+        run: |
+          npm install --prefix /tmp/camera-test-runtime --no-save --no-package-lock playwright@1.62.1
+          /tmp/camera-test-runtime/node_modules/.bin/playwright install --with-deps chromium
+          sudo apt-get install --yes ffmpeg
+          ffmpeg -version
+      - name: Prior engines for compatibility checks
+        if: matrix.job == 'camera'
+        run: |
+          # Kept in the repo since GitHub keeps only today's history: see camera/tests/fixtures/published-baselines/README.md.
+          cp camera/tests/fixtures/published-baselines/87f47e8f/looks-gl.js "$CAMERA_MAIN_ENGINE"
+          cp camera/tests/fixtures/published-baselines/3af0bae6/looks-gl.js "$CAMERA_REFINE_ENGINE"
+      - name: Published source for the before/after audit
+        if: matrix.job == 'camera-audit'
+        run: |
+          mkdir -p "$CAMERA_AUDIT_BASELINE"
+          cp camera/tests/fixtures/published-baselines/83783c93/{index.html,app.js,camera-ui.css,looks-gl.js} "$CAMERA_AUDIT_BASELINE/"
+      - name: Unit, module and syntax checks
+        run: |
+          for test in camera/tests/*.test.mjs; do node "$test"; done
+          for source in camera/*.js camera/tests/*.browser.mjs tools/render-camera-looks.mjs; do node --check "$source"; done
+          git diff --check
+      - name: Combined browser regressions (Chromium emulation; Share mocked)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/camera-results
+          for suite in ${{ matrix.suites }}; do
+            export CAMERA_SHOTS="/tmp/camera-results/$suite"
+            node "camera/tests/$suite.browser.mjs" | tee "/tmp/camera-results/$suite.log"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pocket-camera-${{ matrix.job }}-evidence
+          path: /tmp/camera-results
+          retention-days: 14

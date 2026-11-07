@@ -1,0 +1,58 @@
+/* Pocket Camera's chrome, in the theme's tokens (camera.css: dark by default, light under html[data-theme=light]):
+   a small warm accent and legible controls. Nothing here names a colour of its own, so Light and Dark are the same
+   rules with the other tokens. The games keep their illustrated paper palette (game-room-refresh.css) in light and the
+   surrounding app and panels go black in dark, at the foot of this file. */
+html,body,.app{background:var(--bg)}
+.bar{background:var(--bar);box-shadow:inset 0 -1px var(--outline)}
+/* A title remains in the same place in a browser and on the Home Screen. */
+.camera-home{display:flex;align-items:center;min-width:0;gap:3px;justify-self:start}
+.camera-home .back{flex:none;width:32px;justify-content:flex-start;padding:0}
+.camera-home .back span{position:absolute;clip:rect(0 0 0 0);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.camera-mark{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:800;letter-spacing:.045em;color:var(--label)}
+.standalone .camera-home .back{display:none}
+.camera .settings-toggle{color:var(--label);background:transparent;box-shadow:none}
+.camera .settings-toggle.open,.camera .settings-toggle.busy{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--outline)}
+.round,.photos-button{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--outline);color:var(--label)}
+.settings{background:var(--surface);border-color:var(--outline)}
+.setting i{background:var(--surface-2);box-shadow:none}.setting.on i{background:var(--accent-fill);color:var(--on-accent)}
+.button{background:var(--surface-2);color:var(--label);box-shadow:inset 0 0 0 1px var(--outline),0 3px 0 var(--shadow)}
+.pill-button,.button.primary{background:var(--accent-fill);color:var(--on-accent);box-shadow:inset 0 -3px rgba(94,65,10,.18)}
+.welcome{background:none}
+.welcome h1{color:var(--label);text-shadow:none}.welcome p{color:var(--label-2)}.welcome .fine{color:var(--label-3)}
+.welcome-sticker{filter:drop-shadow(0 6px 12px var(--shadow))}
+.camera.idle .exposure-chip,.camera.idle .exposure{display:none}
+.camera .frame,.editor .frame{box-shadow:0 0 0 1px var(--outline)}
+.controls{background:var(--bar);border-top:1px solid var(--separator)}
+.roll{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--outline)}.shutter{border-color:var(--shutter-ring);box-shadow:none}.shutter::after{background:var(--shutter)}
+.mix,.segmented,.mini-seg{background:var(--well);box-shadow:inset 0 0 0 1px var(--outline)}
+.layer.active,.segmented button[aria-selected="true"],.mini-seg button[aria-checked="true"],.sticker-sets button[aria-selected="true"]{background:var(--chip-on);color:var(--chip-on-label)}
+.sticker-choice{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--outline)}.sticker-choice:hover{background:var(--fill-strong)}
+.sticker-sheet,.text-sheet{background:var(--surface);box-shadow:0 12px 30px var(--shadow),inset 0 0 0 1px var(--outline)}
+.text-sheet textarea{background:var(--well);color:var(--label)}.album-empty strong{color:var(--label)}
+.toast{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--outline)}
+#deleteSheet p,#deleteSheet button{background:var(--surface-2)}#deleteSheet button{color:var(--accent)}#deleteSheet .danger{color:var(--red)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* Dark: the games keep their own illustrated cards, but the surrounding app and panels are black. (In light the paper
+   palette of game-room-refresh.css shows as it is.) */
+:root:not([data-theme=light]) :is(.card-games,.memory){background:#050505;color:#f5f5f2}
+:root:not([data-theme=light]) :is(.card-games .bar,.memory .bar){background:#0b0b0b;color:#fff;border-bottom:2px solid #484033}
+:root:not([data-theme=light]) :is(.card-games .bar h2,.memory .bar h2,.card-games .back,.memory .back,.memory .memory-new){color:#fff}
+:root:not([data-theme=light]) :is(.arcade-entry,.game-choice){background:#1d1d1f;color:#fff;border-color:#444;box-shadow:0 3px 0 #080808}
+:root:not([data-theme=light]) :is(.arcade-entry small,.game-choice small){color:#d0d0cc}
+:root:not([data-theme=light]) .game-room-intro{background:linear-gradient(145deg,#303031,#1b1b1d);border-color:#49443b;box-shadow:0 5px 0 #090909}
+:root:not([data-theme=light]) .game-room-intro h1{color:#fff}:root:not([data-theme=light]) .game-room-intro p:not(.cards-kicker){color:#deded8}:root:not([data-theme=light]) :is(.game-room-intro .cards-kicker,.game-room-label){color:#efcf80}
+:root:not([data-theme=light]) .game-choice>span:last-child{color:#e4c475}:root:not([data-theme=light]) .choice-symbol{background:#d2ad5e;color:#141414;box-shadow:inset 0 0 0 3px #ebd391}
+:root:not([data-theme=light]) .blackjack-layout{background:#101112;color:#f4f4ef}:root:not([data-theme=light]) .blackjack-rules{color:#d6d6d2}
+:root:not([data-theme=light]) .blackjack-table{background:#242426;border-color:#52504a;box-shadow:inset 0 0 0 2px #353535,0 6px 0 #060606}
+:root:not([data-theme=light]) :is(.blackjack-hand,.blackjack-hand:last-child){background:#161718;color:#fff;border-color:#454545}
+:root:not([data-theme=light]) .blackjack-score{background:#ebcf78;color:#1b1b19}:root:not([data-theme=light]) .blackjack-message{color:#fff;text-shadow:none}
+:root:not([data-theme=light]) .solitaire-game{background:#111;color:#fff}:root:not([data-theme=light]) .sol-toolbar{background:#202022;border-color:#444}:root:not([data-theme=light]) .sol-instructions{color:#f0f0ec}
+:root:not([data-theme=light]) .sol-scroll{background:#171c1a}:root:not([data-theme=light]) .sol-placeholder{background:rgba(255,255,255,.06);border-color:#8b948b;color:#d5ded4}
+:root:not([data-theme=light]) .sol-status{background:#080909;color:#fff}
+:root:not([data-theme=light]) .memory{background:#101011}:root:not([data-theme=light]) :is(.memory .memory-lead,.memory .memory-setup h3){color:#eee}
+:root:not([data-theme=light]) .memory .memory-deck{background:#252527;color:#fff;border-color:#666;box-shadow:0 3px 0 #070707}
+:root:not([data-theme=light]) .memory .memory-deck[aria-checked="true"]{border-color:#f0cf75;box-shadow:0 3px 0 #070707,inset 0 0 0 1px #f0cf75}
+:root:not([data-theme=light]) :is(.memory .memory-deck-note,.memory .memory-best){color:#ccc}:root:not([data-theme=light]) .memory .memory-go{background:#1b1b1c;border-color:#444}
+:root:not([data-theme=light]) .memory .mini-seg.memory-pairs{background:#272729;border-color:#555}:root:not([data-theme=light]) .memory .memory-pairs button{color:#fff}:root:not([data-theme=light]) .memory .memory-pairs button[aria-checked="true"]{background:#f0cf75;color:#1a1a19}
+:root:not([data-theme=light]) .memory .memory-stage{background:#1d2320;border-color:#343b36}:root:not([data-theme=light]) .memory .memory-status{background:#090a09;color:#eee}
+:root:not([data-theme=light]) .memory .memory-win{background:rgba(8,8,8,.96)}

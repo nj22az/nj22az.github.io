@@ -1,0 +1,499 @@
+{
+  "checkedOn": "2026-10-25",
+  "policy": "Free remains preferred. Paid parking is Easy only if both payment at the hotel and inclusion on the hotel receipt are confirmed. Any external, separate or unknown arrangement is Avoid. Unknown stays null.",
+  "scope": "First paid-parking batch: Denmark 14, Sweden 4, Norway 3, Finland 4. Not a complete four-country census.",
+  "properties": [
+    {
+      "hotelId": "scandic-aalborg-city",
+      "name": "Scandic Aalborg City",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-aalborg-city",
+      "sourceSha256": "b59e0c7ad120f2c0591c2115a8a9fbabeaed32becdd79d16c6b9b5546d0591fc",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Garage DKK 145/night, 14:00–12:00, weekdays and weekends. Nearby municipal parking is also paid during the listed hours.",
+      "coordinates": {
+        "latitude": 57.04392,
+        "longitude": 9.912053,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-aalborg-city/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Aalborg City\",\"markerInfo\":{\"hotelId\":\"720\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":57.04392,\"lng\":9.912053}",
+      "mapSourceSha256": "089bc35218b0f7b53c4e1b7f7c2533aeaf2cee4b57a22b91e6a6109a0ef676f8",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-aarhus-city",
+      "name": "Scandic Aarhus City",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-aarhus-city",
+      "sourceSha256": "b8c967bd1355aafe82dc78899350dcdfbce82a5fde2bbcdf894d37432c7a0023",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Q-Park garage DKK 33/hour or 240/24 hours, weekdays and weekends. Spaces are not guaranteed.",
+      "coordinates": {
+        "latitude": 56.15418,
+        "longitude": 10.20514,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-aarhus-city/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Aarhus City\",\"markerInfo\":{\"hotelId\":\"736\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":56.15418,\"lng\":10.20514}",
+      "mapSourceSha256": "8bb087bf9c6f78b9fa2b43a9481186989e6f1f35d0c9272af1e5dde475fe9336",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-copenhagen",
+      "name": "Scandic Copenhagen",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-copenhagen",
+      "sourceSha256": "79e8cf79be1da2401e8b3c4d011d4880deaae5766b7934f846bd83831939542a",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Q-Park garage DKK 47/hour or 350/24 hours, weekdays and weekends. Garage entrance: Nyropsgade 42.",
+      "coordinates": {
+        "latitude": 55.674644,
+        "longitude": 12.559046,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-copenhagen/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Copenhagen\",\"markerInfo\":{\"hotelId\":\"749\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.674644,\"lng\":12.559046}",
+      "mapSourceSha256": "4776c7273400432cddc889ef2234a0170816f1a10e6a0681099e1aa8c9433d17",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-cph-strandpark",
+      "name": "Scandic CPH Strandpark",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-cph-strandpark",
+      "sourceSha256": "9843457c6f96f14c7d84f1ede80a638a85c3d1d0915eebd47e1d11b75c27e589",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Garage DKK 25/hour or 248/24 hours, weekdays and weekends. Booking and payment are required before arrival.",
+      "coordinates": {
+        "latitude": 55.635857,
+        "longitude": 12.653871,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-cph-strandpark/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic CPH Strandpark\",\"markerInfo\":{\"hotelId\":\"715\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.635857,\"lng\":12.653871}",
+      "mapSourceSha256": "4c781f0151b4ebd9f0f6ffac2c3829b947bf6648208fec9ab4a97d04e4b05ff1",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-falkoner",
+      "name": "Scandic Falkoner",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-falkoner",
+      "sourceSha256": "7da2e45efe8faa0a68903ebe1134fc717248cd557751792b97d1ae361c45c267",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Falkoner P-hus DKK 25/hour or 225/24 hours, weekdays and weekends. No advance reservation or guaranteed space.",
+      "coordinates": {
+        "latitude": 55.679707,
+        "longitude": 12.532876,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-falkoner/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Falkoner\",\"markerInfo\":{\"hotelId\":\"719\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.679707,\"lng\":12.532876}",
+      "mapSourceSha256": "38541ee549a1d3e52697c729b54ce77950fe90965f2e1a4372d55ea9851aa555",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-front",
+      "name": "Scandic Front",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-front",
+      "sourceSha256": "7e7ae2f7cc42caa5e3dbf6a4a2fbf7012bd6a90d18e12142813d78bffb795259",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Jeudan garage DKK 325/24 hours, weekdays and weekends, about 50 metres away at Sankt Annæ Plads 32.",
+      "coordinates": {
+        "latitude": 55.681263,
+        "longitude": 12.593207,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-front/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Front\",\"markerInfo\":{\"hotelId\":\"739\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.681263,\"lng\":12.593207}",
+      "mapSourceSha256": "af75d2dfa3fd8c559c4f73c6a829bd31cffb77e0dde6fd0744fb4ebf30675c28",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-kodbyen",
+      "name": "Scandic Kødbyen",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-kodbyen",
+      "sourceSha256": "c7a166b76cd0cec4d7ea1c5925a5f88b2a2994ccb3dabbfb84c0dd01983e2ce4",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Q-Park garage DKK 37/hour or 270/24 hours, weekdays and weekends. Garage entrance: Skelbækgade 3A.",
+      "coordinates": {
+        "latitude": 55.668083,
+        "longitude": 12.55893,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-kodbyen/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Kødbyen\",\"markerInfo\":{\"hotelId\":\"721\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.668083,\"lng\":12.55893}",
+      "mapSourceSha256": "efa088c34cdff63f614367f6b4e8ebbfc022c51e758373b9c3e0d7312a622d1f",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-norreport",
+      "name": "Scandic Nørreport",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-norreport",
+      "sourceSha256": "bea3a28a83106b6cafc4f3f2240a0f750988d210c37d4b123af5903a39b6b564",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Q-Park Nørreport garage is paid on weekdays and weekends, about 300 metres away at Israels Plads 1. A numeric tariff is not supplied on the hotel page.",
+      "coordinates": {
+        "latitude": 55.683807,
+        "longitude": 12.571513,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-norreport/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Nørreport\",\"markerInfo\":{\"hotelId\":\"714\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.683807,\"lng\":12.571513}",
+      "mapSourceSha256": "8a64d58e8ce39b2674edc78588132033703e474ea646126b32847f35c1624e18",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-palace",
+      "name": "Scandic Palace Hotel",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-palace",
+      "sourceSha256": "94739e5b8d537a4ff7da35c7b2edcde3600dd3c78d528a661d4e29d5793c0f5e",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Listed parking at Industriens Hus costs DKK 380/24 hours, weekdays and weekends, or 50/hour during 06:00–23:00. The hotel also refers guests to surrounding streets.",
+      "coordinates": {
+        "latitude": 55.676136,
+        "longitude": 12.570144,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-palace/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Palace Hotel\",\"markerInfo\":{\"hotelId\":\"724\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.676136,\"lng\":12.570144}",
+      "mapSourceSha256": "22bf358043f4ea76f1b6d68f49cadd65092a3b41b7729ad416146c343045d35d",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-sluseholmen",
+      "name": "Scandic Sluseholmen",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-sluseholmen",
+      "sourceSha256": "3195c2730efbfe0ede7ca92333640088482436ba715acf2c47b15e3eb6ce9273",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Outdoor DKK 20/hour or 125/24 hours; garage DKK 30/hour or 175/24 hours, weekdays and weekends. Outdoor parking requires registration and payment; fees are additional.",
+      "coordinates": {
+        "latitude": 55.64367,
+        "longitude": 12.544198,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-sluseholmen/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Sluseholmen\",\"markerInfo\":{\"hotelId\":\"718\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.64367,\"lng\":12.544198}",
+      "mapSourceSha256": "46f6f466a138a5456d5dfaadc151ffecec19ceb82bf5e3d7b6a49ed0da9ff77a",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-spectrum",
+      "name": "Scandic Spectrum",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-spectrum",
+      "sourceSha256": "34b48f3f7e362e2641f513a404f9b884a9ceeb43bc96dfcc5a93d622c0442b82",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Garage DKK 40/hour or 325/24 hours, weekdays and weekends. Entrance: Mitchellsgade 2; no reservation or guaranteed space.",
+      "coordinates": {
+        "latitude": 55.67016,
+        "longitude": 12.57327,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-spectrum/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Spectrum\",\"markerInfo\":{\"hotelId\":\"716\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.67016,\"lng\":12.57327}",
+      "mapSourceSha256": "23e02bbc9f9049b3420bc7040d18672dc3d65ec16657221fab28964667a5bc0e",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-sydhavnen",
+      "name": "Scandic Sydhavnen",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-sydhavnen",
+      "sourceSha256": "28d7388613d1a6c788ae3d80a43057d8e6778214f3070599449544c3d719701e",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Outdoor DKK 20/hour or 125/24 hours, weekdays and weekends, plus fees. Register the vehicle and payment method immediately on arrival; follow the signs.",
+      "coordinates": {
+        "latitude": 55.655014,
+        "longitude": 12.542417,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-sydhavnen/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Sydhavnen\",\"markerInfo\":{\"hotelId\":\"723\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.655014,\"lng\":12.542417}",
+      "mapSourceSha256": "04f80731bc16b832a87b1105b4f054fce46a29e07d5dc66c72f41f7aa01e4243",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-the-mayor",
+      "name": "Scandic The Mayor",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-the-mayor",
+      "sourceSha256": "9b7b29f3589f66a9dc658d5771ca20657acf123a246d328ca90591565e99659f",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Bruuns Galleri DKK 180/24 hours; outdoor behind the hotel DKK 220/24 hours, weekdays and weekends. Register parking at the front desk; this does not confirm payment there.",
+      "coordinates": {
+        "latitude": 56.150913,
+        "longitude": 10.202718,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-the-mayor/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic The Mayor\",\"markerInfo\":{\"hotelId\":\"726\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":56.150913,\"lng\":10.202718}",
+      "mapSourceSha256": "ed923c5aed78de6c698df38672bd46de9004640d4aa4d41a5125a13f2e158000",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-webers",
+      "name": "Scandic Webers",
+      "country": "Denmark",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-webers",
+      "sourceSha256": "e68506de6873ab4f66016c4634ec8b2cba85aad755146e9b7ad75579d7ca0e63",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "SAGA garage DKK 300/24 hours, weekdays and weekends, about 100 metres away at Vesterbrogade 23. Nearby street parking is also mentioned.",
+      "coordinates": {
+        "latitude": 55.673237,
+        "longitude": 12.561163,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-webers/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Webers\",\"markerInfo\":{\"hotelId\":\"727\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.673237,\"lng\":12.561163}",
+      "mapSourceSha256": "34a362b16a86d142f63f217d3a9194ae47cedbba9d4743c91af0fd69a5963759",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-jarva-krog",
+      "name": "Scandic Järva Krog",
+      "country": "Sweden",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-jarva-krog",
+      "sourceSha256": "a4c2501341b5fc3fd683e66b9773480e90757083636af9d61249b33417179683",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": false,
+      "tariffNotes": "Garage and outdoor share one paid zone: SEK 18/hour or 175/day on weekdays. Weekend offer SEK 175 from Friday 14:00 to Monday 09:00. Pay through Aimo Park, SMS or the machine outside the entrance.",
+      "coordinates": {
+        "latitude": 59.38013,
+        "longitude": 18.008736,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-jarva-krog/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Järva Krog\",\"markerInfo\":{\"hotelId\":\"865\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.38013,\"lng\":18.008736}",
+      "mapSourceSha256": "fda245a93dd20d1ddc347372c2e96ca46787c909e2bec666f0f8b5c2ac2082f3",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-continental",
+      "name": "Scandic Continental",
+      "country": "Sweden",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-continental",
+      "sourceSha256": "b0afd76e6a7c331bf56cdcbda4f1603f82654f3a985124c14099f4f3e7f9f032",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Continental Garage SEK 495/night, weekdays and weekends. The page also advertises pre-booking from SEK 100, subject to availability; that starting offer is not a confirmed nightly tariff.",
+      "coordinates": {
+        "latitude": 59.33099,
+        "longitude": 18.05926,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-continental/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Continental\",\"markerInfo\":{\"hotelId\":\"811\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.33099,\"lng\":18.05926}",
+      "mapSourceSha256": "f38ad6d86236ed1e39d1285d52495cc76d756d9fc6ca3616be42180e22e6f6e0",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-malmen",
+      "name": "Scandic Malmen",
+      "country": "Sweden",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-malmen",
+      "sourceSha256": "0eaa67f0ca9dabdd47418e8d81572974f61e66ad9f61eb9c2a0638c045611020",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "P-huset Medborgarplatsen SEK 295/24 hours, weekdays and weekends, or 60/hour during 06:00–23:59. Garage is about 100 metres away.",
+      "coordinates": {
+        "latitude": 59.31459,
+        "longitude": 18.072992,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-malmen/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Malmen\",\"markerInfo\":{\"hotelId\":\"812\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.31459,\"lng\":18.072992}",
+      "mapSourceSha256": "47bb26f696a60a22101e2a39438957b688aebdc7cadc8b13bc973598e8f72038",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-triangeln",
+      "name": "Scandic Triangeln",
+      "country": "Sweden",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-triangeln",
+      "sourceSha256": "bc8245fce8e39fbeb69136bd144422fda27d8fa135c48c59d75daba61e283fd5",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Triangelgaraget SEK 28/hour or 240/24 hours, weekdays and weekends. Access via S:t Johannesgatan or Pildammsvägen.",
+      "coordinates": {
+        "latitude": 55.596485,
+        "longitude": 13.001522,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-triangeln/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Triangeln\",\"markerInfo\":{\"hotelId\":\"864\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.596485,\"lng\":13.001522}",
+      "mapSourceSha256": "e790ddd7fd471a05de040bc59e79a71c0babe62dacc3360e4504bde5529bff38",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-flesland-airport",
+      "name": "Scandic Flesland Airport",
+      "country": "Norway",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-flesland-airport/parking",
+      "sourceSha256": "1576a2c0a20596e8e256ced7bd416a608c5ed3d7662c2a65c72151999752e31f",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": false,
+      "tariffNotes": "APCOA garage NOK 95/day; outdoor NOK 32/hour or 140/day. Garage uses number-plate recognition. Pay through APCOA Flow, online within 48 hours, exit machine or invoice. EasyPark outdoors adds 15%.",
+      "coordinates": {
+        "latitude": 60.28188,
+        "longitude": 5.236411,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-flesland-airport/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Flesland Airport\",\"markerInfo\":{\"hotelId\":\"782\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.28188,\"lng\":5.236411}",
+      "mapSourceSha256": "8cb18f532733dce754176267695b30f335f3e75f12b08e984c04d9f9944bf866",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-byporten",
+      "name": "Scandic Byporten",
+      "country": "Norway",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-byporten/parking",
+      "sourceSha256": "e77bcbd68fa575841628a0cad9618caa439e142a383ef41fdf8604c9fc397222",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": true,
+      "tariffNotes": "APCOA garage NOK 330/24 hours, weekdays and weekends. Hotel guests pay at the parking meter in reception. Enter the vehicle registration in the lobby machine within 20 minutes to obtain the hotel rate.",
+      "coordinates": {
+        "latitude": 59.911816,
+        "longitude": 10.752869,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-byporten/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Byporten\",\"markerInfo\":{\"hotelId\":\"766\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":59.911816,\"lng\":10.752869}",
+      "mapSourceSha256": "f73a7af7ecda25eb9546a364be3a1675799464a3d1a291252eea9b22bdbe2bb9",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-ornen",
+      "name": "Scandic Ørnen",
+      "country": "Norway",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-ornen",
+      "sourceSha256": "64a5b179bd20a01478d64af6aabc2331a61e09b6813dfb986caf286ab3451fee",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Bygarasjen NOK 44/hour or 260/24 hours, weekdays and weekends, about 100 metres away at Fjøsangerveien 4.",
+      "coordinates": {
+        "latitude": 60.38821,
+        "longitude": 5.33148,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-ornen/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Ørnen\",\"markerInfo\":{\"hotelId\":\"326\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.38821,\"lng\":5.33148}",
+      "mapSourceSha256": "ce6a7190741ce9c806df2a609d27a624d209bbbe943d85811a2155a209648bf8",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-helsinki-hub",
+      "name": "Scandic Helsinki Hub",
+      "country": "Finland",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-helsinki-hub",
+      "sourceSha256": "32c51140c0c411db7e9d4fd565c8fd85becad1b3118dc15743bd696ef8a1d107",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": false,
+      "tariffNotes": "AimoPark-operated garage EUR 42/24 hours, weekdays and weekends. Payment is through the garage machine or AimoPark app. Access is currently from the Bulevardi direction.",
+      "coordinates": {
+        "latitude": 60.165897,
+        "longitude": 24.937994,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-helsinki-hub/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Helsinki Hub\",\"markerInfo\":{\"hotelId\":\"698\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.165897,\"lng\":24.937994}",
+      "mapSourceSha256": "08e3b962524fa3f225ab4789bdddad12e88d1c271416323388931983233055c8",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-rosendahl",
+      "name": "Scandic Rosendahl",
+      "country": "Finland",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-rosendahl",
+      "sourceSha256": "7706bbebcd89de0329da940fe9169da2f5285a8ffaf5f154e55ab7a9be70b444",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": true,
+      "tariffNotes": "Outdoor EUR 2/hour or 8/24 hours; garage EUR 2.50/hour or 14/24 hours, weekdays and weekends. Pay at reception, machine, ParkMan or EasyPark; app fees apply. Ask reception about multi-night Scandic Friends rates.",
+      "coordinates": {
+        "latitude": 61.49422,
+        "longitude": 23.730854,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-rosendahl/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Rosendahl\",\"markerInfo\":{\"hotelId\":\"607\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":61.49422,\"lng\":23.730854}",
+      "mapSourceSha256": "309112df06b4e1714ed2baa5afb6e7ab1301e040c83a430fd2e06ef453fe3b68",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-eden-nokia",
+      "name": "Scandic Eden Nokia",
+      "country": "Finland",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-eden-nokia",
+      "sourceSha256": "523403498cc125d0ec265069bb283675df24bbbd586d2bcb2a434f5f5d71b5fb",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Outdoor EUR 1.70/hour or 11/24 hours, weekdays and weekends. Car-heating outlets are paid; EV charging is not confirmed as free.",
+      "coordinates": {
+        "latitude": 61.468063,
+        "longitude": 23.530857,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-eden-nokia/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Eden Nokia\",\"markerInfo\":{\"hotelId\":\"679\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":61.468063,\"lng\":23.530857}",
+      "mapSourceSha256": "43a0b3a75a65c50d7a9d6267e0981db1dde241aa6c379182aaa68a10e735102f",
+      "parkingOnHotelReceipt": null
+    },
+    {
+      "hotelId": "scandic-grand-central-helsinki",
+      "name": "Scandic Grand Central Helsinki",
+      "country": "Finland",
+      "checkedOn": "2026-10-25",
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-grand-central-helsinki",
+      "sourceSha256": "111b1ffada83a2173218e87230ab7fd3de100304ff2200aed0df5d2124919d0b",
+      "parkingCategory": "avoid",
+      "paymentAtHotel": null,
+      "tariffNotes": "Nearby P-Eliel garage is paid on weekdays and weekends, about 200 metres away. The hotel page does not supply a numeric parking tariff.",
+      "coordinates": {
+        "latitude": 60.17209,
+        "longitude": 24.942945,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-grand-central-helsinki/map-view"
+      },
+      "markerEvidence": "\"hotelName\":\"Scandic Grand Central Helsinki\",\"markerInfo\":{\"hotelId\":\"639\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.17209,\"lng\":24.942945}",
+      "mapSourceSha256": "3cbd12d1ee7e814092139b21e875d228b819e407c52eb950572c6836671efdcb",
+      "parkingOnHotelReceipt": null
+    }
+  ],
+  "additionalFreeProperty": {
+    "hotelId": "scandic-odense",
+    "name": "Scandic Odense",
+    "checkedOn": "2026-10-25",
+    "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-odense",
+    "sourceSha256": "8d17d1e7822952eb115fff0f159fc8854bb9b554e4606f0d5f91c2eedaa416da",
+    "parkingCategory": "free",
+    "freeParking": true,
+    "registrationAtReception": null,
+    "spaces": 120,
+    "coordinates": {
+      "latitude": 55.360344,
+      "longitude": 10.341095,
+      "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-odense/map-view"
+    },
+    "markerEvidence": "\"hotelName\":\"Scandic Odense\",\"markerInfo\":{\"hotelId\":\"748\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":55.360344,\"lng\":10.341095}"
+  }
+}

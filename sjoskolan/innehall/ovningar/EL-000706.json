@@ -1,0 +1,33 @@
+{
+  "id": "EL-000706",
+  "titel": "Avslutsfråga: v41_01",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka två anslutningar använder du för att definiera U_{L} respektive U_{F}?",
+    "instruktion": "Förbered trefasberäkningarna för v41. Inlämningen ska vara klar före den fysiska träffen den 9 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_01_Trefassystemets_grunder_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

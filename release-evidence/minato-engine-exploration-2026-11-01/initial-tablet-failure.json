@@ -1,0 +1,125 @@
+{
+  "physicalDevice": false,
+  "engine": "WebKit / software graphics",
+  "profiles": [
+    {
+      "name": "ipad-portrait",
+      "viewport": {
+        "width": 744,
+        "height": 1133
+      },
+      "steps": [
+        {
+          "name": "fresh viewport and full graphics",
+          "seconds": 83.89,
+          "width": 744,
+          "height": 1133,
+          "canvas": {
+            "x": 0,
+            "y": 0,
+            "width": 744,
+            "height": 1133,
+            "top": 0,
+            "right": 744,
+            "bottom": 1133,
+            "left": 0
+          },
+          "graphics": {
+            "ink": true,
+            "grade": true,
+            "fxaa": true,
+            "scale": 1,
+            "samples": 4,
+            "hdr": true,
+            "look": "none",
+            "focusDistance": 0,
+            "focusRange": 3,
+            "focusMode": 0
+          }
+        },
+        {
+          "name": "ferry Blender asset and interior rendering",
+          "seconds": 113.94,
+          "profile": "ipad-portrait",
+          "loaded": true,
+          "error": null,
+          "meshes": 2,
+          "groupMeshes": 2,
+          "triangles": 80376,
+          "gpuError": 0,
+          "render": {
+            "programs": 163,
+            "calls": 96,
+            "triangles": 719062,
+            "geometries": 1125,
+            "textures": 442,
+            "releasedCanvases": 241
+          }
+        },
+        {
+          "name": "ferry normal movement",
+          "seconds": 150.13,
+          "profile": "ipad-portrait",
+          "before": [
+            1.7763568394002505e-15,
+            -1,
+            -6.150000000000006
+          ],
+          "after": [
+            -1.1784999287556277e-7,
+            -1.0000195891368928,
+            -6.647479694658729
+          ],
+          "distance": 0.4974796946587376
+        },
+        {
+          "name": "ferry free look and standing stability",
+          "seconds": 178.72,
+          "profile": "ipad-portrait",
+          "driftMetres": 7.479706906001381e-14
+        },
+        {
+          "name": "ferry precision movement",
+          "seconds": 247.63,
+          "profile": "ipad-portrait",
+          "before": [
+            7.105427357601002e-15,
+            -0.9999999999999994,
+            -6.150000000000006
+          ],
+          "after": [
+            4.4692745504448794e-8,
+            -1.0000074925538358,
+            -6.324117732898998
+          ],
+          "distance": 0.17411773289899773
+        },
+        {
+          "name": "ferry ordinary lens restored",
+          "seconds": 438.33,
+          "profile": "ipad-portrait",
+          "camera": {
+            "active": false,
+            "mode": "walk",
+            "id": null,
+            "local": [
+              0.0035825169662562217,
+              -1.0000000000000004,
+              -6.1846132466450285
+            ],
+            "precision": false,
+            "fov": 65,
+            "zoom": 1
+          },
+          "view": true
+        }
+      ],
+      "errors": [],
+      "passed": false,
+      "failure": "AssertionError [ERR_ASSERTION]: Inspection returns to the original standing point\n    at checkFerryExploration (file:///home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-check.mjs:71:75)\n    at async file:///home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-smoke.mjs:32:4"
+    }
+  ],
+  "passed": false,
+  "failure": "AssertionError [ERR_ASSERTION]: Inspection returns to the original standing point\n    at checkFerryExploration (file:///home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-check.mjs:71:75)\n    at async file:///home/runner/work/nj22az.github.io/nj22az.github.io/johansson-town/tools/ferry-exploration-smoke.mjs:32:4",
+  "seconds": 443.26
+}

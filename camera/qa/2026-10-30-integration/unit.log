@@ -1,0 +1,16 @@
+Blackjack score and play checks passed
+crop: existing recipes, bounds, aspect ratios and zoom round trips pass
+looks-gl: 33 Looks convert; recipe, size and row checks pass
+✔ every board size fills whole rows and fits inside the screen it is given (1.501209ms)
+✔ a tall phone gets more rows than columns, a wide window more columns (0.264928ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18.422672
+modules: 15 camera modules, each at one address
+Social share modes and result text pass
+Solitaire rules: all checks passed

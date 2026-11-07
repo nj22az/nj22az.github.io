@@ -1,0 +1,27 @@
+name: Polivoks filter model
+
+on:
+  push:
+    paths: ['polivoks/**', '.github/workflows/polivoks.yml']
+  pull_request:
+    paths: ['polivoks/**', '.github/workflows/polivoks.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: polivoks
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm test
+      - name: Illustrations are current (art/draw.py)
+        run: python3 art/draw.py --check

@@ -1,0 +1,115 @@
+{
+  "id": "EL-000319",
+  "titel": "Matningsström",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En last i byssan tar P = 2 300 W vid 230 V och PF = 0,50. Beräkna strömmen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[10] (id matstrom)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "I = P/(U · PF).",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 20,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "A",
+        "berakning": "ac.strom_pf"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "P": {
+      "varde": 2300,
+      "enhet": "W"
+    },
+    "U": {
+      "varde": 230,
+      "enhet": "V"
+    },
+    "PF": {
+      "varde": 0.5
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 20,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "effekt",
+    "initial": {
+      "U": 230,
+      "f": 60,
+      "P": 2300,
+      "pf": 0.5,
+      "character": "induktiv",
+      "Qc": 0,
+      "Rcable": 0.2
+    },
+    "fraga": {
+      "storhet": "I",
+      "etikett": "I",
+      "enhet": "A"
+    },
+    "dolj": [
+      "I",
+      "I2",
+      "S",
+      "S2",
+      "loss",
+      "loss2",
+      "triangleValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 10,
+          "text": "Du har räknat P/U utan effektfaktorn. Strömmen bestäms av S: I = P/(U · PF)."
+        }
+      ]
+    },
+    "kallhanvisning": "Ström och effektfaktor",
+    "teoriavsnitt": "strom",
+    "alias": "matstrom"
+  }
+}

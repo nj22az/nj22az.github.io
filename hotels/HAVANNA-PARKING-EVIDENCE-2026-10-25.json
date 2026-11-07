@@ -1,0 +1,29 @@
+{
+  "hotelId": "hotell-havanna",
+  "name": "Hotell Havanna",
+  "checkedOn": "2026-10-25",
+  "identitySource": "https://www.hotellhavanna.se/kontakt/",
+  "parkingSource": "https://www.hotellhavanna.se/ovrigt__trashed/havanna-a-o/",
+  "coordinates": {
+    "latitude": 57.10066699999999,
+    "longitude": 12.246641,
+    "sourceUrl": "https://www.hotellhavanna.se/kontakt/"
+  },
+  "selectedPlaceEvidence": "[\"0x46502a5b404ce02d:0x2ee4ec3e184cd4cb\",\"Hotell Havanna, Krabbes väg 4, 432 52 Varberg\",[57.10066699999999,12.246641]",
+  "selectedPlaceId": "0x46502a5b404ce02d:0x2ee4ec3e184cd4cb",
+  "coordinateMethod": "Named selected-place point in Google Maps embed linked by the official contact page; viewport centre excluded.",
+  "officialContactSha256": "47d11fa87dcb137e0efda1a8d39f20353eb8f93f15a6a1793fdd14eb00628835",
+  "officialParkingSha256": "eb6928c01640090c19fc1c10e4903699d2af6b99c5b931b9378c5dd5be5424bd",
+  "mapPayloadSha256": "69fe3f84fdb77bc01cf3f3489d6b82875baf207ab840cb05788bc5a2b0781a64",
+  "ownerReport": [
+    "No own hotel parking",
+    "Nearby street parking free, plentiful and close"
+  ],
+  "unknown": [
+    "Exact stay date",
+    "Walking distance",
+    "Street-by-street time limits",
+    "Registration rules"
+  ],
+  "decision": "Green/free. Nearby public parking qualifies when useful and free; hotel ownership not required."
+}

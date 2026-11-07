@@ -1,0 +1,38 @@
+{
+  "id": "EL-000867",
+  "titel": "Din tur: kylskåpets kompressor",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Kylskåpets kompressor tar P = 150 W vid U = 230 V och PF = 0,60. Räkna S, I och Q."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS effekt bild tur-effekt",
+        "revision": "ny",
+        "roll": "Din tur i genomgången och presentationen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "S = 150/0,60 = 250 VA. I = 250/230 ≈ 1,09 A. Q = √(250² − 150²) = 200 var.",
+    "status": "migrerad"
+  }
+}

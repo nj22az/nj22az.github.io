@@ -1,0 +1,50 @@
+{
+  "id": "EL-000869",
+  "titel": "Kontrollfråga 1.2",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Tre lika stora fasströmmar på 12 A ligger 120° isär. Hur stor är strömmen i neutralledaren?",
+    "alternativ": [
+      "36 A",
+      "12 A",
+      "0 A",
+      "20,8 A"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Strömmarna adderas som visare, inte som vanliga tal.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Tre lika stora visare med 120° emellan tar ut varandra. Summan är noll.",
+    "status": "utkast",
+    "kommentar": "0 A"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_1.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

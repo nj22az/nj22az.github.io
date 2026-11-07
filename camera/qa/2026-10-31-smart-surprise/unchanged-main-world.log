@@ -1,0 +1,80 @@
+Johansson trucker cap (johansson-trucker) is not available from the catalogue: its wearers wear the stand-in Error: HTTP 404
+    at file:///workspace/scratch/0bac722ae682/camera-smart-base/johansson-town/src/catalog/hat-models.js:32:26
+Builder placements not loaded: HTTP 404
+Johansson Town stability checks passed {
+  ok: true,
+  failures: [],
+  colliders: 622,
+  characterCount: 9,
+  streetInteractions: 7,
+  renderDpr: 1,
+  toneMapping: 'Ink grade',
+  shadows: true
+}
+✖ controller and camera controls boot in the game, pause movement in settings and resume cleanly (11792.193396ms)
+✔ 18 core residents have 11 occupied Minato primary homes and one shared tropical home; the five supporting crew have quarters, not households (3.407826ms)
+✔ all retained household targets are registered doors on land, clear at their real foot height (8.727768ms)
+✔ each authored family room has a distinct sleeping place and actual clear routes from door to bed and table (117.630314ms)
+✔ canonical shore schedules resolve home, school and work destinations through clock wrap (33.333471ms)
+✔ Sakura office has reachable business fittings; the only bedding is the rest room’s futon in its cupboard (367.877686ms)
+✔ housing migration is idempotent and preserves shops, inventory, relationships and tropical home data (1.830764ms)
+✔ 3 Kitahama is Nhung, Kōji and Riku’s: three sleeping places, a walk to each, and the family home, eats, rests and sleeps there (70.724185ms)
+✔ the Heights’ two residents walk continuously from their own front doors to the terminal and back; no upper floor is left (11310.190355ms)
+✔ private residential stairs carry a visitor from the street landing to the actual room floor and back (1.046872ms)
+✖ the surplus dwellings, the housing project’s nine and phase 4’s eight, leave no active doors, private obstructions, lights, prompts or plot circuits (172.145746ms)
+✔ both office outlooks map the seated desk to the same physical upper floor: Main Street east, the ferry berth south through the desk’s own window (7.089459ms)
+✔ the retired neighbours have no body: nobody walks the postman’s round, tidies the pavilion, minds the generators or scrapes a sabani (2.429782ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 11
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 56807.741489
+
+✖ failing tests:
+
+test at johansson-town/tests/controller-game.test.mjs:8:1
+✖ controller and camera controls boot in the game, pause movement in settings and resume cleanly (11792.193396ms)
+  AssertionError [ERR_ASSERTION]: the controller smoke starts on its clear ferry landing
+  + actual - expected
+  
+    [
+  +   0.3,
+  -   -1.5,
+      -72.7
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/0bac722ae682/camera-smart-base/johansson-town/tests/controller-game.test.mjs:25:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 0.3, -72.7 ],
+    expected: [ -1.5, -72.7 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at johansson-town/tests/housing-consolidation.test.mjs:198:1
+✖ the surplus dwellings, the housing project’s nine and phase 4’s eight, leave no active doors, private obstructions, lights, prompts or plot circuits (172.145746ms)
+  AssertionError [ERR_ASSERTION]: post-office-lot has nothing of its own left standing on it but its dressing
+  + actual - expected
+  
+  + [
+  +   'Minato Maru paint',
+  +   'Minato Maru metal'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/0bac722ae682/camera-smart-base/johansson-town/tests/housing-consolidation.test.mjs:245:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'Minato Maru paint', 'Minato Maru metal' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

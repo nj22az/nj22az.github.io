@@ -1,0 +1,170 @@
+{
+  "source": "Johansson World createSpawnScene, quay and pier openings, actual Minato Maru bridge wing and town geometry",
+  "runtime3D": false,
+  "posterBytes": 27122,
+  "posters": [
+    {
+      "id": "harbour",
+      "bytes": 27122
+    },
+    {
+      "id": "pier",
+      "bytes": 27560
+    },
+    {
+      "id": "bridge",
+      "bytes": 40262
+    }
+  ],
+  "autoplay": "once",
+  "selection": "shuffled character and location bags, no consecutive repeats",
+  "drinks": false,
+  "residents": [
+    {
+      "id": "fujita",
+      "personId": "fujita",
+      "place": "quay",
+      "name": "Fujita",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 378445
+    },
+    {
+      "id": "johansson",
+      "personId": "johansson",
+      "place": "quay",
+      "name": "Johansson",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 383524
+    },
+    {
+      "id": "thuan",
+      "personId": "thuan",
+      "place": "quay",
+      "name": "Thuận",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 386394
+    },
+    {
+      "id": "tetsuo",
+      "personId": "tetsuo",
+      "place": "quay",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 373311
+    },
+    {
+      "id": "pier-fujita",
+      "personId": "fujita",
+      "place": "pier",
+      "name": "Fujita",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 284494
+    },
+    {
+      "id": "pier-johansson",
+      "personId": "johansson",
+      "place": "pier",
+      "name": "Johansson",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 296586
+    },
+    {
+      "id": "pier-thuan",
+      "personId": "thuan",
+      "place": "pier",
+      "name": "Thuận",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 287545
+    },
+    {
+      "id": "pier-tetsuo",
+      "personId": "tetsuo",
+      "place": "pier",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 5,
+      "fps": 24,
+      "videoBytes": 287860
+    },
+    {
+      "id": "bridge-fujita",
+      "personId": "fujita",
+      "place": "bridge",
+      "name": "Fujita",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 181353
+    },
+    {
+      "id": "bridge-johansson",
+      "personId": "johansson",
+      "place": "bridge",
+      "name": "Johansson",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 184580
+    },
+    {
+      "id": "bridge-thuan",
+      "personId": "thuan",
+      "place": "bridge",
+      "name": "Thuận",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 185684
+    },
+    {
+      "id": "bridge-tetsuo",
+      "personId": "tetsuo",
+      "place": "bridge",
+      "name": "Tetsuo",
+      "prop": null,
+      "width": 960,
+      "height": 540,
+      "seconds": 6,
+      "fps": 24,
+      "videoBytes": 181675
+    }
+  ],
+  "edit": "Short camera approaches and character moments, played once, 5–6 seconds at 24 fps.",
+  "bridgeRevision": "2026-10-18 · 操舵室 / WHEELHOUSE signs; bridge-films.mjs"
+}

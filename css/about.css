@@ -1,0 +1,72 @@
+/*
+ * About — centered layout with gradient + decorative elements
+ */
+
+/* Blob wrapper — clips decorative blobs without clipping interactive content */
+.about-blobs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.about-layout {
+  max-width: 40rem; margin: 0 auto;
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.about-logo {
+  flex-shrink: 0;
+  color: var(--accent);
+  transition: color 0.3s;
+}
+
+.about-content { text-align: center; }
+.about-content h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--accent);
+  letter-spacing: -0.01em;
+  margin-bottom: 1.5rem;
+}
+.about-bio {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  line-height: 1.9;
+  color: var(--ink-light);
+  margin-bottom: 2rem;
+}
+
+.social-links { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding-bottom: 0.5rem; }
+.social-link {
+  width: 2.75rem; height: 2.75rem;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  transition: all 0.2s;
+  transform: scale(1);
+}
+.social-link:hover { transform: scale(1.1); }
+.social-link svg { width: 16px; height: 16px; }
+
+/* Brand colors — white bg with colored icon + border */
+.social-link[data-icon="github"] { color: #24292e; border-color: rgba(36, 41, 46, 0.25); }
+.social-link[data-icon="github"]:hover { color: #fff; background: #24292e; border-color: #24292e; }
+
+.social-link[data-icon="linkedin"] { color: #0a66c2; border-color: rgba(10, 102, 194, 0.3); }
+.social-link[data-icon="linkedin"]:hover { color: #fff; background: #0a66c2; border-color: #0a66c2; }
+
+.social-link[data-icon="etsy"],
+.social-link[data-icon="store"] { color: #f1a500; border-color: rgba(241, 165, 0, 0.3); }
+.social-link[data-icon="etsy"]:hover,
+.social-link[data-icon="store"]:hover { color: #fff; background: #f1a500; border-color: #f1a500; }
+
+.social-link[data-icon="wordpress"] { color: #217538; border-color: rgba(33, 117, 56, 0.3); }
+.social-link[data-icon="wordpress"]:hover { color: #fff; background: #217538; border-color: #217538; }

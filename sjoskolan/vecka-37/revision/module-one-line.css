@@ -1,0 +1,114 @@
+/* Module 1 only. LINE reference: kzhrknt/awesome-design-md-jp/design-md/line.
+   Swedish study text retains generous line-height. Black CTA text on LINE green
+   deliberately preserves normal-text contrast; reference white/green does not. */
+html[data-module-theme="line"], html[data-module-theme="line"] body { background:#fff; color:#000; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif; font-size:20px; line-height:1.8; }
+html[data-module-theme="line"] .sidebar { background:#fff; color:#000; border-right:1px solid #e5e5e5; }
+html[data-module-theme="line"] .brand { color:#000; }
+html[data-module-theme="line"] .brand-mark { color:#000; background:#06c755; border-color:#06c755; border-radius:12px; }
+html[data-module-theme="line"] :is(.brand small,.side-label,.side-footer,.side-footer strong) { color:#555; }
+html[data-module-theme="line"] .sidebar :is(.navlink,.modulelink) { color:#111; }
+html[data-module-theme="line"] .sidebar :is(.navlink,.modulelink):hover { background:#f7f8f9; color:#000; }
+html[data-module-theme="line"] .sidebar :is(.navlink.active,.modulelink.active) { background:#e9f9ef; color:#000; box-shadow:inset 4px 0 #06c755; }
+html[data-module-theme="line"] .modulelink span:first-child { border-color:#aaa; }
+html[data-module-theme="line"] .modulelink .done { color:#006b2e; }
+html[data-module-theme="line"] .topbar { background:#fff; border-color:#e5e5e5; }
+html[data-module-theme="line"] :is(.crumb,.private,.helper,.field-label) { color:#555; }
+html[data-module-theme="line"] .main { max-width:1120px; padding-top:64px; }
+html[data-module-theme="line"] .module-head { max-width:900px; }
+html[data-module-theme="line"] .module-head h1 { font-size:clamp(40px,4.7vw,64px); line-height:1.27; font-weight:700; color:#000; }
+html[data-module-theme="line"] h2 { color:#000; font-size:clamp(28px,3vw,40px); line-height:1.33; }
+html[data-module-theme="line"] h3 { color:#000; font-size:26px; }
+html[data-module-theme="line"] .lead { font-size:20px; color:#555; line-height:1.8; }
+html[data-module-theme="line"] .eyebrow { color:#006b2e; font-size:14px; letter-spacing:.04em; }
+html[data-module-theme="line"] .btn { background:#06c755; border-color:#06c755; color:#000; font-size:16px; font-weight:700; padding:12px 28px; border-radius:8px; min-height:48px; }
+html[data-module-theme="line"] .btn:hover { background:#05b34c; border-color:#05b34c; color:#000; }
+html[data-module-theme="line"] .btn.secondary { background:#fff; border:1px solid #999; color:#000; }
+html[data-module-theme="line"] .btn.secondary:hover { background:#f7f8f9; }
+html[data-module-theme="line"] a { color:#006b2e; }
+html[data-module-theme="line"] .chapter-integrated-nav { background:#fff; border-color:#e5e5e5; border-radius:12px; padding:12px 16px; margin-top:40px; }
+html[data-module-theme="line"] .chapter-integrated-nav a { color:#000; font-weight:650; }
+html[data-module-theme="line"] :is(.weekly-overview,.chapter-opening,.weekly-bridge,.weekly-case,.question,.chapter-readiness,.export-builder,.lab-panel.card) { background:#fff; border:1px solid #e5e5e5; border-radius:12px; box-shadow:0 2px 8px #0000000a; padding:24px; }
+html[data-module-theme="line"] :is(.reading-status,.notice) { color:#111; background:#f7f8f9; border-color:#06c755; font-size:18px; }
+html[data-module-theme="line"] .notice.warning { border-color:#9a6700; background:#fff8e6; color:#654500; }
+html[data-module-theme="line"] :is(.weekly-bridge p,.weekly-case p,.weekly-case li,.weekly-protocol li,.weekly-completion li,.native-reading p,.native-reading li,.theory-formula p,.theory-terms dt,.theory-terms dd) { font-size:20px; line-height:1.8; color:#000; }
+html[data-module-theme="line"] .native-reading { max-width:820px; border:0; border-radius:0; background:#fff; padding:0; margin-top:64px; }
+html[data-module-theme="line"] .native-reading article { padding:0 0 48px; margin:0 0 48px; border-color:#e5e5e5; }
+html[data-module-theme="line"] .native-reading h2 { font-size:36px; line-height:1.33; margin:0 0 24px; }
+html[data-module-theme="line"] .native-reading h3 { font-size:26px; }
+html[data-module-theme="line"] .module-one-figure { margin:32px 0; }
+.schematic-scroll { max-width:100%; overflow-x:auto; padding-bottom:12px; overscroll-behavior-x:contain; }
+.native-reading .schematic-scroll img,.weekly-bridge .schematic-scroll img { width:820px; max-width:none; height:auto; margin:0; display:block; }
+html[data-module-theme="line"] .module-one-figure figcaption { font-size:18px; line-height:1.7; color:#555; margin-top:12px; }
+html[data-module-theme="line"] .math-render { background:#f7f8f9; border:1px solid #e5e5e5; color:#000; border-radius:12px; font-size:28px; padding:24px; }
+html[data-module-theme="line"] .formula-explainer { border-color:#e5e5e5; border-radius:12px; }
+html[data-module-theme="line"] .formula-context { background:#f7f8f9; }
+html[data-module-theme="line"] .theory-formula { padding:24px; border-color:#e5e5e5; }
+html[data-module-theme="line"] :is(.module-relations,.module-relation-note) { background:#fff; color:#a11b1b; border:2px solid #a11b1b; box-shadow:none; }
+html[data-module-theme="line"] .module-relations :is(h2,p,li,a), html[data-module-theme="line"] .module-relation-note { color:#a11b1b; }
+html[data-module-theme="line"] .module-relations h2 { font-size:26px; }
+html[data-module-theme="line"] .question h3 { font-size:22px; line-height:1.7; }
+html[data-module-theme="line"] .option { font-size:20px; border-color:#999; border-radius:8px; padding:14px 16px; }
+html[data-module-theme="line"] .option:has(input:checked) { background:#e9f9ef; border-color:#006b2e; }
+html[data-module-theme="line"] :is(input,select,textarea) { accent-color:#007d35; }
+html[data-module-theme="line"] :is(input[type=text],input[type=search],select,textarea) { font-size:18px; color:#000; border-color:#999; border-radius:8px; min-height:48px; }
+html[data-module-theme="line"] .feedback.correct { color:#004f22; background:#e9f9ef; border-color:#008a3a; }
+html[data-module-theme="line"] .badge { color:#333; background:#f7f8f9; }
+html[data-module-theme="line"] .badge.good { color:#004f22; background:#e9f9ef; }
+html[data-module-theme="line"] .badge.warn { color:#654500; background:#fff4d6; }
+html[data-module-theme="line"] .language button[aria-pressed=true] { background:#000; color:#fff; }
+html[data-module-theme="line"] :is(.setup-cog,.menu) { color:#000; border-color:#999; }
+html[data-module-theme="line"] .footer { color:#555; border-color:#e5e5e5; }
+html[data-module-theme="line"] .lab-viewport { border-color:#e5e5e5; border-radius:12px; background:#f7f8f9; }
+html[data-module-theme="line"] .meter-reading { color:#dcffe8; background:#111; }
+@media(max-width:820px) { html[data-module-theme="line"] .main { padding-top:40px; } }
+@media(max-width:580px) {
+ html[data-module-theme="line"] .module-head h1 { font-size:40px; }
+ html[data-module-theme="line"] .native-reading h2 { font-size:30px; }
+ html[data-module-theme="line"] :is(.weekly-overview,.chapter-opening,.weekly-bridge,.weekly-case,.question,.chapter-readiness,.export-builder) { padding:20px; }
+ html[data-module-theme="line"] .main { padding-inline:18px; }
+}
+html[data-module-theme="line"] .module-one-formula-diagram { width:820px; height:420px; max-width:none; }
+html[data-module-theme="line"] .weekly-bridge p.module-relation-note { color:#a11b1b; }
+/* Blender apparatus is shared by the DC station, with readable status outside the model. */
+.dc-bench-status { position:absolute;left:12px;right:12px;bottom:12px;padding:9px 12px;background:#fff;color:#111;border:1px solid #ddd;border-radius:6px;font-size:14px;pointer-events:none; }
+.dc-connection-note { font-size:16px;line-height:1.6;padding:12px 0;color:#171717; }
+.lab-fallback-poster { width:100%;height:auto;display:block; }
+
+.lab-viewport.lab-static { height:auto;min-height:330px; }
+.dc-object-controls { position:absolute;inset:0;pointer-events:none;overflow:hidden; }
+.dc-object-target { position:absolute;transform:translate(-50%,-140%);pointer-events:auto;min-height:44px;min-width:44px;padding:5px 8px;border:1px solid #333;background:#fff;color:#111;border-radius:6px;font-size:13px;line-height:1.2;white-space:nowrap;box-shadow:0 1px 4px #0002; }
+.dc-port-target { transform:translate(-50%,-50%);border:2px solid #b22532; }
+.dc-port-target[data-probe="black"] { border-color:#111; }
+.dc-port-target[aria-pressed="true"] { background:#ffecb2;border-color:#5f4200; }
+.dc-object-target[hidden] { display:none; }
+.dc-interaction-toolbar { margin-top:12px;padding:12px;background:#fff;border:1px solid #ddd;border-radius:8px; }
+.dc-interaction-toolbar>div { display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:5px 0; }
+.dc-interaction-toolbar button { min-height:44px;padding:8px 12px;border:1px solid #bbb;background:#fff;color:#111;border-radius:6px;font-size:15px; }
+.dc-interaction-toolbar button[aria-pressed="true"] { background:#06c755;color:#111;border-color:#006b2e;font-weight:700; }
+.dc-interaction-toolbar button:focus-visible,.dc-object-target:focus-visible { outline:3px solid #005fcc;outline-offset:3px; }
+.dc-interaction-help { font-size:16px;line-height:1.6;padding:10px 0; }
+.dmm-settings { margin-top:18px;padding:12px;border:1px solid #ccc;border-radius:8px; }
+.dmm-settings legend { font-size:18px;font-weight:700;color:#111; }
+
+/* Student workflow shared by the embedded and standalone DC bench. */
+.dc-student-intro { margin:18px 0 24px;max-width:900px; }
+.dc-student-intro p,.dc-boundary p { font-size:16px;line-height:1.65; }
+.dc-next-step { border-left:4px solid #007d35;background:#f0faf3;padding:16px;margin:16px 0; }
+.dc-next-step strong { font-size:19px;color:#153c23; }
+.dc-next-step p { margin:8px 0 12px;line-height:1.55;color:#14271b; }
+.dc-next-step .btn { min-height:48px;white-space:normal;line-height:1.45; }
+.dc-check-details,.dc-extra { margin:16px 0;border:1px solid #ddd;border-radius:8px;padding:12px; }
+.dc-check-details summary,.dc-extra summary { cursor:pointer;font-weight:650;line-height:1.5;min-height:44px;display:list-item; }
+.dc-check-details ul { margin:10px 0;padding-left:20px;font-size:15px;line-height:1.65; }
+.dc-practice-result { margin:18px 0;padding:16px;border:1px solid #007d35;border-radius:8px;background:#fff; }
+.dc-practice-result p { line-height:1.6;font-size:16px; }
+.dc-practice-result a { color:#006b2e;text-decoration:underline;text-underline-offset:3px; }
+.dc-exercise-count,.dc-live-state,.dc-measurement-point { font-size:15px;line-height:1.65; }
+.lab-panel:has(#dc-student-guide) { min-width:0; }
+.lab-panel:has(#dc-student-guide) .lab-field { color:#172b24;font-size:16px;line-height:1.45; }
+.lab-panel:has(#dc-student-guide) :is(select,input,textarea) { width:100%;max-width:100%;box-sizing:border-box;font-size:16px;min-height:46px; }
+.lab-panel:has(#dc-student-guide) #lab-feedback { font-size:16px;line-height:1.6; }
+@media(max-width:900px){.lab-layout:has(#dc-student-guide){grid-template-columns:minmax(0,1fr)}.lab-panel:has(#dc-student-guide){padding:18px}.dc-next-step{padding:14px}}
+.dc-manual-controls { margin:12px 0 20px;border:1px solid #d8dfda;border-radius:8px;padding:12px; }
+.dc-manual-controls>summary { font-size:16px;line-height:1.5;font-weight:650;cursor:pointer;min-height:44px; }
+.lab-panel:has(#dc-student-guide) :focus-visible { outline:3px solid #005fcc;outline-offset:3px; }

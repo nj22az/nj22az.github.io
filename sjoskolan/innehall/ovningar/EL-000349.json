@@ -1,0 +1,67 @@
+{
+  "id": "EL-000349",
+  "titel": "Parallella vägar",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Förklara varför en 1 kΩ-resistor kan ge 500 Ω."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[4] (id parallel)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "s1",
+        "text": "Mät mellan A och B i Ω-läge med båda 1 kΩ-resistorerna inkopplade.",
+        "ledtrad": "Mätaren ser båda strömvägarna: 1/R = 1/1000 + 1/1000.",
+        "varfor": "500 Ω är korrekt för två 1 kΩ-resistorer parallellt. Det betyder inte att R1 är trasig.",
+        "kod": {
+          "test": "multimetersimulator.parallel.1"
+        }
+      },
+      {
+        "id": "s2",
+        "text": "Frikoppla R2 med knappen vid kretsen. Mät sedan R1 igen.",
+        "ledtrad": "När den parallella vägen försvinner ska värdet stiga till 1,000 kΩ.",
+        "varfor": "Nu mäter du bara R1: 1,000 kΩ. Frikoppla en komponent vid behov för att undvika parallella strömvägar.",
+        "kod": {
+          "test": "multimetersimulator.parallel.2"
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "resistor",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 30–32",
+    "alias": "parallel"
+  }
+}

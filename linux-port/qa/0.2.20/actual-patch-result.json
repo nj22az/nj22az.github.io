@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "from": "0.2.19",
+  "to": "0.2.20",
+  "oldArchiveSha256": "1b6a6c1db3c7a10467f3f3f4b55d173d9d5e1bc13ce8adc276da3b13daec883e",
+  "offered": {
+    "available": true,
+    "version": "0.2.19",
+    "next": "0.2.20",
+    "canInstall": true,
+    "notes": "# Johansson World Linux 0.2.20\n\nMaintenance update from production main `a7338203dd8a239fb6529e533aaea23a9526d651`, including the facial-rendering correction published as `c36a40c782ae9ffa118b879661849e9a6f1af01e`.\n\n- Painted eyes, eyebrows and other facial marks retain their contrast in dim lighting through the shared avatar head-lighting floor.\n- Sketchbook preserves dark facial marks through its paper wash. Character geometry, expressions, blinking and animation are unchanged.\n- Retains 0.2.19's Steam Library installer, Gamepad with Camera Controls layout, saved-axis fallback and existing controller configuration.\n- Existing save locations and update compatibility are retained. Published 0.2.19 assets remain unchanged.\n\nAutomated rendering and simulated-controller results are software acceptance only. Physical Steam Deck and 8BitDo Bluetooth acceptance remain unverified; this release does not establish that the owner's hardware control problem is resolved.\n\nUse Settings → Updates or the published installer. See `linux-port/acceptance-0.2.20.md` for candidate checks, publication evidence and limitations.\n",
+    "downloadBytes": 1671472,
+    "kind": "patch"
+  },
+  "installed": {
+    "ready": true,
+    "version": "0.2.20",
+    "kind": "patch",
+    "downloadBytes": 1671472
+  },
+  "oldTree": "f14b33975b33c02b34d724b9ab8b742e544a95861c777a554fde99886364ef71",
+  "targetTree": "f39239d9af722baec245df0a1ec265d338e3120d4d7b56497d2cdcda2f7f6a5f",
+  "verifiedTargetFiles": 1621,
+  "oldInstallUnchanged": true,
+  "previousRetained": true,
+  "syntheticProfileByteIdentical": true,
+  "physicalLaunch": false,
+  "tarNoSameOwner": true,
+  "fixtureLocation": "private temporary directory",
+  "transport": "local copies of checksum-verified published bytes",
+  "requests": [
+    "https://api.github.com/repos/nj22az/nj22az.github.io/releases?per_page=30",
+    "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.20/latest-linux.json",
+    "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.20/johansson-world-linux-0.2.19-to-0.2.20.patch.tar.gz"
+  ]
+}

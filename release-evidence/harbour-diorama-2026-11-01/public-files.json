@@ -1,0 +1,72 @@
+[
+  {
+    "path": "index.html",
+    "matches": true,
+    "bytes": 17038,
+    "sha256": "4fb6dca0f7e4225cbcf020745e6e270a62957198411ecfa7a0672dc4e4fe7693",
+    "encoding": null
+  },
+  {
+    "path": "css/office-port.css",
+    "matches": true,
+    "bytes": 4701,
+    "sha256": "8c4d8fb353410a75c30bb5d71a2acfa1fa7477612001834716f1241492fa0345",
+    "encoding": null
+  },
+  {
+    "path": "assets/js/office-port.js",
+    "matches": true,
+    "bytes": 7522,
+    "sha256": "100185181bedd9fe8efe6ce40fd6346494847a0c873ea25c27d46365ef0434a9",
+    "encoding": null
+  },
+  {
+    "path": "assets/js/office-diorama.js",
+    "matches": true,
+    "bytes": 3124,
+    "sha256": "c708bcb2a3ef3ef0d0b8e009b683f4975b43047fb0dafc358cdf62bafe0b4676",
+    "encoding": null
+  },
+  {
+    "path": "assets/js/office-diorama-scene.js",
+    "matches": true,
+    "bytes": 7524,
+    "sha256": "6ce8a07a1a8b47fb08b4d25de015a19a9177d50120770ee36ff4aa8e8232bbb1",
+    "encoding": null
+  },
+  {
+    "path": "assets/office-port/harbour.scene.gz",
+    "matches": true,
+    "bytes": 3787206,
+    "sha256": "78e89a6f5e4ae98c72152c173e2c1d08ef810421278a1a117b57cafe926032ce",
+    "encoding": null
+  },
+  {
+    "path": "assets/office-port/harbour.webp",
+    "matches": true,
+    "bytes": 27122,
+    "sha256": "9345418477cb405c518b054292774e83bf2c25849537825e151a3b14e3acd0f0",
+    "encoding": null
+  },
+  {
+    "path": "johansson-town/vendor/three.module.js",
+    "matches": true,
+    "bytes": 1314680,
+    "sha256": "89074684ade72d694575eed82346b55cd11a48f06dc9e368f427d3858b220977",
+    "encoding": null
+  },
+  {
+    "path": "johansson-town/src/render/cel.js",
+    "matches": true,
+    "bytes": 17624,
+    "sha256": "0daee046a3e5b8e7a2d77da9cbcc51f1b8411354dac754e148974a304017413f",
+    "encoding": null
+  },
+  {
+    "path": "johansson-town/src/render/world-uv.js",
+    "matches": true,
+    "bytes": 1822,
+    "sha256": "b57d18bd7fc66d69b27378d67a82d385f44fa15a534419cbf09b82ce340b7f51",
+    "encoding": null
+  }
+]

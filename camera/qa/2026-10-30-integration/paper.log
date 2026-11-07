@@ -1,0 +1,6 @@
+ok  each paper renders deterministically; rough stock has more tooth; None preserves the photo
+ok  paper choices fit a small phone and change the editor recipe
+ok  save/reopen retains paper without changing the original source
+ok  the camera Frame sheet offers paper and remembers it
+ok  no page errors
+5/5 paper checks passed

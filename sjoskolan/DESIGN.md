@@ -1,0 +1,236 @@
+# Sjöskolan · designsystem
+
+Ett gemensamt designsystem för kursens webbsidor, simulatorer, protokoll och presentationer. Det bygger på Sjöskolans befintliga färger och typsnitt och hämtar struktur från tre referenser:
+
+| Referens | Används för | Det vi tar |
+|---|---|---|
+| Digital Agency Japan (DADS) | startsida, veckosidor, navigation | tydlig rubrikhierarki, en tydlig huvudåtgärd, numrerade steg, informationspaneler, synligt tangentbordsfokus, 17 px brödtext, minsta textstorlek 14 px, 44 px tryckyta |
+| Zenn | genomgångar och räkneexempel | lugn läsbredd, luftigt radavstånd, tydlig skillnad mellan rubrik, förklaring och stödmaterial |
+| SmartHR | simulatorernas reglage, labbprotokoll och mätvärden | grupperade reglage med etiketter, tydliga inmatningsfält och knappar, strukturerade tabeller, synligt läge för uppgiften |
+
+Referenserna är sammanställningar i [awesome-design-md-jp](https://github.com/kzhrknt/awesome-design-md-jp), inte officiell dokumentation från företagen. För DADS komponenter är [den japanska digitaliseringsmyndighetens designsystem](https://design.digital.go.jp/dads/) den bättre källan. Japanska typsnitt och radbrytningsregler används inte; svensk text och teknisk notation styr typografin.
+
+## Vad sidan ska svara på
+
+Varje sida bedöms efter om eleven snabbt kan se:
+
+1. Vad lär jag mig?
+2. Vad behöver jag förstå innan jag börjar?
+3. Vilket instrument eller vilken koppling tittar jag på?
+4. Vad gör jag nu?
+5. Vad ska jag anteckna och förklara?
+
+## Grundvärden
+
+Implementeras i `gemensamt/sjoskolan.css`.
+
+### Färger
+
+| Token | Värde | Används till |
+|---|---|---|
+| `--sj-blue` | `#064f91` | huvudknappar, länkar, aktivt steg |
+| `--sj-blue-dark` | `#053f74` | hovring och tryck på huvudknapp |
+| `--sj-ink` | `#163248` | brödtext och rubriker |
+| `--sj-muted` | `#4d6579` | stödtext, etiketter |
+| `--sj-line` | `#cad8e2` | ramar och avdelare |
+| `--sj-soft` | `#edf4f9` | paneler, tabellhuvud |
+| `--sj-paper` | `#ffffff` | sidor och kort |
+| `--sj-page` | `#f4f7fa` | bakgrund bakom kort i labbarna |
+| `--sj-ok` | `#176844` | rätt, klart |
+| `--sj-warn` | `#9a4a12` | varning, saknas |
+| `--sj-danger` | `#b8323c` | fel, fara |
+| `--sj-focus` | `#ffd43d` | fokusring (DADS) |
+
+Röd används bara för det som söks eller är fel. Orange för fara och felström. Färg är aldrig enda bäraren av information: skriv också ut läget i text.
+
+### Kursplanens områden (färgkod)
+
+Veckor och moduler färgkodas efter kursplanens fyra områden. Varje skriftlig punkt har sin praktiska motsvarighet i samma
+område. Färgerna är validerade för färgblindhet mot vit yta (alla par) och visas alltid med namnet bredvid. Stark färg bara
+i smala markeringar (rand, band, liten ruta); stora ytor får en ljus ton (DADS 50-steg) och texten står alltid i `--sj-ink`.
+Källan är `OMRADEN` i `verktyg/veckosidor/kursplan.py`.
+
+| Område | Punkter | Färg |
+|---|---|---|
+| Komponenter och system | LM-1 | `#1baf7a` |
+| Elsäkerhet och regler | LM-2, LM-3, LM-6, LM-9 | `#eda100` |
+| Mätning och analys | LM-4, LM-8 | `#6250d6` |
+| Felsökning och dokumentation | LM-5, LM-7 | `#e87ba4` |
+
+Andelarna räknas ur veckans eller modulens övningar, labbuppgifter och inlämningar (en uppgift räknas en gång per område).
+Röd och orange används inte som områdesfärg.
+
+### Typografi
+
+Arial, Helvetica, sans-serif. Brödtext 17 px med radavstånd 1,65 i gränssnitt och 1,8 i löptext som eleven läser länge
+(genomgångar, delsidor; Zenn). Läsbredd högst 72–76 tecken (cirka 720 px). Minsta textstorlek 14 px. Ingen spärrning i brödtext.
+
+| Nivå | Storlek | Vikt | Radavstånd |
+|---|---|---|---|
+| Sidrubrik (h1) | 36–44 px | 700 | 1,15 |
+| Avsnitt (h2) | 26 px | 700 | 1,25 |
+| Delrubrik (h3) | 20 px | 700 | 1,3 |
+| Ingress | 20 px | 400 | 1,5 |
+| Brödtext | 17 px | 400 | 1,65 |
+| Etikett, stödtext | 15 px | 400–700 | 1,4 |
+| Minsta | 14 px | 400 | 1,4 |
+
+Formler skrivs i egen rad, 22–24 px, blå, med svenskt decimalkomma och mellanslag före enhet.
+
+### Mått
+
+- Avstånd: 8, 16, 24, 40, 64 px.
+- Hörn: 8 px på knappar och fält, 12 px på kort och paneler.
+- Läsbredd för löptext: högst 72 tecken (cirka 820 px). Figurer får vara bredare.
+- Brytpunkter: 768 px (en eller två spalter), 1100 px (labbens arbetsyta bredvid uppgiften).
+- Tryckyta minst 44 × 44 px.
+
+### Fokus
+
+Alla interaktiva element: `outline: 3px solid #163248; outline-offset: 2px; box-shadow: 0 0 0 6px #ffd43d`. Fokus tas aldrig bort.
+
+## Komponenter
+
+### Knappar
+
+| Typ | Utseende | Används |
+|---|---|---|
+| Huvudknapp | blå fyllning, vit text | en per vy: nästa steg |
+| Sekundär | vit, blå ram och text | alternativa vägar |
+| Textknapp | blå text, understruken | små åtgärder |
+
+Storlekar: stor 56 px, normal 48 px, liten 44 px. Knapptext är ett verb: ”Börja med genomgången”, ”Spara förutsägelsen och läs av”.
+
+### Länkar
+
+Blå och understrukna. Externa länkar och nedladdningar får ↗ eller filtyp i texten.
+
+### Informationspanel
+
+Vit eller ljusblå panel med vänsterkant i temafärg (8 px, 16 px på bred skärm). Typer: information (blå), klart (grön), varning (orange), fara (röd). Rubrik i fetstil, en till tre meningar.
+
+### Numrerade steg
+
+Arbetsgång visas som numrerad lista eller steglinje. Aktuellt steg är blått och fetstilt, klara steg har ”klart” i text, kommande steg är gråa. Används för ”Börja här”, labbens ”Förutsäg → Läs av och jämför → Förklara” och genomgångens fem delar.
+
+### Formulärfält (SmartHR)
+
+- Etikett ovanför fältet, alltid synlig. Enhet i etiketten: ”Toppvärde û (V)”.
+- Höjd 48 px, ram 1 px `#5d7282`, hörn 8 px.
+- Hjälptext under fältet i 15 px. Fel i röd text med orsak och åtgärd.
+- Reglage grupperas under en rubrik med ”Återställ” som textknapp.
+
+### Tabeller (SmartHR)
+
+Rubrikrad `--sj-soft`, rader åtskilda med 1 px linje, vartannat radfält får ljus ton i långa tabeller. Tal högerjusteras med `font-variant-numeric: tabular-nums`. Enhet står i kolumnrubriken.
+
+### Status
+
+Uppgiftens läge skrivs ut: ”Inte påbörjad”, ”Förutsagd”, ”Avläst”, ”Förklarad”. Samma ord i simulator och protokoll.
+
+## Sidmönster
+
+### Startsida (DADS)
+
+1. Överst: modulen att göra nu med en huvudknapp, nästa inlämning och elevens övningar.
+2. Kursens moduler i ordning, var och en med rand och band i kursplanens områdesfärger och förklaringen ovanför.
+3. Stödmaterial i en lugnare sektion: labbar, filmer, formelblad, protokoll.
+
+Startsidan byggs av `verktyg/startsida/bygg.py`.
+
+### Veckosida (DADS)
+
+”Börja här” med numrerade delar. Varje del: genomgång, film, labb. Skilj grunddel från fördjupning i text, inte bara med färg. Vad som lämnas in och när står i en egen panel.
+
+Från vecka 42 är veckan en enda numrerad väg (”Så gör du den här veckan”): lektion → hemma → labb → inlämning. Varje steg
+bockas av med ”Klart” (sparas i webbläsaren, som en checklista i Notion). Steget att göra nu är det första som inte är
+bockat och som har börjat; bara dess första knapp är blå (en huvudknapp per vy). Rubriken har veckans områdesband.
+
+Översikten ”Din vecka” (från vecka 42) står direkt under rubriken: fyra rutor (steg klara, delar lästa, övningar klara,
+inlämningen) med en tunn stapel, sista dagen och dagar kvar, och kursplanens punkter med stapel i områdets färg och ”x av y”.
+Siffran står alltid i text; stapeln är bara stöd. Inga nya knappar: den enda blå knappen är fortfarande ”Nästa steg”.
+
+**Veckan som dagar (vecka 42–44, `verktyg/veckosidor/dagsvy.py`, `gemensamt/dagsvy.mjs`).** Eleven ska se på sidan vad dagens
+lektion handlar om, så att läraren bara visar presentationen. Ordning: rubrik → **I dag** → **Veckans lektioner** → **Hela
+veckan** → **Kursplanen den här veckan**. Ersätter ”Nästa steg”, den numrerade vägen och rutorna i ”Din vecka” för veckorna i `DAGSVY`.
+
+- **I dag** är sidans mest framträdande del och enda blå huvudknapp. På en lektionsdag: tid, rubrik, ”Det här pratar vi om i
+  dag” (passen i presentationens upplägg) och Öppna presentationen; efter lektionen: läxorna. Utan lektion: närmaste sista dag
+  och nästa lektion. Före veckan: första lektionen. Utan JavaScript visas inte rutan.
+- **Lektionsdagarna har var sin färg**, alltid med dagens namn: måndag `#008300`, tisdag `#2468c0`, fredag `#b5179e`
+  (`kursplan.DAGFARG`, validerade för färgblindhet, vit text 4,5:1; inte samma kulörer som kursplanens områden). Färgen står på
+  dagens ruta (vänsterkant och etikett), på I dag samma dag och på presentationens titelbild. Dagens och nästa lektions ruta är
+  öppna, de andra en rad; har en passerad lektion läxor kvar står ”Läxor: x av y klara” i varningsfärg. Två lektioner
+  samma dag (vecka 44: två entimmeslektioner måndag och tisdag) står i samma dagruta, var och en med rubrik och tid.
+- **Hela veckan** (veckans läxa med texterna att ladda ner, quiz, inlämning, övningar) har ingen dagfärg: grå yta, mörk
+  överkant, sista dag och dagar kvar. Sista dagen skrivs med sin veckodag (från vecka 42: allt senast fredag). Labbar
+  och övningstentan kan stå här utan sista dag.
+- **Delsidorna** har rutan **Din del** överst: dagens färg och tid, lektionens läge, vad vi pratar om,
+  presentationen, läxorna efter lektionen med läge, övningarna på lektionen och Hela veckan i neutral färg. Delar som
+  undervisas en annan vecka (vecka-45/Del_1–3 i vecka 43 och 44) visar den veckans lektion och länkar till den veckan.
+- Läxorna efter en lektion skrivs en gång, i `HEMMA` (`verktyg/lektionsbilder/lektioner.py` för vecka 42, en fil
+  `lektion_<id>.py` per presentation från vecka 43). Bilden ”Det här gör du nu” och dagens ruta byggs ur samma lista. Läst
+  del och övningar visar läget själva: en läxa med ”övning 2.4–2.6” och en länk till `#v44_02-q4` räknar just de
+  övningarna, och ”På lektionen” räknar övningarna på bilderna Övningar tillsammans. Övriga läxor har en Klart-ruta.
+
+### Genomgång (Zenn)
+
+Varje del följer samma mönster:
+
+1. **Det här ska du kunna** – ett konkret mål.
+2. **Så fungerar det** – förklaring bredvid figuren.
+3. **Genomräknat exempel** – metoden med verkliga värden.
+4. **Prova själv** – en närliggande fråga med dold förklaring.
+5. **Använd det i labben** – direkt koppling till labbuppgiften.
+
+Fördjupning märks ”Fördjupning” och kommer efter grunddelen. Beteckningar står intill den del av figuren de beskriver.
+
+### Labb (SmartHR)
+
+- Bred skärm (minst 1100 px): instrument och koppling till vänster, uppgiftspanelen till höger.
+- Surfplatta och mobil: uppgiften först, sedan instrumentet.
+- Arbetsgången Förutsäg → Läs av och jämför → Förklara syns alltid, med aktuellt steg markerat.
+- Avläsningar, enheter och viktiga reglage finns också som vanlig text bredvid 3D-vyn.
+- Mätvärden förs in i tabeller med enhet i rubriken. Hämtade värden märks med tid.
+
+### Presentationer
+
+Eleverna möter presentationerna som bildspel på webben (`bildspel/?d=<id>`): bilden, bildens text under för läsning och skärmläsare, pilar, svep, översikt och helskärm. Bilder med ”övning N” i rubriken länkar till övningen med facit. PowerPoint och PDF finns kvar som nedladdning. Bygg om med `verktyg/bildspel/bygg.py` när en presentation ändras. Sjöskolans omslag behålls. Samma rubriker, begrepp och figurbeteckningar som i genomgång, simulator och protokoll. Räkneexempel och labbinstruktioner har egna, igenkännbara bildtyper. Fördjupning märks i rubriken.
+
+Från vecka 42 byggs lektionens presentation av `verktyg/lektionsbilder/bygg.py` (innehållet i `lektioner.py`) med en fast mall, i samma
+ordning varje lektion: titel, kursplanen i dag (punkterna i områdets färg), startfråga, så går lektionen till, teori (en bild per avsnitt i
+delsidans ordning och med delsidans rubrik; en blå nyckelmening och högst fyra korta rader, figuren till höger eller under), exempel,
+övningar tillsammans (övningarna görs på delsidan, inga övningstexter på bilderna), paus, avslutsfråga, sammanfattning, det här gör du nu och
+källor. Rubriken är bildens första text och avsnittet (”Del 1 · avsnitt 3”) står i sidfoten. Linjen under rubriken har lektionens områdesfärg.
+Text minst 18 pt, nyckelmeningen 21–25 pt.
+
+## Filer
+
+| Fil | Används av |
+|---|---|
+| `gemensamt/sjoskolan.css` | grundvärden, meny och komponenter; länkas på alla sidor utom labbarna |
+| `course.css` | veckosidor, läsmaterial, övningar, formelblad och filmlistor (`body.course`) |
+| `vecka-40/aktuell/ac-course.css` | genomgångar och veckosida för vecka 40 samt Växelströmslabbet |
+| `gemensamt/skolnav.css` | meny och startruta i labbarna |
+| `gemensamt/labbpekskarm.css` | Trefas-, Hållkrets- och Isolationslabbet: arbetsytans ordning (uppgift, diagram, reglage), 44 px tryckytor, 17 px text och protokollets storlekar, ingen fastnad :hover på pekskärm |
+| `verktyg/larare/las.mjs` | lösenordssidan för lärarstöd (`wrapper()`, byts med `omslag`) |
+| `verktyg/veckosidor/bygg.py` | veckosidorna 37–39 och 41–45 (mål, delar, redovisning) |
+| `verktyg/inlamning/bygg.py` | veckans inlämningsuppgifter, `vecka-XX/aktuell/Inlamning.html` |
+| `verktyg/inlamning/sjalvrattning.py`, `facit.py` | självrättande inlämning (vecka 42–44): svarsfält, alternativ, läshänvisningar och checklista; nyckeln med hashade svar |
+| `gemensamt/sjalvrattning.css`, `sjalvrattning*.mjs` | svarsfälten, Rätta (Rätt!/Skiljer sig, tre försök, låsning), rutan Låsta frågor (läs om veckan för nya försök), Lämna in och PDF:en på en självrättande inlämningssida |
+| `verktyg/inlamning/quiz_mall.py` | quizen (vecka 42): texterna med flervalsfrågor A–E, rutan Låsta frågor per text och Lämna in |
+| `gemensamt/quiz-sida.mjs` | quizens Rätta (tre försök per fråga), Jag har läst om texten (nya försök för den texten), Lämna in och PDF:en |
+| `gemensamt/pdf.mjs` | elevens PDF (A4, Helvetica WinAnsi, utan bibliotek) |
+| `gemensamt/lasbekraftelse.mjs` | rutan Har du läst hela del N? sist på delsidorna i en vecka med självrättande inlämning |
+| `innehall/` | innehållsdatabasen: övningar, ledtrådar, lösningar, labbuppgifter och lärarfacit (`innehall/README.md`). `innehall.py bygg` skriver kurssidornas övningar, `*/uppgifter.gen.mjs`, arbetsblad, inlämning, tenta, presentationer, lärarguiden och boken |
+| `verktyg/bildspel/bygg.py` | webbildspel av presentationerna: `bildspel/<id>/` med bilder och text, visaren `bildspel/index.html` |
+
+Alla sidor använder Sjöskolans meny (`nav.school-nav`) och sidfot (`footer.school-nav`). Webbplatsens `styles.css`, `config.js` och `shared.js` och dess färgteman används inte i kursen.
+
+## Innehållsregler
+
+- Ett begrepp, ett ord. Samma beteckning i presentation, simulator och protokoll (till exempel U, û, UL, UF, Xᴸ).
+- Svenska decimaltecken och mellanslag före enhet: 12,35 V.
+- Varje obligatorisk uppgift pekar på en genomgång eller ett exempel som lär ut samma metod.
+- Skilj på grunddel och fördjupning i text.
+- Inga dekorativa prickar, märken eller dubbla signaler.

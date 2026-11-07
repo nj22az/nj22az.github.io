@@ -1,0 +1,111 @@
+{
+  "id": "EL-000315",
+  "titel": "Fasvinkel i RC-krets",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "R = 40 Ω och X_{C} ≈ 30 Ω i serie. Beräkna fasvinkeln φ med tecken."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[6] (id rc)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "X = −X_{C} för kapacitiv reaktans. φ = arctan(X/R), räknaren i DEG.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "φ",
+        "varde": -36.8708,
+        "tolerans": {
+          "abs": 0.8
+        },
+        "enhet": "°",
+        "berakning": "ac.fasvinkel_grader"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "R": {
+      "varde": 40,
+      "enhet": "Ω"
+    },
+    "XC": {
+      "varde": 30,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": -36.8708,
+      "tolerans": {
+        "abs": 0.8
+      }
+    },
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RC",
+      "U": 100,
+      "f": 50,
+      "R": 40,
+      "L": 80,
+      "C": 106.1
+    },
+    "fraga": {
+      "storhet": "phi",
+      "etikett": "φ",
+      "enhet": "°"
+    },
+    "dolj": [
+      "phi",
+      "phasorValues",
+      "character"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": -0.643501,
+          "text": "Svaret är i radianer. Ställ räknaren i DEG."
+        },
+        {
+          "varde": -53.1301,
+          "text": "Du har räknat arctan(R/X). Fasvinkeln är arctan(X/R)."
+        }
+      ]
+    },
+    "kallhanvisning": "Fördjupning: RC-krets",
+    "teoriavsnitt": "rc",
+    "alias": "rc"
+  }
+}

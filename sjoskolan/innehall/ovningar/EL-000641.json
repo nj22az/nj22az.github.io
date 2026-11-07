@@ -1,0 +1,46 @@
+{
+  "id": "EL-000641",
+  "titel": "Spänningen över H1",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v39-03",
+      "T-labb-multimetersimulator"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Förväntat värde när kretsen är i drift: ungefär 12 V. Var ska röd och svart spets sitta? Vilka uttag? Vilket mätläge?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-39/aktuell/v39_03_Multimeter_och_matfel_elev.pptx bild 10",
+        "revision": "8cabde3",
+        "roll": "övning i presentationen Multimeter och mätfel"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "validering": {
+      "typ": "steg"
+    },
+    "alias": "voltage"
+  },
+  "losning": {
+    "status": "saknas",
+    "kalla": "Genomförs i Multimeterlabbet"
+  }
+}

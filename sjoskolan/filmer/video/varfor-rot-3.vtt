@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.800 --> 00:00:07.800
+<v Måns>Ombord mäter vi 440 V mellan två faser. Varför är det √3 gånger fasspänningen?
+
+2
+00:00:08.800 --> 00:00:15.800
+<v Sigge>Generatorn har tre lindningar. De ger tre spänningar, 120° isär i tiden.
+
+3
+00:00:16.000 --> 00:00:21.800
+<v Måns>Tre vågor samtidigt! Hur räknar man med det?
+
+4
+00:00:22.800 --> 00:00:30.300
+<v Sigge>Varje fasspänning ritas som en pil från neutralpunkten N. Ombord är den ungefär 254 V.
+
+5
+00:00:30.500 --> 00:00:36.800
+<v Måns>Men mellan två faser, då? Mellan pilspetsarna?
+
+6
+00:00:37.800 --> 00:00:44.800
+<v Sigge>Linjespänningen, även kallad huvudspänning, är avståndet mellan två pilspetsar.
+
+7
+00:00:45.000 --> 00:00:50.300
+<v Sigge>Vinkeln mellan pilarna vid N är 120°.
+
+8
+00:00:50.500 --> 00:00:58.300
+<v Sigge>Dra en linje från N till mitten av UL. Den bildar en rät vinkel, och vid spetsen blir det 30°.
+
+9
+00:00:58.500 --> 00:01:03.800
+<v Sigge>Halva UL är då UF · cos 30°, alltså UF · √3/2.
+
+10
+00:01:04.800 --> 00:01:09.300
+<v Måns>Två halvor … då blir det 2 · √3/2!
+
+11
+00:01:09.500 --> 00:01:14.300
+<v Sigge>Tvåorna tar ut varandra: UL = √3 · UF.
+
+12
+00:01:14.500 --> 00:01:20.800
+<v Sigge>254 V · 1,732 ≈ 440 V. Åt andra hållet delar man med √3.
+
+13
+00:01:21.800 --> 00:01:28.300
+<v Sigge>Ombord är 440 V-nätet oftast ett IT-nät utan neutralledare.
+
+14
+00:01:28.500 --> 00:01:34.300
+<v Sigge>Första jordfelet ger normalt bara larm från isolationsvakten.
+
+15
+00:01:34.500 --> 00:01:39.300
+<v Måns>Och de andra faserna får 440 V mot skrovet!
+
+16
+00:01:39.500 --> 00:01:44.800
+<v Sigge>Ett andra jordfel blir en kortslutning. Leta upp felet direkt.
+
+17
+00:01:45.000 --> 00:01:47.800
+<v Sigge>Vi ses i nästa film!

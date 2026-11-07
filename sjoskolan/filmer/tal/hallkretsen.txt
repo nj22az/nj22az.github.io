@@ -1,0 +1,23 @@
+Hållkretsen – START, STOPP och hjälpkontakt, överlast och strömavbrott
+
+Måns (7 s): Hur kan motorn gå vidare när man släpper START-knappen?
+Sigge (7 s): Snoll STOPP är normalt sluten, NC. Sett START är normalt öppen, NO.
+Sigge (5.8 s): Fett är överlastskyddets kontakt. Den är också sluten.
+Måns (5.8 s): Men START är öppen. Ingen ström når spolen, och motorn står.
+Sigge (6.5 s): Jag trycker START. Ström når spolen och Kett drar.
+Sigge (7.3 s): Då sluter också Kett:s hjälpkontakt, som sitter parallellt med START.
+Måns (4.2 s): Nu släpper du START. Stannar motorn?
+Sigge (8.6 s): Nej! Strömmen går genom hjälpkontakten i stället. Kett håller sig själv.
+Sigge (7.5 s): STOPP bryter kretsen. Spolen blir strömlös, Kett släpper och hjälpkontakten öppnar.
+Måns (7.3 s): När STOPP släpps står motorn kvar. Den väntar på ett nytt tryck på START.
+Sigge (7.5 s): Blir motorn överbelastad blir den varm. Då öppnar överlastskyddets kontakt Fett.
+Måns (4.8 s): Samma I i kvadrat gånger R som i filmen om dubbel ström!
+Sigge (3.3 s): Ta reda på orsaken innan du återställer.
+Måns (4.5 s): Och om fartyget får strömavbrott?
+Sigge (6.3 s): Då blir spolen strömlös. Kett släpper och hjälpkontakten öppnar.
+Sigge (5.8 s): När spänningen kommer tillbaka står motorn kvar. Det kallas återstartsskydd.
+Sigge (6.8 s): Men viktiga pumpar och styrmaskinen startar om automatiskt, i tur och ordning.
+Sigge (6.5 s): Kort sagt: START sluter, STOPP och Fett bryter, Kett håller.
+Sigge (6.8 s): Felsök i första hand spänningslöst: frånskilj, lås, prova och mät resistans.
+Måns (6.8 s): Mätning under spänning bara med kompetens, uppdrag, rätt instrument och skydd!
+Sigge (3.3 s): Precis. Vi ses!

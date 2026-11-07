@@ -1,0 +1,9 @@
+{
+  "name": "polivoks-filter-simulator",
+  "private": true,
+  "type": "module",
+  "description": "Circuit model of the Eurorack Polivoks filter and the synthesiser around it; no dependencies.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}

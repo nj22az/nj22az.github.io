@@ -1,0 +1,4 @@
+<!doctype html><meta charset="utf-8"><title>Harbour still asset renderer</title><style>body{margin:0}#stage{width:960px;height:540px}canvas{width:100%;height:100%}</style><div id="stage"></div><script type="module">
+import {createPortScene} from '/assets/js/office-port-live.js';
+window.posterScene=await createPortScene({host:document.querySelector('#stage'),person:{id:'johansson',name:'Johansson'},place:{id:'quay'},onError(error){throw error;}});window.__READY__=true;
+</script>

@@ -1,0 +1,103 @@
+{
+  "id": "EL-000309",
+  "titel": "Period vid 400 Hz",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vissa fartyg har ett separat 400 Hz-nät för elektronik. Beräkna perioden T i millisekunder."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[0] (id period)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "T = 1/f. Svaret i sekunder multipliceras med 1 000 för att få ms.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "T",
+        "varde": 2.5,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "ms",
+        "berakning": "ac.period_ms"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "f": {
+      "varde": 400,
+      "enhet": "Hz"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 2.5,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 115,
+      "f": 400,
+      "t": 0.5,
+      "showB": false,
+      "dt": 0.5,
+      "window": "auto"
+    },
+    "fraga": {
+      "storhet": "T",
+      "etikett": "T",
+      "enhet": "ms"
+    },
+    "dolj": [
+      "T",
+      "ticks"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0.4,
+          "text": "Du har räknat f/1 000. Perioden är 1/f."
+        }
+      ]
+    },
+    "kallhanvisning": "Periodtid",
+    "teoriavsnitt": "period",
+    "alias": "period"
+  }
+}

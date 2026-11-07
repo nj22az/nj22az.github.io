@@ -1,0 +1,23 @@
+2026-10-30T22:36:31.4286261Z ##[group]Run mkdir -p /tmp/camera-results
+2026-10-30T22:36:31.4286596Z [36;1mmkdir -p /tmp/camera-results[0m
+2026-10-30T22:36:31.4287006Z [36;1mfor suite in camera crop enhance save-share-layout paper integration sticker-contour; do[0m
+2026-10-30T22:36:31.4287491Z [36;1m  export CAMERA_SHOTS="/tmp/camera-results/$suite"[0m
+2026-10-30T22:36:31.4287918Z [36;1m  node "camera/tests/$suite.browser.mjs" | tee "/tmp/camera-results/$suite.log"[0m
+2026-10-30T22:36:31.4288286Z [36;1mdone[0m
+2026-10-30T22:36:31.4307594Z shell: /usr/bin/bash -e {0}
+2026-10-30T22:36:49.1523018Z node:internal/modules/run_main:107
+2026-10-30T22:36:49.1523494Z     triggerUncaughtException(
+2026-10-30T22:36:49.1523894Z     ^
+2026-10-30T22:36:49.1524271Z
+2026-10-30T22:36:49.1524570Z page.waitForFunction: Timeout 10000ms exceeded.
+2026-10-30T22:36:49.1525427Z     at /home/runner/work/nj22az.github.io/nj22az.github.io/camera/tests/camera.browser.mjs:428:15
+2026-10-30T22:36:49.1526453Z     at check (/home/runner/work/nj22az.github.io/nj22az.github.io/camera/tests/camera.browser.mjs:23:36)
+2026-10-30T22:36:49.1527928Z     at playAndPrint (/home/runner/work/nj22az.github.io/nj22az.github.io/camera/tests/camera.browser.mjs:427:9)
+2026-10-30T22:36:49.1529124Z     at async file:///home/runner/work/nj22az.github.io/nj22az.github.io/camera/tests/camera.browser.mjs:645:2 {
+2026-10-30T22:36:49.1529898Z   log: [],
+2026-10-30T22:36:49.1530234Z   name: 'TimeoutError'
+2026-10-30T22:36:49.1530558Z }
+2026-10-30T22:36:49.1530685Z
+2026-10-30T22:36:49.1530793Z Node.js v24.22.1
+2026-10-30T22:37:34.6235522Z crop browser: 33/33 checks passed
+2026-10-30T22:38:53.3984797Z 4/4 sticker contour checks passed

@@ -1,0 +1,36 @@
+{
+  "runtime_first_commit": "26f576481cbcbf2b5fec1af02e4053aa4b12d9e5",
+  "current_review": "d9a9f25b525a6d403b2c352d78745d78463f6a7f",
+  "files": [
+    {
+      "path": "camera/app.js",
+      "sha256": "4fe02d5ae8faacee9d970844fa5f433336f620b42524b6bf1cf042544c2cf5f8",
+      "bytes": 89725
+    },
+    {
+      "path": "camera/looks-gl.js",
+      "sha256": "effcc29d8f531fb1406047b6465006737ec7d2c687a57d9f5f789b6e656e4ef9",
+      "bytes": 93799
+    },
+    {
+      "path": "camera/look-icons.js",
+      "sha256": "5a5857a1e24d10b7933d85ba2c7ee52c8a563cdf09ee5b804be647f2d7244935",
+      "bytes": 3602
+    },
+    {
+      "path": "camera/camera-ui.css",
+      "sha256": "86f87b771bd773d440f831efe6c1f64e602bfe9921b6cf0b8aa01ef3d6d54e4b",
+      "bytes": 20577
+    },
+    {
+      "path": "camera/index.html",
+      "sha256": "8962e042a745b277a080afb54eaba9895b18cf4a5d82fe512627c49c16c22b26",
+      "bytes": 26372
+    },
+    {
+      "path": "johansson-town/tools/camera/session.mjs",
+      "sha256": "a0402fb4237ee97f3c7c0866b6cf8370858c98615955f680e96e54961c9f813d",
+      "bytes": 10942
+    }
+  ]
+}

@@ -1,0 +1,350 @@
+/* Approved 31 October UI: real Camera controls, with the existing renderer and albums. */
+/* The colours are the theme tokens of camera.css (dark, and light under html[data-theme=light]); only the rail's width is this layer's own. */
+:root{--camera-rail:max(56px,3.5rem)}
+.app{height:100dvh;bottom:auto;background:var(--bg)}
+.camera,.editor,.album,.viewer{font-size:1rem;line-height:1.4}
+.camera button,.editor button,.album button,.viewer button{min-height:44px;min-width:44px}
+.camera .bar,.editor .bar,.album .bar,.viewer .bar{height:auto;min-height:64px;padding:8px 16px;gap:8px;background:var(--bar);box-shadow:inset 0 -1px var(--outline)}
+.bar h2,.camera-mark{font-size:1.0625rem;line-height:1.3;white-space:normal;overflow:visible;text-overflow:unset;overflow-wrap:anywhere}
+.camera .camera-bar{grid-template-columns:44px minmax(0,1fr) auto}
+.camera-mark{margin:0;text-align:center;text-transform:none;letter-spacing:-.025em;font-weight:750}
+.camera-bar>.back{width:44px;padding:0;justify-content:center}
+.camera-bar>.back span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+.camera-header-actions{display:flex;align-items:center;gap:8px}
+.camera .settings-toggle{width:44px;height:44px;padding:0;background:var(--surface);border-radius:14px;box-shadow:none;color:var(--label)}
+.camera .settings-status{display:none}
+.camera .photos-button{min-height:44px;padding:8px 12px;font-size:.9375rem;border-radius:14px;background:var(--surface)}
+.camera.idle #import{display:none}
+.camera.idle .dock{display:none}
+.camera.idle .stage{display:block;overflow:auto;touch-action:pan-y;container-type:normal}
+.welcome{position:relative;inset:auto;min-height:100%;width:min(100%,560px);margin:auto;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:18px;padding:24px;overflow:visible;text-align:left;background:none}
+.welcome-hero{position:relative;display:flex;align-items:center;justify-content:center;flex:none;height:clamp(100px,21dvh,190px);border-radius:28px;background:var(--hero);overflow:hidden;isolation:isolate}
+.welcome-print{width:148px;max-width:56%;height:auto;border:7px solid #f1eee4;border-bottom-width:23px;border-radius:5px;transform:rotate(-9deg);margin-right:46px;box-shadow:0 8px 20px var(--shadow)}
+.welcome .welcome-sticker{position:absolute;right:12%;bottom:8px;height:90%;max-width:42%;width:auto;max-height:170px;object-fit:contain;margin:0;animation:none;transform:none;filter:drop-shadow(0 3px 3px #0007)}
+/* The greeter's dance: a hop and a sway, --dance its tempo (app.js setDance); still under reduced motion. */
+.welcome .welcome-sticker.dancing{animation:welcome-dance var(--dance,1.1s) ease-in-out infinite;transform-origin:50% 100%}
+@keyframes welcome-dance{0%,100%{transform:translateY(0) rotate(-4deg)}25%{transform:translateY(-9px) rotate(0)}50%{transform:translateY(0) rotate(4deg)}75%{transform:translateY(-9px) rotate(0)}}
+@media (prefers-reduced-motion:reduce){.welcome .welcome-sticker.dancing{animation:none}}
+.welcome-note-row{display:flex;align-items:center;gap:10px}.welcome-note-row>div{min-width:0}.welcome-note-row .fine{margin:0}
+.welcome-face{flex:none;width:56px;height:49px;border-radius:9px;image-rendering:pixelated}.welcome-face[hidden]{display:none}.welcome-face-line{font-style:italic;color:var(--label)}.welcome-face-line[hidden]{display:none}
+.welcome-copy h2{font-size:2rem;line-height:1.1;letter-spacing:-.045em;margin:0 0 10px;font-weight:780}
+.welcome-copy p{font-size:1rem;line-height:1.5;max-width:none;color:var(--label-3)}
+.welcome-actions{width:100%;margin:0;gap:10px}
+.welcome .button{min-height:54px;border-radius:17px;font-size:1rem;padding:12px 16px;line-height:1.3;white-space:normal;box-shadow:inset 0 0 0 1px var(--outline)}
+.welcome .button.primary{box-shadow:inset 0 -3px #ae892b44}
+.welcome .fine{display:block!important;font-size:.8125rem;line-height:1.5;text-align:center;max-width:none;margin:0;color:var(--label-3)}
+.welcome-album{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:20px;background:var(--surface);border:1px solid var(--separator);text-align:left;min-height:80px}
+.welcome-album>img{width:48px;height:48px;object-fit:cover;border-radius:10px;flex:none}
+.welcome-album>span{flex:1;min-width:0;display:grid;gap:4px}
+.welcome-album strong{font-size:1rem}.welcome-album small{font-size:.8125rem;line-height:1.4;color:var(--label-3)}
+.welcome-album>svg{width:18px;transform:rotate(180deg)}
+/* Full labels in a scrollable settings view, rather than seven undersized icons. */
+.camera .settings{inset:0;left:0;top:0;transform:none;width:100%;max-width:none;border-radius:0;display:flex;flex-direction:column;gap:0;padding:20px 24px;background:var(--bg);box-shadow:none;overflow:auto;animation:none;backdrop-filter:none;-webkit-backdrop-filter:none;touch-action:pan-y}
+.settings-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.settings-heading h2{font-size:1.25rem;margin:0}.settings-heading button{color:var(--accent);font-size:1rem;padding:8px}
+.camera .setting{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;flex:none;width:100%;min-height:64px;padding:8px 0;text-align:left;border-bottom:1px solid var(--separator);font-size:.9375rem}
+.camera .setting i{width:44px;height:44px;background:var(--surface-2);border-radius:13px}
+.camera .setting-title{font:inherit;color:var(--label);white-space:normal;overflow-wrap:anywhere}
+.camera .setting>span{max-width:110px;white-space:normal;text-align:right;color:var(--label-3)}
+.camera .setting.on>span{color:var(--accent)}
+/* Editing: icon controls with full accessible names and a clear active label. */
+.editor>.bar{grid-template-columns:auto minmax(0,1fr) auto}.editor .bar h2{overflow-wrap:normal}
+.editor .text-button{font-size:.9375rem}.editor .pill-button{font-size:.875rem;min-height:44px;height:auto;padding:10px 14px;border-radius:15px;max-width:130px;white-space:normal;line-height:1.3}
+.editor>.stage{padding:18px 24px;min-height:110px;flex:1;touch-action:none}
+.editor .frame{border-radius:9px}
+.compare-original{position:absolute;right:24px;bottom:12px;z-index:7;padding:8px 12px;border-radius:12px;background:var(--surface);color:var(--label-2);font-size:.75rem;box-shadow:0 1px 4px var(--shadow)}
+.compare-original[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.editor>.dock{display:flex;flex-direction:column;flex:none;min-height:0;max-height:calc(100dvh - 190px - env(safe-area-inset-top) - env(safe-area-inset-bottom));width:100%;max-width:none;padding:0;background:var(--surface)}
+.editor .panel{order:0;min-height:0;max-height:calc(100dvh - 302px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:12px 16px;background:var(--surface);border-top:1px solid var(--separator);border-radius:25px 25px 0 0;flex:0 1 auto}
+.editor .segmented{order:1;flex:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(max(44px,2.75rem),1fr));gap:4px;width:100%;margin:0;padding:8px 12px;border-radius:0;background:var(--bar);border-top:1px solid var(--separator);box-shadow:none}
+.editor .segmented button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;height:auto;min-width:0;padding:6px 2px;border-radius:12px;font-size:.75rem;line-height:1.35;white-space:normal;overflow:visible;text-overflow:unset;overflow-wrap:anywhere;background:none;box-shadow:none}
+.editor .segmented button[aria-selected=true]{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+.editor .tray{padding:0}.editor .layers{height:auto;min-height:44px;flex-wrap:wrap;padding:0 0 6px;gap:6px}
+.editor .mix{display:flex;flex-wrap:wrap;max-width:100%;border-radius:12px}
+.editor .layer-pick{min-height:44px;height:auto;font-size:.8125rem;padding:8px 10px;white-space:normal}
+.editor .layer-remove{min-width:44px;min-height:44px;width:44px}
+.editor .add-layer,.editor .shuffle{height:44px;min-height:44px;border-radius:12px;font-size:.8125rem}
+.editor .undo-shuffle{display:grid;place-items:center;flex:none;width:44px;min-height:44px;border-radius:12px;background:var(--surface-2)}
+.editor .undo-shuffle svg{width:22px;height:22px}.editor .shuffle[aria-busy=true]{opacity:.55}
+.editor .look-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(4.2em,1fr));gap:4px;padding:6px 0;font-size:.8125rem}
+.editor .look-groups button{min-height:44px;height:auto;font:inherit;line-height:1.3;padding:6px 3px;border-radius:10px;white-space:normal;overflow-wrap:anywhere}
+.editor .strip{padding:8px 0;gap:8px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}
+.editor .tile{width:72px;min-width:72px;font-size:.75rem;height:auto;overflow:visible}
+.editor .tile .face{width:64px;height:64px}.editor .tile .name{white-space:normal;overflow:visible;text-overflow:unset;line-height:1.3;overflow-wrap:anywhere}
+.editor .slider-row{min-height:44px;padding:0;gap:10px}.editor input[type=range]{min-height:44px}
+.editor .slider-row output{width:auto;min-width:3ch;flex:none;font-size:.8125rem}.editor .slider-row label{font-size:.8125rem}
+.editor .adjusters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:8px 0}
+.editor .adjuster{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:7px;width:auto;min-width:0;min-height:44px;padding:8px 6px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
+.editor .adjuster>:first-child,.editor .adjuster>:last-child{margin:0}
+.editor .adjuster i{position:static;display:grid;place-items:center;width:24px;height:24px;background:none;transform:none}.editor .adjuster i::before{display:none}.editor .adjuster i svg{width:22px;height:22px}.editor .adjuster span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.editor .adjuster[aria-checked=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.editor .enhance-heading{padding:0;min-height:44px;gap:10px}.editor .enhance-heading>span{flex:1;font-size:.9375rem}
+.editor .enhance-amount{font-size:.8125rem;color:var(--accent);padding:6px;min-width:44px}
+.editor .switch{width:48px;min-width:48px;min-height:44px;height:44px;position:relative;background:transparent;box-shadow:none}
+.editor .switch::before{content:"";position:absolute;inset:8px 0;background:var(--surface-2);border-radius:20px}
+.editor .switch[aria-checked=true]{background:transparent}.editor .switch[aria-checked=true]::before{background:var(--accent)}
+.editor .switch::after{width:24px;height:24px;left:3px;top:10px;transform:none}.editor .switch[aria-checked=true]::after{transform:translateX(18px)}
+.editor #enhanceHint,.editor #popHint{display:block;font-size:.75rem;line-height:1.4;color:var(--label-3);font-weight:400;margin-top:2px}
+.editor .enhance-hint{font-size:.75rem;line-height:1.5;text-align:left;margin:6px 0;color:var(--label-3)}
+.editor .enhance-strength{margin-top:8px}.editor .adjustment-strength{height:auto;min-height:88px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:0 8px}
+.editor .adjustment-strength input{grid-column:1/-1;grid-row:2;width:100%}.editor .adjustment-strength output{grid-column:2;grid-row:1}.editor .adjustment-strength button{grid-column:3;grid-row:1;color:var(--accent);font-size:.8125rem}
+.editor .crop-shapes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:none;width:100%;overflow:visible;margin:12px 0;box-shadow:none;background:none;padding:0}
+.editor .crop-shapes button{min-height:44px;padding:8px 4px;white-space:normal;font-size:.8125rem;border-radius:10px;background:var(--surface-2)}
+/* The chosen shape reads as the other chosen chips do (it was dark text on the dark surface). */
+.editor .crop-shapes button[aria-checked=true]{background:var(--chip-on);color:var(--chip-on-label)}
+.editor .frame-choices{padding:8px 0}.editor .frame-choice{min-height:44px;font-size:.75rem}
+.frame-finishes,.frame-finish-choices{display:flex;align-items:center;gap:6px}.frame-finishes{margin:6px 0}.frame-finish-choices{flex:1}
+.editor .frame-finish-choices button,.editor .frame-stamp{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 12px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
+.frame-finishes svg{width:22px;height:22px;flex:none}.frame-finish-choices button[aria-pressed=true],.frame-stamp[aria-checked=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.frame-finish-choices button:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.editor .option-row{padding-inline:0}.editor .paper-choices,.editor #mirrorChoices{flex-wrap:wrap;height:auto}
+.editor .mini-seg button{min-height:44px;height:auto;font-size:.8125rem;white-space:normal;overflow-wrap:anywhere}
+.editor .paper-choices{width:100%;min-width:0;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(64px,4rem)),1fr))}.editor #mirrorChoices{width:100%;min-width:0;grid-template-columns:repeat(3,minmax(0,1fr))}
+.editor #panelFrame .mini-seg button{padding-inline:6px}
+.editor #panelStickers{touch-action:pan-x pan-y}
+.editor .sticker-sets{display:flex;flex-wrap:nowrap;padding:0 0 4px;gap:4px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-x:contain;touch-action:pan-x}.editor .sticker-sets button{flex:none;min-height:44px;height:auto;font-size:.8125rem;padding:8px;white-space:nowrap}
+/* The secret sheet's lock tab keeps a finger's width in the editor. */
+.editor .sticker-sets button.locked{min-width:44px}
+.editor .sticker-sets>:first-child,.editor .sticker-sets>:last-child{margin:0}
+.editor .sticker-grid{padding-inline:0}.editor .erase-hint{font-size:.875rem;line-height:1.5;margin:8px 0}
+/* Retouch controls stay in Adjust and Erase; the photograph keeps its existing space. */
+.editor .makeup-heading{min-height:44px;gap:8px}.makeup-heading output{margin-left:auto;font-size:.8125rem;color:var(--label-2)}
+.editor .makeup-open,.retouch-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 10px;border-radius:10px;background:var(--surface-2);font-size:.8125rem}
+.makeup-open svg,.retouch-actions svg{width:22px;height:22px;flex:none}
+.retouch-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.retouch-hint{font-size:.75rem;line-height:1.5;color:var(--label-2);margin:6px 0}
+.makeup-controls{padding:4px 0 10px;border-bottom:1px solid var(--separator)}
+.makeup-sliders label,.makeup-angle{display:grid;grid-template-columns:3.2em minmax(0,1fr) 3em;gap:8px;align-items:center;font-size:.8125rem;min-height:44px}
+.makeup-sliders input,.makeup-angle input{width:100%;min-width:0}.makeup-sliders output,.makeup-angle output{text-align:right;font-size:.75rem}
+.erase-suggestions button{min-height:44px;min-width:44px;border-radius:10px;padding:8px 12px;background:var(--surface-2);font-size:.8125rem}
+.makeup-open[aria-expanded=true],#makeupFace[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+/* Lip colour: round swatches in a row that scrolls, the chosen one ringed, the first the look's own shade. */
+.makeup-colour{display:flex;align-items:center;gap:8px;min-height:28px;margin-top:2px}.makeup-colour output{font-size:.8125rem;color:var(--label-2)}
+.makeup-shades{display:flex;gap:2px;margin:0 -2px;padding:2px 2px 6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x}
+.makeup-shades::-webkit-scrollbar{display:none}.makeup-shades[hidden]{display:none}
+.makeup-shades button{flex:none;display:grid;place-items:center;width:44px;min-width:44px;min-height:44px;padding:0;border-radius:22px;background:transparent}
+.makeup-shades button i{width:30px;height:30px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 1px var(--outline)}
+.makeup-shades button i.auto{background:conic-gradient(#bf425f,#d9775a,#c81e3a,#7d3b63,#c48a78,#bf425f)}
+.makeup-shades button[aria-pressed=true] i{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent)}
+.makeup-shades button:disabled{opacity:.4}
+.erase-suggestions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.erase-suggestions:empty{display:none}
+.makeup-guide{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden}.makeup-guide[hidden]{display:none}
+.makeup-guide>.makeup-guide-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.makeup-guide-outline{fill:none;stroke:#fff;stroke-width:1.5;stroke-dasharray:5 4;filter:drop-shadow(0 1px 1px #111)}
+.makeup-guide-handle{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;min-height:44px;border-radius:50%;background:rgba(20,20,24,.72);color:white;pointer-events:auto;touch-action:none;display:grid;place-items:center;border:1px solid rgba(255,255,255,.85)}
+.makeup-guide-handle[hidden]{display:none}.makeup-guide-handle:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.makeup-guide-handle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6}
+/* Saved photos remain first; games stay in their existing secondary destination. */
+.album .album-scroll{padding:24px 20px}.album .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px;max-width:960px;margin:auto}
+.album .grid button{aspect-ratio:auto;min-width:0;overflow:visible;text-align:left;display:flex;flex-direction:column;align-items:stretch;gap:6px;background:none;box-shadow:none}
+.album .grid img{aspect-ratio:1;height:auto;object-fit:cover;border-radius:17px}
+.album .grid strong{font-size:.875rem;line-height:1.4;font-weight:650;overflow-wrap:anywhere}.album .grid small{font-size:.75rem;line-height:1.4;color:var(--label-3)}
+.album .arcade-entry{margin:24px auto 0;width:100%;max-width:960px;background:var(--surface);border-radius:16px;box-shadow:none;border:1px solid var(--separator)}
+.album .bar-actions{gap:8px}.album .bar-actions .round{min-width:44px;min-height:44px}.album .photos-button{min-height:44px;font-size:.9375rem}
+.album .bar{grid-template-columns:auto minmax(0,1fr) auto}.album .bar h2{white-space:normal}.album .album-note{font-size:.8125rem;line-height:1.5}
+.viewer .toolbar{max-width:520px;padding:12px 24px}.viewer .toolbar button{font-size:.8125rem;line-height:1.4;min-height:60px}
+/* A reserved side rail says which shaders are active without painting over the canvas. */
+.camera-view{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:8px;padding:12px}
+.camera.idle .camera-view{display:none}.picture-area{display:grid;place-items:center;min-width:0;min-height:0;width:100%;height:100%;position:relative}
+.editor>.stage{display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--camera-rail);gap:10px;overflow:clip;touch-action:auto}
+.camera:not(.idle)>.stage{touch-action:auto}.picture-area{touch-action:none}
+.look-rail{display:flex;flex-direction:column;justify-content:flex-start;gap:8px;align-items:center;align-self:start;min-height:0;height:100%;max-height:100%;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scroll-padding-block:2px;touch-action:pan-y}
+#editLookRail,#cameraLookRail{display:flex;flex:none;flex-direction:column;gap:8px;width:100%}
+.rail-look{flex:none;width:var(--camera-rail);min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:var(--surface);padding:5px 2px;color:var(--label-3)}
+.rail-look svg{width:28px;height:28px;flex:none}.rail-look span{font-size:.625rem;line-height:1.25;max-width:100%;overflow-wrap:normal}
+.rail-look[aria-pressed=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.editor .compare-original{position:static;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:var(--camera-rail);min-height:48px;padding:6px 2px;margin-top:auto;box-shadow:none;background:var(--surface)}
+.compare-original svg{width:22px;height:22px}.compare-original span,.rail-original{font-size:.625rem;line-height:1.4;overflow-wrap:anywhere;max-width:100%}
+.editor .layer-pick>svg{width:24px;height:24px;flex:none}.editor .layer-pick{display:flex;align-items:center;gap:6px}
+/* Nine kinds in one row: narrow chips (their names are read out, the symbols shown), and the row scrolls on a phone
+   narrower than they are, the open kind brought into view (app.js). */
+.editor .look-groups{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:1px;overflow-x:auto;scrollbar-width:none}
+.look-groups button{display:flex;align-items:center;justify-content:center;gap:5px;min-width:36px;min-height:44px;flex:none}
+.look-groups button>svg{width:22px;height:22px}.editor .look-groups button{padding:7px 5px}
+.tile .name{min-height:1.3em}.tile:not([aria-checked=true]) .name{pointer-events:none}
+/* Errors and action messages occupy the controls' layout; Look announcements use the side icons. */
+.toast{position:relative;inset:auto;left:auto;top:auto;z-index:auto;display:none;opacity:0;transform:none;max-width:none;flex:none;margin:8px 12px;padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:.875rem;line-height:1.5;white-space:normal;overflow-wrap:anywhere;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;transition:none}
+.toast.show{display:block;opacity:1;transform:none}
+.toast.show.has-face{display:flex}
+.toast.look{position:absolute;width:1px;height:1px;padding:0;margin:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;font-size:1rem}
+.camera.compact .tray{position:static;padding:6px 0 0;background:none;pointer-events:auto}
+.camera.compact.looks-open .tray{background:none}
+.camera .look-groups{flex-wrap:nowrap;gap:1px}.camera .look-groups button{padding:6px 5px}
+.camera-rail .zoom,.camera-rail .exposure-chip{position:static;flex:none;width:var(--camera-rail);min-height:48px;height:auto;transform:none;margin:0;border-radius:12px;background:var(--surface);opacity:1;pointer-events:auto;font-size:.8125rem;padding:6px 2px;box-shadow:none}
+.camera-rail .zoom{margin-top:auto}.camera.compact.looks-open .camera-rail .zoom{opacity:1;pointer-events:auto}
+.camera .sticker>button,.editor .sticker>button{min-width:30px;min-height:30px}
+/* One selected shader name, rather than repeating it in the mix, group and thumbnail rows. */
+.layer-name,.tile:not(:focus-visible) .name,.look-groups button:not(:focus-visible) .group-name,.rail-look:not([aria-pressed=true]) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.editor{overflow-y:auto}
+.editor .segmented button svg{width:22px;height:22px;flex:none}.editor .segmented button span{max-width:100%;overflow-wrap:normal}
+.editor .segmented button:not([aria-selected=true]):not(:focus-visible) span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+@media(min-width:850px){.editor .look-groups{gap:0}}
+@media(max-height:620px){
+ .welcome{gap:14px;padding:16px 20px}.welcome-hero{height:100px}.welcome-copy h2{font-size:1.75rem}.welcome .welcome-sticker{min-height:72px}.welcome-print{width:118px;border-width:5px;border-bottom-width:17px}
+ .editor>.stage{padding:10px 20px;min-height:96px}.editor .panel{padding:8px 12px}.editor .tile{width:60px;min-width:60px}.editor .tile .face{width:52px;height:52px}.editor .strip{gap:6px;padding:4px 0}
+ .editor .look-groups{padding:4px 0}.editor .layers{padding-bottom:0}
+}
+@media(min-width:700px) and (min-height:700px){
+ .welcome{width:min(640px,100%);padding:40px 32px;gap:28px}.welcome-hero{height:280px}.welcome-print{width:230px;margin-right:70px}.welcome .welcome-sticker{height:240px;max-height:240px;right:15%;bottom:18px}.welcome-copy h2{font-size:2.625rem}.welcome-copy p{font-size:1.125rem}
+ .editor>.stage{padding:28px 40px}.editor>.dock{max-height:50%;width:min(100%,744px);align-self:center}.editor .panel{max-height:calc(50dvh - 76px);padding:16px 24px}
+ .editor .segmented{padding:12px 24px}.editor .segmented button{min-height:48px;font-size:.875rem}
+ .album .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 18px}.album .album-scroll{padding:32px}
+}
+@media(min-width:850px){
+ .editor{display:grid;grid-template-columns:minmax(0,1fr) 344px;grid-template-rows:auto minmax(0,1fr)}
+ .editor>.bar{grid-column:1/-1;grid-row:1}.editor>.stage{grid-column:1;grid-row:2;min-height:0;padding:24px}
+ .editor>.dock{grid-column:2;grid-row:2;width:100%;max-height:none;align-self:stretch;display:flex;justify-content:flex-start;padding:0;border-left:1px solid var(--separator)}
+ .editor .panel{flex:1;max-height:none;border-radius:0;border-top:0;padding:16px;overflow:auto}.editor .segmented{padding:8px 12px}
+ .editor .segmented button{min-height:64px;font-size:.75rem}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .editor .strip{flex-wrap:nowrap;justify-content:flex-start}.editor .layers{flex-wrap:wrap;padding:0;min-height:44px}
+ .camera.idle{display:flex}.camera.idle .stage{padding:0;grid-column:auto;grid-row:auto}
+ .welcome{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto auto auto auto;align-content:center;gap:20px 40px;max-width:1000px;width:100%;padding:32px 48px}
+ .welcome-hero{grid-column:1;grid-row:1/5;height:100%;min-height:300px;max-height:420px}.welcome-copy{grid-column:2;grid-row:1}.welcome-actions{grid-column:2;grid-row:2}.welcome .fine{grid-column:2;grid-row:3}.welcome-album{grid-column:2;grid-row:4}
+ .welcome .welcome-sticker{height:225px;max-height:225px;right:9%;bottom:24px}.welcome-print{width:210px;margin-right:50px}.welcome-copy h2{font-size:2.25rem}
+ .album .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(min-width:850px) and (max-height:420px){
+ .editor .panel{padding:12px}.editor .look-groups{padding:0}.editor .strip{padding:4px 0}
+ .editor .tile{width:44px;min-width:44px}.editor .tile .face{width:40px;height:40px}
+ .editor .frame-choice canvas{width:40px;height:40px}.editor .frame-choices{padding:4px 0;gap:8px}.frame-finishes{margin-block:4px}
+}
+@media(max-width:359px){.camera .bar,.editor .bar,.album .bar{padding-inline:12px}.camera .photos-button{width:44px;padding:0;justify-content:center}.camera .photos-button span{display:none}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}.editor .segmented{padding-inline:10px}}
+/* Larger user text and short windows reflow rather than clipping fixed-height rows. */
+@media(max-height:500px) and (max-width:849px){.editor{overflow:auto}.editor>.stage{flex:none;min-height:160px}.editor>.dock{flex:none;max-height:none}.editor .panel{max-height:none;overflow:visible}.welcome{justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){.welcome-sticker{animation:none}}
+
+.settings-heading{flex-wrap:wrap}.settings-heading h2{flex:1}.settings-heading .offline-setting{flex:none;width:44px;height:44px;padding:10px}.offline-setting svg{width:24px;height:24px}.offline-setting:disabled{opacity:1}.offline-setting[data-state="preparing"]{opacity:.5}
+.settings-heading .offline-setting[data-state="update"]{display:inline-flex;align-items:center;gap:6px;width:auto;color:var(--accent);font-size:.8125rem}
+
+/* Installed Camera has its own header, without website navigation. */
+.camera-version{display:block;font-size:11px;line-height:1.5;font-weight:500;letter-spacing:0;color:var(--label-2)}
+.standalone .camera-bar>a.back{display:none}
+.standalone .camera .camera-bar{grid-template-columns:minmax(0,1fr) auto}
+.standalone .camera-mark{text-align:left}
+@media (display-mode:standalone){
+ .camera-bar>a.back{display:none}
+ .camera .camera-bar{grid-template-columns:minmax(0,1fr) auto}
+ .camera-mark{text-align:left}
+}
+
+/* Version and offline update action belong at the foot of Camera settings. */
+.settings-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;margin-top:auto;padding:20px 0 0;border-top:1px solid var(--separator)}
+.settings-footer .camera-version{font-size:.8125rem;line-height:1.5}
+.settings-footer .offline-setting{display:grid;place-items:center;flex:none;min-width:44px;min-height:44px;padding:10px;color:var(--accent);border-radius:12px}
+.settings-footer .offline-setting[data-state="update"]{display:inline-flex;align-items:center;gap:8px;width:auto;padding:10px 16px;background:var(--surface-2);font-size:.875rem;font-weight:650}
+.camera .settings>.setting{flex-shrink:0}
+
+/* A Look's model and screen belong to its existing layer. Keep the photograph visible above this sheet. */
+.look-settings-sheet{max-height:72dvh;overflow-y:auto;background:var(--surface)}
+.look-settings-sheet header{flex:none;position:sticky;top:0;background:var(--surface);z-index:1}
+.look-settings-body{min-height:0;overflow-y:auto;padding:0 20px 16px}
+.look-setting-select{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;font-size:15px}
+.look-setting-select select{min-width:0;max-width:65%;min-height:44px;padding:6px 8px;background:var(--fill);color:var(--label);border:0;border-radius:8px;font:inherit}
+.screen-control{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 12px;margin:12px 0;font-size:14px}
+.screen-control input{grid-column:1/-1;width:100%;min-height:44px;margin:0}
+.screen-control output{font-variant-numeric:tabular-nums;color:var(--label-2)}
+.look-settings-body p{font-size:13px;line-height:1.4;color:var(--label-2)}
+.look-settings-button{flex:none;display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--fill);color:var(--label)}
+.look-settings-button svg{width:21px;height:21px}
+/* Album backup (backup.js): the album's entry and its sheet. */
+.album .backup-entry{margin-top:24px}.album .backup-entry+.arcade-entry{margin-top:12px}
+.backup-icon{background:#3a4a44;color:#f5d77b}.backup-icon svg{width:24px;height:24px}
+.backup-sheet form{gap:10px}
+.backup-where{margin:0;font-size:14px;line-height:1.45;color:var(--label-2);text-align:center}
+.backup-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.backup-stats div{padding:8px 10px;border-radius:10px;background:var(--surface-2)}
+.backup-stats dt{font-size:12px;color:var(--label-3)}.backup-stats dd{margin:2px 0 0;font-size:15px;font-weight:650;font-variant-numeric:tabular-nums}
+.backup-status{margin:0;min-height:1.4em;text-align:center}.backup-status.error{color:var(--red)}
+.backup-progress{width:100%;height:6px;accent-color:var(--accent)}
+.backup-actions{display:grid;gap:8px;justify-items:center}.backup-actions .pill-button{min-width:200px;min-height:44px;border-radius:22px}
+.backup-note{margin:0;line-height:1.45;text-align:center}
+/* Face stickers (face-stamps.js): the parts, the residents' brows and eyes on paper, the colours and the finish. */
+#funAlign[aria-pressed=true],#funPhoto[aria-expanded=true]{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.mini-seg.fun-parts{grid-template-columns:repeat(4,1fr);margin:6px 0}.mini-seg.fun-finish{grid-template-columns:repeat(2,1fr);margin:8px 0 2px}
+.fun-parts button,.fun-finish button{min-height:44px;font-size:.8125rem}
+.fun-tiles{display:flex;gap:6px;overflow-x:auto;padding:4px 1px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.fun-tiles::-webkit-scrollbar{display:none}
+.fun-tiles:empty{display:none}
+.fun-tile{flex:none;display:grid;grid-template-rows:auto auto;justify-items:center;gap:3px;width:68px;min-height:72px;padding:5px 4px 4px;border-radius:12px;background:var(--surface-2);font-size:.6875rem;line-height:1.2;color:var(--label-2)}
+.fun-tile canvas,.fun-tile img,.fun-tile .none{width:60px;height:40px;border-radius:8px;background:#efe4d2;object-fit:contain}
+.fun-tile .none{display:grid;place-items:center;color:#8a7a68;font-size:1.25rem}
+.fun-tile[aria-checked=true]{color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.fun-colours{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 4px}.fun-colours:empty{display:none}
+.fun-colours button{display:grid;place-items:center;min-width:44px;min-height:44px;border-radius:22px;background:transparent}
+.fun-colours button i{width:26px;height:26px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 2px var(--outline)}
+.fun-colours button[aria-checked=true] i{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+.fun-sliders label{grid-template-columns:4em minmax(0,1fr) 3.6em}
+.stamps-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.stamps-art[hidden]{display:none}
+/* Makeup and Face stickers side by side: a name and, under it, whether it is on (a 320-point phone keeps both whole). */
+.editor .retouch-headings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-height:44px}
+.editor .retouch-headings .makeup-open{justify-content:flex-start;min-width:0;text-align:left}
+.retouch-title{display:grid;min-width:0;line-height:1.25}
+.retouch-title output{font-size:.6875rem;font-weight:400;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Zooming in on a photo with the fingers (zoom-view.js): the area clips the zoomed photo, one button in its corner goes
+ * back to the whole photo, and what is drawn on the photo to be touched (a sticker's buttons, the face guide) keeps one
+ * finger's size at any zoom. A browser without calc() in these keeps the unzoomed sizes. */
+.picture-area.zoomed,.viewer .stage.zoomed{overflow:hidden}
+.viewer img{touch-action:none}
+.zoom-fit{position:absolute;z-index:8;left:8px;top:8px;min-width:52px;min-height:44px;padding:0 12px;border-radius:22px;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;font-size:.8125rem;font-weight:700;font-variant-numeric:tabular-nums;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.zoom-fit[hidden]{display:none}
+.sticker>button,.sticker-handle{transform:scale(calc(1 / var(--view-zoom,1)))}
+.sticker.selected::before{inset:calc(-4px / var(--view-zoom,1));border-width:calc(1.5px / var(--view-zoom,1));border-radius:calc(10px / var(--view-zoom,1))}
+.sticker.balloon.selected::before{border-radius:calc(14px / var(--view-zoom,1))}
+.makeup-guide-handle{transform:translate(-50%,-50%) scale(calc(1 / var(--view-zoom,1)))}
+.makeup-guide-outline{stroke-width:calc(1.5px / var(--view-zoom,1));stroke-dasharray:calc(5px / var(--view-zoom,1)) calc(4px / var(--view-zoom,1))}
+/* The face guide on (Makeup, Face stickers): the panel scrolls within a little under half the screen, so the photo has
+ * room to show a face its handles do not cover; Find face then zooms in on it (app.js showFace). */
+@media (max-width:699px),(max-height:699px){.editor.aligning .panel{max-height:min(calc(100dvh - 302px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),46dvh)}}
+/* The face finder at work (app.js prepareFaces): a glint sweeps the photo while the faces are found; a hint with
+ * nothing to say takes no room. */
+.retouch-hint:empty{display:none}
+.frame.finding::after{content:"";position:absolute;inset:0;z-index:7;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);background-size:220% 100%;animation:face-glint 1.1s linear infinite}
+@keyframes face-glint{from{background-position:120% 0}to{background-position:-120% 0}}
+@media (prefers-reduced-motion:reduce){.frame.finding::after{animation:none;background:rgba(255,255,255,.08)}}
+/* Makeup as looks: the strip of this face with each look, one Strength after it, and the fine-tune behind a door. */
+.makeup-strip{padding:4px 0 8px;margin:0 -4px}
+.makeup-strip .tile .face{background:var(--surface-2)}
+.makeup-strength{min-height:44px}
+.fine-tune{margin-top:4px;border-top:1px solid var(--separator)}
+.fine-tune summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:44px;font-size:.8125rem;font-weight:600;color:var(--label-2)}
+.fine-tune summary::-webkit-details-marker{display:none}
+.fine-tune summary::before{content:"";width:8px;height:8px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin-left:4px;transition:transform .2s}
+.fine-tune[open] summary::before{transform:rotate(45deg)}
+/* The Auto row (auto.js): its name over its short hint, its state beside the switch, like Enhance's row. */
+.auto-heading .enhance-copy{display:grid;gap:2px;min-width:0}
+.auto-heading .enhance-copy small{display:block;font-size:.75rem;font-weight:400;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.auto-state{flex:none;font-size:.8125rem;font-weight:600;color:var(--accent);min-width:44px;text-align:right;padding:6px 0}
+.adjust-fine{margin-top:8px}
+/* The camera's tray sits under the picture in this layout, so its chips take the panel's fill, not the dark glass meant
+ * for a tray over the picture (in light that glass carried black icons on dark grey: the owner's phone, 3 November). */
+.camera.compact .mix,.camera.compact .shuffle,.camera.compact .add-layer{background:var(--fill);-webkit-backdrop-filter:none;backdrop-filter:none}
+/* The safe areas under the home indicator take the open screen's own colour, so the games' paper (or black) runs to the
+ * foot of the screen instead of a band of the camera's page colour (the owner's iPad, 4 November 2026). */
+.app[data-mode=memory]{background:#e9dbb9}.app[data-mode=cardsHub],.app[data-mode=cardGame]{background:#ead9b7}
+.app[data-mode=cardGame]:has(.blackjack-layout){background:#2e665c}.app[data-mode=cardGame]:has(.solitaire-game){background:#83ad9b}
+:root:not([data-theme=light]) .app[data-mode=memory]{background:#101011}:root:not([data-theme=light]) :is(.app[data-mode=cardsHub],.app[data-mode=cardGame]){background:#050505}
+:root:not([data-theme=light]) .app[data-mode=cardGame]:has(.blackjack-layout){background:#101112}:root:not([data-theme=light]) .app[data-mode=cardGame]:has(.solitaire-game){background:#111}
+/* Select in the album (app.js): a tick on every photo, the chosen ones ringed, Delete for all of them at once. */
+.album-select{color:var(--accent);font-weight:600;padding:0 10px;min-height:44px}
+/* The album bar on a phone: with Select beside Memory and Add, the back button and Add keep their icons alone (their
+ * names stay for a reader), so the title stays whole; while selecting only Done and the title stay. */
+@media (max-width:479px){
+ .album .bar .back{width:44px;padding:0;justify-content:center}.album .bar .back span,.album .photos-button span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+ .album .photos-button{width:44px;padding:0;justify-content:center}
+}
+.album.selecting .bar-actions #openGames,.album.selecting .bar-actions #albumImport{display:none}
+.album .bar h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.album .grid button{position:relative}
+.album .grid .pick{display:none;position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;background:var(--surface);color:transparent;box-shadow:0 0 0 1.5px var(--label-3),0 1px 3px var(--shadow)}
+.album .grid .pick svg{width:18px;height:18px;stroke-width:2.6}
+.album.selecting .grid .pick{display:grid;place-items:center}
+.album.selecting .grid button.picked .pick{background:var(--accent-fill);color:var(--on-accent);box-shadow:0 0 0 1.5px var(--on-accent)}
+.album.selecting .grid button.picked img{box-shadow:0 0 0 3px var(--accent)}
+.album.selecting .arcade-entry{display:none}
+.album-actions{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:var(--bar);box-shadow:inset 0 1px var(--outline)}
+.album-actions .text-button{color:var(--accent);font-weight:600}
+.album-count{flex:1;text-align:center;font-size:.8125rem;color:var(--label-2)}
+.album-actions .danger-pill{min-height:44px;height:auto;padding:10px 18px;border-radius:14px;background:var(--surface-2);color:var(--red);box-shadow:inset 0 0 0 1px var(--outline)}
+.album-actions .danger-pill:disabled{opacity:.45}
+/* Remove background (background.js): a see-through picture sits on a checkerboard, in the editor and the viewer. */
+.frame.cutout,.viewer .stage.cutout img{background:repeating-conic-gradient(var(--surface-2) 0 25%,var(--surface) 0 50%) 0 0/18px 18px}
+.editor .frame.cutout{background:repeating-conic-gradient(var(--surface-2) 0 25%,var(--surface) 0 50%) 0 0/18px 18px}

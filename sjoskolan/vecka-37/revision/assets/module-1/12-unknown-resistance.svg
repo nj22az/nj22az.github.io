@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="420" viewBox="0 0 820 420" role="img" aria-labelledby="title desc"><title id="title">Bestäm resistansen från spänning och ström</title><desc id="desc">En ideal 12 V-källa driver den uppmätta strömmen 6 mA genom en okänd resistor. Spänning och ström gäller samma driftpunkt.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id="current-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#007d35"/></marker></defs><rect width="100%" height="100%" fill="white"/><text x="410.0" y="37" font-family="DejaVu Sans,sans-serif" font-size="25" text-anchor="middle" fill="#111" font-weight="700">Bestäm resistansen från spänning och ström</text><polyline points="190,115 190,190.0" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(190 220.0) rotate(0) scale(0.05) translate(-2600 -1000)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="Group">
+       <g class="com.sun.star.drawing.EllipseShape">
+        <g>
+         <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z "/>
+        </g>
+       </g>
+       <g class="Group">
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2600,600 L 2600,1000 "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2400,800 L 2800,800 "/>
+         </g>
+        </g>
+        <g class="com.sun.star.drawing.LineShape">
+         <g>
+          <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 2350,1250 L 2850,1250 "/>
+         </g>
+        </g>
+       </g>
+      </g>
+      </g><polyline points="190,250.0 190,325" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="145" y="214.0" font-family="DejaVu Sans,sans-serif" font-size="18" text-anchor="end" fill="#111">Batteri</text><text x="145" y="241.0" font-family="DejaVu Sans,sans-serif" font-size="22" text-anchor="end" fill="#111">12 V</text><polyline points="190,115 580,115" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><polyline points="580,115 580,190.0" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><g transform="translate(580 220.0) rotate(90) scale(0.05) translate(-3600 -9400)"><g xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" class="com.sun.star.drawing.RectangleShape">
+       <g>
+        <path fill="none" stroke="rgb(0,0,0)" stroke-width="100" stroke-linejoin="round" d="M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z "/>
+       </g>
+      </g>
+      </g><polyline points="580,250.0 580,325" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><text x="622" y="227.0" font-family="DejaVu Sans,sans-serif" font-size="20" text-anchor="start" fill="#111">R = ?</text><polyline points="580,325 190,325" fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round"/><path d="M320,115 L440,115" fill="none" stroke="#007d35" stroke-width="3" marker-end="url(#current-arrow)"/><text x="380.0" y="101" font-family="DejaVu Sans,sans-serif" font-size="21" text-anchor="middle" fill="#006b2e">6 mA</text><text x="410" y="385" font-family="DejaVu Sans,sans-serif" font-size="19" text-anchor="middle" fill="#111">Mätt spänning och ström används för samma resistor</text></svg>

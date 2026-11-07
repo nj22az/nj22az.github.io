@@ -1,0 +1,10 @@
+{
+  "name": "johansson-sc-90",
+  "private": true,
+  "type": "module",
+  "description": "Johansson SC-90: a four-voice retro sound chip, and Sakura Shōten's jingles on it",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "render": "node render.mjs"
+  }
+}

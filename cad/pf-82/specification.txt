@@ -1,0 +1,60 @@
+JOHANSSON PF-82 — POLIVOKS FILTER SYNTHESISER — CAD REVISION A
+3 November 2026
+
+Purpose
+The PF-82 as a physical instrument: a Johansson Denki desktop synthesiser of
+about 1982, designed for the web simulator at /polivoks/ and drawn from
+scratch. Its panel carries exactly the controls of the page, in the page's
+order, so the three.js model (polivoks/view3d.js) can turn the same knobs.
+No geometry, artwork or dimensions are taken from the Formanta Polivoks or
+from clarionut's Eurorack module.
+
+Files
+build.py          build123d model; run: uvx --from build123d python cad/pf-82/build.py
+out/pf-82.step    the solid model in millimetres (regenerated, not committed)
+../../polivoks/3d/pf82.glb          the same model, metres, Y up (committed: the page loads it)
+../../polivoks/3d/pf82-layout.json  every control's panel position and parameter (committed)
+drawing.py        general arrangement from the layout; writes drawing.svg
+
+Overall (millimetres)
+Width over the cheeks:            640
+Depth:                             400
+Height at the rear of the cheeks:  152
+Case between the cheeks:           600 wide, extruded side section
+Cheeks:                            2 × 20 thick, walnut
+Feet:                              4 × Ø24 × 6, rubber
+
+Keyboard
+37 keys: three octaves and a top C (C2 to C5 at the default octave).
+White keys:   pitch 23.5, body 22.5 wide, 150 long, 20 high, top at z = 60.
+Black keys:   13 wide, 95 long, 12 proud of the white keys.
+Key frame:    top at z = 40; key fronts 14 behind the case front; key slip 10 deep.
+Travel:       4 (the page moves a key down 4 when it sounds).
+
+Panel
+Brushed black aluminium, 2 thick, 600 wide, 219 along the slope.
+Front edge at y = 185, z = 78; rear edge at y = 395, z = 140; slope 16.45°.
+Panel co-ordinates: u across from the left, v up the slope from the front edge.
+Header strip v 195–219: wordmark, lamp at u 548, power rocker at u 574.
+Three columns (u 4–198, 202–398, 402–596) and three rows
+(v 130–192, 66–128, 2–64), numbered as on the page's signal-flow map:
+  1 VCO 1       2 VCO 2        4 VCF (rows 1 and 2, right column)
+  3 MIXER       6 ENV 1
+  5 VCA + ENV 2 7 LFO          8 KEYBOARD
+
+Controls
+Knobs:        Ø20 cap (Ø25 skirt), 15 high, 1.2 chamfer, cream pointer.
+Filter knobs: FREQUENCY and RESONANCE Ø30 cap, 18 high, at v = 151.
+Selectors:    chicken-head, Ø14 boss, 24 × 6 bar; at the middle position
+              they point up the slope; 2 to 5 positions over ±35° to ±70°.
+Jacks:        6 on the filter, v = 80, 32 apart: CV 1, CV 2, AUDIO IN,
+              LP OUT, BP OUT, MIX OUT (the lit output feeds the VCA).
+Knob law:     0 at 7 o'clock, 10 at 5 o'clock, 270° clockwise, as on screen.
+
+Colours
+Case #202224 · cheeks #4b3424 · panel #121314 · knobs #1d1d1e
+skirts #0c0c0d · pointers #eeebe4 · white keys #ede9e0 · black keys #141414
+jacks #8a8c8e · lamp #4a3412 (lit amber #f2a93b on the page)
+
+Legends are not geometry: the page prints them onto the panel from the
+layout, in English or Russian, with the same words as the on-screen panel.

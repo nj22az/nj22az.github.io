@@ -1,0 +1,138 @@
+import {createRequire} from 'node:module';
+const require = createRequire(new URL('../../../multimetersimulator/package.json', import.meta.url));
+const {test, expect} = require('@playwright/test');
+const week = '/sjoskolan/vecka-43/aktuell/';
+const old = '/sjoskolan/vecka-45/aktuell/Del_1.html';
+const chapters = ['v43_01', 'v43_02', 'v43_03', 'v45_01'];
+const overflow = async page => expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+const expand = async (page, day) => {
+  const section = page.locator('#dag-' + day);
+  if (!await section.evaluate(el => el.open)) await section.locator('summary').click();
+};
+
+test('four lessons, presentations, exercise links, progress and original route', async ({page}, info) => {
+  const errors = [], failed = [];
+  page.on('pageerror', e => errors.push(e.message));
+  page.on('response', r => {if (r.status() >= 400) failed.push(`${r.status()} ${r.url()}`);});
+  for (let n = 1; n <= 4; n++) {
+    await page.goto(week);
+    await expand(page, n === 1 ? 'måndag' : n === 2 ? 'tisdag' : 'fredag');
+    await page.getByRole('link', {name: `Öppna del ${n}`, exact: true}).first().click();
+    await expect(page).toHaveURL(new RegExp(`/vecka-43/aktuell/Del_${n}.html$`));
+    await expect(page.locator('.course-kicker')).toContainText(`Vecka 43 · Del ${n} av 4`);
+    await expect(page.locator('.del-ovning')).toHaveCount(10);
+    await overflow(page);
+    const button = page.locator(`[data-id="${chapters[n-1]}-q1"]`);
+    await button.click();
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+    await page.reload();
+    await expect(button).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('#din-del .dp-knappar a').first().click();
+    await expect(page.locator('.course-kicker')).toContainText(`Vecka 43 · Del ${n} av 4`);
+    await expect(page.locator('#img')).toBeVisible();
+    await expect.poll(() => page.locator('#img').evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
+    const pdf = await page.getByRole('link', {name: 'PDF', exact: true}).getAttribute('href');
+    const response = await page.request.get(new URL(pdf, page.url()).href);
+    expect(response.ok()).toBe(true);
+    expect((await response.body()).subarray(0, 5).toString()).toBe('%PDF-');
+    await page.getByRole('button', {name: 'Nästa ›', exact: true}).click();
+    await expect(page.locator('#count')).toContainText('2 /');
+    await overflow(page);
+    await page.getByRole('link', {name: 'Övningar med facit', exact: true}).click();
+    await expect(page).toHaveURL(new RegExp(`/Del_${n}.html#ovningar$`));
+  }
+  await page.goto(old);
+  await expect(page.locator('[data-id="v45_01-q1"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-id="v45_01-q6"]').click();
+  await page.goto(week + 'Del_4.html#v45_01-q6');
+  await expect(page.locator('[data-id="v45_01-q6"]')).toHaveAttribute('aria-pressed', 'true');
+  const exercise = page.locator('#v45_01-q6');
+  await exercise.locator('.ledtrad summary').first().click();
+  const hint = exercise.locator('a[href^="#teori-"]').first();
+  const target = await hint.getAttribute('href');
+  await hint.click();
+  await expect(page.locator(target)).toHaveAttribute('open', '');
+  await page.goto(week + 'Del_3.html');
+  await page.locator('.art-nav a[href$="Del_4.html"]').click();
+  await expect(page).toHaveURL(new RegExp('/vecka-43/aktuell/Del_4.html$'));
+  await expect(page.locator('#din-del .dag-tid')).toContainText('10.00–11.00');
+  await page.screenshot({path: info.outputPath('part4.png')});
+  await page.goto(week);
+  await expect(page.locator('[data-vk="ovningar"] .vk-lage')).toContainText('5 av 40 klara');
+  await page.getByRole('link', {name: 'Alla övningar', exact: true}).click();
+  await expect(page.locator('.ovn-delar li')).toHaveCount(4);
+  await expect(page.locator('[data-kap="v45_01"] .ovn-lage')).toHaveText('2 av 10 klara');
+  await overflow(page);
+  await page.screenshot({path: info.outputPath('all-exercises.png'), fullPage: true});
+  await page.getByRole('link', {name: 'Öppna övningarna i del 4', exact: true}).click();
+  await expect(page).toHaveURL(new RegExp('/Del_4.html#ovningar$'));
+  await page.locator('#oversikt .del-gor a').click();
+  await expect(page).toHaveURL(new RegExp('/vecka-43/aktuell/Inlamning.html$'));
+  await expect(page.locator('.ri-classroom')).toContainText('skickar inget till Classroom');
+  await expect(page.locator('.course-lead')).toContainText('fredag 23 oktober');
+  await expect(page.locator('.task')).toHaveCount(4);
+  await expect(page.locator('#ri-lasom a[href="Del_4.html"]')).toHaveCount(1);
+  await overflow(page);
+  expect(errors).toEqual([]);
+  expect(failed).toEqual([]);
+});
+
+test('holding-circuit lab and PDF handoff need no invented Classroom link', async ({page}, info) => {
+  await page.goto(week);
+  await page.getByRole('link', {name: 'Öppna labbet', exact: true}).click();
+  await expect(page.locator('#challenge-select option')).toHaveCount(9);
+  await page.getByRole('button', {name: 'Starta första uppgiften', exact: true}).click();
+  await expect(page.locator('#lock-note')).toBeVisible();
+  await expect(page.locator('#challenge-task')).not.toBeEmpty();
+  await overflow(page);
+  await page.locator('#leave').click();
+  await expect(page.locator('#labbprotokoll')).toContainText('Labbprotokoll: Station C');
+  await page.getByRole('button', {name: /Ny felmodul/}).click();
+  await expect(page.locator('#labbprotokoll')).toBeVisible();
+  await page.locator('.school-nav a[href="/sjoskolan/vecka-43/aktuell/"]').click();
+  await page.getByLabel('Hela veckan', {exact: true}).getByRole('link', {name: 'Öppna inlämningen', exact: true}).click();
+  // Synthetic answers only: exercise marking and download without solving or uploading assessed work.
+  await page.locator('#ri-820b-ns').fill('123');
+  await page.locator('#ri-820a-text').fill('TEST ONLY: synthetic submission evidence.');
+  await page.getByRole('button', {name: 'Rätta inlämning 1', exact: true}).click();
+  await page.locator('#ri-namn').fill('Navigation Test');
+  await page.locator('#ri-lamna').click();
+  await expect(page.locator('#ri-resultat')).toContainText('Google Classroom under Vecka 43');
+  await expect(page.locator('#ri-resultat')).toContainText('foto av ritningen i inlämning 3');
+  await expect(page.locator('#ri-resultat')).toContainText('det ingår inte i sidans PDF');
+  await expect(page.locator('#ri-resultat')).toContainText('Webbsidan har inte skickat något till Classroom');
+  await expect(page.locator('.ri-reserv')).toContainText('godkänt alternativ');
+  await expect(page.locator('.ri-reserv')).not.toContainText('Mejla PDF-filen');
+  await expect(page.locator('.ri-reserv a')).toHaveText('Kontakta läraren');
+  const downloadEvent = page.waitForEvent('download');
+  await page.locator('#ri-pdf').click();
+  const download = await downloadEvent;
+  expect(download.suggestedFilename()).toMatch(/43.*Navigation.*Test.*pdf/i);
+  await download.saveAs(info.outputPath('synthetic-handoff.pdf'));
+  await overflow(page);
+});
+
+test('Week 43 schedule selects Part 4 on Friday at 10.00 Stockholm time', async ({page}) => {
+  await page.clock.install({time: new Date('2026-10-23T10:05:00+02:00')});
+  await page.goto(week);
+  await expect(page.locator('#idag-rubrik')).toHaveText('Del 4: Systematisk felsökning');
+  await page.locator('#idag-knapp').click();
+  await expect(page.locator('.course-kicker')).toContainText('Vecka 43 · Del 4 av 4');
+});
+
+test('Part 4 reading confirmation belongs to Week 43 on both routes', async ({page}) => {
+  await page.clock.install();
+  await page.goto(week + 'Del_4.html');
+  const button = page.locator('.ri-lasdel-knapp');
+  await expect(button).toBeDisabled();
+  await button.scrollIntoViewIfNeeded();
+  await page.clock.fastForward(181000);
+  await expect(button).toBeEnabled();
+  await button.click();
+  await expect(page.locator('.ri-lasdel-status')).toContainText('Del 4 är bekräftad');
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('sj-last:vecka-43'))['del-4']);
+  expect(saved).toBeTruthy();
+  await page.goto(old);
+  await expect(page.locator('.ri-lasdel-status')).toContainText('Senast bekräftad');
+  await expect(page.locator('[data-ri-las-vecka]')).toHaveAttribute('data-ri-las-vecka', '43');
+});

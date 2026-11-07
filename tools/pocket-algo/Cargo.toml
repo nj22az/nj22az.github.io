@@ -1,0 +1,23 @@
+# Pocket Camera's Erase, from PhotoCraft's image algorithms (storytold/photocraft, MIT OR Apache-2.0), built to the
+# WebAssembly file camera/pocket-algo.wasm by build.sh. Pinned to the commit it was tested at.
+[package]
+name = "pocket-algo"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "MIT OR Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+photocraft-algo = { git = "https://github.com/storytold/photocraft", rev = "0d9a0f66137906698525970bb272119bc0cabac4" }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[workspace]

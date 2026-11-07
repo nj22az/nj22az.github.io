@@ -1,0 +1,886 @@
+{
+  "source_commit": "baf0da1a0745bad6238811bdfae26c4df4aebe67",
+  "checked_utc": "2026-10-31T13:35:25Z",
+  "site": "https://nj22az.github.io/johansson-town/",
+  "current_manifest_files": 36,
+  "original_production_JS": 62,
+  "previous_release_manifest_files": 36,
+  "total_unique_files": 97,
+  "matches": 97,
+  "seconds": 141.7,
+  "files": [
+    {
+      "path": "johansson-town/art/ferry-engine-room/Minato_Maru_Engine_Room_H1.blend",
+      "expected_bytes": 784563,
+      "expected_sha256": "26341179d5645e939ac07f4eb229a5d25664691182359c3ca7628588aa5add15",
+      "status": 200,
+      "actual_bytes": 784563,
+      "actual_sha256": "26341179d5645e939ac07f4eb229a5d25664691182359c3ca7628588aa5add15",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/art/ferry-engine-room/cad/Minato_Maru_Engine_Room_H1_Implementation.pdf",
+      "expected_bytes": 520776,
+      "expected_sha256": "7faff00274599ab33d693fde5217de44914c498c344064796a49b68ce4057c72",
+      "status": 200,
+      "actual_bytes": 520776,
+      "actual_sha256": "7faff00274599ab33d693fde5217de44914c498c344064796a49b68ce4057c72",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/assets/models/ferry-engine-room/minato-engine-room-h1-f1.glb",
+      "expected_bytes": 3587152,
+      "expected_sha256": "6ee5d7362b402701b9ee9be8a7f3486464542f1b3687723e52d95da3dd516af9",
+      "status": 200,
+      "actual_bytes": 3587152,
+      "actual_sha256": "6ee5d7362b402701b9ee9be8a7f3486464542f1b3687723e52d95da3dd516af9",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/index.html",
+      "expected_bytes": 46314,
+      "expected_sha256": "ddcf958b7befe71d0acc51b1f450744eecf05a288106e1602a9996343453cbdb",
+      "status": 200,
+      "actual_bytes": 46314,
+      "actual_sha256": "ddcf958b7befe71d0acc51b1f450744eecf05a288106e1602a9996343453cbdb",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/actors-BqR4ujRY.js",
+      "expected_bytes": 92700,
+      "expected_sha256": "85ad7fb866d82823f98ed18551f485774f82da6028c1cd55ae7e96acac308ee2",
+      "status": 200,
+      "actual_bytes": 92700,
+      "actual_sha256": "85ad7fb866d82823f98ed18551f485774f82da6028c1cd55ae7e96acac308ee2",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/actors-uyEUiSkd.js",
+      "expected_bytes": 93260,
+      "expected_sha256": "08cd7013c9b3dc8bdd0cb98e135858e07405b81325931a2c899fc58bec9ebad8",
+      "status": 200,
+      "actual_bytes": 93260,
+      "actual_sha256": "08cd7013c9b3dc8bdd0cb98e135858e07405b81325931a2c899fc58bec9ebad8",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/animate-BX9iDI20.js",
+      "expected_bytes": 644411,
+      "expected_sha256": "65e8d0063a03b4a9516f97ee9a173e798a34fba527a743aa71de150f95e1b49f",
+      "status": 200,
+      "actual_bytes": 644411,
+      "actual_sha256": "65e8d0063a03b4a9516f97ee9a173e798a34fba527a743aa71de150f95e1b49f",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/animate-BkSzIkHa.js",
+      "expected_bytes": 644411,
+      "expected_sha256": "86411147748fffea1dfecdf8fac61678b98112e8d38925e20cbe1fb29d10326a",
+      "status": 200,
+      "actual_bytes": 644411,
+      "actual_sha256": "86411147748fffea1dfecdf8fac61678b98112e8d38925e20cbe1fb29d10326a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/audio-BASudbp7.js",
+      "expected_bytes": 101,
+      "expected_sha256": "5911cd4195623ef6f4fdda1ac15f11b87afea9c38cd8a55eb957617172203fec",
+      "status": 200,
+      "actual_bytes": 101,
+      "actual_sha256": "5911cd4195623ef6f4fdda1ac15f11b87afea9c38cd8a55eb957617172203fec",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/audio-CE8cpUOv.js",
+      "expected_bytes": 101,
+      "expected_sha256": "11521ca759160b955306901782cb22f82a9a9be54e76b81a7480c52e3d1d7b56",
+      "status": 200,
+      "actual_bytes": 101,
+      "actual_sha256": "11521ca759160b955306901782cb22f82a9a9be54e76b81a7480c52e3d1d7b56",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/boot-BQYIUHjR.js",
+      "expected_bytes": 4746,
+      "expected_sha256": "9c6b4c51424cf3bd1edc5124a47d5dc536ea34add8b94a97d768105a0153c399",
+      "status": 200,
+      "actual_bytes": 4746,
+      "actual_sha256": "9c6b4c51424cf3bd1edc5124a47d5dc536ea34add8b94a97d768105a0153c399",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/boot-BwyXU0tX.js",
+      "expected_bytes": 4746,
+      "expected_sha256": "4fa1ba4d44071eecc8abbf888ab5af8f9075138b9fa6bf9b51b5359dd3cc2a76",
+      "status": 200,
+      "actual_bytes": 4746,
+      "actual_sha256": "4fa1ba4d44071eecc8abbf888ab5af8f9075138b9fa6bf9b51b5359dd3cc2a76",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/boot-Dh4Mrg0N.js",
+      "expected_bytes": 4557,
+      "expected_sha256": "d8b05b01a52941cfe8bc42337cc7dfc7aac594f1b09e6e348522ff5ded1638e5",
+      "status": 200,
+      "actual_bytes": 4557,
+      "actual_sha256": "d8b05b01a52941cfe8bc42337cc7dfc7aac594f1b09e6e348522ff5ded1638e5",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/boot-YKl8eog2.js",
+      "expected_bytes": 4746,
+      "expected_sha256": "00caba50c13b75b3f616db961cb51d0283358d7d596a8fcf0dbbf6d65f6a840a",
+      "status": 200,
+      "actual_bytes": 4746,
+      "actual_sha256": "00caba50c13b75b3f616db961cb51d0283358d7d596a8fcf0dbbf6d65f6a840a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/catalog-CDeVBzZu.js",
+      "expected_bytes": 4958,
+      "expected_sha256": "e0be6e8fb7e8c3f4f73789b059f20ca377b15efa46f77f87b1279be2f34b4b6c",
+      "status": 200,
+      "actual_bytes": 4958,
+      "actual_sha256": "e0be6e8fb7e8c3f4f73789b059f20ca377b15efa46f77f87b1279be2f34b4b6c",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/catalog-Dou-UlE5.js",
+      "expected_bytes": 4958,
+      "expected_sha256": "fa10bfb50741ed5f37929a1ce849699177383be2c51fa63f2c0083ba0b3db424",
+      "status": 200,
+      "actual_bytes": 4958,
+      "actual_sha256": "fa10bfb50741ed5f37929a1ce849699177383be2c51fa63f2c0083ba0b3db424",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/compact-shops-D386eqsq.js",
+      "expected_bytes": 835746,
+      "expected_sha256": "63bc2ef41ffb4bf2f49f53ea30323f0df74d5c23eff60670f1542de1384b7e0a",
+      "status": 200,
+      "actual_bytes": 835746,
+      "actual_sha256": "63bc2ef41ffb4bf2f49f53ea30323f0df74d5c23eff60670f1542de1384b7e0a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/compact-shops-HRLOIi1Y.js",
+      "expected_bytes": 835694,
+      "expected_sha256": "db36912232d302ea3596dc52f63c9032ddcd628d7179321a74b61a13f0bce8cd",
+      "status": 200,
+      "actual_bytes": 835694,
+      "actual_sha256": "db36912232d302ea3596dc52f63c9032ddcd628d7179321a74b61a13f0bce8cd",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/concert-jEu_euMX.js",
+      "expected_bytes": 33951,
+      "expected_sha256": "939cac583438326e0a3723109c014b7fb055c64c343f7ee8db4a22348f497cb6",
+      "status": 200,
+      "actual_bytes": 33951,
+      "actual_sha256": "939cac583438326e0a3723109c014b7fb055c64c343f7ee8db4a22348f497cb6",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/concert-m6Cv5kjw.js",
+      "expected_bytes": 33951,
+      "expected_sha256": "00f2e8024aaa035736388cd9f3db6902ea05d59e223f782f62977062c178e0f0",
+      "status": 200,
+      "actual_bytes": 33951,
+      "actual_sha256": "00f2e8024aaa035736388cd9f3db6902ea05d59e223f782f62977062c178e0f0",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/feed-0p_JP0uK.js",
+      "expected_bytes": 25889,
+      "expected_sha256": "e246cd0e4de6da8ad8f0566adbee5c44041c126af5adf1e650bf76e4c50c43f5",
+      "status": 200,
+      "actual_bytes": 25889,
+      "actual_sha256": "e246cd0e4de6da8ad8f0566adbee5c44041c126af5adf1e650bf76e4c50c43f5",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/feed-4Hc-wfOC.js",
+      "expected_bytes": 25889,
+      "expected_sha256": "11d69818d1001a5b7e697cdbe2cc80e9ae2c77be74461b074b55e0d52775a727",
+      "status": 200,
+      "actual_bytes": 25889,
+      "actual_sha256": "11d69818d1001a5b7e697cdbe2cc80e9ae2c77be74461b074b55e0d52775a727",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/feed-Czkene2n.js",
+      "expected_bytes": 25889,
+      "expected_sha256": "6967e2584393a5dabc30d5933ac8547b6eaa5fab8a31cb590536560805b5958b",
+      "status": 200,
+      "actual_bytes": 25889,
+      "actual_sha256": "6967e2584393a5dabc30d5933ac8547b6eaa5fab8a31cb590536560805b5958b",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/feed-D7wFg3Ef.js",
+      "expected_bytes": 25889,
+      "expected_sha256": "2b434852a9365db77c9f0d6877edccc57c90ac17c66667887049ea67675c4409",
+      "status": 200,
+      "actual_bytes": 25889,
+      "actual_sha256": "2b434852a9365db77c9f0d6877edccc57c90ac17c66667887049ea67675c4409",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/ferry-engine-room-asset-xkTbxdtZ.js",
+      "expected_bytes": 845,
+      "expected_sha256": "4b4534481940a9977562d6fdd50698fff2c10b57e61b579a6355bd2877733bae",
+      "status": 200,
+      "actual_bytes": 845,
+      "actual_sha256": "4b4534481940a9977562d6fdd50698fff2c10b57e61b579a6355bd2877733bae",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/ferry-ship-BYOQYI_W.js",
+      "expected_bytes": 38048,
+      "expected_sha256": "56301d422e11165e56c967843ff1a64204fe0e24add9bfa9bc08bd91c3aa7990",
+      "status": 200,
+      "actual_bytes": 38048,
+      "actual_sha256": "56301d422e11165e56c967843ff1a64204fe0e24add9bfa9bc08bd91c3aa7990",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/ferry-ship-BkHvId4g.js",
+      "expected_bytes": 35805,
+      "expected_sha256": "ed033c36209339b0fa020c885c61f233d6a56af1b015551be64c95f7b02c00ae",
+      "status": 200,
+      "actual_bytes": 35805,
+      "actual_sha256": "ed033c36209339b0fa020c885c61f233d6a56af1b015551be64c95f7b02c00ae",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/ferry-ship-BlnVoovY.js",
+      "expected_bytes": 35799,
+      "expected_sha256": "f98e3b77d669223e3a7a3296afa1d88e0bccbb54add782ea4241db67e440c3b6",
+      "status": 200,
+      "actual_bytes": 35799,
+      "actual_sha256": "f98e3b77d669223e3a7a3296afa1d88e0bccbb54add782ea4241db67e440c3b6",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/ferry-ship-CAN-nQPz.js",
+      "expected_bytes": 38048,
+      "expected_sha256": "b0d76affd9f5f45393b55cb0f53b7a05c57ed838cf0acdfd21c57c3d0afcc5b1",
+      "status": 200,
+      "actual_bytes": 38048,
+      "actual_sha256": "b0d76affd9f5f45393b55cb0f53b7a05c57ed838cf0acdfd21c57c3d0afcc5b1",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/fish-DJIlujZy.js",
+      "expected_bytes": 330767,
+      "expected_sha256": "6637be523da8891b044c575c4b024f73b5eba96e1d93b3db92a66ded90803bb3",
+      "status": 200,
+      "actual_bytes": 330767,
+      "actual_sha256": "6637be523da8891b044c575c4b024f73b5eba96e1d93b3db92a66ded90803bb3",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/fish-DmlzgSB5.js",
+      "expected_bytes": 332415,
+      "expected_sha256": "1843443fb7adf185055997a51f73b5722d3aebc05ac21687df83f4bdddf1db2b",
+      "status": 200,
+      "actual_bytes": 332415,
+      "actual_sha256": "1843443fb7adf185055997a51f73b5722d3aebc05ac21687df83f4bdddf1db2b",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/fish-QS-LRVQF.js",
+      "expected_bytes": 330767,
+      "expected_sha256": "e90bc0d830080df0c7c12c9c78de2f87cedc96c5a0107d73db844ead8a094f49",
+      "status": 200,
+      "actual_bytes": 330767,
+      "actual_sha256": "e90bc0d830080df0c7c12c9c78de2f87cedc96c5a0107d73db844ead8a094f49",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/fish-hpRNmSNi.js",
+      "expected_bytes": 332433,
+      "expected_sha256": "8a81046df2518d68a9a1b6906cf158384f5708b5bb50cf62915f03a8f95321e3",
+      "status": 200,
+      "actual_bytes": 332433,
+      "actual_sha256": "8a81046df2518d68a9a1b6906cf158384f5708b5bb50cf62915f03a8f95321e3",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/friendship-C0A5ehs1.js",
+      "expected_bytes": 3421,
+      "expected_sha256": "49887dfef191c692d989f9c6af2d8d4ba6f2ba30fc83864eb4ce1f9a5a7763b7",
+      "status": 200,
+      "actual_bytes": 3421,
+      "actual_sha256": "49887dfef191c692d989f9c6af2d8d4ba6f2ba30fc83864eb4ce1f9a5a7763b7",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/friendship-DqXHyFL0.js",
+      "expected_bytes": 3421,
+      "expected_sha256": "a11d135c8034ee6a59a833fe453e2fa970c44d269b964ec7fd0d4bfa2370e326",
+      "status": 200,
+      "actual_bytes": 3421,
+      "actual_sha256": "a11d135c8034ee6a59a833fe453e2fa970c44d269b964ec7fd0d4bfa2370e326",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/friendship-Drg3EPLK.js",
+      "expected_bytes": 3421,
+      "expected_sha256": "5da8448a646acf37cf10344d5fa91424214987c4a55d609d0a7d9228dc65f5bc",
+      "status": 200,
+      "actual_bytes": 3421,
+      "actual_sha256": "5da8448a646acf37cf10344d5fa91424214987c4a55d609d0a7d9228dc65f5bc",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/friendship-DyCc1p2x.js",
+      "expected_bytes": 3421,
+      "expected_sha256": "445fb281472fa4cb8ed2e6d62c3f1bb9446df464323fb8efb1499d348bd51525",
+      "status": 200,
+      "actual_bytes": 3421,
+      "actual_sha256": "445fb281472fa4cb8ed2e6d62c3f1bb9446df464323fb8efb1499d348bd51525",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/game-CKxverAo.js",
+      "expected_bytes": 889493,
+      "expected_sha256": "6a5b84eb9ffad18192019ef5aab4ebe66a44eec30d9807369976741c8b7e0438",
+      "status": 200,
+      "actual_bytes": 889493,
+      "actual_sha256": "6a5b84eb9ffad18192019ef5aab4ebe66a44eec30d9807369976741c8b7e0438",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/game-Cj_esMUY.js",
+      "expected_bytes": 892069,
+      "expected_sha256": "3223a08c2fa50003eab9ca69c4e320f312b94944dfac9d51fd8899b852017aaf",
+      "status": 200,
+      "actual_bytes": 892069,
+      "actual_sha256": "3223a08c2fa50003eab9ca69c4e320f312b94944dfac9d51fd8899b852017aaf",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/game-DnXd5tgp.js",
+      "expected_bytes": 892048,
+      "expected_sha256": "ddc7ee482b4c86ee65dae4ad5e14dc58f6534c81f5d8863eacd8141571fc0704",
+      "status": 200,
+      "actual_bytes": 892048,
+      "actual_sha256": "ddc7ee482b4c86ee65dae4ad5e14dc58f6534c81f5d8863eacd8141571fc0704",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/game-TM2weX5N.js",
+      "expected_bytes": 891185,
+      "expected_sha256": "3f197864a1cb2269ba4685422917898fca2a1cf263036c8bc2607d27187002b5",
+      "status": 200,
+      "actual_bytes": 891185,
+      "actual_sha256": "3f197864a1cb2269ba4685422917898fca2a1cf263036c8bc2607d27187002b5",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/halloween-Buo41LRJ.js",
+      "expected_bytes": 1231893,
+      "expected_sha256": "dc1abec6b555214638c25b7ea0166a504488a01ecc7aaecd488eb9dae14a68d0",
+      "status": 200,
+      "actual_bytes": 1231893,
+      "actual_sha256": "dc1abec6b555214638c25b7ea0166a504488a01ecc7aaecd488eb9dae14a68d0",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/halloween-Bz6ZJ5ch.js",
+      "expected_bytes": 1231891,
+      "expected_sha256": "fd85fe0d990d117f9dc7c3901dc06e05a01ed1cb8094fa802459c168bedd9f13",
+      "status": 200,
+      "actual_bytes": 1231891,
+      "actual_sha256": "fd85fe0d990d117f9dc7c3901dc06e05a01ed1cb8094fa802459c168bedd9f13",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/halloween-C-8USRQj.js",
+      "expected_bytes": 1233331,
+      "expected_sha256": "9262732f17e85eeef308e91497d80961e2c6132cd55d8e9879d03b5888474338",
+      "status": 200,
+      "actual_bytes": 1233331,
+      "actual_sha256": "9262732f17e85eeef308e91497d80961e2c6132cd55d8e9879d03b5888474338",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/halloween-DrI0gnxI.js",
+      "expected_bytes": 1231891,
+      "expected_sha256": "29c98480ea620b3484e89b480aeccd0203c4c68d6adc79dad736e8bc0e8c418f",
+      "status": 200,
+      "actual_bytes": 1231891,
+      "actual_sha256": "29c98480ea620b3484e89b480aeccd0203c4c68d6adc79dad736e8bc0e8c418f",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/harbour-park-plan-B1KRv61-.js",
+      "expected_bytes": 54063,
+      "expected_sha256": "babff9075f2e90379d38f01ff871263e2a23d58894a261c112f5bee78689022a",
+      "status": 200,
+      "actual_bytes": 54063,
+      "actual_sha256": "babff9075f2e90379d38f01ff871263e2a23d58894a261c112f5bee78689022a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/harbour-park-plan-CU8IGfsI.js",
+      "expected_bytes": 53396,
+      "expected_sha256": "add69c014327d2ca0272e1680de0da7d23a35cd1b3ee32d50edcaf8055670364",
+      "status": 200,
+      "actual_bytes": 53396,
+      "actual_sha256": "add69c014327d2ca0272e1680de0da7d23a35cd1b3ee32d50edcaf8055670364",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/hat-models-BltfS9Th.js",
+      "expected_bytes": 48044,
+      "expected_sha256": "93e0d4d9df04259852e2fc4a37de698ead3ab73eba2d423d7a08e630d53385fe",
+      "status": 200,
+      "actual_bytes": 48044,
+      "actual_sha256": "93e0d4d9df04259852e2fc4a37de698ead3ab73eba2d423d7a08e630d53385fe",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/hat-models-y75xNIEN.js",
+      "expected_bytes": 48026,
+      "expected_sha256": "8b7a01ece04efbcf87c41b4fefe40471a240913d8680cf68b3b5508467911cee",
+      "status": 200,
+      "actual_bytes": 48026,
+      "actual_sha256": "8b7a01ece04efbcf87c41b4fefe40471a240913d8680cf68b3b5508467911cee",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/icons-DfeBIm6m.js",
+      "expected_bytes": 7263,
+      "expected_sha256": "b091b9cb9311794bd87d1ba33e34fc8a3bb6ca8931abd3bc51614f9278744803",
+      "status": 200,
+      "actual_bytes": 7263,
+      "actual_sha256": "b091b9cb9311794bd87d1ba33e34fc8a3bb6ca8931abd3bc51614f9278744803",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/onsen-CyzWxpNZ.js",
+      "expected_bytes": 189553,
+      "expected_sha256": "2550e5fdc2307ae43539af717a9d23cd3498827face0c4b57f6edc47659bdf13",
+      "status": 200,
+      "actual_bytes": 189553,
+      "actual_sha256": "2550e5fdc2307ae43539af717a9d23cd3498827face0c4b57f6edc47659bdf13",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/onsen-DdlFB1K2.js",
+      "expected_bytes": 189552,
+      "expected_sha256": "cbb1df9e8e7647c233d7f9638bb6ed43e243f87505be700ef68b04b7b6ed2cf2",
+      "status": 200,
+      "actual_bytes": 189552,
+      "actual_sha256": "cbb1df9e8e7647c233d7f9638bb6ed43e243f87505be700ef68b04b7b6ed2cf2",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/onsen-IyAyM8I0.js",
+      "expected_bytes": 189552,
+      "expected_sha256": "98a8cd41c5c37c6a77be895d1d743f258ff335257a97160c8d6f646d4991b5a4",
+      "status": 200,
+      "actual_bytes": 189552,
+      "actual_sha256": "98a8cd41c5c37c6a77be895d1d743f258ff335257a97160c8d6f646d4991b5a4",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/onsen-bmg3wi2e.js",
+      "expected_bytes": 189553,
+      "expected_sha256": "d84dece4b0d3cb088ca762e67fad8e53d4d2a4c6d3883a76510d80768366ebdd",
+      "status": 200,
+      "actual_bytes": 189553,
+      "actual_sha256": "d84dece4b0d3cb088ca762e67fad8e53d4d2a4c6d3883a76510d80768366ebdd",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/pixar-DC4sRsqH.js",
+      "expected_bytes": 115946,
+      "expected_sha256": "0e699b3cb4abf0404469d645b84f19aa0c2ef5201c3ec7b090c73d16aa302c4c",
+      "status": 200,
+      "actual_bytes": 115946,
+      "actual_sha256": "0e699b3cb4abf0404469d645b84f19aa0c2ef5201c3ec7b090c73d16aa302c4c",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/pixar-DVmUiIgS.js",
+      "expected_bytes": 115851,
+      "expected_sha256": "ce50884063065f60faf9a5315cbfb14890ac0119f84141893235f3bac24b2423",
+      "status": 200,
+      "actual_bytes": 115851,
+      "actual_sha256": "ce50884063065f60faf9a5315cbfb14890ac0119f84141893235f3bac24b2423",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/portraits-CJ92fBau.js",
+      "expected_bytes": 2671,
+      "expected_sha256": "44a2465cd516b12c51b3c3683adf9dbdc21758bc56369cecbbde6a1a54bd0ded",
+      "status": 200,
+      "actual_bytes": 2671,
+      "actual_sha256": "44a2465cd516b12c51b3c3683adf9dbdc21758bc56369cecbbde6a1a54bd0ded",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/portraits-h0W4hcIF.js",
+      "expected_bytes": 2671,
+      "expected_sha256": "f4f6324190288d402ef1ae7e4ac79622c5dc7f8fadd4da0f17372c9d55812cbd",
+      "status": 200,
+      "actual_bytes": 2671,
+      "actual_sha256": "f4f6324190288d402ef1ae7e4ac79622c5dc7f8fadd4da0f17372c9d55812cbd",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/preload-helper-PPVm8Dsz.js",
+      "expected_bytes": 1232,
+      "expected_sha256": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+      "status": 200,
+      "actual_bytes": 1232,
+      "actual_sha256": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sakura-interior-DXP2Bu18.js",
+      "expected_bytes": 179291,
+      "expected_sha256": "d3ce9a2fbe02bbaf7560c578253d8cee07a21a1bab7788753cd05cb0faba356c",
+      "status": 200,
+      "actual_bytes": 179291,
+      "actual_sha256": "d3ce9a2fbe02bbaf7560c578253d8cee07a21a1bab7788753cd05cb0faba356c",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sakura-interior-DYeixllV.js",
+      "expected_bytes": 179291,
+      "expected_sha256": "2fa71d46509e480c8bd3307840ff7817d0df2741ff973580b948de94c59eb7e2",
+      "status": 200,
+      "actual_bytes": 179291,
+      "actual_sha256": "2fa71d46509e480c8bd3307840ff7817d0df2741ff973580b948de94c59eb7e2",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sakura-interior-Dvd89y_K.js",
+      "expected_bytes": 179291,
+      "expected_sha256": "4e68c564c40a31216a396323790384a6b0cefc89f7c655b8942e6030f18f0612",
+      "status": 200,
+      "actual_bytes": 179291,
+      "actual_sha256": "4e68c564c40a31216a396323790384a6b0cefc89f7c655b8942e6030f18f0612",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sakura-interior-q1Xy3n7H.js",
+      "expected_bytes": 179291,
+      "expected_sha256": "6dc586591fc44b7ce1b9257e5c2d707892c8d5242e6d08dcd83a76e9806111f6",
+      "status": 200,
+      "actual_bytes": 179291,
+      "actual_sha256": "6dc586591fc44b7ce1b9257e5c2d707892c8d5242e6d08dcd83a76e9806111f6",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sato-ramen-B4SkSv0l.js",
+      "expected_bytes": 543,
+      "expected_sha256": "db6d393ac5d1096893595dd255fd7f25a81ec8090347a8d9b42f15b7623c9ac2",
+      "status": 200,
+      "actual_bytes": 543,
+      "actual_sha256": "db6d393ac5d1096893595dd255fd7f25a81ec8090347a8d9b42f15b7623c9ac2",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sato-ramen-BC3i5mNK.js",
+      "expected_bytes": 543,
+      "expected_sha256": "09388bb640bee2bf41db557f196c6ea22e36625de99c602ba18b24b6521c53e2",
+      "status": 200,
+      "actual_bytes": 543,
+      "actual_sha256": "09388bb640bee2bf41db557f196c6ea22e36625de99c602ba18b24b6521c53e2",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sato-ramen-Cp-8a0vc.js",
+      "expected_bytes": 543,
+      "expected_sha256": "667298ac87bfa64ca604dd08f914a78178214718d649d4cc1f2a17a862a0e333",
+      "status": 200,
+      "actual_bytes": 543,
+      "actual_sha256": "667298ac87bfa64ca604dd08f914a78178214718d649d4cc1f2a17a862a0e333",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/sato-ramen-DLbOVO5c.js",
+      "expected_bytes": 543,
+      "expected_sha256": "0c6cdeca62f20ac4338c44a60fc4fcaf001489977bca293a6fd0d60378292aee",
+      "status": 200,
+      "actual_bytes": 543,
+      "actual_sha256": "0c6cdeca62f20ac4338c44a60fc4fcaf001489977bca293a6fd0d60378292aee",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/scene-world-B1VS_l2p.js",
+      "expected_bytes": 39379,
+      "expected_sha256": "607f2244138698ee9981df196751fe02f5e750fe07d677994e85f979497ef2a4",
+      "status": 200,
+      "actual_bytes": 39379,
+      "actual_sha256": "607f2244138698ee9981df196751fe02f5e750fe07d677994e85f979497ef2a4",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/scene-world-C4dZPQz-.js",
+      "expected_bytes": 39379,
+      "expected_sha256": "c586e3d2b46d3d85b007d4379da53c386590c6f4cadd037057ae0c49b13f0a6f",
+      "status": 200,
+      "actual_bytes": 39379,
+      "actual_sha256": "c586e3d2b46d3d85b007d4379da53c386590c6f4cadd037057ae0c49b13f0a6f",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/scene-world-DqkEvwsb.js",
+      "expected_bytes": 39379,
+      "expected_sha256": "a56e9a02fd57f73ecc395a3ea76f078617b51c24de3969e3bab40e5175c1933a",
+      "status": 200,
+      "actual_bytes": 39379,
+      "actual_sha256": "a56e9a02fd57f73ecc395a3ea76f078617b51c24de3969e3bab40e5175c1933a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/scene-world-MP4LqS45.js",
+      "expected_bytes": 39379,
+      "expected_sha256": "cb8fecb53fc7cf635df1cffaa9c6bf8f8a37cfb2effdfb44f8458f1b45a9257a",
+      "status": 200,
+      "actual_bytes": 39379,
+      "actual_sha256": "cb8fecb53fc7cf635df1cffaa9c6bf8f8a37cfb2effdfb44f8458f1b45a9257a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/shopping-lane-plan-D0DhEU8_.js",
+      "expected_bytes": 606,
+      "expected_sha256": "5bdd9f9ba046f84c06cef3f1b7ed6318534d4216331464a43ea0682a47e32d94",
+      "status": 200,
+      "actual_bytes": 606,
+      "actual_sha256": "5bdd9f9ba046f84c06cef3f1b7ed6318534d4216331464a43ea0682a47e32d94",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/source.json",
+      "expected_bytes": 83,
+      "expected_sha256": "613698279e999fd7efe8512bf5f8ebb3ef64e2d5d79fee50d25e2a9231666f6b",
+      "status": 200,
+      "actual_bytes": 83,
+      "actual_sha256": "613698279e999fd7efe8512bf5f8ebb3ef64e2d5d79fee50d25e2a9231666f6b",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/spector.bundle-_JPoFEkN.js",
+      "expected_bytes": 1199203,
+      "expected_sha256": "8e4e5a80c99ba39625463e80fc7b32b8961b174d46d438fe18a08ee0f7023f5c",
+      "status": 200,
+      "actual_bytes": 1199203,
+      "actual_sha256": "8e4e5a80c99ba39625463e80fc7b32b8961b174d46d438fe18a08ee0f7023f5c",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/staff-bench-CjSrHg3G.js",
+      "expected_bytes": 223524,
+      "expected_sha256": "cce0d81059de4a02719f73d6fff6d0cdaf9efb11e8bebd488c75ff2a3260372d",
+      "status": 200,
+      "actual_bytes": 223524,
+      "actual_sha256": "cce0d81059de4a02719f73d6fff6d0cdaf9efb11e8bebd488c75ff2a3260372d",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/staff-bench-DSC0Cxar.js",
+      "expected_bytes": 223909,
+      "expected_sha256": "2e8da50a0a6d938b71ee5fcecbc65098793ed4e343b56b4443be46f07978570d",
+      "status": 200,
+      "actual_bytes": 223909,
+      "actual_sha256": "2e8da50a0a6d938b71ee5fcecbc65098793ed4e343b56b4443be46f07978570d",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/startup-recovery-CIJ7HiTu.js",
+      "expected_bytes": 8783,
+      "expected_sha256": "cd8cce68bf6d0e75fca8770a907732cb460fdf9947d6f34150779d5fcade963e",
+      "status": 200,
+      "actual_bytes": 8783,
+      "actual_sha256": "cd8cce68bf6d0e75fca8770a907732cb460fdf9947d6f34150779d5fcade963e",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/storyteller-9KhANrNZ.js",
+      "expected_bytes": 67194,
+      "expected_sha256": "3b557218f231044a5d2c4af5fe96c2f9500f7e72c9abadd7420bd471f1f7942a",
+      "status": 200,
+      "actual_bytes": 67194,
+      "actual_sha256": "3b557218f231044a5d2c4af5fe96c2f9500f7e72c9abadd7420bd471f1f7942a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/storyteller-B_6XBzQM.js",
+      "expected_bytes": 67194,
+      "expected_sha256": "0fd2fa28f4f6968767c8f438dc951a76d680e61fcf8a8029bbf61a8439375ec8",
+      "status": 200,
+      "actual_bytes": 67194,
+      "actual_sha256": "0fd2fa28f4f6968767c8f438dc951a76d680e61fcf8a8029bbf61a8439375ec8",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/storyteller-CZDQqH4D.js",
+      "expected_bytes": 67194,
+      "expected_sha256": "d5f57e3a639e508062423d17dfdc66f067e41e906e71c4e5eb930b8a9e7dfb5a",
+      "status": 200,
+      "actual_bytes": 67194,
+      "actual_sha256": "d5f57e3a639e508062423d17dfdc66f067e41e906e71c4e5eb930b8a9e7dfb5a",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/storyteller-DixtvLu9.js",
+      "expected_bytes": 67528,
+      "expected_sha256": "75c35b032943e8a86163f1b93492261b8011ef5ee331e53b32f090b4a623b0c7",
+      "status": 200,
+      "actual_bytes": 67528,
+      "actual_sha256": "75c35b032943e8a86163f1b93492261b8011ef5ee331e53b32f090b4a623b0c7",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/studio-handoff-MzHhuZSW.js",
+      "expected_bytes": 6099,
+      "expected_sha256": "f604677633a51b81ff428dc144a0e93b54dc782a7377e8af4b270f0b1ca79b18",
+      "status": 200,
+      "actual_bytes": 6099,
+      "actual_sha256": "f604677633a51b81ff428dc144a0e93b54dc782a7377e8af4b270f0b1ca79b18",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/studio-handoff-dU-3hwmR.js",
+      "expected_bytes": 6099,
+      "expected_sha256": "152d9cc1eeb4833b5a8ad33e52ef6ca0f7eecffe252af91557d87992e7675f8f",
+      "status": 200,
+      "actual_bytes": 6099,
+      "actual_sha256": "152d9cc1eeb4833b5a8ad33e52ef6ca0f7eecffe252af91557d87992e7675f8f",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/thuan-voice-Dz-XGNqd.js",
+      "expected_bytes": 5832,
+      "expected_sha256": "7353d3a89febbcb7ca9cded704c7c09b90bde9c665e843631510e857f881cd59",
+      "status": 200,
+      "actual_bytes": 5832,
+      "actual_sha256": "7353d3a89febbcb7ca9cded704c7c09b90bde9c665e843631510e857f881cd59",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/title-menu-CrThthUz.js",
+      "expected_bytes": 3993,
+      "expected_sha256": "4205aa2f9d35e2e6939d9f6a65182aab331dddda966a0b8131a3c73c2a8e500d",
+      "status": 200,
+      "actual_bytes": 3993,
+      "actual_sha256": "4205aa2f9d35e2e6939d9f6a65182aab331dddda966a0b8131a3c73c2a8e500d",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/title-menu-Dpcp6Pof.js",
+      "expected_bytes": 3993,
+      "expected_sha256": "ba407c8819e83260863ccb43706693fadff0b3d2349156a011efc721dd7c3796",
+      "status": 200,
+      "actual_bytes": 3993,
+      "actual_sha256": "ba407c8819e83260863ccb43706693fadff0b3d2349156a011efc721dd7c3796",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/title-menu-bXbo70HQ.js",
+      "expected_bytes": 3993,
+      "expected_sha256": "71f6ebf5111fa2334b333e2dcac271eb62ef20d750d824675130119b0dff19c8",
+      "status": 200,
+      "actual_bytes": 3993,
+      "actual_sha256": "71f6ebf5111fa2334b333e2dcac271eb62ef20d750d824675130119b0dff19c8",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/title-menu-dnO4MlyO.js",
+      "expected_bytes": 3993,
+      "expected_sha256": "66c4fb555622bbda5820582594d35addb953d1522b6e4465d15ef6094346a324",
+      "status": 200,
+      "actual_bytes": 3993,
+      "actual_sha256": "66c4fb555622bbda5820582594d35addb953d1522b6e4465d15ef6094346a324",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/touch-ui-D34cMzo7.js",
+      "expected_bytes": 2413,
+      "expected_sha256": "83b5028de47afa38a02300daf6d01f359d4ef5bc4aae58d4875f070d6f77db33",
+      "status": 200,
+      "actual_bytes": 2413,
+      "actual_sha256": "83b5028de47afa38a02300daf6d01f359d4ef5bc4aae58d4875f070d6f77db33",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/town-hall-B1JXEkbF.js",
+      "expected_bytes": 58170,
+      "expected_sha256": "20a07cd4eb791aca132961e5752ae0f1a3c2cfe00529278b872379c2a4f71825",
+      "status": 200,
+      "actual_bytes": 58170,
+      "actual_sha256": "20a07cd4eb791aca132961e5752ae0f1a3c2cfe00529278b872379c2a4f71825",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/town-hall-C65k24em.js",
+      "expected_bytes": 57946,
+      "expected_sha256": "f0fefa998502ed3a7356974c057a84c9a7d4026b31ce57ebed802a90618db5a2",
+      "status": 200,
+      "actual_bytes": 57946,
+      "actual_sha256": "f0fefa998502ed3a7356974c057a84c9a7d4026b31ce57ebed802a90618db5a2",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/town-hall-CecJUXvJ.js",
+      "expected_bytes": 57946,
+      "expected_sha256": "574cfa43afd28ce726ae31ca65bded0bd9959b0c5acdb57e6dd13768144c79ea",
+      "status": 200,
+      "actual_bytes": 57946,
+      "actual_sha256": "574cfa43afd28ce726ae31ca65bded0bd9959b0c5acdb57e6dd13768144c79ea",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/town-hall-DJTlt0JJ.js",
+      "expected_bytes": 57946,
+      "expected_sha256": "4bef8f2e62d87a473947933dc01a787c823006337cd70313b37d56bec41a98a6",
+      "status": 200,
+      "actual_bytes": 57946,
+      "actual_sha256": "4bef8f2e62d87a473947933dc01a787c823006337cd70313b37d56bec41a98a6",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/tree-design-data-iR1qvQBH.js",
+      "expected_bytes": 633139,
+      "expected_sha256": "c2e5523bbdfd35de736dba447e106edd8909a672776674d2c2c7313028c8e48e",
+      "status": 200,
+      "actual_bytes": 633139,
+      "actual_sha256": "c2e5523bbdfd35de736dba447e106edd8909a672776674d2c2c7313028c8e48e",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/webmcp-CxSkO4VH.js",
+      "expected_bytes": 15824,
+      "expected_sha256": "2a6856ebc806bc4225e8bdfd3d08f913aad788e032d8bda521a230291c0f1cb6",
+      "status": 200,
+      "actual_bytes": 15824,
+      "actual_sha256": "2a6856ebc806bc4225e8bdfd3d08f913aad788e032d8bda521a230291c0f1cb6",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/runtime/webmcp-characters-BkXkAGJZ.js",
+      "expected_bytes": 3130,
+      "expected_sha256": "4f1c850b6db1cf07f238f632a62d81eb8d1336f66d50e23a2bf6c738cb82b2bc",
+      "status": 200,
+      "actual_bytes": 3130,
+      "actual_sha256": "4f1c850b6db1cf07f238f632a62d81eb8d1336f66d50e23a2bf6c738cb82b2bc",
+      "matches": true
+    },
+    {
+      "path": "johansson-town/sw.js",
+      "expected_bytes": 2308,
+      "expected_sha256": "d415229aba94a40a5683c8b96bd1a2c7aeea81431d7766a5eec44588763e69e3",
+      "status": 200,
+      "actual_bytes": 2308,
+      "actual_sha256": "d415229aba94a40a5683c8b96bd1a2c7aeea81431d7766a5eec44588763e69e3",
+      "matches": true
+    }
+  ]
+}

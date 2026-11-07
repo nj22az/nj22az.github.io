@@ -1,0 +1,1 @@
+Verified Linux 0.2.21 release evidence. Captures are actual software-rendered game output; controller input is simulated. Physical Steam Deck acceptance remains unverified. See ../../acceptance-0.2.21.md.

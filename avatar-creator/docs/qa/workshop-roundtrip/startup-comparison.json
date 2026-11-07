@@ -1,0 +1,115 @@
+{
+  "current": {
+    "status": "Drawing the island",
+    "hint": "Drawing the island",
+    "ready": {
+      "completed": 8,
+      "total": 10,
+      "percent": 70,
+      "target": 97,
+      "seconds": 3,
+      "ready": false,
+      "label": "Drawing the island",
+      "error": null,
+      "assets": {
+        "completed": 24,
+        "total": 24,
+        "failed": 0
+      },
+      "timings": {
+        "controls": {
+          "start": 632.8999999985099,
+          "end": 633.5
+        },
+        "code": {
+          "start": 633.6999999992549,
+          "end": 716.8999999985099
+        },
+        "accessories": {
+          "start": 719.2999999970198,
+          "end": 753.0999999977648
+        },
+        "graphics": {
+          "start": 753.6999999992549,
+          "end": 787.2999999970198
+        },
+        "town": {
+          "start": 1089.199999999255,
+          "end": 5448.599999997765
+        },
+        "residents": {
+          "start": 5575.79999999702,
+          "end": 7273.699999999255
+        },
+        "shaders": {
+          "start": 8296.29999999702,
+          "end": 8823.699999999255
+        },
+        "walking": {
+          "start": 8825.79999999702,
+          "end": 9922.599999997765
+        },
+        "preview": {
+          "start": 9924.39999999851
+        }
+      }
+    }
+  },
+  "baseline": {
+    "baseline": "unchanged main HTML and compiled chunks",
+    "ready": false,
+    "errors": [],
+    "loading": {
+      "completed": 8,
+      "total": 10,
+      "percent": 70,
+      "target": 97,
+      "seconds": 3,
+      "ready": false,
+      "label": "Drawing the island",
+      "error": null,
+      "assets": {
+        "completed": 24,
+        "total": 24,
+        "failed": 0
+      },
+      "timings": {
+        "controls": {
+          "start": 487.5,
+          "end": 488.20000000298023
+        },
+        "code": {
+          "start": 488.4000000022352,
+          "end": 561.4000000022352
+        },
+        "accessories": {
+          "start": 565.2000000029802,
+          "end": 589
+        },
+        "graphics": {
+          "start": 589.7000000029802,
+          "end": 624.3000000007451
+        },
+        "town": {
+          "start": 873.3000000007451,
+          "end": 4589.20000000298
+        },
+        "residents": {
+          "start": 4707.10000000149,
+          "end": 5675.20000000298
+        },
+        "shaders": {
+          "start": 6474,
+          "end": 6929.10000000149
+        },
+        "walking": {
+          "start": 6932.20000000298,
+          "end": 7493
+        },
+        "preview": {
+          "start": 7493.5
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "focusedTests": {
+    "passed": 53,
+    "failed": 0
+  },
+  "runtimeTests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "surfaceTests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "compiledGraphEntries": 32,
+  "previousGraphEntries": 36,
+  "browsers": [
+    "generic room recovery/exchange 1280 and 390",
+    "native workshop/floating/GLB/export/publish/rollback 1280 and 390",
+    "compiled workshop builder 960 and 390"
+  ],
+  "publishedWorkshopRevision": 1,
+  "wholeGameStartup": "Both current build and unchanged-main baseline reached Drawing the island (8/10 steps, all 24 assets loaded) but did not finish the first preview frame within 60 seconds on SwiftShader. No page errors; isolated compiled room checks pass.",
+  "physicalSafari": "Not tested",
+  "fullAnimationTimeline": "Not implemented"
+}

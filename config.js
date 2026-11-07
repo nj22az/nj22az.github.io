@@ -1,0 +1,367 @@
+/**
+ * Site Configuration
+ * All hardcoded values, project data, and UI strings in one place.
+ */
+
+const CONFIG = {
+  site: {
+    title: "The Office of Nils Johansson",
+    tagline: "Engineering in the field. Building beyond it.",
+    description:
+      "Field service engineering, industrial commissioning, and practical digital tools shaped by work across marine and international environments.",
+    footerTagline: "Field engineering, practical tools, and writing from work across borders.",
+    url: "https://nj22az.github.io",
+    copyright: "\u00A9 " + new Date().getFullYear() + " Nils Johansson",
+  },
+
+  author: {
+    name: "Nils Johansson",
+    role: "Field Service Engineer \u00b7 Marine Systems",
+    location: "Southeast Asia",
+    bio: "Marine engineer turned field service engineer, working across maritime systems, precision material testing, and industrial commissioning. I combine hands-on diagnostics with structured delivery, clear documentation, and cross-cultural collaboration.",
+    social: {
+      github: "https://github.com/nj22az",
+      linkedin: "https://www.linkedin.com/in/nils-johansson-86744583",
+      store: "https://3va6hr-fw.myshopify.com/",
+    },
+    locations: [
+      {
+        name: "Stora Mell\u00f6sa",
+        label: "Sweden",
+        countryCode: "SE",
+        embed: "https://maps.google.com/maps?q=Stora+Mell%C3%B6sa,+Sweden&z=12&output=embed",
+      },
+      {
+        name: "Nam Phuoc",
+        label: "Vietnam",
+        countryCode: "VN",
+        embed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15350.0!2d108.27!3d15.85!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142b1a8c7fbc96f%3A0x3b7e9c7f9a8c1d3e!2sNam%20Ph%C6%B0%E1%BB%9Bc%2C%20Duy%20Xuy%C3%AAn%2C%20Quang%20Nam%2C%20Vietnam!5e0!3m2!1sen!2s!4v1",
+      },
+    ],
+    schedule: {
+      note: "Available Mon\u2013Fri, office hours. Not available on public holidays.",
+      defaultLocation: 0,
+    },
+  },
+
+  navigation: [
+    { id: "home", label: "Home" },
+    { id: "projects", label: "Projects" },
+    { id: "world", label: "Johansson World", url: "/johansson-world/" },
+    { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
+    { id: "blog", label: "Blog", url: "/blog/" },
+    { id: "hotels", label: "Hotels & Parking", url: "/hotels/" },
+    { id: "about", label: "About" },
+    { id: "locations", label: "Locations" },
+  ],
+
+  projects: [
+    {
+      title: "Maintenance Programme Demo",
+      description:
+        "Try an English maintenance programme for technical equipment. Explore sample assets, scheduled tasks, inspection checklists, risk assessments and service history. Demonstration data; changes stay in your browser.",
+      url: "/maintenance-demo/",
+      icon: "notebook",
+      tags: ["Demo", "Maintenance", "Engineering"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "Sjöskolan – elteknik",
+      description:
+        "Svenskt elevmaterial för elteknik ombord: presentationer, bildövningar och metodstöd för vecka 37–45. Multimeter, SELV-rigg, trefas och felsökning.",
+      url: "/sjoskolan/",
+      icon: "notebook",
+      tags: ["Sjöfart", "Elteknik", "Elevmaterial"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "Elteknik och ell\u00e4ra",
+      description:
+        "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. E-book price read live from Shopify \u2014 or download a free sample chapter.",
+      url: "/elteknik/",
+      shopifyProductUrl: "https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara.js",
+      icon: "notebook",
+      image: "/elteknik/files/omslag.jpg?v=20261017",
+      tags: ["Book", "Elteknik", "YH"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "Johansson World",
+      description:
+        "A storytelling game set in Johansson Town, a 1997 Okinawan harbour town. Meet the residents and discover the shops, bathhouse and waterfront.",
+      url: "/johansson-world/",
+      icon: "home",
+      tags: ["3D World", "Exploration", "Okinawa"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "GitHub",
+      description:
+        "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
+      url: "https://github.com/nj22az",
+      icon: "github",
+      tags: ["Code", "Open Source", "Projects"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "LinkedIn",
+      description:
+        "Career history and professional work across maritime systems, industrial equipment, and international field service.",
+      url: "https://www.linkedin.com/in/nils-johansson-86744583",
+      icon: "linkedin",
+      tags: ["Career", "Networking", "Engineering"],
+      bento: "normal",
+      featured: true,
+    },
+    {
+      title: "JOJO-Engineering Shop",
+      description:
+        "Printify-made apparel, drinkware, and field-ready merchandise from JOJO-Engineering.",
+      url: "https://3va6hr-fw.myshopify.com/",
+      icon: "store",
+      tags: ["Printify", "Merchandise", "Shop"],
+      bento: "normal",
+      featured: true,
+    },
+    {
+      title: "Blog",
+      description:
+        "Long-form technical dispatches and cultural reflections from engineering work around the world.",
+      url: "/blog/",
+      icon: "wordpress",
+      tags: ["Writing", "Engineering", "Travel"],
+      bento: "wide",
+      featured: true,
+    },
+    {
+      title: "StepWise",
+      description:
+        "A test-point planner for measurement tasks: create evenly spaced or percentage targets, convert units, and export the plan.",
+      url: "https://nj22az.github.io/stepbuddy/",
+      icon: "calculator",
+      tags: ["Tool", "Calculator", "Engineering"],
+      bento: "normal",
+      featured: true,
+    },
+  ],
+
+  archivedProjects: [
+    {
+      title: "Jonsson's Anslagstavla",
+      description:
+        "A bilingual shop for practical products made in Stora Mell\u00f6sa, with online ordering and Swish payment.",
+      url: "/shop/",
+      icon: "package",
+      tags: ["Shop", "Products", "Sweden"],
+      bento: "wide",
+      featured: false,
+      archived: true,
+    },
+  ],
+
+  wordpressApi:
+    "https://public-api.wordpress.com/wp/v2/sites/theofficeofnils.wordpress.com/posts",
+
+  navLogo: function (h) {
+    var height = h || 32;
+    var width = Math.round(height * 5.6);
+    return '<svg viewBox="0 0 280 50" width="' + width + '" height="' + height + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
+      '<rect x="1.5" y="1.5" width="277" height="47" rx="8" stroke="currentColor" stroke-width="2"/>' +
+      '<text x="140" y="21" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="11" fill="currentColor" text-anchor="middle" letter-spacing="3.5">THE OFFICE OF</text>' +
+      '<text x="140" y="38" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="14" fill="currentColor" text-anchor="middle" letter-spacing="2.5">NILS JOHANSSON</text>' +
+    '</svg>';
+  },
+
+  logo: (function () {
+    var _id = 0;
+    return function (size) {
+      var s = size || 120;
+      var uid = "seal" + (++_id);
+      return '<svg viewBox="0 0 200 200" width="' + s + '" height="' + s + '" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Office of Nils Johansson">' +
+        '<defs><path id="' + uid + '" d="M 40 100 A 60 60 0 0 1 160 100"/></defs>' +
+        '<circle cx="100" cy="100" r="96" stroke="currentColor" stroke-width="3"/>' +
+        '<circle cx="100" cy="100" r="84" stroke="currentColor" stroke-width="1.5"/>' +
+        '<text font-family="Nunito, system-ui, sans-serif" font-weight="700" font-size="14" fill="currentColor" letter-spacing="3">' +
+          '<textPath href="#' + uid + '" startOffset="50%" text-anchor="middle">THE OFFICE OF</textPath>' +
+        '</text>' +
+        '<text x="100" y="108" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">NILS</text>' +
+        '<text x="100" y="130" font-family="Nunito, system-ui, sans-serif" font-weight="800" font-size="19" fill="currentColor" text-anchor="middle" letter-spacing="1.5">JOHANSSON</text>' +
+        '<line x1="65" y1="137" x2="135" y2="137" stroke="currentColor" stroke-width="1" opacity="0.4"/>' +
+        '<text x="100" y="155" font-family="Nunito, system-ui, sans-serif" font-weight="600" font-size="9" fill="currentColor" text-anchor="middle" letter-spacing="4" opacity="0.6">EST. MMXI</text>' +
+      '</svg>';
+    };
+  })(),
+
+  icons: {
+    github:
+      "M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4M9 18c-4.51 2-5-2-7-2",
+    linkedin:
+      "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6ZM2 9h4v12H2ZM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+    store:
+      "M4 7V4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3M2 7h20l-1.5 9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2ZM12 11v4M8 11v4M16 11v4",
+    wordpress:
+      "M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5ZM15 5l4 4",
+    etsy:
+      "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",
+    notebook:
+      "M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20M8 7h6M8 11h4",
+    arrow:
+      "M5 12h14M12 5l7 7-7 7",
+    menu: "M4 6h16M4 12h16M4 18h16",
+    close: "M18 6 6 18M6 6l12 12",
+    external: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3",
+    sun: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z",
+    moon: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z",
+    home: "M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z",
+    user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
+    leaf: "M12 22V8M12 8C12 8 7 3 2 3c0 5 4 9 10 13M12 8c0 0 5-5 10-5 0 5-4 9-10 13",
+    plus: "M12 5v14M5 12h14",
+    bed: "M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9",
+    mappin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0ZM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
+    calculator:
+      "M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2ZM6 6h12v4H6ZM6 14h2M6 18h2M10 14h2M10 18h2M14 14h4v4h-4Z",
+    printer3d:
+      "M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6Z",
+    joystick:
+      "M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2ZM6 15v-2a6 6 0 0 1 12 0v2M12 9V7M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
+    package:
+      "M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.27 6.96 12 12.01l8.73-5.05M12 22.08V12",
+    zap:
+      "M13 2 3 14h9l-1 8 10-12h-9l1-8Z",
+  },
+};
+
+
+
+/* Homepage project explorer: purpose, first steps and previews. */
+CONFIG.projectExplorer = [
+  {
+    "id": "world",
+    "category": "create",
+    "title": "Johansson World",
+    "eyebrow": "A LITTLE ISLAND LIFE · 1997",
+    "summary": "Step into an Okinawan harbour town. Walk the waterfront, visit the shops and meet the people who live there.",
+    "url": "/johansson-town/",
+    "action": "Start the game",
+    "titleUrl": "/johansson-world/",
+    "secondaryUrl": "/johansson-world/sakura/play/",
+    "secondaryAction": "Play Sakura Shōten demo",
+    "downloadUrl": "/johansson-world/#downloads",
+    "platforms": ["Linux", "x86-64", "Steam Deck"],
+    "format": "3D exploration",
+    "language": "English",
+    "status": "Work in progress",
+    "firstTry": "Start exploring, walk towards Sakura Konbini, then approach a resident or an object to see what you can do.",
+    "features": [
+      "A walkable town with shops, homes and a waterfront",
+      "Residents, everyday routines and small discoveries",
+      "A harbour, ferry routes and places to explore"
+    ],
+    "preview": "world"
+  },
+  {
+    "id": "camera",
+    "category": "create",
+    "title": "Pocket Camera",
+    "eyebrow": "EVERY LOOK FROM JOHANSSON WORLD",
+    "summary": "A camera and photo editor with the island’s own art styles. Shoot through Pocket, Manga, Woodblock print or Old TV, mix up to three, and stick on the residents’ die-cut stickers.",
+    "url": "/camera/",
+    "action": "Open the camera",
+    "format": "Camera & photo editor",
+    "language": "English",
+    "status": "Browser app",
+    "firstTry": "Start the camera, swipe across the picture to change the Look, tap Mix to add a second, or roll the dice for a surprise. Photos stay on your device.",
+    "features": [
+      "Every Look from Johansson World, live on the camera or on your own photos",
+      "Mix up to three Looks; adjust light, colour and the size of the pattern",
+      "Die-cut stickers of Thuan and Fuji, and a film camera’s date stamp"
+    ],
+    "preview": "camera"
+  },
+  {
+    "id": "maintenance",
+    "category": "tools",
+    "title": "Maintenance Desk",
+    "eyebrow": "FROM THE ENGINEER’S WORKBENCH",
+    "summary": "Turn equipment care into a clear programme. Try scheduled tasks, inspection checklists and follow-up actions in a fictional workshop.",
+    "url": "/maintenance-demo/",
+    "action": "Try the maintenance demo",
+    "format": "Interactive demo",
+    "language": "English",
+    "status": "Demo",
+    "firstTry": "Open the cooling water pump, choose a maintenance task and record a sample inspection. Your changes stay in your browser.",
+    "features": [
+      "Calendar and operating-hour maintenance schedules",
+      "Risk assessments, checklists and corrective actions",
+      "Service history with backup export and restore"
+    ],
+    "preview": "maintenance"
+  },
+  {
+    "id": "course",
+    "category": "learn",
+    "title": "Sjöskolan · Electrical engineering",
+    "eyebrow": "LEARNING THROUGH DOING",
+    "summary": "A practical course space for electrical work on board. Explore the lessons, practise measurements and work through guided exercises.",
+    "url": "/sjoskolan/",
+    "action": "Browse the course",
+    "format": "Course & simulators",
+    "language": "Swedish",
+    "status": "Learning resource",
+    "firstTry": "Open the multimeter simulator and work through a measurement exercise. Course material and instructions are in Swedish.",
+    "features": [
+      "Lessons connecting electrical theory to marine examples",
+      "Interactive simulators and measurement exercises",
+      "Guided laboratory material and formula support"
+    ],
+    "preview": "course",
+    "secondaryUrl": "/sjoskolan/multimetersimulator/",
+    "secondaryAction": "Try the multimeter"
+  },
+  {
+    "id": "book",
+    "category": "learn",
+    "title": "Elteknik och ellära",
+    "eyebrow": "THE BOOK BEHIND THE PRACTICE",
+    "summary": "Electrical engineering for marine and industrial work, collected in one Swedish textbook. Read a free sample before exploring the full book.",
+    "url": "/elteknik/",
+    "action": "Discover the book",
+    "format": "Textbook",
+    "language": "Swedish",
+    "status": "Free sample available",
+    "firstTry": "Download the free sample chapter. The book page provides the full contents and current purchase details.",
+    "features": [
+      "24 chapters spanning marine and industrial electrical engineering",
+      "240 exercises with full solutions",
+      "A formula card and index for reference"
+    ],
+    "preview": "book",
+    "secondaryUrl": "/elteknik/files/provkapitel.pdf",
+    "secondaryAction": "Read the free sample"
+  },
+  {
+    "id": "stepwise",
+    "category": "tools",
+    "title": "StepWise",
+    "eyebrow": "PLAN THE MEASUREMENT",
+    "summary": "Turn a measurement range into test targets. Choose even spacing or percentage points, add units, then copy or export the plan.",
+    "url": "/stepbuddy/",
+    "action": "Plan test points",
+    "format": "Test-point planner",
+    "language": "English",
+    "status": "Browser tool",
+    "firstTry": "Load the 0–10 kN example: five points give 0, 2.5, 5, 7.5 and 10 kN. Or try a pressure range or a 4–20 mA signal.",
+    "features": [
+      "Evenly spaced targets or custom percentages of a span",
+      "Force, pressure, signal and other units with conversions",
+      "Named ranges, display precision, copy and CSV export"
+    ],
+    "preview": "stepwise"
+  }
+];
+

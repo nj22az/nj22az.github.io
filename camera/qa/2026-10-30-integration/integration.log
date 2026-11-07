@@ -1,0 +1,13 @@
+    816 combinations; 408 full preview/export pixel comparisons
+ok  all 34 published Looks combine with enhancement and every stock, full and LIGHT
+    68 baseline comparisons
+ok  off/None preserves prior Look pixels except the intentionally rebuilt Crayon
+ok  enhanced mixed-Look thumbnails apply paper once, after the Looks
+ok  Original bypasses Enhance, mixed Looks and stock together while preserving the crop
+    saved JPEG mean RGB error 9.552/255
+ok  album save, JPEG and source retain the combined cropped recipe
+ok  Share receives the exact saved JPEG, without resaving or downloading
+ok  saving the same combined recipe twice does not accumulate correction or paper
+ok  re-edit, cancellation and reload preserve paper, mix, crop and enhancement independently
+ok  no separate-development model or shader dependency and no page error
+9/9 combined integration checks passed

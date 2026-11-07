@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "johansson-town-audit": {
+      "command": "node",
+      "args": [
+        "johansson-town/tools/mcp/server.mjs"
+      ]
+    },
+    "johansson-studio": {
+      "command": "node",
+      "args": [
+        "johansson-town/tools/studio/server.mjs"
+      ]
+    },
+    "johansson-camera": {
+      "command": "node",
+      "args": [
+        "johansson-town/tools/camera/server.mjs"
+      ]
+    },
+    "rea": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "rea-agents@6.7.0",
+        "mcp"
+      ]
+    },
+    "pf82": {
+      "command": "node",
+      "args": [
+        "polivoks/mcp/server.mjs"
+      ]
+    }
+  }
+}

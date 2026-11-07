@@ -1,0 +1,103 @@
+{
+  "id": "EL-000855",
+  "titel": "RL-last",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-formelblad"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En last består av R = 20 Ω i serie med en spole med X_{L} = 15 Ω vid 50 Hz. Den ansluts till 230 V i ett vägguttag i land. Beräkna |Z|, I, cos φ, P, Q och S.",
+    "delfragor": [
+      {
+        "id": "a",
+        "typ": "flerval",
+        "text": "Vilka värden får du på impedansens belopp och strömmen?",
+        "alternativ": [
+          "35 Ω och 6,57 A",
+          "5 Ω och 46 A",
+          "20 Ω och 11,5 A",
+          "25 Ω och 9,2 A"
+        ],
+        "ratt": 3
+      },
+      {
+        "id": "b",
+        "typ": "flerval",
+        "text": "Vilken effektfaktor har lasten?",
+        "alternativ": [
+          "1,00",
+          "0,75",
+          "0,80",
+          "0,60"
+        ],
+        "ratt": 2
+      },
+      {
+        "id": "c",
+        "typ": "flerval",
+        "text": "Vilken kombination av aktiv, reaktiv och skenbar effekt stämmer?",
+        "alternativ": [
+          "P ≈ 1 693 W, Q = 0 var, S ≈ 1 693 VA",
+          "P ≈ 1 693 W, Q ≈ 1 270 var, S = 2 116 VA",
+          "P = 2 116 W, Q ≈ 1 270 var, S ≈ 1 693 VA",
+          "P ≈ 1 270 W, Q ≈ 1 693 var, S = 2 116 VA"
+        ],
+        "ratt": 1
+      }
+    ]
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "tentamen.html övningstenta 5",
+        "revision": "8cabde3",
+        "roll": "uppgift i övningstentan"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "|Z| = √(20² + 15²) = 25 Ω. I = 230/25 = 9,2 A. cos φ = 20/25 = 0,80. P = I²R = 9,2² · 20 ≈ 1 693 W. Q = I²X_{L} = 9,2² · 15 ≈ 1 270 var. S = U · I = 230 · 9,2 = 2 116 VA. Kontroll: √(1 693² + 1 270²) ≈ 2 116 VA.",
+    "status": "migrerad",
+    "kalla": "Övningstentans lösning",
+    "svar": [
+      {
+        "storhet": "|Z|",
+        "varde": 25,
+        "enhet": "Ω",
+        "tolerans": {
+          "rel": 0.01
+        },
+        "berakning": "ac.z_serie"
+      }
+    ]
+  },
+  "parametrar": {
+    "R": {
+      "varde": 20
+    },
+    "XL": {
+      "varde": 15
+    }
+  },
+  "bedomning": {
+    "kursniva": "Veckor: v40",
+    "kriterier": [
+      "Visar impedans, ström och effektfaktor med rimliga enheter.",
+      "Redovisar aktiv, reaktiv och skenbar effekt och kontrollerar effekttriangeln."
+    ]
+  }
+}

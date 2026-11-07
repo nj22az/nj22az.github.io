@@ -1,0 +1,63 @@
+// Node checks for Pocket Camera's shader conversion: every World Look converts, and the one change to World's
+// source (unit() follows the picture's height) is really made. Run: node camera/tests/looks-gl.test.mjs
+import assert from 'node:assert/strict';
+import {LOOK_NAMES,photoFragment,normalRecipe,exportSize,flipRows,lookDrawsLines,faceUniform,INK_LOOKS} from '../looks-gl.js';
+
+assert.equal(LOOK_NAMES[0],'none');
+assert.ok(LOOK_NAMES.length>=19,'every World Look is offered');
+assert.equal(photoFragment('none'),null);
+for(const name of LOOK_NAMES.filter(n=>n!=='none'))for(const light of [false,true]){
+ const f=photoFragment(name,{light});
+ assert.ok(f.startsWith('#version 300 es\n'),name);
+ assert.ok(!f.includes('#include'),`${name}: three.js includes removed`);
+ assert.ok(f.includes('return max(uUnitFloor,uResolution.y/uLines);'),`${name}: patterns follow the picture's height`);
+ assert.ok(!f.includes('max(1.0,uResolution.y/1080.0)'),`${name}: World's screen-sized unit replaced`);
+ assert.equal((f.match(/void main\(\)/g)||[]).length,1,`${name}: one entry point`);
+ assert.ok(f.includes('void lookMain()'),name);
+ assert.ok(!/#define HAS_DEPTH|#define HAS_NORMALS/.test(f),`${name}: picture-only`);
+ assert.equal(f.includes('#define LIGHT'),light,`${name}: light only when asked`);
+}
+assert.ok(lookDrawsLines('manga')&&!lookDrawsLines('mono')&&!lookDrawsLines('none'));
+assert.ok(LOOK_NAMES.includes('adventureInk')&&lookDrawsLines('adventureInk'));
+assert.equal(normalRecipe({layers:[{look:'adventureInk'}]}).layers[0].look,'adventureInk');
+// Adventure Ink and Cartoon are cel builds for photographs: a base and a shadow per material, and an ink line.
+for(const name of ['adventureInk','flat'])assert.ok(photoFragment(name).includes('celBase(')&&photoFragment(name).includes('lineAt('),name);
+// The Pop and Comic Looks (4 November 2026): eight camera-only mains; Manga and Action manga share one page of screens;
+// the Looks that aim at the subject read uFace; the tone-cut ones are exposed first; the inking ones are smoothed first.
+const NEW=['popArt','poster','neon','thermal','funhouse','goldenAge','actionManga','oldCartoon'];
+for(const name of NEW)assert.ok(LOOK_NAMES.includes(name)&&photoFragment(name).includes('void lookMain()'),name);
+for(const name of ['manga','actionManga'])assert.ok(photoFragment(name).includes('float mangaInk(vec2 uv,vec2 p,float u,out float line,out float black)'),name);
+assert.ok(photoFragment('actionManga').includes('speedLines(')&&!photoFragment('manga').includes('speedLines('));
+for(const name of ['funhouse','actionManga','thermal'])assert.ok(photoFragment(name).includes('uFace.z'),`${name} aims at the face`);
+for(const name of ['popArt','poster','goldenAge','actionManga','oldCartoon'])assert.ok(INK_LOOKS.includes(name),`${name} is exposed first`);
+for(const name of ['popArt','goldenAge','actionManga','oldCartoon','neon'])assert.ok(lookDrawsLines(name),`${name} inks lines`);
+assert.ok(!lookDrawsLines('funhouse')&&!lookDrawsLines('thermal')&&!INK_LOOKS.includes('neon'));
+// The face uniform: the oval's centre and half-size in the drawn picture, after the crop and the mirror, y up.
+assert.deepEqual(faceUniform({faces:[]}),[0,0,0,0]);
+const f=faceUniform({faces:[{oval:[[.3,.2],[.5,.2],[.5,.5],[.3,.5]]}]},{x:.1,y:.1,w:.8,h:.8},true);
+assert.ok(Math.abs(f[0]-.625)<1e-9&&Math.abs(f[1]-.6875)<1e-9&&Math.abs(f[2]-.125)<1e-9&&Math.abs(f[3]-.1875)<1e-9,String(f));
+assert.deepEqual(faceUniform({faces:[{oval:[[.3,.2],[.5,.2],[.5,.5],[.3,.5]]}]}).map(v=>+v.toFixed(4)),[.4,.65,.1,.15]);
+
+
+const r=normalRecipe({layers:[{look:'manga',amount:2},{look:'nope'},{look:'crt'},{look:'oil'}],adjust:{light:5,pattern:'x'}});
+assert.deepEqual(r.layers,[{look:'manga',amount:1},{look:'none',amount:1},{look:'crt',amount:1}]);
+assert.equal(r.adjust.light,1);assert.equal(r.adjust.pattern,0);assert.equal(r.stamp,false);
+assert.deepEqual(normalRecipe().layers,[{look:'none',amount:1}]);
+assert.deepEqual(normalRecipe().stickers,[]);
+assert.equal(normalRecipe().frame,'none');assert.equal(normalRecipe().trick,'none');assert.equal(normalRecipe().adjust.detail,0);
+assert.equal(normalRecipe().paper,'none');assert.equal(normalRecipe({paper:'rough'}).paper,'rough');assert.equal(normalRecipe({paper:'other'}).paper,'none');
+// Old albums stay unenhanced; malformed recipes cannot send invalid strength to the GPU.
+assert.equal(normalRecipe().enhance,0);
+for(const [value,expected] of [[-.5,0],[2,1],['0.37',.37],[NaN,0],[Infinity,0]])assert.equal(normalRecipe({enhance:value}).enhance,expected);
+assert.equal(normalRecipe(JSON.parse(JSON.stringify(normalRecipe({enhance:.65})))).enhance,.65);
+assert.equal(normalRecipe({frame:'panel',trick:'twin',adjust:{detail:-3}}).trick,'twin');
+assert.equal(normalRecipe({frame:'<b>',trick:'spin'}).frame,'none');assert.equal(normalRecipe({trick:'spin'}).trick,'none');
+assert.equal(normalRecipe({adjust:{detail:-3}}).adjust.detail,-1);
+assert.deepEqual(normalRecipe({stickers:[{id:'balloon:speech',text:'x'.repeat(200)},{id:'fuji/Wave',text:'no'}]}).stickers.map(s=>s.text?.length),[140,undefined]);
+assert.deepEqual(normalRecipe({stickers:[{id:'fuji/Wave',x:2,size:0,angle:12,flip:1},{x:.5},null]}).stickers,[{id:'fuji/Wave',x:1.2,y:.5,size:.06,angle:12,flip:true}]);
+
+assert.deepEqual(exportSize(1920,1440),{width:1920,height:1440});
+const big=exportSize(8064,6048);assert.ok(big.width<=4096&&big.width*big.height<=16e6);
+
+const px=new Uint8Array([1,1,1,1, 2,2,2,2]);assert.deepEqual([...flipRows(px,1,2)],[2,2,2,2,1,1,1,1]);
+console.log(`looks-gl: ${LOOK_NAMES.length-1} Looks convert; recipe, size and row checks pass`);

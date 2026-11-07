@@ -1,0 +1,119 @@
+{
+  "id": "EL-000305",
+  "titel": "Neutralström med två laster",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-trefaslabbet",
+      "T-bildspel-v41-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma två laster, nu med hel neutralledare. Beräkna neutralströmmen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "trefaslabbet/lessons.mjs CHALLENGES[4] (id inr)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Varje last får U_{F} ≈ 231 V. Räkna I_{1} och I_{2} och summera dem som visare med 120° emellan.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I_{1} = 231/23 ≈ 10,0 A och I_{2} = 231/46 ≈ 5,02 A. I_{N} = √(10,0² + 5,02² + 2·10,0·5,02·(−0,5)) ≈ 8,69 A.",
+    "svar": [
+      {
+        "storhet": "I_{N}",
+        "varde": 8.69565,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A",
+        "berakning": "trefas.neutral_tva_laster"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "UL": {
+      "varde": 400,
+      "enhet": "V"
+    },
+    "R1": {
+      "varde": 23,
+      "enhet": "Ω"
+    },
+    "R2": {
+      "varde": 46,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "trefaslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "trefaslabbet.forvantat",
+      "facit": 8.69565,
+      "tolerans": {
+        "rel": 0.02
+      }
+    },
+    "scenario": "neutral",
+    "initial": {
+      "UL": 400,
+      "R1": 23,
+      "R2": 46,
+      "R3": 92,
+      "on1": true,
+      "on2": true,
+      "on3": false,
+      "neutral": true
+    },
+    "fraga": {
+      "storhet": "IN",
+      "etikett": "I_{N}",
+      "enhet": "A"
+    },
+    "dolj": [
+      "IN",
+      "I1",
+      "I2",
+      "phasorValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 15.0613,
+          "text": "Du har adderat beloppen. Strömmarna ligger 120° isär."
+        },
+        {
+          "varde": 5.02044,
+          "text": "Nästan: men vinkeln mellan strömmarna är 120°, inte 180°."
+        }
+      ]
+    },
+    "kallhanvisning": "v41_01 · bild 21–22",
+    "alias": "inr"
+  }
+}

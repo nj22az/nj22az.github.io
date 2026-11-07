@@ -1,0 +1,92 @@
+{
+ "id": "pocket-faces",
+ "name": "Pocket faces",
+ "tab": "Faces",
+ "who": "",
+ "kind": "secret",
+ "locked": "game",
+ "source": "tools/draw-pocket-faces.mjs",
+ "note": "The faces that turn up when something goes wrong, as the Game Boy Camera had them: the residents, scribbled over.",
+ "stickers": [
+  {
+   "id": "pocket-faces/run",
+   "src": "pocket-faces/run.png",
+   "thumb": "pocket-faces/run.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "Who are you running from?",
+   "gloss": "Thuan, fuming, scribbled over: angry brows, a cross over one eye, a spiral on her cheek",
+   "from": "thuan-pixar/Fume"
+  },
+  {
+   "id": "pocket-faces/hide",
+   "src": "pocket-faces/hide.png",
+   "thumb": "pocket-faces/hide.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "Who are you hiding from?",
+   "gloss": "Thao, shushing, scribbled over: round glasses and a curly moustache",
+   "from": "thao-pixar/Shush"
+  },
+  {
+   "id": "pocket-faces/oops",
+   "src": "pocket-faces/oops.png",
+   "thumb": "pocket-faces/oops.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "Well. That did not go to plan.",
+   "gloss": "Thuan, jaw dropped, scribbled over: sweat drops, a scrawl on the forehead, stubble",
+   "from": "thuan-pixar/JawDrop"
+  },
+  {
+   "id": "pocket-faces/silly",
+   "src": "pocket-faces/silly.png",
+   "thumb": "pocket-faces/silly.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "Don\u2019t be so silly!",
+   "gloss": "Johansson, huffing, scribbled over: devil horns, a monocle, a spiral on his cheek",
+   "from": "johansson-pixar/Huff"
+  },
+  {
+   "id": "pocket-faces/full",
+   "src": "pocket-faces/full.png",
+   "thumb": "pocket-faces/full.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "Thirty photos. A Game Boy Camera would be full by now.",
+   "gloss": "Johansson, aghast, scribbled over: tears and a zigzag mouth",
+   "from": "johansson-pixar/OhNo"
+  },
+  {
+   "id": "pocket-faces/secret",
+   "src": "pocket-faces/secret.png",
+   "thumb": "pocket-faces/secret.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "The secret sheet is yours!",
+   "gloss": "Thao, ta-da, scribbled over: a party hat, stars and blush lines",
+   "from": "thao-pixar/Tada"
+  },
+  {
+   "id": "pocket-faces/wait",
+   "src": "pocket-faces/wait.png",
+   "thumb": "pocket-faces/wait.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "Still getting ready. Try again.",
+   "gloss": "Thuan, rolling her eyes, scribbled over: glasses, a beard and a sweat drop",
+   "from": "thuan-pixar/Eyeroll"
+  },
+  {
+   "id": "pocket-faces/nope",
+   "src": "pocket-faces/nope.png",
+   "thumb": "pocket-faces/nope.thumb.png",
+   "width": 512,
+   "height": 448,
+   "line": "That is not going to work.",
+   "gloss": "Johansson, thinking, scribbled over: a cross over one eye, a moustache and horns",
+   "from": "johansson-pixar/Think"
+  }
+ ]
+}

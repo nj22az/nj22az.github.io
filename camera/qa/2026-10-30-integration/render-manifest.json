@@ -1,0 +1,1154 @@
+[
+  {
+    "file": "enhance/cafe--crayon.png",
+    "sha256": "615e22a2391260316580bd190038a7cb8d69dd14b7c5576e83fc843144e6186a",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/cafe--manga.png",
+    "sha256": "388285a1b2e44779476a79e5501b34553b331f7192f1ec96cddcbcdd51a96f54",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/cafe--none.png",
+    "sha256": "d0fb1513572080df5ba1714a4d9f4c444e6e1d199ad070369bd3cf000c0ae374",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/cafe--oil.png",
+    "sha256": "d5139c0454d978fb24a770505efb49b09b55fafe0d259b1f6d17a6eef63cf5cb",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/cafe--risoThree.png",
+    "sha256": "cdbca44e6a43e29a6e560552c7d62468e7ec0d4542eb480efb979ec6040ff99c",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/cafe--tilt.png",
+    "sha256": "b38ebb833d2cc3c15464cfde65094f84f488d5741bbb0141e12b1e0aae1ca4ec",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/garden--crayon.png",
+    "sha256": "18201743b158cf2bca46fa44cc6134502794b402e246e1696302fe5a10c58492",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/garden--manga.png",
+    "sha256": "c894854f2b005c8f849f82dae42e481a18068e2a9aafc0d8fef2d577ed6e8684",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/garden--none.png",
+    "sha256": "1d67eb4bd42b250ff3de39539c0a4ef90a3fe31512f53e98df3d8fabce97562b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/garden--oil.png",
+    "sha256": "71042720d2ee7c1e7ac11c9b61c8a55db40460bf572b2df1d62c7e5ee6926393",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/garden--risoThree.png",
+    "sha256": "54d20b894079b2db1dba00fd32d4c42fb3e60b81cb7d4dd37b76374d1c94b8e9",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/garden--tilt.png",
+    "sha256": "d6d59bdd67d442f4b6b4a7e4f41cf132e40a7209e1336ed482a7fea58a97ae14",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/night--crayon.png",
+    "sha256": "3931ed253f464d63d86d6d027a7f220ab7214427bc4fa7a7c36df3e7828e50cd",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/night--manga.png",
+    "sha256": "6ded675d800e4885b88aade4b1126d55076203ba1c8d97a4320de3df5e80b826",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/night--none.png",
+    "sha256": "db9e2b9cd1434e581b54b5295618da1ef8702a11b6be374f1d75bb6d042c7d55",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/night--oil.png",
+    "sha256": "f4b7a9485985a02b08e196c7893e194b1b65a90bb61e51ba316a1582696bb5bf",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/night--risoThree.png",
+    "sha256": "22307c00759e9671e6638d13a975f7d684477d5fc9ede7b9e8cc6163de1d39ba",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/night--tilt.png",
+    "sha256": "ea7e0d260f8d0ab26c37efc5b28f70e8729812124e2810ddc174c10834c0e1ae",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-braids--crayon.png",
+    "sha256": "d2b559b81f25111d8022b5a633d6ca4036806c26f5152eddd79fa8b75b54265b",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-braids--manga.png",
+    "sha256": "07c53e5ef2506beac158e2a8f7d2f71785e65d3424c79b991de3f1cfd23a8ac9",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-braids--none.png",
+    "sha256": "da19ace5e4dfafe7ca3df7081dc4f327a3eb66b40f3a75965e8a512d7568c2a0",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-braids--oil.png",
+    "sha256": "7fed94b51b8b6bbf02cd10f9d52a42886745a88b514edeb56b5497f23ef5710c",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-braids--risoThree.png",
+    "sha256": "5beee70e9a761a8e8264b5ecf8d26bf71d1117e4763d3e18b7c38fea8f2011d3",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-braids--tilt.png",
+    "sha256": "e4b0405c4bba5ecfbf6678823e3190e13b60d0cabd9db24ad1987e2d057de5bf",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-hat--crayon.png",
+    "sha256": "2c0dbc3817bda70671b167122f83cf43549fa5b57ab8489b297e56fa9032c132",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-hat--manga.png",
+    "sha256": "f602f282bef8ddf3a83a176418c00e77e642240b034e32a0d80e7f390923cf78",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-hat--none.png",
+    "sha256": "9e64aa964949ab5bc80b139216881989f12ee0e3612696fd400f4296afa462bc",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-hat--oil.png",
+    "sha256": "50ec1803a5cbebdf1bed6afe5487f5128dcfe7ca6f2d7ab76b0122b71ce2c4f4",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-hat--risoThree.png",
+    "sha256": "8ec0025dca26843883f5f526f4dfd82a40f15ed4087e818ff8bfebf7d765520f",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-hat--tilt.png",
+    "sha256": "c13ccdbc6714c89b99828529594007ac445e6f1ebe79ebb46895cabad9fb6404",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-restaurant--crayon.png",
+    "sha256": "a4b3390b0fe4c3f530355772f1616d728bb2a323af3fbadc61f9cda61ff01a9a",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-restaurant--manga.png",
+    "sha256": "cd45de3a27a0f50c0156d5bbbdad6b59bd319070f8264ec10dff7054c53594c6",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-restaurant--none.png",
+    "sha256": "c469bcf32dfc85d72a7610f4bae5ae16fcddb584eb295e7a0a89989a0baf2a29",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-restaurant--oil.png",
+    "sha256": "d761f62e91e9da35b38a282491804540c8098798d301f8c02ab49a05bce66aad",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-restaurant--risoThree.png",
+    "sha256": "8c25b9ceb384f543cfe7cc75edbc274c73bf5125c90aa2e0d3a3d38a091a90c4",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "enhance/portrait-restaurant--tilt.png",
+    "sha256": "2f30975635440c40f546ab9ec345a4fc5feb94980f0b1e9ea5478e7be40bc689",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/cafe--crayon.png",
+    "sha256": "98a9b7b01f9feb7d3e751829c9c81870f9a0abad8ec058c920217bed929017d6",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/cafe--manga.png",
+    "sha256": "46cf81957887f27da71feefc117246555157fdeb3ae80115170eaa202a0ea6f5",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/cafe--none.png",
+    "sha256": "915fc43148af50e4cc548383350858605d5020ad3556fb7d737a4ee02093583b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/cafe--oil.png",
+    "sha256": "45c07aff2e1cb225fb6afc4e82f921598ff1eb692a89a87310dc83ac4b525537",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/cafe--risoThree.png",
+    "sha256": "0aafd938107c9faa2df15495aa677ca25954ecf828423e1919c643ee9141feea",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/cafe--tilt.png",
+    "sha256": "5835bf5439818152d4c9abe5a88f6cddea5edf0e9b865c019c7237bb63b0e61c",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/garden--crayon.png",
+    "sha256": "9e96d23c85859f9e3ec4977a563981e7dac783781e1c785b71bc35fa8399e60b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/garden--manga.png",
+    "sha256": "5b83f1d96eb2094a701bc486e868056d101d7e934053f58a9c2243c06f732259",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/garden--none.png",
+    "sha256": "41bb94d7db858bc190ebaf17c9e813073429c97d656c04842b314efb6ddb02d9",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/garden--oil.png",
+    "sha256": "4e2bec50f626ff03316f601c29ba9d7bf7bfa5c5690b297cc4de1d7e65ff085b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/garden--risoThree.png",
+    "sha256": "8092dd7a0bc2e736508970e3d15973d83786c5060d5acb43c132598d1470d669",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/garden--tilt.png",
+    "sha256": "f17afe9df320e372a7f770a1840aec77d12185b316f50904c588d4539de648d4",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/night--crayon.png",
+    "sha256": "00a1edc5cb13d189d8b1613047c34c1654378f99b577f9e1eebd2a183475ee04",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/night--manga.png",
+    "sha256": "672a7284b02ca7a41a71ad8838cb84ac0128a913567bbbd20d73f5c057fbec36",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/night--none.png",
+    "sha256": "0c92992e2cf49733b213ad9b84f4ca022a45861e161c2be17ce7db2e7ba3a0d3",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/night--oil.png",
+    "sha256": "bfd66a4f5f5b7af85d34f92e3d6b67fb11004d0c73b3e64327e49a4cd0806bdc",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/night--risoThree.png",
+    "sha256": "de92184770d8551a9671c71a4b019c57ba5737b08275690c13fba2d478808557",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/night--tilt.png",
+    "sha256": "cc00af5ba44a16513efe68c59ee40d8e19d307705d376f237d58d8f33bba2dab",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-braids--crayon.png",
+    "sha256": "730522ea1e3d19fadf2a836b866fd1c56a31375adec5316e44f767d01b7af9ec",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-braids--manga.png",
+    "sha256": "9605863a427e0e9adfe9d0039288738eb9062c426771d730525c9bdd6cbcfad9",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-braids--none.png",
+    "sha256": "180d33ca678cc938def0c61f6f6f41ee82b393c20ff9bfba308ce9c9139492ab",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-braids--oil.png",
+    "sha256": "944743575d21abfc8c50826f0320e30bd63e7bdb339a1d02e009fc4c82e80f73",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-braids--risoThree.png",
+    "sha256": "f3824bb15fc94b2cd72ad74bd1f44027adcaf7502f0b3a2b77f625fdf5691cee",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-braids--tilt.png",
+    "sha256": "b237438fb67a7e4dd0abc8492b7389b97b4f480ecbf5b6ca3cb5f9f403f7f3b0",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-hat--crayon.png",
+    "sha256": "830786511ec823a7fce21094722c9aebd96d78dbfe3ca30f76c459b8b06d20e8",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-hat--manga.png",
+    "sha256": "62a1b194a7940d304c6f1ece16b3b5e0dd509f8738880aa20129d766bee7c480",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-hat--none.png",
+    "sha256": "efeea40a99d7c7d1178d229105f10de3e7560f233285feb72ca2e1da83ea937a",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-hat--oil.png",
+    "sha256": "d8b8ca1be9fdf9b574ea438cbe352e52ffe5d41f21bd790219548579b58cc6e5",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-hat--risoThree.png",
+    "sha256": "1fc1ebf3aa1342afd8d5bf83b53e4cae639eeab9b5567d586fc51101d9753875",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-hat--tilt.png",
+    "sha256": "a09a55c95216c0b24b23184e8ddae83fb54ed827d9222047ad37b20e4d119ded",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-restaurant--crayon.png",
+    "sha256": "809fed6e258cb77347441a07245c806798da238eed6332ece8505c9738624a15",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-restaurant--manga.png",
+    "sha256": "1e478489e3b7c912d7d7434bf36860e437dbefbe8f0181a2100030af7ed35543",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-restaurant--none.png",
+    "sha256": "42c0e466fb56e04a15c6b3a74c30078ace01389d4358f280a71bafb7aad298d1",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-restaurant--oil.png",
+    "sha256": "745e266ee40a2c81e8d167f600c5ef344373f3ab36b7ec2cea343990486d1d27",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-restaurant--risoThree.png",
+    "sha256": "85e003b8b2bf52cdfcab31c662d411d82ad5de879b5560ae941249a08d22b0a1",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "light/portrait-restaurant--tilt.png",
+    "sha256": "207bff834688d9b01b8aabb1aca9ae455831a1cf44b1e57acf584fba7215ee04",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/cafe--crayon.png",
+    "sha256": "f99a054cb1c5b9004af54332d021921784b3016a072116d2450b259a5c928331",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/cafe--manga.png",
+    "sha256": "7b8a02c33ecba398ca18e9e72c8caf58332f1c43ab780bca843fe796f8a05b0c",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/cafe--none.png",
+    "sha256": "8ec044263b452109d207741f1da01eae7bb85c42ce7f93fd2c2031a393840c42",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/cafe--oil.png",
+    "sha256": "b6f568b3d3ac144e3a75617f931d8e7c749398cc05971b915987ca9bd3639bd2",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/cafe--risoThree.png",
+    "sha256": "df3fcd53c3da271eb500dd6452bb0eba0baf07182fc64c22cf8e34e1809e45a6",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/cafe--tilt.png",
+    "sha256": "6e80c0527858ac790990f2888d4953933356fde2c86d94a4e32089a694c2ee64",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/garden--crayon.png",
+    "sha256": "705825c0bb757381033a626912249a7a49d308b833c97063e4fa0230d655a879",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/garden--manga.png",
+    "sha256": "25ed0b81a77e5e4480e8ede62ff1ecc2f96943f3b477d5af8031a8dac5d9d8da",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/garden--none.png",
+    "sha256": "b17570aeba665a6250aa698c0105034fd17c88b588cd19b85543aaa071dacece",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/garden--oil.png",
+    "sha256": "549b1208d0bfd491a376e5ccefb586a3f6ef3ce0650e103763bd255c896ee366",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/garden--risoThree.png",
+    "sha256": "d2cd5053085759cf765a285c7e1f8aa460a77ac99b96e38993d1a742200a5391",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/garden--tilt.png",
+    "sha256": "2f46f6ecd5046810525f8b53ad23a09360ef740d4945a27dcb80ad7f9ca22e46",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/night--crayon.png",
+    "sha256": "5045ac5305b94652ddd0f001983f01b3c7bc2d472b5bb734e9d616fe310be7ee",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/night--manga.png",
+    "sha256": "51300504958b3148cfd3d1ac67a9ee0fd2a8742b8ad69ee25c23f0f9df321fc9",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/night--none.png",
+    "sha256": "4bfaffab06bf607521f4c07543a15cf042f5caa9b95e67740b173b3a683b950c",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/night--oil.png",
+    "sha256": "2794309813cda31b1b5b65364a6a6fa7a79811966374a79b1fa33f3179047af9",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/night--risoThree.png",
+    "sha256": "d33736d6cdecf8db5c044878cf9545958df07346e65fc1903d2d4c86d421525d",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/night--tilt.png",
+    "sha256": "f15ad4d5784633d21a443df63dfea982abe9dece822224028c794d0d16a87524",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-braids--crayon.png",
+    "sha256": "8f696b3228c5f532a65a1885fe9297be0f2a11a39210a103662e7053fd870be6",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-braids--manga.png",
+    "sha256": "67d3ab8216712a28c6afcbf93d26d8cf05ebbaa4505da6bb21a2da98d0f5d1a5",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-braids--none.png",
+    "sha256": "c0fc215b0b7159f633257862a5e1492c9ff99f074d46da0ac57e30cfeb58afb6",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-braids--oil.png",
+    "sha256": "435cd83ba78305aa964708499018461388f049040597c35a2990f5fc925ed72a",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-braids--risoThree.png",
+    "sha256": "a04d714329df1dd617ab3fd9d0a88429bdf8e50bcbfbc2801ccf9ed5e0bf2a8d",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-braids--tilt.png",
+    "sha256": "ba4652a40298f309dbc1f6cf144fad7b9ecb109ff06f57be8d9073886f13730d",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-hat--crayon.png",
+    "sha256": "54f7fce32d795104124bd3da1742b0f7dd5dd340fe1905037120016715eeca57",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-hat--manga.png",
+    "sha256": "a7324af556a8f5eb2728c54ad1602897ed7da1230a42772797eba1514615d6b6",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-hat--none.png",
+    "sha256": "6deed855bb871665be4c4c6980961fe0c1c6997cf3c99fba439ce9a0e8eeec61",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-hat--oil.png",
+    "sha256": "711bbe31221db976555f5866229c9e0ce56a8332e67d2f0a9a4081c78f981b52",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-hat--risoThree.png",
+    "sha256": "6a08c0d814165d724607bf4c69769433645ed448c07b844271eacd3241f93a56",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-hat--tilt.png",
+    "sha256": "f92238f9409bbc5b48d69d2872ee62f7789428c1f96dd9977041b4966f5039ab",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-restaurant--crayon.png",
+    "sha256": "53bf854910c07b02ff257dbe5ce9bbc4f27278ac68d5b86c2785b8d3313d0dae",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-restaurant--manga.png",
+    "sha256": "52adf9f2b4e8a31c968d908dbeedee455fdae211ee2b710bf4bc330acd7d72d6",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-restaurant--none.png",
+    "sha256": "8d63edd79d67c08f4e48550d063e668a3c493a31547406a9ebe0da5113e08003",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-restaurant--oil.png",
+    "sha256": "250c00c8d8b5a4b18a53e560ff3fa993e6581dd8c9c6c186a5d7b3162e22648b",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-restaurant--risoThree.png",
+    "sha256": "c66dd61be39bf429990a5b8694ce9cd49cbfef6710794fb9e84cdaa3064edb44",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "off/portrait-restaurant--tilt.png",
+    "sha256": "2fa78fc926357e7063b8734c9910b6e28175c77d5a322cd031805c9000f67865",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/cafe--crayon.png",
+    "sha256": "0f5416dceab24bf4cedc0000df4e5f0eaf483bc17f7f08a5c324cd59b826d2e2",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/cafe--manga.png",
+    "sha256": "704d5f585a3a3c258240efe6e183ece807fb71cb63c9182d86731ba589def754",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/cafe--none.png",
+    "sha256": "915fc43148af50e4cc548383350858605d5020ad3556fb7d737a4ee02093583b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/cafe--oil.png",
+    "sha256": "2a4b5ea3021483bbfa680bbd3952b56d34d56adc9ea2e1d6daee0e9e9356c64b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/cafe--risoThree.png",
+    "sha256": "89175c0f87d08228957efbfa5efca833db10e34a9a585239f98f8c321f5fd9b3",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/cafe--tilt.png",
+    "sha256": "5835bf5439818152d4c9abe5a88f6cddea5edf0e9b865c019c7237bb63b0e61c",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/garden--crayon.png",
+    "sha256": "a15a9cdca5c3c0d62670a8b3226da099d1927ee8fce1770123a0d80bec5491fa",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/garden--manga.png",
+    "sha256": "d2a7163b5d3c77669dd01f5881b7f805700f7aa7cf8c15ce032083ba6611860b",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/garden--none.png",
+    "sha256": "41bb94d7db858bc190ebaf17c9e813073429c97d656c04842b314efb6ddb02d9",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/garden--oil.png",
+    "sha256": "be41d5e5246a4c03018a1af804d2c13c6b3ddb3c31c23416e5bb75cfaa0d8f20",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/garden--risoThree.png",
+    "sha256": "891a96c9d772c642f57bb82846730efcc3ba14c20f77fd89cc011c13305e5169",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/garden--tilt.png",
+    "sha256": "f17afe9df320e372a7f770a1840aec77d12185b316f50904c588d4539de648d4",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/night--crayon.png",
+    "sha256": "69b54ff702a8cdfa367a8fb56d14aafccbbf5f45490673aed8aba7663da8547e",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/night--manga.png",
+    "sha256": "b907ae59beec9bcec3e6c75d58269a2f4160928d44912d3ce879b973077cbeeb",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/night--none.png",
+    "sha256": "0c92992e2cf49733b213ad9b84f4ca022a45861e161c2be17ce7db2e7ba3a0d3",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/night--oil.png",
+    "sha256": "9f955880bc03a60d78453f815555623c90b2fc315ef8be0efc56431da87869b4",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/night--risoThree.png",
+    "sha256": "7846e9e2a5847be909bc0d09391b7f41c35eaa53a2456e1b61d71065c44aab86",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/night--tilt.png",
+    "sha256": "cc00af5ba44a16513efe68c59ee40d8e19d307705d376f237d58d8f33bba2dab",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-braids--crayon.png",
+    "sha256": "cbb49978995fd2c8b0425126d148ce1c727383659d323d813d04aa50308c3765",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-braids--manga.png",
+    "sha256": "72f51136f26881c2ff3281ad0ec382736845bb34bf6f8e01e13546511cef0162",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-braids--none.png",
+    "sha256": "180d33ca678cc938def0c61f6f6f41ee82b393c20ff9bfba308ce9c9139492ab",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-braids--oil.png",
+    "sha256": "d4cfae521989259ee66d1d4f74c37a8f2d71ebe6dcfe391377c2d2ae910ae75e",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-braids--risoThree.png",
+    "sha256": "c81a2c69eb83b86972ca5f31a7ef614dfe646a9c6e2c3a6677143e7b0e9a33e0",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-braids--tilt.png",
+    "sha256": "b237438fb67a7e4dd0abc8492b7389b97b4f480ecbf5b6ca3cb5f9f403f7f3b0",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-hat--crayon.png",
+    "sha256": "225a73c230c7999e586ff870c155ef631b4bd316229a6809c8e80f4c24defa19",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-hat--manga.png",
+    "sha256": "10164e8696d70cf345a367bb8e2fd6d0980d69696c837a3f858db730b709d596",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-hat--none.png",
+    "sha256": "efeea40a99d7c7d1178d229105f10de3e7560f233285feb72ca2e1da83ea937a",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-hat--oil.png",
+    "sha256": "0a185058cadc0b484d0117f5bf1f15ccb411e9a2a18c8145132e2d84adcd5f88",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-hat--risoThree.png",
+    "sha256": "d824ecbb824b5999d347a15db207e913f2264cb11570a098eb7f38004315863d",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-hat--tilt.png",
+    "sha256": "a09a55c95216c0b24b23184e8ddae83fb54ed827d9222047ad37b20e4d119ded",
+    "dimensions": [
+      960,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-restaurant--crayon.png",
+    "sha256": "0791a23ad7b1cc36d646be380e411facae3d9a52a36f6bf2bdfa233f435f2095",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-restaurant--manga.png",
+    "sha256": "db80ce291289d3f8925371d4ae087369f08f2a76a514562f26d637c69eebaca5",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-restaurant--none.png",
+    "sha256": "42c0e466fb56e04a15c6b3a74c30078ace01389d4358f280a71bafb7aad298d1",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-restaurant--oil.png",
+    "sha256": "43efc9ebd17c15d7259b8e82e67bfbedd47d2a4bb6649a5c6c136e12c8c55cbd",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-restaurant--risoThree.png",
+    "sha256": "9a10c96e976cc41ce993c3f8a120dc412d366ed806bd58a788346bab0267bcb5",
+    "dimensions": [
+      540,
+      720
+    ]
+  },
+  {
+    "file": "paper/portrait-restaurant--tilt.png",
+    "sha256": "207bff834688d9b01b8aabb1aca9ae455831a1cf44b1e57acf584fba7215ee04",
+    "dimensions": [
+      540,
+      720
+    ]
+  }
+]

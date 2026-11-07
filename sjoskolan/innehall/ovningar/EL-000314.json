@@ -1,0 +1,117 @@
+{
+  "id": "EL-000314",
+  "titel": "Ström i RL-krets",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "U = 100 V RMS, R = 40 Ω och X_{L} ≈ 30 Ω i serie. Beräkna strömmen I."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[5] (id strom)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "|Z| = √(R² + X_{L}²). Därefter I = U/|Z|. Addera inte R och X_{L} direkt.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "I",
+        "varde": 1.99995,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "A",
+        "berakning": "ac.strom_serie"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 100,
+      "enhet": "V"
+    },
+    "R": {
+      "varde": 40,
+      "enhet": "Ω"
+    },
+    "XL": {
+      "varde": 30,
+      "enhet": "Ω"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 1.99995,
+      "tolerans": {
+        "rel": 0.02
+      }
+    },
+    "scenario": "impedans",
+    "initial": {
+      "kind": "RL",
+      "U": 100,
+      "f": 50,
+      "R": 40,
+      "L": 95.5,
+      "C": 150
+    },
+    "fraga": {
+      "storhet": "I",
+      "etikett": "I",
+      "enhet": "A"
+    },
+    "dolj": [
+      "Z",
+      "I",
+      "UR",
+      "UL",
+      "phasorValues"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 1.42857,
+          "text": "Du har adderat R och X_{L} direkt. De ligger 90° isär: |Z| = √(R² + X_{L}²)."
+        },
+        {
+          "varde": 2.5,
+          "text": "Du har bara räknat med R. Spolens reaktans begränsar också strömmen."
+        }
+      ]
+    },
+    "kallhanvisning": "Ström i RL-krets",
+    "teoriavsnitt": "strom",
+    "alias": "strom"
+  }
+}

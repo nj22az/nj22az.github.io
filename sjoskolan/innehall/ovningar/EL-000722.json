@@ -1,0 +1,33 @@
+{
+  "id": "EL-000722",
+  "titel": "Avslutsfråga: v43_03",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-5"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v43-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka två punkter och vilket driftläge hör till ditt förväntade mätvärde?",
+    "instruktion": "Inlämning 3 bygger på hållkretsen: nödstoppet S2, lampan H1, kretsens fem lägen och en felsökningsrad. Inlämningen senast i dag, fredag 23 oktober."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-43/aktuell/v43_03_Elscheman_och_dokumentation_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

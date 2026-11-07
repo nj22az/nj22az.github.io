@@ -1,0 +1,30 @@
+[
+  {
+    "id": "pickup",
+    "price": 0,
+    "classes": ["letter", "parcel_s", "parcel_m"],
+    "label": { "sv": "Hämtning i Stora Mellösa", "en": "Local pickup (Stora Mellösa)" },
+    "eta":   { "sv": "Boka upphämtning efter beställning", "en": "Schedule pickup after ordering" }
+  },
+  {
+    "id": "letter",
+    "price": 29,
+    "classes": ["letter"],
+    "label": { "sv": "Brev (Postnord, ≤ 100 g)", "en": "Letter (Postnord, ≤ 100 g)" },
+    "eta":   { "sv": "2–4 arbetsdagar", "en": "2–4 business days" }
+  },
+  {
+    "id": "parcel_s",
+    "price": 79,
+    "classes": ["letter", "parcel_s"],
+    "label": { "sv": "Paket S (Postnord, ≤ 2 kg)", "en": "Parcel S (Postnord, ≤ 2 kg)" },
+    "eta":   { "sv": "2–4 arbetsdagar", "en": "2–4 business days" }
+  },
+  {
+    "id": "parcel_m",
+    "price": 129,
+    "classes": ["letter", "parcel_s", "parcel_m"],
+    "label": { "sv": "Paket M (Postnord, ≤ 5 kg)", "en": "Parcel M (Postnord, ≤ 5 kg)" },
+    "eta":   { "sv": "2–4 arbetsdagar", "en": "2–4 business days" }
+  }
+]

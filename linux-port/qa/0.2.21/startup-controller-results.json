@@ -1,0 +1,77 @@
+{
+  "physicalDevice": false,
+  "candidate": "78965d9ff54cc1907da9a22b4b758d40a7ad2f11",
+  "source": "Hosted compiled-game Deck fixture and actual native Linux application",
+  "results": {
+    "WORLD_SMOKE": {
+      "running": true,
+      "stability": {
+        "ok": true,
+        "failures": [],
+        "colliders": 590,
+        "characterCount": 9,
+        "streetInteractions": 7,
+        "renderDpr": 1,
+        "toneMapping": "Ink grade",
+        "shadows": true
+      },
+      "version": "ios-colour-2",
+      "desktopVersion": "0.2.21",
+      "inputProfile": "steam-deck"
+    },
+    "CONTROL_REPAIR_OK": {
+      "playing": true,
+      "menu": false,
+      "page": "pause",
+      "controller": "Steam Deck test pad",
+      "connected": true,
+      "person": "Johansson",
+      "inBed": false,
+      "capture": null,
+      "inputMode": "controller",
+      "hudHidden": false
+    },
+    "DESKTOP_SMOKE": {
+      "opened": true,
+      "hidden": true,
+      "status": "HUD hidden. Press \u2193 or F8 to restore it."
+    }
+  },
+  "fixedProfileMovementCameraMappingLossHeldMenuRecovery": true,
+  "release": "22a03f8ce69a1c0b6241a1fe4cbe14f79b53577e",
+  "releaseResults": {
+    "WORLD_SMOKE": {
+      "running": true,
+      "stability": {
+        "ok": true,
+        "failures": [],
+        "colliders": 590,
+        "characterCount": 9,
+        "streetInteractions": 7,
+        "renderDpr": 1,
+        "toneMapping": "Ink grade",
+        "shadows": true
+      },
+      "version": "ios-colour-2",
+      "desktopVersion": "0.2.21",
+      "inputProfile": "steam-deck"
+    },
+    "CONTROL_REPAIR_OK": {
+      "playing": true,
+      "menu": false,
+      "page": "pause",
+      "controller": "Steam Deck test pad",
+      "connected": true,
+      "person": "Johansson",
+      "inBed": false,
+      "capture": null,
+      "inputMode": "controller",
+      "hudHidden": false
+    },
+    "DESKTOP_SMOKE": {
+      "opened": true,
+      "hidden": true,
+      "status": "HUD hidden. Press \u2193 or F8 to restore it."
+    }
+  }
+}

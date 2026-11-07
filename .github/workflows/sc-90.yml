@@ -1,0 +1,25 @@
+name: SC-90 sound chip
+
+on:
+  push:
+    paths: ['sc-90/**', 'polivoks/songs.js', '.github/workflows/sc-90.yml']
+  pull_request:
+    paths: ['sc-90/**', 'polivoks/songs.js', '.github/workflows/sc-90.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  chip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: sc-90
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm test

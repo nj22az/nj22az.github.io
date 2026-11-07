@@ -1,0 +1,137 @@
+{
+  "implementation": "8bdf28c6073775fb4f87115ba2aff37b3be13ca7",
+  "firstPublication": "c437d439c8f1e4ac49199d15289c029b150b3d46",
+  "currentSource": "b21b86af1f88db64ac8910f5e5a849886cfe7c64",
+  "currentTree": "e5fdd9b3ff754c71c3b02e76411927ab420cf5da",
+  "runtimeSource": {
+    "sha256": "08ddbdb4a55807f144127ebe5fab90eb1f538216ef82b59867cf3c317f0ddb9c"
+  },
+  "firstHostedRun": 41278562448,
+  "currentHostedRun": 41279030840,
+  "firstGuard": {
+    "tests": 578,
+    "passed": 578
+  },
+  "firstPhone": {
+    "passed": false,
+    "failure": "Inspection return drift under 2 cm",
+    "artifact": 13072815156,
+    "digest": "sha256:37f6e2623a4caa9d52b42cc9accdd141927c4d5dcf058f0091800ef7c9667dec"
+  },
+  "correction": "All engine-room view changes reset motion easing and touch auto-run immediately, including between simulation frames. No change to return-position assertion; a new regression test covers opening and closing inspection between updates.",
+  "focusedFinal": {
+    "tests": 24,
+    "passed": 24
+  },
+  "physicalDeviceTested": false,
+  "verificationWorkflowSource": "fb8a82eff7e254bbd775e6f022cba58540383e0d",
+  "verificationRun": 41279188580,
+  "workflowChange": "Fresh iPad portrait, iPad landscape and desktop profiles run as three independent jobs, retaining each complete check and 15-minute limit.",
+  "finalGuard": {
+    "tests": 580,
+    "passed": 580,
+    "seconds": 282
+  },
+  "liveFiles": {
+    "total": 126,
+    "passed": 126
+  },
+  "artifacts": [
+    {
+      "id": 13073116146,
+      "name": "iphone-startup",
+      "bytes": 37667258,
+      "digest": "sha256:8f43f810611977977cf85cc973e8981b5ebfe0e880341c172cac60a9ca32696b",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41279188580/artifacts/13073116146"
+    },
+    {
+      "id": 13072886975,
+      "name": "ferry-exploration-ipad-portrait",
+      "bytes": 23212020,
+      "digest": "sha256:7e0cabc4271bdf06b928a5cfaa4777619b003d127c3a9e12d8747917f9e21c60",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41279188580/artifacts/13072886975"
+    },
+    {
+      "id": 13072508409,
+      "name": "ferry-exploration-desktop",
+      "bytes": 6279994,
+      "digest": "sha256:7748039068ee5bbe8d0db77aa8d77c2f7f1d36a486a1fe938819f6dff3bfa919",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41279188580/artifacts/13072508409"
+    },
+    {
+      "id": 13071943763,
+      "name": "ferry-exploration-ipad-landscape",
+      "bytes": 22078169,
+      "digest": "sha256:22b3368e42f8c399f8320d612c60d2d5f0ff0f36b7d6be43b50bd0ee247a0c4d",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41279188580/artifacts/13071943763"
+    }
+  ],
+  "mobileAndTabletPassed": true,
+  "panelCorrection": "6c6cc98207d2cb08ba5d7477064ba4535185b899",
+  "panelCorrectionTree": "5789ba8913c5e1ac1dbe4c6f9c6d87aaa50e659f",
+  "panelVerificationRun": 41280684803,
+  "panelCorrectionDetails": "Explicit single-click details toggle; retain summary DOM for unchanged text; calculate the ladder label before assigning it. Startup automation allows 120 seconds for Enter under software rendering.",
+  "finalSource": "6c6cc98207d2cb08ba5d7477064ba4535185b899",
+  "finalSourceTree": "5789ba8913c5e1ac1dbe4c6f9c6d87aaa50e659f",
+  "finalRuntimeSource": {
+    "sha256": "a932d000a5508d7b3effeeddcdbbbb5bf3e2cd2d0f28f5c39486b358d6ea8f4f"
+  },
+  "finalArtifacts": [
+    {
+      "id": 13073441626,
+      "name": "ferry-exploration-ipad-portrait",
+      "bytes": 16530724,
+      "digest": "sha256:5c3c4a0315d51ac844b1efa8fe35de59286d9029684ec0188dc24a03161ca43c",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41280684803/artifacts/13073441626"
+    },
+    {
+      "id": 13073019267,
+      "name": "ferry-exploration-ipad-landscape",
+      "bytes": 31022015,
+      "digest": "sha256:1c300b3fd888bc1538dbda07fd8976fef77cedd0ba0b46563e4e9fd5bdf88f66",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41280684803/artifacts/13073019267"
+    },
+    {
+      "id": 13072984151,
+      "name": "ferry-exploration-desktop",
+      "bytes": 28318239,
+      "digest": "sha256:a0d3d84b6aaad6c51a84098a308899550d69c4752099e94c026871398b4a6c60",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41280684803/artifacts/13072984151"
+    },
+    {
+      "id": 13072959359,
+      "name": "iphone-startup",
+      "bytes": 39850304,
+      "digest": "sha256:3b688448163f096726ad4b7bf3bbac4404f1f2ed40cd536d0c4167cf18baaaf1",
+      "url": "https://github.com/nj22az/nj22az.github.io/actions/runs/41280684803/artifacts/13072959359"
+    }
+  ],
+  "finalChecks": {
+    "guard": "success",
+    "iphone-startup": "success",
+    "ipad-portrait": "success",
+    "ipad-landscape": "success",
+    "desktop": "success",
+    "pages": "success"
+  },
+  "capturesReviewed": [
+    "phone",
+    "ipad-portrait",
+    "ipad-landscape",
+    "desktop"
+  ],
+  "captureHashes": {
+    "ferry-explore-desktop.png": "b40cf84c64af96c69e556a2513ceee922daf3c0a036be64496581884982026a4",
+    "ferry-explore-ipad-landscape.png": "d4a205538a3fb046bd2331383e831b95bdcb07c8dfc3c5a347b10274c31995e6",
+    "ferry-explore-ipad-portrait.png": "0b5323df497eb4388220c7b5ca04e0a98aac1336372b1fe0b190177fc8a5acd7",
+    "ferry-explore-phone.png": "5d50274a2e979df4a4a187488c9fe2bc05b1990b172c480d47fb54e551ae268a",
+    "ferry-inspect-desktop.png": "665ac234eb8b70ae04744d42d1795acb53da5e410845bb7839424611f93f17f3",
+    "ferry-inspect-ipad-landscape.png": "906b6a2abd2472b481b1d28d9697a110608cae869d9b05800cc560e04dd1c4ce",
+    "ferry-inspect-ipad-portrait.png": "7e492a9186cea46537192902734a6ae9ed9446eb735c3c7775da21612b5a64ef",
+    "ferry-inspect-phone.png": "7b5c9549abb7be17571ac811ce4290d38fab803506aaa0ec0d041afae3a9f6ea",
+    "ferry-map-desktop.png": "48967327730de7289be697f4f1e1365208ccf11868f8917edc40a2cc03bee9d8",
+    "ferry-map-ipad-landscape.png": "6d2d47c6f59d34b9bd0564ce0370ee512c03afa3232a4f609cb94ac51ddcf2de",
+    "ferry-map-ipad-portrait.png": "db2762ab534e4c5e8fd7170dfc93d2f5f94e0c88cec73c095fce5d613b2cf06b",
+    "ferry-map-phone.png": "ba84dd14836650ce0da144956e74a9d8af9eaba9eceec92b7dc70e58d9fb37a2"
+  }
+}

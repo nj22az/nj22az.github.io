@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {riskSummary} from '../risk-assessment.mjs';
+const complete={pressureUse:'no',hazard:'Slip',context:'Operator walking past pump',effect:'Injury',controls:'Barrier',basis:'Site review',likelihood:2,consequence:2,serious:'no',seriousReason:'Recorded judgement',assessor:'Engineer',review:'2026-12-01',actionDecision:'none',noActionReason:'Existing measures reviewed'};
+test('all 25 screening cells use the displayed arithmetic and bands',()=>{for(let l=1;l<=5;l++)for(let c=1;c<=5;c++){const s=riskSummary({...complete,likelihood:l,consequence:c});assert.equal(s.score,l*c);assert.equal(s.band,l*c>=15?'High planning priority':l*c>=6?'Medium planning priority':'Lower planning priority');}});
+test('unknown, blank and invalid ratings never turn into a low score',()=>{for(const value of ['',undefined,null,0,6,1.5,'1x'])assert.equal(riskSummary({...complete,likelihood:value}).score,null);});
+test('rare but serious harm and an explicit serious-risk decision override lower planning scores',()=>{assert.equal(riskSummary({...complete,likelihood:1,consequence:5}).priority,true);assert.equal(riskSummary({...complete,likelihood:1,consequence:1,serious:'yes'}).priority,true);assert.equal(riskSummary({...complete,serious:'unknown'}).label,'Needs assessment');});
+test('completed measures need effectiveness checks and pressure use needs an evidence review',()=>{assert.ok(riskSummary({...complete,actionDecision:'immediate',action:'Repair'}).missing.includes('completed action and effectiveness check'));assert.ok(riskSummary({...complete,pressureUse:'yes'}).missing.includes('pressure-use evidence review'));assert.deepEqual(riskSummary(complete).missing,[]);});

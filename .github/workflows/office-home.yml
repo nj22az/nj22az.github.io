@@ -1,0 +1,55 @@
+name: Office homepage design review
+on:
+  push:
+    branches: [development, main]
+    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
+permissions:
+  contents: read
+jobs:
+  homepage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            assets
+            css
+            camera
+            elteknik/files
+            tools/office-home
+      # Johansson Town has its own repository since 7 November 2026; the homepage's harbour uses its title art and renderer.
+      - uses: actions/checkout@v4
+        with:
+          repository: nj22az/johansson-town
+          path: johansson-town
+          sparse-checkout: |
+            assets/images/title
+            vendor
+            src/render
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax
+        run: |
+          node --check config.js
+          node --check assets/js/project-explorer.js
+      - name: Browser tools
+        run: |
+          npm install --prefix /tmp/office-runtime --no-save --no-package-lock playwright@1.61.0
+          /tmp/office-runtime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Project controls, layouts, preserved theme preference and 200 percent zoom
+        env:
+          OFFICE_TEST_RUNTIME: /tmp/office-runtime
+          OFFICE_SOURCE_ROOT: ${{ github.workspace }}
+          # The homepage as published at 0f13c23b, kept in the repo since GitHub keeps only today's history. Anything it
+          # lacks, config.js included, falls back to today's site, so the grid-height check compares the old and new
+          # layouts on the same projects.
+          OFFICE_BASELINE_ROOT: ${{ github.workspace }}/tools/office-home/baseline-0f13c23b
+          OFFICE_OUTPUT: ${{ github.workspace }}/release-evidence/office-home-2026-11-01
+        run: node tools/office-home/review.browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: office-home-design-review
+          path: release-evidence/office-home-2026-11-01/

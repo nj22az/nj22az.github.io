@@ -1,0 +1,929 @@
+#!/usr/bin/env python3
+"""Bygger veckosidorna vecka-XX/aktuell/index.html ur VECKOR nedan.
+
+Mönster enligt sjoskolan/DESIGN.md: mål, numrerade delar (genomgång, övningar, labb, film),
+vad som redovisas och när, fördjupning för sig. PDF-länk visas när PDF-filen finns bredvid presentationen.
+
+Mappnamnen följer den ursprungliga planen och ändras aldrig (länkar, nedladdningar, resultatkoder och sparade
+elevdata hänger på dem). Kursen började måndag 14 september (vecka 38), så veckan som visas kan skilja sig från
+mappen: 'vecka' är veckan eleven ser. vecka-37/ är kursvecka 1 (vecka 38) och vecka-38/ (Frånskiljning och
+mätteknik) ingår i vecka 40, måndag ('flyttad'). Vecka 40 har en plan dag för dag ('dagar', dagplan.mjs).
+
+    python3 sjoskolan/verktyg/veckosidor/bygg.py
+"""
+import hashlib
+import re
+from html import escape
+from pathlib import Path
+import importlib.util
+
+ROOT = Path(__file__).resolve().parents[2]  # sjoskolan/
+# Inlämningsuppgifternas rubriker kommer ur innehållsdatabasens publika id-register (genererat av innehall.py bygg).
+import json as _json
+INLAMNING = {}
+for _p in _json.loads((ROOT / 'innehall' / 'ut' / 'id-register.json').read_text(encoding='utf-8'))['poster']:
+    for _pl in _p.get('placeringar', []):
+        if _pl['yta'] == 'inlamning':
+            INLAMNING.setdefault(int(_pl['plats'].split('-')[1].split('/')[0]), []).append((_pl['ankare'], _pl['nummer'], _p['titel']))
+# Veckor där eleven skickar resultaten som QR-kod (samma mängd som i verktyg/inlamning/bygg.py).
+RESULTATKOD = {40}
+_spec = importlib.util.spec_from_file_location('inlamning_bygg', ROOT / 'verktyg' / 'inlamning' / 'bygg.py')
+_inl = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_inl)
+EPOST, epost_knapp = _inl.EPOST, _inl.epost_knapp
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from dagsvy import DAGSVY, dagsvy_html  # vecka 42: I dag, lektionsdagarna i egna färger och det som gäller hela veckan
+from kursplan import PANEL, kursplan_html, vecko_band, veckopanel_html  # veckans översikt efter kursplanens punkter LM-1–9 och områdenas färgkod
+V = '20261011a'
+DAGPLAN_V = '20260927a'
+# Lektionerna från vecka 42 är online; samma text i varje veckas presentationsruta.
+DISTANS_INTRO = ('<p>Lektionerna är <strong>online</strong> måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Länken till mötet får du av läraren. '
+                 'Läraren visar dagens presentation; öppna den själv också, eller ladda ner PowerPoint.</p>')
+MONTHS = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
+
+
+def ppt(fil, titel, bilder, extra=''):
+    return {'typ': 'ppt', 'fil': fil, 'titel': titel, 'bilder': bilder, 'extra': extra}
+
+
+def lank(href, titel, typ, text=''):
+    return {'typ': typ, 'href': href, 'titel': titel, 'text': text}
+
+
+def genomgang(href, titel, deck, bilder):
+    """Steget Genomgång, med samma innehåll som bildspel, PowerPoint och PDF."""
+    return {'typ': 'genomgång', 'href': href, 'titel': titel, 'text': '', 'deck': deck, 'bilder': bilder}
+
+
+V38 = '../../vecka-38/aktuell/'
+V45 = '../../vecka-45/aktuell/'
+LABB = {
+    'ac': '../../vaxelstromslabbet/',
+    'multimeter': '../../multimetersimulator/',
+    'trefas': '../../trefaslabbet/',
+    'hallkrets': '../../hallkretslabbet/',
+    'isolation': '../../isolationslabbet/',
+}
+
+VECKOR = {
+    # Mappen vecka-37 undervisades vecka 38 (kursvecka 1, första lektionen måndag 14 september).
+    37: {
+        'vecka': 38,
+        'titel': 'Elens grunder och elsäkerhet', 'datum': ('2026-09-14', '2026-09-18'), 'sista': '2026-09-20',
+        'mal': 'Du kan följa strömvägen i en enkel krets, räkna med spänning, ström och resistans och göra en första riskbedömning.',
+        'delar': [
+            {'titel': 'Elens grunder', 'mal': 'Strömväg, brytare, spänning mellan två punkter och Ohms lag.', 'poster': [
+                ppt('v37_01_Forberedelsefragor_1A_elev.pptx', 'Förberedelsefrågor 1A', 1, 'svara innan genomgången'),
+                ppt('v37_02_Elens_grunder_ombord_elev.pptx', 'Elens grunder ombord', 50),
+                lank('01A_Elens_grunder/Elens_grunder.html', 'Elens grunder steg för steg', 'läs', 'samma genomgång som text'),
+                lank('01A_Elens_grunder/Arbetsblad.html', 'Arbetsblad 1A: elens grunder', 'övning', 'övning 1.1–1.7'),
+            ]},
+            {'titel': 'Elsäkerhet och riskbedömning', 'mal': 'Skilj på fara, händelse och skada och skriv en riskrad som hänger ihop.', 'poster': [
+                ppt('v37_03_Forberedelsefragor_1B_elev.pptx', 'Förberedelsefrågor 1B', 1, 'svara innan genomgången'),
+                ppt('v37_04_Elsakerhet_och_riskbedomning_elev.pptx', 'Elsäkerhet och riskbedömning', 46),
+                lank('01B_Elsakerhet_och_riskbedomning/Elsakerhet_steg_for_steg.html', 'Elsäkerhet steg för steg', 'läs', 'samma genomgång som text'),
+                lank('01B_Elsakerhet_och_riskbedomning/Lampkretsen_bildguide.html', 'Lampkretsen: delar och symboler', 'läs'),
+                lank('01B_Elsakerhet_och_riskbedomning/Arbetsblad.html', 'Arbetsblad 1B: elsäkerhet och riskbedömning', 'övning', 'övning 2.1–2.10'),
+                lank('01B_Elsakerhet_och_riskbedomning/Riskbedomning_mall.html', 'Mall för riskbedömning', 'mall'),
+            ]},
+        ],
+        'redovisa': ['Arbetsblad 1A, övning 1.1–1.7, med metod och enhet i varje beräkning.', 'Arbetsblad 1B, övning 2.3–2.8.', 'En egen riskbedömning i mallen.'],
+        'fordjupning': [lank('01B_Elsakerhet_och_riskbedomning/Bildkallor.html', 'Bildkällor till föreläsning 1B', 'läs')],
+    },
+    # Mappen vecka-38 har inte undervisats än. Den ingår i vecka 40 och börjar måndagens lektion 28 september.
+    38: {
+        'vecka': 40,
+        'flyttad': {'href': '../../vecka-40/aktuell/#mandag', 'dag': 'måndag 28 september'},
+        'titel': 'Frånskiljning och mätteknik', 'datum': ('2026-09-28', '2026-09-28'), 'sista': '2026-10-04',
+        'mal':'Du kan frånskilja enligt de fem stegen, välja instrument och funktion för en mätning och bedöma ett mätvärde mot instrumentets noggrannhet.',
+        'delar': [
+            {'titel': 'Frånskiljning och de fem stegen', 'mal': 'Varför en öppen brytare inte är ett bevis, och vad som måste verifieras.', 'poster': [
+                ppt('v38_01_Franskiljning_och_matteknik_elev.pptx', 'Frånskiljning och mätteknik', 19),
+                lank('../../filmer/#fem-steg', 'Film: Fem steg', 'film', 'utan ljud, med text'),
+            ]},
+            {'titel': 'Instrumentval och noggrannhet', 'mal': 'Välj rätt funktion och räkna instrumentets felgräns.', 'poster': [
+                lank('Elevuppgifter.html', 'Övning 1.1–1.4', 'övning'),
+                lank('../../gemensamt/Underlagskort.html', 'Instrument- och komponentkort', 'läs', 'M1 och M2 används i övning 1.2'),
+            ]},
+        ],
+        'redovisa': ['Övning 1.1–1.4, var och en med metod och motivering.'],
+        'fordjupning': [lank('Fordjupning_elev.html', 'Fördjupning: mätfrågor, upplösning och mätprotokoll', 'övning')],
+    },
+    39: {
+        'titel': 'Effekt, Kirchhoff och multimeter', 'datum': ('2026-09-21', '2026-09-25'), 'sista': '2026-09-27',
+        'mal': 'Du kan räkna effekt och energi, använda Kirchhoffs lagar i en belastad krets och mäta spänning, ström och resistans med multimeter.',
+        'delar': [
+            {'titel': 'Effekt och energi', 'mal': 'P = U · I, energi över tid och förlust i en kabel.', 'poster': [
+                ppt('v39_01_Effekt_och_energi_elev.pptx', 'Effekt och energi', 36),
+                lank('Formelstod_och_ovningar.html#v39_01', 'Övningar: effekt och energi', 'övning', '10 övningar med facit'),
+                lank('../../filmer/#dubbel-strom', 'Film: Dubbel ström – fyra gånger förlust', 'film', 'utan ljud, med text'),
+            ]},
+            {'titel': 'Kirchhoffs lagar', 'mal': 'Slingekvation, nodspänning och den belastade spänningsdelaren.', 'poster': [
+                ppt('v39_02_Kirchhoffs_lagar_med_nodforklaring_v2_elev.pptx', 'Kirchhoffs lagar', 46),
+                lank('Kirchhoff_exempel_i_text.html', 'Kirchhoff: tre exempel i text', 'läs'),
+                lank('Formelstod_och_ovningar.html#v39_02', 'Övningar: Kirchhoffs lagar', 'övning', '10 övningar med facit'),
+            ]},
+            {'titel': 'Multimeter och mätfel', 'mal': 'Koppla rätt, välj funktion och uttag, och förstå mätarens felgräns och belastning.', 'poster': [
+                ppt('v39_03_Multimeter_och_matfel_elev.pptx', 'Multimeter och mätfel', 70, 'version 7'),
+                lank('Multimeter_begrepp.html', 'Multimetern – ord på enkel svenska', 'läs'),
+                lank('Filmer.html', 'Svenska filmer om multimetern', 'film'),
+                lank(LABB['multimeter'], 'Multimeterlabbet', 'labb', 'övning 01–08'),
+            ]},
+        ],
+        'redovisa': ['Multimeterlabbet: övning 01–08 klara och mätprotokollet sparat som PDF.'],
+        'fordjupning': [
+            ppt('v39_04_Kirchhoff_seminarium_elev.pptx', 'Kirchhoff – kompletterande seminarium', 42),
+            lank('../../multimeterfilm/', 'Multimeter Aboard (engelska)', 'film', '12 kapitel med engelsk berättarröst'),
+            lank('SELV_rigg_hyttbelysning.png', 'Bild: SELV-rigg för hyttbelysning', 'läs'),
+        ],
+    },
+    40: {
+        'titel': 'Frånskiljning och växelström', 'datum': ('2026-09-28', '2026-10-02'), 'sista': '2026-10-04',
+        'mal': 'Du kan frånskilja enligt de fem stegen, läsa en sinuskurva, räkna med topp- och effektivvärde, reaktans och impedans och förklara hur effektfaktorn påverkar strömmen.',
+        # Måndagen börjar med materialet i mappen vecka-38 (filerna ligger kvar där).
+        'forst': {'titel': 'Frånskiljning och mätteknik', 'mal': 'De fem stegen, alla matningsvägar, instrumentval och instrumentets felgräns. Måndag, före del 1.', 'steg': [
+            ppt('../../vecka-38/aktuell/v38_01_Franskiljning_och_matteknik_elev.pptx', 'Frånskiljning och mätteknik', 19),
+            lank('../../filmer/#fem-steg', 'Film: Fem steg', 'film', 'utan ljud, med text'),
+            lank(V38 + 'Elevuppgifter.html', 'Övning 1.1–1.4', 'övning', '1.1 och 1.2 på lektionen, 1.3 och 1.4 hemma'),
+        ], 'mer': [
+            lank(V38 + 'Fordjupning_elev.html', 'Fördjupning: mätfrågor, upplösning och mätprotokoll', 'övning', 'frivillig'),
+            lank('../../gemensamt/Underlagskort.html', 'Instrument- och komponentkort', 'läs', 'M1 och M2 används i övning 1.2'),
+        ]},
+        'dagar': [],  # fylls i av DAGAR40 nedan
+        'delar': [
+            {'titel': 'Sinus och mätvärden', 'mal': 'Periodtid, toppvärde och effektivvärde.', 'steg': [
+                genomgang('Genomgang.html?del=sinus', 'Genomgång: sinus och mätvärden', 'v40_01_Sinusformad_vaxelspanning_elev.pptx', 20),
+                lank('Kortfilmer.html?del=sinus', 'Film: Vad visar kurvan och multimetern?', 'film', '2 min, svensk text'),
+                lank('Formelstod_och_ovningar.html?del=v40_01', 'Övningar: sinusformad växelspänning', 'övning', '10 övningar med facit, bocka av när du är klar'),
+            ], 'mer': [
+                lank('Lektion_1.html', 'Artikel: sinus och mätvärden', 'artikel', 'samma innehåll som genomgången, som löpande text med figurer'),
+                lank('../../filmer/#radianer', 'Film: Radianer och grader', 'film', 'Måns och Sigge, 2 min: RAD eller DEG på räknaren'),
+            ]},
+            {'titel': 'Spole, motstånd och ström', 'mal': 'Reaktans, impedans och strömmen i en RL-krets.', 'steg': [
+                genomgang('Genomgang.html?del=impedans', 'Genomgång: spole, motstånd och ström', 'v40_02_Reaktans_och_impedans_elev.pptx', 18),
+                lank('Kortfilmer.html?del=impedans', 'Film: Vad händer när vi lägger till en spole?', 'film', '2 min, svensk text'),
+                lank('Formelstod_och_ovningar.html?del=v40_02', 'Övningar: reaktans och impedans', 'övning', '10 övningar med facit, bocka av när du är klar'),
+            ], 'mer': [
+                lank('Lektion_2.html', 'Artikel: spole, motstånd och ström', 'artikel', 'samma innehåll som genomgången, som löpande text med figurer'),
+            ]},
+            {'titel': 'Effekt och effektfaktor', 'mal': 'P, Q och S och hur effektfaktorn påverkar matningsströmmen.', 'steg': [
+                genomgang('Genomgang.html?del=effekt', 'Genomgång: effekt och effektfaktor', 'v40_03_Effekt_i_vaxelstromskretsar_elev.pptx', 16),
+                lank('Kortfilmer.html?del=effekt', 'Film: Samma aktiva effekt, olika ström', 'film', '2 min, svensk text'),
+                lank('Formelstod_och_ovningar.html?del=v40_03', 'Övningar: effekt i växelströmskretsar', 'övning', '10 övningar med facit, bocka av när du är klar'),
+            ], 'mer': [
+                lank('Lektion_3.html', 'Artikel: effekt och effektfaktor', 'artikel', 'samma innehåll som genomgången, som löpande text med figurer'),
+            ]},
+        ],
+        'labbar': [lank(LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad', 'labb', 'åtta uppgifter i tre delar med egna värden ur ditt D; skicka resultatet med QR-koden')],
+        'slaupp': [lank('Beteckningar.html', 'Förkortningar och beteckningar', 'läs', 'RMS, X_{L}, PF och alla andra tecken i veckan')],
+        'redovisa': [],
+        'fordjupning': [
+            lank(LABB['ac'] + '?lage=fri', 'Växelströmslabbet: utforska och räkna vidare', 'labb', 'tolv räkna-först-uppgifter'),
+            lank(LABB['ac'] + '?lage=station', 'Station B: utökat protokoll', 'labb', 'efter genomgången av mätarprinciper'),
+            lank('../../filmer/#vaxelstrom', 'Växelström ombord', 'film', 'repetitionsfilm med Måns och Sigge, 4 min, svensk text'),
+        ],
+    },
+    41: {
+        'titel': 'Trefas och laboration', 'datum': ('2026-10-05', '2026-10-09'), 'sista': '2026-10-11',
+        'mal': 'Du kan räkna med fas- och huvudspänning i Y och Δ, förklara neutralströmmen och koppla Y och Δ i en riktig motors plint med eget protokoll.',
+        'delar': [
+            {'titel': 'Trefassystemets grunder', 'mal': 'Fas- och huvudspänning, visare och neutralström.', 'poster': [
+                ppt('v41_01_Trefassystemets_grunder_elev.pptx', 'Trefassystemets grunder', 36),
+                lank('Formelstod_och_ovningar.html#v41_01', 'Övningar: trefassystemets grunder', 'övning', '10 övningar med facit'),
+                lank('../../filmer/#varfor-rot-3', 'Film: Varför √3?', 'film', 'utan ljud, med text'),
+                lank('../../generatorn/', 'Generatorn i 3D', 'läs', 'vrid rotorn och se varför spänningarna ligger 120° isär'),
+                lank(LABB['trefas'], 'Trefaslabbet', 'labb', 'flik 1 och 2'),
+            ]},
+            {'titel': 'Y, Δ och trefaseffekt', 'mal': 'Välj rätt spänning och ström i Y och Δ och räkna effekten.', 'poster': [
+                ppt('v41_02_Y_och_trefaseffekt_elev.pptx', 'Y, Δ och trefaseffekt', 36),
+                lank('Formelstod_och_ovningar.html#v41_02', 'Övningar: Y, Δ och trefaseffekt', 'övning', '10 övningar med facit'),
+                lank(LABB['trefas'] + '?flik=ydelta', 'Trefaslabbet', 'labb', 'flik 3: Y, Δ och motorns märkning'),
+            ]},
+            {'titel': 'Motorn, startaren och strömtången', 'mal': 'Koppla Y och Δ i plinten, kontrollera med mätning och känn igen delarna.', 'poster': [
+                ppt('v41_03_Fysisk_traff_och_matning_elev.pptx', 'Fysisk träff och mätning', 36),
+                lank('Formelstod_och_ovningar.html#v41_03', 'Övningar: motorn, startaren och tången', 'övning', '10 övningar med facit'),
+                lank('Labbet.html', 'Labbet fredag 9 oktober 11.00–16.00', 'labb', 'stationerna M, S och T, felsökning och protokoll'),
+                lank('../../motorlabbet/', 'Motorlabbet: labbet på distans', 'labb', 'samma stationer i 3D för dig som inte kan komma'),
+                lank('Elevprotokoll.html', 'Elevprotokoll och riskmall', 'mall', 'riskbedömning och mätplan'),
+            ]},
+        ],
+        'redovisa': ['Protokollet från labbet fredag 9 oktober: station M, S och T.'],
+        'notis': 'Del 3 läser du själv efter del 2, senast torsdag, och gör övning 3.1–3.5. Labbet är på plats fredag 9 oktober 11.00–16.00 med lunch 12.00–13.00. Motorn och startaren är övningsobjekt som aldrig ansluts.',
+        'fordjupning': [lank('Simulerade_stationer.html', 'Simulerade stationer A, B och C', 'övning', 'extra övning i simulatorerna'), lank(LABB['hallkrets'], 'Hållkretslabbet', 'övning', 'inför vecka 43')],
+    },
+    # Från vecka 42: lektionerna är online, labbarna görs i simulatorerna och vecka 45 är tentamensvecka.
+    # Vecka 45:s tre delar (felsökning, analys, repetition) undervisas i vecka 43 och 44. Filerna ligger kvar i
+    # vecka-45/ (mappnamn ändras aldrig) och veckorna länkar dit.
+    42: {
+        'titel': 'Elektriska risker och skydd', 'datum': ('2026-10-12', '2026-10-16'), 'sista': '2026-10-16',  # allt lämnas in senast fredag (beslut 11 okt)
+        'mal': 'Du kan beskriva hur el skadar, välja regelverk och arbetsmetod utifrån fallet och skriva en riskbedömning som går att följa upp.',
+        'distans': True,
+        'delar': [
+            {'titel': 'Elektriska risker', 'mal': 'Strömgenomgång, ljusbåge och beröringsspänning.', 'poster': [
+                ppt('v42_01_Elektriska_risker_elev.pptx', 'Elektriska risker', 20),
+                lank('Formelstod_och_ovningar.html#v42_01', 'Övningar: elektriska risker', 'övning', '10 övningar med facit'),
+                lank('../../filmer/#fem-steg', 'Film: Fem steg', 'film', 'repetition från vecka 40'),
+            ]},
+            {'titel': 'Regler, ansvar och arbetsmetoder', 'mal': 'Vem gör vad, och vilket underlag krävs innan arbetet börjar.', 'poster': [
+                ppt('v42_02_Regler_ansvar_och_arbetsmetoder_elev.pptx', 'Regler, ansvar och arbetsmetoder', 20),
+                lank('Formelstod_och_ovningar.html#v42_02', 'Övningar: regler och arbetsmetoder', 'övning', '10 övningar med facit'),
+            ]},
+            {'titel': 'Riskbedömning och skydd', 'mal': 'Från identifierad fara till beslut och verifierad åtgärd.', 'poster': [
+                ppt('v42_03_Riskbedomning_och_skydd_elev.pptx', 'Riskbedömning och skydd', 21),
+                lank('Formelstod_och_ovningar.html#v42_03', 'Övningar: riskbedömning och skydd', 'övning', '10 övningar med facit'),
+                lank(LABB['multimeter'] + '?ovning=category', 'Multimeterlabbet: Välj CAT-klass', 'labb', 'motivera valet skriftligt'),
+            ]},
+        ],
+        'lektioner': {1: (0, 'Måndag', 'online 09.00–11.00'), 2: (1, 'Tisdag', 'online 15.00–17.00'), 3: (4, 'Fredag', 'online 09.00–11.00')},
+        'plan': [
+            (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Del 1 Elektriska risker. Övning 1.1–1.5 tillsammans.'),
+            (0, '11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', 'Övning 1.6–1.10 på del 1. Film: Fem steg.'),
+            (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Del 2 Regler, ansvar och arbetsmetoder. Övning 2.1–2.5 tillsammans.'),
+            (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 2.6–2.10 på del 2. Börja på inlämning 1 och 2.'),
+            (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Del 3 Riskbedömning och skydd. Övning 3.1–3.5 tillsammans.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Övning 3.6–3.10. Labb: Multimeterlabbet, Välj CAT-klass. Inlämning 1–3 senast fredag: ladda ner PDF:en och lämna in den i Google Classroom.'),
+        ],
+        'redovisa': ['Multimeterlabbet, Välj CAT-klass: ditt val av instrument och mätsladdar med skriftlig motivering.', 'En riskbedömning i mallen för ett av fallen i del 3.'],
+        # Det som gäller hela veckan (dagsvy.py, rutorna under ”Hela veckan”). Läxorna efter varje lektion står i
+        # verktyg/lektionsbilder/lektioner.py HEMMA, så att bilden ”Det här gör du nu” och sidan säger samma sak.
+        'veckan': [
+            # Veckans läxa: texterna att läsa (PDF i veckans mapp, från Transportstyrelsen). Quizet frågar om dem.
+            {'id': 'texter', 'titel': 'Veckans läxa: läs texterna', 'sista': '2026-10-15', 'banner': False,
+             'text': 'Läs de fyra texterna från Transportstyrelsen hemma under veckan. Quizet frågar om dem, och varje fråga säger vilket avsnitt du ska läsa.',
+             'hur': 'Ladda ner texterna här. De finns också i quizet.',
+             'filer': [
+                 ('Riktlinjer för riskanalysarbete (2019)', 'Transportstyrelsen_riktlinjer_riskanalysarbete.pdf'),
+                 ('Riktlinjer för elektrifiering av fartyg (2023)', 'Transportstyrelsen_riktlinjer_elektrifiering_fartyg_2023.pdf'),
+                 ('Anslutning av fartyg till landbaserat elnät (2015)', 'Transportstyrelsen_landanslutning_fartyg_2015.pdf'),
+                 ('Vägledning: strukturellt brandskydd i fartyg av annat material än stål (2024)', 'Transportstyrelsen_vagledning_strukturellt_brandskydd_2024.pdf'),
+             ]},
+            {'id': 'quiz', 'titel': 'Quiz', 'sista': '2026-10-15', 'href': 'Quiz.html', 'knapp': 'Öppna quizet',
+             'text': 'Tio frågor om varje text. Svara med A, B, C eller D.',
+             'hur': 'Quizet rättar svaren, och du har tre försök per fråga. Lämna in PDF-filen i Google Classroom under Vecka 42 – Quiz.'},
+            {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-16', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
+             'text': 'Tre uppgifter: riskbedömning före arbete, beröringsspänning i en modell och rätt mätutrustning.',
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 42.'},
+            {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Formelstod_och_ovningar.html', 'knapp': 'Alla övningar',
+             'text': 'Tio övningar till varje del, med ledtrådar och facit. Övning 1–5 gör vi tillsammans på lektionen, övning 6–10 gör du hemma.',
+             'hur': 'Bocka av en övning när du är klar. Övningarna lämnas inte in.'},
+        ],
+        'fordjupning': [],
+    },
+    43: {
+        'titel': 'Komponenter, motorer, scheman och felsökning', 'datum': ('2026-10-19', '2026-10-23'), 'sista': '2026-10-23',  # allt senast fredag
+        'mal': 'Du kan läsa skyddsdata och märkning, räkna på transformator och motor, följa en styrkrets i schemat och felsöka den systematiskt.',
+        'distans': True,
+        'delar': [
+            {'titel': 'Komponenter och skydd', 'mal': 'Säkring, dvärgbrytare, jordfelsbrytare och deras märkdata.', 'poster': [
+                ppt('v43_01_Komponenter_och_skydd_elev.pptx', 'Komponenter och skydd', 20),
+                lank('Formelstod_och_ovningar.html#v43_01', 'Övningar: komponenter och skydd', 'övning', '10 övningar med facit'),
+            ]},
+            {'titel': 'Transformatorer och motorer', 'mal': 'Omsättning, varvtal och eftersläpning.', 'poster': [
+                ppt('v43_02_Transformatorer_och_motorer_elev.pptx', 'Transformatorer och motorer', 21),
+                lank('Formelstod_och_ovningar.html#v43_02', 'Övningar: transformatorer och motorer', 'övning', '10 övningar med facit'),
+                lank('../../motorlabbet/', 'Motorlabbet', 'läs', 'repetera motorn i plinten från vecka 41'),
+            ]},
+            {'titel': 'Elscheman och dokumentation', 'mal': 'Följ hållkretsen i schemat och mät dig fram till ett avbrott.', 'poster': [
+                ppt('v43_03_Elscheman_och_dokumentation_elev.pptx', 'Elscheman och dokumentation', 18),
+                lank('Formelstod_och_ovningar.html#v43_03', 'Övningar: scheman och dokumentation', 'övning', '10 övningar med facit'),
+                lank('../../filmer/#hallkretsen', 'Film: Hållkretsen', 'film', 'utan ljud, med text'),
+                lank(LABB['hallkrets'], 'Hållkretslabbet', 'labb', '8 räkna-först-uppgifter, sedan en felsökning med dolt fel'),
+            ]},
+            {'titel': 'Systematisk felsökning', 'mal': 'Observation, prövbar hypotes och en kontroll som skiljer mellan orsakerna.',
+             'delsida': 'Del_4.html', 'ovningsgrupp': ('vecka-45', 'v45_01'), 'poster': [
+                ppt(V45 + 'v45_01_Systematisk_felsokning_elev.pptx', 'Systematisk felsökning', 19),
+                lank('Del_4.html#ovningar', 'Övningar: systematisk felsökning', 'övning', '10 övningar med facit'),
+            ]},
+        ],
+        'lektioner': {1: (0, 'Måndag', 'online 09.00–11.00'), 2: (1, 'Tisdag', 'online 15.00–17.00'), 3: (4, 'Fredag', 'online 09.00–10.00'), 4: (4, 'Fredag', 'online 10.00–11.00')},
+        'plan': [
+            (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Del 1 Komponenter och skydd. Övning 1.1–1.5 tillsammans.'),
+            (0, '11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', 'Övning 1.6–1.10. Börja på inlämning 1 och 2.'),
+            (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Del 2 Transformatorer och motorer. Övning 2.1–2.5 tillsammans.'),
+            (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 2.6–2.10. Läs del 3 Elscheman själv och gör övning 3.1–3.5. Hållkretslabbet: de 8 räkna-först-uppgifterna.'),
+            (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Första timmen: frågor från del 3. Andra timmen: del 4 Systematisk felsökning, övning 1.1–1.5 på delsidan tillsammans.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Hållkretslabbet: felsök ett dolt fel med protokoll. Övning 1.6–1.10 i del 4 om du hinner. Inlämningen och felsökningsrapporten senast fredag.'),
+        ],
+        'redovisa': ['Hållkretslabbet: de 8 räkna-först-uppgifterna och en felsökning med observation, hypotes, kontroll och slutsats.'],
+        # Hela veckan (dagsvy.py). Läxorna efter varje lektion står i verktyg/lektionsbilder/lektion_v43_0N.py och lektion_v45_01.py.
+        'veckan': [
+            {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-23', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
+             'text': 'Fyra uppgifter: motorns märkskylt, skyddsdata, hållkretsen med nödstopp och felsökningsrapporten.',
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 43. Använd kursens Classroom-länk från skolan. Webbformuläret skickar inte PDF-filen automatiskt. Saknar du länken eller åtkomst, kontakta läraren.'},
+            {'id': 'labb', 'titel': 'Hållkretslabbet', 'href': LABB['hallkrets'], 'knapp': 'Öppna labbet',
+             'text': 'Först de 8 räkna-först-uppgifterna, sedan en felsökning av ett dolt fel med labbprotokollet.',
+             'hur': 'Labbet är underlaget till inlämning 3 och felsökningsrapporten. Läxorna efter tisdagens och fredagens lektion säger vad du gör när.'},
+            {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Ovningar.html', 'knapp': 'Alla övningar',
+             'text': 'Tio övningar till varje del, med ledtrådar och facit. Fredagens kärnövningar är 3.6, 3.7 och 3.9 i del 3 samt 1.2, 1.3 och 1.10 i del 4. Övriga fredagsövningar är frivillig extra träning.',
+             'hur': 'Läxorna efter måndag och tisdag gäller som tidigare. Efter fredagen prioriterar du inlämningens fyra uppgifter och labben. Övningsräknaren visar all träning, även frivillig. Övningarna lämnas inte in.'},
+        ],
+        'fordjupning': [],
+    },
+    44: {
+        'titel': 'Elsystem, mätteknik och repetition', 'datum': ('2026-10-26', '2026-10-30'), 'sista': '2026-10-30',  # allt senast fredag
+        'mal': 'Du kan jämföra IT- och TN-system ombord, förklara första och andra jordfelet, bedöma isolationsresistans och mätresultat mot ett krav, och repetera inför tentamen.',
+        'distans': True,
+        'delar': [
+            {'titel': 'Lågspänningssystem', 'mal': 'Matning, jordning och skydd i IT- och TN-system.', 'poster': [
+                ppt('v44_01_Lagspanningssystem_elev.pptx', 'Lågspänningssystem', 20),
+                lank('Formelstod_och_ovningar.html#v44_01', 'Övningar: lågspänningssystem', 'övning', '10 övningar med facit'),
+                lank('../../filmer/#it-nat', 'Film: IT-nätet ombord', 'film', 'första och andra jordfelet'),
+                lank(LABB['isolation'], 'Isolationslabbet', 'labb', 'isolationsövervakning och jordfel i IT-nät'),
+            ]},
+            {'titel': 'Högspänningssystem', 'mal': 'Spänningsnivåer, skyddsfunktion och strömtransformator.', 'poster': [
+                ppt('v44_02_Hogspanningssystem_elev.pptx', 'Högspänningssystem', 19),
+                lank('Formelstod_och_ovningar.html#v44_02', 'Övningar: högspänningssystem', 'övning', '10 övningar med facit'),
+            ]},
+            {'titel': 'Fördjupad mätteknik', 'mal': 'Mätkedjan, isolationsmätning och instrumentets påverkan.', 'poster': [
+                ppt('v44_03_Fordjupad_matteknik_elev.pptx', 'Fördjupad mätteknik', 18),
+                lank('Formelstod_och_ovningar.html#v44_03', 'Övningar: fördjupad mätteknik', 'övning', '10 övningar med facit'),
+                lank(LABB['isolation'] + '?del=matning', 'Isolationslabbet: isolationsmätning', 'labb', 'provspänning, läckström och gränsvärde'),
+                lank(LABB['multimeter'] + '?ovning=loading', 'Multimeterlabbet: Mätaren påverkar', 'labb', 'belastning i en spänningsdelare'),
+            ]},
+            {'titel': 'Analys av mätresultat', 'mal': 'Mätvärde, osäkerhet och slutsats mot ett krav.', 'delsida': V45 + 'Del_2.html', 'poster': [
+                ppt(V45 + 'v45_02_Analys_av_matresultat_elev.pptx', 'Analys av mätresultat', 18),
+                lank(V45 + 'Formelstod_och_ovningar.html#v45_02', 'Övningar: analys av mätresultat', 'övning', '10 övningar med facit'),
+                lank('../../vecka-41/aktuell/Elevprotokoll.html', 'Elevprotokoll (vecka 41)', 'mall', 'samma kolumner för plan, mätning och analys'),
+            ]},
+            {'titel': 'Repetition inför tentamen', 'mal': 'Välj formel efter storhet och metod efter frågan.', 'delsida': V45 + 'Del_3.html', 'poster': [
+                ppt(V45 + 'v45_03_Repetition_infor_tentamen_elev.pptx', 'Repetition inför tentamen', 22),
+                lank(V45 + 'Formelstod_och_ovningar.html#v45_03', 'Övningar: repetition', 'övning', '10 övningar med facit'),
+                lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'frågor och separat facit som PDF'),
+            ]},
+        ],
+        'lektioner': {1: (0, 'Måndag', 'online 09.00–10.00'), 2: (0, 'Måndag', 'online 10.00–11.00'), 3: (1, 'Tisdag', 'online 15.00–16.00'),
+                      4: (1, 'Tisdag', 'online 16.00–17.00'), 5: (4, 'Fredag', 'online 09.00–11.00')},
+        'plan': [
+            (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Första timmen: del 1 Lågspänningssystem. Andra timmen: del 2 Högspänningssystem. Övning 1.1–1.5 och 2.1–2.3 tillsammans.'),
+            (0, '11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', 'Isolationslabbet: räkna-först-uppgifterna och protokollet. Övning 1.6–1.10 och 2.4–2.6.'),
+            (1, '15:00', 'Tisdag', 'Online 15.00–17.00', 'Första timmen: del 3 Fördjupad mätteknik. Andra timmen: del 4 Analys av mätresultat. Övning 3.1–3.3, och 2.1–2.3 på delsidan för del 4, tillsammans.'),
+            (1, '17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', 'Övning 3.4–3.6, och 2.4–2.6 i del 4. Multimeterlabbet: Mätaren påverkar. Inlämning 1–4. Gör övningstentan utan att titta i lösningarna.'),
+            (4, '09:00', 'Fredag', 'Online 09.00–11.00', 'Del 5 Repetition: vi går igenom de uppgifter i övningstentan som flest behöver. Tentamensveckan förklaras.'),
+            (4, '11:00', 'Fredag eftermiddag och helgen', 'Hemma', 'Inlämningen och analysen av mätdata senast fredag. Rätta övningstentan och gör om övningarna i de veckor där du hade fel.'),
+        ],
+        'redovisa': ['Isolationslabbet: alla räkna-först-uppgifter och labbprotokollet sparat som PDF.'],
+        # Hela veckan (dagsvy.py). Läxorna efter varje lektion står i verktyg/lektionsbilder/lektion_v44_0N.py, lektion_v45_02.py och lektion_v45_03.py.
+        'veckan': [
+            {'id': 'inlamning', 'titel': 'Inlämningen', 'sista': '2026-10-30', 'href': 'Inlamning.html', 'knapp': 'Öppna inlämningen',
+             'text': 'Fyra uppgifter: jordningssystemen, högspänning och strömtransformator, Isolationslabbet och analysen av mätdata.',
+             'hur': 'Formuläret rättar svaren, och du har tre försök per fråga. Tryck Lämna in, ladda ner PDF-filen och lämna in den i Google Classroom under Vecka 44.'},
+            {'id': 'labb', 'titel': 'Isolationslabbet', 'href': LABB['isolation'], 'knapp': 'Öppna labbet',
+             'text': 'Räkna-först-uppgifterna, isolationsmätningen och labbprotokollet. Spara protokollet som PDF.',
+             'hur': 'Labbet är underlaget till inlämning 3. Läxorna efter måndagens och tisdagens lektioner säger vad du gör när.'},
+            {'id': 'tenta', 'titel': 'Övningstentan', 'href': '../../tentamen.html#ovningstenta', 'knapp': 'Öppna övningstentan',
+             'text': 'Gör övningstentan hemma före fredagens lektion, utan att titta i lösningarna. Den är frivillig och betygsätts inte.',
+             'hur': 'På fredagen går vi igenom de uppgifter som flest behöver. Rätta den sedan själv med PDF:en ”Facit med lösningsgång” i avsnittet Övningstenta på sidan Tentamen.'},
+            {'id': 'ovningar', 'titel': 'Övningarna', 'href': 'Formelstod_och_ovningar.html', 'knapp': 'Alla övningar',
+             'text': 'Tio övningar till varje del, med ledtrådar och facit. En del gör vi tillsammans på lektionen, resten gör du hemma.',
+             'hur': 'Läxorna efter varje lektion säger vilka övningar du gör hemma. Bocka av en övning när du är klar. Övningarna lämnas inte in.'},
+        ],
+        'fordjupning': [],
+    },
+    45: {
+        'titel': 'Tentamensvecka', 'datum': ('2026-11-02', '2026-11-06'), 'sista': '2026-11-06',
+        'mal': 'Du visar vad du kan: en skriftlig tentamen online och ett praktiskt prov i simulatorerna med en kort muntlig avstämning.',
+        'distans': True, 'tenta': True, 'sista_text': 'Protokollen senast onsdag 4 november kl. 20',
+        'delar': [
+            {'titel': 'Förbered dig', 'mal': 'Övningstentan, formelsamlingen och veckorna där du hade fel.', 'delsida': None, 'poster': [
+                lank('../../tentamen.html', 'Tentamen: innehåll och övningstenta', 'läs', 'frågor och separat facit som PDF'),
+                lank('../../gemensamt/Formelsamling.pdf', 'Formelsamling (PDF)', 'läs', 'samma som på tentamen'),
+            ]},
+            {'titel': 'Skriftlig tentamen online', 'mal': 'Teori och beräkningar från alla veckor. Tid och länk meddelas av läraren.', 'delsida': None, 'poster': [
+                lank('../../tentamen.html#praktiskt', 'Så går den skriftliga tentamen till', 'läs'),
+            ]},
+            {'titel': 'Praktiskt prov i simulatorerna', 'mal': 'Tre stationer med protokoll: motorn, hållkretsen och isolationen. Sedan 15 minuter muntligt online.', 'delsida': None, 'poster': [
+                lank('../../praktiskt-prov.html', 'Praktiskt prov: stationer, protokoll och bedömning', 'läs'),
+                lank('../../motorlabbet/', 'Motorlabbet', 'läs', 'station 1'),
+                lank(LABB['hallkrets'], 'Hållkretslabbet', 'läs', 'station 2'),
+                lank(LABB['isolation'] + '?del=matning', 'Isolationslabbet', 'läs', 'station 3'),
+            ]},
+        ],
+        'plan': [
+            (0, '09:00', 'Måndag', 'Online 09.00–11.00', 'Frågestund inför tentamen. Instruktion till det praktiska provet. Boka din tid för den muntliga avstämningen.', 'Frågestund online'),
+            (0, '11:00', 'Måndag 2–onsdag 4 november', 'Hemma', 'Tre protokoll som PDF och en riskbedömning som PDF i ett mejl till nils@sjoskolan.se senast onsdag 4 november kl. 20.00. Ämnesrad: Praktiskt prov: för- och efternamn. Kompletta egna protokoll för station 2 och 3 får återanvändas; komplettera luckor och behåll tidigare uppgifter.', 'Praktiskt prov'),
+            (3, '00:00', 'Torsdag 5–fredag 6 november', 'Online, 15 min per elev', 'På din bokade tid: kamera, skärmdelning, egna protokoll och ett nytt okänt fel. Bokningsmetod, tillgängliga tider och möteslänk meddelas av läraren.', 'Muntlig avstämning'),
+            (None, None, 'Enligt lärarens besked', 'Online', '120 minuter, cirka 50 % teori och 50 % beräkningar efter poäng, öppen bok och individuella talvärden. Den skriftliga tentamen är ännu inte schemalagd. Datum, start- och sluttid, åtkomst och inlämning meddelas senare. Se sidan Tentamen.', 'Skriftlig tentamen'),
+        ],
+        'redovisa_lista': [(V45 + 'Inlamning.html#uppgift-2', 'Övningstentan, rättad (frivillig, inte betygsatt)'),
+                           ('../../praktiskt-prov.html#lamna', 'Protokollen från det praktiska provet')],
+        'redovisa': ['Protokollen från de tre stationerna i det praktiska provet.'],
+        'fordjupning': [],
+    },
+}
+
+def steg(kind, titel, href, minuter, text='', ovningar=None):
+    """Ett steg hemma: vad eleven gör, var, och ungefär hur lång tid det tar. ovningar='v40_01:4-10' visar framsteg
+    från övningssidans avbockning (gemensamt/ovningsvy.mjs)."""
+    return {'kind': kind, 'titel': titel, 'href': href, 'min': minuter, 'text': text, 'ovningar': ovningar}
+
+
+# Vecka 40 dag för dag. Lektion måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Onsdag, torsdag och helgen hemma.
+# Ordningen i varje del är genomgång → film → övningar, och labben är veckans sista steg (ANDRINGSLOGG regel 26).
+# Samma upplägg står i lärarens anteckningar i vecka-40/aktuell/lektioner.mjs (bilden ”Det här ska du kunna”).
+G, K, O = 'Genomgang.html?del=', 'Kortfilmer.html?del=', 'Formelstod_och_ovningar.html?del='
+BILDSPEL38 = '../../bildspel/?d=v38_01_Franskiljning_och_matteknik'
+DAGAR40 = [
+    {'id': 'mandag', 'dag': 'Måndag 28/9', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-09-28T00:00', 'rubrik': 'Del 1: frånskiljning, sedan del 2: sinus', 'pass': [
+        ('Pass 1', 'Frånskiljning och mätteknik: de fem stegen, alla matningsvägar, instrumentval och felgräns. Film: Fem steg. Övning 1.1 och 1.2 i par.'),
+        ('Pass 2', 'Del 2 Sinus och mätvärden: teori och exempel tillsammans, sedan övning 2.1–2.3.'),
+        ('Sist', 'Skicka resultat med QR-koden.'),
+     ], 'material': [('Mandag_28_sep_vecka40.pptx', 'Dagens presentation (PowerPoint)'), ('Mandag_28_sep_vecka40.pdf', 'Dagens presentation (PDF)'),
+                     (BILDSPEL38, 'Bildspel: Frånskiljning och mätteknik'), (V38 + 'Elevuppgifter.html', 'Övning 1.1–1.4'), (G + 'sinus', 'Del 2: sinus'), (K + 'sinus', 'Film del 2')]},
+    {'id': 'mandag-hemma', 'dag': 'Måndag eftermiddag och tisdag förmiddag', 'typ': 'Hemma', 'start': '2026-09-28T11:00', 'steg': [
+        steg('Del 2 · Övningar', 'Fortsätt med övning 2.4–2.10', G + 'sinus&uppgift=v40_01-q4', 75, 'läs teorin som ledtråd 1 pekar på, räkna och jämför med facit', 'v40_01:4-10'),
+        steg('Del 1 · Övningar', 'Övning 1.3 och 1.4', V38 + 'Elevuppgifter.html#v2-3', 20, 'skriv metod och motivering'),
+     ], 'fore': ('Före tisdagens lektion', 'Övning 2.1–2.10 är bearbetade; ta med uppgifter som behöver hjälp. Du kan räkna periodtid, toppvärde och effektivvärde. Skriv ner det du inte förstod.')},
+    {'id': 'tisdag', 'dag': 'Tisdag 29/9', 'typ': 'Lektion', 'tid': '15.00–17.00', 'start': '2026-09-29T14:00', 'rubrik': 'Del 3: spole, motstånd och ström', 'pass': [
+        ('Pass 1', 'Dina frågor från del 2. Del 3: teori och exempel tillsammans.'),
+        ('Pass 2', 'Övning 3.1–3.4. Påbörja inlämning 4.'),
+        ('Sist', 'Skicka resultat med QR-koden.'),
+     ], 'material': [(G + 'impedans', 'Del 3: spole'), (K + 'impedans', 'Film del 3'), (O + 'v40_02', 'Övning 3.1–3.10'), ('Inlamning.html#uppgift-1', 'Inlämning 4')]},
+    {'id': 'onsdag', 'dag': 'Tisdag kväll och onsdag 30/9', 'typ': 'Hemma', 'start': '2026-09-29T17:00', 'steg': [
+        steg('Del 3 · Övningar', 'Följ exemplet och gör övning 3.5–3.10', G + 'impedans&avsnitt=exempel', 55, 'fortsätt på delsidan: exempel först, sedan övningarna', 'v40_02:5-10'),
+        steg('Del 1 · Inlämning', 'Inlämning 1–3', V38 + 'Inlamning.html', 45, 'D räknas där ur ditt namn, ett annat tal än D i växelströmsuppgifterna'),
+     ], 'fore': ('Före fredagens lektion', 'Övning 3.1–3.10 är klara. Inlämning 1–3 är skriven.')},
+    {'id': 'torsdag', 'dag': 'Torsdag 1/10', 'typ': 'Hemma', 'start': '2026-10-01T00:00', 'steg': [
+        steg('Del 4 · Teori, exempel och övningar', 'Effekt och effektfaktor, till och med övning 4.6', G + 'effekt', 70, 'läs teorin och exemplen, stanna efter övning 4.6', 'v40_03:1-6'),
+        steg('Del 4 · Film', 'Samma aktiva effekt, olika ström', K + 'effekt', 5, '2 min, svensk text'),
+        steg('Inlämning', 'Inlämning 4 och 5', 'Inlamning.html#uppgift-1', 40, 'skriv svaren i rutorna, de följer med i QR-koden'),
+     ], 'fore': ('Före fredagens lektion', 'Du har läst del 4 och gjort övning 4.1–4.6. Ta med dina frågor. Labben på fredag bygger på del 2–4.')},
+    {'id': 'fredag', 'dag': 'Fredag 2/10', 'typ': 'Lektion', 'tid': '09.00–11.00', 'start': '2026-10-02T00:00', 'rubrik': 'Del 4 och labben', 'pass': [
+        ('Pass 1', 'Dina frågor från del 4. Övning 4.7–4.10 tillsammans.'),
+        ('Pass 2', 'Labb: växelströmslabbet, guidad. Alla åtta uppgifter. Veckans sista steg.'),
+        ('Sist', 'Skicka resultat med QR-koden, nu med labbprotokollet.'),
+     ], 'material': [(O + 'v40_03#v40_03-q7', 'Övning 4.7–4.10'), (LABB['ac'] + '?lage=guidad', 'Labb: växelströmslabbet, guidad'), ('Resultat.html', 'Skicka resultat')]},
+    {'id': 'helgen', 'dag': 'Fredag eftermiddag och helgen', 'typ': 'Hemma', 'start': '2026-10-02T11:00', 'steg': [
+        steg('Labb', 'Gör klart labbet', LABB['ac'] + '?lage=guidad', 30, 'de uppgifter du inte hann på fredagen'),
+        steg('Inlämning', 'Inlämning 6 och 7', 'Inlamning.html#uppgift-3', 45, 'inlämning 7 är protokollet från labbet'),
+        steg('Inlämning', 'Lämna in inlämning 1–7', '#inlamning', 10, 'frånskiljning 1–3 och växelström 4–7, via den inlämningskanal läraren har anvisat'),
+        steg('Skicka resultat', 'QR-koden', 'Resultat.html', 5, 'skriv ditt namn, ta en skärmbild och skicka den till läraren'),
+     ], 'fore': ('Senast söndag 4 oktober', 'Båda inlämningarna är inlämnade och du har skickat resultatet med QR-koden.')},
+]
+VECKOR[40]['dagar'] = DAGAR40
+SLUT40 = '2026-10-05T00:00'  # därefter visar planen att veckan är klar
+
+
+def tid(minuter):
+    h, m = divmod(int(5 * round(minuter / 5)), 60)
+    return f'cirka {h} h {m} min' if h and m else (f'cirka {h} h' if h else f'cirka {m} min')
+
+
+def dagplan(nr):
+    """Veckans plan dag för dag: kort om lektionen, steg för steg hemma med tid och en tydlig ”Före nästa lektion”."""
+    kort = []
+    for d in VECKOR[nr]['dagar']:
+        hid = f'{d["id"]}-rubrik'
+        if d['typ'] == 'Lektion':
+            pass_ = ''.join(f'<li><strong>{escape(t)}.</strong> {escape(x)}</li>' for t, x in d['pass'])
+            mat = ' · '.join(f'<a href="{h}">{escape(t)}</a>' for h, t in d['material'])
+            kort.append(f'<section class="dag lektion" id="{d["id"]}" data-start="{d["start"]}" aria-labelledby="{hid}"><h3 id="{hid}"><span class="dag-namn">{escape(d["dag"])}</span> <span class="dag-typ">Lektion {d["tid"]}</span></h3>'
+                        f'<p class="dag-rubrik">{escape(d["rubrik"])}</p><ul class="dag-pass">{pass_}</ul><p class="dag-material"><strong>Öppna på lektionen:</strong> {mat}</p></section>')
+            continue
+        rader = []
+        for i, s in enumerate(d['steg'], 1):
+            sid = f'{d["id"]}-{i}'
+            ov = f' data-ovningar="{s["ovningar"]}"' if s['ovningar'] else ''
+            text = f' · {escape(s["text"])}' if s['text'] else ''
+            rader.append(f'<li data-steg="{sid}"{ov}><div class="steg-text"><span class="kind">{escape(s["kind"])}</span><a href="{s["href"]}">{escape(s["titel"])}</a>'
+                         f'<small>{s["min"]} min{text}</small><span class="steg-framsteg" aria-live="polite"></span></div>'
+                         f'<span class="klar-ruta" data-status="{sid}"></span></li>')
+        fore_t, fore = d['fore']
+        total = tid(sum(s['min'] for s in d['steg']))
+        kort.append(f'<section class="dag hemma" id="{d["id"]}" data-start="{d["start"]}" aria-labelledby="{hid}"><h3 id="{hid}"><span class="dag-namn">{escape(d["dag"])}</span> <span class="dag-typ">Hemma, {total}</span></h3>'
+                    f'<p class="dag-status" aria-live="polite"></p><ol class="dag-steg">{"".join(rader)}</ol><p class="dag-fore"><strong>{escape(fore_t)}:</strong> {escape(fore)}</p></section>')
+    return (f'<section class="dagplan" id="dagplan" aria-labelledby="dagplan-rubrik" data-slut="{SLUT40}"><h2 id="dagplan-rubrik">Veckan dag för dag</h2>'
+            '<p>Följ arbetsgången i arbetsrummet. Status hämtas från det du har läst och försökt besvara; den kan inte bockas av manuellt.</p>'
+            + ''.join(kort) + '</section>')
+
+
+KIND = {'ppt': 'Presentation', 'genomgång': 'Genomgång', 'läs': 'Läs', 'artikel': 'Artikel', 'övning': 'Övningar', 'labb': 'Labb', 'film': 'Film', 'mall': 'Mall'}
+
+
+def datum(iso, år=False):
+    y, m, d = map(int, iso.split('-'))
+    return f'{d} {MONTHS[m - 1]}' + (f' {y}' if år else '')
+
+
+def sista_dag(iso):
+    """Sista dagen med rätt veckodag ur datumet: ”söndag 4 oktober” (vecka 38–41), ”fredag 23 oktober” (från vecka 42)."""
+    import datetime as _dt
+    return f'{("måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "söndag")[_dt.date.fromisoformat(iso).weekday()]} {datum(iso)}'
+
+
+def post(p, week_dir, steg=None):
+    if p['typ'] == 'ppt':
+        stem = p['fil'][:-5]
+        pdf = stem + '.pdf'
+        extra = f" · {escape(p['extra'])}" if p['extra'] else ''
+        pdf_link = f' · <a href="{pdf}">PDF</a>' if (week_dir / pdf).exists() else ''
+        did = Path(stem).name.removesuffix('_elev')
+        n = f"{p['bilder']} {'bild' if p['bilder'] == 1 else 'bilder'}"
+        if (ROOT / 'bildspel' / did / 'data.json').exists():
+            kind = f'Steg {steg} · Bildspel' if steg else 'Bildspel'
+            return (f'<li><span class="kind">{kind}</span><a href="../../bildspel/?d={did}">{escape(p["titel"])}</a>'
+                    f'<small>{n}{extra} · <a href="{p["fil"]}">PowerPoint</a>{pdf_link}</small></li>')
+        return (f'<li><span class="kind">Presentation</span><a href="{p["fil"]}">{escape(p["titel"])}</a>'
+                f'<small>PowerPoint · {n}{extra}{pdf_link}</small></li>')
+    if p.get('deck'):
+        stem = p['deck'][:-5]
+        pdf = f' · <a href="{stem}.pdf">PDF</a>' if (week_dir / f'{stem}.pdf').exists() else ''
+        p = {**p, 'html': f'Bäst att läsa på egen hand. Till lektionen eller utskrift: <a href="../../bildspel/?d={stem.removesuffix("_elev")}">bildspel</a> ({p["bilder"]} bilder) · <a href="{p["deck"]}">PowerPoint</a>{pdf}'}
+    # Kursens markering X_{L} blir nedsänkt index (som i innehall/lib/text.py).
+    text = p.get('html') or re.sub(r'_\{([^{}]*)\}', r'<sub>\1</sub>', escape(p['text']))
+    small = f'<small>{text}</small>' if text else ''
+    kind = f'Steg {steg} · {KIND[p["typ"]]}' if steg else KIND[p['typ']]
+    return f'<li><span class="kind">{kind}</span><a href="{p["href"]}">{escape(p["titel"])}</a>{small}</li>'
+
+
+def first_href(del_):
+    p = (del_.get('steg') or del_['poster'])[0]
+    return p.get('fil') or p['href']
+
+
+def veckoplan(nr, w, n, delsidor):
+    """Veckans plan från vecka 41: vad eleven gör på varje lektion (måndag, tisdag, fredag) och hemma mellan dem.
+    Övning d.1–d.5 görs på lektionen och d.6–d.10 hemma (samma delning som presentationernas pass). Den del av planen
+    som gäller just nu markeras med ”Nu”."""
+    import datetime as dt
+    mandag = dt.date.fromisoformat(w['datum'][0])
+    dag = lambda k: mandag + dt.timedelta(days=k)
+    fmt = lambda d: f'{d.day}/{d.month}'
+    svar = nr in _inl.SVARSRUTOR
+    del_ = lambda i: f'<a href="Del_{i}.html">del {i}</a>' if delsidor else f'del {i}'
+    kontroll = lambda i: f', sedan <a href="Del_{i}.html#kontroll">kontrollfrågorna</a>' if svar else ''
+    inl = 'Skriv svaren i rutorna på <a href="Inlamning.html">inlämningssidan</a>.' if svar else 'Börja på <a href="Inlamning.html">inlämningen</a>.'
+    skicka = ' Skapa QR-koden på <a href="Resultat.html">Skicka resultat</a> och bifoga den.' if svar else ''
+    steg = [
+        (f'{dag(0).isoformat()}T00:00', f'Måndag {fmt(dag(0))}', 'Lektion 09.00–11.00', f'Presentationen för {del_(1)}. Övning 1.1–1.5 i klassen.'),
+        (f'{dag(0).isoformat()}T11:00', 'Måndag eftermiddag och tisdag förmiddag', 'Hemma', f'Övning 1.6–1.10 på {del_(1)}{kontroll(1)}. Använd ledtrådarna innan du öppnar facit.'),
+        (f'{dag(1).isoformat()}T14:00', f'Tisdag {fmt(dag(1))}', 'Lektion 15.00–17.00', f'Presentationen för {del_(2)}. Övning 2.1–2.5 i klassen.'),
+        (f'{dag(1).isoformat()}T17:00', 'Tisdag kväll, onsdag och torsdag', 'Hemma', f'Övning 2.6–2.10 på {del_(2)}{kontroll(2)}. {inl}' + (f' Avsluta veckans teori: läs genomgången av {del_(3)} själv och gör övning 3.1–3.5. Skriv dina förutsägelser i <a href="Labbet.html">labbprotokollet</a>.' if nr == 41 else '')),
+        (f'{dag(4).isoformat()}T00:00', f'Fredag {fmt(dag(4))}', 'Labb på plats 11.00–16.00' if nr == 41 else 'Lektion 09.00–11.00', ('Labbet 11.00–16.00, lunch 12.00–13.00: <a href="Labbet.html">motorn, startaren och strömtången</a>. Ta med protokollet med dina förutsägelser.' if nr == 41 else f'Presentationen för {del_(n)}, sedan <a href="#labb">labben</a>.')),
+        (f'{dag(4).isoformat()}T{"16:00" if nr == 41 else "11:00"}', 'Fredag kväll och helgen' if nr == 41 else 'Fredag eftermiddag och helgen', 'Hemma', f'Övning {n}.6–{n}.10 på {del_(n)}{kontroll(n)}. Gör klart labbprotokollet och inlämningen. Skicka mejlet senast {sista_dag(w["sista"])}.{skicka}'),
+    ]
+    if w.get('plan'):  # vecka 42–45: planen står i VECKOR (dag, starttid, rubrik, typ, vad)
+        steg = [(f'{dag(k).isoformat()}T{hh}' if k is not None else '', f'{d} {fmt(dag(k))}' if k is not None and d in ('Måndag', 'Tisdag', 'Fredag') else d, t, escape(x))
+                for k, hh, d, t, x, *_ in w['plan']]
+    rader = ''.join(('<li' + (f' data-start="{s0}"' if s0 else '') + f'><span class="plan-nar"><b>{escape(d)}</b> {escape(t)}</span><span class="plan-vad">{x}</span></li>') for s0, d, t, x in steg)
+    return ('<style>.veckoplan{margin:0 0 26px}.veckoplan h2{font-size:22px;margin:0 0 8px}.veckoplan ol{list-style:none;margin:0;padding:0;border-top:1px solid #cad8e2}'
+            '.veckoplan li{display:grid;grid-template-columns:minmax(11em,15em) 1fr;gap:4px 16px;padding:10px 8px;border-bottom:1px solid #cad8e2}'
+            '.veckoplan .plan-nar{color:#4d6579;font-size:15px}.veckoplan .plan-nar b{display:block;color:#163248}'
+            '.veckoplan li.nu{border:2px solid #064f91;border-radius:10px;background:#fff}.veckoplan li.nu .plan-nar b::before{content:"Nu · ";color:#064f91}'
+            '@media(max-width:640px){.veckoplan li{grid-template-columns:1fr}}</style>'
+            f'<section class="veckoplan" aria-labelledby="veckoplan"><h2 id="veckoplan">Veckans plan</h2><ol>{rader}</ol></section>'
+            '<script>(function(){var t=new Date(),r=[].slice.call(document.querySelectorAll(".veckoplan li[data-start]")),nu=null;'
+            'r.forEach(function(x){if(new Date(x.dataset.start)<=t)nu=x;});var slut=new Date(r[r.length-1].dataset.start);slut.setDate(slut.getDate()+3);'
+            'if(nu&&t<slut)nu.classList.add("nu");})();</script>')
+
+
+ENKEL_CSS = ('<style>'
+    '.vag{list-style:none;margin:0 0 32px;padding:0;counter-reset:steg}'
+    '.vag>li{position:relative;margin:0 0 14px;padding:18px 20px 18px 64px;border:1px solid #cad8e2;border-radius:12px;background:#fff}'
+    '.vag>li::before{counter-increment:steg;content:counter(steg);position:absolute;left:18px;top:18px;width:32px;height:32px;border-radius:50%;'
+    'background:#edf4f9;color:#064f91;font-weight:700;display:grid;place-items:center}'
+    '.vag>li.lektion::before{background:#064f91;color:#fff}'
+    '.vag>li.nu,.vag>li.nasta{border:2px solid #064f91;box-shadow:0 0 0 4px #edf4f9}'
+    '.vag>li.nu .vag-nar::after{content:" · nu";color:#064f91;font-weight:700}.vag>li.nasta .vag-nar::after{content:" · nästa";color:#064f91;font-weight:700}'
+    '.vag>li.klar{background:#f7fafc}.vag>li.klar::before{content:"✓";background:#e3f1ea;color:#176844}'
+    '.vag>li.klar h3::after{content:" · klart";font-size:15px;font-weight:700;color:#176844}'
+    '.vag-klar{display:inline-flex;align-items:center;gap:10px;min-height:44px;margin-top:10px;padding:0 14px;border:1px solid #cad8e2;border-radius:8px;font-size:16px;cursor:pointer;background:#fff}'
+    '.vag-klar input{width:22px;height:22px;margin:0;accent-color:#176844}'
+    '.vag-status{font-weight:700;color:#176844;min-height:1em}'
+    '.vag-nar{margin:0;font-size:15px;font-weight:700;color:#4d6579}.vag h3{margin:2px 0 6px;font-size:21px;line-height:1.3}'
+    '.vag p{margin:6px 0}.vag-del{margin:10px 0 0;padding:12px 0 0;border-top:1px solid #e3ecf2}'
+    '.vag-del h4{margin:0 0 8px;font-size:18px}.vag-knappar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}'
+    '.vag-framsteg{font-size:15px;color:#4d6579}.vag-framsteg.klar{color:#176844;font-weight:700}'
+    '.vag ul.vag-lankar{margin:6px 0 0;padding-left:20px}.vag .handin-mail{margin-top:12px}'
+    '.vecka-stod{margin:8px 0 0;font-size:16px}.vecka-stod a{margin-right:14px}'
+    '.nasta-steg{margin:8px 0 28px;padding:20px 22px;border:2px solid #064f91;border-radius:12px;background:#edf4f9}'
+    '.nasta-nar{margin:0;font-size:15px;font-weight:700;color:#064f91}.nasta-titel{margin:4px 0 10px;font-size:22px;font-weight:700;line-height:1.3}'
+    '.nasta-till{font-size:16px;margin-left:6px}'
+    '.vag-mer{margin:8px 0 0}.vag-mer summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#064f91;font-weight:700}'
+    '</style>')
+
+
+def revision_notice(nr):
+    """Add the complementary revision without replacing the original week."""
+    return '<aside class="module-revision-update" id="revision-modul-1" aria-labelledby="revision-rubrik" style="margin:24px 0;padding:16px 20px;border:1px solid #cad8e2;border-radius:12px;background:#f7fafc"><p class="course-kicker">Frivilligt komplement · 16 oktober 2026</p><h2 id="revision-rubrik">Extra stöd till modul 1</h2><p>Vill du repetera eller se kretsarna tydligare? Här finns en kompletterande genomgång med tydligare scheman, extra övningar och en interaktiv 3D-multimeter. Följ veckans ordinarie steg och inlämning ovan.</p><p><a href="../revision/">Öppna den utökade genomgången och simulatorn</a></p></aside>' if nr == 37 else ''
+
+
+def enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kicker):
+    """Veckan som en enda numrerad väg med en tydlig handling per steg (alla veckor utom vecka 40:s arbetsrum).
+
+    Vecka 42–45 följer veckans plan (lektion online → hemma → labb → inlämning). Veckor utan plan (38, 39, 41) visas
+    som delarna i ordning, sedan labben och inlämningen. Varje del har en knapp; delsidan har teori, exempel, övningar
+    och bildspelet. Resten ligger under ”Mer”. Rutan ”Nästa steg” överst visar steget att göra nu.
+    """
+    import datetime as _dt
+    mandag = _dt.date.fromisoformat(w['datum'][0])
+    lektion = w.get('lektioner') or {1: (0, 'Måndag', ''), 2: (1, 'Tisdag', ''), 3: (4, 'Fredag', '')}
+    dagnamn = ('Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag')
+
+    def lankrad(q):
+        if q['typ'] == 'ppt':
+            did = Path(q['fil'][:-5]).name.removesuffix('_elev')
+            href = f'../../bildspel/?d={did}' if (ROOT / 'bildspel' / did / 'data.json').exists() else q['fil']
+            return f'<li><a href="{href}">Bildspel: {escape(q["titel"])}</a></li>'
+        text = f' · {escape(q["text"])}' if q.get('text') else ''
+        return f'<li><a href="{q["href"]}">{escape(q["titel"])}</a>{text}</li>'
+
+    def mer(rubrik, poster):
+        return (f'<details class="vag-mer"><summary>{escape(rubrik)}</summary><ul class="vag-lankar">{"".join(lankrad(q) for q in poster)}</ul></details>'
+                if poster else '')
+
+    def delkort(i):
+        d, items = delar_[i - 1]
+        poster = items + d.get('steg', [])
+        href = delsida(i)
+        if href:
+            knappar = f'<a class="sj-btn" data-huvud href="{href}">Öppna del {i}</a>'
+            m = re.search(r'vecka-(\d+)', href)
+            mapp, prefix = (f'vecka-{m.group(1)}', f'v{m.group(1)}_0' + re.search(r'Del_(\d)', href).group(1) + '-q') if m else (f'vecka-{nr}', f'v{nr}_0{i}-q')
+            knappar += f'<span class="vag-framsteg" data-mapp="{mapp}" data-prefix="{prefix}"></span>'
+            ovrigt = [q for q in poster if q['typ'] in ('film', 'läs', 'mall')]
+        else:  # delar utan delsida (vecka 38 och 39): läs först, öva sedan
+            las = next((q for q in poster if q['typ'] in ('läs', 'genomgång')), None) or next((q for q in poster if q['typ'] == 'ppt'), None)
+            ova = next((q for q in poster if q['typ'] == 'övning'), None)
+            knappar = ''
+            if las:
+                lhref = las.get('href') or (f'../../bildspel/?d={Path(las["fil"][:-5]).name.removesuffix("_elev")}' if las['typ'] == 'ppt' else las['fil'])
+                knappar += f'<a class="sj-btn" data-huvud href="{lhref}">Läs: {escape(las["titel"])}</a>'
+            if ova:
+                knappar += f'<a class="sj-btn" href="{ova["href"]}">Övningar</a>'
+            ovrigt = [q for q in poster if q is not las and q is not ova and q['typ'] != 'labb']
+        return (f'<div class="vag-del"><h4>Del {i}: {escape(d["titel"])}</h4><p>{escape(d["mal"])}</p>'
+                f'<p class="vag-knappar">{knappar}</p>{mer(f"Mer till del {i}", ovrigt)}</div>')
+
+    klar_ruta = '<label class="vag-klar"><input type="checkbox"> Klart</label>'
+    steg, sista_start = [], ''
+    if w.get('plan'):
+        for rad in w['plan']:
+            k, hh, dag, typ, text = rad[:5]
+            start = f'{(mandag + _dt.timedelta(days=k)).isoformat()}T{hh}' if k is not None else ''
+            start_attr = f' data-start="{start}"' if start else ''
+            datumtext = f'{dag} {(mandag + _dt.timedelta(days=k)).day}/{(mandag + _dt.timedelta(days=k)).month}' if k is not None and dag in dagnamn else dag
+            ar_lektion = typ.lower().startswith('online')
+            delar_har = [i for i, v in sorted(lektion.items()) if ar_lektion and v[0] == k and i <= len(delar_)] if not w.get('tenta') else []
+            rubrik_ = rad[5] if len(rad) > 5 else ('Lektion online' if ar_lektion else ('Hemma' if typ == 'Hemma' else typ))
+            innehall = ''.join(delkort(i) for i in delar_har)
+            steg.append(f'<li id="steg-{len(steg) + 1}" class="{"lektion" if ar_lektion else "hemma"}"{start_attr}><p class="vag-nar">{escape(datumtext)} · {escape(typ)}</p>'
+                        f'<h3>{escape(rubrik_)}</h3><p>{escape(text)}</p>{innehall}{klar_ruta}</li>')
+            sista_start = start
+    else:
+        for i in range(1, len(delar_) + 1):
+            titel = delar_[i - 1][0]['titel']
+            kort = delkort(i).replace(f'<h4>Del {i}: {escape(titel)}</h4>', '', 1)  # rubriken står redan i steget
+            steg.append(f'<li id="steg-{len(steg) + 1}" class="lektion"><p class="vag-nar">Del {i} av {len(delar_)}</p>'
+                        f'<h3>{escape(titel)}</h3>{kort}{klar_ruta}</li>')
+    start_attr = f' data-start="{sista_start}"' if sista_start else ''
+    if w.get('tenta'):
+        material = ''.join(f'<div class="vag-del"><h4>{escape(d["titel"])}</h4><p>{escape(d["mal"])}</p><ul class="vag-lankar">'
+                           + ''.join(lankrad(q) for q in items) + '</ul></div>' for d, items in delar_)
+        steg.append(f'<li id="steg-{len(steg) + 1}"><p class="vag-nar">Allt du behöver</p><h3>Material till tentamen och provet</h3>{material}</li>')
+    else:
+        if labbar:
+            forsta, *ovriga = labbar
+            steg.append(f'<li id="steg-{len(steg) + 1}"{start_attr}><p class="vag-nar">När delarna är klara</p><h3>Labben</h3>'
+                        f'<p>{escape((forsta.get("text") or "labben gör du i webbläsaren.").capitalize())}.</p>'
+                        f'<p class="vag-knappar"><a class="sj-btn" data-huvud href="{forsta["href"]}">Öppna {escape(forsta["titel"])}</a></p>'
+                        f'{mer("Mer till labben", ovriga)}{klar_ruta}</li>')
+        steg.append(f'<li id="steg-{len(steg) + 1}"{start_attr}><p class="vag-nar">Senast {sista_dag(w["sista"])}</p><h3>Inlämningen</h3>'
+                    f'<p>Allt du ska lämna in, och hur du skickar det, står på inlämningssidan.</p>'
+                    f'<p class="vag-knappar"><a class="sj-btn" data-huvud href="Inlamning.html">Gör inlämningen</a></p>{klar_ruta}</li>')
+    # Steget att göra nu: det första som inte är bockat och som har börjat (annars nästa som inte är bockat). Rutan
+    # ”Nästa steg” överst visar det med den enda blå knappen på sidan (en huvudknapp per vy, DESIGN.md).
+    nu_script = ('<script>(function(){var t=new Date(),key="sj-steg:vecka-' + str(nr) + '",k={};try{k=JSON.parse(localStorage.getItem(key)||"{}")||{};}catch(e){}'
+                 'var r=[].slice.call(document.querySelectorAll(".vag>li[id]")),st=document.getElementById("vag-status"),p=document.getElementById("nasta-steg");'
+                 'function spara(){try{localStorage.setItem(key,JSON.stringify(k));}catch(e){}}'
+                 'function rita(){r.forEach(function(x){var c=x.querySelector(".vag-klar input");if(c)c.checked=!!k[x.id];x.classList.toggle("klar",!!k[x.id]);x.classList.remove("nu","nasta");});'
+                 'var kvar=r.filter(function(x){return x.querySelector(".vag-klar")&&!k[x.id];}),'
+                 'nu=kvar.filter(function(x){return !x.dataset.start||new Date(x.dataset.start)<=t;})[0]||null,n=nu||kvar[0]||null;'
+                 'if(n)n.classList.add(nu?"nu":"nasta");'
+                 'if(p){var b=n&&n.querySelector("[data-huvud]");p.hidden=!n;if(n){p.querySelector(".nasta-nar").textContent=(nu?"Nu":"Nästa")+" · steg "+n.id.split("-")[1]+" · "+n.querySelector(".vag-nar").textContent;'
+                 'var h4=n.querySelector(".vag-del h4");p.querySelector(".nasta-titel").textContent=n.querySelector("h3").textContent+(h4?": "+h4.textContent:"");var a=p.querySelector(".nasta-knapp");'
+                 'if(b){a.href=b.getAttribute("href");a.textContent=b.textContent;a.hidden=false;}else{a.hidden=true;}p.querySelector(".nasta-till").href="#"+n.id;}}'
+                 'if(st)st.textContent=(r.length&&!kvar.length)?"✓ Alla steg är klara.":"";}'
+                 'r.forEach(function(x){var c=x.querySelector(".vag-klar input");if(c)c.addEventListener("change",function(){k[x.id]=c.checked;spara();rita();});});rita();'
+                 'document.querySelectorAll(".vag-framsteg").forEach(function(e){var o={};try{o=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/"+e.dataset.mapp+"/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch(x){}'
+                 'var n=Object.keys(o).filter(function(a){return o[a]&&a.indexOf(e.dataset.prefix)===0;}).length;e.textContent=n>=10?"✓ Alla 10 övningar klara":n+" av 10 övningar klara";e.classList.toggle("klar",n>=10);});})();</script>')
+    # Utan skript visar rutan det första steget.
+    f0 = steg[0]
+    b0 = re.search(r'<a class="sj-btn" data-huvud href="([^"]+)">([^<]+)</a>', f0)
+    nasta = (f'<section class="nasta-steg" id="nasta-steg" aria-label="Nästa steg"><p class="nasta-nar">Börja här · steg 1</p>'
+             f'<p class="nasta-titel">{re.search(r"<h3>(.*?)</h3>", f0).group(1)}{(": " + re.search(r"<h4>(.*?)</h4>", f0).group(1)) if "<h4>" in f0 else ""}</p>'
+             f'<p class="vag-knappar"><a class="sj-btn primary large nasta-knapp" href="{b0.group(1) if b0 else "#steg-1"}">{b0.group(2) if b0 else "Se steg 1"}</a>'
+             f'<a class="nasta-till" href="#steg-1">Visa steget i listan</a></p></section>')
+    lektionstext = ('<p>Lektionerna är online. Länken till mötet får du av läraren. Bocka av varje steg med ”Klart”, så visar sidan nästa steg.</p>'
+                    if w.get('plan') and not w.get('tenta') else '<p>Bocka av varje steg med ”Klart”, så visar sidan nästa steg.</p>')
+    extra = list(w.get('fordjupning', [])) + list(w.get('slaupp', []))
+    stod = ('<p class="vecka-stod"><strong>Att slå upp:</strong> <a href="../../gemensamt/Formelsamling.pdf">Formelsamling</a>'
+            '<a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp</a>'
+            '<a href="../../tentamen.html">Tentamen</a></p>' + mer('Mer att läsa (frivilligt)', extra))
+    if nr in DAGSVY:
+        # Veckan som dagar: I dag, lektionerna (en färg per dag) och hela veckan. Ersätter Nästa steg, vägen och översikten.
+        modul = ROOT / 'gemensamt' / 'sjalvrattning.mjs'
+        sjalv = f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
+        return (ENKEL_CSS + f'<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>'
+                f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{dagsvy_html(nr, w, sjalv)}'
+                f'{kursplan_html(nr, w, med_tal=False)}{stod}')
+    panel = ''
+    if nr in PANEL:
+        # Översikten ”Din vecka”: stegen med Klart-ruta, veckans egna delsidor (läst-knapparna) och den självrättande inlämningen.
+        steg_ids = [m.group(1) for m in re.finditer(r'<li id="(steg-\d+)"[^>]*>', ''.join(steg)) if 'vag-klar' in steg[int(m.group(1).split('-')[1]) - 1]]
+        egna = [i for i in range(1, len(delar_) + 1) if (delsida(i) or '').startswith('Del_')]
+        modul = ROOT / 'gemensamt' / 'sjalvrattning.mjs'
+        sjalv = f'./sjalvrattning.mjs?v={hashlib.sha1(modul.read_bytes()).hexdigest()[:10]}' if modul.exists() else None
+        panel = veckopanel_html(nr, w, steg_ids, egna, sjalv)
+    return (ENKEL_CSS + f'<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>'
+            f'<p class="course-lead">{escape(w["mal"])}</p>{vecko_band(nr, w)}</header>{panel}{nasta}'
+            f'<section aria-labelledby="vag-rubrik"><h2 id="vag-rubrik">Så gör du den här veckan</h2>{lektionstext}'
+            f'<p class="vag-status" id="vag-status" aria-live="polite"></p><ol class="vag">{"".join(steg)}</ol></section>{revision_notice(nr)}{kursplan_html(nr, w, med_tal=nr not in PANEL)}{stod}{nu_script}')
+
+
+def page(nr, w):
+    if nr == 40:
+        from arbetsvecka40 import page as workspace_page
+        html = workspace_page(w, dagplan(nr))
+        assert html.count('<section id="idag"') == 1
+        assert html.count('<h1>Frånskiljning och växelström</h1>') == 1
+        html = html.replace('<h1>Frånskiljning och växelström</h1>', '<h1>Frånskiljning och växelström</h1>' + vecko_band(nr, w))
+        return html.replace('<section id="idag"', kursplan_html(nr, w) + '<section id="idag"')
+    week_dir = ROOT / f'vecka-{nr}' / 'aktuell'
+    start, end = w['datum']
+    labbar, sedda, delar_ = list(w.get('labbar', [])), set(), []
+    for d in w['delar']:
+        items = []
+        for p in d.get('poster', []):
+            if p['typ'] == 'labb':
+                if p['href'] not in sedda:
+                    sedda.add(p['href']); labbar.append(p)
+            else:
+                items.append(p)
+        delar_.append((d, items))
+    n = len(delar_)
+    def innehall(d, items):
+        # Vägläge: tre steg (genomgång, film, övningar) och resten under Mer.
+        if d.get('steg'):
+            mer = ''.join(post(p, week_dir) for p in d.get('mer', []))
+            mer = f'<details class="week-more"><summary>Mer att läsa</summary><ul class="lesson-items">{mer}</ul></details>' if mer else ''
+            return f'<ol class="lesson-items route-steps">{"".join(post(p, week_dir, k) for k, p in enumerate(d["steg"], 1))}</ol>{mer}'
+        return f'<ul class="lesson-items">{"".join(post(p, week_dir) for p in items)}</ul>'
+    # Från vecka 41: varje del har en egen sida som vecka 40 (Del_N.html: översikt, teori, exempel, övningar med ledtrådar och facit).
+    def delsida(i):
+        # Delsidans adress, eller False. En del kan ligga i en annan veckas mapp ('delsida', t.ex. vecka 45:s delar i vecka 43 och 44).
+        d = delar_[i - 1][0] if i <= len(delar_) else {}
+        if 'delsida' in d:
+            return d['delsida'] or False
+        return nr >= 41 and (week_dir / f'Del_{i}.html').exists() and f'Del_{i}.html'
+    delar = ''.join(
+        f'<li id="del-{i}"><span class="lesson-number" aria-hidden="true">{i}</span><div><h3>Del {i}. {escape(d["titel"])}</h3>'
+        f'<p>{escape(d["mal"])}</p>'
+        + (f'<p><a class="sj-btn primary" href="{delsida(i)}">Öppna del {i}: teori, exempel och övningar</a></p>'
+           + ('' if d.get('delsida') else f'<p class="del-framsteg" data-prefix="v{nr}_0{i}-q" aria-live="polite"></p>') +
+           f'<details class="week-more"><summary>Allt material i del {i}</summary>{innehall(d, items)}</details>' if delsida(i) else innehall(d, items))
+        + '</div></li>'
+        for i, (d, items) in enumerate(delar_, 1))
+    if labbar:
+        delar += (f'<li id="labb" class="lab-step"><span class="lesson-number" aria-hidden="true">{n + 1}</span><div><h3>Sist: labben</h3>'
+                  f'<p>Gör labben när du har gått igenom del 1–{n} och övningarna. Labben bygger på det du har lärt dig och är veckans avslutning.</p>'
+                  f'<ul class="lesson-items">{"".join(post(p, week_dir) for p in labbar)}</ul></div></li>')
+    redovisa = ''.join(f'<li><a href="Inlamning.html#{a}">{escape(n)}. {escape(t)}</a></li>' for a, n, t in INLAMNING[nr])
+    redovisa += ''.join(f'<li><a href="{h}">{escape(t)}</a></li>' for h, t in w.get('redovisa_extra', []))
+    if w.get('redovisa_lista'):
+        redovisa = ''.join(f'<li><a href="{h}">{escape(t)}</a></li>' for h, t in w['redovisa_lista'])
+    # Veckor med resultatkod: eleven skickar resultaten som QR-kod sist i varje lektion (vecka-XX/aktuell/Resultat.html).
+    skicka = '<p><a class="sj-btn primary" href="Resultat.html">Skicka resultat (QR-kod)</a></p><p>Gör det sist varje lektion: skriv ditt namn, ta en skärmbild av koden och skicka den till läraren.</p>' if nr in RESULTATKOD else ''
+    lamna = 'Lämna via den inlämningskanal läraren har anvisat.'
+    formelsamling = '<li><a href="../../gemensamt/Formelsamling.pdf">Formelsamling för hela kursen (PDF)</a></li>' if nr >= 41 else ''
+    if nr >= 41:  # från vecka 41: inlämning med e-post till läraren (verktyg/inlamning/bygg.py har samma adress)
+        skicka = epost_knapp(nr, w.get('vecka', nr))
+        if nr == 41:  # labbet på plats 9 oktober: protokollet får lämnas som foton (samma text som läraren gav i vecka 41)
+            skicka = (skicka.replace('<li>Bifoga labbprotokollet som PDF.</li>', '<li>Bifoga labbprotokollet separat som PDF eller tydliga foton.</li>')
+                      .replace('labbprotokoll%20%28PDF%29', 'labbprotokoll%20%28PDF%20eller%20tydliga%20foton%29'))
+        lamna = f'Skicka allt i ett mejl till <a href="mailto:{EPOST}">{EPOST}</a>.'
+    fordj = ''
+    if w['fordjupning']:
+        fordj = ('<h3>Fördjupning, frivillig</h3><ul class="lesson-items">'
+                 + ''.join(post(p, week_dir) for p in w['fordjupning']) + '</ul>')
+    notis = f'<p class="sj-panel warn week-note">{escape(w["notis"])}</p>' if w.get('notis') else ''
+    if w.get('notis_html'):
+        notis = f'<p class="sj-panel warn week-note">{w["notis_html"]}</p>'
+    vag = bool(w['delar'][0].get('steg'))
+    intro = ('Varje del har tre steg: genomgång, film och övningar. Gör dem i ordning. Labben kommer sist, när du har gått igenom del 1–%d.' % n
+             if vag else 'Gå igenom delarna i ordning: bildspel och genomgång, film och övningar med facit. Labben kommer sist, när du har materialet klart för dig.')
+    startlank = first_href(w['delar'][0]) if vag else '#del-1'
+    slaupp = ''.join(f'<li><a href="{p["href"]}">{escape(p["titel"])}</a></li>' for p in w.get('slaupp', []))
+    vn = w.get('vecka', nr)  # veckan eleven ser (mappnamnet ändras aldrig)
+    flytt = w.get('flyttad')
+    kicker = f'Vecka {vn} · {flytt["dag"]} 2026' if flytt else f'Vecka {vn} · {datum(start)}–{datum(end, True)}'
+    rubrik = f'Vecka {vn}, {flytt["dag"]}: {w["titel"]}' if flytt else f'Vecka {vn}: {w["titel"]}'
+    due = f'<p class="week-due"><strong>Inlämning senast {sista_dag(w["sista"])}.</strong> <a href="Inlamning.html">Se vad du lämnar in</a></p>'
+    actions = f'<p class="course-actions"><a class="sj-btn primary large" href="{startlank}">Börja med del 1: {escape(w["delar"][0]["titel"])}</a></p>'
+    plan, script, rubrik_ordning, forst = '', '', 'Arbeta i den här ordningen', ''
+    if flytt:
+        # Materialet har inte undervisats än: det ingår i vecka 40 och börjar måndagens lektion. Filerna ligger kvar här.
+        intro = (f'<p class="sj-panel week-note flyttad"><strong>Det här ingår nu i vecka 40.</strong> Vi går igenom frånskiljning och mätteknik på lektionen '
+                 f'{flytt["dag"]}, och du fortsätter hemma enligt veckans plan dag för dag. Materialet nedan ligger kvar här, och vecka 40 länkar hit.</p>')
+        due = f'<p class="week-due"><strong>Inlämning senast {sista_dag(w["sista"])}</strong>, tillsammans med vecka 40. <a href="Inlamning.html">Se vad du lämnar in</a></p>'
+        actions = f'<p class="course-actions"><a class="sj-btn primary large" href="{flytt["href"]}">Till vecka 40: planen dag för dag</a></p>'
+    if w.get('dagar'):
+        # Vecka med plan dag för dag: dagplan.mjs visar vad som gäller nu och nästa steg, och sparar avbockningen.
+        intro = 'Lektion måndag, tisdag och fredag. Onsdag, torsdag och helgen arbetar du hemma. Följ planen dag för dag.'
+        d0 = w['dagar'][0]
+        actions = (f'<div class="nu-panel" id="nu" aria-live="polite"><p class="nu-etikett">Börja här</p><p class="nu-rubrik">{escape(d0["dag"])}: {escape(d0["rubrik"])}</p>'
+                   f'<p class="nu-knapp"><a class="sj-btn primary large" href="#{d0["id"]}">Se planen för {escape(d0["dag"].split()[0].lower())}</a></p></div>')
+        inl38 = ', '.join(f'{escape(x)}' for _, x, _t in INLAMNING[38])
+        due = (f'<p class="week-due"><strong>Inlämning senast {sista_dag(w["sista"])}:</strong> <a href="../../vecka-38/aktuell/Inlamning.html">Inlämning 1–{len(INLAMNING[38])}: Frånskiljning och mätteknik</a> '
+               f'och <a href="Inlamning.html">Inlämning {len(INLAMNING[38]) + 1}–{len(INLAMNING[38]) + len(INLAMNING[nr])}: Växelström</a>.</p>')
+        plan = dagplan(nr)
+        script = f'<script type="module" src="dagplan.mjs?v={DAGPLAN_V}"></script>'
+        rubrik_ordning = 'Allt material, del för del'
+        f = w['forst']
+        mer = ''.join(post(p, week_dir) for p in f.get('mer', []))
+        forst = (f'<li id="franskiljning" class="forst"><span class="lesson-number" aria-hidden="true">M</span><div><h3>Måndag först: {escape(f["titel"])}</h3><p>{escape(f["mal"])}</p>'
+                 f'<ol class="lesson-items route-steps">{"".join(post(p, week_dir, k) for k, p in enumerate(f["steg"], 1))}</ol>'
+                 f'<details class="week-more"><summary>Mer att läsa</summary><ul class="lesson-items">{mer}</ul></details></div></li>')
+        redovisa = ('<li><a href="Inlamning.html">Växelström</a><ul>' + redovisa + '</ul></li><li><a href="../../vecka-38/aktuell/Inlamning.html">Frånskiljning och mätteknik</a><ul>'
+                    + ''.join(f'<li><a href="../../vecka-38/aktuell/Inlamning.html#{a}">{escape(n)}. {escape(t)}</a></li>' for a, n, t in INLAMNING[38]) + '</ul></li>')
+    pres, sjalv = '', ''
+    if nr >= 41 and not flytt and not w.get('tenta'):
+        # Från vecka 41: presentationerna först (samma princip som vecka 40), sedan lösningar och självhjälp del för del.
+        rader = []
+        # Lektionerna är måndag, tisdag och fredag (samma tider som vecka 40): del 1 måndag, del 2 tisdag, del 3 fredag.
+        import datetime as _dt
+        mandag = _dt.date.fromisoformat(w['datum'][0])
+        lektion = w.get('lektioner') or {1: (0, 'Måndag', '09.00–11.00'), 2: (1, 'Tisdag', '15.00–17.00'), 3: (4, 'Fredag', '09.00–11.00')}
+        if nr == 41:  # del 3 läses själv efter del 2, som avslutning på veckans teori; fredag är labbet
+            lektion[3] = (3, 'Läs själv efter del 2, senast torsdag', 'före labbet')
+        for i, (d, items) in enumerate(delar_, 1):
+            for q in items + d.get('steg', []):
+                if q['typ'] == 'ppt':
+                    stem = q['fil'][:-5]
+                    oppna = stem + '.pdf' if (week_dir / (stem + '.pdf')).exists() else q['fil']
+                    los = f' <a class="pres-los" href="{delsida(i)}#ovningar">Övningar och facit</a>' if delsida(i) else ''
+                    dag = lektion.get(i)
+                    ld = mandag + _dt.timedelta(days=dag[0]) if dag else None
+                    nar = f'<span class="pres-nar">{dag[1]} {ld.day}/{ld.month} · {dag[2]}</span>' if dag else ''
+                    attr = f' data-dag="{ld.isoformat()}"' if dag else ''
+                    rader.append(f'<li{attr}><span class="pres-del">Del {i}</span><span class="pres-titel">{nar}{escape(q["titel"])}{los}</span>'
+                                 f'<span class="pres-knappar"><a class="sj-btn primary" href="{oppna}">Öppna</a> <a class="sj-btn" href="{q["fil"]}" download>PowerPoint</a></span></li>')
+        pres_intro = ('<p>Lektioner måndag 09.00–11.00 och tisdag 15.00–17.00. Läraren visar dagens presentation på lektionen. Del 3 läser du själv efter del 2, som avslutning på veckans teori, senast torsdag. Labbet är på plats fredag 11.00–16.00. Öppna presentationen, eller ladda ner PowerPoint.</p>' if nr == 41
+                      else DISTANS_INTRO if w.get('distans')
+                      else '<p>Lektioner måndag 09.00–11.00, tisdag 15.00–17.00 och fredag 09.00–11.00. Läraren visar dagens presentation på lektionen. Öppna den, eller ladda ner PowerPoint.</p>')
+        pres = ('<style>.week-pres{margin:22px 0 26px;padding:20px 22px;border:2px solid #064f91;border-radius:12px;background:#edf4f9}'
+                '.week-pres h2{margin:0 0 6px;font-size:26px}.week-pres ul{list-style:none;margin:12px 0 0;padding:0}'
+                '.week-pres li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid #cad8e2}'
+                '.week-pres .pres-del{font-weight:700;color:#064f91;min-width:3.4em}.week-pres .pres-titel{flex:1 1 14em;font-size:18px}'
+                '.week-pres .pres-knappar{display:flex;gap:10px}.week-pres .pres-los{display:block;font-size:15px;margin-top:2px}'
+                '.week-pres .pres-nar{display:block;font-size:14px;font-weight:700;color:#4d6579;letter-spacing:.02em}'
+                '.week-pres li.idag{margin:0 -12px;padding:12px;border:2px solid #064f91;border-radius:10px;background:#fff}'
+                '.week-pres li.idag .pres-nar{color:#064f91}.week-pres .pres-klart{margin:14px 0 0;padding-top:12px;border-top:1px solid #cad8e2}</style>'
+                f'<section class="week-pres" aria-labelledby="presentationer"><h2 id="presentationer">Veckans presentationer</h2>'
+                f'{pres_intro}<ul>{"".join(rader)}</ul>'
+                f'<p class="pres-klart"><strong>Klart senast {sista_dag(w["sista"])}:</strong> övningarna i del 1–{n}, labben och <a href="Inlamning.html">inlämningen</a> med e-post till läraren.</p></section>'
+                # Dagens lektion (eller nästa lektion i veckan) lyfts fram. Utan JavaScript visas listan som den är.
+                '<script>(function(){var d=new Date(),t=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");'
+                'var r=[].slice.call(document.querySelectorAll(".week-pres li[data-dag]"));if(!r.length||t<r[0].dataset.dag||t>r[r.length-1].dataset.dag)return;'
+                'var n=r.filter(function(x){return x.dataset.dag>=t})[0];if(!n)return;n.classList.add("idag");var s=n.querySelector(".pres-nar");'
+                'if(s)s.textContent=(n.dataset.dag===t?"Idag · ":"Nästa lektion · ")+s.textContent;})();</script>')
+        pres += veckoplan(nr, w, n, delsida(1))
+        forsta = '' if delsida(1) else actions  # delsidorna har egna knappar och ”Nästa” visar var eleven ska fortsätta
+        sjalv = ('<p>Varje del har en egen sida: översikt, teori, exempel och övningar med ledtrådar och facit. Gör delarna i ordning. Labben kommer sist.</p>' if delsida(1)
+                 else '<p>Varje del har bildspel, övningar med ledtrådar och facit, och film. Gör dem i ordning. Labben kommer sist.</p>') + forsta
+        rubrik_ordning = 'Lösningar och självhjälp'
+        actions = ''
+        # Framsteg per del ur avbockningarna på delsidorna (samma nyckel i webbläsaren). Första ofärdiga delen markeras.
+        sjalv += ('<style>.del-framsteg{margin:4px 0 8px;font-weight:700;color:#4d6579}.del-framsteg.klar{color:#176844}'
+                  '.del-framsteg .nasta{display:inline-block;margin-left:8px;padding:2px 10px;border-radius:999px;background:#064f91;color:#fff;font-size:14px}</style>'
+                  '<script>addEventListener("DOMContentLoaded",()=>{let k={};try{k=JSON.parse(localStorage.getItem("sj-ovningar:/sjoskolan/vecka-' + str(nr)
+                  + '/aktuell/Formelstod_och_ovningar.html")||"{}")||{};}catch{}let nasta=false;'
+                  'for(const el of document.querySelectorAll(".del-framsteg")){const n=Object.keys(k).filter(x=>k[x]&&x.startsWith(el.dataset.prefix)).length;'
+                  'el.textContent=n>=10?"✓ Alla 10 övningar klara":n+" av 10 övningar klara";el.classList.toggle("klar",n>=10);'
+                  'if(n<10&&!nasta){nasta=true;el.insertAdjacentHTML("beforeend",\'<span class="nasta">Nästa</span>\');}}});</script>')
+    if w.get('tenta'):
+        # Tentamensveckan: ingen undervisning, bara planen och de tre stegen (förbered, skriftligt, praktiskt).
+        pres = veckoplan(nr, w, n, False)
+        rubrik_ordning, actions = 'Tentamensveckan steg för steg', ''
+        due = ('<p class="week-due"><strong>Protokollen från det praktiska provet senast onsdag 4 november kl. 20.</strong> '
+               '<a href="../../praktiskt-prov.html">Se det praktiska provet</a></p>')
+    if not flytt:
+        # En enda väg genom veckan (alla veckor utom vecka 40:s arbetsrum och den flyttade mappen vecka-38).
+        huvud = f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">'''
+        return huvud + enkel_vecka(nr, w, week_dir, delar_, delsida, labbar, redovisa, skicka, kicker) + '''
+</main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
+'''
+    return f'''<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(rubrik)} · Sjöskolan</title><meta name="description" content="{escape(w["mal"])}"><link rel="canonical" href="https://nj22az.github.io/sjoskolan/vecka-{nr}/aktuell/"><link rel="icon" href="/assets/images/apple-touch-icon.png"><link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v={V}"><link rel="stylesheet" href="/sjoskolan/course.css?v={V}"><script defer src="/sjoskolan/downloads.js?v=20260924-1"></script><script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script>{script}</head><body class="course"><nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav><main id="main-content" class="course-main">
+<header class="course-heading week-heading"><p class="course-kicker">{escape(kicker)}</p><h1>{escape(w["titel"])}</h1>{intro if flytt else ''}<p class="course-lead">{escape(w["mal"])}</p>{'' if flytt else vecko_band(nr, w)}{'' if flytt or pres else f'<p>{intro}</p>'}{'' if flytt else kursplan_html(nr, w)}{pres}{actions}{due}</header>
+{notis}{plan}<div class="week-grid"><section aria-labelledby="ordning"><h2 id="ordning">{rubrik_ordning}</h2>{sjalv}<ol class="lesson-list">{forst}{delar}</ol></section>
+<aside class="week-aside" aria-labelledby="grundarbete"><h2 id="grundarbete">Veckans grundarbete</h2><h3 id="inlamning">Du redovisar</h3><p><a class="sj-btn primary" href="Inlamning.html">Veckans inlämningsuppgifter</a></p><ul>{redovisa}</ul>{skicka}<p>Övningarna är träning. Kontrollera dina svar mot facit under varje övning.</p><p><strong>{w.get("sista_text") or f'Senast {sista_dag(w["sista"])}'}.</strong> {lamna}</p>{fordj}<h3>Att slå upp</h3><ul class="plain">{slaupp}{formelsamling}<li><a href="../../gemensamt/Raknehjalp.html">Räknarhjälp: RAD eller DEG, mH och µF</a></li><li><a href="../../gemensamt/Formelblad_och_begrepp.html">Formelblad och begrepp</a></li><li><a href="../../gemensamt/Underlagskort.html">Instrument- och komponentkort</a></li><li><a href="../../tentamen.html">Tentamen och övningstenta</a></li></ul></aside></div>
+<p class="course-download-note">Bildspelen öppnas direkt i webbläsaren, också i telefonen. Presentationerna finns även som PowerPoint och PDF. Nedladdade filer får datum och klockslag i filnamnet.</p>
+</main><footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer></body></html>
+'''
+
+
+if __name__ == '__main__':
+    for nr, w in VECKOR.items():
+        out = ROOT / f'vecka-{nr}' / 'aktuell' / 'index.html'
+        out.write_text(page(nr, w), encoding='utf-8')
+        print('skrev', out.relative_to(ROOT.parent))

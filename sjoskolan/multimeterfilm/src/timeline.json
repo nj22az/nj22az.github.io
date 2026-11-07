@@ -1,0 +1,1876 @@
+{
+  "language": "en-GB",
+  "title": "Multimeter Aboard",
+  "fps": 30,
+  "bpm": 120,
+  "width": 1920,
+  "height": 1080,
+  "duration": 817.5,
+  "chapters": [
+    "Welcome aboard",
+    "U, I and R",
+    "Know your instrument",
+    "Voltage",
+    "Current",
+    "Resistance and continuity",
+    "CAT and instrument selection",
+    "Resolution and error limits",
+    "Tolerance and records",
+    "Voltage loading",
+    "Ammeter loading",
+    "Your own measurement"
+  ],
+  "scenes": [
+    {
+      "id": "ombord",
+      "chapter": 0,
+      "title": "Why is the cabin lamp not working?",
+      "visual": "intro",
+      "slides": [
+        1,
+        2
+      ],
+      "key": "A good measurement starts with a question.",
+      "say": "A cabin lamp has gone dark. Shall we guess, or measure? Join cadet Saga and the Gull in the multimeter lab. We will practise connections, instrument selection and calculations. Finally, we will record a result that the next watch can understand.",
+      "start": 0,
+      "duration": 17,
+      "voiceStart": 0.5,
+      "voiceDuration": 15.222666666666667,
+      "cues": {}
+    },
+    {
+      "id": "voltbegrepp",
+      "chapter": 1,
+      "title": "Voltage compares two points",
+      "visual": "quantity",
+      "slides": [
+        3,
+        4
+      ],
+      "key": "U is measured in volts, V.",
+      "say": "Voltage is the difference in electrical potential between two points. In this course, its symbol is the letter U, and its unit is the volt. The meter compares the point at the red probe with the point at the black probe. A voltage measurement therefore always needs two measurement points.",
+      "quantity": "U",
+      "start": 17,
+      "duration": 18,
+      "voiceStart": 17.5,
+      "voiceDuration": 16.410666666666668,
+      "cues": {}
+    },
+    {
+      "id": "amperebegrepp",
+      "chapter": 1,
+      "title": "Current flows through a branch",
+      "visual": "quantity",
+      "slides": [
+        3,
+        4
+      ],
+      "key": "I is measured in amperes, A.",
+      "say": "Current describes how much electric charge passes a point each second. Its symbol is the letter I, and its unit is the ampere. To measure current, the current in that branch must pass through the instrument. The moving dots show the current direction in our model, not the actual speed of the charges.",
+      "quantity": "I",
+      "start": 35,
+      "duration": 18.5,
+      "voiceStart": 35.5,
+      "voiceDuration": 16.794666666666668,
+      "cues": {}
+    },
+    {
+      "id": "ohmbegrepp",
+      "chapter": 1,
+      "title": "Resistance limits the current",
+      "visual": "quantity",
+      "slides": [
+        3,
+        4
+      ],
+      "key": "R is measured in ohms, Ω.  U = R · I",
+      "say": "Resistance describes opposition to current. Its symbol is the letter R, and its unit is the ohm. For a resistive load, we use Ohm's law. Twelve volts across one hundred and twenty ohms gives zero point one amperes. Here, we treat the lamp as a constant resistance. A real lamp's resistance can change with temperature.",
+      "quantity": "R",
+      "start": 53.5,
+      "duration": 21.5,
+      "voiceStart": 54,
+      "voiceDuration": 19.64533333333333,
+      "cues": {}
+    },
+    {
+      "id": "rigg",
+      "chapter": 2,
+      "title": "Our current-limited 12 V training circuit",
+      "visual": "rig",
+      "slides": [
+        5,
+        6
+      ],
+      "key": "F1: fuse   S1: switch   H1: lamp",
+      "say": "This is a twelve-volt source with protective electrical separation and current limiting. F one is the fuse, S one the switch, and H one the cabin lamp. P one and P two are the lamp terminals. The return conductor leads back to the source. Practical connections are made during a supervised laboratory session.",
+      "start": 75,
+      "duration": 20.5,
+      "voiceStart": 75.5,
+      "voiceDuration": 18.550666666666668,
+      "cues": {}
+    },
+    {
+      "id": "instrument",
+      "chapter": 2,
+      "title": "Selector, display and sockets",
+      "visual": "meter",
+      "slides": [
+        7,
+        8
+      ],
+      "key": "The function and sockets must agree.",
+      "say": "The rotary selector chooses the function. The display shows the number, unit and measurement mode. D C means direct current, and A C means alternating current. The black lead goes into COM. The red lead goes into volts and ohms, or the appropriate current socket. Autoranging selects the range, but you still choose the function and sockets.",
+      "start": 95.5,
+      "duration": 23,
+      "voiceStart": 96,
+      "voiceDuration": 21.309333333333335,
+      "cues": {}
+    },
+    {
+      "id": "forkontroll",
+      "chapter": 2,
+      "title": "Check before connecting",
+      "visual": "check",
+      "slides": [
+        9
+      ],
+      "key": "Question → check → connect → read",
+      "say": "What are you measuring, between which points, and approximately how much do you expect? Inspect the leads, probes and instrument for damage. Select the correct function, sockets and range. Check the connections before switching on the supply. In our training circuit, always disconnect the supply before changing connections.",
+      "start": 118.5,
+      "duration": 20,
+      "voiceStart": 119,
+      "voiceDuration": 18.38,
+      "cues": {}
+    },
+    {
+      "id": "voltforkoppling",
+      "chapter": 3,
+      "title": "Voltage: connect with the supply off",
+      "visual": "voltage",
+      "slides": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "key": "Black: COM to P2. Red: VΩ to P1.",
+      "say": "We want to measure across the lamp. With the supply disconnected, Saga selects D C volts. The black lead connects COM to P two. The red lead connects the voltage socket to P one. The lamp's current path remains complete. The meter is connected in parallel with the lamp. COM does not automatically mean earth.",
+      "powered": false,
+      "start": 138.5,
+      "duration": 21.5,
+      "voiceStart": 139,
+      "voiceDuration": 19.758666666666667,
+      "cues": {}
+    },
+    {
+      "id": "voltavlasning",
+      "chapter": 3,
+      "title": "Voltage: read the value, unit and mode",
+      "visual": "voltage",
+      "slides": [
+        14,
+        16
+      ],
+      "key": "12.00 V DC. The meter is connected in parallel.",
+      "say": "After checking the connections, we switch on the training circuit. The model reads twelve point zero zero volts D C. The voltmeter has a high input resistance, so only a small current flows through it. Later, we will see why even that small current can affect the result.",
+      "powered": true,
+      "start": 160,
+      "duration": 17.5,
+      "voiceStart": 160.5,
+      "voiceDuration": 15.600000000000001,
+      "cues": {}
+    },
+    {
+      "id": "polaritet",
+      "chapter": 3,
+      "title": "Reversing polarity gives a minus sign",
+      "visual": "voltage",
+      "slides": [
+        15
+      ],
+      "key": "−12.00 V: the same magnitude, with the comparison reversed.",
+      "say": "First, we disconnect the supply and swap the probe positions. After checking, we switch the supply on again. The meter now reads minus twelve volts. The magnitude is unchanged. The minus sign tells us that the red probe is at a lower potential than the black probe.",
+      "powered": true,
+      "reversed": true,
+      "start": 177.5,
+      "duration": 17.5,
+      "voiceStart": 178,
+      "voiceDuration": 15.990666666666666,
+      "cues": {}
+    },
+    {
+      "id": "stromkoppling",
+      "chapter": 4,
+      "title": "Current: open the path and bridge the gap",
+      "visual": "current",
+      "slides": [
+        17,
+        18,
+        19
+      ],
+      "key": "Supply OFF. Connect the meter in series.",
+      "say": "Now we want to measure the lamp current. Disconnect the supply and open the link between K one and K two. Select D C amperes and a current socket with suitable limits, as specified in the manual. Connect red to K one, and black COM to K two. The meter bridges the gap.",
+      "powered": false,
+      "start": 195,
+      "duration": 19,
+      "voiceStart": 195.5,
+      "voiceDuration": 17.377333333333333,
+      "cues": {}
+    },
+    {
+      "id": "stromavlasning",
+      "chapter": 4,
+      "title": "All lamp current passes through the meter",
+      "visual": "current",
+      "slides": [
+        20
+      ],
+      "key": "I = 12 V / 120 Ω = 0.10 A",
+      "say": "After the instructor has checked the connections, switch on the supply. All the current in the lamp branch now passes through the meter. Our simplified model reads zero point one amperes, or one hundred milliamperes. Record the actual reading with its unit. Observe the instrument's fuse requirements, time limit and current limit.",
+      "powered": true,
+      "start": 214,
+      "duration": 21,
+      "voiceStart": 214.5,
+      "voiceDuration": 19.254666666666665,
+      "cues": {}
+    },
+    {
+      "id": "aterstall",
+      "chapter": 4,
+      "title": "Return to a safe starting configuration",
+      "visual": "restore",
+      "slides": [
+        21
+      ],
+      "key": "Disconnect the supply. Move red back to VΩ.",
+      "say": "After measuring current, disconnect the supply. Remove the meter and restore the link in the circuit. Move the red lead back to the volts and ohms socket. This habit reduces the risk of beginning the next voltage measurement with a dangerous connection.",
+      "start": 235,
+      "duration": 16,
+      "voiceStart": 235.5,
+      "voiceDuration": 14.405333333333337,
+      "cues": {
+        "restore": 6.486666666666679
+      }
+    },
+    {
+      "id": "feluttag",
+      "chapter": 4,
+      "title": "Pause: what is wrong with this setup?",
+      "visual": "wrong",
+      "slides": [
+        22,
+        23
+      ],
+      "key": "V mode + red in the A socket = wrong setup for voltage.",
+      "say": "The Gull wants to measure voltage. The selector is correct, but the red lead is still in the ampere socket. What must change? Pause the film and decide. The current input has low resistance and can short-circuit a source. Simply turning the selector to volts does not make the wrong socket safe. Do not try this incorrect connection.",
+      "pause": true,
+      "start": 251,
+      "duration": 24,
+      "voiceStart": 251.5,
+      "voiceDuration": 20.505333333333333,
+      "cues": {
+        "answer": 10.574666666666644
+      }
+    },
+    {
+      "id": "resistans",
+      "chapter": 5,
+      "title": "Ohms: the meter supplies a test signal",
+      "visual": "ohm",
+      "slides": [
+        24,
+        25,
+        26
+      ],
+      "key": "Isolate the circuit, verify it is dead, and discharge stored energy.",
+      "say": "For resistance measurements, the meter supplies its own small test signal. Disconnect the supply, verify that voltage is absent, and deal safely with stored energy. Isolate the component by disconnecting at least one terminal. With the leads in COM and volts and ohms, and the selector on ohms, we measure one thousand ohms: one kilohm.",
+      "start": 275,
+      "duration": 22,
+      "voiceStart": 275.5,
+      "voiceDuration": 20.4,
+      "cues": {}
+    },
+    {
+      "id": "kontinuitet",
+      "chapter": 5,
+      "title": "The buzzer identifies a conducting path",
+      "visual": "continuity",
+      "slides": [
+        27,
+        28,
+        29
+      ],
+      "key": "Low resistance may produce a beep. An open path may show OL.",
+      "say": "With the equipment isolated and verified dead, select continuity. First, touch the probe tips together. Low resistance normally produces a beep. An intact fuse, removed from the circuit, also has low resistance. An open path may display O L. This can also mean resistance above the range. A beep never proves that a circuit is dead.",
+      "start": 297,
+      "duration": 23.5,
+      "voiceStart": 297.5,
+      "voiceDuration": 21.870666666666665,
+      "cues": {
+        "fuse": 10.205333333333328,
+        "open": 14.457333333333338
+      }
+    },
+    {
+      "id": "parallellohm",
+      "chapter": 5,
+      "title": "Two paths change the resistance reading",
+      "visual": "parallel",
+      "slides": [
+        30,
+        31,
+        32
+      ],
+      "key": "1 kΩ in parallel with 1 kΩ = 500 Ω",
+      "say": "Two one-thousand-ohm resistors are connected in parallel, with no external supply. The meter's test current has two paths, and the meter reads five hundred ohms. Disconnecting one branch leaves a single path, and the reading becomes one thousand ohms. Other connected paths can therefore distort a component's resistance measurement.",
+      "start": 320.5,
+      "duration": 21,
+      "voiceStart": 321,
+      "voiceDuration": 19.44,
+      "cues": {
+        "disconnect": 10.305333333333351
+      }
+    },
+    {
+      "id": "transient",
+      "chapter": 6,
+      "title": "CAT describes the measurement environment",
+      "visual": "transient",
+      "slides": [
+        33
+      ],
+      "key": "A brief voltage spike can start a dangerous fault.",
+      "say": "A transient is a very brief voltage spike, for example when a motor is switched off. If insulation breaks down, the supply can continue feeding a short circuit and a dangerous arc. The CAT rating describes the measurement environment for which the instrument's protection has been tested. The same operating voltage can require different categories.",
+      "start": 341.5,
+      "duration": 22.5,
+      "voiceStart": 342,
+      "voiceDuration": 20.890666666666664,
+      "cues": {}
+    },
+    {
+      "id": "katkarta",
+      "chapter": 6,
+      "title": "From appliances to the incoming supply",
+      "visual": "categories",
+      "slides": [
+        34
+      ],
+      "key": "CAT II: appliances. CAT III: fixed installation. CAT IV: supply origin.",
+      "say": "Category two includes plug-connected appliances on the load side. Category three covers fixed installations, distribution boards and fixed motors, including single-phase systems. Category four covers the origin of the low-voltage installation. It does not mean every outdoor wire. The older category one refers to circuits without a direct mains connection. Check their particular limits in the manual.",
+      "start": 364,
+      "duration": 26.5,
+      "voiceStart": 364.5,
+      "voiceDuration": 24.914666666666665,
+      "cues": {}
+    },
+    {
+      "id": "katvolt",
+      "chapter": 6,
+      "title": "Read both the category and voltage rating",
+      "visual": "ratings",
+      "slides": [
+        35
+      ],
+      "key": "One meter may carry CAT III 1 000 V / CAT IV 600 V.",
+      "say": "Can a category two meter have a higher voltage rating than a category four meter? Yes. But a higher voltage rating never substitutes for the required category. One instrument can have several ratings. A higher category does not automatically require a lower rated voltage. Check voltage to earth, voltage between sockets, and the limits of the selected function.",
+      "start": 390.5,
+      "duration": 24.5,
+      "voiceStart": 391,
+      "voiceDuration": 22.717333333333332,
+      "cues": {}
+    },
+    {
+      "id": "katimpuls",
+      "chapter": 6,
+      "title": "Test impulse is not a permitted measuring voltage",
+      "visual": "impulse",
+      "slides": [
+        36
+      ],
+      "key": "The same test voltage can produce different test currents.",
+      "say": "In this example, category two at one thousand volts and category three at six hundred volts are tested with brief six-thousand-volt impulses. But the test-source resistances are twelve ohms and two ohms respectively. Lower resistance can deliver more current. Category four at six hundred volts is tested here at eight thousand volts. These are test values, never permissible continuous measuring voltages.",
+      "start": 415,
+      "duration": 26.5,
+      "voiceStart": 415.5,
+      "voiceDuration": 24.609333333333332,
+      "cues": {}
+    },
+    {
+      "id": "katval",
+      "chapter": 6,
+      "title": "Pause: which meter meets the requirement?",
+      "visual": "choose",
+      "slides": [
+        37,
+        38,
+        39
+      ],
+      "key": "Required: CAT III 600 V. Check the leads and probes too.",
+      "say": "The work plan requires category three, six hundred volts. Meter A is category two, one thousand volts. Meter B is category three, six hundred volts. Which do you choose? B meets both requirements. The entire measuring system must meet them. A category four meter with category two probes is not sufficient. Removing probe-tip covers may also change the rating. Read the manual.",
+      "pause": true,
+      "start": 441.5,
+      "duration": 28,
+      "voiceStart": 442,
+      "voiceDuration": 24.998666666666665,
+      "cues": {
+        "answer": 12.110666666666646
+      }
+    },
+    {
+      "id": "upplosning",
+      "chapter": 7,
+      "title": "More digits do not necessarily mean less error",
+      "visual": "resolution",
+      "slides": [
+        41,
+        42
+      ],
+      "key": "12.00 → 12.01 V: one count is 0.01 V.",
+      "say": "Resolution is the smallest step on the display. Here, the difference between twelve point zero zero and twelve point zero one volts is one hundredth of a volt. The error limit describes the instrument's specified deviation under stated conditions. Tolerance describes the range allowed for the equipment being tested. Keep these three concepts separate.",
+      "start": 469.5,
+      "duration": 23,
+      "voiceStart": 470,
+      "voiceDuration": 21.067999999999998,
+      "cues": {}
+    },
+    {
+      "id": "fel12",
+      "chapter": 7,
+      "title": "Error limit: percentage plus counts",
+      "visual": "accuracy",
+      "slides": [
+        43,
+        44,
+        45,
+        46
+      ],
+      "key": "12.00 V ±0.08 V gives 11.92–12.08 V.",
+      "say": "Assume a specification of plus or minus zero point five per cent of the reading, plus two counts. One count is zero point zero one volts. At twelve volts, the percentage contribution is zero point zero six volts. The two counts contribute zero point zero two volts. Adding them gives plus or minus zero point zero eight volts. This interval covers only the stated instrument error limit.",
+      "example": 12,
+      "start": 492.5,
+      "duration": 26.5,
+      "voiceStart": 493,
+      "voiceDuration": 24.850666666666662,
+      "cues": {}
+    },
+    {
+      "id": "fel24",
+      "chapter": 7,
+      "title": "Pause and calculate at 24.00 V",
+      "visual": "accuracy",
+      "slides": [
+        47,
+        48
+      ],
+      "key": "24.00 V ±0.14 V gives 23.86–24.14 V.",
+      "say": "Use the same specification and resolution, but now the display reads twenty-four volts. Pause and calculate first. The percentage contribution is zero point one two volts. Two counts still contribute zero point zero two volts. The error limit is plus or minus zero point one four volts. The interval runs from twenty-three point eight six to twenty-four point one four volts.",
+      "example": 24,
+      "pause": true,
+      "start": 519,
+      "duration": 27,
+      "voiceStart": 519.5,
+      "voiceDuration": 23.890666666666668,
+      "cues": {}
+    },
+    {
+      "id": "fel8",
+      "chapter": 7,
+      "title": "A different meter gives different contributions",
+      "visual": "accuracy",
+      "slides": [
+        67
+      ],
+      "key": "8.00 V ±0.11 V gives 7.89–8.11 V.",
+      "say": "In the extension example, the meter reads eight volts. Its specification is plus or minus one per cent, plus three counts, with a resolution of one hundredth of a volt. The contributions are zero point zero eight and zero point zero three volts. Their sum is zero point one one volts. Always use the specification for the actual range.",
+      "example": 8,
+      "start": 546,
+      "duration": 23,
+      "voiceStart": 546.5,
+      "voiceDuration": 21.26,
+      "cues": {}
+    },
+    {
+      "id": "tolerans",
+      "chapter": 8,
+      "title": "Does the whole interval fit within the limits?",
+      "visual": "tolerance",
+      "slides": [
+        49,
+        50,
+        51,
+        52
+      ],
+      "key": "Required: 11.40–12.60 V. Measurement interval: 11.40–11.60 V.",
+      "say": "The equipment requires twelve volts, plus or minus five per cent. Five per cent is zero point six volts, giving an allowed range of eleven point four zero to twelve point six zero volts. Our measurement is eleven point five zero, plus or minus zero point one zero volts. The whole interval fits. This exercise includes the boundary values. In real work, acceptance rules must be agreed beforehand.",
+      "start": 569,
+      "duration": 27,
+      "voiceStart": 569.5,
+      "voiceDuration": 25.49066666666666,
+      "cues": {}
+    },
+    {
+      "id": "protokoll",
+      "chapter": 8,
+      "title": "The next watch needs more than a number",
+      "visual": "protocol",
+      "slides": [
+        53,
+        54
+      ],
+      "key": "Record the points, operating state, instrument, result and conclusion.",
+      "say": "Writing 'the voltage is eleven point eight' is not enough. Record the unit, measurement points and operating state. Identify the instrument, function, range, resolution and relevant specification. Include the error limit, requirement and conclusion, together with the date and operator. This is fictional teaching data. Record real information in actual work; never guess it.",
+      "start": 596,
+      "duration": 25,
+      "voiceStart": 596.5,
+      "voiceDuration": 23.293333333333326,
+      "cues": {}
+    },
+    {
+      "id": "delare",
+      "chapter": 9,
+      "title": "Two equal resistors divide 10 V equally",
+      "visual": "divider",
+      "slides": [
+        55
+      ],
+      "key": "Without a meter: U across R₂ = 5.000 V.",
+      "say": "We now leave the lamp and examine a sensor model. Two resistors, each one megohm, divide ten volts equally. With no meter connected, the voltage across the lower resistor is five volts. What happens when a real voltmeter is connected?",
+      "rm": 0,
+      "start": 621,
+      "duration": 16.5,
+      "voiceStart": 621.5,
+      "voiceDuration": 14.725333333333335,
+      "cues": {}
+    },
+    {
+      "id": "last10",
+      "chapter": 9,
+      "title": "The meter adds another current path",
+      "visual": "divider",
+      "slides": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "key": "Rₘ = 10 MΩ: calculated 4.762 V, displayed 4.76 V.",
+      "say": "The voltmeter's ten-megohm input is in parallel with the lower resistor. The equivalent parallel resistance is about zero point nine zero nine megohms. The voltage-divider equation then gives approximately four point seven six two volts. With a resolution of one hundredth, the display reads four point seven six. The meter has changed the voltage we wanted to investigate.",
+      "rm": 10,
+      "start": 637.5,
+      "duration": 25,
+      "voiceStart": 638,
+      "voiceDuration": 23.26533333333333,
+      "cues": {}
+    },
+    {
+      "id": "last1",
+      "chapter": 9,
+      "title": "Lower input resistance causes more loading here",
+      "visual": "divider",
+      "slides": [
+        60,
+        61
+      ],
+      "key": "Rₘ = 1 MΩ: calculated 3.333 V, displayed 3.33 V.",
+      "say": "Change only the meter's input resistance to one megohm. One megohm in parallel with one megohm is half a megohm. Ten times one half, divided by one plus one half, gives approximately three point three three three volts. Pause and check the calculation.",
+      "rm": 1,
+      "pause": true,
+      "start": 662.5,
+      "duration": 20,
+      "voiceStart": 663,
+      "voiceDuration": 16.581333333333333,
+      "cues": {}
+    },
+    {
+      "id": "lastprocent",
+      "chapter": 9,
+      "title": "Compare loading error with the original value",
+      "visual": "loadingError",
+      "slides": [
+        62,
+        63
+      ],
+      "key": "(3.333 − 5.000) / 5.000 · 100 % ≈ −33.3 %",
+      "say": "Compare the result with the original five volts, without the meter. Divide the difference by the original value to obtain about minus thirty-three point three per cent. The minus sign means a lower voltage. Large resistances in the sensor circuit make the effect clear. Higher input resistance causes less loading in this model. Loading error is separate from the instrument's own error limit.",
+      "start": 682.5,
+      "duration": 24.5,
+      "voiceStart": 683,
+      "voiceDuration": 22.653333333333336,
+      "cues": {}
+    },
+    {
+      "id": "last9",
+      "chapter": 9,
+      "title": "The same principle at 9 V",
+      "visual": "divider",
+      "slides": [
+        68
+      ],
+      "key": "R₁ = R₂ = Rₘ = 2 MΩ. 4.5 V becomes 3.0 V.",
+      "say": "For the extension example, the source is nine volts and all three resistances are two megohms. Without the meter, the voltage is four point five volts. The lower parallel combination is one megohm. With the meter connected, we obtain three volts. Once again, the change is minus thirty-three point three per cent.",
+      "rm": 2,
+      "source": 9,
+      "start": 707,
+      "duration": 21,
+      "voiceStart": 707.5,
+      "voiceDuration": 19.276000000000003,
+      "cues": {}
+    },
+    {
+      "id": "burden",
+      "chapter": 10,
+      "title": "The ammeter also changes the circuit",
+      "visual": "burden",
+      "slides": [
+        66
+      ],
+      "key": "12 / 120 = 0.100 A. 12 / 121 ≈ 0.0992 A.",
+      "say": "An ammeter also changes the circuit. Twelve volts across one hundred and twenty ohms gives zero point one amperes. If the meter adds one ohm, the total becomes one hundred and twenty-one ohms. Current falls to about zero point zero nine nine two amperes. The shunt and fuse cause a voltage drop. Instrument manuals often call this burden voltage.",
+      "start": 728,
+      "duration": 24,
+      "voiceStart": 728.5,
+      "voiceDuration": 22.119999999999997,
+      "cues": {}
+    },
+    {
+      "id": "repetition",
+      "chapter": 11,
+      "title": "Explain the connection before measuring",
+      "visual": "recap",
+      "slides": [
+        4,
+        40,
+        64
+      ],
+      "key": "V in parallel. A in series. Ω and continuity with no external supply.",
+      "say": "Why do we measure volts in parallel and amperes in series? Why must resistance be measured in an isolated circuit? Explain using a diagram. Distinguish resolution, error limit, tolerance and loading error. The correct category and voltage rating provide protection for the measurement environment, but they do not make the reading more accurate.",
+      "start": 752,
+      "duration": 22,
+      "voiceStart": 752.5,
+      "voiceDuration": 20.129333333333335,
+      "cues": {}
+    },
+    {
+      "id": "egetarbete",
+      "chapter": 11,
+      "title": "Your turn in the Multimeter Lab",
+      "visual": "outro",
+      "slides": [
+        2,
+        64,
+        65
+      ],
+      "key": "Predict. Connect. Read. Explain. Record.",
+      "say": "Saga and the Gull now have a method instead of a guess. Open the Multimeter Lab, predict the value, and select the function and sockets. Connect, read and explain. Then draw the correct measurement circuit and write a short record. Follow the course submission instructions and the instructor's directions during practical laboratory work.",
+      "start": 774,
+      "duration": 21,
+      "voiceStart": 774.5,
+      "voiceDuration": 19.44666666666667,
+      "cues": {}
+    },
+    {
+      "id": "kallor",
+      "chapter": 11,
+      "title": "Continue with the presentation and manual",
+      "visual": "credits",
+      "slides": [
+        69,
+        70
+      ],
+      "key": "Sjöskolan · Multimeters and measurement errors",
+      "say": "This film complements the presentation on multimeters and measurement errors. References and additional Swedish videos are listed in the presentation and below this player. The instrument shown here is a simplified teaching model. For practical work, follow the actual instrument manual and the relevant safety procedures. Thank you for joining us aboard.",
+      "start": 795,
+      "duration": 22.5,
+      "voiceStart": 795.5,
+      "voiceDuration": 20.918666666666667,
+      "cues": {}
+    }
+  ],
+  "captions": [
+    {
+      "start": 0.5,
+      "end": 2.42,
+      "text": "A cabin lamp has gone dark.",
+      "scene": "ombord"
+    },
+    {
+      "start": 2.64,
+      "end": 4.261333333333333,
+      "text": "Shall we guess, or measure?",
+      "scene": "ombord"
+    },
+    {
+      "start": 4.481333333333333,
+      "end": 7.681333333333333,
+      "text": "Join cadet Saga and the Gull in the multimeter lab.",
+      "scene": "ombord"
+    },
+    {
+      "start": 7.901333333333333,
+      "end": 11.719999999999999,
+      "text": "We will practise connections, instrument selection and calculations.",
+      "scene": "ombord"
+    },
+    {
+      "start": 11.94,
+      "end": 15.502666666666666,
+      "text": "Finally, we will record a result that the next watch can understand.",
+      "scene": "ombord"
+    },
+    {
+      "start": 17.5,
+      "end": 21.404,
+      "text": "Voltage is the difference in electrical potential between two points.",
+      "scene": "voltbegrepp"
+    },
+    {
+      "start": 21.624,
+      "end": 25.570666666666664,
+      "text": "In this course, its symbol is the letter U, and its unit is the volt.",
+      "scene": "voltbegrepp"
+    },
+    {
+      "start": 25.790666666666667,
+      "end": 29.950666666666667,
+      "text": "The meter compares the point at the red probe with the point at the black probe.",
+      "scene": "voltbegrepp"
+    },
+    {
+      "start": 30.17066666666667,
+      "end": 33.69066666666667,
+      "text": "A voltage measurement therefore always needs two measurement points.",
+      "scene": "voltbegrepp"
+    },
+    {
+      "start": 35.5,
+      "end": 39.382666666666665,
+      "text": "Current describes how much electric charge passes a point each second.",
+      "scene": "amperebegrepp"
+    },
+    {
+      "start": 39.602666666666664,
+      "end": 42.93066666666667,
+      "text": "Its symbol is the letter I, and its unit is the ampere.",
+      "scene": "amperebegrepp"
+    },
+    {
+      "start": 43.150666666666666,
+      "end": 46.86266666666667,
+      "text": "To measure current, the current in that branch must pass through the instrument.",
+      "scene": "amperebegrepp"
+    },
+    {
+      "start": 47.08266666666667,
+      "end": 52.074666666666666,
+      "text": "The moving dots show the current direction in our model, not the actual speed of the charges.",
+      "scene": "amperebegrepp"
+    },
+    {
+      "start": 54,
+      "end": 56.602666666666664,
+      "text": "Resistance describes opposition to current.",
+      "scene": "ohmbegrepp"
+    },
+    {
+      "start": 56.82266666666666,
+      "end": 59.894666666666666,
+      "text": "Its symbol is the letter R, and its unit is the ohm.",
+      "scene": "ohmbegrepp"
+    },
+    {
+      "start": 60.114666666666665,
+      "end": 62.46133333333333,
+      "text": "For a resistive load, we use Ohm's law.",
+      "scene": "ohmbegrepp"
+    },
+    {
+      "start": 62.681333333333335,
+      "end": 67.28933333333333,
+      "text": "Twelve volts across one hundred and twenty ohms gives zero point one amperes.",
+      "scene": "ohmbegrepp"
+    },
+    {
+      "start": 67.50933333333333,
+      "end": 70.19733333333333,
+      "text": "Here, we treat the lamp as a constant resistance.",
+      "scene": "ohmbegrepp"
+    },
+    {
+      "start": 70.41733333333333,
+      "end": 73.42533333333333,
+      "text": "A real lamp's resistance can change with temperature.",
+      "scene": "ohmbegrepp"
+    },
+    {
+      "start": 75.5,
+      "end": 80.428,
+      "text": "This is a twelve-volt source with protective electrical separation and current limiting.",
+      "scene": "rigg"
+    },
+    {
+      "start": 80.648,
+      "end": 84.36,
+      "text": "F one is the fuse, S one the switch, and H one the cabin lamp.",
+      "scene": "rigg"
+    },
+    {
+      "start": 84.58,
+      "end": 87.16133333333333,
+      "text": "P one and P two are the lamp terminals.",
+      "scene": "rigg"
+    },
+    {
+      "start": 87.38133333333333,
+      "end": 89.89866666666666,
+      "text": "The return conductor leads back to the source.",
+      "scene": "rigg"
+    },
+    {
+      "start": 90.11866666666667,
+      "end": 93.83066666666667,
+      "text": "Practical connections are made during a supervised laboratory session.",
+      "scene": "rigg"
+    },
+    {
+      "start": 96,
+      "end": 98.38933333333334,
+      "text": "The rotary selector chooses the function.",
+      "scene": "instrument"
+    },
+    {
+      "start": 98.60933333333334,
+      "end": 101.55333333333334,
+      "text": "The display shows the number, unit and measurement mode.",
+      "scene": "instrument"
+    },
+    {
+      "start": 101.77333333333334,
+      "end": 105.80533333333334,
+      "text": "D C means direct current, and A C means alternating current.",
+      "scene": "instrument"
+    },
+    {
+      "start": 106.02533333333334,
+      "end": 108.116,
+      "text": "The black lead goes into COM.",
+      "scene": "instrument"
+    },
+    {
+      "start": 108.336,
+      "end": 112.432,
+      "text": "The red lead goes into volts and ohms, or the appropriate current socket.",
+      "scene": "instrument"
+    },
+    {
+      "start": 112.652,
+      "end": 117.08933333333333,
+      "text": "Autoranging selects the range, but you still choose the function and sockets.",
+      "scene": "instrument"
+    },
+    {
+      "start": 119,
+      "end": 123.24533333333333,
+      "text": "What are you measuring, between which points, and approximately how much do you expect?",
+      "scene": "forkontroll"
+    },
+    {
+      "start": 123.46533333333333,
+      "end": 126.43066666666667,
+      "text": "Inspect the leads, probes and instrument for damage.",
+      "scene": "forkontroll"
+    },
+    {
+      "start": 126.65066666666667,
+      "end": 129.44533333333334,
+      "text": "Select the correct function, sockets and range.",
+      "scene": "forkontroll"
+    },
+    {
+      "start": 129.66533333333334,
+      "end": 132.41733333333335,
+      "text": "Check the connections before switching on the supply.",
+      "scene": "forkontroll"
+    },
+    {
+      "start": 132.63733333333334,
+      "end": 137.16000000000003,
+      "text": "In our training circuit, always disconnect the supply before changing connections.",
+      "scene": "forkontroll"
+    },
+    {
+      "start": 139,
+      "end": 140.87733333333333,
+      "text": "We want to measure across the lamp.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 141.09733333333332,
+      "end": 144.66,
+      "text": "With the supply disconnected, Saga selects D C volts.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 144.88,
+      "end": 147.33333333333331,
+      "text": "The black lead connects COM to P two.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 147.55333333333334,
+      "end": 150.348,
+      "text": "The red lead connects the voltage socket to P one.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 150.568,
+      "end": 152.91466666666668,
+      "text": "The lamp's current path remains complete.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 153.13466666666667,
+      "end": 155.716,
+      "text": "The meter is connected in parallel with the lamp.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 155.936,
+      "end": 158.53866666666667,
+      "text": "COM does not automatically mean earth.",
+      "scene": "voltforkoppling"
+    },
+    {
+      "start": 160.5,
+      "end": 163.828,
+      "text": "After checking the connections, we switch on the training circuit.",
+      "scene": "voltavlasning"
+    },
+    {
+      "start": 164.048,
+      "end": 167.14133333333334,
+      "text": "The model reads twelve point zero zero volts D C.",
+      "scene": "voltavlasning"
+    },
+    {
+      "start": 167.36133333333333,
+      "end": 172.012,
+      "text": "The voltmeter has a high input resistance, so only a small current flows through it.",
+      "scene": "voltavlasning"
+    },
+    {
+      "start": 172.232,
+      "end": 175.88,
+      "text": "Later, we will see why even that small current can affect the result.",
+      "scene": "voltavlasning"
+    },
+    {
+      "start": 178,
+      "end": 181.328,
+      "text": "First, we disconnect the supply and swap the probe positions.",
+      "scene": "polaritet"
+    },
+    {
+      "start": 181.548,
+      "end": 184.108,
+      "text": "After checking, we switch the supply on again.",
+      "scene": "polaritet"
+    },
+    {
+      "start": 184.328,
+      "end": 186.76,
+      "text": "The meter now reads minus twelve volts.",
+      "scene": "polaritet"
+    },
+    {
+      "start": 186.98,
+      "end": 188.94266666666667,
+      "text": "The magnitude is unchanged.",
+      "scene": "polaritet"
+    },
+    {
+      "start": 189.16266666666667,
+      "end": 193.77066666666667,
+      "text": "The minus sign tells us that the red probe is at a lower potential than the black probe.",
+      "scene": "polaritet"
+    },
+    {
+      "start": 195.5,
+      "end": 197.69733333333335,
+      "text": "Now we want to measure the lamp current.",
+      "scene": "stromkoppling"
+    },
+    {
+      "start": 197.91733333333335,
+      "end": 201.67200000000003,
+      "text": "Disconnect the supply and open the link between K one and K two.",
+      "scene": "stromkoppling"
+    },
+    {
+      "start": 201.892,
+      "end": 207.31066666666666,
+      "text": "Select D C amperes and a current socket with suitable limits, as specified in the manual.",
+      "scene": "stromkoppling"
+    },
+    {
+      "start": 207.53066666666666,
+      "end": 210.688,
+      "text": "Connect red to K one, and black COM to K two.",
+      "scene": "stromkoppling"
+    },
+    {
+      "start": 210.90800000000002,
+      "end": 212.65733333333336,
+      "text": "The meter bridges the gap.",
+      "scene": "stromkoppling"
+    },
+    {
+      "start": 214.5,
+      "end": 218.212,
+      "text": "After the instructor has checked the connections, switch on the supply.",
+      "scene": "stromavlasning"
+    },
+    {
+      "start": 218.432,
+      "end": 221.61066666666665,
+      "text": "All the current in the lamp branch now passes through the meter.",
+      "scene": "stromavlasning"
+    },
+    {
+      "start": 221.83066666666667,
+      "end": 226.73733333333334,
+      "text": "Our simplified model reads zero point one amperes, or one hundred milliamperes.",
+      "scene": "stromavlasning"
+    },
+    {
+      "start": 226.95733333333334,
+      "end": 229.26133333333334,
+      "text": "Record the actual reading with its unit.",
+      "scene": "stromavlasning"
+    },
+    {
+      "start": 229.48133333333334,
+      "end": 233.53466666666668,
+      "text": "Observe the instrument's fuse requirements, time limit and current limit.",
+      "scene": "stromavlasning"
+    },
+    {
+      "start": 235.5,
+      "end": 238.14533333333333,
+      "text": "After measuring current, disconnect the supply.",
+      "scene": "aterstall"
+    },
+    {
+      "start": 238.36533333333333,
+      "end": 241.26666666666665,
+      "text": "Remove the meter and restore the link in the circuit.",
+      "scene": "aterstall"
+    },
+    {
+      "start": 241.48666666666668,
+      "end": 244.26000000000002,
+      "text": "Move the red lead back to the volts and ohms socket.",
+      "scene": "aterstall"
+    },
+    {
+      "start": 244.48,
+      "end": 249.68533333333332,
+      "text": "This habit reduces the risk of beginning the next voltage measurement with a dangerous connection.",
+      "scene": "aterstall"
+    },
+    {
+      "start": 251.5,
+      "end": 253.52666666666667,
+      "text": "The Gull wants to measure voltage.",
+      "scene": "feluttag"
+    },
+    {
+      "start": 253.74666666666667,
+      "end": 257.7146666666667,
+      "text": "The selector is correct, but the red lead is still in the ampere socket.",
+      "scene": "feluttag"
+    },
+    {
+      "start": 257.93466666666666,
+      "end": 259.3213333333333,
+      "text": "What must change?",
+      "scene": "feluttag"
+    },
+    {
+      "start": 259.54133333333334,
+      "end": 261.3546666666667,
+      "text": "Pause the film and decide.",
+      "scene": "feluttag"
+    },
+    {
+      "start": 261.57466666666664,
+      "end": 265.24399999999997,
+      "text": "The current input has low resistance and can short-circuit a source.",
+      "scene": "feluttag"
+    },
+    {
+      "start": 265.464,
+      "end": 269.368,
+      "text": "Simply turning the selector to volts does not make the wrong socket safe.",
+      "scene": "feluttag"
+    },
+    {
+      "start": 269.588,
+      "end": 271.78533333333337,
+      "text": "Do not try this incorrect connection.",
+      "scene": "feluttag"
+    },
+    {
+      "start": 275.5,
+      "end": 279.5106666666667,
+      "text": "For resistance measurements, the meter supplies its own small test signal.",
+      "scene": "resistans"
+    },
+    {
+      "start": 279.73066666666665,
+      "end": 285.04266666666666,
+      "text": "Disconnect the supply, verify that voltage is absent, and deal safely with stored energy.",
+      "scene": "resistans"
+    },
+    {
+      "start": 285.2626666666667,
+      "end": 288.59066666666666,
+      "text": "Isolate the component by disconnecting at least one terminal.",
+      "scene": "resistans"
+    },
+    {
+      "start": 288.8106666666667,
+      "end": 295.68,
+      "text": "With the leads in COM and volts and ohms, and the selector on ohms, we measure one thousand ohms: one kilohm.",
+      "scene": "resistans"
+    },
+    {
+      "start": 297.5,
+      "end": 301.76666666666665,
+      "text": "With the equipment isolated and verified dead, select continuity.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 301.9866666666667,
+      "end": 304.16266666666667,
+      "text": "First, touch the probe tips together.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 304.3826666666667,
+      "end": 306.98533333333336,
+      "text": "Low resistance normally produces a beep.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 307.20533333333333,
+      "end": 311.2373333333333,
+      "text": "An intact fuse, removed from the circuit, also has low resistance.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 311.45733333333334,
+      "end": 313.612,
+      "text": "An open path may display O L.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 313.832,
+      "end": 316.4773333333333,
+      "text": "This can also mean resistance above the range.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 316.69733333333335,
+      "end": 319.15066666666667,
+      "text": "A beep never proves that a circuit is dead.",
+      "scene": "kontinuitet"
+    },
+    {
+      "start": 321,
+      "end": 325.97066666666666,
+      "text": "Two one-thousand-ohm resistors are connected in parallel, with no external supply.",
+      "scene": "parallellohm"
+    },
+    {
+      "start": 326.1906666666667,
+      "end": 330.5853333333334,
+      "text": "The meter's test current has two paths, and the meter reads five hundred ohms.",
+      "scene": "parallellohm"
+    },
+    {
+      "start": 330.80533333333335,
+      "end": 335.79733333333337,
+      "text": "Disconnecting one branch leaves a single path, and the reading becomes one thousand ohms.",
+      "scene": "parallellohm"
+    },
+    {
+      "start": 336.01733333333334,
+      "end": 340.22,
+      "text": "Other connected paths can therefore distort a component's resistance measurement.",
+      "scene": "parallellohm"
+    },
+    {
+      "start": 342,
+      "end": 346.8426666666667,
+      "text": "A transient is a very brief voltage spike, for example when a motor is switched off.",
+      "scene": "transient"
+    },
+    {
+      "start": 347.06266666666664,
+      "end": 352.80133333333333,
+      "text": "If insulation breaks down, the supply can continue feeding a short circuit and a dangerous arc.",
+      "scene": "transient"
+    },
+    {
+      "start": 353.02133333333336,
+      "end": 359.0373333333334,
+      "text": "The CAT rating describes the measurement environment for which the instrument's protection has been tested.",
+      "scene": "transient"
+    },
+    {
+      "start": 359.25733333333335,
+      "end": 362.6706666666667,
+      "text": "The same operating voltage can require different categories.",
+      "scene": "transient"
+    },
+    {
+      "start": 364.5,
+      "end": 368.36133333333333,
+      "text": "Category two includes plug-connected appliances on the load side.",
+      "scene": "katkarta"
+    },
+    {
+      "start": 368.5813333333333,
+      "end": 375.38666666666666,
+      "text": "Category three covers fixed installations, distribution boards and fixed motors, including single-phase systems.",
+      "scene": "katkarta"
+    },
+    {
+      "start": 375.6066666666667,
+      "end": 379.42533333333336,
+      "text": "Category four covers the origin of the low-voltage installation.",
+      "scene": "katkarta"
+    },
+    {
+      "start": 379.6453333333333,
+      "end": 381.90666666666664,
+      "text": "It does not mean every outdoor wire.",
+      "scene": "katkarta"
+    },
+    {
+      "start": 382.12666666666667,
+      "end": 386.628,
+      "text": "The older category one refers to circuits without a direct mains connection.",
+      "scene": "katkarta"
+    },
+    {
+      "start": 386.848,
+      "end": 389.1946666666667,
+      "text": "Check their particular limits in the manual.",
+      "scene": "katkarta"
+    },
+    {
+      "start": 391,
+      "end": 395.77866666666665,
+      "text": "Can a category two meter have a higher voltage rating than a category four meter?",
+      "scene": "katvolt"
+    },
+    {
+      "start": 395.9986666666667,
+      "end": 396.916,
+      "text": "Yes.",
+      "scene": "katvolt"
+    },
+    {
+      "start": 397.136,
+      "end": 401.12533333333334,
+      "text": "But a higher voltage rating never substitutes for the required category.",
+      "scene": "katvolt"
+    },
+    {
+      "start": 401.3453333333333,
+      "end": 403.73466666666667,
+      "text": "One instrument can have several ratings.",
+      "scene": "katvolt"
+    },
+    {
+      "start": 403.95466666666664,
+      "end": 408.2853333333333,
+      "text": "A higher category does not automatically require a lower rated voltage.",
+      "scene": "katvolt"
+    },
+    {
+      "start": 408.50533333333334,
+      "end": 413.49733333333336,
+      "text": "Check voltage to earth, voltage between sockets, and the limits of the selected function.",
+      "scene": "katvolt"
+    },
+    {
+      "start": 415.5,
+      "end": 423.99066666666664,
+      "text": "In this example, category two at one thousand volts and category three at six hundred volts are tested with brief six-thousand-volt impulses.",
+      "scene": "katimpuls"
+    },
+    {
+      "start": 424.21066666666667,
+      "end": 428.2853333333333,
+      "text": "But the test-source resistances are twelve ohms and two ohms respectively.",
+      "scene": "katimpuls"
+    },
+    {
+      "start": 428.50533333333334,
+      "end": 430.93733333333336,
+      "text": "Lower resistance can deliver more current.",
+      "scene": "katimpuls"
+    },
+    {
+      "start": 431.1573333333333,
+      "end": 435.4026666666667,
+      "text": "Category four at six hundred volts is tested here at eight thousand volts.",
+      "scene": "katimpuls"
+    },
+    {
+      "start": 435.62266666666665,
+      "end": 439.8893333333333,
+      "text": "These are test values, never permissible continuous measuring voltages.",
+      "scene": "katimpuls"
+    },
+    {
+      "start": 442,
+      "end": 445.4773333333333,
+      "text": "The work plan requires category three, six hundred volts.",
+      "scene": "katval"
+    },
+    {
+      "start": 445.69733333333335,
+      "end": 448.57733333333334,
+      "text": "Meter A is category two, one thousand volts.",
+      "scene": "katval"
+    },
+    {
+      "start": 448.7973333333333,
+      "end": 451.784,
+      "text": "Meter B is category three, six hundred volts.",
+      "scene": "katval"
+    },
+    {
+      "start": 452.004,
+      "end": 453.3906666666667,
+      "text": "Which do you choose?",
+      "scene": "katval"
+    },
+    {
+      "start": 453.61066666666665,
+      "end": 455.46666666666664,
+      "text": "B meets both requirements.",
+      "scene": "katval"
+    },
+    {
+      "start": 455.68666666666667,
+      "end": 458.03333333333336,
+      "text": "The entire measuring system must meet them.",
+      "scene": "katval"
+    },
+    {
+      "start": 458.25333333333333,
+      "end": 461.9653333333333,
+      "text": "A category four meter with category two probes is not sufficient.",
+      "scene": "katval"
+    },
+    {
+      "start": 462.18533333333335,
+      "end": 465.236,
+      "text": "Removing probe-tip covers may also change the rating.",
+      "scene": "katval"
+    },
+    {
+      "start": 465.456,
+      "end": 466.7786666666667,
+      "text": "Read the manual.",
+      "scene": "katval"
+    },
+    {
+      "start": 470,
+      "end": 472.7733333333333,
+      "text": "Resolution is the smallest step on the display.",
+      "scene": "upplosning"
+    },
+    {
+      "start": 472.99333333333334,
+      "end": 479.6066666666667,
+      "text": "Here, the difference between twelve point zero zero and twelve point zero one volts is one hundredth of a volt.",
+      "scene": "upplosning"
+    },
+    {
+      "start": 479.82666666666665,
+      "end": 484.69066666666663,
+      "text": "The error limit describes the instrument's specified deviation under stated conditions.",
+      "scene": "upplosning"
+    },
+    {
+      "start": 484.91066666666666,
+      "end": 488.51599999999996,
+      "text": "Tolerance describes the range allowed for the equipment being tested.",
+      "scene": "upplosning"
+    },
+    {
+      "start": 488.736,
+      "end": 490.848,
+      "text": "Keep these three concepts separate.",
+      "scene": "upplosning"
+    },
+    {
+      "start": 493,
+      "end": 498.80266666666665,
+      "text": "Assume a specification of plus or minus zero point five per cent of the reading, plus two counts.",
+      "scene": "fel12"
+    },
+    {
+      "start": 499.0226666666667,
+      "end": 501.83866666666665,
+      "text": "One count is zero point zero one volts.",
+      "scene": "fel12"
+    },
+    {
+      "start": 502.0586666666667,
+      "end": 506.58133333333336,
+      "text": "At twelve volts, the percentage contribution is zero point zero six volts.",
+      "scene": "fel12"
+    },
+    {
+      "start": 506.80133333333333,
+      "end": 510.06533333333334,
+      "text": "The two counts contribute zero point zero two volts.",
+      "scene": "fel12"
+    },
+    {
+      "start": 510.2853333333333,
+      "end": 514.1039999999999,
+      "text": "Adding them gives plus or minus zero point zero eight volts.",
+      "scene": "fel12"
+    },
+    {
+      "start": 514.324,
+      "end": 517.6306666666666,
+      "text": "This interval covers only the stated instrument error limit.",
+      "scene": "fel12"
+    },
+    {
+      "start": 519.5,
+      "end": 524.7266666666667,
+      "text": "Use the same specification and resolution, but now the display reads twenty-four volts.",
+      "scene": "fel24"
+    },
+    {
+      "start": 524.9466666666667,
+      "end": 526.8453333333334,
+      "text": "Pause and calculate first.",
+      "scene": "fel24"
+    },
+    {
+      "start": 527.0653333333333,
+      "end": 530.564,
+      "text": "The percentage contribution is zero point one two volts.",
+      "scene": "fel24"
+    },
+    {
+      "start": 530.784,
+      "end": 534.1333333333333,
+      "text": "Two counts still contribute zero point zero two volts.",
+      "scene": "fel24"
+    },
+    {
+      "start": 534.3533333333334,
+      "end": 538.0866666666667,
+      "text": "The error limit is plus or minus zero point one four volts.",
+      "scene": "fel24"
+    },
+    {
+      "start": 538.3066666666666,
+      "end": 543.1706666666666,
+      "text": "The interval runs from twenty-three point eight six to twenty-four point one four volts.",
+      "scene": "fel24"
+    },
+    {
+      "start": 546.5,
+      "end": 549.572,
+      "text": "In the extension example, the meter reads eight volts.",
+      "scene": "fel8"
+    },
+    {
+      "start": 549.792,
+      "end": 556.64,
+      "text": "Its specification is plus or minus one per cent, plus three counts, with a resolution of one hundredth of a volt.",
+      "scene": "fel8"
+    },
+    {
+      "start": 556.86,
+      "end": 561.6386666666667,
+      "text": "The contributions are zero point zero eight and zero point zero three volts.",
+      "scene": "fel8"
+    },
+    {
+      "start": 561.8586666666666,
+      "end": 564.3546666666666,
+      "text": "Their sum is zero point one one volts.",
+      "scene": "fel8"
+    },
+    {
+      "start": 564.5746666666666,
+      "end": 567.54,
+      "text": "Always use the specification for the actual range.",
+      "scene": "fel8"
+    },
+    {
+      "start": 569.5,
+      "end": 573.2546666666667,
+      "text": "The equipment requires twelve volts, plus or minus five per cent.",
+      "scene": "tolerans"
+    },
+    {
+      "start": 573.4746666666666,
+      "end": 580.8773333333332,
+      "text": "Five per cent is zero point six volts, giving an allowed range of eleven point four zero to twelve point six zero volts.",
+      "scene": "tolerans"
+    },
+    {
+      "start": 581.0973333333334,
+      "end": 586.5160000000001,
+      "text": "Our measurement is eleven point five zero, plus or minus zero point one zero volts.",
+      "scene": "tolerans"
+    },
+    {
+      "start": 586.736,
+      "end": 588.4213333333333,
+      "text": "The whole interval fits.",
+      "scene": "tolerans"
+    },
+    {
+      "start": 588.6413333333334,
+      "end": 591.3506666666667,
+      "text": "This exercise includes the boundary values.",
+      "scene": "tolerans"
+    },
+    {
+      "start": 591.5706666666666,
+      "end": 594.7706666666667,
+      "text": "In real work, acceptance rules must be agreed beforehand.",
+      "scene": "tolerans"
+    },
+    {
+      "start": 596.5,
+      "end": 599.8066666666666,
+      "text": "Writing 'the voltage is eleven point eight' is not enough.",
+      "scene": "protokoll"
+    },
+    {
+      "start": 600.0266666666666,
+      "end": 603.2693333333333,
+      "text": "Record the unit, measurement points and operating state.",
+      "scene": "protokoll"
+    },
+    {
+      "start": 603.4893333333333,
+      "end": 608.4813333333333,
+      "text": "Identify the instrument, function, range, resolution and relevant specification.",
+      "scene": "protokoll"
+    },
+    {
+      "start": 608.7013333333333,
+      "end": 613.5013333333333,
+      "text": "Include the error limit, requirement and conclusion, together with the date and operator.",
+      "scene": "protokoll"
+    },
+    {
+      "start": 613.7213333333333,
+      "end": 615.7693333333333,
+      "text": "This is fictional teaching data.",
+      "scene": "protokoll"
+    },
+    {
+      "start": 615.9893333333333,
+      "end": 619.5733333333333,
+      "text": "Record real information in actual work; never guess it.",
+      "scene": "protokoll"
+    },
+    {
+      "start": 621.5,
+      "end": 624.2093333333333,
+      "text": "We now leave the lamp and examine a sensor model.",
+      "scene": "delare"
+    },
+    {
+      "start": 624.4293333333334,
+      "end": 628.312,
+      "text": "Two resistors, each one megohm, divide ten volts equally.",
+      "scene": "delare"
+    },
+    {
+      "start": 628.532,
+      "end": 633.0120000000001,
+      "text": "With no meter connected, the voltage across the lower resistor is five volts.",
+      "scene": "delare"
+    },
+    {
+      "start": 633.232,
+      "end": 636.0053333333333,
+      "text": "What happens when a real voltmeter is connected?",
+      "scene": "delare"
+    },
+    {
+      "start": 638,
+      "end": 642.4586666666667,
+      "text": "The voltmeter's ten-megohm input is in parallel with the lower resistor.",
+      "scene": "last10"
+    },
+    {
+      "start": 642.6786666666667,
+      "end": 647.82,
+      "text": "The equivalent parallel resistance is about zero point nine zero nine megohms.",
+      "scene": "last10"
+    },
+    {
+      "start": 648.04,
+      "end": 653.1386666666666,
+      "text": "The voltage-divider equation then gives approximately four point seven six two volts.",
+      "scene": "last10"
+    },
+    {
+      "start": 653.3586666666666,
+      "end": 657.5186666666666,
+      "text": "With a resolution of one hundredth, the display reads four point seven six.",
+      "scene": "last10"
+    },
+    {
+      "start": 657.7386666666666,
+      "end": 661.0453333333332,
+      "text": "The meter has changed the voltage we wanted to investigate.",
+      "scene": "last10"
+    },
+    {
+      "start": 663,
+      "end": 666.4133333333333,
+      "text": "Change only the meter's input resistance to one megohm.",
+      "scene": "last1"
+    },
+    {
+      "start": 666.6333333333333,
+      "end": 670.58,
+      "text": "One megohm in parallel with one megohm is half a megohm.",
+      "scene": "last1"
+    },
+    {
+      "start": 670.8,
+      "end": 677.1146666666666,
+      "text": "Ten times one half, divided by one plus one half, gives approximately three point three three three volts.",
+      "scene": "last1"
+    },
+    {
+      "start": 677.3346666666666,
+      "end": 679.3613333333333,
+      "text": "Pause and check the calculation.",
+      "scene": "last1"
+    },
+    {
+      "start": 683,
+      "end": 686.6906666666666,
+      "text": "Compare the result with the original five volts, without the meter.",
+      "scene": "lastprocent"
+    },
+    {
+      "start": 686.9106666666667,
+      "end": 692.3293333333334,
+      "text": "Divide the difference by the original value to obtain about minus thirty-three point three per cent.",
+      "scene": "lastprocent"
+    },
+    {
+      "start": 692.5493333333334,
+      "end": 694.8533333333334,
+      "text": "The minus sign means a lower voltage.",
+      "scene": "lastprocent"
+    },
+    {
+      "start": 695.0733333333334,
+      "end": 698.5293333333334,
+      "text": "Large resistances in the sensor circuit make the effect clear.",
+      "scene": "lastprocent"
+    },
+    {
+      "start": 698.7493333333333,
+      "end": 701.992,
+      "text": "Higher input resistance causes less loading in this model.",
+      "scene": "lastprocent"
+    },
+    {
+      "start": 702.212,
+      "end": 705.4333333333333,
+      "text": "Loading error is separate from the instrument's own error limit.",
+      "scene": "lastprocent"
+    },
+    {
+      "start": 707.5,
+      "end": 713.1106666666667,
+      "text": "For the extension example, the source is nine volts and all three resistances are two megohms.",
+      "scene": "last9"
+    },
+    {
+      "start": 713.3306666666666,
+      "end": 716.5946666666666,
+      "text": "Without the meter, the voltage is four point five volts.",
+      "scene": "last9"
+    },
+    {
+      "start": 716.8146666666667,
+      "end": 719.8439999999999,
+      "text": "The lower parallel combination is one megohm.",
+      "scene": "last9"
+    },
+    {
+      "start": 720.064,
+      "end": 722.752,
+      "text": "With the meter connected, we obtain three volts.",
+      "scene": "last9"
+    },
+    {
+      "start": 722.972,
+      "end": 726.5559999999999,
+      "text": "Once again, the change is minus thirty-three point three per cent.",
+      "scene": "last9"
+    },
+    {
+      "start": 728.5,
+      "end": 730.932,
+      "text": "An ammeter also changes the circuit.",
+      "scene": "burden"
+    },
+    {
+      "start": 731.152,
+      "end": 735.76,
+      "text": "Twelve volts across one hundred and twenty ohms gives zero point one amperes.",
+      "scene": "burden"
+    },
+    {
+      "start": 735.98,
+      "end": 740.5453333333334,
+      "text": "If the meter adds one ohm, the total becomes one hundred and twenty-one ohms.",
+      "scene": "burden"
+    },
+    {
+      "start": 740.7653333333334,
+      "end": 744.5413333333333,
+      "text": "Current falls to about zero point zero nine nine two amperes.",
+      "scene": "burden"
+    },
+    {
+      "start": 744.7613333333334,
+      "end": 747.172,
+      "text": "The shunt and fuse cause a voltage drop.",
+      "scene": "burden"
+    },
+    {
+      "start": 747.392,
+      "end": 750.4000000000001,
+      "text": "Instrument manuals often call this burden voltage.",
+      "scene": "burden"
+    },
+    {
+      "start": 752.5,
+      "end": 755.6573333333333,
+      "text": "Why do we measure volts in parallel and amperes in series?",
+      "scene": "repetition"
+    },
+    {
+      "start": 755.8773333333334,
+      "end": 759.0773333333334,
+      "text": "Why must resistance be measured in an isolated circuit?",
+      "scene": "repetition"
+    },
+    {
+      "start": 759.2973333333333,
+      "end": 761.132,
+      "text": "Explain using a diagram.",
+      "scene": "repetition"
+    },
+    {
+      "start": 761.352,
+      "end": 764.9573333333333,
+      "text": "Distinguish resolution, error limit, tolerance and loading error.",
+      "scene": "repetition"
+    },
+    {
+      "start": 765.1773333333333,
+      "end": 772.4093333333333,
+      "text": "The correct category and voltage rating provide protection for the measurement environment, but they do not make the reading more accurate.",
+      "scene": "repetition"
+    },
+    {
+      "start": 774.5,
+      "end": 777.4013333333334,
+      "text": "Saga and the Gull now have a method instead of a guess.",
+      "scene": "egetarbete"
+    },
+    {
+      "start": 777.6213333333334,
+      "end": 781.9946666666667,
+      "text": "Open the Multimeter Lab, predict the value, and select the function and sockets.",
+      "scene": "egetarbete"
+    },
+    {
+      "start": 782.2146666666666,
+      "end": 783.9639999999999,
+      "text": "Connect, read and explain.",
+      "scene": "egetarbete"
+    },
+    {
+      "start": 784.184,
+      "end": 787.6826666666666,
+      "text": "Then draw the correct measurement circuit and write a short record.",
+      "scene": "egetarbete"
+    },
+    {
+      "start": 787.9026666666666,
+      "end": 793.7266666666666,
+      "text": "Follow the course submission instructions and the instructor's directions during practical laboratory work.",
+      "scene": "egetarbete"
+    },
+    {
+      "start": 795.5,
+      "end": 799.7453333333333,
+      "text": "This film complements the presentation on multimeters and measurement errors.",
+      "scene": "kallor"
+    },
+    {
+      "start": 799.9653333333333,
+      "end": 805.2773333333333,
+      "text": "References and additional Swedish videos are listed in the presentation and below this player.",
+      "scene": "kallor"
+    },
+    {
+      "start": 805.4973333333334,
+      "end": 808.6546666666667,
+      "text": "The instrument shown here is a simplified teaching model.",
+      "scene": "kallor"
+    },
+    {
+      "start": 808.8746666666667,
+      "end": 814.0586666666667,
+      "text": "For practical work, follow the actual instrument manual and the relevant safety procedures.",
+      "scene": "kallor"
+    },
+    {
+      "start": 814.2786666666667,
+      "end": 816.1986666666667,
+      "text": "Thank you for joining us aboard.",
+      "scene": "kallor"
+    }
+  ],
+  "voice": {
+    "name": "bf_emma",
+    "engine": "Kokoro-82M / kokoro-onnx 0.4.9 (local)",
+    "synthetic": true,
+    "speed": 0.96,
+    "language": "en-gb",
+    "modelSHA256": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
+    "voicesSHA256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  }
+}

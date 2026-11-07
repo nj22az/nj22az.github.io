@@ -1,0 +1,36 @@
+{
+  "source": "d9a9f25b525a6d403b2c352d78745d78463f6a7f",
+  "delivery": "Six files successfully saved; original pixels preserved. Links supplied directly to owner.",
+  "files": [
+    {
+      "name": "Pocket-Camera-design-audit.zip",
+      "bytes": 47318400,
+      "sha256": "ce4d143dfeeea72aedbe130fa244a982c60821269152539c9b53c75da2ddf0ff"
+    },
+    {
+      "name": "Pocket-Camera-32-bit-before.png",
+      "bytes": 139292,
+      "sha256": "d273b9cbed8be5295421ade618e51367ef5fbf97b0a71ec1894b913b4bbe72cf"
+    },
+    {
+      "name": "Pocket-Camera-32-bit-review.png",
+      "bytes": 129005,
+      "sha256": "77fc76351eb652c3e0131d443405d0909901984a23c150a1b97370127f8533dd"
+    },
+    {
+      "name": "Pocket-Camera-34-shaders.png",
+      "bytes": 1401973,
+      "sha256": "5ba9055edea15adc5b402fb68d33698b9b6cf44ffcc396b31d4fa65bf3164a4a"
+    },
+    {
+      "name": "Pocket-Camera-shader-icons.png",
+      "bytes": 98553,
+      "sha256": "8f16cfbd35c9fa9a5ed5c5286a4ea2de07ceb63208aa3ced37759e9d4769a419"
+    },
+    {
+      "name": "Pocket-Camera-iPad-mini-audit.png",
+      "bytes": 426825,
+      "sha256": "637f84f34b796fb662b8ef08103b8e0f75829c5522e3baacba539e0fcf7ff1f2"
+    }
+  ]
+}

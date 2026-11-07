@@ -1,0 +1,31 @@
+✔ ordinary exploration has no automatic shots, no bob and a constant ship-local eye through heave and roll (11.969153ms)
+✔ eight views require manual selection and inspection returns the exact walking pose; ordinary lens restores (12.215295ms)
+✔ inspection sweeps cannot tunnel through a bulkhead even after a large input (361.605463ms)
+✔ every representative room has a body-clear measured route to the lower ladder landing (95.393603ms)
+✔ the aft booth pocket cannot be offered a walking route through its chair (0.986768ms)
+✔ enclosed-room rendering removes street work only for the draw and restores it on failure (0.840378ms)
+✔ inspection also respects the transparent control-booth glazing (0.702069ms)
+✔ guidance never invents a floor-level shortcut from halfway up the ladder or inside equipment (0.18611ms)
+✔ a real visible Blender machinery surface resolves to inspection data at phone, iPad and desktop aspect ratios (97.836417ms)
+✔ opening and closing machinery inspection between frames clears residual walking (2.437968ms)
+✔ published runtime matches the current source rather than an older build (233.458187ms)
+✔ published page uses one compiled audio/boot graph with local hashed dependencies (67.637819ms)
+✔ every stylesheet link carries a hash of the file it points at (8.251666ms)
+✔ delivered chunks contain no retired combat handlers, menus, damage simulation or rewards (177.674989ms)
+✔ a parked car blocks pedestrians on all four sides at every heading (2.528564ms)
+✔ the collider follows forward and reversing cars and leaves no wall in their old bay (9.997018ms)
+✔ held cars remain solid; hidden cars release their footprint and visible cars recover it (0.331681ms)
+✔ a car on a raised deck blocks that deck, not pedestrians underneath it (0.328595ms)
+✔ the dynamic broad phase follows a collider between cells in the same frame (0.16608ms)
+✔ moving traffic does not rebuild the town static collider grid every frame (0.248765ms)
+✔ Tetsuo keeps a solid kei truck throughout his actual town departure (63.922114ms)
+✔ the actual prompt selector excludes a driver but still offers ordinary conversations and car inspection (2.9308ms)
+✔ clicking a seated driver cannot open a conversation or walk into the cab (3.024402ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 796.64915

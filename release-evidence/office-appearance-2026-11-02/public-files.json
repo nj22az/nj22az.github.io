@@ -1,0 +1,32 @@
+[
+  {
+    "path": "index.html",
+    "matches": true,
+    "bytes": 15379,
+    "sha256": "e6fa17b2d00d1013eb855d2717e98a28a3df103f8966f95214619fc35f47bd11"
+  },
+  {
+    "path": "css/office-home.css",
+    "matches": true,
+    "bytes": 10881,
+    "sha256": "6bb0987adbc495c1bde9450a3e5c9ede5ecb64163e72296fe9baa1305f287476"
+  },
+  {
+    "path": "css/project-explorer.css",
+    "matches": true,
+    "bytes": 12358,
+    "sha256": "80680832cb5a0aa4dfd3808e6b9af65c90eac5825165769fefe1556d8f12ab22"
+  },
+  {
+    "path": "assets/js/office-appearance.js",
+    "matches": true,
+    "bytes": 2482,
+    "sha256": "9dc66b94a8989665f03b0bb9f494d41a5f0943f90e822fad0f38579234de84b2"
+  },
+  {
+    "path": "shared.js",
+    "matches": true,
+    "bytes": 15201,
+    "sha256": "5acbd6aa594c99d91c9826c730a587328b8aefe7a11ead9697c33c8d85b13d19"
+  }
+]

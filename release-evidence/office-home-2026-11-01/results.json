@@ -1,0 +1,840 @@
+{
+  "result": "passed",
+  "baselineDesktopGridHeight": 3124.390625,
+  "profiles": [
+    {
+      "profile": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "zoom": 1,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "gridHeight": 1960.421875,
+        "cards": [
+          {
+            "title": "Johansson World",
+            "height": 627.484375
+          },
+          {
+            "title": "Pocket Camera",
+            "height": 597.078125
+          },
+          {
+            "title": "Maintenance Desk",
+            "height": 613.65625
+          },
+          {
+            "title": "Sjöskolan · Electrical engineering",
+            "height": 687.859375
+          },
+          {
+            "title": "Elteknik och ellära",
+            "height": 597.078125
+          },
+          {
+            "title": "StepWise",
+            "height": 597.078125
+          }
+        ],
+        "targets": [
+          {
+            "label": "All projects 6",
+            "width": 143.984375,
+            "height": 58.390625
+          },
+          {
+            "label": "Explore 1Island life",
+            "width": 113.953125,
+            "height": 58.390625
+          },
+          {
+            "label": "Create 3Camera & tools",
+            "width": 127.0625,
+            "height": 58.390625
+          },
+          {
+            "label": "Learn 2Course & book",
+            "width": 122.140625,
+            "height": 58.390625
+          },
+          {
+            "label": "Day",
+            "width": 48,
+            "height": 44
+          },
+          {
+            "label": "Night",
+            "width": 56.125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 514,
+            "height": 44
+          },
+          {
+            "label": "Start the game",
+            "width": 179.28125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 514,
+            "height": 44
+          },
+          {
+            "label": "Open the camera",
+            "width": 195.46875,
+            "height": 44
+          },
+          {
+            "label": "Mark complete",
+            "width": 105.46875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 514,
+            "height": 44
+          },
+          {
+            "label": "Try the maintenance demo",
+            "width": 270.71875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 514,
+            "height": 44
+          },
+          {
+            "label": "Browse the course",
+            "width": 206.484375,
+            "height": 44
+          },
+          {
+            "label": "Private classroomSign-in required · opens in ",
+            "width": 514,
+            "height": 59
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 514,
+            "height": 44
+          },
+          {
+            "label": "Discover the book",
+            "width": 202.671875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 514,
+            "height": 44
+          },
+          {
+            "label": "Plan test points",
+            "width": 184.875,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "profile": "ipad-portrait",
+      "width": 768,
+      "height": 1024,
+      "zoom": 1,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "gridHeight": 2315.84375,
+        "cards": [
+          {
+            "title": "Johansson World",
+            "height": 749.171875
+          },
+          {
+            "title": "Pocket Camera",
+            "height": 673.859375
+          },
+          {
+            "title": "Maintenance Desk",
+            "height": 723.59375
+          },
+          {
+            "title": "Sjöskolan · Electrical engineering",
+            "height": 810.625
+          },
+          {
+            "title": "Elteknik och ellära",
+            "height": 708.046875
+          },
+          {
+            "title": "StepWise",
+            "height": 648.265625
+          }
+        ],
+        "targets": [
+          {
+            "label": "All projects 6",
+            "width": 143.984375,
+            "height": 58.390625
+          },
+          {
+            "label": "Explore 1Island life",
+            "width": 113.953125,
+            "height": 58.390625
+          },
+          {
+            "label": "Create 3Camera & tools",
+            "width": 127.0625,
+            "height": 58.390625
+          },
+          {
+            "label": "Learn 2Course & book",
+            "width": 122.140625,
+            "height": 58.390625
+          },
+          {
+            "label": "Day",
+            "width": 48,
+            "height": 44
+          },
+          {
+            "label": "Night",
+            "width": 56.125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Start the game",
+            "width": 179.28125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Open the camera",
+            "width": 195.46875,
+            "height": 44
+          },
+          {
+            "label": "Mark complete",
+            "width": 105.46875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Try the maintenance demo",
+            "width": 266,
+            "height": 59.1875
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Browse the course",
+            "width": 206.484375,
+            "height": 44
+          },
+          {
+            "label": "Private classroomSign-in required · opens in ",
+            "width": 266,
+            "height": 64.1875
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Discover the book",
+            "width": 202.671875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 266,
+            "height": 44
+          },
+          {
+            "label": "Plan test points",
+            "width": 184.875,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "profile": "ipad-landscape",
+      "width": 1024,
+      "height": 768,
+      "zoom": 1,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "gridHeight": 1999.609375,
+        "cards": [
+          {
+            "title": "Johansson World",
+            "height": 653.078125
+          },
+          {
+            "title": "Pocket Camera",
+            "height": 622.671875
+          },
+          {
+            "title": "Maintenance Desk",
+            "height": 613.65625
+          },
+          {
+            "title": "Sjöskolan · Electrical engineering",
+            "height": 701.453125
+          },
+          {
+            "title": "Elteknik och ellära",
+            "height": 597.078125
+          },
+          {
+            "title": "StepWise",
+            "height": 597.078125
+          }
+        ],
+        "targets": [
+          {
+            "label": "All projects 6",
+            "width": 143.984375,
+            "height": 58.390625
+          },
+          {
+            "label": "Explore 1Island life",
+            "width": 113.953125,
+            "height": 58.390625
+          },
+          {
+            "label": "Create 3Camera & tools",
+            "width": 127.0625,
+            "height": 58.390625
+          },
+          {
+            "label": "Learn 2Course & book",
+            "width": 122.140625,
+            "height": 58.390625
+          },
+          {
+            "label": "Day",
+            "width": 48,
+            "height": 44
+          },
+          {
+            "label": "Night",
+            "width": 56.125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 394,
+            "height": 44
+          },
+          {
+            "label": "Start the game",
+            "width": 179.28125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 394,
+            "height": 44
+          },
+          {
+            "label": "Open the camera",
+            "width": 195.46875,
+            "height": 44
+          },
+          {
+            "label": "Mark complete",
+            "width": 105.46875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 394,
+            "height": 44
+          },
+          {
+            "label": "Try the maintenance demo",
+            "width": 270.71875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 394,
+            "height": 44
+          },
+          {
+            "label": "Browse the course",
+            "width": 206.484375,
+            "height": 44
+          },
+          {
+            "label": "Private classroomSign-in required · opens in ",
+            "width": 394,
+            "height": 59
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 394,
+            "height": 44
+          },
+          {
+            "label": "Discover the book",
+            "width": 202.671875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 394,
+            "height": 44
+          },
+          {
+            "label": "Plan test points",
+            "width": 184.875,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "profile": "phone",
+      "width": 390,
+      "height": 844,
+      "zoom": 1,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "gridHeight": 4371.53125,
+        "cards": [
+          {
+            "title": "Johansson World",
+            "height": 709.453125
+          },
+          {
+            "title": "Pocket Camera",
+            "height": 651.953125
+          },
+          {
+            "title": "Maintenance Desk",
+            "height": 747.1875
+          },
+          {
+            "title": "Sjöskolan · Electrical engineering",
+            "height": 804.625
+          },
+          {
+            "title": "Elteknik och ellära",
+            "height": 716.046875
+          },
+          {
+            "title": "StepWise",
+            "height": 642.265625
+          }
+        ],
+        "targets": [
+          {
+            "label": "All projects 6",
+            "width": 293.984375,
+            "height": 44
+          },
+          {
+            "label": "Explore 1Island life",
+            "width": 92.65625,
+            "height": 65.578125
+          },
+          {
+            "label": "Create 3Camera & tools",
+            "width": 92.671875,
+            "height": 65.578125
+          },
+          {
+            "label": "Learn 2Course & book",
+            "width": 92.65625,
+            "height": 65.578125
+          },
+          {
+            "label": "Day",
+            "width": 48,
+            "height": 44
+          },
+          {
+            "label": "Night",
+            "width": 56.125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 252,
+            "height": 44
+          },
+          {
+            "label": "Start the game",
+            "width": 179.28125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 252,
+            "height": 44
+          },
+          {
+            "label": "Open the camera",
+            "width": 195.46875,
+            "height": 44
+          },
+          {
+            "label": "Mark complete",
+            "width": 105.46875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 252,
+            "height": 44
+          },
+          {
+            "label": "Try the maintenance demo",
+            "width": 252,
+            "height": 59.1875
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 252,
+            "height": 44
+          },
+          {
+            "label": "Browse the course",
+            "width": 206.484375,
+            "height": 44
+          },
+          {
+            "label": "Private classroomSign-in required · opens in ",
+            "width": 252,
+            "height": 64.1875
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 252,
+            "height": 44
+          },
+          {
+            "label": "Discover the book",
+            "width": 202.671875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 252,
+            "height": 44
+          },
+          {
+            "label": "Plan test points",
+            "width": 184.875,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "profile": "small-phone",
+      "width": 320,
+      "height": 844,
+      "zoom": 1,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "gridHeight": 5067.046875,
+        "cards": [
+          {
+            "title": "Johansson World",
+            "height": 782.578125
+          },
+          {
+            "title": "Pocket Camera",
+            "height": 751.640625
+          },
+          {
+            "title": "Maintenance Desk",
+            "height": 908.734375
+          },
+          {
+            "title": "Sjöskolan · Electrical engineering",
+            "height": 1003.0625
+          },
+          {
+            "title": "Elteknik och ellära",
+            "height": 810.203125
+          },
+          {
+            "title": "StepWise",
+            "height": 710.828125
+          }
+        ],
+        "targets": [
+          {
+            "label": "All projects 6",
+            "width": 224,
+            "height": 44
+          },
+          {
+            "label": "Explore 1Island life",
+            "width": 69.328125,
+            "height": 82.375
+          },
+          {
+            "label": "Create 3Camera & tools",
+            "width": 69.328125,
+            "height": 82.375
+          },
+          {
+            "label": "Learn 2Course & book",
+            "width": 69.34375,
+            "height": 82.375
+          },
+          {
+            "label": "Day",
+            "width": 48,
+            "height": 44
+          },
+          {
+            "label": "Night",
+            "width": 56.125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 182,
+            "height": 46.1875
+          },
+          {
+            "label": "Start the game",
+            "width": 179.28125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 182,
+            "height": 46.1875
+          },
+          {
+            "label": "Open the camera",
+            "width": 182,
+            "height": 59.1875
+          },
+          {
+            "label": "Mark complete",
+            "width": 105.46875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 182,
+            "height": 46.1875
+          },
+          {
+            "label": "Try the maintenance demo",
+            "width": 182,
+            "height": 78.78125
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 182,
+            "height": 46.1875
+          },
+          {
+            "label": "Browse the course",
+            "width": 182,
+            "height": 59.1875
+          },
+          {
+            "label": "Private classroomSign-in required · opens in ",
+            "width": 182,
+            "height": 100.578125
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 182,
+            "height": 46.1875
+          },
+          {
+            "label": "Discover the book",
+            "width": 182,
+            "height": 59.1875
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 182,
+            "height": 46.1875
+          },
+          {
+            "label": "Plan test points",
+            "width": 182,
+            "height": 59.1875
+          }
+        ]
+      }
+    },
+    {
+      "profile": "desktop-200pct",
+      "width": 720,
+      "height": 500,
+      "zoom": 2,
+      "result": "passed",
+      "layout": {
+        "overflow": false,
+        "gridHeight": 3971.578125,
+        "cards": [
+          {
+            "title": "Johansson World",
+            "height": 776.234375
+          },
+          {
+            "title": "Pocket Camera",
+            "height": 745.828125
+          },
+          {
+            "title": "Maintenance Desk",
+            "height": 582.0625
+          },
+          {
+            "title": "Sjöskolan · Electrical engineering",
+            "height": 636.484375
+          },
+          {
+            "title": "Elteknik och ellära",
+            "height": 565.484375
+          },
+          {
+            "title": "StepWise",
+            "height": 565.484375
+          }
+        ],
+        "targets": [
+          {
+            "label": "All projects 6",
+            "width": 135.984375,
+            "height": 58.390625
+          },
+          {
+            "label": "Explore 1Island life",
+            "width": 105.953125,
+            "height": 58.390625
+          },
+          {
+            "label": "Create 3Camera & tools",
+            "width": 119.0625,
+            "height": 58.390625
+          },
+          {
+            "label": "Learn 2Course & book",
+            "width": 114.140625,
+            "height": 58.390625
+          },
+          {
+            "label": "Day",
+            "width": 48,
+            "height": 44
+          },
+          {
+            "label": "Night",
+            "width": 56.125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 566,
+            "height": 44
+          },
+          {
+            "label": "Start the game",
+            "width": 179.28125,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 566,
+            "height": 44
+          },
+          {
+            "label": "Open the camera",
+            "width": 195.46875,
+            "height": 44
+          },
+          {
+            "label": "Mark complete",
+            "width": 105.46875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 566,
+            "height": 44
+          },
+          {
+            "label": "Try the maintenance demo",
+            "width": 270.71875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 566,
+            "height": 44
+          },
+          {
+            "label": "Browse the course",
+            "width": 206.484375,
+            "height": 44
+          },
+          {
+            "label": "Private classroomSign-in required · opens in ",
+            "width": 566,
+            "height": 59
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 566,
+            "height": 44
+          },
+          {
+            "label": "Discover the book",
+            "width": 202.671875,
+            "height": 44
+          },
+          {
+            "label": "What can I do here?＋",
+            "width": 566,
+            "height": 44
+          },
+          {
+            "label": "Plan test points",
+            "width": 184.875,
+            "height": 44
+          }
+        ]
+      }
+    }
+  ]
+}

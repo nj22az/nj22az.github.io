@@ -1,0 +1,173 @@
+/* Sjöskolan · kurssidor (veckosidor, läsmaterial, övningar). Grundvärden i gemensamt/sjoskolan.css, regler i DESIGN.md. */
+body.course{margin:0;background:var(--sj-paper,#fff);color:var(--sj-ink,#163248);font:17px/1.65 Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
+body.course *,body.course *::before,body.course *::after{box-sizing:border-box}
+body.course img,body.course video,body.course canvas,body.course svg{max-width:100%}
+body.course [hidden]{display:none!important}
+body.course :focus-visible{outline:3px solid var(--sj-ink,#163248);outline-offset:2px;box-shadow:0 0 0 6px var(--sj-focus,#ffd43d)}
+body.course button,body.course input,body.course select,body.course textarea{font:inherit;color:inherit}
+body.course code{font-family:Menlo,Consolas,monospace;font-size:.92em;background:var(--sj-soft,#edf4f9);padding:1px 5px;border-radius:4px}
+
+.course-main{max-width:1208px;margin:0 auto;padding:32px 24px 64px}
+.course-main h1{font-size:clamp(34px,4.2vw,44px);line-height:1.15;letter-spacing:-.02em;margin:8px 0 16px}
+.course-main h2{font-size:26px;line-height:1.25;margin:40px 0 16px}
+.course-main h3{font-size:20px;line-height:1.3;margin:24px 0 8px}
+.course-main h4{font-size:17px;margin:16px 0 8px}
+.course-main p{margin:8px 0 16px}
+.course-main a{color:var(--sj-blue,#064f91);text-underline-offset:3px}
+.course-main a:hover{text-decoration-thickness:2px}
+.course-main li{margin:4px 0}
+.course-main{overflow-wrap:break-word}
+.course-main a{overflow-wrap:anywhere}
+.course-main table{max-width:100%}
+.course-main td{overflow-wrap:break-word}
+
+.course-kicker{font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sj-muted,#4d6579);margin:0}
+.course-lead{font-size:20px;line-height:1.5;color:var(--sj-muted,#4d6579);max-width:60ch}
+.course-meta,.course-hero figcaption{font-size:15px;color:var(--sj-muted,#4d6579)}
+.course-breadcrumb{display:none}
+.course-breadcrumb a{display:inline-flex;align-items:center;min-height:44px}
+.course-heading{max-width:820px;padding-bottom:24px;border-bottom:1px solid var(--sj-line,#cad8e2);margin-bottom:8px}
+.course-heading p{font-size:18px}
+
+.course-button{display:inline-flex!important;align-items:center;min-height:48px;padding:10px 22px;margin-top:16px;border-radius:8px;background:var(--sj-blue,#064f91);color:#fff!important;font-weight:700;text-decoration:none}
+.course-button:hover{background:var(--sj-blue-dark,#053f74)}
+
+.course-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:16px 0 40px;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.course-hero img{display:block;width:100%;height:auto;border-radius:12px}
+.course-hero figure{margin:0}
+
+.course-week-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.course-week{display:block;text-decoration:none;border:1px solid var(--sj-line,#cad8e2);padding:24px;border-radius:12px;color:var(--sj-ink,#163248)!important}
+.course-week:hover{border-color:var(--sj-blue,#064f91);background:var(--sj-soft,#edf4f9)}
+.course-week>span{font-weight:700;color:var(--sj-blue,#064f91)}
+.course-week small{display:block;font-size:15px;color:var(--sj-muted,#4d6579)}
+.course-week p{font-size:15px;margin-top:16px}
+.course-resources{border-top:1px solid var(--sj-line,#cad8e2);margin-top:40px}
+.course-resources>div{display:flex;flex-wrap:wrap;gap:16px 32px}
+
+/* Nedladdningar och länklistor */
+.course-download-note{max-width:72ch;padding:12px 16px;border:1px solid var(--sj-line,#cad8e2);border-left:8px solid var(--sj-blue,#064f91);border-radius:12px;background:var(--sj-soft,#edf4f9);font-size:15px;line-height:1.5}
+.course-downloads,.course-links{list-style:none;padding:0;margin:0}
+.course-downloads li{padding:16px 0;border-bottom:1px solid var(--sj-line,#cad8e2);margin:0}
+.course-downloads li:first-child{border-top:1px solid var(--sj-line,#cad8e2)}
+.course-downloads a{font-size:19px;font-weight:700}
+.course-downloads a>span,.course-downloads>span,.course-downloads li>span{display:block;color:var(--sj-muted,#4d6579);font-size:15px;margin-top:4px}
+.course-links li{padding:6px 0;margin:0}
+.course-links a{display:inline-flex;align-items:center;min-height:44px}
+.course-next{margin-top:40px;padding:8px 24px 16px;border:1px solid var(--sj-line,#cad8e2);border-radius:12px;background:var(--sj-soft,#edf4f9)}
+.course-next h2{margin-top:16px}
+
+/* Läsmaterial, övningar och protokoll */
+.course-reading{max-width:1000px}
+.course-reading p,.course-reading li,.course-reading dd{line-height:1.8}
+.course-reading>p,.course-reading>ul,.course-reading>ol,.course-reading .chapter>p{max-width:72ch}
+.course-reading h1{font-size:clamp(32px,3.6vw,40px)}
+.course-reading img{max-width:100%;height:auto}
+.course-reading figure{margin:24px 0}
+.course-reading figcaption{font-size:15px;color:var(--sj-muted,#4d6579);margin-top:8px}
+.course-reading table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;font-size:16px}
+.course-reading th{background:var(--sj-soft,#edf4f9);font-weight:700}
+.course-reading td,.course-reading th{border-bottom:1px solid var(--sj-line,#cad8e2);padding:10px 12px;vertical-align:top;text-align:left}
+.course-reading ul,.course-reading ol{padding-left:26px}
+.course-reading dd{margin-left:0;margin-bottom:24px}
+.course-reading .chapter{margin-top:40px;border-top:2px solid var(--sj-line,#cad8e2);padding-top:16px}
+.course-reading .exercise{padding:16px 0;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.course-reading .example{margin:16px 0;padding:12px 20px;border:1px solid var(--sj-line,#cad8e2);border-left:8px solid var(--sj-blue,#064f91);border-radius:12px;background:var(--sj-paper,#fff)}
+.course-reading .formula{font-size:22px;font-weight:700;color:var(--sj-blue,#064f91);white-space:pre-line}
+.course-reading .muted,.course-reading .meta{color:var(--sj-muted,#4d6579);font-size:15px}
+.course-reading .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.course-reading .panel{border:1px solid var(--sj-line,#cad8e2);border-radius:12px;padding:16px 20px;background:var(--sj-soft,#edf4f9)}
+.course-reading button{min-height:44px;padding:8px 18px;border:1px solid var(--sj-blue,#064f91);border-radius:8px;background:var(--sj-paper,#fff);color:var(--sj-blue,#064f91);font-weight:700;cursor:pointer}
+.course-reading button:hover{background:var(--sj-soft,#edf4f9)}
+.course-reading input:not([type=checkbox]):not([type=radio]):not([type=range]),.course-reading select,.course-reading textarea{min-height:44px;padding:8px 10px;border:1px solid var(--sj-field,#5d7282);border-radius:8px;background:#fff}
+.course-reading details{margin:12px 0}
+.course-reading summary{cursor:pointer;font-weight:700;min-height:44px;display:list-item;padding-top:8px}
+
+@media(max-width:767px){
+  .course-main{padding:24px 16px 48px}
+  .course-main h2{font-size:23px;margin-top:32px}
+  .course-hero{grid-template-columns:1fr;gap:24px}
+  .course-hero figure{max-width:540px}
+  .course-week-grid{grid-template-columns:1fr 1fr}
+  .course-week{padding:18px}
+  .course-reading .grid{grid-template-columns:1fr}
+  .course-next{padding:4px 16px 12px}
+}
+@media(max-width:440px){.course-week-grid{grid-template-columns:1fr}}
+@media print{
+  .school-nav,.course-breadcrumb,.no-print{display:none!important}
+  .course-main{padding:0;font-size:11pt}
+  .course-reading .exercise{break-inside:avoid}
+  .course-reading img{max-height:140mm}
+  .course-main a{color:inherit}
+}
+
+/* Veckosida: mål, delar i ordning och veckans grundarbete (verktyg/veckosidor/bygg.py) */
+.week-heading .course-lead{color:var(--sj-ink,#163248)}
+.course-actions{margin:24px 0 0}
+.week-note{margin:24px 0 0;max-width:72ch}
+.week-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr);gap:40px;margin-top:16px}
+.lesson-list{list-style:none;margin:0;padding:0}
+.lesson-list>li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;border-top:1px solid var(--sj-line,#cad8e2);padding:24px 0;margin:0;scroll-margin-top:16px}
+.lesson-number{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--sj-blue,#064f91);color:#fff;font-weight:700;font-size:18px}
+.course-main .lesson-list h3{margin:4px 0 4px;font-size:22px}
+.lesson-list p{margin:0 0 12px;color:var(--sj-muted,#4d6579)}
+.lesson-items{list-style:none;margin:0;padding:0}
+.lesson-items li{display:grid;grid-template-columns:110px minmax(0,1fr);column-gap:12px;padding:8px 0;margin:0;border-bottom:1px solid var(--sj-soft,#edf4f9)}
+.lesson-items .kind{grid-row:span 2;font-size:14px;font-weight:700;color:var(--sj-muted,#4d6579);padding-top:3px}
+.lesson-items a{font-weight:700}
+.lesson-items small{display:block;font-size:15px;color:var(--sj-muted,#4d6579)}
+.lesson-items small a{font-weight:700}
+.week-aside{background:var(--sj-soft,#edf4f9);border-radius:12px;padding:24px;align-self:start}
+.course-main .week-aside h2{font-size:22px;margin-top:0}
+.week-aside ul{padding-left:22px}
+.week-aside ul.plain,.week-aside .lesson-items{padding-left:0;list-style:none}
+.week-aside .lesson-items li{grid-template-columns:1fr;border-color:var(--sj-line,#cad8e2)}
+.week-aside .lesson-items .kind{grid-row:auto}
+.week-aside li{margin:8px 0}
+@media(max-width:900px){.week-grid{grid-template-columns:1fr;gap:24px}}
+@media(max-width:520px){.lesson-list>li{grid-template-columns:1fr;gap:8px}.lesson-items li{grid-template-columns:1fr}.lesson-items .kind{grid-row:auto}}
+@media print{.week-grid{display:block}.week-aside{background:none;border:1px solid #999}.course-actions{display:none}}
+/* Veckosidans väg: tre steg per del, resten under Mer, inlämningen syns direkt */
+.route-steps .kind{color:var(--sj-accent,#064f91)}
+.week-more{margin:8px 0 0}.week-more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--sj-muted,#4d6579);font-weight:700}
+.week-due{margin:12px 0;padding:10px 14px;border-left:6px solid var(--sj-accent,#064f91);background:var(--sj-soft,#edf4f9);border-radius:8px}
+/* Vecka 40: plan dag för dag (verktyg/veckosidor/bygg.py, vecka-40/aktuell/dagplan.mjs) */
+.nu-panel{margin:24px 0 8px;padding:16px 20px;border:1px solid var(--sj-line,#cad8e2);border-left:8px solid var(--sj-blue,#064f91);border-radius:12px;background:var(--sj-paper,#fff);max-width:72ch}
+.course-main .nu-panel p{margin:0}
+.nu-etikett{font-size:15px;font-weight:700;color:var(--sj-muted,#4d6579)}
+.course-main .nu-panel .nu-rubrik{font-size:20px;font-weight:700;line-height:1.3;margin:2px 0 4px}
+.course-main .nu-panel .nu-text{color:var(--sj-muted,#4d6579);margin:0 0 4px}
+.course-main .nu-panel .nu-knapp{margin-top:12px}
+.nu-knapp .sj-btn{max-width:100%;white-space:normal;text-align:left}
+.dagplan{margin:40px 0 8px}
+.dagplan>p{max-width:72ch}
+.dag{border-top:1px solid var(--sj-line,#cad8e2);padding:20px 0 16px;scroll-margin-top:16px}
+.course-main .dag h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:0 0 4px;font-size:22px}
+.dag-typ{font-size:16px;font-weight:700;color:var(--sj-muted,#4d6579)}
+.dag.hemma .dag-typ{color:var(--sj-ok,#176844)}
+.dag.nu{margin:0 -12px;padding:20px 12px 16px;background:var(--sj-soft,#edf4f9);border-radius:12px;border-top-color:transparent;box-shadow:inset 6px 0 0 var(--sj-blue,#064f91)}
+.dag-nu{font-size:16px;font-weight:700;color:var(--sj-blue,#064f91)}
+.course-main .dag-rubrik{font-weight:700;margin:0 0 8px}
+.dag-pass{margin:0 0 8px;padding-left:22px;max-width:72ch}.dag-pass li{margin:4px 0}
+.course-main .dag-material{margin:8px 0 0;font-size:16px}
+.dag-steg{list-style:none;margin:8px 0 0;padding:0;counter-reset:steg}
+.dag-steg li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sj-line,#cad8e2)}
+.dag-steg .kind{display:block;font-size:14px;font-weight:700;color:var(--sj-blue,#064f91)}
+.dag-steg .kind::before{counter-increment:steg;content:counter(steg) ". "}
+.dag-steg a{font-weight:700}
+.dag-steg small{display:block;font-size:15px;color:var(--sj-muted,#4d6579)}
+.steg-framsteg{display:block;font-size:15px;font-weight:700;color:var(--sj-muted,#4d6579)}.steg-framsteg:empty{display:none}
+.klar-ruta{display:none;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid var(--sj-line,#cad8e2);border-radius:8px;background:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.dagplan.js .klar-ruta{display:inline-flex}
+.klar-ruta input{width:22px;height:22px;margin:0;accent-color:var(--sj-ok,#176844)}
+.dag-steg li.klar .steg-text a{color:var(--sj-muted,#4d6579)}
+.dag-steg li.klar .klar-ruta{border-color:var(--sj-ok,#176844);color:var(--sj-ok,#176844)}
+.course-main .dag-status{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--sj-muted,#4d6579)}.dag-status:empty{display:none}
+.course-main .dag-fore{margin:12px 0 0;padding:10px 14px;border-left:6px solid var(--sj-ok,#176844);background:#fff;border-radius:8px;max-width:72ch}
+.dag.nu .dag-fore{background:var(--sj-paper,#fff)}
+.lesson-list>li.forst .lesson-number{background:var(--sj-ink,#163248)}
+.flyttad{border-left-color:var(--sj-blue,#064f91)}
+@media(max-width:520px){.dag-steg li{gap:4px 10px}.klar-ruta{padding:0 10px}.dag.nu{margin:0 -8px;padding:16px 8px}}
+@media print{.nu-panel,.klar-ruta{display:none!important}.dag.nu{background:none;box-shadow:none}}
+.handin-mail{margin:16px 0;max-width:72ch}.handin-mail ol{padding-left:22px}.course-main .handin-mail h3{margin-top:0}.week-aside .handin-mail{background:var(--sj-bg,#fff)}

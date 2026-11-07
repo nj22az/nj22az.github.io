@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Filmspelare · Sjöskolan</title>
+  <meta name="description" content="Animerade förklaringsfilmer i elteknik med måsen Måns och matrosen Sigge.">
+  <link rel="icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="stylesheet" href="/sjoskolan/gemensamt/sjoskolan.css?v=20260926"><link rel="stylesheet" href="/sjoskolan/course.css?v=20260928"><link rel="stylesheet" href="filmer.css">
+<script src="/sjoskolan/gemensamt/oversattning.js?v=20260927" defer></script></head>
+<body class="course">
+  <nav class="school-nav" aria-label="Sjöskolan"><a href="/sjoskolan/"><strong>SJÖSKOLAN</strong></a><a href="/sjoskolan/#veckor">Alla veckor</a><a href="/sjoskolan/bildspel/">Bildspel</a></nav>
+  <main id="main-content" class="course-main film-main">
+    <div class="course-breadcrumb"><a href="./">← Alla filmer</a></div>
+    <h1 id="film-title">Film</h1>
+    <p id="film-sub" class="film-sub"></p>
+    <div class="film-stage"><canvas id="c" width="1280" height="720" role="img" aria-label="Animerad film"></canvas></div>
+    <div class="film-controls">
+      <button id="play" type="button">Spela</button>
+      <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Tid i filmen">
+      <span id="time" class="film-time">0:00</span>
+    </div>
+    <p class="film-line" id="line" aria-live="polite"></p>
+  </main>
+  <footer class="school-nav">Sjöskolan · Elteknik och ellära · Nils Johansson</footer>
+  <script type="module" src="spela.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+{
+  "passed": true,
+  "publicationCommit": "465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+  "release": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20",
+  "files": [
+    {
+      "path": "world/index.html",
+      "url": "https://nj22az.github.io/world/index.html?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 58790,
+      "sha256": "51417ca103c9afd3b21c4238121504aa3608ade0b6fb9a19ed6ba68bd681220d"
+    },
+    {
+      "path": "linux-port/install/index.html",
+      "url": "https://nj22az.github.io/linux-port/install/index.html?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 11879,
+      "sha256": "6f7fb9c245296840b64564d140c859e1e52a3d37c1256e8301fd4bac71e55745"
+    },
+    {
+      "path": "johansson-world/install.sh",
+      "url": "https://raw.githubusercontent.com/nj22az/nj22az.github.io/main/johansson-world/install.sh?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 12961,
+      "sha256": "8261db16ba46561a2c4b4fd74f1dae79941289566b7a0914e2000e2be020d541"
+    },
+    {
+      "path": "steam-deck/tools/console-smoke.cjs",
+      "url": "https://nj22az.github.io/steam-deck/tools/console-smoke.cjs?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 34738,
+      "sha256": "3b5cdc307bd474d25d8f585eb5d508a51cf1398a0948d4187d8d8263927b3101"
+    },
+    {
+      "path": "linux-port/acceptance-0.2.20.md",
+      "url": "https://nj22az.github.io/linux-port/acceptance-0.2.20.md?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 8189,
+      "sha256": "ee7a9245f163a0e395d851841df4e8f1efe6d3dbe30e620e1200c1ad9a83d250"
+    },
+    {
+      "path": "HANDOVER.md",
+      "url": "https://nj22az.github.io/HANDOVER.md?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 43485,
+      "sha256": "4dd83dfbe684d2512710bbae1f0205a0c09d9d0d65561a3131cb9ef7f6b3d979"
+    },
+    {
+      "path": "HANDOVER-LINUX-JOYSTICK-2026-10-22.md",
+      "url": "https://nj22az.github.io/HANDOVER-LINUX-JOYSTICK-2026-10-22.md?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 14577,
+      "sha256": "e8639221f7ccd477db799295d9a190eca36496244f8c43b0669b49baa147733a"
+    },
+    {
+      "path": "johansson-town/briefs/HANDOFF-FACE-VISIBILITY-2026-10-25.md",
+      "url": "https://nj22az.github.io/johansson-town/briefs/HANDOFF-FACE-VISIBILITY-2026-10-25.md?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 5090,
+      "sha256": "62df362e0466fd6a23ff996ecfed9c25d58298f64263ab793b029371a06ad3c1"
+    },
+    {
+      "path": "world/HANDOVER-2026-10-24.md",
+      "url": "https://nj22az.github.io/world/HANDOVER-2026-10-24.md?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 4979,
+      "sha256": "fc01873764b8df48d4d8c921f1de3e9c3bdf5670fece46889fd9518d09b2da49"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/dim-cartoon.png",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/dim-cartoon.png?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 140797,
+      "sha256": "7d2657e4d82901132015ec510e4a8e890b11363b8268257cc729314ea05227ef"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/README.md",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/README.md?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 194,
+      "sha256": "9d7a18c7d1db79ae9897c5a2fc85284e0f7ee3e881050084074fb0d94885aa46"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/controller-layout-1280x800.png",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/controller-layout-1280x800.png?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 81425,
+      "sha256": "0bf747f1929f7d4b361da66bd4a03b4bcba97c4c84a7504a5eaa0909e620b7a7"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/published-verification.json",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/published-verification.json?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 2395,
+      "sha256": "76cc587f4eebb9e342c352a9002f431f8dd879b490a8eae5aa132e2769a83951"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/linux-gameplay.png",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/linux-gameplay.png?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 434594,
+      "sha256": "5a6e83ef0e957f69f2deb21ca5aa4fd50cc5648f31231007f00c3b01e8265f25"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/actual-patch-result.json",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/actual-patch-result.json?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 2420,
+      "sha256": "7e9d80ba1e5b1b213e693233ec0062e887a9ce9b1a577d5b2698c2b990bed08a"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/dim-natural.png",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/dim-natural.png?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 133369,
+      "sha256": "dc959d4360cb92ac986b780c2215537f23f22dee2abaf3d7690830fdfdd31db9"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/dim-sketchbook.png",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/dim-sketchbook.png?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 170003,
+      "sha256": "19f9bce155a9e0d33e0a98c1a0f96c392494cb67a64bc196395526b24030ac4b"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/console-results.json",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/console-results.json?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 75,
+      "sha256": "0486d538e0815b38088af0e0e3e49ccf48082bdb04dd45134cc0d9cdc8c756ce"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/filter-report.json",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/filter-report.json?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 12712,
+      "sha256": "85438d3fd16051396dbd67992f4b0c22aa8eaab938d5f0489f9dd8a122b67030"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/dim-oil.png",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/dim-oil.png?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 208742,
+      "sha256": "8b8e870c58a55f3476d85f8586f84b80579282146d895f9ba6a6f6f7a6d7de11"
+    },
+    {
+      "path": "linux-port/qa/0.2.20/SHA256SUMS",
+      "url": "https://nj22az.github.io/linux-port/qa/0.2.20/SHA256SUMS?linux-release=0.2.20&verified=465808031c0b73b7e38d5f4493f44f5c2494ae4a",
+      "status": 200,
+      "bytes": 217,
+      "sha256": "ac594416efcf7e46dc53d24a3f7a01ef24ad023db3c51241f38a10455f356f67"
+    }
+  ],
+  "currentReleaseLinks": [
+    {
+      "page": "world/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.20/johansson-world-linux-x64.tar.gz"
+    },
+    {
+      "page": "world/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20"
+    },
+    {
+      "page": "world/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20"
+    },
+    {
+      "page": "linux-port/install/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20"
+    },
+    {
+      "page": "linux-port/install/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.20/johansson-world-512.png"
+    },
+    {
+      "page": "linux-port/install/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/tree/johansson-world-linux-v0.2.20/steam-deck"
+    },
+    {
+      "page": "linux-port/install/index.html",
+      "href": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.20"
+    }
+  ],
+  "aliasesVerified": [
+    "/world/",
+    "/linux-port/install/"
+  ],
+  "installerMatchesPublishedRelease": true,
+  "browserLayoutRun": false
+}

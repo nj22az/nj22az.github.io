@@ -1,0 +1,338 @@
+{
+  "id": "EL-000408",
+  "titel": "Labbprotokoll, Station C",
+  "sprak": "sv",
+  "typ": "laboration",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-5"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-hallkretslabbet",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Fyll i medan du använder labbet. Först mäter du den hela kretsen i vila, start, hållning och stopp. Sedan sätter du i en felmodul med okänt fel och felsöker: observation, hypotes, kontroll som skiljer mellan orsakerna, förväntat resultat, resultat och slutsats."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "hallkretslabbet/stationC-protokoll.mjs STATION_C_PROTOKOLL",
+        "revision": "8cabde3",
+        "roll": "labbprotokoll under simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "station": "Station C · hållkrets · simulerad",
+    "utrustning": "Hållkrets enligt v41_03 bild 21: +U, S0 STOPP (NC), S1 START (NO) parallellt med K1:s NO-hjälpkontakt, K1-spole 480 Ω med släckdiod, retur till 0 V. Mätpunkter +U, a, b, c och 0 V, och en strömmätlänk mellan c och returen. Stationsriggen har 12 V DC. Felmoduler: S0 fastnat öppen, START sluter inte, hjälpkontakten sluter inte, spolen avbruten, returen bruten, eller inget fel. I simulatorn är voltmetern ideal.",
+    "sakerhet": [
+      {
+        "id": "selv",
+        "text": "Styrspänningen är SELV enligt riggens dokumentation."
+      },
+      {
+        "id": "diod",
+        "text": "Spolen har släckdiod enligt dokumentationen. Utan den kan spolen ge en spänningsspik på flera hundra volt när kretsen bryts."
+      },
+      {
+        "id": "modul",
+        "text": "Felmodulerna är instruktörens förberedda moduler. Jag öppnar inte riggen och ändrar inte kopplingen."
+      },
+      {
+        "id": "instr",
+        "text": "Instrumentet är kontrollerat mot en känd källa. V ⎓ är valt och röd sladd sitter i V Ω."
+      },
+      {
+        "id": "omk",
+        "text": "Modulbyte och omkoppling till strömmätning sker med frånskild styrspänning. Jag avbryter vid skada, värme eller osäkerhet."
+      },
+      {
+        "id": "klar",
+        "text": "Klartecken före energisättning. På den fysiska stationen ger instruktören det. I simulatorn ger du det själv när punkterna ovan är gjorda."
+      }
+    ],
+    "matningar": [
+      {
+        "id": "m1",
+        "titel": "Matning i vila",
+        "storhet": "U(+U–0 V)",
+        "punkter": "+U / 0 V",
+        "forvantat": "märkt styrspänning",
+        "tolerans": "±0,1 V",
+        "kod": {
+          "need": {
+            "red": "P",
+            "black": "N",
+            "state": "vila"
+          }
+        }
+      },
+      {
+        "id": "m2",
+        "titel": "Efter S0 i vila",
+        "storhet": "U(a–0 V)",
+        "punkter": "a / 0 V",
+        "forvantat": "följ strömvägen",
+        "tolerans": "±0,1 V",
+        "kod": {
+          "need": {
+            "red": "a",
+            "black": "N",
+            "state": "vila"
+          }
+        }
+      },
+      {
+        "id": "m3",
+        "titel": "Över spolen i vila",
+        "storhet": "U(b–c)",
+        "punkter": "b / c",
+        "forvantat": "finns det ström?",
+        "tolerans": "±0,1 V",
+        "kod": {
+          "need": {
+            "red": "b",
+            "black": "c",
+            "state": "vila"
+          }
+        }
+      },
+      {
+        "id": "m4",
+        "titel": "Över spolen, START intryckt",
+        "storhet": "U(b–c)",
+        "punkter": "b / c",
+        "forvantat": "följ strömvägen",
+        "tolerans": "±0,1 V",
+        "kod": {
+          "need": {
+            "red": "b",
+            "black": "c",
+            "state": "start"
+          }
+        }
+      },
+      {
+        "id": "m5",
+        "titel": "Över spolen efter att START släppts",
+        "storhet": "U(b–c)",
+        "punkter": "b / c",
+        "forvantat": "håller K1?",
+        "tolerans": "±0,1 V",
+        "kod": {
+          "need": {
+            "red": "b",
+            "black": "c",
+            "state": "hall"
+          }
+        }
+      },
+      {
+        "id": "m6",
+        "titel": "Spolström vid hållning",
+        "storhet": "I spole",
+        "punkter": "strömmätlänk c–retur, mA-uttag",
+        "forvantat": "U/R",
+        "tolerans": "±2 %",
+        "kod": {
+          "q": "I",
+          "need": {
+            "state": "hall"
+          }
+        }
+      },
+      {
+        "id": "m7",
+        "titel": "Spolens matningssida efter STOPP",
+        "storhet": "U(b–0 V)",
+        "punkter": "b / 0 V",
+        "forvantat": "följ strömvägen",
+        "tolerans": "±0,1 V",
+        "kod": {
+          "need": {
+            "red": "b",
+            "black": "N",
+            "state": "vila"
+          }
+        }
+      }
+    ],
+    "fragor": [
+      {
+        "id": "skilj",
+        "text": "Hur skiljer du en öppen hållkontakt från en bruten retur med mätningar? Ange mätpunkter, knappläge och förväntade värden i båda fallen.",
+        "kort": "hållkontakt mot retur",
+        "min_ord": 15
+      },
+      {
+        "id": "obs",
+        "text": "Ge ett exempel från din felsökning på en observation och en hypotes. Varför är de inte samma sak?",
+        "kort": "observation och hypotes",
+        "min_ord": 12
+      },
+      {
+        "id": "sakerhet",
+        "text": "Vilka kontroller skulle du göra spänningslöst på en verklig anläggning ombord, och vad måste du göra innan du kan mäta spänningslöst?",
+        "kort": "spänningslös felsökning",
+        "min_ord": 15
+      },
+      {
+        "id": "slutsats",
+        "text": "Slutsats: vad visar dina mätningar om kretsens funktion, och vad visar de inte?",
+        "kort": "slutsats",
+        "min_ord": 12
+      },
+      {
+        "id": "blackout",
+        "text": "Efter en black-out kommer spänningen tillbaka (prova ”Styrspänning till”). Varför startar inte pumpen av sig själv med den här kretsen? Vilka förbrukare ombord ska ändå starta automatiskt, varför startas de i tur och ordning, och vad gör preferential trip?",
+        "valfri": true
+      }
+    ],
+    "protokoll": {
+      "nyckel": "stationC",
+      "titel": "Labbprotokoll: Station C",
+      "matningsinledning": "Välj ”Stationsrigg 12 V utan fel”. Skriv förväntat värde, ställ in knapparna och sonderna i simulatorn och tryck ”Hämta avläsning”.",
+      "felsokning": {
+        "faults": 2,
+        "faultsRequired": 1,
+        "faultsIntro": "Välj ”Ny felmodul (okänt fel)”. Beskriv vad du ser, skriv vilka orsaker som är möjliga och välj en mätning som ger olika resultat för olika orsaker. Skriv förväntat resultat innan du mäter. Visa felet först när raden är ifylld. En rad krävs, den andra är frivillig."
+      },
+      "exempel": {
+        "note": "Ifyllt exempel med labbets 24 V och felmodulen ”S0 fastnat öppen”. Din rigg har 12 V och dina felmoduler slumpas. Frågor utan siffror visar bara hur ett svar kan byggas upp.",
+        "head": {
+          "namn": "Exempel Elevsson",
+          "datum": "2026-10-09",
+          "rigg": "Hållkrets 24 V, simulator"
+        },
+        "checks": {
+          "selv": true,
+          "diod": true,
+          "modul": true,
+          "instr": true,
+          "omk": true,
+          "klar": true
+        },
+        "rows": [
+          {
+            "storhet": "U(+U–0 V)",
+            "punkter": "röd +U / svart 0 V",
+            "drift": "vila, K1 släppt",
+            "forv": "24 V",
+            "uppm": "24,0 V",
+            "avv": "0 V",
+            "tol": "±0,1 V",
+            "bed": "Inom tolerans",
+            "komm": "Matningen finns."
+          },
+          {
+            "storhet": "U(a–0 V)",
+            "punkter": "röd a / svart 0 V",
+            "drift": "vila, K1 släppt",
+            "forv": "24 V",
+            "uppm": "24,0 V",
+            "avv": "0 V",
+            "tol": "±0,1 V",
+            "bed": "Inom tolerans",
+            "komm": "S0 är sluten. Ingen ström, men full spänning mot 0 V."
+          },
+          {
+            "storhet": "U(b–c)",
+            "punkter": "röd b / svart c",
+            "drift": "vila, K1 släppt",
+            "forv": "0 V",
+            "uppm": "0 V",
+            "avv": "0 V",
+            "tol": "±0,1 V",
+            "bed": "Inom tolerans",
+            "komm": "Ingen ström genom spolen ger inget spänningsfall."
+          },
+          {
+            "storhet": "U(b–c)",
+            "punkter": "röd b / svart c",
+            "drift": "START intryckt, K1 dragen",
+            "forv": "24 V",
+            "uppm": "24,0 V",
+            "avv": "0 V",
+            "tol": "±0,1 V",
+            "bed": "Inom tolerans",
+            "komm": ""
+          },
+          {
+            "storhet": "U(b–c)",
+            "punkter": "röd b / svart c",
+            "drift": "START släppt, K1 dragen",
+            "forv": "24 V",
+            "uppm": "24,0 V",
+            "avv": "0 V",
+            "tol": "±0,1 V",
+            "bed": "Inom tolerans",
+            "komm": "Hjälpkontakten håller spolens matning."
+          },
+          {
+            "storhet": "I spole",
+            "punkter": "strömmätlänk c–retur, mA-uttag",
+            "drift": "hållning, omkopplat frånskilt",
+            "forv": "50 mA",
+            "uppm": "50,0 mA",
+            "avv": "0 mA",
+            "tol": "±2 %",
+            "bed": "Inom tolerans",
+            "komm": "I = 24 V / 480 Ω."
+          },
+          {
+            "storhet": "U(b–0 V)",
+            "punkter": "röd b / svart 0 V",
+            "drift": "STOPP har tryckts och släppts, K1 släppt",
+            "forv": "0 V",
+            "uppm": "0 V",
+            "avv": "0 V",
+            "tol": "±0,1 V",
+            "bed": "Inom tolerans",
+            "komm": "b hänger kvar på 0 V genom spolen och returen. Kretsen startar inte själv."
+          }
+        ],
+        "faults": [
+          {
+            "obs": "K1 drar inte, varken med START intryckt eller efter.",
+            "hyp": "Fyra möjliga orsaker: S0 öppen, START sluter inte, spolen avbruten eller returen bruten. Jag prövar först om spänningen når förbi S0.",
+            "kontroll": "Håll START intryckt och mät a–0 V.",
+            "omsann": "S0 öppen: a saknar förbindelse med +U och följer returen, 0 V. De tre andra orsakerna: 24 V på a.",
+            "resultat": "a–0 V: 0 V",
+            "slutsats": "a har 0 V, så spänningen stannar före a. Det pekar på S0 och utesluter de tre andra orsakerna. Felmodulen visade ”S0 har fastnat öppen”."
+          },
+          {}
+        ],
+        "answers": {
+          "skilj": "Så kan svaret byggas: 1) vad K1 gör i varje fall när START trycks och släpps, 2) en mätpunkt och ett knappläge som ger olika värden för de två felen, 3) de förväntade värdena i båda fallen.",
+          "obs": "Så kan svaret byggas: 1) en sak du såg eller mätte, 2) en möjlig orsak, 3) varför orsaken måste prövas och inte bara antas.",
+          "sakerhet": "Så kan svaret byggas: 1) vilka kontroller som kan göras spänningslöst, 2) vilka matningar som måste frånskiljas och låsas, inte bara styrspänningen, 3) hur spänningslösheten kontrolleras, 4) vilka regler ombord arbetet följer.",
+          "blackout": "Så kan svaret byggas: 1) vad som händer med K1 och hjälpkontakten när spänningen försvinner, 2) vilka förbrukare som ändå ska starta och varför de startar i tur och ordning, 3) vad preferential trip kopplar bort och varför.",
+          "slutsats": "Kretsen startade med START, höll med K1:s hjälpkontakt och stannade med STOPP. Spolen tog 50 mA vid 24 V. Mätningarna visar inte kontakternas slitage, spolens tillslagsspänning eller hur kretsen beter sig vid spänningsdipp. Simulatorn visar en öppen punkt som ”flytande”. I en verklig 230 V-styrkrets med långa kablar kan en högohmig multimeter visa spökspänning på en öppen ledare; ett LoZ-läge ger ett säkrare besked."
+        }
+      }
+    },
+    "fysisk_variant": "EL-000409"
+  },
+  "losning": {
+    "text": "Protokollet har ett ifyllt exempel för en annan rigg. Förväntade värden räknas av eleven före mätningen.",
+    "status": "migrerad"
+  },
+  "simulator": {
+    "labb": "hallkretslabbet",
+    "validering": {
+      "typ": "protokoll"
+    },
+    "alias": "stationC"
+  }
+}

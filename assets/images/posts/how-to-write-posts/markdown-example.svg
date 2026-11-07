@@ -1,0 +1,10 @@
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="200" fill="#f8f9fa" stroke="#e9ecef" stroke-width="2" rx="8"/>
+  <text x="20" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="600" fill="#212529">Markdown Example</text>
+  <text x="20" y="60" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#495057"># This is a heading</text>
+  <text x="20" y="80" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#495057">This is **bold text** and *italic text*</text>
+  <text x="20" y="100" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#495057">- List item 1</text>
+  <text x="20" y="120" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#495057">- List item 2</text>
+  <text x="20" y="150" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#495057">[Link text](https://example.com)</text>
+  <text x="20" y="180" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#495057">![Image](image.jpg)</text>
+</svg>

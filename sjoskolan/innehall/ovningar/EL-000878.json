@@ -1,0 +1,81 @@
+{
+  "id": "EL-000878",
+  "titel": "Lindningarna utan bleck",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 2,
+  "granskning": {
+    "status": "utkast",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-8"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-kurs-v41-03",
+      "T-bildspel-v41-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Sladdarna visar 0,3 Ω mot varandra. Utan bleck: U1–U2 4,1 Ω, V1–V2 4,0 Ω och W1–W2 4,2 Ω. Beräkna varje lindnings resistans och medelvärdet.",
+    "samband": [
+      "R_{lindning} = R_{avläst} − R_{sladdar}"
+    ],
+    "givet": "Spänningslös motor som aldrig är ansluten. Blecken borttagna. Sladdarnas resistans 0,3 Ω.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Mätsladdarna ligger i serie med lindningen. Multimetern visar summan.",
+      "status": "utkast"
+    },
+    {
+      "niva": "metod",
+      "text": "Dra av sladdarnas resistans från varje avläsning. Lägg sedan ihop de tre lindningarna och dela med tre.",
+      "status": "utkast"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Dra av sladdarnas resistans från varje avläst värde. 2) Medelvärdet är summan delad med antalet. Exempel med andra tal: sladdar 0,2 Ω och avläst 5,4 Ω ger en lindning på 5,2 Ω. Rimlighet: tre lindningar i samma motor ska ligga nära varandra.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "U1–U2: 4,1 − 0,3 = 3,8 Ω. V1–V2: 4,0 − 0,3 = 3,7 Ω. W1–W2: 4,2 − 0,3 = 3,9 Ω. Medelvärde (3,8 + 3,7 + 3,9)/3 = 3,8 Ω.",
+    "svar": [
+      {
+        "storhet": "R_{lindning}",
+        "varde": 3.8,
+        "avrundning": "1 decimaler",
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "Ω"
+      }
+    ],
+    "status": "utkast",
+    "kalla": "Kursens facit (publikt)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Formelstod_och_ovningar.html#v41_03-q2",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-41/aktuell/v41_03_Fysisk_traff_och_matning_elev.pptx bild 12 och 13",
+        "roll": "presentationens stöd- och övningsbild"
+      },
+      {
+        "kalla": "sjoskolan/labbhandbok/vecka-41.html",
+        "roll": "labbpasset med motorn, startaren och strömtången"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

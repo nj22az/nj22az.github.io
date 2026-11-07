@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nj22az.github.io/sitemap.xml

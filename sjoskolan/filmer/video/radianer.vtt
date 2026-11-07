@@ -1,0 +1,77 @@
+WEBVTT
+
+1
+00:00:00.800 --> 00:00:07.800
+<v Måns>Formeln är rätt, men räknaren ger fel svar. Hur kan det bli så?
+
+2
+00:00:08.600 --> 00:00:15.800
+<v Sigge>En vinkel kan mätas i grader. Ett helt varv är 360°.
+
+3
+00:00:16.000 --> 00:00:23.800
+<v Sigge>Den kan också mätas i radianer, som längd i meter eller fot.
+
+4
+00:00:24.600 --> 00:00:30.300
+<v Sigge>Rulla ett hjul med radien 1. Titta på sträckan kanten rullar.
+
+5
+00:00:30.500 --> 00:00:36.300
+<v Sigge>Den sträckan är vinkeln i radianer.
+
+6
+00:00:36.500 --> 00:00:41.300
+<v Sigge>Ett helt varv blir 2π, ungefär 6,28.
+
+7
+00:00:41.500 --> 00:00:47.800
+<v Måns>Då är 1 radian ungefär 57°!
+
+8
+00:00:48.600 --> 00:00:55.300
+<v Sigge>Ett halvt varv är 180° eller π. Ett kvarts varv är 90° eller π/2.
+
+9
+00:00:55.500 --> 00:01:01.800
+<v Måns>Samma vinkel, bara olika tal.
+
+10
+00:01:02.600 --> 00:01:09.300
+<v Sigge>Generatorn vrids ett varv per period. Ett varv är 2π radianer.
+
+11
+00:01:09.500 --> 00:01:17.300
+<v Sigge>Efter tiden t har den vridits 2π · f · t. Vinkeln blir i radianer.
+
+12
+00:01:17.500 --> 00:01:25.800
+<v Måns>Då ska räknaren stå i RAD när jag räknar u(t)!
+
+13
+00:01:26.600 --> 00:01:33.800
+<v Sigge>I DEG läses π/2 som 1,57 grader. Svaret blir nästan noll.
+
+14
+00:01:34.000 --> 00:01:38.800
+<v Sigge>I RAD blir sin(π/2) exakt 1.
+
+15
+00:01:39.000 --> 00:01:45.800
+<v Måns>Och sin(90) = 1 betyder att räknaren står i DEG.
+
+16
+00:01:46.600 --> 00:01:55.300
+<v Sigge>π eller 2π · f · t i vinkeln betyder RAD på räknaren.
+
+17
+00:01:55.500 --> 00:01:59.800
+<v Sigge>Fasvinklar i grader räknas i DEG.
+
+18
+00:02:00.000 --> 00:02:03.800
+<v Måns>Och jag testar med sin(90)!
+
+19
+00:02:04.000 --> 00:02:07.800
+<v Sigge>Vi ses i nästa film!

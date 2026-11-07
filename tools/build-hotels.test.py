@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+"""Acceptance checks for the confirmed-parking publication rule."""
+import copy
+import csv
+import datetime as dt
+import importlib.util
+import json
+from pathlib import Path
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+spec = importlib.util.spec_from_file_location('hotel_builder', ROOT / 'tools/build-hotels.py')
+builder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(builder)
+
+
+class ParkingAdmissionTests(unittest.TestCase):
+    def setUp(self):
+        self.records = json.loads((ROOT / 'hotels/hotels.json').read_text(encoding='utf-8'))['reviews']
+        self.free = copy.deepcopy(next(row for row in self.records if row['freeParking'] is True))
+
+    def test_published_register_has_dated_confirmation_and_correct_categories(self):
+        builder.validate(self.records)
+        for row in self.records:
+            category = builder.parking_category(row)
+            if row.get('parkingAccessWarning'):
+                self.assertEqual(category, 'avoid')
+            elif row['freeParking']:
+                registered = row.get('parkingRegistrationRequired') is True or row.get('parkingDetails', {}).get('registrationAtReception') is True
+                self.assertEqual(category, 'registered' if registered else 'free')
+            else:
+                self.assertEqual(category, 'easy' if row['parkingPaymentAtHotel'] is True and row['parkingOnHotelReceipt'] is True else 'avoid')
+            self.assertNotIn('easyParking', row)
+
+    def test_stay_blog_post_opens_the_hotels_thread_and_must_name_a_real_hotel(self):
+        post = {'title': 'Synthetic stay post', 'excerpt': 'Fixture excerpt.', 'url': '/blog/synthetic-stay/', 'date': '2026-10-27'}
+        html = builder.build(self.records, {self.free['id']: [post]})
+        thread = html[html.index(f'id="notes-{self.free["id"]}"'):]
+        thread = thread[:thread.index('</ol>')]
+        self.assertIn('<a href="/blog/synthetic-stay/">Synthetic stay post</a>', thread)
+        self.assertLess(thread.index('Blog post'), thread.index('Register notes'))
+        self.assertIn(post['date'], thread)
+        with self.assertRaises(AssertionError):
+            builder.check_posts(self.records, {'no-such-hotel': [post]})
+        builder.check_posts(self.records, builder.hotel_posts())
+        for hotel, posts in builder.hotel_posts().items():
+            self.assertIn(hotel, {row['id'] for row in self.records})
+            for item in posts:
+                self.assertTrue(item['url'].startswith('/blog/'))
+
+    def test_photos_show_small_with_a_date_stamp_and_must_exist(self):
+        row = next(r for r in self.records if r.get('photos'))
+        html = builder.render_review(row)
+        self.assertEqual(html.count('class="hotel-photo-stamp"'), len(row['photos']))
+        self.assertIn('’26 10 27', html)
+        self.assertIn('loading="lazy"', html)
+        for photo in row['photos']:
+            self.assertIn(f'src="{photo["thumb"]}"', html)
+            self.assertIn(f'href="{photo["src"]}"', html)
+        self.assertNotIn('hotel-photos', builder.render_review(self.free if not self.free.get('photos') else self.records[-1]))
+        broken = copy.deepcopy(row)
+        broken['photos'][0]['thumb'] = '/hotels/photos/missing.webp'
+        with self.assertRaises(AssertionError):
+            builder.validate([broken])
+
+    def test_card_hold_at_check_in_is_an_owner_report_with_its_own_filter(self):
+        held = [r for r in self.records if r.get('cardHold')]
+        self.assertEqual({r['hotelId']: r['cardHold']['asked'] for r in held}, {'scandic-elmia': True, 'scandic-laajavuori': False})
+        elmia = next(r for r in held if r['cardHold']['asked'])
+        html = builder.render_review(elmia) + builder.render_row(elmia)
+        self.assertIn('Card hold asked at check-in', html)
+        self.assertIn('data-card-hold="asked"', html)
+        self.assertIn('card at check-in', html)
+        self.assertIn('data-card-hold="unknown"', builder.render_row(self.free if not self.free.get('cardHold') else self.records[-1]))
+        self.assertIn('name="cardhold"', builder.build(self.records))
+        broken = copy.deepcopy(elmia)
+        broken['cardHold']['source'] = 'a guess'
+        with self.assertRaises(AssertionError):
+            builder.validate([broken])
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = {row['Hotel']: row['Card hold at check-in'] for row in csv.DictReader(stream)}
+        for row in self.records:
+            hold = row.get('cardHold')
+            self.assertEqual(exported[row['name']], '' if hold is None else 'Asked (owner report)' if hold['asked'] else 'Not asked (owner report)')
+
+    def test_easy_requires_hotel_payment_and_confirmed_hotel_receipt(self):
+        row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
+        row['name'] = 'Synthetic hotel-payment test fixture'
+        row['parkingPaymentAtHotel'] = True
+        row['parkingType'] = 'hotel-paid'
+        row['parkingOnHotelReceipt'] = None
+        row['parkingSummary'] = 'Paid parking can be settled at hotel reception.'
+        builder.validate([row])
+        self.assertEqual(builder.parking_category(row), 'avoid')
+        self.assertIn('Hotel receipt unconfirmed', builder.render_review(row))
+        row['parkingOnHotelReceipt'] = True
+        self.assertEqual(builder.parking_category(row), 'easy')
+        self.assertIn('hotel-parking-easy', builder.render_row(row))
+        self.assertIn('Easy parking · One hotel receipt', builder.render_row(row))
+        row['parkingPaymentAtHotel'] = False
+        self.assertEqual(builder.parking_category(row), 'avoid')
+
+    def test_unknown_paid_route_is_avoid_without_inventing_external_payment(self):
+        row = copy.deepcopy(next(row for row in self.records if row['freeParking'] is False))
+        row['parkingPaymentAtHotel'] = None
+        row['parkingType'] = 'payment-unconfirmed'
+        builder.validate([row])
+        self.assertEqual(builder.parking_category(row), 'avoid')
+        self.assertIn('Avoid · Payment route unconfirmed', builder.render_review(row))
+        self.assertIn('data-parking-type="payment-unconfirmed"', builder.render_row(row))
+        for value in ('true', 1):
+            row['parkingPaymentAtHotel'] = value
+            with self.assertRaises((ValueError, AssertionError)):
+                builder.validate([row])
+
+    def test_owner_access_warning_can_override_free_without_inventing_a_charge(self):
+        row = next(r for r in self.records if r['hotelId'] == 'best-western-plus-hotel-odense')
+        self.assertTrue(row['freeParking'])
+        self.assertEqual(row['parkingPaid'], 0)
+        self.assertIsNone(row['parkingPaymentAtHotel'])
+        self.assertEqual(builder.parking_category(row), 'avoid')
+        html = builder.render_review(row)
+        self.assertIn('Avoid · Difficult access · Free parking', html)
+        self.assertIn('owner', html.lower())
+        invalid = copy.deepcopy(row)
+        invalid['parkingAccessWarning']['reason'] = ''
+        with self.assertRaises(AssertionError):
+            builder.validate([invalid])
+
+    def test_free_parking_has_no_payment_route(self):
+        for value in (True, False):
+            with self.subTest(paymentAtHotel=value):
+                self.free['parkingPaymentAtHotel'] = value
+                with self.assertRaises(ValueError):
+                    builder.validate([self.free])
+
+    def test_discovery_candidate_cannot_enter_register(self):
+        for value in (None, 'true', 1):
+            with self.subTest(freeParking=value):
+                row = copy.deepcopy(self.free)
+                row['freeParking'] = value
+                with self.assertRaises(ValueError):
+                    builder.validate([row])
+        del self.free['parkingVerification']
+        with self.assertRaises(ValueError):
+            builder.validate([self.free])
+
+    def test_unresolved_or_contradictory_parking_is_rejected(self):
+        for status in ('candidate', 'needs_review', 'confirmed-paid'):
+            with self.subTest(status=status):
+                row = copy.deepcopy(self.free)
+                row['parkingVerification']['status'] = status
+                with self.assertRaises(ValueError):
+                    builder.validate([row])
+        self.free['parkingPaid'] = 100
+        with self.assertRaises(ValueError):
+            builder.validate([self.free])
+
+    def test_confirmation_requires_a_real_check_date_and_reviewed_source(self):
+        cases = [
+            ('checkedOn', None),
+            ('checkedOn', (dt.date.today() + dt.timedelta(days=1)).isoformat()),
+            ('sourceUrl', None),
+            ('sourceUrl', 'https://example.org/unreviewed-search-result'),
+        ]
+        for field, value in cases:
+            with self.subTest(field=field, value=value):
+                row = copy.deepcopy(self.free)
+                row['parkingVerification'][field] = value
+                with self.assertRaises(ValueError):
+                    builder.validate([row])
+
+    def test_reader_can_follow_the_parking_source_and_date(self):
+        html = builder.render_row(self.free)
+        verification = self.free['parkingVerification']
+        self.assertIn('href="' + builder.e(verification['sourceUrl']) + '">Checked', html)
+        self.assertIn('datetime="' + verification['checkedOn'] + '"', html)
+        self.assertIn(builder.e(self.free['parkingSummary']), html)
+
+    def test_verified_locations_match_official_marker_evidence_and_csv(self):
+        evidence = json.loads((ROOT / 'hotels/LOCATION-EVIDENCE-2026-10-25.json').read_text())['properties']
+        self.assertEqual(len(evidence), 16)
+        by_id = {row['hotelId']: row for row in self.records}
+        for item in evidence:
+            row = by_id[item['hotelId']]
+            self.assertEqual(row['coordinates'], item['coordinates'])
+            marker = json.loads('{' + item['markerEvidence'] + '}')
+            self.assertEqual(marker['hotelName'], row['name'])
+            self.assertEqual(marker['markerInfo']['hotelId'], item['officialPropertyId'])
+            self.assertEqual(marker['coordinates']['lat'], row['coordinates']['latitude'])
+            self.assertEqual(marker['coordinates']['lng'], row['coordinates']['longitude'])
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = list(csv.DictReader(stream))
+        self.assertEqual(len(exported), len(self.records))
+        for item in exported:
+            row = next(r for r in self.records if r['name'] == item['Hotel'])
+            self.assertEqual(float(item['Latitude']), row['coordinates']['latitude'])
+            self.assertEqual(float(item['Longitude']), row['coordinates']['longitude'])
+            self.assertEqual(item['Coordinate source'], row['coordinates']['sourceUrl'])
+
+    def test_new_scandic_evidence_preserves_payment_receipt_and_named_coordinates(self):
+        evidence = json.loads((ROOT / 'hotels/SCANDIC-PAID-EVIDENCE-2026-10-25.json').read_text())
+        self.assertEqual(len(evidence['properties']), 25)
+        for item in evidence['properties'] + [evidence['additionalFreeProperty']]:
+            row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
+            marker = json.loads('{' + item['markerEvidence'] + '}')
+            self.assertEqual(marker['hotelName'], row['name'])
+            self.assertEqual(row['coordinates'], item['coordinates'])
+            self.assertEqual(marker['coordinates'], {'lat': row['coordinates']['latitude'], 'lng': row['coordinates']['longitude']})
+            # Rosendahl moved to Easy on the owner's 27 October report (FINLAND-EVIDENCE-2026-10-27.json).
+            if item['hotelId'] == 'scandic-rosendahl':
+                self.assertEqual(builder.parking_category(row), 'easy')
+                self.assertIs(row['parkingOnHotelReceipt'], True)
+                continue
+            self.assertEqual(builder.parking_category(row), item['parkingCategory'])
+            if not row['freeParking']:
+                self.assertEqual(row['parkingPaymentAtHotel'], item['paymentAtHotel'])
+                self.assertIsNone(row['parkingOnHotelReceipt'])
+                self.assertIsNone(row['parkingPaid'])
+                self.assertIsNone(row['roomPaid'])
+
+    def test_havanna_nearby_street_parking_is_free_without_claiming_hotel_ownership(self):
+        row = next(r for r in self.records if r['hotelId'] == 'hotell-havanna')
+        self.assertEqual(builder.parking_category(row), 'free')
+        self.assertEqual(row['parkingPaid'], 0)
+        self.assertIn('street', row['parkingSummary'])
+        self.assertIsNone(row['parkingDetails']['registrationAtReception'])
+        evidence = json.loads((ROOT / 'hotels/HAVANNA-PARKING-EVIDENCE-2026-10-25.json').read_text())
+        self.assertEqual(row['coordinates'], evidence['coordinates'])
+        self.assertIn('Hotell Havanna, Krabbes väg 4', evidence['selectedPlaceEvidence'])
+
+    def test_swedish_audit_matches_every_catalogue_property_and_new_marker(self):
+        audit = json.loads((ROOT / 'hotels/SCANDIC-SWEDEN-EVIDENCE-2026-10-25.json').read_text())
+        self.assertEqual(len(audit['properties']), 91)
+        self.assertEqual(len({p['hotelId'] for p in audit['properties']}), 91)
+        self.assertEqual(sum(p['category'] == 'avoid' for p in audit['properties']), 72)
+        for item in audit['properties']:
+            row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
+            self.assertEqual(builder.hotel_chain(row), 'Scandic')
+            # The owner's 29 October Blue category separates required registration.
+            expected = 'registered' if row['hotelId'] == 'scandic-vasteras' else item['category']
+            self.assertEqual(builder.parking_category(row), expected)
+            if item['disposition'] == 'added':
+                marker = json.loads('{' + item['markerEvidence'] + '}')
+                self.assertEqual(marker['hotelName'], row['name'])
+                self.assertEqual(row['coordinates'], item['coordinates'])
+                self.assertEqual(marker['coordinates'], {'lat': row['coordinates']['latitude'], 'lng': row['coordinates']['longitude']})
+                self.assertIsNone(row['roomPaid'])
+                self.assertEqual(row['parkingPaid'], 0 if row['freeParking'] else None)
+
+    def test_sweden_payment_and_tariff_edge_cases_remain_explicit(self):
+        kista = next(r for r in self.records if r['hotelId'] == 'scandic-kista')
+        self.assertIs(kista['parkingPaymentAtHotel'], True)
+        self.assertIsNone(kista['parkingOnHotelReceipt'])
+        self.assertEqual(builder.parking_category(kista), 'avoid')
+        no25 = next(r for r in self.records if r['hotelId'] == 'scandic-no-25')
+        self.assertTrue(no25['parkingVerification']['sourceUrl'].startswith('https://www.parkeringgoteborg.se/'))
+        self.assertIn('26/hour', no25['parkingSummary'])
+        stjorgen = next(r for r in self.records if r['hotelId'] == 'scandic-st-jorgen')
+        self.assertIn('273 SEK per night', stjorgen['parkingDetails']['weekday'])
+        self.assertIn('260 SEK per night', stjorgen['parkingDetails']['weekend'])
+        var = next(r for r in self.records if r['hotelId'] == 'scandic-varnamo')
+        self.assertEqual(builder.parking_category(var), 'free')
+        self.assertIsNone(var['parkingDetails']['registrationAtReception'])
+
+    def test_unmapped_hotel_keeps_card_and_address_without_a_marker(self):
+        row = copy.deepcopy(self.free)
+        row['coordinates'] = None
+        html = builder.build([row])
+        self.assertIn('Map location awaiting verification', html)
+        self.assertIn(builder.e(row['address']), html)
+        self.assertIn('id="hotel-map-data" type="application/json">[]', html)
+        self.assertIn('0 of 1 hotels have verified locations', html)
+
+    def test_feed_preserves_unknown_registration_and_paid_garage(self):
+        row = next(r for r in self.records if r['hotelId'] == 'scandic-skelleftea')
+        html = builder.render_review(row)
+        # Unknown registration stays visible as unknown, never turned into "not required".
+        self.assertIn('Registration not stated</li>', html)
+        self.assertNotIn('No registration needed', html)
+        self.assertIn(builder.e(row['parkingSummary']), html)
+        # Full notes and sources stay in the post's thread.
+        self.assertIn('class="hotel-thread"', html)
+        self.assertIn(builder.e(row['review'][1]), html)
+        row = next(r for r in self.records if r['hotelId'] == 'scandic-vasteras')
+        self.assertIn('Register at reception', builder.render_review(row))
+
+    def test_finland_follow_up_matches_evidence_and_keeps_rosendahl_tariff(self):
+        evidence = json.loads((ROOT / 'hotels/FINLAND-EVIDENCE-2026-10-27.json').read_text())
+        self.assertEqual(len(evidence['properties']), 8)
+        for item in evidence['properties']:
+            row = next(r for r in self.records if r['hotelId'] == item['hotelId'])
+            self.assertEqual(builder.parking_category(row), 'free')
+            self.assertEqual(row['coordinates'], item['coordinates'])
+            self.assertEqual(row['parkingVerification']['sourceUrl'], item['parkingUrl'])
+            self.assertIsNone(row['roomPaid'])
+            if 'markerEvidence' in item:
+                marker = json.loads('{' + item['markerEvidence'] + '}')
+                self.assertEqual(marker['hotelName'], row['name'])
+                self.assertEqual(marker['coordinates'], {'lat': row['coordinates']['latitude'], 'lng': row['coordinates']['longitude']})
+        ros = next(r for r in self.records if r['hotelId'] == 'scandic-rosendahl')
+        self.assertEqual(builder.parking_category(ros), 'easy')
+        self.assertIn('EUR 2/hour or 8/24 hours', ros['parkingSummary'])
+        self.assertIn('owner', ros['sourceNote'].lower())
+        hyvinkaa = next(r for r in self.records if r['hotelId'] == 'scandic-hyvinkaa')
+        self.assertIn('only 12 spaces', hyvinkaa['parkingSummary'])
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = {row['Hotel']: row for row in csv.DictReader(stream)}
+        self.assertEqual(exported['Scandic Rosendahl']['Parking category'], 'Yellow — Easy parking')
+        self.assertEqual(exported['Hotel Kajanus']['Free parking'], 'Yes')
+
+    def test_chain_filter_contains_only_groups_in_the_register(self):
+        html = builder.build(self.records)
+        self.assertIn('id="hotel-chain" name="chain"', html)
+        self.assertEqual({builder.hotel_chain(r) for r in self.records}, {'Scandic', 'Thon Hotels', 'Best Western', 'Other hotels'})
+        self.assertEqual(sum(builder.hotel_chain(r) == 'Scandic' for r in self.records), 200)
+        for row in self.records:
+            self.assertIn('data-chain="' + builder.hotel_chain(row) + '"', builder.render_row(row))
+        self.assertIn('data-theme="clarity" data-theme-lock="clarity"', html)
+
+    def test_norway_snapshot_coverage_withholds_unknown_charges_and_matches_export(self):
+        audit = json.loads((ROOT / 'hotels/SCANDIC-NORWAY-EVIDENCE-2026-10-29.json').read_text())
+        items = audit['properties']
+        self.assertEqual(len({p['officialPropertyId'] for p in items}), 81)
+        self.assertEqual({p['hotelId'] for p in items if p['previouslyRegistered']},
+                         {'scandic-flesland-airport', 'scandic-byporten', 'scandic-ornen'})
+        self.assertEqual(sum(p['disposition'] == 'added' for p in items), 75)
+        by_id = {r['hotelId']: r for r in self.records}
+        with (ROOT / 'hotels/hotel-reviews.csv').open(encoding='utf-8-sig', newline='') as stream:
+            exported = {r['Hotel']: r for r in csv.DictReader(stream)}
+        for p in items:
+            if p['category'] == 'unresolved':
+                self.assertNotIn(p['hotelId'], by_id)
+                self.assertNotIn(p['name'], exported)
+                continue
+            row = by_id[p['hotelId']]
+            self.assertEqual(builder.parking_category(row), p['category'])
+            self.assertEqual(row['coordinates'], p['coordinates'])
+            self.assertEqual(row['parkingVerification']['checkedOn'], '2026-10-29')
+            self.assertIsNone(row['parkingOnHotelReceipt'])
+            self.assertEqual(row['parkingPaymentAtHotel'], p['parkingPaymentAtHotel'])
+            self.assertEqual(exported[row['name']]['Weekday parking'], row['parkingDetails']['weekday'])
+            self.assertEqual(exported[row['name']]['Weekend parking'], row['parkingDetails']['weekend'])
+            self.assertEqual(exported[row['name']]['Parking checked date'], '2026-10-29')
+            self.assertEqual(exported[row['name']]['Parking paid'], '0' if row['freeParking'] else '')
+            self.assertEqual(exported[row['name']]['Room price paid'], '')
+            self.assertTrue(all(s['url'].startswith('https://www.scandichotels.com/') for s in p['sources']))
+            self.assertTrue(all(len(s['sha256']) == 64 for s in p['sources']))
+        sunnfjord = by_id['scandic-sunnfjord-hotel-spa']
+        self.assertEqual(builder.parking_category(sunnfjord), 'registered')
+        self.assertEqual(exported[sunnfjord['name']]['Parking category'], 'Blue — Free with registration')
+        self.assertIn('inPark', sunnfjord['parkingSummary'])
+        self.assertIn('Conflicting official rates', by_id['hotel-norge-by-scandic']['parkingSummary'])
+        self.assertIn('20 minutes', by_id['scandic-byporten']['parkingSummary'])
+        self.assertIs(by_id['scandic-alta']['parkingPaymentAtHotel'], True)
+        self.assertEqual(builder.parking_category(by_id['scandic-alta']), 'avoid')
+
+
+if __name__ == '__main__':
+    unittest.main()

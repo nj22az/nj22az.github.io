@@ -1,0 +1,42 @@
+[
+  {
+    "id": "pump",
+    "boundsMetres": [
+      1.2,
+      0.4236,
+      0.5975
+    ],
+    "parts": 41,
+    "glbBytes": 426896
+  },
+  {
+    "id": "compressor",
+    "boundsMetres": [
+      1.4,
+      0.5263,
+      1.1658
+    ],
+    "parts": 72,
+    "glbBytes": 764944
+  },
+  {
+    "id": "generator",
+    "boundsMetres": [
+      1.5,
+      0.7275,
+      1.067
+    ],
+    "parts": 36,
+    "glbBytes": 240620
+  },
+  {
+    "id": "probe",
+    "boundsMetres": [
+      0.4306,
+      0.22,
+      0.0492
+    ],
+    "parts": 9,
+    "glbBytes": 134196
+  }
+]

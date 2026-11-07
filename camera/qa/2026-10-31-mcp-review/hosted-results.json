@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "started": "2026-10-31T04:41:37.616Z",
+  "finished": "2026-10-31T04:41:44.153Z",
+  "connection": {
+    "host": "Official SDK acceptance client; not the owner's installed MCP host",
+    "registration": ".mcp.json#mcpServers.johansson-camera",
+    "cwd": "/tmp"
+  },
+  "passed": 20,
+  "checks": [
+    "MCP initialization and discovery expose eleven tools",
+    "calls before session open fail explicitly",
+    "actual Camera starts with working WebGL",
+    "catalog reports actual app choices",
+    "approved image imports into the actual editor",
+    "replacement needs explicit discard and failed imports preserve the edit",
+    "approved directory import uses the same real editor",
+    "strict tool schema rejects arbitrary extra fields",
+    "preview returns real PNG pixels",
+    "three Looks, six adjustments, Enhance, crop, frame and paper use the editor",
+    "invalid edits do not mutate the recipe",
+    "editing changes the rendered preview",
+    "Save requires explicit confirmation",
+    "Save uses the app JPEG pipeline",
+    "album lists the new photo and recipe",
+    "Export preserves exact saved bytes without overwriting",
+    "re-edit uses original source and saves a separate copy",
+    "browser reports no uncaught page errors",
+    "close is explicit and preserves exported files",
+    "a fresh session cannot read the preceding temporary album"
+  ],
+  "stderr": ""
+}

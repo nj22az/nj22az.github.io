@@ -1,0 +1,21 @@
+    816 combinations; 408 full preview/export pixel comparisons
+ok  all 34 published Looks combine with enhancement and every stock, full and LIGHT
+    68 baseline comparisons
+ok  off/None preserves prior Look pixels except the intentionally rebuilt Crayon
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Original contains only the cropped source (255)
+    at file:///workspace/scratch/9715783a3669/pocket-camera/camera/tests/integration.browser.mjs:106:10
+    at async check (file:///workspace/scratch/9715783a3669/pocket-camera/camera/tests/integration.browser.mjs:16:30)
+    at async file:///workspace/scratch/9715783a3669/pocket-camera/camera/tests/integration.browser.mjs:93:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

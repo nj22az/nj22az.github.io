@@ -1,0 +1,74 @@
+{
+  "id": "EL-000199",
+  "titel": "Saknade uppgifter",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 3,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-3"
+    ],
+    "niva": "analys",
+    "teori": [
+      "T-bok-20",
+      "T-kurs-v44-02",
+      "T-bildspel-v44-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Du ska arbeta i en högspänningsanläggning. Det finns inget enlinjeschema. Ingen vet om det finns reservmatning. Vilka två saker kan du då inte veta säkert?",
+    "samband": [
+      "Enlinjeschema och matningsdata behövs för avgränsning"
+    ],
+    "givet": "Ett aktuellt enlinjeschema och uppgift om reservmatning saknas.",
+    "instruktion": "Redovisa din beräkning eller motivera ditt beslut."
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "Ett enlinjeschema visar hur anläggningen matas. Uppgiften om reservmatning visar om det finns fler källor.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "metod",
+      "text": "Ange två osäkerheter och vilken kontroll var och en gör omöjlig.",
+      "status": "migrerad"
+    },
+    {
+      "niva": "nasta-steg",
+      "text": "1) Vad visar ett enlinjeschema? 2) Vad kan hända om det finns en reservmatning som ingen känner till? 3) Skriv två osäkerheter och vilken kontroll varje osäkerhet gör omöjlig.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "Det går inte att avgöra vilka vägar som är spänningssatta, och det går inte att utesluta återmatning från reservkällan. Arbetsområdet kan därför inte avgränsas säkert.",
+    "status": "migrerad",
+    "kalla": "Kursens facit (publikt) och bokens lösning (bok.enc)"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "bok.epub: ch028.xhtml#ch20-q9 och ch053.xhtml#sol20-s9",
+        "revision": "8cabde3",
+        "roll": "uppgift och lösning i boken"
+      },
+      {
+        "kalla": "vecka-44/aktuell/Formelstod_och_ovningar.html#v44_02-q9",
+        "revision": "8cabde3",
+        "roll": "kursens övning och facit"
+      },
+      {
+        "kalla": "vecka-44/aktuell/v44_02_Hogspanningssystem_elev.pptx bild 31 och 32",
+        "revision": "8cabde3",
+        "roll": "presentationens stöd- och övningsbild"
+      }
+    ],
+    "publik": "elev",
+    "rattigheter": "© Nils Johansson. Bokens lösningar och figurer ingår bara i boken.",
+    "losning_publik": true
+  }
+}

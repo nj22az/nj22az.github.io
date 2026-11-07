@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pocket Camera">
+<title>Pocket Camera · The Office of Nils Johansson</title>
+<meta name="description" content="A camera and photo editor with every Look from Johansson World: Pocket, Manga, Woodblock print, Watercolour, Old TV and more, alone or mixed. Your photos stay on your device.">
+<meta property="og:title" content="Pocket Camera">
+<meta property="og:description" content="Every Look from Johansson World, on your camera and your own photos. Mix them, shoot, save.">
+<meta property="og:image" content="https://nj22az.github.io/camera/preview.jpg">
+<meta property="og:url" content="https://nj22az.github.io/camera/">
+<link rel="canonical" href="https://nj22az.github.io/camera/">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="camera.css?v=20261031ui1">
+<link rel="stylesheet" href="camera-refresh.css?v=20261029a">
+<link rel="stylesheet" href="memory-retro.css?v=20261029a">
+<link rel="stylesheet" href="card-games.css?v=20261029a">
+<link rel="stylesheet" href="blackjack.css?v=20261029a">
+<link rel="stylesheet" href="solitaire.css?v=20261030share1">
+<link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
+<link rel="stylesheet" href="social-share.css?v=20261029a">
+<link rel="stylesheet" href="camera-black.css?v=20261029a">
+<link rel="stylesheet" href="camera-ui.css?v=20261031ui1">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-look" viewBox="0 0 24 24"><path d="m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3Z"/></symbol>
+  <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 3v15h15M3 6h15v15"/></symbol>
+  <symbol id="i-erase" viewBox="0 0 24 24"><path d="m9 4 11 9-7 8H8l-6-6Z M5 12l9 8"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 4.5 7.5 12l7.5 7.5"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 2.2M9.5 2.5h5M18.6 6.4l1.4-1.4"/></symbol>
+  <symbol id="i-ratio" viewBox="0 0 24 24"><rect x="4" y="6.5" width="16" height="11" rx="2.6"/></symbol>
+  <symbol id="i-date" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3.2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3.2"/><circle cx="8.6" cy="10.2" r="1.7"/><path d="m21 15.5-4.6-4.4L9 18.5"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M5 10.5a7.3 7.3 0 0 1 12.9-3.8M19 13.5a7.3 7.3 0 0 1-12.9 3.8"/><path d="M18.4 3.4v3.8h-3.8M5.6 20.6v-3.8h3.8"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><rect x="3.8" y="3.8" width="16.4" height="16.4" rx="4.2"/><circle cx="8.6" cy="8.6" r="1.25" class="fill"/><circle cx="15.4" cy="15.4" r="1.25" class="fill"/><circle cx="12" cy="12" r="1.25" class="fill"/><circle cx="15.4" cy="8.6" r="1.25" class="fill"/><circle cx="8.6" cy="15.4" r="1.25" class="fill"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3.5v11M8 7.5l4-4 4 4"/><path d="M8.5 10.5H6.8a1.8 1.8 0 0 0-1.8 1.8v6.4a1.8 1.8 0 0 0 1.8 1.8h10.4a1.8 1.8 0 0 0 1.8-1.8v-6.4a1.8 1.8 0 0 0-1.8-1.8h-1.7"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 11v6M14 11v6M6.5 7l.9 11.4A1.8 1.8 0 0 0 9.2 20h5.6a1.8 1.8 0 0 0 1.8-1.6L17.5 7M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></symbol>
+  <symbol id="i-light" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.8"/><path d="M12 2.8v2.4M12 18.8v2.4M21.2 12h-2.4M5.2 12H2.8M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7M18.5 18.5l-1.7-1.7M7.2 7.2 5.5 5.5"/></symbol>
+  <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" class="fill"/></symbol>
+  <symbol id="i-colour" viewBox="0 0 24 24"><path d="M12 3.5c3.2 4.1 6.2 7.2 6.2 10.7a6.2 6.2 0 0 1-12.4 0C5.8 10.7 8.8 7.6 12 3.5Z"/></symbol>
+  <symbol id="i-warmth" viewBox="0 0 24 24"><path d="M10 13.6V5.5a2 2 0 0 1 4 0v8.1a4.2 4.2 0 1 1-4 0Z"/><path d="M12 10v6"/></symbol>
+  <symbol id="i-pattern" viewBox="0 0 24 24"><circle cx="7" cy="7" r="2"/><circle cx="17" cy="7" r="2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><circle cx="12" cy="12" r="1.2" class="fill"/></symbol>
+  <symbol id="i-sticker" viewBox="0 0 24 24"><path d="M14.5 20.5H7a3.5 3.5 0 0 1-3.5-3.5V7A3.5 3.5 0 0 1 7 3.5h10A3.5 3.5 0 0 1 20.5 7v7.5Z"/><path d="M14.5 20.5v-3a3 3 0 0 1 3-3h3"/><path d="M8.6 9.6h.01M15.4 9.6h.01M8.8 13.6c.9 1 2 1.5 3.2 1.5"/></symbol>
+  <symbol id="i-flip-h" viewBox="0 0 24 24"><path d="M12 3.5v17"/><path d="M8.5 7 3.5 17h5ZM15.5 7l5 10h-5Z"/></symbol>
+  <symbol id="i-resize" viewBox="0 0 24 24"><path d="M7 17 17 7M11 7h6v6M13 17H7v-6"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+  <symbol id="i-frame" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.4"/><rect x="7" y="7" width="10" height="8" rx="1"/></symbol>
+  <symbol id="i-mirror" viewBox="0 0 24 24"><path d="M12 2.8v18.4" stroke-dasharray="2.2 2.4"/><path d="M9.2 6.2a6 6 0 0 0 0 11.6M14.8 6.2a6 6 0 0 1 0 11.6"/><circle cx="7.6" cy="10.6" r=".9" class="fill"/><circle cx="16.4" cy="10.6" r=".9" class="fill"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
+  <symbol id="i-sound-off" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4Z"/><path d="m15.5 9.5 5 5M20.5 9.5l-5 5"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M3.5 7V5h10v2M8.5 5v14M6.5 19h4"/><path d="M14 12v-1.5h6.5V12M17.2 10.5V19M16 19h2.4"/></symbol>
+  <symbol id="i-detail" viewBox="0 0 24 24"><path d="M12 3.2 6.3 9.8l2 8.7h7.4l2-8.7Z"/><path d="M12 3.2v8.3"/><circle cx="12" cy="12.6" r="1.3"/><path d="M8.5 21h7"/></symbol>
+  <symbol id="i-paste" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="2.6"/><path d="M9 4.5V3.6a1.1 1.1 0 0 1 1.1-1.1h3.8A1.1 1.1 0 0 1 15 3.6v.9a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1Z"/><path d="M8.5 11h7M8.5 14.5h5"/></symbol>
+  <symbol id="i-game" viewBox="0 0 24 24"><path d="M7.6 7.8h8.8a4.6 4.6 0 0 1 4.5 5.5l-.8 3.8a2.2 2.2 0 0 1-3.8 1l-1.6-2.1H9.3l-1.6 2.1a2.2 2.2 0 0 1-3.8-1l-.8-3.8a4.6 4.6 0 0 1 4.5-5.5Z"/><path d="M8.3 10.6v3.4M6.6 12.3H10"/><circle cx="15.6" cy="11.4" r="1" class="fill"/><circle cx="17.6" cy="13.4" r="1" class="fill"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M7 9V4.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2.2"/><path d="M7 14.5h10v5.5H7Z"/><circle cx="17" cy="11.9" r=".9" class="fill"/></symbol>
+  <symbol id="i-say" viewBox="0 0 24 24"><path d="M6.5 4.5h11A2.5 2.5 0 0 1 20 7v6.5a2.5 2.5 0 0 1-2.5 2.5H12l-4.6 3.6V16h-.9A2.5 2.5 0 0 1 4 13.5V7a2.5 2.5 0 0 1 2.5-2.5Z"/><circle cx="8.6" cy="10.3" r="1" class="fill"/><circle cx="12" cy="10.3" r="1" class="fill"/><circle cx="15.4" cy="10.3" r="1" class="fill"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4.5 7.5h2.8L9 5h6l1.7 2.5h2.8a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18V9a1.5 1.5 0 0 1 1.5-1.5Z"/><circle cx="12" cy="13" r="3.6"/></symbol>
+ </defs>
+</svg>
+
+<div class="app" id="app" data-mode="camera">
+ <!-- Camera -->
+ <section class="screen camera" id="camera" aria-label="Camera">
+  <header class="bar camera-bar">
+   <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
+   <h1 class="camera-mark">Pocket Camera</h1>
+   <div class="camera-header-actions">
+    <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus" aria-hidden="true"></span><svg><use href="#i-settings"/></svg></button>
+    <button type="button" class="photos-button" id="import" aria-label="Choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
+   </div>
+  </header>
+  <div class="stage" id="cameraStage">
+   <div class="settings" id="settings" role="group" aria-label="Camera settings" hidden>
+    <div class="settings-heading"><h2>Camera settings</h2><button type="button" class="text-button" id="settingsDone">Done</button></div>
+    <button type="button" class="setting" id="timer"><i><svg><use href="#i-timer"/></svg></i><small class="setting-title">Timer</small><span>Timer</span></button>
+    <button type="button" class="setting" id="ratio"><i><svg><use href="#i-ratio"/></svg></i><small class="setting-title">Photo shape</small><span>4:3</span></button>
+    <button type="button" class="setting" id="frameSetting"><i><svg><use href="#i-frame"/></svg></i><small class="setting-title">Frame & paper</small><span>Frame</span></button>
+    <button type="button" class="setting" id="mirrorSetting"><i><svg><use href="#i-mirror"/></svg></i><small class="setting-title">Mirror</small><span>Mirror</span></button>
+    <button type="button" class="setting" id="stamp"><i><svg><use href="#i-date"/></svg></i><small class="setting-title">Date stamp</small><span>Date</span></button>
+    <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><small class="setting-title">Print when sharing</small><span>Print</span></button>
+    <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
+   </div>
+   <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
+    <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
+   </div>
+   </div><aside class="look-rail camera-rail" aria-label="Active Looks and camera controls"><div id="cameraLookRail"></div><button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button><button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button></aside></div>
+   <div class="welcome" id="welcome" hidden>
+    <div class="welcome-hero" aria-hidden="true"><img class="welcome-print" src="samples/default-adventure.png" alt="" decoding="async"><img class="welcome-sticker" id="welcomeSticker" alt="" hidden></div>
+    <div class="welcome-copy"><h2>Make it yours.</h2><p>Take a photo. Try a Look.</p></div>
+    <div class="welcome-actions">
+     <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
+     <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Choose a photo</button>
+    </div>
+    <p class="fine" id="welcomeNote">Photos stay on this device.</p>
+    <button type="button" class="welcome-album" id="welcomeAlbum"><img id="welcomeAlbumThumb" alt="" hidden><span><strong>Your album</strong><small id="welcomeAlbumCount">Saved photos, all in one place</small></span><svg><use href="#i-back"/></svg></button>
+   </div>
+   <div class="count" id="count" aria-live="assertive"></div>
+  </div>
+  <div class="dock" id="cameraDock">
+   <div class="controls">
+    <button type="button" class="roll" id="roll" aria-label="Album"><img alt="" hidden></button>
+    <button type="button" class="shutter" id="shutter" aria-label="Take photo" disabled></button>
+    <button type="button" class="round big" id="flip" aria-label="Switch camera" hidden><svg><use href="#i-flip"/></svg></button>
+   </div>
+  </div>
+ </section>
+
+ <!-- Editor -->
+ <section class="screen editor" id="editor" aria-label="Edit photo" hidden>
+  <header class="bar">
+   <button type="button" class="text-button" id="cancelEdit">Cancel</button>
+   <h2>Edit</h2>
+   <button type="button" class="pill-button" id="saveEdit">Save copy</button>
+  </header>
+  <div class="stage" id="editStage">
+   <div class="picture-area" id="editPictureArea"><div class="frame" id="editFrame"></div></div>
+   <aside class="look-rail editor-rail" aria-label="Photo Looks and comparison"><div id="editLookRail"></div><button type="button" class="compare-original" id="compareOriginal" aria-label="Compare original" aria-pressed="false"><svg><use href="#i-photo"/></svg><span>Original</span></button><span class="rail-original" id="original" hidden>Original</span></aside>
+  </div>
+  <div class="dock" id="editDock">
+   <div class="segmented" role="tablist" aria-label="Edit">
+    <button type="button" role="tab" id="tabLooks" aria-selected="true" aria-controls="panelLooks" aria-label="Looks" title="Looks"><svg aria-hidden="true"><use href="#i-look"/></svg><span>Looks</span></button>
+    <button type="button" role="tab" id="tabCrop" aria-selected="false" aria-controls="panelCrop" aria-label="Crop" title="Crop"><svg aria-hidden="true"><use href="#i-crop"/></svg><span>Crop</span></button>
+    <button type="button" role="tab" id="tabAdjust" aria-selected="false" aria-controls="panelAdjust" aria-label="Adjust" title="Adjust"><svg aria-hidden="true"><use href="#i-edit"/></svg><span>Adjust</span></button>
+    <button type="button" role="tab" id="tabErase" aria-selected="false" aria-controls="panelErase" aria-label="Erase" title="Erase"><svg aria-hidden="true"><use href="#i-erase"/></svg><span>Erase</span></button>
+    <button type="button" role="tab" id="tabStickers" aria-selected="false" aria-controls="panelStickers" aria-label="Stickers" title="Stickers"><svg aria-hidden="true"><use href="#i-sticker"/></svg><span>Stickers</span></button>
+    <button type="button" role="tab" id="tabFrame" aria-selected="false" aria-controls="panelFrame" aria-label="Frame" title="Frame"><svg aria-hidden="true"><use href="#i-frame"/></svg><span>Frame</span></button>
+   </div>
+   <div class="panel" id="panelLooks" role="tabpanel" aria-labelledby="tabLooks"></div>
+   <div class="panel crop-panel" id="panelCrop" role="tabpanel" aria-labelledby="tabCrop" hidden>
+    <p class="erase-hint">Pinch to zoom. Drag to position.</p>
+    <div class="crop-shapes mini-seg" id="cropShapes" role="radiogroup" aria-label="Crop shape"></div>
+    <div class="slider-row">
+     <input type="range" id="cropZoom" min="100" max="400" step="1" value="100" aria-label="Photo zoom">
+     <output id="cropZoomValue" for="cropZoom">1.0×</output>
+     <button type="button" class="text-button" id="cropReset">Reset</button>
+    </div>
+   </div>
+   <div class="panel" id="panelAdjust" role="tabpanel" aria-labelledby="tabAdjust" hidden>
+    <div class="option-row enhance-heading"><span class="enhance-copy"><span id="enhanceLabel">Enhance</span><small id="enhanceHint">Tone, colour and detail.</small></span><button type="button" class="text-button enhance-amount" id="enhanceAmount" aria-label="Enhance strength" aria-expanded="false" aria-controls="enhanceStrengthRow"><output id="enhanceValue" for="enhanceStrength">Off</output></button><button type="button" class="switch" id="enhancePhoto" role="switch" aria-checked="false" aria-labelledby="enhanceLabel" aria-describedby="enhanceHint"></button></div>
+    <div class="slider-row enhance-strength" id="enhanceStrengthRow" hidden>
+     <label for="enhanceStrength">Strength</label>
+     <input type="range" id="enhanceStrength" min="0" max="100" step="1" value="0">
+    </div>
+    <div class="adjusters" id="adjusters" role="radiogroup" aria-label="Adjustment"></div>
+    <div class="slider-row adjustment-strength" id="adjustmentSliderRow">
+     <label id="adjustLabel" for="adjustSlider">Light</label>
+     <input type="range" id="adjustSlider" min="-100" max="100" step="1" value="0" aria-label="Light">
+     <output id="adjustValue">0</output>
+     <button type="button" class="text-button" id="adjustReset">Reset</button>
+    </div>
+   </div>
+   <!-- Erase: paint over what should go; it is filled from the picture round it (PhotoCraft's Content-Aware Fill). -->
+   <div class="panel erase-panel" id="panelErase" role="tabpanel" aria-labelledby="tabErase" hidden>
+    <p class="erase-hint" id="eraseHint">Paint over what should go.</p>
+    <div class="slider-row">
+     <span class="erase-label" aria-hidden="true">Brush</span>
+     <input type="range" id="eraseSize" min="2" max="24" step="1" value="8" aria-label="Brush size">
+     <button type="button" class="text-button" id="eraseUndo" disabled>Undo</button>
+    </div>
+   </div>
+   <div class="panel" id="panelStickers" role="tabpanel" aria-labelledby="tabStickers" hidden></div>
+   <div class="panel" id="panelFrame" role="tabpanel" aria-labelledby="tabFrame" hidden>
+    <div class="frame-choices" id="frameChoices" role="radiogroup" aria-label="Frame"></div>
+    <div class="option-row"><span id="paperLabel">Paper</span><div class="mini-seg paper-choices" id="paperChoices" role="radiogroup" aria-labelledby="paperLabel"></div></div>
+    <div class="option-row"><span id="mirrorLabel">Mirror</span><div class="mini-seg" id="mirrorChoices" role="radiogroup" aria-labelledby="mirrorLabel"></div></div>
+    <div class="option-row"><span id="stampLabel">Date stamp</span><button type="button" class="switch" id="editStamp" role="switch" aria-checked="false" aria-labelledby="stampLabel"></button></div>
+   </div>
+  </div>
+ </section>
+
+ <!-- Album -->
+ <section class="screen album" id="album" aria-label="Album" hidden>
+  <header class="bar">
+   <button type="button" class="back" id="closeAlbum"><svg><use href="#i-back"/></svg><span>Camera</span></button>
+   <h2>Your album</h2>
+   <div class="bar-actions">
+    <button type="button" class="round" id="playMemory" aria-label="Play Memory with your photos or the stickers" title="Memory"><svg><use href="#i-game"/></svg></button>
+    <button type="button" class="photos-button" id="albumImport" aria-label="Add your own photos"><svg><use href="#i-plus"/></svg><span>Add</span></button>
+   </div>
+  </header>
+  <div class="album-scroll">
+
+   <div class="grid" id="grid"></div>
+   <div class="album-empty" id="albumEmpty" hidden>
+    <img class="empty-sticker" id="emptySticker" alt="" hidden>
+    <p><strong>No photos yet</strong>Take one with the camera, or bring in your own photos: one to edit, or several at once in the camera's Look.</p>
+    <div class="empty-actions">
+     <button type="button" class="button" id="emptyImport"><svg><use href="#i-photo"/></svg>Your photos</button>
+     <button type="button" class="button" id="emptyPlay"><svg><use href="#i-game"/></svg>Play Memory</button>
+    </div>
+   </div>
+   <p class="fine album-note" id="albumNote"></p>
+   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
+  </div>
+ </section>
+
+ <!-- Memory: the camera's game, with the album's photos or the stickers (memory.js). -->
+ <section class="screen memory" id="memory" aria-label="Memory" hidden>
+  <header class="bar">
+   <button type="button" class="back" id="closeMemory"><svg><use href="#i-back"/></svg><span>Album</span></button>
+   <h2>Memory</h2>
+   <button type="button" class="text-button memory-new" id="memoryNew" hidden>New Game</button>
+  </header>
+  <div class="memory-setup"></div>
+  <div class="memory-stage" hidden><div class="memory-board" role="group" aria-label="Cards"></div></div>
+  <p class="memory-status" aria-live="polite" hidden></p>
+  <div class="memory-win" role="dialog" aria-label="All pairs found" hidden></div>
+ </section>
+
+ <!-- Original island card games -->
+ <section class="screen card-games" id="cardsHub" aria-label="Card games" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardsHub"><svg><use href="#i-back"/></svg><span>Album</span></button><h2>Card games</h2><span class="bar-spacer"></span></header>
+  <div class="cards-hub-content"><div class="game-room-intro"><div><p class="cards-kicker">JOHANSSON WORLD · MINATO</p><h1>Game Room</h1><p>Choose a game and stay a while.</p></div><img class="game-room-mascot" src="stickers/thuan-blender/wave.thumb.webp" alt="" aria-hidden="true"></div><p class="game-room-label">CHOOSE A GAME</p>
+   <button class="game-choice" id="chooseMemory" type="button"><span class="choice-symbol memory-symbol" aria-hidden="true">✿</span><span><strong>Memory</strong><small>Find pairs of photos or residents.</small></span><span aria-hidden="true">›</span></button>
+   <button class="game-choice" id="chooseBlackjack" type="button"><span class="choice-symbol" aria-hidden="true">21</span><span><strong>Blackjack</strong><small>Get close to 21 without going over.</small></span><span aria-hidden="true">›</span></button>
+   <button class="game-choice" id="chooseSolitaire" type="button"><span class="choice-symbol" aria-hidden="true">♠</span><span><strong>Solitaire</strong><small>Build the four suits from ace to king.</small></span><span aria-hidden="true">›</span></button>
+  </div>
+ </section>
+ <section class="screen card-games" id="cardGame" aria-label="Card game" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardGame"><svg><use href="#i-back"/></svg><span>Games</span></button><h2 id="cardGameTitle">Card game</h2><span class="bar-spacer"></span></header>
+  <div id="cardGameContent" class="card-game-content"></div>
+ </section>
+
+ <!-- One photo -->
+ <section class="screen viewer" id="viewer" aria-label="Photo" hidden>
+  <header class="bar">
+   <button type="button" class="back" id="closeViewer"><svg><use href="#i-back"/></svg><span>Album</span></button>
+   <h2 id="viewerTitle"></h2>
+   <span class="bar-spacer"></span>
+  </header>
+  <div class="stage" id="viewerStage"><img id="viewerImage" alt=""></div>
+  <div class="toolbar">
+   <button type="button" id="sharePhoto"><svg><use href="#i-share"/></svg><span>Share</span></button>
+   <button type="button" id="editPhoto"><svg><use href="#i-edit"/></svg><span>Edit</span></button>
+   <button type="button" id="deletePhoto"><svg><use href="#i-trash"/></svg><span>Delete</span></button>
+  </div>
+ </section>
+
+ <!-- The Look tray: moved between the camera and the editor. -->
+ <div class="tray" id="tray">
+  <div class="layers" id="layers" role="group" aria-label="Looks in this mix"></div>
+  <div class="slider-row" id="amountRow" hidden>
+   <input type="range" id="amount" min="0" max="100" step="1" value="100" aria-label="Intensity">
+   <output id="amountValue">100</output>
+   <button type="button" class="text-button amount-done" id="amountDone">Done</button>
+  </div>
+  <div class="look-groups" id="lookGroups" role="tablist" aria-label="Kinds of Look"></div>
+  <div class="strip" id="strip" role="radiogroup" aria-label="Look"></div>
+ </div>
+
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
+ <div class="flash" id="flash"></div>
+</div>
+
+<!-- The sticker sheets: in the editor's Stickers tab, or over the camera. -->
+<div class="sticker-picker" id="stickerPicker">
+ <div class="sticker-sets" id="stickerSets" role="tablist" aria-label="Sticker sheets"></div>
+ <div class="sticker-grid" id="stickerGrid" role="tabpanel" aria-label="Stickers"></div>
+</div>
+<dialog class="sheet sticker-sheet" id="stickerSheet" aria-label="Stickers">
+ <header><h2>Stickers</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
+</dialog>
+
+<!-- The camera's frames: every frame on the picture as it is now (the editor has the same row in its Frame tab). -->
+<dialog class="sheet sticker-sheet frame-sheet" id="frameSheet" aria-label="Frames">
+ <header><h2>Frame</h2><form method="dialog"><button class="text-button done" value="done">Done</button></form></header>
+ <div class="frame-choices" id="cameraFrames" role="radiogroup" aria-label="Frame"></div>
+ <div class="option-row"><span id="cameraPaperLabel">Paper</span><div class="mini-seg paper-choices" id="cameraPaperChoices" role="radiogroup" aria-labelledby="cameraPaperLabel"></div></div>
+</dialog>
+
+<dialog class="sheet text-sheet" id="textSheet" aria-labelledby="textSheetTitle">
+ <form method="dialog">
+  <h2 id="textSheetTitle">What do they say?</h2>
+  <textarea id="balloonText" rows="3" maxlength="140" autocomplete="off" spellcheck="true"></textarea>
+  <div class="mini-seg lettering-styles" id="letteringStyles" role="radiogroup" aria-label="Lettering"></div>
+  <div class="sound-presets" id="soundPresets" role="group" aria-label="Sound effects" hidden></div>
+  <div class="sheet-buttons"><button value="cancel" class="text-button" formnovalidate>Cancel</button><button value="ok" class="pill-button" id="textDone">Done</button></div>
+ </form>
+</dialog>
+
+<dialog class="sheet" id="deleteSheet" aria-label="Delete">
+ <form method="dialog">
+  <p id="deleteMessage">This photo will be deleted from this device.</p>
+  <button value="delete" class="danger" id="deleteConfirm">Delete Photo</button>
+  <button value="cancel" autofocus>Cancel</button>
+ </form>
+</dialog>
+
+<input type="file" id="picker" accept="image/*" multiple hidden>
+<input type="file" id="stickerFile" accept="image/*" hidden>
+<video id="video" class="video-source" playsinline muted autoplay></video>
+<noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
+<script type="module" src="app.js?v=20261031ui1"></script>
+</body>
+</html>

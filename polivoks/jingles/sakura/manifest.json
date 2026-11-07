@@ -1,0 +1,72 @@
+{
+ "engine": "Johansson PF-82, polivoks/dsp/polivoks-dsp.js",
+ "engineHash": "5a9f50de665f5a25",
+ "unit": {
+  "grade": "modern",
+  "seed": 13715
+ },
+ "sampleRate": 48000,
+ "peakDb": -1,
+ "files": [
+  {
+   "id": "sakura-door",
+   "title": "Door melody",
+   "wav": "sakura-door.wav",
+   "mp3": "sakura-door.mp3",
+   "seconds": 1.749,
+   "peakDb": -1,
+   "rmsDb": -18.4,
+   "notes": 6,
+   "loop": false,
+   "spec": "88caabcadc9c3bcc"
+  },
+  {
+   "id": "sakura-till",
+   "title": "Till “pi-pon”",
+   "wav": "sakura-till.wav",
+   "mp3": "sakura-till.mp3",
+   "seconds": 0.496,
+   "peakDb": -1,
+   "rmsDb": -21.3,
+   "notes": 2,
+   "loop": false,
+   "spec": "265ebd6286ea2cdc"
+  },
+  {
+   "id": "sakura-ident",
+   "title": "Shop jingle",
+   "wav": "sakura-ident.wav",
+   "mp3": "sakura-ident.mp3",
+   "seconds": 7.395,
+   "peakDb": -1,
+   "rmsDb": -15,
+   "notes": 24,
+   "loop": false,
+   "spec": "d66c67b4317a6ad9"
+  },
+  {
+   "id": "sakura-open",
+   "title": "Good morning",
+   "wav": "sakura-open.wav",
+   "mp3": "sakura-open.mp3",
+   "seconds": 4.12,
+   "peakDb": -1,
+   "rmsDb": -16.4,
+   "notes": 11,
+   "loop": false,
+   "spec": "63c589a8c801bbd8"
+  },
+  {
+   "id": "sakura-closing",
+   "title": "Closing waltz",
+   "wav": "sakura-closing.wav",
+   "mp3": "sakura-closing.mp3",
+   "seconds": 30,
+   "peakDb": -1,
+   "rmsDb": -17.4,
+   "notes": 33,
+   "loop": true,
+   "spec": "d6e73b23836d1dde"
+  }
+ ]
+}

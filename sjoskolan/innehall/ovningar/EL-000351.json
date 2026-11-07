@@ -1,0 +1,191 @@
+{
+  "id": "EL-000351",
+  "titel": "Mätaren påverkar",
+  "sprak": "sv",
+  "typ": "matning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-multimetersimulator",
+      "T-bildspel-v39-03"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Upptäck varför en voltmeter kan sänka spänningen den mäter. Förutsäg → mät → förklara."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "multimetersimulator/lessons.mjs LESSONS[6] (id loading)",
+        "revision": "8cabde3",
+        "roll": "stegvis övning i multimeterlabbet"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "labb": {
+    "variant": "simulerad",
+    "steg": [
+      {
+        "id": "unloaded",
+        "text": "R1 och R2 är båda 1 MΩ (en miljon ohm). De delar på källans 10 V. Hur stor är spänningen mellan M och G innan mätaren ansluts?",
+        "ledtrad": "R1 och R2 är lika stora. Varje resistor får hälften av källans 10 V.",
+        "varfor": "5,00 V. Det är det beräknade värdet utan ansluten mätare. Nu ska vi se om mätaren förändrar kretsen.",
+        "typ": "number",
+        "etikett": "Förutsäg utan mätare",
+        "svar": 5,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.01
+        }
+      },
+      {
+        "id": "predict10",
+        "text": "Mätarens ingång är en extra strömväg mellan M och G. Vad tror du händer med spänningen när en mätare med 10 MΩ ansluts?",
+        "ledtrad": "Mätaren hamnar parallellt med R2. Den sammanlagda resistansen i den nedre delen blir lite mindre.",
+        "varfor": "Spänningen blir lite lägre. Även en voltmeter tar en liten ström. Mät nu och jämför med dina 5,00 V.",
+        "typ": "choice",
+        "etikett": "Förutsäg med 10 MΩ",
+        "alternativ": [
+          "Den blir lite lägre än 5 V",
+          "Den blir högre än 5 V",
+          "Den blir exakt 5 V"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "measure10",
+        "text": "Mät mellan M och G. Följ kopplingshjälpen och kontrollera sedan avläsningen.",
+        "ledtrad": "Välj V ⎓ och V Ω. Sätt svart på G och röd på M. Välj 10 MΩ och slå på 10 V. Omvända spetsar går också bra: jämför beloppet.",
+        "varfor": "Cirka 4,76 V, alltså lite under 5,00 V. Den streckade grenen är mätarens ingångsresistans, parallellt med R2.",
+        "typ": "measurement",
+        "etikett": "Mät med 10 MΩ",
+        "kod": {
+          "test": "multimetersimulator.loading.3",
+          "input": 10000000
+        }
+      },
+      {
+        "id": "predict1",
+        "text": "Nästa mätare har lägre ingångsresistans: 1 MΩ. Vad händer med spänningens belopp om spetsarna sitter kvar?",
+        "ledtrad": "Lägre ingångsresistans ger mer ström i mätarens gren. R2 och mätaren är nu två lika stora resistanser parallellt.",
+        "varfor": "Beloppet blir ännu lägre. En lägre ingångsresistans påverkar den här kretsen mer.",
+        "typ": "choice",
+        "etikett": "Förutsäg med 1 MΩ",
+        "alternativ": [
+          "Det blir lägre än med 10 MΩ",
+          "Det blir högre än med 10 MΩ",
+          "Det ändras inte"
+        ],
+        "ratt": 0
+      },
+      {
+        "id": "measure1",
+        "text": "Låt spetsarna sitta kvar på M och G. Ändra simulerad ingångsresistans till 1 MΩ. Läs av och jämför.",
+        "ledtrad": "Ändra endast väljaren ”Simulerad ingångsresistans” under schemat. Behåll V ⎓, V Ω och matningen till.",
+        "varfor": "Cirka 3,33 V. R2 och mätaren ger tillsammans 500 kΩ. Spänningen sjunker därför mer. Det är belastning från mätaren, inte en trasig resistor.",
+        "typ": "measurement",
+        "etikett": "Mät med 1 MΩ",
+        "kod": {
+          "test": "multimetersimulator.loading.5",
+          "input": 1000000
+        }
+      },
+      {
+        "id": "kirchhoff",
+        "text": "Behåll mätaren över R2. Källan ger 10,00 V och den nedre delen har 3,33 V. Beräkna spänningsfallet över R1: 10,00 − 3,33 = ?",
+        "ledtrad": "Spänningsfallen i samma krets summeras till källspänningen. Flytta inte mätaren: då belastas en annan del av kretsen.",
+        "varfor": "6,67 V över R1 + 3,33 V över R2 = 10,00 V. Källans spänning är oförändrad. Värdet över R1 är beräknat för den här kopplingen, inte uppmätt med en flyttad mätare.",
+        "typ": "number",
+        "etikett": "Kontrollera summan",
+        "svar": 6.666666666666667,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.02
+        }
+      },
+      {
+        "id": "explain",
+        "text": "Varför är 3,33 V inte ett tecken på att spänningsdelaren är trasig? Välj förklaring och skriv sedan en egen mening i protokollet.",
+        "ledtrad": "Beskriv var mätaren kopplas och hur den extra strömvägen påverkar delaren. Använd gärna orden parallellt, resistans och spänning.",
+        "varfor": "Mätaren är en gren i kretsen. Lägre ingångsresistans ger större påverkan här. Båda mätvärdena och din egen förklaring finns i protokollet. Läraren kan följa upp din formulering.",
+        "typ": "choice",
+        "etikett": "Förklara med egna ord",
+        "alternativ": [
+          "Mätaren är en extra gren parallellt med R2 och ändrar spänningsdelningen",
+          "Mätaren sänker alltid källans spänning till 3,33 V",
+          "Minustecknet gör att spänningens belopp blir mindre"
+        ],
+        "ratt": 0,
+        "kod": {
+          "comment": true
+        }
+      }
+    ]
+  },
+  "simulator": {
+    "labb": "multimetersimulator",
+    "scenario": "divider",
+    "validering": {
+      "typ": "steg"
+    },
+    "kallhanvisning": "Multimeter och mätfel, bild 55–63",
+    "alias": "loading",
+    "initial": {
+      "power": true
+    },
+    "lagringsversion": 2
+  },
+  "parametrar": {
+    "U": {
+      "varde": 10,
+      "enhet": "V"
+    },
+    "R1": {
+      "varde": 1000000.0,
+      "enhet": "Ω"
+    },
+    "R2": {
+      "varde": 1000000.0,
+      "enhet": "Ω"
+    },
+    "Rin": {
+      "varde": 10000000.0,
+      "enhet": "Ω"
+    }
+  },
+  "losning": {
+    "svar": [
+      {
+        "storhet": "U(M–G) utan mätare",
+        "varde": 5,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.01
+        },
+        "berakning": "spanningsdelare.u2"
+      },
+      {
+        "storhet": "U(M–G) med 10 MΩ",
+        "varde": 4.7619,
+        "enhet": "V",
+        "tolerans": {
+          "abs": 0.01
+        },
+        "berakning": "spanningsdelare.belastad"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Stegens svar och förklaringar"
+  }
+}

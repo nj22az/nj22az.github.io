@@ -1,0 +1,155 @@
+{
+  "checkedOn": "2026-10-27",
+  "scope": "Finland follow-up: eight free-parking hotels from the 25 October research shortlist, re-verified on their own pages; Scandic Rosendahl moved to Easy on the owner’s report. Not a Finnish census.",
+  "rosendahl": {
+    "hotelId": "scandic-rosendahl",
+    "change": "parkingOnHotelReceipt null -> true",
+    "source": "owner report, 27 October 2026: parking can be paid at the hotel and is on the hotel bill",
+    "officialPageSha256": "495084fe5e8f0cb0be7229bd4648eaba271b9566b64a6df4320186f06b6f07ef",
+    "officialTariffUnchanged": true
+  },
+  "properties": [
+    {
+      "hotelId": "scandic-aulanko",
+      "name": "Scandic Aulanko",
+      "address": "Aulangontie 93",
+      "postalCode": "13220",
+      "city": "Hämeenlinna",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 61.0235,
+        "longitude": 24.44626,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-aulanko/map-view"
+      },
+      "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-aulanko",
+      "markerEvidence": "\"hotelName\":\"Scandic Aulanko\",\"markerInfo\":{\"hotelId\":\"670\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":61.0235,\"lng\":24.44626}",
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and the map viewport centre.",
+      "pageSha256": "99c5f49c454db439ae8653c93e269247d034405443bd93f2b16bf2270a8bf17b",
+      "mapViewSha256": "8dcea9b68bce01a0953c9a3e66c794f9cabbe0d947d3fe7b7076865a2592d912"
+    },
+    {
+      "hotelId": "scandic-kemi",
+      "name": "Scandic Kemi",
+      "address": "Hahtisaarenkatu 3",
+      "postalCode": "94100",
+      "city": "Kemi",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 65.738,
+        "longitude": 24.55796,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-kemi/map-view"
+      },
+      "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-kemi",
+      "markerEvidence": "\"hotelName\":\"Scandic Kemi\",\"markerInfo\":{\"hotelId\":\"693\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":65.738,\"lng\":24.55796}",
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and the map viewport centre.",
+      "pageSha256": "101da240de0c2ab2eac1f7f416dcbe178804801f56d9a3d670e10b42116cf601",
+      "mapViewSha256": "7dfba540ef875f68c04b2d6c566bf37cc93e74875d61e376c0c9ece9551002ee"
+    },
+    {
+      "hotelId": "scandic-kouvola",
+      "name": "Scandic Kouvola",
+      "address": "Kouvolankatu 11",
+      "postalCode": "45100",
+      "city": "Kouvola",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 60.86784,
+        "longitude": 26.704988,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-kouvola/map-view"
+      },
+      "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-kouvola",
+      "markerEvidence": "\"hotelName\":\"Scandic Kouvola\",\"markerInfo\":{\"hotelId\":\"672\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.86784,\"lng\":26.704988}",
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and the map viewport centre.",
+      "pageSha256": "974a52d60fa303a99f8d65ffa3fcdd67058710a17bcf9ddb4ab97b49ddc39b17",
+      "mapViewSha256": "63a0999ed96ae1bf1d1ab6bdca69a1aadfade2787c6355cf379ad6c4ce4ca7bd"
+    },
+    {
+      "hotelId": "scandic-hyvinkaa",
+      "name": "Scandic Hyvinkää",
+      "address": "Hämeenkatu 2-4",
+      "postalCode": "05800",
+      "city": "Hyvinkää",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 60.63126,
+        "longitude": 24.8602,
+        "sourceUrl": "https://www.scandichotels.com/en/hotels/scandic-hyvinkaa/map-view"
+      },
+      "parkingUrl": "https://www.scandichotels.com/en/hotels/scandic-hyvinkaa",
+      "markerEvidence": "\"hotelName\":\"Scandic Hyvinkää\",\"markerInfo\":{\"hotelId\":\"668\",\"hotelType\":\"regular\"},\"coordinates\":{\"lat\":60.63126,\"lng\":24.8602}",
+      "method": "Official map-view hotelName + markerInfo.hotelId + coordinates; excludes pointsOfInterest and the map viewport centre.",
+      "pageSha256": "3bb02dc2a1fa7da07c6d4bec80dcb1e677b61260ad6d2a8d52dad2256449096e",
+      "mapViewSha256": "9f49932fbed5d7f1d874ca2b604adad561a1fbff23feae7f8584e918d6d82b82"
+    },
+    {
+      "hotelId": "break-sokos-hotel-bomba",
+      "name": "Break Sokos Hotel Bomba",
+      "address": "Tuulentie 10",
+      "postalCode": "75500",
+      "city": "Nurmes",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 63.534847,
+        "longitude": 29.171871,
+        "sourceUrl": "https://www.sokoshotels.fi/en/hotels/nurmes/break-sokos-hotel-bomba"
+      },
+      "parkingUrl": "https://www.sokoshotels.fi/en/hotels/nurmes/break-sokos-hotel-bomba/parking"
+    },
+    {
+      "hotelId": "break-sokos-hotel-vuokatti",
+      "name": "Break Sokos Hotel Vuokatti",
+      "address": "Kidekuja 2",
+      "postalCode": "88610",
+      "city": "Sotkamo",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 64.140771,
+        "longitude": 28.294681,
+        "sourceUrl": "https://www.sokoshotels.fi/en/hotels/sotkamo/break-sokos-hotel-vuokatti"
+      },
+      "parkingUrl": "https://www.sokoshotels.fi/en/hotels/sotkamo/break-sokos-hotel-vuokatti/parking"
+    },
+    {
+      "hotelId": "hotel-kauppi",
+      "name": "Hotel Kauppi",
+      "address": "Kalevan puistotie 2",
+      "postalCode": null,
+      "city": "Tampere",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 61.505476,
+        "longitude": 23.785797,
+        "sourceUrl": "https://hotellikauppi.fi/en/"
+      },
+      "parkingUrl": "https://hotellikauppi.fi/en/"
+    },
+    {
+      "hotelId": "hotel-kajanus",
+      "name": "Hotel Kajanus",
+      "address": "Koskikatu 3",
+      "postalCode": "87200",
+      "city": "Kajaani",
+      "category": "free",
+      "checkedOn": "2026-10-27",
+      "coordinates": {
+        "latitude": 64.226165,
+        "longitude": 27.736404,
+        "sourceUrl": "https://www.hotelkajanus.fi/en/contact/"
+      },
+      "parkingUrl": "https://www.hotelkajanus.fi/en/accommodation/"
+    }
+  ],
+  "nonScandicLocationBasis": {
+    "break-sokos-hotel-bomba": "hotel page JSON: address Tuulentie 10, 75500 Nurmes; coordinate 63.534847, 29.171871",
+    "break-sokos-hotel-vuokatti": "hotel page JSON: address Kidekuja 2, 88610 Sotkamo; coordinate 64.140771, 28.294681",
+    "hotel-kauppi": "website map pin data-title \"Hotel Kauppi\": 61.505476, 23.785797; postal code not published",
+    "hotel-kajanus": "contact page Google embed of \"Hotel Kajanus\" centred at 64.226165, 27.736404"
+  }
+}

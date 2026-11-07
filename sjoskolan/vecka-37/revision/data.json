@@ -1,0 +1,937 @@
+{
+  "revision": "2026-10-16",
+  "module": {
+    "id": 1,
+    "title": {
+      "en": "Electrical fundamentals & safety",
+      "sv": "Elens grunder och elsäkerhet"
+    },
+    "week": "38",
+    "lm": [
+      "LM-1",
+      "LM-2",
+      "LM-6"
+    ],
+    "source": "vecka-37/aktuell/",
+    "concepts": [
+      {
+        "title": {
+          "en": "Follow the complete circuit",
+          "sv": "Följ hela kretsen"
+        },
+        "text": {
+          "en": "A steady DC current needs a closed path from the source through the load and back. Voltage is a difference between two points; current is charge flow through a branch. An open return can stop a lamp even when its supply terminal has voltage. Draw the return path before choosing measurement points.",
+          "sv": "En stationär likström behöver en sluten väg från källan genom lasten och tillbaka. Spänning är en skillnad mellan två punkter; ström är laddningsflöde genom en gren. En bruten retur kan släcka en lampa trots spänning på matningsanslutningen. Rita returvägen innan du väljer mätpunkter."
+        },
+        "formula": {
+          "en": "U = R · I",
+          "sv": "U = R · I"
+        }
+      },
+      {
+        "title": {
+          "en": "Series and parallel",
+          "sv": "Serie och parallell"
+        },
+        "text": {
+          "en": "Series components share current and their resistances add. Parallel branches share voltage; their currents add. For a fixed resistance, raising voltage raises current. Before calculating, state whether the circuit is series, parallel or mixed. Keep amperes, volts and ohms distinct.",
+          "sv": "Seriekopplade komponenter har samma ström och resistanserna adderas. Parallella grenar har samma spänning; strömmarna adderas. Vid konstant resistans ökar strömmen när spänningen ökar. Ange om kretsen är serie-, parallell- eller blandkopplad innan du räknar. Skilj ampere, volt och ohm åt."
+        },
+        "formula": {
+          "en": "R_series = R₁ + R₂; 1/R_parallel = 1/R₁ + 1/R₂",
+          "sv": "R_serie = R₁ + R₂; 1/R_parallell = 1/R₁ + 1/R₂"
+        }
+      },
+      {
+        "title": {
+          "en": "Describe a risk before starting",
+          "sv": "Beskriv risken före start"
+        },
+        "text": {
+          "en": "Connect a hazard to an event, a consequence and a verifiable control. Include batteries and other stored energy. A low-voltage source can still supply a dangerous short-circuit current. Classroom exercises do not authorise work on a real installation; the instructor defines the practical activity and its limits.",
+          "sv": "Koppla en fara till en händelse, en konsekvens och en verifierbar åtgärd. Ta med batterier och annan lagrad energi. En lågspänningskälla kan ändå ge farlig kortslutningsström. Kursövningar ger inte rätt att arbeta på en verklig anläggning; instruktören bestämmer det praktiska momentet och dess gränser."
+        },
+        "formula": {
+          "en": "Hazard → event → consequence → control → verification",
+          "sv": "Fara → händelse → konsekvens → åtgärd → verifiering"
+        }
+      }
+    ],
+    "lab": "multimetersimulator/",
+    "goals": {
+      "en": "Follow a DC current path, calculate with Ohm’s law and write a clear risk statement.",
+      "sv": "Följ en sluten likströmskrets, skilj spänning från ström, räkna med Ohms lag och motivera ett säkert beslut i ett givet fall."
+    },
+    "questions": [
+      {
+        "id": "m1q1",
+        "type": "choice",
+        "prompt": {
+          "en": "A 24 V lamp has an open return. Which statement is correct?",
+          "sv": "En 24 V-lampa har bruten retur. Vilket påstående stämmer?"
+        },
+        "options": [
+          {
+            "en": "A complete steady-current path is missing.",
+            "sv": "En fullständig väg för stationär ström saknas."
+          },
+          {
+            "en": "Voltage at one terminal proves current flows.",
+            "sv": "Spänning på en anslutning bevisar strömflöde."
+          },
+          {
+            "en": "The resistance must be zero.",
+            "sv": "Resistansen måste vara noll."
+          }
+        ],
+        "answer": 0,
+        "explanation": {
+          "en": "Current needs a closed path through the load and back to the source.",
+          "sv": "Ström behöver en sluten väg genom lasten tillbaka till källan."
+        },
+        "concept": 0,
+        "kind": "quiz",
+        "reviewAnchor": "module-1-v2-circuit",
+        "reviewTitle": {
+          "sv": "1. Följ hela strömvägen",
+          "en": "1. Följ hela strömvägen"
+        }
+      },
+      {
+        "id": "m1q2",
+        "type": "choice",
+        "prompt": {
+          "en": "Which quantity is shared by parallel branches?",
+          "sv": "Vilken storhet är gemensam för parallella grenar?"
+        },
+        "options": [
+          {
+            "en": "Current",
+            "sv": "Ström"
+          },
+          {
+            "en": "Resistance",
+            "sv": "Resistans"
+          },
+          {
+            "en": "Voltage",
+            "sv": "Spänning"
+          }
+        ],
+        "answer": 2,
+        "explanation": {
+          "en": "Parallel branches connect between the same two nodes, so their voltage is the same.",
+          "sv": "Parallella grenar är anslutna mellan samma två noder och har därför samma spänning."
+        },
+        "concept": 1,
+        "kind": "quiz",
+        "reviewAnchor": "module-1-v2-connections",
+        "reviewTitle": {
+          "sv": "4. Serie och parallell",
+          "en": "4. Serie och parallell"
+        }
+      },
+      {
+        "id": "m1q3",
+        "type": "number",
+        "prompt": {
+          "en": "A 12 Ω resistor is supplied with 24 V DC. Find current.",
+          "sv": "En resistor på 12 Ω matas med 24 V DC. Bestäm strömmen."
+        },
+        "answer": 2,
+        "unit": "A",
+        "rel": 0.02,
+        "abs": 0.0001,
+        "explanation": {
+          "en": "I = U/R = 24/12 = 2 A.",
+          "sv": "I = U/R = 24/12 = 2 A."
+        },
+        "concept": 1,
+        "kind": "quiz",
+        "reviewAnchor": "module-1-v2-ohm-example",
+        "reviewTitle": {
+          "sv": "9. Räkneexempel: från kiloohm till milliampere",
+          "en": "9. Räkneexempel: från kiloohm till milliampere"
+        }
+      },
+      {
+        "id": "m1q4",
+        "type": "number",
+        "prompt": {
+          "en": "Two series resistors are 8 Ω and 16 Ω. Find total resistance.",
+          "sv": "Två serieresistorer är 8 Ω och 16 Ω. Bestäm total resistans."
+        },
+        "answer": 24,
+        "unit": "Ω",
+        "rel": 0.02,
+        "abs": 0.0001,
+        "explanation": {
+          "en": "Series resistances add: 8 + 16 = 24 Ω.",
+          "sv": "Serieresistanser adderas: 8 + 16 = 24 Ω."
+        },
+        "concept": 1,
+        "kind": "quiz",
+        "reviewAnchor": "module-1-v2-connections",
+        "reviewTitle": {
+          "sv": "4. Serie och parallell",
+          "en": "4. Serie och parallell"
+        }
+      },
+      {
+        "id": "m1a",
+        "type": "number",
+        "prompt": {
+          "en": "Practice hand-in: a 24 V lamp draws 0.4 A. Calculate its operating resistance.",
+          "sv": "Träningsinlämning: en 24 V-lampa tar 0,4 A. Beräkna resistansen i drift."
+        },
+        "answer": 60,
+        "unit": "Ω",
+        "rel": 0.02,
+        "abs": 0.0001,
+        "explanation": {
+          "en": "R = U/I = 24/0.4 = 60 Ω.",
+          "sv": "R = U/I = 24/0,4 = 60 Ω."
+        },
+        "concept": 1,
+        "kind": "handin",
+        "reviewAnchor": "formula-1-0",
+        "reviewTitle": {
+          "sv": "Ohms lag: bestäm resistansen",
+          "en": "Ohms lag: bestäm resistansen"
+        }
+      },
+      {
+        "type": "number",
+        "prompt": {
+          "sv": "Veckofall: vilken ström går genom 12 Ω vid 24 V?",
+          "en": "Veckofall: vilken ström går genom 12 Ω vid 24 V?"
+        },
+        "answer": 2,
+        "unit": "A",
+        "rel": 0.01,
+        "abs": 0.001,
+        "explanation": {
+          "sv": "Välj Ohms lag. Dividera 24 V med 12 Ω. Strömmen blir 2 A.",
+          "en": "Välj Ohms lag. Dividera 24 V med 12 Ω. Strömmen blir 2 A."
+        },
+        "concept": 0,
+        "kind": "quiz",
+        "weekly": true,
+        "id": "m1w1",
+        "reviewAnchor": "module-1-v2-ohm-example",
+        "reviewTitle": {
+          "sv": "9. Räkneexempel: från kiloohm till milliampere",
+          "en": "9. Räkneexempel: från kiloohm till milliampere"
+        }
+      },
+      {
+        "type": "number",
+        "prompt": {
+          "sv": "Veckofall: hur stor är lampans effekt vid 24 V och 2 A?",
+          "en": "Veckofall: hur stor är lampans effekt vid 24 V och 2 A?"
+        },
+        "answer": 48,
+        "unit": "W",
+        "rel": 0.01,
+        "abs": 0.001,
+        "explanation": {
+          "sv": "Multiplicera spänningen 24 V med strömmen 2 A. Effekten blir 48 W.",
+          "en": "Multiplicera spänningen 24 V med strömmen 2 A. Effekten blir 48 W."
+        },
+        "concept": 0,
+        "kind": "quiz",
+        "weekly": true,
+        "id": "m1w2",
+        "reviewAnchor": "formula-1-2",
+        "reviewTitle": {
+          "sv": "Effekt i en resistiv likströmslast",
+          "en": "Effekt i en resistiv likströmslast"
+        }
+      },
+      {
+        "type": "number",
+        "prompt": {
+          "sv": "Två identiska 12 Ω-laster seriekopplas till 24 V. Hur stor blir strömmen?",
+          "en": "Två identiska 12 Ω-laster seriekopplas till 24 V. Hur stor blir strömmen?"
+        },
+        "answer": 1,
+        "unit": "A",
+        "rel": 0.01,
+        "abs": 0.001,
+        "explanation": {
+          "sv": "Serieresistansen är 24 Ω. Spänningen 24 V ger då 1 A.",
+          "en": "Serieresistansen är 24 Ω. Spänningen 24 V ger då 1 A."
+        },
+        "concept": 1,
+        "kind": "quiz",
+        "weekly": true,
+        "id": "m1w3",
+        "reviewAnchor": "module-1-v2-connections",
+        "reviewTitle": {
+          "sv": "4. Serie och parallell",
+          "en": "4. Serie och parallell"
+        }
+      },
+      {
+        "type": "number",
+        "prompt": {
+          "sv": "Två identiska 12 Ω-laster parallellkopplas till 24 V. Vilken totalström lämnar källan?",
+          "en": "Två identiska 12 Ω-laster parallellkopplas till 24 V. Vilken totalström lämnar källan?"
+        },
+        "answer": 4,
+        "unit": "A",
+        "rel": 0.01,
+        "abs": 0.001,
+        "explanation": {
+          "sv": "Varje gren tar 2 A. Två grenar ger tillsammans 4 A.",
+          "en": "Varje gren tar 2 A. Två grenar ger tillsammans 4 A."
+        },
+        "concept": 1,
+        "kind": "quiz",
+        "weekly": true,
+        "id": "m1w4",
+        "reviewAnchor": "module-1-v2-connections",
+        "reviewTitle": {
+          "sv": "4. Serie och parallell",
+          "en": "4. Serie och parallell"
+        }
+      },
+      {
+        "type": "choice",
+        "prompt": {
+          "sv": "Returen öppnas. Vad visar en ideal strömmätning i lampgrenen?",
+          "en": "Returen öppnas. Vad visar en ideal strömmätning i lampgrenen?"
+        },
+        "options": [
+          {
+            "sv": "0 A.",
+            "en": "0 A."
+          },
+          {
+            "sv": "2 A.",
+            "en": "2 A."
+          },
+          {
+            "sv": "24 A.",
+            "en": "24 A."
+          }
+        ],
+        "answer": 0,
+        "explanation": {
+          "sv": "En öppen krets saknar sluten väg för stationär ström.",
+          "en": "En öppen krets saknar sluten väg för stationär ström."
+        },
+        "concept": 0,
+        "kind": "quiz",
+        "weekly": true,
+        "id": "m1w5",
+        "reviewAnchor": "module-1-v2-circuit",
+        "reviewTitle": {
+          "sv": "1. Följ hela strömvägen",
+          "en": "1. Följ hela strömvägen"
+        }
+      },
+      {
+        "type": "choice",
+        "prompt": {
+          "sv": "Vilken uppgift är en kontrollerbar säkerhetsåtgärd?",
+          "en": "Vilken uppgift är en kontrollerbar säkerhetsåtgärd?"
+        },
+        "options": [
+          {
+            "sv": "Var försiktig.",
+            "en": "Var försiktig."
+          },
+          {
+            "sv": "Kontrollera att angiven källa är frånkopplad och dokumentera kontrollen.",
+            "en": "Kontrollera att angiven källa är frånkopplad och dokumentera kontrollen."
+          },
+          {
+            "sv": "Arbeta fort.",
+            "en": "Arbeta fort."
+          }
+        ],
+        "answer": 1,
+        "explanation": {
+          "sv": "En åtgärd måste ange vad som görs och hur resultatet kontrolleras.",
+          "en": "En åtgärd måste ange vad som görs och hur resultatet kontrolleras."
+        },
+        "concept": 2,
+        "kind": "quiz",
+        "weekly": true,
+        "id": "m1w6",
+        "reviewAnchor": "module-1-v2-safety",
+        "reviewTitle": {
+          "sv": "5. Funktion är inte samma sak som säkerhet",
+          "en": "5. Funktion är inte samma sak som säkerhet"
+        }
+      },
+      {
+        "id": "m1s1",
+        "kind": "quiz",
+        "type": "choice",
+        "prompt": {
+          "sv": "En arbetslampa lyser men sladdens ytterhölje är sprucket i en fuktig gångväg. Vilken slutsats stöds av fallet?",
+          "en": "En arbetslampa lyser men sladdens ytterhölje är sprucket i en fuktig gångväg. Vilken slutsats stöds av fallet?"
+        },
+        "options": [
+          {
+            "sv": "Lampan är säker eftersom den lyser.",
+            "en": "Lampan är säker eftersom den lyser."
+          },
+          {
+            "sv": "Det saknas underlag för fortsatt användning; användningen ska upphöra och riskerna hanteras.",
+            "en": "Det saknas underlag för fortsatt användning; användningen ska upphöra och riskerna hanteras."
+          },
+          {
+            "sv": "Säkringen har säkert provats.",
+            "en": "Säkringen har säkert provats."
+          }
+        ],
+        "answer": 1,
+        "explanation": {
+          "sv": "Funktion bevisar inte att skydden är hela. Skadans djup och skyddens skick är inte verifierade.",
+          "en": "Funktion bevisar inte att skydden är hela. Skadans djup och skyddens skick är inte verifierade."
+        },
+        "concept": 2,
+        "moduleOneReview": true,
+        "reviewAnchor": "module-1-v2-case-a",
+        "reviewTitle": {
+          "sv": "6. Beslutsfall A: den skadade arbetslampan",
+          "en": "6. Beslutsfall A: den skadade arbetslampan"
+        }
+      },
+      {
+        "id": "m1s2",
+        "kind": "quiz",
+        "type": "choice",
+        "prompt": {
+          "sv": "Vilken mening är en observation i lampfallet?",
+          "en": "Vilken mening är en observation i lampfallet?"
+        },
+        "options": [
+          {
+            "sv": "Sladdens ytterhölje är sprucket.",
+            "en": "Sladdens ytterhölje är sprucket."
+          },
+          {
+            "sv": "Sladden måste ha klämts.",
+            "en": "Sladden måste ha klämts."
+          },
+          {
+            "sv": "Alla skydd fungerar.",
+            "en": "Alla skydd fungerar."
+          }
+        ],
+        "answer": 0,
+        "explanation": {
+          "sv": "Det spruckna ytterhöljet är en given uppgift. Orsak och skyddsfunktion är ännu inte verifierade.",
+          "en": "Det spruckna ytterhöljet är en given uppgift. Orsak och skyddsfunktion är ännu inte verifierade."
+        },
+        "concept": 2,
+        "moduleOneReview": true,
+        "reviewAnchor": "module-1-v2-case-a",
+        "reviewTitle": {
+          "sv": "6. Beslutsfall A: den skadade arbetslampan",
+          "en": "6. Beslutsfall A: den skadade arbetslampan"
+        }
+      },
+      {
+        "id": "m1s3",
+        "kind": "quiz",
+        "type": "choice",
+        "prompt": {
+          "sv": "Reservlampa B har angiven miljölämplighet och minst två timmars drifttid. Gångvägen behövs i 90 minuter. Vilket nästa steg är rimligt?",
+          "en": "Reservlampa B har angiven miljölämplighet och minst två timmars drifttid. Gångvägen behövs i 90 minuter. Vilket nästa steg är rimligt?"
+        },
+        "options": [
+          {
+            "sv": "Använd B utan fler kontroller.",
+            "en": "Använd B utan fler kontroller."
+          },
+          {
+            "sv": "Kontrollera även skick, laddning, placering och faktisk belysning före beslut.",
+            "en": "Kontrollera även skick, laddning, placering och faktisk belysning före beslut."
+          },
+          {
+            "sv": "Välj alltid A eftersom den kan tändas.",
+            "en": "Välj alltid A eftersom den kan tändas."
+          }
+        ],
+        "answer": 1,
+        "explanation": {
+          "sv": "B har relevant dokumenterat underlag, men den aktuella utrustningen och användningssituationen behöver fortfarande kontrolleras.",
+          "en": "B har relevant dokumenterat underlag, men den aktuella utrustningen och användningssituationen behöver fortfarande kontrolleras."
+        },
+        "concept": 2,
+        "moduleOneReview": true,
+        "reviewAnchor": "module-1-v2-case-b",
+        "reviewTitle": {
+          "sv": "7. Beslutsfall B: ljus och länsning samtidigt",
+          "en": "7. Beslutsfall B: ljus och länsning samtidigt"
+        }
+      },
+      {
+        "id": "m1s4",
+        "kind": "quiz",
+        "type": "number",
+        "prompt": {
+          "sv": "Eget försök: en ohmsk resistor på 3 kΩ matas med 12 V. Ange strömmen i mA.",
+          "en": "Eget försök: en ohmsk resistor på 3 kΩ matas med 12 V. Ange strömmen i mA."
+        },
+        "answer": 4,
+        "unit": "mA",
+        "rel": 0.01,
+        "abs": 0.001,
+        "explanation": {
+          "sv": "3 kΩ motsvarar 3 000 Ω. Dividera 12 V med 3 000 Ω: strömmen är 0,004 A, alltså 4 mA. Fördubbla gärna svaret till 8 mA i ett kontrollförsök och undersök varför det inte passar givna värden.",
+          "en": "3 kΩ motsvarar 3 000 Ω. Dividera 12 V med 3 000 Ω: strömmen är 0,004 A, alltså 4 mA. Fördubbla gärna svaret till 8 mA i ett kontrollförsök och undersök varför det inte passar givna värden."
+        },
+        "concept": 0,
+        "moduleOneReview": true,
+        "reviewAnchor": "module-1-v2-ohm-example",
+        "reviewTitle": {
+          "sv": "9. Räkneexempel: från kiloohm till milliampere",
+          "en": "9. Räkneexempel: från kiloohm till milliampere"
+        }
+      }
+    ]
+  },
+  "weekly": {
+    "title": "Belysningen i förrådet",
+    "scenario": "Ett simulerat 24 V-system matar en resistiv arbetslampa på 12 Ω. Ledningarna antas först ideala. Du ska förklara normal drift, jämföra två kopplingar och skilja en bruten retur från en spänningslös källa.",
+    "refresh": [
+      "Spänning mäts mellan två punkter. Ström går genom en gren och behöver en sluten returväg. Resistans beskriver hur mycket kretsen begränsar strömmen vid den angivna driftpunkten.",
+      "I serie går samma ström genom alla komponenter. Parallella grenar har samma spänning men kan ha olika ström. Försök inte avgöra strömflödet från en enda spänningsmätning."
+    ],
+    "relations": [
+      {
+        "module": 2,
+        "reason": "Samma strömväg används när du senare följer förgreningar, effekt och mätaranslutning."
+      },
+      {
+        "module": 3,
+        "reason": "Säker mätning kräver också planerad arbetsgräns och funktionskontroll av instrumentet."
+      }
+    ],
+    "lab": "dc",
+    "protocol": [
+      "Ställ in 24 V och 12 Ω. Rita hela returvägen och skriv din strömprognos.",
+      "Mät matning, lastspänning och ström med sluten krets. Spara värde och enhet.",
+      "Öppna returen i simulatorn. Jämför strömmen med normalfallet.",
+      "Ändra resistansen till 24 Ω och jämför prognos och mätning. Återställ och upprepa."
+    ],
+    "report": [
+      "Rita normal krets och en krets med bruten retur. Markera minst tre mätpunkter.",
+      "Redovisa serie- och parallellfallet i en jämförelsetabell. Förklara varför samma batterispänning inte ger samma totalström.",
+      "Skriv en riskrad med fara, åtgärd och hur åtgärden kontrolleras.",
+      "Besvara också beslutsfall A och B: observation, möjlig händelse, beslut, ansvar och verifiering. Skilj genomförd åtgärd från planerad kontroll."
+    ],
+    "formulaRefs": [],
+    "studyBlocks": [
+      {
+        "title": "Teori och begrepp",
+        "hours": 4,
+        "task": "Läs kärnteorin och förkunskapsrepetitionen. Skriv egna definitioner och rita kapitlets principbild."
+      },
+      {
+        "title": "Räkneexempel och egen träning",
+        "hours": 4,
+        "task": "Lös exemplen utan facit, kontrollera metod och enhet, och gör de självrättande frågorna."
+      },
+      {
+        "title": "Simulering och felvariation",
+        "hours": 4,
+        "task": "Följ veckans protokoll. Förutsäg före varje körning och jämför minst tre tillstånd."
+      },
+      {
+        "title": "Veckofall och redovisning",
+        "hours": 6,
+        "task": "Bearbeta fallet, gör en jämförelse med ändrade villkor och skriv ett sammanhängande underlag."
+      },
+      {
+        "title": "Återkoppling och riktad repetition",
+        "hours": 2,
+        "task": "Använd felaktiga svar för att välja exakt teoriavsnitt. Gör nya försök och förbättra slutsatsen."
+      }
+    ],
+    "completion": [
+      "Alla objektiva frågor har ett eget försök; kvarstående fel har en angiven repetitionsåtgärd.",
+      "Protokollet visar prognos, inställning, observation, enhet och förklaring för minst tre tillstånd.",
+      "Veckofallet är redovisat med metod, antaganden, jämförelse och slutsats.",
+      "Resonemang och laborationsunderlag är klara för lärargranskning; automatisk rättning är inte ett betyg."
+    ],
+    "variation": "Gör en andra genomgång med ett ändrat givet värde eller ett annat fel. Skriv vad som bör ändras och vad som bör vara oförändrat innan du räknar eller simulerar. Motivera skillnaden och ange modellens begränsning."
+  },
+  "workloadNote": "Varje modul är ett fristående veckopaket med ett föreslaget arbetsomfång på 20 timmar. Det är en pedagogisk arbetsbudget, inte ett fastställt timtal eller elva obligatoriska kalenderveckor. Lärarens tidsplan i kugghjulsmenyn styr faktisk fördelning; alla delar finns även utan schema.",
+  "theory": {
+    "prerequisites": {
+      "en": "No prior electrical calculations are assumed. You need division, multiplication and the idea of a closed loop. Read voltage, current and resistance as three different quantities.",
+      "sv": "Inga tidigare elberäkningar förutsätts. Du behöver division, multiplikation och förståelse för en sluten slinga. Läs spänning, ström och resistans som tre skilda storheter."
+    },
+    "terms": [
+      {
+        "term": {
+          "en": "Voltage U",
+          "sv": "Spänning U"
+        },
+        "definition": {
+          "en": "Potential difference between two specified points, measured in volts (V).",
+          "sv": "Potentialskillnad mellan två angivna punkter, mäts i volt (V)."
+        }
+      },
+      {
+        "term": {
+          "en": "Current I",
+          "sv": "Ström I"
+        },
+        "definition": {
+          "en": "Charge flow through a branch, measured in amperes (A). A steady current requires a complete path.",
+          "sv": "Laddningsflöde genom en gren, mäts i ampere (A). Stationär ström kräver en fullständig strömväg."
+        }
+      },
+      {
+        "term": {
+          "en": "Resistance R",
+          "sv": "Resistans R"
+        },
+        "definition": {
+          "en": "The voltage/current ratio for the stated operating condition, measured in ohms (Ω).",
+          "sv": "Förhållandet mellan spänning och ström i angivet driftfall, mäts i ohm (Ω)."
+        }
+      },
+      {
+        "term": {
+          "en": "Node and branch",
+          "sv": "Nod och gren"
+        },
+        "definition": {
+          "en": "A node joins conductors; a branch is a path between nodes. An ideal connecting wire has negligible voltage drop.",
+          "sv": "En nod förbinder ledare; en gren är en väg mellan noder. En ideal förbindningsledning har försumbart spänningsfall."
+        }
+      }
+    ],
+    "sections": [
+      {
+        "title": {
+          "en": "From a physical circuit to a diagram",
+          "sv": "Från fysisk krets till schema"
+        },
+        "text": {
+          "en": "Identify source, outgoing conductor, load and return. Mark the two voltage points and draw an arrow for current. An open circuit has no complete steady-current path; it can still have voltage across the opening. A short circuit provides a low-resistance bypass and can produce a large current limited by the source and wiring.",
+          "sv": "Identifiera källa, framledning, last och retur. Märk spänningens två punkter och rita en strömpil. En öppen krets saknar fullständig stationär strömväg men kan ha spänning över avbrottet. En kortslutning ger en lågohmig förbikoppling och kan ge stor ström som begränsas av källa och ledningar."
+        }
+      },
+      {
+        "title": {
+          "en": "Choose the topology before calculating",
+          "sv": "Välj kopplingsprincip före beräkning"
+        },
+        "text": {
+          "en": "In series, every component carries the same current, voltage drops add and total resistance increases. In parallel, branches share voltage and branch currents add. The equivalent parallel resistance is smaller than the smallest positive branch resistance. For a mixed circuit, reduce one series or parallel group at a time and redraw it.",
+          "sv": "I serie går samma ström genom komponenterna, spänningsfallen adderas och totalresistansen ökar. Parallella grenar har samma spänning och grenströmmarna adderas. Parallellresistansen är mindre än den minsta positiva grenresistansen. Förenkla en serie- eller parallellgrupp i taget i blandade kretsar och rita om."
+        }
+      },
+      {
+        "title": {
+          "en": "Quantities, units and the first risk statement",
+          "sv": "Storheter, enheter och den första riskraden"
+        },
+        "text": {
+          "en": "1 kΩ = 1000 Ω and 1 mA = 0.001 A. Convert units before substitution and retain the unit in the result. Write a risk as hazard → event → consequence → control → verification. Low voltage alone does not remove short-circuit or thermal risk. For the optional physical task use only the teacher-defined cell-voltage activity.",
+          "sv": "1 kΩ = 1000 Ω och 1 mA = 0,001 A. Omvandla före insättning och behåll enheten i svaret. Skriv risk som fara → händelse → konsekvens → åtgärd → verifiering. Låg spänning tar inte ensam bort kortslutnings- eller värmerisk. Använd endast lärarens avgränsade cellspänningsövning för det frivilliga fysiska momentet."
+        }
+      }
+    ],
+    "formulas": [
+      {
+        "expression": "U = RI; I = U/R; R = U/I",
+        "meaning": {
+          "en": "Three rearrangements of the same relation.",
+          "sv": "Tre omskrivningar av samma samband."
+        },
+        "conditions": {
+          "en": "Use the stated resistance and operating condition; real lamps can change resistance with temperature.",
+          "sv": "Använd angiven resistans och driftpunkt; verkliga lampors resistans kan ändras med temperaturen."
+        },
+        "expressionSv": "U = RI; I = U/R; R = U/I",
+        "illustratedFormulas": [
+          {
+            "tex": "U=RI",
+            "type": "ohm",
+            "html": "<div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"U = RI; I = U/R; R = U/I\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>U</mi><mo>=</mo><mi>R</mi><mi>I</mi></mrow><annotation encoding=\"application/x-tex\">U=RI</annotation></semantics></math></span></div><figure class=\"formula-explainer\" data-formula-illustration=\"ohm\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram module-one-formula-diagram\" xmlns=\"http://www.w3.org/2000/svg\" width=\"820\" height=\"420\" viewBox=\"0 0 820 420\" role=\"img\" aria-labelledby=\"m1f0-title m1f0-desc\"><title id=\"m1f0-title\">Spänning mäts mellan två punkter</title><desc id=\"m1f0-desc\">En voltmeter är parallellkopplad mellan A och B, samma två noder som resistorn. Batteriet modelleras som en ideal 12 V-källa.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id=\"m1f0-current-arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0L8 4L0 8Z\" fill=\"#007d35\"/></marker></defs><rect width=\"100%\" height=\"100%\" fill=\"white\"/><text x=\"410.0\" y=\"37\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"25\" text-anchor=\"middle\" fill=\"#111\" font-weight=\"700\">Spänning mäts mellan två punkter</text><polyline points=\"190,115 190,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(190 217.5) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"190,247.5 190,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"145\" y=\"211.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"145\" y=\"238.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">12 V</text><polyline points=\"190,115 635,115\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"190,320 635,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"450,115 450,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(450 217.5) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"450,247.5 450,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"492\" y=\"224.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">R</text><polyline points=\"635,115 635,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(635 217.5) rotate(0) scale(0.05) translate(-13000 -7800)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.EllipseShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 13000,8400 C 12895,8400 12791,8372 12700,8320 12609,8267 12533,8191 12480,8100 12428,8009 12400,7905 12400,7800 12400,7695 12428,7591 12480,7500 12533,7409 12609,7333 12700,7280 12791,7228 12895,7200 13000,7200 13105,7200 13209,7228 13300,7280 13391,7333 13467,7409 13520,7500 13572,7591 13600,7695 13600,7800 13600,7905 13572,8009 13520,8100 13467,8191 13391,8267 13300,8320 13209,8372 13105,8400 13000,8400 Z \"/>\n        <text class=\"SVGTextShape\"><tspan class=\"TextParagraph\"><tspan class=\"TextPosition\" x=\"12745\" y=\"8040\"><tspan font-family=\"Liberation Serif, serif\" font-size=\"706px\" font-weight=\"400\" lengthAdjust=\"spacingAndGlyphs\" textLength=\"511\" fill=\"rgb(0,0,0)\" stroke=\"none\" style=\"white-space: pre\">V</tspan></tspan></tspan></text>\n       </g>\n      </g>\n      </g><polyline points=\"635,247.5 635,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><circle cx=\"450\" cy=\"115\" r=\"4.5\" fill=\"#111\"/><circle cx=\"450\" cy=\"320\" r=\"4.5\" fill=\"#111\"/><text x=\"450\" y=\"92\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"middle\" fill=\"#111\">A</text><text x=\"450\" y=\"350\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"middle\" fill=\"#111\">B</text><text x=\"635\" y=\"281\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"middle\" fill=\"#111\">12 V</text><text x=\"410\" y=\"390\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"middle\" fill=\"#111\">Mätaren jämför A med B · den mäter inte ”ström i punkten”</text></svg></div><figcaption>En voltmeter är parallellkopplad mellan A och B, samma två noder som resistorn. Batteriet modelleras som en ideal 12 V-källa.</figcaption><p class=\"formula-units\">U: volt (V). R: ohm (Ω). I: ampere (A).</p></figure></div>"
+          },
+          {
+            "tex": "I=\\frac{U}{R}",
+            "type": "ohm",
+            "html": "<div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"U = RI; I = U/R; R = U/I\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>I</mi><mo>=</mo><mfrac><mi>U</mi><mi>R</mi></mfrac></mrow><annotation encoding=\"application/x-tex\">I=\\frac{U}{R}</annotation></semantics></math></span></div><figure class=\"formula-explainer\" data-formula-illustration=\"ohm\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram module-one-formula-diagram\" xmlns=\"http://www.w3.org/2000/svg\" width=\"820\" height=\"420\" viewBox=\"0 0 820 420\" role=\"img\" aria-labelledby=\"m1f1-title m1f1-desc\"><title id=\"m1f1-title\">Samma spänning, olika resistans</title><desc id=\"m1f1-desc\">Två separata kretsar har vardera en ideal 12 V-källa. En resistor på 1 kiloohm ger 12 milliampere. Två kiloohm ger 6 milliampere.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id=\"m1f1-current-arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0L8 4L0 8Z\" fill=\"#007d35\"/></marker></defs><rect width=\"100%\" height=\"100%\" fill=\"white\"/><text x=\"410.0\" y=\"37\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"25\" text-anchor=\"middle\" fill=\"#111\" font-weight=\"700\">Samma spänning, olika resistans</text><polyline points=\"145,130 145,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(145 217.5) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"145,247.5 145,305\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"100\" y=\"211.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"100\" y=\"238.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">12 V</text><polyline points=\"145,130 315,130\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"315,130 315,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(315 217.5) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"315,247.5 315,305\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"357\" y=\"224.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">1 kΩ</text><polyline points=\"315,305 145,305\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"230.0\" y=\"360\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"24\" text-anchor=\"middle\" fill=\"#006b2e\" font-weight=\"700\">12 mA</text><polyline points=\"535,130 535,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(535 217.5) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"535,247.5 535,305\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"490\" y=\"211.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"490\" y=\"238.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">12 V</text><polyline points=\"535,130 705,130\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"705,130 705,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(705 217.5) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"705,247.5 705,305\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"747\" y=\"224.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">2 kΩ</text><polyline points=\"705,305 535,305\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"620.0\" y=\"360\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"24\" text-anchor=\"middle\" fill=\"#006b2e\" font-weight=\"700\">6 mA</text></svg></div><figcaption>Två separata kretsar har vardera en ideal 12 V-källa. En resistor på 1 kiloohm ger 12 milliampere. Två kiloohm ger 6 milliampere.</figcaption><p class=\"formula-units\">I: ampere (A). U: volt (V). R: ohm (Ω).</p></figure></div>"
+          },
+          {
+            "tex": "R=\\frac{U}{I}",
+            "type": "ohm",
+            "html": "<div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"U = RI; I = U/R; R = U/I\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>R</mi><mo>=</mo><mfrac><mi>U</mi><mi>I</mi></mfrac></mrow><annotation encoding=\"application/x-tex\">R=\\frac{U}{I}</annotation></semantics></math></span></div><figure class=\"formula-explainer\" data-formula-illustration=\"ohm\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram module-one-formula-diagram\" xmlns=\"http://www.w3.org/2000/svg\" width=\"820\" height=\"420\" viewBox=\"0 0 820 420\" role=\"img\" aria-labelledby=\"m1f2-title m1f2-desc\"><title id=\"m1f2-title\">Bestäm resistansen från spänning och ström</title><desc id=\"m1f2-desc\">En ideal 12 V-källa driver den uppmätta strömmen 6 mA genom en okänd resistor. Spänning och ström gäller samma driftpunkt.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id=\"m1f2-current-arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0L8 4L0 8Z\" fill=\"#007d35\"/></marker></defs><rect width=\"100%\" height=\"100%\" fill=\"white\"/><text x=\"410.0\" y=\"37\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"25\" text-anchor=\"middle\" fill=\"#111\" font-weight=\"700\">Bestäm resistansen från spänning och ström</text><polyline points=\"190,115 190,190.0\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(190 220.0) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"190,250.0 190,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"145\" y=\"214.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"145\" y=\"241.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">12 V</text><polyline points=\"190,115 580,115\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"580,115 580,190.0\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(580 220.0) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"580,250.0 580,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"622\" y=\"227.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">R = ?</text><polyline points=\"580,325 190,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M320,115 L440,115\" fill=\"none\" stroke=\"#007d35\" stroke-width=\"3\" marker-end=\"url(#m1f2-current-arrow)\"/><text x=\"380.0\" y=\"101\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"21\" text-anchor=\"middle\" fill=\"#006b2e\">6 mA</text><text x=\"410\" y=\"385\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"19\" text-anchor=\"middle\" fill=\"#111\">Mätt spänning och ström används för samma resistor</text></svg></div><figcaption>En ideal 12 V-källa driver den uppmätta strömmen 6 mA genom en okänd resistor. Spänning och ström gäller samma driftpunkt.</figcaption><p class=\"formula-units\">R: ohm (Ω). U: volt (V). I: ampere (A).</p></figure></div>"
+          }
+        ]
+      },
+      {
+        "expression": "R_series = R₁ + R₂; R_parallel = R₁R₂/(R₁ + R₂)",
+        "meaning": {
+          "en": "Equivalent resistance of two positive resistances.",
+          "sv": "Ersättningsresistans för två positiva resistanser."
+        },
+        "conditions": {
+          "en": "The parallel expression requires both resistors to connect between the same two nodes.",
+          "sv": "Parallelluttrycket kräver att båda resistorerna ligger mellan samma två noder."
+        },
+        "expressionSv": "R_serie = R₁ + R₂; R_parallell = R₁R₂/(R₁ + R₂)",
+        "illustratedFormulas": [
+          {
+            "tex": "R_{\\text{serie}}=R_1+R_2",
+            "type": "resistance",
+            "html": "<div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"R_serie = R₁ + R₂; R_parallell = R₁R₂/(R₁ + R₂)\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msub><mi>R</mi><mtext>serie</mtext></msub><mo>=</mo><msub><mi>R</mi><mn>1</mn></msub><mo>+</mo><msub><mi>R</mi><mn>2</mn></msub></mrow><annotation encoding=\"application/x-tex\">R_{\\text{serie}}=R_1+R_2</annotation></semantics></math></span></div><figure class=\"formula-explainer\" data-formula-illustration=\"resistance\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram module-one-formula-diagram\" xmlns=\"http://www.w3.org/2000/svg\" width=\"820\" height=\"420\" viewBox=\"0 0 820 420\" role=\"img\" aria-labelledby=\"m1f3-title m1f3-desc\"><title id=\"m1f3-title\">Serie: båda lasterna delar samma ström</title><desc id=\"m1f3-desc\">Två resistorer på 12 ohm ligger i serie med en 24 V-källa. Total resistans är 24 ohm och strömmen är 1 ampere.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id=\"m1f3-current-arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0L8 4L0 8Z\" fill=\"#007d35\"/></marker></defs><rect width=\"100%\" height=\"100%\" fill=\"white\"/><text x=\"410.0\" y=\"37\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"25\" text-anchor=\"middle\" fill=\"#111\" font-weight=\"700\">Serie: båda lasterna delar samma ström</text><polyline points=\"190,115 190,190.0\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(190 220.0) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"190,250.0 190,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"145\" y=\"214.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"145\" y=\"241.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">24 V</text><polyline points=\"190,115 325,115\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(355 115) rotate(0) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"385,115 480,115\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(510 115) rotate(0) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"540,115 650,115 650,325 190,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"355\" y=\"82\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"21\" text-anchor=\"middle\" fill=\"#111\">12 Ω</text><text x=\"510\" y=\"82\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"21\" text-anchor=\"middle\" fill=\"#111\">12 Ω</text><path d=\"M570,115 L625,115\" fill=\"none\" stroke=\"#007d35\" stroke-width=\"3\" marker-end=\"url(#m1f3-current-arrow)\"/><text x=\"597.5\" y=\"101\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"21\" text-anchor=\"middle\" fill=\"#006b2e\">1 A</text><text x=\"410\" y=\"375\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"middle\" fill=\"#111\">En strömväg · samma ström genom båda lasterna</text></svg></div><figcaption>Två resistorer på 12 ohm ligger i serie med en 24 V-källa. Total resistans är 24 ohm och strömmen är 1 ampere.</figcaption><p class=\"formula-units\">Resistanser anges i ohm (Ω). Samma ström går genom serielasterna.</p></figure></div>"
+          },
+          {
+            "tex": "R_{\\text{parallell}}=\\frac{R_1R_2}{R_1+R_2}",
+            "type": "resistance",
+            "html": "<div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"R_serie = R₁ + R₂; R_parallell = R₁R₂/(R₁ + R₂)\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msub><mi>R</mi><mtext>parallell</mtext></msub><mo>=</mo><mfrac><mrow><msub><mi>R</mi><mn>1</mn></msub><msub><mi>R</mi><mn>2</mn></msub></mrow><mrow><msub><mi>R</mi><mn>1</mn></msub><mo>+</mo><msub><mi>R</mi><mn>2</mn></msub></mrow></mfrac></mrow><annotation encoding=\"application/x-tex\">R_{\\text{parallell}}=\\frac{R_1R_2}{R_1+R_2}</annotation></semantics></math></span></div><figure class=\"formula-explainer\" data-formula-illustration=\"resistance\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram module-one-formula-diagram\" xmlns=\"http://www.w3.org/2000/svg\" width=\"820\" height=\"420\" viewBox=\"0 0 820 420\" role=\"img\" aria-labelledby=\"m1f4-title m1f4-desc\"><title id=\"m1f4-title\">Parallell: varje gren har sin egen strömväg</title><desc id=\"m1f4-desc\">Två resistorer på 12 ohm ligger i separata grenar mellan samma två noder i en ideal 24 V-krets. Varje gren tar 2 ampere och källan ger 4 ampere.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id=\"m1f4-current-arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0L8 4L0 8Z\" fill=\"#007d35\"/></marker></defs><rect width=\"100%\" height=\"100%\" fill=\"white\"/><text x=\"410.0\" y=\"37\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"25\" text-anchor=\"middle\" fill=\"#111\" font-weight=\"700\">Parallell: varje gren har sin egen strömväg</text><polyline points=\"190,115 190,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(190 217.5) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"190,247.5 190,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"145\" y=\"211.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"145\" y=\"238.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">24 V</text><polyline points=\"190,115 650,115\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"650,320 190,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"420,115 420,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(420 217.5) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"420,247.5 420,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"462\" y=\"224.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">12 Ω</text><polyline points=\"650,115 650,187.5\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(650 217.5) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"650,247.5 650,320\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"692\" y=\"224.5\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">12 Ω</text><circle cx=\"420\" cy=\"115\" r=\"4.5\" fill=\"#111\"/><circle cx=\"420\" cy=\"320\" r=\"4.5\" fill=\"#111\"/><path d=\"M255,115 L335,115\" fill=\"none\" stroke=\"#007d35\" stroke-width=\"3\" marker-end=\"url(#m1f4-current-arrow)\"/><text x=\"295.0\" y=\"101\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"21\" text-anchor=\"middle\" fill=\"#006b2e\">4 A</text><text x=\"370\" y=\"232\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"end\" fill=\"#006b2e\">2 A</text><text x=\"600\" y=\"232\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"end\" fill=\"#006b2e\">2 A</text><text x=\"410\" y=\"385\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"middle\" fill=\"#111\">Samma spänning över grenarna · grenströmmarna summeras</text></svg></div><figcaption>Två resistorer på 12 ohm ligger i separata grenar mellan samma två noder i en ideal 24 V-krets. Varje gren tar 2 ampere och källan ger 4 ampere.</figcaption><p class=\"formula-units\">Resistanser anges i ohm (Ω). De parallella grenarna har samma spänning.</p></figure></div>"
+          }
+        ]
+      },
+      {
+        "expression": "P = UI",
+        "expressionSv": "P = UI",
+        "meaning": {
+          "sv": "Effekt i en resistiv likströmslast.",
+          "en": "Effekt i en resistiv likströmslast."
+        },
+        "conditions": {
+          "sv": "Spänning och ström ska avse samma last och samma driftpunkt i den resistiva likströmsmodellen.",
+          "en": "Spänning och ström ska avse samma last och samma driftpunkt i den resistiva likströmsmodellen."
+        },
+        "illustratedFormulas": [
+          {
+            "tex": "P=UI",
+            "type": "power",
+            "html": "<div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"P = UI\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>P</mi><mo>=</mo><mi>U</mi><mi>I</mi></mrow><annotation encoding=\"application/x-tex\">P=UI</annotation></semantics></math></span></div><figure class=\"formula-explainer\" data-formula-illustration=\"power\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram module-one-formula-diagram\" xmlns=\"http://www.w3.org/2000/svg\" width=\"820\" height=\"420\" viewBox=\"0 0 820 420\" role=\"img\" aria-labelledby=\"m1f5-title m1f5-desc\"><title id=\"m1f5-title\">Lastens effekt vid 24 V och 2 A</title><desc id=\"m1f5-desc\">En ideal 24 V-källa driver 2 A genom en resistiv last på 12 ohm. Lastens elektriska effekt är 48 watt i denna driftpunkt.</desc><metadata>Symbols adapted from ma-laforge/ElectricalDiagrams, MIT licence. See /licenses/ElectricalDiagrams-MIT.txt.</metadata><defs><marker id=\"m1f5-current-arrow\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0L8 4L0 8Z\" fill=\"#007d35\"/></marker></defs><rect width=\"100%\" height=\"100%\" fill=\"white\"/><text x=\"410.0\" y=\"37\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"25\" text-anchor=\"middle\" fill=\"#111\" font-weight=\"700\">Lastens effekt vid 24 V och 2 A</text><polyline points=\"190,115 190,190.0\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(190 220.0) rotate(0) scale(0.05) translate(-2600 -1000)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"Group\">\n       <g class=\"com.sun.star.drawing.EllipseShape\">\n        <g>\n         <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 2600,1600 C 2495,1600 2391,1572 2300,1520 2209,1467 2133,1391 2080,1300 2028,1209 2000,1105 2000,1000 2000,895 2028,791 2080,700 2133,609 2209,533 2300,480 2391,428 2495,400 2600,400 2705,400 2809,428 2900,480 2991,533 3067,609 3120,700 3172,791 3200,895 3200,1000 3200,1105 3172,1209 3120,1300 3067,1391 2991,1467 2900,1520 2809,1572 2705,1600 2600,1600 L 2600,1600 Z \"/>\n        </g>\n       </g>\n       <g class=\"Group\">\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2600,600 L 2600,1000 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2400,800 L 2800,800 \"/>\n         </g>\n        </g>\n        <g class=\"com.sun.star.drawing.LineShape\">\n         <g>\n          <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"50\" stroke-linejoin=\"round\" d=\"M 2350,1250 L 2850,1250 \"/>\n         </g>\n        </g>\n       </g>\n      </g>\n      </g><polyline points=\"190,250.0 190,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"145\" y=\"214.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"18\" text-anchor=\"end\" fill=\"#111\">Batteri</text><text x=\"145\" y=\"241.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"22\" text-anchor=\"end\" fill=\"#111\">24 V</text><polyline points=\"190,115 580,115\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><polyline points=\"580,115 580,190.0\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><g transform=\"translate(580 220.0) rotate(90) scale(0.05) translate(-3600 -9400)\"><g xmlns=\"http://www.w3.org/2000/svg\" xmlns:ooo=\"http://xml.openoffice.org/svg/export\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:presentation=\"http://sun.com/xmlns/staroffice/presentation\" xmlns:smil=\"http://www.w3.org/2001/SMIL20/\" xmlns:anim=\"urn:oasis:names:tc:opendocument:xmlns:animation:1.0\" xmlns:svg=\"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0\" class=\"com.sun.star.drawing.RectangleShape\">\n       <g>\n        <path fill=\"none\" stroke=\"rgb(0,0,0)\" stroke-width=\"100\" stroke-linejoin=\"round\" d=\"M 3600,9600 L 3000,9600 3000,9200 4200,9200 4200,9600 3600,9600 Z \"/>\n       </g>\n      </g>\n      </g><polyline points=\"580,250.0 580,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><text x=\"622\" y=\"227.0\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"20\" text-anchor=\"start\" fill=\"#111\">12 Ω</text><polyline points=\"580,325 190,325\" fill=\"none\" stroke=\"#111\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M320,115 L440,115\" fill=\"none\" stroke=\"#007d35\" stroke-width=\"3\" marker-end=\"url(#m1f5-current-arrow)\"/><text x=\"380.0\" y=\"101\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"21\" text-anchor=\"middle\" fill=\"#006b2e\">2 A</text><text x=\"410\" y=\"385\" font-family=\"DejaVu Sans,sans-serif\" font-size=\"23\" text-anchor=\"middle\" fill=\"#006b2e\" font-weight=\"700\">Lastens effekt: 48 W</text></svg></div><figcaption>En ideal 24 V-källa driver 2 A genom en resistiv last på 12 ohm. Lastens elektriska effekt är 48 watt i denna driftpunkt.</figcaption><p class=\"formula-units\">P: watt (W). U: volt (V). I: ampere (A).</p></figure></div>"
+          }
+        ]
+      }
+    ],
+    "examples": [
+      {
+        "title": {
+          "en": "A new DC load",
+          "sv": "En ny likströmslast"
+        },
+        "steps": [
+          {
+            "en": "Given 18 V and 9 Ω. Find current, so choose I = U/R.",
+            "sv": "Givet 18 V och 9 Ω. Sök ström och välj I = U/R."
+          },
+          {
+            "en": "I = 18/9 = 2 A. Check: 9 Ω × 2 A = 18 V.",
+            "sv": "I = 18/9 = 2 A. Kontroll: 9 Ω × 2 A = 18 V."
+          }
+        ],
+        "stepIllustrationsSv": [
+          "<figure class=\"formula-explainer\" data-formula-illustration=\"ohm\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram\" viewBox=\"0 0 560 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-labelledby=\"arr-example100-title arr-example100-desc\"><title id=\"arr-example100-title\">Spänning, ström och resistans</title><desc id=\"arr-example100-desc\">Spänningen U driver strömmen I genom resistorn R. Vid samma R ger större U större I. Vid samma U ger större R mindre I.</desc><defs><marker id=\"arr-example100\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0 L8 4 L0 8 Z\" fill=\"#164b87\"/></marker></defs><g stroke=\"#164b87\" stroke-width=\"2.8\" fill=\"none\"><circle cx=\"100\" cy=\"125\" r=\"38\" fill=\"white\"/><text x=\"100\" y=\"132\">U</text><line x1=\"100\" y1=\"87\" x2=\"100\" y2=\"60\" /><line x1=\"100\" y1=\"60\" x2=\"430\" y2=\"60\" /><line x1=\"430\" y1=\"60\" x2=\"430\" y2=\"190\" /><line x1=\"430\" y1=\"190\" x2=\"100\" y2=\"190\" /><line x1=\"100\" y1=\"190\" x2=\"100\" y2=\"163\" /><rect x=\"270\" y=\"39\" width=\"90\" height=\"42\" rx=\"5\" fill=\"white\"/><text x=\"315\" y=\"67\">R</text><line x1=\"160\" y1=\"60\" x2=\"230\" y2=\"60\" marker-end=\"url(#arr-example100)\"/><text x=\"195\" y=\"44\">I</text></g><style>.formula-diagram text{font:18px system-ui,sans-serif;fill:#142c45;stroke:none;text-anchor:middle}</style></svg></div><figcaption><strong>Spänning, ström och resistans.</strong> Spänningen U driver strömmen I genom resistorn R. Vid samma R ger större U större I. Vid samma U ger större R mindre I.</figcaption><p class=\"formula-units\">U: volt (V). I: ampere (A). R: ohm (Ω).</p></figure>",
+          "<figure class=\"formula-explainer\" data-formula-illustration=\"ohm\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram\" viewBox=\"0 0 560 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-labelledby=\"arr-example101-title arr-example101-desc\"><title id=\"arr-example101-title\">Spänning, ström och resistans</title><desc id=\"arr-example101-desc\">Spänningen U driver strömmen I genom resistorn R. Vid samma R ger större U större I. Vid samma U ger större R mindre I.</desc><defs><marker id=\"arr-example101\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0 L8 4 L0 8 Z\" fill=\"#164b87\"/></marker></defs><g stroke=\"#164b87\" stroke-width=\"2.8\" fill=\"none\"><circle cx=\"100\" cy=\"125\" r=\"38\" fill=\"white\"/><text x=\"100\" y=\"132\">U</text><line x1=\"100\" y1=\"87\" x2=\"100\" y2=\"60\" /><line x1=\"100\" y1=\"60\" x2=\"430\" y2=\"60\" /><line x1=\"430\" y1=\"60\" x2=\"430\" y2=\"190\" /><line x1=\"430\" y1=\"190\" x2=\"100\" y2=\"190\" /><line x1=\"100\" y1=\"190\" x2=\"100\" y2=\"163\" /><rect x=\"270\" y=\"39\" width=\"90\" height=\"42\" rx=\"5\" fill=\"white\"/><text x=\"315\" y=\"67\">R</text><line x1=\"160\" y1=\"60\" x2=\"230\" y2=\"60\" marker-end=\"url(#arr-example101)\"/><text x=\"195\" y=\"44\">I</text></g><style>.formula-diagram text{font:18px system-ui,sans-serif;fill:#142c45;stroke:none;text-anchor:middle}</style></svg></div><figcaption><strong>Spänning, ström och resistans.</strong> Spänningen U driver strömmen I genom resistorn R. Vid samma R ger större U större I. Vid samma U ger större R mindre I.</figcaption><p class=\"formula-units\">U: volt (V). I: ampere (A). R: ohm (Ω).</p></figure>"
+        ]
+      },
+      {
+        "title": {
+          "en": "Two parallel branches",
+          "sv": "Två parallella grenar"
+        },
+        "steps": [
+          {
+            "en": "Two 12 Ω resistors are in parallel across 24 V. Each branch current is 24/12 = 2 A.",
+            "sv": "Två resistorer på 12 Ω är parallella över 24 V. Varje grenström är 24/12 = 2 A."
+          },
+          {
+            "en": "Total current is 4 A; equivalent resistance is 24/4 = 6 Ω, below 12 Ω.",
+            "sv": "Totalströmmen är 4 A; ersättningsresistansen är 24/4 = 6 Ω, mindre än 12 Ω."
+          }
+        ],
+        "stepIllustrationsSv": [
+          "<figure class=\"formula-explainer\" data-formula-illustration=\"divider\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram\" viewBox=\"0 0 560 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-labelledby=\"arr-example110-title arr-example110-desc\"><title id=\"arr-example110-title\">Belastad spänningsdelare</title><desc id=\"arr-example110-desc\">R₁ ligger i serie med den nedre delen. Lasten Rlast ligger parallellt med R₂ och ändrar den nedre ersättningsresistansen och utspänningen.</desc><defs><marker id=\"arr-example110\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0 L8 4 L0 8 Z\" fill=\"#164b87\"/></marker></defs><g stroke=\"#164b87\" stroke-width=\"2.8\" fill=\"none\"><line x1=\"80\" y1=\"50\" x2=\"480\" y2=\"50\" /><line x1=\"80\" y1=\"210\" x2=\"480\" y2=\"210\" /><line x1=\"240\" y1=\"50\" x2=\"240\" y2=\"210\" /><rect x=\"212\" y=\"65\" width=\"56\" height=\"45\" rx=\"5\" fill=\"white\"/><text x=\"240\" y=\"94.5\">R₁</text><rect x=\"212\" y=\"145\" width=\"56\" height=\"45\" rx=\"5\" fill=\"white\"/><text x=\"240\" y=\"174.5\">R₂</text><line x1=\"240\" y1=\"125\" x2=\"430\" y2=\"125\" /><line x1=\"430\" y1=\"125\" x2=\"430\" y2=\"210\" /><rect x=\"395\" y=\"148\" width=\"70\" height=\"42\" rx=\"5\" fill=\"white\"/><text x=\"430\" y=\"176\">Rlast</text><text x=\"80\" y=\"130\">Uin</text><text x=\"335\" y=\"112\">Uut</text><text x=\"330\" y=\"238\">R₂ ∥ Rlast = Rp</text></g><style>.formula-diagram text{font:18px system-ui,sans-serif;fill:#142c45;stroke:none;text-anchor:middle}</style></svg></div><figcaption><strong>Belastad spänningsdelare.</strong> R₁ ligger i serie med den nedre delen. Lasten Rlast ligger parallellt med R₂ och ändrar den nedre ersättningsresistansen och utspänningen.</figcaption><p class=\"formula-units\">Uin, Uut: volt (V). R₁, R₂, Rlast: ohm (Ω).</p></figure>",
+          "<figure class=\"formula-explainer\" data-formula-illustration=\"ohm\"><div class=\"diagram-scroll\"><svg class=\"formula-diagram\" viewBox=\"0 0 560 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-labelledby=\"arr-example111-title arr-example111-desc\"><title id=\"arr-example111-title\">Spänning, ström och resistans</title><desc id=\"arr-example111-desc\">Spänningen U driver strömmen I genom resistorn R. Vid samma R ger större U större I. Vid samma U ger större R mindre I.</desc><defs><marker id=\"arr-example111\" markerWidth=\"8\" markerHeight=\"8\" refX=\"7\" refY=\"4\" orient=\"auto\"><path d=\"M0 0 L8 4 L0 8 Z\" fill=\"#164b87\"/></marker></defs><g stroke=\"#164b87\" stroke-width=\"2.8\" fill=\"none\"><circle cx=\"100\" cy=\"125\" r=\"38\" fill=\"white\"/><text x=\"100\" y=\"132\">U</text><line x1=\"100\" y1=\"87\" x2=\"100\" y2=\"60\" /><line x1=\"100\" y1=\"60\" x2=\"430\" y2=\"60\" /><line x1=\"430\" y1=\"60\" x2=\"430\" y2=\"190\" /><line x1=\"430\" y1=\"190\" x2=\"100\" y2=\"190\" /><line x1=\"100\" y1=\"190\" x2=\"100\" y2=\"163\" /><rect x=\"270\" y=\"39\" width=\"90\" height=\"42\" rx=\"5\" fill=\"white\"/><text x=\"315\" y=\"67\">R</text><line x1=\"160\" y1=\"60\" x2=\"230\" y2=\"60\" marker-end=\"url(#arr-example111)\"/><text x=\"195\" y=\"44\">I</text></g><style>.formula-diagram text{font:18px system-ui,sans-serif;fill:#142c45;stroke:none;text-anchor:middle}</style></svg></div><figcaption><strong>Spänning, ström och resistans.</strong> Spänningen U driver strömmen I genom resistorn R. Vid samma R ger större U större I. Vid samma U ger större R mindre I.</figcaption><p class=\"formula-units\">U: volt (V). I: ampere (A). R: ohm (Ω).</p></figure>"
+        ]
+      }
+    ],
+    "mistakes": [
+      {
+        "en": "Do not treat voltage as something that flows; current flows and voltage is measured between points.",
+        "sv": "Behandla inte spänning som något som flyter; ström går och spänning mäts mellan punkter."
+      },
+      {
+        "en": "Do not connect a current input directly across a cell in a voltage-measurement exercise.",
+        "sv": "Anslut inte strömingången direkt över en cell i en spänningsövning."
+      }
+    ],
+    "ready": [
+      {
+        "en": "I can draw the entire return path and identify series versus parallel.",
+        "sv": "Jag kan rita hela returvägen och skilja serie från parallell."
+      },
+      {
+        "en": "I can rearrange Ohm’s law and state the unit of the answer.",
+        "sv": "Jag kan skriva om Ohms lag och ange svarets enhet."
+      }
+    ],
+    "id": "1"
+  },
+  "native": [
+    {
+      "key": "module-1-v2-circuit",
+      "title": "1. Följ hela strömvägen",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        0,
+        1,
+        2,
+        11
+      ],
+      "html": "<span id=\"concept-0\"></span><h2>1. Följ hela strömvägen</h2><p>En arbetslampa behöver både en väg från batteriets pluspol och en väg tillbaka till minus. I principbilderna representeras batteriet av symbolen för en <strong>ideal likspänningskälla</strong>. Verkliga batterier har bland annat inre resistans; den ingår inte i grundmodellen.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/01-incomplete.svg\" width=\"820\" height=\"420\" alt=\"Bara den övre ledaren finns. Lampans undre anslutning och batteriets minuspol saknar förbindelse. Returledaren saknas, så ingen stationär ström går genom lampan.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Bara den övre ledaren finns. Lampans undre anslutning och batteriets minuspol saknar förbindelse. Returledaren saknas, så ingen stationär ström går genom lampan.</figcaption></figure><p>När källa, ledare och last bildar en hel slinga kan stationär ström gå. Lampan är en last: den omvandlar elektrisk energi till ljus och värme. En brytare öppnar eller sluter strömvägen.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/02-closed.svg\" width=\"820\" height=\"420\" alt=\"Brytarkontakterna sitter ihop. Konventionell ström går från plus via brytaren och lampan tillbaka till minus. Pilarna visar samma ström i hela den yttre slingan.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Brytarkontakterna sitter ihop. Konventionell ström går från plus via brytaren och lampan tillbaka till minus. Pilarna visar samma ström i hela den yttre slingan.</figcaption></figure><p>Ström är laddning som passerar per tidsenhet. Enheten är ampere, A. I en enkel stationär krets utan förgreningar är strömmen lika stor före och efter lampan. <strong>Strömmen förbrukas inte i lasten.</strong> Vi följer konventionell strömriktning från plus till minus i den yttre kretsen. Elektronerna i en metall rör sig åt motsatt håll.</p><p>Återledaren ingår i den normala strömvägen. Skyddsledare och fartygsskrov har andra funktioner. Skrovet är inte automatiskt detsamma som batteriets minus.</p>"
+    },
+    {
+      "key": "module-1-v2-voltage",
+      "title": "2. Skilj spänning från ström",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        3
+      ],
+      "html": "<h2>2. Skilj spänning från ström</h2><p>Spänning är skillnaden i elektrisk potential mellan två bestämda punkter. Enheten är volt, V. En voltmeter har därför två anslutningar och kopplas mellan de punkter som ska jämföras. I bilden ligger mätaren parallellt med resistorn, mellan A och B.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/04-voltmeter.svg\" width=\"820\" height=\"420\" alt=\"En voltmeter är parallellkopplad mellan A och B, samma två noder som resistorn. Batteriet modelleras som en ideal 12 V-källa.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>En voltmeter är parallellkopplad mellan A och B, samma två noder som resistorn. Batteriet modelleras som en ideal 12 V-källa.</figcaption></figure><p>Ett batteri kan ha 12 V mellan polerna även när brytaren är öppen och lastströmmen är noll. Ett spänningsvärde på en anslutning bevisar därför inte att en last har en hel strömväg.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/03-open.svg\" width=\"820\" height=\"420\" alt=\"Brytararmen är tydligt lyft från vänster kontakt. Det vita gapet bryter slingan. Ingen stationär ström går någonstans i seriekretsen och lampan är släckt. Batteriet har fortfarande 12 V mellan polerna.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Brytararmen är tydligt lyft från vänster kontakt. Det vita gapet bryter slingan. Ingen stationär ström går någonstans i seriekretsen och lampan är släckt. Batteriet har fortfarande 12 V mellan polerna.</figcaption></figure><p>12 V på en märkning är ett nominellt värde. Verklig spänning kan variera med driftläge. I modulens första modeller använder vi ideala källor för att kunna skilja principerna åt.</p>"
+    },
+    {
+      "key": "module-1-v2-resistance",
+      "title": "3. Resistans, resistor och enheter",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        4,
+        5,
+        6
+      ],
+      "html": "<h2>3. Resistans, resistor och enheter</h2><p>En resistor är komponenten; resistans är egenskapen som anges i ohm, Ω. För beräkningen ersätter vi lampan med en ohmsk resistor vars resistans är oförändrad vid den angivna driftpunkten. En verklig lampas resistans kan ändras med temperaturen.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/05-resistance.svg\" width=\"820\" height=\"420\" alt=\"Två separata kretsar har vardera en ideal 12 V-källa. En resistor på 1 kiloohm ger 12 milliampere. Två kiloohm ger 6 milliampere.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två separata kretsar har vardera en ideal 12 V-källa. En resistor på 1 kiloohm ger 12 milliampere. Två kiloohm ger 6 milliampere.</figcaption></figure><p>Jämför de två separata kretsarna. Båda har 12 V. När resistansen fördubblas från 1 kΩ till 2 kΩ halveras strömmen från 12 mA till 6 mA. Det är samma samband som skrivs med Ohms lag i formelguiden nedan.</p><ul><li>Kilo betyder tusen: 1 kΩ motsvarar 1 000 Ω.</li><li>Milli betyder en tusendel: 1 mA motsvarar 0,001 A.</li><li>U betecknar spänning, I ström och R resistans. Storhetsbokstav och enhet är olika saker.</li><li>Skriv om givna värden till volt, ampere och ohm innan du sätter in dem i grundsambanden. Behåll enheten i slutsvaret.</li></ul>"
+    },
+    {
+      "key": "module-1-v2-connections",
+      "title": "4. Serie och parallell",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        7
+      ],
+      "html": "<span id=\"concept-1\"></span><h2>4. Serie och parallell</h2><p>I serie finns en enda strömväg. Samma ström passerar båda lasterna, resistansen summeras och spänningen fördelas mellan komponenterna. Principbilden använder två identiska 12 Ω-resistorer och en ideal 24 V-källa.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/06-series.svg\" width=\"820\" height=\"420\" alt=\"Två resistorer på 12 ohm ligger i serie med en 24 V-källa. Total resistans är 24 ohm och strömmen är 1 ampere.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två resistorer på 12 ohm ligger i serie med en 24 V-källa. Total resistans är 24 ohm och strömmen är 1 ampere.</figcaption></figure><p>I parallell ligger grenarna mellan samma två noder. Varje gren har därför samma spänning. Grenströmmarna kan vara olika; källans ström är summan av dem. I bilden är lasterna lika, så båda tar 2 A och källan ger 4 A.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/07-parallel.svg\" width=\"820\" height=\"420\" alt=\"Två resistorer på 12 ohm ligger i separata grenar mellan samma två noder i en ideal 24 V-krets. Varje gren tar 2 ampere och källan ger 4 ampere.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två resistorer på 12 ohm ligger i separata grenar mellan samma två noder i en ideal 24 V-krets. Varje gren tar 2 ampere och källan ger 4 ampere.</figcaption></figure><p>Ett avbrott i en gren kan släcka den grenens lampa medan den andra fortfarande lyser. Ett avbrott i den gemensamma returen kan däremot bryta båda vägarna. Följ varje gren genom hela kretsen innan du drar slutsatsen.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/08-lamp-branches.svg\" width=\"820\" height=\"420\" alt=\"Två lampor har varsin gren. En öppen brytare i den högra grenen släcker endast den lampan i idealmodellen. Den gemensamma returen är hel.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två lampor har varsin gren. En öppen brytare i den högra grenen släcker endast den lampan i idealmodellen. Den gemensamma returen är hel.</figcaption></figure>"
+    },
+    {
+      "key": "module-1-v2-safety",
+      "title": "5. Funktion är inte samma sak som säkerhet",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        8,
+        13,
+        14,
+        16,
+        17
+      ],
+      "html": "<span id=\"concept-2\"></span><h2>5. Funktion är inte samma sak som säkerhet</h2><p>En lampa kan lysa även om en anslutning blir varm eller ett skyddande lager är skadat. En extra kontaktresistans kan omvandla energi till värme under belastning. Att lasten fungerar visar inte att isolation, kapsling eller överströmsskydd har kontrollerats.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/10-contact.svg\" width=\"820\" height=\"420\" alt=\"En extra kontaktresistans i serie kan omvandla energi till värme även när lampans krets är sluten. Denna principbild anger inget säkert temperatur- eller skyddsvärde.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>En extra kontaktresistans i serie kan omvandla energi till värme även när lampans krets är sluten. Denna principbild anger inget säkert temperatur- eller skyddsvärde.</figcaption></figure><ul><li>Isolation skiljer elektriskt ledande delar åt.</li><li>En kapsling är utrustningens hölje och har de skyddsegenskaper som dess utförande anger.</li><li>En säkring kan bryta vid överström enligt sina villkor; den ersätter inte alla andra skydd.</li><li>Även ett lågspänningsbatteri kan ge stor felström med värme- och brandrisk. Grundmodellen är ingen säkerhetsverifiering av en verklig anläggning.</li></ul><p>Skriv riskbedömningen som en sammanhängande kedja: <strong>fara → möjlig händelse → följd → åtgärd → verifiering</strong>. Ange även vem som ansvarar. Sätt inte ett påhittat sannolikhetstal där underlag saknas. Personlig skyddsutrustning gör inte skadad utrustning lämplig att använda.</p>"
+    },
+    {
+      "key": "module-1-v2-case-a",
+      "title": "6. Beslutsfall A: den skadade arbetslampan",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        12,
+        15,
+        18
+      ],
+      "html": "<h2>6. Beslutsfall A: den skadade arbetslampan</h2><p><strong>Givet underlag:</strong> en bärbar arbetslampa vid en gångväg på däck är ansluten till 230 V AC. Sladdens ytterhölje är sprucket, lampan lyser, däcket är fuktigt och personer passerar. Skadans djup, skyddens skick och matningens krets är inte verifierade. Detta är ett distansfall för analys; du ska inte undersöka verklig spänningssatt utrustning.</p><p>Skilj uppgifterna i fallet från en hypotes. ”Ytterhöljet är sprucket” är en observation. ”Sladden har klämts” är en möjlig förklaring, inte ett fastställt förlopp. ”Alla skydd fungerar” saknar underlag.</p><p>I fallet finns inget underlag för fortsatt användning. Användningen ska upphöra och återanvändning hindras. Elektrisk hantering kräver säker metod, rätt identifiering och relevant kompetens. En AV-knapp eller en lapp är inte i sig ett bevis på frånskiljning. Samtidigt måste ljus och tillträde hanteras.</p><ul><li>Beskriv vilka personer som kan exponeras och genom vilket förlopp.</li><li>Ange vad som är känt, vad som är osäkert och vilket underlag som behövs.</li><li>Skriv ett beslut, en ansvarig och en kontrollerbar uppföljning.</li><li>Skilj genomförd åtgärd från planerad kontroll.</li></ul>"
+    },
+    {
+      "key": "module-1-v2-case-b",
+      "title": "7. Beslutsfall B: ljus och länsning samtidigt",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        9,
+        19,
+        20
+      ],
+      "html": "<h2>7. Beslutsfall B: ljus och länsning samtidigt</h2><p>Den skadade lampan är nu tagen ur bruk genom säker hantering. Gångvägen behövs i ytterligare 90 minuter. Samma grupp försörjer också en pump vars aktuella driftbehov behöver klarläggas. En länspump för bort vatten från avsedda utrymmen; dess betydelse beror på uppgift och driftläge.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/09-common-feeder.svg\" width=\"820\" height=\"420\" alt=\"Ett funktionsschema visar hur en gemensam matning förgrenas till arbetsbelysning och länspump. En frånkoppling före förgreningen påverkar båda. Detta är inte ett installationsschema.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Ett funktionsschema visar hur en gemensam matning förgrenas till arbetsbelysning och länspump. En frånkoppling före förgreningen påverkar båda. Detta är inte ett installationsschema.</figcaption></figure><p>Reservlampa A kan tändas, men miljölämplighet och drifttid är okända. För reservlampa B anger övningsunderlaget lämplighet för fallets miljö och minst två timmars drifttid i valt läge. B:s aktuella skick, laddning, placering och belysning av gångvägen ska fortfarande kontrolleras. Att den kan lysa är inte den enda kontrollen.</p><p>Välj därför inte enbart efter att en lampa går att tända. Ange vilket underlag som talar för B och vad som återstår före användning. Samordna påverkan på pumpen med driftfunktionen. Funktionsschemat är inte en instruktion för frånskiljning eller ändrad koppling.</p><p>Ett tillfälligt beslut behöver ansvarig, tidsgräns och villkor för omprövning. Flyttad lampa, ändrat driftläge eller mer vatten kan kräva en ny kontroll. En ficklampa är inte automatiskt en ersättning för föreskriven nödbelysning.</p>"
+    },
+    {
+      "key": "module-1-v2-evidence",
+      "title": "8. Dokumentera så att någon annan kan följa arbetet",
+      "kind": "theory",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        10,
+        21,
+        22
+      ],
+      "html": "<h2>8. Dokumentera så att någon annan kan följa arbetet</h2><p>Ett användbart protokoll anger objekt, plats, driftläge och mätpunkter. Skriv förutsägelse före mätningen, därefter observerat värde med enhet, möjlig förklaring och slutsats. Ange vilka kontroller som har utförts och vilka som fortfarande planeras.</p><p>”12,0 V vid batteriet, 11,9 V över lampan, lampan lyser” är ett observationsunderlag. Det bevisar inte att isolation och alla skydd är kontrollerade. Ordet ”klart” skapar inget tekniskt bevis.</p><p>Lämna ett tydligt besked mellan berörda funktioner: objekt, plats, observation, aktuell status och vem som följer upp. Rollnamn varierar mellan organisationer. Kontrollera att mottagaren har uppfattat det väsentliga.</p><p>Vid olycka eller tillbud: skydda hjälpare från den elektriska faran och larma enligt fartygets rutiner. Vid akut nödläge används 112 där kontakt är möjlig. Följ larmoperatörens och sjukvårdens anvisningar. Rapportera händelser och tillbud sakligt när det akuta läget är hanterat. Denna distanslektion ersätter inte praktisk första hjälpen.</p>"
+    },
+    {
+      "key": "module-1-v2-ohm-example",
+      "title": "9. Räkneexempel: från kiloohm till milliampere",
+      "kind": "example",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        4,
+        5,
+        6
+      ],
+      "html": "<h2>9. Räkneexempel: från kiloohm till milliampere</h2><p><strong>Givet:</strong> en ideal källa på 12 V och en ohmsk resistor på 2 kΩ. <strong>Sökt:</strong> strömmen genom resistorn. Omvandla först resistansen till 2 000 Ω. Välj sedan strömformen av Ohms lag.</p><div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"I=\\frac{U}{R}=\\frac{12\\,\\mathrm{V}}{2000\\,\\Omega}=0{,}006\\,\\mathrm{A}=6\\,\\mathrm{mA}\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>I</mi><mo>=</mo><mfrac><mi>U</mi><mi>R</mi></mfrac><mo>=</mo><mfrac><mrow><mn>12</mn><mtext> </mtext><mi mathvariant=\"normal\">V</mi></mrow><mrow><mn>2000</mn><mtext> </mtext><mi mathvariant=\"normal\">Ω</mi></mrow></mfrac><mo>=</mo><mn>0</mn><mo separator=\"true\" lspace=\"0em\" rspace=\"0em\">,</mo><mn>006</mn><mtext> </mtext><mi mathvariant=\"normal\">A</mi><mo>=</mo><mn>6</mn><mtext> </mtext><mrow><mi mathvariant=\"normal\">m</mi><mi mathvariant=\"normal\">A</mi></mrow></mrow><annotation encoding=\"application/x-tex\">I=\\frac{U}{R}=\\frac{12\\,\\mathrm{V}}{2000\\,\\Omega}=0{,}006\\,\\mathrm{A}=6\\,\\mathrm{mA}</annotation></semantics></math></span></div><figure data-formula-illustration=\"electrical-diagrams\" class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/05-resistance.svg\" width=\"820\" height=\"420\" alt=\"Två separata kretsar har vardera en ideal 12 V-källa. En resistor på 1 kiloohm ger 12 milliampere. Två kiloohm ger 6 milliampere.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två separata kretsar har vardera en ideal 12 V-källa. En resistor på 1 kiloohm ger 12 milliampere. Två kiloohm ger 6 milliampere.</figcaption></figure><p class=\"formula-units\">U: volt (V). R: ohm (Ω). I: ampere (A) eller milliampere (mA).</p><p class=\"formula-condition\"><strong>Gäller när:</strong> Ohmsk, resistiv likströmsmodell vid angiven driftpunkt. Ledningarna antas ideala.</p></div><p><strong>Rimlighetskontroll:</strong> vid samma spänning och halverad resistans, 1 kΩ, ska strömmen fördubblas till 12 mA. Den jämförelsen syns i figuren.</p><p><strong>Eget försök med samma metod:</strong> 12 V över 3 kΩ. Skriv om resistansen, välj samband och ange ström i A och mA. Facit finns efter modulens uppgifter.</p>"
+    },
+    {
+      "key": "module-1-v2-case-example",
+      "title": "10. Räkneexempel: en ny likströmslast",
+      "kind": "example",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        6
+      ],
+      "html": "<h2>10. Räkneexempel: en ny likströmslast</h2><p>När grundmetoden fungerar ändrar vi talen. En last har resistansen 9 Ω och matas med 18 V. Vi söker strömmen och använder samma samband som i föregående exempel.</p><div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"I=\\frac{U}{R}=\\frac{18\\,\\mathrm{V}}{9\\,\\Omega}=2\\,\\mathrm{A}\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>I</mi><mo>=</mo><mfrac><mi>U</mi><mi>R</mi></mfrac><mo>=</mo><mfrac><mrow><mn>18</mn><mtext> </mtext><mi mathvariant=\"normal\">V</mi></mrow><mrow><mn>9</mn><mtext> </mtext><mi mathvariant=\"normal\">Ω</mi></mrow></mfrac><mo>=</mo><mn>2</mn><mtext> </mtext><mi mathvariant=\"normal\">A</mi></mrow><annotation encoding=\"application/x-tex\">I=\\frac{U}{R}=\\frac{18\\,\\mathrm{V}}{9\\,\\Omega}=2\\,\\mathrm{A}</annotation></semantics></math></span></div><figure data-formula-illustration=\"electrical-diagrams\" class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/11-new-load.svg\" width=\"820\" height=\"420\" alt=\"En ideal 18 V-källa driver 2 A genom en ohmsk resistor på 9 ohm vid den angivna driftpunkten.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>En ideal 18 V-källa driver 2 A genom en ohmsk resistor på 9 ohm vid den angivna driftpunkten.</figcaption></figure><p class=\"formula-units\">U: volt (V). R: ohm (Ω). I: ampere (A).</p><p class=\"formula-condition\"><strong>Gäller när:</strong> Ohmsk, resistiv likströmsmodell vid angiven driftpunkt. Ledningarna antas ideala.</p></div><p>Kontrollera lösningen genom att multiplicera den beräknade strömmen med den givna resistansen. Produkten ska återge källans spänning. Förklara alltid vilken driftpunkt och modell du använder.</p>"
+    },
+    {
+      "key": "module-1-v2-parallel-example",
+      "title": "11. Räkneexempel: två lika parallella grenar",
+      "kind": "example",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        7
+      ],
+      "html": "<h2>11. Räkneexempel: två lika parallella grenar</h2><p>Veckofallet använder två resistorer på 12 Ω anslutna parallellt till 24 V. Båda grenarna har hela källspänningen. Beräkna först varje gren och summera sedan strömmarna.</p><div class=\"illustrated-formula\"><div class=\"math-render\" aria-label=\"I_1=I_2=\\frac{24\\,\\mathrm{V}}{12\\,\\Omega}=2\\,\\mathrm{A}\\qquad I_{\\mathrm{tot}}=4\\,\\mathrm{A}\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msub><mi>I</mi><mn>1</mn></msub><mo>=</mo><msub><mi>I</mi><mn>2</mn></msub><mo>=</mo><mfrac><mrow><mn>24</mn><mtext> </mtext><mi mathvariant=\"normal\">V</mi></mrow><mrow><mn>12</mn><mtext> </mtext><mi mathvariant=\"normal\">Ω</mi></mrow></mfrac><mo>=</mo><mn>2</mn><mtext> </mtext><mi mathvariant=\"normal\">A</mi><mspace width=\"2em\"/><msub><mi>I</mi><mrow><mi mathvariant=\"normal\">t</mi><mi mathvariant=\"normal\">o</mi><mi mathvariant=\"normal\">t</mi></mrow></msub><mo>=</mo><mn>4</mn><mtext> </mtext><mi mathvariant=\"normal\">A</mi></mrow><annotation encoding=\"application/x-tex\">I_1=I_2=\\frac{24\\,\\mathrm{V}}{12\\,\\Omega}=2\\,\\mathrm{A}\\qquad I_{\\mathrm{tot}}=4\\,\\mathrm{A}</annotation></semantics></math></span></div><figure data-formula-illustration=\"electrical-diagrams\" class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/07-parallel.svg\" width=\"820\" height=\"420\" alt=\"Två resistorer på 12 ohm ligger i separata grenar mellan samma två noder i en ideal 24 V-krets. Varje gren tar 2 ampere och källan ger 4 ampere.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två resistorer på 12 ohm ligger i separata grenar mellan samma två noder i en ideal 24 V-krets. Varje gren tar 2 ampere och källan ger 4 ampere.</figcaption></figure><p class=\"formula-units\">Grenströmmar och totalström anges i ampere (A).</p><p class=\"formula-condition\"><strong>Gäller när:</strong> Ohmsk, resistiv likströmsmodell vid angiven driftpunkt. Ledningarna antas ideala.</p></div><p>Jämför med seriefiguren: två 12 Ω-resistorer i serie vid 24 V ger en total resistans på 24 Ω och en gemensam ström på 1 A. Samma komponenter och samma källa ger olika resultat när kopplingen ändras. Rita därför strömvägarna före beräkningen.</p><figure class=\"module-one-figure\"><div class=\"schematic-scroll\"><img src=\"assets/module-1/06-series.svg\" width=\"820\" height=\"420\" alt=\"Två resistorer på 12 ohm ligger i serie med en 24 V-källa. Total resistans är 24 ohm och strömmen är 1 ampere.\" loading=\"lazy\" decoding=\"async\"></div><figcaption>Två resistorer på 12 ohm ligger i serie med en 24 V-källa. Total resistans är 24 ohm och strömmen är 1 ampere.</figcaption></figure>"
+    },
+    {
+      "key": "module-1-v2-sources",
+      "title": "12. Inför övningarna och källor",
+      "kind": "example",
+      "source": "vecka-37/aktuell/",
+      "sourceBlocks": [
+        23
+      ],
+      "html": "<h2>12. Inför övningarna och källor</h2><span id=\"chapter-readiness\"></span><ul><li>Kan du följa både framledning och retur?</li><li>Kan du förklara varför ett spänningsvärde inte bevisar strömflöde?</li><li>Kan du skilja serie från parallell och omvandla kΩ och mA?</li><li>Kan du skilja observation från hypotes och skriva en verifierbar riskrad?</li></ul><p>Därefter följer veckofallet, självrättande kontroller, simulatorprotokoll och din skriftliga redovisning. Resonemang och laborationsunderlag kräver lärargranskning.</p><p>Allmänna säkerhetsprinciper stöds av material från Elsäkerhetsverket, Arbetsmiljöverket och Transportstyrelsen. Fallens beslut är pedagogiska tillämpningar av givna uppgifter. Tillämpliga rutiner beror på det aktuella fartyget och uppgiften.</p><p>Schematiska symboler: <a href=\"https://github.com/ma-laforge/ElectricalDiagrams\" target=\"_blank\" rel=\"noreferrer\">ma-laforge/ElectricalDiagrams</a>, MIT-licens. <a href=\"licenses/ElectricalDiagrams-MIT.txt\">Läs licensen</a>. Kretsar, märkning och svenska bildförklaringar är omritade för denna modul. Ursprungsmaterialet finns i källarkivet.</p>"
+    }
+  ],
+  "related": [
+    {
+      "id": 2,
+      "title": "Effekt, Kirchhoff och multimeter",
+      "reason": "Samma strömväg används när du senare följer förgreningar, effekt och mätaranslutning.",
+      "url": "/sjoskolan/vecka-39/aktuell/"
+    },
+    {
+      "id": 3,
+      "title": "Frånskiljning och mätteknik",
+      "reason": "Säker mätning kräver också planerad arbetsgräns och funktionskontroll av instrumentet.",
+      "url": "/sjoskolan/vecka-38/aktuell/"
+    }
+  ]
+}

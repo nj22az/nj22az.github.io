@@ -1,0 +1,18 @@
+{
+  "candidate": "78965d9ff54cc1907da9a22b4b758d40a7ad2f11",
+  "release": "22a03f8ce69a1c0b6241a1fe4cbe14f79b53577e",
+  "candidateArtifact": 12589637816,
+  "candidateArtifactSHA256": "c8902e4c3a0b648305fe9e7af3219f6d5623fc0c9bd58832f4ada0e5fa865815",
+  "releaseArtifact": 12589418021,
+  "releaseArtifactSHA256": "09f5cca8072d9126f7b3499989c524843a41a2ab038ee2ab687720796ec1278f",
+  "finalFaceCapturesByteIdenticalToCandidate": true,
+  "physicalDevice": false,
+  "files": {
+    "dim-cartoon.png": "7d2657e4d82901132015ec510e4a8e890b11363b8268257cc729314ea05227ef",
+    "deck-controls-1280x800.png": "c19fdd45e35381333d3cf7c478f9f3e658a0de86db3ca6c878490798b999499e",
+    "linux-gameplay.png": "eab51a5322c68cd1e24ea68c34624202696092f1777b81d7d744180fc65754f7",
+    "dim-natural.png": "dc959d4360cb92ac986b780c2215537f23f22dee2abaf3d7690830fdfdd31db9",
+    "dim-sketchbook.png": "19f9bce155a9e0d33e0a98c1a0f96c392494cb67a64bc196395526b24030ac4b",
+    "dim-oil.png": "8b8e870c58a55f3476d85f8586f84b80579282146d895f9ba6a6f6f7a6d7de11"
+  }
+}

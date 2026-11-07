@@ -1,0 +1,33 @@
+{
+  "id": "EL-000708",
+  "titel": "Avslutsfråga: v41_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Vilka märkdata behöver du innan du beräknar motorström från axeleffekt?",
+    "instruktion": "Lämna v41-uppgifterna före 9 oktober. Repetera instrumentval och säker arbetsberedning inför träffen."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 35",
+        "revision": "8cabde3",
+        "roll": "avslutsfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

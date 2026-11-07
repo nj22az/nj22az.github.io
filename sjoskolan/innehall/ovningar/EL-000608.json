@@ -1,0 +1,33 @@
+{
+  "id": "EL-000608",
+  "titel": "Fall A: arbetslampan på däck",
+  "sprak": "sv",
+  "typ": "fall",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-2",
+      "LM-9"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v37-04"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En bärbar arbetslampa vid en gångväg på däck är ansluten till 230 V AC. Sladdens ytterhölje är sprucket. Lampan lyser. Däcket är fuktigt och personer passerar. Skadans djup, skyddens skick och matningens krets är ännu inte verifierade."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-37/aktuell/01B_Elsakerhet_och_riskbedomning/Arbetsblad.html Fall A",
+        "revision": "8cabde3",
+        "roll": "gemensamt fall för arbetsblad 1B"
+      }
+    ],
+    "publik": "elev"
+  }
+}

@@ -1,0 +1,43 @@
+/* Memory: original Minato postcard art, ink and paper, shared with the camera's island palette. */
+.memory {
+ --memory-ink:#244842; --memory-paper:#f8eccd; --memory-teal:#6fa99b; --memory-coral:#bd5d50;
+ color:var(--memory-ink);
+ background:repeating-linear-gradient(0deg,#e5d8b6 0 2px,#e9ddbe 2px 4px);
+}
+.memory .bar {background:var(--memory-ink);color:var(--memory-paper);border-bottom:4px solid #b98754}
+.memory .bar h2 {font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:15px}
+.memory .back,.memory .memory-new {color:var(--memory-paper)}
+.memory .memory-new {font-weight:800}
+.memory .memory-choose {padding-top:12px;gap:10px}
+.memory .memory-lead {color:var(--memory-ink);font-weight:650;line-height:1.4}
+.memory .memory-setup h3 {color:#516c5b;font-size:12px;font-weight:800;letter-spacing:.08em}
+.memory .memory-deck {background:#f9f0d9;color:var(--memory-ink);border:2px solid #8da68b;border-radius:8px;box-shadow:0 3px 0 #b7ad8d}
+.memory .memory-deck[aria-checked="true"] {border-color:var(--memory-ink);box-shadow:0 3px 0 var(--memory-ink),inset 0 0 0 2px #eabf6d}
+.memory .memory-deck:disabled {opacity:.52}
+.memory .memory-fan i {border:2px solid var(--memory-ink);border-radius:4px;box-shadow:0 2px 0 #729181;background:#fff8e6}
+.memory .memory-deck-name {font-weight:800}
+.memory .memory-deck-note,.memory .memory-best {color:#526c5c}
+.memory .mini-seg.memory-pairs {background:#cbbf9e;border:2px solid var(--memory-ink);border-radius:7px;padding:3px}
+.memory .memory-pairs button {color:var(--memory-ink);font-weight:800;border-radius:4px;min-height:38px}
+.memory .memory-pairs button[aria-checked="true"] {background:var(--memory-ink);color:var(--memory-paper);box-shadow:none}
+.memory .memory-go {background:#f8eccd;border-top:2px solid #b7ad8d;padding-top:10px}
+.memory .button {background:#fff9e7;color:var(--memory-ink);border:2px solid var(--memory-ink);border-radius:8px;box-shadow:0 3px 0 var(--memory-ink);font-weight:800}
+.memory .button.primary {background:#d97e67;color:#173f3c}
+.memory .button:active {transform:translateY(2px);box-shadow:0 1px 0 var(--memory-ink)}
+.memory .memory-stage {background:repeating-linear-gradient(0deg,#8fb4a0 0 2px,#94baa5 2px 4px)}
+.memory .memory-card,.memory .memory-back,.memory .memory-face {border-radius:5px}
+.memory .memory-back {background:#6fa99b url('assets/memory-card-back.png') center / 100% 100% no-repeat;image-rendering:pixelated;box-shadow:0 3px 0 #244842}
+.memory .memory-face {background:#fff8e6;border:3px solid #244842;box-shadow:0 3px 0 #244842}
+.memory .memory-card.matched {opacity:.65}
+.memory .memory-card:focus-visible,.memory button:focus-visible {outline:3px solid #d75845;outline-offset:3px}
+.memory .memory-status {gap:clamp(8px,3vw,18px);background:#244842;color:#dce4c8;font-size:12px;font-weight:700;white-space:nowrap;flex-wrap:wrap}
+.memory .memory-status b {color:#fff8de}
+.memory .memory-record {color:#e4c780}
+.memory .memory-win {background:rgba(29,64,59,.92);color:#fff8de;-webkit-backdrop-filter:none;backdrop-filter:none}
+.memory .memory-win h3 {color:#fff8de;letter-spacing:.02em}
+.memory .memory-win p {color:#e3d8b8}
+.memory .memory-cheer {filter:drop-shadow(0 5px 0 rgba(20,48,43,.45))}
+@media (prefers-reduced-motion:reduce) {
+ .memory .memory-inner,.memory .memory-card,.memory .memory-deck {transition:none}
+ .memory .memory-card.matched,.memory .memory-card.miss,.memory .memory-win,.memory .memory-cheer {animation:none}
+}

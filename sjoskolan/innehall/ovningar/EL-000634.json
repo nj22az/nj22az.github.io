@@ -1,0 +1,38 @@
+{
+  "id": "EL-000634",
+  "titel": "Fall A: Vilken mätning svarar på frågan?",
+  "sprak": "sv",
+  "typ": "resonemang",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4",
+      "LM-8"
+    ],
+    "niva": "fordjupning",
+    "teori": [
+      "T-bildspel-v38-01"
+    ]
+  },
+  "uppgift": {
+    "scenario": "En 12 V DC-krets med 1 kΩ last är dokumenterad. Frågan är om lasten får rätt spänning. Instrument M1 har spänningsmätning; M2 har dessutom säkrad mA-ingång.",
+    "fraga": "Välj mätstorhet, två mätpunkter, funktion och förväntat värde. En kollega föreslår att ansluta mA-ingången mellan plus och retur: förklara felet.",
+    "instruktion": "givna uppgifter, metod, resultat med enheter där det behövs, slutsats och begränsning."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-38/aktuell/Fordjupning_elev.html Fall A",
+        "revision": "8cabde3",
+        "roll": "fördjupning vecka 38"
+      }
+    ],
+    "publik": "elev"
+  },
+  "losning": {
+    "status": "saknas"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "EL-000866",
+  "titel": "Din tur: fläktens fasvinkel",
+  "sprak": "sv",
+  "typ": "berakning",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v40-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma fläkt: R = 110 Ω och X_{L} = 45 Ω. Räkna fasvinkeln φ med räknaren i DEG. Leder eller släpar strömmen?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-40/aktuell/lektioner.mjs LESSONS impedans bild tur-fas",
+        "revision": "ny",
+        "roll": "Din tur i genomgången och presentationen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "losning": {
+    "text": "φ = arctan(45/110) ≈ 22,2°. Strömmen släpar efter spänningen.",
+    "status": "migrerad"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "release": "https://github.com/nj22az/nj22az.github.io/releases/tag/johansson-world-linux-v0.2.21",
+  "tag": "johansson-world-linux-v0.2.21",
+  "target": "22a03f8ce69a1c0b6241a1fe4cbe14f79b53577e",
+  "assets": [
+    {
+      "name": "bundle-manifest.json",
+      "bytes": 270660,
+      "sha256": "da7b4159612aa562cbcc35cf81f11c7f6b7f4ffb742405d19cbcd9b4b1817cc4"
+    },
+    {
+      "name": "install.sh",
+      "bytes": 17865,
+      "sha256": "27fea91bc766a272307ef3be1ed1ef8a4e3bf01d7e5ff5f74a90ae6b2e42b34d"
+    },
+    {
+      "name": "johansson-world-512.png",
+      "bytes": 261803,
+      "sha256": "30c8ee9eb18ec1e1f703f17dccc3df787f64943207a77c57bf9e90893193cbfa"
+    },
+    {
+      "name": "johansson-world-linux-0.2.20-to-0.2.21.patch.tar.gz",
+      "bytes": 2391542,
+      "sha256": "9484a24d522f1cea0c3047c0f6c5884b45b5fffb63208a4f6f87dd98040d3f8f"
+    },
+    {
+      "name": "johansson-world-linux-x64.tar.gz",
+      "bytes": 268958973,
+      "sha256": "e853af692816e2070eff658a549396110a2e390faebad8db4d5df38dd0f404ac"
+    },
+    {
+      "name": "latest-linux.json",
+      "bytes": 771,
+      "sha256": "084a05d78a963cdaeb7aa53b016d5e05edb33fd4179119e5e69197362109f82d"
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 217,
+      "sha256": "7d407276721562a3b66a6b2a2fe6ab9db2b9cc7742ed29f559074106987e8683"
+    }
+  ],
+  "verified_files": 1625,
+  "production_runtime_modules": 36,
+  "shared_sources": {
+    "src/avatars/build.js": "8e56000989e3cb9146aeca1cefb6183334e428a5e9c5b32b8858915822b91608",
+    "src/render/looks.js": "78f7a9c2c8f291d23f59fee6b5842dc0ed6c547c5af1867722cd8459d43a615a",
+    "src/render/ink-pipeline.js": "001cc698fdd66b84473768e2f8dab9d2889a141ec59188881e6b986f6401e0a5"
+  },
+  "desktop_build": {
+    "version": "0.2.21",
+    "source": "22a03f8ce69a1c0b6241a1fe4cbe14f79b53577e",
+    "offline": true
+  },
+  "patches": [
+    {
+      "from": "0.2.20",
+      "baseTree": "f39239d9af722baec245df0a1ec265d338e3120d4d7b56497d2cdcda2f7f6a5f",
+      "runtime": "1662b562ceff7e8bce4d63da4ab7040a83e8afc7c011a51c1611a8309c4232b1",
+      "archiveUrl": "https://github.com/nj22az/nj22az.github.io/releases/download/johansson-world-linux-v0.2.21/johansson-world-linux-0.2.20-to-0.2.21.patch.tar.gz",
+      "sha256": "9484a24d522f1cea0c3047c0f6c5884b45b5fffb63208a4f6f87dd98040d3f8f",
+      "bytes": 2391542
+    }
+  ],
+  "deck_input": {
+    "profile": "steam-deck",
+    "physicalDevice": false,
+    "files": {
+      "resources/app/preload.cjs": "8e5228be6b48c4878815b4454934bf05767e6473cb1309e56ec08cbc839a6d61",
+      "resources/app/site/desktop/controller.mjs": "5b092b0441b52d3a308d5839a1114ede2cb5096922acf06035bc9c15c11b0d86",
+      "resources/app/site/desktop/console-ui.mjs": "89d926a28ce8cfb78f346b0b51ff56c74a96b111de8f3abf930c79899f8ecab4",
+      "resources/app/site/desktop/pad-layout.mjs": "dc09bbc8789016a97e80bb9540a6a50a76864a67888c113022dad253b73db268"
+    }
+  },
+  "production_runtime": {
+    "resources/app/site/johansson-town/runtime/actors-CrKMHpvF.js": "71a50f582d1189b0ca41b305d00d8233535fce4c7713a1806a0ba632f3269007",
+    "resources/app/site/johansson-town/runtime/animate-Dn0ZJ1ch.js": "c0699cb249efdb8f4fa38d4ba3301b135a9f05419c692def11ebf7a2d13a9bc7",
+    "resources/app/site/johansson-town/runtime/audio-D2X0mDtX.js": "bffacba2c7f9ab91f3d8ade4711907bb2ec3f0744d528ffb221b00a7a2a7152f",
+    "resources/app/site/johansson-town/runtime/boot-BOLsSUZD.js": "9b29c4c63c7d541c6266a231890418110ba7aa87cffbcf9a2c8368428737b0de",
+    "resources/app/site/johansson-town/runtime/boot-yr8eklbp.js": "99bf0e9b5adf4d3c43fb78a49a090d8b797db149267709558fbff809868485d3",
+    "resources/app/site/johansson-town/runtime/catalog-D5MacHo8.js": "0d736d31e2b24ab875939b829f22963f29deef13e49bccc398ee0c42057d88ec",
+    "resources/app/site/johansson-town/runtime/compact-shops-CMhcntwQ.js": "3ada119ba05570537a4c41be57053f3082c4cc09b95b77ffffb948db477833c4",
+    "resources/app/site/johansson-town/runtime/concert-TBYfk9P7.js": "051d8a7f4f1c922649a3cd116fd822bf114839357ade10806ff4d8d586358207",
+    "resources/app/site/johansson-town/runtime/feed-BQZw3i1z.js": "2547112f1ceee36d1616128d297832fe875159d3fc25e27ada264ff099e461e8",
+    "resources/app/site/johansson-town/runtime/feed-D-LWhSdU.js": "bd5c6004c6f761d7fe60ed10d501e85c8e9e1b8f707004b8409b9166505d19d9",
+    "resources/app/site/johansson-town/runtime/fish-CGKzduID.js": "cb1348331a5112a415c8d01a19ff3c24df51896593c4f6cf9a50d3376f5345aa",
+    "resources/app/site/johansson-town/runtime/friendship-DLe0ZCjr.js": "17fb517363e329e07818469094cbe6df32e460cd05b08cac26ad8945d0df3dcd",
+    "resources/app/site/johansson-town/runtime/game-Cn9mMlIy.js": "ba30f48dd86aa988c5b80294dd6a067cef9f4bb979b0280c00b3a3c357d032fa",
+    "resources/app/site/johansson-town/runtime/game-DSnILHr4.js": "1f5329a7ea5b547492faa72836a898a2917fb4a4747714c4aa3a1216696aed31",
+    "resources/app/site/johansson-town/runtime/halloween-JSa1lSn5.js": "de2f3752de051a6d22f1ad8a1e2c3042159eeb55183ac62a89871523ba109dfb",
+    "resources/app/site/johansson-town/runtime/harbour-park-plan-Bbx44h8h.js": "8799beaae9606fbb7d08de4056464709814cbc068ff36b5a17885b9c27c6195c",
+    "resources/app/site/johansson-town/runtime/hat-models-DWqJpXRY.js": "402974f6ff748453a5b3e1423a5ae21a577ffefa05c145149807b28cc4519eea",
+    "resources/app/site/johansson-town/runtime/icons-DfeBIm6m.js": "b091b9cb9311794bd87d1ba33e34fc8a3bb6ca8931abd3bc51614f9278744803",
+    "resources/app/site/johansson-town/runtime/onsen-DsMuQfV5.js": "482c999006c8b4fb436e9cf0fd869c4ddcadd9c71e65891b9dbdc8a355397a19",
+    "resources/app/site/johansson-town/runtime/portraits-CMERjSFh.js": "33c6e93591dbe100d274af7c337161186f71299644b764c592b8c7b9e74cb293",
+    "resources/app/site/johansson-town/runtime/preload-helper-PPVm8Dsz.js": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4",
+    "resources/app/site/johansson-town/runtime/sakura-interior-DvvkeCR3.js": "a51a4bcf358492ba53529656e01a17e6e43a70416eaee36b62b74c0760bac47a",
+    "resources/app/site/johansson-town/runtime/sato-ramen-DQchdLuj.js": "136d522d8747bcf9236dfe213256486d85dea83f62dadaec584ecb2d933b3675",
+    "resources/app/site/johansson-town/runtime/scene-world-BlhEOdn4.js": "430416d1ee6bd272593d551290d9638a55a59d7a325d3c2639bb84a8f764ac78",
+    "resources/app/site/johansson-town/runtime/scene-world-DjrT_AWD.js": "fc310254ece14f61182b3af1e22d3ba59a4be70e9212f504f0beb389aa53366d",
+    "resources/app/site/johansson-town/runtime/shopping-lane-plan-D0DhEU8_.js": "5bdd9f9ba046f84c06cef3f1b7ed6318534d4216331464a43ea0682a47e32d94",
+    "resources/app/site/johansson-town/runtime/spector.bundle-_JPoFEkN.js": "8e4e5a80c99ba39625463e80fc7b32b8961b174d46d438fe18a08ee0f7023f5c",
+    "resources/app/site/johansson-town/runtime/staff-bench-DA7K0cUw.js": "e80f3fe22b3b0149d1ed89736cd2bbb2c34b90032a170c4c036f1ff9be4421aa",
+    "resources/app/site/johansson-town/runtime/storyteller-BoqedW7h.js": "839bda9b5ebd615a6fe2635ec556f6c711c290a0488ca369700efe650f5efb4a",
+    "resources/app/site/johansson-town/runtime/studio-handoff-BIKEd-A2.js": "e540783a05115f73995e75f6db0c5dc8804c2012a686045db5159a3c0d6ed669",
+    "resources/app/site/johansson-town/runtime/thuan-voice-Dz-XGNqd.js": "7353d3a89febbcb7ca9cded704c7c09b90bde9c665e843631510e857f881cd59",
+    "resources/app/site/johansson-town/runtime/title-menu-DOJ9MpVm.js": "86c092c279a7aa781bf5e90ee66d2088a4d6ba38cb88ee1f993a2ed1c220c0ac",
+    "resources/app/site/johansson-town/runtime/touch-ui-D34cMzo7.js": "83b5028de47afa38a02300daf6d01f359d4ef5bc4aae58d4875f070d6f77db33",
+    "resources/app/site/johansson-town/runtime/town-hall-kVY8V1VN.js": "22da96b90364fa337d04badd532a01e514d67443aff60f63bf95751b3e3ef7bc",
+    "resources/app/site/johansson-town/runtime/webmcp-CxSkO4VH.js": "2a6856ebc806bc4225e8bdfd3d08f913aad788e032d8bda521a230291c0f1cb6",
+    "resources/app/site/johansson-town/runtime/webmcp-characters-BkXkAGJZ.js": "4f1c850b6db1cf07f238f632a62d81eb8d1336f66d50e23a2bf6c738cb82b2bc"
+  },
+  "production_sources_commit": "7c048393daaf614e242956cf3ee7b3f9bdc0f626",
+  "candidate_git_tree": "9dbcadd435455ae250965f96a17e980d80c320ac",
+  "olderReleaseAssetsUnchanged": true,
+  "olderRelease": "johansson-world-linux-v0.2.20"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "EL-000707",
+  "titel": "Startfråga: v41_02",
+  "sprak": "sv",
+  "typ": "reflektion",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "forberedelse",
+    "teori": [
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Har en lastgren samma spänning i Y som i Δ vid samma linjespänning?"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/v41_02_Y_och_trefaseffekt_elev.pptx bild 2",
+        "revision": "8cabde3",
+        "roll": "startfråga i presentationen"
+      }
+    ],
+    "publik": "elev"
+  }
+}

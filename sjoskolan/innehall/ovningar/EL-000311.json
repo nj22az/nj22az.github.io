@@ -1,0 +1,127 @@
+{
+  "id": "EL-000311",
+  "titel": "Momentanvärde",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "U = 10 V RMS, f = 50 Hz. Beräkna u vid t = 3,0 ms. Räknaren i RAD."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[2] (id moment)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Beräkna först û = √2 · U. Sedan u = û · sin(2π · 50 · 0,003).",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "u(3,0 ms)",
+        "varde": 11.4412,
+        "tolerans": {
+          "rel": 0.02,
+          "abs": 0.05
+        },
+        "enhet": "V",
+        "berakning": "ac.momentan"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 10,
+      "enhet": "V"
+    },
+    "f": {
+      "varde": 50,
+      "enhet": "Hz"
+    },
+    "t": {
+      "varde": 0.003,
+      "enhet": "s"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 11.4412,
+      "tolerans": {
+        "rel": 0.02,
+        "abs": 0.05
+      }
+    },
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 10,
+      "f": 50,
+      "t": 3,
+      "showB": false,
+      "dt": 3,
+      "window": "auto"
+    },
+    "fraga": {
+      "storhet": "ut",
+      "etikett": "u(3,0 ms)",
+      "enhet": "V"
+    },
+    "dolj": [
+      "ut",
+      "peak",
+      "pp",
+      "scale"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 8.09017,
+          "text": "Du har använt effektivvärdet 10 V som amplitud. Amplituden är û = √2 · U."
+        },
+        {
+          "varde": 10,
+          "text": "Det är effektivvärdet. Momentanvärdet beror på tiden: u = û · sin(2πft)."
+        },
+        {
+          "varde": 14.1421,
+          "text": "Det är toppvärdet û. Multiplicera med sin(2πft) för tiden 3,0 ms."
+        },
+        {
+          "varde": 0.232618,
+          "text": "Räknaren står i DEG. Vinkeln 2πft är i radianer, ställ räknaren i RAD."
+        }
+      ]
+    },
+    "kallhanvisning": "Fördjupning: momentanvärde",
+    "teoriavsnitt": "moment",
+    "alias": "moment"
+  }
+}

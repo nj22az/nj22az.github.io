@@ -1,0 +1,50 @@
+{
+  "id": "EL-000872",
+  "titel": "Kontrollfråga 2.2",
+  "sprak": "sv",
+  "typ": "flerval",
+  "revision": 3,
+  "granskning": {
+    "status": "utkast"
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "grund",
+    "teori": [
+      "T-bildspel-v41-02"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma tre resistorer kopplas om från Y till Δ på samma nät. Vad händer med den totala effekten?",
+    "alternativ": [
+      "Den blir √3 gånger större",
+      "Den är oförändrad",
+      "Den blir tre gånger större",
+      "Den blir en tredjedel"
+    ]
+  },
+  "ledtradar": [
+    {
+      "niva": "begrepp",
+      "text": "P = U²/R per gren.",
+      "status": "utkast"
+    }
+  ],
+  "losning": {
+    "text": "I Δ får varje gren √3 gånger högre spänning. Effekten växer med spänningen i kvadrat: (√3)² = 3.",
+    "status": "utkast",
+    "kommentar": "Den blir tre gånger större"
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vecka-41/aktuell/Del_2.html#kontroll",
+        "roll": "kontrollfråga sist i delen"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  }
+}

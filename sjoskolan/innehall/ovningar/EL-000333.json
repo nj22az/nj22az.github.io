@@ -1,0 +1,117 @@
+{
+  "id": "EL-000333",
+  "titel": "Ström i jordfelet",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 5,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-1",
+      "LM-6"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-isolationslabbet",
+      "T-bildspel-v44-01"
+    ]
+  },
+  "uppgift": {
+    "fraga": "Samma fel på L1. Varje fas har 1,0 µF kapacitans mot skrovet (kablar och filter). f = 60 Hz. Hur stor ström går i jordfelet? Svara i mA."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "isolationslabbet/lessons.mjs CHALLENGES[4] (id kapstrom)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "Strömmen går tillbaka genom de friska fasernas kapacitans. I ≈ 3 · ωC · U_{F}, med ω = 2πf och U_{F} = 440/√3.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "text": "I = 3 · 2π · 60 · 1,0 · 10⁻⁶ · 254 ≈ 0,287 A ≈ 287 mA. Strömmen är för liten för att säkringar ska lösa men tillräckligt stor för att ge stöt och gnistor.",
+    "svar": [
+      {
+        "storhet": "I_{fel}",
+        "varde": 287.306,
+        "tolerans": {
+          "rel": 0.02
+        },
+        "enhet": "mA",
+        "berakning": "it.kapacitiv_felstrom_ma"
+      }
+    ],
+    "status": "migrerad",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "f": {
+      "varde": 60,
+      "enhet": "Hz"
+    },
+    "C": {
+      "varde": 1e-06,
+      "enhet": "F"
+    },
+    "UL": {
+      "varde": 440,
+      "enhet": "V"
+    }
+  },
+  "simulator": {
+    "labb": "isolationslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "isolationslabbet.forvantat",
+      "facit": 287.306
+    },
+    "initial": {
+      "R": [
+        0,
+        10000000,
+        10000000
+      ],
+      "C": 1e-06,
+      "f": 60
+    },
+    "fraga": {
+      "storhet": "Ifault",
+      "etikett": "I_{fel}",
+      "enhet": "mA",
+      "skala": 0.001
+    },
+    "dolj": [
+      "net"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 0,
+          "text": "Utan kapacitans vore strömmen nästan noll. Men kablarna har kapacitans mot skrovet."
+        },
+        {
+          "varde": 95.8,
+          "text": "Det är ωC · U_{F}: laddningsströmmen i en fas före felet. Efter felet har de två friska faserna huvudspänning mot skrovet och ger var och en √3 gånger mer ström. Strömmarna läggs ihop som visare med 60° mellan sig. Summan blir tre gånger ditt värde."
+        },
+        {
+          "varde": 239.4,
+          "text": "Det är strömmen vid 50 Hz. Fartygets nät har 60 Hz."
+        }
+      ]
+    },
+    "kallhanvisning": "Del 1, film: IT-nätet ombord",
+    "alias": "kapstrom"
+  }
+}

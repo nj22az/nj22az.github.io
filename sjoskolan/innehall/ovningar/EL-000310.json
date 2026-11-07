@@ -1,0 +1,109 @@
+{
+  "id": "EL-000310",
+  "titel": "Toppvärde från effektivvärde",
+  "sprak": "sv",
+  "typ": "simulator",
+  "revision": 1,
+  "granskning": {
+    "status": "migrerad",
+    "numeriskt_kontrollerad": true
+  },
+  "larande": {
+    "mal": [
+      "LM-4"
+    ],
+    "niva": "tillampning",
+    "teori": [
+      "T-labb-vaxelstromslabbet"
+    ]
+  },
+  "uppgift": {
+    "fraga": "En sinusspänning har effektivvärdet 24 V. Beräkna toppvärdet û."
+  },
+  "referenser": {
+    "ursprung": [
+      {
+        "kalla": "vaxelstromslabbet/lessons.mjs CHALLENGES[1] (id topp)",
+        "revision": "8cabde3",
+        "roll": "räkna-först-uppgift i simulatorn"
+      }
+    ],
+    "publik": "elev",
+    "losning_publik": true
+  },
+  "ledtradar": [
+    {
+      "niva": "metod",
+      "text": "û = √2 · U. Toppvärdet ska bli större än effektivvärdet.",
+      "status": "migrerad"
+    }
+  ],
+  "losning": {
+    "svar": [
+      {
+        "storhet": "û",
+        "varde": 33.9411,
+        "tolerans": {
+          "rel": 0.01
+        },
+        "enhet": "V",
+        "berakning": "ac.topp"
+      }
+    ],
+    "status": "saknas",
+    "kalla": "Simulatorns modell (facit räknas med registrerad funktion)"
+  },
+  "parametrar": {
+    "U": {
+      "varde": 24,
+      "enhet": "V"
+    }
+  },
+  "simulator": {
+    "labb": "vaxelstromslabbet",
+    "validering": {
+      "typ": "numerisk",
+      "funktion": "vaxelstromslabbet.forvantat",
+      "facit": 33.9411,
+      "tolerans": {
+        "rel": 0.01
+      }
+    },
+    "scenario": "sinus",
+    "initial": {
+      "shape": "sinus",
+      "urms": 24,
+      "f": 50,
+      "t": 5,
+      "showB": false,
+      "dt": 3,
+      "window": "auto"
+    },
+    "fraga": {
+      "storhet": "peak",
+      "etikett": "û",
+      "enhet": "V"
+    },
+    "dolj": [
+      "peak",
+      "pp",
+      "ut",
+      "scale"
+    ],
+    "aterkoppling": {
+      "vanliga_fel": [
+        {
+          "varde": 48,
+          "text": "Du har dubblat effektivvärdet (2 · 24 V). Toppvärdet är √2 · U, inte 2 · U."
+        },
+        {
+          "varde": 67.8823,
+          "text": "Det är topp till topp-värdet (2 · û). Frågan gäller toppvärdet û = √2 · U."
+        }
+      ]
+    },
+    "kallhanvisning": "Toppvärde och RMS",
+    "teoriavsnitt": "rms",
+    "alias": "topp"
+  }
+}

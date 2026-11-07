@@ -1,0 +1,132 @@
+# Working instructions
+
+Read the existing `CLAUDE.md` and any instructions in the directory being changed. Preserve its project guidance. The following working rules adapt [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills/blob/8462496b34419f20b32778610571ac723e91f94c/CLAUDE.md), adopted at the owner's request on 18 October 2026.
+
+1. Before editing, identify assumptions, relevant alternatives and consequential uncertainty. Explain meaningful trade-offs. Resolve ambiguity that could change the intended outcome; use judgement for routine reversible choices.
+2. Implement the smallest complete solution to the requested problem. Avoid speculative features, premature frameworks and unused configuration. Prefer a straightforward implementation.
+3. Keep changes confined to the requested work, follow the surrounding style and remove any unused code introduced by your changes. Report unrelated defects separately.
+4. Turn the goal into observable acceptance criteria. For substantial work, outline the steps and their checks, then iterate until those checks pass. Report remaining verification limits honestly.
+
+These supplement the owner's instructions and existing project rules. They do not authorise unrelated work or override the owner's stated decisions.
+
+## Where Johansson World lives — 7 November 2026
+
+The owner moved Johansson World out of this repository so it has its own storage (6 and 7 November 2026):
+
+- **Johansson Town**, the three.js World and formerly `johansson-town/` here, is
+  [`nj22az/johansson-town`](https://github.com/nj22az/johansson-town), still served at `/johansson-town/`. World work
+  happens there now, and its guard checks run there. A branch of this repository that changes `johansson-town/` is
+  ported to the Town repository, never merged here.
+- **The World page, Sakura Shōten's pages and the Sakura browser demo**, formerly `world/`, are
+  [`nj22az/johansson-world`](https://github.com/nj22az/johansson-world), served at `/johansson-world/`. Its demos are
+  GitHub Releases, never committed.
+- The Studio (`avatar-creator/`), the Camera and other pages here still load the Town from `/johansson-town/`. Their
+  CI checks out the Town repository into `johansson-town/`; for local work, clone it there too (Git ignores it).
+- **Revision history lives on the owner's Development drive, not on GitHub.** The owner said: "I want revision history
+  locally on my development drive". They chose to keep only today's `main` on GitHub. The full history of this
+  repository, every branch, tag and pull request until 7 November 2026, is in
+  `/Volumes/Development/Projects/Git-History/nj22az.github.io.git`; read the `README.md` there.
+  - Never push a branch that was made from the old history to GitHub: it would upload the whole history again.
+  - Start new work from today's `main`.
+  - CI keeps any old file it compares against in the repository (`tools/office-home/baseline-0f13c23b/`,
+    `camera/tests/fixtures/published-baselines/`), never as a fetch of an old commit.
+
+## Owner's workflow — 24 October 2026: prototypes, Pixar, main
+
+The owner: "I want the workflow to be like this , codex prototypes and makes a detailed three.js room and characters and
+you improve upon this to reach Pixar standard , main keeps the simplified but cute and relatable cartoony three js until
+we have a perfect Pixar world".
+
+- **Codex prototypes** detailed three.js rooms and characters on the `development` branch (behind a URL flag when
+  they run in World, as `?sakura-rebuild` does). Prototypes are not merged into `main`.
+- **Claude takes a prototype to Pixar standard**, in Blender (the studio repo `nj22az/jojo`: `3d/cast/`, `3d/sakura/`),
+  on the `pixar` branch, reading the prototype's CAD and data rather than copying it.
+- **`main` keeps the simplified, cute and relatable cartoon three.js** World until the Pixar world is complete; its
+  fixes and small features merge as before.
+- **Except Thuan** (the owner, 26 October 2026: "Replace her in the live game and studio now"): her Pixar body (made in
+  the studio repo, `3d/cast/game_thuan.py`; World `src/avatars/pixar.js`) is Thuan on every World and Studio page;
+  `?pixar=0` shows the cartoon. Further residents follow only on the owner's word
+  (`johansson-town/briefs/HANDOFF-PIXAR-THUAN-2026-10-26.md`). **Pixar Johansson** (`3d/cast/game_johansson.py`, in
+  `PIXAR_BODIES`) is made and on the branch `claude/vibrant-brown-0udpq3`, **not on `main`**: he is the player, and his
+  publication waits for the owner's word (`johansson-town/briefs/HANDOFF-PIXAR-JOHANSSON-2026-10-26.md`).
+- **Three branches only** (the owner, 24 October 2026: "I basically want main , and the Pixar branch , and a development
+  branch"): `main`, `development`, `pixar`, in both repos. Every older branch is kept as a tag `archive/<name>`
+  (`git checkout -b <name> archive/<name>` restores one). The survey before the clean-up: `docs/BRANCHES-2026-10-24.md`.
+
+## Development tool: REA, reverse engineering for agents — 24 October 2026
+
+The owner: "https://github.com/morluto/rea use this as a permanent asset in Johansson World and nj22az.github.io
+development". REA (MIT, `rea-agents` on npm) gives an agent tools to inspect native binaries, JavaScript/Electron
+applications, .NET assemblies and websites, with the evidence for each conclusion.
+
+- **Registered for every session** in `.mcp.json` as `rea`, pinned to one exact version (`npx -y rea-agents@6.7.0 mcp`),
+  as REA's installation guide recommends for persistent registrations. Raise the pin deliberately, after reading the
+  release notes; never `@latest` in the shared config. Terminal use: `npx -y rea-agents@6.7.0 <command>` (`--help` lists
+  them). Codex registers it with `npx -y rea-agents@6.7.0 setup --client codex` (see REA's `docs/installation.md`).
+- **Use it on our own things first:** the packaged Linux edition (`steam-deck/dist/`, an Electron app:
+  `analyze-javascript-application`), the website and World bundles, Johansson Studio, Steam's behaviour around our
+  shortcut and controller files, and libraries we depend on, to understand and debug them from the outside.
+- **Study, measure, never copy** (as for New Yokosuka): REA's own disclaimer is the boundary. No DRM, licence-check or
+  anti-cheat circumvention, no cheats, no reproducing another product's code or assets. Learn how a feature works,
+  then build our own. Record what was inspected and why with the work.
+
+## Development tool: Lightpanda, a headless browser for agents — 30 October 2026
+
+The owner: "https://github.com/lightpanda-io/browser Can you add this as a resource in my nj22az repo". Lightpanda
+(AGPL-3.0, Zig, V8 for JavaScript, beta) is a headless browser built for agents and automation. It runs a page's
+JavaScript and gives back the resulting DOM as HTML or Markdown, over a CDP server, an MCP server or the command line.
+It has **no graphics engine**: no WebGL, no layout, no picture.
+
+- **Install** (no npm package; rolling `nightly` release; Linux needs glibc):
+  `curl -L -o lightpanda https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-x86_64-linux && chmod a+x lightpanda`
+  (macOS: `brew install lightpanda-io/browser/lightpanda`, or the `lightpanda-aarch64-macos` asset). Set
+  `LIGHTPANDA_DISABLE_TELEMETRY=true`; it reports usage otherwise.
+- **Use:** `lightpanda fetch --dump markdown <url>` reads a page after its scripts run; `lightpanda serve --host 127.0.0.1
+  --port 9222` is a CDP endpoint for `puppeteer-core` (`puppeteer.connect({ browserWSEndpoint: "ws://127.0.0.1:9222" })`);
+  `lightpanda mcp` is an MCP server over stdio (`--port 9223` for HTTP). It is **not** in `.mcp.json`: unlike REA it is
+  a downloaded binary whose path differs per machine, so register it locally (`"command": "/path/to/lightpanda", "args": ["mcp"]`).
+- **Verified here, 30 October 2026:** nightly `1.1.0-nightly.11326+948d77378` on Linux x86_64 read the homepage from
+  `python3 -m http.server` in 0.07 s, including the nav that `shared.js` injects.
+- **What it is for:** fast checks of the static site's DOM and script output (nav and footer on every page, links,
+  `/blog/`, `/hotels/`, page text, crawls) where a full Chromium is slow or unavailable. **Not** for World, Studio,
+  Pocket Camera or any visual, WebGL, layout or screenshot check: use Chromium/Playwright and the devices for those,
+  and never report a Lightpanda run as visual evidence.
+- **AGPL-3.0:** use it as an outside tool only. Never vendor, bundle or ship its code or binary in this repo or in the
+  Linux edition.
+
+## Hotels & Parking
+
+The register is its own section of the site, at `/hotels/` (folder `hotels/`, page built by `tools/build-hotels.py`,
+rules in `hotels/README.md`). It sits in the header beside Blog; `/blog/hotels/` only redirects there.
+
+**Every hotel update that carries the owner's own notes also becomes a blog post** (the owner, 27 October 2026: "When I
+updated the hotel feed my notes can be used to crafting a blog post always", "Like that hotel was so and so"):
+1. Record the facts in the hotel's record as usual (`hotels/hotels.json`).
+2. Write a short post from the same notes, in the owner's voice: their words quoted or closely paraphrased, only what
+   they said (no invented rooms, meals, staff, ratings or feelings), with the parking verdict and the link
+   `/hotels/#review-<id>`. Several hotels from one trip can share one post.
+3. Put it at `blog/<slug>/index.html` and list it in `assets/js/blog-posts.js` (and the static list in
+   `blog/index.html`) with `"topic": "Hotel stay"` and `"hotel": "<record id>"`. The builder then opens that hotel's
+   notes with the post (`hotel_posts()`), and refuses a post that names no hotel in the register.
+4. Show the owner the draft before it is published.
+
+## Handover: required at the start and end of every task
+
+These instructions apply to every agent working in this repository.
+
+1. **Before starting work**, read [HANDOVER.md](HANDOVER.md), then the latest applicable handover it links to and any newer notes for the area being changed. Check dates and Git history when several notes exist; do not assume an older note is current because it was supplied in a previous conversation. Follow any additional handovers required by directory instructions.
+2. Verify the relevant branch, PR, check and release state against the repository before acting. Handovers preserve context; newer owner decisions and verified repository state take precedence.
+3. **Before finishing or handing work to another agent**, update the applicable handover with what changed, exact branches/commits/PRs, checks actually run and their results, remaining problems or verification limits, and the next concrete actions. Do this for completed, partial and blocked work. Clearly distinguish planned, open, merged and published work; never imply an unrun check or physical-device test passed.
+4. Keep [HANDOVER.md](HANDOVER.md) pointing to the latest notes. If a new dated handover supersedes an old one, update its pointer in the same change and preserve useful history. If no handover exists for the work area, create one and link it there. Re-read the current version before writing so concurrent agents' updates are preserved.
+5. Include the handover update in the work delivered for review and link it in the final response. If access prevents updating it, state that explicitly and provide the pending handover text instead of silently omitting it.
+
+## Animation, character performances and films
+
+Read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md) when working on animated performances, scene/film direction or rendering. It adapts the owner's supplied *Opus 5.5 promt.pdf* for both Claude and Codex: timed briefs, a reproducible timeline, readable acting/cameras, contact checks, measured picture/sound review and honest reporting. Its offline film settings do not replace the interactive game's device budgets or existing character system.
+
+## Repository split: on hold
+
+The owner, 20 October 2026: "We won't split anything until the Sjöskolan course is over." The plan to move World, Studio
+and Sjöskolan into their own repositories (`split/RUNBOOK.md` on the `codex/studio-*` branches) stays unexecuted until
+then: no new repositories, no moved folders, no forwarding addresses. Work continues in this repository.
+

@@ -1,0 +1,22 @@
+    816 combinations; 408 full preview/export pixel comparisons
+ok  all 34 published Looks combine with enhancement and every stock, full and LIGHT
+    68 baseline comparisons
+ok  off/None preserves prior Look pixels except the intentionally rebuilt Crayon
+ok  Original bypasses Enhance, mixed Looks and stock together while preserving the crop
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: {"recipe":{"layers":[{"look":"crayon","amount":1},{"look":"risoPinkBlue","amount":0.25}],"crop":{"x":0.3125,"y":0.16666666666666669,"w":0.375,"h":0.6666666666666666},"enhance":0.57,"paper":"rough","adjust":{"light":0,"contrast":0,"colour":0,"warmth":0,"pattern":0,"detail":0},"stamp":false,"stickers":[],"frame":"none","focus":-1,"trick":"none"},"source":[155,129,73,206,236,28,127,253,218,237,34,206,13,222,124,15,85,107,162,20,232,233,6,75,238,73,208,67,72,17,195,111],"error":9.55245632595486,"width":192,"height":256,"type":"image/jpeg","id":"mvvicklq-saupl","shares":0,"downloads":0}
+    at file:///workspace/scratch/9715783a3669/pocket-camera/camera/tests/integration.browser.mjs:112:10
+    at async check (file:///workspace/scratch/9715783a3669/pocket-camera/camera/tests/integration.browser.mjs:16:30)
+    at async file:///workspace/scratch/9715783a3669/pocket-camera/camera/tests/integration.browser.mjs:100:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
