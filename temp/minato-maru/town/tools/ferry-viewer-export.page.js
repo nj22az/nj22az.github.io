@@ -124,7 +124,7 @@ try{
  const tiles=new Map(),items=[],skipped=[],hidden=[];
  const V=new THREE.Vector3(),N=new THREE.Vector3(),C=new THREE.Color(),A=new THREE.Vector3(),Bv=new THREE.Vector3(),Cv=new THREE.Vector3();
  /** One piece: `corners` are indices into the mesh's own vertices, three a triangle. */
- function piece(mesh,M,m,corners,where,machinery){
+ function piece(mesh,M,m,corners,where,machinery,force){
   const g=mesh.geometry,P=g.attributes.position,Cc=m.vertexColors?g.attributes.color:null,U=m.map?g.attributes.uv:null,count=corners.length;
   let Nn=g.attributes.normal;if(!Nn){const c=g.clone();c.computeVertexNormals();Nn=c.attributes.normal;}
   const nm=new THREE.Matrix3().getNormalMatrix(M),mirrored=M.determinant()<0;
@@ -144,7 +144,7 @@ try{
   let tile=null;
   if(uv){tile=tiles.get(m.map.uuid);if(!tile){tile={tex:m.map,area:0,name:mesh.name};tiles.set(m.map.uuid,tile);}tile.area=Math.max(tile.area,area);}
   const it={name:mesh.name,where,material:materialOf(uv?m:Object.assign(Object.create(m),{map:null})),pos,nor,col,uv,tile,min,max,triangles:count/3};
-  it.section=machinery?'machinery':sectionOf(it);items.push(it);
+  it.section=force||(machinery?'machinery':sectionOf(it));items.push(it);
  }
  /** The separate bodies of a mesh the kit did not build (the windows, the markings): triangles that share a corner. */
  function bodies(g,M,corners){
@@ -154,6 +154,27 @@ try{
   for(let k=0;k<corners.length;k+=3){const a=find(of[k]);parent[find(of[k+1])]=a;parent[find(of[k+2])]=a;}
   const out=new Map();for(let k=0;k<corners.length;k+=3){const r=find(of[k]);let list=out.get(r);if(!list)out.set(r,list=[]);list.push(corners[k],corners[k+1],corners[k+2]);}
   return [...out.values()];
+ }
+ /**
+  * The lid. The engine room's model carries the deckhead over the machinery spaces: slabs as thick as the car deck's own
+  * structure, drawn in art/ferry-engine-room/geometry-h1.json. Left with the machinery they lie over every room below
+  * like a lid; they are the car deck's underside, so they lift with the car deck. A triangle is the lid's when it lies
+  * on one of a slab's six faces and looks out of the slab. What is fastened under the deckhead ends in a face sunk into
+  * the slab or looking up at its underside: that is the fitting's own top, and it stays with the room.
+  */
+ const LIDS=(await (await fetch(BASE+'art/ferry-engine-room/geometry-h1.json')).json()).boxes.filter(b=>/deckhead$/.test(b.name||''));
+ if(!LIDS.length)throw Error('no deckhead slab is drawn over the machinery spaces (art/ferry-engine-room/geometry-h1.json)');
+ let lidCount=0;const La=new THREE.Vector3(),Lb=new THREE.Vector3(),Lc=new THREE.Vector3(),Ld=new THREE.Vector3(),Le=new THREE.Vector3();
+ function lidOf(P,M,corners){
+  const lid=[],rest=[],flip=M.determinant()<0?-1:1,T=.005,p=[La,Lb,Lc];
+  for(let k=0;k<corners.length;k+=3){
+   for(let j=0;j<3;j++)p[j].fromBufferAttribute(P,corners[k+j]).applyMatrix4(M);
+   Ld.subVectors(Lb,La).cross(Le.subVectors(Lc,La)).multiplyScalar(flip);
+   const own=LIDS.some(b=>p.every(v=>v.x>=b.a[0]-T&&v.x<=b.b[0]+T&&v.y>=b.a[1]-T&&v.y<=b.b[1]+T&&v.z>=b.a[2]-T&&v.z<=b.b[2]+T)&&
+    [0,1,2].some(i=>[[b.a[i],-1],[b.b[i],1]].some(([at,out])=>Ld.getComponent(i)*out>0&&p.every(v=>Math.abs(v.getComponent(i)-at)<T))));
+   (own?lid:rest).push(corners[k],corners[k+1],corners[k+2]);
+  }
+  lidCount+=lid.length/3;return {lid,rest};
  }
  const split=[];
  function mesh(o,M,machinery){
@@ -171,6 +192,7 @@ try{
   for(const grp of groups){
    const m=list[grp.materialIndex];if(!m||m.visible===false)continue;const count=Math.min(grp.count,total-grp.start);if(count<3)continue;
    const corners=range(grp.start,count-count%3);
+   if(machinery){const {lid,rest}=lidOf(P,M,corners);if(rest.length)piece(o,M,m,rest,null,true);if(lid.length)piece(o,M,m,lid,'the deckhead over the machinery spaces',true,'car');continue;}
    if(!across){piece(o,M,m,corners,null,machinery);continue;}
    const parts=bodies(g,M,corners);split.push({mesh:o.name,bodies:parts.length});for(const part of parts)piece(o,M,m,part,null,machinery);
   }
@@ -184,6 +206,7 @@ try{
   else if(o.isLine||o.isPoints||o.isSprite)skipped.push(o.name||o.type);
   for(const c of o.children)walk(c,machinery);
  })(ship,false);
+ if(!lidCount)throw Error('the deckhead over the machinery spaces was not found in the engine room model: the lid would stay on the machinery');
 
  /**
   * How far each part lifts at full spread: GAP metres of air between a deck's own height and the deck over it, so each
@@ -313,6 +336,7 @@ try{
   return {id:s.id,name:s.name,level:s.level,explode:s.explode,spaces,meshes};
  });
  report.tidied=tidied;
+ report.lid={slabs:LIDS.map(b=>b.name),triangles:lidCount,to:'car'};
  report.renamed={...renamed,kept:[...renamed.kept].sort()};
  if(outside)console.warn(outside+' picture corners lay outside their picture and were pulled in');
  // The Minato Maru's year, yard and hull number are hers, not the Christina's: they are left out until the Christina has her own.

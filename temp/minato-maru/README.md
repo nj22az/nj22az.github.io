@@ -31,7 +31,7 @@ it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what
 - The viewer is on the Office's `main` and live: <https://nj22az.github.io/ferry/> (page, format, known limits and
   checks: [`/ferry/README.md`](../../ferry/README.md)). She is also one of the projects on the homepage.
 - Its data is written by two Town tools kept here: `town/tools/ferry-viewer-export.mjs` and
-  `town/tools/ferry-viewer-export.page.js` (Town commit `c3ecb2d`). They change nothing under the Town's `src/`: the
+  `town/tools/ferry-viewer-export.page.js` (Town commit `f0b2973`). They change nothing under the Town's `src/`: the
   Christina's name is painted by the export alone, and the ferry in the live Johansson World is untouched.
 - **For now the Christina is drawn from the Minato Maru's model.** Her own build is next: in Blender, from the Rev C
   working drawings, section by section from the hull and exterior, with the Rev C issues corrected in her design
@@ -77,7 +77,8 @@ Merge the branch into the Town's `main` when the guard is green and the ferry ha
 
 ## Checked
 
-- 9 November: after the export tools were committed in the Town (`c3ecb2d`), `save.sh` saved 50 files; the two tools
-  here are byte-identical to the ones that wrote the published `ferry/data/`.
+- 9 November: after the export's deckhead rule was committed in the Town (`f0b2973`: the deckhead over the machinery
+  spaces goes to the car deck, so the machinery rooms open from above), `save.sh` saved 50 files; the two tools here
+  are byte-identical (`cmp`) to the ones that wrote the `ferry/data/` now on `main`, whose header names `f0b2973`.
 - 9 November: `bring-back.sh` into a fresh worktree of the Town at `BASE` gave a tree identical to the Town branch it
   was saved from (`git diff` empty).
