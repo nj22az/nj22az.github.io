@@ -62,7 +62,25 @@ Also there: the Studio link dark on the night harbour, and the copyright pill cu
 
 ## Checks
 
-PENDING: filled in when the run completes.
+The whole Pocket Camera regression on the finished code, as `.github/workflows/pocket-camera.yml` runs it (Playwright's
+Chromium on SwiftShader, the published baselines from `camera/tests/fixtures/published-baselines/`), with nothing
+failing:
+
+- the 22 unit files, `wordmark.test.mjs` new among them;
+- the 26 browser suites: camera 56, crop 33, enhance 22, save-share-layout 14, paper 5, integration 9,
+  sticker-contour 4, ui 82, audit 59, smart 14, offline 13, retouch 40, screens 5, face-stamps 12, backup 7, pop 5,
+  zoom 13, face-pack 4, auto 5, theme 5, defaults 4, background 3, comic 4, album 3, faces 7, ball 6, brand 9.
+
+The run before it failed integration and Ball; both were races, described above, and each was then run alone until it
+held (integration 3 of 3 with the baselines, Ball 5 of 5) before the whole regression was run again.
+
+Looked at, not only measured (`camera/qa/2026-11-09-landing/`): the landing page before and after, installed and in
+Safari, dark and light, on an iPhone SE's height, an iPad's and a desktop's; the running camera's bar; the Game Room;
+the share card; the World's title before and after, with its wordmark enlarged.
+
+In the Town (its handoff has the detail): `tools/font-audit.mjs` fails on the old state and passes on the new; the
+title measured at eight sizes; the three tests that read the changed files pass (13). The Town's full guard was not run
+(its checkout had no `npm ci`).
 
 ## Open, for the owner
 
