@@ -9,7 +9,7 @@ No build step. Serve the site root (`python3 -m http.server`) and open `/ferry/`
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), about 135,000 triangles in 41 meshes, six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), about 134,000 triangles in 42 meshes, six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 
 ## What she is, and what this first look is not
@@ -44,8 +44,14 @@ the game draws it on the bow, the transom and the name boards, and stops if any 
 of the data records the Town commit she was drawn from (`source.commit`, shown at the foot of the panel), so a stale
 picture can be told from the game.
 
+The export also sorts every triangle to its deck. One rule is worth knowing: the engine room's model carries the
+deckhead over the machinery spaces (three slabs, drawn in `art/ferry-engine-room/geometry-h1.json`). They are the car
+deck's underside, so the export gives them to the car deck (36 triangles: those lying on a slab's face and looking out
+of it), and the machinery rooms stand open from above once the car deck is lifted or hidden. Fittings fastened under
+the deckhead keep their own tops and stay with their room. The export stops if it finds no slab.
+
 Until the weekend the Town's work on her lives on the branch `claude/festive-rubin-fo8mmp` of this repository, in
-`temp/minato-maru/` (never on `main`), the two export tools among it (`town/tools/`, Town commit `c3ecb2d`).
+`temp/minato-maru/` (never on `main`), the two export tools among it (`town/tools/`, Town commit `f0b2973`).
 
 ## The file format (JMF1)
 
@@ -94,8 +100,6 @@ they are lit:
 
 ## Known limits of the first look
 
-- Seen from above, the machinery rooms are covered by their deckhead: use **Cut** to open the engine room. (The lid
-  belongs with the car deck; the export will move it.)
 - The cut faces are hollow: plating is not capped where it is sliced.
 - In the exploded view the stack is framed small, and two small dark fittings float beside the car deck.
 - A pale translucent panel shows amidships at the car-deck opening.
@@ -113,6 +117,11 @@ they are lit:
   phone size, light and dark colour schemes. No console errors or failed requests in any of them.
 - The cut view again after one fix: a picture (her name, a sign, a dial) keeps its one face when she is cut open, so her
   name no longer shows mirrored on the inside of the hull.
+- The machinery rooms open from above (data from Town commit `f0b2973`): the export's report names the three slabs and
+  36 triangles moved to the car deck; pictures of the machinery deck alone from above (light and dark), the exploded
+  ship, the closed ship, the cut view, and the engine room and the auxiliary room chosen from the panel at 1440 × 900
+  and the engine room at 390 × 844. No console errors. Compared with pictures of the earlier data, the closed ship is the
+  same pixel for pixel and the cut view differs in two pixels, so the homepage card's picture was not retaken.
 - The homepage card: `node --check config.js`, `node --check assets/js/project-explorer.js`, and the homepage design
   review (`tools/office-home/review.browser.mjs`) run locally in headless Chromium at its six sizes: passed, with 7
   cards and a desktop project grid of 2536 px against its 3062 px limit (80 % of the baseline's height). The card itself was looked at on desktop, at
