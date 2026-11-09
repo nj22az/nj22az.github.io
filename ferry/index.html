@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Christina: the ferry, deck by deck</title>
+<meta name="description" content="A 3D model of the Christina, a 34.5 m car and passenger ferry: turn her, take her apart deck by deck, cut her open along her length and name every room aboard.">
+<meta name="author" content="Nils Johansson">
+<link rel="canonical" href="https://nj22az.github.io/ferry/">
+<link rel="icon" href="/assets/images/apple-touch-icon.png">
+<meta name="theme-color" content="#e9ecec">
+<style>
+/* The viewer's own chrome, on the pattern of /motor-90l/: a full-screen model with a panel and a bar over it. */
+:root {
+  --bg: #e9ecec; --bg2: #f7f8f7; --ink: #1d2427; --muted: #59656b; --line: #cfd6d8;
+  --panel: rgba(255,255,255,0.92); --accent: #0b6e66; --accent-ink: #fff; --radius: 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b2023; --bg2: #2a3135; --ink: #e8eced; --muted: #a3afb4; --line: #3a4449;
+    --panel: rgba(30,36,39,0.94); --accent: #3fb3a8; --accent-ink: #0e1a19;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); }
+#view { position: fixed; inset: 0; background: radial-gradient(120% 90% at 40% 35%, var(--bg2), var(--bg)); }
+#view canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#view canvas:active { cursor: grabbing; }
+
+header.title { position: fixed; top: calc(16px + env(safe-area-inset-top)); left: 16px; max-width: min(520px, calc(100vw - 32px)); pointer-events: none; }
+header.title a { pointer-events: auto; color: var(--muted); font-size: 13px; text-decoration: none; }
+header.title a:hover { color: var(--accent); }
+header.title h1 { margin: 4px 0 2px; font-size: clamp(20px, 3vw, 28px); letter-spacing: -0.01em; }
+header.title p { margin: 0; color: var(--muted); font-size: 14px; }
+
+#status { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100vw - 48px)); margin: 0; text-align: center; color: var(--muted); font-size: 15px; line-height: 1.45; }
+body.ready #status { display: none; }
+body:not(.ready) #bar, body:not(.ready) #panel, body:not(.ready) #panel-toggle { visibility: hidden; }
+
+#panel { position: fixed; top: 16px; right: 16px; bottom: 16px; width: 360px; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; transition: transform .25s ease; }
+#panel.closed { transform: translateX(calc(100% + 24px)); }
+#panel h2 { margin: 0; padding: 14px 16px 10px; font-size: 15px; border-bottom: 1px solid var(--line); }
+#panel-toggle { position: fixed; top: 16px; right: 16px; z-index: 3; display: none; }
+.tabpanel { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 10px 16px; flex: 1; font-size: 14px; line-height: 1.45; }
+.muted { color: var(--muted); }
+
+.deck { padding: 6px 0 8px; border-bottom: 1px solid var(--line); }
+.deck:last-of-type { border-bottom: 0; }
+.deck-row { display: flex; align-items: center; gap: 4px; }
+.deck-row input { width: 18px; height: 18px; margin: 0 4px 0 8px; accent-color: var(--accent); flex: none; }
+.deck .level { margin: 0 8px 2px 38px; font-size: 13px; }
+.deck details { margin-left: 30px; }
+.deck summary { cursor: pointer; padding: 6px 8px; font-size: 13px; color: var(--muted); border-radius: 8px; }
+.deck summary:hover { color: var(--accent); }
+.deck ul { list-style: none; margin: 0; padding: 0; }
+.deck.off .deck-name, .deck.off .level { color: var(--muted); }
+.pick { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 4px 8px; border: 0; border-radius: 8px; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.pick:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.pick.on { background: color-mix(in srgb, var(--accent) 18%, transparent); font-weight: 600; }
+.deck-name { font-weight: 600; }
+.note { margin: 2px 8px 10px; padding-left: 10px; border-left: 2px solid var(--accent); font-size: 13.5px; }
+.note p { margin: 0 0 6px; }
+.note p:last-child { margin-bottom: 0; }
+.source { margin: 14px 8px 0; font-size: 12.5px; color: var(--muted); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#bar { position: fixed; left: 16px; right: 392px; bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#bar label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+#bar output { font-size: 13px; color: var(--ink); margin-left: auto; text-align: right; }
+#bar output:empty { display: none; }
+input[type=range] { accent-color: var(--accent); width: 130px; height: 28px; margin: 0; }
+.btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+@media (max-width: 900px) {
+  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 46vh; border-radius: var(--radius) var(--radius) 0 0; padding-bottom: env(safe-area-inset-bottom); }
+  #panel.closed { transform: translateY(100%); }
+  #panel-toggle { display: inline-block; top: auto; bottom: calc(46vh + 8px); right: 16px; }
+  #panel.closed ~ #panel-toggle { bottom: calc(8px + env(safe-area-inset-bottom)); }
+  #bar { top: auto; bottom: calc(46vh + 56px); left: 16px; right: 16px; padding: 8px 10px; gap: 4px 10px; }
+  #panel.closed ~ #bar { bottom: calc(56px + env(safe-area-inset-bottom)); }
+  #bar label { font-size: 12px; gap: 6px; flex: 1 1 96px; }
+  #bar .btn { min-height: 34px; padding: 0 9px; font-size: 12px; }
+  #bar output { flex: 1 1 100%; margin: 0; text-align: left; font-size: 12.5px; }
+  input[type=range] { flex: 1; width: auto; min-width: 56px; }
+  header.title p { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { #panel { transition: none; } }
+</style>
+<script type="importmap">{ "imports": { "three": "/motor-90l/vendor/three.module.min.js" } }</script>
+</head>
+<body>
+<div id="view" aria-label="3D view of the ferry. Drag to turn her, scroll or pinch to zoom, tap a room to name it."></div>
+
+<header class="title">
+  <a href="/">← The Office of Nils Johansson</a>
+  <h1>Christina</h1>
+  <p>A 34.5 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, tap a room to name it.</p>
+</header>
+
+<p id="status" role="status">Loading the ferry…</p>
+<noscript><p style="position:fixed;left:16px;right:16px;top:45%;text-align:center">The ferry is a 3D model: it needs JavaScript to be shown.</p></noscript>
+
+<aside id="panel" aria-label="Decks and rooms">
+  <h2>Decks and rooms</h2>
+  <section class="tabpanel" id="decks"></section>
+</aside>
+<button type="button" id="panel-toggle" class="btn" aria-expanded="true" aria-controls="panel">Decks</button>
+
+<div id="bar" role="toolbar" aria-label="Model controls">
+  <label><span class="lbl">Explode</span><input id="explode" type="range" min="0" max="100" value="0" aria-label="Explode: lift the decks apart"></label>
+  <label><span class="lbl">Cut</span><input id="cut" type="range" min="0" max="100" value="0" aria-label="Cut: slice her open along her length, from the starboard side"></label>
+  <button type="button" class="btn" id="home">Reset view</button>
+  <output id="what" aria-live="polite"></output>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
