@@ -4,7 +4,8 @@
 **Release** `v2026.11.09.1`, key `20261109brand1` (page, `app.js`, `camera.css`, `camera-ui.css`, `camera-black.css`,
 `game-room-refresh.css`, `camera-brand.css`, `looks-gl.js`, `frames.js`, `background.js`, `social-share.js`,
 `memory.js`, `blackjack.js`, `solitaire.js`, `ball.js`, `stickers.js`); stickers style `20261109-contour2`.
-**Not published**: the owner publishes with "Push to main".
+**Published** on the owner's "Push to main" (fast-forward, main `f5e5a4cbc` → `1e0fa30bc`; Pages run 42682438091
+success; see "Publication" below).
 
 ## The owner's words
 
@@ -85,6 +86,25 @@ SwiftShader; the published baselines from `camera/tests/fixtures/published-basel
   (`camera/qa/2026-11-09-stickers/`).
 
 The workflow's `camera-face-auto` job now runs `brand` too.
+
+## Publication
+
+- Main was unmoved since the rebuild, so `git push origin claude/laughing-brahmagupta-ybyndm:main` was a fast-forward
+  of four commits (`ff8eb75ca`, `90fc9c42d`, `24c7c70e7`, `1e0fa30bc`). The Pages run for `1e0fa30bc` succeeded; the
+  live page showed `v2026.11.09.1` after six 15-second polls.
+- 20 live files (page, `app.js`, the five stylesheets, `background.js`, `social-share.js`, `frames.js`, `stickers.js`,
+  the sticker manifest, the web manifest, `offline.json`, `sw.js`, two icons, a Johansson and a Thao sticker and
+  thumbnail) match the repository byte for byte.
+- Headless on the live page, at 390×664, 375×560 and 390×844: no page errors; the greeter 125, 90 and 160 px high and
+  every part of the card inside the stage; the title "Pocket Camera · Johansson World", the theme colour `#142d37` in
+  dark and `#faf8f2` in light, the wordmark, the pill and "Pocket Camera" on the card.
+- The recut, measured on the live files against the files before this round: enclosed see-through holes (the gaps the
+  studio's paper used to fill) in 81 stickers of the six sets where 32 had them; Johansson 11 → 16 stickers, hole area
+  73,000 → 110,000 px; Thuan & Nils 2 → 8; the cartoon Thuan 3 → 23. Every large hole in the worst stickers was looked
+  at full size over magenta: each is a gap between legs, between an arm and the body or between two heads, with the
+  sticker's white rim round it; no eye, tooth or white shoe was cut. (A first measure, pure-white pixels, was
+  misleading: the die-cut rim is itself pure white and now also outlines the holes.)
+- Not looked at by the owner on the phone yet.
 
 ## Open
 
