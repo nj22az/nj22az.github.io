@@ -1,0 +1,925 @@
+{
+ "date": "2026-11-09",
+ "rev": "C",
+ "source": "tools/ferry-audit.mjs",
+ "summary": {
+  "total": 30,
+  "clash": 15,
+  "check": 15,
+  "byKind": {
+   "clash": 3,
+   "into-structure": 1,
+   "part-clash": 2,
+   "floating": 9,
+   "coplanar": 14,
+   "no-floor": 1
+  }
+ },
+ "sheets": [
+  {
+   "no": "JS-127-C1",
+   "name": "exterior",
+   "title": "EXTERIOR · at sea, ramp raised",
+   "issues": [
+    "F30"
+   ],
+   "marked": [
+    "F30"
+   ]
+  },
+  {
+   "no": "JS-127-C2",
+   "name": "car-deck",
+   "title": "CAR DECK",
+   "issues": [],
+   "marked": []
+  },
+  {
+   "no": "JS-127-C3",
+   "name": "engine-room",
+   "title": "ENGINE ROOM AND MACHINERY SPACES",
+   "issues": [
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F16",
+    "F17",
+    "F18",
+    "F19",
+    "F20",
+    "F21",
+    "F22",
+    "F23"
+   ],
+   "marked": [
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "F13",
+    "F14",
+    "F15",
+    "F16",
+    "F17",
+    "F18",
+    "F19",
+    "F20",
+    "F21",
+    "F22",
+    "F23"
+   ]
+  },
+  {
+   "no": "JS-127-C4",
+   "name": "bridge",
+   "title": "BRIDGE · wheelhouse, wings and compass deck",
+   "issues": [
+    "F30"
+   ],
+   "marked": [
+    "F30"
+   ]
+  },
+  {
+   "no": "JS-127-C5",
+   "name": "passenger-accommodation",
+   "title": "PASSENGER ACCOMMODATION",
+   "issues": [
+    "F24",
+    "F25",
+    "F26"
+   ],
+   "marked": [
+    "F24",
+    "F25",
+    "F26"
+   ]
+  },
+  {
+   "no": "JS-127-C6",
+   "name": "crew-accommodation",
+   "title": "CREW ACCOMMODATION · the bridge deck house",
+   "issues": [
+    "F27",
+    "F28",
+    "F29"
+   ],
+   "marked": [
+    "F27",
+    "F28",
+    "F29"
+   ]
+  },
+  {
+   "no": "JS-127-C7",
+   "name": "toilets",
+   "title": "TOILETS · passengers’ and crew",
+   "issues": [
+    "F24",
+    "F25",
+    "F26"
+   ],
+   "marked": [
+    "F24",
+    "F25",
+    "F26"
+   ]
+  },
+  {
+   "no": "JS-127-C8",
+   "name": "galley-mess",
+   "title": "GALLEY AND MESS",
+   "issues": [],
+   "marked": []
+  }
+ ],
+ "findings": [
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509) and her metal work share a plane over 400 cm²: they flash",
+   "space": "control-booth",
+   "deck": "hold",
+   "at": {
+    "yard": 9.2,
+    "x": -2.35,
+    "h": 2.25
+   },
+   "model": [
+    -2.35,
+    0.35,
+    -8.05
+   ],
+   "area": 0.04,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Minato Maru metal ⟨ferry-model.js:604⟩"
+   ],
+   "source": [
+    "ferry-model.js:604"
+   ],
+   "n": "F1"
+  },
+  {
+   "kind": "clash",
+   "severity": "clash",
+   "what": "main engine bedplate and local control stand occupy the same space, 13 cm deep (in the code-built engine room, seen until the Blender model loads)",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 9.3,
+    "x": 2.02,
+    "h": 1.01
+   },
+   "model": [
+    2.015,
+    -0.89,
+    -7.95
+   ],
+   "standIn": true,
+   "depth": 0.13,
+   "pieces": [
+    "main engine bedplate",
+    "local control stand"
+   ],
+   "source": [
+    "ferry-interior.js:815",
+    "ferry-interior.js:1056"
+   ],
+   "sides": "both",
+   "mirrorModel": [
+    -2.015,
+    -0.89,
+    -7.95
+   ],
+   "n": "F2"
+  },
+  {
+   "kind": "clash",
+   "severity": "clash",
+   "what": "main engine bedplate and flywheel housing occupy the same space, 4 cm deep (in the code-built engine room, seen until the Blender model loads)",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 9.59,
+    "x": 1.55,
+    "h": 1.1
+   },
+   "model": [
+    1.55,
+    -0.8,
+    -7.66
+   ],
+   "standIn": true,
+   "depth": 0.04,
+   "pieces": [
+    "main engine bedplate",
+    "flywheel housing"
+   ],
+   "source": [
+    "ferry-interior.js:815"
+   ],
+   "sides": "both",
+   "mirrorModel": [
+    -1.55,
+    -0.8,
+    -7.66
+   ],
+   "n": "F3"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509) and her metal work share a plane over 644 cm²: they flash",
+   "space": "control-booth",
+   "deck": "hold",
+   "at": {
+    "yard": 9.85,
+    "x": -2.35,
+    "h": 2.6
+   },
+   "model": [
+    -2.35,
+    0.7,
+    -7.4
+   ],
+   "area": 0.0644,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Minato Maru metal ⟨ferry-model.js:604⟩"
+   ],
+   "source": [
+    "ferry-model.js:604"
+   ],
+   "n": "F4"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509) and her metal work share a plane over 644 cm²: they flash",
+   "space": "control-booth",
+   "deck": "hold",
+   "at": {
+    "yard": 9.85,
+    "x": -2.35,
+    "h": 1.9
+   },
+   "model": [
+    -2.35,
+    0,
+    -7.4
+   ],
+   "area": 0.0644,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Minato Maru metal ⟨ferry-model.js:604⟩"
+   ],
+   "source": [
+    "ferry-model.js:604"
+   ],
+   "n": "F5"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509) and her metal work share a plane over 400 cm²: they flash",
+   "space": "control-booth",
+   "deck": "hold",
+   "at": {
+    "yard": 10.5,
+    "x": -2.35,
+    "h": 2.25
+   },
+   "model": [
+    -2.35,
+    0.35,
+    -6.75
+   ],
+   "area": 0.04,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Minato Maru metal ⟨ferry-model.js:604⟩"
+   ],
+   "source": [
+    "ferry-model.js:604"
+   ],
+   "n": "F6"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509), two of its faces, share a plane over 3.91 m²: they flash",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 11.01,
+    "x": -2.11,
+    "h": 1.49
+   },
+   "model": [
+    -2.11,
+    -0.41,
+    -6.24
+   ],
+   "area": 3.9139,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509"
+   ],
+   "source": [],
+   "n": "F7"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509) and the engine room’s Blender model (Cube509_1) share a plane over 239 cm²: they flash",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 11.95,
+    "x": 0.37,
+    "h": 1.55
+   },
+   "model": [
+    0.37,
+    -0.35,
+    -5.3
+   ],
+   "area": 0.0239,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509_1"
+   ],
+   "source": [],
+   "n": "F8"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509), two of its faces, share a plane over 4.34 m²: they flash",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 13.48,
+    "x": -2.21,
+    "h": 1.52
+   },
+   "model": [
+    -2.21,
+    -0.38,
+    -3.77
+   ],
+   "area": 4.3351,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509"
+   ],
+   "source": [],
+   "n": "F9"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509) and the engine room’s Blender model (Cube509_1) share a plane over 441 cm²: they flash",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 13.72,
+    "x": -0.47,
+    "h": 1.24
+   },
+   "model": [
+    -0.47,
+    -0.66,
+    -3.53
+   ],
+   "area": 0.0441,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509_1"
+   ],
+   "source": [],
+   "n": "F10"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509), two of its faces, share a plane over 1.88 m²: they flash",
+   "space": "aux-room",
+   "deck": "hold",
+   "at": {
+    "yard": 17.11,
+    "x": -0.84,
+    "h": 1.72
+   },
+   "model": [
+    -0.84,
+    -0.18,
+    -0.14
+   ],
+   "area": 1.8772,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509"
+   ],
+   "source": [],
+   "n": "F11"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509), two of its faces, share a plane over 5.75 m²: they flash",
+   "space": "aux-room",
+   "deck": "hold",
+   "at": {
+    "yard": 17.57,
+    "x": -1.59,
+    "h": 1.64
+   },
+   "model": [
+    -1.59,
+    -0.26,
+    0.32
+   ],
+   "area": 5.747,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509"
+   ],
+   "source": [],
+   "n": "F12"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509), two of its faces, share a plane over 6131 cm²: they flash",
+   "space": "engine-store",
+   "deck": "hold",
+   "at": {
+    "yard": 21.45,
+    "x": -2.47,
+    "h": 2.2
+   },
+   "model": [
+    -2.47,
+    0.3,
+    4.2
+   ],
+   "area": 0.6131,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509"
+   ],
+   "source": [],
+   "n": "F13"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "clash",
+   "what": "the engine room’s Blender model (Cube509), two of its faces, share a plane over 5805 cm²: they flash",
+   "space": "workshop",
+   "deck": "hold",
+   "at": {
+    "yard": 22.08,
+    "x": 2.96,
+    "h": 2.28
+   },
+   "model": [
+    2.96,
+    0.38,
+    4.83
+   ],
+   "area": 0.5805,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509"
+   ],
+   "source": [],
+   "n": "F14"
+  },
+  {
+   "kind": "no-floor",
+   "severity": "check",
+   "what": "steering-gear: a manned space with 2 exits (steering-gear-hatch, engine-room) but 0% of it can be walked on",
+   "space": "steering-gear",
+   "deck": "hold",
+   "at": {
+    "yard": 1.45,
+    "x": 0,
+    "h": 2.05
+   },
+   "model": [
+    0,
+    0.15,
+    -15.8
+   ],
+   "walkable": 0,
+   "n": "F15"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "H1 fluorescent fitting rests on nothing and hangs from nothing (its foot 3.40 m above the keel) (in the code-built engine room, seen until the Blender model loads)",
+   "space": "control-booth",
+   "deck": "hold",
+   "at": {
+    "yard": 9.6,
+    "x": -3.1,
+    "h": 3.4
+   },
+   "model": [
+    -3.1,
+    1.5,
+    -7.65
+   ],
+   "standIn": true,
+   "pieces": [
+    "H1 fluorescent fitting"
+   ],
+   "source": [
+    "ferry-interior.js:1303"
+   ],
+   "n": "F16"
+  },
+  {
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 16 cm inside main engine (in the code-built engine room, seen until the Blender model loads)",
+   "space": "engine-room",
+   "deck": "hold",
+   "at": {
+    "yard": 10.82,
+    "x": 1.21,
+    "h": 1.89
+   },
+   "model": [
+    1.212,
+    -0.015,
+    -6.425
+   ],
+   "standIn": true,
+   "depth": 0.16,
+   "pieces": [
+    "main engine",
+    "trim piece"
+   ],
+   "source": [
+    "ferry-interior.js:817",
+    "ferry-interior.js:841"
+   ],
+   "sides": "both",
+   "mirrorModel": [
+    -1.212,
+    -0.015,
+    -6.425
+   ],
+   "n": "F17"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "H1 fluorescent fitting rests on nothing and hangs from nothing (its foot 3.40 m above the keel) (in the code-built engine room, seen until the Blender model loads)",
+   "space": "aux-room",
+   "deck": "hold",
+   "at": {
+    "yard": 15.5,
+    "x": 0,
+    "h": 3.4
+   },
+   "model": [
+    0,
+    1.5,
+    -1.75
+   ],
+   "standIn": true,
+   "pieces": [
+    "H1 fluorescent fitting"
+   ],
+   "source": [
+    "ferry-interior.js:1303"
+   ],
+   "n": "F18"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "H1 fluorescent fitting rests on nothing and hangs from nothing (its foot 3.40 m above the keel) (in the code-built engine room, seen until the Blender model loads)",
+   "space": "aux-room",
+   "deck": "hold",
+   "at": {
+    "yard": 18,
+    "x": 0,
+    "h": 3.4
+   },
+   "model": [
+    0,
+    1.5,
+    0.75
+   ],
+   "standIn": true,
+   "pieces": [
+    "H1 fluorescent fitting"
+   ],
+   "source": [
+    "ferry-interior.js:1303"
+   ],
+   "n": "F19"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "H1 fluorescent fitting rests on nothing and hangs from nothing (its foot 3.40 m above the keel) (in the code-built engine room, seen until the Blender model loads)",
+   "space": "workshop",
+   "deck": "hold",
+   "at": {
+    "yard": 21,
+    "x": 1.7,
+    "h": 3.4
+   },
+   "model": [
+    1.7,
+    1.5,
+    3.75
+   ],
+   "standIn": true,
+   "pieces": [
+    "H1 fluorescent fitting"
+   ],
+   "source": [
+    "ferry-interior.js:1303"
+   ],
+   "n": "F20"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "check",
+   "what": "the engine room’s Blender model (Cube509) and the engine room’s Blender model (Cube509_1) share a plane over 19 cm²: they flash",
+   "space": "engine-store",
+   "deck": "hold",
+   "at": {
+    "yard": 21.2,
+    "x": -1.75,
+    "h": 2.69
+   },
+   "model": [
+    -1.75,
+    0.79,
+    3.95
+   ],
+   "area": 0.0019,
+   "pieces": [
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509",
+    "Minato Maru › Engine room H1 / CAD › Minato Maru H1-F1 / Blender CAD › Minato_Maru_H1-F1__CAD_source › Cube509_1"
+   ],
+   "source": [],
+   "n": "F21"
+  },
+  {
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 8 cm inside welding set (in the code-built engine room, seen until the Blender model loads)",
+   "space": "workshop",
+   "deck": "hold",
+   "at": {
+    "yard": 21.3,
+    "x": 3.92,
+    "h": 1.3
+   },
+   "model": [
+    3.915,
+    -0.6,
+    4.05
+   ],
+   "standIn": true,
+   "depth": 0.08,
+   "pieces": [
+    "welding set",
+    "trim piece"
+   ],
+   "source": [
+    "ferry-interior.js:1190",
+    "ferry-interior.js:1125"
+   ],
+   "n": "F22"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "H1 fluorescent fitting rests on nothing and hangs from nothing (its foot 3.40 m above the keel) (in the code-built engine room, seen until the Blender model loads)",
+   "space": "engine-store",
+   "deck": "hold",
+   "at": {
+    "yard": 21.3,
+    "x": -2.2,
+    "h": 3.4
+   },
+   "model": [
+    -2.2,
+    1.5,
+    4.05
+   ],
+   "standIn": true,
+   "pieces": [
+    "H1 fluorescent fitting"
+   ],
+   "source": [
+    "ferry-interior.js:1303"
+   ],
+   "n": "F23"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "cubicle door rests on nothing and hangs from nothing (its foot 8.55 m above the keel)",
+   "space": "toilets",
+   "deck": "passenger",
+   "at": {
+    "yard": 10.17,
+    "x": -2.22,
+    "h": 8.55
+   },
+   "model": [
+    -2.22,
+    6.65,
+    -7.08
+   ],
+   "pieces": [
+    "cubicle door"
+   ],
+   "source": [
+    "ferry-interior.js:360"
+   ],
+   "n": "F24"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "cubicle door rests on nothing and hangs from nothing (its foot 8.55 m above the keel)",
+   "space": "toilets",
+   "deck": "passenger",
+   "at": {
+    "yard": 10.96,
+    "x": 2.22,
+    "h": 8.55
+   },
+   "model": [
+    2.22,
+    6.65,
+    -6.295
+   ],
+   "pieces": [
+    "cubicle door"
+   ],
+   "source": [
+    "ferry-interior.js:360"
+   ],
+   "n": "F25"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "cubicle door rests on nothing and hangs from nothing (its foot 8.55 m above the keel)",
+   "space": "toilets",
+   "deck": "passenger",
+   "at": {
+    "yard": 11.11,
+    "x": -2.22,
+    "h": 8.55
+   },
+   "model": [
+    -2.22,
+    6.65,
+    -6.145
+   ],
+   "pieces": [
+    "cubicle door"
+   ],
+   "source": [
+    "ferry-interior.js:360"
+   ],
+   "n": "F26"
+  },
+  {
+   "kind": "clash",
+   "severity": "clash",
+   "what": "bunk and desk occupy the same space, 25 cm deep",
+   "space": "mate-cabin",
+   "deck": "bridge",
+   "at": {
+    "yard": 10.88,
+    "x": -2.65,
+    "h": 11.25
+   },
+   "model": [
+    -2.645,
+    9.35,
+    -6.375
+   ],
+   "depth": 0.25,
+   "pieces": [
+    "bunk",
+    "desk"
+   ],
+   "source": [
+    "ferry-interior.js:681",
+    "ferry-interior.js:684"
+   ],
+   "n": "F27"
+  },
+  {
+   "kind": "floating",
+   "severity": "check",
+   "what": "day tank rests on nothing and hangs from nothing (its foot 12.30 m above the keel)",
+   "space": "eg-room",
+   "deck": "bridge",
+   "at": {
+    "yard": 6.38,
+    "x": 0.8,
+    "h": 12.3
+   },
+   "model": [
+    0.8,
+    10.4,
+    -10.875
+   ],
+   "pieces": [
+    "day tank"
+   ],
+   "source": [
+    "ferry-interior.js:670"
+   ],
+   "n": "F28"
+  },
+  {
+   "kind": "into-structure",
+   "severity": "check",
+   "what": "firemen’s outfit locker runs 3 cm into a wall or deck",
+   "space": "co2-room",
+   "deck": "bridge",
+   "at": {
+    "yard": 6.7,
+    "x": -2.94,
+    "h": 11.95
+   },
+   "model": [
+    -2.935,
+    10.05,
+    -10.55
+   ],
+   "depth": 0.03,
+   "pieces": [
+    "firemen’s outfit locker",
+    "wall or deck"
+   ],
+   "source": [
+    "ferry-interior.js:677",
+    "ferry-interior.js:631"
+   ],
+   "n": "F29"
+  },
+  {
+   "kind": "coplanar",
+   "severity": "check",
+   "what": "Navigation feeder fallback › Navigation panel, protection and actual two-core cable, two of its faces, share a plane over 15 cm²: they flash",
+   "space": "wing-s",
+   "deck": "bridge",
+   "at": {
+    "yard": 22.75,
+    "x": -4.18,
+    "h": 12.15
+   },
+   "model": [
+    -4.18,
+    10.25,
+    5.5
+   ],
+   "area": 0.0015,
+   "pieces": [
+    "Minato Maru › Minato Maru bridge equipment › Navigation lantern supply › Navigation feeder fallback › Navigation panel, protection and actual two-core cable",
+    "Minato Maru › Minato Maru bridge equipment › Navigation lantern supply › Navigation feeder fallback › Navigation panel, protection and actual two-core cable"
+   ],
+   "source": [],
+   "n": "F30"
+  }
+ ]
+}

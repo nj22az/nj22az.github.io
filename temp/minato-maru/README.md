@@ -1,0 +1,64 @@
+# Minato Maru: the ferry work, kept here for the week (from 9 November 2026)
+
+The owner, 9 November 2026: *"Work on nj22az.github.io for now make a temp folder there , I want to focus on getting
+the ferry ready"*, after *"Work on the cloud and online for now and we bring it back local in the weekend"*.
+
+**What this folder is.** The ferry is part of Johansson Town, which lives in its own repository
+(`nj22az/johansson-town`). The cloud session doing this work can read that repository but cannot push to it. So the
+work is kept here, online, until it is brought back into the Town at the weekend.
+
+- **Temporary.** It lives on branch `claude/festive-rubin-fo8mmp` of this repository only. Do not merge it into this
+  repository's `main`: it is Town work, and it would add 13 MB to the Office.
+- **Delete it** once the work is in the Town.
+
+## What is in it
+
+| Path | What |
+|---|---|
+| `town/` | Every file the work changes or adds in the Town, at the Town's own paths |
+| `BASE` | The Town commit the work is built on (`main` on 9 November) |
+| `COMMITS` | The Town commits the files come from |
+| `DELETED` | Town files the work removes (one path a line) |
+| `save.sh` | Town checkout → this folder |
+| `bring-back.sh` | This folder → a branch in the Town |
+
+To read the work on GitHub, start at:
+- `town/docs/minato-maru/rev-c/README.md`: the working drawings, Rev C, sheets JS-127-C1 to C8
+- `town/docs/minato-maru/rev-c/ISSUES.md`: the issue list the sheets mark
+- `town/briefs/HANDOFF-FERRY-CAD-REV-C-2026-11-09.md`: the handover, with what is fixed and what is left
+
+## Bringing it back at the weekend
+
+From a clone of this repository, with this branch checked out, and a clone of the Town beside it:
+
+```sh
+sh temp/minato-maru/bring-back.sh /path/to/johansson-town
+```
+
+It makes the branch `claude/minato-maru` in the Town, starting at `BASE`, and commits the files of `town/` on it. Then,
+in the Town:
+
+```sh
+npm run build:runtime                          # the game runs from runtime/, which is not kept here
+node --test tests/runtime-package.test.mjs
+node tools/ci-guard.mjs
+```
+
+Merge the branch into the Town's `main` when the guard is green and the ferry has been looked at in a browser.
+
+- **The built game is not here.** `runtime/` is 56 MB built from `src/`, so only the source is kept. Until
+  `npm run build:runtime` has run in the Town, the fixes are in the source but not in the game.
+- **The branch starts at `BASE`, not at today's `main`.** Merging it is an ordinary merge: nothing changed on the
+  Town's `main` since is overwritten.
+
+## Continuing in a cloud session
+
+1. Clone the Town (read access is enough) and check out `BASE`.
+2. Run `sh temp/minato-maru/bring-back.sh /path/to/johansson-town` to get the work as a branch.
+3. Work and commit in the Town clone: the tools and tests run there.
+4. Run `sh temp/minato-maru/save.sh /path/to/johansson-town`, then commit and push this repository's branch.
+
+## Checked
+
+- 9 November: `bring-back.sh` into a fresh worktree of the Town at `BASE` gave a tree identical to the Town branch it
+  was saved from (`git diff` empty).
