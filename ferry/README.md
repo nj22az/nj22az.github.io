@@ -45,7 +45,7 @@ of the data records the Town commit she was drawn from (`source.commit`, shown a
 picture can be told from the game.
 
 Until the weekend the Town's work on her lives on the branch `claude/festive-rubin-fo8mmp` of this repository, in
-`temp/minato-maru/` (never on `main`); the two export tools are not yet committed in the Town.
+`temp/minato-maru/` (never on `main`), the two export tools among it (`town/tools/`, Town commit `c3ecb2d`).
 
 ## The file format (JMF1)
 
