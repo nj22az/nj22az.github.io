@@ -1,4 +1,4 @@
-import {createResultShare} from './social-share.js?v=20261029a';
+import {createResultShare} from './social-share.js?v=20261109brand2';
 /** Klondike, draw one: tap a card or ordered run, then its destination.
  * Cards use rank 1–13 and suits 'hearts', 'diamonds', 'clubs', 'spades'.
  * Rendering is supplied by Pocket Camera's shared deck through cardView(card, faceDown).

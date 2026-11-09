@@ -40,7 +40,7 @@ html,body,.app{background:var(--bg)}
 :root:not([data-theme=light]) :is(.arcade-entry,.game-choice){background:#1d1d1f;color:#fff;border-color:#444;box-shadow:0 3px 0 #080808}
 :root:not([data-theme=light]) :is(.arcade-entry small,.game-choice small){color:#d0d0cc}
 :root:not([data-theme=light]) .game-room-intro{background:linear-gradient(145deg,#303031,#1b1b1d);border-color:#49443b;box-shadow:0 5px 0 #090909}
-:root:not([data-theme=light]) .game-room-intro h1{color:#fff}:root:not([data-theme=light]) .game-room-intro p:not(.cards-kicker){color:#deded8}:root:not([data-theme=light]) :is(.game-room-intro .cards-kicker,.game-room-label){color:#efcf80}
+:root:not([data-theme=light]) .game-room-intro h1{color:#fff}:root:not([data-theme=light]) .game-room-intro p:not(.cards-kicker){color:#deded8}:root:not([data-theme=light]) .game-room-intro .cards-kicker{color:var(--brand)}:root:not([data-theme=light]) .game-room-label{color:#efcf80}
 :root:not([data-theme=light]) .game-choice>span:last-child{color:#e4c475}:root:not([data-theme=light]) .choice-symbol{background:#d2ad5e;color:#141414;box-shadow:inset 0 0 0 3px #ebd391}
 :root:not([data-theme=light]) .blackjack-layout{background:#101112;color:#f4f4ef}:root:not([data-theme=light]) .blackjack-rules{color:#d6d6d2}
 :root:not([data-theme=light]) .blackjack-table{background:#242426;border-color:#52504a;box-shadow:inset 0 0 0 2px #353535,0 6px 0 #060606}

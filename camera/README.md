@@ -20,7 +20,9 @@ when saving ? I want memory with our own photos or with the stickers".
   (`’26 10 29`, as the hotel photos print it), a shutter that sounds and flashes, and the photo flying into the album.
 - **Frames** (`frames.js`), as every hand-held camera photo had one: **Print** (an instant print's white border and
   deeper foot), **Panel** (a comic panel's hand-inked border on white), **Film** (a 35 mm frame with its sprocket holes
-  and edge print, turning with the picture). Drawn over the picture's edges in the viewfinder and in the save alike;
+  and edge print, MINATO 400 and the frame number along one edge and, since the brand round of 9 November 2026, the
+  stock's maker JOHANSSON WORLD along the other, turning with the picture). Drawn over the picture's edges in the
+  viewfinder and in the save alike;
   the date stays in the picture's own corner, stickers and balloons may cross the border as a balloon breaks a panel.
 - **Pixel frames**, drawn in Python by `tools/draw-camera-frames.py` (the owner: "Draw our own frames in Python") in
   the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
@@ -422,9 +424,16 @@ photo's source. Undo takes back the last few (within 64 MB). Rebuild the module 
 (Rust and `rustup target add wasm32-unknown-unknown`).
 
 **Remove background** (`background.js`, 3 November 2026) sits beside Find spots: the person (MediaPipe's Selfie
-Segmenter, 256 × 256, in `face-pack-worker.js`; `face-pack.js findPerson`) or a plain ground (`plainMask`: the edges'
-median colour, a flood from the edges with a tolerance from the edges' own spread, then any patch of that colour inside
-the subject bigger than a speck) becomes a mask canvas kept on the edit (`edit.cutout`), never baked into the picture.
+Segmenter, 256 × 256, in `face-pack-worker.js`; `face-pack.js findPerson`) or a plain ground (`plainMask`) becomes a
+mask canvas kept on the edit (`edit.cutout`), never baked into the picture. The plain ground is read as a colour that
+bends, not one colour (9 November 2026; the owner: "I see big patches are white"): the rim's colour stretch by stretch
+(a running median, so a subject standing on the frame's edge does not pull it), its grain as the typical stray from
+that, and a flood from the rim in which every pixel carries a reference colour that drifts with the ground it crosses
+and a pixel joins when it is near the reference (hue first, lightness, which shade moves, at half) and a small step from
+its neighbour; a patch the rim cannot reach (between two legs, under a shadow) is read against the nearest ground and
+goes too when it is more than a speck. A sheet with a shadow and a vignette, a wall lit from one side and grainy paper
+now cut clean; a scene (sky over grass, noise) is still refused, and a subject whose colour is the ground's (khaki
+shorts on cream paper) can still lose a little at a soft edge.
 The preview is masked with CSS (`maskDataURL`, the crop's part at 512 px, re-made only when the crop or the mask
 changes); the save applies it to the rendered pixels (`applyMask`, destination-in) before the frame, stickers and date,
 and writes a PNG and the mask as a PNG beside it (`shot.mask`), which a re-edit reads back (`maskFromBlob`) and the
@@ -562,6 +571,71 @@ things went back into Johansson World: the bat and the sweets as Johansson Studi
 `johansson-town/assets/catalog/<id>/source/build-*.py`, checked, exported and published by Studio), hung on Sakura's
 lantern string and heaped on its crates; the cat ears as a Halloween costume (`storyProps(avatar).give('catEars')`).
 
+## Johansson World's brand on the camera — 9 November 2026
+
+The owner: "I would like the branding from Johansson World to be more clear and sophisticated." Later the same day, of
+the first cut: "How about the landing page it doesn't look quite right, I mean for the camera app."
+
+**What the World really looks like** (read from its drawn title screen, `johansson-town/title-screen.css` and
+`line-ui.css`, not from the older rules under them): one typeface, LINE Seed JP; an ink `#263d39`; a green `#16815e`;
+a cream surface `#f5f5ec`; a brighter green `#06c755` for a stamp's edge. Its wordmark is JOHANSSON in the ink over
+WORLD in the green, plain ExtraBold letters with air between them (28 px with .035em over 24 px with .18em on a
+phone), a tag line, a tilted WORK IN PROGRESS stamp, cream panels and a green Start button.
+
+**The first cut was wrong, and why.** It drew a yellow, orange and red toy wordmark with a green outline, called a gold
+and a navy "ink" the World's, and set the brand's words in Avenir Next: all from `landing.css` and `base.css` rules
+that `title-screen.css` and `line-ui.css` have long overridden (in the live World `--gold` and `--rust` both resolve
+to its green). On the landing page the toy mark sat on a grey slab, the greeter overlapped it, and the bar above was an
+empty navy band. The rule since: **look at the World's drawn screen (and ask the browser which rules win) before
+copying its look.**
+
+What is there now (`camera-brand.css`, the tokens in `camera.css`):
+
+- **The title card** (the welcome). The World's cream card, in both themes, as the World's own panels are cream over
+  its harbour by day and by night. On it, once: the World's wordmark **as outlines** (drawn from LINE Seed JP ExtraBold
+  at the World's own setting by `tools/draw-camera-wordmark.py`, set into the page by
+  `tools/apply-camera-wordmark.mjs`; no font decides how it looks), and the camera's Japanese name ポケットカメラ as
+  a stamp in the World's stamp form (signs in Japanese, words in English). The greeter dances at the right, in the room
+  the wordmark leaves, clear of it whichever resident greets. Under the card, "Pocket Camera" in the World's typeface,
+  "A little camera from Minato Machi. Take a photo, try a Look, play with your face.", and a Start button in the
+  World's green, as Start Exploring is. The bar above is quiet there (no lockup, no rule), so the settings button sits
+  at the corner of the page as the World's Settings does. The card takes spare height on a tall phone (to 220) and
+  keeps its least on a short one, so the whole greeting fits an iPhone SE's Safari.
+- **One lockup, everywhere else the app names itself.** A tracked eyebrow JOHANSSON WORLD in the World's green (a soft
+  one, `#7fcaa5`, on dark; a deep one, `#0e5f43`, for small type on light) over "Pocket Camera": the running camera's
+  bar, the settings foot ("Johansson World · Minato Machi", the version, "Visit the World ›" to `/johansson-town/`),
+  the Game Room's kicker (the bar there says "Minato Machi", the room "Game Room"), the share card
+  (`social-share.js`: the World's ink header, its green rules, its cream, the text signed "Pocket Camera · Johansson
+  World").
+- **The typeface.** The brand's words are set in LINE Seed JP, the camera's own files (`fonts/line-seed-jp-latin-700`
+  and `-800.woff2`, Basic Latin and a few marks, 7 KB each, SIL OFL 1.1 in `fonts/OFL-LINESeedJP.txt`), so the camera
+  still loads nothing from another host and works offline.
+- **The bars** are the page's own dark again (`--bar:#0d0e10`, the browser's theme colour with it), as before the
+  first cut's navy.
+- **On what leaves the app.** The Film frame's far edge prints JOHANSSON WORLD beside the stock's MINATO 400
+  (`frames.js`); the instant print stays plain.
+- **What is the camera's own, not the World's.** The warm gold for what is chosen (`--accent`), and the Home Screen
+  icon's dark ground and gold ring (`tools/draw-camera-icon.py`). The World has no gold. Whether the camera's working
+  highlight should become the World's green too is the owner's choice (asked 9 November 2026).
+
+`brand.browser.mjs` (9 checks) holds it: the page, the manifest and the status bar; the wordmark's two outlines in the
+World's ink and green on its cream, unstroked, once; the stamp; the greeter at least 2 px clear of the wordmark for the
+three widest and two narrowest stickers at 390 × 664, 375 × 560 and 390 × 844, the whole greeting on the first screen;
+the lockup drawn by LINE Seed JP itself (the browser's account of the glyphs, not the stylesheet's); the settings
+foot's 44-point link; the Game Room's kicker on one line; the Film edge print; the share card's ink and cream; the
+icons. `wordmark.test.mjs` checks that the page's block is the drawn outlines and that nothing of the toy wordmark or
+the navy is left.
+
+The same day, from the owner's phone: **"The cat out in the stickers need improvement. I see big patches are white";
+"Eh Johansson's Legs are not cut out right."** Two things were wrong. The residents' die-cut stickers kept the studio's
+paper wherever the figure enclosed it (between two legs, under an arm akimbo, inside a crooked elbow: pure white against
+the figure's ink, which `tools/camera_sticker_contours.py` had left as "enclosed white" so shirts and teeth would
+survive); `enclosed_paper` now tells the studio's flat paper (nearly all pure white, bounded by ink) from a garment's
+shaded whites and cuts it, every set was rebuilt from the studio's plain cuts (`tools/build-camera-stickers.py
+../jojo`, style `20261109-contour2`), and the thumbnails are resampled with the alpha premultiplied (`shrink`), so no
+grey or white fringe. And Remove background's plain flood gave up on any ground that was not one flat colour, so a
+thing on a sheet with a shadow went to the person segmenter and came back with its sheet: see Remove background below.
+
 ## How it works
 
 | File | Purpose |
@@ -627,6 +701,8 @@ node camera/tests/makeup.test.mjs              # the makeup recipe, a face from 
 node camera/tests/face-pack.browser.mjs        # the face found as the photo opens, the handles, the recipe, no face
 node camera/tests/auto.browser.mjs             # Auto's levels, on by default, off exact, Adjusted, the setting
 node camera/tests/theme.browser.mjs            # Appearance: Auto follows the device, Light and Dark pinned and remembered, no flash, 4.5:1 in both, the games' paper and black
+node camera/tests/brand.browser.mjs            # Johansson World's brand: page, manifest and status bar; the title card's wordmark (the World's outlines, ink and green on cream) once, the greeter clear of it; the lockup drawn by LINE Seed JP; the settings foot, the Game Room's kicker at 4.5:1 in both themes; the Film edge print; the share card; the icons
+node camera/tests/wordmark.test.mjs            # the page's wordmark block is the drawn outlines; the brand type's files and licence; nothing of the first cut left
 node camera/tests/defaults.browser.mjs         # no Look by default, the old default migrated, a chosen Look kept; the lip colour row
 node camera/tests/background.test.mjs          # Remove background's plain flood and person mask on synthetic pictures
 node camera/tests/background.browser.mjs       # Remove background on the portrait (the segmenter), a drawing on paper, a photo with neither; the PNG and its mask

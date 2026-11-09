@@ -15,33 +15,58 @@ const WORK=512;
 /**
  * A plain background flooded from the edges. `image` is RGBA pixels (ImageData-like, at a working size). Returns
  * {mask: Float32Array (1 = keep), width, height, coverage (the subject's share), spread} or null when the edges are
- * not one colour, or the flood takes nearly everything or nearly nothing.
+ * not a ground (a photograph of a scene, noise), or the flood takes nearly everything or nearly nothing.
+ *
+ * A real ground is seldom one colour: a sheet or a table has a shadow under the thing on it, a vignette towards the
+ * corners, a wall is lit from one side, paper has grain (the owner, 9 November 2026: cut-outs with "big patches" of
+ * white left on them). So the ground is read as a colour that bends gently: every flooded pixel carries a reference
+ * colour that drifts with the ground it crosses, a pixel joins when it is close to the reference (in hue first;
+ * lightness, which shade moves, counts for about half) and a small step from its neighbour, and the rim's colour is
+ * read stretch by stretch, so a subject standing on the frame's edge does not pull it over.
  */
 export function plainMask(image){
  const {data:d,width:w,height:h}=image,n=w*h;if(n<16)return null;
- // The edge's colour: the median of a one-pixel ring, and how far the ring strays from it.
- const ring=[];for(let x=0;x<w;x++){ring.push(x,(h-1)*w+x);}for(let y=1;y<h-1;y++){ring.push(y*w,y*w+w-1);}
- const med=c=>{const v=ring.map(i=>d[4*i+c]).sort((a,b)=>a-b);return v[v.length>>1];};
- const mr=med(0),mg=med(1),mb=med(2);
- const dist=i=>Math.max(Math.abs(d[4*i]-mr),Math.abs(d[4*i+1]-mg),Math.abs(d[4*i+2]-mb));
- let spread=0;for(const i of ring)spread+=dist(i);spread/=ring.length;
- if(spread>26)return null;
- const near=clamp(16+spread*2.4,16,46),step=Math.max(12,near*.7);
- const bg=new Uint8Array(n),queue=new Int32Array(n);
- const flood=(seeds,limit)=>{let head=0,tail=0,count=0;for(const s of seeds){if(bg[s]||dist(s)>=limit)continue;bg[s]=1;queue[tail++]=s;}
-  while(head<tail){const i=queue[head++];count++;const x=i%w,y=(i-x)/w,di=d[4*i],dg=d[4*i+1],db=d[4*i+2];
+ const R=i=>d[4*i],G=i=>d[4*i+1],B=i=>d[4*i+2];
+ // The rim, one pixel in from the frame, walked round in order so a stretch of it is one neighbourhood.
+ const ring=[];for(let x=0;x<w;x++)ring.push(x);for(let y=1;y<h;y++)ring.push(y*w+w-1);for(let x=w-2;x>=0;x--)ring.push((h-1)*w+x);for(let y=h-2;y>=1;y--)ring.push(y*w);
+ const m=ring.length,HALF=Math.max(6,Math.round(m/40));
+ // The ground's colour along the rim: the running median of a stretch.
+ const local=new Float32Array(3*m),win=[];
+ for(let c=0;c<3;c++)for(let k=0;k<m;k++){win.length=0;for(let t=-HALF;t<=HALF;t++)win.push(d[4*ring[(k+t+m)%m]+c]);win.sort((a,b)=>a-b);local[3*k+c]=win[HALF];}
+ // How far the rim strays from its own stretch: the typical stray is the ground's grain (noise and a photograph of a
+ // scene stray everywhere); a subject on the edge strays far but may take a fifth of the rim.
+ const strays=Float32Array.from({length:m},(_,k)=>{const i=ring[k];return Math.max(Math.abs(R(i)-local[3*k]),Math.abs(G(i)-local[3*k+1]),Math.abs(B(i)-local[3*k+2]));}).sort();
+ const roughness=strays[m>>1];if(roughness>18||strays[Math.floor(m*.8)]>60)return null;
+ // The ground bends, it does not swing: sky over grass is a scene, not a ground.
+ const band=f=>{const v=Float32Array.from({length:m},(_,k)=>f(k)).sort();return v[Math.floor(m*.88)]-v[Math.floor(m*.12)];};
+ if(band(k=>local[3*k]+local[3*k+1]+local[3*k+2])>390||band(k=>local[3*k]-local[3*k+1])>40||band(k=>local[3*k+1]-local[3*k+2])>40)return null;
+ const near=clamp(12+roughness*1.6,12,30),step=Math.max(12,near*.75),limit=near*1.9,LIGHT=.55,DRIFT=.03;
+ // Distance from a reference colour: the two hue differences in full, lightness at about half.
+ const far=(i,r,g,b)=>Math.max(Math.abs((R(i)-G(i))-(r-g)),Math.abs((G(i)-B(i))-(g-b)),LIGHT*Math.abs(R(i)+G(i)+B(i)-r-g-b)/3);
+ // bg: 0 unseen, 1 the ground from the rim, 3 a patch of ground inside the subject, 2 a speck given back to the subject.
+ const bg=new Uint8Array(n),ref=new Float32Array(3*n),queue=new Int32Array(n);
+ const flood=(seeds,mark)=>{let head=0,tail=0,count=0;
+  for(const [s,r,g,b] of seeds){if(bg[s]||far(s,r,g,b)>=limit)continue;bg[s]=mark;ref[3*s]=r;ref[3*s+1]=g;ref[3*s+2]=b;queue[tail++]=s;}
+  while(head<tail){const i=queue[head++];count++;const x=i%w,y=(i-x)/w,ri=R(i),gi=G(i),bi=B(i),r=ref[3*i],g=ref[3*i+1],b=ref[3*i+2];
    for(const j of [x>0?i-1:-1,x<w-1?i+1:-1,y>0?i-w:-1,y<h-1?i+w:-1]){if(j<0||bg[j])continue;
-    if(dist(j)<limit&&Math.max(Math.abs(d[4*j]-di),Math.abs(d[4*j+1]-dg),Math.abs(d[4*j+2]-db))<step){bg[j]=1;queue[tail++]=j;}}}
+    if(Math.max(Math.abs(R(j)-ri),Math.abs(G(j)-gi),Math.abs(B(j)-bi))<step&&far(j,r,g,b)<limit){bg[j]=mark;ref[3*j]=r+DRIFT*(R(j)-r);ref[3*j+1]=g+DRIFT*(G(j)-g);ref[3*j+2]=b+DRIFT*(B(j)-b);queue[tail++]=j;}}}
   return count;};
- flood(ring,near*1.6);
- // Patches of the edge's colour the edges do not reach (between an arm and a body, inside a letter): background too,
- // when they are more than a speck.
+ flood(ring.map((i,k)=>[i,local[3*k],local[3*k+1],local[3*k+2]]),1);
+ // Patches of the ground the edges do not reach (between an arm and a body, inside a letter, under a shadow): ground
+ // too, when they are more than a speck. A patch is marked apart from the rim's ground, so a speck given back takes
+ // only itself (walking the rim's ground would hand the whole background back).
+ // A patch is read against the rim's ground nearest to it (along the four axes), shade and all: the wall between two
+ // legs against the wall beside them; failing that, against the rim's median colour.
+ const med=c=>{const v=Float32Array.from({length:m},(_,k)=>local[3*k+c]).sort();return v[m>>1];};const mr=med(0),mg=med(1),mb=med(2);
+ const reach=Math.max(24,Math.round(Math.max(w,h)/8));
+ const nearestGround=i=>{const x=i%w,y=(i-x)/w;for(let t=1;t<=reach;t++){for(const j of [x-t>=0?i-t:-1,x+t<w?i+t:-1,y-t>=0?i-t*w:-1,y+t<h?i+t*w:-1])if(j>=0&&bg[j]===1)return j;}return -1;};
  const minPatch=Math.max(24,n*.002);
- for(let i=0;i<n;i++){if(bg[i]||dist(i)>=near*.6)continue;
-  const before=flood([i],near*1.2);if(before<minPatch){/* a speck of background colour inside the subject: keep it */let head=0;const stack=[i];bg[i]=2;while(head<stack.length){const k=stack[head++];const x=k%w,y=(k-x)/w;for(const j of [x>0?k-1:-1,x<w-1?k+1:-1,y>0?k-w:-1,y<h-1?k+w:-1])if(j>=0&&bg[j]===1){bg[j]=2;stack.push(j);}}}}
- let kept=0;const mask=new Float32Array(n);for(let i=0;i<n;i++){const keep=bg[i]===1?0:1;mask[i]=keep;kept+=keep;}
+ for(let i=0;i<n;i++){if(bg[i])continue;
+  const j=nearestGround(i),r=j>=0?ref[3*j]:mr,g=j>=0?ref[3*j+1]:mg,b=j>=0?ref[3*j+2]:mb;if(far(i,r,g,b)>=near*1.2)continue;
+  const before=flood([[i,r,g,b]],3);if(before<minPatch){let head=0;const stack=[i];bg[i]=2;while(head<stack.length){const k=stack[head++];const x=k%w,y=(k-x)/w;for(const j of [x>0?k-1:-1,x<w-1?k+1:-1,y>0?k-w:-1,y<h-1?k+w:-1])if(j>=0&&bg[j]===3){bg[j]=2;stack.push(j);}}}}
+ let kept=0;const mask=new Float32Array(n);for(let i=0;i<n;i++){const keep=bg[i]===1||bg[i]===3?0:1;mask[i]=keep;kept+=keep;}
  const coverage=kept/n;if(coverage<.02||coverage>.9)return null;
- return {mask:soften(mask,w,h),width:w,height:h,coverage:+coverage.toFixed(3),spread:+spread.toFixed(1)};
+ return {mask:soften(mask,w,h),width:w,height:h,coverage:+coverage.toFixed(3),spread:+roughness.toFixed(1)};
 }
 /** A one-pixel box blur, so the cut edge is not a staircase once scaled up. */
 function soften(m,w,h){

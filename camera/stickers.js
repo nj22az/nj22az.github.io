@@ -17,7 +17,7 @@ import {isBalloon,balloonLayout,balloonCanvas,loadLetteringFont,BALLOONS} from '
 import {isEffect,drawEffect,effectLabel} from './effects.js?v=20261029b';
 import {viewDetail} from './zoom-view.js?v=20261104ui1';
 
-const MANIFEST=new URL('./stickers/stickers.json?v=20261031-contour1',import.meta.url);
+const MANIFEST=new URL('./stickers/stickers.json?v=20261109-contour2',import.meta.url);
 // The camera's own sheet of manga marks (tools/draw-manga-marks.py): under the Manga tab with the lines, never a deck
 // for Memory or a greeting (its `kind`).
 const MARKS=new URL('./stickers/marks.json',import.meta.url);

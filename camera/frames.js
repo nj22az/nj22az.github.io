@@ -114,13 +114,14 @@ export function drawFrame(g,id,w,h){
    const [x,y,hw,hh]=across?[along,away-hole.across/2,hole.along,hole.across]:[away-hole.across/2,along,hole.across,hole.along];
    g.beginPath();g.roundRect(x,y,hw,hh,hole.r);g.fill();
   }
-  // The edge print: the stock's name and the frame number, in the amber the film's edge is exposed with.
+  // The edge print: the stock's maker and name and the frame number, in the amber the film's edge is exposed with
+  // (the maker on the far edge, as a stock's manufacturer is: the one place a photo carries the World's name).
   g.fillStyle='#e7a23b';g.font=`700 ${.024*m}px "Helvetica Neue",Arial,sans-serif`;g.textBaseline='middle';
   const label=(text,along,away,align)=>{g.save();if(across)g.translate(along,away);else{g.translate(away,along);g.rotate(Math.PI/2);}g.textAlign=align;g.fillText(text,0,0);g.restore();};
   // Between the holes and the picture.
   const edgeAt=band*.86;
   label('MINATO 400',length*.06,edgeAt,'left');label('▶ 12',length*.94,edgeAt,'right');
-  label('12A',length*.5,(across?h:w)-edgeAt,'center');
+  label('JOHANSSON WORLD',length*.06,(across?h:w)-edgeAt,'left');label('12A',length*.5,(across?h:w)-edgeAt,'center');
   g.restore();
  }
 }

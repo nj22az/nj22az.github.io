@@ -30,7 +30,7 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
 
  await check('Auto follows the device: a light device opens the camera light, with the browser’s theme colour to match',async()=>{
-  assert.deepEqual(await theme(page),{attr:'light',meta:'#fbfaf7',setting:'Auto',stored:'auto'});
+  assert.deepEqual(await theme(page),{attr:'light',meta:'#faf8f2',setting:'Auto',stored:'auto'});
   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).colorScheme),'light');
   await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='dark');
   assert.equal((await theme(page)).meta,'#0d0e10','the device turned dark: so did the camera');
@@ -39,10 +39,10 @@ try{
 
  await check('the Appearance setting pins Light or Dark and is remembered; Auto follows the device again',async()=>{
   const tap=()=>page.evaluate(()=>document.getElementById('themeSetting').click());
-  await tap();assert.deepEqual(await theme(page),{attr:'light',meta:'#fbfaf7',setting:'Light',stored:'light'});
+  await tap();assert.deepEqual(await theme(page),{attr:'light',meta:'#faf8f2',setting:'Light',stored:'light'});
   await tap();assert.deepEqual(await theme(page),{attr:'dark',meta:'#0d0e10',setting:'Dark',stored:'dark'});
   await page.emulateMedia({colorScheme:'light'});await new Promise(r=>setTimeout(r,80));assert.equal((await theme(page)).attr,'dark','pinned: the device does not move it');
-  await tap();assert.deepEqual(await theme(page),{attr:'light',meta:'#fbfaf7',setting:'Auto',stored:'auto'});
+  await tap();assert.deepEqual(await theme(page),{attr:'light',meta:'#faf8f2',setting:'Auto',stored:'auto'});
   assert.ok((await page.getAttribute('#themeSetting','aria-label')).startsWith('Appearance: Auto'));
  });
 

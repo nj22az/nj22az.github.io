@@ -1,0 +1,63 @@
+/* Pocket Camera: Johansson World's mark on the camera (the owner, 9 November 2026: "I would like the branding from
+   Johansson World to be more clear and sophisticated").
+
+   The World's own look, read from its drawn title screen (johansson-town/title-screen.css, line-ui.css): one typeface,
+   LINE Seed JP; an ink, #263d39; a green, #16815e; a cream surface, #f5f5ec; a brighter green, #06c755, for a stamp's
+   edge. The wordmark is JOHANSSON in the ink over WORLD in the green, plain letters with air between them. The camera
+   carries that in two ways:
+   - the wordmark itself, once, on the title card (the welcome), as outlines (tools/draw-camera-wordmark.py), with the
+     camera's Japanese name as a stamp, the form the World stamps WORK IN PROGRESS in;
+   - one lockup wherever a screen names the app: a tracked eyebrow JOHANSSON WORLD in the World's green over the
+     product's name, in the World's typeface (the Latin the brand's words need, camera/fonts/, SIL OFL 1.1).
+   Signs in Japanese, words in English, as the World's rule goes. The field behind a photo stays neutral.
+
+   The first brand round (earlier the same day) took a yellow, red and green toy wordmark, a gold and a navy "ink" from
+   stylesheets the World no longer shows; the owner: "the landing page … doesn't look quite right". */
+@font-face{font-family:"LINE Seed JP";font-style:normal;font-weight:700;font-display:swap;src:url("fonts/line-seed-jp-latin-700.woff2") format("woff2")}
+@font-face{font-family:"LINE Seed JP";font-style:normal;font-weight:800;font-display:swap;src:url("fonts/line-seed-jp-latin-800.woff2") format("woff2")}
+
+.brand-lockup{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;font-family:var(--font-brand)}
+.brand-eyebrow{display:block;margin:0;font:700 .5625rem/1.25 var(--font-brand);letter-spacing:.2em;text-transform:uppercase;color:var(--brand);white-space:nowrap}
+.brand-name{display:block;font:700 1rem/1.2 var(--font-brand);letter-spacing:0;color:var(--label)}
+.camera-mark.brand-lockup{font-size:1rem;line-height:1.2;letter-spacing:0;text-transform:none;overflow:visible;white-space:normal}
+/* The title card carries the brand on the first screen: the bar's lockup waits until the camera is up, and the bar
+   itself is quiet there (no rule under it), so the settings button sits at the corner of the page as the World's own
+   Settings does on its title. */
+.camera.idle .camera-mark{visibility:hidden}
+.camera.idle .camera-bar{box-shadow:none}
+/* Installed, with no Back to the Office, the lockup sits at the left as the bar's own title did. */
+.standalone .camera .brand-lockup{align-items:flex-start}
+@media (display-mode:standalone){.camera .brand-lockup{align-items:flex-start}}
+
+/* The title card. The hero is the World's cream surface in both themes, as the World's own panels are cream over its
+   harbour by day and by night, so the wordmark is always in its own colours. The wordmark and the stamp stand at the
+   left, centred on each other as on the World's title; the greeter dances at the right, clear of them. Everything is
+   sized from the wordmark's width, --wm: a little over half the card's width (the card is a size container,
+   camera-ui.css), and no wider than fits a card at its least height, so the whole greeting still fits an iPhone SE's
+   Safari. (Only the width is asked of the container: the card's height comes from flexing, and a flexed height
+   answers a container query with nothing.) */
+.welcome-hero{background:#f5f5ec;box-shadow:inset 0 0 0 1px #263d391f,0 4px 20px #263d3912}
+.welcome-brand{--wm:min(54cqw,var(--wm-max,215px));position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:calc(var(--wm) * .05);width:var(--wm);-webkit-user-select:none;user-select:none}
+@media(min-width:700px) and (min-height:700px){.welcome-brand{--wm-max:330px}}
+/* Written under .welcome-brand: the camera's icon rule (camera.css) would size and stroke any svg. */
+.welcome-brand .world-mark{display:block;width:100%;height:auto;fill:none;stroke:none}
+.welcome-brand .wm-main{fill:#263d39}
+.welcome-brand .wm-town{fill:#16815e}
+/* The stamp: the World's WORK IN PROGRESS form (a tilted label with a bright green edge), carrying ポケットカメラ. */
+.welcome-brand .world-stamp{display:block;padding:calc(var(--wm) * .022) calc(var(--wm) * .055);border:max(1.5px,calc(var(--wm) * .0085)) solid #06c755;border-radius:calc(var(--wm) * .028);background:#fff;transform:rotate(-2.5deg)}
+.welcome-brand .world-stamp svg{display:block;width:auto;height:clamp(8px,calc(var(--wm) * .058),15px);fill:#11714f;stroke:none}
+.welcome-copy h2{font-family:var(--font-brand);font-weight:800;letter-spacing:-.01em}
+/* The title card's own button is the World's: its green, as Start Exploring is. */
+.welcome .button.primary{background:#16815e;color:#fff;box-shadow:inset 0 -3px #0000001f}
+.welcome .button.primary:active{background:#126c4f}
+
+/* The foot of the settings: whose camera this is, its version, and the way to the World. */
+.settings-footer{align-items:flex-start}
+.settings-brand{display:grid;gap:2px;min-width:0}
+.settings-brand .brand-eyebrow{white-space:normal}
+.settings-world{display:inline-flex;align-items:center;gap:4px;min-height:44px;margin:0 0 -12px;color:var(--brand);font:600 .8125rem/1.4 var(--font);text-decoration:none;border-radius:8px}
+.settings-world:active{opacity:.7}
+
+/* The Game Room's kicker is the same eyebrow, in the World's green on its paper and in the dark (camera-black.css). */
+.game-room-intro .cards-kicker{font:700 .625rem/1.3 var(--font-brand);letter-spacing:.2em;text-transform:uppercase;color:var(--brand)}
+.game-room-intro h1{font-family:var(--font-brand);font-weight:800;letter-spacing:-.02em}

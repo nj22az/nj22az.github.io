@@ -17,7 +17,7 @@
  * segment, never between. createBallGame() is the game alone, for the checks (camera/tests/ball.test.mjs);
  * createBall() the screen.
  */
-import {createResultShare} from './social-share.js?v=20261029a';
+import {createResultShare} from './social-share.js?v=20261109brand2';
 
 /** Ball positions across the LCD: 0 is the left hand, STEPS-1 the right; a crossing is STEPS-1 moves. */
 export const STEPS=7;
@@ -132,7 +132,9 @@ export function createBall(root,{faces=async()=>[],pickFace=async()=>null,defaul
  const best=()=>store.read().ballBest||0;
  const loadFace=url=>new Promise(res=>{if(!url){res(null);return;}const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=url;});
  const loadFaces=async choice=>(await Promise.all((choice?.frames||[]).map(loadFace))).filter(Boolean);
- async function useFace(choice){faceChoice=normalFace(choice);store.write({...store.read(),gameFace:faceChoice});faceImgs=await loadFaces(faceChoice);frameIndex=0;draw();renderFaces();}
+ // The list shows the choice at once (its first choices are drawn before anything is awaited); the pictures follow.
+ // Drawn only after the faces had loaded, the list went on showing the earlier choice for a moment.
+ async function useFace(choice){faceChoice=normalFace(choice);store.write({...store.read(),gameFace:faceChoice});renderFaces();faceImgs=await loadFaces(faceChoice);frameIndex=0;draw();}
  async function renderFaces(){
   facesEl.textContent='';
   const choice=(id,html,checked,onClick,extra='')=>{const b=document.createElement('button');b.type='button';b.className='ball-face'+extra;b.setAttribute('role','radio');b.dataset.face=id;b.setAttribute('aria-checked',String(checked));b.innerHTML=html;b.addEventListener('click',onClick);facesEl.append(b);return b;};

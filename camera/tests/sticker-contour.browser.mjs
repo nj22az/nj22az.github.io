@@ -18,7 +18,7 @@ try{
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  await check('116 resident stickers and thumbnails load at unchanged dimensions with the new contour key',async()=>{
   const report=await page.evaluate(async()=>{
-   const m=await(await fetch('/camera/stickers/stickers.json?v=20261031-contour1')).json(),rows=[];
+   const m=await(await fetch('/camera/stickers/stickers.json?v=20261109-contour2')).json(),rows=[];
    for(const s of m.sets.flatMap(set=>set.stickers)){
     const full=await createImageBitmap(await(await fetch('/camera/stickers/'+s.src)).blob());
     const thumb=await createImageBitmap(await(await fetch('/camera/stickers/'+s.thumb)).blob());
@@ -28,12 +28,12 @@ try{
      const p=g.getImageData(0,Math.floor(full.height*.86),full.width,full.height-Math.floor(full.height*.86)).data;paleShoes=0;
      for(let i=0;i<p.length;i+=4)if(Math.min(p[i],p[i+1],p[i+2])>220&&p[i+3]>240)paleShoes++;
     }
-    rows.push({id:s.id,width:full.width,height:full.height,expected:[s.width,s.height],thumb:Math.max(thumb.width,thumb.height),paleShoes,version:s.src.endsWith('?v=20261031-contour1')&&s.thumb.endsWith('?v=20261031-contour1')});
+    rows.push({id:s.id,width:full.width,height:full.height,expected:[s.width,s.height],thumb:Math.max(thumb.width,thumb.height),paleShoes,version:s.src.endsWith('-20261109-contour2')&&s.thumb.endsWith('-20261109-contour2')});
     full.close();thumb.close();
    }
    return {style:m.contour,rows};
   });
-  assert.equal(report.style,'20261031-contour1');assert.equal(report.rows.length,116);
+  assert.equal(report.style,'20261109-contour2');assert.equal(report.rows.length,116);
   for(const r of report.rows){assert.deepEqual([r.width,r.height],r.expected);assert.ok(r.thumb<=256&&r.version,JSON.stringify(r));if(r.paleShoes!==null)assert.ok(r.paleShoes>3000,JSON.stringify(r));}
  });
  await check('new cut-outs and photo stickers have a fine rim and transparent corners',async()=>{
@@ -62,7 +62,7 @@ try{
  if(shots)await page.screenshot({path:join(shots,'phone-sticker-contour.png')});
  await check('the actual picker places the recut asset and export uses those same sticker pixels',async()=>{
   const result=await page.evaluate(async()=>{
-   const {engine,state}=window.pocketCamera,e=state.edit,m=await import('/camera/stickers.js?v=20261105fun1');
+   const {engine,state}=window.pocketCamera,e=state.edit,m=await import('/camera/stickers.js?v=20261109brand2');
    const img=document.querySelector('#editFrame .sticker img');await img.decode();
    const selected=await m.stickerImage(e.recipe.stickers[0].id);
    const a=document.createElement('canvas');a.width=a.height=512;
@@ -73,7 +73,7 @@ try{
    let max=0;for(let i=0;i<pa.length;i++)max=Math.max(max,Math.abs(pa[i]-pb[i]));
    return {src:img.src,max,id:s.id};
   });
-  assert.match(result.src,/20261031-contour1/);assert.equal(result.id,'thuan-blender/wave');assert.equal(result.max,0);
+  assert.match(result.src,/20261109-contour2/);assert.equal(result.id,'thuan-blender/wave');assert.equal(result.max,0);
   await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');
   assert.equal(await page.evaluate(()=>window.pocketCamera.state.viewing.recipe.stickers[0].id),'thuan-blender/wave');
   await page.locator('#viewerImage').evaluate(img=>img.decode());
