@@ -8,7 +8,7 @@ the ferry ready"*, after *"Work on the cloud and online for now and we bring it 
 work is kept here, online, until it is brought back into the Town at the weekend.
 
 - **Temporary.** It lives on branch `claude/festive-rubin-fo8mmp` of this repository only. Do not merge it into this
-  repository's `main`: it is Town work, and it would add 13 MB to the Office.
+  repository's `main`: it is Town work, and it would add 18 MB to the Office.
 - **Delete it** once the work is in the Town.
 
 ## What is in it
@@ -21,6 +21,23 @@ work is kept here, online, until it is brought back into the Town at the weekend
 | `DELETED` | Town files the work removes (one path a line) |
 | `save.sh` | Town checkout → this folder |
 | `bring-back.sh` | This folder → a branch in the Town |
+
+## The Christina (from 9 November 2026)
+
+The owner, 9 November 2026: *"I want a ferry viewer on my website"*, *"I think you should call this ship the Christina ,
+it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what we learn from building this ship"*,
+*"Don't replace the ferry in Johansson world yet"*.
+
+- The viewer is on the Office's `main` and live: <https://nj22az.github.io/ferry/> (page, format, known limits and
+  checks: [`/ferry/README.md`](../../ferry/README.md)). She is also one of the projects on the homepage.
+- Its data is written by two Town tools kept here: `town/tools/ferry-viewer-export.mjs` and
+  `town/tools/ferry-viewer-export.page.js` (Town commit `c3ecb2d`). They change nothing under the Town's `src/`: the
+  Christina's name is painted by the export alone, and the ferry in the live Johansson World is untouched.
+- **For now the Christina is drawn from the Minato Maru's model.** Her own build is next: in Blender, from the Rev C
+  working drawings, section by section from the hull and exterior, with the Rev C issues corrected in her design
+  first. The Minato Maru is rebuilt later from what she teaches; until the owner says so, nothing here replaces her.
+- The viewer's files (`/ferry/`, the homepage card) go to `main` on their own: they are committed apart from this
+  folder and cherry-picked onto a branch made from `main`.
 
 To read the work on GitHub, start at:
 - `town/docs/minato-maru/rev-c/README.md`: the working drawings, Rev C, sheets JS-127-C1 to C8
@@ -60,5 +77,7 @@ Merge the branch into the Town's `main` when the guard is green and the ferry ha
 
 ## Checked
 
+- 9 November: after the export tools were committed in the Town (`c3ecb2d`), `save.sh` saved 50 files; the two tools
+  here are byte-identical to the ones that wrote the published `ferry/data/`.
 - 9 November: `bring-back.sh` into a fresh worktree of the Town at `BASE` gave a tree identical to the Town branch it
   was saved from (`git diff` empty).
