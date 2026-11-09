@@ -115,7 +115,7 @@ they are lit:
   name no longer shows mirrored on the inside of the hull.
 - The homepage card: `node --check config.js`, `node --check assets/js/project-explorer.js`, and the homepage design
   review (`tools/office-home/review.browser.mjs`) run locally in headless Chromium at its six sizes: passed, with 7
-  cards and a desktop project grid of 2536 px against its 3119 px limit. The card itself was looked at on desktop, at
+  cards and a desktop project grid of 2536 px against its 3062 px limit (80 % of the baseline's height). The card itself was looked at on desktop, at
   390 px and 320 px wide, light and dark.
 
 Not checked: a real phone, a real GPU (frame rate is unknown), an actual finger tap on a room (`identify` was only called
