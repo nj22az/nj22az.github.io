@@ -79,8 +79,18 @@ they are lit:
 - Three.js r170 comes from `/motor-90l/vendor/` (`three.module.min.js` through the import map, and `OrbitControls.js`).
   Moving or upgrading that folder changes this page too.
 - The page uses its own chrome, not the site's `shared.js` navigation, as `/motor-90l/` does.
-- `window.__ferry` (`setExplode`, `setCut`, `home`, `select`, `showDeck`, `setPanel`, `identify`, `state`) is there for
-  checks and screenshots.
+- `window.__ferry` (`setExplode`, `setCut`, `home`, `select`, `showDeck`, `setPanel`, `identify`, `state`, and `look`:
+  the renderer, scene, camera, controls, sun and `redraw()`) is there for checks and screenshots.
+- **The homepage card.** The owner, 9 November 2026: "Make it one of my projects , on the website". She is the `ferry`
+  entry of `CONFIG.projectExplorer` in `/config.js` (second card, under Explore), drawn by
+  `/assets/js/project-explorer.js`; `CONFIG.projects` has her too. The homepage never loads the 3D model (its design
+  review forbids it): the card shows a picture, `/assets/images/ferry/christina-card.webp`. It lives under `assets/`,
+  not here, because the homepage review's sparse checkout does not include `ferry/`.
+- **Retake the card picture when the model changes.** It is this page's cut view from the starboard side with the
+  chrome hidden: Cut 0.5, the camera set through `window.__ferry.look` (target (0, 6.3, 1.4), looking along
+  (−1, 0.2, 0.3) from 50 m, aspect 1200 : 630), shot at 1200 × 630 at scale 2 and reduced to a 1200 × 630 WebP
+  (quality 84). The counts in `tools/office-home/review.browser.mjs` (7 cards; Explore 2, Create 3, Learn 2) follow
+  `CONFIG.projectExplorer`.
 
 ## Known limits of the first look
 
@@ -101,6 +111,12 @@ they are lit:
 - Headless Chromium (software rendering, SwiftShader) at 1440 × 900 and at 390 × 844 with touch: closed ship, exploded,
   cut, decks hidden, rooms selected (wheelhouse, engine room, saloon), the machinery deck alone, the panel open on the
   phone size, light and dark colour schemes. No console errors or failed requests in any of them.
+- The cut view again after one fix: a picture (her name, a sign, a dial) keeps its one face when she is cut open, so her
+  name no longer shows mirrored on the inside of the hull.
+- The homepage card: `node --check config.js`, `node --check assets/js/project-explorer.js`, and the homepage design
+  review (`tools/office-home/review.browser.mjs`) run locally in headless Chromium at its six sizes: passed, with 7
+  cards and a desktop project grid of 2536 px against its 3119 px limit. The card itself was looked at on desktop, at
+  390 px and 320 px wide, light and dark.
 
 Not checked: a real phone, a real GPU (frame rate is unknown), an actual finger tap on a room (`identify` was only called
 from script), Safari and Firefox.
