@@ -573,36 +573,58 @@ lantern string and heaped on its crates; the cat ears as a Halloween costume (`s
 
 ## Johansson World's brand on the camera — 9 November 2026
 
-The owner: "I would like the branding from Johansson World to be more clear and sophisticated." The World has two
-registers: the toy wordmark of its title screen (JOHANSSON in sun letters outlined in green, WORLD in a tilted red box,
-a Japanese pill; `johansson-town/landing.css`) and, inside, its harbour palette (ink `#142d37`, paper `#ece3c9`, gold
-`#e2b665`, rust `#b65940`; `johansson-town/base.css`) in Avenir Next and Yu Gothic. The camera wore neither: an
-iOS-camera yellow, the system font, and "Pocket Camera" with no origin. Now (`camera-brand.css`, the tokens in
-`camera.css`):
+The owner: "I would like the branding from Johansson World to be more clear and sophisticated." Later the same day, of
+the first cut: "How about the landing page it doesn't look quite right, I mean for the camera app."
 
-- **One lockup, everywhere the app names itself.** A tracked eyebrow JOHANSSON WORLD in the World's gold (its ink in
-  light) over "Pocket Camera", in the World's type: the camera bar (`h1.camera-mark.brand-lockup`), the settings foot
-  ("Johansson World · Minato Machi", the version, "Visit the World ›" to `/johansson-town/`), the Game Room's kicker
-  (the bar there says "Minato Machi", the room "Game Room"), the share card (`social-share.js`: the lockup on an ink
-  header, the camera's name at the foot, the text signed "Pocket Camera · Johansson World").
-- **The toy wordmark once, on the title card.** The welcome's hero card holds the World's wordmark at a label's size
-  and the camera's Japanese name, ポケットカメラ, in the World's pill (signs in Japanese, words in English), beside
-  the dancing greeter (the sample print it held before is gone); under it "Pocket Camera" and "A little camera from
-  Minato Machi. Take a photo, try a Look, play with your face." The wordmark is sized by the hero's height, so the
-  greeting still fits whole on an iPhone SE's Safari; the bar's lockup is hidden while the title card carries the brand.
-- **The palette.** The accent is the World's gold (`#e2b665`; a deep brass `#7d5a1c` for chosen text in light, 4.5:1
-  and better on every surface); in dark the bars, the editor's tab row and the status bar take the World's ink
-  (`--bar:#142d37`, the browser's theme colour with it); light leans a touch towards the World's paper. The field
-  behind a photo stays neutral, so a photo is judged on neutral. Rust (`#d47b62` dark, `#8f4030` light) for kickers.
+**What the World really looks like** (read from its drawn title screen, `johansson-town/title-screen.css` and
+`line-ui.css`, not from the older rules under them): one typeface, LINE Seed JP; an ink `#263d39`; a green `#16815e`;
+a cream surface `#f5f5ec`; a brighter green `#06c755` for a stamp's edge. Its wordmark is JOHANSSON in the ink over
+WORLD in the green, plain ExtraBold letters with air between them (28 px with .035em over 24 px with .18em on a
+phone), a tag line, a tilted WORK IN PROGRESS stamp, cream panels and a green Start button.
+
+**The first cut was wrong, and why.** It drew a yellow, orange and red toy wordmark with a green outline, called a gold
+and a navy "ink" the World's, and set the brand's words in Avenir Next: all from `landing.css` and `base.css` rules
+that `title-screen.css` and `line-ui.css` have long overridden (in the live World `--gold` and `--rust` both resolve
+to its green). On the landing page the toy mark sat on a grey slab, the greeter overlapped it, and the bar above was an
+empty navy band. The rule since: **look at the World's drawn screen (and ask the browser which rules win) before
+copying its look.**
+
+What is there now (`camera-brand.css`, the tokens in `camera.css`):
+
+- **The title card** (the welcome). The World's cream card, in both themes, as the World's own panels are cream over
+  its harbour by day and by night. On it, once: the World's wordmark **as outlines** (drawn from LINE Seed JP ExtraBold
+  at the World's own setting by `tools/draw-camera-wordmark.py`, set into the page by
+  `tools/apply-camera-wordmark.mjs`; no font decides how it looks), and the camera's Japanese name ポケットカメラ as
+  a stamp in the World's stamp form (signs in Japanese, words in English). The greeter dances at the right, in the room
+  the wordmark leaves, clear of it whichever resident greets. Under the card, "Pocket Camera" in the World's typeface,
+  "A little camera from Minato Machi. Take a photo, try a Look, play with your face.", and a Start button in the
+  World's green, as Start Exploring is. The bar above is quiet there (no lockup, no rule), so the settings button sits
+  at the corner of the page as the World's Settings does. The card takes spare height on a tall phone (to 220) and
+  keeps its least on a short one, so the whole greeting fits an iPhone SE's Safari.
+- **One lockup, everywhere else the app names itself.** A tracked eyebrow JOHANSSON WORLD in the World's green (a soft
+  one, `#7fcaa5`, on dark; a deep one, `#0e5f43`, for small type on light) over "Pocket Camera": the running camera's
+  bar, the settings foot ("Johansson World · Minato Machi", the version, "Visit the World ›" to `/johansson-town/`),
+  the Game Room's kicker (the bar there says "Minato Machi", the room "Game Room"), the share card
+  (`social-share.js`: the World's ink header, its green rules, its cream, the text signed "Pocket Camera · Johansson
+  World").
+- **The typeface.** The brand's words are set in LINE Seed JP, the camera's own files (`fonts/line-seed-jp-latin-700`
+  and `-800.woff2`, Basic Latin and a few marks, 7 KB each, SIL OFL 1.1 in `fonts/OFL-LINESeedJP.txt`), so the camera
+  still loads nothing from another host and works offline.
+- **The bars** are the page's own dark again (`--bar:#0d0e10`, the browser's theme colour with it), as before the
+  first cut's navy.
 - **On what leaves the app.** The Film frame's far edge prints JOHANSSON WORLD beside the stock's MINATO 400
-  (`frames.js`); the instant print stays plain. The Home Screen icons stand on the World's ink with a gold lens ring
-  (`tools/draw-camera-icon.py`). The page is "Pocket Camera · Johansson World"; the manifest names the World and
-  takes the ink as its theme colour; the Home Screen keeps the short name.
-- **Not done, on purpose:** no toy logo on every screen, no tint over the viewfinder or album, no rename.
+  (`frames.js`); the instant print stays plain.
+- **What is the camera's own, not the World's.** The warm gold for what is chosen (`--accent`), and the Home Screen
+  icon's dark ground and gold ring (`tools/draw-camera-icon.py`). The World has no gold. Whether the camera's working
+  highlight should become the World's green too is the owner's choice (asked 9 November 2026).
 
-`brand.browser.mjs` (8 checks) holds it: the page, manifest and status bar; the title card's wordmark once and the
-pill's red, the lockup's type and contrast in both themes, the settings foot's 44-point link, the Game Room's kicker on
-one line, the Film edge print (and the plain print), the share card's ink and paper, the icons' ink and gold.
+`brand.browser.mjs` (9 checks) holds it: the page, the manifest and the status bar; the wordmark's two outlines in the
+World's ink and green on its cream, unstroked, once; the stamp; the greeter at least 2 px clear of the wordmark for the
+three widest and two narrowest stickers at 390 × 664, 375 × 560 and 390 × 844, the whole greeting on the first screen;
+the lockup drawn by LINE Seed JP itself (the browser's account of the glyphs, not the stylesheet's); the settings
+foot's 44-point link; the Game Room's kicker on one line; the Film edge print; the share card's ink and cream; the
+icons. `wordmark.test.mjs` checks that the page's block is the drawn outlines and that nothing of the toy wordmark or
+the navy is left.
 
 The same day, from the owner's phone: **"The cat out in the stickers need improvement. I see big patches are white";
 "Eh Johansson's Legs are not cut out right."** Two things were wrong. The residents' die-cut stickers kept the studio's
@@ -679,7 +701,8 @@ node camera/tests/makeup.test.mjs              # the makeup recipe, a face from 
 node camera/tests/face-pack.browser.mjs        # the face found as the photo opens, the handles, the recipe, no face
 node camera/tests/auto.browser.mjs             # Auto's levels, on by default, off exact, Adjusted, the setting
 node camera/tests/theme.browser.mjs            # Appearance: Auto follows the device, Light and Dark pinned and remembered, no flash, 4.5:1 in both, the games' paper and black
-node camera/tests/brand.browser.mjs            # Johansson World's brand: page, manifest and status bar in the World's ink; the title card's wordmark once; the lockup, the settings foot, the Game Room's kicker at 4.5:1 in both themes; the Film edge print; the share card; the icons
+node camera/tests/brand.browser.mjs            # Johansson World's brand: page, manifest and status bar; the title card's wordmark (the World's outlines, ink and green on cream) once, the greeter clear of it; the lockup drawn by LINE Seed JP; the settings foot, the Game Room's kicker at 4.5:1 in both themes; the Film edge print; the share card; the icons
+node camera/tests/wordmark.test.mjs            # the page's wordmark block is the drawn outlines; the brand type's files and licence; nothing of the first cut left
 node camera/tests/defaults.browser.mjs         # no Look by default, the old default migrated, a chosen Look kept; the lip colour row
 node camera/tests/background.test.mjs          # Remove background's plain flood and person mask on synthetic pictures
 node camera/tests/background.browser.mjs       # Remove background on the portrait (the segmenter), a drawing on paper, a photo with neither; the PNG and its mask

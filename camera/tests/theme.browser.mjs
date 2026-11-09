@@ -33,14 +33,14 @@ try{
   assert.deepEqual(await theme(page),{attr:'light',meta:'#faf8f2',setting:'Auto',stored:'auto'});
   assert.equal(await page.evaluate(()=>getComputedStyle(document.body).colorScheme),'light');
   await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='dark');
-  assert.equal((await theme(page)).meta,'#142d37','the device turned dark: so did the camera, to the World’s ink');
+  assert.equal((await theme(page)).meta,'#0d0e10','the device turned dark: so did the camera');
   await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='light');
  });
 
  await check('the Appearance setting pins Light or Dark and is remembered; Auto follows the device again',async()=>{
   const tap=()=>page.evaluate(()=>document.getElementById('themeSetting').click());
   await tap();assert.deepEqual(await theme(page),{attr:'light',meta:'#faf8f2',setting:'Light',stored:'light'});
-  await tap();assert.deepEqual(await theme(page),{attr:'dark',meta:'#142d37',setting:'Dark',stored:'dark'});
+  await tap();assert.deepEqual(await theme(page),{attr:'dark',meta:'#0d0e10',setting:'Dark',stored:'dark'});
   await page.emulateMedia({colorScheme:'light'});await new Promise(r=>setTimeout(r,80));assert.equal((await theme(page)).attr,'dark','pinned: the device does not move it');
   await tap();assert.deepEqual(await theme(page),{attr:'light',meta:'#faf8f2',setting:'Auto',stored:'auto'});
   assert.ok((await page.getAttribute('#themeSetting','aria-label')).startsWith('Appearance: Auto'));
@@ -52,7 +52,7 @@ try{
   await fresh.goto(server.url+'camera/',{waitUntil:'domcontentloaded'});
   assert.equal(await fresh.evaluate(()=>document.documentElement.dataset.theme),'dark','set by the head script');
   await fresh.waitForFunction(()=>!!window.pocketCamera?.engine);
-  assert.deepEqual(await theme(fresh),{attr:'dark',meta:'#142d37',setting:'Dark',stored:'dark'});
+  assert.deepEqual(await theme(fresh),{attr:'dark',meta:'#0d0e10',setting:'Dark',stored:'dark'});
   await fresh.close();
  });
 

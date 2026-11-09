@@ -1,0 +1,72 @@
+# Pocket Camera handover: the landing page redrawn from the World's real title; the World's own title fixed — 9 November 2026
+
+**Branches** `claude/laughing-brahmagupta-ybyndm` in **two repositories**:
+- `nj22az/nj22az.github.io` (this one): the camera's landing page and brand layer, the Studio page's font link.
+- `nj22az/johansson-town`: the World's title screen (`briefs/HANDOFF-TITLE-FONTS-2026-11-09.md` there).
+
+**Release** `v2026.11.09.2`, key `20261109brand2`. **Not published** in either repository: the owner publishes.
+This corrects [the brand round](HANDOVER-BRAND-2026-11-09.md), published earlier the same day as `v2026.11.09.1`.
+
+## The owner's words
+
+- "How about the landing page it doesn't look quite right, I mean for the camera app"
+- "Johansson Worlds landing page is a bit off too"
+
+## What was wrong, and whose fault
+
+**The camera's landing page: mine.** The brand round drew the World's wordmark from `johansson-town/landing.css`
+(`.logo-main`, `.logo-town`, the `--ts-*` colours: yellow and orange letters with a green outline, WORLD in a tilted red
+box, a white pill) and took a gold, a navy "ink", a paper and a rust from `base.css`, and Avenir Next from its font
+list. None of that is what the World shows. `title-screen.css` and `line-ui.css`, later in the page, override all of
+it: the drawn title is JOHANSSON in `#263d39` over WORLD in `#16815e`, plain LINE Seed JP ExtraBold, on cream
+`#f5f5ec`, with a green Start button, and in the live World `--gold` and `--rust` both resolve to its green. I read
+stylesheets and never looked at the rendered screen or asked which rule won. On the landing page the result was a
+garish toy mark on a grey slab, the greeter overlapping its last letters, an empty navy band above (the bar, with its
+lockup hidden), and a blank band over the card.
+
+**The World's own title: a real fault in the World**, found while comparing. Every plain vowel on the island was drawn
+in a second typeface (see the Town's handoff): JOHANSSON was six glyphs of LINE Seed JP ExtraBold and three of Figtree.
+Also there: the Studio link dark on the night harbour, and the copyright pill cut at the fold on an iPhone's Safari.
+
+## What changed here
+
+- **The wordmark is the World's, as outlines.** `tools/draw-camera-wordmark.py` shapes JOHANSSON and WORLD in LINE Seed
+  JP ExtraBold at the World's own setting (HarfBuzz for the kerning a browser applies, fontTools for the outlines) and
+  the kana ポケットカメラ in Bold; `camera/brand/wordmark.json` keeps them; `tools/apply-camera-wordmark.mjs` writes
+  them into `camera/index.html` between its wordmark markers (`--check` in `wordmark.test.mjs`).
+  `camera/brand/world-wordmark.svg` is the mark alone.
+- **The title card** (`camera-brand.css`, layout in `camera-ui.css`): the World's cream card in both themes; the
+  wordmark and the stamp at the left, sized from the card's width (`--wm`); the greeter at the right in the room they
+  leave (`max-width:37%`), never over them; the card flexes to 220 px on a tall phone. "Pocket Camera" in the World's
+  typeface; the Start button the World's green. The idle bar has no lockup and no rule.
+- **A container-query trap, kept as a comment in the CSS:** the card's height comes from flexing, and a flexed height
+  answers `cqh` with 0 in Chromium, so `min(54cqw, 44cqh…)` made the wordmark vanish at every size but the
+  fixed-height iPhone SE one. Only the width is asked of the container now. The welcome's own container queries name
+  the stage (`@container stage (…)`), since the card is a container too.
+- **The brand's typeface**: `camera/fonts/line-seed-jp-latin-700.woff2` and `-800.woff2` (7 KB each, Basic Latin and a
+  few marks, OFL 1.1 in `OFL-LINESeedJP.txt`), `--font-brand` first. The suite asks the browser which font draws the
+  lockup (CDP platform fonts), not the stylesheet.
+- **Tokens** (`camera.css`): `--bar` in dark is the page's own `#0d0e10` again (theme colour and manifest with it);
+  `--brand` is the World's green as text (`#7fcaa5` dark, `#0e5f43` light: 4.5:1 on the Game Room's paper needed the
+  deep one); `--accent-soft` in dark back to its warm `#383225`; the navy, paper, gold-as-brand and rust tokens are
+  gone. `--accent` (the gold for what is chosen) is unchanged and is now described as the camera's own.
+- **Share card** (`social-share.js`): the World's ink, green and cream, in LINE Seed JP once it is loaded.
+- **Game Room**: the kicker in `--brand`; its CHOOSE A GAME label keeps the room's own gold in the dark.
+- **Johansson Studio** (`avatar-creator/index.html`): Google's Figtree subset link removed; the face now comes from the
+  Town's `line-ui.css`. **Publish the Town first**: until its `line-ui.css` is live, a Studio without the link would
+  draw ā ē ī ō ū in LINE Seed JP (the bar beside the letter).
+
+## Checks
+
+PENDING: filled in when the run completes.
+
+## Open, for the owner
+
+1. **The camera's working highlight.** The gold for what is chosen was sold as "the World's gold"; the World has none.
+   It can stay (a camera's yellow, as an iPhone's) or become the World's green everywhere. A picture of the green
+   option is in `camera/qa/2026-11-09-landing/` once made. The Home Screen icon (dark teal ground, gold ring) goes with
+   that choice.
+2. **Not seen on a physical iPhone**, either landing page. Software Chromium only.
+3. LINE Seed JP's licence file in the fontsource package is headed "Google Inc." where a copyright line would be; the
+   typeface is LINE Corporation's, released under OFL 1.1. The file is copied as shipped.
+4. The fun audit's three rounds are still unstarted.

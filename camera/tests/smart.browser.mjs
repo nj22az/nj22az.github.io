@@ -45,7 +45,7 @@ try{
  };
  for(const kind of ['cafe','garden','portrait','dark','bright'])await check(`${kind}: actual-photo search ranks bounded previews and preserves source/crop/overlays`,async()=>{
   await importPhoto(kind);
-  const before=await page.evaluate(async()=>{const a=window.pocketCamera,e=a.state.edit;const {loadStickerSets}=await import('/camera/stickers.js?v=20261109brand1');await loadStickerSets();a.editStickers.add('johansson-pixar/Wave');a.editStickers.select(null);e.recipe.crop={x:.08,y:.08,w:.84,h:.84};e.recipe.frame='print';e.recipe.paper='warm';e.recipe.stamp=true;a.chooseLook('mono');a.chooseLook('none');return {recipe:JSON.stringify(e.recipe),source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await e.sourceBlob.arrayBuffer()))]};});
+  const before=await page.evaluate(async()=>{const a=window.pocketCamera,e=a.state.edit;const {loadStickerSets}=await import('/camera/stickers.js?v=20261109brand2');await loadStickerSets();a.editStickers.add('johansson-pixar/Wave');a.editStickers.select(null);e.recipe.crop={x:.08,y:.08,w:.84,h:.84};e.recipe.frame='print';e.recipe.paper='warm';e.recipe.stamp=true;a.chooseLook('mono');a.chooseLook('none');return {recipe:JSON.stringify(e.recipe),source:[...new Uint8Array(await crypto.subtle.digest('SHA-256',await e.sourceBlob.arrayBuffer()))]};});
   await page.waitForFunction(()=>window.smartDrawn===JSON.stringify(window.pocketCamera.state.edit.recipe));
   const beforeImage=await page.evaluate(()=>window.smartProof());await writeFile(join(shots,kind+'-before.jpg'),Buffer.from(beforeImage.split(',')[1],'base64'));
   await page.locator('#editFrame').screenshot({path:join(shots,kind+'-before.png')});const requestStart=requests.length;

@@ -1,5 +1,7 @@
 # Pocket Camera handover: Johansson World's brand, the stickers' enclosed paper, the cut-out on shaded grounds — 9 November 2026
 
+> **Corrected the same day** by [the landing handover](HANDOVER-LANDING-2026-11-09.md): the wordmark, the gold-as-the-World's, the navy "ink", the paper, the rust and Avenir Next described below were read from stylesheets the World no longer shows. The stickers and Remove background parts stand.
+
 **Branch** `claude/laughing-brahmagupta-ybyndm`, rebuilt on the new `main` (see "The repository was reset" below).
 **Release** `v2026.11.09.1`, key `20261109brand1` (page, `app.js`, `camera.css`, `camera-ui.css`, `camera-black.css`,
 `game-room-refresh.css`, `camera-brand.css`, `looks-gl.js`, `frames.js`, `background.js`, `social-share.js`,

@@ -1,6 +1,6 @@
 {
-  "version": "20261109brand1",
-  "bytes": 40410761,
+  "version": "20261109brand2",
+  "bytes": 40438215,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,7 +9,7 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "89b9473fc19b4d30024651c6cbb85b5dc358cca3e3721e53c931447dd7325d80",
+      "sha256": "dfae36564a9307599045a9b53931346e14f30cdb9c7c1fbff954237f24331dc7",
       "bytes": 157314
     },
     {
@@ -34,7 +34,7 @@
     },
     {
       "url": "/camera/ball.js",
-      "sha256": "bbdc1cb790ede9e2579f6d8110913a816f2822802826bf29af368611deb0fd7f",
+      "sha256": "7e9cc2dd7a9c3e3591be0231c593eb8368a50f6867b39af34654fb8c748f0149",
       "bytes": 22618
     },
     {
@@ -44,18 +44,18 @@
     },
     {
       "url": "/camera/blackjack.js",
-      "sha256": "b3333884f530f97c998feb696d3d40502cd0e20f00191a5954297c9d00d5b4c6",
+      "sha256": "c108cb2e6671121472c124ab8b29ab1733f7f7f354bfb91a1a7eee537b20511d",
       "bytes": 4609
     },
     {
       "url": "/camera/camera-black.css",
-      "sha256": "fac8b34c9dd00277d9f5d2ba4cea64ea081c8e51d8cad909f2102a2653292b4c",
-      "bytes": 6893
+      "sha256": "ef33bec6ace9cfc635d92388396cb5d99b2ddc528d70ce39cec2a4d64f4f4d32",
+      "bytes": 6927
     },
     {
       "url": "/camera/camera-brand.css",
-      "sha256": "b532fec5c0b9b3e5ecbe24adee22420367c3fb4d62769814ab333bb82e93e096",
-      "bytes": 5496
+      "sha256": "d85e01af116e28c885fc7b81bf050a705a2161aa55c61b6590ae8f13d66d47b5",
+      "bytes": 5757
     },
     {
       "url": "/camera/camera-refresh.css",
@@ -64,13 +64,13 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "753ac7b1acb7b957983cc6b83a045e7bcb08f4de607e33f052d5639b4fef0643",
-      "bytes": 40446
+      "sha256": "385b41a22b98012d0d9ab1c2ca14097eda941c59ed0844739f671d8b30fdce02",
+      "bytes": 40637
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "c225f7acc66581300b9b7de252e8c54ce2d329dee83bc4784722aa96aee0522c",
-      "bytes": 53752
+      "sha256": "eb6ab3905994740247795f3db37950a94401d96cd053bc6f8686cded3adbea6a",
+      "bytes": 54072
     },
     {
       "url": "/camera/card-games.css",
@@ -134,13 +134,23 @@
     },
     {
       "url": "/camera/face-stamps.js",
-      "sha256": "0d9e53d9bd56fdad35215da4be3e58d9c906dd5c0f6d41d84aaf41fb33e6fd5c",
+      "sha256": "462b080ba583b7013231a62bcd07eec07aa99f7e56d72b513006da968d58f963",
       "bytes": 20377
     },
     {
       "url": "/camera/fonts/baloo2.woff2",
       "sha256": "b40241a54b2cd0b6cf57243d63f8d07726ad6b489586bbd55194fa4e27d5564f",
       "bytes": 52472
+    },
+    {
+      "url": "/camera/fonts/line-seed-jp-latin-700.woff2",
+      "sha256": "0bf3a5c6582c8fc7da3a662aec149658fbcce7f7425e564070b4f4f78b3867d7",
+      "bytes": 7392
+    },
+    {
+      "url": "/camera/fonts/line-seed-jp-latin-800.woff2",
+      "sha256": "50ee0ad2368464982857c0c7861f81e881762f9a30b5ccedc1df3226a55b6a7a",
+      "bytes": 7372
     },
     {
       "url": "/camera/fonts/mplus-rounded-black-kana.woff2",
@@ -234,8 +244,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "511cd0eebfdec956cc7caccc796da0e8db8d9c1284460a9e6448b25f3612f308",
-      "bytes": 41705
+      "sha256": "6a5b602a905d9c9b9ecd5e5c5ba72e97ec9d0fcbd940539af9555ccfc3691ccd",
+      "bytes": 53167
     },
     {
       "url": "/camera/lettering.js",
@@ -269,7 +279,7 @@
     },
     {
       "url": "/camera/manifest.webmanifest",
-      "sha256": "184fa685751f03838a828bf55787a80241546e9249fcc5ea31660d4edb7cf021",
+      "sha256": "012eb97494ce963ab68d175f0431aa4994298090bf7ff07823325bcee657ddce",
       "bytes": 794
     },
     {
@@ -289,7 +299,7 @@
     },
     {
       "url": "/camera/memory.js",
-      "sha256": "f0578b4321da2351b18cef242803379f99e97cf09f50050ea24b0d3bfd522470",
+      "sha256": "7a8cd726a43001521ff70ed7d8dfaf394369a84eaf88df3bb567652d7162aa08",
       "bytes": 12937
     },
     {
@@ -314,7 +324,7 @@
     },
     {
       "url": "/camera/pocket-faces.js",
-      "sha256": "789ef7d6b1cf824a6b421685b2522753e3927c5f883b3ba3852e376bbf56bcba",
+      "sha256": "9f283f5e3b74d65e53bbbf4dd6f38015e2e7ff6849fe9d8b0af273798fad8a23",
       "bytes": 1538
     },
     {
@@ -354,8 +364,8 @@
     },
     {
       "url": "/camera/social-share.js",
-      "sha256": "4e9cc56b8dea54f36c954fe2a68804c0eed45d4a2ea0028b9030d968c1a90fc2",
-      "bytes": 4660
+      "sha256": "b972ea565eaca55327ad9e12588eafcb62019a5dd799635161c974fd8d23c1d5",
+      "bytes": 5082
     },
     {
       "url": "/camera/solitaire.css",
@@ -364,7 +374,7 @@
     },
     {
       "url": "/camera/solitaire.js",
-      "sha256": "dad5b4567d5533d630ad582911c97a7ed5d2f03977c38cbbb30d62cc59c4c024",
+      "sha256": "26b285370ed6def7e565e8c896bba2d5df1d9de4e278cb7184e1dbab23211aae",
       "bytes": 8469
     },
     {
