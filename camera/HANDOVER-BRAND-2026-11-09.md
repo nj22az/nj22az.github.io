@@ -64,7 +64,27 @@ and the coverage check throws the result away, as before). `background.test.mjs`
 
 ## Checks
 
-PENDING: filled in when the final run completes.
+The whole Pocket Camera regression, as `.github/workflows/pocket-camera.yml` runs it (Playwright's Chromium on
+SwiftShader; the published baselines from `camera/tests/fixtures/published-baselines/`):
+
+- the 21 unit files pass (`background.test.mjs` 5, with the shaded-sheet case; `social-share.test.mjs` signs the text
+  with both names; `modules.test.mjs` 33 modules at one address; `offline.test.mjs` on the rebuilt bundle, 377 files,
+  40.4 MB: the recut stickers are 2.8 MB larger as lossless WebP, and `camera-brand.css` is new);
+- the 26 browser suites pass: camera 56, crop 33, enhance 22, save-share-layout 14, paper 5, integration 9,
+  sticker-contour 4 (116 stickers and thumbnails at unchanged dimensions, the pale shoes kept, the new style key),
+  ui 82, audit 59, smart 14, offline 13, retouch 40, screens 5, face-stamps 12, backup 7, pop 5, zoom 13, face-pack 4,
+  auto 5, theme 5, defaults 4, background 3, comic 4, album 3, faces 7, ball 6, brand 8. Camera and offline were
+  re-run on the final bundle after the title card moved into the hero (the run in flight had a stale bundle: the
+  offline worker verifies every file's digest and unregisters itself when one differs, which also fails the camera
+  suite's "the offline worker is registered"). Ball failed twice in the full run under load from other browsers
+  (`'own' !== 'booth'`, then "the head changed: 0.19") and passes alone, 6/6; it is a timing-sensitive booth check,
+  not a change in Ball.
+- Looked at, not only measured: the title card at 375×560, 390×664, 390×844 and 1100×760 in both themes, the running
+  camera, the settings foot, the editor's Film frame, the album, the Game Room and the share card
+  (`camera/qa/2026-11-09-brand/`); every Johansson thumbnail before and after, and a sample of Thao's and Thuan's
+  (`camera/qa/2026-11-09-stickers/`).
+
+The workflow's `camera-face-auto` job now runs `brand` too.
 
 ## Open
 
