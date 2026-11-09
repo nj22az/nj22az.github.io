@@ -1,6 +1,6 @@
 {
   "version": "20261109brand2",
-  "bytes": 40438215,
+  "bytes": 40438433,
   "files": [
     {
       "url": "/camera/album.js",
@@ -34,8 +34,8 @@
     },
     {
       "url": "/camera/ball.js",
-      "sha256": "7e9cc2dd7a9c3e3591be0231c593eb8368a50f6867b39af34654fb8c748f0149",
-      "bytes": 22618
+      "sha256": "f56e3170ee71efc7c29a306b977658cf1d1a809501272ebf2cd7cdf9bab37a19",
+      "bytes": 22836
     },
     {
       "url": "/camera/blackjack.css",

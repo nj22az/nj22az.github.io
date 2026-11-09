@@ -92,15 +92,23 @@ try{
   assert.ok(await page.isHidden('.ball-booth-take')&&await page.isVisible('.ball-booth-use'));
   await shot(page,'5-booth');
   await page.click('.ball-booth-use');await page.waitForSelector('.ball-setup:not([hidden])');
+  // The list is redrawn for the choice as it is made: the booth's entry is there, chosen.
+  await page.waitForSelector('.ball-face[data-face="booth"][aria-checked="true"]',{timeout:5000});
   const f=await page.evaluate(()=>{const f=window.pocketCamera.cardGame.face,s=JSON.parse(localStorage.getItem('office-pocket-camera')).gameFace;return {from:f.from,n:f.frames.length,kept:s.from==='booth'&&s.frames.length===4,distinct:new Set(f.frames).size,checked:document.querySelector('.ball-face[aria-checked="true"]').dataset.face,bytes:f.frames.reduce((n,u)=>n+u.length,0)};});
   assert.equal(f.from,'booth');assert.equal(f.n,4);assert.ok(f.kept);assert.equal(f.distinct,4,'four different pictures');assert.equal(f.checked,'booth');assert.ok(f.bytes<600000,`kept small: ${f.bytes}`);
   // Each frame: a PNG, opaque in the middle, clear at the corners.
   const cut=await page.evaluate(async()=>{const out=[];for(const url of window.pocketCamera.cardGame.face.frames){const img=new Image();img.src=url;await img.decode();const c=document.createElement('canvas');c.width=c.height=img.width;const g=c.getContext('2d');g.drawImage(img,0,0);out.push({size:img.width,mid:g.getImageData(img.width/2|0,img.height/2|0,1,1).data[3],corner:g.getImageData(2,2,1,1).data[3]});}return out;});
   for(const c of cut){assert.equal(c.size,160);assert.equal(c.mid,255);assert.equal(c.corner,0);}
   await page.click('.ball-play');await page.waitForSelector('.ball-stage:not([hidden])');
-  await page.evaluate(()=>window.pocketCamera.cardGame.step());const a=await headPixels();const f0=await page.evaluate(()=>window.pocketCamera.cardGame.frame);
-  await page.evaluate(()=>window.pocketCamera.cardGame.step());const b=await headPixels();const f1=await page.evaluate(()=>window.pocketCamera.cardGame.frame);
-  assert.notEqual(f0,f1,'the frame moved on');let diff=0;for(let i=0;i<a.length;i++)diff+=Math.abs(a[i]-b[i]);assert.ok(diff/a.length>1,`the head changed: ${(diff/a.length).toFixed(2)}`);
+  // The head goes through the four faces as the game ticks. The fake camera's picture turns slowly, so two faces taken
+  // a quarter of a second apart can be nearly the same on the LCD's few tones (0.19 of a level, under load): the head
+  // is read at every frame over two rounds, each frame must come up, and the two most different must differ.
+  const heads=new Map();
+  for(let i=0;i<16;i++){await page.evaluate(()=>window.pocketCamera.cardGame.step());const frame=await page.evaluate(()=>window.pocketCamera.cardGame.frame);if(!heads.has(frame))heads.set(frame,await headPixels());}
+  assert.deepEqual([...heads.keys()].sort(),[0,1,2,3],'the head showed each of the four faces');
+  let most=0;const seen=[...heads.values()];
+  for(let i=0;i<seen.length;i++)for(let j=i+1;j<seen.length;j++){let diff=0;for(let k=0;k<seen[i].length;k++)diff+=Math.abs(seen[i][k]-seen[j][k]);most=Math.max(most,diff/seen[i].length);}
+  assert.ok(most>1,`the head changed between faces: ${most.toFixed(2)}`);
   await shot(page,'6-four-faces');
   await page.click('.ball-hand[data-side="right"]');
   await page.evaluate(()=>{const c=window.pocketCamera.cardGame,g=c.game;for(let t=0;t<20&&!g.state.over;t++){const b=g.state.balls.find(b=>Math.abs(b.pos-(b.from==='left'?6:0))===1);if(b)g.moveHands(b.from==='left'?'left':'right');c.step();}});

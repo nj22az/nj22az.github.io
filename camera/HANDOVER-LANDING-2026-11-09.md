@@ -52,6 +52,10 @@ Also there: the Studio link dark on the night harbour, and the copyright pill cu
   gone. `--accent` (the gold for what is chosen) is unchanged and is now described as the camera's own.
 - **Share card** (`social-share.js`): the World's ink, green and cream, in LINE Seed JP once it is loaded.
 - **Game Room**: the kicker in `--brand`; its CHOOSE A GAME label keeps the room's own gold in the dark.
+- **Two checks that failed now and then, fixed at the cause.** Ball: after "Use these" in the booth the list of faces
+  went on showing the earlier choice until the four pictures had loaded (`useFace` drew the list last); it is drawn at
+  once now, and the suite reads the head at every frame instead of two faces a quarter of a second apart. Integration:
+  the suite took the recipe to expect while the face pack was still searching; it waits for the search to end.
 - **Johansson Studio** (`avatar-creator/index.html`): Google's Figtree subset link removed; the face now comes from the
   Town's `line-ui.css`. **Publish the Town first**: until its `line-ui.css` is live, a Studio without the link would
   draw ā ē ī ō ū in LINE Seed JP (the bar beside the letter).
@@ -63,9 +67,10 @@ PENDING: filled in when the run completes.
 ## Open, for the owner
 
 1. **The camera's working highlight.** The gold for what is chosen was sold as "the World's gold"; the World has none.
-   It can stay (a camera's yellow, as an iPhone's) or become the World's green everywhere. A picture of the green
-   option is in `camera/qa/2026-11-09-landing/` once made. The Home Screen icon (dark teal ground, gold ring) goes with
-   that choice.
+   It can stay (a camera's yellow, as an iPhone's) or become the World's green everywhere. The editor in both, side by
+   side in dark and light: `camera/qa/2026-11-09-landing/option-highlight-gold-or-green.jpg` (the tokens overridden in
+   the page for the picture; nothing changed in the code). The Home Screen icon (dark teal ground, gold ring) goes
+   with that choice.
 2. **Not seen on a physical iPhone**, either landing page. Software Chromium only.
 3. LINE Seed JP's licence file in the fontsource package is headed "Google Inc." where a copyright line would be; the
    typeface is LINE Corporation's, released under OFL 1.1. The file is copied as shipped.
