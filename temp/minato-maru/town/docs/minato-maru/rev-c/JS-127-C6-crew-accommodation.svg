@@ -42,13 +42,13 @@
 <text data-layer="TEXT" x="171" y="29" font-size="2" fill="#1d2326" text-anchor="middle" font-weight="bold">12.70</text>
 <text data-layer="TEXT" x="277" y="29" font-size="2" fill="#1d2326" text-anchor="middle" font-weight="bold">18.0</text>
 <circle data-layer="CHECK" cx="44.5" cy="21" r="3.2" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="44.5" y="22.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">28</text>
+<text data-layer="CHECK-TEXT" x="44.5" y="22.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">16</text>
 <circle data-layer="CHECK" cx="44.5" cy="108" r="0.7" fill="none" stroke="#b7791f" stroke-width="0.35"/>
 <circle data-layer="CHECK" cx="51" cy="229" r="3.2" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="51" y="230.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">29</text>
+<text data-layer="CHECK-TEXT" x="51" y="230.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">17</text>
 <circle data-layer="CHECK" cx="51" cy="182.7" r="0.7" fill="none" stroke="#b7791f" stroke-width="0.35"/>
 <circle data-layer="MARKUP" cx="134.5" cy="229" r="3.2" fill="#fff" stroke="#c0302a" stroke-width="0.35"/>
-<text data-layer="MARKUP-TEXT" x="134.5" y="230.1" font-size="2.9" fill="#c0302a" text-anchor="middle" font-weight="bold">27</text>
+<text data-layer="MARKUP-TEXT" x="134.5" y="230.1" font-size="2.9" fill="#c0302a" text-anchor="middle" font-weight="bold">15</text>
 <circle data-layer="MARKUP" cx="134.5" cy="176.9" r="0.7" fill="#fff" stroke="#c0302a" stroke-width="0.35"/>
 <text data-layer="TEXT" x="25" y="243.5" font-size="3.3" fill="#1d2326" text-anchor="start" font-weight="bold">SECTION ON THE CENTRELINE · the corridor, looking to port</text>
 <text data-layer="TEXT" x="25" y="247.4" font-size="2.1" fill="#1d2326" text-anchor="start">SCALE 1:50</text>
@@ -74,15 +74,15 @@
 <text data-layer="TEXT" x="25" y="443.4" font-size="2.1" fill="#1d2326" text-anchor="start">SCALE 1:50</text>
 <text data-layer="TEXT" x="640" y="30" font-size="3.2" fill="#1d2326" text-anchor="start" font-weight="bold">ISSUES IN THIS SECTION · 1 clash, 2 check</text>
 <circle data-layer="MARKUP" cx="642.6" cy="35.8" r="2.3" fill="#fff" stroke="#c0302a" stroke-width="0.35"/>
-<text data-layer="MARKUP-TEXT" x="642.6" y="36.6" font-size="2" fill="#c0302a" text-anchor="middle" font-weight="bold">27</text>
+<text data-layer="MARKUP-TEXT" x="642.6" y="36.6" font-size="2" fill="#c0302a" text-anchor="middle" font-weight="bold">15</text>
 <text data-layer="TEXT" x="647" y="36.5" font-size="2.05" fill="#1d2326" text-anchor="start">bunk and desk occupy the same space, 25 cm deep</text>
 <text data-layer="MARKUP-TEXT" x="647" y="39.2" font-size="1.75" fill="#c0302a" text-anchor="start">MATE CABIN · yard 10.88 · x 2.65 S · h 11.25 · ferry-interior.js:681, ferry-interior.js:684</text>
 <circle data-layer="CHECK" cx="642.6" cy="42.8" r="2.3" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="642.6" y="43.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">28</text>
+<text data-layer="CHECK-TEXT" x="642.6" y="43.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">16</text>
 <text data-layer="TEXT" x="647" y="43.5" font-size="2.05" fill="#1d2326" text-anchor="start">day tank rests on nothing and hangs from nothing (its foot 12.30 m above the keel)</text>
 <text data-layer="CHECK-TEXT" x="647" y="46.2" font-size="1.75" fill="#b7791f" text-anchor="start">EG ROOM · yard 6.38 · x 0.80 P · h 12.30 · ferry-interior.js:670</text>
 <circle data-layer="CHECK" cx="642.6" cy="49.8" r="2.3" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="642.6" y="50.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">29</text>
+<text data-layer="CHECK-TEXT" x="642.6" y="50.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">17</text>
 <text data-layer="TEXT" x="647" y="50.5" font-size="2.05" fill="#1d2326" text-anchor="start">firemen’s outfit locker runs 3 cm into a wall or deck</text>
 <text data-layer="CHECK-TEXT" x="647" y="53.2" font-size="1.75" fill="#b7791f" text-anchor="start">CO2 ROOM · yard 6.70 · x 2.94 S · h 11.95 · ferry-interior.js:677, ferry-interior.js:631</text>
 <text data-layer="TEXT" x="640" y="158" font-size="3.2" fill="#1d2326" text-anchor="start" font-weight="bold">DESIGN AND AS BUILT</text>

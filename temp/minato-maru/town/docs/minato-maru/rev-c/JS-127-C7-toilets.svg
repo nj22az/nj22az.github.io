@@ -22,13 +22,13 @@
 <text data-layer="TEXT" x="77" y="37" font-size="2" fill="#1d2326" text-anchor="middle" font-weight="bold">10.50</text>
 <text data-layer="TEXT" x="77" y="37" font-size="2" fill="#1d2326" text-anchor="middle" font-weight="bold">10.50</text>
 <circle data-layer="CHECK" cx="95.2" cy="29" r="3.2" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="95.2" y="30.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">25</text>
+<text data-layer="CHECK-TEXT" x="95.2" y="30.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">13</text>
 <circle data-layer="CHECK" cx="95.2" cy="123.2" r="0.7" fill="none" stroke="#b7791f" stroke-width="0.35"/>
 <circle data-layer="CHECK" cx="63.8" cy="397" r="3.2" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="63.8" y="398.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">24</text>
+<text data-layer="CHECK-TEXT" x="63.8" y="398.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">12</text>
 <circle data-layer="CHECK" cx="63.8" cy="300.8" r="0.7" fill="none" stroke="#b7791f" stroke-width="0.35"/>
 <circle data-layer="CHECK" cx="101.2" cy="397" r="3.2" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="101.2" y="398.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">26</text>
+<text data-layer="CHECK-TEXT" x="101.2" y="398.1" font-size="2.9" fill="#b7791f" text-anchor="middle" font-weight="bold">14</text>
 <circle data-layer="CHECK" cx="101.2" cy="300.8" r="0.7" fill="none" stroke="#b7791f" stroke-width="0.35"/>
 <text data-layer="TEXT" x="160" y="33.5" font-size="3.3" fill="#1d2326" text-anchor="start" font-weight="bold">AT 10.5 · LOOKING FORWARD</text>
 <text data-layer="TEXT" x="160" y="37.4" font-size="2.1" fill="#1d2326" text-anchor="start">SCALE 1:25</text>
@@ -53,15 +53,15 @@
 <text data-layer="TEXT" x="549.5" y="347.1" font-size="2.2" fill="#1d2326" text-anchor="start">COMPASS DECK 13.40</text>
 <text data-layer="TEXT" x="640" y="30" font-size="3.2" fill="#1d2326" text-anchor="start" font-weight="bold">ISSUES IN THIS SECTION · 0 clash, 3 check</text>
 <circle data-layer="CHECK" cx="642.6" cy="35.8" r="2.3" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="642.6" y="36.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">24</text>
+<text data-layer="CHECK-TEXT" x="642.6" y="36.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">12</text>
 <text data-layer="TEXT" x="647" y="36.5" font-size="2.05" fill="#1d2326" text-anchor="start">cubicle door rests on nothing and hangs from nothing (its foot 8.55 m above the keel)</text>
 <text data-layer="CHECK-TEXT" x="647" y="39.2" font-size="1.75" fill="#b7791f" text-anchor="start">TOILETS · yard 10.17 · x 2.22 S · h 8.55 · ferry-interior.js:360</text>
 <circle data-layer="CHECK" cx="642.6" cy="42.8" r="2.3" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="642.6" y="43.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">25</text>
+<text data-layer="CHECK-TEXT" x="642.6" y="43.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">13</text>
 <text data-layer="TEXT" x="647" y="43.5" font-size="2.05" fill="#1d2326" text-anchor="start">cubicle door rests on nothing and hangs from nothing (its foot 8.55 m above the keel)</text>
 <text data-layer="CHECK-TEXT" x="647" y="46.2" font-size="1.75" fill="#b7791f" text-anchor="start">TOILETS · yard 10.96 · x 2.22 P · h 8.55 · ferry-interior.js:360</text>
 <circle data-layer="CHECK" cx="642.6" cy="49.8" r="2.3" fill="none" stroke="#b7791f" stroke-width="0.35"/>
-<text data-layer="CHECK-TEXT" x="642.6" y="50.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">26</text>
+<text data-layer="CHECK-TEXT" x="642.6" y="50.6" font-size="2" fill="#b7791f" text-anchor="middle" font-weight="bold">14</text>
 <text data-layer="TEXT" x="647" y="50.5" font-size="2.05" fill="#1d2326" text-anchor="start">cubicle door rests on nothing and hangs from nothing (its foot 8.55 m above the keel)</text>
 <text data-layer="CHECK-TEXT" x="647" y="53.2" font-size="1.75" fill="#b7791f" text-anchor="start">TOILETS · yard 11.11 · x 2.22 S · h 8.55 · ferry-interior.js:360</text>
 <text data-layer="TEXT" x="640" y="188" font-size="3.2" fill="#1d2326" text-anchor="start" font-weight="bold">DESIGN AND AS BUILT</text>
