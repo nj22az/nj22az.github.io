@@ -4,7 +4,8 @@
 - `nj22az/nj22az.github.io` (this one): the camera's landing page and brand layer, the Studio page's font link.
 - `nj22az/johansson-town`: the World's title screen (`briefs/HANDOFF-TITLE-FONTS-2026-11-09.md` there).
 
-**Release** `v2026.11.09.2`, key `20261109brand2`. **Not published** in either repository: the owner publishes.
+**Release** `v2026.11.09.2`, key `20261109brand2`. **Published in both repositories** on the owner's "Push to main"
+(9 November 2026), the Town first: see "Publication" below.
 This corrects [the brand round](HANDOVER-BRAND-2026-11-09.md), published earlier the same day as `v2026.11.09.1`.
 
 ## The owner's words
@@ -81,6 +82,34 @@ the share card; the World's title before and after, with its wordmark enlarged.
 In the Town (its handoff has the detail): `tools/font-audit.mjs` fails on the old state and passes on the new; the
 title measured at eight sizes; the three tests that read the changed files pass (13). The Town's full guard was not run
 (its checkout had no `npm ci`).
+
+## Publication
+
+**The Town** (`nj22az/johansson-town`): `main` `fc7281f` → `4deb767`, then `fcbcae9`.
+- The first deployment did not go live: `actions/deploy-pages` gave up after its ten minutes with Pages still
+  `syncing_files` and cancelled it. This session's integration may neither re-run a job nor dispatch a workflow there
+  (403), so `pages.yml` was given thirty minutes for the deployment and that commit, pushed to `main`, published: the
+  second run took 47 seconds.
+- Live: six changed files match the repository byte for byte (the page, `line-ui.css`, `title-screen.css`, the
+  creator page, the font file, its licence). The live title on a phone, by the browser's own account: JOHANSSON
+  LINE Seed JP ExtraBold × 9, WORLD × 5, the tag × 32, the stamp × 16; "Sakura Shōten, Kōji, Ōshiro" LINE Seed JP × 24
+  and Figtree × 3; nothing under the fold at 390 × 664; the Studio link on its backing; no Google Figtree link; no
+  page errors.
+- Its guard workflow: the `guard` job (the tests of `tests/ci-guard.txt`) passed on both pushes. The `iphone-startup`
+  job failed on the first push at "authored dining exit approach failed" in the Izakaya, after start-up, rotation and
+  reload had passed; the Town's handoff has it. That workflow had never completed in the Town's repository before.
+
+**The Office** (this repository): `main` had moved meanwhile (`efe4a45df`, another session's ferry viewer, `/ferry/`),
+so it was merged into the branch (no camera file touched; the bundle, module and wordmark tests re-run) and `main`
+fast-forwarded to `ca4021019`. Pages run 42716476625 succeeded.
+- Live: 16 files match byte for byte (the page, `app.js`, the four stylesheets, `ball.js`, `social-share.js`, the
+  manifest, `offline.json`, `sw.js`, the two font files and their licence, the Studio page, the ferry's page).
+- The live landing page at 390 × 664 (dark), 375 × 560 (light) and 390 × 844 (dark): `v2026.11.09.2`; the wordmark's
+  outlines `rgb(38,61,57)` and `rgb(22,129,94)` on `rgb(245,245,236)`; 45 to 91 px between the wordmark and the
+  greeter; the whole greeting on the first screen; Start in the World's green; the theme colour `#0d0e10` in dark and
+  `#faf8f2` in light; no page errors.
+- The running camera's lockup is drawn by LINE Seed JP (15 and 13 glyphs, no fallback).
+- Johansson Studio, live, with Google's subset gone: "Sakura Shōten, Kōji" is LINE Seed JP × 17 and Figtree × 2.
 
 ## Open, for the owner
 
