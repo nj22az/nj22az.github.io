@@ -17,7 +17,7 @@
  * segment, never between. createBallGame() is the game alone, for the checks (camera/tests/ball.test.mjs);
  * createBall() the screen.
  */
-import {createResultShare} from './social-share.js?v=20261029a';
+import {createResultShare} from './social-share.js?v=20261109brand1';
 
 /** Ball positions across the LCD: 0 is the left hand, STEPS-1 the right; a crossing is STEPS-1 moves. */
 export const STEPS=7;

@@ -1,13 +1,13 @@
 {
   "id": "/camera/",
-  "name": "Pocket Camera",
+  "name": "Pocket Camera · Johansson World",
   "short_name": "Pocket Camera",
-  "description": "Every Look from Johansson World, on your camera and your own photos. Your photos stay on your device.",
+  "description": "A little camera from Minato Machi, Johansson World: every Look of the island, the residents as stickers, and games you play with your own face. Your photos stay on your device.",
   "start_url": "/camera/",
   "scope": "/camera/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#0d0e10",
+  "theme_color": "#142d37",
   "categories": ["photo", "entertainment"],
   "icons": [
     {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},

@@ -2,10 +2,11 @@
 """Pocket Camera's Home Screen icon, drawn in code (the owner, 29 October 2026: "It should be installable as iPhone app
 web page too on the Home Screen draw a Camera icon with Python").
 
-A chunky white toy camera on the camera app's graphite, its lens ringed in the camera's yellow (#ffd60a, the colour of
-everything chosen in the app), and in the glass the little pixel house from the Pocket Look's tile, in the Pocket
-Look's four greens: the picture the camera takes. Apple's grid: a full-bleed square (iOS rounds the corners itself),
-one subject, centred, no words.
+A chunky white toy camera on Johansson World's ink (#142d37, the colour of the camera's bars since the brand round of
+9 November 2026), its lens ringed in the World's gold (#e2b665, the colour of everything chosen in the app), and in the
+glass the little pixel house from the Pocket Look's tile, in the Pocket Look's four greens: the picture the camera
+takes. Apple's grid: a full-bleed square (iOS rounds the corners itself), one subject, centred, no words. Before the
+brand round the ground was graphite and the ring the camera's yellow (#ffd60a).
 
 Drawn at 4096 px and reduced, so every curve is smooth. Writes camera/icons/:
   apple-touch-icon.png (180, the Home Screen on iPhone and iPad), icon-192.png and icon-512.png (the web manifest),
@@ -20,9 +21,10 @@ OUT = Path(__file__).resolve().parent.parent / 'camera' / 'icons'
 S = 4096          # drawing size
 U = S / 1024      # one design unit (the design is laid out on 1024)
 
-GRAPHITE_TOP, GRAPHITE_BOTTOM = (58, 58, 60), (13, 13, 15)
+# The ground: the World's ink, lit at the top, deepening to the camera's night below.
+GRAPHITE_TOP, GRAPHITE_BOTTOM = (36, 70, 84), (14, 32, 40)
 BODY_TOP, BODY_BOTTOM = (250, 250, 252), (214, 214, 220)
-BEZEL, YELLOW = (28, 28, 30), (255, 214, 10)
+BEZEL, YELLOW = (28, 28, 30), (226, 182, 101)
 # The Pocket Look's four greens, darkest first (looks.js, 'pocket').
 GREENS = [(15, 56, 15), (48, 98, 48), (139, 172, 15), (155, 188, 15)]
 # The Pocket tile's little house, as twelve by twelve pixels: 3 sky, 0 roof, window and door, 1 walls, 2 grass.
@@ -70,12 +72,12 @@ def circle(cx, cy, r):
 
 def draw(scale=1.0):
     """The icon at S px. `scale` shrinks the camera about the centre (the maskable icon keeps it in the safe circle)."""
-    # The ground: the app's graphite, lighter at the top left as the light falls on the camera.
+    # The ground: the World's ink, lighter at the top left as the light falls on the camera.
     icon = vertical((S, S), GRAPHITE_TOP, GRAPHITE_BOTTOM)
     glow = Image.new('L', (S, S), 0)
     ImageDraw.Draw(glow).ellipse([u(-260), u(-320), u(760), u(560)], fill=46)
     glow = glow.filter(ImageFilter.GaussianBlur(u(140)))
-    icon = Image.composite(Image.new('RGB', (S, S), (120, 120, 128)), icon, glow)
+    icon = Image.composite(Image.new('RGB', (S, S), (92, 132, 146)), icon, glow)
 
     camera = Image.new('RGBA', (S, S), (0, 0, 0, 0))
     # The body and its viewfinder hump, one white shape.

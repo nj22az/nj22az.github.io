@@ -6,5 +6,5 @@ assert.equal(shareMode({share(){}},file),'text');
 assert.equal(shareMode({share(){},canShare(){return true;}},file),'image');
 assert.equal(shareMode({share(){},canShare(){throw Error('no');}},file),'text');
 assert.equal(shareMode({share(){},canShare(){return true;}},null),'text');
-assert.equal(resultText({game:'Memory',headline:'6 pairs found!',detail:'12 moves · 0:42'}),'Memory · 6 pairs found! · 12 moves · 0:42 — Pocket Camera');
+assert.equal(resultText({game:'Memory',headline:'6 pairs found!',detail:'12 moves · 0:42'}),'Memory · 6 pairs found! · 12 moves · 0:42 — Pocket Camera · Johansson World');
 console.log('Social share modes and result text pass');

@@ -197,8 +197,9 @@
  .editor .segmented button{min-height:64px;font-size:.75rem}.editor .look-groups{grid-template-columns:repeat(3,minmax(0,1fr))}
  .editor .strip{flex-wrap:nowrap;justify-content:flex-start}.editor .layers{flex-wrap:wrap;padding:0;min-height:44px}
  .camera.idle{display:flex}.camera.idle .stage{padding:0;grid-column:auto;grid-row:auto}
- .welcome{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto auto auto auto;align-content:center;gap:20px 40px;max-width:1000px;width:100%;padding:32px 48px}
- .welcome-hero{grid-column:1;grid-row:1/5;height:100%;min-height:300px;max-height:420px}.welcome-copy{grid-column:2;grid-row:1}.welcome-actions{grid-column:2;grid-row:2}.welcome .fine{grid-column:2;grid-row:3}.welcome-album{grid-column:2;grid-row:4}
+ .welcome{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto auto auto auto auto;align-content:center;gap:20px 40px;max-width:1000px;width:100%;padding:32px 48px}
+ .welcome-brand{grid-column:1/-1;grid-row:1;margin-bottom:4px}
+ .welcome-hero{grid-column:1;grid-row:2/6;height:100%;min-height:300px;max-height:420px}.welcome-copy{grid-column:2;grid-row:2}.welcome-actions{grid-column:2;grid-row:3}.welcome-note-row{grid-column:2;grid-row:4}.welcome-album{grid-column:2;grid-row:5}
  .welcome .welcome-sticker{height:225px;max-height:225px;right:9%;bottom:24px}.welcome-print{width:210px;margin-right:50px}.welcome-copy h2{font-size:2.25rem}
  .album .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
@@ -247,7 +248,7 @@
 .look-settings-button svg{width:21px;height:21px}
 /* Album backup (backup.js): the album's entry and its sheet. */
 .album .backup-entry{margin-top:24px}.album .backup-entry+.arcade-entry{margin-top:12px}
-.backup-icon{background:#3a4a44;color:#f5d77b}.backup-icon svg{width:24px;height:24px}
+.backup-icon{background:#3a4a44;color:var(--brand-gold)}.backup-icon svg{width:24px;height:24px}
 .backup-sheet form{gap:10px}
 .backup-where{margin:0;font-size:14px;line-height:1.45;color:var(--label-2);text-align:center}
 .backup-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}

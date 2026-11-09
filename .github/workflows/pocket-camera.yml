@@ -34,7 +34,7 @@ jobs:
           - job: camera-face-backup
             suites: face-stamps backup pop zoom album faces ball
           - job: camera-face-auto
-            suites: face-pack auto theme defaults background comic
+            suites: face-pack auto theme defaults background comic brand
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:

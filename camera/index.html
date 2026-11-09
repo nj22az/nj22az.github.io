@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d0e10">
+<meta name="theme-color" content="#142d37">
 <meta name="color-scheme" content="dark light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -11,27 +11,28 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Pocket Camera">
 <script>/* The theme before the first paint: the camera's Appearance setting, else the device's (app.js applyTheme does the same and follows a change). */
-(function(){try{var s=JSON.parse(localStorage.getItem('office-pocket-camera')||'{}'),t=s.theme==='light'||s.theme==='dark'?s.theme:(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.dataset.theme=t;document.querySelector('meta[name="theme-color"]').content=t==='light'?'#fbfaf7':'#0d0e10';}catch(e){}})();</script>
-<title>Pocket Camera · The Office of Nils Johansson</title>
-<meta name="description" content="A camera and photo editor with every Look from Johansson World: Pocket, Manga, Woodblock print, Watercolour, Old TV and more, alone or mixed. Your photos stay on your device.">
-<meta property="og:title" content="Pocket Camera">
-<meta property="og:description" content="Every Look from Johansson World, on your camera and your own photos. Mix them, shoot, save.">
+(function(){try{var s=JSON.parse(localStorage.getItem('office-pocket-camera')||'{}'),t=s.theme==='light'||s.theme==='dark'?s.theme:(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.dataset.theme=t;document.querySelector('meta[name="theme-color"]').content=t==='light'?'#faf8f2':'#142d37';}catch(e){}})();</script>
+<title>Pocket Camera · Johansson World</title>
+<meta name="description" content="A little camera from Minato Machi, Johansson World: every Look of the island (Pocket, Manga, Woodblock print, Watercolour, Old TV and more, alone or mixed), the residents as stickers, and games you play with your own face. Your photos stay on your device.">
+<meta property="og:title" content="Pocket Camera · Johansson World">
+<meta property="og:description" content="A little camera from Minato Machi: every Look of Johansson World on your camera and your own photos, the residents as stickers, games you play with your face.">
 <meta property="og:image" content="https://nj22az.github.io/camera/preview.jpg">
 <meta property="og:url" content="https://nj22az.github.io/camera/">
 <link rel="canonical" href="https://nj22az.github.io/camera/">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261106ball2">
+<link rel="stylesheet" href="camera.css?v=20261109brand1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261104ui1">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
 <link rel="stylesheet" href="blackjack.css?v=20261029a">
 <link rel="stylesheet" href="solitaire.css?v=20261030share1">
-<link rel="stylesheet" href="game-room-refresh.css?v=20261030share1">
+<link rel="stylesheet" href="game-room-refresh.css?v=20261109brand1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
-<link rel="stylesheet" href="camera-black.css?v=20261104ui1">
-<link rel="stylesheet" href="camera-ui.css?v=20261105games1">
+<link rel="stylesheet" href="camera-black.css?v=20261109brand1">
+<link rel="stylesheet" href="camera-ui.css?v=20261109brand1">
+<link rel="stylesheet" href="camera-brand.css?v=20261109brand1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -92,7 +93,7 @@
  <section class="screen camera" id="camera" aria-label="Camera">
   <header class="bar camera-bar">
    <a class="back" href="/" aria-label="Back to The Office of Nils Johansson"><svg><use href="#i-back"/></svg><span>Office</span></a>
-   <h1 class="camera-mark">Pocket Camera</h1>
+   <h1 class="camera-mark brand-lockup"><span class="brand-eyebrow">Johansson World</span><span class="brand-name">Pocket Camera</span></h1>
    <div class="camera-header-actions">
     <button type="button" class="settings-toggle" id="settingsToggle" aria-expanded="false" aria-controls="settings" aria-label="Camera settings"><span class="settings-status" id="settingsStatus" aria-hidden="true"></span><svg><use href="#i-settings"/></svg></button>
     <button type="button" class="photos-button" id="import" aria-label="Choose photos from this device to edit"><svg><use href="#i-photo"/></svg><span>Photos</span></button>
@@ -110,15 +111,20 @@
     <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><small class="setting-title">Print when sharing</small><span>Print</span></button>
     <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
     <button type="button" class="setting" id="themeSetting"><i><svg><use href="#i-contrast"/></svg></i><small class="setting-title">Appearance</small><span>Auto</span></button>
-    <footer class="settings-footer"><small class="camera-version">v2026.11.06.1</small><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
+    <footer class="settings-footer"><div class="settings-brand"><span class="brand-eyebrow">Johansson World · Minato Machi</span><small class="camera-version">v2026.11.09.1</small><a class="settings-world" href="/johansson-town/">Visit the World ›</a></div><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
    </div>
    <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
     <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
    </div>
    </div><aside class="look-rail camera-rail" aria-label="Active Looks and camera controls"><div id="cameraLookRail"></div><button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button><button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button></aside></div>
    <div class="welcome" id="welcome" hidden>
+    <!-- The title card: Johansson World's wordmark (its title screen's, at a label's size) and the camera's Japanese name, once, here only (camera-brand.css). -->
+    <div class="welcome-brand" id="welcomeBrand">
+     <p class="world-mark" role="img" aria-label="Johansson World"><span class="world-mark-main" aria-hidden="true"><span>J</span><span>O</span><span>H</span><span>A</span><span>N</span><span>S</span><span>S</span><span>O</span><span>N</span></span><span class="world-mark-town" aria-hidden="true"><span>W</span><span>O</span><span>R</span><span>L</span><span>D</span></span></p>
+     <p class="world-mark-jp" lang="ja">ポケットカメラ</p>
+    </div>
     <div class="welcome-hero" aria-hidden="true"><img class="welcome-print" src="samples/default-adventure.png" alt="" decoding="async"><img class="welcome-sticker" id="welcomeSticker" alt="" hidden></div>
-    <div class="welcome-copy"><h2>Make it yours.</h2><p>Take a photo. Try a Look.</p></div>
+    <div class="welcome-copy"><h2>Pocket Camera</h2><p>A little camera from Minato Machi. Take a photo, try a Look, play with your face.</p></div>
     <div class="welcome-actions">
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>
      <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Choose a photo</button>
@@ -309,9 +315,9 @@
  </section>
 
  <!-- Original island card games -->
- <section class="screen card-games" id="cardsHub" aria-label="Card games" hidden>
-  <header class="bar"><button type="button" class="back" id="closeCardsHub"><svg><use href="#i-back"/></svg><span>Album</span></button><h2>Card games</h2><span class="bar-spacer"></span></header>
-  <div class="cards-hub-content"><div class="game-room-intro"><div><p class="cards-kicker">JOHANSSON WORLD · MINATO</p><h1>Game Room</h1><p>Choose a game and stay a while.</p></div><img class="game-room-mascot" src="stickers/thuan-blender/wave.thumb.webp" alt="" aria-hidden="true"></div><p class="game-room-label">CHOOSE A GAME</p>
+ <section class="screen card-games" id="cardsHub" aria-label="Game Room" hidden>
+  <header class="bar"><button type="button" class="back" id="closeCardsHub"><svg><use href="#i-back"/></svg><span>Album</span></button><h2>Minato Machi</h2><span class="bar-spacer"></span></header>
+  <div class="cards-hub-content"><div class="game-room-intro"><div><p class="cards-kicker">Johansson World</p><h1>Game Room</h1><p>Choose a game and stay a while.</p></div><img class="game-room-mascot" src="stickers/thuan-blender/wave.thumb.webp" alt="" aria-hidden="true"></div><p class="game-room-label">CHOOSE A GAME</p>
    <button class="game-choice" id="chooseMemory" type="button"><span class="choice-symbol memory-symbol" aria-hidden="true">✿</span><span><strong>Memory</strong><small>Find pairs of photos or residents.</small></span><span aria-hidden="true">›</span></button>
    <button class="game-choice" id="chooseBlackjack" type="button"><span class="choice-symbol" aria-hidden="true">21</span><span><strong>Blackjack</strong><small>Get close to 21 without going over.</small></span><span aria-hidden="true">›</span></button>
    <button class="game-choice" id="chooseSolitaire" type="button"><span class="choice-symbol" aria-hidden="true">♠</span><span><strong>Solitaire</strong><small>Build the four suits from ace to king.</small></span><span aria-hidden="true">›</span></button>
@@ -424,6 +430,6 @@
 <input type="file" id="backupFile" accept=".zip,application/zip" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261106ball2"></script>
+<script type="module" src="app.js?v=20261109brand1"></script>
 </body>
 </html>

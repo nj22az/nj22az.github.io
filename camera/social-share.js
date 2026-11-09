@@ -1,29 +1,41 @@
-/** Share a compact result card through the device share sheet; no network call until the user chooses to share. */
+/** Share a compact result card through the device share sheet; no network call until the user chooses to share.
+ * The card is Johansson World's: its ink, paper, gold and rust, the lockup over the Game Room's name, the camera's name
+ * at the foot (camera-brand.css has the same lockup on the screens). */
 export function shareMode(nav,file){
  if(typeof nav?.share!=='function')return 'download';
  try{if(file&&nav.canShare?.({files:[file]}))return 'image';}catch{}
  return 'text';
 }
 export function resultText({game,headline,detail}){
- return `${game} · ${headline}${detail?' · '+detail:''} — Pocket Camera`;
+ return `${game} · ${headline}${detail?' · '+detail:''} — Pocket Camera · Johansson World`;
+}
+const INK='#142d37',PAPER='#ece3c9',CREAM='#fff8e9',GOLD='#e2b665',RUST='#b65940',MUTED='#4f6a62';
+const BRAND='"Avenir Next","Yu Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif';
+/** Tracked capitals, as the eyebrow on the screens is (letterSpacing where the canvas has it, else plain). */
+function tracked(g,text,x,y,spacing){
+ if('letterSpacing' in g){g.letterSpacing=`${spacing}px`;g.fillText(text,x,y);g.letterSpacing='0px';}
+ else g.fillText(text,x,y);
 }
 function makeResultImage({game,headline,detail}){
  return new Promise(resolve=>{
   try{
    const c=document.createElement('canvas');c.width=1080;c.height=1080;
    const g=c.getContext('2d');if(!g){resolve(null);return;}
-   g.fillStyle='#e9dbb9';g.fillRect(0,0,1080,1080);
-   g.fillStyle='#24483f';g.fillRect(52,52,976,976);
-   g.fillStyle='#fff5dd';g.fillRect(66,66,948,948);
-   g.fillStyle='#78ad9a';g.fillRect(91,91,898,214);
-   g.fillStyle='#24483f';g.font='bold 32px sans-serif';g.textAlign='center';g.fillText('JOHANSSON WORLD  ·  POCKET CAMERA',540,143);
-   g.font='bold 64px sans-serif';g.fillText('MINATO GAME ROOM',540,232);
-   g.fillStyle='#d37a64';g.fillRect(153,367,774,5);
-   g.fillStyle='#24483f';g.font='bold 68px sans-serif';g.fillText(game.toUpperCase(),540,470,800);
-   g.font='bold 54px sans-serif';g.fillText(headline,540,580,800);
-   g.fillStyle='#526c5c';g.font='38px sans-serif';g.fillText(detail||'',540,650,800);
-   g.fillStyle='#e8bd70';g.fillRect(380,727,320,4);
-   g.fillStyle='#355d50';g.font='bold 30px sans-serif';g.fillText('A little game from Minato',540,815);
+   g.fillStyle=PAPER;g.fillRect(0,0,1080,1080);
+   g.fillStyle=INK;g.fillRect(52,52,976,976);
+   g.fillStyle=CREAM;g.fillRect(66,66,948,948);
+   // The header: the World's ink, the lockup in gold, the room's name in cream.
+   g.fillStyle=INK;g.fillRect(91,91,898,214);
+   g.textAlign='center';g.textBaseline='alphabetic';
+   g.fillStyle=GOLD;g.font=`700 26px ${BRAND}`;tracked(g,'JOHANSSON WORLD  ·  MINATO MACHI',540,152,6);
+   g.fillStyle=CREAM;g.font=`800 66px ${BRAND}`;tracked(g,'GAME ROOM',540,246,4);
+   g.fillStyle=RUST;g.fillRect(153,367,774,5);
+   g.fillStyle=INK;g.font=`800 68px ${BRAND}`;g.fillText(game.toUpperCase(),540,470,800);
+   g.font=`700 54px ${BRAND}`;g.fillText(headline,540,580,800);
+   g.fillStyle=MUTED;g.font=`500 38px ${BRAND}`;g.fillText(detail||'',540,650,800);
+   g.fillStyle=GOLD;g.fillRect(380,727,320,4);
+   g.fillStyle=INK;g.font=`700 28px ${BRAND}`;tracked(g,'POCKET CAMERA',540,808,5);
+   g.fillStyle=MUTED;g.font=`500 28px ${BRAND}`;g.fillText('A little game from Minato Machi',540,856);
    c.toBlob(blob=>resolve(blob||null),'image/png');
   }catch{resolve(null);}
  });

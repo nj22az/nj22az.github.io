@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 from PIL import Image
-from camera_sticker_contours import contour, save_webp, STYLE_ID
+from camera_sticker_contours import contour, save_webp, shrink, STYLE_ID
 
 SETS = [  # (folder in art/stickers, name in the picker, who they are: "What does Thuan say?", the tab it is under)
     # The camera's cast is Johansson, Thuan and Thao (the owner, 29 October 2026: "Remove Fujita he is not important
@@ -36,8 +36,9 @@ OUT = Path(__file__).resolve().parent.parent / 'camera' / 'stickers'
 
 
 def webp(image, side, path):
-    copy = image.copy()
-    copy.thumbnail((side, side), Image.LANCZOS)
+    # Resampled with the alpha premultiplied (camera_sticker_contours.shrink): a straight RGBA resize leaves the
+    # see-through pixels' colour as a fringe along every edge.
+    copy = shrink(image, side)
     save_webp(copy, path)
     return copy.size
 
@@ -46,7 +47,15 @@ def main(studio):
     root = Path(studio) / 'art' / 'stickers'
     commit = subprocess.run(['git', '-C', str(studio), 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
     manifest = {'source': f'nj22az/jojo art/stickers/*/plain at {commit or "unknown"}', 'lettered': False, 'contour': STYLE_ID, 'sets': []}
+    # A set the studio checkout lacks keeps its published entries (recut them with camera_sticker_contours.py --sets).
+    previous = {sheet['id']: sheet for sheet in json.loads((OUT / 'stickers.json').read_text(encoding='utf-8'))['sets']} if (OUT / 'stickers.json').exists() else {}
     for folder, name, who, tab in SETS:
+        if not (root / folder / 'stickers.json').exists():
+            if folder not in previous:
+                sys.exit(f'{root / folder} is missing and the camera has no earlier cut of it')
+            print(f'{name}: not in this studio checkout, its published stickers kept')
+            manifest['sets'].append(previous[folder])
+            continue
         data = json.loads((root / folder / 'stickers.json').read_text(encoding='utf-8'))
         (OUT / folder).mkdir(parents=True, exist_ok=True)
         entries = []

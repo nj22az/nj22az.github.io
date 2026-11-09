@@ -116,7 +116,7 @@ try{
  });
 
  await check('a pinch that starts on a sticker sizes the sticker; zoomed, its buttons keep one finger’s size',async()=>{
-  await page.evaluate(async()=>{const m=await import('/camera/stickers.js?v=20261105fun1');await m.loadStickerSets();window.pocketCamera.editStickers.add('thao-pixar/Peace');});
+  await page.evaluate(async()=>{const m=await import('/camera/stickers.js?v=20261109brand1');await m.loadStickerSets();window.pocketCamera.editStickers.add('thao-pixar/Peace');});
   await page.click('#tabStickers');await rest();
   const s0=await rect('#editFrame .sticker'),size0=await page.evaluate(()=>window.pocketCamera.state.edit.recipe.stickers[0].size);
   await pinch({x:s0.x,y:s0.y},40,90);await rest();

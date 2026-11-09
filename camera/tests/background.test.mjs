@@ -24,6 +24,17 @@ check('a ground that is lit unevenly (a gentle gradient) still floods; a patch o
  const n=plainMask(image(w,h,(x,y)=>Math.hypot(x-100,y-75)<40&&!speck(x,y)?[30,60,160]:[230,228,222]));
  assert.ok(n);assert.ok(at(n,100,75)>.5,'a speck of ground colour inside the subject is left to it');
 });
+check('a white sheet with a shadow under the thing and a vignette, grain on it (9 November 2026: "big patches are white"): the shade goes with the sheet, the thing stays, the shaded sheet between its legs goes too',()=>{
+ const w=240,h=200;let seed=3;const rnd=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
+ const vignette=(x,y)=>Math.hypot((x-120)/120,(y-100)/100)*55,shadow=(x,y)=>Math.max(0,1-Math.hypot((x-120)/70,(y-150)/22))*85;
+ const legs=(x,y)=>y>110&&y<170&&(Math.abs(x-95)<16||Math.abs(x-145)<16),body=(x,y)=>Math.hypot((x-120)/48,(y-85)/40)<1;
+ const m=plainMask(image(w,h,(x,y)=>{if(body(x,y)||legs(x,y))return [96,70,58];const v=vignette(x,y)+shadow(x,y)+rnd()*8-4;return [250-v,247-v,240-v];}));
+ assert.ok(m,'found');
+ assert.equal(at(m,120,85),1,'the body');assert.equal(at(m,95,140),1,'a leg');
+ assert.equal(at(m,120,160),0,'the shaded sheet between the legs (reached from the sides)');assert.equal(at(m,120,185),0,'the deepest shadow under it');
+ assert.equal(at(m,3,3),0,'the darkest corner of the vignette');assert.equal(at(m,236,196),0);
+ const share=m.coverage;assert.ok(share>.12&&share<.2,`coverage ${share}`);
+});
 check('a ground that is not one colour (noise, a photograph) is refused; so is a subject that is nearly all or nothing',()=>{
  let seed=7;const rnd=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296);
  assert.equal(plainMask(image(120,90,()=>[rnd()*255,rnd()*255,rnd()*255])),null,'noise');
