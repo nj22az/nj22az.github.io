@@ -17,18 +17,22 @@
 .standalone .camera .brand-lockup{align-items:flex-start}
 @media (display-mode:standalone){.camera .brand-lockup{align-items:flex-start}}
 
-/* The title card (the welcome): the World's wordmark and the camera's Japanese name over the hero, then the camera's
-   own words. The wordmark is the World's title logo at a label's size, its colours the title screen's own. */
-.welcome-brand{--wm-sun:#ffd54a;--wm-sun-2:#ffe066;--wm-orange:#ff9f1c;--wm-red:#d7263d;--wm-green:#06c755;display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0 0;-webkit-user-select:none;user-select:none}
+/* The title card (the welcome): the World's wordmark and the camera's Japanese name in the hero, at the left of the
+   dancing greeter, then the camera's own words. The wordmark is the World's title logo at a label's size, its colours
+   the title screen's own; it is sized by the hero's height (a size container, camera-ui.css), so the card keeps the
+   height it had and the whole greeting still fits an iPhone SE's Safari. */
+/* --wm is the wordmark's size: by the hero's height, capped by its width so the greeter keeps its room; the box and the
+   pill follow it, so the three keep the title screen's proportions. */
+.welcome-brand{--wm-sun:#ffd54a;--wm-sun-2:#ffe066;--wm-orange:#ff9f1c;--wm-red:#d7263d;--wm-green:#06c755;--wm:min(clamp(1.125rem,24cqh,2.5rem),10.2cqw);position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:clamp(6px,7cqh,14px);padding:0;-webkit-user-select:none;user-select:none}
 /* Written under .welcome-brand: the welcome's own paragraph colours (camera.css, camera-black.css) would paint them. */
-.welcome-brand .world-mark{display:flex;flex-direction:column;align-items:center;margin:0;max-width:none;line-height:1;font-family:var(--font-brand);font-weight:800;font-size:1rem;color:var(--wm-sun)}
-.welcome-brand .world-mark-main{display:flex;font-size:clamp(1.75rem,7vw,2.25rem);letter-spacing:.01em}
+.welcome-brand .world-mark{display:flex;flex-direction:column;align-items:flex-start;margin:0;max-width:none;line-height:1;font-family:var(--font-brand);font-weight:800;font-size:1rem;color:var(--wm-sun)}
+.welcome-brand .world-mark-main{display:flex;font-size:var(--wm);letter-spacing:.01em}
 /* Outline and extrusion are stacked shadows, so the sun fill stays whole (as the World draws it). */
 .welcome-brand .world-mark-main span{display:inline-block;color:var(--wm-sun);text-shadow:.035em 0 0 var(--wm-green),-.035em 0 0 var(--wm-green),0 .035em 0 var(--wm-green),0 -.035em 0 var(--wm-green),.025em .025em 0 var(--wm-green),-.025em .025em 0 var(--wm-green),.025em -.025em 0 var(--wm-green),-.025em -.025em 0 var(--wm-green),0 .06em 0 var(--wm-green),0 .085em 0 var(--wm-green),.02em .1em 0 var(--wm-green),0 .14em .12em rgba(16,32,43,.35)}
 .welcome-brand .world-mark-main span:nth-child(odd){color:var(--wm-sun-2)}.welcome-brand .world-mark-main span:nth-child(3n){color:var(--wm-orange)}
-.welcome-brand .world-mark-town{display:flex;margin-top:0;padding:.16em .5em .2em;font-size:clamp(.95rem,3.6vw,1.2rem);letter-spacing:.18em;text-indent:.18em;color:#fff;background:var(--wm-red);border:3px solid var(--wm-green);border-radius:.45em;box-shadow:0 4px 0 var(--wm-green);transform:rotate(-3deg)}
+.welcome-brand .world-mark-town{display:flex;margin:.1em 0 0 .3em;padding:.16em .5em .2em;font-size:calc(var(--wm)*.52);letter-spacing:.18em;text-indent:.18em;color:#fff;background:var(--wm-red);border:.18em solid var(--wm-green);border-radius:.45em;box-shadow:0 .25em 0 var(--wm-green);transform:rotate(-3deg)}
 .welcome-brand .world-mark-town span{text-shadow:0 .05em 0 var(--wm-green)}
-.welcome-brand .world-mark-jp{display:inline-block;margin:0;max-width:none;padding:.3rem .9rem .32rem;border:2px solid var(--wm-green);border-radius:2rem;background:#fff;color:var(--wm-red);font:700 .8125rem/1.2 var(--font-brand);letter-spacing:.28em;text-indent:.28em;box-shadow:0 3px 0 var(--wm-green)}
+.welcome-brand .world-mark-jp{display:inline-block;margin:0 0 0 .1em;max-width:none;padding:.3em .9em .32em;border:.15em solid var(--wm-green);border-radius:2em;background:#fff;color:var(--wm-red);font:700 max(.5625rem,calc(var(--wm)*.34))/1.2 var(--font-brand);letter-spacing:.28em;text-indent:.28em;box-shadow:0 .2em 0 var(--wm-green)}
 .welcome-copy h2{font-family:var(--font-brand);letter-spacing:-.03em}
 .welcome-copy .brand-eyebrow{margin-bottom:6px}
 

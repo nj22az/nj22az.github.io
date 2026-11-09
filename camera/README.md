@@ -585,10 +585,11 @@ iOS-camera yellow, the system font, and "Pocket Camera" with no origin. Now (`ca
   ("Johansson World · Minato Machi", the version, "Visit the World ›" to `/johansson-town/`), the Game Room's kicker
   (the bar there says "Minato Machi", the room "Game Room"), the share card (`social-share.js`: the lockup on an ink
   header, the camera's name at the foot, the text signed "Pocket Camera · Johansson World").
-- **The toy wordmark once, on the title card.** The welcome opens with the World's wordmark at a label's size and the
-  camera's Japanese name, ポケットカメラ, in the World's pill (signs in Japanese, words in English), then the hero,
-  "Pocket Camera" and "A little camera from Minato Machi. Take a photo, try a Look, play with your face." The bar's
-  lockup is hidden while the title card carries the brand.
+- **The toy wordmark once, on the title card.** The welcome's hero card holds the World's wordmark at a label's size
+  and the camera's Japanese name, ポケットカメラ, in the World's pill (signs in Japanese, words in English), beside
+  the dancing greeter (the sample print it held before is gone); under it "Pocket Camera" and "A little camera from
+  Minato Machi. Take a photo, try a Look, play with your face." The wordmark is sized by the hero's height, so the
+  greeting still fits whole on an iPhone SE's Safari; the bar's lockup is hidden while the title card carries the brand.
 - **The palette.** The accent is the World's gold (`#e2b665`; a deep brass `#7d5a1c` for chosen text in light, 4.5:1
   and better on every surface); in dark the bars, the editor's tab row and the status bar take the World's ink
   (`--bar:#142d37`, the browser's theme colour with it); light leans a touch towards the World's paper. The field

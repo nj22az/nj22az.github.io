@@ -30,7 +30,9 @@ against now come from `camera/tests/fixtures/published-baselines/` (the local ru
 See the README, "Johansson World's brand on the camera". In short: the lockup (eyebrow JOHANSSON WORLD over Pocket
 Camera, Avenir Next / Yu Gothic) in the camera bar, the settings foot (with "Visit the World ›" to `/johansson-town/`),
 the Game Room (bar "Minato Machi", kicker "Johansson World") and the share card; the World's toy wordmark and the pill
-ポケットカメラ on the title card only (the bar's lockup hidden there); gold `#e2b665` for what is chosen (brass
+ポケットカメラ on the title card only, in the hero card beside the dancing greeter, sized by the card's height so the
+greeting still fits an iPhone SE's Safari whole (a first cut put them above the hero and the album card fell off the
+first screen: `camera.browser.mjs` caught it) (the bar's lockup hidden there); gold `#e2b665` for what is chosen (brass
 `#7d5a1c` in light), the World's ink `#142d37` for the dark bars, the tab row and the status bar (`theme-color`,
 manifest `theme_color`), light a touch towards paper; the Film frame's edge prints JOHANSSON WORLD; the icons redrawn
 on ink with a gold ring (`tools/draw-camera-icon.py`); page title, descriptions and manifest name the World.

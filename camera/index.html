@@ -118,12 +118,14 @@
    </div>
    </div><aside class="look-rail camera-rail" aria-label="Active Looks and camera controls"><div id="cameraLookRail"></div><button type="button" class="zoom" id="zoom" aria-label="Zoom 1×">1×</button><button type="button" class="exposure-chip" id="exposureChip" hidden><svg><use href="#i-light"/></svg><span></span></button></aside></div>
    <div class="welcome" id="welcome" hidden>
-    <!-- The title card: Johansson World's wordmark (its title screen's, at a label's size) and the camera's Japanese name, once, here only (camera-brand.css). -->
-    <div class="welcome-brand" id="welcomeBrand">
-     <p class="world-mark" role="img" aria-label="Johansson World"><span class="world-mark-main" aria-hidden="true"><span>J</span><span>O</span><span>H</span><span>A</span><span>N</span><span>S</span><span>S</span><span>O</span><span>N</span></span><span class="world-mark-town" aria-hidden="true"><span>W</span><span>O</span><span>R</span><span>L</span><span>D</span></span></p>
-     <p class="world-mark-jp" lang="ja">ポケットカメラ</p>
+    <!-- The title card's hero: Johansson World's wordmark (its title screen's, at a label's size) and the camera's Japanese name, once, here only, beside the dancing greeter (camera-brand.css). -->
+    <div class="welcome-hero">
+     <div class="welcome-brand" id="welcomeBrand">
+      <p class="world-mark" role="img" aria-label="Johansson World"><span class="world-mark-main" aria-hidden="true"><span>J</span><span>O</span><span>H</span><span>A</span><span>N</span><span>S</span><span>S</span><span>O</span><span>N</span></span><span class="world-mark-town" aria-hidden="true"><span>W</span><span>O</span><span>R</span><span>L</span><span>D</span></span></p>
+      <p class="world-mark-jp" lang="ja">ポケットカメラ</p>
+     </div>
+     <img class="welcome-sticker" id="welcomeSticker" alt="" aria-hidden="true" hidden>
     </div>
-    <div class="welcome-hero" aria-hidden="true"><img class="welcome-print" src="samples/default-adventure.png" alt="" decoding="async"><img class="welcome-sticker" id="welcomeSticker" alt="" hidden></div>
     <div class="welcome-copy"><h2>Pocket Camera</h2><p>A little camera from Minato Machi. Take a photo, try a Look, play with your face.</p></div>
     <div class="welcome-actions">
      <button type="button" class="button primary" id="startCamera"><svg><use href="#i-camera"/></svg>Start camera</button>

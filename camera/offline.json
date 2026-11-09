@@ -1,6 +1,6 @@
 {
   "version": "20261109brand1",
-  "bytes": 40410344,
+  "bytes": 40410761,
   "files": [
     {
       "url": "/camera/album.js",
@@ -54,8 +54,8 @@
     },
     {
       "url": "/camera/camera-brand.css",
-      "sha256": "498001b9d34144c126d793acdfa151d05c3bdc68be07e357c1c8881db5090788",
-      "bytes": 4988
+      "sha256": "b532fec5c0b9b3e5ecbe24adee22420367c3fb4d62769814ab333bb82e93e096",
+      "bytes": 5496
     },
     {
       "url": "/camera/camera-refresh.css",
@@ -64,13 +64,13 @@
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "9ef19b0691f2aee7c99021e7ff2bb180e197cde7d897ef47b47e4bed9ad51ff5",
-      "bytes": 40678
+      "sha256": "753ac7b1acb7b957983cc6b83a045e7bcb08f4de607e33f052d5639b4fef0643",
+      "bytes": 40446
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "e994ecad3d19b166614a3f1f840be3139f8269b22b187e6505816f2ee82f7376",
-      "bytes": 53574
+      "sha256": "c225f7acc66581300b9b7de252e8c54ce2d329dee83bc4784722aa96aee0522c",
+      "bytes": 53752
     },
     {
       "url": "/camera/card-games.css",
@@ -234,8 +234,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "e42a023ae455c64614aa388308f53bb53bcf0e6b56bceccd5e7fde7b65b59744",
-      "bytes": 41742
+      "sha256": "511cd0eebfdec956cc7caccc796da0e8db8d9c1284460a9e6448b25f3612f308",
+      "bytes": 41705
     },
     {
       "url": "/camera/lettering.js",
