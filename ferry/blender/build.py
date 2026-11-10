@@ -111,7 +111,11 @@ def looking_outward():
                  'Fresh-water tanks, pipes', 'Chain lockers', 'Zinc anodes', 'Compass deck, slab', 'Compass deck, rails',
                  'Compass deck, mast and fittings', 'Compass deck, mast, steel fittings', 'Compass deck, dark fittings',
                  'Compass deck, antennas', 'Compass deck, antenna mounts', 'Compass deck, vent heads', 'Compass deck, vent fittings',
-                 'Compass deck, searchlight and floodlights', 'Compass deck, light mounts', 'Compass deck, binnacle'):
+                 'Compass deck, searchlight and floodlights', 'Compass deck, light mounts', 'Compass deck, binnacle',
+                 'Wheelhouse, console', 'Wheelhouse, steering stand', 'Wheelhouse, instruments', 'Wheelhouse, lamps and dials', 'Wheelhouse, brass',
+                 'Wheelhouse, steel', 'Wheelhouse, wood', 'Wheelhouse, chair', 'Wheelhouse, frames', 'Wheelhouse, sills', 'Wheelhouse, wing consoles',
+                 'Wheelhouse, wing door, port', 'Wheelhouse, wing door, starboard', 'Wheelhouse, wing door hardware, port',
+                 'Wheelhouse, wing door hardware, starboard'):
         ob = bpy.data.objects.get(name)
         if ob is None:
             wrong.append(name + ' (not built)')
@@ -134,7 +138,7 @@ def main():
     # spaces and to the car deck (part.group).
     parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'bridge', 'top')}
     report, inputs, movers, ways = {}, [], [], []
-    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck'):
+    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck', 'wheelhouse'):
         try:
             mod = importlib.import_module(name)
         except ModuleNotFoundError as e:

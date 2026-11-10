@@ -185,7 +185,7 @@ add(r, 'Mess benches (two)', 'furniture', 'built', 'drawn', geom(piece(r, 'mess 
 add(r, 'Sideboard', 'furniture', 'built', 'drawn', geom(piece(r, 'sideboard')), fn=FN['UYA'])
 add(r, 'Television', 'electrical', 'built', 'drawn', geom(piece(r, 'mess television')), fn=FN['BRB'],
     el='No feeder: the Town\'s "tv" load is in the carpet room, not the mess', need='105 V socket circuit and an aerial/data cable; fixed to the bulkhead')
-add(r, 'Kettle', 'electrical', 'designed', 'words', fn=FN['BRB'], need='A 105 V socket on a protected circuit (galley-appliances covers 4 kW in the galley, not the mess)')
+add(r, 'Kettle', 'electrical', 'built', 'drawn', dict(yard=14.35, x=2.55, h=1.0, size=[0.12, 0.14, 0.2], src='in the model, unnamed: a grey cylinder on the sideboard (found by looking at the model\'s pieces, not in the interior list)'), fn=FN['BRB'], need='A 105 V socket on a protected circuit (galley-appliances covers 4 kW in the galley, not the mess)')
 add(r, 'Duty board and muster list', 'outfit', 'designed', 'words', fn=NO_KEY, note='The muster list is a statutory notice; neither is drawn')
 add(r, 'Air-conditioning units (four, 2 kW each)', 'electrical', 'data only', 'data', fn=FN['SAC'], tag='10SAC20 AH001 / AH002',
     el=feed('room-acA', 'room-acB'), need='Located "in the mess" in the Town data: serves the bridge deck; supply ducts to every cabin; condensate drains (none exist)')
@@ -202,7 +202,7 @@ add(r, 'Sink', 'plumbing', 'built', 'drawn', geom(piece(r, 'sink')), tag='10GKB2
 add(r, 'Fridge-freezer', 'electrical', 'built', 'drawn', geom(piece(r, 'fridge-freezer')), tag='10GKB30 GS001 (shared)', fn='GKB (as above)',
     el=feed('galley-appliances'), need='105 V socket; ventilated recess; defrost drain')
 add(r, 'Provision locker', 'furniture', 'built', 'drawn', geom(piece(r, 'provision locker')), fn=FN['UYA'])
-add(r, 'Rice cooker', 'electrical', 'designed', 'words', tag='10GKB30 GS001 (shared)', fn='GKB (as above)', el='Named in galley-appliances (rice cooker, microwave, pot, fridge, hood): ' + feed('galley-appliances'), note='Not drawn (Rev C task: close the design gaps)')
+add(r, 'Rice cooker', 'electrical', 'built', 'drawn', dict(yard=15.45, x=-2.62, h=1.0, size=[0.16, 0.18, 0.2], src='in the model, unnamed: a cream cylinder on the counter beside the sink'), tag='10GKB30 GS001 (shared)', fn='GKB (as above)', el='Named in galley-appliances (rice cooker, microwave, pot, fridge, hood): ' + feed('galley-appliances'), note='Drawn, unnamed (found by looking at the model\'s pieces)')
 add(r, 'Hatch to the mess', 'outfit', 'designed', 'words', fn=NO_KEY, note='In the design words; not drawn')
 add(r, 'Water heater, 100 L / 3 kW', 'plumbing', 'data only', 'data', tag='10GKB20 AC001', fn=FN['GKB'], el=feed('water-heater'), pl=pipe('heater'),
     need='Cold feed from the pressure tank, hot to the galley, the crew WC and the shower, an expansion vessel, a safety valve with a drain; "the kiosk\'s hot water too" (design words) needs a pipe two decks down')
@@ -263,7 +263,7 @@ add(r, 'Ramp lamps and lane signals', 'safety', 'designed', 'words', fn=FN['XSB'
     note='The Town\'s ramp node says "limit switches to the bridge lamp": no lamp is drawn')
 add(r, 'Whistle button', 'navigation', 'designed', 'words', fn=FN['CTA'], need='A solenoid on the whistle at the funnel or mast; 24 V or air')
 add(r, 'Searchlight control', 'navigation', 'designed', 'words', fn=FN['CTA'], el=feed('searchlight'), need='Handle with a pan/tilt cable to the compass deck; the 1 kW lamp is on the lighting board')
-add(r, 'Clock, barometer, inclinometer', 'navigation', 'designed', 'words', fn=NO_KEY, note='Instruments for the wall above the console')
+add(r, 'Clock and barometer (drawn, unnamed); inclinometer not found', 'navigation', 'part-built', 'drawn', dict(yard=19.57, x=1.65, h=1.9, size=[0.8, 0.06, 0.34], src='in the model, unnamed: a clock at x +1.25..+1.55 and a brass barometer ring at x +1.85..+2.05 on the aft wall'), fn=NO_KEY, note='A pale 0.55 × 0.55 m board at x +2.30..+2.85 beside them is also unnamed')
 add(r, 'Log desk', 'furniture', 'designed', 'words', fn=NO_KEY, need='Writing surface and a lamp; the engine log and deck log')
 add(r, 'Overhead lights (two)', 'electrical', 'built', 'drawn', dict(yard=21.25, x=0.0, h=2.17, size=[0.7, 0.3, 0.06], src='ferry-interior.js (two unnamed pale plates)'), tag='10BRB10 GS011', fn=FN['BRB'],
     el='Inside "light-crew" (lighting: bridge, mess, galley, cabins): ' + feed('light-crew'), need='Own circuit; dimmable white and red lighting; no light spill on the glass')
@@ -293,7 +293,14 @@ for item, fn, el, need in (
 for i, row in enumerate(ROWS, 1):
     row['id'] = f'B{i:03d}'
 
-COLS = ['id', 'deck', 'room', 'item', 'cls', 'status', 'basis', 'tag', 'fn', 'yard', 'x', 'h', 'size', 'electrical', 'plumbing', 'connect', 'source', 'note']
+# What the wheelhouse build (ferry/blender/wheelhouse.py, 11 November 2026) has made hers: the design basis' items, and the
+# survey's rows that its slice replaced or folded in (the wipers, the two unnamed boxes, the overhead lamps, the GPS with the sounder).
+_basis = json.load(open(os.path.join(HERE, 'design-basis.json')))
+HERS = {i['register'] for i in _basis['items'] if i.get('built_by', '').startswith('ferry/blender')} | {'B075', 'B086', 'B092', 'B096', 'B103', 'B105'}
+for row in ROWS:
+    row['hers'] = 'built, wheelhouse.py (11 Nov 2026)' if row['id'] in HERS else ''
+
+COLS = ['id', 'deck', 'room', 'item', 'cls', 'status', 'hers', 'basis', 'tag', 'fn', 'yard', 'x', 'h', 'size', 'electrical', 'plumbing', 'connect', 'source', 'note']
 
 
 def services():

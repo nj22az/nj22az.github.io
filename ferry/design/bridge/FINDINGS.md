@@ -8,6 +8,7 @@ From a person standing at the wheel (x 0, yard 20.9, eye 1.6 m above the deck) t
 
 - Where from: ferry-interior.js glass (18 panes), ferry-bridge.js; drawn on CHR-B2 · drawn on CHR-B2
 - To do: Glaze the wing doors' upper halves and the aft starboard wall panel; add glass abaft the helm; rake the forward panes
+- **Done 11 November 2026 (wheelhouse.py): the wing doors are glazed in their upper halves and the starboard wall has its window; measured on the built model, the glass shows 224° of the 225°.**
 
 ## BF-02 · risk · The compass card and its housing stand on the line of sight dead ahead
 
@@ -15,6 +16,7 @@ Measured from the model, with the eye 1.6 m above the deck and the helm at yard 
 
 - Where from: ferry-bridge.js:57 (compass card), ferry-interior.js (brass block x ±0.08, h 1.50–1.62); CHR-B2 section · drawn on CHR-B2
 - To do: Move the heading display overhead or low in the stand (below 1.2 m), or into the repeater panel; keep the periscope tube above the eye
+- **Done 11 November 2026: the heading readout is low on the stand (0.84–1.0 m), the compass is read in a periscope at 1.84–1.95 m, the displays top out at 1.33 m.**
 
 ## BF-03 · error · The two engine levers are crossed
 
@@ -22,6 +24,7 @@ ferry-bridge.js draws "Port" at x +0.20 and "Starboard" at x +0.40; x is positiv
 
 - Where from: ferry-bridge.js:44 ([.2,'mainP','Port'],[.4,'mainS','Starboard']); register B076/B077 · drawn on CHR-B2
 - To do: Port lever at x +0.4, starboard at x +0.2 (or both on the centreline, port to port); the engine-order repeater reads the same way round
+- **Done 11 November 2026: port lever at x +0.45, starboard at +0.25, the thruster lever at −0.15.**
 
 ## BF-04 · error · The Town's own audit still lists 8 findings on this deck
 
@@ -36,6 +39,7 @@ x +1.40..+1.90 and x +1.30..+1.75 at yard 22.45–22.75, 1.0–1.25 m above the 
 
 - Where from: ferry-interior.js (unnamed boxes); register B092 · drawn on CHR-B2
 - To do: Replace by the named sets (VHF with DSC, NAVTEX, telephone)
+- **Done 11 November 2026: replaced by the named VHF, telephone and NAVTEX.**
 
 ## BF-06 · error · The galley range is tagged as drinking water
 
@@ -51,9 +55,9 @@ Their basin and shower water is the node "toilets" (10GKB20 BR002, where: toilet
 - Where from: ferry-piping.js 170–181; ferry-electrical.js TAGS toilet-fans; register B049–B052 · drawn on CHR-B4
 - To do: Add crew-WC nodes (hot, cold, flush, soil, extract fan) located in crew-wc
 
-## BF-08 · gap · 26 items the design words name are not drawn, and 18 more are in the data only
+## BF-08 · gap · 23 items the design words name are not drawn, and 18 more are in the data only
 
-Not drawn: Louvres (EG room air) (eg-room); Remote fuel quick-closing valves (controls) (co2-room); Fold-down desk (crew-cabin); Shower (crew-wc); Kettle (mess); Duty board and muster list (mess); Rice cooker (galley); Hatch to the mess (galley); Non-follow-up lever and autopilot (wheelhouse); Thruster lever (centre) (wheelhouse); Engine and thruster levers at both wing consoles (wheelhouse); VHF with DSC (wheelhouse); Ship's telephone and engine-room phone (wheelhouse); NAVTEX printer (wheelhouse); GPS display (wheelhouse); PA and general alarm (wheelhouse); Ramp lamps and lane signals (wheelhouse); Whistle button (wheelhouse); Searchlight control (wheelhouse); Clock, barometer, inclinometer (wheelhouse); Log desk (wheelhouse); Wing console (engine and thruster levers) (wing-p); Port sidelight (red) (wing-p); Wing console (engine and thruster levers) (wing-s); Starboard sidelight (green) (wing-s); Float-free EPIRB (wing-s). In the data (tags, loads, pipe lines) but not drawn: Battery chargers (two, 1.5 kW each, MSB); Emergency charger (0.5 kW, ESB); Emergency lighting transformer, 5 kVA, 440/105 V; CO₂ main valve; Berth reading lamp and cabin light (× 5); Cabin air conditioning/ventilation unit (× 5); Air-conditioning units (four, 2 kW each); Lighting for the crew rooms (0.42 kW); Water heater, 100 L / 3 kW; Hydrant, bridge deck, 15 m hose.
+Not drawn: Louvres (EG room air) (eg-room); Remote fuel quick-closing valves (controls) (co2-room); Fold-down desk (crew-cabin); Shower (crew-wc); Duty board and muster list (mess); Hatch to the mess (galley); Non-follow-up lever and autopilot (wheelhouse); Thruster lever (centre) (wheelhouse); Engine and thruster levers at both wing consoles (wheelhouse); VHF with DSC (wheelhouse); Ship's telephone and engine-room phone (wheelhouse); NAVTEX printer (wheelhouse); GPS display (wheelhouse); PA and general alarm (wheelhouse); Ramp lamps and lane signals (wheelhouse); Whistle button (wheelhouse); Searchlight control (wheelhouse); Log desk (wheelhouse); Wing console (engine and thruster levers) (wing-p); Port sidelight (red) (wing-p); Wing console (engine and thruster levers) (wing-s); Starboard sidelight (green) (wing-s); Float-free EPIRB (wing-s). In the data (tags, loads, pipe lines) but not drawn: Battery chargers (two, 1.5 kW each, MSB); Emergency charger (0.5 kW, ESB); Emergency lighting transformer, 5 kVA, 440/105 V; CO₂ main valve; Berth reading lamp and cabin light (× 5); Cabin air conditioning/ventilation unit (× 5); Air-conditioning units (four, 2 kW each); Lighting for the crew rooms (0.42 kW); Water heater, 100 L / 3 kW; Hydrant, bridge deck, 15 m hose.
 
 - Where from: ferry-ship.js FERRY_GA (design words), ferry-electrical.js, ferry-piping.js; register status "designed" and "data only" · drawn on CHR-B3
 - To do: Build them in section 5 from the register; each row says what it must connect to
@@ -64,6 +68,7 @@ The design words give the wheelhouse "two engine levers and the thruster lever a
 
 - Where from: ferry-ship.js:134-136; ferry-bridge.js:44-49; register B075–B079, B107, B109 · drawn on CHR-B2
 - To do: A console on each wing at the wing door, levers, a rudder-angle and engine repeater, a watertight cover
+- **Done 11 November 2026 for the thruster lever, the autopilot head and both wing consoles; the VHF, telephone and NAVTEX are built too; the alarm panel is the Town's (kept).**
 
 ## BF-10 · risk · The cabin doors are 0.70 m wide; every other door on the deck is 0.80 m
 
@@ -78,13 +83,14 @@ Port: the doorway is yard 19.60–20.40 and the leaf (0.75 m) stands at 20.45–
 
 - Where from: ferry-interior.js "wing door" x2, wall boxes; register B104 · drawn on CHR-B2
 - To do: A real weathertight door in each doorway with a coaming sill, hinges, dogs and a glazed upper half; the leaf swings out or in without covering a window
+- **Done 11 November 2026: two hinged weathertight doors with a 0.15 m sill, a glazed upper half, handles and hinges, opening outward for whoever comes near.**
 
 ## BF-12 · error · The opening from the wheelhouse to the crew stair is 1.50 m high
 
 In the wheelhouse's aft wall at x −2.92..−2.12 (0.80 m wide) the wall piece above the opening starts 1.50 m above the deck; every other doorway on the deck has its head at 1.92–1.95 m. A person of average height strikes the lintel; this is the stair the crew use between the bridge and the passenger deck, and the walk through it (Town issue "crew stair headroom") needed a stoop.
 
 - Where from: ferry-interior.js wall box x −2.92..−2.12, z 2.21–2.29, h 1.50–2.20; plan and cut of the model; CHR-B2 · drawn on CHR-B2
-- To do: Raise the lintel to 1.95 m (the deckhead is at 2.4 m)
+- To do: Raise the lintel to 1.95 m (the deckhead, the roof slab's underside, is at 2.08 m)
 
 ## BF-13 · gap · The ship has 59 feeders and not one is direct current; the 24 V board has no consumers
 

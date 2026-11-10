@@ -29,7 +29,8 @@
    "connect": "Fuel feed and return to the 60 L day tank; exhaust to the open deck (no pipe is drawn or specified); battery cables; start/stop and alarms to the ESB; earth",
    "source": "ferry-interior.js:667",
    "note": "",
-   "id": "B001"
+   "id": "B001",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -53,7 +54,8 @@
    "connect": "Cables up the casing trunk from the MSB (control booth); feeders to the compass deck, the wheelhouse, the corridor",
    "source": "ferry-interior.js:669",
    "note": "",
-   "id": "B002"
+   "id": "B002",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -77,7 +79,8 @@
    "connect": "Radio/emergency bank to the wheelhouse (VHF, DSC, NAVTEX, GPS, alarm panel) and to the EG starter; charger supplies; ventilation of the battery space",
    "source": "ferry-interior.js:670",
    "note": "One \"battery box\" is drawn for two banks",
-   "id": "B003"
+   "id": "B003",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -97,7 +100,8 @@
    "connect": "Output cables to the two banks; alarm if a charger fails",
    "source": "",
    "note": "",
-   "id": "B004"
+   "id": "B004",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -117,7 +121,8 @@
    "connect": "Output to the radio/emergency bank",
    "source": "",
    "note": "",
-   "id": "B005"
+   "id": "B005",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -137,7 +142,8 @@
    "connect": "Primary from the ESB 440 V section; 105 V to the emergency lighting circuits",
    "source": "",
    "note": "",
-   "id": "B006"
+   "id": "B006",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -161,7 +167,8 @@
    "connect": "Fill line from below (no pipe is drawn); overflow to a drain tank; vent to open air; low-level alarm; quick-closing valve operated from the CO₂ room",
    "source": "ferry-interior.js:670",
    "note": "Drawn 1.6 m above the deck; nothing is under it (Rev C F23-F26 class: floating)",
-   "id": "B007"
+   "id": "B007",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -181,7 +188,8 @@
    "connect": "Weathertight louvres with closing flaps in the wall to the open deck; sized for the EG's air and heat",
    "source": "",
    "note": "",
-   "id": "B008"
+   "id": "B008",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -201,7 +209,8 @@
    "connect": "Through the deckhead or the aft wall to a vent clear of the accommodation; lagged; spark arrester",
    "source": "",
    "note": "",
-   "id": "B009"
+   "id": "B009",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -225,7 +234,8 @@
    "connect": "",
    "source": "measured off the model: a doorway 0.80 m wide in the aft wall",
    "note": "A doorway; no leaf was found. Its only exit: no door to the corridor (FERRY_GA exits: open-deck)",
-   "id": "B010"
+   "id": "B010",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -249,7 +259,8 @@
    "connect": "Manifold, main valve and a 40 mm line to six nozzles under the engine-room deckhead (the line is unresolved in the Town: \"outside machinery-space envelope\")",
    "source": "measured off the model (four hexagonal prisms, not in ferry-interior.js)",
    "note": "Standing 0.28 m clear of the forward wall; ties and a weighing arrangement are not drawn",
-   "id": "B011"
+   "id": "B011",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -273,7 +284,8 @@
    "connect": "Pilot line to the main valve; wire to the alarm and fan-stop contacts; keyed, alarm first",
    "source": "ferry-interior.js:676",
    "note": "",
-   "id": "B012"
+   "id": "B012",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -293,7 +305,8 @@
    "connect": "Between the bottles and the engine-room line; opened from the cabinet",
    "source": "",
    "note": "",
-   "id": "B013"
+   "id": "B013",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -317,7 +330,8 @@
    "connect": "Stop contacts wired into the starters; labelled; behind a glass or a lid",
    "source": "ferry-interior.js:678",
    "note": "",
-   "id": "B014"
+   "id": "B014",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -337,7 +351,8 @@
    "connect": "Pull handles or pneumatic/hydraulic release to each fuel tank valve (engine room, day tank); labelled",
    "source": "",
    "note": "",
-   "id": "B015"
+   "id": "B015",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -361,7 +376,8 @@
    "connect": "",
    "source": "ferry-interior.js:677",
    "note": "Contents (two sets of fire-fighter's outfit, breathing apparatus, axes, lifelines) are not drawn",
-   "id": "B016"
+   "id": "B016",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -385,7 +401,8 @@
    "connect": "",
    "source": "measured off the model: a doorway 0.80 m wide in the aft wall",
    "note": "A doorway; no leaf was found. Its only exit is the open deck (FERRY_GA exits: open-deck)",
-   "id": "B017"
+   "id": "B017",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -409,7 +426,8 @@
    "connect": "",
    "source": "ferry-interior.js:681|709",
    "note": "For the bosun and the oiler",
-   "id": "B018"
+   "id": "B018",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -433,7 +451,8 @@
    "connect": "",
    "source": "ferry-interior.js:683|712",
    "note": "",
-   "id": "B019"
+   "id": "B019",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -453,7 +472,8 @@
    "connect": "One lighting circuit and a berth lamp per cabin; switch at the door; no per-cabin circuit exists in the table",
    "source": "",
    "note": "",
-   "id": "B020"
+   "id": "B020",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -473,7 +493,8 @@
    "connect": "Supply and exhaust duct or a split unit with a condensate drain; thermostat",
    "source": "",
    "note": "",
-   "id": "B021"
+   "id": "B021",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -493,7 +514,8 @@
    "connect": "Detector loop to the fire panel in the wheelhouse; no fire loop is in the Town's feeder table",
    "source": "",
    "note": "",
-   "id": "B022"
+   "id": "B022",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -517,7 +539,8 @@
    "connect": "",
    "source": "ferry-interior.js:681|709",
    "note": "For the chief officer",
-   "id": "B023"
+   "id": "B023",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -541,7 +564,8 @@
    "connect": "",
    "source": "ferry-interior.js:683|712",
    "note": "",
-   "id": "B024"
+   "id": "B024",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -561,7 +585,8 @@
    "connect": "One lighting circuit and a berth lamp per cabin; switch at the door; no per-cabin circuit exists in the table",
    "source": "",
    "note": "",
-   "id": "B025"
+   "id": "B025",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -581,7 +606,8 @@
    "connect": "Supply and exhaust duct or a split unit with a condensate drain; thermostat",
    "source": "",
    "note": "",
-   "id": "B026"
+   "id": "B026",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -601,7 +627,8 @@
    "connect": "Detector loop to the fire panel in the wheelhouse; no fire loop is in the Town's feeder table",
    "source": "",
    "note": "",
-   "id": "B027"
+   "id": "B027",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -625,7 +652,8 @@
    "connect": "",
    "source": "ferry-interior.js:681|709",
    "note": "For the deckhand",
-   "id": "B028"
+   "id": "B028",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -649,7 +677,8 @@
    "connect": "",
    "source": "ferry-interior.js:683|712",
    "note": "",
-   "id": "B029"
+   "id": "B029",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -669,7 +698,8 @@
    "connect": "One lighting circuit and a berth lamp per cabin; switch at the door; no per-cabin circuit exists in the table",
    "source": "",
    "note": "",
-   "id": "B030"
+   "id": "B030",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -689,7 +719,8 @@
    "connect": "Supply and exhaust duct or a split unit with a condensate drain; thermostat",
    "source": "",
    "note": "",
-   "id": "B031"
+   "id": "B031",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -709,7 +740,8 @@
    "connect": "Detector loop to the fire panel in the wheelhouse; no fire loop is in the Town's feeder table",
    "source": "",
    "note": "",
-   "id": "B032"
+   "id": "B032",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -733,7 +765,8 @@
    "connect": "",
    "source": "ferry-interior.js:681|709",
    "note": "For the chief engineer",
-   "id": "B033"
+   "id": "B033",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -757,7 +790,8 @@
    "connect": "",
    "source": "ferry-interior.js:683|712",
    "note": "",
-   "id": "B034"
+   "id": "B034",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -777,7 +811,8 @@
    "connect": "One lighting circuit and a berth lamp per cabin; switch at the door; no per-cabin circuit exists in the table",
    "source": "",
    "note": "",
-   "id": "B035"
+   "id": "B035",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -797,7 +832,8 @@
    "connect": "Supply and exhaust duct or a split unit with a condensate drain; thermostat",
    "source": "",
    "note": "",
-   "id": "B036"
+   "id": "B036",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -817,7 +853,8 @@
    "connect": "Detector loop to the fire panel in the wheelhouse; no fire loop is in the Town's feeder table",
    "source": "",
    "note": "",
-   "id": "B037"
+   "id": "B037",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -841,7 +878,8 @@
    "connect": "",
    "source": "ferry-interior.js:681|709",
    "note": "For the master",
-   "id": "B038"
+   "id": "B038",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -865,7 +903,8 @@
    "connect": "",
    "source": "ferry-interior.js:683|712",
    "note": "",
-   "id": "B039"
+   "id": "B039",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -885,7 +924,8 @@
    "connect": "One lighting circuit and a berth lamp per cabin; switch at the door; no per-cabin circuit exists in the table",
    "source": "",
    "note": "",
-   "id": "B040"
+   "id": "B040",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -905,7 +945,8 @@
    "connect": "Supply and exhaust duct or a split unit with a condensate drain; thermostat",
    "source": "",
    "note": "",
-   "id": "B041"
+   "id": "B041",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -925,7 +966,8 @@
    "connect": "Detector loop to the fire panel in the wheelhouse; no fire loop is in the Town's feeder table",
    "source": "",
    "note": "",
-   "id": "B042"
+   "id": "B042",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -945,7 +987,8 @@
    "connect": "",
    "source": "",
    "note": "In the design words; not drawn",
-   "id": "B043"
+   "id": "B043",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -969,7 +1012,8 @@
    "connect": "",
    "source": "ferry-interior.js:684",
    "note": "Two pieces (top and carcase)",
-   "id": "B044"
+   "id": "B044",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -993,7 +1037,8 @@
    "connect": "",
    "source": "ferry-interior.js:684",
    "note": "Two pieces (top and carcase)",
-   "id": "B045"
+   "id": "B045",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1017,7 +1062,8 @@
    "connect": "",
    "source": "ferry-interior.js:684",
    "note": "Two pieces (top and carcase)",
-   "id": "B046"
+   "id": "B046",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1041,7 +1087,8 @@
    "connect": "",
    "source": "ferry-interior.js:711",
    "note": "",
-   "id": "B047"
+   "id": "B047",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1065,7 +1112,8 @@
    "connect": "",
    "source": "ferry-interior.js plates",
    "note": "",
-   "id": "B048"
+   "id": "B048",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1089,7 +1137,8 @@
    "connect": "Sea-water flush from the sanitary pumps (GHB, DN32); soil pipe to the sewage tank by gravity (DN100) — no pipe is drawn on this deck",
    "source": "ferry-interior.js:691",
    "note": "",
-   "id": "B049"
+   "id": "B049",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1113,7 +1162,8 @@
    "connect": "Cold and hot drinking water (DN15/20); waste to the grey-water drain: no such drain exists in the Town's tables",
    "source": "ferry-interior.js:691",
    "note": "",
-   "id": "B050"
+   "id": "B050",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1133,7 +1183,8 @@
    "connect": "Mixer; waste with a trap to the grey-water drain; the shower tray needs a watertight coaming; extract ventilation",
    "source": "",
    "note": "\"Crew WC and shower\": the shower is not drawn (Rev C task: close the design gaps)",
-   "id": "B051"
+   "id": "B051",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1153,7 +1204,8 @@
    "connect": "Duct to open air through the house side; the Town's only toilet fans (10SAC30 AN001-M01, 0.3 kW) are in the passenger-deck toilets, none here",
    "source": "",
    "note": "",
-   "id": "B052"
+   "id": "B052",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1177,7 +1229,8 @@
    "connect": "",
    "source": "ferry-interior.js:693",
    "note": "",
-   "id": "B053"
+   "id": "B053",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1201,7 +1254,8 @@
    "connect": "",
    "source": "ferry-interior.js:694",
    "note": "Two pieces, one each side of the table",
-   "id": "B054"
+   "id": "B054",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1225,7 +1279,8 @@
    "connect": "",
    "source": "ferry-interior.js:696",
    "note": "",
-   "id": "B055"
+   "id": "B055",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1249,27 +1304,33 @@
    "connect": "105 V socket circuit and an aerial/data cable; fixed to the bulkhead",
    "source": "ferry-interior.js:695",
    "note": "",
-   "id": "B056"
+   "id": "B056",
+   "hers": ""
   },
   {
    "deck": "bridge",
    "room": "mess",
    "item": "Kettle",
    "cls": "electrical",
-   "status": "designed",
-   "basis": "words",
+   "status": "built",
+   "basis": "drawn",
    "tag": "",
    "fn": "BRB 105 V lighting board",
-   "yard": null,
-   "x": null,
-   "h": null,
-   "size": null,
+   "yard": 14.35,
+   "x": 2.55,
+   "h": 1.0,
+   "size": [
+    0.12,
+    0.14,
+    0.2
+   ],
    "electrical": "",
    "plumbing": "",
    "connect": "A 105 V socket on a protected circuit (galley-appliances covers 4 kW in the galley, not the mess)",
-   "source": "",
+   "source": "in the model, unnamed: a grey cylinder on the sideboard (found by looking at the model's pieces, not in the interior list)",
    "note": "",
-   "id": "B057"
+   "id": "B057",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1289,7 +1350,8 @@
    "connect": "",
    "source": "",
    "note": "The muster list is a statutory notice; neither is drawn",
-   "id": "B058"
+   "id": "B058",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1309,7 +1371,8 @@
    "connect": "Located \"in the mess\" in the Town data: serves the bridge deck; supply ducts to every cabin; condensate drains (none exist)",
    "source": "",
    "note": "",
-   "id": "B059"
+   "id": "B059",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1329,7 +1392,8 @@
    "connect": "Circuits per room; emergency lights from the ESB",
    "source": "",
    "note": "",
-   "id": "B060"
+   "id": "B060",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1353,7 +1417,8 @@
    "connect": "440 V 3~ cable to a range isolator within reach; hood fan interlock; fire blanket nearby",
    "source": "ferry-interior.js:699",
    "note": "Tagged 10GKB30: GKB is the drinking-water key; a cooking range is not water distribution (a KKS slip, see findings)",
-   "id": "B061"
+   "id": "B061",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1377,7 +1442,8 @@
    "connect": "Grease filter, duct to open air through the house side, fan, and a fire damper; a 105 V circuit",
    "source": "ferry-interior.js:699",
    "note": "",
-   "id": "B062"
+   "id": "B062",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1401,7 +1467,8 @@
    "connect": "Cold and hot DN20/15; waste with a trap to a grey-water drain (none in the Town's tables)",
    "source": "ferry-interior.js:700",
    "note": "",
-   "id": "B063"
+   "id": "B063",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1425,7 +1492,8 @@
    "connect": "105 V socket; ventilated recess; defrost drain",
    "source": "ferry-interior.js:701",
    "note": "",
-   "id": "B064"
+   "id": "B064",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1449,27 +1517,33 @@
    "connect": "",
    "source": "ferry-interior.js:704",
    "note": "",
-   "id": "B065"
+   "id": "B065",
+   "hers": ""
   },
   {
    "deck": "bridge",
    "room": "galley",
    "item": "Rice cooker",
    "cls": "electrical",
-   "status": "designed",
-   "basis": "words",
+   "status": "built",
+   "basis": "drawn",
    "tag": "10GKB30 GS001 (shared)",
    "fn": "GKB (as above)",
-   "yard": null,
-   "x": null,
-   "h": null,
-   "size": null,
+   "yard": 15.45,
+   "x": -2.62,
+   "h": 1.0,
+   "size": [
+    0.16,
+    0.18,
+    0.2
+   ],
    "electrical": "Named in galley-appliances (rice cooker, microwave, pot, fridge, hood): LB 105 V 1~ · feeder galley-appliances (10GKB30 GS001) · 4 kW · 38.1 A · switch · breaker 40 A · 2 × 10 mm² + PE 10 mm² · 24 m · cable 10BRB10 1010",
    "plumbing": "",
    "connect": "",
-   "source": "",
-   "note": "Not drawn (Rev C task: close the design gaps)",
-   "id": "B066"
+   "source": "in the model, unnamed: a cream cylinder on the counter beside the sink",
+   "note": "Drawn, unnamed (found by looking at the model's pieces)",
+   "id": "B066",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1489,7 +1563,8 @@
    "connect": "",
    "source": "",
    "note": "In the design words; not drawn",
-   "id": "B067"
+   "id": "B067",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1509,7 +1584,8 @@
    "connect": "Cold feed from the pressure tank, hot to the galley, the crew WC and the shower, an expansion vessel, a safety valve with a drain; \"the kiosk's hot water too\" (design words) needs a pipe two decks down",
    "source": "",
    "note": "",
-   "id": "B068"
+   "id": "B068",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1533,7 +1609,8 @@
    "connect": "Emergency lighting from the ESB (1.55 kW) inside the normal lighting; the lights are drawn at 2 m spacing",
    "source": "ferry-interior.js (unnamed, five 0.4 m plates 2 m apart)",
    "note": "",
-   "id": "B069"
+   "id": "B069",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1557,7 +1634,8 @@
    "connect": "A lit exit sign on the emergency circuit",
    "source": "ferry-interior.js (unnamed red box)",
    "note": "Unnamed in the source",
-   "id": "B070"
+   "id": "B070",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1581,7 +1659,8 @@
    "connect": "",
    "source": "assemble.py OPENINGS (cut at the doorways)",
    "note": "",
-   "id": "B071"
+   "id": "B071",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1601,7 +1680,8 @@
    "connect": "At least one in the corridor and one in the galley; not drawn on this deck",
    "source": "",
    "note": "",
-   "id": "B072"
+   "id": "B072",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1625,7 +1705,8 @@
    "connect": "Non-follow-up and follow-up signals to the steering gear (control cables 4501–5999), power from the steering board; rudder angle indicator wiring",
    "source": "ferry-interior.js:577",
    "note": "A 0.5 × 0.5 × 0.95 m block",
-   "id": "B073"
+   "id": "B073",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1649,7 +1730,8 @@
    "connect": "Follow-up transmitter to the steering gear; wheel, pedestal and shaft are one piece in the model",
    "source": "ferry-bridge.js",
    "note": "",
-   "id": "B074"
+   "id": "B074",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1669,7 +1751,8 @@
    "connect": "NFU lever on the stand; autopilot panel; both to the steering gear's solenoid valves; heading sensor from the compass",
    "source": "",
    "note": "",
-   "id": "B075"
+   "id": "B075",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1693,7 +1776,8 @@
    "connect": "Remote engine control to the port engine (control cables); engine-order repeater in the engine room",
    "source": "ferry-bridge.js",
    "note": "Drawn at x +0.20 (to port of the centreline)",
-   "id": "B076"
+   "id": "B076",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1717,7 +1801,8 @@
    "connect": "Remote engine control to the starboard engine",
    "source": "ferry-bridge.js",
    "note": "Drawn at x +0.40: further to port than the port lever (the two are crossed, see findings)",
-   "id": "B077"
+   "id": "B077",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1737,7 +1822,8 @@
    "connect": "Proportional lever; interlock with the two-generator rule; to the thruster starter in the bow house",
    "source": "",
    "note": "",
-   "id": "B078"
+   "id": "B078",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1757,7 +1843,8 @@
    "connect": "Duplicate lever sets under a transfer switch; none of the wing consoles is drawn",
    "source": "",
    "note": "",
-   "id": "B079"
+   "id": "B079",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1781,7 +1868,8 @@
    "connect": "Cable trays in and behind it; a trunk to the deck below for the cables",
    "source": "ferry-interior.js:575",
    "note": "",
-   "id": "B080"
+   "id": "B080",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1805,7 +1893,8 @@
    "connect": "Coax to the antenna on the compass deck; 105 V; heading input",
    "source": "ferry-bridge.js",
    "note": "With a three-plate hood; the screen redraws a demo sweep",
-   "id": "B081"
+   "id": "B081",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1829,7 +1918,8 @@
    "connect": "Transducer cable through the hull (none is drawn)",
    "source": "ferry-bridge.js",
    "note": "Reads \"NO DEPTH DATA\": no bathymetry is connected",
-   "id": "B082"
+   "id": "B082",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1853,7 +1943,8 @@
    "connect": "Engine rpm and telegraph signals from the engine room; heading from the compass",
    "source": "ferry-bridge.js",
    "note": "",
-   "id": "B083"
+   "id": "B083",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1877,7 +1968,8 @@
    "connect": "Optical tube to the binnacle on the compass deck; a lamp on the 24 V DC supply",
    "source": "ferry-bridge.js",
    "note": "",
-   "id": "B084"
+   "id": "B084",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1901,7 +1993,8 @@
    "connect": "Dedicated circuits to masthead, sidelights, stern and all-round lights with failure indication (Town ELEC-10: not yet specified)",
    "source": "ferry-bridge-lantern.js",
    "note": "",
-   "id": "B085"
+   "id": "B085",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1925,7 +2018,8 @@
    "connect": "A motor and switch per wiper (no feeder exists); a freshwater washer jet from the drinking-water supply",
    "source": "ferry-bridge-wipers.js",
    "note": "At x -1.18, 0 and +1.18 on the forward windows",
-   "id": "B086"
+   "id": "B086",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -1949,7 +2043,8 @@
    "connect": "A dimmable red lamp; parallel rule rack; the table is against the aft wall",
    "source": "ferry-interior.js:597",
    "note": "",
-   "id": "B087"
+   "id": "B087",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1973,7 +2068,8 @@
    "connect": "",
    "source": "ferry-bridge.js",
    "note": "",
-   "id": "B088"
+   "id": "B088",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -1997,7 +2093,8 @@
    "connect": "",
    "source": "ferry-bridge.js",
    "note": "Pedestal chair with arm rests",
-   "id": "B089"
+   "id": "B089",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2021,7 +2118,8 @@
    "connect": "24 V DC supply; the detection loops from every room; the release alarm from the CO₂ cabinet; the fans' stops",
    "source": "ferry-interior.js (unnamed red box above the chart table)",
    "note": "",
-   "id": "B090"
+   "id": "B090",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -2045,7 +2143,8 @@
    "connect": "",
    "source": "ferry-interior.js (six unnamed green plates)",
    "note": "Part of the panel above (B090); unnamed in the source",
-   "id": "B091"
+   "id": "B091",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -2069,7 +2168,8 @@
    "connect": "",
    "source": "ferry-interior.js (two unnamed dark boxes at x +1.3 to +1.9)",
    "note": "Drawn, named by nobody: they stand where the VHF, NAVTEX and the telephone would",
-   "id": "B092"
+   "id": "B092",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2089,7 +2189,8 @@
    "connect": "Antenna coax to the mast; GPS feed for DSC; handset; the Town lists no radio load",
    "source": "",
    "note": "",
-   "id": "B093"
+   "id": "B093",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2109,7 +2210,8 @@
    "connect": "Sound-powered or battery circuit to the engine room, control booth, steering gear",
    "source": "",
    "note": "",
-   "id": "B094"
+   "id": "B094",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2129,7 +2231,8 @@
    "connect": "Antenna; paper",
    "source": "",
    "note": "",
-   "id": "B095"
+   "id": "B095",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2149,7 +2252,8 @@
    "connect": "Antenna on the compass deck; feeds to the radar, DSC, autopilot",
    "source": "",
    "note": "",
-   "id": "B096"
+   "id": "B096",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2169,7 +2273,8 @@
    "connect": "Amplifier; speakers in every room and on deck; alarm bells; the cables are the longest on the ship",
    "source": "",
    "note": "",
-   "id": "B097"
+   "id": "B097",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2189,7 +2294,8 @@
    "connect": "Lamp board for the ramp locking pins and limit switches (ramp: \"10XSB10 AA203 limit switches to the bridge lamp\"); lane signals load on the lighting board",
    "source": "",
    "note": "The Town's ramp node says \"limit switches to the bridge lamp\": no lamp is drawn",
-   "id": "B098"
+   "id": "B098",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2209,7 +2315,8 @@
    "connect": "A solenoid on the whistle at the funnel or mast; 24 V or air",
    "source": "",
    "note": "",
-   "id": "B099"
+   "id": "B099",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2229,27 +2336,33 @@
    "connect": "Handle with a pan/tilt cable to the compass deck; the 1 kW lamp is on the lighting board",
    "source": "",
    "note": "",
-   "id": "B100"
+   "id": "B100",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
    "room": "wheelhouse",
-   "item": "Clock, barometer, inclinometer",
+   "item": "Clock and barometer (drawn, unnamed); inclinometer not found",
    "cls": "navigation",
-   "status": "designed",
-   "basis": "words",
+   "status": "part-built",
+   "basis": "drawn",
    "tag": "",
    "fn": "no key in the Town table",
-   "yard": null,
-   "x": null,
-   "h": null,
-   "size": null,
+   "yard": 19.57,
+   "x": 1.65,
+   "h": 1.9,
+   "size": [
+    0.8,
+    0.06,
+    0.34
+   ],
    "electrical": "",
    "plumbing": "",
    "connect": "",
-   "source": "",
-   "note": "Instruments for the wall above the console",
-   "id": "B101"
+   "source": "in the model, unnamed: a clock at x +1.25..+1.55 and a brass barometer ring at x +1.85..+2.05 on the aft wall",
+   "note": "A pale 0.55 × 0.55 m board at x +2.30..+2.85 beside them is also unnamed",
+   "id": "B101",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -2269,7 +2382,8 @@
    "connect": "Writing surface and a lamp; the engine log and deck log",
    "source": "",
    "note": "",
-   "id": "B102"
+   "id": "B102",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2293,7 +2407,8 @@
    "connect": "Own circuit; dimmable white and red lighting; no light spill on the glass",
    "source": "ferry-interior.js (two unnamed pale plates)",
    "note": "",
-   "id": "B103"
+   "id": "B103",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2317,7 +2432,8 @@
    "connect": "",
    "source": "ferry-interior.js",
    "note": "Port leaf at yard 20.45-21.20, starboard leaf at 21.30-22.05, drawn laid open against the wall",
-   "id": "B104"
+   "id": "B104",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2341,7 +2457,8 @@
    "connect": "",
    "source": "ferry-interior.js glass",
    "note": "Panes 1.05 × 0.96 m, sill 0.97 m above the deck",
-   "id": "B105"
+   "id": "B105",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2361,7 +2478,8 @@
    "connect": "A DN50 branch from the fire main up the casing to the bridge deck (the line is unresolved: pipe clearance); hose box; the main must be drained in frost",
    "source": "",
    "note": "",
-   "id": "B106"
+   "id": "B106",
+   "hers": ""
   },
   {
    "deck": "bridge",
@@ -2381,7 +2499,8 @@
    "connect": "Lever set with transfer switch; weathertight; a rudder-angle and rpm repeater",
    "source": "",
    "note": "",
-   "id": "B107"
+   "id": "B107",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2401,7 +2520,8 @@
    "connect": "Screened lantern at the wing end; cable from the panel along the wing",
    "source": "",
    "note": "Today it is the Town's exterior lantern (not in the bridge group)",
-   "id": "B108"
+   "id": "B108",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2421,7 +2541,8 @@
    "connect": "As to port",
    "source": "",
    "note": "",
-   "id": "B109"
+   "id": "B109",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2441,7 +2562,8 @@
    "connect": "As to port",
    "source": "",
    "note": "",
-   "id": "B110"
+   "id": "B110",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "bridge",
@@ -2461,7 +2583,8 @@
    "connect": "Hydrostatic release bracket clear of rails; registered",
    "source": "",
    "note": "",
-   "id": "B111"
+   "id": "B111",
+   "hers": "built, wheelhouse.py (11 Nov 2026)"
   },
   {
    "deck": "compass",
@@ -2481,7 +2604,8 @@
    "connect": "Remote control cable down the mast to the wheelhouse handle",
    "source": "",
    "note": "Her own Blender compass deck (compass_deck.py); the Town draws the lanterns on the exterior",
-   "id": "B112"
+   "id": "B112",
+   "hers": ""
   },
   {
    "deck": "compass",
@@ -2501,7 +2625,8 @@
    "connect": "Fed through the wheelhouse panel; each lamp with a failure alarm",
    "source": "",
    "note": "Her own Blender compass deck (compass_deck.py); the Town draws the lanterns on the exterior",
-   "id": "B113"
+   "id": "B113",
+   "hers": ""
   },
   {
    "deck": "compass",
@@ -2521,7 +2646,8 @@
    "connect": "Coax and power to the display; turns at 24 rpm (not in the model: it does not turn)",
    "source": "",
    "note": "Her own Blender compass deck (compass_deck.py); the Town draws the lanterns on the exterior",
-   "id": "B114"
+   "id": "B114",
+   "hers": ""
   },
   {
    "deck": "compass",
@@ -2541,7 +2667,8 @@
    "connect": "Coax to the wheelhouse sets",
    "source": "",
    "note": "Her own Blender compass deck (compass_deck.py); the Town draws the lanterns on the exterior",
-   "id": "B115"
+   "id": "B115",
+   "hers": ""
   },
   {
    "deck": "compass",
@@ -2561,7 +2688,8 @@
    "connect": "Optical tube down to the periscope in the wheelhouse",
    "source": "",
    "note": "Her own Blender compass deck (compass_deck.py); the Town draws the lanterns on the exterior",
-   "id": "B116"
+   "id": "B116",
+   "hers": ""
   }
  ]
 }

@@ -46,6 +46,19 @@ SUPERSEDES = {
         why="her own compass deck, mast and fittings, built in Blender",
         what='the compass deck, mast and what they carry (radar, lights, antennas, searchlight, vents)'),
 }
+# A slice of a part, not the whole of it (section 5, the bridge deck, is built a room at a time): what Blender has built
+# there takes the place of the base's own pieces inside `box` (x, y and z in the ship's axes). A piece is a connected set
+# of triangles (the base draws each box, bar and plate of its interiors as one); it goes when its whole extent lies in the
+# box, unless `keep` says it is not furniture (glass, window frames). Pieces that run out of the box (walls, the deck)
+# stay. A slice is replaced when a part brings an object whose name begins with `prefix`.
+REPLACES = {
+    'wheelhouse': dict(
+        part='bridge', prefix='Wheelhouse', section='Wheelhouse', built='11 November 2026',
+        box=dict(x=(-4.35, 4.35), y=(9.09, 11.45), z=(2.9, 5.85)),
+        keep=lambda mat, col: mat['transparent'] or tuple(col) == (58, 66, 68),
+        why='her own wheelhouse fit-out, built in Blender',
+        what="the wheelhouse's fittings (helm and console, instruments, the master's chair, wing doors, wing consoles, sidelights)"),
+}
 # Parts of the base that must lie inside the shell.
 FIT = ('machinery',)
 # Openings the base's drawing lacks, each cut through one thin plate of it. `across` names the axis the plate is thin
@@ -78,7 +91,12 @@ OPENINGS = (
     #    to 19.20 m: across the four doorways of the cabins on that side. It is cut away at each doorway.
     dict(part='bridge', name=f"the corridor's {'port' if side > 0 else 'starboard'} handrail across the doorway at {a:.2f} m",
          across='x', x=tuple(sorted((side * 0.40, side * 0.44))), y=(10.02, 10.08), yard=(a, b))
-    for side in (1, -1) for a, b in ((9.20, 9.90), (11.70, 12.40), (14.20, 14.90), (16.70, 17.40)))
+    for side in (1, -1) for a, b in ((9.20, 9.90), (11.70, 12.40), (14.20, 14.90), (16.70, 17.40))
+) + (
+    #  - The wheelhouse's starboard wall has a solid panel (21.25 to 22.15 m, 8 cm thick, floor to head) where the port wall
+    #    has a window: cut for the window she is given (0.80 m wide, 0.97 to 1.83 m above the deck), so the helm sees there.
+    dict(part='bridge', name='the starboard wall panel at the new window', across='x', x=(-3.005, -2.915), y=(10.07, 10.93), yard=(21.30, 22.10)),
+)
 # Spaces that are not rooms one goes into: the bow ramp is stowed upright and the two funnels are uptake casings with no
 # door. A walk begun there (the room chosen in the panel) starts at `stand`, beside it, where one can walk on:
 # (x, y, metres from the transom). The page reads it from the space's record.
@@ -218,6 +236,50 @@ def open_plate(m, thin, level, a, a_range, b, b_range, grace=0.002):
     return int(hit.sum())
 
 
+def pieces_of(m):
+    """The connected pieces of a mesh: a list of triangle-index arrays. Two triangles are one piece where they share a corner."""
+    pos, idx = m['pos'], m['idx']
+    _, inv = np.unique(np.round(pos * 1e4).astype(np.int64), axis=0, return_inverse=True)
+    inv = inv.reshape(-1)
+    parent = np.arange(inv.max() + 1)
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+    for t in idx:
+        a, b, c = (find(inv[i]) for i in t)
+        parent[b] = a
+        parent[find(c)] = find(a)
+    root = np.array([find(inv[t[0]]) for t in idx])
+    order = np.argsort(root, kind='stable')
+    cuts = np.nonzero(np.diff(root[order]))[0] + 1
+    return np.split(order, cuts)
+
+
+def replace_slice(m, rule, mat):
+    """Drop the pieces of a base mesh that lie wholly in the slice's box, bar what `keep` spares; the vertices left unused go too.
+    Returns how many triangles went."""
+    box = rule['box']
+    lo, hi = np.array([box['x'][0], box['y'][0], box['z'][0]]), np.array([box['x'][1], box['y'][1], box['z'][1]])
+    pos, idx = m['pos'], m['idx']
+    drop = np.zeros(len(idx), bool)
+    for tri in pieces_of(m):
+        P = pos[idx[tri]].reshape(-1, 3)
+        if (P.min(0) >= lo).all() and (P.max(0) <= hi).all() and not rule['keep'](mat, m['col'][idx[tri[0]][0]]):
+            drop[tri] = True
+    if not drop.any():
+        return 0
+    idx = idx[~drop]
+    used, inverse = np.unique(idx, return_inverse=True)
+    m['pos'], m['nor'], m['col'] = pos[used], m['nor'][used], m['col'][used]
+    if m['uv'] is not None:
+        m['uv'] = m['uv'][used]
+    m['idx'] = inverse.reshape(-1, 3).astype(np.uint32)
+    return int(drop.sum())
+
+
 def weld(pos, nor, col, lo, hi):
     """Triangle corners → shared vertices and indices, quantised as the file keeps them."""
     q = np.rint((pos - lo) / (hi - lo) * 65535).astype(np.uint16)
@@ -268,6 +330,21 @@ def main():
                 keep.append(m)
         meshes[gid] = keep
 
+    # 1b. A slice of a part: the base's pieces inside its box go where Blender has built them again.
+    names = {o['name'] for meta, _ in parts for m in meta['meshes'] for o in m['objects']}
+    for key, rule in REPLACES.items():
+        if not any(n.startswith(rule['prefix']) for n in names):
+            continue
+        kept = []
+        for m in meshes[rule['part']]:
+            cut = replace_slice(m, rule, materials[m['material']]) if m['origin'] == 'town' else 0
+            if cut:
+                report['dropped'].append(dict(part=rule['part'], material=m['material'], triangles=cut, why=rule['why']))
+            if len(m['idx']):
+                kept.append(m)
+        meshes[rule['part']] = kept
+        report.setdefault('replaced', []).append(key)
+
     # 2. The base's rooms under the car deck are fitted inside her shell.
     for gid in FIT:
         for m in meshes.get(gid, []):
@@ -304,6 +381,9 @@ def main():
         rec = dict(MATERIAL_DEFAULTS)
         rec.update(metalness=round(float(look['metalness']), 3), roughness=round(float(look['roughness']), 3), side=look.get('side', 'front'),
                    offset=[int(v) for v in look['offset']] if look.get('offset') else None)
+        for key in ('transparent', 'opacity', 'depthWrite'):
+            if key in look:
+                rec[key] = look[key]
         key = json.dumps(rec, sort_keys=True)
         if key not in look_index:
             for i, m in enumerate(materials):
@@ -380,7 +460,10 @@ def main():
             header.pop(key, None)
     ship = header['ship']
     ship['built'] = [dict(part=gid, section=SUPERSEDES[gid]['section'], date=SUPERSEDES[gid]['built'], what=SUPERSEDES[gid]['what']) for gid in SUPERSEDES
-                     if any(f['group'] == gid for f in fresh) or any(b.get('part') == gid for b in ship.get('built', []))]
+                     if any(f['group'] == gid for f in fresh) or any(b.get('part') == gid and b.get('section') == SUPERSEDES[gid]['section'] for b in ship.get('built', []))]
+    for key, rule in REPLACES.items():
+        if key in report.get('replaced', []) or any(b.get('section') == rule['section'] for b in ship.get('built', [])):
+            ship['built'].append(dict(part=rule['part'], section=rule['section'], date=rule['built'], what=rule['what']))
     header['source']['blender'] = dict(generator=parts[0][0]['generator'], blender=parts[0][0]['blender'])
     text = json.dumps(header, ensure_ascii=False, separators=(',', ':')).encode()
     text += b' ' * ((4 - len(text) % 4) % 4)

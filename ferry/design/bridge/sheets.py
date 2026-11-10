@@ -149,8 +149,10 @@ def b1():
         sh.text(lv.o[0], lv(0, DECK + 2.9)[1] + 2, 'SECTION ' + title + ' · looking to port · SCALE 1:50', 2.2, bold=True)
         sh.line(lv(-12.2, DECK), lv(6.4, DECK), 'DIM')
         sh.line(lv(-12.2, DECK + 2.4), lv(6.4, DECK + 2.4), 'DIM')
+        sh.line(lv(-12.2, DECK + 2.08), lv(6.4, DECK + 2.08), 'DIM')
         sh.text(lv(6.4, DECK)[0] + 1.5, lv(6.4, DECK)[1] - 0.8, 'deck 11.0 above the keel', 1.6, 'DIM')
-        sh.text(lv(6.4, DECK + 2.4)[0] + 1.5, lv(6.4, DECK + 2.4)[1] - 0.8, 'deckhead 13.4', 1.6, 'DIM')
+        sh.text(lv(6.4, DECK + 2.4)[0] + 1.5, lv(6.4, DECK + 2.4)[1] - 0.8, 'compass deck 13.4', 1.6, 'DIM')
+        sh.text(lv(6.4, DECK + 2.08)[0] + 1.5, lv(6.4, DECK + 2.08)[1] - 0.8, 'deckhead 13.08', 1.6, 'DIM')
         for yd in range(6, 24, 2):
             p = lv(yd - YARD, DECK - 0.5)
             sh.line(p, (p[0], p[1] - 1.5), 'DIM')
@@ -254,7 +256,8 @@ def b2():
     sh.text(ev.o[0], ev(0, DECK + 2.7)[1] + 3, 'FROM THE WHEEL, LOOKING FORWARD · what stands between the eye and the sea', 3.0, bold=True)
     h = lambda v: DECK + v
     sh.line(ev(-4.5, h(0)), ev(4.5, h(0)), 'DIM')
-    sh.line(ev(-4.5, h(2.4)), ev(4.5, h(2.4)), 'DIM')
+    sh.line(ev(-4.5, h(2.08)), ev(4.5, h(2.08)), 'DIM')
+    sh.text(ev(4.5, h(2.08))[0] + 1.5, ev(4.5, h(2.08))[1] - 0.8, 'deckhead 2.08', 1.6, 'DIM')
     sh.text(ev(4.5, h(0))[0] + 1.5, ev(4.5, h(0))[1] - 0.8, 'deck', 1.6, 'DIM')
     # every piece forward of the eye (z beyond the wheel), as its outline
     for p in SNAP['pieces']:
@@ -348,7 +351,7 @@ def b3():
         sh.text(x, y - 2.4, r['id'], 1.8, L, bold=True)
         sh.text(x + 10, y - 2.4, r['room'], 1.7, L)
         sh.text(x + 33, y - 2.4, r['item'][:52], 1.8, L, bold=True)
-        sh.text(x + 103, y - 2.4, r['status'], 1.7, L)
+        sh.text(x + 103, y - 2.4, r['status'] + (' · hers' if r.get('hers') else ''), 1.7, L)
         sh.text(x + 120, y - 2.4, r['tag'][:26], 1.7, L)
         sh.text(x + 160, y - 2.4, pos_s, 1.6, L)
         need = ('→ ' + r['connect']) if r['connect'] else ('· ' + r['note'] if r['note'] else '')
@@ -469,6 +472,8 @@ def b5():
         yy = sh.wrapped(x[col], yy - 0.6, f['what'], colw, 2.0, 'TEXT')
         yy = sh.wrapped(x[col], yy - 0.8, 'Where from: ' + f['source'] + (f"  ·  drawn on CHR-{f['sheet']}" if f['sheet'] else ''), colw, 1.6, 'THIN')
         yy = sh.wrapped(x[col], yy - 0.8, 'To do: ' + f['fix'], colw, 1.9, 'DIM')
+        if f.get('status'):
+            yy = sh.wrapped(x[col], yy - 0.8, f['status'], colw, 1.9, 'TAG', bold=True)
         y[col] = yy - 6
     sh.save(os.path.join(OUT, 'CHR-B5-findings'))
 
@@ -528,10 +533,10 @@ def b6():
     sh.text(ev.o[0], ev(0, DECK + 2.7)[1] + 3, 'FROM THE WHEEL, LOOKING FORWARD · the same items by height', 3.0, bold=True)
     h = lambda v: DECK + v
     sh.line(ev(-4.5, h(0)), ev(4.5, h(0)), 'DIM')
-    sh.line(ev(-4.5, h(2.4)), ev(4.5, h(2.4)), 'DIM')
+    sh.line(ev(-4.5, h(2.08)), ev(4.5, h(2.08)), 'DIM')
     sh.line(ev(-4.5, h(1.0)), ev(4.5, h(1.0)), 'DIM')
     sh.text(ev(4.5, h(1.0))[0] + 1.5, ev(4.5, h(1.0))[1] - 0.8, 'console top 1.0', 1.6, 'DIM')
-    sh.text(ev(4.5, h(2.4))[0] + 1.5, ev(4.5, h(2.4))[1] - 0.8, 'deckhead 2.4', 1.6, 'DIM')
+    sh.text(ev(4.5, h(2.08))[0] + 1.5, ev(4.5, h(2.08))[1] - 0.8, 'deckhead 2.08', 1.6, 'DIM')
     for g in SNAP['glass']:
         sx, sy, sz = g['size']
         px, py, pz = g['pos']

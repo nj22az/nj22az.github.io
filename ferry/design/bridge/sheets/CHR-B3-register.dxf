@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461355.7457291665
+2461355.8016550927
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461355.7457291665
+2461355.8016550927
   9
 $TDUUPDATE
  40
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{BB3C285F-BE81-4E80-A923-20AFC2092B76}
+{9BDA9649-14E5-45A5-8D43-A7638ABB3BFA}
   9
 $VERSIONGUID
   2
-{25CAA645-A550-4F36-9BD5-5A98D868E2EA}
+{C2041C3B-7272-4E45-AAAA-5A1FE087F593}
   9
 $EXTNAMES
 290
@@ -18919,7 +18919,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -18951,7 +18951,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -18983,7 +18983,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -19015,7 +19015,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -19027,7 +19027,7 @@ AcDbText
  40
 1.7
   1
-designed
+built
   7
 SANS
  11
@@ -19047,7 +19047,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -19079,7 +19079,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -19091,7 +19091,7 @@ AcDbText
  40
 1.6
   1
-
+yd 14.3 x +2.5 h 1.0
   7
 SANS
  11
@@ -20935,7 +20935,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -20967,7 +20967,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -20999,7 +20999,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -21031,7 +21031,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -21043,7 +21043,7 @@ AcDbText
  40
 1.7
   1
-designed
+built
   7
 SANS
  11
@@ -21063,7 +21063,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -21095,7 +21095,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -21107,7 +21107,7 @@ AcDbText
  40
 1.6
   1
-
+yd 15.4 x -2.6 h 1.0
   7
 SANS
  11
@@ -21139,7 +21139,7 @@ AcDbText
  40
 1.35
   1
-· Not drawn (Rev C task: close the design gaps)
+· Drawn, unnamed (found by looking at the model's pieces)
   7
 SANS
  11
@@ -22611,7 +22611,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -22835,7 +22835,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -23059,7 +23059,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -23283,7 +23283,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -23507,7 +23507,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -23731,7 +23731,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -24179,7 +24179,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -24403,7 +24403,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -24627,7 +24627,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -24851,7 +24851,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -25075,7 +25075,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -25299,7 +25299,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -25523,7 +25523,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -26195,7 +26195,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -26867,7 +26867,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -27091,7 +27091,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -27315,7 +27315,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -27539,7 +27539,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -27763,7 +27763,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -27987,7 +27987,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -28211,7 +28211,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -28435,7 +28435,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -28659,7 +28659,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -28775,7 +28775,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -28807,7 +28807,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -28839,7 +28839,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -28851,7 +28851,7 @@ AcDbText
  40
 1.8
   1
-Clock, barometer, inclinometer
+Clock and barometer (drawn, unnamed); inclinometer n
   7
 SANSB
  11
@@ -28871,7 +28871,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -28883,7 +28883,7 @@ AcDbText
  40
 1.7
   1
-designed
+part-built
   7
 SANS
  11
@@ -28903,7 +28903,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -28935,7 +28935,7 @@ TEXT
 100
 AcDbEntity
   8
-SIGHT
+TEXT
 100
 AcDbText
  10
@@ -28947,7 +28947,7 @@ AcDbText
  40
 1.6
   1
-
+yd 19.6 x +1.6 h 1.9
   7
 SANS
  11
@@ -28979,7 +28979,7 @@ AcDbText
  40
 1.35
   1
-· Instruments for the wall above the console
+· A pale 0.55 × 0.55 m board at x +2.30..+2.85 beside them is also unnamed
   7
 SANS
  11
@@ -29107,7 +29107,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -29331,7 +29331,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -29555,7 +29555,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -29779,7 +29779,7 @@ AcDbText
  40
 1.7
   1
-built
+built · hers
   7
 SANS
  11
@@ -30227,7 +30227,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -30451,7 +30451,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -30675,7 +30675,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -30899,7 +30899,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -31123,7 +31123,7 @@ AcDbText
  40
 1.7
   1
-designed
+designed · hers
   7
 SANS
  11
@@ -33453,7 +33453,7 @@ DictionaryVariables
 280
 0
   1
-1.4.5 @ 2026-11-10T17:53:51.648190+00:00
+1.4.5 @ 2026-11-10T19:14:23.174957+00:00
   0
 VISUALSTYLE
   5
@@ -34165,7 +34165,7 @@ DictionaryVariables
 280
 0
   1
-1.4.5 @ 2026-11-10T17:53:51.670740+00:00
+1.4.5 @ 2026-11-10T19:14:23.196486+00:00
   0
 ENDSEC
   0

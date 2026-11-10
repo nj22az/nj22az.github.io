@@ -38,7 +38,8 @@ place of the Minato Maru's drawing on this page as it is finished.
 | **Every room on foot** | **10 November 2026** (the owner: "Fix the rooms all rooms need to be accessible"). From where the walk begins every room is now reached on foot: a hatch and ladder from the lower lobby to the shaft space (and so to all the machinery spaces), two more watertight doors forward into the void and the thruster room, a hatch and ladder into the fore peak, a ladder to the compass deck. *The ways on foot*, below. |
 | **2. Exterior above the hull: the compass deck and mast** (first slice) | **Her own, 10 November 2026** (the owner: "Yes, proceed", after the reference drawings). The roof of the bridge house and what stands on it, at the Minato Maru's positions: the slab with its rounded plan and plated top, a three-course rail all round with a gap where the ladder arrives, the mast on a gusseted foot with its flag yard, radar platform, radar, masthead and anchor lights, air horns and loudhailer, VHF and AIS whips, GNSS and satellite-compass domes, the searchlight, two floodlights, the binnacle, and vent heads over the generator room, the galley and the crew WC. *The compass deck*, below. |
 | 2. Exterior above the hull, the rest (bulwark fittings, ramp, casings, deckhouses, funnels) | The Minato Maru's drawing |
-| 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
+| **5. Bridge, first slice: the wheelhouse** | **Her own, 11 November 2026** (the owner, after the bridge survey: "Start the blender build"). The wheelhouse's fittings from the survey's design basis: console, steering stand and wheel, the master's chair, the engine and thruster levers (the right way round), radar, sounder and plotter, VHF, telephone, NAVTEX, navigation-light panel, searchlight handle, whistle, ramp lamp board, the compass read in a periscope overhead, three wipers, a log desk and an alarm handset on the aft wall; two hinged wing doors with sills and glazed upper halves; a window in the starboard wall; a console and a sidelight on each wing; an EPIRB. The walls, the forward glass, the deck, the chart table and the rest of the house are still the Minato Maru's. *The wheelhouse*, below. |
+| 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge, the rest of the house (the corridor, the cabins, the galley, the mess, the EG and CO₂ rooms, the walls) · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
 Her room notes therefore still speak of the Minato Maru's crew and route. The ferry in the live Johansson World is not
 replaced or changed by any of this.
@@ -151,6 +152,7 @@ blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull
 | `hull_fittings.py` | What stands in the spaces the hull gives a floor to (steering gear, shafting inboard, fresh-water tanks, thruster motor and starter, chain lockers), and the anchors |
 | `hull_markings.py` | Draught marks, the load line, her name: each point carried onto the plating it is painted on |
 | `compass_deck.py` | The roof of the bridge house, her mast and what it carries (the viewer's part `top`): slab, plating, rails, mast, radar, lights, antennas, searchlight, binnacle, vents |
+| `wheelhouse.py` | The wheelhouse's fittings, wing doors and consoles (the viewer's part `bridge`, a slice of it: assemble.py replaces the other ship's pieces inside the wheelhouse), from `design/bridge/design-basis.json` |
 | `build.py` | Builds the sections into collections named after the viewer's parts (`hull`, `machinery`) |
 | `export_jmf.py` | Writes every mesh of those collections as it stands in the file, so work done by hand in Blender is exported the same way |
 | `assemble.py` | Puts the parts into `data/ferry.bin.gz` (below) |
@@ -254,8 +256,49 @@ at 20.8 m from the transom and rises to 16.1 m (18.0 m above the keel), the binn
 On foot the roof is a floor like any other: the rail holds one in (0.18 m off it), the gap lets one reach the ladder,
 and the mast, the binnacle, the vents and the lights are in the way. The compass deck's reach on foot fell from
 100 m² to 89 m² for it. What is lacking: the lamps do not light (the viewer's day has none lit), the radar does not turn
-(the page has no continuous motion for it yet), nothing is drawn of the cables, and the sidelights and the stern light
-are still the Minato Maru's, on the bridge wings and the stern, outside this part.
+(the page has no continuous motion for it yet), nothing is drawn of the cables, and the stern light
+is still the Minato Maru's, outside this part (the sidelights are hers, from 11 November: *The wheelhouse*).
+
+## The wheelhouse (`blender/wheelhouse.py`)
+
+The first room of the bridge deck (section 5), from the survey of 10 November (`design/bridge/`: the CAD sheets, the register of
+116 items, 19 findings, and a realistic wheelhouse laid out from M/V Ranger III's pilot house and the Town's design words).
+The bridge deck is the viewer's part `bridge`, 14,586 triangles of the Minato Maru's drawing. Part of it is taken a room at a
+time: `assemble.py` has a second rule beside `SUPERSEDES`, `REPLACES`, which removes the base's **pieces** (a piece is a
+connected set of triangles: the base draws each box, bar and plate of its interiors as one) lying wholly inside a box in the
+ship's axes, bar glass and window frames, and the part's own objects named `Wheelhouse, …` take their place. The wheelhouse's box is
+x ±4.35, y 9.09 to 11.45, z 2.9 to 5.85 (yard 20.15 to 23.1): it takes in the wing consoles' places and leaves the aft wall's
+chart table and panels, the walls, the deck, the forward glass and its frames. 7,970 triangles of the other ship's go; 6,168
+of hers come (`ship.built` says "Wheelhouse").
+
+- *The console and the stand.* A 5.5 m console, its top at 1.0 m, sea green with a cream top; the steering stand 0.60 m wide on
+  a plinth with a non-follow-up lever and an autopilot head on its top plate, and the heading readout **low on its face**
+  (0.84 to 1.0 m: the Minato Maru's stood at 1.5 m on the line of sight); the helm, a varnished eight-spoke wheel with handles
+  on a brass hub, on a shaft out of the stand; the master's high chair on a pedestal beside it.
+- *The levers and the displays.* The port engine lever at x +0.45, the starboard at +0.25 (the other ship's were crossed),
+  the thruster lever at −0.15; the radar to starboard under a three-plate hood, the sounder and plotter to port, the repeater
+  on stand-offs, the VHF with its handset, the telephone, the NAVTEX printer with paper, the navigation-light panel on the console's
+  after face (four switches, four lenses), the searchlight handle, a whistle push, a ramp lamp board. No display tops 1.33 m.
+  The compass is read in a periscope at the deckhead (1.84 to 1.95 m; the deckhead, the roof slab's underside, is at 2.08 m).
+  Three wipers stand parked on the outside of the forward glass.
+- *The doors.* Two weathertight doors in the wing doorways (0.80 m, 1.95 m high), each with a lining, a 0.15 m coaming sill, a
+  leaf hinged on its forward edge with a glazed upper half, a lever handle on both faces, a kick plate and two hinges. Each
+  turns out to 100° on its own input (`door-wing-p`, `door-wing-s`, `auto: near`, 1.6 m) and opens for whoever comes near on foot, as
+  the watertight doors do. A window (0.80 × 0.86 m, sill 0.97 m) is cut in the starboard wall's solid panel
+  (`assemble.OPENINGS`) and glazed. With these the glass shows **224° of the 225°** from the helm, measured on the built model
+  (it showed 173°).
+- *The wings.* A console at each wing's forward end (0.90 × 0.45 m, a sloped top with three levers, two repeater dials and a
+  windscreen on stanchions), a sidelight on a post at the wing's outer end behind a screen board (red to port, green to
+  starboard), and on the starboard post between window and door a float-free EPIRB in its bracket.
+- *On the aft wall,* beside what the other ship drew and is kept (the chart table, the alarm panel, the clock and barometer): an
+  alarm handset and a fold-down log desk with a lamp.
+
+On foot nothing changed but the better: 62 of 62 walking checks, 46 of 46 rooms as before (the starboard wing now walks
+4.3 m where the old pedestal and sidelight posts held one to 3.2). The consoles, the stand and the chair stop one, the doors
+open and shut as one comes and goes. What is lacking: the displays show nothing (no texture: a dark glass), the lamps do not light,
+the wipers do not move, the forward glass is not raked (the survey's 10° would put its head at 23.17 m from the transom,
+1 cm beyond the roof slab's edge: the roof is to be lengthened first), the aft wall's alarm panel is still the other ship's
+unnamed red plate, and the rest of the house (the walls, the crew stair's 1.50 m opening, the cabins) is not hers yet.
 
 ## Walking aboard and the outside view
 
@@ -517,6 +560,17 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, the wheelhouse
+
+`build.py`: 103,834 triangles, its checks unchanged (plating never nearer than 10.4 mm, structure 5.2 mm, 0 corners through,
+solids looking outward, now also for the wheelhouse's solids; 16 motions, each with its parts: the two wing doors are new);
+`assemble.py` twice: the same file; `check.py --town …`: all passed. 7,970 of the Town's wheelhouse triangles dropped, the
+starboard wall cut for the window (4 triangles), the new part added. Walking: 62 checks, all passed; rooms on foot as before
+(the starboard wing walks further). The page's eleven standard pictures: no console errors. Looked at: the wheelhouse from the
+helm, from either side of the console, looking aft, at the doors shut and open, on both wings, and from outside from four sides. The
+glass's arc from the helm measured on the built model: 224°. Not run: any real device; the doors' swing seen by a person, not by a
+picture.
 
 ### 10 November 2026, the compass deck and mast
 

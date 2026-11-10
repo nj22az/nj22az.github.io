@@ -57,6 +57,12 @@ LOOKS = {
     'Lens': dict(metalness=0.0, roughness=0.12),
     # Marks painted on the plating: drawn a hair in front of it.
     'Marking': dict(metalness=0.0, roughness=0.5, offset=[-2, -4]),
+    # The wheelhouse: satin enamel on the consoles, varnished wood, leather, the dark glass of a display, window glass.
+    'Console paint': dict(metalness=0.05, roughness=0.5),
+    'Varnished wood': dict(metalness=0.0, roughness=0.38),
+    'Upholstery': dict(metalness=0.0, roughness=0.9),
+    'Screen': dict(metalness=0.2, roughness=0.1),
+    'Window glass': dict(metalness=0.2, roughness=0.15, side='double', transparent=True, opacity=0.38, depthWrite=False),
 }
 _materials = {}
 
@@ -77,6 +83,9 @@ def material(name):
     m.use_backface_culling = look.get('side') != 'double'
     m['jmf'] = {'metalness': look['metalness'], 'roughness': look['roughness'], 'side': look.get('side', 'front'),
                 'offset': look.get('offset') or []}
+    for key in ('transparent', 'opacity', 'depthWrite'):
+        if key in look:
+            m['jmf'][key] = look[key]
     _materials[name] = m
     return m
 

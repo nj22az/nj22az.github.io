@@ -5,7 +5,7 @@ machinery that's on the bridge and what this is a bigger part in building the el
 drawing the bridge in CAD, you can find errors and problems to it and by investigating the general arrangement plans that you
 found you might find a way to build a magical realistic bridge". This folder is the answer: six drawing sheets, a register,
 a list of what the drawing found, and a design basis for a realistic wheelhouse. It is **survey and design-basis work, not a
-rebuild**: the page still shows the Town's bridge. Section 5 of her Blender build (the bridge deck group) is the next step.
+rebuild**; the build followed it (see *Built so far*, below). The page still shows the Town's bridge but for the wheelhouse.
 
 ## What is here
 
@@ -53,8 +53,9 @@ The ones that matter most:
   the sea out to 75 m in a 13° arc. The glass shows 173° of the 225° the navigation-bridge guide asks for (SOLAS V/22, a
   benchmark for a 34.5 m ship, not a rule; the numbers are recalled, not checked).
 - **The wing doors are plates laid beside their doorways**, over a window and a wall, with no frame, hinge or glass.
-- **No wing console is drawn**, nor the thruster lever, the autopilot, the VHF, the telephone, the alarm: 26 items the design
-  words name and 18 more the tables name are not drawn.
+- **No wing console is drawn**, nor the thruster lever, the autopilot, the VHF, the telephone, the alarm: 23 items the design
+  words name and 18 more the tables name were not drawn (the first count was 26: a kettle, a rice cooker and a clock and
+  barometer turned out to be drawn as unnamed pieces, found when the wheelhouse build looked at the model's own pieces).
 - **Wiring**: the ship has 59 feeders and none is direct current; one 0.75 kW feeder serves the radar, autopilot, echo sounder,
   GPS, NAVTEX and PA, with a 4.4 % drop; no fire-detection loop or general-alarm circuit exists.
 - **Plumbing**: none of the 14 pipe lines that serve the deck is drawn on it; the Town's own route check calls 11 unresolved;
@@ -95,9 +96,23 @@ Christina's wheelhouse is the same width and 1.3 m shallower; her envelope stays
 - No equipment's real catalogue size, weight or power was looked up; the electrical data is the Town's planning envelope.
 - The sheets were checked by looking at the rendered PNGs and by `ezdxf`'s audit (0 errors on all six); no CAD program opened them.
 
+## Built so far (11 November 2026, the owner: "Start the blender build")
+
+`ferry/blender/wheelhouse.py` builds the wheelhouse from this basis (README of `ferry/`, *The wheelhouse*): the register's `hers`
+column marks the 32 rows it made hers, and `design-basis.json` records what built each item. Six findings are closed
+(`FINDINGS.md` says so under each): the glass now shows 224° of the 225° from the helm, measured on the built model; the compass
+card is out of the line of sight; the levers are the right way round; the two unnamed boxes are the named VHF, telephone and NAVTEX;
+the thruster lever, the autopilot head and both wing consoles are drawn; the wing doors are hinged doors in their doorways.
+Not built: the forward glass's rake, the displays' pictures, anything of the house outside the wheelhouse.
+
+Three things the survey got wrong, found while building: the deckhead is **2.08 m** over the deck (the roof slab is 0.32 m deep
+and its underside is the ceiling), not 2.4 m as the sections B1, B2 and B6 first showed it (corrected); a kettle in the mess, a rice
+cooker in the galley, and a clock and barometer on the wheelhouse's aft wall *are* drawn, as unnamed pieces that the Town's
+interior list does not hold (corrected in the register); the Town's pedestals on the wings were its wing consoles.
+
 ## Next
 
-Section 5 of her own build: a `ferry/blender/bridge.py` that reads `design-basis.json` and builds the wheelhouse, wings and the
-house's rooms (with the register's items as named parts, so the electrical and plumbing routes can then be drawn to them),
-superseding the Town's `bridge` group the way `hull` and `top` were. The findings that are the Town's (tags, tables, the audit)
-belong in the Town's repository.
+The rest of the bridge deck, a room at a time by the same rule (`assemble.REPLACES`): the corridor and the house's walls
+(including the crew stair's 1.50 m opening), the galley, the mess and the cabins with their equipment from the register, the EG
+and CO₂ rooms with their machinery; then the electrical and plumbing routes drawn to the register's items. The findings that
+are the Town's (tags, tables, the audit) belong in the Town's repository.

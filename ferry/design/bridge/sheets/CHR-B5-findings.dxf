@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461355.7458564816
+2461355.8017708333
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461355.7458564816
+2461355.8017708333
   9
 $TDUUPDATE
  40
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{DDC4B3C7-B781-4A9D-8240-1C05AED5CB4F}
+{CBDA87BA-E48E-4100-B568-39C2C642EB3A}
   9
 $VERSIONGUID
   2
-{2D7425BC-20C4-4437-838A-9E17E896FAA6}
+{EE69AFD7-3EF0-47F5-9220-DEA4953BA3B4}
   9
 $EXTNAMES
 290
@@ -7987,7 +7987,7 @@ AcDbText
  40
 2.6
   1
-26 items the design words name are not drawn, and 18 more are in the data only
+23 items the design words name are not drawn, and 18 more are in the data only
   7
 SANSB
  11
@@ -8019,7 +8019,7 @@ AcDbText
  40
 2.0
   1
-Not drawn: Louvres (EG room air) (eg-room); Remote fuel quick-closing valves (controls) (co2-room); Fold-down desk (crew-cabin); Shower (crew-wc); Kettle (mess); Duty board and
+Not drawn: Louvres (EG room air) (eg-room); Remote fuel quick-closing valves (controls) (co2-room); Fold-down desk (crew-cabin); Shower (crew-wc); Duty board and muster list (mess);
   7
 SANS
  11
@@ -8051,7 +8051,7 @@ AcDbText
  40
 2.0
   1
-muster list (mess); Rice cooker (galley); Hatch to the mess (galley); Non-follow-up lever and autopilot (wheelhouse); Thruster lever (centre) (wheelhouse); Engine and thruster
+Hatch to the mess (galley); Non-follow-up lever and autopilot (wheelhouse); Thruster lever (centre) (wheelhouse); Engine and thruster levers at both wing consoles (wheelhouse); VHF
   7
 SANS
  11
@@ -8083,7 +8083,7 @@ AcDbText
  40
 2.0
   1
-levers at both wing consoles (wheelhouse); VHF with DSC (wheelhouse); Ship's telephone and engine-room phone (wheelhouse); NAVTEX printer (wheelhouse); GPS display (wheelhouse); PA
+with DSC (wheelhouse); Ship's telephone and engine-room phone (wheelhouse); NAVTEX printer (wheelhouse); GPS display (wheelhouse); PA and general alarm (wheelhouse); Ramp lamps and
   7
 SANS
  11
@@ -8115,7 +8115,7 @@ AcDbText
  40
 2.0
   1
-and general alarm (wheelhouse); Ramp lamps and lane signals (wheelhouse); Whistle button (wheelhouse); Searchlight control (wheelhouse); Clock, barometer, inclinometer (wheelhouse);
+lane signals (wheelhouse); Whistle button (wheelhouse); Searchlight control (wheelhouse); Log desk (wheelhouse); Wing console (engine and thruster levers) (wing-p); Port sidelight
   7
 SANS
  11
@@ -8147,7 +8147,7 @@ AcDbText
  40
 2.0
   1
-Log desk (wheelhouse); Wing console (engine and thruster levers) (wing-p); Port sidelight (red) (wing-p); Wing console (engine and thruster levers) (wing-s); Starboard sidelight
+(red) (wing-p); Wing console (engine and thruster levers) (wing-s); Starboard sidelight (green) (wing-s); Float-free EPIRB (wing-s). In the data (tags, loads, pipe lines) but not
   7
 SANS
  11
@@ -8179,7 +8179,7 @@ AcDbText
  40
 2.0
   1
-(green) (wing-s); Float-free EPIRB (wing-s). In the data (tags, loads, pipe lines) but not drawn: Battery chargers (two, 1.5 kW each, MSB); Emergency charger (0.5 kW, ESB);
+drawn: Battery chargers (two, 1.5 kW each, MSB); Emergency charger (0.5 kW, ESB); Emergency lighting transformer, 5 kVA, 440/105 V; CO₂ main valve; Berth reading lamp and cabin
   7
 SANS
  11
@@ -8211,7 +8211,7 @@ AcDbText
  40
 2.0
   1
-Emergency lighting transformer, 5 kVA, 440/105 V; CO₂ main valve; Berth reading lamp and cabin light (× 5); Cabin air conditioning/ventilation unit (× 5); Air-conditioning units
+light (× 5); Cabin air conditioning/ventilation unit (× 5); Air-conditioning units (four, 2 kW each); Lighting for the crew rooms (0.42 kW); Water heater, 100 L / 3 kW; Hydrant,
   7
 SANS
  11
@@ -8243,7 +8243,7 @@ AcDbText
  40
 2.0
   1
-(four, 2 kW each); Lighting for the crew rooms (0.42 kW); Water heater, 100 L / 3 kW; Hydrant, bridge deck, 15 m hose.
+bridge deck, 15 m hose.
   7
 SANS
  11
@@ -9139,7 +9139,7 @@ AcDbText
  40
 1.9
   1
-To do: Raise the lintel to 1.95 m (the deckhead is at 2.4 m)
+To do: Raise the lintel to 1.95 m (the deckhead, the roof slab's underside, is at 2.08 m)
   7
 SANS
  11
@@ -11885,7 +11885,7 @@ DictionaryVariables
 280
 0
   1
-1.4.5 @ 2026-11-10T17:54:02.043722+00:00
+1.4.5 @ 2026-11-10T19:14:33.677038+00:00
   0
 VISUALSTYLE
   5
@@ -12597,7 +12597,7 @@ DictionaryVariables
 280
 0
   1
-1.4.5 @ 2026-11-10T17:54:02.053203+00:00
+1.4.5 @ 2026-11-10T19:14:33.684981+00:00
   0
 ENDSEC
   0

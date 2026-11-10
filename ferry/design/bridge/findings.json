@@ -20,7 +20,8 @@
    },
    "source": "ferry-interior.js glass (18 panes), ferry-bridge.js; drawn on CHR-B2",
    "fix": "Glaze the wing doors' upper halves and the aft starboard wall panel; add glass abaft the helm; rake the forward panes",
-   "sheet": "B2"
+   "sheet": "B2",
+   "status": "Done 11 November 2026 (wheelhouse.py): the wing doors are glazed in their upper halves and the starboard wall has its window; measured on the built model, the glass shows 224° of the 225°."
   },
   {
    "id": "BF-02",
@@ -35,7 +36,8 @@
    },
    "source": "ferry-bridge.js:57 (compass card), ferry-interior.js (brass block x ±0.08, h 1.50–1.62); CHR-B2 section",
    "fix": "Move the heading display overhead or low in the stand (below 1.2 m), or into the repeater panel; keep the periscope tube above the eye",
-   "sheet": "B2"
+   "sheet": "B2",
+   "status": "Done 11 November 2026: the heading readout is low on the stand (0.84–1.0 m), the compass is read in a periscope at 1.84–1.95 m, the displays top out at 1.33 m."
   },
   {
    "id": "BF-03",
@@ -50,7 +52,8 @@
    },
    "source": "ferry-bridge.js:44 ([.2,'mainP','Port'],[.4,'mainS','Starboard']); register B076/B077",
    "fix": "Port lever at x +0.4, starboard at x +0.2 (or both on the centreline, port to port); the engine-order repeater reads the same way round",
-   "sheet": "B2"
+   "sheet": "B2",
+   "status": "Done 11 November 2026: port lever at x +0.45, starboard at +0.25, the thruster lever at −0.15."
   },
   {
    "id": "BF-04",
@@ -65,7 +68,8 @@
    },
    "source": "tools/ferry-audit.mjs auditFerry(), Town f0b2973",
    "fix": "Move the desk 25 cm; rest the day tank on a shelf or hang it from the deckhead; trim the pieces inside the bunks",
-   "sheet": "B1"
+   "sheet": "B1",
+   "status": ""
   },
   {
    "id": "BF-05",
@@ -80,7 +84,8 @@
    },
    "source": "ferry-interior.js (unnamed boxes); register B092",
    "fix": "Replace by the named sets (VHF with DSC, NAVTEX, telephone)",
-   "sheet": "B2"
+   "sheet": "B2",
+   "status": "Done 11 November 2026: replaced by the named VHF, telephone and NAVTEX."
   },
   {
    "id": "BF-06",
@@ -95,7 +100,8 @@
    },
    "source": "ferry-electrical.js TAGS (range, galley-appliances); ferry-kks.js GKB; register B061/B064",
    "fix": "Give cooking its own function key under the accommodation, yard-allocated, so a tag search for water never finds a range",
-   "sheet": "B1"
+   "sheet": "B1",
+   "status": ""
   },
   {
    "id": "BF-07",
@@ -110,17 +116,19 @@
    },
    "source": "ferry-piping.js 170–181; ferry-electrical.js TAGS toilet-fans; register B049–B052",
    "fix": "Add crew-WC nodes (hot, cold, flush, soil, extract fan) located in crew-wc",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   },
   {
    "id": "BF-08",
    "kind": "gap",
-   "title": "26 items the design words name are not drawn, and 18 more are in the data only",
-   "what": "Not drawn: Louvres (EG room air) (eg-room); Remote fuel quick-closing valves (controls) (co2-room); Fold-down desk (crew-cabin); Shower (crew-wc); Kettle (mess); Duty board and muster list (mess); Rice cooker (galley); Hatch to the mess (galley); Non-follow-up lever and autopilot (wheelhouse); Thruster lever (centre) (wheelhouse); Engine and thruster levers at both wing consoles (wheelhouse); VHF with DSC (wheelhouse); Ship's telephone and engine-room phone (wheelhouse); NAVTEX printer (wheelhouse); GPS display (wheelhouse); PA and general alarm (wheelhouse); Ramp lamps and lane signals (wheelhouse); Whistle button (wheelhouse); Searchlight control (wheelhouse); Clock, barometer, inclinometer (wheelhouse); Log desk (wheelhouse); Wing console (engine and thruster levers) (wing-p); Port sidelight (red) (wing-p); Wing console (engine and thruster levers) (wing-s); Starboard sidelight (green) (wing-s); Float-free EPIRB (wing-s). In the data (tags, loads, pipe lines) but not drawn: Battery chargers (two, 1.5 kW each, MSB); Emergency charger (0.5 kW, ESB); Emergency lighting transformer, 5 kVA, 440/105 V; CO₂ main valve; Berth reading lamp and cabin light (× 5); Cabin air conditioning/ventilation unit (× 5); Air-conditioning units (four, 2 kW each); Lighting for the crew rooms (0.42 kW); Water heater, 100 L / 3 kW; Hydrant, bridge deck, 15 m hose.",
+   "title": "23 items the design words name are not drawn, and 18 more are in the data only",
+   "what": "Not drawn: Louvres (EG room air) (eg-room); Remote fuel quick-closing valves (controls) (co2-room); Fold-down desk (crew-cabin); Shower (crew-wc); Duty board and muster list (mess); Hatch to the mess (galley); Non-follow-up lever and autopilot (wheelhouse); Thruster lever (centre) (wheelhouse); Engine and thruster levers at both wing consoles (wheelhouse); VHF with DSC (wheelhouse); Ship's telephone and engine-room phone (wheelhouse); NAVTEX printer (wheelhouse); GPS display (wheelhouse); PA and general alarm (wheelhouse); Ramp lamps and lane signals (wheelhouse); Whistle button (wheelhouse); Searchlight control (wheelhouse); Log desk (wheelhouse); Wing console (engine and thruster levers) (wing-p); Port sidelight (red) (wing-p); Wing console (engine and thruster levers) (wing-s); Starboard sidelight (green) (wing-s); Float-free EPIRB (wing-s). In the data (tags, loads, pipe lines) but not drawn: Battery chargers (two, 1.5 kW each, MSB); Emergency charger (0.5 kW, ESB); Emergency lighting transformer, 5 kVA, 440/105 V; CO₂ main valve; Berth reading lamp and cabin light (× 5); Cabin air conditioning/ventilation unit (× 5); Air-conditioning units (four, 2 kW each); Lighting for the crew rooms (0.42 kW); Water heater, 100 L / 3 kW; Hydrant, bridge deck, 15 m hose.",
    "where": null,
    "source": "ferry-ship.js FERRY_GA (design words), ferry-electrical.js, ferry-piping.js; register status \"designed\" and \"data only\"",
    "fix": "Build them in section 5 from the register; each row says what it must connect to",
-   "sheet": "B3"
+   "sheet": "B3",
+   "status": ""
   },
   {
    "id": "BF-09",
@@ -135,7 +143,8 @@
    },
    "source": "ferry-ship.js:134-136; ferry-bridge.js:44-49; register B075–B079, B107, B109",
    "fix": "A console on each wing at the wing door, levers, a rudder-angle and engine repeater, a watertight cover",
-   "sheet": "B2"
+   "sheet": "B2",
+   "status": "Done 11 November 2026 for the thruster lever, the autopilot head and both wing consoles; the VHF, telephone and NAVTEX are built too; the alarm panel is the Town's (kept)."
   },
   {
    "id": "BF-10",
@@ -150,7 +159,8 @@
    },
    "source": "plan cut of ferry/data/ferry.bin.gz (bridge group) at y = 10.1; CHR-B1",
    "fix": "0.80 m for the crew's escape doors; the guide value is recalled, not checked against the rules",
-   "sheet": "B1"
+   "sheet": "B1",
+   "status": ""
   },
   {
    "id": "BF-11",
@@ -165,7 +175,8 @@
    },
    "source": "ferry-interior.js \"wing door\" x2, wall boxes; register B104",
    "fix": "A real weathertight door in each doorway with a coaming sill, hinges, dogs and a glazed upper half; the leaf swings out or in without covering a window",
-   "sheet": "B2"
+   "sheet": "B2",
+   "status": "Done 11 November 2026: two hinged weathertight doors with a 0.15 m sill, a glazed upper half, handles and hinges, opening outward for whoever comes near."
   },
   {
    "id": "BF-12",
@@ -179,8 +190,9 @@
     "h": 1.5
    },
    "source": "ferry-interior.js wall box x −2.92..−2.12, z 2.21–2.29, h 1.50–2.20; plan and cut of the model; CHR-B2",
-   "fix": "Raise the lintel to 1.95 m (the deckhead is at 2.4 m)",
-   "sheet": "B2"
+   "fix": "Raise the lintel to 1.95 m (the deckhead, the roof slab's underside, is at 2.08 m)",
+   "sheet": "B2",
+   "status": ""
   },
   {
    "id": "BF-13",
@@ -195,7 +207,8 @@
    },
    "source": "ferry-electrical.js FERRY_FEEDERS, chargers; register B003, B075, B090, B093",
    "fix": "A 24 V radio/emergency distribution with fused feeders to the wheelhouse and a cable-number series 2001–2499",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   },
   {
    "id": "BF-14",
@@ -210,7 +223,8 @@
    },
    "source": "ferry-electrical.js FERRY_FEEDERS bridge-electronics, light-crew; ferry-bridge-wipers.js; register",
    "fix": "A distribution panel in the wheelhouse with a fused way per instrument; per-room lighting and socket circuits",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   },
   {
    "id": "BF-15",
@@ -225,7 +239,8 @@
    },
    "source": "ferry-kks.js CSA; ferry-electrical.js emergency-charger; ferry-piping.js co2rel→co2al; register B022 etc.",
    "fix": "Detector loops (cables 4501–5999), an alarm panel with its own battery, bells and speakers on the emergency board",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   },
   {
    "id": "BF-16",
@@ -240,7 +255,8 @@
    },
    "source": "ferry-interior.js pipes / engineeringPipes / pipeRouteIssues; pipes.csv",
    "fix": "Route DN50 fire main, DN20/15 fresh water, DN32/100 flush and soil, the CO₂ line, through the casing trunk and along the deckhead; resolve each of the 11",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   },
   {
    "id": "BF-17",
@@ -255,7 +271,8 @@
    },
    "source": "ferry-piping.js sewage system (sp1, sp2, flush, htank); register B050, B051, B059, B063, B064",
    "fix": "A grey-water collector to the 4 m³ sewage holding tank (the Town lets nothing overboard in the strait), with traps at every fitting",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   },
   {
    "id": "BF-18",
@@ -270,7 +287,8 @@
    },
    "source": "ferry-piping.js:134 hBridge; plan distances on CHR-B1; the hydrant's place on the wing is assumed",
    "fix": "A second hydrant at the aft platform; or the main brought up the aft stair; check against the fire-control plan",
-   "sheet": "B1"
+   "sheet": "B1",
+   "status": ""
   },
   {
    "id": "BF-19",
@@ -285,7 +303,8 @@
    },
    "source": "ferry-piping.js fuel system (no EG node); ferry-interior.js day tank; register B001, B007–B009",
    "fix": "A DN15 fill from the transfer pump and a return, an overflow and a vent; an exhaust through the aft wall or the deckhead; louvres with closing flaps",
-   "sheet": "B4"
+   "sheet": "B4",
+   "status": ""
   }
  ]
 }
