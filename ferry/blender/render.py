@@ -1,7 +1,7 @@
 """
-A still of the Christina's hull from the file build.py wrote, in Cycles: the hull standing on the slip in daylight.
+A still of the Chisum's hull from the file build.py wrote, in Cycles: the hull standing on the slip in daylight.
 
-    blender -b christina.blend -P ferry/blender/render.py -- --out hull-stern.png [--view stern|bow|inside] [--samples 96]
+    blender -b chisum.blend -P ferry/blender/render.py -- --out hull-stern.png [--view stern|bow|inside] [--samples 96]
 
 It adds a sky, a sun, a floor and a camera to the scene for the picture and saves nothing back to the file.
 """
@@ -72,7 +72,7 @@ if view == 'inside':
         for ob in c.all_objects:
             ob.hide_render = True
 
-out = os.path.abspath(opt.get('--out', f'christina-hull-{view}.png'))
+out = os.path.abspath(opt.get('--out', f'chisum-hull-{view}.png'))
 scene.render.image_settings.file_format = 'PNG'
 scene.render.filepath = out
 bpy.ops.render.render(write_still=True)

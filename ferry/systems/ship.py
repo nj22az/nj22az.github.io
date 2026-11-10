@@ -1,5 +1,5 @@
 """
-The Christina's systems, ship-wide: what supplies her, the boards the sections are fed from, the subsystems her equipment
+The Chisum's systems, ship-wide: what supplies her, the boards the sections are fed from, the subsystems her equipment
 is sorted into, and the rules a circuit is sized by. Each section's own components, circuits, nets and pipes are a module of
 their own (bridge.py is the first); register.py puts them together, checks them and writes what the page reads.
 
@@ -8,7 +8,7 @@ on the work branch): the same generators, voltages and frequency, the same sizin
 Nothing here is class-approved or construction information.
 """
 
-SHIP = dict(name='Christina', length=34.5, type='car and passenger ferry')
+SHIP = dict(name='Chisum', length=34.5, type='car and passenger ferry')
 
 # ---- What she is supplied by: the answer to "what is the main?"
 SUPPLY = dict(

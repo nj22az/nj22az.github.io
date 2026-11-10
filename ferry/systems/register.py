@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-The Christina's component register: puts her systems together, routes every cable, sizes and checks every circuit, and
+The Chisum's component register: puts her systems together, routes every cable, sizes and checks every circuit, and
 writes what the page and people read.
 
     python3 ferry/systems/register.py [--boxes <part file from blender/build.py>]
@@ -413,7 +413,7 @@ def build(boxes=None):
         if n:
             subs.append(dict(s, count=n))
     data = dict(
-        format='christina-systems-1',
+        format='chisum-systems-1',
         ship=S.SHIP, supply=S.SUPPLY, sources=S.SOURCES,
         elsewhere=[dict(id=b['id'], name=b['name'], volts=b['volts'], kind=b['kind'], where=b['where'], text=b.get('text', ''), fedBy=b.get('fed_by', []))
                    for b in S.BOARDS],

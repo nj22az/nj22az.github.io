@@ -41,7 +41,8 @@ try{
   * Minato the town and the Minato – Kitano-jima route are left as they are; `report.renamed.kept` lists every line that
   * still says Minato, so nothing of the old name stays unseen.
   */
- const CHRISTINA=Object.freeze({name:'Christina',painted:'CHRISTINA',drawnFrom:FERRY_SHIP.name});
+ // Renamed by the owner on 11 November 2026 ("rename to Chisum"): the constant keeps its name, the ship does not.
+const CHRISTINA=Object.freeze({name:'Chisum',painted:'CHISUM',drawnFrom:FERRY_SHIP.name});
  const renamed={bow:0,bowSecondLine:0,transom:0,board:0,boardSecondName:0,elsewhere:0,kept:new Set()};
  {
   const P=CanvasRenderingContext2D.prototype,fill0=P.fillText,measure0=P.measureText;

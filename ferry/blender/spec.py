@@ -1,5 +1,5 @@
 """
-The Christina's hull as specified: where her paint lines, bulkheads, shafts, screws, rudders and marks are, and why.
+The Chisum's hull as specified: where her paint lines, bulkheads, shafts, screws, rudders and marks are, and why.
 
 Numbers first, so the builder (hull_*.py), the page's notes and later sections read the same ship. Positions are in the
 ship's axes (lines.py): x to port, y up from the laden waterline, z forward from amidships; `yard` means metres from
@@ -202,5 +202,6 @@ DRAUGHT_MARKS = (
     dict(where='forward', yard=30.9, lowest=0.8),
 )
 LOAD_LINE_YARD = 17.6
-NAME = 'CHRISTINA'
+NAME = 'CHISUM'             # as it is painted. The owner, 11 November 2026: "Maybe rename her to the Chisum", then "rename to Chisum"; she was the Christina from 9 November
+SHIP_NAME = NAME.title()    # as it is written
 PORT_OF_REGISTRY = 'MINATO'

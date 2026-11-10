@@ -1,5 +1,5 @@
 """
-The yard's tools: what every part of the Christina is made with in Blender.
+The yard's tools: what every part of the Chisum is made with in Blender.
 
 A part is drawn in the ship's own axes (x to port, y up from the laden waterline, z forward from amidships, metres) and
 handed to Blender, which is Z-up: Blender's X is her length (forward), Y her breadth (to port), Z her height.

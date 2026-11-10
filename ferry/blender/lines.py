@@ -1,5 +1,5 @@
 """
-The Christina's lines: her hull form, as numbers.
+The Chisum's lines: her hull form, as numbers.
 
 She is 34.5 m long, 8.4 m in beam, 4.0 m deep to the car deck and draws 1.9 m laden. The form is the one the Rev C
 working drawings show (sheet JS-127-C1: profiles, plan and four body sections), so the decks drawn there still sit on
@@ -277,7 +277,7 @@ def displacement(draft_y=0.0, step=0.05):
 
 
 PARTICULARS = {
-    'name': 'Christina',
+    'name': 'Chisum',
     'length': LENGTH, 'beam': BEAM, 'depth': DEPTH, 'draft': DRAFT,
     'frameSpacing': FRAME_SPACING,
     'carDeck': DEPTH, 'bulwark': BULWARK,

@@ -1,6 +1,6 @@
-# Christina: the ferry, deck by deck
+# Chisum: the ferry, deck by deck
 
-A 3D viewer of the Christina, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
+A 3D viewer of the Chisum, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
 along her length (Cut), put her rudders over (Rudder), name every room aboard, walk through her on foot (Walk
 aboard), where walls stop one, doors let one through, ladders are climbed, and every room is reached on foot, and see
 what every fitting on her bridge is, what feeds it and what it talks to (tap it, or open *Systems*):
@@ -16,7 +16,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | `systems.js` | Her systems on the page: the card that says what a fitting is, the *Systems* list, and what is drawn over the model for a board, a circuit, a net or a pipe |
 | `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.76 MB, about 234,000 triangles in 110 meshes (119,400 of them her own: the hull, the fittings of its spaces, the compass deck and the navigation bridge), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | The other ship's plates, dials and signs on one 2048 px picture |
-| `data/christina-atlas.webp` | Her own pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
+| `data/chisum-atlas.webp` | Her own pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
 | `data/systems.json` | Her component register as the page reads it (written by `systems/register.py`) |
 | `systems/` | Her systems as designed: every component with its supply, circuit, nets and pipes; the tool that routes, sizes and checks them ([README](systems/README.md)) |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
@@ -30,7 +30,15 @@ can rebuild Minato maru later from what we learn from building this ship"; "When
 it over time and then insert it into the games after"; "Make it look as realistic and pretty as possible , disregard
 cartoon style from Johansson World for now".
 
-So the Christina is the lead ship of a new design, and the Minato Maru of Johansson World is rebuilt later from what she
+**She is the Chisum since 11 November 2026.** The owner: "Maybe rename her to the Chisum", then: "Push to main , then
+rename to Chisum". From 9 to 11 November she was the Christina; the handover's older notes, the bridge survey's sheets
+(`CHR-B1` to `CHR-B6`) and the commits before the rename call her that. Her name is one line of the yard's specification
+(`blender/spec.py`, `NAME`): the lettering on both bows and on the transom, her own pictures (the AIS screen, the fire
+panel) and the name in the model's header are made from it. The other ship's sheet of pictures carried the name on three
+plates (bow, transom, the name board on the wheelhouse front) and in the small print of its two fire plans:
+`blender/name_plates.py` paints hers there.
+
+So the Chisum is the lead ship of a new design, and the Minato Maru of Johansson World is rebuilt later from what she
 teaches. She is built in Blender, section by section, from the working drawings (Rev C), and each section takes the
 place of the Minato Maru's drawing on this page as it is finished.
 
@@ -63,10 +71,6 @@ page), one section at a time. Asked for by the owner on 11 November 2026, while 
   2.5 m, so each wet unit has to be found within its cabin or by re-dividing the deck. That is the crew accommodation's
   section (with it: the fresh-water, hot-water and grey- and black-water pipes the survey found missing, findings BF-07,
   BF-16 and BF-17, and the fire detection loop's detectors in every room).
-- **Her name.** "Maybe rename her to the Chisum": not done, waiting for the owner's word. It touches the lettering on both
-  bows and the transom (`blender/spec.py`, `NAME`), the name boards (the other ship's plates, repainted by the Town's
-  export), her own pictures (`atlas.py`: the AIS screen, the fire panel), the page's title and text, the homepage card and
-  project entry (`/config.js`), and the names of two files (`christina-atlas.webp`, `christina-card.webp`).
 
 Suggested order: the machinery spaces with the control room next (the bridge's cables and nets run there, so the register
 grows without a gap), then the crew accommodation.
@@ -84,9 +88,9 @@ node tools/ferry-viewer-export.mjs --out=<this checkout>/ferry/data [--report=<f
 ```
 
 A fresh export carries the Minato Maru's hull again: run `blender/assemble.py` after it (with the part file from
-`blender/build.py`), which puts the Christina's own hull back in its place.
+`blender/build.py`), which puts the Chisum's own hull back in its place.
 
-The export does not edit the game: the Christina's name is painted by the export page alone (it replaces the name where
+The export does not edit the game: the Chisum's name is painted by the export page alone (it replaces the name where
 the game draws it on the bow, the transom and the name boards, and stops if any of those places was missed). The header
 of the data records the Town commit she was drawn from (`source.commit`, shown at the foot of the panel), so a stale
 picture can be told from the game.
@@ -141,7 +145,7 @@ DigitaltMuseum refused automated access, so none was opened. Wikimedia Commons w
   5 × 3 × 5/16 in inverted angle (127 × 76 mm) from the tank top to the main deck, 3½ × 2½ × ¼ in above it, spaced 2 ft,
   and 4 × 3 × 5/16 in intermediate frames 12 in between the regular ones at the forward end; plate floors of 12.75 and
   15.3 lb plate (5/16 and 3/8 in); a plate centre vertical keel of 20.4 lb, watertight or oil-tight between frames
-  19 and 51. The Christina's frames were 75 × 50 mm, 0.5 m apart: lighter than
+  19 and 51. The Chisum's frames were 75 × 50 mm, 0.5 m apart: lighter than
   that vessel's, as is to be expected of a hull 15 m shorter, but on the light side. **Taken up (10 November 2026):**
   100 × 65 mm, the 5 × 3 in angle scaled to a hull of 4 m depth, and a lighter 80 × 65 mm frame (its 4 × 3 in) between
   each pair forward of the collision bulkhead, so the fore peak has them every 0.25 m (`spec.py`: `FRAME_WEB`,
@@ -163,11 +167,11 @@ Blender 4.0 or later, and Python 3 with numpy for the tools that need no Blender
 
 ```bash
 python3 ferry/blender/atlas.py                                                              # her pictures: only when one of them changes
-blender -b -P ferry/blender/build.py -- --part christina-hull.npz --blend christina.blend   # build, export, save the .blend
-python3 ferry/blender/assemble.py --part christina-hull.npz                                 # put it into data/ferry.bin.gz, and write data/systems.json
+blender -b -P ferry/blender/build.py -- --part chisum-hull.npz --blend chisum.blend   # build, export, save the .blend
+python3 ferry/blender/assemble.py --part chisum-hull.npz                                 # put it into data/ferry.bin.gz, and write data/systems.json
 python3 ferry/blender/check.py                                                              # check what the page will read
 node ferry/checks/bridge.cjs                                                                # check the page itself (the site served on port 8765)
-blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
+blender -b chisum.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
 ```
 
 | File | What |
@@ -182,6 +186,7 @@ blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull
 | `hull_markings.py` | Draught marks, the load line, her name: each point carried onto the plating it is painted on |
 | `compass_deck.py` | The roof of the bridge house, her mast and what it carries (the viewer's part `top`): slab, plating, rails, mast, radar, lights, antennas, searchlight, binnacle, vents |
 | `wheelhouse.py` | The navigation bridge: the house, the console and every component of the register, both wings, the bridge's fittings on the compass deck. It draws each component where `systems/bridge.py` puts it; assemble.py takes the other ship's wheelhouse away for it |
+| `name_plates.py` | Her name on the other ship's three name plates (its sheet of pictures): run when her name changes |
 | `atlas.py`, `atlas.json` | Her own pictures, drawn in Python (Pillow, no Blender) and packed on one sheet, and where each lies on it. Run `atlas.py` before `build.py` when a picture changes |
 | `build.py` | Builds the sections into collections named after the viewer's parts (`hull`, `machinery`) |
 | `export_jmf.py` | Writes every mesh of those collections as it stands in the file, so work done by hand in Blender is exported the same way |
@@ -547,7 +552,7 @@ they are lit:
 - **The homepage card.** The owner, 9 November 2026: "Make it one of my projects , on the website". She is the `ferry`
   entry of `CONFIG.projectExplorer` in `/config.js` (second card, under Explore), drawn by
   `/assets/js/project-explorer.js`; `CONFIG.projects` has her too. The homepage never loads the 3D model (its design
-  review forbids it): the card shows a picture, `/assets/images/ferry/christina-card.webp`. It lives under `assets/`,
+  review forbids it): the card shows a picture, `/assets/images/ferry/chisum-card.webp`. It lives under `assets/`,
   not here, because the homepage review's sparse checkout does not include `ferry/`.
 - **Retake the card picture when the model changes.** It is this page's cut view from the starboard side with the
   chrome hidden and the lens centred (`camera.clearViewOffset()`, aspect 1200 : 630): Cut 0.5, the camera set through
@@ -595,8 +600,8 @@ Of the navigation bridge and her systems:
   page from the register's cable ways. The pipes likewise, but for their fittings.
 - The aft wall is still the other ship's, with the crew stair's opening 1.50 m high under it (finding BF-12); the stair is
   railed and barred and is not gone down from the wheelhouse.
-- The name board on the wheelhouse front is the other ship's plate, repainted by the export; its lowest 3 cm is sunk in
-  the visor.
+- The name board on the wheelhouse front is the other ship's plate with her name painted on it (`name_plates.py`); its
+  lowest 3 cm is sunk in the visor.
 - The stern light is in the register and on its way of the navigation light panel, and is still the other ship's drawing,
   at the after end of the passenger deck.
 - Powers are typical figures, the sizing rules are recalled and not checked against a text, and nothing is class-approved
@@ -649,6 +654,15 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, last: renamed Chisum
+
+`name_plates.py` on the other ship's sheet (bow, transom and board lettering in the same ink, height and spacing; looked at
+on the sheet and in the model: CHISUM on the bow, over MINATO on the transom, on the name board); `atlas.py`, `build.py`
+(119,623 triangles: her name is three letters shorter), `assemble.py` twice with the same files, `check.py` all passed (one
+new: the model, the register and the specification agree on her name), `checks/bridge.cjs` 21 of 21. The homepage card's
+picture is retaken under its new file name. Not run: the homepage's own review (its counts do not change; only the card's
+title and picture file do).
 
 ### 11 November 2026, later: the navigation bridge and her systems
 

@@ -99,7 +99,7 @@ const CONFIG = {
       featured: true,
     },
     {
-      title: "Christina",
+      title: "Chisum",
       description:
         "A 34.5 m car and passenger ferry as a 3D model: turn her, lift her decks apart, cut her open along her length and name every room aboard. A first look.",
       url: "/ferry/",
@@ -279,7 +279,7 @@ CONFIG.projectExplorer = [
   {
     "id": "ferry",
     "category": "explore",
-    "title": "Christina",
+    "title": "Chisum",
     "eyebrow": "A FERRY, DECK BY DECK",
     "summary": "A 34.5 m car and passenger ferry in 3D. Turn her, lift her six decks apart, cut her open along her length and name every room aboard.",
     "url": "/ferry/",

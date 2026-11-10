@@ -1,5 +1,5 @@
 /**
- * The ferry viewer: the Christina, turned, taken apart deck by deck, cut open, and walked through on foot.
+ * The ferry viewer: the Chisum, turned, taken apart deck by deck, cut open, and walked through on foot.
  *
  * She is the lead ship of a new design, built section by section in Blender (blender/). Her hull is her own; the
  * decks above it and the machinery are for now the Minato Maru's, the ferry of Johansson Town, exported from the game's

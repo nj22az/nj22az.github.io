@@ -1,5 +1,8 @@
 # The Christina's bridge: drawn in CAD, logged, and designed
 
+*She is the Chisum since 11 November 2026 (`ferry/README.md`). This survey was made on 10 November, when she was the Christina: its
+sheets (`CHR-B1` to `CHR-B6`), its register and its findings keep that name, as the record of what was surveyed.*
+
 The owner, 10 November 2026: "I need you to draw the bridge in CAD and then we need to log every piece of equipment and
 machinery that's on the bridge and what this is a bigger part in building the electrical wiring and a plumbing", and "by
 drawing the bridge in CAD, you can find errors and problems to it and by investigating the general arrangement plans that you

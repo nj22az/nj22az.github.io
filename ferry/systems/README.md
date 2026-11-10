@@ -1,4 +1,4 @@
-# The Christina's systems: her component register
+# The Chisum's systems: her component register
 
 The owner, 11 November 2026: "Make the ferry fully realistic in blender, start with one section at a time. Start with the bridge,
 aim for a fully explorable realistic ferry with a component register, I.e, what equipment is installed, what's the power what's
@@ -64,7 +64,7 @@ not a member, or names a component that is not registered; a pipe joins somethin
 drop in all is 8.8 % on DC1 way 11 (the limit there is 10 %) and 4.2 % on alternating current (the stern light, 39 m from its panel).
 
 **The first run found one of the Minato Maru's own:** her searchlight feeder (10CTA10 GS001) has a 10 A breaker for 9.5 A,
-under her list's own rule of 1.25 times the full-load current. The Christina's has 16 A on the same 4 mm² cable. That is for
+under her list's own rule of 1.25 times the full-load current. The Chisum's has 16 A on the same 4 mm² cable. That is for
 the Town's repository to put right in its feeder list.
 
 ## The nets

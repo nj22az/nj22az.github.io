@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Checks the Christina as the viewer will read her (ferry/data/ferry.bin.gz), without Blender.
+Checks the Chisum as the viewer will read her (ferry/data/ferry.bin.gz), without Blender.
 
     python3 ferry/blender/check.py [--town <the Town's own export of the Minato Maru>]
 
@@ -87,6 +87,7 @@ def main():
         data = json.load(open(os.path.join(here, reg['file'])))
         comps = data['components']
         check(len(comps) == reg['components'], f'the register beside the model holds the {reg["components"]} components the model names')
+        check(header['ship']['name'] == S.SHIP_NAME == data['ship']['name'], f'the model, the register and the specification agree on her name ({header["ship"]["name"]})')
         lo, hi = np.array(header['bounds']['min']) - 0.05, np.array(header['bounds']['max']) + 0.05
         out = [c['id'] for c in comps if c.get('box') and not ((np.array(c['box'][0]) >= lo).all() and (np.array(c['box'][1]) <= hi).all())]
         check(not out, f'every component with a place in the model lies within the model ({", ".join(out) or "all"})')

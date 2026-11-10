@@ -1,5 +1,5 @@
 """
-The navigation bridge of the Christina: the wheelhouse, its two wings and what stands over it on the compass deck.
+The navigation bridge of the Chisum: the wheelhouse, its two wings and what stands over it on the compass deck.
 Every component with what it is, where it stands, what it draws and from which circuit; the boards and their circuits; the
 nets that join the components; the pipes; and the cable ways all of it is laid along.
 

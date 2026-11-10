@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-The Christina's own pictures: what her screens show, her dial faces, the faces of her panels and boards, her chart, her
+The Chisum's own pictures: what her screens show, her dial faces, the faces of her panels and boards, her chart, her
 flags. Drawn here, in Python, and packed onto one sheet.
 
-    python3 ferry/blender/atlas.py [--out ferry/data/christina-atlas.webp] [--tiles ferry/blender/atlas.json] [--preview dir]
+    python3 ferry/blender/atlas.py [--out ferry/data/chisum-atlas.webp] [--tiles ferry/blender/atlas.json] [--preview dir]
 
 Writes the sheet (WebP) and a list of where each picture lies on it (atlas.json: name → u0, v0, u1, v1 as the viewer
 reads them, v up), which the builders read to put a picture on a face. Everything on it is made here: no photograph, no
@@ -388,7 +388,7 @@ def ais():
     w, h = 256, 208
     im, d = sheet(w, h)
     frame(d, w, h)
-    lcd(d, (14, 14, w - 14, 150), ['NAME        RNG  BRG', 'KITANO MARU 2.4  062', 'SAKURA NO 3 2.4  189', 'HIGA MARU   3.4  140', 'OWN: CHRISTINA', 'TX OK  CH 87B 88B'], 11, AMBER, (30, 22, 6))
+    lcd(d, (14, 14, w - 14, 150), ['NAME        RNG  BRG', 'KITANO MARU 2.4  062', 'SAKURA NO 3 2.4  189', 'HIGA MARU   3.4  140', 'OWN: CHISUM', 'TX OK  CH 87B 88B'], 11, AMBER, (30, 22, 6))
     for i, s in enumerate(('▲', '▼', 'MSG', 'MENU', 'ENT')):
         key(d, 36 + i * 46, 180, 38, 24, (70, 80, 86), s, 9)
     return im
@@ -897,7 +897,7 @@ def fire_panel():
     im, d = sheet(w, h, (52, 56, 58))
     d.rectangle((0, 0, w, 40), fill=(170, 34, 28))
     text(d, (w / 2, 20), 'FIRE DETECTION', 16, WHITE)
-    lcd(d, (20, 56, w - 20, 148), ['SYSTEM NORMAL', 'LOOPS 1-4  OK', '10 NOV  03:41', 'CHRISTINA'], 14, AMBER, (30, 22, 6))
+    lcd(d, (20, 56, w - 20, 148), ['SYSTEM NORMAL', 'LOOPS 1-4  OK', '10 NOV  03:41', 'CHISUM'], 14, AMBER, (30, 22, 6))
     for i, (s, c, on) in enumerate((('FIRE', RED, False), ('FAULT', YELLOW, False), ('DISABLED', YELLOW, False), ('POWER', GREEN, True))):
         led(d, 44 + i * 82, 176, 7, c, on)
         text(d, (44 + i * 82, 198), s, 9)
@@ -1086,7 +1086,7 @@ def tiles():
         'lever_scale': (lever_scale(), 'face'), 'thr_scale': (lever_scale(True), 'face'), 'talkback': (talkback(), 'face'),
         'hose': (sign(256, 96, (190, 40, 32), ['FIRE HOSE'], WHITE, 22), 'face'),
         'exit': (sign(256, 96, (30, 130, 70), ['EXIT'], WHITE, 34, border=False), 'face'),
-        'nameplate': (sign(384, 64, (24, 26, 28), ['CHRISTINA   ·   MINATO'], (226, 200, 120), 20), 'face'),
+        'nameplate': (sign(384, 64, (24, 26, 28), ['CHISUM   ·   MINATO'], (226, 200, 120), 20), 'face'),
     }
 
 
@@ -1121,7 +1121,7 @@ def pack(items):
 def main():
     args = sys.argv[1:]
     opt = dict(zip(args[::2], args[1::2]))
-    out = opt.get('--out', os.path.join(HERE, '..', 'data', 'christina-atlas.webp'))
+    out = opt.get('--out', os.path.join(HERE, '..', 'data', 'chisum-atlas.webp'))
     tiles_path = opt.get('--tiles', os.path.join(HERE, 'atlas.json'))
     items = tiles()
     im, uv, height = pack(items)

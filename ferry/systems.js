@@ -1,5 +1,5 @@
 /**
- * The Christina's systems on the page: her component register (data/systems.json, written by systems/register.py) made
+ * The Chisum's systems on the page: her component register (data/systems.json, written by systems/register.py) made
  * explorable. A tap on a component names it and says what feeds it and what it talks to; the Systems tab lists her
  * supply, the boards and their circuits, the nets, the pipes and the equipment by subsystem, and shows whichever is
  * chosen in the model: a box round each component that belongs to it, and the run of its cables or its pipe.
