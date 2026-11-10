@@ -48,6 +48,19 @@ it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what
   (`ferry-model.js`, from 7.5 m to the screws at x ±1.6), on a line 0.36 m below the gearboxes' output flanges
   (x ±1.55, 1.5 m above the keel) and 5 cm outboard of them, and nothing joins the two: the engines drive nothing. The
   Christina's run straight from the flanges to the screws at 6° (`/ferry/blender/spec.py`).
+- **Four more, found on foot** (10 November 2026, when the viewer learned to walk; all in the Town's drawing, none in
+  the Rev C list):
+  - The lobby's floor covering on the passenger deck is one slab from side to side (x -4.02 to 4.02, 6.04 to 9.46 m
+    from the transom, 6.503 to 6.508 m up) and lies over both stairwells from the car deck; the deck plating under it
+    is cut correctly. From the lobby the stairs cannot be seen, and one climbs up through the floor. The viewer's
+    data cuts the covering back to the wells (`/ferry/blender/assemble.py`, `OPENINGS`).
+  - The car deck is drawn from above only: there is nothing under its plating over the steering-gear room, the
+    fresh-water tanks, the shaft space, the void, the thruster room and the fore peak, so from those spaces one looks
+    up through it. The Christina's hull build gives it an underside there (`/ferry/blender/hull_structure.py`).
+  - The crew stair from the saloon to the wheelhouse has 1.55 m of headroom over its fourth tread, under the edge of
+    the opening in the deckhead (the opening begins 5 cm aft of that tread). The bar across its top is drawn closed.
+  - The two outside stairs to the bridge wings leave 6 cm between the top tread (ending 19.42 m from the transom) and
+    the landing (beginning 19.48 m).
 - The viewer's files (`/ferry/`, the homepage card) go to `main` on their own: they are committed apart from this
   folder and cherry-picked onto a branch made from `main`. To build her data again no Town checkout is needed:
   `/ferry/blender/assemble.py` works from the viewer's own file. A new export from the Town (`town/tools/`) is needed
