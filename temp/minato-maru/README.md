@@ -61,6 +61,16 @@ it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what
     the opening in the deckhead (the opening begins 5 cm aft of that tread). The bar across its top is drawn closed.
   - The two outside stairs to the bridge wings leave 6 cm between the top tread (ending 19.42 m from the transom) and
     the landing (beginning 19.48 m).
+- **Three more, found when walls began to stop the walker** (10 November 2026):
+  - No door opens, and of the 23 door leaves 15 hang on a wall with no opening behind them (all eight on the car
+    deck, the four in the machinery spaces; on the passenger deck the two at 9.54 m; on the bridge deck the one at
+    19.54 m). The viewer lets the walker through the leaf and the wall it hangs in.
+  - On the bridge deck the handrail along each side of the crew's corridor is one length from 9.30 to 19.20 m, across
+    the four cabin doorways on that side (9.20, 11.70, 14.20 and 16.70 m, each 0.70 m wide). The viewer's data cuts it
+    at each doorway (`/ferry/blender/assemble.py`, `OPENINGS`).
+  - The steering-gear room, the fresh-water tanks and the shaft space have no way in: no door, hatch or ladder. The
+    Christina has a way aft from the engine room through three watertight doors (`/ferry/blender/spec.py`,
+    `WT_DOORS`); the engine room's after wall is opened for the first.
 - The viewer's files (`/ferry/`, the homepage card) go to `main` on their own: they are committed apart from this
   folder and cherry-picked onto a branch made from `main`. To build her data again no Town checkout is needed:
   `/ferry/blender/assemble.py` works from the viewer's own file. A new export from the Town (`town/tools/`) is needed
