@@ -184,6 +184,16 @@ KEEL_BAR = dict(width=0.15, depth=0.05, yard=(10.2, 33.0))
 SKEG = dict(yard=(3.6, 10.6), thickness=0.18)
 BILGE_KEEL = dict(yard=(11.0, 23.0), depth=0.22, psi=pi / 4)
 
+# ---- The compass deck: the roof of the bridge house, her mast and what it carries (section 2, the first slice; the owner,
+# 10 November 2026: "Yes, proceed"). The positions are the Minato Maru's, so the ladder that comes up to it, the rooms
+# that hang under it and the walker still fit; the fittings follow what M/V Ranger III (HAER MI-432) carries on her
+# pilot-house roof: radar, searchlight, anchor and masthead lights, VHF antennas, vent heads over the spaces below.
+COMPASS_DECK = dict(deck=11.5, slab=0.32, half=3.10, yards=(5.95, 23.16), corner=0.35,
+                    rail=1.0, rail_in=0.13, post_every=1.45,
+                    gate=(19.25, 0.8))            # the gap in the port rail where the ladder arrives: (yard, width)
+MAST = dict(yard=20.8, top=16.1, yardarm=13.5, platform=13.6, radar=13.82, masthead=14.1)
+ROOF_DECK = 0xb4bab6        # the roof's paint: light grey, non-skid
+
 # ---- Marks.
 # Figures every 20 cm from `lowest` (metres above the keel) to 2.8 m, wherever the plating is upright enough to carry one.
 DRAUGHT_MARKS = (

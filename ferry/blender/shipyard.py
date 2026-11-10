@@ -53,6 +53,8 @@ LOOKS = {
     'Bronze': dict(metalness=0.9, roughness=0.28),
     'Shaft steel': dict(metalness=0.85, roughness=0.34),
     'Zinc': dict(metalness=0.6, roughness=0.5),
+    # Lamp glasses, searchlight and compass domes: smooth, pale, not see-through (the viewer's day has no lamps lit).
+    'Lens': dict(metalness=0.0, roughness=0.12),
     # Marks painted on the plating: drawn a hair in front of it.
     'Marking': dict(metalness=0.0, roughness=0.5, offset=[-2, -4]),
 }

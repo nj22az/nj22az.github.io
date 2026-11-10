@@ -108,7 +108,10 @@ def looking_outward():
     bpy.data.collections.remove(trial)
     for name in ('Tail shafts', 'Rudder stock, port', 'Rudder stock, starboard', 'Rudder anodes, port', 'Intermediate shafts',
                  'Steering gear, bright steel', 'Rudder stock head, port', 'Ram cylinder, port', 'Ram rod, starboard', 'Tie bar',
-                 'Fresh-water tanks, pipes', 'Chain lockers', 'Zinc anodes'):
+                 'Fresh-water tanks, pipes', 'Chain lockers', 'Zinc anodes', 'Compass deck, slab', 'Compass deck, rails',
+                 'Compass deck, mast and fittings', 'Compass deck, mast, steel fittings', 'Compass deck, dark fittings',
+                 'Compass deck, antennas', 'Compass deck, antenna mounts', 'Compass deck, vent heads', 'Compass deck, vent fittings',
+                 'Compass deck, searchlight and floodlights', 'Compass deck, light mounts', 'Compass deck, binnacle'):
         ob = bpy.data.objects.get(name)
         if ob is None:
             wrong.append(name + ' (not built)')
@@ -129,9 +132,9 @@ def main():
     ship = shipyard.collection('Christina')
     # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
     # spaces and to the car deck (part.group).
-    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'bridge')}
+    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'bridge', 'top')}
     report, inputs, movers, ways = {}, [], [], []
-    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings'):
+    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck'):
         try:
             mod = importlib.import_module(name)
         except ModuleNotFoundError as e:

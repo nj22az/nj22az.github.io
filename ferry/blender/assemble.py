@@ -36,7 +36,15 @@ SUPERSEDES = {
         # The base sorts the engine control booth's window into the hull (it stands below the car deck and is not part
         # of the engine room's model): glass is not hull, so it goes with the machinery spaces it belongs to.
         keep=lambda m: m['transparent'] and m['opacity'] < 1, keep_in='machinery',
-        why='her own hull, built in Blender from her lines'),
+        why='her own hull, built in Blender from her lines',
+        what='the hull, from her lines (plating, frames, floors and bulkheads, the gear of her spaces, screws and rudders)'),
+    # The Minato Maru's roof, mast and fittings (1,164 triangles) go; hers take their place, the same size and in the same
+    # places, so the ladder that comes up to it and the rooms under it still fit.
+    'top': dict(
+        section='Compass deck and mast', built='10 November 2026',
+        keep=lambda m: False, keep_in=None,
+        why="her own compass deck, mast and fittings, built in Blender",
+        what='the compass deck, mast and what they carry (radar, lights, antennas, searchlight, vents)'),
 }
 # Parts of the base that must lie inside the shell.
 FIT = ('machinery',)
@@ -371,7 +379,7 @@ def main():
         else:
             header.pop(key, None)
     ship = header['ship']
-    ship['built'] = [dict(part=gid, section=SUPERSEDES[gid]['section'], date=SUPERSEDES[gid]['built']) for gid in SUPERSEDES
+    ship['built'] = [dict(part=gid, section=SUPERSEDES[gid]['section'], date=SUPERSEDES[gid]['built'], what=SUPERSEDES[gid]['what']) for gid in SUPERSEDES
                      if any(f['group'] == gid for f in fresh) or any(b.get('part') == gid for b in ship.get('built', []))]
     header['source']['blender'] = dict(generator=parts[0][0]['generator'], blender=parts[0][0]['blender'])
     text = json.dumps(header, ensure_ascii=False, separators=(',', ':')).encode()

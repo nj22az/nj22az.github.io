@@ -1144,12 +1144,14 @@ function buildPanel(header) {
   const s = header.source, ship = header.ship;
   const from = `the Johansson Town source at commit ${s.commit}${s.uncommitted ? ' with later changes' : ''}`;
   // What is her own so far (ship.built, written by blender/assemble.py), and what is still drawn from the other ship.
-  const own = (ship.built || []).map(b => b.section.toLowerCase());
+  const built = ship.built || [], own = built.map(b => b.section.toLowerCase());
   const said = own.length > 1 ? `${own.slice(0, -1).join(', ')} and ${own[own.length - 1]} are` : `${own[0]} is`;
+  // What each section is, from the file (`what`): the hull from her lines, the compass deck and its mast, and so on.
+  const what = built.map(b => b.what).filter(Boolean).join('; ');
   list.append(el('p', { className: 'source' }, !ship.drawnFrom
     ? `${ship.name}, ${ship.length} m long. Drawn from ${from}.`
     : own.length
-      ? `${ship.name}, ${ship.length} m long, a new ship in the making. Her ${said} her own, built in Blender from her lines: plating, frames, floors and bulkheads, screws and rudders. The rest is for now the ${ship.drawnFrom}'s drawing, from ${from}, so some notes still speak of that ship's crew and route. It is rebuilt section by section.`
+      ? `${ship.name}, ${ship.length} m long, a new ship in the making. Her ${said} her own, built in Blender: ${what || 'drawn from her lines'}. The rest is for now the ${ship.drawnFrom}'s drawing, from ${from}, so some notes still speak of that ship's crew and route. It is rebuilt section by section.`
       : `${ship.name}, ${ship.length} m long. A first look: she is a new ship in the making, and for now her drawing is the ${ship.drawnFrom}'s, from ${from}, so some notes still speak of that ship's crew and route. Her own build, section by section from the working drawings, comes next.`));
 }
 
