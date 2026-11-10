@@ -27,11 +27,15 @@ requirement is a lead, not a finding, until it has been read.
 
 ## How she is built, step by step
 
-1. **Rule basis** (open: `class/PA-001`, comment 1). Which rules she is designed to. Until the owner decides, the review takes the
-   international conventions as the benchmark (SOLAS, COLREG, Load Lines) for a passenger ship on a short coastal voyage.
+1. **Rule basis.** Settled by the owner on 11 November 2026 ("Rectify and proceed work according to your recommendations"):
+   **the international conventions are the benchmark**: SOLAS as for a passenger ship, COLREG and the Load Line convention,
+   though a 34.5 m ferry on her service would be a domestic ship under her flag's own rules. Where a regulation binds only
+   larger ships she meets it all the same. `class/PA-001` lists what has been read of them, where, and what is still recalled.
 2. **Plan approval, section by section.** The yard submits a section (first: the navigation bridge). Class reads it and writes a
    comment sheet. The yard answers each comment by changing the design or by showing why it stands. A section is approved when no
-   comment of category A is open.
+   comment of category A is open. The navigation bridge was approved with comments on 11 November 2026 (PA-001 revision 1).
+   The yard's calculations are programs that read the model and the register (`calc/`): run again after any change, they
+   stop with an error when a result leaves its limit. They found five defects in the bridge that reading the drawings had not.
 3. **Construction.** The model is built from the approved documents; class surveys it against them (`SR-…`): that what is drawn
    is what was approved, and that the checks the yard claims were run.
 4. **Tests and trials**, simulated honestly: a test is a calculation or a run of the model with a stated method and a result, never
@@ -61,7 +65,8 @@ use to her:
    public domain was found for this type on 10 November.
 2. **The rule texts themselves**, which are published: the conventions' regulations on steering gear, emergency power, fire
    detection, bridge visibility, navigation lights and radio; and one society's rules for small passenger ships. With them the
-   word "recalled" comes out of the comment sheets.
+   word "recalled" comes out of the comment sheets. The conventions' regulations for the bridge were read on 11 November
+   (`class/PA-001`, the rule basis); a society's rules for the electrical installation have not been.
 3. **An electrical one-line diagram and load balance** of a ship with two generators and an emergency generator.
 4. **Machinery and piping diagrams** (bilge, ballast, fire main, fuel, cooling, compressed air) of a twin-screw vessel of her power.
 5. **A shipyard's own standard documents**: an inspection and test plan, a sea trial programme, a docking plan.

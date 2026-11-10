@@ -176,7 +176,7 @@ def _mast():
     _cyl(steel, (0, top - 0.14, mz), (0, top - 0.04, mz), 0.025, ZINC, sides=8)
     _cyl(lens, (0, top - 0.1, mz), (0, top, mz), 0.055, LENS, sides=12)                                # the anchor light
     # ---- Two air horns on a bracket at the front, a loudhailer and the signal lamp.
-    hy = my + 0.55
+    hy = M['horns']
     _cyl(steel, (0, hy - 0.03, mz + 0.04), (0, hy - 0.03, mz + 0.22), 0.015, ZINC, sides=6)
     for sx in (-1, 1):
         _cyl(steel, (sx * 0.09, hy, mz + 0.16), (sx * 0.09, hy + 0.04, mz + 0.62), 0.022, ZINC, sides=10, r2=0.085)

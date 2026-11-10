@@ -143,6 +143,7 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
       const b = boards.get(id); if (!b) return null;
       const members = new Set([b.comp]), paths = [];
       if (b.feeder) paths.push(b.feeder.path);
+      if (b.altFeeder) paths.push(b.altFeeder.path);
       for (const k of b.circuits) { for (const c of [...k.consumers, ...k.standby]) members.add(c); paths.push(...Object.values(k.paths)); if (k.feeds) members.add(boards.get(k.feeds).comp); }
       return { title: `${b.id} · ${b.name}`, members: [...members], paths, ink: INK.power };
     }
@@ -201,6 +202,7 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
       const n = el('div', { className: 'note' }, el('p', {}, b.text));
       if (b.feeder) n.append(el('p', { className: 'muted' }, `Fed from the ${b.fedBy.name.toLowerCase()} (${b.fedBy.where.toLowerCase()}): ${b.feeder.amps} A, ${b.feeder.breaker} A breaker, ${b.feeder.cable}, ${b.feeder.length} m, ${b.feeder.drop} % drop.`));
       else n.append(el('p', { className: 'muted' }, `Fed from ${way(b.fedBy.board, b.fedBy.circuit)}${b.alt ? `, with ${way(b.alt.board, b.alt.circuit)} as its second supply` : ''}.`));
+      if (b.altFeeder) n.append(el('p', { className: 'muted' }, `Second feeder, by another way, from the ${b.altFeeder.name.toLowerCase()} (${b.altFeeder.where.toLowerCase()}): ${b.altFeeder.breaker} A breaker, ${b.altFeeder.cable}, ${b.altFeeder.length} m, ${b.altFeeder.drop} % drop.`));
       n.append(el('p', { className: 'muted' }, `${kW(b.load.connected)} connected, about ${kW(b.load.sea)} at sea.`));
       const ways = el('ul', { className: 'ways' });
       for (const k of b.circuits) {

@@ -191,7 +191,9 @@ BILGE_KEEL = dict(yard=(11.0, 23.0), depth=0.22, psi=pi / 4)
 COMPASS_DECK = dict(deck=11.5, slab=0.32, half=3.10, yards=(5.95, 23.16), corner=0.35,
                     rail=1.0, rail_in=0.13, post_every=1.45,
                     gate=(19.25, 0.8))            # the gap in the port rail where the ladder arrives: (yard, width)
-MAST = dict(yard=20.8, top=16.1, yardarm=13.5, platform=13.6, radar=13.82, masthead=14.1)
+# The masthead light stands 0.2 m over the tops of the radar platform's posts: at 14.1 two of them stood in its sector
+# (the yard's calculation JS4-402, for class comment PA-001 No. 10). The horns stay where they were.
+MAST = dict(yard=20.8, top=16.1, yardarm=13.5, platform=13.6, radar=13.82, masthead=14.4, horns=14.65)
 ROOF_DECK = 0xb4bab6        # the roof's paint: light grey, non-skid
 
 # ---- Marks.

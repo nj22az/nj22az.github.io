@@ -33,29 +33,41 @@ CCTV,Camera network,Ethernet with power to the cameras,ALM-05,Camera monitor,nod
 CCTV,Camera network,Ethernet with power to the cameras,elsewhere,Car deck: Cameras at the bow ramp and on the car deck,node,
 CCTV,Camera network,Ethernet with power to the cameras,elsewhere,Passenger deck: Camera at the stern,node,
 CCTV,Camera network,Ethernet with power to the cameras,elsewhere,Engine room: Camera in the engine room,node,
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-07,"Propulsion control unit, bridge",node,which station commands; the orders
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-01,"Engine control lever, port",node,lever position
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-02,"Engine control lever, starboard",node,lever position
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-03,Bow thruster lever,node,lever position
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-04,Propulsion control panel,node,
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-05,Bow thruster panel,node,
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-06,Engine instrument panel,node,
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-10,"Wing control station, port",node,lever positions
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-11,"Wing control station, starboard",node,lever positions
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",NAV-10,Conning display,node,"revolutions, for the conning display"
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",elsewhere,"Engine control room: Engine control units, port and starboard",node,"revolutions, clutch state, alarms"
-PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",elsewhere,Bow thruster room: Bow thruster starter and controller,node,"running, current"
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-01,Steering stand and wheel,talks,the wheel's position
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-03,Steering mode selector and tiller,talks,mode; tiller port or starboard
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",NAV-12,Autopilot control unit,talks,rudder ordered by the autopilot
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-02,Steering control unit,node,valve orders
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-05,"Rudder angle indicator, overhead",listens,rudder angle
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-06,"Rudder angle indicator, console",listens,rudder angle
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",PRP-10,"Wing control station, port",listens,rudder angle
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",PRP-11,"Wing control station, starboard",listens,rudder angle
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",NAV-10,Conning display,listens,rudder angle
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",elsewhere,"Steering-gear room: Hydraulic power units No. 1 and No. 2 (valves, running, alarms)",node,
-STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",elsewhere,Steering-gear room: Rudder angle transmitter,talks,rudder angle
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-07,"Propulsion control unit, bridge",node,which station commands; the orders
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-01,"Engine control lever, port",node,lever position
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-02,"Engine control lever, starboard",node,lever position
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-03,Bow thruster lever,node,lever position
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-04,Propulsion control panel,node,
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-05,Bow thruster panel,node,
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-06,Engine instrument panel,node,
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-10,"Wing control station, port",node,lever positions
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",PRP-11,"Wing control station, starboard",node,lever positions
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",NAV-10,Conning display,node,"revolutions, for the conning display"
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",elsewhere,"Engine control room: Engine control units, port and starboard",node,"revolutions, clutch state, alarms"
+PROP-CAN-A,"Propulsion control, line A","CAN bus, screened twisted pair, down the port side",elsewhere,Bow thruster room: Bow thruster starter and controller,node,"running, current"
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",PRP-07,"Propulsion control unit, bridge",node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",PRP-01,"Engine control lever, port",node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",PRP-02,"Engine control lever, starboard",node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",PRP-03,Bow thruster lever,node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",PRP-10,"Wing control station, port",node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",PRP-11,"Wing control station, starboard",node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",elsewhere,"Engine control room: Engine control units, port and starboard",node,
+PROP-CAN-B,"Propulsion control, line B","CAN bus, screened twisted pair, down the starboard side",elsewhere,Bow thruster room: Bow thruster starter and controller,node,
+STEER-1,Steering control system No. 1,"control cables, screened, down the port side",STR-02,Steering control system No. 1,node,valve orders
+STEER-1,Steering control system No. 1,"control cables, screened, down the port side",STR-01,Steering stand and wheel,talks,"the wheel's position, first transmitter"
+STEER-1,Steering control system No. 1,"control cables, screened, down the port side",STR-03,Steering mode selector and tiller,talks,system and mode chosen; tiller port or starboard
+STEER-1,Steering control system No. 1,"control cables, screened, down the port side",NAV-12,Autopilot control unit,talks,rudder ordered by the autopilot
+STEER-1,Steering control system No. 1,"control cables, screened, down the port side",elsewhere,"Steering-gear room: Hydraulic power unit No. 1 (valves, running, alarms)",node,
+STEER-2,Steering control system No. 2,"control cables, screened, down the starboard side",STR-07,Steering control system No. 2,node,valve orders
+STEER-2,Steering control system No. 2,"control cables, screened, down the starboard side",STR-01,Steering stand and wheel,talks,"the wheel's position, second transmitter"
+STEER-2,Steering control system No. 2,"control cables, screened, down the starboard side",STR-03,Steering mode selector and tiller,talks,system and mode chosen; tiller port or starboard
+STEER-2,Steering control system No. 2,"control cables, screened, down the starboard side",elsewhere,"Steering-gear room: Hydraulic power unit No. 2 (valves, running, alarms)",node,
+RUDDER,Rudder angle indication,"4 to 20 mA signal, screened pair, with its own supply",STR-05,"Rudder angle indicator, overhead",listens,rudder angle
+RUDDER,Rudder angle indication,"4 to 20 mA signal, screened pair, with its own supply",STR-06,"Rudder angle indicator, console",listens,rudder angle
+RUDDER,Rudder angle indication,"4 to 20 mA signal, screened pair, with its own supply",PRP-10,"Wing control station, port",listens,rudder angle
+RUDDER,Rudder angle indication,"4 to 20 mA signal, screened pair, with its own supply",PRP-11,"Wing control station, starboard",listens,rudder angle
+RUDDER,Rudder angle indication,"4 to 20 mA signal, screened pair, with its own supply",NAV-10,Conning display,listens,rudder angle
+RUDDER,Rudder angle indication,"4 to 20 mA signal, screened pair, with its own supply",elsewhere,Steering-gear room: Rudder angle transmitter,talks,rudder angle
 PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-01,Public address and general alarm amplifier,node,
 PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-02,Public address and talkback panel,talks,"microphone, zone keys"
 PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-07,General alarm push button,talks,general alarm
