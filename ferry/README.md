@@ -714,7 +714,8 @@ the design: the list is in the bridge's section above. `checks/bridge.cjs` **24 
 port engine lever moves it a notch and shows its card; the same lever at the console and on both wings has turned 16.26°;
 the wheel turns four degrees for one of rudder). Looked at in pictures: the console from the wheel, the control heads at
 rest and worked, the port wing's station, the view from its levers across the bow, the mast. Not run: the homepage's own
-review (nothing of the homepage changed); the walk tests of the other decks (nothing of them changed). Not on `main`.
+review (nothing of the homepage changed); the walk tests of the other decks (nothing of them changed). Published to `main`
+the same day on the owner's "Merge current progress to main so I can look at it", with the rename and the yard's paperwork.
 
 ### 11 November 2026, last: renamed Chisum
 

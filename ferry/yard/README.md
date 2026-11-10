@@ -45,6 +45,9 @@ requirement is a lead, not a finding, until it has been read.
 
 ## The paperwork
 
+Paths in this folder that begin with `temp/minato-maru/` or `ferry/design/bridge/` are on the development branch
+`claude/festive-rubin-fo8mmp`, not on `main`: the other ship's working drawings and the survey of her bridge.
+
 `document-register.csv` lists what a yard holds for a ship of this kind: 83 documents, each with its number, what it is, and
 whether it **exists** (with where), is **partly** there, or is **to do**. Documents are numbered by ship group (1 general, 2 hull,
 3 cargo equipment: the ramp and car deck, 4 ship equipment: navigation, steering, anchoring, 5 crew and passengers, 6 machinery,
