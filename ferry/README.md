@@ -12,7 +12,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.58 MB, about 212,000 triangles in 83 meshes (87,200 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.59 MB, about 213,000 triangles in 83 meshes (88,000 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 
@@ -112,9 +112,11 @@ DigitaltMuseum refused automated access, so none was opened. Wikimedia Commons w
   5 × 3 × 5/16 in inverted angle (127 × 76 mm) from the tank top to the main deck, 3½ × 2½ × ¼ in above it, spaced 2 ft,
   and 4 × 3 × 5/16 in intermediate frames 12 in between the regular ones at the forward end; plate floors of 12.75 and
   15.3 lb plate (5/16 and 3/8 in); a plate centre vertical keel of 20.4 lb, watertight or oil-tight between frames
-  19 and 51. The Christina's frames (0.5 m apart, 75 × 50 mm) are lighter than that vessel's, as is to be expected of
-  a hull 15 m shorter; whether they are right for her was not checked against a class rule, and raising them to about
-  100 × 65 mm is open. Not done.
+  19 and 51. The Christina's frames were 75 × 50 mm, 0.5 m apart: lighter than
+  that vessel's, as is to be expected of a hull 15 m shorter, but on the light side. **Taken up (10 November 2026):**
+  100 × 65 mm, the 5 × 3 in angle scaled to a hull of 4 m depth, and a lighter 80 × 65 mm frame (its 4 × 3 in) between
+  each pair forward of the collision bulkhead, so the fore peak has them every 0.25 m (`spec.py`: `FRAME_WEB`,
+  `INTERMEDIATE_WEB`; `hull_structure.py`: `_side_frames`). Whether the sizes match a class rule was not checked.
 - *What a real outfit holds* (the boat and bridge deck, the pilot house roof): range light, anchor lights, side lights,
   searchlight, radar and radio antennas, a 13-person life raft, a 5-ton cargo crane, a capstan, a 20 by 10 ft cargo
   hatch. A checklist for section 2.
@@ -217,8 +219,8 @@ the Town at the weekend (with the two under *How the two ships are put together*
   (`Primer plate`) are therefore drawn a hair further away (`offset: [1, 1]`), the more so the more edge-on they are.
 - *Marks in front of plating.* Lettering is flat geometry 4 mm off the plating, drawn a hair nearer (`offset: [-2, -4]`).
   Cut open, such a mark keeps its one face (`app.js`, `setCut`), or her name reads mirrored inside the transom.
-- *Where the Minato Maru's rooms still are, the hull keeps clear of them:* frames are 75 mm angles inside the 14 cm
-  between the moulded line and the rooms' linings, and the bulkheads at frames 17 and 52 stand 8 cm outside the rooms'
+- *Where the Minato Maru's rooms still are, the hull keeps clear of them:* frames are 100 mm angles inside the 14 cm
+  between the moulded line and the rooms' linings (28 mm to spare), and the bulkheads at frames 17 and 52 stand 8 cm outside the rooms'
   own end walls. When the machinery spaces are rebuilt, these become ordinary web frames and bulkheads.
 
 ## Walking aboard and the outside view
@@ -466,6 +468,16 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 10 November 2026, after it: heavier frames (from the reference drawings)
+
+`build.py` (88,142 triangles, 14 motions) with its checks unchanged (the plating's two faces never nearer than 10.4 mm,
+structure never nearer than 5.2 mm to the plating, 0 corners through it, solids looking outward); `assemble.py` on the
+Town's export and again on its own output: the same file; `check.py --town …`: all passed. Walking: all 58 checks, and
+46 of 46 rooms reached on foot, as before. The page's eleven standard pictures: no console errors. Looked at: the open
+hull from forward before and after (twice as many frames in the fore peak, each deeper) and the engine room (nothing
+stands through the other ship's linings). **Not seen:** a difference from inside the steering-gear room or from a
+distance: a frame's face grew from 50 to 65 mm, which needs a close look. Not run: any real device.
 
 ### 10 November 2026, the last: every room on foot
 

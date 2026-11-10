@@ -35,9 +35,14 @@ STRAKE_BUTT = 6.0          # a plate's length, metres; butts are shifted 2 m fro
 GATE = (-3.75, -2.75)
 
 # ---- Structure. Frames stand at every 0.5 m (frame 0 at the transom). The machinery spaces' own linings stand
-# 14 cm inside the moulded line (Rev C sheet C3), so a 75 mm frame clears them.
-FRAME_WEB = 0.075
-FRAME_FLANGE = 0.05
+# 14 cm inside the moulded line (Rev C sheet C3), so a frame 100 mm deep (112 mm off the moulded line with the plating)
+# clears them. 100 × 65 mm: the 5 × 3 in angle of M/V Ranger III (HAER MI-432), a 50 m vessel, scaled to a hull of 4 m
+# depth. Forward of the collision bulkhead, where the sea strikes her, a lighter frame (80 × 65 mm, Ranger III's 4 × 3 in)
+# stands between each pair, so the spacing there is 0.25 m.
+FRAME_WEB = 0.100
+FRAME_FLANGE = 0.065
+INTERMEDIATE_WEB = 0.080
+INTERMEDIATE_FROM = 30.5            # the yard of the collision bulkhead
 TANK_TOP = Y(0.7)
 # Watertight bulkheads that the hull carries herself (yard). 8.5 and 26 are set 8 cm clear of the machinery spaces'
 # own end walls, which stand at 8.44–8.50 and 26.00–26.06.
