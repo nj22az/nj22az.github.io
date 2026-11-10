@@ -140,3 +140,27 @@ The 60 L day tank is a drawn box (a Town audit finding: it rests on nothing); no
 
 - Where from: ferry-piping.js fuel system (no EG node); ferry-interior.js day tank; register B001, B007–B009 · drawn on CHR-B4
 - To do: A DN15 fill from the transfer pump and a return, an overflow and a vent; an exhaust through the aft wall or the deckhead; louvres with closing flaps
+
+## What became of these when the navigation bridge was redrawn (11 November 2026)
+
+The wheelhouse and its wings were drawn anew and registered (`ferry/systems/`, `ferry/blender/wheelhouse.py`). For the
+navigation bridge, on the Christina:
+
+| Finding | Now |
+|---|---|
+| BF-01 glass 173° of 225° | **Closed.** 224° by the same measure, worked out by the build from the windows as built; the build stops if a blind sector wider than a mullion opens |
+| BF-02 compass on the line of sight | **Closed.** Read in a periscope at the deckhead, now directly under the binnacle |
+| BF-03 levers crossed | **Closed.** Port lever to port |
+| BF-05 two unnamed boxes | **Closed.** Every fitting is a named component of the register |
+| BF-08 items named and not drawn | **Closed for the navigation bridge** (145 components, 144 drawn; the stern light is not). Open for the rest of the deck |
+| BF-09 no thruster lever, autopilot, wing consoles | **Closed.** |
+| BF-11 wing doors beside their doorways | **Closed.** Hinged doors in their doorways; the port one moved to mirror the starboard one |
+| BF-13 no direct current to any consumer | **Closed for the bridge.** Two 24 V panels, 20 ways, each sized and its drop worked out |
+| BF-14 one 0.75 kW feeder for six systems | **Closed for the bridge.** BD1 (2.4 kW) and BD2 (1.1 kW), a way for each service |
+| BF-15 no fire detection or general alarm circuit | **Closed for the wheelhouse.** A panel on BD2, loop 1 with a detector and a call point, the general alarm on the public address. The detectors of the other rooms come with their rooms |
+| BF-16 pipes not drawn | **Closed for the bridge's own** (whistle air, window wash, fire main branch, scuppers, air conditioner): each has its run in the register and its fittings in the model. The deck's fresh water and waste are the accommodation's |
+| BF-18 one hydrant, 15 m of hose | **Open.** The hydrant and its hose box are drawn on the port wing; the reach aft is the accommodation's section |
+| BF-04, BF-06, BF-07, BF-10, BF-12, BF-17, BF-19 | **Open**: they concern the rest of the bridge deck or the Town's own tables |
+
+New, found by the register's own check: the Minato Maru's searchlight feeder has a 10 A breaker for 9.5 A, under her list's own
+rule of 1.25 times the full-load current (`ferry/systems/README.md`). For the Town's repository.

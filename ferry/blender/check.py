@@ -72,6 +72,31 @@ def main():
     total = sum(m['triangles'] for g in groups.values() for m in g['meshes'])
     size = os.path.getsize(a.file)
     check(size < 2_000_000, f'the file is {size / 1e6:.2f} MB with {total} triangles (under 2 MB)')
+    # ---- Her own pictures and her register travel with the model.
+    here = os.path.dirname(os.path.abspath(a.file))
+    sheets = header.get('atlases', [])
+    check(len(sheets) == 2 and all(os.path.exists(os.path.join(here, s['file'])) for s in sheets), 'two sheets of pictures are named and both are there')
+    used = {header['materials'][m['material']].get('atlas', 0) for g in groups.values() for m in g['meshes'] if header['materials'][m['material']].get('textured')}
+    check(used <= {0, 1} and 1 in used, 'her own sheet is drawn from')
+    for g in groups.values():
+        for m in g['meshes']:
+            if header['materials'][m['material']].get('textured') and 'uv' not in m:
+                check(False, f'{g["id"]}: a mesh with a picture has no place on its sheet (no uv)')
+    reg = header.get('systems')
+    if reg and os.path.exists(os.path.join(here, reg['file'])):
+        data = json.load(open(os.path.join(here, reg['file'])))
+        comps = data['components']
+        check(len(comps) == reg['components'], f'the register beside the model holds the {reg["components"]} components the model names')
+        lo, hi = np.array(header['bounds']['min']) - 0.05, np.array(header['bounds']['max']) + 0.05
+        out = [c['id'] for c in comps if c.get('box') and not ((np.array(c['box'][0]) >= lo).all() and (np.array(c['box'][1]) <= hi).all())]
+        check(not out, f'every component with a place in the model lies within the model ({", ".join(out) or "all"})')
+        parts = {c.get('part') for c in comps if c.get('box')}
+        check(parts <= set(groups), f'each is drawn in one of the viewer\'s parts ({", ".join(sorted(p for p in parts if p))})')
+        ids = {c['id'] for c in comps}
+        loose = [f"{b['id']} {k['no']}: {c}" for b in data['boards'] for k in b['circuits'] for c in k['consumers'] + k['standby'] if c not in ids]
+        check(not loose, 'every consumer of every way is a component of the register')
+    else:
+        check(False, 'the model names no register, or the register is not beside it')
     for g in groups.values():
         for m in g['meshes']:
             if m['material'] >= len(header['materials']):

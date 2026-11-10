@@ -110,7 +110,31 @@ and its underside is the ceiling), not 2.4 m as the sections B1, B2 and B6 first
 cooker in the galley, and a clock and barometer on the wheelhouse's aft wall *are* drawn, as unnamed pieces that the Town's
 interior list does not hold (corrected in the register); the Town's pedestals on the wings were its wing consoles.
 
+## The navigation bridge, redrawn whole (11 November 2026, later the same day)
+
+The owner: "Make the ferry fully realistic in blender, start with one section at a time. Start with the bridge, aim for a fully
+explorable realistic ferry with a component register", and: "If current foundation is lacking don't be ashamed of redrawing it".
+So the wheelhouse and both wings are no longer the Minato Maru's house with her fittings in it: they are drawn anew
+(`ferry/blender/wheelhouse.py`), and what they hold is registered in **`ferry/systems/`** (145 components with their supply,
+circuits, nets and pipes; [README](../../systems/README.md)). For the navigation bridge that register supersedes this folder's
+`register.csv` and `design-basis.json`, which remain the survey of what stood there and the first layout. `FINDINGS.md` says at
+its end what became of each finding.
+
+Three things this folder's layout got wrong, found while building it whole:
+- the compass periscope hung 0.65 m aft of the binnacle it is read through (it is now directly under it);
+- the sidelights stood behind the wing bulwarks, 0.98 to 1.18 m up behind a 1.10 m plate (they are on the bulwark's rail now);
+- the port door was kept in the after corner, where the boards and a locker on the aft wall would stand in its doorway (it is
+  moved to mirror the starboard door).
+
 ## Next
+
+The rest of the bridge deck is the crew accommodation's section: the corridor and the house's walls (with the crew stair's
+1.50 m opening), the galley, the mess and the cabins, the EG and CO₂ rooms with their machinery, on the method of `ferry/systems/`.
+The owner asks for a shower and toilet in each cabin (`ferry/README.md`, *What comes next*). The findings that are the Town's
+(tags, tables, the audit) belong in the Town's repository.
+
+*The paragraph below is the plan as it stood before the navigation bridge was redrawn.*
+
 
 The rest of the bridge deck, a room at a time by the same rule (`assemble.REPLACES`): the corridor and the house's walls
 (including the crew stair's 1.50 m opening), the galley, the mess and the cabins with their equipment from the register, the EG
