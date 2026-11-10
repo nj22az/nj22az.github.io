@@ -1,5 +1,5 @@
 /**
- * The ferry viewer: the Christina, turned, taken apart deck by deck, cut open, and walked through on foot.
+ * The ferry viewer: the Chisum, turned, taken apart deck by deck, cut open, and walked through on foot.
  *
  * She is the lead ship of a new design, built section by section in Blender (blender/). Her hull is her own; the
  * decks above it and the machinery are for now the Minato Maru's, the ferry of Johansson Town, exported from the game's
@@ -288,6 +288,40 @@ function workAuto(dt) {
   }
   if (moved) moveParts(!under);
 }
+/**
+ * What the file says is worked a notch at a time (`steps`: her control levers): a tap moves it to the next position, up
+ * to the end of its travel and back again, and says what the position means. It travels there in a third of a second.
+ */
+function stepInput(id) {
+  const it = inputs.get(id);
+  if (!it || !it.def.steps) return null;
+  const n = it.def.steps.length;
+  if (it.at + it.way < 0 || it.at + it.way >= n) it.way = -it.way;
+  it.at += it.way;
+  it.want = it.def.steps[it.at].v;
+  readout.textContent = `${it.def.name}: ${it.def.steps[it.at].say}`;
+  return it.def.steps[it.at];
+}
+function workSteps(dt) {
+  let moved = false, under = false;
+  for (const it of inputs.values()) {
+    if (!it.def.steps || it.value === it.want) continue;
+    const step = (it.def.max - it.def.min) / 1.2 * dt;
+    it.value = it.want > it.value ? Math.min(it.want, it.value + step) : Math.max(it.want, it.value - step);
+    moved = true;
+    if (it.value !== it.want) under = true;
+  }
+  if (moved) moveParts(!under);
+}
+/** The control a tap has reached: the moving part itself, or the fitting of the register it belongs to. */
+function controlAt(object, fittingId) {
+  for (let n = object && object.parent; n; n = n.parent) {
+    const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
+    if (it && it.def.steps) return it.def.id;
+  }
+  if (fittingId) for (const it of inputs.values()) if (it.def.steps && it.def.fitting === fittingId) return it.def.id;
+  return null;
+}
 /** A slider in the bar for each thing the file says can be worked. A double click puts it back to rest. */
 function buildInputs(header) {
   for (const def of header.inputs || []) {
@@ -295,6 +329,12 @@ function buildInputs(header) {
     if (def.auto) {
       inputs.set(def.id, { def, value: def.min, open: false });
       if (def.normal) { const axis = Math.abs(def.normal[0]) > Math.abs(def.normal[2]) ? 0 : 2; passages.push({ axis, u: def.at[axis === 0 ? 2 : 0], at: def.at[axis], y: def.at[1] }); }
+      continue;
+    }
+    // A lever has no slider either: a tap moves it a notch (stepInput), and it travels there in a moment (workSteps).
+    if (def.steps) {
+      const home = def.steps[def.home ?? 0].v;
+      inputs.set(def.id, { def, value: home, want: home, at: def.home ?? 0, way: 1 });
       continue;
     }
     const range = el('input', { type: 'range', min: String(def.min), max: String(def.max), step: String(def.step || 1), value: '0' });
@@ -515,7 +555,10 @@ function identify(clientX, clientY) {
   const p = hit.point.clone().sub(deck.node.position);
   // A fitting of the register answers before the room it stands in: the card says what it is.
   const fitting = systems && systems.pick(deck.id, p);
-  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); return; }
+  // A lever answers a tap by moving a notch; its card is shown with it.
+  const control = controlAt(hit.object, fitting && fitting.id);
+  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); if (control) stepInput(control); return; }
+  if (control) { stepInput(control); return; }
   if (systems) { systems.hideCard(); if (!systems.state.shown) systems.clear(); }
   // The smallest room of this deck that holds the point: a cabin wins over the deck house it stands in.
   let best = null, bestSize = Infinity;
@@ -554,8 +597,10 @@ function nameOnFoot(clientX, clientY) {
   while (within && !decks.some(d => d.node === within)) within = within.parent;
   const deck = hit && hit.distance < 8 && decks.find(d => d.node === within);
   const fitting = deck && systems.pick(deck.id, hit.point.clone().sub(deck.node.position));
+  const control = deck && controlAt(hit.object, fitting && fitting.id);
   if (fitting) systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown });
   else if (systems.state.shown) systems.hideCard(); else systems.clear();
+  if (control) stepInput(control);
 }
 renderer.domElement.addEventListener('pointerdown', e => {
   if (walk) { walkDown = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }; lookStart(e); return; }
@@ -1235,6 +1280,7 @@ function frame(now) {
   const dt = Math.min((now - lastFrame) / 1000 || 0, 0.25);
   lastFrame = now;
   workAuto(dt);
+  workSteps(dt);
   if (walk) {
     stepWalk(dt);
     if (dirty) { renderer.render(scene, camera); dirty = false; }
@@ -1308,6 +1354,9 @@ async function start() {
     get ways() { return ways.map(w => ({ id: w.def.id, a: w.a.toArray(), b: w.b.toArray() })); },
     /** For checks: leave a door open or shut, as a tap would. */
     work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
+    step: id => stepInput(id),
+    control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
+    movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray() })),
     get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max, stand: sp.stand || null }))); },
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw },
     get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent, climbing: !!walk.climb, ladder: climbBtn.hidden ? null : climbBtn.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },

@@ -1,5 +1,5 @@
 """
-The navigation bridge of the Christina: the wheelhouse, its two wings and what stands over it on the compass deck.
+The navigation bridge of the Chisum: the wheelhouse, its two wings and what stands over it on the compass deck.
 Every component with what it is, where it stands, what it draws and from which circuit; the boards and their circuits; the
 nets that join the components; the pipes; and the cable ways all of it is laid along.
 
@@ -24,7 +24,9 @@ VOID = 2.20            # the deckhead void the cable trays lie in, inside the ro
 # consumer along the shortest way through them; its length is that way, the tails at both ends, and a tenth more.
 # ---------------------------------------------------------------------------------------------------------------------
 NODES = {
-    'COR': (0.0, 19.50, VOID),          # where the ship's cables arrive: the corridor's deckhead at the wheelhouse door
+    'COR': (0.0, 19.50, VOID),          # where the signal and communication cables arrive: the corridor's deckhead at the wheelhouse door
+    'MAIN-IN': (2.70, 19.50, VOID),     # where the main supplies arrive, along the port side of the house
+    'EM-IN': (-2.70, 19.50, VOID),      # and the emergency and battery supplies, along the starboard side: the two ways lie 5.4 m apart
     'AFT-C': (0.0, 19.70, VOID),        # the cross tray along the aft wall
     'AFT-P': (1.60, 19.70, VOID),
     'AFT-PP': (2.70, 19.70, VOID),
@@ -55,14 +57,14 @@ NODES = {
     'WALL-S': (-2.96, 21.20, VOID),
     'MAST-D': (0.0, 20.80, DECK_H + 0.05),   # up the mast
     'MAST-PF': (0.0, 20.80, 4.50),
-    'MAST-ML': (0.0, 20.80, 5.00),
+    'MAST-ML': (0.0, 20.80, 5.30),
     'MAST-H': (0.0, 20.80, 5.55),
     'MAST-T': (0.0, 20.80, 6.95),
     'ROOF-A': (0.0, 19.85, DECK_H + 0.05),   # conduit on the compass deck, aft to the antennas
     'ROOF-F': (0.0, 22.00, DECK_H + 0.05),   # and forward to the searchlight, the floodlights and the binnacle
 }
 EDGES = [
-    ('COR', 'AFT-C'), ('AFT-C', 'AFT-P'), ('AFT-P', 'AFT-PP'), ('AFT-C', 'AFT-S'), ('AFT-S', 'AFT-SS'),
+    ('COR', 'AFT-C'), ('MAIN-IN', 'AFT-PP'), ('EM-IN', 'AFT-SS'), ('AFT-C', 'AFT-P'), ('AFT-P', 'AFT-PP'), ('AFT-C', 'AFT-S'), ('AFT-S', 'AFT-SS'),
     ('AFT-P', 'BRD'), ('AFT-S', 'CHT'),
     ('AFT-P', 'P-M'), ('P-M', 'P-F'), ('AFT-S', 'S-M'), ('S-M', 'S-F'),
     ('AFT-C', 'MAST-0'), ('MAST-0', 'C-F'),
@@ -75,6 +77,10 @@ EDGES = [
     ('MAST-D', 'ROOF-A'), ('MAST-D', 'ROOF-F'),
 ]
 
+# Where each board elsewhere sends its cables into the bridge. PA-001 comment 7: main and emergency supplies do not share a
+# way. They meet only at the boards themselves, which stand side by side on the aft wall.
+ENTRY = {'LB': 'MAIN-IN', 'MSB': 'MAIN-IN', 'SG1': 'MAIN-IN', 'ESB': 'EM-IN', 'TSB': 'EM-IN', 'DCB': 'EM-IN', 'DCB-R': 'EM-IN', 'SG2': 'EM-IN'}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # Boards on the bridge. `comp` is the component that is the board; `feeder` the cable that feeds it: breaker (A), copper
 # (mm²), and the board or circuit it comes from.
@@ -85,25 +91,40 @@ BOARDS = [
          text='General services of the bridge: lighting, wipers, sockets, the air conditioner, the chart system. Dead in a blackout.'),
     dict(id='BD2', name='Wheelhouse emergency distribution board', comp='ELD-02', volts=105, kind='AC', fed_by='ESB',
          feeder=dict(breaker=16, mm2=4),
-         text='What must work when the main board is dead: the radar, the navigation lights, public address and general alarm, '
-              'fire detection, the whistle. Fed from the emergency switchboard, so from the main generators while they run and '
-              'from the emergency generator when they do not.'),
+         text='What must work when the main board is dead: the radar, public address and general alarm, the emergency light, '
+              'the whistle, the second supply of the propulsion control. Fed from the emergency switchboard, so from the main '
+              'generators while they run and from the emergency generator when they do not. The navigation lights and the fire '
+              'detection panel are not on it: each has feeders of its own, direct from the switchboards.'),
     dict(id='DC1', name='24 V DC panel, navigation and control', comp='ELD-03', volts=24, kind='DC', fed_by='DCB',
-         feeder=dict(breaker=40, mm2=25),
+         feeder=dict(breaker=40, mm2=35),
          text='Navigation sensors, steering and propulsion control, alarms, the red night lighting: on the general service battery, '
               'so nothing on it notices a blackout.'),
     dict(id='DC2', name='24 V DC panel, radio', comp='ELD-04', volts=24, kind='DC', fed_by='DCB-R',
-         feeder=dict(breaker=25, mm2=16),
+         feeder=dict(breaker=25, mm2=25),
          text='The radio installation on its own battery (the reserve source of energy): both VHF sets, the NAVTEX receiver, the '
               'position fix for the distress call, the portable sets\' charger.'),
-    dict(id='NLP', name='Navigation light panel', comp='NLT-01', volts=105, kind='AC', fed_by=('BD2', 5), alt=('BD1', 9),
+    # PA-001 comment 2: each supply direct from a switchboard, not through a board that serves other consumers.
+    # PA-001 revision 1, comment 17: the emergency feeder comes from the switchboard's transitional section, so that the
+    # lanterns stay lit through the 45 seconds before the emergency generator is on the board (SOLAS II-1/42.4.1).
+    dict(id='NLP', name='Navigation light panel', comp='NLT-01', volts=105, kind='AC', fed_by='TSB',
+         feeder=dict(breaker=10, mm2=2.5), alt_feeder=dict(board='LB', breaker=10, mm2=4, via='CON-P'),      # round by the port side and the port duct
          text='One fused and monitored way for each lantern: a lamp that fails sounds the buzzer and lights its lamp on the '
-              'panel. Two supplies with a change-over switch: the emergency board, and the wheelhouse board as the second.'),
+              'panel. Two feeders of its own, each direct from a switchboard and by a different way: the emergency switchboard\'s '
+              'transitional section, which the battery keeps alive while the emergency generator starts, and the main lighting '
+              'board as the second, with the change-over switch on the panel. The emergency feeder comes down the starboard duct, the '
+              'main feeder round the port side and down the port duct: they meet in the console, at the panel.'),
 ]
 
 # A circuit that comes to the bridge from a board elsewhere and is not one of the bridge's own: the Minato Maru's feeder
 # list gives it whole (breaker, cable, length).
 OUTSIDE_CIRCUITS = {
+    # PA-001 comment 3: each steering control system is fed from its own power unit's circuit, not from a bridge board.
+    ('SG1', 'control'): dict(name='Steering control system No. 1', breaker=2, mm2=1.5),
+    ('SG2', 'control'): dict(name='Steering control system No. 2', breaker=2, mm2=1.5),
+    # PA-001 revision 1, comment 18 (FSS Code chapter 9, 2.2.1): the fire detection panel's two feeders run direct from the
+    # main and the emergency switchboard to the change-over switch at the panel, through no other board.
+    ('ESB', 'fire detection'): dict(name='Fire detection panel, emergency feeder', breaker=2, mm2=1.5),
+    ('LB', 'fire detection'): dict(name='Fire detection panel, main feeder', breaker=2, mm2=1.5),
     ('LB', 'searchlight'): dict(name='Searchlight', breaker=16, mm2=4, length=37.0, kks='10CTA10 GS001',
                                 note="The Minato Maru's feeder, its own cable from the lighting board by the port casing trunk, with a 16 A breaker: "
                                      "that ship's list gives it 10 A for 9.5 A, which is under its own rule of 1.25 times the full-load current."),
@@ -118,27 +139,26 @@ CIRCUITS = [
     ('BD1', 5, 'Air conditioner', 16, 4, None),
     ('BD1', 6, 'Chart system and cameras', 6, 1.5, None),
     ('BD1', 8, 'Dimmers and console heaters', 6, 1.5, None),
-    ('BD1', 9, 'Navigation light panel, second supply', 10, 2.5, None),
     ('BD2', 1, 'Radar', 6, 2.5, None),
     ('BD2', 2, 'Public address and general alarm', 6, 1.5, None),
-    ('BD2', 3, 'Fire detection panel', 2, 1.5, None),
     ('BD2', 4, 'Emergency lighting, wheelhouse', 2, 1.5, None),
-    ('BD2', 5, 'Navigation light panel, main supply', 10, 2.5, None),
     ('BD2', 6, 'Whistle control', 2, 1.5, None),
+    ('BD2', 7, 'Propulsion control, second supply', 2, 1.5, None),
     ('DC1', 1, 'GPS navigator', 2, 1.5, None),
     ('DC1', 2, 'AIS transponder', 6, 2.5, None),
     ('DC1', 3, 'Satellite compass', 2, 1.5, None),
     ('DC1', 4, 'Echo sounder', 4, 1.5, None),
     ('DC1', 5, 'Speed log', 2, 1.5, None),
     ('DC1', 6, 'Navigation data: distributor, network switch, conning display', 6, 2.5, None),
-    ('DC1', 7, 'Steering control and autopilot', 6, 2.5, None),
+    ('DC1', 7, 'Autopilot', 2, 1.5, None),
     ('DC1', 8, 'Propulsion remote control', 10, 4, None),
     ('DC1', 9, 'Bow thruster control', 2, 1.5, None),
     ('DC1', 10, 'Talkback', 2, 1.5, None),
     ('DC1', 11, 'Alarm panel, watch alarm, door and ramp panel', 4, 1.5, None),
     ('DC1', 12, 'Heading and bearing repeaters, rudder angle indicators', 4, 2.5, None),
     ('DC1', 13, 'Wind sensor and display', 2, 1.5, None),
-    ('DC1', 15, 'Night lighting and binnacle light', 2, 1.5, None),
+    ('DC1', 14, 'Public address and general alarm, battery supply', 16, 6, None),
+    ('DC1', 15, 'Night and transitional lighting, binnacle light', 2, 1.5, None),
     ('DC1', 16, 'Signalling lamp socket', 4, 1.5, None),
     ('DC2', 1, 'VHF No. 1', 10, 4, None),
     ('DC2', 2, 'VHF No. 2', 10, 4, None),
@@ -150,9 +170,13 @@ CIRCUITS = [
     ('NLP', 3, 'Starboard sidelight', 2, 1.5, 1.0),
     ('NLP', 4, 'Stern light', 2, 1.5, 1.0),
     ('NLP', 5, 'Anchor light', 2, 1.5, 1.0),
-    ('NLP', 6, 'Not under command, upper', 2, 1.5, 1.0),
-    ('NLP', 7, 'Not under command, lower', 2, 1.5, 1.0),
+    ('NLP', 6, 'Not under command, upper pair', 2, 1.5, 1.0),
+    ('NLP', 7, 'Not under command, lower pair', 2, 1.5, 1.0),
 ]
+
+# Cables that must go on working in a fire (PA-001 comment 7): the feeders and ways of the emergency services.
+FIRE_RESISTANT = {('feeder', 'BD2'), ('feeder', 'NLP'), ('alt', 'NLP'), ('feeder', 'DC1'), ('feeder', 'DC2'),
+                  ('BD2', 2), ('BD2', 4), ('BD2', 7), ('ESB', 'fire detection'), ('LB', 'fire detection'), ('DC1', 14), ('DC1', 15), ('SG1', 'control'), ('SG2', 'control')} | {('NLP', n) for n in range(1, 8)}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Components.
@@ -178,7 +202,7 @@ TOP = 1.00             # the console's top
 FRONT, BACK = 22.39, 22.50   # the console's two rows: flush panels at the helmsman's hand, tilted displays behind them
 
 # ---- Outfit: the room and its furniture.
-C('OUT-01', 'Console', WH, (0.0, 22.61, 0.0), 'The forward console, 5.5 m wide, in five bays with doors to the equipment inside; its top is at 1.0 m and nothing on it stands higher than 1.33 m, so the sea is seen over it from the helm.',
+C('OUT-01', 'Console', WH, (0.0, 22.61, 0.0), 'The forward console, 5.5 m wide, in five bays with doors to the equipment inside; its top is at 1.0 m; nothing on it stands higher than 1.33 m, and nothing ahead of the wheel higher than 1.22 m, so the sea is seen over it from the helm (calculation JS4-402).',
   dict(kind='console'), survey='B080')
 C('OUT-02', "Master's chair", WH, (1.05, 21.55, 0.0), 'A high pedestal chair at the conning position, to port of the wheel.', dict(kind='chair'), survey='B089')
 C('OUT-03', "Watch officer's chair", WH, (-1.05, 21.55, 0.0), 'A second pedestal chair, at the radar.', dict(kind='chair'))
@@ -255,35 +279,37 @@ C('NAV-35', 'AIS position antenna', CD, (0.30, 19.55, DECK_H), 'A small satellit
 C('NAV-36', 'Wind sensor', CD, (-1.40, 20.80, 4.40), 'A cup anemometer and a vane at the starboard end of the flag yard.', dict(kind='wind_sensor'), node='MAST-PF')
 
 # ---- Steering.
-C('STR-01', 'Steering stand and wheel', WH, (0.0, 21.75, 0.0), 'The helm: an eight-spoke wheel on a stand. The wheel turns a transmitter; where it is put, the rudders follow.',
+C('STR-01', 'Steering stand and wheel', WH, (0.0, 21.75, 0.0), 'The helm: an eight-spoke wheel on a stand. The wheel turns a transmitter; where it is put, the rudders follow: four degrees of wheel for one of rudder, and the spoke with the brass cap upright when they are amidships. On the page the wheel turns with the rudder.',
   dict(kind='stand'), survey='B073')
-C('STR-02', 'Steering control unit', WH, (0.0, 21.75, 0.30), 'Compares the rudder ordered (by wheel, tiller or autopilot) with the rudder angle fed back from the steering gear, and opens the valves of the running power unit until they agree.',
-  dict(kind='box', size=(0.40, 0.30, 0.34)), w=50, by=('DC1', 7), node='STAND', hid='inside the steering stand')
-C('STR-03', 'Steering mode selector and tiller', WH, (-0.14, 21.74, 0.98), 'Chooses hand steering, autopilot or the tiller. The tiller works the valves directly (non-follow-up): the rudders move while it is held over, and it works with the control unit dead.',
+C('STR-02', 'Steering control system No. 1', WH, (0.11, 21.75, 0.30), 'The first of two control systems that have nothing in common. It compares the rudder ordered (by the wheel\'s first transmitter, or the autopilot) with the angle fed back from the gear and works the valves of power unit No. 1. Its supply comes from that power unit\'s own circuit in the steering-gear room, and its cables go down the port side.',
+  dict(kind='box', size=(0.19, 0.30, 0.34)), w=50, by=('SG1', 'control'), node='STAND', hid='inside the steering stand, port half')
+C('STR-07', 'Steering control system No. 2', WH, (-0.11, 21.75, 0.30), 'The second control system: the wheel\'s second transmitter, its own amplifier, the valves of power unit No. 2, a supply from that unit\'s circuit (which comes by the emergency switchboard), and cables down the starboard side. Either system steers her alone; the selector on the stand chooses.',
+  dict(kind='box', size=(0.19, 0.30, 0.34)), w=50, by=('SG2', 'control'), node='STAND', hid='inside the steering stand, starboard half')
+C('STR-03', 'Steering mode selector and tiller', WH, (-0.14, 21.74, 0.98), 'Chooses the control system (No. 1 or No. 2) and hand steering, autopilot or the tiller. The tiller works the valves of the chosen power unit directly (non-follow-up): the rudders move while it is held over, and it needs neither amplifier. It stands in a gate, a slot across the ship; a tap holds it over or lets it go.',
   dict(kind='flush', w=0.18, l=0.20, tile='steer_mode', lever=True), node='STAND', survey='B075')
 C('STR-04', 'Heading repeater', WH, (0.0, 21.515, 0.86), 'The heading in figures, low on the stand\'s face: read by looking down, not through it.',
   dict(kind='facepanel', w=0.20, H=0.12, tile='hdg'), w=10, by=('DC1', 12), node='STAND', survey='B075')
 C('STR-05', 'Rudder angle indicator, overhead', WH, (0.42, 22.52, 1.90), 'The rudders\' true angle, from the transmitter on the steering gear: read from anywhere in the wheelhouse.',
   dict(kind='ovh_dial', r=0.11, tile='rai'), w=10, by=('DC1', 12), node='OVH')
-C('STR-06', 'Rudder angle indicator, console', WH, (-0.13, 22.74, TOP + 0.15), 'A second indicator among the propulsion instruments.',
-  dict(kind='display', w=0.22, d=0.12, H=0.24, tile='rai_panel', lit=True), w=5, by=('DC1', 12), node='CON-0')
+C('STR-06', 'Rudder angle indicator, console', WH, (-0.13, 22.74, TOP), 'A second indicator among the propulsion instruments. It sits on the console, not on a stand-off, so that the sea is seen over it (calculation JS4-402).',
+  dict(kind='display', w=0.22, d=0.12, H=0.22, tile='rai_panel', lit=True), w=5, by=('DC1', 12), node='CON-0')
 
 # ---- Propulsion control.
-C('PRP-01', 'Engine control lever, port', WH, (0.45, 22.60, TOP), 'One lever for the port engine: ahead or astern through the gearbox, then revolutions.',
+C('PRP-01', 'Engine control lever, port', WH, (0.45, 22.60, TOP), 'One lever for the port engine: ahead or astern through the gearbox, then revolutions. A control head: the lever turns on a shaft inside the housing and comes up through a slot in its top plate; a drum on the shaft closes the slot under it, and where the arm crosses the plate is its reading on the scale beside it, from full astern through stop to full ahead. Pushed forward is ahead. A tap moves it a notch, and the port engine\'s lever on each wing moves with it.',
   dict(kind='lever', colour=0xc2412f), node='CON-P', survey='B076')
-C('PRP-02', 'Engine control lever, starboard', WH, (0.25, 22.60, TOP), 'One lever for the starboard engine.', dict(kind='lever', colour=0x2f9e5a), node='CON-P', survey='B077')
-C('PRP-03', 'Bow thruster lever', WH, (-0.15, 22.60, TOP), 'Thrust to port or starboard from the tunnel thruster in the bow.', dict(kind='lever', colour=0x4a6a8a, across=True), w=30, use=0.1, by=('DC1', 9), node='CON-0', survey='B078')
+C('PRP-02', 'Engine control lever, starboard', WH, (0.25, 22.60, TOP), 'One lever for the starboard engine, a control head like the port one\'s. A tap moves it a notch, and its fellow on each wing moves with it.', dict(kind='lever', colour=0x2f9e5a), node='CON-P', survey='B077')
+C('PRP-03', 'Bow thruster lever', WH, (-0.15, 22.60, TOP), 'Thrust to port or starboard from the tunnel thruster in the bow. A control head whose slot lies across the ship: the lever is pushed the way her bow is to go. A tap moves it a notch, with its fellow on each wing.', dict(kind='lever', colour=0x4a6a8a, across=True), w=30, use=0.1, by=('DC1', 9), node='CON-0', survey='B078')
 C('PRP-04', 'Propulsion control panel', WH, (0.35, FRONT, TOP), 'Which station has control (bridge, a wing, or the engine control room), engine start and stop, and an emergency stop for each engine under a flap.',
   dict(kind='flush', w=0.46, l=0.12, tile='prop_panel'), node='CON-P')
 C('PRP-05', 'Bow thruster panel', WH, (-0.15, FRONT, TOP), 'Start, stop, running lamp and the motor\'s current.', dict(kind='flush', w=0.20, l=0.12, tile='thr_panel'), node='CON-0')
-C('PRP-06', 'Engine instrument panel', WH, (0.37, 22.74, TOP + 0.15), 'Revolutions of both engines, their oil pressure and cooling-water temperature.',
-  dict(kind='display', w=0.60, d=0.12, H=0.24, tile='engine_panel', lit=True), w=20, by=('DC1', 8), node='CON-P', survey='B083')
+C('PRP-06', 'Engine instrument panel', WH, (0.37, 22.74, TOP), 'Revolutions of both engines, their oil pressure and cooling-water temperature. Low on the console, straight ahead of the wheel: the sea is seen over it (calculation JS4-402).',
+  dict(kind='display', w=0.60, d=0.12, H=0.22, tile='engine_panel', lit=True), w=20, by=('DC1', 8), node='CON-P', survey='B083')
 C('PRP-07', 'Propulsion control unit, bridge', WH, (0.35, 22.64, 0.30), 'Reads the levers at the three stations, decides which one commands, and sends the orders to the engine room over two CAN lines.',
-  dict(kind='box', size=(0.40, 0.25, 0.30)), w=80, by=('DC1', 8), node='CON-P', hid='inside the console, propulsion bay',
-  note='A second 24 V supply from the engine control room\'s battery is to come with that section.')
-C('PRP-10', 'Wing control station, port', WP, (3.55, 22.65, 0.0), 'Engine and thruster levers, a rudder angle indicator and a revolution indicator at the forward end of the wing, for berthing port side to.',
+  dict(kind='box', size=(0.40, 0.25, 0.30)), w=80, by=('DC1', 8), alt=('BD2', 7), node='CON-P', hid='inside the console, propulsion bay',
+  note='Two supplies from different sources: the general service battery, and the emergency board through a rectifier of its own in the same case; the loss of either gives an alarm. If both control lines are lost the engines hold the speed and direction last ordered, the alarm sounds on the bridge and in the engine control room, and control is taken at the engines.')
+C('PRP-10', 'Wing control station, port', WP, (3.715, 22.75, 0.0), 'Engine and thruster levers, a rudder angle indicator and a revolution indicator at the outboard forward corner of the wing, for berthing port side to. The levers are outboard: standing at them she is seen along her side, and across the bow past the house to 45° on the other side.',
   dict(kind='wing_console', side=1), node='WING-P', survey='B107')
-C('PRP-11', 'Wing control station, starboard', WS, (-3.55, 22.65, 0.0), 'Engine and thruster levers, a rudder angle indicator and a revolution indicator at the forward end of the wing, for berthing starboard side to.',
+C('PRP-11', 'Wing control station, starboard', WS, (-3.715, 22.75, 0.0), 'Engine and thruster levers, a rudder angle indicator and a revolution indicator at the outboard forward corner of the wing, for berthing starboard side to. The levers are outboard, as on the port wing.',
   dict(kind='wing_console', side=-1), node='WING-S', survey='B109')
 
 # ---- Radio.
@@ -305,7 +331,8 @@ C('COM-13', 'NAVTEX antenna', CD, (-0.35, 19.50, DECK_H), 'A short active antenn
 
 # ---- Internal communication.
 C('INT-01', 'Public address and general alarm amplifier', WH, (2.30, 22.64, 0.30), 'A 240 W amplifier with the general alarm\'s tone generator: seven short blasts and a long one on every loudspeaker aboard.',
-  dict(kind='box', size=(0.45, 0.28, 0.18)), w=240, use=0.1, by=('BD2', 2), node='CON-PP', hid='inside the console, port bay', survey='B097', kks='10CTA10 GS002')
+  dict(kind='box', size=(0.45, 0.28, 0.18)), w=240, use=0.1, by=('BD2', 2), alt=('DC1', 14), node='CON-PP', hid='inside the console, port bay', survey='B097', kks='10CTA10 GS002',
+  note='Two supplies: the emergency board, and the general service battery as the transitional source, taken over without a break when the board is dead.')
 C('INT-02', 'Public address and talkback panel', WH, (2.50, FRONT, TOP), 'The microphone, the zone keys (car deck, saloon, crew, open decks), the general alarm key, and the talkback keys for the two wings, the mooring stations, the ramp and the engine control room.',
   dict(kind='flush', w=0.36, l=0.12, tile='pa_panel', mic=True), w=30, use=0.3, by=('DC1', 10), node='CON-PP', survey='B097')
 C('INT-04', 'Telephone', WH, (2.12, FRONT, TOP), 'The ship\'s automatic telephone: cabins, mess, galley, engine control room.', dict(kind='phone', w=0.22, l=0.12, tile='phone'), node='CON-PP', survey='B094')
@@ -332,7 +359,9 @@ C('ALM-07', 'Camera recorder', WH, (1.62, 22.64, 0.30), 'Records the cameras.', 
 
 # ---- Fire detection and fire-fighting.
 C('FIR-01', 'Fire detection panel', WH, (0.94, 19.54, 1.20), 'The addressable fire detection panel: it names the detector that has answered, sounds the bells, and after two minutes unaccepted, the general alarm. It has a standby battery of its own.',
-  dict(kind='wallbox', w=0.42, H=0.52, d=0.10, tile='fire_panel', colour=0xb03024), w=60, by=('BD2', 3), node='BRD', survey='B090', kks='10CSA')
+  dict(kind='wallbox', w=0.42, H=0.52, d=0.10, tile='fire_panel', colour=0xb03024), w=60, by=('ESB', 'fire detection'), alt=('LB', 'fire detection'), node='BRD', survey='B090', kks='10CSA',
+  note='Two feeders of its own, direct from the emergency and the main switchboard, with the automatic change-over switch in the panel and a fault alarm for each; '
+       'and a battery of its own that carries it for half an hour, through the 45 seconds before the emergency generator is on the board.')
 C('FIR-02', 'Manual call point', WH, (0.56, 19.54, 1.32), 'Break the glass to give the alarm.', dict(kind='callpoint', colour=0xc2412f, tile='callpoint'), node='BRD', survey='B022')
 C('FIR-03', 'Smoke detector', WH, (-0.5, 21.0, 2.05), 'An optical smoke detector on loop 1.', dict(kind='ceil', type='detector', r=0.055), node='MAST-0', survey='B022')
 C('FIR-05', 'Fire extinguisher, CO₂ 5 kg', WH, (-0.70, 19.64, 0.04), 'For the electrical equipment: carbon dioxide leaves nothing behind.', dict(kind='extinguisher', colour=0xc2412f, horn=True), survey='B072')
@@ -344,12 +373,12 @@ C('NLT-01', 'Navigation light panel', WH, (-1.55, 22.30, 0.63), 'A switch, a fus
   dict(kind='facepanel', w=1.06, H=0.26, tile='navlight_panel', face='console'), node='CON-SS', survey='B085', kks='10CTA20 GS001', basis='town')
 C('NLT-02', 'Sidelight, port', WP, (4.13, 22.70, 1.20), 'Red, from right ahead to 22.5° abaft the port beam: on the bulwark\'s rail at the wing\'s outer end, with a screen board inboard of it.', dict(kind='sidelight', side=1), w=60, use=0.5, by=('NLP', 2), node='WING-P', survey='B108', basis='town')
 C('NLT-03', 'Sidelight, starboard', WS, (-4.13, 22.70, 1.20), 'Green, from right ahead to 22.5° abaft the starboard beam: on the bulwark\'s rail, with a screen board inboard of it.', dict(kind='sidelight', side=-1), w=60, use=0.5, by=('NLP', 3), node='WING-S', survey='B110', basis='town')
-C('NLT-04', 'Masthead light', CD, (0.0, 20.98, 5.00), 'White, over 225° ahead, on the front of the mast above the radar.', box=(-0.13, 0.13, 20.90, 21.08, 4.86, 5.10), w=60, use=0.5, by=('NLP', 1), node='MAST-ML', survey='B113', basis='town')
+C('NLT-04', 'Masthead light', CD, (0.0, 20.98, 5.30), 'White, over 225° ahead, on the front of the mast above the radar, its lens clear over the posts of the radar platform.', box=(-0.13, 0.13, 20.90, 21.08, 5.16, 5.40), w=60, use=0.5, by=('NLP', 1), node='MAST-ML', survey='B113', basis='town')
 C('NLT-05', 'Anchor light', CD, (0.0, 20.80, 6.90), 'White, all round, on the crown of the mast.', box=(-0.07, 0.07, 20.73, 20.87, 6.84, 7.00), w=60, use=0.0, by=('NLP', 5), node='MAST-T', survey='B113', basis='town')
 C('NLT-06', 'Stern light', CD, (0.0, 0.3, -2.4), 'White, over 135° astern. It stands at the after end of the passenger deck and is still the Minato Maru\'s drawing.',
   w=60, use=0.5, by=('NLP', 4), node='COR', tail=24.0, survey='B113', basis='town', hid='at the after end of the passenger deck, not yet rebuilt')
-C('NLT-07', 'Not-under-command light, upper', CD, (0.30, 20.80, 5.90), 'Red, all round: two of them in a line, 2 m apart, say she cannot keep out of the way.', dict(kind='nuc', h=5.90), w=60, use=0.0, by=('NLP', 6), node='MAST-H', basis='town')
-C('NLT-08', 'Not-under-command light, lower', CD, (0.30, 20.80, 3.90), 'Red, all round.', dict(kind='nuc', h=3.90), w=60, use=0.0, by=('NLP', 7), node='MAST-D', basis='town')
+C('NLT-07', 'Not-under-command lights, upper pair', CD, (0.0, 20.80, 5.90), 'Red, all round: two heights of them in a vertical line, 2 m apart, say she cannot keep out of the way. Each height is a pair of lanterns, one either side of the mast, lit together: a single lantern beside the mast would be hidden by it over 35° of the horizon, and no more than 6° is allowed.', dict(kind='nuc', h=5.90), w=120, use=0.0, by=('NLP', 6), node='MAST-H', basis='town')
+C('NLT-08', 'Not-under-command lights, lower pair', CD, (0.0, 20.80, 3.90), 'Red, all round: the lower pair, 2 m under the upper.', dict(kind='nuc', h=3.90), w=120, use=0.0, by=('NLP', 7), node='MAST-D', basis='town')
 C('NLT-09', 'Whistle', CD, (0.0, 21.20, 5.58), 'Two air horns on the front of the mast, sounded by compressed air.', box=(-0.18, 0.18, 20.82, 21.44, 5.46, 5.72), node='MAST-H')
 C('NLT-10', 'Whistle panel', WH, (0.72, FRONT, TOP), 'A push button for the whistle and a timer for the fog signal (one long blast every two minutes when under way).',
   dict(kind='flush', w=0.16, l=0.12, tile='whistle_panel', button=0xc2412f), w=10, by=('BD2', 6), node='CON-P', survey='B099')
@@ -373,6 +402,8 @@ C('LGT-06', 'Night light, red, port', WH, (0.9, 22.15, 2.05), 'A red light over 
 C('LGT-13', 'Night light, red, starboard', WH, (-0.9, 22.15, 2.05), 'A red light over the console.', dict(kind='ceil', type='red', r=0.035, xs=(-0.9,)),
   w=5, use=0.5, by=('DC1', 15), node='C-F')
 C('LGT-07', 'Emergency light', WH, (0.0, 20.40, 2.05), 'Lights by itself when the main supply fails.', dict(kind='ceil', type='emergency', w=0.30, l=0.12), w=15, use=0.0, by=('BD2', 4), node='MAST-0', kks='10BRV20 GS011')
+C('LGT-14', 'Transitional light', WH, (0.6, 21.9, 2.05), 'A 24 V lamp on the general service battery: it lights at once when the supply fails, before the emergency generator has started.', dict(kind='ceil', type='emergency', w=0.20, l=0.10),
+  w=10, use=0.0, by=('DC1', 15), node='P-M')
 C('LGT-08', 'Wing light, port', WP, (3.05, 22.91, 1.90), 'A bulkhead light on the house side.', dict(kind='wing_light', side=1), w=40, use=0.1, by=('BD1', 2), node='WALL-P')
 C('LGT-09', 'Wing light, starboard', WS, (-3.05, 22.91, 1.90), 'A bulkhead light on the house side.', dict(kind='wing_light', side=-1), w=40, use=0.1, by=('BD1', 2), node='WALL-S')
 C('LGT-10', 'Dimmer panel', WH, (-2.38, FRONT, TOP), 'Dims the instruments and the console lighting for the night watch.', dict(kind='flush', w=0.24, l=0.12, tile='dimmer_panel', knobs=3), w=60, use=0.5, by=('BD1', 8), node='CON-SS')
@@ -454,8 +485,8 @@ NETS = [
          text='The cameras to the recorder and the monitor.', hub='ALM-07',
          members=[('ALM-07', 'node', ''), ('ALM-05', 'node', ''), ('ext:CAR:Cameras at the bow ramp and on the car deck', 'node', ''),
                   ('ext:PAX:Camera at the stern', 'node', ''), ('ext:ER:Camera in the engine room', 'node', '')]),
-    dict(id='PROP-CAN', name='Propulsion control', medium='CAN bus, two lines (A and B), screened twisted pair',
-         text='The levers\' orders to the engines, gearboxes and thruster, and their answers back. Two lines by different ways: one may fail.',
+    dict(id='PROP-CAN-A', name='Propulsion control, line A', medium='CAN bus, screened twisted pair, down the port side', out='MAIN-IN',
+         text='The levers\' orders to the engines, gearboxes and thruster, and their answers back, on two lines that go below by different sides of the ship: either carries all of it.',
          hub='PRP-07', members=[
              ('PRP-07', 'node', 'which station commands; the orders'), ('PRP-01', 'node', 'lever position'), ('PRP-02', 'node', 'lever position'),
              ('PRP-03', 'node', 'lever position'), ('PRP-04', 'node', ''), ('PRP-05', 'node', ''), ('PRP-06', 'node', ''),
@@ -463,15 +494,25 @@ NETS = [
              ('ext:ECR:Engine control units, port and starboard', 'node', 'revolutions, clutch state, alarms'),
              ('ext:THR:Bow thruster starter and controller', 'node', 'running, current'),
          ]),
-    dict(id='STEER', name='Steering control', medium='24 V control cables, screened; the rudder angle as a 4 to 20 mA signal',
-         text='Orders from the helm to the valves of the two hydraulic power units, and the rudder angle back from the transmitter on the steering gear.',
+    dict(id='PROP-CAN-B', name='Propulsion control, line B', medium='CAN bus, screened twisted pair, down the starboard side', out='EM-IN',
+         text='The second line, by the other side.', hub='PRP-07',
+         members=[('PRP-07', 'node', ''), ('PRP-01', 'node', ''), ('PRP-02', 'node', ''), ('PRP-03', 'node', ''), ('PRP-10', 'node', ''), ('PRP-11', 'node', ''),
+                  ('ext:ECR:Engine control units, port and starboard', 'node', ''), ('ext:THR:Bow thruster starter and controller', 'node', '')]),
+    dict(id='STEER-1', name='Steering control system No. 1', medium='control cables, screened, down the port side', out='MAIN-IN',
+         text='From the wheel\'s first transmitter and the autopilot to the valves of power unit No. 1. It shares no part, supply or cable way with system No. 2.',
          hub='STR-02', members=[
-             ('STR-01', 'talks', 'the wheel\'s position'), ('STR-03', 'talks', 'mode; tiller port or starboard'), ('NAV-12', 'talks', 'rudder ordered by the autopilot'),
-             ('STR-02', 'node', 'valve orders'), ('STR-05', 'listens', 'rudder angle'), ('STR-06', 'listens', 'rudder angle'),
-             ('PRP-10', 'listens', 'rudder angle'), ('PRP-11', 'listens', 'rudder angle'), ('NAV-10', 'listens', 'rudder angle'),
-             ('ext:STG:Hydraulic power units No. 1 and No. 2 (valves, running, alarms)', 'node', ''),
-             ('ext:STG:Rudder angle transmitter', 'talks', 'rudder angle'),
-         ]),
+             ('STR-02', 'node', 'valve orders'), ('STR-01', 'talks', 'the wheel\'s position, first transmitter'), ('STR-03', 'talks', 'system and mode chosen; tiller port or starboard'),
+             ('NAV-12', 'talks', 'rudder ordered by the autopilot'),
+             ('ext:STG:Hydraulic power unit No. 1 (valves, running, alarms)', 'node', '')]),
+    dict(id='STEER-2', name='Steering control system No. 2', medium='control cables, screened, down the starboard side', out='EM-IN',
+         text='From the wheel\'s second transmitter to the valves of power unit No. 2.',
+         hub='STR-07', members=[
+             ('STR-07', 'node', 'valve orders'), ('STR-01', 'talks', 'the wheel\'s position, second transmitter'), ('STR-03', 'talks', 'system and mode chosen; tiller port or starboard'),
+             ('ext:STG:Hydraulic power unit No. 2 (valves, running, alarms)', 'node', '')]),
+    dict(id='RUDDER', name='Rudder angle indication', medium='4 to 20 mA signal, screened pair, with its own supply',
+         text='The rudders\' true angle from the transmitter on the steering gear to every indicator. It is independent of both control systems: it shows the truth when either has failed.',
+         members=[('STR-05', 'listens', 'rudder angle'), ('STR-06', 'listens', 'rudder angle'), ('PRP-10', 'listens', 'rudder angle'), ('PRP-11', 'listens', 'rudder angle'),
+                  ('NAV-10', 'listens', 'rudder angle'), ('ext:STG:Rudder angle transmitter', 'talks', 'rudder angle')]),
     dict(id='PA-GA', name='Public address and general alarm', medium='100 V loudspeaker lines in zones; fire-resistant cable',
          text='One amplifier, the microphone at the console, and loudspeakers in every space aboard. The general alarm goes out on the same lines.',
          hub='INT-01', members=[

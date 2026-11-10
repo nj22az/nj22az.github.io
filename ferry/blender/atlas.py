@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-The Christina's own pictures: what her screens show, her dial faces, the faces of her panels and boards, her chart, her
+The Chisum's own pictures: what her screens show, her dial faces, the faces of her panels and boards, her chart, her
 flags. Drawn here, in Python, and packed onto one sheet.
 
-    python3 ferry/blender/atlas.py [--out ferry/data/christina-atlas.webp] [--tiles ferry/blender/atlas.json] [--preview dir]
+    python3 ferry/blender/atlas.py [--out ferry/data/chisum-atlas.webp] [--tiles ferry/blender/atlas.json] [--preview dir]
 
 Writes the sheet (WebP) and a list of where each picture lies on it (atlas.json: name → u0, v0, u1, v1 as the viewer
 reads them, v up), which the builders read to put a picture on a face. Everything on it is made here: no photograph, no
@@ -388,7 +388,7 @@ def ais():
     w, h = 256, 208
     im, d = sheet(w, h)
     frame(d, w, h)
-    lcd(d, (14, 14, w - 14, 150), ['NAME        RNG  BRG', 'KITANO MARU 2.4  062', 'SAKURA NO 3 2.4  189', 'HIGA MARU   3.4  140', 'OWN: CHRISTINA', 'TX OK  CH 87B 88B'], 11, AMBER, (30, 22, 6))
+    lcd(d, (14, 14, w - 14, 150), ['NAME        RNG  BRG', 'KITANO MARU 2.4  062', 'SAKURA NO 3 2.4  189', 'HIGA MARU   3.4  140', 'OWN: CHISUM', 'TX OK  CH 87B 88B'], 11, AMBER, (30, 22, 6))
     for i, s in enumerate(('▲', '▼', 'MSG', 'MENU', 'ENT')):
         key(d, 36 + i * 46, 180, 38, 24, (70, 80, 86), s, 9)
     return im
@@ -745,15 +745,15 @@ def gauge(d, cx, cy, r, lo, hi, value, title, unit, step, red=None, face=(14, 16
 
 
 def engine_panel():
-    w, h = 704, 256
+    w, h = 704, 232                                   # the face is 0.55 by 0.184 m: lowered for the view over the console
     im, d = sheet(w, h)
     frame(d, w, h)
-    for i, (x, name) in enumerate(((128, 'PORT'), (w - 128, 'STBD'))):
-        gauge(d, x, 122, 104, 0, 2400, 1480 - 5 * i, 'ENGINE ' + name, 'rpm', 400, red=(2100, 2400))
-        text(d, (x, 240), 'AHEAD', 11, GREEN)
-    for i, (x, y, title, unit, lo, hi, v, step, red) in enumerate(((298, 68, 'OIL P', 'bar', 0, 8, 4.6, 2, (0, 1.5)), (406, 68, 'OIL S', 'bar', 0, 8, 4.5, 2, (0, 1.5)),
-                                                                   (298, 188, 'WATER P', '°C', 40, 120, 82, 20, (100, 120)), (406, 188, 'WATER S', '°C', 40, 120, 83, 20, (100, 120)))):
-        gauge(d, x, y, 54, lo, hi, v, title, unit, step, red=red, a0=-120, a1=120)
+    for i, (x, name) in enumerate(((122, 'PORT'), (w - 122, 'STBD'))):
+        gauge(d, x, 108, 94, 0, 2400, 1480 - 5 * i, 'ENGINE ' + name, 'rpm', 400, red=(2100, 2400))
+        text(d, (x, 217), 'AHEAD', 11, GREEN)
+    for i, (x, y, title, unit, lo, hi, v, step, red) in enumerate(((298, 62, 'OIL P', 'bar', 0, 8, 4.6, 2, (0, 1.5)), (406, 62, 'OIL S', 'bar', 0, 8, 4.5, 2, (0, 1.5)),
+                                                                   (298, 170, 'WATER P', '°C', 40, 120, 82, 20, (100, 120)), (406, 170, 'WATER S', '°C', 40, 120, 83, 20, (100, 120)))):
+        gauge(d, x, y, 49, lo, hi, v, title, unit, step, red=red, a0=-120, a1=120)
     return im
 
 
@@ -897,7 +897,7 @@ def fire_panel():
     im, d = sheet(w, h, (52, 56, 58))
     d.rectangle((0, 0, w, 40), fill=(170, 34, 28))
     text(d, (w / 2, 20), 'FIRE DETECTION', 16, WHITE)
-    lcd(d, (20, 56, w - 20, 148), ['SYSTEM NORMAL', 'LOOPS 1-4  OK', '10 NOV  03:41', 'CHRISTINA'], 14, AMBER, (30, 22, 6))
+    lcd(d, (20, 56, w - 20, 148), ['SYSTEM NORMAL', 'LOOPS 1-4  OK', '10 NOV  03:41', 'CHISUM'], 14, AMBER, (30, 22, 6))
     for i, (s, c, on) in enumerate((('FIRE', RED, False), ('FAULT', YELLOW, False), ('DISABLED', YELLOW, False), ('POWER', GREEN, True))):
         led(d, 44 + i * 82, 176, 7, c, on)
         text(d, (44 + i * 82, 198), s, 9)
@@ -1058,11 +1058,16 @@ def talkback():
 
 
 def tiles():
-    BD1 = ['1  Wheelhouse lighting                 6 A', '2  Wing lights, floodlights           10 A', '3  Wipers, window wash                 6 A', '4  Console sockets                    10 A',
-           '5  Air conditioner                    16 A', '6  Chart system, cameras               6 A', '8  Dimmers, console heaters            6 A', '9  Navigation lights, second supply   10 A']
-    BD2 = ['1  Radar                               6 A', '2  Public address, general alarm       6 A', '3  Fire detection panel                2 A', '4  Emergency lighting                  2 A',
-           '5  Navigation lights, main supply     10 A', '6  Whistle control                     2 A']
-    DC1 = ['1 GPS  2 AIS  3 Sat compass  4 Sounder', '5 Log  6 Nav data  7 Steering', '8 Propulsion  9 Thruster  10 Talkback', '11 Alarms  12 Repeaters  13 Wind', '15 Night lights  16 Signal lamp']
+    # The ways lettered on each board's door are the register's own (ferry/systems/bridge.py): the door cannot say otherwise.
+    sys.path.insert(0, os.path.join(HERE, '..', 'systems'))
+    import bridge as REG
+    ways = lambda board: [f'{no}  {name[:40]:<40s} {breaker:>2d} A' for b, no, name, breaker, mm2, pf in REG.CIRCUITS if b == board]
+    BD1, BD2 = ways('BD1'), ways('BD2')
+    short = {1: 'GPS', 2: 'AIS', 3: 'Sat compass', 4: 'Sounder', 5: 'Log', 6: 'Nav data', 7: 'Autopilot', 8: 'Propulsion', 9: 'Thruster', 10: 'Talkback',
+             11: 'Alarms', 12: 'Repeaters', 13: 'Wind', 14: 'PA battery', 15: 'Lights', 16: 'Signal lamp'}
+    nos = [no for b, no, *_ in REG.CIRCUITS if b == 'DC1']
+    assert set(nos) <= set(short), 'a way of DC1 has no short name for its door'
+    DC1 = ['  '.join(f'{n} {short[n]}' for n in nos[i:i + 4]) for i in range(0, len(nos), 4)]
     DC2 = ['1 VHF No. 1    2 VHF No. 2', '3 NAVTEX    4 GPS (second supply)', '5 Portable VHF charger']
     return {
         'radar': (radar(), 'screen'), 'ecdis': (ecdis(), 'screen'), 'conning': (conning(), 'screen'), 'echo': (echo(), 'screen'), 'gps': (gps(), 'screen'),
@@ -1073,7 +1078,7 @@ def tiles():
         'whistle_panel': (whistle_panel(), 'face'), 'sl_panel': (sl_panel(), 'face'), 'wiper_panel': (wiper_panel(), 'face'), 'dimmer_panel': (dimmer_panel(), 'face'),
         'ramp_panel': (ramp_panel(), 'face'), 'pa_panel': (pa_panel(), 'face'), 'phone': (phone(), 'face'), 'navlight_panel': (navlight_panel(), 'face'),
         'autopilot': (autopilot(), 'face'), 'steer_mode': (steer_mode(), 'face'), 'engine_panel': (engine_panel(), 'face'),
-        'rai_panel': (rudder_dial(256, 288, 112, 150), 'face'), 'rai': (rudder_dial(256, 256, 120, 128), 'face'), 'wind': (wind(), 'face'),
+        'rai_panel': (rudder_dial(256, 276, 110, 142), 'face'), 'rai': (rudder_dial(256, 256, 120, 128), 'face'), 'wind': (wind(), 'face'),
         'clock': (clock(), 'face'), 'barometer': (barometer(), 'face'), 'clinometer': (clinometer(), 'face'), 'card': (card(), 'face'), 'rpm': (rpm_small(), 'face'),
         'fire_panel': (fire_panel(), 'face'),
         'bd1': (board_door(384, 544, 'BD1', 'WHEELHOUSE DISTRIBUTION', '105 V  60 Hz  ·  FROM LIGHTING BOARD  ·  40 A', BD1, '105 V, two-pole'), 'face'),
@@ -1086,7 +1091,7 @@ def tiles():
         'lever_scale': (lever_scale(), 'face'), 'thr_scale': (lever_scale(True), 'face'), 'talkback': (talkback(), 'face'),
         'hose': (sign(256, 96, (190, 40, 32), ['FIRE HOSE'], WHITE, 22), 'face'),
         'exit': (sign(256, 96, (30, 130, 70), ['EXIT'], WHITE, 34, border=False), 'face'),
-        'nameplate': (sign(384, 64, (24, 26, 28), ['CHRISTINA   ·   MINATO'], (226, 200, 120), 20), 'face'),
+        'nameplate': (sign(384, 64, (24, 26, 28), ['CHISUM   ·   MINATO'], (226, 200, 120), 20), 'face'),
     }
 
 
@@ -1121,7 +1126,7 @@ def pack(items):
 def main():
     args = sys.argv[1:]
     opt = dict(zip(args[::2], args[1::2]))
-    out = opt.get('--out', os.path.join(HERE, '..', 'data', 'christina-atlas.webp'))
+    out = opt.get('--out', os.path.join(HERE, '..', 'data', 'chisum-atlas.webp'))
     tiles_path = opt.get('--tiles', os.path.join(HERE, 'atlas.json'))
     items = tiles()
     im, uv, height = pack(items)

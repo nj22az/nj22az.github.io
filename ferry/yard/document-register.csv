@@ -1,0 +1,84 @@
+number,document,group,state,where it is,note
+JS1-101,Contract specification,general,to do,,"The ship as contracted: particulars, service, rules, makers, tests. The rule basis is settled (yard/README.md): to be carried in"
+JS1-102,General arrangement,general,partly,"temp/minato-maru (Rev C working drawings, the Minato Maru's); ferry/design/bridge/sheets/CHR-B1 (bridge deck as surveyed)","To be redrawn as hers, section by section"
+JS1-103,Lines plan and table of offsets,general,exists,ferry/blender/lines.py,Her lines as numbers; no drawn sheet yet
+JS1-104,Hydrostatic tables and cross curves,general,to do,,From lines.py: displacement is checked at one draught only (368 t at 1.9 m)
+JS1-105,Capacity plan and tank tables,general,to do,,
+JS1-106,Lightweight estimate and inclining test report,general,to do,,Simulated: weights from the model's own parts
+JS1-107,Intact stability booklet,general,to do,,
+JS1-108,Damage stability calculation,general,to do,,
+JS1-109,Freeboard calculation and load line marks,general,partly,ferry/blender/spec.py (load line position),The mark is painted; the calculation is not made
+JS1-110,Tonnage calculation,general,to do,,
+JS1-111,Docking plan,general,to do,,
+JS1-112,Component register,general,partly,ferry/systems/ (navigation bridge: 145 components),Grows with every section
+JS2-201,Midship section and scantlings,hull,partly,"ferry/blender/spec.py, hull_structure.py",Scantlings are stated with reasons; not checked against a rule
+JS2-202,Construction profile and decks,hull,to do,,
+JS2-203,Shell expansion,hull,partly,ferry/blender/hull_shell.py,Plates are modelled; no expansion drawn
+JS2-204,Watertight bulkheads and doors,hull,partly,"ferry/blender/spec.py (WT_DOORS), hull_structure.py","Five watertight doors built; bulkheads at frames 28, 38 and 45 are the other ship's walls"
+JS2-205,"Stern frame, shaft brackets, rudders",hull,partly,ferry/blender/hull_appendages.py,
+JS2-206,Superstructure and deckhouse plans,hull,partly,"ferry/blender/compass_deck.py, wheelhouse.py",Compass deck and wheelhouse are hers
+JS2-207,Welding table and procedures,hull,to do,,
+JS2-208,Structural fire protection plan,hull,to do,,"Divisions, insulation, doors"
+JS2-209,Painting specification,hull,partly,"ferry/blender/spec.py (paint lines), shipyard.py",Colours only
+JS2-210,Cathodic protection plan,hull,partly,ferry/blender/hull_appendages.py (anodes),Anodes drawn; no calculation
+JS3-301,"Car deck arrangement: lanes, lashing, pillars",cargo equipment,to do,,The other ship's drawing stands there
+JS3-302,"Bow ramp: arrangement, hydraulics, securing",cargo equipment,to do,,
+JS3-303,Car deck drainage and scuppers,cargo equipment,to do,,
+JS4-401,Navigation bridge layout,ship equipment,exists,ferry/systems/bridge.py; ferry/blender/wheelhouse.py; the page,Approved with comments: PA-001 revision 1
+JS4-402,Bridge visibility calculation,ship equipment,exists,ferry/yard/calc/JS4-402-bridge-visibility.md (made by calc/bridge_calcs.py from the model),"Revision 1. Sea over the bow, blind sectors, both wings, the glass. Open: upper edge of the glass (PA-001 No. 21); light draught and trim"
+JS4-403,Navigation and radio equipment list,ship equipment,exists,ferry/systems/out/bridge-components.csv,
+JS4-404,Navigation lights arrangement,ship equipment,exists,"ferry/yard/calc/JS4-402-bridge-visibility.md, section 5; ferry/systems/bridge.py (NLT)",Each lantern's sector measured in the model. Open: sidelight screens (PA-001 No. 22); the stern light
+JS4-405,Antenna arrangement,ship equipment,partly,"ferry/blender/compass_deck.py, wheelhouse.py",PA-001 comment 12
+JS4-406,Magnetic compass: safe distances and deviation card,ship equipment,to do,,PA-001 comment 11
+JS4-407,Steering gear arrangement and calculation,ship equipment,partly,ferry/blender/hull_fittings.py,Gear built and working; no torque or timing calculation
+JS4-408,Steering control diagram,ship equipment,exists,"ferry/systems/bridge.py (nets STEER-1, STEER-2; components STR-02, STR-07)","Two independent control systems: PA-001 No. 3 closed. Open: supply-failure alarm, separation below the bridge (No. 23)"
+JS4-409,"Anchoring and mooring arrangement, equipment number",ship equipment,to do,,
+JS4-410,Life-saving appliances plan,ship equipment,partly,"ferry/systems/bridge.py (LSA, bridge only)",
+JS4-411,Fire control and safety plan,ship equipment,partly,"data/ferry-atlas.webp (the other ship's plan, renamed)",To be redrawn as hers
+JS4-412,Escape plan and evacuation analysis,ship equipment,to do,,
+JS5-501,"Accommodation plan: cabins with wet units, mess, galley",crew and passengers,to do,,Owner: a shower and toilet in each cabin
+JS5-502,Engine department day room and toilet,crew and passengers,to do,,Owner: a coffee and break room and a toilet below
+JS5-503,Passenger saloon arrangement and seating,crew and passengers,to do,,
+JS5-504,Ventilation and air conditioning plan,crew and passengers,partly,"ferry/systems/bridge.py (HVC, wheelhouse only)",
+JS5-505,"Sanitary plan: fresh water, hot water, drains, sewage",crew and passengers,to do,,"Survey findings BF-07, BF-16, BF-17"
+JS6-601,Machinery arrangement,machinery,to do,,The other ship's engine room stands there
+JS6-602,Engine control room arrangement,machinery,to do,,Owner: a proper control room
+JS6-603,Main engines: specification,machinery,to do,,"On the pattern of the Scania DSI 11, under the Johansson brand"
+JS6-604,Shafting arrangement and alignment,machinery,partly,"ferry/blender/spec.py, hull_fittings.py",Shaft lines run from gearbox flange to screw
+JS6-605,Torsional vibration calculation,machinery,to do,,
+JS6-606,Propeller drawing and calculation,machinery,partly,ferry/blender/hull_appendages.py,Geometry only
+JS6-607,Bow thruster arrangement,machinery,partly,"ferry/blender/hull_fittings.py, hull_shell.py",
+JS7-701,Fuel oil system diagram,machinery systems,to do,,
+JS7-702,Lubricating oil system diagram,machinery systems,to do,,
+JS7-703,Cooling water system diagram,machinery systems,to do,,
+JS7-704,Compressed air system diagram,machinery systems,partly,ferry/systems/bridge.py (pipe AIR-WH),The whistle's branch only
+JS7-705,Exhaust gas system,machinery systems,to do,,
+JS7-706,Engine room ventilation,machinery systems,to do,,
+JS8-801,Bilge and ballast system diagram,ship systems,to do,,
+JS8-802,Fire main and hydrants diagram,ship systems,partly,ferry/systems/bridge.py (pipe FIRE-MAIN),The bridge deck's branch only; finding BF-18
+JS8-803,Fixed fire-extinguishing system (CO₂) and calculation,ship systems,to do,,
+JS8-804,Fire detection and alarm system diagram,ship systems,partly,ferry/systems/bridge.py (net FIRE-1),"Loop 1, wheelhouse only. Two feeders direct from the switchboards: PA-001 Nos. 6 and 18 closed"
+JS8-805,"Air, sounding and overflow pipes",ship systems,to do,,
+JS8-806,Scuppers and drains,ship systems,partly,"ferry/systems/bridge.py (SCUP-P, SCUP-S)",The wings only
+JS8-851,Electrical one-line diagram,electrical,partly,"ferry/systems/ship.py, bridge.py","Sources, the transitional section and inverter, the bridge's five boards; no drawn sheet"
+JS8-852,Electrical load balance,electrical,partly,ferry/systems/out/bridge-circuits.csv,The bridge's boards; the ship's balance is the other ship's
+JS8-853,Short-circuit calculation and breaker selectivity,electrical,to do,,PA-001 comment 13
+JS8-854,Emergency source of power: load list and capacity,electrical,to do,,PA-001 No. 13: waits for the machinery section. The transitional source is in JS8-855
+JS8-855,Battery capacity calculations,electrical,exists,ferry/yard/calc/JS8-855-battery-capacity.md (made by calc/bridge_calcs.py from the register),"Revision 1. Radio bank and general service (transitional) bank, chargers, inverter. The bridge only: reissued with each section (PA-001 No. 26)"
+JS8-856,Cable schedule and cable ways,electrical,partly,"ferry/systems/bridge.py (NODES, EDGES), out/bridge-circuits.csv","Lengths, sizes and types for the bridge; main and emergency supplies by separate ways: PA-001 No. 7 closed"
+JS8-857,"Lighting plan, normal and emergency",electrical,partly,ferry/systems/bridge.py (LGT),Bridge only
+JS8-858,Navigation light panel diagram,electrical,exists,ferry/systems/bridge.py (board NLP),"Two feeders of its own, one from the transitional section: PA-001 Nos. 2 and 17 closed"
+JS8-859,Internal communication diagrams,electrical,exists,ferry/systems/out/bridge-nets.csv,"Ends below are named, not yet registered"
+JS8-860,Radio installation plan,electrical,partly,ferry/systems/bridge.py (COM),Battery sized (JS8-855): PA-001 No. 5 closed. Antennas: No. 12 open
+JS8-861,Propulsion remote control diagram,electrical,exists,"ferry/systems/bridge.py (nets PROP-CAN-A, PROP-CAN-B; component PRP-07)","Two supplies, two lines by separate ways: PA-001 No. 8 closed for the bridge"
+JS8-862,Alarm and monitoring system: alarm list,electrical,to do,,
+JS1-151,Inspection and test plan,general,to do,,"What is inspected, by whom, against what"
+JS1-152,Harbour acceptance test programme,general,to do,,
+JS1-153,Sea trial programme and report,general,to do,,"Speed, turning, stopping, steering gear timing, compass adjustment"
+JS9-901,Plan approval comment sheets,class,exists,ferry/yard/class/PA-001-navigation-bridge.md,"PA-001 revision 1: the navigation bridge approved with comments, 11 November 2026"
+JS9-902,Survey reports,class,to do,,
+JS9-903,Certificates and delivery documents,class,to do,,
+JSY-QM-001,Quality manual,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0: the yard's way of working in the order of ISO 9001:2015"
+JSY-POL-001,Quality policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"
+JSY-POL-002,Environmental policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"
+JSY-POL-003,Health and safety policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Puts the Christina together for the viewer: the parts built in Blender into ferry/data/ferry.bin.gz.
+Puts the Chisum together for the viewer: the parts built in Blender into ferry/data/ferry.bin.gz.
 
-    python3 ferry/blender/assemble.py --part christina-hull.npz [--base <a ferry.bin.gz>] [--out ferry/data/ferry.bin.gz]
+    python3 ferry/blender/assemble.py --part chisum-hull.npz [--base <a ferry.bin.gz>] [--out ferry/data/ferry.bin.gz]
 
 The base is a JMF1 file: the Town's export of the Minato Maru (tools/ferry-viewer-export.mjs), or the viewer's own file
 as this tool last wrote it (the default). What Blender has built replaces what stood there before:
@@ -10,11 +10,11 @@ as this tool last wrote it (the default). What Blender has built replaces what s
   - every mesh a part file brings is marked `from: "blender"`; meshes so marked in the base are dropped first, so the
     tool can be run again on its own output;
   - a part named in SUPERSEDES replaces the base's own meshes of that part (the Minato Maru's hull goes when the
-    Christina's hull comes); the rule says what is kept and where it goes;
-  - what the base keeps under the car deck is fitted inside the Christina's shell (FIT), because the Minato Maru's
+    Chisum's hull comes); the rule says what is kept and where it goes;
+  - what the base keeps under the car deck is fitted inside the Chisum's shell (FIT), because the Minato Maru's
     machinery spaces are square rooms and their corners stand through her plating where the hull rises aft;
   - where the base lays a floor over a stairwell, the well is opened (OPENINGS), so the stair can be seen from the deck
-    it leads to and gone down as well as up; where a door of the Christina's stands in a wall of the base, the wall is
+    it leads to and gone down as well as up; where a door of the Chisum's stands in a wall of the base, the wall is
     opened for it.
 
 Needs numpy; no Blender.
@@ -76,7 +76,7 @@ FIT = ('machinery',)
 #    between 6.503 and 6.508: the stair's top step, the kerb and the feet of the walls round the well lie at 6.500 and
 #    must stay.
 #  - Her engine room's after wall (6 cm, 8.44 to 8.50 m from the transom) has no way aft through it: it is opened where
-#    the Christina's watertight door to the shaft space stands (spec.WT_DOORS), whose frame lines the opening.
+#    the Chisum's watertight door to the shaft space stands (spec.WT_DOORS), whose frame lines the opening.
 _door, _void = S.door_opening(S.WT_DOORS[0]), S.door_opening(S.WT_DOORS[3])
 OPENINGS = (
     dict(part='passenger', name='the lobby floor over the starboard stair', across='y', y=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(7.40, 9.40)),
@@ -537,6 +537,7 @@ def main():
         else:
             header.pop(key, None)
     ship = header['ship']
+    ship['name'] = S.SHIP_NAME            # her name is the yard's (spec.py), whatever the base was exported as
     ship['built'] = [dict(part=gid, section=SUPERSEDES[gid]['section'], date=SUPERSEDES[gid]['built'], what=SUPERSEDES[gid]['what']) for gid in SUPERSEDES
                      if any(f['group'] == gid for f in fresh) or any(b.get('part') == gid and b.get('section') == SUPERSEDES[gid]['section'] for b in ship.get('built', []))]
     for key, rule in REPLACES.items():

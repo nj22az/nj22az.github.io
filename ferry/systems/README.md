@@ -1,4 +1,4 @@
-# The Christina's systems: her component register
+# The Chisum's systems: her component register
 
 The owner, 11 November 2026: "Make the ferry fully realistic in blender, start with one section at a time. Start with the bridge,
 aim for a fully explorable realistic ferry with a component register, I.e, what equipment is installed, what's the power what's
@@ -14,7 +14,7 @@ open *Systems*), and a tool checks that it holds together. **The first section r
 | File | What |
 |---|---|
 | `ship.py` | Ship-wide: her supply (the answer to "what is the main?"), the sources, the boards a section may be fed from, the subsystems, and the rule a circuit is sized by |
-| `bridge.py` | The navigation bridge: 145 components, 5 boards with 41 ways, 28 nets, 7 pipes, and the cable ways (trays, trunks, ducts) all of it is laid along |
+| `bridge.py` | The navigation bridge: 147 components, 5 boards with 35 ways and 5 circuits direct from boards elsewhere, 31 nets, 7 pipes, and the cable ways (trays, trunks, ducts) all of it is laid along |
 | `register.py` | Puts them together, routes every cable, works out currents, lengths and voltage drops, checks the lot, and writes `../data/systems.json` and the tables in `out/` |
 | `out/bridge-components.csv`, `-circuits.csv`, `-nets.csv`, `-pipes.csv` | The register as tables, for people |
 
@@ -32,8 +32,11 @@ python3 ferry/systems/register.py --boxes <part file>   # with a fresh part file
 - **Lighting and small power: 105 V single-phase**, through transformers; both poles insulated and switched.
 - **Emergency:** a 32 kW (40 kVA) generator on the bridge deck feeds the emergency switchboard, which is otherwise fed from the
   main board; its 105 V section is behind a 5 kVA transformer.
-- **24 V direct current** from two battery banks in the emergency generator room: general service (navigation and control) and
-  radio and emergency, each on its own charger.
+- **24 V direct current** from two battery banks in the emergency generator room, each on its own charger: the radio bank,
+  which feeds the radio and nothing else; and the general service bank, for navigation and control, which is also the
+  **transitional source**: through the 45 seconds the emergency generator takes to start it carries the alarm and the public
+  address, the transitional lighting and, through a 1 kVA inverter and a transitional section of the emergency switchboard,
+  the navigation lights. Their capacities are worked out in `../yard/calc/JS8-855-battery-capacity.md`.
 
 This is the Minato Maru's plant (the Town's working drawings D1 and D15), continued: the same generators, voltages and sizing
 rule. What is hers is the distribution on the bridge, which the survey of 10 November found wanting (one 0.75 kW feeder for six
@@ -41,11 +44,20 @@ systems, no direct current to any consumer, no fire detection or general alarm c
 
 | Board | Where | Fed from | Feeds |
 |---|---|---|---|
-| **BD1** Wheelhouse distribution, 105 V | aft wall | the lighting board, 40 A, 2 × 16 mm², 34 m, 2.3 % | lighting, wing lights and floodlights, wipers, sockets, air conditioner, chart system and cameras, dimmers; 2.4 kW connected |
-| **BD2** Emergency distribution, 105 V | aft wall | the emergency switchboard, 16 A, 2 × 4 mm², 21 m, 2.5 % | radar, public address and general alarm, fire detection, emergency light, the navigation light panel, whistle control; 1.1 kW |
-| **DC1** 24 V, navigation and control | aft wall | the general service battery, 40 A, 2 × 25 mm², 21.5 m, 4.4 % | GPS, AIS, satellite compass, sounder, log, navigation data, steering, propulsion and thruster control, talkback, alarms, repeaters, night lighting; 660 W |
-| **DC2** 24 V, radio | aft wall | the radio battery, 25 A, 2 × 16 mm², 22 m, 3.6 % | both VHF sets, NAVTEX, the GPS's second supply, the portable sets' charger; 340 W |
-| **NLP** Navigation light panel | console | BD2 way 5, and BD1 way 9 as its second supply | one monitored way a lantern: masthead, sidelights, stern, anchor, two not-under-command |
+| **BD1** Wheelhouse distribution, 105 V | aft wall | the lighting board, 40 A, 2 × 16 mm², 33.5 m, 2.2 % | lighting, wing lights and floodlights, wipers, sockets, air conditioner, chart system and cameras, dimmers; 2.4 kW connected |
+| **BD2** Emergency distribution, 105 V | aft wall | the emergency switchboard, 16 A, 2 × 4 mm² fire-resistant, 24 m, 1.6 % | radar, public address and general alarm, emergency light, whistle control, the propulsion control's second supply; 0.6 kW |
+| **DC1** 24 V, navigation and control | aft wall | the general service battery, 40 A, 2 × 35 mm² fire-resistant, 24.5 m, 3.3 % | GPS, AIS, satellite compass, sounder, log, navigation data, autopilot, propulsion and thruster control, talkback, alarms, repeaters, night and transitional lighting, the amplifier's battery supply; 0.6 kW |
+| **DC2** 24 V, radio | aft wall | the radio battery, 25 A, 2 × 25 mm² fire-resistant, 25 m, 2.6 % | both VHF sets, NAVTEX, the GPS's second supply, the portable sets' charger; 340 W |
+| **NLP** Navigation light panel | console | two feeders of its own: the emergency switchboard's transitional section (10 A, 2 × 2.5 mm² fire-resistant, 29.5 m, 2.8 %) and the main lighting board (10 A, 2 × 4 mm², 43.5 m, 2.6 %), by different sides of the room | one monitored way a lantern: masthead, sidelights, stern, anchor, two pairs of not-under-command lights; 540 W |
+
+Five circuits come to the bridge direct from boards elsewhere and belong to none of its own (`OUTSIDE_CIRCUITS`): the two
+steering control systems, each from its own power unit's circuit in the steering-gear room (2 A, 56 m); the fire detection
+panel's two feeders, from the emergency switchboard and the main lighting board; the searchlight. Main supplies enter the
+bridge at its port after corner and emergency and battery supplies at the starboard one (`ENTRY`); cables that must go on
+working in a fire are named in `FIRE_RESISTANT`, and the register prints each cable's type.
+
+This distribution was changed twice on 11 November 2026 in answer to class (`../yard/class/PA-001-navigation-bridge.md`,
+which says what each change answers and which regulation was read for it).
 
 ## How a circuit is sized, and checked
 
@@ -64,7 +76,7 @@ not a member, or names a component that is not registered; a pipe joins somethin
 drop in all is 8.8 % on DC1 way 11 (the limit there is 10 %) and 4.2 % on alternating current (the stern light, 39 m from its panel).
 
 **The first run found one of the Minato Maru's own:** her searchlight feeder (10CTA10 GS001) has a 10 A breaker for 9.5 A,
-under her list's own rule of 1.25 times the full-load current. The Christina's has 16 A on the same 4 mm² cable. That is for
+under her list's own rule of 1.25 times the full-load current. The Chisum's has 16 A on the same 4 mm² cable. That is for
 the Town's repository to put right in its feeder list.
 
 ## The nets

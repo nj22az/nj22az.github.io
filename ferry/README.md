@@ -1,6 +1,6 @@
-# Christina: the ferry, deck by deck
+# Chisum: the ferry, deck by deck
 
-A 3D viewer of the Christina, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
+A 3D viewer of the Chisum, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
 along her length (Cut), put her rudders over (Rudder), name every room aboard, walk through her on foot (Walk
 aboard), where walls stop one, doors let one through, ladders are climbed, and every room is reached on foot, and see
 what every fitting on her bridge is, what feeds it and what it talks to (tap it, or open *Systems*):
@@ -14,13 +14,14 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
 | `systems.js` | Her systems on the page: the card that says what a fitting is, the *Systems* list, and what is drawn over the model for a board, a circuit, a net or a pipe |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.76 MB, about 234,000 triangles in 110 meshes (119,400 of them her own: the hull, the fittings of its spaces, the compass deck and the navigation bridge), six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.77 MB, about 236,000 triangles in 141 meshes (121,900 of them her own: the hull, the fittings of its spaces, the compass deck and the navigation bridge), six decks, 50 named rooms, 28 moving parts |
 | `data/ferry-atlas.webp` | The other ship's plates, dials and signs on one 2048 px picture |
-| `data/christina-atlas.webp` | Her own pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
+| `data/chisum-atlas.webp` | Her own pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
 | `data/systems.json` | Her component register as the page reads it (written by `systems/register.py`) |
 | `systems/` | Her systems as designed: every component with its supply, circuit, nets and pipes; the tool that routes, sizes and checks them ([README](systems/README.md)) |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
-| `checks/bridge.cjs` | The page's own check for the bridge and the register (21 checks; *Checks actually run*) |
+| `checks/bridge.cjs` | The page's own check for the bridge and the register (24 checks; *Checks actually run*) |
+| `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register (what a yard holds, and what of it exists), class's comment sheets, and the yard's calculations, which are programs that read the model and the register (`yard/calc/`) ([README](yard/README.md)) |
 
 ## What she is, and how far her own build has come
 
@@ -30,7 +31,15 @@ can rebuild Minato maru later from what we learn from building this ship"; "When
 it over time and then insert it into the games after"; "Make it look as realistic and pretty as possible , disregard
 cartoon style from Johansson World for now".
 
-So the Christina is the lead ship of a new design, and the Minato Maru of Johansson World is rebuilt later from what she
+**She is the Chisum since 11 November 2026.** The owner: "Maybe rename her to the Chisum", then: "Push to main , then
+rename to Chisum". From 9 to 11 November she was the Christina; the handover's older notes, the bridge survey's sheets
+(`CHR-B1` to `CHR-B6`) and the commits before the rename call her that. Her name is one line of the yard's specification
+(`blender/spec.py`, `NAME`): the lettering on both bows and on the transom, her own pictures (the AIS screen, the fire
+panel) and the name in the model's header are made from it. The other ship's sheet of pictures carried the name on three
+plates (bow, transom, the name board on the wheelhouse front) and in the small print of its two fire plans:
+`blender/name_plates.py` paints hers there.
+
+So the Chisum is the lead ship of a new design, and the Minato Maru of Johansson World is rebuilt later from what she
 teaches. She is built in Blender, section by section, from the working drawings (Rev C), and each section takes the
 place of the Minato Maru's drawing on this page as it is finished.
 
@@ -53,8 +62,21 @@ replaced or changed by any of this.
 ## What comes next: the owner's list
 
 The method is now fixed (register a section in `systems/`, draw it from that register in Blender, check it, show it on the
-page), one section at a time. Asked for by the owner on 11 November 2026, while the bridge was built, and not yet begun:
+page), one section at a time. **She is built as a real newbuilding of Johansson Shipyard, surveyed by class** (the owner,
+11 November 2026; `yard/README.md`): each section is submitted, commented on and answered before it is called finished.
 
+- **Done: class answered on the navigation bridge** ([`yard/class/PA-001`](yard/class/PA-001-navigation-bridge.md),
+  revision 1: **approved with comments**, no comment of category A open). The rule basis is the international conventions.
+  What is still open there is listed in one table at its end: the height of the wheelhouse roof (the owner's to decide),
+  the sidelights' screens, and what waits for makers' figures or for other sections.
+
+Asked for by the owner on 11 November 2026 and not yet begun:
+
+- **An internal staircase from the bridge all the way to the engine room** ("I want an internal stair case too so you can
+  run all way from the bridge to the engine room"). One enclosed stair trunk through every deck: bridge deck, passenger
+  deck, car deck, machinery spaces. Today the crew stair from the wheelhouse reaches the passenger deck through an opening
+  1.50 m high, and the machinery spaces are entered from the car deck. It is drawn with the machinery spaces and the
+  accommodation, with full headroom and a door at each deck (it is also an escape route and a fire boundary).
 - **An engine control room.** The Minato Maru has a control booth in the machinery spaces; she is to have a proper control
   room. The bridge's nets already end there by name (the main switchboard and lighting board, the engine control units, the
   alarm system, the telephone exchange, the talkback and sound-powered telephone stations): those ends become components.
@@ -63,13 +85,9 @@ page), one section at a time. Asked for by the owner on 11 November 2026, while 
   2.5 m, so each wet unit has to be found within its cabin or by re-dividing the deck. That is the crew accommodation's
   section (with it: the fresh-water, hot-water and grey- and black-water pipes the survey found missing, findings BF-07,
   BF-16 and BF-17, and the fire detection loop's detectors in every room).
-- **Her name.** "Maybe rename her to the Chisum": not done, waiting for the owner's word. It touches the lettering on both
-  bows and the transom (`blender/spec.py`, `NAME`), the name boards (the other ship's plates, repainted by the Town's
-  export), her own pictures (`atlas.py`: the AIS screen, the fire panel), the page's title and text, the homepage card and
-  project entry (`/config.js`), and the names of two files (`christina-atlas.webp`, `christina-card.webp`).
 
-Suggested order: the machinery spaces with the control room next (the bridge's cables and nets run there, so the register
-grows without a gap), then the crew accommodation.
+Order: the machinery spaces with the control room and the stair trunk next (the bridge's cables and nets run there, so
+the register grows without a gap; class comment sheet PA-002), then the crew accommodation.
 
 ## Where the data comes from
 
@@ -84,9 +102,9 @@ node tools/ferry-viewer-export.mjs --out=<this checkout>/ferry/data [--report=<f
 ```
 
 A fresh export carries the Minato Maru's hull again: run `blender/assemble.py` after it (with the part file from
-`blender/build.py`), which puts the Christina's own hull back in its place.
+`blender/build.py`), which puts the Chisum's own hull back in its place.
 
-The export does not edit the game: the Christina's name is painted by the export page alone (it replaces the name where
+The export does not edit the game: the Chisum's name is painted by the export page alone (it replaces the name where
 the game draws it on the bow, the transom and the name boards, and stops if any of those places was missed). The header
 of the data records the Town commit she was drawn from (`source.commit`, shown at the foot of the panel), so a stale
 picture can be told from the game.
@@ -141,7 +159,7 @@ DigitaltMuseum refused automated access, so none was opened. Wikimedia Commons w
   5 × 3 × 5/16 in inverted angle (127 × 76 mm) from the tank top to the main deck, 3½ × 2½ × ¼ in above it, spaced 2 ft,
   and 4 × 3 × 5/16 in intermediate frames 12 in between the regular ones at the forward end; plate floors of 12.75 and
   15.3 lb plate (5/16 and 3/8 in); a plate centre vertical keel of 20.4 lb, watertight or oil-tight between frames
-  19 and 51. The Christina's frames were 75 × 50 mm, 0.5 m apart: lighter than
+  19 and 51. The Chisum's frames were 75 × 50 mm, 0.5 m apart: lighter than
   that vessel's, as is to be expected of a hull 15 m shorter, but on the light side. **Taken up (10 November 2026):**
   100 × 65 mm, the 5 × 3 in angle scaled to a hull of 4 m depth, and a lighter 80 × 65 mm frame (its 4 × 3 in) between
   each pair forward of the collision bulkhead, so the fore peak has them every 0.25 m (`spec.py`: `FRAME_WEB`,
@@ -163,11 +181,11 @@ Blender 4.0 or later, and Python 3 with numpy for the tools that need no Blender
 
 ```bash
 python3 ferry/blender/atlas.py                                                              # her pictures: only when one of them changes
-blender -b -P ferry/blender/build.py -- --part christina-hull.npz --blend christina.blend   # build, export, save the .blend
-python3 ferry/blender/assemble.py --part christina-hull.npz                                 # put it into data/ferry.bin.gz, and write data/systems.json
+blender -b -P ferry/blender/build.py -- --part chisum-hull.npz --blend chisum.blend   # build, export, save the .blend
+python3 ferry/blender/assemble.py --part chisum-hull.npz                                 # put it into data/ferry.bin.gz, and write data/systems.json
 python3 ferry/blender/check.py                                                              # check what the page will read
 node ferry/checks/bridge.cjs                                                                # check the page itself (the site served on port 8765)
-blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
+blender -b chisum.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
 ```
 
 | File | What |
@@ -182,6 +200,7 @@ blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull
 | `hull_markings.py` | Draught marks, the load line, her name: each point carried onto the plating it is painted on |
 | `compass_deck.py` | The roof of the bridge house, her mast and what it carries (the viewer's part `top`): slab, plating, rails, mast, radar, lights, antennas, searchlight, binnacle, vents |
 | `wheelhouse.py` | The navigation bridge: the house, the console and every component of the register, both wings, the bridge's fittings on the compass deck. It draws each component where `systems/bridge.py` puts it; assemble.py takes the other ship's wheelhouse away for it |
+| `name_plates.py` | Her name on the other ship's three name plates (its sheet of pictures): run when her name changes |
 | `atlas.py`, `atlas.json` | Her own pictures, drawn in Python (Pillow, no Blender) and packed on one sheet, and where each lies on it. Run `atlas.py` before `build.py` when a picture changes |
 | `build.py` | Builds the sections into collections named after the viewer's parts (`hull`, `machinery`) |
 | `export_jmf.py` | Writes every mesh of those collections as it stands in the file, so work done by hand in Blender is exported the same way |
@@ -304,7 +323,7 @@ builder holds no positions of its own: it draws each component where `systems/br
 `with component(tag):` and its end is that component in the model (`shipyard.component`), so the build writes where each one is.
 
 - *The house.* Plating outside in the house's paint, a lining inside, 8 cm in all. Five forward windows (1.04 m each)
-  between posts and mullions, **raked 10° forward** from the sill at 0.95 m to the head at 1.95 m, under a visor that
+  between posts and mullions, **raked 10° forward** from the sill at 0.95 m to the head at 2.00 m, under a visor that
   carries the roof's eave 0.3 m forward of the glass. Down each side, the same: a window over the after corner, a
   weathertight door (hinged forward, a 0.15 m sill, a glazed upper half), two windows. **From the helm the glass shows
   224° of 225°**, by the survey's measure (gaps under 6° are mullions the view goes on round; counted to 22.5° abaft
@@ -314,7 +333,8 @@ builder holds no positions of its own: it draws each component where `systems/br
   other ship's stood in the after corner, where the boards and their locker would have stood in its doorway (the page's
   check found it: the walker could not get out); it now stands opposite the starboard one, 20.45 to 21.25 m from the
   transom. A deckhead lining 25 mm under the roof with its panel seams; a sheet deck covering with a ribbed mat at the helm.
-- *The console* (5.5 m, top at 1.0 m, nothing on it over 1.33 m) in five bays with doors, a grab rail and a foot rail. In
+- *The console* (5.5 m, top at 1.0 m; nothing on it over 1.33 m, and nothing ahead of the wheel over 1.22 m, so that
+  the sea is seen over it: `yard/calc`) in five bays with doors, a grab rail and a foot rail. In
   the after row, flush panels with their knobs, buttons, a joystick, a trackball, a microphone and two handsets; behind
   them the tilted displays. From port: NAVTEX, the chart system, the echo sounder, the conning display; the two engine
   levers and the thruster lever under the engine instruments and a rudder angle indicator; the GPS, the radar under its
@@ -332,11 +352,20 @@ builder holds no positions of its own: it draws each component where `systems/br
   it opens for whoever comes near); the flag locker, a first-aid box and an extinguisher; the chart table with its
   drawers, the chart, a lamp, the clock, barometer and clinometer, a shelf of publications and the portable radios in
   their charger; over the crew stair's head, which has a rail and a bar, the room air conditioner.
-- *Each wing:* a bulwark 1.1 m high with stays and a varnished rail, the wing control station, a bearing repeater on a
+- *The levers are control heads, and they move.* The owner, 11 November 2026: "Levers need slots and mechanical moving
+  parts". Each engine lever and the thruster lever turns on a shaft inside a housing and comes up through **a slot in its
+  top plate**; a drum on the shaft closes the slot under it, and the scale beside the slot is marked where the arm crosses
+  the plate at each order (full astern to full ahead; thrust to port or starboard), which is how the scale and the
+  lever's angles are worked out (`lever_notches`). **A tap moves a lever a notch** and says the order; the same lever at
+  the console and on both wings moves as one, as synchronised stations do. The tiller stands in a gate and is held over or
+  let go by a tap. **The wheel turns with the rudder**, four degrees for one, its king spoke capped in brass.
+- *Each wing:* a bulwark 1.1 m high with stays and a varnished rail, the wing control station (a pedestal at the outboard
+  forward corner, its levers outboard, so that the person at them sees past the house across the bow), a bearing repeater on a
   stand, a lifebuoy with its light and smoke float, a wing light, a talkback station, a scupper; to port the hydrant and
   the hose box; to starboard the EPIRB. **The sidelights stand on the rail** with their screens: they stood behind the
   bulwark, where no ship abeam could have seen them.
-- *On the compass deck* (the viewer's part `top`): two not-under-command lights on the mast, the NAVTEX antenna, the
+- *On the compass deck* (the viewer's part `top`): the not-under-command lights, a pair of lanterns at each of two
+  heights, one either side of the mast (one alone is hidden by the mast over 26° and more), the NAVTEX antenna, the
   AIS's position antenna, a wind sensor on the flag yard, the air conditioner's condensing unit.
 
 **What hangs from the deckhead lifts with the compass deck** (the lining, its lights, the overhead console, the periscope,
@@ -345,20 +374,34 @@ with nothing over it when she is taken apart. In the register those components s
 
 `assemble.py` takes the other ship's wheelhouse away for it (`REPLACES`: its pieces from the aft wall's forward face to the
 front, wings and all; and everything inside the house's own box, cut at the box's faces). The aft wall itself, with the
-corridor's doorway and the crew stair's opening, is still the other ship's. 119,700 triangles are built in all, 19,750 of
+corridor's doorway and the crew stair's opening, is still the other ship's. 122,200 triangles are built in all, 21,900 of
 them the bridge's own in the `bridge` part and 2,800 in `top`; of the other ship's 14,586 on the bridge deck 4,950 are left.
+
+**What class and the yard's calculations changed** (11 November 2026; `yard/class/PA-001`, revision 1). The navigation
+lights and the fire detection panel each have two feeders of their own, direct from the switchboards, and the lights'
+emergency feeder comes from a section the battery keeps alive through the 45 seconds the emergency generator takes to
+start. There are two steering control systems with nothing in common, each fed from its own power unit's circuit. The
+propulsion control has two supplies and its two lines leave by different sides. Main and emergency cables enter the bridge
+at opposite corners. `yard/calc/bridge_calcs.py`, which reads the model, found what reading the drawing had not: the engine
+instruments and the levers hid the sea to 176 m ahead of the bow from a short helmsman (now 62 m; 69 m is allowed); the
+wing control stations stood where the house's corner hid 13.5° of the view across the bow (moved outboard: the whole 225°
+is clear); two posts of the radar platform stood in the masthead light's sector (the light is 0.3 m higher); a single
+not-under-command lantern is hidden by the mast (pairs). Still open: the forward glass ends at 1.96 m, where 2.00 m is
+recommended, because the deckhead is at 2.08 m (the roof's height is the owner's decision); the sidelights' screens are
+0.42 m long and let the lens be seen 14.5° across the bow.
 
 ## Her systems: the register, and how the page shows it (`systems/`, `systems.js`)
 
 The owner: "a component register, I.e, what equipment is installed, what's the power what's the main? How's the plumbing,
 how's the subsystems and the communication nets. A fully functional realistic well defined ferry". [`systems/README.md`](systems/README.md)
-says what is in it and how it is checked. In short: 145 components on the navigation bridge; her supply (440 V three-phase
-60 Hz, 105 V for lighting and small power, 24 V from two batteries, a 32 kW emergency generator); five boards with 41
-ways, each breaker and cable sized and each voltage drop worked out from **the way the cable is actually laid** through
-the bridge's trays, trunks and ducts; 28 nets with what every member says or hears; 7 pipes.
+says what is in it and how it is checked. In short: 147 components on the navigation bridge; her supply (440 V three-phase
+60 Hz, 105 V for lighting and small power, 24 V from two batteries, a 32 kW emergency generator, and a transitional section
+the battery keeps alive through an inverter); five boards with 35 ways and five circuits that come to the bridge direct from
+boards elsewhere, each breaker and cable sized and each voltage drop worked out from **the way the cable is actually laid**
+through the bridge's trays, trunks and ducts; 31 nets with what every member says or hears; 7 pipes.
 
 On the page:
-- **A tap on a fitting** (or a click on foot) opens a card: its tag, subsystem and room, what it is, what it draws and
+- **A tap on a fitting** (or a click on foot) opens a card (and moves it a notch, if it is a lever): its tag, subsystem and room, what it is, what it draws and
   from which way of which board (breaker, cable, length, voltage drop), its second supply, its nets with its part in
   each, its pipes. The names in the card are links: to the circuit, the net, the pipe.
 - **The panel's second list, *Systems***: her supply in two sentences; the sources; the boards (each opens to its feeder
@@ -495,7 +538,12 @@ spaces to a multiple of four bytes), then one binary block.
 - `ship.built[]` lists the sections that are her own (`part`, `section`, `date`); `source.blender` names the builder.
 - **Parts that move.** `inputs[]` are what can be worked on the page: `id`, `name`, `min`, `max`, `step`, `unit`, and
   how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page makes a slider
-  for each. `movers[]` are the motions: `id`, `input`, `axis`, `pivot`, and a `kind`:
+  for each, with two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
+  tap. An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
+  position means), `home` the one it rests in, `fitting` the component of the register it belongs to; a tap on the lever
+  or on its fitting moves it to the next position, to the end of its travel and back, and it travels there in a moment
+  (`stepInput`, `workSteps`). Several movers may answer one input: the same lever at three stations.
+  `movers[]` are the motions: `id`, `input`, `axis`, `pivot`, and a `kind`:
   `turn` (the part turns about the pivot by the input's angle), `carry` (it keeps its heading and goes with `point` as
   that turns about the pivot: the tie bar), `aim` (it swings about `anchor` to keep pointing at `pin`, which turns about
   the pivot: a ram's cylinder; with `extend` it also runs along that line by as much as the distance has changed: the
@@ -503,8 +551,8 @@ spaces to a multiple of four bytes), then one binary block.
   inside their deck and moves the group. The rudder's angle is negative to port and positive to starboard, as a helm
   indicator shows it; a positive angle turns about the upright axis so that the blade's after edge goes to starboard.
   In Blender a moving part is an object with the custom property `mover` (`Part(..., mover='rudder-p')`), and
-  `hull_fittings.motion()` describes the motions; `build.py` stops if a part names a motion that is not described, or
-  a motion moves nothing.
+  `hull_fittings.motion()` and `wheelhouse.motion()` describe the motions; `build.py` stops if a part names a motion
+  that is not described, or a motion moves nothing.
 - A space record is a room: `id`, `name`, `text`, `why`, and its box `min`, `max`.
 - Axes: metres; the bow is +z, port is +x, y is up with its origin on the laden waterline (keel −1.9, car deck 2.1,
   passenger deck 6.5, bridge deck 9.1, compass deck 11.5).
@@ -547,7 +595,7 @@ they are lit:
 - **The homepage card.** The owner, 9 November 2026: "Make it one of my projects , on the website". She is the `ferry`
   entry of `CONFIG.projectExplorer` in `/config.js` (second card, under Explore), drawn by
   `/assets/js/project-explorer.js`; `CONFIG.projects` has her too. The homepage never loads the 3D model (its design
-  review forbids it): the card shows a picture, `/assets/images/ferry/christina-card.webp`. It lives under `assets/`,
+  review forbids it): the card shows a picture, `/assets/images/ferry/chisum-card.webp`. It lives under `assets/`,
   not here, because the homepage review's sparse checkout does not include `ferry/`.
 - **Retake the card picture when the model changes.** It is this page's cut view from the starboard side with the
   chrome hidden and the lens centred (`camera.clearViewOffset()`, aspect 1200 : 630): Cut 0.5, the camera set through
@@ -579,7 +627,8 @@ Of her own hull (section 1):
   from the engine room), no lighting, no bilge, ballast or fire-main piping, no cable trays; the fore peak has its chain lockers but no ballast
   tank; the shaft space has its walkway and no other floor plates. The steering flat gives 1.80 m under the
   car deck, not the 2.0 m of the arrangement, whose floor lay 6 cm over the keel plate.
-- The rudders are worked by the page's slider only: nothing steers her, the screws do not turn, and the hydraulic pipes
+- The rudders are worked by the page's slider only (the wheel turns with it): nothing steers her, the screws do not turn
+  and the engine levers order nothing but their own position, and the hydraulic pipes
   end beside the rams without the hoses that would let the cylinders swing (they swing up to 8°).
 - The anchors are simple: a shank, a head and two flukes, without the cable, the shackle or the pipe through to the
   windlass, which is still the Minato Maru's.
@@ -595,8 +644,8 @@ Of the navigation bridge and her systems:
   page from the register's cable ways. The pipes likewise, but for their fittings.
 - The aft wall is still the other ship's, with the crew stair's opening 1.50 m high under it (finding BF-12); the stair is
   railed and barred and is not gone down from the wheelhouse.
-- The name board on the wheelhouse front is the other ship's plate, repainted by the export; its lowest 3 cm is sunk in
-  the visor.
+- The name board on the wheelhouse front is the other ship's plate with her name painted on it (`name_plates.py`); its
+  lowest 3 cm is sunk in the visor.
 - The stern light is in the register and on its way of the navigation light panel, and is still the other ship's drawing,
   at the after end of the passenger deck.
 - Powers are typical figures, the sizing rules are recalled and not checked against a text, and nothing is class-approved
@@ -649,6 +698,33 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, last of all: class answered, and the levers
+
+The bridge as changed for class comment sheet PA-001 revision 1, and the levers the owner asked for. `atlas.py` (55
+pictures; two faces redrawn lower, the board doors lettered from the register), `build.py` (122,175 triangles; glass 224°
+of 225°; all solids outward; **28 motions, each with its parts**: the 17 before, nine levers at three stations, the tiller
+and the wheel), `assemble.py` twice with the same two files (1,772,194 bytes, 236,175 triangles), `register.py` (147
+components, 146 in the model, 40 circuits, 31 nets, 7 pipes: all checks hold), `check.py` all passed.
+**`yard/calc/bridge_calcs.py`: all calculations hold** (sea hidden to 62 m ahead of the bow of 69 m allowed; two blind
+sectors of 4.0° outside the wheelhouse; each wing 225° clear; the masthead and anchor lights unobstructed, no bearing on
+which both lanterns of a not-under-command pair are hidden; radio battery 87 Ah needed of 100 Ah; 31 Ah of the general
+service bank's 128 Ah in the transitional half hour). Its earlier runs failed five times on real defects, each corrected in
+the design: the list is in the bridge's section above. `checks/bridge.cjs` **24 of 24**: three new (on foot, a tap on the
+port engine lever moves it a notch and shows its card; the same lever at the console and on both wings has turned 16.26°;
+the wheel turns four degrees for one of rudder). Looked at in pictures: the console from the wheel, the control heads at
+rest and worked, the port wing's station, the view from its levers across the bow, the mast. Not run: the homepage's own
+review (nothing of the homepage changed); the walk tests of the other decks (nothing of them changed). Published to `main`
+the same day on the owner's "Merge current progress to main so I can look at it", with the rename and the yard's paperwork.
+
+### 11 November 2026, last: renamed Chisum
+
+`name_plates.py` on the other ship's sheet (bow, transom and board lettering in the same ink, height and spacing; looked at
+on the sheet and in the model: CHISUM on the bow, over MINATO on the transom, on the name board); `atlas.py`, `build.py`
+(119,623 triangles: her name is three letters shorter), `assemble.py` twice with the same files, `check.py` all passed (one
+new: the model, the register and the specification agree on her name), `checks/bridge.cjs` 21 of 21. The homepage card's
+picture is retaken under its new file name. Not run: the homepage's own review (its counts do not change; only the card's
+title and picture file do).
 
 ### 11 November 2026, later: the navigation bridge and her systems
 

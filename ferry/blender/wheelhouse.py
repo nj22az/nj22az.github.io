@@ -23,7 +23,7 @@ Drawn in the ship's axes (lines.py): x to port, y up from the laden waterline, z
 the register gives them: x, `yard` (metres from the transom) and h (metres over the bridge deck, 11.0 m above the keel).
 """
 import os, sys
-from math import pi, cos, sin, radians, tan, hypot
+from math import pi, cos, sin, radians, degrees, tan, atan, hypot
 from mathutils import Vector
 import lines as L
 import spec as S
@@ -37,7 +37,7 @@ import bridge as REG
 DECK = L.Y(11.0)                      # the bridge deck, 9.1 m over the waterline
 HEAD_ROOM = 2.08                      # the roof's underside
 CEIL = 2.055                          # the deckhead lining
-SILL, HEAD, RAKE = 0.95, 1.95, tan(radians(10.0))
+SILL, HEAD, RAKE = 0.95, 2.00, tan(radians(10.0))
 X_IN, X_OUT = 2.92, 3.00              # the house side, inside and out
 AFT, FRONT_IN, FRONT_OUT = 19.545, 22.92, 23.00
 CORNER = 22.82                        # where the side wall's last window ends and the forward corner begins
@@ -119,7 +119,7 @@ def tube(key, a, b, r, colour, sides=12, r2=None):
 
 def torus(key, centre, big, small, colour, axis='z', n=28, m=10):
     """A ring about the fore-and-aft axis (a wheel) or the athwartships one (a lifebuoy against the bulwark)."""
-    p = part(key)
+    p = key if isinstance(key, Part) else part(key)
     c = Vector(P(*centre))
     a1, a2, ax = (Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))) if axis == 'z' else (Vector((0, 0, 1)), Vector((0, 1, 0)), Vector((1, 0, 0)))
     rows = []
@@ -203,9 +203,16 @@ def details(name, got, w, h):
             part('steel').tube(tuple(at), tuple(at + n * 0.006), 0.007, colour=GREY, sides=10)
             part('steel').tube(tuple(at + n * 0.006), tuple(at + n * 0.03 + u * 0.012), 0.0035, 0.0045, colour=srgb(0xd7dcdc), sides=8)
         elif kind == 'tiller':
-            part('steel').tube(tuple(at), tuple(at + n * 0.012), 0.016, colour=GREY, sides=12)
-            part('steel').tube(tuple(at + n * 0.012), tuple(at + n * 0.14), 0.007, colour=GREY, sides=8)
-            _revolve(part('plastic'), tuple(at + n * 0.13), tuple(n), [(0.0, 0.0), (0.0, 0.007), (0.01, 0.019), (0.035, 0.02), (0.05, 0.0)], BLACK, sides=12)
+            # A gate: a raised steel plate with a slot across the ship, and the stick standing in it on its ball. The
+            # stick is a moving part (the panel is level: its face looks up).
+            gate = part('steel')
+            for z0, z1, x0, x1 in ((0.006, 0.018, -0.04, 0.04), (-0.018, -0.006, -0.04, 0.04), (-0.006, 0.006, 0.03, 0.04), (-0.006, 0.006, -0.04, -0.03)):
+                gate.box(tuple(at + Vector((x0, 0.0, z0))), tuple(at + Vector((x1, 0.004, z1))), GREY)
+            mv = _moving('Wheelhouse, tiller', 'tiller', steel='Shaft steel', grip='Plastic')
+            _revolve(mv['steel'], tuple(at - n * 0.004), tuple(n), [(0.0, 0.0), (0.0, 0.0105), (0.006, 0.0105), (0.012, 0.007), (0.014, 0.0)], srgb(0x9aa2a3), sides=12)
+            mv['steel'].tube(tuple(at + n * 0.008), tuple(at + n * 0.125), 0.0055, colour=GREY, sides=8)
+            _revolve(mv['grip'], tuple(at + n * 0.115), tuple(n), [(0.0, 0.0), (0.0, 0.007), (0.01, 0.019), (0.035, 0.02), (0.05, 0.0)], BLACK, sides=12)
+            LEVERS.append(dict(id='tiller', input='tiller', axis=[0, 0, 1], pivot=[float(v) for v in at]))
         elif kind == 'mic':
             part('steel').tube(tuple(at), tuple(at + n * 0.015), 0.022, colour=GREY, sides=14)
             mid = at + n * 0.16 - u * 0.03
@@ -469,15 +476,21 @@ def stand(g, tag, *where):
     box('console', -0.32, 0.32, 21.48, 22.02, 0.012, 0.10, STAND)
     box('console', -0.28, 0.28, 21.52, 21.98, 0.10, 0.95, STAND)
     box('console', -0.31, 0.31, 21.49, 22.01, 0.95, 0.98, tint(STAND, 0.55))
+    # The wheel is one moving part on its shaft: it turns with the rudder order, four degrees for one of rudder, and its
+    # king spoke (the one with the brass cap) stands upright when the rudders are amidships.
     c = (0.0, 21.42, 1.05)
-    torus('wood', c, 0.29, 0.022, WOOD)
-    tube('brass', (0, 21.385, 1.05), (0, 21.455, 1.05), 0.055, BRASS, 16)
-    tube('steel', (0, 21.45, 1.05), (0, 21.52, 1.05), 0.03, GREY, 12)
+    mv = _moving('Wheelhouse, steering wheel', 'wheel', wood='Varnished wood', brass='Bronze')
+    torus(mv['wood'], c, 0.29, 0.022, WOOD)
+    tube(mv['brass'], (0, 21.385, 1.05), (0, 21.455, 1.05), 0.055, BRASS, 16)
+    tube('steel', (0, 21.455, 1.05), (0, 21.52, 1.05), 0.03, GREY, 12)
     for i in range(8):
         a = i * pi / 4
         d = (cos(a), sin(a))
-        tube('wood', (0.05 * d[0], 21.42, 1.05 + 0.05 * d[1]), (0.36 * d[0], 21.42, 1.05 + 0.36 * d[1]), 0.012, WOOD, 8, 0.016)
-        tube('wood', (0.29 * d[0], 21.42, 1.05 + 0.29 * d[1]), (0.37 * d[0], 21.42, 1.05 + 0.37 * d[1]), 0.016, WOOD, 8)
+        tube(mv['wood'], (0.05 * d[0], 21.42, 1.05 + 0.05 * d[1]), (0.36 * d[0], 21.42, 1.05 + 0.36 * d[1]), 0.012, WOOD, 8, 0.016)
+        tube(mv['wood'], (0.29 * d[0], 21.42, 1.05 + 0.29 * d[1]), (0.37 * d[0], 21.42, 1.05 + 0.37 * d[1]), 0.016, WOOD, 8)
+    tube(mv['brass'], (0, 21.42, 1.05 + 0.37), (0, 21.42, 1.05 + 0.385), 0.0175, BRASS, 10)
+    tube(mv['brass'], (0, 21.42, 1.05 + 0.312), (0, 21.42, 1.05 + 0.324), 0.0178, BRASS, 10)
+    LEVERS.append(dict(id='wheel', input='rudder', axis=[0, 0, 1], pivot=list(P(*c)), ratio=4.0))
 
 
 def chair(g, tag, x, yard):
@@ -550,19 +563,100 @@ def facepanel(g, tag, x, yard, h):
     details(g['tile'], got, w - 0.01, H - 0.01)
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Levers. A lever is a moving part: it turns on its shaft, in its slot, when it is worked (motion()).
+# ---------------------------------------------------------------------------------------------------------------------
+LEVERS = []                         # this build's lever motions: the part's name, what works it, its shaft
+PLATE = 0.065                       # a control head's slotted plate stands this far over the lever's shaft
+NOTCH = 0.14 * 39 / 288             # the distance between the marks of the engine scale (its picture, 0.14 m long)
+THRUST = 0.13 * 57 / 288            # and of the thruster scale
+ORDERS = ('full astern', 'half astern', 'slow astern', 'stop', 'slow ahead', 'half ahead', 'full ahead')
+THRUSTS = ('full thrust to port', 'half thrust to port', 'stopped', 'half thrust to starboard', 'full thrust to starboard')
+
+
+def lever_notches(across=False):
+    """The lever's angle in degrees at each mark of its scale: the arm crosses the slotted plate exactly at the mark."""
+    marks, pitch = ((-2, -1, 0, 1, 2), THRUST) if across else (range(-3, 4), NOTCH)
+    return [round(degrees(atan(k * pitch / PLATE)), 2) for k in marks]
+
+
+# What can be worked by a tap: its name, the fitting of the register it belongs to, its positions and what each means.
+CONTROLS = [
+    dict(id='lever-engine-p', name='Port engine lever', fitting='PRP-01', home=3, steps=[dict(v=a, say=o) for a, o in zip(lever_notches(), ORDERS)]),
+    dict(id='lever-engine-s', name='Starboard engine lever', fitting='PRP-02', home=3, steps=[dict(v=a, say=o) for a, o in zip(lever_notches(), ORDERS)]),
+    dict(id='lever-thruster', name='Bow thruster lever', fitting='PRP-03', home=2, steps=[dict(v=a, say=o) for a, o in zip(lever_notches(True), THRUSTS)]),
+    dict(id='tiller', name='Tiller', fitting='STR-03', home=1,
+         steps=[dict(v=-24.0, say='held to port: the rudders go to port until it is let go'), dict(v=0.0, say='let go: the rudders stay where they are'),
+                dict(v=24.0, say='held to starboard: the rudders go to starboard until it is let go')]),
+]
+
+
+def _moving(title, mover, **looks):
+    """The parts of one thing that moves, one for each look it needs: the viewer turns them together (the file's `movers`)."""
+    parts = {key: Part(f'{title}, {key}', look, mover=mover) for key, look in looks.items()}
+    for part_ in parts.values():
+        part_.group = 'bridge'
+        _extra.append(part_)
+    return parts
+
+
+def control_head(title, mover, works, x, yard, base, colour, across=False, s=1.0, sink=0.0):
+    """
+    A control head: a housing with a slot in its top plate, a scale beside the slot, and the lever that travels in it.
+
+    The lever turns on a shaft inside the housing, 65 mm under the plate. A drum on the shaft closes the slot from below,
+    the arm comes up through the slot to its grip, and where the arm crosses the plate is its reading: the scale's marks
+    are spaced for exactly that (lever_notches). An engine's lever travels fore and aft, forward for ahead; the thruster's
+    travels across, to port for thrust to port. Drum, arm and grip are one moving part.
+
+    `base` is the height the head stands on, `s` its size (the wing stations' are three quarters), `sink` how far the
+    housing goes down into a sloping top.
+    """
+    top, piv = base + (PLATE + 0.010) * s, base + 0.010 * s
+    half_l, half_w = (0.085 if across else 0.09) * s, 0.07 * s
+    run = PLATE * s * tan(radians(lever_notches(across)[-1])) + 0.010 * s      # half the slot's length
+    v0, v1 = 0.0, 0.016 * s                                                     # the slot, across the lever's travel
+    vs = (v0 + v1) / 2
+
+    def at(u, v):                                                               # u along the travel, v across it
+        return (x + u, yard + v) if across else (x + v, yard + u)
+
+    def block(key, u0, u1, va, vb, h0, h1, col):
+        (xa, ya), (xb, yb) = at(u0, va), at(u1, vb)
+        box(key, xa, xb, ya, yb, h0, h1, col)
+
+    lo = base - sink
+    block('dark', -half_l, half_l, -half_w, v0, lo, top, DARK)                  # the housing: four blocks round the slot
+    block('dark', -half_l, half_l, v1, half_w, lo, top, DARK)
+    block('dark', run, half_l, v0, v1, lo, top, DARK)
+    block('dark', -half_l, -run, v0, v1, lo, top, DARK)
+    for va, vb in ((v0 - 0.003 * s, v0), (v1, v1 + 0.003 * s)):                 # the slot's steel lips
+        block('steel', -run - 0.003 * s, run + 0.003 * s, va, vb, top, top + 0.0015, GREY)
+    for u0, u1 in ((run, run + 0.003 * s), (-run - 0.003 * s, -run)):
+        block('steel', u0, u1, v0, v1, top, top + 0.0015, GREY)
+    long, wide = ((0.13, 0.05) if across else (0.14, 0.055))                    # the scale, its marks against the slot
+    cx, cy = at(0.0, v0 - (0.005 + wide / 2) * s)
+    pic((cx, cy, top), UP, FWD, (long if across else wide) * s, (wide if across else long) * s, 'thr_scale' if across else 'lever_scale')
+
+    mv = _moving(title, mover, steel='Shaft steel', grip='Plastic', drum='Machinery paint')
+    (ax0, ay0), (ax1, ay1) = at(0.0, v0 + 0.001 * s), at(0.0, v1 - 0.001 * s)
+    tube(mv['drum'], (ax0, ay0, piv), (ax1, ay1, piv), (PLATE - 0.007) * s, srgb(0x2b3032), 24)
+    px, py = at(0.0, vs)
+    tube(mv['steel'], (px, py, piv + (PLATE - 0.010) * s), (px, py, piv + (PLATE + 0.014) * s), 0.0075 * s, srgb(0x9aa2a3), 10)      # the arm's boss on the drum
+    tube(mv['steel'], (px, py, piv + 0.05 * s), (px, py, piv + 0.16 * s), 0.0055 * s, GREY, 10)
+    (gx0, gy0), (gx1, gy1) = at(0.0, vs - 0.045 * s), at(0.0, vs + 0.045 * s)
+    tube(mv['grip'], (gx0, gy0, piv + 0.16 * s), (gx1, gy1, piv + 0.16 * s), 0.022 * s, colour, 14)
+    LEVERS.append(dict(id=mover, input=works, axis=[0, 0, 1] if across else [1, 0, 0], pivot=list(P(px, py, piv))))
+
+
+LEVER_OF = {'PRP-01': ('Wheelhouse, port engine lever', 'lever-engine-p'), 'PRP-02': ('Wheelhouse, starboard engine lever', 'lever-engine-s'),
+            'PRP-03': ('Wheelhouse, bow thruster lever', 'lever-thruster')}
+
+
 def lever(g, tag, x, yard, h):
-    """An engine or thruster control lever: a base with its scale, a shaft, a grip."""
-    col = srgb(g['colour'])
-    box('dark', x - 0.07, x + 0.07, yard - 0.15, yard + 0.15, h, h + 0.04, DARK)
-    if g.get('across'):
-        pic((x, yard + 0.085, h + 0.04), UP, FWD, 0.13, 0.05, 'thr_scale')
-        tube('steel', (x, yard - 0.03, h + 0.04), (x, yard - 0.03, h + 0.27), 0.012, GREY, 10)
-        tube('plastic', (x, yard - 0.075, h + 0.27), (x, yard + 0.015, h + 0.27), 0.03, col, 12)
-    else:
-        pic((x + 0.038, yard, h + 0.04), UP, FWD, 0.055, 0.14, 'lever_scale')
-        tube('steel', (x - 0.025, yard, h + 0.04), (x - 0.025, yard, h + 0.27), 0.012, GREY, 10)
-        tube('plastic', (x - 0.065, yard, h + 0.27), (x + 0.015, yard, h + 0.27), 0.03, col, 12)
-    tube('steel', (x - (0.0 if g.get('across') else 0.025), yard - (0.03 if g.get('across') else 0.0), h + 0.04), (x - (0.0 if g.get('across') else 0.025), yard - (0.03 if g.get('across') else 0.0), h + 0.055), 0.03, GREY, 12)
+    """An engine or thruster control lever on the console. Its grip's top is 0.19 m over the console: the sea is seen over it (JS4-402)."""
+    title, works = LEVER_OF[tag]
+    control_head(title, works, works, x, yard, h, srgb(g['colour']), across=bool(g.get('across')))
 
 
 def phone(g, tag, x, yard, h):
@@ -846,9 +940,9 @@ def blinds(g, tag, x, yard, h):
     """A roller blind at the head of each forward window: the roll, and a hand's breadth of tinted film drawn down."""
     yd = FRONT_IN + fwd(HEAD) - 0.03
     for x0, x1 in PANES:
-        tube('plastic', (x0 + 0.02, yd, 1.985), (x1 - 0.02, yd, 1.985), 0.022, srgb(0xd9d5c8), 10)
-        part('glass').polygon([P(x0 + 0.04, yd - 0.004, 1.965), P(x1 - 0.04, yd - 0.004, 1.965), P(x1 - 0.04, yd - 0.022, 1.86), P(x0 + 0.04, yd - 0.022, 1.86)], srgb(0x1a2a2e))
-        tube('steel', (x0 + 0.04, yd - 0.022, 1.86), (x1 - 0.04, yd - 0.022, 1.86), 0.006, GREY, 6)
+        tube('plastic', (x0 + 0.02, yd, HEAD + 0.03), (x1 - 0.02, yd, HEAD + 0.03), 0.02, srgb(0xd9d5c8), 10)
+        part('glass').polygon([P(x0 + 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.022, HEAD - 0.09), P(x0 + 0.04, yd - 0.022, HEAD - 0.09)], srgb(0x1a2a2e))
+        tube('steel', (x0 + 0.04, yd - 0.022, HEAD - 0.09), (x1 - 0.04, yd - 0.022, HEAD - 0.09), 0.006, GREY, 6)
 
 
 def mullion_ducts(g, tag, x, yard, h):
@@ -887,30 +981,42 @@ def whistle_valve(g, tag, x, yard, h):
 # The wings
 # =====================================================================================================================
 def wing_console(g, tag, x, yard, h):
+    """
+    A wing control station: a pedestal 0.63 m wide against the wing's forward bulwark, at its outboard end, with a sloping
+    top and a low windscreen. The levers are outboard, where the person berthing her stands: from there the eye is far
+    enough out to see past the house's forward corner to 45 degrees on the opposite bow (SOLAS V/22.1.4; the yard's
+    calculation JS4-402 found the first station, across the whole wing with its levers inboard, 13.5 degrees short).
+    The levers stand in the order they have on the console, port engine to port, on both wings.
+    """
     side = g['side']
-    x0, x1, y0, y1 = 3.10, 4.00, 22.425, 22.875
+    x0, x1, y0, y1 = abs(x) - 0.315, abs(x) + 0.315, yard - 0.17, yard + 0.17
     xa, xb = sorted((side * x0, side * x1))
+    at = lambda u: side * (x0 + u)                                   # u metres from the pedestal's inboard edge
     box('console', xa, xb, y0 + 0.03, y1 - 0.03, 0.012, 0.10, FRAME)
     box('console', xa, xb, y0, y1, 0.10, 0.82, GREEN)
     prism('console', xa - 0.01, xb + 0.01, [(y0 - 0.02, 0.82), (y1 + 0.02, 0.82), (y1 + 0.02, 0.98), (y0 + 0.14, 0.88)], tint(GREEN, 1.08))
-    xm = (xa + xb) / 2
-    for dx, col in ((-0.28, RED), (-0.14, GREENLENS), (0.0, BLUE)):
-        xx = xm + side * dx
-        tube('steel', (xx, y0 + 0.13, 0.875), (xx, y0 + 0.13, 1.10), 0.011, GREY, 10)
-        tube('plastic', (xx - 0.04, y0 + 0.13, 1.10), (xx + 0.04, y0 + 0.13, 1.10), 0.028, col, 12)
+    # Three control heads of three-quarter size, sunk into the sloping top: the two engines outboard, fore and aft, the
+    # thruster nearest the person, across. Each lever moves with its fellow on the console and on the other wing.
+    where = 'Port wing' if side > 0 else 'Starboard wing'
+    tail = '-wp' if side > 0 else '-ws'
+    for u, col, name, works in zip((0.56, 0.44) if side > 0 else (0.44, 0.56), (RED, GREENLENS), ('port engine lever', 'starboard engine lever'), ('lever-engine-p', 'lever-engine-s')):
+        control_head(f'{where}, {name}', works + tail, works, at(u), y0 + 0.13, 0.89, col, s=0.77, sink=0.05)
+    control_head(f'{where}, bow thruster lever', 'lever-thruster' + tail, 'lever-thruster', at(0.20), y0 + 0.085, 0.875, BLUE, across=True, s=0.77, sink=0.05)
     slope = (0.98 - 0.88) / (y1 + 0.02 - (y0 + 0.14))
     nrm = Vector((0.0, 1.0, -slope)).normalized()
     upv = Vector((0.0, slope, 1.0)).normalized()
-    for dx, name in ((0.18, 'rai'), (0.34, 'rpm')):
-        ys = y0 + 0.30
+    for u, name in ((0.09, 'rai'), (0.25, 'rpm')):
+        ys = y0 + 0.265
         hs = 0.88 + (ys - (y0 + 0.14)) * slope
-        c = Vector(P(xm + side * dx, ys, hs))
+        c = Vector(P(at(u), ys, hs))
         part('brass').tube(tuple(c), tuple(c + nrm * 0.012), 0.072, colour=BRASS, sides=20)
-        disc((xm + side * dx, ys, hs), tuple(nrm), tuple(upv), 0.062, name, proud=0.0135)
-    # the watch alarm's reset and the whistle push, and a windscreen across the forward edge
-    for dx, col in ((0.26, BLUE), (0.38, RED)):
-        c = Vector(P(xm + side * dx, y0 + 0.16, 0.88 + 0.02 * slope))
-        part('plastic').tube(tuple(c), tuple(c + nrm * 0.022), 0.016, colour=col, sides=12)
+        disc((at(u), ys, hs), tuple(nrm), tuple(upv), 0.062, name, proud=0.0135)
+    # the watch alarm's reset and the whistle push on the lip, between the thruster's head and the engines'; and a
+    # windscreen across the forward edge
+    lip = Vector((0.0, 1.0, -0.375)).normalized()
+    for dy, col in ((0.06, BLUE), (0.125, RED)):
+        c = Vector(P(at(0.33), y0 + dy, 0.82 + (dy + 0.02) * 0.375))
+        part('plastic').tube(tuple(c), tuple(c + lip * 0.022), 0.016, colour=col, sides=12)
     for xs in (xa + 0.03, xb - 0.03):
         tube('steel', (xs, y1 - 0.02, 0.98), (xs, y1 - 0.02, 1.32), 0.012, GREY, 8)
     part('glass').polygon([P(xa + 0.03, y1 - 0.02, 1.00), P(xb - 0.03, y1 - 0.02, 1.00), P(xb - 0.03, y1 - 0.02, 1.30), P(xa + 0.03, y1 - 0.02, 1.30)], GLASS)
@@ -1012,10 +1118,13 @@ ROOF = REG.DECK_H
 
 
 def nuc(g, tag, x, yard, h):
-    tube('top', (0.06, yard, h + 0.04), (x, yard, h + 0.04), 0.012, HOUSE, 6)
-    tube('top_dark', (x, yard, h), (x, yard, h + 0.05), 0.06, DARK, 14)
-    tube('top_lens', (x, yard, h + 0.05), (x, yard, h + 0.16), 0.052, RED, 14)
-    tube('top_dark', (x, yard, h + 0.16), (x, yard, h + 0.19), 0.06, DARK, 14)
+    """A pair of all-round red lanterns on a cross arm, one either side of the mast: together they are seen all round, where
+    one beside the mast would be hidden by it over 35 degrees (COLREG Annex I, 9(b): not more than 6)."""
+    tube('top', (-0.30, yard, h + 0.04), (0.30, yard, h + 0.04), 0.012, HOUSE, 6)
+    for sx in (-0.30, 0.30):
+        tube('top_dark', (sx, yard, h), (sx, yard, h + 0.05), 0.06, DARK, 14)
+        tube('top_lens', (sx, yard, h + 0.05), (sx, yard, h + 0.16), 0.052, RED, 14)
+        tube('top_dark', (sx, yard, h + 0.16), (sx, yard, h + 0.19), 0.06, DARK, 14)
 
 
 def navtex_ant(g, tag, x, yard, h):
@@ -1067,6 +1176,7 @@ def build():
     _parts.clear()
     _extra.clear()
     MOTIONS.clear()
+    LEVERS.clear()
     for c in REG.COMPONENTS:
         g, kind = c['g'], c['g']['kind']
         if kind == 'none':
@@ -1102,10 +1212,17 @@ def build():
 
 
 def motion():
-    """Each door turns on its hinge and opens for whoever comes near on foot."""
+    """
+    Each door turns on its hinge and opens for whoever comes near on foot. Each lever turns on its shaft, a notch for a
+    tap, and the same lever at the console and on both wings moves as one. The wheel turns with the rudder order.
+    """
     inputs, movers = [], []
     for m in MOTIONS:
         inputs.append(dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit='°', below='', above='open', rest='shut', auto='near',
                            at=m['at'], normal=m['normal'], reach=1.6))
         movers.append(dict(id=m['id'], kind='turn', input=m['id'], axis=[0, 1, 0], pivot=m['pivot'], ratio=m['ratio']))
+    for c in CONTROLS:
+        inputs.append(dict(id=c['id'], name=c['name'], fitting=c['fitting'], steps=c['steps'], home=c['home'], min=c['steps'][0]['v'], max=c['steps'][-1]['v'], unit='°'))
+    for m in LEVERS:
+        movers.append(dict(id=m['id'], kind='turn', input=m['input'], axis=m['axis'], pivot=[round(float(v), 4) for v in m['pivot']], ratio=m.get('ratio', 1.0)))
     return inputs, movers

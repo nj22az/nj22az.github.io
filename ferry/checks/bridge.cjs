@@ -126,6 +126,35 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(named.id && named.card, `on foot, a tap on what is ahead of the watch officer's chair names it (${named.id})`);
   await page.evaluate(() => { window.__ferry.systems.clear(); window.__ferry.leaveWalk(); });
 
+  // ---- the levers: a tap moves one a notch, at the console and on both wings together; the wheel follows the rudder
+  const lever = await page.evaluate(async ([z, zl]) => {
+    const f = window.__ferry, L = f.look;
+    f.enterWalk();
+    f.walkTo(0.85, z, Math.PI, -0.6, 9.1);          // beside the stand, where a walker can stand upright
+    f.walkFor(0.5);
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const grip = new L.camera.position.constructor(0.458, 9.1 + 1.17, zl).project(L.camera);
+    const c = document.querySelector('canvas').getBoundingClientRect();
+    f.nameOnFoot(c.left + (grip.x + 1) / 2 * c.width, c.top + (1 - grip.y) / 2 * c.height);
+    const said = document.querySelector('#what').textContent;
+    await new Promise(r => setTimeout(r, 1500));
+    const deg = (m, a, b) => Math.atan2(m[a], m[b]) * 180 / Math.PI;
+    const turned = f.movers().filter(m => m.input === 'lever-engine-p').map(m => [m.id, deg(m.matrix, 6, 5)]);
+    f.setInput('rudder', 20);
+    const wheel = deg(f.movers().find(m => m.id === 'wheel').matrix, 1, 0);
+    f.setInput('rudder', 0);
+    const all = f.movers();
+    const worked = ['lever-engine-p', 'lever-engine-s', 'lever-thruster', 'tiller'].map(id => f.control(id)).filter(k => k && k.steps && k.fitting);
+    return { said, card: f.systems.state.component, at: f.control('lever-engine-p').at, turned, wheel, n: all.length, worked: worked.length };
+  }, [Z(22.0), Z(22.60)]);
+  const mark = 16.26;
+  check(lever.said === 'Port engine lever: slow ahead' && lever.card === 'PRP-01' && lever.at === 4,
+    `on foot, a tap on the port engine lever moves it a notch and shows its card ("${lever.said}", ${lever.card})`);
+  check(lever.turned.length === 3 && lever.turned.every(([, a]) => Math.abs(a - mark) < 0.05),
+    `the same lever at the console and on both wings has turned ${mark}° in its slot (${lever.turned.map(([id, a]) => `${id} ${a.toFixed(2)}`).join(', ')})`);
+  check(Math.abs(lever.wheel - 80) < 0.05 && lever.worked === 4, `the wheel turns four degrees for one of rudder (${lever.wheel.toFixed(1)}° at 20°); ${lever.worked} controls are worked by a tap, ${lever.n} parts move`);
+  await page.evaluate(() => { window.__ferry.systems.clear(); window.__ferry.leaveWalk(); });
+
   // ---- a phone
   const phone = await open({ width: 390, height: 844 });
   const small = await phone.evaluate(() => {

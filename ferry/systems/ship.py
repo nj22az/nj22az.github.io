@@ -1,5 +1,5 @@
 """
-The Christina's systems, ship-wide: what supplies her, the boards the sections are fed from, the subsystems her equipment
+The Chisum's systems, ship-wide: what supplies her, the boards the sections are fed from, the subsystems her equipment
 is sorted into, and the rules a circuit is sized by. Each section's own components, circuits, nets and pipes are a module of
 their own (bridge.py is the first); register.py puts them together, checks them and writes what the page reads.
 
@@ -8,7 +8,7 @@ on the work branch): the same generators, voltages and frequency, the same sizin
 Nothing here is class-approved or construction information.
 """
 
-SHIP = dict(name='Christina', length=34.5, type='car and passenger ferry')
+SHIP = dict(name='Chisum', length=34.5, type='car and passenger ferry')
 
 # ---- What she is supplied by: the answer to "what is the main?"
 SUPPLY = dict(
@@ -18,8 +18,11 @@ SUPPLY = dict(
     small=dict(label='105 V single-phase, 60 Hz', volts=105, phases=1, hz=60,
                text='Lighting and small power, through 440/105 V transformers: two-wire, both poles insulated and both switched.'),
     dc=dict(label='24 V direct current', volts=24, phases=0, hz=0,
-            text='Two-wire, insulated, from two battery banks in the emergency generator room: the general service bank '
-                 '(navigation and control) and the radio and emergency bank. Each bank floats on its own charger.'),
+            text='Two-wire, insulated, from two battery banks in the emergency generator room. The general service bank feeds '
+                 'navigation and control and is the transitional source: it carries the general alarm, the public address, the '
+                 'transitional lighting and, through an inverter, the navigation lights through the 45 seconds the emergency '
+                 'generator takes to start, and for half an hour if it does not. The radio bank feeds the radio and nothing else. '
+                 'Each bank floats on its own charger.'),
 )
 
 SOURCES = [
@@ -27,8 +30,8 @@ SOURCES = [
     dict(id='G2', name='Diesel generator No. 2', rating='125 kVA, 100 kW, 445 V, 60 Hz', where='Engine room', feeds='MSB', built=False),
     dict(id='SHORE', name='Shore connection at Minato', rating='50 kVA, 440 V, 60 Hz', where='Car deck, port side', feeds='MSB', built=False),
     dict(id='EG', name='Emergency generator', rating='40 kVA, 32 kW, 445 V, 60 Hz', where='Emergency generator room, bridge deck', feeds='ESB', built=False),
-    dict(id='BAT-G', name='24 V battery bank, general service', rating='capacity to be sized with the emergency-power section', where='Emergency generator room', feeds='DCB', built=False),
-    dict(id='BAT-R', name='24 V battery bank, radio and emergency', rating='capacity to be sized with the emergency-power section', where='Emergency generator room', feeds='DCB-R', built=False),
+    dict(id='BAT-G', name='24 V battery bank, general service and transitional', rating='24 V, 200 Ah (calculation JS8-855)', where='Emergency generator room', feeds='DCB', built=False),
+    dict(id='BAT-R', name='24 V battery bank, radio', rating='24 V, 100 Ah (calculation JS8-855)', where='Emergency generator room', feeds='DCB-R', built=False),
 ]
 
 # ---- The boards a section may be fed from. `ext` is the cable length, in metres, from the board to the point where its
@@ -42,8 +45,20 @@ BOARDS = [
     dict(id='ESB', name='Emergency switchboard', volts=105, kind='AC', where='Emergency generator room', fed_by=['MSB', 'EG'], ext=17.0, built=False,
          text='Fed from the main board through the bus-tie while there is main power, and from the emergency generator within 45 s of '
               'losing it; its 105 V section is behind the 5 kVA emergency lighting transformer.'),
+    # SOLAS II-1/42.4 (read for PA-001 revision 1): the transitional source is an accumulator battery that takes over by
+    # itself and carries, among other things, the navigation lights for half an hour. They are 105 V lanterns, so the
+    # battery feeds them through an inverter.
+    dict(id='TSB', name='Emergency switchboard, transitional section', volts=105, kind='AC', where='Emergency generator room', fed_by=['ESB', 'BAT-G'], ext=17.0, built=False,
+         text='A section of the emergency switchboard that is never dead: fed from the board while it is alive, and without a break from the '
+              'general service battery through a 1 kVA inverter (24 V DC to 105 V) when it is not. It feeds the navigation light panel.'),
     dict(id='DCB', name='24 V DC board, general service bank', volts=24, kind='DC', where='Emergency generator room', fed_by=['BAT-G'], ext=17.0, built=False),
-    dict(id='DCB-R', name='24 V DC board, radio and emergency bank', volts=24, kind='DC', where='Emergency generator room', fed_by=['BAT-R'], ext=17.0, built=False),
+    dict(id='DCB-R', name='24 V DC board, radio bank', volts=24, kind='DC', where='Emergency generator room', fed_by=['BAT-R'], ext=17.0, built=False,
+         text='The reserve source of energy of the radio installation: it feeds the radio and nothing else.'),
+    # The two steering gear power units' own circuits (SOLAS II-1/30: two exclusive circuits, one of them by the emergency
+    # switchboard). Each steering control system takes its supply from its own power unit's circuit, in the steering-gear
+    # room (II-1/29). 45 m of cable to the bridge is an estimate until the sections between are routed.
+    dict(id='SG1', name='Steering gear power unit No. 1, control circuit', volts=105, kind='AC', where='Steering-gear room', fed_by=['MSB'], ext=45.0, built=False),
+    dict(id='SG2', name='Steering gear power unit No. 2, control circuit', volts=105, kind='AC', where='Steering-gear room', fed_by=['ESB'], ext=45.0, built=False),
 ]
 
 # ---- Places outside the section that its nets and pipes run to. Named, not yet registered: they become components when

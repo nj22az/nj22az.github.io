@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-The Christina's component register: puts her systems together, routes every cable, sizes and checks every circuit, and
+The Chisum's component register: puts her systems together, routes every cable, sizes and checks every circuit, and
 writes what the page and people read.
 
     python3 ferry/systems/register.py [--boxes <part file from blender/build.py>]
@@ -157,7 +157,7 @@ def build(boxes=None):
             circuits[(board, no)] = dict(board=board, no=no, name=name, breaker=breaker, mm2=mm2, pf=pf, consumers=[], standby=[], feeds=None, section=sec['id'])
         for key, c in mod.OUTSIDE_CIRCUITS.items():
             circuits[key] = dict(board=key[0], no=key[1], name=c['name'], breaker=c['breaker'], mm2=c['mm2'], pf=1.0, consumers=[], standby=[], feeds=None,
-                                 section=sec['id'], given_length=c['length'], note=c.get('note'), kks=c.get('kks'))
+                                 section=sec['id'], given_length=c.get('length'), note=c.get('note'), kks=c.get('kks'))
 
     # ---- who is on which circuit
     for cid, e in by_id.items():
@@ -215,6 +215,17 @@ def build(boxes=None):
     def round_up(x, step=0.5):
         return math.ceil(x / step - 1e-9) * step
 
+    def entry(mod, bid):
+        """Where the cables from a board elsewhere come into the section: the main supplies by one way, the emergency ones by another."""
+        return getattr(mod, 'ENTRY', {}).get(bid, 'COR')
+
+    fire = set()
+    for mod in SECTIONS:
+        fire |= set(getattr(mod, 'FIRE_RESISTANT', ()))
+
+    def cable(mm2, resistant=False):
+        return f"2 × {mm2:g} mm² + earth" + (', fire-resistant' if resistant else '')
+
     out_boards = []
     drop_to = {}                                   # board → per cent lost from its source's bars to its own
     order = [b for b in boards if boards[b].get('section')]
@@ -237,7 +248,7 @@ def build(boxes=None):
             f = b['feeder']
             comp = by_id[b['comp']]
             ways = comp['ways']
-            names, d = ways.between('COR', comp['node'])
+            names, d = ways.between(entry(comp['mod'], fed), comp['node'])
             laid = d + comp['tail']
             length = round_up(src.get('ext', 0.0) + laid * S.ALLOWANCE)
             standby = sum(circuit_watts(k) if not k['consumers'] else 0 for (bb, no), k in circuits.items() if bb == bid and k['feeds'] and k.get('feeds_as') == 'alt')
@@ -249,9 +260,34 @@ def build(boxes=None):
             pct = 100 * dv / volts
             pts = ways.run(names) + legs(ways.nodes[comp['node']], comp['src']['at'])[1:]
             rec['fedBy'] = dict(board=fed, name=src['name'], where=src['where'])
-            rec['feeder'] = dict(breaker=f['breaker'], mm2=f['mm2'], cable=f"2 × {f['mm2']:g} mm² + earth", length=length, amps=round(amps, 1), drop=round(pct, 1),
+            rec['feeder'] = dict(breaker=f['breaker'], mm2=f['mm2'], cable=cable(f['mm2'], ('feeder', bid) in fire), length=length, amps=round(amps, 1), drop=round(pct, 1),
                                  standby=round(standby), path=[ship_xyz(p) for p in pts])
             drop_to[bid] = pct
+            # a second feeder from another switchboard (the navigation lights): it carries the whole board when it is the one in use
+            af = b.get('alt_feeder')
+            if af:
+                src2 = boards[af['board']]
+                # `via` leads the second feeder round by another side of the room, so that the two meet only at the board
+                if af.get('via'):
+                    first, d_a = ways.between(entry(comp['mod'], af['board']), af['via'])
+                    rest, d_b = ways.between(af['via'], comp['node'])
+                    names2, d2 = first + rest[1:], d_a + d_b
+                else:
+                    names2, d2 = ways.between(entry(comp['mod'], af['board']), comp['node'])
+                length2 = round_up(src2.get('ext', 0.0) + (d2 + comp['tail']) * S.ALLOWANCE)
+                pct2 = 100 * S.drop_volts(length2, amps, af['mm2']) / volts
+                pts2 = ways.run(names2) + legs(ways.nodes[comp['node']], comp['src']['at'])[1:]
+                rec['altFeeder'] = dict(board=af['board'], name=src2['name'], where=src2['where'], breaker=af['breaker'], mm2=af['mm2'],
+                                        cable=cable(af['mm2'], ('alt', bid) in fire), length=length2, amps=round(amps, 1), drop=round(pct2, 1), path=[ship_xyz(p) for p in pts2])
+                drop_to[bid] = max(pct, pct2)
+                shared = len(set(map(tuple, map(ship_xyz, pts))) & set(map(tuple, map(ship_xyz, pts2))))
+                rec['altFeeder']['sharedPoints'] = shared
+                if af['breaker'] not in S.BREAKERS or af['breaker'] < S.MARGIN * amps - 1e-6:
+                    problems.append(f"{bid} second feeder: {af['breaker']} A breaker for {amps:.1f} A")
+                if S.CABLE_RATING[af['mm2']] < af['breaker']:
+                    problems.append(f"{bid} second feeder: {af['mm2']:g} mm² is rated {S.CABLE_RATING[af['mm2']]} A, under its {af['breaker']} A breaker")
+                if pct2 > S.DROP_ONE_CABLE + 1e-6:
+                    problems.append(f"{bid} second feeder: {pct2:.1f} % voltage drop over {length2:g} m of {af['mm2']:g} mm²")
             if f['breaker'] not in S.BREAKERS:
                 problems.append(f"{bid} feeder: {f['breaker']} A is not a standard breaker")
             if f['breaker'] < S.MARGIN * amps - 1e-6:
@@ -278,7 +314,7 @@ def build(boxes=None):
             standby = sum(by_id[c]['src']['w'] for c in k['standby'])
         amps = S.amps(watts, volts, kind, pf)
         amps_all = S.amps(watts + standby, volts, kind, pf)
-        rec = dict(no=k['no'], name=k['name'], breaker=k['breaker'], mm2=k['mm2'], cable=f"2 × {k['mm2']:g} mm² + earth", watts=round(watts), amps=round(amps, 2),
+        rec = dict(no=k['no'], name=k['name'], breaker=k['breaker'], mm2=k['mm2'], cable=cable(k['mm2'], key in fire), watts=round(watts), amps=round(amps, 2),
                    consumers=list(k['consumers']), standby=list(k['standby']), paths={})
         if standby:
             rec['standbyWatts'] = round(standby)
@@ -304,10 +340,14 @@ def build(boxes=None):
                 longest = max(longest, laid)
             else:
                 e = by_id[c]
-                names, d = e['ways'].between('COR', e['node'])
+                names, d = e['ways'].between(entry(e['mod'], bid), e['node'])
                 pts = e['ways'].run(names) + legs(e['ways'].nodes[e['node']], e['src']['at'])[1:]
                 rec['paths'][c] = [ship_xyz(p) for p in pts]
-        length = k['given_length'] if 'given_length' in k else round_up(longest * S.ALLOWANCE)
+                longest = max(longest, d + e['tail'])
+        if 'given_length' in k and k['given_length'] is not None:
+            length = k['given_length']
+        else:
+            length = round_up((0.0 if own else boards[bid].get('ext', 0.0)) + longest * S.ALLOWANCE)
         current = amps if watts else amps_all       # a standby-only way is sized for what it would carry
         dv = S.drop_volts(length, current, k['mm2'])
         pct = 100 * dv / volts
@@ -372,7 +412,7 @@ def build(boxes=None):
             if any('ext' in m for m in members) and ids:
                 # the way out of the section: from the hub (or the first member) to where the ship's cables arrive
                 first = by_id[hub or ids[0]]
-                names, _ = first['ways'].between(first['node'], 'COR')
+                names, _ = first['ways'].between(first['node'], n.get('out', 'COR'))
                 pts = legs(first['src']['at'], first['ways'].nodes[first['node']]) + first['ways'].run(names)[1:]
                 paths.append([ship_xyz(p) for p in pts])
             nets.append(dict(id=n['id'], name=n['name'], medium=n['medium'], text=n.get('text', ''), hub=hub, section=mod.SECTION['id'], members=members, paths=paths))
@@ -413,7 +453,7 @@ def build(boxes=None):
         if n:
             subs.append(dict(s, count=n))
     data = dict(
-        format='christina-systems-1',
+        format='chisum-systems-1',
         ship=S.SHIP, supply=S.SUPPLY, sources=S.SOURCES,
         elsewhere=[dict(id=b['id'], name=b['name'], volts=b['volts'], kind=b['kind'], where=b['where'], text=b.get('text', ''), fedBy=b.get('fed_by', []))
                    for b in S.BOARDS],
@@ -451,6 +491,10 @@ def tables(data):
                 if 'feeder' in b:
                     fd = b['feeder']
                     w.writerow([b['id'], 'feeder', f"from {b['fedBy']['board']} ({b['fedBy']['name']})", b['volts'], b['load']['connected'], fd['amps'], fd['breaker'], fd['cable'],
+                                fd['length'], fd['drop'], fd['drop'], '', ''])
+                if 'altFeeder' in b:
+                    fd = b['altFeeder']
+                    w.writerow([b['id'], 'second feeder', f"from {fd['board']} ({fd['name']})", b['volts'], b['load']['connected'], fd['amps'], fd['breaker'], fd['cable'],
                                 fd['length'], fd['drop'], fd['drop'], '', ''])
                 for k in b['circuits']:
                     w.writerow([b['id'], k['no'], k['name'], b['volts'], k['watts'], k['amps'], k['breaker'], k['cable'], k['length'], k['drop'], k['total'],

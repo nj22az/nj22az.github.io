@@ -1,7 +1,7 @@
 """
-Builds the Christina in Blender, section by section, and writes what the viewer needs.
+Builds the Chisum in Blender, section by section, and writes what the viewer needs.
 
-    blender -b -P ferry/blender/build.py -- [--blend christina.blend] [--part christina-hull.npz]
+    blender -b -P ferry/blender/build.py -- [--blend chisum.blend] [--part chisum-hull.npz]
 
 Section 1 (10 November 2026): the hull. Her lines (lines.py), her shell, structure, appendages and marks (hull_*.py).
 Each collection in the file is one of the viewer's parts that lift apart (`hull`, `machinery`, `car`); export_jmf.py writes
@@ -138,7 +138,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
     scene.unit_settings.system = 'METRIC'
-    ship = shipyard.collection('Christina')
+    ship = shipyard.collection('Chisum')
     # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
     # spaces and to the car deck (part.group).
     parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'bridge', 'top')}
