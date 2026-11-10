@@ -173,9 +173,9 @@ def _anode(part, z, psi, side, length=0.30, width=0.10, thick=0.035):
 def build():
     keel = Part('Keel bar and skeg', 'Antifouling', smooth=True, angle=40)
     bilge = Part('Bilge keels', 'Antifouling', smooth=True, angle=30)
-    gear = Part('Stern gear: stern tubes, brackets, rudders', 'Antifouling', smooth=True, angle=40)
+    gear = Part('Stern gear: bossings, brackets, headboxes', 'Antifouling', smooth=True, angle=40)
     inboard = Part('Stern tubes, inboard', 'Primer', smooth=True, angle=40)
-    shafts = Part('Shafts and rudder stocks', 'Shaft steel', smooth=True, angle=40)
+    shafts = Part('Tail shafts', 'Shaft steel', smooth=True, angle=40)
     screws = Part('Screws', 'Bronze', smooth=True, angle=50)
     thruster = Part('Bow thruster', 'Antifouling', smooth=True, angle=40)
     thruster_screw = Part('Bow thruster screw', 'Bronze', smooth=True, angle=50)
@@ -291,13 +291,26 @@ def build():
         if i == 6:
             chord *= 0.9
         sections.append((y, zs + r['balance'] * chord, chord))
-    _foil(side_gear, x, sections, RED, t=r['thickness'])
+    # The blade and its stock turn, so each rudder is a part of its own (`mover`); the headbox is fixed.
+    side_rudder = Part('rudder', 'Antifouling')
+    side_stock = Part('stock', 'Shaft steel')
+    _foil(side_rudder, x, sections, RED, t=r['thickness'])
     hull_at = L.hull_y(x, zs)
     _foil(side_gear, x, [(hull_at + 0.05, zs + 0.24, 0.62), (r['top'] + 0.05, zs + 0.2, 0.52)], RED, t=0.22)
-    side_shafts.tube((x, r['top'] - 0.05, zs), (x, S.FLAT, zs), 0.06, colour=steel, sides=14)
+    side_stock.tube((x, r['top'] - 0.05, zs), (x, S.FLAT, zs), 0.06, colour=steel, sides=14)
+    side_zinc = Part('rudder anodes', 'Zinc')
+    for face in (1, -1):
+        xr = x + face * 0.048
+        side_zinc.box((xr - 0.016, -1.02, zs - 0.22), (xr + 0.016, -0.94, zs + 0.0), srgb(S.ZINC))
     for part, whole in ((side_gear, gear), (side_inboard, inboard), (side_shafts, shafts), (side_screw, screws)):
         whole.add(part)
         whole.add(part.mirrored())
+    turning = []
+    for name, part, look in (('Rudder', side_rudder, 'Antifouling'), ('Rudder stock', side_stock, 'Shaft steel'), ('Rudder anodes', side_zinc, 'Zinc')):
+        for label, mover, half in (('starboard', 'rudder-s', part), ('port', 'rudder-p', part.mirrored())):
+            piece = Part(f'{name}, {label}', look, smooth=look != 'Zinc', angle=40, mover=mover)
+            piece.add(half)
+            turning.append(piece)
 
     # ---- The bow thruster: the unit in the middle of the tunnel and the bars across each mouth.
     t = S.THRUSTER
@@ -349,15 +362,11 @@ def build():
             _anode(anodes, L.Z(yard), L.psi_at(-0.55, L.Z(yard)), side)
         for yard, off in ((5.2, 2.5), (7.7, 2.6), (4.6, 0.8)):
             _anode(anodes, L.Z(yard), L.psi_at_x(off, L.Z(yard)), side)
-        # On each face of each rudder.
-        for face in (1, -1):
-            xr = side * S.SHAFT_X + face * 0.048
-            anodes.box((xr - 0.016, -1.02, zs - 0.22), (xr + 0.016, -0.94, zs + 0.0), srgb(S.ZINC))
     for yard in (5.6, 8.2):
         for face in (1, -1):
             xs = face * (S.SKEG['thickness'] / 2 + 0.012)
             anodes.box((xs - 0.016, L.KEEL + 0.5, L.Z(yard) - 0.15), (xs + 0.016, L.KEEL + 0.58, L.Z(yard) + 0.15), srgb(S.ZINC))
-    return [keel, bilge, gear, inboard, shafts, screws, thruster, thruster_screw, chests, chest_dark, anodes]
+    return [keel, bilge, gear, inboard, shafts, screws, thruster, thruster_screw, chests, chest_dark, anodes] + turning
 
 
 def _bilge_out(c, side, psi):

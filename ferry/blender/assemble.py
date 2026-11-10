@@ -51,7 +51,7 @@ def read_jmf(path):
 def decode(header, block, rec):
     lo, hi = np.array(header['bounds']['min']), np.array(header['bounds']['max'])
     nv, nt = rec['vertices'], rec['triangles']
-    out = dict(material=rec['material'], origin=rec.get('from', 'town'))
+    out = dict(material=rec['material'], origin=rec.get('from', 'town'), mover=rec.get('mover'))
     out['pos'] = np.frombuffer(block, '<u2', nv * 3, rec['pos']).reshape(-1, 3).astype(np.float64) / 65535 * (hi - lo) + lo
     out['nor'] = np.frombuffer(block, 'i1', nv * 3, rec['nor']).reshape(-1, 3).copy()
     out['col'] = np.frombuffer(block, 'u1', nv * 3, rec['col']).reshape(-1, 3).copy()
@@ -174,7 +174,7 @@ def main():
         for m in meta['meshes']:
             if m['group'] not in by_id:
                 raise SystemExit(f'the part file brings "{m["group"]}", which is not one of the viewer\'s parts')
-            fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'],
+            fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'], mover=m.get('mover') or None,
                               pos=z[m['key'] + '|pos'].astype(np.float64), nor=z[m['key'] + '|nor'], col=z[m['key'] + '|col']))
     # The box positions are kept over: the base's own, widened where a new part reaches further. It never shrinks, so
     # what the base keeps stays on the same grid and a second run gives the same file.
@@ -197,9 +197,11 @@ def main():
             offset += pad
         return at
 
-    def record(material, origin, pos_q, nor, col, idx, uv=None):
+    def record(material, origin, pos_q, nor, col, idx, uv=None, mover=None):
         wide = len(pos_q) > 65535
         rec = dict(material=material, vertices=int(len(pos_q)), triangles=int(len(idx)), wide=wide)
+        if mover:
+            rec['mover'] = mover
         rec['pos'] = chunk(pos_q.astype('<u2'))
         rec['nor'] = chunk(nor.astype('i1'))
         rec['col'] = chunk(col.astype('u1'))
@@ -214,14 +216,22 @@ def main():
         out = []
         for m in meshes[g['id']]:
             q = np.rint((m['pos'] - lo) / (hi - lo) * 65535).astype(np.uint16)
-            out.append(record(m['material'], m['origin'], q, m['nor'], m['col'], m['idx'], m['uv']))
+            out.append(record(m['material'], m['origin'], q, m['nor'], m['col'], m['idx'], m['uv'], m['mover']))
         for m in (f for f in fresh if f['group'] == g['id']):
             q, n, c, tri = weld(m['pos'], m['nor'], m['col'], lo, hi)
-            out.append(record(m['material'], 'blender', q, n, c, tri))
+            out.append(record(m['material'], 'blender', q, n, c, tri, mover=m['mover']))
             report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects']))
-        g['meshes'] = sorted(out, key=lambda r: r['material'])
+        g['meshes'] = sorted(out, key=lambda r: (r['material'], r.get('mover', '')))
 
     header['bounds'] = dict(min=[float(v) for v in lo], max=[float(v) for v in hi])
+    # What can be worked on the page (inputs) and how the moving parts answer (movers): Blender's replace Blender's.
+    for key in ('inputs', 'movers'):
+        kept = [x for x in header.get(key, []) if x.get('from') != 'blender']
+        brought = [dict(x, **{'from': 'blender'}) for meta, _ in parts for x in meta.get(key, [])]
+        if kept or brought:
+            header[key] = kept + brought
+        else:
+            header.pop(key, None)
     ship = header['ship']
     ship['built'] = [dict(part=gid, section=SUPERSEDES[gid]['section'], date=SUPERSEDES[gid]['built']) for gid in SUPERSEDES
                      if any(f['group'] == gid for f in fresh) or any(b.get('part') == gid for b in ship.get('built', []))]

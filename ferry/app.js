@@ -161,6 +161,9 @@ const redraw = () => { dirty = true; };
 /** @type {{id:string,name:string,level:string,lift:THREE.Vector3,node:THREE.Group,box:THREE.Box3,spaces:any[],row?:HTMLElement}[]} */
 let decks = [];
 let materials = [];
+/** The parts that move (the file's `movers`), each a group inside its deck, and what works them (the file's `inputs`). */
+let movers = [];
+const inputs = new Map();
 const state = { explode: 0, cut: 0, selected: null };
 const root = new THREE.Group();
 scene.add(root);
@@ -174,21 +177,100 @@ function build(doc, atlas) {
   materials = header.materials.map(m => materialOf(m, atlas));
   cutSpan = [header.bounds.min[0] - 0.05, header.bounds.max[0] - 1.0];
   floor.position.y = header.bounds.min[1] - 0.02;
+  const motions = new Map((header.movers || []).map(m => [m.id, m]));
+  movers = [];
   decks = viewDef.groups.map(g => {
     const node = new THREE.Group(); node.name = g.id;
     const box = new THREE.Box3();
+    const moving = new Map();
     for (const rec of g.meshes) {
       const mesh = new THREE.Mesh(geometryOf(rec, doc), materials[rec.material]);
       // Glass and painted markings are drawn after the solid things they lie on, and throw no shadow of their own.
       const clear = header.materials[rec.material].transparent;
       if (clear) mesh.renderOrder = 1;
       mesh.castShadow = !clear; mesh.receiveShadow = true;
-      node.add(mesh); box.union(mesh.geometry.boundingBox);
+      // A mesh that names a motion goes into that motion's own group within the deck, and is moved as one piece with
+      // the other meshes of the motion (a rudder's blade, stock and anodes; a tiller and the head of its stock).
+      let home = node;
+      const motion = rec.mover && motions.get(rec.mover);
+      if (motion) {
+        home = moving.get(motion.id);
+        if (!home) {
+          home = new THREE.Group(); home.name = motion.id; home.matrixAutoUpdate = false;
+          node.add(home); moving.set(motion.id, home); movers.push({ def: motion, node: home });
+        }
+      }
+      home.add(mesh); box.union(mesh.geometry.boundingBox);
     }
     root.add(node);
     return { id: g.id, name: g.name, level: g.level, lift: new THREE.Vector3(...g.explode), node, box, spaces: g.spaces };
   });
   fitSun();
+}
+
+// ---------- parts that move ----------
+const AXIS = new THREE.Vector3(), PIVOT = new THREE.Vector3(), ARM = new THREE.Vector3(), ARM2 = new THREE.Vector3(), CROSS = new THREE.Vector3();
+const TURN = new THREE.Matrix4(), SHIFT = new THREE.Matrix4();
+/** The matrix that turns things by `angle` about the line through `pivot` along AXIS. */
+function turnAbout(out, pivot, angle) {
+  out.makeTranslation(pivot.x, pivot.y, pivot.z).multiply(TURN.makeRotationAxis(AXIS, angle)).multiply(SHIFT.makeTranslation(-pivot.x, -pivot.y, -pivot.z));
+  return out;
+}
+/** Put every moving part where its input says. The kinds of motion are the file's (README: `movers`). */
+function moveParts() {
+  for (const { def, node } of movers) {
+    const input = inputs.get(def.input);
+    const angle = THREE.MathUtils.degToRad(input ? input.value : 0) * (def.ratio ?? 1);
+    AXIS.fromArray(def.axis).normalize();
+    PIVOT.fromArray(def.pivot);
+    if (def.kind === 'turn') turnAbout(node.matrix, PIVOT, angle);
+    else if (def.kind === 'carry') {
+      // The part keeps its heading and goes with a point that turns about the pivot.
+      ARM.fromArray(def.point).sub(PIVOT);
+      ARM2.copy(ARM).applyAxisAngle(AXIS, angle).sub(ARM);
+      node.matrix.makeTranslation(ARM2.x, ARM2.y, ARM2.z);
+    } else if (def.kind === 'aim') {
+      // The part swings about its anchor to keep pointing at a pin that turns about the pivot; a rod also runs out or
+      // in along that line by as much as the distance from anchor to pin has changed.
+      const anchor = Q.fromArray(def.anchor);
+      ARM.fromArray(def.pin).sub(PIVOT).applyAxisAngle(AXIS, angle).add(PIVOT).sub(anchor);   // anchor → pin, now
+      ARM2.fromArray(def.pin).sub(anchor);                                                    // anchor → pin, at rest
+      ARM.addScaledVector(AXIS, -ARM.dot(AXIS)); ARM2.addScaledVector(AXIS, -ARM2.dot(AXIS));
+      const swing = Math.atan2(CROSS.crossVectors(ARM2, ARM).dot(AXIS), ARM2.dot(ARM));
+      turnAbout(node.matrix, anchor, swing);
+      if (def.extend) {
+        const run = ARM.length() - ARM2.length();
+        ARM.normalize();
+        node.matrix.premultiply(SHIFT.makeTranslation(ARM.x * run, ARM.y * run, ARM.z * run));
+      }
+    } else node.matrix.identity();
+    node.matrixWorldNeedsUpdate = true;
+  }
+  renderer.shadowMap.needsUpdate = true;
+  redraw();
+}
+/** How a setting is said: "Rudder 20° to port", "Rudder amidships". */
+const said = (def, v) => v === 0 ? `${def.name} ${def.rest || 'at rest'}` : `${def.name} ${Math.abs(v)}${def.unit || ''} ${v < 0 ? def.below : def.above}`;
+function setInput(id, value) {
+  const it = inputs.get(id);
+  if (!it) return;
+  it.value = THREE.MathUtils.clamp(value, it.def.min, it.def.max);
+  it.range.value = String(it.value);
+  it.range.setAttribute('aria-valuetext', said(it.def, it.value));
+  readout.textContent = said(it.def, it.value);
+  moveParts();
+}
+/** A slider in the bar for each thing the file says can be worked. A double click puts it back to rest. */
+function buildInputs(header) {
+  for (const def of header.inputs || []) {
+    const range = el('input', { type: 'range', min: String(def.min), max: String(def.max), step: String(def.step || 1), value: '0' });
+    range.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
+    inputs.set(def.id, { def, value: 0, range });
+    range.addEventListener('input', () => setInput(def.id, Number(range.value)));
+    range.addEventListener('dblclick', () => setInput(def.id, 0));
+    bar.insertBefore(el('label', {}, el('span', { className: 'lbl' }, def.name), range), $('#home'));
+  }
+  moveParts();
 }
 
 /** The box of everything shown, where it stands now. */
@@ -386,7 +468,10 @@ function identify(clientX, clientY) {
   const hit = ray.intersectObjects(decks.filter(d => d.node.visible).map(d => d.node), true)
     .find(h => h.object.isMesh && h.object.parent !== mark && h.point.x >= c && !h.object.material.userData.glass);
   if (!hit) { select(null); return; }
-  const deck = decks.find(d => d.node === hit.object.parent);
+  // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
+  let within = hit.object.parent;
+  while (within && !decks.some(d => d.node === within)) within = within.parent;
+  const deck = decks.find(d => d.node === within);
   const p = hit.point.clone().sub(deck.node.position);
   // The smallest room of this deck that holds the point: a cabin wins over the deck house it stands in.
   let best = null, bestSize = Infinity;
@@ -503,6 +588,7 @@ async function start() {
   atlas.anisotropy = renderer.capabilities.getMaxAnisotropy();
   build(doc, atlas);
   buildPanel(doc.header);
+  buildInputs(doc.header);
   tintMark();
   // On a phone the panel is a sheet over the lower half: she is shown whole first, the list a tap away.
   panel.classList.toggle('closed', narrow.matches);
@@ -514,9 +600,9 @@ async function start() {
   requestAnimationFrame(frame);
   // For checks and pictures: the same moves the controls make.
   window.__ferry = {
-    setExplode, setCut, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
+    setExplode, setCut, setInput, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw },
-    get state() { return { ...state, decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
+    get state() { return { ...state, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
   };
 }
 start().catch(err => {

@@ -94,9 +94,11 @@ class Part:
     its own normal (the shell knows its normals from the lines); others are rounded by Blender up to `angle` degrees.
     """
 
-    def __init__(self, name, look, smooth=False, angle=35.0):
+    def __init__(self, name, look, smooth=False, angle=35.0, mover=None):
         self.name, self.look, self.smooth, self.angle = name, look, smooth, angle
         self.v, self.n, self.f, self.c = [], [], [], []
+        # The name of the motion this part takes part in (the rudder's, a ram's): the viewer moves it as one piece.
+        self.mover = mover
 
     def vert(self, p, n=None):
         self.v.append((float(p[0]), float(p[1]), float(p[2])))
@@ -231,6 +233,8 @@ class Part:
             me.normals_split_custom_set_from_vertices(own)
         me.materials.append(material(self.look))
         ob = bpy.data.objects.new(self.name, me)
+        if self.mover:
+            ob['mover'] = self.mover
         coll.objects.link(ob)
         return ob
 

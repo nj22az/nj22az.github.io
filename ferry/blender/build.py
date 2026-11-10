@@ -106,8 +106,9 @@ def looking_outward():
             wrong.append(f'a round bar along {axis}')
         bpy.data.objects.remove(ob)
     bpy.data.collections.remove(trial)
-    for name in ('Shafts and rudder stocks', 'Intermediate shafts', 'Steering gear, bright steel', 'Fresh-water tanks, pipes',
-                 'Chain lockers', 'Zinc anodes'):
+    for name in ('Tail shafts', 'Rudder stock, port', 'Rudder stock, starboard', 'Rudder anodes, port', 'Intermediate shafts',
+                 'Steering gear, bright steel', 'Rudder stock head, port', 'Ram cylinder, port', 'Ram rod, starboard', 'Tie bar',
+                 'Fresh-water tanks, pipes', 'Chain lockers', 'Zinc anodes'):
         ob = bpy.data.objects.get(name)
         if ob is None:
             wrong.append(name + ' (not built)')
@@ -128,7 +129,7 @@ def main():
     ship = shipyard.collection('Christina')
     hull = shipyard.collection('hull', ship)
     machinery = shipyard.collection('machinery', ship)
-    report = {}
+    report, inputs, movers = {}, [], []
     for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings'):
         try:
             mod = importlib.import_module(name)
@@ -138,6 +139,10 @@ def main():
             print('not built yet:', name)
             continue
         made = mod.build()
+        if hasattr(mod, 'motion'):
+            more_inputs, more_movers = mod.motion()
+            inputs += more_inputs
+            movers += more_movers
         for part in made:
             target = machinery if getattr(part, 'group', 'hull') == 'machinery' else hull
             if part.build(target):
@@ -145,13 +150,19 @@ def main():
         print(f'{name}: {len(made)} parts, {time.time() - t0:.1f} s')
     behind_the_plating()
     looking_outward()
+    named = {ob['mover'] for ob in bpy.data.objects if 'mover' in ob}
+    defined = {m['id'] for m in movers}
+    if named != defined:
+        raise SystemExit(f'moving parts and their motions do not agree: parts name {sorted(named - defined)} without a motion, '
+                         f'motions {sorted(defined - named)} move nothing')
+    print(f'moving parts: {len(named)} motions, each with its parts')
     total = sum(report.values())
     for k, v in report.items():
         print(f'  {v:7d}  {k}')
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], ('hull', 'machinery'))
+        export_jmf.write(opt['--part'], ('hull', 'machinery'), inputs, movers)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])
