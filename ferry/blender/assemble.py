@@ -12,7 +12,9 @@ as this tool last wrote it (the default). What Blender has built replaces what s
   - a part named in SUPERSEDES replaces the base's own meshes of that part (the Minato Maru's hull goes when the
     Christina's hull comes); the rule says what is kept and where it goes;
   - what the base keeps under the car deck is fitted inside the Christina's shell (FIT), because the Minato Maru's
-    machinery spaces are square rooms and their corners stand through her plating where the hull rises aft.
+    machinery spaces are square rooms and their corners stand through her plating where the hull rises aft;
+  - where the base lays a floor over a stairwell, the well is opened (OPENINGS), so the stair can be seen from the deck
+    it leads to and gone down as well as up.
 
 Needs numpy; no Blender.
 """
@@ -36,6 +38,15 @@ SUPERSEDES = {
 }
 # Parts of the base that must lie inside the shell.
 FIT = ('machinery',)
+# Floors the base lays over a stairwell. The Minato Maru's lobby floor (a 5 mm covering, x -4.02 to 4.02, 6.04 to
+# 9.46 m from the transom) is one slab from side to side, over both stairs up from the car deck; the deck plating under
+# it is cut correctly (1.43 m wide to 2.75 m off the centreline, 7.40 to 9.40 m from the transom, a kerb along the
+# inboard edge). `level` is the height the covering lies between, 6.503 to 6.508: narrow, because the stair's top step,
+# the kerb and the feet of the walls round the well lie at 6.500 and must stay. The opening is given in plan.
+OPENINGS = (
+    dict(part='passenger', name='the lobby floor over the starboard stair', level=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(7.40, 9.40)),
+    dict(part='passenger', name='the lobby floor over the port stair', level=(6.5015, 6.5095), x=(2.76, 4.3), yard=(7.40, 9.40)),
+)
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
                          emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None)
 
@@ -92,6 +103,80 @@ def fit_inside(pos, clear=0.03):
     return moved, furthest
 
 
+def _clip(poly, axis, bound, below):
+    """A polygon (a list of (point, weights)) cut by the plane `axis` = bound; the side kept is the one below it, or above."""
+    out = []
+    for (p, w), (q, v) in zip(poly, poly[1:] + poly[:1]):
+        dp, dq = (bound - p[axis]) if below else (p[axis] - bound), (bound - q[axis]) if below else (q[axis] - bound)
+        if dp >= 0:
+            out.append((p, w))
+        if (dp > 0 and dq < 0) or (dp < 0 and dq > 0):
+            t = dp / (dp - dq)
+            m = p + (q - p) * t
+            m[axis] = bound
+            out.append((m, w + (v - w) * t))
+    return out
+
+
+def open_floor(m, level, xs, zs, grace=0.002):
+    """
+    Cut the rectangle xs by zs (in plan) out of every face of the mesh that lies between the two levels. What is left of
+    each face is drawn again in pieces that meet corner to corner. Returns how many triangles were cut; a mesh already
+    cut is left as it is, so a second run changes nothing. The 5 mm edge of the covering round the opening is not drawn.
+    """
+    pos, idx = m['pos'], m['idx']
+    T = pos[idx]
+    lo, hi = T.min(1), T.max(1)
+    hit = ((lo[:, 1] >= level[0]) & (hi[:, 1] <= level[1]) & (hi[:, 0] > xs[0] + grace) & (lo[:, 0] < xs[1] - grace)
+           & (hi[:, 2] > zs[0] + grace) & (lo[:, 2] < zs[1] - grace))
+    if not hit.any():
+        return 0
+    # Round the opening: the two sides beyond it in breadth, and the two ends between them.
+    regions = (((0, xs[0], True),), ((0, xs[1], False),),
+               ((0, xs[0], False), (0, xs[1], True), (2, zs[0], True)), ((0, xs[0], False), (0, xs[1], True), (2, zs[1], False)))
+    new_pos, new_w, new_from = [], [], []
+    for t in np.nonzero(hit)[0]:
+        tri = [(pos[idx[t, k]].copy(), np.eye(3)[k]) for k in range(3)]
+        for r, region in enumerate(regions):
+            poly = tri
+            for axis, bound, below in region:
+                poly = _clip(poly, axis, bound, below)
+                if len(poly) < 3:
+                    break
+            if len(poly) < 3:
+                continue
+            if r < 2:
+                # A side piece meets the two end pieces along its edge at the opening: it takes their corners too.
+                edge, more = region[0][1], []
+                for (p, w), (q, v) in zip(poly, poly[1:] + poly[:1]):
+                    more.append((p, w))
+                    if abs(p[0] - edge) < 1e-9 and abs(q[0] - edge) < 1e-9:
+                        cuts = sorted((z for z in zs if min(p[2], q[2]) + 1e-9 < z < max(p[2], q[2]) - 1e-9), reverse=p[2] > q[2])
+                        for z in cuts:
+                            f = (z - p[2]) / (q[2] - p[2])
+                            more.append((p + (q - p) * f, w + (v - w) * f))
+                poly = more
+                # Fanned from the corner furthest from that edge, so no piece is a sliver along it.
+                k = max(range(len(poly)), key=lambda i: abs(poly[i][0][0] - edge))
+                poly = poly[k:] + poly[:k]
+            for a, b in zip(poly[1:], poly[2:]):
+                if np.linalg.norm(np.cross(a[0] - poly[0][0], b[0] - poly[0][0])) < 1e-9:
+                    continue
+                for p, w in (poly[0], a, b):
+                    new_pos.append(p); new_w.append(w); new_from.append(t)
+    new_w, corners = np.array(new_w).reshape(-1, 3), idx[np.array(new_from, dtype=np.int64).reshape(-1)]
+    first = len(pos)
+    m['pos'] = np.concatenate([pos, np.array(new_pos).reshape(-1, 3)])
+    for key in ('nor', 'col', 'uv'):
+        if m[key] is None:
+            continue
+        mixed = np.einsum('nk,nkc->nc', new_w, m[key][corners].astype(np.float64))
+        m[key] = np.concatenate([m[key], np.rint(mixed).astype(m[key].dtype)])
+    added = np.arange(first, first + len(new_pos), dtype=np.uint32).reshape(-1, 3)
+    m['idx'] = np.concatenate([idx[~hit], added])
+    return int(hit.sum())
+
+
 def weld(pos, nor, col, lo, hi):
     """Triangle corners → shared vertices and indices, quantised as the file keeps them."""
     q = np.rint((pos - lo) / (hi - lo) * 65535).astype(np.uint16)
@@ -116,7 +201,7 @@ def main():
     by_id = {g['id']: g for g in groups}
     materials = header['materials']
     meshes = {g['id']: [decode(header, block, rec) for rec in g['meshes']] for g in groups}
-    report = dict(base=os.path.basename(a.base), dropped=[], moved=[], fitted=[], added=[])
+    report = dict(base=os.path.basename(a.base), dropped=[], moved=[], fitted=[], opened=[], added=[])
 
     parts = []
     for path in a.part:
@@ -150,6 +235,16 @@ def main():
             moved, furthest = fit_inside(m['pos'])
             if moved:
                 report['fitted'].append(dict(part=gid, material=m['material'], vertices=moved, furthest=round(float(furthest), 3)))
+
+    # 2b. Stairwells the base has floored over are opened.
+    for o in OPENINGS:
+        zs = (L.Z(o['yard'][0]), L.Z(o['yard'][1]))
+        for m in meshes.get(o['part'], []):
+            if m['origin'] != 'town':
+                continue
+            cut = open_floor(m, o['level'], o['x'], zs)
+            if cut:
+                report['opened'].append(dict(part=o['part'], what=o['name'], material=m['material'], triangles=cut))
 
     # 3. Bounds over everything, then the new parts.
     look_index = {}
@@ -248,7 +343,7 @@ def main():
     if a.report:
         json.dump(report, open(a.report, 'w'), indent=1)
     print(f"{a.out}: {report['bytes']} bytes, {sum(report['triangles'].values())} triangles")
-    for k in ('dropped', 'moved', 'fitted'):
+    for k in ('dropped', 'moved', 'fitted', 'opened'):
         for r in report[k]:
             print(' ', k, r)
     for r in report['added']:

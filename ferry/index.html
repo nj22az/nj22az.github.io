@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Christina: the ferry, deck by deck</title>
-<meta name="description" content="A 3D model of the Christina, a 34.5 m car and passenger ferry: turn her, take her apart deck by deck, cut her open along her length, put her rudders over and name every room aboard.">
+<meta name="description" content="A 3D model of the Christina, a 34.5 m car and passenger ferry: turn her, take her apart deck by deck, cut her open along her length, put her rudders over, name every room aboard, or walk through her on foot.">
 <meta name="author" content="Nils Johansson">
 <link rel="canonical" href="https://nj22az.github.io/ferry/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png">
@@ -73,6 +73,22 @@ input[type=range] { accent-color: var(--accent); width: 130px; height: 28px; mar
 .btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 
+select.btn { appearance: none; -webkit-appearance: none; padding-right: 26px; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
+.walk-only { display: none !important; }
+/* Walking aboard: the model fills the screen; the panel and what only the outside view uses go, and the line under her
+   name says how to walk. */
+body.walking .orbit-only, body.walking #panel, body.walking #panel-toggle { display: none !important; }
+body.walking .walk-only { display: revert !important; }
+body.walking #bar { right: 16px; }
+body.walking #view canvas { cursor: crosshair; }
+/* On foot the model is behind the line under her name: it gets a ground of its own to be read on. */
+#hint { width: fit-content; margin-top: 6px; padding: 6px 10px; font-size: 12.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+/* The thumb-stick, on screens that are touched: a ring to rest the thumb in and a knob that follows it. */
+#stick { position: fixed; left: 20px; bottom: calc(150px + env(safe-area-inset-bottom)); width: 116px; height: 116px; border-radius: 50%; background: color-mix(in srgb, var(--panel) 70%, transparent); border: 1px solid var(--line); touch-action: none; }
+#stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: var(--accent); opacity: 0.85; }
+@media (hover: hover) and (pointer: fine) { body.walking #stick, #hint .touch { display: none !important; } }
+@media (hover: none), (pointer: coarse) { #hint .keys { display: none; } }
+
 @media (max-width: 900px) {
   #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 46vh; border-radius: var(--radius) var(--radius) 0 0; padding-bottom: env(safe-area-inset-bottom); }
   #panel.closed { transform: translateY(100%); }
@@ -85,18 +101,20 @@ input[type=range] { accent-color: var(--accent); width: 130px; height: 28px; mar
   #bar output { flex: 1 1 100%; margin: 0; text-align: left; font-size: 12.5px; }
   input[type=range] { flex: 1; width: auto; min-width: 56px; }
   header.title p { display: none; }
+  body.walking #panel ~ #bar { bottom: calc(12px + env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) { #panel { transition: none; } }
 </style>
 <script type="importmap">{ "imports": { "three": "/motor-90l/vendor/three.module.min.js" } }</script>
 </head>
 <body>
-<div id="view" aria-label="3D view of the ferry. Drag to turn her, scroll or pinch to zoom, tap a room to name it."></div>
+<div id="view" aria-label="3D view of the ferry. Drag to turn her, scroll or pinch to zoom toward the pointer, drag with the right button or two fingers to move her, double-click to look closer, tap a room to name it. Walk aboard to go through her on foot."></div>
 
 <header class="title">
   <a href="/">← The Office of Nils Johansson</a>
   <h1>Christina</h1>
-  <p>A 34.5 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, tap a room to name it.</p>
+  <p class="orbit-only">A 34.5 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room to name it, or walk aboard.</p>
+  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, Shift to go faster, Q and E for the deck below and above, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round.</span></p>
 </header>
 
 <p id="status" role="status">Loading the ferry…</p>
@@ -108,10 +126,25 @@ input[type=range] { accent-color: var(--accent); width: 130px; height: 28px; mar
 </aside>
 <button type="button" id="panel-toggle" class="btn" aria-expanded="true" aria-controls="panel">Decks</button>
 
+<div id="stick" class="walk-only" aria-hidden="true"><i></i></div>
+
 <div id="bar" role="toolbar" aria-label="Model controls">
-  <label><span class="lbl">Explode</span><input id="explode" type="range" min="0" max="100" value="0" aria-label="Explode: lift the decks apart"></label>
-  <label><span class="lbl">Cut</span><input id="cut" type="range" min="0" max="100" value="0" aria-label="Cut: slice her open along her length, from the starboard side"></label>
-  <button type="button" class="btn" id="home">Reset view</button>
+  <label class="orbit-only"><span class="lbl">Explode</span><input id="explode" type="range" min="0" max="100" value="0" aria-label="Explode: lift the decks apart"></label>
+  <label class="orbit-only"><span class="lbl">Cut</span><input id="cut" type="range" min="0" max="100" value="0" aria-label="Cut: slice her open along her length, from the starboard side"></label>
+  <select id="views" class="btn orbit-only" aria-label="Look at her from">
+    <option value="">View</option>
+    <option value="home">Bow quarter</option>
+    <option value="starboard">Starboard side</option>
+    <option value="port">Port side</option>
+    <option value="ahead">From ahead</option>
+    <option value="astern">From astern</option>
+    <option value="above">From above</option>
+    <option value="below">From below</option>
+  </select>
+  <button type="button" class="btn walk-only" id="deck-down">Deck below</button>
+  <button type="button" class="btn walk-only" id="deck-up">Deck above</button>
+  <button type="button" class="btn" id="walk" aria-pressed="false">Walk aboard</button>
+  <button type="button" class="btn orbit-only" id="home">Reset view</button>
   <output id="what" aria-live="polite"></output>
 </div>
 

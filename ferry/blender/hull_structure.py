@@ -1,6 +1,6 @@
 """
 What holds her shape: frames at every 0.5 m, plate floors under them, the double bottom's girders, the watertight
-bulkheads the hull carries herself, and the tank top.
+bulkheads the hull carries herself, the tank top, and the car deck's plating as it is seen from below.
 
 The machinery spaces between frames 17 and 52 are still the Minato Maru's rooms (Rev C sheet C3), with their own
 linings 14 cm inside the moulded line and their own end walls: the structure here keeps clear of them, so a frame is a
@@ -168,4 +168,22 @@ def build():
         rows.append([(x, S.TANK_TOP, z), (0.0, S.TANK_TOP, z), (-x, S.TANK_TOP, z)])
     tank_top.grid(rows, red)
     tank_top.orient(0, (0, 1, 0))
-    return [frames, floors, girders, bulkheads, stringers, tank_top]
+
+    # ---- The car deck's plating as it is seen from below, over the spaces the hull keeps to herself: abaft the engine
+    # room (the steering gear, the fresh-water tanks, the shaft space) and forward of the electrical workshop (the void,
+    # the thruster room, the fore peak). The Minato Maru's car deck is drawn from above only, so from these spaces one
+    # looked up through it; the machinery spaces between have deckheads of their own. One face, looking down, and part
+    # of the car deck: lifted away with it when she is taken apart, never a lid over the hull.
+    deckhead = Part('Car deck plating, from below', 'Primer')
+    deckhead.group = 'car'
+    for a, b in ((0.0, 8.5), (26.0, L.LENGTH - 0.02)):
+        count = int(round((b - a) / S.STATION))
+        rows = []
+        for i in range(count + 1):
+            z = L.Z(a + (b - a) * i / count)
+            x = _breadth_inside(z, min(TOP_OF_STRUCTURE, L.deck_edge(z) - 0.01), S.SHELL + 0.004)
+            rows.append([(x, TOP_OF_STRUCTURE, z), (0.0, TOP_OF_STRUCTURE, z), (-x, TOP_OF_STRUCTURE, z)])
+        start = len(deckhead.f)
+        deckhead.grid(rows, tint(PRIMER, 1.02))
+        deckhead.orient(start, (0, -1, 0))
+    return [frames, floors, girders, bulkheads, stringers, tank_top, deckhead]
