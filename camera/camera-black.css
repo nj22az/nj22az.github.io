@@ -51,8 +51,8 @@ html,body,.app{background:var(--bg)}
 :root:not([data-theme=light]) .sol-status{background:#080909;color:#fff}
 :root:not([data-theme=light]) .memory{background:#101011}:root:not([data-theme=light]) :is(.memory .memory-lead,.memory .memory-setup h3){color:#eee}
 :root:not([data-theme=light]) .memory .memory-deck{background:#252527;color:#fff;border-color:#666;box-shadow:0 3px 0 #070707}
-:root:not([data-theme=light]) .memory .memory-deck[aria-checked="true"]{border-color:#f0cf75;box-shadow:0 3px 0 #070707,inset 0 0 0 1px #f0cf75}
+:root:not([data-theme=light]) .memory .memory-deck[aria-checked="true"]{border-color:#5fd6a2;box-shadow:0 3px 0 #070707,inset 0 0 0 1px #5fd6a2}
 :root:not([data-theme=light]) :is(.memory .memory-deck-note,.memory .memory-best){color:#ccc}:root:not([data-theme=light]) .memory .memory-go{background:#1b1b1c;border-color:#444}
-:root:not([data-theme=light]) .memory .mini-seg.memory-pairs{background:#272729;border-color:#555}:root:not([data-theme=light]) .memory .memory-pairs button{color:#fff}:root:not([data-theme=light]) .memory .memory-pairs button[aria-checked="true"]{background:#f0cf75;color:#1a1a19}
+:root:not([data-theme=light]) .memory .mini-seg.memory-pairs{background:#272729;border-color:#555}:root:not([data-theme=light]) .memory .memory-pairs button{color:#fff}:root:not([data-theme=light]) .memory .memory-pairs button[aria-checked="true"]{background:#16815e;color:#fff}
 :root:not([data-theme=light]) .memory .memory-stage{background:#1d2320;border-color:#343b36}:root:not([data-theme=light]) .memory .memory-status{background:#090a09;color:#eee}
 :root:not([data-theme=light]) .memory .memory-win{background:rgba(8,8,8,.96)}

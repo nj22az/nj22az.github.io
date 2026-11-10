@@ -62,7 +62,7 @@ try{
  if(shots)await page.screenshot({path:join(shots,'phone-sticker-contour.png')});
  await check('the actual picker places the recut asset and export uses those same sticker pixels',async()=>{
   const result=await page.evaluate(async()=>{
-   const {engine,state}=window.pocketCamera,e=state.edit,m=await import('/camera/stickers.js?v=20261109brand2');
+   const {engine,state}=window.pocketCamera,e=state.edit,m=await import('/camera/stickers.js?v=20261110green1');
    const img=document.querySelector('#editFrame .sticker img');await img.decode();
    const selected=await m.stickerImage(e.recipe.stickers[0].id);
    const a=document.createElement('canvas');a.width=a.height=512;
