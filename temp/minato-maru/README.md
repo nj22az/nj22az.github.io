@@ -33,11 +33,21 @@ it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what
 - Its data is written by two Town tools kept here: `town/tools/ferry-viewer-export.mjs` and
   `town/tools/ferry-viewer-export.page.js` (Town commit `f0b2973`). They change nothing under the Town's `src/`: the
   Christina's name is painted by the export alone, and the ferry in the live Johansson World is untouched.
-- **For now the Christina is drawn from the Minato Maru's model.** Her own build is next: in Blender, from the Rev C
-  working drawings, section by section from the hull and exterior, with the Rev C issues corrected in her design
-  first. The Minato Maru is rebuilt later from what she teaches; until the owner says so, nothing here replaces her.
+- **Her own build has begun: her hull is her own since 10 November** (the owner: "Proceed"). It is built in Blender by
+  the Office's own tools (`/ferry/blender/`, not Town files: nothing of it is in this folder), over the Rev C lines, so
+  the Minato Maru's decks still sit on her; the rest of her is still drawn from the Minato Maru's model. The sections
+  that follow: the exterior above the hull, the car deck, the engine room, the bridge, the accommodation. The Minato
+  Maru is rebuilt later from what she teaches; until the owner says so, nothing here replaces her.
+- **Found while fitting the Minato Maru's machinery spaces into her shell, and to be put right in the Town at the
+  weekend** (it is so in the game too, and it is not in the Rev C issue list, whose audit does not test rooms against
+  the hull): the engine room's ladder trunk comes down through the hull's bottom under the port counter (by up to
+  1.03 m at 6.4 m from the transom), and the after corners of the engine room's tank top and side walls stand up to
+  0.3 m out through the bilge at 8.5 m, where the hull has begun to rise. The viewer's data moves those points inside
+  her plating (`/ferry/blender/assemble.py`, `fit_inside`); the Town's `src/` is not changed.
 - The viewer's files (`/ferry/`, the homepage card) go to `main` on their own: they are committed apart from this
-  folder and cherry-picked onto a branch made from `main`.
+  folder and cherry-picked onto a branch made from `main`. To build her data again no Town checkout is needed:
+  `/ferry/blender/assemble.py` works from the viewer's own file. A new export from the Town (`town/tools/`) is needed
+  only when the Minato Maru's part of her changes; give it to `assemble.py --base`.
 
 To read the work on GitHub, start at:
 - `town/docs/minato-maru/rev-c/README.md`: the working drawings, Rev C, sheets JS-127-C1 to C8
