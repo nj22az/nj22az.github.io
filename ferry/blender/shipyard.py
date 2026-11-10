@@ -139,7 +139,7 @@ class Part:
             self.face((base + a, base + c, base + b) if flip else (base + a, base + b, base + c), colour)
 
     def tube(self, a, b, ra, rb=None, colour=(1, 1, 1), sides=16, caps=(True, True)):
-        """A round bar or cone from a to b."""
+        """A round bar or cone from a to b, closed at its ends. Its faces look outward whichever way it runs."""
         rb = ra if rb is None else rb
         a, b = Vector(a), Vector(b)
         axis = (b - a).normalized()
@@ -147,15 +147,17 @@ class Part:
         w = axis.cross(u)
         ring = lambda c, r: [tuple(c + (u * math.cos(t) + w * math.sin(t)) * r) for t in
                              (2 * math.pi * k / sides for k in range(sides))]
-        base = self.grid([ring(a, ra), ring(b, rb)], colour, close=True, flip=True)
-        if caps[0] and ra > 0:
-            c = self.vert(tuple(a))
+        start = len(self.f)
+        base = self.grid([ring(a, ra), ring(b, rb)], colour, close=True)
+        self.orient(start, lambda c: (c - a) - axis * (c - a).dot(axis))
+        for wanted, centre, first, away in ((caps[0] and ra > 0, a, base, -axis), (caps[1] and rb > 0, b, base + sides, axis)):
+            if not wanted:
+                continue
+            start = len(self.f)
+            c = self.vert(tuple(centre))
             for k in range(sides):
-                self.face((c, base + k, base + (k + 1) % sides), colour)
-        if caps[1] and rb > 0:
-            c = self.vert(tuple(b))
-            for k in range(sides):
-                self.face((c, base + sides + (k + 1) % sides, base + sides + k), colour)
+                self.face((c, first + k, first + (k + 1) % sides), colour)
+            self.orient(start, tuple(away))
 
     def box(self, lo, hi, colour):
         x0, y0, z0 = lo
