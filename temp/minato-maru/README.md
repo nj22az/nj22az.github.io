@@ -44,6 +44,10 @@ it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what
   1.03 m at 6.4 m from the transom), and the after corners of the engine room's tank top and side walls stand up to
   0.3 m out through the bilge at 8.5 m, where the hull has begun to rise. The viewer's data moves those points inside
   her plating (`/ferry/blender/assemble.py`, `fit_inside`); the Town's `src/` is not changed.
+- **A third, found while running her shafts:** the Minato Maru's propeller shafts are drawn only outside the hull
+  (`ferry-model.js`, from 7.5 m to the screws at x ±1.6), on a line 0.36 m below the gearboxes' output flanges
+  (x ±1.55, 1.5 m above the keel) and 5 cm outboard of them, and nothing joins the two: the engines drive nothing. The
+  Christina's run straight from the flanges to the screws at 6° (`/ferry/blender/spec.py`).
 - The viewer's files (`/ferry/`, the homepage card) go to `main` on their own: they are committed apart from this
   folder and cherry-picked onto a branch made from `main`. To build her data again no Town checkout is needed:
   `/ferry/blender/assemble.py` works from the viewer's own file. A new export from the Town (`town/tools/`) is needed
