@@ -1,0 +1,15 @@
+system,from,to,dn,note,from_tag,from_room,to_tag,to_room
+fire,main,hBridge,50,,,,10SGA30 AA518,wing-p
+fire,co2b,co2rel,0,wire,10SGJ10 BB001,co2-room,10SGJ10 CH001,co2-room
+fire,co2rel,co2v,25,pilot,10SGJ10 CH001,co2-room,10SGJ10 AA201,co2-room
+fire,co2b,co2v,40,,10SGJ10 BB001,co2-room,10SGJ10 AA201,co2-room
+fire,co2v,co2n,40,,10SGJ10 AA201,co2-room,,
+fire,co2rel,co2al,0,electric: the alarm sounds and the fans stop,10SGJ10 CH001,co2-room,,
+freshwater,ptank,galley,20,,,,10GKB20 BR001,galley
+freshwater,ptank,toilets,20,,,,10GKB20 BR002,toilets
+freshwater,ptank,heater,15,,,,10GKB20 AC001,galley
+freshwater,heater,galley,15,hot,10GKB20 AC001,galley,10GKB20 BR001,galley
+freshwater,heater,toilets,15,hot,10GKB20 AC001,galley,10GKB20 BR002,toilets
+sewage,sp1,flush,32,,,,10GHB10 BR001,toilets
+sewage,sp2,flush,32,,,,10GHB10 BR001,toilets
+sewage,flush,htank,100,gravity,10GHB10 BR001,toilets,,

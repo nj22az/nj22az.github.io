@@ -1,0 +1,4 @@
+__pycache__/
+# text-only sheets: their content is register.csv and FINDINGS.md; the PDFs are 3 MB each of glyph outlines
+sheets/CHR-B3-register.pdf
+sheets/CHR-B5-findings.pdf

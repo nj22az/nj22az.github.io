@@ -1,0 +1,5765 @@
+{
+ "source": {
+  "repository": "nj22az/johansson-town",
+  "commit": "f0b2973",
+  "uncommitted": false,
+  "note": "axes: x to port, y up from the laden waterline (deck floor 9.1), z forward from amidships; yard = z + 17.25, height above keel = y + 1.9"
+ },
+ "heights": {
+  "tankTop": 0.7,
+  "floorPlates": 0.9,
+  "carDeck": 4,
+  "passengerDeck": 8.4,
+  "bridgeDeck": 11,
+  "compassDeck": 13.4,
+  "funnelTop": 13,
+  "mastheadLight": 16,
+  "mastTop": 18,
+  "bridgeEye": 12.6
+ },
+ "rooms": [
+  {
+   "id": "eg-room",
+   "x": [
+    0.45,
+    3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    6,
+    9
+   ],
+   "what": "Emergency-generator room: the 40 kVA emergency generator, the emergency switchboard, the 24 V batteries and their chargers, a 60 L day tank, louvres",
+   "why": "Power when the main board is dead; its door opens to the open deck only",
+   "exits": [
+    "open-deck"
+   ]
+  },
+  {
+   "id": "co2-room",
+   "x": [
+    -3,
+    -0.45
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    6,
+    9
+   ],
+   "what": "CO₂ room and fire-control station: four 45 kg CO₂ bottles, the release cabinet, the remote fan stops and fuel quick-closing valves, two firemen’s outfits",
+   "why": "Fire in the engine room is fought from outside it; its door opens to the open deck only",
+   "exits": [
+    "open-deck"
+   ]
+  },
+  {
+   "id": "crew-cabin",
+   "x": [
+    0.45,
+    3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    9,
+    11.5
+   ],
+   "what": "Crew cabin, two berths: the bosun and the oiler; bunk beds, lockers, a fold-down desk",
+   "why": null,
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "mate-cabin",
+   "x": [
+    -3,
+    -0.45
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    9,
+    11.5
+   ],
+   "what": "Chief officer’s cabin",
+   "why": null,
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "deckhand-cabin",
+   "x": [
+    0.45,
+    3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    11.5,
+    14
+   ],
+   "what": "Deckhand’s cabin",
+   "why": "On her weeks aboard",
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "crew-wc",
+   "x": [
+    -3,
+    -0.45
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    11.5,
+    14
+   ],
+   "what": "Crew WC and shower",
+   "why": null,
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "mess",
+   "x": [
+    0.45,
+    3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    14,
+    16.5
+   ],
+   "what": "Mess room: a table for six, a television, a kettle, the duty board and the muster list",
+   "why": "Where the crew eat and the watch is handed over",
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "galley",
+   "x": [
+    -3,
+    -0.45
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    14,
+    16.5
+   ],
+   "what": "Galley: a three-plate range, the rice cooker, a fridge-freezer, a sink, a hood, the provision locker, a hatch to the mess",
+   "why": "The cook’s; the kiosk’s hot water too",
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "chief-cabin",
+   "x": [
+    0.45,
+    3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    16.5,
+    19.5
+   ],
+   "what": "Johansson’s chief engineer duty cabin",
+   "why": "Primary home with Thuan on Kitano-jima",
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "master-cabin",
+   "x": [
+    -3,
+    -0.45
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    16.5,
+    19.5
+   ],
+   "what": "Master’s cabin: a desk, a bunk along the corridor’s wall, the ship’s papers and the safe; the crew stair’s trunk walled off in its outboard forward corner",
+   "why": null,
+   "exits": [
+    "corridor"
+   ]
+  },
+  {
+   "id": "corridor",
+   "x": [
+    -0.45,
+    0.45
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    6,
+    19.5
+   ],
+   "what": "The crew’s corridor down the middle, from their own door aft onto the bridge deck’s platform (they come up the open deck’s ladders) to the wheelhouse",
+   "why": "The crew’s way to their rooms and to the bridge, apart from the passengers",
+   "exits": [
+    "crew-door",
+    "wheelhouse"
+   ]
+  },
+  {
+   "id": "wheelhouse",
+   "x": [
+    -3,
+    3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    19.5,
+    23
+   ],
+   "what": "Wheelhouse: the steering stand (wheel, non-follow-up lever, autopilot); two engine levers and the thruster lever at the centre and on both wing consoles; the radar; the magnetic compass periscope; VHF with DSC; the ship’s telephone; the NAVTEX printer; the echo sounder; the GPS display; the chart table with its drawers and red lamp; the navigation-light panel; the fire panel; the PA and general alarm; the ramp lamps; the whistle button; the searchlight control; the wipers; a clock, a barometer, an inclinometer; the log desk; the master’s high chair",
+   "why": "She is conned from here and from the wings",
+   "exits": [
+    "corridor",
+    "wing-p",
+    "wing-s",
+    "crew-stair"
+   ]
+  },
+  {
+   "id": "wing-p",
+   "x": [
+    3,
+    4.1
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    19.5,
+    23
+   ],
+   "what": "Bridge wing, port, open: a wing console with the engine and thruster levers, the port sidelight at its end",
+   "why": "Berthing port side to",
+   "exits": [
+    "wheelhouse",
+    "walkway-p"
+   ]
+  },
+  {
+   "id": "wing-s",
+   "x": [
+    -4.1,
+    -3
+   ],
+   "y": [
+    11,
+    13.4
+   ],
+   "z": [
+    19.5,
+    23
+   ],
+   "what": "Bridge wing, starboard, open: a wing console, the starboard sidelight at its end, the float-free EPIRB",
+   "why": "Berthing starboard side to",
+   "exits": [
+    "wheelhouse",
+    "walkway-s"
+   ]
+  }
+ ],
+ "pieces": [
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-stair",
+   "solid": false,
+   "hex": 14727482,
+   "lo": [
+    -2.89,
+    9.095,
+    2.875
+   ],
+   "hi": [
+    -2.15,
+    9.103,
+    2.93
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    2.25
+   ],
+   "hi": [
+    3,
+    11.3,
+    2.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    11.054,
+    2.346
+   ],
+   "hi": [
+    3,
+    11.3,
+    3.154
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    3.154
+   ],
+   "hi": [
+    3,
+    11.3,
+    3.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    3.346
+   ],
+   "hi": [
+    3,
+    10.071,
+    4.354
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    10.929,
+    3.346
+   ],
+   "hi": [
+    3,
+    11.3,
+    4.354
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    4.354
+   ],
+   "hi": [
+    3,
+    11.3,
+    4.496
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    4.496
+   ],
+   "hi": [
+    3,
+    10.071,
+    5.404
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    10.929,
+    4.496
+   ],
+   "hi": [
+    3,
+    11.3,
+    5.404
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-p",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    5.404
+   ],
+   "hi": [
+    3,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "wing door",
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 6122346,
+   "lo": [
+    2.88,
+    9.12,
+    3.2
+   ],
+   "hi": [
+    2.92,
+    11.02,
+    3.95
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    2.25
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    2.396
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    2.396
+   ],
+   "hi": [
+    -2.92,
+    10.196,
+    3.004
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.904,
+    2.396
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    3.004
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    3.004
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    3.196
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    11.054,
+    3.196
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    4.004
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    4.004
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    4.896
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    4.896
+   ],
+   "hi": [
+    -2.92,
+    10.071,
+    5.404
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.929,
+    4.896
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    5.404
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    5.404
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "wing door",
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 6122346,
+   "lo": [
+    -2.92,
+    9.12,
+    4.05
+   ],
+   "hi": [
+    -2.88,
+    11.02,
+    4.8
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    -2.889,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -2.889,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    -1.831,
+    10.071,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -2.889,
+    11.029,
+    5.67
+   ],
+   "hi": [
+    -1.831,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -1.831,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    -1.709,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -1.709,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    -0.651,
+    10.071,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -1.709,
+    11.029,
+    5.67
+   ],
+   "hi": [
+    -0.651,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -0.651,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    -0.529,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -0.529,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    0.529,
+    10.071,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -0.529,
+    11.029,
+    5.67
+   ],
+   "hi": [
+    0.529,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.529,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    0.651,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.651,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    1.709,
+    10.071,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.651,
+    11.029,
+    5.67
+   ],
+   "hi": [
+    1.709,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    1.709,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    1.831,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    1.831,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    2.889,
+    10.071,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    1.831,
+    11.029,
+    5.67
+   ],
+   "hi": [
+    2.889,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.889,
+    9.1,
+    5.67
+   ],
+   "hi": [
+    3,
+    11.3,
+    5.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 9072469,
+   "lo": [
+    -2.04,
+    9.107,
+    2.29
+   ],
+   "hi": [
+    2.92,
+    9.112,
+    5.67
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 9072469,
+   "lo": [
+    -2.92,
+    9.107,
+    2.9
+   ],
+   "hi": [
+    -2.04,
+    9.112,
+    5.67
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "wheelhouse console",
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 5405039,
+   "lo": [
+    -2.75,
+    9.1,
+    5.05
+   ],
+   "hi": [
+    2.75,
+    10.1,
+    5.67
+   ],
+   "lines": [
+    575
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    1.4,
+    10.1,
+    5.2
+   ],
+   "hi": [
+    1.9,
+    10.28,
+    5.5
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "steering stand",
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 6055014,
+   "lo": [
+    -0.25,
+    9.1,
+    4.25
+   ],
+   "hi": [
+    0.25,
+    10.05,
+    4.75
+   ],
+   "lines": [
+    577
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 11569738,
+   "lo": [
+    -0.08,
+    10.6,
+    4.35
+   ],
+   "hi": [
+    0.08,
+    10.72,
+    4.5
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 15789280,
+   "lo": [
+    -0.12,
+    9.85,
+    4.23
+   ],
+   "hi": [
+    0.12,
+    10,
+    4.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    1.3,
+    10.1,
+    5.25
+   ],
+   "hi": [
+    1.75,
+    10.35,
+    5.47
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 14209728,
+   "lo": [
+    -2.9,
+    10.1,
+    5.55
+   ],
+   "hi": [
+    2.9,
+    10.13,
+    5.67
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 12730671,
+   "lo": [
+    -1.7,
+    10.65,
+    2.29
+   ],
+   "hi": [
+    -0.9,
+    11.15,
+    2.35
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2817904,
+   "lo": [
+    -1.62,
+    11,
+    2.35
+   ],
+   "hi": [
+    -1.55,
+    11.05,
+    2.36
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2817904,
+   "lo": [
+    -1.5,
+    11,
+    2.35
+   ],
+   "hi": [
+    -1.43,
+    11.05,
+    2.36
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2817904,
+   "lo": [
+    -1.38,
+    11,
+    2.35
+   ],
+   "hi": [
+    -1.31,
+    11.05,
+    2.36
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2817904,
+   "lo": [
+    -1.26,
+    11,
+    2.35
+   ],
+   "hi": [
+    -1.19,
+    11.05,
+    2.36
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2817904,
+   "lo": [
+    -1.14,
+    11,
+    2.35
+   ],
+   "hi": [
+    -1.07,
+    11.05,
+    2.36
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2817904,
+   "lo": [
+    -1.02,
+    11,
+    2.35
+   ],
+   "hi": [
+    -0.95,
+    11.05,
+    2.36
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": false,
+   "hex": 16052712,
+   "lo": [
+    2.3,
+    10.5,
+    2.29
+   ],
+   "hi": [
+    2.85,
+    11.05,
+    2.31
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -1.85,
+    11.24,
+    3.85
+   ],
+   "hi": [
+    -1.15,
+    11.3,
+    4.15
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    1.15,
+    11.24,
+    3.85
+   ],
+   "hi": [
+    1.85,
+    11.3,
+    4.15
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    -0.3,
+    11.1,
+    5.35
+   ],
+   "hi": [
+    0.3,
+    11.3,
+    5.645
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 9269068,
+   "lo": [
+    -0.03,
+    10.92,
+    4.82
+   ],
+   "hi": [
+    0.03,
+    11,
+    4.88
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "chart table",
+   "space": "wheelhouse",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -1.95,
+    9.1,
+    2.29
+   ],
+   "hi": [
+    -1,
+    10.05,
+    2.89
+   ],
+   "lines": [
+    597
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 7297600,
+   "lo": [
+    -1.9,
+    9.25,
+    2.89
+   ],
+   "hi": [
+    -1.05,
+    9.45,
+    2.895
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 7297600,
+   "lo": [
+    -1.9,
+    9.5,
+    2.89
+   ],
+   "hi": [
+    -1.05,
+    9.7,
+    2.895
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 7297600,
+   "lo": [
+    -1.9,
+    9.75,
+    2.89
+   ],
+   "hi": [
+    -1.05,
+    9.95,
+    2.895
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 15262412,
+   "lo": [
+    -1.9,
+    10.05,
+    2.35
+   ],
+   "hi": [
+    -1.05,
+    10.06,
+    2.85
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -11.25
+   ],
+   "hi": [
+    -2.004,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -2.004,
+    11.024,
+    -11.25
+   ],
+   "hi": [
+    -1.196,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -1.196,
+    9.1,
+    -11.25
+   ],
+   "hi": [
+    -0.404,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -0.404,
+    11.024,
+    -11.25
+   ],
+   "hi": [
+    0.404,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.404,
+    9.1,
+    -11.25
+   ],
+   "hi": [
+    1.196,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    1.196,
+    11.024,
+    -11.25
+   ],
+   "hi": [
+    2.004,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.004,
+    9.1,
+    -11.25
+   ],
+   "hi": [
+    3,
+    11.3,
+    -11.17
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 11549226,
+   "lo": [
+    -0.4,
+    11.05,
+    -11.27
+   ],
+   "hi": [
+    0.4,
+    11.2,
+    -11.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -11.25
+   ],
+   "hi": [
+    3,
+    11.3,
+    -7.304
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -7.304
+   ],
+   "hi": [
+    3,
+    10.296,
+    -6.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    10.804,
+    -7.304
+   ],
+   "hi": [
+    3,
+    11.3,
+    -6.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -6.796
+   ],
+   "hi": [
+    3,
+    11.3,
+    -4.804
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -4.804
+   ],
+   "hi": [
+    3,
+    10.296,
+    -4.296
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    10.804,
+    -4.804
+   ],
+   "hi": [
+    3,
+    11.3,
+    -4.296
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -4.296
+   ],
+   "hi": [
+    3,
+    11.3,
+    -2.304
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -2.304
+   ],
+   "hi": [
+    3,
+    10.296,
+    -1.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    10.804,
+    -2.304
+   ],
+   "hi": [
+    3,
+    11.3,
+    -1.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    -1.796
+   ],
+   "hi": [
+    3,
+    11.3,
+    0.396
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    0.396
+   ],
+   "hi": [
+    3,
+    10.296,
+    0.904
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    10.804,
+    0.396
+   ],
+   "hi": [
+    3,
+    11.3,
+    0.904
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    2.92,
+    9.1,
+    0.904
+   ],
+   "hi": [
+    3,
+    11.3,
+    2.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -11.25
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    -7.304
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -7.304
+   ],
+   "hi": [
+    -2.92,
+    10.296,
+    -6.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.804,
+    -7.304
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    -6.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -6.796
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    -4.804
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -4.804
+   ],
+   "hi": [
+    -2.92,
+    10.296,
+    -4.296
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.804,
+    -4.804
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    -4.296
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -4.296
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    -2.304
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -2.304
+   ],
+   "hi": [
+    -2.92,
+    10.296,
+    -1.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.804,
+    -2.304
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    -1.796
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -1.796
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    0.096
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    0.096
+   ],
+   "hi": [
+    -2.92,
+    10.296,
+    0.604
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.804,
+    0.096
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    0.604
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    0.604
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    1.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    1.346
+   ],
+   "hi": [
+    -2.92,
+    10.296,
+    1.854
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    10.804,
+    1.346
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    1.854
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    1.854
+   ],
+   "hi": [
+    -2.92,
+    11.3,
+    2.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wing-s",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    2.21
+   ],
+   "hi": [
+    -2.924,
+    11.3,
+    2.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -2.924,
+    10.604,
+    2.21
+   ],
+   "hi": [
+    -2.116,
+    11.3,
+    2.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -2.116,
+    9.1,
+    2.21
+   ],
+   "hi": [
+    -0.404,
+    11.3,
+    2.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -0.404,
+    11.024,
+    2.21
+   ],
+   "hi": [
+    0.404,
+    11.3,
+    2.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.404,
+    9.1,
+    2.21
+   ],
+   "hi": [
+    3,
+    11.3,
+    2.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -2.12,
+    9.1,
+    0.66
+   ],
+   "hi": [
+    -2.04,
+    11.3,
+    2.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -2.92,
+    9.1,
+    0.66
+   ],
+   "hi": [
+    -2.12,
+    11.3,
+    0.74
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -2.72,
+    11.18,
+    1.1
+   ],
+   "hi": [
+    -2.32,
+    11.22,
+    1.4
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "wheelhouse",
+   "solid": false,
+   "hex": 6122346,
+   "lo": [
+    0.42,
+    9.12,
+    2.29
+   ],
+   "hi": [
+    1.2,
+    11.02,
+    2.33
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -3,
+    9.1,
+    -8.29
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -8.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.45,
+    9.1,
+    -8.29
+   ],
+   "hi": [
+    3,
+    11.3,
+    -8.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    0.45,
+    9.1,
+    -11.17
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -8.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    9.1,
+    -8.21
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -8.054
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    11.024,
+    -8.054
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -7.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    9.1,
+    -7.346
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -5.554
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    11.024,
+    -5.554
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -4.846
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    9.1,
+    -4.846
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -3.054
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    11.024,
+    -3.054
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -2.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    9.1,
+    -2.346
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    -0.554
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    11.024,
+    -0.554
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    0.154
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.45,
+    9.1,
+    0.154
+   ],
+   "hi": [
+    0.53,
+    11.3,
+    2.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.53,
+    9.1,
+    -5.79
+   ],
+   "hi": [
+    2.92,
+    11.3,
+    -5.71
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.53,
+    9.1,
+    -3.29
+   ],
+   "hi": [
+    2.92,
+    11.3,
+    -3.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    0.53,
+    9.1,
+    -0.79
+   ],
+   "hi": [
+    2.92,
+    11.3,
+    -0.71
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": true,
+   "hex": 15657696,
+   "lo": [
+    -0.53,
+    9.1,
+    -11.17
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -8.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    9.1,
+    -8.21
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -8.054
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    11.024,
+    -8.054
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -7.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    9.1,
+    -7.346
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -5.554
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    11.024,
+    -5.554
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -4.846
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    9.1,
+    -4.846
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -3.054
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    11.024,
+    -3.054
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -2.346
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    9.1,
+    -2.346
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    -0.554
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    11.024,
+    -0.554
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    0.154
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -0.53,
+    9.1,
+    0.154
+   ],
+   "hi": [
+    -0.45,
+    11.3,
+    2.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -2.92,
+    9.1,
+    -5.79
+   ],
+   "hi": [
+    -0.53,
+    11.3,
+    -5.71
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -2.92,
+    9.1,
+    -3.29
+   ],
+   "hi": [
+    -0.53,
+    11.3,
+    -3.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": true,
+   "hex": 15525074,
+   "lo": [
+    -2.92,
+    9.1,
+    -0.79
+   ],
+   "hi": [
+    -0.53,
+    11.3,
+    -0.71
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 9072469,
+   "lo": [
+    -0.45,
+    9.103,
+    -11.17
+   ],
+   "hi": [
+    0.45,
+    9.108,
+    2.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    0.53,
+    9.103,
+    -8.21
+   ],
+   "hi": [
+    2.92,
+    9.108,
+    -5.79
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    -2.92,
+    9.103,
+    -8.21
+   ],
+   "hi": [
+    -0.53,
+    9.108,
+    -5.79
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    0.53,
+    9.103,
+    -5.71
+   ],
+   "hi": [
+    2.92,
+    9.108,
+    -3.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": false,
+   "hex": 14278624,
+   "lo": [
+    -2.92,
+    9.103,
+    -5.71
+   ],
+   "hi": [
+    -0.53,
+    9.108,
+    -3.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    0.53,
+    9.103,
+    -3.21
+   ],
+   "hi": [
+    2.92,
+    9.108,
+    -0.79
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": false,
+   "hex": 13222574,
+   "lo": [
+    -2.92,
+    9.103,
+    -3.21
+   ],
+   "hi": [
+    -0.53,
+    9.108,
+    -0.79
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    0.53,
+    9.103,
+    -0.71
+   ],
+   "hi": [
+    2.92,
+    9.108,
+    2.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    -2.04,
+    9.103,
+    -0.71
+   ],
+   "hi": [
+    -0.53,
+    9.108,
+    2.21
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": false,
+   "hex": 10126438,
+   "lo": [
+    -2.92,
+    9.103,
+    -0.71
+   ],
+   "hi": [
+    -2.04,
+    9.108,
+    0.66
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 9212307,
+   "lo": [
+    0.53,
+    9.103,
+    -11.17
+   ],
+   "hi": [
+    2.92,
+    9.108,
+    -8.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": false,
+   "hex": 9212307,
+   "lo": [
+    -2.92,
+    9.103,
+    -11.17
+   ],
+   "hi": [
+    -0.53,
+    9.108,
+    -8.29
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "emergency generator",
+   "space": "eg-room",
+   "solid": true,
+   "hex": 6258538,
+   "lo": [
+    1.25,
+    9.1,
+    -10.35
+   ],
+   "hi": [
+    2.55,
+    10.05,
+    -8.95
+   ],
+   "lines": [
+    667
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 4151882,
+   "lo": [
+    1.4,
+    10.05,
+    -10.05
+   ],
+   "hi": [
+    2.4,
+    10.15,
+    -9.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "emergency switchboard",
+   "space": "eg-room",
+   "solid": true,
+   "hex": 10134434,
+   "lo": [
+    0.6,
+    9.1,
+    -8.65
+   ],
+   "hi": [
+    2.9,
+    11,
+    -8.29
+   ],
+   "lines": [
+    669
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 3818052,
+   "lo": [
+    0.7,
+    10.1,
+    -8.67
+   ],
+   "hi": [
+    1,
+    10.7,
+    -8.65
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 3818052,
+   "lo": [
+    1.15,
+    10.1,
+    -8.67
+   ],
+   "hi": [
+    1.45,
+    10.7,
+    -8.65
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 3818052,
+   "lo": [
+    1.6,
+    10.1,
+    -8.67
+   ],
+   "hi": [
+    1.9,
+    10.7,
+    -8.65
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 3818052,
+   "lo": [
+    2.05,
+    10.1,
+    -8.67
+   ],
+   "hi": [
+    2.35,
+    10.7,
+    -8.65
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 3818052,
+   "lo": [
+    2.5,
+    10.1,
+    -8.67
+   ],
+   "hi": [
+    2.8,
+    10.7,
+    -8.65
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "battery box",
+   "space": "eg-room",
+   "solid": true,
+   "hex": 3818052,
+   "lo": [
+    2.4,
+    9.1,
+    -11.1
+   ],
+   "hi": [
+    2.9,
+    9.7,
+    -10.45
+   ],
+   "lines": [
+    670
+   ]
+  },
+  {
+   "type": "box",
+   "name": "day tank",
+   "space": "eg-room",
+   "solid": true,
+   "hex": 9071162,
+   "lo": [
+    0.6,
+    10.4,
+    -11.1
+   ],
+   "hi": [
+    1,
+    11,
+    -10.65
+   ],
+   "lines": [
+    670
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    2.1,
+    10.3,
+    -11.26
+   ],
+   "hi": [
+    2.8,
+    10.35,
+    -11.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    2.1,
+    10.42,
+    -11.26
+   ],
+   "hi": [
+    2.8,
+    10.47,
+    -11.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    2.1,
+    10.54,
+    -11.26
+   ],
+   "hi": [
+    2.8,
+    10.59,
+    -11.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "eg-room",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    2.1,
+    10.66,
+    -11.26
+   ],
+   "hi": [
+    2.8,
+    10.71,
+    -11.25
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "co2-room",
+   "solid": false,
+   "hex": 2764593,
+   "lo": [
+    -2.8,
+    10.2,
+    -8.4
+   ],
+   "hi": [
+    -1.55,
+    10.25,
+    -8.35
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "CO₂ release cabinet",
+   "space": "co2-room",
+   "solid": true,
+   "hex": 12730671,
+   "lo": [
+    -1.2,
+    10,
+    -8.49
+   ],
+   "hi": [
+    -0.6,
+    10.8,
+    -8.29
+   ],
+   "lines": [
+    676
+   ]
+  },
+  {
+   "type": "box",
+   "name": "firemen’s outfit locker",
+   "space": "co2-room",
+   "solid": true,
+   "hex": 10134434,
+   "lo": [
+    -2.95,
+    9.1,
+    -11.05
+   ],
+   "hi": [
+    -2.35,
+    11,
+    -10.05
+   ],
+   "lines": [
+    677
+   ]
+  },
+  {
+   "type": "box",
+   "name": "fan stops",
+   "space": "co2-room",
+   "solid": true,
+   "hex": 14209728,
+   "lo": [
+    -1.1,
+    10.1,
+    -11.17
+   ],
+   "hi": [
+    -0.6,
+    10.7,
+    -11.02
+   ],
+   "lines": [
+    678
+   ]
+  },
+  {
+   "type": "box",
+   "name": "bunk",
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    2.07,
+    9.1,
+    -8.16
+   ],
+   "hi": [
+    2.92,
+    10.8,
+    -6.25
+   ],
+   "lines": [
+    681,
+    709
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": false,
+   "hex": 15262936,
+   "lo": [
+    2.11,
+    9.55,
+    -8.11
+   ],
+   "hi": [
+    2.88,
+    9.65,
+    -6.3
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": false,
+   "hex": 15262936,
+   "lo": [
+    2.11,
+    10.4,
+    -8.11
+   ],
+   "hi": [
+    2.88,
+    10.5,
+    -6.3
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "locker",
+   "space": "crew-cabin",
+   "solid": true,
+   "hex": 12170144,
+   "lo": [
+    0.53,
+    9.1,
+    -6.34
+   ],
+   "hi": [
+    1.08,
+    11,
+    -5.84
+   ],
+   "lines": [
+    683,
+    712
+   ]
+  },
+  {
+   "type": "box",
+   "name": "bunk",
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -2.92,
+    9.1,
+    -8.16
+   ],
+   "hi": [
+    -2.07,
+    9.6,
+    -6.25
+   ],
+   "lines": [
+    681,
+    709
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": false,
+   "hex": 15262936,
+   "lo": [
+    -2.88,
+    9.55,
+    -8.11
+   ],
+   "hi": [
+    -2.11,
+    9.65,
+    -6.3
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "desk",
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -2.92,
+    9.82,
+    -6.5
+   ],
+   "hi": [
+    -2.37,
+    9.87,
+    -5.84
+   ],
+   "lines": [
+    684
+   ]
+  },
+  {
+   "type": "box",
+   "name": "desk",
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -2.92,
+    9.1,
+    -6.5
+   ],
+   "hi": [
+    -2.37,
+    9.82,
+    -6.1
+   ],
+   "lines": [
+    684
+   ]
+  },
+  {
+   "type": "box",
+   "name": "locker",
+   "space": "mate-cabin",
+   "solid": true,
+   "hex": 12170144,
+   "lo": [
+    -1.03,
+    9.1,
+    -6.31
+   ],
+   "hi": [
+    -0.53,
+    11,
+    -5.81
+   ],
+   "lines": [
+    683,
+    712
+   ]
+  },
+  {
+   "type": "box",
+   "name": "bunk",
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    2.07,
+    9.1,
+    -5.66
+   ],
+   "hi": [
+    2.92,
+    9.6,
+    -3.75
+   ],
+   "lines": [
+    681,
+    709
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": false,
+   "hex": 15262936,
+   "lo": [
+    2.11,
+    9.55,
+    -5.61
+   ],
+   "hi": [
+    2.88,
+    9.65,
+    -3.8
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "locker",
+   "space": "deckhand-cabin",
+   "solid": true,
+   "hex": 12170144,
+   "lo": [
+    0.53,
+    9.1,
+    -3.81
+   ],
+   "hi": [
+    1.08,
+    11,
+    -3.31
+   ],
+   "lines": [
+    683,
+    712
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": false,
+   "hex": 15134448,
+   "lo": [
+    -2.92,
+    9.109,
+    -5.65
+   ],
+   "hi": [
+    -2.02,
+    9.12,
+    -4.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": false,
+   "hex": 8226182,
+   "lo": [
+    -2.02,
+    11.05,
+    -5.65
+   ],
+   "hi": [
+    -2,
+    11.07,
+    -4.75
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "WC",
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 16053488,
+   "lo": [
+    -2.92,
+    9.1,
+    -4.05
+   ],
+   "hi": [
+    -2.37,
+    9.52,
+    -3.65
+   ],
+   "lines": [
+    691
+   ]
+  },
+  {
+   "type": "box",
+   "name": "basin",
+   "space": "crew-wc",
+   "solid": true,
+   "hex": 16053488,
+   "lo": [
+    -0.98,
+    9.8,
+    -4.6
+   ],
+   "hi": [
+    -0.53,
+    9.95,
+    -4.1
+   ],
+   "lines": [
+    691
+   ]
+  },
+  {
+   "type": "box",
+   "name": "mess table",
+   "space": "mess",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    1.35,
+    9.1,
+    -2.25
+   ],
+   "hi": [
+    2.35,
+    9.82,
+    -1.05
+   ],
+   "lines": [
+    693
+   ]
+  },
+  {
+   "type": "box",
+   "name": "mess bench",
+   "space": "mess",
+   "solid": true,
+   "hex": 9073494,
+   "lo": [
+    1.08,
+    9.1,
+    -2.25
+   ],
+   "hi": [
+    1.28,
+    9.52,
+    -1.05
+   ],
+   "lines": [
+    694
+   ]
+  },
+  {
+   "type": "box",
+   "name": "mess bench",
+   "space": "mess",
+   "solid": true,
+   "hex": 9073494,
+   "lo": [
+    2.42,
+    9.1,
+    -2.25
+   ],
+   "hi": [
+    2.62,
+    9.52,
+    -1.05
+   ],
+   "lines": [
+    694
+   ]
+  },
+  {
+   "type": "box",
+   "name": "mess television",
+   "space": "mess",
+   "solid": true,
+   "hex": 2764593,
+   "lo": [
+    2.47,
+    10.4,
+    -1.35
+   ],
+   "hi": [
+    2.92,
+    10.8,
+    -0.84
+   ],
+   "lines": [
+    695
+   ]
+  },
+  {
+   "type": "box",
+   "name": "sideboard",
+   "space": "mess",
+   "solid": true,
+   "hex": 14209728,
+   "lo": [
+    2.42,
+    9.1,
+    -3.16
+   ],
+   "hi": [
+    2.92,
+    10,
+    -2.55
+   ],
+   "lines": [
+    696
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    0.6,
+    10.3,
+    -0.81
+   ],
+   "hi": [
+    1.6,
+    10.9,
+    -0.79
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "range",
+   "space": "galley",
+   "solid": true,
+   "hex": 10134434,
+   "lo": [
+    -2.92,
+    9.1,
+    -3.05
+   ],
+   "hi": [
+    -2.32,
+    10,
+    -2.25
+   ],
+   "lines": [
+    699
+   ]
+  },
+  {
+   "type": "box",
+   "name": "hood",
+   "space": "galley",
+   "solid": true,
+   "hex": 8226182,
+   "lo": [
+    -2.92,
+    10.65,
+    -3.05
+   ],
+   "hi": [
+    -2.32,
+    11,
+    -2.25
+   ],
+   "lines": [
+    699
+   ]
+  },
+  {
+   "type": "box",
+   "name": "sink",
+   "space": "galley",
+   "solid": true,
+   "hex": 13158592,
+   "lo": [
+    -2.92,
+    9.1,
+    -2.25
+   ],
+   "hi": [
+    -2.32,
+    10,
+    -1.35
+   ],
+   "lines": [
+    700
+   ]
+  },
+  {
+   "type": "box",
+   "name": "fridge-freezer",
+   "space": "galley",
+   "solid": true,
+   "hex": 15263452,
+   "lo": [
+    -2.92,
+    9.1,
+    -1.35
+   ],
+   "hi": [
+    -2.27,
+    10.85,
+    -0.79
+   ],
+   "lines": [
+    701
+   ]
+  },
+  {
+   "type": "box",
+   "name": "provision locker",
+   "space": "galley",
+   "solid": true,
+   "hex": 12170144,
+   "lo": [
+    -1.13,
+    9.1,
+    -3.16
+   ],
+   "hi": [
+    -0.53,
+    11,
+    -2.95
+   ],
+   "lines": [
+    704
+   ]
+  },
+  {
+   "type": "box",
+   "name": "bunk",
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    2.07,
+    9.1,
+    0.21
+   ],
+   "hi": [
+    2.92,
+    9.6,
+    2.16
+   ],
+   "lines": [
+    681,
+    709
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": false,
+   "hex": 15262936,
+   "lo": [
+    2.11,
+    9.55,
+    0.26
+   ],
+   "hi": [
+    2.88,
+    9.65,
+    2.11
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "desk",
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    2.37,
+    9.82,
+    -0.65
+   ],
+   "hi": [
+    2.92,
+    9.87,
+    0.15
+   ],
+   "lines": [
+    684
+   ]
+  },
+  {
+   "type": "box",
+   "name": "desk",
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    2.37,
+    9.1,
+    -0.65
+   ],
+   "hi": [
+    2.92,
+    9.82,
+    -0.25
+   ],
+   "lines": [
+    684
+   ]
+  },
+  {
+   "type": "box",
+   "name": "locker",
+   "space": "chief-cabin",
+   "solid": true,
+   "hex": 12170144,
+   "lo": [
+    0.53,
+    9.1,
+    -0.69
+   ],
+   "hi": [
+    1.08,
+    11,
+    -0.19
+   ],
+   "lines": [
+    683,
+    712
+   ]
+  },
+  {
+   "type": "box",
+   "name": "bunk",
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -1.38,
+    9.1,
+    0.25
+   ],
+   "hi": [
+    -0.53,
+    9.6,
+    2.16
+   ],
+   "lines": [
+    681,
+    709
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": false,
+   "hex": 15262936,
+   "lo": [
+    -1.34,
+    9.55,
+    0.3
+   ],
+   "hi": [
+    -0.57,
+    9.65,
+    2.11
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": "desk",
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -2.92,
+    9.82,
+    -0.65
+   ],
+   "hi": [
+    -2.37,
+    9.87,
+    0.35
+   ],
+   "lines": [
+    684
+   ]
+  },
+  {
+   "type": "box",
+   "name": "desk",
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 9269068,
+   "lo": [
+    -2.92,
+    9.1,
+    -0.65
+   ],
+   "hi": [
+    -2.37,
+    9.82,
+    -0.25
+   ],
+   "lines": [
+    684
+   ]
+  },
+  {
+   "type": "box",
+   "name": "safe",
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 2764593,
+   "lo": [
+    -2.9,
+    9.1,
+    -0.15
+   ],
+   "hi": [
+    -2.45,
+    9.65,
+    0.3
+   ],
+   "lines": [
+    711
+   ]
+  },
+  {
+   "type": "box",
+   "name": "locker",
+   "space": "master-cabin",
+   "solid": true,
+   "hex": 12170144,
+   "lo": [
+    -2,
+    9.1,
+    1.66
+   ],
+   "hi": [
+    -1.44,
+    11,
+    2.18
+   ],
+   "lines": [
+    683,
+    712
+   ]
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-cabin",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    0.53,
+    11.1,
+    -7.85
+   ],
+   "hi": [
+    0.54,
+    11.22,
+    -7.55
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mate-cabin",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    -0.54,
+    11.1,
+    -7.85
+   ],
+   "hi": [
+    -0.53,
+    11.22,
+    -7.55
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "deckhand-cabin",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    0.53,
+    11.1,
+    -5.35
+   ],
+   "hi": [
+    0.54,
+    11.22,
+    -5.05
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "crew-wc",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    -0.54,
+    11.1,
+    -5.35
+   ],
+   "hi": [
+    -0.53,
+    11.22,
+    -5.05
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "mess",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    0.53,
+    11.1,
+    -2.85
+   ],
+   "hi": [
+    0.54,
+    11.22,
+    -2.55
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "galley",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    -0.54,
+    11.1,
+    -2.85
+   ],
+   "hi": [
+    -0.53,
+    11.22,
+    -2.55
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "chief-cabin",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    0.53,
+    11.1,
+    -0.35
+   ],
+   "hi": [
+    0.54,
+    11.22,
+    -0.05
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "master-cabin",
+   "solid": false,
+   "hex": 16052450,
+   "lo": [
+    -0.54,
+    11.1,
+    -0.35
+   ],
+   "hi": [
+    -0.53,
+    11.22,
+    -0.05
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -0.2,
+    11.18,
+    -7.4
+   ],
+   "hi": [
+    0.2,
+    11.22,
+    -7.1
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -0.2,
+    11.18,
+    -5.4
+   ],
+   "hi": [
+    0.2,
+    11.22,
+    -5.1
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -0.2,
+    11.18,
+    -3.4
+   ],
+   "hi": [
+    0.2,
+    11.22,
+    -3.1
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -0.2,
+    11.18,
+    -1.4
+   ],
+   "hi": [
+    0.2,
+    11.22,
+    -1.1
+   ],
+   "lines": []
+  },
+  {
+   "type": "box",
+   "name": null,
+   "space": "corridor",
+   "solid": false,
+   "hex": 16183778,
+   "lo": [
+    -0.2,
+    11.18,
+    0.6
+   ],
+   "hi": [
+    0.2,
+    11.22,
+    0.9
+   ],
+   "lines": []
+  }
+ ],
+ "glass": [
+  {
+   "size": [
+    0.03,
+    0.85,
+    1
+   ],
+   "pos": [
+    2.96,
+    10.5,
+    3.85
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.85,
+    0.9
+   ],
+   "pos": [
+    2.96,
+    10.5,
+    4.95
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.7,
+    0.6
+   ],
+   "pos": [
+    -2.96,
+    10.55,
+    2.7
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.85,
+    0.5
+   ],
+   "pos": [
+    -2.96,
+    10.5,
+    5.15
+   ]
+  },
+  {
+   "size": [
+    1.05,
+    0.95,
+    0.03
+   ],
+   "pos": [
+    -2.36,
+    10.55,
+    5.71
+   ]
+  },
+  {
+   "size": [
+    1.05,
+    0.95,
+    0.03
+   ],
+   "pos": [
+    -1.18,
+    10.55,
+    5.71
+   ]
+  },
+  {
+   "size": [
+    1.05,
+    0.95,
+    0.03
+   ],
+   "pos": [
+    0,
+    10.55,
+    5.71
+   ]
+  },
+  {
+   "size": [
+    1.05,
+    0.95,
+    0.03
+   ],
+   "pos": [
+    1.18,
+    10.55,
+    5.71
+   ]
+  },
+  {
+   "size": [
+    1.05,
+    0.95,
+    0.03
+   ],
+   "pos": [
+    2.36,
+    10.55,
+    5.71
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    2.96,
+    10.55,
+    -7.05
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    2.96,
+    10.55,
+    -4.55
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    2.96,
+    10.55,
+    -2.05
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    2.96,
+    10.55,
+    0.65
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    -2.96,
+    10.55,
+    -7.05
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    -2.96,
+    10.55,
+    -4.55
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    -2.96,
+    10.55,
+    -2.05
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    -2.96,
+    10.55,
+    0.35
+   ]
+  },
+  {
+   "size": [
+    0.03,
+    0.5,
+    0.5
+   ],
+   "pos": [
+    -2.96,
+    10.55,
+    1.6
+   ]
+  }
+ ],
+ "plates": [
+  {
+   "name": "Named engineering relief berth",
+   "kind": "text",
+   "pos": [
+    0.58,
+    10.7,
+    -7.45
+   ],
+   "w": 0.7,
+   "h": 0.18,
+   "lines": [
+    "UEZU · DUTY BERTH",
+    "NAKANDAKARI · RELIEF ENGINEER"
+   ]
+  }
+ ],
+ "floors": [
+  {
+   "id": "crew-stair",
+   "x": [
+    -2.92,
+    -2.12
+   ],
+   "z": [
+    0.5,
+    3.1000000000000014
+   ],
+   "y": [
+    6.6,
+    9.2
+   ]
+  },
+  {
+   "id": "wing-ladder-p",
+   "x": [
+    3.46,
+    4.04
+   ],
+   "z": [
+    0.3500000000000014,
+    2.25
+   ],
+   "y": [
+    6.5,
+    9.1
+   ]
+  },
+  {
+   "id": "wing-ladder-s",
+   "x": [
+    -4.04,
+    -3.46
+   ],
+   "z": [
+    0.3500000000000014,
+    2.25
+   ],
+   "y": [
+    6.5,
+    9.1
+   ]
+  },
+  {
+   "id": "platform-ladder-p",
+   "x": [
+    0.8699999999999999,
+    1.43
+   ],
+   "z": [
+    -13.95,
+    -12.43
+   ],
+   "y": [
+    6.5,
+    9.1
+   ]
+  },
+  {
+   "id": "platform-ladder-s",
+   "x": [
+    -1.43,
+    -0.8699999999999999
+   ],
+   "z": [
+    -13.95,
+    -12.43
+   ],
+   "y": [
+    6.5,
+    9.1
+   ]
+  },
+  {
+   "id": "bridge-deck-aft",
+   "x": [
+    -2.55,
+    2.55
+   ],
+   "z": [
+    -12.45,
+    -11.25
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "wing-p",
+   "x": [
+    2.9,
+    4.1000000000000005
+   ],
+   "z": [
+    2.2,
+    5.71
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "wing-s",
+   "x": [
+    -4.1000000000000005,
+    -2.9
+   ],
+   "z": [
+    2.2,
+    5.71
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "wheelhouse",
+   "x": [
+    -2.92,
+    2.92
+   ],
+   "z": [
+    2.25,
+    5.67
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "wing-door-p",
+   "x": [
+    2.42,
+    3.3
+   ],
+   "z": [
+    2.3500000000000014,
+    3.1499999999999986
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "wing-door-s",
+   "x": [
+    -3.3,
+    -2.42
+   ],
+   "z": [
+    3.1999999999999993,
+    4
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "crew-corridor",
+   "x": [
+    -0.45,
+    0.45
+   ],
+   "z": [
+    -11.7,
+    2.65
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "crew-cabin",
+   "x": [
+    0.10000000000000003,
+    2.92
+   ],
+   "z": [
+    -8.25,
+    -5.75
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "mate-cabin",
+   "x": [
+    -2.92,
+    -0.10000000000000003
+   ],
+   "z": [
+    -8.25,
+    -5.75
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "deckhand-cabin",
+   "x": [
+    0.10000000000000003,
+    2.92
+   ],
+   "z": [
+    -5.75,
+    -3.25
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "crew-wc",
+   "x": [
+    -2.92,
+    -0.10000000000000003
+   ],
+   "z": [
+    -5.75,
+    -3.25
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "mess",
+   "x": [
+    0.10000000000000003,
+    2.92
+   ],
+   "z": [
+    -3.25,
+    -0.75
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "galley",
+   "x": [
+    -2.92,
+    -0.10000000000000003
+   ],
+   "z": [
+    -3.25,
+    -0.75
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "chief-cabin",
+   "x": [
+    0.10000000000000003,
+    2.92
+   ],
+   "z": [
+    -0.75,
+    2.25
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "master-cabin",
+   "x": [
+    -2.92,
+    -0.10000000000000003
+   ],
+   "z": [
+    -0.75,
+    2.25
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "eg-room",
+   "x": [
+    0.53,
+    2.92
+   ],
+   "z": [
+    -11.7,
+    -8.25
+   ],
+   "y": 9.1
+  },
+  {
+   "id": "co2-room",
+   "x": [
+    -2.92,
+    -0.53
+   ],
+   "z": [
+    -11.7,
+    -8.25
+   ],
+   "y": 9.1
+  }
+ ],
+ "loads": [
+  {
+   "id": "range",
+   "name": "Galley range",
+   "where": "galley",
+   "board": "MSB",
+   "supply": "440",
+   "count": 1,
+   "kW": 6,
+   "amps": 7.9,
+   "draw": {
+    "sea": 1.8,
+    "arrival": 0,
+    "loading": 3,
+    "night": 1.2,
+    "blackout": 0
+   },
+   "why": "Crew meals",
+   "trip": 2
+  },
+  {
+   "id": "water-heater",
+   "name": "Water heater, 100 L",
+   "where": "galley",
+   "board": "MSB",
+   "supply": "440",
+   "count": 1,
+   "kW": 3,
+   "amps": 3.9,
+   "draw": {
+    "sea": 0.9,
+    "arrival": 0,
+    "loading": 0.9,
+    "night": 1.5,
+    "blackout": 0
+   },
+   "why": "The galley and the shower",
+   "trip": 2
+  },
+  {
+   "id": "chargers",
+   "name": "24 V battery chargers",
+   "where": "eg-room",
+   "board": "MSB",
+   "supply": "440",
+   "count": 2,
+   "kW": 1.5,
+   "amps": 2,
+   "draw": {
+    "sea": 0.9,
+    "arrival": 0.9,
+    "loading": 0.9,
+    "night": 0.9,
+    "blackout": 0
+   },
+   "why": "Both banks kept full",
+   "trip": null
+  },
+  {
+   "id": "light-crew",
+   "name": "Lighting: bridge, mess, galley, cabins",
+   "where": "mess",
+   "board": "LB",
+   "supply": "105",
+   "count": 1,
+   "kW": 0.42,
+   "amps": 4.4,
+   "draw": {
+    "sea": 0.2,
+    "arrival": 0.2,
+    "loading": 0.3,
+    "night": 0.3,
+    "blackout": 0
+   },
+   "why": "",
+   "trip": null
+  },
+  {
+   "id": "searchlight",
+   "name": "Searchlight",
+   "where": "compass-deck",
+   "board": "LB",
+   "supply": "105",
+   "count": 1,
+   "kW": 1,
+   "amps": 9.5,
+   "draw": {
+    "sea": 0,
+    "arrival": 0.5,
+    "loading": 0,
+    "night": 0,
+    "blackout": 0
+   },
+   "why": "Finds the pier on the last boat",
+   "trip": null
+  },
+  {
+   "id": "bridge-electronics",
+   "name": "Bridge electronics (radar, autopilot, echo sounder, GPS, NAVTEX, PA)",
+   "where": "wheelhouse",
+   "board": "LB",
+   "supply": "105",
+   "count": 1,
+   "kW": 0.75,
+   "amps": 7.9,
+   "draw": {
+    "sea": 0.8,
+    "arrival": 0.8,
+    "loading": 0.4,
+    "night": 0.1,
+    "blackout": 0
+   },
+   "why": "",
+   "trip": null
+  },
+  {
+   "id": "room-ac",
+   "name": "Room air conditioners (bridge, mess, cabins)",
+   "where": "mess",
+   "board": "LB",
+   "supply": "105",
+   "count": 4,
+   "kW": 1,
+   "amps": 11.2,
+   "draw": {
+    "sea": 3,
+    "arrival": 3,
+    "loading": 3,
+    "night": 1.5,
+    "blackout": 0
+   },
+   "why": "",
+   "trip": null
+  },
+  {
+   "id": "galley-appliances",
+   "name": "Galley appliances (rice cooker, microwave, pot, fridge, hood)",
+   "where": "galley",
+   "board": "LB",
+   "supply": "105",
+   "count": 1,
+   "kW": 4,
+   "amps": 38.1,
+   "draw": {
+    "sea": 1.2,
+    "arrival": 0.4,
+    "loading": 1.6,
+    "night": 1.2,
+    "blackout": 0
+   },
+   "why": "",
+   "trip": 2
+  },
+  {
+   "id": "emergency-light",
+   "name": "Emergency lighting (one fitting in four, the escapes, the muster stations)",
+   "where": "corridor",
+   "board": "ESB",
+   "supply": "105",
+   "count": 1,
+   "kW": 1.55,
+   "amps": 16.4,
+   "draw": {
+    "sea": 0,
+    "arrival": 0,
+    "loading": 0,
+    "night": 0,
+    "blackout": 1.6
+   },
+   "why": "Inside the lighting above in normal service",
+   "trip": null
+  },
+  {
+   "id": "nav-lights",
+   "name": "Navigation lights (7 × 60 W)",
+   "where": "compass-deck",
+   "board": "ESB",
+   "supply": "105",
+   "count": 1,
+   "kW": 0.42,
+   "amps": 4.4,
+   "draw": {
+    "sea": 0.4,
+    "arrival": 0.4,
+    "loading": 0,
+    "night": 0,
+    "blackout": 0.4
+   },
+   "why": "Masthead, sidelights, stern light, all-round lights",
+   "trip": null
+  },
+  {
+   "id": "emergency-radar",
+   "name": "Radar and PA on the emergency supply",
+   "where": "wheelhouse",
+   "board": "ESB",
+   "supply": "105",
+   "count": 1,
+   "kW": 0.5,
+   "amps": 5.3,
+   "draw": {
+    "sea": 0,
+    "arrival": 0,
+    "loading": 0,
+    "night": 0,
+    "blackout": 0.5
+   },
+   "why": "Inside the bridge electronics normally",
+   "trip": null
+  },
+  {
+   "id": "emergency-charger",
+   "name": "24 V emergency charger (radio, fire detection, alarm)",
+   "where": "eg-room",
+   "board": "ESB",
+   "supply": "440",
+   "count": 1,
+   "kW": 0.5,
+   "amps": 4.8,
+   "draw": {
+    "sea": 0,
+    "arrival": 0,
+    "loading": 0,
+    "night": 0,
+    "blackout": 0.5
+   },
+   "why": "",
+   "trip": null
+  }
+ ],
+ "feeders": [
+  {
+   "id": "range",
+   "name": "Galley range",
+   "tag": "10GKB30 AH001",
+   "board": "MSB",
+   "boardTag": "10BRA10 GS001",
+   "where": "galley",
+   "volts": 440,
+   "phases": 3,
+   "kW": 6,
+   "amps": 7.9,
+   "starter": "contactor",
+   "breaker": 10,
+   "cable": "3 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 24,
+   "drop": 1.1,
+   "route": "control-booth → casing-p trunk → lobby → corridor → galley",
+   "number": "10BRA10 1031"
+  },
+  {
+   "id": "water-heater",
+   "name": "Water heater, 100 L",
+   "tag": "10GKB20 AC001",
+   "board": "MSB",
+   "boardTag": "10BRA10 GS001",
+   "where": "galley",
+   "volts": 440,
+   "phases": 3,
+   "kW": 3,
+   "amps": 3.9,
+   "starter": "contactor",
+   "breaker": 6,
+   "cable": "3 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 24,
+   "drop": 0.5,
+   "route": "control-booth → casing-p trunk → lobby → corridor → galley",
+   "number": "10BRA10 1032"
+  },
+  {
+   "id": "chargersA",
+   "name": "24 V battery chargers feeder 1",
+   "tag": "10BRU10 GU001",
+   "board": "MSB",
+   "boardTag": "10BRA10 GS001",
+   "where": "eg-room",
+   "volts": 440,
+   "phases": 3,
+   "kW": 1.5,
+   "amps": 2,
+   "starter": "contactor",
+   "breaker": 6,
+   "cable": "3 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 24,
+   "drop": 0.3,
+   "route": "control-booth → casing-p trunk → lobby → corridor → eg-room",
+   "number": "10BRA10 1033"
+  },
+  {
+   "id": "chargersB",
+   "name": "24 V battery chargers feeder 2",
+   "tag": "10BRU10 GU002",
+   "board": "MSB",
+   "boardTag": "10BRA10 GS001",
+   "where": "eg-room",
+   "volts": 440,
+   "phases": 3,
+   "kW": 1.5,
+   "amps": 2,
+   "starter": "contactor",
+   "breaker": 6,
+   "cable": "3 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 24,
+   "drop": 0.3,
+   "route": "control-booth → casing-p trunk → lobby → corridor → eg-room",
+   "number": "10BRA10 1034"
+  },
+  {
+   "id": "light-crew",
+   "name": "Lighting: bridge, mess, galley, cabins",
+   "tag": "10BRB10 GS014",
+   "board": "LB",
+   "boardTag": "10BRB10 GS001",
+   "where": "mess",
+   "volts": 105,
+   "phases": 1,
+   "kW": 0.42,
+   "amps": 4.4,
+   "starter": "switch",
+   "breaker": 6,
+   "cable": "2 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 28,
+   "drop": 3.5,
+   "route": "control-booth → casing-p trunk → lobby → corridor → mess",
+   "number": "10BRB10 1004"
+  },
+  {
+   "id": "searchlight",
+   "name": "Searchlight",
+   "tag": "10CTA10 GS001",
+   "board": "LB",
+   "boardTag": "10BRB10 GS001",
+   "where": "compass-deck",
+   "volts": 105,
+   "phases": 1,
+   "kW": 1,
+   "amps": 9.5,
+   "starter": "switch",
+   "breaker": 10,
+   "cable": "2 × 4 mm² + PE 4 mm²",
+   "rating": 28,
+   "length": 37,
+   "drop": 3.7,
+   "route": "control-booth → casing-p trunk → compass-deck",
+   "number": "10BRB10 1006"
+  },
+  {
+   "id": "bridge-electronics",
+   "name": "Bridge electronics (radar, autopilot, echo sounder, GPS, NAVTEX, PA)",
+   "tag": "10CTA10 GS002",
+   "board": "LB",
+   "boardTag": "10BRB10 GS001",
+   "where": "wheelhouse",
+   "volts": 105,
+   "phases": 1,
+   "kW": 0.75,
+   "amps": 7.9,
+   "starter": "switch",
+   "breaker": 10,
+   "cable": "2 × 2.5 mm² + PE 2.5 mm²",
+   "rating": 21,
+   "length": 33,
+   "drop": 4.4,
+   "route": "control-booth → casing-p trunk → lobby → corridor → wheelhouse",
+   "number": "10BRB10 1007"
+  },
+  {
+   "id": "room-acA",
+   "name": "Room air conditioners (bridge, mess, cabins) feeder 1 (2 units)",
+   "tag": "10SAC20 AH001",
+   "board": "LB",
+   "boardTag": "10BRB10 GS001",
+   "where": "mess",
+   "volts": 105,
+   "phases": 1,
+   "kW": 2,
+   "amps": 22.4,
+   "starter": "switch",
+   "breaker": 25,
+   "cable": "2 × 6 mm² + PE 6 mm²",
+   "rating": 36,
+   "length": 28,
+   "drop": 4.4,
+   "route": "control-booth → casing-p trunk → lobby → corridor → mess",
+   "number": "10BRB10 1008"
+  },
+  {
+   "id": "room-acB",
+   "name": "Room air conditioners (bridge, mess, cabins) feeder 2 (2 units)",
+   "tag": "10SAC20 AH002",
+   "board": "LB",
+   "boardTag": "10BRB10 GS001",
+   "where": "mess",
+   "volts": 105,
+   "phases": 1,
+   "kW": 2,
+   "amps": 22.4,
+   "starter": "switch",
+   "breaker": 25,
+   "cable": "2 × 6 mm² + PE 6 mm²",
+   "rating": 36,
+   "length": 28,
+   "drop": 4.4,
+   "route": "control-booth → casing-p trunk → lobby → corridor → mess",
+   "number": "10BRB10 1009"
+  },
+  {
+   "id": "galley-appliances",
+   "name": "Galley appliances (rice cooker, microwave, pot, fridge, hood)",
+   "tag": "10GKB30 GS001",
+   "board": "LB",
+   "boardTag": "10BRB10 GS001",
+   "where": "galley",
+   "volts": 105,
+   "phases": 1,
+   "kW": 4,
+   "amps": 38.1,
+   "starter": "switch",
+   "breaker": 40,
+   "cable": "2 × 10 mm² + PE 10 mm²",
+   "rating": 50,
+   "length": 24,
+   "drop": 3.9,
+   "route": "control-booth → casing-p trunk → lobby → corridor → galley",
+   "number": "10BRB10 1010"
+  },
+  {
+   "id": "emergency-light",
+   "name": "Emergency lighting (one fitting in four, the escapes, the muster stations)",
+   "tag": "10BRV20 GS011",
+   "board": "ESB",
+   "boardTag": "10BRV10 GS001",
+   "where": "corridor",
+   "volts": 105,
+   "phases": 1,
+   "kW": 1.55,
+   "amps": 16.4,
+   "starter": "switch",
+   "breaker": 20,
+   "cable": "2 × 2.5 mm² + PE 2.5 mm²",
+   "rating": 21,
+   "length": 10,
+   "drop": 2.8,
+   "route": "eg-room → corridor",
+   "number": "10BRV10 1003"
+  },
+  {
+   "id": "nav-lights",
+   "name": "Navigation lights (7 × 60 W)",
+   "tag": "10CTA20 GS001",
+   "board": "ESB",
+   "boardTag": "10BRV10 GS001",
+   "where": "compass-deck",
+   "volts": 105,
+   "phases": 1,
+   "kW": 0.42,
+   "amps": 4.4,
+   "starter": "switch",
+   "breaker": 6,
+   "cable": "2 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 24,
+   "drop": 3,
+   "route": "eg-room → compass-deck",
+   "number": "10BRV10 1004"
+  },
+  {
+   "id": "emergency-radar",
+   "name": "Radar and PA on the emergency supply",
+   "tag": "10CTA10 GS003",
+   "board": "ESB",
+   "boardTag": "10BRV10 GS001",
+   "where": "wheelhouse",
+   "volts": 105,
+   "phases": 1,
+   "kW": 0.5,
+   "amps": 5.3,
+   "starter": "switch",
+   "breaker": 6,
+   "cable": "2 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 20,
+   "drop": 3,
+   "route": "eg-room → wheelhouse",
+   "number": "10BRV10 1005"
+  },
+  {
+   "id": "emergency-charger",
+   "name": "24 V emergency charger (radio, fire detection, alarm)",
+   "tag": "10BRU10 GU003",
+   "board": "ESB",
+   "boardTag": "10BRV10 GS001",
+   "where": "eg-room",
+   "volts": 440,
+   "phases": 3,
+   "kW": 0.5,
+   "amps": 4.8,
+   "starter": "contactor",
+   "breaker": 6,
+   "cable": "3 × 1.5 mm² + PE 1.5 mm²",
+   "rating": 16,
+   "length": 2,
+   "drop": 0.1,
+   "route": "eg-room",
+   "number": "10BRU10 1006"
+  }
+ ],
+ "boards": [
+  {
+   "id": "ESB",
+   "tag": "10BRV10 GS001",
+   "name": "Emergency switchboard · 440 V and 105 V",
+   "where": "eg-room",
+   "fedBy": [
+    "MSB",
+    "EG"
+   ],
+   "to": null
+  },
+  {
+   "id": "DC",
+   "tag": "10BTA10 GS001",
+   "name": "24 V DC distribution · two battery banks and chargers",
+   "where": "eg-room",
+   "fedBy": [
+    "chargers"
+   ],
+   "to": null
+  },
+  {
+   "id": "EG",
+   "tag": "15MKA10 AG001",
+   "name": "Emergency generator · 40 kVA · 32 kW",
+   "where": "eg-room",
+   "fedBy": null,
+   "to": "ESB"
+  },
+  {
+   "id": "ETR",
+   "tag": "10BRT20 GT001",
+   "name": "Emergency lighting transformer · 5 kVA · 440/105 V",
+   "where": "eg-room",
+   "fedBy": null,
+   "to": "ESB"
+  }
+ ],
+ "pipingNodes": [
+  {
+   "system": "fire",
+   "medium": "Sea water · CO₂",
+   "id": "hBridge",
+   "kind": "hydrant",
+   "tag": "10SGA30 AA518",
+   "where": "wing-p",
+   "label": "Hydrant bridge deck · 15 m hose · 12 mm nozzle"
+  },
+  {
+   "system": "fire",
+   "medium": "Sea water · CO₂",
+   "id": "co2b",
+   "kind": "bottle",
+   "tag": "10SGJ10 BB001",
+   "where": "co2-room",
+   "label": "4 × 45 kg CO₂"
+  },
+  {
+   "system": "fire",
+   "medium": "Sea water · CO₂",
+   "id": "co2rel",
+   "kind": "cabinet",
+   "tag": "10SGJ10 CH001",
+   "where": "co2-room",
+   "label": "Release cabinet · key · alarm first"
+  },
+  {
+   "system": "fire",
+   "medium": "Sea water · CO₂",
+   "id": "co2v",
+   "kind": "valve",
+   "tag": "10SGJ10 AA201",
+   "where": "co2-room",
+   "label": "Main valve · opened by the cabinet"
+  },
+  {
+   "system": "freshwater",
+   "medium": "Drinking water",
+   "id": "heater",
+   "kind": "cooler",
+   "tag": "10GKB20 AC001",
+   "where": "galley",
+   "label": "Water heater · 100 L · 3 kW"
+  },
+  {
+   "system": "freshwater",
+   "medium": "Drinking water",
+   "id": "galley",
+   "kind": "consumer",
+   "tag": "10GKB20 BR001",
+   "where": "galley",
+   "label": "Galley · kiosk hot water"
+  },
+  {
+   "system": "freshwater",
+   "medium": "Drinking water",
+   "id": "toilets",
+   "kind": "consumer",
+   "tag": "10GKB20 BR002",
+   "where": "toilets",
+   "label": "Toilets’ basins · crew WC and shower"
+  },
+  {
+   "system": "sewage",
+   "medium": "Sea water · sewage",
+   "id": "flush",
+   "kind": "consumer",
+   "tag": "10GHB10 BR001",
+   "where": "toilets",
+   "label": "Flushing: three WCs, two urinals, the crew WC"
+  }
+ ],
+ "pipingLines": [
+  {
+   "system": "fire",
+   "from": "main",
+   "to": "hBridge",
+   "dn": 50,
+   "note": null
+  },
+  {
+   "system": "fire",
+   "from": "co2b",
+   "to": "co2rel",
+   "dn": 0,
+   "note": "wire"
+  },
+  {
+   "system": "fire",
+   "from": "co2rel",
+   "to": "co2v",
+   "dn": 25,
+   "note": "pilot"
+  },
+  {
+   "system": "fire",
+   "from": "co2b",
+   "to": "co2v",
+   "dn": 40,
+   "note": null
+  },
+  {
+   "system": "fire",
+   "from": "co2v",
+   "to": "co2n",
+   "dn": 40,
+   "note": null
+  },
+  {
+   "system": "fire",
+   "from": "co2rel",
+   "to": "co2al",
+   "dn": 0,
+   "note": "electric: the alarm sounds and the fans stop"
+  },
+  {
+   "system": "freshwater",
+   "from": "ptank",
+   "to": "galley",
+   "dn": 20,
+   "note": null
+  },
+  {
+   "system": "freshwater",
+   "from": "ptank",
+   "to": "toilets",
+   "dn": 20,
+   "note": null
+  },
+  {
+   "system": "freshwater",
+   "from": "ptank",
+   "to": "heater",
+   "dn": 15,
+   "note": null
+  },
+  {
+   "system": "freshwater",
+   "from": "heater",
+   "to": "galley",
+   "dn": 15,
+   "note": "hot"
+  },
+  {
+   "system": "freshwater",
+   "from": "heater",
+   "to": "toilets",
+   "dn": 15,
+   "note": "hot"
+  },
+  {
+   "system": "sewage",
+   "from": "sp1",
+   "to": "flush",
+   "dn": 32,
+   "note": null
+  },
+  {
+   "system": "sewage",
+   "from": "sp2",
+   "to": "flush",
+   "dn": 32,
+   "note": null
+  },
+  {
+   "system": "sewage",
+   "from": "flush",
+   "to": "htank",
+   "dn": 100,
+   "note": "gravity"
+  }
+ ],
+ "pipesDrawnOnBridge": 0,
+ "routeIssues": [
+  {
+   "line": "fire/main>hBridge#133",
+   "status": "unresolved",
+   "reason": "pipe clearance",
+   "missing": null
+  },
+  {
+   "line": "fire/co2rel>co2v#136",
+   "status": "unresolved",
+   "reason": "missing physical terminal",
+   "missing": [
+    "co2rel"
+   ]
+  },
+  {
+   "line": "fire/co2b>co2v#137",
+   "status": "unresolved",
+   "reason": "missing physical terminal",
+   "missing": [
+    "co2b"
+   ]
+  },
+  {
+   "line": "fire/co2v>co2n#138",
+   "status": "unresolved",
+   "reason": "outside machinery-space envelope",
+   "missing": null
+  },
+  {
+   "line": "freshwater/ptank>galley#165",
+   "status": "unresolved",
+   "reason": "pipe clearance",
+   "missing": null
+  },
+  {
+   "line": "freshwater/ptank>toilets#166",
+   "status": "unresolved",
+   "reason": "pipe clearance",
+   "missing": null
+  },
+  {
+   "line": "freshwater/ptank>heater#167",
+   "status": "unresolved",
+   "reason": "pipe clearance",
+   "missing": null
+  },
+  {
+   "line": "freshwater/heater>galley#168",
+   "status": "unresolved",
+   "reason": "outside machinery-space envelope",
+   "missing": null
+  },
+  {
+   "line": "freshwater/heater>toilets#169",
+   "status": "unresolved",
+   "reason": "outside machinery-space envelope",
+   "missing": null
+  },
+  {
+   "line": "sewage/sp1>flush#173",
+   "status": "unresolved",
+   "reason": "pipe clearance",
+   "missing": null
+  },
+  {
+   "line": "sewage/flush>htank#175",
+   "status": "unresolved",
+   "reason": "pipe clearance",
+   "missing": null
+  }
+ ],
+ "audit": [
+  {
+   "n": "F17",
+   "kind": "clash",
+   "severity": "clash",
+   "what": "bunk and desk occupy the same space, 25 cm deep",
+   "space": "mate-cabin",
+   "at": {
+    "yard": 10.88,
+    "x": -2.65,
+    "h": 11.25
+   },
+   "pieces": [
+    "bunk",
+    "desk"
+   ]
+  },
+  {
+   "n": "F18",
+   "kind": "floating",
+   "severity": "check",
+   "what": "day tank rests on nothing and hangs from nothing (its foot 12.30 m above the keel)",
+   "space": "eg-room",
+   "at": {
+    "yard": 6.38,
+    "x": 0.8,
+    "h": 12.3
+   },
+   "pieces": [
+    "day tank"
+   ]
+  },
+  {
+   "n": "F19",
+   "kind": "into-structure",
+   "severity": "check",
+   "what": "firemen’s outfit locker runs 3 cm into a wall or deck",
+   "space": "co2-room",
+   "at": {
+    "yard": 6.7,
+    "x": -2.94,
+    "h": 11.95
+   },
+   "pieces": [
+    "firemen’s outfit locker",
+    "wall or deck"
+   ]
+  },
+  {
+   "n": "F20",
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 5 cm inside bunk",
+   "space": "mate-cabin",
+   "at": {
+    "yard": 10.04,
+    "x": -2.5,
+    "h": 11.47
+   },
+   "pieces": [
+    "bunk",
+    "trim piece"
+   ]
+  },
+  {
+   "n": "F21",
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 10 cm inside desk",
+   "space": "mate-cabin",
+   "at": {
+    "yard": 10.85,
+    "x": -2.63,
+    "h": 11.5
+   },
+   "pieces": [
+    "desk",
+    "trim piece"
+   ]
+  },
+  {
+   "n": "F22",
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 5 cm inside bunk",
+   "space": "deckhand-cabin",
+   "at": {
+    "yard": 12.54,
+    "x": 2.5,
+    "h": 11.47
+   },
+   "pieces": [
+    "bunk",
+    "trim piece"
+   ]
+  },
+  {
+   "n": "F23",
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 5 cm inside bunk",
+   "space": "chief-cabin",
+   "at": {
+    "yard": 18.43,
+    "x": 2.5,
+    "h": 11.47
+   },
+   "pieces": [
+    "bunk",
+    "trim piece"
+   ]
+  },
+  {
+   "n": "F24",
+   "kind": "part-clash",
+   "severity": "check",
+   "what": "a trim piece stands 5 cm inside bunk",
+   "space": "master-cabin",
+   "at": {
+    "yard": 18.46,
+    "x": -0.96,
+    "h": 11.47
+   },
+   "pieces": [
+    "bunk",
+    "trim piece"
+   ]
+  }
+ ]
+}

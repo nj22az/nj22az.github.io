@@ -1,0 +1,15 @@
+id,tag,name,board,where,volts,phases,kW,amps,starter,breaker,cable,length,drop,route,number
+range,10GKB30 AH001,Galley range,MSB,galley,440,3,6,7.9,contactor,10,3 × 1.5 mm² + PE 1.5 mm²,24,1.1,control-booth → casing-p trunk → lobby → corridor → galley,10BRA10 1031
+water-heater,10GKB20 AC001,"Water heater, 100 L",MSB,galley,440,3,3,3.9,contactor,6,3 × 1.5 mm² + PE 1.5 mm²,24,0.5,control-booth → casing-p trunk → lobby → corridor → galley,10BRA10 1032
+chargersA,10BRU10 GU001,24 V battery chargers feeder 1,MSB,eg-room,440,3,1.5,2,contactor,6,3 × 1.5 mm² + PE 1.5 mm²,24,0.3,control-booth → casing-p trunk → lobby → corridor → eg-room,10BRA10 1033
+chargersB,10BRU10 GU002,24 V battery chargers feeder 2,MSB,eg-room,440,3,1.5,2,contactor,6,3 × 1.5 mm² + PE 1.5 mm²,24,0.3,control-booth → casing-p trunk → lobby → corridor → eg-room,10BRA10 1034
+light-crew,10BRB10 GS014,"Lighting: bridge, mess, galley, cabins",LB,mess,105,1,0.42,4.4,switch,6,2 × 1.5 mm² + PE 1.5 mm²,28,3.5,control-booth → casing-p trunk → lobby → corridor → mess,10BRB10 1004
+searchlight,10CTA10 GS001,Searchlight,LB,compass-deck,105,1,1,9.5,switch,10,2 × 4 mm² + PE 4 mm²,37,3.7,control-booth → casing-p trunk → compass-deck,10BRB10 1006
+bridge-electronics,10CTA10 GS002,"Bridge electronics (radar, autopilot, echo sounder, GPS, NAVTEX, PA)",LB,wheelhouse,105,1,0.75,7.9,switch,10,2 × 2.5 mm² + PE 2.5 mm²,33,4.4,control-booth → casing-p trunk → lobby → corridor → wheelhouse,10BRB10 1007
+room-acA,10SAC20 AH001,"Room air conditioners (bridge, mess, cabins) feeder 1 (2 units)",LB,mess,105,1,2,22.4,switch,25,2 × 6 mm² + PE 6 mm²,28,4.4,control-booth → casing-p trunk → lobby → corridor → mess,10BRB10 1008
+room-acB,10SAC20 AH002,"Room air conditioners (bridge, mess, cabins) feeder 2 (2 units)",LB,mess,105,1,2,22.4,switch,25,2 × 6 mm² + PE 6 mm²,28,4.4,control-booth → casing-p trunk → lobby → corridor → mess,10BRB10 1009
+galley-appliances,10GKB30 GS001,"Galley appliances (rice cooker, microwave, pot, fridge, hood)",LB,galley,105,1,4,38.1,switch,40,2 × 10 mm² + PE 10 mm²,24,3.9,control-booth → casing-p trunk → lobby → corridor → galley,10BRB10 1010
+emergency-light,10BRV20 GS011,"Emergency lighting (one fitting in four, the escapes, the muster stations)",ESB,corridor,105,1,1.55,16.4,switch,20,2 × 2.5 mm² + PE 2.5 mm²,10,2.8,eg-room → corridor,10BRV10 1003
+nav-lights,10CTA20 GS001,Navigation lights (7 × 60 W),ESB,compass-deck,105,1,0.42,4.4,switch,6,2 × 1.5 mm² + PE 1.5 mm²,24,3,eg-room → compass-deck,10BRV10 1004
+emergency-radar,10CTA10 GS003,Radar and PA on the emergency supply,ESB,wheelhouse,105,1,0.5,5.3,switch,6,2 × 1.5 mm² + PE 1.5 mm²,20,3,eg-room → wheelhouse,10BRV10 1005
+emergency-charger,10BRU10 GU003,"24 V emergency charger (radio, fire detection, alarm)",ESB,eg-room,440,3,0.5,4.8,contactor,6,3 × 1.5 mm² + PE 1.5 mm²,2,0.1,eg-room,10BRU10 1006

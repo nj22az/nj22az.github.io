@@ -440,6 +440,14 @@ they are lit:
   counts in `tools/office-home/review.browser.mjs` (7 cards; Explore 2, Create 3, Learn 2) follow
   `CONFIG.projectExplorer`.
 
+## The bridge, surveyed and designed (`design/bridge/`)
+
+Before section 5 (the bridge deck) is built, the Town's bridge was drawn in CAD (six A1 sheets cut from this page's own `bridge`
+group), every piece of equipment and machinery on it logged with its electrical and plumbing connections (116 rows,
+`register.csv`), what the drawing found written down (19 findings), and a realistic wheelhouse laid out from the Ranger III's
+pilot house and the Town's design words (`design-basis.json`). It changes nothing on the page. Read
+[`design/bridge/README.md`](design/bridge/README.md).
+
 ## Known limits
 
 Of her own hull (section 1):

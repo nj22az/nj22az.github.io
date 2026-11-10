@@ -1,0 +1,540 @@
+{
+ "note": "A realistic wheelhouse for the Christina: where every item of the design words goes, and why. Writes design-basis.json,",
+ "envelope": {
+  "x": [
+   -3.0,
+   3.0
+  ],
+  "yard": [
+   19.5,
+   23.0
+  ],
+  "wing_x": [
+   3.0,
+   4.1
+  ],
+  "deck_above_keel": 11.0,
+  "deckhead_above_keel": 13.4
+ },
+ "rake": {
+  "deg": 10.0,
+  "head_yard": 23.17,
+  "slab_edge_yard": 23.16
+ },
+ "view": {
+  "eye": {
+   "x": 0.0,
+   "yard": 20.9,
+   "h": 1.6
+  },
+  "arcs_now": [
+   [
+    -96,
+    67
+   ],
+   [
+    102,
+    113
+   ]
+  ],
+  "arcs_after": [
+   [
+    -113,
+    113
+   ]
+  ],
+  "seen_now": 173,
+  "seen_after": 225
+ },
+ "items": [
+  {
+   "register": "B073",
+   "item": "Steering stand with wheel, NFU lever and autopilot head",
+   "x": 0.0,
+   "yard": 21.75,
+   "h": 0.0,
+   "size": [
+    0.6,
+    0.5,
+    0.95
+   ],
+   "why": "Centreline conning position, as Ranger III; the wheel on a horizontal shaft, 1.05 m up; NFU lever and autopilot head on the stand's top",
+   "change": "widen to 0.60 (Ranger III 0.63); add the two missing controls"
+  },
+  {
+   "register": "B074",
+   "item": "Helm wheel, eight spokes",
+   "x": 0.0,
+   "yard": 21.43,
+   "h": 0.76,
+   "size": [
+    0.58,
+    0.07,
+    0.58
+   ],
+   "why": "Rim below the eye (1.34 m top)",
+   "change": "keep"
+  },
+  {
+   "register": "B075",
+   "item": "Heading readout low on the stand's face",
+   "x": 0.0,
+   "yard": 21.52,
+   "h": 0.85,
+   "size": [
+    0.22,
+    0.03,
+    0.14
+   ],
+   "why": "The helmsman reads it by looking down, not through it",
+   "change": "MOVE from 1.50–1.62 m dead ahead to 0.85 m"
+  },
+  {
+   "register": "B084",
+   "item": "Compass periscope eyepiece, overhead",
+   "x": 0.0,
+   "yard": 21.55,
+   "h": 2.05,
+   "size": [
+    0.2,
+    0.2,
+    0.15
+   ],
+   "why": "A magnetic compass is read in a periscope or a reflector at the deckhead, above the eye",
+   "change": "MOVE overhead (2.0–2.2 m): clears the horizon"
+  },
+  {
+   "register": "B076",
+   "item": "Engine lever, port",
+   "x": 0.45,
+   "yard": 22.6,
+   "h": 1.0,
+   "size": [
+    0.12,
+    0.3,
+    0.25
+   ],
+   "why": "The port lever to the port side of the starboard one",
+   "change": "MOVE to x +0.45 (it was at +0.20: crossed)"
+  },
+  {
+   "register": "B077",
+   "item": "Engine lever, starboard",
+   "x": 0.25,
+   "yard": 22.6,
+   "h": 1.0,
+   "size": [
+    0.12,
+    0.3,
+    0.25
+   ],
+   "why": "As above",
+   "change": "MOVE to x +0.25 (it was at +0.40)"
+  },
+  {
+   "register": "B078",
+   "item": "Thruster lever",
+   "x": -0.15,
+   "yard": 22.6,
+   "h": 1.0,
+   "size": [
+    0.12,
+    0.3,
+    0.25
+   ],
+   "why": "Beside the engine levers, within one hand's reach of them",
+   "change": "ADD"
+  },
+  {
+   "register": "B083",
+   "item": "Engine and heading repeater panel",
+   "x": 0.35,
+   "yard": 22.82,
+   "h": 1.15,
+   "size": [
+    0.86,
+    0.12,
+    0.25
+   ],
+   "why": "Forward of the levers, tilted back 20°",
+   "change": "keep, tilt"
+  },
+  {
+   "register": "B081",
+   "item": "Radar display",
+   "x": -1.05,
+   "yard": 22.45,
+   "h": 1.05,
+   "size": [
+    0.46,
+    0.3,
+    0.28
+   ],
+   "why": "Starboard forward, as Ranger III; screen tilted, top at 1.33 m so the hood no longer stands at eye level",
+   "change": "LOWER the hood from 1.52 to 1.33 m; move 0.1 m inboard"
+  },
+  {
+   "register": "B082",
+   "item": "Echo sounder and GPS plotter",
+   "x": 1.75,
+   "yard": 22.45,
+   "h": 1.05,
+   "size": [
+    0.6,
+    0.3,
+    0.28
+   ],
+   "why": "Port forward, an arm's length from the engine levers; inboard of where the sounder was (x +2.4)",
+   "change": "MOVE inboard, add the plotter on the same bracket"
+  },
+  {
+   "register": "B093",
+   "item": "VHF with DSC and handset",
+   "x": -1.95,
+   "yard": 22.55,
+   "h": 1.0,
+   "size": [
+    0.35,
+    0.28,
+    0.2
+   ],
+   "why": "Starboard end, within reach of the starboard wing door",
+   "change": "ADD"
+  },
+  {
+   "register": "B094",
+   "item": "Ship's telephone and sound-powered phone",
+   "x": -2.35,
+   "yard": 22.55,
+   "h": 1.0,
+   "size": [
+    0.25,
+    0.28,
+    0.2
+   ],
+   "why": "With the VHF; engine room and control booth",
+   "change": "ADD"
+  },
+  {
+   "register": "B095",
+   "item": "NAVTEX printer",
+   "x": 2.35,
+   "yard": 22.55,
+   "h": 1.0,
+   "size": [
+    0.3,
+    0.28,
+    0.2
+   ],
+   "why": "Port end",
+   "change": "ADD"
+  },
+  {
+   "register": "B085",
+   "item": "Navigation-light panel (four double-pole switches)",
+   "x": -1.55,
+   "yard": 22.3,
+   "h": 0.75,
+   "size": [
+    1.05,
+    0.1,
+    0.25
+   ],
+   "why": "On the console's aft face, below the sight line, starboard of the radar",
+   "change": "MOVE from x −2.05 to −1.55 (VHF takes the end)"
+  },
+  {
+   "register": "B100",
+   "item": "Searchlight handle",
+   "x": -0.6,
+   "yard": 22.6,
+   "h": 1.0,
+   "size": [
+    0.15,
+    0.2,
+    0.3
+   ],
+   "why": "Beside the thruster lever; pan and tilt to the compass deck",
+   "change": "ADD"
+  },
+  {
+   "register": "B099",
+   "item": "Whistle push and fog-signal switch",
+   "x": 0.85,
+   "yard": 22.6,
+   "h": 1.0,
+   "size": [
+    0.12,
+    0.12,
+    0.1
+   ],
+   "why": "Near the engine levers, in the master's hand",
+   "change": "ADD"
+  },
+  {
+   "register": "B098",
+   "item": "Ramp lamp board, lane signals",
+   "x": 1.25,
+   "yard": 22.5,
+   "h": 1.0,
+   "size": [
+    0.4,
+    0.25,
+    0.15
+   ],
+   "why": "Where the master can see it with the ramp ahead",
+   "change": "ADD"
+  },
+  {
+   "register": "B080",
+   "item": "Console, 5.5 m, top at 1.0 m",
+   "x": 0.0,
+   "yard": 22.61,
+   "h": 0.0,
+   "size": [
+    5.5,
+    0.62,
+    1.0
+   ],
+   "why": "Keeps its place; its top and the glass sill at 0.97 m become a 10 cm gap with a flush trim, no light on the glass",
+   "change": "keep"
+  },
+  {
+   "register": "B089",
+   "item": "Master's high chair",
+   "x": 1.05,
+   "yard": 21.55,
+   "h": 0.0,
+   "size": [
+    0.5,
+    0.48,
+    1.2
+   ],
+   "why": "Port of the stand, as Ranger III's seat beside the stand",
+   "change": "keep"
+  },
+  {
+   "register": "B087",
+   "item": "Chart table, 0.95 × 0.60",
+   "x": -1.48,
+   "yard": 19.84,
+   "h": 0.0,
+   "size": [
+    0.95,
+    0.6,
+    0.95
+   ],
+   "why": "Against the aft bulkhead, starboard, with its lamp over; a folded half-chart fits",
+   "change": "keep; lamp shade red"
+  },
+  {
+   "register": "B090",
+   "item": "Fire and alarm panel",
+   "x": -1.3,
+   "yard": 19.56,
+   "h": 1.55,
+   "size": [
+    0.8,
+    0.08,
+    0.5
+   ],
+   "why": "Over the chart table on the aft wall, where it is now; 24 V and detector loops behind it",
+   "change": "keep; name it, give it a 24 V supply"
+  },
+  {
+   "register": "B097",
+   "item": "PA and general alarm handset",
+   "x": -0.65,
+   "yard": 19.56,
+   "h": 1.35,
+   "size": [
+    0.2,
+    0.08,
+    0.2
+   ],
+   "why": "Between the fire panel and the corridor door",
+   "change": "ADD"
+  },
+  {
+   "register": "B101",
+   "item": "Clock, barometer, inclinometer",
+   "x": 1.95,
+   "yard": 19.56,
+   "h": 1.9,
+   "size": [
+    0.6,
+    0.05,
+    0.25
+   ],
+   "why": "Aft wall, port, above the log desk",
+   "change": "ADD"
+  },
+  {
+   "register": "B102",
+   "item": "Log desk (fold-down)",
+   "x": 1.95,
+   "yard": 19.7,
+   "h": 0.9,
+   "size": [
+    0.8,
+    0.4,
+    0.04
+   ],
+   "why": "Aft wall, port, beside the open corridor door",
+   "change": "ADD"
+  },
+  {
+   "register": "B104",
+   "item": "Wing doors, hinged, glazed upper half, 0.15 m sill",
+   "x": 3.0,
+   "yard": 20.0,
+   "h": 0.0,
+   "size": [
+    0.06,
+    0.8,
+    1.95
+   ],
+   "why": "Real leaves in the doorways, swinging out onto the wing so they cover no window; the sill keeps the weather out; glass makes the arc from the helm whole",
+   "change": "REPLACE the plates laid beside the doorways"
+  },
+  {
+   "register": "B104",
+   "item": "Starboard wing door, same",
+   "x": -3.0,
+   "yard": 20.85,
+   "h": 0.0,
+   "size": [
+    0.06,
+    0.8,
+    1.95
+   ],
+   "why": "As above",
+   "change": "REPLACE"
+  },
+  {
+   "register": "B105",
+   "item": "Starboard wall panel glazed, 0.90 m",
+   "x": -3.0,
+   "yard": 21.7,
+   "h": 0.97,
+   "size": [
+    0.06,
+    0.9,
+    0.86
+   ],
+   "why": "The solid panel at yard 21.25–22.15 hides +67° to +83° from the helm; the port side has a window there",
+   "change": "ADD glass"
+  },
+  {
+   "register": "B107",
+   "item": "Port wing console, 0.90 × 0.45",
+   "x": 3.55,
+   "yard": 22.78,
+   "h": 0.0,
+   "size": [
+    0.9,
+    0.45,
+    1.0
+   ],
+   "why": "At the wing's forward end: engine and thruster levers, rudder and rpm repeater, a weathertight lid",
+   "change": "ADD"
+  },
+  {
+   "register": "B109",
+   "item": "Starboard wing console",
+   "x": -3.55,
+   "yard": 22.78,
+   "h": 0.0,
+   "size": [
+    0.9,
+    0.45,
+    1.0
+   ],
+   "why": "As to port",
+   "change": "ADD"
+  },
+  {
+   "register": "B108",
+   "item": "Port sidelight (red) on a screen",
+   "x": 4.05,
+   "yard": 22.9,
+   "h": 1.2,
+   "size": [
+    0.15,
+    0.15,
+    0.2
+   ],
+   "why": "At the wing end, 112.5° arc, screened",
+   "change": "MOVE to the wing from the exterior"
+  },
+  {
+   "register": "B110",
+   "item": "Starboard sidelight (green) on a screen",
+   "x": -4.05,
+   "yard": 22.9,
+   "h": 1.2,
+   "size": [
+    0.15,
+    0.15,
+    0.2
+   ],
+   "why": "As to port",
+   "change": "MOVE"
+  },
+  {
+   "register": "B111",
+   "item": "Float-free EPIRB in its bracket",
+   "x": -3.05,
+   "yard": 22.4,
+   "h": 2.05,
+   "size": [
+    0.2,
+    0.2,
+    0.35
+   ],
+   "why": "On the starboard wing's house wall above the window, clear of rails and overhead",
+   "change": "ADD"
+  }
+ ],
+ "glass_new": [
+  {
+   "name": "port door",
+   "x": 3.0,
+   "yard": [
+    19.65,
+    20.35
+   ]
+  },
+  {
+   "name": "starboard door",
+   "x": -3.0,
+   "yard": [
+    20.5,
+    21.2
+   ]
+  },
+  {
+   "name": "starboard panel",
+   "x": -3.0,
+   "yard": [
+    21.35,
+    22.05
+   ]
+  }
+ ],
+ "ranger_iii": {
+  "source": "HAER MI-432 sheet 4 (LoC mi0766), read at 75 px/ft, ±0.2 m",
+  "pilot_house_width": 5.9,
+  "pilot_house_depth": 4.8,
+  "chart_table": [
+   1.07,
+   1.54
+  ],
+  "steering_stand": [
+   0.63,
+   0.95
+  ],
+  "wing_door_steps": 3,
+  "sea_cabin": "directly aft, own stair"
+ }
+}
