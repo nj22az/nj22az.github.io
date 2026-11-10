@@ -235,6 +235,7 @@ try{
    assert.deepEqual(await paint('.memory-play'),[WORLD.green,'rgb(255, 255, 255)'],`${scheme}: Play`);
    const ring=await cam.evaluate(()=>getComputedStyle(document.querySelector('.memory-deck[aria-checked="true"]')).borderTopColor);
    assert.equal(ring,scheme==='dark'?'rgb(95, 214, 162)':WORLD.green,`${scheme}: the chosen deck is ringed in green`);
+   assert.deepEqual(await paint('.memory-pairs button[aria-checked="true"]'),[WORLD.green,'rgb(255, 255, 255)'],`${scheme}: the chosen number of pairs`);
   });
   await cam.click('#closeMemory');await cam.waitForSelector('#cardsHub:not([hidden])');
  });

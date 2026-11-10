@@ -1,6 +1,6 @@
 {
   "version": "20261110green1",
-  "bytes": 40434799,
+  "bytes": 40435065,
   "files": [
     {
       "url": "/camera/album.js",
@@ -214,8 +214,8 @@
     },
     {
       "url": "/camera/game-room-refresh.css",
-      "sha256": "116ca0d79d34f751eff465575729f1cef58e34d4c4eea1692335442598352a3d",
-      "bytes": 9182
+      "sha256": "21f747557f4e49bc9f22467dce79c73492c8fc9ffea9d3b3c58048381e1600bc",
+      "bytes": 9396
     },
     {
       "url": "/camera/icons/apple-touch-icon.png",
@@ -244,8 +244,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "9169078e3e163332e785069848d757c1cd98ee3cb0e3ab4955b70dbb00b526f0",
-      "bytes": 53742
+      "sha256": "14bec7528a54f8f179eb7109c0eb118b60cc06cdbf867af6ba63c8ae2676c1e8",
+      "bytes": 53794
     },
     {
       "url": "/camera/lettering.js",

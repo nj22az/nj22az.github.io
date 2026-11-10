@@ -15,7 +15,7 @@ when saving ? I want memory with our own photos or with the stickers".
 
 - **Camera**: the live picture through any Look; swipe across it for the next one, drag up or down on it for light
   (a sun on the right edge; the small sun chip puts it back), tap twice to turn the camera round. Behind the chevron at
-  the top, as on an iPhone: Timer (3 s, 10 s), Shape (4:3, 1:1, 16:9), Frame, Mirror, Date and Sound, each in yellow when
+  the top, as on an iPhone: Timer (3 s, 10 s), Shape (4:3, 1:1, 16:9), Frame, Mirror, Date and Sound, each in green when
   on and shown beside the chevron while the row is closed. Digital zoom (1×, 2×, 3×), the film camera's date stamp
   (`’26 10 29`, as the hotel photos print it), a shutter that sounds and flashes, and the photo flying into the album.
 - **Frames** (`frames.js`), as every hand-held camera photo had one: **Print** (an instant print's white border and
@@ -169,8 +169,8 @@ when saving ? I want memory with our own photos or with the stickers".
 - **Share game results**: Memory wins, Blackjack outcomes and Solitaire wins can be shared through the device share sheet, or saved as an image. A text fallback is offered when image sharing is unavailable. No result is posted until the player chooses to share.
 - **Home Screen app** (`manifest.webmanifest`, `sw.js`, `icons/`): Share, then Add to Home Screen, on an iPhone (or
   Install on Android and desktop Chrome) gives Pocket Camera its own icon and a full screen without the browser. The
-  icon is drawn in code by `tools/draw-camera-icon.py` (a white toy camera on graphite, the lens ringed in the camera's
-  yellow, the Pocket Look's pixel house in the glass): the 180 px Home Screen icon, 192 and 512 px and a maskable 512
+  icon is drawn in code by `tools/draw-camera-icon.py` (a white toy camera on Johansson World's ink, the lens ringed in the
+  World's green, the Pocket Look's pixel house in the glass): the 180 px Home Screen icon, 192 and 512 px and a maskable 512
   for the manifest, and the 32 px tab icon. On the Home Screen the way back to the website is hidden. The worker asks
   the network first, so the app is always the site as published, and keeps a copy of the camera's own files and of the
   World code the Looks use, so the camera opens without a signal.
@@ -220,7 +220,7 @@ Adventure Ink), **Comic** (Comic dots, Golden age comic, Action manga, Old carto
 brush) and **Print** (Woodblock, Rubber stamp, Blueprint), and since 30 October **Riso** (five Risographs, below) and the
 five consoles under **Games**. The nine kinds sit in one row of symbols; on a phone narrower than they are the row
 scrolls and the open kind is brought into view. The kind of the chosen Look is the one open and keeps its name
-in yellow while another is looked at; a swipe across the picture goes through every Look, kind after kind; only the
+in green while another is looked at; a swipe across the picture goes through every Look, kind after kind; only the
 open kind's thumbnails are drawn, and none while the strip is folded over the picture. A Look World adds later goes under
 More until it is given a kind (`LOOK_GROUPS` in `app.js`). New dice mixes: Home video (Instant and VHS), Comic book
 (Cartoon and Comic dots), Engineer's plan (Line drawing and Blueprint), Night watch (Night vision and Old TV).
@@ -581,6 +581,8 @@ the first cut: "How about the landing page it doesn't look quite right, I mean f
 a cream surface `#f5f5ec`; a brighter green `#06c755` for a stamp's edge. Its wordmark is JOHANSSON in the ink over
 WORLD in the green, plain ExtraBold letters with air between them (28 px with .035em over 24 px with .18em on a
 phone), a tag line, a tilted WORK IN PROGRESS stamp, cream panels and a green Start button.
+Since 10 November 2026 the World keeps its own record of this, `brand/` in `nj22az/johansson-town` (`brand.json`,
+`wordmark.svg`, a test that holds it to the title's stylesheets); read that, not the stylesheets.
 
 **The first cut was wrong, and why.** It drew a yellow, orange and red toy wordmark with a green outline, called a gold
 and a navy "ink" the World's, and set the brand's words in Avenir Next: all from `landing.css` and `base.css` rules
@@ -601,6 +603,12 @@ What is there now (`camera-brand.css`, the tokens in `camera.css`):
   World's green, as Start Exploring is. The bar above is quiet there (no lockup, no rule), so the settings button sits
   at the corner of the page as the World's Settings does. The card takes spare height on a tall phone (to 220) and
   keeps its least on a short one, so the whole greeting fits an iPhone SE's Safari.
+- **Two doors under the buttons** (10 November 2026): **Your album** (the last photo and how many there are) and
+  **Game Room** (its ♠ ♥ sign, "Four games"), side by side, so the pair is no taller than the album's card was alone.
+  A phone shows the title screen at every start unless its browser says the camera is already allowed, and the
+  room was two taps behind the album. The room's Back leaves
+  by the door one came in through and says so: "Camera" from the title screen, "Album" from the album (`enterGames`
+  in `app.js`).
 - **One lockup, everywhere else the app names itself.** A tracked eyebrow JOHANSSON WORLD in the World's green (a soft
   one, `#7fcaa5`, on dark; a deep one, `#0e5f43`, for small type on light) over "Pocket Camera": the running camera's
   bar, the settings foot ("Johansson World · Minato Machi", the version, "Visit the World ›" to `/johansson-town/`),
@@ -614,16 +622,27 @@ What is there now (`camera-brand.css`, the tokens in `camera.css`):
   first cut's navy.
 - **On what leaves the app.** The Film frame's far edge prints JOHANSSON WORLD beside the stock's MINATO 400
   (`frames.js`); the instant print stays plain.
-- **What is the camera's own, not the World's.** The warm gold for what is chosen (`--accent`), and the Home Screen
-  icon's dark ground and gold ring (`tools/draw-camera-icon.py`). The World has no gold. Whether the camera's working
-  highlight should become the World's green too is the owner's choice (asked 9 November 2026).
+- **The highlight is the World's green** (the owner, 10 November 2026: "Proceed according to your recommendation").
+  What is chosen (a tab, a tile, a setting that is on, a slider's travel) and the one main button of a screen were the
+  camera's yellow and then a gold; the World has no gold. `--accent` is the green as text and rings (`#5fd6a2` on
+  dark, `#0e5f43` on light, 4.5:1 and better on the page, on a surface and on its own soft ground), `--accent-fill`
+  the World's own `#16815e` under white words, so Start camera, Save copy, Blackjack's Hit, Memory's Play and Ball's
+  Play are one button. What is drawn on the photograph keeps a photograph's colours: the sun that sets the light
+  (`--sun`) and the date stamp's amber (`--stamp`). The Game Room keeps its own gold on its fittings (the choice
+  tiles, the score chips, a selected Solitaire card on the green felt); its chosen deck, its chosen number of pairs
+  and its main buttons are the green.
+- **The Home Screen icon** (`tools/draw-camera-icon.py`) is the white toy camera on the World's ink, lit at the top,
+  its lens ring and flash in the World's green. An installed icon keeps its old picture until the app is removed
+  from the Home Screen and added again; that is iOS, not the camera.
 
-`brand.browser.mjs` (9 checks) holds it: the page, the manifest and the status bar; the wordmark's two outlines in the
+`brand.browser.mjs` (11 checks) holds it: the page, the manifest and the status bar; the wordmark's two outlines in the
 World's ink and green on its cream, unstroked, once; the stamp; the greeter at least 2 px clear of the wordmark for the
 three widest and two narrowest stickers at 390 × 664, 375 × 560 and 390 × 844, the whole greeting on the first screen;
-the lockup drawn by LINE Seed JP itself (the browser's account of the glyphs, not the stylesheet's); the settings
-foot's 44-point link; the Game Room's kicker on one line; the Film edge print; the share card's ink and cream; the
-icons. `wordmark.test.mjs` checks that the page's block is the drawn outlines and that nothing of the toy wordmark or
+the two doors side by side, a finger high, each label on one line at 375 × 560, 360 × 640 and 390 × 844, and the
+room's Back leaving by the door one came in through; the lockup drawn by LINE Seed JP itself (the browser's account of
+the glyphs, not the stylesheet's); the settings foot's 44-point link; the Game Room's kicker on one line; the
+highlight's tokens in both themes with their contrasts, and Hit, Play and the chosen deck in the green; the Film edge
+print; the share card's ink and cream; the icon's ground, ring and flash. `wordmark.test.mjs` checks that the page's block is the drawn outlines and that nothing of the toy wordmark or
 the navy is left.
 
 The same day, from the owner's phone: **"The cat out in the stickers need improvement. I see big patches are white";
@@ -701,7 +720,7 @@ node camera/tests/makeup.test.mjs              # the makeup recipe, a face from 
 node camera/tests/face-pack.browser.mjs        # the face found as the photo opens, the handles, the recipe, no face
 node camera/tests/auto.browser.mjs             # Auto's levels, on by default, off exact, Adjusted, the setting
 node camera/tests/theme.browser.mjs            # Appearance: Auto follows the device, Light and Dark pinned and remembered, no flash, 4.5:1 in both, the games' paper and black
-node camera/tests/brand.browser.mjs            # Johansson World's brand: page, manifest and status bar; the title card's wordmark (the World's outlines, ink and green on cream) once, the greeter clear of it; the lockup drawn by LINE Seed JP; the settings foot, the Game Room's kicker at 4.5:1 in both themes; the Film edge print; the share card; the icons
+node camera/tests/brand.browser.mjs            # Johansson World's brand: page, manifest and status bar; the title card's wordmark (the World's outlines, ink and green on cream) once, the greeter clear of it; the lockup drawn by LINE Seed JP; the title screen's two doors (the album, the Game Room) and the room's Back by the door one came in through; the settings foot, the Game Room's kicker at 4.5:1 in both themes; the highlight in the World's green (tokens, contrasts, Hit, Play, the chosen deck and pairs); the Film edge print; the share card; the icon's ink and green
 node camera/tests/wordmark.test.mjs            # the page's wordmark block is the drawn outlines; the brand type's files and licence; nothing of the first cut left
 node camera/tests/defaults.browser.mjs         # no Look by default, the old default migrated, a chosen Look kept; the lip colour row
 node camera/tests/background.test.mjs          # Remove background's plain flood and person mask on synthetic pictures

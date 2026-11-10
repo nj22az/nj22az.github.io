@@ -47,6 +47,8 @@
 .memory{background:#e9dbb9}.memory .memory-choose{padding-top:18px}.memory .memory-lead{color:#294b42;font-size:15px;font-weight:750}
 .memory .memory-deck{background:#fff7e4;border-color:#9aaf95;border-radius:12px;box-shadow:0 3px 0 #b1a685}
 .memory .memory-deck[aria-checked="true"]{border-color:#16815e;box-shadow:0 3px 0 #25483f,inset 0 0 0 2px #16815e}
+/* The chosen number of pairs, in the same green on the room's paper and in the dark (memory-retro.css had it in the room's ink). */
+.memory .memory-pairs button[aria-checked="true"]{background:#16815e;color:#fff}
 .memory .memory-go{background:#fff2d9;border-color:#c8b491}.memory .memory-pairs button{min-height:44px}
 .memory .memory-stage{box-sizing:border-box;width:min(100%,900px);margin:0 auto;background:radial-gradient(ellipse at 50% 25%,#a5cdb2,#77a994);border-left:3px solid rgba(39,72,63,.22);border-right:3px solid rgba(39,72,63,.22)}
 .memory .memory-status{padding:10px 16px;background:#25483f;color:#f0ebcf;font-weight:750}.memory .memory-face,.memory .memory-back{border-radius:8px}

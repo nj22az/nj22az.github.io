@@ -113,7 +113,8 @@ fast-forwarded to `ca4021019`. Pages run 42716476625 succeeded.
 
 ## Open, for the owner
 
-1. **The camera's working highlight.** The gold for what is chosen was sold as "the World's gold"; the World has none.
+1. **The camera's working highlight.** (Settled on 10 November 2026: the World's green everywhere, the icon with it;
+   [HANDOVER-GREEN-2026-11-10.md](HANDOVER-GREEN-2026-11-10.md).) The gold for what is chosen was sold as "the World's gold"; the World has none.
    It can stay (a camera's yellow, as an iPhone's) or become the World's green everywhere. The editor in both, side by
    side in dark and light: `camera/qa/2026-11-09-landing/option-highlight-gold-or-green.jpg` (the tokens overridden in
    the page for the picture; nothing changed in the code). The Home Screen icon (dark teal ground, gold ring) goes
