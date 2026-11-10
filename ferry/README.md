@@ -21,6 +21,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | `systems/` | Her systems as designed: every component with its supply, circuit, nets and pipes; the tool that routes, sizes and checks them ([README](systems/README.md)) |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 | `checks/bridge.cjs` | The page's own check for the bridge and the register (21 checks; *Checks actually run*) |
+| `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register (what a yard holds, and what of it exists), and class's comment sheets ([README](yard/README.md)) |
 
 ## What she is, and how far her own build has come
 
@@ -61,7 +62,14 @@ replaced or changed by any of this.
 ## What comes next: the owner's list
 
 The method is now fixed (register a section in `systems/`, draw it from that register in Blender, check it, show it on the
-page), one section at a time. Asked for by the owner on 11 November 2026, while the bridge was built, and not yet begun:
+page), one section at a time. **She is built as a real newbuilding of Johansson Shipyard, surveyed by class** (the owner,
+11 November 2026; `yard/README.md`): each section is submitted, commented on and answered before it is called finished.
+
+- **First: answer class on the navigation bridge** ([`yard/class/PA-001`](yard/class/PA-001-navigation-bridge.md): not
+  approved, 5 comments of category A). The rule basis she is designed to; the navigation lights fed direct from two
+  switchboards; a second, independent steering control system; a transitional battery for the alarm, the public address and
+  the emergency lighting; a second supply to the propulsion control.
+ Asked for by the owner on 11 November 2026, while the bridge was built, and not yet begun:
 
 - **An engine control room.** The Minato Maru has a control booth in the machinery spaces; she is to have a proper control
   room. The bridge's nets already end there by name (the main switchboard and lighting board, the engine control units, the
