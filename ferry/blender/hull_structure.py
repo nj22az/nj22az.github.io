@@ -31,7 +31,8 @@ def floor_top(yard):
     z = L.Z(yard)
     if S.DOUBLE_BOTTOM[0] - 1e-6 <= yard <= S.DOUBLE_BOTTOM[1] + 1e-6:
         return S.TANK_TOP
-    return L.keel_y(z) + (0.28 if yard < S.DOUBLE_BOTTOM[0] else 0.45)
+    # Aft, 0.20 m: low enough for the flat of the steering-gear room to lie over them with standing room under the deck.
+    return L.keel_y(z) + (0.20 if yard < S.DOUBLE_BOTTOM[0] else 0.45)
 
 
 def _section_outline(z, y_top, count=14, depth=S.SHELL):

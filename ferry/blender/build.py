@@ -92,7 +92,7 @@ def main():
     hull = shipyard.collection('hull', ship)
     machinery = shipyard.collection('machinery', ship)
     report = {}
-    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_markings'):
+    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings'):
         try:
             mod = importlib.import_module(name)
         except ModuleNotFoundError as e:

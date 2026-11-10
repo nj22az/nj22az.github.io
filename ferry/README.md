@@ -10,7 +10,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.45 MB, about 194,000 triangles in 48 meshes (70,000 of them her own hull), six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.52 MB, about 202,000 triangles in 53 meshes (78,000 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 
@@ -28,7 +28,8 @@ place of the Minato Maru's drawing on this page as it is finished.
 
 | Section | State |
 |---|---|
-| **1. Hull** | **Her own, 10 November 2026** (the owner: "Proceed"). Lines, shell plating in her paint, the plating's inner face, frames, floors, double-bottom girders, the watertight bulkheads at the ends, the tank top forward of the engine room, keel bar and skeg, bilge keels, shafts, stern tubes and brackets, two screws, two rudders, the bow thruster in its tunnel, sea chests, anodes, draught marks, load line, her name |
+| **1. Hull** | **Her own, 10 November 2026** (the owner: "Proceed"). Lines, shell plating in her paint, the plating's inner face, frames, floors, double-bottom girders, the watertight bulkheads at the ends, the tank top forward of the engine room, keel bar and skeg, bilge keels, tail shafts, stern tubes and brackets, two screws, two rudders, the bow thruster in its tunnel, sea chests, anodes, two anchors in their hawse pipes, draught marks, load line, her name |
+| **1b. The spaces the hull gives a floor to** | **Her own, 10 November 2026** (the owner, on seeing the hull live: "Lots of things are missing like the steering gear and the propeller shaft"). The steering gear (flat, rudder carriers, tillers, tie bar, two rams, two hydraulic power units, hand pump, rudder-angle transmitter, the stern tubes' header tanks, the emergency fire pump); the shafting inside her (each intermediate shaft from its gearbox's flange through the bulkhead gland, over a plummer block, to the coupling on the tail shaft, and the stern tube's seal); two 6 m³ fresh-water tanks; the bow thruster's motor on the tunnel, its platform and starter; two chain lockers. These lift with the machinery spaces, where the panel lists their rooms |
 | 2. Exterior above the hull (bulwark fittings, ramp, casings, deckhouses, funnels, mast) | The Minato Maru's drawing |
 | 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
@@ -82,7 +83,8 @@ blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull
 | `shipyard.py` | The yard's tools: a part (vertices, faces, a colour a face), the materials and how the viewer is to draw each, lettering |
 | `hull_shell.py` | The shell: outer plating in four paint zones with every plate shaded a little differently, its inner face 12 mm inside it, the end plates, the bulwarks with the gangway gate, the thruster tunnel cut through the forefoot |
 | `hull_structure.py` | Frames at every 0.5 m, plate floors with lightening holes, the centre girder and two side girders a side, six watertight bulkheads with their stiffeners, fore-peak stringers, the tank top |
-| `hull_appendages.py` | Keel bar, skeg, bilge keels, shafts, stern tubes, brackets, screws (true helicoid blades, turning outward), rudders under their headboxes, the thruster, sea chests, anodes |
+| `hull_appendages.py` | Keel bar, skeg, bilge keels, tail shafts, stern tubes and their bossings, brackets, screws (true helicoid blades, turning outward), rudders under their headboxes, the thruster, sea chests, anodes |
+| `hull_fittings.py` | What stands in the spaces the hull gives a floor to (steering gear, shafting inboard, fresh-water tanks, thruster motor and starter, chain lockers), and the anchors |
 | `hull_markings.py` | Draught marks, the load line, her name: each point carried onto the plating it is painted on |
 | `build.py` | Builds the sections into collections named after the viewer's parts (`hull`, `machinery`) |
 | `export_jmf.py` | Writes every mesh of those collections as it stands in the file, so work done by hand in Blender is exported the same way |
@@ -99,7 +101,10 @@ tool last wrote it (the default), so no Town checkout is needed to build her aga
   (10,026 triangles; the engine control booth's window, which the export had sorted into the hull, went to the
   machinery spaces it belongs to).
 - The tank top goes to the machinery spaces, by the export's own rule (a deck belongs to the rooms that stand on it): it
-  lifts with them, and the double bottom is seen under it.
+  lifts with them, and the double bottom is seen under it. So do the fittings of the steering-gear room, the
+  fresh-water tanks, the shaft space, the thruster room and the fore peak: the panel lists those rooms under the
+  machinery spaces, and a room chosen there must have its fittings in it. The tail shaft, the stern tube and the rudder
+  stock below the flat stay with the hull, so in the exploded view each shaft parts at its coupling.
 - **The Minato Maru's machinery spaces are fitted inside her shell.** They are square rooms, and where the hull rises
   aft their corners stood through the plating: the engine room's ladder trunk came down as much as 1.03 m under the
   counter on the port side, and the tank top's after corners 0.3 m out through the bilge. 169 points are moved just
@@ -107,6 +112,12 @@ tool last wrote it (the default), so no Town checkout is needed to build her aga
   she is drawn from (not in the Rev C list: the audit does not test rooms against the hull).
 - A second run on its own output gives the same file byte for byte.
 - `ship.built` in the header names the sections that are her own; the panel's last paragraph is written from it.
+
+**The shaft lines.** Each shaft runs straight from its gearbox's output flange in the engine room (1.55 m off the
+centreline, 1.5 m above the keel, 8.85 m from the transom, as the Rev C engine room has it) to its screw, falling 6° aft,
+and leaves the hull 6.5 m from the transom. In the design she is drawn from the shaft was drawn only outside the hull,
+on a line 0.36 m under the gearbox flanges and 5 cm outboard of them: it never met its engine. That is a third issue for
+the Town at the weekend (with the two under *How the two ships are put together*).
 
 **Five things worth knowing before changing the build.**
 - *Plating is flat between its own points; structure follows her lines.* Frames and floors stand 12 mm inside the lines,
@@ -190,12 +201,14 @@ Of her own hull (section 1):
   on those lines, since the Minato Maru's decks must still fit her.
 - The hull ends at the deck edge and the bulwark's outer plating. The bulwark's inner face, its cap rail and stays, the
   rubbing strake, the freeing ports and the car deck's plating and beams are still the Minato Maru's (section 2 and 3).
-- No fittings in the spaces the hull now gives a floor and bulkheads to: the steering-gear room, the fresh-water tanks,
-  the shaft space, the thruster room and the fore peak are bare structure. The fresh-water and ballast tanks are not
-  plated in. The shafts end at the engine room's aft bulkhead: the engines beyond it are the Minato Maru's.
+- The spaces the hull gives a floor to have their main fittings and nothing else: no ladders or hatches into them, no
+  lighting, no bilge, ballast or fire-main piping, no cable trays; the fore peak has its chain lockers but no ballast
+  tank; the shaft space has no floor plates (it is entered through a manhole). The steering flat gives 1.80 m under the
+  car deck, not the 2.0 m of the arrangement, whose floor lay 6 cm over the keel plate.
+- The anchors are simple: a shank, a head and two flukes, without the cable, the shackle or the pipe through to the
+  windlass, which is still the Minato Maru's.
 - Inside the machinery spaces the frames are hidden behind the Minato Maru's linings, and there are no watertight
   bulkheads of her own at frames 28, 38 and 45, only the rooms' walls.
-- The stern-tube bossings are antifouled inside the hull as well as outside.
 - Plating seams and welds are not drawn: a plate is told from its neighbour by a slightly different shade.
 - The port of registry on her transom is still MINATO, until the owner names hers.
 
@@ -212,9 +225,22 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 10 November 2026, later: published, and the fittings of the hull's spaces
+
+- **Published** on the owner's "Push go main": `main` `d6d9e68` (the hull). Eight live files compared with the tree
+  pushed, byte for byte, 65 seconds after the push: all matched.
+- The fittings (section 1b): `check.py --town …` 23 checks, all passed (every mesh of the machinery spaces, the new
+  fittings among them, is inside the shell); the build's two checks unchanged (10.4 mm, 5.2 mm); `assemble.py` twice,
+  the same file.
+- Headless Chromium as before: the steering gear from above and in the cut, the shafting from above and in the cut
+  (engine, gearbox, bulkhead gland, plummer block, coupling, seal, stern tube, screw in one line), the fresh-water
+  tanks, the thruster room, an anchor, the stern from below, and the steering-gear room chosen from the panel (it now
+  frames its gear). No console errors. Found by looking and put right: the stern-tube bossings showed as antifouled
+  castings inside the shaft space; the floor plates mirrored the sky.
+
 ### 10 November 2026: her own hull
 
-- `python3 ferry/blender/check.py --town <the Town's export, commit f0b2973>`: 19 checks, all passed. Among them: her
+- `python3 ferry/blender/check.py --town <the Town's export, commit f0b2973>`: 19 checks, all passed (23 since the fittings). Among them: her
   lines pass through all 1,750 port loft points of the Rev C hull (furthest 0.30 mm, the file's own rounding); they
   displace 368 t at 1.9 m; no point of her frames, floors, girders, bulkheads or stringers is outside the moulded shell;
   none of the fitted machinery spaces is. This check found a fault while she was being built (the face bars of the
@@ -243,8 +269,8 @@ Of the page and of what is still the Minato Maru's:
 - The homepage card's picture retaken from the new model at the same framing; the homepage's own files are unchanged,
   so its design review was not run again.
 
-Not checked: a real phone, a real GPU (frame rate is unknown; the model grew from 134,000 to 194,000 triangles and the
-file from 1.15 to 1.45 MB), an actual finger tap on a room, Safari and Firefox. Whether the depth offset on the plates
+Not checked: a real phone, a real GPU (frame rate is unknown; the model grew from 134,000 to 202,000 triangles and the
+file from 1.15 to 1.52 MB), an actual finger tap on a room, Safari and Firefox. Whether the depth offset on the plates
 behaves the same on a real GPU as in software rendering is not known: if hairlines show under her bottom on a phone,
 raise `offset` on `Primer plate` in `blender/shipyard.py`.
 
