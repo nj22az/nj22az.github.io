@@ -4,7 +4,7 @@ bulkheads the hull carries herself, the tank top, and the car deck's plating as 
 
 The machinery spaces between frames 17 and 52 are still the Minato Maru's rooms (Rev C sheet C3), with their own
 linings 14 cm inside the moulded line and their own end walls: the structure here keeps clear of them, so a frame is a
-75 mm angle and the bulkheads at frames 17 and 52 stand 8 cm outside those walls.
+100 mm angle and the bulkheads at frames 17 and 52 stand 8 cm outside those walls.
 
 Plates are drawn as one surface seen from both sides ('Primer plate').
 """
@@ -54,6 +54,22 @@ def _oval(xc, yc, a, b, z, count=14):
     return [(xc + a * cos(2 * pi * k / count), yc + b * sin(2 * pi * k / count), z) for k in range(count)]
 
 
+def _side_frames(frames, z, yard, y_floor, skin, toward, colour, web):
+    """An angle bar up each side from the floor to the deck at the station z: a web `web` deep and a flange along her length."""
+    foot = max(y_floor, L.keel_y(z) + 0.12)
+    if _in_tunnel(z):
+        # Over the tunnel the frame begins above the plating that was fitted round the opening.
+        foot = TUNNEL[1] + TUNNEL[2] + 0.4
+    head = min(TOP_OF_STRUCTURE, L.deck_edge(z) - 0.01)
+    if head - foot > 0.3:
+        psis = L.girth_psis(z, 14, L.psi_at(foot, z), L.psi_at(head, z))
+        for side in (1, -1):
+            outer = [L.inside_plane(z, p, skin) for p in psis]
+            inner = [L.inside_plane(z, p, skin + web) for p in psis]
+            frames.grid([[(side * x, y, z) for x, y in outer], [(side * x, y, z) for x, y in inner]], colour)
+            frames.grid([[(side * x, y, z) for x, y in inner], [(side * x, y, z + toward * S.FRAME_FLANGE) for x, y in inner]], colour)
+
+
 def build():
     frames = Part('Frames', 'Primer plate')
     floors = Part('Floors', 'Primer plate')
@@ -91,18 +107,15 @@ def build():
                 (x0, yb, _), x1 = outline[0], outline[-1][0]
                 floors.grid([[(x0, yb, z), (x1, yb, z)], [(x0, yb, z + toward * 0.06), (x1, yb, z + toward * 0.06)]], floor_colour)
         # ---- The side frames: an angle bar up each side from the floor to the deck.
-        foot = max(y_floor, L.keel_y(z) + 0.12)
-        if _in_tunnel(z):
-            # Over the tunnel the frame begins above the plating that was fitted round the opening.
-            foot = TUNNEL[1] + TUNNEL[2] + 0.4
-        head = min(TOP_OF_STRUCTURE, L.deck_edge(z) - 0.01)
-        if head - foot > 0.3:
-            psis = L.girth_psis(z, 14, L.psi_at(foot, z), L.psi_at(head, z))
-            for side in (1, -1):
-                outer = [L.inside_plane(z, p, skin) for p in psis]
-                inner = [L.inside_plane(z, p, skin + S.FRAME_WEB) for p in psis]
-                frames.grid([[(side * x, y, z) for x, y in outer], [(side * x, y, z) for x, y in inner]], frame_colour)
-                frames.grid([[(side * x, y, z) for x, y in inner], [(side * x, y, z + toward * S.FRAME_FLANGE) for x, y in inner]], frame_colour)
+        _side_frames(frames, z, yard, y_floor, skin, toward, frame_colour, S.FRAME_WEB)
+
+    # ---- Intermediate frames in the fore peak: a lighter angle between each pair, from the collision bulkhead to the stem,
+    # where the sea strikes her (M/V Ranger III has them in her forward end). They stand on the floor's level there.
+    k = int(round(S.INTERMEDIATE_FROM / L.FRAME_SPACING))
+    while (k + 0.5) * L.FRAME_SPACING < L.LENGTH - 0.25:
+        yard = (k + 0.5) * L.FRAME_SPACING
+        _side_frames(frames, L.Z(yard), yard, floor_top(yard), S.SHELL, -1, frame_colour, S.INTERMEDIATE_WEB)
+        k += 1
 
     # ---- Girders in the double bottom: the centre girder and, each side, one under the main engine and one outboard.
     yards = [S.DOUBLE_BOTTOM[0] + 0.25 * i for i in range(int((S.DOUBLE_BOTTOM[1] - S.DOUBLE_BOTTOM[0]) / 0.25) + 1)]
