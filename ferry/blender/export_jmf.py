@@ -3,7 +3,8 @@ Blender → what the viewer reads. Each collection named after one of the viewer
 written as that part: every mesh object in it, as it stands in the file (modifiers applied), with its own normals and
 the colours of its `Col` attribute. Objects made or changed by hand in Blender are written the same way as built ones.
 
-The result is a part file (.npz): triangles in the ship's axes, grouped by part and material, with each material's look.
+The result is a part file (.npz): triangles in the ship's axes, grouped by part, material and mover (an object's custom
+property `mover` names the motion it takes part in), with each material's look and the motions themselves.
 assemble.py puts it into ferry/data/ferry.bin.gz.
 """
 import json
@@ -44,7 +45,7 @@ def _triangles(ob, dg):
     return pos[lv[tl]][:, order], nor[tl][:, order], c.reshape(-1, 4)[tl][:, :3]
 
 
-def write(path, groups):
+def write(path, groups, inputs=(), movers=()):
     dg = bpy.context.evaluated_depsgraph_get()
     dg.update()
     arrays, meshes = {}, []
@@ -59,21 +60,23 @@ def write(path, groups):
             mat = ob.material_slots[0].material
             if 'jmf' not in mat:
                 raise RuntimeError(f'{ob.name}: its material "{mat.name}" has no look for the viewer (custom property jmf)')
-            rec = by_look.setdefault(mat.name, dict(look=mat['jmf'].to_dict(), pos=[], nor=[], col=[], objects=[]))
+            mover = ob.get('mover') or ''
+            rec = by_look.setdefault((mat.name, mover), dict(look=mat['jmf'].to_dict(), pos=[], nor=[], col=[], objects=[]))
             p, n, c = _triangles(ob, dg)
             rec['pos'].append(p)
             rec['nor'].append(n)
             rec['col'].append(c)
             rec['objects'].append(dict(name=ob.name, triangles=len(p) // 3))
-        for name, rec in by_look.items():
-            key = f'{gid}|{name}'
+        for (name, mover), rec in by_look.items():
+            key = f'{gid}|{name}|{mover}'
             arrays[key + '|pos'] = np.concatenate(rec['pos']).astype(np.float32)
             arrays[key + '|nor'] = np.concatenate(rec['nor']).astype(np.float32)
             arrays[key + '|col'] = np.clip(np.rint(np.concatenate(rec['col']) * 255), 0, 255).astype(np.uint8)
             look = rec['look']
             look['offset'] = list(look.get('offset') or [])
-            meshes.append(dict(key=key, group=gid, material=name, look=look, objects=rec['objects'],
+            meshes.append(dict(key=key, group=gid, material=name, mover=mover, look=look, objects=rec['objects'],
                                triangles=len(arrays[key + '|pos']) // 3))
-    meta = dict(generator='ferry/blender/build.py', blender=bpy.app.version_string, meshes=meshes)
+    meta = dict(generator='ferry/blender/build.py', blender=bpy.app.version_string, meshes=meshes,
+                inputs=list(inputs), movers=list(movers))
     np.savez_compressed(path, meta=np.frombuffer(json.dumps(meta).encode(), dtype=np.uint8), **arrays)
     print(f'wrote {path}: {sum(m["triangles"] for m in meshes)} triangles in {len(meshes)} meshes')

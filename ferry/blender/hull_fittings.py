@@ -63,49 +63,66 @@ def _hex_bar(part, a, b, wa, wb, h, colour):
 
 
 def steering_gear():
+    """
+    The steering gear, as it works. What turns with a rudder is a part of its own (its `mover`): the head of the stock
+    and the tiller with the rudder; the tie bar is carried by the tillers' ends; each ram swings on its trunnion and its
+    rod runs out or in. motion() says how each moves.
+    """
     flat = Part('Steering-gear room, flat', 'Floor plate')
     gear = Part('Steering gear', 'Machinery paint', smooth=True, angle=40)
     bright = Part('Steering gear, bright steel', 'Shaft steel', smooth=True, angle=40)
-    for p in (flat, gear, bright):
-        p.group = 'machinery'
+    tie = Part('Tie bar', 'Machinery paint', smooth=True, angle=40, mover='tie-bar')
+    made = [flat, gear, bright, tie]
     y0 = S.FLAT
     zs = L.Z(S.RUDDER['yard_stock'])
+    t = S.TILLER
+    arm_y, reach = t['level'], t['reach']
     dark, grey, steel = srgb(S.DARK_GREY), srgb(S.LIGHT_GREY), srgb(S.STEEL)
     blue, red, brown = srgb(S.MOTOR_BLUE), srgb(S.FIRE_RED), srgb(S.OIL_BROWN)
 
-    # ---- The flat: chequer plates from the transom's frames to the bulkhead, cut round each rudder carrier.
+    # ---- The flat: chequer plates from the transom's frames to the bulkhead.
     breadth = lambda z: L.hull_x(y0 + 0.02, z) - 0.16
     _plates(flat, 0.35, 2.55, y0, srgb(S.FLOOR_PLATE), breadth)
 
-    arm_y = y0 + 0.33                      # the level of the tillers
-    reach = 0.62                           # a tiller's length, stock to tie-bar pin
-    for side in (1, -1):
+    pin = zs + t['ram_at']
+    for side, label in ((1, 'port'), (-1, 'starboard')):
         x = side * X
-        # The rudder carrier on the flat, the head of the stock above it, the tiller keyed to the stock.
+        rudder = 'rudder-p' if side > 0 else 'rudder-s'
+        ram = 'ram-p' if side > 0 else 'ram-s'
+        tiller = Part(f'Tiller, {label}', 'Machinery paint', smooth=True, angle=40, mover=rudder)
+        head = Part(f'Rudder stock head, {label}', 'Shaft steel', smooth=True, angle=40, mover=rudder)
+        barrel = Part(f'Ram cylinder, {label}', 'Machinery paint', smooth=True, angle=40, mover=ram)
+        rod = Part(f'Ram rod, {label}', 'Shaft steel', smooth=True, angle=40, mover=ram + '-rod')
+        made += [tiller, head, barrel, rod]
+        # The rudder carrier on the flat (fixed); the head of the stock above it and the tiller keyed to it (turning).
         _revolve(gear, (x, y0, zs), UP, [(0.0, 0.25), (0.035, 0.25), (0.035, 0.17), (0.15, 0.17), (0.16, 0.09)], dark, sides=20)
-        _cyl(bright, (x, y0 + 0.15, zs), (x, arm_y + 0.13, zs), 0.06, steel)
-        _revolve(gear, (x, arm_y - 0.085, zs), UP, [(0.0, 0.09), (0.0, 0.125), (0.17, 0.125), (0.17, 0.065)], dark, sides=20)
-        _hex_bar(gear, (x, arm_y, zs + 0.09), (x, arm_y, zs + reach), 0.17, 0.10, 0.085, dark)
-        _revolve(gear, (x, arm_y - 0.06, zs + reach), UP, [(0.0, 0.0), (0.0, 0.065), (0.12, 0.065), (0.12, 0.0)], dark, sides=14)
-        _cyl(bright, (x, arm_y - 0.09, zs + reach), (x, arm_y + 0.11, zs + reach), 0.022, steel, sides=10)
-        # The ram: a cylinder trunnioned on a stool outboard, its rod pinned to the tiller two thirds along it.
-        pin = zs + 0.42
-        out = side * (X + 1.16)
+        _cyl(head, (x, y0 + 0.15, zs), (x, arm_y + 0.13, zs), 0.06, steel)
+        _revolve(tiller, (x, arm_y - 0.085, zs), UP, [(0.0, 0.09), (0.0, 0.125), (0.17, 0.125), (0.17, 0.065)], dark, sides=20)
+        _hex_bar(tiller, (x, arm_y, zs + 0.09), (x, arm_y, zs + reach), 0.17, 0.10, 0.085, dark)
+        _revolve(tiller, (x, arm_y - 0.06, zs + reach), UP, [(0.0, 0.0), (0.0, 0.065), (0.12, 0.065), (0.12, 0.0)], dark, sides=14)
+        _cyl(head, (x, arm_y - 0.09, zs + reach), (x, arm_y + t['tie_bar'] + 0.05, zs + reach), 0.022, steel, sides=10)
+        # The clevis on the tiller that the ram's rod is pinned to.
+        cx = x + side * t['clevis']
+        tiller.box((cx - 0.055, arm_y - 0.065, pin - 0.05), (cx + 0.055, arm_y + 0.065, pin + 0.05), dark)
+        # The ram: its stool (fixed), the cylinder trunnioned on it, the rod.
+        out = side * (X + t['ram_anchor'])
         gear.box((min(out, out + side * 0.14), y0, pin - 0.11), (max(out, out + side * 0.14), arm_y + 0.09, pin + 0.11), dark)
-        _cyl(gear, (side * (X + 1.14), arm_y, pin), (side * (X + 0.52), arm_y, pin), 0.062, grey, sides=16)
-        _cyl(gear, (side * (X + 0.53), arm_y, pin), (side * (X + 0.47), arm_y, pin), 0.075, dark, sides=16)
-        _cyl(bright, (side * (X + 0.50), arm_y, pin), (side * (X + 0.11), arm_y, pin), 0.027, steel, sides=12)
-        gear.box((min(x + side * 0.02, x + side * 0.13), arm_y - 0.065, pin - 0.05), (max(x + side * 0.02, x + side * 0.13), arm_y + 0.065, pin + 0.05), dark)
-        # Two pipes from the power unit to the ram, along the flat and up to the cylinder's ends.
+        along = lambda d: (out - side * d, arm_y, pin)          # a point d metres from the trunnion, toward the tiller
+        _cyl(barrel, along(0.02), along(0.64), 0.062, grey, sides=16)
+        _cyl(barrel, along(0.63), along(0.69), 0.075, dark, sides=16)
+        # The rod is as long as the stroke asks: hard over one way it still stands in the cylinder, the other way it
+        # does not come out of its back.
+        _cyl(rod, along(0.30), along(t['ram_anchor'] - t['clevis'] - 0.03), 0.027, steel, sides=12)
+        # Two pipes from the power unit to the ram, along the flat.
         for k, end in enumerate((X + 1.08, X + 0.58)):
-            run = L.Z(2.18) + 0.05 * k
-            pts = [(side * 0.62, y0 + 0.16, run), (side * end, y0 + 0.16, run), (side * end, y0 + 0.16, pin + 0.09), (side * end, arm_y - 0.05, pin + 0.09)]
+            run = L.Z(0.72) + 0.05 * k
+            pts = [(side * 0.62, y0 + 0.16, run), (side * end, y0 + 0.16, run), (side * end, y0 + 0.16, pin + 0.14), (side * end, arm_y - 0.08, pin + 0.14)]
             for a, b in zip(pts, pts[1:]):
                 _cyl(bright, a, b, 0.012, srgb(S.FLANGE), sides=8)
-        # A hydraulic power unit each side of the centreline against the forward bulkhead: a tank on feet, a motor and
-        # its pump standing on the tank, a filter.
+        # A hydraulic power unit each side of the centreline, aft of the stocks and clear of the tillers and the tie bar:
+        # a tank on feet, a motor and its pump standing on the tank, a filter, a sight glass.
         ux = side * 0.62
-        z0, z1 = L.Z(2.1), L.Z(2.5)
+        z0, z1 = L.Z(0.55), L.Z(0.95)
         gear.box((ux - 0.27, y0 + 0.1, z0), (ux + 0.27, y0 + 0.5, z1), grey)
         for fx in (-0.22, 0.22):
             for fz in (z0 + 0.05, z1 - 0.05):
@@ -113,8 +130,8 @@ def steering_gear():
         _cyl(gear, (ux - 0.08, y0 + 0.5, (z0 + z1) / 2), (ux - 0.08, y0 + 0.58, (z0 + z1) / 2), 0.07, dark)
         _cyl(gear, (ux - 0.08, y0 + 0.58, (z0 + z1) / 2), (ux - 0.08, y0 + 0.9, (z0 + z1) / 2), 0.105, blue, sides=18)
         _cyl(gear, (ux - 0.08, y0 + 0.9, (z0 + z1) / 2), (ux - 0.08, y0 + 0.94, (z0 + z1) / 2), 0.11, dark, sides=18)
-        _cyl(gear, (ux + 0.15, y0 + 0.5, z0 + 0.12), (ux + 0.15, y0 + 0.66, z0 + 0.12), 0.045, srgb(S.FLANGE), sides=12)
-        gear.box((ux + 0.27, y0 + 0.2, z0 + 0.1), (ux + 0.285, y0 + 0.44, z0 + 0.15), srgb(0xd8d2b8))      # the sight glass
+        _cyl(gear, (ux + 0.15, y0 + 0.5, z1 - 0.12), (ux + 0.15, y0 + 0.66, z1 - 0.12), 0.045, srgb(S.FLANGE), sides=12)
+        gear.box((ux - 0.04, y0 + 0.2, z1), (ux + 0.04, y0 + 0.44, z1 + 0.015), srgb(0xd8d2b8))
         # The stern tube's oil header tank, high on the forward bulkhead, its pipe led down through the flat.
         hx = side * 2.35
         hz = L.Z(2.6) - 0.04
@@ -122,19 +139,20 @@ def steering_gear():
         gear.box((hx - 0.2, 1.14, hz - 0.3), (hx + 0.2, 1.2, hz), dark)
         _cyl(bright, (hx, 1.2, hz - 0.15), (hx, y0, hz - 0.15), 0.012, srgb(S.FLANGE), sides=8)
 
-    # The tie bar joins the two tillers, so the rudders turn together.
-    _cyl(gear, (-X, arm_y + 0.085, zs + reach), (X, arm_y + 0.085, zs + reach), 0.032, dark, sides=14)
+    # The tie bar joins the two tillers' ends, over the tillers and the rams, so the rudders turn together.
+    bar_y = arm_y + t['tie_bar']
+    _cyl(tie, (-X, bar_y, zs + reach), (X, bar_y, zs + reach), 0.032, dark, sides=14)
     for side in (1, -1):
-        gear.box((side * X - 0.05, arm_y + 0.05, zs + reach - 0.05), (side * X + 0.05, arm_y + 0.12, zs + reach + 0.05), dark)
+        tie.box((side * X - 0.05, bar_y - 0.035, zs + reach - 0.05), (side * X + 0.05, bar_y + 0.035, zs + reach + 0.05), dark)
 
-    # The emergency hand pump on its pedestal on the centreline, its lever up.
-    hz = L.Z(2.3)
+    # The emergency hand pump on its pedestal on the centreline aft, its lever up.
+    hz = L.Z(1.05)
     gear.box((-0.09, y0, hz - 0.09), (0.09, y0 + 0.55, hz + 0.09), grey)
     _cyl(gear, (0.0, y0 + 0.55, hz), (0.0, y0 + 0.66, hz), 0.06, dark)
     _cyl(bright, (0.0, y0 + 0.62, hz), (0.0, y0 + 1.15, hz - 0.36), 0.014, steel, sides=10)
     _cyl(gear, (0.0, y0 + 1.15, hz - 0.36), (0.0, y0 + 1.27, hz - 0.44), 0.022, red, sides=10)
 
-    # The rudder-angle transmitter on the port stock, and its link.
+    # The rudder-angle transmitter beside the port stock, and its link.
     gear.box((X - 0.32, arm_y + 0.02, zs - 0.34), (X - 0.2, arm_y + 0.16, zs - 0.22), grey)
     _cyl(bright, (X - 0.26, arm_y + 0.12, zs - 0.28), (X, arm_y + 0.12, zs), 0.008, steel, sides=6)
 
@@ -149,7 +167,37 @@ def steering_gear():
     _cyl(gear, (px, y0 + 0.24, pz + 0.4), (px, y0 - 0.02, pz + 0.4), 0.05, red, sides=12)
     _revolve(gear, (px, y0 + 0.12, pz + 0.4), (1, 0, 0), [(0.05, 0.0), (0.05, 0.09), (0.065, 0.09), (0.065, 0.0)], red, sides=12)
     _cyl(gear, (px, y0 + 0.36, pz + 0.2), (px, 1.95, pz + 0.2), 0.04, red, sides=12)
-    return [flat, gear, bright]
+    for p in made:
+        p.group = 'machinery'
+    return made
+
+
+def motion():
+    """
+    What can be worked on the page, and how each moving part answers. One input, the rudder angle in degrees (to port
+    negative, to starboard positive: the helm indicator's way). Turning to starboard is a turn about the upright axis
+    that carries the blade's after edge to starboard and the tiller, which points forward, to port.
+
+      turn    the part turns about `pivot`
+      carry   the part keeps its heading and goes with `point` as that turns about `pivot` (the tie bar)
+      aim     the part swings about `anchor` to keep pointing at `pin`, which turns about `pivot` (a ram's cylinder);
+              with `extend`, it also runs along that line by as much as the distance has grown (its rod)
+    """
+    t = S.TILLER
+    zs = L.Z(S.RUDDER['yard_stock'])
+    inputs = [dict(id='rudder', name='Rudder', min=-S.RUDDER_ANGLE, max=S.RUDDER_ANGLE, step=1, unit='°',
+                   below='to port', above='to starboard', rest='amidships')]
+    movers = []
+    for side, tag in ((1, 'p'), (-1, 's')):
+        pivot = [side * X, 0.0, zs]
+        movers.append(dict(id=f'rudder-{tag}', kind='turn', input='rudder', axis=[0, 1, 0], pivot=pivot))
+        ram = dict(kind='aim', input='rudder', axis=[0, 1, 0], pivot=pivot,
+                   anchor=[side * (X + t['ram_anchor']), t['level'], zs + t['ram_at']],
+                   pin=[side * (X + t['clevis']), t['level'], zs + t['ram_at']])
+        movers.append(dict(ram, id=f'ram-{tag}'))
+        movers.append(dict(ram, id=f'ram-{tag}-rod', extend=True))
+    movers.append(dict(id='tie-bar', kind='carry', input='rudder', axis=[0, 1, 0], pivot=[X, 0.0, zs], point=[X, 0.0, zs + t['reach']]))
+    return inputs, movers
 
 
 def shafting():

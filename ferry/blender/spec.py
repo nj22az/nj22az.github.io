@@ -73,6 +73,11 @@ RUDDER = dict(yard_stock=1.72, top=-0.30, bottom=-1.60, chord_top=0.66, chord_bo
 # just over the floors' face bars; the thruster room's platform lies just over the crown of the tunnel.
 FLAT = 0.27
 THRUSTER_PLATFORM = Y(1.46)
+# The steering gear. A tiller on each stock points forward; a tie bar joins their ends; a ram lies athwartships outboard
+# of each tiller, trunnioned on a stool and pinned to the tiller two thirds along it. 35° each way.
+TILLER = dict(level=FLAT + 0.33, reach=0.62, ram_at=0.42, ram_anchor=1.16, clevis=0.075, tie_bar=0.13)
+RUDDER_ANGLE = 35
+
 # Machinery colours, as the engine room's (Rev C): engines green, motors blue, fire red, fresh water blue.
 ENGINE_GREEN = 0x2e7a4e
 MOTOR_BLUE = 0x2a3f6b

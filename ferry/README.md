@@ -1,7 +1,7 @@
 # Christina: the ferry, deck by deck
 
 A 3D viewer of the Christina, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
-along her length (Cut) and name every room aboard: <https://nj22az.github.io/ferry/>.
+along her length (Cut), put her rudders over (Rudder) and name every room aboard: <https://nj22az.github.io/ferry/>.
 
 The page has no build step: serve the site root (`python3 -m http.server`) and open `/ferry/`. Her data is built
 beforehand (*Her own build*, below) and kept in `data/`.
@@ -9,8 +9,8 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | File | What |
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut and Reset view), on the pattern of `/motor-90l/` |
-| `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.52 MB, about 202,000 triangles in 53 meshes (78,000 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
+| `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, and moves the parts the data says can be worked |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.52 MB, about 202,000 triangles in 68 meshes (78,000 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 
@@ -30,6 +30,7 @@ place of the Minato Maru's drawing on this page as it is finished.
 |---|---|
 | **1. Hull** | **Her own, 10 November 2026** (the owner: "Proceed"). Lines, shell plating in her paint, the plating's inner face, frames, floors, double-bottom girders, the watertight bulkheads at the ends, the tank top forward of the engine room, keel bar and skeg, bilge keels, tail shafts, stern tubes and brackets, two screws, two rudders, the bow thruster in its tunnel, sea chests, anodes, two anchors in their hawse pipes, draught marks, load line, her name |
 | **1b. The spaces the hull gives a floor to** | **Her own, 10 November 2026** (the owner, on seeing the hull live: "Lots of things are missing like the steering gear and the propeller shaft"). The steering gear (flat, rudder carriers, tillers, tie bar, two rams, two hydraulic power units, hand pump, rudder-angle transmitter, the stern tubes' header tanks, the emergency fire pump); the shafting inside her (each intermediate shaft from its gearbox's flange through the bulkhead gland, over a plummer block, to the coupling on the tail shaft, and the stern tube's seal); two 6 m³ fresh-water tanks; the bow thruster's motor on the tunnel, its platform and starter; two chain lockers. These lift with the machinery spaces, where the panel lists their rooms |
+| **1c. Working rudders** | **10 November 2026** (the owner: "The rudders too , need to work, or be azimuth pods"). The Rudder control puts both rudders over, to 35° either side. Blade, stock and anodes turn; so do the head of the stock and the tiller in the steering-gear room; the tie bar goes with the tillers' ends; each ram swings on its trunnion and its rod runs out or in. Azimuth pods were the owner's alternative: they would be another ship (no shafts, rudders or steering gear), and are not built |
 | 2. Exterior above the hull (bulwark fittings, ramp, casings, deckhouses, funnels, mast) | The Minato Maru's drawing |
 | 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
@@ -156,6 +157,18 @@ spaces to a multiple of four bytes), then one binary block.
   (sRGB Uint8 × 3), `uv` (Uint16 × 2, into the atlas, only on textured meshes) and `idx` (Uint16, or Uint32 when `wide`).
   `from: "blender"` marks a mesh of her own build; the others are the Town's export.
 - `ship.built[]` lists the sections that are her own (`part`, `section`, `date`); `source.blender` names the builder.
+- **Parts that move.** `inputs[]` are what can be worked on the page: `id`, `name`, `min`, `max`, `step`, `unit`, and
+  how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page makes a slider
+  for each. `movers[]` are the motions: `id`, `input`, `axis`, `pivot`, and a `kind`:
+  `turn` (the part turns about the pivot by the input's angle), `carry` (it keeps its heading and goes with `point` as
+  that turns about the pivot: the tie bar), `aim` (it swings about `anchor` to keep pointing at `pin`, which turns about
+  the pivot: a ram's cylinder; with `extend` it also runs along that line by as much as the distance has changed: the
+  rod). A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
+  inside their deck and moves the group. The rudder's angle is negative to port and positive to starboard, as a helm
+  indicator shows it; a positive angle turns about the upright axis so that the blade's after edge goes to starboard.
+  In Blender a moving part is an object with the custom property `mover` (`Part(..., mover='rudder-p')`), and
+  `hull_fittings.motion()` describes the motions; `build.py` stops if a part names a motion that is not described, or
+  a motion moves nothing.
 - A space record is a room: `id`, `name`, `text`, `why`, and its box `min`, `max`.
 - Axes: metres; the bow is +z, port is +x, y is up with its origin on the laden waterline (keel −1.9, car deck 2.1,
   passenger deck 6.5, bridge deck 9.1, compass deck 11.5).
@@ -209,6 +222,8 @@ Of her own hull (section 1):
   lighting, no bilge, ballast or fire-main piping, no cable trays; the fore peak has its chain lockers but no ballast
   tank; the shaft space has no floor plates (it is entered through a manhole). The steering flat gives 1.80 m under the
   car deck, not the 2.0 m of the arrangement, whose floor lay 6 cm over the keel plate.
+- The rudders are worked by the page's slider only: nothing steers her, the screws do not turn, and the hydraulic pipes
+  end beside the rams without the hoses that would let the cylinders swing (they swing up to 8°).
 - The anchors are simple: a shank, a head and two flukes, without the cable, the shackle or the pipe through to the
   windlass, which is still the Minato Maru's.
 - Inside the machinery spaces the frames are hidden behind the Minato Maru's linings, and there are no watertight
@@ -228,6 +243,20 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 10 November 2026, later still: working rudders
+
+- The moving parts were measured on the page at 0° and at 35° either way (the box of each motion's group, read back
+  through `window.__ferry.look`): to starboard the blades' after edges go to starboard and the tillers to port, the tie
+  bar goes 0.36 m across and 0.11 m aft with them, the port ram's rod runs 0.22 m in and the starboard one 0.26 m out,
+  and each rod stays inside its cylinder at both ends of its stroke. To port, the mirror of it.
+- Looked at: the rudders hard over from astern and from the quarter, the steering gear amidships and hard over each way
+  from above, the bar with its third slider on desktop and at 390 × 844, the exploded ship with the rudders over. No
+  console errors.
+- Found and put right on the way: the power units and the hand pump stood in the tie bar's path (they now stand aft of
+  the stocks); every plain round bar was inside-out (above).
+- `build.py`: 7 motions, each with its parts; the earlier checks unchanged. `check.py --town …`: all passed.
+  `assemble.py` twice: the same file.
 
 ### 10 November 2026, later: published, and the fittings of the hull's spaces
 
