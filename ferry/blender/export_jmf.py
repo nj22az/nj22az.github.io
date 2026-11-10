@@ -45,7 +45,7 @@ def _triangles(ob, dg):
     return pos[lv[tl]][:, order], nor[tl][:, order], c.reshape(-1, 4)[tl][:, :3]
 
 
-def write(path, groups, inputs=(), movers=()):
+def write(path, groups, inputs=(), movers=(), ways=()):
     dg = bpy.context.evaluated_depsgraph_get()
     dg.update()
     arrays, meshes = {}, []
@@ -77,6 +77,6 @@ def write(path, groups, inputs=(), movers=()):
             meshes.append(dict(key=key, group=gid, material=name, mover=mover, look=look, objects=rec['objects'],
                                triangles=len(arrays[key + '|pos']) // 3))
     meta = dict(generator='ferry/blender/build.py', blender=bpy.app.version_string, meshes=meshes,
-                inputs=list(inputs), movers=list(movers))
+                inputs=list(inputs), movers=list(movers), ways=list(ways))
     np.savez_compressed(path, meta=np.frombuffer(json.dumps(meta).encode(), dtype=np.uint8), **arrays)
     print(f'wrote {path}: {sum(m["triangles"] for m in meshes)} triangles in {len(meshes)} meshes')

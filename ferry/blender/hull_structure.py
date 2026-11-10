@@ -145,7 +145,9 @@ def build():
             y_low = L.hull_y(x, z)
             y_high = TOP_OF_STRUCTURE if not (trunk and x > trunk[0] - 0.05) else trunk[1]
             y_far = L.hull_y(x, z + toward * 0.075)
-            if y_low is not None and y_far is not None and y_high - y_low > 0.4 and abs(x) > 0.05:
+            # No stiffener through a door: one that would stand within 0.5 m of a door's middle is left out.
+            at_door = any(abs(d['yard'] - b['yard']) < 1e-6 and abs(x - d.get('x', 0.0)) < 0.5 for d in S.WT_DOORS)
+            if y_low is not None and y_far is not None and y_high - y_low > 0.4 and abs(x) > 0.05 and not at_door:
                 y_low = max(y_low, y_far) + S.SHELL + 0.03
                 web = [[(x, y_low, z), (x, y_high, z)], [(x, y_low, z + toward * 0.075), (x, y_high, z + toward * 0.075)]]
                 bulkheads.grid(web, bulkhead_colour)
@@ -185,12 +187,18 @@ def build():
     deckhead.group = 'car'
     for a, b in ((0.0, 8.5), (26.0, L.LENGTH - 0.02)):
         count = int(round((b - a) / S.STATION))
-        rows = []
+        port = []
         for i in range(count + 1):
             z = L.Z(a + (b - a) * i / count)
-            x = _breadth_inside(z, min(TOP_OF_STRUCTURE, L.deck_edge(z) - 0.01), S.SHELL + 0.004)
-            rows.append([(x, TOP_OF_STRUCTURE, z), (0.0, TOP_OF_STRUCTURE, z), (-x, TOP_OF_STRUCTURE, z)])
+            port.append((_breadth_inside(z, min(TOP_OF_STRUCTURE, L.deck_edge(z) - 0.01), S.SHELL + 0.004), TOP_OF_STRUCTURE, z))
+        outline = port + [(-x, y, z) for x, y, z in reversed(port)]
+        # The hatches over the ladders that come down through it (spec.LADDERS).
+        hatches = []
+        for l in S.LADDERS:
+            if l.get('hatch') and a < l['yard'] < b:
+                x0, x1, y0, y1 = S.hatch_opening(l)
+                hatches.append([(x0, TOP_OF_STRUCTURE, L.Z(y0)), (x1, TOP_OF_STRUCTURE, L.Z(y0)), (x1, TOP_OF_STRUCTURE, L.Z(y1)), (x0, TOP_OF_STRUCTURE, L.Z(y1))])
         start = len(deckhead.f)
-        deckhead.grid(rows, tint(PRIMER, 1.02))
+        deckhead.polygon(outline, tint(PRIMER, 1.02), hatches)
         deckhead.orient(start, (0, -1, 0))
     return [frames, floors, girders, bulkheads, stringers, tank_top, deckhead]

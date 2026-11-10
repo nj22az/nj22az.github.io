@@ -79,6 +79,8 @@ select.btn { appearance: none; -webkit-appearance: none; padding-right: 26px; ba
    name says how to walk. */
 body.walking .orbit-only, body.walking #panel, body.walking #panel-toggle { display: none !important; }
 body.walking .walk-only { display: revert !important; }
+/* The Ladder button shows only where there is a ladder to take. */
+body.walking #climb[hidden] { display: none !important; }
 body.walking #bar { right: 16px; }
 body.walking #view canvas { cursor: crosshair; }
 /* On foot the model is behind the line under her name: it gets a ground of its own to be read on. */
@@ -114,7 +116,7 @@ body.walking #view canvas { cursor: crosshair; }
   <a href="/">← The Office of Nils Johansson</a>
   <h1>Christina</h1>
   <p class="orbit-only">A 34.5 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room to name it, or walk aboard.</p>
-  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, Shift to go faster, Q and E for the deck below and above, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round.</span></p>
+  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, Shift to go faster, F at a ladder, Q and E for the deck below and above, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round. At a ladder a button takes it.</span></p>
 </header>
 
 <p id="status" role="status">Loading the ferry…</p>
@@ -141,6 +143,7 @@ body.walking #view canvas { cursor: crosshair; }
     <option value="above">From above</option>
     <option value="below">From below</option>
   </select>
+  <button type="button" class="btn walk-only" id="climb" hidden>Ladder</button>
   <button type="button" class="btn walk-only" id="deck-down">Deck below</button>
   <button type="button" class="btn walk-only" id="deck-up">Deck above</button>
   <button type="button" class="btn" id="walk" aria-pressed="false">Walk aboard</button>

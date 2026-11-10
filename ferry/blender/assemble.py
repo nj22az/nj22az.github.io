@@ -50,18 +50,35 @@ FIT = ('machinery',)
 #    must stay.
 #  - Her engine room's after wall (6 cm, 8.44 to 8.50 m from the transom) has no way aft through it: it is opened where
 #    the Christina's watertight door to the shaft space stands (spec.WT_DOORS), whose frame lines the opening.
-_door = S.door_opening(S.WT_DOORS[0])
+_door, _void = S.door_opening(S.WT_DOORS[0]), S.door_opening(S.WT_DOORS[3])
 OPENINGS = (
     dict(part='passenger', name='the lobby floor over the starboard stair', across='y', y=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(7.40, 9.40)),
     dict(part='passenger', name='the lobby floor over the port stair', across='y', y=(6.5015, 6.5095), x=(2.76, 4.3), yard=(7.40, 9.40)),
     dict(part='machinery', name="the engine room's after wall at the door to the shaft space", across='yard', yard=(8.435, 8.505),
          x=(_door[0], _door[2]), y=(_door[1], _door[3])),
+    #  - The electrical workshop's forward wall (6 cm, 26.00 to 26.06 m) likewise, for the door to the void.
+    dict(part='machinery', name="the electrical workshop's forward wall at the door to the void", across='yard', yard=(25.995, 26.065),
+         x=(_void[0], _void[2]), y=(_void[1], _void[3])),
+) + tuple(
+    #  - The car deck has no hatch: its plating, and whatever is laid on it there (the lobby's floor covering), is
+    #    opened over each ladder of hers that comes down through it (spec.LADDERS).
+    dict(part='car', name=f"the car deck at the {l['hatch_name'].lower()}", across='y', y=(2.05, 2.13),
+         x=S.hatch_opening(l)[:2], yard=S.hatch_opening(l)[2:])
+    for l in S.LADDERS if l.get('hatch')
 ) + tuple(
     #  - On the bridge deck a handrail runs along each side of the crew's corridor, 0.94 m up, in one length from 9.30
     #    to 19.20 m: across the four doorways of the cabins on that side. It is cut away at each doorway.
     dict(part='bridge', name=f"the corridor's {'port' if side > 0 else 'starboard'} handrail across the doorway at {a:.2f} m",
          across='x', x=tuple(sorted((side * 0.40, side * 0.44))), y=(10.02, 10.08), yard=(a, b))
     for side in (1, -1) for a, b in ((9.20, 9.90), (11.70, 12.40), (14.20, 14.90), (16.70, 17.40)))
+# Spaces that are not rooms one goes into: the bow ramp is stowed upright and the two funnels are uptake casings with no
+# door. A walk begun there (the room chosen in the panel) starts at `stand`, beside it, where one can walk on:
+# (x, y, metres from the transom). The page reads it from the space's record.
+STAND = {
+    'ramp': (0.0, 2.1, 33.6),
+    'funnel-p': (2.55, 6.5, 4.35),
+    'funnel-s': (-2.55, 6.5, 4.35),
+}
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
                          emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None)
 
@@ -265,6 +282,13 @@ def main():
             if cut:
                 report['opened'].append(dict(part=o['part'], what=o['name'], material=m['material'], triangles=cut))
 
+    # 2c. Where a walk begins at a space that is not entered.
+    for g in groups:
+        for sp in g['spaces']:
+            if sp['id'] in STAND:
+                x, y, yard = STAND[sp['id']]
+                sp['stand'] = [x, y, round(L.Z(yard), 4)]
+
     # 3. Bounds over everything, then the new parts.
     look_index = {}
 
@@ -339,7 +363,7 @@ def main():
 
     header['bounds'] = dict(min=[float(v) for v in lo], max=[float(v) for v in hi])
     # What can be worked on the page (inputs) and how the moving parts answer (movers): Blender's replace Blender's.
-    for key in ('inputs', 'movers'):
+    for key in ('inputs', 'movers', 'ways'):
         kept = [x for x in header.get(key, []) if x.get('from') != 'blender']
         brought = [dict(x, **{'from': 'blender'}) for meta, _ in parts for x in meta.get(key, [])]
         if kept or brought:

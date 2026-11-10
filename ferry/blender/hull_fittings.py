@@ -6,7 +6,7 @@ What stands in the spaces the hull gives a floor and bulkheads to, and what she 
   - the shafting inside her: each intermediate shaft from its gearbox's flange through the engine room's aft bulkhead,
     over a plummer block, to the coupling on the tail shaft;
   - the two fresh-water tanks;
-  - the way aft on foot: three watertight doors on the centreline and the walkway through the shaft space;
+  - the ways on foot: five watertight doors, the walkways through the shaft space and the void, three ladders, two hatches;
   - the bow thruster's motor on the crown of the tunnel, its platform and its starter;
   - the two chain lockers in the fore peak;
   - the two anchors, housed in their hawse pipes.
@@ -205,8 +205,17 @@ def motion():
     for d in S.WT_DOORS:
         hinge = _door_hinge(d)
         inputs.append(dict(id=d['id'], name=d['name'], min=0, max=D['open'], step=1, unit='°', below='', above='open', rest='shut',
-                           auto='near', at=[0.0, d['floor'], L.Z(d['yard'])], normal=[0, 0, 1], reach=D['reach']))
+                           auto='near', at=[d.get('x', 0.0), d['floor'], L.Z(d['yard'])], normal=[0, 0, 1], reach=D['reach']))
         movers.append(dict(id=d['id'], kind='turn', input=d['id'], axis=[0, 1, 0], pivot=[hinge[0], 0.0, hinge[1]], ratio=d['opens']))
+    # The hatch covers the same way: 100° open, for whoever comes near on the deck or on the ladder under it.
+    for l in S.LADDERS:
+        if not l.get('hatch'):
+            continue
+        x0, x1, ya, yb = S.hatch_opening(l)
+        pivot, axis, ratio = hatch_hinge(l)
+        inputs.append(dict(id=l['hatch'], name=l['hatch_name'], min=0, max=100, step=1, unit='°', below='', above='open', rest='shut',
+                           auto='near', at=[(x0 + x1) / 2, (l['foot'] + l['head']) / 2, L.Z((ya + yb) / 2)], reach=1.9, height=1.6))
+        movers.append(dict(id=l['hatch'], kind='turn', input=l['hatch'], axis=axis, pivot=pivot, ratio=ratio))
     return inputs, movers
 
 
@@ -219,7 +228,144 @@ def _door_face(d):
 def _door_hinge(d):
     """The hinge line of a door: (x, z). To port of the frame, in the middle of the leaf's thickness."""
     zf, side = _door_face(d)
-    return (S.WT_DOOR['width'] / 2 + S.WT_DOOR['frame'] + 0.04, zf + side * (0.004 + S.WT_DOOR['leaf'] / 2))
+    return (d.get('x', 0.0) + S.WT_DOOR['width'] / 2 + S.WT_DOOR['frame'] + 0.04, zf + side * (0.004 + S.WT_DOOR['leaf'] / 2))
+
+
+def _walkway(walk, rails, cx, half, levels, posts, frames, rail):
+    """
+    A walkway of floor plates: `levels` are its plates, each (yard, yard, height), in the order one walks them. Under
+    each edge a stringer; bearers down to the floors of her bottom at the frames given; a rail each side on stanchions
+    at the yards given for that side (+1 port, -1 starboard).
+    """
+    from hull_structure import floor_top
+    plate, dark, yellow = srgb(S.FLOOR_PLATE), srgb(S.DARK_GREY), srgb(S.RAIL_YELLOW)
+    for i, (ya, yb, y) in enumerate(levels):
+        ya, yb = sorted((ya, yb))
+        start = len(walk.f)
+        walk.grid([[(cx - half, y, L.Z(ya)), (cx + half, y, L.Z(ya))], [(cx - half, y, L.Z(yb)), (cx + half, y, L.Z(yb))]], tint(plate, 1 + 0.03 * ((i * 5) % 3 - 1)))
+        walk.orient(start, UP)
+
+    def level_at(yard):
+        best = None
+        for ya, yb, y in levels:
+            ya, yb = sorted((ya, yb))
+            if ya - 1e-6 <= yard <= yb + 1e-6 and (best is None or y > best):
+                best = y
+        return best if best is not None else levels[0][2]
+
+    for sx in (1, -1):
+        x = cx + sx * (half + 0.02)
+        for ya, yb, y in levels:
+            ya, yb = sorted((ya, yb))
+            a, b = sorted((x - 0.006, x + 0.006))
+            rails.box((a, y - 0.10, L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
+        for k in frames:
+            yard = k * L.FRAME_SPACING
+            if not (min(l[0] for l in levels) < yard < max(l[1] for l in levels)):
+                continue
+            top, foot = level_at(yard) - 0.10, floor_top(yard) + 0.012
+            if top - foot > 0.06:
+                rails.box((x - 0.025, foot, L.Z(yard) - 0.025), (x + 0.025, top, L.Z(yard) + 0.025), dark)
+        rx = cx + sx * (half + 0.04)
+        tops = []
+        for yard in posts[sx]:
+            y = level_at(yard)
+            _cyl(rails, (rx, y - 0.02, L.Z(yard)), (rx, y + rail, L.Z(yard)), 0.014, yellow, sides=8)
+            tops.append((rx, y + rail, L.Z(yard)))
+        for a, b in zip(tops, tops[1:]):
+            _cyl(rails, a, b, 0.017, yellow, sides=10)
+            _cyl(rails, (a[0], a[1] - 0.45, a[2]), (b[0], b[1] - 0.45, b[2]), 0.011, yellow, sides=8)
+
+
+def ways():
+    """The ladders, as the page's walker needs them: where one stands at each end and the line one climbs on."""
+    out = []
+    for l in S.LADDERS:
+        foot, head, line = S.ladder_way(l)
+        out.append(dict(id=l['id'], kind='ladder', down=l['name'], up=l['up'],
+                        a=[foot[0], l['foot'], L.Z(foot[1])], b=[head[0], l['head'], L.Z(head[1])], line=[line[0], L.Z(line[1])]))
+    return out
+
+
+def ladders():
+    """
+    The ladders (spec.LADDERS): two flat-bar stringers 0.40 m apart, round rungs every 0.30 m. Over two of them a hatch in
+    the car deck: a coaming 0.12 m high and a cover hinged on the ladder's side, which the page opens for whoever comes
+    near (a mover named as the hatch). In the fore peak, the flat one comes down to, between the chain lockers.
+    """
+    from hull_structure import floor_top
+    steel, grey, dark, plate = srgb(S.STEEL), srgb(S.DOOR_GREY), srgb(S.DARK_GREY), srgb(S.FLOOR_PLATE)
+    made = []
+    for l in S.LADDERS:
+        fx, fz = l['faces']
+        cx, cz = S.ladder_side(l)
+        ax, az = abs(fz), abs(fx)                                   # across the ladder, in the plan
+        x, z = l['x'], L.Z(l['yard'])
+        y0, y1 = l['foot'], l['head'] + l.get('top', -0.06)
+        part = Part(f"Ladder, {l['id'][7:].replace('-', ' ')}", 'Shaft steel', smooth=True, angle=40)
+        part.group = l['group']
+        for s in (1, -1):
+            sx, sz = x + s * 0.2 * ax, z + s * 0.2 * az
+            lo = (sx - 0.006 * ax - 0.025 * abs(fx), y0, sz - 0.006 * az - 0.025 * abs(fz))
+            hi = (sx + 0.006 * ax + 0.025 * abs(fx), y1, sz + 0.006 * az + 0.025 * abs(fz))
+            part.box(lo, hi, steel)
+            # stand-offs to the wall behind, where there is one
+            if l.get('wall'):
+                n = max(2, int((y1 - y0) / 1.1) + 1)
+                for k in range(n):
+                    y = y0 + 0.25 + (min(y1, l['head']) - y0 - 0.5) * k / (n - 1)
+                    a = (min(sx, sx + fx * l['wall']) - 0.008 * ax, y, min(sz, sz + fz * l['wall']) - 0.008 * az)
+                    b = (max(sx, sx + fx * l['wall']) + 0.008 * ax, y + 0.04, max(sz, sz + fz * l['wall']) + 0.008 * az)
+                    part.box(a, b, steel)
+        y = y0 + 0.30
+        while y < y1 - 0.05:
+            _cyl(part, (x - 0.2 * ax, y, z - 0.2 * az), (x + 0.2 * ax, y, z + 0.2 * az), 0.011, steel, sides=8)
+            y += 0.30
+        made.append(part)
+        if not l.get('hatch'):
+            continue
+        # ---- The hatch: coaming and cover.
+        x0, x1, ya, yb = S.hatch_opening(l)
+        z0, z1 = L.Z(ya), L.Z(yb)
+        deck = l['head']
+        coaming = Part(f"Hatch coaming, {l['id'][7:].replace('-', ' ')}", 'Machinery paint')
+        coaming.group = 'car'
+        t, top = 0.03, deck + 0.12
+        for lo, hi in (((x0 - t, deck - 0.05, z0 - t), (x0, top, z1 + t)), ((x1, deck - 0.05, z0 - t), (x1 + t, top, z1 + t)),
+                       ((x0, deck - 0.05, z0 - t), (x1, top, z0)), ((x0, deck - 0.05, z1), (x1, top, z1 + t))):
+            coaming.box(lo, hi, grey)
+        cover = Part(f"Hatch cover, {l['id'][7:].replace('-', ' ')}", 'Machinery paint', mover=l['hatch'])
+        cover.group = 'car'
+        cover.box((x0 - t - 0.02, top + 0.004, z0 - t - 0.02), (x1 + t + 0.02, top + 0.024, z1 + t + 0.02), tint(grey, 0.96))
+        # a stiffening cross and a handle on the cover
+        mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
+        cover.box((x0 + 0.05, top + 0.024, mz - 0.02), (x1 - 0.05, top + 0.04, mz + 0.02), tint(grey, 0.88))
+        cover.box((mx - 0.02, top + 0.024, z0 + 0.05), (mx + 0.02, top + 0.04, z1 - 0.05), tint(grey, 0.88))
+        made += [coaming, cover]
+    # ---- The fore peak's flat, between the chain lockers, on bearers.
+    flat = Part('Fore peak, flat', 'Floor plate')
+    bearers = Part('Fore peak, bearers', 'Machinery paint')
+    for p in (flat, bearers):
+        p.group = 'machinery'
+    _plates(flat, 30.56, 33.0, S.FORE_PEAK_FLAT, plate, lambda z: 0.9)
+    for k in (62, 63, 64, 65):
+        yard = k * L.FRAME_SPACING
+        for sx in (0.82, -0.82):
+            foot = floor_top(yard) + 0.012
+            if S.FORE_PEAK_FLAT - 0.01 - foot > 0.06:
+                bearers.box((sx - 0.025, foot, L.Z(yard) - 0.025), (sx + 0.025, S.FORE_PEAK_FLAT - 0.006, L.Z(yard) + 0.025), dark)
+    made += [flat, bearers]
+    return made
+
+
+def hatch_hinge(l):
+    """A hatch cover's hinge: a point on it and its direction. Along the edge behind the ladder."""
+    x0, x1, ya, yb = S.hatch_opening(l)
+    cx, cz = S.ladder_side(l)
+    y = l['head'] + 0.12 + 0.014
+    if cx:
+        return [x0 - 0.03 if cx > 0 else x1 + 0.03, y, L.Z((ya + yb) / 2)], [0, 0, 1], (1 if cx > 0 else -1)
+    return [(x0 + x1) / 2, y, L.Z(ya - 0.03 if cz > 0 else yb + 0.03)], [1, 0, 0], (-1 if cz > 0 else 1)
 
 
 def way_aft():
@@ -241,9 +387,9 @@ def way_aft():
     for d in S.WT_DOORS:
         x0, y0, x1, y1 = S.door_opening(d)
         za, zb = (L.Z(v) for v in S.door_frame_yards(d))
-        cx, cy = 0.0, (y0 + y1) / 2
-        inward = lambda c: (cx - c[0], cy - c[1], 0)
-        outward = lambda c: (c[0] - cx, c[1] - cy, 0)
+        cx, cy = d.get('x', 0.0), (y0 + y1) / 2
+        inward = lambda c, cx=cx, cy=cy: (cx - c[0], cy - c[1], 0)
+        outward = lambda c, cx=cx, cy=cy: (c[0] - cx, c[1] - cy, 0)
         # ---- The frame: two faces, the lining of the opening, and its outer edge.
         for z, look in ((za, -1), (zb, 1)):
             start = len(frames.f)
@@ -290,64 +436,52 @@ def way_aft():
                 gear.box((min(dx, dx + sx * 0.085), dy - 0.016, a), (max(dx, dx + sx * 0.085), dy + 0.016, b), steel)
         # The handwheel in the middle of the leaf: hub, three spokes, rim.
         wz = far + side * 0.012
-        _cyl(gear, (0.0, cy, wz), (0.0, cy, wz + side * 0.06), 0.028, steel, sides=12)
+        _cyl(gear, (cx, cy, wz), (cx, cy, wz + side * 0.06), 0.028, steel, sides=12)
         rim0, rim1 = sorted((0.04, 0.062))
-        _revolve(gear, (0.0, cy, wz), (0, 0, side), [(rim0, 0.13), (rim0, 0.155), (rim1, 0.155), (rim1, 0.13), (rim0, 0.13)], steel, sides=24)
+        _revolve(gear, (cx, cy, wz), (0, 0, side), [(rim0, 0.13), (rim0, 0.155), (rim1, 0.155), (rim1, 0.13), (rim0, 0.13)], steel, sides=24)
         for k in range(3):
             ang = pi / 2 + 2 * pi * k / 3
-            _cyl(gear, (0.0, cy, wz + side * 0.05), (0.14 * cos(ang), cy + 0.14 * sin(ang), wz + side * 0.05), 0.009, steel, sides=8)
+            _cyl(gear, (cx, cy, wz + side * 0.05), (cx + 0.14 * cos(ang), cy + 0.14 * sin(ang), wz + side * 0.05), 0.009, steel, sides=8)
         made += [leaf, gear]
 
-    # ---- The walkway through the shaft space, from the engine room's door up to the flat by the tanks.
-    h = W['half']
+    # ---- The walkway through the shaft space, from the engine room's door up to the flat by the tanks. Its starboard
+    # rail ends at the head of the steps: beyond it the flat is widened to starboard for the ladder from the lower lobby.
     low, high = S.WT_DOORS[0]['floor'], S.FLAT
     rise = (high - low) / (W['treads'] + 1)
-    plate = srgb(S.FLOOR_PLATE)
-    levels = []                                             # (yard aft end, yard forward end, height), going aft
-    levels.append((W['platform'][0], W['platform'][1], low))
+    levels = [(W['platform'][0], W['platform'][1], low)]             # (yard aft end, yard forward end, height), going aft
     for k in range(1, W['treads'] + 1):
         fwd = W['platform'][0] - W['going'] * (k - 1)
         levels.append((fwd - W['going'], fwd + 0.02, low + rise * k))
-    levels.append((W['flat'][0], W['platform'][0] - W['going'] * W['treads'] + 0.02, high))
-    for i, (ya, yb, y) in enumerate(levels):
-        start = len(walk.f)
-        walk.grid([[(-h, y, L.Z(ya)), (h, y, L.Z(ya))], [(-h, y, L.Z(yb)), (h, y, L.Z(yb))]], tint(plate, 1 + 0.03 * ((i * 5) % 3 - 1)))
-        walk.orient(start, UP)
+    head = W['platform'][0] - W['going'] * W['treads']
+    levels.append((W['flat'][0], head + 0.02, high))
+    posts = [W['platform'][1] - 0.06, W['platform'][0]] + [W['platform'][0] - W['going'] * k for k in (2, 4, 6)]
+    _walkway(walk, rails, 0.0, W['half'], levels, {1: posts + [5.9, W['flat'][0] + 0.1], -1: posts}, range(11, 17), W['rail'])
+    ladder = S.LADDERS[0]
+    lx0, lx1, ly0, ly1 = S.hatch_opening(ladder)
+    plate = srgb(S.FLOOR_PLATE)
+    start = len(walk.f)
+    walk.grid([[(lx0 - 0.05, high, L.Z(ly0 - 0.04)), (-W['half'] - 0.008, high, L.Z(ly0 - 0.04))], [(lx0 - 0.05, high, L.Z(ly1 + 0.06)), (-W['half'] - 0.008, high, L.Z(ly1 + 0.06))]], tint(plate, 0.97))
+    walk.orient(start, UP)
+    # a rail across the landing's forward end, where it stands over her bottom
+    ends = [(x, high + W['rail'], L.Z(ly1 + 0.06)) for x in (lx0 - 0.03, -W['half'] - 0.04)]
+    for x, y, z in ends:
+        _cyl(rails, (x, high - 0.02, z), (x, y, z), 0.014, yellow, sides=8)
+    _cyl(rails, ends[0], ends[1], 0.017, yellow, sides=10)
 
-    def level_at(yard):
-        for ya, yb, y in levels:
-            if ya - 1e-6 <= yard <= yb + 1e-6:
-                return y
-        return high if yard < levels[-1][1] else low
-
-    # Stringers under the edges, bearers down to the floors of her bottom, and a rail each side.
-    from hull_structure import floor_top
-    for sx in (1, -1):
-        x = sx * (h + 0.02)
-        # the stringer: a flat bar on edge under the walkway's side, stepped like it
-        for ya, yb, y in levels:
-            a, b = sorted((x - 0.006, x + 0.006))
-            rails.box((a, y - 0.10, L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
-        # bearers at every frame under it
-        for k in range(11, 17):
-            yard = k * L.FRAME_SPACING
-            if not (W['flat'][0] < yard < W['platform'][1]):
-                continue
-            top, foot = level_at(yard) - 0.10, floor_top(yard) + 0.012
-            if top - foot > 0.06:
-                rails.box((x - 0.025, foot, L.Z(yard) - 0.025), (x + 0.025, top, L.Z(yard) + 0.025), dark)
-        # the rail: stanchions and a top rail that follows the steps' line
-        rx = sx * (h + 0.04)
-        posts = [W['platform'][1] - 0.06, W['platform'][0]] + [W['platform'][0] - W['going'] * k for k in (2, 4, 6)] + [5.9, W['flat'][0] + 0.1]
-        tops = []
-        for yard in posts:
-            y = level_at(yard - 1e-3)
-            _cyl(rails, (rx, y - 0.02, L.Z(yard)), (rx, y + W['rail'], L.Z(yard)), 0.014, yellow, sides=8)
-            tops.append((rx, y + W['rail'], L.Z(yard)))
-        for a, b in zip(tops, tops[1:]):
-            _cyl(rails, a, b, 0.017, yellow, sides=10)
-            lo_a, lo_b = (a[0], a[1] - 0.45, a[2]), (b[0], b[1] - 0.45, b[2])
-            _cyl(rails, lo_a, lo_b, 0.011, yellow, sides=8)
+    # ---- The walkway through the void, from the workshop's door up to the thruster room's.
+    V = S.WALKWAY_VOID
+    low, high = S.WT_DOORS[3]['floor'], S.WT_DOORS[4]['floor']
+    rise = (high - low) / (V['treads'] + 1)
+    void_walk = Part('Void walkway', 'Floor plate')
+    void_rails = Part('Void walkway, rails and bearers', 'Machinery paint', smooth=True, angle=40)
+    levels = [(V['platform'][0], V['platform'][1], low)]             # going forward
+    for k in range(1, V['treads'] + 1):
+        aft = V['platform'][1] + V['going'] * (k - 1)
+        levels.append((aft - 0.02, aft + V['going'], low + rise * k))
+    levels.append((V['platform'][1] + V['going'] * V['treads'] - 0.02, V['flat'], high))
+    posts = [V['platform'][0] + 0.05, V['platform'][1], V['platform'][1] + V['going'] * V['treads'], V['flat'] - 0.05]
+    _walkway(void_walk, void_rails, V['x'], V['half'], levels, {1: posts, -1: posts}, range(53, 55), V['rail'])
+    made += [void_walk, void_rails]
     for part in made:
         part.group = 'machinery'
     return made
@@ -511,4 +645,4 @@ def anchors():
 
 
 def build():
-    return steering_gear() + shafting() + fresh_water_tanks() + way_aft() + thruster_room() + chain_lockers() + anchors()
+    return steering_gear() + shafting() + fresh_water_tanks() + way_aft() + ladders() + thruster_room() + chain_lockers() + anchors()
