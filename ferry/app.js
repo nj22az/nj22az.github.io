@@ -1,9 +1,10 @@
 /**
  * The ferry viewer: the Christina, turned, taken apart deck by deck and cut open.
  *
- * She is the lead ship of a new design. For now her drawing is the Minato Maru's, the ferry of Johansson Town, renamed:
- * the model is not made here but exported from the game's own source (nj22az/johansson-town,
- * tools/ferry-viewer-export.mjs) into data/ferry.bin.gz and data/ferry-atlas.webp; this page only reads and shows it.
+ * She is the lead ship of a new design, built section by section in Blender (blender/). Her hull is her own; the
+ * decks above it and the machinery are for now the Minato Maru's, the ferry of Johansson Town, exported from the game's
+ * own source (nj22az/johansson-town, tools/ferry-viewer-export.mjs). blender/assemble.py puts the two together into
+ * data/ferry.bin.gz and data/ferry-atlas.webp; this page only reads and shows them.
  * The file format (JMF1), and what this page changes in the look of what it reads, are described in README.md.
  *
  * The look is this page's own: daylight, one sun with shadows, a sky to reflect. The game's cartoon look does not bind it.
@@ -111,7 +112,7 @@ function daylight() {
     fragmentShader: `varying vec3 d; uniform vec3 sun;
       void main() {
         vec3 n = normalize(d);
-        vec3 zenith = vec3(0.30, 0.52, 0.95), horizon = vec3(0.86, 0.92, 1.0), ground = vec3(0.36, 0.34, 0.31);
+        vec3 zenith = vec3(0.30, 0.52, 0.95), horizon = vec3(0.86, 0.92, 1.0), ground = vec3(0.60, 0.59, 0.56);
         vec3 c = n.y > 0.0 ? mix(horizon, zenith, pow(n.y, 0.55)) : mix(horizon * 0.8, ground, pow(min(-n.y * 4.0, 1.0), 0.6));
         c += vec3(1.0, 0.93, 0.82) * pow(max(dot(n, sun), 0.0), 12.0) * 0.6;
         gl_FragColor = vec4(c, 1.0);
@@ -306,10 +307,12 @@ function setCut(t) {
   cutPlane.constant = -(cutSpan[0] + (cutSpan[1] - cutSpan[0]) * t);
   if (was !== is) for (const m of materials) {
     // Cut open, the insides of plates are seen: draw both faces while the cut is on. What is cut away throws no shadow.
-    // A picture (her name, a sign, a dial) is paint on one face: it keeps that face, or it would read mirrored from behind.
+    // A picture (a sign, a dial) and a mark laid on the plating (her name, the draught marks: drawn a hair in front of
+    // it) are paint on one face: they keep that face, or they would read mirrored from behind.
+    const paint = m.map || (m.polygonOffset && m.polygonOffsetFactor < 0);
     m.clippingPlanes = is ? [cutPlane] : null;
     m.clipShadows = is;
-    m.side = is && !m.map ? THREE.DoubleSide : m.userData.side;
+    m.side = is && !paint ? THREE.DoubleSide : m.userData.side;
     m.needsUpdate = true;
   }
   renderer.shadowMap.needsUpdate = true;
@@ -439,9 +442,14 @@ function buildPanel(header) {
   }
   const s = header.source, ship = header.ship;
   const from = `the Johansson Town source at commit ${s.commit}${s.uncommitted ? ' with later changes' : ''}`;
-  list.append(el('p', { className: 'source' }, ship.drawnFrom
-    ? `${ship.name}, ${ship.length} m long. A first look: she is a new ship in the making, and for now her drawing is the ${ship.drawnFrom}'s, from ${from}, so some notes still speak of that ship's crew and route. Her own build, section by section from the working drawings, comes next.`
-    : `${ship.name}, ${ship.length} m long. Drawn from ${from}.`));
+  // What is her own so far (ship.built, written by blender/assemble.py), and what is still drawn from the other ship.
+  const own = (ship.built || []).map(b => b.section.toLowerCase());
+  const said = own.length > 1 ? `${own.slice(0, -1).join(', ')} and ${own[own.length - 1]} are` : `${own[0]} is`;
+  list.append(el('p', { className: 'source' }, !ship.drawnFrom
+    ? `${ship.name}, ${ship.length} m long. Drawn from ${from}.`
+    : own.length
+      ? `${ship.name}, ${ship.length} m long, a new ship in the making. Her ${said} her own, built in Blender from her lines: plating, frames, floors and bulkheads, screws and rudders. The rest is for now the ${ship.drawnFrom}'s drawing, from ${from}, so some notes still speak of that ship's crew and route. It is rebuilt section by section.`
+      : `${ship.name}, ${ship.length} m long. A first look: she is a new ship in the making, and for now her drawing is the ${ship.drawnFrom}'s, from ${from}, so some notes still speak of that ship's crew and route. Her own build, section by section from the working drawings, comes next.`));
 }
 
 function setPanel(open) {
