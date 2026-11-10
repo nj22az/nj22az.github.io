@@ -71,6 +71,13 @@ it's not the same as Minato Maru"*, *"We can rebuild Minato maru later from what
   - The steering-gear room, the fresh-water tanks and the shaft space have no way in: no door, hatch or ladder. The
     Christina has a way aft from the engine room through three watertight doors (`/ferry/blender/spec.py`,
     `WT_DOORS`); the engine room's after wall is opened for the first.
+- **And when every room had to be reached on foot** (10 November 2026):
+  - The two engine-room ladders (3.6 m to starboard, 8.6 and 18.8 m from the transom, rungs from 0.28 to 2.38 m over
+    the floor plates) end under an unbroken deckhead and car deck: there is no hatch over either, and the after one
+    stands behind the engine control booth. Nothing joins the car deck to the machinery spaces.
+  - The void, the bow-thruster room and the fore peak have no way in, and nothing leads up to the compass deck.
+  - The Christina's answers are in `/ferry/README.md`, *The ways on foot* (a hatch and ladder in the lower lobby, two
+    watertight doors forward, a hatch and ladder to the fore peak, a ladder to the compass deck).
 - The viewer's files (`/ferry/`, the homepage card) go to `main` on their own: they are committed apart from this
   folder and cherry-picked onto a branch made from `main`. To build her data again no Town checkout is needed:
   `/ferry/blender/assemble.py` works from the viewer's own file. A new export from the Town (`town/tools/`) is needed
