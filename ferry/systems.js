@@ -215,7 +215,6 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
     net(net) {
       const n = el('div', { className: 'note' });
       if (net.text) n.append(el('p', {}, net.text));
-      n.append(el('p', { className: 'muted' }, net.medium.charAt(0).toUpperCase() + net.medium.slice(1) + '.'));
       const ul = el('ul', { className: 'members' });
       for (const m of net.members) {
         const what = [m.role !== 'node' ? m.role : '', m.says].filter(Boolean).join(': ');
