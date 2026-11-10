@@ -71,6 +71,61 @@ the deckhead keep their own tops and stay with their room. The export stops if i
 Until the weekend the Town's work on her lives on the branch `claude/festive-rubin-fo8mmp` of this repository, in
 `temp/minato-maru/` (never on `main`), the two export tools among it (`town/tools/`, Town commit `f0b2973`).
 
+## Reference drawings (public domain) and what they are good for
+
+The owner, 10 November 2026: "Search for free GA or installation drawings from public domain shipyards and see if can
+use anything to make this ship more realistic". They are studied and measured, never traced or copied (as for the
+Town's New Yokosuka), and none is kept in this repository. What was searched, what the rights are, and what was seen:
+
+**Usable, and looked at.** The Library of Congress's Historic American Engineering Record (HAER) measured drawings,
+whose rights advisory reads "No known restrictions on images made by the U.S. Government; images copied from other
+sources may be restricted":
+- [M/V Ranger III, HAER MI-432](https://www.loc.gov/item/mi0766/): the National Park Service's 1957 passenger and cargo
+  vessel, 165 ft (50 m), 34 ft beam, 15 ft 1¾ in depth, 10 ft draft, twin controllable-pitch screws. Six sheets of
+  measured drawings (2022): the outboard profile, a longitudinal section with scantlings, the main deck and the lower
+  deck and holds (machinery, shaft alleys, steering gear in the after peak, tanks, crew spaces), the boat, bridge and
+  upper decks, the lines with a table of offsets. Sheet 5 was not looked at. **The closest real vessel found.**
+- [M/V Husky II (ex USS LCI(L)-653), HAER AK-52](https://www.loc.gov/item/ak0557/): four sheets, among them the 1944
+  general arrangements and the lines with offsets, traced from National Archives microfilm (RG 19). A 48 m twin-screw
+  landing ship with bow gangways, not a car ferry. Sheets 2 and 4 were not looked at.
+- Listed, not looked at: [Ferry EUREKA](https://www.loc.gov/item/ca1504/) (an 1890 steam ferry, 7 sheets), USS SHACKLE
+  ([AK-49](https://www.loc.gov/item/ak0533/), 10 sheets) and the schooner Lettie G. Howard
+  ([NY-206](https://www.loc.gov/item/ny1621/), 20 sheets).
+
+**Public domain in principle, not reachable here.** The National Archives (RG 19, the Bureau of Ships) has digitised
+over 11,000 ship drawings, with an [index](https://www.archives.gov/research/cartographic/ship-index) of 19,223 rows.
+Its ferry entries are Navy yard ferries (YFB) and one 1959 coastal ferry (COHO, RG 357). The catalogue is a script-driven
+site, so nothing was opened from it. The Smithsonian's Open Access collection (CC0) has general arrangements of
+wartime merchant ships (Victory ships, T2 tankers), all large.
+
+**Free to look at, not public domain.** East Carolina University's [LCU 1667-1679 drawings](https://digital.lib.ecu.edu/79681)
+(a 41 m twin-screw bow-ramp craft: the closest type, with the bow ramp winch, the stern gate and the watertight doors)
+are by a private yard, Barbour Boat Works, and are "In Copyright, educational use permitted"
+(`rightsstatements.org/vocab/InC-EDU/1.0/`): they may be read, not reused. Royal Museums Greenwich, Mystic Seaport,
+scans on Model Monkey and similar sites vary by item. Sjöhistoriska museet's drawings (35,000, about 10,000 digitised,
+many marked Public Domain) are described under CC0 in the national heritage index, but the licence of each image is its
+own; the ferry drawings there are from 1874 to 1920 (a 1909 proposal for a motor ferry for Svanesund among them), and
+DigitaltMuseum refused automated access, so none was opened. Wikimedia Commons was rate-limited and not searched.
+
+**What the Ranger III sheets give that this build can use.**
+- *Scantlings of a real hull* (read off sheet 2 at full resolution). 24 in (610 mm) frame spacing; side frames
+  5 × 3 × 5/16 in inverted angle (127 × 76 mm) from the tank top to the main deck, 3½ × 2½ × ¼ in above it, spaced 2 ft,
+  and 4 × 3 × 5/16 in intermediate frames 12 in between the regular ones at the forward end; plate floors of 12.75 and
+  15.3 lb plate (5/16 and 3/8 in); a plate centre vertical keel of 20.4 lb, watertight or oil-tight between frames
+  19 and 51. The Christina's frames (0.5 m apart, 75 × 50 mm) are lighter than that vessel's, as is to be expected of
+  a hull 15 m shorter; whether they are right for her was not checked against a class rule, and raising them to about
+  100 × 65 mm is open. Not done.
+- *What a real outfit holds* (the boat and bridge deck, the pilot house roof): range light, anchor lights, side lights,
+  searchlight, radar and radio antennas, a 13-person life raft, a 5-ton cargo crane, a capstan, a 20 by 10 ft cargo
+  hatch. A checklist for section 2.
+- *Where things lie in a real lower deck*: the steering gear on the centreline of the after peak under a shaft and tank
+  space, line shaft bearings in the shaft alleys, the pitch control stand between the engines, the sewage and fresh-water
+  tanks aft of the machinery. This build lays the steering gear, shafts and tanks the same way round.
+
+**What they do not give.** A 34.5 m twin-screw car ferry with a bow ramp has no public-domain general arrangement among
+these, and the one close in type (the LCU) is copyrighted. Her hull lines stay the Rev C form: Ranger III and the
+landing ship are different hulls.
+
 ## Her own build (`blender/`)
 
 Blender 4.0 or later, and Python 3 with numpy for the two tools that need no Blender.
