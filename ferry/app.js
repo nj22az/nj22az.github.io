@@ -306,9 +306,10 @@ function setCut(t) {
   cutPlane.constant = -(cutSpan[0] + (cutSpan[1] - cutSpan[0]) * t);
   if (was !== is) for (const m of materials) {
     // Cut open, the insides of plates are seen: draw both faces while the cut is on. What is cut away throws no shadow.
+    // A picture (her name, a sign, a dial) is paint on one face: it keeps that face, or it would read mirrored from behind.
     m.clippingPlanes = is ? [cutPlane] : null;
     m.clipShadows = is;
-    m.side = is ? THREE.DoubleSide : m.userData.side;
+    m.side = is && !m.map ? THREE.DoubleSide : m.userData.side;
     m.needsUpdate = true;
   }
   renderer.shadowMap.needsUpdate = true;

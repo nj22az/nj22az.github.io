@@ -9,7 +9,7 @@ No build step. Serve the site root (`python3 -m http.server`) and open `/ferry/`
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), about 135,000 triangles in 41 meshes, six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), about 134,000 triangles in 42 meshes, six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 
 ## What she is, and what this first look is not
@@ -44,8 +44,14 @@ the game draws it on the bow, the transom and the name boards, and stops if any 
 of the data records the Town commit she was drawn from (`source.commit`, shown at the foot of the panel), so a stale
 picture can be told from the game.
 
+The export also sorts every triangle to its deck. One rule is worth knowing: the engine room's model carries the
+deckhead over the machinery spaces (three slabs, drawn in `art/ferry-engine-room/geometry-h1.json`). They are the car
+deck's underside, so the export gives them to the car deck (36 triangles: those lying on a slab's face and looking out
+of it), and the machinery rooms stand open from above once the car deck is lifted or hidden. Fittings fastened under
+the deckhead keep their own tops and stay with their room. The export stops if it finds no slab.
+
 Until the weekend the Town's work on her lives on the branch `claude/festive-rubin-fo8mmp` of this repository, in
-`temp/minato-maru/` (never on `main`); the two export tools are not yet committed in the Town.
+`temp/minato-maru/` (never on `main`), the two export tools among it (`town/tools/`, Town commit `f0b2973`).
 
 ## The file format (JMF1)
 
@@ -79,13 +85,21 @@ they are lit:
 - Three.js r170 comes from `/motor-90l/vendor/` (`three.module.min.js` through the import map, and `OrbitControls.js`).
   Moving or upgrading that folder changes this page too.
 - The page uses its own chrome, not the site's `shared.js` navigation, as `/motor-90l/` does.
-- `window.__ferry` (`setExplode`, `setCut`, `home`, `select`, `showDeck`, `setPanel`, `identify`, `state`) is there for
-  checks and screenshots.
+- `window.__ferry` (`setExplode`, `setCut`, `home`, `select`, `showDeck`, `setPanel`, `identify`, `state`, and `look`:
+  the renderer, scene, camera, controls, sun and `redraw()`) is there for checks and screenshots.
+- **The homepage card.** The owner, 9 November 2026: "Make it one of my projects , on the website". She is the `ferry`
+  entry of `CONFIG.projectExplorer` in `/config.js` (second card, under Explore), drawn by
+  `/assets/js/project-explorer.js`; `CONFIG.projects` has her too. The homepage never loads the 3D model (its design
+  review forbids it): the card shows a picture, `/assets/images/ferry/christina-card.webp`. It lives under `assets/`,
+  not here, because the homepage review's sparse checkout does not include `ferry/`.
+- **Retake the card picture when the model changes.** It is this page's cut view from the starboard side with the
+  chrome hidden: Cut 0.5, the camera set through `window.__ferry.look` (target (0, 6.3, 1.4), looking along
+  (−1, 0.2, 0.3) from 50 m, aspect 1200 : 630), shot at 1200 × 630 at scale 2 and reduced to a 1200 × 630 WebP
+  (quality 84). The counts in `tools/office-home/review.browser.mjs` (7 cards; Explore 2, Create 3, Learn 2) follow
+  `CONFIG.projectExplorer`.
 
 ## Known limits of the first look
 
-- Seen from above, the machinery rooms are covered by their deckhead: use **Cut** to open the engine room. (The lid
-  belongs with the car deck; the export will move it.)
 - The cut faces are hollow: plating is not capped where it is sliced.
 - In the exploded view the stack is framed small, and two small dark fittings float beside the car deck.
 - A pale translucent panel shows amidships at the car-deck opening.
@@ -101,6 +115,17 @@ they are lit:
 - Headless Chromium (software rendering, SwiftShader) at 1440 × 900 and at 390 × 844 with touch: closed ship, exploded,
   cut, decks hidden, rooms selected (wheelhouse, engine room, saloon), the machinery deck alone, the panel open on the
   phone size, light and dark colour schemes. No console errors or failed requests in any of them.
+- The cut view again after one fix: a picture (her name, a sign, a dial) keeps its one face when she is cut open, so her
+  name no longer shows mirrored on the inside of the hull.
+- The machinery rooms open from above (data from Town commit `f0b2973`): the export's report names the three slabs and
+  36 triangles moved to the car deck; pictures of the machinery deck alone from above (light and dark), the exploded
+  ship, the closed ship, the cut view, and the engine room and the auxiliary room chosen from the panel at 1440 × 900
+  and the engine room at 390 × 844. No console errors. Compared with pictures of the earlier data, the closed ship is the
+  same pixel for pixel and the cut view differs in two pixels, so the homepage card's picture was not retaken.
+- The homepage card: `node --check config.js`, `node --check assets/js/project-explorer.js`, and the homepage design
+  review (`tools/office-home/review.browser.mjs`) run locally in headless Chromium at its six sizes: passed, with 7
+  cards and a desktop project grid of 2536 px against its 3062 px limit (80 % of the baseline's height). The card itself was looked at on desktop, at
+  390 px and 320 px wide, light and dark.
 
 Not checked: a real phone, a real GPU (frame rate is unknown), an actual finger tap on a room (`identify` was only called
 from script), Safari and Firefox.

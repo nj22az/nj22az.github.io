@@ -99,6 +99,16 @@ const CONFIG = {
       featured: true,
     },
     {
+      title: "Christina",
+      description:
+        "A 34.5 m car and passenger ferry as a 3D model: turn her, lift her decks apart, cut her open along her length and name every room aboard. A first look.",
+      url: "/ferry/",
+      icon: "anchor",
+      tags: ["3D Model", "Ferry", "Engineering"],
+      bento: "wide",
+      featured: true,
+    },
+    {
       title: "GitHub",
       description:
         "Open-source tools, working prototypes, and engineering experiments with an emphasis on practical use.",
@@ -233,6 +243,8 @@ const CONFIG = {
       "M16.5 9.4l-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.27 6.96 12 12.01l8.73-5.05M12 22.08V12",
     zap:
       "M13 2 3 14h9l-1 8 10-12h-9l1-8Z",
+    anchor:
+      "M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12 8v14M5 12H2a10 10 0 0 0 20 0h-3",
   },
 };
 
@@ -263,6 +275,25 @@ CONFIG.projectExplorer = [
       "A harbour, ferry routes and places to explore"
     ],
     "preview": "world"
+  },
+  {
+    "id": "ferry",
+    "category": "explore",
+    "title": "Christina",
+    "eyebrow": "A FERRY, DECK BY DECK",
+    "summary": "A 34.5 m car and passenger ferry in 3D. Turn her, lift her six decks apart, cut her open along her length and name every room aboard.",
+    "url": "/ferry/",
+    "action": "Explore the ferry",
+    "format": "3D model viewer",
+    "language": "English",
+    "status": "First look",
+    "firstTry": "Drag the Cut slider to open her from the starboard side and look into the engine room, then tap a room to name it.",
+    "features": [
+      "Lift her six decks apart, from the double bottom to the compass deck",
+      "Cut her open along her length to see inside",
+      "50 named rooms, each with a note on what it is for"
+    ],
+    "preview": "ferry"
   },
   {
     "id": "camera",
