@@ -911,7 +911,8 @@ function placeEye() {
  */
 function eyeFor(w) {
   const head = headroom(w.pos.x, w.pos.z, w.floor);
-  return Math.min(EYE, head - 0.12, wallClear(w.pos.x, w.pos.z, w.floor, Math.min(EYE, head - 0.05)) - 0.2);
+  // Never lower than a stoop: walking keeps the body where there is DUCK of room, so less is only met where one was put.
+  return Math.max(CROUCH - 0.2, Math.min(EYE, head - 0.12, wallClear(w.pos.x, w.pos.z, w.floor, Math.min(EYE, head - 0.05)) - 0.2));
 }
 /** One frame on foot: turn, step, find the floor. */
 function stepWalk(dt) {
