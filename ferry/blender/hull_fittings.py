@@ -6,6 +6,7 @@ What stands in the spaces the hull gives a floor and bulkheads to, and what she 
   - the shafting inside her: each intermediate shaft from its gearbox's flange through the engine room's aft bulkhead,
     over a plummer block, to the coupling on the tail shaft;
   - the two fresh-water tanks;
+  - the way aft on foot: three watertight doors on the centreline and the walkway through the shaft space;
   - the bow thruster's motor on the crown of the tunnel, its platform and its starter;
   - the two chain lockers in the fore peak;
   - the two anchors, housed in their hawse pipes.
@@ -17,7 +18,7 @@ from math import pi, cos, sin
 from mathutils import Vector
 import lines as L
 import spec as S
-from shipyard import Part, srgb, tint
+from shipyard import Part, srgb, tint, round_rect
 from hull_appendages import shaft_y, _revolve, _frame
 
 X = S.SHAFT_X
@@ -197,7 +198,159 @@ def motion():
         movers.append(dict(ram, id=f'ram-{tag}'))
         movers.append(dict(ram, id=f'ram-{tag}-rod', extend=True))
     movers.append(dict(id='tie-bar', kind='carry', input='rudder', axis=[0, 1, 0], pivot=[X, 0.0, zs], point=[X, 0.0, zs + t['reach']]))
+    # The watertight doors: each turns on its hinges, 90° open. Nobody sets a door with a slider: `auto: near` says the
+    # page opens it for whoever comes within `reach` of `at` (the middle of its sill's foot) on foot, and to a tap from
+    # outside; `normal` is the way through it.
+    D = S.WT_DOOR
+    for d in S.WT_DOORS:
+        hinge = _door_hinge(d)
+        inputs.append(dict(id=d['id'], name=d['name'], min=0, max=D['open'], step=1, unit='°', below='', above='open', rest='shut',
+                           auto='near', at=[0.0, d['floor'], L.Z(d['yard'])], normal=[0, 0, 1], reach=D['reach']))
+        movers.append(dict(id=d['id'], kind='turn', input=d['id'], axis=[0, 1, 0], pivot=[hinge[0], 0.0, hinge[1]], ratio=d['opens']))
     return inputs, movers
+
+
+def _door_face(d):
+    """Where a door's leaf lies: the face of its frame on the side it opens to (z), and that side (+1 forward, -1 aft)."""
+    ya, yb = S.door_frame_yards(d)
+    return (L.Z(yb) if d['opens'] > 0 else L.Z(ya)), d['opens']
+
+
+def _door_hinge(d):
+    """The hinge line of a door: (x, z). To port of the frame, in the middle of the leaf's thickness."""
+    zf, side = _door_face(d)
+    return (S.WT_DOOR['width'] / 2 + S.WT_DOOR['frame'] + 0.04, zf + side * (0.004 + S.WT_DOOR['leaf'] / 2))
+
+
+def way_aft():
+    """
+    The three watertight doors and the walkway through the shaft space (spec.WT_DOORS, spec.WALKWAY).
+
+    A door: a frame of flat bar round the opening, standing 5 cm proud of the bulkhead each side (its lower side is the
+    sill one steps over, its upper side the head one stoops under); a leaf of 20 mm with a pressed panel, lying against
+    the frame on the side it opens to; six dogs round its edge and the handwheel that works them; two hinges to port.
+    The leaf, its dogs and the wheel turn together (a mover named as the door); the frame and the hinges' lugs stand.
+    """
+    D, W = S.WT_DOOR, S.WALKWAY
+    grey, dark, steel, yellow = srgb(S.DOOR_GREY), srgb(S.DARK_GREY), srgb(S.STEEL), srgb(S.RAIL_YELLOW)
+    frames = Part('Watertight doors, frames', 'Machinery paint')
+    walk = Part('Shaft space walkway', 'Floor plate')
+    rails = Part('Shaft space walkway, rails and bearers', 'Machinery paint', smooth=True, angle=40)
+    made = [frames, walk, rails]
+    r, fw = D['corner'], D['frame']
+    for d in S.WT_DOORS:
+        x0, y0, x1, y1 = S.door_opening(d)
+        za, zb = (L.Z(v) for v in S.door_frame_yards(d))
+        cx, cy = 0.0, (y0 + y1) / 2
+        inward = lambda c: (cx - c[0], cy - c[1], 0)
+        outward = lambda c: (c[0] - cx, c[1] - cy, 0)
+        # ---- The frame: two faces, the lining of the opening, and its outer edge.
+        for z, look in ((za, -1), (zb, 1)):
+            start = len(frames.f)
+            frames.polygon(round_rect(x0 - fw, y0 - fw, x1 + fw, y1 + fw, r + fw, z), grey, [round_rect(x0, y0, x1, y1, r, z)])
+            frames.orient(start, (0, 0, look))
+        start = len(frames.f)
+        frames.grid([round_rect(x0, y0, x1, y1, r, za), round_rect(x0, y0, x1, y1, r, zb)], tint(grey, 0.9), close=True)
+        frames.orient(start, inward)
+        start = len(frames.f)
+        frames.grid([round_rect(x0 - fw, y0 - fw, x1 + fw, y1 + fw, r + fw, za), round_rect(x0 - fw, y0 - fw, x1 + fw, y1 + fw, r + fw, zb)], tint(grey, 0.95), close=True)
+        frames.orient(start, outward)
+        # ---- The leaf.
+        zf, side = _door_face(d)
+        hx, hz = _door_hinge(d)
+        near, far = zf + side * 0.004, zf + side * (0.004 + D['leaf'])           # against the frame, and its outer face
+        leaf = Part(f"Watertight door, {d['where']}", 'Machinery paint', mover=d['id'])
+        gear = Part(f"Watertight door, {d['where']}, dogs and wheel", 'Shaft steel', smooth=True, angle=40, mover=d['id'])
+        over = 0.035
+        edge = lambda z: round_rect(x0 - over, y0 - over, x1 + over, y1 + over, r + over, z)
+        for z, look in ((near, -side), (far, side)):
+            start = len(leaf.f)
+            leaf.polygon(edge(z), grey)
+            leaf.orient(start, (0, 0, look))
+        start = len(leaf.f)
+        leaf.grid([edge(near), edge(far)], tint(grey, 0.9), close=True)
+        leaf.orient(start, outward)
+        # The pressed panel that stiffens it, on the outer face.
+        a, b = sorted((far, far + side * 0.012))
+        leaf.box((x0 + 0.09, y0 + 0.16, a), (x1 - 0.09, y1 - 0.16, b), tint(grey, 1.04))
+        # Hinge blades from the leaf's port edge to the pins.
+        for hy in (y0 + 0.28, y1 - 0.28):
+            a, b = sorted((near + side * 0.003, far - side * 0.003))
+            leaf.box((x1 + over - 0.02, hy - 0.035, a), (hx, hy + 0.035, b), tint(grey, 0.82))
+            _cyl(gear, (hx, hy - 0.05, hz), (hx, hy + 0.05, hz), 0.014, steel, sides=10)
+            # The lug on the bulkhead that carries the pin, above and below the blade.
+            for ly in (hy - 0.075, hy + 0.05):
+                a, b = sorted((zf, hz + side * 0.014))
+                frames.box((hx - 0.02, ly, a), (hx + 0.035, ly + 0.025, b), tint(grey, 0.8))
+        # Six dogs: a lever over the frame at each, on a boss through the leaf.
+        for dx, sx in ((x0 + 0.02, -1), (x1 - 0.02, 1)):
+            for dy in (y0 + 0.2, cy, y1 - 0.2):
+                _cyl(gear, (dx, dy, far), (dx, dy, far + side * 0.03), 0.022, steel, sides=10)
+                a, b = sorted((far + side * 0.012, far + side * 0.026))
+                gear.box((min(dx, dx + sx * 0.085), dy - 0.016, a), (max(dx, dx + sx * 0.085), dy + 0.016, b), steel)
+        # The handwheel in the middle of the leaf: hub, three spokes, rim.
+        wz = far + side * 0.012
+        _cyl(gear, (0.0, cy, wz), (0.0, cy, wz + side * 0.06), 0.028, steel, sides=12)
+        rim0, rim1 = sorted((0.04, 0.062))
+        _revolve(gear, (0.0, cy, wz), (0, 0, side), [(rim0, 0.13), (rim0, 0.155), (rim1, 0.155), (rim1, 0.13), (rim0, 0.13)], steel, sides=24)
+        for k in range(3):
+            ang = pi / 2 + 2 * pi * k / 3
+            _cyl(gear, (0.0, cy, wz + side * 0.05), (0.14 * cos(ang), cy + 0.14 * sin(ang), wz + side * 0.05), 0.009, steel, sides=8)
+        made += [leaf, gear]
+
+    # ---- The walkway through the shaft space, from the engine room's door up to the flat by the tanks.
+    h = W['half']
+    low, high = S.WT_DOORS[0]['floor'], S.FLAT
+    rise = (high - low) / (W['treads'] + 1)
+    plate = srgb(S.FLOOR_PLATE)
+    levels = []                                             # (yard aft end, yard forward end, height), going aft
+    levels.append((W['platform'][0], W['platform'][1], low))
+    for k in range(1, W['treads'] + 1):
+        fwd = W['platform'][0] - W['going'] * (k - 1)
+        levels.append((fwd - W['going'], fwd + 0.02, low + rise * k))
+    levels.append((W['flat'][0], W['platform'][0] - W['going'] * W['treads'] + 0.02, high))
+    for i, (ya, yb, y) in enumerate(levels):
+        start = len(walk.f)
+        walk.grid([[(-h, y, L.Z(ya)), (h, y, L.Z(ya))], [(-h, y, L.Z(yb)), (h, y, L.Z(yb))]], tint(plate, 1 + 0.03 * ((i * 5) % 3 - 1)))
+        walk.orient(start, UP)
+
+    def level_at(yard):
+        for ya, yb, y in levels:
+            if ya - 1e-6 <= yard <= yb + 1e-6:
+                return y
+        return high if yard < levels[-1][1] else low
+
+    # Stringers under the edges, bearers down to the floors of her bottom, and a rail each side.
+    from hull_structure import floor_top
+    for sx in (1, -1):
+        x = sx * (h + 0.02)
+        # the stringer: a flat bar on edge under the walkway's side, stepped like it
+        for ya, yb, y in levels:
+            a, b = sorted((x - 0.006, x + 0.006))
+            rails.box((a, y - 0.10, L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
+        # bearers at every frame under it
+        for k in range(11, 17):
+            yard = k * L.FRAME_SPACING
+            if not (W['flat'][0] < yard < W['platform'][1]):
+                continue
+            top, foot = level_at(yard) - 0.10, floor_top(yard) + 0.012
+            if top - foot > 0.06:
+                rails.box((x - 0.025, foot, L.Z(yard) - 0.025), (x + 0.025, top, L.Z(yard) + 0.025), dark)
+        # the rail: stanchions and a top rail that follows the steps' line
+        rx = sx * (h + 0.04)
+        posts = [W['platform'][1] - 0.06, W['platform'][0]] + [W['platform'][0] - W['going'] * k for k in (2, 4, 6)] + [5.9, W['flat'][0] + 0.1]
+        tops = []
+        for yard in posts:
+            y = level_at(yard - 1e-3)
+            _cyl(rails, (rx, y - 0.02, L.Z(yard)), (rx, y + W['rail'], L.Z(yard)), 0.014, yellow, sides=8)
+            tops.append((rx, y + W['rail'], L.Z(yard)))
+        for a, b in zip(tops, tops[1:]):
+            _cyl(rails, a, b, 0.017, yellow, sides=10)
+            lo_a, lo_b = (a[0], a[1] - 0.45, a[2]), (b[0], b[1] - 0.45, b[2])
+            _cyl(rails, lo_a, lo_b, 0.011, yellow, sides=8)
+    for part in made:
+        part.group = 'machinery'
+    return made
 
 
 def shafting():
@@ -358,4 +511,4 @@ def anchors():
 
 
 def build():
-    return steering_gear() + shafting() + fresh_water_tanks() + thruster_room() + chain_lockers() + anchors()
+    return steering_gear() + shafting() + fresh_water_tanks() + way_aft() + thruster_room() + chain_lockers() + anchors()

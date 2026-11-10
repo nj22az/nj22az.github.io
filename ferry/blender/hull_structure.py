@@ -11,7 +11,7 @@ Plates are drawn as one surface seen from both sides ('Primer plate').
 from math import pi, cos, sin
 import lines as L
 import spec as S
-from shipyard import Part, srgb, tint
+from shipyard import Part, srgb, tint, round_rect
 
 PRIMER = srgb(S.PRIMER)
 TOP_OF_STRUCTURE = L.CAR - 0.03          # just under the car deck's plating
@@ -131,7 +131,14 @@ def build():
             outline = [(tx, outline[0][1]), (tx, ty)] + [p for p in outline if not (p[0] > tx and p[1] > ty)]
             edge = L.inside_plane(z, L.psi_at(ty, z), S.SHELL)
             outline.insert(2, (edge[0], ty))
-        bulkheads.polygon([(x, y, z) for x, y in outline], bulkhead_colour)
+        # A watertight door stands in three of them (spec.WT_DOORS): the plate is cut 3 cm wider than the clear opening,
+        # under the door's frame.
+        doorways = []
+        for d in S.WT_DOORS:
+            if abs(d['yard'] - b['yard']) < 1e-6:
+                x0, y0, x1, y1 = S.door_opening(d)
+                doorways.append(round_rect(x0 - 0.03, y0 - 0.03, x1 + 0.03, y1 + 0.03, S.WT_DOOR['corner'] + 0.03, z))
+        bulkheads.polygon([(x, y, z) for x, y in outline], bulkhead_colour, doorways)
         toward = -1 if z > 0 else 1
         x = -3.6
         while x < 3.61:
