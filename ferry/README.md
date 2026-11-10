@@ -12,7 +12,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.59 MB, about 213,000 triangles in 83 meshes (88,000 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.65 MB, about 221,000 triangles in 86 meshes (97,300 of them her own: the hull, the fittings of its spaces and the compass deck), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 
@@ -36,7 +36,8 @@ place of the Minato Maru's drawing on this page as it is finished.
 | **On foot, and a better outside view** | **10 November 2026** (the owner: "I want to be able to explore it in fpv on the demo and have better camera controls"). *Walking aboard and the outside view*, below. For it the data changed in two places: the lobby's floor is opened over the two stairs, and the car deck has an underside over the hull's own spaces. |
 | **Walls, doors, and the way aft** | **10 November 2026** (the owner: "Do one fix that can impact and make it better", and while it was made: "There needs to be a water tight door that can open to the steering gear"). On foot, walls now stop one and doors let one through. Three hinged watertight doors of her own stand on the centreline, and a walkway with steps goes through the shaft space: from the engine room one walks aft to the steering gear. *Walking aboard* and *The way aft*, below. |
 | **Every room on foot** | **10 November 2026** (the owner: "Fix the rooms all rooms need to be accessible"). From where the walk begins every room is now reached on foot: a hatch and ladder from the lower lobby to the shaft space (and so to all the machinery spaces), two more watertight doors forward into the void and the thruster room, a hatch and ladder into the fore peak, a ladder to the compass deck. *The ways on foot*, below. |
-| 2. Exterior above the hull (bulwark fittings, ramp, casings, deckhouses, funnels, mast) | The Minato Maru's drawing |
+| **2. Exterior above the hull: the compass deck and mast** (first slice) | **Her own, 10 November 2026** (the owner: "Yes, proceed", after the reference drawings). The roof of the bridge house and what stands on it, at the Minato Maru's positions: the slab with its rounded plan and plated top, a three-course rail all round with a gap where the ladder arrives, the mast on a gusseted foot with its flag yard, radar platform, radar, masthead and anchor lights, air horns and loudhailer, VHF and AIS whips, GNSS and satellite-compass domes, the searchlight, two floodlights, the binnacle, and vent heads over the generator room, the galley and the crew WC. *The compass deck*, below. |
+| 2. Exterior above the hull, the rest (bulwark fittings, ramp, casings, deckhouses, funnels) | The Minato Maru's drawing |
 | 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
 Her room notes therefore still speak of the Minato Maru's crew and route. The ferry in the live Johansson World is not
@@ -149,6 +150,7 @@ blender -b christina.blend -P ferry/blender/render.py -- --view stern --out hull
 | `hull_appendages.py` | Keel bar, skeg, bilge keels, tail shafts, stern tubes and their bossings, brackets, screws (true helicoid blades, turning outward), rudders under their headboxes, the thruster, sea chests, anodes |
 | `hull_fittings.py` | What stands in the spaces the hull gives a floor to (steering gear, shafting inboard, fresh-water tanks, thruster motor and starter, chain lockers), and the anchors |
 | `hull_markings.py` | Draught marks, the load line, her name: each point carried onto the plating it is painted on |
+| `compass_deck.py` | The roof of the bridge house, her mast and what it carries (the viewer's part `top`): slab, plating, rails, mast, radar, lights, antennas, searchlight, binnacle, vents |
 | `build.py` | Builds the sections into collections named after the viewer's parts (`hull`, `machinery`) |
 | `export_jmf.py` | Writes every mesh of those collections as it stands in the file, so work done by hand in Blender is exported the same way |
 | `assemble.py` | Puts the parts into `data/ferry.bin.gz` (below) |
@@ -222,6 +224,38 @@ the Town at the weekend (with the two under *How the two ships are put together*
 - *Where the Minato Maru's rooms still are, the hull keeps clear of them:* frames are 100 mm angles inside the 14 cm
   between the moulded line and the rooms' linings (28 mm to spare), and the bulkheads at frames 17 and 52 stand 8 cm outside the rooms'
   own end walls. When the machinery spaces are rebuilt, these become ordinary web frames and bulkheads.
+
+## The compass deck (`blender/compass_deck.py`)
+
+The roof of the bridge house is the viewer's part `top`, 1,164 triangles in the Minato Maru's drawing (a slab, a rail,
+a mast, a few boxes) and 9,332 in hers. `assemble.py` takes the one for the other (`SUPERSEDES['top']`, as for the hull),
+so nothing of the other ship's is left on it. Its positions are the Minato Maru's, so the ladder that comes up to it, the
+rooms under it and the walker on it still fit: the roof's top is at 11.50 m (13.40 m above the keel), the mast stands
+at 20.8 m from the transom and rises to 16.1 m (18.0 m above the keel), the binnacle at 22.2 m.
+
+- *The roof.* A slab 0.32 m deep with a rounded plan (3.10 m each side, 5.95 to 23.16 m from the transom), white at the
+  edge and on its underside, which is the bridge house's deckhead. Its plating is light grey, a plate 2.4 m by 1.2 m,
+  the seams drawn as marks a hair in front of it. The slab's top lies 6 mm under the plating.
+- *The rail.* Three courses of tube (1.0, 0.62 and 0.30 m) with a stanchion on a foot plate about every 1.45 m, all
+  round 0.13 m in from the edge, with an 0.8 m gap in the port side at 19.25 m from the transom, where the ladder
+  arrives. (The Minato Maru's rail ran only round the wheelhouse; the rest of the roof was open to the edge.)
+- *The mast.* A tube 0.22 m through at the foot and 0.12 m at the head, on a foot plate with six gussets, with a
+  flag yard of 2.8 m at 15.4 m above the keel; a radar platform of 1.3 m by 1.0 m with toe plates; a turning unit and a
+  1.8 m slotted-waveguide array; the masthead light (white, 225° forward) on a bracket on the front of the mast above the radar, and
+  the anchor light (white, all round) on its crown, as for a power-driven vessel of 20 to 50 m; two air horns and a
+  loudhailer.
+- *Aft of the mast.* Two VHF whips of 3 m and an AIS whip of 1.4 m on insulators; a GNSS dome and a satellite
+  compass dome; to starboard forward the searchlight on a yoke, and at each front corner a floodlight angled down
+  toward the bow; on the centreline the standard compass in its binnacle, with its brass ring and its dome.
+- *Vent heads over the spaces below*, as on Ranger III's roof: the emergency generator room's air intake (a louvred
+  coaming, 7.7 m from the transom) and its exhaust (a 0.14 m pipe with a flap), the galley's extract cowl (15.25 m,
+  starboard) and the crew WC's mushroom head (12.75 m).
+
+On foot the roof is a floor like any other: the rail holds one in (0.18 m off it), the gap lets one reach the ladder,
+and the mast, the binnacle, the vents and the lights are in the way. The compass deck's reach on foot fell from
+100 m² to 89 m² for it. What is lacking: the lamps do not light (the viewer's day has none lit), the radar does not turn
+(the page has no continuous motion for it yet), nothing is drawn of the cables, and the sidelights and the stern light
+are still the Minato Maru's, on the bridge wings and the stern, outside this part.
 
 ## Walking aboard and the outside view
 
@@ -456,6 +490,13 @@ Of walking aboard:
 - Measured on this machine only, which draws in software (about one picture a second with the eye inside her): the
   frame rate while walking on a phone or a laptop is not measured.
 
+Of the compass deck:
+- The lamps are not lit and the radar does not turn. The navigation lights (sidelights on the bridge wings, the stern
+  light) belong to the bridge and the passenger deck, and are still the Minato Maru's; so is the funnels' exhaust.
+- Nothing of the wiring, the antenna cables or the mast's ladder (there is none: the mast is serviced from the platform)
+  is drawn, and the roof has no hatch to the wheelhouse below.
+- The vent heads are over the rooms the Minato Maru's drawing has under them; where those rooms are rebuilt they may move.
+
 Of the page and of what is still the Minato Maru's:
 - The cut faces are hollow: plating is not capped where it is sliced.
 - In the exploded view the stack is framed small, and two small dark fittings float beside the car deck.
@@ -468,6 +509,17 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 10 November 2026, the compass deck and mast
+
+`build.py`: 97,474 triangles, its checks unchanged (the plating's two faces never nearer than 10.4 mm, structure never
+nearer than 5.2 mm to the plating, 0 corners through it, solids looking outward, now also for the roof's solids);
+`assemble.py` on the Town's export and again on its own output: the same file; `check.py --town …`: all passed. The
+Town's 1,164 roof triangles are dropped and 9,332 of hers added. Walking: 62 checks, all passed (58 before, and four
+for the roof: the rail holds one in at x 2.78, the gap lets one reach the ladder, the binnacle and the front rail hold
+one at 21.8 and 22.8 m); 46 of 46 rooms reached on foot as before. The page's eleven standard pictures: no console
+errors. Looked at: the roof from outside before and after from the same camera, and on foot along the roof, at the
+mast, at the forward corner and among the vents. Not run: any real device.
 
 ### 10 November 2026, after it: heavier frames (from the reference drawings)
 
