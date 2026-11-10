@@ -3,16 +3,16 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261109brand2';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261110green1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
 import {lookIcon} from './look-icons.js?v=20261104fx1';
 import {prepareOffline} from './offline.js?v=20261105games1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261109brand2';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261110green1';
 import {makeSticker} from './cutout.js?v=20261031-contour1';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261109brand2';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261110green1';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261104ui1';
@@ -20,18 +20,18 @@ import {normaliseMakeup,applyMakeup,makeupActive,makeupPixels,makeupFaces,faceCr
 import {createMakeupGuide} from './makeup-guide.js?v=20261104ui1';
 import {createPrinter} from './printer.js?v=20261030share1';
 import {normaliseStamps,stampsActive,stampsLabel,characterOf,characterStamps,CHARACTERS,drawFaceStamps,loadStampImages,stampImages,hatChoices,partPreview,moodLabel,BROW_STYLES,BROW_LABELS,BROW_COLOURS,EYE_STYLES,EYE_COLOURS} from './face-stamps.js?v=20261104ui1';
-import {createMemory} from './memory.js?v=20261109brand2';
+import {createMemory} from './memory.js?v=20261110green1';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
-import {createBlackjack} from './blackjack.js?v=20261109brand2';
-import {createSolitaire} from './solitaire.js?v=20261109brand2';
+import {createBlackjack} from './blackjack.js?v=20261110green1';
+import {createSolitaire} from './solitaire.js?v=20261110green1';
 import {makeBackup,restoreBackup,albumStorage,formatBytes} from './backup.js?v=20261102fun1';
 import {createZoomView,viewZoom,viewDetail} from './zoom-view.js?v=20261104ui1';
 import {findFaces,findPerson,guideFromFace,syncFaceToGuide,warmFacePack} from './face-pack.js?v=20261104ui1';
-import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261109brand2';
+import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261110green1';
 import {autoLevels} from './auto.js?v=20261104ui1';
 import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261105fun1';
 import {pocketFace,errorFace} from './pocket-faces.js?v=20261105fun1';
-import {createBall} from './ball.js?v=20261109brand2';
+import {createBall} from './ball.js?v=20261110green1';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -968,7 +968,7 @@ function renderRoll(pop=false){
  if(rollURL)URL.revokeObjectURL(rollURL);rollURL=null;
  if(latest){rollURL=URL.createObjectURL(latest.thumb||latest.photo);img.src=rollURL;img.hidden=false;}else img.hidden=true;
  const welcomeThumb=$('welcomeAlbumThumb');welcomeThumb.hidden=img.hidden;if(!img.hidden)welcomeThumb.src=img.src;else welcomeThumb.removeAttribute('src');
- $('welcomeAlbumCount').textContent=state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'} · on this device`:'Saved photos, all in one place';
+ $('welcomeAlbumCount').textContent=state.shots.length?`${state.shots.length} ${state.shots.length===1?'photo':'photos'}`:'No photos yet';
  $('roll').setAttribute('aria-label',`Album, ${state.shots.length} ${state.shots.length===1?'photo':'photos'}`);
  if(pop){const r=$('roll');r.classList.remove('pop');void r.offsetWidth;r.classList.add('pop');}
 }
@@ -1061,7 +1061,7 @@ function cheer(){
 const memory=createMemory($('memory'),{sources:memorySources,cheer,sound,store,onPlay:()=>{$('memoryNew').hidden=false;},onWin:()=>gameWon('memory')});
 let memoryReturnToGames=false;
 async function openMemory(fromGames=false){memoryReturnToGames=fromGames;document.querySelector('#closeMemory span').textContent=fromGames?'Games':'Album';sound('tick');show('memory');$('memoryNew').hidden=true;await memory.open();}
-$('openGames').addEventListener('click',openCardsHub);
+$('openGames').addEventListener('click',()=>enterGames(false));
 $('emptyPlay').addEventListener('click',()=>openMemory());
 $('closeMemory').addEventListener('click',()=>{memory.close();if(memoryReturnToGames)openCardsHub();else openAlbum();});
 $('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden=true;memory.showSetup();});
@@ -1069,6 +1069,10 @@ $('memoryNew').addEventListener('click',()=>{sound('tick');$('memoryNew').hidden
 // A separate game room keeps the photo-based Memory flow intact.
 let activeCardGame=null;
 function openCardsHub(){activeCardGame?.destroy();activeCardGame=null;show('cardsHub');}
+// The room has two doors: the album's, and the title screen's. Back leaves by the door one came in through, and says so.
+let gamesFromCamera=false;
+function enterGames(fromCamera){gamesFromCamera=fromCamera;document.querySelector('#closeCardsHub span').textContent=fromCamera?'Camera':'Album';sound('tick');openCardsHub();}
+$('welcomeGames').addEventListener('click',()=>enterGames(true));
 function openCardGame(kind){
  activeCardGame?.destroy();
  const root=$('cardGameContent');root.replaceChildren();
@@ -1103,7 +1107,7 @@ async function ballWon({juggler}){
   setTimeout(()=>toast('Your juggler is a sticker now. Find it under Mine.',{face:'secret',ms:3600}),before?900:5400);
  }catch(err){console.error(err);}
 }
-$('openCardGames').addEventListener('click',openCardsHub);
+$('openCardGames').addEventListener('click',()=>enterGames(false));
 
 // ---------- Album backup (backup.js) ----------
 // Two taps on purpose: packing a whole album takes longer than an iPhone keeps a tap's permission to open the share
@@ -1168,7 +1172,7 @@ $('backupFile').addEventListener('change',async e=>{
 $('backupSheet').addEventListener('click',e=>{if(e.target===e.currentTarget&&!backupBusy)e.currentTarget.close();});
 $('backupSheet').addEventListener('cancel',e=>{if(backupBusy)e.preventDefault();});
 renderBackupSummary();
-$('closeCardsHub').addEventListener('click',openAlbum);
+$('closeCardsHub').addEventListener('click',()=>{if(gamesFromCamera)show('camera');else openAlbum();});
 $('closeCardGame').addEventListener('click',openCardsHub);
 $('chooseMemory').addEventListener('click',()=>openMemory(true));
 $('chooseBlackjack').addEventListener('click',()=>openCardGame('blackjack'));

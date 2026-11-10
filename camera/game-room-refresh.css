@@ -30,7 +30,9 @@
 .blackjack-message{margin:4px 0 0;color:#fff8e3;font-size:16px;text-shadow:0 2px 0 #2f6459}
 .blackjack-actions{margin:0 auto auto;gap:10px}
 .blackjack-actions .button,.memory .button{min-height:48px;border:2px solid #253f3d;border-radius:11px;background:#fff4dd;color:#253f3d;box-shadow:0 4px 0 #253f3d;font-weight:850}
-.blackjack-actions .primary,.memory .button.primary{background:#f5c86f;color:#253f3d}.blackjack-actions .button:active,.memory .button:active{transform:translateY(3px);box-shadow:0 1px 0 #253f3d}
+/* The one main button of a game (Play, Hit) is the World's green, as Start camera and Save copy are; the room's own
+   gold stays on its fittings (the choice tiles, the score chips). */
+.blackjack-actions .primary,.memory .button.primary{background:#16815e;color:#fff}.blackjack-actions .button:active,.memory .button:active{transform:translateY(3px);box-shadow:0 1px 0 #253f3d}
 /* The felt board fits all seven columns; long runs remain vertically scrollable. */
 .solitaire-game{background:#d5e6cf;color:#24483f}
 .sol-toolbar{padding:10px 14px;background:#fff1d4;border-bottom:2px solid #d0b58e}
@@ -44,7 +46,9 @@
 /* Memory remains sized by its own board algorithm, with a calmer framed play surface. */
 .memory{background:#e9dbb9}.memory .memory-choose{padding-top:18px}.memory .memory-lead{color:#294b42;font-size:15px;font-weight:750}
 .memory .memory-deck{background:#fff7e4;border-color:#9aaf95;border-radius:12px;box-shadow:0 3px 0 #b1a685}
-.memory .memory-deck[aria-checked="true"]{border-color:#25483f;box-shadow:0 3px 0 #25483f,inset 0 0 0 2px #efc16e}
+.memory .memory-deck[aria-checked="true"]{border-color:#16815e;box-shadow:0 3px 0 #25483f,inset 0 0 0 2px #16815e}
+/* The chosen number of pairs, in the same green on the room's paper and in the dark (memory-retro.css had it in the room's ink). */
+.memory .memory-pairs button[aria-checked="true"]{background:#16815e;color:#fff}
 .memory .memory-go{background:#fff2d9;border-color:#c8b491}.memory .memory-pairs button{min-height:44px}
 .memory .memory-stage{box-sizing:border-box;width:min(100%,900px);margin:0 auto;background:radial-gradient(ellipse at 50% 25%,#a5cdb2,#77a994);border-left:3px solid rgba(39,72,63,.22);border-right:3px solid rgba(39,72,63,.22)}
 .memory .memory-status{padding:10px 16px;background:#25483f;color:#f0ebcf;font-weight:750}.memory .memory-face,.memory .memory-back{border-radius:8px}

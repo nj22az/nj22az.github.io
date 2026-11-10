@@ -8,7 +8,10 @@
 // above it; the running camera's bar carries the lockup in the World's typeface (loaded, not a fallback); the settings
 // foot says whose camera it is, its version and the way to the World; the Game Room's kicker is the same eyebrow on
 // one line; every brand word keeps 4.5:1 in both themes; the Film frame's edge print and the share card carry the
-// World's name and colours; no page errors.
+// World's name and colours; the title screen has two doors, the album and the Game Room, and the room's Back leaves
+// by the door one came in through; what is chosen and the one main button are the World's green (the owner,
+// 10 November 2026: "Proceed according to your recommendation"); the Home Screen icon is the World's ink and green;
+// no page errors.
 //   node camera/tests/brand.browser.mjs
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
@@ -125,6 +128,33 @@ try{
   }
   await page.setViewportSize({width:390,height:844});
  });
+
+ await check('the title screen’s two doors, the album and the Game Room: side by side, a finger high, each label on one line; the room’s Back leaves by the door one came in through',async()=>{
+  for(const size of [{width:375,height:560},{width:360,height:640},{width:390,height:844}]){
+   // Two frames after the resize: the browser re-reads its media queries when it next draws, not when it is measured.
+   await page.setViewportSize(size);await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
+   const out=await page.evaluate(()=>{
+    const box=id=>document.getElementById(id).getBoundingClientRect(),a=box('welcomeAlbum'),g=box('welcomeGames'),stage=document.getElementById('cameraStage').getBoundingClientRect();
+    const lines=[...document.querySelectorAll('.welcome-doors strong,.welcome-doors small')].map(el=>({text:el.textContent,lines:Math.round(el.getBoundingClientRect().height/parseFloat(getComputedStyle(el).lineHeight)),cut:el.scrollWidth>el.clientWidth+1}));
+    return {level:Math.abs(a.top-g.top)<1&&Math.abs(a.height-g.height)<1,beside:a.right<g.left&&Math.abs(a.width-g.width)<1,finger:Math.min(a.height,g.height),inside:g.bottom<=stage.bottom+.5&&g.right<=stage.right+.5,lines};
+   });
+   const at=`${size.width}×${size.height}`;
+   assert.ok(out.level&&out.beside,`${at}: two doors of one size, side by side`);assert.ok(out.finger>=44,`${at}: a finger high (${out.finger})`);assert.ok(out.inside,`${at}: on the first screen`);
+   for(const l of out.lines)assert.ok(l.lines===1&&!l.cut,`${at}: “${l.text}” on one line`);
+  }
+  await page.setViewportSize({width:390,height:844});
+  assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('.welcome-doors strong')].map(e=>e.textContent)),['Your album','Game Room']);
+  // By the title screen's door: Back says Camera, and still does after a game, and leads back to the title screen.
+  await page.click('#welcomeGames');await page.waitForSelector('#cardsHub:not([hidden])');
+  assert.equal(await page.textContent('#closeCardsHub span'),'Camera');
+  await page.click('#chooseBlackjack');await page.waitForSelector('#cardGame:not([hidden])');await page.click('#closeCardGame');await page.waitForSelector('#cardsHub:not([hidden])');
+  assert.equal(await page.textContent('#closeCardsHub span'),'Camera');
+  await page.click('#closeCardsHub');await page.waitForFunction(()=>window.pocketCamera.state.mode==='camera'&&!document.getElementById('welcome').hidden);
+  // By the album's door: Back says Album, and leads there.
+  await page.click('#welcomeAlbum');await page.waitForSelector('#album:not([hidden])');await page.click('#openGames');await page.waitForSelector('#cardsHub:not([hidden])');
+  assert.equal(await page.textContent('#closeCardsHub span'),'Album');
+  await page.click('#closeCardsHub');await page.waitForSelector('#album:not([hidden])');
+ });
  await idle.close();
 
  // The running camera, the settings foot, the editor's Film frame, the Game Room and the share card, with the camera granted.
@@ -165,12 +195,12 @@ try{
 
  await check('the Film frame’s edge print carries the stock and the World’s name',async()=>{
   const texts=await cam.evaluate(async()=>{
-   const m=await import('./frames.js?v=20261109brand2');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');
+   const m=await import('./frames.js?v=20261110green1');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');
    const seen=[];const orig=g.fillText.bind(g);g.fillText=(t,...a)=>{seen.push(t);return orig(t,...a);};
    m.drawFrame(g,'film',1200,900);return seen;
   });
   assert.ok(texts.includes('MINATO 400')&&texts.includes('JOHANSSON WORLD'),JSON.stringify(texts));
-  const print=await cam.evaluate(async()=>{const m=await import('./frames.js?v=20261109brand2');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');const seen=[];g.fillText=t=>seen.push(t);m.drawFrame(g,'print',1200,900);return seen;});
+  const print=await cam.evaluate(async()=>{const m=await import('./frames.js?v=20261110green1');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');const seen=[];g.fillText=t=>seen.push(t);m.drawFrame(g,'print',1200,900);return seen;});
   assert.deepEqual(print,[],'the instant print stays plain');
  });
 
@@ -183,9 +213,36 @@ try{
   await bothThemes(cam,async scheme=>{const c=await contrast(cam,'.game-room-intro .cards-kicker');assert.ok(c>=4.5,`${scheme}: the kicker reads (${c})`);});
  });
 
+ await check('what is chosen and the one main button are the World’s green: the tokens in both themes, the games’ Play and Hit',async()=>{
+  // WCAG contrast of two #rgb or #rrggbb colours.
+  const lum=hex=>{const h=hex.replace('#',''),v=(h.length===3?[...h].map(c=>c+c):h.match(/../g)).map(x=>parseInt(x,16)/255).map(c=>c<=.03928?c/12.92:((c+.055)/1.055)**2.4);return .2126*v[0]+.7152*v[1]+.0722*v[2];};
+  const ratio=(x,y)=>{const a=lum(x),b=lum(y);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);};
+  await bothThemes(cam,async scheme=>{
+   const t=await cam.evaluate(()=>{const s=getComputedStyle(document.documentElement),v=n=>s.getPropertyValue(n).trim();return {fill:v('--accent-fill'),on:v('--on-accent'),accent:v('--accent'),soft:v('--accent-soft'),bg:v('--bg'),surface:v('--surface')};});
+   assert.equal(t.fill,'#16815e',`${scheme}: the main button’s fill is the World’s green`);
+   assert.ok(ratio(t.on,t.fill)>=4.5,`${scheme}: the words on it read (${ratio(t.on,t.fill).toFixed(2)})`);
+   for(const ground of ['bg','surface','soft'])assert.ok(ratio(t.accent,t[ground])>=4.5,`${scheme}: what is chosen reads on ${ground} (${ratio(t.accent,t[ground]).toFixed(2)})`);
+   // A green, not the gold it was: green the strongest channel.
+   const [r,g,b]=(t.accent.replace('#','').match(/../g)).map(x=>parseInt(x,16));assert.ok(g>r&&g>b,`${scheme}: what is chosen is a green (${t.accent})`);
+  });
+  // The games' own main buttons, in the room's toy shape, are the same green: Blackjack's Hit, Memory's Play.
+  const paint=sel=>cam.evaluate(sel=>{const s=getComputedStyle(document.querySelector(sel));return [s.backgroundColor,s.color];},sel);
+  await cam.click('#chooseBlackjack');await cam.waitForSelector('.blackjack-actions .primary');
+  assert.deepEqual(await paint('.blackjack-actions .primary'),[WORLD.green,'rgb(255, 255, 255)'],'Hit');
+  await cam.click('#closeCardGame');await cam.waitForSelector('#cardsHub:not([hidden])');
+  await cam.click('#chooseMemory');await cam.waitForSelector('#memory:not([hidden]) .memory-play');
+  await bothThemes(cam,async scheme=>{
+   assert.deepEqual(await paint('.memory-play'),[WORLD.green,'rgb(255, 255, 255)'],`${scheme}: Play`);
+   const ring=await cam.evaluate(()=>getComputedStyle(document.querySelector('.memory-deck[aria-checked="true"]')).borderTopColor);
+   assert.equal(ring,scheme==='dark'?'rgb(95, 214, 162)':WORLD.green,`${scheme}: the chosen deck is ringed in green`);
+   assert.deepEqual(await paint('.memory-pairs button[aria-checked="true"]'),[WORLD.green,'rgb(255, 255, 255)'],`${scheme}: the chosen number of pairs`);
+  });
+  await cam.click('#closeMemory');await cam.waitForSelector('#cardsHub:not([hidden])');
+ });
+
  await check('the share card is the World’s: ink header with the lockup, the camera’s name at the foot, the text signed by both',async()=>{
   const out=await cam.evaluate(async()=>{
-   const m=await import('./social-share.js?v=20261109brand2');
+   const m=await import('./social-share.js?v=20261110green1');
    let canvas=null;const orig=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(...a){canvas=this;return orig.apply(this,a);};
    const el=m.createResultShare({game:'Ball',headline:'520 points!',detail:'52 catches'});document.body.append(el);
    await new Promise(r=>{const t=setInterval(()=>{if(!el.querySelectorAll('button')[1].disabled){clearInterval(t);r();}},20);});
@@ -198,14 +255,15 @@ try{
   assert.equal(out.text,'Ball · 520 points! · 52 catches — Pocket Camera · Johansson World');
  });
 
- await check('the Home Screen icons: a dark ground and the camera’s gold ring',async()=>{
+ await check('the Home Screen icons: the World’s ink for a ground and its green for the lens ring',async()=>{
   const px=await cam.evaluate(async()=>{
    const img=new Image();img.src='icons/icon-512.png';await img.decode();const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');g.drawImage(img,0,0);
-   const at=(x,y)=>[...g.getImageData(x,y,1,1).data].slice(0,3);return {corner:at(8,500),ring:at(256,362)};
+   const at=(x,y)=>[...g.getImageData(x,y,1,1).data].slice(0,3);return {corner:at(8,500),ring:at(256,362),flash:at(377,211)};
   });
-  // The ground deepens from the World's ink to the camera's night; the lens ring is the World's gold, a little lit.
-  assert.ok(px.corner[2]>px.corner[0]&&px.corner[1]>px.corner[0]&&px.corner[0]<40,`an ink ground (${px.corner})`);
-  assert.ok(px.ring[0]>200&&px.ring[1]>160&&px.ring[1]<200&&px.ring[2]<130,`a gold ring (${px.ring})`);
+  // The ground deepens from the World's ink (38,61,57) to the camera's night: green over blue over red, and dark.
+  assert.ok(px.corner[1]>px.corner[2]&&px.corner[2]>=px.corner[0]&&px.corner[1]<60,`an ink ground (${px.corner})`);
+  // The ring and the flash are the World's green, #16815e, the colour of everything chosen in the app.
+  for(const part of ['ring','flash'])assert.deepEqual(px[part],[22,129,94],`the ${part} in the World's green (${px[part]})`);
  });
  await granted.close();
  assert.deepEqual(errors,[]);

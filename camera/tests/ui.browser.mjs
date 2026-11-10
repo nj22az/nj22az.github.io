@@ -47,6 +47,7 @@ try{
     assert.equal(await page.locator('#startCamera').textContent(),'Start camera');
     assert.equal(await page.locator('#welcomeImport').textContent(),'Choose a photo');
     await page.locator('#welcomeAlbum').scrollIntoViewIfNeeded();assert.ok(await page.locator('#welcomeAlbum strong').isVisible());
+    assert.equal(await page.locator('#welcomeGames strong').textContent(),'Game Room');assert.ok(await page.locator('#welcomeGames').isVisible(),'the Game Room has a door on the title screen');
     const header=await page.locator('.camera-bar').evaluate(el=>{const r=el.getBoundingClientRect(),items=[...el.children].map(x=>x.getBoundingClientRect());return {overflow:el.scrollWidth-el.clientWidth,inside:items.every(x=>x.left>=r.left&&x.right<=r.right),overlap:items.some((x,i)=>items.slice(i+1).some(y=>Math.min(x.right,y.right)>Math.max(x.left,y.left)+1))};});
     assert.ok(header.overflow<=1&&header.inside&&!header.overlap,JSON.stringify(header));
    });await capture('welcome');

@@ -22,17 +22,17 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="camera.css?v=20261109brand2">
+<link rel="stylesheet" href="camera.css?v=20261110green1">
 <link rel="stylesheet" href="camera-refresh.css?v=20261104ui1">
 <link rel="stylesheet" href="memory-retro.css?v=20261029a">
 <link rel="stylesheet" href="card-games.css?v=20261029a">
 <link rel="stylesheet" href="blackjack.css?v=20261029a">
 <link rel="stylesheet" href="solitaire.css?v=20261030share1">
-<link rel="stylesheet" href="game-room-refresh.css?v=20261109brand2">
+<link rel="stylesheet" href="game-room-refresh.css?v=20261110green1">
 <link rel="stylesheet" href="social-share.css?v=20261029a">
-<link rel="stylesheet" href="camera-black.css?v=20261109brand2">
-<link rel="stylesheet" href="camera-ui.css?v=20261109brand2">
-<link rel="stylesheet" href="camera-brand.css?v=20261109brand2">
+<link rel="stylesheet" href="camera-black.css?v=20261110green1">
+<link rel="stylesheet" href="camera-ui.css?v=20261110green1">
+<link rel="stylesheet" href="camera-brand.css?v=20261110green1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -111,7 +111,7 @@
     <button type="button" class="setting" id="printSetting"><i><svg><use href="#i-printer"/></svg></i><small class="setting-title">Print when sharing</small><span>Print</span></button>
     <button type="button" class="setting" id="soundSetting"><i><svg><use href="#i-sound"/></svg></i><small class="setting-title">Sound</small><span>Sound</span></button>
     <button type="button" class="setting" id="themeSetting"><i><svg><use href="#i-contrast"/></svg></i><small class="setting-title">Appearance</small><span>Auto</span></button>
-    <footer class="settings-footer"><div class="settings-brand"><span class="brand-eyebrow">Johansson World · Minato Machi</span><small class="camera-version">v2026.11.09.2</small><a class="settings-world" href="/johansson-town/">Visit the World ›</a></div><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
+    <footer class="settings-footer"><div class="settings-brand"><span class="brand-eyebrow">Johansson World · Minato Machi</span><small class="camera-version">v2026.11.10.1</small><a class="settings-world" href="/johansson-town/">Visit the World ›</a></div><button type="button" class="offline-setting" id="offlineSetting" aria-label="Download offline files" title="Download offline files"><svg aria-hidden="true"><use href="#i-download"/></svg><span class="offline-label" hidden>Update</span></button></footer>
    </div>
    <div class="camera-view" id="cameraView"><div class="picture-area" id="cameraPictureArea"><div class="frame" id="cameraFrame">
     <div class="exposure" id="exposure" aria-hidden="true"><svg><use href="#i-light"/></svg><i></i></div>
@@ -134,7 +134,11 @@
      <button type="button" class="button" id="welcomeImport"><svg><use href="#i-photo"/></svg>Choose a photo</button>
     </div>
     <div class="welcome-note-row"><img class="welcome-face" id="welcomeFace" alt="" hidden><div><p class="fine welcome-face-line" id="welcomeFaceLine" hidden></p><p class="fine" id="welcomeNote">Photos stay on this device.</p></div></div>
-    <button type="button" class="welcome-album" id="welcomeAlbum"><img id="welcomeAlbumThumb" alt="" hidden><span><strong>Your album</strong><small id="welcomeAlbumCount">Saved photos, all in one place</small></span><svg><use href="#i-back"/></svg></button>
+    <!-- The two doors off the title screen, side by side: the album and the Game Room (the owner, 10 November 2026, on the recommendation to put the Game Room on the landing page: a phone shows this screen at every start unless its browser says the camera is already allowed, and the room was two taps behind the album). -->
+    <div class="welcome-doors">
+     <button type="button" class="welcome-album" id="welcomeAlbum"><img id="welcomeAlbumThumb" alt="" hidden><span class="door-icon" aria-hidden="true"><svg><use href="#i-photo"/></svg></span><span><strong>Your album</strong><small id="welcomeAlbumCount">No photos yet</small></span></button>
+     <button type="button" class="welcome-album welcome-games" id="welcomeGames"><span class="door-icon door-cards" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Four games</small></span></button>
+    </div>
    </div>
    <div class="count" id="count" aria-live="assertive"></div>
   </div>
@@ -434,6 +438,6 @@
 <input type="file" id="backupFile" accept=".zip,application/zip" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>
-<script type="module" src="app.js?v=20261109brand2"></script>
+<script type="module" src="app.js?v=20261110green1"></script>
 </body>
 </html>

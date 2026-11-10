@@ -25,7 +25,7 @@ import {normaliseFace} from './makeup.js?v=20261104ui1';
 const TAU=Math.PI*2;
 // The sticker sheets are loaded only when a hat is wanted, so the renderer (looks-gl.js, which normalises recipes here)
 // stays free of the sticker layer and runs in Node's tests too.
-const sheets=()=>import('./stickers.js?v=20261109brand2');
+const sheets=()=>import('./stickers.js?v=20261110green1');
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const number=(v,fallback)=>v!=null&&Number.isFinite(+v)?+v:fallback;
 
