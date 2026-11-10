@@ -87,6 +87,16 @@ def collection(name, parent=None):
     return c
 
 
+def round_rect(x0, y0, x1, y1, r, z, n=4):
+    """A rectangle with rounded corners, upright in the plane z (ship's axes): its points, counter-clockwise seen from forward."""
+    pts = []
+    for cx, cy, a0 in ((x1 - r, y1 - r, 0), (x0 + r, y1 - r, 90), (x0 + r, y0 + r, 180), (x1 - r, y0 + r, 270)):
+        for i in range(n + 1):
+            a = math.radians(a0 + 90 * i / n)
+            pts.append((cx + r * math.cos(a), cy + r * math.sin(a), z))
+    return pts
+
+
 # ---------- a part ----------
 class Part:
     """

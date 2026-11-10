@@ -14,7 +14,8 @@ as this tool last wrote it (the default). What Blender has built replaces what s
   - what the base keeps under the car deck is fitted inside the Christina's shell (FIT), because the Minato Maru's
     machinery spaces are square rooms and their corners stand through her plating where the hull rises aft;
   - where the base lays a floor over a stairwell, the well is opened (OPENINGS), so the stair can be seen from the deck
-    it leads to and gone down as well as up.
+    it leads to and gone down as well as up; where a door of the Christina's stands in a wall of the base, the wall is
+    opened for it.
 
 Needs numpy; no Blender.
 """
@@ -24,6 +25,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import lines as L
+import spec as S
 
 DEFAULT = os.path.join(HERE, '..', 'data', 'ferry.bin.gz')
 
@@ -38,15 +40,28 @@ SUPERSEDES = {
 }
 # Parts of the base that must lie inside the shell.
 FIT = ('machinery',)
-# Floors the base lays over a stairwell. The Minato Maru's lobby floor (a 5 mm covering, x -4.02 to 4.02, 6.04 to
-# 9.46 m from the transom) is one slab from side to side, over both stairs up from the car deck; the deck plating under
-# it is cut correctly (1.43 m wide to 2.75 m off the centreline, 7.40 to 9.40 m from the transom, a kerb along the
-# inboard edge). `level` is the height the covering lies between, 6.503 to 6.508: narrow, because the stair's top step,
-# the kerb and the feet of the walls round the well lie at 6.500 and must stay. The opening is given in plan.
+# Openings the base's drawing lacks, each cut through one thin plate of it. `across` names the axis the plate is thin
+# along (y: a floor, yard: a wall across the ship); the range given for that axis is the plate's own thickness, kept
+# narrow so nothing beside it is cut; the other two ranges are the opening.
+#  - The Minato Maru's lobby floor (a 5 mm covering, x -4.02 to 4.02, 6.04 to 9.46 m from the transom) is one slab from
+#    side to side, over both stairs up from the car deck; the deck plating under it is cut correctly (1.43 m wide to
+#    2.75 m off the centreline, 7.40 to 9.40 m from the transom, a kerb along the inboard edge). The covering lies
+#    between 6.503 and 6.508: the stair's top step, the kerb and the feet of the walls round the well lie at 6.500 and
+#    must stay.
+#  - Her engine room's after wall (6 cm, 8.44 to 8.50 m from the transom) has no way aft through it: it is opened where
+#    the Christina's watertight door to the shaft space stands (spec.WT_DOORS), whose frame lines the opening.
+_door = S.door_opening(S.WT_DOORS[0])
 OPENINGS = (
-    dict(part='passenger', name='the lobby floor over the starboard stair', level=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(7.40, 9.40)),
-    dict(part='passenger', name='the lobby floor over the port stair', level=(6.5015, 6.5095), x=(2.76, 4.3), yard=(7.40, 9.40)),
-)
+    dict(part='passenger', name='the lobby floor over the starboard stair', across='y', y=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(7.40, 9.40)),
+    dict(part='passenger', name='the lobby floor over the port stair', across='y', y=(6.5015, 6.5095), x=(2.76, 4.3), yard=(7.40, 9.40)),
+    dict(part='machinery', name="the engine room's after wall at the door to the shaft space", across='yard', yard=(8.435, 8.505),
+         x=(_door[0], _door[2]), y=(_door[1], _door[3])),
+) + tuple(
+    #  - On the bridge deck a handrail runs along each side of the crew's corridor, 0.94 m up, in one length from 9.30
+    #    to 19.20 m: across the four doorways of the cabins on that side. It is cut away at each doorway.
+    dict(part='bridge', name=f"the corridor's {'port' if side > 0 else 'starboard'} handrail across the doorway at {a:.2f} m",
+         across='x', x=tuple(sorted((side * 0.40, side * 0.44))), y=(10.02, 10.08), yard=(a, b))
+    for side in (1, -1) for a, b in ((9.20, 9.90), (11.70, 12.40), (14.20, 14.90), (16.70, 17.40)))
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
                          emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None)
 
@@ -118,22 +133,23 @@ def _clip(poly, axis, bound, below):
     return out
 
 
-def open_floor(m, level, xs, zs, grace=0.002):
+def open_plate(m, thin, level, a, a_range, b, b_range, grace=0.002):
     """
-    Cut the rectangle xs by zs (in plan) out of every face of the mesh that lies between the two levels. What is left of
-    each face is drawn again in pieces that meet corner to corner. Returns how many triangles were cut; a mesh already
-    cut is left as it is, so a second run changes nothing. The 5 mm edge of the covering round the opening is not drawn.
+    Cut a rectangle out of every face of the mesh that lies within `level` along the axis `thin` (the plate's own
+    thickness): the rectangle is a_range by b_range along the axes a and b. What is left of each face is drawn again in
+    pieces that meet corner to corner. Returns how many triangles were cut; a mesh already cut is left as it is, so a
+    second run changes nothing. The plate's edge round the opening is not drawn.
     """
     pos, idx = m['pos'], m['idx']
     T = pos[idx]
     lo, hi = T.min(1), T.max(1)
-    hit = ((lo[:, 1] >= level[0]) & (hi[:, 1] <= level[1]) & (hi[:, 0] > xs[0] + grace) & (lo[:, 0] < xs[1] - grace)
-           & (hi[:, 2] > zs[0] + grace) & (lo[:, 2] < zs[1] - grace))
+    hit = ((lo[:, thin] >= level[0]) & (hi[:, thin] <= level[1]) & (hi[:, a] > a_range[0] + grace) & (lo[:, a] < a_range[1] - grace)
+           & (hi[:, b] > b_range[0] + grace) & (lo[:, b] < b_range[1] - grace))
     if not hit.any():
         return 0
-    # Round the opening: the two sides beyond it in breadth, and the two ends between them.
-    regions = (((0, xs[0], True),), ((0, xs[1], False),),
-               ((0, xs[0], False), (0, xs[1], True), (2, zs[0], True)), ((0, xs[0], False), (0, xs[1], True), (2, zs[1], False)))
+    # Round the opening: the two sides beyond it along a, and the two ends between them.
+    regions = (((a, a_range[0], True),), ((a, a_range[1], False),),
+               ((a, a_range[0], False), (a, a_range[1], True), (b, b_range[0], True)), ((a, a_range[0], False), (a, a_range[1], True), (b, b_range[1], False)))
     new_pos, new_w, new_from = [], [], []
     for t in np.nonzero(hit)[0]:
         tri = [(pos[idx[t, k]].copy(), np.eye(3)[k]) for k in range(3)]
@@ -150,19 +166,19 @@ def open_floor(m, level, xs, zs, grace=0.002):
                 edge, more = region[0][1], []
                 for (p, w), (q, v) in zip(poly, poly[1:] + poly[:1]):
                     more.append((p, w))
-                    if abs(p[0] - edge) < 1e-9 and abs(q[0] - edge) < 1e-9:
-                        cuts = sorted((z for z in zs if min(p[2], q[2]) + 1e-9 < z < max(p[2], q[2]) - 1e-9), reverse=p[2] > q[2])
-                        for z in cuts:
-                            f = (z - p[2]) / (q[2] - p[2])
+                    if abs(p[a] - edge) < 1e-9 and abs(q[a] - edge) < 1e-9:
+                        cuts = sorted((c for c in b_range if min(p[b], q[b]) + 1e-9 < c < max(p[b], q[b]) - 1e-9), reverse=p[b] > q[b])
+                        for c in cuts:
+                            f = (c - p[b]) / (q[b] - p[b])
                             more.append((p + (q - p) * f, w + (v - w) * f))
                 poly = more
                 # Fanned from the corner furthest from that edge, so no piece is a sliver along it.
-                k = max(range(len(poly)), key=lambda i: abs(poly[i][0][0] - edge))
+                k = max(range(len(poly)), key=lambda i: abs(poly[i][0][a] - edge))
                 poly = poly[k:] + poly[:k]
-            for a, b in zip(poly[1:], poly[2:]):
-                if np.linalg.norm(np.cross(a[0] - poly[0][0], b[0] - poly[0][0])) < 1e-9:
+            for u, v in zip(poly[1:], poly[2:]):
+                if np.linalg.norm(np.cross(u[0] - poly[0][0], v[0] - poly[0][0])) < 1e-9:
                     continue
-                for p, w in (poly[0], a, b):
+                for p, w in (poly[0], u, v):
                     new_pos.append(p); new_w.append(w); new_from.append(t)
     new_w, corners = np.array(new_w).reshape(-1, 3), idx[np.array(new_from, dtype=np.int64).reshape(-1)]
     first = len(pos)
@@ -236,13 +252,16 @@ def main():
             if moved:
                 report['fitted'].append(dict(part=gid, material=m['material'], vertices=moved, furthest=round(float(furthest), 3)))
 
-    # 2b. Stairwells the base has floored over are opened.
+    # 2b. Openings the base's drawing lacks: stairwells it floors over, a wall where a door now stands.
+    AXES = dict(x=0, y=1, yard=2)
     for o in OPENINGS:
-        zs = (L.Z(o['yard'][0]), L.Z(o['yard'][1]))
+        span = dict(x=o['x'], y=o['y'], yard=(L.Z(o['yard'][0]), L.Z(o['yard'][1])))
+        thin = o['across']
+        u, v = (k for k in ('x', 'y', 'yard') if k != thin)
         for m in meshes.get(o['part'], []):
             if m['origin'] != 'town':
                 continue
-            cut = open_floor(m, o['level'], o['x'], zs)
+            cut = open_plate(m, AXES[thin], span[thin], AXES[u], span[u], AXES[v], span[v])
             if cut:
                 report['opened'].append(dict(part=o['part'], what=o['name'], material=m['material'], triangles=cut))
 

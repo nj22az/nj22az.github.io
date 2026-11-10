@@ -219,8 +219,11 @@ function turnAbout(out, pivot, angle) {
   out.makeTranslation(pivot.x, pivot.y, pivot.z).multiply(TURN.makeRotationAxis(AXIS, angle)).multiply(SHIFT.makeTranslation(-pivot.x, -pivot.y, -pivot.z));
   return out;
 }
-/** Put every moving part where its input says. The kinds of motion are the file's (README: `movers`). */
-function moveParts() {
+/**
+ * Put every moving part where its input says. The kinds of motion are the file's (README: `movers`). The shadows are
+ * drawn again with it, unless told to wait (a door on its way: they are drawn once it has come to rest).
+ */
+function moveParts(shadows = true) {
   for (const { def, node } of movers) {
     const input = inputs.get(def.input);
     const angle = THREE.MathUtils.degToRad(input ? input.value : 0) * (def.ratio ?? 1);
@@ -249,23 +252,48 @@ function moveParts() {
     } else node.matrix.identity();
     node.matrixWorldNeedsUpdate = true;
   }
-  renderer.shadowMap.needsUpdate = true;
+  if (shadows) renderer.shadowMap.needsUpdate = true;
   redraw();
 }
 /** How a setting is said: "Rudder 20° to port", "Rudder amidships". */
 const said = (def, v) => v === 0 ? `${def.name} ${def.rest || 'at rest'}` : `${def.name} ${Math.abs(v)}${def.unit || ''} ${v < 0 ? def.below : def.above}`;
 function setInput(id, value) {
   const it = inputs.get(id);
-  if (!it) return;
+  if (!it || it.def.auto) return;
   it.value = THREE.MathUtils.clamp(value, it.def.min, it.def.max);
   it.range.value = String(it.value);
   it.range.setAttribute('aria-valuetext', said(it.def, it.value));
   readout.textContent = said(it.def, it.value);
   moveParts();
 }
+/**
+ * What the file says is worked by coming near (`auto`: her watertight doors): open to a walker within `reach` of `at`,
+ * shut again behind; from outside, as a tap left it. It swings in 0.8 s.
+ */
+function workAuto(dt) {
+  let moved = false, under = false;
+  for (const it of inputs.values()) {
+    const def = it.def;
+    if (!def.auto) continue;
+    const near = walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < 1.5;
+    const want = (walk ? near : it.open) ? def.max : def.min;
+    if (it.value === want) continue;
+    const step = (def.max - def.min) / 0.8 * dt;
+    it.value = want > it.value ? Math.min(want, it.value + step) : Math.max(want, it.value - step);
+    moved = true;
+    if (it.value !== want) under = true;
+  }
+  if (moved) moveParts(!under);
+}
 /** A slider in the bar for each thing the file says can be worked. A double click puts it back to rest. */
 function buildInputs(header) {
   for (const def of header.inputs || []) {
+    // A door has no slider: it opens to whoever comes near on foot, and to a tap from outside (workAuto, identify).
+    if (def.auto) {
+      inputs.set(def.id, { def, value: def.min, open: false });
+      if (def.normal) { const axis = Math.abs(def.normal[0]) > Math.abs(def.normal[2]) ? 0 : 2; passages.push({ axis, u: def.at[axis === 0 ? 2 : 0], at: def.at[axis], y: def.at[1] }); }
+      continue;
+    }
     const range = el('input', { type: 'range', min: String(def.min), max: String(def.max), step: String(def.step || 1), value: '0' });
     range.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
     inputs.set(def.id, { def, value: 0, range });
@@ -471,6 +499,11 @@ function identify(clientX, clientY) {
   const hit = ray.intersectObjects(decks.filter(d => d.node.visible).map(d => d.node), true)
     .find(h => h.object.isMesh && h.object.parent !== mark && h.point.x >= c && !h.object.material.userData.glass);
   if (!hit) { select(null); return; }
+  // A door answers a tap: it opens, or shuts again.
+  for (let n = hit.object.parent; n; n = n.parent) {
+    const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
+    if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? 'open' : 'shut'}`; return; }
+  }
   // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
   let within = hit.object.parent;
   while (within && !decks.some(d => d.node === within)) within = within.parent;
@@ -553,12 +586,15 @@ function nudgeView(turn, tip, zoom) {
  * carry one from deck to deck and a deck's edge holds one back; a gap of up to GAP in the floor is stepped across (open
  * stairs leave one between the top tread and the landing). What stands on a deck stops the walker too (furniture,
  * machinery, rails, the bulwark): anything whose top lies between OVER and the top of the head, within BODY of the
- * feet (OVER is two treads of a stair, which a body on a stair has beside its feet). Bulkheads and doors do not: the
- * model has no doors that open, and several rooms have none drawn at all, so one walks through. Ladders are not
- * climbed: the deck above and the deck below are a key (or a button) away. Under a deckhead lower than the walker the
- * eye comes down (one stoops); under less than CROUCH one does not go.
+ * feet (OVER is two treads of a stair, which a body on a stair has beside its feet). Walls stop it as well: bulkheads,
+ * linings, glass, whatever stands upright within BODY of the walker between knee and eye (wallClear). A door lets one
+ * through: the other ship's doors are leaves that do not open, so one goes through the leaf and the wall it hangs in
+ * (findDoors); her own watertight doors swing open for whoever comes near (workAuto). A room with no door drawn is
+ * entered by choosing it in the panel. Ladders are not climbed: the deck above and the deck below are a key (or a
+ * button) away. Under a deckhead lower than the walker, and through a low doorway, the eye comes down (one stoops);
+ * under less than CROUCH one does not go.
  */
-const EYE = 1.6, HEAD = 1.7, CROUCH = 1.1, BODY = 0.18, STEP = 0.3, OVER = 0.42, GAP = 0.15, PACE = 1.5, RUN = 3.8, LOOK = 0.0036, STRIDE = 0.02;
+const EYE = 1.6, HEAD = 1.7, CROUCH = 1.1, DUCK = 1.25, BODY = 0.18, STEP = 0.3, OVER = 0.42, GAP = 0.15, PACE = 1.5, RUN = 3.8, LOOK = 0.0036, STRIDE = 0.02;
 const RING = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [Math.cos(k * Math.PI / 4) * BODY, Math.sin(k * Math.PI / 4) * BODY])];
 /**
  * Every triangle of what stands still that faces up (a floor) or down (a deckhead), by 0.5 m squares of the plan, so
@@ -566,7 +602,11 @@ const RING = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [Math.cos(k * Math.
  */
 const CELL = 0.5;
 const surface = () => ({ tris: [], deck: [], map: new Map() });
-const floors = surface(), heads = surface();
+const floors = surface(), heads = surface(), walls = surface();
+/** Where a door of the drawing hangs: there one may go through the wall it hangs in (findDoors). */
+let doorways = [];
+/** Every way through a wall, the drawing's doors and her own: which way it lies (0 across x, 2 across z), its middle along the wall, where the wall stands, its floor. */
+let passages = [];
 function indexFloors() {
   const p = new Float64Array(9);
   const keep = (S, di) => {
@@ -582,9 +622,11 @@ function indexFloors() {
       list.push(n);
     }
   };
+  const steep = [], steepDeck = [];
   decks.forEach((d, di) => {
     for (const o of d.node.children) {
-      if (!o.isMesh || o.material.transparent) continue;          // moving parts (groups) and glass are not stood on
+      if (!o.isMesh) continue;                                    // moving parts (groups) neither carry nor stop the walker
+      const glass = o.material.transparent;                       // glass is not stood on, but it is a wall
       // A plate drawn as one surface seen from both sides (a floor plate, a flat) is a floor from above and a deckhead
       // from below, whichever way it is wound.
       const both = o.material.userData.side === THREE.DoubleSide;
@@ -593,13 +635,113 @@ function indexFloors() {
         for (let k = 0; k < 3; k++) { const j = ix[i + k] * 3; p[k * 3] = pos[j]; p[k * 3 + 1] = pos[j + 1]; p[k * 3 + 2] = pos[j + 2]; }
         const ux = p[3] - p[0], uy = p[4] - p[1], uz = p[5] - p[2], vx = p[6] - p[0], vy = p[7] - p[1], vz = p[8] - p[2];
         const ny = uz * vx - ux * vz, len = Math.hypot(uy * vz - uz * vy, ny, ux * vy - uy * vx);
-        if (len < 1e-9 || Math.abs(ny) / len < 0.6) continue;
+        if (len < 1e-9) continue;
+        if (Math.abs(ny) / len < 0.6) { for (let k = 0; k < 9; k++) steep.push(p[k]); steepDeck.push(di); continue; }
+        if (glass) continue;
         if (ny > 0 || both) keep(floors, di);
         if (ny < 0 || both) keep(heads, di);
       }
     }
   });
-  for (const S of [floors, heads]) { S.tris = Float32Array.from(S.tris); S.deck = Uint8Array.from(S.deck); }
+  // What stands upright is a wall, but for the doors' own leaves and frames.
+  doorways = findDoors(steep);
+  passages = doorways.map(d => ({ axis: d.axis, u: (d.u0 + d.u1) / 2, at: (d.p0 + d.p1) / 2, y: d.y0 }));
+  for (let i = 0, n = 0; i < steep.length; i += 9, n++) {
+    for (let k = 0; k < 9; k++) p[k] = steep[i + k];
+    if (!partOfDoor(p)) keep(walls, steepDeck[n]);
+  }
+  for (const S of [floors, heads, walls]) { S.tris = Float32Array.from(S.tris); S.deck = Uint8Array.from(S.deck); }
+}
+/**
+ * The doors of the drawing, found by their shape: a leaf is a thin upright slab, 0.5 to 1.05 m wide and 1.6 to 2.12 m
+ * high, its two faces 1 to 6 cm apart, lying fore and aft or athwartships. (A wall panel is taller, wider or thicker; a
+ * locker is deeper.) None of them opens, and most of them hang on a wall that has no opening behind them: so a door is
+ * where the walker may go through the wall it hangs in (wallClear).
+ */
+function findDoors(t) {
+  const seen = new Map();
+  for (let i = 0; i < t.length; i += 9) {
+    const x0 = Math.min(t[i], t[i + 3], t[i + 6]), x1 = Math.max(t[i], t[i + 3], t[i + 6]);
+    const y0 = Math.min(t[i + 1], t[i + 4], t[i + 7]), y1 = Math.max(t[i + 1], t[i + 4], t[i + 7]);
+    const z0 = Math.min(t[i + 2], t[i + 5], t[i + 8]), z1 = Math.max(t[i + 2], t[i + 5], t[i + 8]);
+    if (y1 - y0 < 1.6 || y1 - y0 > 2.12) continue;
+    const dx = x1 - x0, dz = z1 - z0;
+    let axis, at, u0, u1;
+    if (dx < 0.02 && dz >= 0.5 && dz <= 1.05) { axis = 0; at = (x0 + x1) / 2; u0 = z0; u1 = z1; }
+    else if (dz < 0.02 && dx >= 0.5 && dx <= 1.05) { axis = 2; at = (z0 + z1) / 2; u0 = x0; u1 = x1; }
+    else continue;
+    const key = [axis, Math.round(u0 * 500), Math.round(u1 * 500), Math.round(y0 * 500), Math.round(y1 * 500)].join('|');
+    let rec = seen.get(key);
+    if (!rec) seen.set(key, rec = { axis, u0, u1, y0, y1, at: new Set() });
+    rec.at.add(Math.round(at * 1000));
+  }
+  const out = [];
+  for (const r of seen.values()) {
+    const at = [...r.at].sort((a, b) => a - b);
+    for (let k = 1; k < at.length; k++) if (at[k] - at[k - 1] >= 10 && at[k] - at[k - 1] <= 60) out.push({ axis: r.axis, p0: at[k - 1] / 1000, p1: at[k] / 1000, u0: r.u0, u1: r.u1, y0: r.y0, y1: r.y1 });
+  }
+  return out;
+}
+/** Whether a triangle (nine numbers) is part of a door: its leaf, its frame, its handle, a sign on it. */
+function partOfDoor(p) {
+  const x0 = Math.min(p[0], p[3], p[6]), x1 = Math.max(p[0], p[3], p[6]), y0 = Math.min(p[1], p[4], p[7]), y1 = Math.max(p[1], p[4], p[7]);
+  const z0 = Math.min(p[2], p[5], p[8]), z1 = Math.max(p[2], p[5], p[8]);
+  for (const d of doorways) {
+    const a0 = d.axis === 0 ? x0 : z0, a1 = d.axis === 0 ? x1 : z1, u0 = d.axis === 0 ? z0 : x0, u1 = d.axis === 0 ? z1 : x1;
+    if (a0 >= d.p0 - 0.15 && a1 <= d.p1 + 0.15 && u0 >= d.u0 - 0.15 && u1 <= d.u1 + 0.15 && y0 >= d.y0 - 0.1 && y1 <= d.y1 + 0.3) return true;
+  }
+  return false;
+}
+/**
+ * How high a body standing at (x, z) on a floor at y is clear of what stands upright: the lowest of SLICES (heights
+ * over the feet, up to `top`) at which a wall comes within BODY of its middle; Infinity when none does. Each wall
+ * triangle is cut at the height and the line it leaves in the plan is measured to. Standing in a doorway, the wall the
+ * door hangs in does not count.
+ */
+const SLICES = [0.5, 0.7, 0.9, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6];
+function wallClear(x, z, y, top = EYE) {
+  let door = null;
+  for (const d of doorways) {
+    const u = d.axis === 0 ? z : x, at = d.axis === 0 ? x : z;
+    if (u > d.u0 + 0.1 && u < d.u1 - 0.1 && at > d.p0 - 0.55 && at < d.p1 + 0.55 && y > d.y0 - 0.4 && y < d.y0 + 0.3) { door = d; break; }
+  }
+  const t = walls.tris, R = BODY, R2 = R * R;
+  let clear = Infinity;
+  for (let cx = Math.floor((x - R) / CELL), cx1 = Math.floor((x + R) / CELL); cx <= cx1; cx++) for (let cz = Math.floor((z - R) / CELL), cz1 = Math.floor((z + R) / CELL); cz <= cz1; cz++) {
+    const list = walls.map.get(cx * 4096 + cz);
+    if (!list) continue;
+    for (const n of list) {
+      if (!decks[walls.deck[n]].node.visible) continue;
+      const i = n * 9, ax = t[i], ay = t[i + 1], az = t[i + 2], bx = t[i + 3], by = t[i + 4], bz = t[i + 5], qx = t[i + 6], qy = t[i + 7], qz = t[i + 8];
+      const lo = Math.min(ay, by, qy) - y, hi = Math.max(ay, by, qy) - y;
+      if (hi < SLICES[0] || lo > top || lo >= clear) continue;
+      if (Math.min(ax, bx, qx) > x + R || Math.max(ax, bx, qx) < x - R || Math.min(az, bz, qz) > z + R || Math.max(az, bz, qz) < z - R) continue;
+      if (door) {
+        const nx = (by - ay) * (qz - az) - (bz - az) * (qy - ay), nz = (bx - ax) * (qy - ay) - (by - ay) * (qx - ax);
+        const axis = Math.abs(nx) > Math.abs(nz) ? 0 : 2, at = axis === 0 ? (ax + bx + qx) / 3 : (az + bz + qz) / 3;
+        if (axis === door.axis && at > door.p0 - 0.3 && at < door.p1 + 0.3) continue;
+      }
+      for (const sl of SLICES) {
+        if (sl >= clear || sl > top) break;
+        if (sl < lo || sl > hi) continue;
+        // Where the triangle's edges cross that height: two points, the ends of its line in the plan.
+        const h = y + sl;
+        let count = 0, px = 0, pz = 0, rx = 0, rz = 0;
+        for (let e = 0; e < 3; e++) {
+          const a = i + e * 3, b = i + ((e + 1) % 3) * 3, ya = t[a + 1] - h, yb = t[b + 1] - h;
+          if ((ya <= 0) === (yb <= 0)) continue;
+          const f = ya / (ya - yb), ex = t[a] + (t[b] - t[a]) * f, ez = t[a + 2] + (t[b + 2] - t[a + 2]) * f;
+          if (count++ === 0) { px = ex; pz = ez; } else { rx = ex; rz = ez; }
+        }
+        if (count < 2) continue;
+        const sx = rx - px, sz = rz - pz, len2 = sx * sx + sz * sz;
+        const f = len2 > 1e-12 ? Math.max(0, Math.min(1, ((x - px) * sx + (z - pz) * sz) / len2)) : 0;
+        const ddx = px + sx * f - x, ddz = pz + sz * f - z;
+        if (ddx * ddx + ddz * ddz < R2) { clear = sl; break; }
+      }
+    }
+  }
+  return clear;
 }
 /** The surface of S over or under (x, z) between `bottom` and `top`: the highest there, or with `lowest` the lowest; null when there is none. */
 function levelAt(S, x, z, top, bottom, lowest) {
@@ -627,28 +769,36 @@ function headroom(x, z, y) {
   return over === null ? Infinity : over - y;
 }
 /**
- * The floor a body stands on at (x, z), coming from the level `from`: what is under its middle within a step, null
- * where there is nothing. A slot narrower than the body (the seam between two floor plates) is stood across, not in:
- * where the floor is higher on both sides of the middle, the lower of the two sides is the footing.
+ * The floor a body stands on at (x, z), coming from the level `from`: what is under its middle within a step. A slot
+ * narrower than the body (the seam between two floor plates) is stood across, not in: where the floor is higher on
+ * both sides of the middle, or there is floor on both sides and none under the middle, the lower of the two sides is
+ * the footing. Null where there is nothing to stand on.
  */
 function footing(x, z, from) {
   let y = floorAt(x, z, from + STEP, from - STEP);
-  if (y === null) return null;
   for (let k = 1; k <= 4; k++) {
     const a = floorAt(x + RING[k][0], z + RING[k][1], from + STEP, from - STEP);
-    if (a === null || a <= y) continue;
+    if (a === null || (y !== null && a <= y)) continue;
     const b = floorAt(x - RING[k][0], z - RING[k][1], from + STEP, from - STEP);
-    if (b !== null && b > y) y = Math.min(a, b);
+    if (b !== null && (y === null || b > y)) y = Math.min(a, b);
   }
   return y;
 }
 /**
- * Whether a body can stand at (x, z) on a floor at y: nothing drawn has its top there between a step and the head, and
- * there is CROUCH of headroom over its middle (under less than the full height one stoops: see placeEye).
+ * Whether a body can stand at (x, z) on a floor at y: nothing drawn has its top there between a step and the head,
+ * there is CROUCH of headroom over its middle, and no wall comes within BODY of it lower than DUCK (under less than the
+ * full height one stoops, under a deckhead and through a low doorway alike: see placeEye).
  */
 function roomFor(x, z, y) {
-  for (const [dx, dz] of RING) if (floorAt(x + dx, z + dz, y + HEAD, y + OVER + 0.01) !== null) return false;
-  return headroom(x, z, y) >= CROUCH;
+  for (const [dx, dz] of RING) {
+    const top = floorAt(x + dx, z + dz, y + HEAD, y + OVER + 0.01);
+    if (top === null) continue;
+    // What stands there stops one, but not what only hangs there high enough to stoop under (the head of a doorway).
+    const under = levelAt(heads, x + dx, z + dz, top, y + OVER, true);
+    if (under === null || under - y < DUCK) return false;
+  }
+  const head = headroom(x, z, y);
+  return head >= CROUCH && wallClear(x, z, y, Math.min(EYE, head - 0.05)) > DUCK;
 }
 /** Whether one can walk `far` metres from there, some way: a spot hemmed in on every side is no place to begin a walk. */
 function canLeave(x, z, y, far) {
@@ -755,8 +905,14 @@ function placeEye() {
   camera.rotation.set(walk.pitch, walk.yaw, 0, 'YXZ');
   redraw();
 }
-/** How high the eye is carried at the feet's place: its own height, less under a low deckhead (0.12 m is kept over it). */
-const eyeFor = w => Math.min(EYE, headroom(w.pos.x, w.pos.z, w.floor) - 0.12);
+/**
+ * How high the eye is carried at the feet's place: its own height, less under a low deckhead (0.12 m is kept over it)
+ * and less where the head of a doorway is in the way (0.2 m under the lowest height at which the wall is met).
+ */
+function eyeFor(w) {
+  const head = headroom(w.pos.x, w.pos.z, w.floor);
+  return Math.min(EYE, head - 0.12, wallClear(w.pos.x, w.pos.z, w.floor, Math.min(EYE, head - 0.05)) - 0.2);
+}
 /** One frame on foot: turn, step, find the floor. */
 function stepWalk(dt) {
   const w = walk;
@@ -785,7 +941,7 @@ function stepWalk(dt) {
       // The whole stride if there is floor and room to take it; else along one side of it, so an edge is slid along.
       let gone = false;
       for (const [sx, sz] of [[dx, dz], [dx, 0], [0, dz]]) {
-        if (!sx && !sz) continue;
+        if (Math.abs(sx) + Math.abs(sz) < 1e-9) continue;
         // Where there is nothing to stand on, the foot reaches a little further: the first floor found within GAP decides.
         const reach = Math.hypot(sx, sz);
         for (let d = reach; d <= Math.max(reach, GAP); d = d < STRIDE ? STRIDE : d + STRIDE) {
@@ -796,7 +952,18 @@ function stepWalk(dt) {
         }
         if (gone) break;
       }
-      if (!gone) break;
+      if (gone) continue;
+      // Stopped by the wall beside a doorway one was making for, one is drawn to its middle: a stride along the wall.
+      let drawn = false;
+      for (const d of passages) {
+        const across = d.axis === 0 ? w.pos.x : w.pos.z, along = d.axis === 0 ? w.pos.z : w.pos.x, going = d.axis === 0 ? dx : dz;
+        const off = d.u - along;
+        if ((d.at - across) * going <= 0 || Math.abs(d.at - across) > 0.9 || Math.abs(off) < 0.01 || Math.abs(off) > 0.55 || Math.abs(d.y - w.floor) > 0.6) continue;
+        const side = Math.sign(off) * Math.min(Math.abs(off), pace), x = w.pos.x + (d.axis === 0 ? 0 : side), z = w.pos.z + (d.axis === 0 ? side : 0), y = footing(x, z, w.floor);
+        if (y !== null && roomFor(x, z, y)) { w.pos.x = x; w.pos.z = z; w.floor = y; changed = drawn = true; }
+        break;
+      }
+      if (!drawn) break;
     }
   }
   if (Math.abs(w.floor - w.pos.y) > 1e-4) { w.pos.y += (w.floor - w.pos.y) * Math.min(1, dt * 14); changed = true; }
@@ -959,6 +1126,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min((now - lastFrame) / 1000 || 0, 0.25);
   lastFrame = now;
+  workAuto(dt);
   if (walk) {
     stepWalk(dt);
     if (dirty) { renderer.render(scene, camera); dirty = false; }
@@ -1010,9 +1178,12 @@ async function start() {
     hold: (code, on = true) => { on ? held.add(code) : held.delete(code); },
     /** For checks: the walk of so many seconds, gone at once (60 pictures a second), whatever this machine can draw. */
     walkFor: seconds => { for (let t = 0; walk && t < seconds - 1e-9; t += 1 / 60) stepWalk(1 / 60); },
-    roomFor, headroom,
+    roomFor, headroom, wallClear, workAuto, footing,
+    /** For checks: leave a door open or shut, as a tap would. */
+    work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
+    get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max }))); },
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw },
-    get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
+    get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
   };
 }
 start().catch(err => {

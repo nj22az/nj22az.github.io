@@ -2,7 +2,7 @@
 
 A 3D viewer of the Christina, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
 along her length (Cut), put her rudders over (Rudder), name every room aboard, and walk through her on foot (Walk
-aboard): <https://nj22az.github.io/ferry/>.
+aboard), where walls stop one and doors let one through: <https://nj22az.github.io/ferry/>.
 
 The page has no build step: serve the site root (`python3 -m http.server`) and open `/ferry/`. Her data is built
 beforehand (*Her own build*, below) and kept in `data/`.
@@ -11,7 +11,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.52 MB, about 203,000 triangles in 69 meshes (78,500 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.55 MB, about 208,000 triangles in 75 meshes (83,400 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 
@@ -33,6 +33,7 @@ place of the Minato Maru's drawing on this page as it is finished.
 | **1b. The spaces the hull gives a floor to** | **Her own, 10 November 2026** (the owner, on seeing the hull live: "Lots of things are missing like the steering gear and the propeller shaft"). The steering gear (flat, rudder carriers, tillers, tie bar, two rams, two hydraulic power units, hand pump, rudder-angle transmitter, the stern tubes' header tanks, the emergency fire pump); the shafting inside her (each intermediate shaft from its gearbox's flange through the bulkhead gland, over a plummer block, to the coupling on the tail shaft, and the stern tube's seal); two 6 m³ fresh-water tanks; the bow thruster's motor on the tunnel, its platform and starter; two chain lockers. These lift with the machinery spaces, where the panel lists their rooms |
 | **1c. Working rudders** | **10 November 2026** (the owner: "The rudders too , need to work, or be azimuth pods"). The Rudder control puts both rudders over, to 35° either side. Blade, stock and anodes turn; so do the head of the stock and the tiller in the steering-gear room; the tie bar goes with the tillers' ends; each ram swings on its trunnion and its rod runs out or in. Azimuth pods were the owner's alternative: they would be another ship (no shafts, rudders or steering gear), and are not built |
 | **On foot, and a better outside view** | **10 November 2026** (the owner: "I want to be able to explore it in fpv on the demo and have better camera controls"). *Walking aboard and the outside view*, below. For it the data changed in two places: the lobby's floor is opened over the two stairs, and the car deck has an underside over the hull's own spaces. |
+| **Walls, doors, and the way aft** | **10 November 2026** (the owner: "Do one fix that can impact and make it better", and while it was made: "There needs to be a water tight door that can open to the steering gear"). On foot, walls now stop one and doors let one through. Three hinged watertight doors of her own stand on the centreline, and a walkway with steps goes through the shaft space: from the engine room one walks aft to the steering gear. *Walking aboard* and *The way aft*, below. |
 | 2. Exterior above the hull (bulwark fittings, ramp, casings, deckhouses, funnels, mast) | The Minato Maru's drawing |
 | 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
@@ -119,6 +120,11 @@ tool last wrote it (the default), so no Town checkout is needed to build her aga
   down. The covering is cut back to the well on each side (1.26 m by 2.0 m, 7.40 to 9.40 m from the transom). Only
   faces between 6.5015 and 6.5095 m are cut: the stair's top step, the kerb and the feet of the walls round the well lie
   at 6.500 and stay. The 5 mm edge of the covering round the opening is not drawn.
+- **A wall of the base is opened where a door of hers stands, and a rail where it bars a doorway** (the same
+  `OPENINGS`, which cut a rectangle through any thin plate or bar of the base). The engine room's after wall (6 cm,
+  8.44 to 8.50 m) is opened for the watertight door to the shaft space. On the bridge deck a handrail ran along each
+  side of the crew's corridor in one length, across the four cabin doorways on that side: it is cut away at each
+  (the cut ends are open tubes).
 - A part may give a mesh to another of the viewer's parts (`part.group` in the builders). The hull's build gives the
   car deck its plating as seen from below, over the hull's own spaces (below).
 - A second run on its own output gives the same file byte for byte.
@@ -181,8 +187,9 @@ to walk.
 The Rudder slider stays: one can stand in the steering-gear room and put the rudders over.
 
 **How the walker finds its way** (`app.js`, *walking aboard*). There is no separate collision model: the walker reads
-the same triangles the page draws. At start every triangle of what stands still that faces up is kept as a floor and
-every one that faces down as a deckhead (52,000 and 53,000 of them), by 0.5 m squares of the plan.
+the same triangles the page draws. At start every triangle of what stands still is kept by 0.5 m squares of the plan:
+as a floor if it faces up, a deckhead if it faces down, a wall if it stands upright (52,600, 53,800 and 126,000 of
+them; glass is a wall but not a floor).
 - The feet stand on the highest floor under them within a step. A step is 0.3 m, up or down, and no more: stairs carry
   one from deck to deck (their risers are 0.2 m), a seat is not climbed, and a deck's edge holds one back. Nobody
   falls.
@@ -192,16 +199,44 @@ every one that faces down as a deckhead (52,000 and 53,000 of them), by 0.5 m sq
   them, and a foot on a seam would otherwise stand on the hull plating 24 cm below.
 - What stands on a deck stops the walker: anything whose top lies between 0.42 m and 1.7 m over the feet, within
   0.18 m of them (furniture, machinery, rails, the bulwark, the capstan, the barrier across the bow). 0.42 m is two
-  treads of a stair, which a body on a stair has beside its feet.
-- Under a deckhead, beam or pipe lower than the walker the eye comes down, keeping 0.12 m under it (one stoops);
-  where there is less than 1.1 m one does not go.
+  treads of a stair, which a body on a stair has beside its feet. What only hangs there, with 1.25 m or more under
+  it (the head of a doorway), is stooped under.
+- **Walls stop the walker.** Each wall triangle near the body is cut at nine heights between 0.5 m and 1.6 m over the
+  feet, and the line it leaves in the plan must stay 0.18 m from the body's middle. So bulkheads, linings, windows,
+  casings, the mast and lockers are solid, and the eye never comes nearer a wall than the lens can see.
+- **Doors let one through.** The other ship's doors are leaves that do not open. They are found by their shape (an
+  upright slab 0.5 to 1.05 m wide, 1.6 to 2.12 m high, its faces 1 to 6 cm apart): 23 of them, 15 hung on a wall with
+  no opening behind them; a door's own leaf, frame and handle are no wall, and standing in its doorway the
+  wall it hangs in does not count. One walks through the leaf. Her own watertight doors swing open (below).
+- Stopped by the wall beside a doorway one was making for, one is drawn to its middle.
+- Under a deckhead, beam or pipe lower than the walker the eye comes down, keeping 0.12 m under it; through a low
+  doorway it comes down to 0.2 m under the lowest height at which the wall is met (one stoops). Where there is less
+  than 1.1 m one does not go.
 - The way is gone in strides of 2 cm, so a rail is never stepped over, and by the clock, so the pace does not hang on
   how fast a device draws (a pause of more than a quarter of a second is walked as a quarter).
 - The deck keys put one down over the same spot on the next deck where one can stand there, else at the nearest such
   place. A walk never begins hemmed in: the start is looked for outward from a room's middle until there is 0.9 m to
   walk from it.
 
-What is not there to stop one is in *Known limits*.
+What still does not stop one, and which rooms have no door, is in *Known limits*.
+
+**The way aft, and her watertight doors** (`blender/spec.py`: `WT_DOORS`, `WALKWAY`; `hull_fittings.py`: `way_aft`).
+The owner, 10 November 2026: "There needs to be a water tight door that can open to the steering gear". The
+steering-gear room had no way in. Now one goes aft from the engine room on the centreline:
+- through a watertight door in the engine room's after bulkhead (8.42 m from the transom), which opens forward;
+- along a platform at the level of the engine room's floor plates and up six treads (0.18 m each, 0.8 m wide between
+  two rails) to a flat at the level of the steering flat, 1.27 m higher, clear over the floors of her bottom as she
+  rises aft;
+- through the door at frame 10 (5.0 m), which opens aft, and along the gangway between the two fresh-water tanks;
+- through the door to the steering gear (2.6 m), which opens forward into that gangway.
+
+A door is 0.60 m by 1.40 m clear over a 0.20 m sill, its corners rounded 0.10 m: a frame of flat bar standing 5 cm
+proud of the bulkhead each side, a 20 mm leaf with a pressed panel, six dogs worked by a handwheel, two hinges to
+port. The bulkheads are cut for them (`hull_structure.py`), and so is the other ship's engine-room wall
+(`assemble.py`, `OPENINGS`), which the first door's frame lines. One steps over the sill and stoops under the head: the
+eye comes down to 1.28 m in the doorway. **The doors open by themselves** to whoever comes within 2.4 m on foot, in
+0.8 s, and shut again behind. From outside, a tap on a door opens it, and another shuts it. They have no slider:
+the file marks them `auto` (*The file format*).
 
 **The car deck from below.** The Minato Maru's car deck is drawn from above only. Seen from the hull's own spaces one
 looked up through it into the car deck. `hull_structure.py` now builds the deck's plating as it is seen from below,
@@ -211,8 +246,9 @@ car deck, not of the hull: it lifts away with the deck when she is taken apart, 
 
 **For checks.** `window.__ferry` also carries `enterWalk`, `leaveWalk`, `hopDeck(±1)`, `walkTo(x, z, yaw, pitch,
 level)`, `hold(code, on)`, `walkFor(seconds)` (the walk of so many seconds gone at once, 60 steps a second, whatever
-the machine can draw), `floorAt`, `roomFor`, `headroom`, `lookFrom(name)` and `focusAt(x, y)`; `state.walk` says where
-the walker stands.
+the machine can draw), `floorAt`, `footing`, `roomFor`, `headroom`, `wallClear`, `work(id, open)` (leave a door open or shut, as a tap
+would), `workAuto(seconds)`, `spaces`, `lookFrom(name)` and `focusAt(x, y)`; `state.walk` says where the walker
+stands, `state.inputs` how far each door stands open.
 
 ## The file format (JMF1)
 
@@ -243,6 +279,11 @@ spaces to a multiple of four bytes), then one binary block.
   passenger deck 6.5, bridge deck 9.1, compass deck 11.5).
 
 The decks, bottom to top: `hull`, `machinery`, `car`, `passenger`, `bridge`, `top`.
+
+An input may be worked by the page itself and not by a slider: `"auto": "near"` with `at` (a point), `reach` (metres)
+and `normal` (the way through it). Such an input opens (goes to `max`) for a walker within `reach` of `at`, shuts (goes
+to `min`) behind them, and answers a tap from outside; `normal` tells the walker which way the doorway lies. A mover's
+`ratio` (1 when absent) is the turn it makes for each degree of its input: -1 for a door that opens the other way.
 
 ## The look this page applies
 
@@ -289,9 +330,10 @@ Of her own hull (section 1):
   rubbing strake, the freeing ports and the car deck's plating and beams are still the Minato Maru's (section 2 and 3).
 - The car deck's underside over the hull's own spaces is plain plating: no beams, girders or pillars under it yet, and
   no hatch drawn in it (from below it closes the places where the car deck has one).
-- The spaces the hull gives a floor to have their main fittings and nothing else: no ladders or hatches into them, no
-  lighting, no bilge, ballast or fire-main piping, no cable trays; the fore peak has its chain lockers but no ballast
-  tank; the shaft space has no floor plates (it is entered through a manhole). The steering flat gives 1.80 m under the
+- The spaces the hull gives a floor to have their main fittings and nothing else: no ladders or hatches into them
+  from the car deck (the steering-gear room, the tanks and the shaft space are entered through the watertight doors
+  from the engine room), no lighting, no bilge, ballast or fire-main piping, no cable trays; the fore peak has its chain lockers but no ballast
+  tank; the shaft space has its walkway and no other floor plates. The steering flat gives 1.80 m under the
   car deck, not the 2.0 m of the arrangement, whose floor lay 6 cm over the keel plate.
 - The rudders are worked by the page's slider only: nothing steers her, the screws do not turn, and the hydraulic pipes
   end beside the rams without the hoses that would let the cylinders swing (they swing up to 8°).
@@ -303,19 +345,24 @@ Of her own hull (section 1):
 - The port of registry on her transom is still MINATO, until the owner names hers.
 
 Of walking aboard:
-- **Bulkheads, doors and whatever is taller than the walker do not stop one.** The model has no doors that open, and
-  several rooms have none drawn at all, so a walker stopped by walls would be shut in the first room. Only what has a
-  top between 0.42 and 1.7 m over the deck is in the way. So one walks through a bulkhead, a closed door, the mast, a
-  funnel casing or a tall locker, and inside a closed casing the picture is its empty inside.
-- Ladders are not climbed. The machinery spaces and the compass deck are reached with the deck keys (or by choosing a
-  room in the panel first); the car deck, the passenger deck and the bridge deck are joined on foot by the stairs.
+- **Five rooms have no way in on foot**: the void, the bow-thruster room and the fore peak (closed compartments of the
+  hull, with no hatch or ladder drawn), the starboard funnel casing, and the bow ramp beyond its barrier. They are
+  entered by choosing them in the panel before Walk aboard; from inside one cannot walk out.
+- Ladders are not climbed, so the decks fall into three groups joined only by the deck keys: the car deck, passenger
+  deck and bridge deck (joined by stairs: 31 of the 46 rooms are reached on foot from where the walk begins); the
+  machinery spaces with the way aft; the compass deck. With the keys 41 rooms are reached.
+- **The other ship's doors do not swing.** One walks through the shut leaf, and through the wall behind it where the
+  drawing has no opening there. A door is known by its shape only: a door drawn in several pieces, or a leaf more than
+  6 cm thick, would be a wall, and a wall panel shaped like a door would let one through.
+- Just inside the steering-gear door the tie bar lies across the way, 0.46 m over the flat. It moves with the
+  rudders, and what moves is not in the walker's way: one walks through it.
 - The crew stair from the saloon to the wheelhouse is not passed: the bar across its top is drawn closed, and under
   the edge of the opening in the deckhead there is 1.55 m over the fourth tread. The two outside stairs to the bridge
   wings do the same journey.
-- In the hull's spaces without a floor of their own (the shaft space, the void, the fore peak) the walker stands on
-  the structure: the floors' top edges and the stringers.
-- The eye is a point: beside a bulkhead it can come nearer than the 7 cm the lens begins at, and then sees through
-  it.
+- In the hull's spaces without a floor of their own (the shaft space beside its walkway, the void, the fore peak) the
+  walker stands on the structure: the floors' top edges and the stringers.
+- Along a wall that lies askew to her length (her sides at the ends) the walker stops where it meets it: it slides
+  along walls that run fore and aft or athwartships only.
 - No footsteps, no head-bob, no light of its own: the spaces are lit as the outside view lights them.
 - Measured on this machine only, which draws in software (about one picture a second with the eye inside her): the
   frame rate while walking on a phone or a laptop is not measured.
@@ -332,6 +379,38 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 10 November 2026, last of all: walls, doors and the way aft
+
+Headless Chromium with software rendering, as before. 49 checks, all passed, no console errors: the 42 below, and
+- in the steering-gear room, walking into the bulkhead 0.9 m to port of the door: stopped 0.18 m short of it;
+- from the engine room aft for 9 s, begun 0.25 m off the doors' line: through three watertight doors and up the steps
+  to the steering flat (0.27 m, 1.33 m from the transom); the steering-gear door stands open at 90°, the engine
+  room's has shut behind;
+- on the steering-gear door's sill: 0.20 m over the flat, the eye stooped to 1.28 m;
+- and forward again to the engine room;
+- from the crew's corridor through an open doorway into a cabin; where there is no doorway the corridor's wall and
+  its handrail stop one;
+- from outside, a door left open as a tap leaves it: 45° after 0.4 s, 90° at rest.
+
+Also:
+- **Every room** begun on foot (all 50): a place to stand in each, with 0.9 m or more to walk from it.
+- **Where one can get to** (the flood, by the walker's own rules, walls and doors among them): on foot from where the
+  walk begins 207 m² of the car deck, 79 m² of the passenger deck and 52 m² of the bridge deck, 31 of the 46 rooms;
+  with the deck keys 41 rooms. Before the corridor's handrails were cut at the doorways the seven crew rooms on the
+  bridge deck could not be entered.
+- **Looked at, on foot**: the engine room's door shut, from 2.6 m; the steering-gear door open, from the gangway
+  between the tanks, the steering gear seen through it.
+- **The data**: `build.py`, 83,504 triangles, 10 motions, its checks unchanged (plating 10.4 mm, structure 5.2 mm,
+  solids looking outward). `assemble.py` on the Town's export and again on its own output: the same file.
+  `check.py --town …`: all passed.
+- **Found and put right on the way**: a door's frame, whose top is lower than the walker, stopped the walker as
+  furniture would (what only hangs is now stooped under); a stride of no length counted as a stride, so one stood
+  still at a wall instead of being drawn to the doorway; on the steering flat's centre seam there was nothing under
+  the feet at the door's sill; a door on its way made the shadows be drawn again at every picture (now once, when it
+  has come to rest).
+- **Not run**: a phone, a tablet or a laptop with a graphics card; a tap on a door in the outside view with a real
+  pointer (the door's answer to it was run through `window.__ferry.work`); a screen reader.
 
 ### 10 November 2026, last: walking aboard and the outside view
 

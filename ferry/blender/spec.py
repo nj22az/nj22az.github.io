@@ -78,6 +78,34 @@ THRUSTER_PLATFORM = Y(1.46)
 TILLER = dict(level=FLAT + 0.33, reach=0.62, ram_at=0.42, ram_anchor=1.16, clevis=0.075, tie_bar=0.13)
 RUDDER_ANGLE = 35
 
+# ---- The way aft on foot (the owner, 10 November 2026: "There needs to be a water tight door that can open to the
+# steering gear"). From the engine room one goes aft on the centreline through three hinged watertight doors: into the
+# shaft space, up its steps to the level of the flats, between the two fresh-water tanks, and into the steering-gear
+# room. A door is 0.60 m by 1.40 m clear over a 0.20 m sill, corners rounded, six dogs worked by a handwheel; it is
+# hung to port and opens 90°, toward the side where the deck is level and clear (`opens`: +1 toward the bow, the leaf
+# on the forward face; -1 toward the stern). `through` is how far the frame runs fore and aft: the engine room's door
+# stands in her own bulkhead (8.42 m) and lines the other ship's wall (8.44 to 8.50 m) as well.
+WT_DOOR = dict(width=0.60, height=1.40, sill=0.20, corner=0.10, frame=0.06, leaf=0.02, open=90, reach=2.4)
+WT_DOORS = (
+    dict(id='door-engine-room', name='Door to the shaft space', where='engine room', yard=8.42, floor=Y(0.9), opens=1, through=(8.40, 8.52)),
+    dict(id='door-shaft-space', name='Door between shaft space and tanks', where='shaft space', yard=5.0, floor=FLAT, opens=-1),
+    dict(id='door-steering-gear', name='Door to the steering gear', where='steering gear', yard=2.6, floor=FLAT, opens=1),
+)
+# The walkway through the shaft space: a platform at the engine room's floor plates, six treads and a flat at the
+# level of the steering flat, 0.8 m wide between two rails, clear over the floors of her bottom as she rises aft.
+WALKWAY = dict(half=0.40, platform=(8.05, 8.38), treads=6, going=0.25, flat=(5.06, 6.55), rail=0.95)
+
+
+def door_opening(d):
+    """A door's clear opening: (x0, y0, x1, y1), port and up positive."""
+    y0 = d['floor'] + WT_DOOR['sill']
+    return (-WT_DOOR['width'] / 2, y0, WT_DOOR['width'] / 2, y0 + WT_DOOR['height'])
+
+
+def door_frame_yards(d):
+    return d.get('through', (d['yard'] - 0.05, d['yard'] + 0.05))
+
+
 # Machinery colours, as the engine room's (Rev C): engines green, motors blue, fire red, fresh water blue.
 ENGINE_GREEN = 0x2e7a4e
 MOTOR_BLUE = 0x2a3f6b
@@ -88,6 +116,8 @@ DARK_GREY = 0x3a3f41
 LIGHT_GREY = 0x9aa3a2
 FLOOR_PLATE = 0x8c9193
 FLANGE = 0x9ea4a6
+RAIL_YELLOW = 0xe3c341
+DOOR_GREY = 0xc9cfcc
 
 # ---- The bow thruster: a 0.9 m tunnel through the forefoot.
 THRUSTER = dict(yard=29.0, y=-0.95, radius=0.45)
