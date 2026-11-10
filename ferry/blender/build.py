@@ -4,7 +4,7 @@ Builds the Christina in Blender, section by section, and writes what the viewer 
     blender -b -P ferry/blender/build.py -- [--blend christina.blend] [--part christina-hull.npz]
 
 Section 1 (10 November 2026): the hull. Her lines (lines.py), her shell, structure, appendages and marks (hull_*.py).
-Each collection in the file is one of the viewer's parts that lift apart (`hull`, `machinery`); export_jmf.py writes
+Each collection in the file is one of the viewer's parts that lift apart (`hull`, `machinery`, `car`); export_jmf.py writes
 them for assemble.py, which puts them into ferry/data/ferry.bin.gz.
 """
 import sys, os, time, importlib
@@ -127,8 +127,9 @@ def main():
     scene = bpy.context.scene
     scene.unit_settings.system = 'METRIC'
     ship = shipyard.collection('Christina')
-    hull = shipyard.collection('hull', ship)
-    machinery = shipyard.collection('machinery', ship)
+    # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
+    # spaces and to the car deck (part.group).
+    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car')}
     report, inputs, movers = {}, [], []
     for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings'):
         try:
@@ -144,8 +145,7 @@ def main():
             inputs += more_inputs
             movers += more_movers
         for part in made:
-            target = machinery if getattr(part, 'group', 'hull') == 'machinery' else hull
-            if part.build(target):
+            if part.build(parts_of[getattr(part, 'group', 'hull')]):
                 report[part.name] = sum(max(1, len(f) - 2) for f in part.f)
         print(f'{name}: {len(made)} parts, {time.time() - t0:.1f} s')
     behind_the_plating()
@@ -162,7 +162,7 @@ def main():
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], ('hull', 'machinery'), inputs, movers)
+        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])
