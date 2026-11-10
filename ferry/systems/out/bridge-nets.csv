@@ -1,0 +1,131 @@
+net,name,medium,member,name or place,role,what it says
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-09,Navigation data distributor,node,"a buffered copy of every sentence, to each listener"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-06,GPS navigator,talks,"GGA, RMC, VTG, ZDA: position, course and speed over the ground, time"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-11,Satellite compass processor,talks,"HDT, ROT: true heading, rate of turn"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-07,Echo sounder,talks,"DPT, DBT: depth"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-08,Speed log,talks,"VHW, VBW: speed through the water"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-13,Wind display,talks,MWV: wind
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-01,Radar display,listens,"heading, position, speed"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-02,Radar processor,listens,"heading, position, speed"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-05,Electronic chart system,listens,all of it
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-10,Conning display,listens,all of it
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-12,Autopilot control unit,listens,"heading, course"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-04,AIS transponder,listens,"heading, rate of turn"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",COM-01,"VHF radiotelephone No. 1, with DSC",listens,"position and time, for the distress call"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",COM-02,VHF radiotelephone No. 2,listens,position and time
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",COM-05,NAVTEX receiver,listens,"position, to choose the stations"
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",STR-04,Heading repeater,listens,heading
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-16,"Bearing repeater, port wing",listens,heading
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-17,"Bearing repeater, starboard wing",listens,heading
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",ALM-02,Bridge watch alarm,listens,whether the autopilot steers
+AIS,AIS targets,"IEC 61162-2, 38 400 baud",NAV-04,AIS transponder,talks,"VDM, VDO: other ships and her own report"
+AIS,AIS targets,"IEC 61162-2, 38 400 baud",NAV-02,Radar processor,listens,
+AIS,AIS targets,"IEC 61162-2, 38 400 baud",NAV-05,Electronic chart system,listens,
+NAV-LAN,Navigation network,"Ethernet, 100 Mbit/s, screened Cat 5e",NAV-14,Navigation network switch,node,
+NAV-LAN,Navigation network,"Ethernet, 100 Mbit/s, screened Cat 5e",NAV-02,Radar processor,node,"radar picture, tracked targets"
+NAV-LAN,Navigation network,"Ethernet, 100 Mbit/s, screened Cat 5e",NAV-01,Radar display,node,
+NAV-LAN,Navigation network,"Ethernet, 100 Mbit/s, screened Cat 5e",NAV-05,Electronic chart system,node,"charts, route"
+NAV-LAN,Navigation network,"Ethernet, 100 Mbit/s, screened Cat 5e",NAV-10,Conning display,node,
+RADAR,Radar scanner cable,"composite cable: power, Ethernet and trigger, up the mast",NAV-02,Radar processor,node,
+RADAR,Radar scanner cable,"composite cable: power, Ethernet and trigger, up the mast",NAV-30,Radar scanner,node,
+CCTV,Camera network,Ethernet with power to the cameras,ALM-07,Camera recorder,node,
+CCTV,Camera network,Ethernet with power to the cameras,ALM-05,Camera monitor,node,
+CCTV,Camera network,Ethernet with power to the cameras,elsewhere,Car deck: Cameras at the bow ramp and on the car deck,node,
+CCTV,Camera network,Ethernet with power to the cameras,elsewhere,Passenger deck: Camera at the stern,node,
+CCTV,Camera network,Ethernet with power to the cameras,elsewhere,Engine room: Camera in the engine room,node,
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-07,"Propulsion control unit, bridge",node,which station commands; the orders
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-01,"Engine control lever, port",node,lever position
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-02,"Engine control lever, starboard",node,lever position
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-03,Bow thruster lever,node,lever position
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-04,Propulsion control panel,node,
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-05,Bow thruster panel,node,
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-06,Engine instrument panel,node,
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-10,"Wing control station, port",node,lever positions
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",PRP-11,"Wing control station, starboard",node,lever positions
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",NAV-10,Conning display,node,"revolutions, for the conning display"
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",elsewhere,"Engine control room: Engine control units, port and starboard",node,"revolutions, clutch state, alarms"
+PROP-CAN,Propulsion control,"CAN bus, two lines (A and B), screened twisted pair",elsewhere,Bow thruster room: Bow thruster starter and controller,node,"running, current"
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-01,Steering stand and wheel,talks,the wheel's position
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-03,Steering mode selector and tiller,talks,mode; tiller port or starboard
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",NAV-12,Autopilot control unit,talks,rudder ordered by the autopilot
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-02,Steering control unit,node,valve orders
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-05,"Rudder angle indicator, overhead",listens,rudder angle
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",STR-06,"Rudder angle indicator, console",listens,rudder angle
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",PRP-10,"Wing control station, port",listens,rudder angle
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",PRP-11,"Wing control station, starboard",listens,rudder angle
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",NAV-10,Conning display,listens,rudder angle
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",elsewhere,"Steering-gear room: Hydraulic power units No. 1 and No. 2 (valves, running, alarms)",node,
+STEER,Steering control,"24 V control cables, screened; the rudder angle as a 4 to 20 mA signal",elsewhere,Steering-gear room: Rudder angle transmitter,talks,rudder angle
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-01,Public address and general alarm amplifier,node,
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-02,Public address and talkback panel,talks,"microphone, zone keys"
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-07,General alarm push button,talks,general alarm
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-08,"Loudspeaker, wheelhouse",listens,
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,INT-11,Loudhailer,listens,
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,FIR-01,Fire detection panel,talks,fire alarm unaccepted: sound the general alarm
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,ALM-02,Bridge watch alarm,talks,"watch alarm, third stage"
+PA-GA,Public address and general alarm,100 V loudspeaker lines in zones; fire-resistant cable,elsewhere,"All decks: Loudspeakers on the car deck, in the saloon, the crew rooms, the machinery spaces and on the open decks",listens,
+TALKBACK,Talkback,screened pairs to each station,INT-02,Public address and talkback panel,node,
+TALKBACK,Talkback,screened pairs to each station,INT-09,"Talkback station, port wing",node,
+TALKBACK,Talkback,screened pairs to each station,INT-10,"Talkback station, starboard wing",node,
+TALKBACK,Talkback,screened pairs to each station,elsewhere,Car deck: Stations at the bow ramp and the forward mooring station,node,
+TALKBACK,Talkback,screened pairs to each station,elsewhere,Passenger deck: Station at the after mooring station,node,
+TALKBACK,Talkback,screened pairs to each station,elsewhere,Engine control room: Station in the engine control room,node,
+SP-TEL,Sound-powered telephone,"one pair, no supply",INT-05,Sound-powered telephone,node,
+SP-TEL,Sound-powered telephone,"one pair, no supply",elsewhere,Engine control room: Sound-powered telephone,node,
+SP-TEL,Sound-powered telephone,"one pair, no supply",elsewhere,"Steering-gear room: Sound-powered telephone, for emergency steering",node,
+TEL,Telephone,"one pair a set, to the exchange",INT-04,Telephone,node,
+TEL,Telephone,"one pair a set, to the exchange",elsewhere,Engine control room: Telephone exchange,node,
+TEL,Telephone,"one pair a set, to the exchange",elsewhere,"Crew accommodation, bridge deck: Sets in the cabins, the mess and the galley",node,
+FIRE-1,Fire detection loop 1,"a two-wire addressable loop, out and back, fire-resistant cable",FIR-01,Fire detection panel,node,
+FIRE-1,Fire detection loop 1,"a two-wire addressable loop, out and back, fire-resistant cable",FIR-03,Smoke detector,talks,smoke
+FIRE-1,Fire detection loop 1,"a two-wire addressable loop, out and back, fire-resistant cable",FIR-02,Manual call point,talks,call point
+FIRE-1,Fire detection loop 1,"a two-wire addressable loop, out and back, fire-resistant cable",elsewhere,"Crew accommodation, bridge deck: Detectors and call points in the corridor, the cabins, the mess, the galley and the two machinery rooms of the bridge deck",talks,
+FIRE-1,Fire detection loop 1,"a two-wire addressable loop, out and back, fire-resistant cable",elsewhere,"All decks: Loops 2 to 4 (passenger deck, car deck, machinery spaces), the alarm bells, the fan stops",node,
+AMS,Machinery alarms,"RS-485, two lines",ALM-01,Machinery alarm panel,node,
+AMS,Machinery alarms,"RS-485, two lines",elsewhere,Engine control room: Alarm and monitoring system,talks,"alarm groups, engineer's acceptance"
+WATCH,Bridge watch alarm,24 V control cables,ALM-02,Bridge watch alarm,node,
+WATCH,Bridge watch alarm,24 V control cables,ALM-04,"Watch alarm reset, chart table",talks,reset
+WATCH,Bridge watch alarm,24 V control cables,PRP-10,"Wing control station, port",talks,reset button at the wing
+WATCH,Bridge watch alarm,24 V control cables,PRP-11,"Wing control station, starboard",talks,reset button at the wing
+WATCH,Bridge watch alarm,24 V control cables,elsewhere,"Crew accommodation, bridge deck: Buzzers in the master's and the chief officer's cabins",listens,
+DOORS,"Door, hatch and ramp indication","24 V, one pair to each limit switch",ALM-06,"Ramp, hatch and watertight door panel",node,
+DOORS,"Door, hatch and ramp indication","24 V, one pair to each limit switch",elsewhere,Hull: The five watertight doors below the car deck,talks,shut and dogged
+DOORS,"Door, hatch and ramp indication","24 V, one pair to each limit switch",elsewhere,Car deck: The bow ramp and the three hatches in the car deck,talks,shut and secured
+WHISTLE,Whistle control,105 V control cable,NLT-10,Whistle panel,node,
+WHISTLE,Whistle control,105 V control cable,PIP-10,Whistle valve,listens,
+WHISTLE,Whistle control,105 V control cable,PRP-10,"Wing control station, port",talks,whistle button at the wing
+WHISTLE,Whistle control,105 V control cable,PRP-11,"Wing control station, starboard",talks,whistle button at the wing
+WIPERS,Wiper control,"105 V, switched",NLT-12,Wiper and window wash panel,node,
+WIPERS,Wiper control,"105 V, switched",NLT-13,"Window wiper, starboard",listens,
+WIPERS,Wiper control,"105 V, switched",NLT-14,"Window wiper, centre",listens,
+WIPERS,Wiper control,"105 V, switched",NLT-15,"Window wiper, port",listens,
+WIPERS,Wiper control,"105 V, switched",PIP-11,Window wash valve,listens,
+SEARCHLIGHT,Searchlight control,control cable,NLT-11,Searchlight control,node,
+SEARCHLIGHT,Searchlight control,control cable,NLT-16,Searchlight,node,
+DIMMING,Instrument dimming,0 to 10 V control line,LGT-10,Dimmer panel,node,
+DIMMING,Instrument dimming,0 to 10 V control line,NAV-01,Radar display,listens,
+DIMMING,Instrument dimming,0 to 10 V control line,NAV-05,Electronic chart system,listens,
+DIMMING,Instrument dimming,0 to 10 V control line,NAV-10,Conning display,listens,
+DIMMING,Instrument dimming,0 to 10 V control line,PRP-06,Engine instrument panel,listens,
+DIMMING,Instrument dimming,0 to 10 V control line,STR-06,"Rudder angle indicator, console",listens,
+DIMMING,Instrument dimming,0 to 10 V control line,STR-05,"Rudder angle indicator, overhead",listens,
+DIMMING,Instrument dimming,0 to 10 V control line,NAV-13,Wind display,listens,
+RF-VHF1,VHF No. 1 antenna feeder,50 ohm coaxial cable,COM-01,"VHF radiotelephone No. 1, with DSC",node,
+RF-VHF1,VHF No. 1 antenna feeder,50 ohm coaxial cable,COM-11,VHF antenna No. 1,node,
+RF-VHF2,VHF No. 2 antenna feeder,50 ohm coaxial cable,COM-02,VHF radiotelephone No. 2,node,
+RF-VHF2,VHF No. 2 antenna feeder,50 ohm coaxial cable,COM-12,VHF antenna No. 2,node,
+RF-AIS,AIS antenna feeders,"50 ohm coaxial cable, two",NAV-04,AIS transponder,node,
+RF-AIS,AIS antenna feeders,"50 ohm coaxial cable, two",NAV-31,AIS antenna,node,
+RF-AIS,AIS antenna feeders,"50 ohm coaxial cable, two",NAV-35,AIS position antenna,node,
+RF-GPS,GPS antenna feeder,50 ohm coaxial cable,NAV-06,GPS navigator,node,
+RF-GPS,GPS antenna feeder,50 ohm coaxial cable,NAV-32,GPS antenna,node,
+RF-SATC,Satellite compass antenna cable,multi-core antenna cable,NAV-11,Satellite compass processor,node,
+RF-SATC,Satellite compass antenna cable,multi-core antenna cable,NAV-33,Satellite compass antenna,node,
+RF-NAVTEX,NAVTEX antenna feeder,50 ohm coaxial cable,COM-05,NAVTEX receiver,node,
+RF-NAVTEX,NAVTEX antenna feeder,50 ohm coaxial cable,COM-13,NAVTEX antenna,node,
+WIND,Wind sensor cable,screened four-core,NAV-13,Wind display,node,
+WIND,Wind sensor cable,screened four-core,NAV-36,Wind sensor,node,
+SOUNDER,Echo sounder transducer cable,screened transducer cable,NAV-07,Echo sounder,node,
+SOUNDER,Echo sounder transducer cable,screened transducer cable,elsewhere,"Hull: Echo sounder transducer, in the bottom forward of the engine room",node,
+LOG,Speed log sensor cable,screened sensor cable,NAV-08,Speed log,node,
+LOG,Speed log sensor cable,screened sensor cable,elsewhere,"Hull: Speed log sensor, in the bottom forward of the engine room",node,

@@ -63,6 +63,14 @@ LOOKS = {
     'Upholstery': dict(metalness=0.0, roughness=0.9),
     'Screen': dict(metalness=0.2, roughness=0.1),
     'Window glass': dict(metalness=0.2, roughness=0.15, side='double', transparent=True, opacity=0.38, depthWrite=False),
+    # Pictures from her own sheet (atlas.py). A screen shines by itself and is drawn without light; the face of a panel, a
+    # dial or a chart takes the light like the thing it is printed on. Both lie on a surface and are drawn a hair in front of it.
+    'Screen picture': dict(metalness=0.0, roughness=0.3, shading='basic', textured=True, atlas=1, offset=[-2, -4]),
+    'Panel face': dict(metalness=0.0, roughness=0.55, textured=True, atlas=1, offset=[-2, -4]),
+    # Linings, deck coverings and deckhead panels: matt.
+    'Lining': dict(metalness=0.0, roughness=0.8),
+    'Deck covering': dict(metalness=0.0, roughness=0.85),
+    'Plastic': dict(metalness=0.0, roughness=0.45),
 }
 _materials = {}
 
@@ -83,7 +91,7 @@ def material(name):
     m.use_backface_culling = look.get('side') != 'double'
     m['jmf'] = {'metalness': look['metalness'], 'roughness': look['roughness'], 'side': look.get('side', 'front'),
                 'offset': look.get('offset') or []}
-    for key in ('transparent', 'opacity', 'depthWrite'):
+    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas'):
         if key in look:
             m['jmf'][key] = look[key]
     _materials[name] = m
@@ -108,6 +116,55 @@ def round_rect(x0, y0, x1, y1, r, z, n=4):
     return pts
 
 
+# ---------- her pictures ----------
+_tiles = None
+
+
+def tile(name):
+    """Where a picture lies on her sheet (u0, v0, u1, v1), from atlas.json (written by atlas.py)."""
+    global _tiles
+    if _tiles is None:
+        import json, os
+        _tiles = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'atlas.json')))['tiles']
+    return _tiles[name]
+
+
+# ---------- components ----------
+# What is drawn between `with component(tag):` and its end belongs to that component of the register (ferry/systems/):
+# the box round it is written with the part file, and the page finds the component under a tap by it.
+COMPONENTS = {}
+
+
+class component:
+    def __init__(self, tag):
+        self.tag = tag
+
+    def __enter__(self):
+        self.before = {id(p): len(p.v) for p in Part.made}
+        return self
+
+    def __exit__(self, *exc):
+        lo, hi = None, None
+        where = {}
+        for p in Part.made:
+            new = p.v[self.before.get(id(p), 0):]
+            if not new:
+                continue
+            g = getattr(p, 'group', 'hull')
+            where[g] = where.get(g, 0) + len(new)
+            xs, ys, zs = zip(*new)
+            a, b = (min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs))
+            lo = a if lo is None else tuple(map(min, lo, a))
+            hi = b if hi is None else tuple(map(max, hi, b))
+        if lo is not None:
+            if self.tag in COMPONENTS:
+                lo = tuple(map(min, lo, COMPONENTS[self.tag][0]))
+                hi = tuple(map(max, hi, COMPONENTS[self.tag][1]))
+            # the viewer's part most of it was drawn in: its box lifts with that part when she is taken apart
+            COMPONENTS[self.tag] = (lo, hi, max(where, key=where.get))
+        return False
+
+
 # ---------- a part ----------
 class Part:
     """
@@ -115,9 +172,14 @@ class Part:
     its own normal (the shell knows its normals from the lines); others are rounded by Blender up to `angle` degrees.
     """
 
+    made = []          # every part made in this build, for `component`
+
     def __init__(self, name, look, smooth=False, angle=35.0, mover=None):
         self.name, self.look, self.smooth, self.angle = name, look, smooth, angle
         self.v, self.n, self.f, self.c = [], [], [], []
+        # Where each corner of a face lies on her sheet of pictures, for the faces that carry one (else None).
+        self.t = []
+        Part.made.append(self)
         # The name of the motion this part takes part in (the rudder's, a ram's): the viewer moves it as one piece.
         self.mover = mover
 
@@ -126,9 +188,20 @@ class Part:
         self.n.append(n)
         return len(self.v) - 1
 
-    def face(self, idx, colour):
+    def face(self, idx, colour, uv=None):
         self.f.append(tuple(idx))
         self.c.append(colour)
+        self.t.append(uv)
+
+    def picture(self, corners, name, colour=(1.0, 1.0, 1.0), turns=0):
+        """
+        A picture from her sheet on a flat four-cornered face. The corners are given as the picture is looked at: bottom left,
+        bottom right, top right, top left (so the face looks at whoever reads it). `turns` turns the picture by quarter turns.
+        """
+        u0, v0, u1, v1 = tile(name)['uv']
+        uv = [(u0, v0), (u1, v0), (u1, v1), (u0, v1)]
+        uv = uv[-turns % 4:] + uv[:-turns % 4]
+        self.face([self.vert(p) for p in corners], colour, uv)
 
     def quad(self, a, b, c, d, colour):
         self.face((a, b, c, d), colour)
@@ -214,14 +287,16 @@ class Part:
                 want = Vector(direction)
             if n.dot(want) < 0:
                 self.f[k] = tuple(reversed(f))
+                if self.t[k] is not None:
+                    self.t[k] = list(reversed(self.t[k]))
 
     def add(self, other):
         """Another part's geometry, taken into this part."""
         base = len(self.v)
         for p, n in zip(other.v, other.n):
             self.vert(p, n)
-        for f, c in zip(other.f, other.c):
-            self.face(tuple(base + i for i in f), c)
+        for f, c, t in zip(other.f, other.c, other.t):
+            self.face(tuple(base + i for i in f), c, t)
 
     def mirrored(self):
         """The same part on the other side of the centreline (x → -x), its faces turned to look out again."""
@@ -230,6 +305,7 @@ class Part:
         out.n = [None if n is None else (-n[0], n[1], n[2]) for n in self.n]
         out.f = [tuple(reversed(f)) for f in self.f]
         out.c = list(self.c)
+        out.t = [None if t is None else list(reversed(t)) for t in self.t]
         return out
 
     def build(self, coll):
@@ -247,6 +323,13 @@ class Part:
             for _ in range(poly.loop_total):
                 flat.extend((c[0], c[1], c[2], 1.0))
         col.data.foreach_set('color_srgb', flat)
+        if any(t is not None for t in self.t):
+            layer = me.uv_layers.new(name='UV')
+            flat = []
+            for poly, t in zip(me.polygons, self.t):
+                for k in range(poly.loop_total):
+                    flat.extend(t[k] if t is not None else (0.0, 0.0))
+            layer.data.foreach_set('uv', flat)
         me.use_auto_smooth = True
         me.auto_smooth_angle = math.radians(self.angle)
         if self.smooth and any(n is not None for n in self.n):

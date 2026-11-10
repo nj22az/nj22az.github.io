@@ -11,10 +11,13 @@
  */
 import * as THREE from 'three';
 import { OrbitControls } from '/motor-90l/vendor/OrbitControls.js';
+import { createSystems } from './systems.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
-const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what');
+const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what'), card = $('#card');
+/** Her systems (systems.js): the component register, shown in the panel's second list and on the model. Null until read. */
+let systems = null;
 const narrow = matchMedia('(max-width: 900px)');
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -60,10 +63,10 @@ function geometryOf(rec, doc) {
   return g;
 }
 
-function materialOf(m, atlas) {
+function materialOf(m, atlases) {
   const common = {
     vertexColors: true, side: m.side === 'double' ? THREE.DoubleSide : THREE.FrontSide,
-    transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite, alphaTest: m.alphaTest, map: m.textured ? atlas : null,
+    transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite, alphaTest: m.alphaTest, map: m.textured ? atlases[m.atlas || 0] : null,
   };
   // Plates, dials and markings lie on a surface: the game draws them a hair in front of it, and so does this page.
   if (m.offset) Object.assign(common, { polygonOffset: true, polygonOffsetFactor: m.offset[0], polygonOffsetUnits: m.offset[1] });
@@ -175,9 +178,9 @@ scene.add(root);
 const cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
 let cutSpan = [-4.6, 3.6];
 
-function build(doc, atlas) {
+function build(doc, atlases) {
   const { header } = doc, viewDef = header.views[0];
-  materials = header.materials.map(m => materialOf(m, atlas));
+  materials = header.materials.map(m => materialOf(m, atlases));
   cutSpan = [header.bounds.min[0] - 0.05, header.bounds.max[0] - 1.0];
   floor.position.y = header.bounds.min[1] - 0.02;
   const motions = new Map((header.movers || []).map(m => [m.id, m]));
@@ -447,7 +450,8 @@ const spaceBox = sp => new THREE.Box3(new THREE.Vector3(...sp.min), new THREE.Ve
 function select(deckId, spaceId, { frame = false } = {}) {
   const deck = decks.find(d => d.id === deckId), sp = deck && deck.spaces.find(s => s.id === spaceId);
   for (const b of panel.querySelectorAll('.room.on')) { b.classList.remove('on'); b.setAttribute('aria-expanded', 'false'); }
-  for (const n of panel.querySelectorAll('.note')) n.remove();
+  for (const n of panel.querySelectorAll('#decks .note')) n.remove();
+  if (sp && systems) systems.hideCard();
   if (!sp || (state.selected && state.selected.deck === deckId && state.selected.space === spaceId && frame)) {
     state.selected = null; mark.visible = false; readout.textContent = ''; redraw(); return;
   }
@@ -498,7 +502,7 @@ function identify(clientX, clientY) {
   const c = cutAt();
   const hit = ray.intersectObjects(decks.filter(d => d.node.visible).map(d => d.node), true)
     .find(h => h.object.isMesh && h.object.parent !== mark && h.point.x >= c && !h.object.material.userData.glass);
-  if (!hit) { select(null); return; }
+  if (!hit) { select(null); systems && !systems.state.shown && systems.clear(); systems && systems.hideCard(); return; }
   // A door answers a tap: it opens, or shuts again.
   for (let n = hit.object.parent; n; n = n.parent) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
@@ -509,6 +513,10 @@ function identify(clientX, clientY) {
   while (within && !decks.some(d => d.node === within)) within = within.parent;
   const deck = decks.find(d => d.node === within);
   const p = hit.point.clone().sub(deck.node.position);
+  // A fitting of the register answers before the room it stands in: the card says what it is.
+  const fitting = systems && systems.pick(deck.id, p);
+  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); return; }
+  if (systems) { systems.hideCard(); if (!systems.state.shown) systems.clear(); }
   // The smallest room of this deck that holds the point: a cabin wins over the deck house it stands in.
   let best = null, bestSize = Infinity;
   for (const sp of deck.spaces) {
@@ -534,13 +542,33 @@ function focusAt(clientX, clientY) {
 }
 
 let down = null, lastTap = null;
+/** On foot a tap or a click on a fitting says what it is (a drag looks round). */
+let walkDown = null;
+function nameOnFoot(clientX, clientY) {
+  if (!systems) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ndc.set((clientX - r.left) / r.width * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(decks.map(d => d.node), true).find(h => h.object.isMesh && h.object.visible && !h.object.material.userData.glass && !h.object.userData.own && h.object.material.depthTest !== false);
+  let within = hit && hit.object.parent;
+  while (within && !decks.some(d => d.node === within)) within = within.parent;
+  const deck = hit && hit.distance < 8 && decks.find(d => d.node === within);
+  const fitting = deck && systems.pick(deck.id, hit.point.clone().sub(deck.node.position));
+  if (fitting) systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown });
+  else if (systems.state.shown) systems.hideCard(); else systems.clear();
+}
 renderer.domElement.addEventListener('pointerdown', e => {
-  if (walk) { lookStart(e); return; }
+  if (walk) { walkDown = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }; lookStart(e); return; }
   move = null; down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId };
 });
 renderer.domElement.addEventListener('pointermove', e => { if (walk) lookMove(e); });
 renderer.domElement.addEventListener('pointerup', e => {
-  if (walk) { lookEnd(e); return; }
+  if (walk) {
+    lookEnd(e);
+    const d = walkDown; walkDown = null;
+    if (d && d.id === e.pointerId && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6 && performance.now() - d.t < 450) nameOnFoot(e.clientX, e.clientY);
+    return;
+  }
   if (!down || down.id !== e.pointerId) return;
   const now = performance.now();
   const tap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && now - down.t < 500;
@@ -1179,7 +1207,26 @@ function resize() {
   redraw();
 }
 new ResizeObserver(resize).observe(view);
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', tintMark);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { tintMark(); systems && systems.tint(); });
+
+// ---------- the panel's two lists, and the card ----------
+const tabs = [...document.querySelectorAll('.tabs [role=tab]')];
+function showTab(id) {
+  for (const t of tabs) {
+    const on = t.getAttribute('aria-controls') === id;
+    t.setAttribute('aria-selected', String(on));
+    $('#' + t.getAttribute('aria-controls')).hidden = !on;
+  }
+}
+for (const t of tabs) t.addEventListener('click', () => showTab(t.getAttribute('aria-controls')));
+/** The card stands just over the bar, wherever the bar is; on a narrow screen it has the model to itself, so the list is put away. */
+function placeCard() {
+  if (card.hidden) return;
+  if (narrow.matches && !walk && !panel.classList.contains('closed')) setPanel(false);
+  card.style.bottom = `${Math.round(innerHeight - bar.getBoundingClientRect().top + 8)}px`;
+}
+addEventListener('resize', placeCard);
+panel.addEventListener('transitionend', placeCard);
 
 const ease = t => t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
 let lastFrame = 0;
@@ -1214,14 +1261,29 @@ function frame(now) {
 // ---------- start ----------
 async function start() {
   const doc = await loadDocument(DOCS[0].file);
-  const atlas = await new THREE.TextureLoader().loadAsync('./data/' + doc.header.atlas.file);
-  atlas.colorSpace = THREE.SRGBColorSpace;
-  atlas.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  build(doc, atlas);
+  // Two sheets of pictures: the other ship's plates and signs, and her own screens, dials and panel faces.
+  const atlases = await Promise.all((doc.header.atlases || [doc.header.atlas]).map(async a => {
+    const t = await new THREE.TextureLoader().loadAsync('./data/' + a.file);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    return t;
+  }));
+  build(doc, atlases);
   indexFloors();
   buildWays(doc.header);
   buildPanel(doc.header);
   buildInputs(doc.header);
+  // Her systems, when the file names its register: the panel's second list and the card.
+  if (doc.header.systems) {
+    try {
+      const res = await fetch('./data/' + doc.header.systems.file);
+      if (!res.ok) throw new Error(String(res.status));
+      systems = createSystems({
+        data: await res.json(), decks: () => decks, list: $('#systems'), card, readout, flyTo, eyeDir, redraw, accent,
+        walking: () => !!walk, onChange: () => requestAnimationFrame(placeCard),
+      });
+    } catch (err) { console.error(err); $('#systems').append(el('p', { className: 'lede muted' }, 'Her systems could not be read.')); }
+  } else $('#tab-systems').hidden = true;
   tintMark();
   // On a phone the panel is a sheet over the lower half: she is shown whole first, the list a tap away.
   panel.classList.toggle('closed', narrow.matches);
@@ -1234,7 +1296,9 @@ async function start() {
   // For checks and pictures: the same moves the controls make.
   window.__ferry = {
     setExplode, setCut, setInput, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
-    lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt,
+    lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt, showTab, nameOnFoot, get systems() { return systems; },
+    /** For checks: the room the walker stands in, named now (the readout is written as the walk goes). */
+    whereOnFoot: () => { if (!walk) return ''; sayWhere(); return walk.room; },
     /** For checks: put the walker somewhere, or hold a key down. */
     walkTo: (x, z, yaw = Math.PI, pitch = 0, level = walk && walk.floor) => { if (!walk) return null; const under = floorAt(x, z, level + 0.6, level - 3); if (under === null) return null; const y = footing(x, z, under); walk.pos.set(x, y, z); walk.floor = y; walk.eye = eyeFor(walk); walk.yaw = yaw; walk.pitch = pitch; placeEye(); return y; },
     hold: (code, on = true) => { on ? held.add(code) : held.delete(code); },

@@ -112,10 +112,15 @@ def looking_outward():
                  'Compass deck, mast and fittings', 'Compass deck, mast, steel fittings', 'Compass deck, dark fittings',
                  'Compass deck, antennas', 'Compass deck, antenna mounts', 'Compass deck, vent heads', 'Compass deck, vent fittings',
                  'Compass deck, searchlight and floodlights', 'Compass deck, light mounts', 'Compass deck, binnacle',
-                 'Wheelhouse, console', 'Wheelhouse, steering stand', 'Wheelhouse, instruments', 'Wheelhouse, lamps and dials', 'Wheelhouse, brass',
-                 'Wheelhouse, steel', 'Wheelhouse, wood', 'Wheelhouse, chair', 'Wheelhouse, frames', 'Wheelhouse, sills', 'Wheelhouse, wing consoles',
-                 'Wheelhouse, wing door, port', 'Wheelhouse, wing door, starboard', 'Wheelhouse, wing door hardware, port',
-                 'Wheelhouse, wing door hardware, starboard'):
+                 'Wheelhouse, plating', 'Wheelhouse, linings', 'Wheelhouse, window frames', 'Wheelhouse, deck covering', 'Wheelhouse, console',
+                 'Wheelhouse, instruments', 'Wheelhouse, plastics', 'Wheelhouse, steel', 'Wheelhouse, brass', 'Wheelhouse, wood', 'Wheelhouse, upholstery',
+                 'Wheelhouse, lamps and lenses', 'Wheelhouse, painted fittings', 'Wheelhouse, wing plating', 'Wheelhouse, wing door, port',
+                 'Wheelhouse, wing door, starboard', 'Wheelhouse, wing door hardware, port', 'Wheelhouse, wing door hardware, starboard',
+                 'Wheelhouse, corridor door', 'Wheelhouse, corridor door hardware', 'Wheelhouse deckhead, linings', 'Wheelhouse deckhead, console',
+                 'Wheelhouse deckhead, instruments', 'Wheelhouse deckhead, steel', 'Wheelhouse deckhead, lamps and lenses', 'Wheelhouse deckhead, plastics',
+                 'Wheelhouse deckhead, painted fittings', 'Wheelhouse deckhead, brass', 'Wheelhouse deckhead, wood',
+                 'Compass deck, bridge fittings', 'Compass deck, bridge fittings, dark',
+                 'Compass deck, bridge fittings, lenses', 'Compass deck, bridge fittings, steel'):
         ob = bpy.data.objects.get(name)
         if ob is None:
             wrong.append(name + ' (not built)')
@@ -171,7 +176,7 @@ def main():
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways)
+        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])

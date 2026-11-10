@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Christina: the ferry, deck by deck</title>
-<meta name="description" content="A 3D model of the Christina, a 34.5 m car and passenger ferry: turn her, take her apart deck by deck, cut her open along her length, put her rudders over, name every room aboard, or walk through her on foot.">
+<meta name="description" content="A 3D model of the Christina, a 34.5 m car and passenger ferry: turn her, take her apart deck by deck, cut her open, walk through her on foot, and see what every fitting on her bridge is, what feeds it and what it talks to.">
 <meta name="author" content="Nils Johansson">
 <link rel="canonical" href="https://nj22az.github.io/ferry/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png">
@@ -40,7 +40,6 @@ body:not(.ready) #bar, body:not(.ready) #panel, body:not(.ready) #panel-toggle {
 
 #panel { position: fixed; top: 16px; right: 16px; bottom: 16px; width: 360px; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; transition: transform .25s ease; }
 #panel.closed { transform: translateX(calc(100% + 24px)); }
-#panel h2 { margin: 0; padding: 14px 16px 10px; font-size: 15px; border-bottom: 1px solid var(--line); }
 #panel-toggle { position: fixed; top: 16px; right: 16px; z-index: 3; display: none; }
 .tabpanel { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 10px 16px; flex: 1; font-size: 14px; line-height: 1.45; }
 .muted { color: var(--muted); }
@@ -63,6 +62,37 @@ body:not(.ready) #bar, body:not(.ready) #panel, body:not(.ready) #panel-toggle {
 .note p { margin: 0 0 6px; }
 .note p:last-child { margin-bottom: 0; }
 .source { margin: 14px 8px 0; font-size: 12.5px; color: var(--muted); }
+.source a { color: var(--accent); }
+/* The panel's two lists: her decks and rooms, and her systems. */
+.tabs { display: flex; border-bottom: 1px solid var(--line); flex: none; }
+.tabs button { flex: 1; min-height: 46px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.tabs button[aria-selected=true] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabpanel[hidden] { display: none; }
+.lede { margin: 6px 8px 8px; font-size: 13.5px; }
+details.sys { border-top: 1px solid var(--line); }
+details.sys > summary { cursor: pointer; padding: 10px 8px; font-weight: 600; }
+details.sys > summary:hover { color: var(--accent); }
+details.sys ul { list-style: none; margin: 0 0 8px; padding: 0; }
+.pick small, li.plain small { display: block; font-size: 12px; font-weight: 400; line-height: 1.35; }
+.pick:has(small) { flex-direction: column; align-items: stretch; gap: 1px; padding: 6px 8px; }
+li.plain { padding: 5px 8px; font-size: 13.5px; }
+.note .ways, .note .members { list-style: none; margin: 8px 0 0; padding: 0; }
+.note .members li { padding: 3px 0; }
+.note .pick.way { font-size: 13px; min-height: 0; padding: 5px 6px; }
+button.link { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; font-weight: 600; text-align: left; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.small { font-size: 12px; }
+/* What a fitting is: a card over the model, above the bar. */
+#card { position: fixed; left: 16px; bottom: 84px; z-index: 2; width: min(390px, calc(100vw - 32px)); max-height: min(50vh, 460px); overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 13.5px; line-height: 1.45; }
+#card[hidden] { display: none; }
+#card h3 { margin: 0 30px 4px 0; font-size: 16px; }
+#card .tag { margin: 0 30px 2px 0; font-size: 12px; color: var(--muted); }
+#card p { margin: 0 0 6px; }
+#card dl { display: grid; grid-template-columns: auto 1fr; gap: 5px 10px; margin: 8px 0 6px; }
+#card dt { color: var(--muted); font-size: 12.5px; padding-top: 1px; }
+#card dd { margin: 0; }
+#card .chip { display: block; }
+#card .close { position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; border: 0; border-radius: 8px; background: none; color: var(--muted); font-size: 21px; line-height: 1; cursor: pointer; }
+#card .close:hover { color: var(--accent); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 #bar { position: fixed; left: 16px; right: 392px; bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
@@ -110,23 +140,28 @@ body.walking #view canvas { cursor: crosshair; }
 <script type="importmap">{ "imports": { "three": "/motor-90l/vendor/three.module.min.js" } }</script>
 </head>
 <body>
-<div id="view" aria-label="3D view of the ferry. Drag to turn her, scroll or pinch to zoom toward the pointer, drag with the right button or two fingers to move her, double-click to look closer, tap a room to name it. Walk aboard to go through her on foot."></div>
+<div id="view" aria-label="3D view of the ferry. Drag to turn her, scroll or pinch to zoom toward the pointer, drag with the right button or two fingers to move her, double-click to look closer, tap a room or a fitting to name it. Walk aboard to go through her on foot."></div>
 
 <header class="title">
   <a href="/">← The Office of Nils Johansson</a>
   <h1>Christina</h1>
-  <p class="orbit-only">A 34.5 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room to name it, or walk aboard.</p>
-  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, Shift to go faster, F at a ladder, Q and E for the deck below and above, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round. At a ladder a button takes it.</span></p>
+  <p class="orbit-only">A 34.5 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room or a fitting to name it, or walk aboard.</p>
+  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, click a fitting to see what it is, Shift to go faster, F at a ladder, Q and E for the deck below and above, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round, tap a fitting to see what it is. At a ladder a button takes it.</span></p>
 </header>
 
 <p id="status" role="status">Loading the ferry…</p>
 <noscript><p style="position:fixed;left:16px;right:16px;top:45%;text-align:center">The ferry is a 3D model: it needs JavaScript to be shown.</p></noscript>
 
-<aside id="panel" aria-label="Decks and rooms">
-  <h2>Decks and rooms</h2>
-  <section class="tabpanel" id="decks"></section>
+<aside id="panel" aria-label="Decks, rooms and systems">
+  <div class="tabs" role="tablist" aria-label="What the panel lists">
+    <button type="button" role="tab" id="tab-decks" aria-selected="true" aria-controls="decks">Decks and rooms</button>
+    <button type="button" role="tab" id="tab-systems" aria-selected="false" aria-controls="systems">Systems</button>
+  </div>
+  <section class="tabpanel" id="decks" role="tabpanel" aria-labelledby="tab-decks"></section>
+  <section class="tabpanel" id="systems" role="tabpanel" aria-labelledby="tab-systems" hidden></section>
 </aside>
-<button type="button" id="panel-toggle" class="btn" aria-expanded="true" aria-controls="panel">Decks</button>
+<button type="button" id="panel-toggle" class="btn" aria-expanded="true" aria-controls="panel">Rooms and systems</button>
+<aside id="card" aria-label="What this fitting is" aria-live="polite" hidden></aside>
 
 <div id="stick" class="walk-only" aria-hidden="true"><i></i></div>
 

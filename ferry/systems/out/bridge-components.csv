@@ -1,0 +1,146 @@
+tag,name,subsystem,room,watts,share at sea,supply,second supply,nets,pipes,x,y above waterline,z from amidships,in the model,"where, if hidden",basis of the power figure,survey row,KKS tag (Minato Maru),what it is
+OUT-01,Console,OUT,Wheelhouse,,,,,,,0.0,9.1,5.36,built,,,B080,,"The forward console, 5.5 m wide, in five bays with doors to the equipment inside; its top is at 1.0 m and nothing on it stands higher than 1.33 m, so the sea is seen over it from the helm."
+OUT-02,Master's chair,OUT,Wheelhouse,,,,,,,1.05,9.1,4.3,built,,,B089,,"A high pedestal chair at the conning position, to port of the wheel."
+OUT-03,Watch officer's chair,OUT,Wheelhouse,,,,,,,-1.05,9.1,4.3,built,,,,,"A second pedestal chair, at the radar."
+OUT-04,Chart table,OUT,Wheelhouse,,,,,,,-1.475,9.1,2.59,built,,,B087,,"The chart table against the aft wall, with three drawers for folded charts and the chart in use on its top. She navigates on paper charts; the chart system on the console is an aid."
+OUT-05,"Bookshelf, nautical publications",OUT,Wheelhouse,,,,,,,-1.62,10.68,2.29,built,,,,,"Tide tables, the list of lights, the radio signals list, the signal code and the ship's own manuals, behind a fiddle rail."
+OUT-07,Binoculars box,OUT,Wheelhouse,,,,,,,-2.64,10.1,5.51,built,,,,,Two 7 × 50 binoculars in a varnished box at the console's starboard end.
+OUT-08,Stair well and rail,OUT,Wheelhouse,,,,,,,-2.5,9.1,2.6,built,,,,,"The head of the crew stair from the saloon, railed on its inboard side with a bar across the top."
+OUT-09,Log desk,OUT,Wheelhouse,10,0.2,BD1 1,,,,2.71,9.98,4.45,built,,typical,B102,,"A fold-down desk under the port window for the deck log, with its own lamp."
+OUT-10,"Door, corridor to wheelhouse",OUT,Wheelhouse,,,,,,,0.0,9.1,2.25,built,,,,,The door from the crew corridor. It opens into the wheelhouse and is kept shut at night to keep the corridor's light off the glass.
+OUT-11,Deck covering,OUT,Wheelhouse,,,,,,,0.0,9.1,3.95,built,,,,,"Sheet vinyl on the steel deck, with a ribbed rubber mat at the helm."
+OUT-14,Deckhead lining,OUT,Wheelhouse,,,,,,,0.0,11.15,3.95,built,,,,,Lining panels under the compass deck; the cable trays lie above them.
+OUT-15,"Overhead grab rail, port",OUT,Wheelhouse,,,,,,,0.75,11.08,3.95,built,,,,,A rail under the deckhead to hold on to in a seaway.
+OUT-23,"Overhead grab rail, starboard",OUT,Wheelhouse,,,,,,,-0.75,11.08,3.95,built,,,,,A rail under the deckhead to hold on to in a seaway.
+OUT-16,Overhead console,OUT,Wheelhouse,,,,,,,0.0,10.9,5.27,built,,,,,"A sloped panel under the deckhead over the forward console, for what is read at a glance."
+OUT-17,Sun blinds,OUT,Wheelhouse,,,,,,,0.0,11.06,5.73,built,,,,,A roller blind of tinted film at the head of each forward window.
+OUT-18,Door to the port wing,OUT,Wheelhouse,,,,,,,2.96,9.1,3.6,built,,,B104,,"A weathertight door, hinged on its forward edge, with a glazed upper half and a 0.15 m sill. It stands opposite the starboard one: the Minato Maru's stood in the aft corner, where the boards and their locker now have the wall to themselves."
+OUT-19,Door to the starboard wing,OUT,Wheelhouse,,,,,,,-2.96,9.1,3.6,built,,,B104,,"A weathertight door, hinged on its forward edge, with a glazed upper half and a 0.15 m sill."
+OUT-20,"Wheelhouse plating, linings and windows",OUT,Wheelhouse,,,,,,,0.0,9.1,3.95,built,,,B105,,"The house itself: plated outside, lined inside, five forward windows raked 10° under a visor, and windows down both sides: glass over 224° of the horizon from the helm."
+OUT-21,"Wing bulwarks, port",OUT,"Bridge wing, port",,,,,,,3.6,9.1,3.95,built,,,,,"A plated bulwark 1.1 m high round the wing, with a varnished cap rail."
+OUT-22,"Wing bulwarks, starboard",OUT,"Bridge wing, starboard",,,,,,,-3.6,9.1,3.95,built,,,,,"A plated bulwark 1.1 m high round the wing, with a varnished cap rail."
+NAV-01,Radar display,NAV,Wheelhouse,80,1.0,BD2 1,,NMEA NAV-LAN DIMMING,,-1.05,10.1,5.25,built,,typical,B081,10CTA10 GS002,"The radar picture, with target tracking: the display and its keyboard at the watch officer's chair, under a hood against the daylight."
+NAV-02,Radar processor,NAV,Wheelhouse,120,1.0,BD2 1,,NMEA AIS NAV-LAN RADAR,,-1.05,9.4,5.39,built,"inside the console, radar bay",typical,,,"The radar's processor unit: it takes the scanner's signal, the heading and the position, and gives the picture to the display and to the chart system."
+NAV-30,Radar scanner,NAV,Compass deck,100,1.0,BD2 1,,RADAR,,0.0,13.82,3.55,built (compass deck),,typical,B114,,"An X-band scanner on the mast platform: a turning unit and a 1.8 m array, 14.8 m above the waterline."
+NAV-04,AIS transponder,NAV,Wheelhouse,60,0.3,DC1 2,,NMEA AIS RF-AIS,,-1.55,10.1,5.3,built,,typical,,,"Sends her name, position, course and speed on VHF and shows the ships that send theirs."
+NAV-05,Electronic chart system,NAV,Wheelhouse,120,1.0,BD1 6,,NMEA AIS NAV-LAN DIMMING,,1.95,10.1,5.25,built,,typical,B082,10CTA10 GS002,"Her position on an electronic chart, with the radar's and the AIS's targets laid over it. An aid: the paper chart on the chart table is the chart she is navigated on."
+NAV-06,GPS navigator,NAV,Wheelhouse,10,1.0,DC1 1,DC2 4,NMEA RF-GPS,,-0.6,10.1,5.3,built,,typical,B096,10CTA10 GS002,"Position, course and speed over the ground from the satellites; it gives them to every set that needs them, the radios among them."
+NAV-07,Echo sounder,NAV,Wheelhouse,40,1.0,DC1 4,,NMEA SOUNDER,,1.49,10.1,5.3,built,,typical,B082,10CTA10 GS002,"The depth under the keel, drawn as a trace, with a shallow-water alarm."
+NAV-08,Speed log,NAV,Wheelhouse,20,1.0,DC1 5,,NMEA LOG,,0.8,9.72,5.39,built,"inside the console, conning bay",typical,,,The speed through the water from a sensor in the bottom; shown on the conning display.
+NAV-09,Navigation data distributor,NAV,Wheelhouse,10,1.0,DC1 6,,NMEA,,-0.6,9.66,5.39,built,"inside the console, radar bay",typical,,,"Takes each sensor's sentences once and gives a buffered copy to every listener, so that no set can pull another's line down."
+NAV-10,Conning display,NAV,Wheelhouse,60,1.0,DC1 6,,NMEA NAV-LAN PROP-CAN STEER DIMMING,,1.05,10.1,5.25,built,,typical,B083,,"Heading, rudder angle, both engines' revolutions, speed, depth and wind on one screen in front of the master's chair."
+NAV-11,Satellite compass processor,NAV,Wheelhouse,20,1.0,DC1 3,,NMEA RF-SATC,,-0.6,9.4,5.39,built,"inside the console, radar bay",typical,,,Works out her true heading and rate of turn from the two antennas in the dome on the compass deck. It is the heading every set steers and plots by.
+NAV-12,Autopilot control unit,NAV,Wheelhouse,30,1.0,DC1 7,,NMEA STEER,,0.12,10.08,4.49,built,,typical,B075,10CTA10 GS002,Sets and holds a heading; it steers through the steering control unit like the wheel does.
+NAV-13,Wind display,NAV,Wheelhouse,5,1.0,DC1 13,,NMEA DIMMING WIND,,-0.42,11.0,5.27,built,,typical,,,"Wind direction and speed relative to the ship, on the overhead console."
+NAV-14,Navigation network switch,NAV,Wheelhouse,15,1.0,DC1 6,,NAV-LAN,,0.8,9.6,5.39,built,"inside the console, conning bay",typical,,,The Ethernet switch of the navigation network.
+NAV-15,Compass periscope,NAV,Wheelhouse,,,,,,,0.0,10.94,4.95,built,,,B084,,"The magnetic compass on the compass deck, read from the helm through a tube and a mirror: it stands directly under the binnacle."
+NAV-16,"Bearing repeater, port wing",NAV,"Bridge wing, port",10,1.0,DC1 12,,NMEA,,3.55,9.1,4.3,built,,typical,,,"A heading repeater under an azimuth ring on a pelorus stand, to take bearings from the wing."
+NAV-17,"Bearing repeater, starboard wing",NAV,"Bridge wing, starboard",10,1.0,DC1 12,,NMEA,,-3.55,9.1,4.3,built,,typical,,,"A heading repeater under an azimuth ring on a pelorus stand, to take bearings from the wing."
+NAV-20,Ship's clock,NAV,Wheelhouse,,,,,,,-1.84,10.46,2.29,built,,,B101,,A brass bulkhead clock over the chart table.
+NAV-21,Barometer,NAV,Wheelhouse,,,,,,,-1.6,10.46,2.29,built,,,B101,,An aneroid barometer.
+NAV-22,Clinometer,NAV,Wheelhouse,,,,,,,-1.36,10.46,2.29,built,,,B101,,Shows her list in degrees.
+NAV-31,AIS antenna,NAV,Compass deck,,,,,RF-AIS,,0.6,11.5,2.55,built (compass deck),,,,,"The AIS's own VHF whip, 1.4 m."
+NAV-32,GPS antenna,NAV,Compass deck,,,,,RF-GPS,,0.8,11.5,2.65,built (compass deck),,,B115,,The GPS navigator's antenna dome.
+NAV-33,Satellite compass antenna,NAV,Compass deck,,,,,RF-SATC,,-0.8,11.5,2.65,built (compass deck),,,,,"Two satellite antennas in one dome, a known distance apart along her length: the heading is the direction from one to the other."
+NAV-34,Magnetic compass and binnacle,NAV,Compass deck,5,0.5,DC1 15,,,,0.0,11.5,4.95,built (compass deck),,typical,B116,,"The standard compass, on the centreline clear of steel and wiring, with a dimmed lamp. It needs no power to point."
+NAV-35,AIS position antenna,NAV,Compass deck,,,,,RF-AIS,,0.3,11.5,2.3,built,,,,,A small satellite antenna for the AIS's own position fix.
+NAV-36,Wind sensor,NAV,Compass deck,,,,,WIND,,-1.4,13.5,3.55,built,,,,,A cup anemometer and a vane at the starboard end of the flag yard.
+STR-01,Steering stand and wheel,STR,Wheelhouse,,,,,STEER,,0.0,9.1,4.5,built,,,B073,,"The helm: an eight-spoke wheel on a stand. The wheel turns a transmitter; where it is put, the rudders follow."
+STR-02,Steering control unit,STR,Wheelhouse,50,1.0,DC1 7,,STEER,,0.0,9.4,4.5,built,inside the steering stand,typical,,,"Compares the rudder ordered (by wheel, tiller or autopilot) with the rudder angle fed back from the steering gear, and opens the valves of the running power unit until they agree."
+STR-03,Steering mode selector and tiller,STR,Wheelhouse,,,,,STEER,,-0.14,10.08,4.49,built,,,B075,,"Chooses hand steering, autopilot or the tiller. The tiller works the valves directly (non-follow-up): the rudders move while it is held over, and it works with the control unit dead."
+STR-04,Heading repeater,STR,Wheelhouse,10,1.0,DC1 12,,NMEA,,0.0,9.96,4.265,built,,typical,B075,,"The heading in figures, low on the stand's face: read by looking down, not through it."
+STR-05,"Rudder angle indicator, overhead",STR,Wheelhouse,10,1.0,DC1 12,,STEER DIMMING,,0.42,11.0,5.27,built,,typical,,,"The rudders' true angle, from the transmitter on the steering gear: read from anywhere in the wheelhouse."
+STR-06,"Rudder angle indicator, console",STR,Wheelhouse,5,1.0,DC1 12,,STEER DIMMING,,-0.13,10.25,5.49,built,,typical,,,A second indicator among the propulsion instruments.
+PRP-01,"Engine control lever, port",PRP,Wheelhouse,,,,,PROP-CAN,,0.45,10.1,5.35,built,,,B076,,"One lever for the port engine: ahead or astern through the gearbox, then revolutions."
+PRP-02,"Engine control lever, starboard",PRP,Wheelhouse,,,,,PROP-CAN,,0.25,10.1,5.35,built,,,B077,,One lever for the starboard engine.
+PRP-03,Bow thruster lever,PRP,Wheelhouse,30,0.1,DC1 9,,PROP-CAN,,-0.15,10.1,5.35,built,,typical,B078,,Thrust to port or starboard from the tunnel thruster in the bow.
+PRP-04,Propulsion control panel,PRP,Wheelhouse,,,,,PROP-CAN,,0.35,10.1,5.14,built,,,,,"Which station has control (bridge, a wing, or the engine control room), engine start and stop, and an emergency stop for each engine under a flap."
+PRP-05,Bow thruster panel,PRP,Wheelhouse,,,,,PROP-CAN,,-0.15,10.1,5.14,built,,,,,"Start, stop, running lamp and the motor's current."
+PRP-06,Engine instrument panel,PRP,Wheelhouse,20,1.0,DC1 8,,PROP-CAN DIMMING,,0.37,10.25,5.49,built,,typical,B083,,"Revolutions of both engines, their oil pressure and cooling-water temperature."
+PRP-07,"Propulsion control unit, bridge",PRP,Wheelhouse,80,1.0,DC1 8,,PROP-CAN,,0.35,9.4,5.39,built,"inside the console, propulsion bay",typical,,,"Reads the levers at the three stations, decides which one commands, and sends the orders to the engine room over two CAN lines."
+PRP-10,"Wing control station, port",PRP,"Bridge wing, port",,,,,PROP-CAN STEER WATCH WHISTLE,,3.55,9.1,5.4,built,,,B107,,"Engine and thruster levers, a rudder angle indicator and a revolution indicator at the forward end of the wing, for berthing port side to."
+PRP-11,"Wing control station, starboard",PRP,"Bridge wing, starboard",,,,,PROP-CAN STEER WATCH WHISTLE,,-3.55,9.1,5.4,built,,,B109,,"Engine and thruster levers, a rudder angle indicator and a revolution indicator at the forward end of the wing, for berthing starboard side to."
+COM-01,"VHF radiotelephone No. 1, with DSC",COM,Wheelhouse,150,0.1,DC2 1,,NMEA RF-VHF1,,-1.95,10.1,5.3,built,,typical,B093,,"The distress and calling set: 25 W, digital selective calling on channel 70 with her position from the GPS, and a handset."
+COM-02,VHF radiotelephone No. 2,COM,Wheelhouse,150,0.1,DC2 2,,NMEA RF-VHF2,,-2.35,10.1,5.3,built,,typical,,,"The second set, for port and working channels, and the spare for the first."
+COM-05,NAVTEX receiver,COM,Wheelhouse,10,1.0,DC2 3,,NMEA RF-NAVTEX,,2.52,10.1,5.3,built,,typical,B095,10CTA10 GS002,Prints navigational and weather warnings broadcast on 518 kHz.
+COM-06,Portable VHF sets and charger,COM,Wheelhouse,30,0.3,DC2 5,,,,-1.12,10.38,2.29,built,,typical,,,"Three waterproof two-way sets for the survival craft, kept charged in their rack."
+COM-07,"Radar transponder, port",COM,Wheelhouse,,,,,,,2.9,10.55,3.14,built,,,,,"A search and rescue transponder beside the port door, to be taken into a survival craft: it answers a searching radar. Its own battery."
+COM-08,"Radar transponder, starboard",COM,Wheelhouse,,,,,,,-2.9,10.55,3.14,built,,,,,"The second transponder, beside the starboard door. Its own battery."
+COM-10,Float-free EPIRB,COM,"Bridge wing, starboard",,,,,,,-3.07,10.58,3.14,built,,,B111,,A satellite distress beacon in a bracket that lets it go and float free if she sinks. Its own battery.
+COM-11,VHF antenna No. 1,COM,Compass deck,,,,,RF-VHF1,,-1.2,11.5,2.35,built (compass deck),,,B115,,A 3 m whip on the starboard side.
+COM-12,VHF antenna No. 2,COM,Compass deck,,,,,RF-VHF2,,1.2,11.5,2.35,built (compass deck),,,B115,,A 3 m whip on the port side.
+COM-13,NAVTEX antenna,COM,Compass deck,,,,,RF-NAVTEX,,-0.35,11.5,2.25,built,,,B115,,A short active antenna for 518 kHz.
+INT-01,Public address and general alarm amplifier,INT,Wheelhouse,240,0.1,BD2 2,,PA-GA,,2.3,9.4,5.39,built,"inside the console, port bay",typical,B097,10CTA10 GS002,A 240 W amplifier with the general alarm's tone generator: seven short blasts and a long one on every loudspeaker aboard.
+INT-02,Public address and talkback panel,INT,Wheelhouse,30,0.3,DC1 10,,PA-GA TALKBACK,,2.5,10.1,5.14,built,,typical,B097,,"The microphone, the zone keys (car deck, saloon, crew, open decks), the general alarm key, and the talkback keys for the two wings, the mooring stations, the ramp and the engine control room."
+INT-04,Telephone,INT,Wheelhouse,,,,,TEL,,2.12,10.1,5.14,built,,,B094,,"The ship's automatic telephone: cabins, mess, galley, engine control room."
+INT-05,Sound-powered telephone,INT,Wheelhouse,,,,,SP-TEL,,-2.63,10.1,5.17,built,,,B094,,"Speaks to the engine control room and the steering-gear room with no supply at all: the voice makes the current, and a hand crank rings the other end."
+INT-07,General alarm push button,INT,Wheelhouse,,,,,PA-GA,,0.56,10.62,2.29,built,,,,,Sounds the general alarm from the door.
+INT-08,"Loudspeaker, wheelhouse",INT,Wheelhouse,,,,,PA-GA,,0.6,11.15,3.35,built,,,,,A loudspeaker in the deckhead.
+INT-09,"Talkback station, port wing",INT,"Bridge wing, port",,,,,TALKBACK,,3.06,10.32,5.66,built,,,,,A weatherproof loudspeaking station on the house side.
+INT-10,"Talkback station, starboard wing",INT,"Bridge wing, starboard",,,,,TALKBACK,,-3.06,10.32,5.66,built,,,,,A weatherproof loudspeaking station on the house side.
+INT-11,Loudhailer,INT,Compass deck,,,,,PA-GA,,0.5,13.6,3.9,built (compass deck),,,,,"A horn loudspeaker on the mast platform, for hailing and for the fog signal's listening watch."
+ALM-01,Machinery alarm panel,ALM,Wheelhouse,25,1.0,DC1 11,,AMS,,1.3,10.1,5.14,built,,typical,B090,,"The engine room's alarms in groups, with a buzzer: the bridge sees that something is wrong below, and whether the engineer has accepted it."
+ALM-02,Bridge watch alarm,ALM,Wheelhouse,15,1.0,DC1 11,,NMEA PA-GA WATCH,,0.96,10.1,5.14,built,,typical,,,"Asks the watch to press a button every few minutes at night. Unanswered, it calls the master's cabin, then the general alarm."
+ALM-04,"Watch alarm reset, chart table",ALM,Wheelhouse,,,,,WATCH,,-1.05,10.28,2.29,built,,,,,A reset button at the chart table.
+ALM-05,Camera monitor,ALM,Wheelhouse,40,1.0,BD1 6,,CCTV,,1.1,11.0,5.27,built,,typical,,,"Four cameras on one screen: the bow ramp, the car deck, the stern and the engine room."
+ALM-06,"Ramp, hatch and watertight door panel",ALM,Wheelhouse,20,1.0,DC1 11,,DOORS,,-1.55,10.1,5.14,built,,typical,B098,,"A lamp for the bow ramp, each hatch and each of the five watertight doors: green when shut and secured, red when not."
+ALM-07,Camera recorder,ALM,Wheelhouse,40,1.0,BD1 6,,CCTV,,1.62,9.4,5.39,built,"inside the console, port bay",typical,,,Records the cameras.
+FIR-01,Fire detection panel,FIR,Wheelhouse,60,1.0,BD2 3,,PA-GA FIRE-1,,0.94,10.3,2.29,built,,typical,B090,10CSA,"The addressable fire detection panel: it names the detector that has answered, sounds the bells, and after two minutes unaccepted, the general alarm. It has a standby battery of its own."
+FIR-02,Manual call point,FIR,Wheelhouse,,,,,FIRE-1,,0.56,10.42,2.29,built,,,B022,,Break the glass to give the alarm.
+FIR-03,Smoke detector,FIR,Wheelhouse,,,,,FIRE-1,,-0.5,11.15,3.75,built,,,B022,,An optical smoke detector on loop 1.
+FIR-05,"Fire extinguisher, CO₂ 5 kg",FIR,Wheelhouse,,,,,,,-0.7,9.14,2.39,built,,,B072,,For the electrical equipment: carbon dioxide leaves nothing behind.
+FIR-06,"Fire extinguisher, powder 6 kg",FIR,Wheelhouse,,,,,,,2.82,9.2,3.14,built,,,B072,,"Dry powder, beside the port door."
+FIR-07,Fire hose box,FIR,"Bridge wing, port",,,,,,,3.11,9.2,2.7,built,,,B106,,"A 15 m hose with a dual-purpose nozzle, coiled in its box beside the hydrant."
+NLT-01,Navigation light panel,NLT,Wheelhouse,,,,,,,-1.55,9.73,5.05,built,,,B085,10CTA20 GS001,"A switch, a fuse and a lamp-failure indicator for each lantern, on a mimic of the ship; a change-over switch between its two supplies."
+NLT-02,"Sidelight, port",NLT,"Bridge wing, port",60,0.5,NLP 2,,,,4.13,10.3,5.45,built,,town,B108,,"Red, from right ahead to 22.5° abaft the port beam: on the bulwark's rail at the wing's outer end, with a screen board inboard of it."
+NLT-03,"Sidelight, starboard",NLT,"Bridge wing, starboard",60,0.5,NLP 3,,,,-4.13,10.3,5.45,built,,town,B110,,"Green, from right ahead to 22.5° abaft the starboard beam: on the bulwark's rail, with a screen board inboard of it."
+NLT-04,Masthead light,NLT,Compass deck,60,0.5,NLP 1,,,,0.0,14.1,3.73,built (compass deck),,town,B113,,"White, over 225° ahead, on the front of the mast above the radar."
+NLT-05,Anchor light,NLT,Compass deck,60,0.0,NLP 5,,,,0.0,16.0,3.55,built (compass deck),,town,B113,,"White, all round, on the crown of the mast."
+NLT-06,Stern light,NLT,Compass deck,60,0.5,NLP 4,,,,0.0,6.7,-16.95,not built,"at the after end of the passenger deck, not yet rebuilt",town,B113,,"White, over 135° astern. It stands at the after end of the passenger deck and is still the Minato Maru's drawing."
+NLT-07,"Not-under-command light, upper",NLT,Compass deck,60,0.0,NLP 6,,,,0.3,15.0,3.55,built,,town,,,"Red, all round: two of them in a line, 2 m apart, say she cannot keep out of the way."
+NLT-08,"Not-under-command light, lower",NLT,Compass deck,60,0.0,NLP 7,,,,0.3,13.0,3.55,built,,town,,,"Red, all round."
+NLT-09,Whistle,NLT,Compass deck,,,,,,AIR-WH,0.0,14.68,3.95,built (compass deck),,,,,"Two air horns on the front of the mast, sounded by compressed air."
+NLT-10,Whistle panel,NLT,Wheelhouse,10,1.0,BD2 6,,WHISTLE,,0.72,10.1,5.14,built,,typical,B099,,A push button for the whistle and a timer for the fog signal (one long blast every two minutes when under way).
+NLT-11,Searchlight control,NLT,Wheelhouse,,,,,SEARCHLIGHT,,-0.5,10.1,5.14,built,,,B100,,"A joystick that turns and tilts the searchlight, and its lamp switch."
+NLT-12,Wiper and window wash panel,NLT,Wheelhouse,,,,,WIPERS,,-2.02,10.1,5.14,built,,,,,"Each wiper on, off or intermittent, and the wash."
+NLT-13,"Window wiper, starboard",NLT,Wheelhouse,60,0.2,BD1 3,,WIPERS,,-1.164,10.1,5.77,built,,typical,B086,,A pantograph wiper on the outside of the glass; its motor is under the sill.
+NLT-14,"Window wiper, centre",NLT,Wheelhouse,60,0.2,BD1 3,,WIPERS,,0.0,10.1,5.77,built,,typical,B086,,A pantograph wiper on the outside of the glass; its motor is under the sill.
+NLT-15,"Window wiper, port",NLT,Wheelhouse,60,0.2,BD1 3,,WIPERS,,1.164,10.1,5.77,built,,typical,B086,,A pantograph wiper on the outside of the glass; its motor is under the sill.
+NLT-16,Searchlight,NLT,Compass deck,1000,0.0,LB searchlight,,SEARCHLIGHT,,-1.6,11.5,4.75,built (compass deck),,town,B112,10CTA10 GS001,"A 1 kW searchlight on the compass deck, turned from the console."
+NLT-20,Flag locker,NLT,Wheelhouse,,,,,,,-0.7,10.1,2.29,built,,,,,"The signal flags of the international code, each rolled in its own pigeonhole."
+NLT-21,Daylight signalling lamp,NLT,Wheelhouse,60,0.0,DC1 16,,,,-2.9,9.82,3.14,built,,typical,,,"A hand lamp for Morse by day, on its hook beside the starboard door with its socket."
+LGT-01,Deckhead light,LGT,Wheelhouse,36,0.1,BD1 1,,,,1.55,11.15,3.95,built,,typical,B103,10BRB10 GS011,"A white light in the deckhead, for work in harbour and by day."
+LGT-02,Deckhead light,LGT,Wheelhouse,36,0.1,BD1 1,,,,-1.55,11.15,3.95,built,,typical,B103,10BRB10 GS011,"A white light in the deckhead, for work in harbour and by day."
+LGT-03,Deckhead light,LGT,Wheelhouse,36,0.1,BD1 1,,,,1.2,11.15,2.95,built,,typical,B103,10BRB10 GS011,"A white light in the deckhead, for work in harbour and by day."
+LGT-04,Deckhead light,LGT,Wheelhouse,36,0.1,BD1 1,,,,-1.2,11.15,2.95,built,,typical,B103,10BRB10 GS011,"A white light in the deckhead, for work in harbour and by day."
+LGT-05,Chart lamp,LGT,Wheelhouse,10,0.5,BD1 1,,,,-1.9,10.05,2.41,built,,typical,B087,,"A dimmed lamp on a stalk, red or white, that lights the chart and nothing else."
+LGT-06,"Night light, red, port",LGT,Wheelhouse,5,0.5,DC1 15,,,,0.9,11.15,4.9,built,,typical,,,"A red light over the console: enough to find a switch by, without spoiling the night vision."
+LGT-13,"Night light, red, starboard",LGT,Wheelhouse,5,0.5,DC1 15,,,,-0.9,11.15,4.9,built,,typical,,,A red light over the console.
+LGT-07,Emergency light,LGT,Wheelhouse,15,0.0,BD2 4,,,,0.0,11.15,3.15,built,,typical,,10BRV20 GS011,Lights by itself when the main supply fails.
+LGT-08,"Wing light, port",LGT,"Bridge wing, port",40,0.1,BD1 2,,,,3.05,11.0,5.66,built,,typical,,,A bulkhead light on the house side.
+LGT-09,"Wing light, starboard",LGT,"Bridge wing, starboard",40,0.1,BD1 2,,,,-3.05,11.0,5.66,built,,typical,,,A bulkhead light on the house side.
+LGT-10,Dimmer panel,LGT,Wheelhouse,60,0.5,BD1 8,,DIMMING,,-2.38,10.1,5.14,built,,typical,,,Dims the instruments and the console lighting for the night watch.
+LGT-11,"Foredeck floodlight, port",LGT,Compass deck,150,0.1,BD1 2,,,,2.35,11.5,5.41,built (compass deck),,typical,,,Lights the car deck forward and the ramp.
+LGT-12,"Foredeck floodlight, starboard",LGT,Compass deck,150,0.1,BD1 2,,,,-2.35,11.5,5.41,built (compass deck),,typical,,,Lights the car deck forward and the ramp.
+ELD-01,Wheelhouse distribution board BD1,ELD,Wheelhouse,,,,,,,1.5,10.05,2.29,built,,,,,"105 V, from the lighting board in the engine control room: eight ways for the bridge's general services."
+ELD-02,Emergency distribution board BD2,ELD,Wheelhouse,,,,,,,2.11,10.15,2.29,built,,,,,"105 V, from the emergency switchboard: six ways for what must not go dark."
+ELD-03,"24 V DC panel DC1, navigation and control",ELD,Wheelhouse,,,,,,,2.63,10.54,2.29,built,,,,,"24 V from the general service battery: fifteen fused ways, a voltmeter and an earth-fault lamp."
+ELD-04,"24 V DC panel DC2, radio",ELD,Wheelhouse,,,,,,,2.63,10.15,2.29,built,,,,,"24 V from the radio battery: five fused ways, a voltmeter and the charger-failure alarm."
+ELD-11,"Console socket, port",ELD,Wheelhouse,150,0.1,BD1 4,,,,2.2,9.82,5.05,built,,typical,,,A 105 V socket on the console's after face.
+ELD-13,"Console socket, centre",ELD,Wheelhouse,150,0.1,BD1 4,,,,-0.4,9.82,5.05,built,,typical,,,A 105 V socket on the console's after face.
+ELD-12,Console heaters,ELD,Wheelhouse,100,0.2,BD1 8,,,,0.0,9.24,5.45,built,"inside the console, at its foot",typical,,,Small heaters low in the console that keep the damp out of the electronics when she lies cold.
+ELD-20,Cable transit at the mast,ELD,Wheelhouse,,,,,,,0.0,11.15,3.55,built,,,,,"Where the cables to the mast and the compass deck pass the deck, sealed gastight and watertight."
+ELD-21,Cable duct on the port mullion,ELD,Wheelhouse,,,,,,,0.58,10.55,5.65,built,,,,,"A covered duct down a forward mullion, from the trays over the deckhead to the console."
+ELD-22,Cable duct on the starboard mullion,ELD,Wheelhouse,,,,,,,-0.58,10.55,5.65,built,,,,,"A covered duct down a forward mullion, from the trays over the deckhead to the console."
+HVC-01,"Air conditioner, room unit",HVC,Wheelhouse,60,0.6,BD1 5,,,AC-REF AC-DRAIN,-2.52,10.82,2.29,built,,town,B059,10SAC20 AH001,"The wheelhouse's cooling and dehumidifying unit, high on the aft wall over the stair."
+HVC-02,"Air conditioner, condensing unit",HVC,Compass deck,940,0.6,BD1 5,,,AC-REF,-2.3,11.5,2.7,built,,town,B059,10SAC20 AH001,"The compressor and condenser, on the compass deck above the room unit."
+PIP-01,"Fire hydrant, port wing",PIP,"Bridge wing, port",,,,,,FIRE-MAIN,3.09,9.65,3.14,built,,,B106,10SGA30 AA518,"A 50 mm hydrant on the fire main, with a hose coupling and a hand valve."
+PIP-05,"Scupper, port wing",PIP,"Bridge wing, port",,,,,,SCUP-P,3.92,9.1,2.55,built,,,,,"The wing's deck drain, led overboard."
+PIP-06,"Scupper, starboard wing",PIP,"Bridge wing, starboard",,,,,,SCUP-S AC-DRAIN,-3.92,9.1,2.55,built,,,,,"The wing's deck drain, led overboard."
+PIP-10,Whistle valve,PIP,Wheelhouse,20,0.0,BD2 6,,WHISTLE,AIR-WH,0.3,11.03,3.7,built,,typical,,,"The valve that lets air to the whistle: opened by a solenoid from the push buttons and the fog timer, or by hand with the pull above the helm."
+PIP-11,Window wash valve,PIP,Wheelhouse,15,0.0,BD1 3,,WIPERS,FW-WASH,2.62,9.4,5.55,built,"inside the console, port end",typical,,,A solenoid valve on the fresh-water line to the wash nozzles.
+PIP-12,Window wash nozzles,PIP,Wheelhouse,,,,,,FW-WASH,0.0,10.09,5.78,built,,,,,A nozzle at each wiper.
+LSA-01,"Lifebuoy with light and smoke, port",LSA,"Bridge wing, port",,,,,,,4.02,9.72,3.65,built,,,,,A lifebuoy on a quick-release with a self-igniting light and a smoke float: thrown from the wing for a man overboard.
+LSA-02,"Lifebuoy with light and smoke, starboard",LSA,"Bridge wing, starboard",,,,,,,-4.02,9.72,3.65,built,,,,,A lifebuoy on a quick-release with a self-igniting light and a smoke float.
+LSA-05,Locker: lifejackets and pyrotechnics,LSA,Wheelhouse,,,,,,,2.03,9.1,2.29,built,,,,,"Four lifejackets for the watch, twelve parachute flares and the line-throwing appliance, under the boards."
+LSA-06,First-aid kit,LSA,Wheelhouse,,,,,,,-0.7,9.78,2.29,built,,,,,A first-aid box under the flag locker.

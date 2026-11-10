@@ -51,13 +51,19 @@ SUPERSEDES = {
 # of triangles (the base draws each box, bar and plate of its interiors as one); it goes when its whole extent lies in the
 # box, unless `keep` says it is not furniture (glass, window frames). Pieces that run out of the box (walls, the deck)
 # stay. A slice is replaced when a part brings an object whose name begins with `prefix`.
+# `clear` is a second box, emptied whatever is in it: the base's walls there are one piece with the rest of the house, so they
+# cannot go as pieces; every triangle of the base inside the box goes, and one that crosses its faces is cut there.
 REPLACES = {
     'wheelhouse': dict(
-        part='bridge', prefix='Wheelhouse', section='Wheelhouse', built='11 November 2026',
-        box=dict(x=(-4.35, 4.35), y=(9.09, 11.45), z=(2.9, 5.85)),
-        keep=lambda mat, col: mat['transparent'] or tuple(col) == (58, 66, 68),
-        why='her own wheelhouse fit-out, built in Blender',
-        what="the wheelhouse's fittings (helm and console, instruments, the master's chair, wing doors, wing consoles, sidelights)"),
+        part='bridge', prefix='Wheelhouse', section='Navigation bridge', built='11 November 2026',
+        # From the forward face of the wheelhouse's aft wall (19.54 m from the transom) to the front, both wings with it.
+        box=dict(x=(-4.35, 4.35), y=(9.09, 11.45), z=(L.Z(19.495), L.Z(23.10))),
+        keep=lambda mat, col: False,
+        # The walls, windows and linings of the wheelhouse itself: from just off the aft wall's face to the front, from just
+        # over the deck's plating to the roof.
+        clear=dict(x=(-3.02, 3.02), y=(9.102, 11.36), z=(L.Z(19.545), L.Z(23.12))),
+        why='her own navigation bridge, built in Blender',
+        what='the navigation bridge (the wheelhouse plated, lined and glazed, its console and every instrument, the boards and their wiring, both wings)'),
 }
 # Parts of the base that must lie inside the shell.
 FIT = ('machinery',)
@@ -106,7 +112,7 @@ STAND = {
     'funnel-s': (-2.55, 6.5, 4.35),
 }
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
-                         emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None)
+                         emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None, atlas=0)
 
 
 def read_jmf(path):
@@ -280,15 +286,84 @@ def replace_slice(m, rule, mat):
     return int(drop.sum())
 
 
-def weld(pos, nor, col, lo, hi):
+def clear_box(m, box, grace=0.002):
+    """
+    Empty a box of the mesh: a triangle wholly inside goes; one that crosses its faces is cut there and what lies outside is
+    kept, drawn again in pieces. A triangle that only comes near is left as it is, and so is every piece this has made
+    (each lies beyond one face of the box), so a second run changes nothing. Returns how many triangles went or were cut.
+    """
+    lo = np.array([box['x'][0], box['y'][0], box['z'][0]])
+    hi = np.array([box['x'][1], box['y'][1], box['z'][1]])
+    pos, idx = m['pos'], m['idx']
+    T = pos[idx]
+    tlo, thi = T.min(1), T.max(1)
+    near = ((thi > lo + grace) & (tlo < hi - grace)).all(1)
+    if not near.any():
+        return 0
+    drop = np.zeros(len(idx), bool)
+    new_pos, new_w, new_from = [], [], []
+    for t in np.nonzero(near)[0]:
+        rest = [(pos[idx[t, k]].copy(), np.eye(3)[k]) for k in range(3)]
+        kept = []
+        for axis in range(3):
+            for bound, below in ((lo[axis], True), (hi[axis], False)):
+                out = _clip(rest, axis, bound, below)
+                if len(out) >= 3:
+                    kept.append(out)
+                rest = _clip(rest, axis, bound, not below)
+                if len(rest) < 3:
+                    break
+            if len(rest) < 3:
+                break
+        if len(rest) < 3:
+            continue                                  # nothing of it is inside: left as it is
+        area = 0.0
+        for u, v in zip(rest[1:], rest[2:]):
+            area += np.linalg.norm(np.cross(u[0] - rest[0][0], v[0] - rest[0][0]))
+        if area < 1e-8:
+            continue
+        drop[t] = True
+        for poly in kept:
+            for u, v in zip(poly[1:], poly[2:]):
+                if np.linalg.norm(np.cross(u[0] - poly[0][0], v[0] - poly[0][0])) < 1e-9:
+                    continue
+                for p, w in (poly[0], u, v):
+                    new_pos.append(p); new_w.append(w); new_from.append(t)
+    if not drop.any():
+        return 0
+    if new_pos:
+        new_w, corners = np.array(new_w).reshape(-1, 3), idx[np.array(new_from, dtype=np.int64).reshape(-1)]
+        first = len(pos)
+        m['pos'] = np.concatenate([pos, np.array(new_pos).reshape(-1, 3)])
+        for key in ('nor', 'col', 'uv'):
+            if m[key] is None:
+                continue
+            mixed = np.einsum('nk,nkc->nc', new_w, m[key][corners].astype(np.float64))
+            m[key] = np.concatenate([m[key], np.rint(mixed).astype(m[key].dtype)])
+        added = np.arange(first, first + len(new_pos), dtype=np.uint32).reshape(-1, 3)
+        idx = np.concatenate([idx[~drop], added])
+    else:
+        idx = idx[~drop]
+    used, inverse = np.unique(idx, return_inverse=True)
+    m['pos'], m['nor'], m['col'] = m['pos'][used], m['nor'][used], m['col'][used]
+    if m['uv'] is not None:
+        m['uv'] = m['uv'][used]
+    m['idx'] = inverse.reshape(-1, 3).astype(np.uint32)
+    return int(drop.sum())
+
+
+def weld(pos, nor, col, lo, hi, uv=None):
     """Triangle corners → shared vertices and indices, quantised as the file keeps them."""
     q = np.rint((pos - lo) / (hi - lo) * 65535).astype(np.uint16)
     n = np.clip(np.rint(nor * 127), -127, 127).astype(np.int8)
-    rows = np.concatenate([q.astype(np.int32), n.astype(np.int32), col.astype(np.int32)], axis=1)
+    cols = [q.astype(np.int32), n.astype(np.int32), col.astype(np.int32)]
+    if uv is not None:
+        cols.append(np.clip(np.rint(uv * 65535), 0, 65535).astype(np.int32))
+    rows = np.concatenate(cols, axis=1)
     uniq, inverse = np.unique(rows, axis=0, return_inverse=True)
     tri = inverse.reshape(-1, 3).astype(np.uint32)
     tri = tri[(tri[:, 0] != tri[:, 1]) & (tri[:, 1] != tri[:, 2]) & (tri[:, 0] != tri[:, 2])]
-    return uniq[:, :3].astype(np.uint16), uniq[:, 3:6].astype(np.int8), uniq[:, 6:9].astype(np.uint8), tri
+    return uniq[:, :3].astype(np.uint16), uniq[:, 3:6].astype(np.int8), uniq[:, 6:9].astype(np.uint8), tri, (uniq[:, 9:11].astype(np.uint16) if uv is not None else None)
 
 
 def main():
@@ -338,6 +413,8 @@ def main():
         kept = []
         for m in meshes[rule['part']]:
             cut = replace_slice(m, rule, materials[m['material']]) if m['origin'] == 'town' else 0
+            if m['origin'] == 'town' and rule.get('clear') and len(m['idx']):
+                cut += clear_box(m, rule['clear'])
             if cut:
                 report['dropped'].append(dict(part=rule['part'], material=m['material'], triangles=cut, why=rule['why']))
             if len(m['idx']):
@@ -381,7 +458,7 @@ def main():
         rec = dict(MATERIAL_DEFAULTS)
         rec.update(metalness=round(float(look['metalness']), 3), roughness=round(float(look['roughness']), 3), side=look.get('side', 'front'),
                    offset=[int(v) for v in look['offset']] if look.get('offset') else None)
-        for key in ('transparent', 'opacity', 'depthWrite'):
+        for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas'):
             if key in look:
                 rec[key] = look[key]
         key = json.dumps(rec, sort_keys=True)
@@ -401,7 +478,8 @@ def main():
             if m['group'] not in by_id:
                 raise SystemExit(f'the part file brings "{m["group"]}", which is not one of the viewer\'s parts')
             fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'], mover=m.get('mover') or None,
-                              pos=z[m['key'] + '|pos'].astype(np.float64), nor=z[m['key'] + '|nor'], col=z[m['key'] + '|col']))
+                              pos=z[m['key'] + '|pos'].astype(np.float64), nor=z[m['key'] + '|nor'], col=z[m['key'] + '|col'],
+                              uv=z[m['key'] + '|uv'].astype(np.float64) if m['key'] + '|uv' in z.files else None))
     # The box positions are kept over: the base's own, widened where a new part reaches further. It never shrinks, so
     # what the base keeps stays on the same grid and a second run gives the same file.
     lo, hi = np.array(header['bounds']['min'], dtype=np.float64), np.array(header['bounds']['max'], dtype=np.float64)
@@ -444,8 +522,8 @@ def main():
             q = np.rint((m['pos'] - lo) / (hi - lo) * 65535).astype(np.uint16)
             out.append(record(m['material'], m['origin'], q, m['nor'], m['col'], m['idx'], m['uv'], m['mover']))
         for m in (f for f in fresh if f['group'] == g['id']):
-            q, n, c, tri = weld(m['pos'], m['nor'], m['col'], lo, hi)
-            out.append(record(m['material'], 'blender', q, n, c, tri, mover=m['mover']))
+            q, n, c, tri, uv = weld(m['pos'], m['nor'], m['col'], lo, hi, m['uv'])
+            out.append(record(m['material'], 'blender', q, n, c, tri, uv, mover=m['mover']))
             report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects']))
         g['meshes'] = sorted(out, key=lambda r: (r['material'], r.get('mover', '')))
 
@@ -465,6 +543,17 @@ def main():
         if key in report.get('replaced', []) or any(b.get('section') == rule['section'] for b in ship.get('built', [])):
             ship['built'].append(dict(part=rule['part'], section=rule['section'], date=rule['built'], what=rule['what']))
     header['source']['blender'] = dict(generator=parts[0][0]['generator'], blender=parts[0][0]['blender'])
+    # Her own sheet of pictures (atlas.py) beside the base's: a material's `atlas` says which of the two it is drawn from.
+    sheet = json.load(open(os.path.join(HERE, 'atlas.json')))
+    header['atlases'] = [dict(header['atlas']), dict(file=sheet['file'], size=sheet['size'])]
+    # The register: where each component of hers is, joined with what it is, what feeds it and what it talks to.
+    boxes = {}
+    for meta, _ in parts:
+        boxes.update(meta.get('components', {}))
+    sys.path.insert(0, os.path.join(HERE, '..', 'systems'))
+    import register
+    systems = register.write(boxes, quiet=True)
+    header['systems'] = dict(file='systems.json', components=len(systems['components']))
     text = json.dumps(header, ensure_ascii=False, separators=(',', ':')).encode()
     text += b' ' * ((4 - len(text) % 4) % 4)
     body = b'JMF1' + struct.pack('<I', len(text)) + text + b''.join(chunks)
