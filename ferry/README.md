@@ -2,7 +2,8 @@
 
 A 3D viewer of the Christina, a 34.5 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
 along her length (Cut), put her rudders over (Rudder), name every room aboard, and walk through her on foot (Walk
-aboard), where walls stop one and doors let one through: <https://nj22az.github.io/ferry/>.
+aboard), where walls stop one, doors let one through, ladders are climbed, and every room is reached on foot:
+<https://nj22az.github.io/ferry/>.
 
 The page has no build step: serve the site root (`python3 -m http.server`) and open `/ferry/`. Her data is built
 beforehand (*Her own build*, below) and kept in `data/`.
@@ -11,7 +12,7 @@ beforehand (*Her own build*, below) and kept in `data/`.
 |---|---|
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.55 MB, about 208,000 triangles in 75 meshes (83,400 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.58 MB, about 212,000 triangles in 83 meshes (87,200 of them her own: the hull and the fittings of its spaces), six decks, 50 named rooms |
 | `data/ferry-atlas.webp` | Every plate, dial and sign aboard on one 2048 px picture |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
 
@@ -34,6 +35,7 @@ place of the Minato Maru's drawing on this page as it is finished.
 | **1c. Working rudders** | **10 November 2026** (the owner: "The rudders too , need to work, or be azimuth pods"). The Rudder control puts both rudders over, to 35° either side. Blade, stock and anodes turn; so do the head of the stock and the tiller in the steering-gear room; the tie bar goes with the tillers' ends; each ram swings on its trunnion and its rod runs out or in. Azimuth pods were the owner's alternative: they would be another ship (no shafts, rudders or steering gear), and are not built |
 | **On foot, and a better outside view** | **10 November 2026** (the owner: "I want to be able to explore it in fpv on the demo and have better camera controls"). *Walking aboard and the outside view*, below. For it the data changed in two places: the lobby's floor is opened over the two stairs, and the car deck has an underside over the hull's own spaces. |
 | **Walls, doors, and the way aft** | **10 November 2026** (the owner: "Do one fix that can impact and make it better", and while it was made: "There needs to be a water tight door that can open to the steering gear"). On foot, walls now stop one and doors let one through. Three hinged watertight doors of her own stand on the centreline, and a walkway with steps goes through the shaft space: from the engine room one walks aft to the steering gear. *Walking aboard* and *The way aft*, below. |
+| **Every room on foot** | **10 November 2026** (the owner: "Fix the rooms all rooms need to be accessible"). From where the walk begins every room is now reached on foot: a hatch and ladder from the lower lobby to the shaft space (and so to all the machinery spaces), two more watertight doors forward into the void and the thruster room, a hatch and ladder into the fore peak, a ladder to the compass deck. *The ways on foot*, below. |
 | 2. Exterior above the hull (bulwark fittings, ramp, casings, deckhouses, funnels, mast) | The Minato Maru's drawing |
 | 3. Car deck · 4. Engine room and machinery spaces · 5. Bridge · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
@@ -125,6 +127,9 @@ tool last wrote it (the default), so no Town checkout is needed to build her aga
   8.44 to 8.50 m) is opened for the watertight door to the shaft space. On the bridge deck a handrail ran along each
   side of the crew's corridor in one length, across the four cabin doorways on that side: it is cut away at each
   (the cut ends are open tubes).
+- The electrical workshop's forward wall is opened for the door to the void, and the car deck (its plating, and the
+  lobby's floor covering on it) over each of her ladders that comes down through it.
+- Three spaces that are not entered are given the place where a walk begun at them starts (`STAND`).
 - A part may give a mesh to another of the viewer's parts (`part.group` in the builders). The hull's build gives the
   car deck its plating as seen from below, over the hull's own spaces (below).
 - A second run on its own output gives the same file byte for byte.
@@ -182,6 +187,7 @@ to walk.
 | Look round | Drag on the model | Drag anywhere else, with another finger while walking if wanted |
 | Faster | Shift (3.8 m/s, a walk is 1.5 m/s) | Push the stick to its edge |
 | Deck above, deck below | E and Q, or Page Up and Page Down, or the two buttons | The two buttons |
+| A ladder | F, or the button that appears at its foot and at its head | That button |
 | Leave | Esc, or the button | The button |
 
 The Rudder slider stays: one can stand in the steering-gear room and put the rudders over.
@@ -209,6 +215,7 @@ them; glass is a wall but not a floor).
   no opening behind them; a door's own leaf, frame and handle are no wall, and standing in its doorway the
   wall it hangs in does not count. One walks through the leaf. Her own watertight doors swing open (below).
 - Stopped by the wall beside a doorway one was making for, one is drawn to its middle.
+- Her ladders are taken at a button (below). The other ship's own ladders are not climbed.
 - Under a deckhead, beam or pipe lower than the walker the eye comes down, keeping 0.12 m under it; through a low
   doorway it comes down to 0.2 m under the lowest height at which the wall is met (one stoops). Where there is less
   than 1.1 m one does not go.
@@ -220,23 +227,40 @@ them; glass is a wall but not a floor).
 
 What still does not stop one, and which rooms have no door, is in *Known limits*.
 
-**The way aft, and her watertight doors** (`blender/spec.py`: `WT_DOORS`, `WALKWAY`; `hull_fittings.py`: `way_aft`).
-The owner, 10 November 2026: "There needs to be a water tight door that can open to the steering gear". The
-steering-gear room had no way in. Now one goes aft from the engine room on the centreline:
-- through a watertight door in the engine room's after bulkhead (8.42 m from the transom), which opens forward;
-- along a platform at the level of the engine room's floor plates and up six treads (0.18 m each, 0.8 m wide between
-  two rails) to a flat at the level of the steering flat, 1.27 m higher, clear over the floors of her bottom as she
-  rises aft;
-- through the door at frame 10 (5.0 m), which opens aft, and along the gangway between the two fresh-water tanks;
-- through the door to the steering gear (2.6 m), which opens forward into that gangway.
+**The ways on foot: her watertight doors, ladders and hatches** (`blender/spec.py`: `WT_DOORS`, `WALKWAY`,
+`WALKWAY_VOID`, `LADDERS`; `hull_fittings.py`: `way_aft`, `ladders`, `ways`). The owner, 10 November 2026: "There needs to
+be a water tight door that can open to the steering gear", then "Fix the rooms all rooms need to be accessible". The
+other ship's drawing gives no way into the spaces below the car deck (its two engine-room ladders end under an unbroken
+deck) nor up to the compass deck. Hers, from where the walk begins on the car deck:
+
+- **Below, aft.** In the lower lobby a hatch (0.65 m by 0.60 m, a coaming 0.12 m high, its cover hinged behind the
+  ladder) and a ladder down to the flat in the shaft space. From there forward, down six treads (0.18 m each, 0.8 m
+  wide between two rails) and through the watertight door in the engine room's after bulkhead (8.42 m from the
+  transom) into the engine room and the machinery spaces beyond; or aft, through the door at frame 10 (5.0 m), along the
+  gangway between the two fresh-water tanks, and through the door to the steering gear (2.6 m).
+- **Below, forward.** From the electrical workshop through a watertight door (26.08 m, 0.8 m to starboard of the
+  centreline, where the workshop's wall is clear) into the void, up two treads, and through another (27.5 m) onto the
+  thruster room's platform. The collision bulkhead beyond has no door, as the rules require: the fore peak is entered
+  from the car deck, by a hatch just forward of that bulkhead and a ladder down to a flat between the chain lockers.
+- **Above.** At the head of the port stairs to the bridge wing, a ladder up the house side to the compass deck.
 
 A door is 0.60 m by 1.40 m clear over a 0.20 m sill, its corners rounded 0.10 m: a frame of flat bar standing 5 cm
 proud of the bulkhead each side, a 20 mm leaf with a pressed panel, six dogs worked by a handwheel, two hinges to
-port. The bulkheads are cut for them (`hull_structure.py`), and so is the other ship's engine-room wall
-(`assemble.py`, `OPENINGS`), which the first door's frame lines. One steps over the sill and stoops under the head: the
-eye comes down to 1.28 m in the doorway. **The doors open by themselves** to whoever comes within 2.4 m on foot, in
-0.8 s, and shut again behind. From outside, a tap on a door opens it, and another shuts it. They have no slider:
-the file marks them `auto` (*The file format*).
+port. The bulkheads are cut for them (`hull_structure.py`), and so are the other ship's walls where a door stands in
+one, and its car deck at the hatches (`assemble.py`, `OPENINGS`). One steps over the sill and stoops under the head:
+the eye comes down to 1.28 m in the doorway. **The doors and the hatch covers open by themselves** to whoever comes
+within reach on foot (2.4 m of a door, 1.9 m of a hatch, from the deck or from the ladder under it), in 0.8 s, and
+shut again behind. From outside, a tap opens one and another shuts it. They have no slider: the file marks them
+`auto` (*The file format*).
+
+**A ladder is not climbed rung by rung.** Standing at its foot or its head, a button appears in the bar, named for
+where the ladder leads (F does the same); it carries the walker over to the ladder, along it and off at the other end,
+1.2 m/s on the level and 0.75 m/s on the rungs. Each end is set at load on the nearest spot with room to stand.
+
+**Spaces that are not entered.** The bow ramp is stowed upright, and the two funnels are uptake casings without a
+door: one walks up to them. Chosen in the panel, a walk begins beside them (`stand` in the space's record, written by
+`assemble.py`, `STAND`). The four tanks of the double bottom are too low to stand in: a walk begun there starts in the
+room over them.
 
 **The car deck from below.** The Minato Maru's car deck is drawn from above only. Seen from the hull's own spaces one
 looked up through it into the car deck. `hull_structure.py` now builds the deck's plating as it is seen from below,
@@ -280,8 +304,13 @@ spaces to a multiple of four bytes), then one binary block.
 
 The decks, bottom to top: `hull`, `machinery`, `car`, `passenger`, `bridge`, `top`.
 
-An input may be worked by the page itself and not by a slider: `"auto": "near"` with `at` (a point), `reach` (metres)
-and `normal` (the way through it). Such an input opens (goes to `max`) for a walker within `reach` of `at`, shuts (goes
+`ways` (optional) are the ladders: `{id, kind: "ladder", down, up, a, b, line}`, where `a` is the place to stand at
+the foot and `b` at the head (x, y, z), `line` (x, z) is where one is while on the rungs, and `down` and `up` name
+where it leads from the head and from the foot. A space may carry `stand` (x, y, z): where a walk begun at it starts.
+
+An input may be worked by the page itself and not by a slider: `"auto": "near"` with `at` (a point), `reach` (metres),
+`height` (how far above or below `at` still counts as near, 1.5 m when absent) and `normal` (the way through it, for a
+door). Such an input opens (goes to `max`) for a walker within `reach` of `at`, shuts (goes
 to `min`) behind them, and answers a tap from outside; `normal` tells the walker which way the doorway lies. A mover's
 `ratio` (1 when absent) is the turn it makes for each degree of its input: -1 for a door that opens the other way.
 
@@ -345,12 +374,15 @@ Of her own hull (section 1):
 - The port of registry on her transom is still MINATO, until the owner names hers.
 
 Of walking aboard:
-- **Five rooms have no way in on foot**: the void, the bow-thruster room and the fore peak (closed compartments of the
-  hull, with no hatch or ladder drawn), the starboard funnel casing, and the bow ramp beyond its barrier. They are
-  entered by choosing them in the panel before Walk aboard; from inside one cannot walk out.
-- Ladders are not climbed, so the decks fall into three groups joined only by the deck keys: the car deck, passenger
-  deck and bridge deck (joined by stairs: 31 of the 46 rooms are reached on foot from where the walk begins); the
-  machinery spaces with the way aft; the compass deck. With the keys 41 rooms are reached.
+- **Every room is reached on foot** from where the walk begins, with three kinds of exception. The stowed bow ramp and
+  the two funnel casings are walked up to, not into. The four double-bottom tanks cannot be stood in. And the other
+  ship's own two engine-room ladders are not climbed: they end under an unbroken deck, and hers do their work.
+- The hatch to the fore peak lies in the vehicle lane, 0.25 to 0.85 m to port of the centreline: a raised coaming
+  where cars drive. A flush hatch, or one in a bow house, is a decision for the car deck's own section.
+- The ladder to the compass deck stands on a ledge 0.4 m wide beside the port stairs, and at its head there is no
+  rail to step through: the compass deck has none aft of the wheelhouse.
+- On a ladder the walker is carried along a straight line, not hand over hand, and passes through the hatch cover's
+  place whether or not it has finished opening.
 - **The other ship's doors do not swing.** One walks through the shut leaf, and through the wall behind it where the
   drawing has no opening there. A door is known by its shape only: a door drawn in several pieces, or a leaf more than
   6 cm thick, would be a wall, and a wall panel shaped like a door would let one through.
@@ -379,6 +411,33 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 10 November 2026, the last: every room on foot
+
+Headless Chromium with software rendering, as before. 58 checks, all passed, no console errors: the 49 below, and
+- the Ladder button is in the bar at a ladder only;
+- three ladders; at each one's head the button names where it leads, it takes the walker down to the foot (0.27 m in
+  the shaft space, 0.20 m in the fore peak, 9.11 m on the bridge deck), where the button names the way back, and up
+  again;
+- from the electrical workshop forward for 4 s: through two watertight doors and up the void's steps onto the thruster
+  platform (-0.44 m, 28.27 m from the transom);
+- chosen in the panel, the ramp and each funnel: the walk begins beside it, and one can walk on from there.
+
+Also:
+- **Where one can get to** (the flood, by the walker's own rules, ladders among them): **46 of the 46 rooms on foot
+  from where the walk begins**, the ramp and the two funnels counted when one stands within 0.6 m of them; the four
+  double-bottom tanks are not counted.
+- **Every room** begun on foot (all 50): a place to stand in each, with 0.9 m or more to walk from it.
+- **Looked at, on foot**: the hatch in the lower lobby with its cover open and the ladder going down; the ladder to
+  the compass deck at the head of the port stairs; the fore peak's ladder and hatch from its flat; the door to the
+  void standing open from the electrical workshop, the void's steps and the thruster room's door beyond.
+- **The data**: `build.py`, 87,358 triangles, 14 motions, its checks unchanged. `assemble.py` on the Town's export and
+  again on its own output: the same file. `check.py --town …`: all passed. Nothing of the other ship's is left in the
+  doorway to the void or in the two hatches (counted).
+- **Found and put right on the way**: the Ladder button stayed in the bar after one had left the ladder (the page's
+  own rule for what shows while walking overrode `hidden`).
+- **Not looked at**: the ladder from below in the shaft space; the thruster room from its door; the hatch covers
+  swinging. **Not run**: any real device; a screen reader.
 
 ### 10 November 2026, last of all: walls, doors and the way aft
 

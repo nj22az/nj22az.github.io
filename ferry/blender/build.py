@@ -129,8 +129,8 @@ def main():
     ship = shipyard.collection('Christina')
     # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
     # spaces and to the car deck (part.group).
-    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car')}
-    report, inputs, movers = {}, [], []
+    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'bridge')}
+    report, inputs, movers, ways = {}, [], [], []
     for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings'):
         try:
             mod = importlib.import_module(name)
@@ -140,6 +140,8 @@ def main():
             print('not built yet:', name)
             continue
         made = mod.build()
+        if hasattr(mod, 'ways'):
+            ways += mod.ways()
         if hasattr(mod, 'motion'):
             more_inputs, more_movers = mod.motion()
             inputs += more_inputs
@@ -162,7 +164,7 @@ def main():
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers)
+        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])

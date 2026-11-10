@@ -90,16 +90,66 @@ WT_DOORS = (
     dict(id='door-engine-room', name='Door to the shaft space', where='engine room', yard=8.42, floor=Y(0.9), opens=1, through=(8.40, 8.52)),
     dict(id='door-shaft-space', name='Door between shaft space and tanks', where='shaft space', yard=5.0, floor=FLAT, opens=-1),
     dict(id='door-steering-gear', name='Door to the steering gear', where='steering gear', yard=2.6, floor=FLAT, opens=1),
+    # Forward (the owner, 10 November 2026: "all rooms need to be accessible"): from the electrical workshop into the void
+    # and on into the thruster room, 0.8 m to starboard of the centreline, where the workshop's forward wall is clear.
+    # The collision bulkhead beyond has no door, as the rules require: the fore peak is entered from above (LADDERS).
+    dict(id='door-void', name='Door to the void', where='void', yard=26.08, x=-0.8, floor=Y(0.9), opens=-1, through=(25.98, 26.13)),
+    dict(id='door-thruster-room', name='Door to the thruster room', where='thruster room', yard=27.5, x=-0.8, floor=THRUSTER_PLATFORM, opens=1),
 )
 # The walkway through the shaft space: a platform at the engine room's floor plates, six treads and a flat at the
 # level of the steering flat, 0.8 m wide between two rails, clear over the floors of her bottom as she rises aft.
 WALKWAY = dict(half=0.40, platform=(8.05, 8.38), treads=6, going=0.25, flat=(5.06, 6.55), rail=0.95)
 
 
+# The walkway through the void: from the workshop's floor plates up two treads to the level of the thruster platform.
+WALKWAY_VOID = dict(x=-0.8, half=0.40, platform=(26.14, 26.40), treads=2, going=0.25, flat=27.44, rail=0.95)
+# The flat in the fore peak, between the chain lockers.
+FORE_PEAK_FLAT = 0.20
+
+# ---- Ladders, and the hatches over two of them. A ladder stands upright at (x, yard); `faces` is the way one looks while
+# on it (x, z); `foot` and `head` are the levels it joins. With a hatch, the opening is 0.65 m by 0.60 m in the deck over
+# it, a coaming round it and a cover hinged on the ladder's side. `group` is the part of the ship it is drawn with.
+#  - From the lower lobby down to the flat in the shaft space: the way to the machinery spaces and the steering gear.
+#  - From the car deck, just forward of the collision bulkhead, down to the flat in the fore peak.
+#  - From the bridge deck, at the head of the port stairs, up the house side to the compass deck.
+LADDERS = (
+    dict(id='ladder-shaft-space', name='Ladder to the shaft space', up='Ladder to the lower lobby', group='machinery',
+         x=-0.98, yard=5.45, faces=(-1, 0), foot=FLAT, head=Y(4.0), hatch='hatch-shaft-space', hatch_name='Hatch to the shaft space'),
+    dict(id='ladder-fore-peak', name='Ladder to the fore peak', up='Ladder to the car deck', group='machinery',
+         x=0.55, yard=30.58, faces=(0, -1), foot=FORE_PEAK_FLAT, head=Y(4.0), hatch='hatch-fore-peak', hatch_name='Hatch to the fore peak'),
+    dict(id='ladder-compass-deck', name='Ladder to the bridge deck', up='Ladder to the compass deck', group='bridge',
+         x=3.14, yard=19.25, faces=(-1, 0), foot=9.11, head=11.5, top=1.0, wall=0.17,
+         foot_at=(3.45, 19.78), head_at=(2.58, 19.25)),
+)
+
+
+def ladder_side(l):
+    """The way from a ladder to the one who climbs it: (x, z), the opposite of the way they look."""
+    return (-l['faces'][0], -l['faces'][1])
+
+
+def hatch_opening(l):
+    """The opening over a ladder: (x0, x1, yard0, yard1). From 5 cm behind the ladder to 0.60 m before it, 0.60 m across."""
+    cx, cz = ladder_side(l)
+    xs = sorted((l['x'] - 0.05 * cx - 0.30 * abs(cz), l['x'] + 0.60 * cx + 0.30 * abs(cz)))
+    zs = sorted((l['yard'] - 0.05 * cz - 0.30 * abs(cx), l['yard'] + 0.60 * cz + 0.30 * abs(cx)))
+    return (xs[0], xs[1], zs[0], zs[1])
+
+
+def ladder_way(l):
+    """Where one stands at a ladder's foot and at its head, and the line one climbs on: three (x, yard) points."""
+    cx, cz = ladder_side(l)
+    line = (l['x'] + 0.30 * cx, l['yard'] + 0.30 * cz)
+    foot = l.get('foot_at') or (l['x'] + 0.68 * cx, l['yard'] + 0.68 * cz)
+    head = l.get('head_at') or (l['x'] + 1.00 * cx, l['yard'] + 1.00 * cz)
+    return foot, head, line
+
+
 def door_opening(d):
     """A door's clear opening: (x0, y0, x1, y1), port and up positive."""
     y0 = d['floor'] + WT_DOOR['sill']
-    return (-WT_DOOR['width'] / 2, y0, WT_DOOR['width'] / 2, y0 + WT_DOOR['height'])
+    x = d.get('x', 0.0)
+    return (x - WT_DOOR['width'] / 2, y0, x + WT_DOOR['width'] / 2, y0 + WT_DOOR['height'])
 
 
 def door_frame_yards(d):

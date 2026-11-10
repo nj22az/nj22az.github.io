@@ -275,7 +275,7 @@ function workAuto(dt) {
   for (const it of inputs.values()) {
     const def = it.def;
     if (!def.auto) continue;
-    const near = walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < 1.5;
+    const near = walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < (def.height ?? 1.5);
     const want = (walk ? near : it.open) ? def.max : def.min;
     if (it.value === want) continue;
     const step = (def.max - def.min) / 0.8 * dt;
@@ -590,9 +590,9 @@ function nudgeView(turn, tip, zoom) {
  * linings, glass, whatever stands upright within BODY of the walker between knee and eye (wallClear). A door lets one
  * through: the other ship's doors are leaves that do not open, so one goes through the leaf and the wall it hangs in
  * (findDoors); her own watertight doors swing open for whoever comes near (workAuto). A room with no door drawn is
- * entered by choosing it in the panel. Ladders are not climbed: the deck above and the deck below are a key (or a
- * button) away. Under a deckhead lower than the walker, and through a low doorway, the eye comes down (one stoops);
- * under less than CROUCH one does not go.
+ * entered by choosing it in the panel. Her ladders are climbed at a button (the file's `ways`: climb); the other ship's
+ * are not, and the deck above and the deck below are also a key (or a button) away. Under a deckhead lower than the
+ * walker, and through a low doorway, the eye comes down (one stoops); under less than CROUCH one does not go.
  */
 const EYE = 1.6, HEAD = 1.7, CROUCH = 1.1, DUCK = 1.25, BODY = 0.18, STEP = 0.3, OVER = 0.42, GAP = 0.15, PACE = 1.5, RUN = 3.8, LOOK = 0.0036, STRIDE = 0.02;
 const RING = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [Math.cos(k * Math.PI / 4) * BODY, Math.sin(k * Math.PI / 4) * BODY])];
@@ -836,6 +836,59 @@ function roomAt(point) {
   return best;
 }
 
+/**
+ * The ladders (the file's `ways`): each joins two places to stand, `a` below and `b` above, and is climbed on `line`.
+ * The walker does not climb rung by rung: standing at one end, the Ladder button (or F) carries it to the other, down
+ * to the line, along it and off, at a climber's pace. Each end is set on the nearest spot where there is room to stand.
+ */
+let ways = [];
+function buildWays(header) {
+  ways = (header.ways || []).map(def => {
+    const end = p => standNear(p[0], p[2], p[1], 0.3, 0.3) || new THREE.Vector3(p[0], p[1], p[2]);
+    return { def, a: end(def.a), b: end(def.b), line: def.line };
+  });
+}
+/** The ladder whose end the walker stands at, and which end: within 0.75 m of it and on its level. */
+function wayHere() {
+  for (const way of ways) for (const from of ['a', 'b']) {
+    const p = way[from];
+    if (Math.hypot(walk.pos.x - p.x, walk.pos.z - p.z) < 0.75 && Math.abs(walk.floor - p.y) < 0.45) return { way, from };
+  }
+  return null;
+}
+function climb() {
+  if (!walk || walk.climb) return;
+  const here = wayHere();
+  if (!here) return;
+  const { way, from } = here, to = way[from === 'a' ? 'b' : 'a'];
+  // Over to the ladder, along it, and off at the other end: 1.2 m/s on the level, 0.75 m/s on the rungs.
+  const pts = [walk.pos.clone().setY(walk.floor), new THREE.Vector3(way.line[0], walk.floor, way.line[1]), new THREE.Vector3(way.line[0], to.y, way.line[1]), to.clone()];
+  const legs = [pts[0].distanceTo(pts[1]) / 1.2, pts[1].distanceTo(pts[2]) / 0.75, pts[2].distanceTo(pts[3]) / 1.2];
+  walk.climb = { pts, legs, t: 0 };
+  held.clear();
+}
+/** One frame on a ladder. */
+function stepClimb(dt) {
+  const w = walk, c = w.climb;
+  c.t += dt;
+  let t = c.t, leg = 0;
+  while (leg < 2 && t > c.legs[leg]) t -= c.legs[leg++];
+  const k = Math.min(1, c.legs[leg] > 1e-6 ? t / c.legs[leg] : 1);
+  w.pos.lerpVectors(c.pts[leg], c.pts[leg + 1], k);
+  w.floor = w.pos.y;
+  if (leg === 2 && k >= 1) { w.climb = null; w.eye = eyeFor(w); }
+  placeEye();
+}
+const climbBtn = $('#climb');
+/** Show the Ladder button where there is one to take, named for where it leads. */
+function showWay() {
+  const here = !walk || walk.climb ? null : wayHere();
+  const text = here ? (here.from === 'a' ? here.way.def.up : here.way.def.down) : '';
+  if (climbBtn.hidden !== !here) climbBtn.hidden = !here;
+  if (here && climbBtn.textContent !== text) climbBtn.textContent = text;
+}
+climbBtn.addEventListener('click', climb);
+
 /** While walking: where the feet are, which way the head is turned, what is held down, and the outside view to go back to. */
 let walk = null;
 const held = new Set();
@@ -857,6 +910,8 @@ function deckLevels() {
  * then on whatever can be stood on there (a stair's treads, a flat laid over the frames), then with less room.
  */
 function standIn(sp) {
+  // A space that is not entered (the stowed ramp, a funnel's casing) names the place beside it where a walk begins.
+  if (sp.stand) { const spot = standNear(sp.stand[0], sp.stand[2], sp.stand[1], 0.35, 0.9); if (spot) return spot; }
   const cx = (sp.min[0] + sp.max[0]) / 2, cz = (sp.min[2] + sp.max[2]) / 2, y = sp.min[1];
   return standNear(cx, cz, y, 0.35, 0.9, sp) || standNear(cx, cz, y + 0.1, 0.9, 0.9, sp)
     || standNear(cx, cz, y, 0.35, 0.3, sp) || standNear(cx, cz, y + 0.1, 0.9, 0.3, sp);
@@ -876,7 +931,7 @@ function enterWalk() {
     || (car && car.spaces.map(standIn).find(Boolean)) || new THREE.Vector3(0, 2.1, 0);
   select(null);
   walk = {
-    pos: start, floor: start.y, eye: EYE, yaw: Math.PI, pitch: 0, look: null, said: 0, room: null,
+    pos: start, floor: start.y, eye: EYE, yaw: Math.PI, pitch: 0, look: null, said: 0, room: null, climb: null,
     saved: { pos: camera.position.clone(), target: controls.target.clone(), fov: camera.fov, near: camera.near, panel: !panel.classList.contains('closed') },
   };
   controls.enabled = false;
@@ -891,7 +946,7 @@ function enterWalk() {
 function leaveWalk() {
   if (!walk) return;
   const s = walk.saved;
-  walk = null; held.clear(); stick.x = stick.y = 0; stick.id = null; stickEl.firstElementChild.style.transform = '';
+  walk = null; showWay(); held.clear(); stick.x = stick.y = 0; stick.id = null; stickEl.firstElementChild.style.transform = '';
   document.body.classList.remove('walking');
   walkBtn.textContent = 'Walk aboard'; walkBtn.setAttribute('aria-pressed', 'false');
   camera.fov = s.fov; camera.near = s.near; camera.up.set(0, 1, 0);
@@ -917,6 +972,7 @@ function eyeFor(w) {
 /** One frame on foot: turn, step, find the floor. */
 function stepWalk(dt) {
   const w = walk;
+  if (w.climb) { stepClimb(dt); showWay(); return; }
   let ahead = (held.has('KeyW') || held.has('ArrowUp') ? 1 : 0) - (held.has('KeyS') || held.has('ArrowDown') ? 1 : 0);
   let aside = (held.has('KeyD') ? 1 : 0) - (held.has('KeyA') ? 1 : 0);
   let speed = held.has('ShiftLeft') || held.has('ShiftRight') ? RUN : PACE;
@@ -974,6 +1030,7 @@ function stepWalk(dt) {
   // Say where one is, a few times a second.
   const now = performance.now();
   if (now - w.said > 250) { w.said = now; sayWhere(); }
+  showWay();
 }
 const WAIST = new THREE.Vector3();
 /** Name the room one stands in, when it is another than the last one named (so a rudder order stays read until then). */
@@ -986,7 +1043,7 @@ function sayWhere() {
 }
 /** Go to the deck above (+1) or below (-1), over the same spot if there is floor there, else into one of its rooms. */
 function hopDeck(by) {
-  if (!walk) return;
+  if (!walk || walk.climb) return;
   const levels = deckLevels();
   let here = 0;
   levels.forEach((l, i) => { if (walk.pos.y >= l.y - 0.6) here = i; });
@@ -1036,6 +1093,7 @@ addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT' && /^Arrow/.test(e.code)) return;      // a slider that has the keys keeps them
     if (e.code === 'KeyE' || e.code === 'PageUp') { hopDeck(1); e.preventDefault(); return; }
     if (e.code === 'KeyQ' || e.code === 'PageDown') { hopDeck(-1); e.preventDefault(); return; }
+    if (e.code === 'KeyF') { climb(); e.preventDefault(); return; }
     if (/^(Key[WASD]|Arrow(Up|Down|Left|Right)|Shift(Left|Right))$/.test(e.code)) { held.add(e.code); if (/^Arrow/.test(e.code)) e.preventDefault(); }
     return;
   }
@@ -1159,6 +1217,7 @@ async function start() {
   atlas.anisotropy = renderer.capabilities.getMaxAnisotropy();
   build(doc, atlas);
   indexFloors();
+  buildWays(doc.header);
   buildPanel(doc.header);
   buildInputs(doc.header);
   tintMark();
@@ -1179,12 +1238,13 @@ async function start() {
     hold: (code, on = true) => { on ? held.add(code) : held.delete(code); },
     /** For checks: the walk of so many seconds, gone at once (60 pictures a second), whatever this machine can draw. */
     walkFor: seconds => { for (let t = 0; walk && t < seconds - 1e-9; t += 1 / 60) stepWalk(1 / 60); },
-    roomFor, headroom, wallClear, workAuto, footing,
+    roomFor, headroom, wallClear, workAuto, footing, climb,
+    get ways() { return ways.map(w => ({ id: w.def.id, a: w.a.toArray(), b: w.b.toArray() })); },
     /** For checks: leave a door open or shut, as a tap would. */
     work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
-    get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max }))); },
+    get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max, stand: sp.stand || null }))); },
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw },
-    get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
+    get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent, climbing: !!walk.climb, ladder: climbBtn.hidden ? null : climbBtn.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
   };
 }
 start().catch(err => {
