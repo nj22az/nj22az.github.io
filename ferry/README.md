@@ -119,7 +119,7 @@ and leaves the hull 6.5 m from the transom. In the design she is drawn from the 
 on a line 0.36 m under the gearbox flanges and 5 cm outboard of them: it never met its engine. That is a third issue for
 the Town at the weekend (with the two under *How the two ships are put together*).
 
-**Five things worth knowing before changing the build.**
+**Six things worth knowing before changing the build.**
 - *Plating is flat between its own points; structure follows her lines.* Frames and floors stand 12 mm inside the lines,
   so the plating must keep closer to the lines than that or the structure comes out through it. The rows of plating
   are therefore set by girth and turning together (`lines.girth_psis`: closer round the turn of the bilge), which keeps
@@ -131,6 +131,10 @@ the Town at the weekend (with the two under *How the two ships are put together*
   out through the outer plating where she twists, under the counter and at the forefoot: the page hides that (it shows
   one side of each face), a Cycles still does not. `build.py` looks outward from 89,584 points of the inner face and
   stops if the plating is not there (it is never nearer than 10.4 mm).
+- *Solids look outward.* A solid whose faces look inward is drawn inside-out: the page shows its far inner wall and it
+  reads as glass. The yard's round bar (`Part.tube`) was so in every direction until 10 November (the steering rams
+  showed it). `build.py` now tries the bar in seven directions and measures the volume of each object made only of
+  closed solids, and stops if one is inside-out.
 - *Plates behind plating.* A floor or a frame stands square to the shell 12 mm behind it. Seen exactly edge-on a plate's
   depth is not to be trusted, and it showed through the plating as dotted hairlines along every frame. Plates
   (`Primer plate`) are therefore drawn a hair further away (`offset: [1, 1]`), the more so the more edge-on they are.

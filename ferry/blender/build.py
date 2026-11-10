@@ -81,6 +81,43 @@ def behind_the_plating():
         raise SystemExit('structure comes through the plating: ' + '; '.join(proud[:10]))
 
 
+def looking_outward():
+    """
+    A solid whose faces look inward is drawn inside-out: the page shows its far inner wall and it reads as glass (the
+    steering rams did, 10 November). The yard's round bar is tried in every direction, and each object made only of
+    closed solids must enclose a positive volume by its faces' winding. Stops the build if one does not.
+    """
+    import bmesh
+
+    def volume(mesh):
+        bm = bmesh.new()
+        bm.from_mesh(mesh)
+        v = bm.calc_volume(signed=True)
+        bm.free()
+        return v
+
+    wrong = []
+    trial = shipyard.collection('trial')
+    for k, axis in enumerate(((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1), (0.3, -0.8, 0.5))):
+        part = shipyard.Part(f'trial bar {k}', 'Machinery paint')
+        part.tube((0, 0, 0), axis, 0.1, 0.06)
+        ob = part.build(trial)
+        if volume(ob.data) <= 0:
+            wrong.append(f'a round bar along {axis}')
+        bpy.data.objects.remove(ob)
+    bpy.data.collections.remove(trial)
+    for name in ('Shafts and rudder stocks', 'Intermediate shafts', 'Steering gear, bright steel', 'Fresh-water tanks, pipes',
+                 'Chain lockers', 'Zinc anodes'):
+        ob = bpy.data.objects.get(name)
+        if ob is None:
+            wrong.append(name + ' (not built)')
+        elif volume(ob.data) <= 0:
+            wrong.append(name)
+    print('solids looking outward: ' + ('all' if not wrong else 'NOT ' + '; '.join(wrong)))
+    if wrong:
+        raise SystemExit('solids drawn inside-out: ' + '; '.join(wrong))
+
+
 def main():
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     opt = dict(zip(argv[::2], argv[1::2]))
@@ -107,6 +144,7 @@ def main():
                 report[part.name] = sum(max(1, len(f) - 2) for f in part.f)
         print(f'{name}: {len(made)} parts, {time.time() - t0:.1f} s')
     behind_the_plating()
+    looking_outward()
     total = sum(report.values())
     for k, v in report.items():
         print(f'  {v:7d}  {k}')
