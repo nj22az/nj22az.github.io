@@ -19,6 +19,29 @@ def shaft_y(yard):
     return S.SCREW['y'] + S.SHAFT_RISE * (yard - S.SCREW['yard'])
 
 
+def shaft_exit():
+    """Where the shaft line passes out through the shell, metres from the transom."""
+    a, b = S.SCREW['yard'] + 1.0, S.GEARBOX_FLANGE['yard']
+    for _ in range(40):
+        m = (a + b) / 2
+        if shaft_y(m) < L.hull_y(S.SHAFT_X, L.Z(m)):
+            a = m
+        else:
+            b = m
+    return (a + b) / 2
+
+
+def _outside_only(part, start):
+    """Take away the faces made since `start` that lie wholly inside her plating: what is left ends at the shell."""
+    def inside(i):
+        x, y, z = part.v[i]
+        under = L.hull_y(x, z)
+        return under is not None and y > under + S.SHELL + 0.004
+    kept = [(f, c) for f, c in zip(part.f[start:], part.c[start:]) if not all(inside(i) for i in f)]
+    part.f[start:] = [f for f, _ in kept]
+    part.c[start:] = [c for _, c in kept]
+
+
 def _frame(axis):
     """Two unit vectors square to `axis`, with e1 × e2 = axis: e1 as near to port as the axis allows."""
     axis = Vector(axis).normalized()
@@ -227,11 +250,27 @@ def build():
     side_shafts = Part('shafts', 'Shaft steel')
     side_screw = Part('screw', 'Bronze')
     steel = srgb(S.STEEL)
-    # The shaft, from the engine room's aft bulkhead to the screw.
-    side_shafts.tube(at(S.SHAFT_INBOARD), at(sc['yard'] + 0.17), S.SHAFT_RADIUS, colour=steel, sides=14)
-    # The stern tube: inside her, a tube from the bulkhead to the shell; outside, the bossing that fairs it.
-    side_inboard.tube(at(S.SHAFT_INBOARD), at(7.05), 0.085, colour=srgb(S.PRIMER), sides=14)
-    _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in ((7.45, 0.17), (7.0, 0.155), (6.6, 0.125), (6.35, 0.1), (6.3, 0.075))], RED, sides=18)
+    # The tail shaft, from its coupling inside her to the screw. (The intermediate shaft forward of the coupling stands
+    # in the shaft space and is drawn with it: hull_fittings.py.)
+    side_shafts.tube(at(S.SHAFT_COUPLING), at(sc['yard'] + 0.17), S.SHAFT_RADIUS, colour=steel, sides=14)
+    # The stern tube: inside her, a tube from its seal to the shell; outside, the bossing that fairs it. The bossing is
+    # set where the shaft line leaves the hull.
+    leave = shaft_exit()
+    side_inboard.tube(at(S.STERN_TUBE_SEAL), at(leave - 0.25), 0.085, colour=srgb(S.PRIMER), sides=14)
+    _revolve(side_inboard, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in
+                                        ((S.STERN_TUBE_SEAL + 0.14, 0.06), (S.STERN_TUBE_SEAL + 0.12, 0.115), (S.STERN_TUBE_SEAL, 0.115), (S.STERN_TUBE_SEAL - 0.02, 0.085))],
+             srgb(S.FLANGE), sides=18)
+    # The bossing is turned about the shaft in short steps and only what is outside her is kept, so that inside the
+    # shaft space the stern tube is seen running to the plating and not an antifouled casting.
+    shape = ((leave + 0.6, 0.17), (leave + 0.2, 0.16), (leave - 0.25, 0.13), (leave - 0.5, 0.1), (leave - 0.56, 0.075))
+    fine = []
+    for (ya, ra), (yb, rb) in zip(shape, shape[1:]):
+        steps = max(1, round((ya - yb) / 0.04))
+        fine += [(ya + (yb - ya) * k / steps, ra + (rb - ra) * k / steps) for k in range(steps)]
+    fine.append(shape[-1])
+    start = len(side_gear.f)
+    _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in fine], RED, sides=18)
+    _outside_only(side_gear, start)
     # The bracket ahead of the screw: a barrel on the shaft and two arms up to the hull.
     by = S.BRACKET_YARD
     _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in ((by + 0.26, 0.07), (by + 0.2, 0.115), (by - 0.2, 0.115), (by - 0.26, 0.07))], RED, sides=18)
@@ -255,7 +294,7 @@ def build():
     _foil(side_gear, x, sections, RED, t=r['thickness'])
     hull_at = L.hull_y(x, zs)
     _foil(side_gear, x, [(hull_at + 0.05, zs + 0.24, 0.62), (r['top'] + 0.05, zs + 0.2, 0.52)], RED, t=0.22)
-    side_shafts.tube((x, r['top'] - 0.05, zs), (x, hull_at + 0.5, zs), 0.06, colour=steel, sides=14)
+    side_shafts.tube((x, r['top'] - 0.05, zs), (x, S.FLAT, zs), 0.06, colour=steel, sides=14)
     for part, whole in ((side_gear, gear), (side_inboard, inboard), (side_shafts, shafts), (side_screw, screws)):
         whole.add(part)
         whole.add(part.mirrored())

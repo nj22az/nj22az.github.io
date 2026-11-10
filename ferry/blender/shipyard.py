@@ -47,6 +47,9 @@ LOOKS = {
     'Primer': dict(metalness=0.0, roughness=0.74),
     'Primer plate': dict(metalness=0.0, roughness=0.74, side='double', offset=[1, 1]),
     'Deck paint': dict(metalness=0.0, roughness=0.7),
+    # Machinery in its enamel, and the floor plates that are walked on (one surface, seen from above and below).
+    'Machinery paint': dict(metalness=0.1, roughness=0.5),
+    'Floor plate': dict(metalness=0.05, roughness=0.62, side='double', offset=[1, 1]),
     'Bronze': dict(metalness=0.9, roughness=0.28),
     'Shaft steel': dict(metalness=0.85, roughness=0.34),
     'Zinc': dict(metalness=0.6, roughness=0.5),

@@ -19,6 +19,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import lines as L
+import spec as S
 
 failures = []
 
@@ -93,7 +94,7 @@ def main():
         pos = positions(header, block, m)
         out = outside(pos, 0.001)
         # The stern tubes pass out through the shell inside their bossings: 0.2 m round each shaft line is theirs.
-        tubes = (np.abs(np.abs(pos[:, 0]) - 1.6) < 0.2) & (pos[:, 2] < L.Z(7.6))
+        tubes = (np.abs(np.abs(pos[:, 0]) - S.SHAFT_X) < 0.2) & (pos[:, 2] < L.Z(7.6))
         bad = int(((out > 0) & ~tubes).sum())
         check(bad == 0, f'primer ({mat["side"]}): {bad} of {len(pos)} points outside the shell' +
               (f' (worst {out[~tubes].max() * 1000:.0f} mm)' if bad else ''))
@@ -108,7 +109,7 @@ def main():
         mid = pos[idx].mean(1)
         mid = mid[(np.abs(mid[:, 2]) < L.HALF - 0.02) & (mid[:, 1] < L.CAR - 0.05)]
         # Not the stern tubes (they pass out through the shell) nor the tunnel (it is the opening).
-        mid = mid[~((np.abs(np.abs(mid[:, 0]) - 1.6) < 0.2) & (mid[:, 2] < L.Z(8.5)))]
+        mid = mid[~((np.abs(np.abs(mid[:, 0]) - S.SHAFT_X) < 0.2) & (mid[:, 2] < L.Z(8.5)))]
         mid = mid[np.hypot(mid[:, 1] + 0.95, mid[:, 2] - L.Z(29.0)) > 0.55]
         thin = 0
         for x, y, z in mid[::3]:

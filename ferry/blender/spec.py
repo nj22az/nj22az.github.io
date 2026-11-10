@@ -55,14 +55,34 @@ TIGHT_FLOORS = (8.5, 14.0, 22.5, 26.0)
 # Girders: the centre girder, one under each main engine (the engines sit 1.55 m off the centreline), one outboard.
 GIRDERS = (1.55, 3.0)
 
-# ---- Shafts, screws, rudders. Twin screws 1.6 m off the centreline, turning outward; the shafts fall 2.5° aft.
-SHAFT_X = 1.6
+# ---- Shafts, screws, rudders. Twin screws turning outward. Each shaft runs straight from its gearbox's output flange
+# (1.55 m off the centreline, 1.5 m above the keel, 8.85 m from the transom: the engine room as drawn on Rev C sheet C3)
+# to its screw, falling 6° aft; it leaves the hull 6.5 m from the transom.
+SHAFT_X = 1.55
+GEARBOX_FLANGE = dict(yard=8.85, y=Y(1.5), radius=0.12)
 SCREW = dict(yard=3.2, y=-1.0, diameter=1.45, blades=4, pitch_ratio=0.8, hub=0.15)
-SHAFT_RISE = 0.18 / 4.05           # rise per metre going forward
+SHAFT_RISE = (GEARBOX_FLANGE['y'] - SCREW['y']) / (GEARBOX_FLANGE['yard'] - SCREW['yard'])   # per metre going forward
 SHAFT_RADIUS = 0.055               # a 110 mm shaft
-SHAFT_INBOARD = 8.42               # the shaft is drawn from the engine room's aft bulkhead
+SHAFT_COUPLING = 7.45              # where the intermediate shaft is coupled to the tail shaft
+STERN_TUBE_SEAL = 7.15             # the stern tube's inboard seal
+PLUMMER_BLOCK = 8.0                # the intermediate shaft's bearing, on the floor at frame 16
 BRACKET_YARD = 3.9
 RUDDER = dict(yard_stock=1.72, top=-0.30, bottom=-1.60, chord_top=0.66, chord_bottom=0.54, balance=0.30, thickness=0.18)
+
+# ---- The spaces the hull gives a floor to. The flat in the steering-gear room and under the fresh-water tanks lies
+# just over the floors' face bars; the thruster room's platform lies just over the crown of the tunnel.
+FLAT = 0.27
+THRUSTER_PLATFORM = Y(1.46)
+# Machinery colours, as the engine room's (Rev C): engines green, motors blue, fire red, fresh water blue.
+ENGINE_GREEN = 0x2e7a4e
+MOTOR_BLUE = 0x2a3f6b
+FIRE_RED = 0xc2412f
+WATER_BLUE = 0x4f7fb0
+OIL_BROWN = 0x8a6a3a
+DARK_GREY = 0x3a3f41
+LIGHT_GREY = 0x9aa3a2
+FLOOR_PLATE = 0x8c9193
+FLANGE = 0x9ea4a6
 
 # ---- The bow thruster: a 0.9 m tunnel through the forefoot.
 THRUSTER = dict(yard=29.0, y=-0.95, radius=0.45)
