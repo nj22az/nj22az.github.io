@@ -10,7 +10,7 @@ JS1-108,Damage stability calculation,general,to do,,
 JS1-109,Freeboard calculation and load line marks,general,partly,ferry/blender/spec.py (load line position),The mark is painted; the calculation is not made
 JS1-110,Tonnage calculation,general,to do,,
 JS1-111,Docking plan,general,to do,,
-JS1-112,Component register,general,partly,ferry/systems/ (navigation bridge: 145 components),Grows with every section
+JS1-112,Component register,general,partly,"ferry/systems/ (203 components: the navigation bridge, the bridge deck, the emergency generator room)",Grows with every section
 JS2-201,Midship section and scantlings,hull,partly,"ferry/blender/spec.py, hull_structure.py",Scantlings are stated with reasons; not checked against a rule
 JS2-202,Construction profile and decks,hull,to do,,
 JS2-203,Shell expansion,hull,partly,ferry/blender/hull_shell.py,Plates are modelled; no expansion drawn
@@ -63,7 +63,7 @@ JS8-806,Scuppers and drains,ship systems,partly,"ferry/systems/bridge.py (SCUP-P
 JS8-851,Electrical one-line diagram,electrical,partly,"ferry/systems/ship.py, bridge.py","Sources, the transitional section and inverter, the bridge's five boards; no drawn sheet"
 JS8-852,Electrical load balance,electrical,partly,ferry/systems/out/bridge-circuits.csv,The bridge's boards; the ship's balance is the other ship's
 JS8-853,Short-circuit calculation and breaker selectivity,electrical,to do,,PA-001 comment 13
-JS8-854,Emergency source of power: load list and capacity,electrical,to do,,PA-001 No. 13: waits for the machinery section. The transitional source is in JS8-855
+JS8-854,Emergency source of power: load list and capacity,electrical,to do,,PA-001 No. 13: waits for the machinery section. The emergency generator room is built to the owner's drawing with the drawing's set (500 kW) and day tank (about 200 L): the load list is to settle both (the 68 m ship's own emergency loads are near 200 kW)
 JS8-855,Battery capacity calculations,electrical,exists,ferry/yard/calc/JS8-855-battery-capacity.md (made by calc/bridge_calcs.py from the register),"Revision 1. Radio bank and general service (transitional) bank, chargers, inverter. The bridge only: reissued with each section (PA-001 No. 26)"
 JS8-856,Cable schedule and cable ways,electrical,partly,"ferry/systems/bridge.py (NODES, EDGES), out/bridge-circuits.csv","Lengths, sizes and types for the bridge; main and emergency supplies by separate ways: PA-001 No. 7 closed"
 JS8-857,"Lighting plan, normal and emergency",electrical,partly,ferry/systems/bridge.py (LGT),Bridge only
@@ -72,6 +72,7 @@ JS8-859,Internal communication diagrams,electrical,exists,ferry/systems/out/brid
 JS8-860,Radio installation plan,electrical,partly,ferry/systems/bridge.py (COM),Battery sized (JS8-855): PA-001 No. 5 closed. Antennas: No. 12 open
 JS8-861,Propulsion remote control diagram,electrical,exists,"ferry/systems/bridge.py (nets PROP-CAN-A, PROP-CAN-B; component PRP-07)","Two supplies, two lines by separate ways: PA-001 No. 8 closed for the bridge"
 JS8-862,Alarm and monitoring system: alarm list,electrical,to do,,
+JS8-863,Emergency generator room arrangement,electrical,exists,"ferry/blender/eg_room.py, eg_place.py; ferry/systems/bridge.py (EMG); the page","Built to the owner's drawing of 11 November 2026 (7.80 x 4.50 x 3.20 m), as a block for the 68 m ship's top deck, landed on the present ship's house top. 20 components registered. Not checked against any rule text"
 JS1-151,Inspection and test plan,general,to do,,"What is inspected, by whom, against what"
 JS1-152,Harbour acceptance test programme,general,to do,,
 JS1-153,Sea trial programme and report,general,to do,,"Speed, turning, stopping, steering gear timing, compass adjustment"

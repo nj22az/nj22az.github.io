@@ -91,6 +91,7 @@ SUBSYSTEMS = [
     dict(id='HVC', name='Air conditioning', text='The wheelhouse room unit and its condensing unit on the compass deck.'),
     dict(id='PIP', name='Piping', text='Compressed air to the whistle, fresh water to the window wash, the fire main, the scuppers.'),
     dict(id='LSA', name='Life-saving', text='Lifebuoys, lifejackets for the watch, pyrotechnics, first aid.'),
+    dict(id='EMG', name='Emergency power', text='The emergency generator set in its own room, with what starts it, feeds it, cools it and takes its exhaust away, and the emergency switchboard it supplies.'),
     dict(id='OUT', name='Outfit', text='The room itself and its furniture: console, stand, chairs, chart table, doors, windows, linings.'),
 ]
 

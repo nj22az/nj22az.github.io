@@ -139,6 +139,14 @@ def main():
         for i in range(len(T)):
             buckets[(kn[i, 0], kn[i, 1], kn[i, 2], kd[i], shift)].append(i)
 
+    # Every face by the direction of its plane, for the search for a face that two others are bedded on: that face may lie
+    # in the next bin of distance (the model file rounds places to its own grid, so a deck's face and the feet standing on
+    # it can fall a hair to either side of a bin's edge; 11 November 2026, under the drinks machine).
+    facing = defaultdict(list)
+    for i in range(len(T)):
+        facing[(kn[i, 0], kn[i, 1], kn[i, 2])].append(i)
+    facing = {k: np.array(v) for k, v in facing.items()}
+
     fights = defaultdict(lambda: [0.0, None, None, 0.0, None])    # (piece, piece) -> area, where, the plane's direction, the largest overlap
     done = set()
     for idx in buckets.values():
@@ -192,11 +200,15 @@ def main():
                         # bedded: a third face in this plane looks the other way and covers the middle of the overlap
                         # (anywhere in this plane, or within 2.5 mm of it: the feet of things stand a little over a deck)
                         c = clip_area.centre
-                        other = (way[idx] != way[gi]) & (np.abs(d[idx] - d[gi]) <= 0.0025) & (lo <= c).all(1) & (hi >= c).all(1)
-                        for k in np.nonzero(other)[0]:
-                            if covers(P2[k], c):
-                                area = 0.0
-                                break
+                        cand = facing[(kn[gi, 0], kn[gi, 1], kn[gi, 2])]
+                        cand = cand[(way[cand] != way[gi]) & (np.abs(d[cand] - d[gi]) <= 0.0025)]
+                        if len(cand):
+                            Q2 = np.stack([T[cand] @ u, T[cand] @ v], axis=-1)
+                            inside = (Q2.min(1) <= c).all(1) & (Q2.max(1) >= c).all(1)
+                            for k in np.nonzero(inside)[0]:
+                                if covers(Q2[k], c):
+                                    area = 0.0
+                                    break
                     if area > 0:
                         rec = fights[(min(owner[gi], owner[gj]), max(owner[gi], owner[gj]))]
                         rec[0] += area

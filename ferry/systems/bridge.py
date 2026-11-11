@@ -15,7 +15,7 @@ Maru's planning figures (basis 'town'). The survey of 10 November (`ferry/design
 as `survey`; where the Town gave an item a KKS tag it is kept as `kks`.
 """
 
-SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'corridor': "Crew's corridor", 'aft-platform': 'After platform'}))
+SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'corridor': "Crew's corridor", 'eg-house': 'Emergency generator room', 'aft-platform': 'After platform'}))
 # The wheelhouse's heights (the owner, 11 November 2026, on raising its roof: "Yes make it realistic"): 2.30 m clear under
 # the deckhead lining, a void over the lining for the cable trays, and the compass deck's top 2.70 m over the bridge deck.
 DECK_H = 2.70          # the compass deck's top, over the bridge deck
@@ -132,6 +132,8 @@ OUTSIDE_CIRCUITS = {
     # board's circuit for this deck; the two exit lights on the emergency switchboard's emergency lighting.
     ('LB', 'bridge deck lighting'): dict(name='Bridge deck lighting, corridor and after platform', breaker=6, mm2=1.5),
     ('ESB', 'emergency lighting'): dict(name='Emergency lighting, bridge deck', breaker=6, mm2=1.5),
+    # The emergency generator room (blender/eg_room.py): the starting battery's charger.
+    ('ESB', 'emergency generator auxiliaries'): dict(name='Emergency generator: starting battery charger', breaker=10, mm2=1.5),
     ('LB', 'searchlight'): dict(name='Searchlight', breaker=16, mm2=4, length=37.0, kks='10CTA10 GS001',
                                 note="The Minato Maru's feeder, its own cable from the lighting board by the port casing trunk, with a 16 A breaker: "
                                      "that ship's list gives it 10 A for 9.5 A, which is under its own rule of 1.25 times the full-load current."),
@@ -659,3 +661,46 @@ for _k, (_name, _side, _a, _b) in enumerate((('crew cabin', 1, 9.20, 9.90), ("ch
 C('OUT-36', 'Windows of the bridge deck house', AP, (3.0, 14.0, 1.45), 'Nine fixed windows in the side plating, four to port and five to starboard: a steel frame with rounded corners bolted proud of the plating, the glass, a drip strip over each.',
   box=(2.92, 3.02, 9.89, 10.51, 1.14, 1.76), note='The place given is the aftermost window to port; the other eight are as it is.')
 
+
+
+# ---- The emergency generator room (blender/eg_room.py), built to the owner's drawing and landed on the house top: what is in
+# it. Each is drawn there under its tag; its place here is for the cable's length. The room's measures (p aft from its
+# forward wall, q to starboard from its port wall, h over its deck) are turned into the register's by _eg, with the numbers
+# of blender/eg_place.py.
+EG = 'eg-house'
+
+
+def _eg(p, q, h):
+    return (round(2.70 - q, 3), round(16.50 - p, 3), round(2.45 + h, 3))
+
+
+C('EMG-01', 'Emergency generator set No. 1', EG, _eg(3.15, 2.05, 0.9),
+  'A six-cylinder turbocharged diesel and its alternator on one skid, on six rubber mounts: 440 V, three-phase, 60 Hz, 500 kW on the owner\'s drawing. '
+  'Its radiator stands at its forward end in a cowl, so it needs no sea water. It starts by itself when the main board is dead.',
+  note='500 kW is the drawing\'s figure and is more than the 68 m ship\'s arrangement gives each of her main generators (about 320 kW); her own emergency loads '
+       'come to something near 200 kW. The rating is one of the questions put to the owner with the general arrangement.')
+C('EMG-02', 'Starting battery bank, 24 V', EG, _eg(0.55, 0.55, 0.35), 'Eight 12 V blocks in a steel rack, in two strings: they turn the starter, and nothing else is fed from them. '
+  'The ship\'s transitional and radio batteries are not in this room.')
+C('EMG-03', 'Starting battery charger', EG, _eg(0.55, 0.17, 1.55), 'Keeps the starting bank charged from the emergency switchboard; a voltmeter, an ammeter and a failure lamp.',
+  w=600, use=0.2, by=('ESB', 'emergency generator auxiliaries'), node='COR')
+C('EMG-04', 'Emergency generator control panel', EG, _eg(4.85, 4.19, 0.9), 'Starts and stops the set, by itself or by hand; shows its voltage, frequency, load, oil pressure and temperature; '
+  'the emergency stop is on its front. Fed from the starting battery.')
+C('EMG-05', 'Emergency switchboard, 440 V', EG, _eg(5.90, 4.10, 1.0), 'Two sections: the generator breaker and the bus tie from the main board with their meters; and the ways to what must '
+  'work when all else has stopped (steering, the emergency fire pump, emergency lighting, navigation lights, radio, alarms, the bilge pump).')
+C('EMG-06', 'Day tank, about 200 L', EG, _eg(1.18, 4.05, 1.97), 'The set\'s own fuel, high enough to run to the engine by gravity: on a stand over a tray, with a level gauge, filled from the service tank.',
+  note='200 L is the drawing\'s figure. At full load 500 kW burns about 125 L an hour: the hours the rule asks of an emergency source are to be worked out with the rating.')
+C('EMG-07', 'Fuel quick-closing valve and its pull', EG, _eg(1.00, 4.21, 1.60), 'Under the tank: shut by a wire from the red box outside the door, so that nobody goes into a fire to stop the fuel.')
+C('EMG-08', 'Exhaust: bellows, lagged riser, silencer', EG, _eg(3.50, 3.90, 2.7), 'From the turbocharger through a bellows and a lagged riser up through the deckhead to a silencer on the roof.',
+  note='The owner\'s drawing leads it to the funnel. Here it has a stack of its own, so the emergency set does not depend on the main machinery\'s casing.')
+C('EMG-09', 'Supply air duct and fire damper FD-01', EG, _eg(1.30, 4.13, 2.7), 'Air for the engine and the room, in through a louvre on the forward wall; the damper shuts it. Its lever is worked by hand: tap it.')
+C('EMG-10', 'Exhaust air duct and fire damper FD-02', EG, _eg(5.40, 4.13, 2.7), 'The room\'s warm air, out through a louvre on the starboard wall; the damper shuts it. Its lever is worked by hand: tap it.')
+C('EMG-11', 'Fuel lines', EG, _eg(1.60, 1.27, 0.35), 'Supply from the day tank to the engine\'s filters and the return beside it, each tagged; the filling line from the service tank with its strainer and valve; the tank\'s vent, out through the wall.')
+for _k, (_p, _q, _by) in enumerate(((2.00, 0.85, ('LB', 'bridge deck lighting')), (4.30, 0.85, ('LB', 'bridge deck lighting')), (5.90, 3.10, ('ESB', 'emergency lighting')),
+                                   (7.22, 2.20, ('ESB', 'emergency lighting')))):
+    C(f'LGT-{25 + _k}', f'Emergency generator room light No. {_k + 1}', EG, _eg(_p, _q, 3.0), 'A fitting under the deckhead beams. Two of the four are on the emergency lighting: the one before the switchboard and the one over the way to the door.',
+      w=36, by=_by, node='COR')
+C('FIR-18', 'Fire extinguisher, CO2 5 kg, emergency generator room', EG, _eg(7.70, 3.55, 0.55), 'Carbon dioxide, for a fire in the switchboard or the set: by the door, under its sign.')
+C('FIR-19', 'Manual call point, emergency generator room', EG, _eg(7.78, 4.10, 1.40), 'Break the glass to give the alarm: by the door one leaves by.', node='COR')
+C('FIR-20', 'Heat detector, emergency generator room', EG, _eg(4.22, 1.25, 3.18), 'A heat detector on loop 1 (a running diesel would set a smoke detector off).', node='COR')
+C('INT-14', 'Telephone, emergency generator room', EG, _eg(7.76, 2.90, 1.45), 'To the wheelhouse and the engine control room.', node='COR')
+C('OUT-37', 'Weathertight door, emergency generator room (house top)', EG, _eg(7.20, 4.55, 1.1), 'A steel door with a porthole, two dogs and a lever handle, opening outward onto the deck: the escape route ends at it.')
