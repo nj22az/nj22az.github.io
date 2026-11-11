@@ -1053,6 +1053,9 @@ Run in a cloud container (Blender 4.0.2 headless, Chromium with software GL), on
 | `checks/offline.cjs` | 5 of 5 |
 | `yard/drawings/stern_drawing.py` | Writes JS3-304 and prints the cylinder's lengths (3.04, 4.26, 4.33 m) and where the floodlights' beam falls (5.21 m abaft the transom; the ramp ends at 4.18 m). The sheet was looked at in Chromium, whole and in two close-ups |
 
+- **Published to `main` as `323354b`** on the owner's "Publish now", **and live**: fourteen live files compared with
+  `main`, all the same; `data/ferry-atlas.webp` answers 404; the live page loaded in Chromium shows her at 68.4 m with
+  93 rooms, 16 stairs, 167 components, lowers the stern ramp, and raises no error.
 - **Run the page checks one at a time.** Six at once, `bridge.cjs` failed one check: a lever had turned 1.15° of its
   16.26° when the check looked, 1.5 s after the tap. Alone it passes.
 - **Looked at**: the stern in Cycles stills (three, from astern, from above and close to), and on the page itself at
