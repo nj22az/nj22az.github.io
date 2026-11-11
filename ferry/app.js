@@ -12,6 +12,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from '/motor-90l/vendor/OrbitControls.js';
 import { createSystems } from './systems.js';
+import { surface as surfaceOf, createLook } from './look.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
@@ -84,6 +85,8 @@ function materialOf(m, atlases) {
     mat.userData.glass = true;
   } else mat = lit();
   mat.userData.side = mat.side;
+  // What it is made of: paint, deck coating, wood, metal each get their own grain and sheen (look.js).
+  surfaceOf(mat, m.surface);
   return mat;
 }
 const GLASS = { opacity: 0.62, metalness: 0.55, roughness: 0.06 };
@@ -146,6 +149,10 @@ scene.add(floor);
 
 const FOV = 30, TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
 const camera = new THREE.PerspectiveCamera(FOV, 1, 0.4, 700);
+// A frame is drawn with the shade where things meet (look.js). Glass is left out of that: what stands behind a pane is
+// shaded as if the pane were not there.
+const drawing = createLook(renderer, scene, camera, { hidden: o => !!(o.material && (o.material.transparent || (o.material.userData && o.material.userData.glass))) });
+const draw = () => drawing.render();
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
@@ -486,6 +493,8 @@ function setCut(t) {
     m.side = is && !paint ? THREE.DoubleSide : m.userData.side;
     m.needsUpdate = true;
   }
+  // The shade where things meet is worked out from what is drawn: what is cut away is cut away there too.
+  if (was !== is) { const nm = drawing.shade.normalMaterial; nm.clippingPlanes = is ? [cutPlane] : null; nm.side = is ? THREE.DoubleSide : THREE.FrontSide; nm.needsUpdate = true; }
   renderer.shadowMap.needsUpdate = true;
   redraw();
 }
@@ -1371,6 +1380,7 @@ function resize() {
   const W = view.clientWidth, H = view.clientHeight;
   if (!W || !H) return;
   renderer.setSize(W, H, false);
+  drawing.setSize(W, H);
   if (walk) { resizeWalk(); redraw(); return; }
   if (decks.length) keepFraming(() => { measure(); applyLens(); });
   else { measure(); applyLens(); }
@@ -1408,7 +1418,7 @@ function frame(now) {
   workSteps(dt);
   if (walk) {
     stepWalk(dt);
-    if (dirty) { renderer.render(scene, camera); dirty = false; }
+    if (dirty) { draw(); dirty = false; }
     return;
   }
   // Close to, the lens must see nearer: the near plane follows the distance to what she turns about.
@@ -1426,7 +1436,7 @@ function frame(now) {
     if (k >= 1) move = null;
     dirty = true;
   }
-  if (controls.update() || dirty) { renderer.render(scene, camera); dirty = false; }
+  if (controls.update() || dirty) { draw(); dirty = false; }
 }
 
 // ---------- start ----------
@@ -1461,6 +1471,7 @@ async function start() {
   toggle.setAttribute('aria-expanded', String(!narrow.matches));
   document.body.classList.add('ready');
   renderer.setSize(view.clientWidth, view.clientHeight, false);
+  drawing.setSize(view.clientWidth, view.clientHeight);
   measure(); applyLens();
   home(0);
   requestAnimationFrame(frame);

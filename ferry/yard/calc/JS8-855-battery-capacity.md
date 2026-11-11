@@ -35,6 +35,6 @@ Both banks are 24 V lead-acid, in the emergency generator room. A bank is taken 
 - The bridge takes 31 Ah in the half hour: a bank of 49 Ah rated would carry it.
 - **Fitted: 24 V, 200 Ah**, of which 128 Ah are counted. **97 Ah remain for the transitional services of the other sections** (the emergency lighting of the passenger spaces, stairs, machinery spaces and embarkation stations; the watertight doors' indication): up to 4.6 kW for the half hour. This calculation is closed only when every section is in the register.
 - If the emergency generator never starts, panel DC1 and the lanterns she shows under way (240 W) draw 37.6 A: the bank carries navigation and control for 3.4 hours.
-- Inverter: the navigation light panel's 540 W connected. **Fitted: 1 kVA, 24 V DC to 105 V**, in the emergency generator room, feeding the transitional section of the emergency switchboard.
+- Inverter: the navigation light panel's 540 W connected. **Fitted: 1 kVA, 24 V DC to 230 V**, in the emergency generator room, feeding the transitional section of the emergency switchboard.
 - Charger: a tenth of the bank an hour and panel DC1's load: 20 + 25.8 = 45.8 A. **Fitted: 24 V, 50 A**, automatic, with a charging-failure alarm on the bridge alarm panel.
 - Neither steering control system is on this bank: each is fed from its own power unit's circuit (PA-001 comment 3).

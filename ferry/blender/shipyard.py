@@ -87,6 +87,14 @@ LOOKS = {
     'Lit red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.9),
     'Lit green': dict(metalness=0.0, roughness=0.4, emissive='#3cf058', emissiveIntensity=0.7),
 }
+# What each look's surface is: the page gives each kind its own grain, sheen and unevenness (ferry/look.js), so that paint,
+# deck coating, wood, metal, leather and laminate are told apart by more than their colour (JSY-STD-404, rule 11).
+SURFACES = {
+    'Topside paint': 'paint', 'Topside plate': 'paint', 'Bulkhead paint': 'paint', 'Machinery paint': 'paint', 'Console paint': 'paint',
+    'Vending enamel': 'paint', 'Antifouling': 'matt', 'Primer': 'primer', 'Primer plate': 'primer', 'Deck paint': 'deck', 'Floor plate': 'deck',
+    'Bronze': 'metal', 'Shaft steel': 'metal', 'Zinc': 'metal', 'Chrome': 'metal', 'Drinks can': 'metal', 'Varnished wood': 'wood',
+    'Upholstery': 'leather', 'Lining': 'laminate', 'Deck covering': 'vinyl', 'Plastic': 'plastic',
+}
 _materials = {}
 
 
@@ -106,6 +114,8 @@ def material(name):
     m.use_backface_culling = look.get('side') != 'double'
     m['jmf'] = {'metalness': look['metalness'], 'roughness': look['roughness'], 'side': look.get('side', 'front'),
                 'offset': look.get('offset') or []}
+    if name in SURFACES:
+        m['jmf']['surface'] = SURFACES[name]
     for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear'):
         if key in look:
             m['jmf'][key] = look[key]

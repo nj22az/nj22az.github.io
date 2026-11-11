@@ -97,7 +97,7 @@ NOTE = ("{name}, {length} m long: the ship of her general arrangement (revision 
         "the drinks machine are fitted; the rest of her outfit, the machinery first, comes section by section. Nothing of the first, 34.5 m Chisum's "
         "borrowed interiors is left.")
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
-                         emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None, atlas=0, clear=False)
+                         emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None, atlas=0, clear=False, surface=None)
 
 
 def read_jmf(path):
@@ -206,7 +206,7 @@ def main():
         rec = dict(MATERIAL_DEFAULTS)
         rec.update(metalness=round(float(look['metalness']), 3), roughness=round(float(look['roughness']), 3), side=look.get('side', 'front'),
                    offset=[int(v) for v in look['offset']] if look.get('offset') else None)
-        for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear'):
+        for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear', 'surface'):
             if key in look:
                 rec[key] = look[key]
         key = json.dumps(rec, sort_keys=True)
