@@ -36,6 +36,12 @@ arrangement (revision C: 93 spaces on five plans, each with what it is for), and
 against itself and against her lines. `yard/drawings/JS1-102-general-arrangement.svg` is drawn from it. It is still a
 proposal for the owner's approval, with eight questions on the sheet.
 
+**She is a ship of her own, beside the Minato Maru.** The owner, 11 November 2026, after she was published: "I'm thinking
+the Minato Maru can be simplified , this is an additional ship". So she is no longer the lead ship from which the Minato
+Maru is to be rebuilt (the plan of 9 November, further down this file): the realistic engineering lives in her, and the
+Minato Maru stays Johansson World's own ferry and may be made simpler. What of the Minato Maru can go, what stays and
+what the two ships can share is sorted in `temp/minato-maru/SIMPLIFY.md` (on the work branch; nothing is removed yet).
+
 **What is built, all of it hers** (nothing of the Minato Maru or of the first Chisum's borrowed interiors is in the file):
 
 | | |

@@ -1,5 +1,10 @@
 # Minato Maru: the ferry work, kept here for the week (from 9 November 2026)
 
+> **11 November 2026: the plan changed.** The owner: "I'm thinking the Minato Maru can be simplified , this is an
+> additional ship". The Chisum is a ship of her own and the Minato Maru is not rebuilt from her. Read
+> [SIMPLIFY.md](SIMPLIFY.md) first: it sorts the Minato Maru into what can go, what stays and what both ships share,
+> and says which part of this folder still needs to go back to the Town (little of it).
+
 The owner, 9 November 2026: *"Work on nj22az.github.io for now make a temp folder there , I want to focus on getting
 the ferry ready"*, after *"Work on the cloud and online for now and we bring it back local in the weekend"*.
 
