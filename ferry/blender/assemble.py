@@ -97,6 +97,12 @@ REPLACES.update({
         why='her own bridge deck, built in Blender',
         what='the bridge deck abaft the wheelhouse: the corridor (eight cabin doors, storm rails, a panelled deckhead with its lights and '
              'detectors, the fire point) and the house outside (three weathertight doors, nine framed windows, the fire station on the platform)'),
+    # The other ship's mark on each funnel (a flat picture of an anchor standing off the plating): the line's own is painted there.
+    'livery': dict(
+        part='passenger', prefix='Funnel emblem', section='Livery', built='11 November 2026', listed=False,
+        boxes=[_box((3.79, 3.83), (9.4, 10.2), (4.5, 5.3)), _box((-3.83, -3.79), (9.4, 10.2), (4.5, 5.3))],
+        keep=lambda mat, col: False,
+        why="the line's own mark, built in Blender", what=''),
     # The main stairs' top landing plate and first step, and the guard along each well, which hers takes the place of
     # 5 cm further out (in line with the casing's wall below).
     'stairs-main-top': dict(

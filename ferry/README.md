@@ -826,9 +826,9 @@ Of walking aboard:
   is not allowed" holds for her own parts only so far.
 - The bridge deck's walls, cabins, galley, mess, emergency generator room and CO₂ room are still the other ship's. The
   galley's door is 0.60 m because of the other ship's unit in its doorway.
-- Not built, and asked for by the owner on 11 November 2026: the shipping company's livery (Johansson Lines on the hull
-  and a big J on the funnels, her own design), and an auxiliary engine room near the funnels (to be settled with the
-  machinery spaces; the emergency generator room is already beside the funnels, on the bridge deck).
+- Not built, and asked for by the owner on 11 November 2026: an auxiliary engine room near the funnels (to be settled
+  with the machinery spaces; the emergency generator room is already beside the funnels, on the bridge deck). The
+  funnels themselves are still the other ship's; only the line's mark on them is hers.
 - Offline: saving has been tested in Chromium only, not on an iPhone.
 - In the hull's spaces without a floor of their own (the shaft space beside its walkway, the void, the fore peak) the
   walker stands on the structure: the floors' top edges and the stringers.
@@ -857,6 +857,21 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, later: the line's mark
+
+- The owner: "we need to make the shipping company sign Johansson Lines and a big J similar to Jonsson lines ships but
+  my own thing"; of the page's first icon, whose J sat low and to one side: "The Johansson emblem with the J needs to be
+  aligned and pushed on the chimneys update pls". The mark is her own, drawn in `blender/emblem.py`: a J of one weight
+  (a stem, a hook at its foot, a bar at its head) set in the middle of a ring by its own outline. `blender/livery.py`
+  paints it in white on the outboard and inboard face of each funnel, laid on the two facets either side of the
+  funnel's ridge and cut along it; the other ship's anchor pictures are gone. `python3 ferry/blender/emblem.py` draws
+  the page's three icons from the same shape. `hull_markings.py` letters JOHANSSON LINES in the funnels' teal along each
+  side of the hull, 0.62 m high, forward of the midships draught marks.
+- The Blender build, `assemble.py` twice with the same hashes, `check.py`, `bridge_calcs.py`, `zfight.py`, `afloat.py`,
+  and `bridge.cjs`, `stairs.cjs`, `doors.cjs`, `travel.cjs`, `offline.cjs`: all passed. Looked at: the port funnel's
+  outboard mark from the quarter (no seam at the ridge), the 192 px icon, the port side with the lettering.
+- Not looked at: the starboard funnel, the inboard faces, the starboard lettering.
 
 ### 11 November 2026, after the publication: quick travel on foot
 

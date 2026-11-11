@@ -286,3 +286,8 @@ LOAD_LINE_YARD = 17.6
 NAME = 'CHISUM'             # as it is painted. The owner, 11 November 2026: "Maybe rename her to the Chisum", then "rename to Chisum"; she was the Christina from 9 November
 SHIP_NAME = NAME.title()    # as it is written
 PORT_OF_REGISTRY = 'MINATO'
+# The shipping line she sails for, lettered along each side of the hull, and its colour (the funnels' teal). Its mark, a J
+# in a ring, is on the funnels (blender/livery.py).
+LINE = 'JOHANSSON LINES'
+LINE_YARD = 23.0           # its middle: forward of the midships draught marks and the load line mark, which it would otherwise stand over
+LINE_COLOUR = 0x2f6f74
