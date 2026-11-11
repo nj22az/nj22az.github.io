@@ -79,7 +79,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
 
   // ---- a card says what feeds a component
   const card = await page.evaluate(() => { window.__ferry.systems.showComponent('NAV-01', { fly: false }); const t = document.querySelector('#card').innerText; window.__ferry.systems.clear(); return t; });
-  check(/Radar display/.test(card) && /BD2 way 1/.test(card) && /105 V/.test(card) && /Navigation data/.test(card) && !/null|undefined/.test(card), 'the radar\'s card names its supply (BD2 way 1, 105 V) and its nets');
+  check(/Radar display/.test(card) && /BD2 way 1/.test(card) && /230 V/.test(card) && /Navigation data/.test(card) && !/null|undefined/.test(card), 'the radar\'s card names its supply (BD2 way 1, 230 V) and its nets');
 
   // ---- on foot
   const walk = async (x, yard, yaw, seconds, key = 'KeyW') => page.evaluate(([x, z, yaw, seconds, key, DECK]) => {

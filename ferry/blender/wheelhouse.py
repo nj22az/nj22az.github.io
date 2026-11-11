@@ -30,7 +30,7 @@ import lines as L
 import spec as S
 import shipyard
 import bridge_place as BP
-from shipyard import Part, srgb, tint, component, tile
+from shipyard import Part, srgb, tint, component, tile, lettering
 from hull_appendages import _revolve
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'systems'))
@@ -103,11 +103,20 @@ def fwd(h):
     return (min(max(h, SILL), HEAD) - SILL) * RAKE
 
 
-def box(key, x0, x1, yd0, yd1, h0, h1, colour):
+# What the house itself is made of is plate with square edges; everything fitted in it is a made thing, whose edges are
+# chamfered and catch the light (JSY-STD-404, rule 2).
+PLATE_KEYS = {'plating', 'lining', 'glass', 'floor', 'seam', 'wing'}
+
+
+def box(key, x0, x1, yd0, yd1, h0, h1, colour, r=0.003):
     x0, x1 = sorted((x0, x1))
     yd0, yd1 = sorted((yd0, yd1))
     h0, h1 = sorted((h0, h1))
-    (key if isinstance(key, Part) else part(key)).box(P(x0, yd0, h0), P(x1, yd1, h1), colour)
+    p = key if isinstance(key, Part) else part(key)
+    if key in PLATE_KEYS if isinstance(key, str) else False:
+        p.box(P(x0, yd0, h0), P(x1, yd1, h1), colour)
+    else:
+        p.block(P(x0, yd0, h0), P(x1, yd1, h1), colour, r)
 
 
 def prism(key, x0, x1, profile, colour):
@@ -123,30 +132,20 @@ def prism(key, x0, x1, profile, colour):
     p.orient(start, lambda c: c - mid)
 
 
-def tube(key, a, b, r, colour, sides=12, r2=None):
-    (key if isinstance(key, Part) else part(key)).tube(P(*a), P(*b), r, r2, colour=colour, sides=sides)
+def tube(key, a, b, r, colour, sides=12, r2=None, caps=(True, True)):
+    (key if isinstance(key, Part) else part(key)).tube(P(*a), P(*b), r, r2, colour=colour, sides=sides, caps=caps)
+
+
+def vessel(key, a, b, r, colour, r2=None):
+    """A length of a glass vessel (a bottle, a jar, a jug): its wall only. Glass is seen from both sides, so it has no end
+    lying in the plane of what it stands on or of what closes it (JSY-STD-403, rule 8)."""
+    tube(key, a, b, r, colour, r2=r2, caps=(False, False))
 
 
 def torus(key, centre, big, small, colour, axis='z', n=28, m=10):
     """A ring about the fore-and-aft axis (a wheel) or the athwartships one (a lifebuoy against the bulwark)."""
     p = key if isinstance(key, Part) else part(key)
-    c = Vector(P(*centre))
-    a1, a2, ax = (Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))) if axis == 'z' else (Vector((0, 0, 1)), Vector((0, 1, 0)), Vector((1, 0, 0)))
-    rows = []
-    for i in range(n + 1):
-        a = 2 * pi * i / n
-        out = a1 * cos(a) + a2 * sin(a)
-        mid = c + out * big
-        rows.append([tuple(mid + out * (small * cos(2 * pi * k / m)) + ax * (small * sin(2 * pi * k / m))) for k in range(m)])
-    start = len(p.f)
-    p.grid(rows, colour, close=True)
-
-    def away(q):
-        v = Vector(q) - c
-        v -= ax * v.dot(ax)
-        v.normalize()
-        return Vector(q) - (c + v * big)
-    p.orient(start, away)
+    p.ring(P(*centre), (0, 0, 1) if axis == 'z' else (1, 0, 0), big, small, colour)
 
 
 def pic(centre, normal, up, w, h, name, proud=0.0015):
@@ -1109,50 +1108,455 @@ def epirb(g, tag, x, yard, h):
         tube('steel', (x - 0.07, yard, hh), (x, yard, hh), 0.012, GREY, 8)
 
 
+def oval_ring(p, centre, side, R, a, b, colour, n=96, m=32):
+    """A ring that lies against a wall which looks athwartships, its face toward whoever stands inboard of it: its section an
+    oval, `a` across (along the ring's radius) and `b` thick. `colour` is one colour or a function of the length's number
+    (0 to n - 1, counted anticlockwise from the right as it is looked at). Lit smooth."""
+    c = Vector(P(*centre))
+    e_a = Vector((-side, 0.0, 0.0))                                           # toward the eye
+    rows = []
+    for i in range(n):
+        t = 2 * pi * i / n
+        e_r = Vector((0.0, sin(t), side * cos(t)))                            # outward along the radius: right is forward to port, aft to starboard
+        row = []
+        for k in range(m):
+            q = 2 * pi * k / m
+            nrm = (e_r * (cos(q) / a) + e_a * (sin(q) / b)).normalized()
+            row.append(p.vert(tuple(c + e_r * (R + a * cos(q)) + e_a * (b * sin(q))), tuple(nrm)))
+        rows.append(row)
+    start = len(p.f)
+    for i in range(n):
+        ra, rb = rows[i], rows[(i + 1) % n]
+        col = colour(i) if callable(colour) else colour
+        for k in range(m):
+            j = (k + 1) % m
+            p.face((ra[k], ra[j], rb[j], rb[k]), col, smooth=True)
+
+    def away(q):
+        v = Vector(q) - c
+        v.x = 0.0
+        v.normalize()
+        return Vector(q) - (c + v * R)
+    p.orient(start, away)
+
+
+def in_pieces(tri, longest):
+    """A flat triangle (three (u, v) points) as smaller ones, none with an edge longer than `longest`."""
+    out, todo = [], [tuple(tri)]
+    while todo:
+        a_, b_, c_ = todo.pop()
+        if max(hypot(a_[0] - b_[0], a_[1] - b_[1]), hypot(b_[0] - c_[0], b_[1] - c_[1]), hypot(c_[0] - a_[0], c_[1] - a_[1])) <= longest:
+            out.append((a_, b_, c_))
+            continue
+        ab, bc, ca = ((a_[0] + b_[0]) / 2, (a_[1] + b_[1]) / 2), ((b_[0] + c_[0]) / 2, (b_[1] + c_[1]) / 2), ((c_[0] + a_[0]) / 2, (c_[1] + a_[1]) / 2)
+        todo += [(a_, ab, ca), (ab, b_, bc), (ca, bc, c_), (ab, bc, ca)]
+    return out
+
+
+def at_ring(centre, side, r, t, lift=0.0):
+    """A point on such a ring's middle plane: r from its centre, at the angle t (anticlockwise from the right as it is looked at)."""
+    cx, cy, cz = P(*centre)
+    return (cx - side * lift, cy + r * sin(t), cz + side * r * cos(t))
+
+
 def pelorus(g, tag, x, yard, h):
-    """A bearing repeater: a heading repeater in a bowl on a stand, under an azimuth ring with two sight vanes."""
-    tube('wing', (x, yard, 0.012), (x, yard, 0.04), 0.16, tint(HOUSE, 0.9), 18)
-    tube('wing', (x, yard, 0.04), (x, yard, 1.12), 0.07, HOUSE, 16, 0.055)
-    tube('brass', (x, yard, 1.12), (x, yard, 1.22), 0.09, BRASS, 20, 0.125)
-    disc((x, yard, 1.22), UP, FWD, 0.115, 'card')
-    tube('brass', (x, yard, 1.22), (x, yard, 1.232), 0.128, BRASS, 24, 0.128)
+    """
+    A bearing repeater on its pelorus stand, as one meets it on a bridge wing: a column bolted to the deck by a flange; a
+    junction box on the column with the cable that comes up from the deck; a brass fork on the column's head; in the fork a
+    gimbal ring, and in the ring the weighted bowl, so that the card lies level when she rolls; the card under glass in a
+    bezel; and on the bezel the azimuth circle, turned by hand, with its two sight vanes (the far one a wire in a frame,
+    the near one a slit) and two knobs to turn it by.
+    """
+    side = g['side']
+    white, brass, steel, dark = part('wing'), part('brass'), part('steel'), part('dark')
+    # ---- the foot and the column
+    tube('wing', (x, yard, 0.012), (x, yard, 0.030), 0.170, tint(HOUSE, 0.88))
+    for k in range(6):
+        a = pi / 6 + k * pi / 3
+        bx, by = x + 0.140 * cos(a), yard + 0.140 * sin(a)
+        tube('steel', (bx, by, 0.030), (bx, by, 0.033), 0.017, GREY)                                  # a washer
+        tube('steel', (bx, by, 0.033), (bx, by, 0.043), 0.011, STEEL)                                 # and its bolt's head
+    tube('wing', (x, yard, 0.030), (x, yard, 0.080), 0.098, tint(HOUSE, 0.94), r2=0.077)              # the weld's taper
+    tube('wing', (x, yard, 0.080), (x, yard, 1.020), 0.076, HOUSE, r2=0.056)
+    tube('wing', (x, yard, 1.020), (x, yard, 1.050), 0.066, tint(HOUSE, 0.94))
+    # ---- the junction box on the column's after side, its lid's four screws, its gland and the cable from the deck
+    grey = srgb(0x8d9496)
+    box('dark', x - 0.060, x + 0.060, yard - 0.128, yard - 0.060, 0.50, 0.66, grey, r=0.006)
+    box('dark', x - 0.054, x + 0.054, yard - 0.134, yard - 0.128, 0.506, 0.654, tint(grey, 0.93), r=0.002)   # its lid
+    for sx, hh in ((-0.046, 0.514), (0.046, 0.514), (-0.046, 0.646), (0.046, 0.646)):
+        tube('steel', (x + sx, yard - 0.134, hh), (x + sx, yard - 0.137, hh), 0.0035, STEEL)
+    tube('brass', (x, yard - 0.094, 0.50), (x, yard - 0.094, 0.470), 0.013, BRASS)                    # the gland under it
+    tube('brass', (x, yard - 0.094, 0.470), (x, yard - 0.094, 0.462), 0.010, tint(BRASS, 0.8))
+    part('plastic').rod([P(x, yard - 0.094, 0.465), P(x, yard - 0.094, 0.20), P(x, yard - 0.150, 0.06), P(x, yard - 0.190, 0.035), P(x, yard - 0.190, 0.012)], 0.0065, BLACK)
+    tube('brass', (x, yard - 0.190, 0.012), (x, yard - 0.190, 0.040), 0.014, BRASS)                   # the deck gland the cable comes up through
+    # the dimmer for the card's lamp, on the column's inboard side
+    tube('dark', (x - side * 0.060, yard, 0.92), (x - side * 0.074, yard, 0.92), 0.020, BLACK)
+    tube('dark', (x - side * 0.074, yard, 0.92), (x - side * 0.090, yard, 0.92), 0.013, srgb(0x3a4042))
+    # ---- the fork, the gimbal ring and the bowl
+    box('brass', x - 0.168, x + 0.168, yard - 0.020, yard + 0.020, 1.050, 1.068, BRASS, r=0.004)
+    for sx in (-1, 1):
+        box('brass', x + sx * 0.151, x + sx * 0.168, yard - 0.020, yard + 0.020, 1.064, 1.222, BRASS, r=0.004)
+        tube('brass', (x + sx * 0.174, yard, 1.200), (x + sx * 0.136, yard, 1.200), 0.0065, tint(BRASS, 0.85))      # the ring's pivot through the arm
+        brass.ball(P(x + sx * 0.176, yard, 1.200), 0.011, BRASS)
+    brass.ring(P(x, yard, 1.200), UP, 0.137, 0.0075, BRASS)
     for sy in (-1, 1):
-        box('brass', x - 0.004, x + 0.004, yard + sy * 0.122, yard + sy * 0.128, 1.232, 1.33, BRASS)
+        tube('brass', (x, yard + sy * 0.138, 1.200), (x, yard + sy * 0.124, 1.200), 0.0065, tint(BRASS, 0.85))      # the bowl's pivots in the ring
+    tube('brass', (x, yard, 1.072), (x, yard, 1.096), 0.046, tint(BRASS, 0.78))                                  # the weight that keeps it upright
+    tube('brass', (x, yard, 1.096), (x, yard, 1.200), 0.062, BRASS, r2=0.126)
+    disc((x, yard, 1.200), UP, FWD, 0.117, 'card', sides=56)
+    tube('glass', (x, yard, 1.2050), (x, yard, 1.2080), 0.119, GLASS)
+    brass.ring(P(x, yard, 1.2080), UP, 0.1225, 0.0065, BRASS)                                                     # the bezel
+    # ---- the azimuth circle: a ring that turns on the bezel, with the far vane, the near vane and two knobs
+    old = tint(BRASS, 0.86)
+    brass.ring(P(x, yard, 1.2165), UP, 0.1290, 0.0045, old)
+    f = yard + 0.129                                                                                              # the far vane: a wire in a frame
+    for sx in (-1, 1):
+        box('brass', x + sx * 0.0125 - 0.0022, x + sx * 0.0125 + 0.0022, f - 0.0022, f + 0.0022, 1.2165, 1.332, old)
+    box('brass', x - 0.0147, x + 0.0147, f - 0.0022, f + 0.0022, 1.3276, 1.332, old)
+    tube('steel', (x, f, 1.2165), (x, f, 1.3280), 0.0008, BLACK)
+    n = yard - 0.129                                                                                              # the near vane: a slit to look through
+    for sx in (-1, 1):
+        box('brass', x + sx * 0.0075 - 0.0060, x + sx * 0.0075 + 0.0060, n - 0.0022, n + 0.0022, 1.2165, 1.300, old)
+    box('brass', x - 0.0135, x + 0.0135, n - 0.0022, n + 0.0022, 1.2956, 1.300, old)
+    box('dark', x - 0.016, x + 0.016, n - 0.011, n + 0.011, 1.2165, 1.238, BLACK, r=0.003)                          # the prism's housing at its foot
+    for sx in (-1, 1):
+        tube('brass', (x + sx * 0.129, yard, 1.2165), (x + sx * 0.129, yard, 1.2330), 0.0095, old)
+        brass.ball(P(x + sx * 0.129, yard, 1.2335), 0.0105, old, squash=0.6)
 
 
 def lifebuoy(g, tag, x, yard, h):
+    """
+    A lifebuoy as it hangs on a ship: an oval-sectioned ring in orange with four reflective bands, her name over its top
+    and her port under it, a grab line round the outside in four bights, in a bracket of flat and round bar bolted to the
+    bulwark (a clip over the top, a hook under each lower quarter). Beside it the man-overboard light and smoke float in its
+    own clamps, made fast to the ring by a lanyard: thrown together from the wing.
+    """
     side = g['side']
-    xc = side * (W - 0.08)
-    torus('plastic', (xc, yard, h), 0.305, 0.06, ORANGE, axis='x')
-    for k in range(4):                                                         # four bands of reflective tape
-        a = k * pi / 2 + pi / 4
-        box('paint', xc - 0.064, xc + 0.064, yard + 0.305 * cos(a) - 0.035, yard + 0.305 * cos(a) + 0.035, h + 0.305 * sin(a) - 0.064, h + 0.305 * sin(a) + 0.064, WHITE)
-    box('steel', side * W, side * (W - 0.025), yard - 0.02, yard + 0.02, h + 0.28, h + 0.40, GREY)                 # its bracket
-    # the light and smoke float beside it
-    tube('plastic', (xc, yard + 0.50, 0.30), (xc, yard + 0.50, 0.72), 0.06, ORANGE, 14)
-    tube('plastic', (xc, yard + 0.50, 0.72), (xc, yard + 0.50, 0.80), 0.045, WHITE, 12)
-    box('steel', side * W, side * (W - 0.03), yard + 0.45, yard + 0.55, 0.36, 0.40, GREY)
-    box('steel', side * W, side * (W - 0.03), yard + 0.45, yard + 0.55, 0.60, 0.64, GREY)
+    R, a, b = 0.300, 0.080, 0.050
+    xc = side * (W - 0.075)
+    centre = (xc, yard, h)
+    band = lambda i: abs(((i + 0.5) * 360.0 / 96 + 45.0) % 90.0 - 45.0) > 41.0
+    oval_ring(part('plastic'), centre, side, R, a, b, lambda i: tint(WHITE, 0.98) if band(i) else ORANGE)
+    # ---- her name and her port, painted on the ring's face and following it round
+    for text, top in ((S.NAME, True), (S.PORT_OF_REGISTRY, False)):
+        pts, tris, width = lettering(text, 0.052)
+        paint = part('seam')
+
+        def onto(u, v):
+            r, t = (R - 0.026 + v, pi / 2 - (u - width / 2) / R) if top else (R + 0.026 - v, 3 * pi / 2 + (u - width / 2) / R)
+            lift = b * max(0.0, 1.0 - ((r - R) / a) ** 2) ** 0.5 + 0.0006
+            return paint.vert(at_ring(centre, side, r, t, lift))
+        first = len(paint.f)
+        for tri in tris:
+            # A letter is paint on a curved face: a flat piece of it would cut under the curve, so each is laid on in
+            # pieces no longer than 5 mm, every corner on the ring.
+            for piece in in_pieces([pts[i] for i in tri], 0.005):
+                paint.face(tuple(onto(*q) for q in piece), BLACK)
+        paint.orient(first, (-side, 0, 0))
+    # ---- the grab line: made fast under each band, hanging in a bight between
+    rope = part('plastic')
+    for k in range(4):
+        t0, t1 = radians(45 + 90 * k + 5), radians(135 + 90 * k - 5)
+        pts = []
+        for i in range(15):
+            u = i / 14
+            pts.append(at_ring(centre, side, R + a + 0.0035 + 0.085 * sin(pi * u) ** 0.8, t0 + (t1 - t0) * u))
+        rope.rod(pts, 0.0048, srgb(0xf4f1e6))
+    # ---- its bracket: an upright of flat bar on the bulwark with a cross bar, a clip over the ring's top, a hook under each lower quarter
+    box('steel', side * W, side * (W - 0.006), yard - 0.025, yard + 0.025, h - 0.44, h + 0.44, GREY, r=0.002)
+    box('steel', side * W, side * (W - 0.006), yard - 0.24, yard + 0.24, h - 0.285, h - 0.245, GREY, r=0.002)
+    for hh in (h - 0.40, h + 0.40):
+        tube('steel', (side * (W - 0.006), yard, hh), (side * (W - 0.012), yard, hh), 0.009, STEEL)                 # the bolts through the bulwark
+    out = xc - side * (b + 0.016)                                                                                   # just inboard of the ring's face
+    top = h + R + a + 0.0045
+    part('steel').rod([P(side * W, yard, top), P(out, yard, top), P(out, yard, top - 0.045)], 0.0055, STEEL)
+    for sy in (-1, 1):
+        low = h - (R + a) * cos(radians(30)) - 0.0045
+        yq = yard + sy * (R + a) * sin(radians(30))
+        part('steel').rod([P(side * W, yq, h - 0.265), P(side * W - side * 0.02, yq, low), P(out, yq, low), P(out, yq, low + 0.045)], 0.0055, STEEL)
+    # ---- the light and smoke float, forward of it: its canister, its lamp, its two clamps, its lanyard to the ring
+    yc = yard + 0.50
+    tube('dark', (xc, yc, 0.285), (xc, yc, 0.315), 0.0585, BLACK)                                                   # its weighted foot
+    tube('plastic', (xc, yc, 0.315), (xc, yc, 0.660), 0.055, ORANGE)
+    tube('plastic', (xc, yc, 0.455), (xc, yc, 0.545), 0.0565, YELLOW)                                               # its instruction band
+    tube('plastic', (xc, yc, 0.660), (xc, yc, 0.695), 0.055, ORANGE, r2=0.034)
+    tube('dark', (xc, yc, 0.695), (xc, yc, 0.708), 0.036, BLACK)
+    part('lens').ball(P(xc, yc, 0.708), 0.033, WHITE_LAMP, squash=0.85)
+    for hh in (0.375, 0.605):
+        part('steel').ring(P(xc, yc, hh), UP, 0.0585, 0.0045, STEEL)
+        box('steel', side * W, side * (W - 0.024), yc - 0.020, yc + 0.020, hh - 0.012, hh + 0.012, GREY, r=0.002)
+        box('steel', side * (W - 0.118), side * (W - 0.134), yc - 0.012, yc + 0.012, hh - 0.010, hh + 0.010, STEEL, r=0.002)   # the clamp's catch
+    part('plastic').rod([P(xc - side * 0.030, yc, 0.700), P(xc - side * 0.040, yc - 0.030, 0.800), P(xc - side * 0.030, yc - 0.075, 0.740),
+                         at_ring(centre, side, R + a + 0.002, 0.0)], 0.003, ORANGE)
 
 
 def hydrant(g, tag, x, yard, h):
+    """
+    A fire hydrant on the wing: a riser up through the deck in a bolted flange, clamped to the house side; an angle valve
+    with its bonnet, gland and handwheel; the outlet looking down and outboard with a brass hose coupling and its cap on a
+    chain.
+    """
     red = srgb(0xb8342a)
-    tube('paint', (x + 0.06, yard, 0.012), (x + 0.06, yard, h), 0.04, red, 12)
-    tube('paint', (x + 0.06, yard, h), (x + 0.06, yard, h + 0.12), 0.06, red, 14)
-    tube('brass', (x + 0.06, yard, h + 0.05), (x + 0.20, yard, h - 0.02), 0.04, BRASS, 12)
-    tube('brass', (x + 0.20, yard, h - 0.02), (x + 0.23, yard, h - 0.035), 0.05, BRASS, 12)
-    tube('paint', (x + 0.06, yard, h + 0.12), (x + 0.06, yard, h + 0.22), 0.012, red, 8)
-    torus('paint', (x + 0.06, yard, h + 0.22), 0.07, 0.01, red, axis='z', n=16, m=6)
-    for k in range(3):
-        a = k * 2 * pi / 3
-        tube('paint', (x + 0.06, yard, h + 0.22), (x + 0.06 + 0.07 * cos(a), yard, h + 0.22 + 0.07 * sin(a)), 0.006, red, 5)
+    px = x + 0.06
+    paint, brass, steel = part('paint'), part('brass'), part('steel')
+    tube('paint', (px, yard, 0.012), (px, yard, 0.030), 0.085, red)
+    for k in range(4):
+        a = pi / 4 + k * pi / 2
+        tube('steel', (px + 0.066 * cos(a), yard + 0.066 * sin(a), 0.030), (px + 0.066 * cos(a), yard + 0.066 * sin(a), 0.040), 0.009, STEEL)
+    tube('paint', (px, yard, 0.030), (px, yard, h - 0.045), 0.032, red)
+    # the clamp that holds the riser to the house side
+    box('steel', X_OUT, px - 0.030, yard - 0.020, yard + 0.020, 0.300, 0.318, GREY, r=0.003)
+    steel.ring(P(px, yard, 0.309), UP, 0.0345, 0.0055, GREY)
+    # the valve: body, bonnet, gland nut, stem, handwheel
+    paint.ball(P(px, yard, h), 0.062, red)
+    tube('paint', (px, yard, h + 0.045), (px, yard, h + 0.060), 0.058, red)                                         # the bonnet's flange
+    tube('paint', (px, yard, h + 0.060), (px, yard, h + 0.130), 0.038, red, r2=0.030)
+    tube('brass', (px, yard, h + 0.130), (px, yard, h + 0.156), 0.021, BRASS)
+    tube('steel', (px, yard, h + 0.156), (px, yard, h + 0.262), 0.0075, STEEL)
+    paint.ring(P(px, yard, h + 0.236), UP, 0.085, 0.0085, red)
+    tube('paint', (px, yard, h + 0.224), (px, yard, h + 0.248), 0.021, red)
+    for k in range(4):
+        a = pi / 4 + k * pi / 2
+        tube('paint', (px + 0.018 * cos(a), yard + 0.018 * sin(a), h + 0.236), (px + 0.084 * cos(a), yard + 0.084 * sin(a), h + 0.236), 0.0065, red)
+    tube('brass', (px, yard, h + 0.248), (px, yard, h + 0.262), 0.013, BRASS)                                       # the nut on the stem
+    # the outlet, 30 degrees down and outboard, its coupling and its cap on a chain
+    ox, oh = cos(radians(30)), -sin(radians(30))
+    along = lambda d: (px + ox * d, yard, h + oh * d)
+    tube('paint', along(0.030), along(0.125), 0.036, red)
+    tube('brass', along(0.125), along(0.137), 0.047, BRASS)
+    tube('brass', along(0.137), along(0.170), 0.040, BRASS)
+    tube('brass', along(0.170), along(0.192), 0.049, tint(BRASS, 0.9))                                              # the cap
+    tube('brass', along(0.192), along(0.200), 0.020, tint(BRASS, 0.8))
+    for sy in (-1, 1):                                                                                             # the coupling's two lugs
+        box('brass', along(0.150)[0] - 0.008, along(0.150)[0] + 0.008, yard + sy * 0.038, yard + sy * 0.056, along(0.150)[2] - 0.008, along(0.150)[2] + 0.008, BRASS, r=0.002)
+    cx, _, ch = along(0.196)
+    steel.rod([P(cx, yard, ch), P(cx - 0.02, yard + 0.03, ch - 0.10), P(px + 0.04, yard + 0.04, ch - 0.16), P(px + 0.030, yard + 0.012, h - 0.20)], 0.0025, GREY)
 
 
 def hosebox(g, tag, x, yard, h):
-    red = srgb(0xb8342a)
-    box('paint', X_OUT, X_OUT + 0.22, yard - 0.26, yard + 0.26, h, h + 0.62, red)
-    pic((X_OUT + 0.22, yard, h + 0.48), PORT, UP, 0.40, 0.15, 'hose')
-    box('steel', X_OUT + 0.22, X_OUT + 0.235, yard + 0.20, yard + 0.23, h + 0.25, h + 0.35, GREY)
+    """
+    The fire hose box beside the hydrant, on the house side: a steel cabinet on two brackets, its door on two hinges with
+    a quarter-turn catch (it opens to a tap), and in it what the sign says: the hose rolled on a peg with its coupling, the
+    nozzle in its clips, the hydrant's spanner on a hook.
+    """
+    red, dark_red = srgb(0xb8342a), srgb(0x8f2a22)
+    x0, x1, t = X_OUT, X_OUT + 0.22, 0.004
+    ya, yb, h1 = yard - 0.26, yard + 0.26, h + 0.62
+    box('paint', x0, x0 + t, ya, yb, h, h1, red, r=0.001)                                                           # its back, on the house side
+    box('paint', x0, x1 - 0.008, ya, ya + t, h, h1, red, r=0.001)
+    box('paint', x0, x1 - 0.008, yb - t, yb, h, h1, red, r=0.001)
+    box('paint', x0, x1 - 0.008, ya, yb, h, h + t, red, r=0.001)
+    box('paint', x0, x1 - 0.008, ya, yb, h1 - t, h1, red, r=0.001)
+    for yq in (yard - 0.18, yard + 0.18):                                                                           # two brackets under it, on the house side
+        box('steel', x0, x0 + 0.18, yq - 0.015, yq + 0.015, h - 0.012, h, GREY, r=0.002)
+        box('steel', x0, x0 + 0.012, yq - 0.015, yq + 0.015, h - 0.13, h - 0.012, GREY, r=0.002)
+    # ---- inside: the hose rolled flat on a peg, its coupling, the nozzle in two clips, the spanner on a hook
+    canvas, inner = srgb(0xd9d2bd), part('plastic')
+    xm = x0 + 0.090
+    peg_h = h + 0.400
+    tube('steel', (x0 + t, yard, peg_h), (x0 + 0.150, yard, peg_h), 0.020, GREY)
+    tube('steel', (x0 + 0.150, yard, peg_h), (x0 + 0.156, yard, peg_h), 0.030, GREY)                                 # the peg's end plate keeps the roll on
+    R0, turns, pitch, ha, hb = 0.070, 8, 0.0175, 0.0092, 0.033
+    coil = (xm, yard, peg_h - (R0 - ha - 0.020) + 0.001)                                                            # the roll hangs on the peg by its innermost turn
+    for k in range(turns):
+        oval_ring(inner, coil, -1, R0 + k * pitch, ha, hb, tint(canvas, 0.94 + 0.02 * (k % 3)), n=72, m=20)
+    ro = R0 + (turns - 1) * pitch
+    tube('brass', (xm, yard + 0.02, coil[2] - ro - 0.006), (xm, yard + 0.085, coil[2] - ro - 0.006), 0.036, BRASS)   # the coupling on the roll's outer end
+    tube('brass', (xm, yard + 0.085, coil[2] - ro - 0.006), (xm, yard + 0.097, coil[2] - ro - 0.006), 0.043, BRASS)
+    ny = yb - 0.045                                                                                                # the nozzle, upright at the forward side
+    tube('brass', (xm, ny, h + 0.105), (xm, ny, h + 0.150), 0.030, BRASS)
+    tube('paint', (xm, ny, h + 0.150), (xm, ny, h + 0.300), 0.024, dark_red)
+    tube('brass', (xm, ny, h + 0.300), (xm, ny, h + 0.420), 0.024, BRASS, r2=0.013)
+    tube('brass', (xm, ny, h + 0.420), (xm, ny, h + 0.436), 0.017, tint(BRASS, 0.85))
+    for hh in (h + 0.180, h + 0.340):
+        box('steel', x0 + t, xm + 0.004, ny - 0.006, ny + 0.006, hh - 0.008, hh + 0.008, GREY, r=0.002)              # its clips, from the back
+    box('steel', x0 + t, xm + 0.030, ny - 0.030, ny + 0.030, h + 0.094, h + 0.105, GREY, r=0.002)                    # and the shelf its foot stands on
+    sy = ya + 0.040                                                                                                # the spanner, hung on a hook at the after side
+    tube('steel', (x0 + t, sy, h + 0.500), (x0 + 0.050, sy, h + 0.500), 0.004, GREY)
+    box('steel', x0 + 0.030, x0 + 0.038, sy - 0.014, sy + 0.014, h + 0.210, h + 0.515, STEEL, r=0.002)
+    part('steel').ring(P(x0 + 0.034, sy, h + 0.200), PORT, 0.022, 0.0045, STEEL, sweep=(radians(200), radians(520)))
+    # ---- the door: a pan with a rim, hinged at its after edge, the sign on it, a quarter-turn catch at its forward edge
+    mover = 'hose-box-p' if x > 0 else 'hose-box-s'
+    M = _moving('Fire hose box, door', mover, leaf='Deck paint', fit='Shaft steel', sign='Panel face')
+    leaf, fit = M['leaf'], M['fit']
+    box(leaf, x1 - 0.008, x1 - 0.004, ya + 0.002, yb - 0.002, h + 0.002, h1 - 0.002, red, r=0.001)
+    for (qa, qb, ha_, hb_) in ((ya + 0.002, yb - 0.002, h + 0.002, h + 0.022), (ya + 0.002, yb - 0.002, h1 - 0.022, h1 - 0.002),
+                               (ya + 0.002, ya + 0.022, h + 0.022, h1 - 0.022), (yb - 0.022, yb - 0.002, h + 0.022, h1 - 0.022)):
+        box(leaf, x1 - 0.004, x1, qa, qb, ha_, hb_, tint(red, 0.94), r=0.0015)                                      # the rim that stiffens it
+    c, n, u = Vector(P(x1 - 0.004, yard, h + 0.44)) + Vector((0.0012, 0, 0)), Vector(PORT), Vector(UP)
+    r = u.cross(n)
+    M['sign'].picture([tuple(c - r * 0.20 - u * 0.075), tuple(c + r * 0.20 - u * 0.075), tuple(c + r * 0.20 + u * 0.075), tuple(c - r * 0.20 + u * 0.075)], 'hose')
+    for hh in (h + 0.12, h + 0.50):                                                                                # two hinges
+        tube(fit, (x1 + 0.0015, ya - 0.006, hh - 0.035), (x1 + 0.0015, ya - 0.006, hh + 0.035), 0.0065, STEEL)
+        box(fit, x1, x1 + 0.003, ya - 0.004, ya + 0.040, hh - 0.030, hh + 0.030, STEEL, r=0.0)      # its leaf lies on the door's rim, not in it
+    ky, kh = yb - 0.040, h + 0.31                                                                                  # the catch
+    tube(fit, (x1, ky, kh), (x1 + 0.010, ky, kh), 0.018, STEEL)
+    box(fit, x1 + 0.010, x1 + 0.018, ky - 0.008, ky + 0.008, kh - 0.045, kh + 0.012, STEEL, r=0.003)
+    MOTIONS.append(dict(id=mover, name='Fire hose box', pivot=[x1 + 0.0015, 0.0, BP.Z(ya - 0.006)], ratio=1.0, max=105,
+                        at=[x1, DECK + h + 0.31, BP.Z(yard)], normal=[1, 0, 0], auto='tap', reach=1.8))
+
+
+# ---- The pantry. The owner, 11 November 2026: "we need a cooler and a coffee pot too". On the starboard side, forward of the
+# wing door, under the side window and wholly below its sill (0.95 m), so nothing of it stands in the view abeam: a unit
+# 0.80 m long and 0.46 m deep with two bays. In the after bay the cooler; in the forward bay a niche for the coffee maker,
+# with a rail across its front for when she rolls, and under it a cupboard for the mugs.
+PANTRY = dict(back=-X_IN, front=-X_IN + 0.46, y0=21.34, y1=22.14, top=0.90, t=0.018, split=0.44, shelf=0.45)
+
+
+def _pantry():
+    Q = PANTRY
+    ys = Q['y0'] + Q['split']                                      # the divider's after face
+    return Q['back'], Q['front'], Q['y0'], Q['y1'], ys, Q['top'], Q['t']
+
+
+def _door_motion(mover, name, hinge_x, hinge_yard, ratio, at, reach=1.7, opens=100):
+    MOTIONS.append(dict(id=mover, name=name, pivot=[hinge_x, 0.0, BP.Z(hinge_yard)], ratio=ratio, max=opens,
+                        at=[at[0], DECK + at[2], BP.Z(at[1])], normal=[1, 0, 0], auto='tap', reach=reach))
+
+
+def pantry(g, tag, x, yard, h):
+    """The unit itself: a carcass of panels on a plinth set back for the feet, a wooden top, the niche's shelf and its rail, and
+    the cupboard under the niche with its door (it opens to a tap), its shelf, four mugs, the coffee tin, the tea and the sugar."""
+    xb, xf, y0, y1, ys, T, t = _pantry()
+    cream = srgb(0xd8d2c0)
+    sh = PANTRY['shelf']
+    box('console', xb + 0.02, xf - 0.035, y0 + 0.02, y1 - 0.02, 0.012, 0.08, FRAME)
+    box('console', xb, xb + t, y0, y1, 0.08, T - t, cream)
+    for a in (y0, ys, y1 - t):
+        box('console', xb + t, xf, a, a + t, 0.08, T - t, cream)
+    box('console', xb + t, xf, y0 + t, ys, 0.08, 0.08 + t, cream)
+    box('console', xb + t, xf, ys + t, y1 - t, 0.08, 0.08 + t, cream)
+    box('console', xb, xf, y0, y1, T - t, T, cream)
+    box('wood', xb, xf + 0.012, y0 - 0.008, y1 + 0.008, T, T + 0.022, WOOD, r=0.005)
+    box('console', xb + t, xf, ys + t, y1 - t, sh, sh + t, cream)
+    part('steel').rod([P(xf - 0.012, ys + t, sh + t + 0.055), P(xf - 0.012, y1 - t, sh + t + 0.055)], 0.0045, STEEL)        # the rail across the niche
+    # ---- in the cupboard: a shelf; mugs on it; the tin, the tea and the sugar under it
+    a, b = ys + t, y1 - t
+    box('console', xb + t, xf - 0.03, a, b, 0.27, 0.27 + 0.012, cream)
+    white, mugs = srgb(0xf4f2ea), part('plastic')
+    for i, (mx, my) in enumerate(((xb + 0.10, a + 0.075), (xb + 0.10, a + 0.215), (xb + 0.22, a + 0.075), (xb + 0.22, a + 0.215))):
+        tube('plastic', (mx, my, 0.282), (mx, my, 0.372), 0.040, white if i != 2 else srgb(0x2f6f74))
+        tube('dark', (mx, my, 0.372), (mx, my, 0.3725), 0.0355, srgb(0x2a2420))                                          # the dark of the inside
+        mugs.ring(P(mx + 0.052, my, 0.327), (0, 0, 1), 0.026, 0.0055, white if i != 2 else srgb(0x2f6f74), sweep=(radians(-110), radians(110)))
+    tube('paint', (xb + 0.10, a + 0.08, 0.098), (xb + 0.10, a + 0.08, 0.235), 0.050, srgb(0xa8322a))                       # the coffee tin
+    tube('steel', (xb + 0.10, a + 0.08, 0.235), (xb + 0.10, a + 0.08, 0.243), 0.051, STEEL)
+    box('plastic', xb + 0.05, xb + 0.19, a + 0.17, a + 0.25, 0.098, 0.178, srgb(0x3f7a4a), r=0.004)                         # the tea
+    vessel('glass', (xb + 0.27, a + 0.12, 0.098), (xb + 0.27, a + 0.12, 0.210), 0.042, GLASS)                               # the sugar, in a jar
+    tube('plastic', (xb + 0.27, a + 0.12, 0.100), (xb + 0.27, a + 0.12, 0.175), 0.038, white)
+    tube('steel', (xb + 0.27, a + 0.12, 0.210), (xb + 0.27, a + 0.12, 0.222), 0.044, STEEL)
+    # ---- the cupboard's door: hinged on its forward edge, a knob at its after edge
+    M = _moving('Pantry, cupboard door', 'pantry-cupboard', leaf='Console paint', fit='Shaft steel')
+    box(M['leaf'], xf - 0.018, xf, a + 0.003, b - 0.003, 0.101, sh - 0.003, tint(cream, 1.03), r=0.004)
+    tube(M['fit'], (xf, a + 0.035, 0.36), (xf + 0.016, a + 0.035, 0.36), 0.006, STEEL)
+    M['fit'].ball(P(xf + 0.020, a + 0.035, 0.36), 0.012, STEEL)
+    for hh in (0.16, 0.39):
+        tube(M['fit'], (xf - 0.004, b - 0.003, hh - 0.022), (xf - 0.004, b - 0.003, hh + 0.022), 0.006, STEEL)
+    _door_motion('pantry-cupboard', 'Pantry cupboard', xf - 0.004, b - 0.003, -1.0, (xf, (a + b) / 2, 0.28))
+
+
+def cooler(g, tag, x, yard, h):
+    """The cooler, in the after bay: a small refrigerator of its own, standing on four feet; an insulated cabinet with two wire
+    shelves and what the watch keeps cold; a door with a gasket, a shelf of its own for bottles and a handle. It opens to a tap."""
+    xb, xf, y0, y1, ys, T, t = _pantry()
+    white, inner, wire = srgb(0xf2f0e8), srgb(0xe9edee), srgb(0xb9c0c2)
+    a, b = y0 + t + 0.006, ys - 0.006
+    x0, x1 = xb + t + 0.010, xf - 0.046                                # the cabinet, behind its door
+    h0, h1, w = 0.100, 0.860, 0.030
+    for (fx, fy) in ((x0 + 0.03, a + 0.03), (x0 + 0.03, b - 0.03), (x1 - 0.03, a + 0.03), (x1 - 0.03, b - 0.03)):
+        tube('dark', (fx, fy, 0.098), (fx, fy, h0), 0.014, BLACK)
+    box('plastic', x0, x0 + w, a, b, h0, h1, white)                                                                    # its back, sides, floor and top
+    box('plastic', x0 + w, x1, a, a + w, h0, h1, white)
+    box('plastic', x0 + w, x1, b - w, b, h0, h1, white)
+    box('plastic', x0 + w, x1, a + w, b - w, h0, h0 + w, white)
+    box('plastic', x0 + w, x1, a + w, b - w, h1 - w, h1, white)
+    box('dark', x0 + w, x0 + w + 0.012, a + w + 0.02, b - w - 0.02, h1 - w - 0.12, h1 - w - 0.02, srgb(0xcfd6d8), r=0.003)   # the cold plate at the back
+    ia, ib = a + w, b - w
+    for sh in (0.360, 0.580):                                                                                           # two wire shelves, each a frame and its wires
+        part('steel').rod([P(x0 + w + 0.004, ia, sh), P(x1 - 0.006, ia, sh), P(x1 - 0.006, ib, sh), P(x0 + w + 0.004, ib, sh), P(x0 + w + 0.004, ia, sh)], 0.003, wire)
+        for k in range(1, 9):
+            yy = ia + (ib - ia) * k / 9
+            tube('steel', (x0 + w + 0.004, yy, sh), (x1 - 0.006, yy, sh), 0.0016, wire)
+    # what is kept cold: bottles on the floor, cans on the first shelf, milk and the watch's box on the second
+    green, brown, red, blue = srgb(0x2f6f4a), srgb(0x5a3a1e), srgb(0xb5332a), srgb(0x2d5f9a)
+    for k, col in enumerate((green, brown, green, brown)):
+        bx, by = x0 + w + 0.06 + 0.075 * (k // 2), ia + 0.06 + 0.085 * (k % 2)
+        vessel('glass', (bx, by, h0 + w), (bx, by, h0 + w + 0.150), 0.031, col)
+        vessel('glass', (bx, by, h0 + w + 0.150), (bx, by, h0 + w + 0.200), 0.031, col, r2=0.013)
+        vessel('glass', (bx, by, h0 + w + 0.200), (bx, by, h0 + w + 0.222), 0.013, col)
+        tube('steel', (bx, by, h0 + w + 0.222), (bx, by, h0 + w + 0.228), 0.0145, srgb(0xd8b23a))
+    for k in range(6):
+        cx, cy = x0 + w + 0.06 + 0.075 * (k // 3), ia + 0.05 + 0.075 * (k % 3)
+        tube('steel', (cx, cy, 0.3632), (cx, cy, 0.478), 0.033, (red, blue, srgb(0xd9d9d4))[k % 3])
+        tube('steel', (cx, cy, 0.478), (cx, cy, 0.481), 0.029, srgb(0xc9cdd0))
+    box('plastic', x0 + w + 0.03, x0 + w + 0.10, ia + 0.03, ia + 0.10, 0.5806, 0.775, srgb(0xf7f5ee), r=0.004)             # milk: it beds a millimetre onto the wires it stands on
+    box('plastic', x0 + w + 0.03, x0 + w + 0.21, ia + 0.14, ib - 0.02, 0.5806, 0.650, srgb(0x4a86a8), r=0.008)             # the watch's box
+    # ---- the door: its leaf, the gasket round its inner face, its own shelf with a rail and two bottles, its handle
+    M = _moving('Cooler, door', 'cooler-door', leaf='Plastic', fit='Shaft steel', dark='Machinery paint', glass='Window glass')
+    leaf = M['leaf']
+    box(leaf, xf - 0.040, xf, a, b, h0, h1, white, r=0.006)
+    for (qa, qb, ga, gb) in ((a + 0.012, b - 0.012, h0 + 0.012, h0 + 0.024), (a + 0.012, b - 0.012, h1 - 0.024, h1 - 0.012),
+                             (a + 0.012, a + 0.024, h0 + 0.024, h1 - 0.024), (b - 0.024, b - 0.012, h0 + 0.024, h1 - 0.024)):
+        box(M['dark'], xf - 0.046, xf - 0.040, qa, qb, ga, gb, srgb(0x3a4042), r=0.0)                                    # the gasket
+    box(leaf, xf - 0.105, xf - 0.040, a + 0.03, b - 0.03, 0.230, 0.242, inner, r=0.003)                                   # the door's shelf
+    M['fit'].rod([P(xf - 0.100, a + 0.03, 0.300), P(xf - 0.100, b - 0.03, 0.300)], 0.003, wire)
+    for yy in (a + 0.03, b - 0.03):
+        box(leaf, xf - 0.105, xf - 0.040, yy - 0.004, yy + 0.004, 0.242, 0.304, inner, r=0.0)
+    for k, yy in enumerate((a + 0.11, b - 0.11)):
+        vessel(M['glass'], (xf - 0.072, yy, 0.242), (xf - 0.072, yy, 0.400), 0.027, (srgb(0xe8e4d8), srgb(0x2f6f4a))[k])
+        vessel(M['glass'], (xf - 0.072, yy, 0.400), (xf - 0.072, yy, 0.455), 0.027, (srgb(0xe8e4d8), srgb(0x2f6f4a))[k], r2=0.012)
+        tube(M['fit'], (xf - 0.072, yy, 0.455), (xf - 0.072, yy, 0.470), 0.013, srgb(0xd8b23a))
+    hy = b - 0.035                                                                                                     # the handle, at the free edge
+    for hh in (0.52, 0.76):
+        tube(M['fit'], (xf, hy, hh), (xf + 0.028, hy, hh), 0.005, STEEL)
+    M['fit'].rod([P(xf + 0.028, hy, 0.50), P(xf + 0.028, hy, 0.78)], 0.007, STEEL)
+    _door_motion('cooler-door', 'Cooler', xf - 0.004, a, 1.0, (xf, (a + b) / 2, 0.50))
+
+
+def coffee_maker(g, tag, x, yard, h):
+    """The coffee pot: a filter machine in the niche, on the shelf behind the rail: a base with the hot plate and the switch, a
+    column that holds the water with a window to see its level, a head with the filter's basket over the jug, and the jug
+    itself, of glass, with its collar, lid and handle, and coffee in it."""
+    xb, xf, y0, y1, ys, T, t = _pantry()
+    top = PANTRY['shelf'] + t                                           # the shelf's top
+    c = (ys + t + y1 - t) / 2
+    black, body = srgb(0x1c2022), srgb(0x2a3033)
+    bx0, bx1 = xb + t + 0.045, xb + t + 0.045 + 0.27
+    box('dark', bx0, bx1, c - 0.105, c + 0.105, top, top + 0.022, body, r=0.006)
+    for (fx, fy) in ((bx0 + 0.02, c - 0.085), (bx0 + 0.02, c + 0.085), (bx1 - 0.02, c - 0.085), (bx1 - 0.02, c + 0.085)):
+        tube('dark', (fx, fy, top), (fx, fy, top + 0.002), 0.010, black)
+    jx = bx1 - 0.085                                                     # the jug's middle, on the hot plate
+    tube('steel', (jx, c, top + 0.022), (jx, c, top + 0.026), 0.072, srgb(0x4a4f52))
+    box('dark', bx0, bx0 + 0.085, c - 0.105, c + 0.105, top + 0.022, top + 0.300, body, r=0.008)                          # the column
+    box('lens', bx0 + 0.085, bx0 + 0.088, c - 0.03, c + 0.03, top + 0.070, top + 0.250, srgb(0x6f8fa3), r=0.001)             # the water's window
+    box('dark', bx0, bx1 - 0.015, c - 0.105, c + 0.105, top + 0.258, top + 0.300, body, r=0.008)                           # the head
+    tube('dark', (jx, c, top + 0.258), (jx, c, top + 0.196), 0.062, black, r2=0.046)                                     # the filter's basket
+    tube('dark', (jx, c, top + 0.196), (jx, c, top + 0.188), 0.012, black)
+    box('paint', bx1 - 0.010, bx1 + 0.004, c + 0.060, c + 0.090, top + 0.004, top + 0.018, srgb(0xc2412f), r=0.002)        # the switch, lit when it is on
+    # the jug
+    vessel('glass', (jx, c, top + 0.026), (jx, c, top + 0.130), 0.064, GLASS)
+    vessel('glass', (jx, c, top + 0.130), (jx, c, top + 0.158), 0.064, GLASS, r2=0.050)
+    tube('dark', (jx, c, top + 0.030), (jx, c, top + 0.098), 0.060, srgb(0x2b1a10))                                      # the coffee
+    part('dark').ring(P(jx, c, top + 0.158), UP, 0.051, 0.006, black)                                                    # its collar
+    tube('dark', (jx, c, top + 0.160), (jx, c, top + 0.168), 0.047, black)                                               # its lid
+    part('dark').ball(P(jx, c, top + 0.172), 0.010, black)
+    part('dark').rod([P(jx + 0.050, c, top + 0.156), P(jx + 0.096, c, top + 0.150), P(jx + 0.100, c, top + 0.075), P(jx + 0.063, c, top + 0.050)], 0.0075, black)
+
+
+def pantry_socket(g, tag, x, yard, h):
+    """A double 230 V socket at the back of the niche, with the coffee maker's plug in one and the cooler's in the other; the
+    cooler's lead goes through the divider to it."""
+    xb, xf, y0, y1, ys, T, t = _pantry()
+    white, cable = srgb(0xf2f0e8), srgb(0x25282a)
+    c = (ys + t + y1 - t) / 2
+    fx = xb + t
+    box('plastic', fx, fx + 0.010, c - 0.075, c + 0.075, h - 0.042, h + 0.042, white, r=0.003)
+    for k, yy in enumerate((c - 0.036, c + 0.036)):
+        tube('dark', (fx + 0.010, yy, h), (fx + 0.012, yy, h), 0.019, srgb(0x2a2e30))
+        box('plastic', fx + 0.012, fx + 0.040, yy - 0.018, yy + 0.018, h - 0.018, h + 0.018, white, r=0.005)                # a plug in each
+    top = PANTRY['shelf'] + t
+    part('plastic').rod([P(fx + 0.040, c + 0.036, h), P(fx + 0.050, c + 0.036, h - 0.06), P(fx + 0.050, c + 0.02, top + 0.16)], 0.0035, cable)   # to the coffee maker's column
+    part('plastic').rod([P(fx + 0.040, c - 0.036, h), P(fx + 0.052, c - 0.036, h - 0.05), P(fx + 0.052, c - 0.10, h - 0.10), P(fx + 0.052, ys - 0.02, h - 0.10),
+                         P(fx + 0.045, ys - 0.02, 0.86)], 0.0035, cable)                                                                    # through the divider to the cooler's back
 
 
 def scupper(g, tag, x, yard, h):
@@ -1235,6 +1639,7 @@ KINDS = dict(
     blinds=blinds, mullion_ducts=mullion_ducts, wiper=wiper, nozzles=nozzles, whistle_valve=whistle_valve, wing_console=wing_console, sidelight=sidelight,
     epirb=epirb, pelorus=pelorus, lifebuoy=lifebuoy, hydrant=hydrant, hosebox=hosebox, scupper=scupper, wing_light=wing_light, talkback=talkback_station,
     nuc=nuc, navtex_ant=navtex_ant, gnss_small=gnss_small, wind_sensor=wind_sensor, ac_outdoor=ac_outdoor,
+    pantry=pantry, cooler=cooler, coffee=coffee_maker, pantry_socket=pantry_socket,
 )
 
 
@@ -1285,7 +1690,7 @@ def motion():
     """
     inputs, movers = [], []
     for m in MOTIONS:
-        inputs.append(dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit='°', below='', above='open', rest='shut', auto='near',
+        inputs.append(dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit='°', below='', above='open', rest='shut', auto=m.get('auto', 'near'),
                            at=m['at'], normal=m['normal'], reach=m.get('reach', 1.6)))
         movers.append(dict(id=m['id'], kind='turn', input=m['id'], axis=[0, 1, 0], pivot=m['pivot'], ratio=m['ratio']))
     for c in CONTROLS:

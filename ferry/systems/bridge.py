@@ -95,10 +95,10 @@ ENTRY = {'LB': 'MAIN-IN', 'MSB': 'MAIN-IN', 'SG1': 'MAIN-IN', 'ESB': 'EM-IN', 'T
 # (mm²), and the board or circuit it comes from.
 # ---------------------------------------------------------------------------------------------------------------------
 BOARDS = [
-    dict(id='BD1', name='Wheelhouse distribution board', comp='ELD-01', volts=105, kind='AC', fed_by='LB',
-         feeder=dict(breaker=40, mm2=16),
-         text='General services of the bridge: lighting, wipers, sockets, the air conditioner, the chart system. Dead in a blackout.'),
-    dict(id='BD2', name='Wheelhouse emergency distribution board', comp='ELD-02', volts=105, kind='AC', fed_by='ESB',
+    dict(id='BD1', name='Wheelhouse distribution board', comp='ELD-01', volts=230, kind='AC', fed_by='LB',
+         feeder=dict(breaker=25, mm2=6),            # sized again at 230 V: 15 A with the pantry on it (it was 40 A and 16 mm² at 105 V)
+         text='General services of the bridge: lighting, wipers, sockets, the air conditioner, the chart system, the pantry. Dead in a blackout.'),
+    dict(id='BD2', name='Wheelhouse emergency distribution board', comp='ELD-02', volts=230, kind='AC', fed_by='ESB',
          feeder=dict(breaker=16, mm2=4),
          text='What must work when the main board is dead: the radar, public address and general alarm, the emergency light, '
               'the whistle, the second supply of the propulsion control. Fed from the emergency switchboard, so from the main '
@@ -115,7 +115,7 @@ BOARDS = [
     # PA-001 comment 2: each supply direct from a switchboard, not through a board that serves other consumers.
     # PA-001 revision 1, comment 17: the emergency feeder comes from the switchboard's transitional section, so that the
     # lanterns stay lit through the 45 seconds before the emergency generator is on the board (SOLAS II-1/42.4.1).
-    dict(id='NLP', name='Navigation light panel', comp='NLT-01', volts=105, kind='AC', fed_by='TSB',
+    dict(id='NLP', name='Navigation light panel', comp='NLT-01', volts=230, kind='AC', fed_by='TSB',
          feeder=dict(breaker=10, mm2=2.5), alt_feeder=dict(board='LB', breaker=10, mm2=4, via='CON-P'),      # round by the port side and the port duct
          text='One fused and monitored way for each lantern: a lamp that fails sounds the buzzer and lights its lamp on the '
               'panel. Two feeders of its own, each direct from a switchboard and by a different way: the emergency switchboard\'s '
@@ -155,6 +155,7 @@ CIRCUITS = [
     ('BD1', 4, 'Console sockets', 10, 2.5, None),
     ('BD1', 5, 'Air conditioner', 16, 4, None),
     ('BD1', 6, 'Chart system and cameras', 6, 1.5, None),
+    ('BD1', 7, 'Pantry: cooler and coffee maker', 10, 2.5, None),
     ('BD1', 8, 'Dimmers and console heaters', 6, 1.5, None),
     ('BD2', 1, 'Radar', 6, 2.5, None),
     ('BD2', 2, 'Public address and general alarm', 6, 1.5, None),
@@ -436,18 +437,24 @@ C('LGT-11', 'Foredeck floodlight, port', CD, (2.35, 22.66, DECK_H), 'Lights the 
 C('LGT-12', 'Foredeck floodlight, starboard', CD, (-2.35, 22.66, DECK_H), 'Lights the car deck forward and the ramp.', box=(-2.51, -2.19, 22.58, 22.78, DECK_H, DECK_H + 0.63), w=150, use=0.1, by=('BD1', 2), node='ROOF-F')
 
 # ---- Electrical distribution.
-C('ELD-01', 'Wheelhouse distribution board BD1', WH, (1.50, 19.54, 0.95), '105 V, from the lighting board in the engine control room: eight ways for the bridge\'s general services.',
+C('ELD-01', 'Wheelhouse distribution board BD1', WH, (1.50, 19.54, 0.95), '230 V, from the lighting board in the engine control room: eight ways for the bridge\'s general services.',
   dict(kind='wallbox', w=0.60, H=0.85, d=0.16, tile='bd1', colour=0x9aa3a2, handle=True), node='BRD')
-C('ELD-02', 'Emergency distribution board BD2', WH, (2.11, 19.54, 1.05), '105 V, from the emergency switchboard: six ways for what must not go dark.',
+C('ELD-02', 'Emergency distribution board BD2', WH, (2.11, 19.54, 1.05), '230 V, from the emergency switchboard: six ways for what must not go dark.',
   dict(kind='wallbox', w=0.46, H=0.75, d=0.16, tile='bd2', colour=0x9aa3a2, handle=True), node='BRD')
 C('ELD-03', '24 V DC panel DC1, navigation and control', WH, (2.63, 19.54, 1.44), '24 V from the general service battery: fifteen fused ways, a voltmeter and an earth-fault lamp.',
   dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc1', colour=0x9aa3a2, handle=True), node='BRD')
 C('ELD-04', '24 V DC panel DC2, radio', WH, (2.63, 19.54, 1.05), '24 V from the radio battery: five fused ways, a voltmeter and the charger-failure alarm.',
   dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc2', colour=0x9aa3a2, handle=True), node='BRD')
-C('ELD-11', 'Console socket, port', WH, (2.20, 22.30, 0.72), 'A 105 V socket on the console\'s after face.', dict(kind='sockets', xs=(2.20,)), w=150, use=0.1, by=('BD1', 4), node='CON-PP')
-C('ELD-13', 'Console socket, centre', WH, (-0.40, 22.30, 0.72), 'A 105 V socket on the console\'s after face.', dict(kind='sockets', xs=(-0.40,)), w=150, use=0.1, by=('BD1', 4), node='CON-S')
+C('ELD-11', 'Console socket, port', WH, (2.20, 22.30, 0.72), 'A 230 V socket on the console\'s after face.', dict(kind='sockets', xs=(2.20,)), w=150, use=0.1, by=('BD1', 4), node='CON-PP')
+C('ELD-13', 'Console socket, centre', WH, (-0.40, 22.30, 0.72), 'A 230 V socket on the console\'s after face.', dict(kind='sockets', xs=(-0.40,)), w=150, use=0.1, by=('BD1', 4), node='CON-S')
 C('ELD-12', 'Console heaters', WH, (0.0, 22.70, 0.14), 'Small heaters low in the console that keep the damp out of the electronics when she lies cold.', dict(kind='box', size=(0.60, 0.06, 0.06)),
   w=100, use=0.2, by=('BD1', 8), node='CON-0', hid='inside the console, at its foot')
+# ---- The pantry (the owner, 11 November 2026: "we need a cooler and a coffee pot too"): on the starboard side forward of the
+# wing door, below the window's sill. Its two appliances are on a way of their own on BD1.
+C('OUT-38', 'Pantry unit', WH, (-2.69, 21.74, 0.0), 'A low unit under the starboard side window, wholly below its sill: the cooler in its after bay, the coffee maker in a niche with a rail across it for when she rolls, and under the niche a cupboard with the mugs, the coffee, the tea and the sugar. The cupboard opens to a tap.', dict(kind='pantry'))
+C('OUT-39', 'Cooler', WH, (-2.70, 21.56, 0.10), 'A 45-litre refrigerator for the watch: two wire shelves, a shelf in the door. It opens to a tap.', dict(kind='cooler'), w=70, use=0.35, by=('BD1', 7), node='WALL-S')
+C('OUT-40', 'Coffee maker', WH, (-2.67, 21.96, 0.47), 'A filter coffee maker with a glass jug on a hot plate: a litre and a quarter, a pot for the watch.', dict(kind='coffee'), w=900, use=0.08, by=('BD1', 7), node='WALL-S')
+C('ELD-23', 'Pantry sockets', WH, (-2.90, 21.96, 0.76), 'A double 230 V socket at the back of the pantry\'s niche, for the coffee maker and the cooler.', dict(kind='pantry_socket'), node='WALL-S')
 C('ELD-20', 'Cable transit at the mast', WH, (0.0, 20.80, CEIL), 'Where the cables to the mast and the compass deck pass the deck, sealed gastight and watertight.', dict(kind='ceil', type='transit', w=0.24, l=0.16), node='MAST-0')
 C('ELD-21', 'Cable duct on the port mullion', WH, (0.58, 22.90, 1.45), 'A covered duct down a forward mullion, from the trays over the deckhead to the console.', dict(kind='mullion_ducts', side=1), node='DUCT-P')
 C('ELD-22', 'Cable duct on the starboard mullion', WH, (-0.58, 22.90, 1.45), 'A covered duct down a forward mullion, from the trays over the deckhead to the console.', dict(kind='mullion_ducts', side=-1), node='DUCT-S')
@@ -569,9 +576,9 @@ NETS = [
          text='Two switches on each closing (shut, and secured) to the lamps on the bridge.', hub='ALM-06',
          members=[('ALM-06', 'node', ''), ('ext:HULL:The five watertight doors below the car deck', 'talks', 'shut and dogged'),
                   ('ext:CAR:The bow ramp and the three hatches in the car deck', 'talks', 'shut and secured')]),
-    dict(id='WHISTLE', name='Whistle control', medium='105 V control cable', text='The push buttons and the fog timer to the whistle valve.', hub='NLT-10',
+    dict(id='WHISTLE', name='Whistle control', medium='230 V control cable', text='The push buttons and the fog timer to the whistle valve.', hub='NLT-10',
          members=[('NLT-10', 'node', ''), ('PIP-10', 'listens', ''), ('PRP-10', 'talks', 'whistle button at the wing'), ('PRP-11', 'talks', 'whistle button at the wing')]),
-    dict(id='WIPERS', name='Wiper control', medium='105 V, switched', text='The panel to the three wiper motors and the wash valve.', hub='NLT-12',
+    dict(id='WIPERS', name='Wiper control', medium='230 V, switched', text='The panel to the three wiper motors and the wash valve.', hub='NLT-12',
          members=[('NLT-12', 'node', ''), ('NLT-13', 'listens', ''), ('NLT-14', 'listens', ''), ('NLT-15', 'listens', ''), ('PIP-11', 'listens', '')]),
     dict(id='SEARCHLIGHT', name='Searchlight control', medium='control cable', text='The joystick to the searchlight\'s two motors and its lamp contactor.',
          members=[('NLT-11', 'node', ''), ('NLT-16', 'node', '')]),

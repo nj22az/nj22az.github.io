@@ -434,7 +434,11 @@ def day_tank(S):
         tube(yellow, (pf, 3.42, 0.35), (pf + 0.09, 3.42, 0.35), 0.008, YELLOW, 6)
         tube(yellow, (pf + 0.09, 3.42, 0.35), (pf + 0.10, 3.42, 0.35), 0.045, YELLOW, 12)
         for h, r, q, tile in ((0.95, rs, 2.70, 'eg_tag_supply'), (0.65, rr, 2.70, 'eg_tag_return'), (0.35, rf, 1.96, 'eg_tag_service')):
-            box(steel, RACK_P + 2 * r, RACK_P + 2 * r + 0.006, q - 0.13, q + 0.13, h - 0.03, h + 0.03, YELLOW)   # a tag on each line
+            # a tag on each line: its plate bedded 2 mm into the line's side and held by a band at each end (it was held only
+            # by the corner of a ten-sided pipe until the pipes were drawn round: JSY-STD-404)
+            box(steel, RACK_P + 2 * r - 0.002, RACK_P + 2 * r + 0.006, q - 0.13, q + 0.13, h - 0.03, h + 0.03, YELLOW)
+            for dq in (-0.11, 0.11):
+                steel.ring(R(RACK_P + r, q + dq, h), (1, 0, 0), r + 0.002, 0.003, STEEL)
             sign(face, (RACK_P + 2 * r + 0.006, q, h), (1, 0, 0), 0.25, 0.055, tile)
         # the vent: up from the tank's top and out through the starboard wall to a gooseneck with a gauze
         run(steel, [(p1 - 0.12, q1 - 0.10, h1), (p1 - 0.12, q1 - 0.10, 2.32), (p1 - 0.12, WIDTH + WALL + 0.10, 2.32), (p1 - 0.12, WIDTH + WALL + 0.10, 2.20)], 0.016, STEEL, 8)

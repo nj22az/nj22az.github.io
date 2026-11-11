@@ -1207,7 +1207,7 @@ def eg_esb(section):
             text(d, (w / 2, y + 110), label, 9, (30, 30, 30))
     else:
         ways = ('STEERING GEAR No. 2', 'EMERGENCY FIRE PUMP', 'EMERGENCY LIGHTING', 'NAVIGATION LIGHTS', 'RADIO AND NAVIGATION', 'FIRE DETECTION',
-                'GENERAL ALARM, PA', 'BILGE PUMP', 'BATTERY CHARGERS', 'TRANSFORMER 440/105 V')
+                'GENERAL ALARM, PA', 'BILGE PUMP', 'BATTERY CHARGERS', 'TRANSFORMER 440/230 V')
         for i, name in enumerate(ways):
             y = 88 + i * 40
             d.rectangle((22, y, 62, y + 30), fill=(60, 64, 66), outline=(20, 22, 24), width=2)
@@ -1376,8 +1376,8 @@ def tiles():
         'rai_panel': (rudder_dial(256, 276, 110, 142), 'face'), 'rai': (rudder_dial(256, 256, 120, 128), 'face'), 'wind': (wind(), 'face'),
         'clock': (clock(), 'face'), 'barometer': (barometer(), 'face'), 'clinometer': (clinometer(), 'face'), 'card': (card(), 'face'), 'rpm': (rpm_small(), 'face'),
         'fire_panel': (fire_panel(), 'face'),
-        'bd1': (board_door(384, 544, 'BD1', 'WHEELHOUSE DISTRIBUTION', '105 V  60 Hz  ·  FROM LIGHTING BOARD  ·  40 A', BD1, '105 V, two-pole'), 'face'),
-        'bd2': (board_door(304, 496, 'BD2', 'EMERGENCY', '105 V  ·  FROM EMERGENCY SWBD  ·  16 A', BD2, '105 V, two-pole'), 'face'),
+        'bd1': (board_door(384, 544, 'BD1', 'WHEELHOUSE DISTRIBUTION', '230 V  60 Hz  ·  FROM LIGHTING BOARD  ·  25 A', BD1, '230 V, two-pole'), 'face'),
+        'bd2': (board_door(304, 496, 'BD2', 'EMERGENCY', '230 V  ·  FROM EMERGENCY SWBD  ·  16 A', BD2, '230 V, two-pole'), 'face'),
         'dc1': (board_door(352, 288, 'DC1', '24 V DC  NAVIGATION', 'GENERAL SERVICE BATTERY  ·  40 A', DC1, '24 V, fused', meters=1, lamps=0), 'face'),
         'dc2': (board_door(352, 288, 'DC2', '24 V DC  RADIO', 'RADIO BATTERY  ·  25 A', DC2, '24 V, fused', meters=1, lamps=0), 'face'),
         'flags': (flags(), 'face'), 'chart': (paper_chart(), 'face'), 'logbook': (logbook(), 'face'), 'books': (books(), 'face'), 'firstaid': (firstaid(), 'face'),

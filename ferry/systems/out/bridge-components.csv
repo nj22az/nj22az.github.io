@@ -124,13 +124,17 @@ LGT-09,"Wing light, starboard",LGT,"Bridge wing, starboard",40,0.1,BD1 2,,,,-3.0
 LGT-10,Dimmer panel,LGT,Wheelhouse,60,0.5,BD1 8,,DIMMING,,-2.38,10.3,18.695,built,,typical,,,Dims the instruments and the console lighting for the night watch.
 LGT-11,"Foredeck floodlight, port",LGT,Compass deck,150,0.1,BD1 2,,,,2.35,12.0,18.965,built (compass deck),,typical,,,Lights the car deck forward and the ramp.
 LGT-12,"Foredeck floodlight, starboard",LGT,Compass deck,150,0.1,BD1 2,,,,-2.35,12.0,18.965,built (compass deck),,typical,,,Lights the car deck forward and the ramp.
-ELD-01,Wheelhouse distribution board BD1,ELD,Wheelhouse,,,,,,,1.5,10.25,15.845,built,,,,,"105 V, from the lighting board in the engine control room: eight ways for the bridge's general services."
-ELD-02,Emergency distribution board BD2,ELD,Wheelhouse,,,,,,,2.11,10.35,15.845,built,,,,,"105 V, from the emergency switchboard: six ways for what must not go dark."
+ELD-01,Wheelhouse distribution board BD1,ELD,Wheelhouse,,,,,,,1.5,10.25,15.845,built,,,,,"230 V, from the lighting board in the engine control room: eight ways for the bridge's general services."
+ELD-02,Emergency distribution board BD2,ELD,Wheelhouse,,,,,,,2.11,10.35,15.845,built,,,,,"230 V, from the emergency switchboard: six ways for what must not go dark."
 ELD-03,"24 V DC panel DC1, navigation and control",ELD,Wheelhouse,,,,,,,2.63,10.74,15.845,built,,,,,"24 V from the general service battery: fifteen fused ways, a voltmeter and an earth-fault lamp."
 ELD-04,"24 V DC panel DC2, radio",ELD,Wheelhouse,,,,,,,2.63,10.35,15.845,built,,,,,"24 V from the radio battery: five fused ways, a voltmeter and the charger-failure alarm."
-ELD-11,"Console socket, port",ELD,Wheelhouse,150,0.1,BD1 4,,,,2.2,10.02,18.605,built,,typical,,,A 105 V socket on the console's after face.
-ELD-13,"Console socket, centre",ELD,Wheelhouse,150,0.1,BD1 4,,,,-0.4,10.02,18.605,built,,typical,,,A 105 V socket on the console's after face.
+ELD-11,"Console socket, port",ELD,Wheelhouse,150,0.1,BD1 4,,,,2.2,10.02,18.605,built,,typical,,,A 230 V socket on the console's after face.
+ELD-13,"Console socket, centre",ELD,Wheelhouse,150,0.1,BD1 4,,,,-0.4,10.02,18.605,built,,typical,,,A 230 V socket on the console's after face.
 ELD-12,Console heaters,ELD,Wheelhouse,100,0.2,BD1 8,,,,0.0,9.44,19.005,built,"inside the console, at its foot",typical,,,Small heaters low in the console that keep the damp out of the electronics when she lies cold.
+OUT-38,Pantry unit,OUT,Wheelhouse,,,,,,,-2.69,9.3,18.045,built,,,,,"A low unit under the starboard side window, wholly below its sill: the cooler in its after bay, the coffee maker in a niche with a rail across it for when she rolls, and under the niche a cupboard with the mugs, the coffee, the tea and the sugar. The cupboard opens to a tap."
+OUT-39,Cooler,OUT,Wheelhouse,70,0.35,BD1 7,,,,-2.7,9.4,17.865,built,,typical,,,"A 45-litre refrigerator for the watch: two wire shelves, a shelf in the door. It opens to a tap."
+OUT-40,Coffee maker,OUT,Wheelhouse,900,0.08,BD1 7,,,,-2.67,9.77,18.265,built,,typical,,,"A filter coffee maker with a glass jug on a hot plate: a litre and a quarter, a pot for the watch."
+ELD-23,Pantry sockets,ELD,Wheelhouse,,,,,,,-2.9,10.06,18.265,built,,,,,"A double 230 V socket at the back of the pantry's niche, for the coffee maker and the cooler."
 ELD-20,Cable transit at the mast,ELD,Wheelhouse,,,,,,,0.0,11.6,17.105,built,,,,,"Where the cables to the mast and the compass deck pass the deck, sealed gastight and watertight."
 ELD-21,Cable duct on the port mullion,ELD,Wheelhouse,,,,,,,0.58,10.75,19.205,built,,,,,"A covered duct down a forward mullion, from the trays over the deckhead to the console."
 ELD-22,Cable duct on the starboard mullion,ELD,Wheelhouse,,,,,,,-0.58,10.75,19.205,built,,,,,"A covered duct down a forward mullion, from the trays over the deckhead to the console."

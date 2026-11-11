@@ -103,15 +103,15 @@ WATCH,Bridge watch alarm,24 V control cables,elsewhere,"Crew accommodation, brid
 DOORS,"Door, hatch and ramp indication","24 V, one pair to each limit switch",ALM-06,"Ramp, hatch and watertight door panel",node,
 DOORS,"Door, hatch and ramp indication","24 V, one pair to each limit switch",elsewhere,Hull: The five watertight doors below the car deck,talks,shut and dogged
 DOORS,"Door, hatch and ramp indication","24 V, one pair to each limit switch",elsewhere,Car deck: The bow ramp and the three hatches in the car deck,talks,shut and secured
-WHISTLE,Whistle control,105 V control cable,NLT-10,Whistle panel,node,
-WHISTLE,Whistle control,105 V control cable,PIP-10,Whistle valve,listens,
-WHISTLE,Whistle control,105 V control cable,PRP-10,"Wing control station, port",talks,whistle button at the wing
-WHISTLE,Whistle control,105 V control cable,PRP-11,"Wing control station, starboard",talks,whistle button at the wing
-WIPERS,Wiper control,"105 V, switched",NLT-12,Wiper and window wash panel,node,
-WIPERS,Wiper control,"105 V, switched",NLT-13,"Window wiper, starboard",listens,
-WIPERS,Wiper control,"105 V, switched",NLT-14,"Window wiper, centre",listens,
-WIPERS,Wiper control,"105 V, switched",NLT-15,"Window wiper, port",listens,
-WIPERS,Wiper control,"105 V, switched",PIP-11,Window wash valve,listens,
+WHISTLE,Whistle control,230 V control cable,NLT-10,Whistle panel,node,
+WHISTLE,Whistle control,230 V control cable,PIP-10,Whistle valve,listens,
+WHISTLE,Whistle control,230 V control cable,PRP-10,"Wing control station, port",talks,whistle button at the wing
+WHISTLE,Whistle control,230 V control cable,PRP-11,"Wing control station, starboard",talks,whistle button at the wing
+WIPERS,Wiper control,"230 V, switched",NLT-12,Wiper and window wash panel,node,
+WIPERS,Wiper control,"230 V, switched",NLT-13,"Window wiper, starboard",listens,
+WIPERS,Wiper control,"230 V, switched",NLT-14,"Window wiper, centre",listens,
+WIPERS,Wiper control,"230 V, switched",NLT-15,"Window wiper, port",listens,
+WIPERS,Wiper control,"230 V, switched",PIP-11,Window wash valve,listens,
 SEARCHLIGHT,Searchlight control,control cable,NLT-11,Searchlight control,node,
 SEARCHLIGHT,Searchlight control,control cable,NLT-16,Searchlight,node,
 DIMMING,Instrument dimming,0 to 10 V control line,LGT-10,Dimmer panel,node,

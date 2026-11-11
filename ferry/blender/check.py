@@ -70,12 +70,14 @@ def main():
     check(all(m.get('from') == 'blender' for g in groups.values() for m in g['meshes']), 'every mesh of every part is built in Blender: nothing of another ship is in the file')
     check(any(b['part'] == 'hull' for b in header['ship'].get('built', [])), 'the header names the hull as her own')
     tri = sum(m['triangles'] for m in hull)
-    check(80000 < tri < 130000, f'the hull has {tri} triangles (between 80,000 and 130,000)')
     total = sum(m['triangles'] for g in groups.values() for m in g['meshes'])
     size = os.path.getsize(a.file)
-    # The budget is what a phone fetches once and then keeps (the page saves the file for use offline): 3 MB since 11 November
-    # 2026. The bare 68 m ship is 1.8 MB; it is to be looked at again as each section is fitted out.
-    check(size < 3_000_000, f'the file is {size / 1e6:.2f} MB with {total} triangles (under 3 MB)')
+    # No budget. The owner, 11 November 2026, standing on her bridge wing: "This low quality of detail is not acceptable I
+    # can't even see what I'm looking at , don't use triangle budgets , this vessel becomes its own world when we are on it,
+    # so it needs to be as detailed as possible" (JSY-STD-404). What she weighs is said, not limited: how a phone fetches and
+    # draws it is for the page to solve, not for the drawing to pay for.
+    check(tri > 80000, f'the hull has {tri:,} triangles (no upper limit)')
+    print(f'      the file is {size / 1e6:.2f} MB with {total:,} triangles (said, not limited: JSY-STD-404)')
     # ---- Her own pictures and her register travel with the model.
     here = os.path.dirname(os.path.abspath(a.file))
     sheets = header.get('atlases', [])
