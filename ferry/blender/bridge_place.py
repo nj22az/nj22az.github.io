@@ -6,7 +6,7 @@ The bridge (wheelhouse.py, compass_deck.py and its register, ferry/systems/bridg
 heights over her bridge deck, which stood 9.1 m over her waterline. It is landed whole on the 68 m ship's bridge deck, as
 the general arrangement asks ("her navigation bridge, moved aboard with what is fitted in it"), and this file is the
 placing: every builder and the register turn the bridge's own measures into the ship's through it, so that none of the
-bridge's 145 components had to be measured again.
+bridge's components had to be measured again.
 
   - SHIFT: how far forward of its old place the block stands. Its after wall's outer face (19.495 m) lands on the forward
     end of the accommodation, 50.0 m from the transom (ga.py).

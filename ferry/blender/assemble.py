@@ -73,16 +73,21 @@ FITTED = {
     'engine-room': 'Bare, but for the intermediate shafts from the flanges that wait for the gearboxes, their plummer blocks and the bulkhead glands, the after flat and its steps, and the port platform with the crew stair.',
     'thruster-room': 'Bare, but for the tunnel and the thruster\'s motor standing on it.',
     'chain-lockers': 'The flat, the two chain lockers, and the ladder up to the flush hatch in the car deck.',
-    'wheelhouse': 'Fitted complete: her navigation bridge, designed aboard the first Chisum and landed whole: console, instruments, boards, both wings, 145 components of her register. Tap a fitting, or open Systems.',
+    'wheelhouse': 'Fitted complete: her navigation bridge, designed aboard the first Chisum and landed whole: console, instruments, boards, both wings, every one a component of her register. Tap a fitting, or open Systems.',
     'compass-deck': 'Fitted: the mast with radar, lights and horns, the antennas, the searchlight and floodlights, the binnacle.',
     'eg-room': "Fitted complete, to the owner's drawing: the generator set on its skid, the exhaust, two air ducts with fire dampers, the day tank, the starting batteries, the control panel, the emergency switchboard, the weathertight door.",
     'saloon': "Bare steel, but for the owner's drinks machine, which stands in the nook at its after end to port, against the toilets' wall.",
+    'stern-ramp': 'Fitted: the ramp, which raised is the stern door, on its two hydraulic cylinders (the Stern ramp control lowers it to the quay). '
+                  'Over it on the bulwark the sternlight and two floodlights that look down on the ramp; beside the door, to starboard, the red and green signal for those who drive aboard. '
+                  'The hydraulic power unit, the securing and the seal are not built (drawing JS3-304).',
+    'aft-mooring-deck': 'Bare steel and its bulwark. At the stern, on the bulwark\'s rail, the sternlight and the two floodlights of the ramp.',
 }
 BARE = 'Bare steel: decks, walls, doorways and windows. Her outfit comes section by section.'
 SECTIONS = [
     dict(part='hull', section='Hull', date=BUILT, what='her hull at 68.4 m from her own lines: plating, frames, floors, eight watertight bulkheads, the tank top, keel, skeg and bilge keels, two shafts with their screws and rudders, the bow thruster, anchors, marks'),
     dict(part='machinery', section='The spaces below the car deck', date=BUILT, what='the steering gear, the shafting inboard, six watertight doors, the flats and the ways between them'),
     dict(part='car', section='Decks, casings and houses', date=BUILT, what='every deck, the side casings, the passenger house, the accommodation and the top deck\'s houses as bare steel, from the general arrangement'),
+    dict(part='car', section='Stern ramp', date=BUILT, what='the stern door, which lowers as the ramp on two hydraulic cylinders; the sternlight, two floodlights and the drive-on signal over it (drawing JS3-304)'),
     dict(part='car', section='Stairs', date=BUILT, what='sixteen stairs to the yard\'s standard: four main stairs, the crew\'s stair trunk from the machinery flat to the bridge deck, the stair into the wheelhouse, the ladders outside and in the machinery spaces'),
     dict(part='bridge', section='Navigation bridge', date=BUILT, what='the wheelhouse, its wings carried to her side, the compass deck and mast, landed whole from the first Chisum'),
     dict(part='top', section='Emergency generator room', date=BUILT, what="built to the owner's drawing, on the top deck"),

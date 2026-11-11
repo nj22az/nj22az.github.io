@@ -51,6 +51,37 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   });
   check(ramp.label.includes('Stern ramp') && Math.abs(ramp.raised) < 1e-6 && Math.abs(Math.abs(ramp.lowered) - 90) < 0.01 && Math.abs(ramp.again) < 1e-6,
     `the stern ramp has its control in the bar and lowers through 90° to lie level with the car deck, and is raised again (${ramp.lowered === null ? 'no such part' : ramp.lowered.toFixed(1) + '°'})`);
+  // Its hydraulics (the owner: "It needs a hydraulic ramp"): a cylinder each side, whose barrel swings on its foot pin and whose
+  // rod runs out, so that the rod's end stays on the lug of the ramp it is pinned to, wherever the ramp is.
+  const rams = await page.evaluate(async () => {
+    const f = window.__ferry;
+    const r = await fetch('data/ferry.bin.gz'); const ds = new DecompressionStream('gzip');
+    const buf = await new Response(r.body.pipeThrough(ds)).arrayBuffer(); const n = new DataView(buf).getUint32(4, true);
+    const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 8, n)));
+    const rods = header.movers.filter(m => m.kind === 'aim' && m.extend && m.input === 'stern-ramp');
+    const at = (id, p) => { const m = f.movers().find(m => m.id === id).matrix; return [0, 1, 2].map(i => m[i] * p[0] + m[4 + i] * p[1] + m[8 + i] * p[2] + m[12 + i]); };
+    const lowest = header.inputs.find(i => i.id === 'stern-ramp').max;
+    let off = 0, run = 0;
+    for (const angle of [0, 30, 60, 90, lowest]) {
+      f.setInput('stern-ramp', angle);
+      for (const rod of rods) {
+        const lug = at('stern-ramp', rod.pin), end = at(rod.id, rod.pin);
+        off = Math.max(off, Math.hypot(lug[0] - end[0], lug[1] - end[1], lug[2] - end[2]));
+        if (angle === 90) run = Math.hypot(end[0] - rod.anchor[0], end[1] - rod.anchor[1], end[2] - rod.anchor[2]) - Math.hypot(rod.pin[0] - rod.anchor[0], rod.pin[1] - rod.anchor[1], rod.pin[2] - rod.anchor[2]);
+      }
+    }
+    f.setInput('stern-ramp', 0);
+    return { rods: rods.length, off, run, lowest };
+  });
+  check(rams.rods === 2 && rams.off < 0.002 && rams.run > 1.0 && rams.run < 1.5,
+    `two hydraulic cylinders work it: each rod's end stays on the ramp's lug from raised to ${rams.lowest}° (never more than ${(rams.off * 1000).toFixed(1)} mm off), and has run out ${rams.run.toFixed(2)} m when the ramp lies level`);
+  // The lights of the after end (the owner: "And lights"): the sternlight is the register's NLT-06 and has its place at the stern.
+  const light = await page.evaluate(() => {
+    const f = window.__ferry, c = f.systems ? f.systems.data.components.find(c => c.id === 'NLT-06') : null;
+    return c ? { drawn: c.drawn, room: c.roomName, at: c.at, half: f.ship.length / 2 } : null;
+  });
+  check(light && light.drawn === 'blender' && Math.abs(light.at[0]) < 0.01 && light.at[2] < -light.half && light.at[2] > -light.half - 0.3,
+    `the sternlight is drawn, on the centreline just abaft the transom (${light ? `"${light.room}", ${(-light.half - light.at[2]).toFixed(2)} m abaft it, ${light.at[1].toFixed(2)} m over the waterline` : 'not in the register'})`);
   const walk = await page.evaluate(() => {
     const f = window.__ferry, H = f.ship.length / 2, AHEAD = Math.PI, ASTERN = 0, PORT = -Math.PI / 2;
     f.enterWalk();

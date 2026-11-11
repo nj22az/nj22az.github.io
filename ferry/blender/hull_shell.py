@@ -222,8 +222,8 @@ def _end_plate(parts, z, facing, inner=False):
         part.orient(start, (0, 0, -facing if inner else facing))
 
 
-# The stern door: its opening in the transom over the car deck (ga.py: 6.4 m wide, 4.3 m clear), which the ramp closes.
-STERN_DOOR = dict(half=3.2, height=4.3)
+# The stern door: its opening in the transom over the car deck, which the ramp closes (spec.STERN_DOOR).
+STERN_DOOR = S.STERN_DOOR
 
 
 def _transom_above(top, inner):

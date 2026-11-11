@@ -62,6 +62,37 @@ SHELL_DOOR = dict(yard=(31.5, 32.7), y=(CAR_DECK, CAR_DECK + 2.2))
 # The topsides' rows of plating run at these heights (the openings above lie between them).
 TOPSIDE_LEVELS = (CAR_DECK, CAR_DECK + 1.0, CAR_DECK + 2.2, PASSENGER_DECK - BAND, PASSENGER_DECK - BAND_TOP, PASSENGER_DECK)
 
+# ---- The stern door and its ramp (ga.py: 6.4 m wide, 4.3 m clear). The owner, 11 November 2026: "How do you get on to cargo
+# deck from this ship ? Aft ramp ?", "It needs a hydraulic ramp", "And lights , draw the aft in cad".
+# The ramp is how vehicles come aboard. Raised, it is the stern door; it turns on its hinges at the car deck's sill and lowers
+# aft onto the quay: level with the deck at 90 degrees, and 10 degrees further for a quay that lies lower.
+# It is worked by two double-acting hydraulic cylinders, one at each side of the opening, each trunnioned on a pedestal on
+# the car deck 3.2 m inside the stern and pinned to a lug on the ramp 0.9 m over its hinges: 3.04 m between its pins with
+# the ramp raised, 4.26 m with it level, a stroke of 1.22 m. `ram_x` is where they stand off the centreline, inside the
+# opening's width, which the ramp and its lugs pass through. Heights are over the waterline; the second of each pair is
+# metres inside the transom's plating. `barrel` is the cylinder's length from its foot pin, `rod_from` where the rod's inner
+# end lies with the ramp raised; `column` the pedestal's column, which ends `column_over` above the foot pin, on a footplate.
+STERN_DOOR = dict(half=3.2, height=4.3)
+STERN_RAMP = dict(id='stern-ramp', lowered=100, half=3.18, thick=(0.04, 0.14), foot=0.02, head=4.28, hinge=(CAR_DECK + 0.01, 0.09), lug=0.12,
+                  ram_x=3.02, trunnion=(CAR_DECK + 1.60, 3.20), pin=(CAR_DECK + 0.91, 0.24), barrel=1.90, barrel_d=0.17, rod_d=0.09, rod_from=0.25,
+                  column=0.18, column_over=0.12, footplate=(0.40, 0.64))
+# The lights of the after end. Each: what it is for, where (x off the centreline, height over the waterline, metres AFT of
+# the transom's plating).
+#   the sternlight   white, over 135 degrees astern (COLREG rule 21, as the yard recalls it): on the centreline at the
+#                    stern, on the bulwark's rail over the stern door, with a screen forward of it. Component NLT-06.
+#   two floodlights  on posts on the bulwark's rail over the door's two corners, looking aft and `tilt` degrees down: they
+#                    light the ramp and the quay for those who drive aboard at night and for the crew who work the ramp.
+#                    `y` is the middle of the lamp's head, 6.1 m over the lowered ramp. At 50 degrees down the middle of
+#                    the beam meets the quay 5.2 m aft of the transom, a metre beyond the ramp's end: where the ramp's
+#                    lip lies on the quay is what a driver has to see. (30 degrees would put it 10.6 m astern.)
+#   the signal       red over green on the transom to starboard of the door, where a driver coming aboard (who sits to
+#                    starboard: she sails in Japan) sees it: wait, or drive on.
+STERN_LIGHTS = dict(
+    sternlight=dict(x=0.0, y=PASSENGER_DECK + 1.10 + 0.02, aft=0.11),
+    floods=dict(x=3.6, y=PASSENGER_DECK + 1.10 + 0.40, aft=0.06, tilt=50, head=(0.32, 0.22, 0.16)),
+    signal=dict(x=-3.6, y=CAR_DECK + 2.45, size=(0.30, 0.58, 0.14)),
+)
+
 # ---- Structure. Frames stand at every 0.6 m (frame 0 at the transom): a 150 x 75 mm angle below the car deck and a
 # 100 x 65 mm one in the topsides. Every third frame is a web frame, 300 mm deep. Forward of the collision bulkhead, where
 # the sea strikes her, a lighter frame stands between each pair.

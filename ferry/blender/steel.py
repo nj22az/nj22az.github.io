@@ -23,7 +23,7 @@ zfight.py holds the whole ship to it after every build.
 
 Drawn in the ship's axes (lines.py): x to port, y up from the waterline, z forward from amidships.
 """
-from math import pi, cos, sin, ceil, hypot
+from math import pi, cos, sin, ceil, hypot, radians
 import lines as L
 import spec as S
 import ga
@@ -669,16 +669,14 @@ def flats():
 # =====================================================================================================================
 # The stern ramp and the inner bow door, the funnels, the wheelhouse's after wall
 # =====================================================================================================================
-# The stern ramp is how vehicles come aboard (the owner, 11 November 2026: "How do you get on to cargo deck from this ship ?
-# Aft ramp ?"). Raised, it is the stern door; it turns on its hinges at the car deck's sill and lowers aft onto the quay:
-# level with the deck at 90 degrees, and 10 degrees further for a quay that lies lower. The Stern ramp control works it.
-#
-# It is a hydraulic ramp (the owner, the same day: "It needs a hydraulic ramp"): a double-acting cylinder at each side of
-# the opening, trunnioned on a pedestal on the car deck 3.2 m inside the stern and pinned to a lug on the ramp 0.9 m over
-# its hinges. Raised, each is 3.06 m between its pins; with the ramp level it is 4.27 m, a stroke of 1.2 m. `ram_x` is
-# where the cylinders stand off the centreline, inside the opening's width, which the ramp and its lugs pass through.
-STERN_RAMP = dict(id='stern-ramp', lowered=100, hinge=(0.0, S.CAR_DECK + 0.01, -L.HALF + 0.09),
-                  ram_x=3.02, trunnion=(S.CAR_DECK + 1.60, -L.HALF + 3.20), pin=(S.CAR_DECK + 0.91, -L.HALF + 0.24))
+# The stern ramp, its two hydraulic cylinders and the lights of the after end are specified in spec.py (STERN_DOOR,
+# STERN_RAMP, STERN_LIGHTS), where the yard's drawing of the after end reads them too. The model's z of a place given there
+# as metres inside the transom:
+STERN_RAMP = dict(S.STERN_RAMP)
+_IN = lambda inside: -L.HALF + inside
+STERN_RAMP['hinge3'] = (0.0, S.STERN_RAMP['hinge'][0], _IN(S.STERN_RAMP['hinge'][1]))
+STERN_RAMP['trunnion3'] = (S.STERN_RAMP['trunnion'][0], _IN(S.STERN_RAMP['trunnion'][1]))
+STERN_RAMP['pin3'] = (S.STERN_RAMP['pin'][0], _IN(S.STERN_RAMP['pin'][1]))
 
 
 def motion():
@@ -688,11 +686,11 @@ def motion():
     R = STERN_RAMP
     inputs = [dict(id=R['id'], name='Stern ramp', min=0, max=R['lowered'], step=1, unit='°', below='raised', above='lowered', rest='raised')]
     # about the athwartships axis through its hinges; its head goes aft and down
-    movers = [dict(id=R['id'], kind='turn', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge']), ratio=-1.0)]
+    movers = [dict(id=R['id'], kind='turn', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge3']), ratio=-1.0)]
     for sgn, tag in ((1, 'p'), (-1, 's')):
         x = sgn * R['ram_x']
-        ram = dict(kind='aim', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge']), ratio=-1.0,
-                   anchor=[x, R['trunnion'][0], R['trunnion'][1]], pin=[x, R['pin'][0], R['pin'][1]])
+        ram = dict(kind='aim', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge3']), ratio=-1.0,
+                   anchor=[x, R['trunnion3'][0], R['trunnion3'][1]], pin=[x, R['pin3'][0], R['pin3'][1]])
         movers.append(dict(ram, id=f"{R['id']}-ram-{tag}"))
         movers.append(dict(ram, id=f"{R['id']}-ram-{tag}-rod", extend=True))
     return inputs, movers
@@ -702,24 +700,23 @@ def doors_shut():
     """The stern ramp, drawn raised: it is the stern door, and it lowers (motion). And the inner bow door's ramp, raised in the
     collision bulkhead's opening, which does not move yet: the visor before it is not cut. Each is a stiffened slab: its
     roadway inside, its plating outside."""
-    from hull_shell import STERN_DOOR
     ramp = part('car', 'Stern ramp', 'Topside paint', mover=STERN_RAMP['id'])
     road = part('car', 'Stern ramp, roadway', 'Deck paint', mover=STERN_RAMP['id'])
     lugs = part('car', 'Stern ramp, hinge lugs', 'Machinery paint')
     z0 = -L.HALF
-    h = STERN_DOOR['half'] - 0.02
-    y0, y1 = S.CAR_DECK + 0.02, S.CAR_DECK + STERN_DOOR['height'] - 0.02
-    ramp.box((-h, y0, z0 + 0.04), (h, y1, z0 + 0.14), tint(WHITE, 0.97))
+    R = STERN_RAMP
+    h = R['half']
+    y0, y1 = S.CAR_DECK + R['foot'], S.CAR_DECK + R['head']
+    ramp.box((-h, y0, z0 + R['thick'][0]), (h, y1, z0 + R['thick'][1]), tint(WHITE, 0.97))
     road.box((-h + 0.05, y0 + 0.05, z0 + 0.14), (h - 0.05, y1 - 0.05, z0 + 0.15), tint(GREEN, 0.95))
     for k in range(1, 8):                                                        # the non-slip bars across its roadway
         yy = y0 + (y1 - y0) * k / 8
         road.box((-h + 0.2, yy - 0.02, z0 + 0.15), (h - 0.2, yy + 0.02, z0 + 0.165), tint(GREEN, 0.8))
-    for x in (-h, h - 0.12):                                                     # its hinge lugs on the sill: they stay when it lowers
-        lugs.box((x, S.CAR_DECK, z0 + 0.05), (x + 0.12, y0, z0 + 0.13), srgb(S.DARK_GREY))
+    for x in (-h, h - R['lug']):                                                 # its hinge lugs on the sill: they stay when it lowers
+        lugs.box((x, S.CAR_DECK, z0 + 0.05), (x + R['lug'], y0, z0 + 0.13), srgb(S.DARK_GREY))
     # ---- its two hydraulic cylinders
-    R = STERN_RAMP
     dark, steel, yellow = srgb(S.DARK_GREY), srgb(S.STEEL), srgb(S.RAIL_YELLOW)
-    (ty, tz), (py, pz) = R['trunnion'], R['pin']
+    (ty, tz), (py, pz) = R['trunnion3'], R['pin3']
     length = hypot(py - ty, pz - tz)
     along = lambda d: (ty + (py - ty) * d / length, tz + (pz - tz) * d / length)           # a point d metres from the trunnion toward the pin
     for sgn, tag, label in ((1, 'p', 'port'), (-1, 's', 'starboard')):
@@ -729,24 +726,25 @@ def doors_shut():
         lug.box((x - 0.07, py - 0.10, z0 + 0.15), (x + 0.07, py + 0.10, pz + 0.07), dark)
         # the pedestal on the car deck that carries the trunnion: a column on a foot plate, stayed aft and forward, painted to be seen
         ped = part('car', 'Stern ramp, cylinder pedestals', 'Machinery paint')
-        ped.box((x - 0.20, S.CAR_DECK, tz - 0.32), (x + 0.20, S.CAR_DECK + 0.02, tz + 0.32), dark)
-        ped.box((x - 0.09, S.CAR_DECK + 0.02, tz - 0.09), (x + 0.09, ty + 0.12, tz + 0.09), yellow)
+        fw, fl, c = R['footplate'][0] / 2, R['footplate'][1] / 2, R['column'] / 2
+        ped.box((x - fw, S.CAR_DECK, tz - fl), (x + fw, S.CAR_DECK + 0.02, tz + fl), dark)
+        ped.box((x - c, S.CAR_DECK + 0.02, tz - c), (x + c, ty + R['column_over'], tz + c), yellow)
         for way in (-1, 1):                                                       # a stay each way, from the foot plate to the column's head
             ped.tube((x, S.CAR_DECK + 0.02, tz + way * 0.28), (x, ty - 0.35, tz + way * 0.07), 0.03, colour=yellow, sides=8)
         # the cylinder: its barrel on the trunnion, and the rod that runs out of it to the lug
         barrel = part('car', f'Stern ramp cylinder, {label}', 'Machinery paint', smooth=True, angle=40, mover=f"{R['id']}-ram-{tag}")
         rod = part('car', f'Stern ramp cylinder rod, {label}', 'Shaft steel', smooth=True, angle=40, mover=f"{R['id']}-ram-{tag}-rod")
-        (ay, az), (by, bz) = along(0.0), along(1.90)
-        barrel.tube((x, ay, az), (x, by, bz), 0.085, colour=srgb(S.LIGHT_GREY), sides=16)
-        (cy, cz), (dy, dz) = along(1.88), along(1.96)
+        (ay, az), (by, bz) = along(0.0), along(R['barrel'])
+        barrel.tube((x, ay, az), (x, by, bz), R['barrel_d'] / 2, colour=srgb(S.LIGHT_GREY), sides=16)
+        (cy, cz), (dy, dz) = along(R['barrel'] - 0.02), along(R['barrel'] + 0.06)
         barrel.tube((x, cy, cz), (x, dy, dz), 0.10, colour=dark, sides=16)                  # its gland
-        (ey, ez), (fy, fz) = along(0.25), along(length)
-        rod.tube((x, ey, ez), (x, fy, fz), 0.045, colour=steel, sides=12)
+        (ey, ez), (fy, fz) = along(R['rod_from']), along(length)
+        rod.tube((x, ey, ez), (x, fy, fz), R['rod_d'] / 2, colour=steel, sides=12)
     bow = part('car', 'Inner bow door', 'Topside paint')
     bow_road = part('car', 'Inner bow door, roadway', 'Deck paint')
     zc = Z(S.COLLISION)
     h = BOW_DOOR['half'] - 0.02
-    y1 = S.CAR_DECK + BOW_DOOR['height'] - 0.02
+    y0, y1 = S.CAR_DECK + 0.02, S.CAR_DECK + BOW_DOOR['height'] - 0.02
     bow.box((-h, y0, zc + 0.03), (h, y1, zc + 0.13), tint(WHITE, 0.97))
     bow_road.box((-h + 0.05, y0 + 0.05, zc + 0.02), (h - 0.05, y1 - 0.05, zc + 0.03), tint(GREEN, 0.95))
     for k in range(1, 8):
@@ -754,6 +752,61 @@ def doors_shut():
         bow_road.box((-h + 0.2, yy - 0.02, zc + 0.005), (h - 0.2, yy + 0.02, zc + 0.02), tint(GREEN, 0.8))
     for x in (-h, h - 0.12):
         bow.box((x, S.CAR_DECK, zc + 0.04), (x + 0.12, y0, zc + 0.12), srgb(S.DARK_GREY))
+
+
+def _tilted(part, middle, half, tilt, colour):
+    """A box that looks aft and `tilt` degrees down: `half` is half its width, its height and its depth (along its look)."""
+    t = radians(tilt)
+    look, up = (0.0, -sin(t), -cos(t)), (0.0, cos(t), -sin(t))
+    hu, hv, hw = half
+    at = lambda a, b, c: tuple(middle[i] + (a * hu if i == 0 else 0.0) + b * hv * up[i] + c * hw * look[i] for i in range(3))
+    p = [part.vert(at(a, b, c)) for a, b, c in ((-1, -1, -1), (1, -1, -1), (1, 1, -1), (-1, 1, -1), (-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1))]
+    start = len(part.f)
+    for f in ((0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)):
+        part.face(tuple(p[i] for i in f), colour)
+    part.orient(start, lambda c: tuple(c[i] - middle[i] for i in range(3)))
+
+
+def stern_lights():
+    """The lights of the after end (spec.STERN_LIGHTS): the sternlight on the bulwark's rail over the stern door, a
+    floodlight over each corner of the door, and the red and green signal for those who drive aboard. Each stands on a
+    bracket clipped over the bulwark's plate or fixed on the transom, where its cable comes through the plating behind it."""
+    from shipyard import component
+    Q = S.STERN_LIGHTS
+    z0 = -L.HALF
+    dark, black, grey = srgb(0x252e30), srgb(0x1a1f20), srgb(S.LIGHT_GREY)
+    steel = part('passenger', 'Stern lights, brackets', 'Machinery paint')
+    lamps = part('passenger', 'Stern lights, lanterns', 'Machinery paint', smooth=True, angle=40)
+    glass = part('passenger', 'Stern lights, glasses', 'Lens', smooth=True, angle=50)
+    rail = S.PASSENGER_DECK + L.BULWARK
+    # ---- the sternlight (the register's NLT-06): its bracket clipped over the bulwark's head, the lantern abaft it, a screen forward of it
+    q = Q['sternlight']
+    with component('NLT-06'):
+        zc = z0 - q['aft']
+        steel.box((q['x'] - 0.06, rail - 0.10, zc - 0.07), (q['x'] + 0.06, q['y'], z0 + 0.04), dark)
+        lamps.tube((q['x'], q['y'], zc), (q['x'], q['y'] + 0.04, zc), 0.070, colour=dark, sides=16)
+        glass.tube((q['x'], q['y'] + 0.04, zc), (q['x'], q['y'] + 0.17, zc), 0.062, colour=srgb(0xf6f1e2), sides=16)
+        lamps.tube((q['x'], q['y'] + 0.17, zc), (q['x'], q['y'] + 0.21, zc), 0.072, colour=dark, sides=16)
+        steel.box((q['x'] - 0.13, q['y'], z0 + 0.012), (q['x'] + 0.13, q['y'] + 0.25, z0 + 0.027), black)      # the screen: no light forward of the beam
+    # ---- a floodlight over each corner of the stern door, looking aft
+    q = Q['floods']
+    for sgn in (1, -1):
+        x = sgn * q['x']
+        steel.box((x - 0.05, rail - 0.10, z0 - 0.04), (x + 0.05, rail + 0.02, z0 + 0.04), dark)
+        steel.tube((x, rail + 0.02, z0), (x, q['y'] - 0.05, z0), 0.025, colour=dark, sides=8)      # the post ends inside the head
+        w, h, d = q['head']
+        middle = (x, q['y'], z0 - q['aft'])
+        _tilted(lamps, middle, (w / 2, h / 2, d / 2), q['tilt'], tint(grey, 0.8))
+        face = (x, q['y'] - sin(radians(q['tilt'])) * (d / 2 + 0.006), z0 - q['aft'] - cos(radians(q['tilt'])) * (d / 2 + 0.006))
+        _tilted(glass, face, (w / 2 - 0.02, h / 2 - 0.02, 0.006), q['tilt'], srgb(0xdfe6e1))
+    # ---- the signal: red over green on the transom to starboard of the door, under a hood
+    q = Q['signal']
+    x = q['x']
+    w, h, d = q['size']
+    lamps.box((x - w / 2, q['y'], z0 - d), (x + w / 2, q['y'] + h, z0), black)
+    lamps.box((x - w / 2 - 0.04, q['y'] + h, z0 - d - 0.10), (x + w / 2 + 0.04, q['y'] + h + 0.02, z0), black)      # its hood
+    for dy, colour in ((0.42, 0xc2412f), (0.16, 0x2f9e5a)):
+        glass.tube((x, q['y'] + dy, z0 - d), (x, q['y'] + dy, z0 - d - 0.02), 0.09, colour=srgb(colour), sides=18)
 
 
 # A funnel: its casing's plan on the bridge deck (ga.py: 13 to 20 m, 3.2 to 5.8 m off the centreline), its top, and the band.
@@ -832,6 +885,7 @@ def build():
     crew_trunk()
     flats()
     doors_shut()
+    stern_lights()
     funnels()
     wheelhouse_after_wall()
     open_deck_rails()

@@ -41,7 +41,7 @@ NLP,second feeder,from LB (Lighting and small-power board),105,540,5.7,10,"2 × 
 NLP,1,Masthead light,105,60,0.57,2,"2 × 1.5 mm² + earth, fire-resistant",15.0,0.2,3.1,NLT-04,
 NLP,2,Port sidelight,105,60,0.57,2,"2 × 1.5 mm² + earth, fire-resistant",13.0,0.2,3.0,NLT-02,
 NLP,3,Starboard sidelight,105,60,0.57,2,"2 × 1.5 mm² + earth, fire-resistant",7.5,0.1,3.0,NLT-03,
-NLP,4,Stern light,105,60,0.57,2,"2 × 1.5 mm² + earth, fire-resistant",39.0,0.6,3.5,NLT-06,
+NLP,4,Stern light,105,60,0.57,2,"2 × 1.5 mm² + earth, fire-resistant",74.5,1.2,4.0,NLT-06,
 NLP,5,Anchor light,105,60,0.57,2,"2 × 1.5 mm² + earth, fire-resistant",17.0,0.3,3.1,NLT-05,
 NLP,6,"Not under command, upper pair",105,120,1.14,2,"2 × 1.5 mm² + earth, fire-resistant",15.5,0.5,3.3,NLT-07,
 NLP,7,"Not under command, lower pair",105,120,1.14,2,"2 × 1.5 mm² + earth, fire-resistant",13.5,0.4,3.3,NLT-08,

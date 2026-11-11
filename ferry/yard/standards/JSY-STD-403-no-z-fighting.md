@@ -70,6 +70,7 @@ its own header.
 | 2 | Curved faces drawn from different stations, which cross and recross each other without ever sharing a triangle's plane. Rule 9. |
 | 3 | A moving part in any position but the one it is drawn in. Rule 10. |
 | 4 | The depth figure of section 1 on a real phone. Not measured. |
+| 5 | The check's second list ("coverings that lie close under another surface") can name a covering that is not under anything. It sorts faces by the way they look to 0.14° and compares how far each lies along its own direction; 9 m from amidships, two faces that differ by less than that grid can seem 3 mm apart the wrong way round. So it named the line's name on the starboard side at 43 m as 3.2 mm under the plating; measured point by point against the plating's own triangles, the lettering stands 3.4 mm and more outside it everywhere (11 November 2026). The list does not stop the build. Before a covering named there is moved, measure it. |
 
 ## 6. Open points
 
@@ -77,3 +78,4 @@ its own header.
 |---|---|
 | 1 | The bridge, the emergency generator room and the drinks machine were built before this standard and passed `zfight.py` on the first Chisum. They are held to it as they are refitted on the 68 m ship. |
 | 2 | A check for near-misses (faces within 10 mm, looking the same way, overlapping) would make rule 5 a program's and not the eye's. Not written. |
+| 3 | The list of coverings should measure a covering against the face it lies on, not compare two planes' distances (section 5, row 5). Not done. |

@@ -19,8 +19,9 @@ import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'blender'))
 import bridge_place as BP          # where the bridge stands in the 68 m ship: the places below are the bridge's own
 import eg_place
+import spec as SH                   # the ship's own measures (the sternlight's place, at the stern)
 
-SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'eg-house': 'Emergency generator room'}))
+SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'eg-house': 'Emergency generator room', 'stern': 'Stern, over the ramp'}))
 # The wheelhouse's heights (the owner, 11 November 2026, on raising its roof: "Yes make it realistic"): 2.30 m clear under
 # the deckhead lining, a void over the lining for the cable trays, and the compass deck's top 2.70 m over the bridge deck.
 DECK_H = 2.70          # the compass deck's top, over the bridge deck
@@ -393,8 +394,14 @@ C('NLT-02', 'Sidelight, port', WP, (4.13, 22.70, 1.20), 'Red, from right ahead t
 C('NLT-03', 'Sidelight, starboard', WS, (-4.13, 22.70, 1.20), 'Green, from right ahead to 22.5° abaft the starboard beam: on the bulwark\'s rail, with a screen board inboard of it.', dict(kind='sidelight', side=-1), w=60, use=0.5, by=('NLP', 3), node='WING-S', survey='B110', basis='town')
 C('NLT-04', 'Masthead light', CD, (0.0, 20.98, 5.60), 'White, over 225° ahead, on the front of the mast above the radar, its lens clear over the posts of the radar platform.', box=(-0.13, 0.13, 20.90, 21.08, 5.46, 5.70), w=60, use=0.5, by=('NLP', 1), node='MAST-ML', survey='B113', basis='town')
 C('NLT-05', 'Anchor light', CD, (0.0, 20.80, 7.20), 'White, all round, on the crown of the mast.', box=(-0.07, 0.07, 20.73, 20.87, 7.14, 7.30), w=60, use=0.0, by=('NLP', 5), node='MAST-T', survey='B113', basis='town')
-C('NLT-06', 'Stern light', CD, (0.0, 0.3, -2.4), 'White, over 135° astern. It stands at the after end of the passenger deck and is still the Minato Maru\'s drawing.',
-  w=60, use=0.5, by=('NLP', 4), node='COR', tail=24.0, survey='B113', basis='town', hid='at the after end of the passenger deck, not yet rebuilt')
+# The sternlight is not on the bridge: it stands at the stern, on the bulwark's rail over the stern door (blender/spec.py:
+# STERN_LIGHTS, drawn by blender/steel.py). Its place is given here in the bridge's own measures like every other component
+# of this register; its cable leaves the section at the corridor's deckhead and runs aft under the top deck, then down the
+# after end of the house to the upper deck's bulwark: 50 m aft and 4 m down, which `tail` counts and the page does not draw.
+_SL = SH.STERN_LIGHTS['sternlight']
+C('NLT-06', 'Stern light', 'stern', (_SL['x'], round(-_SL['aft'] - BP.SHIFT, 3), round(_SL['y'] + 0.10 - BP.DECK, 3)),
+  'White, over 135° astern: on the centreline at the stern, on the bulwark\'s rail over the stern door, with a screen forward of it so that it is not seen from forward of the beam.',
+  w=60, use=0.5, by=('NLP', 4), node='COR', tail=56.0, survey='B113', basis='town')
 C('NLT-07', 'Not-under-command lights, upper pair', CD, (0.0, 20.80, 6.20), 'Red, all round: two heights of them in a vertical line, 2 m apart, say she cannot keep out of the way. Each height is a pair of lanterns, one either side of the mast, lit together: a single lantern beside the mast would be hidden by it over 35° of the horizon, and no more than 6° is allowed.', dict(kind='nuc', h=6.20), w=120, use=0.0, by=('NLP', 6), node='MAST-H', basis='town')
 C('NLT-08', 'Not-under-command lights, lower pair', CD, (0.0, 20.80, 4.20), 'Red, all round: the lower pair, 2 m under the upper.', dict(kind='nuc', h=4.20), w=120, use=0.0, by=('NLP', 7), node='MAST-D', basis='town')
 C('NLT-09', 'Whistle', CD, (0.0, 21.20, 5.88), 'Two air horns on the front of the mast, sounded by compressed air.', box=(-0.18, 0.18, 20.82, 21.44, 5.76, 6.02), node='MAST-H')
