@@ -8,6 +8,10 @@ what she teaches" (the owner, 9 November). Now the Chisum is a ship of her own b
 engineering has a home in her. The Minato Maru is free to be what Johansson World needs: the town's cartoon ferry, which
 sails, is boarded, is worked by her crew and makes stories.
 
+**Later the same day the owner settled two things**: "Minato Maru only needs a crew of two an engineer and a skipper", and
+"Chisums is a real ship"; "make a plan on how to proceed here". The plan is [`ferry/PLAN.md`](../../ferry/PLAN.md); where this
+file spoke of her crew of eight it has been brought into line with it (sections 2 and 3).
+
 **This file is the stock-take. Nothing has been removed.** It was made by reading the Town
 (`nj22az/johansson-town`) at commit `f0b2973`: the Town's `main` of 9 November (`fc7281f`) plus the four ferry commits
 kept in this folder. The Town's `main` has had 22 files changed since (to `8a9b2e0`), none of them the ferry's. "Used by"
@@ -48,18 +52,25 @@ In the Town that is about 23 MB and 3,200 lines off `main`, and 12.6 MB of Rev C
 | The posted safety plan | `ferry-safety-plan.js` (133) | The plan on the wall in the lobby, the saloon, the corridor and the booth becomes a plain poster, or goes |
 | The bridge's small machinery | `ferry-bridge-wipers*.js`, `ferry-bridge-lantern*.js`, their three Blender builders, `assets/models/ferry-bridge/` | Wipers and the lantern's wiring become simple shapes |
 
-### Not recommended: fewer rooms
+### Her crew, from eight to two (the owner's decision; `ferry/PLAN.md`, phase D)
 
-Her rooms are where the stories are. The crew of eight have cabins aboard and a working day in them, Johansson is her
-chief engineer and works the plant, the saloon and the car deck carry every crossing, and the storyteller has her as a
-place with nine regulars. `ferry-interior.js` (1,383 lines) should lose its engineering dressing, not its rooms.
+This is the one removal that changes the town, so the plan sets it out step by step: who the two are, what becomes of
+the six who sign off (nobody leaves the cast by this file), the bosun's rota that half the town's trade reads, who does
+the work of eight, and the save's migration. In files: `FERRY_MANNING` (`ferry-ship.js`), `SHIP_POSTS` (`people/roster.js`),
+`people/ferry-crew.js`, `ferry-crew-aboard.js`, `ferry-operations.js`, `ferry-vehicle-securing.js`, and their tests.
+
+### Her rooms
+
+With two aboard she needs two cabins and a small mess; the other crew cabins and the galley for eight can go or become
+stores. The saloon, the car deck, the bridge and the engine room stay: they are where the stories are, and Johansson is
+her engineer. `ferry-interior.js` (1,383 lines) loses its engineering dressing and the rooms nobody lives in any more.
 
 ## 3. What stays
 
 | What | Where |
 |---|---|
 | She sails: her paths in the harbour, her timetable, the departure work, both berths, the crossing for passengers and cars, the quick crossing | `ferry.js`, `ferry-paths.js`, `ferry-timetable.js`, `ferry-sailing-profile.js`, `ferry-operations.js`, `minato-berth.js`, `airport-ferry.js`, `ferry-quick-crossing.js`, `ferry-vehicle-securing.js` |
-| Her crew: eight posts held by named people, their work aboard, the line hands ashore | `src/people/ferry-crew.js`, `ferry-crew-aboard.js`, `ferry-crew-walk.js`, `ferry-shore-crew.js` (read by the fish market, the trade round, the laundry, the kissa, the canonical day) |
+| Her crew: a skipper and an engineer, their work aboard, and the line hands ashore as now | `src/people/ferry-crew.js`, `ferry-crew-aboard.js`, `ferry-crew-walk.js`, `ferry-shore-crew.js` (read by the fish market, the trade round, the laundry, the kissa, the canonical day) |
 | She is boarded and walked | `ferry-model.js`, `ferry-interior.js`, `ferry-walk.js`, `ferry-boards.js`, the exploration view |
 | Things to look at, and the words they give | `ferry-inspect.js` |
 | The chief engineer's work: stop an engine, start a generator, a blackout | `ferry-plant.js`, `ferry-plant-controls.js`, and the ship's own figures in `ferry-ship.js` (loads, scenarios, manning, her day) |
@@ -101,6 +112,7 @@ Then this folder is deleted, as its README always said.
 
 ## 6. For the owner to decide
 
+0. **The crew of two**: who they are, and what becomes of the other six (`ferry/PLAN.md`, section 6, questions 1 and 2).
 1. **How far.** Level 1 only, or level 2 as well? Level 1 is safe and could be done in one sitting in the Town. Level 2
    changes what is seen in the engine room and should be looked at before it is kept.
 2. **Whether the Chisum enters Johansson World** as a second ship of the line, and where she lies and sails.
