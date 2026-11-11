@@ -499,8 +499,13 @@ class Part:
                 for k in range(poly.loop_total):
                     flat.extend(t[k] if t is not None else (0.0, 0.0))
             layer.data.foreach_set('uv', flat)
-        me.use_auto_smooth = True
-        me.auto_smooth_angle = math.radians(self.angle)
+        # an edge is sharp where its faces meet at more than the part's angle (Blender 4.1 and later mark it on the edge;
+        # 4.0 kept it as the mesh's auto smooth)
+        if hasattr(me, 'set_sharp_from_angle'):
+            me.set_sharp_from_angle(angle=math.radians(self.angle))
+        else:
+            me.use_auto_smooth = True
+            me.auto_smooth_angle = math.radians(self.angle)
         if any(n is not None for n in self.n):
             # a corner with a direction of its own keeps it; every other corner is left to the angle between its faces
             own = [(0.0, 0.0, 0.0)] * len(me.loops)
