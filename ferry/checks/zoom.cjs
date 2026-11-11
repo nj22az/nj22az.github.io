@@ -16,7 +16,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-  await page.goto('http://localhost:8765/ferry/?t=' + Date.now());
+  await page.goto((process.env.CHISUM_URL || 'http://localhost:8765/ferry/') + '?t=' + Date.now());
   await page.waitForFunction(() => window.__ferry && document.body.classList.contains('ready'), null, { timeout: 120000 });
   const lens = () => page.evaluate(() => ({ fov: window.__ferry.look.camera.fov, zoom: window.__ferry.walkZoom, yaw: window.__ferry.state.walk && window.__ferry.state.walk.yaw,
     said: document.querySelector('#what').textContent }));

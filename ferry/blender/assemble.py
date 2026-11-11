@@ -156,6 +156,15 @@ def weld(pos, nor, col, lo, hi, uv=None):
     return uniq[:, :3].astype(np.uint16), uniq[:, 3:6].astype(np.int8), uniq[:, 6:9].astype(np.uint8), tri, (uniq[:, 9:11].astype(np.uint16) if uv is not None else None)
 
 
+def waterline():
+    """Her outline at the design waterline, port side, from the transom to the stem: (z, half breadth). The page lays the
+    sea round it: inside her there is no sea, however far below the waterline a room lies."""
+    end = L.stem_yard(L.above_keel(0.0))
+    n = int(end / 0.4) + 1
+    pts = [(L.Z(end * i / n), max(L.hull_x(0.0, L.Z(end * i / n)), 0.0)) for i in range(n)] + [(L.Z(end), 0.0)]
+    return [[round(z, 3), round(x, 3)] for z, x in pts]
+
+
 def spaces():
     """The rooms the page lists, by the viewer's part: each space of the general arrangement with its box in the ship's axes."""
     out = {g['id']: [] for g in GROUPS}
@@ -281,7 +290,7 @@ def main():
     header = dict(
         format='JMF1',
         ship=dict(name=S.SHIP_NAME, type=dict(ga.PARTICULARS)['Type'], length=L.LENGTH, beam=L.BEAM, depth=L.DEPTH, draft=L.DRAFT,
-                  displacement=ga.DISPLACEMENT, arrangement=ga.REVISION, built=SECTIONS,
+                  displacement=ga.DISPLACEMENT, arrangement=ga.REVISION, built=SECTIONS, waterline=waterline(),
                   note=NOTE.format(name=S.SHIP_NAME, length=L.LENGTH, rev=ga.REVISION, date=BUILT)),
         axes='x to port, y up from the design waterline, z forward from amidships; metres',
         bounds=dict(min=[float(v) for v in lo], max=[float(v) for v in hi]),

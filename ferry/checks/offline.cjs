@@ -15,7 +15,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   const ready = () => page.waitForFunction(() => window.__ferry && document.body.classList.contains('ready'), null, { timeout: 120000 });
-  await page.goto('http://localhost:8765/ferry/');
+  await page.goto(process.env.CHISUM_URL || 'http://localhost:8765/ferry/');
   await ready();
   await page.waitForFunction(() => navigator.serviceWorker.ready.then(() => true), null, { timeout: 20000 });
   await page.click('#fn-more');                            // Save offline and Install are behind the rail's last icon

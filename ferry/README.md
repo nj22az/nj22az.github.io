@@ -18,7 +18,7 @@ beforehand (`blender/make.sh`, below) and kept in `data/`.
 | `data/chisum-atlas.webp` | Her pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
 | `data/systems.json` | Her component register as the page reads it (167 components; written by `systems/register.py`) |
 | `systems/` | Her systems as designed: every component with its supply, circuit, nets and pipes; the tool that routes, sizes and checks them ([README](systems/README.md)) |
-| `blender/` | Her build, in Blender: the arrangement (`ga.py`), her lines (`lines.py`), the yard's specification (`spec.py`), a builder for each section, the export, the tool that puts the data together, the checks, and `make.sh`, which runs all of it in order |
+| `blender/` | Her build, in Blender: the arrangement (`ga.py`), her lines (`lines.py`), the yard's specification (`spec.py`), a builder for each section, the export, the tool that puts the data together, the checks, the tracing of her light (`light.py`), and `make.sh`, which runs all of it in order |
 | `checks/*.cjs` | The page's own checks, in a browser: the bridge and the register, doors and the stern ramp, the stairs, quick travel, zoom on foot, offline (*Checks actually run*) |
 | `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register, the yard's standards (stairs, supports, no z-fighting), its drawings (the general arrangement, the stern ramp and after end), class's comment sheets, and the calculations ([README](yard/README.md)) |
 
@@ -897,6 +897,41 @@ An input may be worked by the page itself and not by a slider: `"auto": "near"` 
 door). Such an input opens (goes to `max`) for a walker within `reach` of `at`, shuts (goes
 to `min`) behind them, and answers a tap from outside; `normal` tells the walker which way the doorway lies. A mover's
 `ratio` (1 when absent) is the turn it makes for each degree of its input: -1 for a door that opens the other way.
+
+## Light, sky and sea (`blender/light.py`, `data/light.bin.gz`, `look.js`)
+
+The owner, 11 November 2026: "It still looks like Lego create a realistic bridge"; "you have no budget on the 3d model, focus
+on photorealism and reality". What made her look like a toy was that every face was lit alike. Since 12 November 2026:
+
+- **The light of every place aboard is traced when she is built.** `blender/light.py` (the last step of `make.sh`) lays a
+  grid of points through the whole ship, one every 0.4 m, and sends 96 rays from each: a ray that gets out sees the sky, one
+  that meets a lit lamp sees the lamp, one that meets a surface sees what that surface throws back, the sun on it if the
+  sun reaches it and the light the grid found there, worked round four times. Glass lets rays through. The result,
+  `data/light.bin.gz` (JLV1: a header, then two blocks of the grid: how much light a place gets, and from which side), is
+  about 1.6 MB. Blender's own ray caster does the tracing in several processes at once: under a minute for this ship.
+  `--look DIR` writes slices through the result as pictures.
+- **Every lit surface takes its light from there** (`look.js`, `surface`): asked for half a grid step out from the surface
+  and a little toward the looker, so that a thin wall does not let the next room's light through. A room is lit by its
+  windows and lamps and by its own deck and walls, and is darker in its corners; outside, it is darker under an overhang.
+  **A space with no window and no lamp is dark** (it is lifted only to what an eye still makes out): rooms get light when
+  they get lamps, which are parts like any other (a material that gives out light is a lamp to the rays).
+- **The sun is the page's own lamp**, nine units strong against a sky of about one and a third, with sharp shadows. On
+  foot the shadows are drawn finely round the walker (a patch of sun through a window has an edge), and again as the
+  walker moves on.
+- **The eye opens and closes** (`createLook`, `expose`): in the open the picture is taken at one exposure; in a room it
+  opens by a good part of how much darker the room is, over about a second, so that from inside the day outside is
+  bright, as it is.
+- **She floats.** When she is walked, and when she is looked at whole from outside with the wave key lit, there is a sky
+  with clouds and the sun's disc, and a sea at her waterline with her own outline cut out of it (the file's
+  `ship.waterline`), so that no room below the waterline has the sea standing in it. The sea's waves are worked out where
+  it is drawn and left out where they are finer than a dot of the screen. Lifted apart, cut open, or with the wave key
+  off she stands in dock on the slip as before, so that her bottom can be seen.
+- **Glare**: what is brighter than the screen's white spills a little over what is beside it.
+- **The light way** (`lite` in `app.js`): where there is no graphics card (the page's own checks draw in software) or the
+  address says `?lite`, the glare, the clouds and the sea's finer waves are left out and the sea stands still. The
+  checks would otherwise be too slow to follow a pinch of two fingers.
+- The day's figures (the sun's direction and strength, the sky's colours) are `light.py`'s; the file carries them and
+  the page takes them from it, so the traced light and the drawn sky cannot drift apart.
 
 ## The look this page applies
 

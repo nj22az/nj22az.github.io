@@ -12,7 +12,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from '/motor-90l/vendor/OrbitControls.js';
 import { createSystems } from './systems.js';
-import { surface as surfaceOf, createLook } from './look.js';
+import { surface as surfaceOf, createLook, createSky, createSea, light, day } from './look.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
@@ -28,7 +28,8 @@ const DOCS = [{ id: 'ship', name: 'Ship', file: './data/ferry.bin.gz' }];
 const TOP_DOWN = ['top', 'bridge', 'passenger', 'car', 'machinery', 'hull'];
 
 // ---------- reading the file ----------
-async function loadDocument(url) {
+/** One of her files, unpacked: four letters that say what it is, the length of a header, the header, then its block. */
+async function fetchPacked(url, magic) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`The ferry's file could not be fetched (${res.status}).`);
   let bytes = new Uint8Array(await res.arrayBuffer());
@@ -37,9 +38,13 @@ async function loadDocument(url) {
     if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot unpack the ferry (it has no DecompressionStream). A current Safari, Chrome, Edge or Firefox can.');
     bytes = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
   }
-  if (String.fromCharCode(...bytes.subarray(0, 4)) !== 'JMF1') throw new Error("The ferry's file is not in the format this page reads.");
+  if (String.fromCharCode(...bytes.subarray(0, 4)) !== magic) throw new Error("The ferry's file is not in the format this page reads.");
   const length = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(4, true);
   const header = JSON.parse(new TextDecoder().decode(bytes.subarray(8, 8 + length)));
+  return { bytes, header, length };
+}
+async function loadDocument(url) {
+  const { bytes, header, length } = await fetchPacked(url, 'JMF1');
   // Typed views need their start aligned; copy once if the browser handed back an offset buffer.
   const buffer = bytes.byteOffset % 4 === 0 ? bytes.buffer : bytes.slice().buffer;
   return { header, buffer, base: (bytes.byteOffset % 4 === 0 ? bytes.byteOffset : 0) + 8 + length };
@@ -95,7 +100,6 @@ const GLASS = { opacity: 0.62, metalness: 0.55, roughness: 0.06 };
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.9;
 renderer.localClippingEnabled = true;
 // Shadows are drawn again only when something that casts them moves: turning the camera costs nothing.
 renderer.shadowMap.enabled = true;
@@ -104,37 +108,30 @@ renderer.shadowMap.autoUpdate = false;
 view.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
+/**
+ * Where there is no graphics card to draw with (the page's own checks draw in software; so do some old machines), or when
+ * the address asks for it (?lite), she is drawn the light way: no glare, a sky without clouds, a plainer sea that stands
+ * still. The light of each place, the sun and the shade where things meet stay.
+ */
+const drawnBy = (() => { const gl = renderer.getContext(), x = gl.getExtension('WEBGL_debug_renderer_info'); return x ? String(gl.getParameter(x.UNMASKED_RENDERER_WEBGL)) : ''; })();
+const lite = /swiftshader|llvmpipe|software/i.test(drawnBy) || new URLSearchParams(location.search).has('lite');
 
 /** From the ship toward the sun: over her starboard side, the side she is first seen from, and a little ahead of the beam.
- *  Across her rather than along her, so that with the decks lifted apart each one still has its near half in the sun. */
-const SUN_DIR = new THREE.Vector3(-0.6, 0.72, 0.36).normalize();
+ *  Across her rather than along her, so that with the decks lifted apart each one still has its near half in the sun.
+ *  The day is look.js's (and blender/light.py's, which traced her light under the same sun). */
+const SUN_DIR = day.sun;
 
-/** The sky she reflects and is filled by: a clear day made here, blue overhead, pale at the horizon, a glow toward the sun
- *  (the sun itself is the lamp below, so it is not painted twice), warm grey underfoot. No picture is fetched for it. */
-function daylight() {
-  const sky = new THREE.Scene();
-  const paint = new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, uniforms: { sun: { value: SUN_DIR } },
-    vertexShader: 'varying vec3 d; void main() { d = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `varying vec3 d; uniform vec3 sun;
-      void main() {
-        vec3 n = normalize(d);
-        vec3 zenith = vec3(0.30, 0.52, 0.95), horizon = vec3(0.86, 0.92, 1.0), ground = vec3(0.60, 0.59, 0.56);
-        vec3 c = n.y > 0.0 ? mix(horizon, zenith, pow(n.y, 0.55)) : mix(horizon * 0.8, ground, pow(min(-n.y * 4.0, 1.0), 0.6));
-        c += vec3(1.0, 0.93, 0.82) * pow(max(dot(n, sun), 0.0), 12.0) * 0.6;
-        gl_FragColor = vec4(c, 1.0);
-      }`,
-  });
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(50, 48, 24), paint);
-  sky.add(dome);
-  const pmrem = new THREE.PMREMGenerator(renderer), env = pmrem.fromScene(sky, 0.02).texture;
-  pmrem.dispose(); paint.dispose(); dome.geometry.dispose();
-  return env;
-}
-scene.environment = daylight();
+/** The sky: seen behind her when she is afloat or walked, and mirrored by every polished surface always. */
+const sky = createSky({ lite });
+sky.dome.visible = false;
+scene.add(sky.dome);
+scene.environment = sky.env(renderer);
 scene.environmentIntensity = 1;
 
-const sun = new THREE.DirectionalLight(0xfff1dc, 3);
+const sun = new THREE.DirectionalLight(0xffffff, 1);
+/** The sun's colour and strength are the day's: set again when her light file has been read. */
+function lightSun() { const c = day.sunLight, m = Math.max(c.r, c.g, c.b); sun.color.setRGB(c.r / m, c.g / m, c.b / m); sun.intensity = m; }
+lightSun();
 sun.castShadow = true;
 sun.shadow.mapSize.setScalar(Math.min(narrow.matches ? 2048 : 4096, renderer.capabilities.maxTextureSize));
 sun.shadow.bias = -0.0004;
@@ -151,7 +148,7 @@ const FOV = 30, TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
 const camera = new THREE.PerspectiveCamera(FOV, 1, 0.4, 700);
 // A frame is drawn with the shade where things meet (look.js). Glass is left out of that: what stands behind a pane is
 // shaded as if the pane were not there.
-const drawing = createLook(renderer, scene, camera, { hidden: o => !!(o.material && (o.material.transparent || (o.material.userData && o.material.userData.glass))) });
+const drawing = createLook(renderer, scene, camera, { lite, hidden: o => !!(o.userData.backdrop || (o.material && (o.material.transparent || (o.material.userData && o.material.userData.glass)))) });
 const draw = () => drawing.render();
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -178,7 +175,7 @@ let materials = [];
 /** The parts that move (the file's `movers`), each a group inside its deck, and what works them (the file's `inputs`). */
 let movers = [];
 const inputs = new Map();
-const state = { explode: 0, cut: 0, selected: null };
+const state = { explode: 0, cut: 0, selected: null, afloat: true };
 const root = new THREE.Group();
 scene.add(root);
 
@@ -186,6 +183,25 @@ scene.add(root);
 const cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
 let cutSpan = [-4.6, 3.6];
 
+/**
+ * The sea and the sky (look.js). She floats when she is walked, and when she is looked at whole from outside with the Afloat
+ * key lit; lifted apart, cut open or put in dock she stands on the slip as before, so that her bottom can be seen.
+ */
+let sea = null, walk = null;
+const afloat = () => !!sea && (!!walk || (state.afloat && state.explode === 0 && state.cut === 0));
+function showSea() {
+  if (!sea) return;
+  const on = afloat();
+  sea.mesh.visible = sea.shadow.visible = sky.dome.visible = on;
+  floor.visible = !on;
+  camera.far = on ? 9000 : 700;
+  camera.updateProjectionMatrix();
+  // afloat one cannot get under the water to look at her
+  controls.maxPolarAngle = on ? Math.PI / 2 - 0.015 : Math.PI * 0.98;
+  const key = document.querySelector('#fn-afloat');
+  if (key) key.setAttribute('aria-pressed', String(state.afloat));
+  fitSun();
+}
 let stairList = [];
 function build(doc, atlases) {
   const { header } = doc, viewDef = header.views[0];
@@ -193,6 +209,10 @@ function build(doc, atlases) {
   materials = header.materials.map(m => materialOf(m, atlases));
   cutSpan = [header.bounds.min[0] - 0.05, header.bounds.max[0] - 1.0];
   floor.position.y = header.bounds.min[1] - 0.02;
+  // The sea, with her own outline cut out of it.
+  sea = createSea(header.ship.waterline, { lite });
+  scene.add(sea.mesh, sea.shadow);
+  showSea();
   const motions = new Map((header.movers || []).map(m => [m.id, m]));
   movers = [];
   decks = viewDef.groups.map(g => {
@@ -325,6 +345,8 @@ function showHelp(on, ms = 0) {
   if (on && ms) helpTimer = setTimeout(() => showHelp(false), ms);
 }
 helpBtn.addEventListener('click', () => showHelp(help.hidden));
+/** Afloat, or in dock: on the sea under the sky, or on the slip with her bottom to be seen. */
+$('#fn-afloat').addEventListener('click', () => { state.afloat = !state.afloat; showSea(); readout.textContent = state.afloat ? 'Afloat' : 'In dock'; });
 /**
  * The desk. What the file says is worked and is neither a door nor a lever has three keys and a window:
  * a thing that goes both ways from its rest (the rudder) has a key each way, a notch a press, and one for its rest;
@@ -502,10 +524,14 @@ const eyeDir = () => camera.position.clone().sub(controls.target).normalize();
 const SX = new THREE.Vector3().crossVectors(UP, SUN_DIR).normalize(), SY = new THREE.Vector3().crossVectors(SUN_DIR, SX), SP = new THREE.Vector3();
 /** The sun's shadow is drawn on one picture: fit that picture to what is shown and to where its shadow falls on the ground,
  *  so none of it is spent on empty air, and have it drawn again. Called whenever what casts a shadow has moved. */
+const sunAt = new THREE.Vector3();
 function fitSun() {
-  const box = shownBox();
-  if (box.isEmpty()) return;
-  box.min.y = Math.min(box.min.y, floor.position.y);
+  // On foot the shadows are drawn finely round the walker (a patch of sun through a window has a sharp edge); from outside,
+  // over all of her that is shown and the ground her shadow falls on.
+  const ground = afloat() ? 0 : floor.position.y;
+  let box;
+  if (walk) { box = new THREE.Box3().setFromCenterAndSize(walk.pos, SP.set(30, 14, 30)); sunAt.copy(walk.pos); }
+  else { box = shownBox(); if (box.isEmpty()) return; box.min.y = Math.min(box.min.y, ground); }
   const c = box.getCenter(new THREE.Vector3());
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
   const take = p => {
@@ -514,16 +540,17 @@ function fitSun() {
   };
   for (let i = 0; i < 8; i++) {
     SP.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z);
-    const fall = (SP.y - floor.position.y) / SUN_DIR.y;
+    const fall = (SP.y - ground) / SUN_DIR.y;
     take(SP.sub(c));
     // Where this corner's shadow reaches the ground: further from the sun, on the same ray.
-    take(SP.addScaledVector(SUN_DIR, -fall));
+    if (!walk) take(SP.addScaledVector(SUN_DIR, -fall));
   }
-  const far = 150, margin = 1, lens = sun.shadow.camera;
+  // On foot what stands between the walker's surroundings and the sun still shades them: the lens begins well sunward.
+  const far = 150, margin = 1, lens = sun.shadow.camera, sunward = walk ? 60 : 0;
   sun.position.copy(c).addScaledVector(SUN_DIR, far);
   sun.target.position.copy(c);
   lens.left = x0 - margin; lens.right = x1 + margin; lens.bottom = y0 - margin; lens.top = y1 + margin;
-  lens.near = far - z1 - margin; lens.far = far - z0 + margin;
+  lens.near = far - z1 - margin - sunward; lens.far = far - z0 + margin;
   lens.updateProjectionMatrix();
   renderer.shadowMap.needsUpdate = true;
   redraw();
@@ -557,11 +584,12 @@ const showExplode = t => { showKeys($('#explode'), t * 100); lamp('decks', t > 0
 const showCut = t => { showKeys($('#cut'), t * 100); $('#cut-val').textContent = `${Math.round(t * 100)} %`; lamp('cut', t > 0); };
 let explodeMove = null;
 function placeDecks(t) {
+  const was = afloat();
   state.explode = t;
   for (const d of decks) d.node.position.copy(d.lift).multiplyScalar(t);
   // Lifted apart, each deck stands in the shadow of the one above: the shadows are let up, so the rooms can still be read.
   sun.shadow.intensity = 1 - SHADE_LET_UP * t;
-  fitSun();
+  if (was !== afloat()) showSea(); else fitSun();
 }
 const SHADE_LET_UP = 0.4;
 function setExplode(t, { animate = false } = {}) {
@@ -574,8 +602,9 @@ function setExplode(t, { animate = false } = {}) {
 
 function setCut(t) {
   t = THREE.MathUtils.clamp(t, 0, 1);
-  const was = state.cut > 0, is = t > 0;
+  const was = state.cut > 0, is = t > 0, floated = afloat();
   state.cut = t;
+  if (floated !== afloat()) showSea();
   showCut(t);
   cutPlane.constant = -(cutSpan[0] + (cutSpan[1] - cutSpan[0]) * t);
   if (was !== is) for (const m of materials) {
@@ -1123,7 +1152,7 @@ function showWay() {
 climbBtn.addEventListener('click', climb);
 
 /** While walking: where the feet are, which way the head is turned, what is held down, and the outside view to go back to. */
-let walk = null;
+/* walk is declared with the sea, above */
 const held = new Set();
 const stick = { x: 0, y: 0, id: null };
 const walkBtn = $('#walk'), stickEl = $('#stick');
@@ -1169,6 +1198,7 @@ function enterWalk() {
     saved: { pos: camera.position.clone(), target: controls.target.clone(), fov: camera.fov, near: camera.near, panel: !panel.classList.contains('closed') },
   };
   controls.enabled = false;
+  showSea();
   document.body.classList.add('walking');
   walkBtn.textContent = walkBtn.title = 'Leave'; walkBtn.setAttribute('aria-pressed', 'true');
   showFn(null, false); showHelp(true, 9000);
@@ -1189,6 +1219,7 @@ function leaveWalk() {
   showFn(null, false); showHelp(false);
   camera.fov = s.fov; camera.near = s.near; camera.up.set(0, 1, 0);
   camera.position.copy(s.pos); controls.target.copy(s.target); controls.enabled = true;
+  showSea();
   readout.textContent = '';
   measure(); applyLens(); controls.update(); redraw();
 }
@@ -1508,6 +1539,7 @@ panel.addEventListener('transitionend', placeCard);
 
 const ease = t => t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
 let lastFrame = 0;
+let seaDrawn = 0;
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min((now - lastFrame) / 1000 || 0, 0.25);
@@ -1515,8 +1547,13 @@ function frame(now) {
   workAuto(dt);
   workSteps(dt);
   workOrders(dt);
+  // The sea and the clouds move, thirty times a second at most (not at all for whoever asked for less motion).
+  if (afloat() && !lite && !still.matches && !document.hidden && now - seaDrawn > 33) { day.time.value = now / 1000; seaDrawn = now; dirty = true; }
+  // The eye opens in a room and closes on deck.
+  if (drawing.expose(dt, camera.position)) dirty = true;
   if (walk) {
     stepWalk(dt);
+    if (walk && walk.pos.distanceToSquared(sunAt) > 16) fitSun();
     if (dirty) { draw(); dirty = false; }
     return;
   }
@@ -1548,6 +1585,13 @@ async function start() {
     t.anisotropy = renderer.capabilities.getMaxAnisotropy();
     return t;
   }));
+  // The light of every place aboard (blender/light.py). Without it she is lit as she was, evenly, by the sky.
+  try {
+    const lit = await fetchPacked('./data/light.bin.gz', 'JLV1');
+    light.set(lit.header, lit.bytes.subarray(8 + lit.length));
+    lightSun();
+    scene.environment = sky.env(renderer);
+  } catch (err) { console.warn('Her light could not be read: she is lit evenly.', err); }
   build(doc, atlases);
   indexFloors();
   buildWays(doc.header);

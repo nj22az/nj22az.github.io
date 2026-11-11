@@ -17,4 +17,6 @@ python3 ferry/blender/check.py
 python3 ferry/blender/zfight.py --part "$PART"
 python3 ferry/blender/afloat.py --part "$PART" --allow ferry/blender/afloat-known.json
 python3 ferry/blender/spans.py --part "$PART"
+# the light of every place aboard, traced through her as built (the page lights her from it)
+python3 ferry/blender/light.py --part "$PART"
 echo "built: every check passed"

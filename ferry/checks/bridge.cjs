@@ -10,7 +10,7 @@
  * Needs Playwright with Chromium (software rendering is enough). Exits non-zero if a check fails.
  */
 const { chromium } = require('playwright');
-const url = process.argv[2] || 'http://localhost:8765/ferry/';
+const url = process.argv[2] || process.env.CHISUM_URL || 'http://localhost:8765/ferry/';
 // The bridge is measured in its own terms (metres from the first Chisum's transom, where it was designed: blender/bridge_place.py).
 // SHIFT carries those aboard the 68 m ship, HALF is half her length, DECK the bridge deck over her waterline.
 const SHIFT = 30.505, HALF = 34.2, DECK = 9.3, TOP = 12.0;

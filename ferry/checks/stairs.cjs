@@ -13,7 +13,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
-  await page.goto('http://localhost:8765/ferry/?t=' + Date.now());
+  await page.goto((process.env.CHISUM_URL || 'http://localhost:8765/ferry/') + '?t=' + Date.now());
   await page.waitForFunction(() => window.__ferry && document.body.classList.contains('ready'), null, { timeout: 120000 });
   const stairs = await page.evaluate(() => window.__ferry.stairs);
   check(stairs.length > 0, `the model lists ${stairs.length} stairs of her own`);
