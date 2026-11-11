@@ -923,10 +923,12 @@ they are lit:
   `/assets/js/project-explorer.js`; `CONFIG.projects` has her too. The homepage never loads the 3D model (its design
   review forbids it): the card shows a picture, `/assets/images/ferry/chisum-card.webp`. It lives under `assets/`,
   not here, because the homepage review's sparse checkout does not include `ferry/`.
-- **Retake the card picture when the model changes.** It is this page's cut view from the starboard side with the
-  chrome hidden and the lens centred (`camera.clearViewOffset()`, aspect 1200 : 630): Cut 0.5, the camera set through
-  `window.__ferry.look` with its target at (0, 6.3, 1.4) and the eye 50 m from it toward (−1, 0.2, 0.3), shot at
-  1200 × 630 at scale 2 and reduced to a 1200 × 630 WebP (quality 84). Retaken on 10 November with her own hull. The
+- **Retake the card picture when the model changes.** `node ferry/tools/card.cjs shot.png` (the site served on port
+  8765) opens this page with its chrome hidden and the lens centred, looks at her from the bow quarter as the page
+  first does (`HOME_DIR`), and shoots 1200 × 630 at scale 2 on the machine's own graphics card;
+  `python3 ferry/tools/card_crop.py shot.png assets/images/ferry/chisum-card.webp` frames her outline and writes the
+  1200 × 630 WebP (quality 84). Retaken on 11 November 2026 with the 68 m ship, on an Apple M1 Pro; until then the
+  card showed the first Chisum, 34.5 m, cut open, with the words that went with her. The
   counts in `tools/office-home/review.browser.mjs` (7 cards; Explore 2, Create 3, Learn 2) follow
   `CONFIG.projectExplorer`.
 
