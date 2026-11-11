@@ -19,7 +19,7 @@ OUT_SCALE = 2                # film pixels per u
 ORIGIN = (845, 716)          # sheet position of the world origin
 CELL = (-250, -335, 250, 25) # world box of one frame, in u
 FRAMES = 36                  # one cycle = two steps: an easy stroll, 80 steps a minute
-STRIDE = 196.0               # u travelled per cycle (the sheet's marching step is 147; he strolls at 98)
+STRIDE = 264.0               # u travelled per cycle: a real stride, a little under the sheet's own 147 a step
 INK = 6.5                    # line weight of the drawing, u
 
 _meta = json.loads((PARTS_DIR / 'parts.json').read_text())['parts']
@@ -75,12 +75,14 @@ class Canvas:
     def px(self, p):
         return ((p[0] - CELL[0]) * UP, (p[1] - CELL[1]) * UP)
 
-    def place(self, part, anchor, at, angle=0.0):
-        """Put `part` so its own world point `anchor` lands on `at`, turned by `angle` about it."""
+    def place(self, part, anchor, at, angle=0.0, scale=(1.0, 1.0)):
+        """Put `part` so its own world point `anchor` lands on `at`, squashed by `scale` and then
+        turned by `angle` about it."""
         c, s = math.cos(angle), math.sin(angle)
         ax, ay = part.local(anchor)
         X, Y = self.px(at)
-        data = (c, s, ax - c * X - s * Y, -s, c, ay + s * X - c * Y)
+        a, b, d, e = c / scale[0], s / scale[0], -s / scale[1], c / scale[1]
+        data = (a, b, ax - a * X - b * Y, d, e, ay - d * X - e * Y)
         t = part.img.transform((self.w, self.h), Image.AFFINE, data, resample=Image.BICUBIC)
         self.img.alpha_composite(t)
 
@@ -107,14 +109,14 @@ class Canvas:
 
 
 # ---- feet ----------------------------------------------------------------------------------------
-HEEL_X0 = 40.0                                    # where the leading heel strikes, ahead of the pelvis
+HEEL_X0 = 56.0                                    # where the leading heel strikes, ahead of the pelvis
 STANCE = 0.60                                     # share of the cycle a boot is on the quay
 FLAT = PARTS['foot_flat']
 HEELED = PARTS['foot_heel']
 BALL_DX = FLAT.pts['ball'][0] - FLAT.pts['heel'][0]
 T_SLAP, T_FLAT, T_OFF = 0.03, 0.085, 0.45
-TOE_OFF = math.radians(38)
-STRIKE = math.radians(24)     # the toe-up drawing, lowered this far for an easy heel strike
+TOE_OFF = math.radians(46)
+STRIKE = math.radians(12)     # the toe-up drawing, lowered this far for an easy heel strike
 
 
 def foot(p):
@@ -138,7 +140,7 @@ def foot(p):
     heel1 = (HEEL_X0, 0)
     e = smooth(s)
     x = lerp(heel0[0], heel1[0], lerp(s, e, 0.6))
-    y = lerp(heel0[1], heel1[1], e) - 15 * math.sin(math.pi * s) ** 1.1
+    y = lerp(heel0[1], heel1[1], e) - 11 * math.sin(math.pi * s) ** 1.1
     if s < 0.72:
         return FLAT, 'heel', (x, y), lerp(th0, math.radians(-12), smooth(s / 0.72))
     return HEELED, 'heel', (x, y), lerp(math.radians(32), STRIKE, smooth((s - 0.72) / 0.28))
@@ -153,7 +155,7 @@ def hose(a, b, rest, n=12):
     """A rubber-hose leg from hip a to ankle b: it bows forward when it has slack, stretches when not."""
     dx, dy = b[0] - a[0], b[1] - a[1]
     L = math.hypot(dx, dy) or 1.0
-    bend = math.sqrt(max(0.0, rest * rest - L * L)) * 0.55
+    bend = math.sqrt(max(0.0, rest * rest - L * L)) * 0.5
     nx, ny = -dy / L, dx / L
     if nx < 0:
         nx, ny = -nx, -ny
@@ -168,34 +170,49 @@ HIP_NEAR = world((858, 640))
 HIP_FAR = world((828, 638))
 FAR_SHOULDER = (878, 550)    # sheet px: where the hanging arm hangs on his far side
 LEG_R = 14.0
-LEG_REST = 60.0
+LEG_REST = 62.0
 
 
 def lift(ph):
     """Pelvis height: sinks just after each heel strike, rises as the legs pass."""
-    return 1.0 - 3.0 * math.cos(4 * math.pi * (ph - 0.07))
+    return 1.5 - 3.2 * math.cos(4 * math.pi * (ph - BOUNCE_LAG))
+
+
+BOUNCE_LAG = 0.045
+
+
+def squash(ph):
+    """A breath of squash as each heel lands and stretch as the legs pass: he is soft, but he walks,
+    he does not hop. Returns (wide, tall)."""
+    k = 0.018 * math.cos(4 * math.pi * (ph - BOUNCE_LAG - 0.02))
+    return (1 + k * 0.7, 1 - k)
 
 
 def pose(ph):
     up = lift(ph)
-    lean = math.radians(0.9 * math.sin(4 * math.pi * (ph - 0.02)))        # chest rocks over each step
+    lean = math.radians(1.2 * math.sin(4 * math.pi * (ph - 0.02)))        # chest rocks over each step
     sway = 1.5 * math.sin(2 * math.pi * ph)
     body = (sway, -up)
 
+    sq = squash(ph)
+
     def on_torso(sheet_pt):
         piv = PARTS['torso'].pts['pivot']
-        return add(add(piv, rot(sub(world(sheet_pt), piv), lean)), body)
+        v = sub(world(sheet_pt), piv)
+        return add(add(piv, rot((v[0] * sq[0], v[1] * sq[1]), lean)), body)
 
     swing = lambda x: (1 - math.cos(2 * math.pi * x)) / 2                  # 0 back, 1 forward
     head_up = lift(ph - 1.6 / FRAMES)                                       # the head arrives a beat late
     return dict(
-        body=body, lean=lean, on_torso=on_torso,
+        body=body, lean=lean, on_torso=on_torso, squash=sq, head_squash=squash(ph - 1.6 / FRAMES),
         # both arms are the hanging-arm drawing; it is drawn 46 degrees back, so turn it forward
-        arm_near=math.radians(lerp(-12, -84, swing(ph - 0.05))),
-        arm_far=math.radians(lerp(-12, -84, swing(ph + 0.5 - 0.05))),
+        # the arm is drawn 46 degrees back: the sleeve swings from the shoulder, and the forearm
+        # follows late and bends further as it comes forward (the hose whips)
+        arm_near=(math.radians(lerp(-4, -78, swing(ph - 0.05))), math.radians(lerp(16, -40, swing(ph - 0.13)))),
+        arm_far=(math.radians(lerp(-4, -78, swing(ph + 0.45))), math.radians(lerp(16, -40, swing(ph + 0.37)))),
         shrug=1.6 * math.sin(4 * math.pi * (ph - 0.16)),      # shoulders ride up a touch after each step
         head=(sway * 1.2, -(head_up * 1.15)),
-        head_tilt=math.radians(1.3 * math.sin(4 * math.pi * (ph - 0.12))),
+        head_tilt=math.radians(2.0 * math.sin(4 * math.pi * (ph - 0.12))),
     )
 
 
@@ -204,8 +221,17 @@ def mouth_point(i):
     ph = (i % FRAMES) / FRAMES
     P = pose(ph)
     Hd = PARTS['head']
-    at = add(P['on_torso'](add(Hd.pts['pivot'], ORIGIN)), sub(P['head'], P['body']))
+    at = P['on_torso'](add(Hd.pts['pivot'], ORIGIN))
     return add(at, rot(sub(world((866, 503)), Hd.pts['pivot']), P['head_tilt']))
+
+
+def arm(c, shoulder, angles, lean):
+    """Sleeve from the shoulder, forearm and fist from the elbow under its hem."""
+    S, F = PARTS['sleeve'], PARTS['forearm']
+    a = angles[0] + lean
+    elbow = add(shoulder, rot(sub(F.pts['pivot'], S.pts['pivot']), a))
+    c.place(F, F.pts['pivot'], elbow, a + angles[1])
+    c.place(S, S.pts['pivot'], shoulder, a)
 
 
 def frame(i, frames=FRAMES, face='head'):
@@ -214,8 +240,7 @@ def frame(i, frames=FRAMES, face='head'):
     c = Canvas()
     T = PARTS['torso']
     # far arm, behind everything
-    A = PARTS['arm_near']
-    c.place(A, A.pts['pivot'], add(P['on_torso'](FAR_SHOULDER), (0, -P['shrug'])), P['arm_far'] + P['lean'])
+    arm(c, add(P['on_torso'](FAR_SHOULDER), (0, -P['shrug'])), P['arm_far'], P['lean'])
     # far leg
     for hip, shift, parts_first in ((HIP_FAR, 0.5, None), (HIP_NEAR, 0.0, 'seat')):
         part, key, at, th = foot(ph + shift)
@@ -228,12 +253,19 @@ def frame(i, frames=FRAMES, face='head'):
         else:
             c.shape([leg])
         c.place(part, part.pts[key], at, th)
-    c.place(T, T.pts['pivot'], add(T.pts['pivot'], P['body']), P['lean'])
     Hd = PARTS[face]
-    c.place(Hd, Hd.pts['pivot'], add(P['on_torso'](add(Hd.pts['pivot'], ORIGIN)), sub(P['head'], (P['body'][0], P['body'][1]))),
-            P['head_tilt'])
-    N = PARTS['arm_near']
-    c.place(N, N.pts['pivot'], add(P['on_torso'](add(N.pts['pivot'], ORIGIN)), (0, -P['shrug'])), P['arm_near'] + P['lean'])
+    head_at = P['on_torso'](add(Hd.pts['pivot'], ORIGIN))          # the head sits on the body, always
+
+    def on_head(sheet_pt):
+        return add(head_at, rot(sub(world(sheet_pt), Hd.pts['pivot']), P['head_tilt']))
+
+    # his neck: from the shoulders up behind the ear and the beard, so nothing shows between them;
+    # drawn under the shirt, so only the neck itself is seen
+    c.shape([('hose', [P['on_torso']((813, 536)), on_head((807, 512))], 4.5),
+             ('hose', [P['on_torso']((840, 542)), on_head((838, 520))], 13)])
+    c.place(T, T.pts['pivot'], add(T.pts['pivot'], P['body']), P['lean'], P['squash'])
+    c.place(Hd, Hd.pts['pivot'], head_at, P['head_tilt'])
+    arm(c, add(P['on_torso'](add(PARTS['sleeve'].pts['pivot'], ORIGIN)), (0, -P['shrug'])), P['arm_near'], P['lean'])
     return c.result()
 
 

@@ -22,7 +22,8 @@ CYCLES = 20
 N = sailor.FRAMES * CYCLES                         # 720 frames, 30 s
 PX_PER_FRAME = sailor.STRIDE * sailor.OUT_SCALE / sailor.FRAMES
 SAILOR_X = 880
-BOB_FRAMES = 90                                    # the moored boats rise and fall every 3.75 s
+BEAT = sailor.FRAMES // 2                          # one step, one beat
+BOB_FRAMES = sailor.FRAMES                         # the moored boats rise and fall with his stride
 
 NOTE_LIFE = 48
 
@@ -40,8 +41,9 @@ def walk_frame(i, mouth, eye):
 
 def layers():
     if not _cache:
-        _cache['sky'] = docks.sky()
-        for name, fn, w in (('far', docks.far, docks.FAR_W), ('mid', docks.mid, docks.MID_W), ('near', docks.near, docks.NEAR_W)):
+        _cache['sky'] = [docks.sky(0), docks.sky(1)]
+        for name, fn, w in (('far', docks.far, docks.FAR_W), ('mid', docks.mid, docks.MID_W), ('near', docks.near, docks.NEAR_W),
+                            ('props', docks.props, docks.NEAR_W)):
             t = fn()
             wide = Image.new('RGBA', (w + docks.W, docks.H), (0, 0, 0, 0))
             wide.paste(t, (0, 0)); wide.paste(t.crop((0, 0, docks.W, docks.H)), (w, 0))
@@ -59,12 +61,20 @@ def render_at(n):
     n %= N
     travel = n * PX_PER_FRAME
     f = Image.new('RGBA', (docks.W, docks.H), (255, 255, 255, 255))
-    f.alpha_composite(L['sky'])
+    f.alpha_composite(L['sky'][(n // BEAT * 2 // 2 + (1 if n % BEAT >= BEAT // 2 else 0)) % 2])
     for name, w, speed in (('far', docks.FAR_W, 0.25), ('mid', docks.MID_W, 0.5), ('near', docks.NEAR_W, 1.0)):
         x = int(round(travel * speed)) % w
-        dy = round(4 * math.sin(2 * math.pi * n / BOB_FRAMES)) if name == 'mid' else 0
+        dy = round(5 * math.sin(2 * math.pi * n / BOB_FRAMES)) if name == 'mid' else 0
         f.alpha_composite(L[name].crop((x, 0, x + docks.W, docks.H)), (0, dy)) if dy >= 0 else \
             f.alpha_composite(L[name].crop((x, -dy, x + docks.W, docks.H)), (0, 0))
+        if name == 'near':
+            # everything on the quay squashes and springs back on each beat, as one
+            b = (n % BEAT) / BEAT
+            k = 1 - 0.022 * math.exp(-b * 5.0) * math.cos(2 * math.pi * b * 1.5)
+            foot = docks.PROP_BASE + 14
+            strip = L['props'].crop((x, 0, x + docks.W, foot))
+            hh = round(foot * k)
+            f.alpha_composite(strip.resize((docks.W, hh), Image.BILINEAR), (0, foot - hh))
     ph = (n % sailor.FRAMES) / sailor.FRAMES
     sw = 1 + 0.06 * math.cos(4 * math.pi * ph)        # the shadow widens as the feet part
     sh = L['shadow'].resize((round(320 * sw), 30), Image.LANCZOS)
@@ -90,7 +100,7 @@ def render_at(n):
         w = max(2, round(110 * size))
         im = im.resize((w, w), Image.LANCZOS)
         f.alpha_composite(im, (round(x - w / 2), round(y - w / 2))) if -w < x < docks.W and y > w else None
-    return f.convert('RGB')
+    return f.convert('RGB')                     # black ink on pure white, like the drawings
 
 
 if __name__ == '__main__':

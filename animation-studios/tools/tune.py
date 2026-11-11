@@ -17,6 +17,11 @@ B = [('D6', 0, 1), ('D6', 1, 1), ('E6', 2, 1), ('D6', 3, 1), ('B5', 4, 2), ('G5'
 C = [('G5', 0, 1), ('A5', 1, 1), ('B5', 2, 1), ('D6', 3, 1), ('G6', 4, 2), ('E6', 6, 1), ('D6', 7, 1),
      ('B5', 8, 1), ('A5', 9, 1), ('B5', 10, 1), ('A5', 11, 1), ('G5', 12, 1.6)]
 PHRASES = [A, B, A, B, C]
+# one chord to the beat, eight beats to the phrase: the band behind the whistle
+CHORDS = dict(A='GGCGDDGG', B='GGGGGCDD', C='GGCCDDGG')
+ORDER = 'ABABC'
+BASS = dict(G=(98.0, 73.42), C=(130.81, 98.0), D=(146.83, 110.0))            # root, then fifth below
+STRUM = dict(G=(196.0, 246.94, 293.66), C=(196.0, 261.63, 329.63), D=(185.0, 220.0, 293.66))
 
 
 def notes():
@@ -55,6 +60,24 @@ def render(total_frames, step_frames):
         breath = rng.standard_normal(m)
         breath = np.convolve(breath, np.ones(6) / 6, 'same') - np.convolve(breath, np.ones(40) / 40, 'same')
         whistle[i0:i0 + m] += env * (np.sin(phase) + 0.07 * np.sin(2 * phase) + 0.05 * breath)
+    band = np.zeros(n)
+    beat = 2 * QUAVER_FRAMES
+    for b in range(int(total_frames // beat)):
+        ch = CHORDS[ORDER[(b // 8) % len(ORDER)]][b % 8]
+        # tuba on the beat
+        i0 = int(b * beat / FPS * SR); m = int(0.34 * SR); tt = np.arange(m) / SR
+        f0 = BASS[ch][b % 2]
+        tuba = (np.sin(2 * np.pi * f0 * tt) + 0.35 * np.sin(4 * np.pi * f0 * tt) + 0.12 * np.sin(6 * np.pi * f0 * tt))
+        tuba *= np.minimum(1, tt / 0.018) * np.exp(-tt / 0.16)
+        band[i0:i0 + m] += 0.9 * tuba[: max(0, min(m, n - i0))]
+        # banjo on the off beat
+        i0 = int((b * beat + QUAVER_FRAMES) / FPS * SR); m = int(0.22 * SR); tt = np.arange(m) / SR
+        pluck = np.zeros(m)
+        for j, f1 in enumerate(STRUM[ch]):
+            d = int(j * 0.006 * SR)
+            for k in range(1, 6):
+                pluck[d:] += np.sin(2 * np.pi * f1 * k * tt[: m - d]) / k * np.exp(-tt[: m - d] / (0.09 / k ** 0.5))
+        band[i0:i0 + m] += 0.28 * pluck[: max(0, min(m, n - i0))]
     steps = np.zeros(n)
     k = 0
     for fr in np.arange(0, total_frames, step_frames):
@@ -69,8 +92,12 @@ def render(total_frames, step_frames):
     wash = np.convolve(wash, np.ones(90) / 90, 'same')
     wash = np.concatenate([wash[n // 2:], wash[:n // 2]]) * np.linspace(0, 1, n) + wash * np.linspace(1, 0, n)   # seamless
     wash *= 0.55 + 0.45 * np.sin(2 * np.pi * t / 3.75 - 1.2)
-    left = 0.20 * whistle + 0.30 * steps + 0.75 * wash
-    right = 0.22 * whistle + 0.27 * steps + 0.75 * np.roll(wash, 1777)
+    crackle = (rng.random(n) < 0.0007) * rng.standard_normal(n)
+    crackle = np.convolve(crackle, np.ones(5) / 5, 'same')
+    left = 0.20 * whistle + 0.24 * steps + 0.075 * band + 0.55 * wash + 0.05 * crackle
+    right = 0.21 * whistle + 0.22 * steps + 0.075 * band + 0.55 * np.roll(wash, 1777) + 0.05 * np.roll(crackle, 911)
     st = np.stack([left, right], 1)
+    for c in (0, 1):                                 # the narrow band of an old optical track
+        st[:, c] = np.convolve(st[:, c], np.ones(5) / 5, 'same')
     st /= max(1e-9, np.abs(st).max()) / 0.7
     return (st * 32767).astype('<i2')

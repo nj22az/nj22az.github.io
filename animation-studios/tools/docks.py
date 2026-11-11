@@ -92,13 +92,21 @@ def waves(a, x0, x1, rows, size, lw, seed):
 
 
 # ---- sky -----------------------------------------------------------------------------------------
-def sky():
+def sky(beat=0):
+    """The sun has a face, as suns did then, and its rays pump in and out on the beat."""
     a = Art(W)
     c = (300, 170)
-    a.blob(('circ', c, 62), 9)
+    a.blob(('circ', c, 66), 9)
     for i in range(12):
         t = i * math.pi / 6
-        a.line([(c[0] + 88 * math.cos(t), c[1] + 88 * math.sin(t)), (c[0] + 118 * math.cos(t), c[1] + 118 * math.sin(t))], 9)
+        long = (i + beat) % 2 == 0
+        r0, r1 = 92, (128 if long else 108)
+        a.line([(c[0] + r0 * math.cos(t), c[1] + r0 * math.sin(t)), (c[0] + r1 * math.cos(t), c[1] + r1 * math.sin(t))], 9)
+    for dx in (-22, 20):                                   # pie eyes
+        a.solid(('circ', (c[0] + dx, c[1] - 12), (9, 15)))
+        a.solid(('poly', [(c[0] + dx + 1, c[1] - 12), (c[0] + dx + 12, c[1] - 19), (c[0] + dx + 12, c[1] - 7)]), WHITE)
+    a.arc((c[0], c[1] + 8), 34, 26, 20, 160, 7)
+    a.arc((c[0] - 34, c[1] + 16), 7, 7, 200, 330, 5); a.arc((c[0] + 34, c[1] + 16), 7, 7, 210, 340, 5)
     return a.done()
 
 
@@ -342,7 +350,16 @@ def near():
             a.solid(('circ', (x + 50 - (yy - QUAY) * 0.225, yy), 4.5))
         if i % 3 == 0:
             a.line([(x + 62, QUAY + 96 + (i % 5) * 20), (x + 110, QUAY + 96 + (i % 5) * 20)], 4)
-    base = 898                                      # things stand behind his path
+    return a.done()
+
+
+PROP_BASE = 898                                     # things stand on the quay behind his path
+
+
+def props():
+    """What stands on the quay, on its own layer so that it can bounce to the beat."""
+    a = Art(NEAR_W)
+    base = PROP_BASE
     bollard(a, 420, base)
     crate(a, 980, base, 160, 124, 'anchor'); crate(a, 1150, base, 130, 96); crate(a, 1040, base - 124 - 12, 130, 100)
     lamp(a, 1800, base)
