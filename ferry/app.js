@@ -78,8 +78,9 @@ function materialOf(m, atlases) {
     if (m.textured && !m.transparent) mat = new THREE.MeshBasicMaterial(common);
     else mat = new THREE.MeshStandardMaterial({ ...common, metalness: 0, roughness: m.textured ? 0.58 : 0.3 });
   } else if (m.transparent && m.opacity < 1) {
-    // Window glass, seen from outside by day: dark, and it shows the sky.
-    mat = lit(GLASS);
+    // Window glass, seen from outside by day: dark, and it shows the sky. What the file marks clear (a display window, a
+    // bottle, a smoked flap) is as clear as it says.
+    mat = lit(m.clear ? {} : GLASS);
     mat.userData.glass = true;
   } else mat = lit();
   mat.userData.side = mat.side;
@@ -262,6 +263,11 @@ function moveParts(shadows = true) {
     } else node.matrix.identity();
     node.matrixWorldNeedsUpdate = true;
   }
+  // A part that rides on another moving part (`on`: a flap in a door) goes with it, after its own motion.
+  for (const { def, node } of movers) {
+    const carrier = def.on && movers.find(m => m.def.id === def.on);
+    if (carrier) node.matrix.premultiply(carrier.node.matrix);
+  }
   if (shadows) renderer.shadowMap.needsUpdate = true;
   redraw();
 }
@@ -285,8 +291,10 @@ function workAuto(dt) {
   for (const it of inputs.values()) {
     const def = it.def;
     if (!def.auto) continue;
-    const near = walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < (def.height ?? 1.5);
-    const want = (walk ? near : it.open) ? def.max : def.min;
+    // `auto: "tap"` (a machine's service door, its coin return) is worked by a tap only, on foot too: nobody opens it by passing.
+    const byTap = def.auto === 'tap';
+    const near = !byTap && walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < (def.height ?? 1.5);
+    const want = (walk && !byTap ? near : it.open) ? def.max : def.min;
     if (it.value === want) continue;
     const step = (def.max - def.min) / 0.8 * dt;
     it.value = want > it.value ? Math.min(want, it.value + step) : Math.max(want, it.value - step);
@@ -553,7 +561,7 @@ function identify(clientX, clientY) {
   // A door answers a tap: it opens, or shuts again.
   for (let n = hit.object.parent; n; n = n.parent) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
-    if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? 'open' : 'shut'}`; return; }
+    if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
   }
   // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
   let within = hit.object.parent;
@@ -595,11 +603,16 @@ let down = null, lastTap = null;
 /** On foot a tap or a click on a fitting says what it is (a drag looks round). */
 let walkDown = null;
 function nameOnFoot(clientX, clientY) {
-  if (!systems) return;
   const r = renderer.domElement.getBoundingClientRect();
   ndc.set((clientX - r.left) / r.width * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ndc, camera);
   const hit = ray.intersectObjects(decks.map(d => d.node), true).find(h => h.object.isMesh && h.object.visible && !h.object.material.userData.glass && !h.object.userData.own && h.object.material.depthTest !== false);
+  // What is worked by a tap answers one from within reach: it opens, or shuts again.
+  if (hit && hit.distance < 3) for (let n = hit.object.parent; n; n = n.parent) {
+    const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
+    if (it && it.def.auto === 'tap') { it.open = !it.open; readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
+  }
+  if (!systems) return;
   let within = hit && hit.object.parent;
   while (within && !decks.some(d => d.node === within)) within = within.parent;
   const deck = hit && hit.distance < 8 && decks.find(d => d.node === within);

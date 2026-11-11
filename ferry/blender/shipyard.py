@@ -73,6 +73,19 @@ LOOKS = {
     'Bulkhead paint': dict(metalness=0.05, roughness=0.58),
     'Deck covering': dict(metalness=0.0, roughness=0.85),
     'Plastic': dict(metalness=0.0, roughness=0.45),
+    # The owner's drinks machine (vending.py), in the finishes its own file gives it: stoved enamel, chrome, printed cans;
+    # glass and plastics one sees through as they are (`clear`: the page draws window glass dark, as from outside by day,
+    # and these as clear as they say); and what shines by itself, which glows in its own colour by day too.
+    'Vending enamel': dict(metalness=0.0, roughness=0.34),
+    'Chrome': dict(metalness=1.0, roughness=0.1),
+    'Drinks can': dict(metalness=0.5, roughness=0.28),
+    'Clear glass': dict(metalness=0.0, roughness=0.04, transparent=True, opacity=0.14, depthWrite=False, clear=True),
+    'Clear plastic': dict(metalness=0.0, roughness=0.08, transparent=True, opacity=0.42, depthWrite=False, clear=True),
+    'Smoked plastic': dict(metalness=0.0, roughness=0.1, transparent=True, opacity=0.72, depthWrite=False, clear=True),
+    'Lit panel': dict(metalness=0.0, roughness=0.5, emissive='#fff4e2', emissiveIntensity=0.6),
+    'Lit blue': dict(metalness=0.0, roughness=0.4, emissive='#1450ff', emissiveIntensity=0.9),
+    'Lit red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.9),
+    'Lit green': dict(metalness=0.0, roughness=0.4, emissive='#3cf058', emissiveIntensity=0.7),
 }
 _materials = {}
 
@@ -93,7 +106,7 @@ def material(name):
     m.use_backface_culling = look.get('side') != 'double'
     m['jmf'] = {'metalness': look['metalness'], 'roughness': look['roughness'], 'side': look.get('side', 'front'),
                 'offset': look.get('offset') or []}
-    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas'):
+    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear'):
         if key in look:
             m['jmf'][key] = look[key]
     _materials[name] = m

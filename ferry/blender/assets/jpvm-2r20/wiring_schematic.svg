@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1150" viewBox="0 0 1700 1150" font-family="DejaVu Sans, Noto Sans CJK JP, sans-serif" xmlns:c2pa="http://c2pa.org/manifest">
+<rect width="100%" height="100%" fill="white"/>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#333"/></marker></defs>
+<text x="20" y="32" font-size="22" font-weight="bold">JPVM-2R20 Drink Vending Machine — Electrical Wiring Schematic</text>
+<text x="20" y="52" font-size="12">AC100V 50/60Hz single phase · 15A branch · Rev A · Drawing VM-E-001 · Tags match vending_machine_metadata.json io_map</text>
+<rect x="20" y="80" width="170" height="110" rx="6" fill="#ffecec" stroke="#222" stroke-width="1.5"/>
+<text x="105.0" y="98" font-size="13" font-weight="bold" text-anchor="middle">X1 Mains inlet</text>
+<text x="28" y="116" font-size="10.5">AC100V 15A plug + PE</text>
+<text x="28" y="130" font-size="10.5">Leakage breaker ELB</text>
+<text x="28" y="144" font-size="10.5">30mA / 15A (Q1)</text>
+<text x="28" y="158" font-size="10.5">Line noise filter FL1</text>
+<rect x="20" y="230" width="170" height="90" rx="6" fill="#ffecec" stroke="#222" stroke-width="1.5"/>
+<text x="105.0" y="248" font-size="13" font-weight="bold" text-anchor="middle">Q2 Door interlock</text>
+<text x="28" y="266" font-size="10.5">Service sw S1 (DI_DOOR_SW)</text>
+<text x="28" y="280" font-size="10.5">Lamp/main on-off SW2</text>
+<path d="M190,110 L330,110" fill="none" stroke="#c00000" stroke-width="2"/>
+<text x="264.0" y="106.0" font-size="9.5" fill="#c00000">L</text>
+<path d="M190,130 L330,130" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<text x="264.0" y="126.0" font-size="9.5" fill="#1f4fd0">N</text>
+<path d="M190,150 L330,150" fill="none" stroke="#2a9d2a" stroke-width="2"/>
+<text x="264.0" y="146.0" font-size="9.5" fill="#2a9d2a">PE</text>
+<path d="M330,110 L330,110" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M330,130 L330,130" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<path d="M330,150 L330,150" fill="none" stroke="#2a9d2a" stroke-width="2"/>
+<line x1="330" y1="100" x2="330" y2="1060" stroke="#c00000" stroke-width="3"/>
+<line x1="345" y1="120" x2="345" y2="1060" stroke="#1f4fd0" stroke-width="3"/>
+<line x1="360" y1="140" x2="360" y2="1060" stroke="#2a9d2a" stroke-width="3"/>
+<text x="300" y="1080" font-size="11">AC bus L / N / PE</text>
+<path d="M190,110 L330,110" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M105,190 L105,230" fill="none" stroke="#c00000" stroke-width="2"/>
+<text x="109.0" y="206.0" font-size="9.5" fill="#c00000">SW</text>
+<rect x="430" y="80" width="230" height="170" rx="6" fill="#fff6e5" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="98" font-size="13" font-weight="bold" text-anchor="middle">K1 Relay / SSR board</text>
+<text x="438" y="116" font-size="10.5">K1 Compressor 25A relay (DO_COMP)</text>
+<text x="438" y="130" font-size="10.5">K2 Heater SSR 10A (DO_HEATER)</text>
+<text x="438" y="144" font-size="10.5">K3 Evap fan (DO_FAN_EVAP)</text>
+<text x="438" y="158" font-size="10.5">K4 Cond fan (DO_FAN_COND)</text>
+<text x="438" y="172" font-size="10.5">K5 Hot circ fan (DO_HEATER_FAN)</text>
+<text x="438" y="186" font-size="10.5">K6 Defrost heater</text>
+<text x="438" y="200" font-size="10.5">K7 Light (DO_DISPLAY_LIGHT)</text>
+<text x="438" y="214" font-size="10.5">coil 12VDC from main ctrl</text>
+<path d="M330,165 L430,165" fill="none" stroke="#c00000" stroke-width="2"/>
+<text x="384.0" y="161.0" font-size="9.5" fill="#c00000">L</text>
+<path d="M345,185 L430,185" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<text x="391.5" y="181.0" font-size="9.5" fill="#1f4fd0">N</text>
+<rect x="430" y="300" width="230" height="75" rx="6" fill="#ffecec" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="318" font-size="13" font-weight="bold" text-anchor="middle">M1 Compressor</text>
+<text x="438" y="336" font-size="10.5">R744 rotary 350W</text>
+<text x="438" y="350" font-size="10.5">Start relay + OLP</text>
+<text x="438" y="364" font-size="10.5">Thermal protector</text>
+<path d="M545,250 L545,260" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M660,120 L700,120 L700,337 L660,337" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M345,355 L430,355" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<path d="M360,368 L430,368" fill="none" stroke="#2a9d2a" stroke-width="1.5"/>
+<rect x="430" y="400" width="230" height="75" rx="6" fill="#ffecec" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="418" font-size="13" font-weight="bold" text-anchor="middle">E1 Hot heater</text>
+<text x="438" y="436" font-size="10.5">Sheath 300W 100V</text>
+<text x="438" y="450" font-size="10.5">Thermal fuse TF1 85°C</text>
+<text x="438" y="464" font-size="10.5">Bimetal TS 70°C</text>
+<path d="M660,150 L700,150 L700,437 L660,437" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M345,455 L430,455" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<path d="M360,468 L430,468" fill="none" stroke="#2a9d2a" stroke-width="1.5"/>
+<rect x="430" y="500" width="230" height="75" rx="6" fill="#ffecec" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="518" font-size="13" font-weight="bold" text-anchor="middle">M2/M3/M4 Fans</text>
+<text x="438" y="536" font-size="10.5">Evap 10W, Cond 25W</text>
+<text x="438" y="550" font-size="10.5">Hot-zone circ 10W</text>
+<text x="438" y="564" font-size="10.5">shaded-pole AC100V</text>
+<path d="M660,180 L700,180 L700,537 L660,537" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M345,555 L430,555" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<path d="M360,568 L430,568" fill="none" stroke="#2a9d2a" stroke-width="1.5"/>
+<rect x="430" y="600" width="230" height="75" rx="6" fill="#ffecec" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="618" font-size="13" font-weight="bold" text-anchor="middle">E2 Defrost htr</text>
+<text x="438" y="636" font-size="10.5">Evap defrost 150W</text>
+<path d="M660,210 L700,210 L700,637 L660,637" fill="none" stroke="#c00000" stroke-width="2"/>
+<path d="M345,655 L430,655" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<path d="M360,668 L430,668" fill="none" stroke="#2a9d2a" stroke-width="1.5"/>
+<rect x="430" y="720" width="230" height="110" rx="6" fill="#eef7ee" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="738" font-size="13" font-weight="bold" text-anchor="middle">PS1 SMPS</text>
+<text x="438" y="756" font-size="10.5">In: AC100V</text>
+<text x="438" y="770" font-size="10.5">Out1: 24VDC 6.5A (motors)</text>
+<text x="438" y="784" font-size="10.5">Out2: 12VDC 5A (MDB/ctrl/LED)</text>
+<text x="438" y="798" font-size="10.5">Out3: 5VDC 2A (logic)</text>
+<path d="M330,750 L430,750" fill="none" stroke="#c00000" stroke-width="2"/>
+<text x="384.0" y="746.0" font-size="9.5" fill="#c00000">L</text>
+<path d="M345,770 L430,770" fill="none" stroke="#1f4fd0" stroke-width="2"/>
+<text x="391.5" y="766.0" font-size="9.5" fill="#1f4fd0">N</text>
+<path d="M360,790 L430,790" fill="none" stroke="#2a9d2a" stroke-width="2"/>
+<text x="399.0" y="786.0" font-size="9.5" fill="#2a9d2a">PE</text>
+<rect x="430" y="870" width="230" height="90" rx="6" fill="#eef7ee" stroke="#222" stroke-width="1.5"/>
+<text x="545.0" y="888" font-size="13" font-weight="bold" text-anchor="middle">LED backlight</text>
+<text x="438" y="906" font-size="10.5">LED bars 2×18W, 12VDC</text>
+<text x="438" y="920" font-size="10.5">dim via light sensor LS1</text>
+<text x="438" y="934" font-size="10.5">(K7 / PWM)</text>
+<rect x="800" y="300" width="280" height="380" rx="6" fill="#e9f0ff" stroke="#222" stroke-width="1.5"/>
+<text x="940.0" y="318" font-size="13" font-weight="bold" text-anchor="middle">A1 Main Vend Controller (MCU)</text>
+<text x="808" y="336" font-size="10.5">J1  24VDC in  / J2 12VDC in</text>
+<text x="808" y="350" font-size="10.5">J3  Vend motor drv ×10 (low-side MOSFET)</text>
+<text x="808" y="364" font-size="10.5">     DO_VEND_M01..10</text>
+<text x="808" y="378" font-size="10.5">J4  Cam switches DI_CAM_01..10</text>
+<text x="808" y="392" font-size="10.5">J5  Sold-out sw DI_EMPTY_01..10</text>
+<text x="808" y="406" font-size="10.5">J6  Drop IR sensor DI_DROP</text>
+<text x="808" y="420" font-size="10.5">J7  Flap sw DI_FLAP_SW, Door DI_DOOR_SW</text>
+<text x="808" y="434" font-size="10.5">J8  Return lever DI_RET_LEVER</text>
+<text x="808" y="448" font-size="10.5">J9  NTC TH1 cold / TH2 hot (AI)</text>
+<text x="808" y="462" font-size="10.5">J10 Relay board coils (12V)</text>
+<text x="808" y="476" font-size="10.5">J11 MDB master (9600 8N1+mode)</text>
+<text x="808" y="490" font-size="10.5">J12 HMI board (RS-485 + 12V)</text>
+<text x="808" y="504" font-size="10.5">J13 LCD credit display (UART)</text>
+<text x="808" y="518" font-size="10.5">J14 Telemetry / DEX-UCS / LTE-M</text>
+<text x="808" y="532" font-size="10.5">Watchdog, RTC, EEPROM audit</text>
+<text x="808" y="546" font-size="10.5"></text>
+<text x="808" y="560" font-size="10.5">State machine: controller_state_machine.md</text>
+<path d="M660,750 L740,750 L740,330 L800,330" fill="none" stroke="#e07b00" stroke-width="2.5"/>
+<text x="704.0" y="746.0" font-size="9.5" fill="#e07b00">24V</text>
+<path d="M660,775 L760,775 L760,350 L800,350" fill="none" stroke="#9b59b6" stroke-width="2.5"/>
+<text x="714.0" y="771.0" font-size="9.5" fill="#9b59b6">12V</text>
+<path d="M800,440 L720,440 L720,210 L660,210" fill="none" stroke="#333333" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="764.0" y="436.0" font-size="9.5" fill="#333333">J10 coils</text>
+<path d="M660,900 L780,900 L780,560 L800,560" fill="none" stroke="#9b59b6" stroke-width="1.5"/>
+<rect x="1180" y="80" width="230" height="200" rx="6" fill="#fff6e5" stroke="#222" stroke-width="1.5"/>
+<text x="1295.0" y="98" font-size="13" font-weight="bold" text-anchor="middle">M10..M19 Vend motors ×10</text>
+<text x="1188" y="116" font-size="10.5">24VDC gear motor 0.3A</text>
+<text x="1188" y="130" font-size="10.5">Cam micro-sw (NO) per col</text>
+<text x="1188" y="144" font-size="10.5">Column 1–7 COLD, 8–10 HOT</text>
+<text x="1188" y="158" font-size="10.5">Sold-out sw S11..S20 (NC)</text>
+<text x="1188" y="172" font-size="10.5">Diode clamp per motor</text>
+<text x="1188" y="186" font-size="10.5"></text>
+<text x="1188" y="200" font-size="10.5">Drop sensor PH1:</text>
+<text x="1188" y="214" font-size="10.5">IR emitter/receiver 12V, chute</text>
+<path d="M1080,330 L1130,330 L1130,150 L1180,150" fill="none" stroke="#e07b00" stroke-width="2.5"/>
+<text x="1109.0" y="326.0" font-size="9.5" fill="#e07b00">DO_VEND_M01..10</text>
+<path d="M1180,200 L1110,200 L1110,360 L1080,360" fill="none" stroke="#333333" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="1149.0" y="196.0" font-size="9.5" fill="#333333">DI_CAM / DI_EMPTY</text>
+<rect x="1180" y="320" width="230" height="90" rx="6" fill="#e5f7f7" stroke="#222" stroke-width="1.5"/>
+<text x="1295.0" y="338" font-size="13" font-weight="bold" text-anchor="middle">A2 Coin changer (MDB 0x08)</text>
+<text x="1188" y="356" font-size="10.5">¥10/50/100/500, 4 tubes</text>
+<text x="1188" y="370" font-size="10.5">Return lever → DI_RET_LEVER</text>
+<text x="1188" y="384" font-size="10.5">24VDC on MDB</text>
+<rect x="1180" y="430" width="230" height="80" rx="6" fill="#e5f7f7" stroke="#222" stroke-width="1.5"/>
+<text x="1295.0" y="448" font-size="13" font-weight="bold" text-anchor="middle">A3 Bill validator (MDB 0x30)</text>
+<text x="1188" y="466" font-size="10.5">¥1000 note, escrow 1</text>
+<text x="1188" y="480" font-size="10.5">stacker 300 notes</text>
+<rect x="1180" y="530" width="230" height="90" rx="6" fill="#e5f7f7" stroke="#222" stroke-width="1.5"/>
+<text x="1295.0" y="548" font-size="13" font-weight="bold" text-anchor="middle">A4 IC reader (MDB 0x10)</text>
+<text x="1188" y="566" font-size="10.5">Cashless lvl 3, NFC FeliCa</text>
+<text x="1188" y="580" font-size="10.5">Suica/PASMO/iD/QUICPay</text>
+<text x="1188" y="594" font-size="10.5">LTE-M gateway to host</text>
+<line x1="1140" y1="360" x2="1140" y2="580" stroke="#008b8b" stroke-width="4"/>
+<path d="M1080,470 L1140,470" fill="none" stroke="#008b8b" stroke-width="3"/>
+<text x="1114.0" y="466.0" font-size="9.5" fill="#008b8b">MDB bus</text>
+<path d="M1140,365 L1180,365" fill="none" stroke="#008b8b" stroke-width="3"/>
+<path d="M1140,470 L1180,470" fill="none" stroke="#008b8b" stroke-width="3"/>
+<path d="M1140,575 L1180,575" fill="none" stroke="#008b8b" stroke-width="3"/>
+<rect x="1180" y="660" width="230" height="170" rx="6" fill="#f0e9ff" stroke="#222" stroke-width="1.5"/>
+<text x="1295.0" y="678" font-size="13" font-weight="bold" text-anchor="middle">A5 HMI board (door)</text>
+<text x="1188" y="696" font-size="10.5">20 selection buttons (4×5 matrix)</text>
+<text x="1188" y="710" font-size="10.5">DI_SEL_R1C01..R2C10</text>
+<text x="1188" y="724" font-size="10.5">20 button LEDs blue/red</text>
+<text x="1188" y="738" font-size="10.5">DO_LED_*, 20 sold-out lamps DO_SOLDOUT_*</text>
+<text x="1188" y="752" font-size="10.5">4-digit LCD (SER_LCD)</text>
+<text x="1188" y="766" font-size="10.5">Buzzer</text>
+<text x="1188" y="780" font-size="10.5">Door harness: 12-pin, 2 m</text>
+<path d="M1080,620 L1110,620 L1110,740 L1180,740" fill="none" stroke="#333333" stroke-width="2"/>
+<text x="1099.0" y="616.0" font-size="9.5" fill="#333333">RS-485 + 12V</text>
+<rect x="800" y="730" width="280" height="110" rx="6" fill="#f7f7f7" stroke="#222" stroke-width="1.5"/>
+<text x="940.0" y="748" font-size="13" font-weight="bold" text-anchor="middle">Sensors</text>
+<text x="808" y="766" font-size="10.5">TH1 NTC 10k B3435 cold zone</text>
+<text x="808" y="780" font-size="10.5">TH2 NTC 10k B3435 hot zone</text>
+<text x="808" y="794" font-size="10.5">LS1 CdS light sensor (night dim)</text>
+<text x="808" y="808" font-size="10.5">S2 flap sw, S1 door sw</text>
+<path d="M940,730 L940,680" fill="none" stroke="#333333" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="944.0" y="701.0" font-size="9.5" fill="#333333">AI/DI</text>
+<rect x="1450" y="80" width="230" height="200" fill="#fff" stroke="#222"/><text x="1460" y="100" font-size="13" font-weight="bold">Legend</text>
+<line x1="1460" y1="120" x2="1500" y2="120" stroke="#c00000" stroke-width="3"/><text x="1510" y="124" font-size="11">AC100V Line (L)</text>
+<line x1="1460" y1="142" x2="1500" y2="142" stroke="#1f4fd0" stroke-width="3"/><text x="1510" y="146" font-size="11">Neutral (N)</text>
+<line x1="1460" y1="164" x2="1500" y2="164" stroke="#2a9d2a" stroke-width="3"/><text x="1510" y="168" font-size="11">Protective earth</text>
+<line x1="1460" y1="186" x2="1500" y2="186" stroke="#e07b00" stroke-width="3"/><text x="1510" y="190" font-size="11">24VDC motor power</text>
+<line x1="1460" y1="208" x2="1500" y2="208" stroke="#9b59b6" stroke-width="3"/><text x="1510" y="212" font-size="11">12VDC control / LED</text>
+<line x1="1460" y1="230" x2="1500" y2="230" stroke="#008b8b" stroke-width="3"/><text x="1510" y="234" font-size="11">MDB bus (9-bit serial)</text>
+<line x1="1460" y1="252" x2="1500" y2="252" stroke="#333333" stroke-width="3"/><text x="1510" y="256" font-size="11">Signal / sensor</text>
+<rect x="1450" y="320" width="230" height="200" rx="6" fill="#fffbe6" stroke="#222" stroke-width="1.5"/>
+<text x="1565.0" y="338" font-size="13" font-weight="bold" text-anchor="middle">Notes</text>
+<text x="1458" y="356" font-size="10.5">1. All metal parts bonded to PE.</text>
+<text x="1458" y="370" font-size="10.5">2. Heater: SSR + TF1 85°C fuse +</text>
+<text x="1458" y="384" font-size="10.5">   bimetal in series (hw safety).</text>
+<text x="1458" y="398" font-size="10.5">3. Compressor: 3-min restart delay</text>
+<text x="1458" y="412" font-size="10.5">   in firmware + OLP in hardware.</text>
+<text x="1458" y="426" font-size="10.5">4. Motor diodes 1N4007 on each.</text>
+<text x="1458" y="440" font-size="10.5">5. Door sw kills vend motor 24V</text>
+<text x="1458" y="454" font-size="10.5">   (hardware interlock K8).</text>
+<text x="1458" y="468" font-size="10.5">6. Wire: AC 1.25sq, DC 0.5sq,</text>
+<text x="1458" y="482" font-size="10.5">   MDB 4-core 0.3sq shielded.</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToyMDQzMzZhYS01NjI3LTQyMzUtODE1Yi0xZmQ1OTEzOWFlMDUAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaMZH39EbU6ll7qGdL4BevPUAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo0NzZmNzZhNC05YmQ3LTQwYjItOTRmZS1iOGUxNmIzZjkwNzdscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoJzwZ9woXh29kZDqwwZ3FeQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggBbqj+VLKjYUJuljeLxJ4LrbHtWr7XEJGS6mmdsbwVdekZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaBXGPJpaOYwyWw0i09k8HzMAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIBLerdAA2jAg7C2WyNHZ6t7RkhOioE6oTVSsBbkQywlTZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GT9MZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjIwNDMzNmFhLTU2MjctNDIzNS04MTViLTFmZDU5MTM5YWUwNS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjNmYzMxMjhiLWZlMzUtNDE4Zi1hYmI0LTI3YWQ5ODc2Mzg5NHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCAFuqP5UsqNhQm6WN4vEngutse1avtcQkZLqaZ2xvBV16JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggEE3rX3RELbpZKdX/eHEGmux6tpnlRBSy4t44Om47hJeiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggTAHJFfBeMTm9qXMht9a9DTVPWY3L4up4/eCu87vvw/50Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQDonYxYAfmM2eS1ljg4YFxLrTFWJBKerWCYHrdAkylHkWZkmWDURUFBNP1jmUJH0xscevVBQO9a9jy1PvcD3AVs=</c2pa:manifest></metadata></svg>

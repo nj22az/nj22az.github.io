@@ -71,7 +71,10 @@ def main():
     check(40000 < tri < 80000, f'the hull has {tri} triangles (between 40,000 and 80,000)')
     total = sum(m['triangles'] for g in groups.values() for m in g['meshes'])
     size = os.path.getsize(a.file)
-    check(size < 2_000_000, f'the file is {size / 1e6:.2f} MB with {total} triangles (under 2 MB)')
+    # The budget is what a phone fetches once and then keeps (the page saves the file for use offline). It was 2 MB while she
+    # was mostly the other ship; it is 3 MB since 11 November 2026, when the owner's drinks machine came aboard with 22,000
+    # triangles of its own, and it is to be looked at again as each section is built.
+    check(size < 3_000_000, f'the file is {size / 1e6:.2f} MB with {total} triangles (under 3 MB)')
     # ---- Her own pictures and her register travel with the model.
     here = os.path.dirname(os.path.abspath(a.file))
     sheets = header.get('atlases', [])
