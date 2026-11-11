@@ -3,12 +3,12 @@ What stands in the spaces the hull gives a floor and bulkheads to, and what she 
 
   - the steering gear: a flat, the two rudder stocks in their carriers, a tiller on each joined by a tie bar, a ram on
     each tiller, two hydraulic power units, the hand pump, the stern tubes' oil header tanks, the emergency fire pump;
-  - the shafting inside her: each intermediate shaft from its gearbox's flange through the engine room's aft bulkhead,
-    over a plummer block, to the coupling on the tail shaft;
-  - the two fresh-water tanks;
-  - the ways on foot: five watertight doors, the walkways through the shaft space and the void, three ladders, two hatches;
-  - the bow thruster's motor on the crown of the tunnel, its platform and its starter;
-  - the two chain lockers in the fore peak;
+  - the shafting inside her: each intermediate shaft from its gearbox's flange in the engine room, over a plummer block,
+    through the bulkhead's gland, to the coupling on the tail shaft in the shaft space;
+  - the ways on foot below the car deck: six watertight doors on the centreline, the flat and steps through the shaft
+    space, the steps from the engine room's after flat to the tank top, the ladder and flush hatch to the fore store;
+  - the bow thruster's motor on the crown of the tunnel;
+  - the fore store's flat and the two chain lockers;
   - the two anchors, housed in their hawse pipes.
 
 All but the anchors are fittings of rooms, so they lift with the machinery spaces (`group = 'machinery'`), where the
@@ -29,6 +29,9 @@ def _cyl(part, a, b, r, colour, sides=16, r2=None):
     part.tube(a, b, r, r2, colour=colour, sides=sides)
 
 
+PLATE_T = 0.006          # a floor plate's thickness
+
+
 def _plates(part, yard0, yard1, y, colour, breadth, gap=0.008, length=0.75, width=0.9, opening=None):
     """Floor plates laid in panels between two frames: each panel its own plate, a shade apart from its neighbours."""
     n = max(1, round((yard1 - yard0) / length))
@@ -41,9 +44,7 @@ def _plates(part, yard0, yard1, y, colour, breadth, gap=0.008, length=0.75, widt
             if opening and opening(xa, xb, za, zb):
                 continue
             shade = 1 + 0.035 * (((i * 7 + j * 13) % 5) - 2) / 2
-            start = len(part.f)
-            part.grid([[(xa, y, za), (xb, y, za)], [(xa, y, zb), (xb, y, zb)]], tint(colour, shade))
-            part.orient(start, UP)
+            part.box((xa, y - PLATE_T, za), (xb, y, zb), tint(colour, shade))        # 6 mm of plate: it carries what stands on it
 
 
 def _hex_bar(part, a, b, wa, wb, h, colour):
@@ -74,16 +75,28 @@ def steering_gear():
     bright = Part('Steering gear, bright steel', 'Shaft steel', smooth=True, angle=40)
     tie = Part('Tie bar', 'Machinery paint', smooth=True, angle=40, mover='tie-bar')
     made = [flat, gear, bright, tie]
-    y0 = S.FLAT
+    y0 = S.STEERING_FLAT
     zs = L.Z(S.RUDDER['yard_stock'])
     t = S.TILLER
     arm_y, reach = t['level'], t['reach']
+    k = 1.6                                           # her gear beside the first Chisum's: stocks of 200 mm for 120
     dark, grey, steel = srgb(S.DARK_GREY), srgb(S.LIGHT_GREY), srgb(S.STEEL)
     blue, red, brown = srgb(S.MOTOR_BLUE), srgb(S.FIRE_RED), srgb(S.OIL_BROWN)
 
     # ---- The flat: chequer plates from the transom's frames to the bulkhead.
-    breadth = lambda z: L.hull_x(y0 + 0.02, z) - 0.16
-    _plates(flat, 0.35, 2.55, y0, srgb(S.FLOOR_PLATE), breadth)
+    breadth = lambda z: L.hull_x(y0 + 0.02, z) - 0.20
+    _plates(flat, 0.33, S.fr(8) - 0.06, y0, srgb(S.FLOOR_PLATE), breadth, length=0.9, width=1.1)
+    # The flat's bearers: a bar across her on the floor of each frame, as high as the flat lies over it.
+    from hull_structure import floor_top
+    bearers = Part('Steering-gear room, bearers', 'Machinery paint')
+    made.append(bearers)
+    for frame in range(1, 8):
+        yard = frame * L.FRAME_SPACING
+        zb = L.Z(yard)
+        foot = floor_top(yard)
+        if y0 - PLATE_T - foot > 0.02:
+            half = L.hull_x(foot + 0.02, zb) - 0.12                 # as wide as she is at the bearer's foot: she is narrower there than at the flat
+            bearers.box((-half, foot, zb - 0.03), (half, y0 - PLATE_T, zb + 0.03), dark)
 
     pin = zs + t['ram_at']
     for side, label in ((1, 'port'), (-1, 'starboard')):
@@ -98,70 +111,78 @@ def steering_gear():
         # The rudder carrier on the flat (fixed); the head of the stock above it and the tiller keyed to it (turning).
         # (The carrier's top closes on the stock, the tiller's boss is bored to it and the ram's cylinder begins at its stool:
         # each stood clear of what holds it by 5 to 30 mm, which blender/afloat.py found.)
-        _revolve(gear, (x, y0, zs), UP, [(0.0, 0.25), (0.035, 0.25), (0.035, 0.17), (0.15, 0.17), (0.16, 0.09), (0.16, 0.06)], dark, sides=20)
-        _cyl(head, (x, y0 + 0.15, zs), (x, arm_y + 0.13, zs), 0.06, steel)
-        _revolve(tiller, (x, arm_y - 0.085, zs), UP, [(0.0, 0.06), (0.0, 0.125), (0.17, 0.125), (0.17, 0.06)], dark, sides=20)
-        _hex_bar(tiller, (x, arm_y, zs + 0.09), (x, arm_y, zs + reach), 0.17, 0.10, 0.085, dark)
-        _revolve(tiller, (x, arm_y - 0.06, zs + reach), UP, [(0.0, 0.0), (0.0, 0.065), (0.12, 0.065), (0.12, 0.0)], dark, sides=14)
-        _cyl(head, (x, arm_y - 0.09, zs + reach), (x, arm_y + t['tie_bar'] + 0.05, zs + reach), 0.022, steel, sides=10)
+        _revolve(gear, (x, y0, zs), UP, [(0.0, 0.25 * k), (0.035 * k, 0.25 * k), (0.035 * k, 0.17 * k), (0.15 * k, 0.17 * k), (0.16 * k, 0.11 * k), (0.16 * k, 0.10)], dark, sides=22)
+        _cyl(head, (x, y0 + 0.15 * k, zs), (x, arm_y + 0.20, zs), 0.10, steel)
+        _revolve(tiller, (x, arm_y - 0.13, zs), UP, [(0.0, 0.10), (0.0, 0.20), (0.26, 0.20), (0.26, 0.10)], dark, sides=22)
+        _hex_bar(tiller, (x, arm_y, zs + 0.15), (x, arm_y, zs + reach), 0.27, 0.16, 0.13, dark)
+        _revolve(tiller, (x, arm_y - 0.09, zs + reach), UP, [(0.0, 0.0), (0.0, 0.10), (0.18, 0.10), (0.18, 0.0)], dark, sides=16)
+        _cyl(head, (x, arm_y - 0.13, zs + reach), (x, arm_y + t['tie_bar'] + 0.07, zs + reach), 0.034, steel, sides=10)
         # The clevis on the tiller that the ram's rod is pinned to.
         cx = x + side * t['clevis']
-        tiller.box((cx - 0.055, arm_y - 0.065, pin - 0.05), (cx + 0.055, arm_y + 0.065, pin + 0.05), dark)
+        tiller.box((cx - 0.085, arm_y - 0.10, pin - 0.08), (cx + 0.085, arm_y + 0.10, pin + 0.08), dark)
         # The ram: its stool (fixed), the cylinder trunnioned on it, the rod.
         out = side * (X + t['ram_anchor'])
-        gear.box((min(out, out + side * 0.14), y0, pin - 0.11), (max(out, out + side * 0.14), arm_y + 0.09, pin + 0.11), dark)
+        gear.box((min(out, out + side * 0.22), y0, pin - 0.17), (max(out, out + side * 0.22), arm_y + 0.14, pin + 0.17), dark)
         along = lambda d: (out - side * d, arm_y, pin)          # a point d metres from the trunnion, toward the tiller
-        _cyl(barrel, along(0.0), along(0.64), 0.062, grey, sides=16)
-        _cyl(barrel, along(0.63), along(0.69), 0.075, dark, sides=16)
+        _cyl(barrel, along(0.0), along(0.90), 0.095, grey, sides=18)
+        _cyl(barrel, along(0.89), along(0.97), 0.115, dark, sides=18)
         # The rod is as long as the stroke asks: hard over one way it still stands in the cylinder, the other way it
         # does not come out of its back.
-        _cyl(rod, along(0.30), along(t['ram_anchor'] - t['clevis'] - 0.03), 0.027, steel, sides=12)
-        # Two pipes from the power unit to the ram, along the flat.
-        for k, end in enumerate((X + 1.08, X + 0.58)):
-            run = L.Z(0.72) + 0.05 * k
-            pts = [(side * 0.62, y0 + 0.16, run), (side * end, y0 + 0.16, run), (side * end, y0 + 0.16, pin + 0.14), (side * end, arm_y - 0.08, pin + 0.14)]
+        _cyl(rod, along(0.42), along(t['ram_anchor'] - t['clevis'] - 0.04), 0.042, steel, sides=12)
+        # Two pipes from the power unit to the ram, along the flat, clamped to it at every turn and between.
+        for i, end in enumerate((X + 1.75, X + 1.05)):
+            run = L.Z(1.75) + 0.07 * i
+            pts = [(side * 1.05, y0 + 0.03, run), (side * end, y0 + 0.03, run), (side * end, y0 + 0.03, pin + 0.21), (side * end, arm_y - 0.10, pin + 0.21)]
             for a, b in zip(pts, pts[1:]):
-                _cyl(bright, a, b, 0.012, srgb(S.FLANGE), sides=8)
+                _cyl(bright, a, b, 0.016, srgb(S.FLANGE), sides=8)
+            # a saddle clamp on the flat at each end of its two level lengths and in the middle of each (JSY-STD-402)
+            for a, b in zip(pts[:2], pts[1:3]):
+                for f in (0.08, 0.5, 0.92):
+                    cx, cz = a[0] + (b[0] - a[0]) * f, a[2] + (b[2] - a[2]) * f
+                    wx, wz = (0.012, 0.03) if abs(b[0] - a[0]) > abs(b[2] - a[2]) else (0.03, 0.012)
+                    gear.box((cx - wx, y0, cz - wz), (cx + wx, y0 + 0.052, cz + wz), dark)
         # A hydraulic power unit each side of the centreline, aft of the stocks and clear of the tillers and the tie bar:
         # a tank on feet, a motor and its pump standing on the tank, a filter, a sight glass.
-        ux = side * 0.62
-        z0, z1 = L.Z(0.55), L.Z(0.95)
-        gear.box((ux - 0.27, y0 + 0.1, z0), (ux + 0.27, y0 + 0.5, z1), grey)
-        for fx in (-0.22, 0.22):
-            for fz in (z0 + 0.05, z1 - 0.05):
-                gear.box((ux + fx - 0.025, y0, fz - 0.025), (ux + fx + 0.025, y0 + 0.1, fz + 0.025), dark)
-        _cyl(gear, (ux - 0.08, y0 + 0.5, (z0 + z1) / 2), (ux - 0.08, y0 + 0.58, (z0 + z1) / 2), 0.07, dark)
-        _cyl(gear, (ux - 0.08, y0 + 0.58, (z0 + z1) / 2), (ux - 0.08, y0 + 0.9, (z0 + z1) / 2), 0.105, blue, sides=18)
-        _cyl(gear, (ux - 0.08, y0 + 0.9, (z0 + z1) / 2), (ux - 0.08, y0 + 0.94, (z0 + z1) / 2), 0.11, dark, sides=18)
-        _cyl(gear, (ux + 0.15, y0 + 0.5, z1 - 0.12), (ux + 0.15, y0 + 0.66, z1 - 0.12), 0.045, srgb(S.FLANGE), sides=12)
-        gear.box((ux - 0.04, y0 + 0.2, z1), (ux + 0.04, y0 + 0.44, z1 + 0.015), srgb(0xd8d2b8))
-        # The stern tube's oil header tank, high on the forward bulkhead, its pipe led down through the flat.
-        hx = side * 2.35
-        hz = L.Z(2.6) - 0.04
-        gear.box((hx - 0.16, 1.2, hz - 0.3), (hx + 0.16, 1.62, hz), brown)
-        gear.box((hx - 0.2, 1.14, hz - 0.3), (hx + 0.2, 1.2, hz), dark)
-        _cyl(bright, (hx, 1.2, hz - 0.15), (hx, y0, hz - 0.15), 0.012, srgb(S.FLANGE), sides=8)
+        ux = side * 1.05
+        z0, z1 = L.Z(1.0), L.Z(1.7)
+        gear.box((ux - 0.42, y0 + 0.12, z0), (ux + 0.42, y0 + 0.72, z1), grey)
+        for fx in (-0.34, 0.34):
+            for fz in (z0 + 0.07, z1 - 0.07):
+                gear.box((ux + fx - 0.035, y0, fz - 0.035), (ux + fx + 0.035, y0 + 0.12, fz + 0.035), dark)
+        _cyl(gear, (ux - 0.12, y0 + 0.72, (z0 + z1) / 2), (ux - 0.12, y0 + 0.82, (z0 + z1) / 2), 0.10, dark)
+        _cyl(gear, (ux - 0.12, y0 + 0.82, (z0 + z1) / 2), (ux - 0.12, y0 + 1.26, (z0 + z1) / 2), 0.15, blue, sides=18)
+        _cyl(gear, (ux - 0.12, y0 + 1.26, (z0 + z1) / 2), (ux - 0.12, y0 + 1.31, (z0 + z1) / 2), 0.157, dark, sides=18)
+        _cyl(gear, (ux + 0.22, y0 + 0.72, z1 - 0.18), (ux + 0.22, y0 + 0.94, z1 - 0.18), 0.06, srgb(S.FLANGE), sides=12)
+        gear.box((ux - 0.05, y0 + 0.26, z1), (ux + 0.05, y0 + 0.60, z1 + 0.015), srgb(0xd8d2b8))
+        # The stern tube's oil header tank, high on the forward bulkhead (frame 8), its pipe led down the bulkhead to the flat.
+        hx = side * 3.3
+        hz = L.Z(S.fr(8)) - 0.002                                         # its bracket is welded to the bulkhead's after face
+        gear.box((hx - 0.22, y0 + 1.05, hz - 0.36), (hx + 0.22, y0 + 1.55, hz - 0.02), brown)
+        gear.box((hx - 0.26, y0 + 0.99, hz - 0.36), (hx + 0.26, y0 + 1.05, hz), dark)
+        _cyl(bright, (hx, y0 + 1.0, hz - 0.05), (hx, y0, hz - 0.05), 0.016, srgb(S.FLANGE), sides=8)
+        for hh in (0.25, 0.70):                                           # clamped to the bulkhead on its way down
+            gear.box((hx - 0.03, y0 + hh, hz - 0.07), (hx + 0.03, y0 + hh + 0.025, hz), dark)
 
     # The tie bar joins the two tillers' ends, over the tillers and the rams, so the rudders turn together.
     bar_y = arm_y + t['tie_bar']
-    _cyl(tie, (-X, bar_y, zs + reach), (X, bar_y, zs + reach), 0.032, dark, sides=14)
+    _cyl(tie, (-X, bar_y, zs + reach), (X, bar_y, zs + reach), 0.05, dark, sides=14)
     for side in (1, -1):
-        tie.box((side * X - 0.05, bar_y - 0.035, zs + reach - 0.05), (side * X + 0.05, bar_y + 0.035, zs + reach + 0.05), dark)
+        tie.box((side * X - 0.08, bar_y - 0.055, zs + reach - 0.08), (side * X + 0.08, bar_y + 0.055, zs + reach + 0.08), dark)
 
     # The emergency hand pump on its pedestal on the centreline aft, its lever up.
-    hz = L.Z(1.05)
-    gear.box((-0.09, y0, hz - 0.09), (0.09, y0 + 0.55, hz + 0.09), grey)
-    _cyl(gear, (0.0, y0 + 0.55, hz), (0.0, y0 + 0.66, hz), 0.06, dark)
-    _cyl(bright, (0.0, y0 + 0.62, hz), (0.0, y0 + 1.15, hz - 0.36), 0.014, steel, sides=10)
-    _cyl(gear, (0.0, y0 + 1.15, hz - 0.36), (0.0, y0 + 1.27, hz - 0.44), 0.022, red, sides=10)
+    hz = L.Z(1.5)
+    gear.box((-0.11, y0, hz - 0.11), (0.11, y0 + 0.62, hz + 0.11), grey)
+    _cyl(gear, (0.0, y0 + 0.62, hz), (0.0, y0 + 0.74, hz), 0.07, dark)
+    _cyl(bright, (0.0, y0 + 0.70, hz), (0.0, y0 + 1.22, hz - 0.36), 0.016, steel, sides=10)
+    _cyl(gear, (0.0, y0 + 1.22, hz - 0.36), (0.0, y0 + 1.34, hz - 0.44), 0.025, red, sides=10)
 
-    # The rudder-angle transmitter beside the port stock, and its link.
-    gear.box((X - 0.32, arm_y + 0.02, zs - 0.34), (X - 0.2, arm_y + 0.16, zs - 0.22), grey)
-    _cyl(bright, (X - 0.26, arm_y + 0.12, zs - 0.28), (X, arm_y + 0.12, zs), 0.008, steel, sides=6)
+    # The rudder-angle transmitter beside the port stock, on a stool on the flat, and its link to the stock's head.
+    gear.box((X - 0.50, y0, zs - 0.52), (X - 0.34, arm_y + 0.26, zs - 0.36), grey)
+    _cyl(bright, (X - 0.42, arm_y + 0.19, zs - 0.44), (X, arm_y + 0.19, zs), 0.010, steel, sides=6)
 
     # The emergency fire pump, outside the engine room: a pump and its motor on a bed to starboard aft, its own sea
     # suction with a valve, its delivery led up to the deck.
-    px, pz = -2.55, L.Z(0.95)
+    px, pz = -3.4, L.Z(1.3)
     gear.box((px - 0.2, y0, pz - 0.42), (px + 0.2, y0 + 0.07, pz + 0.42), dark)
     _cyl(gear, (px, y0 + 0.24, pz - 0.36), (px, y0 + 0.24, pz + 0.02), 0.115, blue, sides=18)
     _cyl(gear, (px, y0 + 0.24, pz + 0.02), (px, y0 + 0.24, pz + 0.1), 0.06, dark, sides=12)
@@ -169,7 +190,7 @@ def steering_gear():
     _cyl(gear, (px, y0 + 0.24, pz + 0.3), (px, y0 + 0.24, pz + 0.4), 0.055, red, sides=12)
     _cyl(gear, (px, y0 + 0.24, pz + 0.4), (px, y0 - 0.02, pz + 0.4), 0.05, red, sides=12)
     _revolve(gear, (px, y0 + 0.12, pz + 0.4), (1, 0, 0), [(0.05, 0.0), (0.05, 0.09), (0.065, 0.09), (0.065, 0.0)], red, sides=12)
-    _cyl(gear, (px, y0 + 0.36, pz + 0.2), (px, 1.95, pz + 0.2), 0.04, red, sides=12)
+    _cyl(gear, (px, y0 + 0.36, pz + 0.2), (px, L.CAR - 0.04, pz + 0.2), 0.04, red, sides=12)
     for p in made:
         p.group = 'machinery'
     return made
@@ -233,7 +254,7 @@ def _door_hinge(d):
     return (d.get('x', 0.0) + S.WT_DOOR['width'] / 2 + S.WT_DOOR['frame'] + 0.04, zf + side * (0.004 + S.WT_DOOR['leaf'] / 2))
 
 
-def _walkway(walk, rails, cx, half, levels, posts, frames, rail):
+def _walkway(walk, rails, cx, half, levels, posts, frames, rail, floor=None):
     """
     A walkway of floor plates: `levels` are its plates, each (yard, yard, height), in the order one walks them. Under
     each edge a stringer; bearers down to the floors of her bottom at the frames given; a rail each side on stanchions
@@ -263,7 +284,8 @@ def _walkway(walk, rails, cx, half, levels, posts, frames, rail):
             # A level with no frame under it (a step between two longer levels) has no post: its side bearer is deep enough
             # to meet the next level's, so the step hangs on its neighbours (it hung on nothing: blender/afloat.py).
             framed = any(ya < k * L.FRAME_SPACING < yb for k in frames)
-            rails.box((a, y - (0.10 if framed else 0.30), L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
+            under = y - (0.10 if framed else 0.30)
+            rails.box((a, under if floor is None else max(under, floor), L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
         for k in frames:
             yard = k * L.FRAME_SPACING
             if not (min(l[0] for l in levels) < yard < max(l[1] for l in levels)):
@@ -294,23 +316,23 @@ def ways():
 
 def ladders():
     """
-    The ladders (spec.LADDERS): two flat-bar stringers 0.40 m apart, round rungs every 0.30 m. Over two of them a hatch in
-    the car deck: a coaming 0.12 m high and a cover hinged on the ladder's side, which the page opens for whoever comes
-    near (a mover named as the hatch). In the fore peak, the flat one comes down to, between the chain lockers.
+    The ladders (spec.LADDERS): two flat-bar stringers 0.40 m apart, round rungs every 0.30 m. Over the fore store's a
+    hatch in the car deck, on the line between the two middle lanes: flush, because vehicles drive over it; its coaming
+    hangs under the deck and its cover lies in the deck's plane, hinged on the ladder's side (a mover named as the hatch,
+    which the page opens for whoever comes near). And the fore store's flat itself, between the chain lockers.
     """
     from hull_structure import floor_top
     steel, grey, dark, plate = srgb(S.STEEL), srgb(S.DOOR_GREY), srgb(S.DARK_GREY), srgb(S.FLOOR_PLATE)
     made = []
     for l in S.LADDERS:
         fx, fz = l['faces']
-        cx, cz = S.ladder_side(l)
         ax, az = abs(fz), abs(fx)                                   # across the ladder, in the plan
         x, z = l['x'], L.Z(l['yard'])
-        y0, y1 = l['foot'], l['head'] + l.get('top', -0.06)
+        y0, y1 = l['foot'], l['head'] + l.get('top', -0.02)
         part = Part(f"Ladder, {l['id'][7:].replace('-', ' ')}", 'Shaft steel', smooth=True, angle=40)
         part.group = l['group']
-        for s in (1, -1):
-            sx, sz = x + s * 0.2 * ax, z + s * 0.2 * az
+        for sgn in (1, -1):
+            sx, sz = x + sgn * 0.2 * ax, z + sgn * 0.2 * az
             lo = (sx - 0.006 * ax - 0.025 * abs(fx), y0, sz - 0.006 * az - 0.025 * abs(fz))
             hi = (sx + 0.006 * ax + 0.025 * abs(fx), y1, sz + 0.006 * az + 0.025 * abs(fz))
             part.box(lo, hi, steel)
@@ -329,37 +351,43 @@ def ladders():
         made.append(part)
         if not l.get('hatch'):
             continue
-        # ---- The hatch: coaming and cover.
+        # ---- The hatch: a coaming under the deck round the opening, and the cover in the deck's plane.
         x0, x1, ya, yb = S.hatch_opening(l)
         z0, z1 = L.Z(ya), L.Z(yb)
         deck = l['head']
         coaming = Part(f"Hatch coaming, {l['id'][7:].replace('-', ' ')}", 'Machinery paint')
         coaming.group = 'car'
-        t, top = 0.03, deck + 0.12
-        for lo, hi in (((x0 - t, deck - 0.05, z0 - t), (x0, top, z1 + t)), ((x1, deck - 0.05, z0 - t), (x1 + t, top, z1 + t)),
-                       ((x0, deck - 0.05, z0 - t), (x1, top, z0)), ((x0, deck - 0.05, z1), (x1, top, z1 + t))):
+        t, foot = 0.03, deck - 0.22
+        for lo, hi in (((x0 - t, foot, z0 - t), (x0, deck - 0.012, z1 + t)), ((x1, foot, z0 - t), (x1 + t, deck - 0.012, z1 + t)),
+                       ((x0, foot, z0 - t), (x1, deck - 0.012, z0)), ((x0, foot, z1), (x1, deck - 0.012, z1 + t))):
             coaming.box(lo, hi, grey)
         cover = Part(f"Hatch cover, {l['id'][7:].replace('-', ' ')}", 'Machinery paint', mover=l['hatch'])
         cover.group = 'car'
-        cover.box((x0 - t - 0.02, top + 0.004, z0 - t - 0.02), (x1 + t + 0.02, top + 0.024, z1 + t + 0.02), tint(grey, 0.96))
-        # a stiffening cross and a handle on the cover
+        cover.box((x0 + 0.004, deck - 0.012, z0 + 0.004), (x1 - 0.004, deck + 0.004, z1 - 0.004), tint(grey, 0.9))
+        # a stiffening cross under the cover, and a flush lifting ring on it
         mx, mz = (x0 + x1) / 2, (z0 + z1) / 2
-        cover.box((x0 + 0.05, top + 0.024, mz - 0.02), (x1 - 0.05, top + 0.04, mz + 0.02), tint(grey, 0.88))
-        cover.box((mx - 0.02, top + 0.024, z0 + 0.05), (mx + 0.02, top + 0.04, z1 - 0.05), tint(grey, 0.88))
+        cover.box((x0 + 0.05, deck - 0.03, mz - 0.02), (x1 - 0.05, deck - 0.012, mz + 0.02), tint(grey, 0.82))
+        cover.box((mx - 0.02, deck - 0.03, z0 + 0.05), (mx + 0.02, deck - 0.012, z1 - 0.05), tint(grey, 0.82))
+        cover.box((mx - 0.05, deck + 0.004, z1 - 0.12), (mx + 0.05, deck + 0.008, z1 - 0.08), dark)
         made += [coaming, cover]
-    # ---- The fore peak's flat, between the chain lockers, on bearers.
-    flat = Part('Fore peak, flat', 'Floor plate')
-    bearers = Part('Fore peak, bearers', 'Machinery paint')
+    # ---- The fore store's flat, between the two bulkheads forward, on bearers that stand on the floors.
+    flat = Part('Fore store, flat', 'Floor plate')
+    bearers = Part('Fore store, bearers', 'Machinery paint')
     for p in (flat, bearers):
         p.group = 'machinery'
-    _plates(flat, 30.56, 33.0, S.FORE_PEAK_FLAT, plate, lambda z: 0.9)
-    for k in (62, 63, 64, 65):
+    a, b = S.fr(96) + 0.06, S.COLLISION - 0.06
+    breadth = lambda z: L.hull_x(S.FORE_STORE_FLAT + 0.02, z) - 0.22
+    _plates(flat, a, b, S.FORE_STORE_FLAT, plate, breadth, length=0.6, width=1.0)
+    for k in range(97, 103):
         yard = k * L.FRAME_SPACING
-        for sx in (0.82, -0.82):
-            foot = floor_top(yard) + 0.012
-            if S.FORE_PEAK_FLAT - 0.01 - foot > 0.06:
-                # (to 4 mm under the plates' top, the plate's own thickness: 6 mm under, the flat lay on nothing by the check's measure)
-                bearers.box((sx - 0.025, foot, L.Z(yard) - 0.025), (sx + 0.025, S.FORE_PEAK_FLAT - 0.004, L.Z(yard) + 0.025), dark)
+        z = L.Z(yard)
+        foot = floor_top(yard) + 0.012
+        for sx in (0.5, -0.5):
+            if abs(sx) < L.hull_x(foot - 0.05, z) - 0.15:
+                bearers.box((sx - 0.03, foot - 0.02, z - 0.03), (sx + 0.03, S.FORE_STORE_FLAT - PLATE_T, z + 0.03), dark)
+        # a bearer across under the plates at each frame, landed on the frames each side
+        half = L.hull_x(S.FORE_STORE_FLAT - 0.10, z) - 0.10          # as wide as she is under the flat, where she is narrower than at it
+        bearers.box((-half, S.FORE_STORE_FLAT - 0.09, z - 0.03), (half, S.FORE_STORE_FLAT - PLATE_T, z + 0.03), dark)
     made += [flat, bearers]
     return made
 
@@ -368,10 +396,10 @@ def hatch_hinge(l):
     """A hatch cover's hinge: a point on it and its direction. Along the edge behind the ladder."""
     x0, x1, ya, yb = S.hatch_opening(l)
     cx, cz = S.ladder_side(l)
-    y = l['head'] + 0.12 + 0.014
+    y = l['head'] - 0.004
     if cx:
-        return [x0 - 0.03 if cx > 0 else x1 + 0.03, y, L.Z((ya + yb) / 2)], [0, 0, 1], (1 if cx > 0 else -1)
-    return [(x0 + x1) / 2, y, L.Z(ya - 0.03 if cz > 0 else yb + 0.03)], [1, 0, 0], (-1 if cz > 0 else 1)
+        return [x0 + 0.004 if cx > 0 else x1 - 0.004, y, L.Z((ya + yb) / 2)], [0, 0, 1], (1 if cx > 0 else -1)
+    return [(x0 + x1) / 2, y, L.Z(ya + 0.004 if cz > 0 else yb - 0.004)], [1, 0, 0], (-1 if cz > 0 else 1)
 
 
 def way_aft():
@@ -452,9 +480,9 @@ def way_aft():
             _cyl(gear, (cx, cy, wz + side * 0.05), (cx + 0.14 * cos(ang), cy + 0.14 * sin(ang), wz + side * 0.05), 0.009, steel, sides=8)
         made += [leaf, gear]
 
-    # ---- The walkway through the shaft space, from the engine room's door up to the flat by the tanks. Its starboard
-    # rail ends at the head of the steps: beyond it the flat is widened to starboard for the ladder from the lower lobby.
-    low, high = S.WT_DOORS[0]['floor'], S.FLAT
+    # ---- The way through the shaft space: a platform at the level of the engine room's after flat inside the door, five
+    # treads up, and a flat at the level of the steering gear's as far as its door (spec.WALKWAY).
+    low, high = S.ER_AFT_FLAT, S.STEERING_FLAT
     rise = (high - low) / (W['treads'] + 1)
     levels = [(W['platform'][0], W['platform'][1], low)]             # (yard aft end, yard forward end, height), going aft
     for k in range(1, W['treads'] + 1):
@@ -462,34 +490,19 @@ def way_aft():
         levels.append((fwd - W['going'], fwd + 0.02, low + rise * k))
     head = W['platform'][0] - W['going'] * W['treads']
     levels.append((W['flat'][0], head + 0.02, high))
-    posts = [W['platform'][1] - 0.06, W['platform'][0]] + [W['platform'][0] - W['going'] * k for k in (2, 4, 6)]
-    _walkway(walk, rails, 0.0, W['half'], levels, {1: posts + [5.9, W['flat'][0] + 0.1], -1: posts}, range(11, 17), W['rail'])
-    ladder = S.LADDERS[0]
-    lx0, lx1, ly0, ly1 = S.hatch_opening(ladder)
-    plate = srgb(S.FLOOR_PLATE)
-    start = len(walk.f)
-    walk.grid([[(lx0 - 0.05, high, L.Z(ly0 - 0.04)), (-W['half'] - 0.008, high, L.Z(ly0 - 0.04))], [(lx0 - 0.05, high, L.Z(ly1 + 0.06)), (-W['half'] - 0.008, high, L.Z(ly1 + 0.06))]], tint(plate, 0.97))
-    walk.orient(start, UP)
-    # a rail across the landing's forward end, where it stands over her bottom
-    ends = [(x, high + W['rail'], L.Z(ly1 + 0.06)) for x in (lx0 - 0.03, -W['half'] - 0.04)]
-    for x, y, z in ends:
-        _cyl(rails, (x, high - 0.02, z), (x, y, z), 0.014, yellow, sides=8)
-    _cyl(rails, ends[0], ends[1], 0.017, yellow, sides=10)
+    posts = [W['platform'][1] - 0.06, W['platform'][0]] + [W['platform'][0] - W['going'] * k for k in (2, 4)] + [head, 7.6, 6.5, 5.5, W['flat'][0] + 0.1]
+    _walkway(walk, rails, 0.0, W['half'], levels, {1: posts, -1: posts}, range(9, 18), W['rail'])
 
-    # ---- The walkway through the void, from the workshop's door up to the thruster room's.
-    V = S.WALKWAY_VOID
-    low, high = S.WT_DOORS[3]['floor'], S.WT_DOORS[4]['floor']
-    rise = (high - low) / (V['treads'] + 1)
-    void_walk = Part('Void walkway', 'Floor plate')
-    void_rails = Part('Void walkway, rails and bearers', 'Machinery paint', smooth=True, angle=40)
-    levels = [(V['platform'][0], V['platform'][1], low)]             # going forward
-    for k in range(1, V['treads'] + 1):
-        aft = V['platform'][1] + V['going'] * (k - 1)
-        levels.append((aft - 0.02, aft + V['going'], low + rise * k))
-    levels.append((V['platform'][1] + V['going'] * V['treads'] - 0.02, V['flat'], high))
-    posts = [V['platform'][0] + 0.05, V['platform'][1], V['platform'][1] + V['going'] * V['treads'], V['flat'] - 0.05]
-    _walkway(void_walk, void_rails, V['x'], V['half'], levels, {1: posts, -1: posts}, range(53, 55), V['rail'])
-    made += [void_walk, void_rails]
+    # ---- The steps in the engine room, from its after flat down to the tank top at frame 24 (spec.ER_STEPS).
+    E = S.ER_STEPS
+    low, high = S.TANK_TOP, S.ER_AFT_FLAT
+    rise = (high - low) / (E['treads'] + 1)
+    er_walk = Part('Engine room steps', 'Floor plate')
+    er_rails = Part('Engine room steps, rails and bearers', 'Machinery paint', smooth=True, angle=40)
+    levels = [(E['at'] + E['going'] * (k - 1) - 0.02, E['at'] + E['going'] * k, high - rise * k) for k in range(1, E['treads'] + 1)]
+    posts = [E['at'] + 0.03, E['at'] + E['going'] * E['treads'] - 0.03]
+    _walkway(er_walk, er_rails, 0.0, E['half'], levels, {1: posts, -1: posts}, (), 0.95, floor=S.TANK_TOP)
+    made += [er_walk, er_rails]
     for part in made:
         part.group = 'machinery'
     return made
@@ -503,144 +516,88 @@ def shafting():
         p.group = 'machinery'
     steel, flange, green = srgb(S.STEEL), srgb(S.FLANGE), srgb(S.ENGINE_GREEN)
     g = S.GEARBOX_FLANGE
+    bulkhead = S.fr(18)
     for side in (1, -1):
         x = side * X
         at = lambda yard: Vector((x, shaft_y(yard), L.Z(yard)))
         fwd = (at(9.0) - at(8.0)).normalized()
         along = lambda yard: (at(yard) - at(0)).length
-        ring = lambda profile, colour, part=paint: _revolve(part, at(0), fwd, [(along(yd), r) for yd, r in profile], colour, sides=18)
-        # The shaft, from the half coupling bolted to the gearbox's flange to the coupling on the tail shaft.
-        bright.tube(at(g['yard'] - 0.04), at(S.SHAFT_COUPLING), S.SHAFT_RADIUS, colour=steel, sides=14)
-        # (Each ring round the shaft is bored to the shaft: they were bored 15 mm larger and the coupling hung on nothing.)
+        ring = lambda profile, colour, part=paint: _revolve(part, at(0), fwd, [(along(yd), r) for yd, r in profile], colour, sides=20)
+        # The shaft, from the half coupling that will be bolted to the gearbox's flange to the coupling on the tail shaft.
+        bright.tube(at(g['yard'] - 0.05), at(S.SHAFT_COUPLING), S.SHAFT_RADIUS, colour=steel, sides=16)
         bore = S.SHAFT_RADIUS
-        ring([(g['yard'], bore), (g['yard'], g['radius']), (g['yard'] - 0.045, g['radius']), (g['yard'] - 0.05, bore)], flange)
-        # The gland where it passes through the engine room's aft bulkhead.
-        ring([(8.42, bore), (8.42, 0.15), (8.4, 0.15), (8.4, 0.11), (8.31, 0.11), (8.3, bore)], flange)
-        # The plummer block: its housing round the shaft, its foot, and the seat that carries it down to the floor.
+        ring([(g['yard'], bore), (g['yard'], g['radius']), (g['yard'] - 0.07, g['radius']), (g['yard'] - 0.08, bore)], flange)
+        # The gland where it passes through the engine room's after bulkhead.
+        ring([(bulkhead + 0.012, bore), (bulkhead + 0.012, 0.24), (bulkhead - 0.02, 0.24), (bulkhead - 0.02, 0.18), (bulkhead - 0.16, 0.18), (bulkhead - 0.17, bore)], flange)
+        # The plummer block: its housing round the shaft, its foot, and the seat that carries it down to the after flat.
         pb = S.PLUMMER_BLOCK
-        ring([(pb + 0.1, bore), (pb + 0.095, 0.13), (pb - 0.095, 0.13), (pb - 0.1, bore)], green)
+        ring([(pb + 0.16, bore), (pb + 0.15, 0.21), (pb - 0.15, 0.21), (pb - 0.16, bore)], green)
         c = at(pb)
-        foot = c.y - 0.2
-        paint.box((x - 0.22, foot, c.z - 0.085), (x + 0.22, foot + 0.09, c.z + 0.085), green)
-        floor = L.hull_y(X, c.z) + 0.2
-        paint.box((x - 0.19, floor, c.z - 0.11), (x + 0.19, foot, c.z + 0.11), tint(srgb(S.PRIMER), 0.86))
+        foot = c.y - 0.26
+        paint.box((x - 0.34, foot, c.z - 0.13), (x + 0.34, foot + 0.10, c.z + 0.13), green)
+        paint.box((x - 0.30, S.ER_AFT_FLAT, c.z - 0.17), (x + 0.30, foot, c.z + 0.17), tint(srgb(S.PRIMER), 0.86))
         # The pair of flanges that couples it to the tail shaft.
         k = S.SHAFT_COUPLING
-        ring([(k + 0.05, bore), (k + 0.045, 0.12), (k - 0.045, 0.12), (k - 0.05, bore)], flange)
+        ring([(k + 0.08, bore), (k + 0.07, 0.19), (k - 0.07, 0.19), (k - 0.08, bore)], flange)
     return [paint, bright]
 
 
-def fresh_water_tanks():
-    tanks = Part('Fresh-water tanks', 'Machinery paint')
-    flat = Part('Fresh-water tanks, flat', 'Floor plate')
-    pipes = Part('Fresh-water tanks, pipes', 'Shaft steel', smooth=True, angle=40)
-    for p in (tanks, flat, pipes):
-        p.group = 'machinery'
-    from hull_structure import floor_top
-    blue, dark = srgb(S.WATER_BLUE), srgb(S.DARK_GREY)
-    y0 = S.FLAT
-    z0, z1 = L.Z(2.8), L.Z(4.85)
-    # The gangway between the two tanks.
-    _plates(flat, 2.66, 4.95, y0, srgb(S.FLOOR_PLATE), lambda z: 0.66)
-    for side in (1, -1):
-        xa, xb = sorted((side * 0.8, side * 3.2))
-        # 6 m³ each: 2.4 × 2.05 × 1.22 m, standing on three bearers.
-        tanks.box((xa, y0 + 0.08, z0), (xb, y0 + 1.3, z1), blue)
-        # Its bearers lie over the frames, and each stands on legs on the floor under it wherever the floor is there to stand
-        # on (the bearers stood on nothing, 18 cm over the floors: blender/afloat.py).
-        for yd in (3.0, 3.5, 4.0, 4.5):
-            zz, top = L.Z(yd), floor_top(yd)
-            tanks.box((xa + 0.05, y0, zz - 0.05), (xb - 0.05, y0 + 0.08, zz + 0.05), dark)
-            for lx in (xa + 0.25, (xa + xb) / 2, xb - 0.25):
-                if L.hull_y(abs(lx), zz) + 0.08 < top:
-                    tanks.box((lx - 0.04, top - 0.012, zz - 0.04), (lx + 0.04, y0, zz + 0.04), dark)
-        # Stiffening bands, the manhole on top, the level gauge on the gangway side.
-        for zz in (z0 + 0.68, z1 - 0.68):
-            tanks.box((xa - 0.015, y0 + 0.08, zz - 0.03), (xb + 0.015, y0 + 1.315, zz + 0.03), tint(blue, 0.9))
-        _revolve(tanks, ((xa + xb) / 2, y0 + 1.3, z0 + 0.6), UP, [(0.0, 0.28), (0.03, 0.28), (0.03, 0.24), (0.045, 0.24), (0.045, 0.0)], tint(blue, 0.85), sides=20)
-        inner = side * 0.8
-        tanks.box((min(inner, inner - side * 0.02), y0 + 0.2, z1 - 0.34), (max(inner, inner - side * 0.02), y0 + 1.2, z1 - 0.3), srgb(0xd8e2e6))
-        # Filling and air pipes up to the deck, the suction valve low on the gangway side.
-        pipes.tube((side * 1.2, y0 + 1.3, z1 - 0.25), (side * 1.2, L.CAR - 0.05, z1 - 0.25), 0.03, colour=blue, sides=10)
-        pipes.tube((side * 1.45, y0 + 1.3, z1 - 0.25), (side * 1.45, L.CAR - 0.05, z1 - 0.25), 0.02, colour=blue, sides=8)
-        pipes.tube((inner, y0 + 0.22, z0 + 0.3), (inner - side * 0.14, y0 + 0.22, z0 + 0.3), 0.025, colour=blue, sides=10)
-        _revolve(tanks, (inner - side * 0.14, y0 + 0.22, z0 + 0.3), UP, [(0.0, 0.035), (0.09, 0.035), (0.09, 0.012), (0.14, 0.012), (0.14, 0.06), (0.155, 0.06), (0.155, 0.0)], blue, sides=12)
-    return [tanks, flat, pipes]
-
-
 def thruster_room():
-    flat = Part('Thruster room, platform', 'Floor plate')
-    gear = Part('Bow thruster motor and starter', 'Machinery paint', smooth=True, angle=40)
-    for p in (flat, gear):
-        p.group = 'machinery'
+    """The bow thruster's motor, upright on the crown of the tunnel: its seat, the lantern over the coupling, the motor of
+    about 300 kW with its terminal box and its fan cowl. (Its starter and cable come with the machinery spaces.)"""
+    gear = Part('Bow thruster motor', 'Machinery paint', smooth=True, angle=40)
+    gear.group = 'machinery'
     t = S.THRUSTER
     zc, crown = L.Z(t['yard']), t['y'] + t['radius']
-    y0 = S.THRUSTER_PLATFORM
-    blue, dark, grey = srgb(S.MOTOR_BLUE), srgb(S.DARK_GREY), srgb(S.LIGHT_GREY)
-    # The platform lies just over the crown of the tunnel, open round the motor.
-    breadth = lambda z: L.hull_x(y0 + 0.02, z) - 0.2
-    near = lambda xa, xb, za, zb: xa < 0.5 and xb > -0.5 and za < zc + 0.5 and zb > zc - 0.5
-    _plates(flat, 27.58, 30.42, y0, srgb(S.FLOOR_PLATE), breadth, opening=near)
-    # The 75 kW motor stands upright on the tunnel: its seat on the crown, the lantern over the coupling, the motor with
-    # its terminal box and its fan cowl.
-    _revolve(gear, (0, crown - 0.02, zc), UP, [(0.0, 0.3), (0.07, 0.3), (0.07, 0.2), (0.4, 0.2), (0.4, 0.3), (0.44, 0.3)], dark, sides=22)
-    _revolve(gear, (0, crown + 0.42, zc), UP, [(0.0, 0.3), (0.0, 0.27), (0.66, 0.27), (0.66, 0.28), (0.78, 0.28), (0.8, 0.2), (0.8, 0.0)], blue, sides=24)
-    gear.box((0.26, crown + 0.62, zc - 0.1), (0.42, crown + 0.86, zc + 0.1), blue)
-    for k in range(10):
-        a = 2 * pi * k / 10 + 0.3
-        if abs(cos(a)) > 0.9 and cos(a) > 0:
+    blue, dark = srgb(S.MOTOR_BLUE), srgb(S.DARK_GREY)
+    _revolve(gear, (0, crown - 0.03, zc), UP, [(0.0, 0.42), (0.10, 0.42), (0.10, 0.28), (0.55, 0.28), (0.55, 0.42), (0.61, 0.42)], dark, sides=24)
+    _revolve(gear, (0, crown + 0.58, zc), UP, [(0.0, 0.42), (0.0, 0.38), (0.92, 0.38), (0.92, 0.39), (1.08, 0.39), (1.11, 0.28), (1.11, 0.0)], blue, sides=26)
+    gear.box((0.36, crown + 0.86, zc - 0.14), (0.58, crown + 1.20, zc + 0.14), blue)
+    for k in range(12):
+        a = 2 * pi * k / 12 + 0.26
+        if cos(a) > 0.85:
             continue
-        gear.box((0.27 * cos(a) - 0.012, crown + 0.5, 0.27 * sin(a) + zc - 0.012), (0.27 * cos(a) + 0.012, crown + 1.04, 0.27 * sin(a) + zc + 0.012), tint(blue, 0.9))
-    # The starter cabinet against the aft bulkhead, with its door, handle and two lamps.
-    za = L.Z(27.5) + 0.1
-    gear.box((1.3, y0, za), (2.1, y0 + 1.5, za + 0.38), grey)
-    gear.box((1.34, y0 + 0.06, za + 0.38), (2.06, y0 + 1.44, za + 0.39), tint(grey, 0.93))
-    gear.box((2.0, y0 + 0.7, za + 0.39), (2.03, y0 + 0.86, za + 0.42), dark)
-    for k, c in enumerate((0x3f8a5a, 0xc2412f)):
-        _cyl(gear, (1.5 + 0.12 * k, y0 + 1.3, za + 0.39), (1.5 + 0.12 * k, y0 + 1.3, za + 0.41), 0.025, srgb(c), sides=10)
-    # Its cable, from the cabinet along the platform to the motor's terminal box.
-    for a, b in (((1.7, y0 + 0.04, za + 0.38), (1.7, y0 + 0.04, zc)), ((1.7, y0 + 0.04, zc), (0.46, y0 + 0.04, zc)), ((0.46, y0 + 0.04, zc), (0.42, crown + 0.66, zc))):
-        _cyl(gear, a, b, 0.022, dark, sides=8)
-    return [flat, gear]
+        gear.box((0.38 * cos(a) - 0.016, crown + 0.70, 0.38 * sin(a) + zc - 0.016), (0.38 * cos(a) + 0.016, crown + 1.44, 0.38 * sin(a) + zc + 0.016), tint(blue, 0.9))
+    return [gear]
 
 
 def chain_lockers():
+    """The two chain lockers in the fore store, each on four legs on the flat, a door in its after side."""
     lockers = Part('Chain lockers', 'Primer')
     lockers.group = 'machinery'
-    from hull_structure import floor_top
     primer = srgb(S.PRIMER)
-    za, zb = L.Z(31.3), L.Z(32.5)
+    za, zb = L.Z(59.7), L.Z(60.9)
+    foot = S.FORE_STORE_FLAT + 0.30
     for side in (1, -1):
-        xa, xb = sorted((side * 1.0, side * 2.2))
-        lockers.box((xa, -0.25, za), (xb, L.CAR - 0.04, zb), primer)
-        # Each stands on four legs on the floors of frames 63 and 64 (it stood on nothing, 14 to 55 cm over them).
-        for yd in (31.5, 32.0):
-            for lx in (xa + 0.2, xb - 0.2):
-                lockers.box((lx - 0.04, floor_top(yd) - 0.012, L.Z(yd) - 0.04), (lx + 0.04, -0.25, L.Z(yd) + 0.04), tint(primer, 0.84))
-        # The door in its after side, and the pipe that leads the cable down from the windlass.
-        lockers.box((xa + 0.35, 0.2, za - 0.012), (xb - 0.35, 0.95, za), tint(primer, 0.84))
+        xa, xb = sorted((side * 0.4, side * 1.3))
+        lockers.box((xa, foot, za), (xb, L.CAR - 0.04, zb), primer)
+        for lz in (za + 0.12, zb - 0.12):
+            for lx in (xa + 0.12, xb - 0.12):
+                lockers.box((lx - 0.04, S.FORE_STORE_FLAT, lz - 0.04), (lx + 0.04, foot, lz + 0.04), tint(primer, 0.84))
+        lockers.box((xa + 0.25, foot + 0.35, za - 0.012), (xb - 0.25, foot + 1.10, za), tint(primer, 0.84))
     return [lockers]
 
 
 def anchors():
-    """A 480 kg stockless anchor each side of the bow, hove up into its hawse pipe: the head and flukes against the plating."""
+    """A stockless anchor of about 1,300 kg each side of the bow, hove up into its hawse pipe: the head and flukes against the plating."""
     part = Part('Anchors', 'Machinery paint', smooth=True, angle=35)
     mouth = Part('Hawse pipe mouths', 'Marking')
     black = srgb(S.BLACK)
+    m_ = 1.4                                                   # beside the first Chisum's 480 kg anchor
     for side in (1, -1):
-        z = L.Z(32.2)
-        psi = L.psi_at(1.42, z)
+        z = L.Z(62.2)
+        psi = L.psi_at(1.05, z)
         m = Vector(L.shell_point(z, psi))
         n = Vector(L.shell_normal(z, psi))
         fwd = (Vector((0, 0, 1)) - n * n.z).normalized()
         up = n.cross(fwd) * -1
         if up.y < 0:
             up = -up
-        place = lambda a, b, c: tuple(Vector((side, 1, 1)) * (m + fwd * a + up * b + n * c))
+        place = lambda a, b, c: tuple(Vector((side, 1, 1)) * (m + fwd * (a * m_) + up * (b * m_) + n * (c * m_)))
         centre = Vector(place(0, 0, 0))
         out = Vector((side * n.x, n.y, n.z))
         # The bolster round the mouth of the pipe, and the dark of the pipe within it.
-        _revolve(part, centre, out, [(0.0, 0.27), (0.045, 0.25), (0.07, 0.2), (0.06, 0.15), (0.0, 0.15)], srgb(S.WHITE), sides=22)
+        _revolve(part, centre, out, [(0.0, 0.27 * m_), (0.045 * m_, 0.25 * m_), (0.07 * m_, 0.2 * m_), (0.06 * m_, 0.15 * m_), (0.0, 0.15 * m_)], srgb(S.WHITE), sides=22)
         start = len(mouth.f)
         mouth.polygon([place(0.15 * cos(2 * pi * k / 20), 0.15 * sin(2 * pi * k / 20), 0.004) for k in range(20)], tint(black, 0.6))
         mouth.orient(start, tuple(out))
@@ -667,4 +624,4 @@ def anchors():
 
 
 def build():
-    return steering_gear() + shafting() + fresh_water_tanks() + way_aft() + ladders() + thruster_room() + chain_lockers() + anchors()
+    return steering_gear() + shafting() + way_aft() + ladders() + thruster_room() + chain_lockers() + anchors()

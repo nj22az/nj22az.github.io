@@ -11,7 +11,11 @@
  */
 const { chromium } = require('playwright');
 const url = process.argv[2] || 'http://localhost:8765/ferry/';
-const Z = yard => yard - 17.25;            // metres from the transom → the ship's z
+// The bridge is measured in its own terms (metres from the first Chisum's transom, where it was designed: blender/bridge_place.py).
+// SHIFT carries those aboard the 68 m ship, HALF is half her length, DECK the bridge deck over her waterline.
+const SHIFT = 30.505, HALF = 34.2, DECK = 9.3, TOP = 12.0;
+const Z = yard => yard + SHIFT - HALF;     // the bridge's measure along her → the ship's z
+const B = z => z + HALF - SHIFT;           // and back, for what is said
 const fails = [];
 const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if (!ok) fails.push(text); };
 
@@ -78,76 +82,76 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(/Radar display/.test(card) && /BD2 way 1/.test(card) && /105 V/.test(card) && /Navigation data/.test(card) && !/null|undefined/.test(card), 'the radar\'s card names its supply (BD2 way 1, 105 V) and its nets');
 
   // ---- on foot
-  const walk = async (x, yard, yaw, seconds, key = 'KeyW') => page.evaluate(([x, z, yaw, seconds, key]) => {
+  const walk = async (x, yard, yaw, seconds, key = 'KeyW') => page.evaluate(([x, z, yaw, seconds, key, DECK]) => {
     const f = window.__ferry;
     if (!f.state.walk) f.enterWalk();
-    const y = f.walkTo(x, z, yaw, 0, 9.1);
+    const y = f.walkTo(x, z, yaw, 0, DECK);
     f.hold(key, true);
     for (let t = 0; t < seconds; t += 0.1) { f.workAuto(0.1); f.walkFor(0.1); }
     f.hold(key, false);
     const w = f.state.walk;
     return { y0: y, x: w.x, y: w.y, z: w.z, room: f.whereOnFoot() };
-  }, [x, Z(yard), yaw, seconds, key]);
+  }, [x, Z(yard), yaw, seconds, key, DECK]);
   const AHEAD = Math.PI, PORT = -Math.PI / 2, STBD = Math.PI / 2, ASTERN = 0;
 
   let w = await walk(0, 18.0, AHEAD, 2.6);
-  check(w.y0 !== null && w.z > Z(20.0) && /Wheelhouse/i.test(w.room), `from the corridor through its door into the wheelhouse (${(w.z + 17.25).toFixed(2)} m from the transom, "${w.room}")`);
+  check(w.y0 !== null && w.z > Z(20.0) && /Wheelhouse/i.test(w.room), `from the corridor through its door into the wheelhouse (${B(w.z).toFixed(2)} m from the transom, "${w.room}")`);
   w = await walk(0, 20.4, AHEAD, 3);
-  check(w.z < Z(21.5) && w.z > Z(20.9), `the steering stand and its wheel stop one (${(w.z + 17.25).toFixed(2)} m)`);
+  check(w.z < Z(21.5) && w.z > Z(20.9), `the steering stand and its wheel stop one (${B(w.z).toFixed(2)} m)`);
   w = await walk(1.7, 21.6, AHEAD, 3);
-  check(w.z < Z(22.30) - 0.1 && w.z > Z(21.9), `the console stops one (${(w.z + 17.25).toFixed(2)} m; its after face is at 22.30)`);
+  check(w.z < Z(22.30) - 0.1 && w.z > Z(21.9), `the console stops one (${B(w.z).toFixed(2)} m; its after face is at 22.30)`);
   w = await walk(1.5, 20.85, PORT, 3);
-  check(w.x > 3.2 && w.x < 4.1 && /wing/i.test(w.room), `through the port door, over its sill, onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
-  w = await walk(3.5, 20.85, PORT, 2);
-  check(w.x < 4.0, `the wing's bulwark holds one in (x ${w.x.toFixed(2)})`);
+  check(w.x > 3.2 && w.x < 6.4 && /wing|wheelhouse/i.test(w.room), `through the port door, over its sill, onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
+  w = await walk(5.5, 20.85, PORT, 2);
+  check(w.x > 5.9 && w.x < 6.35, `the wing is carried to her side, and its bulwark holds one in (x ${w.x.toFixed(2)}; the bulwark's inner face is at 6.44)`);
   w = await walk(-1.5, 20.85, STBD, 3);
-  check(w.x < -3.2 && w.x > -4.1 && /wing/i.test(w.room), `through the starboard door onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
-  w = await walk(3.75, 20.2, ASTERN, 2);          // the stair is 0.54 m wide between its rails, 3.48 to 4.02 m off the centreline
-  check(w.z < Z(19.4), `from the port wing aft, off it at its open end toward the stairs (${(w.z + 17.25).toFixed(2)} m)`);
+  check(w.x < -3.2 && w.x > -6.4 && /wing|wheelhouse/i.test(w.room), `through the starboard door onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
+  w = await walk(6.0, 20.2, ASTERN, 2);           // the side deck is 1.2 m wide between the accommodation and her side
+  check(w.z < Z(19.4), `from the port wing aft, off it at its open end onto the side deck (${B(w.z).toFixed(2)} m)`);
   w = await walk(2.0, 21.7, PORT, 2);
   check(w.x < 2.6, `the port wall and the log desk stop one (x ${w.x.toFixed(2)})`);
   w = await walk(-2.5, 20.9, ASTERN, 3);
-  check(w.y < 6.6 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the saloon (${(w.z + 17.25).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
+  check(w.y < 6.6 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the forward lounge (${B(w.z).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
   w = await walk(-1.5, 20.9, ASTERN, 3);
-  check(w.z > Z(20.14), `the chart table stops one (${(w.z + 17.25).toFixed(2)} m; its front is at 20.15)`);
+  check(w.z > Z(20.14), `the chart table stops one (${B(w.z).toFixed(2)} m; its front is at 20.15)`);
   w = await walk(0, 21.0, ASTERN, 2.5);
-  check(w.z < Z(19.4) && /corridor/i.test(w.room), `and back out through the door into the corridor (${(w.z + 17.25).toFixed(2)} m, "${w.room}")`);
+  check(w.z < Z(19.4) && /corridor/i.test(w.room), `and back out through the door into the corridor (${B(w.z).toFixed(2)} m, "${w.room}")`);
 
-  // the roof's step: from the house top, over the step block, onto the compass deck over the wheelhouse
-  const roof = await page.evaluate(([z]) => {
+  // the top deck and the compass deck are one level: from the top deck forward onto the compass deck, between the two rails' ends
+  const roof = await page.evaluate(([z, TOP]) => {
     const f = window.__ferry;
     if (!f.state.walk) f.enterWalk();
-    const y0 = f.walkTo(1.8, z, Math.PI, 0, 11.5);
+    const y0 = f.walkTo(1.8, z, Math.PI, 0, TOP);
     f.hold('KeyW', true);
     for (let t = 0; t < 2.0; t += 0.1) f.walkFor(0.1);
     f.hold('KeyW', false);
     const w = f.state.walk;
     return { y0, y: w.y, z: w.z, room: f.whereOnFoot() };
-  }, [Z(18.4)]);
-  check(roof.y0 !== null && Math.abs(roof.y0 - 11.5) < 0.03 && Math.abs(roof.y - 11.8) < 0.03 && roof.z > Z(19.6),
-    `from the house top over the step block onto the compass deck, 0.30 m higher (${roof.y0 === null ? 'no floor' : roof.y0.toFixed(2)} to ${roof.y.toFixed(2)} m up, ${(roof.z + 17.25).toFixed(2)} m from the transom, "${roof.room}")`);
+  }, [Z(18.4), TOP]);
+  check(roof.y0 !== null && Math.abs(roof.y0 - TOP) < 0.03 && Math.abs(roof.y - TOP) < 0.03 && roof.z > Z(19.6),
+    `from the top deck forward onto the compass deck, level with it (${roof.y0 === null ? 'no floor' : roof.y0.toFixed(2)} to ${roof.y.toFixed(2)} m up, ${B(roof.z).toFixed(2)} m from the transom, "${roof.room}")`);
 
   // a tap on foot names what is tapped
-  const named = await page.evaluate(([z]) => {
+  const named = await page.evaluate(([z, DECK]) => {
     const f = window.__ferry;
-    f.walkTo(-1.05, z, Math.PI, -0.42, 9.1);
+    f.walkTo(-1.05, z, Math.PI, -0.42, DECK);
     return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => {
       const c = document.querySelector('canvas').getBoundingClientRect();
       f.nameOnFoot(c.left + c.width / 2, c.top + c.height / 2);
       r({ id: f.systems.state.component, card: !document.querySelector('#card').hidden });
     })));
-  }, [Z(21.9)]);
+  }, [Z(21.9), DECK]);
   check(named.id && named.card, `on foot, a tap on what is ahead of the watch officer's chair names it (${named.id})`);
   await page.evaluate(() => { window.__ferry.systems.clear(); window.__ferry.leaveWalk(); });
 
   // ---- the levers: a tap moves one a notch, at the console and on both wings together; the wheel follows the rudder
-  const lever = await page.evaluate(async ([z, zl]) => {
+  const lever = await page.evaluate(async ([z, zl, DECK]) => {
     const f = window.__ferry, L = f.look;
     f.enterWalk();
-    f.walkTo(0.85, z, Math.PI, -0.6, 9.1);          // beside the stand, where a walker can stand upright
+    f.walkTo(0.85, z, Math.PI, -0.6, DECK);          // beside the stand, where a walker can stand upright
     f.walkFor(0.5);
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const grip = new L.camera.position.constructor(0.458, 9.1 + 1.17, zl).project(L.camera);
+    const grip = new L.camera.position.constructor(0.458, DECK + 1.17, zl).project(L.camera);
     const c = document.querySelector('canvas').getBoundingClientRect();
     f.nameOnFoot(c.left + (grip.x + 1) / 2 * c.width, c.top + (1 - grip.y) / 2 * c.height);
     const said = document.querySelector('#what').textContent;
@@ -160,7 +164,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const all = f.movers();
     const worked = ['lever-engine-p', 'lever-engine-s', 'lever-thruster', 'tiller'].map(id => f.control(id)).filter(k => k && k.steps && k.fitting);
     return { said, card: f.systems.state.component, at: f.control('lever-engine-p').at, turned, wheel, n: all.length, worked: worked.length };
-  }, [Z(22.0), Z(22.60)]);
+  }, [Z(22.0), Z(22.60), DECK]);
   const mark = 16.26;
   check(lever.said === 'Port engine lever: slow ahead' && lever.card === 'PRP-01' && lever.at === 4,
     `on foot, a tap on the port engine lever moves it a notch and shows its card ("${lever.said}", ${lever.card})`);

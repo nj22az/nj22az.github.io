@@ -1,13 +1,17 @@
 """
 Where the emergency generator room stands in the ship, as plain numbers: read by eg_room.py (Blender), which builds it
-there, and by assemble.py, which names the room for the page. To move the block (to the 68 m ship's top deck), change PLACE.
+there, by the register (ferry/systems/bridge.py) and by assemble.py, which names the room for the page.
+
+She stands on the 68 m ship's top deck since 11 November 2026, where the general arrangement puts her (ga.py: 29.8 to 37.8 m
+from the transom, on the centreline): the block is 7.96 m by 4.66 m over its 80 mm walls.
 """
 import lines as L
+import spec as S
 
 LENGTH, WIDTH, HEIGHT = 7.80, 4.50, 3.20
 # The forward wall's inner face (metres from the transom), the port wall's inner face (metres to port of the centreline), the
-# room's deck over the waterline, and how far that is over the deck it stands on (the present ship's house top, 11.50 m).
-PLACE = dict(yard=16.50, x=2.70, deck=11.55, under=0.05)
+# room's deck over the waterline, and how far that is over the deck it stands on (the top deck).
+PLACE = dict(yard=37.70, x=2.25, deck=round(S.TOP_DECK + 0.05, 4), under=0.05)
 
 
 def R(p, q, h):

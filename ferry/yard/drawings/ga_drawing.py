@@ -58,12 +58,12 @@ def outline(level, a, b, cy, step=0.6):
 y = 34
 text(LEFT, y, 'CHISUM', 26, weight='700')
 text(LEFT + 138, y, f'General arrangement  ·  JS1-102  ·  revision {G.REVISION}  ·  11 November 2026', 15, weight='600')
-text(LEFT, y + 20, 'Johansson Shipyard, newbuilding No. 1, rebuilt at 68 m for Johansson Line.  A proposal for the owner\'s approval: nothing of it is calculated or built yet.', 11.5, fill=FAINT)
+text(LEFT, y + 20, 'Johansson Shipyard, newbuilding No. 1, rebuilt at 68 m for Johansson Line.  As her bare ship is built from it. Still a proposal for the owner\'s approval: nothing is calculated beyond the volume under her lines.', 11.5, fill=FAINT)
 text(WIDTH - 24, y, 'Bow to the right, port up.  Metres.', 11.5, 'end', fill=FAINT)
 
 # ---- the profile
 top = 86
-base = top + G.MAST_TOP * K + 6
+base = top + max(G.MAST_TOP, G.FUNNEL_TOP + 1.0) * K + 6
 
 
 def H(h):
@@ -89,32 +89,30 @@ for name, a, b, lo, hi in G.PROFILE[1:]:
 for name, a, b, lo, n in (('passenger house', 15.0, 53.0, G.DECKS['passenger'] + 1.1, 24), ('accommodation', 23.5, 49.0, G.DECKS['bridge'] + 1.2, 13)):
     for i in range(n):
         add(f'<rect x="{X(a + (b - a) * i / n):.1f}" y="{H(lo + 0.9):.1f}" width="{(b - a) / n * 0.62 * K:.1f}" height="{0.9 * K:.1f}" fill="#cfe0e6" stroke="{INK}" stroke-width="0.5"/>')
-add(f'<rect x="{X(50.6):.1f}" y="{H(G.DECKS["bridge"] + 2.1):.1f}" width="{4.6 * K:.1f}" height="{1.0 * K:.1f}" fill="#cfe0e6" stroke="{INK}" stroke-width="0.5"/>')
-for a, b, h in ((0.0, 13.0, G.DECKS['passenger']), (13.0, 22.0, G.DECKS['bridge']), (22.0, 27.0, G.DECKS['top']), (46.2, 55.6, G.DECKS['top']), (56.4, G.LENGTH - 0.6, G.DECKS['mooring'])):
-    if h == G.DECKS['mooring']:
-        continue
+add(f'<rect x="{X(50.4):.1f}" y="{H(G.DECKS["bridge"] + 2.1):.1f}" width="{3.0 * K:.1f}" height="{1.0 * K:.1f}" fill="#cfe0e6" stroke="{INK}" stroke-width="0.5"/>')
+for a, b, h in ((0.0, 13.0, G.DECKS['passenger']), (13.0, 22.0, G.DECKS['bridge']), (22.0, 27.0, G.DECKS['top']), (46.2, 50.0, G.DECKS['top']), (54.0, G.LENGTH - 0.4, G.DECKS['mooring'])):
     add(f'<path d="M{X(a):.1f},{H(h + 1.05):.1f} H{X(b):.1f}" stroke="{INK}" stroke-width="0.7" fill="none"/>')
     for v in [a + i * 1.5 for i in range(int((b - a) / 1.5) + 1)]:
         add(f'<path d="M{X(v):.1f},{H(h):.1f} V{H(h + 1.05):.1f}" stroke="{INK}" stroke-width="0.5"/>')
 # the mast, the radar, the decks inside her, the bulkheads
-add(f'<path d="M{X(52):.1f},{H(G.DECKS["top"]):.1f} V{H(G.MAST_TOP):.1f} M{X(50.6):.1f},{H(21.2):.1f} H{X(53.4):.1f} M{X(51.2):.1f},{H(23.2):.1f} H{X(52.8):.1f}" stroke="{INK}" stroke-width="1.6" fill="none"/>')
-for key, a, b, dash in (('car', 0.0, 64.2, ''), ('tank_top', G.fr(18), G.fr(103), ''), ('flat', G.fr(46), G.fr(55), '4 3'), ('mooring', 56.4, G.LENGTH - 0.5, '')):
+add(f'<path d="M{X(51.3):.1f},{H(G.DECKS["top"]):.1f} V{H(G.MAST_TOP):.1f} M{X(49.9):.1f},{H(17.0):.1f} H{X(52.7):.1f} M{X(50.6):.1f},{H(17.4):.1f} H{X(52.0):.1f}" stroke="{INK}" stroke-width="1.6" fill="none"/>')
+for key, a, b, dash in (('car', 0.0, G.fr(103), ''), ('tank_top', G.fr(24), G.fr(90), ''), ('flat', G.fr(46), G.fr(55), '4 3'), ('mooring', 54.0, G.LENGTH - 0.3, '')):
     add(f'<path d="M{X(a):.1f},{H(G.DECKS[key]):.1f} H{X(b):.1f}" stroke="{INK}" stroke-width="1" fill="none" stroke-dasharray="{dash}"/>')
 for n, what in G.BULKHEADS:
     add(f'<path d="M{X(G.fr(n)):.1f},{H(max(G.keel(G.fr(n)), 0)):.1f} V{H(G.DECKS["car"]):.1f}" stroke="{INK}" stroke-width="1.3"/>')
     text(X(G.fr(n)), H(-0.9) + 2, f'fr {n}', 9, 'middle', fill=FAINT)
 add(f'<path d="M{X(0):.1f},{H(G.DECKS["car"]):.1f} V{H(G.DECKS["passenger"]):.1f}" stroke="{INK}" stroke-width="3.2"/>')                      # the stern ramp, stowed
-add(f'<path d="M{X(62.4):.1f},{H(G.DECKS["car"]):.1f} L{X(64.4):.1f},{H(G.DECKS["mooring"]):.1f}" stroke="{INK}" stroke-width="2.2"/>')        # the inner bow door
+add(f'<path d="M{X(G.fr(103) + 0.1):.1f},{H(G.DECKS["car"]):.1f} V{H(G.DECKS["car"] + 4.3):.1f}" stroke="{INK}" stroke-width="2.6"/>')        # the inner bow door, shut in the collision bulkhead's line
 add(f'<path d="M{X(62.0):.1f},{H(G.DECKS["passenger"]):.1f} L{X(63.3):.1f},{H(3.9):.1f}" stroke="{INK}" stroke-width="0.9" stroke-dasharray="5 3" fill="none"/>')   # the visor's seam
-add(f'<circle cx="{X(54.6):.1f}" cy="{H(1.4):.1f}" r="{0.75 * K:.1f}" fill="none" stroke="{INK}" stroke-width="1"/>')                             # the thruster tunnel
-add(f'<path d="M{X(2.0):.1f},{H(3.0):.1f} L{X(1.5):.1f},{H(0.4):.1f} H{X(3.3):.1f} L{X(2.9):.1f},{H(2.7):.1f}" fill="#ffffff" stroke="{INK}" stroke-width="1.2"/>')   # a rudder
-add(f'<path d="M{X(4.3):.1f},{H(2.4):.1f} V{H(0.1):.1f}" stroke="{INK}" stroke-width="2.4"/><path d="M{X(4.3):.1f},{H(1.25):.1f} L{X(10.4):.1f},{H(1.7):.1f}" stroke="{INK}" stroke-width="1"/>')
+add(f'<circle cx="{X(G.fr(92)):.1f}" cy="{H(1.4):.1f}" r="{0.6 * K:.1f}" fill="none" stroke="{INK}" stroke-width="1"/>')                             # the thruster tunnel
+add(f'<path d="M{X(1.4):.1f},{H(2.68):.1f} L{X(1.55):.1f},{H(0.25):.1f} H{X(2.75):.1f} L{X(2.85):.1f},{H(2.68):.1f} Z" fill="#ffffff" stroke="{INK}" stroke-width="1.2"/>')   # a rudder
+add(f'<path d="M{X(3.8):.1f},{H(2.2):.1f} V{H(0.2):.1f}" stroke="{INK}" stroke-width="2.4"/><path d="M{X(3.8):.1f},{H(1.2):.1f} L{X(12.6):.1f},{H(2.44):.1f}" stroke="{INK}" stroke-width="1"/>')     # a screw, and its shaft to the gearbox's flange
 for label, a, b, h in (('Steering', 0.3, 4.8, 4.1), ('Shafts', 4.8, 10.8, 3.4), ('Engine room', 10.8, 24.6, 2.4), ('Auxiliary engine room', 24.6, 33.0, 2.0), ('Fuel', 33.0, 42.0, 2.4),
                        ('Ballast', 42.0, 51.0, 2.4), ('Thruster', 51.0, 57.6, 3.0), ('Vehicle deck: 4.3 m clear', 4.0, 58.0, 7.2), ('Saloon', 21.0, 54.0, 10.4),
-                       ('Crew', 22.0, 50.0, 13.2), ('Bridge', 50.0, 55.6, 13.0), ('CO₂', 27.0, 29.8, 16.6), ('Emergency generator', 29.8, 37.8, 16.6),
-                       ('Ventilation room', 39.8, 46.2, 16.6)):
+                       ('Crew', 22.0, 50.0, 13.2), ('Bridge', 50.0, 54.0, 13.0), ('CO₂', 27.0, 29.2, 16.6), ('Emergency generator', 29.8, 37.8, 16.6),
+                       ('Ventilation room', 40.0, 46.2, 16.6)):
     text(X((a + b) / 2), H(h), label, 9.5 if b - a > 6 else 8.5, 'middle', fill=INK)
-for a in (29.8, 37.8, 39.8):
+for a in (29.2, 29.8, 37.8, 38.6, 40.0):
     add(f'<path d="M{X(a):.1f},{H(G.DECKS["top"]):.1f} V{H(G.DECKS["top_house"]):.1f}" stroke="{INK}" stroke-width="0.9"/>')
 for key, label in (('car', 'Car deck'), ('passenger', 'Passenger deck'), ('bridge', 'Bridge deck'), ('top', 'Top deck'), ('top_house', '')):
     if label:
@@ -138,13 +136,13 @@ for name, value in G.PARTICULARS:
 
 # ---- the plans
 y = max(base + 46, ty + 34)
-EXTENT = dict(top=(13.0, 55.6), bridge=(13.0, 55.6), passenger=(0.0, 54.0), car=(0.0, G.LENGTH), hold=(0.0, G.LENGTH - 2.2))
+EXTENT = dict(top=(13.0, 54.0), bridge=(13.0, 54.0), passenger=(0.0, G.LENGTH), car=(0.0, G.LENGTH), hold=(0.0, G.LENGTH - 2.2))
 for plan, title, level in G.PLANS:
     spaces = [s for s in G.SPACES if s['plan'] == plan]
     cy = y + 22 + G.HB * K
-    lvl = 'hold' if plan == 'hold' else 'car'
+    lvl = 'hold' if plan == 'hold' else 'car' if plan == 'car' else 'upper'
     text(LEFT, y + 6, title.upper() if plan != 'hold' else 'BELOW THE CAR DECK', 12, weight='700')
-    text(LEFT + (152 if plan != 'hold' else 190), y + 6, f'{level} m above the keel' + ('' if plan != 'hold' else ': at the tank top; what stands on the flat at 2.9 m is dashed'), 10.5, fill=FAINT)
+    text(LEFT + (152 if plan != 'hold' else 190), y + 6, f'{level} m above the keel' + ('' if plan != 'hold' else ': at the tank top, and where her bottom rises over it 0.6 m over her bottom; what stands on the flat at 2.9 m is dashed'), 10.5, fill=FAINT)
     a, b = EXTENT[plan]
     add(f'<polygon points="{outline(lvl, 0.0, G.LENGTH - (2.2 if plan == "hold" else 0.0), cy)}" fill="none" stroke="{FAINT}" stroke-width="0.7" stroke-dasharray="3 3"/>')
     add(f'<clipPath id="clip-{plan}"><polygon points="{outline(lvl, a, b, cy)}"/></clipPath>')
@@ -202,7 +200,7 @@ for kind, label in G.KINDS.items():
     text(x + 17, y + 26, label, 10.5)
     x += 30 + len(label) * 6.4
 y += 54
-text(LEFT, y, 'FOR THE OWNER TO SETTLE BEFORE SHE IS BUILT', 12, weight='700')
+text(LEFT, y, 'FOR THE OWNER TO SETTLE', 12, weight='700')
 for i, q in enumerate(G.QUESTIONS):
     for j, line in enumerate(wrap(f'{i + 1}.  {q}', 190)):
         y += 15

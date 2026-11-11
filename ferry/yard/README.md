@@ -15,7 +15,7 @@ This folder holds the paperwork.
 | | |
 |---|---|
 | **The yard** | Johansson Shipyard. It designs and builds her: the model (`../blender/`), the register of her systems (`../systems/`), the drawings and calculations listed in `document-register.csv` |
-| **The ship** | The Chisum, newbuilding No. 1 (a working number until the owner gives the yard's own): a 34.5 m car and passenger ferry for the Minato to Kitano-jima service |
+| **The ship** | The Chisum, newbuilding No. 1 (a working number until the owner gives the yard's own): a 68.4 m car and passenger ferry for the Minato to Kitano-jima service. She was first built at 34.5 m; the owner had her rebuilt at 68 m on 11 November 2026 (`../blender/ga.py`, drawing JS1-102), and the bridge that class approved was landed on the new ship whole |
 | **The owner** | The owner of this site, for whom she is built, and who decides |
 | **Class** | A surveyor who reads what the yard submits, as a classification society's plan approval and survey departments would, and writes it up: comment sheets on drawings (`class/PA-…`), survey reports on the build (`class/SR-…`), and, when everything is closed, her certificates |
 
@@ -29,7 +29,7 @@ requirement is a lead, not a finding, until it has been read.
 
 1. **Rule basis.** Settled by the owner on 11 November 2026 ("Rectify and proceed work according to your recommendations"):
    **the international conventions are the benchmark**: SOLAS as for a passenger ship, COLREG and the Load Line convention,
-   though a 34.5 m ferry on her service would be a domestic ship under her flag's own rules. Where a regulation binds only
+   though a ferry of her size on her service would be a domestic ship under her flag's own rules. Where a regulation binds only
    larger ships she meets it all the same. `class/PA-001` lists what has been read of them, where, and what is still recalled.
 2. **Plan approval, section by section.** The yard submits a section (first: the navigation bridge). Class reads it and writes a
    comment sheet. The yard answers each comment by changing the design or by showing why it stands. A section is approved when no

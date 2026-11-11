@@ -1,7 +1,7 @@
 """
-What she carries under the water: the keel bar and the centreline skeg, the bilge keels, two shafts with their stern
-tubes and brackets, two four-bladed screws turning outward, a rudder behind each, the bow thruster in its tunnel, the
-sea chests and the zinc anodes.
+What she carries under the water: the keel bar, the centreline skeg and the stem bar, the bilge keels, two shafts with
+their stern tubes and brackets, two four-bladed controllable-pitch screws turning outward, a rudder behind each, the bow
+thruster in its tunnel, the sea chests and the zinc anodes.
 
 The starboard shaft line is built and the port one is its mirror, which also makes the port screw left-handed.
 """
@@ -82,7 +82,7 @@ _CHORD = ((0.17, 0.40), (0.25, 0.47), (0.35, 0.55), (0.45, 0.61), (0.55, 0.65), 
           (0.92, 0.44), (0.97, 0.30), (1.0, 0.12))
 
 
-def propeller(part, centre, axis, radius, hub, blades, pitch_ratio, colour, hand=1, boss=True, bore=None):
+def propeller(part, centre, axis, radius, hub, blades, pitch_ratio, colour, hand=1, boss=True, bore=None, scale=1.0):
     """
     A screw on `axis` (pointing the way it drives). Right-handed for hand = 1: seen from behind it turns clockwise going
     ahead. The blade's face is a true helicoid of constant pitch; its back carries the thickness; the tips are skewed.
@@ -120,9 +120,9 @@ def propeller(part, centre, axis, radius, hub, blades, pitch_ratio, colour, hand
         # The boss, and the cone that fairs it aft.
         # Its forward face closes on the shaft it is keyed to (`bore`): open, one looked into a hollow boss past a shaft
         # 38 mm smaller than the hole (blender/afloat.py found the screws held by nothing).
-        face = [(0.17, bore)] if bore else []
-        _revolve(part, centre, axis, face + [(0.17, hub * 0.62), (0.15, hub), (-0.17, hub), (-0.24, hub * 0.93), (-0.31, hub * 0.72),
-                                             (-0.37, hub * 0.42), (-0.41, 0.0)], colour, sides=20)
+        face = [(0.17 * scale, bore)] if bore else []
+        _revolve(part, centre, axis, face + [(0.17 * scale, hub * 0.62), (0.15 * scale, hub), (-0.17 * scale, hub), (-0.24 * scale, hub * 0.93),
+                                             (-0.31 * scale, hub * 0.72), (-0.37 * scale, hub * 0.42), (-0.41 * scale, 0.0)], colour, sides=20)
 
 
 def _naca(xc, t):
@@ -190,12 +190,12 @@ def build():
     w, d = S.KEEL_BAR['width'] / 2, S.KEEL_BAR['depth']
     y0, y1 = S.KEEL_BAR['yard']
     rows = []
-    n = int((y1 - y0) / 0.25)
+    n = int((y1 - y0) / 0.6)
     for i in range(n + 1):
         yard = y0 + (y1 - y0) * i / n
         z = L.Z(yard)
         k = L.keel_y(z)
-        fade = min(1.0, (y1 - yard) / 0.8)                 # it runs out into the stem
+        fade = min(1.0, (y1 - yard) / 1.2)                 # it runs out into the forefoot
         rows.append([(w, k + 0.01, z), (w, k - d * fade, z), (w * 0.6, k - d * fade - 0.012 * fade, z),
                      (-w * 0.6, k - d * fade - 0.012 * fade, z), (-w, k - d * fade, z), (-w, k + 0.01, z)])
     start = len(keel.f)
@@ -211,10 +211,10 @@ def build():
         yard = a + (b - a) * i / n
         z = L.Z(yard)
         top = L.keel_y(z) + 0.03
-        run = min(1.0, (yard - a) / 0.9)                   # the aft edge rakes up to the hull
+        run = min(1.0, (yard - a) / 1.6)                   # the aft edge rakes up to the hull
         bottom = top + (foot - top) * (run * run * (3 - 2 * run))
         bottom = min(bottom, top - 0.001)
-        h = (S.SKEG['thickness'] / 2) * (0.18 + 0.82 * min(1.0, (yard - a) / 1.6))
+        h = (S.SKEG['thickness'] / 2) * (0.18 + 0.82 * min(1.0, (yard - a) / 2.4))
         mid = top + (bottom - top) * 0.55
         rows.append([(h, top, z), (h, mid, z), (h * 0.7, bottom + (top - bottom) * 0.08, z), (0.0, bottom, z),
                      (-h * 0.7, bottom + (top - bottom) * 0.08, z), (-h, mid, z), (-h, top, z)])
@@ -227,13 +227,13 @@ def build():
     psi = spec['psi']
     for side in (1, -1):
         rows = []
-        n = int((spec['yard'][1] - spec['yard'][0]) / 0.25)
+        n = int(round((spec['yard'][1] - spec['yard'][0]) / 0.3))
         for i in range(n + 1):
-            yard = spec['yard'][0] + 0.25 * i
+            yard = spec['yard'][0] + 0.3 * i
             z = L.Z(yard)
             p, nrm = Vector(L.shell_point(z, psi)), Vector(L.shell_normal(z, psi))
             girth = Vector((-nrm.y, nrm.x, 0)).normalized()
-            depth = spec['depth'] * min(1.0, (yard - spec['yard'][0]) / 0.7, (spec['yard'][1] - yard) / 0.7)
+            depth = spec['depth'] * min(1.0, (yard - spec['yard'][0]) / 1.2, (spec['yard'][1] - yard) / 1.2)
             root = 0.035
             tip = p + nrm * max(depth, 0.004)
             pts = [p + girth * root - nrm * 0.004, tip + girth * 0.012, tip - girth * 0.012, p - girth * root - nrm * 0.004]
@@ -248,6 +248,7 @@ def build():
     at = lambda yard: Vector((x, shaft_y(yard), L.Z(yard)))
     fwd = (at(8.0) - at(3.0)).normalized()
     centre = at(sc['yard'])
+    k = S.SHAFT_RADIUS / 0.055                         # the first Chisum's stern gear was drawn round a 110 mm shaft: hers is as much larger as her shaft is
     side_gear = Part('gear', 'Antifouling')
     side_inboard = Part('inboard', 'Primer')
     side_shafts = Part('shafts', 'Shaft steel')
@@ -255,17 +256,17 @@ def build():
     steel = srgb(S.STEEL)
     # The tail shaft, from its coupling inside her to the screw. (The intermediate shaft forward of the coupling stands
     # in the shaft space and is drawn with it: hull_fittings.py.)
-    side_shafts.tube(at(S.SHAFT_COUPLING), at(sc['yard'] + 0.17), S.SHAFT_RADIUS, colour=steel, sides=14)
+    side_shafts.tube(at(S.SHAFT_COUPLING), at(sc['yard'] + 0.17 * k), S.SHAFT_RADIUS, colour=steel, sides=16)
     # The stern tube: inside her, a tube from its seal to the shell; outside, the bossing that fairs it. The bossing is
     # set where the shaft line leaves the hull.
     leave = shaft_exit()
-    side_inboard.tube(at(S.STERN_TUBE_SEAL), at(leave - 0.25), 0.085, colour=srgb(S.PRIMER), sides=14)
+    side_inboard.tube(at(S.STERN_TUBE_SEAL), at(leave - 0.35), 0.085 * k, colour=srgb(S.PRIMER), sides=16)
     _revolve(side_inboard, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in
-                                        ((S.STERN_TUBE_SEAL + 0.14, 0.06), (S.STERN_TUBE_SEAL + 0.12, 0.115), (S.STERN_TUBE_SEAL, 0.115), (S.STERN_TUBE_SEAL - 0.02, 0.085))],
+                                        ((S.STERN_TUBE_SEAL + 0.14, S.SHAFT_RADIUS), (S.STERN_TUBE_SEAL + 0.12, 0.115 * k), (S.STERN_TUBE_SEAL, 0.115 * k), (S.STERN_TUBE_SEAL - 0.02, 0.085 * k))],
              srgb(S.FLANGE), sides=18)
     # The bossing is turned about the shaft in short steps and only what is outside her is kept, so that inside the
     # shaft space the stern tube is seen running to the plating and not an antifouled casting.
-    shape = ((leave + 0.6, 0.17), (leave + 0.2, 0.16), (leave - 0.25, 0.13), (leave - 0.5, 0.1), (leave - 0.56, 0.075))
+    shape = ((leave + 0.9, 0.17 * k), (leave + 0.3, 0.16 * k), (leave - 0.4, 0.13 * k), (leave - 0.8, 0.1 * k), (leave - 0.9, S.SHAFT_RADIUS + 0.02))
     fine = []
     for (ya, ra), (yb, rb) in zip(shape, shape[1:]):
         steps = max(1, round((ya - yb) / 0.04))
@@ -274,15 +275,16 @@ def build():
     start = len(side_gear.f)
     _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in fine], RED, sides=18)
     _outside_only(side_gear, start)
-    # The bracket ahead of the screw: a barrel on the shaft and two arms up to the hull.
-    by = S.BRACKET_YARD
-    _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in ((by + 0.26, 0.07), (by + 0.2, 0.115), (by - 0.2, 0.115), (by - 0.26, 0.07))], RED, sides=18)
-    for dx in (-0.6, 0.6):
-        zz = L.Z(by + 0.05)
-        hull = Vector((x + dx, L.hull_y(x + dx, zz) + 0.06, zz))
-        _beam(side_gear, at(by), hull, (0, 0, 1), 0.24, 0.055, RED)
+    # The brackets: a barrel on the shaft and two arms up to the hull, ahead of the screw and halfway along the open shaft.
+    for by in S.BRACKETS:
+        _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in
+                                         ((by + 0.42, S.SHAFT_RADIUS + 0.02), (by + 0.32, 0.115 * k), (by - 0.32, 0.115 * k), (by - 0.42, S.SHAFT_RADIUS + 0.02))], RED, sides=18)
+        for dx in (-0.9, 0.9):
+            zz = L.Z(by + 0.08)
+            hull = Vector((x + dx, L.hull_y(x + dx, zz) + 0.08, zz))
+            _beam(side_gear, at(by), hull, (0, 0, 1), 0.40, 0.09, RED)
     # The screw: right-handed to starboard, so the pair turns outward.
-    propeller(side_screw, centre, fwd, sc['diameter'] / 2, sc['hub'], sc['blades'], sc['pitch_ratio'], srgb(S.BRONZE), hand=1, bore=S.SHAFT_RADIUS)
+    propeller(side_screw, centre, fwd, sc['diameter'] / 2, sc['hub'], sc['blades'], sc['pitch_ratio'], srgb(S.BRONZE), hand=1, bore=S.SHAFT_RADIUS, scale=k)
     # The rudder, its stock and the headbox that carries it under the counter.
     r = S.RUDDER
     zs = L.Z(r['yard_stock'])
@@ -299,12 +301,14 @@ def build():
     side_stock = Part('stock', 'Shaft steel')
     _foil(side_rudder, x, sections, RED, t=r['thickness'])
     hull_at = L.hull_y(x, zs)
-    _foil(side_gear, x, [(hull_at + 0.05, zs + 0.24, 0.62), (r['top'] + 0.05, zs + 0.2, 0.52)], RED, t=0.22)
-    side_stock.tube((x, r['top'] - 0.05, zs), (x, S.FLAT, zs), 0.06, colour=steel, sides=14)
+    _foil(side_gear, x, [(hull_at + 0.06, zs + 0.46, 1.25), (r['top'] + 0.04, zs + 0.40, 1.10)], RED, t=0.24)
+    side_stock.tube((x, r['top'] - 0.05, zs), (x, S.STEERING_FLAT, zs), 0.10, colour=steel, sides=16)
     side_zinc = Part('rudder anodes', 'Zinc')
+    mid = (r['top'] + r['bottom']) / 2
     for face in (1, -1):
-        xr = x + face * 0.048
-        side_zinc.box((xr - 0.016, -1.02, zs - 0.22), (xr + 0.016, -0.94, zs + 0.0), srgb(S.ZINC))
+        xr = x + face * 0.105
+        for ya in (mid - 0.5, mid + 0.4):
+            side_zinc.box((xr - 0.02, ya, zs - 0.42), (xr + 0.02, ya + 0.10, zs - 0.10), srgb(S.ZINC))
     for part, whole in ((side_gear, gear), (side_inboard, inboard), (side_shafts, shafts), (side_screw, screws)):
         whole.add(part)
         whole.add(part.mirrored())
@@ -319,12 +323,13 @@ def build():
     t = S.THRUSTER
     c = Vector((0.0, t['y'], L.Z(t['yard'])))
     dark = tint(RED, 0.8)
-    _revolve(thruster, c, (1, 0, 0), [(-0.34, 0.0), (-0.28, 0.07), (-0.2, 0.1), (0.2, 0.1), (0.24, 0.085)], dark, sides=16)
-    _beam(thruster, c + Vector((0, 0.06, 0)), c + Vector((0, t['radius'] + 0.01, 0)), (0, 0, 1), 0.26, 0.11, dark)
-    propeller(thruster_screw, c + Vector((0.34, 0, 0)), (1, 0, 0), t['radius'] - 0.05, 0.085, 4, 0.75, srgb(S.BRONZE), hand=1, boss=False)
-    _revolve(thruster_screw, c + Vector((0.34, 0, 0)), (1, 0, 0), [(-0.1, 0.085), (0.08, 0.085), (0.16, 0.0)], srgb(S.BRONZE), sides=16)
+    m = t['radius'] / 0.45
+    _revolve(thruster, c, (1, 0, 0), [(-0.34 * m, 0.0), (-0.28 * m, 0.07 * m), (-0.2 * m, 0.1 * m), (0.2 * m, 0.1 * m), (0.24 * m, 0.085 * m)], dark, sides=16)
+    _beam(thruster, c + Vector((0, 0.06 * m, 0)), c + Vector((0, t['radius'] + 0.01, 0)), (0, 0, 1), 0.26 * m, 0.11 * m, dark)
+    propeller(thruster_screw, c + Vector((0.34 * m, 0, 0)), (1, 0, 0), t['radius'] - 0.06, 0.085 * m, 4, 0.75, srgb(S.BRONZE), hand=1, boss=False)
+    _revolve(thruster_screw, c + Vector((0.34 * m, 0, 0)), (1, 0, 0), [(-0.1 * m, 0.085 * m), (0.08 * m, 0.085 * m), (0.16 * m, 0.0)], srgb(S.BRONZE), sides=16)
     for side in (1, -1):
-        for dy in (-0.24, 0.0, 0.24):
+        for dy in (-0.32, 0.0, 0.32):
             y = t['y'] + dy
             half = sqrt(t['radius'] ** 2 - dy ** 2) + 0.01
             ends = []
@@ -337,39 +342,55 @@ def build():
 
     # ---- Sea chests: a grating let into the bilge each side of the engine room, where the cooling water comes in.
     for side in (1, -1):
-        z0, z1 = L.Z(12.65), L.Z(13.35)
-        mid = L.Z(13.0)
-        pa, pb = L.psi_at(-1.62, mid), L.psi_at(-1.27, mid)
+        z0, z1 = (L.Z(v) for v in S.SEA_CHEST['yard'])
+        mid = (z0 + z1) / 2
+        pa, pb = (L.psi_at(v, mid) for v in S.SEA_CHEST['y'])
         rows = [[_conform(z0 + (z1 - z0) * i / 2, pa + (pb - pa) * j / 5, side, 0.004)[0] for j in range(6)] for i in range(3)]
         start = len(chest_dark.f)
         chest_dark.grid(rows, tint(RED, 0.32))
         chest_dark.orient(start, lambda q, s=side: (s, -0.6, 0))
         bars = [(z0 + (z1 - z0) * k / 8, 0.022) for k in range(9)]
+        # each bar is a channel standing on the plating: its two sides from the plating out, its face 14 mm off it
         for zc, wide in bars:
             start = len(chests.f)
-            rows = [[_conform(zz, pa + (pb - pa) * j / 5, side, 0.014)[0] for j in range(6)] for zz in (zc - wide / 2, zc + wide / 2)]
+            rows = [[_conform(zz, pa + (pb - pa) * j / 5, side, lift)[0] for j in range(6)] for zz, lift in
+                    ((zc - wide / 2, 0.0), (zc - wide / 2, 0.014), (zc + wide / 2, 0.014), (zc + wide / 2, 0.0))]
             chests.grid(rows, DARK_RED)
-            chests.orient(start, lambda q, s=side: (s, -0.6, 0))
+            chests.orient(start, lambda q, s=side, zc=zc: (s * 0.5, -0.3, q[2] - zc))
         for pp in (pa, pb):
             start = len(chests.f)
             dp = (pb - pa) * 0.07 * (1 if pp == pa else -1)
-            rows = [[_conform(z0 + (z1 - z0) * i / 4, q, side, 0.014)[0] for q in (pp, pp + dp)] for i in range(5)]
+            rows = [[_conform(z0 + (z1 - z0) * i / 4, q, side, lift)[0] for q, lift in ((pp, 0.0), (pp, 0.014), (pp + dp, 0.014), (pp + dp, 0.0))] for i in range(5)]
             chests.grid(rows, DARK_RED)
             chests.orient(start, lambda q, s=side: (s, -0.6, 0))
 
     # ---- Zinc anodes: along the bottom and the side below the waterline, by the stern gear, on the rudders and skeg.
     for side in (1, -1):
-        for yard in (10.5, 13.9, 17.0, 20.1, 23.5, 26.5):
-            _anode(anodes, L.Z(yard), 0.5, side)
-        for yard in (9.2, 12.0, 15.5, 19.0, 22.5, 25.8):
-            _anode(anodes, L.Z(yard), L.psi_at(-0.55, L.Z(yard)), side)
-        for yard, off in ((5.2, 2.5), (7.7, 2.6), (4.6, 0.8)):
-            _anode(anodes, L.Z(yard), L.psi_at_x(off, L.Z(yard)), side)
-    for yard in (5.6, 8.2):
+        for yard in (22.5, 27.3, 32.1, 36.9, 41.7, 46.5, 51.3):
+            _anode(anodes, L.Z(yard), 0.5, side, length=0.40, width=0.13, thick=0.045)
+        for yard in (19.5, 24.9, 30.3, 35.1, 39.9, 44.7, 49.5, 54.3):
+            _anode(anodes, L.Z(yard), L.psi_at(-0.9, L.Z(yard)), side, length=0.40, width=0.13, thick=0.045)
+        for yard, off in ((6.9, 3.7), (9.5, 3.9), (5.5, 1.2)):
+            _anode(anodes, L.Z(yard), L.psi_at_x(off, L.Z(yard)), side, length=0.40, width=0.13, thick=0.045)
+    for yard in (9.0, 12.0, 15.0):                                          # on the skeg, in its upper part, where its sides are flat and upright
+        top = L.keel_y(L.Z(yard)) + 0.03
         for face in (1, -1):
-            xs = face * (S.SKEG['thickness'] / 2 + 0.012)
-            anodes.box((xs - 0.016, L.KEEL + 0.5, L.Z(yard) - 0.15), (xs + 0.016, L.KEEL + 0.58, L.Z(yard) + 0.15), srgb(S.ZINC))
-    return [keel, bilge, gear, inboard, shafts, screws, thruster, thruster_screw, chests, chest_dark, anodes] + turning
+            xs = face * (S.SKEG['thickness'] / 2 + 0.016)
+            anodes.box((xs - 0.02, top - 0.42, L.Z(yard) - 0.2), (xs + 0.02, top - 0.32, L.Z(yard) + 0.2), srgb(S.ZINC))
+
+    # ---- The stem bar: a round bar up the stem from the forefoot to the stem head, which the plating of both sides lands on.
+    stem = Part('Stem bar', 'Topside paint', smooth=True, angle=60)
+    white = srgb(S.WHITE)
+    pts = []
+    h = 0.35
+    while h < L.above_keel(L.UPPER) - 0.02:
+        pts.append((0.0, L.Y(h), L.Z(L.stem_yard(h))))
+        h += 0.25
+    pts.append((0.0, L.UPPER, L.HALF))
+    for a, b in zip(pts, pts[1:]):
+        paint = RED if (a[1] + b[1]) / 2 < S.BOOT else white
+        stem.tube(a, b, L.STEM_HALF, colour=paint, sides=12)
+    return [keel, bilge, gear, inboard, shafts, screws, thruster, thruster_screw, chests, chest_dark, anodes, stem] + turning
 
 
 def _bilge_out(c, side, psi):

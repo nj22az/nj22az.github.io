@@ -35,8 +35,9 @@ What else is put right aboard, and why:
   what hangs free inside the cabinet is carried (mounts()): the file's inside parts are stand-ins without their mounts
   five pairs of surfaces that lay in one plane and flickered are moved apart by a millimetre or two (put_right())
 
-Aboard it stands against the lobby's forward wall, facing aft, 60 mm off the wall for the condenser's air, and is held to
-the ship: two angles from its top to the wall and a cleat on the deck at each side of its plinth.
+Aboard it stands just forward of the lobby, in the nook between the after main stair's head and the toilets, against the
+toilets' after wall and facing aft, 60 mm off the wall for the condenser's air, and is held to the ship: two angles from its
+top to the wall and a cleat on the deck at each side of its plinth.
 """
 import numpy as np
 import lines as L
@@ -44,8 +45,12 @@ import glb
 import jpvm
 from shipyard import Part, srgb, tint
 
-DECK, FLOOR = 6.50, 0.008          # the passenger deck; the lobby's floor covering lies 8 mm over it
-XC, BACK, GAP = 2.10, 9.46, 0.06   # the machine's middle off the centreline; the lobby's forward wall behind it; the air gap
+import spec as S
+
+DECK, FLOOR = S.PASSENGER_DECK, 0.0  # the passenger deck: bare steel until the saloon is fitted out
+# The machine's middle off the centreline; the wall behind it (the toilets' after wall, 30 m from the transom: its after face);
+# the air gap. It stands in the nook between the after main stair's head and the toilets, facing the lobby (ga.py).
+XC, BACK, GAP = 4.40, 29.995, 0.06
 DOOR_OPENS, FLAP_OPENS = 90, 55    # degrees aboard (the file: 100 and 75)
 Z = L.Z
 MOTIONS = {}

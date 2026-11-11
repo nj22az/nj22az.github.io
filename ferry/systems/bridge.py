@@ -15,7 +15,13 @@ Maru's planning figures (basis 'town'). The survey of 10 November (`ferry/design
 as `survey`; where the Town gave an item a KKS tag it is kept as `kks`.
 """
 
-SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'corridor': "Crew's corridor", 'eg-house': 'Emergency generator room', 'aft-platform': 'After platform'}))
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'blender'))
+import bridge_place as BP          # where the bridge stands in the 68 m ship: the places below are the bridge's own
+import eg_place
+import spec as SH                   # the ship's own measures (the sternlight's place, at the stern)
+
+SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'eg-house': 'Emergency generator room', 'stern': 'Stern, over the ramp'}))
 # The wheelhouse's heights (the owner, 11 November 2026, on raising its roof: "Yes make it realistic"): 2.30 m clear under
 # the deckhead lining, a void over the lining for the cable trays, and the compass deck's top 2.70 m over the bridge deck.
 DECK_H = 2.70          # the compass deck's top, over the bridge deck
@@ -133,7 +139,9 @@ OUTSIDE_CIRCUITS = {
     ('LB', 'bridge deck lighting'): dict(name='Bridge deck lighting, corridor and after platform', breaker=6, mm2=1.5),
     ('ESB', 'emergency lighting'): dict(name='Emergency lighting, bridge deck', breaker=6, mm2=1.5),
     # The emergency generator room (blender/eg_room.py): the starting battery's charger.
-    ('ESB', 'emergency generator auxiliaries'): dict(name='Emergency generator: starting battery charger', breaker=10, mm2=1.5),
+    # (2.5 mm²: on the 68 m ship the room stands on the top deck, and the way from the bridge's cable entry, by which every
+    # cable of this section is still measured, is 39 m: 1.5 mm² lost 6.3 % of the voltage over it.)
+    ('ESB', 'emergency generator auxiliaries'): dict(name='Emergency generator: starting battery charger', breaker=10, mm2=2.5),
     ('LB', 'searchlight'): dict(name='Searchlight', breaker=16, mm2=4, length=37.0, kks='10CTA10 GS001',
                                 note="The Minato Maru's feeder, its own cable from the lighting board by the port casing trunk, with a 16 A breaker: "
                                      "that ship's list gives it 10 A for 9.5 A, which is under its own rule of 1.25 times the full-load current."),
@@ -202,6 +210,8 @@ def C(id, name, room, at, what, g=None, w=0, use=1.0, by=None, alt=None, node=No
     `box` places one that another module draws (x0, x1, yard0, yard1, h0, h1); `pick` False keeps it from answering a tap;
     `tail` is the cable's length beyond `node` where the component lies outside the section (its way there is not drawn).
     """
+    if room in ('wing-p', 'wing-s'):
+        at = (BP.wing_x(at[0]), at[1], at[2])          # the wings are carried to the ship's side: what stood at their outer end went with them
     COMPONENTS.append(dict(id=id, name=name, room=room, at=at, what=what, g=g or dict(kind='none'), w=w, use=use, by=by, alt=alt,
                            node=node, survey=survey, kks=kks, basis=basis, hid=hid, box=box, pick=pick, note=note, tail=tail))
 
@@ -384,8 +394,14 @@ C('NLT-02', 'Sidelight, port', WP, (4.13, 22.70, 1.20), 'Red, from right ahead t
 C('NLT-03', 'Sidelight, starboard', WS, (-4.13, 22.70, 1.20), 'Green, from right ahead to 22.5° abaft the starboard beam: on the bulwark\'s rail, with a screen board inboard of it.', dict(kind='sidelight', side=-1), w=60, use=0.5, by=('NLP', 3), node='WING-S', survey='B110', basis='town')
 C('NLT-04', 'Masthead light', CD, (0.0, 20.98, 5.60), 'White, over 225° ahead, on the front of the mast above the radar, its lens clear over the posts of the radar platform.', box=(-0.13, 0.13, 20.90, 21.08, 5.46, 5.70), w=60, use=0.5, by=('NLP', 1), node='MAST-ML', survey='B113', basis='town')
 C('NLT-05', 'Anchor light', CD, (0.0, 20.80, 7.20), 'White, all round, on the crown of the mast.', box=(-0.07, 0.07, 20.73, 20.87, 7.14, 7.30), w=60, use=0.0, by=('NLP', 5), node='MAST-T', survey='B113', basis='town')
-C('NLT-06', 'Stern light', CD, (0.0, 0.3, -2.4), 'White, over 135° astern. It stands at the after end of the passenger deck and is still the Minato Maru\'s drawing.',
-  w=60, use=0.5, by=('NLP', 4), node='COR', tail=24.0, survey='B113', basis='town', hid='at the after end of the passenger deck, not yet rebuilt')
+# The sternlight is not on the bridge: it stands at the stern, on the bulwark's rail over the stern door (blender/spec.py:
+# STERN_LIGHTS, drawn by blender/steel.py). Its place is given here in the bridge's own measures like every other component
+# of this register; its cable leaves the section at the corridor's deckhead and runs aft under the top deck, then down the
+# after end of the house to the upper deck's bulwark: 50 m aft and 4 m down, which `tail` counts and the page does not draw.
+_SL = SH.STERN_LIGHTS['sternlight']
+C('NLT-06', 'Stern light', 'stern', (_SL['x'], round(-_SL['aft'] - BP.SHIFT, 3), round(_SL['y'] + 0.10 - BP.DECK, 3)),
+  'White, over 135° astern: on the centreline at the stern, on the bulwark\'s rail over the stern door, with a screen forward of it so that it is not seen from forward of the beam.',
+  w=60, use=0.5, by=('NLP', 4), node='COR', tail=56.0, survey='B113', basis='town')
 C('NLT-07', 'Not-under-command lights, upper pair', CD, (0.0, 20.80, 6.20), 'Red, all round: two heights of them in a vertical line, 2 m apart, say she cannot keep out of the way. Each height is a pair of lanterns, one either side of the mast, lit together: a single lantern beside the mast would be hidden by it over 35° of the horizon, and no more than 6° is allowed.', dict(kind='nuc', h=6.20), w=120, use=0.0, by=('NLP', 6), node='MAST-H', basis='town')
 C('NLT-08', 'Not-under-command lights, lower pair', CD, (0.0, 20.80, 4.20), 'Red, all round: the lower pair, 2 m under the upper.', dict(kind='nuc', h=4.20), w=120, use=0.0, by=('NLP', 7), node='MAST-D', basis='town')
 C('NLT-09', 'Whistle', CD, (0.0, 21.20, 5.88), 'Two air horns on the front of the mast, sounded by compressed air.', box=(-0.18, 0.18, 20.82, 21.44, 5.76, 6.02), node='MAST-H')
@@ -595,10 +611,10 @@ PIPES = [
          path=[(3.09, 20.39, -0.25), (3.09, 20.39, 0.55)]),
     dict(id='SCUP-P', system='Scuppers', name='Scupper, port wing', dn=50, medium='rain and spray', material='galvanised steel',
          text='From the wing\'s deck down the house side and overboard above the waterline.', ends=['PIP-05', 'ext:PAX:Overboard, port side'],
-         path=[(3.92, 19.80, 0.0), (3.92, 19.80, -0.25)]),
+         path=[(BP.wing_x(3.92), 19.80, 0.0), (BP.wing_x(3.92), 19.80, -0.25)]),
     dict(id='SCUP-S', system='Scuppers', name='Scupper, starboard wing', dn=50, medium='rain and spray', material='galvanised steel',
          text='From the wing\'s deck down the house side and overboard above the waterline.', ends=['PIP-06', 'ext:PAX:Overboard, starboard side'],
-         path=[(-3.92, 19.80, 0.0), (-3.92, 19.80, -0.25)]),
+         path=[(BP.wing_x(-3.92), 19.80, 0.0), (BP.wing_x(-3.92), 19.80, -0.25)]),
     dict(id='AC-REF', system='Air conditioning', name='Refrigerant lines', dn=12, medium='refrigerant, a liquid line and a suction line, insulated', material='copper',
          text='Between the room unit and the condensing unit above it.', ends=['HVC-01', 'HVC-02'],
          path=[(-2.80, 19.60, 1.86), (-2.80, 19.60, 2.16), (-2.30, 19.60, 2.16), (-2.30, 19.80, 2.16), (-2.30, 19.80, 2.50)]),
@@ -608,70 +624,21 @@ PIPES = [
 ]
 
 
-# ---------------------------------------------------------------------------------------------------------------------
-# The bridge deck abaft the wheelhouse: the crew's corridor and the after platform (blender/bridge_deck.py draws them;
-# the places here are the ones in its tables). The owner, 11 November 2026: "continue with bridge deck , how about the
-# outside and the corridor to the cabins"; "The corridor needs boards and information as well"; "The door needs to be
-# able to open nothing is ornamental".
-# ---------------------------------------------------------------------------------------------------------------------
-CO, AP = 'corridor', 'aft-platform'
-for _k, _yd in enumerate((7.60, 10.80, 13.30, 15.80, 18.30)):
-    C(f'LGT-{15 + _k}', f'Corridor light No. {_k + 1}', CO, (0.0, _yd, 2.08), 'A recessed fitting in the deckhead panels, one of five along the corridor.',
-      box=(-0.15, 0.15, _yd - 0.30, _yd + 0.30, 2.07, 2.09), w=18, by=('LB', 'bridge deck lighting'), node='COR')
-for _k, (_name, _x) in enumerate((("the crew's corridor", 0.0), ('the emergency generator room', 1.6), ('the CO2 room', -1.6))):
-    C(f'LGT-{20 + _k}', f'Light over the door to {_name}', AP, (_x, 5.93, 2.15), 'A bulkhead fitting with a guard, over the door on the after platform.',
-      box=(_x - 0.09, _x + 0.09, 5.92, 6.0, 2.115, 2.19), w=20, use=0.5, by=('LB', 'bridge deck lighting'), node='COR')
-C('LGT-23', 'Exit light, after end', CO, (0.0, 6.10, 2.015), 'A self-contained exit light over the door to the platform: it stays lit on its own battery when the supply fails.',
-  box=(-0.17, 0.17, 6.08, 6.11, 1.955, 2.075), w=5, by=('ESB', 'emergency lighting'), node='COR')
-C('LGT-24', 'Exit light, forward end', CO, (0.0, 19.44, 2.015), 'A self-contained exit light over the door to the wheelhouse.',
-  box=(-0.17, 0.17, 19.43, 19.46, 1.955, 2.075), w=5, by=('ESB', 'emergency lighting'), node='COR')
-for _k, _yd in enumerate((9.00, 12.90, 16.90)):
-    C(f'FIR-{8 + _k}', f'Smoke detector, corridor No. {_k + 1}', CO, (0.0, _yd, 2.06), 'An optical smoke detector on loop 1, in the escape route past the cabins.',
-      box=(-0.055, 0.055, _yd - 0.055, _yd + 0.055, 2.045, 2.085), node='COR')
-C('FIR-11', 'Manual call point, corridor', CO, (0.43, 6.36, 1.40), 'Break the glass to give the alarm: by the door one leaves by.', box=(0.415, 0.45, 6.315, 6.405, 1.355, 1.445), node='COR')
-C('FIR-12', 'Alarm bell, corridor', CO, (0.42, 6.36, 1.93), 'Rings for the fire alarm and the general alarm, where every cabin hears it.', box=(0.395, 0.45, 6.285, 6.435, 1.855, 2.005), node='COR')
-C('FIR-13', 'Fire extinguisher, powder 6 kg, corridor', CO, (-0.365, 6.45, 0.10), 'Dry powder, on its bracket by the aft door, under its sign.', box=(-0.45, -0.28, 6.37, 6.55, 0.09, 0.69))
-C('FIR-14', 'Fire hose box, after platform', AP, (-0.80, 5.91, 0.92), 'A 15 m hose rolled flat on its peg and a dual-purpose nozzle in its clip. The door opens.',
-  box=(-1.08, -0.52, 5.81, 6.0, 0.62, 1.22))
-C('FIR-15', 'Fire hydrant, after platform', AP, (-0.80, 5.91, 0.30), 'A 50 mm hydrant on the fire main, under the hose box: the second on this deck, so that the corridor is reached with one length of hose from either end (finding BF-18).',
-  box=(-0.87, -0.73, 5.76, 5.98, 0.0, 0.58))
-C('FIR-16', 'Fire control and safety plan', CO, (-0.44, 7.62, 1.50), 'The ship in profile and deck by deck, with every extinguisher, hydrant, call point, fire door, ventilation stop and escape route marked: shown where the officers pass.',
-  box=(-0.45, -0.43, 7.12, 8.12, 1.18, 1.82))
-C('FIR-17', 'Fire plan, the shore\'s copy', AP, (0.81, 5.925, 1.28), 'A second copy of the fire control plan in a watertight tube outside the house, marked, for firemen who come aboard from shore.',
-  box=(0.50, 1.12, 5.86, 6.0, 1.22, 1.34))
-C('INT-12', 'Loudspeaker, corridor', CO, (0.0, 14.55, 2.07), 'Public address and general alarm, in the deckhead.', box=(-0.095, 0.095, 14.455, 14.645, 2.07, 2.085), node='COR')
-C('INT-13', 'Loudspeaker horn, after platform', AP, (0.80, 5.82, 2.02), 'Public address and general alarm, to the platform and the open deck below it.', box=(0.70, 0.90, 5.74, 6.0, 1.92, 2.12), node='COR')
-C('LSA-07', 'Muster list', CO, (0.44, 8.57, 1.50), 'Who goes where and does what when the alarm sounds: the signal, each rank\'s duty at fire and at abandoning ship, the two muster stations. Signed by the master.',
-  box=(0.43, 0.45, 8.31, 8.83, 1.16, 1.84))
-C('OUT-24', 'Notice board', CO, (0.44, 7.45, 1.52), 'The watch list, the table of hours of work and rest, the sailings, the safety policy, the drills due and the day\'s notices.',
-  box=(0.43, 0.45, 6.92, 7.98, 1.15, 1.89))
-for _k, (_name, _x0, _x1, _what) in enumerate((
-        ("crew's corridor", -0.43, 0.43, 'The crew\'s way in from the platform, with a porthole.'),
-        ('emergency generator room', 1.17, 2.03, 'The generator room is entered from the open deck, not from the accommodation.'),
-        ('CO2 room', -2.03, -1.17, 'The CO2 room is entered from the open deck only, and its door opens outward.'))):
-    C(f'OUT-{25 + _k}', f'Weathertight door, {_name}', AP, ((_x0 + _x1) / 2, 5.97, 1.0),
-      'A steel door on a 15 cm sill, closing on its frame from outside, with two hinges, two dogs and a lever handle each side. ' + _what + ' It opens for whoever comes near.',
-      box=(_x0, _x1, 5.94, 6.0, 0.12, 1.95))
-for _k, (_name, _side, _a, _b) in enumerate((('crew cabin', 1, 9.20, 9.90), ("chief officer's cabin", -1, 9.20, 9.90), ("deckhand's cabin", 1, 11.70, 12.40),
-                                             ('crew WC and shower', -1, 11.70, 12.40), ('mess room', 1, 14.20, 14.90), ('galley', -1, 14.30, 14.90),
-                                             ("chief engineer's cabin", 1, 16.70, 17.40), ("master's cabin", -1, 16.70, 17.40))):
-    C(f'OUT-{28 + _k}', f'Door, {_name}', CO, (_side * 0.51, (_a + _b) / 2, 1.0),
-      'A joiner door in its frame, with a vent grille low in the leaf, lever handles and a name plate. It opens into the room for whoever turns to it.',
-      box=(min(_side * 0.49, _side * 0.53), max(_side * 0.49, _side * 0.53), _a + 0.027, _b - 0.027, 0.012, 1.895))
-C('OUT-36', 'Windows of the bridge deck house', AP, (3.0, 14.0, 1.45), 'Nine fixed windows in the side plating, four to port and five to starboard: a steel frame with rounded corners bolted proud of the plating, the glass, a drip strip over each.',
-  box=(2.92, 3.02, 9.89, 10.51, 1.14, 1.76), note='The place given is the aftermost window to port; the other eight are as it is.')
-
+# The first Chisum's bridge deck abaft the wheelhouse (her corridor's lights, detectors, boards and doors, the after
+# platform's fire station: 36 components) went with that ship on 11 November 2026. The 68 m ship's accommodation is bare
+# steel; its fittings are registered when it is built.
 
 
 # ---- The emergency generator room (blender/eg_room.py), built to the owner's drawing and landed on the house top: what is in
 # it. Each is drawn there under its tag; its place here is for the cable's length. The room's measures (p aft from its
-# forward wall, q to starboard from its port wall, h over its deck) are turned into the register's by _eg, with the numbers
-# of blender/eg_place.py.
+# forward wall, q to starboard from its port wall, h over its deck) are turned into the register's by _eg, from where
+# blender/eg_place.py stands the room: on the 68 m ship's top deck.
 EG = 'eg-house'
 
 
 def _eg(p, q, h):
-    return (round(2.70 - q, 3), round(16.50 - p, 3), round(2.45 + h, 3))
+    P = eg_place.PLACE
+    return (round(P['x'] - q, 3), round(P['yard'] - BP.SHIFT - p, 3), round(P['deck'] - BP.DECK + h, 3))
 
 
 C('EMG-01', 'Emergency generator set No. 1', EG, _eg(3.15, 2.05, 0.9),

@@ -34,7 +34,7 @@ TOL = 0.004           # two things closer than this touch
 PAINT = 0.008         # paint and pictures are drawn a little proud of the surface they are on (more on the curved shell)
 PAINTED = ('Marking', 'Panel face', 'Screen picture')
 CELL = 0.25           # the grid the pieces are sorted into
-HALF = 17.25          # metres from the transom = z + HALF
+HALF = A.L.HALF          # metres from the transom = z + HALF
 # What is drawn on a surface with nothing behind it is not a thing to be held: the base draws its signs, floor markings
 # and light pools as loose flat pictures. A piece thinner than this in one direction is such a picture.
 FLAT = 0.0005

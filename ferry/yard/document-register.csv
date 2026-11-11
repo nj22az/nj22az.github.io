@@ -1,8 +1,8 @@
 number,document,group,state,where it is,note
 JS1-101,Contract specification,general,to do,,"The ship as contracted: particulars, service, rules, makers, tests. The rule basis is settled (yard/README.md): to be carried in"
-JS1-102,General arrangement,general,partly,ferry/blender/ga.py; ferry/yard/drawings/JS1-102-general-arrangement.svg (made by ga_drawing.py),"Revision B, 11 November 2026: the Chisum rebuilt at 68 m (the owner: ""Rebuild the Chisum at 68 m""): 68.4 x 13.6 x 5.0 m, a profile and five plans, 86 spaces. B: the officers' cabins enlarged (chief engineer 23 m², master 29 m², chief officer 22 m²) and one crew cabin removed, at the owner's word. A proposal for the owner's approval; nothing calculated. The first Chisum's (34.5 m) was the Minato Maru's Rev C working drawings"
-JS1-103,Lines plan and table of offsets,general,exists,ferry/blender/lines.py,Her lines as numbers; no drawn sheet yet
-JS1-104,Hydrostatic tables and cross curves,general,to do,,From lines.py: displacement is checked at one draught only (368 t at 1.9 m)
+JS1-102,General arrangement,general,partly,ferry/blender/ga.py; ferry/yard/drawings/JS1-102-general-arrangement.svg (made by ga_drawing.py),"Revision C, 11 November 2026: the Chisum rebuilt at 68 m (the owner: ""Rebuild the Chisum at 68 m""): 68.4 x 13.6 x 5.0 m, a profile and five plans, 93 spaces, eight watertight bulkheads. C is the arrangement as her bare ship is built from it (blender/steel.py): the forecastle level with the passenger deck so the bow lanes keep 4.3 m, the crew stair's head, the top house's rooms. Still a proposal for the owner's approval, with eight questions on the sheet; nothing calculated beyond the volume under her lines"
+JS1-103,Lines plan and table of offsets,general,exists,ferry/blender/lines.py,"Her lines as numbers, remade for 68.4 m: 1,745 t at 3.2 m, block coefficient 0.62. No drawn sheet yet"
+JS1-104,Hydrostatic tables and cross curves,general,to do,,"From lines.py: displacement is checked at one draught only (1,745 t at 3.2 m)"
 JS1-105,Capacity plan and tank tables,general,to do,,
 JS1-106,Lightweight estimate and inclining test report,general,to do,,Simulated: weights from the model's own parts
 JS1-107,Intact stability booklet,general,to do,,
@@ -10,38 +10,39 @@ JS1-108,Damage stability calculation,general,to do,,
 JS1-109,Freeboard calculation and load line marks,general,partly,ferry/blender/spec.py (load line position),The mark is painted; the calculation is not made
 JS1-110,Tonnage calculation,general,to do,,
 JS1-111,Docking plan,general,to do,,
-JS1-112,Component register,general,partly,"ferry/systems/ (203 components: the navigation bridge, the bridge deck, the emergency generator room)",Grows with every section
+JS1-112,Component register,general,partly,"ferry/systems/ (167 components: the navigation bridge, the emergency generator room, the sternlight)",Grows with every section. The first Chisum's corridor and after platform (36 components) went with her bridge deck; they return when the accommodation is fitted
 JS2-201,Midship section and scantlings,hull,partly,"ferry/blender/spec.py, hull_structure.py",Scantlings are stated with reasons; not checked against a rule
 JS2-202,Construction profile and decks,hull,to do,,
 JS2-203,Shell expansion,hull,partly,ferry/blender/hull_shell.py,Plates are modelled; no expansion drawn
-JS2-204,Watertight bulkheads and doors,hull,partly,"ferry/blender/spec.py (WT_DOORS), hull_structure.py","Five watertight doors built; bulkheads at frames 28, 38 and 45 are the other ship's walls"
+JS2-204,Watertight bulkheads and doors,hull,partly,"ferry/blender/spec.py (WT_DOORS), hull_structure.py","Eight watertight bulkheads, at frames 8, 18, 41, 55, 70, 85, 96 and 103; six watertight doors on the centreline (frames 8 to 85), built hinged. Open: on a passenger ship they are to be sliding (question 7 on JS1-102)"
 JS2-205,"Stern frame, shaft brackets, rudders",hull,partly,ferry/blender/hull_appendages.py,
-JS2-206,Superstructure and deckhouse plans,hull,partly,"ferry/blender/compass_deck.py, wheelhouse.py",Compass deck and wheelhouse are hers
+JS2-206,Superstructure and deckhouse plans,hull,partly,"ferry/blender/steel.py (from ga.py); compass_deck.py, wheelhouse.py, bridge_place.py","Every deck, casing, house and room of the general arrangement in bare steel, with its doorways and windows; the first Chisum's wheelhouse and compass deck landed on the bridge deck"
 JS2-207,Welding table and procedures,hull,to do,,
 JS2-208,Structural fire protection plan,hull,to do,,"Divisions, insulation, doors"
 JS2-209,Painting specification,hull,partly,"ferry/blender/spec.py (paint lines), shipyard.py",Colours only
 JS2-210,Cathodic protection plan,hull,partly,ferry/blender/hull_appendages.py (anodes),Anodes drawn; no calculation
-JS3-301,"Car deck arrangement: lanes, lashing, pillars",cargo equipment,to do,,The other ship's drawing stands there
-JS3-302,"Bow ramp: arrangement, hydraulics, securing",cargo equipment,to do,,
+JS3-301,"Car deck arrangement: lanes, lashing, pillars",cargo equipment,partly,"ferry/blender/ga.py, steel.py","Four lanes of 2.6 m between the casings, bare: no lane marks, lashing points or pillars yet"
+JS3-302,"Bow ramp: arrangement, hydraulics, securing",cargo equipment,partly,ferry/blender/steel.py (the inner bow door),The inner bow door stands shut in the collision bulkhead and does not move; the visor is not cut in the bow
 JS3-303,Car deck drainage and scuppers,cargo equipment,to do,,
+JS3-304,"Stern ramp and after end: arrangement, hydraulics, lights",cargo equipment,exists,"ferry/yard/drawings/JS3-304-stern-ramp-and-after-end.svg (made by stern_drawing.py); ferry/blender/spec.py (STERN_DOOR, STERN_RAMP, STERN_LIGHTS), steel.py; the page","Revision 0, 11 November 2026, at the owner's word (""It needs a hydraulic ramp"", ""And lights , draw the aft in cad""): the transom, the profile and the plan at one scale, the ramp's motion as a table, the three kinds of light. The ramp works on the page with its two cylinders. Eight points not settled, on the sheet: no power unit, no forces, no securing or seal, no flaps, and whether the door is to be wider (the owner asked; not decided)"
 JS4-401,Navigation bridge layout,ship equipment,exists,ferry/systems/bridge.py; ferry/blender/wheelhouse.py; the page,Approved with comments: PA-001 revision 2. The wheelhouse 0.30 m taller by the owner's decision
-JS4-402,Bridge visibility calculation,ship equipment,exists,ferry/yard/calc/JS4-402-bridge-visibility.md (made by calc/bridge_calcs.py from the model),"Revision 2. Sea over the bow, blind sectors, both wings, the glass and the view upward. Open: light draught and trim"
+JS4-402,Bridge visibility calculation,ship equipment,exists,ferry/yard/calc/JS4-402-bridge-visibility.md (made by calc/bridge_calcs.py from the model),"Revision 2. Sea over the bow, blind sectors, both wings, the glass and the view upward. Open: light draught and trim. Made on the first Chisum (34.5 m): not remade for the 68 m ship, whose bow is longer and higher"
 JS4-403,Navigation and radio equipment list,ship equipment,exists,ferry/systems/out/bridge-components.csv,
-JS4-404,Navigation lights arrangement,ship equipment,exists,"ferry/yard/calc/JS4-402-bridge-visibility.md, section 5; ferry/systems/bridge.py (NLT)",Each lantern's sector measured in the model. Open: sidelight screens (PA-001 No. 22); the stern light
+JS4-404,Navigation lights arrangement,ship equipment,exists,"ferry/yard/calc/JS4-402-bridge-visibility.md, section 5; ferry/systems/bridge.py (NLT)","Each of the bridge's lanterns measured in the model of the first Chisum; not remade for the 68 m ship. Open: sidelight screens (PA-001 No. 22). The sternlight has its place at the stern (JS3-304); its arc is drawn, not yet measured"
 JS4-405,Antenna arrangement,ship equipment,partly,"ferry/blender/compass_deck.py, wheelhouse.py",PA-001 comment 12
 JS4-406,Magnetic compass: safe distances and deviation card,ship equipment,to do,,PA-001 comment 11
 JS4-407,Steering gear arrangement and calculation,ship equipment,partly,ferry/blender/hull_fittings.py,Gear built and working; no torque or timing calculation
 JS4-408,Steering control diagram,ship equipment,exists,"ferry/systems/bridge.py (nets STEER-1, STEER-2; components STR-02, STR-07)","Two independent control systems: PA-001 No. 3 closed. Open: supply-failure alarm, separation below the bridge (No. 23)"
 JS4-409,"Anchoring and mooring arrangement, equipment number",ship equipment,to do,,
 JS4-410,Life-saving appliances plan,ship equipment,partly,"ferry/systems/bridge.py (LSA, bridge only)",
-JS4-411,Fire control and safety plan,ship equipment,partly,"data/ferry-atlas.webp (the other ship's plan, renamed)",To be redrawn as hers
+JS4-411,Fire control and safety plan,ship equipment,to do,,The other ship's plan went with her interiors. To be drawn as hers
 JS4-412,Escape plan and evacuation analysis,ship equipment,to do,,
 JS5-501,"Accommodation plan: cabins with wet units, mess, galley",crew and passengers,to do,,Owner: a shower and toilet in each cabin
 JS5-502,Engine department day room and toilet,crew and passengers,to do,,Owner: a coffee and break room and a toilet below
 JS5-503,Passenger saloon arrangement and seating,crew and passengers,to do,,
 JS5-504,Ventilation and air conditioning plan,crew and passengers,partly,"ferry/systems/bridge.py (HVC, wheelhouse only)",
 JS5-505,"Sanitary plan: fresh water, hot water, drains, sewage",crew and passengers,to do,,"Survey findings BF-07, BF-16, BF-17"
-JS6-601,Machinery arrangement,machinery,to do,,The other ship's engine room stands there
+JS6-601,Machinery arrangement,machinery,to do,,"Her machinery spaces are bare: the shafting, the steering gear, the thruster and the ways on foot only"
 JS6-602,Engine control room arrangement,machinery,to do,,Owner: a proper control room
 JS6-603,Main engines: specification,machinery,to do,,"On the pattern of the Scania DSI 11, under the Johansson brand"
 JS6-604,Shafting arrangement and alignment,machinery,partly,"ferry/blender/spec.py, hull_fittings.py",Shaft lines run from gearbox flange to screw
@@ -72,7 +73,7 @@ JS8-859,Internal communication diagrams,electrical,exists,ferry/systems/out/brid
 JS8-860,Radio installation plan,electrical,partly,ferry/systems/bridge.py (COM),Battery sized (JS8-855): PA-001 No. 5 closed. Antennas: No. 12 open
 JS8-861,Propulsion remote control diagram,electrical,exists,"ferry/systems/bridge.py (nets PROP-CAN-A, PROP-CAN-B; component PRP-07)","Two supplies, two lines by separate ways: PA-001 No. 8 closed for the bridge"
 JS8-862,Alarm and monitoring system: alarm list,electrical,to do,,
-JS8-863,Emergency generator room arrangement,electrical,exists,"ferry/blender/eg_room.py, eg_place.py; ferry/systems/bridge.py (EMG); the page","Built to the owner's drawing of 11 November 2026 (7.80 x 4.50 x 3.20 m), as a block for the 68 m ship's top deck, landed on the present ship's house top. 20 components registered. Not checked against any rule text"
+JS8-863,Emergency generator room arrangement,electrical,exists,"ferry/blender/eg_room.py, eg_place.py; ferry/systems/bridge.py (EMG); the page","Built to the owner's drawing of 11 November 2026 (7.80 x 4.50 x 3.20 m), in the house on the 68 m ship's top deck (ga.py). 20 components registered. Not checked against any rule text"
 JS1-151,Inspection and test plan,general,to do,,"What is inspected, by whom, against what"
 JS1-152,Harbour acceptance test programme,general,to do,,
 JS1-153,Sea trial programme and report,general,to do,,"Speed, turning, stopping, steering gear timing, compass adjustment"
@@ -85,3 +86,4 @@ JSY-POL-002,Environmental policy,yard,exists,"held by the owner, not in the repo
 JSY-POL-003,Health and safety policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"
 JSY-STD-401,Stairs and inclined ladders,yard,exists,ferry/yard/standards/JSY-STD-401-stairs.md,"Revision 0: three classes, every stair aboard held to one of them by the build (blender/spec.py, blender/stairs.py) and walked by checks/stairs.cjs. Its outside requirements are recalled, not yet read"
 JSY-STD-402,"Supports: pipes, cables, ducts and what stands on a deck",yard,exists,ferry/yard/standards/JSY-STD-402-supports.md; ferry/blender/spans.py,"Revision 0, 11 November 2026, after the owner's ""too much floating objects ... why aren't you working according to Spec?"". Nothing runs through the air; the spans are the yard's or recalled, none read"
+JSY-STD-403,No two faces in one plane: designing against z-fighting,yard,exists,ferry/yard/standards/JSY-STD-403-no-z-fighting.md; ferry/blender/zfight.py,"Revision 0, 11 November 2026, at the owner's word (""Design with anti z fighting measures"", ""Write it in the repo , as a working instruction""): ten rules a builder keeps before it draws, how to work, what zfight.py checks and what it does not see. blender/steel.py is the first builder written to it"

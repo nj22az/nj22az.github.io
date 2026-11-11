@@ -17,18 +17,19 @@ import csv, heapq, json, math, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(HERE, '..', 'blender'))
 import ship as S
 import bridge
+import bridge_place as BP
 
 SECTIONS = [bridge]
 OUT_JSON = os.path.join(HERE, '..', 'data', 'systems.json')
 OUT_DIR = os.path.join(HERE, 'out')
-DECK_Y, HALF = 9.1, 17.25            # the bridge deck over the waterline; half her length (yard → z)
 
 
 def ship_xyz(p):
-    """(x, yard, h over the bridge deck) → the ship's axes."""
-    return [round(p[0], 3), round(DECK_Y + p[2], 3), round(p[1] - HALF, 3)]
+    """(x, yard, h over the bridge deck), in the bridge's own measures → the ship's axes, by its placing (blender/bridge_place.py)."""
+    return [round(p[0], 3), round(BP.DECK + p[2], 3), round(BP.Z(p[1]), 3)]
 
 
 def manhattan(a, b):

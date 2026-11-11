@@ -1,6 +1,6 @@
 """
-Her marks: draught marks forward, amidships and aft on both sides, the load line, and her name on both bows and on the
-transom over her port of registry.
+Her marks: draught marks forward, amidships and aft on both sides, the load line, her name on both bows and on the
+transom over her port of registry, and the line's name along each side.
 
 Every mark is laid on the plating it is painted on: each point of a letter is carried horizontally onto the shell, as
 draught marks are set out (their height is the height they measure), so the lettering follows her shape.
@@ -15,10 +15,6 @@ LIFT = 0.004        # paint stands this far off the plating in the model, and is
 
 def _on_shell(side, z, y):
     return (side * (L.hull_x(y, z) + LIFT), y, z)
-
-
-def _on_bulwark(side, z, y):
-    return (side * (L.half_breadth(z) + LIFT), y, z)
 
 
 def _write(part, text, height, side, z_middle, y_foot, colour, surface):
@@ -72,7 +68,7 @@ def build():
         for station in S.DRAUGHT_MARKS:
             z = L.Z(station['yard'])
             dm = round(station['lowest'] * 10)
-            while dm <= 28:
+            while dm <= round(S.DRAUGHT_TOP * 10):
                 # A figure is painted where the plating stands up enough to carry it: not under the turn of the bilge.
                 y = L.Y(dm / 10)
                 if y > L.keel_y(z) + 0.02 and L.shell_normal(z, L.psi_at(y + 0.05, z))[0] > 0.6:
@@ -83,16 +79,16 @@ def build():
         z = L.Z(S.LOAD_LINE_YARD)
         _ring(marks, side, z, 0.0, 0.150, 0.125)
         _bar(marks, side, z - 0.225, z + 0.225, -0.025, 0.0)
-        _bar(marks, side, z - 0.150, z + 0.150, L.CAR - 0.025, L.CAR, surface=_on_bulwark)
-        # ---- Her name on the bow, on the bulwark.
-        zc = L.Z(30.3)
-        _write(name, S.NAME, 0.40, side, zc, L.deck_edge(zc) + 0.32, srgb(S.LETTERING), _on_bulwark)
+        _bar(marks, side, z - 0.150, z + 0.150, L.CAR - 0.025, L.CAR)
+        # ---- Her name on the bow, under the band.
+        zc = L.Z(S.NAME_YARD)
+        _write(name, S.NAME, 0.62, side, zc, L.UPPER - S.BAND - 1.25, srgb(S.LETTERING), _on_shell)
         # ---- The line's name along her side (the owner, 11 November 2026: "make the shipping company sign Johansson Lines", then: "Johansson Line not lines by the way").
-        _write(name, S.LINE, 0.62, side, L.Z(S.LINE_YARD), 1.00, srgb(S.LINE_COLOUR), _on_shell)
+        _write(name, S.LINE, 0.95, side, L.Z(S.LINE_YARD), L.CAR + 1.50, srgb(S.LINE_COLOUR), _on_shell)
 
     # ---- Her name and port of registry on the transom.
     z = -L.HALF - LIFT
-    for text, height, y_foot in ((S.NAME, 0.34, 0.92), (S.PORT_OF_REGISTRY, 0.20, 0.50)):
+    for text, height, y_foot in ((S.NAME, 0.44, 1.02), (S.PORT_OF_REGISTRY, 0.26, 0.52)):
         pts, tris, width = lettering(text, height)
         base = len(name.v)
         for u, v in pts:

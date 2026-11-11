@@ -1,10 +1,10 @@
 /**
  * The ferry viewer: the Chisum, turned, taken apart deck by deck, cut open, and walked through on foot.
  *
- * She is the lead ship of a new design, built section by section in Blender (blender/). Her hull is her own; the
- * decks above it and the machinery are for now the Minato Maru's, the ferry of Johansson Town, exported from the game's
- * own source (nj22az/johansson-town, tools/ferry-viewer-export.mjs). blender/assemble.py puts the two together into
- * data/ferry.bin.gz and data/ferry-atlas.webp; this page only reads and shows them.
+ * She is the 68 m ship of her general arrangement (blender/ga.py), built in Blender (blender/): her hull, every deck and
+ * every room's walls in bare steel, her navigation bridge and what else is fitted so far. Everything in the file is her
+ * own. blender/assemble.py puts it into data/ferry.bin.gz beside her sheet of pictures (data/chisum-atlas.webp) and her
+ * register (data/systems.json); this page only reads and shows them.
  * The file format (JMF1), and what this page changes in the look of what it reads, are described in README.md.
  *
  * The look is this page's own: daylight, one sun with shadows, a sky to reflect. The game's cartoon look does not bind it.
@@ -1344,6 +1344,8 @@ function buildPanel(header) {
   const said = own.length > 1 ? `${own.slice(0, -1).join(', ')} and ${own[own.length - 1]} are` : `${own[0]} is`;
   // What each section is, from the file (`what`): the hull from her lines, the compass deck and its mast, and so on.
   const what = built.map(b => b.what).filter(Boolean).join('; ');
+  // The file says what she is and how far she is built (ship.note, written by blender/assemble.py).
+  if (ship.note) { list.append(el('p', { className: 'source' }, ship.note)); return; }
   list.append(el('p', { className: 'source' }, !ship.drawnFrom
     ? `${ship.name}, ${ship.length} m long. Drawn from ${from}.`
     : own.length
@@ -1430,7 +1432,7 @@ function frame(now) {
 // ---------- start ----------
 async function start() {
   const doc = await loadDocument(DOCS[0].file);
-  // Two sheets of pictures: the other ship's plates and signs, and her own screens, dials and panel faces.
+  // Her sheet of pictures (the file may name more than one): her screens, dials, panel faces and signs.
   const atlases = await Promise.all((doc.header.atlases || [doc.header.atlas]).map(async a => {
     const t = await new THREE.TextureLoader().loadAsync('./data/' + a.file);
     t.colorSpace = THREE.SRGBColorSpace;
@@ -1482,6 +1484,8 @@ async function start() {
     work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
     /** For checks: her stairs, as the file says them (README: `stairs`). */
     get stairs() { return stairList; },
+    /** For checks: her particulars, as the file says them (half her length turns metres from the transom into z). */
+    ship: doc.header.ship,
     step: id => stepInput(id),
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
     movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray() })),

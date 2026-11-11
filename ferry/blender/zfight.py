@@ -31,7 +31,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import assemble as A  # noqa: E402
 
-HALF = 17.25
+HALF = A.L.HALF
 SAME = 0.0004            # two planes nearer than this are one plane
 AREA = 1e-4              # an overlap larger than this (m²) is seen to flicker
 CELL = 0.5
