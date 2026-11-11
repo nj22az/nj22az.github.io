@@ -1010,6 +1010,7 @@ function enterWalk() {
   const start = (chosen && standIn(chosen)) || (lanes && standNear(0, lanes.min[2] + 1.5, lanes.min[1], 0.35, 0.9, lanes))
     || (car && car.spaces.map(standIn).find(Boolean)) || new THREE.Vector3(0, 2.1, 0);
   select(null);
+  fillTravel();
   walk = {
     pos: start, floor: start.y, eye: EYE, yaw: Math.PI, pitch: 0, look: null, said: 0, room: null, climb: null,
     saved: { pos: camera.position.clone(), target: controls.target.clone(), fov: camera.fov, near: camera.near, panel: !panel.classList.contains('closed') },
@@ -1161,6 +1162,37 @@ for (const type of ['pointerup', 'pointercancel']) stickEl.addEventListener(type
   stick.id = null; stick.x = stick.y = 0; stickEl.firstElementChild.style.transform = '';
 });
 walkBtn.addEventListener('click', () => walk ? leaveWalk() : enterWalk());
+/**
+ * Quick travel on foot (the owner, 11 November 2026: "In the free walk add quick travel to the decks", and: "I want to
+ * explore every deck and every room"). The list in the bar names every deck and, under it, every room of it. A deck puts
+ * one on it nearest to where one stands; a room puts one in it. The keys 1 to 5 are the decks, from the lowest up.
+ */
+const travel = $('#travel');
+function fillTravel() {
+  while (travel.children.length > 1) travel.lastChild.remove();
+  for (const level of deckLevels().reverse()) {
+    const group = document.createElement('optgroup');
+    group.label = level.deck.name;
+    group.append(new Option(`${level.deck.name}, nearest place`, `deck:${level.deck.id}`));
+    for (const sp of level.deck.spaces) group.append(new Option(sp.name, `room:${level.deck.id}:${sp.id}`));
+    travel.append(group);
+  }
+}
+function travelTo(value) {
+  if (!walk || walk.climb || !value) return false;
+  const [kind, deckId, roomId] = value.split(':');
+  const level = deckLevels().find(l => l.deck.id === deckId);
+  if (!level) return false;
+  const room = kind === 'room' ? level.deck.spaces.find(sp => sp.id === roomId) : null;
+  const spot = kind === 'room' ? room && standIn(room)
+    : standNear(walk.pos.x, walk.pos.z, level.y, 0.5, 0.9) || level.deck.spaces.map(standIn).find(Boolean);
+  if (!spot) { readout.textContent = `There is nowhere to stand in ${room ? room.name : level.deck.name} yet.`; return false; }
+  walk.pos.copy(spot); walk.floor = spot.y; walk.eye = eyeFor(walk);
+  placeEye();
+  sayWhere();
+  return true;
+}
+travel.addEventListener('change', () => { travelTo(travel.value); travel.value = ''; travel.blur(); });
 $('#deck-up').addEventListener('click', () => hopDeck(1));
 $('#deck-down').addEventListener('click', () => hopDeck(-1));
 
@@ -1174,6 +1206,7 @@ addEventListener('keydown', e => {
     if (e.code === 'KeyE' || e.code === 'PageUp') { hopDeck(1); e.preventDefault(); return; }
     if (e.code === 'KeyQ' || e.code === 'PageDown') { hopDeck(-1); e.preventDefault(); return; }
     if (e.code === 'KeyF') { climb(); e.preventDefault(); return; }
+    if (/^Digit[1-9]$/.test(e.code) && !typing(e)) { const level = deckLevels()[+e.code.slice(5) - 1]; if (level) travelTo(`deck:${level.deck.id}`); e.preventDefault(); return; }
     if (/^(Key[WASD]|Arrow(Up|Down|Left|Right)|Shift(Left|Right))$/.test(e.code)) { held.add(e.code); if (/^Arrow/.test(e.code)) e.preventDefault(); }
     return;
   }
@@ -1357,7 +1390,9 @@ async function start() {
     hold: (code, on = true) => { on ? held.add(code) : held.delete(code); },
     /** For checks: the walk of so many seconds, gone at once (60 pictures a second), whatever this machine can draw. */
     walkFor: seconds => { for (let t = 0; walk && t < seconds - 1e-9; t += 1 / 60) stepWalk(1 / 60); },
-    roomFor, headroom, wallClear, workAuto, footing, climb,
+    roomFor, headroom, wallClear, workAuto, footing, climb, travelTo,
+    /** For checks: what quick travel offers, as the list in the bar has it. */
+    get travels() { return [...travel.querySelectorAll('option')].filter(o => o.value).map(o => ({ value: o.value, name: o.textContent })); },
     get ways() { return ways.map(w => ({ id: w.def.id, a: w.a.toArray(), b: w.b.toArray() })); },
     /** For checks: leave a door open or shut, as a tap would. */
     work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
