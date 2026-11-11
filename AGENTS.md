@@ -120,6 +120,20 @@ These instructions apply to every agent working in this repository.
 4. Keep [HANDOVER.md](HANDOVER.md) pointing to the latest notes. If a new dated handover supersedes an old one, update its pointer in the same change and preserve useful history. If no handover exists for the work area, create one and link it there. Re-read the current version before writing so concurrent agents' updates are preserved.
 5. Include the handover update in the work delivered for review and link it in the final response. If access prevents updating it, state that explicitly and provide the pending handover text instead of silently omitting it.
 
+## 3D models: design against z-fighting
+
+The owner, 11 November 2026: "Z fighting is not allowed", "Design with anti z fighting measures", "Write it in the repo ,
+as a working instruction". The instruction is [ferry/yard/standards/JSY-STD-403-no-z-fighting.md](ferry/yard/standards/JSY-STD-403-no-z-fighting.md).
+Read it **before** drawing any model in this repository, the ferry first of all. In short:
+
+- a surface is drawn once (a wall two rooms share is one wall); at a corner one part takes the corner and the other butts against it;
+- an opening is cut in the one plate, never covered by a second; nothing lies flush on a surface that looks the same way;
+- faces that look the same way are never nearer than 10 mm, unless one is paint drawn with the page's depth offset;
+- a thin plate is one sheet seen from both sides, and never lies in another face's plane;
+- every measure is taken from one place, so that two builders cannot disagree by a millimetre;
+- the build is not called built while `ferry/blender/zfight.py` names a pair, and the result is looked at from far and low
+  as well: the check does not see faces a few millimetres apart.
+
 ## Animation, character performances and films
 
 Read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md) when working on animated performances, scene/film direction or rendering. It adapts the owner's supplied *Opus 5.5 promt.pdf* for both Claude and Codex: timed briefs, a reproducible timeline, readable acting/cameras, contact checks, measured picture/sound review and honest reporting. Its offline film settings do not replace the interactive game's device budgets or existing character system.

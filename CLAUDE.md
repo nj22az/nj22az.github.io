@@ -197,6 +197,13 @@ updated the hotel feed my notes can be used to crafting a blog post always", "Li
    notes with the post (`hotel_posts()`), and refuses a post that names no hotel in the register.
 4. Show the owner the draft before it is published.
 
+## 3D models: no z-fighting
+
+The owner, 11 November 2026: "Z fighting is not allowed", "Design with anti z fighting measures". Before drawing any model
+here (the ferry, `ferry/blender/`), read the working instruction
+[ferry/yard/standards/JSY-STD-403-no-z-fighting.md](ferry/yard/standards/JSY-STD-403-no-z-fighting.md): its ten rules are kept
+by design before anything is built, and `ferry/blender/zfight.py` is run after every build. The summary is in [AGENTS.md](AGENTS.md).
+
 ## Tools
 
 **REA** (reverse engineering for agents, `morluto/rea`) is a permanent development tool, registered as the `rea` MCP server in `.mcp.json` at a pinned version. Read the REA section of [AGENTS.md](AGENTS.md) for what to use it on and its limits.
