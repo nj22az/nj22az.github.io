@@ -3,3 +3,5 @@ build/
 # the abandoned pixel-art draft of 11 November 2026 (see README): delete these, then these two lines
 sprites/
 art/sailor-head.txt
+*.raw.png
+*.id.png

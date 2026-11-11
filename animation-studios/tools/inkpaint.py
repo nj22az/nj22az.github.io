@@ -45,3 +45,41 @@ def inked(id_image, scale, ink_px):
     out = Image.merge('LA', (Image.fromarray(lum), Image.fromarray(alpha))).convert('RGBA')
     # black where nothing is, so the reduced edge has no white fringe
     return out.resize((out.width // scale, out.height // scale), Image.LANCZOS)
+
+
+def inked_surface(a, scale, ink_px, depth_span, depth_step=0.045, turn=0.55):
+    """Ink and paint for a sculpted model (one surface, no separate parts).
+    a: float picture (h, w, 4) in 0..1: red, green = the surface normal's x and y seen from the camera,
+    blue = depth * 0.45 (+ 0.5 where the paint is white), alpha = something is there.
+    A line is inked at the outline, where one surface passes in front of another (a jump in depth of
+    more than depth_step Blender units), and at a sharp crease (the surface turns by more than `turn`)."""
+    solid = a[..., 3] > 0.5
+    white = (a[..., 2] >= 0.475) & solid
+    depth = np.where(white, a[..., 2] - 0.5, a[..., 2]) / 0.45 * depth_span
+    nx, ny = a[..., 0] * 2 - 1, a[..., 1] * 2 - 1
+    edge = np.zeros(solid.shape, bool)
+    for axis in (0, 1):
+        s1 = np.roll(solid, -1, axis)
+        jump = np.abs(depth - np.roll(depth, -1, axis)) > depth_step
+        bend = np.hypot(nx - np.roll(nx, -1, axis), ny - np.roll(ny, -1, axis)) > turn
+        e = (solid != s1) | (solid & s1 & (jump | bend))
+        # black paint needs no line: its edge is the line
+        w1 = np.roll(white, -1, axis)
+        e &= (white | w1)
+        if axis == 0:
+            e[-1, :] = False
+        else:
+            e[:, -1] = False
+        edge |= e | np.roll(e, 1, axis)
+    r = ink_px * scale / 2
+    core = 5
+    m = Image.fromarray((edge * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(core))
+    sigma = r * 0.5
+    grown = np.asarray(m.filter(ImageFilter.GaussianBlur(sigma)), dtype=np.float32) / 255
+    phi = lambda x: 0.5 * (1 + math.erf(x / math.sqrt(2)))
+    half = (core + 1) / 2
+    ink = grown > phi((r + half) / sigma) - phi((r - half) / sigma)
+    lum = np.where(white & ~ink, 255, 0).astype(np.uint8)
+    alpha = np.where(solid | ink, 255, 0).astype(np.uint8)
+    out = Image.merge('LA', (Image.fromarray(lum), Image.fromarray(alpha))).convert('RGBA')
+    return out.resize((out.width // scale, out.height // scale), Image.LANCZOS)

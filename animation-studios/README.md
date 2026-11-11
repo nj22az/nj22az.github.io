@@ -57,3 +57,23 @@ Needs Python 3 with Pillow and NumPy, and `ffmpeg`.
 balls and tubes with a rig and a walk pose (`sailor3d.py`) and a working ink-and-paint pass (`common.py`,
 `tools/inkpaint.py`). The model is not a good enough likeness, nothing was filmed with it and the docks were not built
 in 3D. The film on this page is still the 2D vector character.
+
+## In progress: the owner's Meshy sailor (11 November 2026)
+
+The owner: "Can you use meshy ? I have assets there", then "Clean the model up and fix the hat" and "The mouth needs to
+be rigged or animated and the eyes too". The owner's Meshy account holds two image-to-3d models called
+"Sailor Character 3D": plain `a5e74391-af3a-571c-ba6a-b6b0f88b2362` and textured
+`6e85c569-0dbe-4dfe-af3d-85701e0afe2b` (A-pose, 638,000 faces, 4096 px texture in black, white and grey). They are
+not in the repository; fetch them with the Meshy CLI (`meshy download --resource image-to-3d --task-id ...`), which
+needs the owner's sign-in and the hosts `api.meshy.ai`, `www.meshy.ai` and `assets.meshy.ai` (allowed in the cloud
+environment "nj22az.github.io (Meshy access)").
+
+`blender/meshy_sailor.py` cleans the textured model for ink and paint without sculpting anything: grey becomes white,
+the shirt's hoops are redrawn by height, and the hat becomes the sheets' sailor's cap (white crown, black peak).
+`tools/inkpaint.py` (`inked_surface`) inks the outline, overlaps and sharp creases. `blender/meshy-sailor-clean.png`
+is the result from four sides.
+
+**Not done:** no rig and no animation yet (Meshy's rigging costs the owner's credits and needs a model under 300,000
+faces: ask first); the mouth and eyes are only paint so far and cannot move; the peak is not black from every angle;
+the hoops are untidy under the arms and from the side; small ink scribbles remain at the collar. The docks are not
+built in 3D.
