@@ -622,13 +622,47 @@ function nameOnFoot(clientX, clientY) {
   else if (systems.state.shown) systems.hideCard(); else systems.clear();
   if (control) stepInput(control);
 }
+// On foot: one finger (or the mouse) on the model looks round, and a tap names what it is on; two fingers zoom, by how far
+// apart they have come since the second went down. When one of the two lifts, the other goes on looking from where it is.
+const fingers = new Map();
+let pinch = null;
+const spread = () => { const [a, b] = [...fingers.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
 renderer.domElement.addEventListener('pointerdown', e => {
-  if (walk) { walkDown = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }; lookStart(e); return; }
+  if (walk) {
+    fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (fingers.size === 2) { pinch = { spread: spread(), zoom: walkZoom }; walk.look = null; walkDown = null; return; }
+    if (fingers.size > 2) return;
+    walkDown = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId }; lookStart(e); return;
+  }
   move = null; down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId };
 });
-renderer.domElement.addEventListener('pointermove', e => { if (walk) lookMove(e); });
+renderer.domElement.addEventListener('pointermove', e => {
+  if (!walk) return;
+  const f = fingers.get(e.pointerId);
+  if (f) { f.x = e.clientX; f.y = e.clientY; }
+  if (pinch) { if (fingers.size >= 2 && pinch.spread > 8) setWalkZoom(pinch.zoom * spread() / pinch.spread); return; }
+  lookMove(e);
+});
+function fingerUp(e) {
+  fingers.delete(e.pointerId);
+  if (!pinch) return false;
+  if (fingers.size < 2) {
+    pinch = null;
+    const [id, at] = [...fingers][0] || [];
+    if (walk && id !== undefined) walk.look = { id, x: at.x, y: at.y };
+  }
+  return true;                                                     // a finger of a pinch names nothing as it lifts
+}
+renderer.domElement.addEventListener('wheel', e => {
+  if (!walk) return;
+  e.preventDefault();
+  const turned = e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1);
+  zoomWalk(Math.exp(-turned * (e.ctrlKey ? 0.01 : 0.0015)));       // a pinch on a trackpad comes as the wheel with Ctrl
+}, { passive: false });
+for (const type of ['gesturestart', 'gesturechange', 'gestureend']) renderer.domElement.addEventListener(type, e => e.preventDefault());
 renderer.domElement.addEventListener('pointerup', e => {
   if (walk) {
+    if (fingerUp(e)) return;
     lookEnd(e);
     const d = walkDown; walkDown = null;
     if (d && d.id === e.pointerId && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6 && performance.now() - d.t < 450) nameOnFoot(e.clientX, e.clientY);
@@ -644,7 +678,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   lastTap = { x: e.clientX, y: e.clientY, t: now };
   identify(e.clientX, e.clientY);
 });
-renderer.domElement.addEventListener('pointercancel', e => { down = null; if (walk) lookEnd(e); });
+renderer.domElement.addEventListener('pointercancel', e => { down = null; if (walk && !fingerUp(e)) lookEnd(e); });
 renderer.domElement.addEventListener('wheel', () => { move = null; }, { passive: true });
 
 // ---------- looking at her from a named side ----------
@@ -1031,7 +1065,8 @@ function enterWalk() {
   controls.enabled = false;
   document.body.classList.add('walking');
   walkBtn.textContent = 'Leave'; walkBtn.setAttribute('aria-pressed', 'true');
-  camera.clearViewOffset(); camera.fov = 68; camera.near = 0.07;
+  camera.clearViewOffset(); camera.fov = WALK_LENS; camera.near = 0.07;
+  setWalkZoom(walkZoom, true);
   walk.eye = eyeFor(walk);
   resizeWalk();
   placeEye();
@@ -1041,6 +1076,7 @@ function leaveWalk() {
   if (!walk) return;
   const s = walk.saved;
   walk = null; showWay(); held.clear(); stick.x = stick.y = 0; stick.id = null; stickEl.firstElementChild.style.transform = '';
+  fingers.clear(); pinch = null; clearTimeout(zoomSaid);
   document.body.classList.remove('walking');
   walkBtn.textContent = 'Walk aboard'; walkBtn.setAttribute('aria-pressed', 'false');
   camera.fov = s.fov; camera.near = s.near; camera.up.set(0, 1, 0);
@@ -1049,6 +1085,32 @@ function leaveWalk() {
   measure(); applyLens(); controls.update(); redraw();
 }
 function resizeWalk() { camera.aspect = view.clientWidth / view.clientHeight; camera.updateProjectionMatrix(); }
+/**
+ * Looking closer and wider on foot (the owner, 11 November 2026: "I want to be able to zoom out and in on the walk
+ * aboard"): two fingers pinched or spread, the wheel, or + and -; 0 is the normal view again. It is the lens that changes,
+ * not where one stands: zoom 1 is the 68° one walks with, and it goes from about half (a wide lens, which a phone held
+ * upright wants: at 68° it sees only 35° across) to nearly five times (to read a label across a room). Near 1 it settles
+ * on 1. What was set is kept for the next walk.
+ */
+const WALK_LENS = 68, LENS_WIDE = 104, LENS_LONG = 16;
+const halfTan = deg => Math.tan(THREE.MathUtils.degToRad(deg / 2));
+const ZOOM_MIN = halfTan(WALK_LENS) / halfTan(LENS_WIDE), ZOOM_MAX = halfTan(WALK_LENS) / halfTan(LENS_LONG);
+let walkZoom = 1, zoomSaid = 0;
+const zoomShown = () => Math.abs(walkZoom - 1) < 0.06 ? 1 : walkZoom;
+function setWalkZoom(zoom, quiet = false) {
+  walkZoom = THREE.MathUtils.clamp(zoom, ZOOM_MIN, ZOOM_MAX);
+  if (!walk) return;
+  const z = zoomShown();
+  camera.fov = THREE.MathUtils.radToDeg(2 * Math.atan(halfTan(WALK_LENS) / z));
+  camera.updateProjectionMatrix();
+  if (!quiet) {
+    readout.textContent = z === 1 ? 'Zoom: normal' : `Zoom: ${z.toFixed(1)} ×`;
+    clearTimeout(zoomSaid);
+    zoomSaid = setTimeout(() => { if (walk) readout.textContent = walk.room || ''; }, 1400);
+  }
+  redraw();
+}
+const zoomWalk = factor => setWalkZoom(walkZoom * factor);
 function placeEye() {
   camera.position.set(walk.pos.x, walk.pos.y + walk.eye, walk.pos.z);
   camera.rotation.set(walk.pitch, walk.yaw, 0, 'YXZ');
@@ -1150,11 +1212,16 @@ function hopDeck(by) {
   sayWhere();
 }
 // Looking round: drag anywhere on the model.
-function lookStart(e) { if (walk.look === null) { walk.look = { id: e.pointerId, x: e.clientX, y: e.clientY }; renderer.domElement.setPointerCapture?.(e.pointerId); } }
+function lookStart(e) {
+  if (walk.look !== null) return;
+  walk.look = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  try { renderer.domElement.setPointerCapture?.(e.pointerId); } catch { /* a pointer that cannot be captured still looks round */ }
+}
 function lookMove(e) {
   const l = walk.look;
   if (!l || l.id !== e.pointerId) return;
-  walk.yaw -= (e.clientX - l.x) * LOOK; walk.pitch = THREE.MathUtils.clamp(walk.pitch - (e.clientY - l.y) * LOOK, -1.45, 1.45);
+  const k = LOOK / Math.max(1, zoomShown());                       // looking closer, the same drag turns one less
+  walk.yaw -= (e.clientX - l.x) * k; walk.pitch = THREE.MathUtils.clamp(walk.pitch - (e.clientY - l.y) * k, -1.45, 1.45);
   l.x = e.clientX; l.y = e.clientY;
   placeEye();
 }
@@ -1219,6 +1286,9 @@ addEventListener('keydown', e => {
     if (e.code === 'KeyE' || e.code === 'PageUp') { hopDeck(1); e.preventDefault(); return; }
     if (e.code === 'KeyQ' || e.code === 'PageDown') { hopDeck(-1); e.preventDefault(); return; }
     if (e.code === 'KeyF') { climb(); e.preventDefault(); return; }
+    if (!typing(e) && (e.key === '+' || e.key === '=' || e.code === 'NumpadAdd')) { zoomWalk(1.25); e.preventDefault(); return; }
+    if (!typing(e) && (e.key === '-' || e.code === 'NumpadSubtract')) { zoomWalk(0.8); e.preventDefault(); return; }
+    if (!typing(e) && (e.code === 'Digit0' || e.code === 'Numpad0')) { setWalkZoom(1); e.preventDefault(); return; }
     if (/^Digit[1-9]$/.test(e.code) && !typing(e)) { const level = deckLevels()[+e.code.slice(5) - 1]; if (level) travelTo(`deck:${level.deck.id}`); e.preventDefault(); return; }
     if (/^(Key[WASD]|Arrow(Up|Down|Left|Right)|Shift(Left|Right))$/.test(e.code)) { held.add(e.code); if (/^Arrow/.test(e.code)) e.preventDefault(); }
     return;
@@ -1396,6 +1466,7 @@ async function start() {
   window.__ferry = {
     setExplode, setCut, setInput, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
     lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt, showTab, nameOnFoot, get systems() { return systems; },
+    zoomWalk, setWalkZoom, get walkZoom() { return zoomShown(); }, zoomLimits: [ZOOM_MIN, ZOOM_MAX],
     /** For checks: the room the walker stands in, named now (the readout is written as the walk goes). */
     whereOnFoot: () => { if (!walk) return ''; sayWhere(); return walk.room; },
     /** For checks: put the walker somewhere, or hold a key down. */

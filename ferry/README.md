@@ -675,6 +675,16 @@ walls, the deckhead and the deck covering do not answer: there the room is named
 
 ## Walking aboard and the outside view
 
+**Zoom on foot.** The owner, 11 November 2026: "I want to be able to zoom out and in on the walk aboard". On foot the
+lens one walks with can be changed: two fingers spread or pinched on a touch screen, the wheel (or a pinch on a trackpad)
+on a computer, or the keys + and -; 0 is the normal view again. Zoom 1 is the 68° lens as before; it goes from 0.53 × (a
+104° lens: a phone held upright sees only 35° across at the normal lens, and 61° at the widest) to 4.8 × (16°, to read a
+label across a room), and settles on 1 when brought near it. It is the lens that changes, not where one stands. Looking
+closer, the same drag turns one less, so a label can be followed; a pinch does not turn one's head, and when one of the two
+fingers lifts the other goes on looking. The left thumb on the stick is not a finger of a pinch. The page says the zoom
+for a moment ("Zoom: 2.0 ×") and then the room again. The zoom one leaves with is the next walk's. `checks/zoom.cjs` turns
+the wheel, presses the keys and pinches with two fingers, and checks the lens the page then draws with.
+
 The owner, 10 November 2026: "I want to be able to explore it in fpv on the demo and have better camera controls".
 
 **The outside view.** Scrolling or pinching zooms toward the pointer, not toward the middle. A double-click or
@@ -975,6 +985,18 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, later: zoom on foot
+
+- The owner: "I want to be able to zoom out and in on the walk aboard". `app.js`: `setWalkZoom`, the two-finger pinch,
+  the wheel and the keys (section "Walking aboard" above); the hint line says how.
+- `node ferry/checks/zoom.cjs`: all passed (the wheel both ways and back to normal; the limits, 104° and 16°; 0, + and -;
+  a drag at 3 × turns a third as far; two fingers spread to twice as far apart give 2.00 × and do not turn the head;
+  pinched, wider; one finger lifted, the other looks on; a pinch names nothing; leaving gives the outside view its lens
+  back). `doors.cjs`, `bridge.cjs`, `stairs.cjs`, `travel.cjs`, `offline.cjs` all passed.
+- Looked at in pictures on a phone-sized screen (390 by 844) at 0.53 ×, 1 × and 3 ×, before the drinks machine.
+- **Not checked:** on a real phone or tablet. The two-finger pinch is driven by Chromium's touch input and, for one finger
+  lifting, by the pointer events themselves; Safari on an iPhone is not tried.
 
 ### 11 November 2026, after it: nothing in the generator room runs through the air
 
