@@ -50,3 +50,10 @@ Needs Python 3 with Pillow and NumPy, and `ffmpeg`.
   proportions and stride but nothing is cut from them yet.
 - The boot changes from the flat drawing to the toe-up drawing for the two frames round each heel strike.
 - The page is not in the site navigation or the sitemap. It was opened in Chromium at 1280 and 390 px wide: the film plays, nothing overflows, no script errors. Not tried on a real phone.
+
+## Stopped: a 3D sailor in Blender (11 November 2026)
+
+`blender/` is unfinished and was stopped by the owner ("The quality is subpar stop"). It holds a sailor built from
+balls and tubes with a rig and a walk pose (`sailor3d.py`) and a working ink-and-paint pass (`common.py`,
+`tools/inkpaint.py`). The model is not a good enough likeness, nothing was filmed with it and the docks were not built
+in 3D. The film on this page is still the 2D vector character.
