@@ -41,7 +41,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   // The stern ramp (the owner, 11 November 2026: "How do you get on to cargo deck from this ship ? Aft ramp ?"): raised it is
   // the stern door; its control in the bar lowers it aft about its hinges at the car deck's sill, level at 90 degrees.
   const ramp = await page.evaluate(() => {
-    const f = window.__ferry, label = [...document.querySelectorAll('#bar label .lbl')].map(e => e.textContent);
+    const f = window.__ferry, label = [...document.querySelectorAll('#bar .grp .lbl')].map(e => e.textContent);
     const lean = () => { const m = f.movers().find(m => m.id === 'stern-ramp'); return m ? Math.atan2(m.matrix[6], m.matrix[5]) * 180 / Math.PI : null; };
     const raised = lean();
     f.setInput('stern-ramp', 90);

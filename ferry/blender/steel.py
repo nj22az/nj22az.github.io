@@ -684,7 +684,11 @@ def motion():
     its hinges; each cylinder swings on its trunnion to follow its pin on the ramp, and its rod runs out as far as the pin has
     gone (the page's `aim`, as the steering gear's rams are worked)."""
     R = STERN_RAMP
-    inputs = [dict(id=R['id'], name='Stern ramp', min=0, max=R['lowered'], step=1, unit='°', below='raised', above='lowered', rest='raised')]
+    # On the page's desk: Raise, Stop, Lower. Lowering, it stops by itself level with the car deck (90 degrees); Lower again
+    # takes it on to a low quay. Three degrees a second is the yard's figure for the page: half a minute to the quay. A real
+    # ramp of this size takes about a minute (recalled, not read).
+    inputs = [dict(id=R['id'], name='Stern ramp', min=0, max=R['lowered'], step=1, unit='°', below='raised', above='lowered', rest='raised',
+                   keys=['Raise', 'Stop', 'Lower'], stops=[dict(v=90, say='level'), dict(v=R['lowered'], say='low quay')], rate=3)]
     # about the athwartships axis through its hinges; its head goes aft and down
     movers = [dict(id=R['id'], kind='turn', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge3']), ratio=-1.0)]
     for sgn, tag in ((1, 'p'), (-1, 's')):

@@ -209,8 +209,12 @@ def motion():
     """
     t = S.TILLER
     zs = L.Z(S.RUDDER['yard_stock'])
+    # On the page's desk: a key each way, five degrees an order, and Midships. The rudder follows at the steering gear's
+    # pace: from 35 degrees on one side to 30 on the other in 28 seconds, which is what the rule asks of a steering gear at
+    # full speed (SOLAS II-1, regulation 29, as the yard recalls it; not read).
     inputs = [dict(id='rudder', name='Rudder', min=-S.RUDDER_ANGLE, max=S.RUDDER_ANGLE, step=1, unit='°',
-                   below='to port', above='to starboard', rest='amidships')]
+                   below='to port', above='to starboard', rest='amidships',
+                   keys=['Port', 'Midships', 'Starboard'], notch=5, rate=round(65 / 28, 2))]
     movers = []
     for side, tag in ((1, 'p'), (-1, 's')):
         pivot = [side * X, 0.0, zs]

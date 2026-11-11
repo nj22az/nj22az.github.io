@@ -11,7 +11,7 @@ beforehand (`blender/make.sh`, below) and kept in `data/`.
 
 | File | What |
 |---|---|
-| `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, Rudder, Stern ramp, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
+| `index.html` | The page and its own chrome: the title, the *Decks and rooms* panel, and the bar, which is a rail of icons (decks, cut, look from, rudder, stern ramp, walk aboard, reset view, how to move, on this device) with a desk over it that shows the keys of one function at a time (*The bar*, below) |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
 | `systems.js` | Her systems on the page: the card that says what a fitting is, the *Systems* list, and what is drawn over the model for a board, a circuit, a net or a pipe |
 | `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.77 MB, about 237,100 triangles, six parts, 93 named rooms, 16 stairs, 41 moving parts. Everything in it is her own, built in Blender |
@@ -860,8 +860,11 @@ spaces to a multiple of four bytes), then one binary block.
   `from: "blender"` marks a mesh of her own build; the others are the Town's export.
 - `ship.built[]` lists the sections that are her own (`part`, `section`, `date`); `source.blender` names the builder.
 - **Parts that move.** `inputs[]` are what can be worked on the page: `id`, `name`, `min`, `max`, `step`, `unit`, and
-  how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page makes a slider
-  for each, with two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
+  how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page gives each an
+  icon on its rail and three keys on its desk (no sliders since 11 November 2026: *The bar*, below): `keys` names them,
+  `notch` is how far one press of a two-way thing's key orders it (the rudder: 5°), `stops[]` (`v`, `say`) are where a
+  one-way thing's run ends by itself (the ramp: level at 90°, then the low quay), and `rate` is how fast the part follows
+  its order, in its unit a second. There are two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
   tap; with `auto: "tap"` it is worked by a tap only, on foot too (the drinks machine's door and coin return: nobody opens
   them by walking past). An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
   position means), `home` the one it rests in, `fitting` the component of the register it belongs to; a tap on the lever
@@ -910,6 +913,30 @@ they are lit:
   she did.
 - A material's `offset` is a depth offset: paint laid on plating is drawn a hair nearer, plates behind plating a hair
   further (see *Her own build*).
+
+## The bar: a rail of icons, and keys when they are wanted
+
+The owner, 11 November 2026: "I dont like the sliders, I would prefer buttons, like we are using a hmi to control the view
+professionally", then: "use smart menus, with buttons that show when we need them, we dont need to see everything in the
+menus, and make it icon based, not all that text (for the viewer page)".
+
+- **The rail** (`#rail`) is one icon for each function. Outside: decks, cut, look at her from, each thing the model says is
+  worked (the rudder, the stern ramp: their icons are made from the file's `inputs`), walk aboard, reset view, how to move,
+  and *on this device* (save offline, install). On foot: the worked things, ladder (only at one), go to, deck below, deck
+  above, leave, how to move. Every icon has its name as a tooltip and for a screen reader; the icons are 24 × 24 line
+  drawings kept as CSS variables in `index.html` (`--i-…`) and drawn as masks, so they take the colour of their key.
+- **The desk** (`#desk`) stands over the rail and shows the keys of **one** function: the one whose icon was pressed (a
+  second press puts them away), or the one whose part was tapped on the model (tap the ramp, the wheel or a rudder, and its
+  keys are there: `keysFor`). Nothing else is shown.
+- **What the signs mean.** An icon is filled while its function is away from rest (decks lifted, she cut open, rudder
+  over, ramp down) and ringed while its keys are shown. A key is lit while its order stands. The dark window beside the
+  keys says where the part is now ("Port 7°", "74°", "Level").
+- **Orders, not positions.** A key gives an order (`orderInput`) and the part follows at its own pace (`workOrders`, the
+  file's `rate`): the rudder at 2.3° a second, the ramp at 3° a second with Raise, Stop and Lower. `setInput` still puts a
+  part somewhere at once, for the checks and for whoever has asked for less motion.
+- **How to move** is said when asked for (the question mark) and for nine seconds on going aboard; it no longer stands
+  under her name.
+- On a phone the rail wraps to two rows and a function's keys that are wider than the screen are swiped sideways.
 
 ## Coupling
 

@@ -287,7 +287,7 @@ CONFIG.projectExplorer = [
     "format": "3D model viewer",
     "language": "English",
     "status": "Work in progress",
-    "firstTry": "Press Walk aboard, choose the wheelhouse under Go to, then tap a lever or a screen to see what it is and what feeds it.",
+    "firstTry": "Press the walking figure to go aboard, pick the wheelhouse from the pin, then tap a lever or a screen to see what it is and what feeds it.",
     "features": [
       "Lift her six decks apart, from the double bottom to the compass deck",
       "Walk aboard: 93 named rooms, 16 stairs, doors that open as you come to them",

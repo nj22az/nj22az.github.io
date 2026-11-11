@@ -19,6 +19,7 @@
 :root {
   --bg: #e9ecec; --bg2: #f7f8f7; --ink: #1d2427; --muted: #59656b; --line: #cfd6d8;
   --panel: rgba(255,255,255,0.92); --accent: #0b6e66; --accent-ink: #fff; --radius: 12px;
+  --window: #172024; --window-ink: #d5efe9;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
@@ -100,15 +101,80 @@ button.link { border: 0; background: none; padding: 0; color: var(--accent); fon
 #card .close:hover { color: var(--accent); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-#bar { position: fixed; left: 16px; right: 392px; bottom: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-#bar label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
-#bar output { font-size: 13px; color: var(--ink); margin-left: auto; text-align: right; }
+/* The icons: drawn on a 24 by 24 field with one weight of line, and used as masks, so each takes the colour of its key. */
+:root {
+  --i-decks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 3 7.5l9 4.5 9-4.5L12 3z'/%3E%3Cpath d='M3 12l9 4.5 9-4.5'/%3E%3Cpath d='M3 16.5 12 21l9-4.5'/%3E%3C/svg%3E");
+  --i-cut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7h18l-1.6 8.2a4 4 0 0 1-3.9 3.3h-7a4 4 0 0 1-3.9-3.3L3 7z'/%3E%3Cpath d='M12 2.5v19' stroke-dasharray='2.2 2.6'/%3E%3C/svg%3E");
+  --i-eye: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='2.8'/%3E%3C/svg%3E");
+  --i-helm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5.6'/%3E%3Ccircle cx='12' cy='12' r='1.4'/%3E%3Cpath d='M12 2v4.4M12 17.6V22M2 12h4.4M17.6 12H22M4.9 4.9 8 8M16 16l3.1 3.1M4.9 19.1 8 16M16 8l3.1-3.1'/%3E%3C/svg%3E");
+  --i-ramp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 8h9v8h-9'/%3E%3Cpath d='M11.5 16l10 3'/%3E%3Cpath d='M17.5 5v7'/%3E%3Cpath d='M14.9 9.4l2.6 2.6 2.6-2.6'/%3E%3C/svg%3E");
+  --i-lever: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 14V5'/%3E%3Ccircle cx='12' cy='4' r='1.7'/%3E%3Cpath d='M5 20h14l-2-6H7l-2 6z'/%3E%3C/svg%3E");
+  --i-walk: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='13' cy='4' r='1.9'/%3E%3Cpath d='M13.5 8 10 9.5 8 13'/%3E%3Cpath d='M13.5 8l-1.2 6 3.2 2.8 1 5.2'/%3E%3Cpath d='M12.3 14l-1.8 3.5-3 4'/%3E%3Cpath d='M13.8 9.8l2.2 2.4 3 .6'/%3E%3C/svg%3E");
+  --i-exit: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M15 8l4 4-4 4'/%3E%3Cpath d='M19 12H9'/%3E%3C/svg%3E");
+  --i-home: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11.5 12 4l9 7.5'/%3E%3Cpath d='M5.5 10v10h13V10'/%3E%3Cpath d='M10 20v-5.5h4V20'/%3E%3C/svg%3E");
+  --i-more: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='5' cy='12' r='1.5' fill='black'/%3E%3Ccircle cx='12' cy='12' r='1.5' fill='black'/%3E%3Ccircle cx='19' cy='12' r='1.5' fill='black'/%3E%3C/svg%3E");
+  --i-help: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9.3 9.2a2.8 2.8 0 1 1 4.2 2.5c-.9.6-1.5 1.1-1.5 2.3'/%3E%3Cpath d='M12 17.2v.3'/%3E%3C/svg%3E");
+  --i-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21.5s6.5-6 6.5-11a6.5 6.5 0 1 0-13 0c0 5 6.5 11 6.5 11z'/%3E%3Ccircle cx='12' cy='10.3' r='2.3'/%3E%3C/svg%3E");
+  --i-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20V8'/%3E%3Cpath d='M6.5 13 12 7.5l5.5 5.5'/%3E%3Cpath d='M5 3.5h14'/%3E%3C/svg%3E");
+  --i-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12'/%3E%3Cpath d='M6.5 11l5.5 5.5 5.5-5.5'/%3E%3Cpath d='M5 20.5h14'/%3E%3C/svg%3E");
+  --i-ladder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 2.5v19M16 2.5v19M8 6.5h8M8 10.5h8M8 14.5h8M8 18.5h8'/%3E%3C/svg%3E");
+  --i-list: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 6h12M8.5 12h12M8.5 18h12'/%3E%3Cpath d='M3.6 6h.1M3.6 12h.1M3.6 18h.1' stroke-width='2.8'/%3E%3C/svg%3E");
+  --i-decks0: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5h16M4 12h16M4 14.5h16'/%3E%3C/svg%3E");
+  --i-decks1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E");
+  --i-decks2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h16M4 12h16M4 20h16'/%3E%3C/svg%3E");
+  --i-whole: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7h18l-1.6 8.2a4 4 0 0 1-3.9 3.3h-7a4 4 0 0 1-3.9-3.3L3 7z'/%3E%3C/svg%3E");
+  --i-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --i-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 5l7 7-7 7'/%3E%3C/svg%3E");
+  --i-mid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v16'/%3E%3Cpath d='M8.5 20h7'/%3E%3C/svg%3E");
+  --i-raise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 14.5l7-7 7 7'/%3E%3C/svg%3E");
+  --i-lower: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9.5l7 7 7-7'/%3E%3C/svg%3E");
+  --i-stop: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6.5' y='6.5' width='11' height='11' rx='1.5'/%3E%3C/svg%3E");
+}
+/* The bar (the owner, 11 November 2026: "I dont like the sliders, I would prefer buttons, like we are using a hmi to control the
+   view professionally", then: "use smart menus, with buttons that show when we need them, we dont need to see everything in
+   the menus, and make it icon based, not all that text"). A rail of icons, one for each function. A function's keys stand on
+   the desk over the rail only while its icon is open, or after the part itself was tapped on the model. An icon is filled
+   while its function is away from rest, and ringed while its keys are shown; a key is lit while its order stands. */
+#bar { position: fixed; left: 16px; bottom: 16px; max-width: calc(100vw - 424px); display: flex; flex-direction: column; align-items: flex-start; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#rail { display: flex; flex-wrap: wrap; gap: 6px; }
+#worked { display: contents; }
+.ico { position: relative; display: inline-block; flex: none; width: 40px; height: 40px; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); color: var(--ink); font: inherit; font-size: 0; overflow: hidden; cursor: pointer; }
+.ico::before { content: ""; position: absolute; inset: 9px; background: currentColor; -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat; }
+.ico[hidden] { display: none; }
+.ico[aria-pressed=true], .ico[data-on] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ico[aria-expanded=true] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.ico:active { background: color-mix(in srgb, var(--accent) 28%, var(--bg2)); }
+label.ico select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; font-size: 16px; cursor: pointer; }
+label.ico:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+body.walking label.ico.walk-only { display: inline-block !important; }
+body.walking #walk { --i: var(--i-exit) !important; }
+#desk { display: flex; }
+#desk:not(:has(> .grp:not([hidden]))) { display: none; }
+.grp { display: grid; grid-template-columns: auto auto; grid-template-areas: "lbl lbl" "keys val"; gap: 3px 6px; align-items: center; justify-content: start; }
+.grp[hidden] { display: none; }
+.grp .lbl { grid-area: lbl; font-size: 11.5px; line-height: 1.2; color: var(--muted); }
+.keys { grid-area: keys; display: flex; }
+.keys.plain { gap: 6px; }
+.key { position: relative; min-height: 38px; min-width: 40px; margin: 0 0 0 -1px; padding: 0 11px; border: 1px solid var(--line); border-radius: 0; background: var(--bg2); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.key.ik { min-width: 44px; font-size: 0; }
+.key.ik::before { content: ""; position: absolute; inset: 8px 11px; background: currentColor; -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat; }
+.key:first-child, .key.trim { margin-left: 0; border-radius: 8px 0 0 8px; }
+.key:last-child, .key:has(+ .trim) { border-radius: 0 8px 8px 0; }
+.key:only-child { border-radius: 8px; }
+.key.trim { margin-left: 6px; }
+.key[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.key:active { background: color-mix(in srgb, var(--accent) 28%, var(--bg2)); }
+.key[aria-pressed=true]:active { background: var(--accent); }
+.key:focus-visible { z-index: 1; }
+.val { grid-area: val; display: inline-flex; align-items: center; justify-content: flex-end; height: 38px; min-width: 5.5ch; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--window); color: var(--window-ink); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.grp.wide .val { min-width: 12.5ch; }
+#bar output { align-self: stretch; font-size: 13px; color: var(--ink); }
 #bar output:empty { display: none; }
-input[type=range] { accent-color: var(--accent); width: 130px; height: 28px; margin: 0; }
 .btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+/* How to move: said when asked for (the question mark), and for a few seconds on going aboard. */
+#help p { width: fit-content; margin: 6px 0 0; padding: 6px 10px; font-size: 12.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
 
-select.btn { appearance: none; -webkit-appearance: none; padding-right: 26px; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
 .walk-only { display: none !important; }
 /* Walking aboard: the model fills the screen; the panel and what only the outside view uses go, and the line under her
    name says how to walk. */
@@ -116,10 +182,9 @@ body.walking .orbit-only, body.walking #panel, body.walking #panel-toggle { disp
 body.walking .walk-only { display: revert !important; }
 /* The Ladder button shows only where there is a ladder to take. */
 body.walking #climb[hidden] { display: none !important; }
-body.walking #bar { right: 16px; }
+body.walking #bar { max-width: calc(100vw - 32px); }
 body.walking #view canvas { cursor: crosshair; }
 /* On foot the model is behind the line under her name: it gets a ground of its own to be read on. */
-#hint { width: fit-content; margin-top: 6px; padding: 6px 10px; font-size: 12.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
 /* The thumb-stick, on screens that are touched: a ring to rest the thumb in and a knob that follows it. */
 #stick { position: fixed; left: 20px; bottom: calc(150px + env(safe-area-inset-bottom)); width: 116px; height: 116px; border-radius: 50%; background: color-mix(in srgb, var(--panel) 70%, transparent); border: 1px solid var(--line); touch-action: none; }
 #stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: var(--accent); opacity: 0.85; }
@@ -131,13 +196,12 @@ body.walking #view canvas { cursor: crosshair; }
   #panel.closed { transform: translateY(100%); }
   #panel-toggle { display: inline-block; top: auto; bottom: calc(46vh + 8px); right: 16px; }
   #panel.closed ~ #panel-toggle { bottom: calc(8px + env(safe-area-inset-bottom)); }
-  #bar { top: auto; bottom: calc(46vh + 56px); left: 16px; right: 16px; padding: 8px 10px; gap: 4px 10px; }
+  #bar { top: auto; bottom: calc(46vh + 56px); max-width: calc(100vw - 32px); }
   #panel.closed ~ #bar { bottom: calc(56px + env(safe-area-inset-bottom)); }
-  #bar label { font-size: 12px; gap: 6px; flex: 1 1 96px; }
-  #bar .btn { min-height: 34px; padding: 0 9px; font-size: 12px; }
-  #bar output { flex: 1 1 100%; margin: 0; text-align: left; font-size: 12.5px; }
-  input[type=range] { flex: 1; width: auto; min-width: 56px; }
-  header.title p { display: none; }
+  /* On a phone a function's keys may be wider than the screen: they are swiped sideways. */
+  #desk { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+  #desk::-webkit-scrollbar { display: none; }
+  .grp { flex: none; }
   body.walking #panel ~ #bar { bottom: calc(12px + env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) { #panel { transition: none; } }
@@ -150,8 +214,10 @@ body.walking #view canvas { cursor: crosshair; }
 <header class="title">
   <a href="/">← The Office of Nils Johansson</a>
   <h1>Chisum</h1>
+  <div id="help" hidden>
   <p class="orbit-only">A 68 m car and passenger ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room or a fitting to name it, or walk aboard.</p>
   <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, click a fitting to see what it is, Shift to go faster, the wheel or + and - to zoom (0 for the normal view), F at a ladder, Q and E for the deck below and above, 1 to 5 for a deck, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round, two fingers to zoom in and out, tap a fitting to see what it is. At a ladder a button takes it.</span></p>
+  </div>
 </header>
 
 <p id="status" role="status">Loading the ferry…</p>
@@ -165,32 +231,70 @@ body.walking #view canvas { cursor: crosshair; }
   <section class="tabpanel" id="decks" role="tabpanel" aria-labelledby="tab-decks"></section>
   <section class="tabpanel" id="systems" role="tabpanel" aria-labelledby="tab-systems" hidden></section>
 </aside>
-<button type="button" id="panel-toggle" class="btn" aria-expanded="true" aria-controls="panel">Rooms and systems</button>
+<button type="button" id="panel-toggle" class="ico" style="--i: var(--i-list)" title="Rooms and systems" aria-expanded="true" aria-controls="panel">Rooms and systems</button>
 <aside id="card" aria-label="What this fitting is" aria-live="polite" hidden></aside>
 
 <div id="stick" class="walk-only" aria-hidden="true"><i></i></div>
 
 <div id="bar" role="toolbar" aria-label="Model controls">
-  <label class="orbit-only"><span class="lbl">Explode</span><input id="explode" type="range" min="0" max="100" value="0" aria-label="Explode: lift the decks apart"></label>
-  <label class="orbit-only"><span class="lbl">Cut</span><input id="cut" type="range" min="0" max="100" value="0" aria-label="Cut: slice her open along her length, from the starboard side"></label>
-  <select id="views" class="btn orbit-only" aria-label="Look at her from">
-    <option value="">View</option>
-    <option value="home">Bow quarter</option>
-    <option value="starboard">Starboard side</option>
-    <option value="port">Port side</option>
-    <option value="ahead">From ahead</option>
-    <option value="astern">From astern</option>
-    <option value="above">From above</option>
-    <option value="below">From below</option>
-  </select>
-  <button type="button" class="btn walk-only" id="climb" hidden>Ladder</button>
-  <select id="travel" class="btn walk-only" aria-label="Go to a deck or a room"><option value="">Go to</option></select>
-  <button type="button" class="btn walk-only" id="deck-down">Deck below</button>
-  <button type="button" class="btn walk-only" id="deck-up">Deck above</button>
-  <button type="button" class="btn" id="walk" aria-pressed="false">Walk aboard</button>
-  <button type="button" class="btn orbit-only" id="home">Reset view</button>
-  <button type="button" class="btn orbit-only" id="offline" aria-pressed="false">Save offline</button>
-  <button type="button" class="btn orbit-only" id="install">Install</button>
+  <!-- The desk: the keys of the one function whose icon is open. -->
+  <div id="desk">
+    <div class="grp" data-fn="decks" role="group" aria-label="Decks: lift them apart" hidden>
+      <span class="lbl">Decks</span>
+      <div class="keys" id="explode">
+        <button type="button" class="key ik" style="--i: var(--i-decks0)" data-v="0" aria-pressed="true" title="Together">Together</button>
+        <button type="button" class="key ik" style="--i: var(--i-decks1)" data-v="50" aria-pressed="false" title="Lifted halfway">Half</button>
+        <button type="button" class="key ik" style="--i: var(--i-decks2)" data-v="100" aria-pressed="false" title="Lifted apart">Apart</button>
+      </div>
+    </div>
+    <div class="grp" data-fn="cut" role="group" aria-label="Cut: slice her open along her length, from the starboard side" hidden>
+      <span class="lbl">Cut</span>
+      <div class="keys" id="cut">
+        <button type="button" class="key ik" style="--i: var(--i-whole)" data-v="0" aria-pressed="true" title="Whole">Whole</button>
+        <button type="button" class="key" data-v="25" aria-pressed="false" title="A quarter of her beam cut away" aria-label="Cut a quarter of her beam away">¼</button>
+        <button type="button" class="key" data-v="50" aria-pressed="false" title="Cut to the centreline" aria-label="Cut her to the centreline">½</button>
+        <button type="button" class="key" data-v="75" aria-pressed="false" title="Three quarters of her beam cut away" aria-label="Cut three quarters of her beam away">¾</button>
+        <button type="button" class="key trim" data-by="-5" title="Cut less" aria-label="Cut less">−</button>
+        <button type="button" class="key" data-by="5" title="Cut more" aria-label="Cut more">+</button>
+      </div>
+      <span class="val" id="cut-val">0 %</span>
+    </div>
+    <div class="grp" data-fn="more" role="group" aria-label="Keep her on this device" hidden>
+      <span class="lbl">On this device</span>
+      <div class="keys plain">
+        <button type="button" class="btn" id="offline" aria-pressed="false">Save offline</button>
+        <button type="button" class="btn" id="install">Install</button>
+      </div>
+    </div>
+  </div>
+  <!-- The rail: one icon for each function. What can be worked aboard (the rudder, the ramp) gets its icon from the model. -->
+  <div id="rail">
+    <button type="button" class="ico orbit-only" id="fn-decks" data-open="decks" aria-expanded="false" style="--i: var(--i-decks)" title="Decks: lift them apart">Decks</button>
+    <button type="button" class="ico orbit-only" id="fn-cut" data-open="cut" aria-expanded="false" style="--i: var(--i-cut)" title="Cut her open">Cut</button>
+    <label class="ico orbit-only" style="--i: var(--i-eye)" title="Look at her from">
+      <select id="views" aria-label="Look at her from">
+        <option value="">Look at her from</option>
+        <option value="home">Bow quarter</option>
+        <option value="starboard">Starboard side</option>
+        <option value="port">Port side</option>
+        <option value="ahead">From ahead</option>
+        <option value="astern">From astern</option>
+        <option value="above">From above</option>
+        <option value="below">From below</option>
+      </select>
+    </label>
+    <span id="worked"></span>
+    <button type="button" class="ico walk-only" id="climb" style="--i: var(--i-ladder)" title="Ladder" hidden>Ladder</button>
+    <label class="ico walk-only" style="--i: var(--i-pin)" title="Go to a deck or a room">
+      <select id="travel" aria-label="Go to a deck or a room"><option value="">Go to</option></select>
+    </label>
+    <button type="button" class="ico walk-only" id="deck-down" style="--i: var(--i-down)" title="Deck below (Q)">Deck below</button>
+    <button type="button" class="ico walk-only" id="deck-up" style="--i: var(--i-up)" title="Deck above (E)">Deck above</button>
+    <button type="button" class="ico" id="walk" aria-pressed="false" style="--i: var(--i-walk)" title="Walk aboard">Walk aboard</button>
+    <button type="button" class="ico orbit-only" id="home" style="--i: var(--i-home)" title="Reset view">Reset view</button>
+    <button type="button" class="ico" id="fn-help" aria-expanded="false" aria-controls="help" style="--i: var(--i-help)" title="How to move">How to move</button>
+    <button type="button" class="ico orbit-only" id="fn-more" data-open="more" aria-expanded="false" style="--i: var(--i-more)" title="Save offline, install">On this device</button>
+  </div>
   <output id="what" aria-live="polite"></output>
 </div>
 

@@ -280,14 +280,85 @@ function moveParts(shadows = true) {
 }
 /** How a setting is said: "Rudder 20° to port", "Rudder amidships". */
 const said = (def, v) => v === 0 ? `${def.name} ${def.rest || 'at rest'}` : `${def.name} ${Math.abs(v)}${def.unit || ''} ${v < 0 ? def.below : def.above}`;
+/** Put a worked thing somewhere at once (the checks, and whoever asked for less motion). Its keys and window follow. */
 function setInput(id, value) {
   const it = inputs.get(id);
   if (!it || it.def.auto) return;
   it.value = THREE.MathUtils.clamp(value, it.def.min, it.def.max);
-  it.range.value = String(it.value);
-  it.range.setAttribute('aria-valuetext', said(it.def, it.value));
+  if (it.keys) { it.order = it.value; it.held = !(it.value === it.def.min || it.stops.some(st => st.v === it.value)); showInput(it); }
   readout.textContent = said(it.def, it.value);
   moveParts();
+}
+const cap = text => text ? text[0].toUpperCase() + text.slice(1) : '';
+/**
+ * The rail and the desk (index.html says what each is for). `showFn` puts one function's keys on the desk: by its icon, where a
+ * second press puts them away again, or because the part itself was tapped on the model (`toggle` false: they stay).
+ */
+const desk = $('#desk'), rail = $('#rail');
+let openFn = null;
+function showFn(id, toggle = true) {
+  openFn = toggle && id === openFn ? null : id;
+  for (const g of desk.children) g.hidden = g.dataset.fn !== openFn;
+  for (const b of rail.querySelectorAll('[data-open]')) b.setAttribute('aria-expanded', String(b.dataset.open === openFn));
+  placeCard();
+}
+rail.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) showFn(b.dataset.open); });
+/** An icon is filled while its function is away from rest: the decks lifted, she cut open, the rudder over, the ramp down. */
+const lamp = (id, on) => { const b = rail.querySelector(`[data-open="${id}"]`); if (b) b.toggleAttribute('data-on', on); };
+/** What stands for a thing that is worked, on the rail and on its keys. One it does not know gets a lever. */
+const ICON = { rudder: 'helm', 'stern-ramp': 'ramp' };
+/** The keys of the thing a tapped part belongs to, if it has any: tap the ramp, or the wheel, and its keys are there. */
+function keysFor(object) {
+  for (let n = object && object.parent; n; n = n.parent) {
+    const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
+    if (it && it.keys) { if (openFn !== it.def.id) showFn(it.def.id, false); return it; }
+  }
+  return null;
+}
+/** How to move: said when asked for, and for a few seconds on going aboard. */
+const help = $('#help'), helpBtn = $('#fn-help');
+let helpTimer = 0;
+function showHelp(on, ms = 0) {
+  clearTimeout(helpTimer);
+  help.hidden = !on;
+  helpBtn.setAttribute('aria-expanded', String(on));
+  if (on && ms) helpTimer = setTimeout(() => showHelp(false), ms);
+}
+helpBtn.addEventListener('click', () => showHelp(help.hidden));
+/**
+ * The desk. What the file says is worked and is neither a door nor a lever has three keys and a window:
+ * a thing that goes both ways from its rest (the rudder) has a key each way, a notch a press, and one for its rest;
+ * a thing that goes one way (the ramp) has a key to bring it back, one to stop it, and one to run it on to its next stop.
+ * A key gives an order; the part follows at its own pace (`rate`, in its unit a second). The key whose order stands is lit.
+ */
+function showInput(it) {
+  const d = it.def, v = Math.round(it.value), names = it.names;
+  const stop = it.stops.find(st => st.say && Math.abs(st.v - it.value) < 0.5);
+  it.val.textContent = v === 0 ? cap(d.rest || 'at rest') : stop ? cap(stop.say) : d.min < 0 ? `${names[v < 0 ? 0 : 2]} ${Math.abs(v)}${d.unit || ''}` : `${v}${d.unit || ''}`;
+  const lit = d.min < 0 ? (it.order < 0 ? 0 : it.order > 0 ? 2 : 1) : (it.held ? 1 : it.order === d.min ? 0 : 2);
+  it.keys.forEach((k, i) => k.setAttribute('aria-pressed', String(i === lit)));
+  lamp(d.id, v !== 0 || it.order !== 0);
+}
+function orderInput(id, to, held = false) {
+  const it = inputs.get(id);
+  if (!it || !it.keys) return;
+  it.order = THREE.MathUtils.clamp(to, it.def.min, it.def.max);
+  it.held = held;
+  readout.textContent = said(it.def, Math.round(it.order));
+  if (still.matches && it.value !== it.order) { it.value = it.order; moveParts(); }
+  showInput(it);
+}
+function workOrders(dt) {
+  let moved = false, under = false;
+  for (const it of inputs.values()) {
+    if (!it.keys || it.value === it.order) continue;
+    const step = it.rate * dt;
+    it.value = it.order > it.value ? Math.min(it.order, it.value + step) : Math.max(it.order, it.value - step);
+    showInput(it);
+    moved = true;
+    if (it.value !== it.order) under = true;
+  }
+  if (moved) moveParts(!under);
 }
 /**
  * What the file says is worked by coming near (`auto`: her watertight doors): open to a walker within `reach` of `at`,
@@ -344,27 +415,47 @@ function controlAt(object, fittingId) {
   if (fittingId) for (const it of inputs.values()) if (it.def.steps && it.def.fitting === fittingId) return it.def.id;
   return null;
 }
-/** A slider in the bar for each thing the file says can be worked. A double click puts it back to rest. */
+/** Keys on the desk for each thing the file says can be worked (showInput). */
 function buildInputs(header) {
   for (const def of header.inputs || []) {
-    // A door has no slider: it opens to whoever comes near on foot, and to a tap from outside (workAuto, identify).
+    // A door has no keys on the desk: it opens to whoever comes near on foot, and to a tap from outside (workAuto, identify).
     if (def.auto) {
       inputs.set(def.id, { def, value: def.min, open: false });
       if (def.normal) { const axis = Math.abs(def.normal[0]) > Math.abs(def.normal[2]) ? 0 : 2; passages.push({ axis, u: def.at[axis === 0 ? 2 : 0], at: def.at[axis], y: def.at[1] }); }
       continue;
     }
-    // A lever has no slider either: a tap moves it a notch (stepInput), and it travels there in a moment (workSteps).
+    // A lever has none either: a tap moves it a notch (stepInput), and it travels there in a moment (workSteps).
     if (def.steps) {
       const home = def.steps[def.home ?? 0].v;
       inputs.set(def.id, { def, value: home, want: home, at: def.home ?? 0, way: 1 });
       continue;
     }
-    const range = el('input', { type: 'range', min: String(def.min), max: String(def.max), step: String(def.step || 1), value: '0' });
-    range.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
-    inputs.set(def.id, { def, value: 0, range });
-    range.addEventListener('input', () => setInput(def.id, Number(range.value)));
-    range.addEventListener('dblclick', () => setInput(def.id, 0));
-    bar.insertBefore(el('label', {}, el('span', { className: 'lbl' }, def.name), range), $('#views'));
+    const two = def.min < 0, notch = def.notch || 5;
+    const names = def.keys || (two ? [cap(def.below), cap(def.rest), cap(def.above)] : [cap(def.rest), 'Stop', cap(def.above)]);
+    const keys = names.map((name, i) => {
+      const k = el('button', { type: 'button', className: 'key ik', textContent: name, title: name });
+      k.style.setProperty('--i', `var(--i-${(two ? ['left', 'mid', 'right'] : ['raise', 'stop', 'lower'])[i]})`);
+      return k;
+    });
+    const val = el('span', { className: 'val' });
+    const grp = el('div', { className: two ? 'grp wide' : 'grp', hidden: true }, el('span', { className: 'lbl' }, def.name), el('div', { className: 'keys' }, ...keys), val);
+    grp.dataset.fn = def.id;
+    const icon = el('button', { type: 'button', className: 'ico', textContent: def.name, title: def.name });
+    icon.dataset.open = def.id;
+    icon.setAttribute('aria-expanded', 'false');
+    icon.style.setProperty('--i', `var(--i-${ICON[def.id] || 'lever'})`);
+    $('#worked').append(icon);
+    grp.setAttribute('role', 'group');
+    grp.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
+    // its stops, lowest first: where a run ends by itself (the ramp level with the quay, then at its lowest)
+    const stops = (def.stops || [def.max]).map(st => typeof st === 'number' ? { v: st } : st).sort((a, b) => a.v - b.v);
+    const it = { def, value: 0, order: 0, held: false, keys, val, names, stops, rate: def.rate || (def.max - def.min) / 8 };
+    inputs.set(def.id, it);
+    keys[0].addEventListener('click', () => orderInput(def.id, two ? it.order - notch : def.min));
+    keys[1].addEventListener('click', () => two ? orderInput(def.id, 0) : orderInput(def.id, it.value, it.value !== def.min && !stops.some(st => st.v === it.value)));
+    keys[2].addEventListener('click', () => orderInput(def.id, two ? it.order + notch : (stops.find(st => st.v > it.value + 1e-6) || stops[stops.length - 1]).v));
+    desk.append(grp);
+    showInput(it);
   }
   moveParts();
 }
@@ -460,6 +551,10 @@ function keepFraming(change) {
   redraw();
 }
 
+/** The desk's keys for the decks and the cut: the key whose setting stands is lit; the cut's window says how far. */
+function showKeys(box, percent) { for (const k of box.querySelectorAll('.key[data-v]')) k.setAttribute('aria-pressed', String(Math.abs(Number(k.dataset.v) - percent) < 0.5)); }
+const showExplode = t => { showKeys($('#explode'), t * 100); lamp('decks', t > 0); };
+const showCut = t => { showKeys($('#cut'), t * 100); $('#cut-val').textContent = `${Math.round(t * 100)} %`; lamp('cut', t > 0); };
 let explodeMove = null;
 function placeDecks(t) {
   state.explode = t;
@@ -471,7 +566,7 @@ function placeDecks(t) {
 const SHADE_LET_UP = 0.4;
 function setExplode(t, { animate = false } = {}) {
   t = THREE.MathUtils.clamp(t, 0, 1);
-  $('#explode').value = String(Math.round(t * 100));
+  showExplode(t);
   if (animate && !still.matches) { explodeMove = { from: state.explode, to: t, t0: performance.now(), ms: 520 }; return; }
   explodeMove = null;
   keepFraming(() => placeDecks(t));
@@ -481,7 +576,7 @@ function setCut(t) {
   t = THREE.MathUtils.clamp(t, 0, 1);
   const was = state.cut > 0, is = t > 0;
   state.cut = t;
-  $('#cut').value = String(Math.round(t * 100));
+  showCut(t);
   cutPlane.constant = -(cutSpan[0] + (cutSpan[1] - cutSpan[0]) * t);
   if (was !== is) for (const m of materials) {
     // Cut open, the insides of plates are seen: draw both faces while the cut is on. What is cut away throws no shadow.
@@ -541,7 +636,7 @@ function select(deckId, spaceId, { frame = false } = {}) {
   if (frame) {
     if (!deck.node.visible) showDeck(deck, true);
     // A room is under the decks above it: lift them clear first, then look down into it.
-    if (state.explode < 0.6) { explodeMove = null; placeDecks(1); $('#explode').value = '100'; }
+    if (state.explode < 0.6) { explodeMove = null; placeDecks(1); showExplode(1); }
     const dir = eyeDir(), flat = Math.hypot(dir.x, dir.z) || 1, e = Math.max(Math.asin(THREE.MathUtils.clamp(dir.y, -1, 1)), ROOM_ELEVATION);
     dir.set(dir.x / flat * Math.cos(e), Math.sin(e), dir.z / flat * Math.cos(e));
     const shown = box.clone().translate(deck.node.position).expandByScalar(1.2);
@@ -572,6 +667,7 @@ function identify(clientX, clientY) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
     if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
   }
+  keysFor(hit.object);
   // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
   let within = hit.object.parent;
   while (within && !decks.some(d => d.node === within)) within = within.parent;
@@ -621,6 +717,7 @@ function nameOnFoot(clientX, clientY) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
     if (it && it.def.auto === 'tap') { it.open = !it.open; readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
   }
+  if (hit && hit.distance < 8) keysFor(hit.object);
   if (!systems) return;
   let within = hit && hit.object.parent;
   while (within && !decks.some(d => d.node === within)) within = within.parent;
@@ -1021,7 +1118,7 @@ function showWay() {
   const here = !walk || walk.climb ? null : wayHere();
   const text = here ? (here.from === 'a' ? here.way.def.up : here.way.def.down) : '';
   if (climbBtn.hidden !== !here) climbBtn.hidden = !here;
-  if (here && climbBtn.textContent !== text) climbBtn.textContent = text;
+  if (here && climbBtn.textContent !== text) climbBtn.textContent = climbBtn.title = text;
 }
 climbBtn.addEventListener('click', climb);
 
@@ -1059,7 +1156,7 @@ function enterWalk() {
   explodeMove = null; move = null;
   if (state.explode) placeDecks(0);
   if (state.cut) setCut(0);
-  $('#explode').value = '0'; $('#cut').value = '0';
+  showExplode(0); showCut(0);
   // Begin in the room that is chosen, else at the after end of the vehicle lanes, looking forward along the car deck.
   const chosen = state.selected && decks.find(d => d.id === state.selected.deck)?.spaces.find(sp => sp.id === state.selected.space);
   const car = decks.find(d => d.id === 'car'), lanes = car && car.spaces.find(sp => sp.id === 'car-deck');
@@ -1073,7 +1170,8 @@ function enterWalk() {
   };
   controls.enabled = false;
   document.body.classList.add('walking');
-  walkBtn.textContent = 'Leave'; walkBtn.setAttribute('aria-pressed', 'true');
+  walkBtn.textContent = walkBtn.title = 'Leave'; walkBtn.setAttribute('aria-pressed', 'true');
+  showFn(null, false); showHelp(true, 9000);
   camera.clearViewOffset(); camera.fov = WALK_LENS; camera.near = 0.07;
   setWalkZoom(walkZoom, true);
   walk.eye = eyeFor(walk);
@@ -1087,7 +1185,8 @@ function leaveWalk() {
   walk = null; showWay(); held.clear(); stick.x = stick.y = 0; stick.id = null; stickEl.firstElementChild.style.transform = '';
   fingers.clear(); pinch = null; clearTimeout(zoomSaid);
   document.body.classList.remove('walking');
-  walkBtn.textContent = 'Walk aboard'; walkBtn.setAttribute('aria-pressed', 'false');
+  walkBtn.textContent = walkBtn.title = 'Walk aboard'; walkBtn.setAttribute('aria-pressed', 'false');
+  showFn(null, false); showHelp(false);
   camera.fov = s.fov; camera.near = s.near; camera.up.set(0, 1, 0);
   camera.position.copy(s.pos); controls.target.copy(s.target); controls.enabled = true;
   readout.textContent = '';
@@ -1286,12 +1385,11 @@ $('#deck-up').addEventListener('click', () => hopDeck(1));
 $('#deck-down').addEventListener('click', () => hopDeck(-1));
 
 // ---------- the keyboard ----------
-const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.tagName) && !(e.target.type === 'range' && walk);
+const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.tagName);
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (walk) {
     if (e.code === 'Escape') { leaveWalk(); return; }
-    if (e.target.tagName === 'INPUT' && /^Arrow/.test(e.code)) return;      // a slider that has the keys keeps them
     if (e.code === 'KeyE' || e.code === 'PageUp') { hopDeck(1); e.preventDefault(); return; }
     if (e.code === 'KeyQ' || e.code === 'PageDown') { hopDeck(-1); e.preventDefault(); return; }
     if (e.code === 'KeyF') { climb(); e.preventDefault(); return; }
@@ -1371,8 +1469,8 @@ function setPanel(open) {
 }
 toggle.addEventListener('click', () => setPanel(panel.classList.contains('closed')));
 
-$('#explode').addEventListener('input', e => { if (!walk) setExplode(Number(e.target.value) / 100); });
-$('#cut').addEventListener('input', e => setCut(Number(e.target.value) / 100));
+$('#explode').addEventListener('click', e => { const k = e.target.closest('.key'); if (k && !walk) setExplode(Number(k.dataset.v) / 100, { animate: true }); });
+$('#cut').addEventListener('click', e => { const k = e.target.closest('.key'); if (k) setCut(k.dataset.by ? state.cut + Number(k.dataset.by) / 100 : Number(k.dataset.v) / 100); });
 $('#home').addEventListener('click', () => home());
 
 // ---------- size and frames ----------
@@ -1416,6 +1514,7 @@ function frame(now) {
   lastFrame = now;
   workAuto(dt);
   workSteps(dt);
+  workOrders(dt);
   if (walk) {
     stepWalk(dt);
     if (dirty) { draw(); dirty = false; }
