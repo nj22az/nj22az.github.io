@@ -858,6 +858,30 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 11 November 2026, last: the car deck's patches, and the drinks machine built to the World's own
+
+- The owner, with a picture from the tablet: "Cargo deck has lots of Z fighting". It was not two faces in one plane, and
+  `zfight.py` had not seen it: over the engine room the other ship draws that room's deckhead panel as a box whose top
+  lies 12 mm under the car deck's surface, in the material its coverings are drawn in, which the page pulls toward the
+  eye; seen low across the deck the panel came through the deck's paint in patches, and from higher up it hid the lane
+  markings altogether. Its top face is cut away (`assemble.OPENINGS`). Before and after, from the bow: the deck was
+  light with no lane lines; it is now its grey-green with the yellow centre line and the lanes' dashes.
+- `zfight.py` now also lists this second kind (a face drawn with a pull toward the eye lying close under another that
+  looks the same way): 94 today, most of them the other ship's floor coverings 3 mm under the feet of its furniture.
+  It lists them and does not fail on them yet: some are meant (a dial's face under its bezel), and they are not sorted.
+- The owner, of the drinks machine: "It doesn't look like the machine in Johansson World?" It did not: it had been
+  drawn from the World library's description. The World's builder is not in this repository but is served on the
+  owner's site (`johansson-town/src/world/vending.js`, `commerce/vending-catalogue.js`), and `blender/vending.py` is
+  now built to it: a mid-1990s can machine 1.03 by 1.83 by 0.74 m in the bottler's red with a cream face, the lit
+  Minato Drinks header over its cold and hot strips, two bands of glass with eight cans each over their price plates
+  (the catalogue's products, colours and order: sanpin, Harbour Tea, shikuwasa with its sold-out lamp, Ryukyu Cola;
+  J-Coffee, Dockside, corn soup hot at the right), buttons on the rails, the J-Coffee poster, the money panel, the
+  take-out pocket behind its smoked flap, a poster on each side and the maker's plate. What is painted on it is drawn
+  after the World's painted sheets, not copied from them pixel for pixel; the World's rounded corners are square here.
+- The Blender build, `assemble.py` twice with the same hashes, `check.py`, `zfight.py`, `afloat.py`, `bridge.cjs`,
+  `stairs.cjs`, `doors.cjs`, `travel.cjs`, `offline.cjs`: all passed. Looked at: the car deck from the bow before and
+  after; the machine from the lobby.
+
 ### 11 November 2026, later still: Johansson World's drinks machine in the lobby
 
 - The owner: "Can you bring the vending machine from Johansson World into the accommodation ?" `blender/vending.py`

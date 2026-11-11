@@ -1106,6 +1106,96 @@ def ext_sign():
     return im
 
 
+# ---- Johansson World's drinks machine (johansson-town/src/world/vending.js): what is painted on it, after the World's own
+# painted sheets: the lit header, the J-Coffee poster, the money panel, the price plates, the take-out label, the maker's plate.
+_JP = '/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf'
+
+
+def jp(size):
+    return ImageFont.truetype(_JP, int(size)) if os.path.exists(_JP) else font(size)
+
+
+def vm_header():
+    im, d = sheet(448, 94, (251, 246, 233))
+    text(d, (224, 30), 'MINATO DRINKS', 40, (196, 38, 46))
+    d.text((150, 58), 'ミナトドリンク', font=jp(13), fill=(122, 42, 32), anchor='mm')
+    text(d, (290, 58), 'A break at the port', 12, (122, 42, 32))
+    split = 336
+    d.rectangle((0, 70, split, 93), fill=(42, 99, 196))
+    d.rectangle((split, 70, 447, 93), fill=(214, 50, 42))
+    d.text((split / 2, 82), 'つめた〜い', font=jp(16), fill=WHITE, anchor='mm')
+    d.text((split + (448 - split) / 2, 82), 'あったか〜い', font=jp(12), fill=WHITE, anchor='mm')
+    return im
+
+
+def vm_price(hot):
+    im, d = sheet(64, 32, (251, 250, 244))
+    d.rectangle((0, 0, 63, 7), fill=(214, 50, 42) if hot else (42, 99, 196))
+    text(d, (32, 20), '¥120', 15, (27, 27, 27))
+    return im
+
+
+def vm_poster():
+    im, d = sheet(320, 216, (23, 19, 15))
+    d.rectangle((0, 199, 319, 215), fill=(217, 164, 65))
+    d.rounded_rectangle((38, 26, 112, 172), radius=9, fill=(201, 205, 208))
+    d.rectangle((38, 52, 112, 150), fill=(20, 20, 20))
+    text(d, (75, 92), 'J', 44, (217, 164, 65))
+    text(d, (75, 132), 'COFFEE', 11, (243, 230, 196))
+    text(d, (212, 58), 'J-COFFEE', 34, (243, 230, 196))
+    d.text((212, 110), '港の一本。', font=jp(24), fill=(217, 164, 65), anchor='mm')
+    text(d, (212, 146), 'The port’s own can', 13, (243, 230, 196), 'mm', 'r')
+    d.text((160, 207), 'つめた〜い  ¥120', font=jp(13), fill=(23, 19, 15), anchor='mm')
+    return im
+
+
+def vm_money():
+    im, d = sheet(120, 256, (214, 218, 220))
+    d.rectangle((0, 0, 119, 255), outline=(150, 156, 160), width=2)
+    d.rectangle((18, 16, 102, 44), fill=(26, 13, 12))                      # the amount, in red figures
+    text(d, (94, 30), '0', 18, (255, 74, 42), 'rm', 'm')
+    d.text((14, 62), '硬貨', font=jp(11), fill=(43, 47, 51), anchor='lm')
+    for x, r, col in ((40, 6, (184, 115, 51)), (58, 5, (217, 220, 223)), (76, 6, (217, 220, 223)), (96, 7, (216, 197, 138))):
+        d.ellipse((x - r, 62 - r, x + r, 62 + r), fill=col, outline=(90, 90, 90))
+    d.rectangle((52, 78, 60, 110), fill=(30, 32, 34))                      # the coin slot
+    d.text((14, 128), '紙幣', font=jp(11), fill=(43, 47, 51), anchor='lm')
+    d.rectangle((14, 138, 106, 154), fill=(85, 208, 122))
+    d.text((60, 146), '千円札 使えます', font=jp(10), fill=(15, 58, 28), anchor='mm')
+    d.rectangle((22, 162, 98, 168), fill=(30, 32, 34))                     # the note slot
+    d.text((60, 190), '返却レバー', font=jp(10), fill=(43, 47, 51), anchor='mm')
+    d.rectangle((40, 232, 80, 250), fill=(255, 250, 240), outline=(150, 156, 160))
+    d.text((60, 241), 'おつり', font=jp(11), fill=(196, 38, 46), anchor='mm')
+    return im
+
+
+def vm_takeout():
+    im, d = sheet(256, 16, (242, 236, 220))
+    d.text((92, 8), '取出口', font=jp(13), fill=(58, 53, 48), anchor='mm')
+    text(d, (176, 8), 'PUSH', 11, (58, 53, 48))
+    return im
+
+
+def vm_badge():
+    im, d = sheet(136, 60, (217, 220, 221))
+    d.rectangle((2, 2, 133, 57), outline=(90, 95, 99), width=2)
+    text(d, (68, 14), 'JOHANSSON VENDING', 9, (40, 44, 48))
+    d.text((68, 27), 'ヨハンソン自販機', font=jp(9), fill=(40, 44, 48), anchor='mm')
+    text(d, (68, 40), 'JV-16C   No. 9403-17', 8, (40, 44, 48), 'mm', 'r')
+    text(d, (68, 51), 'Urasoe  1994   100 V  4 A', 7, (40, 44, 48), 'mm', 'r')
+    return im
+
+
+def vm_side(kana, brand, line, colour):
+    im, d = sheet(128, 208, (244, 234, 208))
+    d.rectangle((0, 0, 127, 128), fill=colour)
+    d.text((64, 96), kana, font=jp(21), fill=(255, 250, 240), anchor='mm')
+    text(d, (64, 148), brand, 13, (74, 58, 24))
+    text(d, (64, 166), line, 8, (74, 58, 24), 'mm', 'r')
+    d.rectangle((0, 180, 127, 207), fill=(42, 99, 196))
+    d.text((64, 194), 'つめた〜い ¥120', font=jp(11), fill=WHITE, anchor='mm')
+    return im
+
+
 def firstaid():
     im, d = sheet(240, 208, (232, 236, 232))
     d.rectangle((70, 30, 170, 130), fill=(30, 140, 70))
@@ -1202,8 +1292,10 @@ def tiles():
         'muster_list': (muster_list(), 'face'), 'fire_plan': (fire_plan(), 'face'), 'notice_board': (notice_board(), 'face'),
         'escape_left': (escape(True), 'face'), 'escape_right': (escape(False), 'face'), 'ext_sign': (ext_sign(), 'face'),
         'fire_plan_label': (sign(256, 64, (190, 40, 32), ['FIRE PLAN'], WHITE, 26), 'face'),
-        'jv_brand': (sign(384, 64, (47, 111, 116), ['JOHANSSON VENDING'], WHITE, 24, border=False), 'face'),
-        'jv_panel': (sign(384, 208, (244, 244, 238), ['COLD  AND  HOT', 'SANPIN TEA', 'J-COFFEE  ¥120', 'MINATO DRINKS'], (47, 111, 116), 26), 'face'),
+        'vm_header': (vm_header(), 'face'), 'vm_poster': (vm_poster(), 'face'), 'vm_money': (vm_money(), 'face'), 'vm_takeout': (vm_takeout(), 'face'),
+        'vm_badge': (vm_badge(), 'face'), 'vm_price_cold': (vm_price(False), 'face'), 'vm_price_hot': (vm_price(True), 'face'),
+        'vm_side_a': (vm_side('さんぴん茶', 'SANPIN', 'Okinawa’s jasmine tea', (201, 163, 58)), 'face'),
+        'vm_side_b': (vm_side('リュウキュウ', 'RYUKYU COLA', 'The island’s cola', (179, 38, 46)), 'face'),
         'stairs_up': (sign(384, 96, (30, 130, 70), ['STAIRS', 'PASSENGER DECK'], WHITE, 26, border=False), 'face'),
         'car_deck': (sign(384, 96, (30, 130, 70), ['CAR DECK'], WHITE, 34, border=False), 'face'),
         'fire_door': (sign(384, 96, (190, 40, 32), ['FIRE DOOR', 'KEEP CLEAR'], WHITE, 26), 'face'),
