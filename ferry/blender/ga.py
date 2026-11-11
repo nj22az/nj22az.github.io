@@ -11,7 +11,7 @@ This file is that ship set out, before anything of her is built: her principal p
 bulkheads and every space, each with where it is and what it is for. The drawing JS1-102 (ferry/yard/drawings/) is made
 from it, and the hull, the decks and the page's list of rooms are to be built from it, so that the three cannot differ.
 
-**It is a proposal for the owner's approval: revision A.** Nothing in it is calculated yet beyond the sums written beside
+**It is a proposal for the owner's approval: revision B** (11 November 2026: the officers' cabins enlarged and one crew cabin removed, at the owner's word). Nothing in it is calculated yet beyond the sums written beside
 the figures: no hydrostatics, no stability, no scantlings, no tonnage. The proportions are those of small Japanese
 coastal car and passenger ferries of this length as the yard recalls them; no particular ship is copied and none was
 read for it.
@@ -48,7 +48,7 @@ PARTICULARS = [
     ('Generators', 'Three of about 320 kW, 450 V, 60 Hz, in an auxiliary engine room of their own; an emergency generator on the top deck'),
     ('Vehicles', 'Four lanes of 2.6 m, 208 lane metres: about 40 cars, or 8 lorries and 20 cars; 4.3 m clear under the passenger deck'),
     ('Passengers', '350: about 280 seated in the saloon, the others on the open decks'),
-    ('Crew', '12, each in a cabin on the bridge deck'),
+    ('Crew', '12 on the bridge deck: five officers each in a cabin of 18 to 29 m², seven ratings in five cabins of 15 m²'),
     ('Frame spacing', f'{FRAME_SPACING:.1f} m, frames 0 (the transom) to {round(LENGTH / FRAME_SPACING)}'),
 ]
 
@@ -176,21 +176,32 @@ S('passenger', 'lounge', 'Forward lounge', 46.0, 54.0, -HB, HB, 'passenger', 'Wi
 S('passenger', 'crew-stair-pax', 'Crew stair trunk', 20.0, 24.0, 5.2, HB, 'crew')
 
 # The bridge deck
-S('bridge', 'aft-deck', 'Open deck, funnels', 13.0, 22.0, -HB, HB, 'open')
-S('bridge', 'side-deck-p', 'Side deck: rescue boat, liferafts', 22.0, 50.0, 5.0, HB, 'safety')
-S('bridge', 'side-deck-s', 'Side deck: liferafts', 22.0, 50.0, -HB, -5.0, 'safety')
-S('bridge', 'mess', 'Crew mess and day room', 22.0, 27.4, 0.6, 5.0, 'crew')
-S('bridge', 'galley', 'Galley', 22.0, 26.2, -5.0, -0.6, 'crew')
-S('bridge', 'provisions', 'Provisions', 26.2, 28.6, -5.0, -0.6, 'service')
-S('bridge', 'laundry', 'Laundry', 28.6, 30.4, -5.0, -0.6, 'service')
-S('bridge', 'wash', 'Showers and toilets', 30.4, 33.4, -5.0, -0.6, 'crew')
-S('bridge', 'cabins-p', 'Four crew cabins', 27.4, 39.4, 0.6, 5.0, 'crew', 'Single cabins of 3.0 m by 4.4 m')
-S('bridge', 'cabins-s', 'Two crew cabins', 33.4, 39.4, -5.0, -0.6, 'crew')
-S('bridge', 'chief-engineer', 'Chief engineer', 39.4, 44.2, 0.6, 5.0, 'crew')
-S('bridge', 'master', 'Master', 44.2, 50.0, 0.6, 5.0, 'crew', 'A day room and a bedroom, next to the wheelhouse')
-S('bridge', 'chief-officer', 'Chief officer', 39.4, 43.6, -5.0, -0.6, 'crew')
-S('bridge', 'second', 'Second officer; second engineer', 43.6, 47.2, -5.0, -0.6, 'crew')
-S('bridge', 'office', "Ship's office", 47.2, 50.0, -5.0, -0.6, 'crew')
+# The owner, 11 November 2026, with the files of a chief engineer's suite of their own (assets/ce-suite/: a suite of 7.2 m by
+# 5.0 m, 36 m², for a 190 m cargo ship: a day room and office, a bedroom, a wet unit and a store, with its lighting, sockets,
+# water, drains and air): "Can this be used to make the chief engineer cabin", then: "Expand their current cabins they should
+# be comfortable and roomy maybe 20 m^2 remove one of the other cabins". Revision B: the house is 1.2 m wider (rooms 5.0 m
+# deep, as the suite's are, side decks 1.2 m), the senior officers' cabins are 22 to 29 m² and the other officers' 18 m², one
+# crew cabin is gone (five single cabins of 15 m² for seven ratings: two of them take a second berth), and the rescue boat
+# stands on the open deck aft, where the wider house leaves it no side deck.
+HOUSE = 5.6              # the accommodation house's half breadth on the bridge deck
+S('bridge', 'aft-deck', 'Open deck: funnels, rescue boat and davit', 13.0, 22.0, -HB, HB, 'open')
+S('bridge', 'side-deck-p', 'Side deck: liferafts', 22.0, 50.0, HOUSE, HB, 'safety')
+S('bridge', 'side-deck-s', 'Side deck: liferafts', 22.0, 50.0, -HB, -HOUSE, 'safety')
+S('bridge', 'mess', 'Crew mess and day room', 22.0, 27.0, 0.6, HOUSE, 'crew', '25 m²')
+S('bridge', 'cabins-p', 'Three crew cabins', 27.0, 36.0, 0.6, HOUSE, 'crew', 'Single cabins of 3.0 m by 5.0 m, 15 m² each')
+S('bridge', 'second-engineer', 'Second engineer', 36.0, 39.6, 0.6, HOUSE, 'crew', '18 m²')
+S('bridge', 'chief-engineer', "Chief engineer's suite", 39.6, 44.2, 0.6, HOUSE, 'crew',
+  "23 m²: a day room with a desk, a bedroom, a wet unit; fitted out from the owner's suite package (its rooms, fittings and its "
+  "electrical and plumbing lists), which as drawn is 7.2 m by 5.0 m")
+S('bridge', 'master', "Master's suite", 44.2, 50.0, 0.6, HOUSE, 'crew', '29 m²: a day room and a bedroom, next to the wheelhouse')
+S('bridge', 'galley', 'Galley', 22.0, 26.2, -HOUSE, -0.6, 'crew')
+S('bridge', 'provisions', 'Provisions', 26.2, 28.2, -HOUSE, -0.6, 'service')
+S('bridge', 'laundry', 'Laundry', 28.2, 29.8, -HOUSE, -0.6, 'service')
+S('bridge', 'wash', 'Showers and toilets', 29.8, 32.4, -HOUSE, -0.6, 'crew', "The ratings'; each officer's cabin has its own")
+S('bridge', 'cabins-s', 'Two crew cabins', 32.4, 38.4, -HOUSE, -0.6, 'crew', 'Single cabins of 15 m²')
+S('bridge', 'second-officer', 'Second officer', 38.4, 42.0, -HOUSE, -0.6, 'crew', '18 m²')
+S('bridge', 'chief-officer', 'Chief officer', 42.0, 46.4, -HOUSE, -0.6, 'crew', '22 m²')
+S('bridge', 'office', "Ship's office", 46.4, 50.0, -HOUSE, -0.6, 'crew')
 S('bridge', 'corridor', 'Corridor', 22.0, 50.0, -0.6, 0.6, 'crew')
 S('bridge', 'wheelhouse', 'Wheelhouse, wings to the ship\'s side', 50.0, 55.6, -HB, HB, 'bridge',
   'Her navigation bridge, moved aboard with what is fitted in it; the wings are carried out to the side so the berth is seen from the wing console')
@@ -204,7 +215,7 @@ S('top', 'ac-room', 'Air conditioning plant', 37.8, 39.8, -2.5, 0.0, 'machinery'
 S('top', 'ventilation-room', 'Ventilation room', 39.8, 46.2, -2.5, 2.5, 'machinery',
   'The owner, 11 November 2026: "this is the ventilation room that should be on top of the bridge deck", with a drawing of a room 6.2 m by 3.4 m and 2.9 m high: an air handling unit of 6,000 m³/h for the passenger spaces, two extract fans of 3,000 m³/h, the filter box, the fire damper')
 S('top', 'compass-deck', 'Compass deck: mast, radar, compass', 50.0, 55.6, -HB, HB, 'bridge')
-S('top', 'top-open', 'Top deck, open', 22.0, 50.0, -5.0, 5.0, 'open', label=(24.5, 0.0), why= 'Over the accommodation: the house\'s doors open onto it; the air intakes and outlets stand clear of the funnels\' smoke')
+S('top', 'top-open', 'Top deck, open', 22.0, 50.0, -5.6, 5.6, 'open', label=(24.5, 0.0), why= 'Over the accommodation: the house\'s doors open onto it; the air intakes and outlets stand clear of the funnels\' smoke')
 both('top', 'funnel-top', 'Funnel', 13.0, 20.0, 3.2, 5.8, 'machinery', 'With the line\'s J')
 
 # ---- What stands on the profile: (name, from, to, foot, top)
@@ -218,7 +229,9 @@ PROFILE = [
 ]
 
 # ---- What the yard asks the owner to settle before she is built
+REVISION = 'B'
 QUESTIONS = [
+    "The chief engineer's suite: 23 m² with the rooms and fittings of the owner's suite package rearranged to fit (drawn); or the package's own 36 m² (7.2 m by 5.0 m), which takes the second engineer's cabin as well.",
     'The bow: a visor and an inner ramp, driven through (drawn); or her old way, a blunt bow that the ramp itself closes.',
     'The saloon to the ship\'s side with windows (drawn), or narrower with a promenade outside it on each side.',
     'Where the owner\'s two rooms stand: in one house on the top deck with the CO₂ room and the batteries (drawn).',

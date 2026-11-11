@@ -57,7 +57,7 @@ def outline(level, a, b, cy, step=0.6):
 # ---------------------------------------------------------------------------------------------------------------------
 y = 34
 text(LEFT, y, 'CHISUM', 26, weight='700')
-text(LEFT + 138, y, 'General arrangement  ·  JS1-102  ·  revision A  ·  11 November 2026', 15, weight='600')
+text(LEFT + 138, y, f'General arrangement  ·  JS1-102  ·  revision {G.REVISION}  ·  11 November 2026', 15, weight='600')
 text(LEFT, y + 20, 'Johansson Shipyard, newbuilding No. 1, rebuilt at 68 m for Johansson Line.  A proposal for the owner\'s approval: nothing of it is calculated or built yet.', 11.5, fill=FAINT)
 text(WIDTH - 24, y, 'Bow to the right, port up.  Metres.', 11.5, 'end', fill=FAINT)
 

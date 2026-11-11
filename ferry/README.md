@@ -29,15 +29,25 @@ The owner, 11 November 2026: "I think the ship needs to be longer maybe 65-70 me
 4.0 m she cannot be stretched to that; asked, the owner chose **"Rebuild the Chisum at 68 m"**, in place: a new hull, the
 other ship's interiors gone at once, the page showing a bare new hull with her bridge until each deck is built.
 
-- **`blender/ga.py` is that ship set out** (revision A, a proposal for the owner's approval): 68.4 m over all, 13.6 m
+- **`blender/ga.py` is that ship set out** (revision B, a proposal for the owner's approval): 68.4 m over all, 13.6 m
   beam, 5.0 m to the car deck, 3.2 m draught, about 1,630 t; drive-through, four lanes, 350 passengers, 12 crew; her
-  decks, her eight watertight bulkheads and 85 spaces, each with what it is for. `python3 ferry/blender/ga.py` checks it
+  decks, her eight watertight bulkheads and 86 spaces, each with what it is for.
+- **Revision B: the officers' cabins.** The owner, with the files of a chief engineer's suite of their own
+  (`blender/assets/ce-suite/`: a suite of 7.2 by 5.0 m for a 190 m cargo ship, with its model, its drawing and a method
+  statement for its outfitting, electrical and plumbing work): "Can this be used to make the chief engineer cabin", then
+  "Expand their current cabins they should be comfortable and roomy maybe 20 m^2 remove one of the other cabins". It can:
+  the model reads with `glb.py` as the drinks machine's does (167 parts, 5,460 triangles, nothing misplaced). On the bridge
+  deck the house is 1.2 m wider (rooms 5.0 m deep, as the suite's), the chief engineer has 23 m², the master 29 m², the
+  chief officer 22 m², the second officer and second engineer 18 m² each, and one crew cabin is gone (five of 15 m² for
+  seven ratings). The suite as drawn is 36 m²: whether it is fitted at that size or its rooms rearranged into 23 m² is
+  the first of the questions on the drawing. On the present 34.5 m ship it cannot be done at all: her cabins are 6 m²
+  and her whole bridge deck 81 m². `python3 ferry/blender/ga.py` checks it
   against itself (no space outside her, none over another, the collision bulkhead where it belongs).
 - **`yard/drawings/JS1-102-general-arrangement.svg`** is drawn from it by `ga_drawing.py`: a profile and five plans.
 - **The owner's two rooms** stand in one house on the top deck, at the sizes of the owner's drawings: the emergency
   generator room (7.8 by 4.5 m) and the ventilation room (6.2 by 3.4 m), with the CO₂ room and a battery room.
-- Five things are the owner's to settle first (on the drawing): the bow, the saloon's width, where the two rooms stand,
-  the emergency generator's size, her speed and engines.
+- Six things are the owner's to settle first (on the drawing): the chief engineer's suite's size, the bow, the saloon's
+  width, where the two rooms stand, the emergency generator's size, her speed and engines.
 - **Nothing of her is built.** Everything below this section describes the first Chisum, 34.5 m, which is what the page
   shows. What carries over: the bridge and its register, the yard's standards and checks, the builder, the drinks machine.
   What does not: her hull's lines as they are, and everything of the other ship.
