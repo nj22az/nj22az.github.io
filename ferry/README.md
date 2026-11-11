@@ -394,11 +394,51 @@ brackets, the porthole's glass, the stairs' newels in their stringers, and other
 ship's own pieces** (`--all` lists them): they are not fixed, and go as each section is rebuilt or by a pass over the
 other ship's drawing that is not written yet.
 
+## The drinks machine (`blender/vending.py`, `blender/jpvm.py`, `blender/glb.py`, `blender/assets/jpvm-2r20/`)
+
+The owner, 11 November 2026, with the files of a machine of their own (JPVM-2R20: the model as a glTF binary, the
+Blender script that made it, a parts list, the controller's state machine, the wiring): "Use this vending machine
+instead"; then: "Use English so we can see what we are selling , English and Japanese". The files are in
+`blender/assets/jpvm-2r20/` as they came (without the two rendered previews, the Blender 5 scene and the PDF of the
+wiring drawing: the script makes the first three again, and the drawing is there as SVG).
+
+- **Not redrawn.** `glb.py` reads the file (numpy only: nodes, triangles, materials); `vending.py` stands its 262 parts in
+  the lobby in the finishes the file gives them, against the forward wall, 60 mm off it for the condenser's air, held by
+  two angles to the wall and four deck cleats. 22,000 triangles; the model file is 2.09 MB (its budget in `check.py` went
+  from 2 to 3 MB).
+- **What it sells** is Johansson World's line-up of seven drinks (`jpvm.SELL`, with why each is aboard; read from the
+  owner's site, since the Town's source is not in this repository): ten cans in the upper row, the right-hand four hot,
+  and ten 500 ml bottles below (`jpvm.ROWS`). One price for a can (¥130) and one for a bottle (¥160): the commonest of
+  each row in the file's own table, which prices every selection differently whatever stands in it. **The Japanese names
+  of the drinks are the yard's** (緑茶, 缶コーヒー, さんぴん茶, シークヮーサー, 琉球コーラ, ブラックコーヒー, コーンスープ) and want
+  the owner's eye.
+- **Lettered in English and Japanese** (`jpvm.pictures`, drawn onto her picture sheet by `atlas.py`): each selection's
+  label (the brand, what it is, its Japanese name, the price, cold or hot), a menu of the seven drinks on the door's lower
+  panel, the lit header, the credit display, the card reader's pad, the sold-out lamps (one lit, as in the file), the
+  recycling plate, and printed strips at the coin slot, the note slot, the return lever, the change cup and the take-out
+  port. The display cans and the bottles' wraps are in each drink's colour. English is in DejaVu Sans Bold, Japanese in
+  IPA Gothic (the only Japanese face on the build machine; `atlas.py` stops if it is missing).
+- **What moves** is what the file's rig moves, about the pivots its script names: the door for a tap (90° aboard; the
+  file's 100° would stand it over the stair well's guard), the take-out flap for whoever stands before it (55°; at the
+  file's 75° it passes through the back of the bin), the coin return lever and the change cup's flap for a tap. The flap
+  and the coin return ride on the door (`on`). The vend cycle is not played.
+- **What is not as in the file, and why** (the owner is told each): its pivots and all its lettering lie at the file's
+  origin (its script loses their places when it parents them), so the pivots are taken from the script, and the file's
+  lettering (Japanese only, naming no drink, a third of the size the script asks) is not used; the display cans and
+  bottles stand 28 mm further back (in the file they stand through the window's glass); the chute is at the place the
+  script gives it (in the file it is turned about the origin and passes through the compressor); one button that the
+  file's animation leaves 60 mm out in front is at rest; five pairs of surfaces that lay in one plane are a millimetre or
+  two apart; the can kept in mid-fall is left out; and sixteen inside parts that hung free have mounts
+  (`vending.mounts`). The picture sheet is now 3072 wide, to stay under 4096 either way.
+- `checks/doors.cjs` walks up to it (the flap opens, the door does not), taps it (the door opens and what is on it goes
+  with it) and taps the open door (it shuts).
+
 ## Offline, and on the Home Screen (`offline.js`, `sw.js`, `offline-files.js`, `manifest.webmanifest`)
 
 The owner, 11 November 2026: "Make a install to Home Screen and download offline button so I don't need a connection to
-look at it". **Save offline** in the bar fetches the 15 files the page needs (3.9 MB: the page, its scripts, three.js,
-the model, the register, both picture sheets, the icons) and keeps them; the button then reads "Saved offline", and
+look at it". **Save offline** in the bar fetches the 15 files the page needs (4.4 MB since the drinks machine came
+aboard, 3.9 MB before: the page, its scripts, three.js, the model, the register, both picture sheets, the icons) and
+keeps them; the button then reads "Saved offline", and
 pressing it again renews the copy. From then on the page's service worker gives the saved copy whenever the network does
 not answer (at once with no connection; after four seconds on a slow one). With a connection the page is always the
 newest, and each answer renews the saved copy. **Install** asks the browser to put the page on the Home Screen; on an
@@ -681,7 +721,8 @@ spaces to a multiple of four bytes), then one binary block.
 - **Parts that move.** `inputs[]` are what can be worked on the page: `id`, `name`, `min`, `max`, `step`, `unit`, and
   how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page makes a slider
   for each, with two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
-  tap. An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
+  tap; with `auto: "tap"` it is worked by a tap only, on foot too (the drinks machine's door and coin return: nobody opens
+  them by walking past). An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
   position means), `home` the one it rests in, `fitting` the component of the register it belongs to; a tap on the lever
   or on its fitting moves it to the next position, to the end of its travel and back, and it travels there in a moment
   (`stepInput`, `workSteps`). Several movers may answer one input: the same lever at three stations.
@@ -690,7 +731,8 @@ spaces to a multiple of four bytes), then one binary block.
   `ratio`: a sliding door, whose input is in centimetres), `carry` (it keeps its heading and goes with `point` as
   that turns about the pivot: the tie bar), `aim` (it swings about `anchor` to keep pointing at `pin`, which turns about
   the pivot: a ram's cylinder; with `extend` it also runs along that line by as much as the distance has changed: the
-  rod). A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
+  rod). A mover with `on` rides on another moving part and goes with it after its own motion (a flap in a door); one
+  deep. A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
   inside their deck and moves the group. The rudder's angle is negative to port and positive to starboard, as a helm
   indicator shows it; a positive angle turns about the upright axis so that the blade's after edge goes to starboard.
   In Blender a moving part is an object with the custom property `mover` (`Part(..., mover='rudder-p')`), and
@@ -858,6 +900,19 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 11 November 2026, after the car deck: the owner's drinks machine, in two languages; Johansson Line
+
+- The owner: "Use this vending machine instead" (JPVM-2R20), "Use English so we can see what we are selling , English
+  and Japanese", and "Johansson Line not lines by the way". Section "The drinks machine" above says what was done.
+- Atlas, build, assembled twice to the same two files; `check.py` all passed (the size budget raised to 3 MB: 2.09 MB,
+  290,000 triangles); `zfight.py`: no face of hers lies in one plane over another (the machine's file had five such
+  pairs); `afloat.py`: nothing of hers hangs in the air (sixteen of the machine's inside parts did); `bridge.cjs`,
+  `stairs.cjs`, `doors.cjs` (with the machine: flap, tap, tap again), `travel.cjs`, `offline.cjs` all passed.
+- Looked at in pictures: the machine from across the lobby, its labels close to, its door open, the hull's lettering.
+- **Not done or not checked:** the machine's lettering is not read by anyone who reads Japanese; its sides and back, its
+  flap open and its coin return pressed are not looked at in pictures; nothing on a phone; the page's material for clear
+  glass and for lit parts is new (`clear`, `emissive`) and seen in Chromium's software renderer only.
+
 ### 11 November 2026, last: the car deck's patches, and the drinks machine built to the World's own
 
 - The owner, with a picture from the tablet: "Cargo deck has lots of Z fighting". It was not two faces in one plane, and
@@ -903,7 +958,7 @@ Of the page and of what is still the Minato Maru's:
   (a stem, a hook at its foot, a bar at its head) set in the middle of a ring by its own outline. `blender/livery.py`
   paints it in white on the outboard and inboard face of each funnel, laid on the two facets either side of the
   funnel's ridge and cut along it; the other ship's anchor pictures are gone. `python3 ferry/blender/emblem.py` draws
-  the page's three icons from the same shape. `hull_markings.py` letters JOHANSSON LINES in the funnels' teal along each
+  the page's three icons from the same shape. `hull_markings.py` letters JOHANSSON LINE (the owner, later the same day: "Johansson Line not lines by the way") in the funnels' teal along each
   side of the hull, 0.62 m high, forward of the midships draught marks.
 - The Blender build, `assemble.py` twice with the same hashes, `check.py`, `bridge_calcs.py`, `zfight.py`, `afloat.py`,
   and `bridge.cjs`, `stairs.cjs`, `doors.cjs`, `travel.cjs`, `offline.cjs`: all passed. Looked at: the port funnel's

@@ -1,0 +1,602 @@
+{
+ "asset_id": "JPVM-2R20-001",
+ "asset_type": "DrinkVendingMachine",
+ "manufacturer_ref": "generic (Fuji/Sanden class)",
+ "selections": 20,
+ "rows": 2,
+ "cols": 10,
+ "units": "m",
+ "up_axis": "Z",
+ "front_axis": "-Y",
+ "rated_voltage": "AC100V 50/60Hz",
+ "rated_power_W": 600,
+ "refrigerant": "R744(CO2)",
+ "schema": "vm-dt/1.0",
+ "door_open": 0,
+ "flap_open": 0.0,
+ "coin_return": 0.0,
+ "vend_drop": 0.0,
+ "credit_yen": 0,
+ "state": "IDLE",
+ "selected": 0,
+ "cold_setpoint_C": 5.0,
+ "hot_setpoint_C": 55.0,
+ "soldout_R1C01": 1.0,
+ "objects": [
+  "VM_Cabinet_Base_Plinth",
+  "VM_Cabinet_LevelFoot_00",
+  "VM_Cabinet_LevelFoot_01",
+  "VM_Cabinet_LevelFoot_10",
+  "VM_Cabinet_LevelFoot_11",
+  "VM_Cabinet_Liner_Insulation",
+  "VM_Cabinet_Shell_Back",
+  "VM_Cabinet_Shell_SideL",
+  "VM_Cabinet_Shell_SideR",
+  "VM_Cabinet_Shell_Top",
+  "VM_Dispense_Bin",
+  "VM_Dispense_BinBack",
+  "VM_Dispense_Chute",
+  "VM_Dispense_Flap",
+  "VM_Dispense_Flap_Hinge",
+  "VM_Dispense_Frame_L",
+  "VM_Dispense_Frame_R",
+  "VM_Dispense_PortTrim",
+  "VM_Dispense_ProductInTransit",
+  "VM_Dispense_Text",
+  "VM_Display_DummyCap_R2C01",
+  "VM_Display_DummyCap_R2C02",
+  "VM_Display_DummyCap_R2C03",
+  "VM_Display_DummyCap_R2C04",
+  "VM_Display_DummyCap_R2C05",
+  "VM_Display_DummyCap_R2C06",
+  "VM_Display_DummyCap_R2C07",
+  "VM_Display_DummyCap_R2C08",
+  "VM_Display_DummyCap_R2C09",
+  "VM_Display_DummyCap_R2C10",
+  "VM_Display_DummyLid_R1C01",
+  "VM_Display_DummyLid_R1C02",
+  "VM_Display_DummyLid_R1C03",
+  "VM_Display_DummyLid_R1C04",
+  "VM_Display_DummyLid_R1C05",
+  "VM_Display_DummyLid_R1C06",
+  "VM_Display_DummyLid_R1C07",
+  "VM_Display_DummyLid_R1C08",
+  "VM_Display_DummyLid_R1C09",
+  "VM_Display_DummyLid_R1C10",
+  "VM_Display_DummyWrap_R2C01",
+  "VM_Display_DummyWrap_R2C02",
+  "VM_Display_DummyWrap_R2C03",
+  "VM_Display_DummyWrap_R2C04",
+  "VM_Display_DummyWrap_R2C05",
+  "VM_Display_DummyWrap_R2C06",
+  "VM_Display_DummyWrap_R2C07",
+  "VM_Display_DummyWrap_R2C08",
+  "VM_Display_DummyWrap_R2C09",
+  "VM_Display_DummyWrap_R2C10",
+  "VM_Display_Dummy_R1C01",
+  "VM_Display_Dummy_R1C02",
+  "VM_Display_Dummy_R1C03",
+  "VM_Display_Dummy_R1C04",
+  "VM_Display_Dummy_R1C05",
+  "VM_Display_Dummy_R1C06",
+  "VM_Display_Dummy_R1C07",
+  "VM_Display_Dummy_R1C08",
+  "VM_Display_Dummy_R1C09",
+  "VM_Display_Dummy_R1C10",
+  "VM_Display_Dummy_R2C01",
+  "VM_Display_Dummy_R2C02",
+  "VM_Display_Dummy_R2C03",
+  "VM_Display_Dummy_R2C04",
+  "VM_Display_Dummy_R2C05",
+  "VM_Display_Dummy_R2C06",
+  "VM_Display_Dummy_R2C07",
+  "VM_Display_Dummy_R2C08",
+  "VM_Display_Dummy_R2C09",
+  "VM_Display_Dummy_R2C10",
+  "VM_Door_DisplayBacklight",
+  "VM_Door_DisplayGlass",
+  "VM_Door_Frame_Kick",
+  "VM_Door_Frame_Left",
+  "VM_Door_Frame_LowerPanel",
+  "VM_Door_Frame_Mid",
+  "VM_Door_Frame_RightPanel",
+  "VM_Door_Frame_Top",
+  "VM_Door_Header_Lightbox",
+  "VM_Door_Header_Text",
+  "VM_Door_Hinge",
+  "VM_Door_InfoPlate",
+  "VM_Door_InfoText",
+  "VM_Door_TLock",
+  "VM_Door_WindowTrim_B",
+  "VM_Door_WindowTrim_L",
+  "VM_Door_WindowTrim_R",
+  "VM_Door_WindowTrim_T",
+  "VM_HMI_ButtonPivot_R1C01",
+  "VM_HMI_ButtonPivot_R1C02",
+  "VM_HMI_ButtonPivot_R1C03",
+  "VM_HMI_ButtonPivot_R1C04",
+  "VM_HMI_ButtonPivot_R1C05",
+  "VM_HMI_ButtonPivot_R1C06",
+  "VM_HMI_ButtonPivot_R1C07",
+  "VM_HMI_ButtonPivot_R1C08",
+  "VM_HMI_ButtonPivot_R1C09",
+  "VM_HMI_ButtonPivot_R1C10",
+  "VM_HMI_ButtonPivot_R2C01",
+  "VM_HMI_ButtonPivot_R2C02",
+  "VM_HMI_ButtonPivot_R2C03",
+  "VM_HMI_ButtonPivot_R2C04",
+  "VM_HMI_ButtonPivot_R2C05",
+  "VM_HMI_ButtonPivot_R2C06",
+  "VM_HMI_ButtonPivot_R2C07",
+  "VM_HMI_ButtonPivot_R2C08",
+  "VM_HMI_ButtonPivot_R2C09",
+  "VM_HMI_ButtonPivot_R2C10",
+  "VM_HMI_Button_R1C01",
+  "VM_HMI_Button_R1C02",
+  "VM_HMI_Button_R1C03",
+  "VM_HMI_Button_R1C04",
+  "VM_HMI_Button_R1C05",
+  "VM_HMI_Button_R1C06",
+  "VM_HMI_Button_R1C07",
+  "VM_HMI_Button_R1C08",
+  "VM_HMI_Button_R1C09",
+  "VM_HMI_Button_R1C10",
+  "VM_HMI_Button_R2C01",
+  "VM_HMI_Button_R2C02",
+  "VM_HMI_Button_R2C03",
+  "VM_HMI_Button_R2C04",
+  "VM_HMI_Button_R2C05",
+  "VM_HMI_Button_R2C06",
+  "VM_HMI_Button_R2C07",
+  "VM_HMI_Button_R2C08",
+  "VM_HMI_Button_R2C09",
+  "VM_HMI_Button_R2C10",
+  "VM_HMI_PriceLabel_R1C01",
+  "VM_HMI_PriceLabel_R1C02",
+  "VM_HMI_PriceLabel_R1C03",
+  "VM_HMI_PriceLabel_R1C04",
+  "VM_HMI_PriceLabel_R1C05",
+  "VM_HMI_PriceLabel_R1C06",
+  "VM_HMI_PriceLabel_R1C07",
+  "VM_HMI_PriceLabel_R1C08",
+  "VM_HMI_PriceLabel_R1C09",
+  "VM_HMI_PriceLabel_R1C10",
+  "VM_HMI_PriceLabel_R2C01",
+  "VM_HMI_PriceLabel_R2C02",
+  "VM_HMI_PriceLabel_R2C03",
+  "VM_HMI_PriceLabel_R2C04",
+  "VM_HMI_PriceLabel_R2C05",
+  "VM_HMI_PriceLabel_R2C06",
+  "VM_HMI_PriceLabel_R2C07",
+  "VM_HMI_PriceLabel_R2C08",
+  "VM_HMI_PriceLabel_R2C09",
+  "VM_HMI_PriceLabel_R2C10",
+  "VM_HMI_PriceText_R1C01",
+  "VM_HMI_PriceText_R1C02",
+  "VM_HMI_PriceText_R1C03",
+  "VM_HMI_PriceText_R1C04",
+  "VM_HMI_PriceText_R1C05",
+  "VM_HMI_PriceText_R1C06",
+  "VM_HMI_PriceText_R1C07",
+  "VM_HMI_PriceText_R1C08",
+  "VM_HMI_PriceText_R1C09",
+  "VM_HMI_PriceText_R1C10",
+  "VM_HMI_PriceText_R2C01",
+  "VM_HMI_PriceText_R2C02",
+  "VM_HMI_PriceText_R2C03",
+  "VM_HMI_PriceText_R2C04",
+  "VM_HMI_PriceText_R2C05",
+  "VM_HMI_PriceText_R2C06",
+  "VM_HMI_PriceText_R2C07",
+  "VM_HMI_PriceText_R2C08",
+  "VM_HMI_PriceText_R2C09",
+  "VM_HMI_PriceText_R2C10",
+  "VM_HMI_Shelf_R1",
+  "VM_HMI_Shelf_R2",
+  "VM_HMI_SoldOutLamp_R1C01",
+  "VM_HMI_SoldOutLamp_R1C02",
+  "VM_HMI_SoldOutLamp_R1C03",
+  "VM_HMI_SoldOutLamp_R1C04",
+  "VM_HMI_SoldOutLamp_R1C05",
+  "VM_HMI_SoldOutLamp_R1C06",
+  "VM_HMI_SoldOutLamp_R1C07",
+  "VM_HMI_SoldOutLamp_R1C08",
+  "VM_HMI_SoldOutLamp_R1C09",
+  "VM_HMI_SoldOutLamp_R1C10",
+  "VM_HMI_SoldOutLamp_R2C01",
+  "VM_HMI_SoldOutLamp_R2C02",
+  "VM_HMI_SoldOutLamp_R2C03",
+  "VM_HMI_SoldOutLamp_R2C04",
+  "VM_HMI_SoldOutLamp_R2C05",
+  "VM_HMI_SoldOutLamp_R2C06",
+  "VM_HMI_SoldOutLamp_R2C07",
+  "VM_HMI_SoldOutLamp_R2C08",
+  "VM_HMI_SoldOutLamp_R2C09",
+  "VM_HMI_SoldOutLamp_R2C10",
+  "VM_HMI_SoldOutText_R1C01",
+  "VM_HMI_SoldOutText_R1C02",
+  "VM_HMI_SoldOutText_R1C03",
+  "VM_HMI_SoldOutText_R1C04",
+  "VM_HMI_SoldOutText_R1C05",
+  "VM_HMI_SoldOutText_R1C06",
+  "VM_HMI_SoldOutText_R1C07",
+  "VM_HMI_SoldOutText_R1C08",
+  "VM_HMI_SoldOutText_R1C09",
+  "VM_HMI_SoldOutText_R1C10",
+  "VM_HMI_SoldOutText_R2C01",
+  "VM_HMI_SoldOutText_R2C02",
+  "VM_HMI_SoldOutText_R2C03",
+  "VM_HMI_SoldOutText_R2C04",
+  "VM_HMI_SoldOutText_R2C05",
+  "VM_HMI_SoldOutText_R2C06",
+  "VM_HMI_SoldOutText_R2C07",
+  "VM_HMI_SoldOutText_R2C08",
+  "VM_HMI_SoldOutText_R2C09",
+  "VM_HMI_SoldOutText_R2C10",
+  "VM_HMI_ZoneText_R1C01",
+  "VM_HMI_ZoneText_R1C02",
+  "VM_HMI_ZoneText_R1C03",
+  "VM_HMI_ZoneText_R1C04",
+  "VM_HMI_ZoneText_R1C05",
+  "VM_HMI_ZoneText_R1C06",
+  "VM_HMI_ZoneText_R1C07",
+  "VM_HMI_ZoneText_R1C08",
+  "VM_HMI_ZoneText_R1C09",
+  "VM_HMI_ZoneText_R1C10",
+  "VM_HMI_ZoneText_R2C01",
+  "VM_HMI_ZoneText_R2C02",
+  "VM_HMI_ZoneText_R2C03",
+  "VM_HMI_ZoneText_R2C04",
+  "VM_HMI_ZoneText_R2C05",
+  "VM_HMI_ZoneText_R2C06",
+  "VM_HMI_ZoneText_R2C07",
+  "VM_HMI_ZoneText_R2C08",
+  "VM_HMI_ZoneText_R2C09",
+  "VM_HMI_ZoneText_R2C10",
+  "VM_Internal_BillValidator",
+  "VM_Internal_CoinMech",
+  "VM_Internal_Column_01",
+  "VM_Internal_Column_02",
+  "VM_Internal_Column_03",
+  "VM_Internal_Column_04",
+  "VM_Internal_Column_05",
+  "VM_Internal_Column_06",
+  "VM_Internal_Column_07",
+  "VM_Internal_Column_08",
+  "VM_Internal_Column_09",
+  "VM_Internal_Column_10",
+  "VM_Internal_InnerDoor_Insulated",
+  "VM_Internal_MainController",
+  "VM_Internal_PSU",
+  "VM_Internal_SoldOutSwitch_01",
+  "VM_Internal_SoldOutSwitch_02",
+  "VM_Internal_SoldOutSwitch_03",
+  "VM_Internal_SoldOutSwitch_04",
+  "VM_Internal_SoldOutSwitch_05",
+  "VM_Internal_SoldOutSwitch_06",
+  "VM_Internal_SoldOutSwitch_07",
+  "VM_Internal_SoldOutSwitch_08",
+  "VM_Internal_SoldOutSwitch_09",
+  "VM_Internal_SoldOutSwitch_10",
+  "VM_Internal_Stock_01_0",
+  "VM_Internal_Stock_01_1",
+  "VM_Internal_Stock_01_2",
+  "VM_Internal_Stock_01_3",
+  "VM_Internal_Stock_01_4",
+  "VM_Internal_Stock_01_5",
+  "VM_Internal_Stock_02_0",
+  "VM_Internal_Stock_02_1",
+  "VM_Internal_Stock_02_2",
+  "VM_Internal_Stock_02_3",
+  "VM_Internal_Stock_02_4",
+  "VM_Internal_Stock_02_5",
+  "VM_Internal_Stock_03_0",
+  "VM_Internal_Stock_03_1",
+  "VM_Internal_Stock_03_2",
+  "VM_Internal_Stock_03_3",
+  "VM_Internal_Stock_03_4",
+  "VM_Internal_Stock_03_5",
+  "VM_Internal_Stock_04_0",
+  "VM_Internal_Stock_04_1",
+  "VM_Internal_Stock_04_2",
+  "VM_Internal_Stock_04_3",
+  "VM_Internal_Stock_04_4",
+  "VM_Internal_Stock_04_5",
+  "VM_Internal_Stock_05_0",
+  "VM_Internal_Stock_05_1",
+  "VM_Internal_Stock_05_2",
+  "VM_Internal_Stock_05_3",
+  "VM_Internal_Stock_05_4",
+  "VM_Internal_Stock_05_5",
+  "VM_Internal_Stock_06_0",
+  "VM_Internal_Stock_06_1",
+  "VM_Internal_Stock_06_2",
+  "VM_Internal_Stock_06_3",
+  "VM_Internal_Stock_06_4",
+  "VM_Internal_Stock_06_5",
+  "VM_Internal_Stock_07_0",
+  "VM_Internal_Stock_07_1",
+  "VM_Internal_Stock_07_2",
+  "VM_Internal_Stock_07_3",
+  "VM_Internal_Stock_07_4",
+  "VM_Internal_Stock_07_5",
+  "VM_Internal_Stock_08_0",
+  "VM_Internal_Stock_08_1",
+  "VM_Internal_Stock_08_2",
+  "VM_Internal_Stock_08_3",
+  "VM_Internal_Stock_08_4",
+  "VM_Internal_Stock_08_5",
+  "VM_Internal_Stock_09_0",
+  "VM_Internal_Stock_09_1",
+  "VM_Internal_Stock_09_2",
+  "VM_Internal_Stock_09_3",
+  "VM_Internal_Stock_09_4",
+  "VM_Internal_Stock_09_5",
+  "VM_Internal_Stock_10_0",
+  "VM_Internal_Stock_10_1",
+  "VM_Internal_Stock_10_2",
+  "VM_Internal_Stock_10_3",
+  "VM_Internal_Stock_10_4",
+  "VM_Internal_Stock_10_5",
+  "VM_Internal_VendMotor_01",
+  "VM_Internal_VendMotor_02",
+  "VM_Internal_VendMotor_03",
+  "VM_Internal_VendMotor_04",
+  "VM_Internal_VendMotor_05",
+  "VM_Internal_VendMotor_06",
+  "VM_Internal_VendMotor_07",
+  "VM_Internal_VendMotor_08",
+  "VM_Internal_VendMotor_09",
+  "VM_Internal_VendMotor_10",
+  "VM_Internal_ZoneDivider",
+  "VM_Pay_Bezel",
+  "VM_Pay_BillAcceptor_Bezel",
+  "VM_Pay_BillSlot",
+  "VM_Pay_BillText",
+  "VM_Pay_ChangeCup_Cavity",
+  "VM_Pay_ChangeCup_Frame",
+  "VM_Pay_ChangeFlap",
+  "VM_Pay_ChangeFlap_Pivot",
+  "VM_Pay_ChangeText",
+  "VM_Pay_CoinSlot",
+  "VM_Pay_CoinSlot_Bezel",
+  "VM_Pay_CoinText",
+  "VM_Pay_ICReader",
+  "VM_Pay_ICReader_Text",
+  "VM_Pay_LCD_Bezel",
+  "VM_Pay_LCD_Credit",
+  "VM_Pay_LCD_Text",
+  "VM_Pay_ReturnLever",
+  "VM_Pay_ReturnLever_Base",
+  "VM_Pay_ReturnLever_Pivot",
+  "VM_Pay_ReturnText",
+  "VM_Root",
+  "VM_Thermal_CircFan_Cold",
+  "VM_Thermal_CircFan_Hot",
+  "VM_Thermal_Compressor",
+  "VM_Thermal_Condenser",
+  "VM_Thermal_CondenserFan",
+  "VM_Thermal_Evaporator_Cold",
+  "VM_Thermal_Heater_Hot",
+  "VM_Thermal_TempSensor_Cold",
+  "VM_Thermal_TempSensor_Hot"
+ ],
+ "io_map": {
+  "VM_Dispense_Flap": {
+   "io_input": "DI_FLAP_SW"
+  },
+  "VM_HMI_Button_R1C01": {
+   "io_input": "DI_SEL_R1C01",
+   "io_led": "DO_LED_R1C01"
+  },
+  "VM_HMI_Button_R1C02": {
+   "io_input": "DI_SEL_R1C02",
+   "io_led": "DO_LED_R1C02"
+  },
+  "VM_HMI_Button_R1C03": {
+   "io_input": "DI_SEL_R1C03",
+   "io_led": "DO_LED_R1C03"
+  },
+  "VM_HMI_Button_R1C04": {
+   "io_input": "DI_SEL_R1C04",
+   "io_led": "DO_LED_R1C04"
+  },
+  "VM_HMI_Button_R1C05": {
+   "io_input": "DI_SEL_R1C05",
+   "io_led": "DO_LED_R1C05"
+  },
+  "VM_HMI_Button_R1C06": {
+   "io_input": "DI_SEL_R1C06",
+   "io_led": "DO_LED_R1C06"
+  },
+  "VM_HMI_Button_R1C07": {
+   "io_input": "DI_SEL_R1C07",
+   "io_led": "DO_LED_R1C07"
+  },
+  "VM_HMI_Button_R1C08": {
+   "io_input": "DI_SEL_R1C08",
+   "io_led": "DO_LED_R1C08"
+  },
+  "VM_HMI_Button_R1C09": {
+   "io_input": "DI_SEL_R1C09",
+   "io_led": "DO_LED_R1C09"
+  },
+  "VM_HMI_Button_R1C10": {
+   "io_input": "DI_SEL_R1C10",
+   "io_led": "DO_LED_R1C10"
+  },
+  "VM_HMI_Button_R2C01": {
+   "io_input": "DI_SEL_R2C01",
+   "io_led": "DO_LED_R2C01"
+  },
+  "VM_HMI_Button_R2C02": {
+   "io_input": "DI_SEL_R2C02",
+   "io_led": "DO_LED_R2C02"
+  },
+  "VM_HMI_Button_R2C03": {
+   "io_input": "DI_SEL_R2C03",
+   "io_led": "DO_LED_R2C03"
+  },
+  "VM_HMI_Button_R2C04": {
+   "io_input": "DI_SEL_R2C04",
+   "io_led": "DO_LED_R2C04"
+  },
+  "VM_HMI_Button_R2C05": {
+   "io_input": "DI_SEL_R2C05",
+   "io_led": "DO_LED_R2C05"
+  },
+  "VM_HMI_Button_R2C06": {
+   "io_input": "DI_SEL_R2C06",
+   "io_led": "DO_LED_R2C06"
+  },
+  "VM_HMI_Button_R2C07": {
+   "io_input": "DI_SEL_R2C07",
+   "io_led": "DO_LED_R2C07"
+  },
+  "VM_HMI_Button_R2C08": {
+   "io_input": "DI_SEL_R2C08",
+   "io_led": "DO_LED_R2C08"
+  },
+  "VM_HMI_Button_R2C09": {
+   "io_input": "DI_SEL_R2C09",
+   "io_led": "DO_LED_R2C09"
+  },
+  "VM_HMI_Button_R2C10": {
+   "io_input": "DI_SEL_R2C10",
+   "io_led": "DO_LED_R2C10"
+  },
+  "VM_HMI_SoldOutLamp_R1C01": {
+   "io_output": "DO_SOLDOUT_R1C01"
+  },
+  "VM_HMI_SoldOutLamp_R1C02": {
+   "io_output": "DO_SOLDOUT_R1C02"
+  },
+  "VM_HMI_SoldOutLamp_R1C03": {
+   "io_output": "DO_SOLDOUT_R1C03"
+  },
+  "VM_HMI_SoldOutLamp_R1C04": {
+   "io_output": "DO_SOLDOUT_R1C04"
+  },
+  "VM_HMI_SoldOutLamp_R1C05": {
+   "io_output": "DO_SOLDOUT_R1C05"
+  },
+  "VM_HMI_SoldOutLamp_R1C06": {
+   "io_output": "DO_SOLDOUT_R1C06"
+  },
+  "VM_HMI_SoldOutLamp_R1C07": {
+   "io_output": "DO_SOLDOUT_R1C07"
+  },
+  "VM_HMI_SoldOutLamp_R1C08": {
+   "io_output": "DO_SOLDOUT_R1C08"
+  },
+  "VM_HMI_SoldOutLamp_R1C09": {
+   "io_output": "DO_SOLDOUT_R1C09"
+  },
+  "VM_HMI_SoldOutLamp_R1C10": {
+   "io_output": "DO_SOLDOUT_R1C10"
+  },
+  "VM_HMI_SoldOutLamp_R2C01": {
+   "io_output": "DO_SOLDOUT_R2C01"
+  },
+  "VM_HMI_SoldOutLamp_R2C02": {
+   "io_output": "DO_SOLDOUT_R2C02"
+  },
+  "VM_HMI_SoldOutLamp_R2C03": {
+   "io_output": "DO_SOLDOUT_R2C03"
+  },
+  "VM_HMI_SoldOutLamp_R2C04": {
+   "io_output": "DO_SOLDOUT_R2C04"
+  },
+  "VM_HMI_SoldOutLamp_R2C05": {
+   "io_output": "DO_SOLDOUT_R2C05"
+  },
+  "VM_HMI_SoldOutLamp_R2C06": {
+   "io_output": "DO_SOLDOUT_R2C06"
+  },
+  "VM_HMI_SoldOutLamp_R2C07": {
+   "io_output": "DO_SOLDOUT_R2C07"
+  },
+  "VM_HMI_SoldOutLamp_R2C08": {
+   "io_output": "DO_SOLDOUT_R2C08"
+  },
+  "VM_HMI_SoldOutLamp_R2C09": {
+   "io_output": "DO_SOLDOUT_R2C09"
+  },
+  "VM_HMI_SoldOutLamp_R2C10": {
+   "io_output": "DO_SOLDOUT_R2C10"
+  },
+  "VM_Internal_SoldOutSwitch_01": {
+   "io_input": "DI_EMPTY_01"
+  },
+  "VM_Internal_SoldOutSwitch_02": {
+   "io_input": "DI_EMPTY_02"
+  },
+  "VM_Internal_SoldOutSwitch_03": {
+   "io_input": "DI_EMPTY_03"
+  },
+  "VM_Internal_SoldOutSwitch_04": {
+   "io_input": "DI_EMPTY_04"
+  },
+  "VM_Internal_SoldOutSwitch_05": {
+   "io_input": "DI_EMPTY_05"
+  },
+  "VM_Internal_SoldOutSwitch_06": {
+   "io_input": "DI_EMPTY_06"
+  },
+  "VM_Internal_SoldOutSwitch_07": {
+   "io_input": "DI_EMPTY_07"
+  },
+  "VM_Internal_SoldOutSwitch_08": {
+   "io_input": "DI_EMPTY_08"
+  },
+  "VM_Internal_SoldOutSwitch_09": {
+   "io_input": "DI_EMPTY_09"
+  },
+  "VM_Internal_SoldOutSwitch_10": {
+   "io_input": "DI_EMPTY_10"
+  },
+  "VM_Internal_VendMotor_01": {
+   "io_output": "DO_VEND_M01",
+   "io_input": "DI_CAM_01"
+  },
+  "VM_Internal_VendMotor_02": {
+   "io_output": "DO_VEND_M02",
+   "io_input": "DI_CAM_02"
+  },
+  "VM_Internal_VendMotor_03": {
+   "io_output": "DO_VEND_M03",
+   "io_input": "DI_CAM_03"
+  },
+  "VM_Internal_VendMotor_04": {
+   "io_output": "DO_VEND_M04",
+   "io_input": "DI_CAM_04"
+  },
+  "VM_Internal_VendMotor_05": {
+   "io_output": "DO_VEND_M05",
+   "io_input": "DI_CAM_05"
+  },
+  "VM_Internal_VendMotor_06": {
+   "io_output": "DO_VEND_M06",
+   "io_input": "DI_CAM_06"
+  },
+  "VM_Internal_VendMotor_07": {
+   "io_output": "DO_VEND_M07",
+   "io_input": "DI_CAM_07"
+  },
+  "VM_Internal_VendMotor_08": {
+   "io_output": "DO_VEND_M08",
+   "io_input": "DI_CAM_08"
+  },
+  "VM_Internal_VendMotor_09": {
+   "io_output": "DO_VEND_M09",
+   "io_input": "DI_CAM_09"
+  },
+  "VM_Internal_VendMotor_10": {
+   "io_output": "DO_VEND_M10",
+   "io_input": "DI_CAM_10"
+  },
+  "VM_Pay_LCD_Credit": {
+   "io_output": "SER_LCD"
+  }
+ }
+}

@@ -53,6 +53,38 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(walk.along.yard > 18.5 && most < 0.02, `walking down the middle of the corridor (to ${walk.along.yard.toFixed(2)} m) the cabin doors stay shut (most opened ${(most * 57.3).toFixed(0)}°)`);
   check(walk.mess.x > 0.9 && walk.messOpen > 1.2, `turning into the mess, its door opens (${(walk.messOpen * 57.3).toFixed(0)}°) and one walks in (to ${walk.mess.x.toFixed(2)} m off the centreline)`);
   check(walk.outAft.yard < 5.7, `the corridor's aft door lets one out onto the platform (to ${walk.outAft.yard.toFixed(2)} m from the transom)`);
+  // The drinks machine in the lobby (the owner's own, 11 November 2026): its take-out flap opens to whoever stands before
+  // it; its door is worked by a tap only, on foot too, and the flap and the coin return go with the door when it swings.
+  const machine = await page.evaluate(() => {
+    const f = window.__ferry, H = 17.25;
+    const off = id => { const m = f.movers().find(m => m.id === id); return m ? m.matrix.reduce((s, v, i) => s + Math.abs(v - (i % 5 === 0 ? 1 : 0)), 0) : null; };
+    f.walkTo(2.1, 6.6 - H, Math.PI, 0, 6.5);
+    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
+    const far = { flap: off('flap-drinks-machine'), door: off('door-drinks-machine') };
+    f.walkTo(2.2, 8.0 - H, Math.PI, -0.05, 6.5);
+    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
+    return { far, near: { flap: off('flap-drinks-machine'), door: off('door-drinks-machine') } };
+  });
+  check(machine.far.flap < 1e-6 && machine.near.flap > 0.05, `the drinks machine's take-out flap is shut from across the lobby and open to one who stands before it`);
+  check(machine.near.door < 1e-6, `its door stays shut as one walks up to it`);
+  await page.waitForTimeout(400);
+  await page.mouse.click(640, 400);                                  // a tap on the machine's front, on foot
+  const tapped = await page.evaluate(() => {
+    const f = window.__ferry;
+    const off = id => { const m = f.movers().find(m => m.id === id); return m.matrix.reduce((s, v, i) => s + Math.abs(v - (i % 5 === 0 ? 1 : 0)), 0); };
+    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
+    return { door: off('door-drinks-machine'), lever: off('lever-drinks-machine'), said: document.querySelector('#what').textContent };
+  });
+  check(tapped.door > 0.5 && tapped.lever > 0.5, `a tap on its front opens the door, and what is on the door goes with it (${tapped.said})`);
+  await page.evaluate(() => { const f = window.__ferry; f.walkTo(2.2, 8.0 - 17.25, -Math.PI / 2, -0.05, 6.5); });      // the open door stands to port of one: turn to it
+  await page.waitForTimeout(400);
+  await page.mouse.click(640, 400);
+  const shut = await page.evaluate(() => {
+    const f = window.__ferry;
+    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
+    return f.movers().find(m => m.id === 'door-drinks-machine').matrix.reduce((s, v, i) => s + Math.abs(v - (i % 5 === 0 ? 1 : 0)), 0);
+  });
+  check(shut < 1e-6, `a tap on the open door shuts it again`);
   check(errors.length === 0, `no errors in the console (${errors.slice(0, 3).join(' | ') || 'none'})`);
   await browser.close();
   console.log(fails.length ? `\n${fails.length} FAILED` : '\nall passed');

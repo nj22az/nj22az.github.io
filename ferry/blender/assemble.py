@@ -97,12 +97,12 @@ REPLACES.update({
         why='her own bridge deck, built in Blender',
         what='the bridge deck abaft the wheelhouse: the corridor (eight cabin doors, storm rails, a panelled deckhead with its lights and '
              'detectors, the fire point) and the house outside (three weathertight doors, nine framed windows, the fire station on the platform)'),
-    # The lobby's vending corner: the other ship's two plain boxes go; Johansson World's drinks machine stands there.
+    # The lobby's vending corner: the other ship's two plain boxes go; the owner's own drinks machine stands there (vending.py).
     'vending': dict(
         part='passenger', prefix='Drinks machine', section='Passenger deck fittings', built='11 November 2026', listed=False,
         boxes=[_box((1.70, 2.75), (6.45, 8.35), (8.70, 9.47))],
         keep=lambda mat, col: False,
-        why="Johansson World's drinks machine, built in Blender", what=''),
+        why="the owner's drinks machine, read from its own file", what=''),
     # The other ship's mark on each funnel (a flat picture of an anchor standing off the plating): the line's own is painted there.
     'livery': dict(
         part='passenger', prefix='Funnel emblem', section='Livery', built='11 November 2026', listed=False,
@@ -267,7 +267,7 @@ STAND = {
     'funnel-s': (-2.55, 6.5, 4.35),
 }
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
-                         emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None, atlas=0)
+                         emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None, atlas=0, clear=False)
 
 
 def read_jmf(path):
@@ -639,7 +639,7 @@ def main():
         rec = dict(MATERIAL_DEFAULTS)
         rec.update(metalness=round(float(look['metalness']), 3), roughness=round(float(look['roughness']), 3), side=look.get('side', 'front'),
                    offset=[int(v) for v in look['offset']] if look.get('offset') else None)
-        for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas'):
+        for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear'):
             if key in look:
                 rec[key] = look[key]
         key = json.dumps(rec, sort_keys=True)

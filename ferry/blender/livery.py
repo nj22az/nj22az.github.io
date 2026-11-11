@@ -1,5 +1,5 @@
 """
-The line's mark: Johansson Lines.
+The line's mark: Johansson Line (the owner, the same day: "Johansson Line not lines by the way").
 
 The owner, 11 November 2026: "we need to make the shipping company sign Johansson Lines and a big J similar to Jonsson
 lines ships but my own thing", and of the page's icon: "The Johansson emblem with the J needs to be aligned and pushed
