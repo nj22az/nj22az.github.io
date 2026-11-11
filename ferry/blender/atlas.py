@@ -1202,6 +1202,8 @@ def tiles():
         'muster_list': (muster_list(), 'face'), 'fire_plan': (fire_plan(), 'face'), 'notice_board': (notice_board(), 'face'),
         'escape_left': (escape(True), 'face'), 'escape_right': (escape(False), 'face'), 'ext_sign': (ext_sign(), 'face'),
         'fire_plan_label': (sign(256, 64, (190, 40, 32), ['FIRE PLAN'], WHITE, 26), 'face'),
+        'jv_brand': (sign(384, 64, (47, 111, 116), ['JOHANSSON VENDING'], WHITE, 24, border=False), 'face'),
+        'jv_panel': (sign(384, 208, (244, 244, 238), ['COLD  AND  HOT', 'SANPIN TEA', 'J-COFFEE  ¥120', 'MINATO DRINKS'], (47, 111, 116), 26), 'face'),
         'stairs_up': (sign(384, 96, (30, 130, 70), ['STAIRS', 'PASSENGER DECK'], WHITE, 26, border=False), 'face'),
         'car_deck': (sign(384, 96, (30, 130, 70), ['CAR DECK'], WHITE, 34, border=False), 'face'),
         'fire_door': (sign(384, 96, (190, 40, 32), ['FIRE DOOR', 'KEEP CLEAR'], WHITE, 26), 'face'),
