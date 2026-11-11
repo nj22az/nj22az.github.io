@@ -97,6 +97,12 @@ REPLACES.update({
         why='her own bridge deck, built in Blender',
         what='the bridge deck abaft the wheelhouse: the corridor (eight cabin doors, storm rails, a panelled deckhead with its lights and '
              'detectors, the fire point) and the house outside (three weathertight doors, nine framed windows, the fire station on the platform)'),
+    # The lobby's vending corner: the other ship's two plain boxes go; Johansson World's drinks machine stands there.
+    'vending': dict(
+        part='passenger', prefix='Drinks machine', section='Passenger deck fittings', built='11 November 2026', listed=False,
+        boxes=[_box((1.78, 2.68), (6.45, 8.35), (8.70, 9.47))],
+        keep=lambda mat, col: False,
+        why="Johansson World's drinks machine, built in Blender", what=''),
     # The other ship's mark on each funnel (a flat picture of an anchor standing off the plating): the line's own is painted there.
     'livery': dict(
         part='passenger', prefix='Funnel emblem', section='Livery', built='11 November 2026', listed=False,

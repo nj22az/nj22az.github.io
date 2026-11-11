@@ -858,6 +858,19 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 11 November 2026, later still: Johansson World's drinks machine in the lobby
+
+- The owner: "Can you bring the vending machine from Johansson World into the accommodation ?" `blender/vending.py`
+  builds a Johansson Vending JV-16C in the passenger deck's lobby, in place of the other ship's two plain boxes
+  (`assemble.REPLACES`: `vending`): sixteen columns in two rows behind glass, a button under each (blue cold, red hot),
+  the display, coin slot, note slot and return lever to the right, J-Coffee in the three bottom columns under the coin
+  slot, the maker's band, what it sells, and a delivery flap that swings in for whoever stands before it. **It is built
+  again from what the World's library says of the machine** (`avatar-creator/world-library.json`); the World's own model
+  and builder (`johansson-town/src/world/vending.js`, `vending-machine.glb`) are not in this repository, so it is not a
+  copy of that model and may differ from it in shape and colour.
+- The Blender build, `assemble.py` twice with the same hashes, `check.py`, `zfight.py`, `afloat.py`, `bridge.cjs`,
+  `stairs.cjs`, `doors.cjs` (26 doors and flaps now), `travel.cjs`, `offline.cjs`: all passed. Looked at from the lobby.
+
 ### 11 November 2026, later: the line's mark
 
 - The owner: "we need to make the shipping company sign Johansson Lines and a big J similar to Jonsson lines ships but
