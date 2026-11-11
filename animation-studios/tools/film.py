@@ -1,5 +1,8 @@
 """Dock Walk: the sailor strides along the quay, whistling. One seamless 30 s loop at 60 frames a second.
 
+He is the owner's Meshy model, rigged by Meshy and inked in Blender (blender/meshy_walk.py renders the
+frames into build/sailor3d/ first). The docks, the notes and the sound are made here.
+
     python3 tools/film.py                      # dock-walk.mp4, dock-walk-poster.png, walk-cycle.png
     python3 tools/film.py --still 120 out.png  # one frame
 
@@ -14,18 +17,23 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import json
+
 import docks
-import sailor
 import tune
 
 ROOT = Path(__file__).resolve().parent.parent
 FPS = 60
 SECONDS = tune.TOTAL / 24                           # 30
 N = round(FPS * SECONDS)                            # 1800 frames
-CYCLE = round(FPS * sailor.CYCLE_SECONDS)           # 90 frames to two steps
-CYCLE_F = 24 * sailor.CYCLE_SECONDS                 # 36, the same in 24ths
+CYCLE_SECONDS = 1.5                                 # two steps, one to the beat
+CYCLE = round(FPS * CYCLE_SECONDS)                  # 90 frames to two steps
+CYCLE_F = 24 * CYCLE_SECONDS                        # 36, the same in 24ths
 BEAT_F = CYCLE_F / 2                                # one step, one beat
-PX_PER_F = sailor.STRIDE * sailor.OUT_SCALE / CYCLE_F
+SAILOR_DIR = ROOT / 'build' / 'sailor3d'            # inked frames of him from blender/meshy_walk.py
+SAILOR_LOOP = 360                                   # one phrase of the tune
+CELL_GROUND = (500, 670)                            # where the ground under him is in those frames
+PX_PER_BU, CAMERA_YAW = 200.0, math.radians(46)     # as blender/common.py
 SAILOR_X = 880
 NOTE_LIFE = 48
 SPEED = (('far', docks.FAR_W, 0.25), ('mid', docks.MID_W, 0.5), ('near', docks.NEAR_W, 1.0))
@@ -41,9 +49,13 @@ def layers():
             wide = Image.new('RGBA', (w + docks.W + 2, docks.H), (0, 0, 0, 0))
             wide.paste(t, (0, 0)); wide.paste(t.crop((0, 0, docks.W + 2, docks.H)), (w, 0))
             _cache[name] = wide
-        beat = round(FPS * sailor.CYCLE_SECONDS / 2)
+        beat = round(FPS * CYCLE_SECONDS / 2)
         _cache['sun'] = [docks.sun(0.5 + 0.5 * math.cos(2 * math.pi * i / beat)) for i in range(beat)]
-        _cache['walk'] = [sailor.frame(i / CYCLE) for i in range(CYCLE)]
+        meta = [json.loads(p.read_text()) for p in sorted(SAILOR_DIR.glob('meta.*.json'))]
+        _cache['stride'] = meta[0]['stride']
+        _cache['mouths'] = {int(k): v for m in meta for k, v in m['mouths'].items()}
+        # the quay moves under him exactly as far as his boots push it back
+        _cache['px_per_f'] = meta[0]['stride'] * math.cos(CAMERA_YAW) * PX_PER_BU / CYCLE_F
         _cache['notes'] = {k: docks.note(k) for k in ('one', 'two')}
         sh = Image.new('RGBA', (720, 60), (0, 0, 0, 0))
         ImageDraw.Draw(sh).ellipse([0, 0, 719, 59], fill=(0, 0, 0, 255))
@@ -60,7 +72,7 @@ def render_at(n):
     L = layers()
     n %= N
     f = n * 24.0 / FPS
-    travel = f * PX_PER_F
+    travel = f * L['px_per_f']
     out = Image.new('RGBA', (docks.W, docks.H), (255, 255, 255, 255))
     s = L['sun'][n % len(L['sun'])]
     out.alpha_composite(s, (docks.SUN[0] - s.width // 2, docks.SUN[1] - s.height // 2))
@@ -78,21 +90,18 @@ def render_at(n):
     sw = 1 + 0.10 * math.cos(4 * math.pi * ph)            # the shadow widens as the feet part
     sh = L['shadow'].resize((round(360 * sw), 30), Image.LANCZOS)
     out.alpha_composite(sh, (SAILOR_X - sh.width // 2, docks.GROUND - 13))
-    ox, oy = SAILOR_X + sailor.CELL[0] * sailor.OUT_SCALE, docks.GROUND + sailor.CELL[1] * sailor.OUT_SCALE
-    out.alpha_composite(L['walk'][n % CYCLE], (ox, oy))
-    fc = sailor.face(ph, tune.pucker_at(f), tune.lid_at(f))
-    if fc:
-        out.alpha_composite(fc[0], (ox + round(fc[1]), oy + round(fc[2])))
+    ox, oy = SAILOR_X - CELL_GROUND[0], docks.GROUND - CELL_GROUND[1]
+    out.alpha_composite(Image.open(SAILOR_DIR / f'{n % SAILOR_LOOP:04d}.png').convert('RGBA'), (ox, oy))
     # the whistled notes drift up and astern from his lips
     for k, (start, ln, _) in enumerate(tune.notes()):
         age = (f - start) % tune.TOTAL
         if age >= NOTE_LIFE:
             continue
-        m = sailor.mouth_point((start % CYCLE_F) / CYCLE_F)
-        x0 = SAILOR_X + m[0] * sailor.OUT_SCALE + 26
-        y0 = docks.GROUND + m[1] * sailor.OUT_SCALE - 8
+        m = L['mouths'][round(start * FPS / 24) % SAILOR_LOOP]
+        x0 = ox + m[0] + 30
+        y0 = oy + m[1] - 8
         up = 1 - (1 - age / NOTE_LIFE) ** 2.5             # quick off the lips, then floating
-        x = x0 + 56 * sailor.smooth(age / 10) - 7.0 * max(0.0, age - 14) + 22 * math.sin(age / 7.0 + k) * (age / NOTE_LIFE)
+        x = x0 + 56 * min(1.0, age / 10) - 7.0 * max(0.0, age - 14) + 22 * math.sin(age / 7.0 + k) * (age / NOTE_LIFE)
         y = y0 - 350 * up - 12 * math.sin(age / 9.0 + 2 * k)
         size = min(1.0, 0.35 + age / 7) * min(1.0, (NOTE_LIFE - age) / 9)
         im = L['notes']['two' if k % 3 == 1 else 'one'].rotate(14 * math.sin(age / 6.0 + k * 1.7), resample=Image.BICUBIC)
@@ -127,9 +136,9 @@ if __name__ == '__main__':
             ff.stdin.write(b)
     ff.stdin.close(); ff.wait()
     render_at(45).save(ROOT / 'dock-walk-poster.png', optimize=True)
-    fr = [sailor.frame(i / 36) for i in range(36)]
+    fr = [Image.open(SAILOR_DIR / f'{i * 5:04d}.png').convert('RGBA') for i in range(18)]      # one cycle
     w, h = fr[0].size
-    sheet = Image.new('RGBA', (w // 2 * 9, h // 2 * 4), (0, 0, 0, 0))
+    sheet = Image.new('RGBA', (w // 2 * 9, h // 2 * 2), (0, 0, 0, 0))
     for i, im in enumerate(fr):
         sheet.paste(im.resize((w // 2, h // 2), Image.LANCZOS), ((i % 9) * (w // 2), (i // 9) * (h // 2)))
     sheet.save(ROOT / 'walk-cycle.png', optimize=True)

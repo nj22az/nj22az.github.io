@@ -53,16 +53,33 @@ def inked_surface(a, scale, ink_px, depth_span, depth_step=0.045, turn=0.55):
     blue = depth * 0.45 (+ 0.5 where the paint is white), alpha = something is there.
     A line is inked at the outline, where one surface passes in front of another (a jump in depth of
     more than depth_step Blender units), and at a sharp crease (the surface turns by more than `turn`)."""
-    solid = a[..., 3] > 0.5
-    white = (a[..., 2] >= 0.475) & solid
-    depth = np.where(white, a[..., 2] - 0.5, a[..., 2]) / 0.45 * depth_span
+    def spread(x, op, k=5):
+        """The largest (or smallest) value within k pixels square: for closing pinholes."""
+        for axis in (0, 1):
+            x = op.reduce([np.roll(x, i, axis) for i in range(-(k // 2), k // 2 + 1)])
+        return x
+    close = lambda x: spread(spread(x, np.maximum), np.minimum)       # fills small gaps
+    opened = lambda x: spread(spread(x, np.minimum), np.maximum)      # removes small spots
+
+    solid0 = a[..., 3] > 0.5
+    white0 = (a[..., 2] >= 0.475) & solid0
+    depth = np.where(white0, a[..., 2] - 0.5, a[..., 2]) / 0.45 * depth_span
+    # one sample a pixel leaves pinholes where the mesh's faces meet: close them before inking
+    solid = close(solid0)
+    depth = opened(np.where(solid0, depth, depth_span))                # a pinhole reads as far away
+    white = close(white0 | ~solid0) & solid
     nx, ny = a[..., 0] * 2 - 1, a[..., 1] * 2 - 1
     edge = np.zeros(solid.shape, bool)
     for axis in (0, 1):
         s1 = np.roll(solid, -1, axis)
         jump = np.abs(depth - np.roll(depth, -1, axis)) > depth_step
         bend = np.hypot(nx - np.roll(nx, -1, axis), ny - np.roll(ny, -1, axis)) > turn
-        e = (solid != s1) | (solid & s1 & (jump | bend))
+        crease = solid & s1 & bend & ~jump
+        if crease.any():                                   # a crease is a line: drop the specks a rough mesh makes
+            c8 = Image.fromarray((crease * 255).astype(np.uint8))
+            near = np.asarray(c8.filter(ImageFilter.BoxBlur(10)), dtype=np.float32) / 255 * 441
+            crease &= near >= 16
+        e = (solid != s1) | (solid & s1 & jump) | crease
         # black paint needs no line: its edge is the line
         w1 = np.roll(white, -1, axis)
         e &= (white | w1)

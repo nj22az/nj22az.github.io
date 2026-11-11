@@ -73,7 +73,27 @@ the shirt's hoops are redrawn by height, and the hat becomes the sheets' sailor'
 `tools/inkpaint.py` (`inked_surface`) inks the outline, overlaps and sharp creases. `blender/meshy-sailor-clean.png`
 is the result from four sides.
 
-**Not done:** no rig and no animation yet (Meshy's rigging costs the owner's credits and needs a model under 300,000
-faces: ask first); the mouth and eyes are only paint so far and cannot move; the peak is not black from every angle;
-the hoops are untidy under the arms and from the side; small ink scribbles remain at the collar. The docks are not
-built in 3D.
+**Rigged and walking (the owner: "Can you do it"; "add details to where the pants stop and shoes start"):** the model
+was reduced to 248,796 faces in Blender and rigged by Meshy (rigging task `01a1c9b6-ffae-748b-a45a-4727ab6f278b`,
+5 credits). `blender/meshy_walk.py` takes that task's `walking.glb`, stands him at the sheet's size, cleans his paint,
+and renders one phrase of the tune (360 frames at 60 a second) into `build/sailor3d/`; `tools/film.py` puts him on
+the docks.
+
+- **Walk:** Meshy's walking clip, slowed so one step is one beat (0.75 s). His right heel lands on the beat, and the
+  quay moves by exactly the distance his boots push back (measured from the rig, 1.82 units a cycle).
+- **Shirt:** the hoops are painted by height on the points that follow the spine bones, so arms and beard stay out.
+- **Cuffs:** a line of ink at 0.37 (boot meets cuff) and 0.67 (cuff meets trouser leg), heights measured on the model.
+- **Mouth and eyes:** animated paint on the head: the grin is covered and a ring of pursed lips painted for the
+  whistle; a white lid with an inked edge comes down for the blink. The numbers come from `tools/tune.py`.
+- **Ink:** `tools/inkpaint.py` `inked_surface` closes the pinholes a one-sample render leaves, then inks outline,
+  overlaps and long creases.
+
+```bash
+# needs the Meshy files (see above) and Blender as the bpy module: python3 -m venv /root/bl && /root/bl/bin/pip install bpy numpy pillow
+for i in 0 1 2 3; do /root/bl/bin/python animation-studios/blender/meshy_walk.py walking.glb --frames animation-studios/build/sailor3d --part $i/4 & done; wait
+python3 animation-studios/tools/film.py
+```
+
+**Not done:** the docks are still the 2D drawings, not 3D; his arms hang wide (the model's A-pose shoulders); the
+peak is not black from every angle; nobody has watched it move or listened to it; the cleaned model is not saved as a
+`.blend`.
