@@ -214,7 +214,7 @@ C('OUT-04', 'Chart table', WH, (-1.475, 19.84, 0.0), 'The chart table against th
 C('OUT-05', 'Bookshelf, nautical publications', WH, (-1.62, 19.54, 1.58), 'Tide tables, the list of lights, the radio signals list, the signal code and the ship\'s own manuals, behind a fiddle rail.',
   dict(kind='bookshelf', w=0.66, d=0.20, H=0.26))
 C('OUT-07', 'Binoculars box', WH, (-2.64, 22.76, TOP), 'Two 7 × 50 binoculars in a varnished box at the console\'s starboard end.', dict(kind='binoculars'))
-C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the crew stair from the saloon, railed on its inboard side with a bar across the top.',
+C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the crew stair from the saloon, railed on its inboard side, with a self-closing gate across the top where one comes up: it opens forward, away from the well.',
   dict(kind='stairwell'))
 C('OUT-09', 'Log desk', WH, (2.71, 21.70, 0.88), 'A fold-down desk under the port window for the deck log, with its own lamp.', dict(kind='log_desk', w=0.72, d=0.40),
   w=10, use=0.2, by=('BD1', 1), survey='B102')
@@ -282,7 +282,7 @@ C('NAV-35', 'AIS position antenna', CD, (0.30, 19.62, DECK_H), 'A small satellit
 C('NAV-36', 'Wind sensor', CD, (-1.40, 20.80, 4.70), 'A cup anemometer and a vane at the starboard end of the flag yard.', dict(kind='wind_sensor'), node='MAST-PF')
 
 # ---- Steering.
-C('STR-01', 'Steering stand and wheel', WH, (0.0, 21.75, 0.0), 'The helm: an eight-spoke wheel on a stand. The wheel turns a transmitter; where it is put, the rudders follow: four degrees of wheel for one of rudder, and the spoke with the brass cap upright when they are amidships. On the page the wheel turns with the rudder.',
+C('STR-01', 'Steering stand and wheel', WH, (0.0, 21.75, 0.0), 'The helm: an eight-spoke wheel on a stand. The wheel\'s shaft runs through a flanged bearing into the helm unit on the stand\'s top, where it turns two transmitters, one for each control system, and the pointer on the unit\'s lid that shows the rudder ordered. Where the wheel is put, the rudders follow: four degrees of wheel for one of rudder, and the spoke with the brass cap upright when they are amidships. On the page the wheel turns with the rudder.',
   dict(kind='stand'), survey='B073')
 C('STR-02', 'Steering control system No. 1', WH, (0.11, 21.75, 0.30), 'The first of two control systems that have nothing in common. It compares the rudder ordered (by the wheel\'s first transmitter, or the autopilot) with the angle fed back from the gear and works the valves of power unit No. 1. Its supply comes from that power unit\'s own circuit in the steering-gear room, and its cables go down the port side.',
   dict(kind='box', size=(0.19, 0.30, 0.34)), w=50, by=('SG1', 'control'), node='STAND', hid='inside the steering stand, port half')

@@ -1091,6 +1091,9 @@ def tiles():
         'lever_scale': (lever_scale(), 'face'), 'thr_scale': (lever_scale(True), 'face'), 'talkback': (talkback(), 'face'),
         'hose': (sign(256, 96, (190, 40, 32), ['FIRE HOSE'], WHITE, 22), 'face'),
         'exit': (sign(256, 96, (30, 130, 70), ['EXIT'], WHITE, 34, border=False), 'face'),
+        'stairs_up': (sign(384, 96, (30, 130, 70), ['STAIRS', 'PASSENGER DECK'], WHITE, 26, border=False), 'face'),
+        'car_deck': (sign(384, 96, (30, 130, 70), ['CAR DECK'], WHITE, 34, border=False), 'face'),
+        'fire_door': (sign(384, 96, (190, 40, 32), ['FIRE DOOR', 'KEEP CLEAR'], WHITE, 26), 'face'),
         'nameplate': (sign(384, 64, (24, 26, 28), ['CHISUM   ·   MINATO'], (226, 200, 120), 20), 'face'),
     }
 

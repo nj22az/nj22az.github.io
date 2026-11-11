@@ -211,6 +211,13 @@ def build():
             if l.get('hatch') and a < l['yard'] < b:
                 x0, x1, y0, y1 = S.hatch_opening(l)
                 hatches.append([(x0, TOP_OF_STRUCTURE, L.Z(y0)), (x1, TOP_OF_STRUCTURE, L.Z(y0)), (x1, TOP_OF_STRUCTURE, L.Z(y1)), (x0, TOP_OF_STRUCTURE, L.Z(y1))])
+        # And the wells of the stairs that come down through it (spec.STAIRS: `well`): the plate closed them from below,
+        # so that nobody could have used the stair under it.
+        for st in S.STAIRS:
+            w = st.get('well')
+            if w and a < w['yard'][0] < b:
+                (x0, x1), (y0, y1) = w['x'], (w['yard'][0], min(w['yard'][1], b - 0.03))        # the plate itself ends at b
+                hatches.append([(x0, TOP_OF_STRUCTURE, L.Z(y0)), (x1, TOP_OF_STRUCTURE, L.Z(y0)), (x1, TOP_OF_STRUCTURE, L.Z(y1)), (x0, TOP_OF_STRUCTURE, L.Z(y1))])
         start = len(deckhead.f)
         deckhead.polygon(outline, tint(PRIMER, 1.02), hatches)
         deckhead.orient(start, (0, -1, 0))

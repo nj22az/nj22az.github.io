@@ -275,6 +275,9 @@ def _searchlight_and_floods():
     _cyl(sl, tuple(c0 - d * 0.06), tuple(c0), 0.13, DARK, sides=16)                                 # the back
     _cyl(lens, tuple(c1 - d * 0.01), tuple(c1 + d * 0.025), 0.15, LENS, sides=20)                  # the glass
     _cyl(steel, tuple(c1 - d * 0.015), tuple(c1 + d * 0.015), 0.175, ZINC, sides=20)               # the rim
+    pin = c0 + d * 0.15                                                                             # the trunnions: the drum hangs in the yoke on them
+    for sx in (-1, 1):
+        _cyl(steel, (px + sx * 0.205, pin.y, pin.z), (px + sx * 0.155, pin.y, pin.z), 0.022, ZINC, sides=10)
     for sx in (-1, 1):                                                                              # floodlights
         fx, fz = sx * 2.35, Z(C['yards'][1]) - 0.5
         _cyl(steel, (fx, DECK, fz), (fx, DECK + 0.42, fz), 0.03, ZINC, sides=8)

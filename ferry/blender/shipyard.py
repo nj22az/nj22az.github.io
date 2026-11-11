@@ -69,6 +69,8 @@ LOOKS = {
     'Panel face': dict(metalness=0.0, roughness=0.55, textured=True, atlas=1, offset=[-2, -4]),
     # Linings, deck coverings and deckhead panels: matt.
     'Lining': dict(metalness=0.0, roughness=0.8),
+    # The other ship's walls and casings are drawn in this: what of hers stands in line with them takes the light the same way.
+    'Bulkhead paint': dict(metalness=0.05, roughness=0.58),
     'Deck covering': dict(metalness=0.0, roughness=0.85),
     'Plastic': dict(metalness=0.0, roughness=0.45),
 }

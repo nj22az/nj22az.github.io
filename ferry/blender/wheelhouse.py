@@ -421,7 +421,7 @@ def door_wing(g, tag):
     box(leaf, xa, xb, b - STILE, b, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
     box(leaf, side * 2.99, side * 3.005, a + 0.01, b - 0.01, 0.15, 0.31, tint(DOOR, 0.55))
     glass.polygon([P(side * 2.97, a + STILE, 0.95), P(side * 2.97, b - STILE, 0.95), P(side * 2.97, b - STILE, DOOR_GLASS[1]), P(side * 2.97, a + STILE, DOOR_GLASS[1])], GLASS)
-    for xs, d in ((side * 3.0, 1), (side * 2.95, -1)):
+    for xs, d in ((side * 2.99, 1), (side * 2.95, -1)):
         box(fit, xs, xs + side * d * 0.045, a + 0.03, a + 0.06, 0.98, 1.08, BRASS)
         box(fit, xs + side * d * 0.03, xs + side * d * 0.05, a + 0.015, a + 0.12, 1.03, 1.06, BRASS)
     for hh in (0.35, 1.80):
@@ -495,10 +495,26 @@ def stand(g, tag, *where):
     # The wheel is one moving part on its shaft: it turns with the rudder order, four degrees for one of rudder, and its
     # king spoke (the one with the brass cap) stands upright when the rudders are amidships.
     c = (0.0, 21.42, 1.05)
-    mv = _moving('Wheelhouse, steering wheel', 'wheel', wood='Varnished wood', brass='Bronze')
+    mv = _moving('Wheelhouse, steering wheel', 'wheel', wood='Varnished wood', brass='Bronze', shaft='Shaft steel')
     torus(mv['wood'], c, 0.29, 0.022, WOOD)
     tube(mv['brass'], (0, 21.385, 1.05), (0, 21.455, 1.05), 0.055, BRASS, 16)
-    tube('steel', (0, 21.455, 1.05), (0, 21.52, 1.05), 0.03, GREY, 12)
+    # The helm unit, on the stand's top at its after edge. The owner, 11 November 2026: "The wheel is not connected to anything
+    # in the wheelhouse": it hung on a stub of shaft that ended in the air, 4 cm over the stand. The shaft now turns with the
+    # wheel and runs through a flanged bearing into the unit, where it turns the two transmitters (one for each control
+    # system) and, through a reduction, the pointer under the glass on the unit's lid, which shows the rudder ordered.
+    hx, ha, hb, h0, h1 = 0.11, 21.50, 21.63, 0.98, 1.135
+    box('console', -hx, hx, ha, hb, h0, h1 - 0.012, STAND)
+    box('console', -hx + 0.008, hx - 0.008, ha + 0.008, hb - 0.008, h1 - 0.012, h1, tint(STAND, 0.55))               # its lid
+    for x in (-hx + 0.02, hx - 0.02):                                                                               # held down to the stand
+        for yd in (ha + 0.02, hb - 0.02):
+            tube('steel', (x, yd, h1), (x, yd, h1 + 0.004), 0.006, GREY, 8)
+    tube('steel', (0, ha - 0.012, 1.05), (0, ha, 1.05), 0.064, GREY, 20)                                             # the bearing's flange
+    tube('steel', (0, ha - 0.034, 1.05), (0, ha - 0.012, 1.05), 0.040, GREY, 16)                                     # and its boss
+    for i in range(6):
+        a = i * pi / 3 + pi / 6
+        tube('steel', (0.052 * cos(a), ha - 0.018, 1.05 + 0.052 * sin(a)), (0.052 * cos(a), ha - 0.012, 1.05 + 0.052 * sin(a)), 0.006, STEEL, 6)
+    tube(mv['shaft'], (0, 21.455, 1.05), (0, ha + 0.04, 1.05), 0.019, STEEL, 14)                                      # the shaft, into the unit
+    disc((0.0, (ha + hb) / 2, h1), UP, FWD, 0.045, 'rai')                                                            # the rudder ordered
     for i in range(8):
         a = i * pi / 4
         d = (cos(a), sin(a))
@@ -523,7 +539,9 @@ def chair(g, tag, x, yard):
     prism('seat', x - 0.22, x + 0.22, [(yard - 0.27, 0.70), (yard - 0.19, 0.70), (yard - 0.23, 1.22), (yard - 0.31, 1.22)], LEATHER)
     box('seat', x - 0.14, x + 0.14, yard - 0.32, yard - 0.24, 1.22, 1.38, tint(LEATHER, 1.15))
     for sx in (-1, 1):
-        tube('steel', (x + sx * 0.26, yard - 0.12, 0.72), (x + sx * 0.26, yard - 0.12, 0.90), 0.014, GREY, 8)
+        # each armrest's post stands in a lug on the seat's frame (it stood 6 mm clear of the seat: blender/afloat.py)
+        box('steel', x + sx * 0.235, x + sx * 0.282, yard - 0.16, yard - 0.08, 0.63, 0.70, GREY)
+        tube('steel', (x + sx * 0.26, yard - 0.12, 0.66), (x + sx * 0.26, yard - 0.12, 0.90), 0.014, GREY, 8)
         box('seat', x + sx * 0.26 - 0.03, x + sx * 0.26 + 0.03, yard - 0.18, yard + 0.20, 0.90, 0.94, tint(LEATHER, 1.2))
 
 
@@ -746,7 +764,7 @@ def periscope(g, tag, x, yard, h):
     """The magnetic compass read from the helm: a tube down from the binnacle above, a mirror box, a glass. The box hangs
     above the line from a tall helmsman's eye to the top of the forward glass: it is glanced up at, not looked round."""
     box('dark', -0.11, 0.11, yard - 0.10, yard + 0.10, CEIL - 0.025, CEIL, DARK)
-    tube('steel', (0.0, yard, CEIL - 0.03), (0.0, yard, h + 0.11), 0.025, GREY, 12)
+    tube('steel', (0.0, yard, CEIL - 0.025), (0.0, yard, h + 0.11), 0.025, GREY, 12)
     box('dark', -0.08, 0.08, yard - 0.08, yard + 0.08, h, h + 0.11, DARK)
     tube('lens', (0.0, yard - 0.08, h + 0.055), (0.0, yard - 0.095, h + 0.055), 0.03, srgb(0xdfe6e1), 14)
 
@@ -852,7 +870,12 @@ def extinguisher(g, tag, x, yard, h):
         tube('dark', (x + 0.11, yard + 0.06, h + 0.36), (x + 0.12, yard + 0.07, h + 0.10), 0.02, BLACK, 10, 0.045)
     else:
         tube('dark', (x + 0.03, yard + 0.03, h + 0.55), (x + 0.09, yard + 0.03, h + 0.20), 0.009, BLACK, 6)
-    box('steel', x - 0.085, x + 0.085, yard - 0.085, yard - 0.075, h + 0.28, h + 0.32, GREY)
+    if g.get('wall') == 'port':
+        box('steel', x - 0.085, x + 0.085, yard - 0.085, yard - 0.075, h + 0.28, h + 0.32, GREY)
+    else:
+        # hung on the aft wall: a strap round the cylinder on a bracket that reaches the wall, 10 cm behind its middle
+        box('steel', x - 0.085, x + 0.085, yard - 0.10, yard - 0.072, h + 0.28, h + 0.32, GREY)
+        box('steel', x - 0.02, x + 0.02, yard - 0.10, yard - 0.072, h + 0.08, h + 0.12, GREY)
 
 
 def sart(g, tag, x, yard, h):
@@ -893,16 +916,28 @@ def binoculars(g, tag, x, yard, h):
 
 
 def stairwell(g, tag, x, yard, h):
-    """The crew stair's head: a rail on its inboard side and a bar across the top."""
+    """
+    The crew stair's head: a rail along its inboard side, and across the top, where one comes up out of it, a self-closing
+    gate of two bars. The first drawing had those bars fixed: nobody could have come up the stair (found when the stairs
+    were walked, checks/stairs.cjs). The gate hangs on the outboard post and opens forward, away from the well.
+    """
     x = -2.07
+    rail = srgb(0xc9cfcf)
     for yd in (19.60, 20.15):
-        tube('steel', (x, yd, 0.012), (x, yd, 1.0), 0.016, srgb(0xc9cfcf), 8)
+        tube('steel', (x, yd, 0.012), (x, yd, 1.0), 0.016, rail, 8)
     for hh in (0.5, 1.0):
-        tube('steel', (x, 19.56, hh), (x, 20.16, hh), 0.014, srgb(0xc9cfcf), 8)
-        tube('steel', (x, 20.16, hh), (-2.90, 20.16, hh), 0.014, srgb(0xc9cfcf), 8)
-    tube('steel', (-2.88, 20.16, 0.012), (-2.88, 20.16, 1.0), 0.016, srgb(0xc9cfcf), 8)
-    box('paint', -2.90, -2.14, 19.56, 19.58, 1.52, 1.64, srgb(0x1e8246))                     # over the opening: the way out
-    pic((-2.52, 19.58, 1.58), FWD, UP, 0.30, 0.11, 'exit')
+        tube('steel', (x, 19.56, hh), (x, 20.16, hh), 0.014, rail, 8)
+    tube('steel', (-2.88, 20.16, 0.012), (-2.88, 20.16, 1.0), 0.016, rail, 8)
+    mv = _moving('Wheelhouse, crew stair gate', 'gate-crew-stair', steel='Shaft steel', grip='Plastic')
+    for hh in (0.5, 1.0):
+        tube(mv['steel'], (-2.86, 20.16, hh), (x - 0.03, 20.16, hh), 0.014, rail, 8)
+    tube(mv['steel'], (x - 0.03, 20.16, 0.5), (x - 0.03, 20.16, 1.0), 0.012, rail, 8)                 # its closing stile
+    tube(mv['steel'], (-2.86, 20.16, 0.5), (-2.86, 20.16, 1.0), 0.012, rail, 8)                      # and the hinge stile
+    box(mv['grip'], x - 0.20, x - 0.03, 20.150, 20.170, 0.70, 0.80, srgb(0xe2b93b))                  # a yellow plate on the closing stile: push
+    MOTIONS.append(dict(id='gate-crew-stair', name='Gate at the head of the crew stair', pivot=[-2.86, 0.0, L.Z(20.16)], ratio=-1.0, max=95,
+                        at=[-2.50, DECK, L.Z(20.16)], normal=[0, 0, 1], reach=1.3))
+    box('paint', -2.90, -2.14, 19.54, 19.56, 1.52, 1.64, srgb(0x1e8246))                     # over the opening, on the wall: the way out
+    pic((-2.52, 19.56, 1.58), FWD, UP, 0.30, 0.11, 'exit')
 
 
 def ac_indoor(g, tag, x, yard, h):
@@ -967,6 +1002,8 @@ def blinds(g, tag, x, yard, h):
         tube('plastic', (x0 + 0.02, yd, HEAD + 0.03), (x1 - 0.02, yd, HEAD + 0.03), 0.02, srgb(0xd9d5c8), 10)
         part('glass').polygon([P(x0 + 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.012, low), P(x0 + 0.04, yd - 0.012, low)], srgb(0x1a2a2e))
         tube('steel', (x0 + 0.04, yd - 0.012, low), (x1 - 0.04, yd - 0.012, low), 0.006, GREY, 6)
+        for xb in (x0 + 0.02, x1 - 0.032):                      # the roll's brackets, on the wall over the glass
+            box('steel', xb, xb + 0.012, yd - 0.022, yd + 0.031, HEAD + 0.008, HEAD + 0.052, GREY)
 
 
 def mullion_ducts(g, tag, x, yard, h):
@@ -1244,7 +1281,7 @@ def motion():
     inputs, movers = [], []
     for m in MOTIONS:
         inputs.append(dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit='°', below='', above='open', rest='shut', auto='near',
-                           at=m['at'], normal=m['normal'], reach=1.6))
+                           at=m['at'], normal=m['normal'], reach=m.get('reach', 1.6)))
         movers.append(dict(id=m['id'], kind='turn', input=m['id'], axis=[0, 1, 0], pivot=m['pivot'], ratio=m['ratio']))
     for c in CONTROLS:
         inputs.append(dict(id=c['id'], name=c['name'], fitting=c['fitting'], steps=c['steps'], home=c['home'], min=c['steps'][0]['v'], max=c['steps'][-1]['v'], unit='°'))

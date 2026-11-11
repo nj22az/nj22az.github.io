@@ -82,7 +82,7 @@ _CHORD = ((0.17, 0.40), (0.25, 0.47), (0.35, 0.55), (0.45, 0.61), (0.55, 0.65), 
           (0.92, 0.44), (0.97, 0.30), (1.0, 0.12))
 
 
-def propeller(part, centre, axis, radius, hub, blades, pitch_ratio, colour, hand=1, boss=True):
+def propeller(part, centre, axis, radius, hub, blades, pitch_ratio, colour, hand=1, boss=True, bore=None):
     """
     A screw on `axis` (pointing the way it drives). Right-handed for hand = 1: seen from behind it turns clockwise going
     ahead. The blade's face is a true helicoid of constant pitch; its back carries the thickness; the tips are skewed.
@@ -118,8 +118,11 @@ def propeller(part, centre, axis, radius, hub, blades, pitch_ratio, colour, hand
         part.orient(start, tuple(axis))
     if boss:
         # The boss, and the cone that fairs it aft.
-        _revolve(part, centre, axis, [(0.17, hub * 0.62), (0.15, hub), (-0.17, hub), (-0.24, hub * 0.93), (-0.31, hub * 0.72),
-                                      (-0.37, hub * 0.42), (-0.41, 0.0)], colour, sides=20)
+        # Its forward face closes on the shaft it is keyed to (`bore`): open, one looked into a hollow boss past a shaft
+        # 38 mm smaller than the hole (blender/afloat.py found the screws held by nothing).
+        face = [(0.17, bore)] if bore else []
+        _revolve(part, centre, axis, face + [(0.17, hub * 0.62), (0.15, hub), (-0.17, hub), (-0.24, hub * 0.93), (-0.31, hub * 0.72),
+                                             (-0.37, hub * 0.42), (-0.41, 0.0)], colour, sides=20)
 
 
 def _naca(xc, t):
@@ -279,7 +282,7 @@ def build():
         hull = Vector((x + dx, L.hull_y(x + dx, zz) + 0.06, zz))
         _beam(side_gear, at(by), hull, (0, 0, 1), 0.24, 0.055, RED)
     # The screw: right-handed to starboard, so the pair turns outward.
-    propeller(side_screw, centre, fwd, sc['diameter'] / 2, sc['hub'], sc['blades'], sc['pitch_ratio'], srgb(S.BRONZE), hand=1)
+    propeller(side_screw, centre, fwd, sc['diameter'] / 2, sc['hub'], sc['blades'], sc['pitch_ratio'], srgb(S.BRONZE), hand=1, bore=S.SHAFT_RADIUS)
     # The rudder, its stock and the headbox that carries it under the counter.
     r = S.RUDDER
     zs = L.Z(r['yard_stock'])

@@ -96,9 +96,11 @@ def steering_gear():
         rod = Part(f'Ram rod, {label}', 'Shaft steel', smooth=True, angle=40, mover=ram + '-rod')
         made += [tiller, head, barrel, rod]
         # The rudder carrier on the flat (fixed); the head of the stock above it and the tiller keyed to it (turning).
-        _revolve(gear, (x, y0, zs), UP, [(0.0, 0.25), (0.035, 0.25), (0.035, 0.17), (0.15, 0.17), (0.16, 0.09)], dark, sides=20)
+        # (The carrier's top closes on the stock, the tiller's boss is bored to it and the ram's cylinder begins at its stool:
+        # each stood clear of what holds it by 5 to 30 mm, which blender/afloat.py found.)
+        _revolve(gear, (x, y0, zs), UP, [(0.0, 0.25), (0.035, 0.25), (0.035, 0.17), (0.15, 0.17), (0.16, 0.09), (0.16, 0.06)], dark, sides=20)
         _cyl(head, (x, y0 + 0.15, zs), (x, arm_y + 0.13, zs), 0.06, steel)
-        _revolve(tiller, (x, arm_y - 0.085, zs), UP, [(0.0, 0.09), (0.0, 0.125), (0.17, 0.125), (0.17, 0.065)], dark, sides=20)
+        _revolve(tiller, (x, arm_y - 0.085, zs), UP, [(0.0, 0.06), (0.0, 0.125), (0.17, 0.125), (0.17, 0.06)], dark, sides=20)
         _hex_bar(tiller, (x, arm_y, zs + 0.09), (x, arm_y, zs + reach), 0.17, 0.10, 0.085, dark)
         _revolve(tiller, (x, arm_y - 0.06, zs + reach), UP, [(0.0, 0.0), (0.0, 0.065), (0.12, 0.065), (0.12, 0.0)], dark, sides=14)
         _cyl(head, (x, arm_y - 0.09, zs + reach), (x, arm_y + t['tie_bar'] + 0.05, zs + reach), 0.022, steel, sides=10)
@@ -109,7 +111,7 @@ def steering_gear():
         out = side * (X + t['ram_anchor'])
         gear.box((min(out, out + side * 0.14), y0, pin - 0.11), (max(out, out + side * 0.14), arm_y + 0.09, pin + 0.11), dark)
         along = lambda d: (out - side * d, arm_y, pin)          # a point d metres from the trunnion, toward the tiller
-        _cyl(barrel, along(0.02), along(0.64), 0.062, grey, sides=16)
+        _cyl(barrel, along(0.0), along(0.64), 0.062, grey, sides=16)
         _cyl(barrel, along(0.63), along(0.69), 0.075, dark, sides=16)
         # The rod is as long as the stroke asks: hard over one way it still stands in the cylinder, the other way it
         # does not come out of its back.
@@ -258,7 +260,10 @@ def _walkway(walk, rails, cx, half, levels, posts, frames, rail):
         for ya, yb, y in levels:
             ya, yb = sorted((ya, yb))
             a, b = sorted((x - 0.006, x + 0.006))
-            rails.box((a, y - 0.10, L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
+            # A level with no frame under it (a step between two longer levels) has no post: its side bearer is deep enough
+            # to meet the next level's, so the step hangs on its neighbours (it hung on nothing: blender/afloat.py).
+            framed = any(ya < k * L.FRAME_SPACING < yb for k in frames)
+            rails.box((a, y - (0.10 if framed else 0.30), L.Z(ya)), (b, y - 0.004, L.Z(yb)), dark)
         for k in frames:
             yard = k * L.FRAME_SPACING
             if not (min(l[0] for l in levels) < yard < max(l[1] for l in levels)):
@@ -427,7 +432,9 @@ def way_aft():
             # The lug on the bulkhead that carries the pin, above and below the blade.
             for ly in (hy - 0.075, hy + 0.05):
                 a, b = sorted((zf, hz + side * 0.014))
-                frames.box((hx - 0.02, ly, a), (hx + 0.035, ly + 0.025, b), tint(grey, 0.8))
+                # (it reaches 5 mm onto the frame's flange: narrower, it stood beside the frame and, where no wall is beside
+                # the frame, on nothing: the steering gear's door hung on its seal's 4 mm of air)
+                frames.box((hx - 0.045, ly, a), (hx + 0.035, ly + 0.025, b), tint(grey, 0.8))
         # Six dogs: a lever over the frame at each, on a boss through the leaf.
         for dx, sx in ((x0 + 0.02, -1), (x1 - 0.02, 1)):
             for dy in (y0 + 0.2, cy, y1 - 0.2):
@@ -503,12 +510,14 @@ def shafting():
         ring = lambda profile, colour, part=paint: _revolve(part, at(0), fwd, [(along(yd), r) for yd, r in profile], colour, sides=18)
         # The shaft, from the half coupling bolted to the gearbox's flange to the coupling on the tail shaft.
         bright.tube(at(g['yard'] - 0.04), at(S.SHAFT_COUPLING), S.SHAFT_RADIUS, colour=steel, sides=14)
-        ring([(g['yard'], 0.07), (g['yard'], g['radius']), (g['yard'] - 0.045, g['radius']), (g['yard'] - 0.05, 0.07)], flange)
+        # (Each ring round the shaft is bored to the shaft: they were bored 15 mm larger and the coupling hung on nothing.)
+        bore = S.SHAFT_RADIUS
+        ring([(g['yard'], bore), (g['yard'], g['radius']), (g['yard'] - 0.045, g['radius']), (g['yard'] - 0.05, bore)], flange)
         # The gland where it passes through the engine room's aft bulkhead.
-        ring([(8.42, 0.075), (8.42, 0.15), (8.4, 0.15), (8.4, 0.11), (8.31, 0.11), (8.3, 0.07)], flange)
+        ring([(8.42, bore), (8.42, 0.15), (8.4, 0.15), (8.4, 0.11), (8.31, 0.11), (8.3, bore)], flange)
         # The plummer block: its housing round the shaft, its foot, and the seat that carries it down to the floor.
         pb = S.PLUMMER_BLOCK
-        ring([(pb + 0.1, 0.07), (pb + 0.095, 0.13), (pb - 0.095, 0.13), (pb - 0.1, 0.07)], green)
+        ring([(pb + 0.1, bore), (pb + 0.095, 0.13), (pb - 0.095, 0.13), (pb - 0.1, bore)], green)
         c = at(pb)
         foot = c.y - 0.2
         paint.box((x - 0.22, foot, c.z - 0.085), (x + 0.22, foot + 0.09, c.z + 0.085), green)
@@ -516,7 +525,7 @@ def shafting():
         paint.box((x - 0.19, floor, c.z - 0.11), (x + 0.19, foot, c.z + 0.11), tint(srgb(S.PRIMER), 0.86))
         # The pair of flanges that couples it to the tail shaft.
         k = S.SHAFT_COUPLING
-        ring([(k + 0.05, 0.07), (k + 0.045, 0.12), (k - 0.045, 0.12), (k - 0.05, 0.07)], flange)
+        ring([(k + 0.05, bore), (k + 0.045, 0.12), (k - 0.045, 0.12), (k - 0.05, bore)], flange)
     return [paint, bright]
 
 
@@ -526,6 +535,7 @@ def fresh_water_tanks():
     pipes = Part('Fresh-water tanks, pipes', 'Shaft steel', smooth=True, angle=40)
     for p in (tanks, flat, pipes):
         p.group = 'machinery'
+    from hull_structure import floor_top
     blue, dark = srgb(S.WATER_BLUE), srgb(S.DARK_GREY)
     y0 = S.FLAT
     z0, z1 = L.Z(2.8), L.Z(4.85)
@@ -535,8 +545,14 @@ def fresh_water_tanks():
         xa, xb = sorted((side * 0.8, side * 3.2))
         # 6 m³ each: 2.4 × 2.05 × 1.22 m, standing on three bearers.
         tanks.box((xa, y0 + 0.08, z0), (xb, y0 + 1.3, z1), blue)
-        for zz in (z0 + 0.2, (z0 + z1) / 2, z1 - 0.2):
+        # Its bearers lie over the frames, and each stands on legs on the floor under it wherever the floor is there to stand
+        # on (the bearers stood on nothing, 18 cm over the floors: blender/afloat.py).
+        for yd in (3.0, 3.5, 4.0, 4.5):
+            zz, top = L.Z(yd), floor_top(yd)
             tanks.box((xa + 0.05, y0, zz - 0.05), (xb - 0.05, y0 + 0.08, zz + 0.05), dark)
+            for lx in (xa + 0.25, (xa + xb) / 2, xb - 0.25):
+                if L.hull_y(abs(lx), zz) + 0.08 < top:
+                    tanks.box((lx - 0.04, top - 0.012, zz - 0.04), (lx + 0.04, y0, zz + 0.04), dark)
         # Stiffening bands, the manhole on top, the level gauge on the gangway side.
         for zz in (z0 + 0.68, z1 - 0.68):
             tanks.box((xa - 0.015, y0 + 0.08, zz - 0.03), (xb + 0.015, y0 + 1.315, zz + 0.03), tint(blue, 0.9))
