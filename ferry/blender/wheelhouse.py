@@ -17,10 +17,11 @@ What was here before was the Minato Maru's house with her own fittings set into 
   - on the compass deck: two not-under-command lights, the NAVTEX and AIS position antennas, a wind sensor, the air
     conditioner's condensing unit.
 
-assemble.py takes the Minato Maru's wheelhouse away for it (REPLACES: its pieces, and everything inside the house's box).
+The after wall below 2.08 m and the deck under it are the ship's (steel.py).
 
-Drawn in the ship's axes (lines.py): x to port, y up from the laden waterline, z forward from amidships. Places below are as
-the register gives them: x, `yard` (metres from the transom) and h (metres over the bridge deck, 11.0 m above the keel).
+Drawn in the ship's axes (lines.py): x to port, y up from the waterline, z forward from amidships. Places below are as the
+register gives them, in the bridge's own measures: x, `yard` (metres from the first Chisum's transom, where the bridge was
+designed) and h (metres over the bridge deck). bridge_place.py carries them aboard the 68 m ship.
 """
 import os, sys
 from math import pi, cos, sin, radians, degrees, tan, atan, hypot
@@ -28,13 +29,15 @@ from mathutils import Vector
 import lines as L
 import spec as S
 import shipyard
+import bridge_place as BP
 from shipyard import Part, srgb, tint, component, tile
 from hull_appendages import _revolve
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'systems'))
 import bridge as REG
 
-DECK = L.Y(11.0)                      # the bridge deck, 9.1 m over the waterline
+DECK = BP.DECK                        # the bridge deck she stands on (bridge_place.py: the bridge's own measures are the first Chisum's)
+W = BP.WING                           # the inner face of each wing's bulwark: the wings are carried to the ship's side
 # The wheelhouse's heights over its deck. The owner, 11 November 2026, on raising the roof: "Yes make it realistic".
 # It stood 2.055 m clear under a roof at 2.40 m, with the glass ending at 1.96 m and an overhead console hanging to 1.80 m,
 # a tall helmsman's eye. Now: 2.30 m clear under the lining, a service void over it for the cable trays, the roof's
@@ -92,7 +95,7 @@ def part(key):
 
 def P(x, yard, h):
     """A point from its place on the bridge deck: x to port, metres from the transom, metres over the deck."""
-    return (x, DECK + h, L.Z(yard))
+    return (x, DECK + h, BP.Z(yard))
 
 
 def fwd(h):
@@ -385,14 +388,14 @@ def floor():
 
 def wing(g):
     side = g['side']
-    box('floor', side * X_OUT, side * 4.10, 19.50, 22.94, 0.0, 0.012, WINGDECK)
-    box('wing', side * 4.10, side * 4.16, 19.50, FRONT_OUT, 0.0, 1.10, HOUSE)                     # the bulwark outboard
-    box('wing', side * X_OUT, side * 4.10, 22.94, FRONT_OUT, 0.0, 1.10, HOUSE)                    # and across the forward end
+    box('floor', side * X_OUT, side * W, 19.50, 22.94, 0.0, 0.012, WINGDECK)
+    box('wing', side * W, side * (W + 0.06), 19.50, FRONT_OUT, 0.0, 1.10, HOUSE)                     # the bulwark outboard
+    box('wing', side * X_OUT, side * W, 22.94, FRONT_OUT, 0.0, 1.10, HOUSE)                    # and across the forward end
     for yd in (20.1, 20.7, 21.3, 21.9, 22.5):                                                     # its stays
-        prism('wing', side * 4.09, side * 4.10, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 1.10), (yd - 0.004, 1.10)], tint(HOUSE, 0.92))
-        prism('wing', side * 4.02, side * 4.10, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 0.30), (yd - 0.004, 0.30)], tint(HOUSE, 0.92))
-    box('wood', side * 4.04, side * 4.19, 19.50, 23.03, 1.10, 1.15, WOOD)                         # the rail
-    box('wood', side * X_OUT, side * 4.04, 22.91, 23.03, 1.10, 1.15, WOOD)
+        prism('wing', side * (W - 0.01), side * W, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 1.10), (yd - 0.004, 1.10)], tint(HOUSE, 0.92))
+        prism('wing', side * (W - 0.08), side * W, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 0.30), (yd - 0.004, 0.30)], tint(HOUSE, 0.92))
+    box('wood', side * (W - 0.06), side * (W + 0.09), 19.50, 23.03, 1.10, 1.15, WOOD)                         # the rail
+    box('wood', side * X_OUT, side * (W - 0.06), 22.91, 23.03, 1.10, 1.15, WOOD)
 
 
 # =====================================================================================================================
@@ -431,8 +434,8 @@ def door_wing(g, tag):
     for p in (leaf, glass, fit):
         p.group = 'bridge'
         _extra.append(p)
-    MOTIONS.append(dict(id=mover, name=f'Door to the {name} wing', pivot=[side * 2.97, 0.0, L.Z(b)], ratio=-1.0 * side, max=100,
-                        at=[side * 3.0, DECK, L.Z((yd0 + yd1) / 2)], normal=[side, 0, 0]))
+    MOTIONS.append(dict(id=mover, name=f'Door to the {name} wing', pivot=[side * 2.97, 0.0, BP.Z(b)], ratio=-1.0 * side, max=100,
+                        at=[side * 3.0, DECK, BP.Z((yd0 + yd1) / 2)], normal=[side, 0, 0]))
 
 
 def door_corridor(g, tag):
@@ -459,8 +462,8 @@ def door_corridor(g, tag):
     for p in (leaf, fit, glass):
         p.group = 'bridge'
         _extra.append(p)
-    MOTIONS.append(dict(id=mover, name='Door from the corridor to the wheelhouse', pivot=[-0.365, 0.0, L.Z(19.535)], ratio=-1.0, max=92,
-                        at=[0.0, DECK, L.Z(19.50)], normal=[0, 0, 1]))
+    MOTIONS.append(dict(id=mover, name='Door from the corridor to the wheelhouse', pivot=[-0.365, 0.0, BP.Z(19.535)], ratio=-1.0, max=92,
+                        at=[0.0, DECK, BP.Z(19.50)], normal=[0, 0, 1]))
 
 
 # =====================================================================================================================
@@ -936,8 +939,8 @@ def stairwell(g, tag, x, yard, h):
     tube(mv['steel'], (x - 0.03, 20.16, 0.5), (x - 0.03, 20.16, 1.0), 0.012, rail, 8)                 # its closing stile
     tube(mv['steel'], (-2.86, 20.16, 0.5), (-2.86, 20.16, 1.0), 0.012, rail, 8)                      # and the hinge stile
     box(mv['grip'], x - 0.20, x - 0.03, 20.150, 20.170, 0.70, 0.80, srgb(0xe2b93b))                  # a yellow plate on the closing stile: push
-    MOTIONS.append(dict(id='gate-crew-stair', name='Gate at the head of the crew stair', pivot=[-2.86, 0.0, L.Z(20.16)], ratio=-1.0, max=95,
-                        at=[-2.50, DECK, L.Z(20.16)], normal=[0, 0, 1], reach=1.3))
+    MOTIONS.append(dict(id='gate-crew-stair', name='Gate at the head of the crew stair', pivot=[-2.86, 0.0, BP.Z(20.16)], ratio=-1.0, max=95,
+                        at=[-2.50, DECK, BP.Z(20.16)], normal=[0, 0, 1], reach=1.3))
     box('paint', -2.90, -2.14, 19.54, 19.56, 1.52, 1.64, srgb(0x1e8246))                     # over the opening, on the wall: the way out
     pic((-2.52, 19.56, 1.58), FWD, UP, 0.30, 0.11, 'exit')
 
@@ -1088,7 +1091,7 @@ def wing_console(g, tag, x, yard, h):
 def sidelight(g, tag, x, yard, h):
     """A sidelight on the bulwark's rail at the wing's outer end: the lantern, and inboard of it the screen that cuts its light off across the bow."""
     side = g['side']
-    xo = side * 4.13
+    xo = side * (W + 0.03)
     box('dark', xo - 0.035, xo + 0.035, yard - 0.035, yard + 0.035, 1.15, h + 0.02, STAND)
     tube('dark', (xo, yard, h + 0.02), (xo, yard, h + 0.06), 0.07, DARK, 16)
     tube('lens', (xo, yard, h + 0.06), (xo, yard, h + 0.19), 0.062, RED if side > 0 else GREENLENS, 16)
@@ -1119,17 +1122,17 @@ def pelorus(g, tag, x, yard, h):
 
 def lifebuoy(g, tag, x, yard, h):
     side = g['side']
-    xc = side * 4.02
+    xc = side * (W - 0.08)
     torus('plastic', (xc, yard, h), 0.305, 0.06, ORANGE, axis='x')
     for k in range(4):                                                         # four bands of reflective tape
         a = k * pi / 2 + pi / 4
         box('paint', xc - 0.064, xc + 0.064, yard + 0.305 * cos(a) - 0.035, yard + 0.305 * cos(a) + 0.035, h + 0.305 * sin(a) - 0.064, h + 0.305 * sin(a) + 0.064, WHITE)
-    box('steel', side * 4.10, side * 4.075, yard - 0.02, yard + 0.02, h + 0.28, h + 0.40, GREY)                 # its bracket
+    box('steel', side * W, side * (W - 0.025), yard - 0.02, yard + 0.02, h + 0.28, h + 0.40, GREY)                 # its bracket
     # the light and smoke float beside it
     tube('plastic', (xc, yard + 0.50, 0.30), (xc, yard + 0.50, 0.72), 0.06, ORANGE, 14)
     tube('plastic', (xc, yard + 0.50, 0.72), (xc, yard + 0.50, 0.80), 0.045, WHITE, 12)
-    box('steel', side * 4.10, side * 4.07, yard + 0.45, yard + 0.55, 0.36, 0.40, GREY)
-    box('steel', side * 4.10, side * 4.07, yard + 0.45, yard + 0.55, 0.60, 0.64, GREY)
+    box('steel', side * W, side * (W - 0.03), yard + 0.45, yard + 0.55, 0.36, 0.40, GREY)
+    box('steel', side * W, side * (W - 0.03), yard + 0.45, yard + 0.55, 0.60, 0.64, GREY)
 
 
 def hydrant(g, tag, x, yard, h):

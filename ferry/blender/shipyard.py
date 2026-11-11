@@ -65,8 +65,8 @@ LOOKS = {
     'Window glass': dict(metalness=0.2, roughness=0.15, side='double', transparent=True, opacity=0.38, depthWrite=False),
     # Pictures from her own sheet (atlas.py). A screen shines by itself and is drawn without light; the face of a panel, a
     # dial or a chart takes the light like the thing it is printed on. Both lie on a surface and are drawn a hair in front of it.
-    'Screen picture': dict(metalness=0.0, roughness=0.3, shading='basic', textured=True, atlas=1, offset=[-2, -4]),
-    'Panel face': dict(metalness=0.0, roughness=0.55, textured=True, atlas=1, offset=[-2, -4]),
+    'Screen picture': dict(metalness=0.0, roughness=0.3, shading='basic', textured=True, atlas=0, offset=[-2, -4]),
+    'Panel face': dict(metalness=0.0, roughness=0.55, textured=True, atlas=0, offset=[-2, -4]),
     # Linings, deck coverings and deckhead panels: matt.
     'Lining': dict(metalness=0.0, roughness=0.8),
     # The other ship's walls and casings are drawn in this: what of hers stands in line with them takes the light the same way.

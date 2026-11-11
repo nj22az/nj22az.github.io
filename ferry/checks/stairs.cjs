@@ -25,7 +25,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
       && st.flights.every(n => n <= c.flight),
       `${st.name}: a ${st.className}, ${st.steps} steps of ${Math.round(st.rise * 1000)} mm, going ${Math.round(st.going * 1000)} mm, ${st.pitch}°, ${st.width.toFixed(2)} m wide${flights}`);
     const walked = await page.evaluate(st => {
-      const f = window.__ferry, HALF = 17.25, AHEAD = Math.PI, ASTERN = 0;
+      const f = window.__ferry, HALF = f.ship.length / 2, AHEAD = Math.PI, ASTERN = 0;
       if (!f.state.walk) f.enterWalk();
       const x = (st.x[0] + st.x[1]) / 2;
       const run = Math.abs(st.top[0] - st.foot[0]);

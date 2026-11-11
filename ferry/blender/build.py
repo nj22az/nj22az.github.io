@@ -12,6 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import bpy
 import lines as L
+import spec as S
 import shipyard
 
 
@@ -39,8 +40,10 @@ def behind_the_plating():
     # Blender's X is her length. The end plates lie flat against the transom and the bow plate and are not tested.
     for t in inner.loop_triangles:
         co = [inner.vertices[i].co for i in t.vertices]
-        if all(abs(abs(c.x) - L.HALF) < 0.03 for c in co):
+        if t.area < 1e-9:
             continue
+        if all(abs(abs(c.x) - L.HALF) < 0.03 for c in co) or all(c.x > L.BODY_END - 0.5 for c in co):
+            continue                                      # (nor the stem's own plate, whose two faces close on each other at its head)
         mid = (co[0] + co[1] + co[2]) / 3
         for p in (mid, (co[0] + mid) / 2, (co[1] + mid) / 2, (co[2] + mid) / 2):
             # The inner face looks inward, so outward is against its normal.
@@ -48,7 +51,15 @@ def behind_the_plating():
             tested += 1
             if hit[0] is None:
                 # The mouth of the thruster tunnel is open: nothing to find there.
-                if (p - Vector((L.Z(29.0), p.y, -0.95))).length < 0.6:
+                if (p - Vector((L.Z(S.THRUSTER['yard']), p.y, S.THRUSTER['y']))).length < S.THRUSTER['radius'] + 0.2:
+                    continue
+                # Nor along the stem's own edge, where the two sides' plating lands on the stem plate: looking square out of
+                # one side from just inside that edge, one looks past it. The stem bar stands on it outside.
+                if abs(p.y) < L.STEM_HALF + 0.03 and L.yard(p.x) > L.FOREFOOT:
+                    continue
+                # Nor at an opening in the topsides (a mooring port, a shell door), nor at the stern door.
+                yd = L.yard(p.x)
+                if any(o['yard'][0] - 0.35 < yd < o['yard'][1] + 0.35 and o['y'][0] - 0.1 < p.z < o['y'][1] + 0.1 for o in (S.MOORING_PORT, S.SHELL_DOOR)):
                     continue
                 out += 1
                 where.append(f'{L.yard(p.x):.2f} m from the transom, {abs(p.y):.2f} m off the centreline, {L.above_keel(p.z):.2f} m above the keel')
@@ -61,11 +72,9 @@ def behind_the_plating():
     # Her structure the same way: every corner of every frame, floor, girder, bulkhead and stringer is behind the
     # plating as it is drawn (the plating is flat between its own points; the structure follows her lines).
     proud, least, least_at = [], 1.0, ''
-    for name in ('Frames', 'Floors', 'Double-bottom girders', 'Watertight bulkheads', 'Fore-peak stringers'):
+    for name in ('Frames', 'Floors', 'Double-bottom girders', 'Watertight bulkheads', 'Tank bulkheads', 'Fore-peak stringers', 'Topside frames'):
         me = bpy.data.objects[name].data
         for v in me.vertices:
-            if v.co.z > L.CAR - 0.05:
-                continue
             near, normal, _, dist = tree.find_nearest(v.co)
             if near is None or dist > 0.1:
                 continue
@@ -90,8 +99,15 @@ def looking_outward():
     import bmesh
 
     def volume(mesh):
+        """The volume its faces enclose by their winding, measured about its own middle: a part that is not closed all
+        round (a prism with an open end) then gives the same answer wherever in the ship it stands."""
+        from mathutils import Vector
         bm = bmesh.new()
         bm.from_mesh(mesh)
+        if bm.verts:
+            lo = Vector((min(v.co.x for v in bm.verts), min(v.co.y for v in bm.verts), min(v.co.z for v in bm.verts)))
+            hi = Vector((max(v.co.x for v in bm.verts), max(v.co.y for v in bm.verts), max(v.co.z for v in bm.verts)))
+            bmesh.ops.translate(bm, verts=bm.verts, vec=-(lo + hi) / 2)
         v = bm.calc_volume(signed=True)
         bm.free()
         return v
@@ -108,9 +124,11 @@ def looking_outward():
     bpy.data.collections.remove(trial)
     for name in ('Tail shafts', 'Rudder stock, port', 'Rudder stock, starboard', 'Rudder anodes, port', 'Intermediate shafts',
                  'Steering gear, bright steel', 'Rudder stock head, port', 'Ram cylinder, port', 'Ram rod, starboard', 'Tie bar',
-                 'Fresh-water tanks, pipes', 'Chain lockers', 'Zinc anodes', 'Compass deck, slab', 'Compass deck, rails',
+                 'Chain lockers', 'Zinc anodes', 'Stem bar', 'Car deck, walls', 'Passenger deck, walls', 'Bridge deck, walls', 'Top deck, walls',
+                 'Bridge deck, rails', 'Top deck, rails', 'Stern ramp', 'Inner bow door', 'Crew stair trunk, landings',
+                 'Compass deck, slab', 'Compass deck, rails',
                  'Compass deck, mast and fittings', 'Compass deck, mast, steel fittings', 'Compass deck, dark fittings',
-                 'Compass deck, antennas', 'Compass deck, antenna mounts', 'Compass deck, vent heads', 'Compass deck, vent fittings',
+                 'Compass deck, antennas', 'Compass deck, antenna mounts',
                  'Compass deck, searchlight and floodlights', 'Compass deck, light mounts', 'Compass deck, binnacle',
                  'Wheelhouse, plating', 'Wheelhouse, linings', 'Wheelhouse, window frames', 'Wheelhouse, deck covering', 'Wheelhouse, console',
                  'Wheelhouse, instruments', 'Wheelhouse, plastics', 'Wheelhouse, steel', 'Wheelhouse, brass', 'Wheelhouse, wood', 'Wheelhouse, upholstery',
@@ -143,7 +161,9 @@ def main():
     # spaces and to the car deck (part.group).
     parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'passenger', 'bridge', 'top')}
     report, inputs, movers, ways = {}, [], [], []
-    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck', 'wheelhouse', 'stairs', 'bridge_deck', 'livery', 'vending', 'eg_room'):
+    modules = ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'steel', 'stairs', 'compass_deck', 'wheelhouse', 'livery', 'vending', 'eg_room')
+    only = opt.get('--only')           # a trial of some sections: no checks, nothing the page reads is to be made from it
+    for name in (only.split(',') if only else modules):
         try:
             mod = importlib.import_module(name)
         except ModuleNotFoundError as e:
@@ -162,11 +182,12 @@ def main():
             if part.build(parts_of[getattr(part, 'group', 'hull')]):
                 report[part.name] = sum(max(1, len(f) - 2) for f in part.f)
         print(f'{name}: {len(made)} parts, {time.time() - t0:.1f} s')
-    behind_the_plating()
-    looking_outward()
+    if not only:
+        behind_the_plating()
+        looking_outward()
     named = {ob['mover'] for ob in bpy.data.objects if 'mover' in ob}
     defined = {m['id'] for m in movers}
-    if named != defined:
+    if named != defined and not only:
         raise SystemExit(f'moving parts and their motions do not agree: parts name {sorted(named - defined)} without a motion, '
                          f'motions {sorted(defined - named)} move nothing')
     print(f'moving parts: {len(named)} motions, each with its parts')

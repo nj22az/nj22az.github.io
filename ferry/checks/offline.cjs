@@ -27,7 +27,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   await page.reload(); await ready();
   const off = await page.evaluate(() => ({ stairs: window.__ferry.stairs.length, systems: window.__ferry.systems ? 1 : 0, label: document.getElementById('offline').textContent,
     wide: document.documentElement.scrollWidth }));
-  check(off.stairs === 8 && off.label === 'Saved offline', `with the network cut the page opens again with the whole model (${off.stairs} stairs listed) and says "${off.label}"`);
+  check(off.stairs === 16 && off.systems === 1 && off.label === 'Saved offline', `with the network cut the page opens again with the whole model (${off.stairs} stairs listed) and says "${off.label}"`);
   check(off.wide <= 390, `on a phone the page is still no wider than the screen (${off.wide} px)`);
   await page.click('#install');
   const hint = await page.textContent('#what');

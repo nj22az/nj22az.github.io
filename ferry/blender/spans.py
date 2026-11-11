@@ -36,7 +36,7 @@ import assemble as A
 
 KINDS = (('pull wire', 0.7), ('cables', 0.6), ('conduit', 1.5), ('pipes', 1.5))
 STEP, NEAR, JOIN = 0.05, 0.010, 0.012
-HALF = 17.25
+HALF = A.L.HALF
 
 
 def kind_of(name):

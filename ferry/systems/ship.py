@@ -8,7 +8,7 @@ on the work branch): the same generators, voltages and frequency, the same sizin
 Nothing here is class-approved or construction information.
 """
 
-SHIP = dict(name='Chisum', length=34.5, type='car and passenger ferry')
+SHIP = dict(name='Chisum', length=68.4, type='car and passenger ferry')
 
 # ---- What she is supplied by: the answer to "what is the main?"
 SUPPLY = dict(
@@ -26,10 +26,12 @@ SUPPLY = dict(
 )
 
 SOURCES = [
-    dict(id='G1', name='Diesel generator No. 1', rating='125 kVA, 100 kW, 445 V, 60 Hz', where='Engine room', feeds='MSB', built=False),
-    dict(id='G2', name='Diesel generator No. 2', rating='125 kVA, 100 kW, 445 V, 60 Hz', where='Engine room', feeds='MSB', built=False),
+    # The 68 m ship's general arrangement (blender/ga.py): three of about 320 kW in an auxiliary engine room of their own.
+    dict(id='G1', name='Diesel generator No. 1', rating='about 400 kVA, 320 kW, 450 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
+    dict(id='G2', name='Diesel generator No. 2', rating='about 400 kVA, 320 kW, 450 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
+    dict(id='G3', name='Diesel generator No. 3', rating='about 400 kVA, 320 kW, 450 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
     dict(id='SHORE', name='Shore connection at Minato', rating='50 kVA, 440 V, 60 Hz', where='Car deck, port side', feeds='MSB', built=False),
-    dict(id='EG', name='Emergency generator', rating='40 kVA, 32 kW, 445 V, 60 Hz', where='Emergency generator room, bridge deck', feeds='ESB', built=False),
+    dict(id='EG', name='Emergency generator', rating='40 kVA, 32 kW, 445 V, 60 Hz', where='Emergency generator room, top deck', feeds='ESB', built=False),
     dict(id='BAT-G', name='24 V battery bank, general service and transitional', rating='24 V, 200 Ah (calculation JS8-855)', where='Emergency generator room', feeds='DCB', built=False),
     dict(id='BAT-R', name='24 V battery bank, radio', rating='24 V, 100 Ah (calculation JS8-855)', where='Emergency generator room', feeds='DCB-R', built=False),
 ]
@@ -39,7 +41,7 @@ SOURCES = [
 # control booth to the wheelhouse and 20 m from the emergency generator room, and 3 m of each is measured in bridge.py.
 # They are the Minato Maru's lengths until the sections between are routed.
 BOARDS = [
-    dict(id='MSB', name='Main switchboard', volts=440, kind='AC', where='Engine control room', fed_by=['G1', 'G2', 'SHORE'], built=False),
+    dict(id='MSB', name='Main switchboard', volts=440, kind='AC', where='Engine control room', fed_by=['G1', 'G2', 'G3', 'SHORE'], built=False),
     dict(id='LB', name='Lighting and small-power board', volts=105, kind='AC', where='Engine control room', fed_by=['MSB'], ext=30.0, built=False,
          text='The 105 V section of the main board, behind the lighting transformers.'),
     dict(id='ESB', name='Emergency switchboard', volts=105, kind='AC', where='Emergency generator room', fed_by=['MSB', 'EG'], ext=17.0, built=False,

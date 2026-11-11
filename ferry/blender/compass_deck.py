@@ -1,31 +1,29 @@
 """
-The compass deck: the roof of the bridge house, her mast and what the mast carries.
+The compass deck: the wheelhouse's roof, her mast and what the mast carries.
 
-Section 2 of her own build, first slice. The roof is the viewer's part `top`; it takes the place of the Minato Maru's
-(1,164 triangles: a slab, a rail, a mast, a few boxes) as the hull took the place of hers. Its positions are the other
-ship's, so the ladder that comes up to it (hull_fittings.ladders), the bridge deck's rooms under it and the walker on it
-still fit; what is on it follows M/V Ranger III's pilot-house roof (HAER MI-432): radar, searchlight, masthead and anchor
-lights, VHF antennas and vent heads over the spaces below.
+It is part of her bridge, designed aboard the first Chisum and landed whole on the 68 m ship (bridge_place.py): the roof
+slab over the wheelhouse, level with the top deck abaft it; a three-course rail round its forward end, which the top
+deck's own rail meets at each after corner; the mast on a gusseted foot with its flag yard, radar platform, radar,
+masthead and anchor lights, air horns and loudhailer; VHF and AIS whips, the GNSS and satellite-compass domes; the
+searchlight and two floodlights; the binnacle. What is on it follows M/V Ranger III's pilot-house roof (HAER MI-432).
 
-Drawn in the ship's axes (lines.py). The roof's top is at spec.COMPASS_DECK['deck'], and is the floor the walker stands on.
-
-Since 11 November 2026 the roof has two levels: the house top aft, where it always was, and the compass deck proper over
-the wheelhouse, a step of 0.30 m higher (spec.COMPASS_DECK: `step`, `rise`). The mast, the binnacle, the antennas, the
-searchlight and the floodlights stand on the higher part and went up with it; the vent heads stand on the lower. A step
-block halves the rise for whoever walks forward from the ladder, and the edges are marked.
+Measures are the bridge's own (spec.COMPASS_DECK, spec.MAST: metres from the first Chisum's transom, heights over her
+waterline); Z and the heights below carry them aboard.
 """
 from math import pi, cos, sin, ceil, hypot, radians
 from mathutils import Vector
 import lines as L
 import spec as S
+import bridge_place as BP
 from shipyard import Part, srgb, tint
 from hull_fittings import _cyl, _revolve
 
-C, M = S.COMPASS_DECK, S.MAST
-Z = L.Z
-DECK = C['deck']                       # the house top, aft of the wheelhouse
-STEP = Z(C['step'])                    # where the roof steps up: the wheelhouse's aft wall
-TOP = DECK + C['rise']                 # the compass deck proper, over the wheelhouse
+# The bridge's own measures, carried aboard: places along her by BP.Z, heights by the rise of the deck she stands on.
+C = dict(S.COMPASS_DECK, deck=BP.Y(S.COMPASS_DECK['deck']))
+M = {k: (v if k == 'yard' else BP.Y(v)) for k, v in S.MAST.items()}
+Z = BP.Z
+STEP = Z(C['step'])                    # the roof's after edge: the wheelhouse's after wall, where the top deck meets it
+TOP = C['deck'] + C['rise']            # the compass deck's top: level with the top deck
 YELLOW = srgb(0xe2b93b)
 WHITE, GREY, DARK = srgb(S.WHITE), srgb(S.LIGHT_GREY), srgb(S.DARK_GREY)
 STEEL, BRONZE, ZINC = srgb(S.STEEL), srgb(S.BRONZE), srgb(S.ZINC)
@@ -88,79 +86,39 @@ def _length(name, z0, z1, deck, depth, fwd, aft):
 
 
 def _slab():
-    """The roof in its two lengths: the house top, and the compass deck over the wheelhouse a step higher. Where they meet,
-    a step block 0.15 m high halves the rise, clear of where the ladder arrives; its edge and the deck's are marked yellow."""
+    """The roof over the wheelhouse. Its after edge is square: the top deck's plating meets it there, level with it."""
     z0, z1 = Z(C['yards'][0]), Z(C['yards'][1])
-    parts = _length('House top', z0, STEP, DECK, C['slab'], fwd=False, aft=True)
-    parts += _length('Compass deck', STEP, z1, TOP, C['slab_top'], fwd=True, aft=False)
-    step = Part('Compass deck, step', 'Topside paint')
-    mark = Part('Compass deck, step markings', 'Marking')
-    x0, x1, za = -2.6, 2.4, STEP - 0.295
-    step.box((x0, DECK, za), (x1, DECK + C['rise'] / 2, STEP), tint(WHITE, 0.97))
-    mark.box((x0, DECK + C['rise'] / 2 + 0.0005, za), (x1, DECK + C['rise'] / 2 + 0.0035, za + 0.05), YELLOW)
-    mark.box((-C['half'] + 0.2, TOP + 0.0005, STEP + 0.01), (C['half'] - 0.2, TOP + 0.0045, STEP + 0.06), YELLOW)   # a millimetre over the seams it crosses
-    return parts + [step, mark]
-
-
-def _path(x0, x1, z0, z1, r, gap_z, gap_w):
-    """The rail's path round the roof as an open path: it starts at the forward end of the gap in the port side, goes
-    forward, round the front, down the starboard side, round the aft end and up the port side to the gap's aft end."""
-    loop = _loop(x0, x1, z0, z1, r)
-    gf, ga = gap_z + gap_w / 2, gap_z - gap_w / 2
-    path = [(x1, gf)] + loop + [(x1, ga)]
-    return path
+    return _length('Compass deck', STEP, z1, TOP, C['slab_top'], fwd=True, aft=False)
 
 
 def _rails():
-    """The rail round the roof. Where the roof steps up (on the starboard side; to port the gate lies across the step) the
-    rail steps up with it, at a post."""
+    """The rail round the compass deck's forward end: from the top deck's rail at one after corner, forward, round the front
+    and back to the other. Three courses of tube and a stanchion about every 1.45 m with a foot plate."""
     rails = Part('Compass deck, rails', 'Topside paint', smooth=True, angle=40)
     x = C['half'] - C['rail_in']
-    z0, z1 = Z(C['yards'][0]) + C['rail_in'], Z(C['yards'][1]) - C['rail_in']
-    gate_z, gate_w = Z(C['gate'][0]), C['gate'][1]
-    path = _path(-x, x, z0, z1, C['corner'] - C['rail_in'] + 0.12, gate_z, gate_w)
-    deck_at = lambda z: TOP if z >= STEP - 1e-9 else DECK
-    # The path in pieces that each lie on one level: a length that crosses the step is parted there.
-    pieces, jogs = [], []
-    for (ax, az), (bx, bz) in zip(path, path[1:]):
-        if hypot(bx - ax, bz - az) <= 1e-4:
-            continue
-        if (az - STEP) * (bz - STEP) < -1e-9:
-            f = (STEP - az) / (bz - az)
-            mx = ax + (bx - ax) * f
-            lo, hi = (az, bz) if az < bz else (bz, az)
-            pieces.append(((ax, az), (mx, STEP), DECK if az < STEP else TOP))
-            pieces.append(((mx, STEP), (bx, bz), DECK if bz < STEP else TOP))
-            jogs.append((mx, STEP))
-        else:
-            pieces.append(((ax, az), (bx, bz), deck_at((az + bz) / 2)))
-    # Three courses of tube along the path, and a stanchion about every 1.45 m with a foot plate.
+    z0, z1 = STEP - 0.08, Z(C['yards'][1]) - C['rail_in']              # it begins on the top deck's rail, 8 cm abaft the roof's edge
+    loop = _loop(-x, x, z0, z1, C['corner'] - C['rail_in'] + 0.12, fwd=True, aft=False)
+    path = [loop[-1]] + loop[:-1]                                     # from the port after corner forward, round, to the starboard one
     heights = (C['rail'], 0.62, 0.30)
     radii = (0.019, 0.012, 0.012)
     for h, r in zip(heights, radii):
-        for (ax, az), (bx, bz), deck in pieces:
-            _cyl(rails, (ax, deck + h, az), (bx, deck + h, bz), r, WHITE, sides=8)
-        for jx, jz in jogs:
-            _cyl(rails, (jx, DECK + h, jz), (jx, TOP + h, jz), r, WHITE, sides=8)
-    for jx, jz in jogs:                                                         # the post at the step, the height of both
-        _cyl(rails, (jx, DECK + 0.012, jz - 0.03), (jx, TOP + C['rail'], jz - 0.03), 0.0135, WHITE, sides=8)
-        _cyl(rails, (jx, DECK, jz - 0.03), (jx, DECK + 0.012, jz - 0.03), 0.045, tint(WHITE, 0.9), sides=10)
-    # Posts at even intervals along the path (arc length), the ends included.
+        for (ax, az), (bx, bz) in zip(path, path[1:]):
+            if hypot(bx - ax, bz - az) > 1e-4:
+                _cyl(rails, (ax, TOP + h, az), (bx, TOP + h, bz), r, WHITE, sides=8)
     seg = [hypot(bx - ax, bz - az) for (ax, az), (bx, bz) in zip(path, path[1:])]
     total = sum(seg)
     n = int(ceil(total / C['post_every']))
-    for i in range(n + 1):
-        s = total * i / n
+    for i in range(1, n):                                             # the two ends are the top deck rail's own stanchions
+        s_ = total * i / n
         k, run = 0, 0.0
-        while k < len(seg) - 1 and run + seg[k] < s - 1e-9:
+        while k < len(seg) - 1 and run + seg[k] < s_ - 1e-9:
             run += seg[k]
             k += 1
-        f = (s - run) / seg[k] if seg[k] else 0.0
+        f = (s_ - run) / seg[k] if seg[k] else 0.0
         (ax, az), (bx, bz) = path[k], path[k + 1]
         px, pz = ax + (bx - ax) * f, az + (bz - az) * f
-        deck = deck_at(pz)
-        _cyl(rails, (px, deck + 0.012, pz), (px, deck + C['rail'], pz), 0.0135, WHITE, sides=8)
-        _cyl(rails, (px, deck, pz), (px, deck + 0.012, pz), 0.045, tint(WHITE, 0.9), sides=10)
+        _cyl(rails, (px, TOP + 0.012, pz), (px, TOP + C['rail'], pz), 0.0135, WHITE, sides=8)
+        _cyl(rails, (px, TOP, pz), (px, TOP + 0.012, pz), 0.045, tint(WHITE, 0.9), sides=10)
     return [rails]
 
 
@@ -185,7 +143,7 @@ def _mast():
         _cyl(mast, base, up, 0.012, WHITE, sides=6)
         _cyl(mast, tip, up, 0.009, WHITE, sides=6)
     for h in (DECK + 1.3, M['platform'] - 0.2):                         # collars where the mast's lengths meet
-        _cyl(mast, (0, h, mz), (0, h + 0.05, mz), 0.125 if h < 12.8 else 0.1, tint(WHITE, 0.92), sides=18)
+        _cyl(mast, (0, h, mz), (0, h + 0.05, mz), 0.125 if h < BP.Y(12.8) else 0.1, tint(WHITE, 0.92), sides=18)
 
     # ---- The yardarm for flags, 2.8 m, on a collar, with a halyard block at each end.
     _cyl(steel, (-1.4, M['yardarm'], mz), (1.4, M['yardarm'], mz), 0.02, ZINC, sides=8)
@@ -302,31 +260,9 @@ def _binnacle():
     return [b, brass, dome]
 
 
-def _vents():
-    """Vent heads over the spaces below: the emergency generator room (an air intake and an exhaust), the galley's
-    extract and the crew WC and shower's."""
-    vents = Part('Compass deck, vent heads', 'Topside paint', smooth=True, angle=40)
-    metal = Part('Compass deck, vent fittings', 'Shaft steel', smooth=True, angle=40)
-    slats = Part('Compass deck, louvres', 'Machinery paint')
-    # The emergency generator's own intake and exhaust stood here until 11 November 2026 (a coaming at 7.7 m, a pipe at
-    # 7.45 m): the generator is now in the room built to the owner's drawing (eg_room.py), which has its own, and that room
-    # stands on this deck from 8.6 to 16.6 m. The two vent heads that were under it are forward of it, clear of the way
-    # from its door to the compass deck.
-    # The galley's extract: a cowl on a coaming (the galley is at 15.25 m; its trunk is led 2.4 m forward under the deck).
-    gx, gz = -1.30, Z(17.60)
-    _cyl(vents, (gx, DECK, gz), (gx, DECK + 0.45, gz), 0.24, WHITE, sides=18)
-    _cyl(vents, (gx, DECK + 0.45, gz), (gx, DECK + 0.62, gz), 0.36, tint(WHITE, 0.95), sides=18, r2=0.12)
-    _cyl(metal, (gx, DECK + 0.62, gz), (gx, DECK + 0.7, gz), 0.12, STEEL, sides=14, r2=0.02)
-    # The crew WC and shower's: a mushroom head (the room is at 12.75 m; its trunk is led forward likewise).
-    wx, wz = -0.40, Z(17.20)
-    _cyl(vents, (wx, DECK, wz), (wx, DECK + 0.3, wz), 0.1, WHITE, sides=14)
-    _cyl(vents, (wx, DECK + 0.3, wz), (wx, DECK + 0.4, wz), 0.2, tint(WHITE, 0.95), sides=16, r2=0.14)
-    return [vents, metal, slats]
-
-
 def build():
     parts = []
-    for fn in (_slab, _rails, _mast, _antennas, _searchlight_and_floods, _binnacle, _vents):
+    for fn in (_slab, _rails, _mast, _antennas, _searchlight_and_floods, _binnacle):
         parts += fn()
     for p in parts:
         p.group = 'top'
