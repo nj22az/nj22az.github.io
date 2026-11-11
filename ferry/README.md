@@ -281,6 +281,64 @@ the Town at the weekend (with the two under *How the two ships are put together*
   between the moulded line and the rooms' linings (28 mm to spare), and the bulkheads at frames 17 and 52 stand 8 cm outside the rooms'
   own end walls. When the machinery spaces are rebuilt, these become ordinary web frames and bulkheads.
 
+## Her stairs (`blender/stairs.py`, `blender/spec.py`: `STAIRS`)
+
+The owner, 11 November 2026: "All stairs need to be traversable and fully realistic and standardised."
+
+- **One standard.** The yard's standard `yard/standards/JSY-STD-401-stairs.md` has three classes: P, a passenger stair
+  (45° at most, steps 170 to 200 mm, going 220 mm at least, 0.90 m clear, a landing after 12 steps, a handrail each side);
+  C, a crew stair (45°, going 200 mm, 0.70 m); L, an inclined ladder for the crew on deck and in the machinery spaces
+  (55°, open grating treads). The figures are `spec.STAIR_CLASS`. The standard says where each comes from, and that its
+  outside requirements are recalled and not yet read.
+- **One builder.** Every stair is one line of `spec.STAIRS` (its class, where its top step is, how many steps in each
+  flight, the landings between, what stands at each side) and `stairs.py` builds it: treads, risers and a closed underside
+  or open gratings, stringers, landings, a marked edge on each closed step, handrails on posts or on wall brackets with
+  newels. `stair_rules.py` (no Blender) holds a stair to its class; the build stops if one breaks it.
+- **Eight stairs**, all hers: the two main stairs between the car deck and the passenger deck (P: 22 steps of 200 mm in
+  flights of 12 and 10 with a landing, 42°, 1.18 m clear), the crew stair to the wheelhouse (C: 13 steps, 45°), the engine
+  room ladder (L: 16 steps, 52°), and the four outside ladders to the bridge wings and the after landing (L: 13 steps, 53°).
+  The other ship's were 45° to 60° with steps 150 to 200 mm deep on two bars.
+- **The main stairs** are 1.6 m longer than the other ship's (JSY-STD-401 section 4 has the reasoning). `spec.MAIN_STAIR`
+  says what stands round them and `stairs.main_stair_fitout` draws it: each well in the passenger deck lengthened aft to
+  6.95 m, trimmed, with a lined guard and a teak capping rail along it; a lining that brings the casing's outboard wall in
+  line with the lobby's wall above; the other ship's doorway from the lower lobby plated in; a foot lobby on the car deck
+  (to port the foyer from the gangway; to starboard cut out of the casing, which the other ship draws solid there) and a
+  sliding fire door from the car deck, 0.90 m clear, with a hatched zone kept clear before it and signs both sides. The
+  doors open onto the vehicle lanes a metre forward of the lower lobby's own fire doors, no longer into the lower lobby.
+- **In the assembler** (`assemble.py`): `REPLACES` drops the other ship's flights, handrail bars, door sets and guards
+  (`stairs-…` rules, several boxes each); `OPENINGS` (`_main_stair_openings`) lengthens the wells through the deck's two
+  faces and the panel under it, opens the casing walls for the doors, and cuts the starboard pocket and foot lobby out of
+  the solid blocks; `NUDGES` moves a base piece that lies in another's plane or stands in the way; `SAYS` rewrites what
+  the page says of a space the build has changed. The model's header carries `stairs[]` (each stair's figures, its
+  flights and landings, and its class's limits) for the page and for the check.
+- **Walked.** `checks/stairs.cjs` walks every stair in the header up from the deck below and down again, and holds its
+  figures to the limits the header gives.
+
+## Nothing hangs in the air (`blender/afloat.py`)
+
+The owner, 11 November 2026, of the steering wheel: "The wheel is not connected to anything in the wheelhouse fix this every
+detail in every part of the ship needs to be realistic". The wheel stood on a stub of shaft that ended in the air 4 cm over
+its stand. It now has a helm unit on the stand: the shaft turns with the wheel and runs through a flanged bearing into the
+unit, which carries the pointer that shows the rudder ordered.
+
+`afloat.py` looks for every such thing. It takes the model apart into pieces (connected sets of triangles) and asks what
+holds each: two pieces hold each other if a corner of one lies within 4 mm of the other (8 mm for paint and pictures), an
+edge of one passes through the other, or one stands inside the other. The shell and the largest pieces are the ground;
+what touches the ground is held, what touches that is held, and so on. What is left is afloat, alone or in a cluster that
+holds only itself, as the wheel, its hub and its stub did.
+
+    python3 ferry/blender/afloat.py --part chisum.npz --allow ferry/blender/afloat-known.json [--all]
+
+Its first run found 84 things of hers afloat. 45 were paint drawn 4 to 5 mm proud of the curved shell (the tolerance for
+paint is now 8 mm). 20 were real and are fixed: the four chairs' armrests (each post 6 mm clear of the seat), the five
+sun blinds (no brackets), the wing doors' outside handles, the push plate of the crew stair's gate, the exit board over
+the crew stair, the CO₂ extinguisher's bracket, the compass periscope's tube (5 mm short of its plate), the searchlight
+(no trunnions in its yoke), the new sliding doors' tracks, and both screws (the boss's forward face was open round a
+shaft 38 mm smaller). 19 are in the machinery spaces and the fore peak and are **not fixed**: the steering gear without
+seats, the fresh-water tanks and chain lockers standing on nothing, walkway bearers that end short of the floors, the
+fore peak ladder. They are listed in `afloat-known.json` with the reason, and go when those spaces are rebuilt.
+`--all` also lists the other ship's: 187 things, 125 of them in the machinery spaces.
+
 ## The compass deck (`blender/compass_deck.py`)
 
 The roof of the bridge house is the viewer's part `top`, 1,164 triangles in the Minato Maru's drawing (a slab, a rail,
@@ -561,14 +619,15 @@ spaces to a multiple of four bytes), then one binary block.
   or on its fitting moves it to the next position, to the end of its travel and back, and it travels there in a moment
   (`stepInput`, `workSteps`). Several movers may answer one input: the same lever at three stations.
   `movers[]` are the motions: `id`, `input`, `axis`, `pivot`, and a `kind`:
-  `turn` (the part turns about the pivot by the input's angle), `carry` (it keeps its heading and goes with `point` as
+  `turn` (the part turns about the pivot by the input's angle), `slide` (it runs along `axis` by the input times
+  `ratio`: a sliding door, whose input is in centimetres), `carry` (it keeps its heading and goes with `point` as
   that turns about the pivot: the tie bar), `aim` (it swings about `anchor` to keep pointing at `pin`, which turns about
   the pivot: a ram's cylinder; with `extend` it also runs along that line by as much as the distance has changed: the
   rod). A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
   inside their deck and moves the group. The rudder's angle is negative to port and positive to starboard, as a helm
   indicator shows it; a positive angle turns about the upright axis so that the blade's after edge goes to starboard.
   In Blender a moving part is an object with the custom property `mover` (`Part(..., mover='rudder-p')`), and
-  `hull_fittings.motion()` and `wheelhouse.motion()` describe the motions; `build.py` stops if a part names a motion
+  `hull_fittings.motion()`, `wheelhouse.motion()` and `stairs.motion()` describe the motions; `build.py` stops if a part names a motion
   that is not described, or a motion moves nothing.
 - A space record is a room: `id`, `name`, `text`, `why`, and its box `min`, `max`.
 - Axes: metres; the bow is +z, port is +x, y is up with its origin on the laden waterline (keel −1.9, car deck 2.1,
@@ -685,9 +744,15 @@ Of walking aboard:
   6 cm thick, would be a wall, and a wall panel shaped like a door would let one through.
 - Just inside the steering-gear door the tie bar lies across the way, 0.46 m over the flat. It moves with the
   rudders, and what moves is not in the walker's way: one walks through it.
-- The crew stair from the saloon to the wheelhouse is not passed: the bar across its top is drawn closed, and under
-  the edge of the opening in the deckhead there is 1.55 m over the fourth tread. The two outside stairs to the bridge
-  wings do the same journey.
+- Every stair is walked on its own (`checks/stairs.cjs`), but the whole way from the wheelhouse to the engine room
+  floor has not been walked in one go: between the crew stair's foot and the lobby it runs through the other ship's
+  saloon, and from a main stair's foot to the engine room entrance it crosses the car deck and the lower lobby. The
+  owner's internal stair trunk (the list above) is not built.
+- The main stairs' doors open onto the vehicle lanes, not into the lower lobby (JSY-STD-401 section 4). The space under
+  the port main stair's lower flight has no use and no door.
+- 19 things of hers in the machinery spaces and the fore peak hang in the air (`blender/afloat-known.json`), and 187 of
+  the other ship's throughout: they go as those sections are rebuilt.
+- The stair standard's outside requirements are recalled, not read.
 - In the hull's spaces without a floor of their own (the shaft space beside its walkway, the void, the fore peak) the
   walker stands on the structure: the floors' top edges and the stringers.
 - Along a wall that lies askew to her length (her sides at the ends) the walker stops where it meets it: it slides
@@ -715,6 +780,29 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, the stairs, and nothing hanging in the air
+
+- `python3 ferry/blender/atlas.py`, the Blender build, `assemble.py` twice with the same two hashes, `check.py` (all 48
+  passed), `yard/calc/bridge_calcs.py` (all hold: the helm unit stands 1.14 m over the deck, under the 1.22 m of the
+  levers ahead of it).
+- `node ferry/checks/stairs.cjs`: 8 stairs in the model; each within its class's limits, walked up from the deck below
+  to the deck above and down again (main stairs: from 2.10 m to 6.51 m arriving 6.23 m from the transom, and down to
+  2.10 m at 14.51 m; crew stair, engine room ladder, both wing ladders, both after ladders likewise). No console errors.
+- `node ferry/checks/bridge.cjs`: all 25 passed with the helm unit and the other fixes.
+- On foot from the vehicle lanes into each foot lobby through its door: the door ran open 0.98 m as the walker came
+  near and the walker came to rest 3.84 m off the centreline, inside the lobby (port and starboard).
+- `python3 ferry/blender/afloat.py --part … --allow ferry/blender/afloat-known.json`: 4,829 pieces, 2,328 of hers;
+  nothing of hers hangs in the air but the 19 known things in the machinery spaces and fore peak.
+- Looked at: the wheel from beside the helm (hub, shaft, flanged bearing, helm unit on the stand); the port stairhead
+  from the lobby (guard, capping rail, handrail and newel); the port stair from its foot lobby (two flights, landing,
+  rails on brackets, marked edges, the door's leaf and its sign); the starboard door from the lanes (frame, leaf, signs,
+  the hatched zone).
+  Also the starboard foot lobby from inside (stair, door, light) and a chair beside the wheel (the armrest on its lug,
+  the order pointer on the helm unit's lid).
+- Not done: no picture was taken of the sun blinds' brackets, the searchlight's trunnions or the screws after the fix
+  (the check that found them passes); the stairs were not looked at on a phone (`bridge.cjs` ran its two phone checks
+  of the page's layout, which passed).
 
 ### 11 November 2026, after it: the wheelhouse roof raised
 

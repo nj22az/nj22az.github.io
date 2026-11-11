@@ -6,7 +6,6 @@
 // need to be traversable and fully realistic and standardised". A stair that the walker cannot climb, or cannot come
 // down, fails here; so does one whose figures are outside its class.
 const { chromium } = require('playwright');
-const CLASS = { P: { pitch: 40, going: 0.24, width: 0.9 }, C: { pitch: 45, going: 0.2, width: 0.7 }, L: { pitch: 55, going: 0.15, width: 0.55 } };
 const fails = [];
 const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if (!ok) fails.push(text); };
 (async () => {
@@ -19,9 +18,12 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const stairs = await page.evaluate(() => window.__ferry.stairs);
   check(stairs.length > 0, `the model lists ${stairs.length} stairs of her own`);
   for (const st of stairs) {
-    const c = CLASS[st.cls];
-    check(st.pitch <= c.pitch + 0.05 && st.going >= c.going - 1e-6 && st.width >= c.width - 1e-6,
-      `${st.name}: a ${st.className}, ${st.steps} steps of ${Math.round(st.rise * 1000)} mm, going ${Math.round(st.going * 1000)} mm, ${st.pitch}°, ${st.width.toFixed(2)} m wide`);
+    // Its class's limits are the model's own, from the yard's standard (blender/spec.py: STAIR_CLASS).
+    const c = st.limit;
+    const flights = st.flights.length > 1 ? `, in ${st.flights.length} flights of ${st.flights.join(' and ')} with a landing of ${st.landings.join(' and ')} m` : '';
+    check(st.pitch <= c.pitch + 0.05 && st.going >= c.going - 1e-6 && st.width >= c.width - 1e-6 && st.rise <= c.rise[1] + 1e-6 && st.rise >= c.rise[0] - 1e-6
+      && st.flights.every(n => n <= c.flight),
+      `${st.name}: a ${st.className}, ${st.steps} steps of ${Math.round(st.rise * 1000)} mm, going ${Math.round(st.going * 1000)} mm, ${st.pitch}°, ${st.width.toFixed(2)} m wide${flights}`);
     const walked = await page.evaluate(st => {
       const f = window.__ferry, HALF = 17.25, AHEAD = Math.PI, ASTERN = 0;
       if (!f.state.walk) f.enterWalk();
@@ -38,8 +40,8 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
       };
       // up: from 0.3 m beyond the foot on the deck below (a bench may stand close behind), toward the top
       const up = go(st.foot[0] + st.down * 0.3, st.foot[1], st.down < 0 ? AHEAD : ASTERN, (run + 2.2) / 0.9);
-      // down: from 0.7 m beyond the top on the deck above, toward the foot
-      const down = go(st.top[0] - st.down * 0.7, st.top[1], st.down < 0 ? ASTERN : AHEAD, (run + 2.2) / 0.9);
+      // down: from 0.5 m beyond the top on the deck above (the lobby's wall stands 0.9 m behind a main stair's head), toward the foot
+      const down = go(st.top[0] - st.down * 0.5, st.top[1], st.down < 0 ? ASTERN : AHEAD, (run + 2.2) / 0.9);
       return { up, down };
     }, st);
     const { up, down } = walked;

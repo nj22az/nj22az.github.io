@@ -235,6 +235,11 @@ function moveParts(shadows = true) {
     AXIS.fromArray(def.axis).normalize();
     PIVOT.fromArray(def.pivot);
     if (def.kind === 'turn') turnAbout(node.matrix, PIVOT, angle);
+    else if (def.kind === 'slide') {
+      // The part runs along the axis, as far as the input says (a sliding door: its input is in centimetres).
+      const run = (input ? input.value : 0) * (def.ratio ?? 1);
+      node.matrix.makeTranslation(AXIS.x * run, AXIS.y * run, AXIS.z * run);
+    }
     else if (def.kind === 'carry') {
       // The part keeps its heading and goes with a point that turns about the pivot.
       ARM.fromArray(def.point).sub(PIVOT);

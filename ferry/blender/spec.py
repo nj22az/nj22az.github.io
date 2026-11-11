@@ -210,14 +210,15 @@ ROOF_DECK = 0xb4bab6        # the roof's paint: light grey, non-skid
 # every stair aboard is one of them. `pitch` is the steepest it may be, `rise` the least and the greatest height of a
 # step, `going` the least distance from one step's edge to the next, `width` the least clear width, `flight` the most
 # steps in one flight before a landing. blender/stairs.py builds every stair from STAIRS and stops if one breaks its class.
-#   P  a stair passengers use: closed steps under a floor covering, a marked edge on every step, a handrail each side
-#   C  a stair for the crew inside the ship: the same, narrower and steeper
+#   P  a stair passengers use: closed steps under a floor covering, a marked edge on every step, a handrail each side,
+#      a landing after 12 steps at most
+#   C  a stair for the crew inside the ship: the same, narrower, its steps 20 mm shorter
 #   L  an inclined ladder for the crew, on deck or in the machinery spaces: open grating treads, a handrail each side
 # No step aboard is higher than 208 mm: two of them must come under the 0.42 m at which the page's walker (app.js, OVER)
 # takes a thing for an obstacle and not for the next step but one. The check that walks every stair found it.
 # ---------------------------------------------------------------------------------------------------------------------
 STAIR_CLASS = dict(
-    P=dict(name='passenger stair', pitch=40.0, rise=(0.170, 0.200), going=0.240, width=0.90, flight=12, tread='closed', rail=0.90),
+    P=dict(name='passenger stair', pitch=45.0, rise=(0.170, 0.200), going=0.220, width=0.90, flight=12, tread='closed', rail=0.90),
     C=dict(name='crew stair', pitch=45.0, rise=(0.180, 0.200), going=0.200, width=0.70, flight=14, tread='closed', rail=0.90),
     L=dict(name='inclined ladder', pitch=55.0, rise=(0.190, 0.208), going=0.150, width=0.55, flight=16, tread='open', rail=0.90),
 )
@@ -244,7 +245,34 @@ STAIRS = [
     # Down to the engine room from the port casing, through the well in the car deck (6.5 to 8.5 m from the transom).
     dict(id='engine-room', cls='L', name='engine room', part='machinery', x=(3.14, 3.96), top=(6.50, 2.10), down=1, legs=[16], rise=3.10 / 16,
          going=0.150, foot=-1.00, sides=('open', 'open'), top_ext=0.10, well=dict(x=(3.08, 4.02), yard=(6.50, 8.50))),
+    # The two main stairs, from the passenger deck's lobby down to the car deck inside the side casings: 22 steps of 200 mm
+    # in two flights with a landing (JSY-STD-401 says why they are as steep as 42 degrees: the lobby above and the deck
+    # over the landing leave 2.42 m for the upper flight). Each is lined to its walls and ends in a foot lobby (MAIN_STAIR).
+    dict(id='main-p', cls='P', name='main stair, port', part='car', x=(2.825, 4.005), top=(6.95, 6.50), down=1, legs=[12, ('landing', 0.95), 10],
+         rise=0.200, going=0.220, foot=2.10, sides=('wall', 'wall'), gaps=(0.015, 0.015), main=1),
+    dict(id='main-s', cls='P', name='main stair, starboard', part='car', x=(-4.005, -2.825), top=(6.95, 6.50), down=1, legs=[12, ('landing', 0.95), 10],
+         rise=0.200, going=0.220, foot=2.10, sides=('wall', 'wall'), gaps=(0.015, 0.015), main=-1),
 ]
+# What stands round each main stair (blender/stairs.py draws it, blender/assemble.py cuts the other ship's drawing to it).
+# Distances off the centreline are for the port stair; the starboard one is its mirror image.
+#   `well`     the opening in the passenger deck: it was 7.40 to 9.40 m and is lengthened aft to the top step
+#   `wall`     the inner faces of the stair's enclosure: the casing's inboard wall, and the lining on its outboard wall, which
+#              stands in line with the lobby's side wall above (the casing's own plate is 9 cm further out)
+#   `lobby`    the foot lobby on the car deck, from the casing's old cross wall to its forward end, 2.20 m under its deckhead
+#   `door`     the way in from the car deck: a sliding fire door inside the lobby (a hinged one would swing into the lane
+#              outside or across the lobby inside), the opening and how far the leaf runs forward to open
+#   `old_door` the other ship's opening, beside what are now the lower flight's last steps: plated in
+#   `guard`    the balustrade along the well in the lobby above
+MAIN_STAIR = dict(
+    well=(6.95, 9.40), wall=(2.81, 4.02), plate=4.11, slab=(6.25, 6.50), deckhead=6.245,
+    lobby=dict(yard=(12.60, 14.70), head=4.30),
+    door=dict(yard=(12.66, 13.60), height=2.00, run=0.98, sill=0.03),
+    old_door=dict(yard=(11.346, 12.554), height=2.004),
+    guard=dict(height=1.06, cap=0.045),
+    # Starboard only: the casing there is drawn solid aft of 7.40 m and forward of 12.60 m. The top two steps stand in a
+    # pocket cut in the after block, and the foot lobby is cut out of the forward one.
+    pocket=dict(yard=(6.93, 7.40), y=(5.74, 6.25)),
+)
 
 # ---- Marks.
 # Figures every 20 cm from `lowest` (metres above the keel) to 2.8 m, wherever the plating is upright enough to carry one.

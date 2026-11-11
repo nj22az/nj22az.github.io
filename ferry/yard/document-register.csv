@@ -82,3 +82,4 @@ JSY-QM-001,Quality manual,yard,exists,"held by the owner, not in the repository 
 JSY-POL-001,Quality policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"
 JSY-POL-002,Environmental policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"
 JSY-POL-003,Health and safety policy,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0"
+JSY-STD-401,Stairs and inclined ladders,yard,exists,ferry/yard/standards/JSY-STD-401-stairs.md,"Revision 0: three classes, every stair aboard held to one of them by the build (blender/spec.py, blender/stairs.py) and walked by checks/stairs.cjs. Its outside requirements are recalled, not yet read"

@@ -282,7 +282,7 @@ C('NAV-35', 'AIS position antenna', CD, (0.30, 19.62, DECK_H), 'A small satellit
 C('NAV-36', 'Wind sensor', CD, (-1.40, 20.80, 4.70), 'A cup anemometer and a vane at the starboard end of the flag yard.', dict(kind='wind_sensor'), node='MAST-PF')
 
 # ---- Steering.
-C('STR-01', 'Steering stand and wheel', WH, (0.0, 21.75, 0.0), 'The helm: an eight-spoke wheel on a stand. The wheel turns a transmitter; where it is put, the rudders follow: four degrees of wheel for one of rudder, and the spoke with the brass cap upright when they are amidships. On the page the wheel turns with the rudder.',
+C('STR-01', 'Steering stand and wheel', WH, (0.0, 21.75, 0.0), 'The helm: an eight-spoke wheel on a stand. The wheel\'s shaft runs through a flanged bearing into the helm unit on the stand\'s top, where it turns two transmitters, one for each control system, and the pointer on the unit\'s lid that shows the rudder ordered. Where the wheel is put, the rudders follow: four degrees of wheel for one of rudder, and the spoke with the brass cap upright when they are amidships. On the page the wheel turns with the rudder.',
   dict(kind='stand'), survey='B073')
 C('STR-02', 'Steering control system No. 1', WH, (0.11, 21.75, 0.30), 'The first of two control systems that have nothing in common. It compares the rudder ordered (by the wheel\'s first transmitter, or the autopilot) with the angle fed back from the gear and works the valves of power unit No. 1. Its supply comes from that power unit\'s own circuit in the steering-gear room, and its cables go down the port side.',
   dict(kind='box', size=(0.19, 0.30, 0.34)), w=50, by=('SG1', 'control'), node='STAND', hid='inside the steering stand, port half')

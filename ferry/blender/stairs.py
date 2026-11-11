@@ -16,6 +16,7 @@ pitch is the angle of the line through the treads' edges.
 Drawn in the ship's axes (lines.py): x to port, y up from the waterline, z forward.
 """
 from math import hypot
+from mathutils import Vector
 import lines as L
 import spec as S
 from shipyard import Part, srgb, tint
@@ -173,14 +174,139 @@ def build_stair(st):
     return parts
 
 
+WALL, TEAL, DOOR, WOOD = srgb(0xeeeae0), srgb(0x2f6f74), srgb(0x5d6b6a), srgb(0x8d6f4c)
+DOORS = []                                      # the sliding doors' motions, for motion()
+
+
+def _sign(part, centre, normal, w, h, name, proud=0.002):
+    """A picture of her sheet, w by h, upright on a wall that looks along `normal`."""
+    c, n, u = Vector(centre), Vector(normal).normalized(), Vector((0, 1, 0))
+    r = u.cross(n)
+    c = c + n * proud
+    part.picture([tuple(c - r * (w / 2) - u * (h / 2)), tuple(c + r * (w / 2) - u * (h / 2)),
+                  tuple(c + r * (w / 2) + u * (h / 2)), tuple(c - r * (w / 2) + u * (h / 2))], name)
+
+
+def main_stair_fitout(st):
+    """
+    What stands round a main stair (spec.MAIN_STAIR), port or starboard: the trim of its well in the passenger deck and the
+    guard along it; the lining that brings its outboard wall in line; the plate in the other ship's doorway; its foot
+    lobby and the sliding fire door from the car deck, with the zone kept clear before it.
+    """
+    M = S.MAIN_STAIR
+    s = st['main']
+    title = f"Stair, {st['name']}"
+    x_in, x_out = M['wall']
+    T, W = M['well']
+    y0, y1 = M['slab']
+    parts = []
+
+    def part(key, look, group, **kw):
+        p = Part(f'{title}, {key}', look, **kw)
+        p.group = group
+        parts.append(p)
+        return p
+
+    B = lambda p, xa, xb, a, b, ya, yb, colour: _box(p, s * xa, s * xb, a, b, ya, yb, colour)
+
+    # ---- on the passenger deck: the well's trim and the guard along it
+    trim = part('well trim', 'Bulkhead paint', 'passenger')
+    cap = part('guard rail', 'Varnished wood', 'passenger')
+    B(trim, x_in - 0.06, x_in, T, W, y0, y1 - 0.001, WALL)                                   # inboard, in line with the casing's wall below
+    B(trim, x_out, M['plate'], T, W, y0, y1 - 0.001, WALL)                                   # outboard, in line with the lobby's wall above
+    B(trim, x_in, x_out, T - 0.004, T, y0, y1 - 0.001, WALL)                                 # under the top step
+    G = M['guard']
+    top = y1 + G['height'] - G['cap']
+    B(trim, x_in - 0.06, x_in, T - 0.05, 9.46, y1, top, WALL)                                # the guard: a lined panel to the lobby's forward wall
+    B(trim, x_in - 0.064, x_in - 0.06, T - 0.05, 9.46, y1 + 0.008, y1 + 0.088, DARK)         # its skirting, on the lobby's side
+    B(cap, x_in - 0.075, x_in + 0.015, T - 0.065, 9.46, top, top + G['cap'], WOOD)           # and its capping rail
+
+    # ---- on the car deck: the enclosure
+    wall = part('enclosure', 'Bulkhead paint', 'car')
+    lobby, door, old = M['lobby'], M['door'], M['old_door']
+    end = lobby['yard'][1] if s < 0 else 13.26                                               # to port the side door's frame stands at 13.26 m
+    start = M['pocket']['yard'][0] if s < 0 else T
+    B(wall, x_out, M['plate'] - 0.002, start, end, st['foot'], y0, WALL)                     # the lining on the outboard wall
+    B(wall, x_in - 0.06, x_in, old['yard'][0], old['yard'][1], st['foot'], st['foot'] + old['height'], WALL)       # the other ship's doorway, plated in
+    if s < 0:
+        # The casing is drawn solid here: the pocket the top steps stand in, and the foot lobby cut out of the forward block.
+        (pa, pb), (py0, py1) = M['pocket']['yard'], M['pocket']['y']
+        B(wall, x_in, x_out, pa, pb, py0 - 0.04, py0, WALL)
+        B(wall, x_in, x_out, pa - 0.04, pa, py0, py1, WALL)
+        B(wall, x_in - 0.05, x_in, pa, pb, py0, py1, WALL)
+        a, b = lobby['yard']
+        head = lobby['head']
+        for ya, yb, lo, hi in ((a, door['yard'][0], st['foot'], head), (door['yard'][1], b, st['foot'], head),
+                               (door['yard'][0], door['yard'][1], st['foot'] + door['height'], head)):
+            B(wall, x_in - 0.058, x_in, ya, yb, lo, hi, WALL)                                # the inboard wall, round the doorway
+        B(wall, x_in, M['plate'], b, b + 0.06, st['foot'], head, WALL)                       # the forward wall
+        B(wall, x_in, M['plate'], a, b, head, head + 0.06, WALL)                             # the deckhead
+        B(wall, 3.50, 3.80, 13.40, 13.90, head - 0.045, head, srgb(0xf3efe2))                # its light
+
+    # ---- the doorway from the car deck and its sliding fire door
+    frame = part('door frame', 'Machinery paint', 'car')
+    a, b = door['yard']
+    f0, f1 = st['foot'], st['foot'] + door['height']
+    xa, xb = x_in - 0.07, x_in + 0.01                                                        # a centimetre proud of the wall each side
+    B(frame, xa, xb, a, a + 0.02, f0, f1, TEAL)
+    B(frame, xa, xb, b - 0.02, b, f0, f1, TEAL)
+    B(frame, xa, xb, a + 0.02, b - 0.02, f1 - 0.03, f1, TEAL)
+    B(frame, xa, xb, a + 0.02, b - 0.02, f0, f0 + door['sill'], srgb(0x7d8586))              # the sill
+    run = door['run']
+    B(frame, x_in, x_in + 0.07, a - 0.06, b + run + 0.06, f1 + 0.02, f1 + 0.10, srgb(0x7d8586))            # the track the leaf hangs from, on the wall
+    B(frame, x_in, x_in + 0.06, b + run + 0.02, b + run + 0.06, f0, f0 + 0.10, srgb(0x7d8586))             # the stop it runs against
+    mover = f"door-{st['id']}"
+    leaf = part('door, steel', 'Machinery paint', 'car', mover=mover)
+    grip = part('door, fittings', 'Shaft steel', 'car', mover=mover)
+    face = part('door, sign', 'Panel face', 'car', mover=mover)
+    la, lb = a - 0.04, b + 0.04
+    B(leaf, x_in + 0.015, x_in + 0.055, la, lb, f0 + 0.02, f1 + 0.02, DOOR)
+    for k in (0.18, 0.82):                                                                   # the two hangers on the track
+        m = la + (lb - la) * k
+        B(grip, x_in + 0.02, x_in + 0.05, m - 0.05, m + 0.05, f1 + 0.02, f1 + 0.06, RAIL)
+    B(grip, x_in + 0.055, x_in + 0.065, la + 0.06, la + 0.09, f0 + 0.95, f0 + 1.25, RAIL)    # a pull inside, at the closing edge
+    B(grip, x_in + 0.013, x_in + 0.015, la + 0.07, la + 0.12, f0 + 0.98, f0 + 1.22, DARK)    # and a flush one outside, which passes the frame
+    _sign(face, (s * (x_in + 0.055), f0 + 1.55, Z((la + lb) / 2)), (s, 0, 0), 0.46, 0.115, 'car_deck')
+    _sign(face, (s * (x_in + 0.015), f0 + 1.55, Z((la + lb) / 2)), (-s, 0, 0), 0.46, 0.115, 'fire_door')
+    DOORS.append(dict(id=mover, name=f"Fire door, car deck to the {'port' if s > 0 else 'starboard'} main stair", max=round(run * 100),
+                      at=[s * (x_in - 0.03), st['foot'], Z((a + b) / 2)], normal=[s, 0, 0]))
+    signs = part('signs', 'Panel face', 'car')
+    _sign(signs, (s * (x_in - 0.06), f1 + 0.20, Z((a + b) / 2)), (-s, 0, 0), 0.72, 0.18, 'stairs_up')       # over the door, on the lanes
+    # ---- the zone kept clear before the door, on the car deck
+    marks = part('kept clear', 'Marking', 'car')
+    zx0, zx1 = x_in - 0.06 - 1.00, x_in - 0.07
+    ya, yb = a - 0.05, b + 0.05
+    hy = st['foot'] + 0.0005
+    for edge in ((zx0, zx0 + 0.06, ya, yb), (zx0, zx1, ya, ya + 0.06), (zx0, zx1, yb - 0.06, yb)):
+        B(marks, edge[0], edge[1], edge[2], edge[3], hy, hy + 0.002, YELLOW)
+    n = 5
+    for k in range(n):                                                                       # hatched: bars athwartships
+        m = ya + 0.06 + (yb - ya - 0.12) * (k + 0.5) / n
+        B(marks, zx0 + 0.06, zx1, m - 0.03, m + 0.03, hy, hy + 0.002, YELLOW)
+    return parts
+
+
+def motion():
+    """Each main stair's door from the car deck slides forward inside its lobby, and opens for whoever comes near on foot."""
+    inputs, movers = [], []
+    for d in DOORS:
+        inputs.append(dict(id=d['id'], name=d['name'], min=0, max=d['max'], step=1, unit='cm', below='', above='open', rest='shut', auto='near',
+                           at=d['at'], normal=d['normal'], reach=1.7))
+        movers.append(dict(id=d['id'], kind='slide', input=d['id'], axis=[0, 0, 1], pivot=[0, 0, 0], ratio=0.01))
+    return inputs, movers
+
+
 def build():
     out = []
     bad = []
+    DOORS.clear()
     for st in S.STAIRS:
         wrong = check(st)
         if wrong:
             bad.append(f"{st['id']} ({S.STAIR_CLASS[st['cls']]['name']}): " + '; '.join(wrong))
         out += build_stair(st)
+        if st.get('main'):
+            out += main_stair_fitout(st)
     if bad:
         raise SystemExit('stairs outside the standard:\n  ' + '\n  '.join(bad))
     for st in S.STAIRS:

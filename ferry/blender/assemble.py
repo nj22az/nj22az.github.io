@@ -69,6 +69,11 @@ def _box(x, y, yard):
     return dict(x=x, y=y, z=(L.Z(yard[0]), L.Z(yard[1])))
 
 
+def _side(s, a, b):
+    """A range off the centreline on the port side (s = 1) or its mirror image to starboard (s = -1)."""
+    return tuple(sorted((s * a, s * b)))
+
+
 # Her stairs (blender/stairs.py, spec.STAIRS) take the place of the other ship's, stair by stair: its steps, the two bars
 # they lie on and its slanted handrail bars are pieces wholly inside each box. A rule with `boxes` has several.
 REPLACES.update({
@@ -80,6 +85,23 @@ REPLACES.update({
         keep=lambda mat, col: False,
         why='her own stairs, built in Blender to the yard\'s standard',
         what='the stairs, each to the yard\'s standard (steps, stringers, handrails)'),
+    # The main stairs' top landing plate and first step, and the guard along each well, which hers takes the place of
+    # 5 cm further out (in line with the casing's wall below).
+    'stairs-main-top': dict(
+        part='passenger', prefix='Stair, main stair', section='Stairs', built='11 November 2026', listed=False,
+        boxes=[b for s in (1, -1) for b in (_box(_side(s, 2.79, 4.13), (6.20, 6.52), (7.35, 7.80)), _box(_side(s, 2.68, 2.78), (6.45, 7.65), (7.30, 9.50)))],
+        keep=lambda mat, col: False,
+        why='her own stairs, built in Blender to the yard\'s standard', what=''),
+    # In the casings on the car deck: the other ship's flight (steps, the bars under them, its handrail bars, the plate at its
+    # foot, and the bulwark stanchions that stood inside the casing behind it); its doorway's frame, sign and parked leaf;
+    # to port the box on the wall where her door now runs, and the foyer's deckhead panel, which lay across her lower flight
+    # and in one plane with the casing's own deckhead.
+    'stairs-main': dict(
+        part='car', prefix='Stair, main stair', section='Stairs', built='11 November 2026', listed=False,
+        boxes=[b for s in (1, -1) for b in (_box(_side(s, 2.79, 4.13), (2.05, 7.45), (7.30, 11.45)), _box(_side(s, 2.68, 2.78), (2.05, 4.56), (10.40, 12.62)))]
+        + [_box((2.80, 3.06), (3.25, 3.95), (12.65, 13.25)), _box((2.76, 4.16), (4.295, 4.305), (11.25, 14.75))],
+        keep=lambda mat, col: False,
+        why='her own stairs, built in Blender to the yard\'s standard', what=''),
     # The after stairs' top steps are sorted into the bridge deck in the base.
     'stairs-bridge-deck': dict(
         part='bridge', prefix='Stair,', section='Stairs', built='11 November 2026', listed=False,
@@ -118,10 +140,42 @@ FIT = ('machinery',)
 #    must stay.
 #  - Her engine room's after wall (6 cm, 8.44 to 8.50 m from the transom) has no way aft through it: it is opened where
 #    the Chisum's watertight door to the shaft space stands (spec.WT_DOORS), whose frame lines the opening.
+#  - Her main stairs are longer than the other ship's (spec.MAIN_STAIR): each well in the passenger deck is lengthened aft
+#    from 7.40 m to the top step, through the deck's two faces, the panel under it and the old edge between them; the
+#    casing's inboard wall is opened for her doorway from the car deck. To starboard the casing is drawn solid aft of
+#    7.40 m and forward of 12.60 m: the pocket for the top steps and the foot lobby are cut out of those blocks.
+_MS = S.MAIN_STAIR
 _door, _void = S.door_opening(S.WT_DOORS[0]), S.door_opening(S.WT_DOORS[3])
-OPENINGS = (
-    dict(part='passenger', name='the lobby floor over the starboard stair', across='y', y=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(7.40, 9.40)),
-    dict(part='passenger', name='the lobby floor over the port stair', across='y', y=(6.5015, 6.5095), x=(2.76, 4.3), yard=(7.40, 9.40)),
+
+
+def _main_stair_openings():
+    out = []
+    T = _MS['well'][0]
+    (da, db), dh = _MS['door']['yard'], _MS['door']['height']
+    for s, side in ((1, 'port'), (-1, 'starboard')):
+        x = _side(s, 2.75, _MS['wall'][1])
+        out += [
+            dict(part='passenger', name=f'the passenger deck over the {side} stair, lengthened aft: its top', across='y', y=(6.4995, 6.5005), x=x, yard=(T, 7.40)),
+            dict(part='passenger', name=f'the passenger deck over the {side} stair, lengthened aft: its underside and the panel under it', across='y',
+                 y=(6.244, 6.251), x=x, yard=(T, 7.41)),
+            dict(part='passenger', name=f'the old after edge of the well over the {side} stair', across='yard', yard=(7.36, 7.41), x=x, y=(6.24, 6.51)),
+        ]
+    out.append(dict(part='car', name='the port casing wall at the door to the main stair', across='x', x=(2.745, 2.815), yard=(da, db), y=(2.0, 2.10 + dh)))
+    out.append(dict(part='car', name='the starboard casing wall at the door to the main stair', across='x', x=(-2.755, -2.745), yard=(da, db), y=(2.0, 2.10 + dh)))
+    inner = _side(-1, _MS['wall'][0], _MS['plate'])
+    (pa, pb), (py0, py1) = _MS['pocket']['yard'], _MS['pocket']['y']
+    (la, lb), head = _MS['lobby']['yard'], _MS['lobby']['head']
+    out += [
+        dict(part='car', name="the starboard casing's after block at the main stair's top steps: its forward face", across='yard', yard=(7.395, 7.405), x=inner, y=(py0, py1 + 0.01)),
+        dict(part='car', name="the starboard casing's after block at the main stair's top steps: its top", across='y', y=(6.249, 6.251), x=inner, yard=(pa, 7.41)),
+        dict(part='car', name="the starboard casing's forward block at the main stair's foot lobby", across='yard', yard=(la - 0.005, la + 0.005), x=inner, y=(2.0, head)),
+    ]
+    return tuple(out)
+
+
+OPENINGS = _main_stair_openings() + (
+    dict(part='passenger', name='the lobby floor over the starboard stair', across='y', y=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(_MS['well'][0], 9.40)),
+    dict(part='passenger', name='the lobby floor over the port stair', across='y', y=(6.5015, 6.5095), x=(2.76, 4.3), yard=(_MS['well'][0], 9.40)),
     dict(part='machinery', name="the engine room's after wall at the door to the shaft space", across='yard', yard=(8.435, 8.505),
          x=(_door[0], _door[2]), y=(_door[1], _door[3])),
     #  - The electrical workshop's forward wall (6 cm, 26.00 to 26.06 m) likewise, for the door to the void.
@@ -149,6 +203,24 @@ OPENINGS = (
 _TOP = S.COMPASS_DECK['deck'] + S.COMPASS_DECK['rise']
 ROOMS = {'wheelhouse': dict(max_y=_TOP), 'compass-deck': dict(min_y=_TOP, max_y=S.MAST['top'])}
 LEVELS = {'top': f"{_TOP + 1.9:.1f} m above the keel, masthead light at {S.MAST['masthead'] + 1.9:.1f} m"}
+
+# What the page says of a space, where her own build has changed what the other ship's words describe (the main stairs:
+# spec.MAIN_STAIR). The other ship's words named a crew changing room under the port stair; it was never drawn.
+SAYS = {
+    'casing-p': "1.3 m wide: the engine uptake and engine-room supply-fan trunk, the engine-room entrance (a 1.1 m door) and ladder, main stair P in "
+                "its enclosure (22 steps of 200 mm in two flights at 42° with a landing, 1.18 m between the stringers, a handrail each side), the foyer "
+                "at its foot with the sliding fire door from the car deck, the gangway passage (1.4 m) with the gangway door and the shore-power box, "
+                "a fan and a hydrant",
+    'casing-s': "1.3 m wide: uptake trunk, the engine-room escape trunk, main stair S in its enclosure (the same as P; the bosun’s store under it: "
+                "lashings, chocks, ropes, fenders), its foot lobby with the sliding fire door from the car deck, a fan and a hydrant",
+    'foyer': "1.4 m wide the whole way: the gangway, the gate, the passage through casing P and the foyer aft of it, 2.2 m under its deckhead, which is "
+             "also the foot of main stair P; the sliding fire door from the car deck opens into it",
+    'lower-lobby': "The car deck’s level aft of the lanes, between the casings under a 2.5 m deckhead: the drivers’ waiting benches along the casings, the "
+                   "bicycle rack and the baggage shelf either side of the crew door in the aft bulkhead, a drink machine and the safety plan on the forward "
+                   "bulkhead, lifejacket lockers; the engine-room door (casing P), its escape and the bosun’s store (casing S), the crew door aft to the "
+                   "mooring station, and two 1.1 m sliding fire doors forward onto the lanes, where the door to each main stair stands just outside in "
+                   "the casing’s wall, a zone kept clear before it",
+}
 
 # Spaces that are not rooms one goes into: the bow ramp is stowed upright and the two funnels are uptake casings with no
 # door. A walk begun there (the room chosen in the panel) starts at `stand`, beside it, where one can walk on:
@@ -518,6 +590,8 @@ def main():
                     sp['min'][1] = round(rule['min_y'], 4)
                 if 'max_y' in rule:
                     sp['max'][1] = round(rule['max_y'], 4)
+            if sp['id'] in SAYS:
+                sp['text'] = SAYS[sp['id']]
             if sp['id'] in STAND:
                 x, y, yard = STAND[sp['id']]
                 sp['stand'] = [x, y, round(L.Z(yard), 4)]
@@ -630,7 +704,8 @@ def main():
     header['systems'] = dict(file='systems.json', components=len(systems['components']))
     # Her stairs, as the yard's standard has them (spec.STAIRS): what each is, for the page and for the check that walks them.
     import stair_rules
-    header['stairs'] = [dict(stair_rules.facts(st), className=S.STAIR_CLASS[st['cls']]['name']) for st in S.STAIRS
+    limit = lambda c: dict(pitch=c['pitch'], going=c['going'], width=c['width'], rise=list(c['rise']), flight=c['flight'])
+    header['stairs'] = [dict(stair_rules.facts(st), className=S.STAIR_CLASS[st['cls']]['name'], limit=limit(S.STAIR_CLASS[st['cls']])) for st in S.STAIRS
                         if any(o['name'].startswith(f"Stair, {st['name']},") for f in fresh for o in f['objects'])]
     text = json.dumps(header, ensure_ascii=False, separators=(',', ':')).encode()
     text += b' ' * ((4 - len(text) % 4) % 4)

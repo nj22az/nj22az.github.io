@@ -51,4 +51,5 @@ def facts(st):
     steps = sum(leg for leg in st['legs'] if not isinstance(leg, tuple))
     return dict(id=st['id'], cls=st['cls'], name=st['name'], steps=steps, rise=round(st['rise'], 4), going=st['going'],
                 pitch=round(degrees(atan2(st['rise'], st['going'])), 1), width=round(abs(st['x'][1] - st['x'][0]), 2),
-                top=list(st['top']), foot=[round(yard, 3), round(y, 3)], down=st['down'], part=st['part'], x=[min(st['x']), max(st['x'])])
+                top=list(st['top']), foot=[round(yard, 3), round(y, 3)], down=st['down'], part=st['part'], x=[min(st['x']), max(st['x'])],
+                flights=[leg for leg in st['legs'] if not isinstance(leg, tuple)], landings=[leg[1] for leg in st['legs'] if isinstance(leg, tuple)])
