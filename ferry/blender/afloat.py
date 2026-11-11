@@ -199,9 +199,9 @@ def touch(p, q):
             pv, qv = np.unique(part.reshape(-1, 3), axis=0), np.unique(Q.reshape(-1, 3), axis=0)
             pv = pv[((pv >= lo) & (pv <= hi)).all(1)]
             qv = qv[((qv >= lo) & (qv <= hi)).all(1)]
-            if len(pv) and point_triangle(pv, Q).min() <= tol:
+            if len(pv) and point_triangle(pv, Q).min() <= tol + 1e-5:
                 return True
-            if len(qv) and point_triangle(qv, part).min() <= tol:
+            if len(qv) and point_triangle(qv, part).min() <= tol + 1e-5:
                 return True
             if segments_cross(edges(part), Q) or segments_cross(edges(Q), part):
                 return True

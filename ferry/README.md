@@ -330,14 +330,19 @@ holds only itself, as the wheel, its hub and its stub did.
     python3 ferry/blender/afloat.py --part chisum.npz --allow ferry/blender/afloat-known.json [--all]
 
 Its first run found 84 things of hers afloat. 45 were paint drawn 4 to 5 mm proud of the curved shell (the tolerance for
-paint is now 8 mm). 20 were real and are fixed: the four chairs' armrests (each post 6 mm clear of the seat), the five
-sun blinds (no brackets), the wing doors' outside handles, the push plate of the crew stair's gate, the exit board over
-the crew stair, the CO₂ extinguisher's bracket, the compass periscope's tube (5 mm short of its plate), the searchlight
-(no trunnions in its yoke), the new sliding doors' tracks, and both screws (the boss's forward face was open round a
-shaft 38 mm smaller). 19 are in the machinery spaces and the fore peak and are **not fixed**: the steering gear without
-seats, the fresh-water tanks and chain lockers standing on nothing, walkway bearers that end short of the floors, the
-fore peak ladder. They are listed in `afloat-known.json` with the reason, and go when those spaces are rebuilt.
-`--all` also lists the other ship's: 187 things, 125 of them in the machinery spaces.
+paint is now 8 mm). 36 were real and are fixed. On the bridge and above: the four chairs' armrests (each post 6 mm clear
+of the seat), the five sun blinds (no brackets), the wing doors' outside handles, the push plate of the crew stair's
+gate, the exit board over the crew stair, the CO₂ extinguisher's bracket, the compass periscope's tube (5 mm short of
+its plate), the searchlight (no trunnions in its yoke). On the car deck: the new sliding doors' tracks. In the hull and
+its spaces: both screws (the boss's forward face was open round a shaft 38 mm smaller); the rudder carriers, the tillers'
+bosses and the rams' cylinders, each 5 to 30 mm clear of the stock or stool that holds it, and with them the whole
+steering gear; every coupling, gland and bearing housing round the shafts (bored 15 mm larger than the shaft); the
+steps of the shaft-space and void walkways (no post, 17 cm over the floors); the fresh-water tanks (bearers on nothing:
+they now lie over the frames, on legs to the floors); the steering gear's watertight door (its hinge lugs stood beside
+the frame on no wall). **Three are not fixed** and are listed with the reason in `afloat-known.json`: the two chain
+lockers, which stand on no flat and reach no deck, and the fore peak's ladder, which is fastened to nothing. The fore
+peak has to be worked through as a whole. `--all` also lists the other ship's: 187 things, 125 of them in the machinery
+spaces.
 
 ## The compass deck (`blender/compass_deck.py`)
 
@@ -750,8 +755,8 @@ Of walking aboard:
   owner's internal stair trunk (the list above) is not built.
 - The main stairs' doors open onto the vehicle lanes, not into the lower lobby (JSY-STD-401 section 4). The space under
   the port main stair's lower flight has no use and no door.
-- 19 things of hers in the machinery spaces and the fore peak hang in the air (`blender/afloat-known.json`), and 187 of
-  the other ship's throughout: they go as those sections are rebuilt.
+- Three things of hers in the fore peak hang in the air (the chain lockers and the ladder: `blender/afloat-known.json`),
+  and 187 of the other ship's throughout: they go as those sections are rebuilt.
 - The stair standard's outside requirements are recalled, not read.
 - In the hull's spaces without a floor of their own (the shaft space beside its walkway, the void, the fore peak) the
   walker stands on the structure: the floors' top edges and the stringers.
@@ -793,7 +798,8 @@ Of the page and of what is still the Minato Maru's:
 - On foot from the vehicle lanes into each foot lobby through its door: the door ran open 0.98 m as the walker came
   near and the walker came to rest 3.84 m off the centreline, inside the lobby (port and starboard).
 - `python3 ferry/blender/afloat.py --part … --allow ferry/blender/afloat-known.json`: 4,829 pieces, 2,328 of hers;
-  nothing of hers hangs in the air but the 19 known things in the machinery spaces and fore peak.
+  nothing of hers hangs in the air but the three known things in the fore peak (4,855 pieces after the last fixes,
+  2,354 of hers).
 - Looked at: the wheel from beside the helm (hub, shaft, flanged bearing, helm unit on the stand); the port stairhead
   from the lobby (guard, capping rail, handrail and newel); the port stair from its foot lobby (two flights, landing,
   rails on brackets, marked edges, the door's leaf and its sign); the starboard door from the lanes (frame, leaf, signs,

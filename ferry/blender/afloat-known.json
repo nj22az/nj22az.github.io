@@ -1,12 +1,34 @@
 [
- {"name": "Steering gear", "box": [[-4.5, -2.0, 0.0], [4.5, 2.1, 3.0]], "why": "the steering gear has no seats on the steering flat yet: machinery spaces, still to be rebuilt"},
- {"name": "Ram cylinder", "box": [[-4.5, -2.0, 0.0], [4.5, 2.1, 3.0]], "why": "the steering gear has no seats on the steering flat yet: machinery spaces, still to be rebuilt"},
- {"name": "Rudder stock head", "box": [[-4.5, -2.0, 0.0], [4.5, 2.1, 3.0]], "why": "the stock's head stands 31 mm clear of its carrier: machinery spaces, still to be rebuilt"},
- {"name": "Watertight door, steering gear", "box": [[-4.5, -2.0, 0.0], [4.5, 2.1, 3.0]], "why": "its frame stands 4 mm off the other ship's bulkhead, which goes when the machinery spaces are rebuilt"},
- {"name": "Fresh-water tanks", "box": [[-4.5, -2.0, 2.0], [4.5, 2.2, 5.5]], "why": "the tanks have no seats yet: machinery spaces, still to be rebuilt"},
- {"name": "Shaft space walkway", "box": [[-4.5, -2.0, 5.5], [4.5, 2.1, 9.0]], "why": "the walkway's bearers end 165 mm short of the floors: machinery spaces, still to be rebuilt"},
- {"name": "Shafting", "box": [[-4.5, -2.0, 5.5], [4.5, 2.1, 9.0]], "why": "a coupling guard stands 15 mm clear of its shaft: machinery spaces, still to be rebuilt"},
- {"name": "Void walkway", "box": [[-4.5, -2.0, 25.0], [4.5, 2.1, 28.0]], "why": "the walkway's bearers end 171 mm short of the floors: machinery spaces, still to be rebuilt"},
- {"name": "Ladder, fore peak", "box": [[-4.5, -2.0, 29.5], [4.5, 2.2, 32.0]], "why": "the ladder is not yet fastened to the bulkhead it climbs: fore peak, still to be rebuilt"},
- {"name": "Chain lockers", "box": [[-4.5, -2.0, 30.0], [4.5, 2.2, 33.5]], "why": "the lockers stand on no flat yet: fore peak, still to be rebuilt"}
+ {
+  "name": "Ladder, fore peak",
+  "box": [
+   [
+    -4.5,
+    -2.0,
+    29.5
+   ],
+   [
+    4.5,
+    2.2,
+    32.0
+   ]
+  ],
+  "why": "the ladder is not yet fastened to a bulkhead or to the hatch over it: the fore peak is still to be worked through"
+ },
+ {
+  "name": "Chain lockers",
+  "box": [
+   [
+    -4.5,
+    -2.0,
+    30.0
+   ],
+   [
+    4.5,
+    2.2,
+    33.5
+   ]
+  ],
+  "why": "the lockers stand on no flat and reach no deck: the fore peak is still to be worked through"
+ }
 ]
