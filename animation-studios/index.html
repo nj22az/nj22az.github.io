@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dock Walk | Johansson Animation Studios</title>
+  <meta name="description" content="The Johansson sailor strolls along the quay, whistling. A hand-inked, black-and-white loop from Johansson Animation Studios.">
+  <link rel="canonical" href="https://nj22az.github.io/animation-studios/">
+  <meta property="og:type" content="video.other">
+  <meta property="og:title" content="Dock Walk | Johansson Animation Studios">
+  <meta property="og:description" content="The Johansson sailor strolls along the quay, whistling.">
+  <meta property="og:image" content="https://nj22az.github.io/animation-studios/dock-walk-poster.png">
+  <meta property="og:url" content="https://nj22az.github.io/animation-studios/">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="/theme-bootstrap.js?v=random-2"></script>
+  <link rel="stylesheet" href="/styles.css?v=popwave-icons-2">
+  <style>
+    .dock-walk { max-width: 1100px; margin: 0 auto; padding: 104px 16px 64px; }
+    .dock-walk h1 { margin: 0 0 8px; }
+    .dock-walk p { max-width: 62ch; }
+    .dock-film { position: relative; margin: 24px 0; background: #fff; border: 3px solid #000; border-radius: 10px; overflow: hidden; }
+    .dock-film video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+    .dock-sound { position: absolute; right: 12px; bottom: 12px; font: inherit; font-weight: 700; padding: 8px 14px;
+      color: #000; background: #fff; border: 3px solid #000; border-radius: 999px; cursor: pointer; }
+    .dock-sound:focus-visible { outline: 3px solid #000; outline-offset: 3px; }
+    .dock-cycle { display: block; width: 100%; height: auto; background: #fff; border: 3px solid #000; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <nav id="site-nav" class="site-nav"></nav>
+  <main id="main-content" class="dock-walk">
+    <h1>Dock Walk</h1>
+    <p>The Johansson sailor takes an easy stroll along the quay, whistling. Johansson Animation Studios, 2026.</p>
+    <div class="dock-film">
+      <video id="dock-film" src="dock-walk.mp4" poster="dock-walk-poster.png" width="1920" height="1080"
+             autoplay loop muted playsinline preload="metadata"
+             aria-label="A bearded sailor in a striped shirt and cap strolls along a wooden quay, whistling; notes float up behind him. Boats, a steamer and a lighthouse pass in the background."></video>
+      <button class="dock-sound" id="dock-sound" type="button" aria-pressed="false">Sound on</button>
+    </div>
+    <h2>The walk cycle</h2>
+    <p>Thirty-six drawings make two steps. His head, shirt, arms and boots are cut from the original character sheet; only the trouser legs are redrawn for each frame.</p>
+    <img class="dock-cycle" src="walk-cycle.png" width="4500" height="1440" loading="lazy" alt="Thirty-six frames of the sailor's walk, in four rows.">
+  </main>
+  <footer id="site-footer" class="site-footer"></footer>
+  <script src="/config.js?v=20261027-hotels"></script>
+  <script src="/shared.js?v=20261027-hotels"></script>
+  <script>
+    (function () {
+      var film = document.getElementById('dock-film'), button = document.getElementById('dock-sound');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { film.removeAttribute('autoplay'); film.pause(); film.controls = true; }
+      button.addEventListener('click', function () {
+        film.muted = !film.muted;
+        button.textContent = film.muted ? 'Sound on' : 'Sound off';
+        button.setAttribute('aria-pressed', String(!film.muted));
+        if (film.paused) film.play();
+      });
+    })();
+  </script>
+</body>
+</html>
