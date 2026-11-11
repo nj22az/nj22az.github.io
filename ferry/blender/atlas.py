@@ -1009,6 +1009,103 @@ def sign(w, h, bg, lines, ink=WHITE, size=13, border=True):
     return im
 
 
+# ---- what hangs in the crew's corridor: the papers a ship must show her crew
+CREW = (('Master', 'Bridge: command', 'Command, radio, EPIRB'), ('Chief officer', 'Scene: fire party leader', 'Rescue boat, muster passengers'),
+        ('Chief engineer', 'Engine room: pumps, CO2', 'Engine, emergency generator'), ('Bosun', 'Fire party: hose', 'Liferafts port'),
+        ('Oiler', 'Fire party: breathing set', 'Liferafts starboard'), ('Deckhand', 'Close doors, flaps, vents', 'Guide passengers to station B'))
+
+
+def muster_list():
+    im, d = sheet(384, 512, (250, 250, 246))
+    d.rectangle((0, 0, 383, 44), fill=(190, 40, 32))
+    text(d, (192, 22), 'MUSTER LIST', 24, WHITE)
+    text(d, (192, 60), 'CHISUM  ·  MINATO  ·  JOHANSSON LINES', 11, INK)
+    d.rectangle((12, 76, 371, 148), outline=INK, width=1)
+    text(d, (20, 88), 'GENERAL EMERGENCY ALARM', 11, (190, 40, 32), 'lm')
+    text(d, (20, 104), 'seven short blasts and one long, on whistle and bells', 10, INK, 'lm', 'r')
+    for k in range(7):
+        d.rectangle((24 + k * 16, 118, 32 + k * 16, 126), fill=INK)
+    d.rectangle((140, 118, 200, 126), fill=INK)
+    text(d, (214, 122), 'go to your station', 10, INK, 'lm', 'r')
+    text(d, (20, 138), 'ABANDON SHIP: by word of mouth from the master', 10, INK, 'lm', 'r')
+    for x, t in ((14, 'RANK'), (120, 'FIRE AND EMERGENCY'), (256, 'ABANDON SHIP')):
+        text(d, (x, 164), t, 10, (190, 40, 32), 'lm')
+    for i, (rank, fire, boat) in enumerate(CREW):
+        y = 186 + i * 44
+        d.line((12, y - 14, 371, y - 14), fill=(170, 176, 176))
+        text(d, (14, y), rank, 11, INK, 'lm')
+        text(d, (120, y), fire, 9, INK, 'lm', 'r')
+        text(d, (256, y), boat, 9, INK, 'lm', 'r')
+    d.line((12, 436, 371, 436), fill=(170, 176, 176))
+    text(d, (14, 452), 'MUSTER STATION A: bridge deck, after platform (crew)', 10, (30, 110, 60), 'lm')
+    text(d, (14, 468), 'MUSTER STATION B: open deck aft (passengers)', 10, (30, 110, 60), 'lm')
+    text(d, (14, 492), 'Signed: Master', 9, INK, 'lm', 'r')
+    d.rectangle((0, 0, 383, 511), outline=(60, 68, 70), width=3)
+    return im
+
+
+def fire_plan():
+    im, d = sheet(512, 320, (250, 250, 246))
+    text(d, (256, 16), 'FIRE CONTROL AND SAFETY PLAN', 16, INK)
+    text(d, (256, 34), 'CHISUM   34.5 m car and passenger ferry', 10, INK, 'mm', 'r')
+    # her profile, and three decks in plan, with what fights a fire marked where it stands
+    d.polygon([(40, 96), (70, 78), (430, 78), (470, 60), (476, 96), (450, 112), (60, 112)], outline=INK)
+    d.rectangle((150, 56, 330, 78), outline=INK)
+    d.rectangle((262, 40, 322, 56), outline=INK)
+    d.rectangle((120, 44, 132, 78), outline=INK)
+    for k, (y, name) in enumerate(((132, 'BRIDGE DECK'), (190, 'PASSENGER DECK'), (248, 'CAR DECK'))):
+        d.rounded_rectangle((60, y, 452, y + 44), radius=14, outline=INK)
+        text(d, (66, y - 8), name, 9, INK, 'lm')
+        for x in range(110, 440, 56):
+            d.line((x, y, x, y + 44), fill=(170, 176, 176))
+        for j, x in enumerate(range(84, 440, 48)):
+            col = ((200, 40, 32), (200, 40, 32), (30, 130, 70), (40, 90, 180))[(j + k) % 4]
+            d.ellipse((x - 5, y + 10 + (j % 3) * 9, x + 5, y + 20 + (j % 3) * 9), fill=col)
+    text(d, (84, 305), 'red: fire-fighting   green: escape   blue: closing and stopping', 9, INK, 'lm', 'r')
+    d.rectangle((0, 0, 511, 319), outline=(60, 68, 70), width=3)
+    return im
+
+
+def notice_board():
+    im, d = sheet(512, 352, (176, 138, 92))
+    d.rectangle((0, 0, 511, 351), outline=(92, 66, 40), width=10)
+    def paper(x, y, w, h, title, rows, head=(40, 60, 90)):
+        d.rectangle((x + 3, y + 3, x + w + 3, y + h + 3), fill=(140, 108, 70))
+        d.rectangle((x, y, x + w, y + h), fill=(250, 250, 246))
+        d.ellipse((x + w / 2 - 4, y + 3, x + w / 2 + 4, y + 11), fill=(190, 40, 32))
+        text(d, (x + w / 2, y + 22), title, 11, head)
+        for i, r in enumerate(rows):
+            text(d, (x + 8, y + 40 + i * 13), r, 8, INK, 'lm', 'r')
+    paper(22, 22, 150, 150, 'WATCH LIST', ['00-06   Chief officer', '06-12   Master', '12-18   Chief officer', '18-24   Master', '', 'Engine: day work,',
+                                           'call on alarm'])
+    paper(186, 22, 150, 190, 'HOURS OF WORK AND REST', ['Rest: 10 h in any 24 h,', '77 h in any 7 days', '', 'At sea: watches as listed', 'In port: 07-16',
+                                                          '', 'Records: kept by the', 'chief officer, signed', 'monthly by each'])
+    paper(350, 22, 140, 120, 'SAILINGS', ['Minato      07:10  12:40', 'Kitano-jima 09:00  15:10', '', 'Bunkers: Thursday', 'Fresh water: daily'])
+    paper(22, 186, 150, 144, 'SAFETY POLICY', ['Johansson Lines', '', 'No job is so urgent', 'that it cannot be', 'done safely.', '', 'Report every near miss.'],
+          (30, 110, 60))
+    paper(350, 156, 140, 174, 'DRILLS', ['Fire: every week', 'Abandon ship: every', 'week', 'Rescue boat: monthly', 'Steering gear: before', 'each departure',
+                                          '', 'Next: see the log'], (190, 40, 32))
+    paper(186, 226, 150, 104, 'NOTICES', ['Galley closes 19:30', 'Laundry: Tue, Fri', 'Keep doors on hooks', 'in port only'])
+    return im
+
+
+def escape(left):
+    im, d = sheet(256, 96, (30, 130, 70))
+    a = [(40, 48), (84, 16), (84, 36), (150, 36), (150, 60), (84, 60), (84, 80)]
+    d.polygon(a if left else [(256 - x, y) for x, y in a], fill=WHITE)
+    text(d, (200 if left else 56, 48), 'EXIT', 26, WHITE)
+    return im
+
+
+def ext_sign():
+    im, d = sheet(128, 128, (200, 40, 32))
+    d.rounded_rectangle((48, 44, 84, 108), radius=8, fill=WHITE)
+    d.rectangle((60, 28, 72, 44), fill=WHITE)
+    d.line((72, 34, 100, 34, 104, 60), fill=WHITE, width=5)
+    d.rectangle((40, 24, 66, 32), fill=WHITE)
+    return im
+
+
 def firstaid():
     im, d = sheet(240, 208, (232, 236, 232))
     d.rectangle((70, 30, 170, 130), fill=(30, 140, 70))
@@ -1091,6 +1188,20 @@ def tiles():
         'lever_scale': (lever_scale(), 'face'), 'thr_scale': (lever_scale(True), 'face'), 'talkback': (talkback(), 'face'),
         'hose': (sign(256, 96, (190, 40, 32), ['FIRE HOSE'], WHITE, 22), 'face'),
         'exit': (sign(256, 96, (30, 130, 70), ['EXIT'], WHITE, 34, border=False), 'face'),
+        'np_master': (sign(256, 64, (24, 26, 28), ['MASTER'], (226, 200, 120), 22), 'face'),
+        'np_chief': (sign(256, 64, (24, 26, 28), ['CHIEF ENGINEER'], (226, 200, 120), 22), 'face'),
+        'np_mate': (sign(256, 64, (24, 26, 28), ['CHIEF OFFICER'], (226, 200, 120), 22), 'face'),
+        'np_crew': (sign(256, 64, (24, 26, 28), ['CREW'], (226, 200, 120), 22), 'face'),
+        'np_deckhand': (sign(256, 64, (24, 26, 28), ['DECKHAND'], (226, 200, 120), 22), 'face'),
+        'np_wc': (sign(256, 64, (24, 26, 28), ['WC  ·  SHOWER'], (226, 200, 120), 22), 'face'),
+        'np_mess': (sign(256, 64, (24, 26, 28), ['MESS'], (226, 200, 120), 22), 'face'),
+        'np_galley': (sign(256, 64, (24, 26, 28), ['GALLEY'], (226, 200, 120), 22), 'face'),
+        'np_crew_only': (sign(384, 96, (24, 26, 28), ['CREW ONLY'], (226, 200, 120), 34), 'face'),
+        'np_eg': (sign(384, 96, (236, 190, 40), ['EMERGENCY', 'GENERATOR'], (20, 20, 20), 26), 'face'),
+        'np_co2': (sign(384, 96, (190, 40, 32), ['CO2 ROOM', 'DANGER  ·  GAS'], WHITE, 26), 'face'),
+        'muster_list': (muster_list(), 'face'), 'fire_plan': (fire_plan(), 'face'), 'notice_board': (notice_board(), 'face'),
+        'escape_left': (escape(True), 'face'), 'escape_right': (escape(False), 'face'), 'ext_sign': (ext_sign(), 'face'),
+        'fire_plan_label': (sign(256, 64, (190, 40, 32), ['FIRE PLAN'], WHITE, 26), 'face'),
         'stairs_up': (sign(384, 96, (30, 130, 70), ['STAIRS', 'PASSENGER DECK'], WHITE, 26, border=False), 'face'),
         'car_deck': (sign(384, 96, (30, 130, 70), ['CAR DECK'], WHITE, 34, border=False), 'face'),
         'fire_door': (sign(384, 96, (190, 40, 32), ['FIRE DOOR', 'KEEP CLEAR'], WHITE, 26), 'face'),

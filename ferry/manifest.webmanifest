@@ -1,0 +1,15 @@
+{
+  "name": "Chisum: the ferry, deck by deck",
+  "short_name": "Chisum",
+  "description": "A 3D model of the Chisum, a 34.5 m car and passenger ferry: turn her, take her apart, walk through her.",
+  "start_url": "/ferry/",
+  "scope": "/ferry/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#e9ecec",
+  "theme_color": "#e9ecec",
+  "icons": [
+    { "src": "/ferry/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/ferry/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

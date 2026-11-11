@@ -98,7 +98,7 @@ def _slab():
     x0, x1, za = -2.6, 2.4, STEP - 0.295
     step.box((x0, DECK, za), (x1, DECK + C['rise'] / 2, STEP), tint(WHITE, 0.97))
     mark.box((x0, DECK + C['rise'] / 2 + 0.0005, za), (x1, DECK + C['rise'] / 2 + 0.0035, za + 0.05), YELLOW)
-    mark.box((-C['half'] + 0.2, TOP + 0.0005, STEP + 0.01), (C['half'] - 0.2, TOP + 0.0035, STEP + 0.06), YELLOW)
+    mark.box((-C['half'] + 0.2, TOP + 0.0005, STEP + 0.01), (C['half'] - 0.2, TOP + 0.0045, STEP + 0.06), YELLOW)   # a millimetre over the seams it crosses
     return parts + [step, mark]
 
 

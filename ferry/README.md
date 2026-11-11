@@ -55,7 +55,8 @@ place of the Minato Maru's drawing on this page as it is finished.
 | 2. Exterior above the hull, the rest (bulwark fittings, ramp, casings, deckhouses, funnels) | The Minato Maru's drawing |
 | **5. The navigation bridge** | **Her own, 11 November 2026** (the owner: "Make the ferry fully realistic in blender, start with one section at a time. Start with the bridge, aim for a fully explorable realistic ferry with a component register", and: "If current foundation is lacking don't be ashamed of redrawing it"). The wheelhouse redrawn whole (plated, lined, glazed; five forward windows raked 10° under a visor; the same windows and a door down each side), its console with every instrument showing its picture, the boards on the aft wall, both wings, and what the bridge adds to the compass deck: 145 components, each one an entry of her register with its supply, circuit, nets and pipes. *The navigation bridge* and *Her systems*, below. |
 | **Her stairs, on every deck** | **Her own, 11 November 2026** (the owner: "All stairs need to be traversable and fully realistic and standardised"). Eight stairs to one yard standard in three classes, each built from one line of the specification and walked up and down by a check: the two main stairs between the car deck and the passenger deck (two flights with a landing, in lined enclosures with a foot lobby and a sliding fire door each), the crew stair to the wheelhouse, the engine room ladder, four outside ladders. *Her stairs*, below. With them a check that nothing aboard hangs in the air (the owner: "every detail in every part of the ship needs to be realistic"): *Nothing hangs in the air*, below |
-| 3. Car deck · 4. Engine room and machinery spaces · 5. The rest of the bridge deck (the corridor, the cabins, the galley, the mess, the EG and CO₂ rooms, their walls) · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
+| **5b. The bridge deck abaft the wheelhouse: the corridor and the house outside** | **Her own fit-out, 11 November 2026** (the owner: "continue with bridge deck , how about the outside and the corridor to the cabins"; "The corridor needs boards and information as well"; "The door needs to be able to open nothing is ornamental"). The walls are still the other ship's. *The bridge deck abaft the wheelhouse*, below |
+| 3. Car deck · 4. Engine room and machinery spaces · 5. The rest of the bridge deck (the cabins, the galley, the mess, the EG and CO₂ rooms, their walls) · 6. Accommodation, toilets, galley | The Minato Maru's drawing |
 
 Her room notes therefore still speak of the Minato Maru's crew and route. The ferry in the live Johansson World is not
 replaced or changed by any of this.
@@ -345,6 +346,65 @@ the frame on no wall). The last three, in the fore peak, were fixed after the pu
 come up to its plates, and each chain locker stands on four legs on the floors of frames 63 and 64. `afloat-known.json`
 (things known to be afloat, with the reason) is empty. `--all` also lists the other ship's: 187 things, 125 of them in
 the machinery spaces.
+
+## The bridge deck abaft the wheelhouse (`blender/bridge_deck.py`)
+
+What the other ship draws there is one piece for the whole house, eight bare doorways off a bare corridor, handrail bars
+hanging 2 cm off the walls, three open holes in the aft wall and nine flat window frames inside the plating. The walls
+stay (the cabins behind them are not rebuilt); `bridge_deck.py` gives the corridor and the outside what a ship has there,
+from the tables at its top, and `systems/bridge.py` registers it (rooms `corridor` and `aft-platform`, 43 components).
+
+- **The corridor.** A joiner door in each of the eight doorways: frame, leaf with a vent grille, lever handles, hinges on
+  the cabin's side, a name plate. Each opens into its room for whoever turns to it (it stays shut for one who walks down
+  the middle), hung on the jamb where the open leaf lies clear of the furniture. Two pieces of the other ship's furniture
+  were moved for it (`assemble.NUDGES`): the chief engineer's wardrobe stood in the after half of his doorway, and a rail
+  hung across the crew cabin's. The galley's doorway is 0.60 m, not 0.70: the other ship's galley unit stands 10 cm into
+  it and a post closes that strip. Storm rails of varnished wood on brass brackets; a skirting; a panelled deckhead at
+  2.085 m with five recessed lights, three smoke detectors, a loudspeaker, two air diffusers and an exit light at each
+  end; by the aft door an extinguisher under its sign, a call point, the alarm bell and the light switch.
+- **Boards and information.** On the walls: the notice board (watch list, hours of work and rest, sailings, safety
+  policy, drills, notices), the muster list (the alarm signal, each rank's duty at fire and at abandoning ship, the two
+  muster stations), the fire control and safety plan, and four escape signs pointing aft. Outside by the door, the shore
+  firemen's copy of the fire plan in its red tube. The requirements behind them (a muster list shown in the
+  accommodation, a fire plan permanently exhibited with a copy outside the house, a table of working arrangements) are
+  recalled, not read.
+- **The aft wall.** Three weathertight steel doors on 15 cm sills, each closing on a flat-bar frame from outside, hung
+  on two hinges with lugs on the plating, two dogs and a lever handle each side, a light over it: the corridor's with a
+  porthole, the emergency generator room's and the CO₂ room's with their signs. They open aft onto the platform.
+- **The sides.** Nine windows: a steel frame with rounded corners 12 mm proud of the plating and lining the opening,
+  twelve bolts, the glass, a drip strip over it.
+- **The platform.** A fire hose box that is a cabinet (the hose rolled on its peg, the nozzle in its clip) whose door
+  opens, with its hydrant under it (the survey's finding BF-18 asked for a second hydrant aft); the loudspeaker horn.
+- **Every door opens** (`checks/doors.cjs`): all 25 doors, gates, hatches and cabinet doors the model says can be worked
+  are opened and shut as a tap does it.
+
+## No two faces in one plane (`blender/zfight.py`)
+
+The owner, 11 November 2026: "Z fighting is not allowed". Where two faces lie in one plane, look the same way and
+overlap, the page cannot tell which is in front and they flicker. `zfight.py` sorts every triangle of the model by its
+plane and finds every pair of different pieces that overlap by more than a square centimetre. Not a fight: a pair where
+one is drawn with an offset toward the eye (paint, pictures, floor plates), and two faces bedded on a third that looks
+the other way (the feet of two things on one deck).
+
+    python3 ferry/blender/zfight.py --part chisum.npz [--all]
+
+Its first run found 34 pairs with a part of hers; all are fixed (the wheelhouse's aft wall band in the side walls'
+faces, a wing door sill in the deck covering's underside, the sliding doors' hangers in their track, the sun blinds'
+brackets, the porthole's glass, the stairs' newels in their stringers, and others). **629 pairs remain among the other
+ship's own pieces** (`--all` lists them): they are not fixed, and go as each section is rebuilt or by a pass over the
+other ship's drawing that is not written yet.
+
+## Offline, and on the Home Screen (`offline.js`, `sw.js`, `offline-files.js`, `manifest.webmanifest`)
+
+The owner, 11 November 2026: "Make a install to Home Screen and download offline button so I don't need a connection to
+look at it". **Save offline** in the bar fetches the 15 files the page needs (3.9 MB: the page, its scripts, three.js,
+the model, the register, both picture sheets, the icons) and keeps them; the button then reads "Saved offline", and
+pressing it again renews the copy. From then on the page's service worker gives the saved copy whenever the network does
+not answer (at once with no connection; after four seconds on a slow one). With a connection the page is always the
+newest, and each answer renews the saved copy. **Install** asks the browser to put the page on the Home Screen; on an
+iPhone or iPad the browser has no such request, so the button says where the command is (Share, then Add to Home
+Screen). A file the page loads must be listed in `offline-files.js` to be saved. `checks/offline.cjs` saves the page,
+cuts the network and opens it again.
 
 ## The compass deck (`blender/compass_deck.py`)
 
@@ -762,6 +822,14 @@ Of walking aboard:
   chain lockers and the ladder); they are fixed on the development branch.
 - The chain lockers still end 4 cm under the car deck, with no spurling pipe drawn to the windlass above.
 - The stair standard's outside requirements are recalled, not read.
+- 629 pairs of the other ship's own faces lie in one plane over each other (`zfight.py --all`): the owner's "Z fighting
+  is not allowed" holds for her own parts only so far.
+- The bridge deck's walls, cabins, galley, mess, emergency generator room and CO₂ room are still the other ship's. The
+  galley's door is 0.60 m because of the other ship's unit in its doorway.
+- Not built, and asked for by the owner on 11 November 2026: the shipping company's livery (Johansson Lines on the hull
+  and a big J on the funnels, her own design), and an auxiliary engine room near the funnels (to be settled with the
+  machinery spaces; the emergency generator room is already beside the funnels, on the bridge deck).
+- Offline: saving has been tested in Chromium only, not on an iPhone.
 - In the hull's spaces without a floor of their own (the shaft space beside its walkway, the void, the fore peak) the
   walker stands on the structure: the floors' top edges and the stringers.
 - Along a wall that lies askew to her length (her sides at the ends) the walker stops where it meets it: it slides
@@ -789,6 +857,22 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, last of the day: the bridge deck's corridor and outside, no z-fighting, offline
+
+- The Blender build (43 motions), `assemble.py` twice with the same hashes, `check.py`, `bridge_calcs.py`: all passed.
+- `zfight.py`: no face of hers lies in one plane over another (629 pairs among the other ship's own).
+- `afloat.py`: nothing of hers hangs in the air (the other ship's: 179 things).
+- `node ferry/checks/doors.cjs`: 25 doors, gates, hatches and cabinet doors each open to a tap and shut again; walking
+  down the middle of the corridor to the wheelhouse door the cabin doors stay shut; turning into the mess its door opens
+  and one walks in; the corridor's aft door lets one out onto the platform. No console errors.
+- `node ferry/checks/offline.cjs` (390 px wide): saved 15 files, 3.9 MB; with the network cut the page opened again with
+  the whole model; no wider than the screen; Install says where the command is.
+- `bridge.cjs` (25, with its phone checks and the two new buttons in the bar) and `stairs.cjs` (8 stairs): all passed.
+- Looked at: the corridor from its aft end (boards, rails, doors, deckhead), the aft wall with the corridor door and the
+  hose box open, two windows from outside, the mess door standing open from the corridor.
+- Not done: no picture of the galley, WC or cabins' doors from inside the rooms; the starboard windows were not looked
+  at; nothing was tried on a real phone.
 
 ### 11 November 2026, after it: published, and the fore peak
 

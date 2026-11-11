@@ -8,6 +8,11 @@
 <meta name="author" content="Nils Johansson">
 <link rel="canonical" href="https://nj22az.github.io/ferry/">
 <link rel="icon" href="/assets/images/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chisum">
 <meta name="theme-color" content="#e9ecec">
 <style>
 /* The viewer's own chrome, on the pattern of /motor-90l/: a full-screen model with a panel and a bar over it. */
@@ -183,9 +188,13 @@ body.walking #view canvas { cursor: crosshair; }
   <button type="button" class="btn walk-only" id="deck-up">Deck above</button>
   <button type="button" class="btn" id="walk" aria-pressed="false">Walk aboard</button>
   <button type="button" class="btn orbit-only" id="home">Reset view</button>
+  <button type="button" class="btn orbit-only" id="offline" aria-pressed="false">Save offline</button>
+  <button type="button" class="btn orbit-only" id="install">Install</button>
   <output id="what" aria-live="polite"></output>
 </div>
 
 <script type="module" src="./app.js"></script>
+<script src="./offline-files.js"></script>
+<script src="./offline.js"></script>
 </body>
 </html>

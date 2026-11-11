@@ -85,6 +85,18 @@ REPLACES.update({
         keep=lambda mat, col: False,
         why='her own stairs, built in Blender to the yard\'s standard',
         what='the stairs, each to the yard\'s standard (steps, stringers, handrails)'),
+    # The bridge deck abaft the wheelhouse (blender/bridge_deck.py): the corridor's handrail bars, which hung 2 cm off the
+    # walls; the box under its deckhead (hers is panelled, with the lights in it); the nine windows' flat frames and glass
+    # inside the plating. The walls stay: the cabins behind them are not rebuilt yet.
+    'bridge-deck': dict(
+        part='bridge', prefix='Bridge deck', section='Bridge deck: the corridor and the house outside', built='11 November 2026',
+        boxes=[_box((-0.445, -0.39), (10.0, 10.1), (9.85, 19.25)), _box((0.39, 0.445), (10.0, 10.1), (9.85, 19.25)),
+               _box((-0.56, 0.56), (11.09, 11.23), (9.35, 17.25)),
+               _box((2.93, 3.0), (10.2, 10.9), (9.8, 19.2)), _box((-3.0, -2.93), (10.2, 10.9), (9.8, 19.2))],
+        keep=lambda mat, col: False,
+        why='her own bridge deck, built in Blender',
+        what='the bridge deck abaft the wheelhouse: the corridor (eight cabin doors, storm rails, a panelled deckhead with its lights and '
+             'detectors, the fire point) and the house outside (three weathertight doors, nine framed windows, the fire station on the platform)'),
     # The main stairs' top landing plate and first step, and the guard along each well, which hers takes the place of
     # 5 cm further out (in line with the casing's wall below).
     'stairs-main-top': dict(
@@ -125,6 +137,10 @@ NUDGES = (
          box=_box((1.50, 2.16), (2.09, 3.10), (2.58, 4.25)), move=(-0.16, 0.0, 0.0)),
     dict(part='passenger', what='the bench at the foot of the port after stair, which is 0.6 m longer than the other ship\'s',
          box=_box((0.50, 2.70), (6.45, 7.60), (2.30, 2.90)), move=(0.0, 0.0, -0.45)),
+    dict(part='bridge', what="the rail on the corridor wall in the crew cabin, which hung across its doorway: half a metre forward, beside the door",
+         box=_box((0.57, 0.59), (10.55, 10.85), (9.40, 10.20)), move=(0.0, 0.0, 0.50)),
+    dict(part='bridge', what="the wardrobe in the chief engineer's cabin, which stood in the after half of its doorway: forward of the door",
+         box=_box((0.52, 1.12), (9.09, 11.05), (16.55, 17.08)), move=(0.0, 0.0, 0.89)),
     dict(part='passenger', what='the bench at the foot of the starboard after stair',
          box=_box((-2.70, -0.50), (6.45, 7.60), (2.30, 2.90)), move=(0.0, 0.0, -0.45)),
 )
