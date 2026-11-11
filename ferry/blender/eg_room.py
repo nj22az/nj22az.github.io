@@ -190,12 +190,13 @@ def generator_set(S):
             box(green, p - 0.06, p + 0.06, QC - 0.48, QC + 0.48, 0.15, 0.34, DKGREEN)
         box(green, a + 0.12, b - 0.12, QC - 0.48, QC + 0.48, 0.125, 0.14, tint(DKGREEN, 0.8))  # the drip tray between them
         # the radiator in its cowl, its core behind a grille at the forward end
-        box(green, a, 2.00, QC - 0.72, QC + 0.72, 0.34, 1.95, GREEN)
-        box(dark, a - 0.02, a, QC - 0.62, QC + 0.62, 0.50, 1.85, DARK)
-        for k in range(9):
+        # (as high as the drawing's elevation shows it: lower than the engine's air filter, so the engine is seen over it)
+        box(green, a, 2.00, QC - 0.72, QC + 0.72, 0.34, 1.50, GREEN)
+        box(dark, a - 0.02, a, QC - 0.62, QC + 0.62, 0.50, 1.42, DARK)
+        for k in range(6):
             box(green, a - 0.035, a - 0.02, QC - 0.64, QC + 0.64, 0.56 + k * 0.15, 0.585 + k * 0.15, DKGREEN)
-        tube(dark, (a + 0.45, QC + 0.25, 1.95), (a + 0.45, QC + 0.25, 2.03), 0.06, DARK, 12)   # the filler cap
-        sign(face, ((a + 2.00) / 2, QC - 0.72, 1.28), (0, -1, 0), 0.70, 0.55, 'eg_plate')
+        tube(dark, (a + 0.45, QC + 0.25, 1.50), (a + 0.45, QC + 0.25, 1.58), 0.06, DARK, 12)   # the filler cap
+        sign(face, ((a + 2.00) / 2, QC - 0.72, 0.95), (0, -1, 0), 0.70, 0.55, 'eg_plate')
         # the engine: crankcase, head, six covers; the manifold and turbocharger to starboard, the fuel side to port
         box(green, 2.00, 3.95, QC - 0.36, QC + 0.36, 0.34, 1.20, GREEN)
         box(green, 2.08, 3.87, QC - 0.31, QC + 0.31, 1.20, 1.42, tint(GREEN, 0.94))
@@ -211,7 +212,7 @@ def generator_set(S):
         tube(dark, (tx - 0.20, tq, 1.62), (tx - 0.36, tq - 0.25, 1.70), 0.07, BLACK, 12)    # to the air filter
         tube(dark, (tx - 0.36, tq - 0.25, 1.52), (tx - 0.36, tq - 0.25, 1.92), 0.20, BLACK, 18)
         tube(dark, (tx - 0.36, tq - 0.25, 1.92), (tx - 0.36, tq - 0.25, 1.96), 0.22, DARK, 18)
-        tube(dark, (2.00, QC - 0.12, 1.70), (2.14, QC - 0.12, 1.46), 0.045, BLACK, 10)      # the coolant hoses to the radiator
+        tube(dark, (2.00, QC - 0.12, 1.34), (2.12, QC - 0.12, 1.34), 0.045, BLACK, 10)      # the coolant hoses to the radiator
         tube(dark, (2.00, QC + 0.14, 0.52), (2.10, QC + 0.14, 0.52), 0.045, BLACK, 10)
         tube(green, (2.14, QC - 0.42, 1.22), (3.80, QC - 0.42, 1.22), 0.055, GREEN, 12)     # the inlet manifold
         box(green, 2.20, 2.78, QC - 0.54, QC - 0.36, 0.84, 1.10, DKGREEN)                   # the injection pump
