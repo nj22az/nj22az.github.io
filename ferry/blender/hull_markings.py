@@ -87,6 +87,8 @@ def build():
         # ---- Her name on the bow, on the bulwark.
         zc = L.Z(30.3)
         _write(name, S.NAME, 0.40, side, zc, L.deck_edge(zc) + 0.32, srgb(S.LETTERING), _on_bulwark)
+        # ---- The line's name along her side (the owner, 11 November 2026: "make the shipping company sign Johansson Lines").
+        _write(name, S.LINE, 0.62, side, L.Z(S.LINE_YARD), 1.00, srgb(S.LINE_COLOUR), _on_shell)
 
     # ---- Her name and port of registry on the transom.
     z = -L.HALF - LIFT
