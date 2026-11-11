@@ -107,7 +107,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   w = await walk(2.0, 21.7, PORT, 2);
   check(w.x < 2.6, `the port wall and the log desk stop one (x ${w.x.toFixed(2)})`);
   w = await walk(-2.5, 20.9, ASTERN, 3);
-  check(w.y > 9.05 && w.z > Z(20.15), `the bar across the head of the crew stair holds one back (${(w.z + 17.25).toFixed(2)} m, ${w.y.toFixed(2)} m up)`);
+  check(w.y < 6.6 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the saloon (${(w.z + 17.25).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
   w = await walk(-1.5, 20.9, ASTERN, 3);
   check(w.z > Z(20.14), `the chart table stops one (${(w.z + 17.25).toFixed(2)} m; its front is at 20.15)`);
   w = await walk(0, 21.0, ASTERN, 2.5);

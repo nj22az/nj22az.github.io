@@ -75,14 +75,22 @@ REPLACES.update({
     'stairs-passenger-deck': dict(
         part='passenger', prefix='Stair,', section='Stairs', built='11 November 2026',
         boxes=[_box((3.42, 4.09), (6.45, 10.05), (17.50, 19.60)), _box((-4.09, -3.42), (6.45, 10.05), (17.50, 19.60)),      # to the wings
-               _box((0.80, 1.50), (6.45, 10.05), (3.20, 4.90)), _box((-1.50, -0.80), (6.45, 10.05), (3.20, 4.90))],          # to the after landing
+               _box((0.80, 1.50), (6.45, 10.05), (3.20, 4.90)), _box((-1.50, -0.80), (6.45, 10.05), (3.20, 4.90)),           # to the after landing
+               _box((-2.93, -2.12), (6.45, 10.05), (17.60, 20.40))],                                                          # the crew stair
         keep=lambda mat, col: False,
         why='her own stairs, built in Blender to the yard\'s standard',
         what='the stairs, each to the yard\'s standard (steps, stringers, handrails)'),
     # The after stairs' top steps are sorted into the bridge deck in the base.
     'stairs-bridge-deck': dict(
         part='bridge', prefix='Stair,', section='Stairs', built='11 November 2026', listed=False,
-        boxes=[_box((0.80, 1.50), (8.80, 8.90), (4.50, 4.79)), _box((-1.50, -0.80), (8.80, 8.90), (4.50, 4.79))],
+        boxes=[_box((0.80, 1.50), (8.80, 8.90), (4.50, 4.79)), _box((-1.50, -0.80), (8.80, 8.90), (4.50, 4.79)),
+               _box((-2.93, -2.12), (8.80, 8.95), (19.90, 20.20))],
+        keep=lambda mat, col: False,
+        why='her own stairs, built in Blender to the yard\'s standard', what=''),
+    # The engine room's: its steps, the two bars and the handrails, in the well under the port casing.
+    'stairs-machinery': dict(
+        part='machinery', prefix='Stair,', section='Stairs', built='11 November 2026', listed=False,
+        boxes=[_box((3.05, 4.05), (-1.05, 3.05), (6.30, 8.70))],
         keep=lambda mat, col: False,
         why='her own stairs, built in Blender to the yard\'s standard', what=''),
 })

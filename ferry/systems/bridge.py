@@ -214,7 +214,7 @@ C('OUT-04', 'Chart table', WH, (-1.475, 19.84, 0.0), 'The chart table against th
 C('OUT-05', 'Bookshelf, nautical publications', WH, (-1.62, 19.54, 1.58), 'Tide tables, the list of lights, the radio signals list, the signal code and the ship\'s own manuals, behind a fiddle rail.',
   dict(kind='bookshelf', w=0.66, d=0.20, H=0.26))
 C('OUT-07', 'Binoculars box', WH, (-2.64, 22.76, TOP), 'Two 7 × 50 binoculars in a varnished box at the console\'s starboard end.', dict(kind='binoculars'))
-C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the crew stair from the saloon, railed on its inboard side with a bar across the top.',
+C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the crew stair from the saloon, railed on its inboard side, with a self-closing gate across the top where one comes up: it opens forward, away from the well.',
   dict(kind='stairwell'))
 C('OUT-09', 'Log desk', WH, (2.71, 21.70, 0.88), 'A fold-down desk under the port window for the deck log, with its own lamp.', dict(kind='log_desk', w=0.72, d=0.40),
   w=10, use=0.2, by=('BD1', 1), survey='B102')

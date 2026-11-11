@@ -893,14 +893,26 @@ def binoculars(g, tag, x, yard, h):
 
 
 def stairwell(g, tag, x, yard, h):
-    """The crew stair's head: a rail on its inboard side and a bar across the top."""
+    """
+    The crew stair's head: a rail along its inboard side, and across the top, where one comes up out of it, a self-closing
+    gate of two bars. The first drawing had those bars fixed: nobody could have come up the stair (found when the stairs
+    were walked, checks/stairs.cjs). The gate hangs on the outboard post and opens forward, away from the well.
+    """
     x = -2.07
+    rail = srgb(0xc9cfcf)
     for yd in (19.60, 20.15):
-        tube('steel', (x, yd, 0.012), (x, yd, 1.0), 0.016, srgb(0xc9cfcf), 8)
+        tube('steel', (x, yd, 0.012), (x, yd, 1.0), 0.016, rail, 8)
     for hh in (0.5, 1.0):
-        tube('steel', (x, 19.56, hh), (x, 20.16, hh), 0.014, srgb(0xc9cfcf), 8)
-        tube('steel', (x, 20.16, hh), (-2.90, 20.16, hh), 0.014, srgb(0xc9cfcf), 8)
-    tube('steel', (-2.88, 20.16, 0.012), (-2.88, 20.16, 1.0), 0.016, srgb(0xc9cfcf), 8)
+        tube('steel', (x, 19.56, hh), (x, 20.16, hh), 0.014, rail, 8)
+    tube('steel', (-2.88, 20.16, 0.012), (-2.88, 20.16, 1.0), 0.016, rail, 8)
+    mv = _moving('Wheelhouse, crew stair gate', 'gate-crew-stair', steel='Shaft steel', grip='Plastic')
+    for hh in (0.5, 1.0):
+        tube(mv['steel'], (-2.86, 20.16, hh), (x - 0.03, 20.16, hh), 0.014, rail, 8)
+    tube(mv['steel'], (x - 0.03, 20.16, 0.5), (x - 0.03, 20.16, 1.0), 0.012, rail, 8)                 # its closing stile
+    tube(mv['steel'], (-2.86, 20.16, 0.5), (-2.86, 20.16, 1.0), 0.012, rail, 8)                      # and the hinge stile
+    box(mv['grip'], x - 0.20, x - 0.06, 20.150, 20.170, 0.70, 0.80, srgb(0xe2b93b))                  # a yellow plate: push
+    MOTIONS.append(dict(id='gate-crew-stair', name='Gate at the head of the crew stair', pivot=[-2.86, 0.0, L.Z(20.16)], ratio=-1.0, max=95,
+                        at=[-2.50, DECK, L.Z(20.16)], normal=[0, 0, 1], reach=1.3))
     box('paint', -2.90, -2.14, 19.56, 19.58, 1.52, 1.64, srgb(0x1e8246))                     # over the opening: the way out
     pic((-2.52, 19.58, 1.58), FWD, UP, 0.30, 0.11, 'exit')
 
@@ -1244,7 +1256,7 @@ def motion():
     inputs, movers = [], []
     for m in MOTIONS:
         inputs.append(dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit='°', below='', above='open', rest='shut', auto='near',
-                           at=m['at'], normal=m['normal'], reach=1.6))
+                           at=m['at'], normal=m['normal'], reach=m.get('reach', 1.6)))
         movers.append(dict(id=m['id'], kind='turn', input=m['id'], axis=[0, 1, 0], pivot=m['pivot'], ratio=m['ratio']))
     for c in CONTROLS:
         inputs.append(dict(id=c['id'], name=c['name'], fitting=c['fitting'], steps=c['steps'], home=c['home'], min=c['steps'][0]['v'], max=c['steps'][-1]['v'], unit='°'))

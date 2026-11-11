@@ -236,6 +236,14 @@ STAIRS = [
          going=0.152, foot=6.50, sides=('open', 'open'), paint=WHITE),
     dict(id='aft-s', cls='L', name='after landing, starboard', part='passenger', x=(-1.43, -0.87), top=(4.80, 9.10), down=-1, legs=[13], rise=2.60 / 13,
          going=0.152, foot=6.50, sides=('open', 'open'), paint=WHITE),
+    # The crew's stair from the saloon to the wheelhouse, in its own enclosure and, through the bridge deck, in a casing in
+    # the master's cabin. It keeps the other ship's place and pitch, which is the steepest a crew stair may be. At its head
+    # the wheelhouse has a rail and a self-closing gate (wheelhouse.stairwell), so it has no newels of its own there.
+    dict(id='crew', cls='C', name='crew stair to the wheelhouse', part='passenger', x=(-2.90, -2.14), top=(20.15, 9.10), down=-1, legs=[13], rise=0.200,
+         going=0.200, foot=6.50, sides=('open', 'wall'), gaps=(0.0, 0.10), top_ext=0.0, top_newel=False),
+    # Down to the engine room from the port casing, through the well in the car deck (6.5 to 8.5 m from the transom).
+    dict(id='engine-room', cls='L', name='engine room', part='machinery', x=(3.14, 3.96), top=(6.50, 2.10), down=1, legs=[16], rise=3.10 / 16,
+         going=0.150, foot=-1.00, sides=('open', 'open'), top_ext=0.10, well=dict(x=(3.08, 4.02), yard=(6.50, 8.50))),
 ]
 
 # ---- Marks.

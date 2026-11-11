@@ -97,7 +97,8 @@ def build_stair(st):
 
     h = c['rail']
     top_yard, top_y = st['top']
-    path = [(top_yard - d * 0.30, top_y + h), (top_yard, top_y + h)]        # the handrail's line, from the deck above down
+    ext = st.get('top_ext', 0.30)                                            # how far the rail runs on over the deck above
+    path = [(top_yard - d * ext, top_y + h), (top_yard, top_y + h)]          # the handrail's line, from the deck above down
     for kind, yard, y, n in legs:
         if kind == 'landing':
             length = n
@@ -144,7 +145,8 @@ def build_stair(st):
     # ---- handrails: 0.90 m over the line of the steps' edges and over a landing; a newel at the top and at the foot
     for x, side, out in rail_x:
         _rail(rails, x, path, 0.019, RAIL)
-        rails.tube((x, top_y + 0.004, Z(path[0][0])), (x, path[0][1], Z(path[0][0])), 0.019, None, colour=RAIL, sides=10)
+        if st.get('top_newel', True):
+            rails.tube((x, top_y + 0.004, Z(path[0][0])), (x, path[0][1], Z(path[0][0])), 0.019, None, colour=RAIL, sides=10)
         rails.tube((x, foot_y + 0.004, Z(path[-1][0])), (x, path[-1][1], Z(path[-1][0])), 0.019, None, colour=RAIL, sides=10)
         if side == 'open':
             # a knee rail halfway up, and posts from the stringer about every 0.9 m
@@ -157,7 +159,7 @@ def build_stair(st):
                     rails.tube((x, yy - h + 0.03, Z(yd)), (x, yy, Z(yd)), 0.012, None, colour=RAIL, sides=8)
         else:
             # brackets to the wall about every 0.9 m
-            wall = x + out * 0.055
+            wall = x + out * (0.055 + st.get('gaps', (0.0, 0.0))[0 if out < 0 else 1])
             for (a, ya), (b, yb) in zip(path[1:], path[2:]):
                 count = max(1, int(round(hypot(b - a, yb - ya) / 0.9)))
                 for i in range(count + 1):
