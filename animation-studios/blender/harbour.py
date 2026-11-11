@@ -26,7 +26,7 @@ DARK = 0.22          # surfaces darker than this are painted black
 QUAY_Y = 50.0        # the quay's edge runs east-west here; the water, pier and ferry are north of it
 # the backdrop: the harbour seen from the quay looking north, from open water in the west to open water in
 # the east, so that its two ends join and it can go round and round behind him
-BACKDROP = dict(west=-58.0, east=72.0, width=3840, height=760, waterline_row=640, pitch=8.0, ink=4.5)
+BACKDROP = dict(west=-58.0, east=72.0, width=3840, height=760, waterline_row=640, pitch=8.0, ink=8.0)   # close to his 10.5, a little finer for distance
 
 
 def decode():

@@ -109,6 +109,12 @@ against them and rolls over the planted leg, the head nods on every beat and tip
 his sides with bent elbows and swing against the legs with the forearm following late, the whole figure squashes as
 he lands and stretches as he passes, and at the end of each phrase he turns to the camera with his grin.
 
+**The rig (the owner: "You need to rig his body better"):** `meshy_walk.py` `improve_rig()` works on Meshy's rig
+before he is posed. The skin weights are smoothed (four passes over the mesh), so shoulders, hips and knees bend in a
+curve. Three bones are added that Meshy does not give, each owning its part softly: `Cap` and `Beard` on the head,
+`Belly` on the lower spine. `act()` uses them: the cap rides the head a beat late and hops, the beard swings after
+the head, the belly wobbles as each heel lands.
+
 **Not done:** the quay deck and its furniture are still 2D drawings, not the World's; the same six seconds of acting
 repeat for all five phrases; his arms hang wide (the model's A-pose shoulders); the
 peak is not black from every angle; nobody has watched it move or listened to it; the cleaned model is not saved as a

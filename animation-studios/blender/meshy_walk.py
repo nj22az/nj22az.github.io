@@ -62,8 +62,73 @@ def load(path):
     arm.matrix_basis = arm_world
     bpy.context.view_layer.update()
     rest = np.stack([-(raw[:, 1] - c0[1]) * k, (raw[:, 0] - c0[0]) * k, (raw[:, 2] - c0[2]) * k], 1)
+    improve_rig(arm, mesh, rest)
     arm.data.pose_position = 'POSE'
     return sc, arm, mesh, rest
+
+
+def smoothstep(x):
+    x = np.clip(x, 0, 1)
+    return x * x * (3 - 2 * x)
+
+
+def improve_rig(arm, mesh, rest):
+    """Meshy's rig moves him as one stiff body. This makes it a cartoon rig:
+    - the skin weights are smoothed, so shoulders, hips and knees bend in a curve, not a crease;
+    - three bones are added that Meshy does not give: Cap (on the head), Beard (on the head) and Belly
+      (on the lower spine), each owning its part softly, so they can lag, bounce and swing on their own."""
+    me = mesh.data
+    names = [g.name for g in mesh.vertex_groups]
+    n = len(me.vertices)
+    w = np.zeros((n, len(names)), dtype=np.float32)
+    for v in me.vertices:
+        for g in v.groups:
+            w[v.index, g.group] = g.weight
+    # which points are trunk, read before smoothing: the shirt's paint wants a clean edge
+    trunk = sum(w[:, i] for i, nm in enumerate(names) if nm in ('Hips', 'Spine02', 'Spine01', 'Spine', 'LeftShoulder', 'RightShoulder'))
+    a = me.attributes.new('trunk', 'FLOAT', 'POINT')
+    a.data.foreach_set('value', np.asarray(trunk, dtype=np.float32))
+    e = np.empty(len(me.edges) * 2, dtype=np.int64); me.edges.foreach_get('vertices', e); e = e.reshape(-1, 2)
+    deg = np.bincount(e.ravel(), minlength=n).astype(np.float32)[:, None]
+    for _ in range(4):
+        nb = np.zeros_like(w)
+        np.add.at(nb, e[:, 0], w[e[:, 1]]); np.add.at(nb, e[:, 1], w[e[:, 0]])
+        w = 0.5 * w + 0.5 * nb / np.maximum(deg, 1)
+    col = {nm: i for i, nm in enumerate(names)}
+    x, z = rest[:, 0], rest[:, 2]
+
+    def take(name, share, sources):
+        """Give the new bone `share` (0..1 per point) of what the source bones hold there."""
+        nonlocal w
+        new = np.zeros(n, dtype=np.float32)
+        for sname in sources:
+            c = col[sname]
+            new += w[:, c] * share
+            w[:, c] *= (1 - share)
+        w = np.concatenate([w, new[:, None]], 1)
+        names.append(name)
+
+    take('Cap', smoothstep((z - 2.64) / 0.10), ['Head', 'head_end', 'headfront', 'neck'])
+    take('Beard', 0.85 * smoothstep((2.38 - z) / 0.20) * smoothstep(x / 0.15), ['Head', 'headfront', 'neck'])
+    take('Belly', 0.6 * np.exp(-((z - 1.42) / 0.26) ** 2) * smoothstep((x - 0.05) / 0.25), ['Hips', 'Spine02', 'Spine01'])
+    w /= np.maximum(w.sum(1, keepdims=True), 1e-6)
+    for g in list(mesh.vertex_groups):
+        mesh.vertex_groups.remove(g)
+    for c, name in enumerate(names):
+        g = mesh.vertex_groups.new(name=name)
+        for i in np.nonzero(w[:, c] > 1e-3)[0]:
+            g.add([int(i)], float(w[i, c]), 'REPLACE')
+    # the bones themselves, placed on the model at rest
+    inv = arm.matrix_world.inverted()
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode='EDIT')
+    for name, parent, head, tail in (('Cap', 'Head', (0.0, 0, 2.68), (-0.12, 0, 3.05)),
+                                     ('Beard', 'Head', (0.2, 0, 2.36), (0.3, 0, 2.0)),
+                                     ('Belly', 'Spine02', (0.1, 0, 1.5), (0.45, 0, 1.45))):
+        b = arm.data.edit_bones.new(name)
+        b.head, b.tail = inv @ Vector(head), inv @ Vector(tail)
+        b.parent = arm.data.edit_bones[parent]
+    bpy.ops.object.mode_set(mode='OBJECT')
 
 
 def paint(mesh, rest):
@@ -78,10 +143,8 @@ def paint(mesh, rest):
     brim_front = (co[:, 0] > 0.25) & (co[:, 2] > 2.64) & (co[:, 2] < ms.PEAK['z_to'])
     peak |= brim_front; hat |= brim_front
     # the rig knows what is trunk: the points that follow the spine (not the arms, not the head and beard)
-    trunk_bones = {g.index for g in mesh.vertex_groups if g.name in ('Hips', 'Spine02', 'Spine01', 'Spine', 'LeftShoulder', 'RightShoulder')}
-    trunk = np.zeros(len(me.vertices))
-    for v in me.vertices:
-        trunk[v.index] = sum(g.weight for g in v.groups if g.group in trunk_bones)
+    trunk = np.empty(len(me.vertices), dtype=np.float32)
+    me.attributes['trunk'].data.foreach_get('value', trunk)
     shirt = (co[:, 2] > ms.SHIRT[0]) & (co[:, 2] < ms.SHIRT[1]) & (trunk > 0.5)
     leg_bones = {g.index for g in mesh.vertex_groups if g.name.endswith(('UpLeg', 'Leg', 'Foot', 'ToeBase'))}
     legs = np.zeros(len(me.vertices))
@@ -183,6 +246,8 @@ class Walk:
 
     def set_phase(self, ph):
         self.arm.animation_data.action = self.action          # the clip gives the pose; act() then takes it over
+        for pb in self.arm.pose.bones:                        # bones the clip does not move must start from rest,
+            pb.matrix_basis = Matrix.Identity(4)              # or last frame's acting would pile up on them
         f = self.f0 + ((ph + self.phase0) % 1.0) * (self.f1 - self.f0)
         self.sc.frame_set(int(math.floor(f)), subframe=f - math.floor(f))
 
@@ -278,6 +343,20 @@ class Walk:
         nod = 5.5 * math.cos(2 * math.pi * (beat - 0.06))
         turn('Head', RZ(11.0 * c1 * (1 - look) - 40.0 * look) @ RX(4.5 * math.sin(2 * math.pi * (ph + 0.1)) * (1 - 0.6 * look))
              @ RY(nod * (1 - look) - 6.0 * look))
+        # what Meshy's rig could not move: the cap rides the head a beat late and hops, the beard swings after
+        # the head, and the belly wobbles as each heel lands
+        def shift(name, v):
+            d = Matrix.Translation(Wi.to_3x3() @ Vector(v))
+            for b in below(name):
+                new[b] = d @ new[b]
+            touched.append(name)
+
+        turn('Cap', RY(4.0 * math.sin(2 * math.pi * (beat - 0.30))))
+        shift('Cap', (0, 0, 0.028 * max(0.0, math.sin(2 * math.pi * (beat - 0.15)))))
+        turn('Beard', RX(5.0 * math.sin(2 * math.pi * (ph - 0.02))) @ RY(4.5 * math.cos(2 * math.pi * (beat - 0.28))))
+        fb = (beat - 0.05) % 1.0
+        wobble = math.exp(-4.0 * fb) * math.sin(2 * math.pi * fb * 1.6)
+        shift('Belly', (0.015 * wobble, 0, -0.045 * wobble))
         # arms: down by his sides, elbows bent, swinging against the legs; the forearm follows late
         for side, sy, sw, sw_late in (('Left', 1.0, math.cos(2 * math.pi * (ph - 0.04)), math.cos(2 * math.pi * (ph - 0.12))),
                                       ('Right', -1.0, -math.cos(2 * math.pi * (ph - 0.04)), -math.cos(2 * math.pi * (ph - 0.12)))):
