@@ -92,16 +92,19 @@ def waves(a, x0, x1, rows, size, lw, seed):
 
 
 # ---- sky -----------------------------------------------------------------------------------------
-def sky(beat=0):
-    """The sun has a face, as suns did then, and its rays pump in and out on the beat."""
-    a = Art(W)
-    c = (300, 170)
+SUN = (300, 170)
+
+
+def sun(pump=0.0):
+    """The sun has a face, as suns did then, and its rays breathe in and out on the beat (pump 0..1).
+    A 340 px square to be centred on SUN."""
+    a = Art(340, 340)
+    c = (170, 170)
     a.blob(('circ', c, 66), 9)
     for i in range(12):
         t = i * math.pi / 6
-        long = (i + beat) % 2 == 0
-        r0, r1 = 92, (128 if long else 108)
-        a.line([(c[0] + r0 * math.cos(t), c[1] + r0 * math.sin(t)), (c[0] + r1 * math.cos(t), c[1] + r1 * math.sin(t))], 9)
+        r1 = 108 + 22 * (pump if i % 2 == 0 else 1 - pump)
+        a.line([(c[0] + 92 * math.cos(t), c[1] + 92 * math.sin(t)), (c[0] + r1 * math.cos(t), c[1] + r1 * math.sin(t))], 9)
     for dx in (-22, 20):                                   # pie eyes
         a.solid(('circ', (c[0] + dx, c[1] - 12), (9, 15)))
         a.solid(('poly', [(c[0] + dx + 1, c[1] - 12), (c[0] + dx + 12, c[1] - 19), (c[0] + dx + 12, c[1] - 7)]), WHITE)
@@ -381,5 +384,5 @@ if __name__ == '__main__':
     import sys
     from pathlib import Path
     out = Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True)
-    for name, fn in (('sky', sky), ('far', far), ('mid', mid), ('near', near)):
+    for name, fn in (('sun', sun), ('far', far), ('mid', mid), ('near', near), ('props', props)):
         fn().save(out / f'dock-{name}.png')

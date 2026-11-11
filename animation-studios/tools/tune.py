@@ -3,6 +3,7 @@
 The tune is written here for this film (G major, five two-bar phrases A B A B C). Each step of the
 stroll is one beat; the notes are quavers, so his lips, the floating notes and the sound share one clock.
 """
+import math
 import numpy as np
 
 SR = 48000
@@ -33,17 +34,28 @@ def notes():
     return out
 
 
-def face_at(n):
-    """Mouth and eye for film frame n: lips pursed on a note (wider as it starts), a grin between phrases."""
-    mouth = 'grin'
+TOTAL = len(PHRASES) * PHRASE_QUAVERS * QUAVER_FRAMES      # 720: the loop, in 24ths of a second
+
+
+def pucker_at(f):
+    """How far his lips are pursed at time f (24ths of a second, any fraction): 0 is the grin, 1 a
+    whistle, a little over 1 as each note starts. The lips stay pursed from note to note and let go
+    after the last note of a phrase."""
+    best = 0.0
     for start, ln, _ in notes():
-        if start - 1 <= n < start + ln + 1:            # lips stay pursed from one note to the next
-            mouth = 'w2' if 0 <= n - start < 3 else 'w1'
-            if 0 <= n - start < 3:
-                break
-    q = (n / QUAVER_FRAMES) % PHRASE_QUAVERS
-    eye = 'shut' if (14.4 <= q < 14.75 or 5.0 <= q < 5.25) else 'open'
-    return mouth, eye
+        d = (f - start + 1.0) % TOTAL                       # the lips are there a moment before the note
+        if d < ln + 2.5:
+            on = min(1.0, d / 1.4)
+            off = min(1.0, (ln + 2.5 - d) / 1.6)
+            best = max(best, min(on, off) * (1 + 0.3 * math.exp(-max(0.0, d - 1.0) / 2.2)))
+    return best
+
+
+def lid_at(f):
+    """His eyelid, 0 open to 1 shut: he blinks twice a phrase."""
+    q = (f / QUAVER_FRAMES) % PHRASE_QUAVERS
+    v = max(0.0, 1 - abs(q - 14.55) / 0.26, 1 - abs(q - 5.1) / 0.26)
+    return v * v * (3 - 2 * v)
 
 
 def render(total_frames, step_frames):
