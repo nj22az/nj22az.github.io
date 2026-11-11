@@ -728,7 +728,7 @@ head frame). `checks/bridge.cjs` **25 of 25** (new: from the house top over the 
 11.50 to 11.80 m). Looked at in pictures: from the wheel with the eye at 1.80 m, the wheelhouse from outside, the step in
 the roof, the aft wall inside (where the other ship's wall ends and hers is carried up there is a joint line at 2.08 m).
 The homepage card's picture is retaken by the recipe above. Not run: the homepage's own review (only the card's picture
-changed); the walk tests of the other decks.
+changed); the walk tests of the other decks. Published to `main` the same day on the owner's word.
 
 ### 11 November 2026, last of all: class answered, and the levers
 
