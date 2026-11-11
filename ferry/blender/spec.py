@@ -121,7 +121,8 @@ LADDERS = (
     dict(id='ladder-shaft-space', name='Ladder to the shaft space', up='Ladder to the lower lobby', group='machinery',
          x=-0.98, yard=5.45, faces=(-1, 0), foot=FLAT, head=Y(4.0), hatch='hatch-shaft-space', hatch_name='Hatch to the shaft space'),
     dict(id='ladder-fore-peak', name='Ladder to the fore peak', up='Ladder to the car deck', group='machinery',
-         x=0.55, yard=30.58, faces=(0, -1), foot=FORE_PEAK_FLAT, head=Y(4.0), hatch='hatch-fore-peak', hatch_name='Hatch to the fore peak'),
+         x=0.55, yard=30.58, faces=(0, -1), foot=FORE_PEAK_FLAT, head=Y(4.0), hatch='hatch-fore-peak', hatch_name='Hatch to the fore peak',
+         wall=0.08),      # it stands 8 cm forward of the collision bulkhead and is fastened to it (it was fastened to nothing)
     dict(id='ladder-compass-deck', name='Ladder to the bridge deck', up='Ladder to the compass deck', group='bridge',
          x=3.14, yard=19.25, faces=(-1, 0), foot=9.11, head=11.5, top=1.0, wall=0.17,
          foot_at=(3.45, 19.78), head_at=(2.58, 19.25)),

@@ -340,10 +340,11 @@ bosses and the rams' cylinders, each 5 to 30 mm clear of the stock or stool that
 steering gear; every coupling, gland and bearing housing round the shafts (bored 15 mm larger than the shaft); the
 steps of the shaft-space and void walkways (no post, 17 cm over the floors); the fresh-water tanks (bearers on nothing:
 they now lie over the frames, on legs to the floors); the steering gear's watertight door (its hinge lugs stood beside
-the frame on no wall). **Three are not fixed** and are listed with the reason in `afloat-known.json`: the two chain
-lockers, which stand on no flat and reach no deck, and the fore peak's ladder, which is fastened to nothing. The fore
-peak has to be worked through as a whole. `--all` also lists the other ship's: 187 things, 125 of them in the machinery
-spaces.
+the frame on no wall). The last three, in the fore peak, were fixed after the publication of 11 November and are
+**on the development branch only**: the ladder is fastened to the collision bulkhead by stand-offs, the flat's bearers
+come up to its plates, and each chain locker stands on four legs on the floors of frames 63 and 64. `afloat-known.json`
+(things known to be afloat, with the reason) is empty. `--all` also lists the other ship's: 187 things, 125 of them in
+the machinery spaces.
 
 ## The compass deck (`blender/compass_deck.py`)
 
@@ -756,8 +757,10 @@ Of walking aboard:
   owner's internal stair trunk (the list above) is not built.
 - The main stairs' doors open onto the vehicle lanes, not into the lower lobby (JSY-STD-401 section 4). The space under
   the port main stair's lower flight has no use and no door.
-- Three things of hers in the fore peak hang in the air (the chain lockers and the ladder: `blender/afloat-known.json`),
-  and 187 of the other ship's throughout: they go as those sections are rebuilt.
+- 187 of the other ship's pieces hang in the air (`afloat.py --all`), 125 of them in the machinery spaces: they go as
+  those sections are rebuilt. On `main` as published on 11 November, three things of hers in the fore peak still do (the
+  chain lockers and the ladder); they are fixed on the development branch.
+- The chain lockers still end 4 cm under the car deck, with no spurling pipe drawn to the windlass above.
 - The stair standard's outside requirements are recalled, not read.
 - In the hull's spaces without a floor of their own (the shaft space beside its walkway, the void, the fore peak) the
   walker stands on the structure: the floors' top edges and the stringers.
@@ -786,6 +789,19 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, after it: published, and the fore peak
+
+- Published to `main` as `4dcad33` on the owner's "Yes". The Pages build served the new model within the wait; 13 of 13
+  live files matched the tree pushed (the model, the register, her sheet of pictures, `app.js`, `systems.js`, the page,
+  this README, the stair standard, the document register, `afloat.py`, `stairs.py`, `stairs.cjs`, the handover). The
+  live page, opened in a browser: 8 stairs and both stair doors in the model, no console errors, and the wheel on its
+  helm unit in the picture taken there.
+- Then, on the branch only: the fore peak (ladder stand-offs, the flat's bearers, legs under the chain lockers). The
+  Blender build (0 corners through the plating), `assemble.py` twice with the same hashes, `check.py`,
+  `bridge_calcs.py`, `bridge.cjs`, `stairs.cjs`: all passed. `afloat.py` with an empty known list: 4,867 pieces, 2,366
+  of hers, nothing of hers hangs in the air. On foot on the fore peak's flat: stood at 0.20 m, "Machinery spaces · Fore
+  peak". No picture of the fore peak was taken.
 
 ### 11 November 2026, the stairs, and nothing hanging in the air
 
