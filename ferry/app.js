@@ -178,8 +178,10 @@ scene.add(root);
 const cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
 let cutSpan = [-4.6, 3.6];
 
+let stairList = [];
 function build(doc, atlases) {
   const { header } = doc, viewDef = header.views[0];
+  stairList = header.stairs || [];
   materials = header.materials.map(m => materialOf(m, atlases));
   cutSpan = [header.bounds.min[0] - 0.05, header.bounds.max[0] - 1.0];
   floor.position.y = header.bounds.min[1] - 0.02;
@@ -1354,6 +1356,8 @@ async function start() {
     get ways() { return ways.map(w => ({ id: w.def.id, a: w.a.toArray(), b: w.b.toArray() })); },
     /** For checks: leave a door open or shut, as a tap would. */
     work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
+    /** For checks: her stairs, as the file says them (README: `stairs`). */
+    get stairs() { return stairList; },
     step: id => stepInput(id),
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
     movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray() })),

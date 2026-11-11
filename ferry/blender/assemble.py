@@ -65,6 +65,39 @@ REPLACES = {
         why='her own navigation bridge, built in Blender',
         what='the navigation bridge (the wheelhouse plated, lined and glazed, its console and every instrument, the boards and their wiring, both wings)'),
 }
+def _box(x, y, yard):
+    return dict(x=x, y=y, z=(L.Z(yard[0]), L.Z(yard[1])))
+
+
+# Her stairs (blender/stairs.py, spec.STAIRS) take the place of the other ship's, stair by stair: its steps, the two bars
+# they lie on and its slanted handrail bars are pieces wholly inside each box. A rule with `boxes` has several.
+REPLACES.update({
+    'stairs-passenger-deck': dict(
+        part='passenger', prefix='Stair,', section='Stairs', built='11 November 2026',
+        boxes=[_box((3.42, 4.09), (6.45, 10.05), (17.50, 19.60)), _box((-4.09, -3.42), (6.45, 10.05), (17.50, 19.60)),      # to the wings
+               _box((0.80, 1.50), (6.45, 10.05), (3.20, 4.90)), _box((-1.50, -0.80), (6.45, 10.05), (3.20, 4.90))],          # to the after landing
+        keep=lambda mat, col: False,
+        why='her own stairs, built in Blender to the yard\'s standard',
+        what='the stairs, each to the yard\'s standard (steps, stringers, handrails)'),
+    # The after stairs' top steps are sorted into the bridge deck in the base.
+    'stairs-bridge-deck': dict(
+        part='bridge', prefix='Stair,', section='Stairs', built='11 November 2026', listed=False,
+        boxes=[_box((0.80, 1.50), (8.80, 8.90), (4.50, 4.79)), _box((-1.50, -0.80), (8.80, 8.90), (4.50, 4.79))],
+        keep=lambda mat, col: False,
+        why='her own stairs, built in Blender to the yard\'s standard', what=''),
+})
+# Pieces of the base moved as they are, where two of them lie in one plane and flicker, or one stands in the way of
+# something of hers: every piece wholly inside the box goes by `move` (x, y, metres along the ship).
+NUDGES = (
+    dict(part='car', what="the threshold's stripes at the lower lobby's port door: they lay in the floor covering's own plane",
+         box=_box((2.24, 2.74), (2.09, 2.12), (5.27, 6.43)), move=(0.0, 0.004, 0.0)),
+    dict(part='car', what="the inboard baggage cart in the lower lobby: its wheels lay through the other cart's",
+         box=_box((1.50, 2.16), (2.09, 3.10), (2.58, 4.25)), move=(-0.16, 0.0, 0.0)),
+    dict(part='passenger', what='the bench at the foot of the port after stair, which is 0.6 m longer than the other ship\'s',
+         box=_box((0.50, 2.70), (6.45, 7.60), (2.30, 2.90)), move=(0.0, 0.0, -0.45)),
+    dict(part='passenger', what='the bench at the foot of the starboard after stair',
+         box=_box((-2.70, -0.50), (6.45, 7.60), (2.30, 2.90)), move=(0.0, 0.0, -0.45)),
+)
 # Parts of the base that must lie inside the shell.
 FIT = ('machinery',)
 # Openings the base's drawing lacks, each cut through one thin plate of it. `across` names the axis the plate is thin
@@ -273,13 +306,13 @@ def pieces_of(m):
 def replace_slice(m, rule, mat):
     """Drop the pieces of a base mesh that lie wholly in the slice's box, bar what `keep` spares; the vertices left unused go too.
     Returns how many triangles went."""
-    box = rule['box']
-    lo, hi = np.array([box['x'][0], box['y'][0], box['z'][0]]), np.array([box['x'][1], box['y'][1], box['z'][1]])
+    bounds = [(np.array([b['x'][0], b['y'][0], b['z'][0]]), np.array([b['x'][1], b['y'][1], b['z'][1]])) for b in rule.get('boxes') or [rule['box']]]
     pos, idx = m['pos'], m['idx']
     drop = np.zeros(len(idx), bool)
     for tri in pieces_of(m):
         P = pos[idx[tri]].reshape(-1, 3)
-        if (P.min(0) >= lo).all() and (P.max(0) <= hi).all() and not rule['keep'](mat, m['col'][idx[tri[0]][0]]):
+        a, b = P.min(0), P.max(0)
+        if any((a >= lo).all() and (b <= hi).all() for lo, hi in bounds) and not rule['keep'](mat, m['col'][idx[tri[0]][0]]):
             drop[tri] = True
     if not drop.any():
         return 0
@@ -428,6 +461,22 @@ def main():
         meshes[rule['part']] = kept
         report.setdefault('replaced', []).append(key)
 
+    # 1c. Pieces of the base moved as they are.
+    for nudge in NUDGES:
+        b = nudge['box']
+        lo, hi = np.array([b['x'][0], b['y'][0], b['z'][0]]), np.array([b['x'][1], b['y'][1], b['z'][1]])
+        moved = 0
+        for m in meshes.get(nudge['part'], []):
+            if m['origin'] != 'town':
+                continue
+            for tri in pieces_of(m):
+                corners = np.unique(m['idx'][tri])
+                P = m['pos'][corners]
+                if (P.min(0) >= lo).all() and (P.max(0) <= hi).all():
+                    m['pos'][corners] = P + np.array(nudge['move'], dtype=P.dtype)
+                    moved += len(tri)
+        report.setdefault('nudged', []).append(dict(part=nudge['part'], what=nudge['what'], triangles=moved))
+
     # 2. The base's rooms under the car deck are fitted inside her shell.
     for gid in FIT:
         for m in meshes.get(gid, []):
@@ -555,6 +604,8 @@ def main():
     ship['built'] = [dict(part=gid, section=SUPERSEDES[gid]['section'], date=SUPERSEDES[gid]['built'], what=SUPERSEDES[gid]['what']) for gid in SUPERSEDES
                      if any(f['group'] == gid for f in fresh) or any(b.get('part') == gid and b.get('section') == SUPERSEDES[gid]['section'] for b in ship.get('built', []))]
     for key, rule in REPLACES.items():
+        if not rule.get('listed', True):
+            continue
         if key in report.get('replaced', []) or any(b.get('section') == rule['section'] for b in ship.get('built', [])):
             ship['built'].append(dict(part=rule['part'], section=rule['section'], date=rule['built'], what=rule['what']))
     header['source']['blender'] = dict(generator=parts[0][0]['generator'], blender=parts[0][0]['blender'])
@@ -569,6 +620,10 @@ def main():
     import register
     systems = register.write(boxes, quiet=True)
     header['systems'] = dict(file='systems.json', components=len(systems['components']))
+    # Her stairs, as the yard's standard has them (spec.STAIRS): what each is, for the page and for the check that walks them.
+    import stair_rules
+    header['stairs'] = [dict(stair_rules.facts(st), className=S.STAIR_CLASS[st['cls']]['name']) for st in S.STAIRS
+                        if any(o['name'].startswith(f"Stair, {st['name']},") for f in fresh for o in f['objects'])]
     text = json.dumps(header, ensure_ascii=False, separators=(',', ':')).encode()
     text += b' ' * ((4 - len(text) % 4) % 4)
     body = b'JMF1' + struct.pack('<I', len(text)) + text + b''.join(chunks)
@@ -581,6 +636,8 @@ def main():
     if a.report:
         json.dump(report, open(a.report, 'w'), indent=1)
     print(f"{a.out}: {report['bytes']} bytes, {sum(report['triangles'].values())} triangles")
+    for r in report.get('nudged', []):
+        print('  nudged', r['part'], r['triangles'], 'triangles:', r['what'])
     for k in ('dropped', 'moved', 'fitted', 'opened'):
         for r in report[k]:
             print(' ', k, r)

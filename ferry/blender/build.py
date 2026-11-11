@@ -141,9 +141,9 @@ def main():
     ship = shipyard.collection('Chisum')
     # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
     # spaces and to the car deck (part.group).
-    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'bridge', 'top')}
+    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'passenger', 'bridge', 'top')}
     report, inputs, movers, ways = {}, [], [], []
-    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck', 'wheelhouse'):
+    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck', 'wheelhouse', 'stairs'):
         try:
             mod = importlib.import_module(name)
         except ModuleNotFoundError as e:
