@@ -113,6 +113,20 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   w = await walk(0, 21.0, ASTERN, 2.5);
   check(w.z < Z(19.4) && /corridor/i.test(w.room), `and back out through the door into the corridor (${(w.z + 17.25).toFixed(2)} m, "${w.room}")`);
 
+  // the roof's step: from the house top, over the step block, onto the compass deck over the wheelhouse
+  const roof = await page.evaluate(([z]) => {
+    const f = window.__ferry;
+    if (!f.state.walk) f.enterWalk();
+    const y0 = f.walkTo(1.8, z, Math.PI, 0, 11.5);
+    f.hold('KeyW', true);
+    for (let t = 0; t < 2.0; t += 0.1) f.walkFor(0.1);
+    f.hold('KeyW', false);
+    const w = f.state.walk;
+    return { y0, y: w.y, z: w.z, room: f.whereOnFoot() };
+  }, [Z(18.4)]);
+  check(roof.y0 !== null && Math.abs(roof.y0 - 11.5) < 0.03 && Math.abs(roof.y - 11.8) < 0.03 && roof.z > Z(19.6),
+    `from the house top over the step block onto the compass deck, 0.30 m higher (${roof.y0 === null ? 'no floor' : roof.y0.toFixed(2)} to ${roof.y.toFixed(2)} m up, ${(roof.z + 17.25).toFixed(2)} m from the transom, "${roof.room}")`);
+
   // a tap on foot names what is tapped
   const named = await page.evaluate(([z]) => {
     const f = window.__ferry;

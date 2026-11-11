@@ -8,6 +8,11 @@ still fit; what is on it follows M/V Ranger III's pilot-house roof (HAER MI-432)
 lights, VHF antennas and vent heads over the spaces below.
 
 Drawn in the ship's axes (lines.py). The roof's top is at spec.COMPASS_DECK['deck'], and is the floor the walker stands on.
+
+Since 11 November 2026 the roof has two levels: the house top aft, where it always was, and the compass deck proper over
+the wheelhouse, a step of 0.30 m higher (spec.COMPASS_DECK: `step`, `rise`). The mast, the binnacle, the antennas, the
+searchlight and the floodlights stand on the higher part and went up with it; the vent heads stand on the lower. A step
+block halves the rise for whoever walks forward from the ladder, and the edges are marked.
 """
 from math import pi, cos, sin, ceil, hypot, radians
 from mathutils import Vector
@@ -18,38 +23,45 @@ from hull_fittings import _cyl, _revolve
 
 C, M = S.COMPASS_DECK, S.MAST
 Z = L.Z
-DECK = C['deck']
+DECK = C['deck']                       # the house top, aft of the wheelhouse
+STEP = Z(C['step'])                    # where the roof steps up: the wheelhouse's aft wall
+TOP = DECK + C['rise']                 # the compass deck proper, over the wheelhouse
+YELLOW = srgb(0xe2b93b)
 WHITE, GREY, DARK = srgb(S.WHITE), srgb(S.LIGHT_GREY), srgb(S.DARK_GREY)
 STEEL, BRONZE, ZINC = srgb(S.STEEL), srgb(S.BRONZE), srgb(S.ZINC)
 ROOF = srgb(S.ROOF_DECK)
 LENS = srgb(0xdfe6e1)
 
 
-def _loop(x0, x1, z0, z1, r, n=6):
-    """A rounded rectangle in plan, as (x, z) points counter-clockwise (x to port, z forward), beginning on the port side."""
+def _loop(x0, x1, z0, z1, r, n=6, fwd=True, aft=True):
+    """A rectangle in plan with rounded corners, as (x, z) points counter-clockwise (x to port, z forward), beginning on the
+    port side. `fwd` and `aft` say which end's corners are rounded: where two lengths of roof meet, the corners are square."""
     pts = []
-    for cx, cz, a0 in ((x1 - r, z1 - r, 0), (x0 + r, z1 - r, 90), (x0 + r, z0 + r, 180), (x1 - r, z0 + r, 270)):
+    for cx, cz, a0, rounded in ((x1, z1, 0, fwd), (x0, z1, 90, fwd), (x0, z0, 180, aft), (x1, z0, 270, aft)):
+        if not rounded:
+            pts.append((cx, cz))
+            continue
+        ox, oz = cx - r * (1 if cx > 0 else -1), cz - r * (1 if cz == z1 else -1)
         for i in range(n + 1):
             a = radians(a0 + 90 * i / n)
-            pts.append((cx + r * cos(a), cz + r * sin(a)))
+            pts.append((ox + r * cos(a), oz + r * sin(a)))
     return pts
 
 
-def _slab():
-    """The roof: a slab 0.32 m deep with a rounded plan, painted white at the edge and under; its plating on top."""
+def _length(name, z0, z1, deck, depth, fwd, aft):
+    """One length of the roof: a slab `depth` deep, painted white at the edge and under; its plating on top; the plates' seams."""
     x = C['half']
-    z0, z1 = Z(C['yards'][0]), Z(C['yards'][1])
-    loop = _loop(-x, x, z0, z1, C['corner'])
-    top = DECK - 0.006                                     # the plating lies 6 mm over the slab's top: its seams show it
-    bottom = DECK - C['slab']
-    slab = Part('Compass deck, slab', 'Topside paint')
+    loop = _loop(-x, x, z0, z1, C['corner'], fwd=fwd, aft=aft)
+    top = deck - 0.006                                     # the plating lies 6 mm over the slab's top: its seams show it
+    bottom = deck - depth
+    slab = Part(f'{name}, slab', 'Topside paint')
     # The fascia, all round, looking out.
     rows = [[(px, bottom, pz) for px, pz in loop], [(px, top, pz) for px, pz in loop]]
     start = len(slab.f)
     slab.grid(rows, WHITE, close=True)
     zc = (z0 + z1) / 2
     slab.orient(start, lambda c: (c[0], 0.0, c[2] - zc))                   # away from the middle of the roof
-    # Its underside, the deckhead of the bridge house, looking down; its top, looking up (the plating covers it).
+    # Its underside, the deckhead of the house, looking down; its top, looking up (the plating covers it).
     start = len(slab.f)
     slab.polygon([(px, bottom, pz) for px, pz in loop], tint(WHITE, 0.93))
     slab.orient(start, (0, -1, 0))
@@ -57,22 +69,37 @@ def _slab():
     slab.polygon([(px, top, pz) for px, pz in loop], tint(WHITE, 0.6))
     slab.orient(start, (0, 1, 0))
 
-    plating = Part('Compass deck, plating', 'Deck paint')
+    plating = Part(f'{name}, plating', 'Deck paint')
     start = len(plating.f)
-    plating.polygon([(px, DECK, pz) for px, pz in _loop(-x + 0.03, x - 0.03, z0 + 0.03, z1 - 0.03, C['corner'] - 0.03)], ROOF)
+    plating.polygon([(px, deck, pz) for px, pz in _loop(-x + 0.03, x - 0.03, z0 + (0.03 if aft else 0.0), z1 - (0.03 if fwd else 0.0), C['corner'] - 0.03, fwd=fwd, aft=aft)], ROOF)
     plating.orient(start, (0, 1, 0))
     # Plate seams: shallow dark lines, a plate 2.4 m by 1.2 m. Marks, so that they lie a hair in front of the plating.
-    seams = Part('Compass deck, seams', 'Marking')
+    seams = Part(f'{name}, seams', 'Marking')
     seam = tint(ROOF, 0.55)
     span = z1 - z0 - 0.5
     for i in range(1, 6):
         sx = -x + 0.03 + i * (2 * x - 0.06) / 6
-        seams.box((sx - 0.0015, DECK + 0.0005, z0 + C['corner']), (sx + 0.0015, DECK + 0.0035, z1 - C['corner']), seam)
+        seams.box((sx - 0.0015, deck + 0.0005, z0 + (C['corner'] if aft else 0.05)), (sx + 0.0015, deck + 0.0035, z1 - (C['corner'] if fwd else 0.05)), seam)
     nz = int(span / 2.4)
     for j in range(1, nz + 1):
         sz = z0 + 0.25 + j * span / (nz + 1)
-        seams.box((-x + C['corner'], DECK + 0.0005, sz - 0.0015), (x - C['corner'], DECK + 0.0035, sz + 0.0015), seam)
+        seams.box((-x + C['corner'], deck + 0.0005, sz - 0.0015), (x - C['corner'], deck + 0.0035, sz + 0.0015), seam)
     return [slab, plating, seams]
+
+
+def _slab():
+    """The roof in its two lengths: the house top, and the compass deck over the wheelhouse a step higher. Where they meet,
+    a step block 0.15 m high halves the rise, clear of where the ladder arrives; its edge and the deck's are marked yellow."""
+    z0, z1 = Z(C['yards'][0]), Z(C['yards'][1])
+    parts = _length('House top', z0, STEP, DECK, C['slab'], fwd=False, aft=True)
+    parts += _length('Compass deck', STEP, z1, TOP, C['slab_top'], fwd=True, aft=False)
+    step = Part('Compass deck, step', 'Topside paint')
+    mark = Part('Compass deck, step markings', 'Marking')
+    x0, x1, za = -2.6, 2.4, STEP - 0.295
+    step.box((x0, DECK, za), (x1, DECK + C['rise'] / 2, STEP), tint(WHITE, 0.97))
+    mark.box((x0, DECK + C['rise'] / 2 + 0.0005, za), (x1, DECK + C['rise'] / 2 + 0.0035, za + 0.05), YELLOW)
+    mark.box((-C['half'] + 0.2, TOP + 0.0005, STEP + 0.01), (C['half'] - 0.2, TOP + 0.0035, STEP + 0.06), YELLOW)
+    return parts + [step, mark]
 
 
 def _path(x0, x1, z0, z1, r, gap_z, gap_w):
@@ -85,18 +112,39 @@ def _path(x0, x1, z0, z1, r, gap_z, gap_w):
 
 
 def _rails():
+    """The rail round the roof. Where the roof steps up (on the starboard side; to port the gate lies across the step) the
+    rail steps up with it, at a post."""
     rails = Part('Compass deck, rails', 'Topside paint', smooth=True, angle=40)
     x = C['half'] - C['rail_in']
     z0, z1 = Z(C['yards'][0]) + C['rail_in'], Z(C['yards'][1]) - C['rail_in']
     gate_z, gate_w = Z(C['gate'][0]), C['gate'][1]
     path = _path(-x, x, z0, z1, C['corner'] - C['rail_in'] + 0.12, gate_z, gate_w)
+    deck_at = lambda z: TOP if z >= STEP - 1e-9 else DECK
+    # The path in pieces that each lie on one level: a length that crosses the step is parted there.
+    pieces, jogs = [], []
+    for (ax, az), (bx, bz) in zip(path, path[1:]):
+        if hypot(bx - ax, bz - az) <= 1e-4:
+            continue
+        if (az - STEP) * (bz - STEP) < -1e-9:
+            f = (STEP - az) / (bz - az)
+            mx = ax + (bx - ax) * f
+            lo, hi = (az, bz) if az < bz else (bz, az)
+            pieces.append(((ax, az), (mx, STEP), DECK if az < STEP else TOP))
+            pieces.append(((mx, STEP), (bx, bz), DECK if bz < STEP else TOP))
+            jogs.append((mx, STEP))
+        else:
+            pieces.append(((ax, az), (bx, bz), deck_at((az + bz) / 2)))
     # Three courses of tube along the path, and a stanchion about every 1.45 m with a foot plate.
     heights = (C['rail'], 0.62, 0.30)
     radii = (0.019, 0.012, 0.012)
     for h, r in zip(heights, radii):
-        for (ax, az), (bx, bz) in zip(path, path[1:]):
-            if hypot(bx - ax, bz - az) > 1e-4:
-                _cyl(rails, (ax, DECK + h, az), (bx, DECK + h, bz), r, WHITE, sides=8)
+        for (ax, az), (bx, bz), deck in pieces:
+            _cyl(rails, (ax, deck + h, az), (bx, deck + h, bz), r, WHITE, sides=8)
+        for jx, jz in jogs:
+            _cyl(rails, (jx, DECK + h, jz), (jx, TOP + h, jz), r, WHITE, sides=8)
+    for jx, jz in jogs:                                                         # the post at the step, the height of both
+        _cyl(rails, (jx, DECK + 0.012, jz - 0.03), (jx, TOP + C['rail'], jz - 0.03), 0.0135, WHITE, sides=8)
+        _cyl(rails, (jx, DECK, jz - 0.03), (jx, DECK + 0.012, jz - 0.03), 0.045, tint(WHITE, 0.9), sides=10)
     # Posts at even intervals along the path (arc length), the ends included.
     seg = [hypot(bx - ax, bz - az) for (ax, az), (bx, bz) in zip(path, path[1:])]
     total = sum(seg)
@@ -110,13 +158,15 @@ def _rails():
         f = (s - run) / seg[k] if seg[k] else 0.0
         (ax, az), (bx, bz) = path[k], path[k + 1]
         px, pz = ax + (bx - ax) * f, az + (bz - az) * f
-        _cyl(rails, (px, DECK + 0.012, pz), (px, DECK + C['rail'], pz), 0.0135, WHITE, sides=8)
-        _cyl(rails, (px, DECK, pz), (px, DECK + 0.012, pz), 0.045, tint(WHITE, 0.9), sides=10)
+        deck = deck_at(pz)
+        _cyl(rails, (px, deck + 0.012, pz), (px, deck + C['rail'], pz), 0.0135, WHITE, sides=8)
+        _cyl(rails, (px, deck, pz), (px, deck + 0.012, pz), 0.045, tint(WHITE, 0.9), sides=10)
     return [rails]
 
 
 def _mast():
     """The mast, its platform, the radar and the lights."""
+    DECK = TOP                                             # it stands on the compass deck proper, over the wheelhouse
     mz = Z(M['yard'])
     mast = Part('Compass deck, mast and fittings', 'Topside paint', smooth=True, angle=40)
     steel = Part('Compass deck, mast, steel fittings', 'Shaft steel', smooth=True, angle=40)
@@ -188,6 +238,7 @@ def _mast():
 
 def _antennas():
     """VHF, AIS and the satellite compass and GNSS domes aft of the mast."""
+    DECK = TOP                                             # it stands on the compass deck proper, over the wheelhouse
     mz = Z(M['yard'])
     ant = Part('Compass deck, antennas', 'Topside paint', smooth=True, angle=40)
     steel = Part('Compass deck, antenna mounts', 'Shaft steel', smooth=True, angle=40)
@@ -207,6 +258,7 @@ def _antennas():
 
 def _searchlight_and_floods():
     """The searchlight forward on the starboard side and a floodlight at each front corner, to light the bow."""
+    DECK = TOP                                             # it stands on the compass deck proper, over the wheelhouse
     sl = Part('Compass deck, searchlight and floodlights', 'Machinery paint', smooth=True, angle=40)
     lens = Part('Compass deck, light glasses', 'Lens', smooth=True, angle=50)
     steel = Part('Compass deck, light mounts', 'Shaft steel', smooth=True, angle=40)
@@ -235,6 +287,7 @@ def _searchlight_and_floods():
 
 def _binnacle():
     """The standard compass in its binnacle, forward on the centreline."""
+    DECK = TOP                                             # it stands on the compass deck proper, over the wheelhouse
     bz = Z(22.2)
     b = Part('Compass deck, binnacle', 'Topside paint', smooth=True, angle=40)
     brass = Part('Compass deck, binnacle brass', 'Bronze', smooth=True, angle=40)

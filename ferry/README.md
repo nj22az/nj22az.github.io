@@ -14,13 +14,13 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
 | `systems.js` | Her systems on the page: the card that says what a fitting is, the *Systems* list, and what is drawn over the model for a board, a circuit, a net or a pipe |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.77 MB, about 236,000 triangles in 141 meshes (121,900 of them her own: the hull, the fittings of its spaces, the compass deck and the navigation bridge), six decks, 50 named rooms, 28 moving parts |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.78 MB, about 236,600 triangles in 141 meshes (122,300 of them her own: the hull, the fittings of its spaces, the compass deck and the navigation bridge), six decks, 50 named rooms, 28 moving parts |
 | `data/ferry-atlas.webp` | The other ship's plates, dials and signs on one 2048 px picture |
 | `data/chisum-atlas.webp` | Her own pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
 | `data/systems.json` | Her component register as the page reads it (written by `systems/register.py`) |
 | `systems/` | Her systems as designed: every component with its supply, circuit, nets and pipes; the tool that routes, sizes and checks them ([README](systems/README.md)) |
 | `blender/` | Her own build, in Blender: her lines, the builders of each section, the export and the tool that puts the data together (below) |
-| `checks/bridge.cjs` | The page's own check for the bridge and the register (24 checks; *Checks actually run*) |
+| `checks/bridge.cjs` | The page's own check for the bridge and the register (25 checks; *Checks actually run*) |
 | `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register (what a yard holds, and what of it exists), class's comment sheets, and the yard's calculations, which are programs that read the model and the register (`yard/calc/`) ([README](yard/README.md)) |
 
 ## What she is, and how far her own build has come
@@ -287,7 +287,16 @@ The roof of the bridge house is the viewer's part `top`, 1,164 triangles in the 
 a mast, a few boxes) and 9,332 in hers. `assemble.py` takes the one for the other (`SUPERSEDES['top']`, as for the hull),
 so nothing of the other ship's is left on it. Its positions are the Minato Maru's, so the ladder that comes up to it, the
 rooms under it and the walker on it still fit: the roof's top is at 11.50 m (13.40 m above the keel), the mast stands
-at 20.8 m from the transom and rises to 16.1 m (18.0 m above the keel), the binnacle at 22.2 m.
+at 20.8 m from the transom, the binnacle at 22.2 m.
+
+**Since 11 November 2026 the roof has two levels.** The owner had the wheelhouse roof raised ("Yes make it realistic"):
+from the wheelhouse's aft wall forward (19.5 m from the transom) the roof is 0.30 m higher, at 11.80 m (13.70 m above the
+keel). That higher part is the compass deck proper; the house top aft of it, where the ladder arrives, is where it was.
+A step block 0.15 m high halves the rise, clear of the ladder's head, and the block's edge and the deck's are marked
+yellow; the rail steps up at a post on the starboard side (to port the gate lies across the step). The mast, the binnacle,
+the antennas, the searchlight and the floodlights stand on the higher part and went up with it: the mast now rises to
+16.4 m (18.3 m above the keel), the masthead light is 16.6 m above the keel. `spec.COMPASS_DECK` (`step`, `rise`) and
+`spec.MAST` hold the figures.
 
 - *The roof.* A slab 0.32 m deep with a rounded plan (3.10 m each side, 5.95 to 23.16 m from the transom), white at the
   edge and on its underside, which is the bridge house's deckhead. Its plating is light grey, a plate 2.4 m by 1.2 m,
@@ -323,7 +332,8 @@ builder holds no positions of its own: it draws each component where `systems/br
 `with component(tag):` and its end is that component in the model (`shipyard.component`), so the build writes where each one is.
 
 - *The house.* Plating outside in the house's paint, a lining inside, 8 cm in all. Five forward windows (1.04 m each)
-  between posts and mullions, **raked 10° forward** from the sill at 0.95 m to the head at 2.00 m, under a visor that
+  between posts and mullions, **raked 10° forward** from the sill at 0.95 m to the head at 2.10 m (the glass itself from
+  0.99 to 2.06 m), under a visor that
   carries the roof's eave 0.3 m forward of the glass. Down each side, the same: a window over the after corner, a
   weathertight door (hinged forward, a 0.15 m sill, a glazed upper half), two windows. **From the helm the glass shows
   224° of 225°**, by the survey's measure (gaps under 6° are mullions the view goes on round; counted to 22.5° abaft
@@ -332,7 +342,11 @@ builder holds no positions of its own: it draws each component where `systems/br
   **The port door moved**: the
   other ship's stood in the after corner, where the boards and their locker would have stood in its doorway (the page's
   check found it: the walker could not get out); it now stands opposite the starboard one, 20.45 to 21.25 m from the
-  transom. A deckhead lining 25 mm under the roof with its panel seams; a sheet deck covering with a ribbed mat at the helm.
+  transom. **The wheelhouse is 2.30 m clear** under a deckhead lining with its panel seams (it was 2.06 m: the owner had
+  the roof raised); over the lining a void for the cable trays, the roof's structure from 2.42 m, the compass deck at
+  2.70 m. The side windows' glass reaches 2.00 m and the wing doors are 2.01 m high and glazed to 1.95 m, so a tall
+  helmsman sees abeam as well as ahead: `build.py` measures the glass for an eye at 1.50 m and at 1.80 m and stops if
+  either sees less than 220°. A sheet deck covering with a ribbed mat at the helm.
 - *The console* (5.5 m, top at 1.0 m; nothing on it over 1.33 m, and nothing ahead of the wheel over 1.22 m, so that
   the sea is seen over it: `yard/calc`) in five bays with doors, a grab rail and a foot rail. In
   the after row, flush panels with their knobs, buttons, a joystick, a trackball, a microphone and two handsets; behind
@@ -346,7 +360,9 @@ builder holds no positions of its own: it draws each component where `systems/br
   each in its own way; no photograph, no maker's panel and no chart of a real coast is on it.
 - *The steering stand* with its wheel, the mode selector and tiller, the autopilot's control unit, the heading in figures
   low on its face; the master's chair and a second at the radar; an overhead console with the camera monitor, a rudder
-  angle indicator and the wind; the compass periscope **directly under the binnacle** (it hung 0.65 m aft of it).
+  angle indicator and the wind, **hung above the windows' head** (from 2.06 m up: the first hung to 1.80 m, a tall
+  helmsman's eye, and hid the horizon from him); the compass periscope **directly under the binnacle** (it hung 0.65 m
+  aft of it), its mirror box from 1.97 m.
 - *The aft wall:* the fire detection panel, a call point and the general alarm push at the door; the boards BD1 and BD2
   and the two 24 V panels, their doors lettered with their ways; a locker under them; the door from the corridor (hinged,
   it opens for whoever comes near); the flag locker, a first-aid box and an extinguisher; the chart table with its
@@ -386,9 +402,10 @@ at opposite corners. `yard/calc/bridge_calcs.py`, which reads the model, found w
 instruments and the levers hid the sea to 176 m ahead of the bow from a short helmsman (now 62 m; 69 m is allowed); the
 wing control stations stood where the house's corner hid 13.5° of the view across the bow (moved outboard: the whole 225°
 is clear); two posts of the radar platform stood in the masthead light's sector (the light is 0.3 m higher); a single
-not-under-command lantern is hidden by the mast (pairs). Still open: the forward glass ends at 1.96 m, where 2.00 m is
-recommended, because the deckhead is at 2.08 m (the roof's height is the owner's decision); the sidelights' screens are
-0.42 m long and let the lens be seen 14.5° across the bow.
+not-under-command lantern is hidden by the mast (pairs). Then the owner had the roof raised, and the calculation was
+extended to the view upward: what had ended it was not the glass but the overhead console, the periscope and the rolled
+sun blinds, all now above the glass's head (an eye at 1.80 m keeps the horizon until she pitches 6.3° by the bow; at
+1.60 m, 11.1°). Still open: the sidelights' screens are 0.42 m long and let the lens be seen 14.5° across the bow.
 
 ## Her systems: the register, and how the page shows it (`systems/`, `systems.js`)
 
@@ -698,6 +715,20 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, after it: the wheelhouse roof raised
+
+The owner: "Yes make it realistic". The wheelhouse 0.30 m taller, the roof in two levels, the glass and the doors carried
+up, what hangs from the deckhead lifted above the windows' head, the mast and the compass deck's fittings up with the roof.
+`build.py` (122,573 triangles; **the glass shows 224° of 225° to an eye at 1.50 m and to one at 1.80 m**; all solids
+outward; 28 motions), `assemble.py` twice with the same two files (1,775,862 bytes, 236,560 triangles), `register.py` (all
+checks hold; a few cables are half a metre longer), `check.py` all passed, **`bridge_calcs.py`: all calculations hold**,
+with a new one, the view upward (it failed once, on the rolled sun blinds hanging 4 cm over the glass: lifted into the
+head frame). `checks/bridge.cjs` **25 of 25** (new: from the house top over the step block onto the compass deck,
+11.50 to 11.80 m). Looked at in pictures: from the wheel with the eye at 1.80 m, the wheelhouse from outside, the step in
+the roof, the aft wall inside (where the other ship's wall ends and hers is carried up there is a joint line at 2.08 m).
+The homepage card's picture is retaken by the recipe above. Not run: the homepage's own review (only the card's picture
+changed); the walk tests of the other decks. Published to `main` the same day on the owner's word.
 
 ### 11 November 2026, last of all: class answered, and the levers
 

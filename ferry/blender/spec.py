@@ -190,10 +190,16 @@ BILGE_KEEL = dict(yard=(11.0, 23.0), depth=0.22, psi=pi / 4)
 # pilot-house roof: radar, searchlight, anchor and masthead lights, VHF antennas, vent heads over the spaces below.
 COMPASS_DECK = dict(deck=11.5, slab=0.32, half=3.10, yards=(5.95, 23.16), corner=0.35,
                     rail=1.0, rail_in=0.13, post_every=1.45,
-                    gate=(19.25, 0.8))            # the gap in the port rail where the ladder arrives: (yard, width)
-# The masthead light stands 0.2 m over the tops of the radar platform's posts: at 14.1 two of them stood in its sector
-# (the yard's calculation JS4-402, for class comment PA-001 No. 10). The horns stay where they were.
-MAST = dict(yard=20.8, top=16.1, yardarm=13.5, platform=13.6, radar=13.82, masthead=14.4, horns=14.65)
+                    gate=(19.25, 0.8),            # the gap in the port rail where the ladder arrives: (yard, width)
+                    # The wheelhouse stands 0.30 m taller than the house behind it (the owner, 11 November 2026, on raising
+                    # its roof: "Yes make it realistic"): from the wheelhouse's aft wall forward the roof is a step higher.
+                    # That higher part, over the wheelhouse, is the compass deck proper; `deck` is the house top aft of it,
+                    # where the ladder arrives. `slab_top` is the depth of the roof's structure over the wheelhouse.
+                    step=19.495, rise=0.30, slab_top=0.28)
+# Heights above the waterline. The mast stands on the compass deck and went up 0.30 m with it. The masthead light stands
+# 0.2 m over the tops of the radar platform's posts: lower, two of them stood in its sector (the yard's calculation JS4-402,
+# for class comment PA-001 No. 10). The horns are between it and the upper not-under-command lights.
+MAST = dict(yard=20.8, top=16.4, yardarm=13.8, platform=13.9, radar=14.12, masthead=14.7, horns=14.95)
 ROOF_DECK = 0xb4bab6        # the roof's paint: light grey, non-skid
 
 # ---- Marks.

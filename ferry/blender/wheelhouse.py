@@ -35,9 +35,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import bridge as REG
 
 DECK = L.Y(11.0)                      # the bridge deck, 9.1 m over the waterline
-HEAD_ROOM = 2.08                      # the roof's underside
-CEIL = 2.055                          # the deckhead lining
-SILL, HEAD, RAKE = 0.95, 2.00, tan(radians(10.0))
+# The wheelhouse's heights over its deck. The owner, 11 November 2026, on raising the roof: "Yes make it realistic".
+# It stood 2.055 m clear under a roof at 2.40 m, with the glass ending at 1.96 m and an overhead console hanging to 1.80 m,
+# a tall helmsman's eye. Now: 2.30 m clear under the lining, a service void over it for the cable trays, the roof's
+# structure from 2.42 m and its top (the compass deck) at 2.70 m; every window's glass and the wing doors' reach 2.00 m
+# and more, and what hangs from the deckhead ahead of the helm hangs above the windows' head (yard/calc JS4-402).
+HEAD_ROOM = 2.42                      # the roof's underside
+CEIL = 2.30                           # the deckhead lining's underside: the clear height
+LINING_T = 0.025                      # the lining panels; over them the void
+OLD_HEAD = 2.08                       # where the other ship's aft wall ends: hers is carried up from there
+SILL, HEAD, RAKE = 0.95, 2.10, tan(radians(10.0))
 X_IN, X_OUT = 2.92, 3.00              # the house side, inside and out
 AFT, FRONT_IN, FRONT_OUT = 19.545, 22.92, 23.00
 CORNER = 22.82                        # where the side wall's last window ends and the forward corner begins
@@ -231,7 +238,7 @@ TILT_N = (0, sin(radians(20)), -cos(radians(20)))         # and the way that fac
 # The house
 # =====================================================================================================================
 SIDES = {                                                  # openings in each side wall, the same on both sides: (yard from, to, h from, to, what)
-    side: [(19.65, 20.33, 1.10, 1.80, 'window'), (20.45, 21.25, 0.0, 1.95, 'door'), (21.30, 22.10, 0.97, 1.83, 'window'), (22.15, CORNER, 0.97, 1.83, 'window')]
+    side: [(19.65, 20.33, 1.10, 2.05, 'window'), (20.45, 21.25, 0.0, 2.05, 'door'), (21.30, 22.10, 0.97, 2.05, 'window'), (22.15, CORNER, 0.97, 2.05, 'window')]
     for side in (1, -1)
 }
 # The forward windows, x from and to: five alike between two corner posts of 0.06 m and four mullions of 0.10 m.
@@ -240,9 +247,11 @@ PANES = [(-X_IN + 0.06 + k * (_pane + 0.10), -X_IN + 0.06 + k * (_pane + 0.10) +
 MULLION_X = PANES[2][1] + 0.05            # the mullion either side of the middle window, where the cable ducts come down
 FRAME_T, STILE = 0.05, 0.06               # a window's frame, and the stile of a door's leaf beside its glass
 HELM = (0.0, 20.9, 1.6)                   # the eye of a person standing at the wheel
+EYES = (1.5, 1.8)                         # a short helmsman's eye and a tall one's: the glass must serve both
+DOOR_GLASS = (0.95, 1.95)                 # the glazed part of a wing door's leaf
 
 
-def view_from_helm(limit=112.5, mullion=6.0):
+def view_from_helm(limit=112.5, mullion=6.0, eye=None):
     """
     How much of the horizon the glass shows a person standing at the wheel, doors shut, by the survey's own measure
     (ferry/design/bridge/findings.py): each pane's two edges as bearings from right ahead, gaps under 6 degrees taken as
@@ -251,13 +260,14 @@ def view_from_helm(limit=112.5, mullion=6.0):
     """
     from math import atan2, degrees
     ex, ey, eh = HELM
+    eh = eye if eye is not None else eh
     front = FRONT_IN + 0.045 + fwd(eh)
     spans = [(degrees(atan2(a + FRAME_T - 0.005, front - ey)), degrees(atan2(b - FRAME_T + 0.005, front - ey))) for a, b in PANES if b > 0]
     spans[0] = (0.0, spans[0][1])
     for yd0, yd1, h0, h1, what in SIDES[1]:
         if what == 'window' and h0 + FRAME_T < eh < h1 - FRAME_T:
             a, b = yd0 + FRAME_T, yd1 - FRAME_T
-        elif what == 'door':
+        elif what == 'door' and DOOR_GLASS[0] < eh < DOOR_GLASS[1]:
             a, b = yd0 + 0.04 + STILE, yd1 - 0.04 - STILE
         else:
             continue
@@ -301,6 +311,10 @@ def _side_window(side, yd0, yd1, h0, h1):
 
 
 def envelope():
+    # ---- the aft wall above the other ship's, which ends at the old deckhead: plating outside (the riser of the step in
+    # the roof, where the lower house top meets it), lining inside up to the deckhead
+    box('plating', -X_OUT, X_OUT, AFT - 0.05, AFT - 0.025, OLD_HEAD, HEAD_ROOM, HOUSE)
+    box('lining', -X_IN, X_IN, AFT - 0.025, AFT, OLD_HEAD, HEAD_ROOM, LINING)
     # ---- the two sides
     for side, openings in SIDES.items():
         at = AFT
@@ -342,8 +356,9 @@ def envelope():
 
 
 def ceiling():
-    """The deckhead: lining panels 25 mm under the roof, their seams every 0.6 m."""
-    box('lining', -X_IN, X_IN, AFT, FRONT_IN + fwd(HEAD), CEIL, HEAD_ROOM, CEILING)
+    """The deckhead: lining panels 2.30 m over the deck, their seams every 0.6 m. Between them and the roof's structure is
+    the void the cable trays lie in."""
+    box('lining', -X_IN, X_IN, AFT, FRONT_IN + fwd(HEAD), CEIL, CEIL + LINING_T, CEILING)
     p = part('seam')
     ink = tint(CEILING, 0.72)
     start = len(p.f)
@@ -385,14 +400,15 @@ MOTIONS = []
 
 
 def door_wing(g, tag):
-    """A weathertight door in the house side: a lining, a 0.15 m coaming sill, a leaf hinged on its forward edge that opens outward."""
+    """A weathertight door in the house side: a lining, a 0.15 m coaming sill, a leaf hinged on its forward edge that opens outward.
+    The opening is 2.01 m high and the leaf is glazed from 0.95 to 1.95 m: a tall helmsman sees abeam through it."""
     side, (yd0, yd1) = g['side'], g['yd']
     name = 'port' if side > 0 else 'starboard'
     mover = f'door-wing-{name[0]}'
     xi, xo = side * X_IN, side * X_OUT
     for a, b in ((yd0, yd0 + 0.04), (yd1 - 0.04, yd1)):
-        box('frame', xi, xo, a, b, 0.15, 1.91, FRAME)
-    box('frame', xi, xo, yd0, yd1, 1.91, 1.95, FRAME)
+        box('frame', xi, xo, a, b, 0.15, 2.01, FRAME)
+    box('frame', xi, xo, yd0, yd1, 2.01, 2.05, FRAME)
     box('paint', side * 2.88, side * 3.07, yd0, yd1, 0.0, 0.15, SILLC)
     leaf = Part(f'Wheelhouse, wing door, {name}', 'Deck paint', mover=mover)
     glass = Part(f'Wheelhouse, wing door glass, {name}', 'Window glass', mover=mover)
@@ -400,15 +416,15 @@ def door_wing(g, tag):
     a, b = yd0 + 0.04, yd1 - 0.04
     xa, xb = side * 2.95, side * 2.99
     box(leaf, xa, xb, a, b, 0.15, 0.95, DOOR)
-    box(leaf, xa, xb, a, b, 1.75, 1.91, DOOR)
-    box(leaf, xa, xb, a, a + STILE, 0.95, 1.75, DOOR)
-    box(leaf, xa, xb, b - STILE, b, 0.95, 1.75, DOOR)
+    box(leaf, xa, xb, a, b, DOOR_GLASS[1], 2.01, DOOR)
+    box(leaf, xa, xb, a, a + STILE, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
+    box(leaf, xa, xb, b - STILE, b, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
     box(leaf, side * 2.99, side * 3.005, a + 0.01, b - 0.01, 0.15, 0.31, tint(DOOR, 0.55))
-    glass.polygon([P(side * 2.97, a + STILE, 0.95), P(side * 2.97, b - STILE, 0.95), P(side * 2.97, b - STILE, 1.75), P(side * 2.97, a + STILE, 1.75)], GLASS)
+    glass.polygon([P(side * 2.97, a + STILE, 0.95), P(side * 2.97, b - STILE, 0.95), P(side * 2.97, b - STILE, DOOR_GLASS[1]), P(side * 2.97, a + STILE, DOOR_GLASS[1])], GLASS)
     for xs, d in ((side * 3.0, 1), (side * 2.95, -1)):
         box(fit, xs, xs + side * d * 0.045, a + 0.03, a + 0.06, 0.98, 1.08, BRASS)
         box(fit, xs + side * d * 0.03, xs + side * d * 0.05, a + 0.015, a + 0.12, 1.03, 1.06, BRASS)
-    for hh in (0.35, 1.55):
+    for hh in (0.35, 1.80):
         tube(fit, (side * 2.97, b, hh - 0.06), (side * 2.97, b, hh + 0.06), 0.016, BRASS, 10)
     for p in (leaf, glass, fit):
         p.group = 'bridge'
@@ -688,16 +704,20 @@ def hidden(g, tag, x, yard, h):
 
 
 def overhead(g, tag, x, yard, h):
-    """The overhead console: a sloped panel under the deckhead, its face looking aft and down."""
-    prof = [(22.40, CEIL), (22.68, CEIL), (22.68, 1.88), (22.50, 1.80)]
+    """
+    The overhead console: a sloped panel under the deckhead, its face looking aft and down. It hangs wholly above the
+    windows' head: its lowest edge, 2.06 m over the deck, is over the line from a tall helmsman's eye to the top of the
+    glass, so it hides nothing that the glass would show (the first one hung to 1.80 m, that eye's own height).
+    """
+    prof = [(22.36, CEIL), (22.68, CEIL), (22.68, h + 0.06), (22.50, h)]
     prism('console', -1.50, 1.50, prof, tint(GREEN, 0.95))
     for sx in (-1, 1):
-        box('console', sx * 1.50, sx * 1.52, 22.39, 22.69, 1.79, CEIL, tint(GREEN, 0.8))
+        box('console', sx * 1.50, sx * 1.52, 22.35, 22.69, h - 0.01, CEIL, tint(GREEN, 0.8))
 
 
-OVH_UP = Vector((0.0, 0.255, -0.10)).normalized()
-OVH_N = Vector((0.0, -0.10, -0.255)).normalized()
-OVH_MID = (22.45, 1.9275)
+OVH_UP = Vector((0.0, 0.24, -0.14)).normalized()          # up the console's face, from its lower edge to the deckhead
+OVH_N = Vector((0.0, -0.14, -0.24)).normalized()          # and the way the face looks: down and aft
+OVH_MID = (22.43, 2.18)                                    # the middle of the face: (metres from the transom, over the deck)
 
 
 def ovh_dial(g, tag, x, yard, h):
@@ -723,11 +743,12 @@ def ovh_screen(g, tag, x, yard, h):
 
 
 def periscope(g, tag, x, yard, h):
-    """The magnetic compass read from the helm: a tube down from the binnacle above, a mirror box, a glass."""
+    """The magnetic compass read from the helm: a tube down from the binnacle above, a mirror box, a glass. The box hangs
+    above the line from a tall helmsman's eye to the top of the forward glass: it is glanced up at, not looked round."""
     box('dark', -0.11, 0.11, yard - 0.10, yard + 0.10, CEIL - 0.025, CEIL, DARK)
-    tube('steel', (0.0, yard, CEIL - 0.03), (0.0, yard, 1.95), 0.025, GREY, 12)
-    box('dark', -0.08, 0.08, yard - 0.08, yard + 0.08, 1.84, 1.95, DARK)
-    tube('lens', (0.0, yard - 0.08, 1.895), (0.0, yard - 0.095, 1.895), 0.03, srgb(0xdfe6e1), 14)
+    tube('steel', (0.0, yard, CEIL - 0.03), (0.0, yard, h + 0.11), 0.025, GREY, 12)
+    box('dark', -0.08, 0.08, yard - 0.08, yard + 0.08, h, h + 0.11, DARK)
+    tube('lens', (0.0, yard - 0.08, h + 0.055), (0.0, yard - 0.095, h + 0.055), 0.03, srgb(0xdfe6e1), 14)
 
 
 # =====================================================================================================================
@@ -937,12 +958,15 @@ def grabrails(g, tag, x, yard, h):
 
 
 def blinds(g, tag, x, yard, h):
-    """A roller blind at the head of each forward window: the roll, and a hand's breadth of tinted film drawn down."""
+    """A roller blind at the head of each forward window, rolled up: the roll, and its bottom bar with a finger's breadth
+    of tinted film showing, inside the depth of the window's head frame. Rolled up it hangs over none of the glass (the
+    first ones hung 4 cm over its top: the yard's calculation JS4-402 found them)."""
     yd = FRONT_IN + fwd(HEAD) - 0.03
+    low = HEAD - 0.03                                           # the glass ends at HEAD - 0.045
     for x0, x1 in PANES:
         tube('plastic', (x0 + 0.02, yd, HEAD + 0.03), (x1 - 0.02, yd, HEAD + 0.03), 0.02, srgb(0xd9d5c8), 10)
-        part('glass').polygon([P(x0 + 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.022, HEAD - 0.09), P(x0 + 0.04, yd - 0.022, HEAD - 0.09)], srgb(0x1a2a2e))
-        tube('steel', (x0 + 0.04, yd - 0.022, HEAD - 0.09), (x1 - 0.04, yd - 0.022, HEAD - 0.09), 0.006, GREY, 6)
+        part('glass').polygon([P(x0 + 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.012, low), P(x0 + 0.04, yd - 0.012, low)], srgb(0x1a2a2e))
+        tube('steel', (x0 + 0.04, yd - 0.012, low), (x1 - 0.04, yd - 0.012, low), 0.006, GREY, 6)
 
 
 def mullion_ducts(g, tag, x, yard, h):
@@ -1201,10 +1225,11 @@ def build():
             else:
                 KINDS[kind](g, c['id'], x, yard, h)
     _hung[0] = False
-    seen, blind, to = view_from_helm()
-    print(f'glass seen from the helm: {seen:.0f} of 225 degrees, to {to:.0f} degrees each side; blind sectors wider than a mullion: {blind or "none"}')
-    if seen < 220:
-        raise SystemExit(f'the glass shows the helm {seen:.0f} of 225 degrees: a blind sector has opened at {blind}')
+    for eye in EYES:
+        seen, blind, to = view_from_helm(eye=eye)
+        print(f'glass seen from the helm, eye {eye:.2f} m: {seen:.0f} of 225 degrees, to {to:.0f} degrees each side; blind sectors wider than a mullion: {blind or "none"}')
+        if seen < 220:
+            raise SystemExit(f'the glass shows an eye at {eye:.2f} m {seen:.0f} of 225 degrees: a blind sector has opened at {blind}')
     out = list(_parts.values()) + _extra
     for p in out:
         p.smooth = False

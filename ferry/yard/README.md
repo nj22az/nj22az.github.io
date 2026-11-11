@@ -33,9 +33,10 @@ requirement is a lead, not a finding, until it has been read.
    larger ships she meets it all the same. `class/PA-001` lists what has been read of them, where, and what is still recalled.
 2. **Plan approval, section by section.** The yard submits a section (first: the navigation bridge). Class reads it and writes a
    comment sheet. The yard answers each comment by changing the design or by showing why it stands. A section is approved when no
-   comment of category A is open. The navigation bridge was approved with comments on 11 November 2026 (PA-001 revision 1).
+   comment of category A is open. The navigation bridge was approved with comments on 11 November 2026 (PA-001 revision 1; revision 2, the same day, follows
+   the owner's decision to raise the wheelhouse roof).
    The yard's calculations are programs that read the model and the register (`calc/`): run again after any change, they
-   stop with an error when a result leaves its limit. They found five defects in the bridge that reading the drawings had not.
+   stop with an error when a result leaves its limit. They found defects in the bridge that reading the drawings had not: `class/PA-001` lists them.
 3. **Construction.** The model is built from the approved documents; class surveys it against them (`SR-…`): that what is drawn
    is what was approved, and that the checks the yard claims were run.
 4. **Tests and trials**, simulated honestly: a test is a calculation or a run of the model with a stated method and a result, never
