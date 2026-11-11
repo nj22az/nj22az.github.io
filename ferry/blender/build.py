@@ -176,7 +176,7 @@ def main():
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS)
+        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS, shipyard.RUNS)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])

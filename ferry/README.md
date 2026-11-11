@@ -430,6 +430,17 @@ door; 2.40 m of headroom under the ducts.
   alternator's cables in trays; gratings beside the set and before the board, a rubber mat at the board, a yellow guard
   rail round the alternator; four lit lights; the extinguisher, call point and telephone by the door; the warning board;
   the exit sign; the escape route marked on the deck; and the weathertight door with its porthole.
+- **Nothing in it runs through the air** (`yard/standards/JSY-STD-402-supports.md`, `blender/spans.py`). The owner, of
+  the room as first built: "There looks like too much floating objects in the emergency generator room why aren't you
+  working according to Spec?" They were right: a cable stood 1.4 m up from the alternator to a tray, another crossed the
+  room in the air, the ducts hung on rods too thin to see, fuel lines ran off the wall with no bracket; `afloat.py` had
+  passed it all because each thing touched something at an end. Now: the alternator's cables go down from a terminal box
+  on its side into a covered duct on the deck, up a cable ladder on the wall, along a ladder under the duct on brackets
+  and down into the switchboard; the ducts and dampers hang on trapezes of 40 mm angle; the fuel lines are clamped to a
+  rack on the forward wall (supply, return and the filling line, each tagged), laid on the deck beside the skid under a
+  yellow step-over plate where one walks, and bracketed to the skid's rail; the battery lead runs in a conduit; the
+  exhaust riser is stayed to the wall; the pull wire is led through eyes. `spans.py` follows each of the room's 23 runs
+  (73 m) along its centre line and fails if any is unsupported further than the standard allows.
 - **What works:** the door opens outward for whoever comes to it; each fire damper's lever is turned a quarter by a tap.
 - **Where it stands.** It is a block for the 68 m ship's top deck (`ga.py`: `eg-room`). That hull is not built, so the
   block is landed on the present ship's house top, abaft the wheelhouse (`eg_place.PLACE` is the only thing that says
@@ -954,6 +965,18 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, after it: nothing in the generator room runs through the air
+
+- The owner: "There looks like too much floating objects in the emergency generator room why aren't you working according
+  to Spec?" The room's cables, ducts and pipes are reworked onto ladders, a floor duct, trapezes, a pipe rack and brackets;
+  JSY-STD-402 says how things are carried; `blender/spans.py` is new and is run with the other checks.
+- Build, assembled twice to the same two files; `check.py` all passed; `zfight.py` none of hers; `afloat.py` none of hers;
+  **`spans.py`: 23 runs of pipe, cable, conduit and wire (73 m), every one carried** (its first run found a 1.95 m length
+  of the supply line without a support; a post from the tank's stand now carries it).
+- Looked at in pictures from the same three places as before.
+- **Not checked by a program:** the hangers' spacing and size; the wheelhouse's and the hull's older fittings, which were
+  built before this check and are named in the standard's open points.
 
 ### 11 November 2026, after the general arrangement: the emergency generator room
 

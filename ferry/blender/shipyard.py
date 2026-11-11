@@ -144,6 +144,13 @@ def tile(name):
     return _tiles[name]
 
 
+# ---------- runs ----------
+# The centre line of every pipe, cable, conduit and wire that a builder lays as a run (a line of points): the part it is drawn
+# in, its radius and its points in the ship's axes. Written with the part file; spans.py checks that each is carried along
+# its whole length (the owner, 11 November 2026: "too much floating objects ... why aren't you working according to Spec?").
+RUNS = []
+
+
 # ---------- components ----------
 # What is drawn between `with component(tag):` and its end belongs to that component of the register (ferry/systems/):
 # the box round it is written with the part file, and the page finds the component under a tap by it.

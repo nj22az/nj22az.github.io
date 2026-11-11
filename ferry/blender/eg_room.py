@@ -31,7 +31,7 @@ h up from its deck.
 from math import pi, cos, sin
 from mathutils import Vector
 import lines as L
-from shipyard import Part, srgb, tint, component
+from shipyard import Part, srgb, tint, component, RUNS
 
 from eg_place import LENGTH, WIDTH, HEIGHT, PLACE, R          # where the block stands: eg_place.py
 
@@ -87,6 +87,7 @@ def tube(part, a, b, r, colour, sides=12, r2=None):
 
 def run(part, points, r, colour, sides=10):
     """A pipe or a cable along a line of points: a length between each two, and a ball of its own width at each bend."""
+    RUNS.append(dict(part=part.name, r=r, points=[[round(float(v), 4) for v in R(*c)] for c in points]))
     for a, b in zip(points, points[1:]):
         tube(part, a, b, r, colour, sides)
     for c in points[1:-1]:
@@ -101,6 +102,15 @@ def sign(part, centre, facing, w, h, tile, up=(0, 0, 1), proud=0.0015):
     c = c + n * proud
     part.picture([tuple(c - r * (w / 2) - u * (h / 2)), tuple(c + r * (w / 2) - u * (h / 2)),
                   tuple(c + r * (w / 2) + u * (h / 2)), tuple(c - r * (w / 2) + u * (h / 2))], tile)
+
+
+def trapeze(S, p, q0, q1, under):
+    """A hanger for a duct: an angle bar down from the deckhead on each side of it and an angle across under it, 40 mm
+    sections, so that it is seen to hang on steel and not on a thread."""
+    steel = S('supports', 'Machinery paint')
+    for q in (q0 - 0.05, q1 + 0.01):
+        box(steel, p - 0.02, p + 0.02, q, q + 0.04, under - 0.04, HEIGHT, GREY)
+    box(steel, p - 0.02, p + 0.02, q0 - 0.05, q1 + 0.05, under - 0.04, under, GREY)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -225,7 +235,9 @@ def generator_set(S):
                 tube(dark, (4.42 + k * 0.07, QC + s * 0.455 * sin(ang), 0.84 + 0.455 * cos(ang)), (4.42 + k * 0.07, QC + s * 0.47 * sin(ang), 0.84 + 0.47 * cos(ang)), 0.02, DARK, 6)
         for s in (-1, 1):
             box(green, 4.30, 5.00, QC + s * 0.50 - 0.10, QC + s * 0.50 + 0.10, 0.34, 0.66, DKGREEN)
-        box(green, 4.36, 4.86, QC - 0.24, QC + 0.24, 1.26, 1.56, GREEN)
+        box(green, 4.36, 4.86, QC - 0.24, QC + 0.24, 1.26, 1.56, GREEN)                     # the regulator's housing, on top
+        box(green, 4.50, 4.70, QC + 0.44, QC + 0.60, 0.74, 0.94, DKGREEN)                   # the neck to the terminal box
+        box(green, 4.40, 4.80, QC + 0.59, QC + 0.79, 0.62, 1.02, GREEN)                     # the terminal box, on the starboard side
 
 
 def exhaust(S):
@@ -251,6 +263,9 @@ def exhaust(S):
             tube(lag, (c[0], c[1], c[2] - 0.1), (c[0], c[1], c[2] + 0.1), r, LAG, 18)
         box(steel, tp - 0.19, tp + 0.19, tq - r - 0.012, tq - r + 0.004, 2.84, 3.06, GALV)  # the label's plate, on the riser's side
         box(steel, tp - 0.24, tp + 0.24, tq - 0.24, tq + 0.24, HEIGHT - 0.012, HEIGHT, STEEL)   # the collar under the deckhead
+        tube(steel, (tp, tq, 2.83), (tp, tq, 2.87), r + 0.014, GREY, 18)                    # a band round it, and two stays to the wall
+        for dp in (-0.15, 0.15):
+            box(S('supports', 'Machinery paint'), tp + dp - 0.015, tp + dp + 0.015, tq + 0.08, WIDTH, 2.836, 2.864, GREY)
         # on the roof: the collar, the silencer, the tail pipe and its flap
         top = HEIGHT + 0.01
         box(steel, tp - 0.26, tp + 0.26, tq - 0.26, tq + 0.26, top, top + 0.02, STEEL)
@@ -263,10 +278,12 @@ def exhaust(S):
     sign(face, (tp, tq - r - 0.012, 2.95), (0, -1, 0), 0.34, 0.20, 'eg_exhaust')
 
 
-def duct(S, tag, ends, tile, label, mover, name, outside):
-    """One air duct along the starboard wall: from the wall (or its open end) to its fire damper, the damper with its lever."""
+def duct(S, tag, ends, tile, label, mover, name, outside, hung):
+    """One air duct along the starboard wall: from the wall (or its open end) to its fire damper, the damper with its lever.
+    It hangs on trapezes at `hung` (clear of its label, its joints, the wall's stiffeners and the deckhead's beams); the damper
+    has one of its own."""
     galv, red = S('ducts', 'Zinc'), S('fire dampers', 'Machinery paint')
-    face, rods = S('signs', 'Panel face'), S('hangers', 'Shaft steel', smooth=True, angle=40)
+    face, spindle = S('signs', 'Panel face'), S('spindles', 'Shaft steel', smooth=True, angle=40)
     (q0, q1), (h0, h1) = DUCT['q'], DUCT['h']
     a, d0, d1 = ends
     lo, hi = min(a, d0), max(a, d0)
@@ -276,16 +293,14 @@ def duct(S, tag, ends, tile, label, mover, name, outside):
         for p in (lo + 0.02, mid - half - 0.10, mid + half + 0.10):                         # the joints' flanges, clear of the label
             if lo + 0.015 <= p <= hi - 0.015:
                 box(galv, p - 0.015, p + 0.015, q0 - 0.02, q1 + 0.02, h0 - 0.02, h1 + 0.02, tint(GALV, 0.9))
-        for p in (lo + 0.45, hi - 0.35):                                                    # hung from the deckhead's beams
-            for q in (q0 + 0.05, q1 - 0.05):
-                tube(rods, (p, q, h1), (p, q, HEIGHT), 0.008, STEEL, 6)
+        for p in hung:
+            trapeze(S, p, q0, q1, h0)
         box(red, d0, d1, q0 - 0.04, q1 + 0.04, h0 - 0.04, h1 + 0.04, RED)                   # the damper's casing
-        for q in (q0 + 0.05, q1 - 0.05):
-            tube(rods, ((d0 + d1) / 2, q, h1 + 0.04), ((d0 + d1) / 2, q, HEIGHT), 0.008, STEEL, 6)
+        trapeze(S, d0 + 0.03, q0 - 0.04, q1 + 0.04, h0 - 0.04)
         sign(face, ((d0 + d1) / 2, q0 - 0.04, (h0 + h1) / 2 + 0.06), (0, -1, 0), 0.36, 0.28, label)
         # its lever: a spindle through the casing, an arm that hangs down while it is open and lies along the duct when shut
         px, ph = (d0 + d1) / 2, h0 + 0.02
-        tube(rods, (px, q0 - 0.04, ph), (px, q0 - 0.075, ph), 0.014, STEEL, 8)
+        tube(spindle, (px, q0 - 0.04, ph), (px, q0 - 0.075, ph), 0.014, STEEL, 8)
         arm = S(f'damper lever, {name}', 'Machinery paint', mover=mover, smooth=True, angle=40)
         tube(arm, (px, q0 - 0.085, ph), (px, q0 - 0.085, ph - 0.24), 0.011, YELLOW, 8)
         tube(arm, (px, q0 - 0.075, ph), (px, q0 - 0.095, ph), 0.022, YELLOW, 10)
@@ -304,7 +319,7 @@ def duct(S, tag, ends, tile, label, mover, name, outside):
         box(S('dark fittings', 'Plastic'), d1, d1 + 0.012, q0 + 0.03, q1 - 0.03, h0 + 0.03, h1 - 0.03, DARK)
         for k in range(6):
             box(galv, d1 + 0.012, d1 + 0.018, q0 + 0.02, q1 - 0.02, h0 + 0.05 + k * 0.07, h0 + 0.075 + k * 0.07, tint(GALV, 0.9))
-    sign(face, ((lo + hi) / 2 + (0.0 if outside == 'forward' else 0.1), q0, (h0 + h1) / 2), (0, -1, 0), min(1.25, hi - lo - 0.3), 0.36, tile)
+    sign(face, (mid, q0, (h0 + h1) / 2), (0, -1, 0), 2 * half, 0.36, tile)
 
 
 def louvre(S, across, face, span, heights):
@@ -331,17 +346,31 @@ def louvre(S, across, face, span, heights):
         put(a, b, *sorted((face + out * 0.01, face + out * 0.045)), g + 0.01, g + 0.035, tint(WHITE, 0.92))
 
 
+# The pipe rack on the forward wall: channels that stand 100 mm off the plating, each with what is clamped to it.
+RACK_P = 0.10
+UPRIGHTS = ((1.50, 0.02, 0.20, 1.10), (2.30, 0.02, 0.20, 1.10), (3.10, 0.02, 0.20, 1.10), (3.75, 0.02, 0.20, 1.10), (4.34, 0.07, 0.20, 2.44))
+DROPS = (1.25, 1.35, 0.0, 1.02)             # a plate on the stiffener at 1.30 m, for the two lines that go down to the deck there
+SUPPLY_Q, RETURN_Q, CONDUIT_Q = 1.33, 1.27, 1.21     # the three lines along the deck between the grating and the skid
+
+
+def clamp(S, q, h, r, upright=True):
+    """A clamp round a pipe that runs along the forward wall's rack, at an upright."""
+    box(S('supports', 'Machinery paint'), RACK_P, RACK_P + 2 * r + 0.008, q - 0.014, q + 0.014, h - r - 0.008, h + r + 0.008, tint(GREY, 0.8))
+
+
 def day_tank(S):
-    """The day tank on its stand: a tray under it, its gauge, its valve with the pull to outside, its vent out through the wall, the fuel lines."""
+    """The day tank on its stand: a tray under it, its gauge, its valve with the pull to outside, its vent out through the wall; and
+    the fuel lines, each clamped to the rack on the forward wall, laid on the deck or fixed to the skid."""
     green, steel = S('tank and stand', smooth=False), S('pipes', 'Shaft steel', smooth=True, angle=40)
     yellow, face = S('yellow', 'Machinery paint', smooth=True, angle=40), S('signs', 'Panel face')
+    sup = S('supports', 'Machinery paint')
     (p0, p1), (q0, q1), (h0, h1) = TANK['p'], TANK['q'], TANK['h']
     with component('EMG-06'):
         box(green, p0 - 0.05, p1 + 0.05, q0 - 0.05, q1 + 0.05, 0.0, 0.02, DKGREEN)          # the tray: a floor and a rim
         for a, b, c, d in ((p0 - 0.05, p1 + 0.05, q0 - 0.05, q0 - 0.03), (p0 - 0.05, p1 + 0.05, q1 + 0.03, q1 + 0.05),
                            (p0 - 0.05, p0 - 0.03, q0 - 0.03, q1 + 0.03), (p1 + 0.03, p1 + 0.05, q0 - 0.03, q1 + 0.03)):
             box(green, a, b, c, d, 0.02, 0.08, DKGREEN)
-        for p in (p0, p1 - 0.05):                                                           # four legs, two frames, braces
+        for p in (p0, p1 - 0.05):                                                           # four legs, two frames
             for q in (q0, q1 - 0.05):
                 box(green, p, p + 0.05, q, q + 0.05, 0.02, h0, GREEN)
         for h in (0.55, h0 - 0.05):
@@ -356,48 +385,67 @@ def day_tank(S):
         for h in (h0 + 0.05, h1 - 0.05):
             tube(steel, (gx, q0, h), (gx, q0 - 0.035, h), 0.012, BRASS, 8)
         tube(S('gauge glass', 'Lens', smooth=True, angle=40), (gx, q0 - 0.035, h0 + 0.03), (gx, q0 - 0.035, h1 - 0.03), 0.012, srgb(0xd9c98a), 8)
+    vp, vq = p0 + 0.20, q1 - 0.12
     with component('EMG-07'):
         # The outlet: a quick-closing valve under the tank, shut by a wire from a pull outside the door (fire: one does not
-        # go in to shut the fuel). The wire runs along the starboard wall on the stiffeners' faces.
-        vp, vq = p0 + 0.20, q1 - 0.12
+        # go in to shut the fuel). The wire runs along the starboard wall through an eye on each stiffener.
         tube(steel, (vp, vq, h0), (vp, vq, h0 - 0.10), 0.02, STEEL, 10)
-        tube(S('red fittings', 'Machinery paint', smooth=True, angle=40), (vp, vq, h0 - 0.10), (vp, vq, h0 - 0.20), 0.04, RED, 12)
-        tube(yellow, (vp, vq, h0 - 0.15), (vp, vq + 0.10, h0 - 0.10), 0.01, YELLOW, 8)       # its trip lever
-        wire = S('pull wire', 'Shaft steel')
-        wq = WIDTH - 0.085
-        run(wire, [(vp, vq + 0.10, h0 - 0.10), (vp, wq, h0 - 0.10), (vp, wq, 2.40), (6.40, wq, 2.40), (6.40, wq, 1.42), (6.40, WIDTH, 1.42)], 0.004, STEEL, 6)
         red = S('red fittings', 'Machinery paint', smooth=True, angle=40)
-        box(red, 6.30, 6.50, WIDTH + WALL, WIDTH + WALL + 0.07, 1.28, 1.56, RED)             # the pull, in its box outside
-        tube(yellow, (6.40, WIDTH + WALL + 0.07, 1.40), (6.40, WIDTH + WALL + 0.11, 1.40), 0.03, YELLOW, 12)
-        sign(S('signs', 'Panel face'), (6.40, WIDTH + WALL + 0.07, 1.50), (0, 1, 0), 0.18, 0.09, 'eg_fuel_shutoff')
+        tube(red, (vp, vq, h0 - 0.10), (vp, vq, h0 - 0.20), 0.04, RED, 12)
+        tube(yellow, (vp, vq, h0 - 0.15), (vp, vq + 0.10, h0 - 0.10), 0.01, YELLOW, 8)       # its trip lever
+        wq = WIDTH - 0.085
+        run(S('pull wire', 'Shaft steel'), [(vp, vq + 0.10, h0 - 0.10), (vp, wq, h0 - 0.10), (vp, wq, 2.34), (6.50, wq, 2.34), (6.50, wq, 1.42), (6.50, WIDTH, 1.42)], 0.004, STEEL, 6)
+        box(sup, vp - 0.012, vp + 0.012, wq - 0.012, WIDTH, 1.98, 2.0, GREY)                # an eye on the plating where no stiffener is
+        box(sup, vp - 0.012, vp + 0.012, wq - 0.012, WIDTH, 2.32, 2.34, GREY)
+        box(red, 6.40, 6.60, WIDTH + WALL, WIDTH + WALL + 0.07, 1.28, 1.56, RED)             # the pull, in its box outside
+        tube(yellow, (6.50, WIDTH + WALL + 0.07, 1.40), (6.50, WIDTH + WALL + 0.11, 1.40), 0.03, YELLOW, 12)
+        sign(face, (6.50, WIDTH + WALL + 0.07, 1.50), (0, 1, 0), 0.18, 0.09, 'eg_fuel_shutoff')
     with component('EMG-11'):
-        # the fuel lines: the supply from the valve down, across under the forward wall and along the skid to the filters; the
-        # return beside it; the filling line from the service tank in through the forward wall, a strainer and a valve in it
-        vp, vq = p0 + 0.20, q1 - 0.12
-        run(steel, [(vp, vq, h0 - 0.20), (vp, vq, 0.30), (0.30, vq, 0.30), (0.30, 1.30, 0.30), (2.96, 1.30, 0.30), (2.96, 1.30, 1.01), (2.96, QC - 0.50, 1.01)], 0.014, STEEL, 8)
-        run(steel, [(p0 + 0.36, vq, h1), (p0 + 0.36, vq, h1 + 0.10), (0.42, vq, h1 + 0.10), (0.42, vq, 0.40), (0.42, 1.24, 0.40), (2.60, 1.24, 0.40), (2.60, 1.24, 0.90), (2.60, QC - 0.54, 0.90)], 0.011, STEEL, 8)
-        run(steel, [(-0.04, 3.20, 0.95), (0.20, 3.20, 0.95), (0.20, 3.20, h1 + 0.18), (p0 + 0.55, 3.20, h1 + 0.18), (p0 + 0.55, q0 + 0.14, h1 + 0.18), (p0 + 0.55, q0 + 0.14, h1)], 0.017, STEEL, 8)
-        tube(S('blue fittings', 'Machinery paint', smooth=True, angle=40), (0.20, 3.20, 1.20), (0.20, 3.20, 1.42), 0.045, BLUE, 12)   # the strainer
-        tube(steel, (0.20, 3.20, 1.62), (0.20, 3.20, 1.72), 0.035, BRASS, 10)               # the filling valve, its wheel
-        tube(yellow, (0.20, 3.12, 1.67), (0.20, 3.20, 1.67), 0.008, YELLOW, 6)
-        tube(yellow, (0.20, 3.11, 1.67), (0.20, 3.12, 1.67), 0.045, YELLOW, 12)
-        for p in (0.80, 1.70, 2.45):                                                        # the two lines' stands on the deck
-            box(steel, p - 0.015, p + 0.015, 1.235, 1.31, 0.0, 0.41, GREY)
-        # a tag on each line, on the side one reads it from
-        for q, r_, h, tile in ((1.30, 0.014, 0.30, 'eg_tag_supply'), (1.24, 0.011, 0.40, 'eg_tag_return')):
-            box(steel, 1.92, 2.18, q - r_ - 0.006, q - r_ + 0.002, h - 0.03, h + 0.03, YELLOW)
-            sign(face, (2.05, q - r_ - 0.006, h), (0, -1, 0), 0.25, 0.055, tile)
-        box(steel, 0.215, 0.223, 3.07, 3.33, 1.87, 1.93, YELLOW)
-        sign(face, (0.223, 3.20, 1.90), (1, 0, 0), 0.25, 0.055, 'eg_tag_service')
+        # ---- the rack on the forward wall
+        for q, half, a, b in UPRIGHTS:
+            box(sup, 0.0, RACK_P, q - half, q + half, a, b, GREY)
+        box(sup, 0.08, RACK_P, DROPS[0], DROPS[1], DROPS[2], DROPS[3], GREY)
+        rs, rr, rf = 0.014, 0.011, 0.017
+        ps, pr, pf = RACK_P + rs, RACK_P + rr, RACK_P + rf
+        # the supply: from the valve down, forward to the rack, along it at 0.95 m, down the plate to the deck, along the deck
+        # beside the skid, and up to the filter head on a bracket from the skid's rail
+        run(steel, [(vp, vq, h0 - 0.20), (vp, vq, 0.95), (ps, vq, 0.95), (ps, SUPPLY_Q, 0.95), (ps, SUPPLY_Q, rs), (2.96, SUPPLY_Q, rs), (2.96, SUPPLY_Q, 1.01), (2.96, QC - 0.50, 1.01)], rs, STEEL, 8)
+        # the return: from the injection pump out and down, forward along the deck, up the plate, along the rack at 0.65 m, up the
+        # wide channel at the starboard end and over into the tank's top
+        run(steel, [(2.60, QC - 0.54, 0.90), (2.60, RETURN_Q, 0.90), (2.60, RETURN_Q, rr), (pr, RETURN_Q, rr), (pr, RETURN_Q, 0.65), (pr, 4.30, 0.65), (pr, 4.30, 2.30),
+                    (1.20, 4.30, 2.30), (1.20, 4.30, h1)], rr, STEEL, 8)
+        # the filling line from the service tank: up through the deck at the first upright, along the rack at 0.35 m with its
+        # strainer and valve, up the wide channel and over into the tank's top
+        run(steel, [(pf, 1.50, 0.0), (pf, 1.50, 0.35), (pf, 4.38, 0.35), (pf, 4.38, 2.38), (0.45, 4.38, 2.38), (0.45, 3.96, 2.38), (1.00, 3.96, 2.38), (1.00, 3.96, h1)], rf, STEEL, 8)
+        for q, half, a, b in UPRIGHTS[:4]:
+            for h, r in ((0.95, rs), (0.65, rr), (0.35, rf)):
+                clamp(S, q, h, r)
+        for h in (0.50, 1.20, 1.90):
+            clamp(S, 4.30, max(h, 0.80), rr)
+            clamp(S, 4.38, h, rf)
+        for q, r in ((SUPPLY_Q, rs), (RETURN_Q, rr)):                                       # the two risers at the engine, each on a bracket from the rail
+            pp = 2.96 if q == SUPPLY_Q else 2.60
+            box(sup, pp - 0.015, pp + 0.015, q - r, QC - 0.64, 0.28, 0.31, GREY)
+        box(sup, p0, p0 + 0.05, vq - 0.015, vq + 0.015, 0.60, 0.95 - rs, GREY)                # the supply's lead from the valve rests on a post from the stand's frame
+        box(yellow, 0.20, 1.02, 1.17, 1.39, 0.0, 0.045, YELLOW)                             # a step-over plate over the lines where one walks
+        tube(S('blue fittings', 'Machinery paint', smooth=True, angle=40), (pf, 2.58, 0.35), (pf, 2.82, 0.35), 0.045, BLUE, 12)   # the strainer
+        tube(steel, (pf, 3.36, 0.35), (pf, 3.48, 0.35), 0.035, BRASS, 10)                   # the filling valve, its wheel
+        tube(yellow, (pf, 3.42, 0.35), (pf + 0.09, 3.42, 0.35), 0.008, YELLOW, 6)
+        tube(yellow, (pf + 0.09, 3.42, 0.35), (pf + 0.10, 3.42, 0.35), 0.045, YELLOW, 12)
+        for h, r, q, tile in ((0.95, rs, 2.70, 'eg_tag_supply'), (0.65, rr, 2.70, 'eg_tag_return'), (0.35, rf, 1.96, 'eg_tag_service')):
+            box(steel, RACK_P + 2 * r, RACK_P + 2 * r + 0.006, q - 0.13, q + 0.13, h - 0.03, h + 0.03, YELLOW)   # a tag on each line
+            sign(face, (RACK_P + 2 * r + 0.006, q, h), (1, 0, 0), 0.25, 0.055, tile)
         # the vent: up from the tank's top and out through the starboard wall to a gooseneck with a gauze
         run(steel, [(p1 - 0.12, q1 - 0.10, h1), (p1 - 0.12, q1 - 0.10, 2.32), (p1 - 0.12, WIDTH + WALL + 0.10, 2.32), (p1 - 0.12, WIDTH + WALL + 0.10, 2.20)], 0.016, STEEL, 8)
         tube(steel, (p1 - 0.12, WIDTH + WALL + 0.10, 2.20), (p1 - 0.12, WIDTH + WALL + 0.10, 2.15), 0.028, BRASS, 10)
 
 
 def batteries(S):
-    """The starting battery bank: eight blocks in a steel rack, their links, the cable to the starter; the charger on the wall above."""
+    """The starting battery bank: eight blocks in a steel rack, their links; the cable to the starter in a conduit on the deck and
+    on the skid's rail; the charger on the wall above, its cable in a conduit down to the rack."""
     steel, dark = S('rack', 'Machinery paint'), S('batteries', 'Plastic')
     red, face = S('red fittings', 'Machinery paint', smooth=True, angle=40), S('signs', 'Panel face')
+    leads, conduit = S('cables, battery', 'Plastic', smooth=True, angle=40), S('conduit', 'Zinc', smooth=True, angle=40)
     (p0, p1), (q0, q1) = RACK['p'], RACK['q']
     with component('EMG-02'):
         for p in (p0, p1 - 0.04):
@@ -420,29 +468,32 @@ def batteries(S):
                     tube(red, (p0 + 0.15 + i * 0.198, q0 + 0.13 + j * 0.40, 0.535), (p0 + 0.15 + (i + 1) * 0.198, q0 + 0.13 + j * 0.40, 0.535), 0.009, RED, 6)
         box(steel, p1 - 0.004, p1 + 0.004, q0 + 0.03, q1 - 0.03, 0.56, 0.86, tint(GREY, 1.1))  # the name plate's plate, between the rack's after posts
         sign(face, (p1 + 0.004, (q0 + q1) / 2, 0.71), (1, 0, 0), 0.70, 0.28, 'eg_battery')
-        # the cable to the starter: down the rack, under the grating, up the skid's rail and along it
-        run(red, [(p1 - 0.08, q1 - 0.12, 0.53), (p1 - 0.08, q1 + 0.02, 0.53), (p1 - 0.08, q1 + 0.02, 0.015), (1.30, q1 + 0.02, 0.015), (1.30, 1.398, 0.015),
-                  (1.30, 1.398, 0.25), (3.76, 1.398, 0.25), (3.76, 1.398, 0.56), (3.76, QC - 0.50, 0.56)], 0.012, RED, 8)
+        # the lead from the last block down the rack's post; from its foot a conduit along the deck beside the fuel lines (under
+        # the step-over plate where one walks), then up the skid's rail to the starter
+        run(leads, [(p1 - 0.08, q1 - 0.12, 0.535), (p1 - 0.08, q1 + 0.012, 0.535), (p1 - 0.02, q1 + 0.012, 0.535), (p1 - 0.02, q1 + 0.012, 0.03)], 0.012, RED, 8)
+        rail = QC - 0.64 - 0.016
+        run(conduit, [(p1 - 0.02, q1 + 0.016, 0.016), (p1 - 0.02, CONDUIT_Q, 0.016), (3.76, CONDUIT_Q, 0.016), (3.76, rail, 0.016), (3.76, rail, 0.56), (3.76, QC - 0.50, 0.56)], 0.016, GALV, 8)
     with component('EMG-03'):
         cab = S('cabinets', 'Console paint')
         box(cab, 0.28, 0.82, 0.08, 0.26, 1.30, 1.80, CABINET)                               # the charger, on the stiffeners of the port wall
         sign(face, (0.55, 0.26, 1.55), (0, 1, 0), 0.46, 0.42, 'eg_charger')
-        run(red, [(0.55, 0.17, 1.30), (0.55, 0.17, 0.97), (0.55, 0.12, 0.97)], 0.012, RED, 8)
+        run(conduit, [(0.55, 0.12, 1.30), (0.55, 0.12, 0.95)], 0.014, GALV, 8)              # down into the rack's top frame
 
 
 def boards(S):
-    """The generator's control panel and the emergency switchboard, on plinths against the starboard wall; the cables from the alternator."""
+    """The generator's control panel and the emergency switchboard, on plinths against the starboard wall; and the way the
+    alternator's cables go to the board: down from its terminal box into a covered duct on the deck, across to the wall, up a
+    cable ladder and along a ladder under the duct, down into the board's top. No cable crosses the room in the air."""
     cab, dark = S('cabinets', 'Console paint'), S('dark fittings', 'Plastic')
     face, red = S('signs', 'Panel face'), S('red fittings', 'Machinery paint', smooth=True, angle=40)
-    cable = S('cables', 'Plastic', smooth=True, angle=40)
+    cable, conduit = S('cables', 'Plastic', smooth=True, angle=40), S('conduit', 'Zinc', smooth=True, angle=40)
+    ladder, sup = S('cable ladders', 'Zinc'), S('supports', 'Machinery paint')
     (a, b), (q0, q1), top = PANEL['p'], PANEL['q'], PANEL['h']
     with component('EMG-04'):
         box(dark, a, b, q0 + 0.02, q1, 0.0, 0.06, DARK)
         box(cab, a, b, q0, q1, 0.06, top, CABINET)
         sign(face, ((a + b) / 2, q0, 0.06 + (top - 0.06) / 2 + 0.05), (0, -1, 0), 0.54, 1.40, 'eg_control')
         tube(red, ((a + b) / 2 + 0.16, q0, 0.92), ((a + b) / 2 + 0.16, q0 - 0.035, 0.92), 0.028, RED, 12)   # the emergency stop
-        # its cable to the tray: up behind the duct's end and across before it, clear of the duct's label
-        run(cable, [(a + 0.06, q1 - 0.1, top), (a + 0.06, q1 - 0.1, 2.36), (a + 0.06, 3.60, 2.36), (a + 0.06, 3.60, 2.97)], 0.02, BLACK, 8)
     (a, b), (q0, q1), top = BOARD['p'], BOARD['q'], BOARD['h']
     with component('EMG-05'):
         box(dark, a, b, q0 + 0.02, q1, 0.0, 0.06, DARK)
@@ -455,15 +506,49 @@ def boards(S):
         box(cab, a + 0.05, b - 0.05, q0 - 0.06, q0 - 0.03, 1.02, 1.05, srgb(0x2a2d2f))       # the insulated handrail along its front
         for p in (a + 0.10, b - 0.10):
             box(cab, p - 0.012, p + 0.012, q0 - 0.045, q0, 1.022, 1.048, srgb(0x2a2d2f))
-        # the alternator's cables: up from its terminal box to the tray, across and along, and down into the board's top
-        run(cable, [(4.60, QC, 1.56), (4.60, QC, 2.985), (4.60, 3.60, 2.985), (6.04, 3.60, 2.985), (6.04, 3.60, 2.30), (6.04, 3.86, 2.30), (6.04, 3.86, top + 0.02)], 0.035, BLACK, 10)
-    tray = S('cable trays', 'Zinc')
-    rods = S('hangers', 'Shaft steel', smooth=True, angle=40)
-    for p0, p1, c0, c1 in ((4.47, 4.73, 1.90, 3.74), (4.73, 6.14, 3.47, 3.74)):                # the trays under the beams, their hangers
-        box(tray, p0, p1, c0, c1, 2.935, 2.95, GALV)
-    for p, q in ((4.60, 2.20), (4.60, 3.20), (5.30, 3.60), (5.80, 3.60)):
-        for dq in (-0.11, 0.11):
-            tube(rods, (p, q + dq, 2.95), (p, q + dq, HEIGHT), 0.006, STEEL, 6)
+    # ---- the cable way
+    wall = WIDTH
+    H1 = dict(p=(3.94, 6.30), q=(4.24, 4.48), h=(2.10, 2.16))                               # the ladder along the wall, under the duct
+    V1 = dict(p=(3.96, 4.24), q=(4.44, wall), h=(0.0, 2.10))                                # the ladder up the wall
+    (ha, hb), (hq0, hq1), (hh0, hh1) = H1['p'], H1['q'], H1['h']
+    for q in (hq0, hq1 - 0.02):
+        box(ladder, ha, hb, q, q + 0.02, hh0, hh1, GALV)
+    k = 0
+    while ha + 0.10 + k * 0.30 < hb:
+        p = ha + 0.10 + k * 0.30
+        box(ladder, p - 0.012, p + 0.012, hq0 + 0.02, hq1 - 0.02, hh0, hh0 + 0.02, GALV)
+        k += 1
+    for p in (4.55, 5.20, 5.85):                                                            # its brackets, on the wall's stiffeners
+        box(sup, p - 0.02, p + 0.02, hq0 - 0.02, wall - 0.08, hh0 - 0.04, hh0, GREY)
+        tube(sup, (p, wall - 0.08, hh0 - 0.22), (p, hq0 + 0.02, hh0 - 0.03), 0.012, GREY, 6)
+    (va, vb), (vq0, vq1), (vh0, vh1) = V1['p'], V1['q'], V1['h']
+    for p in (va, vb - 0.02):
+        box(ladder, p, p + 0.02, vq0, vq1, vh0, vh1, GALV)
+    k = 0
+    while 0.25 + k * 0.30 < vh1:
+        h = 0.25 + k * 0.30
+        box(ladder, va + 0.02, vb - 0.02, vq0 + 0.02, vq0 + 0.04, h - 0.012, h + 0.012, GALV)
+        k += 1
+    # the covered duct on the deck, from beside the alternator to the foot of the ladder
+    floor = S('floor duct', 'Zinc')
+    box(floor, va + 0.02, vb - 0.02, 2.74, vq0, 0.0, 0.07, tint(GALV, 0.88))
+    box(floor, vb - 0.02, 4.80, 2.74, 2.98, 0.0, 0.07, tint(GALV, 0.88))
+    yellow = S('yellow', 'Machinery paint', smooth=True, angle=40)
+    for q in (2.99, 3.60, 4.20):                                                            # its yellow bands, where one steps over it
+        box(yellow, va + 0.015, vb - 0.015, q, q + 0.06, 0.07, 0.073, YELLOW)
+    with component('EMG-05'):
+        # three power cables: from the terminal box on the alternator's starboard side down into the floor duct (a free loop of half
+        # a metre, for the set moves on its mounts); out of the duct up the ladder; along the ladder; down into the board
+        r = 0.024
+        for k in range(3):
+            pc, qc = 4.02 + k * 0.055, 4.285 + k * 0.055
+            run(cable, [(4.52 + k * 0.08, 2.80, 0.62), (4.52 + k * 0.08, 2.80, 0.07)], r, BLACK, 8)
+            run(cable, [(pc, vq0 + 0.02 - r, 0.07), (pc, vq0 + 0.02 - r, hh0 + 0.02 + r), (pc, qc, hh0 + 0.02 + r), (5.55 + k * 0.07, qc, hh0 + 0.02 + r), (5.55 + k * 0.07, qc, top + 0.02)], r, BLACK, 8)
+    with component('EMG-04'):
+        # the control cable: from the panel's top up to the ladder, along it, down the ladder on the wall and into the floor duct
+        r = 0.015
+        (a, b), (q0, q1), top = PANEL['p'], PANEL['q'], PANEL['h']
+        run(cable, [(4.72, 4.38, top), (4.72, 4.38, hh0 + 0.02 + r), (4.72, 4.44, hh0 + 0.02 + r), (4.195, 4.44, hh0 + 0.02 + r), (4.195, vq0 + 0.02 - r, hh0 + 0.02 + r), (4.195, vq0 + 0.02 - r, 0.07)], r, srgb(0x2a2a2a), 8)
 
 
 def door(S):
@@ -545,13 +630,14 @@ def fittings(S):
             box(lamps, p - hp + 0.02, p + hp - 0.02, q - hq + 0.015, q + hq - 0.015, HEIGHT - 0.25, HEIGHT - 0.23, LAMP)
     # a cable tray along the port wall on brackets, two feeders in it, out through the forward wall
     tray, cable = S('cable trays', 'Zinc'), S('cables', 'Plastic', smooth=True, angle=40)
-    box(tray, 0.0, 7.40, 0.10, 0.36, 2.60, 2.615, GALV)
+    box(tray, 0.0, 7.30, 0.20, 0.36, 2.60, 2.615, GALV)
     k = 1
-    while k * 0.65 < 7.4:
+    while k * 0.65 < 7.3:
         box(tray, k * 0.65 - 0.015, k * 0.65 + 0.015, 0.08, 0.36, 2.575, 2.60, GALV)
         k += 1
-    for q in (0.17, 0.27):
-        tube(cable, (-0.04, q, 2.64), (7.38, q, 2.64), 0.022, BLACK, 8)
+    box(S('dark fittings', 'Plastic'), 7.26, 7.50, 0.0, 0.14, 2.28, 2.50, srgb(0x5a6062))    # the junction box the two feeders end in, on the plating
+    for q in (0.05, 0.09):
+        run(cable, [(-0.04, q + 0.18, 2.637), (7.33 + (q - 0.05), q + 0.18, 2.637), (7.33 + (q - 0.05), q, 2.637), (7.33 + (q - 0.05), q, 2.50)], 0.022, BLACK, 8)
     # by the door: the extinguisher on the after wall under its sign, the call point, the telephone to the bridge
     with component('FIR-18'):
         ep, eq = LENGTH - 0.105, 3.55
@@ -583,8 +669,8 @@ def build():
     gratings(S)
     generator_set(S)
     exhaust(S)
-    duct(S, 'EMG-09', SUPPLY, 'eg_supply', 'eg_fd01', 'damper-fd01', 'FD-01', 'forward')
-    duct(S, 'EMG-10', EXTRACT, 'eg_extract', 'eg_fd02', 'damper-fd02', 'FD-02', 'starboard')
+    duct(S, 'EMG-09', SUPPLY, 'eg_supply', 'eg_fd01', 'damper-fd01', 'FD-01', 'forward', hung=(0.20, 1.88))
+    duct(S, 'EMG-10', EXTRACT, 'eg_extract', 'eg_fd02', 'damper-fd02', 'FD-02', 'starboard', hung=(4.47, 6.00))
     day_tank(S)
     batteries(S)
     boards(S)
