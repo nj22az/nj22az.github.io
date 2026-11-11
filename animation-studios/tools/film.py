@@ -36,15 +36,25 @@ CELL_GROUND = (500, 670)                            # where the ground under him
 PX_PER_BU, CAMERA_YAW = 200.0, math.radians(46)     # as blender/common.py
 SAILOR_X = 880
 NOTE_LIFE = 48
-SPEED = (('far', docks.FAR_W, 0.25), ('mid', docks.MID_W, 0.5), ('near', docks.NEAR_W, 1.0))
+LOOP_TRAVEL = docks.NEAR_W                          # the quay goes round exactly once in the film
+BACKDROP = ROOT / 'build' / 'harbour-backdrop.png'  # Johansson World's harbour from blender/harbour.py
+BACKDROP_DY = 160                                   # its waterline (row 640) sits just behind the quay's rail
+SPEED = (('far', docks.FAR_W, docks.FAR_W / LOOP_TRAVEL), ('mid', docks.MID_W, docks.MID_W / LOOP_TRAVEL),
+         ('world', docks.MID_W, docks.MID_W / LOOP_TRAVEL), ('near', docks.NEAR_W, 1.0))
 
 _cache = {}
 
 
 def layers():
     if not _cache:
-        for name, fn, w in (('far', docks.far, docks.FAR_W), ('mid', docks.mid, docks.MID_W), ('near', docks.near, docks.NEAR_W),
-                            ('props', docks.props, docks.NEAR_W)):
+        def world():
+            b = Image.open(BACKDROP).convert('RGBA')
+            assert b.width == docks.MID_W, 'the backdrop must be as wide as the water layer'
+            t = Image.new('RGBA', (b.width, docks.H), (0, 0, 0, 0))
+            t.paste(b, (0, BACKDROP_DY))
+            return t
+        for name, fn, w in (('far', docks.far, docks.FAR_W), ('mid', docks.mid, docks.MID_W), ('world', world, docks.MID_W),
+                            ('near', docks.near, docks.NEAR_W), ('props', docks.props, docks.NEAR_W)):
             t = fn()
             wide = Image.new('RGBA', (w + docks.W + 2, docks.H), (0, 0, 0, 0))
             wide.paste(t, (0, 0)); wide.paste(t.crop((0, 0, docks.W + 2, docks.H)), (w, 0))
@@ -55,7 +65,9 @@ def layers():
         _cache['stride'] = meta[0]['stride']
         _cache['mouths'] = {int(k): v for m in meta for k, v in m['mouths'].items()}
         # the quay moves under him exactly as far as his boots push it back
-        _cache['px_per_f'] = meta[0]['stride'] * math.cos(CAMERA_YAW) * PX_PER_BU / CYCLE_F
+        measured = meta[0]['stride'] * math.cos(CAMERA_YAW) * PX_PER_BU / CYCLE_F
+        _cache['px_per_f'] = LOOP_TRAVEL / tune.TOTAL      # exactly one turn of the quay in the film
+        assert abs(_cache['px_per_f'] / measured - 1) < 0.01, 'the quay no longer matches his stride'
         _cache['notes'] = {k: docks.note(k) for k in ('one', 'two')}
         sh = Image.new('RGBA', (720, 60), (0, 0, 0, 0))
         ImageDraw.Draw(sh).ellipse([0, 0, 719, 59], fill=(0, 0, 0, 255))
@@ -78,7 +90,7 @@ def render_at(n):
     out.alpha_composite(s, (docks.SUN[0] - s.width // 2, docks.SUN[1] - s.height // 2))
     for name, w, speed in SPEED:
         x = (travel * speed) % w
-        dy = 5 * math.sin(2 * math.pi * f / CYCLE_F) if name == 'mid' else 0.0     # the boats ride the swell
+        dy = 0.0
         out.alpha_composite(scrolled(L[name], x, dy))
         if name == 'near':
             # everything standing on the quay gives a little on each beat and springs back

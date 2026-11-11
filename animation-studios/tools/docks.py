@@ -14,7 +14,9 @@ BLACK, WHITE = (0, 0, 0, 255), (255, 255, 255, 255)
 HORIZON = 560
 QUAY = 840          # far edge of the quay deck
 GROUND = 965        # where he walks
-NEAR_W, MID_W, FAR_W = 7840, 3920, 1960
+# each layer is as wide as the distance it travels in one loop of the film (or a whole fraction of it),
+# so every layer comes round exactly when the film does
+NEAR_W, MID_W, FAR_W = 5040, 3840, 1960
 
 
 class Art:
@@ -140,40 +142,6 @@ def far():
     cloud(a, 120, 250, 1.0)
     cloud(a, 760, 150, 1.25)
     cloud(a, 1450, 290, 0.85)
-    lw = 7
-    # headland
-    hill = [(60, HORIZON)] + [(60 + i * 20, HORIZON - 70 * math.sin(math.pi * i / 30) - 26 * math.sin(math.pi * i / 7.5) ** 2) for i in range(1, 30)] + [(660, HORIZON)]
-    a.blob(('poly', hill), lw)
-    for x, s in ((230, 1.0), (330, 1.3), (430, 0.9)):               # a few pines
-        a.solid(('poly', [(x, HORIZON - 70 * s), (x - 16 * s, HORIZON - 28 * s), (x + 16 * s, HORIZON - 28 * s)]))
-        a.line([(x, HORIZON - 30 * s), (x, HORIZON - 14 * s)], 5)
-    # steamer
-    x, y = 1010, HORIZON
-    a.blob(('rect', x + 60, y - 62, x + 190, y - 30), lw)
-    a.blob(('rect', x + 108, y - 112, x + 142, y - 62), lw)
-    a.solid(('rect', x + 108, y - 100, x + 142, y - 82))
-    a.blob(('poly', [(x - 10, y - 36), (x + 300, y - 36), (x + 270, y + 4), (x + 20, y + 4)]), lw, BLACK)
-    for i in range(4):
-        a.solid(('circ', (x + 82 + i * 28, y - 46), 6))
-    a.line([(x + 250, y - 36), (x + 250, y - 96)], 5)
-    for i, (dx, dy, r) in enumerate(((120, -140, 16), (100, -176, 22), (66, -212, 28), (20, -240, 34))):
-        a.blob(('circ', (x + dx, y + dy), r), lw)
-    # lighthouse on its rock
-    x = 1650
-    a.blob(('poly', [(x - 120, HORIZON), (x - 86, HORIZON - 34), (x - 30, HORIZON - 50), (x + 40, HORIZON - 46), (x + 96, HORIZON - 24), (x + 124, HORIZON)]), lw, BLACK)
-    tower = [(x - 30, HORIZON - 46), (x - 20, HORIZON - 190), (x + 20, HORIZON - 190), (x + 30, HORIZON - 46)]
-    a.blob(('poly', tower), lw)
-    for y0, y1 in ((-86, -118), (-150, -182)):
-        k0, k1 = (-y0 - 46) / 144, (-y1 - 46) / 144
-        a.solid(('poly', [(x - 30 + 10 * k0, HORIZON + y0), (x + 30 - 10 * k0, HORIZON + y0), (x + 30 - 10 * k1, HORIZON + y1), (x - 30 + 10 * k1, HORIZON + y1)]))
-    a.blob(('rect', x - 28, HORIZON - 200, x + 28, HORIZON - 190), lw)
-    a.blob(('rect', x - 16, HORIZON - 232, x + 16, HORIZON - 200), lw)
-    a.blob(('poly', [(x - 24, HORIZON - 232), (x, HORIZON - 262), (x + 24, HORIZON - 232)]), lw, BLACK)
-    for sgn in (-1, 1):
-        for dy in (-12, 0, 12):
-            a.line([(x + sgn * 34, HORIZON - 216 + dy * 0.4), (x + sgn * 74, HORIZON - 216 + dy * 1.6)], 5)
-    a.line([(0, HORIZON), (FAR_W, HORIZON)], lw)
-    waves(a, 0, FAR_W, (590, 624), 9, 4, 0.1)
     return a.done()
 
 
@@ -232,13 +200,11 @@ def buoy(a, x, y):
 
 
 def mid():
+    """The water: the horizon and the swell. What floats on it comes from Johansson World (blender/harbour.py)."""
     a = Art(MID_W)
+    a.line([(0, HORIZON), (MID_W, HORIZON)], 7)
+    waves(a, 0, MID_W, (590, 624), 9, 4, 0.1)
     waves(a, 0, MID_W, (676, 732, 792), 15, 6, 0.6)
-    fishing_boat(a, 420, 760)
-    piles(a, 1420, 790)
-    rowing_boat(a, 2020, 768)
-    buoy(a, 2700, 742)
-    piles(a, 3350, 800, with_gull=False)
     return a.done()
 
 
@@ -363,20 +329,19 @@ def props():
     """What stands on the quay, on its own layer so that it can bounce to the beat."""
     a = Art(NEAR_W)
     base = PROP_BASE
-    bollard(a, 420, base)
-    crate(a, 980, base, 160, 124, 'anchor'); crate(a, 1150, base, 130, 96); crate(a, 1040, base - 124 - 12, 130, 100)
-    lamp(a, 1800, base)
-    barrel(a, 2420, base); barrel(a, 2540, base, 0.86)
-    rope_coil(a, 2990, base + 4)
-    bollard(a, 3380, base)
-    crate(a, 3960, base, 170, 130)
-    small_anchor(a, 4180, base - 96, 1.25, 17)
-    lifebuoy(a, 4840, base)
-    fish_boxes(a, 5380, base)
-    propeller(a, 5700, base - 92, 0.95)
-    lamp(a, 6300, base)
-    crate(a, 6860, base, 150, 116, 'anchor'); barrel(a, 7080, base)
-    bollard(a, 7520, base, rope=False)
+    bollard(a, 300, base)
+    crate(a, 720, base, 160, 124, 'anchor'); crate(a, 890, base, 130, 96); crate(a, 780, base - 124 - 12, 130, 100)
+    lamp(a, 1300, base)
+    barrel(a, 1740, base); barrel(a, 1860, base, 0.86)
+    rope_coil(a, 2160, base + 4)
+    bollard(a, 2460, base)
+    crate(a, 2800, base, 170, 130)
+    small_anchor(a, 3020, base - 96, 1.25, 17)
+    lifebuoy(a, 3380, base)
+    fish_boxes(a, 3680, base)
+    propeller(a, 4000, base - 92, 0.95)
+    lamp(a, 4380, base)
+    bollard(a, 4800, base, rope=False)
     return a.done()
 
 

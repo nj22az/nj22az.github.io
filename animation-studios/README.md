@@ -94,6 +94,22 @@ for i in 0 1 2 3; do /root/bl/bin/python animation-studios/blender/meshy_walk.py
 python3 animation-studios/tools/film.py
 ```
 
-**Not done:** the docks are still the 2D drawings, not 3D; his arms hang wide (the model's A-pose shoulders); the
+**The harbour (the owner: "Use the docks from Johansson world"):** `blender/harbour.py` rebuilds Minato harbour in
+Blender from `assets/office-port/harbour.scene.gz` (the World's own set, baked for the homepage viewer) and renders
+it in ink as seen from the quay looking north: the Minato ferry stern-on at the pier, the crane boat, the fishing
+boats and the barge. It is one strip 3840 px wide with open water at both ends, so it goes round behind him. The
+quay deck, its rail and the things standing on it, the sun and the clouds are still drawn by `tools/docks.py`.
+Every layer is as wide as the distance it travels in one loop (or a whole fraction of it): the quay turns exactly
+once in 30 s, at 7.00 px per 24th of a second against the 7.02 his boots measure.
+
+**The performance (the owner: "the sailor is not well animated", "Do a Pixar Disney steam boat Willie quality
+overhauls"):** `meshy_walk.py` `act()` lays acting over Meshy's clip. The clip keeps the legs, and so the boots on the
+quay; above the hips everything is acted: hips swing with the leading leg and drop as each heel lands, the chest turns
+against them and rolls over the planted leg, the head nods on every beat and tips from side to side, the arms hang by
+his sides with bent elbows and swing against the legs with the forearm following late, the whole figure squashes as
+he lands and stretches as he passes, and at the end of each phrase he turns to the camera with his grin.
+
+**Not done:** the quay deck and its furniture are still 2D drawings, not the World's; the same six seconds of acting
+repeat for all five phrases; his arms hang wide (the model's A-pose shoulders); the
 peak is not black from every angle; nobody has watched it move or listened to it; the cleaned model is not saved as a
 `.blend`.

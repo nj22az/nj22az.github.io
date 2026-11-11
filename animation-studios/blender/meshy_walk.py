@@ -167,10 +167,13 @@ class Walk:
         self.sc = common.reset()
         self.sc.render.image_settings.color_depth = '16'
         self.sc, self.arm, self.mesh, rest = load(path)
+        self.stage = self.arm.parent
+        self.stage_rest = self.stage.matrix_world.copy()
         bands = paint(self.mesh, rest)
         ms.material(self.mesh, bands, (50.0, 70.0))
         self.face = face_nodes(self.mesh)
         act = bpy.data.actions[0]
+        self.action = act
         self.f0, self.f1 = act.frame_range
         self.phase0 = 0.0
         self.cam = common.camera(self.sc, *CELL, (0, 0, 0), CELL_GROUND, pitch=0.0)
@@ -179,6 +182,7 @@ class Walk:
         return self.arm.matrix_world @ self.arm.pose.bones[name].head
 
     def set_phase(self, ph):
+        self.arm.animation_data.action = self.action          # the clip gives the pose; act() then takes it over
         f = self.f0 + ((ph + self.phase0) % 1.0) * (self.f1 - self.f0)
         self.sc.frame_set(int(math.floor(f)), subframe=f - math.floor(f))
 
@@ -215,8 +219,88 @@ class Walk:
     def at_frame(self, n):
         t = (n % LOOP) / FPS
         self.set_phase(t / CYCLE_SECONDS)
+        self.act((t / CYCLE_SECONDS) % 1.0, t)
         f = t * 24.0
         self.set_face(tune.pucker_at(f), tune.lid_at(f))
+
+    def act(self, ph, t):
+        """His performance, laid over the walking clip. The clip keeps his legs (and so his boots on the
+        quay); everything above the hips is acted here, in the manner of the early sound cartoons:
+        the whole body keeps the beat.
+
+        World axes: he walks towards +X, his left is +Y, the camera stands at his front right (-Y)."""
+        arm, W = self.arm, self.arm.matrix_world
+        Wi = W.inverted()
+        bpy.context.view_layer.update()
+        new = {pb.name: pb.matrix.copy() for pb in arm.pose.bones}
+        touched = []
+
+        def below(name):
+            out, stack = [], [arm.pose.bones[name]]
+            while stack:
+                b = stack.pop(); out.append(b.name); stack.extend(b.children)
+            return out
+
+        def turn(name, rot):
+            """Turn a bone, and all that hangs on it, by a world rotation about the bone's joint."""
+            joint = W @ new[name].translation
+            d = Wi @ Matrix.Translation(joint) @ rot.to_4x4() @ Matrix.Translation(-joint) @ W
+            for b in below(name):
+                new[b] = d @ new[b]
+            touched.append(name)
+
+        def aim(name, to, direction):
+            """Point the limb from joint `name` to joint `to` along a world direction."""
+            now = ((W @ new[to].translation) - (W @ new[name].translation)).normalized()
+            turn(name, now.rotation_difference(Vector(direction).normalized()).to_matrix())
+
+        RX = lambda a: Matrix.Rotation(math.radians(a), 3, 'X')
+        RY = lambda a: Matrix.Rotation(math.radians(a), 3, 'Y')
+        RZ = lambda a: Matrix.Rotation(math.radians(a), 3, 'Z')
+        c1, s1 = math.cos(2 * math.pi * ph), math.sin(2 * math.pi * ph)       # once a stride; his right heel lands at ph 0
+        beat = t / (CYCLE_SECONDS / 2)                                        # one step, one beat of the tune
+        ease = lambda x: max(0.0, min(1.0, x)) ** 2 * (3 - 2 * max(0.0, min(1.0, x)))
+
+        # the look: as each phrase of the whistle ends he turns to us with his grin, then back to his walk
+        q = (t * 24 / tune.QUAVER_FRAMES) % tune.PHRASE_QUAVERS
+        look = ease((q - 12.6) / 0.9) * (1 - ease((q - 15.1) / 0.8))
+
+        # hips: the swagger. They swing with the leading leg and drop a little as each heel lands
+        turn('Hips', RZ(5.0 * c1))
+        drop = Wi.to_3x3() @ Vector((0, 0, -0.03 * math.cos(4 * math.pi * (ph - 0.04))))
+        for b in below('Hips'):
+            new[b] = Matrix.Translation(drop) @ new[b]
+        # chest: turns against the hips, rolls over the planted leg, leans into the walk, nods on the beat
+        turn('Spine02', RZ(-5.0 * c1) @ RX(2.0 * s1) @ RY(3.0))
+        turn('Spine01', RZ(-7.0 * c1) @ RX(2.5 * s1) @ RY(2.0 + 1.5 * math.cos(2 * math.pi * beat)))
+        turn('Spine', RZ(-4.0 * c1 - 6.0 * look) @ RY(-3.0 * look))            # chest opens to us on the look
+        # head: keeps time with the tune, tips from side to side, and stays on his road while the chest turns
+        nod = 5.5 * math.cos(2 * math.pi * (beat - 0.06))
+        turn('Head', RZ(11.0 * c1 * (1 - look) - 40.0 * look) @ RX(4.5 * math.sin(2 * math.pi * (ph + 0.1)) * (1 - 0.6 * look))
+             @ RY(nod * (1 - look) - 6.0 * look))
+        # arms: down by his sides, elbows bent, swinging against the legs; the forearm follows late
+        for side, sy, sw, sw_late in (('Left', 1.0, math.cos(2 * math.pi * (ph - 0.04)), math.cos(2 * math.pi * (ph - 0.12))),
+                                      ('Right', -1.0, -math.cos(2 * math.pi * (ph - 0.04)), -math.cos(2 * math.pi * (ph - 0.12)))):
+            a = math.radians(2 + 17 * sw)
+            aim(side + 'Arm', side + 'ForeArm', (math.sin(a), sy * 0.24, -math.cos(a)))
+            e = a + math.radians(14 + 10 * sw_late)
+            aim(side + 'ForeArm', side + 'Hand', (math.sin(e), sy * 0.12, -math.cos(e)))
+        basis = {pb.name: pb.matrix_basis.copy() for pb in arm.pose.bones}
+        for name in dict.fromkeys(touched):
+            pb = arm.pose.bones[name]
+            rest = pb.bone.matrix_local
+            if pb.parent:
+                basis[name] = (new[pb.parent.name] @ pb.parent.bone.matrix_local.inverted() @ rest).inverted() @ new[name]
+            else:
+                basis[name] = rest.inverted() @ new[name]
+        # the render reads the clip again unless it is taken off: hold this pose by hand
+        arm.animation_data.action = None
+        for pb in arm.pose.bones:
+            pb.matrix_basis = basis[pb.name]
+        # squash and stretch: he lands a little squat and passes a little tall, his boots staying on the quay
+        k = 0.028 * math.cos(4 * math.pi * (ph - 0.06))
+        self.stage.matrix_world = Matrix.Diagonal((1 + k * 0.6, 1 + k * 0.6, 1 - k, 1)) @ self.stage_rest
+        bpy.context.view_layer.update()
 
     def mouth_px(self):
         """Where his lips are in the cell picture, for the notes."""
