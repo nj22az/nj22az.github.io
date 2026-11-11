@@ -85,6 +85,20 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     return f.movers().find(m => m.id === 'door-drinks-machine').matrix.reduce((s, v, i) => s + Math.abs(v - (i % 5 === 0 ? 1 : 0)), 0);
   });
   check(shut < 1e-6, `a tap on the open door shuts it again`);
+  // The emergency generator room on the house top (built to the owner's drawing): one walks from the escape route out
+  // through its door onto the deck, and each fire damper's lever is turned by a tap and not by walking past.
+  const eg = await page.evaluate(() => {
+    const f = window.__ferry, H = 17.25;
+    const off = id => { const m = f.movers().find(m => m.id === id); return m ? m.matrix.reduce((s, v, i) => s + Math.abs(v - (i % 5 === 0 ? 1 : 0)), 0) : null; };
+    f.walkTo(0.70, 9.28 - H, Math.PI / 2, 0, 11.55);
+    const before = { x: f.state.walk.x, y: f.state.walk.y };
+    f.hold('KeyW', true);
+    for (let t = 0; t < 3.5; t += 0.1) { f.workAuto(0.1); f.walkFor(0.1); }
+    f.hold('KeyW', false);
+    return { before, x: f.state.walk.x, y: f.state.walk.y, damper: off('damper-fd02') };
+  });
+  check(eg.before.y > 11.4 && eg.x < -1.95, `from the emergency generator room's escape route one walks out through its door onto the house top (from ${eg.before.x.toFixed(2)} to ${eg.x.toFixed(2)} m off the centreline)`);
+  check(eg.damper < 1e-6, `walking past, the fire damper's lever stays as it is`);
   check(errors.length === 0, `no errors in the console (${errors.slice(0, 3).join(' | ') || 'none'})`);
   await browser.close();
   console.log(fails.length ? `\n${fails.length} FAILED` : '\nall passed');

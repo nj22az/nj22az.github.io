@@ -143,7 +143,7 @@ def main():
     # spaces and to the car deck (part.group).
     parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'passenger', 'bridge', 'top')}
     report, inputs, movers, ways = {}, [], [], []
-    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck', 'wheelhouse', 'stairs', 'bridge_deck', 'livery', 'vending'):
+    for name in ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'compass_deck', 'wheelhouse', 'stairs', 'bridge_deck', 'livery', 'vending', 'eg_room'):
         try:
             mod = importlib.import_module(name)
         except ModuleNotFoundError as e:
@@ -176,7 +176,7 @@ def main():
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS)
+        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS, shipyard.RUNS)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])

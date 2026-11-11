@@ -308,27 +308,17 @@ def _vents():
     vents = Part('Compass deck, vent heads', 'Topside paint', smooth=True, angle=40)
     metal = Part('Compass deck, vent fittings', 'Shaft steel', smooth=True, angle=40)
     slats = Part('Compass deck, louvres', 'Machinery paint')
-    # The generator room's air intake (a coaming 0.9 m by 0.5 m with a louvred front and a hood) at 7.7 m from the transom.
-    ix, iz = 1.0, Z(7.7)
-    vents.box((ix - 0.45, DECK, iz - 0.25), (ix + 0.45, DECK + 0.34, iz + 0.25), WHITE)
-    vents.box((ix - 0.5, DECK + 0.34, iz - 0.3), (ix + 0.5, DECK + 0.4, iz + 0.3), tint(WHITE, 0.95))
-    for k in range(7):
-        y = DECK + 0.06 + k * 0.045
-        slats.box((ix - 0.4, y, iz + 0.25), (ix + 0.4, y + 0.02, iz + 0.262), DARK)
-        slats.box((ix - 0.4, y, iz - 0.262), (ix + 0.4, y + 0.02, iz - 0.25), DARK)
-    # Its exhaust: a pipe 0.14 m through, 1.2 m high, with a flap on the top.
-    ex, ez = 1.95, Z(7.45)
-    _cyl(metal, (ex, DECK, ez), (ex, DECK + 1.2, ez), 0.07, STEEL, sides=14)
-    _cyl(metal, (ex, DECK, ez), (ex, DECK + 0.015, ez), 0.12, STEEL, sides=14)
-    _cyl(metal, (ex, DECK + 1.2, ez), (ex, DECK + 1.215, ez), 0.1, tint(STEEL, 0.8), sides=14)
-    _cyl(metal, (ex, DECK + 1.1, ez), (ex, DECK + 1.2, ez), 0.075, tint(STEEL, 0.8), sides=14)
-    # The galley's extract (to starboard, over the galley at 15.25 m): a cowl on a coaming.
-    gx, gz = -1.73, Z(15.25)
+    # The emergency generator's own intake and exhaust stood here until 11 November 2026 (a coaming at 7.7 m, a pipe at
+    # 7.45 m): the generator is now in the room built to the owner's drawing (eg_room.py), which has its own, and that room
+    # stands on this deck from 8.6 to 16.6 m. The two vent heads that were under it are forward of it, clear of the way
+    # from its door to the compass deck.
+    # The galley's extract: a cowl on a coaming (the galley is at 15.25 m; its trunk is led 2.4 m forward under the deck).
+    gx, gz = -1.30, Z(17.60)
     _cyl(vents, (gx, DECK, gz), (gx, DECK + 0.45, gz), 0.24, WHITE, sides=18)
     _cyl(vents, (gx, DECK + 0.45, gz), (gx, DECK + 0.62, gz), 0.36, tint(WHITE, 0.95), sides=18, r2=0.12)
     _cyl(metal, (gx, DECK + 0.62, gz), (gx, DECK + 0.7, gz), 0.12, STEEL, sides=14, r2=0.02)
-    # The crew WC and shower's: a mushroom head (at 12.75 m).
-    wx, wz = -1.73, Z(12.75)
+    # The crew WC and shower's: a mushroom head (the room is at 12.75 m; its trunk is led forward likewise).
+    wx, wz = -0.40, Z(17.20)
     _cyl(vents, (wx, DECK, wz), (wx, DECK + 0.3, wz), 0.1, WHITE, sides=14)
     _cyl(vents, (wx, DECK + 0.3, wz), (wx, DECK + 0.4, wz), 0.2, tint(WHITE, 0.95), sides=16, r2=0.14)
     return [vents, metal, slats]

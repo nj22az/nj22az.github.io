@@ -97,6 +97,17 @@ REPLACES.update({
         why='her own bridge deck, built in Blender',
         what='the bridge deck abaft the wheelhouse: the corridor (eight cabin doors, storm rails, a panelled deckhead with its lights and '
              'detectors, the fire point) and the house outside (three weathertight doors, nine framed windows, the fire station on the platform)'),
+    # The other ship's emergency generator room on the bridge deck (a box for a generator, a block for a switchboard, a
+    # tank and a battery box) is emptied: the emergency generator room is the one built to the owner's drawing (eg_room.py).
+    # Its floor covering stays; so does the slatted panel on its aft wall outside, which was never an opening.
+    'eg-room-old': dict(
+        part='bridge', prefix='Emergency generator room', section='Emergency generator room', built='11 November 2026',
+        boxes=[_box((0.54, 2.915), (9.105, 11.05), (6.10, 8.97))],
+        keep=lambda mat, col: False,
+        why="the emergency generator room built to the owner's drawing",
+        what='the emergency generator room (7.8 by 4.5 by 3.2 m, to the owner\'s drawing: the set on its skid, the exhaust, two air ducts with '
+             'fire dampers, the day tank, the starting batteries, the control panel, the emergency switchboard, the weathertight door), '
+             'landed on the house top until the 68 m hull is built'),
     # The lobby's vending corner: the other ship's two plain boxes go; the owner's own drinks machine stands there (vending.py).
     'vending': dict(
         part='passenger', prefix='Drinks machine', section='Passenger deck fittings', built='11 November 2026', listed=False,
@@ -243,6 +254,10 @@ LEVELS = {'top': f"{_TOP + 1.9:.1f} m above the keel, masthead light at {S.MAST[
 # What the page says of a space, where her own build has changed what the other ship's words describe (the main stairs:
 # spec.MAIN_STAIR). The other ship's words named a crew changing room under the port stair; it was never drawn.
 SAYS = {
+    'eg-room': "Empty since 11 November 2026: the other ship's emergency generator, switchboard, tank and battery box stood here, drawn as plain "
+               "blocks. The emergency generator room is the one on the house top, built to the owner's drawing. The door keeps its plate until "
+               "she is rebuilt",
+
     'casing-p': "1.3 m wide: the engine uptake and engine-room supply-fan trunk, the engine-room entrance (a 1.1 m door) and ladder, main stair P in "
                 "its enclosure (22 steps of 200 mm in two flights at 42° with a landing, 1.18 m between the stringers, a handrail each side), the foyer "
                 "at its foot with the sliding fire door from the car deck, the gangway passage (1.4 m) with the gangway door and the shore-power box, "
@@ -257,6 +272,21 @@ SAYS = {
                    "mooring station, and two 1.1 m sliding fire doors forward onto the lanes, where the door to each main stair stands just outside in "
                    "the casing’s wall, a zone kept clear before it",
 }
+
+# A room of hers that the other ship's list of spaces does not have is added to its part's list (`ADDS`), and a space of the
+# other ship's whose use has gone takes a new name (`NAMES`).
+import eg_place as _EG          # where the emergency generator room stands (plain numbers; eg_room.py builds it there)
+ADDS = {'top': [dict(
+    id='eg-house', name='Emergency generator room',
+    text="Built to the owner's drawing, 7.8 m by 4.5 m and 3.2 m high: the emergency generator set (440 V, three-phase, 60 Hz, 500 kW on the "
+         "drawing) on its skid and six mounts, its lagged exhaust up through the deckhead to a silencer, the supply and exhaust air ducts with "
+         "fire dampers FD-01 and FD-02, the day tank of about 200 L on its stand with its quick-closing valve and the pull outside the door, "
+         "the 24 V starting battery bank and its charger, the control panel, the emergency switchboard, gratings, a guard rail round the "
+         "alternator, the escape route marked to the weathertight door",
+    why="Power when the main board is dead. Built as a block for the 68 m ship's top deck and landed on this ship's house top until that "
+        "hull is built: here it is for looking at, not her arrangement",
+    min=_EG.BOX[0], max=_EG.BOX[1], stand=_EG.STAND)]}
+NAMES = {'eg-room': 'Store (the emergency generator room that was)'}
 
 # Spaces that are not rooms one goes into: the bow ramp is stowed upright and the two funnels are uptake casings with no
 # door. A walk begun there (the room chosen in the panel) starts at `stand`, beside it, where one can walk on:
@@ -619,7 +649,10 @@ def main():
     for g in groups:
         if g['id'] in LEVELS:
             g['level'] = LEVELS[g['id']]
+        g['spaces'] = [sp for sp in g['spaces'] if sp['id'] not in {a['id'] for a in ADDS.get(g['id'], ())}] + [dict(a) for a in ADDS.get(g['id'], ())]
         for sp in g['spaces']:
+            if sp['id'] in NAMES:
+                sp['name'] = NAMES[sp['id']]
             if sp['id'] in ROOMS:
                 rule = ROOMS[sp['id']]
                 if 'min_y' in rule:

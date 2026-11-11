@@ -23,6 +23,35 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | `checks/bridge.cjs` | The page's own check for the bridge and the register (25 checks; *Checks actually run*) |
 | `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register (what a yard holds, and what of it exists), class's comment sheets, and the yard's calculations, which are programs that read the model and the register (`yard/calc/`) ([README](yard/README.md)) |
 
+## She is to be rebuilt at 68 m (`blender/ga.py`, `yard/drawings/`)
+
+The owner, 11 November 2026: "I think the ship needs to be longer maybe 65-70 meters". At her beam of 8.4 m and depth of
+4.0 m she cannot be stretched to that; asked, the owner chose **"Rebuild the Chisum at 68 m"**, in place: a new hull, the
+other ship's interiors gone at once, the page showing a bare new hull with her bridge until each deck is built.
+
+- **`blender/ga.py` is that ship set out** (revision B, a proposal for the owner's approval): 68.4 m over all, 13.6 m
+  beam, 5.0 m to the car deck, 3.2 m draught, about 1,630 t; drive-through, four lanes, 350 passengers, 12 crew; her
+  decks, her eight watertight bulkheads and 86 spaces, each with what it is for.
+- **Revision B: the officers' cabins.** The owner, with the files of a chief engineer's suite of their own
+  (`blender/assets/ce-suite/`: a suite of 7.2 by 5.0 m for a 190 m cargo ship, with its model, its drawing and a method
+  statement for its outfitting, electrical and plumbing work): "Can this be used to make the chief engineer cabin", then
+  "Expand their current cabins they should be comfortable and roomy maybe 20 m^2 remove one of the other cabins". It can:
+  the model reads with `glb.py` as the drinks machine's does (167 parts, 5,460 triangles, nothing misplaced). On the bridge
+  deck the house is 1.2 m wider (rooms 5.0 m deep, as the suite's), the chief engineer has 23 m², the master 29 m², the
+  chief officer 22 m², the second officer and second engineer 18 m² each, and one crew cabin is gone (five of 15 m² for
+  seven ratings). The suite as drawn is 36 m²: whether it is fitted at that size or its rooms rearranged into 23 m² is
+  the first of the questions on the drawing. On the present 34.5 m ship it cannot be done at all: her cabins are 6 m²
+  and her whole bridge deck 81 m². `python3 ferry/blender/ga.py` checks it
+  against itself (no space outside her, none over another, the collision bulkhead where it belongs).
+- **`yard/drawings/JS1-102-general-arrangement.svg`** is drawn from it by `ga_drawing.py`: a profile and five plans.
+- **The owner's two rooms** stand in one house on the top deck, at the sizes of the owner's drawings: the emergency
+  generator room (7.8 by 4.5 m) and the ventilation room (6.2 by 3.4 m), with the CO₂ room and a battery room.
+- Six things are the owner's to settle first (on the drawing): the chief engineer's suite's size, the bow, the saloon's
+  width, where the two rooms stand, the emergency generator's size, her speed and engines.
+- **Nothing of her is built.** Everything below this section describes the first Chisum, 34.5 m, which is what the page
+  shows. What carries over: the bridge and its register, the yard's standards and checks, the builder, the drinks machine.
+  What does not: her hull's lines as they are, and everything of the other ship.
+
 ## What she is, and how far her own build has come
 
 The owner, 9 November 2026: "I want a ferry viewer on my website", "a stand alone ferry viewer that can show the whole
@@ -393,6 +422,53 @@ faces, a wing door sill in the deck covering's underside, the sliding doors' han
 brackets, the porthole's glass, the stairs' newels in their stringers, and others). **629 pairs remain among the other
 ship's own pieces** (`--all` lists them): they are not fixed, and go as each section is rebuilt or by a pass over the
 other ship's drawing that is not written yet.
+
+## The emergency generator room (`blender/eg_room.py`, `blender/eg_place.py`)
+
+The owner, 11 November 2026, twice, with a drawing ("Ship emergency generator room, general arrangement") and a picture of
+the room: "Build the ships emergency generator room". It is built whole, to the drawing's measures: 7.80 m long, 4.50 m
+wide, 3.20 m high; 1.00 m clear, a set of 4.20 m, 1.20 m clear before the switchboard, an escape route of 1.00 m to the
+door; 2.40 m of headroom under the ducts.
+
+- **In it:** the generator set (a six-cylinder turbocharged diesel and its alternator on a skid on six mounts, the
+  radiator in a cowl at its forward end, its name plate with the drawing's rating: 440 V, three-phase, 60 Hz, 500 kW);
+  the exhaust (a bellows, a lagged riser with its bands, up through the deckhead to a silencer on the roof); the supply
+  air duct with fire damper FD-01 and the exhaust air duct with FD-02 along the starboard wall, each ending in a louvre
+  outside; the day tank of about 200 L on its stand over a tray, with a level gauge, a quick-closing valve whose pull is
+  in a red box outside the door, a vent out through the wall, and tagged fuel lines; the 24 V starting battery bank in
+  its rack and its charger; the control panel and the two-section emergency switchboard on plinths, with the
+  alternator's cables in trays; gratings beside the set and before the board, a rubber mat at the board, a yellow guard
+  rail round the alternator; four lit lights; the extinguisher, call point and telephone by the door; the warning board;
+  the exit sign; the escape route marked on the deck; and the weathertight door with its porthole.
+- **Nothing in it runs through the air** (`yard/standards/JSY-STD-402-supports.md`, `blender/spans.py`). The owner, of
+  the room as first built: "There looks like too much floating objects in the emergency generator room why aren't you
+  working according to Spec?" They were right: a cable stood 1.4 m up from the alternator to a tray, another crossed the
+  room in the air, the ducts hung on rods too thin to see, fuel lines ran off the wall with no bracket; `afloat.py` had
+  passed it all because each thing touched something at an end. Now: the alternator's cables go down from a terminal box
+  on its side into a covered duct on the deck, up a cable ladder on the wall, along a ladder under the duct on brackets
+  and down into the switchboard; the ducts and dampers hang on trapezes of 40 mm angle; the fuel lines are clamped to a
+  rack on the forward wall (supply, return and the filling line, each tagged), laid on the deck beside the skid under a
+  yellow step-over plate where one walks, and bracketed to the skid's rail; the battery lead runs in a conduit; the
+  exhaust riser is stayed to the wall; the pull wire is led through eyes. `spans.py` follows each of the room's 23 runs
+  (73 m) along its centre line and fails if any is unsupported further than the standard allows.
+- **What works:** the door opens outward for whoever comes to it; each fire damper's lever is turned a quarter by a tap.
+- **Where it stands.** It is a block for the 68 m ship's top deck (`ga.py`: `eg-room`). That hull is not built, so the
+  block is landed on the present ship's house top, abaft the wheelhouse (`eg_place.PLACE` is the only thing that says
+  where). On the present ship it is as high as her mast's lower lights and would shade her radar aft: it is there to be
+  walked, not as her arrangement. Go to it by **Go to → Top → Emergency generator room**, or on foot from the compass
+  deck. The two vent heads that stood where it stands are forward of it; the other ship's generator room on the bridge
+  deck is emptied and named a store.
+- **The yard's, not the drawing's:** the exhaust has its own stack (the drawing leads it to the funnel); the tank's valve
+  has a pull outside; the ducts end in wall louvres; the starting battery is the only battery in the room.
+- **Open, and told to the owner:** the set's 500 kW is the drawing's figure and is more than the 68 m ship's arrangement
+  gives each main generator (about 320 kW), and her own emergency loads are near 200 kW; a 200 L tank feeds 500 kW for
+  about an hour and a half at full load. JS8-854 (the emergency load list) is to settle the rating and the tank together.
+  No rule text was read for the room.
+- **In the register:** 20 components in a new subsystem, Emergency power (EMG-01 to 11, four lights, the extinguisher,
+  the call point, the heat detector, the telephone, the door).
+- `zfight.py` now looks for the face two others are bedded on across the whole plane, not only in the same bin of
+  distance: adding the room moved the model file's rounding by a hair and two bedded pairs under the drinks machine were
+  reported wrongly.
 
 ## The drinks machine (`blender/vending.py`, `blender/jpvm.py`, `blender/glb.py`, `blender/assets/jpvm-2r20/`)
 
@@ -899,6 +975,32 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 11 November 2026, after it: nothing in the generator room runs through the air
+
+- The owner: "There looks like too much floating objects in the emergency generator room why aren't you working according
+  to Spec?" The room's cables, ducts and pipes are reworked onto ladders, a floor duct, trapezes, a pipe rack and brackets;
+  JSY-STD-402 says how things are carried; `blender/spans.py` is new and is run with the other checks.
+- Build, assembled twice to the same two files; `check.py` all passed; `zfight.py` none of hers; `afloat.py` none of hers;
+  **`spans.py`: 23 runs of pipe, cable, conduit and wire (73 m), every one carried** (its first run found a 1.95 m length
+  of the supply line without a support; a post from the tank's stand now carries it).
+- Looked at in pictures from the same three places as before.
+- **Not checked by a program:** the hangers' spacing and size; the wheelhouse's and the hull's older fittings, which were
+  built before this check and are named in the standard's open points.
+
+### 11 November 2026, after the general arrangement: the emergency generator room
+
+- The owner: "Build the ships emergency generator room", with the drawing. Section "The emergency generator room" above.
+- Atlas (3072 by 4096, at the limit kept for phones), build (15,000 triangles for the room), assembled twice to the same
+  two files (2.20 MB, 300,700 triangles); `check.py` all passed; `zfight.py`: no face of hers in one plane over another;
+  `afloat.py`: nothing of hers hangs in the air; `bridge.cjs`, `stairs.cjs`, `doors.cjs` (with a walk from the room's
+  escape route out through its door, and the damper's lever left alone by a passer-by), `travel.cjs` (47 rooms),
+  `offline.cjs` all passed.
+- Looked at in pictures: the room from the battery corner, from the escape route, toward the switchboard and door, and
+  from outside on the house top.
+- **Not done or not checked:** no rule text read; the room's lighting is the page's daylight plus four glowing fittings,
+  not a lit interior; the dampers' blades are inside their casings and not drawn; the switchboard's and the panel's
+  fronts are pictures, not doors that open; nothing on a phone.
 
 ### 11 November 2026, after the car deck: the owner's drinks machine, in two languages; Johansson Line
 

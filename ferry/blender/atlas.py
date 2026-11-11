@@ -1106,6 +1106,186 @@ def ext_sign():
     return im
 
 
+# ---- The emergency generator room (eg_room.py), to the owner's drawing: its name plates and labels, the faces of its control
+# panel and switchboard, its warning board, its exit and escape markings, the pattern of its gratings.
+def eg_label(w, h, lines, bg=(238, 238, 232), ink=(20, 22, 24), size=None, border=True):
+    im, d = sheet(w, h, bg)
+    if border:
+        d.rectangle((2, 2, w - 3, h - 3), outline=ink, width=2)
+    size = size or int(min((h - 14) / (len(lines) * 1.22), 1.75 * (w - 20) / max(len(t) for t in lines)))
+    for i, t in enumerate(lines):
+        text(d, (w / 2, h / 2 + (i - (len(lines) - 1) / 2) * size * 1.22), t, size, ink)
+    return im
+
+
+def eg_plate():
+    im, d = sheet(384, 302, (236, 236, 230))
+    d.rectangle((3, 3, 380, 298), outline=(30, 32, 34), width=3)
+    for i, t in enumerate(('EMERGENCY', 'GENERATOR', '(No. 1)')):
+        text(d, (192, 44 + i * 44), t, 36, (20, 22, 24))
+    d.rectangle((18, 176, 366, 284), outline=(30, 32, 34), width=2)
+    text(d, (192, 206), '440 V    3Φ    60 Hz', 24, (20, 22, 24))
+    text(d, (192, 252), '500 kW', 34, (20, 22, 24))
+    return im
+
+
+def eg_charger():
+    im, d = sheet(256, 232, (200, 204, 200))
+    frame(d, 256, 232)
+    d.rectangle((16, 14, 240, 60), fill=(24, 26, 28))
+    text(d, (128, 28), 'BATTERY CHARGER', 15, (240, 240, 236))
+    text(d, (128, 47), '24 V DC  ·  STARTING BANK', 10, (240, 240, 236), kind='r')
+    for i, (unit, a) in enumerate((('V', 10), ('A', -25))):
+        x = 76 + i * 104
+        d.rectangle((x - 36, 74, x + 36, 146), fill=(244, 242, 236), outline=(30, 30, 30), width=2)
+        d.arc((x - 28, 90, x + 28, 146), 215, 325, fill=(30, 30, 30), width=2)
+        d.line((x, 128, x + 30 * math.sin(math.radians(a)), 128 - 30 * math.cos(math.radians(a))), fill=(190, 40, 30), width=2)
+        text(d, (x, 136), unit, 11, (30, 30, 30))
+    for i, (label, col) in enumerate((('SUPPLY', GREEN), ('CHARGING', GREEN), ('FAILURE', RED))):
+        led(d, 50 + i * 78, 176, 7, col, on=i < 2)
+        text(d, (50 + i * 78, 200), label, 9, (40, 44, 46))
+    return im
+
+
+def eg_control():
+    w, h = 260, 674
+    im, d = sheet(w, h, (206, 210, 206))
+    frame(d, w, h)
+    d.rectangle((18, 16, w - 18, 84), fill=(238, 238, 232), outline=(30, 32, 34), width=2)
+    for i, t in enumerate(('EMERGENCY', 'GENERATOR', 'CONTROL')):
+        text(d, (w / 2, 30 + i * 20), t, 16, (20, 22, 24))
+    d.rectangle((40, 110, w - 40, 250), fill=(20, 26, 30), outline=(60, 66, 70), width=4)        # the screen
+    text(d, (w / 2, 126), 'EG No. 1   AUTO   STANDBY', 9, (150, 255, 190), kind='m')
+    for i, (name, value, frac) in enumerate((('V', '440', 0.88), ('Hz', '60.0', 0.8), ('kW', '0', 0.02), ('BAT', '26.8', 0.9), ('OIL', '4.1', 0.7), ('TEMP', '42', 0.4))):
+        y = 146 + i * 16
+        text(d, (50, y), name, 9, (160, 200, 220), 'lm', 'm')
+        d.rectangle((92, y - 4, 92 + 90 * frac, y + 4), fill=(90, 190, 230))
+        text(d, (w - 48, y), value, 9, (230, 240, 240), 'rm', 'm')
+    for i, (label, col, on) in enumerate((('READY', GREEN, True), ('RUNNING', GREEN, False), ('ON BOARD', GREEN, False), ('ALARM', AMBER, False), ('TRIP', RED, False))):
+        x = 34 + i * 48
+        led(d, x, 286, 8, col, on=on)
+        text(d, (x, 308), label, 7, (40, 44, 46))
+    for i, (label, col) in enumerate((('START', (60, 170, 90)), ('STOP', (200, 50, 40)), ('RESET', (60, 100, 190)))):
+        key(d, 52 + i * 64, 356, 50, 34, col, label, 9)
+    d.ellipse((34, 404, 98, 468), fill=(40, 44, 46), outline=(20, 22, 24), width=2)                # the mode switch
+    d.line((66, 436, 66, 410), fill=(236, 236, 230), width=5)
+    for label, x in (('MAN', 28), ('AUTO', 66), ('TEST', 106)):
+        text(d, (x, 392), label, 8, (40, 44, 46))
+    d.ellipse((174, 316 + 80, 250, 392 + 80), fill=(236, 190, 40), outline=(40, 40, 40), width=2)  # where the emergency stop stands
+    text(d, (212, 486), 'EMERGENCY STOP', 7, (40, 44, 46))
+    d.rectangle((24, 520, w - 24, 600), fill=(246, 244, 236), outline=(30, 30, 30))
+    for i, t in enumerate(('TO START BY HAND:', '1  Mode switch to MAN', '2  Press START; watch oil pressure', '3  Close the breaker at the board')):
+        text(d, (32, 534 + i * 17), t, 9, (30, 30, 30), 'lm', 'b' if i == 0 else 'r')
+    for k in range(8):                                                                             # the vent
+        d.line((60, 622 + k * 5, w - 60, 622 + k * 5), fill=(120, 126, 124), width=2)
+    return im
+
+
+def eg_esb(section):
+    w, h = 240, 704
+    im, d = sheet(w, h, (206, 210, 206))
+    frame(d, w, h)
+    d.rectangle((14, 14, w - 14, 70), fill=(238, 238, 232), outline=(30, 32, 34), width=2)
+    text(d, (w / 2, 30), 'EMERGENCY SWITCHBOARD', 13, (20, 22, 24))
+    text(d, (w / 2, 52), '440 V   3Φ   60 Hz' if section == 1 else 'DISTRIBUTION', 13, (20, 22, 24))
+    if section == 1:
+        for i, (unit, a) in enumerate((('V', 8), ('A', -40), ('Hz', 0), ('kW', -42))):
+            x, y = 66 + (i % 2) * 108, 92 + (i // 2) * 84
+            d.rectangle((x - 34, y, x + 34, y + 68), fill=(244, 242, 236), outline=(30, 30, 30), width=2)
+            d.arc((x - 26, y + 16, x + 26, y + 68), 215, 325, fill=(30, 30, 30), width=2)
+            d.line((x, y + 52, x + 28 * math.sin(math.radians(a)), y + 52 - 28 * math.cos(math.radians(a))), fill=(190, 40, 30), width=2)
+            text(d, (x, y + 58), unit, 10, (30, 30, 30))
+        for i, (label, col, on) in enumerate((('MAIN', GREEN, True), ('EM. GEN', GREEN, False), ('EARTH', (255, 250, 220), True), ('EARTH', (255, 250, 220), True))):
+            led(d, 36 + i * 56, 282, 8, col, on=on)
+            text(d, (36 + i * 56, 304), label, 8, (40, 44, 46))
+        for i, (label, on) in enumerate((('GENERATOR BREAKER', False), ('BUS TIE FROM MAIN BOARD', True))):
+            y = 330 + i * 120
+            d.rectangle((30, y, w - 30, y + 100), fill=(60, 64, 66), outline=(20, 22, 24), width=2)
+            d.rectangle((w / 2 - 14, y + (20 if on else 50), w / 2 + 14, y + (50 if on else 80)), fill=(236, 236, 230))
+            text(d, (w / 2, y + 12), 'ON' if True else '', 8, (200, 204, 200))
+            text(d, (w / 2, y + 90), 'OFF', 8, (200, 204, 200))
+            text(d, (w / 2, y + 110), label, 9, (30, 30, 30))
+    else:
+        ways = ('STEERING GEAR No. 2', 'EMERGENCY FIRE PUMP', 'EMERGENCY LIGHTING', 'NAVIGATION LIGHTS', 'RADIO AND NAVIGATION', 'FIRE DETECTION',
+                'GENERAL ALARM, PA', 'BILGE PUMP', 'BATTERY CHARGERS', 'TRANSFORMER 440/105 V')
+        for i, name in enumerate(ways):
+            y = 88 + i * 40
+            d.rectangle((22, y, 62, y + 30), fill=(60, 64, 66), outline=(20, 22, 24), width=2)
+            d.rectangle((36, y + 4, 48, y + 16), fill=(236, 236, 230))
+            text(d, (72, y + 15), name, 9, (30, 30, 30), 'lm')
+        d.polygon([(w / 2, 506), (w / 2 - 38, 572), (w / 2 + 38, 572)], fill=(240, 200, 40), outline=(20, 20, 20))
+        d.line((w / 2 + 6, 524, w / 2 - 6, 546, w / 2 + 4, 546, w / 2 - 6, 566), fill=(20, 20, 20), width=4)
+    for k in range(9):                                                                             # the vent at the foot
+        d.line((50, 610 + k * 8, w - 50, 610 + k * 8), fill=(120, 126, 124), width=3)
+    return im
+
+
+def eg_warning():
+    w, h = 560, 396
+    im, d = sheet(w, h, (244, 242, 236))
+    d.rectangle((2, 2, w - 3, h - 3), outline=(60, 60, 60), width=2)
+    d.rectangle((12, 12, w - 12, 84), fill=(196, 44, 36))
+    d.polygon([(52, 22), (22, 74), (82, 74)], fill=(244, 242, 236))
+    d.rectangle((49, 38, 55, 58), fill=(196, 44, 36)); d.ellipse((48, 62, 56, 70), fill=(196, 44, 36))
+    text(d, (318, 36), 'EMERGENCY', 24, (244, 242, 236))
+    text(d, (318, 64), 'GENERATOR ROOM', 24, (244, 242, 236))
+    lines = ('AUTHORISED PERSONNEL ONLY', 'HEARING PROTECTION REQUIRED', 'HOT SURFACES', 'MOVING MACHINERY: THE SET STARTS BY ITSELF', 'DIESEL FUEL: FIRE RISK, NO NAKED LIGHT')
+    for i, t in enumerate(lines):
+        d.rectangle((26, 108 + i * 36, 38, 120 + i * 36), fill=(30, 30, 30))
+        text(d, (52, 114 + i * 36), t, 17, (30, 30, 30), 'lm')
+    d.line((20, 292, w - 20, 292), fill=(60, 60, 60), width=2)
+    text(d, (26, 316), 'IN AN EMERGENCY:', 17, (196, 44, 36), 'lm')
+    text(d, (26, 344), 'The set starts by itself and takes the load within 45 s.', 15, (30, 30, 30), 'lm', 'r')
+    text(d, (26, 368), 'If it does not: start it by hand at the control panel.', 15, (30, 30, 30), 'lm', 'r')
+    return im
+
+
+def eg_exit():
+    im, d = sheet(288, 128, (30, 140, 76))
+    text(d, (104, 64), 'EXIT', 54, (255, 255, 255))
+    d.polygon([(206, 40), (262, 64), (206, 88)], fill=(255, 255, 255))
+    d.rectangle((186, 56, 210, 72), fill=(255, 255, 255))
+    return im
+
+
+def eg_escape_floor():
+    im, d = sheet(256, 256, (47, 107, 79))
+    d.polygon([(128, 18), (70, 96), (106, 96), (106, 150), (150, 150), (150, 96), (186, 96)], fill=(240, 240, 232))
+    text(d, (128, 186), 'ESCAPE', 34, (240, 240, 232))
+    text(d, (128, 226), 'ROUTE', 34, (240, 240, 232))
+    return im
+
+
+def eg_grating():
+    im, d = sheet(128, 128, (38, 42, 44))
+    for k in range(0, 128, 16):
+        d.rectangle((k, 0, k + 5, 127), fill=(124, 130, 132))
+    for k in range(0, 128, 32):
+        d.rectangle((0, k, 127, k + 4), fill=(144, 150, 152))
+    return im
+
+
+def eg_pictures():
+    red, white, ink, yellow = (196, 44, 36), (250, 250, 246), (20, 22, 24), (236, 196, 40)
+    return {
+        'eg_plate': (eg_plate(), 'face'), 'eg_charger': (eg_charger(), 'face'), 'eg_control': (eg_control(), 'face'),
+        'eg_esb_1': (eg_esb(1), 'face'), 'eg_esb_2': (eg_esb(2), 'face'), 'eg_warning': (eg_warning(), 'face'),
+        'eg_exit': (eg_exit(), 'screen'), 'eg_escape_floor': (eg_escape_floor(), 'face'), 'eg_grating': (eg_grating(), 'face'),
+        'eg_exhaust': (eg_label(272, 160, ['↑  EXHAUST', 'TO STACK']), 'face'),
+        'eg_supply': (eg_label(640, 184, ['EMERGENCY GENERATOR ROOM', 'SUPPLY AIR  →']), 'face'),
+        'eg_extract': (eg_label(640, 184, ['EMERGENCY GENERATOR ROOM', 'EXHAUST AIR  →']), 'face'),
+        'eg_fd01': (eg_label(224, 174, ['FIRE', 'DAMPER', '(FD-01)'], red, white), 'face'),
+        'eg_fd02': (eg_label(224, 174, ['FIRE', 'DAMPER', '(FD-02)'], red, white), 'face'),
+        'eg_daytank': (eg_label(400, 227, ['EMERGENCY', 'GENERATOR', 'DAY TANK', '(≈ 200 L)']), 'face'),
+        'eg_battery': (eg_label(480, 192, ['EMERGENCY GENERATOR', 'STARTING BATTERY BANK', '24 V DC']), 'face'),
+        'eg_fuel_shutoff': (eg_label(192, 96, ['EM. GENERATOR', 'FUEL SHUT-OFF', 'PULL'], red, white), 'face'),
+        'eg_escape_plate': (eg_label(320, 136, ['ESCAPE', 'TO SAFE AREA'], red, white), 'face'),
+        'eg_tag_supply': (eg_label(256, 56, ['FUEL SUPPLY  →'], yellow, ink), 'face'),
+        'eg_tag_return': (eg_label(256, 56, ['FUEL RETURN  →'], yellow, ink), 'face'),
+        'eg_tag_service': (eg_label(256, 56, ['FROM SERVICE TANK'], yellow, ink), 'face'),
+    }
+
+
 # ---- The owner's drinks machine (JPVM-2R20, assets/jpvm-2r20/): what is lettered on it, in English and Japanese (the
 # owner, 11 November 2026: "Use English so we can see what we are selling , English and Japanese"): the label of each
 # selection, the menu on its door, the header, the money panel's notices (jpvm.pictures has what each says and where).
@@ -1225,6 +1405,7 @@ def tiles():
         'fire_door': (sign(384, 96, (190, 40, 32), ['FIRE DOOR', 'KEEP CLEAR'], WHITE, 26), 'face'),
         'nameplate': (sign(384, 64, (24, 26, 28), ['CHISUM   ·   MINATO'], (226, 200, 120), 20), 'face'),
         **jpvm_pictures(),
+        **eg_pictures(),
     }
 
 
