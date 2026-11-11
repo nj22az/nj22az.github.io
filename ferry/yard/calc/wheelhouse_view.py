@@ -23,6 +23,9 @@ FRAME_T = 0.05
 STILE = 0.06
 m = re.search(r'^HELM = \(([0-9.]+), ([0-9.]+), ([0-9.]+)\)', SRC, re.M)
 HELM = tuple(float(v) for v in m.groups())
+m = re.search(r'^DOOR_GLASS = \(([0-9.]+), ([0-9.]+)\)', SRC, re.M)
+DOOR_GLASS = (float(m.group(1)), float(m.group(2)))
+HEAD_ROOM, CEIL = const('HEAD_ROOM'), const('CEIL')
 GLASS_FOOT, GLASS_TOP = SILL + 0.045, HEAD - 0.045
 _pane = (2 * X_IN - 2 * 0.06 - 4 * 0.10) / 5
 PANES = [(-X_IN + 0.06 + k * (_pane + 0.10), -X_IN + 0.06 + k * (_pane + 0.10) + _pane) for k in range(5)]
@@ -40,15 +43,16 @@ def glass_distance():
     return FRONT_IN + 0.045 + fwd(GLASS_TOP) - HELM[1]
 
 
-def view(limit=112.5, mullion=6.0):
+def view(limit=112.5, mullion=6.0, eye=None):
     ex, ey, eh = HELM
+    eh = eye if eye is not None else eh
     front = FRONT_IN + 0.045 + fwd(eh)
     spans = [(math.degrees(math.atan2(a + FRAME_T - 0.005, front - ey)), math.degrees(math.atan2(b - FRAME_T + 0.005, front - ey))) for a, b in PANES if b > 0]
     spans[0] = (0.0, spans[0][1])
     for yd0, yd1, h0, h1, what in SIDE:
         if what == 'window' and h0 + FRAME_T < eh < h1 - FRAME_T:
             a, b = yd0 + FRAME_T, yd1 - FRAME_T
-        elif what == 'door':
+        elif what == 'door' and DOOR_GLASS[0] < eh < DOOR_GLASS[1]:
             a, b = yd0 + 0.04 + STILE, yd1 - 0.04 - STILE
         else:
             continue

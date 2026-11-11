@@ -45,10 +45,10 @@ systems, no direct current to any consumer, no fire detection or general alarm c
 | Board | Where | Fed from | Feeds |
 |---|---|---|---|
 | **BD1** Wheelhouse distribution, 105 V | aft wall | the lighting board, 40 A, 2 × 16 mm², 33.5 m, 2.2 % | lighting, wing lights and floodlights, wipers, sockets, air conditioner, chart system and cameras, dimmers; 2.4 kW connected |
-| **BD2** Emergency distribution, 105 V | aft wall | the emergency switchboard, 16 A, 2 × 4 mm² fire-resistant, 24 m, 1.6 % | radar, public address and general alarm, emergency light, whistle control, the propulsion control's second supply; 0.6 kW |
+| **BD2** Emergency distribution, 105 V | aft wall | the emergency switchboard, 16 A, 2 × 4 mm² fire-resistant, 24.5 m, 1.6 % | radar, public address and general alarm, emergency light, whistle control, the propulsion control's second supply; 0.6 kW |
 | **DC1** 24 V, navigation and control | aft wall | the general service battery, 40 A, 2 × 35 mm² fire-resistant, 24.5 m, 3.3 % | GPS, AIS, satellite compass, sounder, log, navigation data, autopilot, propulsion and thruster control, talkback, alarms, repeaters, night and transitional lighting, the amplifier's battery supply; 0.6 kW |
 | **DC2** 24 V, radio | aft wall | the radio battery, 25 A, 2 × 25 mm² fire-resistant, 25 m, 2.6 % | both VHF sets, NAVTEX, the GPS's second supply, the portable sets' charger; 340 W |
-| **NLP** Navigation light panel | console | two feeders of its own: the emergency switchboard's transitional section (10 A, 2 × 2.5 mm² fire-resistant, 29.5 m, 2.8 %) and the main lighting board (10 A, 2 × 4 mm², 43.5 m, 2.6 %), by different sides of the room | one monitored way a lantern: masthead, sidelights, stern, anchor, two pairs of not-under-command lights; 540 W |
+| **NLP** Navigation light panel | console | two feeders of its own: the emergency switchboard's transitional section (10 A, 2 × 2.5 mm² fire-resistant, 29.5 m, 2.8 %) and the main lighting board (10 A, 2 × 4 mm², 44 m, 2.6 %), by different sides of the room | one monitored way a lantern: masthead, sidelights, stern, anchor, two pairs of not-under-command lights; 540 W |
 
 Five circuits come to the bridge direct from boards elsewhere and belong to none of its own (`OUTSIDE_CIRCUITS`): the two
 steering control systems, each from its own power unit's circuit in the steering-gear room (2 A, 56 m); the fire detection
@@ -56,7 +56,8 @@ panel's two feeders, from the emergency switchboard and the main lighting board;
 bridge at its port after corner and emergency and battery supplies at the starboard one (`ENTRY`); cables that must go on
 working in a fire are named in `FIRE_RESISTANT`, and the register prints each cable's type.
 
-This distribution was changed twice on 11 November 2026 in answer to class (`../yard/class/PA-001-navigation-bridge.md`,
+Lengths are as the cables are laid in the wheelhouse as it now stands, 2.30 m clear with the trays in the void over the
+lining. This distribution was changed twice on 11 November 2026 in answer to class (`../yard/class/PA-001-navigation-bridge.md`,
 which says what each change answers and which regulation was read for it).
 
 ## How a circuit is sized, and checked

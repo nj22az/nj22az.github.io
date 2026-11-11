@@ -24,8 +24,8 @@ JS2-210,Cathodic protection plan,hull,partly,ferry/blender/hull_appendages.py (a
 JS3-301,"Car deck arrangement: lanes, lashing, pillars",cargo equipment,to do,,The other ship's drawing stands there
 JS3-302,"Bow ramp: arrangement, hydraulics, securing",cargo equipment,to do,,
 JS3-303,Car deck drainage and scuppers,cargo equipment,to do,,
-JS4-401,Navigation bridge layout,ship equipment,exists,ferry/systems/bridge.py; ferry/blender/wheelhouse.py; the page,Approved with comments: PA-001 revision 1
-JS4-402,Bridge visibility calculation,ship equipment,exists,ferry/yard/calc/JS4-402-bridge-visibility.md (made by calc/bridge_calcs.py from the model),"Revision 1. Sea over the bow, blind sectors, both wings, the glass. Open: upper edge of the glass (PA-001 No. 21); light draught and trim"
+JS4-401,Navigation bridge layout,ship equipment,exists,ferry/systems/bridge.py; ferry/blender/wheelhouse.py; the page,Approved with comments: PA-001 revision 2. The wheelhouse 0.30 m taller by the owner's decision
+JS4-402,Bridge visibility calculation,ship equipment,exists,ferry/yard/calc/JS4-402-bridge-visibility.md (made by calc/bridge_calcs.py from the model),"Revision 2. Sea over the bow, blind sectors, both wings, the glass and the view upward. Open: light draught and trim"
 JS4-403,Navigation and radio equipment list,ship equipment,exists,ferry/systems/out/bridge-components.csv,
 JS4-404,Navigation lights arrangement,ship equipment,exists,"ferry/yard/calc/JS4-402-bridge-visibility.md, section 5; ferry/systems/bridge.py (NLT)",Each lantern's sector measured in the model. Open: sidelight screens (PA-001 No. 22); the stern light
 JS4-405,Antenna arrangement,ship equipment,partly,"ferry/blender/compass_deck.py, wheelhouse.py",PA-001 comment 12
@@ -75,7 +75,7 @@ JS8-862,Alarm and monitoring system: alarm list,electrical,to do,,
 JS1-151,Inspection and test plan,general,to do,,"What is inspected, by whom, against what"
 JS1-152,Harbour acceptance test programme,general,to do,,
 JS1-153,Sea trial programme and report,general,to do,,"Speed, turning, stopping, steering gear timing, compass adjustment"
-JS9-901,Plan approval comment sheets,class,exists,ferry/yard/class/PA-001-navigation-bridge.md,"PA-001 revision 1: the navigation bridge approved with comments, 11 November 2026"
+JS9-901,Plan approval comment sheets,class,exists,ferry/yard/class/PA-001-navigation-bridge.md,"PA-001 revision 2: the navigation bridge approved with comments, 11 November 2026"
 JS9-902,Survey reports,class,to do,,
 JS9-903,Certificates and delivery documents,class,to do,,
 JSY-QM-001,Quality manual,yard,exists,"held by the owner, not in the repository (the owner: ""these shouldn't be pushed"")","Draft, revision 0: the yard's way of working in the order of ISO 9001:2015"

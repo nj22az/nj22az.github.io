@@ -103,6 +103,12 @@ OPENINGS = (
     #    has a window: cut for the window she is given (0.80 m wide, 0.97 to 1.83 m above the deck), so the helm sees there.
     dict(part='bridge', name='the starboard wall panel at the new window', across='x', x=(-3.005, -2.915), y=(10.07, 10.93), yard=(21.30, 22.10)),
 )
+# The wheelhouse stands 0.30 m taller than the base's (spec.COMPASS_DECK: `rise`): the room's own box and the compass
+# deck's over it follow, and so does what the page says of the part's level.
+_TOP = S.COMPASS_DECK['deck'] + S.COMPASS_DECK['rise']
+ROOMS = {'wheelhouse': dict(max_y=_TOP), 'compass-deck': dict(min_y=_TOP, max_y=S.MAST['top'])}
+LEVELS = {'top': f"{_TOP + 1.9:.1f} m above the keel, masthead light at {S.MAST['masthead'] + 1.9:.1f} m"}
+
 # Spaces that are not rooms one goes into: the bow ramp is stowed upright and the two funnels are uptake casings with no
 # door. A walk begun there (the room chosen in the panel) starts at `stand`, beside it, where one can walk on:
 # (x, y, metres from the transom). The page reads it from the space's record.
@@ -444,9 +450,17 @@ def main():
             if cut:
                 report['opened'].append(dict(part=o['part'], what=o['name'], material=m['material'], triangles=cut))
 
-    # 2c. Where a walk begins at a space that is not entered.
+    # 2c. Where a walk begins at a space that is not entered; and the rooms whose height is hers, not the base's.
     for g in groups:
+        if g['id'] in LEVELS:
+            g['level'] = LEVELS[g['id']]
         for sp in g['spaces']:
+            if sp['id'] in ROOMS:
+                rule = ROOMS[sp['id']]
+                if 'min_y' in rule:
+                    sp['min'][1] = round(rule['min_y'], 4)
+                if 'max_y' in rule:
+                    sp['max'][1] = round(rule['max_y'], 4)
             if sp['id'] in STAND:
                 x, y, yard = STAND[sp['id']]
                 sp['stand'] = [x, y, round(L.Z(yard), 4)]

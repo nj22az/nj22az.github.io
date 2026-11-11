@@ -1,6 +1,6 @@
 # JS4-402 · Navigation bridge visibility
 
-Johansson Shipyard, newbuilding No. 1, Chisum. Calculated by `ferry/yard/calc/bridge_calcs.py` from the model as built (`ferry/data/ferry.bin.gz`) and the builder's own measures (`ferry/blender/wheelhouse.py`). Revision 1, 11 November 2026.
+Johansson Shipyard, newbuilding No. 1, Chisum. Calculated by `ferry/yard/calc/bridge_calcs.py` from the model as built (`ferry/data/ferry.bin.gz`) and the builder's own measures (`ferry/blender/wheelhouse.py`). Revision 2, 11 November 2026.
 
 **Requirement.** SOLAS chapter V, regulation 22, as adopted by resolution MSC.99(73) and amended by MSC.142(77): read for class comment sheet PA-001 revision 1, which lists the paragraphs. It binds ships of 55 m in length overall and more; she is 34.5 m and is held to it as the benchmark the yard and class agreed. The recommended heights of the glass are from IACS Recommendation 95 (revision 1), which is a recommendation.
 
@@ -52,29 +52,38 @@ The field asked: from 45° on the opposite bow through right ahead, and round to
 - **Starboard wing** (standing 3.88 m off the centreline, 22.38 m from the transom): 225° of the 225° clear. Hidden over 3° or more: nothing.
 - The ship's side (22.1.5): each wing's outer rail is 4.16 m off the centreline and her side at the deck 4.20 m; the side and the fenders are seen by leaning over the rail.
 
-## 4. The glass (22.1.7 to 22.1.9)
+## 4. The glass, and the view upward (22.1.7 to 22.1.9)
 
 - Forward windows inclined 10° from the vertical, top outward (22.1.9.1: 10° to 25°).
 - Framing (22.1.9.2): the mullions between the forward panes are 0.10 m wide and the corner posts 0.06 m (150 mm is the recommended most). None is straight ahead of a workstation: the wheel (centreline) looks through the middle of the middle pane, which is 1.06 m wide; each chair (1.05 m off the centreline) through the pane beside it, whose glass runs from 0.63 to 1.70 m.
 - Lower edge of the forward glass 0.99 m over the deck (22.1.7: as low as possible; recommended 1.00 m at most).
-- Upper edge of the forward glass 1.96 m over the deck, 2.24 m ahead of the conning eye (22.1.8: the horizon to stay in view for an eye at 1.80 m when she pitches; 1.60 m where the Administration allows). An eye at 1.80 m keeps the horizon until she pitches 4.0° by the bow, an eye at 1.60 m until 9.0°. **The recommended 2.00 m is not reached.** The deckhead is at 2.08 m (the underside of the compass deck) and limits the glass: the yard raised its head from 1.95 to 2.00 m (the glass itself to 1.96 m) for PA-001; reaching 2.00 m of glass needs the wheelhouse roof raised by about 0.10 m. Open with the owner.
+- **Upper edge of the forward glass 2.06 m over the deck** (recommended 2.00 m at least), 2.26 m ahead of the conning eye. The side windows' glass and the wing doors' reach 2.00 m and 1.95 m: the same band all round, so an eye at 1.80 m has the horizon through every pane (224° of 225° by the builder's count, and 224° for an eye at 1.50 m).
+- The wheelhouse is 2.30 m clear under its deckhead lining, the roof's structure is 2.42 m over the deck, and the compass deck on top of it 2.70 m.
+
+**What ends the view upward** (22.1.8: the horizon to stay in view for an eye at 1.80 m when she pitches; 1.60 m where the Administration allows). Looked for in the model on every whole degree to 10° either side of the bow: the lowest thing over the eye's level, whatever it is.
+
+| Eye over the deck | The view ends at | Which is | She may pitch by the bow |
+|---|---|---|---|
+| 1.80 m | 6.3° over the horizontal, 10° to starboard | the head of the glass itself: nothing hangs lower | **6.3°** |
+| 1.60 m | 11.1° over the horizontal, 10° to starboard | the head of the glass itself: nothing hangs lower | **11.1°** |
+
+In the first design the glass ended at 1.96 m and the overhead console hung to 1.80 m, 1.6 m ahead of the wheel: for an eye at 1.80 m the horizon lay at the console's lower edge with her on an even keel, and the periscope's mirror box hung to 1.84 m on the centreline. Reading the height of the glass alone, as revision 1 of this sheet did, hid that. The owner had the roof raised (11 November 2026: "Yes make it realistic"): the wheelhouse is 0.30 m taller, the glass is carried up, and the console and the periscope hang above the windows' head.
 
 ## 5. The lights' sectors (JS4-404)
 
 **Requirement.** COLREG Annex I, as read for PA-001 revision 1: 2(a)(i), 2(g), 2(i)(i), 3(d), section 5 and 9(b). The cut-off of a sidelight outside its sector (9(a)) was not read and is quoted from memory. Each sector below is looked along from the lantern's own lens in the model, every half degree.
 
-- **Masthead light** (white, 225°): on the front of the mast, 12.3 m above the hull; her beam is 8.4 m, so 2(a)(i) asks at least 8.4 m. 3.74 m forward of amidships (3(d)). In its sector, from the lens: **nothing**.
-- **Sidelight, port**: on the wing rail, 8.3 m above the hull, under three quarters of the masthead light's height (9.2 m; 2(g)). In its own sector: nothing. Its matt black screen (section 5) is 0.42 m long and stands 0.09 m inboard of the lens: the middle of the lens is still seen **14.5° across the bow**.
-- **Sidelight, starboard**: on the wing rail, 8.3 m above the hull, under three quarters of the masthead light's height (9.2 m; 2(g)). In its own sector: nothing. Its matt black screen (section 5) is 0.42 m long and stands 0.09 m inboard of the lens: the middle of the lens is still seen **14.5° across the bow**.
+- **Masthead light** (white, 225°): on the front of the mast, 12.6 m above the hull; her beam is 8.4 m, so 2(a)(i) asks at least 8.4 m. 3.74 m forward of amidships (3(d)). In its sector, from the lens: **nothing**.
+- **Sidelight, port**: on the wing rail, 8.3 m above the hull, under three quarters of the masthead light's height (9.4 m; 2(g)). In its own sector: nothing. Its matt black screen (section 5) is 0.42 m long and stands 0.09 m inboard of the lens: the middle of the lens is still seen **14.5° across the bow**.
+- **Sidelight, starboard**: on the wing rail, 8.3 m above the hull, under three quarters of the masthead light's height (9.4 m; 2(g)). In its own sector: nothing. Its matt black screen (section 5) is 0.42 m long and stands 0.09 m inboard of the lens: the middle of the lens is still seen **14.5° across the bow**.
   **Open (PA-001 comment 22):** the practical cut-off asked is 1° to 3° outside the sector. Either the lantern's own screening gives it (the maker's certificate), or the screens are made 0.9 m long, which the wing has no room for with the lantern on its rail: the yard proposes lanterns in boxes let into the wing bulwark under the rail.
-- **Not-under-command lights, upper pair** (red, all round), 13.0 m above the hull: the port lantern alone is hidden over 26° (the mast, and whips of the antennas), the starboard one over 26°; 9(b)(i) allows 6°, so one lantern would not do. **Both are hidden together on 0° of the horizon.** They are 0.6 m apart: one light at a mile (9(b)(ii)).
-- **Not-under-command lights, lower pair** (red, all round), 11.0 m above the hull: the port lantern alone is hidden over 36° (the mast, and whips of the antennas), the starboard one over 36°; 9(b)(i) allows 6°, so one lantern would not do. **Both are hidden together on 0° of the horizon.** They are 0.6 m apart: one light at a mile (9(b)(ii)).
-  The two heights are 2.0 m apart and the lower is 11.0 m above the hull (2(i)(i): 2 m apart, the lowest 4 m above the hull).
+- **Not-under-command lights, upper pair** (red, all round), 13.3 m above the hull: the port lantern alone is hidden over 26° (the mast, and whips of the antennas), the starboard one over 26°; 9(b)(i) allows 6°, so one lantern would not do. **Both are hidden together on 0° of the horizon.** They are 0.6 m apart: one light at a mile (9(b)(ii)).
+- **Not-under-command lights, lower pair** (red, all round), 11.3 m above the hull: the port lantern alone is hidden over 36° (the mast, and whips of the antennas), the starboard one over 36°; 9(b)(i) allows 6°, so one lantern would not do. **Both are hidden together on 0° of the horizon.** They are 0.6 m apart: one light at a mile (9(b)(ii)).
+  The two heights are 2.0 m apart and the lower is 11.3 m above the hull (2(i)(i): 2 m apart, the lowest 4 m above the hull).
 - **Anchor light** (white, all round): on the crown of the mast. Hidden: nothing (9(b)(i) excepts anchor lights in any case).
 - **Stern light**: at the after end of the passenger deck, which is still the other ship's drawing; its sector is to be shown when that section is rebuilt.
 
 ## Open
 
-- The roof's height and the 2.00 m upper edge of the glass (owner).
 - The same calculation at the light draught and with trim by the stern, when the stability booklet (JS1-104) gives those waterlines.
 - The stern light, with the passenger deck.

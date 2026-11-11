@@ -32,7 +32,7 @@ LENGTH = 34.5
 CONN = (0.0, 20.9)              # the conning position: standing at the wheel (x, metres from the transom)
 WALL = (22.90, 23.35)           # the forward window wall, sill to raked head, with what is fixed to its outside
 SILL_TOP = 1.00                 # the sill's upper edge over the deck: the foot of the glass
-HOUSE = dict(x=3.06, yard=(19.50, 23.30), h=2.12)       # the wheelhouse's own walls: what stands in them is framing
+HOUSE = dict(x=3.06, yard=(19.50, 23.30), h=W.HEAD_ROOM + 0.03)   # the wheelhouse's own walls: what stands in them is framing
 FAR = 500.0                     # a bearing is blind when the sea this far off is hidden
 
 
@@ -125,6 +125,24 @@ def sight_over_bow(T, eye_at, eye_h, bearing_deg):
     return dict(bearing=bearing_deg, dip=-best, grazes=at, beyond_bow=reach - stem)
 
 
+def sight_upward(T, eye_at, eye_h, bearing_deg):
+    """
+    Along one bearing: what ends the view upward. The lowest thing over the eye's own level ahead of it, as an angle above
+    the horizontal: the head of the glass, or whatever hangs lower than that (an overhead console, a compass periscope).
+    A thing that stands from below the eye's level to above it ends the view at the horizon itself.
+    """
+    eye = np.array([eye_at[0], DECK + eye_h, L.Z(eye_at[1])])
+    Pa, Pb, ahead = cut(T, eye, bearing_deg)
+    da, db = Pa @ ahead, Pb @ ahead
+    ok = (da > 0.25) & (db > 0.25)
+    ua, ub = np.degrees(np.arctan2(Pa[:, 1], np.maximum(da, 1e-6))), np.degrees(np.arctan2(Pb[:, 1], np.maximum(db, 1e-6)))
+    limit = np.where(ua * ub < 0, 0.0, np.where((ua > 0) & (ub > 0), np.minimum(ua, ub), np.inf))
+    limit = np.where(ok, limit, np.inf)
+    i = int(np.argmin(limit))
+    at = (Pa[i] if ua[i] <= ub[i] else Pb[i]) + eye
+    return float(limit[i]), at
+
+
 def blind(T, eye_at, eye_h, bearing_deg, near=0.25):
     """Whether the sea 500 m off is hidden on a bearing, and by what: the nearest thing the line of sight to it meets
     (beyond `near`: a person's own hands, a lantern's own body)."""
@@ -185,7 +203,7 @@ def visibility(T, named, problems):
     limit = min(2 * LENGTH, 500.0)
     out = ['# JS4-402 · Navigation bridge visibility', '',
            f'Johansson Shipyard, newbuilding No. 1, {S.SHIP_NAME}. Calculated by `ferry/yard/calc/bridge_calcs.py` from the model as built '
-           '(`ferry/data/ferry.bin.gz`) and the builder\'s own measures (`ferry/blender/wheelhouse.py`). Revision 1, 11 November 2026.', '',
+           '(`ferry/data/ferry.bin.gz`) and the builder\'s own measures (`ferry/blender/wheelhouse.py`). Revision 2, 11 November 2026.', '',
            '**Requirement.** SOLAS chapter V, regulation 22, as adopted by resolution MSC.99(73) and amended by MSC.142(77): read for class comment sheet PA-001 revision 1, '
            'which lists the paragraphs. It binds ships of 55 m in length overall and more; she is 34.5 m and is held to it as the benchmark the yard and class agreed. '
            'The recommended heights of the glass are from IACS Recommendation 95 (revision 1), which is a recommendation.', '',
@@ -259,24 +277,40 @@ def visibility(T, named, problems):
                    + ('; '.join(f'{z - a:.1f}° at {side_name(round((a + z) / 2, 1))} ({what})' for a, z, what, _ in big) or 'nothing') + '.')
     out += [f'- The ship\'s side (22.1.5): each wing\'s outer rail is 4.16 m off the centreline and her side at the deck 4.20 m; the side and the fenders are seen by leaning over the rail.', '']
 
-    # ---- the glass
+    # ---- the glass, and the view upward
     head, sill, dist = W.GLASS_TOP, W.GLASS_FOOT, W.glass_distance()
-    pitch = lambda eye: math.degrees(math.atan2(head - eye, dist))
-    out += ['## 4. The glass (22.1.7 to 22.1.9)', '',
+    out += ['## 4. The glass, and the view upward (22.1.7 to 22.1.9)', '',
             f'- Forward windows inclined {W.RAKE_DEG:.0f}° from the vertical, top outward (22.1.9.1: 10° to 25°).',
             f'- Framing (22.1.9.2): the mullions between the forward panes are 0.10 m wide and the corner posts 0.06 m (150 mm is the recommended most). None is straight ahead of a workstation: '
             f'the wheel (centreline) looks through the middle of the middle pane, which is {W.PANES[2][1] - W.PANES[2][0]:.2f} m wide; each chair (1.05 m off the centreline) through the pane beside it, '
             f'whose glass runs from {W.PANES[3][0]:.2f} to {W.PANES[3][1]:.2f} m.',
             f'- Lower edge of the forward glass {sill:.2f} m over the deck (22.1.7: as low as possible; recommended 1.00 m at most).',
-            f'- Upper edge of the forward glass {head:.2f} m over the deck, {dist:.2f} m ahead of the conning eye (22.1.8: the horizon to stay in view for an eye at 1.80 m when she pitches; '
-            f'1.60 m where the Administration allows). An eye at 1.80 m keeps the horizon until she pitches {pitch(1.8):.1f}° by the bow, an eye at 1.60 m until {pitch(1.6):.1f}°. '
-            f'**The recommended 2.00 m is not reached.** The deckhead is at 2.08 m (the underside of the compass deck) and limits the glass: the yard raised its head from 1.95 to 2.00 m '
-            f'(the glass itself to {head:.2f} m) for PA-001; reaching 2.00 m of glass needs the wheelhouse roof raised by about 0.10 m. Open with the owner.', '',
+            f'- **Upper edge of the forward glass {head:.2f} m over the deck** (recommended 2.00 m at least), {dist:.2f} m ahead of the conning eye. The side windows\' glass and the wing doors\' '
+            f'reach {min(v[3] for v in W.SIDE if v[4] == "window") - W.FRAME_T:.2f} m and {W.DOOR_GLASS[1]:.2f} m: the same band all round, so an eye at 1.80 m has the horizon through every pane '
+            f'({W.view(eye=1.8)[0]:.0f}° of 225° by the builder\'s count, and {W.view(eye=1.5)[0]:.0f}° for an eye at 1.50 m).',
+            f'- The wheelhouse is {W.CEIL:.2f} m clear under its deckhead lining, the roof\'s structure is {W.HEAD_ROOM:.2f} m over the deck, and the compass deck on top of it {REG.DECK_H:.2f} m.', '',
+            '**What ends the view upward** (22.1.8: the horizon to stay in view for an eye at 1.80 m when she pitches; 1.60 m where the Administration allows). Looked for in the model on every whole '
+            'degree to 10° either side of the bow: the lowest thing over the eye\'s level, whatever it is.', '',
+            '| Eye over the deck | The view ends at | Which is | She may pitch by the bow |', '|---|---|---|---|']
+    margin = {}
+    for eye in (1.8, 1.6):
+        rows = [(b,) + sight_upward(T, CONN, eye, b) for b in range(-10, 11)]
+        b, lim, at = min(rows, key=lambda r: r[1])
+        margin[eye] = lim
+        what = name_of(at, named)
+        glass = math.degrees(math.atan2(head - eye, dist))
+        out.append(f"| {eye:.2f} m | {lim:.1f}° over the horizontal, {side_name(b)} | {what if lim < glass - 0.3 else 'the head of the glass itself: nothing hangs lower'} | **{lim:.1f}°** |")
+        if lim < glass - 0.3:
+            problems.append(f'an eye at {eye:.2f} m: the view upward ends at {lim:.1f}° on {what}, under the head of the glass ({glass:.1f}°)')
+    if head < 2.0:
+        problems.append(f'the upper edge of the forward glass is {head:.2f} m over the deck (2.00 m recommended)')
+    out += ['', 'In the first design the glass ended at 1.96 m and the overhead console hung to 1.80 m, 1.6 m ahead of the wheel: for an eye at 1.80 m the horizon lay at the console\'s lower edge with '
+            'her on an even keel, and the periscope\'s mirror box hung to 1.84 m on the centreline. Reading the height of the glass alone, as revision 1 of this sheet did, hid that. '
+            'The owner had the roof raised (11 November 2026: "Yes make it realistic"): the wheelhouse is 0.30 m taller, the glass is carried up, and the console and the periscope hang above the windows\' head.', '',
             '## 5. The lights\' sectors (JS4-404)', '']
     out += lights(T, named, problems)
     out += [
             '## Open', '',
-            '- The roof\'s height and the 2.00 m upper edge of the glass (owner).',
             '- The same calculation at the light draught and with trim by the stern, when the stability booklet (JS1-104) gives those waterlines.',
             '- The stern light, with the passenger deck.', '']
     open(os.path.join(HERE, 'JS4-402-bridge-visibility.md'), 'w').write('\n'.join(out))
