@@ -860,6 +860,10 @@ Of the page and of what is still the Minato Maru's:
 
 ### 11 November 2026, last of the day: the bridge deck's corridor and outside, no z-fighting, offline
 
+- Published to `main` as `e940780` on the owner's "Push to main": 13 of 13 live files matched the tree pushed; on the
+  live page, at phone width, Save offline saved 15 files and with the network cut the page opened again with the whole
+  model. Not tried on an iPhone.
+
 - The Blender build (43 motions), `assemble.py` twice with the same hashes, `check.py`, `bridge_calcs.py`: all passed.
 - `zfight.py`: no face of hers lies in one plane over another (629 pairs among the other ship's own).
 - `afloat.py`: nothing of hers hangs in the air (the other ship's: 179 things).
