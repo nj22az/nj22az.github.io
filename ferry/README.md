@@ -858,6 +858,19 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 11 November 2026, after the publication: quick travel on foot
+
+- The owner: "In the free walk add quick travel to the decks"; "The whole ship is not traversable as it is now , I'll
+  identify the problems offline"; "But I want to explore every deck and every room". On foot the bar has a list, **Go
+  to**: every deck (it puts one on that deck nearest to where one stands) and under each deck every room of it (it puts
+  one in the room). The keys 1 to 5 are the decks from the lowest up. `travelTo` and `fillTravel` in `app.js`.
+- `node ferry/checks/travel.cjs`: the list has 5 decks and 46 rooms; each was chosen; each deck was reached, each room
+  could be stood in, the walker stood inside the room named, and from there could walk 0.3 m or more in some direction.
+  That one can be put in every room does not mean every room is reached on foot from every other: the owner reports
+  that the ship is not traversable throughout, and no check walks from room to room yet.
+- `bridge.cjs`, `doors.cjs`, `stairs.cjs`, `offline.cjs`: all passed with the list in the bar. Looked at on a 390 px
+  screen in the corridor: the list, Deck below, Deck above and Leave fit in the bar.
+
 ### 11 November 2026, last of the day: the bridge deck's corridor and outside, no z-fighting, offline
 
 - Published to `main` as `e940780` on the owner's "Push to main": 13 of 13 live files matched the tree pushed; on the
