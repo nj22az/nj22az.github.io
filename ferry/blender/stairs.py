@@ -148,7 +148,8 @@ def build_stair(st):
         _rail(rails, x, path, 0.019, RAIL)
         if st.get('top_newel', True):
             rails.tube((x, top_y + 0.004, Z(path[0][0])), (x, path[0][1], Z(path[0][0])), 0.019, None, colour=RAIL, sides=10)
-        rails.tube((x, foot_y + 0.004, Z(path[-1][0])), (x, path[-1][1], Z(path[-1][0])), 0.019, None, colour=RAIL, sides=10)
+        # (on an open side the newel stands in the stringer, its foot inside it; at a wall it stands on the deck)
+        rails.tube((x, foot_y + (0.02 if side == 'open' else 0.004), Z(path[-1][0])), (x, path[-1][1], Z(path[-1][0])), 0.019, None, colour=RAIL, sides=10)
         if side == 'open':
             # a knee rail halfway up, and posts from the stringer about every 0.9 m
             _rail(rails, x, [(yd, yy - h / 2) for yd, yy in path], 0.012, RAIL)
@@ -160,7 +161,7 @@ def build_stair(st):
                     rails.tube((x, yy - h + 0.03, Z(yd)), (x, yy, Z(yd)), 0.012, None, colour=RAIL, sides=8)
         else:
             # brackets to the wall about every 0.9 m
-            wall = x + out * (0.055 + st.get('gaps', (0.0, 0.0))[0 if out < 0 else 1])
+            wall = x + out * (0.055 + st.get('gaps', (0.0, 0.0))[0 if out < 0 else 1] + 0.002)       # 2 mm into the wall
             for (a, ya), (b, yb) in zip(path[1:], path[2:]):
                 count = max(1, int(round(hypot(b - a, yb - ya) / 0.9)))
                 for i in range(count + 1):
@@ -231,16 +232,16 @@ def main_stair_fitout(st):
     if s < 0:
         # The casing is drawn solid here: the pocket the top steps stand in, and the foot lobby cut out of the forward block.
         (pa, pb), (py0, py1) = M['pocket']['yard'], M['pocket']['y']
-        B(wall, x_in, x_out, pa, pb, py0 - 0.04, py0, WALL)
+        B(wall, x_in, x_out, pa, pb - 0.004, py0 - 0.04, py0, WALL)          # (their forward ends inside the block, not in its face)
         B(wall, x_in, x_out, pa - 0.04, pa, py0, py1, WALL)
-        B(wall, x_in - 0.05, x_in, pa, pb, py0, py1, WALL)
+        B(wall, x_in - 0.05, x_in, pa, pb - 0.004, py0, py1, WALL)
         a, b = lobby['yard']
         head = lobby['head']
         for ya, yb, lo, hi in ((a, door['yard'][0], st['foot'], head), (door['yard'][1], b, st['foot'], head),
                                (door['yard'][0], door['yard'][1], st['foot'] + door['height'], head)):
             B(wall, x_in - 0.058, x_in, ya, yb, lo, hi, WALL)                                # the inboard wall, round the doorway
         B(wall, x_in, M['plate'], b, b + 0.06, st['foot'], head, WALL)                       # the forward wall
-        B(wall, x_in, M['plate'], a, b, head, head + 0.06, WALL)                             # the deckhead
+        B(wall, x_in, M['plate'], a + 0.004, b, head, head + 0.06, WALL)                     # the deckhead (its after edge inside the block, not in its face)
         B(wall, 3.50, 3.80, 13.40, 13.90, head - 0.045, head, srgb(0xf3efe2))                # its light
 
     # ---- the doorway from the car deck and its sliding fire door
@@ -263,7 +264,7 @@ def main_stair_fitout(st):
     B(leaf, x_in + 0.015, x_in + 0.055, la, lb, f0 + 0.02, f1 + 0.02, DOOR)
     for k in (0.18, 0.82):                                                                   # the two hangers on the track
         m = la + (lb - la) * k
-        B(grip, x_in + 0.02, x_in + 0.05, m - 0.05, m + 0.05, f1 + 0.02, f1 + 0.06, RAIL)
+        B(grip, x_in + 0.02, x_in + 0.05, m - 0.05, m + 0.05, f1 + 0.012, f1 + 0.06, RAIL)
     B(grip, x_in + 0.055, x_in + 0.065, la + 0.06, la + 0.09, f0 + 0.95, f0 + 1.25, RAIL)    # a pull inside, at the closing edge
     B(grip, x_in + 0.013, x_in + 0.015, la + 0.07, la + 0.12, f0 + 0.98, f0 + 1.22, DARK)    # and a flush one outside, which passes the frame
     _sign(face, (s * (x_in + 0.055), f0 + 1.55, Z((la + lb) / 2)), (s, 0, 0), 0.46, 0.115, 'car_deck')

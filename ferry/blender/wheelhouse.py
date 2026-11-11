@@ -313,7 +313,9 @@ def _side_window(side, yd0, yd1, h0, h1):
 def envelope():
     # ---- the aft wall above the other ship's, which ends at the old deckhead: plating outside (the riser of the step in
     # the roof, where the lower house top meets it), lining inside up to the deckhead
-    box('plating', -X_OUT, X_OUT, AFT - 0.05, AFT - 0.025, OLD_HEAD, HEAD_ROOM, HOUSE)
+    # (below 2.20 m the other ship's side walls stand at its ends: it stops 3 mm inside their faces, not in them)
+    box('plating', -X_OUT + 0.003, X_OUT - 0.003, AFT - 0.05, AFT - 0.025, OLD_HEAD, 2.20, HOUSE)
+    box('plating', -X_OUT, X_OUT, AFT - 0.05, AFT - 0.025, 2.20, HEAD_ROOM, HOUSE)
     box('lining', -X_IN, X_IN, AFT - 0.025, AFT, OLD_HEAD, HEAD_ROOM, LINING)
     # ---- the two sides
     for side, openings in SIDES.items():
@@ -409,7 +411,7 @@ def door_wing(g, tag):
     for a, b in ((yd0, yd0 + 0.04), (yd1 - 0.04, yd1)):
         box('frame', xi, xo, a, b, 0.15, 2.01, FRAME)
     box('frame', xi, xo, yd0, yd1, 2.01, 2.05, FRAME)
-    box('paint', side * 2.88, side * 3.07, yd0, yd1, 0.0, 0.15, SILLC)
+    box('paint', side * 2.88, side * 3.07, yd0, yd1, 0.004, 0.15, SILLC)       # its foot in the deck covering, not in one plane with the covering's underside
     leaf = Part(f'Wheelhouse, wing door, {name}', 'Deck paint', mover=mover)
     glass = Part(f'Wheelhouse, wing door glass, {name}', 'Window glass', mover=mover)
     fit = Part(f'Wheelhouse, wing door hardware, {name}', 'Bronze', mover=mover)
@@ -1002,8 +1004,8 @@ def blinds(g, tag, x, yard, h):
         tube('plastic', (x0 + 0.02, yd, HEAD + 0.03), (x1 - 0.02, yd, HEAD + 0.03), 0.02, srgb(0xd9d5c8), 10)
         part('glass').polygon([P(x0 + 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.012, low), P(x0 + 0.04, yd - 0.012, low)], srgb(0x1a2a2e))
         tube('steel', (x0 + 0.04, yd - 0.012, low), (x1 - 0.04, yd - 0.012, low), 0.006, GREY, 6)
-        for xb in (x0 + 0.02, x1 - 0.032):                      # the roll's brackets, on the wall over the glass
-            box('steel', xb, xb + 0.012, yd - 0.022, yd + 0.031, HEAD + 0.008, HEAD + 0.052, GREY)
+        for xb in (x0 + 0.012, x1 - 0.028):                     # the roll's brackets, on the wall over the glass: its ends stand in them
+            box('steel', xb, xb + 0.016, yd - 0.022, yd + 0.031, HEAD + 0.008, HEAD + 0.052, GREY)
 
 
 def mullion_ducts(g, tag, x, yard, h):

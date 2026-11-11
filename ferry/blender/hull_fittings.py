@@ -358,7 +358,8 @@ def ladders():
         for sx in (0.82, -0.82):
             foot = floor_top(yard) + 0.012
             if S.FORE_PEAK_FLAT - 0.01 - foot > 0.06:
-                bearers.box((sx - 0.025, foot, L.Z(yard) - 0.025), (sx + 0.025, S.FORE_PEAK_FLAT - 0.006, L.Z(yard) + 0.025), dark)
+                # (to 4 mm under the plates' top, the plate's own thickness: 6 mm under, the flat lay on nothing by the check's measure)
+                bearers.box((sx - 0.025, foot, L.Z(yard) - 0.025), (sx + 0.025, S.FORE_PEAK_FLAT - 0.004, L.Z(yard) + 0.025), dark)
     made += [flat, bearers]
     return made
 
@@ -606,11 +607,16 @@ def thruster_room():
 def chain_lockers():
     lockers = Part('Chain lockers', 'Primer')
     lockers.group = 'machinery'
+    from hull_structure import floor_top
     primer = srgb(S.PRIMER)
     za, zb = L.Z(31.3), L.Z(32.5)
     for side in (1, -1):
         xa, xb = sorted((side * 1.0, side * 2.2))
         lockers.box((xa, -0.25, za), (xb, L.CAR - 0.04, zb), primer)
+        # Each stands on four legs on the floors of frames 63 and 64 (it stood on nothing, 14 to 55 cm over them).
+        for yd in (31.5, 32.0):
+            for lx in (xa + 0.2, xb - 0.2):
+                lockers.box((lx - 0.04, floor_top(yd) - 0.012, L.Z(yd) - 0.04), (lx + 0.04, -0.25, L.Z(yd) + 0.04), tint(primer, 0.84))
         # The door in its after side, and the pipe that leads the cable down from the windlass.
         lockers.box((xa + 0.35, 0.2, za - 0.012), (xb - 0.35, 0.95, za), tint(primer, 0.84))
     return [lockers]
