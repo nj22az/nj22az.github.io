@@ -204,6 +204,44 @@ def main():
                             lo3, hi3 = np.maximum(T[gi].min(0), T[gj].min(0)), np.minimum(T[gi].max(0), T[gj].max(0))
                             rec[1], rec[2], rec[3], rec[4] = (lo3 + hi3) / 2, ax, area, (lo3, hi3, int(way[gi]), int(way[gj]))
 
+    # ---- A second kind: a face drawn with a pull toward the eye (a covering, a picture) that lies close behind another
+    # face looking the same way. The pull is meant to put it before the surface it lies on; lying under a surface instead,
+    # it comes through that surface in patches when seen at a low angle (the car deck, 11 November 2026: the engine room's
+    # deckhead panel, 12 mm under the deck's paint, showed through it).
+    through = defaultdict(lambda: [0.0, None, None])
+    pulled = np.array([bool(p['offset']) and p['offset'][0] < 0 for p in pieces])[owner]
+    clear = np.array([p['glass'] for p in pieces])[owner]         # what lies behind glass is meant to be seen through it
+    key = (kn[:, 0] * 1000003 + kn[:, 1] * 1009 + kn[:, 2]) * 3 + way
+    ahead = d * way                                                # how far along the way it looks
+    for k in np.unique(key[pulled]):
+        grp = np.nonzero(key == k)[0]
+        ax = axis[grp[0]]
+        u = np.cross(ax, [1.0, 0, 0] if abs(ax[0]) < 0.9 else [0, 1.0, 0])
+        u /= np.linalg.norm(u)
+        v = np.cross(ax, u)
+        P2 = np.stack([T[grp] @ u, T[grp] @ v], axis=-1)
+        lo, hi = P2.min(1), P2.max(1)
+        for a_ in np.nonzero(pulled[grp])[0]:
+            gap = ahead[grp] - ahead[grp[a_]]
+            cover = (gap > 0.0006) & (gap <= 0.03) & (owner[grp] != owner[grp[a_]]) & ~pulled[grp] & ~clear[grp] & (lo < hi[a_] - 1e-3).all(1) & (hi > lo[a_] + 1e-3).all(1)
+            for b_ in np.nonzero(cover)[0]:
+                area = clip_area(P2[a_], P2[b_])
+                if area > 0:
+                    rec = through[(int(owner[grp[a_]]), int(owner[grp[b_]]))]
+                    rec[0] += area
+                    if rec[1] is None:
+                        rec[1], rec[2] = (T[grp[a_]].mean(0) + T[grp[b_]].mean(0)) / 2, float(gap[b_])
+    shows = []
+    for (i, j), (area, at, gap) in through.items():
+        if area >= 0.01:
+            shows.append(dict(a=pieces[i]['name'], b=pieces[j]['name'], own=bool(pieces[i]['own'] or pieces[j]['own']), group=pieces[i]['group'], area=round(area, 3),
+                              gap=round(gap * 1000, 1), x=round(float(at[0]), 2), y=round(float(at[1]), 2), yard=round(float(at[2]) + HALF, 2)))
+    shows.sort(key=lambda r: -r['area'])
+    print(f"{len(shows)} coverings lie close under another surface and come through it; {sum(r['own'] for r in shows)} with a part of hers")
+    for r in shows:
+        if r['own'] or a.all:
+            print(f"  {'HERS ' if r['own'] else 'other'} {r['group']:9s} {r['area']:6.2f} m², {r['gap']} mm under, at x {r['x']:+.2f}, {r['yard']:5.2f} m, y {r['y']:+.2f}: {r['a'][:52]}  under  {r['b'][:52]}")
+
     rows = []
     for (i, j), (area, at, ax, _, eg) in fights.items():
         if area < AREA:
@@ -223,6 +261,8 @@ def main():
                   f"plane {r['plane']}: {r['a'][:60]}  ×  {r['b'][:60]}")
     if a.json:
         json.dump(rows, open(a.json, 'w'), indent=1)
+    # The second kind is listed and counted but does not fail the check yet: it still names things that are meant (a dial's
+    # face under its bezel, lettering under a rail), and what is a fault among them has to be sorted out first.
     if hers:
         raise SystemExit(f'{len(hers)} pairs of faces with a part of hers lie in one plane over each other')
     print('no face of hers lies in one plane over another')

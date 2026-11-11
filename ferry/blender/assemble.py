@@ -100,7 +100,7 @@ REPLACES.update({
     # The lobby's vending corner: the other ship's two plain boxes go; Johansson World's drinks machine stands there.
     'vending': dict(
         part='passenger', prefix='Drinks machine', section='Passenger deck fittings', built='11 November 2026', listed=False,
-        boxes=[_box((1.78, 2.68), (6.45, 8.35), (8.70, 9.47))],
+        boxes=[_box((1.70, 2.75), (6.45, 8.35), (8.70, 9.47))],
         keep=lambda mat, col: False,
         why="Johansson World's drinks machine, built in Blender", what=''),
     # The other ship's mark on each funnel (a flat picture of an anchor standing off the plating): the line's own is painted there.
@@ -201,7 +201,15 @@ def _main_stair_openings():
     return tuple(out)
 
 
+#  - Over the engine room the other ship draws that room's deckhead panel as a box 12 mm under the car deck's surface
+#    (x -3.98 to 3.98, 14.00 to 26.06 m, 2.070 to 2.088 m above the waterline), in the material its coverings are drawn in,
+#    which the page pulls toward the eye. Seen low across the deck, the panel's top came through the deck's paint in
+#    patches (the owner, 11 November 2026: "Cargo deck has lots of Z fighting"). Its top face, which nothing should see,
+#    is cut away; its underside is still the engine room's deckhead.
 OPENINGS = _main_stair_openings() + (
+    dict(part='car', name="the top of the engine room's deckhead panel, under the car deck's surface", across='y', y=(2.0875, 2.0887),
+         x=(-4.1, 4.1), yard=(13.9, 26.2)),
+) + (
     dict(part='passenger', name='the lobby floor over the starboard stair', across='y', y=(6.5015, 6.5095), x=(-4.3, -2.76), yard=(_MS['well'][0], 9.40)),
     dict(part='passenger', name='the lobby floor over the port stair', across='y', y=(6.5015, 6.5095), x=(2.76, 4.3), yard=(_MS['well'][0], 9.40)),
     dict(part='machinery', name="the engine room's after wall at the door to the shaft space", across='yard', yard=(8.435, 8.505),
