@@ -23,6 +23,25 @@ beforehand (*Her own build*, below) and kept in `data/`.
 | `checks/bridge.cjs` | The page's own check for the bridge and the register (25 checks; *Checks actually run*) |
 | `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register (what a yard holds, and what of it exists), class's comment sheets, and the yard's calculations, which are programs that read the model and the register (`yard/calc/`) ([README](yard/README.md)) |
 
+## She is to be rebuilt at 68 m (`blender/ga.py`, `yard/drawings/`)
+
+The owner, 11 November 2026: "I think the ship needs to be longer maybe 65-70 meters". At her beam of 8.4 m and depth of
+4.0 m she cannot be stretched to that; asked, the owner chose **"Rebuild the Chisum at 68 m"**, in place: a new hull, the
+other ship's interiors gone at once, the page showing a bare new hull with her bridge until each deck is built.
+
+- **`blender/ga.py` is that ship set out** (revision A, a proposal for the owner's approval): 68.4 m over all, 13.6 m
+  beam, 5.0 m to the car deck, 3.2 m draught, about 1,630 t; drive-through, four lanes, 350 passengers, 12 crew; her
+  decks, her eight watertight bulkheads and 85 spaces, each with what it is for. `python3 ferry/blender/ga.py` checks it
+  against itself (no space outside her, none over another, the collision bulkhead where it belongs).
+- **`yard/drawings/JS1-102-general-arrangement.svg`** is drawn from it by `ga_drawing.py`: a profile and five plans.
+- **The owner's two rooms** stand in one house on the top deck, at the sizes of the owner's drawings: the emergency
+  generator room (7.8 by 4.5 m) and the ventilation room (6.2 by 3.4 m), with the CO₂ room and a battery room.
+- Five things are the owner's to settle first (on the drawing): the bow, the saloon's width, where the two rooms stand,
+  the emergency generator's size, her speed and engines.
+- **Nothing of her is built.** Everything below this section describes the first Chisum, 34.5 m, which is what the page
+  shows. What carries over: the bridge and its register, the yard's standards and checks, the builder, the drinks machine.
+  What does not: her hull's lines as they are, and everything of the other ship.
+
 ## What she is, and how far her own build has come
 
 The owner, 9 November 2026: "I want a ferry viewer on my website", "a stand alone ferry viewer that can show the whole

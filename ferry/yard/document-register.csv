@@ -1,6 +1,6 @@
 number,document,group,state,where it is,note
 JS1-101,Contract specification,general,to do,,"The ship as contracted: particulars, service, rules, makers, tests. The rule basis is settled (yard/README.md): to be carried in"
-JS1-102,General arrangement,general,partly,"temp/minato-maru (Rev C working drawings, the Minato Maru's); ferry/design/bridge/sheets/CHR-B1 (bridge deck as surveyed)","To be redrawn as hers, section by section"
+JS1-102,General arrangement,general,partly,ferry/blender/ga.py; ferry/yard/drawings/JS1-102-general-arrangement.svg (made by ga_drawing.py),"Revision A, 11 November 2026: the Chisum rebuilt at 68 m (the owner: ""Rebuild the Chisum at 68 m""): 68.4 x 13.6 x 5.0 m, a profile and five plans, 85 spaces. A proposal for the owner's approval; nothing calculated. The first Chisum's (34.5 m) was the Minato Maru's Rev C working drawings"
 JS1-103,Lines plan and table of offsets,general,exists,ferry/blender/lines.py,Her lines as numbers; no drawn sheet yet
 JS1-104,Hydrostatic tables and cross curves,general,to do,,From lines.py: displacement is checked at one draught only (368 t at 1.9 m)
 JS1-105,Capacity plan and tank tables,general,to do,,
