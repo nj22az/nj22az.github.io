@@ -8,6 +8,12 @@
   "matsuri.json",
   "showa.json",
   "cute.json",
-  "bits.json"
+  "bits.json",
+  "matsuri-friends.json",
+  "tet.json",
+  "easter.json",
+  "summer.json",
+  "halloween-cute.json",
+  "christmas.json"
  ]
 }

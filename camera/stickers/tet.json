@@ -1,0 +1,59 @@
+{
+ "id": "tet",
+ "name": "Tết",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  1,
+  2
+ ],
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "tet/cat-envelope",
+   "src": "tet/cat-envelope.webp?v=a2b4bb9f",
+   "thumb": "tet/cat-envelope.thumb.webp?v=a2b4bb9f",
+   "width": 492,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat and its lucky money"
+  },
+  {
+   "id": "tet/frog-blossom",
+   "src": "tet/frog-blossom.webp?v=27916094",
+   "thumb": "tet/frog-blossom.thumb.webp?v=27916094",
+   "width": 442,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog brings peach blossom"
+  },
+  {
+   "id": "tet/duck-firecrackers",
+   "src": "tet/duck-firecrackers.webp?v=80aa1efb",
+   "thumb": "tet/duck-firecrackers.thumb.webp?v=80aa1efb",
+   "width": 467,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck and the firecrackers"
+  },
+  {
+   "id": "tet/bear-rice-cake",
+   "src": "tet/bear-rice-cake.webp?v=bceb7708",
+   "thumb": "tet/bear-rice-cake.thumb.webp?v=bceb7708",
+   "width": 290,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear and the square rice cake"
+  },
+  {
+   "id": "tet/rabbit-lantern",
+   "src": "tet/rabbit-lantern.webp?v=fceb9a96",
+   "thumb": "tet/rabbit-lantern.thumb.webp?v=fceb9a96",
+   "width": 328,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit and its lantern"
+  }
+ ]
+}

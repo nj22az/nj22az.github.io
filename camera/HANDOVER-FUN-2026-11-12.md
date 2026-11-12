@@ -90,9 +90,12 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
 
 ## Not done (asked for, still owed)
 
-1. **Seasonal friends**: Tết, Christmas, Halloween, Easter and summer (and the friends at the matsuri), the cast in
-   each season, in the hand above. Sheets go under Season with their months (`when`): add them to `SHEETS` in
-   `tools/draw-cute-stickers.py`.
+1. ~~Seasonal friends~~ **Drawn after the publication, on the branch, not published**: 28 stickers in six sheets under
+   Season, each with its months (`when`): Matsuri (4, the friends at the festival, beside the owner's sheet of its
+   things), Tết (5: the cat and its lucky money, since in Vietnam the year is the cat's), Easter (4), Summer (5),
+   Halloween (5, beside the Blender sheet) and Christmas (5). `seasons()` in `tools/draw-cute-stickers.py`. The sticker
+   suite passes with them (the Season tab runs the year from today: in November Christmas first). **Before the next
+   push to main**: a new release key and version (the bundle changed: 718 files, 46.3 MB), then the whole regression.
 2. **Seasonal frames and face cutouts** ("like a frog costume at the pond could have a cutout for the face, think
    extremely playful"). Plan: a frame of kind cutout in `frames/cute.json`, a painted board with a hole, drawn from
    `cute_hand.Drawing.paths()` (path data the browser draws at any size; `cut` is the hole); live in the viewfinder

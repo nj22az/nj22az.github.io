@@ -705,6 +705,10 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   **Bits**. The owner's notes on the way: a first sheet of plain things "a bit too generic"; a wobbly ink line "too
   ugly … I think you lost your art style?"; five round balls "too round, they lack personality"; of these builds "The
   animals are better". A Memory deck.
+- **The friends through the year** (the owner: "And Japanese matsuri festival and lunar Tet stickers", "And Christmas,
+  and Halloween and Easter and summer"): 28 stickers in six sheets under Season, the same five dressed for the day
+  (the duck is a ghost, the frog is definitely an egg, the cat is in the tree). Drawn after v2026.11.12.1 and **not yet
+  published**.
 - **From a sheet**, in the app (`sticker-sheet.js`): the same reading as the tool, on the device; a photograph (no
   ground all round it) is not a sheet and becomes one sticker. Each piece gets its edge from `cutout.js`.
 - **The sticker box**: an iPhone or iPad offers its keyboard's stickers only in a field that takes pictures, so the

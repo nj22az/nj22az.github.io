@@ -1,0 +1,60 @@
+{
+ "id": "summer",
+ "name": "Summer",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  6,
+  7,
+  8
+ ],
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "summer/frog-ring",
+   "src": "summer/frog-ring.webp?v=341f8bbc",
+   "thumb": "summer/frog-ring.thumb.webp?v=341f8bbc",
+   "width": 501,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog floats"
+  },
+  {
+   "id": "summer/duck-snorkel",
+   "src": "summer/duck-snorkel.webp?v=ca789b62",
+   "thumb": "summer/duck-snorkel.thumb.webp?v=ca789b62",
+   "width": 325,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck goes in"
+  },
+  {
+   "id": "summer/rabbit-melon",
+   "src": "summer/rabbit-melon.webp?v=fb83b516",
+   "thumb": "summer/rabbit-melon.thumb.webp?v=fb83b516",
+   "width": 233,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit and the watermelon"
+  },
+  {
+   "id": "summer/cat-melt",
+   "src": "summer/cat-melt.webp?v=065af406",
+   "thumb": "summer/cat-melt.thumb.webp?v=065af406",
+   "width": 451,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat is too hot"
+  },
+  {
+   "id": "summer/bear-lolly",
+   "src": "summer/bear-lolly.webp?v=be99964c",
+   "thumb": "summer/bear-lolly.thumb.webp?v=be99964c",
+   "width": 398,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear on holiday"
+  }
+ ]
+}

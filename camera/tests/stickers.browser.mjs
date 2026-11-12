@@ -41,7 +41,7 @@ try{
    }
    return rows;
   });
-  for(const want of ['marks','halloween','pocket-faces','johansson-cartoon','johansson-studios','matsuri','showa','cute','bits'])assert.ok(report.some(r=>r.id===want),`${want} is on the list`);
+  for(const want of ['marks','halloween','pocket-faces','johansson-cartoon','johansson-studios','matsuri','showa','cute','bits','matsuri-friends','tet','easter','summer','halloween-cute','christmas'])assert.ok(report.some(r=>r.id===want),`${want} is on the list`);
   for(const r of report){assert.equal(r.file,r.id+'.json');assert.equal(r.missing,0,JSON.stringify(r));assert.ok(r.ids&&r.count>0,JSON.stringify(r));}
   for(const r of report.filter(r=>!['marks','halloween','pocket-faces'].includes(r.id)))assert.ok(r.sizes,`${r.id}: every sticker at most 512 px with a description`);
   const by=id=>report.find(r=>r.id===id);
@@ -55,7 +55,8 @@ try{
   assert.deepEqual(of(tabs.nov,'Friends'),['Friends','Bits']);
   assert.equal(of(tabs.oct,'Season')[0],'Halloween','in October Halloween comes first');
   assert.equal(of(tabs.jul,'Season')[0],'Matsuri','in July the festival comes first');
-  assert.equal(of(tabs.nov,'Season')[0],'Matsuri','in November the next season to come is first');
+  assert.equal(of(tabs.nov,'Season')[0],'Christmas','in November the next season to come is first');
+  assert.deepEqual([...new Set(of(tabs.nov,'Season'))],['Christmas','Tết','Easter','Summer','Matsuri','Halloween'],'the year from here');
  });
  await check('a sheet with a kind never greets; Memory deals the residents, the cartoon sailor and the friends',async()=>{
   const {greeters,decks}=await page.evaluate(async()=>({greeters:await window.pocketCamera.greeters(),decks:await window.pocketCamera.decks()}));
