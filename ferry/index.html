@@ -252,6 +252,20 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
   body.walking #panel ~ #bar { bottom: calc(12px + env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-motion: reduce) { #panel { transition: none; } }
+
+/* The chief engineer's computer (design record: yard/design/maintenance-computer.md). The owner, 12 November 2026: "we are not
+   going to a website we are still on the chisum , accessing the maintenance program is on the computer"; "We can have full
+   screen but needs a clear button to leave and go back to the chisum". The program fills the display inside this page; the
+   bar over it is the ship's, and its one button goes back to her. */
+#computer { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; background: #101416; }
+#computer[hidden] { display: none; }
+#computer > header { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; padding: 8px 12px; padding-top: max(8px, env(safe-area-inset-top)); padding-left: max(12px, env(safe-area-inset-left)); background: #101416; color: #e8eced; }
+#computer-back { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px 0 16px; border: 2px solid #fff; border-radius: 10px; background: #fff; color: #101416; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+#computer-back:focus-visible { outline: 4px solid #ffd43d; outline-offset: 2px; }
+#computer-back svg { width: 22px; height: 22px; }
+#computer-name { margin: 0; font-size: 14px; opacity: .85; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#computer-screen { flex: 1 1 auto; width: 100%; min-height: 0; border: 0; background: #f2f2f2; }
+#card .maintain { display: inline-flex; align-items: center; min-height: 38px; margin-top: 10px; padding: 0 14px; border: 1px solid var(--accent); border-radius: 8px; background: transparent; color: var(--accent); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 </style>
 <script type="importmap">{ "imports": { "three": "/motor-90l/vendor/three.module.min.js" } }</script>
 </head>
@@ -281,6 +295,13 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
 </aside>
 <button type="button" id="panel-toggle" class="ico" style="--i: var(--i-list)" title="Rooms and systems" aria-expanded="true" aria-controls="panel">Rooms and systems</button>
 <aside id="card" aria-label="What this fitting is" aria-live="polite" hidden></aside>
+<section id="computer" aria-label="The chief engineer's computer" hidden>
+  <header>
+    <button type="button" id="computer-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5 M11 6l-6 6 6 6"/></svg>Back to the Chisum</button>
+    <p id="computer-name">Chief engineer's computer · Maintenance Desk, a Johansson Co program</p>
+  </header>
+  <iframe id="computer-screen" title="Maintenance Desk: the ship's maintenance program"></iframe>
+</section>
 
 <aside id="legend" aria-label="What the X-ray shows" hidden></aside>
 <div id="map" class="walk-only"></div>

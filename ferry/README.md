@@ -190,6 +190,32 @@ work tree like the section above; the same caution.)
   joints between a cubicle's doors show as broken lines from the aisle; and where the open door's leaf of cubicle 7 lies was not
   looked at from the side.
 
+## The maintenance program aboard (`../maintenance-demo/`, `systems/equipment.py`, `app.js`: `openComputer`, `checks/computer.cjs`)
+
+The owner, 12 November 2026, of the site's own program Maintenance Desk: "This could be used for the maintenance system onboard , if
+it needs enhancing add that , so we can update that program as well"; "Build a functional Maintenance PC and add it to the chief
+engineers cabin"; "Which has all parts and equipment onboard"; "It needs to have an ui, we are not going to a website we are still
+on the chisum , accessing the maintenance program is on the computer"; "We can have full screen but needs a clear button to leave
+and go back to the chisum"; "We don't need the demo data , we have chisums data , and that is what we will use on the web app
+too"; "Use Python to draw icons make the ui look less generic"; "The software (the maintenance) is a Johansson Co program"; "I
+want to be able to access drawings and installation instructions in the maintenance desk". Design record:
+[`yard/design/maintenance-computer.md`](yard/design/maintenance-computer.md).
+
+| | As built |
+|---|---|
+| Everything aboard, once | `systems/equipment.py` writes `data/equipment.json` from her own files: the register's components and the deck fittings of `spec.OUTFIT` (313 items in 23 systems), each with its system, deck, room and place, and the yard's papers that are about it. **Not in it yet:** the 392 light fittings and each fitting's parts (their builders run inside Blender: `build.py` is to ask each section for them) |
+| Her papers | The same file lists every sheet the yard has drawn and every instruction, calculation and list it has written, as the files stand under `yard/` (20: 14 drawing sheets, 1 instruction, 3 calculations, 2 lists). Which of them an item is given is said once, in `equipment.py` (`papers_for`) |
+| The program | Maintenance Desk, **a Johansson Co program**, in its own folder beside her (`maintenance-demo/`). It opens on the Chisum: a workspace of its own, filled from her list (`vessel.mjs`), with jobs by kind of thing. **The jobs are the yard's own routines, and say so**; the power pack's are its instruction's (JS3-304-M1, section 12); the statutory ones for life-saving and fire gear are as recalled, not read. Its register is close-set rows by system; an item says where it is aboard and lists its drawings and instructions; a sheet is looked at inside the program, an instruction read as a page. The sample workshop it was written for is under `?workshop` and is offered nowhere |
+| Its look and its drawings | `maintenance-demo/vessel.css`: the rules of an accessibility-first public-service design system (contrast, a focus ring that cannot be missed, nothing told by colour alone), with the denser text of a business product for long lists; its rules, not its name. `maintenance-demo/icons/draw_icons.py` draws its 29 icons from numbers: one for each of her systems, and for a winch, a lifeboat, a liferaft, a sheet |
+| On her own page | `app.js` (`openComputer`): the program fills the page inside a frame; the address does not change and she is not unloaded. **One button, top left, always in sight: "Back to the Chisum"**; Escape does the same, from her page or from inside the program. Nobody walks while they sit at it, and they stand where they stood afterwards |
+| Both ways | A fitting's card aboard offers **Maintenance**, which opens the program at that fitting. **Show on board** on an item puts the program away and brings the thing up: by its card where the register has it, else by flying to its place |
+
+**Not done, plainly.** The computer itself does not stand in the chief engineer's cabin yet (`checks/computer.cjs` says so in its one
+failing line): until it does, the program is opened from a fitting's card. Without a connection the program does not open: it is
+outside the reach of her offline store (the worker that serves it is hers alone). What is recorded stays on the device it was
+recorded on. No installation instruction is written yet. The site's own words about Maintenance Desk (`config.js`, the homepage)
+still speak of a fictional workshop: they are the owner's to change when this is published.
+
 ## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
 
 The owner, 12 November 2026: "I need you to water mark, models, with my logo and these icons, incase someone just steals them, these
@@ -1408,6 +1434,17 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, late at night: the maintenance program aboard
+
+| Check | Result |
+|---|---|
+| `node --test maintenance-demo/tests/*.test.mjs` | **340 of 340 pass**: the 321 the program had, and 19 new ones of the vessel's workspace (`tests/vessel.test.mjs`). As first wired, 18 of the old ones failed: the test that loads the page's program did not know the new module's names; it does now, and opens the program as the workshop (`?workshop`), which is what those tests are of |
+| The program in a browser, by itself (`/maintenance-demo/`) | Opens on the Chisum: 313 items, 330 jobs, no sample workshop in it, the workshop's own storage untouched. A sheet is looked at whole and two and three times as large; the power pack's instruction is read as 13 sections and 6 tables with no link out |
+| `checks/computer.cjs` (new: the tenth page check) | **17 of 18**, twice running: the list, the card's Maintenance, the page's address unchanged, the button (229 by 48 px, top left, with the keys), the program Johansson Co's, the register her list, no sample, a word finds, her papers (20), a sheet looked at inside it, the instruction read, an item's own papers, Show on board, Escape from both sides, nobody walks, no error on the page. (Two of its own lines first read the wrong table: an item's card of papers is a table of the register's kind. They wait for the register itself now.) **FAIL, as it should: "the computer stands in the chief engineer's suite, and a tap on it opens the program": it is not built** |
+| The nine page checks, each by itself, on the page with the display added | **all pass, each on its first run: doors 131, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5** |
+
+Not done: a phone or tablet. The program's look was judged at 1280 by 900 only.
 
 ### 12 November 2026, night: the power pack worked; out on the ramp; the main switchboard begun
 

@@ -19,11 +19,20 @@ She knows herself in three places, and this joins them; nothing is typed here th
 
 Each item: `id` (its tag where it has one), `name`, `kind`, `system` and `systemName`, `deck` and `deckName`, `room` and
 `roomName`, `at` (x to port, metres over the waterline, metres forward of amidships: the page's own measures, so the ship can
-take one to it), `what`, `parts` (a list, empty where no builder names them yet), `source` (which of the three it is from).
+take one to it), `what`, `parts` (a list, empty where no builder names them yet), `source` (which of the three it is from),
+`docs` (the drawings and instructions that are about it).
+
+And her papers. The owner, 12 November 2026: "I want to be able to access drawings and installation instructions in the
+maintenance desk". `documents` is every sheet the yard has drawn and every instruction, calculation and list it has written
+for her, as the files stand under ferry/yard/ (a sheet that is not a file is not listed: the document register says what is
+still to do). Which of them an item is given is said once, in DOCS below.
 """
 import argparse
+import csv
+import glob
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -33,6 +42,7 @@ import ga
 import spec as S
 
 DATA = os.path.join(HERE, '..', 'data')
+YARD = os.path.join(HERE, '..', 'yard')
 OUT = os.path.join(DATA, 'equipment.json')
 
 # The deck fittings' systems. The register's own (NAV, STR, HYD and the rest) come with their names from the register.
@@ -80,7 +90,7 @@ def from_register(reg):
         deck = decks.get(c.get('part'), c.get('part') or '')
         out.append(dict(id=c['id'], name=c['name'], kind=names.get(c['sys'], c['sys']), system=c['sys'], systemName=names.get(c['sys'], c['sys']),
                         deck=deck, deckName=DECK_NAMES.get(deck, deck), room=c['room'], roomName=c['roomName'], at=[round(v, 3) for v in c['at']],
-                        what=c['what'], parts=[], source='register'))
+                        what=c['what'], parts=[], source='register', _fed=bool(c.get('by'))))
     return out
 
 
@@ -103,6 +113,65 @@ def from_outfit(half):
     return out
 
 
+# ---- Her papers --------------------------------------------------------------------------------------------------
+# A file's name says what it is: its number, its sheet where it has one (M1: an instruction), then what it shows.
+PAPER = re.compile(r'^(JS\d-\d{3})-(?:(M?\d+)-)?(.+)\.(svg|md)$')
+SHELVES = (('drawings', 'svg', 'Drawing'), ('manuals', 'md', 'Instruction'), ('calc', 'md', 'Calculation'), ('drawings', 'md', 'List'))
+
+
+def documents():
+    titles = {r[0]: r[1] for r in csv.reader(open(os.path.join(YARD, 'document-register.csv'))) if r}
+    out = []
+    for folder, ext, kind in SHELVES:
+        for path in sorted(glob.glob(os.path.join(YARD, folder, '*.' + ext))):
+            name = os.path.basename(path)
+            m = PAPER.match(name)
+            if not m:
+                continue
+            number, sheet, words = m.group(1), m.group(2), m.group(3).replace('-', ' ')
+            out.append(dict(id=name.rsplit('.', 1)[0], number=number, sheet=(sheet or ('1' if kind == 'Drawing' else '')), kind=kind,
+                            title=titles.get(number, words.capitalize()), shows=words[0].upper() + words[1:], format=ext, file=f'/ferry/yard/{folder}/{name}'))
+    out.sort(key=lambda d: (d['number'], d['kind'] != 'Drawing', d['sheet'].lstrip('M').zfill(3)))
+    return out
+
+
+# Which papers an item is given: by its system, its tag, where it is fed from, or where it stands. A number gives every
+# sheet of that document; (number, word) only the sheets whose name has the word.
+def papers_for(item, boards):
+    want = []
+    sys_, tag = item['system'], item['id']
+    if sys_ in ('RMP', 'HYD') or tag == 'ELD-51':
+        want.append('JS3-304')                              # the stern ramp: arrangement, hydraulics, electrical, the power pack; and its instruction
+    if tag in ('ELD-61', 'ELD-62', 'ELD-63', 'ELD-64') or sys_ == 'GEN':
+        want.append('JS8-865')                              # the main switchboard and what is landed on it
+    if tag in boards:
+        want += [('JS8-864', boards[tag]), ('JS8-864', 'parts list'), 'JS8-856']          # a board: its own sheet, the parts list, the cable schedule
+    if sys_ == 'NLT':
+        want += [('JS8-864', 'NLP'), 'JS4-402']             # the navigation lights: their panel, and the calculation their places are in
+    if sys_ == 'EMG':
+        want.append('JS8-855')                              # emergency power: the batteries' capacity
+    if item.get('_fed'):
+        want.append('JS8-851')                              # whatever is fed: the one-line diagram and the proof of supply
+    if sys_ == 'OUT' and item['room'] == 'wheelhouse':
+        want.append('JS2-211')                              # the wheelhouse's forward bay
+    if item['room'] == 'chief-engineer':
+        want.append('JS5-511')                              # the chief engineer's day room: its desk, its computer, its outlets
+    if item['source'] != 'register':
+        want.append('JS1-102')                              # a deck fitting: nothing is drawn of it but her general arrangement
+    return want
+
+
+def give_papers(items, docs, reg):
+    boards = {b['comp']: b['id'] for b in reg['boards']}
+    for i in items:
+        ids = []
+        for w in papers_for(i, boards):
+            number, word = (w, None) if isinstance(w, str) else w
+            ids += [d['id'] for d in docs if d['number'] == number and (word is None or word.lower() in d['shows'].lower()) and d['id'] not in ids]
+        i['docs'] = ids
+        i.pop('_fed', None)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--inventory', help='what build.py wrote beside the part file: the light fittings, and each fitting\'s parts')
@@ -113,6 +182,8 @@ def main():
         import lines
         half = lines.LOA / 2 if hasattr(lines, 'LOA') else lines.LENGTH / 2
     items = from_register(reg) + from_outfit(half)
+    docs = documents()
+    give_papers(items, docs, reg)
     missing = []
     if a.inventory and os.path.exists(a.inventory):
         inv = json.load(open(a.inventory))
@@ -142,12 +213,13 @@ def main():
         by_source[i['source']] = by_source.get(i['source'], 0) + 1
     doc = dict(format='chisum-equipment-1', ship=dict(name='Chisum', line='Johansson Line', length=round(half * 2, 2)),
                made='ferry/systems/equipment.py, from ferry/data/systems.json, ferry/blender/spec.py (OUTFIT)' + (' and the build\'s inventory' if not missing else ''),
-               counts=dict(items=len(items), **by_source), notYetListed=missing,
+               counts=dict(items=len(items), documents=len(docs), **by_source), notYetListed=missing,
                notAboard='Below the main deck she has no main engine, gear, generator or pump yet; the main switchboard is one item of nine cubicles. What is not built is not listed.',
-               systems=systems, items=items)
+               systems=systems, documents=docs, items=items)
     with open(OUT, 'w') as f:
         json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
-    print(f'{os.path.relpath(OUT)}: {len(items)} items in {len(systems)} systems (' + ', '.join(f'{v} from the {k}' for k, v in by_source.items()) + ')'
+    with_papers = sum(1 for i in items if i['docs'])
+    print(f'{os.path.relpath(OUT)}: {len(items)} items in {len(systems)} systems (' + ', '.join(f'{v} from the {k}' for k, v in by_source.items()) + f'); {len(docs)} sheets and papers, {with_papers} items have one or more'
           + ('; not yet listed: ' + '; '.join(missing) if missing else ''))
 
 

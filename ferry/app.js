@@ -16,7 +16,7 @@ import { surface as surfaceOf, createLook, createSky, createSea, light, day } fr
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
-const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what'), card = $('#card');
+const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what'), card = $('#card'), computer = $('#computer'), screenFrame = $('#computer-screen');
 /** Her systems (systems.js): the component register, shown in the panel's second list and on the model. Null until read. */
 let systems = null;
 /** The deck plan on foot (map.js), when the arrangement is beside the model (data/plans.json). */
@@ -346,6 +346,60 @@ function setInput(id, value) {
   moveParts();
 }
 const cap = text => text ? text[0].toUpperCase() + text.slice(1) : '';
+
+// ---------- the chief engineer's computer ----------
+/**
+ * The maintenance program on the computer's display (yard/design/maintenance-computer.md). The owner, 12 November 2026: "It needs
+ * to have an ui, we are not going to a website we are still on the chisum , accessing the maintenance program is on the computer";
+ * "We can have full screen but needs a clear button to leave and go back to the chisum". The program (Maintenance Desk, in its own
+ * folder beside her) is drawn in a frame inside this page: the address does not change, she is not unloaded, and whoever walked to
+ * the computer stands where they stood when they come back. It is opened by a tap on what the file says `opens: "maintenance"`,
+ * or from a fitting's card ("Maintenance"), then at that fitting.
+ */
+const PROGRAM = new URL('../maintenance-demo/', location.href).pathname;
+let computerFrom = null;                                         // what had the keys before, to give them back
+function openComputer(id = '') {
+  if (!computer) return false;
+  const item = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(id) ? id : '';
+  if (!screenFrame.dataset.on) {                                 // the program is started the first time one sits down, and left running
+    screenFrame.src = `${PROGRAM}?vessel=chisum${item ? '#detail/v-' + item : '#overview'}`;
+    screenFrame.dataset.on = '1';
+  } else if (item) screenFrame.contentWindow.postMessage({ app: 'chisum', type: 'open-item', id: item }, location.origin);
+  held.clear();
+  computerFrom = document.activeElement;
+  computer.hidden = false;
+  $('#computer-back').focus();
+  readout.textContent = 'Chief engineer\u2019s computer: the maintenance program';
+  return true;
+}
+function closeComputer() {
+  if (!computer || computer.hidden) return;
+  computer.hidden = true;
+  if (computerFrom && computerFrom.focus) computerFrom.focus();
+  computerFrom = null;
+  redraw();
+}
+/** "Show on board", asked from the program: it is put away and she takes one to the thing, by its card where the register has it. */
+function showOnBoard(d) {
+  const id = String(d.id || '');
+  closeComputer();
+  if (walk) leaveWalk();
+  if (systems && systems.comps.has(id)) { systems.showComponent(id); return; }
+  if (Array.isArray(d.at) && d.at.length === 3 && d.at.every(Number.isFinite)) {
+    if (systems) systems.hideCard();
+    flyTo(new THREE.Vector3(d.at[0], d.at[1] + 0.6, d.at[2]), eyeDir(), 9, 420);
+    readout.textContent = String(d.name || id).slice(0, 120);
+  }
+}
+if (computer) {
+  $('#computer-back').addEventListener('click', closeComputer);
+  // Only the program in the frame is listened to, and only from this site.
+  addEventListener('message', ev => {
+    if (ev.origin !== location.origin || ev.source !== screenFrame.contentWindow || !ev.data || ev.data.app !== 'maintenance-desk') return;
+    if (ev.data.type === 'show-on-board') showOnBoard(ev.data);
+    else if (ev.data.type === 'leave') closeComputer();
+  });
+}
 /**
  * The rail and the desk (index.html says what each is for). `showFn` puts one function's keys on the desk: by its icon, where a
  * second press puts them away again, or because the part itself was tapped on the model (`toggle` false: they stay).
@@ -509,6 +563,7 @@ function tapFitting(id, point) {
  */
 function tapInput(it) {
   const d = it.def;
+  if (d.opens === 'maintenance') { openComputer(); return true; }
   if (!it.open && d.unless && isOn(d.unless)) { readout.textContent = `${d.name}: ${d.refused || 'not now'}`; return false; }
   it.open = !it.open;
   if (it.open) {
@@ -1682,6 +1737,7 @@ const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.t
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   // While the whole plan is open the keys are its own: Esc or M puts it away, and nobody walks under it.
+  if (computer && !computer.hidden) { held.clear(); if (e.code === 'Escape') { closeComputer(); e.preventDefault(); } return; }
   if (map && map.isOpen()) { held.clear(); if (e.code === 'Escape' || (e.code === 'KeyM' && !typing(e))) { map.close(); e.preventDefault(); } return; }
   if (walk) {
     if (e.code === 'Escape') { leaveWalk(); return; }
@@ -1867,7 +1923,7 @@ async function start() {
       if (!res.ok) throw new Error(String(res.status));
       systems = createSystems({
         data: await res.json(), decks: () => decks, list: $('#systems'), card, readout, flyTo, eyeDir, redraw, accent,
-        walking: () => !!walk, onChange: () => requestAnimationFrame(placeCard),
+        walking: () => !!walk, onChange: () => requestAnimationFrame(placeCard), onMaintain: id => openComputer(id),
       });
     } catch (err) { console.error(err); $('#systems').append(el('p', { className: 'lede muted' }, 'Her systems could not be read.')); }
   } else $('#tab-systems').hidden = true;
@@ -1921,6 +1977,8 @@ async function start() {
     step: id => stepInput(id),
     /** For checks: an order as the bar's keys give it (the ramp to so many degrees, at its own speed). */
     order: (id, to) => orderInput(id, to),
+    /** For checks: the chief engineer's computer (the maintenance program on its display), opened at an item or as it was left; and put away. */
+    openComputer, closeComputer, get computerOpen() { return !!computer && !computer.hidden; },
     /** For checks: a tap on a thing that a tap works, with all that follows from it (what it trips, what it holds, what refuses it). */
     tap: id => { const it = inputs.get(id); return it && it.def.auto ? tapInput(it) : false; },
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
