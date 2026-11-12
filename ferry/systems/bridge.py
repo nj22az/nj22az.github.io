@@ -264,8 +264,8 @@ C('OUT-19', 'Door to the starboard wing', WH, (-2.96, 20.85, 0.0), 'A weathertig
   dict(kind='door_wing', side=-1, yd=(20.45, 21.25)), survey='B104')
 C('OUT-20', 'Wheelhouse plating, linings and windows', WH, (0.0, 21.2, 0.0), 'The house itself: plated outside, lined inside, five forward windows raked 10° under a visor, and windows down both sides: glass over 224° of the horizon from the helm.',
   dict(kind='envelope'), pick=False, survey='B105')
-C('OUT-21', 'Wing bulwarks, port', WP, (3.6, 21.2, 0.0), 'A plated bulwark 1.1 m high round the wing, with a varnished cap rail.', dict(kind='wing', side=1), pick=False)
-C('OUT-22', 'Wing bulwarks, starboard', WS, (-3.6, 21.2, 0.0), 'A plated bulwark 1.1 m high round the wing, with a varnished cap rail.', dict(kind='wing', side=-1), pick=False)
+C('OUT-21', 'Bridge wing, port: closed in', WP, (3.6, 21.2, 0.0), 'The wing was an open deck behind a bulwark 1.1 m high. It is closed in, as open wings are when a ship is refitted: the bulwark stays, glass stands on it between steel posts (six panes forward, leaning with the wheelhouse\'s own, three outboard), a wall with a door closes its after end, and a roof is carried out from the wheelhouse\'s eave to her side. One band of windows runs across her whole breadth.', dict(kind='wing', side=1), pick=False)
+C('OUT-22', 'Bridge wing, starboard: closed in', WS, (-3.6, 21.2, 0.0), 'Closed in like the port wing: glass on the bulwark between steel posts, a wall and a door aft, a roof from the wheelhouse\'s eave to her side.', dict(kind='wing', side=-1), pick=False)
 
 # ---- Navigation.
 C('NAV-01', 'Radar display', WH, (-1.05, BACK, TOP), 'The radar picture, with target tracking: the display and its keyboard at the watch officer\'s chair, set in the console\'s upstand under a hood against the daylight.',
@@ -411,8 +411,8 @@ C('FIR-07', 'Fire hose box', WP, (3.11, 19.95, 0.10), 'A 15 m hose with a dual-p
 # ---- Navigation lights and signals.
 C('NLT-01', 'Navigation light panel', WH, (-1.25, 22.20, 0.615), 'A switch, a fuse and a lamp-failure indicator for each lantern, on a mimic of the ship; a change-over switch between its two supplies. On the console block\'s apron, under the desk.',
   dict(kind='facepanel', w=1.06, H=0.26, tile='navlight_panel', face='console'), node='CON-SS', survey='B085', kks='10CTA20 GS001', basis='town')
-C('NLT-02', 'Sidelight, port', WP, (4.13, 22.70, 1.20), 'Red, from right ahead to 22.5° abaft the port beam: on the bulwark\'s rail at the wing\'s outer end, with a screen board inboard of it.', dict(kind='sidelight', side=1), w=60, use=0.5, by=('NLP', 2), node='WING-P', survey='B108', basis='town')
-C('NLT-03', 'Sidelight, starboard', WS, (-4.13, 22.70, 1.20), 'Green, from right ahead to 22.5° abaft the starboard beam: on the bulwark\'s rail, with a screen board inboard of it.', dict(kind='sidelight', side=-1), w=60, use=0.5, by=('NLP', 3), node='WING-S', survey='B110', basis='town')
+C('NLT-02', 'Sidelight, port', WP, (4.13, 22.70, 2.47), 'Red, from right ahead to 22.5° abaft the port beam: on the wing\'s roof at its outer end (it stood on the bulwark\'s rail while the wing was open), with a screen board inboard of it.', dict(kind='sidelight', side=1), w=60, use=0.5, by=('NLP', 2), node='WING-P', survey='B108', basis='town')
+C('NLT-03', 'Sidelight, starboard', WS, (-4.13, 22.70, 2.47), 'Green, from right ahead to 22.5° abaft the starboard beam: on the wing\'s roof at its outer end, with a screen board inboard of it.', dict(kind='sidelight', side=-1), w=60, use=0.5, by=('NLP', 3), node='WING-S', survey='B110', basis='town')
 C('NLT-04', 'Masthead light', CD, (0.0, 20.98, 5.60), 'White, over 225° ahead, on the front of the mast above the radar, its lens clear over the posts of the radar platform.', box=(-0.13, 0.13, 20.90, 21.08, 5.46, 5.70), w=60, use=0.5, by=('NLP', 1), node='MAST-ML', survey='B113', basis='town')
 C('NLT-05', 'Anchor light', CD, (0.0, 20.80, 7.20), 'White, all round, on the crown of the mast.', box=(-0.07, 0.07, 20.73, 20.87, 7.14, 7.30), w=60, use=0.0, by=('NLP', 5), node='MAST-T', survey='B113', basis='town')
 # The sternlight is not on the bridge: it stands at the stern, on the bulwark's rail over the stern door (blender/spec.py:

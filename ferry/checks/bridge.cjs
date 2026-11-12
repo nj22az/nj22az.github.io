@@ -110,8 +110,8 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(w.x > WING - 0.54 && w.x < WING - 0.09, `the wing is carried to her side, and its bulwark holds one in (x ${w.x.toFixed(2)}; the bulwark's inner face is at ${WING})`);
   w = await walk(-1.5, 20.85, STBD, 3);
   check(w.x < -3.2 && w.x > -WING && /wing|wheelhouse/i.test(w.room), `through the starboard door onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
-  w = await walk(6.0, 20.2, ASTERN, 2);           // abaft the wing the bridge deck is open, each side of the house
-  check(w.z < Z(19.4), `from the port wing aft, off it at its open end onto the bridge deck (${B(w.z).toFixed(2)} m)`);
+  w = await walk(4.7, 20.2, ASTERN, 2);           // the wing is closed in: the door in its after wall opens aft, onto the open bridge deck each side of the house
+  check(w.z < Z(19.4), `from the port wing aft, through the door in its after wall and over its coaming onto the bridge deck (${B(w.z).toFixed(2)} m)`);
   w = await walk(2.0, 21.7, PORT, 2);
   check(w.x < 2.6, `the settee under the port windows stops one (x ${w.x.toFixed(2)}; its front is at 2.31)`);
   w = await walk(-2.5, 20.9, ASTERN, 3);

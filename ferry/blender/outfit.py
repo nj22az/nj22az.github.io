@@ -90,7 +90,9 @@ def _stand(o):
     if kind == 'lifeboat-station':
         # the library's origin is the deck's edge abreast the boat's middle, x outboard and her bow forward; the place is the
         # middle of the station's footprint, 1.8 m inboard of that edge
-        edge = L.upper_breadth(z)
+        # (the least breadth along the station's length: forward of amidships her side draws in, and a station set to the
+        # edge abreast its middle had its forward end rail 12 mm outside the deck)
+        edge = min(L.upper_breadth(L.Z(o['yard'] + d)) for d in (-4.45, -2.2, 0.0, 2.2, 4.45))
         x, heading = side * edge, 0
         more.update(side=side, height=y, rescue=side > 0, number=2 if side > 0 else 1, ship=S.SHIP_NAME.upper(), port=S.PORT_OF_REGISTRY)
     elif kind == 'panama-chock':
