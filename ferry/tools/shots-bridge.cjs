@@ -7,8 +7,8 @@
 //
 // A view is an eye and what it looks at, both in the bridge's own measures (metres to port, metres from the first Chisum's
 // transom, metres over the bridge deck: ferry/blender/bridge_place.py), a zoom, and what is worked for it: the file's
-// inputs by name, true for open or running. The eye is put where the view says, not where a walker could stand: a close-up
-// is taken from 0.6 m, as a person leaning in would see it.
+// inputs by name, true for open or running, or a number of steps for a rotary switch. The eye is put where the view says,
+// not where a walker could stand: a close-up is taken from 0.6 m, as a person leaning in would see it.
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -41,7 +41,16 @@ const VIEWS = [
   ['close-chart-table', [-1.35, 20.75, 1.55], [-1.5, 19.85, 0.98], 1, {}],
   ['pantry', [-1.55, 21.55, 1.5], [-2.7, 21.78, 0.55], 1, {}],
   ['pantry-open', [-1.55, 21.55, 1.5], [-2.7, 21.78, 0.55], 1, { 'cooler-door': true, 'pantry-cupboard': true }],
-  ['close-coffee', [-2.05, 21.9, 1.05], [-2.7, 21.95, 0.6], 1, {}],
+  ['close-coffee', [-1.95, 21.86, 0.80], [-2.68, 21.96, 0.60], 1, {}],
+  // what is worked, worked: doors open, blinds down, a wiper and a clear-view screen running, chairs run aft and turned, the jug poured, the night
+  ['worked-console', [-0.45, 21.15, 1.25], [-0.95, 22.3, 0.38], 1, { 'console-door-3s': true, 'console-door-4p': true, 'console-door-4s': true, 'console-door-5p': true, 'console-door-5s': true }],
+  ['worked-telephone', [1.25, 21.78, 1.42], [1.25, 22.26, 0.97], 1, { 'handset-telephone': true }],
+  ['worked-windows', [0.0, 20.75, 1.62], [0.0, 23.2, 1.35], 1, { 'blind-2': true, 'blind-5': true, 'wiper-centre': true, 'wiper-starboard': true, 'clear-view-port': true, 'handset-vhf': true }],
+  ['worked-chairs', [0.0, 20.2, 1.75], [0.0, 21.6, 0.55], 1, { 'chair-master-slide': true, 'chair-master-turn': true, 'chair-officer-turn': true }],
+  ['worked-coffee', [-1.95, 21.86, 0.80], [-2.68, 21.96, 0.60], 1, { 'coffee-machine': true, 'coffee-jug': true }],
+  ['worked-aft', [0.6, 21.9, 1.6], [-0.9, 19.6, 0.8], 1, { 'chart-drawer-1': true, 'chart-drawer-3': true, 'locker-door-1': true, 'locker-door-3': true, 'table-drawer': true, 'binocular-box-lid': true }],
+  ['worked-locker', [1.2, 21.3, 1.5], [2.0, 19.7, 0.5], 1, { 'locker-door-1': true, 'locker-door-2': true, 'locker-door-3': true, 'locker-door-4': true }],
+  ['night-switches', [0.0, 20.75, 1.5], [0.0, 23.0, 1.2], 1, { 'dimmer-console': 1, 'dimmer-instruments': 2 }],
   ['wing-port', [4.3, 20.3, 1.62], [5.9, 22.8, 0.9], 1, {}],
   ['wing-port-in', [5.9, 21.9, 1.62], [3.0, 21.2, 1.3], 1, {}],
   ['wing-starboard', [-4.3, 20.3, 1.62], [-5.9, 22.8, 0.9], 1, {}],
@@ -71,10 +80,13 @@ const VIEWS = [
     await page.evaluate(([eye, aim, zoom, worked, SHIFT, DECK, half]) => {
       const f = window.__ferry, L = f.look, cam = L.camera, T = cam.position.constructor;
       const P = p => new T(p[0], DECK + p[2], p[1] + SHIFT - half);
-      // what is worked for this view: a door open, a thing running (the page's own inputs, as a tap leaves them)
-      for (const id of Object.keys(f.state.inputs)) f.work(id, !!worked[id]);
-      for (const [id, v] of Object.entries(worked)) if (typeof v === 'number') f.setInput(id, v);
-      for (let t = 0; t < 1.6; t += 0.1) f.workAuto(0.1);
+      // what is worked for this view: a door open, a thing running (the page's own inputs, as a tap leaves them); a
+      // rotary switch turned so many steps from where it rests, and back there for the next view
+      window.__homes = window.__homes || Object.fromEntries(Object.keys(f.state.inputs).filter(id => f.control(id) && f.control(id).steps).map(id => [id, f.control(id).at]));
+      for (const id of Object.keys(f.state.inputs)) f.work(id, worked[id] === true);
+      for (const [id, home] of Object.entries(window.__homes)) for (let k = 0; k < 8 && f.control(id).at !== home; k++) f.step(id);
+      for (const [id, v] of Object.entries(worked)) if (typeof v === 'number') for (let k = 0; k < v; k++) f.step(id);
+      for (let t = 0; t < 1.6; t += 0.1) { f.workAuto(0.1); if (f.workSteps) f.workSteps(0.1); }
       // the walker stands near the eye (the page lights and shows the place it is in), then the eye is put where the view says
       const e = P(eye);
       f.walkTo(e.x, e.z, Math.PI, 0, DECK);

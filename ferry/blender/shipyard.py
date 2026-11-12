@@ -105,11 +105,13 @@ LOOKS = {
     'Leather': dict(metalness=0.0, roughness=0.5),
     'Cloth': dict(metalness=0.0, roughness=0.96),
     'Dial glass': dict(metalness=0.0, roughness=0.03, transparent=True, opacity=0.1, depthWrite=False, clear=True),
-    'Blind film': dict(metalness=0.0, roughness=0.3, side='double', transparent=True, opacity=0.6, depthWrite=False, clear=True),
+    'Blind film': dict(metalness=0.0, roughness=0.3, side='double', transparent=True, opacity=0.9, depthWrite=False, clear=True),
     'Coffee': dict(metalness=0.0, roughness=0.06),
     'Lit lamp': dict(metalness=0.0, roughness=0.4, emissive='#fff1dc', emissiveIntensity=2.4),
     'Lit amber': dict(metalness=0.0, roughness=0.4, emissive='#ffb020', emissiveIntensity=0.9),
     'Lit white': dict(metalness=0.0, roughness=0.4, emissive='#f4f6ff', emissiveIntensity=0.8),
+    # a red night light: so dim that it spoils no night vision (and, being out by day, must not redden the deckhead in the traced light)
+    'Lit night red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.15),
 }
 # What each look's surface is: the page gives each kind its own grain, sheen and unevenness (ferry/look.js), so that paint,
 # deck coating, wood, metal, leather and laminate are told apart by more than their colour (JSY-STD-404, rule 11).
@@ -495,6 +497,12 @@ class Part:
         o = Vector(origin)
         n = round_sides(max(r for _, r in profile))
         ring = [e1 * math.cos(2 * pi * k / n) + e2 * math.sin(2 * pi * k / n) for k in range(n)]
+        profile = list(profile)
+        # A turned body is a closed solid: a profile that does not come back to where it began, or end on the axis at both
+        # ends, is closed from its last place to its first (the inside of a ring, the underside of a dome on a plate).
+        open_ends = abs(profile[0][0] - profile[-1][0]) + abs(profile[0][1] - profile[-1][1]) > 1e-9
+        if open_ends and (profile[0][1] > 1e-9 or profile[-1][1] > 1e-9):
+            profile.append(profile[0])
         segs = [(a, b) for a, b in zip(profile, profile[1:]) if abs(a[0] - b[0]) + abs(a[1] - b[1]) > 1e-9]
         # each length's own direction in the (along, out) plane, turned to look away from the axis
         nrm = []
@@ -502,7 +510,10 @@ class Part:
             dx, dr = xb - xa, rb - ra
             ln = math.hypot(dx, dr)
             nrm.append((-dr / ln, dx / ln))
-        if profile[-1][0] < profile[0][0]:                       # a profile given from its far end back
+        # the outside is to the left of the way the profile runs when it goes round its section clockwise (along the axis
+        # at its greatest radius); a profile given the other way round is turned
+        area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(profile, profile[1:] + profile[:1]))
+        if area > 0:
             nrm = [(-nx, -nr) for nx, nr in nrm]
 
         def blend(i, j):
@@ -545,11 +556,19 @@ class Part:
         for k in range(start, len(self.f)):
             f = self.f[k]
             pts = [Vector(self.v[i]) for i in f]
-            n = Vector((0, 0, 0))
-            for a, b in zip(pts, pts[1:] + pts[:1]):
-                n += a.cross(b)
-            if n.length_squared < 1e-18:
+            # The way the face looks by its winding, worked out about its own first corner and in whole precision: a face a
+            # millimetre across (a screw's head, a chamfer's corner) 20 m from the ship's middle is lost in the rounding of
+            # single-precision vectors taken about the origin, and was turned at random.
+            o = self.v[f[0]]
+            nx = ny = nz = 0.0
+            for i, j in zip(f[1:], f[2:]):
+                a, b = self.v[i], self.v[j]
+                ax, ay, az, bx, by, bz = a[0] - o[0], a[1] - o[1], a[2] - o[2], b[0] - o[0], b[1] - o[1], b[2] - o[2]
+                nx, ny, nz = nx + ay * bz - az * by, ny + az * bx - ax * bz, nz + ax * by - ay * bx
+            n = Vector((nx, ny, nz))
+            if nx * nx + ny * ny + nz * nz < 1e-24:
                 continue
+            n.normalize()
             if direction is None:
                 want = Vector((0, 0, 0))
                 for i in f:

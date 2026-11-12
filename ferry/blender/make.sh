@@ -10,6 +10,7 @@ cd "$(dirname "$0")/../.."
 PART=${1:-/tmp/chisum.npz}
 BLEND=${2:-/tmp/chisum.blend}
 python3 ferry/blender/ga.py
+rm -f "$PART"          # a part file left by an earlier build must not stand in for this one when its Blender step fails
 blender -b -P ferry/blender/build.py -- --part "$PART" --blend "$BLEND" | grep -E "inner face|structure behind|solids|moving parts|triangles$|wrote|stairs outside|through|inside-out|do not agree|Error|Traceback" || true
 test -f "$PART"
 python3 ferry/blender/assemble.py --part "$PART"

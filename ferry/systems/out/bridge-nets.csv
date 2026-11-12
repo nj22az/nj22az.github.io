@@ -17,6 +17,7 @@ NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a lin
 NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",STR-04,Heading repeater,listens,heading
 NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-16,"Bearing repeater, port wing",listens,heading
 NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-17,"Bearing repeater, starboard wing",listens,heading
+NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",NAV-18,"Heading repeater, overhead",listens,heading
 NMEA,Navigation data,"IEC 61162-1 (NMEA 0183), 4800 baud, one twisted pair a line",ALM-02,Bridge watch alarm,listens,whether the autopilot steers
 AIS,AIS targets,"IEC 61162-2, 38 400 baud",NAV-04,AIS transponder,talks,"VDM, VDO: other ships and her own report"
 AIS,AIS targets,"IEC 61162-2, 38 400 baud",NAV-02,Radar processor,listens,
