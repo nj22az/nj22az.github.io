@@ -1,5 +1,7 @@
 **Site copy, 12 November 2026:** both books are works in progress, and StepWise sits inside Maintenance Desk. Read [docs/HANDOVER-BOOKS-WIP-2026-11-12.md](docs/HANDOVER-BOOKS-WIP-2026-11-12.md). The ferry notes below are unchanged. Nothing under `ferry/` was touched.
 
+**Tetsuo’s Workshop, 12 November 2026:** the dockside entrance and instrument bench are in the `/temp/` preview. Read the [workshop handover](temp/workshop/HANDOVER.md).
+
 ## RESUME HERE · the Chisum (`ferry/`) · written 12 November 2026, at night, for a session that begins with no memory of the work
 
 **This block is self-contained. Read it, then only what it points to. Everything under it is the days' history: detail to look things up in, not instructions.** (The owner clears the conversation after a note like this. A session starts in `/Users/nilsjohansson/Developer`, which is not this repository, so nothing here is loaded by itself; the session's own memory folder refused writes again on 12 November.) **Why, found that night: `~/.claude/projects` on this Mac is a link to `/Volumes/Development/Builds/Tools/claude-code/projects`, and that volume has not been mounted since 9 November. While it is away no conversation is saved and no memory can be written: this file and the repository are the only memory.** A session that begins after a clear finds its work with `git status`, `git log`, `/tmp/chisum-make.log` and the newest folder under `/Users/nilsjohansson/Developer/chisum-screens/`; that is how the evening's work was found again after the conversation was cleared in the middle of it.
