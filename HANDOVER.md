@@ -1,3 +1,5 @@
+**Music video, 12 November 2026 (night):** *Jack the Ripper (a killer is loose)*, the owner's song as an animated film (Meshy, Blender, Remotion), is in work on the branch `claude/sharp-dijkstra-ebs7m7`; nothing is published and `main` is untouched. Read [films/jack-the-ripper/README.md](films/jack-the-ripper/README.md): the owner's brief in their words, how it is made, and its state.
+
 **Site copy, 12 November 2026:** both books are works in progress, and StepWise sits inside Maintenance Desk. Read [docs/HANDOVER-BOOKS-WIP-2026-11-12.md](docs/HANDOVER-BOOKS-WIP-2026-11-12.md). The ferry notes below are unchanged. Nothing under `ferry/` was touched.
 
 ## RESUME HERE · the Chisum (`ferry/`) · written 12 November 2026, at night, for a session that begins with no memory of the work
