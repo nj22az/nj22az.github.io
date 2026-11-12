@@ -1,6 +1,8 @@
 # Site fixes — sitemap, redirects, heading, README — 12 November 2026
 
-Small behaviour-preserving fixes on branch `cursor/site-audit-fixes-247f`, commit `d198937`. Pull request: https://github.com/nj22az/nj22az.github.io/pull/427. Not merged. Not pushed to `main`. Nothing under `ferry/` was edited.
+Small behaviour-preserving fixes on branch `cursor/site-audit-fixes-247f`. Pull request: https://github.com/nj22az/nj22az.github.io/pull/427. Not merged. Nothing under `ferry/` was edited.
+
+`main` at `5af4da0` (pull request #428) is merged into this branch. The books stay works in progress, StepWise stays inside Maintenance Desk rather than as its own project, the filter counts are computed (6, 2, 2, 2), and the homepage still has no Shopify price script. The no-script list keeps #428’s wording and this branch’s `/johansson-world/` addresses.
 
 ## What changed
 
