@@ -17,7 +17,7 @@
  */
 const { chromium } = require('playwright');
 const url = process.argv[2] || process.env.CHISUM_URL || 'http://localhost:8765/ferry/';
-const SHIFT = 30.505, DECK = 9.3;
+let SHIFT, DECK;                      // where the bridge stands in the ship: the file says (ship.bridge), as bridge.cjs reads it
 const fails = [];
 const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if (!ok) fails.push(text); };
 
@@ -29,6 +29,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   page.on('pageerror', e => errors.push(String(e)));
   await page.goto(url + '?works=' + Date.now());
   await page.waitForFunction(() => window.__ferry && document.body.classList.contains('ready') && window.__ferry.systems, null, { timeout: 180000 });
+  ({ SHIFT, DECK } = await page.evaluate(() => ({ SHIFT: window.__ferry.ship.bridge.shift, DECK: window.__ferry.ship.bridge.deck })));
   // The helpers every check below uses, in the page: a mover's matrix, how far it is from where it rests, the angle it has turned.
   await page.evaluate(() => {
     const f = window.__ferry;

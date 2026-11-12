@@ -155,7 +155,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     f.walkTo(0.85, z, Math.PI, -0.6, DECK);          // beside the stand, where a walker can stand upright
     f.walkFor(0.5);
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const grip = new L.camera.position.constructor(0.458, DECK + 1.17, zl).project(L.camera);
+    const grip = new L.camera.position.constructor(0.458, DECK + 1.075, zl).project(L.camera);   // the grip's middle: the head stands in the desk's after edge (systems/bridge.py: HAND, HEAD)
     const c = document.querySelector('canvas').getBoundingClientRect();
     f.nameOnFoot(c.left + (grip.x + 1) / 2 * c.width, c.top + (1 - grip.y) / 2 * c.height);
     const said = document.querySelector('#what').textContent;
@@ -168,7 +168,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const all = f.movers();
     const worked = ['lever-engine-p', 'lever-engine-s', 'lever-thruster', 'tiller'].map(id => f.control(id)).filter(k => k && k.steps && k.fitting);
     return { said, card: f.systems.state.component, at: f.control('lever-engine-p').at, turned, wheel, n: all.length, worked: worked.length };
-  }, [Z(21.85), Z(22.60), DECK]);
+  }, [Z(21.85), Z(22.255), DECK]);
   const mark = 16.26;
   check(lever.said === 'Port engine lever: slow ahead' && lever.card === 'PRP-01' && lever.at === 4,
     `on foot, a tap on the port engine lever moves it a notch and shows its card ("${lever.said}", ${lever.card})`);

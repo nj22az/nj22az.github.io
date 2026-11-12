@@ -348,44 +348,58 @@ def door_corridor(g, tag):
 # =====================================================================================================================
 def wing_console(g, tag, x, yard, h):
     """
-    A wing control station: a pedestal 0.63 m wide against the wing's forward bulwark, at its outboard end, with a sloping
-    top and a low windscreen. The levers are outboard, where the person berthing her stands: from there the eye is far
-    enough out to see past the house's forward corner to 45 degrees on the opposite bow (SOLAS V/22.1.4; the yard's
-    calculation JS4-402 found the first station, across the whole wing with its levers inboard, 13.5 degrees short).
-    The levers stand in the order they have on the console, port engine to port, on both wings.
+    A wing control station: a pedestal 0.63 m wide against the wing's forward bulwark, at its outboard end. The levers are
+    outboard, where the person berthing her stands: from there the eye is far enough out to see past the house's forward
+    corner to 45 degrees on the opposite bow (SOLAS V/22.1.4; the yard's calculation JS4-402 found the first station,
+    across the whole wing with its levers inboard, 13.5 degrees short). The levers stand in the order they have on the
+    console, port engine to port, on both wings.
+
+    What is worked is at the hand and low, what is read is beyond it and higher (the owner, 12 November 2026: "some levers
+    are blocking some panels": the two dials lay in the sloping top behind the thruster's lever, whose grip stood before
+    them). The three control heads stand in one row in the after part of the top, sunk until their plates are just over
+    it; forward of them the top rises in an upright face that leans back 20 degrees to the eye, and the two dials are set
+    in it, the rudder angle over the thruster's lever and the revolutions over the engines': each is read over the grips
+    from anywhere abaft the station. A low windscreen stands on the face's top.
     """
     side = g['side']
     x0, x1, y0, y1 = abs(x) - 0.315, abs(x) + 0.315, yard - 0.17, yard + 0.17
     xa, xb = sorted((side * x0, side * x1))
     at = lambda u: side * (x0 + u)                                   # u metres from the pedestal's inboard edge
+    slope = (0.98 - 0.88) / (y1 + 0.02 - (y0 + 0.14))                # the top rises this much a metre forward of the lip
+    c20, s20 = cos(radians(20)), sin(radians(20))
+    yf = y0 + 0.24                                                   # the face's foot on the sloping top
+    hf = 0.88 + (yf - (y0 + 0.14)) * slope
+    face = 0.215                                                     # the face's length up its lean
+    ft = hf + face * c20                                             # its top
     box('console', xa, xb, y0 + 0.03, y1 - 0.03, 0.012, 0.10, FRAME)
     box('console', xa, xb, y0, y1, 0.10, 0.82, GREEN)
-    prism('console', xa - 0.01, xb + 0.01, [(y0 - 0.02, 0.82), (y1 + 0.02, 0.82), (y1 + 0.02, 0.98), (y0 + 0.14, 0.88)], tint(GREEN, 1.08))
-    # Three control heads of three-quarter size, sunk into the sloping top: the two engines outboard, fore and aft, the
-    # thruster nearest the person, across. Each lever moves with its fellow on the console and on the other wing.
+    prism('console', xa - 0.01, xb + 0.01, [(y0 - 0.02, 0.82), (y1 + 0.02, 0.82), (y1 + 0.02, ft), (yf + face * s20, ft), (yf, hf), (y0 + 0.14, 0.88)], tint(GREEN, 1.08))
+    # Three control heads of three-quarter size in one row, sunk into the top: the two engines outboard, fore and aft, the
+    # thruster inboard, across. Their plates stand at one height, 9 mm over the top at the engines' forward end. Each lever
+    # moves with its fellow on the console and on the other wing.
     where = 'Port wing' if side > 0 else 'Starboard wing'
     tail = '-wp' if side > 0 else '-ws'
+    row, base = y0 + 0.10, 0.844
     for u, col, name, works in zip((0.56, 0.44) if side > 0 else (0.44, 0.56), (RED, GREENLENS), ('port engine lever', 'starboard engine lever'), ('lever-engine-p', 'lever-engine-s')):
-        BC.control_head(f'{where}, {name}', works + tail, works, at(u), y0 + 0.13, 0.89, col, s=0.77, sink=0.05)
-    BC.control_head(f'{where}, bow thruster lever', 'lever-thruster' + tail, 'lever-thruster', at(0.20), y0 + 0.085, 0.875, BLUE, across=True, s=0.77, sink=0.05)
-    slope = (0.98 - 0.88) / (y1 + 0.02 - (y0 + 0.14))
-    nrm = Vector((0.0, 1.0, -slope)).normalized()
-    upv = Vector((0.0, slope, 1.0)).normalized()
-    for u, name in ((0.09, 'rai'), (0.25, 'rpm')):
-        ys = y0 + 0.265
-        hs = 0.88 + (ys - (y0 + 0.14)) * slope
+        BC.control_head(f'{where}, {name}', works + tail, works, at(u), row, base, col, s=0.77, sink=0.05)
+    BC.control_head(f'{where}, bow thruster lever', 'lever-thruster' + tail, 'lever-thruster', at(0.20), row, base, BLUE, across=True, s=0.77, sink=0.05)
+    # The two dials in the upright face, each in line ahead of the lever it answers: its brass bezel, its picture under it.
+    nrm = Vector((0.0, s20, -c20))                                   # the face looks aft and a little up
+    upv = Vector((0.0, c20, s20))
+    for u, name in ((0.20, 'rai'), (0.50, 'rpm')):
+        ys, hs = yf + 0.110 * s20, hf + 0.110 * c20
         c = Vector(P(at(u), ys, hs))
         part('brass').tube(tuple(c), tuple(c + nrm * 0.012), 0.072, colour=BRASS, sides=20)
         disc((at(u), ys, hs), tuple(nrm), tuple(upv), 0.062, name, proud=0.0135)
     # the watch alarm's reset and the whistle push on the lip, between the thruster's head and the engines'; and a
-    # windscreen across the forward edge
+    # windscreen on the face's top
     lip = Vector((0.0, 1.0, -0.375)).normalized()
     for dy, col in ((0.06, BLUE), (0.125, RED)):
         c = Vector(P(at(0.33), y0 + dy, 0.82 + (dy + 0.02) * 0.375))
         part('plastic').tube(tuple(c), tuple(c + lip * 0.022), 0.016, colour=col, sides=12)
     for xs in (xa + 0.03, xb - 0.03):
-        tube('steel', (xs, y1 - 0.02, 0.98), (xs, y1 - 0.02, 1.32), 0.012, GREY, 8)
-    part('glass').polygon([P(xa + 0.03, y1 - 0.02, 1.00), P(xb - 0.03, y1 - 0.02, 1.00), P(xb - 0.03, y1 - 0.02, 1.30), P(xa + 0.03, y1 - 0.02, 1.30)], GLASS)
+        tube('steel', (xs, y1 - 0.02, ft), (xs, y1 - 0.02, ft + 0.34), 0.012, GREY, 8)
+    part('glass').polygon([P(xa + 0.03, y1 - 0.02, ft + 0.02), P(xb - 0.03, y1 - 0.02, ft + 0.02), P(xb - 0.03, y1 - 0.02, ft + 0.32), P(xa + 0.03, y1 - 0.02, ft + 0.32)], GLASS)
 
 
 def sidelight(g, tag, x, yard, h):

@@ -333,6 +333,7 @@ blender -b -P ferry/blender/build.py -- --part chisum-hull.npz --blend chisum.bl
 python3 ferry/blender/assemble.py --part chisum-hull.npz                                 # put it into data/ferry.bin.gz, and write data/systems.json
 python3 ferry/blender/check.py                                                              # check what the page will read
 node ferry/checks/bridge.cjs                                                                # check the page itself (the site served on port 8765)
+node ferry/checks/sight.cjs                                                                 # no lever stands before an instrument (JSY-STD-404, rule 13)
 blender -b chisum.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
 ```
 
@@ -681,6 +682,16 @@ and the mast, the binnacle, the vents and the lights are in the way. The compass
 is still the Minato Maru's, outside this part (the sidelights are hers, from 11 November: *The wheelhouse*).
 
 ## The navigation bridge (`blender/wheelhouse.py`)
+
+**Since 12 November 2026 the wheelhouse is refitted, and this section describes it as it was before:** the console as one
+block with instruments set into it, the furniture, the deckhead and everything that works are in
+[`yard/design/wheelhouse-refit.md`](yard/design/wheelhouse-refit.md), stage by stage. Its last stage is the arrangement
+of what is worked and what is read (the owner: "some levers are blocking some panels, look at the bridge as an end
+user"): **the three control heads stand in the desk's after edge, at the hand; their panels lie on the level strip and
+their instruments stand in the upstand, each in line ahead of its levers and read over them; at each wing station the
+two dials stand in an upright face over the levers.** The rule is JSY-STD-404's thirteenth, and `checks/sight.cjs` keeps
+it: it draws the lines of sight from the walker's eye to every instrument in the page's own model and fails if a lever
+stands in one.
 
 Section 5. The owner, 11 November 2026: "Make the ferry fully realistic in blender, start with one section at a time. Start
 with the bridge", and while it was built: "If current foundation is lacking don't be ashamed of redrawing it, the important
@@ -1201,6 +1212,36 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, morning: the merged ship (revision D with the wheelhouse refit), and the levers moved
+
+Run on the owner's Mac in the main checkout, on the work branch `claude/festive-rubin-fo8mmp`, after the control heads
+were moved ([`yard/design/wheelhouse-refit.md`](yard/design/wheelhouse-refit.md), *Stage 4*). The site was served from
+the checkout on port 8766 by a threading server with a queue of 128 waiting connections (and on 8765 by
+`python3 -m http.server`, which `travel.cjs`, `zoom.cjs` and others ask when no address is given), each page check by
+itself, with `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright-local`. **This is the first time the merged ship went
+through the page checks**: the merge of the wheelhouse refit says of itself "NOT yet built or checked on the merged ship".
+
+| Check | Result |
+|---|---|
+| `ferry/blender/make.sh /tmp/chisum.npz /tmp/chisum.blend` | **"built: every check passed"**, twice (once with the heads' plates at 0.985 m, once at 0.980 m: the build that is committed). 1,410,320 triangles in a file of 8.98 MB, 133 rooms, 17 stairs, 186 components; `check.py` all passed; `zfight.py` 0 pairs of faces in one plane among 580 pieces; `afloat.py` 0 afloat of 17,301 pieces (17,296 held, 5 flat pictures); `spans.py` 409 runs, every one carried; the light traced through her in 251 s (398 lamps). `zfight.py`'s second list, which does not stop the build, names seven coverings close under another surface (her name, the draught marks, two sea chest openings, the lane lines under the cargo lift's corner plates, the two panel pictures under their own keys) |
+| `python3 ferry/systems/register.py` | 186 components (186 in the model), 41 circuits on 5 boards, 31 nets, 7 pipes; all checks hold |
+| `checks/sight.cjs` (new) | all passed (24): it sees a lever that is in the way; with the levers at stop, both engines full ahead, full astern and the thruster full over each way, from 209 places of the eye abaft the block no lever stands before what is read of the 8 instruments in the upstand (41,800 lines of sight each time), nor before the 2 panels on the level strip from 114 places from the helm forward (5,700 lines), nor before a dial at either wing station (1,134 lines each). Said as it happened: its first two runs failed (9 lines of 37,400, then 1), and what was changed for each is in the refit's record |
+| `checks/bridge.cjs` | all passed (28): the register's 186 components, 181 answering at their own place; a tap on the port engine lever where it stands now moves it a notch at the console and on both wings (16.26°) |
+| `checks/works.cjs` | all passed (21). It held the 68 m ship's measures and now reads where the bridge stands from the file |
+| `checks/doors.cjs` | all passed (112): 60 worked doors, gates and hatches; her 88 doorways and 10 doors that open to whoever comes near |
+| `checks/stairs.cjs` | all passed (53) |
+| `checks/travel.cjs` | all passed (5): each of the 133 rooms can be stood in and walked from |
+| `checks/zoom.cjs` | all passed (14) |
+| `checks/offline.cjs` | all passed (5): 30 files, 16.7 MB, opens with the network cut |
+| `node ferry/tools/shots-bridge.cjs <folder> <twelve views>` | drawn on the Mac's graphics card (Apple M1 Pro), no errors on the page; each picture opened |
+
+Said as it happened: the first run of `sight.cjs` timed out waiting for the page while the light was still being traced
+(six Blender processes); nothing was run beside a build after that. **Not run:** the yard's two calculations
+(`yard/calc`), the electrical drawings and the proof of supply (made on the 68 m ship, before the refit), a phone or a
+tablet. **Not in this build:** the deck fittings (`blender/outfit.py` is not called by `build.py`: the night's build
+with it fails `zfight.py` with 8 pairs and `afloat.py` with 323 things in the air).
+
 
 ### 12 November 2026: revision D, the ro-ro freight ferry of 124.8 m
 

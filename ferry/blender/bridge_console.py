@@ -8,9 +8,16 @@ was a table 5.5 m wide from wall to wall with instrument boxes standing on it.
 
 The block is 3.70 m wide on the centreline, against the forward bulkhead, and leaves a way 1.07 m wide to the forward
 corner windows on each side. From aft forward: a grab rail on brackets; the desk's nose; a desk that slopes up 11 degrees
-with two rows of flush panels on a dark field; a level strip where the control heads stand; an upstand that leans back 20
-degrees with the displays set into it under glass, lower in the middle so that the sea is seen over it ahead of the wheel
-(nothing ahead of the wheel over 1.225 m, nothing else over 1.315 m: yard/calc JS4-402 asked 1.22 and 1.33). Below the desk
+with two rows of flush panels on a dark field, and the three control heads in its after edge; a level strip; an upstand that
+leans back 20 degrees with the displays set into it under glass, lower in the middle so that the sea is seen over it ahead of
+the wheel (nothing ahead of the wheel over 1.225 m, nothing else over 1.315 m: yard/calc JS4-402 asked 1.22 and 1.33).
+
+What is worked is nearest the hand and lowest; what is read is beyond it and higher (the owner, 12 November 2026: "some
+levers are blocking some panels": the control heads stood on the level strip, 0.19 m high, straight in front of the engine
+instruments and the rudder angle indicator). A control head now stands in the desk's after edge (REG.HAND), sunk until its
+plate is a few millimetres over the desk at its forward end; the desk behind it is clear; its panel lies on the level strip
+(REG.STRIP) and its instruments stand in the upstand, in line ahead of it. From an eye 1.6 m up anywhere abaft the block
+the line over a grip's top meets the level strip, never an instrument. Below the desk
 a cabinet of five bays: each has two doors on hinges with a quarter-turn lock and pressed louvres, and behind them the
 units of the register that are not seen, standing on shelves. Every door opens to a tap.
 
@@ -32,8 +39,9 @@ APRON = 0.60                                  # the cabinet's doors end here; ov
 BAYS = [(1.11, 1.85), (0.37, 1.11), (-0.37, 0.37), (-1.11, -0.37), (-1.85, -1.11)]
 BAY_NAMES = ['PA  CCTV', 'NAVIGATION', 'PROPULSION', 'COMPASS  DATA', 'RADAR']
 DOOR = (0.135, 0.585)                         # a cabinet door, from and to
-# The places in the desk's two rows that no panel takes: (the row, x from, x to), each closed by a blanking plate
-BLANKS = [(REG.ROW1, -1.77, -1.37), (REG.ROW1, -0.11, 0.18), (REG.ROW2, 0.60, 0.87), (REG.ROW2, -0.61, -0.39), (REG.ROW2, -1.77, -1.33)]
+# The places in the desk's two rows that no panel takes: (the row, x from, x to), each closed by a blanking plate. The
+# forward row is left bare between -0.44 and 0.58: that is the clear desk behind the three control heads.
+BLANKS = [(REG.ROW1, -1.77, -1.37), (REG.ROW1, -0.035, 0.15), (REG.ROW2, 0.60, 0.87), (REG.ROW2, -1.77, -1.33)]
 
 
 def desk_h(yard):
@@ -70,7 +78,7 @@ def console(g, tag, *where):
     prism('console', SADDLE, BX, outer, BLUEC)
     prism('console', -BX, -SADDLE, outer, BLUEC)
     prism('console', -SADDLE, SADDLE, middle, BLUEC)
-    # ---- the dark instrument fields: on the sloping desk, on the level strip under the control heads, on each face of the upstand
+    # ---- the dark instrument fields: on the sloping desk, on the level strip, on each face of the upstand
     with desk_frame(0.0, S0[0], lift=0.0) as F:
         F.block('desk', (-BX + 0.03, 0.010, 0.0), (BX - 0.03, hypot(S1[0] - S0[0], S1[1] - S0[1]) - 0.012, FIELD), DESK, r=0.002)
     box('desk', -SADDLE + 0.03, SADDLE - 0.03, S1[0] + 0.004, MID_FOOT - 0.012, 1.0, 1.0 + FIELD, DESK, r=0.002)
@@ -209,10 +217,11 @@ def tiller(F, X, Y, z):
 
 
 def flush(g, tag, x, yard, h):
-    """A panel set flush in a desk: in the console's sloping desk, or (where the register says `on` the stand) in the steering
-    stand's level top."""
+    """A panel set flush in a desk: in the console's sloping desk, or (where the register says `on`) in the steering stand's
+    level top or in the console's level strip, on its dark field."""
     w, l = g['w'], g['l']
-    F = Frame((x, yard, h + g.get('rise', 0.0)), STBD, FWD) if g.get('on') == 'stand' else desk_frame(x, yard)
+    on = g.get('on')
+    F = Frame((x, yard, h + g.get('rise', 0.0) + (FIELD if on == 'strip' else 0.0)), STBD, FWD) if on in ('stand', 'strip') else desk_frame(x, yard)
     with F:
         skip = ('knob',) if g.get('works') else ()
         if g.get('rise', 0.0) > 0.01:                               # a set raised on a pedestal of its own
@@ -426,10 +435,24 @@ LEVER_OF = {'PRP-01': ('Wheelhouse, port engine lever', 'lever-engine-p'), 'PRP-
             'PRP-03': ('Wheelhouse, bow thruster lever', 'lever-thruster')}
 
 
+SUNK = 0.012                        # how far a head's housing goes down into the desk under it
+
+
 def lever(g, tag, x, yard, h):
-    """An engine or thruster control lever on the console's level strip. Its grip's top is 0.19 m over the strip: the sea is seen over it (JS4-402)."""
+    """An engine or thruster control lever in the desk's after edge, at the hand. `h` is the height of its slotted plate: the
+    head is sunk in the sloping desk until the plate is a few millimetres over the desk at the head's forward end, so its
+    grip's top is 0.12 m over the plate and 0.10 m over the level strip. What is behind it is read over it: from an eye
+    1.6 m up anywhere abaft the block the line over the grip's top meets the level strip (JS4-402: the sea is seen over
+    it too). The drum on the lever's shaft is wholly inside the block: forward of the cabinet's after face where it goes
+    below the desk's lip."""
     title, works = LEVER_OF[tag]
-    control_head(title, works, works, x, yard, h, srgb(g['colour']), across=bool(g.get('across')))
+    across = bool(g.get('across'))
+    reach = 0.07 if across else 0.09                                   # half the head's length fore and aft
+    if h < desk_h(yard + reach) + FIELD + 0.004:
+        raise SystemExit(f'{tag}: the control head\'s plate at {h:.3f} m is under the desk at its forward end ({desk_h(yard + reach) + FIELD:.3f} m)')
+    if not across and yard - max((PLATE - 0.007) ** 2 - (h - PLATE - 0.885) ** 2, 0.0) ** 0.5 < FACE:      # 0.885: the underside of the desk's lip
+        raise SystemExit(f'{tag}: the lever\'s drum would come out under the desk\'s lip, abaft the cabinet\'s face')
+    control_head(title, works, works, x, yard, h - PLATE - 0.010, srgb(g['colour']), across=across, sink=SUNK)
 
 
 def facepanel(g, tag, x, yard, h):

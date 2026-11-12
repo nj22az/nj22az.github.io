@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 
-const SHIFT = 30.505, DECK = 9.3;
+let SHIFT, DECK;                      // where the bridge stands in the ship: the file says (ship.bridge), since revision D
 const VIEWS = [
   // name, eye, aim, zoom, worked
   ['helm', [0.0, 20.75, 1.62], [0.0, 23.2, 1.20], 1, {}],
@@ -30,7 +30,13 @@ const VIEWS = [
   ['aft-starboard', [1.2, 21.9, 1.6], [-2.2, 19.6, 1.0], 1, {}],
   ['deckhead', [0.0, 20.2, 1.5], [0.0, 22.4, 2.5], 1, {}],
   ['windows-port', [-0.6, 20.8, 1.6], [2.4, 23.0, 1.45], 1, {}],
-  ['close-lever', [0.62, 22.12, 1.48], [0.36, 22.60, 1.10], 1, {}],
+  ['close-lever', [0.62, 21.80, 1.52], [0.36, 22.34, 1.02], 1, {}],
+  // what is read is read over what is worked: the walker's own eye (1.6 m) behind the wheel, beside the stand, and from the room's after end
+  ['over-levers-helm', [0.0, 20.90, 1.60], [0.15, 22.70, 1.02], 1, {}],
+  ['over-levers-port', [0.80, 21.60, 1.60], [0.15, 22.60, 1.00], 1, {}],
+  ['over-levers-starboard', [-0.75, 21.60, 1.60], [0.05, 22.60, 1.00], 1, {}],
+  ['over-levers-aft', [-0.30, 20.00, 1.60], [0.10, 22.70, 1.05], 2, {}],
+  ['over-levers-ahead', [0.35, 21.60, 1.60], [0.35, 22.70, 1.02], 1, { 'lever-engine-p': 3, 'lever-engine-s': 3 }],
   ['close-telephone', [1.25, 21.78, 1.42], [1.25, 22.26, 0.97], 1, {}],
   ['close-display', [-1.05, 22.02, 1.42], [-1.05, 22.56, 1.15], 1, {}],
   ['close-panel', [0.35, 21.92, 1.42], [0.35, 22.36, 0.98], 1, {}],
@@ -74,6 +80,11 @@ const VIEWS = [
   const gpu = await page.evaluate(() => { const gl = window.__ferry.look.renderer.getContext(), d = gl.getExtension('WEBGL_debug_renderer_info'); return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : 'unknown'; });
   // On foot in the wheelhouse first: every deck in its place, the sea and the sky, the lens of the walk.
   const half = await page.evaluate(() => window.__ferry.ship.length / 2);
+  ({ SHIFT, DECK } = await page.evaluate(() => ({ SHIFT: window.__ferry.ship.bridge.shift, DECK: window.__ferry.ship.bridge.deck })));
+  // the wing control stations stand at the ship's side (ship.bridge.wing): from behind the levers, and from two metres abaft them
+  const WS = (await page.evaluate(() => window.__ferry.ship.bridge.wing)) - 0.385;
+  for (const [side, sx] of [['port', 1], ['starboard', -1]])
+    VIEWS.push([`wing-station-${side}`, [sx * WS, 21.95, 1.60], [sx * WS, 22.80, 0.98], 1, {}], [`wing-station-${side}-aft`, [sx * (WS - 0.25), 20.60, 1.60], [sx * WS, 22.80, 1.00], 2, {}]);
   await page.evaluate(([z, DECK]) => { const f = window.__ferry; f.enterWalk(); f.walkTo(0, z, Math.PI, 0, DECK); }, [20.9 + SHIFT - half, DECK]);
   for (const [name, eye, aim, zoom, worked] of VIEWS) {
     if (!want(name)) continue;

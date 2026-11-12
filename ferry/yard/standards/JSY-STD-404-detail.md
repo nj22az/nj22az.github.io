@@ -118,6 +118,14 @@ meet, the room lit as a room). They are the next work, on the bridge first.
 Not yet kept by them: pictures of real surfaces (the grain and the plating are worked out, not photographed); wear where hands and feet go;
 rust where water stands. They are next when her shapes are right.
 
+**Since 12 November 2026, a rule for every place where things are worked and read** (the owner, of the navigation bridge
+as refitted: "the panels and lever need to be placed more intelligent because now some levers are blocking some panels,
+look at the bridge as an end user"; and of the engine levers standing before their own dials: "is that really normal"):
+
+| | Rule | How it is kept |
+|---|---|---|
+| 13 | **What is read is read over what is worked.** A lever, a handwheel or a handle stands nearest the hand and lowest; the panel it belongs to lies beyond it; the instruments that answer it stand beyond that and higher, in line with it. Nothing that is worked stands between an eye and what is read, from anywhere a person stands to read it. A place is looked at as the person who uses it sees it, from where they stand, before it is called arranged. | On the bridge: `systems/bridge.py` (`HAND`, `STRIP`: the control heads in the desk's after edge, their panels on the level strip, their instruments in the upstand) and `blender/wheelhouse.py` (`wing_console`: the wing dials in an upright face over the levers). `checks/sight.cjs` draws the lines of sight in the page's own model, with the levers at stop and at each end of their travel, and fails if a lever stands in one. A new control position (the engine control room, the mooring stations, a local panel) is arranged the same way and added to that check. |
+
 Almost all of her is still to be drawn to rules 4 to 10. On 11 November 2026 rules 1 to 3 hold everywhere; rules 4 to 10 hold for the four fittings of section
 3. The rest of the bridge is next, then each section as it is fitted. A fitting that is still a placeholder is to be said
 so in its register entry rather than passed over.

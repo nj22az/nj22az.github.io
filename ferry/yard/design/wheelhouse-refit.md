@@ -326,6 +326,85 @@ side, and the block's grab rail stops one 7 cm before the desk does.
 - **Not run:** the yard's two calculations (`yard/calc`), the homepage's review, a phone or a tablet. The pictures are
   from headless Chromium on this Mac's graphics card; nobody has walked the refitted bridge in a browser by hand.
 
+## Stage 4. What is read is read over what is worked (12 November 2026, morning)
+
+The owner, having walked the refitted bridge: **"the panels and lever need to be placed more intelligent because now some
+levers are blocking some panels, look at the bridge as an end user"**; and, with a picture of the two engine levers
+standing before the engine dials: **"is that really normal"**. It is not.
+
+**As found** (the page itself on foot, in the desktop app's browser on this Mac's graphics card; from behind the wheel, from
+the eye of each pilot chair, from beside the steering stand, and at each wing station):
+
+- The three control heads stood on the console's level strip at 22.60 m, their grips 0.19 m over it. The engine instrument
+  panel and the rudder angle indicator are set in the low middle of the upstand, 0.12 m beyond them and only 0.22 m high
+  (it is low so that the sea is seen over it: JS4-402). From behind the wheel the two engine grips lay across the middle
+  of the six engine dials; from either chair they covered nearly all of them; the thruster's lever stood before the rudder
+  angle indicator.
+- At each wing station the two dials lay in the sloping top 0.18 m behind the thruster's lever: its grip covered their
+  lower edges from a metre abaft the station and half of one dial from two.
+
+**Why moving them sideways does not answer it.** A lever at arm's length before an upright face hides a different part of
+it from each place one stands: the lines from the two pilot chairs past the same lever land 0.28 m apart on the upstand.
+There is no place along the strip where a lever 0.19 m high hides nothing. The answer is in height and depth: **what is
+worked stands nearest the hand and lowest, what is read stands beyond it and higher, and is read over it.** The owner's
+drawing of the *Arctic Tide*'s wheelhouse (`../reference/owner-drawings-2026-11-12.md`, B: her forward console looked at
+again for this) is arranged so: levers, joystick and panels in the low consoles at the chairs' arms, the displays standing
+apart beyond them.
+
+**What was done** (`ferry/systems/bridge.py`: `HAND`, `HEAD`, `STRIP`; `blender/bridge_console.py`: `lever`, `flush`;
+`blender/wheelhouse.py`: `wing_console`):
+
+| | Was | Is |
+|---|---|---|
+| The three control heads (PRP-01, 02, 03) | Standing on the level strip at 22.60 m; grip's top 1.19 m | **In the desk's after edge, at the hand** (22.255 m: their after faces in line with the after row of panels), sunk in the sloping desk until the slotted plate is 4 mm over it at the head's forward end; grip's top 1.10 m. Same places across her: thruster, starboard engine, port engine. The drum on each shaft is wholly inside the block (the builder stops if it would come out under the desk's lip) |
+| The desk behind them | The propulsion and thruster panels in the forward row, with blanking plates | **Clear** from -0.44 to 0.58 m: nothing is set where a grip stands before it |
+| Propulsion control panel (PRP-04), bow thruster panel (PRP-05) | Forward row of the desk | **On the level strip** at 22.635 m, each in line ahead of its levers and under its instruments |
+| Engine instruments (PRP-06), rudder angle indicator (STR-06), GPS (NAV-06) | In the low middle of the upstand | The same places: now read over the grips |
+| Dimmer panel (LGT-10) | After row, 0.34 m to port | After row, 0.39 m to starboard (the engine heads took its place) |
+| Wiper and wash panel (NLT-12) | After row, 0.30 m to starboard | Forward row, 0.62 m to starboard (the thruster's head took its place) |
+| Whistle panel (NLT-10) | After row, 0.62 m to port | 2 cm farther to port, clear of the port engine's head |
+| The wing stations (PRP-10, 11) | Engine heads at one height and the thruster's at another, standing 4 to 10 cm proud of the sloping top; the two dials lying in the top behind the thruster's lever; a windscreen on the top's forward edge | **The three heads in one row** in the after part of the top, their plates at one height, 9 mm over the top at the engines' forward end (grips' tops 0.99 m, were 1.04 and 1.02); **forward of them the top rises in an upright face that leans back 20 degrees**, like the console's upstand, and the two dials are set in it: the rudder angle over the thruster's lever, the revolutions over the engines'. The windscreen stands on the face's top |
+
+The register moved with it: the three levers, the two panels and the three displaced panels say where they stand now, and
+their cables are laid to them (`systems/out/`, `data/systems.json`: 186 components, 41 circuits, all its checks hold).
+
+**The rule and its check.** `../standards/JSY-STD-404-detail.md`, rule 13: *what is read is read over what is worked*.
+`ferry/checks/sight.cjs` (new) keeps it: in the page's own model it draws a line from the walker's eye (1.6 m) at each of
+209 places abaft the block, from side to side of the room and back to its after wall, to each of 25 points of what is
+read of every instrument in the upstand, and a lever in the line fails it; the same for the panels on the level strip
+from the helm forward, and for the two dials of each wing station; with the levers at stop, both engines full ahead and
+full astern, and the thruster full over each way. It first proves that it can see a lever (a point 6 cm before the port
+engine's grip is behind it).
+
+**Said as it happened.** The first build had the plates 9 mm over the desk (grip's top 1.102 m). `sight.cjs` passed
+everything from the helm forward and at the wings, and cut 9 of 37,400 lines in the upstand: the foot of the conning
+display behind the port engine's grip from the room's starboard after corner, and the foot of the rudder angle indicator
+behind the thruster's grip from against the after wall. The heads were sunk 5 mm more (the plate cannot go lower: it is
+4 mm over the desk at its forward end) and she was built again: one line of 37,400 was still cut, from one place in the
+starboard after corner to the lowest point asked of the conning display, 2.5 cm up it. That point is not read: the
+lowest 4 cm of a display in the upstand are its bezel and its row of keys. The check was then made to ask what is read
+(each face from 15 % of its height up) and from more of the room (to 2.7 m each side, where it had stopped at 2.4): **none
+of 41,800 lines is cut, at any of the five positions of the levers.** So it is said plainly: from the room's after
+corners a grip can stand before the key strip under the conning display or the radar, never before a picture or a dial.
+The results are in `ferry/README.md`, *Checks actually run*.
+
+**Looked at after** (the same places as before, in the same browser, and twelve pictures by `ferry/tools/shots-bridge.cjs`
+in `/Users/nilsjohansson/Developer/chisum-screens/2026-11-12/5-levers/`, each opened): from behind the wheel
+(`over-levers-helm.png`) the six engine dials, the rudder angle indicator and the GPS stand clear over the three grips;
+from the master's chair, with the eye at 1.36 m (`chair-master.png`), the same, where the two engine grips had covered
+the dials; from beside the stand the propulsion panel lies clear between the levers and the dials; at the wing
+(`wing-station-port.png`) the two dials stand in their face over the levers.
+
+**Not done, plainly.**
+- From farther aft than about 20.5 m a grip does come before the after edge of its own panel on the level strip (the
+  check asks those panels only from the helm forward, and says so). They are worked standing at the block.
+- The thruster's and the starboard engine's heads stand behind the steering stand's breadth, as they did: they are
+  reached from beside the stand.
+- The yard's sight-line calculation (JS4-402) was not run again: the grips are 9 cm lower than they were, the upstand
+  and everything on it are where they were.
+- The electrical drawings JS8-851, JS8-856 and JS8-864 were drawn before the refit and are not redrawn: the register's
+  own tables are.
+
 ## What the bridge still lacks, compared with a real one
 
 Said plainly, in the order it would be seen:
