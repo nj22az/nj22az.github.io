@@ -3,6 +3,22 @@
 Version **v2026.11.12.1**, release key `20261112fun1`. Branch `claude/laughing-brahmagupta-ybyndm`.
 Publication: see the last section.
 
+## State when this was last written (12 November 2026, after the publication)
+
+- **Live**: v2026.11.12.1, main `fb9cef280` (everything under *What is done and published*).
+- **On the branch, not live** (four commits after the publication): the friends through the year (28 stickers), five
+  frames for the year and five face cutouts, a first pass of the playful skin, the filter and studio study.
+- **Before the next "Push to main"**: a new release key and version in every place the old one stands (the bundle and
+  the stylesheets changed), `node tools/build-camera-offline.mjs`, then the whole regression (the runner's list is the
+  workflow's: 22 Node tests and 28 browser suites; about 25 minutes). After the post-publication work only stickers,
+  fun, ui, audit, theme, brand, screens and the offline test were rerun.
+- **Waiting on the owner**: whether the skin's first pass is the right direction (screenshots were sent); a try of the
+  Sticker box with the iPhone's keyboard stickers; whether to build any of the studio or the new filters.
+- **A cutout in the editor does not yet bring the face to the hole.** How: with the photo's face guide `f`
+  (`recipe.makeup.face`, in shares of the source) and the hole `win = frameWindow(id, pw, ph)` on the cropped picture
+  (as shares `hx, hy, hh` of it): the crop's height is `f.h / (0.86 * hh)` (at most the whole photo), its width from the
+  crop's own shape, its corner `(f.x + f.w / 2 - hx * w, f.y + f.h / 2 - hy * h)` kept inside the photo.
+
 ## What the owner asked, in order
 
 - "I don't like the sliders or the icons, can you improve the user interface and remove the ball juggle game it didn't
