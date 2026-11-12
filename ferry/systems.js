@@ -13,6 +13,18 @@ const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.crea
 const kW = w => w >= 1000 ? `${(w / 1000).toFixed(1)} kW` : `${w} W`;
 /** What each kind of run is drawn in: cables that carry power, cables that carry signals, pipes. */
 const INK = { power: 0xe58a00, net: 0x2f7de1, pipe: 0x0a9c94 };
+/**
+ * The X-ray's colours: one for each thing a run carries. The owner, 11 November 2026: "an X-ray function to show the
+ * electrical wiring". A cable is coloured by the supply it comes from, since that is what tells one what dies with what.
+ */
+const XRAY = [
+  ['main', '230 V from the main supply', 0xffd23f],
+  ['emergency', '230 V from the emergency switchboard', 0xff7a3d],
+  ['transitional', '230 V that the batteries carry (navigation lights)', 0xff5fd2],
+  ['dc', '24 V direct current', 0x58b0ff],
+  ['signal', 'Signals, data and control', 0x5fe6a8],
+  ['pipe', 'Pipes', 0xc3ccd0],
+];
 
 export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir, redraw, accent, walking, onChange }) {
   const comps = new Map(data.components.map(c => [c.id, c]));
@@ -21,7 +33,7 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
   const pipes = new Map(data.pipes.map(p => [p.id, p]));
   const subs = new Map(data.subsystems.map(s => [s.id, s]));
   const deckOf = id => decks().find(d => d.id === id);
-  const state = { shown: null, component: null };
+  const state = { shown: null, component: null, xray: false };
 
   // ---------- what is drawn over the model ----------
   let marks = [];
@@ -178,7 +190,60 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
     return got;
   }
   function clear() {
-    clearMarks(); state.shown = null; hideCard(); readout.textContent = ''; syncList(); redraw();
+    clearMarks(); state.shown = null; hideCard(); readout.textContent = ''; syncList();
+    if (state.xray) drawXray();
+    redraw();
+  }
+
+  // ---------- X-ray: every run aboard at once, by what it carries ----------
+  /** Which of the X-ray's colours a board's cables are drawn in: by the supply the board hangs on. */
+  function supplyOf(bid) {
+    const b = boards.get(bid) || data.elsewhere.find(x => x.id === bid);
+    if (!b) return 'main';
+    if (b.kind === 'DC') return 'dc';
+    const from = (b.fedBy && (b.fedBy.board || '')) || b.id;
+    if (/^TSB/.test(from) || /^TSB/.test(b.id)) return 'transitional';
+    if (/^ESB/.test(from) || /^ESB/.test(b.id)) return 'emergency';
+    return 'main';
+  }
+  function xrayRuns() {
+    const g = Object.fromEntries(XRAY.map(([k]) => [k, []]));
+    for (const b of data.boards) {
+      const k = supplyOf(b.id);
+      if (b.feeder && b.feeder.path) g[k].push(b.feeder.path);
+      if (b.altFeeder && b.altFeeder.path) g[k].push(b.altFeeder.path);
+      for (const c of b.circuits) g[k].push(...Object.values(c.paths));
+    }
+    for (const c of data.outside) g[supplyOf(c.board)].push(...Object.values(c.paths));
+    for (const n of data.nets) g.signal.push(...n.paths);
+    for (const p of data.pipes) g.pipe.push(p.path);
+    return g;
+  }
+  /** The length of a set of runs, each stretch counted once (cables that share a tray are not drawn twice either). */
+  function metres(paths) {
+    const seen = new Set(); let sum = 0;
+    for (const path of paths) for (let i = 0; i + 1 < path.length; i++) {
+      const a = path[i], b = path[i + 1], key = [a, b].map(p => p.map(v => v.toFixed(2)).join(',')).sort().join('|');
+      if (seen.has(key)) continue;
+      seen.add(key);
+      sum += Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+    }
+    return sum;
+  }
+  function drawXray() {
+    clearMarks();
+    const g = xrayRuns();
+    for (const [key, , colour] of XRAY) markRuns(g[key], colour, key === 'pipe' ? 0.016 : 0.008);
+    for (const b of data.boards) { const c = comps.get(b.comp); if (c) markComponent(c); }
+  }
+  /** Switch the X-ray on or off. Says what is drawn: each colour, what it is, and how many metres of it there are. */
+  function xray(on) {
+    state.xray = !!on;
+    if (!on) { clearMarks(); if (state.shown) { const { kind, id } = state.shown; state.shown = null; show(kind, id, { fly: false }); } redraw(); return []; }
+    state.shown = null; syncList();
+    drawXray(); redraw();
+    const g = xrayRuns();
+    return XRAY.map(([key, name, colour]) => ({ key, name, colour, metres: Math.round(metres(g[key])) })).filter(r => r.metres > 0);
   }
 
   // ---------- which component is at a point of the model ----------
@@ -301,5 +366,5 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
   /** A link in a card or a note: to a component, or to a board, circuit, net, pipe or subsystem. */
   function go(kind, id, opts) { return kind === 'comp' ? showComponent(id, { keep: true, ...opts }) : show(kind, id, opts); }
   build(); tint();
-  return { data, state, comps, pick, show: go, showComponent, clear, hideCard, tint };
+  return { data, state, comps, pick, show: go, showComponent, clear, hideCard, tint, xray };
 }

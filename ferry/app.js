@@ -1,8 +1,8 @@
 /**
  * The ferry viewer: the Chisum, turned, taken apart deck by deck, cut open, and walked through on foot.
  *
- * She is the 68 m ship of her general arrangement (blender/ga.py), built in Blender (blender/): her hull, every deck and
- * every room's walls in bare steel, her navigation bridge and what else is fitted so far. Everything in the file is her
+ * She is the ship of her general arrangement (blender/ga.py: a ro-ro freight ferry of 124.8 m), built in Blender
+ * (blender/): her hull, every deck and every room's walls in bare steel, her navigation bridge and what else is fitted so far. Everything in the file is her
  * own. blender/assemble.py puts it into data/ferry.bin.gz beside her sheet of pictures (data/chisum-atlas.webp) and her
  * register (data/systems.json); this page only reads and shows them.
  * The file format (JMF1), and what this page changes in the look of what it reads, are described in README.md.
@@ -12,6 +12,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from '/motor-90l/vendor/OrbitControls.js';
 import { createSystems } from './systems.js';
+import { surface as surfaceOf, createLook, createSky, createSea, light, day } from './look.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
@@ -23,11 +24,11 @@ const still = matchMedia('(prefers-reduced-motion: reduce)');
 
 /** What can be shown. One document today; a second (the main engine, part by part) is planned. */
 const DOCS = [{ id: 'ship', name: 'Ship', file: './data/ferry.bin.gz' }];
-/** The order the decks are listed in: as she stands, top to bottom. */
-const TOP_DOWN = ['top', 'bridge', 'passenger', 'car', 'machinery', 'hull'];
+/** The decks are listed as she stands, top to bottom: the file gives them bottom to top (buildPanel). */
 
 // ---------- reading the file ----------
-async function loadDocument(url) {
+/** One of her files, unpacked: four letters that say what it is, the length of a header, the header, then its block. */
+async function fetchPacked(url, magic) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`The ferry's file could not be fetched (${res.status}).`);
   let bytes = new Uint8Array(await res.arrayBuffer());
@@ -36,9 +37,13 @@ async function loadDocument(url) {
     if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot unpack the ferry (it has no DecompressionStream). A current Safari, Chrome, Edge or Firefox can.');
     bytes = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
   }
-  if (String.fromCharCode(...bytes.subarray(0, 4)) !== 'JMF1') throw new Error("The ferry's file is not in the format this page reads.");
+  if (String.fromCharCode(...bytes.subarray(0, 4)) !== magic) throw new Error("The ferry's file is not in the format this page reads.");
   const length = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(4, true);
   const header = JSON.parse(new TextDecoder().decode(bytes.subarray(8, 8 + length)));
+  return { bytes, header, length };
+}
+async function loadDocument(url) {
+  const { bytes, header, length } = await fetchPacked(url, 'JMF1');
   // Typed views need their start aligned; copy once if the browser handed back an offset buffer.
   const buffer = bytes.byteOffset % 4 === 0 ? bytes.buffer : bytes.slice().buffer;
   return { header, buffer, base: (bytes.byteOffset % 4 === 0 ? bytes.byteOffset : 0) + 8 + length };
@@ -84,6 +89,8 @@ function materialOf(m, atlases) {
     mat.userData.glass = true;
   } else mat = lit();
   mat.userData.side = mat.side;
+  // What it is made of: paint, deck coating, wood, metal each get their own grain and sheen (look.js).
+  surfaceOf(mat, m.surface);
   return mat;
 }
 const GLASS = { opacity: 0.62, metalness: 0.55, roughness: 0.06 };
@@ -92,7 +99,6 @@ const GLASS = { opacity: 0.62, metalness: 0.55, roughness: 0.06 };
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.9;
 renderer.localClippingEnabled = true;
 // Shadows are drawn again only when something that casts them moves: turning the camera costs nothing.
 renderer.shadowMap.enabled = true;
@@ -101,37 +107,30 @@ renderer.shadowMap.autoUpdate = false;
 view.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
+/**
+ * Where there is no graphics card to draw with (the page's own checks draw in software; so do some old machines), or when
+ * the address asks for it (?lite), she is drawn the light way: no glare, a sky without clouds, a plainer sea that stands
+ * still. The light of each place, the sun and the shade where things meet stay.
+ */
+const drawnBy = (() => { const gl = renderer.getContext(), x = gl.getExtension('WEBGL_debug_renderer_info'); return x ? String(gl.getParameter(x.UNMASKED_RENDERER_WEBGL)) : ''; })();
+const lite = /swiftshader|llvmpipe|software/i.test(drawnBy) || new URLSearchParams(location.search).has('lite');
 
 /** From the ship toward the sun: over her starboard side, the side she is first seen from, and a little ahead of the beam.
- *  Across her rather than along her, so that with the decks lifted apart each one still has its near half in the sun. */
-const SUN_DIR = new THREE.Vector3(-0.6, 0.72, 0.36).normalize();
+ *  Across her rather than along her, so that with the decks lifted apart each one still has its near half in the sun.
+ *  The day is look.js's (and blender/light.py's, which traced her light under the same sun). */
+const SUN_DIR = day.sun;
 
-/** The sky she reflects and is filled by: a clear day made here, blue overhead, pale at the horizon, a glow toward the sun
- *  (the sun itself is the lamp below, so it is not painted twice), warm grey underfoot. No picture is fetched for it. */
-function daylight() {
-  const sky = new THREE.Scene();
-  const paint = new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false, uniforms: { sun: { value: SUN_DIR } },
-    vertexShader: 'varying vec3 d; void main() { d = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-    fragmentShader: `varying vec3 d; uniform vec3 sun;
-      void main() {
-        vec3 n = normalize(d);
-        vec3 zenith = vec3(0.30, 0.52, 0.95), horizon = vec3(0.86, 0.92, 1.0), ground = vec3(0.60, 0.59, 0.56);
-        vec3 c = n.y > 0.0 ? mix(horizon, zenith, pow(n.y, 0.55)) : mix(horizon * 0.8, ground, pow(min(-n.y * 4.0, 1.0), 0.6));
-        c += vec3(1.0, 0.93, 0.82) * pow(max(dot(n, sun), 0.0), 12.0) * 0.6;
-        gl_FragColor = vec4(c, 1.0);
-      }`,
-  });
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(50, 48, 24), paint);
-  sky.add(dome);
-  const pmrem = new THREE.PMREMGenerator(renderer), env = pmrem.fromScene(sky, 0.02).texture;
-  pmrem.dispose(); paint.dispose(); dome.geometry.dispose();
-  return env;
-}
-scene.environment = daylight();
+/** The sky: seen behind her when she is afloat or walked, and mirrored by every polished surface always. */
+const sky = createSky({ lite });
+sky.dome.visible = false;
+scene.add(sky.dome);
+scene.environment = sky.env(renderer);
 scene.environmentIntensity = 1;
 
-const sun = new THREE.DirectionalLight(0xfff1dc, 3);
+const sun = new THREE.DirectionalLight(0xffffff, 1);
+/** The sun's colour and strength are the day's: set again when her light file has been read. */
+function lightSun() { const c = day.sunLight, m = Math.max(c.r, c.g, c.b); sun.color.setRGB(c.r / m, c.g / m, c.b / m); sun.intensity = m; }
+lightSun();
 sun.castShadow = true;
 sun.shadow.mapSize.setScalar(Math.min(narrow.matches ? 2048 : 4096, renderer.capabilities.maxTextureSize));
 sun.shadow.bias = -0.0004;
@@ -139,13 +138,17 @@ sun.shadow.normalBias = 0.04;
 scene.add(sun, sun.target);
 
 /** The ground she stands on is not drawn: only her shadow on it, over the page's own backdrop. Set at her keel in build(). */
-const floor = new THREE.Mesh(new THREE.CircleGeometry(140, 72), new THREE.ShadowMaterial({ opacity: 0.3 }));
+const floor = new THREE.Mesh(new THREE.CircleGeometry(260, 96), new THREE.ShadowMaterial({ opacity: 0.3 }));
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
 
 const FOV = 30, TAN = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
 const camera = new THREE.PerspectiveCamera(FOV, 1, 0.4, 700);
+// A frame is drawn with the shade where things meet (look.js). Glass is left out of that: what stands behind a pane is
+// shaded as if the pane were not there.
+const drawing = createLook(renderer, scene, camera, { lite, hidden: o => !!(o.userData.backdrop || (o.material && (o.material.transparent || (o.material.userData && o.material.userData.glass)))) });
+const draw = () => { if (sea) sea.reflect(renderer, scene, camera, [sky.dome, floor]); drawing.render(); };
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
@@ -153,7 +156,7 @@ controls.dampingFactor = 0.08;
 controls.zoomToCursor = true;
 controls.zoomSpeed = 1.2;
 controls.minDistance = 0.6;
-controls.maxDistance = 300;
+controls.maxDistance = 600;
 controls.maxPolarAngle = Math.PI * 0.98;
 
 /** She is first seen from her starboard bow quarter, a little above: bow to the right. */
@@ -171,7 +174,7 @@ let materials = [];
 /** The parts that move (the file's `movers`), each a group inside its deck, and what works them (the file's `inputs`). */
 let movers = [];
 const inputs = new Map();
-const state = { explode: 0, cut: 0, selected: null };
+const state = { explode: 0, cut: 0, selected: null, afloat: true };
 const root = new THREE.Group();
 scene.add(root);
 
@@ -179,13 +182,41 @@ scene.add(root);
 const cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
 let cutSpan = [-4.6, 3.6];
 
+/**
+ * The sea and the sky (look.js). She floats when she is walked, and when she is looked at whole from outside with the Afloat
+ * key lit; lifted apart, cut open or put in dock she stands on the slip as before, so that her bottom can be seen.
+ */
+let sea = null, walk = null, xray = false;
+const afloat = () => !!sea && !xray && (!!walk || (state.afloat && state.explode === 0 && state.cut === 0));
+function showSea() {
+  if (!sea) return;
+  const on = afloat();
+  sea.mesh.visible = sea.shadow.visible = sky.dome.visible = on;
+  if (sea.lap) sea.lap.visible = on;
+  floor.visible = !on && !xray;
+  camera.far = on ? 9000 : 700;
+  camera.updateProjectionMatrix();
+  // afloat one cannot get under the water to look at her
+  controls.maxPolarAngle = on ? Math.PI / 2 - 0.015 : Math.PI * 0.98;
+  const key = document.querySelector('#fn-afloat');
+  if (key) key.setAttribute('aria-pressed', String(state.afloat));
+  fitSun();
+}
 let stairList = [];
+/** The file's own account of her (its header's `ship`): her size, where a walk begins, where her bridge stands. */
+let shipInfo = {};
 function build(doc, atlases) {
   const { header } = doc, viewDef = header.views[0];
   stairList = header.stairs || [];
+  shipInfo = header.ship || {};
   materials = header.materials.map(m => materialOf(m, atlases));
   cutSpan = [header.bounds.min[0] - 0.05, header.bounds.max[0] - 1.0];
   floor.position.y = header.bounds.min[1] - 0.02;
+  // The sea, with her own outline cut out of it.
+  sea = createSea(header.ship.waterline, { lite });
+  scene.add(sea.mesh, sea.shadow);
+  if (sea.lap) scene.add(sea.lap);
+  showSea();
   const motions = new Map((header.movers || []).map(m => [m.id, m]));
   movers = [];
   decks = viewDef.groups.map(g => {
@@ -241,6 +272,19 @@ function moveParts(shadows = true) {
       const run = (input ? input.value : 0) * (def.ratio ?? 1);
       node.matrix.makeTranslation(AXIS.x * run, AXIS.y * run, AXIS.z * run);
     }
+    else if (def.kind === 'stretch') {
+      // The part grows along the axis from its pivot, by the input times `ratio` of its own length: a blind's film drawn out of
+      // its cassette, the coffee rising in its jug.
+      const k = (input ? input.value : 0) * (def.ratio ?? 1), x = AXIS.x, y = AXIS.y, z = AXIS.z;
+      TURN.set(1 + k * x * x, k * x * y, k * x * z, 0, k * y * x, 1 + k * y * y, k * y * z, 0, k * z * x, k * z * y, 1 + k * z * z, 0, 0, 0, 0, 1);
+      node.matrix.makeTranslation(PIVOT.x, PIVOT.y, PIVOT.z).multiply(TURN).multiply(SHIFT.makeTranslation(-PIVOT.x, -PIVOT.y, -PIVOT.z));
+    }
+    else if (def.kind === 'show') {
+      // The part is there only while its input is over `over` (a lamp's lit glass), or with `when: "off"` only while it is not
+      // (the film that darkens a display turned down).
+      node.matrix.identity();
+      node.visible = ((input ? input.value : 0) > (def.over ?? 0)) === (def.when !== 'off');
+    }
     else if (def.kind === 'carry') {
       // The part keeps its heading and goes with a point that turns about the pivot.
       ARM.fromArray(def.point).sub(PIVOT);
@@ -273,14 +317,147 @@ function moveParts(shadows = true) {
 }
 /** How a setting is said: "Rudder 20° to port", "Rudder amidships". */
 const said = (def, v) => v === 0 ? `${def.name} ${def.rest || 'at rest'}` : `${def.name} ${Math.abs(v)}${def.unit || ''} ${v < 0 ? def.below : def.above}`;
+/** Put a worked thing somewhere at once (the checks, and whoever asked for less motion). Its keys and window follow. */
 function setInput(id, value) {
   const it = inputs.get(id);
   if (!it || it.def.auto) return;
   it.value = THREE.MathUtils.clamp(value, it.def.min, it.def.max);
-  it.range.value = String(it.value);
-  it.range.setAttribute('aria-valuetext', said(it.def, it.value));
+  if (it.keys) { it.order = it.value; it.held = !(it.value === it.def.min || it.stops.some(st => st.v === it.value)); showInput(it); }
   readout.textContent = said(it.def, it.value);
   moveParts();
+}
+const cap = text => text ? text[0].toUpperCase() + text.slice(1) : '';
+/**
+ * The rail and the desk (index.html says what each is for). `showFn` puts one function's keys on the desk: by its icon, where a
+ * second press puts them away again, or because the part itself was tapped on the model (`toggle` false: they stay).
+ */
+const desk = $('#desk'), rail = $('#rail');
+let openFn = null;
+function showFn(id, toggle = true) {
+  openFn = toggle && id === openFn ? null : id;
+  for (const g of desk.children) g.hidden = g.dataset.fn !== openFn;
+  for (const b of rail.querySelectorAll('[data-open]')) b.setAttribute('aria-expanded', String(b.dataset.open === openFn));
+  placeCard();
+}
+rail.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) showFn(b.dataset.open); });
+/** An icon is filled while its function is away from rest: the decks lifted, she cut open, the rudder over, the ramp down. */
+const lamp = (id, on) => { const b = rail.querySelector(`[data-open="${id}"]`); if (b) b.toggleAttribute('data-on', on); };
+/** What stands for a thing that is worked, on the rail and on its keys. One it does not know gets a lever. */
+const ICON = { rudder: 'helm', 'stern-ramp': 'ramp' };
+/** The keys of the thing a tapped part belongs to, if it has any: tap the ramp, or the wheel, and its keys are there. */
+function keysFor(object) {
+  for (let n = object && object.parent; n; n = n.parent) {
+    const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
+    if (it && it.keys) { if (openFn !== it.def.id) showFn(it.def.id, false); return it; }
+  }
+  return null;
+}
+/** How to move: said when asked for, and for a few seconds on going aboard. */
+const help = $('#help'), helpBtn = $('#fn-help');
+let helpTimer = 0;
+function showHelp(on, ms = 0) {
+  clearTimeout(helpTimer);
+  help.hidden = !on;
+  helpBtn.setAttribute('aria-expanded', String(on));
+  if (on && ms) helpTimer = setTimeout(() => showHelp(false), ms);
+}
+helpBtn.addEventListener('click', () => showHelp(help.hidden));
+/**
+ * X-ray (the owner, 11 November 2026: "an X-ray function to show the electrical wiring"). Her structure is drawn as a ghost
+ * of itself and every cable and pipe the register knows is drawn through it, coloured by what it carries (systems.js); a
+ * legend says which colour is which and how many metres of each there are. Choosing a board, a circuit or a net in the
+ * Systems list while it is on shows that one alone through the ghost; choosing it again shows them all.
+ */
+const legend = $('#legend'), solid = new Map();
+function setXray(on) {
+  if (!systems) return false;
+  xray = !!on;
+  for (const m of materials) {
+    if (xray) {
+      if (!solid.has(m)) solid.set(m, { transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite });
+      m.transparent = true; m.depthWrite = false; m.opacity = Math.min(solid.get(m).opacity, m.userData.glass ? 0.04 : 0.12);
+    } else if (solid.has(m)) Object.assign(m, solid.get(m));
+    m.needsUpdate = true;
+  }
+  const rows = systems.xray(xray);
+  legend.replaceChildren();
+  if (xray) {
+    const ul = el('ul');
+    for (const r of rows) {
+      const sw = el('i'); sw.style.background = '#' + r.colour.toString(16).padStart(6, '0');
+      ul.append(el('li', {}, sw, el('span', {}, r.name), el('small', {}, `${r.metres} m`)));
+    }
+    legend.append(el('h2', {}, 'X-ray: what runs through her'), ul, el('p', {}, 'Only what her register holds so far: the bridge and what feeds it. Tap a fitting to see what it is; pick a board or a circuit under Systems to see it alone.'));
+  }
+  legend.hidden = !xray;
+  // through a ghost of her the sea and the sky only dazzle: she stands on a dark ground while it is on
+  document.body.classList.toggle('xray', xray);
+  showSea();
+  $('#fn-xray').setAttribute('aria-pressed', String(xray));
+  readout.textContent = xray ? 'X-ray' : '';
+  renderer.shadowMap.needsUpdate = true;
+  redraw();
+  return xray;
+}
+$('#fn-xray').addEventListener('click', () => setXray(!xray));
+/** Afloat, or in dock: on the sea under the sky, or on the slip with her bottom to be seen. */
+$('#fn-afloat').addEventListener('click', () => { state.afloat = !state.afloat; showSea(); readout.textContent = state.afloat ? 'Afloat' : 'In dock'; });
+/**
+ * The desk. What the file says is worked and is neither a door nor a lever has three keys and a window:
+ * a thing that goes both ways from its rest (the rudder) has a key each way, a notch a press, and one for its rest;
+ * a thing that goes one way (the ramp) has a key to bring it back, one to stop it, and one to run it on to its next stop.
+ * A key gives an order; the part follows at its own pace (`rate`, in its unit a second). The key whose order stands is lit.
+ */
+function showInput(it) {
+  const d = it.def, v = Math.round(it.value), names = it.names;
+  const stop = it.stops.find(st => st.say && Math.abs(st.v - it.value) < 0.5);
+  it.val.textContent = v === 0 ? cap(d.rest || 'at rest') : stop ? cap(stop.say) : d.min < 0 ? `${names[v < 0 ? 0 : 2]} ${Math.abs(v)}${d.unit || ''}` : `${v}${d.unit || ''}`;
+  const lit = d.min < 0 ? (it.order < 0 ? 0 : it.order > 0 ? 2 : 1) : (it.held ? 1 : it.order === d.min ? 0 : 2);
+  it.keys.forEach((k, i) => k.setAttribute('aria-pressed', String(i === lit)));
+  lamp(d.id, v !== 0 || it.order !== 0);
+}
+function orderInput(id, to, held = false) {
+  const it = inputs.get(id);
+  if (!it || !it.keys) return;
+  it.order = THREE.MathUtils.clamp(to, it.def.min, it.def.max);
+  it.held = held;
+  readout.textContent = said(it.def, Math.round(it.order));
+  if (still.matches && it.value !== it.order) { it.value = it.order; moveParts(); }
+  showInput(it);
+}
+function workOrders(dt) {
+  let moved = false, under = false;
+  for (const it of inputs.values()) {
+    if (!it.keys || it.value === it.order) continue;
+    const step = it.rate * dt;
+    it.value = it.order > it.value ? Math.min(it.order, it.value + step) : Math.max(it.order, it.value - step);
+    showInput(it);
+    moved = true;
+    if (it.value !== it.order) under = true;
+  }
+  if (moved) moveParts(!under);
+}
+/** Whether a worked thing is on: a switch away from its first position; a thing worked by a tap more than half way over. */
+function isOn(id) {
+  const it = id && inputs.get(id);
+  if (!it) return false;
+  return it.def.steps ? it.at !== 0 : it.def.auto ? it.value > it.def.min + (it.def.max - it.def.min) * 0.5 : it.value !== 0;
+}
+/**
+ * What is worked by a tap and belongs to a fitting of the register (a wiper, a clear-view screen, the coffee maker, a
+ * telephone's handset) answers a tap anywhere on that fitting: the nearest such thing to the place tapped.
+ */
+function tapFitting(id, point) {
+  let best = null, near = Infinity;
+  for (const it of inputs.values()) {
+    if (it.def.auto !== 'tap' || it.def.fitting !== id) continue;
+    const d = point.distanceToSquared(Q.fromArray(it.def.at));
+    if (d < near) { best = it; near = d; }
+  }
+  if (!best) return false;
+  best.open = !best.open;
+  readout.textContent = `${best.def.name}: ${best.open ? best.def.above || 'open' : best.def.rest || 'shut'}`;
+  return true;
 }
 /**
  * What the file says is worked by coming near (`auto`: her watertight doors): open to a walker within `reach` of `at`,
@@ -290,7 +467,34 @@ function workAuto(dt) {
   let moved = false, under = false;
   for (const it of inputs.values()) {
     const def = it.def;
+    if (def.level) {
+      // What fills and empties (the coffee in its jug): it rises while what fills it is on, and falls while what drains it is worked.
+      let v = it.value;
+      if (isOn(def.level.fill)) v = Math.min(def.max, v + def.level.rate * dt);
+      if (isOn(def.level.drain)) v = Math.max(def.min, v - def.level.drainRate * dt);
+      if (v !== it.value) { it.value = v; moved = under = true; }
+      continue;
+    }
     if (!def.auto) continue;
+    if (def.run) {
+      // What runs while it is on: a wiper sweeps to its limit and back once in `period` seconds; a clear-view screen spins at
+      // `rate` degrees a second. It is on by a tap, or (`with`) while its own switch is turned on. Turned off, it goes on to
+      // where it is parked and stops there. Nothing runs for whoever asked for less motion.
+      const on = !still.matches && (it.open || isOn(def.with)), span = def.max - def.min;
+      if (def.run === 'spin') {
+        const step = (def.rate || 720) * dt;
+        if (on) it.value = def.min + (it.value - def.min + step) % span;
+        else if (it.value !== def.min) it.value = it.value + step >= def.max ? def.min : it.value + step;
+        else continue;
+      } else {
+        if (on) { it.phase = ((it.phase || 0) + dt / (def.period || 2)) % 1; it.value = def.min + span * (0.5 - 0.5 * Math.cos(it.phase * 2 * Math.PI)); }
+        else if (it.value !== def.min) { it.phase = 0; it.value = Math.max(def.min, it.value - span / 0.8 * dt); }
+        else continue;
+      }
+      moved = true;
+      if (on || it.value !== def.min) under = true;
+      continue;
+    }
     // `auto: "tap"` (a machine's service door, its coin return) is worked by a tap only, on foot too: nobody opens it by passing.
     const byTap = def.auto === 'tap';
     const near = !byTap && walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < (def.height ?? 1.5);
@@ -337,27 +541,51 @@ function controlAt(object, fittingId) {
   if (fittingId) for (const it of inputs.values()) if (it.def.steps && it.def.fitting === fittingId) return it.def.id;
   return null;
 }
-/** A slider in the bar for each thing the file says can be worked. A double click puts it back to rest. */
+/** Keys on the desk for each thing the file says can be worked (showInput). */
 function buildInputs(header) {
   for (const def of header.inputs || []) {
-    // A door has no slider: it opens to whoever comes near on foot, and to a tap from outside (workAuto, identify).
+    // What fills and empties (`level`: the coffee in its jug) has no keys: it follows what fills it and what drains it (workAuto).
+    if (def.level) { inputs.set(def.id, { def, value: def.start ?? def.min }); continue; }
+    // A door has no keys on the desk: it opens to whoever comes near on foot, and to a tap from outside (workAuto, identify).
     if (def.auto) {
       inputs.set(def.id, { def, value: def.min, open: false });
       if (def.normal) { const axis = Math.abs(def.normal[0]) > Math.abs(def.normal[2]) ? 0 : 2; passages.push({ axis, u: def.at[axis === 0 ? 2 : 0], at: def.at[axis], y: def.at[1] }); }
       continue;
     }
-    // A lever has no slider either: a tap moves it a notch (stepInput), and it travels there in a moment (workSteps).
+    // A lever has none either: a tap moves it a notch (stepInput), and it travels there in a moment (workSteps).
     if (def.steps) {
       const home = def.steps[def.home ?? 0].v;
       inputs.set(def.id, { def, value: home, want: home, at: def.home ?? 0, way: 1 });
       continue;
     }
-    const range = el('input', { type: 'range', min: String(def.min), max: String(def.max), step: String(def.step || 1), value: '0' });
-    range.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
-    inputs.set(def.id, { def, value: 0, range });
-    range.addEventListener('input', () => setInput(def.id, Number(range.value)));
-    range.addEventListener('dblclick', () => setInput(def.id, 0));
-    bar.insertBefore(el('label', {}, el('span', { className: 'lbl' }, def.name), range), $('#views'));
+    const two = def.min < 0, notch = def.notch || 5;
+    const names = def.keys || (two ? [cap(def.below), cap(def.rest), cap(def.above)] : [cap(def.rest), 'Stop', cap(def.above)]);
+    const keys = names.map((name, i) => {
+      const k = el('button', { type: 'button', className: 'key ik', textContent: name, title: name });
+      k.style.setProperty('--i', `var(--i-${(two ? ['left', 'mid', 'right'] : ['raise', 'stop', 'lower'])[i]})`);
+      return k;
+    });
+    const val = el('span', { className: 'val' });
+    const grp = el('div', { className: two ? 'grp wide' : 'grp', hidden: true }, el('span', { className: 'lbl' }, def.name), el('div', { className: 'keys' }, ...keys), val);
+    grp.dataset.fn = def.id;
+    const icon = el('button', { type: 'button', className: 'ico', textContent: def.name, title: def.name });
+    icon.dataset.open = def.id;
+    icon.setAttribute('aria-expanded', 'false');
+    icon.style.setProperty('--i', `var(--i-${ICON[def.id] || 'lever'})`);
+    // What belongs to the whole ship (her rudders, her ramp) has its icon on the rail. A fitting that is worked where it stands
+    // (a davit, a windlass: the file's `local`) has none: its keys come up when the fitting itself is tapped (keysFor).
+    if (!def.local) $('#worked').append(icon);
+    grp.setAttribute('role', 'group');
+    grp.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
+    // its stops, lowest first: where a run ends by itself (the ramp level with the quay, then at its lowest)
+    const stops = (def.stops || [def.max]).map(st => typeof st === 'number' ? { v: st } : st).sort((a, b) => a.v - b.v);
+    const it = { def, value: 0, order: 0, held: false, keys, val, names, stops, rate: def.rate || (def.max - def.min) / 8 };
+    inputs.set(def.id, it);
+    keys[0].addEventListener('click', () => orderInput(def.id, two ? it.order - notch : def.min));
+    keys[1].addEventListener('click', () => two ? orderInput(def.id, 0) : orderInput(def.id, it.value, it.value !== def.min && !stops.some(st => st.v === it.value)));
+    keys[2].addEventListener('click', () => orderInput(def.id, two ? it.order + notch : (stops.find(st => st.v > it.value + 1e-6) || stops[stops.length - 1]).v));
+    desk.append(grp);
+    showInput(it);
   }
   moveParts();
 }
@@ -404,10 +632,14 @@ const eyeDir = () => camera.position.clone().sub(controls.target).normalize();
 const SX = new THREE.Vector3().crossVectors(UP, SUN_DIR).normalize(), SY = new THREE.Vector3().crossVectors(SUN_DIR, SX), SP = new THREE.Vector3();
 /** The sun's shadow is drawn on one picture: fit that picture to what is shown and to where its shadow falls on the ground,
  *  so none of it is spent on empty air, and have it drawn again. Called whenever what casts a shadow has moved. */
+const sunAt = new THREE.Vector3();
 function fitSun() {
-  const box = shownBox();
-  if (box.isEmpty()) return;
-  box.min.y = Math.min(box.min.y, floor.position.y);
+  // On foot the shadows are drawn finely round the walker (a patch of sun through a window has a sharp edge); from outside,
+  // over all of her that is shown and the ground her shadow falls on.
+  const ground = afloat() ? 0 : floor.position.y;
+  let box;
+  if (walk) { box = new THREE.Box3().setFromCenterAndSize(walk.pos, SP.set(30, 14, 30)); sunAt.copy(walk.pos); }
+  else { box = shownBox(); if (box.isEmpty()) return; box.min.y = Math.min(box.min.y, ground); }
   const c = box.getCenter(new THREE.Vector3());
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
   const take = p => {
@@ -416,16 +648,17 @@ function fitSun() {
   };
   for (let i = 0; i < 8; i++) {
     SP.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z);
-    const fall = (SP.y - floor.position.y) / SUN_DIR.y;
+    const fall = (SP.y - ground) / SUN_DIR.y;
     take(SP.sub(c));
     // Where this corner's shadow reaches the ground: further from the sun, on the same ray.
-    take(SP.addScaledVector(SUN_DIR, -fall));
+    if (!walk) take(SP.addScaledVector(SUN_DIR, -fall));
   }
-  const far = 150, margin = 1, lens = sun.shadow.camera;
+  // On foot what stands between the walker's surroundings and the sun still shades them: the lens begins well sunward.
+  const far = 150, margin = 1, lens = sun.shadow.camera, sunward = walk ? 60 : 0;
   sun.position.copy(c).addScaledVector(SUN_DIR, far);
   sun.target.position.copy(c);
   lens.left = x0 - margin; lens.right = x1 + margin; lens.bottom = y0 - margin; lens.top = y1 + margin;
-  lens.near = far - z1 - margin; lens.far = far - z0 + margin;
+  lens.near = far - z1 - margin - sunward; lens.far = far - z0 + margin;
   lens.updateProjectionMatrix();
   renderer.shadowMap.needsUpdate = true;
   redraw();
@@ -453,18 +686,23 @@ function keepFraming(change) {
   redraw();
 }
 
+/** The desk's keys for the decks and the cut: the key whose setting stands is lit; the cut's window says how far. */
+function showKeys(box, percent) { for (const k of box.querySelectorAll('.key[data-v]')) k.setAttribute('aria-pressed', String(Math.abs(Number(k.dataset.v) - percent) < 0.5)); }
+const showExplode = t => { showKeys($('#explode'), t * 100); lamp('decks', t > 0); };
+const showCut = t => { showKeys($('#cut'), t * 100); $('#cut-val').textContent = `${Math.round(t * 100)} %`; lamp('cut', t > 0); };
 let explodeMove = null;
 function placeDecks(t) {
+  const was = afloat();
   state.explode = t;
   for (const d of decks) d.node.position.copy(d.lift).multiplyScalar(t);
   // Lifted apart, each deck stands in the shadow of the one above: the shadows are let up, so the rooms can still be read.
   sun.shadow.intensity = 1 - SHADE_LET_UP * t;
-  fitSun();
+  if (was !== afloat()) showSea(); else fitSun();
 }
 const SHADE_LET_UP = 0.4;
 function setExplode(t, { animate = false } = {}) {
   t = THREE.MathUtils.clamp(t, 0, 1);
-  $('#explode').value = String(Math.round(t * 100));
+  showExplode(t);
   if (animate && !still.matches) { explodeMove = { from: state.explode, to: t, t0: performance.now(), ms: 520 }; return; }
   explodeMove = null;
   keepFraming(() => placeDecks(t));
@@ -472,9 +710,10 @@ function setExplode(t, { animate = false } = {}) {
 
 function setCut(t) {
   t = THREE.MathUtils.clamp(t, 0, 1);
-  const was = state.cut > 0, is = t > 0;
+  const was = state.cut > 0, is = t > 0, floated = afloat();
   state.cut = t;
-  $('#cut').value = String(Math.round(t * 100));
+  if (floated !== afloat()) showSea();
+  showCut(t);
   cutPlane.constant = -(cutSpan[0] + (cutSpan[1] - cutSpan[0]) * t);
   if (was !== is) for (const m of materials) {
     // Cut open, the insides of plates are seen: draw both faces while the cut is on. What is cut away throws no shadow.
@@ -486,6 +725,8 @@ function setCut(t) {
     m.side = is && !paint ? THREE.DoubleSide : m.userData.side;
     m.needsUpdate = true;
   }
+  // The shade where things meet is worked out from what is drawn: what is cut away is cut away there too.
+  if (was !== is) { const nm = drawing.shade.normalMaterial; nm.clippingPlanes = is ? [cutPlane] : null; nm.side = is ? THREE.DoubleSide : THREE.FrontSide; nm.needsUpdate = true; }
   renderer.shadowMap.needsUpdate = true;
   redraw();
 }
@@ -532,7 +773,7 @@ function select(deckId, spaceId, { frame = false } = {}) {
   if (frame) {
     if (!deck.node.visible) showDeck(deck, true);
     // A room is under the decks above it: lift them clear first, then look down into it.
-    if (state.explode < 0.6) { explodeMove = null; placeDecks(1); $('#explode').value = '100'; }
+    if (state.explode < 0.6) { explodeMove = null; placeDecks(1); showExplode(1); }
     const dir = eyeDir(), flat = Math.hypot(dir.x, dir.z) || 1, e = Math.max(Math.asin(THREE.MathUtils.clamp(dir.y, -1, 1)), ROOM_ELEVATION);
     dir.set(dir.x / flat * Math.cos(e), Math.sin(e), dir.z / flat * Math.cos(e));
     const shown = box.clone().translate(deck.node.position).expandByScalar(1.2);
@@ -563,6 +804,7 @@ function identify(clientX, clientY) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
     if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
   }
+  keysFor(hit.object);
   // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
   let within = hit.object.parent;
   while (within && !decks.some(d => d.node === within)) within = within.parent;
@@ -572,7 +814,7 @@ function identify(clientX, clientY) {
   const fitting = systems && systems.pick(deck.id, p);
   // A lever answers a tap by moving a notch; its card is shown with it.
   const control = controlAt(hit.object, fitting && fitting.id);
-  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); if (control) stepInput(control); return; }
+  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); if (control) stepInput(control); else tapFitting(fitting.id, p); return; }
   if (control) { stepInput(control); return; }
   if (systems) { systems.hideCard(); if (!systems.state.shown) systems.clear(); }
   // The smallest room of this deck that holds the point: a cabin wins over the deck house it stands in.
@@ -612,6 +854,7 @@ function nameOnFoot(clientX, clientY) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
     if (it && it.def.auto === 'tap') { it.open = !it.open; readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
   }
+  if (hit && hit.distance < 8) keysFor(hit.object);
   if (!systems) return;
   let within = hit && hit.object.parent;
   while (within && !decks.some(d => d.node === within)) within = within.parent;
@@ -621,6 +864,7 @@ function nameOnFoot(clientX, clientY) {
   if (fitting) systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown });
   else if (systems.state.shown) systems.hideCard(); else systems.clear();
   if (control) stepInput(control);
+  else if (fitting && hit.distance < 3) tapFitting(fitting.id, hit.point.clone().sub(deck.node.position));
 }
 // On foot: one finger (or the mouse) on the model looks round, and a tap names what it is on; two fingers zoom, by how far
 // apart they have come since the second went down. When one of the two lifts, the other goes on looking from where it is.
@@ -1012,12 +1256,12 @@ function showWay() {
   const here = !walk || walk.climb ? null : wayHere();
   const text = here ? (here.from === 'a' ? here.way.def.up : here.way.def.down) : '';
   if (climbBtn.hidden !== !here) climbBtn.hidden = !here;
-  if (here && climbBtn.textContent !== text) climbBtn.textContent = text;
+  if (here && climbBtn.textContent !== text) climbBtn.textContent = climbBtn.title = text;
 }
 climbBtn.addEventListener('click', climb);
 
 /** While walking: where the feet are, which way the head is turned, what is held down, and the outside view to go back to. */
-let walk = null;
+/* walk is declared with the sea, above */
 const held = new Set();
 const stick = { x: 0, y: 0, id: null };
 const walkBtn = $('#walk'), stickEl = $('#stick');
@@ -1050,10 +1294,12 @@ function enterWalk() {
   explodeMove = null; move = null;
   if (state.explode) placeDecks(0);
   if (state.cut) setCut(0);
-  $('#explode').value = '0'; $('#cut').value = '0';
-  // Begin in the room that is chosen, else at the after end of the vehicle lanes, looking forward along the car deck.
+  showExplode(0); showCut(0);
+  // Begin in the room that is chosen, else where the file says a walk begins (the after end of the vehicle lanes, looking
+  // forward along the main deck: the file's `ship.start`).
   const chosen = state.selected && decks.find(d => d.id === state.selected.deck)?.spaces.find(sp => sp.id === state.selected.space);
-  const car = decks.find(d => d.id === 'car'), lanes = car && car.spaces.find(sp => sp.id === 'car-deck');
+  const begin = shipInfo.start || {};
+  const car = decks.find(d => d.id === begin.deck) || decks.find(d => d.spaces.length && d.id !== 'hull'), lanes = car && car.spaces.find(sp => sp.id === begin.space);
   const start = (chosen && standIn(chosen)) || (lanes && standNear(0, lanes.min[2] + 1.5, lanes.min[1], 0.35, 0.9, lanes))
     || (car && car.spaces.map(standIn).find(Boolean)) || new THREE.Vector3(0, 2.1, 0);
   select(null);
@@ -1063,8 +1309,10 @@ function enterWalk() {
     saved: { pos: camera.position.clone(), target: controls.target.clone(), fov: camera.fov, near: camera.near, panel: !panel.classList.contains('closed') },
   };
   controls.enabled = false;
+  showSea();
   document.body.classList.add('walking');
-  walkBtn.textContent = 'Leave'; walkBtn.setAttribute('aria-pressed', 'true');
+  walkBtn.textContent = walkBtn.title = 'Leave'; walkBtn.setAttribute('aria-pressed', 'true');
+  showFn(null, false); showHelp(true, 9000);
   camera.clearViewOffset(); camera.fov = WALK_LENS; camera.near = 0.07;
   setWalkZoom(walkZoom, true);
   walk.eye = eyeFor(walk);
@@ -1078,9 +1326,11 @@ function leaveWalk() {
   walk = null; showWay(); held.clear(); stick.x = stick.y = 0; stick.id = null; stickEl.firstElementChild.style.transform = '';
   fingers.clear(); pinch = null; clearTimeout(zoomSaid);
   document.body.classList.remove('walking');
-  walkBtn.textContent = 'Walk aboard'; walkBtn.setAttribute('aria-pressed', 'false');
+  walkBtn.textContent = walkBtn.title = 'Walk aboard'; walkBtn.setAttribute('aria-pressed', 'false');
+  showFn(null, false); showHelp(false);
   camera.fov = s.fov; camera.near = s.near; camera.up.set(0, 1, 0);
   camera.position.copy(s.pos); controls.target.copy(s.target); controls.enabled = true;
+  showSea();
   readout.textContent = '';
   measure(); applyLens(); controls.update(); redraw();
 }
@@ -1277,12 +1527,11 @@ $('#deck-up').addEventListener('click', () => hopDeck(1));
 $('#deck-down').addEventListener('click', () => hopDeck(-1));
 
 // ---------- the keyboard ----------
-const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.tagName) && !(e.target.type === 'range' && walk);
+const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.tagName);
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (walk) {
     if (e.code === 'Escape') { leaveWalk(); return; }
-    if (e.target.tagName === 'INPUT' && /^Arrow/.test(e.code)) return;      // a slider that has the keys keeps them
     if (e.code === 'KeyE' || e.code === 'PageUp') { hopDeck(1); e.preventDefault(); return; }
     if (e.code === 'KeyQ' || e.code === 'PageDown') { hopDeck(-1); e.preventDefault(); return; }
     if (e.code === 'KeyF') { climb(); e.preventDefault(); return; }
@@ -1312,9 +1561,7 @@ addEventListener('blur', () => held.clear());
 function buildPanel(header) {
   const list = $('#decks');
   list.replaceChildren();
-  for (const id of TOP_DOWN) {
-    const deck = decks.find(d => d.id === id);
-    if (!deck) continue;
+  for (const deck of [...decks].reverse()) {
     const check = el('input', { type: 'checkbox', checked: true });
     check.setAttribute('aria-label', `Show the ${deck.name.toLowerCase()}`);
     check.addEventListener('change', () => showDeck(deck, check.checked));
@@ -1362,8 +1609,8 @@ function setPanel(open) {
 }
 toggle.addEventListener('click', () => setPanel(panel.classList.contains('closed')));
 
-$('#explode').addEventListener('input', e => { if (!walk) setExplode(Number(e.target.value) / 100); });
-$('#cut').addEventListener('input', e => setCut(Number(e.target.value) / 100));
+$('#explode').addEventListener('click', e => { const k = e.target.closest('.key'); if (k && !walk) setExplode(Number(k.dataset.v) / 100, { animate: true }); });
+$('#cut').addEventListener('click', e => { const k = e.target.closest('.key'); if (k) setCut(k.dataset.by ? state.cut + Number(k.dataset.by) / 100 : Number(k.dataset.v) / 100); });
 $('#home').addEventListener('click', () => home());
 
 // ---------- size and frames ----------
@@ -1371,6 +1618,7 @@ function resize() {
   const W = view.clientWidth, H = view.clientHeight;
   if (!W || !H) return;
   renderer.setSize(W, H, false);
+  drawing.setSize(W, H);
   if (walk) { resizeWalk(); redraw(); return; }
   if (decks.length) keepFraming(() => { measure(); applyLens(); });
   else { measure(); applyLens(); }
@@ -1400,15 +1648,22 @@ panel.addEventListener('transitionend', placeCard);
 
 const ease = t => t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
 let lastFrame = 0;
+let seaDrawn = 0;
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min((now - lastFrame) / 1000 || 0, 0.25);
   lastFrame = now;
   workAuto(dt);
   workSteps(dt);
+  workOrders(dt);
+  // The sea and the clouds move, thirty times a second at most (not at all for whoever asked for less motion).
+  if (afloat() && !lite && !still.matches && !document.hidden && now - seaDrawn > 33) { day.time.value = now / 1000; seaDrawn = now; dirty = true; }
+  // The eye opens in a room and closes on deck.
+  if (drawing.expose(dt, camera.position)) dirty = true;
   if (walk) {
     stepWalk(dt);
-    if (dirty) { renderer.render(scene, camera); dirty = false; }
+    if (walk && walk.pos.distanceToSquared(sunAt) > 16) fitSun();
+    if (dirty) { draw(); dirty = false; }
     return;
   }
   // Close to, the lens must see nearer: the near plane follows the distance to what she turns about.
@@ -1426,7 +1681,7 @@ function frame(now) {
     if (k >= 1) move = null;
     dirty = true;
   }
-  if (controls.update() || dirty) { renderer.render(scene, camera); dirty = false; }
+  if (controls.update() || dirty) { draw(); dirty = false; }
 }
 
 // ---------- start ----------
@@ -1439,6 +1694,13 @@ async function start() {
     t.anisotropy = renderer.capabilities.getMaxAnisotropy();
     return t;
   }));
+  // The light of every place aboard (blender/light.py). Without it she is lit as she was, evenly, by the sky.
+  try {
+    const lit = await fetchPacked('./data/light.bin.gz', 'JLV1');
+    light.set(lit.header, lit.bytes.subarray(8 + lit.length));
+    lightSun();
+    scene.environment = sky.env(renderer);
+  } catch (err) { console.warn('Her light could not be read: she is lit evenly.', err); }
   build(doc, atlases);
   indexFloors();
   buildWays(doc.header);
@@ -1461,12 +1723,13 @@ async function start() {
   toggle.setAttribute('aria-expanded', String(!narrow.matches));
   document.body.classList.add('ready');
   renderer.setSize(view.clientWidth, view.clientHeight, false);
+  drawing.setSize(view.clientWidth, view.clientHeight);
   measure(); applyLens();
   home(0);
   requestAnimationFrame(frame);
   // For checks and pictures: the same moves the controls make.
   window.__ferry = {
-    setExplode, setCut, setInput, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
+    setExplode, setCut, setInput, setXray, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
     lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt, showTab, nameOnFoot, get systems() { return systems; },
     zoomWalk, setWalkZoom, get walkZoom() { return zoomShown(); }, zoomLimits: [ZOOM_MIN, ZOOM_MAX],
     /** For checks: the room the walker stands in, named now (the readout is written as the walk goes). */
@@ -1476,7 +1739,7 @@ async function start() {
     hold: (code, on = true) => { on ? held.add(code) : held.delete(code); },
     /** For checks: the walk of so many seconds, gone at once (60 pictures a second), whatever this machine can draw. */
     walkFor: seconds => { for (let t = 0; walk && t < seconds - 1e-9; t += 1 / 60) stepWalk(1 / 60); },
-    roomFor, headroom, wallClear, workAuto, footing, climb, travelTo,
+    roomFor, headroom, wallClear, workAuto, workSteps, footing, climb, travelTo,
     /** For checks: what quick travel offers, as the list in the bar has it. */
     get travels() { return [...travel.querySelectorAll('option')].filter(o => o.value).map(o => ({ value: o.value, name: o.textContent })); },
     get ways() { return ways.map(w => ({ id: w.def.id, a: w.a.toArray(), b: w.b.toArray() })); },
@@ -1488,9 +1751,9 @@ async function start() {
     ship: doc.header.ship,
     step: id => stepInput(id),
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
-    movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray() })),
+    movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray(), shown: m.node.visible })),
     get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max, stand: sp.stand || null }))); },
-    look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw },
+    look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw, draw, drawing, lite, drawnBy },
     get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent, climbing: !!walk.climb, ladder: climbBtn.hidden ? null : climbBtn.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
   };
 }

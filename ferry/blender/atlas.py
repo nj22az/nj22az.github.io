@@ -47,7 +47,17 @@ RED, GREEN, YELLOW, BLUE, WHITE = (214, 60, 48), (60, 200, 110), (240, 200, 60),
 
 def sheet(w, h, bg=PANEL):
     im = Image.new('RGB', (w, h), bg)
-    return im, ImageDraw.Draw(im)
+    d = ImageDraw.Draw(im)
+    # What stands on this picture in three dimensions is noted as it is drawn (`mark`): the builder raises a real key, lamp,
+    # knob, glass or screw at each place (wheelhouse.py), so a panel is not only a picture of one.
+    im._marks = d._marks = []
+    return im, d
+
+
+def mark(d, kind, *where):
+    """Note a thing of the picture that the builder is to make as a shape: its kind and its place, in picture points."""
+    if hasattr(d, '_marks'):
+        d._marks.append([kind] + [round(float(v), 2) if isinstance(v, (int, float)) and not isinstance(v, bool) else v for v in where])
 
 
 def text(d, xy, s, size=14, fill=INK, anchor='mm', kind='b'):
@@ -59,11 +69,13 @@ def frame(d, w, h, col=(70, 78, 82), screws=True):
     if screws:
         for x, y in ((9, 9), (w - 10, 9), (9, h - 10), (w - 10, h - 10)):
             d.ellipse((x - 3, y - 3, x + 3, y + 3), fill=(110, 118, 120), outline=(20, 24, 26))
+            mark(d, 'screw', x, y, 3)
 
 
 def key(d, cx, cy, w, h, col, legend='', size=11, lit=True, ink=None):
     """A push button with its legend on it."""
     c = col if lit else tuple(int(v * 0.35) for v in col)
+    mark(d, 'key', cx, cy, w, h)
     d.rounded_rectangle((cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), radius=4, fill=c, outline=(12, 14, 15), width=2)
     d.line((cx - w / 2 + 4, cy - h / 2 + 3, cx + w / 2 - 4, cy - h / 2 + 3), fill=tuple(min(255, v + 60) for v in c), width=1)
     if legend:
@@ -74,6 +86,7 @@ def key(d, cx, cy, w, h, col, legend='', size=11, lit=True, ink=None):
 
 def led(d, cx, cy, r, col, on=True):
     c = col if on else tuple(int(v * 0.25) for v in col)
+    mark(d, 'led', cx, cy, r, list(c), bool(on))
     d.ellipse((cx - r - 2, cy - r - 2, cx + r + 2, cy + r + 2), fill=(14, 16, 17))
     d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=c)
     if on:
@@ -82,6 +95,7 @@ def led(d, cx, cy, r, col, on=True):
 
 def lcd(d, box, lines, size=14, fg=LCD_FG, bg=LCD_BG, kind='m', align='l'):
     x0, y0, x1, y1 = box
+    mark(d, 'lcd', x0, y0, x1, y1)
     d.rectangle(box, fill=bg, outline=(8, 10, 10), width=2)
     step = (y1 - y0 - 8) / max(len(lines), 1)
     for i, s in enumerate(lines):
@@ -93,6 +107,7 @@ def lcd(d, box, lines, size=14, fg=LCD_FG, bg=LCD_BG, kind='m', align='l'):
 
 def knob_mark(d, cx, cy, r, legend='', pos=(), size=10):
     """The engraving round a rotary switch or knob (the knob itself is modelled): a ring, its positions, its name."""
+    mark(d, 'knob', cx, cy, r)
     d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=DIM, width=2)
     for a, s in pos:
         x, y = cx + (r + 4) * math.sin(math.radians(a)), cy - (r + 4) * math.cos(math.radians(a))
@@ -408,6 +423,7 @@ def vhf(ch, extra, w=352, h=208, distress=True):
             key(d, x0 + c * 40 + (w - x0 - 100) / 2, 28 + r * 28, 34, 22, (70, 80, 86), '123456789*0#'[r * 3 + c], 11)
     if distress:
         d.rounded_rectangle((16, 136, 110, 190), radius=6, fill=(170, 30, 24), outline=(250, 250, 250), width=2)
+        mark(d, 'flap', 63, 163, 94, 54)
         text(d, (63, 163), 'DISTRESS', 12, WHITE)
     for i, s in enumerate(('16', 'DW', 'SCAN', 'H/L')):
         key(d, 136 + i * 46 if distress else 40 + i * 62, 166, 40, 26, (60, 110, 170) if s == '16' else (70, 80, 86), s, 10)
@@ -516,6 +532,7 @@ def bnwas():
     lcd(d, (16, 30, 150, 92), ['02:45', 'AUTO  12 min'], 16, AMBER, (30, 22, 6), align='c')
     knob_mark(d, 76, 124, 15, '', (((-50), 'OFF'), (0, 'AUTO'), (50, 'ON')), 8)
     d.ellipse((208, 34, 304, 130), fill=(60, 110, 170), outline=(12, 14, 15), width=3)
+    mark(d, 'round', 256, 82, 48)
     text(d, (256, 82), 'RESET', 15, WHITE)
     for i, cc in enumerate((GREEN, YELLOW, RED)):
         led(d, 172, 44 + i * 26, 5, cc, on=i == 0)
@@ -537,6 +554,7 @@ def prop_panel():
         for k in range(-40, 80, 16):
             d.polygon([(x - 40 + k, 144), (x - 40 + k + 8, 144), (x - 40 + k + 62, 90), (x - 40 + k + 54, 90)], fill=(20, 20, 20))
         d.rectangle((x - 40, 90, x + 40, 144), outline=(12, 14, 15), width=2)
+        mark(d, 'flap', x, 117, 80, 54)
         d.rectangle((x - 30, 106, x + 30, 128), fill=(230, 200, 40))
         text(d, (x, 117), 'EM. STOP', 9, (20, 20, 20))
     text(d, (w / 2, 16), 'IN COMMAND', 10)
@@ -600,6 +618,7 @@ def wiper_panel():
     for i, s in enumerate(('STBD', 'CENTRE', 'PORT')):
         knob_mark(d, 56 + i * 96, 76, 17, s, ((-55, 'OFF'), (0, 'INT'), (55, 'ON')), 8)
     d.ellipse((314, 46, 366, 98), fill=(60, 110, 170), outline=(12, 14, 15), width=2)
+    mark(d, 'round', 340, 72, 26)
     text(d, (340, 72), 'WASH', 9, WHITE)
     return im
 
@@ -642,6 +661,7 @@ def pa_panel():
     for i, s in enumerate(('CAR\nDECK', 'SALOON', 'CREW', 'OPEN\nDECKS', 'ALL')):
         key(d, 34 + i * 43, 46, 39, 34, (60, 110, 170) if s == 'ALL' else (70, 80, 86), s, 8)
     d.rounded_rectangle((252, 22, 330, 70), radius=6, fill=(170, 30, 24), outline=WHITE, width=2)
+    mark(d, 'flap', 291, 46, 78, 48)
     text(d, (291, 46), 'GENERAL\nALARM', 9, WHITE)
     text(d, (120, 88), 'TALKBACK', 9)
     for i, s in enumerate(('PORT\nWING', 'STBD\nWING', 'FWD', 'AFT', 'ENGINE\nROOM')):
@@ -1207,7 +1227,7 @@ def eg_esb(section):
             text(d, (w / 2, y + 110), label, 9, (30, 30, 30))
     else:
         ways = ('STEERING GEAR No. 2', 'EMERGENCY FIRE PUMP', 'EMERGENCY LIGHTING', 'NAVIGATION LIGHTS', 'RADIO AND NAVIGATION', 'FIRE DETECTION',
-                'GENERAL ALARM, PA', 'BILGE PUMP', 'BATTERY CHARGERS', 'TRANSFORMER 440/105 V')
+                'GENERAL ALARM, PA', 'BILGE PUMP', 'BATTERY CHARGERS', 'TRANSFORMER 440/230 V')
         for i, name in enumerate(ways):
             y = 88 + i * 40
             d.rectangle((22, y, 62, y + 30), fill=(60, 64, 66), outline=(20, 22, 24), width=2)
@@ -1376,8 +1396,8 @@ def tiles():
         'rai_panel': (rudder_dial(256, 276, 110, 142), 'face'), 'rai': (rudder_dial(256, 256, 120, 128), 'face'), 'wind': (wind(), 'face'),
         'clock': (clock(), 'face'), 'barometer': (barometer(), 'face'), 'clinometer': (clinometer(), 'face'), 'card': (card(), 'face'), 'rpm': (rpm_small(), 'face'),
         'fire_panel': (fire_panel(), 'face'),
-        'bd1': (board_door(384, 544, 'BD1', 'WHEELHOUSE DISTRIBUTION', '105 V  60 Hz  ·  FROM LIGHTING BOARD  ·  40 A', BD1, '105 V, two-pole'), 'face'),
-        'bd2': (board_door(304, 496, 'BD2', 'EMERGENCY', '105 V  ·  FROM EMERGENCY SWBD  ·  16 A', BD2, '105 V, two-pole'), 'face'),
+        'bd1': (board_door(384, 544, 'BD1', 'WHEELHOUSE DISTRIBUTION', '230 V  60 Hz  ·  FROM LIGHTING BOARD  ·  25 A', BD1, '230 V, two-pole'), 'face'),
+        'bd2': (board_door(304, 496, 'BD2', 'EMERGENCY', '230 V  ·  FROM EMERGENCY SWBD  ·  16 A', BD2, '230 V, two-pole'), 'face'),
         'dc1': (board_door(352, 288, 'DC1', '24 V DC  NAVIGATION', 'GENERAL SERVICE BATTERY  ·  40 A', DC1, '24 V, fused', meters=1, lamps=0), 'face'),
         'dc2': (board_door(352, 288, 'DC2', '24 V DC  RADIO', 'RADIO BATTERY  ·  25 A', DC2, '24 V, fused', meters=1, lamps=0), 'face'),
         'flags': (flags(), 'face'), 'chart': (paper_chart(), 'face'), 'logbook': (logbook(), 'face'), 'books': (books(), 'face'), 'firstaid': (firstaid(), 'face'),
@@ -1442,7 +1462,23 @@ def main():
     opt = dict(zip(args[::2], args[1::2]))
     out = opt.get('--out', os.path.join(HERE, '..', 'data', 'chisum-atlas.webp'))
     tiles_path = opt.get('--tiles', os.path.join(HERE, 'atlas.json'))
+    marks_path = os.path.join(os.path.dirname(tiles_path), 'atlas-marks.json')
+
+    def note(items):
+        """What stands on each picture (`mark`), written beside the list of places: one picture a line."""
+        rows = [f' {json.dumps(name)}: {json.dumps(im._marks, separators=(",", ":"))}' for name, (im, kind) in sorted(items.items()) if getattr(im, '_marks', None)]
+        open(marks_path, 'w').write('{\n' + ',\n'.join(rows) + '\n}\n')
+        return len(rows)
+
+    if '--marks' in args:
+        # Only the marks are noted: the sheet itself is not drawn again (a machine without the Japanese font cannot draw the
+        # drinks machine's pictures, and those have no marks).
+        global jpvm_pictures
+        jpvm_pictures = lambda: {}
+        print(f'{marks_path}: the marks of {note(tiles())} pictures noted; the sheet is as it was')
+        return
     items = tiles()
+    note(items)
     im, uv, height = pack(items)
     im.save(out, 'WEBP', quality=90, method=6)
     json.dump(dict(file=os.path.basename(out), size=[WIDTH, height], tiles=uv), open(tiles_path, 'w'), indent=1, sort_keys=True)

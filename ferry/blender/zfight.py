@@ -190,6 +190,12 @@ def main():
                     done.add(key)
                     if abs(d[gi] - d[gj]) > SAME:
                         continue
+                    # ... and truly one plane: each face's corners lie in the other's plane. (A plane's distance is taken
+                    # from amidships, so two faces 16 mm apart whose directions differ by a fiftieth of a degree have the
+                    # same distance 55 m forward or aft: on the 124.8 m ship that named a deck's edge and the shell beside
+                    # it, a window's glass and the wall it stands in. Measured face to face, they are apart.)
+                    if np.abs((T[gj] - T[gi][0]) @ axis[gi]).max() > SAME or np.abs((T[gi] - T[gj][0]) @ axis[gj]).max() > SAME:
+                        continue
                     p, q = pieces[owner[gi]], pieces[owner[gj]]
                     if way[gi] != way[gj] and not (p['both'] or q['both']):
                         continue                                   # back to back, each seen from its own side only

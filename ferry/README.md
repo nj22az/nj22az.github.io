@@ -1,28 +1,90 @@
 # Chisum: the ferry, deck by deck
 
-A 3D viewer of the Chisum, a 68 m car and passenger ferry: turn her, lift her decks apart (Explode), slice her open
-along her length (Cut), put her rudders over (Rudder), lower her stern ramp (Stern ramp), name every room aboard, walk
-through her on foot (Walk aboard), where walls stop one, doors let one through, stairs are climbed, and every room is
-reached on foot, and see what every fitting on her bridge is, what feeds it and what it talks to (tap it, or open
-*Systems*): <https://nj22az.github.io/ferry/>.
+A 3D viewer of the Chisum, a ro-ro freight ferry of 124.8 m, a classic of the 1970s kept in service: turn her, lift her
+decks apart (Explode), slice her open along her length (Cut), put her rudders over (Rudder), lower her stern ramp (Stern
+ramp), name every room aboard, walk through her on foot from the lower hold to the wheelhouse (Walk aboard), where walls
+stop one, doors let one through, stairs are climbed, and every room is reached on foot, and see what every fitting on her
+bridge is, what feeds it and what it talks to (tap it, or open *Systems*): <https://nj22az.github.io/ferry/>.
+
+**As built on the branch `claude/chisum-revision-d` (12 November 2026); the published page still shows the 68 m ship
+until the owner says "Publish now".** What she is now is the next section but one, *The Chisum at 124.8 m*.
 
 The page has no build step: serve the site root (`python3 -m http.server`) and open `/ferry/`. Her data is built
 beforehand (`blender/make.sh`, below) and kept in `data/`.
 
 | File | What |
 |---|---|
-| `index.html` | The page and its own chrome (title, the *Decks and rooms* panel, the bar with Explode, Cut, Rudder, Stern ramp, View, Walk aboard and Reset view), on the pattern of `/motor-90l/` |
+| `index.html` | The page and its own chrome: the title, the *Decks and rooms* panel, and the bar, which is a rail of icons (decks, cut, look from, rudder, stern ramp, walk aboard, reset view, how to move, on this device) with a desk over it that shows the keys of one function at a time (*The bar*, below) |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
 | `systems.js` | Her systems on the page: the card that says what a fitting is, the *Systems* list, and what is drawn over the model for a board, a circuit, a net or a pipe |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 1.77 MB, about 237,100 triangles, six parts, 93 named rooms, 16 stairs, 41 moving parts. Everything in it is her own, built in Blender |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 7.50 MB, about 1,162,100 triangles, eight parts, 133 named rooms, 17 stairs, 45 moving parts. Everything in it is her own, built in Blender |
+| `data/light.bin.gz` | The light of every place aboard, traced through her as built (`blender/light.py`; *Light, sky and sea*, below): 5.2 MB |
 | `data/chisum-atlas.webp` | Her pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
-| `data/systems.json` | Her component register as the page reads it (167 components; written by `systems/register.py`) |
+| `data/systems.json` | Her component register as the page reads it (171 components; written by `systems/register.py`) |
 | `systems/` | Her systems as designed: every component with its supply, circuit, nets and pipes; the tool that routes, sizes and checks them ([README](systems/README.md)) |
-| `blender/` | Her build, in Blender: the arrangement (`ga.py`), her lines (`lines.py`), the yard's specification (`spec.py`), a builder for each section, the export, the tool that puts the data together, the checks, and `make.sh`, which runs all of it in order |
+| `blender/` | Her build, in Blender: the arrangement (`ga.py`), her lines (`lines.py`), the yard's specification (`spec.py`), a builder for each section, the export, the tool that puts the data together, the checks, the tracing of her light (`light.py`), and `make.sh`, which runs all of it in order |
 | `checks/*.cjs` | The page's own checks, in a browser: the bridge and the register, doors and the stern ramp, the stairs, quick travel, zoom on foot, offline (*Checks actually run*) |
-| `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register, the yard's standards (stairs, supports, no z-fighting), its drawings (the general arrangement, the stern ramp and after end), class's comment sheets, and the calculations ([README](yard/README.md)) |
+| `yard/` | Johansson Shipyard's paperwork for her as a newbuilding: what the simulation of a classed build is and is not, the document register, the yard's standards (stairs, supports, no z-fighting), its design basis and audit for revision D (`yard/design/`), its drawings (the general arrangement, revision D; the stern ramp and after end of the 68 m ship, superseded and not yet redrawn), class's comment sheets, and the calculations ([README](yard/README.md)) |
 
-## The Chisum at 68 m: her bare ship (11 November 2026)
+## The Chisum at 124.8 m: revision D (12 November 2026)
+
+**This section says what she is now. It supersedes "The Chisum at 68 m" below**, which is kept as the record of the ship
+she was until 12 November 2026; wherever a later section of this file still speaks of a car deck, a passenger deck or
+68 m, it describes that ship, and the builders it names work as described on the new one.
+
+The owner, with real arrangement drawings in hand ("maybe a Cargo ship is more fun ?"), chose **a ro-ro freight ferry of
+about 125 m, a classic of the 1970s kept in service and refitted**. She is rebuilt as that, in place: a new hull, new
+decks, new houses, new steel; the wheelhouse and compass deck, the emergency generator room and the drinks machine are
+the first Chisum's, landed aboard as blocks.
+
+- **Her design basis** is [`yard/design/revision-D.md`](yard/design/revision-D.md): what she is, her pattern (the
+  Mashala class of 1977, looked at and measured, never traced), every principal figure with where it comes from, her
+  decks, the decisions taken while building her. **The audit** of what was built against it, with the pictures looked at,
+  is [`yard/design/revision-D-audit.md`](yard/design/revision-D-audit.md). The drawing is
+  [`yard/drawings/JS1-102-general-arrangement.svg`](yard/drawings/JS1-102-general-arrangement.svg), revision D.
+- **Particulars.** 124.8 x 19.6 m, 6.6 m to the main deck and 13.2 m to the upper deck, 5.6 m draught, 8,472 t (block
+  coefficient 0.661), 17.5 knots, two engines of about 4,000 kW to controllable-pitch propellers, two rudders, a bow
+  thruster, a bulbous bow; a crew of 25 and 50 drivers and passengers.
+- **Her parts on the page**, bottom to top: `hull`, `machinery` (below the main deck), `main`, `upper`, `boat`,
+  `officers`, `bridge`, `top`. 133 named rooms on seven plans; 17 stairs to JSY-STD-401 and two ladders; 45 moving parts.
+- **How one goes through her.** Vehicles: over the stern ramp (which is the stern door: Raise, Stop, Lower on the desk)
+  onto the main deck's five lanes; down to the lower hold on the cargo lift (its platform is drawn raised and does not
+  move yet); up the fixed ramp along the starboard casing to the upper deck. People: a main stair in each casing from the
+  main deck into the house; the house's stair trunk to the officers' deck; the crew stair into the wheelhouse; the engine
+  room's entrance stair and the lower hold's stair from the port casing; inclined ladders between the open decks and up
+  to the helicopter deck. Each pilot door has a leaf that opens to a tap.
+- **Every enclosed room has light** (`blender/lighting.py`, new): a marine fluorescent fitting (a steel body, an opal
+  diffuser that gives the light, two flat-bar hangers to JSY-STD-402, a cable gland and its cable up a hanger), one to
+  about 10.5 m² of deck, in rows fore and aft between the beams, clear of deck openings and stairs: 392 fittings in 97
+  spaces. Two spaces are too low for 2.1 m under a fitting (the after passage and the steering gear room). `blender/light.py`
+  works each lamp's light out by itself (a line from every point to every lamp within 9 m), because a lamp found by chance
+  among a hundred rays lit a room in blotches.
+- **Her decks read as working decks** (`blender/deck_outfit.py`, new, and the bulwarks in `blender/hull_shell.py`): lane
+  lines on the main and upper decks, a walkway 1.1 m wide each side of the upper deck between two yellow lines, the
+  helicopter deck's edge line, circle and H; a hawse pipe and a chain pipe for each anchor; the foremast on the forecastle
+  with the anchor light and the bell; freeing ports in the bulwarks and an eye for each mooring chock.
+- **Each funnel is a casing round its uptakes** (`blender/steel.py`, `funnels`): three lagged pipes of their own bores
+  stand from the main deck up through the casing's room and the funnel and out of its head (a main engine's, and two
+  generating sets' or one's and the boiler's), with an exhaust gas economiser on each main engine's; louvres, a bar round
+  the head, a platform with a ladder, the whistle. Below the main deck the uptakes await the machinery.
+- **The house's outside**: every outside window has a frame and a rain eyebrow, every door to a weather deck a coaming of
+  0.20 m. Its shape is still square: no raked front, no rounded corners, no tiers set back (the audit's open list).
+- **Her deck fittings have places, not yet shapes**: `blender/spec.py`, `OUTFIT`, is a list of 88 places (lifeboats under
+  davits, liferafts, windlasses, winches, bitts, chocks, ventilators, lashing pots and the rest), each with the deck it
+  stands on, where, and which way it faces; `ga.STATIONS` says what each station is. The fittings themselves come from
+  the yard's library of deck fittings (`blender/fittings.py`, built separately), and the deck is left clear for each.
+- **The file says more of her** (*The file format*, below): `ship.bridge` (where the bridge block stands), `ship.start`
+  (where a walk begins), `ship.decks` (every deck's height), and `doorways[]` (every doorway in her steel that one walks
+  through). The page checks read their places from these, so a ship of another size needs no change in them.
+- **Building her**: `ferry/blender/make.sh` as before. On this Mac the whole make takes about ten minutes, four of them
+  the tracing of her light.
+
+What is not in her yet is listed in the design basis (section 7) and in the audit's open list: her machinery, the fitting
+out of the rooms, the lift's hoisting gear, the ramp cover, the chain lockers, a second escape from the engine room.
+
+## Superseded by revision D: the Chisum at 68 m, her bare ship (11 November 2026)
+
+*She is a ro-ro freight ferry of 124.8 m now (the section above). This is the record of the ship she was.*
 
 The owner, 11 November 2026: "I think the ship needs to be longer maybe 65-70 meters". At the first Chisum's beam of
 8.4 m and depth of 4.0 m she could not be stretched to that; asked, the owner chose **"Rebuild the Chisum at 68 m"**, in
@@ -35,6 +97,12 @@ cabins, a top deck with the owner's emergency generator room; eight watertight b
 arrangement (revision C: 93 spaces on five plans, each with what it is for), and `python3 ferry/blender/ga.py` checks it
 against itself and against her lines. `yard/drawings/JS1-102-general-arrangement.svg` is drawn from it. It is still a
 proposal for the owner's approval, with eight questions on the sheet.
+
+**She is a ship of her own, beside the Minato Maru.** The owner, 11 November 2026, after she was published: "I'm thinking
+the Minato Maru can be simplified , this is an additional ship". So she is no longer the lead ship from which the Minato
+Maru is to be rebuilt (the plan of 9 November, further down this file): the realistic engineering lives in her, and the
+Minato Maru stays Johansson World's own ferry and may be made simpler. What of the Minato Maru can go, what stays and
+what the two ships can share is sorted in `temp/minato-maru/SIMPLIFY.md` (on the work branch; nothing is removed yet).
 
 **What is built, all of it hers** (nothing of the Minato Maru or of the first Chisum's borrowed interiors is in the file):
 
@@ -265,6 +333,7 @@ blender -b -P ferry/blender/build.py -- --part chisum-hull.npz --blend chisum.bl
 python3 ferry/blender/assemble.py --part chisum-hull.npz                                 # put it into data/ferry.bin.gz, and write data/systems.json
 python3 ferry/blender/check.py                                                              # check what the page will read
 node ferry/checks/bridge.cjs                                                                # check the page itself (the site served on port 8765)
+node ferry/checks/sight.cjs                                                                 # no lever stands before an instrument (JSY-STD-404, rule 13)
 blender -b chisum.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
 ```
 
@@ -614,6 +683,16 @@ is still the Minato Maru's, outside this part (the sidelights are hers, from 11 
 
 ## The navigation bridge (`blender/wheelhouse.py`)
 
+**Since 12 November 2026 the wheelhouse is refitted, and this section describes it as it was before:** the console as one
+block with instruments set into it, the furniture, the deckhead and everything that works are in
+[`yard/design/wheelhouse-refit.md`](yard/design/wheelhouse-refit.md), stage by stage. Its last stage is the arrangement
+of what is worked and what is read (the owner: "some levers are blocking some panels, look at the bridge as an end
+user"): **the three control heads stand in the desk's after edge, at the hand; their panels lie on the level strip and
+their instruments stand in the upstand, each in line ahead of its levers and read over them; at each wing station the
+two dials stand in an upright face over the levers.** The rule is JSY-STD-404's thirteenth, and `checks/sight.cjs` keeps
+it: it draws the lines of sight from the walker's eye to every instrument in the page's own model and fails if a lever
+stands in one.
+
 Section 5. The owner, 11 November 2026: "Make the ferry fully realistic in blender, start with one section at a time. Start
 with the bridge", and while it was built: "If current foundation is lacking don't be ashamed of redrawing it, the important
 part is that it's a realistic vessel". So the wheelhouse is not the Minato Maru's with her fittings set into it (the first
@@ -845,7 +924,10 @@ stands, `state.inputs` how far each door stands open.
 `ferry.bin.gz` is gzip over: the four bytes `JMF1`, a 32-bit little-endian header length, a JSON header (padded with
 spaces to a multiple of four bytes), then one binary block.
 
-- Header: `format`, `ship` (name, `drawnFrom`, length, beam, depth, draft, gross tons), `axes`, `bounds`, `atlas`
+- Header: `format`, `ship` (name, type, length, beam, depth, draft; `bridge`: where the bridge block stands, as `shift`
+  (metres forward of where it was designed), `deck`, `top` and `wing` (the inner face of a wing's end bulwark, off the
+  centre line); `start`: the deck and space a walk begins in; `decks`: each deck's height over the waterline, by its
+  name in `blender/ga.py`), `axes`, `bounds`, `atlas`
   (`file`, `size`), `atlases[]` (the sheets of pictures: the other ship's, then her own; a material's `atlas` is the
   index of the one it is drawn from), `systems` (`file`: her register beside the model; `components`: how many), `materials`, `views[]` (each with `groups[]`: one per deck, with its `id`, `name`, `level`, its
   lift in the exploded view (`explode`), its `meshes[]` and its `spaces[]`), `source`.
@@ -854,8 +936,11 @@ spaces to a multiple of four bytes), then one binary block.
   `from: "blender"` marks a mesh of her own build; the others are the Town's export.
 - `ship.built[]` lists the sections that are her own (`part`, `section`, `date`); `source.blender` names the builder.
 - **Parts that move.** `inputs[]` are what can be worked on the page: `id`, `name`, `min`, `max`, `step`, `unit`, and
-  how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page makes a slider
-  for each, with two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
+  how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page gives each an
+  icon on its rail and three keys on its desk (no sliders since 11 November 2026: *The bar*, below): `keys` names them,
+  `notch` is how far one press of a two-way thing's key orders it (the rudder: 5°), `stops[]` (`v`, `say`) are where a
+  one-way thing's run ends by itself (the ramp: level at 90°, then the low quay), and `rate` is how fast the part follows
+  its order, in its unit a second. There are two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
   tap; with `auto: "tap"` it is worked by a tap only, on foot too (the drinks machine's door and coin return: nobody opens
   them by walking past). An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
   position means), `home` the one it rests in, `fitting` the component of the register it belongs to; a tap on the lever
@@ -874,10 +959,13 @@ spaces to a multiple of four bytes), then one binary block.
   `hull_fittings.motion()`, `wheelhouse.motion()` and `stairs.motion()` describe the motions; `build.py` stops if a part names a motion
   that is not described, or a motion moves nothing.
 - A space record is a room: `id`, `name`, `text`, `why`, and its box `min`, `max`.
-- Axes: metres; the bow is +z, port is +x, y is up with its origin on the laden waterline (keel −1.9, car deck 2.1,
-  passenger deck 6.5, bridge deck 9.1, compass deck 11.5).
+- `doorways[]` are the doorways in her steel that one walks through and that have no leaf yet: `id`, `name`, `at` (the
+  middle of its sill), `normal` (the way through it), `width`, `head`. `checks/doors.cjs` walks through each, both ways,
+  and through every door that opens to whoever comes near (an input with `auto: "near"` and a `normal`).
+- Axes: metres; the bow is +z, port is +x, y is up with its origin on the laden waterline (keel −5.6, tank top −4.0,
+  main deck 1.0, upper deck 7.6, boat deck 10.4, officers' deck 13.2, bridge deck 16.0, compass deck 18.7: `ship.decks`).
 
-The decks, bottom to top: `hull`, `machinery`, `car`, `passenger`, `bridge`, `top`.
+The decks, bottom to top: `hull`, `machinery`, `main`, `upper`, `boat`, `officers`, `bridge`, `top`.
 
 `ways` (optional) are the ladders: `{id, kind: "ladder", down, up, a, b, line}`, where `a` is the place to stand at
 the foot and `b` at the head (x, y, z), `line` (x, z) is where one is while on the rungs, and `down` and `up` name
@@ -888,6 +976,49 @@ An input may be worked by the page itself and not by a slider: `"auto": "near"` 
 door). Such an input opens (goes to `max`) for a walker within `reach` of `at`, shuts (goes
 to `min`) behind them, and answers a tap from outside; `normal` tells the walker which way the doorway lies. A mover's
 `ratio` (1 when absent) is the turn it makes for each degree of its input: -1 for a door that opens the other way.
+
+## Light, sky and sea (`blender/light.py`, `data/light.bin.gz`, `look.js`)
+
+The owner, 11 November 2026: "It still looks like Lego create a realistic bridge"; "you have no budget on the 3d model, focus
+on photorealism and reality". What made her look like a toy was that every face was lit alike. Since 12 November 2026:
+
+- **The light of every place aboard is traced when she is built.** `blender/light.py` (the last step of `make.sh`) lays a
+  grid of points through the whole ship, one every 0.4 m, and sends 96 rays from each: a ray that gets out sees the sky, one
+  that meets a lit lamp sees the lamp, one that meets a surface sees what that surface throws back, the sun on it if the
+  sun reaches it and the light the grid found there, worked round four times. Glass lets rays through. The result,
+  `data/light.bin.gz` (JLV1: a header, then two blocks of the grid: how much light a place gets, and from which side), is
+  about 1.6 MB. Blender's own ray caster does the tracing in several processes at once: under a minute for this ship.
+  `--look DIR` writes slices through the result as pictures.
+- **Every lit surface takes its light from there** (`look.js`, `surface`): asked for half a grid step out from the surface
+  and a little toward the looker, so that a thin wall does not let the next room's light through. A room is lit by its
+  windows and lamps and by its own deck and walls, and is darker in its corners; outside, it is darker under an overhang.
+  **A space with no window and no lamp is dark** (it is lifted only to what an eye still makes out): rooms get light when
+  they get lamps, which are parts like any other (a material that gives out light is a lamp to the rays).
+- **The sun is the page's own lamp**, nine units strong against a sky of about one and a third, with sharp shadows. On
+  foot the shadows are drawn finely round the walker (a patch of sun through a window has an edge), and again as the
+  walker moves on.
+- **The eye opens and closes** (`createLook`, `expose`): in the open the picture is taken at one exposure; in a room it
+  opens by a good part of how much darker the room is, over about a second, so that from inside the day outside is
+  bright, as it is.
+- **She floats.** When she is walked, and when she is looked at whole from outside with the wave key lit, there is a sky
+  with clouds and the sun's disc, and a sea at her waterline with her own outline cut out of it (the file's
+  `ship.waterline`), so that no room below the waterline has the sea standing in it. The sea's waves are worked out where
+  it is drawn and left out where they are finer than a dot of the screen. Lifted apart, cut open, or with the wave key
+  off she stands in dock on the slip as before, so that her bottom can be seen.
+- **Glare**: what is brighter than the screen's white spills a little over what is beside it.
+- **Her mirror image** (`createSea`, `reflect`): before each frame she is drawn once more as the sea sees her, from under
+  the water looking up (only what is above the waterline), and the sea shows that picture bent by its long waves and drawn
+  out by its short ones. Left out on the light way.
+- **Steel that is steel** (`SURFACES`, `plate`): what is plate under its coat (paint, primer, antifouling, deck coating)
+  dishes a little between its stiffeners (taken 0.6 m apart along her and 0.68 m the other way), its seams and butts stand
+  a little proud and hold a line of dirt, and a wall carries the streaks water leaves. It is worked out where it is drawn,
+  from the place on the ship, like the grain. It is what tells painted steel from plastic; it does not yet follow her real
+  frames and seams (the hull's own frame spacing and plate rows are in `spec.py` and could feed it).
+- **The light way** (`lite` in `app.js`): where there is no graphics card (the page's own checks draw in software) or the
+  address says `?lite`, the glare, the clouds and the sea's finer waves are left out and the sea stands still. The
+  checks would otherwise be too slow to follow a pinch of two fingers.
+- The day's figures (the sun's direction and strength, the sky's colours) are `light.py`'s; the file carries them and
+  the page takes them from it, so the traced light and the drawn sky cannot drift apart.
 
 ## The look this page applies
 
@@ -905,6 +1036,51 @@ they are lit:
 - A material's `offset` is a depth offset: paint laid on plating is drawn a hair nearer, plates behind plating a hair
   further (see *Her own build*).
 
+## The bar: a rail of icons, and keys when they are wanted
+
+The owner, 11 November 2026: "I dont like the sliders, I would prefer buttons, like we are using a hmi to control the view
+professionally", then: "use smart menus, with buttons that show when we need them, we dont need to see everything in the
+menus, and make it icon based, not all that text (for the viewer page)".
+
+- **The rail** (`#rail`) is one icon for each function. Outside: decks, cut, look at her from, each thing the model says is
+  worked (the rudder, the stern ramp: their icons are made from the file's `inputs`), walk aboard, reset view, how to move,
+  and *on this device* (save offline, install). On foot: the worked things, ladder (only at one), go to, deck below, deck
+  above, leave, how to move. Every icon has its name as a tooltip and for a screen reader; the icons are 24 × 24 line
+  drawings kept as CSS variables in `index.html` (`--i-…`) and drawn as masks, so they take the colour of their key.
+- An input the file marks `local` (a fitting worked where it stands: a lifeboat's davit and falls, a windlass, a foam monitor) has no
+  icon on the rail, so that the rail does not fill up: its keys come up when the fitting itself is tapped, from outside or on foot.
+- **The desk** (`#desk`) stands over the rail and shows the keys of **one** function: the one whose icon was pressed (a
+  second press puts them away), or the one whose part was tapped on the model (tap the ramp, the wheel or a rudder, and its
+  keys are there: `keysFor`). Nothing else is shown.
+- **What the signs mean.** An icon is filled while its function is away from rest (decks lifted, she cut open, rudder
+  over, ramp down) and ringed while its keys are shown. A key is lit while its order stands. The dark window beside the
+  keys says where the part is now ("Port 7°", "74°", "Level").
+- **Orders, not positions.** A key gives an order (`orderInput`) and the part follows at its own pace (`workOrders`, the
+  file's `rate`): the rudder at 2.3° a second, the ramp at 3° a second with Raise, Stop and Lower. `setInput` still puts a
+  part somewhere at once, for the checks and for whoever has asked for less motion.
+- **How to move** is said when asked for (the question mark) and for nine seconds on going aboard; it no longer stands
+  under her name.
+- On a phone the rail wraps to two rows and a function's keys that are wider than the screen are swiped sideways.
+
+## X-ray: her wiring, through her structure (`app.js` `setXray`, `systems.js` `xray`)
+
+The owner, 11 November 2026: "The bridge needs to be enhanced too all cabinets should be able to open and an X-ray function
+to show the electrical wiring". The lightning key on the rail, outside and on foot:
+
+- her structure is drawn as a ghost of itself (every material see-through, at most an eighth as solid as it was), on a dark
+  ground in place of the sea and the sky;
+- **every run the register holds is drawn through it**, coloured by what it carries: 230 V from the main supply, 230 V from
+  the emergency switchboard, 230 V that the batteries carry through a blackout (the navigation lights), 24 V direct
+  current, signals and data, pipes. A cable takes the colour of the supply its board hangs on (`supplyOf`), because that is
+  what tells one what dies with what;
+- a legend says which colour is which and how many metres of each there are (each stretch counted once: cables that share
+  a tray are drawn once);
+- the boards are boxed; a tap on a fitting still names it; choosing a board, a circuit or a net under *Systems* shows that
+  one alone through the ghost, and choosing it again shows them all.
+
+It shows what the register holds, which today is the bridge and what feeds it: as her machinery, lighting and piping are
+entered in `systems/`, they appear here with no further work. `checks/bridge.cjs` switches it on and off.
+
 ## Coupling
 
 - Three.js r170 comes from `/motor-90l/vendor/` (`three.module.min.js` through the import map, and `OrbitControls.js`).
@@ -917,10 +1093,12 @@ they are lit:
   `/assets/js/project-explorer.js`; `CONFIG.projects` has her too. The homepage never loads the 3D model (its design
   review forbids it): the card shows a picture, `/assets/images/ferry/chisum-card.webp`. It lives under `assets/`,
   not here, because the homepage review's sparse checkout does not include `ferry/`.
-- **Retake the card picture when the model changes.** It is this page's cut view from the starboard side with the
-  chrome hidden and the lens centred (`camera.clearViewOffset()`, aspect 1200 : 630): Cut 0.5, the camera set through
-  `window.__ferry.look` with its target at (0, 6.3, 1.4) and the eye 50 m from it toward (−1, 0.2, 0.3), shot at
-  1200 × 630 at scale 2 and reduced to a 1200 × 630 WebP (quality 84). Retaken on 10 November with her own hull. The
+- **Retake the card picture when the model changes.** `node ferry/tools/card.cjs shot.png` (the site served on port
+  8765) opens this page with its chrome hidden and the lens centred, looks at her from the bow quarter as the page
+  first does (`HOME_DIR`), and shoots 1200 × 630 at scale 2 on the machine's own graphics card;
+  `python3 ferry/tools/card_crop.py shot.png assets/images/ferry/chisum-card.webp` frames her outline and writes the
+  1200 × 630 WebP (quality 84). Retaken on 11 November 2026 with the 68 m ship, on an Apple M1 Pro; until then the
+  card showed the first Chisum, 34.5 m, cut open, with the words that went with her. The
   counts in `tools/office-home/review.browser.mjs` (7 cards; Explore 2, Create 3, Learn 2) follow
   `CONFIG.projectExplorer`.
 
@@ -1035,6 +1213,73 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 12 November 2026, morning: the merged ship (revision D with the wheelhouse refit), and the levers moved
+
+Run on the owner's Mac in the main checkout, on the work branch `claude/festive-rubin-fo8mmp`, after the control heads
+were moved ([`yard/design/wheelhouse-refit.md`](yard/design/wheelhouse-refit.md), *Stage 4*). The site was served from
+the checkout on port 8766 by a threading server with a queue of 128 waiting connections (and on 8765 by
+`python3 -m http.server`, which `travel.cjs`, `zoom.cjs` and others ask when no address is given), each page check by
+itself, with `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright-local`. **This is the first time the merged ship went
+through the page checks**: the merge of the wheelhouse refit says of itself "NOT yet built or checked on the merged ship".
+
+| Check | Result |
+|---|---|
+| `ferry/blender/make.sh /tmp/chisum.npz /tmp/chisum.blend` | **"built: every check passed"**, twice (once with the heads' plates at 0.985 m, once at 0.980 m: the build that is committed). 1,410,320 triangles in a file of 8.98 MB, 133 rooms, 17 stairs, 186 components; `check.py` all passed; `zfight.py` 0 pairs of faces in one plane among 580 pieces; `afloat.py` 0 afloat of 17,301 pieces (17,296 held, 5 flat pictures); `spans.py` 409 runs, every one carried; the light traced through her in 251 s (398 lamps). `zfight.py`'s second list, which does not stop the build, names seven coverings close under another surface (her name, the draught marks, two sea chest openings, the lane lines under the cargo lift's corner plates, the two panel pictures under their own keys) |
+| `python3 ferry/systems/register.py` | 186 components (186 in the model), 41 circuits on 5 boards, 31 nets, 7 pipes; all checks hold |
+| `checks/sight.cjs` (new) | all passed (24): it sees a lever that is in the way; with the levers at stop, both engines full ahead, full astern and the thruster full over each way, from 209 places of the eye abaft the block no lever stands before what is read of the 8 instruments in the upstand (41,800 lines of sight each time), nor before the 2 panels on the level strip from 114 places from the helm forward (5,700 lines), nor before a dial at either wing station (1,134 lines each). Said as it happened: its first two runs failed (9 lines of 37,400, then 1), and what was changed for each is in the refit's record |
+| `checks/bridge.cjs` | all passed (28): the register's 186 components, 181 answering at their own place; a tap on the port engine lever where it stands now moves it a notch at the console and on both wings (16.26°) |
+| `checks/works.cjs` | all passed (21). It held the 68 m ship's measures and now reads where the bridge stands from the file |
+| `checks/doors.cjs` | all passed (112): 60 worked doors, gates and hatches; her 88 doorways and 10 doors that open to whoever comes near |
+| `checks/stairs.cjs` | all passed (53) |
+| `checks/travel.cjs` | all passed (5): each of the 133 rooms can be stood in and walked from |
+| `checks/zoom.cjs` | all passed (14) |
+| `checks/offline.cjs` | all passed (5): 30 files, 16.7 MB, opens with the network cut |
+| `node ferry/tools/shots-bridge.cjs <folder> <twelve views>` | drawn on the Mac's graphics card (Apple M1 Pro), no errors on the page; each picture opened |
+
+Said as it happened: the first run of `sight.cjs` timed out waiting for the page while the light was still being traced
+(six Blender processes); nothing was run beside a build after that. **Not run:** the yard's two calculations
+(`yard/calc`), the electrical drawings and the proof of supply (made on the 68 m ship, before the refit), a phone or a
+tablet. **Not in this build:** the deck fittings (`blender/outfit.py` is not called by `build.py`: the night's build
+with it fails `zfight.py` with 8 pairs and `afloat.py` with 323 things in the air).
+
+
+### 12 November 2026: revision D, the ro-ro freight ferry of 124.8 m
+
+Run on the owner's Mac in the worktree of the branch `claude/chisum-revision-d`, the site served from the worktree on port
+8771, each page check by itself. The figures below are those of the commit that carries each stage; the audit
+([`yard/design/revision-D-audit.md`](yard/design/revision-D-audit.md)) has what was looked at and what was found.
+
+| Check | Result (stage 1, her bare ship) |
+|---|---|
+| `python3 ferry/blender/ga.py` | passes: revision D, 133 spaces on 7 plans, 7 watertight bulkheads, about 8,478 t |
+| `ferry/blender/make.sh /tmp/chisum-d.npz /tmp/chisum-d.blend` | "built: every check passed". 1,078,637 triangles, 6.98 MB; the plating's inner face never nearer than 5 mm to the moulded surface; `check.py` all passed (the 133 spaces, the 17 stairs, the 10 deck levels, the 89 places of her deck fittings, 88 doorways listed, 8,472 t by her lines); `zfight.py` 0 pairs in 417 pieces; `afloat.py` 0 of 13,180 pieces afloat; `spans.py` 409 runs carried; `light.py` 398 lamps each by itself, enclosed points' light 0.10 to 0.57 |
+| `checks/stairs.cjs` | all passed (53): each of her 17 stairs within its class and walked up and down |
+| `checks/doors.cjs` | all passed (112): 21 worked doors, gates, hatches and flaps open and shut; the stern ramp by its control and by its keys; its two cylinders; **through each of her 88 doorways and 10 doors that open to whoever comes near, both ways**; the drinks machine; out of the generator room |
+| `checks/travel.cjs` | all passed (5): each of the 133 rooms can be stood in and walked from |
+| `checks/zoom.cjs` | all passed (14) |
+| `checks/offline.cjs` | all passed (5): 30 files, 14.4 MB, opens with the network cut |
+| `checks/bridge.cjs` | all passed (26): the register's 171 components at their places, the walk through the wheelhouse, onto a wing 9.71 m out, down the crew stair, onto the compass deck |
+| `python3 ferry/blender/light.py --part /tmp/chisum-d.npz --look <folder>` | run; the slices looked at: every room of the house, the main deck, the lower hold and the engine rooms are lit by their fittings; the darkest enclosed places are under the cargo lift's platform and under the fixed ramp, where no fitting hangs |
+| `node ferry/tools/shots.cjs <folder>` | 30 views, drawn on the Mac's graphics card (Apple M1 Pro), no errors on the page; every picture looked at (the audit) |
+
+Stage 2, each part through the same checks before its commit (the audit has what the pictures showed):
+
+| Stage 2 | `make.sh` | The six page checks | Pictures |
+|---|---|---|---|
+| Her decks (`deck_outfit.py`; the bulwarks' freeing ports and chock eyes; the helicopter deck 0.5 m farther aft) | "built: every check passed": 1,096,171 triangles, 7.09 MB; 0 pairs in 429 pieces; 0 of 13,314 afloat; 409 runs; 398 lamps. The first run stopped at `afloat.py`: 18 of the foremast's steps did not reach the pole where it tapers (they are bars through it now) | all passed: stairs 53, doors 112, travel 5, zoom 14, offline 5, bridge 26 | 30 views; the outside, deck and vehicle deck views looked at |
+| The funnels as casings round their uptakes; window frames, eyebrows, coamings | "built: every check passed": 1,162,103 triangles, 7.50 MB; 0 pairs in 440 pieces; 0 of 13,677 afloat; 409 runs; 398 lamps. Tried first in a copy of the builders, where `zfight.py` named a window's frame and the wall it stands on (a wall along her side bends between a window's ends; its corners and frame follow it now) | all passed: stairs 53, doors 112 (over each of the seven coamings, both ways), travel 5, zoom 14, offline 5, bridge 26 | 32 views (two close ones added: a funnel, the house's front); the outside and deck views looked at again |
+
+
+The page checks' constants are no longer a ship's: `bridge.cjs` reads where the bridge stands from the file's
+`ship.bridge`, `doors.cjs` walks the file's `doorways` and reads each door's place from its input, `zoom.cjs` stands on
+`ship.decks.main`, `offline.cjs` counts the stairs it was given. Found on the way and put right: the engine room's two
+gallery stairs could not be walked (a floor plate was missing before each stair's head and a bearer crossed its well);
+the after mooring stations' doors stood behind the stern ramp's cylinder pedestals; a plumb line on a doorway's middle
+fell through the seam between two floor plates (the check now looks 0.1 m to each side as well); `python3 -m http.server`
+now and then refused one of the thirty files the page asks for at once (the checks were run against the same folder
+served with a longer queue of waiting connections).
+
+
 ### 11 November 2026: the 68 m ship, her stern ramp and its lights
 
 Run in a cloud container (Blender 4.0.2 headless, Chromium with software GL), on the model as committed.
@@ -1053,6 +1298,9 @@ Run in a cloud container (Blender 4.0.2 headless, Chromium with software GL), on
 | `checks/offline.cjs` | 5 of 5 |
 | `yard/drawings/stern_drawing.py` | Writes JS3-304 and prints the cylinder's lengths (3.04, 4.26, 4.33 m) and where the floodlights' beam falls (5.21 m abaft the transom; the ramp ends at 4.18 m). The sheet was looked at in Chromium, whole and in two close-ups |
 
+- **Published to `main` as `323354b`** on the owner's "Publish now", **and live**: fourteen live files compared with
+  `main`, all the same; `data/ferry-atlas.webp` answers 404; the live page loaded in Chromium shows her at 68.4 m with
+  93 rooms, 16 stairs, 167 components, lowers the stern ramp, and raises no error.
 - **Run the page checks one at a time.** Six at once, `bridge.cjs` failed one check: a lever had turned 1.15° of its
   16.26° when the check looked, 1.5 s after the tap. Alone it passes.
 - **Looked at**: the stern in Cycles stills (three, from astern, from above and close to), and on the page itself at

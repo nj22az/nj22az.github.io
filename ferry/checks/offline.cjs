@@ -15,9 +15,11 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   const ready = () => page.waitForFunction(() => window.__ferry && document.body.classList.contains('ready'), null, { timeout: 120000 });
-  await page.goto('http://localhost:8765/ferry/');
+  await page.goto(process.env.CHISUM_URL || 'http://localhost:8765/ferry/');
   await ready();
-  await page.waitForFunction(() => navigator.serviceWorker.ready.then(() => true), null, { timeout: 20000 });
+  const whole = await page.evaluate(() => window.__ferry.stairs.length);      // how many stairs the model lists, with the network: the same must be there without it
+  await page.waitForFunction(() => navigator.serviceWorker.ready.then(() => true), null, { timeout: 60000 });
+  await page.click('#fn-more');                            // Save offline and Install are behind the rail's last icon
   await page.click('#offline');
   await page.waitForFunction(() => /Saved:|Not saved/.test(document.getElementById('what').textContent), null, { timeout: 120000 });
   const said = await page.textContent('#what');
@@ -27,8 +29,9 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   await page.reload(); await ready();
   const off = await page.evaluate(() => ({ stairs: window.__ferry.stairs.length, systems: window.__ferry.systems ? 1 : 0, label: document.getElementById('offline').textContent,
     wide: document.documentElement.scrollWidth }));
-  check(off.stairs === 16 && off.systems === 1 && off.label === 'Saved offline', `with the network cut the page opens again with the whole model (${off.stairs} stairs listed) and says "${off.label}"`);
+  check(whole > 0 && off.stairs === whole && off.systems === 1 && off.label === 'Saved offline', `with the network cut the page opens again with the whole model (${off.stairs} stairs listed) and says "${off.label}"`);
   check(off.wide <= 390, `on a phone the page is still no wider than the screen (${off.wide} px)`);
+  await page.click('#fn-more');
   await page.click('#install');
   const hint = await page.textContent('#what');
   check(/Home Screen/.test(hint), `Install: "${hint}"`);

@@ -134,6 +134,21 @@ Read it **before** drawing any model in this repository, the ferry first of all.
 - the build is not called built while `ferry/blender/zfight.py` names a pair, and the result is looked at from far and low
   as well: the check does not see faces a few millimetres apart.
 
+## Ship construction: the yard's permanent guide
+
+The owner, 12 November 2026: "add this book as a permanent guide for the shipconstruction". **Eyres and Bruce, *Ship
+Construction*, 7th edition** is the guide for how the Chisum (`ferry/`) and any ship drawn in this repository is built: its
+chapters answer the bottom, the shell and framing, bulkheads, decks, the ends, cargo access (doors, ramps, hoistable decks,
+lifts, lashing), piping, ventilation and the conventions. Read the chapter before a section is drawn and name it in the
+section's record; [ferry/yard/reference/general-arrangements-2026-11-12.md](ferry/yard/reference/general-arrangements-2026-11-12.md)
+says which chapter answers which question, and lists the real arrangement drawings the owner sent with it.
+
+- **The book and the drawings are their owners'.** The files are never added to this repository (it is public); a local
+  copy lives outside it. Facts are taken, said in the yard's own words; no text or figure is copied and no drawing traced.
+- **Audit after every step** (the owner, 11 November 2026: "I want you to make the whole ship realistic and audit yourself
+  after every step"): study the reference, build, then put the result beside the reference and list what does not match
+  yet, before going on. The record of a step says what was compared with what.
+
 ## Animation, character performances and films
 
 Read [ANIMATION_DIRECTION.md](ANIMATION_DIRECTION.md) when working on animated performances, scene/film direction or rendering. It adapts the owner's supplied *Opus 5.5 promt.pdf* for both Claude and Codex: timed briefs, a reproducible timeline, readable acting/cameras, contact checks, measured picture/sound review and honest reporting. Its offline film settings do not replace the interactive game's device budgets or existing character system.

@@ -101,7 +101,7 @@ const CONFIG = {
     {
       title: "Chisum",
       description:
-        "A 34.5 m car and passenger ferry as a 3D model: turn her, lift her decks apart, cut her open along her length and name every room aboard. A first look.",
+        "A 125 m ro-ro freight ferry as a 3D model, built as a yard builds a ship: turn her, lift her decks apart, cut her open, walk aboard from the lower hold to the wheelhouse, and see what every fitting on her bridge is and what feeds it.",
       url: "/ferry/",
       icon: "anchor",
       tags: ["3D Model", "Ferry", "Engineering"],
@@ -281,17 +281,17 @@ CONFIG.projectExplorer = [
     "category": "explore",
     "title": "Chisum",
     "eyebrow": "A FERRY, DECK BY DECK",
-    "summary": "A 34.5 m car and passenger ferry in 3D. Turn her, lift her six decks apart, cut her open along her length and name every room aboard.",
+    "summary": "A 125 m ro-ro freight ferry in 3D. Turn her, lift her eight decks apart, cut her open along her length, or walk aboard and work her bridge.",
     "url": "/ferry/",
     "action": "Explore the ferry",
     "format": "3D model viewer",
     "language": "English",
-    "status": "First look",
-    "firstTry": "Drag the Cut slider to open her from the starboard side and look into the engine room, then tap a room to name it.",
+    "status": "Work in progress",
+    "firstTry": "Press the walking figure to go aboard, pick the wheelhouse from the pin, then tap a lever or a screen to see what it is and what feeds it.",
     "features": [
       "Lift her six decks apart, from the double bottom to the compass deck",
-      "Cut her open along her length to see inside",
-      "50 named rooms, each with a note on what it is for"
+      "Walk aboard: 93 named rooms, 16 stairs, doors that open as you come to them",
+      "Her navigation bridge fitted out: tap a fitting to see what it is, what feeds it and what it talks to"
     ],
     "preview": "ferry"
   },

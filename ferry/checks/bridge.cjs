@@ -10,10 +10,12 @@
  * Needs Playwright with Chromium (software rendering is enough). Exits non-zero if a check fails.
  */
 const { chromium } = require('playwright');
-const url = process.argv[2] || 'http://localhost:8765/ferry/';
+const url = process.argv[2] || process.env.CHISUM_URL || 'http://localhost:8765/ferry/';
 // The bridge is measured in its own terms (metres from the first Chisum's transom, where it was designed: blender/bridge_place.py).
-// SHIFT carries those aboard the 68 m ship, HALF is half her length, DECK the bridge deck over her waterline.
-const SHIFT = 30.505, HALF = 34.2, DECK = 9.3, TOP = 12.0;
+// SHIFT carries those aboard her, HALF is half her length, DECK the bridge deck over her waterline, TOP the compass deck,
+// WING where the inner face of a wing's end bulwark stands off her centre line. All five are the file's own (its `ship`:
+// length and bridge), read when the page has opened: a ship of another size needs no change here.
+let SHIFT, HALF, DECK, TOP, WING;
 const Z = yard => yard + SHIFT - HALF;     // the bridge's measure along her → the ship's z
 const B = z => z + HALF - SHIFT;           // and back, for what is said
 const fails = [];
@@ -31,6 +33,8 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     return page;
   };
   const page = await open({ width: 1400, height: 900 });
+  ({ SHIFT, HALF, DECK, TOP, WING } = await page.evaluate(() => { const s = window.__ferry.ship; return { SHIFT: s.bridge.shift, HALF: s.length / 2, DECK: s.bridge.deck, TOP: s.bridge.top, WING: s.bridge.wing }; }));
+  check([SHIFT, HALF, DECK, TOP, WING].every(Number.isFinite), `the file says where her bridge stands: ${SHIFT} m forward of where it was designed, its deck ${DECK} m and the compass deck ${TOP} m over the waterline, the wings out to ${WING} m`);
 
   // ---- the register is read, and the model has its components
   const reg = await page.evaluate(() => {
@@ -79,7 +83,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
 
   // ---- a card says what feeds a component
   const card = await page.evaluate(() => { window.__ferry.systems.showComponent('NAV-01', { fly: false }); const t = document.querySelector('#card').innerText; window.__ferry.systems.clear(); return t; });
-  check(/Radar display/.test(card) && /BD2 way 1/.test(card) && /105 V/.test(card) && /Navigation data/.test(card) && !/null|undefined/.test(card), 'the radar\'s card names its supply (BD2 way 1, 105 V) and its nets');
+  check(/Radar display/.test(card) && /BD2 way 1/.test(card) && /230 V/.test(card) && /Navigation data/.test(card) && !/null|undefined/.test(card), 'the radar\'s card names its supply (BD2 way 1, 230 V) and its nets');
 
   // ---- on foot
   const walk = async (x, yard, yaw, seconds, key = 'KeyW') => page.evaluate(([x, z, yaw, seconds, key, DECK]) => {
@@ -95,29 +99,29 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const AHEAD = Math.PI, PORT = -Math.PI / 2, STBD = Math.PI / 2, ASTERN = 0;
 
   let w = await walk(0, 18.0, AHEAD, 2.6);
-  check(w.y0 !== null && w.z > Z(20.0) && /Wheelhouse/i.test(w.room), `from the corridor through its door into the wheelhouse (${B(w.z).toFixed(2)} m from the transom, "${w.room}")`);
+  check(w.y0 !== null && w.z > Z(20.0) && /Wheelhouse/i.test(w.room), `from the chart room through its door into the wheelhouse (${B(w.z).toFixed(2)} m in the bridge's own measure, "${w.room}")`);
   w = await walk(0, 20.4, AHEAD, 3);
   check(w.z < Z(21.5) && w.z > Z(20.9), `the steering stand and its wheel stop one (${B(w.z).toFixed(2)} m)`);
   w = await walk(1.7, 21.6, AHEAD, 3);
-  check(w.z < Z(22.30) - 0.1 && w.z > Z(21.9), `the console stops one (${B(w.z).toFixed(2)} m; its after face is at 22.30)`);
+  check(w.z < Z(22.12) - 0.1 && w.z > Z(21.8), `the console block stops one (${B(w.z).toFixed(2)} m; its grab rail is at 22.07 and its desk's after edge at 22.12)`);
   w = await walk(1.5, 20.85, PORT, 3);
-  check(w.x > 3.2 && w.x < 6.4 && /wing|wheelhouse/i.test(w.room), `through the port door, over its sill, onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
-  w = await walk(5.5, 20.85, PORT, 2);
-  check(w.x > 5.9 && w.x < 6.35, `the wing is carried to her side, and its bulwark holds one in (x ${w.x.toFixed(2)}; the bulwark's inner face is at 6.44)`);
+  check(w.x > 3.2 && w.x < WING && /wing|wheelhouse/i.test(w.room), `through the port door, over its sill, onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
+  w = await walk(WING - 0.94, 20.85, PORT, 2);
+  check(w.x > WING - 0.54 && w.x < WING - 0.09, `the wing is carried to her side, and its bulwark holds one in (x ${w.x.toFixed(2)}; the bulwark's inner face is at ${WING})`);
   w = await walk(-1.5, 20.85, STBD, 3);
-  check(w.x < -3.2 && w.x > -6.4 && /wing|wheelhouse/i.test(w.room), `through the starboard door onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
-  w = await walk(6.0, 20.2, ASTERN, 2);           // the side deck is 1.2 m wide between the accommodation and her side
-  check(w.z < Z(19.4), `from the port wing aft, off it at its open end onto the side deck (${B(w.z).toFixed(2)} m)`);
+  check(w.x < -3.2 && w.x > -WING && /wing|wheelhouse/i.test(w.room), `through the starboard door onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
+  w = await walk(6.0, 20.2, ASTERN, 2);           // abaft the wing the bridge deck is open, each side of the house
+  check(w.z < Z(19.4), `from the port wing aft, off it at its open end onto the bridge deck (${B(w.z).toFixed(2)} m)`);
   w = await walk(2.0, 21.7, PORT, 2);
-  check(w.x < 2.6, `the port wall and the log desk stop one (x ${w.x.toFixed(2)})`);
+  check(w.x < 2.6, `the settee under the port windows stops one (x ${w.x.toFixed(2)}; its front is at 2.31)`);
   w = await walk(-2.5, 20.9, ASTERN, 3);
-  check(w.y < 6.6 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the forward lounge (${B(w.z).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
+  check(w.y < DECK - 2.0 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the deck below (${B(w.z).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
   w = await walk(-1.5, 20.9, ASTERN, 3);
   check(w.z > Z(20.14), `the chart table stops one (${B(w.z).toFixed(2)} m; its front is at 20.15)`);
   w = await walk(0, 21.0, ASTERN, 2.5);
-  check(w.z < Z(19.4) && /corridor/i.test(w.room), `and back out through the door into the corridor (${B(w.z).toFixed(2)} m, "${w.room}")`);
+  check(w.z < Z(19.4) && /chart room/i.test(w.room), `and back out through the door into the chart room (${B(w.z).toFixed(2)} m, "${w.room}")`);
 
-  // the top deck and the compass deck are one level: from the top deck forward onto the compass deck, between the two rails' ends
+  // the house top and the compass deck are one level: from the house top forward onto the compass deck, between the two rails' ends
   const roof = await page.evaluate(([z, TOP]) => {
     const f = window.__ferry;
     if (!f.state.walk) f.enterWalk();
@@ -129,7 +133,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     return { y0, y: w.y, z: w.z, room: f.whereOnFoot() };
   }, [Z(18.4), TOP]);
   check(roof.y0 !== null && Math.abs(roof.y0 - TOP) < 0.03 && Math.abs(roof.y - TOP) < 0.03 && roof.z > Z(19.6),
-    `from the top deck forward onto the compass deck, level with it (${roof.y0 === null ? 'no floor' : roof.y0.toFixed(2)} to ${roof.y.toFixed(2)} m up, ${B(roof.z).toFixed(2)} m from the transom, "${roof.room}")`);
+    `from the house top forward onto the compass deck, level with it (${roof.y0 === null ? 'no floor' : roof.y0.toFixed(2)} to ${roof.y.toFixed(2)} m up, ${B(roof.z).toFixed(2)} m from the transom, "${roof.room}")`);
 
   // a tap on foot names what is tapped
   const named = await page.evaluate(([z, DECK]) => {
@@ -151,7 +155,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     f.walkTo(0.85, z, Math.PI, -0.6, DECK);          // beside the stand, where a walker can stand upright
     f.walkFor(0.5);
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const grip = new L.camera.position.constructor(0.458, DECK + 1.17, zl).project(L.camera);
+    const grip = new L.camera.position.constructor(0.458, DECK + 1.075, zl).project(L.camera);   // the grip's middle: the head stands in the desk's after edge (systems/bridge.py: HAND, HEAD)
     const c = document.querySelector('canvas').getBoundingClientRect();
     f.nameOnFoot(c.left + (grip.x + 1) / 2 * c.width, c.top + (1 - grip.y) / 2 * c.height);
     const said = document.querySelector('#what').textContent;
@@ -164,7 +168,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const all = f.movers();
     const worked = ['lever-engine-p', 'lever-engine-s', 'lever-thruster', 'tiller'].map(id => f.control(id)).filter(k => k && k.steps && k.fitting);
     return { said, card: f.systems.state.component, at: f.control('lever-engine-p').at, turned, wheel, n: all.length, worked: worked.length };
-  }, [Z(22.0), Z(22.60), DECK]);
+  }, [Z(21.85), Z(22.255), DECK]);
   const mark = 16.26;
   check(lever.said === 'Port engine lever: slow ahead' && lever.card === 'PRP-01' && lever.at === 4,
     `on foot, a tap on the port engine lever moves it a notch and shows its card ("${lever.said}", ${lever.card})`);
@@ -190,6 +194,23 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(!small.wide && small.tabH >= 44, `on a phone the page is not wider than the screen and the tabs are ${Math.round(small.tabH)} px high`);
   check(small.card.left >= 0 && small.card.right <= 390 && small.card.bottom <= small.barTop + 1 && small.card.top >= 0, `on a phone the card stands over the bar, inside the screen (${Math.round(small.card.top)} to ${Math.round(small.card.bottom)} px, the bar at ${Math.round(small.barTop)})`);
 
+  // ---- X-ray (the owner, 11 November 2026: "an X-ray function to show the electrical wiring"): her structure a ghost of itself,
+  // every run of the register drawn through it by what it carries, a legend that says which is which and how much; off again, she is as she was.
+  const xr = await page.evaluate(async () => {
+    const f = window.__ferry, mats = f.look.materials;
+    const solid = () => mats.filter(m => !m.transparent).length;
+    const before = solid();
+    document.querySelector('#fn-xray').click();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const rows = [...document.querySelectorAll('#legend li')].map(li => ({ name: li.children[1].textContent, m: parseFloat(li.children[2].textContent) }));
+    const on = { ghost: solid(), most: Math.max(...mats.map(m => m.opacity)), shown: !document.querySelector('#legend').hidden, xray: f.systems.state.xray };
+    document.querySelector('#fn-xray').click();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    return { before, rows, on, after: solid(), hidden: document.querySelector('#legend').hidden };
+  });
+  check(xr.on.ghost === 0 && xr.on.most <= 0.12 && xr.on.shown && xr.on.xray && xr.rows.length >= 5 && xr.rows.every(r => r.m > 0),
+    `X-ray: her structure is a ghost of itself and ${xr.rows.length} kinds of run are drawn through it (${xr.rows.map(r => `${r.m} m`).join(', ')})`);
+  check(xr.after === xr.before && xr.hidden, `X-ray off: she is solid again (${xr.after} of her materials, as before)`);
   check(errors.length === 0, `no errors in the console (${errors.slice(0, 3).join(' | ') || 'none'})`);
   await browser.close();
   console.log(fails.length ? `\n${fails.length} FAILED` : '\nall passed');

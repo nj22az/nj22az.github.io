@@ -11,12 +11,21 @@ Nothing here is class-approved or construction information.
 SHIP = dict(name='Chisum', length=68.4, type='car and passenger ferry')
 
 # ---- What she is supplied by: the answer to "what is the main?"
+# The owner, 11 November 2026: "This ship has weird mains normal is 690/440/230 , the ship is not built to Japanese main".
+# She had the Minato Maru's: 440 V with 105 V for lighting and small power, as a Japanese coastal ship has. Hers are the
+# three a ship is normally built to: 690 V where the power is made and where the largest motors take it, 440 V for the rest
+# of her power, 230 V for lighting, small power and everything on the bridge. All three at 60 Hz, three-wire, insulated
+# from the hull.
 SUPPLY = dict(
+    high=dict(label='690 V three-phase, 60 Hz', volts=690, phases=3, hz=60,
+              text='Where her power is made: the three generators and the main switchboard, and the largest motors on it '
+                   '(the bow thruster). Three-wire, insulated from the hull, earth-fault lamps on the board.'),
     main=dict(label='440 V three-phase, 60 Hz', volts=440, phases=3, hz=60,
-              text='The main supply: three-wire, insulated from the hull (no neutral, earth-fault lamps on each board). '
-                   'Motors, the galley range and the water heater take it directly.'),
-    small=dict(label='105 V single-phase, 60 Hz', volts=105, phases=1, hz=60,
-               text='Lighting and small power, through 440/105 V transformers: two-wire, both poles insulated and both switched.'),
+              text='The rest of her power, through two 690/440 V transformers, either of which carries it: pumps, fans, the steering '
+                   'gear, the ramps, the galley range and the water heater. Three-wire, insulated. The shore connection and the '
+                   'emergency generator are 440 V.'),
+    small=dict(label='230 V, 60 Hz', volts=230, phases=1, hz=60,
+               text='Lighting, small power and the bridge, through 440/230 V transformers: two-wire, both poles insulated and both switched.'),
     dc=dict(label='24 V direct current', volts=24, phases=0, hz=0,
             text='Two-wire, insulated, from two battery banks in the emergency generator room. The general service bank feeds '
                  'navigation and control and is the transitional source: it carries the general alarm, the public address, the '
@@ -27,11 +36,11 @@ SUPPLY = dict(
 
 SOURCES = [
     # The 68 m ship's general arrangement (blender/ga.py): three of about 320 kW in an auxiliary engine room of their own.
-    dict(id='G1', name='Diesel generator No. 1', rating='about 400 kVA, 320 kW, 450 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
-    dict(id='G2', name='Diesel generator No. 2', rating='about 400 kVA, 320 kW, 450 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
-    dict(id='G3', name='Diesel generator No. 3', rating='about 400 kVA, 320 kW, 450 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
-    dict(id='SHORE', name='Shore connection at Minato', rating='50 kVA, 440 V, 60 Hz', where='Car deck, port side', feeds='MSB', built=False),
-    dict(id='EG', name='Emergency generator', rating='40 kVA, 32 kW, 445 V, 60 Hz', where='Emergency generator room, top deck', feeds='ESB', built=False),
+    dict(id='G1', name='Diesel generator No. 1', rating='about 400 kVA, 320 kW, 690 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
+    dict(id='G2', name='Diesel generator No. 2', rating='about 400 kVA, 320 kW, 690 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
+    dict(id='G3', name='Diesel generator No. 3', rating='about 400 kVA, 320 kW, 690 V, 60 Hz', where='Auxiliary engine room', feeds='MSB', built=False),
+    dict(id='SHORE', name='Shore connection', rating='50 kVA, 440 V, 60 Hz', where='Car deck, port side', feeds='PSB', built=False),
+    dict(id='EG', name='Emergency generator', rating='40 kVA, 32 kW, 450 V, 60 Hz', where='Emergency generator room, top deck', feeds='ESB', built=False),
     dict(id='BAT-G', name='24 V battery bank, general service and transitional', rating='24 V, 200 Ah (calculation JS8-855)', where='Emergency generator room', feeds='DCB', built=False),
     dict(id='BAT-R', name='24 V battery bank, radio', rating='24 V, 100 Ah (calculation JS8-855)', where='Emergency generator room', feeds='DCB-R', built=False),
 ]
@@ -41,26 +50,29 @@ SOURCES = [
 # control booth to the wheelhouse and 20 m from the emergency generator room, and 3 m of each is measured in bridge.py.
 # They are the Minato Maru's lengths until the sections between are routed.
 BOARDS = [
-    dict(id='MSB', name='Main switchboard', volts=440, kind='AC', where='Engine control room', fed_by=['G1', 'G2', 'G3', 'SHORE'], built=False),
-    dict(id='LB', name='Lighting and small-power board', volts=105, kind='AC', where='Engine control room', fed_by=['MSB'], ext=30.0, built=False,
-         text='The 105 V section of the main board, behind the lighting transformers.'),
-    dict(id='ESB', name='Emergency switchboard', volts=105, kind='AC', where='Emergency generator room', fed_by=['MSB', 'EG'], ext=17.0, built=False,
-         text='Fed from the main board through the bus-tie while there is main power, and from the emergency generator within 45 s of '
-              'losing it; its 105 V section is behind the 5 kVA emergency lighting transformer.'),
+    dict(id='MSB', name='Main switchboard, 690 V', volts=690, kind='AC', where='Engine control room', fed_by=['G1', 'G2', 'G3'], built=False,
+         text='The three generators in parallel, the bow thruster, and the two transformers to the 440 V section.'),
+    dict(id='PSB', name='Main switchboard, 440 V section', volts=440, kind='AC', where='Engine control room', fed_by=['MSB', 'SHORE'], built=False,
+         text='Behind two 690/440 V transformers, either of which carries it; the shore connection comes in here. Her motors other than the thruster.'),
+    dict(id='LB', name='Lighting and small-power board', volts=230, kind='AC', where='Engine control room', fed_by=['PSB'], ext=30.0, built=False,
+         text='The 230 V section of the main board, behind the 440/230 V lighting transformers.'),
+    dict(id='ESB', name='Emergency switchboard', volts=230, kind='AC', where='Emergency generator room', fed_by=['PSB', 'EG'], ext=17.0, built=False,
+         text='A 440 V board, fed from the main board\'s 440 V section through the bus-tie while there is main power, and from the emergency '
+              'generator within 45 s of losing it; its 230 V section, which feeds the bridge, is behind the 5 kVA emergency lighting transformer.'),
     # SOLAS II-1/42.4 (read for PA-001 revision 1): the transitional source is an accumulator battery that takes over by
-    # itself and carries, among other things, the navigation lights for half an hour. They are 105 V lanterns, so the
+    # itself and carries, among other things, the navigation lights for half an hour. They are 230 V lanterns, so the
     # battery feeds them through an inverter.
-    dict(id='TSB', name='Emergency switchboard, transitional section', volts=105, kind='AC', where='Emergency generator room', fed_by=['ESB', 'BAT-G'], ext=17.0, built=False,
+    dict(id='TSB', name='Emergency switchboard, transitional section', volts=230, kind='AC', where='Emergency generator room', fed_by=['ESB', 'BAT-G'], ext=17.0, built=False,
          text='A section of the emergency switchboard that is never dead: fed from the board while it is alive, and without a break from the '
-              'general service battery through a 1 kVA inverter (24 V DC to 105 V) when it is not. It feeds the navigation light panel.'),
+              'general service battery through a 1 kVA inverter (24 V DC to 230 V) when it is not. It feeds the navigation light panel.'),
     dict(id='DCB', name='24 V DC board, general service bank', volts=24, kind='DC', where='Emergency generator room', fed_by=['BAT-G'], ext=17.0, built=False),
     dict(id='DCB-R', name='24 V DC board, radio bank', volts=24, kind='DC', where='Emergency generator room', fed_by=['BAT-R'], ext=17.0, built=False,
          text='The reserve source of energy of the radio installation: it feeds the radio and nothing else.'),
     # The two steering gear power units' own circuits (SOLAS II-1/30: two exclusive circuits, one of them by the emergency
     # switchboard). Each steering control system takes its supply from its own power unit's circuit, in the steering-gear
     # room (II-1/29). 45 m of cable to the bridge is an estimate until the sections between are routed.
-    dict(id='SG1', name='Steering gear power unit No. 1, control circuit', volts=105, kind='AC', where='Steering-gear room', fed_by=['MSB'], ext=45.0, built=False),
-    dict(id='SG2', name='Steering gear power unit No. 2, control circuit', volts=105, kind='AC', where='Steering-gear room', fed_by=['ESB'], ext=45.0, built=False),
+    dict(id='SG1', name='Steering gear power unit No. 1, control circuit', volts=230, kind='AC', where='Steering-gear room', fed_by=['PSB'], ext=45.0, built=False),
+    dict(id='SG2', name='Steering gear power unit No. 2, control circuit', volts=230, kind='AC', where='Steering-gear room', fed_by=['ESB'], ext=45.0, built=False),
 ]
 
 # ---- Places outside the section that its nets and pipes run to. Named, not yet registered: they become components when

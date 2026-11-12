@@ -1,7 +1,7 @@
 {
   "name": "Chisum: the ferry, deck by deck",
   "short_name": "Chisum",
-  "description": "A 3D model of the Chisum, a 68 m car and passenger ferry: turn her, take her apart, walk through her.",
+  "description": "A 3D model of the Chisum, a 125 m ro-ro freight ferry: turn her, take her apart, walk through her.",
   "start_url": "/ferry/",
   "scope": "/ferry/",
   "display": "standalone",

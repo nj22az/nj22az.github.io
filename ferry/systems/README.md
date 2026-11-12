@@ -29,9 +29,9 @@ python3 ferry/systems/register.py --boxes <part file>   # with a fresh part file
 
 - **Main: 440 V three-phase, 60 Hz**, three-wire and insulated, from two diesel generators of 100 kW (125 kVA) on the main
   switchboard in the engine control room, or 50 kVA from the shore at Minato.
-- **Lighting and small power: 105 V single-phase**, through transformers; both poles insulated and switched.
+- **Lighting, small power and the bridge: 230 V**, through 440/230 V transformers; both poles insulated and switched. (Until 11 November 2026 this was 105 V, the Minato Maru's; the owner: "normal is 690/440/230 , the ship is not built to Japanese main". Power is made at 690 V and used at 440 V: `ship.py`.)
 - **Emergency:** a 32 kW (40 kVA) generator on the bridge deck feeds the emergency switchboard, which is otherwise fed from the
-  main board; its 105 V section is behind a 5 kVA transformer.
+  main board; its 230 V section is behind a 5 kVA transformer.
 - **24 V direct current** from two battery banks in the emergency generator room, each on its own charger: the radio bank,
   which feeds the radio and nothing else; and the general service bank, for navigation and control, which is also the
   **transitional source**: through the 45 seconds the emergency generator takes to start it carries the alarm and the public
@@ -44,8 +44,8 @@ systems, no direct current to any consumer, no fire detection or general alarm c
 
 | Board | Where | Fed from | Feeds |
 |---|---|---|---|
-| **BD1** Wheelhouse distribution, 105 V | aft wall | the lighting board, 40 A, 2 × 16 mm², 33.5 m, 2.2 % | lighting, wing lights and floodlights, wipers, sockets, air conditioner, chart system and cameras, dimmers; 2.4 kW connected |
-| **BD2** Emergency distribution, 105 V | aft wall | the emergency switchboard, 16 A, 2 × 4 mm² fire-resistant, 24.5 m, 1.6 % | radar, public address and general alarm, emergency light, whistle control, the propulsion control's second supply; 0.6 kW |
+| **BD1** Wheelhouse distribution, 230 V | aft wall | the lighting board, 25 A, 2 × 6 mm², 33.5 m, 1.7 % | lighting, wing lights and floodlights, wipers, sockets, air conditioner, chart system and cameras, the pantry, dimmers; 3.4 kW connected |
+| **BD2** Emergency distribution, 230 V | aft wall | the emergency switchboard, 16 A, 2 × 4 mm² fire-resistant, 24.5 m, 0.3 % | radar, public address and general alarm, emergency light, whistle control, the propulsion control's second supply; 0.6 kW |
 | **DC1** 24 V, navigation and control | aft wall | the general service battery, 40 A, 2 × 35 mm² fire-resistant, 24.5 m, 3.3 % | GPS, AIS, satellite compass, sounder, log, navigation data, autopilot, propulsion and thruster control, talkback, alarms, repeaters, night and transitional lighting, the amplifier's battery supply; 0.6 kW |
 | **DC2** 24 V, radio | aft wall | the radio battery, 25 A, 2 × 25 mm² fire-resistant, 25 m, 2.6 % | both VHF sets, NAVTEX, the GPS's second supply, the portable sets' charger; 340 W |
 | **NLP** Navigation light panel | console | two feeders of its own: the emergency switchboard's transitional section (10 A, 2 × 2.5 mm² fire-resistant, 29.5 m, 2.8 %) and the main lighting board (10 A, 2 × 4 mm², 44 m, 2.6 %), by different sides of the room | one monitored way a lantern: masthead, sidelights, stern, anchor, two pairs of not-under-command lights; 540 W |

@@ -15,7 +15,7 @@ This folder holds the paperwork.
 | | |
 |---|---|
 | **The yard** | Johansson Shipyard. It designs and builds her: the model (`../blender/`), the register of her systems (`../systems/`), the drawings and calculations listed in `document-register.csv` |
-| **The ship** | The Chisum, newbuilding No. 1 (a working number until the owner gives the yard's own): a 68.4 m car and passenger ferry for the Minato to Kitano-jima service. She was first built at 34.5 m; the owner had her rebuilt at 68 m on 11 November 2026 (`../blender/ga.py`, drawing JS1-102), and the bridge that class approved was landed on the new ship whole |
+| **The ship** | The Chisum, newbuilding No. 1 (a working number until the owner gives the yard's own): a 124.8 m ro-ro freight ferry for the Minato to Kitano-jima service (revision D of her general arrangement, 12 November 2026: `design/revision-D.md`, `../blender/ga.py`, drawing JS1-102). She was first built at 34.5 m, rebuilt at 68.4 m on 11 November 2026 as a car and passenger ferry, and rebuilt again as the freight ferry on 12 November; the bridge that class approved was landed on each new ship whole |
 | **The owner** | The owner of this site, for whom she is built, and who decides |
 | **Class** | A surveyor who reads what the yard submits, as a classification society's plan approval and survey departments would, and writes it up: comment sheets on drawings (`class/PA-…`), survey reports on the build (`class/SR-…`), and, when everything is closed, her certificates |
 

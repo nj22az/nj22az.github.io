@@ -1,11 +1,21 @@
 """
-The shell: her plating outside in her paint, the same plating's inner face in primer, the thruster tunnel through the
-forefoot, the transom with the stern door's opening, and the bulwarks of the open decks aft.
+The shell: her plating outside in her paint, the same plating's inner face in primer, her bulb, the thruster tunnel
+through the forebody, the transom with the stern door's opening, and the bulwarks, which are her side plating carried up
+over the upper deck's edge with her flare.
 
-The shell is drawn from the lines (lines.py) in two parts, as they are: the lower body from the keel to the car deck's
-edge, and the topsides from there to the upper deck. Each paint zone is its own sheet, so a paint line is a line and not
-a blur, and each plate (a strake between two butts) takes the light a little differently from its neighbour. Every
-vertex carries the normal the lines give it, so the plating is fair however it is cut into triangles.
+The shell is drawn from the lines (lines.py) in the parts they have: the lower body from the keel to the main deck's edge,
+the topsides from there to the upper deck's edge, the bulwark from there to the rail, and the bulb. Each paint zone is its
+own sheet, so a paint line is a line and not a blur, and each plate (a strake between two butts) takes the light a little
+differently from its neighbour. Every vertex carries the normal the lines give it, so the plating is fair however it is
+cut into triangles.
+
+Her paint (spec.py): red antifouling to 25 cm over the waterline, a white line of 20 cm, and the line's deep teal from
+there to the rail.
+
+How the bulb is joined. The bulb and the lower body are two bodies that pass through each other at the forefoot
+(lines.hull_x is the broader of the two). Each is drawn as its own sheet, and of each sheet the pieces that lie wholly
+inside the other body are left out; so are their inner faces. The bulb is therefore hollow and open to the fore peak, as
+it is in a ship, and no plating is drawn where none is.
 """
 from math import pi, sin, cos
 from mathutils import Vector
@@ -24,28 +34,41 @@ def stations(end):
     return out
 
 
-# The lower body ends where the stem passes the car deck; its last station is a point. A station stands where the stem
-# passes the boot top, so that the antifouling's edge runs level into the stem and ends on it.
-BOOT_AT_STEM = round(L.stem_yard(L.above_keel(S.BOOT)), 4)
-YARDS = sorted(set(stations(L.STEM_AT_CAR - 0.1) + [BOOT_AT_STEM])) + [L.STEM_AT_CAR - 0.08, L.STEM_AT_CAR]
+# The lower body ends where the stem passes the main deck; its last station is a point. A station stands where the stem
+# passes each paint line, so that the line's edge runs level into the stem and ends on it; and one where each bulwark
+# begins and ends.
+PAINT_AT_STEM = [round(L.stem_yard(L.above_keel(v)), 4) for v in (S.BOOT, S.BOOT + S.BOOT_LINE)]
+ENDS = sorted({round(v, 4) for a, b in S.BULWARKS for v in (a, b) if 0.0 < v < L.LENGTH})
+YARDS = sorted(set(stations(L.STEM_AT_MAIN - 0.1) + PAINT_AT_STEM + [v for v in ENDS if v < L.STEM_AT_MAIN - 0.1])) + [L.STEM_AT_MAIN - 0.08, L.STEM_AT_MAIN]
 ZS = [L.Z(y) for y in YARDS]
 # The topsides run on to the stem head.
-TOP_YARDS = YARDS[:-2] + [y for y in stations(L.LENGTH - 0.1) if y > L.STEM_AT_CAR - 0.25] + [L.LENGTH - 0.06, L.LENGTH]
+DECK_END = round(L.deck_end(), 4)
+TOP_YARDS = YARDS[:-2] + sorted(set([y for y in stations(L.LENGTH - 0.1) if y > L.STEM_AT_MAIN - 0.25] + [DECK_END])) + [L.LENGTH - 0.06, L.LENGTH]
 TOP_ZS = [L.Z(y) for y in TOP_YARDS]
-# Rows of plating in each paint zone of the lower body, keel to car deck, and where the strakes' seams fall among them.
-# With these rows (set closer round the turn of the bilge: lines.girth_psis) the plating keeps within a few millimetres of
-# her lines; the frames and floors stand 12 mm inside the lines, so they stay behind it (build.py measures it).
+# Rows of plating in each paint zone of the lower body, keel to main deck, and where the strakes' seams fall among them.
+# With these rows (set closer round the turn of the bilge: lines.girth_psis) the plating keeps within two millimetres of
+# her lines in every section; the frames and floors stand 12 mm inside the lines, so they stay behind it (build.py measures it).
 ZONES = (
-    dict(id='bottom', rows=24, strakes=(0, 4, 8, 12, 16, 20, 24), colour=S.ANTIFOULING, spread=0.04),
-    dict(id='topside', rows=8, strakes=(0, 4, 8), colour=S.WHITE, spread=0.02),
+    dict(id='bottom', part='bottom', rows=44, strakes=tuple(range(0, 45, 4)), colour=S.ANTIFOULING, spread=0.04),
+    dict(id='line', part='topside', rows=3, strakes=(0, 3), colour=S.WHITE, spread=0.0),
+    dict(id='hull', part='topside', rows=8, strakes=(0, 4, 8), colour=S.HULL, spread=0.03),
 )
-# The topsides' rows: the heights of spec.TOPSIDE_LEVELS, each in its paint.
-TOP_ROWS = (S.WHITE, S.WHITE, S.WHITE, S.TEAL, S.WHITE)
 PSI_SCALE = 4.0     # psi is stretched by this beside z when a hole is cut, so its triangles are well shaped
+INSIDE = 0.03       # a point this far inside the other body is inside it
 
 
 def zone_bounds(z):
-    return (0.0, L.psi_at(S.BOOT, z), pi / 2)
+    return (0.0, L.psi_at(S.BOOT, z), L.psi_at(S.BOOT + S.BOOT_LINE, z), pi / 2)
+
+
+def in_bulb(p):
+    """Whether a point lies inside the bulb, clear of its surface."""
+    return abs(p[0]) < L.bulb_x(p[1], p[2]) - INSIDE
+
+
+def in_main(p):
+    """Whether a point lies inside the hull without her bulb, clear of its plating."""
+    return abs(p[0]) < L.main_x(p[1], p[2]) - INSIDE
 
 
 def _plate_colour(zone, zone_index, side, yards=YARDS):
@@ -61,30 +84,38 @@ def _plate_colour(zone, zone_index, side, yards=YARDS):
 
 
 def _area(part, f):
-    p = [Vector(part.v[i]) for i in f]
-    n = Vector((0, 0, 0))
-    for a, b in zip(p, p[1:] + p[:1]):
-        n += a.cross(b)
-    return n.length / 2
+    """A face's area, from its edges measured from its first corner (in double precision: see shipyard.Part.orient)."""
+    o = part.v[f[0]]
+    nx = ny = nz = 0.0
+    for i, j in zip(f[1:], f[2:]):
+        a = [part.v[i][k] - o[k] for k in range(3)]
+        b = [part.v[j][k] - o[k] for k in range(3)]
+        nx += a[1] * b[2] - a[2] * b[1]
+        ny += a[2] * b[0] - a[0] * b[2]
+        nz += a[0] * b[1] - a[1] * b[0]
+    return (nx * nx + ny * ny + nz * nz) ** 0.5 / 2
 
 
-def _emit(part, f, colour):
+def _emit(part, f, colour, hidden=None):
     """A face of the plating, where it is one: toward the stem a sheet's rows close on each other, and a four-cornered
-    piece becomes three-cornered or nothing. No face without area is drawn."""
+    piece becomes three-cornered or nothing. No face without area is drawn, and none that lies wholly inside the other
+    body (`hidden`)."""
     kept = []
     for i in f:
         if not any((Vector(part.v[i]) - Vector(part.v[k])).length < 1e-6 for k in kept):
             kept.append(i)
     if len(kept) >= 3 and _area(part, kept) > 1e-9:
+        if hidden and all(hidden(part.v[i]) for i in kept):
+            return False
         part.face(tuple(kept), colour)
         return True
     return False
 
 
-def _twin(part, twin, start, thickness=S.SHELL):
+def _twin(part, twin, start, thickness=S.SHELL, colour=None):
     """The inner face of the faces made since `start`: the same triangles, each corner moved the plate's thickness inward
     square to the plating, so the two faces lie parallel everywhere and one can never come through the other."""
-    primer = srgb(S.PRIMER)
+    primer = colour or srgb(S.PRIMER)
     inner_of = {}
     for f in part.f[start:]:
         for i in f:
@@ -122,11 +153,12 @@ def _sheet(part, zs, psi_rows, colour, side, hole=None, twin=None):
         skip = {(i, j) for i in range(i0, i1) for j in range(j0, j1)}
     start = len(part.f)
     for i in range(len(zs) - 1):
+        near_bulb = zs[i + 1] > L.Z(L.BULB_TAIL)
         for j in range(len(psi_rows[0]) - 1):
             if (i, j) in skip:
                 continue
             a, b, c, d = ids[i][j], ids[i + 1][j], ids[i + 1][j + 1], ids[i][j + 1]
-            _emit(part, (a, d, c, b) if side > 0 else (a, b, c, d), colour(i, j))
+            _emit(part, (a, d, c, b) if side > 0 else (a, b, c, d), colour(i, j), hidden=in_bulb if near_bulb else None)
     ring = None
     if hole:
         i0, i1, j0, j1 = block
@@ -134,7 +166,7 @@ def _sheet(part, zs, psi_rows, colour, side, hole=None, twin=None):
                  [(i, j1) for i in range(i1, i0, -1)] + [(i0, j) for j in range(j1, j0, -1)])
         outer_ids = [ids[i][j] for i, j in outer]
         outer_2d = [Vector((zs[i], psi_rows[i][j] * PSI_SCALE, 0)) for i, j in outer]
-        ring, ring_2d, count = [], [], hole.get('count', 44)
+        ring, ring_2d, count = [], [], hole.get('count', 56)
         for k in range(count):
             a = 2 * pi * k / count
             z, y = hole['z'] + hole['r'] * cos(a), hole['y'] + hole['r'] * sin(a)
@@ -153,17 +185,22 @@ def _sheet(part, zs, psi_rows, colour, side, hole=None, twin=None):
     return [part.v[i] for i in ring], ([twin.v[inner_of[i]] for i in ring] if twin is not None else None)
 
 
+def topside_levels(z):
+    """The heights of the topsides' rows at z: the level rows of spec.TOPSIDE_LEVELS, then the upper deck's edge."""
+    return tuple(S.TOPSIDE_LEVELS) + (L.deck_y(z),)
+
+
 def topside_rows(z):
     """The topsides' rows at z, foot to head: (x, y) on the port side. Each row keeps its height; forward of where the stem
-    passes the car deck the rows below the stem end on it."""
+    passes the main deck the rows below the stem end on it."""
     y0 = L.topside_foot(z)[1]
-    return [(L.topside_x(max(y0, lv), z), max(y0, lv)) for lv in S.TOPSIDE_LEVELS]
+    return [(L.topside_x(max(y0, lv), z), max(y0, lv)) for lv in topside_levels(z)]
 
 
 def _open(yard_a, yard_b, row):
     """Whether the cell of the topsides between two stations, in a row, is one of her openings (spec)."""
     mid = (yard_a + yard_b) / 2
-    m, d = S.MOORING_PORT, S.SHELL_DOOR
+    m, d = S.MOORING_PORT, S.PILOT_DOOR
     if row == 1 and m['yard'][0] < mid < m['yard'][1]:
         return True
     return row in (0, 1) and d['yard'][0] < mid < d['yard'][1]
@@ -175,23 +212,25 @@ def _topsides(top, inner, side):
     for z in TOP_ZS:
         n = L.topside_normal(z)
         ids.append([top.vert((side * x, y, z), (side * n[0], n[1], n[2])) for x, y in topside_rows(z)])
+    rows = len(S.TOPSIDE_LEVELS)
     start = len(top.f)
     cells = {}
+    teal = srgb(S.HULL)
     for i in range(len(TOP_ZS) - 1):
-        for j, paint in enumerate(TOP_ROWS):
+        for j in range(rows):
             if _open(TOP_YARDS[i], TOP_YARDS[i + 1], j):
                 continue
             a, b, c, d = ids[i][j], ids[i + 1][j], ids[i + 1][j + 1], ids[i][j + 1]
             key = 20 + j + (50 if side < 0 else 0)
             butt = int((TOP_YARDS[i] + 0.01 + 3.0 * (j % 3)) // S.STRAKE_BUTT)
-            if _emit(top, (a, d, c, b) if side > 0 else (a, b, c, d), tint(srgb(paint), plate_shade(key, butt, 0.02 if paint != S.TEAL else 0.03))):
+            if _emit(top, (a, d, c, b) if side > 0 else (a, b, c, d), tint(teal, plate_shade(key, butt, 0.03))):
                 cells[(i, j)] = True
     top.orient(start, None)
     inner_of = _twin(top, inner, start)
     # The plating's own edge round each opening: between its two faces.
-    edge = tint(srgb(S.WHITE), 0.9)
+    edge = tint(teal, 0.8)
     for i in range(len(TOP_ZS) - 1):
-        for j in range(len(TOP_ROWS)):
+        for j in range(rows):
             if not _open(TOP_YARDS[i], TOP_YARDS[i + 1], j):
                 continue
             for (a, b), (ni, nj) in (((ids[i][j], ids[i][j + 1]), (i - 1, j)), ((ids[i + 1][j + 1], ids[i + 1][j]), (i + 1, j)),
@@ -199,7 +238,8 @@ def _topsides(top, inner, side):
                 if (ni, nj) in cells and a in inner_of and b in inner_of:
                     first = len(top.f)
                     top.face((a, b, inner_of_point(top, inner, inner_of[b]), inner_of_point(top, inner, inner_of[a])), edge)
-                    mid = ((TOP_ZS[i] + TOP_ZS[i + 1]) / 2, (S.TOPSIDE_LEVELS[j] + S.TOPSIDE_LEVELS[j + 1]) / 2)
+                    lv = topside_levels(TOP_ZS[i])
+                    mid = ((TOP_ZS[i] + TOP_ZS[i + 1]) / 2, (lv[j] + lv[j + 1]) / 2)
                     top.orient(first, lambda c, mid=mid: (0, mid[1] - c[1], mid[0] - c[2]))
 
 
@@ -208,13 +248,102 @@ def inner_of_point(top, inner, k):
     return top.vert(inner.v[k], None)
 
 
+def bulwark_rows(z):
+    """The bulwark at z, foot to head: (x, y) on the port side: from the upper deck's edge (or the stem, where it has
+    passed the deck) to the rail."""
+    y0 = max(L.deck_y(z), L.topside_foot(z)[1])
+    y1 = max(y0, L.rail_y(z))
+    return [(L.topside_x(y0, z), y0), (L.topside_x(y1, z), y1)]
+
+
+# The bulwark is plated in five strakes, foot to head, so that openings can be left in it: a freeing port in the second
+# (the water a sea leaves on deck runs out through it: spec.FREEING_PORTS), a mooring chock's eye in the fourth (where a
+# line leaves her: the panama chocks of spec.OUTFIT). Heights over the deck's edge, metres.
+BULWARK_LEVELS = (0.0, S.FREEING_PORTS['sill'], S.FREEING_PORTS['sill'] + S.FREEING_PORTS['height'], 0.42, 0.78, L.BULWARK)
+
+
+def bulwark_levels(z):
+    """The bulwark at z in its strakes, foot to head: (x, y) on the port side. Where it is lower than its full height (at
+    the stem head) the strakes close on each other."""
+    (x0, y0), (x1, y1) = bulwark_rows(z)
+    return [(x0 + (x1 - x0) * min(1.0, h / L.BULWARK), y0 + (y1 - y0) * min(1.0, h / L.BULWARK)) for h in BULWARK_LEVELS]
+
+
+def _bulwark_openings(side):
+    """What is left open in the bulwark on one side: (yard from, yard to, strake)."""
+    P = S.FREEING_PORTS
+    out = [(p, p + P['length'], 1) for p in P['yards']]
+    for o in S.OUTFIT:
+        if o['kind'] == 'panama-chock' and o['x'] * side > 0:
+            out.append((o['yard'] - S.CHOCK_EYE / 2, o['yard'] + S.CHOCK_EYE / 2, 3))
+    return out
+
+
+def _bulwark(outer, inside, cap, side, a, b):
+    """A length of bulwark on one side: its outer face in the hull's paint, its inner face in white 12 mm inside it, the
+    cap along its head, the plate's own end where it stops against a house, and its edge round each opening left in it."""
+    teal, white = srgb(S.HULL), srgb(S.WHITE)
+    yards = [yard for yard in TOP_YARDS if a - 1e-6 <= yard <= b + 1e-6]
+    rows = len(BULWARK_LEVELS) - 1
+    openings = _bulwark_openings(side)
+    is_open = lambda i, r: 0 <= i < len(yards) - 1 and any(k == r and p - 1e-6 <= yards[i] and yards[i + 1] <= q + 1e-6 for p, q, k in openings)
+    ids = []
+    for yard in yards:
+        z = L.Z(yard)
+        n = L.topside_normal(z)
+        ids.append([outer.vert((side * x, y, z), (side * n[0], n[1], n[2])) for x, y in bulwark_levels(z)])
+    start = len(outer.f)
+    for i in range(len(yards) - 1):
+        shade = tint(teal, plate_shade(31 + (50 if side < 0 else 0), int(yards[i] // S.STRAKE_BUTT), 0.03))
+        for r in range(rows):
+            if is_open(i, r):
+                continue
+            a_, b_, c_, d_ = ids[i][r], ids[i + 1][r], ids[i + 1][r + 1], ids[i][r + 1]
+            _emit(outer, (a_, d_, c_, b_) if side > 0 else (a_, b_, c_, d_), shade)
+    outer.orient(start, None)
+    inner_of = _twin(outer, inside, start, colour=white)
+    grey = tint(white, 0.86)
+
+    def edge(p, q, toward):
+        """The plate's own edge between its two faces, from p to q, looking toward a point."""
+        if p in inner_of and q in inner_of:
+            first = len(cap.f)
+            cap.face((cap.vert(outer.v[p]), cap.vert(outer.v[q]), cap.vert(inside.v[inner_of[q]]), cap.vert(inside.v[inner_of[p]])), grey)
+            if callable(toward):
+                cap.orient(first, toward)
+            else:
+                cap.orient(first, toward)
+    # the cap: a flat bar along the head, between the two faces
+    for i in range(len(yards) - 1):
+        edge(ids[i][-1], ids[i + 1][-1], (0, 1, 0))
+    # its ends, where it stops against a house and is not carried into another sheet
+    for k, look in ((0, -1), (len(yards) - 1, 1)):
+        if any(abs(yards[k] - e) < 1e-6 for e in ENDS):
+            for r in range(rows):
+                edge(ids[k][r], ids[k][r + 1], (0, 0, look))
+    # the plate's edge round each opening
+    for i in range(len(yards) - 1):
+        for r in range(rows):
+            if not is_open(i, r):
+                continue
+            corners = [Vector(outer.v[ids[i + u][r + v]]) for u in (0, 1) for v in (0, 1)]
+            mid = sum(corners, Vector()) / 4
+            into = lambda c, mid=mid: mid - c
+            edge(ids[i][r], ids[i + 1][r], into)
+            edge(ids[i][r + 1], ids[i + 1][r + 1], into)
+            if not is_open(i - 1, r):
+                edge(ids[i][r], ids[i][r + 1], into)
+            if not is_open(i + 1, r):
+                edge(ids[i + 1][r], ids[i + 1][r + 1], into)
+
+
 def _end_plate(parts, z, facing, inner=False):
-    """The flat plate that closes the lower body at the transom, up to the car deck."""
+    """The flat plate that closes the lower body at the transom, up to the main deck."""
     bounds = zone_bounds(z)
     for k, zone in enumerate(ZONES):
         psis = L.girth_psis(z, zone['rows'], bounds[k], bounds[k + 1])
         pts = [L.inside(z, p, S.SHELL) if inner else L.section_psi(z, p) for p in psis]
-        part = parts['inner'] if inner else parts[zone['id']]
+        part = parts['inner'] if inner else parts[zone['part']]
         start = len(part.f)
         zz = z - facing * S.SHELL if inner else z
         colour = srgb(S.PRIMER) if inner else tint(srgb(zone['colour']), plate_shade(90 + k, int(facing), zone['spread']))
@@ -222,17 +351,17 @@ def _end_plate(parts, z, facing, inner=False):
         part.orient(start, (0, 0, -facing if inner else facing))
 
 
-# The stern door: its opening in the transom over the car deck, which the ramp closes (spec.STERN_DOOR).
+# The stern door: its opening in the transom over the main deck, which the ramp closes from outside (spec.STERN_DOOR).
 STERN_DOOR = S.STERN_DOOR
 
 
 def _transom_above(top, inner):
-    """The transom over the car deck: plating each side of the stern door's opening and across its head, in the topsides' paint."""
+    """The transom over the main deck: plating each side of the stern door's opening and across its head, in the hull's paint."""
     z = -L.HALF
     hb = L.upper_breadth(z)
     d = STERN_DOOR
-    head = L.CAR + d['height']
-    white, teal = srgb(S.WHITE), srgb(S.TEAL)
+    head = L.MAIN + d['height']
+    teal = srgb(S.HULL)
 
     def plate(x0, x1, y0, y1, colour):
         for part, zz, look in ((top, z, -1), (inner, z + S.SHELL, 1)):
@@ -240,32 +369,65 @@ def _transom_above(top, inner):
             part.grid([[(x0, y0, zz), (x1, y0, zz)], [(x0, y1, zz), (x1, y1, zz)]], colour if part is top else srgb(S.PRIMER))
             part.orient(start, (0, 0, look))
 
-    levels = S.TOPSIDE_LEVELS
+    levels = topside_levels(z)
     for side in (1, -1):
-        for j, paint in enumerate(TOP_ROWS):
+        for j in range(len(levels) - 1):
             x0, x1 = sorted((side * d['half'], side * hb))
-            plate(x0, x1, levels[j], levels[j + 1], tint(srgb(paint), 0.985))
-    # over the door: the band and the white above it
-    plate(-d['half'], d['half'], head, max(head, levels[-2]), tint(teal, 0.985))
-    plate(-d['half'], d['half'], max(head, levels[-2]), levels[-1], tint(white, 0.985))
+            plate(x0, x1, levels[j], levels[j + 1], tint(teal, 0.985))
+    # over the door
+    plate(-d['half'], d['half'], head, levels[-1], tint(teal, 0.985))
     # the plating's edge round the opening
-    edge = tint(white, 0.9)
+    edge = tint(teal, 0.8)
     for x in (-d['half'], d['half']):
         start = len(top.f)
-        top.grid([[(x, L.CAR, z), (x, L.CAR, z + S.SHELL)], [(x, head, z), (x, head, z + S.SHELL)]], edge)
+        top.grid([[(x, L.MAIN, z), (x, L.MAIN, z + S.SHELL)], [(x, head, z), (x, head, z + S.SHELL)]], edge)
         top.orient(start, (-x, 0, 0))
     start = len(top.f)
     top.grid([[(-d['half'], head, z), (d['half'], head, z)], [(-d['half'], head, z + S.SHELL), (d['half'], head, z + S.SHELL)]], edge)
     top.orient(start, (0, -1, 0))
 
 
+def _bulb(bulb, twin):
+    """The bulb: a sheet round its axis from its tail to its nose, both sides, with its inner face; what lies inside the
+    lower body is left out."""
+    red = srgb(S.ANTIFOULING)
+    B = L.BULB
+    # its sections: closer toward the nose, where it turns
+    aft = [B['yard'] - B['tail'] * cos(pi / 2 * i / 30) for i in range(30)]
+    fwd = [B['yard'] + B['nose'] * sin(pi / 2 * i / 18) for i in range(19)]
+    yards = aft + fwd
+    count = 28
+    for side in (1, -1):
+        ids = []
+        for yard in yards:
+            z = L.Z(yard)
+            row = []
+            for k in range(count + 1):
+                phi = pi * k / count
+                x, y = L.bulb_point(z, phi)
+                n = L.bulb_normal(z, phi)
+                row.append(bulb.vert((side * x, y, z), (side * n[0], n[1], n[2])))
+            ids.append(row)
+        start = len(bulb.f)
+        for i in range(len(yards) - 1):
+            for j in range(count):
+                a, b, c, d = ids[i][j], ids[i + 1][j], ids[i + 1][j + 1], ids[i][j + 1]
+                _emit(bulb, (a, d, c, b) if side > 0 else (a, b, c, d), tint(red, plate_shade(70 + j // 7 + (50 if side < 0 else 0), int(yards[i] // 3.0), 0.04)), hidden=in_main)
+        bulb.orient(start, None)
+        _twin(bulb, twin, start)
+
+
 def build():
     bottom = Part('Shell plating, bottom', 'Antifouling', smooth=True)
     top = Part('Shell plating, topsides', 'Topside paint', smooth=True)
     inner = Part('Shell plating, inner face', 'Primer', smooth=True)
+    bulb = Part('Bulb plating', 'Antifouling', smooth=True)
+    bulb_inner = Part('Bulb plating, inner face', 'Primer', smooth=True)
     tunnel = Part('Thruster tunnel', 'Antifouling', smooth=True, angle=50)
     tunnel_out = Part('Thruster tunnel, in the thruster room', 'Primer', smooth=True, angle=50)
-    bulwark = Part('Bulwarks', 'Topside plate', smooth=True)
+    bulwark = Part('Bulwarks', 'Topside paint', smooth=True)
+    bulwark_in = Part('Bulwarks, inner face', 'Topside paint', smooth=True)
+    bulwark_cap = Part('Bulwarks, cap', 'Topside paint')
     parts = dict(bottom=bottom, topside=top, inner=inner)
 
     hole = dict(z=L.Z(S.THRUSTER['yard']), y=S.THRUSTER['y'], r=S.THRUSTER['radius'])
@@ -274,57 +436,55 @@ def build():
     for side in (1, -1):
         for k, zone in enumerate(ZONES):
             psi_rows = [L.girth_psis(z, zone['rows'], b[k], b[k + 1]) for z, b in zip(ZS, bounds)]
-            ring, inner_ring = _sheet(parts[zone['id']], ZS, psi_rows, _plate_colour(zone, k, side), side, hole=hole if k == 0 else None, twin=inner)
+            ring, inner_ring = _sheet(parts[zone['part']], ZS, psi_rows, _plate_colour(zone, k, side), side, hole=hole if k == 0 else None, twin=inner)
             if ring:
                 rings[side], inner_rings[side] = ring, inner_ring
         _topsides(top, inner, side)
-        # The bulwark of the open decks aft stands upright over the upper deck's edge, from the transom to the passenger house.
-        white = srgb(S.WHITE)
-        for a, b in ((0.0, BULWARK_AFT[side]), (BULWARK_FWD, L.LENGTH)):
-            yards = [yard for yard in TOP_YARDS if a - 1e-6 <= yard <= b + 1e-6]
-            start = len(bulwark.f)
-            rows, normals = [], []
-            for yard in yards:
-                z = L.Z(yard)
-                hb, n = L.upper_breadth(z), L.bulwark_normal(z)
-                rows.append([(side * hb, L.UPPER, z), (side * hb, L.UPPER + L.BULWARK, z)])
-                normals.append([(side * n[0], n[1], n[2])] * 2)
-            bulwark.grid(rows, lambda i, j: tint(white, plate_shade(31 + (50 if side < 0 else 0), int(yards[i] // S.STRAKE_BUTT), 0.02)), normals=normals)
-            bulwark.orient(start, None)
+        # The bulwarks: her side plating carried up over the upper deck's edge, where no house stands at her side.
+        for a, b in S.BULWARKS:
+            _bulwark(bulwark, bulwark_in, bulwark_cap, side, a, b)
 
     # The keel plate and, up the stem, the plate the stem bar is welded to: the strip between the two sides' plating, which
-    # do not meet in a knife's edge (lines.STEM_HALF). Antifouled to the boot top, white above it.
-    yards = sorted(set(stations(L.LENGTH - 0.1) + [BOOT_AT_STEM])) + [L.LENGTH]
+    # do not meet in a knife's edge (lines.STEM_HALF). In each paint zone's colour.
+    yards = sorted(set(stations(L.LENGTH - 0.1) + PAINT_AT_STEM)) + [L.LENGTH]
     w = L.STEM_HALF
     rows, normals = [], []
     for i, yard in enumerate(yards):
         z = L.Z(yard)
         a, b = L.Z(max(0.0, yard - 0.05)), L.Z(min(L.LENGTH, yard + 0.05))
-        dy, dz = min(L.UPPER, L.keel_y(b)) - min(L.UPPER, L.keel_y(a)), b - a
+        dy, dz = min(L.rail_y(b), L.keel_y(b)) - min(L.rail_y(a), L.keel_y(a)), b - a
         m = (dy * dy + dz * dz) ** 0.5
         n = (0.0, -dz / m, dy / m)
-        y = min(L.UPPER, L.keel_y(z))
+        y = min(L.rail_y(z), L.keel_y(z))
         rows.append([(w, y, z), (-w, y, z)])
         normals.append([n, n])
-    for part, test in ((bottom, lambda y: y < S.BOOT), (top, lambda y: y >= S.BOOT)):
+    line_top = S.BOOT + S.BOOT_LINE
+    for part, test, paint in ((bottom, lambda y: y < S.BOOT, S.ANTIFOULING), (top, lambda y: S.BOOT <= y < line_top, S.WHITE), (top, lambda y: y >= line_top, S.HULL)):
         ids = [[part.vert(p, n) for p, n in zip(row, ns)] for row, ns in zip(rows, normals)]
         start = len(part.f)
         for i in range(len(rows) - 1):
             if test((rows[i][0][1] + rows[i + 1][0][1]) / 2):
-                colour = srgb(S.ANTIFOULING) if part is bottom else srgb(S.WHITE)
-                _emit(part, (ids[i][0], ids[i][1], ids[i + 1][1], ids[i + 1][0]), tint(colour, 0.97))
+                _emit(part, (ids[i][0], ids[i][1], ids[i + 1][1], ids[i + 1][0]), tint(srgb(paint), 0.97), hidden=in_bulb)
         part.orient(start, None)
         _twin(part, inner, start)
 
-    # The transom: the lower body's end, the plating round the stern door over the car deck, the bulwark across the stern.
+    # The bulb.
+    _bulb(bulb, bulb_inner)
+
+    # The transom: the lower body's end, the plating round the stern door over the main deck, the bulwark across the stern.
     _end_plate(parts, -L.HALF, -1)
     _end_plate(parts, -L.HALF, -1, inner=True)
     _transom_above(top, inner)
     z = -L.HALF
     hb = L.upper_breadth(z)
-    start = len(bulwark.f)
-    bulwark.grid([[(hb, L.UPPER, z), (-hb, L.UPPER, z)], [(hb, L.UPPER + L.BULWARK, z), (-hb, L.UPPER + L.BULWARK, z)]], tint(srgb(S.WHITE), 0.99))
-    bulwark.orient(start, (0, 0, -1))
+    y0, y1 = L.deck_y(z), L.rail_y(z)
+    for part, zz, look, colour in ((bulwark, z, -1, tint(srgb(S.HULL), 0.985)), (bulwark_in, z + S.SHELL, 1, srgb(S.WHITE))):
+        start = len(part.f)
+        part.grid([[(hb, y0, zz), (-hb, y0, zz)], [(hb, y1, zz), (-hb, y1, zz)]], colour)
+        part.orient(start, (0, 0, look))
+    start = len(bulwark_cap.f)
+    bulwark_cap.grid([[(hb, y1, z), (-hb, y1, z)], [(hb, y1, z + S.SHELL), (-hb, y1, z + S.SHELL)]], tint(srgb(S.WHITE), 0.86))
+    bulwark_cap.orient(start, (0, 1, 0))
 
     # The tunnel: a tube from one opening to the other, antifouled inside, primed where it crosses the thruster room.
     axis = lambda c: (0, hole['y'] - c[1], hole['z'] - c[2])
@@ -338,11 +498,4 @@ def build():
     mid = [(0.0, p[1], p[2]) for p in inner_rings[1]]
     tunnel_out.grid([inner_rings[1], mid, inner_rings[-1]], primer, close=True)
     tunnel_out.orient(start, lambda c: tuple(-a for a in axis(c)))
-    return [bottom, top, bulwark, inner, tunnel, tunnel_out]
-
-
-# The bulwarks: round the open decks aft, from the transom to where the passenger house stands at her side (the crew stair
-# trunk at 20 m to port, the kiosk's store at 21 m to starboard: the house's side stands 4 mm inside the deck's edge, and
-# the bulwark ends where it begins); and round the forecastle, from the lounge's front to the stem head.
-BULWARK_AFT = {1: 20.0, -1: 21.0}
-BULWARK_FWD = 54.0
+    return [bottom, top, bulb, bulwark, bulwark_in, bulwark_cap, inner, bulb_inner, tunnel, tunnel_out]
