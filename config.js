@@ -59,7 +59,7 @@ const CONFIG = {
     {
       title: "Maintenance Programme Demo",
       description:
-        "Try an English maintenance programme for technical equipment. Explore sample assets, scheduled tasks, inspection checklists, risk assessments and service history. Demonstration data; changes stay in your browser.",
+        "Try an English maintenance programme for technical equipment, including StepWise for planning test points. Explore sample assets, scheduled tasks, inspection checklists, risk assessments and service history. Demonstration data; changes stay in your browser.",
       url: "/maintenance-demo/",
       icon: "notebook",
       tags: ["Demo", "Maintenance", "Engineering"],
@@ -79,11 +79,10 @@ const CONFIG = {
     {
       title: "Elteknik och ell\u00e4ra",
       description:
-        "Textbook for marine and industrial electrical engineering: 24 chapters, 240 exercises with full solutions, formula card and index. E-book price read live from Shopify \u2014 or download a free sample chapter.",
+        "A Swedish textbook on marine and industrial electrical engineering, still being written. Read a free sample chapter. The book is not finished and is not for sale.",
       url: "/elteknik/",
-      shopifyProductUrl: "https://3va6hr-fw.myshopify.com/products/elteknik-och-ellara.js",
       icon: "notebook",
-      image: "/elteknik/files/omslag.jpg?v=20261017",
+      image: "/elteknik/files/omslag.jpg?v=20261112",
       tags: ["Book", "Elteknik", "YH"],
       bento: "wide",
       featured: true,
@@ -146,16 +145,6 @@ const CONFIG = {
       icon: "wordpress",
       tags: ["Writing", "Engineering", "Travel"],
       bento: "wide",
-      featured: true,
-    },
-    {
-      title: "StepWise",
-      description:
-        "A test-point planner for measurement tasks: create evenly spaced or percentage targets, convert units, and export the plan.",
-      url: "https://nj22az.github.io/stepbuddy/",
-      icon: "calculator",
-      tags: ["Tool", "Calculator", "Engineering"],
-      bento: "normal",
       featured: true,
     },
   ],
@@ -319,17 +308,19 @@ CONFIG.projectExplorer = [
     "category": "tools",
     "title": "Maintenance Desk",
     "eyebrow": "FROM THE ENGINEER’S WORKBENCH",
-    "summary": "Turn equipment care into a clear programme. Try scheduled tasks, inspection checklists and follow-up actions in a fictional workshop.",
+    "summary": "Turn equipment care into a clear programme. Try scheduled tasks, inspection checklists and follow-up in a fictional workshop. StepWise, for planning test points, is one of its tools.",
     "url": "/maintenance-demo/",
     "action": "Try the maintenance demo",
+    "secondaryUrl": "/stepbuddy/",
+    "secondaryAction": "Open StepWise",
     "format": "Interactive demo",
     "language": "English",
     "status": "Demo",
-    "firstTry": "Open the cooling water pump, choose a maintenance task and record a sample inspection. Your changes stay in your browser.",
+    "firstTry": "Open the cooling water pump, choose a maintenance task and record a sample inspection. Your changes stay in your browser. For test points, open StepWise.",
     "features": [
       "Calendar and operating-hour maintenance schedules",
       "Risk assessments, checklists and corrective actions",
-      "Service history with backup export and restore"
+      "StepWise, for turning a measurement range into test points"
     ],
     "preview": "maintenance"
   },
@@ -359,40 +350,21 @@ CONFIG.projectExplorer = [
     "category": "learn",
     "title": "Elteknik och ellära",
     "eyebrow": "THE BOOK BEHIND THE PRACTICE",
-    "summary": "Electrical engineering for marine and industrial work, collected in one Swedish textbook. Read a free sample before exploring the full book.",
+    "summary": "Electrical engineering for marine and industrial work, in a Swedish textbook that is still being written.",
     "url": "/elteknik/",
-    "action": "Discover the book",
-    "format": "Textbook",
+    "action": "Read about the book",
+    "format": "Textbook in progress",
     "language": "Swedish",
-    "status": "Free sample available",
-    "firstTry": "Download the free sample chapter. The book page provides the full contents and current purchase details.",
+    "status": "In progress",
+    "firstTry": "Read the free sample chapter. It is a preview of the book in progress, not a finished edition.",
     "features": [
-      "24 chapters spanning marine and industrial electrical engineering",
-      "240 exercises with full solutions",
-      "A formula card and index for reference"
+      "A working plan from direct current through fault-finding",
+      "A free sample of chapter 1, with examples and exercises",
+      "Still being written, and not for sale"
     ],
     "preview": "book",
     "secondaryUrl": "/elteknik/files/provkapitel.pdf",
     "secondaryAction": "Read the free sample"
-  },
-  {
-    "id": "stepwise",
-    "category": "tools",
-    "title": "StepWise",
-    "eyebrow": "PLAN THE MEASUREMENT",
-    "summary": "Turn a measurement range into test targets. Choose even spacing or percentage points, add units, then copy or export the plan.",
-    "url": "/stepbuddy/",
-    "action": "Plan test points",
-    "format": "Test-point planner",
-    "language": "English",
-    "status": "Browser tool",
-    "firstTry": "Load the 0–10 kN example: five points give 0, 2.5, 5, 7.5 and 10 kN. Or try a pressure range or a 4–20 mA signal.",
-    "features": [
-      "Evenly spaced targets or custom percentages of a span",
-      "Force, pressure, signal and other units with conversions",
-      "Named ranges, display precision, copy and CSV export"
-    ],
-    "preview": "stepwise"
   }
 ];
 

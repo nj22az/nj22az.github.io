@@ -1,6 +1,6 @@
 # Arbetsmapp för boken
 
-*Elteknik och ellära för sjöfart och industri* (24 kapitel, 240 övningar) säljs krypterad från `elteknik/`.
+*Elteknik och ellära för sjöfart och industri* är under arbete. Webbplatsen säljer den inte. Krypterade arbetsfiler kan fortfarande låsas upp med lösenord från författaren, från `elteknik/`.
 Det ursprungliga bokmanuset finns inte i repona, så den publicerade EPUB-filen används som arbetskopia för bokens
 struktur och löptext. **Övningar, ledtrådar och lösningar har sin redigerbara källa i innehållsdatabasen** enligt
 [innehall/README.md](../README.md); de får inte redigeras direkt i EPUB, PDF eller andra genererade filer.
@@ -9,7 +9,7 @@ Klartexten ligger i `bok/.bok/` (i `.gitignore`) och får aldrig checkas in.
 ## Rättad septemberutgåva 2026
 
 Commit `462f9d8cf88f9b8d5a37217c2325828b998c2696` byggde om EPUB och PDF: **223 sidor**, 7×10 tum,
-Source Serif 4 och Source Sans 3. Titelsida och kolofon anger ”Första upplagan 2026, rättad september 2026”.
+Source Serif 4 och Source Sans 3. Titelsida och kolofon i det bygget angav en utgåva och ett år. Webbplatsen presenterar boken som under arbete, så den raden gäller inte som en publicerad utgåva.
 `elteknik/files/provkapitel.pdf` (18 sidor), `sida-1.jpg`, `sida-2.jpg` och `manifest.json` uppdaterades samtidigt.
 PDF-sättningen finns i repot; detta är inte längre ett externt byggsteg.
 
