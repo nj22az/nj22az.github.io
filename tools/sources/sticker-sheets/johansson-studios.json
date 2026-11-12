@@ -1,0 +1,59 @@
+{
+ "id": "johansson-studios",
+ "name": "Animation Studios",
+ "tab": "Johansson",
+ "who": "Johansson",
+ "kind": "studio",
+ "note": "The owner's own studio marks (Johansson Animation Studios, © Nils Johansson).",
+ "sources": [
+  {
+   "file": "johansson-studios-kit.png",
+   "mode": "edge",
+   "join": 6,
+   "marks": 0,
+   "stickers": [
+    {
+     "key": "badge",
+     "gloss": "The studio badge"
+    },
+    {
+     "key": "badge-ink",
+     "gloss": "The studio badge in ink"
+    },
+    {
+     "key": "sailor",
+     "gloss": "The sailor"
+    },
+    {
+     "key": "name",
+     "gloss": "The studio's name"
+    },
+    {
+     "key": "ship-and-gear",
+     "gloss": "A ship and a gear"
+    },
+    null,
+    {
+     "key": "bolt",
+     "gloss": "A bolt"
+    },
+    {
+     "key": "film-camera",
+     "gloss": "A film camera"
+    }
+   ]
+  },
+  {
+   "file": "johansson-studios-badge.jpg",
+   "mode": "ink",
+   "tolerance": 30,
+   "whole": true,
+   "stickers": [
+    {
+     "key": "seal",
+     "gloss": "The studio seal"
+    }
+   ]
+  }
+ ]
+}

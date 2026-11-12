@@ -1,0 +1,200 @@
+{
+ "id": "showa",
+ "name": "Shōwa",
+ "tab": "Minato",
+ "who": "",
+ "kind": "things",
+ "note": "The owner's own sheet of things from the town's old days.",
+ "source": "tools/cut-sticker-sheet.py tools/sources/sticker-sheets/showa.json",
+ "stickers": [
+  {
+   "id": "showa/tv",
+   "src": "showa/tv.webp?v=62f62900",
+   "thumb": "showa/tv.thumb.webp?v=62f62900",
+   "width": 498,
+   "height": 512,
+   "line": "",
+   "gloss": "A television on legs"
+  },
+  {
+   "id": "showa/post-box",
+   "src": "showa/post-box.webp?v=5e6f844a",
+   "thumb": "showa/post-box.thumb.webp?v=5e6f844a",
+   "width": 332,
+   "height": 512,
+   "line": "",
+   "gloss": "A round post box"
+  },
+  {
+   "id": "showa/telephone",
+   "src": "showa/telephone.webp?v=c1f1566c",
+   "thumb": "showa/telephone.thumb.webp?v=c1f1566c",
+   "width": 512,
+   "height": 375,
+   "line": "",
+   "gloss": "A dial telephone"
+  },
+  {
+   "id": "showa/radio",
+   "src": "showa/radio.webp?v=b2e5b824",
+   "thumb": "showa/radio.thumb.webp?v=b2e5b824",
+   "width": 512,
+   "height": 350,
+   "line": "",
+   "gloss": "A valve radio"
+  },
+  {
+   "id": "showa/scooter",
+   "src": "showa/scooter.webp?v=fa9a70a7",
+   "thumb": "showa/scooter.thumb.webp?v=fa9a70a7",
+   "width": 512,
+   "height": 417,
+   "line": "",
+   "gloss": "A scooter"
+  },
+  {
+   "id": "showa/lantern",
+   "src": "showa/lantern.webp?v=319a66e7",
+   "thumb": "showa/lantern.thumb.webp?v=319a66e7",
+   "width": 428,
+   "height": 512,
+   "line": "",
+   "gloss": "A festival lantern"
+  },
+  {
+   "id": "showa/noren",
+   "src": "showa/noren.webp?v=c70cc98c",
+   "thumb": "showa/noren.thumb.webp?v=c70cc98c",
+   "width": 512,
+   "height": 426,
+   "line": "",
+   "gloss": "A bathhouse curtain"
+  },
+  {
+   "id": "showa/shaved-ice",
+   "src": "showa/shaved-ice.webp?v=2f2f91d1",
+   "thumb": "showa/shaved-ice.thumb.webp?v=2f2f91d1",
+   "width": 381,
+   "height": 512,
+   "line": "",
+   "gloss": "Shaved ice"
+  },
+  {
+   "id": "showa/ramune",
+   "src": "showa/ramune.webp?v=3da9eb14",
+   "thumb": "showa/ramune.thumb.webp?v=3da9eb14",
+   "width": 221,
+   "height": 512,
+   "line": "",
+   "gloss": "A bottle of ramune"
+  },
+  {
+   "id": "showa/milk",
+   "src": "showa/milk.webp?v=62bf6f7f",
+   "thumb": "showa/milk.thumb.webp?v=62bf6f7f",
+   "width": 300,
+   "height": 512,
+   "line": "",
+   "gloss": "A bottle of milk"
+  },
+  {
+   "id": "showa/takoyaki",
+   "src": "showa/takoyaki.webp?v=7ca6e330",
+   "thumb": "showa/takoyaki.thumb.webp?v=7ca6e330",
+   "width": 512,
+   "height": 367,
+   "line": "",
+   "gloss": "Takoyaki"
+  },
+  {
+   "id": "showa/fan",
+   "src": "showa/fan.webp?v=9a31b7a7",
+   "thumb": "showa/fan.thumb.webp?v=9a31b7a7",
+   "width": 512,
+   "height": 482,
+   "line": "",
+   "gloss": "A paper fan"
+  },
+  {
+   "id": "showa/record",
+   "src": "showa/record.webp?v=42a3de18",
+   "thumb": "showa/record.thumb.webp?v=42a3de18",
+   "width": 512,
+   "height": 337,
+   "line": "",
+   "gloss": "A record"
+  },
+  {
+   "id": "showa/camera",
+   "src": "showa/camera.webp?v=13617241",
+   "thumb": "showa/camera.thumb.webp?v=13617241",
+   "width": 512,
+   "height": 367,
+   "line": "",
+   "gloss": "A camera"
+  },
+  {
+   "id": "showa/matches",
+   "src": "showa/matches.webp?v=25402f74",
+   "thumb": "showa/matches.thumb.webp?v=25402f74",
+   "width": 512,
+   "height": 311,
+   "line": "",
+   "gloss": "A box of matches"
+  },
+  {
+   "id": "showa/cream-soda",
+   "src": "showa/cream-soda.webp?v=cc125ca4",
+   "thumb": "showa/cream-soda.thumb.webp?v=cc125ca4",
+   "width": 387,
+   "height": 512,
+   "line": "",
+   "gloss": "A cream soda"
+  },
+  {
+   "id": "showa/wind-chime",
+   "src": "showa/wind-chime.webp?v=b0ad6787",
+   "thumb": "showa/wind-chime.thumb.webp?v=b0ad6787",
+   "width": 355,
+   "height": 512,
+   "line": "",
+   "gloss": "A wind chime"
+  },
+  {
+   "id": "showa/lucky-cat",
+   "src": "showa/lucky-cat.webp?v=a36a47e5",
+   "thumb": "showa/lucky-cat.thumb.webp?v=a36a47e5",
+   "width": 449,
+   "height": 512,
+   "line": "",
+   "gloss": "A lucky cat"
+  },
+  {
+   "id": "showa/daruma",
+   "src": "showa/daruma.webp?v=29aada58",
+   "thumb": "showa/daruma.thumb.webp?v=29aada58",
+   "width": 512,
+   "height": 505,
+   "line": "",
+   "gloss": "A daruma"
+  },
+  {
+   "id": "showa/toy-plane",
+   "src": "showa/toy-plane.webp?v=9488e4fc",
+   "thumb": "showa/toy-plane.thumb.webp?v=9488e4fc",
+   "width": 512,
+   "height": 314,
+   "line": "",
+   "gloss": "A tin plane"
+  },
+  {
+   "id": "showa/spinning-top",
+   "src": "showa/spinning-top.webp?v=41ef9bd0",
+   "thumb": "showa/spinning-top.thumb.webp?v=41ef9bd0",
+   "width": 459,
+   "height": 471,
+   "line": "",
+   "gloss": "A spinning top"
+  }
+ ]
+}

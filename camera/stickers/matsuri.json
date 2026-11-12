@@ -1,0 +1,312 @@
+{
+ "id": "matsuri",
+ "name": "Matsuri",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  7,
+  8
+ ],
+ "note": "The owner's own festival sheet.",
+ "source": "tools/cut-sticker-sheet.py tools/sources/sticker-sheets/matsuri.json",
+ "stickers": [
+  {
+   "id": "matsuri/lantern",
+   "src": "matsuri/lantern.webp?v=704c66fd",
+   "thumb": "matsuri/lantern.thumb.webp?v=704c66fd",
+   "width": 420,
+   "height": 512,
+   "line": "",
+   "gloss": "A festival lantern"
+  },
+  {
+   "id": "matsuri/yellow-lantern",
+   "src": "matsuri/yellow-lantern.webp?v=60eca8be",
+   "thumb": "matsuri/yellow-lantern.thumb.webp?v=60eca8be",
+   "width": 372,
+   "height": 512,
+   "line": "",
+   "gloss": "A yellow lantern"
+  },
+  {
+   "id": "matsuri/folding-fan",
+   "src": "matsuri/folding-fan.webp?v=f366fc54",
+   "thumb": "matsuri/folding-fan.thumb.webp?v=f366fc54",
+   "width": 512,
+   "height": 394,
+   "line": "",
+   "gloss": "A folding fan"
+  },
+  {
+   "id": "matsuri/fan",
+   "src": "matsuri/fan.webp?v=2137fdea",
+   "thumb": "matsuri/fan.thumb.webp?v=2137fdea",
+   "width": 455,
+   "height": 512,
+   "line": "",
+   "gloss": "A round paper fan"
+  },
+  {
+   "id": "matsuri/drum",
+   "src": "matsuri/drum.webp?v=b75361ec",
+   "thumb": "matsuri/drum.thumb.webp?v=b75361ec",
+   "width": 512,
+   "height": 479,
+   "line": "",
+   "gloss": "A festival drum"
+  },
+  {
+   "id": "matsuri/fox-mask",
+   "src": "matsuri/fox-mask.webp?v=843d147e",
+   "thumb": "matsuri/fox-mask.thumb.webp?v=843d147e",
+   "width": 434,
+   "height": 512,
+   "line": "",
+   "gloss": "A fox mask"
+  },
+  {
+   "id": "matsuri/hyottoko",
+   "src": "matsuri/hyottoko.webp?v=7523ff9c",
+   "thumb": "matsuri/hyottoko.thumb.webp?v=7523ff9c",
+   "width": 487,
+   "height": 512,
+   "line": "",
+   "gloss": "A hyottoko mask"
+  },
+  {
+   "id": "matsuri/tengu",
+   "src": "matsuri/tengu.webp?v=1265ab41",
+   "thumb": "matsuri/tengu.thumb.webp?v=1265ab41",
+   "width": 488,
+   "height": 512,
+   "line": "",
+   "gloss": "A tengu mask"
+  },
+  {
+   "id": "matsuri/takoyaki",
+   "src": "matsuri/takoyaki.webp?v=1189ccdd",
+   "thumb": "matsuri/takoyaki.thumb.webp?v=1189ccdd",
+   "width": 512,
+   "height": 388,
+   "line": "",
+   "gloss": "Takoyaki"
+  },
+  {
+   "id": "matsuri/yakisoba",
+   "src": "matsuri/yakisoba.webp?v=3a64498d",
+   "thumb": "matsuri/yakisoba.thumb.webp?v=3a64498d",
+   "width": 512,
+   "height": 343,
+   "line": "",
+   "gloss": "Fried noodles"
+  },
+  {
+   "id": "matsuri/corn",
+   "src": "matsuri/corn.webp?v=b4b72022",
+   "thumb": "matsuri/corn.thumb.webp?v=b4b72022",
+   "width": 436,
+   "height": 512,
+   "line": "",
+   "gloss": "Grilled corn"
+  },
+  {
+   "id": "matsuri/taiyaki",
+   "src": "matsuri/taiyaki.webp?v=f0f894b1",
+   "thumb": "matsuri/taiyaki.thumb.webp?v=f0f894b1",
+   "width": 512,
+   "height": 365,
+   "line": "",
+   "gloss": "Taiyaki"
+  },
+  {
+   "id": "matsuri/candy-apple",
+   "src": "matsuri/candy-apple.webp?v=20b867c8",
+   "thumb": "matsuri/candy-apple.thumb.webp?v=20b867c8",
+   "width": 430,
+   "height": 512,
+   "line": "",
+   "gloss": "A candy apple"
+  },
+  {
+   "id": "matsuri/choco-banana",
+   "src": "matsuri/choco-banana.webp?v=3aaef12b",
+   "thumb": "matsuri/choco-banana.thumb.webp?v=3aaef12b",
+   "width": 386,
+   "height": 512,
+   "line": "",
+   "gloss": "A chocolate banana"
+  },
+  {
+   "id": "matsuri/shaved-ice",
+   "src": "matsuri/shaved-ice.webp?v=8f890743",
+   "thumb": "matsuri/shaved-ice.thumb.webp?v=8f890743",
+   "width": 467,
+   "height": 486,
+   "line": "",
+   "gloss": "Shaved ice"
+  },
+  {
+   "id": "matsuri/cotton-candy",
+   "src": "matsuri/cotton-candy.webp?v=a70c9dbb",
+   "thumb": "matsuri/cotton-candy.thumb.webp?v=a70c9dbb",
+   "width": 512,
+   "height": 506,
+   "line": "",
+   "gloss": "Cotton candy"
+  },
+  {
+   "id": "matsuri/ramune",
+   "src": "matsuri/ramune.webp?v=d0fa9041",
+   "thumb": "matsuri/ramune.thumb.webp?v=d0fa9041",
+   "width": 264,
+   "height": 512,
+   "line": "",
+   "gloss": "A bottle of ramune"
+  },
+  {
+   "id": "matsuri/water-balloon",
+   "src": "matsuri/water-balloon.webp?v=e23be1a6",
+   "thumb": "matsuri/water-balloon.thumb.webp?v=e23be1a6",
+   "width": 500,
+   "height": 507,
+   "line": "",
+   "gloss": "A water balloon yo-yo"
+  },
+  {
+   "id": "matsuri/goldfish",
+   "src": "matsuri/goldfish.webp?v=1f79418b",
+   "thumb": "matsuri/goldfish.thumb.webp?v=1f79418b",
+   "width": 501,
+   "height": 512,
+   "line": "",
+   "gloss": "Goldfish in a bag"
+  },
+  {
+   "id": "matsuri/scoop",
+   "src": "matsuri/scoop.webp?v=36fe99ee",
+   "thumb": "matsuri/scoop.thumb.webp?v=36fe99ee",
+   "width": 512,
+   "height": 479,
+   "line": "",
+   "gloss": "A goldfish scoop"
+  },
+  {
+   "id": "matsuri/ring-toss",
+   "src": "matsuri/ring-toss.webp?v=fd8080d7",
+   "thumb": "matsuri/ring-toss.thumb.webp?v=fd8080d7",
+   "width": 512,
+   "height": 434,
+   "line": "",
+   "gloss": "Ring toss"
+  },
+  {
+   "id": "matsuri/pinwheel",
+   "src": "matsuri/pinwheel.webp?v=7b6097c3",
+   "thumb": "matsuri/pinwheel.thumb.webp?v=7b6097c3",
+   "width": 420,
+   "height": 512,
+   "line": "",
+   "gloss": "A pinwheel"
+  },
+  {
+   "id": "matsuri/wind-chime",
+   "src": "matsuri/wind-chime.webp?v=9870c915",
+   "thumb": "matsuri/wind-chime.thumb.webp?v=9870c915",
+   "width": 366,
+   "height": 512,
+   "line": "",
+   "gloss": "A wind chime"
+  },
+  {
+   "id": "matsuri/sparkler",
+   "src": "matsuri/sparkler.webp?v=8f91c57a",
+   "thumb": "matsuri/sparkler.thumb.webp?v=8f91c57a",
+   "width": 348,
+   "height": 445,
+   "line": "",
+   "gloss": "A sparkler"
+  },
+  {
+   "id": "matsuri/sparkler-blue",
+   "src": "matsuri/sparkler-blue.webp?v=d96dfb94",
+   "thumb": "matsuri/sparkler-blue.thumb.webp?v=d96dfb94",
+   "width": 452,
+   "height": 478,
+   "line": "",
+   "gloss": "Another sparkler"
+  },
+  {
+   "id": "matsuri/mikoshi",
+   "src": "matsuri/mikoshi.webp?v=eccdd4bc",
+   "thumb": "matsuri/mikoshi.thumb.webp?v=eccdd4bc",
+   "width": 512,
+   "height": 500,
+   "line": "",
+   "gloss": "A portable shrine"
+  },
+  {
+   "id": "matsuri/tower",
+   "src": "matsuri/tower.webp?v=c53d24aa",
+   "thumb": "matsuri/tower.thumb.webp?v=c53d24aa",
+   "width": 512,
+   "height": 491,
+   "line": "",
+   "gloss": "The festival tower"
+  },
+  {
+   "id": "matsuri/stall",
+   "src": "matsuri/stall.webp?v=3b4bdba6",
+   "thumb": "matsuri/stall.thumb.webp?v=3b4bdba6",
+   "width": 512,
+   "height": 468,
+   "line": "",
+   "gloss": "A food stall"
+  },
+  {
+   "id": "matsuri/happi",
+   "src": "matsuri/happi.webp?v=ed1f6055",
+   "thumb": "matsuri/happi.thumb.webp?v=ed1f6055",
+   "width": 512,
+   "height": 440,
+   "line": "",
+   "gloss": "A happi coat"
+  },
+  {
+   "id": "matsuri/yukata",
+   "src": "matsuri/yukata.webp?v=b87e4698",
+   "thumb": "matsuri/yukata.thumb.webp?v=b87e4698",
+   "width": 465,
+   "height": 512,
+   "line": "",
+   "gloss": "A yukata"
+  },
+  {
+   "id": "matsuri/geta",
+   "src": "matsuri/geta.webp?v=e8a949b1",
+   "thumb": "matsuri/geta.thumb.webp?v=e8a949b1",
+   "width": 512,
+   "height": 352,
+   "line": "",
+   "gloss": "Wooden sandals"
+  },
+  {
+   "id": "matsuri/fireworks",
+   "src": "matsuri/fireworks.webp?v=3211b45c",
+   "thumb": "matsuri/fireworks.thumb.webp?v=3211b45c",
+   "width": 510,
+   "height": 512,
+   "line": "",
+   "gloss": "Fireworks"
+  },
+  {
+   "id": "matsuri/purse",
+   "src": "matsuri/purse.webp?v=61064ed6",
+   "thumb": "matsuri/purse.thumb.webp?v=61064ed6",
+   "width": 512,
+   "height": 511,
+   "line": "",
+   "gloss": "A drawstring purse"
+  }
+ ]
+}

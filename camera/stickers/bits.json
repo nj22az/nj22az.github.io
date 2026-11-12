@@ -1,0 +1,100 @@
+{
+ "id": "bits",
+ "name": "Bits",
+ "tab": "Friends",
+ "who": "",
+ "kind": "cute",
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "bits/heart",
+   "src": "bits/heart.webp?v=c90c5900",
+   "thumb": "bits/heart.thumb.webp?v=c90c5900",
+   "width": 512,
+   "height": 471,
+   "line": "",
+   "gloss": "A heart"
+  },
+  {
+   "id": "bits/star",
+   "src": "bits/star.webp?v=ea90b345",
+   "thumb": "bits/star.thumb.webp?v=ea90b345",
+   "width": 512,
+   "height": 495,
+   "line": "",
+   "gloss": "A star in a good mood"
+  },
+  {
+   "id": "bits/sparkle",
+   "src": "bits/sparkle.webp?v=5169b867",
+   "thumb": "bits/sparkle.thumb.webp?v=5169b867",
+   "width": 512,
+   "height": 493,
+   "line": "",
+   "gloss": "Sparkles"
+  },
+  {
+   "id": "bits/crown",
+   "src": "bits/crown.webp?v=50327ff1",
+   "thumb": "bits/crown.thumb.webp?v=50327ff1",
+   "width": 512,
+   "height": 395,
+   "line": "",
+   "gloss": "A crown"
+  },
+  {
+   "id": "bits/shades",
+   "src": "bits/shades.webp?v=944bdb4c",
+   "thumb": "bits/shades.thumb.webp?v=944bdb4c",
+   "width": 512,
+   "height": 199,
+   "line": "",
+   "gloss": "Sunglasses"
+  },
+  {
+   "id": "bits/bow",
+   "src": "bits/bow.webp?v=6baee2eb",
+   "thumb": "bits/bow.thumb.webp?v=6baee2eb",
+   "width": 512,
+   "height": 271,
+   "line": "",
+   "gloss": "A bow"
+  },
+  {
+   "id": "bits/balloon",
+   "src": "bits/balloon.webp?v=fac8afe8",
+   "thumb": "bits/balloon.thumb.webp?v=fac8afe8",
+   "width": 317,
+   "height": 512,
+   "line": "",
+   "gloss": "A balloon"
+  },
+  {
+   "id": "bits/rainbow",
+   "src": "bits/rainbow.webp?v=d756981d",
+   "thumb": "bits/rainbow.thumb.webp?v=d756981d",
+   "width": 512,
+   "height": 335,
+   "line": "",
+   "gloss": "A rainbow between two clouds"
+  },
+  {
+   "id": "bits/bolt",
+   "src": "bits/bolt.webp?v=dda879eb",
+   "thumb": "bits/bolt.thumb.webp?v=dda879eb",
+   "width": 386,
+   "height": 512,
+   "line": "",
+   "gloss": "A lightning bolt"
+  },
+  {
+   "id": "bits/pow",
+   "src": "bits/pow.webp?v=d96b0f41",
+   "thumb": "bits/pow.thumb.webp?v=d96b0f41",
+   "width": 510,
+   "height": 512,
+   "line": "",
+   "gloss": "A burst"
+  }
+ ]
+}

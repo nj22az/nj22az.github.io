@@ -1,0 +1,194 @@
+{
+ "id": "johansson-cartoon",
+ "name": "Cartoon Johansson",
+ "tab": "Johansson",
+ "who": "Johansson",
+ "deck": true,
+ "sources": [
+  {
+   "file": "johansson-poses.png",
+   "mode": "ink",
+   "stickers": [
+    {
+     "key": "front",
+     "gloss": "Standing proud"
+    },
+    {
+     "key": "hips",
+     "gloss": "Hands on his hips"
+    },
+    {
+     "key": "side",
+     "gloss": "From the side"
+    },
+    {
+     "key": "back",
+     "gloss": "From behind"
+    },
+    {
+     "key": "flex",
+     "gloss": "Flexing"
+    },
+    {
+     "key": "wave",
+     "gloss": "Waving"
+    },
+    {
+     "key": "walk",
+     "gloss": "On his way"
+    },
+    {
+     "key": "run",
+     "gloss": "Running"
+    },
+    {
+     "key": "jump",
+     "gloss": "Jumping for joy"
+    },
+    {
+     "key": "punch",
+     "gloss": "A punch"
+    },
+    {
+     "key": "kick",
+     "gloss": "A kick"
+    },
+    {
+     "key": "anchor",
+     "gloss": "With his anchor"
+    }
+   ]
+  },
+  {
+   "file": "johansson-acts.png",
+   "mode": "ink",
+   "stickers": [
+    {
+     "key": "salute",
+     "gloss": "Aye aye"
+    },
+    {
+     "key": "point",
+     "gloss": "Pointing"
+    },
+    {
+     "key": "arms-crossed",
+     "gloss": "Arms crossed"
+    },
+    {
+     "key": "laugh",
+     "gloss": "A belly laugh"
+    },
+    {
+     "key": "ready",
+     "gloss": "Ready"
+    },
+    {
+     "key": "sneak",
+     "gloss": "Sneaking"
+    },
+    {
+     "key": "think",
+     "gloss": "Thinking it over"
+    },
+    {
+     "key": "crate",
+     "gloss": "Carrying a crate"
+    },
+    {
+     "key": "rope",
+     "gloss": "Hauling a rope"
+    },
+    {
+     "key": "ladder",
+     "gloss": "Up the ladder"
+    },
+    {
+     "key": "lookout",
+     "gloss": "On the lookout"
+    },
+    {
+     "key": "surprised",
+     "gloss": "Surprised"
+    }
+   ]
+  },
+  {
+   "file": "johansson-scenes.png",
+   "mode": "ink",
+   "stickers": [
+    {
+     "key": "cheers",
+     "gloss": "Cheers"
+    },
+    {
+     "key": "ramen",
+     "gloss": "Ramen"
+    },
+    {
+     "key": "burger",
+     "gloss": "A burger"
+    },
+    {
+     "key": "feet-up",
+     "gloss": "Feet up"
+    },
+    {
+     "key": "fishing",
+     "gloss": "A bite"
+    },
+    {
+     "key": "song",
+     "gloss": "A song"
+    },
+    {
+     "key": "chart",
+     "gloss": "Reading the chart"
+    },
+    {
+     "key": "engine",
+     "gloss": "Fixing the engine"
+    },
+    {
+     "key": "photo",
+     "gloss": "Taking a photo"
+    },
+    {
+     "key": "asleep",
+     "gloss": "Asleep"
+    },
+    {
+     "key": "hooray",
+     "gloss": "Hooray"
+    },
+    {
+     "key": "harbour",
+     "gloss": "At the harbour"
+    }
+   ]
+  },
+  {
+   "file": "johansson-turnaround.png",
+   "mode": "ink",
+   "stickers": [
+    null,
+    null,
+    null,
+    {
+     "key": "over-the-shoulder",
+     "gloss": "Over his shoulder"
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    {
+     "key": "hero",
+     "gloss": "The hero"
+    }
+   ]
+  }
+ ],
+ "note": "The owner's own cartoon sailor (Johansson Animation Studios, © Nils Johansson), cut from his pose sheets."
+}
