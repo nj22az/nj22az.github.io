@@ -1396,6 +1396,8 @@ function editPreview(size){
 function renderFrameChoices(box,current,preview,pick){
  box.textContent='';
  for(const f of FRAMES){
+  // The pixel frames are no longer offered; one a photo already wears stays among the choices.
+  if(f.old&&f.id!==current)continue;
   const b=document.createElement('button');b.type='button';b.className='frame-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(current===f.id));
   b.title=f.hint||'No frame';b.dataset.frame=f.id;
   const c=document.createElement('canvas');c.width=c.height=132;const g=c.getContext('2d');

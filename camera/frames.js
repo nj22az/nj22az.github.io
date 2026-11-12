@@ -31,7 +31,9 @@ async function loadPixelFrames(){
   return (await Promise.all(manifest.frames.map(async meta=>{
    const img=new Image();img.src=new URL(`./frames/${meta.id}.png`,import.meta.url).href;
    try{await img.decode();}catch{return null;}
-   return {id:meta.id,label:meta.label,hint:meta.hint,pixel:{meta,sheet:img}};
+   // Kept so a photo framed in one still shows it; no longer offered (`old`: the owner, 12 November 2026, of the frames:
+   // "walk away from the Gameboy arts, but keep the playfulness from Gameboy Camera").
+   return {id:meta.id,label:meta.label,hint:meta.hint,old:true,pixel:{meta,sheet:img}};
   }))).filter(Boolean);
  }catch{return [];}
 }
