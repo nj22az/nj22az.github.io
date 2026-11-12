@@ -87,7 +87,10 @@ FIXED_RAMP = dict(yard=(12.6, 65.4), x=(-7.5, -3.9), slope=8.0)     # main deck 
 RAMP_OPENING = dict(yard=(24.6, 65.4), x=(-7.5, -3.9))        # where it comes up through the upper deck, under its cover
 CARGO_LIFT = dict(yard=(50.0, 66.0), half=1.8)                # the lift to the lower hold: 16.0 x 3.6 m
 HOLD_SIDE = 5.9          # the lower hold's side walls: wing tanks outboard of them, about a fifth of her breadth
-HELIDECK = dict(yard=10.5, across=19.0, over=1.0)             # an octagon 19 m across its flats, 1.0 m over the upper deck
+HELIDECK = dict(yard=10.0, across=19.0, over=1.0)             # an octagon 19 m across its flats, 1.0 m over the upper deck; its
+#                                                               middle 10.0 m from the transom, so that its forward corners' edges
+#                                                               pass 0.1 m clear of the funnels' after inboard corners (at 10.5 m
+#                                                               they cut 0.2 m into them: found 12 November 2026)
 FUNNEL = dict(yard=(16.2, 23.2), x=(7.5, 9.5), top=22.4)      # each funnel's casing on the upper deck, and its top above the keel
 HOUSE = (80.0, 104.0)    # the house, on the upper deck
 HOUSE_HALF = 7.5         # the half breadth of its upper tiers (the boat deck's house and those over it)
@@ -261,7 +264,7 @@ S('main', 'fore-store', 'Fore store and chain lockers', fr(COLLISION), 117.0, -H
 _H0, _H1 = HOUSE
 _T0, _T1 = TRUNK['yard']
 S('upper', 'aft-deck', 'Upper deck aft', 0.0, 23.2, -HB, HB, 'open', label=(21.6, 0.0), why='Under and round the helicopter deck; crew only')
-S('upper', 'helideck', 'Helicopter deck', 1.0, 20.0, -9.5, 9.5, 'safety',
+S('upper', 'helideck', 'Helicopter deck', HELIDECK['yard'] - HELIDECK['across'] / 2, HELIDECK['yard'] + HELIDECK['across'] / 2, -9.5, 9.5, 'safety',
   'An octagon 19 m across, 1.0 m over the upper deck: added at her refit, for the islands\' ambulance flights. A stair each side', level='helideck')
 both('upper', 'funnel', 'Funnel', FUNNEL['yard'][0], FUNNEL['yard'][1], FUNNEL['x'][0], FUNNEL['x'][1], 'machinery',
      'A casing round the uptakes of that side\'s machinery, with the line\'s J. Its top is 22.4 m above the keel, under the wheelhouse\'s')
@@ -376,7 +379,7 @@ PROFILE = [
     ('emergency generator room', 80.1, 88.06, DECKS['officers'], DECKS['officers'] + 3.4),
     ('bridge house', 94.0, 103.5, DECKS['bridge'], DECKS['compass']),
     ('funnel', FUNNEL['yard'][0], FUNNEL['yard'][1], DECKS['upper'], FUNNEL_TOP),
-    ('helicopter deck', 1.0, 20.0, DECKS['helideck'] - 0.2, DECKS['helideck']),
+    ('helicopter deck', HELIDECK['yard'] - HELIDECK['across'] / 2, HELIDECK['yard'] + HELIDECK['across'] / 2, DECKS['helideck'] - 0.2, DECKS['helideck']),
 ]
 
 # ---- What the yard asks the owner to settle
@@ -385,9 +388,9 @@ QUESTIONS = [
     'The lower hold is one compartment of 39.6 m, as ships of her time had it; a ship built today is not allowed that. A watertight bulkhead with a sliding door across it, or the hold as drawn.',
     'Berths: 25 crew (six officers; nineteen ratings in twelve cabins, seven of them with two berths) and eight drivers in four cabins; the other 42 drivers and passengers ride in the lounge. The boat deck\'s house is narrow abaft 91 m, where the lifeboats stand: more cabins need another tier.',
     'The sheer begins at the front of the house (104 m), not at three quarters of her length as first asked: the house stands on a level deck.',
-    'Her funnels stand abaft the engines and four metres before the helicopter deck: their smoke lies over it with the wind ahead, and they stand in a helicopter\'s way from forward. The deck is drawn where the owner asked for it, aft.',
+    'Her funnels stand abaft the engines, at the helicopter deck\'s two forward corners: their smoke lies over it with the wind ahead, and they stand in a helicopter\'s way from forward. The deck is drawn where the owner asked for it, aft.',
     'Her watertight doors below the main deck are drawn hinged, as the first Chisum\'s were at the owner\'s word; a passenger ship\'s are to be sliding and power-operated (SOLAS II-1/13 as the yard recalls it; to be read).',
-    'Her mast is the first Chisum\'s, 28.9 m above the keel (23.3 m over the water): a ship of her length carries her masthead light higher, and a second one forward. A foremast is in the arrangement and not yet built.',
+    'Her mast is the first Chisum\'s, on the wheelhouse, 28.9 m above the keel (23.3 m over the water): her forward masthead light is on it. A second masthead light, at least half her length abaft the first and 4.5 m higher (COLREG annex I, as the yard recalls it; to be read), wants a mast on her centre line between the funnels, as her pattern carries one at its funnel: not built. The foremast on the forecastle carries the anchor light and the bell.',
     'The emergency generator\'s size: the owner\'s drawing names 500 kW, which is as much as one of her main sets. The room is drawn at the drawing\'s size.',
     'The engine room has one stair up (to the port casing) and watertight doors forward and aft; a second way of escape to the deck, from its far end, is not yet in the arrangement. The room first drawn for it in the starboard casing stood over the fresh water tanks, not over the engine room: it is the CO2 room now.',
     'The CO2 room is entered from the main deck, which is an enclosed vehicle deck; the rules ask for a way in from the open deck (as the yard recalls them; to be read).',
@@ -411,16 +414,16 @@ STATIONS = [
      'bulkhead (110.4 m), inboard to the chain locker under the fore store.'),
     ('Forward mooring station', 'forecastle, 104.5 to 123.7 m',
      'A mooring winch each side at 106.8 m, 2.8 m before the house, and the windlasses\' warping heads. Lines leave her at six chocks in the bulwark: head lines at '
-     '119.2 m, breast lines at 110.6 m, springs at 105.6 m, and one in the stem head on the centre line for a tug. Bitts stand beside each chock, a roller fairlead '
+     '119.1 m, breast lines at 110.7 m, springs at 105.6 m (a chock in the stem head for a tug is not yet in her). Bitts stand beside each chock, a roller fairlead '
      'where a line turns. The spare lines are on two reels under the lee of the house front. The foremast stands on the centre line at 116.9 m.'),
     ('After mooring stations', 'main deck, 0 to 7.2 m, inside each casing; and the upper deck\'s after corners',
      'As the pattern has them: her weather deck aft is the helicopter deck, so the stern lines are worked from a station inside each casing on the main deck, '
      'through a mooring port in her side (2.4 to 4.8 m): a winch, bitts, a roller fairlead at the port\'s sill. On the upper deck a capstan and bitts stand in each '
-     'after corner, outside the helicopter deck\'s octagon, with a chock in her side bulwark and one in the stern bulwark beside the raised ramp.'),
+     'after corner, outside the helicopter deck\'s octagon, with two chocks in her side bulwark, at 1.2 and 3.0 m (one in the stern bulwark beside the raised ramp is not yet in her).'),
     ('Ventilators and air pipes', 'upper deck, at the bulwark, outboard of the walkways',
      'The trunks of the engine room, the auxiliary engine room and the lower hold come up in the starboard casing, the main deck\'s exhaust in the port one: a '
      'mushroom ventilator stands over each, hard against the bulwark, and 1.2 m of walkway is left inboard of it. The wing tanks\' air pipes stand between them.'),
-    ('Helicopter deck', 'upper deck aft, 1.0 to 20.0 m',
+    ('Helicopter deck', 'upper deck aft, 0.5 to 19.5 m',
      'A foam monitor each side on the upper deck at the helicopter deck\'s forward edge, beside its two stairs: it covers the whole deck from outside it.'),
     ('Lashing', 'main deck, upper deck and lower hold',
      'Pots flush in the deck along the lane edges, 2.4 m apart: four rows on the main and upper decks (three beside the fixed ramp and its opening, one beside the '

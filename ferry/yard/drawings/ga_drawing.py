@@ -136,6 +136,9 @@ for a, b, h in ((H0, G.OFF, D['officers']), (G.OFF, 94.0, D['bridge']), (94.0, 1
 # the mast on the compass deck; the lifeboat's station on the boat deck (the boat itself: the yard's library of fittings)
 mast = S.BRIDGE_SHIFT + 20.8
 path(f'M{X(mast):.1f},{H(D["compass"]):.1f} V{H(G.MAST_TOP):.1f} M{X(mast - 1.4):.1f},{H(G.MAST_TOP - 2.6):.1f} H{X(mast + 1.4):.1f} M{X(mast - 0.7):.1f},{H(G.MAST_TOP - 1.4):.1f} H{X(mast + 0.7):.1f}', INK, 1.5)
+fm = S.FOREMAST                                                            # the foremast on the forecastle: the anchor light on its truck
+path(f'M{X(fm["yard"]):.1f},{H(deck(fm["yard"])):.1f} V{H(deck(fm["yard"]) + fm["height"]):.1f}', INK, 1.3)
+add(f'<circle cx="{X(fm["yard"]):.1f}" cy="{H(deck(fm["yard"]) + fm["height"] + 0.15):.1f}" r="1.6" fill="{INK}"/>')
 a, b = G.LIFEBOAT
 add(f'<rect x="{X(a):.1f}" y="{H(D["boat"] + 2.6):.1f}" width="{(b - a) * K:.1f}" height="{2.6 * K:.1f}" fill="none" stroke="{INK}" stroke-width="0.8" stroke-dasharray="4 3"/>')
 text(X((a + b) / 2), H(D['boat'] + 0.45), 'lifeboat station', 8, 'middle', fill=FAINT)

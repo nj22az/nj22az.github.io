@@ -68,6 +68,8 @@ SPECIAL = [
     ('steering-gear', 'hold', S.AFT_FLAT, [(0.9, 2.5, 1.2, 6.9), (-2.5, -0.9, 1.2, 6.9)], 'along'),
     ('aft-passage', 'hold', S.AFT_FLAT, [(0.56, 1.16, 7.6, 15.0)], 'along'),
     ('hold-stair', 'hold', None, [(6.0, 8.9, 46.9, 48.0)], 'across'),
+    # the port uptake's room on the main deck: forward of the three uptakes that stand through it, by its door
+    ('uptake-p', 'main', None, [(7.6, 9.6, 20.4, 23.1)], None),
     ('thruster-room', 'hold', None, [(-1.6, 1.6, 98.8, 106.0)], None),
     ('fore-store', 'main', None, [(-1.7, 1.7, 110.7, 115.2)], None),
     # each storey of the house's stair trunk: over its own forward landing

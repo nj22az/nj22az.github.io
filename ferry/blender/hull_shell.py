@@ -256,39 +256,85 @@ def bulwark_rows(z):
     return [(L.topside_x(y0, z), y0), (L.topside_x(y1, z), y1)]
 
 
+# The bulwark is plated in five strakes, foot to head, so that openings can be left in it: a freeing port in the second
+# (the water a sea leaves on deck runs out through it: spec.FREEING_PORTS), a mooring chock's eye in the fourth (where a
+# line leaves her: the panama chocks of spec.OUTFIT). Heights over the deck's edge, metres.
+BULWARK_LEVELS = (0.0, S.FREEING_PORTS['sill'], S.FREEING_PORTS['sill'] + S.FREEING_PORTS['height'], 0.42, 0.78, L.BULWARK)
+
+
+def bulwark_levels(z):
+    """The bulwark at z in its strakes, foot to head: (x, y) on the port side. Where it is lower than its full height (at
+    the stem head) the strakes close on each other."""
+    (x0, y0), (x1, y1) = bulwark_rows(z)
+    return [(x0 + (x1 - x0) * min(1.0, h / L.BULWARK), y0 + (y1 - y0) * min(1.0, h / L.BULWARK)) for h in BULWARK_LEVELS]
+
+
+def _bulwark_openings(side):
+    """What is left open in the bulwark on one side: (yard from, yard to, strake)."""
+    P = S.FREEING_PORTS
+    out = [(p, p + P['length'], 1) for p in P['yards']]
+    for o in S.OUTFIT:
+        if o['kind'] == 'panama-chock' and o['x'] * side > 0:
+            out.append((o['yard'] - S.CHOCK_EYE / 2, o['yard'] + S.CHOCK_EYE / 2, 3))
+    return out
+
+
 def _bulwark(outer, inside, cap, side, a, b):
     """A length of bulwark on one side: its outer face in the hull's paint, its inner face in white 12 mm inside it, the
-    cap along its head, and the plate's own end where it stops against a house."""
+    cap along its head, the plate's own end where it stops against a house, and its edge round each opening left in it."""
     teal, white = srgb(S.HULL), srgb(S.WHITE)
     yards = [yard for yard in TOP_YARDS if a - 1e-6 <= yard <= b + 1e-6]
+    rows = len(BULWARK_LEVELS) - 1
+    openings = _bulwark_openings(side)
+    is_open = lambda i, r: 0 <= i < len(yards) - 1 and any(k == r and p - 1e-6 <= yards[i] and yards[i + 1] <= q + 1e-6 for p, q, k in openings)
     ids = []
     for yard in yards:
         z = L.Z(yard)
         n = L.topside_normal(z)
-        ids.append([outer.vert((side * x, y, z), (side * n[0], n[1], n[2])) for x, y in bulwark_rows(z)])
+        ids.append([outer.vert((side * x, y, z), (side * n[0], n[1], n[2])) for x, y in bulwark_levels(z)])
     start = len(outer.f)
     for i in range(len(yards) - 1):
-        a_, b_, c_, d_ = ids[i][0], ids[i + 1][0], ids[i + 1][1], ids[i][1]
-        _emit(outer, (a_, d_, c_, b_) if side > 0 else (a_, b_, c_, d_), tint(teal, plate_shade(31 + (50 if side < 0 else 0), int(yards[i] // S.STRAKE_BUTT), 0.03)))
+        shade = tint(teal, plate_shade(31 + (50 if side < 0 else 0), int(yards[i] // S.STRAKE_BUTT), 0.03))
+        for r in range(rows):
+            if is_open(i, r):
+                continue
+            a_, b_, c_, d_ = ids[i][r], ids[i + 1][r], ids[i + 1][r + 1], ids[i][r + 1]
+            _emit(outer, (a_, d_, c_, b_) if side > 0 else (a_, b_, c_, d_), shade)
     outer.orient(start, None)
     inner_of = _twin(outer, inside, start, colour=white)
-    # the cap: a flat bar along the head, between the two faces
     grey = tint(white, 0.86)
-    for i in range(len(yards) - 1):
-        p, q = ids[i][1], ids[i + 1][1]
+
+    def edge(p, q, toward):
+        """The plate's own edge between its two faces, from p to q, looking toward a point."""
         if p in inner_of and q in inner_of:
             first = len(cap.f)
             cap.face((cap.vert(outer.v[p]), cap.vert(outer.v[q]), cap.vert(inside.v[inner_of[q]]), cap.vert(inside.v[inner_of[p]])), grey)
-            cap.orient(first, (0, 1, 0))
+            if callable(toward):
+                cap.orient(first, toward)
+            else:
+                cap.orient(first, toward)
+    # the cap: a flat bar along the head, between the two faces
+    for i in range(len(yards) - 1):
+        edge(ids[i][-1], ids[i + 1][-1], (0, 1, 0))
     # its ends, where it stops against a house and is not carried into another sheet
     for k, look in ((0, -1), (len(yards) - 1, 1)):
-        yard = yards[k]
-        if any(abs(yard - e) < 1e-6 for e in ENDS):
-            p, q = ids[k][0], ids[k][1]
-            if p in inner_of and q in inner_of:
-                first = len(cap.f)
-                cap.face((cap.vert(outer.v[p]), cap.vert(outer.v[q]), cap.vert(inside.v[inner_of[q]]), cap.vert(inside.v[inner_of[p]])), grey)
-                cap.orient(first, (0, 0, look))
+        if any(abs(yards[k] - e) < 1e-6 for e in ENDS):
+            for r in range(rows):
+                edge(ids[k][r], ids[k][r + 1], (0, 0, look))
+    # the plate's edge round each opening
+    for i in range(len(yards) - 1):
+        for r in range(rows):
+            if not is_open(i, r):
+                continue
+            corners = [Vector(outer.v[ids[i + u][r + v]]) for u in (0, 1) for v in (0, 1)]
+            mid = sum(corners, Vector()) / 4
+            into = lambda c, mid=mid: mid - c
+            edge(ids[i][r], ids[i + 1][r], into)
+            edge(ids[i][r + 1], ids[i + 1][r + 1], into)
+            if not is_open(i - 1, r):
+                edge(ids[i][r], ids[i][r + 1], into)
+            if not is_open(i + 1, r):
+                edge(ids[i + 1][r], ids[i + 1][r + 1], into)
 
 
 def _end_plate(parts, z, facing, inner=False):

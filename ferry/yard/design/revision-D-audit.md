@@ -121,6 +121,27 @@ darkest enclosed places are under the cargo lift's platform (the hold's two midd
 platform that moves) and under the fixed ramp (no fittings there yet). Enclosed points: light 0.10 to 0.57 (10th to 90th
 in a hundred) against 1.28 on the open deck.
 
+## Stage 2a: her decks' outfit (`deck_outfit.py`, the bulwarks' openings)
+
+Pictures: `2-stage-2a-decks/`. Commit: "stage 2: her decks read as working decks".
+
+Compared: the same thirty views with stage 1's, and the true plan with the coordinating session's point 5 ("from above,
+the weather deck is one flat green field").
+
+| What | Built | Looked at in | Found |
+|---|---|---|---|
+| Lane lines | white, 0.10 m, along the four lane edges of the main deck (9 to 108 m) and of the upper deck (24 to 79.4 m); the starboard outer one begins forward of the fixed ramp and of its opening, and steps over the hatch to the lower hold | `outside-true-plan`, `upper-deck-looking-aft`, `vehicle-deck` | seen from above and on both decks: white, straight, clear of the ramp, its opening and the hatch; on the main deck they run on over the lift's platform |
+| Walkways | a walkway 1.1 m wide each side of the upper deck between two yellow lines, inboard of the ventilators' places at the bulwark | `outside-true-plan`, `upper-deck-looking-forward` | the two yellow lines each side read on deck; to starboard the inner one begins where the opening's rail ends |
+| Helicopter deck | a white line round its edge, a yellow circle of 9.5 m, a white H; the deck moved 0.5 m aft, clear of the funnels | `helideck`, `outside-true-plan` | the H, the circle and the edge line read from the deck and from above; in the plan the deck's forward corners now pass clear of the funnels |
+| Anchor gear's pipes | a hawse pipe each side from the anchor's mouth (115.2 m) up through the forecastle deck at 114.6 m with a bolster; a chain pipe each side from 112.5 m down and inboard through the fore store to the main deck | `forecastle`, `outside-bow-quarter` | the two bolsters stand on the forecastle beside the mast with the chain pipes' collars abaft them; the anchors hang at their mouths below |
+| Foremast | a pole of 7.0 m on the centre line at 116.9 m: anchor light, bell, steps, three stays | `forecastle`, `outside-true-profile` | on the centre line with its three stays, the bell on its after side; in the profile it stands forward of the house and lower than the bridge's mast |
+| Bulwarks | plated in five strakes; 24 freeing ports each side (0.6 x 0.24 m); an eye of 0.6 x 0.36 m for each of the ten panama chocks | `outside-beam-low`, `forecastle`, `upper-deck-looking-aft` | from outside a row of small openings along the sheer; from the deck slots at the bulwark's foot, and the chocks' eyes higher up at the mooring stations |
+
+Not matched, and why: the lashing pots, the ventilators, the mooring gear and the monitors are places in `spec.OUTFIT`
+and are not drawn (the fittings library); the helicopter deck has no net and no lights; the freeing ports have no bars
+across them; no chock is shaped in the stern bulwark or at the stem head (two places were taken out of the list rather
+than left unshaped).
+
 ## The coordinating session's audit of 02:55 (four outside views), and what was done about each point
 
 1. **The house reads as boxes stacked on each other.** Done in stage 2: window frames with rain eyebrows on every outside
