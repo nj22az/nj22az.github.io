@@ -1,1 +1,77 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tetsuo's Workshop · Office Preview</title><meta name="theme-color" content="#101719"><style>*{box-sizing:border-box}body{margin:0;background:#101719;color:#f4f0e6;font-family:system-ui,-apple-system,sans-serif}header{height:72px;padding:12px clamp(15px,3vw,42px);display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #ffffff28}header strong{font-size:16px}header span{display:block;color:#b8c1c5;font-size:11px;letter-spacing:.13em;text-transform:uppercase}a{color:inherit}header a{text-decoration:none;border:1px solid #ffffff50;padding:10px 14px;border-radius:5px;font-size:13px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;height:calc(100dvh - 72px)}iframe{width:100%;height:100%;border:0;background:#dfe8ec}aside{padding:clamp(20px,3vw,38px);overflow:auto;background:#172127;border-left:1px solid #ffffff24}small{letter-spacing:.16em;text-transform:uppercase;color:#f1d28c;font-weight:700}h1{font-size:clamp(27px,3vw,39px);line-height:1.1;letter-spacing:-.035em;margin:20px 0}p{color:#c4cbd0;line-height:1.65}aside a{display:block;margin-top:16px;padding:13px 15px;border:1px solid #ffffff50;border-radius:5px;text-decoration:none;font-weight:600}aside a:first-of-type{background:#f1d28c;color:#142027;border-color:#f1d28c}.note{font-size:12px;color:#a8b5bb;border-top:1px solid #ffffff2b;margin-top:35px;padding-top:20px}@media(max-width:850px){header{height:auto;min-height:65px}.layout{height:auto;display:flex;flex-direction:column}iframe{height:62dvh;min-height:340px}aside{border-left:0;border-top:1px solid #ffffff24}h1{margin:10px 0}}</style></head><body><header><div><span>The Office of Nils Johansson · Engineering</span><strong>Tetsuo's Workshop</strong></div><a href="/temp/">← Return to the park / harbour preview</a></header><main class="layout"><iframe title="Existing interactive Dock Electrical Workshop motor routine" src="/motor-90l/workshop/" loading="eager" allow="fullscreen"></iframe><aside><small>Actual project asset · Interactive 3D</small><h1>Inside the electrical workshop.</h1><p>This is the existing working Dock Electrical Workshop scene from the Johansson project, including its IEC 90L bilge-pump motor, isolator, instruments and animated engineering lesson.</p><p>Use the lesson controls within the 3D scene. The original scene is embedded unchanged, not recreated with AI-generated imagery.</p><a href="/motor-90l/workshop/">Open full-screen workshop ↗</a><a href="/motor-90l/">Inspect the IEC 90L motor ↗</a><a href="/elteknik/">Electrical education ↗</a><p class="note">Design preview: this workshop is currently Erik's motor routine, although the dock workshop and its motor also appear in Tetsuo's town environment. The finished Office will need a dedicated entrance, camera path and updated workshop branding.</p></aside></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f1e8">
+  <meta name="description" content="Visit Tetsuo’s electrical workshop on Minato’s west quay, explore the instrument bench and open Erik’s motor routine.">
+  <title>Tetsuo’s Workshop · Johansson Animation Studios</title>
+  <link rel="stylesheet" href="./workshop.css">
+  <script type="importmap">{"imports":{"three":"/motor-90l/vendor/three.module.min.js"}}</script>
+  <script type="module" src="./workshop.js"></script>
+</head>
+<body>
+  <header class="topbar shell">
+    <a class="brand" href="/temp/" aria-label="Johansson Animation Studios, harbour preview">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 7v19m-6-13h12M5 19c1 5 5 7 11 7s10-2 11-7M5 19l4 1m18-1-4 1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="6.5" r="2.5" stroke="currentColor" stroke-width="2"/></svg></span>
+      <span>Johansson<span class="brand-sub">Animation Studios</span></span>
+    </a>
+    <a class="return" href="/temp/"><span aria-hidden="true">←</span> Back to harbour</a>
+  </header>
+
+  <main class="shell">
+    <div class="visit">
+      <section class="intro" aria-labelledby="title">
+        <div class="intro-copy">
+          <p class="place">Minato <span aria-hidden="true">/</span> West Quay</p>
+          <h1 id="title">Tetsuo’s <br>Workshop</h1>
+          <p class="description">A dockside repair shop for the harbour’s radios, instruments and electrics.</p>
+          <a class="primary" href="#workbench" data-go="workbench">See the workbench <span aria-hidden="true">↗</span></a>
+        </div>
+        <aside class="lesson" aria-labelledby="lesson-title">
+          <p class="place">Electrical training</p>
+          <h2 id="lesson-title">Erik’s motor routine</h2>
+          <p>Follow Erik through isolation, testing and servicing a bilge-pump motor in 3D.</p>
+          <a href="/motor-90l/workshop/">Open Erik’s motor routine <span aria-hidden="true">↗</span></a>
+        </aside>
+      </section>
+
+      <section class="viewer" aria-label="Explore Tetsuo’s workshop">
+        <div class="frame" id="scene-frame" data-view="quayside" data-mode="still">
+          <div class="stage" id="stage" aria-hidden="true">
+            <img id="scene-still" src="/assets/office-port/pier.webp" alt="" fetchpriority="high" width="1240" height="800">
+          </div>
+          <div class="scene-caption" aria-live="polite" aria-atomic="true">
+            <strong id="view-title">Quayside</strong>
+            <span id="view-detail">Dock Electrical &amp; Repairs</span>
+          </div>
+          <a class="scene-link" href="#door" data-go="door" aria-label="Approach the workshop door"><span>Workshop door</span><span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="camera" aria-label="Camera positions">
+          <span class="camera-label">Viewpoint</span>
+          <div class="views">
+            <a href="#quayside" data-view-link="quayside" aria-current="true">Quayside</a>
+            <a href="#door" data-view-link="door">Workshop door</a>
+            <a href="#workbench" data-view-link="workbench">Workbench</a>
+          </div>
+        </div>
+        <div class="bench-panel" id="bench-panel" hidden>
+          <div class="bench-controls" aria-label="Workbench controls">
+            <button type="button" data-kit="lamp">Arm lamp</button>
+            <button type="button" data-kit="scope">Oscilloscope</button>
+            <button type="button" data-kit="drawer">Tool drawer</button>
+          </div>
+          <p id="bench-feedback" role="status">Try the lamp, change the oscilloscope input or open a drawer.</p>
+        </div>
+      </section>
+    </div>
+
+    <nav class="destinations" aria-label="More destinations">
+      <a href="/temp/#destinations">Harbour destinations <span aria-hidden="true">↗</span></a>
+      <a href="/ferry/">Ferry terminal <span aria-hidden="true">↗</span></a>
+      <a href="/motor-90l/">IEC 90L motor <span aria-hidden="true">↗</span></a>
+      <a href="/elteknik/">Electrical education <span aria-hidden="true">↗</span></a>
+    </nav>
+  </main>
+</body>
+</html>

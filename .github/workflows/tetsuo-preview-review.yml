@@ -1,0 +1,38 @@
+name: Tetsuo workshop browser review
+on:
+  push:
+    branches: [development]
+    paths: ['temp/workshop/**', 'tools/workshop-preview/**', '.github/workflows/tetsuo-preview-review.yml']
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            temp
+            motor-90l
+            assets/office-port
+            assets/js
+            tools/workshop-preview
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Chromium
+        run: |
+          npm install --prefix /tmp/tetsuo-runtime --no-save --no-package-lock playwright@1.61.0
+          /tmp/tetsuo-runtime/node_modules/.bin/playwright install --with-deps chromium
+      - name: Capture and test the preview
+        env:
+          NODE_PATH: /tmp/tetsuo-runtime/node_modules
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 &
+          node tools/workshop-preview/review.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tetsuo-browser-review
+          path: workshop-evidence/
