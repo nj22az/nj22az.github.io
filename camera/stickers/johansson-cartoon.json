@@ -1,0 +1,353 @@
+{
+ "id": "johansson-cartoon",
+ "name": "Cartoon Johansson",
+ "tab": "Johansson",
+ "who": "Johansson",
+ "deck": true,
+ "note": "The owner's own cartoon sailor (Johansson Animation Studios, © Nils Johansson), cut from his pose sheets.",
+ "source": "tools/cut-sticker-sheet.py tools/sources/sticker-sheets/johansson-cartoon.json",
+ "stickers": [
+  {
+   "id": "johansson-cartoon/front",
+   "src": "johansson-cartoon/front.webp?v=b72e40f4",
+   "thumb": "johansson-cartoon/front.thumb.webp?v=b72e40f4",
+   "width": 358,
+   "height": 512,
+   "line": "",
+   "gloss": "Standing proud"
+  },
+  {
+   "id": "johansson-cartoon/hips",
+   "src": "johansson-cartoon/hips.webp?v=0c8ca1df",
+   "thumb": "johansson-cartoon/hips.thumb.webp?v=0c8ca1df",
+   "width": 329,
+   "height": 512,
+   "line": "",
+   "gloss": "Hands on his hips"
+  },
+  {
+   "id": "johansson-cartoon/side",
+   "src": "johansson-cartoon/side.webp?v=2e6bb36f",
+   "thumb": "johansson-cartoon/side.thumb.webp?v=2e6bb36f",
+   "width": 261,
+   "height": 512,
+   "line": "",
+   "gloss": "From the side"
+  },
+  {
+   "id": "johansson-cartoon/back",
+   "src": "johansson-cartoon/back.webp?v=2e9786d9",
+   "thumb": "johansson-cartoon/back.thumb.webp?v=2e9786d9",
+   "width": 359,
+   "height": 512,
+   "line": "",
+   "gloss": "From behind"
+  },
+  {
+   "id": "johansson-cartoon/flex",
+   "src": "johansson-cartoon/flex.webp?v=dcda66e3",
+   "thumb": "johansson-cartoon/flex.thumb.webp?v=dcda66e3",
+   "width": 476,
+   "height": 512,
+   "line": "",
+   "gloss": "Flexing"
+  },
+  {
+   "id": "johansson-cartoon/wave",
+   "src": "johansson-cartoon/wave.webp?v=19113c35",
+   "thumb": "johansson-cartoon/wave.thumb.webp?v=19113c35",
+   "width": 444,
+   "height": 512,
+   "line": "",
+   "gloss": "Waving"
+  },
+  {
+   "id": "johansson-cartoon/walk",
+   "src": "johansson-cartoon/walk.webp?v=cfacb779",
+   "thumb": "johansson-cartoon/walk.thumb.webp?v=cfacb779",
+   "width": 469,
+   "height": 512,
+   "line": "",
+   "gloss": "On his way"
+  },
+  {
+   "id": "johansson-cartoon/run",
+   "src": "johansson-cartoon/run.webp?v=97045f27",
+   "thumb": "johansson-cartoon/run.thumb.webp?v=97045f27",
+   "width": 512,
+   "height": 456,
+   "line": "",
+   "gloss": "Running"
+  },
+  {
+   "id": "johansson-cartoon/jump",
+   "src": "johansson-cartoon/jump.webp?v=fc9d3b51",
+   "thumb": "johansson-cartoon/jump.thumb.webp?v=fc9d3b51",
+   "width": 483,
+   "height": 512,
+   "line": "",
+   "gloss": "Jumping for joy"
+  },
+  {
+   "id": "johansson-cartoon/punch",
+   "src": "johansson-cartoon/punch.webp?v=a1493fca",
+   "thumb": "johansson-cartoon/punch.thumb.webp?v=a1493fca",
+   "width": 512,
+   "height": 437,
+   "line": "",
+   "gloss": "A punch"
+  },
+  {
+   "id": "johansson-cartoon/kick",
+   "src": "johansson-cartoon/kick.webp?v=edc90757",
+   "thumb": "johansson-cartoon/kick.thumb.webp?v=edc90757",
+   "width": 512,
+   "height": 475,
+   "line": "",
+   "gloss": "A kick"
+  },
+  {
+   "id": "johansson-cartoon/anchor",
+   "src": "johansson-cartoon/anchor.webp?v=51526d0d",
+   "thumb": "johansson-cartoon/anchor.thumb.webp?v=51526d0d",
+   "width": 512,
+   "height": 476,
+   "line": "",
+   "gloss": "With his anchor"
+  },
+  {
+   "id": "johansson-cartoon/salute",
+   "src": "johansson-cartoon/salute.webp?v=971bb45b",
+   "thumb": "johansson-cartoon/salute.thumb.webp?v=971bb45b",
+   "width": 381,
+   "height": 512,
+   "line": "",
+   "gloss": "Aye aye"
+  },
+  {
+   "id": "johansson-cartoon/point",
+   "src": "johansson-cartoon/point.webp?v=93b40911",
+   "thumb": "johansson-cartoon/point.thumb.webp?v=93b40911",
+   "width": 465,
+   "height": 512,
+   "line": "",
+   "gloss": "Pointing"
+  },
+  {
+   "id": "johansson-cartoon/arms-crossed",
+   "src": "johansson-cartoon/arms-crossed.webp?v=b6daef37",
+   "thumb": "johansson-cartoon/arms-crossed.thumb.webp?v=b6daef37",
+   "width": 369,
+   "height": 512,
+   "line": "",
+   "gloss": "Arms crossed"
+  },
+  {
+   "id": "johansson-cartoon/laugh",
+   "src": "johansson-cartoon/laugh.webp?v=55b0bce1",
+   "thumb": "johansson-cartoon/laugh.thumb.webp?v=55b0bce1",
+   "width": 412,
+   "height": 512,
+   "line": "",
+   "gloss": "A belly laugh"
+  },
+  {
+   "id": "johansson-cartoon/ready",
+   "src": "johansson-cartoon/ready.webp?v=efa63b0a",
+   "thumb": "johansson-cartoon/ready.thumb.webp?v=efa63b0a",
+   "width": 512,
+   "height": 487,
+   "line": "",
+   "gloss": "Ready"
+  },
+  {
+   "id": "johansson-cartoon/sneak",
+   "src": "johansson-cartoon/sneak.webp?v=2d9d0c86",
+   "thumb": "johansson-cartoon/sneak.thumb.webp?v=2d9d0c86",
+   "width": 415,
+   "height": 512,
+   "line": "",
+   "gloss": "Sneaking"
+  },
+  {
+   "id": "johansson-cartoon/think",
+   "src": "johansson-cartoon/think.webp?v=0ff07434",
+   "thumb": "johansson-cartoon/think.thumb.webp?v=0ff07434",
+   "width": 425,
+   "height": 512,
+   "line": "",
+   "gloss": "Thinking it over"
+  },
+  {
+   "id": "johansson-cartoon/crate",
+   "src": "johansson-cartoon/crate.webp?v=01a59439",
+   "thumb": "johansson-cartoon/crate.thumb.webp?v=01a59439",
+   "width": 423,
+   "height": 512,
+   "line": "",
+   "gloss": "Carrying a crate"
+  },
+  {
+   "id": "johansson-cartoon/rope",
+   "src": "johansson-cartoon/rope.webp?v=5219b9f4",
+   "thumb": "johansson-cartoon/rope.thumb.webp?v=5219b9f4",
+   "width": 512,
+   "height": 444,
+   "line": "",
+   "gloss": "Hauling a rope"
+  },
+  {
+   "id": "johansson-cartoon/ladder",
+   "src": "johansson-cartoon/ladder.webp?v=9afd3d4e",
+   "thumb": "johansson-cartoon/ladder.thumb.webp?v=9afd3d4e",
+   "width": 359,
+   "height": 512,
+   "line": "",
+   "gloss": "Up the ladder"
+  },
+  {
+   "id": "johansson-cartoon/lookout",
+   "src": "johansson-cartoon/lookout.webp?v=3bfbbe38",
+   "thumb": "johansson-cartoon/lookout.thumb.webp?v=3bfbbe38",
+   "width": 432,
+   "height": 512,
+   "line": "",
+   "gloss": "On the lookout"
+  },
+  {
+   "id": "johansson-cartoon/surprised",
+   "src": "johansson-cartoon/surprised.webp?v=7b3ebbdf",
+   "thumb": "johansson-cartoon/surprised.thumb.webp?v=7b3ebbdf",
+   "width": 466,
+   "height": 512,
+   "line": "",
+   "gloss": "Surprised"
+  },
+  {
+   "id": "johansson-cartoon/cheers",
+   "src": "johansson-cartoon/cheers.webp?v=82b4656a",
+   "thumb": "johansson-cartoon/cheers.thumb.webp?v=82b4656a",
+   "width": 512,
+   "height": 459,
+   "line": "",
+   "gloss": "Cheers"
+  },
+  {
+   "id": "johansson-cartoon/ramen",
+   "src": "johansson-cartoon/ramen.webp?v=f13c5ef5",
+   "thumb": "johansson-cartoon/ramen.thumb.webp?v=f13c5ef5",
+   "width": 512,
+   "height": 499,
+   "line": "",
+   "gloss": "Ramen"
+  },
+  {
+   "id": "johansson-cartoon/burger",
+   "src": "johansson-cartoon/burger.webp?v=88e276b9",
+   "thumb": "johansson-cartoon/burger.thumb.webp?v=88e276b9",
+   "width": 512,
+   "height": 448,
+   "line": "",
+   "gloss": "A burger"
+  },
+  {
+   "id": "johansson-cartoon/feet-up",
+   "src": "johansson-cartoon/feet-up.webp?v=f18a97b8",
+   "thumb": "johansson-cartoon/feet-up.thumb.webp?v=f18a97b8",
+   "width": 512,
+   "height": 464,
+   "line": "",
+   "gloss": "Feet up"
+  },
+  {
+   "id": "johansson-cartoon/fishing",
+   "src": "johansson-cartoon/fishing.webp?v=b8bbf8cb",
+   "thumb": "johansson-cartoon/fishing.thumb.webp?v=b8bbf8cb",
+   "width": 512,
+   "height": 455,
+   "line": "",
+   "gloss": "A bite"
+  },
+  {
+   "id": "johansson-cartoon/song",
+   "src": "johansson-cartoon/song.webp?v=e31c9560",
+   "thumb": "johansson-cartoon/song.thumb.webp?v=e31c9560",
+   "width": 508,
+   "height": 512,
+   "line": "",
+   "gloss": "A song"
+  },
+  {
+   "id": "johansson-cartoon/chart",
+   "src": "johansson-cartoon/chart.webp?v=60ce4199",
+   "thumb": "johansson-cartoon/chart.thumb.webp?v=60ce4199",
+   "width": 512,
+   "height": 487,
+   "line": "",
+   "gloss": "Reading the chart"
+  },
+  {
+   "id": "johansson-cartoon/engine",
+   "src": "johansson-cartoon/engine.webp?v=51c254f5",
+   "thumb": "johansson-cartoon/engine.thumb.webp?v=51c254f5",
+   "width": 512,
+   "height": 406,
+   "line": "",
+   "gloss": "Fixing the engine"
+  },
+  {
+   "id": "johansson-cartoon/photo",
+   "src": "johansson-cartoon/photo.webp?v=c041e31d",
+   "thumb": "johansson-cartoon/photo.thumb.webp?v=c041e31d",
+   "width": 461,
+   "height": 512,
+   "line": "",
+   "gloss": "Taking a photo"
+  },
+  {
+   "id": "johansson-cartoon/asleep",
+   "src": "johansson-cartoon/asleep.webp?v=19d8be25",
+   "thumb": "johansson-cartoon/asleep.thumb.webp?v=19d8be25",
+   "width": 512,
+   "height": 426,
+   "line": "",
+   "gloss": "Asleep"
+  },
+  {
+   "id": "johansson-cartoon/hooray",
+   "src": "johansson-cartoon/hooray.webp?v=eba1c00b",
+   "thumb": "johansson-cartoon/hooray.thumb.webp?v=eba1c00b",
+   "width": 508,
+   "height": 512,
+   "line": "",
+   "gloss": "Hooray"
+  },
+  {
+   "id": "johansson-cartoon/harbour",
+   "src": "johansson-cartoon/harbour.webp?v=5a113fe4",
+   "thumb": "johansson-cartoon/harbour.thumb.webp?v=5a113fe4",
+   "width": 512,
+   "height": 368,
+   "line": "",
+   "gloss": "At the harbour"
+  },
+  {
+   "id": "johansson-cartoon/over-the-shoulder",
+   "src": "johansson-cartoon/over-the-shoulder.webp?v=9b00c82b",
+   "thumb": "johansson-cartoon/over-the-shoulder.thumb.webp?v=9b00c82b",
+   "width": 306,
+   "height": 512,
+   "line": "",
+   "gloss": "Over his shoulder"
+  },
+  {
+   "id": "johansson-cartoon/hero",
+   "src": "johansson-cartoon/hero.webp?v=78efed5c",
+   "thumb": "johansson-cartoon/hero.thumb.webp?v=78efed5c",
+   "width": 512,
+   "height": 389,
+   "line": "",
+   "gloss": "The hero"
+  }
+ ]
+}

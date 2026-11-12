@@ -16,7 +16,7 @@ try{
  for(const [label,width,height,mobile] of [['phone',390,664,true],['small-phone',320,560,true],['tablet',768,1024,true],['desktop',1280,800,false]]){
   const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile,reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false})));
+  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false})));
   const check=async(name,fn)=>{await fn();checks++;console.log(`ok  ${label}: ${name}`);};
   const crop=()=>page.evaluate(()=>window.pocketCamera.state.edit.recipe.crop);
   try{
@@ -97,7 +97,7 @@ try{
  }
  const context=await browser.newContext({viewport:{width:390,height:664},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),page=await context.newPage();
  try{
-  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false})));
+  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false})));
   await page.goto(`${server.url}camera/`);await page.waitForFunction(()=>!!window.pocketCamera?.engine);
   await page.setInputFiles('#picker',join(root,'IMG_2855.jpeg'));await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
   const baseline=await page.evaluate(async()=>{

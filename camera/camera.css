@@ -226,6 +226,11 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker-sets>:first-child{margin-left:auto}.sticker-sets>:last-child{margin-right:auto}
 .sticker-sets button{flex:none;height:30px;padding:0 13px;border-radius:15px;background:var(--fill);font-size:13px;font-weight:600;white-space:nowrap}
 .sticker-sets button[aria-selected="true"]{background:var(--chip-on);color:var(--chip-on-label)}
+/* More sheets than one row holds (the camera's own sheets, 12 November 2026): over the camera the tabs take a second
+   row, so none is cut off or out of sight. (In the editor the row scrolls: camera-ui.css.) */
+.sticker-sets{flex-wrap:wrap;justify-content:center;row-gap:6px}
+.editor .sticker-sets{justify-content:flex-start}   /* a scrolling row starts at its first tab: centred, its head could not be reached */
+.sticker-sets>:first-child,.sticker-sets>:last-child{margin-left:0;margin-right:0}
 .sticker-sets button.locked{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:34px;padding:0 10px}.sticker-sets button.locked svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* The secret sheet's tab, before it is won: what it is and how to open it. */
 .sticker-locked{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 16px;text-align:center;color:var(--label-2);font-size:13px;line-height:1.4}
@@ -245,6 +250,12 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 /* The own sheet: make one from a photo, paste a lifted subject, and the ones made, each with its own remove. */
 .sticker-choice.make{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--label-3);background:none;color:var(--label-2);font-size:11px;font-weight:600}
 .sticker-choice.make svg{width:26px;height:26px}
+/* The sticker box: a tile that takes a picture from the keyboard's stickers, a paste or a drop. Its field covers the
+   tile and shows nothing of its own; 16 px so an iPhone does not zoom in on it. */
+.sticker-box{position:relative}
+.sticker-box:focus-within{border-style:solid;border-color:var(--accent);color:var(--label)}
+.sticker-catch{position:absolute;inset:0;border-radius:inherit;overflow:hidden;font-size:16px;line-height:1;color:transparent;caret-color:transparent;outline:none;cursor:pointer;-webkit-user-select:text;user-select:text}
+.sticker-catch img{display:none}
 .sticker-choice.mine{position:relative}
 .sticker-choice .mine-remove{position:absolute;top:2px;right:2px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(28,28,30,.85);color:var(--label-2)}
 .sticker-choice .mine-remove svg{width:13px;height:13px;stroke-width:2.4}
@@ -470,7 +481,7 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .camera.compact .zoom{bottom:64px}
 .camera.compact .exposure-chip{bottom:68px}
 /* The zoom steps aside while the tray is open over the picture. */
-.camera.compact.looks-open .zoom,.camera.compact:has(#amountRow:not([hidden])) .zoom{opacity:0;pointer-events:none}
+.camera.compact.looks-open .zoom,.camera.compact:has(#presetRow:not([hidden])) .zoom{opacity:0;pointer-events:none}
 .layer-pick .more{display:none}
 .camera.compact:not(.looks-open) .layer.active:not(.removable) .layer-pick .more{display:inline-block;width:13px;height:13px;margin-left:4px;vertical-align:-1px;transform:rotate(180deg);stroke-width:2.6}
 /* The first screen starts the camera with its own button: no shutter under it, and no empty album corner. */
@@ -491,35 +502,6 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 #panelStickers .sticker-grid{grid-auto-columns:min-content}
 #panelStickers .sticker-choice{width:56px}
 #panelStickers .sticker-heading{grid-column:auto;grid-row:1/-1;margin:0 2px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;text-align:center;white-space:nowrap}
-/* Ball (ball.js): the setup with the juggler's face, the LCD, the hands, the game over. */
-.ball-game{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;position:relative}
-.ball-setup{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:14px 16px 10px;overflow:auto}
-.ball-lead{margin:0;max-width:60ch;font-size:14px;line-height:1.45;color:var(--label-2)}
-.ball-setup h3{margin:4px 0 0;font-size:13px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--label-2)}
-.ball-faces{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none}.ball-faces::-webkit-scrollbar{display:none}
-.ball-face{flex:none;display:flex;flex-direction:column;align-items:center;gap:5px;width:86px;padding:8px 4px;border-radius:14px;background:var(--surface);color:var(--label);font-size:11px;line-height:1.2;text-align:center}
-.ball-face img,.ball-pick-mark{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--well)}
-.ball-face span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ball-face[aria-checked="true"]{box-shadow:inset 0 0 0 2px var(--accent);color:var(--accent)}
-.ball-pick-mark{display:grid;place-items:center;background:var(--fill);font-size:28px;font-weight:300}
-.ball-note{margin:0;min-height:1.3em;font-size:12px;color:var(--label-3)}
-.ball-go{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 8px}
-.ball-best{margin:0;font-size:13px;color:var(--label-2)}.ball-play{min-width:240px}
-/* The booth: four faces from the front camera, each held in the oval (the Game Boy Camera's four blank ovals). */
-.ball-booth{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 16px;overflow:auto}
-.ball-booth-view{position:relative;width:min(100%,320px);aspect-ratio:1;border-radius:18px;overflow:hidden;background:#111}
-.ball-video{display:block;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.ball-oval{position:absolute;left:22%;top:14%;width:56%;height:72%;border:3px dashed rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
-.ball-booth-count{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:#fff;font-weight:700;text-shadow:0 1px 2px #000}
-.ball-booth-frames{display:flex;gap:8px;min-height:60px}.ball-booth-frames img{width:56px;height:56px;border-radius:50%;background:var(--well)}
-.ball-booth-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.ball-booth .button[hidden]{display:none}
-.ball-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;padding:clamp(12px,7vh,56px) 12px 12px;overflow:auto}
-.ball-lcd{display:block;border-radius:10px;box-shadow:inset 0 0 0 3px #6f765c,0 6px 18px rgba(0,0,0,.25);touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
-.ball-hands{display:flex;align-items:center;gap:10px;width:min(100%,640px)}
-.ball-hand{flex:none;min-height:44px;padding:0 14px;border-radius:12px;background:var(--surface);color:var(--label);font-weight:700}
-.ball-status{flex:1;margin:0;text-align:center;font-size:13px;font-weight:600;color:var(--label-2)}
-.ball-over{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:4px 0}
-.ball-over[hidden]{display:none}.ball-over h3{margin:0;font-size:22px}.ball-over p{margin:0;color:var(--label-2)}.ball-over-buttons{display:flex;gap:8px;margin-top:4px}
 /* Memory's decks: a soft card until its picture is in. */
 .memory-fan i{background:rgba(244,241,232,.16);transition:background-color .3s}
 .memory-fan i.loaded{background:#f4f1e8}

@@ -18,7 +18,7 @@ const png=async(name,data)=>writeFile(join(shots,name),Buffer.from(data.split(',
 async function pageFor({before=false,width=402,height=700}={}){
  const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage();
  // (auto:false: Auto would set Enhance and Pop on the imported photo, and this audit compares exact pixels against the Look alone)
- await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},sound:false,printer:false,auto:false})));
+ await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},sound:false,printer:false,auto:false})));
  if(before)await context.route('**/camera/**',route=>{const path=new URL(route.request().url()).pathname,name=path==='/camera/'?'index.html':path.slice(8);return oldFiles[name]?route.fulfill({body:oldFiles[name],contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'}):route.continue();});
  await page.route('**/camera/audit-before-engine.js',route=>route.fulfill({body:oldFiles['looks-gl.js'],contentType:'text/javascript'}));
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>window.pocketCamera?.state.shots.length>=2);

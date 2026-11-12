@@ -5,7 +5,7 @@
  * line; the app shows one when something goes wrong, on the refused camera, on Cancel after a change, at the thirtieth
  * photo (a Game Boy Camera held thirty) and when the sheet itself is won (unlocks.js).
  */
-import {loadStickerSets,stickerById} from './stickers.js?v=20261110green1';
+import {loadStickerSets,stickerById} from './stickers.js?v=20261112fun1';
 
 /** The faces by what they are for; each is `pocket-faces/<kind>` on the sheet. */
 export const FACE_KINDS=Object.freeze(['run','hide','oops','silly','full','secret','wait','nope']);

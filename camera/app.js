@@ -3,16 +3,19 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261110green1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261112fun1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
+import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261112fun1';
+import {stepperFor,syncSteppers} from './steppers.js?v=20261112fun1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
-import {lookIcon} from './look-icons.js?v=20261104fx1';
+import {lookIcon,kindIcon} from './look-icons.js?v=20261112fun1';
 import {prepareOffline} from './offline.js?v=20261105games1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261110green1';
-import {makeSticker} from './cutout.js?v=20261031-contour1';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261110green1';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261112fun1';
+import {makeSticker} from './cutout.js?v=20261112fun1';
+import {cutSheet} from './sticker-sheet.js?v=20261112fun1';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261112fun1';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261104ui1';
@@ -20,18 +23,17 @@ import {normaliseMakeup,applyMakeup,makeupActive,makeupPixels,makeupFaces,faceCr
 import {createMakeupGuide} from './makeup-guide.js?v=20261104ui1';
 import {createPrinter} from './printer.js?v=20261030share1';
 import {normaliseStamps,stampsActive,stampsLabel,characterOf,characterStamps,CHARACTERS,drawFaceStamps,loadStampImages,stampImages,hatChoices,partPreview,moodLabel,BROW_STYLES,BROW_LABELS,BROW_COLOURS,EYE_STYLES,EYE_COLOURS} from './face-stamps.js?v=20261104ui1';
-import {createMemory} from './memory.js?v=20261110green1';
+import {createMemory} from './memory.js?v=20261112fun1';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
-import {createBlackjack} from './blackjack.js?v=20261110green1';
-import {createSolitaire} from './solitaire.js?v=20261110green1';
+import {createBlackjack} from './blackjack.js?v=20261112fun1';
+import {createSolitaire} from './solitaire.js?v=20261112fun1';
 import {makeBackup,restoreBackup,albumStorage,formatBytes} from './backup.js?v=20261102fun1';
 import {createZoomView,viewZoom,viewDetail} from './zoom-view.js?v=20261104ui1';
 import {findFaces,findPerson,guideFromFace,syncFaceToGuide,warmFacePack} from './face-pack.js?v=20261104ui1';
-import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261110green1';
+import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261112fun1';
 import {autoLevels} from './auto.js?v=20261104ui1';
-import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261105fun1';
+import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261112fun1';
 import {pocketFace,errorFace} from './pocket-faces.js?v=20261105fun1';
-import {createBall} from './ball.js?v=20261110green1';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -75,12 +77,15 @@ const state={
  auto:saved.auto!==false,
  // Appearance: 'auto' follows the device's light or dark; 'light' and 'dark' are pinned.
  theme:saved.theme==='light'||saved.theme==='dark'?saved.theme:'auto',
+ // Sliders (the owner, 12 November 2026: "I don't like the sliders … sliders need to be accessed by a setting"): off,
+ // every tool is taps, presets and steps; on, each tool also shows its fine control.
+ sliders:saved.sliders===true,
 };
 state.camera.recipe.stamp=!!saved.stamp;
 const current=()=>state.mode==='editor'?state.edit:state.camera;
 function remember(){
  const c=state.camera,r=c.recipe;
- store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},kept:true,ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,auto:state.auto,printer:state.printer,theme:state.theme});
+ store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},kept:true,ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,auto:state.auto,printer:state.printer,theme:state.theme,sliders:state.sliders});
 }
 
 // ---------- The engine and its canvas ----------
@@ -250,19 +255,6 @@ function stampOverlay(frame,on,date,frameId='none'){
 // ---------- The Look tray ----------
 const tray=$('tray'),strip=$('strip'),layersEl=$('layers');
 const tiles=new Map();
-const GROUP_GLYPHS={
- photo:'M4 6h4l2-2h4l2 2h4v14H4z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
- pop:'M22 12l-4 2.5 1.1 4.6-4.6-1.1L12 22l-2.5-4-4.6 1.1 1.1-4.6L2 12l4-2.5-1.1-4.6 4.6 1.1L12 2l2.5 4 4.6-1.1-1.1 4.6z',
- comic:'M3 4h18v12h-8l-5 4v-4H3z M8 10h.01M12 10h.01M16 10h.01',
- games:'M6 6h12l4 12-3 2-4-4H9l-4 4-3-2z M7 9v5M4.5 11.5h5M16 10h.01M18 13h.01',
- '80s':'M3 7h18v14H3z M7 2l5 5 5-5M7 11h7v6H7zM18 11h.01M18 16h.01',
- drawn:'m4 17 12-13 4 4L8 21H3z M13 7l4 4',
- painted:'m14 3 7 3-10 11-4-3z M7 15c-5-2-6 3-4 6 4 1 8-1 7-5',
- print:'M7 7V3h10v4M6 17H3V8h18v9h-3M7 14h10v7H7z',
- riso:'M14 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0 M20 15a5 5 0 1 1-10 0 5 5 0 0 1 10 0 M12 15a5 5 0 1 1-10 0 5 5 0 0 1 10 0',
- more:'M5 12h.01M12 12h.01M19 12h.01',
-};
-function groupIcon(id){return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="${GROUP_GLYPHS[id]||GROUP_GLYPHS.more}"/></svg>`;}
 function renderLookRail(ctx){
  const box=$(state.mode==='editor'?'editLookRail':'cameraLookRail');box.textContent='';
  ctx.recipe.layers.forEach((layer,i)=>{
@@ -278,7 +270,7 @@ function renderLookRail(ctx){
 function buildGroups(){
  const row=$('lookGroups');row.textContent='';
  for(const g of LOOK_GROUPS){
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${groupIcon(g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${kindIcon(g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
   b.setAttribute('aria-label',`${g.label}: ${g.looks.map(n=>LOOKS[n].label).join(', ')}`);
   b.addEventListener('click',()=>{sound('tick');shownGroup=g.id;renderStripSelection();refreshThumbs(true);});
   row.append(b);
@@ -317,7 +309,8 @@ function renderLayers(){
   wrap.append(pick,remove);mix.append(wrap);
  });
  const selected=layers[ctx.active];
- if(hasLookSettings(selected.look)){
+ // The models of a family and its screens are presets in the row below; the sheet is the fine control of a screen.
+ if(state.sliders&&hasLookSettings(selected.look)){
   const settings=document.createElement('button');settings.type='button';settings.className='look-settings-button';settings.innerHTML=icon('settings');
   settings.setAttribute('aria-label','Look settings');settings.title='Look settings';settings.addEventListener('click',openLookSettings);layersEl.append(settings);
  }
@@ -363,17 +356,97 @@ function renderAmount(){
  const a=$('amount');a.value=v;a.style.setProperty('--fillTo',`${v}%`);$('amountValue').textContent=v;
  a.setAttribute('aria-label',`${LOOKS[layer.look].label} intensity`);
  a.disabled=layer.look==='none';
+ renderPresets();
 }
-// In the editor the intensity sits under the layers; in the camera it takes the strip's place at the strip's height,
-// so it never covers the picture's own controls and the viewfinder does not change size.
+// ---------- Presets (presets.js): the chosen Look's, each drawn on this picture ----------
+// Where the strip offered a Look and a slider from 0 to 100, the row under the mix offers the Look set several ways,
+// each named for what it gives and drawn on the photographer's own picture. For a hand-held, a console or a Riso
+// the row begins with the models (the consoles, the inks), then the chosen one's presets.
+const PRESET_THUMB=112;
+const presetTiles=[];
+let presetsDue=false,presetsAt=0;
+function presetChoices(layer){
+ const family=familyFor(layer.look),list=presetsFor(layer.look);
+ const models=family?family.variants.map(([id,name])=>({kind:'model',id,name})):[];
+ return [...models,...(family?list.slice(1):list).map(preset=>({kind:'preset',id:preset.id,name:preset.name,preset}))];
+}
+/** The mix with layer `index` set as a choice of the row sets it: the model, or the preset on the model it has. */
+function withChoice(layers,index,choice){
+ const old=layers[index],out=layers.map(l=>({...l}));
+ if(choice.kind==='model'){
+  const [look,model]=choice.id.split(':'),same=variantFor(old)===choice.id;
+  // Another model keeps the preset where it has one of that name; the same model, tapped again, is itself once more.
+  const preset=(same?null:presetsFor(look).find(p=>p.id===old.preset))||presetsFor(look)[0];
+  applyPreset(out,index,look,preset,MAX_LAYERS);if(model)out[index].handheld=model;
+ }else{
+  applyPreset(out,index,old.look,choice.preset,MAX_LAYERS);
+  if(old.handheld&&!choice.preset.handheld)out[index].handheld=old.handheld;
+ }
+ return out;
+}
+function renderPresets(){
+ const ctx=current(),layer=ctx.recipe.layers[ctx.active],row=$('presetStrip'),choices=presetChoices(layer);
+ const key=`${layer.look}|${choices.map(c=>c.kind[0]+c.id).join(',')}`;
+ if(row.dataset.key!==key){
+  row.dataset.key=key;row.textContent='';presetTiles.length=0;row.scrollLeft=0;
+  let before=null;
+  for(const choice of choices){
+   const b=document.createElement('button');b.type='button';b.className=`tile preset-tile${before&&before!==choice.kind?' first-preset':''}`;before=choice.kind;
+   b.dataset.kind=choice.kind;b.dataset.preset=choice.id;
+   const face=document.createElement('span');face.className='face';
+   const c=document.createElement('canvas');c.width=c.height=PRESET_THUMB;face.append(c);
+   const name=document.createElement('span');name.className='name';name.textContent=choice.name;
+   b.append(face,name);
+   b.addEventListener('click',()=>choosePreset(choice));
+   row.append(b);presetTiles.push({button:b,canvas:c,choice});
+  }
+ }
+ const chosen=presetOf(layer)?.id,model=variantFor(layer);
+ for(const t of presetTiles){
+  const on=t.choice.kind==='model'?t.choice.id===model:t.choice.id===chosen;
+  t.button.setAttribute('aria-pressed',String(on));
+  t.button.setAttribute('aria-label',`${t.choice.name}${t.choice.kind==='model'?'':`, a preset of ${LOOKS[layer.look].label}`}`);
+ }
+ presetsDue=true;presetsAt=0;
+}
+function choosePreset(choice){
+ const ctx=current();
+ ctx.recipe.layers=withChoice(ctx.recipe.layers,ctx.active,choice);
+ sound('tick');
+ const layer=ctx.recipe.layers[ctx.active];
+ trayChanged({thumbs:true});
+ toast(choice.kind==='model'?LOOKS[layer.look].label:`${lookLabel(layer.look)} · ${choice.name}`,{look:true,ms:900});
+ const tile=presetTiles.find(t=>t.choice.kind===choice.kind&&t.choice.id===choice.id)?.button;
+ if(tile){tile.classList.remove('picked');void tile.offsetWidth;tile.classList.add('picked');}
+}
+/** Each choice of the row, drawn on the picture as choosing it would draw the picture. */
+function drawPresetThumbs(){
+ if(!engine||!presetsDue||$('presetRow').hidden||!presetTiles.length)return;
+ const live=state.mode==='camera',t=performance.now();
+ if(t-presetsAt<(live?900:80))return;
+ const ctx=current(),source=live?'live':'edit';
+ if(!engine.hasSource(source))return;
+ const crop=squareCrop(live?cameraCrop():ctx.recipe.crop,live?videoSize():{width:state.edit.width,height:state.edit.height});
+ let missing=false;
+ for(const tile of presetTiles){
+  let px=null;
+  try{px=engine.sample({...ctx.recipe,layers:withChoice(ctx.recipe.layers,ctx.active,tile.choice),paper:'none'},{source,crop,mirror:live&&state.camera.mirror,width:PRESET_THUMB,height:PRESET_THUMB});}catch{}
+  if(!px){missing=true;continue;}
+  tile.canvas.getContext('2d').putImageData(new ImageData(px.data,PRESET_THUMB,PRESET_THUMB),0,0);tile.canvas.classList.add('drawn');
+ }
+ presetsAt=t;presetsDue=live||missing;
+}
+// In the editor the presets sit under the mix; in the camera they take the strip's place when the chosen Look is
+// tapped again, so the viewfinder does not change size. The slider is under them when Sliders is on (the settings).
 const wide=matchMedia('(min-width:1000px) and (min-aspect-ratio:5/4)');
 function showAmountRow(show){
  // Beside the picture (a wide window) there is room for both.
- const row=$('amountRow'),inCamera=state.mode==='camera'&&!wide.matches;
- if(inCamera&&show&&strip.offsetHeight)row.style.height=`${strip.offsetHeight}px`;else row.style.height='';
- row.hidden=!show;strip.hidden=inCamera&&show;$('lookGroups').hidden=inCamera&&show;
+ const row=$('presetRow'),inCamera=state.mode==='camera'&&!wide.matches;
+ row.hidden=!show;$('amountRow').hidden=!show||!state.sliders;
+ strip.hidden=inCamera&&show;$('lookGroups').hidden=inCamera&&show;
+ if(show){presetsDue=true;presetsAt=0;schedule();}
 }
-function toggleAmount(){if(state.mode==='camera')showAmountRow($('amountRow').hidden);}
+function toggleAmount(){if(state.mode==='camera')showAmountRow($('presetRow').hidden);}
 $('amountDone').addEventListener('click',()=>{sound('tick');showAmountRow(false);});
 /** After any change to the mix: redraw the tray and the picture. */
 function trayChanged({thumbs=false,announce=false,scroll=true}={}){
@@ -387,7 +460,8 @@ function trayChanged({thumbs=false,announce=false,scroll=true}={}){
 function chooseLook(name,{announce=true}={}){
  const ctx=current(),layer=ctx.recipe.layers[ctx.active];
  if(layer.look===name){toggleAmount();return;}
- layer.look=name;layer.amount=1;delete layer.handheld;delete layer.screen;
+ // The Look itself, by its first preset; a second Look the last preset laid over it goes with it.
+ applyPreset(ctx.recipe.layers,ctx.active,name,presetsFor(name)[0],MAX_LAYERS);
  trayChanged({announce});
  // The Looks after this layer are drawn over it, so their thumbnails do not change; the ones before do not either.
 }
@@ -457,7 +531,9 @@ strip.addEventListener('keydown',e=>{
  tiles.get(current().recipe.layers[current().active].look)?.button.focus();
 });
 $('amount').addEventListener('input',e=>{
- const ctx=current();ctx.recipe.layers[ctx.active].amount=e.target.value/100;
+ // A strength set by hand is no preset's any more.
+ const ctx=current(),layer=ctx.recipe.layers[ctx.active];layer.amount=e.target.value/100;
+ if(layer.preset){delete layer.preset;renderPresets();}
  e.target.style.setProperty('--fillTo',`${e.target.value}%`);$('amountValue').textContent=e.target.value;
  if(state.mode==='camera')remember();
  invalidate();
@@ -518,7 +594,7 @@ function loop(t){
  // While the printer prints, the viewfinder (blurred behind it) holds still, so the print moves smoothly.
  if(state.mode==='camera'&&state.camera.running){if(!printer.busy)drawCamera(t);schedule();}
  else if(state.mode==='editor'&&state.edit){if(dirty)drawEditor();if(thumbsDue||dirty)schedule();}
- if(!printer.busy)drawThumbs();
+ if(!printer.busy){drawThumbs();drawPresetThumbs();}
 }
 function videoSize(){const v=$('video');return {width:v.videoWidth||1,height:v.videoHeight||1};}
 /** The part of the camera picture that is kept: the chosen shape, zoomed, centred. */
@@ -666,6 +742,7 @@ function renderCameraChips(){
  setting('autoSetting',{label:state.auto?'On':'Off',on:state.auto,aria:`Auto, the photo set right by itself: ${state.auto?'on':'off'}`});
  setting('printSetting',{label:state.printer?'On':'Off',on:state.printer,aria:`Printer when sharing: ${state.printer?'on':'off'}`});
  setting('soundSetting',{label:state.sound?'On':'Off',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
+ setting('slidersSetting',{label:state.sliders?'On':'Off',on:state.sliders,aria:`Sliders, a fine control under every tool: ${state.sliders?'on':'off'}`});
  setting('themeSetting',{label:THEME_LABELS[state.theme],on:state.theme!=='auto',aria:`Appearance: ${THEME_LABELS[state.theme]}${state.theme==='auto'?` (${resolvedTheme()}, as the device)`:''}`});
  // What is switched on, beside the chevron, so it is never a surprise in the photo.
  const status=[c.timer&&'timer',(r.frame!=='none'||r.paper!=='none')&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
@@ -755,6 +832,15 @@ $('stamp').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.
 $('soundSetting').addEventListener('click',()=>{state.sound=!state.sound;sound('tick');renderCameraChips();remember();});
 $('printSetting').addEventListener('click',()=>{state.printer=!state.printer;sound('tick');renderCameraChips();remember();});
 $('autoSetting').addEventListener('click',()=>{state.auto=!state.auto;sound('tick');renderCameraChips();remember();});
+/** Sliders on or off, everywhere at once: the page says which (styles show or hide every fine control by it). */
+function applySliders(){
+ $('app').dataset.sliders=state.sliders?'on':'off';
+ renderCameraChips();
+ if(state.mode==='camera'||state.mode==='editor'){showAmountRow(!$('presetRow').hidden);renderLayers();}
+ syncSteppers();
+}
+function setSliders(on){state.sliders=!!on;sound('tick');remember();applySliders();toast(state.sliders?'Sliders on: a fine control under every tool':'Sliders off',{ms:1600});}
+$('slidersSetting').addEventListener('click',()=>setSliders(!state.sliders));
 // Appearance (the owner, 3 November 2026: "I need Dark and Light mode"): Auto follows the device, Light and Dark are
 // pinned. The page's head script sets the same attribute before the first paint, so a stored choice never flashes.
 const THEMES=['auto','light','dark'],THEME_LABELS={auto:'Auto',light:'Light',dark:'Dark'};
@@ -766,6 +852,10 @@ function applyTheme(){
 }
 lightScheme.addEventListener?.('change',()=>{if(state.theme==='auto'){applyTheme();renderCameraChips();}});
 applyTheme();
+$('app').dataset.sliders=state.sliders?'on':'off';
+// With Sliders off, what was a slider is steps (steppers.js): an adjustment in nine, makeup's strength in five, the
+// crop's zoom in seven, the rubber's size in five.
+for(const [id,steps] of [['adjustSlider',9],['makeupStrength',5],['cropZoom',7],['eraseSize',5]])stepperFor($(id),{steps,onStep:()=>sound('tick')});
 $('themeSetting').addEventListener('click',()=>{state.theme=cycle(THEMES,state.theme);applyTheme();sound('tick');renderCameraChips();remember();});
 $('zoom').addEventListener('click',()=>{const c=state.camera;c.zoom=cycle(ZOOMS,c.zoom);sound('tick');renderCameraChips();refreshThumbs(true);});
 
@@ -1049,7 +1139,7 @@ async function memorySources(){
  const day=s=>new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'});
  return [
   {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:s.sampleLabel||`Your photo of ${day(s)}`}))},
-  ...[...residentSets(manifest),...secretSets(manifest)].map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
+  ...[...residentSets(manifest),...deckSets(manifest),...secretSets(manifest)].map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
   {id:'mine',name:'Your stickers',kind:'sticker',items:mine.map(m=>stickerById(m.id)).filter(Boolean).map(s=>({id:s.id,url:s.url,label:'Your sticker'}))},
  ];
 }
@@ -1076,37 +1166,13 @@ $('welcomeGames').addEventListener('click',()=>enterGames(true));
 function openCardGame(kind){
  activeCardGame?.destroy();
  const root=$('cardGameContent');root.replaceChildren();
- $('cardGameTitle').textContent={blackjack:'Blackjack',solitaire:'Solitaire',ball:'Ball'}[kind];
+ $('cardGameTitle').textContent={blackjack:'Blackjack',solitaire:'Solitaire'}[kind];
  show('cardGame');
- if(kind==='ball'){
-  // Ball (ball.js): the juggler wears a face found on one of the album's photos, or on a photo chosen now.
-  activeCardGame=createBall(root,{store,sound,reduceMotion,onLeave:openCardsHub,onWin:ballWon,
-   defaultFace:()=>pocketFace('wait').then(f=>f?.url||null),
-   // The booth's four faces come from the front camera (the main camera is stopped while the Game Room is open).
-   camera:()=>navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'user'},width:{ideal:960},height:{ideal:960}}}),
-   faces:async()=>state.shots.filter(s=>s.recipe?.faces?.length&&s.photo).map(s=>({id:s.id,label:s.sampleLabel||`Your photo of ${new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'})}`,blob:s.photo,thumb:s.thumb,face:s.recipe.faces[0]})),
-   pickFace:()=>new Promise(res=>{const input=$('ballFile');input.value='';input.onchange=async()=>{const f=input.files?.[0];input.value='';if(!f||!isPicture(f)){res(null);return;}
-    try{const p=await decode(f);const found=await findFaces(p.picture,{max:1});p.picture?.close?.();res(found.length?{blob:f,face:found[0]}:null);}catch{res(null);}};input.click();}),
-  });
-  return;
- }
  activeCardGame=(kind==='blackjack'?createBlackjack:createSolitaire)({root,cardView,shuffleDeck,onWin:()=>gameWon(kind)});
  activeCardGame.start();
 }
-$('chooseBall').addEventListener('click',()=>openCardGame('ball'));
-/** Five hundred in Ball: the secret sheet opens (unlocks.js), and the juggler, your face and all, becomes a sticker. */
-async function ballWon({juggler}){
- const before=isUnlocked(store.read(),'pocket-faces');gameWon('ball');
- const tag=store.read().gameFace?.from||'pocket',had=store.read().jugglerStickers||[];
- if(had.includes(tag))return;
- try{
-  const blob=await toBlob(juggler,'image/png');
-  const record=await addMine({blob,width:juggler.width,height:juggler.height,cut:'outline'});
-  mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(blob),width:juggler.width,height:juggler.height});
-  store.write({...store.read(),jugglerStickers:[...had,tag]});
-  setTimeout(()=>toast('Your juggler is a sticker now. Find it under Mine.',{face:'secret',ms:3600}),before?900:5400);
- }catch(err){console.error(err);}
-}
+// Ball, the juggle with your own face, was here from 5 to 12 November 2026 and was removed (the owner: "remove the ball
+// juggle game it didn't end up well"). A juggler saved as a sticker stays among the owner's own stickers.
 $('openCardGames').addEventListener('click',()=>enterGames(false));
 
 // ---------- Album backup (backup.js) ----------
@@ -1328,6 +1394,8 @@ function editPreview(size){
 function renderFrameChoices(box,current,preview,pick){
  box.textContent='';
  for(const f of FRAMES){
+  // The pixel frames are no longer offered; one a photo already wears stays among the choices.
+  if(f.old&&f.id!==current)continue;
   const b=document.createElement('button');b.type='button';b.className='frame-choice';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(current===f.id));
   b.title=f.hint||'No frame';b.dataset.frame=f.id;
   const c=document.createElement('canvas');c.width=c.height=132;const g=c.getContext('2d');
@@ -1963,8 +2031,8 @@ async function loadMine(){
   for(const m of mine)if(!stickerById(m.id))registerSticker({id:m.id,url:URL.createObjectURL(m.blob),thumbUrl:null,width:m.width,height:m.height});
  }catch{mine=[];}
 }
-/** A picture to a new own sticker, kept, and stuck on the picture at once. */
-async function stickerFromPicture(file){
+/** A picture to a new own sticker, kept, and (unless `place` is false) stuck on the picture at once. */
+async function stickerFromPicture(file,{place=true}={}){
  const layer=stickerLayer();
  try{
   toast('Cutting your sticker…',{ms:8000});
@@ -1972,12 +2040,67 @@ async function stickerFromPicture(file){
   const record=await addMine({blob:made.blob,width:made.width,height:made.height,cut:made.cut});
   mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(made.blob),width:made.width,height:made.height});
   toast(made.cut==='outline'?'Cut round its outline':'A photo sticker',{ms:1400});
-  if($('stickerSheet').open)$('stickerSheet').close();
-  layer?.add(record.id);sound('pop');
-  if(state.mode==='editor'&&!$('panelStickers').hidden)renderStickerPicker();
+  if(place){if($('stickerSheet').open)$('stickerSheet').close();layer?.add(record.id);}
+  sound('pop');
+  if(!place||(state.mode==='editor'&&!$('panelStickers').hidden))renderStickerPicker();
  }catch(err){console.error(err);toast('That picture could not be made into a sticker',{face:errorFace(),ms:2400});}
 }
-$('stickerFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f)stickerFromPicture(f);});
+/** One picture is stuck on at once; several are made into stickers and wait under Mine. */
+async function stickersFromPictures(files){
+ const pictures=[...files].filter(isPicture);
+ for(const f of pictures)await stickerFromPicture(f,{place:pictures.length===1});
+}
+$('stickerFile').addEventListener('change',e=>{const files=[...(e.target.files||[])];e.target.value='';stickersFromPictures(files);});
+/**
+ * A picture of a whole sticker sheet, cut into its stickers (sticker-sheet.js), each kept under Mine (the owner,
+ * 12 November 2026: "can you make a function to add stickers easily?"). A picture that is not a sheet is one sticker.
+ */
+async function stickersFromSheet(file){
+ try{
+  toast('Cutting the sheet…',{ms:30000});
+  const pieces=await cutSheet(file);
+  if(pieces.length<2){await stickerFromPicture(file);return 1;}
+  let done=0;
+  for(const piece of pieces){
+   const made=await makeSticker(piece.blob,{edge:.022});
+   const record=await addMine({blob:made.blob,width:made.width,height:made.height,cut:made.cut});
+   mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(made.blob),width:made.width,height:made.height});
+   if(++done%4===0)toast(`Cutting the sheet… ${done} of ${pieces.length}`,{ms:30000});
+  }
+  sound('pop');toast(`${done} stickers added to Mine`,{ms:2400});
+  renderStickerPicker();
+  return done;
+ }catch(err){console.error(err);toast('That sheet could not be cut',{face:errorFace(),ms:2400});return 0;}
+}
+$('sheetFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f)stickersFromSheet(f);});
+/**
+ * The sticker box: whatever picture lands in it becomes a sticker (the owner, 12 November 2026: "Even use the system
+ * stickers from the phone or iPad"). An iPhone or iPad offers the keyboard's own stickers only in a field that takes
+ * pictures, so the box is one: a sticker chosen from the keyboard, a paste, or a picture dragged in (a subject lifted in
+ * Photos, a file) is caught here. Nothing can be typed in it.
+ */
+function stickerBox(box){
+ const pictures=transfer=>[...(transfer?.files||[])].filter(isPicture);
+ // (A picture dropped or pasted anywhere else on the page is opened to edit; here it stays a sticker.)
+ box.addEventListener('paste',e=>{const files=pictures(e.clipboardData);if(files.length){e.preventDefault();e.stopPropagation();stickersFromPictures(files);}});
+ box.addEventListener('beforeinput',e=>{
+  const files=pictures(e.dataTransfer);
+  if(files.length){e.preventDefault();stickersFromPictures(files);}
+  else if(typeof e.data==='string')e.preventDefault();
+ });
+ // A picture the system put in the box itself (a keyboard sticker arrives as an image): taken out and kept.
+ box.addEventListener('input',async()=>{
+  const sources=[...box.querySelectorAll('img')].map(img=>img.currentSrc||img.src).filter(Boolean);
+  box.textContent='';
+  const files=[];
+  for(const src of sources){
+   try{const blob=await (await fetch(src)).blob();files.push(new File([blob],'sticker',{type:blob.type||'image/png'}));}catch{}
+  }
+  if(files.length)stickersFromPictures(files);
+ });
+ box.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();});
+ box.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();stickersFromPictures(pictures(e.dataTransfer));});
+}
 async function pasteSticker(){
  try{
   for(const item of await navigator.clipboard.read()){
@@ -1997,21 +2120,32 @@ function removeMine(id){
   cameraStickers.select(null);editStickers.select(null);remember();renderStickerPicker();
  });
 }
-/** The residents' own sheets: Memory's decks and the greetings come from them, not from the manga marks. */
-const residentSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind!=='marks'&&set.kind!=='season'&&set.kind!=='secret');
+/**
+ * The residents' own sheets: the greetings and Memory's decks come from them. A sheet with a kind (the manga marks, a
+ * season's, the drawn friends, a sheet of things) never greets; it is one of Memory's decks if it says so (`deck`).
+ */
+const residentSets=manifest=>(manifest?.sets||[]).filter(set=>!set.kind);
+const deckSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind&&set.kind!=='secret'&&set.deck===true);
 /** The secret sheets that have been won (unlocks.js): a Memory deck too, never a greeter. */
 const secretSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind==='secret'&&isUnlocked(store.read(),set.id));
 const tabLocked=tab=>tab.sets.length>0&&tab.sets.every(set=>set.locked&&!isUnlocked(store.read(),set.id));
+/** How many months until a season's sheet is in season (0 while it is; a sheet with no months comes last). */
+const untilSeason=(set,today)=>{const now=today.getMonth()+1,when=Array.isArray(set.when)?set.when:[];return when.length?Math.min(...when.map(m=>(m-now+12)%12)):12;};
+const LAST_TABS=['Friends','Season','Faces','Manga'];
 /**
- * The sheets by tab: one tab a resident, their other sheets under theirs (the manifest's `tab`), then Manga: the lines
- * (effects.js) and the marks.
+ * The sheets by tab: one tab a resident, their other sheets under theirs (a sheet's `tab`), then any other tab (Minato,
+ * the town's things), the drawn Friends, Season (the sheet in season first, then the next to come), the secret Faces,
+ * and Manga: the lines (effects.js) and the marks.
  */
-function stickerTabs(manifest){
+function stickerTabs(manifest,today=new Date()){
  const tabs=[];
  for(const set of manifest.sets){const name=set.tab||set.name,tab=tabs.find(t=>t.name===name);if(tab)tab.sets.push(set);else tabs.push({name,sets:[set]});}
- const manga=tabs.find(t=>t.name==='Manga');
- if(manga)tabs.push(...tabs.splice(tabs.indexOf(manga),1));else tabs.push({name:'Manga',sets:[]});
- return tabs;
+ if(!tabs.some(t=>t.name==='Manga'))tabs.push({name:'Manga',sets:[]});
+ const place=tab=>LAST_TABS.indexOf(tab.name);
+ const ordered=[...tabs.filter(t=>place(t)<0),...tabs.filter(t=>place(t)>=0).sort((a,b)=>place(a)-place(b))];
+ const season=ordered.find(t=>t.name==='Season');
+ if(season)season.sets=season.sets.map((set,i)=>({set,i})).sort((a,b)=>untilSeason(a.set,today)-untilSeason(b.set,today)||a.i-b.i).map(x=>x.set);
+ return ordered;
 }
 async function renderStickerPicker(){
  const grid=$('stickerGrid'),sets=$('stickerSets');
@@ -2045,7 +2179,11 @@ async function renderStickerPicker(){
  if(stickerSet===tabs.length+1){
   const make=(label,glyph,fn,aria)=>{const b=document.createElement('button');b.type='button';b.className='sticker-choice make';b.innerHTML=`${icon(glyph)}<span>${label}</span>`;b.setAttribute('aria-label',aria);b.addEventListener('click',fn);grid.append(b);};
   make('From a photo','photo',()=>$('stickerFile').click(),'Make a sticker from one of your photos');
+  make('From a sheet','sheet',()=>$('sheetFile').click(),'Cut a picture of a sticker sheet into its stickers');
   if(navigator.clipboard?.read)make('Paste','paste',pasteSticker,'Paste a picture or a lifted subject as a sticker');
+  const box=document.createElement('div');box.className='sticker-choice make sticker-box';
+  box.innerHTML=`${icon('keyboard')}<span>Sticker box</span><div class="sticker-catch" contenteditable="true" role="textbox" aria-label="Sticker box: choose a sticker from the keyboard, or paste or drop a picture here" spellcheck="false" autocapitalize="off" autocorrect="off"></div>`;
+  stickerBox(box.querySelector('.sticker-catch'));grid.append(box);
   for(const m of mine){
    const info=stickerById(m.id);if(!info)continue;
    const b=document.createElement('button');b.type='button';b.className='sticker-choice mine';b.dataset.id=m.id;b.setAttribute('aria-label','Your sticker');
@@ -2053,7 +2191,7 @@ async function renderStickerPicker(){
    grid.append(b);
   }
   const note=document.createElement('p');note.className='sticker-note';
-  note.textContent='Any photo becomes a die-cut sticker. On an iPhone, iPad or Mac, touch and hold the subject of a photo in Photos, choose Copy, then Paste here: it is cut round its outline.';
+  note.textContent='Any photo becomes a die-cut sticker, and a picture of a whole sticker sheet is cut into its stickers. On an iPhone or iPad, tap the Sticker box and choose one of your own from the keyboard\'s stickers; or touch and hold the subject of a photo in Photos, choose Copy, then Paste: it is cut round its outline.';
   grid.append(note);
   return;
  }
@@ -2069,8 +2207,9 @@ async function renderStickerPicker(){
   note.append(what,how);grid.append(note);return;
  }
  (tabs[stickerSet-1]?.sets||[]).forEach((set,k)=>{
-  // The resident's own sheet first; each of their other sheets under its name.
-  if(k>0||tabs[stickerSet-1].name==='Manga'){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
+  // A tab's own sheet first, without a heading; every other sheet under its name (two sheets of one name share it).
+  const tab=tabs[stickerSet-1];
+  if((k>0||set.name!==tab.name)&&set.name!==tab.sets[k-1]?.name){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
   for(const s of set.stickers){
    const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
    b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
@@ -2248,7 +2387,8 @@ if(!startEngine()){
  // you start"), never the one shown last; Johansson, the chief engineer, salutes the empty album.
  loadStickerSets().then(manifest=>{
   stickerSheets=manifest;cameraStickers.render();
-  const all=residentSets(manifest).flatMap(set=>set.stickers),last=store.read().greeting;
+  // A greeter is a figure standing (taller than wide): a wide scene would lean on the wordmark beside it.
+  const all=residentSets(manifest).flatMap(set=>set.stickers).filter(s=>s.height>=s.width*1.1),last=store.read().greeting;
   const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('johansson-pixar/Salute');
   if(hello)store.write({...store.read(),greeting:hello.id});
   // The stickers are figures without words; what they would say is their gloss, for whoever cannot see them.
@@ -2258,4 +2398,4 @@ if(!startEngine()){
  if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory,editZoom,viewerZoom,gameWon,setDance,get danceTempo(){return danceTempo;},openCardGame,get cardGame(){return activeCardGame;}};
+window.pocketCamera={state,editFile,useFiles,stickerFromPicture,stickersFromSheet,stickerTabs:async date=>stickerTabs(await loadStickerSets(),date).map(t=>({name:t.name,sheets:t.sets.map(s=>s.name)})),get mine(){return mine.length;},decks:async()=>(await memorySources()).map(d=>d.name),greeters:async()=>residentSets(await loadStickerSets()).map(set=>set.name),takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory,editZoom,viewerZoom,gameWon,setDance,get danceTempo(){return danceTempo;},openCardGame,get cardGame(){return activeCardGame;}};

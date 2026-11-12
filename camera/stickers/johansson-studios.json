@@ -1,0 +1,83 @@
+{
+ "id": "johansson-studios",
+ "name": "Animation Studios",
+ "tab": "Johansson",
+ "who": "Johansson",
+ "kind": "studio",
+ "note": "The owner's own studio marks (Johansson Animation Studios, © Nils Johansson).",
+ "source": "tools/cut-sticker-sheet.py tools/sources/sticker-sheets/johansson-studios.json",
+ "stickers": [
+  {
+   "id": "johansson-studios/badge",
+   "src": "johansson-studios/badge.webp?v=5849325e",
+   "thumb": "johansson-studios/badge.thumb.webp?v=5849325e",
+   "width": 512,
+   "height": 469,
+   "line": "",
+   "gloss": "The studio badge"
+  },
+  {
+   "id": "johansson-studios/badge-ink",
+   "src": "johansson-studios/badge-ink.webp?v=746024c6",
+   "thumb": "johansson-studios/badge-ink.thumb.webp?v=746024c6",
+   "width": 494,
+   "height": 512,
+   "line": "",
+   "gloss": "The studio badge in ink"
+  },
+  {
+   "id": "johansson-studios/sailor",
+   "src": "johansson-studios/sailor.webp?v=a0923c67",
+   "thumb": "johansson-studios/sailor.thumb.webp?v=a0923c67",
+   "width": 512,
+   "height": 508,
+   "line": "",
+   "gloss": "The sailor"
+  },
+  {
+   "id": "johansson-studios/name",
+   "src": "johansson-studios/name.webp?v=d87ef81f",
+   "thumb": "johansson-studios/name.thumb.webp?v=d87ef81f",
+   "width": 512,
+   "height": 152,
+   "line": "",
+   "gloss": "The studio's name"
+  },
+  {
+   "id": "johansson-studios/ship-and-gear",
+   "src": "johansson-studios/ship-and-gear.webp?v=959dde19",
+   "thumb": "johansson-studios/ship-and-gear.thumb.webp?v=959dde19",
+   "width": 512,
+   "height": 255,
+   "line": "",
+   "gloss": "A ship and a gear"
+  },
+  {
+   "id": "johansson-studios/bolt",
+   "src": "johansson-studios/bolt.webp?v=aa6a428a",
+   "thumb": "johansson-studios/bolt.thumb.webp?v=aa6a428a",
+   "width": 166,
+   "height": 278,
+   "line": "",
+   "gloss": "A bolt"
+  },
+  {
+   "id": "johansson-studios/film-camera",
+   "src": "johansson-studios/film-camera.webp?v=413a51b1",
+   "thumb": "johansson-studios/film-camera.thumb.webp?v=413a51b1",
+   "width": 215,
+   "height": 270,
+   "line": "",
+   "gloss": "A film camera"
+  },
+  {
+   "id": "johansson-studios/seal",
+   "src": "johansson-studios/seal.webp?v=bbccc11c",
+   "thumb": "johansson-studios/seal.thumb.webp?v=bbccc11c",
+   "width": 512,
+   "height": 470,
+   "line": "",
+   "gloss": "The studio seal"
+  }
+ ]
+}

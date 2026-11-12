@@ -18,23 +18,22 @@ when saving ? I want memory with our own photos or with the stickers".
   the top, as on an iPhone: Timer (3 s, 10 s), Shape (4:3, 1:1, 16:9), Frame, Mirror, Date and Sound, each in green when
   on and shown beside the chevron while the row is closed. Digital zoom (1×, 2×, 3×), the film camera's date stamp
   (`’26 10 29`, as the hotel photos print it), a shutter that sounds and flashes, and the photo flying into the album.
-- **Frames** (`frames.js`), as every hand-held camera photo had one: **Print** (an instant print's white border and
-  deeper foot), **Panel** (a comic panel's hand-inked border on white), **Film** (a 35 mm frame with its sprocket holes
-  and edge print, MINATO 400 and the frame number along one edge and, since the brand round of 9 November 2026, the
-  stock's maker JOHANSSON WORLD along the other, turning with the picture). Drawn over the picture's edges in the
-  viewfinder and in the save alike;
-  the date stays in the picture's own corner, stickers and balloons may cross the border as a balloon breaks a panel.
-- **Pixel frames**, drawn in Python by `tools/draw-camera-frames.py` (the owner: "Draw our own frames in Python") in
-  the hand-held camera's own way, four shades and a 16-pixel border where the photo's short side is 144: **Pocket**
-  (the Pocket Look's greens, the little camera), **Harbour** (the ferry, the lighthouse, gulls and the sun),
-  **Sakura** (a branch in blossom), **Ticket** (Minato to Kitano-jima, perforated and stamped), **Matsuri**
-  (lanterns and fireworks), **Hello** (Thuan, redrawn in four shades from her own sticker, waving from the corner), **Island Post** (a Minato postcard) and **Shop Day** (an island shop awning).
-  Each is a sheet of pieces in `frames/` (corners, edges that repeat, scenes set against an edge) that `frames.js`
-  lays out for the photo's own shape and enlarges with hard pixel edges, never stretched. In the camera, **Frame** in
+- **Frames** (`frames.js`), as every hand-held camera photo had one, all drawn in Python since 12 November 2026 (the
+  owner: "Redraw the frames too, in python, make them more playful and cute, similar style to the icons", then of the
+  frames: "walk away from the Gameboy arts, but keep the playfulness from Gameboy Camera"). Sixteen, from
+  `tools/draw-camera-cute-frames.py` into `frames/cute.json`: **Print**, **Panel**, **Film**, **Scallop**, **Hearts**,
+  **Starry**, **Tape**, **Clouds**, **Stamp**, **Confetti**, **Peekaboo** (a cat over the edge), **Telly**, **Harbour**,
+  **Blossom**, **Festival** and **Ticket**. Film keeps its edge print (MINATO 400 and the frame number on one edge,
+  the stock's maker JOHANSSON WORLD on the other, since the brand round of 9 November 2026): the one lettering on a
+  frame. A frame is a description in hundredths of the photo's shorter side (border
+  widths, a window's corners, shapes repeated along the sides, shapes set against a corner) that `frames.js` draws at
+  the photo's own size, the same on a thumbnail and on sixteen megapixels, in the viewfinder and in the save alike.
+  The date stays in the picture's own corner; stickers and balloons may cross the border. In the camera, **Frame** in
   the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
-  `python3 tools/draw-camera-frames.py --preview out.png` draws them on a photo at three shapes;
-  `python3 tools/draw-camera-frames.test.py` checks that the files are the drawing and every border is whole.
-  (Frames from a Game Boy Camera project were looked at and not used: no licence, and others' marks and art.)
+- **The pixel frames** of October (Pocket, Harbour, Sakura, Ticket, Matsuri, Hello, Island Post, Shop Day;
+  `tools/draw-camera-frames.py`, four shades, a 16-pixel border) are no longer offered. They are still drawn, so a photo
+  framed in one keeps it and shows it among the choices when edited. The Game Boy Looks themselves stay (the owner:
+  "Gameboy filters need to stay").
 - **Mirror** lens: **Twin** (the left half mirrored onto the right) and **Quad** (one quarter into four), the trick
   lenses of the hand-held cameras, before the Looks so they draw the mirrored picture.
 - **Mix**: up to three Looks stacked, each with its own intensity (tap the chosen one again in the camera; there the
@@ -117,7 +116,8 @@ when saving ? I want memory with our own photos or with the stickers".
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
   draws them), and under Thuan's tab her other sheets, each under its name: **World Thuan** (hers), **Cartoon Thuan** and
-  **Thuan & Nils**. One tab a resident: Text · Thuan · Johansson · Thao · Mine, all across the phone. On the viewfinder
+  **Thuan & Nils**. One tab a resident, then the camera's own sheets (below): Text · Thuan · Johansson · Thao · Minato ·
+  Friends · Season · Faces · Manga · Mine, in one row that scrolls. On the viewfinder
   or a photo: drag; pinch and turn with two fingers; a chosen sticker has remove and flip at its top and, if it has
   words of its own, Say below; the corner handle (a mouse only) turns and resizes; wheel resizes, Shift+wheel turns;
   arrows nudge, Delete removes.
@@ -134,7 +134,12 @@ when saving ? I want memory with our own photos or with the stickers".
 - **Your own stickers** (`cutout.js`, the sheet **Mine**): any photo becomes a die-cut sticker with the studio's white
   contour and restrained shadow; a picture with a transparent background (a subject lifted from a photo with Copy
   on an iPhone, iPad or Mac, then **Paste**) is cut round its own outline, any other with rounded corners. Kept on the
-  device with the album; deleting one takes it off the viewfinder too, and saved photos keep it.
+  device with the album; deleting one takes it off the viewfinder too, and saved photos keep it. Since 12 November 2026
+  (the owner: "can you make a function to add stickers easily? Even use the system stickers from the phone or iPad")
+  Mine has four ways in: **From a photo** (several at once: one is stuck on the picture, several wait under Mine),
+  **From a sheet** (a picture of a whole sticker sheet is cut into its stickers, `sticker-sheet.js`), **Paste**, and
+  the **Sticker box**, a field that takes whatever picture lands in it: a sticker chosen from the iPhone's or iPad's
+  keyboard, a paste, a picture dragged in. See *Sticker sheets and adding stickers* below.
 - **Album**: two sample photos (the original and Adventure Ink) are added once, including to existing albums. They can be edited or deleted; deleted samples do not reappear. Kept in this browser (IndexedDB), nothing uploaded. Each photo keeps its untouched picture and its
   recipe, so **Edit** starts again from the original with every Look, setting and sticker where it was. Share (the
   system sheet, so a phone can save to Photos or choose a social app) or download.
@@ -382,7 +387,11 @@ running from?"; its last stamps were unlocked by a score in Ball; Mario danced o
 - **The greeter dances**: the sticker that greets the first screen hops and sways; a tap on the picture steps the tempo
   round (three tempos), Up and Down on a keyboard step it; reduced motion keeps it still.
 
-## Ball, with your face
+## Ball, with your face (removed on 12 November 2026)
+
+**Removed**: the owner, 12 November 2026: "remove the ball juggle game it didn't end up well". `ball.js` and its tests are
+gone; the Game Room has Memory, Blackjack and Solitaire, and a win at Memory or Solitaire opens the secret sheet. What
+follows is the record of what it was.
 
 The Game & Watch juggle of 1980, as the Game Boy Camera played it with the photographer's own face on the juggler
 (the owner, 5 November 2026: "I would like 2 also"; 6 November: "The ball game should have four frames and the ball
@@ -655,6 +664,54 @@ shaded whites and cuts it, every set was rebuilt from the studio's plain cuts (`
 grey or white fringe. And Remove background's plain flood gave up on any ground that was not one flat colour, so a
 thing on a sheet with a shadow went to the person segmenter and came back with its sheet: see Remove background below.
 
+## The fun round — 12 November 2026
+
+The owner: "I don't like the sliders or the icons, can you improve the user interface and remove the ball juggle game it
+didn't end up well, use python and draw the assets, draw the icons, make it really fun to use, and have many presets to
+make the shaders to look awesome, sliders need to be accessed by a setting". Published as v2026.11.12.1.
+
+- **Icons drawn in Python** (`tools/draw-camera-icons.py` → `icons/ui-icons.json`; `node tools/apply-camera-icons.mjs`
+  sets them into the page between its icon markers and writes `look-icons.js`; `--check` fails when either is stale):
+  51 interface symbols, 11 kinds, 43 Looks and 4 Game Room signs on a 24 grid, chunky and filled in two tones of the
+  text's own colour. The owner: "Looks much better".
+- **Presets** (`presets.js`): 225 named presets over the 43 Looks, in a row under the strip once a Look is chosen (a
+  console family's models first). A preset is a strength, a small tune of tone and colour, sometimes a second Look laid
+  over (`over`), kept on the layer (`preset`, `tune`, `mate`); `looks-gl.js tuned()` adds the tunes to the
+  photographer's own adjustments. Pattern and Detail do not show at thumbnail size, so presets leave them alone.
+- **Sliders behind a setting**: Settings → Sliders (off by default; `state.sliders`, the page's `data-sliders`). Off, a
+  control that was a slider is a stepper (`steppers.js`: minus, pips, plus; it drives the slider's own input, so
+  everything that listened still hears each step) and the intensity slider is the preset row; on, the sliders return.
+- **Frames** redrawn (above). **Ball** removed (below).
+
+### Sticker sheets and adding stickers
+
+- **The camera's own sheets** are listed in `stickers/sheets.json` and loaded by `stickers.js` after the residents'
+  manifest; a tool that draws or cuts a sheet adds it to the list, so a new sheet needs no code. A sheet says its `tab`,
+  its `kind` (`marks`, `season` with its months `when`, `secret`, `cute`, `things`, `studio`) and whether it is one of
+  Memory's decks (`deck`). A sheet with a kind never greets. Tabs: the residents', then any other (Minato), Friends,
+  Season (the sheet in season first, then the next to come), Faces, Manga; a tab's own sheet first, every other under
+  its name.
+- **The owner's sheets, cut by `tools/cut-sticker-sheet.py`** (the owner: "You can make stickers of my Johansson Assets
+  too", "Here are more sticker sheets"): **Cartoon Johansson** (38, his sailor in his poses, under Johansson's tab, a
+  Memory deck and a greeter), **Animation Studios** (8, the studio's marks), **Matsuri** (33, under Season) and
+  **Shōwa** (21, under Minato). The pictures are kept in `tools/sources/sticker-sheets/` with a recipe each (which
+  pieces, their names, how the sheet is read). The tool finds every drawing (the ground flooded in from the edges, so
+  paper inside a closed outline stays; a small mark near a drawing is cut with it, nearest first), gives it a die-cut
+  edge and writes the sheet. Adding one: `python3 tools/cut-sticker-sheet.py --new picture.png --id harbour --name
+  Harbour --tab Minato --sheet out.png`, name the pieces in the recipe it wrote, run it again on the recipe.
+- **Friends**, drawn in code (`tools/cute_hand.py`, `tools/draw-cute-stickers.py`): a frog, a duck, a rabbit, a cat and
+  a bear in the flat hand of the icons and the frames, each with its own build and its own way of being, 22 small
+  scenes (the frog sips its tea, the duck says no, the rabbit has the worst day ever, the cat and the cup) and 10 plain
+  **Bits**. The owner's notes on the way: a first sheet of plain things "a bit too generic"; a wobbly ink line "too
+  ugly … I think you lost your art style?"; five round balls "too round, they lack personality"; of these builds "The
+  animals are better". A Memory deck.
+- **From a sheet**, in the app (`sticker-sheet.js`): the same reading as the tool, on the device; a photograph (no
+  ground all round it) is not a sheet and becomes one sticker. Each piece gets its edge from `cutout.js`.
+- **The sticker box**: an iPhone or iPad offers its keyboard's stickers only in a field that takes pictures, so the
+  box is one (a `contenteditable`); it catches a paste, a picture the system inserts, and a drop, and nothing can be
+  typed in it. **Not yet tried on a phone**: the paste, the inserted picture and the drop are tested in Chromium; the
+  keyboard's own sticker drawer needs the owner's iPhone.
+
 ## How it works
 
 | File | Purpose |
@@ -708,6 +765,7 @@ node camera/tests/crop.browser.mjs           # gestures, source contact, saved p
 node camera/tests/save-share-layout.browser.mjs # album-only saves, native-share mock, cancellation/failure and phone Solitaire sizing
 node camera/tests/enhance.browser.mjs         # reversible strength, crop/export, prior-engine parity
 node camera/tests/sticker-contour.browser.mjs # catalogue, pale shoes, thin own-sticker rims and preview/export
+node camera/tests/stickers.browser.mjs        # the sheets on the list, tabs and seasons, decks and greeters, a sheet cut in the app, the sticker box
 node camera/tests/integration.browser.mjs     # full/LIGHT matrix, mixed thumbnails, exact JPEG/Share bytes, retained recipes
 node camera/tests/paper.browser.mjs           # paper preview/export agreement, colour/black retention, persistence and controls
 node camera/tests/zip.test.mjs                 # the backup ZIP: round trip, checksums, a standard reader, damage, foreign files
@@ -752,7 +810,8 @@ one is not checked; real phones (iPhone Safari, Android Chrome) and their frame 
 ## Complete offline bundle
 
 After the first complete online download, the Settings download icon becomes **Ready offline**. Startup, local photo
-imports, Looks/Smart Surprise, editing, stickers, frames, Erase, album saves and games use a verified 22.7 MB bundle.
+imports, Looks/Smart Surprise, editing, stickers, frames, Erase, album saves and games use a verified bundle (about
+45 MB since 12 November 2026: the face finder is 13 MB of it, the sticker sheets 28 MB).
 Keep the browser's site data. An incomplete download remains retryable and never replaces the previous complete cache.
 Regenerate `camera/offline.json` and the worker digest with `node tools/build-camera-offline.mjs` after changing runtime
 assets; `camera/tests/offline.test.mjs` rejects a stale bundle. Test real offline behaviour with

@@ -1,6 +1,6 @@
 {
-  "version": "20261110green1",
-  "bytes": 40435065,
+  "version": "20261112fun1",
+  "bytes": 45422144,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "09241713270bce2d1c07b623cd063f997dd151f99f048fd095e1c34afef9c808",
-      "bytes": 157736
+      "sha256": "4d59d89927cb75486de02fd298fff150e4385de4d383d8ec89abef08b8aa6e64",
+      "bytes": 166925
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -33,19 +33,14 @@
       "bytes": 6629
     },
     {
-      "url": "/camera/ball.js",
-      "sha256": "4897fa98e8c89a85d7995295430b1e0734480a3a9eace6a2f2c35c1c8e32f41f",
-      "bytes": 22836
-    },
-    {
       "url": "/camera/blackjack.css",
       "sha256": "390fbbab518e439dac43dd5df4faa15ea8cd9e8c91793b8986456af36cfbe47d",
       "bytes": 1745
     },
     {
       "url": "/camera/blackjack.js",
-      "sha256": "d46d1572b5ede9f878bdb45a3d0bc0e59526a7d7cfeb0cbe98495da4f819ce66",
-      "bytes": 4609
+      "sha256": "9102f39c479e4094f605fec6b111348b3ad4f8fc0797de8565425ed739d1ea00",
+      "bytes": 4607
     },
     {
       "url": "/camera/camera-black.css",
@@ -58,19 +53,24 @@
       "bytes": 5757
     },
     {
+      "url": "/camera/camera-fun.css",
+      "sha256": "e510f8243c4f2aeceea37744a9c7b436927483747058a4f826bf0c5b06b2cd3b",
+      "bytes": 3930
+    },
+    {
       "url": "/camera/camera-refresh.css",
       "sha256": "653a9e51e112803ecbb019e10b3b21cd8d6bfe9fd86241f814ee089a357b194b",
       "bytes": 3595
     },
     {
       "url": "/camera/camera-ui.css",
-      "sha256": "b1ae174487b51a73e1ba6232a12072b26586923299325efc7f6a215592ca38d5",
-      "bytes": 41509
+      "sha256": "3baddece2c034249c4f3481fab750b8649318e7a09936adf95c45ca1ae1fc67f",
+      "bytes": 41742
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "8fcdc77cdf56f8a702ea0fff4be50d0c8530e190f4b82523221b52be5dbb630c",
-      "bytes": 54601
+      "sha256": "23ca936b40619b2b818dedf1013df1cb997c8ad45485b627a6e8cbf72021d6ee",
+      "bytes": 52141
     },
     {
       "url": "/camera/card-games.css",
@@ -104,8 +104,8 @@
     },
     {
       "url": "/camera/cutout.js",
-      "sha256": "9cd25be52ea39bf8cb830e2074faa666b721cbd23c9628aa4a9a89dfdaefd19e",
-      "bytes": 3228
+      "sha256": "fdb740e4f35d0c8f373d7e945b79b4a8594fc92253819c282756e0ba4ff89ed0",
+      "bytes": 3461
     },
     {
       "url": "/camera/effects.js",
@@ -134,8 +134,8 @@
     },
     {
       "url": "/camera/face-stamps.js",
-      "sha256": "f52cebab5a03cade2c352df17be52f05c841a041b82b56e34b81b9cc7af4c044",
-      "bytes": 20377
+      "sha256": "64419298d8254b5a56fd575f09f0204941e3e1b34d8ee9a082eaccaf8e9a2c0d",
+      "bytes": 20375
     },
     {
       "url": "/camera/fonts/baloo2.woff2",
@@ -159,13 +159,18 @@
     },
     {
       "url": "/camera/frames.js",
-      "sha256": "176ebadeea947e65156b78ab0ad689c0a1648dfb3f71c42bb8ef8f574be33422",
-      "bytes": 7966
+      "sha256": "9e47b6247e9b6f73c7f8b05a1c9c769b33fc8c4df52262791d7d794179584e40",
+      "bytes": 8884
     },
     {
       "url": "/camera/frames/adventure.png",
       "sha256": "da003e3ffc7d8a888a688e0b877a63ba607da599c147760f7a309c966021784f",
       "bytes": 696
+    },
+    {
+      "url": "/camera/frames/cute.json",
+      "sha256": "6b7996f8f0afb61f394c9e064424c371794099ebc88f712def519d42ac097e1f",
+      "bytes": 26915
     },
     {
       "url": "/camera/frames/frames.json",
@@ -243,9 +248,19 @@
       "bytes": 41395
     },
     {
+      "url": "/camera/icons/ui-icons.json",
+      "sha256": "3b7c55220594996f87048612423906f9ffcec8f2809f0b3ada338b934db115b6",
+      "bytes": 56093
+    },
+    {
+      "url": "/camera/icons/ui-icons.svg",
+      "sha256": "2725df3bfe99806846b8a944e63da5de49bbaad2cb9cfce37567288e7ff21ffc",
+      "bytes": 57403
+    },
+    {
       "url": "/camera/index.html",
-      "sha256": "14bec7528a54f8f179eb7109c0eb118b60cc06cdbf867af6ba63c8ae2676c1e8",
-      "bytes": 53794
+      "sha256": "95efca69a612da3138d8e6de9acba532d09d6e88acfcecf32079eab31a498e57",
+      "bytes": 74058
     },
     {
       "url": "/camera/lettering.js",
@@ -254,8 +269,8 @@
     },
     {
       "url": "/camera/look-icons.js",
-      "sha256": "434a6c93d4c70523093f26f8e0dd33eb9e0455aba7a7f305187b7190d71c16f3",
-      "bytes": 4723
+      "sha256": "e34f69b88d5733455c9d8bf5f9b24659c3cb0362c07ef779807894de6f7f0fe6",
+      "bytes": 30387
     },
     {
       "url": "/camera/look-settings.js",
@@ -264,8 +279,8 @@
     },
     {
       "url": "/camera/looks-gl.js",
-      "sha256": "abe4f011f5fdf773ab27aa5bc7e342d9b0eff210198e3807445d9537cc085175",
-      "bytes": 119306
+      "sha256": "1d30e2fe21de80241729b973aab322489f2bcb0f781121e8591aa45d70489128",
+      "bytes": 121140
     },
     {
       "url": "/camera/makeup-guide.js",
@@ -299,8 +314,8 @@
     },
     {
       "url": "/camera/memory.js",
-      "sha256": "3bbd9e8649dfa71736bba96a8653b81dee821c90877a1a89305da343383d6b82",
-      "bytes": 12937
+      "sha256": "8dbe1e750ba7a6d297764b0dc1e35de5f096e845eb73ee00f578a431b1a5e3a5",
+      "bytes": 12935
     },
     {
       "url": "/camera/minato.js",
@@ -324,8 +339,13 @@
     },
     {
       "url": "/camera/pocket-faces.js",
-      "sha256": "98e49aaf9c29cb60868e4c54581e01b437d36c48e506379f62e642424227567c",
-      "bytes": 1538
+      "sha256": "807f6f74c2c42ecd77399bcd0086d04875ca89efa5b132ef5914ac164925fe98",
+      "bytes": 1536
+    },
+    {
+      "url": "/camera/presets.js",
+      "sha256": "92d9b081321e5b6974e7242026cb4cf71cfc2ee7061be7c90e6a280bf5095005",
+      "bytes": 13597
     },
     {
       "url": "/camera/preview.jpg",
@@ -374,18 +394,358 @@
     },
     {
       "url": "/camera/solitaire.js",
-      "sha256": "df4f98deef3b00a297bff3eec9ee0d15f1557d3cdf8ca4668c6c25b1e6b4bdfc",
-      "bytes": 8469
+      "sha256": "fc36370cf2a43718ce4d58e5a8c4c22e2d7facabc6775438fb2885a520351ebf",
+      "bytes": 8467
+    },
+    {
+      "url": "/camera/steppers.js",
+      "sha256": "fc5683ebdac5770ab7c6982f44d2e9e6628b3967690de59cc56f7182baebf7c4",
+      "bytes": 3361
+    },
+    {
+      "url": "/camera/sticker-sheet.js",
+      "sha256": "b8748ade9050ec0f35e6c17cba132b071de86496ce8cbe9368c8e09610cef0ba",
+      "bytes": 7860
     },
     {
       "url": "/camera/stickers.js",
-      "sha256": "2742288daf0c1d54797625730f9afe3e4732c08a22cbe069ac3a8a5d4d9babda",
-      "bytes": 17869
+      "sha256": "85af9f562962393bc2894a2d3c3cd22c245fb3443650fd6b2c9672f34a90041a",
+      "bytes": 18378
+    },
+    {
+      "url": "/camera/stickers/bits.json",
+      "sha256": "03908c98ab380c576e1ed02f2513f5ee9120ce02d9185d35942803443bb1baf2",
+      "bytes": 2114
+    },
+    {
+      "url": "/camera/stickers/bits/balloon.thumb.webp",
+      "sha256": "1bd4078ac46dce2500f9a1a3ebc8c5607609ceb82d787e2825d55bb877384512",
+      "bytes": 7416
+    },
+    {
+      "url": "/camera/stickers/bits/balloon.webp",
+      "sha256": "fac8afe895ce4c685772936f5df090a50c78d0731c8ffd17c95d864780ed2aba",
+      "bytes": 16780
+    },
+    {
+      "url": "/camera/stickers/bits/bolt.thumb.webp",
+      "sha256": "2cea0e32b62796b7603768aaeb885551f156209918764dd55406abf9eee08af0",
+      "bytes": 7562
+    },
+    {
+      "url": "/camera/stickers/bits/bolt.webp",
+      "sha256": "dda879eb23afc3e1fb661460d4cdefb427ca3435a9130446931a2d6c95213098",
+      "bytes": 18326
+    },
+    {
+      "url": "/camera/stickers/bits/bow.thumb.webp",
+      "sha256": "02763a761bd87118a325ddefced5197a6afc469bfd85b23827eb0d6315b49431",
+      "bytes": 7054
+    },
+    {
+      "url": "/camera/stickers/bits/bow.webp",
+      "sha256": "6baee2eb2c5f8a77ad1184a0656fe3b66ca5e56402989889262ae7db7acd9697",
+      "bytes": 15952
+    },
+    {
+      "url": "/camera/stickers/bits/crown.thumb.webp",
+      "sha256": "169c3bac57915bea78fff6bad8abbbadf85fa4594e966ee6f9b4b145800c9ac4",
+      "bytes": 7452
+    },
+    {
+      "url": "/camera/stickers/bits/crown.webp",
+      "sha256": "50327ff18ae83a6f9167597391a99a683f4530881892f7a43dbebc092f10c70a",
+      "bytes": 16406
+    },
+    {
+      "url": "/camera/stickers/bits/heart.thumb.webp",
+      "sha256": "d42c9d8711b9263e949c5b2ec3518689ca9d4dbb9d23d7347f196a9a3f3e606e",
+      "bytes": 8214
+    },
+    {
+      "url": "/camera/stickers/bits/heart.webp",
+      "sha256": "c90c59008b972000faeb68811ef87635fe11cbfc9d8795f561a958880fe4bf95",
+      "bytes": 20218
+    },
+    {
+      "url": "/camera/stickers/bits/pow.thumb.webp",
+      "sha256": "a56acdb5442aec986ec43426809862968c4f04d2a7bcc968b323b7d30bab1c64",
+      "bytes": 11076
+    },
+    {
+      "url": "/camera/stickers/bits/pow.webp",
+      "sha256": "d96b0f41505552b919f795b52abca7c7ee20f9b48cc0093b6a887ef8f273bb34",
+      "bytes": 23624
+    },
+    {
+      "url": "/camera/stickers/bits/rainbow.thumb.webp",
+      "sha256": "6f344a132f00b179bf6eaa8ee99cdce9fccf62371276a69d95732ba769f2868a",
+      "bytes": 9238
+    },
+    {
+      "url": "/camera/stickers/bits/rainbow.webp",
+      "sha256": "d756981d59a09a33b26c218217988663c27b85a560ad0f45c55eb0b989ac5437",
+      "bytes": 20500
+    },
+    {
+      "url": "/camera/stickers/bits/shades.thumb.webp",
+      "sha256": "eb40fe824fa23fa856e05cdeabbccf0e00bbd331a9377de69ebeb69ab5f9556d",
+      "bytes": 4846
+    },
+    {
+      "url": "/camera/stickers/bits/shades.webp",
+      "sha256": "944bdb4cb88acbffc48b3bc3d65e96c15dcd69139b94821e5bf50182ed72f53d",
+      "bytes": 10468
+    },
+    {
+      "url": "/camera/stickers/bits/sparkle.thumb.webp",
+      "sha256": "61b491dcf0e4de90824aba40c6f84788d4059da2ba9125ce5add2ef201a7e9c8",
+      "bytes": 12164
+    },
+    {
+      "url": "/camera/stickers/bits/sparkle.webp",
+      "sha256": "5169b867569e090bc3f3d858276a3f05435c7a78d7d7e9079cd82e0e77e1c9f1",
+      "bytes": 28962
+    },
+    {
+      "url": "/camera/stickers/bits/star.thumb.webp",
+      "sha256": "bdc016c36ffc01c67edb6a04c39e992613e737c70ca98b7ff31979ef16983d29",
+      "bytes": 9250
+    },
+    {
+      "url": "/camera/stickers/bits/star.webp",
+      "sha256": "ea90b34528c8ed58fbea1c2b3fa5ed10258c14a2cd8e8ecf29b1c2087220e14c",
+      "bytes": 21656
+    },
+    {
+      "url": "/camera/stickers/cute.json",
+      "sha256": "1376e8e5ebc39cd81a3d2958bb099ccad47954486e867ebb8d4bcd3035718ed8",
+      "bytes": 4985
+    },
+    {
+      "url": "/camera/stickers/cute/bear-hug.thumb.webp",
+      "sha256": "9426a6c6c0381122f6c4169c696f4a170434764f21980c8b07eaaf028f242c42",
+      "bytes": 8460
+    },
+    {
+      "url": "/camera/stickers/cute/bear-hug.webp",
+      "sha256": "962b9c792aa47818eaa0d49b14720d20d0472bf94890fc71200a51282c915e87",
+      "bytes": 17750
+    },
+    {
+      "url": "/camera/stickers/cute/bear-sleep.thumb.webp",
+      "sha256": "eee2848017f099c2feff0dc0a846aecbb82a177ea9dffd370ecd8b08e7b82075",
+      "bytes": 10650
+    },
+    {
+      "url": "/camera/stickers/cute/bear-sleep.webp",
+      "sha256": "908d28c93067b140cf6a84eb5f9de1d55e4623efc9607a714c6590d0fe662cc2",
+      "bytes": 22934
+    },
+    {
+      "url": "/camera/stickers/cute/bear-yum.thumb.webp",
+      "sha256": "bb9aa1e19b86112d76875db70faad07f4365948da3e0589dee3aaa96646a45c6",
+      "bytes": 8470
+    },
+    {
+      "url": "/camera/stickers/cute/bear-yum.webp",
+      "sha256": "bfb0674d17efb699b59f1e83bf7682f3387a444491ed513873999aca7dbba2f7",
+      "bytes": 17798
+    },
+    {
+      "url": "/camera/stickers/cute/cat-box.thumb.webp",
+      "sha256": "01fd18ca9f397da8081af9f70622fd603f82c88d022aa9087580e8e0d1145aca",
+      "bytes": 8624
+    },
+    {
+      "url": "/camera/stickers/cute/cat-box.webp",
+      "sha256": "544c39012865b808739dd143fb37fa587306e8378d7264ac6d6cdd1b8c8b55e7",
+      "bytes": 18884
+    },
+    {
+      "url": "/camera/stickers/cute/cat-cup.thumb.webp",
+      "sha256": "4322dd885b5d43f9bb90fcc7c35fec85d40548bd0b32998df765f96e13725ea1",
+      "bytes": 12692
+    },
+    {
+      "url": "/camera/stickers/cute/cat-cup.webp",
+      "sha256": "bdefbb8666af86b7f0dbd0911cab1321186175e38f7b2efddc1115e205f224b3",
+      "bytes": 28008
+    },
+    {
+      "url": "/camera/stickers/cute/cat-scared.thumb.webp",
+      "sha256": "9db68a3463f663121f7ed4782f0560e24ae2984131ca2878c709ba8a7efad642",
+      "bytes": 8756
+    },
+    {
+      "url": "/camera/stickers/cute/cat-scared.webp",
+      "sha256": "d36fe0ee1b9d145dbc37ad665f2c101e04f62f614e29ffae9a26dc6467f86f53",
+      "bytes": 18672
+    },
+    {
+      "url": "/camera/stickers/cute/duck-angry.thumb.webp",
+      "sha256": "8f63e5e763790780ffc661c040bb9c5405abbb62ceba6aa508ee2c5078dd813e",
+      "bytes": 12192
+    },
+    {
+      "url": "/camera/stickers/cute/duck-angry.webp",
+      "sha256": "dd278c18daccb4d3d7e9f129de3f5e566bc2ee2da3c53eb9ae2b31f6f8b77a8c",
+      "bytes": 27446
+    },
+    {
+      "url": "/camera/stickers/cute/duck-lol.thumb.webp",
+      "sha256": "80a03e46a015964e712fce38e32cf556152fbe457b4edf97706406e43e97e515",
+      "bytes": 11372
+    },
+    {
+      "url": "/camera/stickers/cute/duck-lol.webp",
+      "sha256": "28e40188ba7ea90641aefe39f301dccfc7f577fad082d28de703bb6df7f9ae7c",
+      "bytes": 24874
+    },
+    {
+      "url": "/camera/stickers/cute/duck-nope.thumb.webp",
+      "sha256": "3cb9ce74a2470e2b62bd027a93efdabfc02041e3f87bcaab812dd3e81ca1f18a",
+      "bytes": 8360
+    },
+    {
+      "url": "/camera/stickers/cute/duck-nope.webp",
+      "sha256": "64b4f4bdbb6380b651e6d2936514c4f882a3e95ad1d71f0f8904c101decd904b",
+      "bytes": 17840
+    },
+    {
+      "url": "/camera/stickers/cute/duck-ok.thumb.webp",
+      "sha256": "0163c67e5c2caba4dd03f943443655aee52afae5f639a67c6cd237db54e9e18f",
+      "bytes": 12128
+    },
+    {
+      "url": "/camera/stickers/cute/duck-ok.webp",
+      "sha256": "c329e7a807c6d56a5ff498af870af3866e03e0f23ce8d0737084382ffaeb725d",
+      "bytes": 27138
+    },
+    {
+      "url": "/camera/stickers/cute/duck-run.thumb.webp",
+      "sha256": "f236dfd4443c2f2a13348d2222dc9af7765847b20f9c214a780a734c688c1796",
+      "bytes": 14180
+    },
+    {
+      "url": "/camera/stickers/cute/duck-run.webp",
+      "sha256": "d81d0d94b485f27887b14c10a3ff38f322d8a179d46882d5ca7145c87e7d3a13",
+      "bytes": 31198
+    },
+    {
+      "url": "/camera/stickers/cute/frog-love.thumb.webp",
+      "sha256": "167fd0b8510953b79b728af8aea3b157a47d7de677085b9df480acc577588427",
+      "bytes": 12408
+    },
+    {
+      "url": "/camera/stickers/cute/frog-love.webp",
+      "sha256": "4a86f0f386330d0968735fe99aefb36be5a7e87777277eb37c53661c566a1e60",
+      "bytes": 27702
+    },
+    {
+      "url": "/camera/stickers/cute/frog-nice.thumb.webp",
+      "sha256": "0aeeeacc212090fe91d5e130786f7d06f79af6ac16e652ccc0fd1a3134030e40",
+      "bytes": 13380
+    },
+    {
+      "url": "/camera/stickers/cute/frog-nice.webp",
+      "sha256": "1ad6f2464da40ef1ad98d2ef29581768bfcfb004ab6eba676eb0093ea4d5ed13",
+      "bytes": 29732
+    },
+    {
+      "url": "/camera/stickers/cute/frog-rain.thumb.webp",
+      "sha256": "d874509c3b09558cf29392f11987fd04dae44f7a3fc211c2fc5255a63c496d98",
+      "bytes": 14944
+    },
+    {
+      "url": "/camera/stickers/cute/frog-rain.webp",
+      "sha256": "6e0eeb068af510bba0cd1aa65f89924f9cc67d1e6b2969434c6d62c4830b26c1",
+      "bytes": 32676
+    },
+    {
+      "url": "/camera/stickers/cute/frog-shock.thumb.webp",
+      "sha256": "a0415ae74282343e351ea7d784503b9233cc08da1e55d242e91c2c234d34f19a",
+      "bytes": 12704
+    },
+    {
+      "url": "/camera/stickers/cute/frog-shock.webp",
+      "sha256": "c41bb1519467a11aa299f068b242ecb1738ca303a07ea1fa547c136ecf71a522",
+      "bytes": 28186
+    },
+    {
+      "url": "/camera/stickers/cute/frog-tea.thumb.webp",
+      "sha256": "b3d37675081492fc8d1aff4937642161e2c64a333c9000fbb3aa33953e2dd129",
+      "bytes": 11448
+    },
+    {
+      "url": "/camera/stickers/cute/frog-tea.webp",
+      "sha256": "be96d95bbba5305d5a19161c5d8c538a4f395d3ae968fdc6dffec5e3c208d16c",
+      "bytes": 25398
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-cry.thumb.webp",
+      "sha256": "3022f1838cd9647b001669974f958fc3af5fa493d751c441599999c5f64bac40",
+      "bytes": 12004
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-cry.webp",
+      "sha256": "bdfd1bd38a8604464fcb5ae4229c60632cdfba51f801441cb21f2a5571c165e7",
+      "bytes": 27424
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-faint.thumb.webp",
+      "sha256": "f98606059a6eef949b19e1d046d6a74f04a8bf512dfb62996e3e368ccf51214d",
+      "bytes": 9924
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-faint.webp",
+      "sha256": "c37730a8705800ab58a10902d3edbed3d5d7e526d239fc740b0218397d758628",
+      "bytes": 23362
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-photo.thumb.webp",
+      "sha256": "329f900b942c279bfbe5a4500b07f6c70c55edd07c62f781db894d24e2f9d1ab",
+      "bytes": 8264
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-photo.webp",
+      "sha256": "b5bdfe31070846e3a80522c374f8c5141059519494e537b94d3bf172c23d9452",
+      "bytes": 18358
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-shy.thumb.webp",
+      "sha256": "3a3f9f551bdf57d9ea070aa9fff7801d9b029ad7503c371f019f75174d9e26de",
+      "bytes": 7074
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-shy.webp",
+      "sha256": "37ede8932f04e8e5a941869f1f8910ee1b56836ebe05aee045fbadde36745bb0",
+      "bytes": 15454
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-yay.thumb.webp",
+      "sha256": "acc2c4044799160464d69cfb1cf508701ff1144c01784eb9e49c7d3e5384e246",
+      "bytes": 12116
+    },
+    {
+      "url": "/camera/stickers/cute/rabbit-yay.webp",
+      "sha256": "36ba96121ea06a0d3d57e055e9cb9ac450e5636bf4b947d765c4a3296aa2c05d",
+      "bytes": 26896
+    },
+    {
+      "url": "/camera/stickers/cute/together.thumb.webp",
+      "sha256": "65d44df29d2835cc139c2929d00a91d2ddf64a3c3066c8b927800802b0929d4b",
+      "bytes": 11494
+    },
+    {
+      "url": "/camera/stickers/cute/together.webp",
+      "sha256": "8262095ecea0f315781a3cd8e9853c94dd50d77c47f7d23a4c846d2b8ee78936",
+      "bytes": 25964
     },
     {
       "url": "/camera/stickers/halloween.json",
-      "sha256": "a6ac60f6817481b2c4cbefba39e94c722db66d342e50a324a1471ca472a8c29a",
-      "bytes": 2236
+      "sha256": "bbdd4d6be43c44d2b9775132e4b3f3b1823fbcc5a59bcb9f0ae30e47660f1294",
+      "bytes": 2256
     },
     {
       "url": "/camera/stickers/halloween/README.md",
@@ -471,6 +831,391 @@
       "url": "/camera/stickers/halloween/witch-hat.webp",
       "sha256": "a24d4b283631e49aa77df130867b6b94d7a852b3bcca436997029b8935b35ea9",
       "bytes": 36966
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon.json",
+      "sha256": "11f2a6edf7f400b5ec8a8c36f1824b1cb4a852587b4ba406612f886eacca324e",
+      "bytes": 9338
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/anchor.thumb.webp",
+      "sha256": "9ebd85c43d19d03031a3fa98b2ebe8f3ca951f8bad11efd9910ceb074af9cab6",
+      "bytes": 13538
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/anchor.webp",
+      "sha256": "51526d0d52975679848339a9a5cf08c48f3734e301d2b5c05a34790e8b8ca637",
+      "bytes": 29040
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/arms-crossed.thumb.webp",
+      "sha256": "c1d493704f4cd02b1e9abfd0a6b8cb0b1af7803f0531a2af5a58104123b96cc2",
+      "bytes": 9776
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/arms-crossed.webp",
+      "sha256": "b6daef37e63659e4d76eab54a1b632b0f649381e692c63bc321b27502cd7296e",
+      "bytes": 20726
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/asleep.thumb.webp",
+      "sha256": "fdbf36fd686acd4de3c01743e6e5f58395d15379d45e574384e9c5cc08a2ff97",
+      "bytes": 12174
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/asleep.webp",
+      "sha256": "19d8be25be3cadd0d0330253972693c7df82a06ba7824bda860d562a25767394",
+      "bytes": 25476
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/back.thumb.webp",
+      "sha256": "6a0d1a68c2a36af888fc10d95bf34c4f875ed6abe598091795aa8229b5db9546",
+      "bytes": 9716
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/back.webp",
+      "sha256": "2e9786d9503f83022ceae4689e1241be560eea254fa7beb8da2358a077fc24eb",
+      "bytes": 20112
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/burger.thumb.webp",
+      "sha256": "50b4357555b53f6849de483a20f85fea00c40ad1eb9e10ff9f7a24fdf9cb4f4d",
+      "bytes": 12938
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/burger.webp",
+      "sha256": "88e276b9b8ed90b5ab012e58288854571c8dc46ef0b95d6f2762a859d8b0c33f",
+      "bytes": 26808
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/chart.thumb.webp",
+      "sha256": "79ecbe5d4f5c4e51963e65d6a40a1a7d69491626f530b36ce7719692c7414bb3",
+      "bytes": 15842
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/chart.webp",
+      "sha256": "60ce4199674f35fb037cc797b2dfb0f7df5f98d3d740c188ea47110b5ed02297",
+      "bytes": 32622
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/cheers.thumb.webp",
+      "sha256": "ee6c62bc3924e3c080415f97df768acafde8e6d0d086371c28b3f27aa691321e",
+      "bytes": 14956
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/cheers.webp",
+      "sha256": "82b4656a3ca2041fd3d4978f2226bb1015e94aaec7b47b8162567bb2e392bdbd",
+      "bytes": 31038
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/crate.thumb.webp",
+      "sha256": "39d380dbeae5b1bcad8e2485d7431d94b11c7d7ff07ba3b63c50b33f459b51d0",
+      "bytes": 13706
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/crate.webp",
+      "sha256": "01a59439d0299bcdda2c483a42a827228c051ffd89cc3fc20eb28e5ad575bfad",
+      "bytes": 28912
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/engine.thumb.webp",
+      "sha256": "59dbd86dd1a2ee51d6498d5d28dbf7e728cd31baa0b0639f896c18f0dc117219",
+      "bytes": 13544
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/engine.webp",
+      "sha256": "51c254f577b7c26bb11d349e8a51520733cdc2ba3b3425c79d6f91b0d3e38ef7",
+      "bytes": 28530
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/feet-up.thumb.webp",
+      "sha256": "27d1521bcbd43f596b875551271f8b1684593ce04e77eacd3b73a0cca2d924d5",
+      "bytes": 14050
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/feet-up.webp",
+      "sha256": "f18a97b8b4a2dc299a1f5519e57fbba66ba3027f3985f139c6dd53d3fe824610",
+      "bytes": 29456
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/fishing.thumb.webp",
+      "sha256": "68cc6ff16574b127dfd120495f08e834c51b05c5ac309993f05ff40abf1216c9",
+      "bytes": 15766
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/fishing.webp",
+      "sha256": "b8bbf8cb25981c25261b20abd95c342fda626d380a0303b638b2e1039099e703",
+      "bytes": 33754
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/flex.thumb.webp",
+      "sha256": "042f8a7a1f6b0e8d0626fd90fec3b86ccdf6426c0601ca3f5727b747c6c4db48",
+      "bytes": 13572
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/flex.webp",
+      "sha256": "dcda66e37bf4155dc78e97d2db15898315fdf3c54442510d40b887912b7fe4c9",
+      "bytes": 27596
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/front.thumb.webp",
+      "sha256": "838342c91f5444623e759c683e14ecbe570de7446f60b48e56d4159b2e63c57f",
+      "bytes": 10534
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/front.webp",
+      "sha256": "b72e40f45d99eb24eb2728811483595a3b1e13bdec08ce519eb2ae85f4e80502",
+      "bytes": 22300
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/harbour.thumb.webp",
+      "sha256": "45a3b2807cf50315ca0ca44c2b4a685827fba41fe4c425584a1f3944df574057",
+      "bytes": 13862
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/harbour.webp",
+      "sha256": "5a113fe4634f8ab95fcd64a52cea79714e61349edaa675d18aa63ba5a0dda11a",
+      "bytes": 30640
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/hero.thumb.webp",
+      "sha256": "4fdcd73960d627e37e0ae81957950b219a8679818584604554d2daff6365a59a",
+      "bytes": 10338
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/hero.webp",
+      "sha256": "78efed5ca8283b1bb0015c088c9f5c7009cdd7644565d1e0459ae9fbc59b114c",
+      "bytes": 22588
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/hips.thumb.webp",
+      "sha256": "65e8170a8fbf38e36962744e0189aa57c432eace23d194a3dcd76c559e1cb273",
+      "bytes": 9814
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/hips.webp",
+      "sha256": "0c8ca1df358a31bacea71f4bdf31d172a1dd45201b628815cf8ff302a77ba367",
+      "bytes": 20768
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/hooray.thumb.webp",
+      "sha256": "05894e96a30ba9285ed6f9a4d1a971a8545671251686739241cb579f4b00ffb1",
+      "bytes": 15914
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/hooray.webp",
+      "sha256": "eba1c00b34b9e421ce8ca8b56fb88a3b5617b37b23f37a88480b28b09d83105a",
+      "bytes": 32468
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/jump.thumb.webp",
+      "sha256": "ded3478dc3af9f5238ec1d88b86d748328032c412f91f56f408b778acd7ae37d",
+      "bytes": 14744
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/jump.webp",
+      "sha256": "fc9d3b51de870ffac93fc441c70008261017a1e05f0f0bb9cec15945ecffd646",
+      "bytes": 30286
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/kick.thumb.webp",
+      "sha256": "46e57d2669e6ddb847c1e1a123497826268bcd37826d7f32fc5f786c620e0399",
+      "bytes": 13166
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/kick.webp",
+      "sha256": "edc90757a1d1c1f6a18624d3aa1735787496b7c87a49441312c90d15da0ca25d",
+      "bytes": 27562
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/ladder.thumb.webp",
+      "sha256": "5aae02332dab573f7165158a19b94e68637d30844f0d1eb1f704af6bb3aee595",
+      "bytes": 12828
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/ladder.webp",
+      "sha256": "9afd3d4e7c69711b369b1dd0bfe0b279eafc45ea0cb4038d9fe1ab9763d03c71",
+      "bytes": 26536
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/laugh.thumb.webp",
+      "sha256": "b3b6585b25659236a16099c7b7ac44dbfbab1d017e3270ab1f41dd7724ab0cf3",
+      "bytes": 13478
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/laugh.webp",
+      "sha256": "55b0bce16ab44557f3d1d3d69c77e3de110fd26282e31efac99f916acaf5eab1",
+      "bytes": 27994
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/lookout.thumb.webp",
+      "sha256": "4d92deef44db3b6b041b8fa490a38b57de06f6dead98a9162a2d60e11ad22023",
+      "bytes": 12378
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/lookout.webp",
+      "sha256": "3bfbbe389d3591db37e8d70dabaf7607aacd58d0fcf989ef5b9bdaabe6750a23",
+      "bytes": 25636
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/over-the-shoulder.thumb.webp",
+      "sha256": "feba6ff0d1433b7e01ee1fb1810f057037b5fd8f0c7f9772b2bc00ee2e8392b5",
+      "bytes": 8732
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/over-the-shoulder.webp",
+      "sha256": "9b00c82b006fc414cb23692bc725bed3f9760f86fc8cb3e6f3d6131cce6a8cda",
+      "bytes": 18276
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/photo.thumb.webp",
+      "sha256": "564b59690c04fa559691db40fcda0f972469e751cb85ed0682ba5a2ad7ed7f12",
+      "bytes": 13970
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/photo.webp",
+      "sha256": "c041e31d23efd3ed6058c9b6fbd727b7d2da9f685cf100b6654f7a776e9f4f8f",
+      "bytes": 28488
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/point.thumb.webp",
+      "sha256": "86eef611d5655df2f62b3f4c4764a445dc9d88682b129f905869ecd0cdab8a08",
+      "bytes": 12812
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/point.webp",
+      "sha256": "93b40911532b612d9e22f3dfa974c11f561f90ebfc9c8784f970ec9f43d6b376",
+      "bytes": 26720
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/punch.thumb.webp",
+      "sha256": "f0ecf9739657268bbd4bf10d7314c7d5dd4a19af36901ee553bcff2e586acdba",
+      "bytes": 12724
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/punch.webp",
+      "sha256": "a1493fca22aebdb750bcbefe14935f30e1d1202ba5ec378bd46b01895fc2ad73",
+      "bytes": 26818
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/ramen.thumb.webp",
+      "sha256": "f1c510db80aec14137cb61847ffefb7de4bd22d9304744c3b3a6ace40538d06c",
+      "bytes": 15792
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/ramen.webp",
+      "sha256": "f13c5ef512f4711a288a66e5c5b02472e7ea6092e1452304fc766b119d3ff08d",
+      "bytes": 32080
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/ready.thumb.webp",
+      "sha256": "b8c8e59297f181a3d2608994195d2df68798cc2cae5279e27b5da46c727c3e28",
+      "bytes": 12468
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/ready.webp",
+      "sha256": "efa63b0a69265676b4b9cda61a8a031c3c5a57b14441aae04e065ec0f0d63d02",
+      "bytes": 24728
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/rope.thumb.webp",
+      "sha256": "de697e6defa05d6986830b2e4ce378bd9625e61a594dcdfcb1950f27e83c64cd",
+      "bytes": 12778
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/rope.webp",
+      "sha256": "5219b9f466c1e2e29ae4c8e42c2458641718a2a6c12911825cf76e1556aceba2",
+      "bytes": 26678
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/run.thumb.webp",
+      "sha256": "d2ccc2107fa04324ceb2f572d895a3673ff94f69fa394714e005796051ddf1e2",
+      "bytes": 12630
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/run.webp",
+      "sha256": "97045f27880a3363fc5219a569b8da97dd112fbc0502c35831610837de878a5e",
+      "bytes": 26414
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/salute.thumb.webp",
+      "sha256": "d82b9e08f03ca6c89e58a4fc20fc8fec13cc56071f07c461abc3e85197ff1346",
+      "bytes": 11420
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/salute.webp",
+      "sha256": "971bb45b90ca2a856efc5060e28a408e93193fd4cfac7362bce265a802ec000d",
+      "bytes": 24242
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/side.thumb.webp",
+      "sha256": "ebbb9bfc76097af2b170490eb048f2ffc7ecea207fc795e609d8ae8b5131e5bb",
+      "bytes": 7916
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/side.webp",
+      "sha256": "2e6bb36f67a86abab5cf2b26ac828f545cf060c61f9c080360083d02fdec207a",
+      "bytes": 16872
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/sneak.thumb.webp",
+      "sha256": "87b9fa002fb8153a90512c80faf1e79567abf0106c36db8da8527daa0f42e7a4",
+      "bytes": 11644
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/sneak.webp",
+      "sha256": "2d9d0c86236d41a1098c12177e570c4da4686c78c06439edc92df43cf2d6eec0",
+      "bytes": 24162
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/song.thumb.webp",
+      "sha256": "5620469a240608c645cb415b07a53ad10df7ab2c93b5c09a38fde67d439f0fd4",
+      "bytes": 14986
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/song.webp",
+      "sha256": "e31c9560c8351c4fb3eb36c45e5abf3d8e6bd6478ede51385c82142ac12e6bfa",
+      "bytes": 31188
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/surprised.thumb.webp",
+      "sha256": "652292d099c1548a290c3e55b32314851183221313061f3fc9dff1a6933bc0fd",
+      "bytes": 13096
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/surprised.webp",
+      "sha256": "7b3ebbdfd58c2d27c64f585a24ef9e01fdfc0eb80b78ae996452375bc96f3c18",
+      "bytes": 27248
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/think.thumb.webp",
+      "sha256": "ec944ec0fba0f2b1f04dff534480ce097d537e47eadf77f3b47e605541d893cb",
+      "bytes": 11614
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/think.webp",
+      "sha256": "0ff07434dbe628157c7a7dedd545cbc198fae8fbf217c0f2a5d76af3ced01094",
+      "bytes": 24236
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/walk.thumb.webp",
+      "sha256": "5041d5f3a3e960ee8f64175a14b1fe0d69f29e6b388d6705723fa839214003dd",
+      "bytes": 13146
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/walk.webp",
+      "sha256": "cfacb779969f1a52336889ff2ca6c0a32d0ac4c10aed16e8a44e2aa3122b0264",
+      "bytes": 26960
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/wave.thumb.webp",
+      "sha256": "1c35b2d4f9047c4fc6633aa1d6f3046687405505437394dc1bcbb9a7e529e503",
+      "bytes": 13272
+    },
+    {
+      "url": "/camera/stickers/johansson-cartoon/wave.webp",
+      "sha256": "19113c35148193e60b7704a31ef6797136989d2dbcdaec78e4c2f7d1efc393f1",
+      "bytes": 26474
     },
     {
       "url": "/camera/stickers/johansson-pixar/Bow.thumb.webp",
@@ -713,6 +1458,91 @@
       "bytes": 221296
     },
     {
+      "url": "/camera/stickers/johansson-studios.json",
+      "sha256": "623888f21d7edeced82c7481b5b3998b7998e96683e6663f9acb4c22c5ef6fbb",
+      "bytes": 2281
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/badge-ink.thumb.webp",
+      "sha256": "fb02b5edcf2427ce5591938325ae101e1ed231258fec160e8b4fc7a5a0f47aae",
+      "bytes": 19472
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/badge-ink.webp",
+      "sha256": "746024c60a63dd0424b0842b9348ff62100af32162ef52cd4c7f0c6474b4a8aa",
+      "bytes": 43042
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/badge.thumb.webp",
+      "sha256": "b1474391055676237610c245d238893e607b46cba87c718c701fb8fca94d8ae1",
+      "bytes": 20884
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/badge.webp",
+      "sha256": "5849325ef6bed12b3464a5b00e50140fd38cd96e0ea73f802a828deff0b21abd",
+      "bytes": 48584
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/bolt.thumb.webp",
+      "sha256": "48f5b0cec3a04c787a95435c1a05723529c3f7b82b275bf24dc8a0952e83ae39",
+      "bytes": 4724
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/bolt.webp",
+      "sha256": "aa6a428a0e5b89acb89e25f54b5a1ffbf3634b7c4f8402bfc9b9540efeb7ddfa",
+      "bytes": 4930
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/film-camera.thumb.webp",
+      "sha256": "2baad3ef7e9722b273e3daafa343a57a680612fc23e844bb8c4d1c53340ed62c",
+      "bytes": 7110
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/film-camera.webp",
+      "sha256": "413a51b152322f827f01090cfcbee9c634bf8f6e27d55eea1850e07420a4eb8a",
+      "bytes": 7332
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/name.thumb.webp",
+      "sha256": "4f8e6bf1ae41528d0fb705c9a1885aa383d722718048c1e52f36dd7080ead53b",
+      "bytes": 6144
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/name.webp",
+      "sha256": "d87ef81f4494570cfded10956737e4ee430214c2bb75a151a03d4d4eb35137f6",
+      "bytes": 12448
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/sailor.thumb.webp",
+      "sha256": "8c15b1bf2dee6b85559bc44492a2194c6d5bbea0803b6b90345de9e1ec435e55",
+      "bytes": 12264
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/sailor.webp",
+      "sha256": "a0923c67cf9b6309ea39ff56806581f89feb1e6d9658f7d133ba7f0682e3bf1a",
+      "bytes": 24614
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/seal.thumb.webp",
+      "sha256": "fd9e3eabea16399e2e4983ced6e4da9a963989082702a4da4a00ae539bde950d",
+      "bytes": 17770
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/seal.webp",
+      "sha256": "bbccc11cdb2c77efbf97048cfe8598d33f02fc8136f3340f67fa8574ae1bf180",
+      "bytes": 40448
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/ship-and-gear.thumb.webp",
+      "sha256": "3cc6049e0a0b4ed301473e8cf0072daf34d11d9ec4fbe604f8215e71ed30fbcf",
+      "bytes": 6910
+    },
+    {
+      "url": "/camera/stickers/johansson-studios/ship-and-gear.webp",
+      "sha256": "959dde1954012f29fb31cbaef838750a808821c52b5979f0ae51aabb69c141d0",
+      "bytes": 12680
+    },
+    {
       "url": "/camera/stickers/marks.json",
       "sha256": "4db131f63083408cf423982daddaea906ec7e11225454683b4aa3e57046f1e0b",
       "bytes": 2244
@@ -818,6 +1648,341 @@
       "bytes": 13928
     },
     {
+      "url": "/camera/stickers/matsuri.json",
+      "sha256": "13ad7ed92ff30658bfd257d594fa91642f7ddba38f83108f7b583d143171641b",
+      "bytes": 7386
+    },
+    {
+      "url": "/camera/stickers/matsuri/candy-apple.thumb.webp",
+      "sha256": "09ba6bc5cd4495288680bca48c01f735bf843e9cda537e82457acc01bd126b61",
+      "bytes": 9062
+    },
+    {
+      "url": "/camera/stickers/matsuri/candy-apple.webp",
+      "sha256": "20b867c8f259659eb0c3a01441eaa16c494640a20f31ffe233a3cbc7e6a0bb4c",
+      "bytes": 16888
+    },
+    {
+      "url": "/camera/stickers/matsuri/choco-banana.thumb.webp",
+      "sha256": "24509f13d928fd967420c03c0fad9ad031bc63d58532af4b63eb4dba790c2648",
+      "bytes": 9200
+    },
+    {
+      "url": "/camera/stickers/matsuri/choco-banana.webp",
+      "sha256": "3aaef12b83ed34573dd7f64d22f4b1f916ebde1cfe91fd69e2472457630963f7",
+      "bytes": 17726
+    },
+    {
+      "url": "/camera/stickers/matsuri/corn.thumb.webp",
+      "sha256": "ebd73f7b632ab66a2c56d19d94f7e1fd4ce14f507619f8f6cb8d2d11857a6200",
+      "bytes": 12598
+    },
+    {
+      "url": "/camera/stickers/matsuri/corn.webp",
+      "sha256": "b4b72022d0e72fecfdc2384e6eeb35c45a4110e72d1eabeeb6d0377e816e9655",
+      "bytes": 25132
+    },
+    {
+      "url": "/camera/stickers/matsuri/cotton-candy.thumb.webp",
+      "sha256": "5f5e75ecfc2b2c63935504eeaa3f05230d5a72e335a36e0179c0349dbcf5bdb0",
+      "bytes": 12282
+    },
+    {
+      "url": "/camera/stickers/matsuri/cotton-candy.webp",
+      "sha256": "a70c9dbb87b2d63ed09987214712bfc088d2422afbc1e5327a1f633b4acd3652",
+      "bytes": 23950
+    },
+    {
+      "url": "/camera/stickers/matsuri/drum.thumb.webp",
+      "sha256": "70d0f3a1cde52b8e82137ed93a2a614fdaaa248e2c4891af9179cac2fadfb1dd",
+      "bytes": 14314
+    },
+    {
+      "url": "/camera/stickers/matsuri/drum.webp",
+      "sha256": "b75361eceb3eef398c019e8e78fc3f1bdc1dfa1af1a5d5da0b63a16a508be7c1",
+      "bytes": 28324
+    },
+    {
+      "url": "/camera/stickers/matsuri/fan.thumb.webp",
+      "sha256": "e2accc1c39ba4879752c2a9473a592aaa35ec6f9130385e3d1e81a3ff2568661",
+      "bytes": 12092
+    },
+    {
+      "url": "/camera/stickers/matsuri/fan.webp",
+      "sha256": "2137fdea1dcf42e1d6e3c63dc94044a567cbcb55dd157e96aedb0f1590910677",
+      "bytes": 23492
+    },
+    {
+      "url": "/camera/stickers/matsuri/fireworks.thumb.webp",
+      "sha256": "fbc18bcadebd8817d5b3ee3570c3feebea1f01ce5aefac95b8cab5d27a54c9a9",
+      "bytes": 16658
+    },
+    {
+      "url": "/camera/stickers/matsuri/fireworks.webp",
+      "sha256": "3211b45c413e60bb69b0e504eab48f84f129aaf3deb6e68e4fa79670e7f3d59e",
+      "bytes": 32468
+    },
+    {
+      "url": "/camera/stickers/matsuri/folding-fan.thumb.webp",
+      "sha256": "61b204d5004359ae5bfc7b0f05fe1d62ff942410c8b8f51cc1949621507dd615",
+      "bytes": 10166
+    },
+    {
+      "url": "/camera/stickers/matsuri/folding-fan.webp",
+      "sha256": "f366fc54e508acfeaab874072b46d409d63578a57b22994e20f6dd87a75b4017",
+      "bytes": 20482
+    },
+    {
+      "url": "/camera/stickers/matsuri/fox-mask.thumb.webp",
+      "sha256": "3251cfd6502244d989da67898f86987811609380b517248698728523622a23dc",
+      "bytes": 11144
+    },
+    {
+      "url": "/camera/stickers/matsuri/fox-mask.webp",
+      "sha256": "843d147ec422e38918d5723cfb2a4f25e6e73a5b5660acc45cec842627a83097",
+      "bytes": 22000
+    },
+    {
+      "url": "/camera/stickers/matsuri/geta.thumb.webp",
+      "sha256": "323f7586865b14e2912d760d0b957f411108eb7603d2e332106edc74355786fe",
+      "bytes": 11214
+    },
+    {
+      "url": "/camera/stickers/matsuri/geta.webp",
+      "sha256": "e8a949b18444edf0545843761d97825f5d96c16f1308963799b84dad510e2083",
+      "bytes": 23760
+    },
+    {
+      "url": "/camera/stickers/matsuri/goldfish.thumb.webp",
+      "sha256": "97a7075dc4c3f619fc6bc698f8f37bca0fa137d69c3212471d80aa25114d3314",
+      "bytes": 14006
+    },
+    {
+      "url": "/camera/stickers/matsuri/goldfish.webp",
+      "sha256": "1f79418b156d16aa59c428ea90c1c212d681249a21eef25d3139b7b54192ad1e",
+      "bytes": 27952
+    },
+    {
+      "url": "/camera/stickers/matsuri/happi.thumb.webp",
+      "sha256": "e22a3030d431a22e3c95074cb00ed6b80a63f4065a3f14e69e09bf492714882b",
+      "bytes": 11260
+    },
+    {
+      "url": "/camera/stickers/matsuri/happi.webp",
+      "sha256": "ed1f6055eaea00e07548544d8414f70290db546fbc8c33bc0577c89a0201b40f",
+      "bytes": 21368
+    },
+    {
+      "url": "/camera/stickers/matsuri/hyottoko.thumb.webp",
+      "sha256": "63cd9fddd9a96a2a4c762bf38ecdecab910c6ae1b0b79ee880cfd4688d573198",
+      "bytes": 13480
+    },
+    {
+      "url": "/camera/stickers/matsuri/hyottoko.webp",
+      "sha256": "7523ff9cb33fbd8dfe9c07f1ffb0281c37f3bb80d23345970dadf2d828f06231",
+      "bytes": 25782
+    },
+    {
+      "url": "/camera/stickers/matsuri/lantern.thumb.webp",
+      "sha256": "1cc891eb5a6e77a70deff0ba5b461f205074c8c7128bc4b9a5b7e7fe9290d753",
+      "bytes": 12238
+    },
+    {
+      "url": "/camera/stickers/matsuri/lantern.webp",
+      "sha256": "704c66fd64ade1e76390dcfcbecab7fc7f7b1f0b30e9064a2485e4f334475a2a",
+      "bytes": 23864
+    },
+    {
+      "url": "/camera/stickers/matsuri/mikoshi.thumb.webp",
+      "sha256": "362282ae4f333e9660457f7b33147cd89aa73446277cd7e243925ac1aaec7e51",
+      "bytes": 18310
+    },
+    {
+      "url": "/camera/stickers/matsuri/mikoshi.webp",
+      "sha256": "eccdd4bc40eebfa21c21ee03bd27395513e60dfb97778925511e80cdd735b2b6",
+      "bytes": 37302
+    },
+    {
+      "url": "/camera/stickers/matsuri/pinwheel.thumb.webp",
+      "sha256": "13130f47d1252ce8a2ef974578771e4941c48440c1fd5e0e5dc0f0592dff2ac5",
+      "bytes": 11164
+    },
+    {
+      "url": "/camera/stickers/matsuri/pinwheel.webp",
+      "sha256": "7b6097c3b3eaa568d3a1621b87779c8c790a677b7063860571259d23b8e7e98b",
+      "bytes": 21634
+    },
+    {
+      "url": "/camera/stickers/matsuri/purse.thumb.webp",
+      "sha256": "be3c43aa422448f2da002359d3083317883b7225bad05fbf8b6116645c48d278",
+      "bytes": 16002
+    },
+    {
+      "url": "/camera/stickers/matsuri/purse.webp",
+      "sha256": "61064ed63694946ca0973c47eb233a3657ae8d04b1739adee7876eff67e864ff",
+      "bytes": 30820
+    },
+    {
+      "url": "/camera/stickers/matsuri/ramune.thumb.webp",
+      "sha256": "8d4348d38a819566181748ab19081a9471b10fb3aa6617ce515ab1ebd582fc07",
+      "bytes": 8686
+    },
+    {
+      "url": "/camera/stickers/matsuri/ramune.webp",
+      "sha256": "d0fa9041da60f3dd29f2c515a4926e80e0dffad29ee62e83ca9135d0fcbb6aa3",
+      "bytes": 16228
+    },
+    {
+      "url": "/camera/stickers/matsuri/ring-toss.thumb.webp",
+      "sha256": "8fd0393a39ac9af12174f5b94cf2800fcf41fe45f07e717f1f0cb390a0d9c91a",
+      "bytes": 12820
+    },
+    {
+      "url": "/camera/stickers/matsuri/ring-toss.webp",
+      "sha256": "fd8080d71b173e9891681ec62ddf416b8ef18f95e965d484b54545380d764cb7",
+      "bytes": 25996
+    },
+    {
+      "url": "/camera/stickers/matsuri/scoop.thumb.webp",
+      "sha256": "9831b34e10a99071e9838278520d432d7f8d1780aa5ea25dad4ab64de539ab9f",
+      "bytes": 11960
+    },
+    {
+      "url": "/camera/stickers/matsuri/scoop.webp",
+      "sha256": "36fe99ee1a3822210eb881a9b8b49b73943dd945be449f0aa2dbcb0786a55178",
+      "bytes": 23032
+    },
+    {
+      "url": "/camera/stickers/matsuri/shaved-ice.thumb.webp",
+      "sha256": "398381aa191faec73348d90a71dc0abb1525d02bf8af6439744330b2f9208ce0",
+      "bytes": 10528
+    },
+    {
+      "url": "/camera/stickers/matsuri/shaved-ice.webp",
+      "sha256": "8f890743d12ffba05f2ba2cc4a5f92f335f600f56ad57a616b6fe636d6cc2af6",
+      "bytes": 18362
+    },
+    {
+      "url": "/camera/stickers/matsuri/sparkler-blue.thumb.webp",
+      "sha256": "7e557604188cac4313f28225bb56ad3ff3c3a7c32c9a3c8c7aa1c3f304cb8106",
+      "bytes": 9240
+    },
+    {
+      "url": "/camera/stickers/matsuri/sparkler-blue.webp",
+      "sha256": "d96dfb94198595cd58bfc5041e3024d5ffc40691df7f71de6b99e0eb444fcac4",
+      "bytes": 16482
+    },
+    {
+      "url": "/camera/stickers/matsuri/sparkler.thumb.webp",
+      "sha256": "494c805a72cbf79f97d78913c8b0fef0c87591e314dfa0cfdb25dae9f0feec97",
+      "bytes": 8874
+    },
+    {
+      "url": "/camera/stickers/matsuri/sparkler.webp",
+      "sha256": "8f91c57a538177075aa2adde43efded23b7b90d07abde1c22d3a31ca08e1a0e7",
+      "bytes": 14620
+    },
+    {
+      "url": "/camera/stickers/matsuri/stall.thumb.webp",
+      "sha256": "a0a37a70cae41c4bf584069aead8578f4b9c4310320b98a2e32e56c522457467",
+      "bytes": 11786
+    },
+    {
+      "url": "/camera/stickers/matsuri/stall.webp",
+      "sha256": "3b4bdba68dbac966902534e7db1db861be9601703f6e66a41d7c535989578d1e",
+      "bytes": 23590
+    },
+    {
+      "url": "/camera/stickers/matsuri/taiyaki.thumb.webp",
+      "sha256": "4da9835df8d790f550a9cba3bf0862d321ff18ff916d60f7a4c41a9b495dc2de",
+      "bytes": 11880
+    },
+    {
+      "url": "/camera/stickers/matsuri/taiyaki.webp",
+      "sha256": "f0f894b1c04f61ddb4c50b88164d87f931a87756c84634e976fe0b3a31e3f2d6",
+      "bytes": 24024
+    },
+    {
+      "url": "/camera/stickers/matsuri/takoyaki.thumb.webp",
+      "sha256": "386ec2e135f817e6d0cec0f8e70795fb4c67999e41086824d1e90201bd61b746",
+      "bytes": 12810
+    },
+    {
+      "url": "/camera/stickers/matsuri/takoyaki.webp",
+      "sha256": "1189ccdd311b59e5139c9df465d9d22526dda92cf4ebd568aa70495073c44053",
+      "bytes": 26400
+    },
+    {
+      "url": "/camera/stickers/matsuri/tengu.thumb.webp",
+      "sha256": "92313715c1f79b9a70efa29dd3abc935406fe50245b46533c446266e49004fed",
+      "bytes": 11596
+    },
+    {
+      "url": "/camera/stickers/matsuri/tengu.webp",
+      "sha256": "1265ab41bcfcfdc43360031a59fdb11959a0c0eedbb661b157592768276f5fe1",
+      "bytes": 21672
+    },
+    {
+      "url": "/camera/stickers/matsuri/tower.thumb.webp",
+      "sha256": "78f180be90acdb9b273a0cddfb543ee9947d35fb82bc039e8bd06d69e860d714",
+      "bytes": 16328
+    },
+    {
+      "url": "/camera/stickers/matsuri/tower.webp",
+      "sha256": "c53d24aa4f9ecd55334effc36aca8059af93a86b7136b86b6ba3d6424a3ff64c",
+      "bytes": 32738
+    },
+    {
+      "url": "/camera/stickers/matsuri/water-balloon.thumb.webp",
+      "sha256": "3df7b147a371bbd18f01428f2b6e0dda346a530e15b0508ff14d0702263dabbc",
+      "bytes": 13482
+    },
+    {
+      "url": "/camera/stickers/matsuri/water-balloon.webp",
+      "sha256": "e23be1a6f3a83c7ec7f19ffbdeefc3720829ec9a192869dbafacbdd229e0bcad",
+      "bytes": 26718
+    },
+    {
+      "url": "/camera/stickers/matsuri/wind-chime.thumb.webp",
+      "sha256": "7ecc6caec6ecd7cf5b263ebc0285e2e7f7d8961424f24b9f8aaf08a555aee8e9",
+      "bytes": 9778
+    },
+    {
+      "url": "/camera/stickers/matsuri/wind-chime.webp",
+      "sha256": "9870c915d17cd28d743f2aeef589e77383317265aeaf97762eb152cbef0511b6",
+      "bytes": 19594
+    },
+    {
+      "url": "/camera/stickers/matsuri/yakisoba.thumb.webp",
+      "sha256": "d413e72526745f7abad05624dbfc59198bf0f134865cb5d5e98507b75f50ffa0",
+      "bytes": 13988
+    },
+    {
+      "url": "/camera/stickers/matsuri/yakisoba.webp",
+      "sha256": "3a64498d4522f4331f508a21fcfd4ea9ca2632c0c6cf2830298881412a1aa369",
+      "bytes": 31064
+    },
+    {
+      "url": "/camera/stickers/matsuri/yellow-lantern.thumb.webp",
+      "sha256": "3e7e2a9c6f46d65687507ceed05eecb1539d394422e56c894c2d3d661438a3e6",
+      "bytes": 9618
+    },
+    {
+      "url": "/camera/stickers/matsuri/yellow-lantern.webp",
+      "sha256": "60eca8bea2d474cca4d103e2a5b6f359625465235714d73f9810db6183e33b7d",
+      "bytes": 19506
+    },
+    {
+      "url": "/camera/stickers/matsuri/yukata.thumb.webp",
+      "sha256": "0626616920064c7f543c29e19985e2aff7482ec3047f54336071667c156261c8",
+      "bytes": 14030
+    },
+    {
+      "url": "/camera/stickers/matsuri/yukata.webp",
+      "sha256": "b87e4698dbea943645374a4967438a3b410416c3c13b7d4e4540d37757035f39",
+      "bytes": 27746
+    },
+    {
       "url": "/camera/stickers/pocket-faces.json",
       "sha256": "a6148c282575e121956d281dffec2e74bee27b6ddd40270b47e02942af803f45",
       "bytes": 2864
@@ -901,6 +2066,226 @@
       "url": "/camera/stickers/pocket-faces/wait.thumb.png",
       "sha256": "f9ad62f9c0ac65a1ff059ed7c6f0cecc78a03949da74b81d389112af1753126b",
       "bytes": 15119
+    },
+    {
+      "url": "/camera/stickers/sheets.json",
+      "sha256": "e4ab4c7a1aff65782e1f2d21d13c6a82bc142c7d6551c844cf080e03eeb65b97",
+      "bytes": 198
+    },
+    {
+      "url": "/camera/stickers/showa.json",
+      "sha256": "3ea32c013fc5e59bd99b119fb565de80b3e4a521a4ea49b83ad40f28d864b35a",
+      "bytes": 4610
+    },
+    {
+      "url": "/camera/stickers/showa/camera.thumb.webp",
+      "sha256": "2a8df35f7665fb692220213a5d53c0d29d01270ab79df895113b109e32ef1329",
+      "bytes": 8564
+    },
+    {
+      "url": "/camera/stickers/showa/camera.webp",
+      "sha256": "1361724169d2f50ec4d51b57ba7bd824b98b0f40e57579d99a88d3127d225061",
+      "bytes": 16670
+    },
+    {
+      "url": "/camera/stickers/showa/cream-soda.thumb.webp",
+      "sha256": "89b7463dfceb7b8865a3086a18ae97c3dd296123c2356c7ad5dd87534791dd8e",
+      "bytes": 11204
+    },
+    {
+      "url": "/camera/stickers/showa/cream-soda.webp",
+      "sha256": "cc125ca4dea6fb83cdcd072ca5fa54eb8d4bf8ad4621d54e0baa5d7b375291b8",
+      "bytes": 22386
+    },
+    {
+      "url": "/camera/stickers/showa/daruma.thumb.webp",
+      "sha256": "287bb940545a3aac2587e3cad72c7f246e951d78084a5c126a0de62846d6fe88",
+      "bytes": 14924
+    },
+    {
+      "url": "/camera/stickers/showa/daruma.webp",
+      "sha256": "29aada5886a8862a33f613a9440bbe1dcb2fb8dbfd79990dd9b7197c43445172",
+      "bytes": 30366
+    },
+    {
+      "url": "/camera/stickers/showa/fan.thumb.webp",
+      "sha256": "bdd0ddfbb255a96c2d6916b3629b4cb4761717d5171f402847d18dc721c6c910",
+      "bytes": 12720
+    },
+    {
+      "url": "/camera/stickers/showa/fan.webp",
+      "sha256": "9a31b7a78a8ee46c9b33373b09401166f309a433b50dcb1718c687c8fe9fa2e2",
+      "bytes": 27782
+    },
+    {
+      "url": "/camera/stickers/showa/lantern.thumb.webp",
+      "sha256": "86bc17eff43cf7e7f2256b32ab466d150b37d39b4013c13ec93990c4c0aa5ee0",
+      "bytes": 12010
+    },
+    {
+      "url": "/camera/stickers/showa/lantern.webp",
+      "sha256": "319a66e7d6e23039e02d9d21310269631166ab8bdc0be04892b8a930c75bb1cc",
+      "bytes": 24372
+    },
+    {
+      "url": "/camera/stickers/showa/lucky-cat.thumb.webp",
+      "sha256": "ceebd33e6b27772ad6e944dac6312b3f79e7073ffe327c432c49affeef0ca8f1",
+      "bytes": 12368
+    },
+    {
+      "url": "/camera/stickers/showa/lucky-cat.webp",
+      "sha256": "a36a47e5773292a41c7cc06a7684d942b5041e90e2601f2fe6bd86965ba70d31",
+      "bytes": 24896
+    },
+    {
+      "url": "/camera/stickers/showa/matches.thumb.webp",
+      "sha256": "c50c75d6a3aaee5556d87beab509bc85a8ae60e481ad862ba5edd83960a727fe",
+      "bytes": 11032
+    },
+    {
+      "url": "/camera/stickers/showa/matches.webp",
+      "sha256": "25402f74960769c7f30e47e37d941786a98b297704550a82a2d4bff1ca85308e",
+      "bytes": 24184
+    },
+    {
+      "url": "/camera/stickers/showa/milk.thumb.webp",
+      "sha256": "be9d39192f3650e69a25ece6cbcd07a147bcac7a06cc20682f73432990f93a2a",
+      "bytes": 8812
+    },
+    {
+      "url": "/camera/stickers/showa/milk.webp",
+      "sha256": "62bf6f7fd8e0c1e3a7c16f1a7472c322043029f6f5dab1a03c8737dbf8a75570",
+      "bytes": 18478
+    },
+    {
+      "url": "/camera/stickers/showa/noren.thumb.webp",
+      "sha256": "a3a4b366e65b58b818a78aac1693d65d197b7796a6e5a73cd50b721b22802465",
+      "bytes": 11436
+    },
+    {
+      "url": "/camera/stickers/showa/noren.webp",
+      "sha256": "c70cc98cee1a13778d310b2ed9c8ccafe93bbe3ca8546c1fcda80111873abe36",
+      "bytes": 23752
+    },
+    {
+      "url": "/camera/stickers/showa/post-box.thumb.webp",
+      "sha256": "14c26384d53477cb5e6503f58a6e214cabc9e715442d32368a780a66542c66a4",
+      "bytes": 7936
+    },
+    {
+      "url": "/camera/stickers/showa/post-box.webp",
+      "sha256": "5e6f844ab1b576946ee720c793e1773609eef68fff03d65d586a5a080e946344",
+      "bytes": 16102
+    },
+    {
+      "url": "/camera/stickers/showa/radio.thumb.webp",
+      "sha256": "061a5ee645de6276d4dedb32c767a0e2938b7e8cd2ecb401b34fde194b2f91c5",
+      "bytes": 8056
+    },
+    {
+      "url": "/camera/stickers/showa/radio.webp",
+      "sha256": "b2e5b824c3db27872a9428254713505d64ed3d285a04413bc540a46f05269574",
+      "bytes": 17208
+    },
+    {
+      "url": "/camera/stickers/showa/ramune.thumb.webp",
+      "sha256": "f35329180767a27d56832c15d75e32895094451f3773d54fac4941bb3c2fff42",
+      "bytes": 8080
+    },
+    {
+      "url": "/camera/stickers/showa/ramune.webp",
+      "sha256": "3da9eb146eb42781269e45b9320b519914a0eb71fd2bc5ad89de5f9e72194466",
+      "bytes": 16558
+    },
+    {
+      "url": "/camera/stickers/showa/record.thumb.webp",
+      "sha256": "09b818c194416591acf17b3d3fe2103601108a5c57e58d2f497ea093bcc5fa25",
+      "bytes": 10506
+    },
+    {
+      "url": "/camera/stickers/showa/record.webp",
+      "sha256": "42a3de18dd0c416735674b7afd2b01eb2cf88d48cebe0c9772fae4f31bb7f488",
+      "bytes": 22094
+    },
+    {
+      "url": "/camera/stickers/showa/scooter.thumb.webp",
+      "sha256": "4553f0655179eb989755035985d374b9fed20f5bde3294da2b83bb411ee3466c",
+      "bytes": 12140
+    },
+    {
+      "url": "/camera/stickers/showa/scooter.webp",
+      "sha256": "fa9a70a7c0b1cb2e1ecba01df404d035c2baa6156a65028230b74b48a50b35e9",
+      "bytes": 26120
+    },
+    {
+      "url": "/camera/stickers/showa/shaved-ice.thumb.webp",
+      "sha256": "1128364fe5e34af3f1636f6799111f5ab42f9cb98b045f5ee2c35a66ad5f22aa",
+      "bytes": 12090
+    },
+    {
+      "url": "/camera/stickers/showa/shaved-ice.webp",
+      "sha256": "2f2f91d1c192bc06a85b9650e15ffe1fb1a4db19a75d46a39986468a51f432bb",
+      "bytes": 24704
+    },
+    {
+      "url": "/camera/stickers/showa/spinning-top.thumb.webp",
+      "sha256": "69ac062bd9b9ea852a58f1e3f74c71bd15bfaa2a44737c56141b1d91f6790fe7",
+      "bytes": 10776
+    },
+    {
+      "url": "/camera/stickers/showa/spinning-top.webp",
+      "sha256": "41ef9bd0d0dea22b4421f14fd45d54bf3ce21fe8d2ecd9ed407cce9db63dad7e",
+      "bytes": 19276
+    },
+    {
+      "url": "/camera/stickers/showa/takoyaki.thumb.webp",
+      "sha256": "b62fb6a0af287aa8cfffc33a953789b00aba3a5e271c785301fb52e0b01216af",
+      "bytes": 14174
+    },
+    {
+      "url": "/camera/stickers/showa/takoyaki.webp",
+      "sha256": "7ca6e330000f4fea43d5b98c235511a1ca94fa28452c73518cd6819b67fda858",
+      "bytes": 32556
+    },
+    {
+      "url": "/camera/stickers/showa/telephone.thumb.webp",
+      "sha256": "7aed07268009dfbece354bf680e0940f479e16e75aab59c098a5e25712027808",
+      "bytes": 12256
+    },
+    {
+      "url": "/camera/stickers/showa/telephone.webp",
+      "sha256": "c1f1566ccbebe89bd3aebd7258c21c6dbff9972e2ab95f172abc0cda05a87204",
+      "bytes": 26522
+    },
+    {
+      "url": "/camera/stickers/showa/toy-plane.thumb.webp",
+      "sha256": "875f90a3d88a3c53df08d30e000dcf38e325189c24f76f3df6d4c9604f0377c8",
+      "bytes": 11618
+    },
+    {
+      "url": "/camera/stickers/showa/toy-plane.webp",
+      "sha256": "9488e4fcd2525fcc5cd65dcd6d1d341daa59de78c6208df931723820053967d5",
+      "bytes": 25088
+    },
+    {
+      "url": "/camera/stickers/showa/tv.thumb.webp",
+      "sha256": "bc85c4fc6200a69a1b4217b41f069b1ff4ca30948583aaf9d119690f418da238",
+      "bytes": 14024
+    },
+    {
+      "url": "/camera/stickers/showa/tv.webp",
+      "sha256": "62f62900cc9c07668e4b276ec20fda0b8508e5c95abbae63b60c03ac87222d75",
+      "bytes": 29636
+    },
+    {
+      "url": "/camera/stickers/showa/wind-chime.thumb.webp",
+      "sha256": "3027975871b52a5e63d3bc1991c6a4c6cc8130e4b75c684927ac8e0b6d07c495",
+      "bytes": 8898
+    },
+    {
+      "url": "/camera/stickers/showa/wind-chime.webp",
+      "sha256": "b0ad678748a295df3c66a263519e549928626c55a74213b53f1f235a59c4b4fb",
+      "bytes": 17758
     },
     {
       "url": "/camera/stickers/stickers.json",
@@ -1829,8 +3214,8 @@
     },
     {
       "url": "/camera/unlocks.js",
-      "sha256": "c59508bbd1899e623594648a9d74552622b91e58abe88e9ecc204d93f39effe2",
-      "bytes": 1799
+      "sha256": "7b01e8008e847635f0b1ef8b3e59b347e0f74c1517b626a6844ca1492c05047c",
+      "bytes": 1883
     },
     {
       "url": "/camera/vendor/mediapipe/MEDIAPIPE-LICENSE.txt",

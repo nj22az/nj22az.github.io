@@ -13,8 +13,12 @@ function seeThrough(g,w,h){
  return clear/(d.length/16)>.05;
 }
 
-/** A picture file or blob to a die-cut sticker: {blob (PNG), width, height, cut:'outline'|'photo'}. */
-export async function makeSticker(file){
+/**
+ * A picture file or blob to a die-cut sticker: {blob (PNG), width, height, cut:'outline'|'photo'}. `edge` is the white
+ * contour's width as a share of the longer side: fine for a photo or a lifted subject, wider for a drawing cut from a
+ * sheet (sticker-sheet.js), so its loose marks sit on one piece of paper.
+ */
+export async function makeSticker(file,{edge=.0045}={}){
  const bitmap=await createImageBitmap(file).catch(async()=>{
   const url=URL.createObjectURL(file);
   try{const img=new Image();img.src=url;await img.decode();return img;}finally{URL.revokeObjectURL(url);}
@@ -29,7 +33,7 @@ export async function makeSticker(file){
   const r=Math.min(w,h)*.09;
   ag.globalCompositeOperation='destination-in';ag.beginPath();ag.roundRect(0,0,w,h,r);ag.fill();ag.globalCompositeOperation='source-over';
  }
- const m=Math.max(w,h),border=Math.max(1,m*.0045),shadow=Math.max(1,m*.002);
+ const m=Math.max(w,h),border=Math.max(1,m*edge),shadow=Math.max(1,m*.002);
  const pad=Math.ceil(border+shadow*2+1);
  const out=document.createElement('canvas');out.width=w+2*pad;out.height=h+2*pad;
  const g=out.getContext('2d');

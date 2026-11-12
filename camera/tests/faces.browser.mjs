@@ -78,11 +78,11 @@ try{
   await page.click('#tabStickers');
   await page.waitForSelector('#stickerSets button.locked');
   const r=await page.evaluate(()=>{const b=document.querySelector('#stickerSets button.locked');return {text:b.textContent,lock:!!b.querySelector('svg use[href="#i-lock"]'),aria:b.getAttribute('aria-label'),fits:b.scrollWidth<=b.clientWidth+1};});
-  assert.equal(r.text,'','the lock alone');assert.ok(r.lock&&r.fits);assert.match(r.aria,/^Faces sheet, locked\. Win a game of Memory or Solitaire, or score 500 in Ball/);
+  assert.equal(r.text,'','the lock alone');assert.ok(r.lock&&r.fits);assert.match(r.aria,/^Faces sheet, locked\. Win a game of Memory or Solitaire to open this sheet\./);
   await page.click('#stickerSets button.locked');
   await page.waitForSelector('.sticker-locked');
   const hint=await page.evaluate(()=>({how:document.querySelector('.sticker-locked-how').textContent,choices:document.querySelectorAll('#stickerGrid .sticker-choice').length,what:document.querySelector('.sticker-locked p').textContent}));
-  assert.equal(hint.how,'Win a game of Memory or Solitaire, or score 500 in Ball, to open this sheet.');assert.equal(hint.choices,0);assert.match(hint.what,/scribbled over/);
+  assert.equal(hint.how,'Win a game of Memory or Solitaire to open this sheet.');assert.equal(hint.choices,0);assert.match(hint.what,/scribbled over/);
   await shot(page,'4-locked-tab');
   await page.click('#cancelEdit');
  });

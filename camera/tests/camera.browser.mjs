@@ -48,7 +48,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
  const page=await context.newPage();
  // The camera now opens with no Look (the owner, 3 November 2026: "Default to no filter"); this run keeps its scenario of
  // a remembered Pocket Look (defaults.browser.mjs covers the default itself).
- await page.addInitScript(()=>{if(!localStorage.getItem('office-pocket-camera'))localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'pocket',amount:1}]},kept:true}));});
+ await page.addInitScript(()=>{if(!localStorage.getItem('office-pocket-camera'))localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'pocket',amount:1}]},kept:true}));});
  const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
@@ -68,7 +68,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
   await check(`${label}: every World Look compiles and draws the camera picture`,async()=>{
    const out=await app(()=>{
     const {engine,state}=window.pocketCamera,report={};
-    for(const tile of document.querySelectorAll('.tile')){
+    for(const tile of document.querySelectorAll('.tile[data-look]')){   // (the preset tiles are tiles too, and no Looks)
      const look=tile.dataset.look,px=engine.render({...state.camera.recipe,layers:[{look,amount:1}]},{source:'live',width:96,height:72});
      let sum=0,sq=0;for(let i=0;i<px.data.length;i+=4){const l=(px.data[i]+px.data[i+1]+px.data[i+2])/3;sum+=l;sq+=l*l;}
      const n=px.data.length/4,mean=sum/n;report[look]={failed:engine.failed(look),spread:Math.sqrt(Math.max(0,sq/n-mean*mean))};
@@ -455,7 +455,7 @@ async function playAndPrint({label,width,height}){
    await page.locator('.sticker-button').tap();await page.waitForSelector('#stickerSheet[open] .sticker-choice');
    assert.ok(await fits('#stickerSets'),'every sticker tab fits across');
    assert.ok(await page.$$eval('#stickerSets button',b=>b.every(x=>x.getBoundingClientRect().height>=28)),'the tabs keep their height');
-   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Season','','Manga','Mine'],'a tab a resident, the season’s sheet, the secret sheet’s lock (no name until it is won), and Manga');
+   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Minato','Friends','Season','','Manga','Mine'],'a tab a resident, the town’s things, the friends, the seasons’ sheets, the secret sheet’s lock (no name until it is won), and Manga');
    await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#stickerSheet').open);
    // A sheet puts the settings row away: one panel at a time.
    await page.locator('#settingsToggle').tap();await page.locator('#frameSetting').tap();await page.waitForSelector('#frameSheet[open]');
@@ -537,7 +537,7 @@ async function playAndPrint({label,width,height}){
    const sheet=await page.evaluate(()=>({tabs:[...document.querySelectorAll('#stickerSets button')].map(b=>b.textContent),
     effects:[...document.querySelectorAll('.sticker-choice.effect')].map(b=>b.dataset.id),marks:document.querySelectorAll('.sticker-choice[data-id^="marks/"]').length,
     heading:[...document.querySelectorAll('#stickerGrid .sticker-heading')].map(h=>h.textContent)}));
-   assert.deepEqual(sheet.tabs,['Text','Thuan','Johansson','Thao','Season','','Manga','Mine'],'the secret sheet’s tab is a lock without a name until it is won');
+   assert.deepEqual(sheet.tabs,['Text','Thuan','Johansson','Thao','Minato','Friends','Season','','Manga','Mine'],'the secret sheet’s tab is a lock without a name until it is won');
    assert.deepEqual(sheet.effects,['effect:focus','effect:speed']);assert.equal(sheet.marks,10);assert.deepEqual(sheet.heading,['Marks']);
    assert.ok(await page.evaluate(()=>{const e=document.querySelector('#stickerSets'),r=e.getBoundingClientRect();return [...e.children].every(k=>{const q=k.getBoundingClientRect();return q.left>=r.left-1&&q.right<=r.right+1;});}),'seven tabs fit across');
    await page.locator('.sticker-choice.effect[data-id="effect:focus"]').tap();

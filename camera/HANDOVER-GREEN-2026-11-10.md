@@ -8,7 +8,7 @@
 **Release** `v2026.11.10.1`, key `20261110green1` (page, `app.js`, `camera.css`, `camera-ui.css`, `camera-black.css`,
 `game-room-refresh.css`, `camera-brand.css`, `looks-gl.js`, `frames.js`, `background.js`, `social-share.js`,
 `memory.js`, `blackjack.js`, `solitaire.js`, `ball.js`, `stickers.js`, `face-stamps.js`, `pocket-faces.js`).
-**Not published.** Both branches wait for the owner's "Push to main". Live is still `v2026.11.09.2`.
+**Published in both repositories** on the owner's "Push to main" (10 November 2026): see "Publication" below.
 
 ## The owner's words
 
@@ -92,11 +92,38 @@ Looked at, not only measured (`camera/qa/2026-11-10-green/`): the running camera
 tabs in both themes; Memory's setup and Blackjack in both themes; the title screen with its two doors at 375 × 560,
 390 × 664, 390 × 844 (dark and light) and 1100 × 760; the Game Room entered from the title screen; the icon.
 
+## Publication
+
+The owner: "Push to main". Both pushes were fast-forwards, at 05:27 UTC on 10 November 2026.
+
+**The camera** (this repository): `main` `f4632430d` → `e205f2f46`. The Pages run for it (42762215980) succeeded;
+the live page showed `v2026.11.10.1` 69 seconds after the push. (Another session then put two commits of the ferry
+viewer on top, `main` `d6d9e685f`; they touch no camera file, and the branch was brought up to them.)
+- 20 live files match the repository byte for byte: the page, `app.js`, the five stylesheets, `offline.json`,
+  `sw.js`, the manifest, the five icons, `ball.js`, `memory.js`, `blackjack.js`, `face-stamps.js`, `pocket-faces.js`.
+- The live page, headless, at 390 × 664 (dark), 375 × 560 (light) and 390 × 844 (dark): `v2026.11.10.1`; the two
+  doors side by side, 62 px high, each label on one line, the whole greeting on the first screen; `--accent-fill`
+  `#16815e` with `--accent` `#5fd6a2` in dark and `#0e5f43` in light; Start in `rgb(22,129,94)`; no page errors.
+- Through the live Game Room door: Back says Camera, still after a game of Blackjack, and leads back to the title
+  screen; from the album it says Album. Memory's Play, its chosen number of pairs and Blackjack's Hit are
+  `rgb(22,129,94)`. The live icon's ring and flash are `(22,129,94)` on a `(23,37,35)` corner. The offline worker
+  is registered.
+
+**The Town** (`nj22az/johansson-town`): `main` `fcbcae9` → `8a9b2e0`. Its publish run (42762203354) succeeded in
+4 min 15 s; the new `brand/brand.json` answered 200 at 05:31:18.
+- 9 live files match the repository byte for byte (the page, `landing.css`, `base.css`, `title-screen.css`,
+  `line-ui.css`, the three files of `brand/`, `WHERE-TO-EDIT.md`); the live `landing.css` has none of the old names.
+- The live title, by the browser's own account: JOHANSSON in `rgb(38,61,57)`, ExtraBold, 28 px on a phone and 52 px
+  on a desktop; WORLD in `rgb(22,129,94)`, 24 and 40 px; both `display:flex`, no animation, transform, shadow, box
+  or border; `#start` with no ground of its own; the wordmark LINE Seed JP ExtraBold × 9 and × 5, the long vowels
+  Figtree × 3 among LINE Seed JP × 24; nothing under the fold at 390 × 664; no page errors.
+- **Its guard workflow (42762203444) completed for the first time, every job green**: the guard tests, the iPad in
+  landscape (7 min 34 s this time), the iPad in portrait (7 min 46 s), the desktop (11 min 18 s) and the iPhone
+  start-up (14 min 6 s, which the old 15-minute limit would barely have let through).
+
 ## Open, for the owner
 
-1. **Publishing**: "Push to main" publishes both. The Town first is not needed this time (the camera does not depend
-   on the World's cleanup), but the Town's guard workflow only runs on its `main`.
-2. **Not seen on a physical iPhone**: this round, and still neither landing page of 9 November. Software Chromium only.
-3. Someone with the app on the Home Screen keeps the gold icon until they remove it and add it again.
-4. The fun audit's three rounds are still unstarted (`AUDIT-FUN-2026-11-09.md`); the door on the title screen is the
+1. **Not seen on a physical iPhone**: this round, and still neither landing page of 9 November. Software Chromium only.
+2. Someone with the app on the Home Screen keeps the gold icon until they remove it and add it again.
+3. The fun audit's three rounds are still unstarted (`AUDIT-FUN-2026-11-09.md`); the door on the title screen is the
    first step of its "front door" round.

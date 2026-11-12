@@ -16,7 +16,7 @@ let checks=0;const check=async(name,fn)=>{await fn();checks++;console.log(`ok  $
 try{
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false})));
+ await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false})));
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  const recipe=()=>page.evaluate(()=>{const r=window.pocketCamera.state.edit.recipe;return {enhance:r.enhance,pop:r.pop};});
 
@@ -79,7 +79,7 @@ try{
   await page.click('#cancelEdit');
   // Remembered: a fresh page with that setting stored (this harness writes the settings on every navigation).
   const fresh=await browser.newPage({viewport:{width:390,height:844}});
-  await fresh.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false,auto:false})));
+  await fresh.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false,auto:false})));
   await fresh.goto(server.url+'camera/');await fresh.waitForFunction(()=>!!window.pocketCamera?.engine);
   assert.equal(await fresh.evaluate(()=>window.pocketCamera.state.auto),false);
   assert.equal(await fresh.evaluate(()=>document.getElementById('autoSetting').classList.contains('on')),false,'the setting shows off');

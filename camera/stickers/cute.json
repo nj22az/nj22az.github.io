@@ -1,0 +1,209 @@
+{
+ "id": "cute",
+ "name": "Friends",
+ "tab": "Friends",
+ "who": "",
+ "kind": "cute",
+ "deck": true,
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "cute/frog-tea",
+   "src": "cute/frog-tea.webp?v=be96d95b",
+   "thumb": "cute/frog-tea.thumb.webp?v=be96d95b",
+   "width": 443,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog sips its tea"
+  },
+  {
+   "id": "cute/frog-nice",
+   "src": "cute/frog-nice.webp?v=1ad6f246",
+   "thumb": "cute/frog-nice.thumb.webp?v=1ad6f246",
+   "width": 478,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog approves"
+  },
+  {
+   "id": "cute/frog-shock",
+   "src": "cute/frog-shock.webp?v=c41bb151",
+   "thumb": "cute/frog-shock.thumb.webp?v=c41bb151",
+   "width": 497,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog cannot believe it"
+  },
+  {
+   "id": "cute/frog-rain",
+   "src": "cute/frog-rain.webp?v=6e0eeb06",
+   "thumb": "cute/frog-rain.thumb.webp?v=6e0eeb06",
+   "width": 512,
+   "height": 506,
+   "line": "",
+   "gloss": "The frog under its leaf"
+  },
+  {
+   "id": "cute/frog-love",
+   "src": "cute/frog-love.webp?v=4a86f0f3",
+   "thumb": "cute/frog-love.thumb.webp?v=4a86f0f3",
+   "width": 512,
+   "height": 503,
+   "line": "",
+   "gloss": "The frog is smitten"
+  },
+  {
+   "id": "cute/duck-angry",
+   "src": "cute/duck-angry.webp?v=dd278c18",
+   "thumb": "cute/duck-angry.thumb.webp?v=dd278c18",
+   "width": 512,
+   "height": 483,
+   "line": "",
+   "gloss": "The duck has had enough"
+  },
+  {
+   "id": "cute/duck-nope",
+   "src": "cute/duck-nope.webp?v=64b4f4bd",
+   "thumb": "cute/duck-nope.thumb.webp?v=64b4f4bd",
+   "width": 302,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck says no"
+  },
+  {
+   "id": "cute/duck-ok",
+   "src": "cute/duck-ok.webp?v=c329e7a8",
+   "thumb": "cute/duck-ok.thumb.webp?v=c329e7a8",
+   "width": 458,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck allows it"
+  },
+  {
+   "id": "cute/duck-run",
+   "src": "cute/duck-run.webp?v=d81d0d94",
+   "thumb": "cute/duck-run.thumb.webp?v=d81d0d94",
+   "width": 509,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck is late"
+  },
+  {
+   "id": "cute/duck-lol",
+   "src": "cute/duck-lol.webp?v=28e40188",
+   "thumb": "cute/duck-lol.thumb.webp?v=28e40188",
+   "width": 512,
+   "height": 467,
+   "line": "",
+   "gloss": "The duck laughs till it cries"
+  },
+  {
+   "id": "cute/rabbit-yay",
+   "src": "cute/rabbit-yay.webp?v=36ba9612",
+   "thumb": "cute/rabbit-yay.thumb.webp?v=36ba9612",
+   "width": 461,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit: best day ever"
+  },
+  {
+   "id": "cute/rabbit-cry",
+   "src": "cute/rabbit-cry.webp?v=bdfd1bd3",
+   "thumb": "cute/rabbit-cry.thumb.webp?v=bdfd1bd3",
+   "width": 460,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit: worst day ever"
+  },
+  {
+   "id": "cute/rabbit-shy",
+   "src": "cute/rabbit-shy.webp?v=37ede893",
+   "thumb": "cute/rabbit-shy.thumb.webp?v=37ede893",
+   "width": 285,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit cannot look"
+  },
+  {
+   "id": "cute/rabbit-photo",
+   "src": "cute/rabbit-photo.webp?v=b5bdfe31",
+   "thumb": "cute/rabbit-photo.thumb.webp?v=b5bdfe31",
+   "width": 296,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit takes your photo"
+  },
+  {
+   "id": "cute/rabbit-faint",
+   "src": "cute/rabbit-faint.webp?v=c37730a8",
+   "thumb": "cute/rabbit-faint.thumb.webp?v=c37730a8",
+   "width": 512,
+   "height": 498,
+   "line": "",
+   "gloss": "The rabbit has had too much"
+  },
+  {
+   "id": "cute/cat-cup",
+   "src": "cute/cat-cup.webp?v=bdefbb86",
+   "thumb": "cute/cat-cup.thumb.webp?v=bdefbb86",
+   "width": 512,
+   "height": 510,
+   "line": "",
+   "gloss": "The cat and the cup"
+  },
+  {
+   "id": "cute/cat-box",
+   "src": "cute/cat-box.webp?v=544c3901",
+   "thumb": "cute/cat-box.thumb.webp?v=544c3901",
+   "width": 405,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat fits"
+  },
+  {
+   "id": "cute/cat-scared",
+   "src": "cute/cat-scared.webp?v=d36fe0ee",
+   "thumb": "cute/cat-scared.thumb.webp?v=d36fe0ee",
+   "width": 348,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat did not expect that"
+  },
+  {
+   "id": "cute/bear-sleep",
+   "src": "cute/bear-sleep.webp?v=908d28c9",
+   "thumb": "cute/bear-sleep.thumb.webp?v=908d28c9",
+   "width": 436,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear is off to bed"
+  },
+  {
+   "id": "cute/bear-hug",
+   "src": "cute/bear-hug.webp?v=962b9c79",
+   "thumb": "cute/bear-hug.thumb.webp?v=962b9c79",
+   "width": 290,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear has a heart for you"
+  },
+  {
+   "id": "cute/bear-yum",
+   "src": "cute/bear-yum.webp?v=bfb0674d",
+   "thumb": "cute/bear-yum.thumb.webp?v=bfb0674d",
+   "width": 290,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear and a doughnut"
+  },
+  {
+   "id": "cute/together",
+   "src": "cute/together.webp?v=8262095e",
+   "thumb": "cute/together.thumb.webp?v=8262095e",
+   "width": 512,
+   "height": 324,
+   "line": "",
+   "gloss": "Frog, duck and rabbit"
+  }
+ ]
+}

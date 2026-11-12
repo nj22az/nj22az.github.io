@@ -26,7 +26,7 @@ const contrast=(page,selector)=>page.evaluate(sel=>{
 try{
  const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce',colorScheme:'light'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false})));
+ await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false})));
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
 
  await check('Auto follows the device: a light device opens the camera light, with the browser’s theme colour to match',async()=>{
@@ -48,7 +48,7 @@ try{
 
  await check('a stored choice is on the page before the app runs: no flash of the other theme',async()=>{
   const fresh=await browser.newPage({viewport:{width:390,height:844},colorScheme:'light'});
-  await fresh.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false,theme:'dark'})));
+  await fresh.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false,theme:'dark'})));
   await fresh.goto(server.url+'camera/',{waitUntil:'domcontentloaded'});
   assert.equal(await fresh.evaluate(()=>document.documentElement.dataset.theme),'dark','set by the head script');
   await fresh.waitForFunction(()=>!!window.pocketCamera?.engine);

@@ -11,7 +11,7 @@ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_EXECUTA
 const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce',permissions:['camera'],serviceWorkers:'block'}),page=await context.newPage(),errors=[];
 page.on('pageerror',e=>errors.push(e.message));let checks=0;const check=async(name,fn)=>{await fn();checks++;console.log('ok  '+name);};
 try{
- await page.addInitScript(()=>{if(!localStorage.getItem('office-pocket-camera'))localStorage.setItem('office-pocket-camera',JSON.stringify({sound:false,printer:false}));});
+ await page.addInitScript(()=>{if(!localStorage.getItem('office-pocket-camera'))localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,sound:false,printer:false}));});
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  await check('all systems and finishes compile; zero finish is exact, each control changes pixels, and thumbnails include the selected finish',async()=>{
   const result=await page.evaluate(async()=>{

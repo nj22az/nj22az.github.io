@@ -1,0 +1,156 @@
+{
+ "id": "matsuri",
+ "name": "Matsuri",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  7,
+  8
+ ],
+ "sources": [
+  {
+   "file": "matsuri.png",
+   "mode": "edge",
+   "join": 1,
+   "marks": 8,
+   "stickers": [
+    {
+     "key": "lantern",
+     "gloss": "A festival lantern"
+    },
+    {
+     "key": "yellow-lantern",
+     "gloss": "A yellow lantern"
+    },
+    {
+     "key": "folding-fan",
+     "gloss": "A folding fan"
+    },
+    {
+     "key": "fan",
+     "gloss": "A round paper fan"
+    },
+    {
+     "key": "drum",
+     "gloss": "A festival drum"
+    },
+    {
+     "key": "fox-mask",
+     "gloss": "A fox mask"
+    },
+    {
+     "key": "hyottoko",
+     "gloss": "A hyottoko mask"
+    },
+    {
+     "key": "tengu",
+     "gloss": "A tengu mask"
+    },
+    {
+     "key": "takoyaki",
+     "gloss": "Takoyaki"
+    },
+    {
+     "key": "yakisoba",
+     "gloss": "Fried noodles"
+    },
+    {
+     "key": "corn",
+     "gloss": "Grilled corn"
+    },
+    {
+     "key": "taiyaki",
+     "gloss": "Taiyaki"
+    },
+    {
+     "key": "candy-apple",
+     "gloss": "A candy apple"
+    },
+    {
+     "key": "choco-banana",
+     "gloss": "A chocolate banana"
+    },
+    {
+     "key": "shaved-ice",
+     "gloss": "Shaved ice"
+    },
+    {
+     "key": "cotton-candy",
+     "gloss": "Cotton candy"
+    },
+    {
+     "key": "ramune",
+     "gloss": "A bottle of ramune"
+    },
+    {
+     "key": "water-balloon",
+     "gloss": "A water balloon yo-yo"
+    },
+    {
+     "key": "goldfish",
+     "gloss": "Goldfish in a bag"
+    },
+    {
+     "key": "scoop",
+     "gloss": "A goldfish scoop"
+    },
+    {
+     "key": "ring-toss",
+     "gloss": "Ring toss"
+    },
+    {
+     "key": "pinwheel",
+     "gloss": "A pinwheel"
+    },
+    {
+     "key": "wind-chime",
+     "gloss": "A wind chime"
+    },
+    {
+     "key": "sparkler",
+     "gloss": "A sparkler"
+    },
+    {
+     "key": "sparkler-blue",
+     "gloss": "Another sparkler"
+    },
+    {
+     "key": "mikoshi",
+     "gloss": "A portable shrine"
+    },
+    {
+     "key": "tower",
+     "gloss": "The festival tower"
+    },
+    {
+     "key": "stall",
+     "gloss": "A food stall"
+    },
+    {
+     "key": "happi",
+     "gloss": "A happi coat"
+    },
+    {
+     "key": "yukata",
+     "gloss": "A yukata"
+    },
+    {
+     "key": "geta",
+     "gloss": "Wooden sandals"
+    },
+    {
+     "key": "fireworks",
+     "gloss": "Fireworks"
+    },
+    {
+     "key": "purse",
+     "gloss": "A drawstring purse"
+    }
+   ],
+   "ground": "border+white",
+   "main": 0.05
+  }
+ ],
+ "note": "The owner's own festival sheet."
+}

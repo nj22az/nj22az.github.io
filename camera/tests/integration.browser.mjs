@@ -22,7 +22,7 @@ try{
  for(const [label,env] of [['main','CAMERA_MAIN_ENGINE'],['refine','CAMERA_REFINE_ENGINE']])if(process.env[env])
   await page.route(`**/camera/integration-${label}.js`,async route=>route.fulfill({contentType:'text/javascript',body:await readFile(process.env[env],'utf8')}));
  await page.addInitScript(()=>{
-  localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:true}));
+  localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:true}));
   window.integrationShares=[];window.integrationDownloads=[];
   Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>true});
   Object.defineProperty(navigator,'share',{configurable:true,value:async data=>{
@@ -130,6 +130,9 @@ try{
   });
   const r=await page.locator('#editFrame').boundingBox();await page.mouse.move(r.x+r.width*.5,r.y+r.height*.5);await page.mouse.down();
   await page.waitForFunction(()=>window.pocketCamera.state.edit.comparing);
+  // A hold, not a tap: let go within 300 ms and the app takes it for a tap on the photo, which (no face having been
+  // found in this picture) places the face guide there and changes the recipe.
+  await page.waitForTimeout(400);
   assert.deepEqual(await page.evaluate(()=>window.pocketCamera.state.edit.recipe),expected.recipe);
   assert.equal(await page.locator('#original').isVisible(),true);
   await page.waitForFunction(()=>!!window.integrationComparison);

@@ -15,7 +15,7 @@ let checks=0;const check=async(name,fn)=>{await fn();checks++;console.log(`ok  $
 try{
  const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false})));
+ await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false})));
  await page.goto(server.url+'camera/');await page.waitForFunction(()=>!!window.pocketCamera?.engine);
  // Measures on a photo rendered by the camera's own engine at a size, with Pop at a strength.
  const measure=(src,pop,width,regions)=>page.evaluate(async({src,pop,width,regions})=>{

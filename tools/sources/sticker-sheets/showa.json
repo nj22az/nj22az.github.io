@@ -1,0 +1,105 @@
+{
+ "id": "showa",
+ "name": "Shōwa",
+ "tab": "Minato",
+ "who": "",
+ "kind": "things",
+ "sources": [
+  {
+   "file": "showa.png",
+   "mode": "edge",
+   "ground": "pale",
+   "tolerance": 36,
+   "join": 1,
+   "marks": 0,
+   "stickers": [
+    {
+     "key": "tv",
+     "gloss": "A television on legs"
+    },
+    {
+     "key": "post-box",
+     "gloss": "A round post box"
+    },
+    {
+     "key": "telephone",
+     "gloss": "A dial telephone"
+    },
+    {
+     "key": "radio",
+     "gloss": "A valve radio"
+    },
+    {
+     "key": "scooter",
+     "gloss": "A scooter"
+    },
+    {
+     "key": "lantern",
+     "gloss": "A festival lantern"
+    },
+    {
+     "key": "noren",
+     "gloss": "A bathhouse curtain"
+    },
+    {
+     "key": "shaved-ice",
+     "gloss": "Shaved ice"
+    },
+    {
+     "key": "ramune",
+     "gloss": "A bottle of ramune"
+    },
+    {
+     "key": "milk",
+     "gloss": "A bottle of milk"
+    },
+    {
+     "key": "takoyaki",
+     "gloss": "Takoyaki"
+    },
+    {
+     "key": "fan",
+     "gloss": "A paper fan"
+    },
+    {
+     "key": "record",
+     "gloss": "A record"
+    },
+    {
+     "key": "camera",
+     "gloss": "A camera"
+    },
+    {
+     "key": "matches",
+     "gloss": "A box of matches"
+    },
+    {
+     "key": "cream-soda",
+     "gloss": "A cream soda"
+    },
+    {
+     "key": "wind-chime",
+     "gloss": "A wind chime"
+    },
+    {
+     "key": "lucky-cat",
+     "gloss": "A lucky cat"
+    },
+    {
+     "key": "daruma",
+     "gloss": "A daruma"
+    },
+    {
+     "key": "toy-plane",
+     "gloss": "A tin plane"
+    },
+    {
+     "key": "spinning-top",
+     "gloss": "A spinning top"
+    },
+    null
+   ]
+  }
+ ],
+ "note": "The owner's own sheet of things from the town's old days."
+}

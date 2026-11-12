@@ -1103,7 +1103,7 @@ def finish(work, renders):
                             'width': round(width / sticker.width, 4)}
         entries.append(entry)
         sheet.append((key, sticker, pts if view == 'hat' else None))
-    manifest = {'id': 'halloween', 'name': 'Halloween', 'tab': 'Season', 'who': '', 'kind': 'season',
+    manifest = {'id': 'halloween', 'name': 'Halloween', 'tab': 'Season', 'who': '', 'kind': 'season', 'when': [10],
                 'source': SOURCE, 'stickers': entries}
     (STICKERS / 'halloween.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     contact_sheet(work, sheet)

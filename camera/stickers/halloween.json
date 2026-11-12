@@ -4,6 +4,9 @@
  "tab": "Season",
  "who": "",
  "kind": "season",
+ "when": [
+  10
+ ],
  "source": "tools/blender/render-halloween-stickers.py",
  "stickers": [
   {

@@ -95,7 +95,7 @@ try{
   const max=await page.evaluate(()=>Math.min(8,Math.max(2,2*window.pocketCamera.state.edit.recipe.crop.h*2880/document.getElementById('editFrame').offsetHeight)));
   await pinch(area,40,400,{steps:14,tall:true});await rest();near(await zoomOf('editZoom'),max,.02,'springs back to the closest');
   // from 8× a pinch from 380 px apart to 20 goes below the whole photo, and it comes back whole
-  await pinch(area,380,20,{steps:16,tall:true});await rest();
+  await pinch(area,Math.min(380,area.height-30),20,{steps:16,tall:true});await rest();   // both fingers on the photo's own area (it is shorter since the preset row)
   const v=await view();assert.equal(v.zoom,1);assert.equal(v.transform,'');assert.equal(v.fit,false);
   near(v.canvas.h,start.canvas.h,2,'drawn at the screen’s detail again');
  });
@@ -116,7 +116,7 @@ try{
  });
 
  await check('a pinch that starts on a sticker sizes the sticker; zoomed, its buttons keep one finger’s size',async()=>{
-  await page.evaluate(async()=>{const m=await import('/camera/stickers.js?v=20261110green1');await m.loadStickerSets();window.pocketCamera.editStickers.add('thao-pixar/Peace');});
+  await page.evaluate(async()=>{const m=await import('/camera/stickers.js?v=20261112fun1');await m.loadStickerSets();window.pocketCamera.editStickers.add('thao-pixar/Peace');});
   await page.click('#tabStickers');await rest();
   const s0=await rect('#editFrame .sticker'),size0=await page.evaluate(()=>window.pocketCamera.state.edit.recipe.stickers[0].size);
   await pinch({x:s0.x,y:s0.y},40,90);await rest();
