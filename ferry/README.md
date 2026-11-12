@@ -981,6 +981,25 @@ menus, and make it icon based, not all that text (for the viewer page)".
   under her name.
 - On a phone the rail wraps to two rows and a function's keys that are wider than the screen are swiped sideways.
 
+## X-ray: her wiring, through her structure (`app.js` `setXray`, `systems.js` `xray`)
+
+The owner, 11 November 2026: "The bridge needs to be enhanced too all cabinets should be able to open and an X-ray function
+to show the electrical wiring". The lightning key on the rail, outside and on foot:
+
+- her structure is drawn as a ghost of itself (every material see-through, at most an eighth as solid as it was), on a dark
+  ground in place of the sea and the sky;
+- **every run the register holds is drawn through it**, coloured by what it carries: 230 V from the main supply, 230 V from
+  the emergency switchboard, 230 V that the batteries carry through a blackout (the navigation lights), 24 V direct
+  current, signals and data, pipes. A cable takes the colour of the supply its board hangs on (`supplyOf`), because that is
+  what tells one what dies with what;
+- a legend says which colour is which and how many metres of each there are (each stretch counted once: cables that share
+  a tray are drawn once);
+- the boards are boxed; a tap on a fitting still names it; choosing a board, a circuit or a net under *Systems* shows that
+  one alone through the ghost, and choosing it again shows them all.
+
+It shows what the register holds, which today is the bridge and what feeds it: as her machinery, lighting and piping are
+entered in `systems/`, they appear here with no further work. `checks/bridge.cjs` switches it on and off.
+
 ## Coupling
 
 - Three.js r170 comes from `/motor-90l/vendor/` (`three.module.min.js` through the import map, and `OrbitControls.js`).

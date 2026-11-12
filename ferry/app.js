@@ -187,13 +187,13 @@ let cutSpan = [-4.6, 3.6];
  * The sea and the sky (look.js). She floats when she is walked, and when she is looked at whole from outside with the Afloat
  * key lit; lifted apart, cut open or put in dock she stands on the slip as before, so that her bottom can be seen.
  */
-let sea = null, walk = null;
-const afloat = () => !!sea && (!!walk || (state.afloat && state.explode === 0 && state.cut === 0));
+let sea = null, walk = null, xray = false;
+const afloat = () => !!sea && !xray && (!!walk || (state.afloat && state.explode === 0 && state.cut === 0));
 function showSea() {
   if (!sea) return;
   const on = afloat();
   sea.mesh.visible = sea.shadow.visible = sky.dome.visible = on;
-  floor.visible = !on;
+  floor.visible = !on && !xray;
   camera.far = on ? 9000 : 700;
   camera.updateProjectionMatrix();
   // afloat one cannot get under the water to look at her
@@ -345,6 +345,44 @@ function showHelp(on, ms = 0) {
   if (on && ms) helpTimer = setTimeout(() => showHelp(false), ms);
 }
 helpBtn.addEventListener('click', () => showHelp(help.hidden));
+/**
+ * X-ray (the owner, 11 November 2026: "an X-ray function to show the electrical wiring"). Her structure is drawn as a ghost
+ * of itself and every cable and pipe the register knows is drawn through it, coloured by what it carries (systems.js); a
+ * legend says which colour is which and how many metres of each there are. Choosing a board, a circuit or a net in the
+ * Systems list while it is on shows that one alone through the ghost; choosing it again shows them all.
+ */
+const legend = $('#legend'), solid = new Map();
+function setXray(on) {
+  if (!systems) return false;
+  xray = !!on;
+  for (const m of materials) {
+    if (xray) {
+      if (!solid.has(m)) solid.set(m, { transparent: m.transparent, opacity: m.opacity, depthWrite: m.depthWrite });
+      m.transparent = true; m.depthWrite = false; m.opacity = Math.min(solid.get(m).opacity, m.userData.glass ? 0.04 : 0.12);
+    } else if (solid.has(m)) Object.assign(m, solid.get(m));
+    m.needsUpdate = true;
+  }
+  const rows = systems.xray(xray);
+  legend.replaceChildren();
+  if (xray) {
+    const ul = el('ul');
+    for (const r of rows) {
+      const sw = el('i'); sw.style.background = '#' + r.colour.toString(16).padStart(6, '0');
+      ul.append(el('li', {}, sw, el('span', {}, r.name), el('small', {}, `${r.metres} m`)));
+    }
+    legend.append(el('h2', {}, 'X-ray: what runs through her'), ul, el('p', {}, 'Only what her register holds so far: the bridge and what feeds it. Tap a fitting to see what it is; pick a board or a circuit under Systems to see it alone.'));
+  }
+  legend.hidden = !xray;
+  // through a ghost of her the sea and the sky only dazzle: she stands on a dark ground while it is on
+  document.body.classList.toggle('xray', xray);
+  showSea();
+  $('#fn-xray').setAttribute('aria-pressed', String(xray));
+  readout.textContent = xray ? 'X-ray' : '';
+  renderer.shadowMap.needsUpdate = true;
+  redraw();
+  return xray;
+}
+$('#fn-xray').addEventListener('click', () => setXray(!xray));
 /** Afloat, or in dock: on the sea under the sky, or on the slip with her bottom to be seen. */
 $('#fn-afloat').addEventListener('click', () => { state.afloat = !state.afloat; showSea(); readout.textContent = state.afloat ? 'Afloat' : 'In dock'; });
 /**
@@ -1620,7 +1658,7 @@ async function start() {
   requestAnimationFrame(frame);
   // For checks and pictures: the same moves the controls make.
   window.__ferry = {
-    setExplode, setCut, setInput, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
+    setExplode, setCut, setInput, setXray, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
     lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt, showTab, nameOnFoot, get systems() { return systems; },
     zoomWalk, setWalkZoom, get walkZoom() { return zoomShown(); }, zoomLimits: [ZOOM_MIN, ZOOM_MAX],
     /** For checks: the room the walker stands in, named now (the readout is written as the walk goes). */

@@ -190,6 +190,23 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(!small.wide && small.tabH >= 44, `on a phone the page is not wider than the screen and the tabs are ${Math.round(small.tabH)} px high`);
   check(small.card.left >= 0 && small.card.right <= 390 && small.card.bottom <= small.barTop + 1 && small.card.top >= 0, `on a phone the card stands over the bar, inside the screen (${Math.round(small.card.top)} to ${Math.round(small.card.bottom)} px, the bar at ${Math.round(small.barTop)})`);
 
+  // ---- X-ray (the owner, 11 November 2026: "an X-ray function to show the electrical wiring"): her structure a ghost of itself,
+  // every run of the register drawn through it by what it carries, a legend that says which is which and how much; off again, she is as she was.
+  const xr = await page.evaluate(async () => {
+    const f = window.__ferry, mats = f.look.materials;
+    const solid = () => mats.filter(m => !m.transparent).length;
+    const before = solid();
+    document.querySelector('#fn-xray').click();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const rows = [...document.querySelectorAll('#legend li')].map(li => ({ name: li.children[1].textContent, m: parseFloat(li.children[2].textContent) }));
+    const on = { ghost: solid(), most: Math.max(...mats.map(m => m.opacity)), shown: !document.querySelector('#legend').hidden, xray: f.systems.state.xray };
+    document.querySelector('#fn-xray').click();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    return { before, rows, on, after: solid(), hidden: document.querySelector('#legend').hidden };
+  });
+  check(xr.on.ghost === 0 && xr.on.most <= 0.12 && xr.on.shown && xr.on.xray && xr.rows.length >= 5 && xr.rows.every(r => r.m > 0),
+    `X-ray: her structure is a ghost of itself and ${xr.rows.length} kinds of run are drawn through it (${xr.rows.map(r => `${r.m} m`).join(', ')})`);
+  check(xr.after === xr.before && xr.hidden, `X-ray off: she is solid again (${xr.after} of her materials, as before)`);
   check(errors.length === 0, `no errors in the console (${errors.slice(0, 3).join(' | ') || 'none'})`);
   await browser.close();
   console.log(fails.length ? `\n${fails.length} FAILED` : '\nall passed');

@@ -129,6 +129,7 @@ button.link { border: 0; background: none; padding: 0; color: var(--accent); fon
   --i-raise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 14.5l7-7 7 7'/%3E%3C/svg%3E");
   --i-lower: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 9.5l7 7 7-7'/%3E%3C/svg%3E");
   --i-stop: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6.5' y='6.5' width='11' height='11' rx='1.5'/%3E%3C/svg%3E");
+  --i-bolt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2.5 5 13.5h6l-1 8 8-11h-6l1-8z'/%3E%3C/svg%3E");
   --i-sea: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 8.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2'/%3E%3Cpath d='M2 13.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2'/%3E%3Cpath d='M2 18.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2'/%3E%3C/svg%3E");
 }
 /* The bar (the owner, 11 November 2026: "I dont like the sliders, I would prefer buttons, like we are using a hmi to control the
@@ -170,6 +171,16 @@ body.walking #walk { --i: var(--i-exit) !important; }
 .val { grid-area: val; display: inline-flex; align-items: center; justify-content: flex-end; height: 38px; min-width: 5.5ch; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--window); color: var(--window-ink); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .grp.wide .val { min-width: 12.5ch; }
 #bar output { align-self: stretch; font-size: 13px; color: var(--ink); }
+/* The X-ray's legend: each colour, what it carries, how much of it there is. It stands at the top on the left, under her name. */
+body.xray #view { background: radial-gradient(120% 90% at 40% 35%, #1c262b, #0c1114); }
+body.xray header.title h1, body.xray header.title a { color: #e8eced; }
+#legend { position: fixed; left: 16px; top: calc(96px + env(safe-area-inset-top)); z-index: 2; width: min(330px, calc(100vw - 32px)); padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 13px; line-height: 1.35; }
+#legend h2 { margin: 0 0 6px; font-size: 13.5px; }
+#legend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+#legend li { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 8px; }
+#legend i { width: 22px; height: 6px; border-radius: 3px; }
+#legend small { color: var(--muted); font-variant-numeric: tabular-nums; }
+#legend p { margin: 8px 0 0; color: var(--muted); font-size: 12.5px; }
 #bar output:empty { display: none; }
 .btn { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg2); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .btn[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -235,6 +246,7 @@ body.walking #view canvas { cursor: crosshair; }
 <button type="button" id="panel-toggle" class="ico" style="--i: var(--i-list)" title="Rooms and systems" aria-expanded="true" aria-controls="panel">Rooms and systems</button>
 <aside id="card" aria-label="What this fitting is" aria-live="polite" hidden></aside>
 
+<aside id="legend" aria-label="What the X-ray shows" hidden></aside>
 <div id="stick" class="walk-only" aria-hidden="true"><i></i></div>
 
 <div id="bar" role="toolbar" aria-label="Model controls">
@@ -292,6 +304,7 @@ body.walking #view canvas { cursor: crosshair; }
     </label>
     <button type="button" class="ico walk-only" id="deck-down" style="--i: var(--i-down)" title="Deck below (Q)">Deck below</button>
     <button type="button" class="ico walk-only" id="deck-up" style="--i: var(--i-up)" title="Deck above (E)">Deck above</button>
+    <button type="button" class="ico" id="fn-xray" aria-pressed="false" style="--i: var(--i-bolt)" title="X-ray: her wiring, through her structure">X-ray</button>
     <button type="button" class="ico" id="walk" aria-pressed="false" style="--i: var(--i-walk)" title="Walk aboard">Walk aboard</button>
     <button type="button" class="ico orbit-only" id="home" style="--i: var(--i-home)" title="Reset view">Reset view</button>
     <button type="button" class="ico" id="fn-help" aria-expanded="false" aria-controls="help" style="--i: var(--i-help)" title="How to move">How to move</button>
