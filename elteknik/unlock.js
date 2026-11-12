@@ -31,9 +31,7 @@
       var s = document.getElementById("sample-size");
       if (s) s.textContent = "PDF · " + m.sample_pages + " sidor · " + mb(m.sample_bytes);
       var meta = document.getElementById("sample-meta");
-      if (meta) meta.textContent = "PDF · " + m.sample_pages + " sidor · kapitel 1 med exempel och övningar";
-      var pages = document.getElementById("stat-pages");
-      if (pages) pages.textContent = m.pages;
+      if (meta) meta.textContent = "Förhandsvisning · PDF · " + m.sample_pages + " sidor · kapitel 1";
       FILES.pdf.label = "PDF · " + mb(m.pdf_bytes);
       FILES.epub.label = "EPUB · " + mb(m.epub_bytes);
     })
