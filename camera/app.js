@@ -5,6 +5,8 @@
  */
 import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261110green1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
+import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261110green1';
+import {stepperFor,syncSteppers} from './steppers.js?v=20261110green1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
 import {lookIcon,kindIcon} from './look-icons.js?v=20261110green1';
@@ -74,12 +76,15 @@ const state={
  auto:saved.auto!==false,
  // Appearance: 'auto' follows the device's light or dark; 'light' and 'dark' are pinned.
  theme:saved.theme==='light'||saved.theme==='dark'?saved.theme:'auto',
+ // Sliders (the owner, 12 November 2026: "I don't like the sliders … sliders need to be accessed by a setting"): off,
+ // every tool is taps, presets and steps; on, each tool also shows its fine control.
+ sliders:saved.sliders===true,
 };
 state.camera.recipe.stamp=!!saved.stamp;
 const current=()=>state.mode==='editor'?state.edit:state.camera;
 function remember(){
  const c=state.camera,r=c.recipe;
- store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},kept:true,ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,auto:state.auto,printer:state.printer,theme:state.theme});
+ store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},kept:true,ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,auto:state.auto,printer:state.printer,theme:state.theme,sliders:state.sliders});
 }
 
 // ---------- The engine and its canvas ----------
@@ -303,7 +308,8 @@ function renderLayers(){
   wrap.append(pick,remove);mix.append(wrap);
  });
  const selected=layers[ctx.active];
- if(hasLookSettings(selected.look)){
+ // The models of a family and its screens are presets in the row below; the sheet is the fine control of a screen.
+ if(state.sliders&&hasLookSettings(selected.look)){
   const settings=document.createElement('button');settings.type='button';settings.className='look-settings-button';settings.innerHTML=icon('settings');
   settings.setAttribute('aria-label','Look settings');settings.title='Look settings';settings.addEventListener('click',openLookSettings);layersEl.append(settings);
  }
@@ -349,17 +355,97 @@ function renderAmount(){
  const a=$('amount');a.value=v;a.style.setProperty('--fillTo',`${v}%`);$('amountValue').textContent=v;
  a.setAttribute('aria-label',`${LOOKS[layer.look].label} intensity`);
  a.disabled=layer.look==='none';
+ renderPresets();
 }
-// In the editor the intensity sits under the layers; in the camera it takes the strip's place at the strip's height,
-// so it never covers the picture's own controls and the viewfinder does not change size.
+// ---------- Presets (presets.js): the chosen Look's, each drawn on this picture ----------
+// Where the strip offered a Look and a slider from 0 to 100, the row under the mix offers the Look set several ways,
+// each named for what it gives and drawn on the photographer's own picture. For a hand-held, a console or a Riso
+// the row begins with the models (the consoles, the inks), then the chosen one's presets.
+const PRESET_THUMB=112;
+const presetTiles=[];
+let presetsDue=false,presetsAt=0;
+function presetChoices(layer){
+ const family=familyFor(layer.look),list=presetsFor(layer.look);
+ const models=family?family.variants.map(([id,name])=>({kind:'model',id,name})):[];
+ return [...models,...(family?list.slice(1):list).map(preset=>({kind:'preset',id:preset.id,name:preset.name,preset}))];
+}
+/** The mix with layer `index` set as a choice of the row sets it: the model, or the preset on the model it has. */
+function withChoice(layers,index,choice){
+ const old=layers[index],out=layers.map(l=>({...l}));
+ if(choice.kind==='model'){
+  const [look,model]=choice.id.split(':'),same=variantFor(old)===choice.id;
+  // Another model keeps the preset where it has one of that name; the same model, tapped again, is itself once more.
+  const preset=(same?null:presetsFor(look).find(p=>p.id===old.preset))||presetsFor(look)[0];
+  applyPreset(out,index,look,preset,MAX_LAYERS);if(model)out[index].handheld=model;
+ }else{
+  applyPreset(out,index,old.look,choice.preset,MAX_LAYERS);
+  if(old.handheld&&!choice.preset.handheld)out[index].handheld=old.handheld;
+ }
+ return out;
+}
+function renderPresets(){
+ const ctx=current(),layer=ctx.recipe.layers[ctx.active],row=$('presetStrip'),choices=presetChoices(layer);
+ const key=`${layer.look}|${choices.map(c=>c.kind[0]+c.id).join(',')}`;
+ if(row.dataset.key!==key){
+  row.dataset.key=key;row.textContent='';presetTiles.length=0;row.scrollLeft=0;
+  let before=null;
+  for(const choice of choices){
+   const b=document.createElement('button');b.type='button';b.className=`tile preset-tile${before&&before!==choice.kind?' first-preset':''}`;before=choice.kind;
+   b.dataset.kind=choice.kind;b.dataset.preset=choice.id;
+   const face=document.createElement('span');face.className='face';
+   const c=document.createElement('canvas');c.width=c.height=PRESET_THUMB;face.append(c);
+   const name=document.createElement('span');name.className='name';name.textContent=choice.name;
+   b.append(face,name);
+   b.addEventListener('click',()=>choosePreset(choice));
+   row.append(b);presetTiles.push({button:b,canvas:c,choice});
+  }
+ }
+ const chosen=presetOf(layer)?.id,model=variantFor(layer);
+ for(const t of presetTiles){
+  const on=t.choice.kind==='model'?t.choice.id===model:t.choice.id===chosen;
+  t.button.setAttribute('aria-pressed',String(on));
+  t.button.setAttribute('aria-label',`${t.choice.name}${t.choice.kind==='model'?'':`, a preset of ${LOOKS[layer.look].label}`}`);
+ }
+ presetsDue=true;presetsAt=0;
+}
+function choosePreset(choice){
+ const ctx=current();
+ ctx.recipe.layers=withChoice(ctx.recipe.layers,ctx.active,choice);
+ sound('tick');
+ const layer=ctx.recipe.layers[ctx.active];
+ trayChanged({thumbs:true});
+ toast(choice.kind==='model'?LOOKS[layer.look].label:`${lookLabel(layer.look)} · ${choice.name}`,{look:true,ms:900});
+ const tile=presetTiles.find(t=>t.choice.kind===choice.kind&&t.choice.id===choice.id)?.button;
+ if(tile){tile.classList.remove('picked');void tile.offsetWidth;tile.classList.add('picked');}
+}
+/** Each choice of the row, drawn on the picture as choosing it would draw the picture. */
+function drawPresetThumbs(){
+ if(!engine||!presetsDue||$('presetRow').hidden||!presetTiles.length)return;
+ const live=state.mode==='camera',t=performance.now();
+ if(t-presetsAt<(live?900:80))return;
+ const ctx=current(),source=live?'live':'edit';
+ if(!engine.hasSource(source))return;
+ const crop=squareCrop(live?cameraCrop():ctx.recipe.crop,live?videoSize():{width:state.edit.width,height:state.edit.height});
+ let missing=false;
+ for(const tile of presetTiles){
+  let px=null;
+  try{px=engine.sample({...ctx.recipe,layers:withChoice(ctx.recipe.layers,ctx.active,tile.choice),paper:'none'},{source,crop,mirror:live&&state.camera.mirror,width:PRESET_THUMB,height:PRESET_THUMB});}catch{}
+  if(!px){missing=true;continue;}
+  tile.canvas.getContext('2d').putImageData(new ImageData(px.data,PRESET_THUMB,PRESET_THUMB),0,0);tile.canvas.classList.add('drawn');
+ }
+ presetsAt=t;presetsDue=live||missing;
+}
+// In the editor the presets sit under the mix; in the camera they take the strip's place when the chosen Look is
+// tapped again, so the viewfinder does not change size. The slider is under them when Sliders is on (the settings).
 const wide=matchMedia('(min-width:1000px) and (min-aspect-ratio:5/4)');
 function showAmountRow(show){
  // Beside the picture (a wide window) there is room for both.
- const row=$('amountRow'),inCamera=state.mode==='camera'&&!wide.matches;
- if(inCamera&&show&&strip.offsetHeight)row.style.height=`${strip.offsetHeight}px`;else row.style.height='';
- row.hidden=!show;strip.hidden=inCamera&&show;$('lookGroups').hidden=inCamera&&show;
+ const row=$('presetRow'),inCamera=state.mode==='camera'&&!wide.matches;
+ row.hidden=!show;$('amountRow').hidden=!show||!state.sliders;
+ strip.hidden=inCamera&&show;$('lookGroups').hidden=inCamera&&show;
+ if(show){presetsDue=true;presetsAt=0;schedule();}
 }
-function toggleAmount(){if(state.mode==='camera')showAmountRow($('amountRow').hidden);}
+function toggleAmount(){if(state.mode==='camera')showAmountRow($('presetRow').hidden);}
 $('amountDone').addEventListener('click',()=>{sound('tick');showAmountRow(false);});
 /** After any change to the mix: redraw the tray and the picture. */
 function trayChanged({thumbs=false,announce=false,scroll=true}={}){
@@ -373,7 +459,8 @@ function trayChanged({thumbs=false,announce=false,scroll=true}={}){
 function chooseLook(name,{announce=true}={}){
  const ctx=current(),layer=ctx.recipe.layers[ctx.active];
  if(layer.look===name){toggleAmount();return;}
- layer.look=name;layer.amount=1;delete layer.handheld;delete layer.screen;
+ // The Look itself, by its first preset; a second Look the last preset laid over it goes with it.
+ applyPreset(ctx.recipe.layers,ctx.active,name,presetsFor(name)[0],MAX_LAYERS);
  trayChanged({announce});
  // The Looks after this layer are drawn over it, so their thumbnails do not change; the ones before do not either.
 }
@@ -443,7 +530,9 @@ strip.addEventListener('keydown',e=>{
  tiles.get(current().recipe.layers[current().active].look)?.button.focus();
 });
 $('amount').addEventListener('input',e=>{
- const ctx=current();ctx.recipe.layers[ctx.active].amount=e.target.value/100;
+ // A strength set by hand is no preset's any more.
+ const ctx=current(),layer=ctx.recipe.layers[ctx.active];layer.amount=e.target.value/100;
+ if(layer.preset){delete layer.preset;renderPresets();}
  e.target.style.setProperty('--fillTo',`${e.target.value}%`);$('amountValue').textContent=e.target.value;
  if(state.mode==='camera')remember();
  invalidate();
@@ -504,7 +593,7 @@ function loop(t){
  // While the printer prints, the viewfinder (blurred behind it) holds still, so the print moves smoothly.
  if(state.mode==='camera'&&state.camera.running){if(!printer.busy)drawCamera(t);schedule();}
  else if(state.mode==='editor'&&state.edit){if(dirty)drawEditor();if(thumbsDue||dirty)schedule();}
- if(!printer.busy)drawThumbs();
+ if(!printer.busy){drawThumbs();drawPresetThumbs();}
 }
 function videoSize(){const v=$('video');return {width:v.videoWidth||1,height:v.videoHeight||1};}
 /** The part of the camera picture that is kept: the chosen shape, zoomed, centred. */
@@ -652,6 +741,7 @@ function renderCameraChips(){
  setting('autoSetting',{label:state.auto?'On':'Off',on:state.auto,aria:`Auto, the photo set right by itself: ${state.auto?'on':'off'}`});
  setting('printSetting',{label:state.printer?'On':'Off',on:state.printer,aria:`Printer when sharing: ${state.printer?'on':'off'}`});
  setting('soundSetting',{label:state.sound?'On':'Off',icon:state.sound?'sound':'sound-off',aria:`Sounds: ${state.sound?'on':'off'}`});
+ setting('slidersSetting',{label:state.sliders?'On':'Off',on:state.sliders,aria:`Sliders, a fine control under every tool: ${state.sliders?'on':'off'}`});
  setting('themeSetting',{label:THEME_LABELS[state.theme],on:state.theme!=='auto',aria:`Appearance: ${THEME_LABELS[state.theme]}${state.theme==='auto'?` (${resolvedTheme()}, as the device)`:''}`});
  // What is switched on, beside the chevron, so it is never a surprise in the photo.
  const status=[c.timer&&'timer',(r.frame!=='none'||r.paper!=='none')&&'frame',r.trick!=='none'&&'mirror',r.stamp&&'date'].filter(Boolean);
@@ -741,6 +831,17 @@ $('stamp').addEventListener('click',()=>changeSetting(()=>{const r=state.camera.
 $('soundSetting').addEventListener('click',()=>{state.sound=!state.sound;sound('tick');renderCameraChips();remember();});
 $('printSetting').addEventListener('click',()=>{state.printer=!state.printer;sound('tick');renderCameraChips();remember();});
 $('autoSetting').addEventListener('click',()=>{state.auto=!state.auto;sound('tick');renderCameraChips();remember();});
+/** Sliders on or off, everywhere at once: the page says which (styles show or hide every fine control by it). */
+function applySliders(){
+ $('app').dataset.sliders=state.sliders?'on':'off';
+ for(const b of document.querySelectorAll('.sliders-switch')){b.setAttribute('aria-checked',String(state.sliders));}
+ renderCameraChips();
+ if(state.mode==='camera'||state.mode==='editor'){showAmountRow(!$('presetRow').hidden);renderLayers();}
+ syncSteppers();
+}
+function setSliders(on){state.sliders=!!on;sound('tick');remember();applySliders();toast(state.sliders?'Sliders on: a fine control under every tool':'Sliders off',{ms:1600});}
+$('slidersSetting').addEventListener('click',()=>setSliders(!state.sliders));
+for(const b of document.querySelectorAll('.sliders-switch'))b.addEventListener('click',()=>setSliders(!state.sliders));
 // Appearance (the owner, 3 November 2026: "I need Dark and Light mode"): Auto follows the device, Light and Dark are
 // pinned. The page's head script sets the same attribute before the first paint, so a stored choice never flashes.
 const THEMES=['auto','light','dark'],THEME_LABELS={auto:'Auto',light:'Light',dark:'Dark'};
@@ -752,6 +853,11 @@ function applyTheme(){
 }
 lightScheme.addEventListener?.('change',()=>{if(state.theme==='auto'){applyTheme();renderCameraChips();}});
 applyTheme();
+$('app').dataset.sliders=state.sliders?'on':'off';
+// With Sliders off, what was a slider is steps (steppers.js): an adjustment in nine, makeup's strength in five, the
+// crop's zoom in seven, the rubber's size in five.
+for(const [id,steps] of [['adjustSlider',9],['makeupStrength',5],['cropZoom',7],['eraseSize',5]])stepperFor($(id),{steps,onStep:()=>sound('tick')});
+for(const b of document.querySelectorAll('.sliders-switch'))b.setAttribute('aria-checked',String(state.sliders));
 $('themeSetting').addEventListener('click',()=>{state.theme=cycle(THEMES,state.theme);applyTheme();sound('tick');renderCameraChips();remember();});
 $('zoom').addEventListener('click',()=>{const c=state.camera;c.zoom=cycle(ZOOMS,c.zoom);sound('tick');renderCameraChips();refreshThumbs(true);});
 

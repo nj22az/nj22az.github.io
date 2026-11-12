@@ -470,7 +470,7 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .camera.compact .zoom{bottom:64px}
 .camera.compact .exposure-chip{bottom:68px}
 /* The zoom steps aside while the tray is open over the picture. */
-.camera.compact.looks-open .zoom,.camera.compact:has(#amountRow:not([hidden])) .zoom{opacity:0;pointer-events:none}
+.camera.compact.looks-open .zoom,.camera.compact:has(#presetRow:not([hidden])) .zoom{opacity:0;pointer-events:none}
 .layer-pick .more{display:none}
 .camera.compact:not(.looks-open) .layer.active:not(.removable) .layer-pick .more{display:inline-block;width:13px;height:13px;margin-left:4px;vertical-align:-1px;transform:rotate(180deg);stroke-width:2.6}
 /* The first screen starts the camera with its own button: no shutter under it, and no empty album corner. */

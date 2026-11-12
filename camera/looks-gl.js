@@ -1437,11 +1437,46 @@ export function faceUniform(recipe,crop={x:0,y:0,w:1,h:1},mirror=false){
 }
 export const PAPERS=Object.freeze([{id:'none',label:'None'},{id:'drawing',label:'Drawing'},{id:'rough',label:'Rough'},{id:'warm',label:'Warm'}]);
 
+/*
+ * A Look's preset (presets.js; the owner, 12 November 2026: "have many presets to make the shaders to look awesome"):
+ * a layer may carry the name of the preset it was set by (`preset`) and what that preset adds to the picture's
+ * adjustments while its Look is in the mix (`tune`: light, contrast, colour, warmth, pattern and detail from -1 to 1,
+ * pop from 0 to 1). The numbers travel with the layer, so a saved photo draws the same after the presets change; the
+ * photographer's own adjustments (recipe.adjust, recipe.pop) are left as they set them, and tuned() adds the two.
+ */
+const TUNE_KEYS=Object.freeze(['light','contrast','colour','warmth','pattern','detail']);
+export function normalTune(tune){
+ if(!tune||typeof tune!=='object')return null;
+ const out={};
+ for(const k of TUNE_KEYS){const v=+tune[k];if(Number.isFinite(v)&&v!==0)out[k]=Math.max(-1,Math.min(1,v));}
+ const pop=+tune.pop;if(Number.isFinite(pop)&&pop>0)out.pop=Math.min(1,pop);
+ return Object.keys(out).length?out:null;
+}
+const layerPreset=l=>{
+ const out={},tune=normalTune(l?.tune);
+ if(typeof l?.preset==='string'&&/^[a-z0-9-]{1,32}$/.test(l.preset))out.preset=l.preset;
+ if(tune)out.tune=tune;
+ // The second Look a preset laid over the first (presets.js applyPreset).
+ if(l?.mate===true)out.mate=true;
+ return out;
+};
+/** The adjustments a recipe is drawn with: the photographer's own and what the presets of its Looks add. */
+export function tuned(recipe){
+ const adjust={...recipe.adjust};let pop=recipe.pop||0;
+ for(const l of recipe.layers||[]){
+  if(!l.tune||!(l.amount>0))continue;
+  for(const k of TUNE_KEYS)if(l.tune[k])adjust[k]=(adjust[k]||0)+l.tune[k];
+  pop+=l.tune.pop||0;
+ }
+ for(const k of TUNE_KEYS)adjust[k]=Math.max(-1,Math.min(1,adjust[k]||0));
+ return {adjust,pop:Math.max(0,Math.min(1,pop))};
+}
+
 /** A recipe with every field present and in range. */
 export function normalRecipe(recipe={}){
  const n=(v,lo,hi,d)=>Number.isFinite(+v)?Math.min(hi,Math.max(lo,+v)):d;
  const layers=(Array.isArray(recipe.layers)?recipe.layers:[]).slice(0,3)
-  .map(l=>({look:Object.hasOwn(LOOKS,l?.look)?l.look:'none',amount:n(l?.amount,0,1,1),...layerOptions(l)}));
+  .map(l=>({look:Object.hasOwn(LOOKS,l?.look)?l.look:'none',amount:n(l?.amount,0,1,1),...layerOptions(l),...layerPreset(l)}));
  if(!layers.length)layers.push({look:'none',amount:1});
  const a=recipe.adjust||{};
  // Stickers (stickers.js): centre, height as a share of the picture's height, angle in degrees, mirrored or not; a
@@ -1743,7 +1778,7 @@ export function createLookEngine(canvas,{light=false}={}){
 
  const f1=(l,v)=>{if(l)gl.uniform1f(l,v);};
  function prepare(recipe,source,crop,mirror,w,h,smooth,auto){
-  const a=recipe.adjust,s=sources.get(source);
+  const {adjust:a,pop}=tuned(recipe),s=sources.get(source);
   const meanLod=Math.max(0,Math.log2(Math.max(crop.w*s.width,crop.h*s.height)/3));
   const popLod=Math.max(0,Math.log2(Math.max(crop.w*s.width,crop.h*s.height)/48));
   // A Look that draws lines finds them in the detail of a picture about as tall as its patterns are sized for (the
@@ -1758,7 +1793,7 @@ export function createLookEngine(canvas,{light=false}={}){
    const shrink=Math.max(crop.w*s.width/w,crop.h*s.height/h);
    f1(u.uEnhance,recipe.enhance||0);f1(u.uEnhanceLod,Math.max(0,Math.log2(shrink)));
    // Pop's large shapes: the source's mipmap level about 48 texels across the crop, one of its texels as a step.
-   f1(u.uPop,recipe.pop||0);f1(u.uPopLod,popLod);
+   f1(u.uPop,pop);f1(u.uPopLod,popLod);
    if(u.uPopStep)gl.uniform2f(u.uPopStep,2**popLod/(crop.w*s.width),2**popLod/(crop.h*s.height));
    if(u.uEnhanceStep)gl.uniform2f(u.uEnhanceStep,Math.max(1/w,1/(crop.w*s.width)),Math.max(1/h,1/(crop.h*s.height)));
    if(u.uDown)gl.uniform3f(u.uDown,crop.w/w,crop.h/h,shrink>1.05?Math.max(0,Math.log2(shrink)-1):-1);
@@ -1810,7 +1845,7 @@ export function createLookEngine(canvas,{light=false}={}){
   const face=faceUniform(recipe,crop,mirror);
   steps.forEach(({layer,entry,paper,display},i)=>{
    const last=i===steps.length-1&&!intoPair;
-   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],paper?paperUniforms(recipe,width,height):display?displayUniforms(layer,width,height):lookUniforms(layer.amount,width,height,recipe.adjust.pattern,.5,recipe.focus??-1,layer,face),tile);
+   pass(entry,p.items[read].t,last?output:p.items[1-read].f,last?vp:[0,0,width,height],paper?paperUniforms(recipe,width,height):display?displayUniforms(layer,width,height):lookUniforms(layer.amount,width,height,tuned(recipe).adjust.pattern,.5,recipe.focus??-1,layer,face),tile);
    read=1-read;
   });
   return intoPair?p.items[read].f:true;

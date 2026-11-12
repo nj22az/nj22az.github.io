@@ -205,6 +205,7 @@ def sprite():
                  + solid(poly([(17.2, 2.4), (20.6, 8.6), (13.6, 8.2)], .8)) + solid(poly([(6.8, 21.6), (3.4, 15.4), (10.4, 15.8)], .8)))
     s['dice'] = soft(rrect(3, 3, 18, 18, 4.5)) + dot(8, 8, 1.7) + dot(16, 8, 1.7) + dot(12, 12, 1.7) + dot(8, 16, 1.7) + dot(16, 16, 1.7)
     s['plus'] = line(polyline([(12, 4.5), (12, 19.5)]), 3) + line(polyline([(4.5, 12), (19.5, 12)]), 3)
+    s['minus'] = line(polyline([(4.5, 12), (19.5, 12)]), 3)
     s['x'] = line(polyline([(6, 6), (18, 18)]), 3) + line(polyline([(18, 6), (6, 18)]), 3)
     s['share'] = soft(rrect(4, 10, 16, 11.5, 2.8)) + line(polyline([(12, 15), (12, 3.2)])) + line(polyline([(8, 7), (12, 3), (16, 7)]))
     s['download'] = line(polyline([(12, 3), (12, 14.4)])) + line(polyline([(7.6, 10.4), (12, 14.8), (16.4, 10.4)])) + solid(rrect(3.5, 17.6, 17, 3.6, 1.8))
