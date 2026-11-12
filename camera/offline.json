@@ -1,6 +1,6 @@
 {
   "version": "20261112fun1",
-  "bytes": 46327676,
+  "bytes": 46388745,
   "files": [
     {
       "url": "/camera/album.js",
@@ -159,8 +159,8 @@
     },
     {
       "url": "/camera/frames.js",
-      "sha256": "9e47b6247e9b6f73c7f8b05a1c9c769b33fc8c4df52262791d7d794179584e40",
-      "bytes": 8884
+      "sha256": "298c8e1c508b64c4cd5857b44317447b272ade03c3d164dc37759f05689b1aca",
+      "bytes": 10155
     },
     {
       "url": "/camera/frames/adventure.png",
@@ -169,8 +169,8 @@
     },
     {
       "url": "/camera/frames/cute.json",
-      "sha256": "6b7996f8f0afb61f394c9e064424c371794099ebc88f712def519d42ac097e1f",
-      "bytes": 26915
+      "sha256": "c4123847ceb71f7705bd1b1d479f7c4320bfeba5bc3282c2b87bfab0b5561b6e",
+      "bytes": 86713
     },
     {
       "url": "/camera/frames/frames.json",

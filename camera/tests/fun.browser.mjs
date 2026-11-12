@@ -48,16 +48,35 @@ try{
   if(shots)await page.screenshot({path:join(shots,'fun-presets.png')});
   await page.click('#amountDone');await page.waitForSelector('#presetRow[hidden]',{state:'attached'});
  });
- await check('the frames are the drawn ones: None and sixteen, no pixel frame offered',async()=>{
+ await check('the frames are the drawn ones: None, twenty-one frames and five face cutouts, no pixel frame offered',async()=>{
   await page.click('#settingsToggle');await page.click('#frameSetting');await page.waitForSelector('#frameSheet[open] .frame-choice');
   const frames=await page.$$eval('#cameraFrames .frame-choice',els=>els.map(e=>e.dataset.frame));
-  assert.equal(frames[0],'none');assert.equal(frames.length,17,frames.join(' '));
+  assert.equal(frames[0],'none');assert.equal(frames.length,27,frames.join(' '));
+  for(const id of ['tet','summer','halloween','easter','christmas','frog-pond','sunflower','astronaut','daruma','snowman'])assert.ok(frames.includes(id),id);
   for(const id of ['print','panel','film','scallop','hearts','starry','tape','clouds','stamp','confetti','peek','telly','harbour-day','blossom','festival','ticket-day'])assert.ok(frames.includes(id),id);
   for(const old of ['pocket','harbour','sakura','ticket','matsuri','hello'])assert.ok(!frames.includes(old),`${old} is no longer offered`);
   await page.click('#cameraFrames .frame-choice[data-frame="peek"]');
   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.frame==='peek');
   if(shots)await page.screenshot({path:join(shots,'fun-frame.png')});
   await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.frame='none';});
+ });
+ await check('a face cutout is a board over the whole picture with a hole where the face goes, on any shape of picture',async()=>{
+  const report=await page.evaluate(async()=>{
+   const m=await import('./frames.js?v='+document.querySelector('script[src^="app.js"]').src.split('v=')[1]),rows=[];
+   for(const id of ['frog-pond','sunflower','astronaut','daruma','snowman'])for(const [w,h] of [[400,300],[300,400],[320,320],[640,360]]){
+    const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.fillStyle='#ff00ff';g.fillRect(0,0,w,h);
+    m.drawFrame(g,id,w,h);
+    const at=(x,y)=>{const d=g.getImageData(Math.round(x),Math.round(y),1,1).data;return d[0]===255&&d[1]===0&&d[2]===255;},win=m.frameWindow(id,w,h),inner=m.frameInner(id,w,h);
+    rows.push({id,w,h,hole:at(win.x+win.w/2,win.y+win.h/2),corners:[at(2,2),at(w-3,2),at(2,h-3),at(w-3,h-3)],inside:win.x>=0&&win.y>=0&&win.x+win.w<=w&&win.y+win.h<=h,share:win.w*win.h/(w*h),whole:inner.w===w&&inner.h===h});
+   }
+   return {rows,none:m.frameWindow('print',400,300)};
+  });
+  for(const r of report.rows){
+   assert.ok(r.hole,`${r.id} ${r.w}×${r.h}: the picture shows through the hole`);
+   assert.deepEqual(r.corners,[false,false,false,false],`${r.id} ${r.w}×${r.h}: the board reaches every corner`);
+   assert.ok(r.inside&&r.share>.08&&r.share<.4&&r.whole,JSON.stringify(r));
+  }
+  assert.equal(report.none,null,'a frame that is no cutout has no window');
  });
  await check('Sliders is a setting: on, the fine controls return; it is remembered',async()=>{
   if(!await page.$('#settings:not([hidden]) #slidersSetting'))await page.click('#settingsToggle');

@@ -30,6 +30,10 @@ when saving ? I want memory with our own photos or with the stickers".
   the photo's own size, the same on a thumbnail and on sixteen megapixels, in the viewfinder and in the save alike.
   The date stays in the picture's own corner; stickers and balloons may cross the border. In the camera, **Frame** in
   the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
+- **The year's frames and the face cutouts** (the owner, 12 November 2026: "And frames too, and cutouts, like a frog
+  costume at the pond could have a cutout for the face, think extremely playful"): Tết, Summer, Halloween, Easter and
+  Christmas frames, and five cutouts (Frog, Sunflower, Astronaut, Daruma, Snowman), each a painted board over the whole
+  picture with a hole where your face goes. Drawn after v2026.11.12.1 and **not yet published**.
 - **The pixel frames** of October (Pocket, Harbour, Sakura, Ticket, Matsuri, Hello, Island Post, Shop Day;
   `tools/draw-camera-frames.py`, four shades, a 16-pixel border) are no longer offered. They are still drawn, so a photo
   framed in one keeps it and shows it among the choices when edited. The Game Boy Looks themselves stay (the owner:

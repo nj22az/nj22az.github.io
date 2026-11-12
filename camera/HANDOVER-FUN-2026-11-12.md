@@ -96,11 +96,18 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
    Halloween (5, beside the Blender sheet) and Christmas (5). `seasons()` in `tools/draw-cute-stickers.py`. The sticker
    suite passes with them (the Season tab runs the year from today: in November Christmas first). **Before the next
    push to main**: a new release key and version (the bundle changed: 718 files, 46.3 MB), then the whole regression.
-2. **Seasonal frames and face cutouts** ("like a frog costume at the pond could have a cutout for the face, think
-   extremely playful"). Plan: a frame of kind cutout in `frames/cute.json`, a painted board with a hole, drawn from
-   `cute_hand.Drawing.paths()` (path data the browser draws at any size; `cut` is the hole); live in the viewfinder
-   the face is put in the hole as at a real board; in the editor the photo's found face (`recipe.makeup.face`) is
-   brought to the hole by the crop.
+2. ~~Seasonal frames and face cutouts~~ **Drawn after the publication, on the branch, not published**: five frames
+   for the year (Tết, Summer, Halloween, Easter, Christmas; Festival was there) and five **face cutouts** (Frog at the
+   pond, Sunflower, Astronaut, Daruma, Snowman): a painted board over the whole picture with a hole where a face goes,
+   as stands at a festival. `cutouts()` in `tools/draw-camera-cute-frames.py` draws them with the stickers' kit and
+   writes them as path data into `frames/cute.json` (`cutouts`: `window`, `hole`, `shapes`); `frames.js drawCutout`
+   draws one in a square of 100 whose middle 72 is the picture's shorter side, so the somebody is whole on any shape
+   of picture. They are among the frames in the Frame sheet and the editor's Frame tab; in the viewfinder you put
+   your face in the hole as at a real board. **Still to do**: in the editor, bring the photo's found face
+   (`recipe.makeup.face`) to the hole by the crop (`frames.js frameWindow(id, w, h)` says where the hole is); until
+   then Crop does it by hand. A bug found on the way: `cute_hand.Drawing.paths()` lost closed outlines that ended
+   exactly where they began (a line cannot be simplified against a chord of no length); fixed, and the fun suite
+   checks every cutout on four shapes of picture.
 3. **The whole interface in the playful style** ("Redraw the whole ui in the playful style, so it's fun to use the
    app"), and the sliders' own look when Sliders is on. Nothing of it is in this release beyond the icons, the preset
    row and the steppers. References studied: Sanrio (pills, 20–24 px cards, soft low shadows), YOHO Brewing
