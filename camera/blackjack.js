@@ -1,4 +1,4 @@
-import {createResultShare} from './social-share.js?v=20261110green1';
+import {createResultShare} from './social-share.js?v=20261112fun1';
 /**
  * Pocket Camera Blackjack — a friendly, no-stakes game with one 52-card deck.
  * Dealer stands on all 17s, including soft 17. No betting, splitting or insurance.

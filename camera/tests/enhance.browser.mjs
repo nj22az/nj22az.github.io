@@ -17,7 +17,7 @@ try{
   const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile,reducedMotion:'reduce',serviceWorkers:'block'}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},printer:false,auto:false})));
+  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},printer:false,auto:false})));
   const check=async(name,fn)=>{await fn();checks++;console.log(`ok  ${label}: ${name}`);};
   try{
    if(process.env.CAMERA_BASELINE)await page.route('**/camera/looks-gl-baseline.js',async route=>route.fulfill({contentType:'text/javascript',body:await readFile(process.env.CAMERA_BASELINE,'utf8')}));

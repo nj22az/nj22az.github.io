@@ -226,6 +226,11 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 .sticker-sets>:first-child{margin-left:auto}.sticker-sets>:last-child{margin-right:auto}
 .sticker-sets button{flex:none;height:30px;padding:0 13px;border-radius:15px;background:var(--fill);font-size:13px;font-weight:600;white-space:nowrap}
 .sticker-sets button[aria-selected="true"]{background:var(--chip-on);color:var(--chip-on-label)}
+/* More sheets than one row holds (the camera's own sheets, 12 November 2026): over the camera the tabs take a second
+   row, so none is cut off or out of sight. (In the editor the row scrolls: camera-ui.css.) */
+.sticker-sets{flex-wrap:wrap;justify-content:center;row-gap:6px}
+.editor .sticker-sets{justify-content:flex-start}   /* a scrolling row starts at its first tab: centred, its head could not be reached */
+.sticker-sets>:first-child,.sticker-sets>:last-child{margin-left:0;margin-right:0}
 .sticker-sets button.locked{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:34px;padding:0 10px}.sticker-sets button.locked svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* The secret sheet's tab, before it is won: what it is and how to open it. */
 .sticker-locked{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 16px;text-align:center;color:var(--label-2);font-size:13px;line-height:1.4}
@@ -245,6 +250,12 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 /* The own sheet: make one from a photo, paste a lifted subject, and the ones made, each with its own remove. */
 .sticker-choice.make{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--label-3);background:none;color:var(--label-2);font-size:11px;font-weight:600}
 .sticker-choice.make svg{width:26px;height:26px}
+/* The sticker box: a tile that takes a picture from the keyboard's stickers, a paste or a drop. Its field covers the
+   tile and shows nothing of its own; 16 px so an iPhone does not zoom in on it. */
+.sticker-box{position:relative}
+.sticker-box:focus-within{border-style:solid;border-color:var(--accent);color:var(--label)}
+.sticker-catch{position:absolute;inset:0;border-radius:inherit;overflow:hidden;font-size:16px;line-height:1;color:transparent;caret-color:transparent;outline:none;cursor:pointer;-webkit-user-select:text;user-select:text}
+.sticker-catch img{display:none}
 .sticker-choice.mine{position:relative}
 .sticker-choice .mine-remove{position:absolute;top:2px;right:2px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(28,28,30,.85);color:var(--label-2)}
 .sticker-choice .mine-remove svg{width:13px;height:13px;stroke-width:2.4}

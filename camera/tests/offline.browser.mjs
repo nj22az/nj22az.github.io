@@ -59,7 +59,7 @@ try{
    const a=window.pocketCamera,e=a.state.edit,m=await import('/camera/looks-gl.js?v=20261031offline1');
    for(const look of m.LOOK_NAMES){const pixels=a.engine.render(m.normalRecipe({layers:[{look,amount:1}]}),{source:'edit',width:64,height:48});if(pixels.data.length!==64*48*4)throw Error('Failed '+look);}
    const source=e.sourceBlob;const match=await a.shuffle();if(!match)throw Error('No offline match');
-   const {loadStickerSets}=await import('/camera/stickers.js?v=20261110green1');await loadStickerSets();a.editStickers.add('thao-pixar/Peace');a.editStickers.select(null);e.recipe.crop={x:.1,y:.1,w:.8,h:.8};e.recipe.frame='harbour';e.recipe.paper='warm';a.chooseLook(e.recipe.layers[0].look);
+   const {loadStickerSets}=await import('/camera/stickers.js?v=20261112fun1');await loadStickerSets();a.editStickers.add('thao-pixar/Peace');a.editStickers.select(null);e.recipe.crop={x:.1,y:.1,w:.8,h:.8};e.recipe.frame='harbour';e.recipe.paper='warm';a.chooseLook(e.recipe.layers[0].look);
    return {sameSource:e.sourceBlob===source,looks:m.LOOK_NAMES.length,tested:match.tested,recipe:e.recipe};
   });assert.equal(result.sameSource,true);assert.ok(result.looks>=33&&result.tested>0);await page.screenshot({path:join(shots,'phone-offline-edit.png')});
   await page.click('#saveEdit');await page.waitForFunction(()=>window.pocketCamera.state.mode==='viewer');saved=await page.evaluate(async()=>{const s=window.pocketCamera.state.viewing;return {id:s.id,type:s.photo.type,bytes:s.photo.size,source:s.source.size,data:await s.photo.arrayBuffer().then(b=>Array.from(new Uint8Array(b)))};});assert.equal(saved.type,'image/jpeg');assert.ok(saved.bytes>1000&&saved.source>1000);await writeFile(join(shots,'offline-saved.jpg'),Buffer.from(saved.data));

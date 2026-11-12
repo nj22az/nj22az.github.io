@@ -81,7 +81,38 @@
      "d": "M3.3 3.1H5.5A1.5 1.5 0 0 1 7 4.6V5.8A1.5 1.5 0 0 1 5.5 7.3H3.3A1.5 1.5 0 0 1 1.8 5.8V4.6A1.5 1.5 0 0 1 3.3 3.1Z",
      "fill": "#efe9d9"
     }
-   ]
+   ],
+   "print": {
+    "colour": "#e7a23b",
+    "size": 2.4,
+    "away": 10.3,
+    "words": [
+     {
+      "text": "MINATO 400",
+      "edge": "near",
+      "at": 0.06,
+      "align": "left"
+     },
+     {
+      "text": "▶ 12",
+      "edge": "near",
+      "at": 0.94,
+      "align": "right"
+     },
+     {
+      "text": "JOHANSSON WORLD",
+      "edge": "far",
+      "at": 0.06,
+      "align": "left"
+     },
+     {
+      "text": "12A",
+      "edge": "far",
+      "at": 0.5,
+      "align": "center"
+     }
+    ]
+   }
   },
   {
    "id": "scallop",

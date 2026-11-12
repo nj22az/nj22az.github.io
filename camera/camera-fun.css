@@ -47,7 +47,3 @@
 .step-pips i.lit{background:var(--accent-fill)}
 .step-pips i.at{transform:scaleY(1.5)}
 .step-pips i.zero:not(.lit){background:var(--label-3)}
-.sliders-row{margin-top:6px;padding-top:10px;border-top:1px solid var(--separator)}
-.sliders-row .enhance-copy{display:grid;gap:2px;min-width:0}
-.sliders-row .enhance-copy>span{font-weight:650}
-.sliders-row .enhance-copy small{font-size:.75rem;color:var(--label-3)}

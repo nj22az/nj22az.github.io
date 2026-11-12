@@ -114,6 +114,16 @@ function drawDrawn(g,f,w,h){
   g.save();g.transform(u,0,0,u,cx,cy);paint(g,motif,u);g.restore();
  });
  if(f.rim){g.beginPath();g.roundRect(x,y,iw,ih,radius);g.strokeStyle=f.rim.colour;g.lineWidth=f.rim.width*u;g.lineJoin='round';g.stroke();}
+ // Film's edge print, along its bands (the photo's longer sides): the one lettering on a frame.
+ if(f.print){
+  const across=!(f.turn&&h>w),length=across?w:h,depth=across?h:w;
+  g.fillStyle=f.print.colour;g.font=`700 ${f.print.size*u}px "Helvetica Neue",Arial,sans-serif`;g.textBaseline='middle';
+  for(const word of f.print.words){
+   const along=length*word.at,away=word.edge==='far'?depth-f.print.away*u:f.print.away*u;
+   g.save();if(across)g.translate(along,away);else{g.translate(away,along);g.rotate(Math.PI/2);}
+   g.textAlign=word.align;g.fillText(word.text,0,0);g.restore();
+  }
+ }
  for(const mark of f.marks||[]){
   g.save();g.translate(mark.at[0]*w+(mark.dx||0)*u,mark.at[1]*h+(mark.dy||0)*u);g.rotate((mark.rotate||0)*Math.PI/180);g.scale(u,u);paint(g,mark,u);g.restore();
  }

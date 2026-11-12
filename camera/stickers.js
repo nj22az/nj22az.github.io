@@ -18,23 +18,25 @@ import {isEffect,drawEffect,effectLabel} from './effects.js?v=20261029b';
 import {viewDetail} from './zoom-view.js?v=20261104ui1';
 
 const MANIFEST=new URL('./stickers/stickers.json?v=20261109-contour2',import.meta.url);
-// The camera's own sheet of manga marks (tools/draw-manga-marks.py): under the Manga tab with the lines, never a deck
-// for Memory or a greeting (its `kind`).
-const MARKS=new URL('./stickers/marks.json',import.meta.url);
-// The camera's Halloween sheet (tools/blender/render-halloween-stickers.py): World's Halloween things and new ones,
-// modelled in Blender. Its tab is Halloween; its headpieces (entries with `hat`) are also face stickers (face-stamps.js).
-const SEASON=new URL('./stickers/halloween.json',import.meta.url);
-// The Pocket faces (tools/draw-pocket-faces.mjs): the secret sheet, locked until a game is won (unlocks.js); its faces
-// still turn up on errors (pocket-faces.js).
-const SECRET=new URL('./stickers/pocket-faces.json',import.meta.url);
+// The camera's own sheets, each in its own file beside the manifest and listed in stickers/sheets.json (the owner,
+// 12 November 2026: "can you make a function to add stickers easily?"). A tool that draws or cuts a sheet adds it to the
+// list (tools/cut-sticker-sheet.py for a picture of a sheet, tools/draw-cute-stickers.py for the drawn friends), so a
+// new sheet needs no change here. A sheet says where it goes and what it is: its `tab`; its `kind` (marks: under Manga
+// with the lines; season: under Season, by its months `when`; secret: locked until a game is won, unlocks.js; cute,
+// things, studio: stickers and nothing more), and a sheet with a kind never greets; `deck` makes it one of Memory's
+// decks. The Halloween sheet's headpieces (entries with `hat`) are also face stickers (face-stamps.js).
+const SHEETS=new URL('./stickers/sheets.json',import.meta.url);
+const FIRST_SHEETS=['marks.json','halloween.json','pocket-faces.json'];      // what the camera had before the list
 let loading;
 const byId=new Map(),images=new Map();
 
 /** The sticker sets, loaded once. */
 export function loadStickerSets(){
  loading??=Promise.all([fetch(MANIFEST).then(r=>{if(!r.ok)throw new Error('No stickers');return r.json();}),
-  ...[MARKS,SEASON,SECRET].map(url=>fetch(url).then(r=>r.ok?r.json():null).catch(()=>null))]).then(([m,...own])=>{
-  for(const sheet of own)if(sheet?.stickers?.length)m.sets.push(sheet);
+  fetch(SHEETS).then(r=>r.ok?r.json():null).catch(()=>null)]).then(async([m,list])=>{
+  const files=(Array.isArray(list?.sheets)&&list.sheets.length?list.sheets:FIRST_SHEETS).filter(f=>/^[a-z0-9-]+\.json$/.test(f));
+  const own=await Promise.all(files.map(f=>fetch(new URL(`./stickers/${f}`,import.meta.url)).then(r=>r.ok?r.json():null).catch(()=>null)));
+  for(const sheet of own)if(sheet?.stickers?.length&&!m.sets.some(set=>set.id===sheet.id))m.sets.push(sheet);
   for(const set of m.sets)for(const s of set.stickers){
    s.url=new URL(`./stickers/${s.src}`,import.meta.url).href;s.thumbUrl=new URL(`./stickers/${s.thumb}`,import.meta.url).href;s.set=set.name;s.who=set.who??set.name;byId.set(s.id,s);
   }

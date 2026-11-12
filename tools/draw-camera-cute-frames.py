@@ -61,10 +61,16 @@ def frames():
                 'inset': [5, 5, 5, 5], 'radius': 1.8, 'ground': WHITE, 'rim': {'colour': INK, 'width': 1.5},
                 'marks': [{'d': burst(0, 0, 8.6, 10, .7, .5), 'fill': SUN, 'stroke': INK, 'width': 1.1, 'at': [0, 0], 'dx': 9.2, 'dy': 9.2, 'rotate': -10}]})
 
-    # Film: a strip with round-cornered holes; the bands lie along the photo's longer sides.
+    # Film: a strip with round-cornered holes; the bands lie along the photo's longer sides. Its edge print is the one
+    # lettering on any frame, kept from the brand round of 9 November 2026: the stock's name and frame number on the
+    # near edge, its maker, Johansson World, on the far one, in the amber a film's edge is exposed with. `edge` is
+    # the band (near: top, or left when turned), `at` how far along it, `away` how far in from the photo's edge.
     out.append({'id': 'film', 'label': 'Film', 'hint': 'A strip of film, its holes round-cornered',
                 'inset': [12, 1.8, 12, 1.8], 'turn': True, 'radius': 1.4, 'ground': '#1d2b29',
-                'runs': [{'sides': 'tb', 'at': 'outer', 'tile': 8.8, 'pad': 2, 'd': centred(4.4, 5.2, 5.2, 4.2, 1.5), 'fill': '#efe9d9'}]})
+                'runs': [{'sides': 'tb', 'at': 'outer', 'tile': 8.8, 'pad': 2, 'd': centred(4.4, 5.2, 5.2, 4.2, 1.5), 'fill': '#efe9d9'}],
+                'print': {'colour': '#e7a23b', 'size': 2.4, 'away': 10.3, 'words': [
+                    {'text': 'MINATO 400', 'edge': 'near', 'at': .06, 'align': 'left'}, {'text': '▶ 12', 'edge': 'near', 'at': .94, 'align': 'right'},
+                    {'text': 'JOHANSSON WORLD', 'edge': 'far', 'at': .06, 'align': 'left'}, {'text': '12A', 'edge': 'far', 'at': .5, 'align': 'center'}]}})
 
     # Scallop: a soft pink mount whose window is cut in scallops.
     bump = 'M-.1 -.3H4.7V0A2.35 2.35 0 0 1 -.1 0Z'

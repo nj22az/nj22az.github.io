@@ -3,18 +3,19 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261110green1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261112fun1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
-import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261110green1';
-import {stepperFor,syncSteppers} from './steppers.js?v=20261110green1';
+import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261112fun1';
+import {stepperFor,syncSteppers} from './steppers.js?v=20261112fun1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
-import {lookIcon,kindIcon} from './look-icons.js?v=20261110green1';
+import {lookIcon,kindIcon} from './look-icons.js?v=20261112fun1';
 import {prepareOffline} from './offline.js?v=20261105games1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261110green1';
-import {makeSticker} from './cutout.js?v=20261031-contour1';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261110green1';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261112fun1';
+import {makeSticker} from './cutout.js?v=20261112fun1';
+import {cutSheet} from './sticker-sheet.js?v=20261112fun1';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261112fun1';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261104ui1';
@@ -22,16 +23,16 @@ import {normaliseMakeup,applyMakeup,makeupActive,makeupPixels,makeupFaces,faceCr
 import {createMakeupGuide} from './makeup-guide.js?v=20261104ui1';
 import {createPrinter} from './printer.js?v=20261030share1';
 import {normaliseStamps,stampsActive,stampsLabel,characterOf,characterStamps,CHARACTERS,drawFaceStamps,loadStampImages,stampImages,hatChoices,partPreview,moodLabel,BROW_STYLES,BROW_LABELS,BROW_COLOURS,EYE_STYLES,EYE_COLOURS} from './face-stamps.js?v=20261104ui1';
-import {createMemory} from './memory.js?v=20261110green1';
+import {createMemory} from './memory.js?v=20261112fun1';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
-import {createBlackjack} from './blackjack.js?v=20261110green1';
-import {createSolitaire} from './solitaire.js?v=20261110green1';
+import {createBlackjack} from './blackjack.js?v=20261112fun1';
+import {createSolitaire} from './solitaire.js?v=20261112fun1';
 import {makeBackup,restoreBackup,albumStorage,formatBytes} from './backup.js?v=20261102fun1';
 import {createZoomView,viewZoom,viewDetail} from './zoom-view.js?v=20261104ui1';
 import {findFaces,findPerson,guideFromFace,syncFaceToGuide,warmFacePack} from './face-pack.js?v=20261104ui1';
-import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261110green1';
+import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261112fun1';
 import {autoLevels} from './auto.js?v=20261104ui1';
-import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261105fun1';
+import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261112fun1';
 import {pocketFace,errorFace} from './pocket-faces.js?v=20261105fun1';
 
 const $=id=>document.getElementById(id);
@@ -834,14 +835,12 @@ $('autoSetting').addEventListener('click',()=>{state.auto=!state.auto;sound('tic
 /** Sliders on or off, everywhere at once: the page says which (styles show or hide every fine control by it). */
 function applySliders(){
  $('app').dataset.sliders=state.sliders?'on':'off';
- for(const b of document.querySelectorAll('.sliders-switch')){b.setAttribute('aria-checked',String(state.sliders));}
  renderCameraChips();
  if(state.mode==='camera'||state.mode==='editor'){showAmountRow(!$('presetRow').hidden);renderLayers();}
  syncSteppers();
 }
 function setSliders(on){state.sliders=!!on;sound('tick');remember();applySliders();toast(state.sliders?'Sliders on: a fine control under every tool':'Sliders off',{ms:1600});}
 $('slidersSetting').addEventListener('click',()=>setSliders(!state.sliders));
-for(const b of document.querySelectorAll('.sliders-switch'))b.addEventListener('click',()=>setSliders(!state.sliders));
 // Appearance (the owner, 3 November 2026: "I need Dark and Light mode"): Auto follows the device, Light and Dark are
 // pinned. The page's head script sets the same attribute before the first paint, so a stored choice never flashes.
 const THEMES=['auto','light','dark'],THEME_LABELS={auto:'Auto',light:'Light',dark:'Dark'};
@@ -857,7 +856,6 @@ $('app').dataset.sliders=state.sliders?'on':'off';
 // With Sliders off, what was a slider is steps (steppers.js): an adjustment in nine, makeup's strength in five, the
 // crop's zoom in seven, the rubber's size in five.
 for(const [id,steps] of [['adjustSlider',9],['makeupStrength',5],['cropZoom',7],['eraseSize',5]])stepperFor($(id),{steps,onStep:()=>sound('tick')});
-for(const b of document.querySelectorAll('.sliders-switch'))b.setAttribute('aria-checked',String(state.sliders));
 $('themeSetting').addEventListener('click',()=>{state.theme=cycle(THEMES,state.theme);applyTheme();sound('tick');renderCameraChips();remember();});
 $('zoom').addEventListener('click',()=>{const c=state.camera;c.zoom=cycle(ZOOMS,c.zoom);sound('tick');renderCameraChips();refreshThumbs(true);});
 
@@ -1141,7 +1139,7 @@ async function memorySources(){
  const day=s=>new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'});
  return [
   {id:'photos',name:'Your photos',kind:'photo',items:state.shots.map(s=>({id:s.id,blob:s.thumb||s.photo,label:s.sampleLabel||`Your photo of ${day(s)}`}))},
-  ...[...residentSets(manifest),...secretSets(manifest)].map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
+  ...[...residentSets(manifest),...deckSets(manifest),...secretSets(manifest)].map(set=>({id:`set:${set.name}`,name:set.name,kind:'sticker',items:set.stickers.map(s=>({id:s.id,url:s.url,label:`${set.name}: ${s.gloss||s.line}`}))})),
   {id:'mine',name:'Your stickers',kind:'sticker',items:mine.map(m=>stickerById(m.id)).filter(Boolean).map(s=>({id:s.id,url:s.url,label:'Your sticker'}))},
  ];
 }
@@ -2033,8 +2031,8 @@ async function loadMine(){
   for(const m of mine)if(!stickerById(m.id))registerSticker({id:m.id,url:URL.createObjectURL(m.blob),thumbUrl:null,width:m.width,height:m.height});
  }catch{mine=[];}
 }
-/** A picture to a new own sticker, kept, and stuck on the picture at once. */
-async function stickerFromPicture(file){
+/** A picture to a new own sticker, kept, and (unless `place` is false) stuck on the picture at once. */
+async function stickerFromPicture(file,{place=true}={}){
  const layer=stickerLayer();
  try{
   toast('Cutting your sticker…',{ms:8000});
@@ -2042,12 +2040,67 @@ async function stickerFromPicture(file){
   const record=await addMine({blob:made.blob,width:made.width,height:made.height,cut:made.cut});
   mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(made.blob),width:made.width,height:made.height});
   toast(made.cut==='outline'?'Cut round its outline':'A photo sticker',{ms:1400});
-  if($('stickerSheet').open)$('stickerSheet').close();
-  layer?.add(record.id);sound('pop');
-  if(state.mode==='editor'&&!$('panelStickers').hidden)renderStickerPicker();
+  if(place){if($('stickerSheet').open)$('stickerSheet').close();layer?.add(record.id);}
+  sound('pop');
+  if(!place||(state.mode==='editor'&&!$('panelStickers').hidden))renderStickerPicker();
  }catch(err){console.error(err);toast('That picture could not be made into a sticker',{face:errorFace(),ms:2400});}
 }
-$('stickerFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f)stickerFromPicture(f);});
+/** One picture is stuck on at once; several are made into stickers and wait under Mine. */
+async function stickersFromPictures(files){
+ const pictures=[...files].filter(isPicture);
+ for(const f of pictures)await stickerFromPicture(f,{place:pictures.length===1});
+}
+$('stickerFile').addEventListener('change',e=>{const files=[...(e.target.files||[])];e.target.value='';stickersFromPictures(files);});
+/**
+ * A picture of a whole sticker sheet, cut into its stickers (sticker-sheet.js), each kept under Mine (the owner,
+ * 12 November 2026: "can you make a function to add stickers easily?"). A picture that is not a sheet is one sticker.
+ */
+async function stickersFromSheet(file){
+ try{
+  toast('Cutting the sheet…',{ms:30000});
+  const pieces=await cutSheet(file);
+  if(pieces.length<2){await stickerFromPicture(file);return 1;}
+  let done=0;
+  for(const piece of pieces){
+   const made=await makeSticker(piece.blob,{edge:.022});
+   const record=await addMine({blob:made.blob,width:made.width,height:made.height,cut:made.cut});
+   mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(made.blob),width:made.width,height:made.height});
+   if(++done%4===0)toast(`Cutting the sheet… ${done} of ${pieces.length}`,{ms:30000});
+  }
+  sound('pop');toast(`${done} stickers added to Mine`,{ms:2400});
+  renderStickerPicker();
+  return done;
+ }catch(err){console.error(err);toast('That sheet could not be cut',{face:errorFace(),ms:2400});return 0;}
+}
+$('sheetFile').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(f)stickersFromSheet(f);});
+/**
+ * The sticker box: whatever picture lands in it becomes a sticker (the owner, 12 November 2026: "Even use the system
+ * stickers from the phone or iPad"). An iPhone or iPad offers the keyboard's own stickers only in a field that takes
+ * pictures, so the box is one: a sticker chosen from the keyboard, a paste, or a picture dragged in (a subject lifted in
+ * Photos, a file) is caught here. Nothing can be typed in it.
+ */
+function stickerBox(box){
+ const pictures=transfer=>[...(transfer?.files||[])].filter(isPicture);
+ // (A picture dropped or pasted anywhere else on the page is opened to edit; here it stays a sticker.)
+ box.addEventListener('paste',e=>{const files=pictures(e.clipboardData);if(files.length){e.preventDefault();e.stopPropagation();stickersFromPictures(files);}});
+ box.addEventListener('beforeinput',e=>{
+  const files=pictures(e.dataTransfer);
+  if(files.length){e.preventDefault();stickersFromPictures(files);}
+  else if(typeof e.data==='string')e.preventDefault();
+ });
+ // A picture the system put in the box itself (a keyboard sticker arrives as an image): taken out and kept.
+ box.addEventListener('input',async()=>{
+  const sources=[...box.querySelectorAll('img')].map(img=>img.currentSrc||img.src).filter(Boolean);
+  box.textContent='';
+  const files=[];
+  for(const src of sources){
+   try{const blob=await (await fetch(src)).blob();files.push(new File([blob],'sticker',{type:blob.type||'image/png'}));}catch{}
+  }
+  if(files.length)stickersFromPictures(files);
+ });
+ box.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();});
+ box.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();stickersFromPictures(pictures(e.dataTransfer));});
+}
 async function pasteSticker(){
  try{
   for(const item of await navigator.clipboard.read()){
@@ -2067,21 +2120,32 @@ function removeMine(id){
   cameraStickers.select(null);editStickers.select(null);remember();renderStickerPicker();
  });
 }
-/** The residents' own sheets: Memory's decks and the greetings come from them, not from the manga marks. */
-const residentSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind!=='marks'&&set.kind!=='season'&&set.kind!=='secret');
+/**
+ * The residents' own sheets: the greetings and Memory's decks come from them. A sheet with a kind (the manga marks, a
+ * season's, the drawn friends, a sheet of things) never greets; it is one of Memory's decks if it says so (`deck`).
+ */
+const residentSets=manifest=>(manifest?.sets||[]).filter(set=>!set.kind);
+const deckSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind&&set.kind!=='secret'&&set.deck===true);
 /** The secret sheets that have been won (unlocks.js): a Memory deck too, never a greeter. */
 const secretSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind==='secret'&&isUnlocked(store.read(),set.id));
 const tabLocked=tab=>tab.sets.length>0&&tab.sets.every(set=>set.locked&&!isUnlocked(store.read(),set.id));
+/** How many months until a season's sheet is in season (0 while it is; a sheet with no months comes last). */
+const untilSeason=(set,today)=>{const now=today.getMonth()+1,when=Array.isArray(set.when)?set.when:[];return when.length?Math.min(...when.map(m=>(m-now+12)%12)):12;};
+const LAST_TABS=['Friends','Season','Faces','Manga'];
 /**
- * The sheets by tab: one tab a resident, their other sheets under theirs (the manifest's `tab`), then Manga: the lines
- * (effects.js) and the marks.
+ * The sheets by tab: one tab a resident, their other sheets under theirs (a sheet's `tab`), then any other tab (Minato,
+ * the town's things), the drawn Friends, Season (the sheet in season first, then the next to come), the secret Faces,
+ * and Manga: the lines (effects.js) and the marks.
  */
-function stickerTabs(manifest){
+function stickerTabs(manifest,today=new Date()){
  const tabs=[];
  for(const set of manifest.sets){const name=set.tab||set.name,tab=tabs.find(t=>t.name===name);if(tab)tab.sets.push(set);else tabs.push({name,sets:[set]});}
- const manga=tabs.find(t=>t.name==='Manga');
- if(manga)tabs.push(...tabs.splice(tabs.indexOf(manga),1));else tabs.push({name:'Manga',sets:[]});
- return tabs;
+ if(!tabs.some(t=>t.name==='Manga'))tabs.push({name:'Manga',sets:[]});
+ const place=tab=>LAST_TABS.indexOf(tab.name);
+ const ordered=[...tabs.filter(t=>place(t)<0),...tabs.filter(t=>place(t)>=0).sort((a,b)=>place(a)-place(b))];
+ const season=ordered.find(t=>t.name==='Season');
+ if(season)season.sets=season.sets.map((set,i)=>({set,i})).sort((a,b)=>untilSeason(a.set,today)-untilSeason(b.set,today)||a.i-b.i).map(x=>x.set);
+ return ordered;
 }
 async function renderStickerPicker(){
  const grid=$('stickerGrid'),sets=$('stickerSets');
@@ -2115,7 +2179,11 @@ async function renderStickerPicker(){
  if(stickerSet===tabs.length+1){
   const make=(label,glyph,fn,aria)=>{const b=document.createElement('button');b.type='button';b.className='sticker-choice make';b.innerHTML=`${icon(glyph)}<span>${label}</span>`;b.setAttribute('aria-label',aria);b.addEventListener('click',fn);grid.append(b);};
   make('From a photo','photo',()=>$('stickerFile').click(),'Make a sticker from one of your photos');
+  make('From a sheet','sheet',()=>$('sheetFile').click(),'Cut a picture of a sticker sheet into its stickers');
   if(navigator.clipboard?.read)make('Paste','paste',pasteSticker,'Paste a picture or a lifted subject as a sticker');
+  const box=document.createElement('div');box.className='sticker-choice make sticker-box';
+  box.innerHTML=`${icon('keyboard')}<span>Sticker box</span><div class="sticker-catch" contenteditable="true" role="textbox" aria-label="Sticker box: choose a sticker from the keyboard, or paste or drop a picture here" spellcheck="false" autocapitalize="off" autocorrect="off"></div>`;
+  stickerBox(box.querySelector('.sticker-catch'));grid.append(box);
   for(const m of mine){
    const info=stickerById(m.id);if(!info)continue;
    const b=document.createElement('button');b.type='button';b.className='sticker-choice mine';b.dataset.id=m.id;b.setAttribute('aria-label','Your sticker');
@@ -2123,7 +2191,7 @@ async function renderStickerPicker(){
    grid.append(b);
   }
   const note=document.createElement('p');note.className='sticker-note';
-  note.textContent='Any photo becomes a die-cut sticker. On an iPhone, iPad or Mac, touch and hold the subject of a photo in Photos, choose Copy, then Paste here: it is cut round its outline.';
+  note.textContent='Any photo becomes a die-cut sticker, and a picture of a whole sticker sheet is cut into its stickers. On an iPhone or iPad, tap the Sticker box and choose one of your own from the keyboard\'s stickers; or touch and hold the subject of a photo in Photos, choose Copy, then Paste: it is cut round its outline.';
   grid.append(note);
   return;
  }
@@ -2139,8 +2207,9 @@ async function renderStickerPicker(){
   note.append(what,how);grid.append(note);return;
  }
  (tabs[stickerSet-1]?.sets||[]).forEach((set,k)=>{
-  // The resident's own sheet first; each of their other sheets under its name.
-  if(k>0||tabs[stickerSet-1].name==='Manga'){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
+  // A tab's own sheet first, without a heading; every other sheet under its name (two sheets of one name share it).
+  const tab=tabs[stickerSet-1];
+  if((k>0||set.name!==tab.name)&&set.name!==tab.sets[k-1]?.name){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
   for(const s of set.stickers){
    const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
    b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
@@ -2318,7 +2387,8 @@ if(!startEngine()){
  // you start"), never the one shown last; Johansson, the chief engineer, salutes the empty album.
  loadStickerSets().then(manifest=>{
   stickerSheets=manifest;cameraStickers.render();
-  const all=residentSets(manifest).flatMap(set=>set.stickers),last=store.read().greeting;
+  // A greeter is a figure standing (taller than wide): a wide scene would lean on the wordmark beside it.
+  const all=residentSets(manifest).flatMap(set=>set.stickers).filter(s=>s.height>=s.width*1.1),last=store.read().greeting;
   const choices=all.length>1?all.filter(x=>x.id!==last):all,hello=choices[Math.floor(Math.random()*choices.length)],off=stickerById('johansson-pixar/Salute');
   if(hello)store.write({...store.read(),greeting:hello.id});
   // The stickers are figures without words; what they would say is their gloss, for whoever cannot see them.
@@ -2328,4 +2398,4 @@ if(!startEngine()){
  if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,useFiles,stickerFromPicture,takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory,editZoom,viewerZoom,gameWon,setDance,get danceTempo(){return danceTempo;},openCardGame,get cardGame(){return activeCardGame;}};
+window.pocketCamera={state,editFile,useFiles,stickerFromPicture,stickersFromSheet,stickerTabs:async date=>stickerTabs(await loadStickerSets(),date).map(t=>({name:t.name,sheets:t.sets.map(s=>s.name)})),get mine(){return mine.length;},decks:async()=>(await memorySources()).map(d=>d.name),greeters:async()=>residentSets(await loadStickerSets()).map(set=>set.name),takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory,editZoom,viewerZoom,gameWon,setDance,get danceTempo(){return danceTempo;},openCardGame,get cardGame(){return activeCardGame;}};

@@ -38,7 +38,7 @@ try{
  for(const [label,width,height] of cases){
   const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,serviceWorkers:'block',reducedMotion:'reduce'}),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({recipe:{layers:[{look:'none',amount:1}]},sound:false,printer:false})));
+  await page.addInitScript(()=>localStorage.setItem('office-pocket-camera',JSON.stringify({sliders:true,recipe:{layers:[{look:'none',amount:1}]},sound:false,printer:false})));
   const measurements={},check=async(name,fn)=>{await fn();checks++;console.log(`ok  ${label}: ${name}`);};
   const capture=async name=>{if(shots)await page.screenshot({path:join(shots,`${label}-${name}.png`)});};
   try{
@@ -99,7 +99,7 @@ try{
     assert.ok(await page.locator('#editStage').evaluate(e=>getComputedStyle(e).overflowY==='clip'));
    });
    await check('sticker categories use one scrollable row and reveal Mine and Thuan',async()=>{
-    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===8);   // the secret sheet's lock among them
+    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===10);   // the secret sheet's lock among them
     const row=await page.locator('#stickerSets').evaluate(el=>{const rs=[...el.children].map(b=>b.getBoundingClientRect());return {tops:rs.map(r=>r.top),targets:rs.every(r=>r.width>=44&&r.height>=44),overflow:document.documentElement.scrollWidth-innerWidth,pan:getComputedStyle(document.querySelector('#panelStickers')).touchAction};});
     assert.ok(Math.max(...row.tops)-Math.min(...row.tops)<=1&&row.targets&&row.overflow<=1&&row.pan.includes('pan-x'),JSON.stringify(row));
     measurements.stickerCategories=row;

@@ -235,6 +235,11 @@ def sprite():
     # Detail: a cut stone, its crown solid.
     s['detail'] = soft(poly([(6.4, 3.6), (17.6, 3.6), (22, 9.4), (12, 21.4), (2, 9.4)], 1.6)) + solid(poly([(6.4, 3.6), (17.6, 3.6), (22, 9.4), (2, 9.4)], 1.4))
     s['paste'] = soft(rrect(4.5, 4.5, 15, 17, 3)) + solid(rrect(8.2, 2.4, 7.6, 5, 1.8)) + line(polyline([(8.6, 12.4), (15.4, 12.4)]), 2) + line(polyline([(8.6, 16.4), (13, 16.4)]), 2)
+    # A sheet of stickers: four on their backing. A keyboard: the phone's own stickers come from it.
+    s['sheet'] = (soft(rrect(2.5, 2.5, 19, 19, 4)) + solid(circle(8.2, 8.2, 2.9)) + solid(rrect(13, 5.4, 5.6, 5.6, 1.6))
+                  + solid(heart(8.2, 16, 3)) + solid(star(15.8, 15.8, 3.5, 5, .5, .6)))
+    s['keyboard'] = (soft(rrect(1.8, 5, 20.4, 14, 3.4)) + ''.join(dot(5.6 + i * 4.27, 9, 1.15) for i in range(4))
+                     + dot(5.6, 12.6, 1.15) + dot(18.4, 12.6, 1.15) + solid(rrect(8.2, 14.2, 7.6, 2.3, 1.15)) + dot(9.87, 12.6, 1.15) + dot(14.13, 12.6, 1.15))
     # Games: a pad, its cross and two buttons.
     s['game'] = (soft(rrect(1.8, 6.5, 20.4, 11.4, 5.6)) + line(polyline([(7.4, 9.8), (7.4, 14.6)]), 2.4) + line(polyline([(5, 12.2), (9.8, 12.2)]), 2.4)
                  + dot(15.2, 13.8, 1.5) + dot(18, 10.6, 1.5))
