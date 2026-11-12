@@ -9,7 +9,8 @@ set -e
 cd "$(dirname "$0")/../.."
 PART=${1:-/tmp/chisum.npz}
 BLEND=${2:-/tmp/chisum.blend}
-python3 ferry/blender/ga.py
+# (the arrangement, checked; and as the page's deck plan reads it: ferry/map.js)
+python3 ferry/blender/ga.py --plans ferry/data/plans.json
 # (the part file of an earlier build is put away first: a build that stops must not leave the old ship to be checked)
 rm -f "$PART"
 blender -b -P ferry/blender/build.py -- --part "$PART" --blend "$BLEND" | grep -E "inner face|structure behind|solids|moving parts|light fittings|triangles$|wrote|stairs outside|through|inside-out|do not agree|Error|Traceback" || true

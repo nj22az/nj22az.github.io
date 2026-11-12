@@ -133,6 +133,13 @@ def main():
     levels = header['ship'].get('decks', {})
     check(all(abs(levels.get(k, 1e9) - L.Y(v)) < 1e-3 for k, v in ga.DECKS.items()), f'the model says her decks as the arrangement has them ({len(ga.DECKS)} levels)')
     check(abs(header['ship']['length'] - L.LENGTH) < 1e-9 and all(os.path.exists(os.path.join(here, f)) for f in ('systems.json',)), 'the model says the same length')
+    # ---- The arrangement beside the model, which the page's deck plan is drawn from (map.js), is the arrangement as it stands.
+    plans = os.path.join(here, 'plans.json')
+    same = os.path.exists(plans) and json.load(open(plans)) == json.loads(json.dumps(ga.plans()))
+    rooms = {s['id'] for g in header['views'][0]['groups'] for s in g['spaces']}
+    drawn = {s['id'] for p in ga.plans()['plans'] for s in p['spaces']}
+    check(same and rooms == drawn, f"the arrangement beside the model (plans.json) is revision {ga.REVISION} as it stands, and holds each of her {len(rooms)} rooms"
+          + ('' if same else ': it is not there or is another arrangement; write it with ga.py --plans'))
 
     # ---- Structure inside the shell. Plates and the inner face are drawn in primer (roughness 0.74).
     primer = [m for m in hull if abs(header['materials'][m['material']]['roughness'] - 0.74) < 1e-6]

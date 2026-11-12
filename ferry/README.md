@@ -334,6 +334,7 @@ python3 ferry/blender/assemble.py --part chisum-hull.npz                        
 python3 ferry/blender/check.py                                                              # check what the page will read
 node ferry/checks/bridge.cjs                                                                # check the page itself (the site served on port 8765)
 node ferry/checks/sight.cjs                                                                 # no lever stands before an instrument (JSY-STD-404, rule 13)
+node ferry/checks/map.cjs                                                                   # the deck plan on foot: it is there, follows, opens and goes to a room
 blender -b chisum.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
 ```
 
@@ -1062,6 +1063,39 @@ menus, and make it icon based, not all that text (for the viewer page)".
   under her name.
 - On a phone the rail wraps to two rows and a function's keys that are wider than the screen are swiped sideways.
 
+## The deck plan on foot (`map.js`, `data/plans.json`)
+
+The owner, 12 November 2026, after walking the 124.8 m ship: "I miss a mini map sort of so I don't get lost maybe based
+on the GA". The plan one finds one's way by on a ship is a mimic panel: her arrangement engraved on a dark plate, with a
+lamp for what is so. The page has that panel, drawn from the general arrangement itself.
+
+- **Where it comes from.** `blender/ga.py --plans data/plans.json` writes the arrangement as numbers: for each of its
+  seven plans the deck's edge from her lines, its spaces as they stand in the arrangement (the same 133 the model's rooms
+  are built from), the lanes, the helicopter deck, the watertight bulkheads; her side at the upper deck; her profile. It
+  is what drawing JS1-102 is drawn from, and `make.sh` writes it with every build; `check.py` stops the build if the file
+  is not the arrangement as it stands. The stairs, ladders and doorways on the plan are the model's own (the file's
+  `stairs`, `ways`, `doorways`): a stair is its treads, a ladder a ring, a doorway a gap in its wall.
+- **The small panel**, top right while on foot (a quarter of a desktop's width, under half a phone's): the plan of the
+  deck one is on, bow to the right and port up as the drawing has her, about 55 m of it round where one stands (the
+  whole of a tier of the house, with her side dashed round it); the room one is in lit; an amber lamp where one stands,
+  and a wedge of its light the way one looks. Under it her profile with every deck as a line, the one one is on marked
+  and named, the lamp at one's place and height, and a bracket for the stretch the plan shows.
+- **The whole plan.** Press the panel, or the key M: the whole deck, with each room's name where it fits (inside its
+  room and inside her side, clear of the stairs and of the rooms that stand within it), and a key for each of her seven
+  decks (the lamp stays on one's own). A room pressed is named; **Go there** (or a second press) puts one in it, by the
+  page's own quick travel, and puts the plan away. Esc or M puts it away; nobody walks under an open plan. On a phone a
+  long deck is drawn 8 pixels to a metre and moved along under the finger, beginning where one stands.
+- **In the page.** `app.js` tells the plan where one stands and looks whenever that changes (`tellMap`); the plan draws
+  only when it has. `map.js` is fetched when the page starts, after `data/plans.json`: without either (a copy saved
+  offline before there was a plan) she is walked as before. Both are in `offline-files.js`. Its plate and engraving are
+  the page's own window colours (`--window`, `--window-ink`), the room one is in the accent, the lamp amber.
+- `checks/map.cjs` (13 checks): every room is on a plan; the panel is there, follows from deck to deck and as one
+  turns; the whole plan opens, names a room and goes to it; Esc; and the phone.
+
+**Not done:** the engine room and a few long rooms have no name on the whole plan where smaller rooms fill them (they
+are named when pressed); the plan does not turn with the walker, by choice; fittings and the register's components are
+not on it; it has not been tried on a real phone.
+
 ## X-ray: her wiring, through her structure (`app.js` `setXray`, `systems.js` `xray`)
 
 The owner, 11 November 2026: "The bridge needs to be enhanced too all cabinets should be able to open and an X-ray function
@@ -1212,6 +1246,26 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, later in the morning: the deck plan on foot, and the homepage card
+
+On the work branch in the main checkout, the site served from it on port 8766 by a threading server, each page check by
+itself (`CHISUM_URL` set to that address, so that the checks that take no address ask it too). The model was not built
+again: `ferry.bin.gz` and `light.bin.gz` are those of the entry below.
+
+| Check | Result |
+|---|---|
+| `python3 ferry/blender/ga.py --plans ferry/data/plans.json` | passes: revision D, 133 spaces on 7 plans; the file written (30 kB) |
+| `python3 ferry/blender/check.py` | all checks passed, with the new one: the arrangement beside the model is revision D as it stands and holds each of her 133 rooms |
+| `checks/map.cjs` (new) | all passed (13), twice (once in the run of nine, once more after the last change to `map.js`) |
+| `checks/sight.cjs`, `bridge.cjs`, `works.cjs`, `doors.cjs`, `stairs.cjs`, `travel.cjs`, `zoom.cjs` | all passed: 24, 28, 21, 112, 53, 5, 14 |
+| `checks/offline.cjs` | all passed (5): 32 files, 16.8 MB (the plan's two files with them) |
+| Pictures (a script of this session's, not kept: the small panel and the whole plan on six decks, at 1280 x 800 and at a phone's 390 x 844, drawn on the Mac's graphics card) | no errors on the page; each opened. Put right from them: her side's edge ran on as a spike to her stem; the profile's deck lines ran out through her bottom aft; names stood over the stairs, outside her side and under the lamp; on a phone a long deck was 2.6 pixels to a metre |
+| `node ferry/tools/card.cjs`, `python3 ferry/tools/card_crop.py` | the homepage card retaken: drawn on the Mac's graphics card, no errors. Said as it happened: the first shot timed out (the plain `http.server` on 8765 reset a connection), and the first crop had black borders (the tool took the sea for her outline): put right in `card_crop.py` |
+
+**Not run:** `make.sh` (nothing it builds from was changed except `ga.py`, whose own check and `check.py` were run), a
+phone or a tablet.
+
 
 ### 12 November 2026, morning: the merged ship (revision D with the wheelhouse refit), and the levers moved
 

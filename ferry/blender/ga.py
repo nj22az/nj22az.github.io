@@ -486,9 +486,69 @@ def check_lines():
     return wrong
 
 
+# ---- The arrangement as a map reads it
+PLAN_DECK = dict(hold='machinery')            # the part of the model a plan belongs to, where it is not named as the plan is (spec.PARTS)
+
+
+def plans():
+    """
+    The arrangement as the page's mini map reads it (ferry/map.js; the owner, 12 November 2026: "I miss a mini map sort of
+    so I don't get lost maybe based on the GA"): what drawing JS1-102 is drawn from, as numbers. For each plan its deck's
+    edge (half breadths from her lines, every 0.6 m), its spaces as they stand in the arrangement, and what else the
+    drawing shows on it; and her profile. Metres from the transom, metres off the centreline (port is positive), metres
+    above the keel. A tier of the house has no edge of its own: its deck is what its spaces cover.
+    """
+    import lines as L
+    r = lambda v: round(float(v), 3)
+    ys = lambda a, b, step=0.6: [a + i * step for i in range(int(round((b - a) / step)) + 1)]
+
+    def edge(a, b, lvl):
+        # the deck's edge from a to b; forward it ends in a point where her sides have closed on her stem (the stem bar's
+        # own breadth beyond that is not a deck)
+        pts = [[r(y), r(half_breadth(y, lvl))] for y in ys(a, b)]
+        while len(pts) > 2 and pts[-1][1] < 0.25 and pts[-2][1] < 0.25:
+            pts.pop()
+        pts[-1][1] = min(pts[-1][1], 0.0) if pts[-1][1] < 0.25 else pts[-1][1]
+        return pts
+    out = []
+    for plan, title, level in PLANS:
+        spaces = [s for s in SPACES if s['plan'] == plan]
+        tier = plan in ('top', 'bridge', 'officers')
+        lvl = 'hold' if plan == 'hold' else 'main' if plan == 'main' else 'upper'
+        if plan in ('hold', 'main', 'upper'):
+            a, b = 0.0, LENGTH - (2.2 if plan == 'hold' else 0.0)           # at the tank top her stem is 2.2 m short of her length
+        else:
+            a, b = min(s['yard'][0] for s in spaces), max(s['yard'][1] for s in spaces)
+        rim = None if tier else edge(a, b, lvl)
+        rec = dict(id=plan, deck=PLAN_DECK.get(plan, plan), name=title.split(' (')[0], level=level, tier=tier, yard=[r(a), r(b) if tier else rim[-1][0]],
+                   edge=rim,
+                   spaces=[dict(id=s['id'], name=s['name'], kind=s['kind'], yard=[r(s['yard'][0]), r(s['yard'][1])], x=[r(s['x'][0]), r(s['x'][1])], level=s['level'])
+                           for s in spaces])
+        if plan == 'hold':
+            rec['bulkheads'] = [r(fr(n)) for n, _ in BULKHEADS]
+        if plan in ('main', 'upper'):
+            rec['lanes'] = dict(x=[-4.5, -1.5, 1.5, 4.5], yard=[8.0, 104.0] if plan == 'main' else [23.2, HOUSE[0]])
+        if plan == 'upper':
+            rec['helideck'] = dict(yard=HELIDECK['yard'], across=HELIDECK['across'])
+        out.append(rec)
+    along = ys(0.0, LENGTH, 1.2)
+    hull = [[r(v), r(keel(v))] for v in along] + [[r(v), r(L.above_keel(L.deck_y(L.Z(v))))] for v in reversed(along)]
+    return dict(format='chisum-plans-1', arrangement=REVISION, drawing='JS1-102', length=LENGTH, beam=BEAM, draft=DRAFT, kinds=KINDS,
+                side=edge(0.0, LENGTH, 'upper'),          # her side at the upper deck: shown faintly round a tier of the house
+                plans=out,
+                profile=dict(hull=hull, blocks=[dict(name=n, yard=[r(a), r(b)], h=[r(lo), r(hi)]) for n, a, b, lo, hi in PROFILE[1:]], mast=MAST_TOP))
+
+
 if __name__ == '__main__':
+    import sys
     bad = check() + check_lines()
     print(f'revision {REVISION}: {len(SPACES)} spaces on {len(PLANS)} plans, {len(BULKHEADS)} watertight bulkheads; displacement about {DISPLACEMENT:,} t')
     for w in bad:
         print('  NOT:', w)
+    if '--plans' in sys.argv and not bad:            # the arrangement for the page's mini map: written only when it holds
+        import json
+        to = sys.argv[sys.argv.index('--plans') + 1]
+        with open(to, 'w') as f:
+            json.dump(plans(), f, separators=(',', ':'))
+        print(f'{to}: {len(PLANS)} plans for the page\'s map')
     raise SystemExit(1 if bad else 0)

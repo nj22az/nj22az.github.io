@@ -203,6 +203,39 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
 #stick { position: fixed; left: 20px; bottom: calc(150px + env(safe-area-inset-bottom)); width: 116px; height: 116px; border-radius: 50%; background: color-mix(in srgb, var(--panel) 70%, transparent); border: 1px solid var(--line); touch-action: none; }
 #stick i { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: var(--accent); opacity: 0.85; }
 @media (hover: hover) and (pointer: fine) { body.walking #stick, #hint .touch { display: none !important; } }
+/* The deck plan on foot (map.js): her arrangement as a mimic panel, top right; pressed, the whole plan of the deck. Its
+   plate and its engraving are the page's own window colours; the room one is in is the accent; the lamp is amber. */
+#map { position: fixed; top: calc(16px + env(safe-area-inset-top)); right: calc(16px + env(safe-area-inset-right)); z-index: 2; }
+#map-mini { display: block; width: min(248px, 44vw); margin: 0; padding: 7px 7px 5px; border: 1px solid color-mix(in srgb, var(--window-ink) 26%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--window) 92%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); cursor: pointer; }
+#map-mini canvas { display: block; width: 100%; }
+#map-mini:hover { border-color: color-mix(in srgb, var(--window-ink) 70%, transparent); }
+#map-mini:focus-visible, #chart button:focus-visible, #chart canvas:focus-visible { outline: 2px solid #3fb3a8; outline-offset: 2px; }
+#chart { position: fixed; inset: 0; z-index: 6; display: grid; place-items: center; padding: 12px; background: rgba(9, 13, 15, 0.55); }
+#chart[hidden] { display: none; }
+#chart .sheet { width: min(1080px, 100%); max-height: calc(100dvh - 24px); overflow: auto; display: grid; grid-template-columns: max-content minmax(0, 1fr); grid-template-areas: "head head" "decks plan" "foot foot"; gap: 10px 14px; padding: 14px 16px; background: var(--window); color: var(--window-ink); border: 1px solid color-mix(in srgb, var(--window-ink) 26%, transparent); border-radius: var(--radius); }
+#chart header { grid-area: head; display: flex; align-items: baseline; gap: 12px; }
+#chart h2 { margin: 0; font-size: 17px; }
+#chart .level { margin: 0; flex: 1; font-size: 13px; color: color-mix(in srgb, var(--window-ink) 70%, transparent); }
+#chart .close { align-self: center; flex: none; width: 36px; height: 36px; margin: -4px -6px -4px 0; border: 0; border-radius: 8px; background: none; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
+#chart .decks { grid-area: decks; display: flex; flex-direction: column; gap: 4px; }
+#chart .deck-key { position: relative; flex: none; min-height: 36px; padding: 0 12px 0 24px; border: 1px solid color-mix(in srgb, var(--window-ink) 24%, transparent); border-radius: 8px; background: none; color: inherit; font: inherit; font-size: 13px; text-align: left; white-space: nowrap; cursor: pointer; }
+#chart .deck-key[aria-pressed=true] { background: #3fb3a8; border-color: #3fb3a8; color: #0e1a19; font-weight: 600; }
+#chart .deck-key.here::before { content: ""; position: absolute; left: 9px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: #ffc24a; box-shadow: 0 0 0 1px #172024; }
+#chart .plan { grid-area: plan; min-width: 0; align-self: center; overflow-x: auto; overscroll-behavior-x: contain; }
+#chart .plan canvas { display: block; border-radius: 6px; cursor: pointer; }
+#chart footer { grid-area: foot; display: flex; align-items: center; gap: 12px; min-height: 38px; }
+#chart .said { margin: 0; flex: 1; font-size: 14px; line-height: 1.35; }
+#chart .btn { flex: none; background: #3fb3a8; border-color: #3fb3a8; color: #0e1a19; }
+@media (max-width: 720px) {
+  #chart .sheet { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "decks" "plan" "foot"; padding: 12px; }
+  #chart header { flex-wrap: wrap; row-gap: 2px; }
+  #chart h2 { flex: 1; }
+  #chart .level { order: 3; flex-basis: 100%; }
+  #chart .decks { flex-direction: row; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  #chart .decks::-webkit-scrollbar { display: none; }
+  /* her name and the lines under it keep clear of the plan */
+  body.walking header.title { max-width: calc(100vw - 44vw - 40px); }
+}
 @media (hover: none), (pointer: coarse) { #hint .keys { display: none; } }
 
 @media (max-width: 900px) {
@@ -230,7 +263,7 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
   <h1>Chisum</h1>
   <div id="help" hidden>
   <p class="orbit-only">A 125 m ro-ro freight ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room or a fitting to name it, or walk aboard.</p>
-  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, click a fitting to see what it is, Shift to go faster, the wheel or + and - to zoom (0 for the normal view), F at a ladder, Q and E for the deck below and above, 1 to 5 for a deck, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round, two fingers to zoom in and out, tap a fitting to see what it is. At a ladder a button takes it.</span></p>
+  <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, click a fitting to see what it is, Shift to go faster, the wheel or + and - to zoom (0 for the normal view), F at a ladder, Q and E for the deck below and above, 1 to 5 for a deck, M for the deck plan, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round, two fingers to zoom in and out, tap a fitting to see what it is, tap the plan for the whole deck. At a ladder a button takes it.</span></p>
   </div>
 </header>
 
@@ -249,6 +282,8 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
 <aside id="card" aria-label="What this fitting is" aria-live="polite" hidden></aside>
 
 <aside id="legend" aria-label="What the X-ray shows" hidden></aside>
+<div id="map" class="walk-only"></div>
+<div id="chart" hidden></div>
 <div id="stick" class="walk-only" aria-hidden="true"><i></i></div>
 
 <div id="bar" role="toolbar" aria-label="Model controls">

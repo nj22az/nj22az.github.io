@@ -3,8 +3,8 @@
 self.CHISUM_OFFLINE = {
   cache: 'chisum-offline-v4',
   files: [
-    '/ferry/', '/ferry/app.js', '/ferry/systems.js', '/ferry/look.js', '/ferry/offline.js', '/ferry/offline-files.js', '/ferry/manifest.webmanifest',
-    '/ferry/data/ferry.bin.gz', '/ferry/data/light.bin.gz', '/ferry/data/systems.json', '/ferry/data/chisum-atlas.webp',
+    '/ferry/', '/ferry/app.js', '/ferry/systems.js', '/ferry/look.js', '/ferry/map.js', '/ferry/offline.js', '/ferry/offline-files.js', '/ferry/manifest.webmanifest',
+    '/ferry/data/ferry.bin.gz', '/ferry/data/light.bin.gz', '/ferry/data/systems.json', '/ferry/data/plans.json', '/ferry/data/chisum-atlas.webp',
     '/ferry/icon-180.png', '/ferry/icon-192.png', '/ferry/icon-512.png',
     '/motor-90l/vendor/three.module.min.js', '/motor-90l/vendor/OrbitControls.js',
     // what look.js draws a frame with (three.js r170 add-ons, unchanged)
