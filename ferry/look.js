@@ -90,6 +90,13 @@ export const light = {
     const top = head.min[1] + (ny - 1.5) * head.cell;
     u.uLightOpen.value = this.open = this.at(head.min[0] + 0.6 * head.cell, top, head.min[2] + 0.6 * head.cell);
   },
+  /** How open the place is: the share of what it sees that is sky or sea and not her own steel (1 on an open deck, 0 in a room without windows). */
+  openAt(x, y, z) {
+    if (!this.on) return 1;
+    const h = this.head, [nx, ny, nz] = h.grid, c = h.cell;
+    const i = Math.min(nx - 1, Math.max(0, Math.floor((x - h.min[0]) / c))), j = Math.min(ny - 1, Math.max(0, Math.floor((y - h.min[1]) / c))), k = Math.min(nz - 1, Math.max(0, Math.floor((z - h.min[2]) / c)));
+    return this.bytes[(i + nx * (j + ny * k)) * 4 + 3] / 255;
+  },
   /** How light the place is (the light it gets taken all round), from the grid point nearest it. */
   at(x, y, z) {
     if (!this.on) return 1.3;
@@ -419,7 +426,8 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
     const u = material.uniforms;
     camera.updateMatrixWorld();
     eye.setFromMatrixPosition(camera.matrixWorld);
-    if (!mirror || !mesh.visible || eye.y < 0.05) { u.uMirrorOn.value = 0; return; }
+    // From inside a room her mirror image is not to be seen: it is drawn only for an eye that stands in the open.
+    if (!mirror || !mesh.visible || eye.y < 0.05 || light.openAt(eye.x, eye.y, eye.z) < 0.3) { u.uMirrorOn.value = 0; return; }
     turn.extractRotation(camera.matrixWorld);
     ahead.set(0, 0, -1).applyMatrix4(turn).add(eye);
     up.set(0, 1, 0).applyMatrix4(turn);
@@ -462,18 +470,25 @@ export function createLook(renderer, scene, camera, { hidden = () => false, radi
   const target = new THREE.WebGLRenderTarget(size.x, size.y, { type: THREE.HalfFloatType, samples });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
-  const shade = new GTAOPass(scene, camera, size.x, size.y);
+  // The shade is worked out at half the picture's size each way and spread over it: at the full size it took two thirds of
+  // a frame's time on foot (34 of 50 ms at 3200 by 2000, measured), and the light of the place now carries the large shade.
+  const SHADE_SIZE = 0.5, part = v => Math.max(1, Math.round(v * SHADE_SIZE));
+  const shade = new GTAOPass(scene, camera, part(size.x), part(size.y));
+  const sizeShade = shade.setSize.bind(shade);
+  shade.setSize = (width, height) => sizeShade(part(width), part(height));
   shade.blendIntensity = strength;
-  // The reach is in metres: what lies within a forearm's length shades a place. Sixteen looks each way.
-  shade.updateGtaoMaterial({ radius, distanceExponent: 1.4, thickness: 1.0, scale: 1.15, samples: 16, distanceFallOff: 1.0, screenSpaceRadius: false });
-  shade.updatePdMaterial({ lumaPhi: 10.0, depthPhi: 2.0, normalPhi: 3.0, radius: 5.0, radiusExponent: 1.0, rings: 2.0, samples: 16 });
+  // The reach is in metres: what lies within a forearm's length shades a place. Twelve looks each way.
+  shade.updateGtaoMaterial({ radius, distanceExponent: 1.4, thickness: 1.0, scale: 1.15, samples: 12, distanceFallOff: 1.0, screenSpaceRadius: false });
+  shade.updatePdMaterial({ lumaPhi: 10.0, depthPhi: 2.0, normalPhi: 3.0, radius: 5.0, radiusExponent: 1.0, rings: 2.0, samples: 12 });
   // Leave out what the caller names, as well as what the pass itself leaves out (points and lines).
   const hide = shade.overrideVisibility.bind(shade), show = shade.restoreVisibility.bind(shade), put = [];
   shade.overrideVisibility = () => { hide(); scene.traverse(o => { if (o.visible && o.isMesh && hidden(o)) { o.visible = false; put.push(o); } }); };
   shade.restoreVisibility = () => { for (const o of put) o.visible = true; put.length = 0; show(); };
   composer.addPass(shade);
   // The glare: what is brighter than the screen's white spills a little over what is beside it, as it does in an eye or a lens.
-  const glare = new UnrealBloomPass(new THREE.Vector2(size.x, size.y), 0.16, 0.55, 2.4);
+  const glare = new UnrealBloomPass(new THREE.Vector2(part(size.x), part(size.y)), 0.16, 0.55, 2.4);
+  const sizeGlare = glare.setSize.bind(glare);
+  glare.setSize = (width, height) => sizeGlare(part(width), part(height));          // a glow needs no fine picture
   if (!lite) composer.addPass(glare);          // left out where the drawing is done without a graphics card: it costs several passes
   composer.addPass(new OutputPass());
   // The eye. In the open it is nearly shut; in a room it opens, by a good part of how much darker the room is.
