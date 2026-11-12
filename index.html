@@ -29,7 +29,6 @@
   <link rel="stylesheet" href="/css/office-calendar.css?v=20261024-world">
   <script src="/assets/js/office-port.js?v=diorama-20261101a" defer></script>
   <script src="/assets/js/office-diorama.js?v=20261101a" defer></script>
-  <script src="/assets/js/shopify-book-price.js" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
 
 </head>
@@ -184,8 +183,9 @@
       $("#about-location").textContent = "Based in " + CONFIG.author.location;
       $("#about-bio").textContent = CONFIG.author.bio;
 
+      var socialLabel = { github: "GitHub", linkedin: "LinkedIn", store: "Shop" };
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
-        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + key + '">' +
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + (socialLabel[key] || key) + '">' +
           siteIcon(key) + '</a>';
       }).join("");
 
