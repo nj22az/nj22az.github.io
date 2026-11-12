@@ -91,7 +91,14 @@ def lathe(p, origin, axis, profile, colour, sides=None, caps=(True, True)):
     a, e1, e2 = frame_of(axis)
     o = Vector(origin)
     n = sides or round_sides(max(r for _, r in profile))
-    s = 1.0 if profile[-1][0] >= profile[0][0] else -1.0
+    # Which side of the profile the metal lies on: closed on itself, a profile that runs out along the axis at the greater
+    # radius and back at the lesser (or along the axis itself) goes round clockwise, and its metal is on its right.
+    area = sum(d0 * r1 - d1 * r0 for (d0, r0), (d1, r1) in zip(profile, profile[1:] + profile[:1])) / 2
+    span = (max(d for d, _ in profile) - min(d for d, _ in profile)) * max(r for _, r in profile)
+    if abs(area) > 1e-4 * max(span, 1e-9):
+        s = 1.0 if area < 0 else -1.0
+    else:
+        s = 1.0 if profile[-1][0] >= profile[0][0] else -1.0
     spoke = [e1 * cos(2 * pi * k / n) + e2 * sin(2 * pi * k / n) for k in range(n)]
     base = len(p.v)
     for d, r in profile:

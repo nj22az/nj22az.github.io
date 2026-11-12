@@ -26,7 +26,7 @@ ROPE_BLUE, ROPE_BUFF = srgb(0x4a78b0), srgb(0xcdb67a)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-def chain(p, path, d, colour, phase=0.0, first_flat=True, across=PORT, count=None):
+def chain(p, path, d, colour, phase=0.0, first_flat=True, across=PORT, count=None, stud=True, n_end=6, sides=None):
     """Stud-link cable along a line of points: every link a closed bar of round section with its stud, one lying flat (its
     width along `across`), the next on edge. Links are 6 d long and 3.6 d wide, so the cable's pitch is 4 d."""
     pts = [Vector(q) for q in path]
@@ -60,8 +60,9 @@ def chain(p, path, d, colour, phase=0.0, first_flat=True, across=PORT, count=Non
         if (i % 2 == 0) != first_flat:
             w = t.cross(w)
         col = tint(colour, 0.9 + 0.2 * ((i * 37) % 7) / 7)
-        sweep(p, [tuple(c + t * u + w * v) for u, v in stadium(a_, 0, rc, n=6)], d / 2, col, closed=True)
-        p.tube(tuple(c - w * rc), tuple(c + w * rc), 0.36 * d, colour=col, caps=(False, False))
+        sweep(p, [tuple(c + t * u + w * v) for u, v in stadium(a_, 0, rc, n=n_end)], d / 2, col, closed=True, sides=sides)
+        if stud:
+            p.tube(tuple(c - w * rc), tuple(c + w * rc), 0.36 * d, colour=col, caps=(False, False))
         made += 1
     return made
 

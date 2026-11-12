@@ -29,6 +29,7 @@ GROUP = 'passenger'
 # Where each fitting stands: kind, x (to port), z (forward), heading, its name, options. The starboard bulwark's inner face is
 # at x = STB; the port side is the open deck edge with rails. A fitting against the bulwark has its back to it: heading 90.
 STB = -HALF_B + BULWARK_T
+WALL = -4.0                         # a house side stands here, looking to port, from z = -27 to -6.5: what belongs on a bulkhead hangs on it
 BW_END = 13.0                       # the bulwark runs from the after end to here; forward of it the starboard side is open, with rails
 ROWS = [
     # the boat deck, forward: a station each side (the port boat is the rescue boat and lies uncovered), rafts abaft the port one
@@ -49,24 +50,24 @@ ROWS = [
     dict(kind='rope-reel', x=2.8, z=6.6, heading=90, name='RR1'),
     dict(kind='rope-coil', x=4.4, z=2.8, name='RC1'),
     # the vehicle deck's gear
-    dict(kind='lashing-rack', x=STB, z=-8.0, heading=90, name='LK1'),
+    dict(kind='lashing-rack', x=WALL, z=-8.2, heading=90, name='LK1'),
     dict(kind='trailer-trestle', x=3.6, z=-9.4, name='TT1'),
-    dict(kind='wheel-chocks', x=STB, z=-10.6, heading=90, name='WC1'),
+    dict(kind='wheel-chocks', x=WALL, z=-10.6, heading=90, name='WC1'),
     # ventilators and pipes
-    dict(kind='ventilator-mushroom', x=-3.4, z=-18.0, name='VM1', dia=0.6),
-    dict(kind='ventilator-mushroom', x=-1.8, z=-18.0, name='VM2', dia=0.4),
-    dict(kind='ventilator-gooseneck', x=-0.4, z=-18.0, name='VG1'),
-    dict(kind='air-pipe', x=0.8, z=-18.0, name='AP1'),
-    dict(kind='sounding-pipe', x=1.7, z=-18.0, name='SP1'),
+    dict(kind='ventilator-mushroom', x=-2.4, z=-18.0, name='VM1', dia=0.6),
+    dict(kind='ventilator-mushroom', x=-0.9, z=-18.0, name='VM2', dia=0.4, serves='GALLEY EXHAUST'),
+    dict(kind='ventilator-gooseneck', x=0.3, z=-18.0, name='VG1'),
+    dict(kind='air-pipe', x=1.2, z=-18.0, name='AP1'),
+    dict(kind='sounding-pipe', x=1.9, z=-18.0, name='SP1'),
     # deck furniture and lights
     dict(kind='bench', x=-1.0, z=-23.5, name='BN1'),
     dict(kind='floodlight', x=HALF_B - 0.06, z=-22.0, heading=270, name='FL1'),
     dict(kind='foam-monitor', x=3.4, z=-24.0, name='FM1'),
-    dict(kind='bulkhead-light', x=STB, z=-22.0, heading=90, name='BL1', h=1.0),
-    dict(kind='loudspeaker', x=STB, z=-23.5, heading=90, name='LS1', h=1.0),
+    dict(kind='bulkhead-light', x=WALL, z=-22.0, heading=90, name='BL1', h=1.9),
+    dict(kind='loudspeaker', x=WALL, z=-23.5, heading=90, name='LS1', h=2.1),
     dict(kind='waste-bin', x=HALF_B - 0.06, z=-25.5, heading=270, name='WB1'),
 ]
-GRIDS = [dict(x0=-3.0, z0=-14.6, nx=5, nz=4, dx=1.4, dz=1.25, name='LP')]
+GRIDS = [dict(x0=-2.6, z0=-14.6, nx=5, nz=4, dx=1.4, dz=1.25, name='LP')]
 
 _made = dict(inputs=[], movers=[])
 
@@ -97,7 +98,7 @@ def plate(part, outline, holes, depth, colour, colour2=None):
 
 def build():
     shipyard.RUNS.clear()
-    _made['inputs'], _made['movers'] = [], []
+    _made['inputs'], _made['movers'], _made['rows'] = [], [], {}
     parts, cuts, clears = [], [], []
     missing = []
     for row in ROWS:
@@ -114,7 +115,10 @@ def build():
         cuts += got['cuts']
         if got['clear']:
             clears.append(got['clear'])
-        print(f"  {kind}: {len(got['parts'])} parts, {sum(len(p.f) for p in got['parts'])} faces, {len(got['movers'])} motions, {len(got['cuts'])} cuts")
+        tris = sum(max(1, len(f) - 2) for p in got['parts'] for f in p.f)
+        _made['rows'].setdefault(kind, dict(known_by=got['parts_known_by'], size=F.FITTINGS[kind]['size'], note=F.FITTINGS[kind]['note'], triangles=tris,
+                                            inputs=[i['id'] for i in got['inputs']], movers=len(got['movers']), cuts=len(got['cuts'])))
+        print(f"  {kind}: {len(got['parts'])} parts, {tris} triangles, {len(got['movers'])} motions, {len(got['cuts'])} cuts")
     if hasattr(F, 'lashing_grid'):
         for g in GRIDS:
             got = F.lashing_grid((g['x0'], DECK, g['z0']), g['nx'], g['nz'], g['dx'], g['dz'], group=GROUP, name=g['name'])
@@ -153,6 +157,12 @@ def build():
         if not any(a < z < b for a, b in busy) and not any(lo[0] < STB + 0.3 and lo[2] - 0.1 < z < hi[2] + 0.1 and lo[1] < DECK + 0.9 for lo, hi in clears):
             K.prism(stays, [(STB, y0, z - 0.005), (STB + 0.28, y0, z - 0.005), (STB + 0.06, y1 - 0.04, z - 0.005), (STB, y1 - 0.04, z - 0.005)], (0, 0, 0.010), WHITE)
         z += 1.5
+    # ---- a length of house side, for what is fastened to a bulkhead
+    house = Part('Demonstration quay, house side', 'Topside paint')
+    house.group = GROUP
+    house.box((WALL - 0.012, DECK, -27.0), (WALL, DECK + 2.5, -6.5), WHITE)
+    for zz in [-26.5 + 2.0 * i for i in range(11)]:
+        house.box((WALL - 0.112, DECK, zz - 0.005), (WALL - 0.012, DECK + 2.5, zz + 0.005), tint(WHITE, 0.95))      # its stiffeners, on the far side
     # ---- three-course rails on stanchions along the open sides, left out where a fitting wants the side clear
     rails = Part('Demonstration quay, rails', 'Topside paint')
     rails.group = GROUP
@@ -175,7 +185,7 @@ def build():
                 rails.tube((xr, DECK, zz), (xr, DECK + 1.0, zz), 0.0135, colour=RAIL)
     rail(HALF_B - 0.06, -HALF_L + 0.05, HALF_L - 0.05)
     rail(-HALF_B + 0.06, BW_END + 0.05, HALF_L - 0.05)
-    out = parts + [deck, wall, stays, rails]
+    out = parts + [deck, wall, stays, rails, house]
     named = {p.mover for p in out if p.mover}
     defined = {m['id'] for m in _made['movers']}
     if named != defined:
@@ -183,6 +193,8 @@ def build():
     ids = [i['id'] for i in _made['inputs']]
     if len(ids) != len(set(ids)):
         raise SystemExit('two inputs share a name')
+    import json
+    json.dump(_made['rows'], open('/tmp/chisum-f-rows.json', 'w'), indent=1)
     print(f"  demonstration quay: {len(out)} parts, {len(_made['inputs'])} inputs, {len(_made['movers'])} motions, {len(cuts)} openings cut")
     return out
 
