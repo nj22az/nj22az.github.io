@@ -1,6 +1,6 @@
 # Books in progress, and StepWise inside Maintenance Desk · 12 November 2026
 
-The owner's decision for this change: neither book is finished, and StepWise is not its own project. It is a tool of the maintenance programme. The work is on branch `cursor/books-wip-stepwise-0210`, opened as a pull request against `main`. It is not merged and was not pushed to `main`. Nothing under `ferry/` was changed.
+The owner's decision for this change: neither book is finished, and StepWise is not its own project. It is a tool of the maintenance programme. The work is commit `f789566` on branch `cursor/books-wip-stepwise-0210`, opened as a pull request against `main`. It is not merged and was not pushed to `main`. Nothing under `ferry/` was changed.
 
 ## What changed
 
