@@ -29,7 +29,9 @@ async function checkLayout(page) {
 
 async function captureStills(browser) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 990 }, reducedMotion: 'reduce' });
+  await page.route('**/temp/workshop/assets/*.webp', route => route.fulfill({ path: 'assets/office-port/pier.webp' }));
   await open(page);
+  await page.addStyleTag({ content: '.frame::after,.scene-link,.scene-caption { visibility: hidden !important; }' });
   await fs.mkdir(`${output}/stills`, { recursive: true });
   for (const view of targets) {
     await viewpoint(page, view);
@@ -66,7 +68,7 @@ async function exercise(browser, name, viewport, isMobile) {
   const feedback = page.locator('#bench-feedback');
   for (const [id, result] of [['lamp', /lamp goes out/i], ['scope', /calibrator/i], ['drawer', /drawer runs out/i]]) {
     await page.locator(`[data-kit="${id}"]`).click();
-    assert.match(await feedback.textContent(), result);
+    await page.waitForFunction(({ source }) => new RegExp(source, 'i').test(document.querySelector('#bench-feedback').textContent), { source: result.source });
   }
   assert.equal(await page.locator('iframe').count(), 0);
   const hrefs = await page.locator('a[href]').evaluateAll(links => links.map(link => link.getAttribute('href')));

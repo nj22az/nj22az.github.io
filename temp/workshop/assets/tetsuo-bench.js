@@ -487,7 +487,7 @@ export function buildTetsuoBench({room,collider,reg,action,budget=BUDGET,sound=(
   reg(o,kitLabel(k.id,state,{machinery}),()=>{
    const r=operateKit(state,k.id,{machinery});
    if(!r.changed){say(k.en,r.text);return;}
-   sound?.(k.operates==='supply'?180:880,.05);apply();relabel();
+   sound?.(k.operates==='supply'?180:880,.05);apply();relabel();say(k.en,r.text);
   },true);
   anchors.set(k.id,o);
  }

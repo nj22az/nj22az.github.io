@@ -3,7 +3,7 @@ import { buildDockWorkshop, buildTetsuoBench, DOCK_WORKSHOP_PLOT as plot } from 
 import { buildQuay } from './quay.js';
 
 const positions = {
-  quayside: { eye: [-34.2, 1.88, -27.1], aim: [-26.9, 1.46, -42.2], fov: 38 },
+  quayside: { eye: [-34.55, 1.78, -26.15], aim: [-30.5, 1.33, -42.5], fov: 47 },
   door: { eye: [-27.5, 1.74, -34.5], aim: [-25.15, 1.49, -40.25], fov: 48 },
   workbench: { eye: [-1.17, 1.91, .1], aim: [1.55, 1.02, -2.94], fov: 45 },
 };
@@ -106,11 +106,18 @@ function addFrontage(group) {
 
 function exterior() {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#c4d4cc');
-  scene.fog = new THREE.FogExp2('#c4d4cc', .016);
+  scene.background = canvasTexture(32, 256, (ctx, w, h) => {
+    const sky = ctx.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0, '#a6bec7');
+    sky.addColorStop(.57, '#d9ded0');
+    sky.addColorStop(1, '#e2dfc8');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+  });
+  scene.fog = new THREE.FogExp2('#ced9cb', .014);
   scene.add(new THREE.HemisphereLight(0xf5f5e9, 0x6d8076, 2.05));
   const sun = new THREE.DirectionalLight(0xffefd1, 2.1);
-  sun.position.set(-38, 16, -28);
+  sun.position.set(-43, 14, -33);
   sun.target.position.set(-25, 0, -41);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
@@ -159,7 +166,11 @@ function interior(onAction) {
 }
 
 export function createWorkshop(stage, { initial, onAction, onLoss }) {
-  const renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true, powerPreference: 'low-power' });
+  const canvas = document.createElement('canvas');
+  const attributes = { alpha: false, antialias: true, powerPreference: 'low-power' };
+  const context = canvas.getContext('webgl2', attributes);
+  if (!context) throw new Error('WebGL 2 is unavailable.');
+  const renderer = new THREE.WebGLRenderer({ canvas, context, ...attributes });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.55));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;

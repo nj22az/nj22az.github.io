@@ -25,8 +25,7 @@ function showView() {
   title.textContent = label;
   detail.textContent = description;
   frame.dataset.view = view;
-  if (view !== 'quayside') still.src = `./assets/${view}.webp`;
-  else still.src = './assets/quayside.webp';
+  still.src = `./assets/${view}.webp`;
   for (const tab of tabs) {
     if (tab.dataset.viewLink === view) tab.setAttribute('aria-current', 'true');
     else tab.removeAttribute('aria-current');

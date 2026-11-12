@@ -6,7 +6,7 @@
 @font-face {
   font-family: 'Instrument Sans';
   src: url('./assets/instrumentsans.woff') format('woff');
-  font-weight: 400 900;
+  font-weight: 400 800;
   font-display: swap;
 }
 :root {
