@@ -132,7 +132,8 @@ def load(part):
         e = np.zeros((n, 3))
         g = np.zeros((n, 3))
         hexa = look.get('emissive')
-        if hexa and hexa != '#000000':
+        # (a signal lamp, `bake` false, shines on the page while it is lit and gives the place no light here: shipyard.LOOKS)
+        if hexa and hexa != '#000000' and look.get('bake') is not False:
             rgb = srgb([int(hexa[i:i + 2], 16) for i in (1, 3, 5)])
             (g if m.get('material') in AREA_LIGHTS else e)[:] = rgb * LAMP * float(look.get('emissiveIntensity', 1))
         elif look.get('shading') == 'basic' and look.get('textured'):

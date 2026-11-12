@@ -117,39 +117,76 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     && order.going.leaf > 10 && Math.min(order.going.flap, 360 - order.going.flap) < 1 && flapDown > 160
     && order.again.latch < 1e-6 && order.again.bolt < 1e-6 && order.again.leaf < 1e-6,
     `it is worked in its order: the safety latches lift first (${order.lifted.latch.toFixed(0)}° while the leaf has not moved), the cleats let go (bolts drawn ${(order.free.bolt * 1000).toFixed(0)} mm, hooks dropped ${order.free.hook.toFixed(0)}°, the leaf still home), then the leaf turns (${order.going.leaf.toFixed(1)}° with its flaps still folded), and level its flaps are let down (${flapDown.toFixed(0)}° from stowed); raised again, latches and cleats are home`);
-  // The control stand beside the door (the owner: "a local control panel that is wired up"): its lever does nothing until a pump runs;
-  // with a pump running it lowers the ramp, stops it and raises it, and springs back to its middle when the ramp has arrived.
+  // The control stand beside the door (the owner: "a local control panel that is wired up"; "Control panel for the hydraulics need to
+  // be realistic"). It is worked as its own instruction plate says, and it refuses what a real one refuses: no lever does anything
+  // until a pump runs; the ramp is not lowered with its cleats locked; the emergency stop trips the pump and holds the ramp; the
+  // cleats are not locked until the ramp is home. Its lamps and its two pressure indicators follow.
   const stand = await page.evaluate(async () => {
     const f = window.__ferry, wait = ms => new Promise(r => setTimeout(r, ms));
     const comp = f.systems && f.systems.data.components.find(c => c.id === 'RMP-30');
-    if (!f.control('stern-ramp-lever')) return null;
+    if (!f.control('stern-ramp-ramp-lever') || !f.tap) return null;
+    const run = s => { for (let t = 0; t < s - 1e-9; t += 0.1) f.workAuto(0.1); };
+    const ramp = () => f.state.inputs['stern-ramp'];
+    const until = async (test, seconds) => { for (let t = 0; t < seconds * 2 && !test(); t++) await wait(500); return test(); };
+    const shown = id => { const m = f.movers().find(m => m.id === id); return m ? m.shown : null; };
+    // how far a needle has turned from its rest, in degrees
+    const turned = id => { const m = f.movers().find(m => m.id === id); return m ? Math.acos(Math.max(-1, Math.min(1, (m.matrix[0] + m.matrix[5] + m.matrix[10] - 1) / 2))) * 180 / Math.PI : null; };
+    const at = id => f.control(id).at;
+    const CLEATS = 'stern-ramp-cleats-lever', RAMP = 'stern-ramp-ramp-lever', PUMP = 'stern-ramp-pump-1', STOP = 'stern-ramp-estop';
     f.setInput('stern-ramp', 0);
-    f.step('stern-ramp-lever');                                  // no pump runs: nothing
+    const out = { drawn: comp && comp.drawn };
+    f.step(CLEATS);                                           // open the cleats, with no pump running: nothing
+    await wait(800);
+    out.idle = { ramp: ramp(), lever: at(CLEATS) };
+    f.tap(PUMP); run(4);                                      // pump No. 1 is started: its lamp, and the system's pressure
+    out.pump = { lamp: shown('stern-ramp-lamp-pump-1'), bar: f.state.inputs['stern-ramp-pressure'], needle: turned('stern-ramp-gauge-system'), room: turned('stern-ramp-gauge-pg1') };
+    f.step(RAMP);                                             // lower, with the cleats locked: refused
+    await wait(800);
+    out.locked = { ramp: ramp(), lever: at(RAMP), lamp: shown('stern-ramp-lamp-locked') };
+    f.step(CLEATS);                                           // the cleats lever to OPEN: latches and cleats let go, the leaf stays home
+    out.opened = await until(() => ramp() >= 6 - 1e-6, 180);
     await wait(1200);
-    const idle = { ramp: f.state.inputs['stern-ramp'], at: f.control('stern-ramp-lever').at };
-    f.work('stern-ramp-pump-1', true);
-    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
-    const lamp = f.movers().find(m => m.id === 'stern-ramp-pump-1-lamp');
-    f.step('stern-ramp-lever');                                  // lower: wait until the cleats are free and the leaf is on its way
-    for (let t = 0; t < 240 && f.state.inputs['stern-ramp'] < 8; t++) await wait(500);
-    const lowering = f.state.inputs['stern-ramp'];
-    f.step('stern-ramp-lever');                                  // stop
+    out.open = { ramp: ramp(), open: shown('stern-ramp-lamp-open'), closed: shown('stern-ramp-lamp-closed'), locked: shown('stern-ramp-lamp-locked'), lever: at(CLEATS) };
+    f.step(RAMP);                                             // the ramp lever to LOWER
+    out.going = await until(() => ramp() >= 12, 240);
+    out.lowering = { ramp: ramp(), line: turned('stern-ramp-gauge-ramp'), closed: shown('stern-ramp-lamp-closed'), beacon: shown('stern-ramp-beacon') };
+    f.tap(STOP); run(1.2);                                    // the emergency stop: the pump trips, the ramp is held
     await wait(1500);
-    const held = f.state.inputs['stern-ramp'];
+    const held = ramp();
     await wait(2500);
-    const still = f.state.inputs['stern-ramp'];
-    f.step('stern-ramp-lever');                                  // raise
-    for (let t = 0; t < 360 && f.state.inputs['stern-ramp'] > 0; t++) await wait(500);
-    await wait(1500);
-    const home = { ramp: f.state.inputs['stern-ramp'], at: f.control('stern-ramp-lever').at };
-    f.work('stern-ramp-pump-1', false);
-    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
-    return { drawn: comp && comp.drawn, idle, lit: lamp && lamp.shown, lowering, held, still, home };
+    out.stopped = { held, still: ramp(), pump: shown('stern-ramp-lamp-pump-1') };
+    const refused = f.tap(PUMP);                              // a pump is not started while it is pressed
+    f.tap(STOP); run(1.2);                                    // released; the pump started again
+    f.tap(PUMP); run(4);
+    out.again = { refused: refused === false, lamp: shown('stern-ramp-lamp-pump-1') };
+    f.step(RAMP); f.step(RAMP);                               // the ramp lever through STOP to RAISE
+    out.raised = await until(() => ramp() <= 6 + 1e-6, 360);
+    await wait(1200);
+    out.home = { ramp: ramp(), closed: shown('stern-ramp-lamp-closed'), lever: at(RAMP) };
+    f.step(CLEATS);                                           // the cleats lever to LOCK
+    out.shut = await until(() => ramp() === 0, 180);
+    await wait(1200);
+    out.end = { ramp: ramp(), locked: shown('stern-ramp-lamp-locked'), open: shown('stern-ramp-lamp-open'), beacon: shown('stern-ramp-beacon'), lever: at(CLEATS) };
+    f.tap(PUMP); run(6);                                      // the pump stopped: the pressure falls
+    out.off = { bar: f.state.inputs['stern-ramp-pressure'], lamp: shown('stern-ramp-lamp-pump-1') };
+    return out;
   });
-  check(stand && stand.drawn === 'blender' && stand.idle.ramp === 0 && stand.idle.at === 1 && stand.lit && stand.lowering >= 8 && Math.abs(stand.still - stand.held) < 1e-6
-    && stand.home.ramp === 0 && stand.home.at === 1,
-    `the ramp is worked from its control stand: with no pump running its lever does nothing; with pump No. 1 running (its lamp lit) the lever lowers the ramp `
-    + `(to ${stand ? stand.lowering.toFixed(1) : '?'} of its control when it was stopped), stops it, raises it home, and springs back to its middle`);
+  const sd = stand || {};
+  check(stand && sd.drawn === 'blender' && sd.idle.ramp === 0 && sd.idle.lever === 1,
+    'at the ramp\'s control stand no lever does anything until a pump runs');
+  check(stand && sd.pump.lamp === true && sd.pump.bar > 150 && sd.pump.needle > 140 && sd.pump.room > 140 && sd.off.bar < 1 && sd.off.lamp === false,
+    `a pump is started by its button: PUMP 1 RUNNING lights and the system's pressure rises on the stand's indicator and on the gauge in the pump room (${stand ? sd.pump.bar.toFixed(0) : '?'} bar, needles turned ${stand ? sd.pump.needle.toFixed(0) : '?'}°); stopped, it falls again`);
+  check(stand && sd.locked.ramp === 0 && sd.locked.lever === 1 && sd.locked.lamp === true,
+    'the ramp lever does not lower the ramp while its cleats are locked (CLEATS LOCKED is lit)');
+  check(stand && sd.opened && Math.abs(sd.open.ramp - 6) < 1e-6 && sd.open.open === true && sd.open.closed === true && sd.open.locked === false && sd.open.lever === 1,
+    'the cleats lever to OPEN lifts the latches and lets the cleats go, the leaf still home: CLEATS OPEN lights, RAMP CLOSED stays lit, the lever springs back');
+  check(stand && sd.going && sd.lowering.line > 15 && sd.lowering.closed === false && sd.lowering.beacon === true,
+    `then the ramp lever to LOWER lowers it: RAMP CLOSED goes out, the beacon is lit, and line A's indicator shows the leaf's weight coming on (its needle turned ${stand ? sd.lowering.line.toFixed(0) : '?'}° at ${stand ? sd.lowering.ramp.toFixed(1) : '?'} of the control)`);
+  check(stand && Math.abs(sd.stopped.still - sd.stopped.held) < 1e-6 && sd.stopped.pump === false && sd.again.refused && sd.again.lamp === true,
+    'the emergency stop trips the pump and holds the ramp where it is; a pump is not started until it is released');
+  check(stand && sd.raised && Math.abs(sd.home.ramp - 6) < 1e-6 && sd.home.closed === true && sd.home.lever === 1 && sd.shut && sd.end.ramp === 0 && sd.end.locked === true && sd.end.open === false
+    && sd.end.beacon === false && sd.end.lever === 1,
+    'the ramp lever to RAISE brings the leaf home (RAMP CLOSED), and only then does the cleats lever to LOCK lock it: CLEATS LOCKED lights, the beacon goes out');
   // The lights of the after end (the owner: "And lights"): the sternlight is the register's NLT-06 and has its place at the stern.
   const light = await page.evaluate(() => {
     const f = window.__ferry, c = f.systems ? f.systems.data.components.find(c => c.id === 'NLT-06') : null;

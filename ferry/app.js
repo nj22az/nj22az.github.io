@@ -55,7 +55,9 @@ async function loadDocument(url) {
 const LINEAR = Float32Array.from({ length: 256 }, (_, i) => { const c = i / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
 
 function geometryOf(rec, doc) {
-  const { buffer, base, header: { bounds } } = doc, n = rec.vertices;
+  // Fine work (engraved lettering, a dial's scale and needle) is kept in a box of its own, `rec.box`: over her whole bounds
+  // one step along her length is 1.9 mm, as wide as the upright of a 7 mm letter (README, The file format).
+  const { buffer, base, header } = doc, bounds = rec.box || header.bounds, n = rec.vertices;
   const q = new Uint16Array(buffer, base + rec.pos, n * 3), pos = new Float32Array(n * 3);
   for (let a = 0; a < 3; a++) { const lo = bounds.min[a], k = (bounds.max[a] - lo) / 65535; for (let i = a; i < pos.length; i += 3) pos[i] = lo + q[i] * k; }
   const g = new THREE.BufferGeometry();
@@ -452,7 +454,8 @@ function workOrders(dt) {
     if (it.value !== it.order) under = true;
     // arrived: a lever that gave the order springs back to its middle
     else for (const lever of inputs.values()) {
-      if (lever.def.drives && lever.def.drives.input === it.def.id && lever.at !== (lever.def.home ?? 0)) { lever.at = lever.def.home ?? 0; lever.want = lever.def.steps[lever.at].v; lever.way = 1; }
+      const home = lever.def.home ?? 0;
+      if (lever.def.drives && lever.def.drives.input === it.def.id && lever.at !== home) { lever.way = lever.at > home ? -1 : 1; lever.at = home; lever.want = lever.def.steps[home].v; }
     }
   }
   if (moved) moveParts(!under);
@@ -475,8 +478,24 @@ function tapFitting(id, point) {
     if (d < near) { best = it; near = d; }
   }
   if (!best) return false;
-  best.open = !best.open;
-  readout.textContent = `${best.def.name}: ${best.open ? best.def.above || 'open' : best.def.rest || 'shut'}`;
+  tapInput(best);
+  return true;
+}
+/**
+ * A thing worked by a tap is turned on, or off again, and says so. While what it names `unless` is on it stays as it is and says
+ * why (`refused`: a pump is not started while the emergency stop is pressed). Turned on, what it `trips` goes off with it and
+ * what it `holds` is stopped where it is (the ramp's emergency stop: both pumps, and the ramp).
+ */
+function tapInput(it) {
+  const d = it.def;
+  if (!it.open && d.unless && isOn(d.unless)) { readout.textContent = `${d.name}: ${d.refused || 'not now'}`; return false; }
+  it.open = !it.open;
+  if (it.open) {
+    for (const id of d.trips || []) { const t = inputs.get(id); if (t) t.open = false; }
+    const held = d.holds && inputs.get(d.holds);
+    if (held && held.keys) orderInput(d.holds, held.value, held.value !== held.def.min && !held.stops.some(st => st.v === held.value));
+  }
+  readout.textContent = `${d.name}: ${it.open ? d.above || 'open' : d.rest || 'shut'}`;
   return true;
 }
 /**
@@ -490,7 +509,9 @@ function workAuto(dt) {
     if (def.level) {
       // What fills and empties (the coffee in its jug): it rises while what fills it is on, and falls while what drains it is worked.
       let v = it.value;
-      if (isOn(def.level.fill)) v = Math.min(def.max, v + def.level.rate * dt);
+      // (`fill` may be several things, any of which fills it: either pump; with `fall` it sinks by itself while none of them is on: pressure)
+      if ([].concat(def.level.fill || []).some(isOn)) v = Math.min(def.max, v + def.level.rate * dt);
+      else if (def.level.fall) v = Math.max(def.min, v - def.level.fall * dt);
       if (isOn(def.level.drain)) v = Math.max(def.min, v - def.level.drainRate * dt);
       if (v !== it.value) { it.value = v; moved = under = true; }
       continue;
@@ -543,23 +564,28 @@ function stepInput(id) {
   return it.def.steps[it.at];
 }
 /**
- * A lever that works another thing (`drives`: the ramp's lever at its control stand, which gives the stern ramp its orders).
- * Each of its positions says what it orders (`order`): `min` brings the thing home, `next` runs it on to its next stop,
- * `hold` stops it where it is. It does nothing unless one of what it `needs` is on (a pump runs), and says so; it springs
- * back to its middle when the thing has arrived (workOrders).
+ * A lever that works another thing (`drives`: the two levers at the stern ramp's control stand, which give the ramp its orders).
+ * Each of its positions says what it orders: `to` a place for the thing to go to, or `order`: `min` brings it home, `next` runs it
+ * on to its next stop, `hold` stops it where it is. It does nothing while what it names `unless` is on (the emergency stop), nor
+ * unless one of what it `needs` is on (a pump runs), nor while the thing is not `within` what the position asks (the ramp is not
+ * lowered with its cleats locked, the cleats are not locked with the ramp down): it springs back and says why. It springs back to
+ * its middle when the thing has arrived, and the next tap takes it the other way (workOrders).
  */
 function drive(it) {
-  const d = it.def.drives, target = inputs.get(d.input), step = it.def.steps[it.at];
+  const d = it.def.drives, target = inputs.get(d.input), step = it.def.steps[it.at], home = it.def.home ?? 0;
   if (!target || !target.keys) return;
-  if (step.order !== 'hold' && d.needs && !d.needs.some(isOn)) {
-    it.at = it.def.home ?? 0; it.want = it.def.steps[it.at].v; it.way = 1;
-    readout.textContent = `${it.def.name}: ${d.without || 'not ready'}`;
-    return;
+  const back = why => { it.way = it.at > home ? 1 : -1; it.at = home; it.want = it.def.steps[home].v; readout.textContent = `${it.def.name}: ${why}`; };
+  if (step.order !== 'hold') {
+    if (d.unless && isOn(d.unless)) return back(d.stopped || 'not now');
+    if (d.needs && !d.needs.some(isOn)) return back(d.without || 'not ready');
+    if (step.within && (target.value < step.within[0] || target.value > step.within[1])) return back(step.refused || 'not now');
   }
   const stops = target.stops;
-  if (step.order === 'min') orderInput(d.input, target.def.min);
+  if (typeof step.to === 'number') orderInput(d.input, step.to);
+  else if (step.order === 'min') orderInput(d.input, target.def.min);
   else if (step.order === 'next') orderInput(d.input, (stops.find(st => st.v > target.value + 1e-6) || stops[stops.length - 1]).v);
   else orderInput(d.input, target.value, target.value !== target.def.min && !stops.some(st => st.v === target.value));
+  readout.textContent = `${it.def.name}: ${step.say}`;
 }
 function workSteps(dt) {
   let moved = false, under = false;
@@ -842,7 +868,7 @@ function identify(clientX, clientY) {
   // A door answers a tap: it opens, or shuts again.
   for (let n = hit.object.parent; n; n = n.parent) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
-    if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
+    if (it && it.def.auto) { tapInput(it); select(null); return; }
   }
   keysFor(hit.object);
   // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
@@ -892,7 +918,7 @@ function nameOnFoot(clientX, clientY) {
   // What is worked by a tap answers one from within reach: it opens, or shuts again.
   if (hit && hit.distance < 3) for (let n = hit.object.parent; n; n = n.parent) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
-    if (it && it.def.auto === 'tap') { it.open = !it.open; readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
+    if (it && it.def.auto === 'tap') { tapInput(it); return; }
   }
   if (hit && hit.distance < 8) keysFor(hit.object);
   if (!systems) return;
@@ -1817,6 +1843,8 @@ async function start() {
     /** For checks: her particulars, as the file says them (half her length turns metres from the transom into z). */
     ship: doc.header.ship,
     step: id => stepInput(id),
+    /** For checks: a tap on a thing that a tap works, with all that follows from it (what it trips, what it holds, what refuses it). */
+    tap: id => { const it = inputs.get(id); return it && it.def.auto ? tapInput(it) : false; },
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
     movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray(), shown: m.node.visible })),
     get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max, stand: sp.stand || null }))); },

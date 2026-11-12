@@ -24,7 +24,10 @@ over the power pack and come down to each motor in a conduit; the cylinders and 
 
 Drawn in the ship's axes (lines.py): x to port, y up from the waterline, z forward from amidships.
 """
+import os
+import sys
 from math import atan2, cos, degrees, hypot, pi, radians, sin
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'systems'))
 import lines as L
 import spec as S
 import stern_place as P
@@ -105,6 +108,74 @@ def letter(p, text, height, origin, right, up, colour, centre=True):
     for a, b, c in tris:
         p.face((base + a, base + b, base + c), colour)
     p.orient(first, (right[1] * up[2] - right[2] * up[1], right[2] * up[0] - right[0] * up[2], right[0] * up[1] - right[1] * up[0]))
+
+
+def hexagon(p, x, inn, h0, h1, across, colour, turn=0.0):
+    """A hexagon on an upright axis (a nut, the flats of a nipple): `across` its flats."""
+    R = across / (2 * cos(pi / 6))
+    ring = [(x + R * cos(turn + k * pi / 3), inn + R * sin(turn + k * pi / 3)) for k in range(6)]
+    lo = [p.vert(Q(a, b, h0)) for a, b in ring]
+    hi = [p.vert(Q(a, b, h1)) for a, b in ring]
+    for k in range(6):
+        j = (k + 1) % 6
+        start = len(p.f)
+        p.face((lo[k], lo[j], hi[j], hi[k]), colour, smooth=False)
+        p.orient(start, ((ring[k][0] + ring[j][0]) / 2 - x, 0.0, (ring[k][1] + ring[j][1]) / 2 - inn))
+    for ids, way in ((lo, -1.0), (hi, 1.0)):
+        start = len(p.f)
+        p.face(tuple(ids), colour, smooth=False)
+        p.orient(start, (0.0, way, 0.0))
+
+
+def hexnut_i(p, x, i0, i1, h, across, colour=None):
+    """A union nut on a pipe that runs fore and aft: a hexagon about that axis, from i0 to i1."""
+    colour = STEEL if colour is None else colour
+    R = across / (2 * cos(pi / 6))
+    ring = [(x + R * cos(k * pi / 3), h + R * sin(k * pi / 3)) for k in range(6)]
+    lo = [p.vert(Q(a, i0, b)) for a, b in ring]
+    hi = [p.vert(Q(a, i1, b)) for a, b in ring]
+    for k in range(6):
+        j = (k + 1) % 6
+        start = len(p.f)
+        p.face((lo[k], lo[j], hi[j], hi[k]), colour, smooth=False)
+        p.orient(start, ((ring[k][0] + ring[j][0]) / 2 - x, (ring[k][1] + ring[j][1]) / 2 - h, 0.0))
+    for ids, way in ((lo, -1.0), (hi, 1.0)):
+        start = len(p.f)
+        p.face(tuple(ids), colour, smooth=False)
+        p.orient(start, (0.0, 0.0, way))
+
+
+def gauge_mount(key):
+    """How a pressure gauge of the pump room stands on what it reads from (stern_place.ROOM_GAUGES; the owner, of the first
+    one, on a bare bar: "Is this a floating gauge ?"). From the port in the block's top upward: a hexagon nipple screwed into
+    it, the gauge cock (a brass body, its spindle and red tee handle toward whoever reads the gauge), a union nut, and the
+    gauge's own square socket, which enters the underside of its case. All of it is fine work, as the gauge is."""
+    steel = part('Stern ramp gauges, nipples and nuts', 'Shaft steel', smooth=True, angle=40, fine=True)
+    brass = part('Stern ramp gauges, cocks and sockets', 'Bronze', smooth=True, angle=40, fine=True)
+    handle = part('Stern ramp gauges, cock handles', 'Plastic', smooth=True, angle=40, fine=True)
+    g = P.ROOM_GAUGES[key]
+    (x, at, h), k = g['port'], g['look']
+    bronze = srgb(0xb08a4a)
+    hexagon(steel, x, at, h - 0.002, h + 0.010, 0.022, STEEL)                                           # the nipple, let 2 mm into the block
+    tube(steel, (x, at, h + 0.010), (x, at, h + 0.018), 0.007, STEEL, 10)
+    box(brass, x - 0.014, x + 0.014, at - 0.014, at + 0.014, h + 0.018, h + 0.052, bronze)              # the gauge cock
+    tube(steel, (x + k * 0.014, at, h + 0.035), (x + k * 0.027, at, h + 0.035), 0.004, STEEL, 10)       # its spindle
+    tube(handle, (x + k * 0.030, at - 0.020, h + 0.035), (x + k * 0.030, at + 0.020, h + 0.035), 0.005, RED, 12)   # and its tee handle
+    tube(steel, (x, at, h + 0.052), (x, at, h + 0.060), 0.007, STEEL, 10)
+    hexagon(steel, x, at, h + 0.060, h + 0.074, 0.024, STEEL, turn=pi / 6)                              # the union nut
+    box(brass, x - 0.007, x + 0.007, at - 0.007, at + 0.007, h + 0.074, h + P.GAUGE_MOUNT['stack'] + 0.006, bronze, soft=False)   # the gauge's socket, into its case
+
+
+def room_gauge(key, needle=None):
+    """A pressure gauge of the pump room on its mount: its case (with the body a real gauge has behind its dial), its dial,
+    its needle (a part of its own where it turns) and its glass."""
+    g = P.room_gauge(key)
+    G = Face((g['x'], g['h']), (g['x'], g['h'] + 1.0), g['at'], flip=g['look'] > 0)
+    case = part('Stern ramp gauges, cases', 'Machinery paint', smooth=True, angle=40, fine=True)
+    gauge_mount(key)
+    dial(G, 0.0, 0.0, g['r'], g['tag'], case, part('Stern ramp gauges, dial faces', 'Plastic', smooth=True, angle=40, fine=True),
+         part('Stern ramp gauges, lettering', 'Marking', fine=True), part('Stern ramp gauges, glasses', 'Dial glass', smooth=True, angle=50, fine=True),
+         needle or case, title=g['title'], back=P.GAUGE_MOUNT['depth'])
 
 
 def laid(p, pts, r, colour):
@@ -383,7 +454,7 @@ def power_pack():
     dark = part('Stern ramp power pack, dark fittings', 'Machinery paint', smooth=True, angle=40)
     bright = part('Stern ramp power pack, bright fittings', 'Shaft steel', smooth=True, angle=40)
     glass = part('Stern ramp power pack, glasses', 'Lens', smooth=True, angle=50)
-    paint = part('Stern ramp power pack, lettering', 'Marking')
+    paint = part('Stern ramp power pack, lettering', 'Marking', fine=True)
     x0, x1, a, b, h0, h1 = HPU['tank']
     with component('HYD-01'):
         tx0, tx1, ta, tb, rim = HPU['tray']
@@ -420,7 +491,19 @@ def power_pack():
                 tube(pack, (px, py, LID + bh + 0.10 + k * 0.10), (px, py, LID + bh + 0.13 + k * 0.10), mr + 0.012, tint(LIGHT, 0.9), 32)
             tube(dark, (px, py, LID + bh + mh), (px, py, LID + bh + mh + 0.09), mr + 0.005, DARK, 32)   # the fan's cowl
             box(dark, px - mr - 0.11, px - mr + 0.03, py - 0.09, py + 0.09, LID + bh + 0.315, LID + bh + 0.48, DARK)   # its terminal box, inboard
-            tube(bright, (px - br + 0.02, py, LID + 0.07), (HPU['block'][1] - 0.01, py, LID + 0.07), 0.015, STEEL, 12)   # its delivery pipe to the pressure block
+            # Its delivery pipe to the pressure block: inboard off the pump, along the lid, and into the block's outboard face, with
+            # its non-return valve on the way. (It ran straight inboard and ended in the air beside the block, 0.15 m short of it
+            # each end: the block is 0.44 m long and the pumps stand 0.75 m apart. Found on 12 November 2026 when the owner asked
+            # of the gauge "Is this a floating gauge ?" and everything round it was looked at. It lies 40 mm over the cleat
+            # pump's pipe where they cross.)
+            bx1, ba_, bb_ = HPU['block'][1], HPU['block'][2], HPU['block'][3]
+            into = ba_ + 0.10 if py < (ba_ + bb_) / 2 else bb_ - 0.10
+            hp = LID + 0.09
+            rod(bright, [(px - br + 0.02, py, hp), (bx1 + 0.05, py, hp), (bx1 + 0.05, into, hp), (bx1 - 0.01, into, hp)], 0.015, STEEL)
+            mid = (py + into) / 2
+            tube(dark, (bx1 + 0.05, mid - 0.035, hp), (bx1 + 0.05, mid + 0.035, hp), 0.026, DARK, 16)                   # the non-return valve
+            hexnut_i(bright, bx1 + 0.05, mid - 0.047, mid - 0.035, hp, 0.040)
+            hexnut_i(bright, bx1 + 0.05, mid + 0.035, mid + 0.047, hp, 0.040)
             letter(paint, f'P{no}', 0.05, Q(px - mr - 0.1108, py, LID + bh + 0.365), (0, 0, 1), (0, 1, 0), WHITE)
     with component('HYD-04'):
         px, py = HPU['cleat_pump']
@@ -449,10 +532,10 @@ def power_pack():
         tube(dark, (bx0 + 0.09, bb - 0.09, HPU['block'][5]), (bx0 + 0.09, bb - 0.09, HPU['block'][5] + 0.20), 0.045, DARK, 18)      # the pressure filter's bowl
         tube(bright, (bx0 + 0.09, bb - 0.20, HPU['block'][5]), (bx0 + 0.09, bb - 0.20, HPU['block'][5] + 0.07), 0.02, STEEL, 12)    # the relief valve
         tube(dark, (bx0 + 0.09, bb - 0.20, HPU['block'][5] + 0.07), (bx0 + 0.09, bb - 0.20, HPU['block'][5] + 0.10), 0.028, RED, 12)
-        tube(bright, (bx0, bb - 0.10, LID + 0.10), (bx0 - 0.03, bb - 0.10, LID + 0.10), 0.008, STEEL, 8)                            # the gauge, looking into the way
-        tube(dark, (bx0 - 0.03, bb - 0.10, LID + 0.10), (bx0 - 0.03, bb - 0.10, LID + 0.22), 0.008, STEEL, 8)
-        tube(dark, (bx0 - 0.02, bb - 0.10, LID + 0.27), (bx0 - 0.05, bb - 0.10, LID + 0.27), 0.05, DARK, 24)
-        tube(glass, (bx0 - 0.05, bb - 0.10, LID + 0.27), (bx0 - 0.054, bb - 0.10, LID + 0.27), 0.044, WHITE, 24)
+        # the system's pressure gauge, on its gauge cock on the block's top at its inboard edge, looking into the way: its needle
+        # rises when a pump is started. (A gauge is fine work, shipyard.Part: its face runs fore and aft, where the file's own
+        # step is 1.9 mm.)
+        room_gauge('pg1', part('Stern ramp gauges, system needle', 'Plastic', mover=f'{ID}-gauge-pg1', fine=True))
     with component('HYD-07'):
         fx, fy = HPU['return_filter']
         tube(dark, (fx, fy, LID), (fx, fy, LID + 0.26), 0.07, DARK, 20)
@@ -470,7 +553,7 @@ def valve_stand():
     stand = part('Stern ramp valve stand', 'Machinery paint', smooth=True, angle=40)
     bright = part('Stern ramp valve stand, bright fittings', 'Shaft steel', smooth=True, angle=40)
     glass = part('Stern ramp valve stand, glasses', 'Lens', smooth=True, angle=50)
-    paint = part('Stern ramp valve stand, lettering', 'Marking')
+    paint = part('Stern ramp valve stand, lettering', 'Marking', fine=True)
     x0, x1, a, b, h0, h1 = HPU['manifold']
     with component('HYD-10'):
         stand.block(Q(x0, a, h0), Q(x1, b, h1), srgb(0x6f7778), 0.006)
@@ -483,11 +566,10 @@ def valve_stand():
             rod(bright, [(x1 + 0.06, yy, h0 + 0.22), (x1 + 0.075, yy, h0 + 0.34), (x1 + 0.10, yy, h0 + 0.47)], 0.008, STEEL)   # its hand lever
             stand.ball(Q(x1 + 0.10, yy, h0 + 0.48), 0.02, BLACK)
             letter(paint, name, 0.022, Q(x1 + 0.0008, yy, h0 + 0.02), (0, 0, -1), (0, 1, 0), WHITE)
-        # a gauge for each of the ramp's two lines
-        for yy, in ((a + 0.07,), (a + 0.15,)):
-            tube(bright, (x1 - 0.02, yy, h1), (x1 - 0.02, yy, h1 + 0.075), 0.006, STEEL, 8)
-            tube(stand, (x1 - 0.035, yy, h1 + 0.10), (x1 + 0.0, yy, h1 + 0.10), 0.036, DARK, 20)
-            tube(glass, (x1 + 0.0, yy, h1 + 0.10), (x1 + 0.004, yy, h1 + 0.10), 0.031, WHITE, 20)
+        # a gauge for each of the ramp's two lines, each on its gauge cock on the stand's top, looking into the way: A (its needle
+        # shows what carries the leaf) and B
+        room_gauge('pg2', part('Stern ramp gauges, line A needle', 'Plastic', mover=f'{ID}-gauge-pg2', fine=True))
+        room_gauge('pg3')
         # the solenoids' junction box, where the conduit's branch comes down
         at = P.MANIFOLD_AT['E']
         box(stand, x0 + 0.01, x0 + 0.115, at - 0.045, at + 0.045, h1, h1 + 0.25, srgb(S.DOOR_GREY))
@@ -659,112 +741,318 @@ def pipes():
 
 
 # =====================================================================================================================
-# The control stand
+# The control stand, and the dials
 # =====================================================================================================================
+class Face:
+    """A flat face that runs fore and aft and leans: `a` and `b` are its near and far edge as (x, h), `i0` the edge its
+    measures across begin at. Seen by whoever looks at it, u runs to the right and v up it. A face that looks to port
+    (`flip`) has its u running aft."""
+
+    def __init__(self, a, b, i0, flip=False):
+        self.a, self.i0, self.flip = a, i0, flip
+        self.len = hypot(b[0] - a[0], b[1] - a[1])
+        self.t = ((b[0] - a[0]) / self.len, (b[1] - a[1]) / self.len)
+        self.n = (self.t[1], -self.t[0]) if flip else (-self.t[1], self.t[0])
+        self.right = (0.0, 0.0, -1.0 if flip else 1.0)          # the ship's axes: x, y up, z forward
+        self.up = (self.t[0], self.t[1], 0.0)
+        self.out = (self.n[0], self.n[1], 0.0)
+
+    def at(self, u, v, d=0.0):
+        return Q(self.a[0] + self.t[0] * v + self.n[0] * d, self.i0 + (-u if self.flip else u), self.a[1] + self.t[1] * v + self.n[1] * d)
+
+
+def slab(p, F, u0, u1, v0, v1, d0, d1, colour):
+    """A box that lies on a face: from u0 to u1 across it, v0 to v1 up it, d0 to d1 off it."""
+    c = {(i, j, k): p.vert(F.at(u, v, d)) for i, u in enumerate((u0, u1)) for j, v in enumerate((v0, v1)) for k, d in enumerate((d0, d1))}
+    neg = lambda w: tuple(-x for x in w)
+    for ids, way in ((((0, 0, 1), (1, 0, 1), (1, 1, 1), (0, 1, 1)), F.out), (((0, 0, 0), (0, 1, 0), (1, 1, 0), (1, 0, 0)), neg(F.out)),
+                     (((1, 0, 0), (1, 1, 0), (1, 1, 1), (1, 0, 1)), F.right), (((0, 0, 0), (0, 0, 1), (0, 1, 1), (0, 1, 0)), neg(F.right)),
+                     (((0, 1, 0), (0, 1, 1), (1, 1, 1), (1, 1, 0)), F.up), (((0, 0, 0), (1, 0, 0), (1, 0, 1), (0, 0, 1)), neg(F.up))):
+        start = len(p.f)
+        p.face([c[i] for i in ids], colour)
+        p.orient(start, way)
+
+
+def patch(p, F, pts, d, colour):
+    """A flat shape painted on a face: its corners as (u, v), d off the face."""
+    start = len(p.f)
+    p.face([p.vert(F.at(u, v, d)) for u, v in pts], colour)
+    p.orient(start, F.out)
+
+
+def stud(p, F, u, v, d0, d1, r, colour, sides=16, r2=None):
+    p.tube(F.at(u, v, d0), F.at(u, v, d1), r, r2, colour=colour, sides=sides)
+
+
+def words(p, F, text, height, u, v, d, colour):
+    letter(p, text, height, F.at(u, v, d), F.right, F.up, colour)
+
+
+def fits(text, height, room, what):
+    """A legend never runs over the edge of what it is engraved on (the owner, 12 November 2026: "Labels need to be wrapped ,
+    it should behave like reality emergency stop can't have its text bleed like that"). The lettering's own width is
+    measured, and the build stops if it is more than the room there is for it."""
+    wide = lettering(text, height)[2]
+    if wide > room:
+        raise SystemExit(f'{what}: "{text}" is {wide * 1000:.1f} mm long in letters of {height * 1000:.1f} mm, and there are {room * 1000:.1f} mm for it')
+    return wide
+
+
+def ring_words(p, F, text, height, u, v, feet, d, colour, over=True, most=150.0):
+    """Lettering round a ring, as on the legend plate of an emergency stop: each letter stands on the circle of radius `feet`
+    about (u, v). `over`: across the top, feet toward the middle, read from left to right; otherwise across the bottom, feet
+    outward, so that it is read upright there too. Each letter keeps the place the line gives it (its width and the gaps
+    are the lettering's own). The build stops if the line would take more than `most` degrees of the ring."""
+    upto = [lettering(text[:k + 1], height)[2] for k in range(len(text))]
+    middle = feet + height / 2 if over else feet - height / 2
+    if degrees(upto[-1] / middle) > most:
+        raise SystemExit(f'"{text}" round a ring of {middle * 1000:.0f} mm takes {degrees(upto[-1] / middle):.0f} degrees of it: more than {most:.0f}')
+    for k, ch in enumerate(text):
+        if ch == ' ':
+            continue
+        w = lettering(ch, height)[2]
+        along = upto[k] - w / 2 - upto[-1] / 2                    # the letter's middle along the line, from the line's middle
+        a = along / middle if over else pi - along / middle      # clockwise from straight up, as it is looked at
+        out, round_ = (sin(a), cos(a)), (cos(a), -sin(a))         # away from the middle; clockwise
+        right, up = (round_, out) if over else ((-round_[0], -round_[1]), (-out[0], -out[1]))
+        ou, ov = u + feet * out[0] - right[0] * w / 2, v + feet * out[1] - right[1] * w / 2
+        letter(p, ch, height, F.at(ou, ov, d), tuple(right[0] * F.right[i] + right[1] * F.up[i] for i in range(3)),
+               tuple(up[0] * F.right[i] + up[1] * F.up[i] for i in range(3)), colour, centre=False)
+
+
+def legend(plate, paint, F, lines, u, v, size=0.0075):
+    """An engraved plate: white letters' ground in black, as a ship's legend plates are (black letters on white here). The
+    plate is as wide as its longest line as lettered, and 6 mm more each side: nothing runs over its edge."""
+    wide = max(lettering(t, size)[2] for t in lines) + 0.012
+    high = len(lines) * size * 1.6 + 0.006
+    slab(plate, F, u - wide / 2, u + wide / 2, v - high / 2, v + high / 2, 0.0, 0.0012, WHITE)
+    for k, t in enumerate(lines):
+        words(paint, F, t, size, u, v + high / 2 - 0.004 - size - k * size * 1.6, 0.0018, BLACK)
+
+
+def needle_angle(bar):
+    """Where a dial's needle stands for a pressure: degrees clockwise from straight up."""
+    return -P.GAUGE['sweep'] / 2 + P.GAUGE['sweep'] * bar / P.GAUGE['full']
+
+
+def dial(F, u, v, r, name, case, face, paint, glass, needle, title=None, bar=0.0, back=0.0):
+    """A pressure indicator on a face: its case and bezel, a white dial from 0 to 250 bar with a mark at every ten, a figure
+    at every fifty and a red mark from the working pressure up, its needle (a part of its own, so that it can turn) and its glass."""
+    full, red = P.GAUGE['full'], P.GAUGE['red']
+    stud(case, F, u, v, -back, 0.010, r + 0.007, BLACK, 40)                # (its case ends under the dial: the bezel stands round it; `back`: the body of a gauge that stands free)
+    case.ring(F.at(u, v, 0.0125), F.out, r + 0.0035, 0.0040, CHROME)
+    stud(face, F, u, v, 0.0105, 0.0115, r, WHITE, 40)
+    d = 0.0119
+
+    def at(a, rad):                     # a place on the dial: a degrees clockwise from up, rad from its middle
+        return (u + rad * sin(radians(a)), v + rad * cos(radians(a)))
+
+    def tick(a, r0, r1, w, colour):
+        (x0, y0), (x1, y1) = at(a, r0), at(a, r1)
+        px, py = cos(radians(a)) * w / 2, -sin(radians(a)) * w / 2
+        patch(paint, F, [(x0 - px, y0 - py), (x0 + px, y0 + py), (x1 + px, y1 + py), (x1 - px, y1 - py)], d, colour)
+
+    for b10 in range(0, int(full) + 1, 10):
+        major = b10 % 50 == 0
+        tick(needle_angle(b10), r * (0.76 if major else 0.84), r * 0.95, r * (0.035 if major else 0.018), RED if b10 >= red else BLACK)
+        if major:
+            x, y = at(needle_angle(b10), r * 0.60)
+            words(paint, F, str(b10), r * 0.17, x, y - r * 0.085, d, BLACK)
+    for k in range(8):                                                      # the red mark: from the working pressure to the end of the scale
+        tick(needle_angle(red + (full - red) * (k + 0.5) / 8), r * 0.955, r * 0.995, r * 0.085, RED)
+    words(paint, F, 'bar', r * 0.16, u, v - r * 0.50, d, BLACK)
+    if title:
+        words(paint, F, title, r * 0.115, u, v + r * 0.26, d, BLACK)
+    # the needle: at rest where `bar` says; a counterweight tail, a hub
+    a0 = needle_angle(bar)
+    (tx, ty), (bx, by) = at(a0, r * 0.82), at(a0 + 180, r * 0.22)
+    px, py = cos(radians(a0)) * r * 0.035, -sin(radians(a0)) * r * 0.035
+    patch(needle, F, [(bx - px, by - py), (bx + px, by + py), (tx + px * 0.2, ty + py * 0.2), (tx - px * 0.2, ty - py * 0.2)], 0.0142, BLACK)
+    stud(needle, F, u, v, 0.0125, 0.0155, r * 0.10, BLACK, 16)
+    stud(glass, F, u, v, 0.0165, 0.0172, r + 0.001, srgb(0xdfe8ea), 40)
+
+
 ST = P.STAND
 SX0, SX1 = ST['x']
 SI0, SI1 = ST['inn']
-FACE_LOW, FACE_HIGH = ST['top'] - 0.06, ST['top'] + 0.14         # the sloping face: its near (forward) edge and its far (after) edge
-FACE_LEN = hypot(SI1 - SI0, FACE_HIGH - FACE_LOW)
-FN = ((FACE_HIGH - FACE_LOW) / FACE_LEN, (SI1 - SI0) / FACE_LEN)   # the face's direction (inn, h): up and forward
-FV = (-(SI1 - SI0) / FACE_LEN, (FACE_HIGH - FACE_LOW) / FACE_LEN)  # up its slope (inn, h): aft and up
+DESK = Face(ST['desk'][0], ST['desk'][1], SI0)
+UPST = Face(ST['upstand'][0], ST['upstand'][1], SI0)
+FACES = {'desk': DESK, 'up': UPST}
+ITEM = lambda kind, **want: next(q for q in P.STAND_PANEL if q['kind'] == kind and all(q.get(k) == v for k, v in want.items()))
+LIT = {'white': ('Signal white', 0xfff6dc, 0xd9d4c2), 'green': ('Signal green', 0x7dff9b, 0x35553e), 'amber': ('Signal amber', 0xffc65a, 0x6d5a2c), 'red': ('Signal red', 0xff6a5a, 0x5f302b)}
+WINDOW = (0.050, 0.040)                 # a lamp window: across, up
 
 
-def F(u, v, d=0.0):
-    """A place on the stand's face: u metres from its starboard edge (the left of whoever works it), v metres up its slope
-    from its near edge, d metres off it."""
-    return (SX0 + u, SI1 + FV[0] * v + FN[0] * d, FACE_LOW + FV[1] * v + FN[1] * d)
-
-
-FACE_UP = (0.0, FV[1], FV[0])            # the same directions in the ship's axes (x, y, z)
-FACE_OUT = (0.0, FN[1], FN[0])
-LAMPS = {'POWER': (0.065, 0.335), 'LOCKED': (0.165, 0.335), 'CLEATS FREE': (0.275, 0.335), 'OIL': (0.375, 0.335)}
-BUTTONS = {1: (0.085, 0.215), 2: (0.205, 0.215)}
-STOP_AT, LEVER_AT = (0.345, 0.215), (0.22, 0.085)
+def prism_i(p, profile, i0, i1, colour):
+    """A closed solid: an outline in (x, h) carried fore and aft from i0 to i1."""
+    i0, i1 = min(i0, i1), max(i0, i1)
+    area = sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(profile, profile[1:] + profile[:1]))
+    pts = list(profile) if area > 0 else list(profile)[::-1]
+    for inn, way in ((i0, -1), (i1, 1)):
+        start = len(p.f)
+        p.polygon([Q(x, inn, h) for x, h in pts], colour)
+        p.orient(start, (0, 0, way))
+    for a, b in zip(pts, pts[1:] + pts[:1]):
+        start = len(p.f)
+        p.face([p.vert(Q(a[0], i0, a[1])), p.vert(Q(a[0], i1, a[1])), p.vert(Q(b[0], i1, b[1])), p.vert(Q(b[0], i0, b[1]))], colour)
+        p.orient(start, (b[1] - a[1], -(b[0] - a[0]), 0.0))
 
 
 def stand():
+    """The ramp's control stand (stern_place.STAND, STAND_PANEL): a steel desk against the mooring station's wall. What is worked is on
+    the sloping desk, what is read on the upstand behind it; a door in its front opens on its terminals; two guard posts stand
+    inboard of it and a beacon on its top."""
+    # Its desk and upstand run fore and aft, and along her length the file's own step is 1.9 mm: the uprights of its 6 to 8 mm
+    # letters were lost on the page, and its dials' scales with them. So everything that is worked or read on it is fine work
+    # (shipyard.Part: kept in a small box of its own, a step of a hundredth of a millimetre); its case, a plain steel desk, is not.
+    # What is painted straight on the case stands 1 mm off it, more than the case's own place can be out by (0.45 mm).
     case = part('Ramp control stand', 'Machinery paint')
-    dark = part('Ramp control stand, dark fittings', 'Plastic', smooth=True, angle=40)
-    lens = part('Ramp control stand, lamps', 'Lens', smooth=True, angle=50)
-    paint = part('Ramp control stand, lettering', 'Marking')
+    steel = part('Ramp control stand, bright fittings', 'Stainless', smooth=True, angle=40, fine=True)
+    dark = part('Ramp control stand, dark fittings', 'Plastic', smooth=True, angle=40, fine=True)
+    plate = part('Ramp control stand, legend plates', 'Plastic', fine=True)
+    paint = part('Ramp control stand, lettering', 'Marking', fine=True)
+    face = part('Ramp control stand, dial faces', 'Plastic', smooth=True, angle=40, fine=True)
+    glass = part('Ramp control stand, dial glasses', 'Dial glass', smooth=True, angle=50, fine=True)
+    lens = part('Ramp control stand, lamp windows', 'Lens', fine=True)
     wires = part('Ramp control stand, wiring', 'Rubber', smooth=True, angle=50)
     gear = part('Ramp control stand, terminals', 'Plastic')
+    grey = srgb(0xaeb6b4)                                   # the stand: light grey enamel, as her deck cabinets are
     t = 0.014
-    profile = [(SI0, 0.03), (SI1, 0.03), (SI1, FACE_LOW), (SI0, FACE_HIGH)]
+    (dx0, dh0), (dx1, dh1) = ST['desk']
+    (ux1, uh1) = ST['upstand'][1]
+    W = SI1 - SI0
+    outline = [(SX0, 0.03), (SX0, dh0), (dx1, dh1), (ux1, uh1), (SX1, uh1), (SX1, 0.03)]
     with component('RMP-30'):
-        box(case, SX0 - 0.03, SX1 + 0.005, SI0 - 0.03, SI1 + 0.03, 0.0, 0.03, DARK)                          # its foot, on the deck
-        for xa, xb in ((SX0, SX0 + t), (SX1 - t, SX1)):                                                    # its two sides
-            prism(case, profile, xa, xb, YELLOW)
-        box(case, SX0 + t, SX1 - t, SI0, SI0 + t, 0.03, FACE_HIGH - 0.012, YELLOW)                           # its back
-        prism(case, [(SI1, FACE_LOW), (SI0, FACE_HIGH), (SI0, FACE_HIGH - 0.016), (SI1, FACE_LOW - 0.016)], SX0 + t, SX1 - t, srgb(0x2d3336))     # the face
-        box(case, SX0 + t, SX1 - t, SI0 + t, SI1, 0.03, 0.045, YELLOW)                                       # its bottom
-        for xa, xb in ((SX0 + t, SX0 + 0.03), (SX1 - 0.03, SX1 - t)):                                      # the door's frame
-            box(case, xa, xb, SI1 - t, SI1, 0.045, FACE_LOW - 0.016, YELLOW)
-        box(case, SX0 + 0.03, SX1 - 0.03, SI1 - t, SI1, 0.045, 0.085, YELLOW)
-        box(case, SX0 + 0.03, SX1 - 0.03, SI1 - t, SI1, 0.985, FACE_LOW - 0.016, YELLOW)
-        # the guard on its inboard side: a hoop of pipe on the deck, so that nothing driven aboard takes it with it
-        rod(case, [(ST['hoop'], SI0 - 0.04, 0.0), (ST['hoop'], SI0 - 0.04, 0.92), (ST['hoop'], SI1 + 0.06, 0.92), (ST['hoop'], SI1 + 0.06, 0.0)], 0.022, YELLOW)
-        # ---- the face: four lamps, the two pumps' buttons, the stop, the lever
-        for name, (u, v) in LAMPS.items():
-            case.tube(Q(*F(u, v, 0.0)), Q(*F(u, v, 0.012)), 0.019, colour=CHROME, sides=18)
-            lit = {'POWER': 0xf3efe2, 'LOCKED': 0x3f6f4c, 'CLEATS FREE': 0x7d6a34, 'OIL': 0x6f3a34}[name]
-            lens.tube(Q(*F(u, v, 0.012)), Q(*F(u, v, 0.019)), 0.014, colour=srgb(lit), sides=18)
-            letter(paint, name, 0.0095, Q(*F(u, v - 0.042, 0.0006)), (1, 0, 0), FACE_UP, WHITE)
-        for no, (u, v) in BUTTONS.items():
-            case.tube(Q(*F(u, v, 0.0)), Q(*F(u, v, 0.010)), 0.027, colour=CHROME, sides=20)
-            letter(paint, f'PUMP {no}', 0.0105, Q(*F(u, v - 0.052, 0.0006)), (1, 0, 0), FACE_UP, WHITE)
-            cap = part(f'Ramp control stand, pump {no} button', 'Plastic', smooth=True, angle=40, mover=f'{ID}-pump-{no}-button')
-            cap.tube(Q(*F(u, v, 0.006)), Q(*F(u, v, 0.024)), 0.021, colour=srgb(0x2f5a3c), sides=20)
-            glow = part(f'Ramp control stand, pump {no} lamp', 'Lit green', smooth=True, angle=40, mover=f'{ID}-pump-{no}-lamp')
-            glow.tube(Q(*F(u, v, 0.019)), Q(*F(u, v, 0.0212)), 0.0185, colour=srgb(0x7dff9b), sides=20)
-        u, v = STOP_AT
-        case.tube(Q(*F(u, v, 0.0)), Q(*F(u, v, 0.012)), 0.03, colour=YELLOW, sides=20)
-        dark.tube(Q(*F(u, v, 0.012)), Q(*F(u, v, 0.03)), 0.014, colour=BLACK, sides=14)
-        dark.tube(Q(*F(u, v, 0.03)), Q(*F(u, v, 0.05)), 0.03, 0.024, colour=RED, sides=22)
-        letter(paint, 'STOP', 0.0105, Q(*F(u, v - 0.052, 0.0006)), (1, 0, 0), FACE_UP, WHITE)
-        u, v = LEVER_AT
-        case.tube(Q(*F(u, v, 0.0)), Q(*F(u, v, 0.016)), 0.034, colour=CHROME, sides=22)                     # the lever's gate
-        lever = part('Ramp control stand, lever', 'Plastic', smooth=True, angle=40, mover=f'{ID}-lever')
-        lever.tube(Q(*F(u, v, 0.010)), Q(*F(u, v, 0.034)), 0.022, 0.012, colour=BLACK, sides=18)            # its gaiter
-        lever.tube(Q(*F(u, v, 0.03)), Q(*F(u, v, 0.15)), 0.007, colour=CHROME, sides=12)
-        lever.ball(Q(*F(u, v, 0.165)), 0.021, BLACK)
-        letter(paint, 'RAISE', 0.0105, Q(*F(u, v + 0.047, 0.0006)), (1, 0, 0), FACE_UP, WHITE)
-        letter(paint, 'LOWER', 0.0105, Q(*F(u, v - 0.062, 0.0006)), (1, 0, 0), FACE_UP, WHITE)
-        letter(paint, 'RAMP', 0.0095, Q(*F(u - 0.085, v - 0.005, 0.0006)), (1, 0, 0), FACE_UP, srgb(0xe3c341))
-        letter(paint, 'STERN RAMP', 0.013, Q(*F((SX1 - SX0) / 2, FACE_LEN - 0.032, 0.0006)), (1, 0, 0), FACE_UP, srgb(0xe3c341))
-        # ---- inside, behind the door: the terminal strip X1 (sixteen terminals, as JS3-304 sheet 3 lists them), the cable from the conduit, the cores up to the face
-        box(gear, SX0 + 0.05, SX1 - 0.05, SI0 + t, SI0 + t + 0.008, 0.30, 0.90, srgb(0xd9d4c2), soft=False)   # a mounting plate on the back
-        back = SI0 + t + 0.008
-        box(gear, SX0 + 0.08, SX1 - 0.08, back, back + 0.010, 0.565, 0.60, STEEL, soft=False)                 # the rail
-        for k in range(16):
-            xa = SX0 + 0.10 + k * 0.0152
-            box(gear, xa, xa + 0.013, back + 0.010, back + 0.052, 0.55, 0.615, srgb(0xb9b39f) if k not in (0, 1) else srgb(0x2f6fb7), soft=False)
-            wires.rod([Q(xa + 0.0065, back + 0.03, 0.615), Q(xa + 0.0065, back + 0.03, 0.70), Q(SX0 + 0.12 + k * 0.013, back + 0.03, 0.84), Q(SX0 + 0.12 + k * 0.013, back + 0.03, 0.90)], 0.0028,
+        box(case, SX0 - 0.03, SX1 + 0.005, SI0 - 0.03, SI1 + 0.03, 0.0, 0.03, DARK)                         # its foot, bolted to the deck
+        for xb in (SX0 + 0.01, SX1 - 0.04):
+            for ib in (SI0 - 0.012, SI1 + 0.012):
+                tube(steel, (xb, ib, 0.03), (xb, ib, 0.042), 0.011, STEEL, 6)
+        for ia, ib in ((SI0, SI0 + t), (SI1 - t, SI1)):                                                    # its two ends
+            prism_i(case, outline, ia, ib, grey)
+        slab(case, DESK, t, W - t, 0.0, DESK.len, -0.012, 0.0, srgb(0x8f9896))                              # the desk and the upstand: steel plate
+        slab(case, UPST, t, W - t, 0.0, UPST.len, -0.012, 0.0, srgb(0x8f9896))
+        box(case, ux1 + 0.004, SX1, SI0 + t, SI1 - t, uh1 - 0.012, uh1, grey)                               # its top
+        box(case, SX1 - t, SX1, SI0 + t, SI1 - t, 0.03, uh1 - 0.012, grey)                                  # its back, against the wall
+        box(case, SX0, SX1 - t, SI0 + t, SI1 - t, 0.03, 0.045, grey)                                        # its bottom
+        for ia, ib in ((SI0 + t, SI0 + 0.032), (SI1 - 0.032, SI1 - t)):                                    # the door's frame, in its front
+            box(case, SX0, SX0 + t, ia, ib, 0.045, dh0 - 0.016, grey)
+        box(case, SX0, SX0 + t, SI0 + 0.032, SI1 - 0.032, 0.045, 0.085, grey)
+        box(case, SX0, SX0 + t, SI0 + 0.032, SI1 - 0.032, 0.905, dh0 - 0.016, grey)
+        # the two guard posts inboard of it: whoever works it stands between them
+        px, pa, pb = ST['posts']
+        for pi_ in (pa, pb):
+            tube(case, (px, pi_, 0.0), (px, pi_, 0.95), 0.045, YELLOW, 20)
+            tube(case, (px, pi_, 0.95), (px, pi_, 0.97), 0.05, BLACK, 20)
+            for hb in (0.25, 0.55):
+                tube(case, (px, pi_, hb), (px, pi_, hb + 0.10), 0.0462, BLACK, 20)
+        # ---- the upstand: what is read
+        fits('STERN RAMP   CONTROL STAND CS-R', 0.013, W - 2 * t - 0.04, "the control stand's title")
+        words(paint, UPST, 'STERN RAMP   CONTROL STAND CS-R', 0.013, W / 2, UPST.len - 0.030, 0.0010, BLACK)
+        for q in P.STAND_PANEL:
+            F = FACES[q['on']]
+            u, v = q['u'], q['v']
+            if q['kind'] == 'gauge':
+                needle = part(f"Ramp control stand, {q['id']} pressure needle", 'Plastic', mover=f"{ID}-gauge-{q['id']}", fine=True)
+                dial(F, u, v, q['r'], q['id'], dark, face, paint, glass, needle)
+                legend(plate, paint, F, (q['legend'],), u, v - q['r'] - 0.022)
+            elif q['kind'] == 'window':
+                ww, wh = WINDOW
+                look, lit, dim = LIT[q['colour']]
+                slab(dark, F, u - ww / 2 - 0.003, u + ww / 2 + 0.003, v - wh / 2 - 0.003, v + wh / 2 + 0.003, 0.0, 0.006, BLACK)
+                slab(lens, F, u - ww / 2, u + ww / 2, v - wh / 2, v + wh / 2, 0.006, 0.0085, srgb(dim))
+                glow = part(f"Ramp control stand, {q['id']} lamp", look, mover=None if q['id'] == 'power' else f"{ID}-lamp-{q['id']}", fine=True) if q['id'] not in ('oil-level', 'oil-temp') else None
+                if glow:
+                    slab(glow, F, u - ww / 2 + 0.001, u + ww / 2 - 0.001, v - wh / 2 + 0.001, v + wh / 2 - 0.001, 0.0087, 0.0093, srgb(lit))
+                for k, text in enumerate(q['legend']):
+                    fits(text, 0.0062, ww - 0.006, f"the lamp window {q['id']}")
+                    words(paint, F, text, 0.0062, u, v + 0.0035 - k * 0.0115, 0.0098, BLACK)
+            elif q['kind'] == 'key':
+                stud(steel, F, u, v, 0.0, 0.006, 0.017, CHROME, 20)
+                stud(dark, F, u, v, 0.006, 0.016, 0.012, BLACK, 16)
+                slab(steel, F, u - 0.002, u + 0.002, v - 0.004, v + 0.016, 0.016, 0.034, CHROME)              # the key, in it
+                legend(plate, paint, F, q['legend'], u, v - 0.036, 0.0062)
+            elif q['kind'] == 'push':
+                stud(steel, F, u, v, 0.0, 0.006, 0.016, CHROME, 20)
+                stud(dark, F, u, v, 0.004, 0.012, 0.0115, BLACK, 16)
+                legend(plate, paint, F, q['legend'], u, v - 0.034, 0.0062)
+            elif q['kind'] == 'plate':
+                slab(plate, F, u, u + q['w'], v, v + q['h'], 0.0, 0.0012, WHITE)
+                for cx, cy in ((u + 0.006, v + 0.006), (u + q['w'] - 0.006, v + 0.006), (u + 0.006, v + q['h'] - 0.006), (u + q['w'] - 0.006, v + q['h'] - 0.006)):
+                    stud(steel, F, cx, cy, 0.0012, 0.0026, 0.0025, STEEL, 8)
+                for k, text in enumerate(q['lines']):
+                    head = not text[0].isdigit()
+                    fits(text, 0.0085 if head else 0.0075, q['w'] - (0.014 if head else 0.022) - 0.010, 'the instruction plate')
+                    letter(paint, text, 0.0085 if head else 0.0075, F.at(u + (0.014 if head else 0.022), v + q['h'] - 0.020 - k * 0.0168, 0.0018), F.right, F.up, RED if head else BLACK, centre=False)
+            elif q['kind'] == 'estop':
+                stud(plate, F, u, v, 0.0, 0.0015, 0.046, YELLOW, 32)                                         # its yellow ground
+                stud(dark, F, u, v, 0.0015, 0.020, 0.019, BLACK, 20)
+                cap = part('Ramp control stand, emergency stop', 'Plastic', smooth=True, angle=40, mover=f'{ID}-estop-button', fine=True)
+                cap.tube(F.at(u, v, 0.020), F.at(u, v, 0.026), 0.022, 0.030, colour=RED, sides=28)
+                cap.tube(F.at(u, v, 0.026), F.at(u, v, 0.040), 0.030, 0.026, colour=RED, sides=28)
+                # its legend goes round the yellow ring, as on a real one, over the top and again under the bottom: between the
+                # button (30 mm from the middle) and the ring's edge (46 mm), 4 mm and more from each. (It was two straight lines
+                # across the ring's lower edge, which ran off the yellow and under the button; the owner: "emergency stop can't
+                # have its text bleed like that".)
+                words_ = ' '.join(q['legend'])
+                ring_words(paint, F, words_, 0.0056, u, v, 0.0346, 0.0021, BLACK, over=True)
+                ring_words(paint, F, words_, 0.0056, u, v, 0.0402, 0.0021, BLACK, over=False)
+            elif q['kind'] in ('start', 'stop'):
+                stud(steel, F, u, v, 0.0, 0.006, 0.017, CHROME, 20)
+                if q['kind'] == 'start':
+                    cap = part(f"Ramp control stand, pump {q['id']} start button", 'Plastic', smooth=True, angle=40, mover=f"{ID}-pump-{q['id']}-button", fine=True)
+                    cap.tube(F.at(u, v, 0.004), F.at(u, v, 0.0105), 0.0125, colour=srgb(0x2f8f4f), sides=20)
+                else:
+                    stud(dark, F, u, v, 0.004, 0.015, 0.0125, RED, 20)
+                legend(plate, paint, F, q['legend'], u, v - 0.031 if q['kind'] == 'stop' else v + 0.033, 0.0062)
+            elif q['kind'] == 'lever':
+                slab(steel, F, u - 0.028, u + 0.028, v - 0.060, v + 0.060, 0.0, 0.003, CHROME)                 # its gate
+                slab(dark, F, u - 0.006, u + 0.006, v - 0.045, v + 0.045, 0.003, 0.0045, BLACK)                # the slot it moves in
+                lever = part(f"Ramp control stand, {q['id']} lever", 'Plastic', smooth=True, angle=40, mover=f"{ID}-{q['id']}-lever", fine=True)
+                lever.tube(F.at(u, v, 0.004), F.at(u, v, 0.030), 0.016, 0.008, colour=BLACK, sides=18)         # its gaiter
+                lever.tube(F.at(u, v, 0.026), F.at(u, v, 0.150), 0.0065, colour=CHROME, sides=12)
+                lever.ball(F.at(u, v, 0.165), 0.020, BLACK)
+                legend(plate, paint, F, (q['far'],), u, v + 0.076, 0.0068)
+                legend(plate, paint, F, (q['near'],), u, v - 0.076, 0.0068)
+                fits(q['legend'][0], 0.0075, 0.050, f"the name of the {q['id']} lever")       # between its gate and the next thing on the desk
+                words(paint, F, q['legend'][0], 0.0075, u + 0.062, v - 0.004, 0.0010, BLACK)
+        # ---- the beacon and the horn, on a short pole on its after top corner: lit while the ramp is neither home nor landed
+        bx, bi = ST['beacon']
+        tube(steel, (bx, bi, uh1), (bx, bi, uh1 + 0.16), 0.016, CHROME, 12)
+        tube(dark, (bx, bi, uh1 + 0.16), (bx, bi, uh1 + 0.185), 0.045, BLACK, 20)
+        tube(lens, (bx, bi, uh1 + 0.185), (bx, bi, uh1 + 0.265), 0.040, srgb(0x8a6a22), 20)
+        tube(dark, (bx, bi, uh1 + 0.265), (bx, bi, uh1 + 0.275), 0.042, BLACK, 20)
+        beacon = part('Ramp control stand, beacon', 'Signal amber', smooth=True, angle=40, mover=f'{ID}-beacon', fine=True)
+        beacon.tube(Q(bx, bi, uh1 + 0.187), Q(bx, bi, uh1 + 0.263), 0.0412, colour=srgb(0xffb428), sides=20)
+        dark.tube(Q(bx - 0.016, bi, uh1 + 0.09), Q(bx - 0.075, bi, uh1 + 0.09), 0.014, 0.034, colour=srgb(0x9a2a22), sides=18)      # the horn, looking inboard
+        # ---- inside, behind the door: the terminal strip X1 (as JS3-304 sheet 3 lists it), the cable from the conduit, the cores up to the desk
+        back = SX1 - t
+        box(gear, back - 0.008, back, SI0 + 0.05, SI1 - 0.05, 0.30, 0.92, srgb(0xd9d4c2), soft=False)          # a mounting plate on its back
+        mp = back - 0.008
+        box(gear, mp - 0.010, mp, SI0 + 0.08, SI1 - 0.08, 0.565, 0.60, STEEL, soft=False)                    # the rail
+        import stern as REG                                     # (the register's own list: as many terminals as it names)
+        n = len(REG.STAND_TERMINALS)
+        for k in range(n):
+            ia = SI0 + 0.09 + k * 0.0182
+            box(gear, mp - 0.052, mp - 0.010, ia, ia + 0.0158, 0.55, 0.615, srgb(0x2f6fb7) if k < 2 else srgb(0xb9b39f), soft=False)
+            wires.rod([Q(mp - 0.03, ia + 0.008, 0.615), Q(mp - 0.03, ia + 0.008, 0.70), Q(mp - 0.03, SI0 + 0.12 + k * 0.016, 0.84), Q(mp - 0.03, SI0 + 0.12 + k * 0.016, 0.89)], 0.0028,
                       srgb((0xb8372b, 0x23272a, 0x2f6fb7, 0xd1a51f)[k % 4]))
-        box(gear, SX0 + 0.10, SX1 - 0.10, back, back + 0.05, 0.90, 0.94, srgb(0x8f989a))                      # the duct the cores go up in
+        box(gear, mp - 0.05, mp, SI0 + 0.10, SI1 - 0.10, 0.89, 0.93, srgb(0x8f989a))                          # the duct the cores go up in
         mid = (SI0 + SI1) / 2
-        tube(case, (SX1 - t, mid, 0.60), (SX1 - t - 0.03, mid, 0.60), 0.02, STEEL, 12)                        # the gland, where the conduit comes through the wall
-        wires.rod([Q(SX1 - t - 0.03, mid, 0.60), Q(SX1 - 0.10, mid - 0.06, 0.52), Q(SX1 - 0.12, back + 0.03, 0.50), Q(SX0 + 0.34, back + 0.03, 0.55)], 0.011, CABLE)
-        letter(paint, 'X1', 0.02, Q((SX0 + SX1) / 2, back + 0.0008, 0.66), (-1, 0, 0), (0, 1, 0), BLACK)
+        tube(steel, (back, mid, 0.60), (back - 0.03, mid, 0.60), 0.02, STEEL, 12)                            # the gland, where the conduit comes through the wall
+        wires.rod([Q(back - 0.03, mid, 0.60), Q(back - 0.08, mid - 0.08, 0.52), Q(mp - 0.03, SI0 + 0.20, 0.50), Q(mp - 0.03, SI0 + 0.12, 0.55)], 0.011, CABLE)
+        letter(paint, 'X1', 0.02, Q(mp - 0.0008, mid, 0.66), (0, 0, 1), (0, 1, 0), BLACK)
+        tube(steel, (back, SI1 - 0.09, 0.14), (back - 0.03, SI1 - 0.09, 0.14), 0.006, srgb(0xb08a4a), 8)       # the earth stud
     with component('RMP-30'):
         door = part('Ramp control stand, door', 'Machinery paint', mover='stern-stand-door')
         fit = part('Ramp control stand, door fittings', 'Plastic', smooth=True, angle=40, mover='stern-stand-door')
-        mark = part('Ramp control stand, door lettering', 'Marking', mover='stern-stand-door')
-        door.block(Q(SX0 + 0.032, SI1 - 0.012, 0.087), Q(SX1 - 0.032, SI1 + 0.004, 0.983), YELLOW, 0.003)
-        for hh in (0.22, 0.85):
-            tube(fit, (SX0 + 0.032, SI1 - 0.004, hh - 0.04), (SX0 + 0.032, SI1 - 0.004, hh + 0.04), 0.010, DARK, 10)
-        tube(fit, (SX1 - 0.07, SI1 + 0.004, 0.55), (SX1 - 0.07, SI1 + 0.02, 0.55), 0.016, BLACK, 12)
-        letter(mark, 'CS-R', 0.04, Q((SX0 + SX1) / 2, SI1 + 0.0048, 0.72), (-1, 0, 0), (0, 1, 0), BLACK)
-        letter(mark, '24 V', 0.022, Q((SX0 + SX1) / 2, SI1 + 0.0048, 0.66), (-1, 0, 0), (0, 1, 0), BLACK)
-    # the lamps that light: LOCKED while the ramp is home and its cleats are in; CLEATS FREE once they are away
-    for name, mover, look, colour in (('LOCKED', f'{ID}-lamp-locked', 'Lit green', 0x7dff9b), ('CLEATS FREE', f'{ID}-lamp-free', 'Lit amber', 0xffc65a)):
-        u, v = LAMPS[name]
-        glow = part(f'Ramp control stand, {name.lower()} lamp', look, smooth=True, angle=40, mover=mover)
-        glow.tube(Q(*F(u, v, 0.0185)), Q(*F(u, v, 0.0206)), 0.0142, colour=srgb(colour), sides=18)
-    glow = part('Ramp control stand, power lamp', 'Lit white', smooth=True, angle=40)
-    u, v = LAMPS['POWER']
-    glow.tube(Q(*F(u, v, 0.0185)), Q(*F(u, v, 0.0206)), 0.0142, colour=srgb(0xfff6dc), sides=18)
+        mark = part('Ramp control stand, door lettering', 'Marking', mover='stern-stand-door', fine=True)
+        door.block(Q(SX0 - 0.004, SI0 + 0.034, 0.087), Q(SX0 + 0.012, SI1 - 0.034, 0.903), grey, 0.003)
+        for hh in (0.20, 0.79):                                                                            # its hinges, on its after edge
+            tube(fit, (SX0 + 0.004, SI0 + 0.034, hh - 0.04), (SX0 + 0.004, SI0 + 0.034, hh + 0.04), 0.010, DARK, 10)
+        tube(fit, (SX0 - 0.004, SI1 - 0.075, 0.52), (SX0 - 0.022, SI1 - 0.075, 0.52), 0.016, BLACK, 12)      # its lock
+        letter(mark, 'CS-R', 0.045, Q(SX0 - 0.0048, (SI0 + SI1) / 2, 0.70), (0, 0, 1), (0, 1, 0), BLACK)
+        letter(mark, 'STERN RAMP CONTROL', 0.020, Q(SX0 - 0.0048, (SI0 + SI1) / 2, 0.64), (0, 0, 1), (0, 1, 0), BLACK)
+        letter(mark, '24 V   FED FROM RSP', 0.014, Q(SX0 - 0.0048, (SI0 + SI1) / 2, 0.60), (0, 0, 1), (0, 1, 0), BLACK)
 
 
 # =====================================================================================================================
@@ -854,23 +1142,63 @@ def motion():
     latch_ram = dict(kind='aim', input=ID, axis=[1, 0, 0], pivot=lpivot, ratio=1.0, map=P.LATCH_MAP, anchor=list(Q(0.0, *P.LATCH['ram_anchor'])), pin=list(Q(0.0, *P.LATCH['ram_pin'])))
     movers.append(dict(latch_ram, id=f'{ID}-latch-rams'))
     movers.append(dict(latch_ram, id=f'{ID}-latch-rods', extend=True))
-    # ---- the control stand: two pump buttons (a tap starts or stops a pump), the lever (a tap moves it a notch), its lamps, its door
-    for no, (u, v) in BUTTONS.items():
-        pid = f'{ID}-pump-{no}'
-        inputs.append(dict(id=pid, name=f'Ramp pump No. {no}', min=0, max=1, step=1, unit='', below='', above='running', rest='stopped', auto='tap',
-                           fitting='RMP-30', at=list(Q(*F(u, v, 0.02))), reach=2.0))
-        movers.append(dict(id=f'{pid}-button', kind='slide', input=pid, axis=[-FACE_OUT[0], -FACE_OUT[1], -FACE_OUT[2]], pivot=[0, 0, 0], ratio=0.004))
-        movers.append(dict(id=f'{pid}-lamp', kind='show', input=pid, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=0.5))
-    u, v = LEVER_AT
-    inputs.append(dict(id=f'{ID}-lever', name='Ramp lever', min=-22, max=22, step=22, unit='°', below='raise', above='lower', rest='stop',
-                       steps=[dict(v=-22, say='raise', order='min'), dict(v=0, say='stop', order='hold'), dict(v=22, say='lower', order='next')], home=1,
-                       drives=dict(input=ID, needs=[f'{ID}-pump-1', f'{ID}-pump-2'], without='no pump is running: start one first')))
-    movers.append(dict(id=f'{ID}-lever', kind='turn', input=f'{ID}-lever', axis=[1, 0, 0], pivot=list(Q(*F(u, v, 0.012))), ratio=1.0))
+    # ---- the control stand (stern_place.STAND_PANEL). A tap starts or stops a pump; the emergency stop trips both and holds the ramp;
+    # each lever moves a notch to a tap and gives the ramp its orders, if a pump runs and what must be so is so; the lamps and the
+    # two pressure indicators follow.
+    neg = [-DESK.out[0], -DESK.out[1], -DESK.out[2]]
+    pumps = [f'{ID}-pump-1', f'{ID}-pump-2']
+    estop = f'{ID}-estop'
+    for no in (1, 2):
+        q, qs = ITEM('start', id=no), ITEM('stop', id=no)
+        inputs.append(dict(id=pumps[no - 1], name=f'Ramp pump No. {no}', min=0, max=1, step=1, unit='', below='', above='running', rest='stopped', auto='tap',
+                           fitting='RMP-30', at=list(DESK.at(q['u'], (q['v'] + qs['v']) / 2, 0.02)), reach=2.0,
+                           unless=estop, refused='the emergency stop is pressed: release it first'))
+        movers.append(dict(id=f'{pumps[no - 1]}-button', kind='slide', input=pumps[no - 1], axis=neg, pivot=[0, 0, 0], ratio=0.003))
+        movers.append(dict(id=f'{ID}-lamp-pump-{no}', kind='show', input=pumps[no - 1], axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=0.5))
+    q = ITEM('estop')
+    inputs.append(dict(id=estop, name='Ramp emergency stop', min=0, max=1, step=1, unit='', below='', above='pressed: the pumps are tripped and the ramp is held', rest='released',
+                       auto='tap', fitting='RMP-30', at=list(DESK.at(q['u'], q['v'], 0.03)), reach=2.0, trips=pumps, holds=ID))
+    movers.append(dict(id=f'{estop}-button', kind='slide', input=estop, axis=neg, pivot=[0, 0, 0], ratio=0.008))
+    # the pumps' pressure: it rises while either runs and falls when both are stopped; the system's two gauges read it
+    press = f'{ID}-pressure'
+    inputs.append(dict(id=press, name='Ramp hydraulic pressure', min=0, max=P.GAUGE['pump'], step=1, unit=' bar', below='', above='', rest='no pressure',
+                       level=dict(fill=pumps, rate=130.0, fall=70.0)))
+    per_bar = P.GAUGE['sweep'] / P.GAUGE['full']
+    line_a = [[c, round(b * per_bar, 2)] for c, b in P.RAMP_BAR]
+    q = ITEM('gauge', id='system')
+    movers.append(dict(id=f'{ID}-gauge-system', kind='turn', input=press, axis=list(UPST.out), pivot=list(UPST.at(q['u'], q['v'])), ratio=-per_bar))
+    q = ITEM('gauge', id='ramp')
+    movers.append(dict(id=f'{ID}-gauge-ramp', kind='turn', input=ID, axis=list(UPST.out), pivot=list(UPST.at(q['u'], q['v'])), ratio=-1.0, map=line_a))
+    # (and in the hydraulic pump room: the system's gauge on the pressure block, line A's on the valve stand)
+    g = P.room_gauge('pg1')
+    movers.append(dict(id=f'{ID}-gauge-pg1', kind='turn', input=press, axis=[g['look'], 0, 0], pivot=list(Q(g['x'], g['at'], g['h'])), ratio=-per_bar))
+    g = P.room_gauge('pg2')
+    movers.append(dict(id=f'{ID}-gauge-pg2', kind='turn', input=ID, axis=[g['look'], 0, 0], pivot=list(Q(g['x'], g['at'], g['h'])), ratio=-1.0, map=line_a))
+    free, home = P.CLEAT_RUN[1], P.LEAF_FROM
+    levers = (
+        (ITEM('lever', id='cleats'), 'Ramp cleats lever',
+         [dict(v=-22, say='lock', to=0.0, within=[0.0, home + 0.01], refused='the ramp is not home: raise it first'),
+          dict(v=0, say='middle', order='hold'),
+          dict(v=22, say='open', to=home, within=[0.0, home + 0.01], refused='the ramp is down: its cleats are open')]),
+        (ITEM('lever', id='ramp'), 'Ramp lever',
+         [dict(v=-22, say='raise', to=home, within=[home - 0.01, P.LOWEST], refused='the ramp is home: lock its cleats'),
+          dict(v=0, say='stop', order='hold'),
+          dict(v=22, say='lower', order='next', within=[free - 0.01, P.LOWEST], refused='the cleats are locked: open them first')]),
+    )
+    for q, name, steps in levers:
+        lid = f"{ID}-{q['id']}-lever"
+        inputs.append(dict(id=lid, name=name, min=-22, max=22, step=22, unit='°', below=q['far'].lower(), above=q['near'].lower(), rest='middle', steps=steps, home=1,
+                           drives=dict(input=ID, needs=pumps, without='no pump is running: start one first', unless=estop, stopped='the emergency stop is pressed')))
+        movers.append(dict(id=lid, kind='turn', input=lid, axis=[0, 0, 1], pivot=list(DESK.at(q['u'], q['v'], 0.006)), ratio=1.0))
+    movers.append(dict(id=f'{ID}-lamp-closed', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, when='off', over=home + 0.01))
     movers.append(dict(id=f'{ID}-lamp-locked', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, when='off', over=0.01))
-    movers.append(dict(id=f'{ID}-lamp-free', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=P.CLEAT_RUN[1] - 0.01))
+    movers.append(dict(id=f'{ID}-lamp-open', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=free - 0.01))
+    # the beacon: lit while the ramp is neither locked, nor landed level, nor at its lowest
+    movers.append(dict(id=f'{ID}-beacon', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=0.5,
+                       map=[[0.0, 0.0], [0.4, 1.0], [P.LEVEL - 0.4, 1.0], [P.LEVEL, 0.0], [P.LEVEL + 0.4, 1.0], [P.LOWEST - 0.4, 1.0], [P.LOWEST, 0.0]]))
     inputs.append(dict(id='stern-stand-door', name='Ramp control stand, door', min=0, max=105, step=1, unit='°', below='', above='open', rest='shut', auto='tap',
-                       fitting='RMP-30', at=list(Q((SX0 + SX1) / 2, SI1, 0.45)), reach=2.0))
-    movers.append(dict(id='stern-stand-door', kind='turn', input='stern-stand-door', axis=[0, 1, 0], pivot=list(Q(SX0 + 0.032, SI1 - 0.004, 0.0)), ratio=-1.0))
+                       fitting='RMP-30', at=list(Q(SX0, (SI0 + SI1) / 2, 0.45)), reach=2.0))
+    movers.append(dict(id='stern-stand-door', kind='turn', input='stern-stand-door', axis=[0, 1, 0], pivot=list(Q(SX0 + 0.004, SI0 + 0.034, 0.0)), ratio=-1.0))
     x0, x1, a, b, h0, h1 = P.PANEL['box']
     for tag, hinge, way, name in (('l', x0, 1.0, 'inboard'), ('r', x1, -1.0, 'outboard')):
         inputs.append(dict(id=f'stern-panel-door-{tag}', name=f'Stern ramp starter panel, {name} leaf', min=0, max=90, step=1, unit='°', below='', above='open', rest='shut', auto='tap',

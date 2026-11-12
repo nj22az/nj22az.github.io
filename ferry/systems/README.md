@@ -105,7 +105,8 @@ engine room, but all ends need to be marked so we know where to instal the Gener
 built: "There needs to be a latch for the ramp too, so it doesnt become dangerous".
 
 - **39 components**: the leaf, its hinges, cylinders, end flaps and seal (`RMP-01` to `06`); eight bolt cleats and two hook cleats
-  (`RMP-11` to `20`); the control stand, the switches' junction box, two door switches and the **two safety latches** (`RMP-30` to
+  (`RMP-11` to `20`); the control stand (a desk with two levers, an emergency stop, two pressure indicators and eight lamp windows;
+  its 28 terminals are `STAND_TERMINALS`), the switches' junction box, two door switches and the **two safety latches** (`RMP-30` to
   `35`); the power pack, its pumps, cooler, filters, hand pump and valve stand (`HYD-01` to `10`); the starter panel (`ELD-51`); and
   seven **places marked, not installed**: the main switchboard, its 440 V section, two transformers (`ELD-61` to `64`) and the three
   generating sets (`GEN-01` to `03`).

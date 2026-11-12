@@ -207,6 +207,66 @@ HOOK_MAP = [(0.0, 0.0), (CLEAT_RUN[1], HOOK['swing'])]
 SEAL = dict(out=0.03, wide=0.07, proud=0.018)
 
 # =====================================================================================================================
+# The control stand (CS-R), on the main deck beside the door, port side
+# =====================================================================================================================
+# The owner, 12 November 2026, of the first stand (a post with four lamps, two buttons and a stick): "Control panel for the
+# hydraulics need to be realistic". It is a desk now, as a ramp's stand is: against the port mooring station's wall just
+# inside the door (the basis: "on the car deck, port side, just aft of the ramp", with sight of the ramp's foot), 0.62 m
+# long and 0.42 m deep. Whoever works it stands inboard of it, facing the wall, with the ramp's foot at the left hand. A
+# sloping desk carries what is worked; an upstand behind it carries what is read. `desk` and `upstand` are each face's near
+# and far edge as (x, h); `posts` the two guard posts inboard of it (x, and each one's place from the transom); the beacon
+# stands on its after top corner. Its conduit comes through the wall behind it.
+STAND = dict(x=(4.06, 4.48), inn=(0.82, 1.44), desk=((4.06, 0.98), (4.30, 1.08)), upstand=((4.30, 1.08), (4.40, 1.48)), top=1.48,
+             posts=(3.96, 0.74, 1.52), beacon=(4.44, 0.87))
+# What is on it. Each: the face it is on, what it is, and its place on that face (u metres from the face's after edge, the
+# left of whoever works it; v metres up the face from its near edge). The drawing (JS3-304 sheet 3) and the builder both
+# read this list.
+#   gauge    an electric pressure indicator, 0 to 250 bar, fed by a transmitter at the valve stand. SYSTEM reads the pumps'
+#            pressure: it rises when a pump is started and falls when both are stopped. RAMP reads line A, the cylinders'
+#            rod side: what the leaf's weight makes of it at each angle (RAMP_BAR), 189 bar with the leaf level.
+#   window   a lamp behind an engraved window, and when it is lit
+#   start, stop   a pump's two buttons;  estop   the emergency stop: it trips both pumps and holds the ramp
+#   lever    spring-centred, pushed away or pulled: CLEATS (LOCK, OPEN) and RAMP (RAISE, LOWER)
+#   key, push   the control's key switch (stand or bridge), lamp test, horn: drawn, not worked
+#   plate    the instructions, engraved
+STAND_PANEL = [
+    dict(on='up', kind='gauge', id='system', legend='SYSTEM', u=0.105, v=0.285, r=0.055),
+    dict(on='up', kind='gauge', id='ramp', legend='RAMP LINE A', u=0.255, v=0.285, r=0.055),
+    dict(on='up', kind='window', id='power', legend=('POWER', 'ON'), colour='white', u=0.385, v=0.315),
+    dict(on='up', kind='window', id='pump-1', legend=('PUMP 1', 'RUNNING'), colour='green', u=0.443, v=0.315),
+    dict(on='up', kind='window', id='pump-2', legend=('PUMP 2', 'RUNNING'), colour='green', u=0.501, v=0.315),
+    dict(on='up', kind='window', id='closed', legend=('RAMP', 'CLOSED'), colour='green', u=0.559, v=0.315),
+    dict(on='up', kind='window', id='locked', legend=('CLEATS', 'LOCKED'), colour='green', u=0.385, v=0.262),
+    dict(on='up', kind='window', id='open', legend=('CLEATS', 'OPEN'), colour='amber', u=0.443, v=0.262),
+    dict(on='up', kind='window', id='oil-level', legend=('OIL', 'LEVEL'), colour='red', u=0.501, v=0.262),
+    dict(on='up', kind='window', id='oil-temp', legend=('OIL', 'TEMP'), colour='red', u=0.559, v=0.262),
+    dict(on='up', kind='key', legend=('CONTROL', 'STAND - BRIDGE'), u=0.085, v=0.105),
+    dict(on='up', kind='push', legend=('LAMP', 'TEST'), u=0.185, v=0.105),
+    dict(on='up', kind='push', legend=('HORN',), u=0.275, v=0.105),
+    dict(on='up', kind='plate', u=0.355, v=0.030, w=0.235, h=0.185, lines=(
+        'TO OPEN', '1  START A PUMP', '2  CLEATS LEVER TO OPEN', '3  WAIT FOR CLEATS OPEN', '4  RAMP LEVER TO LOWER',
+        'TO CLOSE', '5  RAMP LEVER TO RAISE', '6  WAIT FOR RAMP CLOSED', '7  CLEATS LEVER TO LOCK', '8  STOP THE PUMPS')),
+    dict(on='desk', kind='estop', legend=('EMERGENCY', 'STOP'), u=0.075, v=0.135),
+    dict(on='desk', kind='start', id=1, legend=('PUMP 1', 'START'), u=0.185, v=0.180),
+    dict(on='desk', kind='stop', id=1, legend=('STOP',), u=0.185, v=0.085),
+    dict(on='desk', kind='start', id=2, legend=('PUMP 2', 'START'), u=0.275, v=0.180),
+    dict(on='desk', kind='stop', id=2, legend=('STOP',), u=0.275, v=0.085),
+    dict(on='desk', kind='lever', id='cleats', legend=('CLEATS',), far='LOCK', near='OPEN', u=0.395, v=0.130),
+    dict(on='desk', kind='lever', id='ramp', legend=('RAMP',), far='RAISE', near='LOWER', u=0.520, v=0.130),
+]
+GAUGE = dict(full=250.0, red=210.0, sweep=270.0, pump=195.0)      # a dial's full scale and red mark, bar; its needle's sweep; what a running pump holds
+
+
+def ramp_bar(control):
+    """What line A reads with the control there: the pressure on the cylinders' rod sides that carries the leaf, bar."""
+    a = leaf_angle(control)
+    return 0.0 if a <= 0 else ram_force(a) / ANNULUS / 100
+
+
+# The same as a table for a needle: (the control, bar), near enough to straight between
+RAMP_BAR = [(0.0, 0.0), (LEAF_FROM, 0.0)] + [(float(c), round(ramp_bar(c), 1)) for c in (7, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90)] + [(LOWEST, round(ramp_bar(LOWEST), 1))]
+
+# =====================================================================================================================
 # The power pack, its valves and the pipes (the hydraulic pump room: main deck, port casing, 7.2 to 12.6 m)
 # =====================================================================================================================
 # Places here are (x, metres from the transom, h over the main deck). The room's inboard wall is the casing's, at 7.5 m;
@@ -226,6 +286,72 @@ HPU = dict(
     return_filter=(9.02, 10.78), breather=(9.04, 12.18), hand_pump=(8.25, 10.80),
     manifold=(7.505, 7.66, 11.00, 11.62, 1.00, 1.30),     # the valve stand on the inboard wall: three lever valves
 )
+# The oil, and how much of it. The owner, 12 November 2026: "Also specify the oil and the level of oil etc , it needs to be
+# fully functional". These are the yard's choices for a deck hydraulic system in an unheated room that must work in the cold:
+# not a maker's figures, and not class-approved. The instruction JS3-304-M1 and sheet 4 of JS3-304 print them from here.
+FLUID = dict(
+    grade='ISO VG 46',
+    kind='mineral hydraulic oil of high viscosity index, type HVLP (DIN 51524 part 3; ISO 11158 class HV)',
+    index=140,                 # viscosity index, at least
+    pour=-33,                  # pour point, degrees C, at most
+    clean='ISO 4406 18/16/13', # how clean it is kept: the code of a system with a 10 micron pressure filter
+    water=0.1,                 # per cent, at most
+    work=(30, 55),             # the oil's working temperature in the tank, degrees C
+    fan=(45, 40),              # the cooler's fan starts at, stops at
+    hot=70,                    # OIL TEMP: the alarm
+    cold=0,                    # under this: warm the oil by running one pump before the ramp is worked
+)
+# How full the tank is. Heights are of the oil's surface over the tank's bottom, inside (the tank is 0.88 m deep inside and holds
+# 16.55 litres to the centimetre). The level is highest with the ramp raised, when the cylinders' rods are in; lowering it
+# takes the rods' own volume of oil out of the tank (TANK_FALL works it out). `fill`: the mark it is filled to with the ramp
+# raised and locked; `low`: the level switch's alarm, OIL LEVEL; `stop`: under this the pumps are not to be run.
+TANK = dict(deep=0.88, fill=0.76, low=0.60, stop=0.48, strainer=0.10)
+
+
+def tank_area():
+    """The tank's area inside, square metres: 10 mm of plate each side."""
+    x0, x1, a, b, _, _ = HPU['tank']
+    return (x1 - x0 - 0.02) * (b - a - 0.02)
+
+
+def tank_litres(height):
+    return tank_area() * height * 1000
+
+
+def oil_level(control=0.0):
+    """Where the oil stands in the tank with the ramp's control there: metres over the tank's bottom."""
+    out = 2 * pi / 4 * RAM['rod'] ** 2 * (ram_length(leaf_angle(control)) - ram_length(0.0))      # the two rods' volume that has left the tank
+    return TANK['fill'] - out / tank_area()
+
+
+def first_fill():
+    """About how much oil she takes in all, litres: the tank to its mark, the two cylinders' rod sides, and the lines."""
+    lines = sum(pi / 4 * (bore / 1000) ** 2 * 60 for _, _, bore, _, _ in LINES[:4]) * 1000            # (taken as 60 m a line)
+    return tank_litres(TANK['fill']) + 2 * ANNULUS * RAM['stroke'] * 1000 + lines
+
+
+# The three pressure gauges in the hydraulic pump room. Each stands on the block it reads from, as a real one does (the
+# owner, 12 November 2026, of the system's gauge, which hung before the pressure block's face on a bare bar that came out of
+# the face behind it: "Is this a floating gauge ?"): a hexagon nipple screwed into a port in the block's top, a gauge cock
+# to shut the gauge off (its tee handle toward whoever reads it), a union nut, and the gauge's own socket into the
+# underside of its case. `port`: where the port is, as (x, from the transom, h); `look`: which way the dial looks across
+# her (-1 to starboard, +1 to port); `r`: the dial's radius. PG1 stands at the block's inboard edge, between the return
+# line and the relief valve, with clear air behind it; PG2 and PG3 on the valve stand's top, before the lines that leave it.
+GAUGE_MOUNT = dict(stack=0.095, rim=0.007, depth=0.024, axis=0.008)   # port to the case's underside; the case round the dial; the case behind the dial's plane; the socket's axis behind that plane
+ROOM_GAUGES = dict(
+    pg1=dict(tag='PG1', title='SYSTEM', r=0.045, look=-1, port=(HPU['block'][0] + 0.022, HPU['block'][3] - 0.28, HPU['block'][5])),
+    pg2=dict(tag='PG2', title='LINE A', r=0.040, look=+1, port=(HPU['manifold'][1] - 0.034, HPU['manifold'][2] + 0.07, HPU['manifold'][5])),
+    pg3=dict(tag='PG3', title='LINE B', r=0.040, look=+1, port=(HPU['manifold'][1] - 0.034, HPU['manifold'][2] + 0.175, HPU['manifold'][5])),
+)
+
+
+def room_gauge(key):
+    """Where such a gauge's dial is: the plane its face is drawn from (`x`), and its middle (`at` from the transom, `h`)."""
+    g = ROOM_GAUGES[key]
+    x, at, h = g['port']
+    return dict(g, x=x + g['look'] * GAUGE_MOUNT['axis'], at=at, h=h + GAUGE_MOUNT['stack'] + g['r'] + GAUGE_MOUNT['rim'])
+
+
 # The starter panel, on the room's forward wall, at the end of the way: 0.58 m wide, with two leaves of 0.29 m, so that each
 # opens square in the 0.75 m between the wall and the tank (one leaf of the whole width would not).
 PANEL = dict(box=(7.62, 8.20, 12.29, 12.595, 0.35, 2.05))
@@ -252,7 +378,8 @@ HEADER_FOOT = 0.55                                  # the cleats' two lines go d
 RAM_FEED = dict(inn=dict(A=3.93, B=4.00), h=5.30, x=WALL - T - 0.075)      # where A and B come through the wall beside each bracket, to the hoses
 MANIFOLD_AT = dict(A=11.06, B=11.13, C=11.20, D=11.27, P=11.40, T=11.47, E=11.57)   # where each line leaves the valve stand's top, from the transom
 SUPPLY = [('P', 'pressure, from the pumps to the valve stand', 25, 0.0150, 2.10), ('T', 'return, from the valve stand to the tank', 32, 0.0175, 2.19)]
-JB = dict(box=(4.505, 4.66, 0.84, 1.12, 1.45, 1.85))                       # the junction box of the cleats' switches, on the station's wall
+_SM = (STAND['inn'][0] + STAND['inn'][1]) / 2
+JB = dict(box=(4.505, 4.66, _SM - 0.14, _SM + 0.14, 1.45, 1.85))             # the junction box of the switches, on the station's wall behind the control stand
 
 
 def routes():
@@ -350,20 +477,6 @@ def clamps():
                     out.append((name, p, wall, along))
     return out
 
-
-# =====================================================================================================================
-# The control stand (CS-R), on the main deck beside the door, port side
-# =====================================================================================================================
-# A pedestal against the port mooring station's wall just inside the door, its sloping face looking forward: whoever
-# works it stands forward of it and looks aft over it at the ramp's foot (the basis: "on the car deck, port side, just
-# aft of the ramp", with sight of the ramp's foot). Its conduit comes through the wall behind it.
-STAND = dict(x=(4.04, 4.48), inn=(0.80, 1.16), top=1.12, slope=0.30, hoop=4.00)
-# What is on its face, by row and column (0, 0 is top left as the one who works it sees it):
-STAND_FACE = [
-    ('lamp', 'POWER', 0, 0, 'white'), ('lamp', 'LOCKED', 0, 1, 'green'), ('lamp', 'CLEATS FREE', 0, 2, 'amber'), ('lamp', 'OIL', 0, 3, 'red'),
-    ('button', 'PUMP 1', 1, 0, 'green'), ('button', 'PUMP 2', 1, 1, 'green'), ('stop', 'STOP', 1, 3, 'red'),
-    ('lever', 'RAMP', 2, 1.5, 'black'),
-]
 
 # =====================================================================================================================
 # Where the feeds end: the places marked in the machinery spaces (the owner: "all ends need to be marked so we know

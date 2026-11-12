@@ -182,9 +182,14 @@ for sgn, side in ((1, 'port'), (-1, 'starboard')):
       'A switch on it says when it is home.', node='X-HP' if sgn > 0 else 'X-HS')
     _n += 1
 C('RMP-30', 'Ramp control stand', 'stern', at((SP.STAND['x'][0] + SP.STAND['x'][1]) / 2, _mid, 0.9),
-  'On the main deck beside the door, port side: whoever works it looks aft over it at the ramp\'s foot. A start button with its lamp for each main pump, a spring-centred lever '
-  '(raise, stop, lower), a stop button, and lamps: power on, ramp locked (cleats, latches and door switches all home), cleats free, oil. The lever does nothing until a pump runs. Its door opens on the terminals.',
-  w=60, by=('RSP', 5), node='STAND', basis='yard')
+  'A steel desk on the main deck beside the door, port side, against the mooring station\'s wall: whoever works it stands inboard of it with the ramp\'s foot at the left hand. '
+  'On the desk: the emergency stop, a start and a stop button for each main pump, and two spring-centred levers, CLEATS (lock, open) and RAMP (raise, lower). On the upstand: '
+  'two pressure indicators, 0 to 250 bar (SYSTEM: the pumps\' pressure; RAMP LINE A: what carries the leaf, 189 bar with it level), eight lamp windows (power on, pump 1 '
+  'running, pump 2 running, ramp closed, cleats locked, cleats open, oil level, oil temperature), the key switch that gives the control to the stand or to the bridge, lamp '
+  'test, horn, and the instructions engraved. Interlocked: no lever does anything until a pump runs; the ramp is not lowered until the cleats are open; the cleats are not '
+  'locked until the ramp is home; the emergency stop trips both pumps and holds the ramp. A beacon on its top is lit while the ramp is neither locked nor landed. '
+  'Its door opens on the terminals of X1.',
+  w=90, by=('RSP', 5), node='STAND', basis='yard')
 C('RMP-31', 'Junction box of the ramp\'s switches', 'mooring-p', at((_jb[0] + _jb[1]) / 2, (_jb[2] + _jb[3]) / 2, (_jb[4] + _jb[5]) / 2),
   'On the port mooring station\'s wall behind the control stand: the ten cleats\' switches, the two latches\' and the two door switches are joined here to the stand, to the bridge\'s door and ramp panel '
   'and to the alarm system.', w=20, by=('RSP', 5), node='JB', basis='yard')
@@ -219,7 +224,7 @@ C('HYD-08', 'Hand pump', 'hydraulic-room', at(H['hand_pump'][0] - 0.06, H['hand_
 _m = H['manifold']
 C('HYD-10', 'Valve stand', 'hydraulic-room', at((_m[0] + _m[1]) / 2, (_m[2] + _m[3]) / 2, 1.2),
   'On the inboard wall: three lever valves with solenoids (the ramp, the cleats, and one for the ramp cover), each worked from the control stand or here by hand; a gauge '
-  'for each of the ramp\'s two lines. The cleats must be free before the ramp\'s valve can lower it.', w=120, by=('RSP', 5), node='VS', basis='yard')
+  'for each of the ramp\'s two lines, and two pressure transmitters (PT1 the system, PT2 line A) for the control stand\'s indicators. The cleats must be free before the ramp\'s valve can lower it.', w=120, by=('RSP', 5), node='VS', basis='yard')
 C('ELD-51', 'Stern ramp starter panel (RSP)', 'hydraulic-room', at((_pb[0] + _pb[1]) / 2, (_pb[2] + _pb[3]) / 2, 1.2),
   'On the hydraulic pump room\'s forward wall. Its door opens on the isolator, the two star-delta starters, the two direct starters, the control transformer and the terminals.',
   node='RSP', basis='yard')
@@ -297,13 +302,17 @@ PIPES = [
 # (terminal, what, the other end, the core of cable W-RMP-10 between the starter panel's strip X0 and the stand's X1)
 STAND_TERMINALS = [
     (1, '24 V +', 'RSP X0:1', 1), (2, '24 V 0', 'RSP X0:2', 2),
-    (3, 'Pump 1: start', 'RSP X0:3 (K1 coil circuit)', 3), (4, 'Pump 1: running', 'RSP X0:4 (K1 auxiliary)', 4),
-    (5, 'Pump 2: start', 'RSP X0:5 (K2 coil circuit)', 5), (6, 'Pump 2: running', 'RSP X0:6 (K2 auxiliary)', 6),
-    (7, 'Stop (opens the pumps\' and the valves\' circuit)', 'RSP X0:7', 7), (8, 'Stop, return', 'RSP X0:8', 8),
-    (9, 'Lever: raise', 'RSP X0:9 (valve V1, solenoid a)', 9), (10, 'Lever: lower', 'RSP X0:10 (valve V1, solenoid b)', 10),
-    (11, 'Cleats and latches free (all twelve away)', 'JB X2:29', 11), (12, 'Ramp closed and locked (all fourteen home)', 'JB X2:30', 12),
-    (13, 'Oil: level, temperature, filter', 'RSP X0:13 (alarm relay)', 13), (14, 'Lamp test', 'RSP X0:14', 14),
-    (15, 'Spare', '', 15), (16, 'Spare', '', 16),
+    (3, 'Emergency stop, contact 1 (opens the pumps\' circuit)', 'RSP X0:3', 3), (4, 'Emergency stop, contact 1, return', 'RSP X0:4', 4),
+    (5, 'Emergency stop, contact 2 (opens the valves\' circuit)', 'RSP X0:5', 5), (6, 'Emergency stop, contact 2, return', 'RSP X0:6', 6),
+    (7, 'Pump 1: start', 'RSP X0:7 (K1 coil circuit)', 7), (8, 'Pump 1: stop', 'RSP X0:8', 8), (9, 'Pump 1: running', 'RSP X0:9 (K1 auxiliary)', 9),
+    (10, 'Pump 2: start', 'RSP X0:10 (K2 coil circuit)', 10), (11, 'Pump 2: stop', 'RSP X0:11', 11), (12, 'Pump 2: running', 'RSP X0:12 (K2 auxiliary)', 12),
+    (13, 'Cleats lever: lock', 'RSP X0:13 (valve V2, solenoid a)', 13), (14, 'Cleats lever: open', 'RSP X0:14 (valve V2, solenoid b)', 14),
+    (15, 'Ramp lever: raise', 'RSP X0:15 (valve V1, solenoid a)', 15), (16, 'Ramp lever: lower', 'RSP X0:16 (valve V1, solenoid b)', 16),
+    (17, 'Cleats open (all twelve away)', 'JB X2:29', 17), (18, 'Cleats locked (all twelve home)', 'JB X2:30', 18), (19, 'Ramp closed (both door switches)', 'JB X2:31', 19),
+    (20, 'Oil level low', 'RSP X0:20 (LS1)', 20), (21, 'Oil temperature high', 'RSP X0:21 (TS1)', 21),
+    (22, 'System pressure, 4 to 20 mA', 'RSP X0:22 (PT1)', 22), (23, 'Ramp line A pressure, 4 to 20 mA', 'RSP X0:23 (PT2)', 23),
+    (24, 'Beacon and horn', 'RSP X0:24 (KA5)', 24), (25, 'Control at the stand (key switch)', 'RSP X0:25', 25), (26, 'Lamp test', 'RSP X0:26', 26),
+    (27, 'Spare', '', 27), (28, 'Spare', '', 28),
 ]
 # The cables (tag, from, to, cores and size, what)
 CABLES = [
@@ -312,9 +321,9 @@ CABLES = [
     ('W-RMP-03', 'RSP way 2', 'Main pump No. 2', '2 x (3 x 25 mm2) + earth', 'Six leads for the star-delta starter'),
     ('W-RMP-04', 'RSP way 3', 'Cleat pump', '3 x 1.5 mm2 + earth', ''),
     ('W-RMP-05', 'RSP way 4', 'Oil cooler fan', '3 x 1.5 mm2 + earth', ''),
-    ('W-RMP-10', 'RSP X0', 'Control stand X1', '16 x 1.5 mm2', 'Control, 24 V: in the conduit with the pipes'),
+    ('W-RMP-10', 'RSP X0', 'Control stand X1', '30 x 1.5 mm2', 'Control, 24 V: in the conduit with the pipes'),
     ('W-RMP-11', 'RSP X0', 'Valve stand', '7 x 1.5 mm2', 'Six solenoids and a common'),
-    ('W-RMP-12', 'Control stand X1', 'Junction box X2', '4 x 1.5 mm2', 'Cleats free; closed and locked'),
+    ('W-RMP-12', 'Control stand X1', 'Junction box X2', '4 x 1.5 mm2', 'Cleats open; cleats locked; ramp closed'),
     ('W-RMP-13', 'Junction box X2', 'Each cleat, latch and door switch (14)', '2 x 1.5 mm2 each', 'One pair a switch'),
     ('W-RMP-14', 'Junction box X2', 'Bridge, door and ramp panel ALM-06', '2 x 1.5 mm2', 'Closed and locked, to the bridge'),
     ('W-RMP-15', 'RSP X0', 'Engine control room, alarm system', '2 x 1.5 mm2', 'Group alarm'),
@@ -337,7 +346,7 @@ PANEL_PARTS = [
     ('T10', 'Control transformer with rectifier', '440/24 V, 630 VA'),
     ('F10, F11', 'Control fuses', '2 A, 10 A'),
     ('KT1, KT2', 'Star-delta timers', '0 to 30 s'),
-    ('KA1 to KA4', 'Relays: cleats free, ramp locked, alarm, stop', '24 V'),
+    ('KA1 to KA5', 'Relays: cleats open, cleats locked, ramp closed, alarm, beacon and horn', '24 V'),
     ('P1, P2', 'Ammeters, main pumps', '0 to 100 A'),
     ('H1 to H5', 'Door lamps: power, pump 1, pump 2, cleat pump, alarm', '24 V'),
     ('X0', 'Terminal strip', '40 terminals'),

@@ -113,11 +113,13 @@ seal, no pump, no pipe, no control.
 | Seal | Rubber on the transom round the opening's sides and head |
 | Power pack HPU-R | In the hydraulic pump room: a tank of 1,500 l on a drip tray, two pumps of 37 kW and the cleats' pump on its lid, pressure block, cooler with fan, return filter, level glass, hand pump |
 | Valve stand, starter panel | Three lever valves with solenoids on the inboard wall; the starter panel RSP on the forward wall, **whose two leaves open** on the isolator, the starters, the transformer and the forty terminals JS3-304 lists |
+| Gauges | Three in the pump room, each standing on what it reads from as a real one does (the owner, of the first, on a bare bar: "Is this a floating gauge ?"): a hexagon nipple in a port in the block's top, a brass gauge cock with a red tee handle, a union nut, and the gauge's own socket into the underside of its case. PG1, the system's, on the pressure block; PG2 and PG3, lines A and B, on the valve stand (`stern_place.ROOM_GAUGES`, `stern_gear.gauge_mount`). The pumps' deliveries go into the block's outboard face, each through a non-return valve |
+| What one is looking at | [JS3-304 sheet 4](yard/drawings/JS3-304-4-hydraulic-power-pack.svg): the room from above, every part numbered, every pipe named, the oil and its level marks; and the operating instruction [JS3-304-M1](yard/manuals/JS3-304-M1-hydraulic-power-pack.md), which uses the sheet's numbers (the owner: "Make a drawing for the hydraulic pack I don't know what I'm looking at and how it's connected and what each pipe does etc , make an instruction for it as well") |
 | Pipes | 163 m: A and B to the cylinders, C and D to the cleats and latches, the conduit of the control stand, pressure and return; 200 clamps. Level runs lie in one layer on a wall, upright runs in a second, so no two lines cross in one plane (`stern_place.routes`) |
-| Control stand CS-R | On the main deck beside the door, port side: lamps (power, locked, cleats free, oil), a button for each pump, stop, the lever. **It works:** tap a pump's button, then the lever (lower, stop, raise); with no pump running the lever does nothing. Its door opens on the sixteen terminals |
+| Control stand CS-R | **A real hydraulic control stand** (the owner, of the first one, a post with four lamps and a stick: "Control panel for the hydraulics need to be realistic"): a steel desk 0.62 m long against the mooring station's wall beside the door, port side, with two guard posts and a beacon. On the desk: the emergency stop, START and STOP for each pump, and two spring-centred levers, CLEATS (lock, open) and RAMP (raise, lower). On the upstand: two pressure indicators, 0 to 250 bar with a red mark from 210 (SYSTEM, RAMP LINE A), eight engraved lamp windows, the key switch, lamp test, horn, and the instructions on an engraved plate. Its faces are drawn on JS3-304 sheet 3. **It works, and it refuses what a real one refuses:** no lever does anything until a pump runs; the ramp is not lowered until the cleats are open; the cleats are not locked until the ramp is home; the emergency stop trips both pumps and holds the ramp. Started, a pump lights its window and the SYSTEM needle climbs to 195 bar (here and on the gauge in the pump room); as the ramp comes down the RAMP LINE A needle climbs with the leaf's weight: 68 bar at 30°, 189 bar level. Its door opens on the 28 terminals of X1 |
 | Marked places | In the main switchboard room and the auxiliary engine room: an outline on the floor, a sign and the tagged, coiled cable ends for the main switchboard, its 440 V section, the two transformers and the three generating sets. **None is installed.** The feeder and the placeholders' feeders are drawn through her in the X-ray (red: 440 V and 690 V) |
 
-**Its order of work.** One control (the Stern ramp keys, or the stand's lever) runs from 0 to 94. Each moving part reads it through
+**Its order of work.** One control (the Stern ramp keys in the bar, which work it in one go; or the stand's two levers, which work it in two steps: the cleats to 6, then the ramp) runs from 0 to 94. Each moving part reads it through
 its own table (`map`, *The file format*): the latches lift over the first 3, the cleats let go over the first 5, the leaf turns from
 6 and is level at exactly 90, the flaps fold out between 38 and 78; 4° more for a low quay. 1.5 of the control a second: a minute
 to level (a real ramp of this size takes two to four; with both pumps this one raises in 94 s by the diagram's figures).
@@ -1013,6 +1015,16 @@ spaces to a multiple of four bytes), then one binary block.
 - A mesh record gives byte offsets into the block: `pos` (Uint16 × 3, quantised over `bounds`), `nor` (Int8 × 3), `col`
   (sRGB Uint8 × 3), `uv` (Uint16 × 2, into the atlas, only on textured meshes) and `idx` (Uint16, or Uint32 when `wide`).
   `from: "blender"` marks a mesh of her own build; the others are the Town's export.
+- **Fine work.** Over `bounds` one step of `pos` is 0.3 mm across her breadth, 0.44 mm in height and **1.9 mm along her
+  length**: as wide as the upright of a 7 mm letter. On a face that runs fore and aft (the ramp's control stand, the gauges
+  in the hydraulic pump room) engraved letters lost their uprights and a dial's scale its marks. A part built `fine`
+  (`Part(..., fine=True)` in `blender/shipyard.py`: lettering, a dial's face, scale and needle, a button, a lamp window) is
+  written as a mesh of its own (`export_jmf.py`), and `assemble.py` keeps it, by the cell of a 2 m grid it lies in, in a box
+  of its own: the record's `box` (`min`, `max`), over which its `pos` is quantised instead of over `bounds` (a step of about
+  0.03 mm). A record without `box` is read as before. Such a mesh carries her maker's mark in the same bit; in a stolen copy
+  written as plain numbers those few corners no longer read (they are read against her bounds), the rest of her does.
+  What is fine and stands on a part that is not must stand clear of it by more than that part can be out of place (0.45 mm
+  across her breadth, 0.95 mm along her length): painted straight onto a coarse face, lettering stands 1 mm off it.
 - `ship.built[]` lists the sections that are her own (`part`, `section`, `date`); `source.blender` names the builder.
 - `rights` says whose she is: `owner`, `holder`, `year`, `notice`, and `mark` (`scheme`, and `id`, the fingerprint of the key her
   corners are marked with: *Whose she is*). A material with `hidden: true` is in the file and is never drawn: her maker's marks.
@@ -1037,9 +1049,13 @@ spaces to a multiple of four bytes), then one binary block.
   that table instead of to the input itself: so one control works several things in their order (the stern ramp: its
   safety latches lift and its cleats let go over the first 5 of its control, the leaf turns from 6 and is level at exactly
   90, its end flaps fold out between 38 and 78). An input with `steps` and `drives` is a lever that gives another
-  thing its orders (the ramp's lever at its control stand): each position says what it orders (`order`: `min`, `next`
-  or `hold`), it does nothing unless one of what it `needs` is on (a pump runs), and it springs back to its middle when
-  the thing has arrived (`drive`, `workOrders`). A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
+  thing its orders (the two levers at the ramp's control stand): each position says what it orders (`to`: a place to go
+  to; or `order`: `min`, `next` or `hold`) and what must be so for it (`within`: where the thing must stand; `refused`: what
+  is said otherwise); it does nothing while what it names `unless` is on (the emergency stop) nor unless one of what it
+  `needs` is on (a pump runs); it springs back to its middle when the thing has arrived, and the next tap takes it the
+  other way (`drive`, `workOrders`). An input worked by a tap may name what it `trips` and what it `holds` when it comes
+  on, and what keeps it off (`unless`, `refused`): the emergency stop and the two pumps (`tapInput`). A `level`'s `fill`
+  may be several things, any of which fills it, and with `fall` it sinks by itself when none is on: the pumps' pressure. A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
   inside their deck and moves the group. The rudder's angle is negative to port and positive to starboard, as a helm
   indicator shows it; a positive angle turns about the upright axis so that the blade's after edge goes to starboard.
   In Blender a moving part is an object with the custom property `mover` (`Part(..., mover='rudder-p')`), and
@@ -1332,6 +1348,40 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, late evening: the control stand made a real one; fine work; the gauges on their mounts; legends that fit
+
+The same checkout, server and way of working as the note under this one. **Said as it happened:** the conversation the
+stand was built in was cleared after the fifth run of `make.sh`, before its page checks were on record (nothing of a
+conversation is kept on this Mac while `/Volumes/Development` is away: `HANDOVER.md`). The session after it found the build
+in the work tree, ran the checks, looked at the stand from arm's length and found its lettering broken. The owner then
+looked at the pictures and found two things more: "Is this a floating gauge ?" and "Labels need to be wrapped , it should
+behave like reality emergency stop can't have its text bleed like that". The seventh run is the one committed.
+
+| Check | Result |
+|---|---|
+| `make.sh`, fourth run (the stand rebuilt as a desk with indicators, lamp windows, levers and interlocks) | **"built: every check passed"** (3,291,737 triangles in the file, 21.91 MB). Four pictures of it (`4-stand/`): the light of the lamp windows and of the beacon lay on the wall behind the stand whether they were lit or not (the light of a place is traced once, with everything at rest), and the two dials showed as black discs |
+| `make.sh`, fifth run (a signal lamp gives its place no light: `bake: false` in `shipyard.LOOKS`, kept by `light.py`) | **"built: every check passed"**: 3,339,456 triangles built, 3,294,137 in the file, 21.94 MB, 197 motions. 12 min 11 s |
+| The nine page checks on the fifth build, each by itself | **all pass, each on its first run: doors 124, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5.** `doors.cjs` is six checks longer: the stand's one check is seven now (nothing without a pump; the pump's lamp and both pressure gauges, 195 bar; no lowering with the cleats locked; the cleats lever; the ramp lever, line A's needle and the beacon; the emergency stop; raise and lock) |
+| Seven pictures of the fifth build from arm's length (`5-close-as-found/`, at twice the size) | The wall is clean and the dials are white with their scales (what cured the black discs of the fourth run is not on record). **The lettering is broken: uprights are missing all over the stand** ("CONTRO_ STAND CS- ", "100" read as "ICO", "RAMP _INE A"), the needles and the red marks are jagged, the buttons lumpy. No check saw it, and Blender's quick look shows the lettering whole |
+| The same lettering drawn from the numbers the file keeps (the part file's corners put through `assemble.weld`) | Whole as built, broken as kept: over her bounds a step is 0.30 mm across her breadth, 0.44 mm in height and **1.91 mm along her length**, and the stand's faces run fore and aft |
+| A trial build of the stern gear with its fine parts, kept as `assemble.py` keeps them | 22 fine meshes in 32 boxes, the coarsest step 0.012 mm, no triangle lost to the weld; the lettering drawn from those numbers is whole |
+| `make.sh`, sixth run (fine work: *The file format*) | **"built: every check passed"**: 3,295,720 triangles in the file (1,583 more: none are lost to the weld in the fine meshes), 21.97 MB; fine work in 32 meshes, a step of 0.012 mm at most; the mark read at 100.00 %. The same seven pictures (`6-close-fine/`) and twenty-seven fixed views (`7-built-fine/`): every legend on the stand reads whole, the dials' figures and marks are sharp, the buttons and bezels round; the pump room's gauges likewise. Page checks on it: doors 124, bridge 37 and sight 24 passed; the run was stopped there, because the owner's remarks meant a seventh build |
+| The owner's two remarks, looked into | **The gauge** was held, by a bare 16 mm bar that came 3 cm out of the pressure block's face and turned up to it; the picture looked along the stub, so the bar seemed to end in the air; and no gauge is mounted so (no socket, nut, gauge cock, nor a body behind its dial). **Found beside it:** the two main pumps' delivery pipes ended in the air 0.15 m short of the pressure block each end (each is held by its pump, so `afloat.py` passed them), and lay 4 mm inside the cleat pump's pipe where they crossed. **The legend** of the emergency stop was two straight lines across a round ground |
+| Three trial builds of the stern gear and ten quick looks in Blender (`9-trial-mounts/`) | The mounts as built (`stern_place.ROOM_GAUGES`, `stern_gear.gauge_mount`); the system's gauge moved from 7 mm before the filter's bowl to clear air between the return line and the relief valve; the deliveries into the block's outboard face, each with its non-return valve, 40 mm over the cleat pump's pipe; the legend round its ring. `stern_gear.fits` measures every legend of the stand against what it is on and stops the build if one is too long: none is |
+| `make.sh`, seventh run (as committed) | **"built: every check passed"**: 3,344,269 triangles built, 3,300,537 in the file, 21.99 MB, 197 motions; the mark read at 100.00 % of 1,739,769 corners; fine work in 38 meshes, a step of 0.012 mm at most; 0 pairs of faces in one plane among 1,234 pieces; 0 afloat of 30,781; 85 panes, nothing built over one; 459 runs (332 m), every one carried; the light traced. 12 min 34 s |
+| The nine page checks on the seventh build, each by itself | **all pass, each on its first run: doors 124, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5** |
+| Pictures of the seventh build (`10-built-mounts/`: the twenty-eight fixed views and two from arm's length) | Drawn on the Mac's graphics card, no error on the page. The three gauges stand on their gauge cocks and read as at the control stand; the deliveries reach the block; the emergency stop's legend goes round its ring. Four opened and sent to the owner |
+| JS3-304 drawn again, four sheets (`stern_drawing.py`); looked at as pictures made by `rsvg-convert` | Sheet 2: a gauge cock under each gauge, and PG1 reads 0 to 250 bar (the sheet said 0 to 400; the dial that is built reads to 250). Sheet 3: the emergency stop's legend round its ring (first as a text on a path, which `rsvg-convert` does not draw: letter by letter now). **Sheet 4 is new**: the power pack as it stands in its room, every part numbered, every pipe named, the oil and its level marks; with the operating instruction `yard/manuals/JS3-304-M1-hydraulic-power-pack.md`. Sheet 4 opened whole; of sheets 2 and 3 the changed places |
+
+Not done: a phone or tablet; a frame's cost. Lettering elsewhere aboard was not gone through for the fault found on the stand
+(whatever is lettered in paint on a face that runs fore and aft: fittings on the bridge's side walls, the marked places' signs,
+the starter panel's insides). **The power pack does not yet work in full** (the owner, the same evening: "Also specify the oil
+and the level of oil etc , it needs to be fully functional"): the oil and its levels are specified (`stern_place.FLUID`,
+`TANK`; the instruction, section 4) and nothing of them is built: the level glass has no marks and does not move, the oil's
+temperature is not kept, the cooler's fan does not turn, the return line does not go through the cooler and the return filter,
+the cleat pump has no line of its own, the lines carry no markers, the valve stand's levers, the hand pump and the gauge cocks
+are not worked. Sheet 4 and the instruction say the same.
 
 ### 12 November 2026, evening: the stern ramp and what works it; her maker's marks
 

@@ -4,7 +4,8 @@ written as that part: every mesh object in it, as it stands in the file (modifie
 the colours of its `Col` attribute. Objects made or changed by hand in Blender are written the same way as built ones.
 
 The result is a part file (.npz): triangles in the ship's axes, grouped by part, material and mover (an object's custom
-property `mover` names the motion it takes part in), with each material's look and the motions themselves.
+property `mover` names the motion it takes part in), with each material's look and the motions themselves. An object with
+the custom property `fine` (engraved lettering, an instrument's scale) goes into a mesh of its own kind, marked `fine`.
 assemble.py puts it into ferry/data/ferry.bin.gz.
 """
 import json
@@ -66,7 +67,8 @@ def write(path, groups, inputs=(), movers=(), ways=(), components=None, runs=(),
             if 'jmf' not in mat:
                 raise RuntimeError(f'{ob.name}: its material "{mat.name}" has no look for the viewer (custom property jmf)')
             mover = ob.get('mover') or ''
-            rec = by_look.setdefault((mat.name, mover), dict(look=mat['jmf'].to_dict(), pos=[], nor=[], col=[], uv=[], objects=[]))
+            fine = bool(ob.get('fine'))                # fine work is a mesh of its own: assemble.py keeps it in a small box (shipyard.Part)
+            rec = by_look.setdefault((mat.name, mover, fine), dict(look=mat['jmf'].to_dict(), pos=[], nor=[], col=[], uv=[], objects=[]))
             p, n, c, uv = _triangles(ob, dg)
             textured = bool(rec['look'].get('textured'))
             if textured and uv is None:
@@ -77,8 +79,8 @@ def write(path, groups, inputs=(), movers=(), ways=(), components=None, runs=(),
             if textured:
                 rec['uv'].append(uv)
             rec['objects'].append(dict(name=ob.name, triangles=len(p) // 3))
-        for (name, mover), rec in by_look.items():
-            key = f'{gid}|{name}|{mover}'
+        for (name, mover, fine), rec in by_look.items():
+            key = f'{gid}|{name}|{mover}' + ('|fine' if fine else '')
             arrays[key + '|pos'] = np.concatenate(rec['pos']).astype(np.float32)
             arrays[key + '|nor'] = np.concatenate(rec['nor']).astype(np.float32)
             arrays[key + '|col'] = np.clip(np.rint(np.concatenate(rec['col']) * 255), 0, 255).astype(np.uint8)
@@ -87,7 +89,7 @@ def write(path, groups, inputs=(), movers=(), ways=(), components=None, runs=(),
             look = rec['look']
             look['offset'] = list(look.get('offset') or [])
             meshes.append(dict(key=key, group=gid, material=name, mover=mover, look=look, objects=rec['objects'],
-                               triangles=len(arrays[key + '|pos']) // 3))
+                               triangles=len(arrays[key + '|pos']) // 3, **({'fine': True} if fine else {})))
     meta = dict(generator='ferry/blender/build.py', blender=bpy.app.version_string, meshes=meshes,
                 inputs=list(inputs), movers=list(movers), ways=list(ways), runs=list(runs), doorways=list(doorways),
                 # where each component of the register is: its box in the ship's axes, and the viewer's part it is drawn in

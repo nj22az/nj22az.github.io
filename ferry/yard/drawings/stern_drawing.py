@@ -7,6 +7,7 @@ model is built from.
         JS3-304-stern-ramp-and-after-end.svg         sheet 1: the arrangement and the motion
         JS3-304-2-stern-ramp-hydraulics.svg          sheet 2: the hydraulic diagram and its parts
         JS3-304-3-stern-ramp-electrical.svg          sheet 3: the supply, the control circuit, the cables, the marked ends
+        JS3-304-4-hydraulic-power-pack.svg           sheet 4: the power pack as it stands in its room: every part numbered, every pipe named
 
 The owner, 11 November 2026: "And lights , draw the aft in cad". And 12 November, of the ramp as first built: "make the
 ramp more realistic its a simple system that could be animated much better, and hydraulics and a local control panel that
@@ -158,7 +159,7 @@ CLOSED, LEVELLED, LOWEST = P.ram_length(0), P.ram_length(P.LEVEL), P.ram_length(
 # =====================================================================================================================
 # SHEET 1: the arrangement
 # =====================================================================================================================
-heading('Stern ramp: arrangement and motion, sheet 1 of 3',
+heading('Stern ramp: arrangement and motion, sheet 1 of 4',
         'Johansson Shipyard, newbuilding No. 1, the 124.8 m ro-ro freight ferry. Drawn before the steel, from the numbers her model is built from. '
         'Revision 0 drew the 68.4 m ship and is superseded.')
 AX, AY = 64 + 13.4 * K, 108 + 11.5 * K            # view A: where the transom and the main deck are on the sheet
@@ -255,7 +256,8 @@ poly([A(LATCH['handle'], lp[1] - 0.015), A(LATCH['handle'], lp[1] + 0.015), A(lp
 circle(*A(*lpin), 1.6, PAPER, INK, 0.7)
 # the control stand
 st = P.STAND
-poly([A(st['inn'][0], 0), A(st['inn'][0], st['top'] + 0.14), A(st['inn'][1], st['top'] - 0.06), A(st['inn'][1], 0)], '#f0e2b8', INK, 0.9)
+rect(*A(st['inn'][0], 0), *A(st['inn'][1], st['top']), '#dfe3e0', INK, 0.9)
+line(*A(st['inn'][0], st['desk'][0][1]), *A(st['inn'][1], st['desk'][0][1]), 0.5, DIM)
 # the lines that go up the wall beside the door and cross over its head
 for name in 'CDAB':
     line(*A(P.UP[name], P.line(name)[4]), *A(P.UP[name], P.CROSS[name]), 1.0, OIL[name])
@@ -319,7 +321,7 @@ for name in 'ABCD':                                                             
     line(*B(-P.WALL - 0.115, P.CROSS[name]), *B(P.WALL + 0.115, P.CROSS[name]), 1.0, OIL[name])
 for name, what, bore, r, h in P.LINES:                                                                        # the bank on the port station's wall
     line(*B(P.WALL + 0.065, h), *B(P.CASING, h), 0.9, OIL[name], '4 2')
-rect(*B(st['x'][0], 0), *B(st['x'][1], st['top']), '#f0e2b8', INK, 0.9)
+poly([B(st['x'][0], 0), B(*st['desk'][0]), B(*st['desk'][1]), B(*st['upstand'][1]), B(st['x'][1], st['top']), B(st['x'][1], 0)], '#dfe3e0', INK, 0.9)
 jb = P.JB['box']
 rect(*B(jb[0], jb[4]), *B(jb[1], jb[5]), '#e8e8e2', INK, 0.7, '3 2')
 dim(*B(-DOOR['half'], -0.45), *B(DOOR['half'], -0.45), f'opening {2 * DOOR["half"]:g} m', off=12)
@@ -382,7 +384,9 @@ m = H['manifold']
 rect(*C(m[2], m[0]), *C(m[3], m[1]), '#f0e2b8', INK, 0.9)
 pb = P.PANEL['box']
 rect(*C(pb[2], pb[0]), *C(pb[3], pb[1]), '#cfd8e6', INK, 0.9)
-rect(*C(st['inn'][0], st['x'][0]), *C(st['inn'][1], st['x'][1]), '#f0e2b8', INK, 0.9)
+rect(*C(st['inn'][0], st['x'][0]), *C(st['inn'][1], st['x'][1]), '#dfe3e0', INK, 0.9)
+for _pi in st['posts'][1:]:
+    circle(*C(_pi, st['posts'][0]), 0.045 * K, '#d1a51f', INK, 0.6)
 rect(*C(jb[2], jb[0]), *C(jb[3], jb[1]), '#e8e8e2', INK, 0.7)
 # every line as it is laid
 for name, runs in P.routes().items():
@@ -428,7 +432,7 @@ PARTS = (
     (7, 'Bolt cleats', f'Eight, four a side at {", ".join(f"{h:g}" for h in BOLT["h"])} m: a {1000 * BOLT["d"]:.0f} mm bolt through the door post into a keeper on the leaf. RMP-11 to RMP-18'),
     (8, 'Hook cleats', f'Two at the door\'s head, {HOOK["x"]:g} m each side. RMP-19, RMP-20'),
     (9, 'Seal', 'Rubber, on the transom round the opening\'s sides and head. RMP-06'),
-    (10, 'Control stand', 'On the main deck beside the door, port: pump buttons, the lever, stop, lamps. RMP-30'),
+    (10, 'Control stand', 'A desk against the wall beside the door, port: emergency stop, start and stop for each pump, the CLEATS and RAMP levers; two pressure indicators, eight lamp windows, key switch, instructions; a beacon. Its faces are drawn on sheet 3. RMP-30'),
     (11, 'Power pack HPU-R', 'Tank of 1,500 l, two pumps of 37 kW, the cleats\' pump, cooler, filters, hand pump. HYD-01 to HYD-08'),
     (12, 'Valve stand', 'Three lever valves with solenoids, on the hydraulic room\'s inboard wall. HYD-10'),
     (13, 'Starter panel RSP', 'On the hydraulic room\'s forward wall. ELD-51 (sheet 3)'),
@@ -472,7 +476,7 @@ sheet(f'{NUMBER}-stern-ramp-and-after-end.svg', 'Stern ramp: arrangement and mot
 # =====================================================================================================================
 # SHEET 2: the hydraulic diagram
 # =====================================================================================================================
-heading('Stern ramp: hydraulic diagram, sheet 2 of 3',
+heading('Stern ramp: hydraulic diagram, sheet 2 of 4',
         'How the oil goes. Drawn with every valve at rest and the ramp raised and locked. Line A (red) carries the ramp: it is the cylinders\' rod side.',
         'Pressures in bar. Pipe sizes: outside diameter x wall, mm.')
 
@@ -518,6 +522,15 @@ def relief(x, y, tag, bar):
     poly([(x + 11, y - 6), (x + 16, y - 3), (x + 11, y), (x + 16, y + 3), (x + 11, y + 6)], close=False, w=0.9)
     text(x + 21, y - 1, tag, 9.5, weight='700')
     text(x + 21, y + 10, bar, 8.5, fill=DIM)
+
+
+def cock(x, y, upright=True):
+    """A gauge cock: the small shut-off valve a gauge stands on, drawn on the line to it."""
+    a, b = (4.0, 5.5) if upright else (5.5, 4.0)
+    if upright:
+        poly([(x - a, y - b), (x + a, y - b), (x - a, y + b), (x + a, y + b)], PAPER, INK, 0.9)
+    else:
+        poly([(x - a, y - b), (x - a, y + b), (x + a, y - b), (x + a, y + b)], PAPER, INK, 0.9)
 
 
 def gauge(x, y, tag):
@@ -615,8 +628,9 @@ line(XP3, Y_P + 60, CXV + 8, Y_P + 60, 1.4, PC)
 line(XHP, Y_P + 60, XHP, Y_P, 1.0, PC, '5 3')
 text(XHP + 6, Y_P + 34, 'change-over cock: the hand pump to the ramp', 8, fill=DIM)
 filt(380, Y_P, 'F1 pressure filter, 10 micron, clogging lamp')
-gauge(210, Y_P - 26, 'PG1  0 to 400')
+gauge(210, Y_P - 26, 'PG1  0 to 250')
 line(210, Y_P, 210, Y_P - 18, 0.8)
+cock(210, Y_P - 9)
 line(240, Y_P, 240, Y_P + 70, 1.0, PC)
 relief(240, Y_P + 82, 'RV1', '210 bar')
 line(240, Y_P + 93, 240, Y_TANK, 1.0, TC)
@@ -648,9 +662,11 @@ line(RX - 8, Y_VALVE - 15, RX - 8, Y_LINE, 1.6, AC)
 line(RX + 8, Y_VALVE - 15, RX + 8, Y_LINE + 40, 1.6, BC)
 gauge(RX - 38, Y_VALVE - 70, '')
 line(RX - 8, Y_VALVE - 70, RX - 30, Y_VALVE - 70, 0.8)
+cock(RX - 19, Y_VALVE - 70, upright=False)
 text(RX - 50, Y_VALVE - 66, 'PG2', 8.5, 'end', fill=DIM)
 gauge(RX + 38, Y_VALVE - 70, 'PG3')
 line(RX + 8, Y_VALVE - 70, RX + 30, Y_VALVE - 70, 0.8)
+cock(RX + 19, Y_VALVE - 70, upright=False)
 rect(RX + 2, Y_VALVE - 112, RX + 14, Y_VALVE - 96, PAPER, INK, 1.0)
 line(RX + 2, Y_VALVE - 96, RX + 14, Y_VALVE - 112, 0.9)
 text(RX + 20, Y_VALVE - 100, 'TV1 lowering speed: throttle with free return', 8.5, fill=DIM)
@@ -701,7 +717,7 @@ HPARTS = [
     ('RV1, RV2', 'Relief valves', '210 bar on the main line; 160 bar on the cleats\' line', 'HYD-06'),
     ('F1, F2', 'Filters', 'Pressure, 10 micron; return, 25 micron, each with a clogging switch', 'HYD-06, HYD-07'),
     ('C1', 'Oil cooler', 'Air-blast, fan M4 of 1.1 kW, in the return line', 'HYD-05'),
-    ('PG1 to PG3', 'Gauges', 'Main pressure at the tank; lines A and B at the valve stand', 'HYD-06, HYD-10'),
+    ('PG1 to PG3', 'Gauges', '0 to 250 bar. Main pressure on the pressure block; lines A and B on the valve stand. Each on a gauge cock on a port in the block\'s top', 'HYD-06, HYD-10'),
     ('V1', 'Ramp valve', 'Four-way, three positions, spring-centred; middle: A and B to the tank (the load-holding valves shut)', 'HYD-10'),
     ('V2', 'Cleat valve', 'Four-way, three positions, detented: lock, middle, let go', 'HYD-10'),
     ('V3', 'Spare valve', 'For the ramp cover over the fixed ramp; its ports are plugged', 'HYD-10'),
@@ -712,6 +728,7 @@ HPARTS = [
     ('HC1, HC2', 'Hook cleat cylinders', 'Bore 50, stroke 110 mm, each with a position switch', 'RMP-19, RMP-20'),
     ('LC1, LC2', 'Safety latch cylinders', 'Single-acting, bore 32, stroke 80 mm, on line D: oil lifts the latch, its own weight brings it back; no oil holds the ramp', 'RMP-34, RMP-35'),
     ('LS1, TS1', 'Tank switches', 'Level low; temperature high: to the alarm relay in the starter panel', 'HYD-01'),
+    ('PT1, PT2', 'Pressure transmitters', '0 to 250 bar, 4 to 20 mA, at the valve stand: the system and line A, for the control stand\'s two indicators', 'HYD-10'),
 ]
 ty = table(64, ty + 8, ('Tag', 'What', 'Size and setting', 'Register'), HPARTS[:8], (96, 130, 410, 120))
 _right = table(64 + 786, Y_TANK + 54, ('Tag', 'What', 'Size and setting', 'Register'), HPARTS[8:], (96, 130, 400, 120))
@@ -731,7 +748,7 @@ sheet(f'{NUMBER}-2-stern-ramp-hydraulics.svg', 'Stern ramp: hydraulic diagram', 
 # =====================================================================================================================
 # SHEET 3: the electrical installation
 # =====================================================================================================================
-heading('Stern ramp: electrical installation, sheet 3 of 3',
+heading('Stern ramp: electrical installation, sheet 3 of 4',
         'From where the generating sets are to stand to the last terminal of the control stand. What is not installed is drawn broken and its place is marked in the model.',
         'Cable sizes in mm² of copper. Places: metres to port, from the transom, above the keel.')
 import register as REGISTER
@@ -824,14 +841,96 @@ for s in wrap('Each place has a yellow outline on its floor, a sign with its tag
 
 # ---- the control circuit: the stand's terminal strip
 ty += 30
-text(64, ty, 'CONTROL CIRCUIT, 24 V: the control stand\'s terminal strip X1 (cable W-RMP-10, 16 x 1.5 mm², in conduit E with the pipes)', 12, weight='700')
+text(64, ty, 'CONTROL CIRCUIT, 24 V: the control stand\'s terminal strip X1 (cable W-RMP-10, 30 x 1.5 mm², in conduit E with the pipes)', 12, weight='700')
 ty = table(64, ty + 8, ('X1', 'What', 'Goes to', 'Core'), [(str(n), what, to, str(core)) for n, what, to, core in REG.STAND_TERMINALS], (36, 300, 300, 44))
 ty += 16
-for s in wrap('How it works. T10 in the starter panel makes 24 V. PUMP 1 and PUMP 2 at the stand each pull in a star-delta starter (K1, K2), which holds itself and lights the button; '
-              'STOP opens the circuit of both starters and of both solenoids of V1. The lever is spring-centred: RAISE energises V1 a, LOWER energises V1 b, and only while a main pump\'s '
-              'auxiliary contact is closed; LOWER also needs relay KA1 (both latches and all ten cleats away). The cleats\' valve V2 is worked with the ramp\'s sequence: let go before lowering, lock when '
-              'the two door switches say the leaf is home. The safety latches need no circuit to hold: each falls in by its own weight. KA2 (all fourteen switches home) lights LOCKED and goes to the bridge.', 150):
+for s in wrap('How it works. T10 in the starter panel makes 24 V. START at the stand pulls in a pump\'s star-delta starter (K1, K2), which holds itself; STOP drops it; its auxiliary '
+              'contact lights PUMP RUNNING. The two levers are spring-centred. CLEATS to OPEN energises V2 b: the two safety latches are lifted and the ten cleats let go; when all twelve '
+              'switches say away, CLEATS OPEN lights. RAMP to LOWER energises V1 b, and only then: with a pump\'s auxiliary contact closed and relay KA1 (cleats open) pulled in. RAMP to '
+              'RAISE energises V1 a until the two door switches say the leaf is home (RAMP CLOSED). CLEATS to LOCK energises V2 a, and only with the ramp closed; all twelve home lights '
+              'CLEATS LOCKED and goes to the bridge. The emergency stop opens the pumps\' circuit and the valves\' circuit: the load-holding valves hold the ramp where it is. The '
+              'safety latches need no circuit to hold: each falls in by its own weight. The beacon and the horn run while the ramp is neither locked nor landed. The two indicators '
+              'are fed by the transmitters PT1 and PT2 at the valve stand.', 150):
     text(64, ty, s, 9.5, fill=DIM)
+    ty += 12.5
+
+# ---- the control stand's two faces, as whoever works it sees them: the upstand over the desk
+ty += 26
+text(64, ty, 'CONTROL STAND CS-R: its upstand and its desk, seen by whoever works it (the ramp is to the left)', 12, weight='700')
+SK = 760.0                                  # pixels to a metre here
+st = P.STAND
+W_ = st['inn'][1] - st['inn'][0]
+LU = hypot(st['upstand'][1][0] - st['upstand'][0][0], st['upstand'][1][1] - st['upstand'][0][1])
+LD = hypot(st['desk'][1][0] - st['desk'][0][0], st['desk'][1][1] - st['desk'][0][1])
+PX0, PY0 = 84, ty + 18
+FACE_Y = {'up': PY0 + LU * SK, 'desk': PY0 + LU * SK + 10 + LD * SK}          # each face's near edge on the sheet
+rect(PX0, PY0, PX0 + W_ * SK, PY0 + LU * SK, '#eef0ee', INK, 1.1)
+rect(PX0, PY0 + LU * SK + 10, PX0 + W_ * SK, PY0 + LU * SK + 10 + LD * SK, '#e6e9e6', INK, 1.1)
+text(PX0 + W_ * SK + 10, PY0 + 14, 'UPSTAND', 9.5, weight='700', fill=DIM)
+text(PX0 + W_ * SK + 10, PY0 + LU * SK + 26, 'DESK', 9.5, weight='700', fill=DIM)
+text(PX0 + W_ * SK / 2, PY0 + 0.030 * SK - 4, 'STERN RAMP   CONTROL STAND CS-R', 10.5, 'middle', '700')
+LAMP = {'white': '#fbf3d6', 'green': '#bfe6c9', 'amber': '#f3d99a', 'red': '#efb9b1'}
+for q in P.STAND_PANEL:
+    X = lambda u: PX0 + u * SK
+    Y = lambda v: FACE_Y[q['on']] - v * SK
+    u, v = q['u'], q['v']
+    if q['kind'] == 'gauge':
+        r = q['r'] * SK
+        circle(X(u), Y(v), r + 5, '#2b3033', INK, 0.8)
+        circle(X(u), Y(v), r, '#ffffff', INK, 0.8)
+        for b10 in range(0, int(P.GAUGE['full']) + 1, 10):
+            a = radians(-P.GAUGE['sweep'] / 2 + P.GAUGE['sweep'] * b10 / P.GAUGE['full'])
+            r0 = r * (0.76 if b10 % 50 == 0 else 0.86)
+            line(X(u) + r0 * sin(a), Y(v) - r0 * cos(a), X(u) + r * 0.95 * sin(a), Y(v) - r * 0.95 * cos(a), 1.1 if b10 % 50 == 0 else 0.5, RED if b10 >= P.GAUGE['red'] else INK)
+            if b10 % 50 == 0:
+                text(X(u) + r * 0.58 * sin(a), Y(v) - r * 0.58 * cos(a) + 3, str(b10), 7, 'middle')
+        a = radians(-P.GAUGE['sweep'] / 2)
+        line(X(u), Y(v), X(u) + r * 0.8 * sin(a), Y(v) - r * 0.8 * cos(a), 1.4)
+        text(X(u), Y(v) + r * 0.55, 'bar', 7, 'middle')
+        text(X(u), Y(v) + r + 22, q['legend'], 8, 'middle', '700')
+    elif q['kind'] == 'window':
+        rect(X(u) - 19, Y(v) - 15, X(u) + 19, Y(v) + 15, LAMP[q['colour']], INK, 0.8)
+        for k, t_ in enumerate(q['legend']):
+            text(X(u), Y(v) - 1 + k * 9, t_, 6.5, 'middle', '700')
+    elif q['kind'] in ('key', 'push'):
+        circle(X(u), Y(v), 11, '#2b3033', INK, 0.8)
+        for k, t_ in enumerate(q['legend']):
+            text(X(u), Y(v) + 25 + k * 8, t_, 6.5, 'middle')
+    elif q['kind'] == 'plate':
+        rect(X(u), Y(v + q['h']), X(u + q['w']), Y(v), '#ffffff', INK, 0.7)
+        for k, t_ in enumerate(q['lines']):
+            headline = not t_[0].isdigit()
+            text(X(u) + (10 if headline else 16), Y(v + q['h']) + 15 + k * 12.6, t_, 7.5 if headline else 7, weight='700' if headline else '400', fill=RED if headline else INK)
+    elif q['kind'] == 'estop':
+        circle(X(u), Y(v), 0.046 * SK, '#e3c341', INK, 0.8)
+        circle(X(u), Y(v), 0.030 * SK, RED, INK, 0.8)
+        # its legend goes round the yellow ring, over the top and under the bottom, as it is engraved (stern_gear.ring_words):
+        # letter by letter, each turned to stand on the ring (a text on a path is not drawn by every program that reads this sheet)
+        cx, cy, words_, fs = X(u), Y(v), ' '.join(q['legend']), 5.6
+        wide = [fs * (0.34 if ch == ' ' else 0.80 if ch in 'MW' else 0.36 if ch == 'I' else 0.66) for ch in words_]
+        for over, r_ in ((True, 0.0346 * SK), (False, 0.0402 * SK)):
+            mid, along = (r_ + fs * 0.36) if over else (r_ - fs * 0.36), -sum(wide) / 2
+            for ch, w_ in zip(words_, wide):
+                ang = (along + w_ / 2) / mid if over else 3.141592653589793 - (along + w_ / 2) / mid
+                along += w_
+                if ch != ' ':
+                    px_, py_ = cx + r_ * sin(ang), cy - r_ * cos(ang)
+                    add(f'<text transform="translate({px_:.2f},{py_:.2f}) rotate({degrees(ang) - (0 if over else 180):.1f})" font-size="{fs}" font-weight="700" text-anchor="middle" fill="{INK}">{escape(ch)}</text>')
+    elif q['kind'] in ('start', 'stop'):
+        circle(X(u), Y(v), 12, GREEN if q['kind'] == 'start' else RED, INK, 0.8)
+        text(X(u), Y(v) - 17 if q['kind'] == 'start' else Y(v) + 23, ' '.join(q['legend']), 6.5, 'middle', '700')
+    elif q['kind'] == 'lever':
+        rect(X(u) - 0.028 * SK, Y(v + 0.060), X(u) + 0.028 * SK, Y(v - 0.060), '#d9dcdd', INK, 0.8)
+        rect(X(u) - 4, Y(v + 0.045), X(u) + 4, Y(v - 0.045), '#2b3033', INK, 0.5)
+        circle(X(u), Y(v), 0.020 * SK, '#1c2022', INK, 0.8)
+        text(X(u), Y(v + 0.066) - 3, q['far'], 7, 'middle', '700')
+        text(X(u), Y(v - 0.066) + 9, q['near'], 7, 'middle', '700')
+        text(X(u) + 0.034 * SK, Y(v) + 3, q['legend'][0], 7.5, weight='700')
+dim(PX0, FACE_Y['desk'] + 16, PX0 + W_ * SK, FACE_Y['desk'] + 16, f'{W_:.2f} m', off=12)
+ty = FACE_Y['desk'] + 40
+for s_ in wrap('Each lever is pushed away (LOCK, RAISE) or pulled (OPEN, LOWER) and springs back. The indicators read 0 to 250 bar with a red mark from 210: SYSTEM about 195 bar with a pump '
+               'running; RAMP LINE A nothing with the ramp locked, 68 bar at 30°, 189 bar level, 198 bar at its lowest (sheet 1, the motion).', 96):
+    text(PX0, ty, s_, 9.5, fill=DIM)
     ty += 12.5
 
 # ---- the cable schedule
@@ -843,3 +942,259 @@ foot(y, 'ferry/systems/stern.py and the register (ferry/systems/register.py), fe
 sheet(f'{NUMBER}-3-stern-ramp-electrical.svg', 'Stern ramp: electrical installation', y + 18)
 
 print('  ' + '\n  '.join(P.report()))
+
+
+# =====================================================================================================================
+# Sheet 4: the hydraulic power pack as it stands in its room
+# =====================================================================================================================
+# The owner, 12 November 2026, looking at the pump room on the page: "Make a drawing for the hydraulic pack I don't know what
+# I'm looking at and how it's connected and what each pipe does etc , make an instruction for it as well". The instruction is
+# ferry/yard/manuals/JS3-304-M1-hydraulic-power-pack.md; it uses this sheet's numbers.
+heading('Stern ramp: the hydraulic power pack HPU-R as it stands, sheet 4 of 4',
+        'The hydraulic pump room on the main deck, port side, seen from above: every part numbered, every pipe named. Read with the operating instruction JS3-304-M1.',
+        note='Forward to the right, the ship\'s side at the top. Metres from the transom.')
+H = P.HPU
+room4 = next(sp for sp in G.SPACES if sp['id'] == 'hydraulic-room')
+(RA, RB), (RX0, RX1) = room4['yard'], room4['x']
+S4 = 196.0
+PXL, PYT = 70, 118
+X4 = lambda yard: PXL + (yard - RA) * S4
+Y4 = lambda x: PYT + (RX1 - x) * S4
+XR = P.CASING + P.T + P.BANK_OFF                                    # the bank of lines on the inboard wall
+GREY, STEELC, TANKC = '#d9dcdd', '#b9c0bd', '#cfe0dc'
+
+
+def box4(x0, x1, a, b, fill, w=1.1, dash=''):
+    rect(X4(a), Y4(x1), X4(b), Y4(x0), fill, INK, w, dash)
+
+
+def run4(pts, colour, w=2.4, dash=''):
+    for (a0, x0), (a1, x1) in zip(pts, pts[1:]):
+        line(X4(a0), Y4(x0), X4(a1), Y4(x1), w, colour, dash)
+
+
+def no4(n, yard, x, dx, dy):
+    """A part's number: a ring `dx`, `dy` pixels from the part, and a line to it."""
+    cx, cy = X4(yard) + dx, Y4(x) + dy
+    line(X4(yard), Y4(x), cx, cy, 0.7, DIM)
+    circle(X4(yard), Y4(x), 1.6, INK, INK, 0.5)
+    circle(cx, cy, 10.5, PAPER, INK, 1.1)
+    text(cx, cy + 4, str(n), 10.5, 'middle', '700')
+
+
+# ---- the room: its walls, its door from the vehicle deck, the way
+rect(X4(RA), Y4(RX1), X4(RB), Y4(RX0), '#f4f2ea', INK, 2.2)
+DA, DB = 9.4, 10.3                                                  # the doorway in the inboard wall (steel.py)
+line(X4(DA), Y4(RX0), X4(DB), Y4(RX0), 5.0, PAPER)
+for d_ in (DA, DB):
+    line(X4(d_), Y4(RX0) - 6, X4(d_), Y4(RX0) + 6, 1.6)
+text(X4((DA + DB) / 2), Y4(RX0) + 17, 'door from the vehicle deck', 9.5, 'middle', fill=DIM)
+text(X4(RA) + 8, Y4(RX1) - 7, 'THE SHIP\'S SIDE, PORT', 9, weight='700', fill=FAINT)
+text(X4(RB) - 8, Y4(RX0) + 17, 'INBOARD WALL (the engine casing)', 9, 'end', '700', FAINT)
+text(X4(RA) - 8, Y4((RX0 + RX1) / 2), 'AFT', 9, 'end', '700', FAINT)
+text(X4(RB) + 8, Y4((RX0 + RX1) / 2), 'FORWARD', 9, 'start', '700', FAINT)
+text(X4(8.55), Y4(7.86), 'THE WAY, 0.69 m', 9.5, 'middle', '700', FAINT)
+text(X4(8.3), Y4(9.52), 'the room\'s after half is kept for the cargo lift\'s power pack', 9, 'middle', fill=FAINT)
+# ---- the tank on its drip tray, and what stands on its lid
+tx0, tx1, ta, tb, _ = H['tray']
+box4(tx0, tx1, ta, tb, 'none', 0.8, '5 3')
+x0, x1, a, b, h0, h1 = H['tank']
+box4(x0, x1, a, b, TANKC, 1.4)
+mr, br = H['motor'][0], H['bell'][0]
+for (px, py), tag in zip(H['pumps'], ('P1', 'P2')):
+    circle(X4(py), Y4(px), mr * S4, STEELC, INK, 1.2)
+    circle(X4(py), Y4(px), br * S4 * 0.55, GREY, INK, 0.6)
+    text(X4(py), Y4(px) + 4, tag, 11, 'middle', '700')
+cpx, cpy = H['cleat_pump']
+circle(X4(cpy), Y4(cpx), H['cleat_motor'][0] * S4, STEELC, INK, 1.1)
+text(X4(cpy), Y4(cpx) + 4, 'P3', 9.5, 'middle', '700')
+bx0, bx1, ba, bb, _, _ = H['block']
+box4(bx0, bx1, ba, bb, '#8f9896', 1.2)
+circle(X4(bb - 0.09), Y4(bx0 + 0.09), 0.045 * S4, '#3a3f41', INK, 0.8)                   # the filter's bowl
+circle(X4(bb - 0.20), Y4(bx0 + 0.09), 0.028 * S4, RED, INK, 0.8)                         # the relief valve's cap
+g1 = P.ROOM_GAUGES['pg1']['port']
+circle(X4(g1[1]), Y4(g1[0]), 0.016 * S4, PAPER, INK, 1.0)
+rfx, rfy = H['return_filter']
+circle(X4(rfy), Y4(rfx), 0.07 * S4, GREY, INK, 0.9)
+brx, bry = H['breather']
+circle(X4(bry), Y4(brx), 0.055 * S4, '#e3c341', INK, 0.9)
+hpx, hpy = H['hand_pump']
+box4(hpx - 0.10, hpx, hpy - 0.05, hpy + 0.05, GREY)
+line(X4(hpy), Y4(hpx - 0.10), X4(hpy + 0.06), Y4(hpx - 0.34), 2.2, INK)
+cx0, cx1, ca, cb, _, _ = H['cooler']
+box4(cx0, cx1, ca, cb, '#5d6a72', 1.1)
+circle(X4(ca - 0.10), Y4((cx0 + cx1) / 2), 0.085 * S4, GREY, INK, 0.9)
+# ---- the pumps' deliveries into the pressure block, each with its non-return valve; the cleat pump's
+PRES, RET = OIL['P'], OIL['T']
+nrv = []
+for (px, py) in H['pumps']:
+    into = ba + 0.10 if py < (ba + bb) / 2 else bb - 0.10
+    run4([(py, px - br + 0.02), (py, bx1 + 0.05), (into, bx1 + 0.05), (into, bx1 - 0.01)], PRES, 2.6)
+    mid = (py + into) / 2
+    rect(X4(mid - 0.035), Y4(bx1 + 0.05 + 0.026), X4(mid + 0.035), Y4(bx1 + 0.05 - 0.026), '#3a3f41', INK, 0.7)
+    nrv.append(mid)
+run4([(cpy, cpx - H['cleat_motor'][0] + 0.03), (cpy, bx1 + 0.10), (ba + 0.04, bx1 + 0.10), (ba + 0.04, bx1 - 0.01)], PRES, 1.5)
+# ---- the valve stand on the inboard wall: three valves, two gauges, and the seven lines that leave its top
+mx0, mx1, ma, mb, _, _ = H['manifold']
+box4(mx0, mx1, ma, mb, '#8f9896', 1.2)
+for yy, name in ((ma + 0.11, 'V1'), (ma + 0.31, 'V2'), (ma + 0.51, 'V3')):
+    box4(mx1, mx1 + 0.085, yy - 0.055, yy + 0.055, '#3a3f41', 0.8)
+    text(X4(yy), Y4(mx1 + 0.125) + 3, name, 8.5, 'middle', '700')
+for key in ('pg2', 'pg3'):
+    gp = P.ROOM_GAUGES[key]['port']
+    circle(X4(gp[1]), Y4(gp[0]), 0.014 * S4, PAPER, INK, 1.0)
+# the bank: A to D and the conduit E go aft along the inboard wall and out through the room's after wall
+for k, name in enumerate('ABCDE'):
+    off = XR + (k - 2) * 0.016
+    run4([(P.MANIFOLD_AT[name], off), (RA + 0.02, off)], OIL[name], 2.0 if name in 'AB' else 1.4, '4 2' if name == 'E' else '')
+    circle(X4(P.MANIFOLD_AT[name]), Y4(XR), 3.0, OIL[name], INK, 0.5)
+    text(X4(RA) + 14 + k * 13, Y4(XR) - 14, name, 10, 'middle', '700', OIL[name])
+text(X4(RA) + 6, Y4(XR) - 28, 'aft, to the stern door', 9, fill=DIM)
+head(X4(RA) + 2, Y4(XR), -1, 0, DIM)
+# pressure and return: up from the stand, over the way at head height, and down onto the pressure block
+xt = (bx0 + bx1) / 2
+for name in 'PT':
+    run4([(P.MANIFOLD_AT[name], XR), (P.MANIFOLD_AT[name], xt)], OIL[name], 2.6)
+    circle(X4(P.MANIFOLD_AT[name]), Y4(XR), 3.0, OIL[name], INK, 0.5)
+    circle(X4(P.MANIFOLD_AT[name]), Y4(xt), 3.4, OIL[name], INK, 0.6)
+text(X4(P.MANIFOLD_AT['P']) - 6, Y4(8.16) + 3, 'P', 10.5, 'end', '700', PRES)
+text(X4(P.MANIFOLD_AT['T']) + 6, Y4(7.84) + 3, 'T', 10.5, 'start', '700', RET)
+# ---- the starter panel on the forward wall, and the tray the motors' cables lie in
+pb = P.PANEL['box']
+box4(pb[0], pb[1], pb[2], pb[3], PAPER, 1.3)
+text(X4((pb[2] + pb[3]) / 2), Y4((pb[0] + pb[1]) / 2) + 4, 'RSP', 10, 'middle', '700')
+run4([(pb[2], H['pumps'][0][0]), (10.62, H['pumps'][0][0])], '#7a5aa6', 1.2, '7 3')
+# ---- the numbers
+no4(1, a + 0.05, x1 - 0.06, -22, -36)
+no4(2, H['pumps'][0][1], H['pumps'][0][0] + mr, 0, -32)
+no4(3, H['pumps'][1][1], H['pumps'][1][0] + mr, 0, -32)
+no4(4, cpy - 0.05, cpx - H['cleat_motor'][0] + 0.02, -30, 30)
+no4(5, nrv[0], bx1 + 0.05, -46, 12)
+no4(6, ba + 0.03, bx0 + 0.02, -42, 34)
+no4(7, bb - 0.09, bx0 + 0.09, 60, 16)
+no4(8, bb - 0.20, bx0 + 0.09, 54, 42)
+no4(9, g1[1], g1[0], 16, 58)
+no4(10, (ca + cb) / 2, cx1, -30, -30)
+no4(11, rfy, rfx, 28, -32)
+no4(12, bry, brx, 32, -28)
+no4(13, hpy + 0.04, hpx - 0.22, -40, 14)
+no4(14, mb, (mx0 + mx1) / 2, 36, -4)
+no4(15, ma + 0.11, mx1 + 0.085, -50, -22)
+no4(16, ma + 0.31, mx1 + 0.085, -26, -50)
+no4(17, ma + 0.51, mx1 + 0.085, 52, -28)
+no4(18, P.ROOM_GAUGES['pg2']['port'][1], P.ROOM_GAUGES['pg2']['port'][0], -58, -14)
+no4(19, pb[2], (pb[0] + pb[1]) / 2, -36, 26)
+no4(20, (H['pumps'][0][1] + H['pumps'][1][1]) / 2, H['pumps'][0][0], 0, -62)
+# ---- beside the plan: the lines as they are met aboard, by their height
+ex, ey = X4(RB) + 86, PYT + 6
+text(ex, ey, 'HOW TO TELL THE LINES ABOARD', 12, weight='700')
+text(ex, ey + 15, 'All oil lines are painted the same orange. Each is known by where it lies:', 9.5, fill=DIM)
+text(ex, ey + 40, 'On the inboard wall, from the top of the bank down', 10, weight='700')
+yy = ey + 56
+for name in 'EDCBA':
+    l_ = P.line(name)
+    line(ex, yy, ex + 150, yy, 4.2 if l_[2] >= 25 else 2.6, OIL[name], '6 3' if name == 'E' else '')
+    text(ex + 160, yy + 4, f'{name}   {l_[4]:.2f} m over the deck', 10, weight='700')
+    text(ex + 160, yy + 16, l_[1], 9, fill=DIM)
+    yy += 34
+text(ex, yy + 6, 'Across the way at head height, to the tank', 10, weight='700')
+yy += 22
+for name in 'TP':
+    l_ = P.line(name)
+    line(ex, yy, ex + 150, yy, 4.6 if name == 'T' else 4.2, OIL[name])
+    text(ex + 160, yy + 4, f'{name}   {l_[4]:.2f} m over the deck', 10, weight='700')
+    text(ex + 160, yy + 16, l_[1], 9, fill=DIM)
+    yy += 34
+text(ex, yy + 4, 'Thin grey lines of 16 mm from each cylinder, cleat and latch are hoses: the last', 9, fill=DIM)
+text(ex, yy + 16, 'half metre between a fixed line and a part that moves.', 9, fill=DIM)
+# ---- how the oil goes round
+fy = Y4(RX0) + 58
+text(64, fy, 'HOW THE OIL GOES ROUND', 12, weight='700')
+fy += 14
+steps = [('TANK (1)', '1,500 litres', TANKC), ('PUMPS (2, 3)', '100 l/min each', STEELC), ('NON-RETURN (5)', 'one a pump', GREY), ('PRESSURE BLOCK (6)', 'filter 7, relief 8, gauge 9', GREY),
+         ('LINE P', 'over the way', '#f3d2cb'), ('VALVE STAND (14)', 'V1 ramp, V2 cleats', GREY), ('LINES A, B / C, D', 'to the stern', '#f6e7c8'),
+         ('CYLINDERS, CLEATS', 'the work is done', PAPER), ('LINE T', 'back over the way', '#cfdff2'), ('COOLER (10)', 'air-blast', GREY), ('RETURN FILTER (11)', '25 micron', GREY), ('TANK (1)', '', TANKC)]
+bw, bh, gap = 118, 40, 13.5
+for k, (t1, t2, fill) in enumerate(steps):
+    bx = 64 + k * (bw + gap)
+    rect(bx, fy, bx + bw, fy + bh, fill, INK, 1.0)
+    text(bx + bw / 2, fy + 17, t1, 8.6, 'middle', '700')
+    text(bx + bw / 2, fy + 31, t2, 8.4, 'middle', fill=DIM)
+    if k:
+        line(bx - gap, fy + bh / 2, bx - 2, fy + bh / 2, 1.2)
+        head(bx - 1, fy + bh / 2, 1, 0, INK)
+fy += bh + 18
+text(64, fy, 'With V1 in its middle both of the ramp\'s lines are open to the tank: the ramp is then held by the load-holding valve bolted to each cylinder, not by the pumps. '
+     'If the pressure reaches 210 bar the relief valve (8) lets the oil back into the tank.', 9.5, fill=DIM)
+# ---- the parts
+fy += 26
+text(64, fy, 'THE PARTS, BY THEIR NUMBERS ON THE PLAN', 12, weight='700')
+PARTS4 = [
+    (1, 'HYD-01', 'Tank', 'About 1,500 litres of oil, on a drip tray (the broken line). Everything of the power pack stands on its lid or its sides. The level glass is on its inboard side, toward the way.'),
+    (2, 'HYD-02  P1, M1', 'Main pump No. 1', '100 l/min at 210 bar, under a 37 kW motor that stands upright on the lid. One pump alone works the ramp at half speed.'),
+    (3, 'HYD-03  P2, M2', 'Main pump No. 2', 'As No. 1. With both running the ramp is raised from its lowest in about a minute and a half.'),
+    (4, 'HYD-04  P3, M3', 'Cleat pump', 'A small pump, 8 l/min at 160 bar, under a 4 kW motor: it works the ten cleats and lifts the two safety latches with the main pumps stopped.'),
+    (5, 'HYD-06', 'Non-return valves', 'One in each main pump\'s delivery, the dark body with a union nut each end: a pump that is stopped is not driven backwards by the one that runs.'),
+    (6, 'HYD-06', 'Pressure block', 'The grey block on the lid\'s edge beside the way, where the pumps\' deliveries meet. The pressure line P leaves its top; 7, 8 and 9 stand on it.'),
+    (7, 'HYD-06  F1', 'Pressure filter', 'The dark bowl: 10 micron. Its clogging switch lights the alarm lamp on the starter panel (19) and gives the group alarm.'),
+    (8, 'HYD-06  RV1', 'Relief valve', 'Under the red cap: it opens at 210 bar and lets oil back into the tank, so the pressure can never be more.'),
+    (9, 'HYD-06  PG1', 'System gauge', 'On a gauge cock (the red tee handle shuts it off) on the block\'s inboard edge: the pumps\' pressure. 0 with the pumps stopped, about 195 bar with one running; red from 210.'),
+    (10, 'HYD-05  C1', 'Oil cooler', 'On the tank\'s after end, with its 1.1 kW fan: the oil coming back is cooled by air before it goes into the tank.'),
+    (11, 'HYD-07  F2', 'Return filter', '25 micron, in the return into the tank, with a switch that says when it is clogged.'),
+    (12, 'HYD-01', 'Breather and filler', 'The yellow cap: where the tank breathes as its level goes up and down, and where it is filled.'),
+    (13, 'HYD-08  HP1', 'Hand pump', 'On the tank\'s inboard side, with its lever: with no power the cleats are worked by it, and slowly the ramp.'),
+    (14, 'HYD-10', 'Valve stand', 'On the inboard wall across the way. The seven lines leave its top: A, B, C, D and the conduit E go aft along the wall; P and T cross to the tank.'),
+    (15, 'HYD-10  V1', 'Ramp valve', 'Lever to one side: oil to line A, the ramp is raised. To the other: oil to B, it is lowered. In the middle: both lines to the tank. Worked by its two solenoids from the control stand, or by the lever here.'),
+    (16, 'HYD-10  V2', 'Cleat valve', 'Oil to line C locks the ten cleats; to line D lets them go and lifts the two safety latches.'),
+    (17, 'HYD-10  V3', 'Spare valve', 'For the ramp cover over the fixed ramp, which is not built. Its ports are plugged.'),
+    (18, 'HYD-10  PG2, PG3', 'Line gauges', 'On the stand\'s top, each on its gauge cock: PG2 reads line A, which carries the leaf (189 bar with the ramp level); PG3 reads line B.'),
+    (19, 'ELD-51  RSP', 'Starter panel', 'On the forward wall, at the end of the way: the isolator, a starter for each motor, the control transformer. Its two leaves open into the way.'),
+    (20, '', 'Cable tray', 'On two posts over the power pack, 2.1 m up: the motors\' cables from the starter panel, each coming down to its motor in a conduit.'),
+]
+fy = table(64, fy + 10, ['No.', 'Tag', 'What it is', 'What it does, and how it is known'], [(str(n), t, w_, d) for n, t, w_, d in PARTS4], [36, 118, 132, 1226])
+# ---- the lines
+fy += 26
+text(64, fy, 'THE LINES', 12, weight='700')
+LINES4 = [
+    ('P', 'Pressure', '30 x 4 mm steel (25 mm bore)', 'Pressure block (6) to the valve stand (14)', 'The pumps\' oil, at up to 210 bar, on its way to the valves.'),
+    ('T', 'Return', '35 x 3 mm steel (32 mm bore)', 'Valve stand (14) to the tank (1)', 'The oil coming back from the valves. No pressure to speak of.'),
+    ('A', 'Ramp, raise', '30 x 4 mm steel', 'Valve stand to the rod side of both cylinders', 'Oil here pulls the cylinders in and RAISES the ramp. It also carries the leaf\'s weight while the ramp is down: gauge PG2 and the control stand\'s RAMP LINE A show it.'),
+    ('B', 'Ramp, lower', '30 x 4 mm steel', 'Valve stand to the piston side of both cylinders', 'Oil here pushes the cylinders out and LOWERS the ramp, against the load-holding valves, which open only while B has pressure.'),
+    ('C', 'Cleats, lock', '18 x 2.5 mm steel (12 mm bore)', 'Valve stand to the ten cleats', 'Oil here shoots the eight bolts and closes the two hooks: the door is LOCKED.'),
+    ('D', 'Cleats, let go', '18 x 2.5 mm steel', 'Valve stand to the ten cleats and the two safety latches', 'Oil here draws the bolts, opens the hooks and lifts the latches: the door is FREE to be lowered.'),
+    ('E', 'Conduit', 'Galvanised conduit', 'Starter panel (19) to the control stand at the stern door', 'Not oil: the control stand\'s cables, carried with the pipes.'),
+]
+fy = table(64, fy + 10, ['Line', 'Name', 'What it is made of', 'From and to', 'What it does'], LINES4, [44, 110, 220, 330, 808])
+# ---- the oil, and how much of it (stern_place.FLUID, TANK)
+fy += 26
+text(64, fy, 'THE OIL, AND HOW MUCH OF IT', 12, weight='700')
+FL, TK = P.FLUID, P.TANK
+lit4 = lambda h_: f'{round(P.tank_litres(h_) / 10) * 10:,} litres'
+down4 = P.oil_level(next(c_ / 10 for c_ in range(60, 941) if P.leaf_angle(c_ / 10) >= 90.0))
+OIL4 = [
+    ('Oil', f"{FL['grade']}: {FL['kind']}. Viscosity index {FL['index']} or more, pour point {FL['pour']} °C or lower. Kept to {FL['clean']} or cleaner, water under {FL['water']} %."),
+    ('How much', f"The tank holds about {lit4(TK['deep'])} to its lid ({P.tank_area() * 10:.1f} litres to the centimetre). With the cylinders and the lines full she takes about {round(P.first_fill() / 50) * 50:,} litres in all."),
+    ('Level glass: FILL', f"{TK['fill']:.2f} m over the tank's bottom, {lit4(TK['fill'])}: where it is filled to with the ramp raised and locked, the rods in."),
+    ('Level glass: RAMP DOWN', f"{down4:.2f} m, {lit4(down4)}: where it stands with the ramp level. Lowering the ramp takes the two rods' own volume out of the tank; it comes back when the ramp is raised."),
+    ('Level glass: LOW', f"{TK['low']:.2f} m, {lit4(TK['low'])}: the level switch. OIL LEVEL lights at the control stand, with the group alarm. Oil has been lost."),
+    ('Level glass: STOP', f"{TK['stop']:.2f} m, {lit4(TK['stop'])}: under this the pumps are not run; their suction strainers are {TK['strainer']:.2f} m over the bottom."),
+    ('Temperature', f"Works at {FL['work'][0]} to {FL['work'][1]} °C. The cooler's fan starts at {FL['fan'][0]} °C and stops at {FL['fan'][1]} °C. OIL TEMP alarm at {FL['hot']} °C. Under {FL['cold']} °C the oil is warmed by one pump before the ramp is worked."),
+    ('Pressures', 'Main relief valve 210 bar; the cleats\' relief valve 160 bar; the load-holding valves 250 bar. A running pump holds about 195 bar; line A carries up to 198 bar.'),
+]
+fy = table(64, fy + 10, ['', 'The yard\'s choice (stern_place.FLUID, TANK): not a maker\'s figures'], OIL4, [190, 1322])
+# ---- said plainly
+fy += 26
+text(64, fy, 'WHERE THE MODEL IS SIMPLER THAN THE DIAGRAM (SHEET 2), SAID PLAINLY', 12, weight='700', fill=RED)
+PLAIN4 = [
+    'The return line T is drawn coming down beside P onto the pressure block. By the diagram it goes through the cooler (10) and the return filter (11) into the tank: that pipework on the lid is not drawn yet.',
+    'The cleat pump (4) is drawn delivering into the same pressure block. By the diagram it has a line and a relief valve of its own (RV2, 160 bar) to the cleat valve V2: not drawn yet.',
+    'The lines carry no markers aboard yet: they are told apart by where they lie (right). The valve stand\'s levers, the hand pump and the gauge cocks are drawn and are not worked on the page; the ramp is worked from its control stand.',
+    'The level glass carries no marks yet and its level does not move with the ramp; the oil\'s temperature is not kept and the cooler\'s fan does not turn. Making the pack work in full is the next piece of work on it.',
+]
+for k, t_ in enumerate(PLAIN4):
+    for i, s_ in enumerate(wrap(t_, 250)):
+        text(64 if i == 0 else 76, fy + 16 + i * 12, ('· ' if i == 0 else '') + s_, 9.5)
+    fy += 14 + 12 * (len(wrap(t_, 250)) - 1)
+fy += 22
+foot(fy + 12, made='ferry/blender/stern_place.py, ga.py and ferry/systems/stern.py')
+sheet(f'{NUMBER}-4-hydraulic-power-pack.svg', 'Stern ramp: the hydraulic power pack as it stands', fy + 30)

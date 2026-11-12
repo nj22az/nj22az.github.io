@@ -25,8 +25,17 @@ const VIEWS = [
   ['hinges', [2.6, 1.9, 7.5], [3.6, -0.3, 6.6], 1, { 'stern-ramp': 90 }],                       // the hinge line at the sill, from close
   ['flaps', [3.0, -6.5, 8.2], [0.0, -11.5, 6.4], 1, { 'stern-ramp': 90 }],                      // standing on the ramp, looking at its end
   ['cleats-port', [2.2, 2.4, 8.3], [4.5, 0.1, 8.6], 1, {}],                                     // the port side of the door, shut: the cleats
-  ['stand', [2.3, 3.4, 8.2], [4.3, 1.5, 7.6], 1, {}],                                           // the control stand beside the door, port side
-  ['stand-face', [3.35, 1.45, 8.05], [4.4, 1.45, 7.75], 1, {}],                                 // its face, as the one who works it sees it
+  ['stand', [2.9, 2.5, 8.3], [4.3, 1.1, 7.75], 1, {}],                                           // the control stand beside the door, port side
+  ['stand-face', [3.5, 1.13, 8.3], [4.34, 1.13, 7.86], 1, {}],                                  // its desk and upstand, as the one who works it sees them
+  ['stand-dials', [3.92, 0.96, 8.12], [4.37, 0.98, 7.95], 1, {}],                               // its two pressure indicators and its lamps, from close
+  ['stand-working', [3.5, 1.13, 8.3], [4.34, 1.13, 7.86], 1, { 'stern-ramp': 45, 'stern-ramp-pump-1': true }],     // a pump running and the ramp half down: lamps, needles, beacon
+  // from arm's length, where its legends and scales are read (JSY-STD-404, rule 6: lettering is judged on the page, not in Blender)
+  ['stand-read', [3.95, 1.13, 8.02], [4.36, 1.13, 7.93], 1, {}],                                  // the upstand: title, indicators, lamp windows, instruction plate
+  ['stand-desk-read', [4.02, 1.13, 8.05], [4.30, 1.13, 7.62], 1, {}],                             // the desk: emergency stop, pump buttons, the two levers and their legends
+  ['stand-read-working', [3.95, 1.13, 8.02], [4.36, 1.13, 7.93], 1, { 'stern-ramp': 45, 'stern-ramp-pump-1': true }],
+  ['gauge-system', [8.00, 11.52, 7.94], [8.284, 11.52, 7.90], 1, { 'stern-ramp-pump-1': true }],     // the system's gauge on its gauge cock on the pressure block, a pump running
+  ['gauge-system-side', [8.08, 11.24, 8.02], [8.30, 11.54, 7.86], 1, {}],                         // the same from forward of it: what it stands on
+  ['gauges-lines', [7.93, 11.24, 8.07], [7.634, 11.12, 8.00], 1, { 'stern-ramp': 45 }],            // the two line gauges on the valve stand's top, the ramp half down
   ['mooring-station-port', [5.2, 6.6, 8.2], [8.4, 0.6, 7.6], 1, {}],                            // in the port after mooring station, looking aft
   ['hydraulic-room', [7.9, 12.2, 8.2], [9.0, 8.0, 7.5], 1, {}],                                 // the hydraulic pump room, from its forward end
   ['hydraulic-room-inboard', [9.2, 7.7, 8.2], [7.6, 11.6, 7.4], 1, {}],                         // and from its after outboard corner, at the inboard wall

@@ -12,7 +12,11 @@ own: the tool starts from nothing.
   - the rooms the page lists are the spaces of ga.py, each with its place, what it is for, and where a walk begun there
     starts when the room itself is not entered (a tank, a funnel, a stair);
   - her register is written beside the model with the places of the same build (systems.json), and her stairs as the
-    yard's standard has them.
+    yard's standard has them;
+  - every corner is kept as three whole numbers, 65,535 steps across her bounds: 0.3 mm across her breadth, 0.4 mm in
+    height, 1.9 mm along her length. Fine work (a part built `fine`: engraved lettering, a dial's scale and needle) is
+    kept in a box of its own instead (`box` in its record), so that a 7 mm letter on a face that runs fore and aft
+    keeps its uprights.
 
 The same parts give the same file, byte for byte. Needs numpy; no Blender.
 """
@@ -187,6 +191,19 @@ def weld(pos, nor, col, lo, hi, uv=None, key=None):
     return uniq[:, :3].astype(np.uint16), uniq[:, 3:6].astype(np.int8), uniq[:, 6:9].astype(np.uint8), tri, (uniq[:, 9:11].astype(np.uint16) if uv is not None else None)
 
 
+FINE_CELL = 2.0            # metres: fine work is kept by the cell of this grid it lies in, each cell in a box of its own
+
+
+def cells(pos):
+    """The triangles of a fine mesh (corner rows, three to a triangle) by the cell their middle lies in: a list of arrays of
+    triangle numbers. One fine look on one deck may be the lettering of a stand at her stern and of a panel a hundred
+    metres forward: kept in one box they would be no finer than the ship is."""
+    mid = pos.reshape(-1, 3, 3).mean(1)
+    _, inverse = np.unique(np.floor(mid / FINE_CELL).astype(np.int64), axis=0, return_inverse=True)
+    inverse = inverse.reshape(-1)
+    return [np.nonzero(inverse == k)[0] for k in range(int(inverse.max()) + 1)] if len(inverse) else []
+
+
 def waterline():
     """Her outline at the design waterline, port side, from the transom to the stem: (z, half breadth). The page lays the
     sea round it: inside her there is no sea, however far below the waterline a room lies."""
@@ -262,7 +279,7 @@ def main():
         for m in sorted(meta['meshes'], key=lambda m: m['key']):
             if m['group'] not in ids:
                 raise SystemExit(f'the part file brings "{m["group"]}", which is not one of the viewer\'s parts')
-            fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'], mover=m.get('mover') or None,
+            fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'], mover=m.get('mover') or None, fine=bool(m.get('fine')),
                               pos=z[m['key'] + '|pos'].astype(np.float64), nor=z[m['key'] + '|nor'], col=z[m['key'] + '|col'],
                               uv=z[m['key'] + '|uv'].astype(np.float64) if m['key'] + '|uv' in z.files else None))
     lo = np.min([np.round(m['pos'].min(0) - 0.001, 4) for m in fresh], axis=0)
@@ -282,11 +299,13 @@ def main():
             offset += pad
         return at
 
-    def record(material, pos_q, nor, col, idx, uv=None, mover=None):
+    def record(material, pos_q, nor, col, idx, uv=None, mover=None, box=None):
         wide = len(pos_q) > 65535
         rec = dict(material=material, vertices=int(len(pos_q)), triangles=int(len(idx)), wide=wide)
         if mover:
             rec['mover'] = mover
+        if box is not None:             # fine work: its corners are numbers across this box, not across her bounds
+            rec['box'] = dict(min=[float(v) for v in box[0]], max=[float(v) for v in box[1]])
         rec['pos'] = chunk(pos_q.astype('<u2'))
         rec['nor'] = chunk(nor.astype('i1'))
         rec['col'] = chunk(col.astype('u1'))
@@ -302,9 +321,20 @@ def main():
     for g in GROUPS:
         out = []
         for m in (f for f in fresh if f['group'] == g['id']):
-            q, n, c, tri, uv = weld(m['pos'], m['nor'], m['col'], lo, hi, m['uv'], key)
-            out.append(record(m['material'], q, n, c, tri, uv, mover=m['mover']))
-            report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects']))
+            if not m['fine']:
+                q, n, c, tri, uv = weld(m['pos'], m['nor'], m['col'], lo, hi, m['uv'], key)
+                out.append(record(m['material'], q, n, c, tri, uv, mover=m['mover']))
+                report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects']))
+                continue
+            # Fine work: each cell's triangles in a box of their own, a little larger than they are (the mark is carried the same way:
+            # the last bit of the number across the box's breadth, which is a few thousandths of a millimetre here).
+            for which in cells(m['pos']):
+                rows = (which[:, None] * 3 + np.arange(3)).reshape(-1)
+                pos = m['pos'][rows]
+                box = np.round(pos.min(0) - 0.0005, 4), np.round(pos.max(0) + 0.0005, 4)
+                q, n, c, tri, uv = weld(pos, m['nor'][rows], m['col'][rows], box[0], box[1], m['uv'][rows] if m['uv'] is not None else None, key)
+                out.append(record(m['material'], q, n, c, tri, uv, mover=m['mover'], box=box))
+                report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects'], fine=True))
         groups.append(dict(id=g['id'], name=g['name'], level=g['level'], explode=[0, g['lift'], 0], spaces=rooms[g['id']],
                            meshes=sorted(out, key=lambda r: (r['material'], r.get('mover', '')))))
 

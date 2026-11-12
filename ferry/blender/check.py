@@ -37,7 +37,9 @@ def read(path):
 
 
 def positions(header, block, rec):
-    lo, hi = np.array(header['bounds']['min']), np.array(header['bounds']['max'])
+    # (fine work is kept in a box of its own: assemble.py)
+    b = rec.get('box') or header['bounds']
+    lo, hi = np.array(b['min']), np.array(b['max'])
     return np.frombuffer(block, '<u2', rec['vertices'] * 3, rec['pos']).reshape(-1, 3) / 65535 * (hi - lo) + lo
 
 
@@ -93,6 +95,15 @@ def main():
     # draws it is for the page to solve, not for the drawing to pay for.
     check(tri > 80000, f'the hull has {tri:,} triangles (no upper limit)')
     print(f'      the file is {size / 1e6:.2f} MB with {total:,} triangles (said, not limited: JSY-STD-404)')
+    # Fine work (engraved lettering, a dial's scale and needle) is kept in a box of its own, where a step is a few hundredths of
+    # a millimetre: over her bounds a step along her length is 1.9 mm, and 7 mm letters on a fore-and-aft face lost their uprights.
+    fine = [m for g in groups.values() for m in g['meshes'] if m.get('box')]
+    if fine:
+        lo, hi = np.array(header['bounds']['min']), np.array(header['bounds']['max'])
+        within = all((np.array(m['box']['min']) >= lo - 1e-6).all() and (np.array(m['box']['max']) <= hi + 1e-6).all() for m in fine)
+        step = max(float((np.array(m['box']['max']) - np.array(m['box']['min'])).max()) for m in fine) / 65535 * 1000
+        check(within and step < 0.1, f'her fine work (lettering, instruments) is kept in {len(fine)} meshes with a box of their own, each within her bounds: '
+              f'a step of {step:.3f} mm at most there ({(hi - lo)[2] / 65535 * 1000:.1f} mm along her length elsewhere)')
     # ---- Her own pictures and her register travel with the model.
     here = os.path.dirname(os.path.abspath(a.file))
     sheets = header.get('atlases', [])
