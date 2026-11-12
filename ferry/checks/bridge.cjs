@@ -103,7 +103,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   w = await walk(0, 20.4, AHEAD, 3);
   check(w.z < Z(21.5) && w.z > Z(20.9), `the steering stand and its wheel stop one (${B(w.z).toFixed(2)} m)`);
   w = await walk(1.7, 21.6, AHEAD, 3);
-  check(w.z < Z(22.30) - 0.1 && w.z > Z(21.9), `the console stops one (${B(w.z).toFixed(2)} m; its after face is at 22.30)`);
+  check(w.z < Z(22.12) - 0.1 && w.z > Z(21.8), `the console block stops one (${B(w.z).toFixed(2)} m; its grab rail is at 22.07 and its desk's after edge at 22.12)`);
   w = await walk(1.5, 20.85, PORT, 3);
   check(w.x > 3.2 && w.x < WING && /wing|wheelhouse/i.test(w.room), `through the port door, over its sill, onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
   w = await walk(WING - 0.94, 20.85, PORT, 2);
@@ -113,7 +113,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   w = await walk(6.0, 20.2, ASTERN, 2);           // abaft the wing the bridge deck is open, each side of the house
   check(w.z < Z(19.4), `from the port wing aft, off it at its open end onto the bridge deck (${B(w.z).toFixed(2)} m)`);
   w = await walk(2.0, 21.7, PORT, 2);
-  check(w.x < 2.6, `the port wall and the log desk stop one (x ${w.x.toFixed(2)})`);
+  check(w.x < 2.6, `the settee under the port windows stops one (x ${w.x.toFixed(2)}; its front is at 2.31)`);
   w = await walk(-2.5, 20.9, ASTERN, 3);
   check(w.y < DECK - 2.0 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the deck below (${B(w.z).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
   w = await walk(-1.5, 20.9, ASTERN, 3);
@@ -168,7 +168,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const all = f.movers();
     const worked = ['lever-engine-p', 'lever-engine-s', 'lever-thruster', 'tiller'].map(id => f.control(id)).filter(k => k && k.steps && k.fitting);
     return { said, card: f.systems.state.component, at: f.control('lever-engine-p').at, turned, wheel, n: all.length, worked: worked.length };
-  }, [Z(22.0), Z(22.60), DECK]);
+  }, [Z(21.85), Z(22.60), DECK]);
   const mark = 16.26;
   check(lever.said === 'Port engine lever: slow ahead' && lever.card === 'PRP-01' && lever.at === 4,
     `on foot, a tap on the port engine lever moves it a notch and shows its card ("${lever.said}", ${lever.card})`);

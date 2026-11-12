@@ -24,234 +24,22 @@ register gives them, in the bridge's own measures: x, `yard` (metres from the fi
 designed) and h (metres over the bridge deck). bridge_place.py carries them aboard the 68 m ship.
 """
 import os, sys
-from math import pi, cos, sin, radians, degrees, tan, atan, hypot
-from mathutils import Vector
-import lines as L
-import spec as S
-import shipyard
-import bridge_place as BP
-from shipyard import Part, srgb, tint, component, tile, lettering
+from bridge_kit import *
+import bridge_kit as K
 from hull_appendages import _revolve
-
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'systems'))
-import bridge as REG
-
-DECK = BP.DECK                        # the bridge deck she stands on (bridge_place.py: the bridge's own measures are the first Chisum's)
-W = BP.WING                           # the inner face of each wing's bulwark: the wings are carried to the ship's side
-# The wheelhouse's heights over its deck. The owner, 11 November 2026, on raising the roof: "Yes make it realistic".
-# It stood 2.055 m clear under a roof at 2.40 m, with the glass ending at 1.96 m and an overhead console hanging to 1.80 m,
-# a tall helmsman's eye. Now: 2.30 m clear under the lining, a service void over it for the cable trays, the roof's
-# structure from 2.42 m and its top (the compass deck) at 2.70 m; every window's glass and the wing doors' reach 2.00 m
-# and more, and what hangs from the deckhead ahead of the helm hangs above the windows' head (yard/calc JS4-402).
-HEAD_ROOM = 2.42                      # the roof's underside
-CEIL = 2.30                           # the deckhead lining's underside: the clear height
-LINING_T = 0.025                      # the lining panels; over them the void
-OLD_HEAD = 2.08                       # where the other ship's aft wall ends: hers is carried up from there
-SILL, HEAD, RAKE = 0.95, 2.10, tan(radians(10.0))
-X_IN, X_OUT = 2.92, 3.00              # the house side, inside and out
-AFT, FRONT_IN, FRONT_OUT = 19.545, 22.92, 23.00
-CORNER = 22.82                        # where the side wall's last window ends and the forward corner begins
-
-HOUSE, LINING, CEILING = srgb(0xeeeae0), srgb(0xe3dfd2), srgb(0xecebe4)
-GREEN, CREAM, DARK, BRASS, WOOD = srgb(0x52796f), srgb(0xd8d2c0), srgb(0x252e30), srgb(S.BRONZE), srgb(0x765032)
-STAND, LEATHER, STEEL = srgb(0x5c6466), srgb(0x3b3430), srgb(S.STEEL)
-FRAME, DOOR, SILLC = srgb(0x3a4244), srgb(0x5d6b6a), srgb(0x6b7472)
-RED, GREENLENS, WHITE_LAMP, BLUE = srgb(0xc2412f), srgb(0x2f9e5a), srgb(0xf6f1e2), srgb(0x4a6a8a)
-GREY, BLACK, WHITE = srgb(0x7d8586), srgb(0x1a1f20), srgb(0xf2f0e8)
-VINYL, MAT, WINGDECK, BOARD, ORANGE, YELLOW = srgb(0x6b6a60), srgb(0x26282a), srgb(0x6f7d6c), srgb(0x9aa3a2), srgb(0xe8742a), srgb(0xe4d83c)
-GLASS = srgb(0x2d4a55)
-
-PARTS = dict(
-    plating=('Wheelhouse, plating', 'Topside paint'), lining=('Wheelhouse, linings', 'Lining'), frame=('Wheelhouse, window frames', 'Console paint'),
-    glass=('Wheelhouse, window glass', 'Window glass'), floor=('Wheelhouse, deck covering', 'Deck covering'), seam=('Wheelhouse, panel seams', 'Marking'),
-    console=('Wheelhouse, console', 'Console paint'), dark=('Wheelhouse, instruments', 'Machinery paint'), plastic=('Wheelhouse, plastics', 'Plastic'),
-    steel=('Wheelhouse, steel', 'Shaft steel'), brass=('Wheelhouse, brass', 'Bronze'), wood=('Wheelhouse, wood', 'Varnished wood'),
-    seat=('Wheelhouse, upholstery', 'Upholstery'), lens=('Wheelhouse, lamps and lenses', 'Lens'), screen=('Wheelhouse, screens', 'Screen picture'),
-    face=('Wheelhouse, panel faces', 'Panel face'), paint=('Wheelhouse, painted fittings', 'Deck paint'), wing=('Wheelhouse, wing plating', 'Topside paint'),
-    top=('Compass deck, bridge fittings', 'Topside paint', 'top'), top_dark=('Compass deck, bridge fittings, dark', 'Machinery paint', 'top'),
-    top_lens=('Compass deck, bridge fittings, lenses', 'Lens', 'top'), top_steel=('Compass deck, bridge fittings, steel', 'Shaft steel', 'top'),
-)
-_parts, _extra = {}, []
-
+import bridge_console as BC
+import bridge_outfit as BO
+import bridge_fittings as BF
 
 # What hangs from the deckhead is fastened to the compass deck, and lifts away with it when she is taken apart (as the
-# deckhead over the machinery spaces goes with the car deck): the lining, its lights, the overhead console, the periscope.
-# So a room is looked down into with nothing over it.
-_hung = [False]
-HUNG = ('ceiling', 'ceil', 'grabrails', 'overhead', 'ovh_dial', 'ovh_screen', 'periscope', 'whistle_valve')
-
-
-def part(key):
-    top = len(PARTS[key]) > 2 or _hung[0]
-    slot = (key, top)
-    if slot not in _parts:
-        name, look = PARTS[key][:2]
-        if _hung[0] and len(PARTS[key]) == 2:
-            name = name.replace('Wheelhouse, ', 'Wheelhouse deckhead, ')
-        _parts[slot] = Part(name, look)
-        _parts[slot].group = 'top' if top else 'bridge'
-    return _parts[slot]
-
-
-def P(x, yard, h):
-    """A point from its place on the bridge deck: x to port, metres from the transom, metres over the deck."""
-    return (x, DECK + h, BP.Z(yard))
-
-
-def fwd(h):
-    """How far the raked forward wall has leaned forward at this height."""
-    return (min(max(h, SILL), HEAD) - SILL) * RAKE
-
-
-# What the house itself is made of is plate with square edges; everything fitted in it is a made thing, whose edges are
-# chamfered and catch the light (JSY-STD-404, rule 2).
-PLATE_KEYS = {'plating', 'lining', 'glass', 'floor', 'seam', 'wing'}
-
-
-def box(key, x0, x1, yd0, yd1, h0, h1, colour, r=0.003):
-    x0, x1 = sorted((x0, x1))
-    yd0, yd1 = sorted((yd0, yd1))
-    h0, h1 = sorted((h0, h1))
-    p = key if isinstance(key, Part) else part(key)
-    if key in PLATE_KEYS if isinstance(key, str) else False:
-        p.box(P(x0, yd0, h0), P(x1, yd1, h1), colour)
-    else:
-        p.block(P(x0, yd0, h0), P(x1, yd1, h1), colour, r)
-
-
-def prism(key, x0, x1, profile, colour):
-    """A solid from an outline in (yard, h) pushed from x0 to x1."""
-    p = key if isinstance(key, Part) else part(key)
-    x0, x1 = sorted((x0, x1))
-    start = len(p.f)
-    ring = lambda x: [P(x, yd, h) for yd, h in profile]
-    p.grid([ring(x0), ring(x1)], colour, close=True)
-    for x in (x0, x1):
-        p.polygon(ring(x), colour)
-    mid = Vector([sum(c) / len(c) for c in zip(*[P((x0 + x1) / 2, yd, h) for yd, h in profile])])
-    p.orient(start, lambda c: c - mid)
-
-
-def tube(key, a, b, r, colour, sides=12, r2=None, caps=(True, True)):
-    (key if isinstance(key, Part) else part(key)).tube(P(*a), P(*b), r, r2, colour=colour, sides=sides, caps=caps)
-
-
-def vessel(key, a, b, r, colour, r2=None):
-    """A length of a glass vessel (a bottle, a jar, a jug): its wall only. Glass is seen from both sides, so it has no end
-    lying in the plane of what it stands on or of what closes it (JSY-STD-403, rule 8)."""
-    tube(key, a, b, r, colour, r2=r2, caps=(False, False))
-
-
-def torus(key, centre, big, small, colour, axis='z', n=28, m=10):
-    """A ring about the fore-and-aft axis (a wheel) or the athwartships one (a lifebuoy against the bulwark)."""
-    p = key if isinstance(key, Part) else part(key)
-    p.ring(P(*centre), (0, 0, 1) if axis == 'z' else (1, 0, 0), big, small, colour)
-
-
-def pic(centre, normal, up, w, h, name, proud=0.0015):
-    """A picture of her sheet, w by h, on a face that looks along `normal`; `up` is the picture's upward edge. Screens shine, the rest takes the light."""
-    c, n, u = Vector(P(*centre)), Vector(normal).normalized(), Vector(up).normalized()
-    r = u.cross(n)
-    c = c + n * proud
-    corners = [tuple(c - r * (w / 2) - u * (h / 2)), tuple(c + r * (w / 2) - u * (h / 2)), tuple(c + r * (w / 2) + u * (h / 2)), tuple(c - r * (w / 2) + u * (h / 2))]
-    part('screen' if tile(name)['kind'] == 'screen' else 'face').picture(corners, name)
-    return c, r, u, n
-
-
-def disc(centre, normal, up, radius, name, sides=28, proud=0.0015):
-    """A round picture: the circle inscribed in the picture's square."""
-    c, n, u = Vector(P(*centre)), Vector(normal).normalized(), Vector(up).normalized()
-    r = u.cross(n)
-    c = c + n * proud
-    u0, v0, u1, v1 = tile(name)['uv']
-    p = part('face')
-    mid = p.vert(tuple(c))
-    ring, uvs = [], []
-    for k in range(sides):
-        a = 2 * pi * k / sides
-        ring.append(p.vert(tuple(c + r * (radius * cos(a)) + u * (radius * sin(a)))))
-        uvs.append((u0 + (0.5 + 0.5 * cos(a)) * (u1 - u0), v0 + (0.5 + 0.5 * sin(a)) * (v1 - v0)))
-    cm = ((u0 + u1) / 2, (v0 + v1) / 2)
-    for k in range(sides):
-        j = (k + 1) % sides
-        p.face((mid, ring[k], ring[j]), (1.0, 1.0, 1.0), [cm, uvs[k], uvs[j]])
-
-
-# ---- what stands on a panel's face in three dimensions, by the picture: (kind, across from the left, down from the top, size in picture points)
-DETAILS = {
-    'dimmer_panel': [('knob', (56 + i * 96) / 304, 76 / 160, 15) for i in range(3)],
-    'wiper_panel': [('knob', (56 + i * 96) / 384, 76 / 160, 13) for i in range(3)],
-    'steer_mode': [('knob', 0.5, 78 / 256, 19), ('tiller', 0.5, 198 / 256, 0)],
-    'whistle_panel': [('button', 62 / 208, 74 / 160, 30), ('knob', 150 / 208, 74 / 160, 13)],
-    'sl_panel': [('stick', 104 / 208, 80 / 160, 0)],
-    'bnwas': [('knob', 76 / 336, 124 / 160, 11)],
-    'pa_panel': [('mic', 404 / 464, 70 / 160, 0)],
-    'radar_kbd': [('ball', (512 - 62) / 512, 0.5, 34)],
-    'ecdis_kbd': [('ball', (384 - 62) / 384, 0.5, 34)],
-    'navlight_panel': [('toggle', (424 + i * 58) / 848, 92 / 208, 0) for i in range(7)] + [('knob', 800 / 848, 150 / 208, 12)],
-}
-
-
-def details(name, got, w, h):
-    c, r, u, n = got
-    px = w / tile(name)['px'][0]
-    for kind, fx, fy, size in DETAILS.get(name, ()):
-        at = c + r * ((fx - 0.5) * w) + u * ((0.5 - fy) * h)
-        if kind == 'knob':
-            part('plastic').tube(tuple(at), tuple(at + n * 0.016), size * px, size * px * 0.85, colour=BLACK, sides=14)
-            part('lens').tube(tuple(at + n * 0.016 + u * (size * px * 0.45)), tuple(at + n * 0.0175 + u * (size * px * 0.45)), size * px * 0.16, colour=WHITE, sides=6)
-        elif kind == 'button':
-            part('steel').tube(tuple(at), tuple(at + n * 0.012), size * px * 0.8, colour=GREY, sides=14)
-            part('plastic').tube(tuple(at + n * 0.012), tuple(at + n * 0.03), size * px, size * px * 0.9, colour=RED, sides=16)
-        elif kind == 'ball':
-            _revolve(part('plastic'), tuple(at - n * 0.004), tuple(n), [(0.0, 0.0), (0.0, size * px), (size * px * 0.5, size * px * 0.86), (size * px * 0.82, size * px * 0.5), (size * px * 0.95, 0.0)], srgb(0x8a1f1a), sides=16)
-        elif kind == 'stick':
-            part('steel').tube(tuple(at), tuple(at + n * 0.06), 0.006, colour=GREY, sides=8)
-            _revolve(part('plastic'), tuple(at + n * 0.05), tuple(n), [(0.0, 0.0), (0.0, 0.006), (0.006, 0.014), (0.02, 0.015), (0.03, 0.0)], BLACK, sides=12)
-        elif kind == 'toggle':
-            part('steel').tube(tuple(at), tuple(at + n * 0.006), 0.007, colour=GREY, sides=10)
-            part('steel').tube(tuple(at + n * 0.006), tuple(at + n * 0.03 + u * 0.012), 0.0035, 0.0045, colour=srgb(0xd7dcdc), sides=8)
-        elif kind == 'tiller':
-            # A gate: a raised steel plate with a slot across the ship, and the stick standing in it on its ball. The
-            # stick is a moving part (the panel is level: its face looks up).
-            gate = part('steel')
-            for z0, z1, x0, x1 in ((0.006, 0.018, -0.04, 0.04), (-0.018, -0.006, -0.04, 0.04), (-0.006, 0.006, 0.03, 0.04), (-0.006, 0.006, -0.04, -0.03)):
-                gate.box(tuple(at + Vector((x0, 0.0, z0))), tuple(at + Vector((x1, 0.004, z1))), GREY)
-            mv = _moving('Wheelhouse, tiller', 'tiller', steel='Shaft steel', grip='Plastic')
-            _revolve(mv['steel'], tuple(at - n * 0.004), tuple(n), [(0.0, 0.0), (0.0, 0.0105), (0.006, 0.0105), (0.012, 0.007), (0.014, 0.0)], srgb(0x9aa2a3), sides=12)
-            mv['steel'].tube(tuple(at + n * 0.008), tuple(at + n * 0.125), 0.0055, colour=GREY, sides=8)
-            _revolve(mv['grip'], tuple(at + n * 0.115), tuple(n), [(0.0, 0.0), (0.0, 0.007), (0.01, 0.019), (0.035, 0.02), (0.05, 0.0)], BLACK, sides=12)
-            LEVERS.append(dict(id='tiller', input='tiller', axis=[0, 0, 1], pivot=[float(v) for v in at]))
-        elif kind == 'mic':
-            part('steel').tube(tuple(at), tuple(at + n * 0.015), 0.022, colour=GREY, sides=14)
-            mid = at + n * 0.16 - u * 0.03
-            tip = at + n * 0.22 - u * 0.10
-            part('plastic').tube(tuple(at + n * 0.015), tuple(mid), 0.005, colour=BLACK, sides=8)
-            part('plastic').tube(tuple(mid), tuple(tip), 0.005, colour=BLACK, sides=8)
-            part('plastic').tube(tuple(tip), tuple(tip - u * 0.05 + n * 0.01), 0.013, 0.016, colour=BLACK, sides=10)
-
-
-UP, FWD, AFTWARD, PORT, STBD = (0, 1, 0), (0, 0, 1), (0, 0, -1), (1, 0, 0), (-1, 0, 0)
-TILT = (0, cos(radians(20)), sin(radians(20)))            # up the leaning face of a display
-TILT_N = (0, sin(radians(20)), -cos(radians(20)))         # and the way that face looks: aft and a little up
+# deckhead over the machinery spaces goes with the car deck): the strips, the lights, the overhead consoles and
+# instruments, the periscope. So a room is looked down into with nothing over it.
+HUNG = ('ceiling', 'ceil', 'grabrails', 'overhead', 'ovh_dial', 'ovh_screen', 'ovh_set', 'periscope', 'whistle_valve')
 
 
 # =====================================================================================================================
 # The house
 # =====================================================================================================================
-SIDES = {                                                  # openings in each side wall, the same on both sides: (yard from, to, h from, to, what)
-    side: [(19.65, 20.33, 1.10, 2.05, 'window'), (20.45, 21.25, 0.0, 2.05, 'door'), (21.30, 22.10, 0.97, 2.05, 'window'), (22.15, CORNER, 0.97, 2.05, 'window')]
-    for side in (1, -1)
-}
-# The forward windows, x from and to: five alike between two corner posts of 0.06 m and four mullions of 0.10 m.
-_pane = (2 * X_IN - 2 * 0.06 - 4 * 0.10) / 5
-PANES = [(-X_IN + 0.06 + k * (_pane + 0.10), -X_IN + 0.06 + k * (_pane + 0.10) + _pane) for k in range(5)]
-MULLION_X = PANES[2][1] + 0.05            # the mullion either side of the middle window, where the cable ducts come down
-FRAME_T, STILE = 0.05, 0.06               # a window's frame, and the stile of a door's leaf beside its glass
-HELM = (0.0, 20.9, 1.6)                   # the eye of a person standing at the wheel
-EYES = (1.5, 1.8)                         # a short helmsman's eye and a tall one's: the glass must serve both
-DOOR_GLASS = (0.95, 1.95)                 # the glazed part of a wing door's leaf
-
 
 def view_from_helm(limit=112.5, mullion=6.0, eye=None):
     """
@@ -302,23 +90,64 @@ def _raked(key, x0, x1, t0, t1, h0, h1, colour):
 
 
 def _side_window(side, yd0, yd1, h0, h1):
-    xa, xb = side * 2.94, side * 2.99
+    """A side window: the glass in black rubber; outside it a painted steel frame standing a little proud of the plating;
+    inside a casing of light varnished wood, proud of the lining, and under it a wooden sill board."""
     t = FRAME_T
-    box('frame', xa, xb, yd0, yd1, h0, h0 + t, FRAME)
-    box('frame', xa, xb, yd0, yd1, h1 - t, h1, FRAME)
-    for a, b in ((yd0, yd0 + t), (yd1 - t, yd1)):
-        box('frame', xa, xb, a, b, h0 + t, h1 - t, FRAME)
+    bars = [(yd0, yd1, h0, h0 + t, 'low'), (yd0, yd1, h1 - t, h1, 'high'), (yd0, yd0 + t, h0 + t, h1 - t, 'aft'), (yd1 - t, yd1, h0 + t, h1 - t, 'fore')]
+    for a, b, c, e, where in bars:
+        # the part of the bar's breadth that is wood and steel (toward the wall) and the part that is rubber (toward the glass)
+        if where in ('low', 'high'):
+            wood = (a, b, c, c + 0.034) if where == 'low' else (a, b, e - 0.034, e)
+            rub = (a + 0.034, b - 0.034, c + 0.034, e) if where == 'low' else (a + 0.034, b - 0.034, c, e - 0.034)
+        else:
+            wood = (a, a + 0.034, c, e) if where == 'aft' else (b - 0.034, b, c, e)
+            rub = (a + 0.034, b, c, e) if where == 'aft' else (a, b - 0.034, c, e)
+        box('lwood', side * 2.908, side * 2.952, wood[0], wood[1], wood[2], wood[3], WOODL, r=0.004)
+        box('plating', side * 2.952, side * 3.008, wood[0], wood[1], wood[2], wood[3], tint(HOUSE, 0.97))
+        box('rubber', side * 2.950, side * 2.980, rub[0], rub[1], rub[2], rub[3], RUBBER, r=0.004)
     x = side * 2.965
-    part('glass').polygon([P(x, yd0 + t, h0 + t), P(x, yd1 - t, h0 + t), P(x, yd1 - t, h1 - t), P(x, yd0 + t, h1 - t)], GLASS)
+    part('glass').polygon([P(x, yd0 + t - 0.006, h0 + t - 0.006), P(x, yd1 - t + 0.006, h0 + t - 0.006), P(x, yd1 - t + 0.006, h1 - t + 0.006), P(x, yd0 + t - 0.006, h1 - t + 0.006)], GLASS)
+    box('lwood', side * 2.862, side * 2.921, yd0 - 0.012, yd1 + 0.012, h0 - 0.030, h0, WOODL, r=0.006)             # the sill board
+
+
+def _skirting(a, b, wall, inward, along='x'):
+    """The vinyl of the deck turned up the wall as a coved skirting, 0.10 m high, between a and b along a wall: `wall` is
+    where the lining's face stands, `inward` the way into the room (+1 or -1) across it."""
+    arc = [(0.045 - 0.039 * cos(radians(q)), 0.051 - 0.039 * sin(radians(q))) for q in (90, 72, 54, 36, 18, 0)]
+    prof = [(0.0, 0.012), (0.045, 0.012)] + arc + [(0.006, 0.100), (0.0, 0.100)]
+    if along == 'x':
+        ring = lambda x: [P(x, wall + inward * d, h) for d, h in prof]
+        out = lambda d: (0.0, d[1], inward * d[0])
+    else:
+        ring = lambda yd: [P(wall + inward * d, yd, h) for d, h in prof]
+        out = lambda d: (inward * d[0], d[1], 0.0)
+    extrude(part('skirt'), prof, ring(a), ring(b), out, SKIRT)
+
+
+def _joint(a, b, normal, width=0.003):
+    """A joint between two lining panels: a dark line from a to b on a face that looks along `normal`."""
+    p = part('seam')
+    A, B, n = Vector(P(*a)), Vector(P(*b)), Vector(normal)
+    side = (B - A).cross(n).normalized() * (width / 2)
+    start = len(p.f)
+    p.polygon([tuple(A - side + n * 0.0008), tuple(B - side + n * 0.0008), tuple(B + side + n * 0.0008), tuple(A + side + n * 0.0008)], tint(LINING, 0.62))
+    p.orient(start, tuple(n))
 
 
 def envelope():
-    # ---- the aft wall above the other ship's, which ends at the old deckhead: plating outside (the riser of the step in
+    # ---- the aft wall above the ship's own, which ends at the old deckhead: plating outside (the riser of the step in
     # the roof, where the lower house top meets it), lining inside up to the deckhead
     # (below 2.20 m the other ship's side walls stand at its ends: it stops 3 mm inside their faces, not in them)
     box('plating', -X_OUT + 0.003, X_OUT - 0.003, AFT - 0.05, AFT - 0.025, OLD_HEAD, 2.20, HOUSE)
     box('plating', -X_OUT, X_OUT, AFT - 0.05, AFT - 0.025, 2.20, HEAD_ROOM, HOUSE)
-    box('lining', -X_IN, X_IN, AFT - 0.025, AFT, OLD_HEAD, HEAD_ROOM, LINING)
+    box('lining', -X_IN, X_IN, AFT - 0.025, AFT_FACE, OLD_HEAD, HEAD_ROOM, LINING)
+    # Below it the wall is the ship's (steel.py), lined in her own cream. The refit lays the bridge's laminate over that
+    # lining, 10 mm thick (its face stands 10 mm before the ship's: JSY-STD-403, rule 5), round the corridor's doorway and
+    # the crew stair's opening.
+    for x0, x1, h0, h1 in ((0.40, X_IN, 0.012, OLD_HEAD), (-0.40, 0.40, 1.92, OLD_HEAD), (-2.12, -0.40, 0.012, OLD_HEAD), (-X_IN, -2.12, 1.50, OLD_HEAD)):
+        box('lining', x0, x1, 19.54, AFT_FACE, h0, h1, LINING)
+    for x in (-1.80, -1.20, -0.60, 0.60, 1.20, 1.80, 2.40):
+        _joint((x, AFT_FACE, 0.11), (x, AFT_FACE, CEIL), FWD)
     # ---- the two sides
     for side, openings in SIDES.items():
         at = AFT
@@ -336,58 +165,110 @@ def envelope():
         prism('plating', side * (X_IN + 0.04), side * X_OUT, cheek, HOUSE)
         prism('lining', side * X_IN, side * (X_IN + 0.04), cheek, LINING)
         box('plating', side * X_IN, side * X_OUT, CORNER, 23.10, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)
+        # the mullion between the two forward side windows, and the post between the door and the window forward of it,
+        # faced in the casings' wood; the panel joints below the sills
+        for a, b in ((22.10, 22.15), (21.25, 21.30)):
+            box('lwood', side * 2.908, side * 2.921, a, b, 0.97, 2.05, WOODL, r=0.0)
+        for yd in (19.60, 21.275, 21.70, 22.125, 22.55):
+            _joint((side * X_IN, yd, 0.11), (side * X_IN, yd, 0.94 if yd > 21.26 else 1.07), (-side, 0, 0))
+        # the skirting: from the after wall to the door, and from the door to the front (to starboard the crew stair's well
+        # takes the after corner)
+        _skirting(AFT_FACE if side > 0 else 20.16, 20.45, side * X_IN, -side, along='yard')
+        _skirting(21.25, FRONT_IN, side * X_IN, -side, along='yard')
+    _skirting(-X_IN, X_IN, FRONT_IN, -1)
+    _skirting(0.40, X_IN, AFT_FACE, 1)
+    _skirting(-2.07, -0.40, AFT_FACE, 1)
     # ---- the front: plating below the sill, then posts, mullions, frames and glass raked forward, then the head
     box('plating', -X_IN, X_IN, FRONT_IN + 0.04, FRONT_OUT, 0.0, SILL, HOUSE)
     box('lining', -X_IN, X_IN, FRONT_IN, FRONT_IN + 0.04, 0.0, SILL, LINING)
     posts = [(-X_IN, PANES[0][0])] + [(a[1], b[0]) for a, b in zip(PANES, PANES[1:])] + [(PANES[-1][1], X_IN)]
+    w = 0.031                                                   # how far a mullion's wood (and the frame's steel) reaches into the opening; then rubber
     for x0, x1 in posts:
         _raked('plating', x0, x1, 0.5, 1.0, SILL, HEAD, HOUSE)
-        _raked('lining', x0, x1, 0.0, 0.5, SILL, HEAD, LINING)
+        # the inner half of every post and mullion is light varnished wood, and stands 12 mm proud of the lining below it
+        _raked('lwood', max(x0 - w, -X_IN), min(x1 + w, X_IN), -0.15, 0.5, SILL, HEAD, WOODL)
+        _joint(((x0 + x1) / 2, FRONT_IN, 0.11), ((x0 + x1) / 2, FRONT_IN, SILL - 0.04), AFTWARD)
     head = [(FRONT_IN + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD_ROOM - 0.05), (FRONT_IN + fwd(HEAD), HEAD_ROOM - 0.05)]
     prism('plating', -X_IN, X_IN, [(y + 0.04 if i in (0, 3) else y, h) for i, (y, h) in enumerate(head)], HOUSE)
     prism('lining', -X_IN, X_IN, [(y if i in (0, 3) else y - 0.04, h) for i, (y, h) in enumerate(head)], LINING)
     t = 0.045
     for x0, x1 in PANES:
-        _raked('frame', x0, x1, 0.25, 0.85, SILL, SILL + t, FRAME)
-        _raked('frame', x0, x1, 0.25, 0.85, HEAD - t, HEAD, FRAME)
-        for a, b in ((x0, x0 + t), (x1 - t, x1)):
-            _raked('frame', a, b, 0.25, 0.85, SILL + t, HEAD - t, FRAME)
+        # the wooden rails under and over the glass, between the mullions; the steel frame outside; the rubber the glass sits in
+        _raked('lwood', x0 + w, x1 - w, -0.15, 0.5, SILL, SILL + w, WOODL)
+        _raked('lwood', x0 + w, x1 - w, -0.15, 0.5, HEAD - w, HEAD, WOODL)
+        _raked('plating', x0, x1, 0.62, 1.10, SILL, SILL + w + 0.002, tint(HOUSE, 0.97))
+        _raked('plating', x0, x1, 0.62, 1.10, HEAD - w - 0.002, HEAD, tint(HOUSE, 0.97))
+        for a, b in ((x0, x0 + w + 0.002), (x1 - w - 0.002, x1)):
+            _raked('plating', a, b, 0.62, 1.10, SILL + w + 0.002, HEAD - w - 0.002, tint(HOUSE, 0.97))
+        _raked('rubber', x0 + w - 0.002, x1 - w + 0.002, 0.42, 0.70, SILL + w - 0.002, SILL + t, RUBBER)
+        _raked('rubber', x0 + w - 0.002, x1 - w + 0.002, 0.42, 0.70, HEAD - t, HEAD - w + 0.002, RUBBER)
+        for a, b in ((x0 + w - 0.002, x0 + t), (x1 - t, x1 - w + 0.002)):
+            _raked('rubber', a, b, 0.42, 0.70, SILL + t, HEAD - t, RUBBER)
         yg = lambda h: FRONT_IN + 0.045 + fwd(h)
-        part('glass').polygon([P(x0 + t, yg(SILL + t), SILL + t), P(x1 - t, yg(SILL + t), SILL + t), P(x1 - t, yg(HEAD - t), HEAD - t), P(x0 + t, yg(HEAD - t), HEAD - t)], GLASS)
+        g = 0.006                                               # the glass goes this far into its rubber
+        holes = []
+        for cx, hc, rr in BF.cvs_holes():                       # a clear-view screen's ring stands in a round hole in the pane
+            if x0 < cx < x1:
+                rise = lambda k: hc + rr * sin(2 * pi * k / 48) * cos(radians(10.0))
+                holes.append([P(cx + rr * cos(2 * pi * k / 48), yg(rise(k)), rise(k)) for k in range(48)])
+        part('glass').polygon([P(x0 + t - g, yg(SILL + t - g), SILL + t - g), P(x1 - t + g, yg(SILL + t - g), SILL + t - g),
+                               P(x1 - t + g, yg(HEAD - t + g), HEAD - t + g), P(x0 + t - g, yg(HEAD - t + g), HEAD - t + g)], GLASS, holes=holes)
+    # the sill board along the front, under the wooden rails: light wood, 60 mm into the room
+    box('lwood', -X_IN, X_IN, FRONT_IN - 0.060, FRONT_IN + 0.001, SILL - 0.032, SILL, WOODL, r=0.006)
     # the visor: the roof's eave carried forward over the glass
     box('plating', -3.08, 3.08, 23.09, 23.46, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)
     prism('plating', -3.08, 3.08, [(23.40, HEAD_ROOM - 0.05), (23.46, HEAD_ROOM - 0.05), (23.46, HEAD_ROOM - 0.11), (23.44, HEAD_ROOM - 0.11)], tint(HOUSE, 0.94))
 
 
+STRIP, STRIP_GAP = 0.185, 0.015         # the deckhead's strips: their breadth fore and aft, and the shadow gap between two
+
+
 def ceiling():
-    """The deckhead: lining panels 2.30 m over the deck, their seams every 0.6 m. Between them and the roof's structure is
-    the void the cable trays lie in."""
-    box('lining', -X_IN, X_IN, AFT, FRONT_IN + fwd(HEAD), CEIL, CEIL + LINING_T, CEILING)
-    p = part('seam')
-    ink = tint(CEILING, 0.72)
-    start = len(p.f)
-    y = CEIL - 0.0008
-    for k in range(-4, 5):
-        x = k * 0.6
-        p.polygon([P(x - 0.004, AFT, y), P(x + 0.004, AFT, y), P(x + 0.004, 23.05, y), P(x - 0.004, 23.05, y)], ink)
-    for k in range(6):
-        yd = 19.8 + k * 0.6
-        p.polygon([P(-X_IN, yd - 0.004, y), P(X_IN, yd - 0.004, y), P(X_IN, yd + 0.004, y), P(-X_IN, yd + 0.004, y)], ink)
-    p.orient(start, (0, -1, 0))
+    """The deckhead: long narrow strips of off-white panel running athwartships, 2.30 m over the deck, a shadow gap between
+    each two; over them a dark backing, and over that the void the cable trays lie in. (It was one slab with seams painted
+    on it.)"""
+    end = FRONT_IN + fwd(HEAD)
+    box('lining', -X_IN, X_IN, AFT, end, CEIL + 0.012, CEIL + LINING_T, srgb(0x2a2c2e))
+    yd = AFT_FACE
+    while yd < end - 0.02:
+        box('strip', -X_IN, X_IN, yd, min(yd + STRIP, end), CEIL, CEIL + 0.012, CEILING, r=0.004)
+        yd += STRIP + STRIP_GAP
+
+
+def _covering(x0, x1, yd0, yd1, slots):
+    """A length of the deck covering, cut round the slots let into it (JSY-STD-403, rule 3: an opening is cut, not covered)."""
+    cuts = sorted({yd0, yd1} | {v for s in slots for v in (s[2], s[3]) if yd0 < v < yd1})
+    for a, b in zip(cuts, cuts[1:]):
+        at = x0
+        for sa, sb in sorted((s[0], s[1]) for s in slots if s[2] < (a + b) / 2 < s[3] and s[1] > x0 and s[0] < x1):
+            if sa > at:
+                box('floor', at, sa, a, b, 0.0, 0.012, VINYL)
+            at = max(at, sb)
+        if at < x1:
+            box('floor', at, x1, a, b, 0.0, 0.012, VINYL)
 
 
 def floor():
-    box('floor', -2.12, X_IN, AFT, FRONT_IN, 0.0, 0.012, VINYL)
-    box('floor', -X_IN, -2.12, 20.15, FRONT_IN, 0.0, 0.012, VINYL)
-    box('floor', -0.55, 0.55, 20.55, 21.40, 0.012, 0.02, MAT)                 # the mat at the helm
-    for k in range(11):
-        box('floor', -0.53, 0.53, 20.59 + k * 0.075, 20.62 + k * 0.075, 0.02, 0.024, tint(MAT, 1.5))
-    box('console', -0.05, 0.05, 21.98, 22.30, 0.012, 0.03, FRAME)             # the floor trunk from the console to the stand
+    """The deck covering: blue sheet vinyl, its sheets welded along two seams, cut for the two tracks the pilot chairs run on;
+    rubber mats where one stands to conn her."""
+    slots = BO.chair_slots()
+    _covering(-2.12, X_IN, AFT, FRONT_IN, slots)
+    _covering(-X_IN, -2.12, 20.15, FRONT_IN, slots)
+    p = part('seam')
+    start = len(p.f)
+    for x in (-1.45, 1.45):                                                   # the welds between the sheets
+        p.polygon([P(x - 0.002, AFT + 0.05, 0.0128), P(x + 0.002, AFT + 0.05, 0.0128), P(x + 0.002, BC.FACE + 0.06, 0.0128), P(x - 0.002, BC.FACE + 0.06, 0.0128)], tint(VINYL, 0.8))
+    p.orient(start, UP)
+    for x0, x1, a, b in ((-0.55, 0.55, 20.55, 21.40), (0.38, 0.90, 21.55, 22.08), (-0.90, -0.38, 21.55, 22.08)):
+        box('rubber', x0, x1, a, b, 0.012, 0.020, MAT, r=0.003)
+        n = int((b - a - 0.06) / 0.035)
+        for k in range(n):                                                    # the mat's ribs, athwartships
+            box('rubber', x0 + 0.02, x1 - 0.02, a + 0.03 + k * 0.035, a + 0.048 + k * 0.035, 0.020, 0.0235, tint(MAT, 1.25), r=0.0012)
 
 
 def wing(g):
     side = g['side']
-    box('floor', side * X_OUT, side * W, 19.50, 22.94, 0.0, 0.012, WINGDECK)
+    box('wingdeck', side * X_OUT, side * W, 19.50, 22.94, 0.0, 0.012, WINGDECK)
     box('wing', side * W, side * (W + 0.06), 19.50, FRONT_OUT, 0.0, 1.10, HOUSE)                     # the bulwark outboard
     box('wing', side * X_OUT, side * W, 22.94, FRONT_OUT, 0.0, 1.10, HOUSE)                    # and across the forward end
     for yd in (20.1, 20.7, 21.3, 21.9, 22.5):                                                     # its stays
@@ -400,9 +281,6 @@ def wing(g):
 # =====================================================================================================================
 # Doors
 # =====================================================================================================================
-MOTIONS = []
-
-
 def door_wing(g, tag):
     """A weathertight door in the house side: a lining, a 0.15 m coaming sill, a leaf hinged on its forward edge that opens outward.
     The opening is 2.01 m high and the leaf is glazed from 0.95 to 1.95 m: a tall helmsman sees abeam through it."""
@@ -432,7 +310,7 @@ def door_wing(g, tag):
         tube(fit, (side * 2.97, b, hh - 0.06), (side * 2.97, b, hh + 0.06), 0.016, BRASS, 10)
     for p in (leaf, glass, fit):
         p.group = 'bridge'
-        _extra.append(p)
+        EXTRA.append(p)
     MOTIONS.append(dict(id=mover, name=f'Door to the {name} wing', pivot=[side * 2.97, 0.0, BP.Z(b)], ratio=-1.0 * side, max=100,
                         at=[side * 3.0, DECK, BP.Z((yd0 + yd1) / 2)], normal=[side, 0, 0]))
 
@@ -446,7 +324,7 @@ def door_corridor(g, tag):
     leaf = Part('Wheelhouse, corridor door', 'Lining', mover=mover)
     fit = Part('Wheelhouse, corridor door hardware', 'Shaft steel', mover=mover)
     glass = Part('Wheelhouse, corridor door glass', 'Window glass', mover=mover)
-    cream = srgb(0xd9d2bf)
+    cream = JOINERY
     box(leaf, -0.355, 0.355, 19.50, 19.54, 0.02, 1.40, cream)
     box(leaf, -0.355, 0.355, 19.50, 19.54, 1.66, 1.875, cream)
     box(leaf, -0.355, -0.13, 19.50, 19.54, 1.40, 1.66, cream)
@@ -460,586 +338,9 @@ def door_corridor(g, tag):
         tube(fit, (-0.365, 19.535, hh - 0.05), (-0.365, 19.535, hh + 0.05), 0.012, GREY, 8)
     for p in (leaf, fit, glass):
         p.group = 'bridge'
-        _extra.append(p)
+        EXTRA.append(p)
     MOTIONS.append(dict(id=mover, name='Door from the corridor to the wheelhouse', pivot=[-0.365, 0.0, BP.Z(19.535)], ratio=-1.0, max=92,
                         at=[0.0, DECK, BP.Z(19.50)], normal=[0, 0, 1]))
-
-
-# =====================================================================================================================
-# The console, the stand, the chairs
-# =====================================================================================================================
-def console(g, tag, *where):
-    box('console', -2.70, 2.70, 22.34, 22.92, 0.012, 0.08, FRAME)
-    box('console', -2.75, 2.75, 22.30, 22.92, 0.08, 0.97, GREEN)
-    box('console', -2.76, 2.76, 22.29, 22.92, 0.97, 1.00, CREAM)
-    # five bays, two doors each, with a pull; a ventilation grille low in each
-    for x0, x1 in ((1.45, 2.75), (0.62, 1.45), (-0.38, 0.62), (-1.45, -0.38), (-2.75, -1.45)):
-        w = (x1 - x0) / 2
-        for k in range(2):
-            a, b = x0 + k * w + 0.012, x0 + (k + 1) * w - 0.012
-            if x0 < -1.45 + 1e-6 and x1 < -1.0 and k == 0 or (x0 == -1.45 and k == 1 and False):
-                pass
-            box('console', a, b, 22.292, 22.30, 0.16, 0.56 if (a < -1.0 and b > -2.1) else 0.90, tint(GREEN, 1.07))
-            box('steel', (a + b) / 2 - 0.05, (a + b) / 2 + 0.05, 22.280, 22.292, 0.50 if (a < -1.0 and b > -2.1) else 0.84, (0.50 if (a < -1.0 and b > -2.1) else 0.84) + 0.012, GREY)
-        for k in range(4):
-            box('dark', x0 + 0.10, x1 - 0.10, 22.296, 22.301, 0.10 + k * 0.012, 0.106 + k * 0.012, BLACK)
-    # a grab rail along the after edge, on stand-offs, and a foot rail
-    tube('steel', (-2.65, 22.25, 1.02), (2.65, 22.25, 1.02), 0.014, srgb(0xc9cfcf), 10)
-    for x in (-2.6, -1.3, 0.0, 1.3, 2.6):
-        tube('steel', (x, 22.25, 1.02), (x, 22.30, 0.985), 0.008, GREY, 6)
-    tube('steel', (-2.6, 22.22, 0.20), (2.6, 22.22, 0.20), 0.016, GREY, 10)
-    for x in (-2.5, -0.9, 0.9, 2.5):
-        tube('steel', (x, 22.22, 0.20), (x, 22.31, 0.20), 0.01, GREY, 6)
-
-
-def stand(g, tag, *where):
-    box('console', -0.32, 0.32, 21.48, 22.02, 0.012, 0.10, STAND)
-    box('console', -0.28, 0.28, 21.52, 21.98, 0.10, 0.95, STAND)
-    box('console', -0.31, 0.31, 21.49, 22.01, 0.95, 0.98, tint(STAND, 0.55))
-    # The wheel is one moving part on its shaft: it turns with the rudder order, four degrees for one of rudder, and its
-    # king spoke (the one with the brass cap) stands upright when the rudders are amidships.
-    c = (0.0, 21.42, 1.05)
-    mv = _moving('Wheelhouse, steering wheel', 'wheel', wood='Varnished wood', brass='Bronze', shaft='Shaft steel')
-    torus(mv['wood'], c, 0.29, 0.022, WOOD)
-    tube(mv['brass'], (0, 21.385, 1.05), (0, 21.455, 1.05), 0.055, BRASS, 16)
-    # The helm unit, on the stand's top at its after edge. The owner, 11 November 2026: "The wheel is not connected to anything
-    # in the wheelhouse": it hung on a stub of shaft that ended in the air, 4 cm over the stand. The shaft now turns with the
-    # wheel and runs through a flanged bearing into the unit, where it turns the two transmitters (one for each control
-    # system) and, through a reduction, the pointer under the glass on the unit's lid, which shows the rudder ordered.
-    hx, ha, hb, h0, h1 = 0.11, 21.50, 21.63, 0.98, 1.135
-    box('console', -hx, hx, ha, hb, h0, h1 - 0.012, STAND)
-    box('console', -hx + 0.008, hx - 0.008, ha + 0.008, hb - 0.008, h1 - 0.012, h1, tint(STAND, 0.55))               # its lid
-    for x in (-hx + 0.02, hx - 0.02):                                                                               # held down to the stand
-        for yd in (ha + 0.02, hb - 0.02):
-            tube('steel', (x, yd, h1), (x, yd, h1 + 0.004), 0.006, GREY, 8)
-    tube('steel', (0, ha - 0.012, 1.05), (0, ha, 1.05), 0.064, GREY, 20)                                             # the bearing's flange
-    tube('steel', (0, ha - 0.034, 1.05), (0, ha - 0.012, 1.05), 0.040, GREY, 16)                                     # and its boss
-    for i in range(6):
-        a = i * pi / 3 + pi / 6
-        tube('steel', (0.052 * cos(a), ha - 0.018, 1.05 + 0.052 * sin(a)), (0.052 * cos(a), ha - 0.012, 1.05 + 0.052 * sin(a)), 0.006, STEEL, 6)
-    tube(mv['shaft'], (0, 21.455, 1.05), (0, ha + 0.04, 1.05), 0.019, STEEL, 14)                                      # the shaft, into the unit
-    disc((0.0, (ha + hb) / 2, h1), UP, FWD, 0.045, 'rai')                                                            # the rudder ordered
-    for i in range(8):
-        a = i * pi / 4
-        d = (cos(a), sin(a))
-        tube(mv['wood'], (0.05 * d[0], 21.42, 1.05 + 0.05 * d[1]), (0.36 * d[0], 21.42, 1.05 + 0.36 * d[1]), 0.012, WOOD, 8, 0.016)
-        tube(mv['wood'], (0.29 * d[0], 21.42, 1.05 + 0.29 * d[1]), (0.37 * d[0], 21.42, 1.05 + 0.37 * d[1]), 0.016, WOOD, 8)
-    tube(mv['brass'], (0, 21.42, 1.05 + 0.37), (0, 21.42, 1.05 + 0.385), 0.0175, BRASS, 10)
-    tube(mv['brass'], (0, 21.42, 1.05 + 0.312), (0, 21.42, 1.05 + 0.324), 0.0178, BRASS, 10)
-    LEVERS.append(dict(id='wheel', input='rudder', axis=[0, 0, 1], pivot=list(P(*c)), ratio=4.0))
-
-
-def chair(g, tag, x, yard):
-    tube('steel', (x, yard, 0.012), (x, yard, 0.04), 0.26, GREY, 24)
-    tube('steel', (x, yard, 0.04), (x, yard, 0.62), 0.045, GREY, 14)
-    torus_y = 0.30
-    for k in range(4):
-        a = k * pi / 2 + 0.4
-        tube('steel', (x, yard, torus_y), (x + 0.24 * cos(a), yard + 0.24 * sin(a), torus_y), 0.01, GREY, 6)
-    for k in range(12):                                                         # the foot ring
-        a0, a1 = k * pi / 6, (k + 1) * pi / 6
-        tube('steel', (x + 0.24 * cos(a0), yard + 0.24 * sin(a0), torus_y), (x + 0.24 * cos(a1), yard + 0.24 * sin(a1), torus_y), 0.012, GREY, 6)
-    box('seat', x - 0.24, x + 0.24, yard - 0.22, yard + 0.24, 0.62, 0.72, LEATHER)
-    prism('seat', x - 0.22, x + 0.22, [(yard - 0.27, 0.70), (yard - 0.19, 0.70), (yard - 0.23, 1.22), (yard - 0.31, 1.22)], LEATHER)
-    box('seat', x - 0.14, x + 0.14, yard - 0.32, yard - 0.24, 1.22, 1.38, tint(LEATHER, 1.15))
-    for sx in (-1, 1):
-        # each armrest's post stands in a lug on the seat's frame (it stood 6 mm clear of the seat: blender/afloat.py)
-        box('steel', x + sx * 0.235, x + sx * 0.282, yard - 0.16, yard - 0.08, 0.63, 0.70, GREY)
-        tube('steel', (x + sx * 0.26, yard - 0.12, 0.66), (x + sx * 0.26, yard - 0.12, 0.90), 0.014, GREY, 8)
-        box('seat', x + sx * 0.26 - 0.03, x + sx * 0.26 + 0.03, yard - 0.18, yard + 0.20, 0.90, 0.94, tint(LEATHER, 1.2))
-
-
-# =====================================================================================================================
-# Instruments
-# =====================================================================================================================
-def display(g, tag, x, yard, h):
-    """A display or a set on the console: a housing whose after face leans back 20 degrees and carries the picture."""
-    w, d, H = g['w'], g['d'], g['H']
-    back = H * tan(radians(20))
-    prism('dark', x - w / 2, x + w / 2, [(yard, h), (yard + d, h), (yard + d, h + H), (yard + back, h + H)], DARK)
-    bz = 0.025
-    face = H / cos(radians(20))
-    pic((x, yard + back / 2, h + H / 2), TILT_N, TILT, w - 2 * bz, face - 2 * bz, g['tile'])
-    if g.get('hood'):
-        top = h + H + 0.012
-        box('dark', x - w / 2 - 0.012, x + w / 2 + 0.012, yard - 0.07, yard + back + 0.03, top, top + 0.02, DARK)
-        for sx in (-1, 1):
-            prism('dark', x + sx * (w / 2 + 0.002), x + sx * (w / 2 + 0.014), [(yard - 0.07, h + 0.10), (yard + 0.02, h + 0.01), (yard + d, h + 0.01), (yard + d, top + 0.02), (yard - 0.07, top + 0.02)], DARK)
-    if h > REG.TOP + 0.01:                                                    # a set raised on a stand-off
-        box('dark', x - w / 2 + 0.04, x + w / 2 - 0.04, yard + 0.01, yard + d - 0.01, REG.TOP, h, DARK)
-    if g.get('keys'):
-        name, kw = g['keys']
-        flush(dict(w=kw, l=0.12, tile=name), tag, x, REG.FRONT, REG.TOP)
-    if g.get('handset'):
-        handset(x + g['handset'] * (w / 2 + 0.07), yard + 0.02, h)
-
-
-def handset(x, yard, h, along='yard'):
-    """A telephone handset lying in its cradle, with a coiled cord."""
-    box('plastic', x - 0.03, x + 0.03, yard, yard + 0.20, h, h + 0.02, BLACK)
-    for yy in (yard + 0.02, yard + 0.16):
-        box('plastic', x - 0.028, x + 0.028, yy, yy + 0.035, h + 0.02, h + 0.045, BLACK)
-    box('plastic', x - 0.022, x + 0.022, yard + 0.005, yard + 0.195, h + 0.045, h + 0.065, srgb(0x2a2f31))
-    for k in range(5):
-        tube('plastic', (x + 0.034, yard + 0.02 + k * 0.012, h + 0.012), (x + 0.045, yard + 0.026 + k * 0.012, h + 0.03), 0.003, BLACK, 5)
-
-
-def flush(g, tag, x, yard, h):
-    """A panel set flush in a level top: a plate, its picture, and whatever stands on it."""
-    w, l = g['w'], g['l']
-    rise = g.get('rise', 0.004)
-    box('dark', x - w / 2, x + w / 2, yard - l / 2, yard + l / 2, h, h + rise, DARK)
-    got = pic((x, yard, h + rise), UP, FWD, w - 0.008, l - 0.008, g['tile'])
-    details(g['tile'], got, w - 0.008, l - 0.008)
-
-
-def facepanel(g, tag, x, yard, h):
-    """A panel on an upright face that looks aft: the console's, or the steering stand's."""
-    w, H = g['w'], g['H']
-    box('dark', x - w / 2, x + w / 2, yard - 0.012, yard, h, h + H, DARK)
-    got = pic((x, yard - 0.012, h + H / 2), AFTWARD, UP, w - 0.01, H - 0.01, g['tile'])
-    details(g['tile'], got, w - 0.01, H - 0.01)
-
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Levers. A lever is a moving part: it turns on its shaft, in its slot, when it is worked (motion()).
-# ---------------------------------------------------------------------------------------------------------------------
-LEVERS = []                         # this build's lever motions: the part's name, what works it, its shaft
-PLATE = 0.065                       # a control head's slotted plate stands this far over the lever's shaft
-NOTCH = 0.14 * 39 / 288             # the distance between the marks of the engine scale (its picture, 0.14 m long)
-THRUST = 0.13 * 57 / 288            # and of the thruster scale
-ORDERS = ('full astern', 'half astern', 'slow astern', 'stop', 'slow ahead', 'half ahead', 'full ahead')
-THRUSTS = ('full thrust to port', 'half thrust to port', 'stopped', 'half thrust to starboard', 'full thrust to starboard')
-
-
-def lever_notches(across=False):
-    """The lever's angle in degrees at each mark of its scale: the arm crosses the slotted plate exactly at the mark."""
-    marks, pitch = ((-2, -1, 0, 1, 2), THRUST) if across else (range(-3, 4), NOTCH)
-    return [round(degrees(atan(k * pitch / PLATE)), 2) for k in marks]
-
-
-# What can be worked by a tap: its name, the fitting of the register it belongs to, its positions and what each means.
-CONTROLS = [
-    dict(id='lever-engine-p', name='Port engine lever', fitting='PRP-01', home=3, steps=[dict(v=a, say=o) for a, o in zip(lever_notches(), ORDERS)]),
-    dict(id='lever-engine-s', name='Starboard engine lever', fitting='PRP-02', home=3, steps=[dict(v=a, say=o) for a, o in zip(lever_notches(), ORDERS)]),
-    dict(id='lever-thruster', name='Bow thruster lever', fitting='PRP-03', home=2, steps=[dict(v=a, say=o) for a, o in zip(lever_notches(True), THRUSTS)]),
-    dict(id='tiller', name='Tiller', fitting='STR-03', home=1,
-         steps=[dict(v=-24.0, say='held to port: the rudders go to port until it is let go'), dict(v=0.0, say='let go: the rudders stay where they are'),
-                dict(v=24.0, say='held to starboard: the rudders go to starboard until it is let go')]),
-]
-
-
-def _moving(title, mover, **looks):
-    """The parts of one thing that moves, one for each look it needs: the viewer turns them together (the file's `movers`)."""
-    parts = {key: Part(f'{title}, {key}', look, mover=mover) for key, look in looks.items()}
-    for part_ in parts.values():
-        part_.group = 'bridge'
-        _extra.append(part_)
-    return parts
-
-
-def control_head(title, mover, works, x, yard, base, colour, across=False, s=1.0, sink=0.0):
-    """
-    A control head: a housing with a slot in its top plate, a scale beside the slot, and the lever that travels in it.
-
-    The lever turns on a shaft inside the housing, 65 mm under the plate. A drum on the shaft closes the slot from below,
-    the arm comes up through the slot to its grip, and where the arm crosses the plate is its reading: the scale's marks
-    are spaced for exactly that (lever_notches). An engine's lever travels fore and aft, forward for ahead; the thruster's
-    travels across, to port for thrust to port. Drum, arm and grip are one moving part.
-
-    `base` is the height the head stands on, `s` its size (the wing stations' are three quarters), `sink` how far the
-    housing goes down into a sloping top.
-    """
-    top, piv = base + (PLATE + 0.010) * s, base + 0.010 * s
-    half_l, half_w = (0.085 if across else 0.09) * s, 0.07 * s
-    run = PLATE * s * tan(radians(lever_notches(across)[-1])) + 0.010 * s      # half the slot's length
-    v0, v1 = 0.0, 0.016 * s                                                     # the slot, across the lever's travel
-    vs = (v0 + v1) / 2
-
-    def at(u, v):                                                               # u along the travel, v across it
-        return (x + u, yard + v) if across else (x + v, yard + u)
-
-    def block(key, u0, u1, va, vb, h0, h1, col):
-        (xa, ya), (xb, yb) = at(u0, va), at(u1, vb)
-        box(key, xa, xb, ya, yb, h0, h1, col)
-
-    lo = base - sink
-    block('dark', -half_l, half_l, -half_w, v0, lo, top, DARK)                  # the housing: four blocks round the slot
-    block('dark', -half_l, half_l, v1, half_w, lo, top, DARK)
-    block('dark', run, half_l, v0, v1, lo, top, DARK)
-    block('dark', -half_l, -run, v0, v1, lo, top, DARK)
-    for va, vb in ((v0 - 0.003 * s, v0), (v1, v1 + 0.003 * s)):                 # the slot's steel lips
-        block('steel', -run - 0.003 * s, run + 0.003 * s, va, vb, top, top + 0.0015, GREY)
-    for u0, u1 in ((run, run + 0.003 * s), (-run - 0.003 * s, -run)):
-        block('steel', u0, u1, v0, v1, top, top + 0.0015, GREY)
-    long, wide = ((0.13, 0.05) if across else (0.14, 0.055))                    # the scale, its marks against the slot
-    cx, cy = at(0.0, v0 - (0.005 + wide / 2) * s)
-    pic((cx, cy, top), UP, FWD, (long if across else wide) * s, (wide if across else long) * s, 'thr_scale' if across else 'lever_scale')
-
-    mv = _moving(title, mover, steel='Shaft steel', grip='Plastic', drum='Machinery paint')
-    (ax0, ay0), (ax1, ay1) = at(0.0, v0 + 0.001 * s), at(0.0, v1 - 0.001 * s)
-    tube(mv['drum'], (ax0, ay0, piv), (ax1, ay1, piv), (PLATE - 0.007) * s, srgb(0x2b3032), 24)
-    px, py = at(0.0, vs)
-    tube(mv['steel'], (px, py, piv + (PLATE - 0.010) * s), (px, py, piv + (PLATE + 0.014) * s), 0.0075 * s, srgb(0x9aa2a3), 10)      # the arm's boss on the drum
-    tube(mv['steel'], (px, py, piv + 0.05 * s), (px, py, piv + 0.16 * s), 0.0055 * s, GREY, 10)
-    (gx0, gy0), (gx1, gy1) = at(0.0, vs - 0.045 * s), at(0.0, vs + 0.045 * s)
-    tube(mv['grip'], (gx0, gy0, piv + 0.16 * s), (gx1, gy1, piv + 0.16 * s), 0.022 * s, colour, 14)
-    LEVERS.append(dict(id=mover, input=works, axis=[0, 0, 1] if across else [1, 0, 0], pivot=list(P(px, py, piv))))
-
-
-LEVER_OF = {'PRP-01': ('Wheelhouse, port engine lever', 'lever-engine-p'), 'PRP-02': ('Wheelhouse, starboard engine lever', 'lever-engine-s'),
-            'PRP-03': ('Wheelhouse, bow thruster lever', 'lever-thruster')}
-
-
-def lever(g, tag, x, yard, h):
-    """An engine or thruster control lever on the console. Its grip's top is 0.19 m over the console: the sea is seen over it (JS4-402)."""
-    title, works = LEVER_OF[tag]
-    control_head(title, works, works, x, yard, h, srgb(g['colour']), across=bool(g.get('across')))
-
-
-def phone(g, tag, x, yard, h):
-    flush(g, tag, x, yard, h)
-    handset(x + g['w'] / 2 - 0.045, yard - 0.06, h + 0.004)
-
-
-def sp_phone(g, tag, x, yard, h):
-    """The sound-powered telephone: a grey box with its handset on top and a calling crank at its side."""
-    box('console', x - 0.08, x + 0.08, yard - 0.10, yard + 0.12, h, h + 0.10, srgb(0x8d9796))
-    handset(x, yard - 0.09, h + 0.10)
-    tube('steel', (x - 0.08, yard, h + 0.05), (x - 0.11, yard, h + 0.05), 0.008, GREY, 8)
-    tube('steel', (x - 0.11, yard, h + 0.05), (x - 0.11, yard + 0.04, h + 0.05), 0.005, GREY, 6)
-    tube('plastic', (x - 0.11, yard + 0.04, h + 0.05), (x - 0.14, yard + 0.04, h + 0.05), 0.008, BLACK, 8)
-
-
-def navtex(g, tag, x, yard, h):
-    w, d, H = g['w'], g['d'], g['H']
-    display(dict(g, hood=False), tag, x, yard, h)
-    box('paint', x - 0.09, x + 0.09, yard + 0.06, yard + d - 0.01, h + H, h + H + 0.004, WHITE)       # the printed paper, coming out of the top
-    box('paint', x - 0.09, x + 0.09, yard + d - 0.012, yard + d - 0.008, h + H, h + H + 0.05, WHITE)
-
-
-def hidden(g, tag, x, yard, h):
-    """A unit inside the console or the stand: a plain case with a connector strip."""
-    w, d, H = g['size']
-    box('console', x - w / 2, x + w / 2, yard - d / 2, yard + d / 2, h, h + H, srgb(0x8a9392))
-    box('dark', x - w / 2 + 0.02, x + w / 2 - 0.02, yard - d / 2 - 0.004, yard - d / 2, h + H * 0.25, h + H * 0.55, BLACK)
-
-
-def overhead(g, tag, x, yard, h):
-    """
-    The overhead console: a sloped panel under the deckhead, its face looking aft and down. It hangs wholly above the
-    windows' head: its lowest edge, 2.06 m over the deck, is over the line from a tall helmsman's eye to the top of the
-    glass, so it hides nothing that the glass would show (the first one hung to 1.80 m, that eye's own height).
-    """
-    prof = [(22.36, CEIL), (22.68, CEIL), (22.68, h + 0.06), (22.50, h)]
-    prism('console', -1.50, 1.50, prof, tint(GREEN, 0.95))
-    for sx in (-1, 1):
-        box('console', sx * 1.50, sx * 1.52, 22.35, 22.69, h - 0.01, CEIL, tint(GREEN, 0.8))
-
-
-OVH_UP = Vector((0.0, 0.24, -0.14)).normalized()          # up the console's face, from its lower edge to the deckhead
-OVH_N = Vector((0.0, -0.14, -0.24)).normalized()          # and the way the face looks: down and aft
-OVH_MID = (22.43, 2.18)                                    # the middle of the face: (metres from the transom, over the deck)
-
-
-def ovh_dial(g, tag, x, yard, h):
-    r = g['r']
-    c = Vector(P(x, *OVH_MID))
-    part('steel').tube(tuple(c), tuple(c + OVH_N * 0.012), r + 0.012, colour=srgb(0x2a2f31), sides=24)
-    disc((x, OVH_MID[0], OVH_MID[1]), OVH_N, OVH_UP, r, g['tile'], proud=0.0135)
-
-
-def ovh_screen(g, tag, x, yard, h):
-    w, H = g['w'], g['H']
-    c = Vector(P(x, *OVH_MID))
-    r = OVH_UP.cross(OVH_N)
-    p = part('dark')
-    start = len(p.f)
-    a, b, n = r * (w / 2 + 0.012), OVH_UP * (H / 2 + 0.012), OVH_N * 0.014
-    lo = [c - a - b, c + a - b, c + a + b, c - a + b]
-    p.grid([[tuple(q) for q in lo], [tuple(q + n) for q in lo]], DARK, close=True)
-    p.polygon([tuple(q + n) for q in lo], DARK)
-    p.polygon([tuple(q) for q in lo], DARK)
-    p.orient(start, lambda q: q - (c + n * 0.5))
-    pic((x, OVH_MID[0], OVH_MID[1]), OVH_N, OVH_UP, w, H, g['tile'], proud=0.0155)
-
-
-def periscope(g, tag, x, yard, h):
-    """The magnetic compass read from the helm: a tube down from the binnacle above, a mirror box, a glass. The box hangs
-    above the line from a tall helmsman's eye to the top of the forward glass: it is glanced up at, not looked round."""
-    box('dark', -0.11, 0.11, yard - 0.10, yard + 0.10, CEIL - 0.025, CEIL, DARK)
-    tube('steel', (0.0, yard, CEIL - 0.025), (0.0, yard, h + 0.11), 0.025, GREY, 12)
-    box('dark', -0.08, 0.08, yard - 0.08, yard + 0.08, h, h + 0.11, DARK)
-    tube('lens', (0.0, yard - 0.08, h + 0.055), (0.0, yard - 0.095, h + 0.055), 0.03, srgb(0xdfe6e1), 14)
-
-
-# =====================================================================================================================
-# The aft wall and the sides
-# =====================================================================================================================
-def wallbox(g, tag, x, yard, h):
-    """A box on the aft wall with its picture on the front: a panel, a board with a door, a locker of pigeonholes."""
-    w, H, d = g['w'], g['H'], g['d']
-    col = srgb(g['colour'])
-    box('console', x - w / 2, x + w / 2, yard + 0.001, yard + d, h, h + H, col)
-    inset = 0.0 if g.get('open') else 0.006
-    pic((x, yard + d, h + H / 2), FWD, UP, w - 2 * inset - 0.004, H - 2 * inset - 0.004, g['tile'])
-    if g.get('handle'):
-        box('steel', x + w / 2 - 0.035, x + w / 2 - 0.015, yard + d, yard + d + 0.025, h + H / 2 - 0.05, h + H / 2 + 0.05, GREY)
-        for hh in (h + 0.08, h + H - 0.08):
-            tube('steel', (x - w / 2 + 0.006, yard + d, hh - 0.03), (x - w / 2 + 0.006, yard + d, hh + 0.03), 0.008, GREY, 8)
-
-
-def dial(g, tag, x, yard, h):
-    """A brass bulkhead instrument on the aft wall."""
-    r = g['r']
-    tube('brass', (x, yard + 0.001, h), (x, yard + 0.035, h), r + 0.014, BRASS, 24, r + 0.010)
-    tube('brass', (x, yard + 0.001, h), (x, yard + 0.012, h), r + 0.03, BRASS, 24)
-    disc((x, yard + 0.035, h), FWD, UP, r, g['tile'])
-
-
-def callpoint(g, tag, x, yard, h):
-    box('console', x - 0.05, x + 0.05, yard + 0.001, yard + 0.04, h - 0.05, h + 0.05, srgb(g['colour']))
-    pic((x, yard + 0.04, h), FWD, UP, 0.088, 0.088, g['tile'])
-
-
-def chart_table(g, tag, x, yard, h):
-    w, d, H = g['w'], g['d'], g['H']
-    x0, x1, y0, y1 = x - w / 2, x + w / 2, AFT, AFT + d
-    box('wood', x0, x1, y0, y1 - 0.01, 0.012, H - 0.03, tint(WOOD, 0.92))
-    box('wood', x0 - 0.01, x1 + 0.01, y0, y1 + 0.01, H - 0.03, H, WOOD)
-    for k in range(3):                                                          # drawers for folded charts, with a pull each
-        hh = 0.10 + k * 0.27
-        box('wood', x0 + 0.02, x1 - 0.02, y1 - 0.01, y1, hh, hh + 0.24, tint(WOOD, 1.08))
-        box('brass', x - 0.07, x + 0.07, y1, y1 + 0.012, hh + 0.11, hh + 0.13, BRASS)
-    for a, b, c, e in ((x0 - 0.01, x1 + 0.01, y0, y0 + 0.012), (x0 - 0.01, x0 + 0.002, y0, y1 + 0.01), (x1 - 0.002, x1 + 0.01, y0, y1 + 0.01)):
-        box('wood', a, b, c, e, H, H + 0.025, WOOD)                             # a fiddle round three sides
-    pic((x, yard + 0.01, H), UP, FWD, 0.88, 0.54, 'chart')
-    # dividers and a parallel rule on the chart
-    tube('brass', (x + 0.30, yard + 0.14, H + 0.006), (x + 0.20, yard + 0.02, H + 0.006), 0.004, BRASS, 6)
-    tube('brass', (x + 0.30, yard + 0.14, H + 0.006), (x + 0.24, yard + 0.01, H + 0.006), 0.004, BRASS, 6)
-    box('plastic', x - 0.34, x - 0.02, yard - 0.20, yard - 0.15, H + 0.002, H + 0.008, srgb(0x9aa7aa))
-
-
-def chart_lamp(g, tag, x, yard, h):
-    tube('steel', (x, yard, h), (x, yard, h + 0.03), 0.03, GREY, 12)
-    tube('steel', (x, yard, h + 0.03), (x, yard, h + 0.30), 0.006, GREY, 6)
-    tube('steel', (x, yard, h + 0.30), (x + 0.16, yard + 0.12, h + 0.26), 0.006, GREY, 6)
-    tube('dark', (x + 0.16, yard + 0.12, h + 0.27), (x + 0.19, yard + 0.15, h + 0.20), 0.02, DARK, 10, 0.04)
-
-
-def bookshelf(g, tag, x, yard, h):
-    w, d, H = g['w'], g['d'], g['H']
-    box('wood', x - w / 2 - 0.015, x + w / 2 + 0.015, yard + 0.001, yard + d, h - 0.02, h, WOOD)
-    for sx in (-1, 1):
-        box('wood', x + sx * (w / 2 + 0.015), x + sx * (w / 2), yard + 0.001, yard + d, h, h + H + 0.02, WOOD)
-    box('paint', x - w / 2, x + w / 2, yard + 0.001, yard + d - 0.03, h, h + H, srgb(0x3a2c20))
-    pic((x, yard + d - 0.03, h + H / 2), FWD, UP, w, H, 'books')
-    tube('brass', (x - w / 2, yard + d - 0.01, h + 0.09), (x + w / 2, yard + d - 0.01, h + 0.09), 0.005, BRASS, 6)
-
-
-def log_desk(g, tag, x, yard, h):
-    """A fold-down desk under the port window, with a lamp and the deck log open on it."""
-    w, d = g['w'], g['d']
-    box('wood', X_IN - d, X_IN, yard - w / 2, yard + w / 2, h, h + 0.03, WOOD)
-    for yy in (yard - w / 2 + 0.07, yard + w / 2 - 0.07):
-        tube('steel', (X_IN, yy, h - 0.28), (X_IN - d + 0.10, yy, h), 0.012, GREY, 8)
-    pic((X_IN - d / 2 - 0.02, yard, h + 0.03), UP, STBD, 0.34, 0.24, 'logbook')
-    tube('steel', (X_IN - 0.05, yard + w / 2 - 0.08, h + 0.03), (X_IN - 0.05, yard + w / 2 - 0.08, h + 0.24), 0.007, GREY, 6)
-    tube('dark', (X_IN - 0.05, yard + w / 2 - 0.08, h + 0.24), (X_IN - 0.16, yard + w / 2 - 0.16, h + 0.20), 0.03, DARK, 10, 0.012)
-
-
-def locker(g, tag, x, yard, h):
-    w, d, H = g['w'], g['d'], g['H']
-    cream = srgb(0xd8d2c0)
-    box('console', x - w / 2, x + w / 2, yard + 0.001, yard + d, 0.012, 0.08, FRAME)
-    box('console', x - w / 2, x + w / 2, yard + 0.001, yard + d, 0.08, H, cream)
-    box('console', x - w / 2 - 0.01, x + w / 2 + 0.01, yard + 0.001, yard + d + 0.01, H, H + 0.025, tint(WOOD, 1.0))
-    n = 4
-    for k in range(n):
-        a, b = x - w / 2 + k * w / n + 0.01, x - w / 2 + (k + 1) * w / n - 0.01
-        box('console', a, b, yard + d, yard + d + 0.008, 0.12, H - 0.04, tint(cream, 1.05))
-        box('steel', (a + b) / 2 - 0.04, (a + b) / 2 + 0.04, yard + d + 0.008, yard + d + 0.02, H - 0.12, H - 0.105, GREY)
-
-
-def extinguisher(g, tag, x, yard, h):
-    col = srgb(g['colour'])
-    if g.get('wall') == 'port':
-        x = X_IN - 0.085
-    tube('paint', (x, yard, h), (x, yard, h + 0.46), 0.075, col, 16)
-    tube('paint', (x, yard, h + 0.46), (x, yard, h + 0.52), 0.075, col, 16, 0.03)
-    tube('dark', (x, yard, h + 0.52), (x, yard, h + 0.58), 0.022, BLACK, 10)
-    box('dark', x - 0.012, x + 0.012, yard - 0.02, yard + 0.10, h + 0.58, h + 0.60, BLACK)
-    if g.get('horn'):
-        tube('dark', (x + 0.03, yard + 0.03, h + 0.55), (x + 0.11, yard + 0.06, h + 0.36), 0.012, BLACK, 8)
-        tube('dark', (x + 0.11, yard + 0.06, h + 0.36), (x + 0.12, yard + 0.07, h + 0.10), 0.02, BLACK, 10, 0.045)
-    else:
-        tube('dark', (x + 0.03, yard + 0.03, h + 0.55), (x + 0.09, yard + 0.03, h + 0.20), 0.009, BLACK, 6)
-    if g.get('wall') == 'port':
-        box('steel', x - 0.085, x + 0.085, yard - 0.085, yard - 0.075, h + 0.28, h + 0.32, GREY)
-    else:
-        # hung on the aft wall: a strap round the cylinder on a bracket that reaches the wall, 10 cm behind its middle
-        box('steel', x - 0.085, x + 0.085, yard - 0.10, yard - 0.072, h + 0.28, h + 0.32, GREY)
-        box('steel', x - 0.02, x + 0.02, yard - 0.10, yard - 0.072, h + 0.08, h + 0.12, GREY)
-
-
-def sart(g, tag, x, yard, h):
-    side = g['side']
-    xw = side * X_IN
-    box('steel', xw, xw - side * 0.012, yard - 0.05, yard + 0.05, h - 0.02, h + 0.34, GREY)
-    tube('plastic', (xw - side * 0.055, yard, h), (xw - side * 0.055, yard, h + 0.26), 0.038, ORANGE, 14)
-    tube('plastic', (xw - side * 0.055, yard, h + 0.26), (xw - side * 0.055, yard, h + 0.32), 0.03, srgb(0xdfe6e1), 12, 0.022)
-    for hh in (h + 0.05, h + 0.21):
-        box('steel', xw - side * 0.10, xw, yard - 0.045, yard + 0.045, hh, hh + 0.012, GREY)
-
-
-def handhelds(g, tag, x, yard, h):
-    box('dark', x - 0.14, x + 0.14, yard + 0.001, yard + 0.06, h, h + 0.07, DARK)
-    for k in range(3):
-        xx = x - 0.09 + k * 0.09
-        box('plastic', xx - 0.03, xx + 0.03, yard + 0.012, yard + 0.05, h + 0.03, h + 0.17, ORANGE if k == 1 else srgb(0xe0c020))
-        box('dark', xx - 0.022, xx + 0.022, yard + 0.05, yard + 0.052, h + 0.10, h + 0.15, BLACK)
-        tube('plastic', (xx - 0.015, yard + 0.03, h + 0.17), (xx - 0.015, yard + 0.03, h + 0.26), 0.006, BLACK, 6)
-
-
-def aldis(g, tag, x, yard, h):
-    xw = -X_IN
-    box('steel', xw, xw + 0.012, yard - 0.04, yard + 0.04, h + 0.02, h + 0.30, GREY)
-    tube('steel', (xw + 0.012, yard, h + 0.26), (xw + 0.07, yard, h + 0.26), 0.006, GREY, 6)
-    tube('dark', (xw + 0.07, yard - 0.09, h + 0.18), (xw + 0.07, yard + 0.07, h + 0.18), 0.065, srgb(0x4a5456), 16)
-    tube('lens', (xw + 0.07, yard + 0.07, h + 0.18), (xw + 0.07, yard + 0.078, h + 0.18), 0.058, srgb(0xdfe6e1), 16)
-    tube('dark', (xw + 0.07, yard - 0.02, h + 0.115), (xw + 0.07, yard - 0.05, h), 0.016, BLACK, 8)
-    box('dark', xw, xw + 0.03, yard - 0.03, yard + 0.03, h - 0.14, h - 0.07, DARK)          # its socket
-
-
-def binoculars(g, tag, x, yard, h):
-    box('wood', x - 0.10, x + 0.10, yard - 0.08, yard + 0.08, h, h + 0.10, WOOD)
-    for sx in (-1, 1):
-        tube('plastic', (x + sx * 0.035, yard, h + 0.06), (x + sx * 0.035, yard, h + 0.19), 0.028, BLACK, 12, 0.024)
-        tube('lens', (x + sx * 0.035, yard, h + 0.19), (x + sx * 0.035, yard, h + 0.194), 0.02, srgb(0x56606a), 10)
-    box('plastic', x - 0.02, x + 0.02, yard - 0.012, yard + 0.012, h + 0.12, h + 0.15, BLACK)
-
-
-def stairwell(g, tag, x, yard, h):
-    """
-    The crew stair's head: a rail along its inboard side, and across the top, where one comes up out of it, a self-closing
-    gate of two bars. The first drawing had those bars fixed: nobody could have come up the stair (found when the stairs
-    were walked, checks/stairs.cjs). The gate hangs on the outboard post and opens forward, away from the well.
-    """
-    x = -2.07
-    rail = srgb(0xc9cfcf)
-    for yd in (19.60, 20.15):
-        tube('steel', (x, yd, 0.012), (x, yd, 1.0), 0.016, rail, 8)
-    for hh in (0.5, 1.0):
-        tube('steel', (x, 19.56, hh), (x, 20.16, hh), 0.014, rail, 8)
-    tube('steel', (-2.88, 20.16, 0.012), (-2.88, 20.16, 1.0), 0.016, rail, 8)
-    mv = _moving('Wheelhouse, crew stair gate', 'gate-crew-stair', steel='Shaft steel', grip='Plastic')
-    for hh in (0.5, 1.0):
-        tube(mv['steel'], (-2.86, 20.16, hh), (x - 0.03, 20.16, hh), 0.014, rail, 8)
-    tube(mv['steel'], (x - 0.03, 20.16, 0.5), (x - 0.03, 20.16, 1.0), 0.012, rail, 8)                 # its closing stile
-    tube(mv['steel'], (-2.86, 20.16, 0.5), (-2.86, 20.16, 1.0), 0.012, rail, 8)                      # and the hinge stile
-    box(mv['grip'], x - 0.20, x - 0.03, 20.150, 20.170, 0.70, 0.80, srgb(0xe2b93b))                  # a yellow plate on the closing stile: push
-    MOTIONS.append(dict(id='gate-crew-stair', name='Gate at the head of the crew stair', pivot=[-2.86, 0.0, BP.Z(20.16)], ratio=-1.0, max=95,
-                        at=[-2.50, DECK, BP.Z(20.16)], normal=[0, 0, 1], reach=1.3))
-    box('paint', -2.90, -2.14, 19.54, 19.56, 1.52, 1.64, srgb(0x1e8246))                     # over the opening, on the wall: the way out
-    pic((-2.52, 19.56, 1.58), FWD, UP, 0.30, 0.11, 'exit')
-
-
-def ac_indoor(g, tag, x, yard, h):
-    w, H, d = g['w'], g['H'], g['d']
-    box('plastic', x - w / 2, x + w / 2, yard + 0.001, yard + d, h, h + H, WHITE)
-    box('dark', x - w / 2 + 0.04, x + w / 2 - 0.04, yard + d - 0.06, yard + d + 0.002, h + 0.02, h + 0.05, srgb(0x4a5254))
-    for k in range(5):
-        box('plastic', x - w / 2 + 0.03, x + w / 2 - 0.03, yard + d, yard + d + 0.003, h + 0.10 + k * 0.03, h + 0.105 + k * 0.03, tint(WHITE, 0.85))
-    tube('lens', (x + w / 2 - 0.06, yard + d, h + 0.075), (x + w / 2 - 0.06, yard + d + 0.004, h + 0.075), 0.006, GREENLENS, 8)
-
-
-def sockets(g, tag, x, yard, h):
-    for xx in g['xs']:
-        box('plastic', xx - 0.05, xx + 0.05, yard - 0.012, yard, h - 0.04, h + 0.04, WHITE)
-        tube('dark', (xx, yard - 0.012, h), (xx, yard - 0.016, h), 0.022, BLACK, 12)
-
-
-def ceil(g, tag, x, yard, h):
-    kind = g['type']
-    if kind == 'light':
-        w, l = g['w'], g['l']
-        box('paint', x - w / 2, x + w / 2, yard - l / 2, yard + l / 2, CEIL - 0.03, CEIL, WHITE)
-        box('lens', x - w / 2 + 0.02, x + w / 2 - 0.02, yard - l / 2 + 0.02, yard + l / 2 - 0.02, CEIL - 0.036, CEIL - 0.03, WHITE_LAMP)
-    elif kind == 'red':
-        for xx in g['xs']:
-            tube('dark', (xx, yard, CEIL), (xx, yard, CEIL - 0.012), 0.05, DARK, 14)
-            tube('lens', (xx, yard, CEIL - 0.012), (xx, yard, CEIL - 0.03), g['r'], RED, 12)
-    elif kind == 'speaker':
-        tube('paint', (x, yard, CEIL), (x, yard, CEIL - 0.012), g['r'], WHITE, 20)
-        tube('dark', (x, yard, CEIL - 0.012), (x, yard, CEIL - 0.014), g['r'] * 0.8, srgb(0x4a5254), 20)
-    elif kind == 'detector':
-        tube('plastic', (x, yard, CEIL), (x, yard, CEIL - 0.02), g['r'], WHITE, 18)
-        tube('plastic', (x, yard, CEIL - 0.02), (x, yard, CEIL - 0.045), g['r'] * 0.8, WHITE, 18, g['r'] * 0.45)
-        tube('lens', (x + 0.03, yard, CEIL - 0.02), (x + 0.03, yard, CEIL - 0.024), 0.005, RED, 6)
-    elif kind == 'emergency':
-        w, l = g['w'], g['l']
-        box('paint', x - w / 2, x + w / 2, yard - l / 2, yard + l / 2, CEIL - 0.04, CEIL, WHITE)
-        box('lens', x - w / 2 + 0.015, x + w / 2 - 0.015, yard - l / 2 + 0.015, yard + l / 2 - 0.015, CEIL - 0.046, CEIL - 0.04, WHITE_LAMP)
-        tube('lens', (x + w / 2 - 0.02, yard, CEIL - 0.046), (x + w / 2 - 0.02, yard, CEIL - 0.05), 0.005, GREENLENS, 6)
-    elif kind == 'transit':
-        w, l = g['w'], g['l']
-        box('steel', x - w / 2, x + w / 2, yard - l / 2, yard + l / 2, CEIL - 0.02, CEIL, GREY)
-        for i in range(4):
-            for j in range(2):
-                tube('dark', (x - 0.075 + i * 0.05, yard - 0.03 + j * 0.06, CEIL - 0.02), (x - 0.075 + i * 0.05, yard - 0.03 + j * 0.06, CEIL - 0.035), 0.016, BLACK, 8)
-
-
-def grabrails(g, tag, x, yard, h):
-    sx = g['side']
-    tube('steel', (sx * 0.75, 20.30, h), (sx * 0.75, 22.05, h), 0.014, srgb(0xc9cfcf), 10)
-    for yd in (20.35, 21.18, 22.0):
-        tube('steel', (sx * 0.75, yd, h), (sx * 0.75, yd, CEIL), 0.008, GREY, 6)
-
-
-def blinds(g, tag, x, yard, h):
-    """A roller blind at the head of each forward window, rolled up: the roll, and its bottom bar with a finger's breadth
-    of tinted film showing, inside the depth of the window's head frame. Rolled up it hangs over none of the glass (the
-    first ones hung 4 cm over its top: the yard's calculation JS4-402 found them)."""
-    yd = FRONT_IN + fwd(HEAD) - 0.03
-    low = HEAD - 0.03                                           # the glass ends at HEAD - 0.045
-    for x0, x1 in PANES:
-        tube('plastic', (x0 + 0.02, yd, HEAD + 0.03), (x1 - 0.02, yd, HEAD + 0.03), 0.02, srgb(0xd9d5c8), 10)
-        part('glass').polygon([P(x0 + 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.004, HEAD + 0.012), P(x1 - 0.04, yd - 0.012, low), P(x0 + 0.04, yd - 0.012, low)], srgb(0x1a2a2e))
-        tube('steel', (x0 + 0.04, yd - 0.012, low), (x1 - 0.04, yd - 0.012, low), 0.006, GREY, 6)
-        for xb in (x0 + 0.012, x1 - 0.028):                     # the roll's brackets, on the wall over the glass: its ends stand in them
-            box('steel', xb, xb + 0.016, yd - 0.022, yd + 0.031, HEAD + 0.008, HEAD + 0.052, GREY)
-
-
-def mullion_ducts(g, tag, x, yard, h):
-    sx = g['side']
-    x0, x1 = sx * MULLION_X - 0.035, sx * MULLION_X + 0.035
-    prism('paint', x0, x1, [(FRONT_IN - 0.03 + fwd(SILL), 1.00), (FRONT_IN + fwd(SILL), 1.00), (FRONT_IN + fwd(HEAD), HEAD), (FRONT_IN - 0.03 + fwd(HEAD), HEAD)], tint(LINING, 0.93))
-    box('paint', x0, x1, FRONT_IN + fwd(HEAD) - 0.03, FRONT_IN + fwd(HEAD), HEAD, CEIL, tint(LINING, 0.93))
-
-
-def wiper(g, tag, x, yard, h):
-    """A wiper on the outside of the raked glass, parked along the sill: the spindle, the arm, the blade."""
-    yo = FRONT_OUT + 0.02
-    tube('brass', (x - 0.27, FRONT_OUT - 0.01, SILL + 0.03), (x - 0.27, yo + 0.02, SILL + 0.03), 0.02, BRASS, 12)
-    tube('steel', (x - 0.27, yo + 0.02, SILL + 0.03), (x + 0.25, yo + 0.03, SILL + 0.075), 0.006, GREY, 8)
-    box('plastic', x - 0.20, x + 0.28, yo + 0.01, yo + 0.03, SILL + 0.06, SILL + 0.08, BLACK)
-    box('console', x - 0.33, x - 0.21, FRONT_IN - 0.10, FRONT_IN, SILL - 0.13, SILL - 0.01, srgb(0x8a9392))       # the motor, under the sill inside the console
-
-
-def nozzles(g, tag, x, yard, h):
-    for xx in (-(_pane + 0.10), 0.0, _pane + 0.10):
-        tube('brass', (xx - 0.36, FRONT_OUT, SILL - 0.02), (xx - 0.36, FRONT_OUT + 0.03, SILL - 0.02), 0.008, BRASS, 8)
-        tube('brass', (xx - 0.36, FRONT_OUT + 0.03, SILL - 0.02), (xx - 0.36, FRONT_OUT + 0.035, SILL + 0.01), 0.005, BRASS, 6)
-    tube('brass', (-1.52, FRONT_OUT + 0.012, SILL - 0.02), (2.62, FRONT_OUT + 0.012, SILL - 0.02), 0.006, BRASS, 6)
-
-
-def whistle_valve(g, tag, x, yard, h):
-    """The whistle valve under the deckhead, and its pull over the helm."""
-    box('brass', x - 0.04, x + 0.04, yard - 0.05, yard + 0.05, h, CEIL, BRASS)
-    tube('brass', (x, yard - 0.05, h + 0.05), (x, yard - 0.09, h + 0.05), 0.012, BRASS, 8)
-    tube('steel', (x, yard + 0.05, h + 0.03), (x, yard + 0.30, h + 0.03), 0.003, GREY, 5)
-    tube('steel', (x, yard + 0.30, h + 0.03), (x, yard + 0.30, h - 0.12), 0.003, GREY, 5)
-    tube('wood', (x - 0.05, yard + 0.30, h - 0.13), (x + 0.05, yard + 0.30, h - 0.13), 0.012, WOOD, 8)
 
 
 # =====================================================================================================================
@@ -1065,8 +366,8 @@ def wing_console(g, tag, x, yard, h):
     where = 'Port wing' if side > 0 else 'Starboard wing'
     tail = '-wp' if side > 0 else '-ws'
     for u, col, name, works in zip((0.56, 0.44) if side > 0 else (0.44, 0.56), (RED, GREENLENS), ('port engine lever', 'starboard engine lever'), ('lever-engine-p', 'lever-engine-s')):
-        control_head(f'{where}, {name}', works + tail, works, at(u), y0 + 0.13, 0.89, col, s=0.77, sink=0.05)
-    control_head(f'{where}, bow thruster lever', 'lever-thruster' + tail, 'lever-thruster', at(0.20), y0 + 0.085, 0.875, BLUE, across=True, s=0.77, sink=0.05)
+        BC.control_head(f'{where}, {name}', works + tail, works, at(u), y0 + 0.13, 0.89, col, s=0.77, sink=0.05)
+    BC.control_head(f'{where}, bow thruster lever', 'lever-thruster' + tail, 'lever-thruster', at(0.20), y0 + 0.085, 0.875, BLUE, across=True, s=0.77, sink=0.05)
     slope = (0.98 - 0.88) / (y1 + 0.02 - (y0 + 0.14))
     nrm = Vector((0.0, 1.0, -slope)).normalized()
     upv = Vector((0.0, slope, 1.0)).normalized()
@@ -1377,7 +678,7 @@ def hosebox(g, tag, x, yard, h):
     part('steel').ring(P(x0 + 0.034, sy, h + 0.200), PORT, 0.022, 0.0045, STEEL, sweep=(radians(200), radians(520)))
     # ---- the door: a pan with a rim, hinged at its after edge, the sign on it, a quarter-turn catch at its forward edge
     mover = 'hose-box-p' if x > 0 else 'hose-box-s'
-    M = _moving('Fire hose box, door', mover, leaf='Deck paint', fit='Shaft steel', sign='Panel face')
+    M = moving('Fire hose box, door', mover, leaf='Deck paint', fit='Shaft steel', sign='Panel face')
     leaf, fit = M['leaf'], M['fit']
     box(leaf, x1 - 0.008, x1 - 0.004, ya + 0.002, yb - 0.002, h + 0.002, h1 - 0.002, red, r=0.001)
     for (qa, qb, ha_, hb_) in ((ya + 0.002, yb - 0.002, h + 0.002, h + 0.022), (ya + 0.002, yb - 0.002, h1 - 0.022, h1 - 0.002),
@@ -1418,21 +719,21 @@ def pantry(g, tag, x, yard, h):
     """The unit itself: a carcass of panels on a plinth set back for the feet, a wooden top, the niche's shelf and its rail, and
     the cupboard under the niche with its door (it opens to a tap), its shelf, four mugs, the coffee tin, the tea and the sugar."""
     xb, xf, y0, y1, ys, T, t = _pantry()
-    cream = srgb(0xd8d2c0)
+    cream = JOINERY
     sh = PANTRY['shelf']
-    box('console', xb + 0.02, xf - 0.035, y0 + 0.02, y1 - 0.02, 0.012, 0.08, FRAME)
-    box('console', xb, xb + t, y0, y1, 0.08, T - t, cream)
+    box('joinery', xb + 0.02, xf - 0.035, y0 + 0.02, y1 - 0.02, 0.012, 0.08, FRAME)
+    box('joinery', xb, xb + t, y0, y1, 0.08, T - t, cream)
     for a in (y0, ys, y1 - t):
-        box('console', xb + t, xf, a, a + t, 0.08, T - t, cream)
-    box('console', xb + t, xf, y0 + t, ys, 0.08, 0.08 + t, cream)
-    box('console', xb + t, xf, ys + t, y1 - t, 0.08, 0.08 + t, cream)
-    box('console', xb, xf, y0, y1, T - t, T, cream)
+        box('joinery', xb + t, xf, a, a + t, 0.08, T - t, cream)
+    box('joinery', xb + t, xf, y0 + t, ys, 0.08, 0.08 + t, cream)
+    box('joinery', xb + t, xf, ys + t, y1 - t, 0.08, 0.08 + t, cream)
+    box('joinery', xb, xf, y0, y1, T - t, T, cream)
     box('wood', xb, xf + 0.012, y0 - 0.008, y1 + 0.008, T, T + 0.022, WOOD, r=0.005)
-    box('console', xb + t, xf, ys + t, y1 - t, sh, sh + t, cream)
+    box('joinery', xb + t, xf, ys + t, y1 - t, sh, sh + t, cream)
     part('steel').rod([P(xf - 0.012, ys + t, sh + t + 0.055), P(xf - 0.012, y1 - t, sh + t + 0.055)], 0.0045, STEEL)        # the rail across the niche
     # ---- in the cupboard: a shelf; mugs on it; the tin, the tea and the sugar under it
     a, b = ys + t, y1 - t
-    box('console', xb + t, xf - 0.03, a, b, 0.27, 0.27 + 0.012, cream)
+    box('joinery', xb + t, xf - 0.03, a, b, 0.27, 0.27 + 0.012, cream)
     white, mugs = srgb(0xf4f2ea), part('plastic')
     for i, (mx, my) in enumerate(((xb + 0.10, a + 0.075), (xb + 0.10, a + 0.215), (xb + 0.22, a + 0.075), (xb + 0.22, a + 0.215))):
         tube('plastic', (mx, my, 0.282), (mx, my, 0.372), 0.040, white if i != 2 else srgb(0x2f6f74))
@@ -1445,7 +746,7 @@ def pantry(g, tag, x, yard, h):
     tube('plastic', (xb + 0.27, a + 0.12, 0.100), (xb + 0.27, a + 0.12, 0.175), 0.038, white)
     tube('steel', (xb + 0.27, a + 0.12, 0.210), (xb + 0.27, a + 0.12, 0.222), 0.044, STEEL)
     # ---- the cupboard's door: hinged on its forward edge, a knob at its after edge
-    M = _moving('Pantry, cupboard door', 'pantry-cupboard', leaf='Console paint', fit='Shaft steel')
+    M = moving('Pantry, cupboard door', 'pantry-cupboard', leaf='Laminate', fit='Stainless')
     box(M['leaf'], xf - 0.018, xf, a + 0.003, b - 0.003, 0.101, sh - 0.003, tint(cream, 1.03), r=0.004)
     tube(M['fit'], (xf, a + 0.035, 0.36), (xf + 0.016, a + 0.035, 0.36), 0.006, STEEL)
     M['fit'].ball(P(xf + 0.020, a + 0.035, 0.36), 0.012, STEEL)
@@ -1491,7 +792,7 @@ def cooler(g, tag, x, yard, h):
     box('plastic', x0 + w + 0.03, x0 + w + 0.10, ia + 0.03, ia + 0.10, 0.5806, 0.775, srgb(0xf7f5ee), r=0.004)             # milk: it beds a millimetre onto the wires it stands on
     box('plastic', x0 + w + 0.03, x0 + w + 0.21, ia + 0.14, ib - 0.02, 0.5806, 0.650, srgb(0x4a86a8), r=0.008)             # the watch's box
     # ---- the door: its leaf, the gasket round its inner face, its own shelf with a rail and two bottles, its handle
-    M = _moving('Cooler, door', 'cooler-door', leaf='Plastic', fit='Shaft steel', dark='Machinery paint', glass='Window glass')
+    M = moving('Cooler, door', 'cooler-door', leaf='Plastic', fit='Shaft steel', dark='Machinery paint', glass='Window glass')
     leaf = M['leaf']
     box(leaf, xf - 0.040, xf, a, b, h0, h1, white, r=0.006)
     for (qa, qb, ga, gb) in ((a + 0.012, b - 0.012, h0 + 0.012, h0 + 0.024), (a + 0.012, b - 0.012, h1 - 0.024, h1 - 0.012),
@@ -1531,15 +832,38 @@ def coffee_maker(g, tag, x, yard, h):
     box('dark', bx0, bx1 - 0.015, c - 0.105, c + 0.105, top + 0.258, top + 0.300, body, r=0.008)                           # the head
     tube('dark', (jx, c, top + 0.258), (jx, c, top + 0.196), 0.062, black, r2=0.046)                                     # the filter's basket
     tube('dark', (jx, c, top + 0.196), (jx, c, top + 0.188), 0.012, black)
-    box('paint', bx1 - 0.010, bx1 + 0.004, c + 0.060, c + 0.090, top + 0.004, top + 0.018, srgb(0xc2412f), r=0.002)        # the switch, lit when it is on
-    # the jug
-    vessel('glass', (jx, c, top + 0.026), (jx, c, top + 0.130), 0.064, GLASS)
-    vessel('glass', (jx, c, top + 0.130), (jx, c, top + 0.158), 0.064, GLASS, r2=0.050)
-    tube('dark', (jx, c, top + 0.030), (jx, c, top + 0.098), 0.060, srgb(0x2b1a10))                                      # the coffee
-    part('dark').ring(P(jx, c, top + 0.158), UP, 0.051, 0.006, black)                                                    # its collar
-    tube('dark', (jx, c, top + 0.160), (jx, c, top + 0.168), 0.047, black)                                               # its lid
-    part('dark').ball(P(jx, c, top + 0.172), 0.010, black)
-    part('dark').rod([P(jx + 0.050, c, top + 0.156), P(jx + 0.096, c, top + 0.150), P(jx + 0.100, c, top + 0.075), P(jx + 0.063, c, top + 0.050)], 0.0075, black)
+    # The switch: a rocker in the base's front that a tap throws over; a lamp beside it that is lit while the machine is on.
+    sw = (bx1, c + 0.075, top + 0.011)
+    R = moving('Coffee maker, switch', 'coffee-machine', rocker='Plastic')
+    with Frame(sw, AFTWARD, UP) as F:                                            # the base's front looks inboard, to port
+        F.box('dark', (-0.016, -0.009, 0.0), (0.016, 0.009, 0.002), black)
+        F.into = dict(plastic=R['rocker'])
+        F.prism('plastic', -0.012, 0.012, [(-0.007, 0.002), (0.007, 0.002), (0.007, 0.0075), (-0.007, 0.0035)], srgb(0xc2412f))
+        F.into = None
+        MOTIONS.append(dict(id='coffee-machine', name='Coffee maker', kind='turn', pivot=[float(v) for v in F.at((0.0, 0.0, 0.002))], axis=[float(v) for v in F.way((1.0, 0.0, 0.0))],
+                            ratio=1.0, max=32, at=[float(v) for v in F.at((0.0, 0.0, 0.0))], auto='tap', reach=1.9, rest='off', above='on: it fills the jug', fitting=tag))
+        F.lathe('lens', (0.03, 0.0, 0.0), [(0.0, 0.0), (0.0, 0.0038), (0.003, 0.0032), (0.004, 0.0)], srgb(0x5a1a14))
+        F.into = dict(lit_red=shown('coffee-lamp-lit', 'coffee-machine', 'Coffee maker, lamp', 'Lit red'))
+        F.lathe('lit_red', (0.03, 0.0, 0.0), [(0.0, 0.0), (0.0, 0.0044), (0.0035, 0.0037), (0.0046, 0.0)], srgb(0xff3a20))
+        F.into = None
+    # The jug: glass, with its collar, lid and handle. It is lifted and tipped by a tap, as when a cup is poured: it turns
+    # about a line just inboard of the hot plate.
+    J = moving('Coffee jug', 'coffee-jug', glass='Clear glass', dark='Plastic')
+    vessel(J['glass'], (jx, c, top + 0.026), (jx, c, top + 0.130), 0.064, GLASS)
+    vessel(J['glass'], (jx, c, top + 0.130), (jx, c, top + 0.158), 0.064, GLASS, r2=0.050)
+    lathe(J['glass'], (jx, c, top + 0.026), UP, [(0.0, 0.0), (0.0, 0.064), (0.003, 0.064), (0.003, 0.0)], GLASS)        # its bottom
+    J['dark'].ring(P(jx, c, top + 0.158), UP, 0.051, 0.006, black)                                                       # its collar
+    lathe(J['dark'], (jx, c, top + 0.160), UP, [(0.0, 0.0), (0.0, 0.047), (0.008, 0.047), (0.010, 0.012), (0.018, 0.010), (0.020, 0.0)], black)   # its lid and knob
+    sweep(J['dark'], [(jx + 0.050, c, top + 0.156), (jx + 0.096, c, top + 0.150), (jx + 0.100, c, top + 0.075), (jx + 0.063, c, top + 0.050)], 0.0075, black)
+    MOTIONS.append(dict(id='coffee-jug', name='Coffee jug', kind='turn', pivot=list(P(jx + 0.105, c, top + 0.03)), axis=[0, 0, 1], ratio=-1.0, max=52,
+                        at=list(P(jx, c, top + 0.09)), auto='tap', reach=1.9, rest='on its plate', above='lifted and poured: it empties', fitting=tag))
+    # The coffee in it: it rises as the machine runs and falls as the jug is poured. It is drawn as the last of a pot, 4 mm
+    # deep, and grows upward from the jug's bottom by what the level says (the file's levels: README).
+    C = moving('Coffee in the jug', 'coffee', coffee='Coffee')
+    lathe(C['coffee'], (jx, c, top + 0.0295), UP, [(0.0, 0.0), (0.0, 0.0605), (0.004, 0.0605), (0.004, 0.0)], srgb(0x2b1a10))
+    LEVERS.append(dict(id='coffee', input='coffee', kind='stretch', axis=[0, 1, 0], pivot=list(P(jx, c, top + 0.0295)), ratio=(0.094 / 0.004 - 1.0) / 100.0, on='coffee-jug'))
+    LEVELS.append(dict(id='coffee', name='Coffee in the jug', min=0, max=100, unit='%', start=55, fitting=tag,
+                       level=dict(fill='coffee-machine', rate=7.0, drain='coffee-jug', drainRate=22.0), below='', above='full', rest='empty'))
 
 
 def pantry_socket(g, tag, x, yard, h):
@@ -1632,31 +956,48 @@ def ac_outdoor(g, tag, x, yard, h):
 
 # =====================================================================================================================
 KINDS = dict(
-    console=console, stand=stand, display=display, flush=flush, facepanel=facepanel, lever=lever, phone=phone, sp_phone=sp_phone, navtex=navtex,
-    box=hidden, overhead=overhead, ovh_dial=ovh_dial, ovh_screen=ovh_screen, periscope=periscope, wallbox=wallbox, dial=dial, callpoint=callpoint,
-    chart_table=chart_table, chart_lamp=chart_lamp, bookshelf=bookshelf, log_desk=log_desk, locker=locker, extinguisher=extinguisher, sart=sart,
-    handhelds=handhelds, aldis=aldis, binoculars=binoculars, stairwell=stairwell, ac_indoor=ac_indoor, sockets=sockets, ceil=ceil, grabrails=grabrails,
-    blinds=blinds, mullion_ducts=mullion_ducts, wiper=wiper, nozzles=nozzles, whistle_valve=whistle_valve, wing_console=wing_console, sidelight=sidelight,
-    epirb=epirb, pelorus=pelorus, lifebuoy=lifebuoy, hydrant=hydrant, hosebox=hosebox, scupper=scupper, wing_light=wing_light, talkback=talkback_station,
+    console=BC.console, display=BC.display, flush=BC.flush, facepanel=BC.facepanel, lever=BC.lever, sp_phone=BC.sp_phone, navtex=BC.navtex,
+    box=BC.hidden, binoculars=BC.binoculars, sockets=BC.sockets,
+    overhead=BF.overhead, ovh_dial=BF.ovh_dial, ovh_screen=BF.ovh_screen, ovh_set=BF.ovh_set, periscope=BF.periscope, ceil=BF.ceil, grabrails=BF.grabrails,
+    blinds=BF.blinds, mullion_ducts=BF.mullion_ducts, wiper=BF.wiper, nozzles=BF.nozzles, whistle_valve=BF.whistle_valve, cvs=BF.cvs, handrail=BF.handrail,
+    jbox=BF.jbox,
+    stand=BO.stand, wallbox=BO.wallbox, dial=BO.dial, callpoint=BO.callpoint, chart_table=BO.chart_table, chart_lamp=BO.chart_lamp, bookshelf=BO.bookshelf,
+    table=BO.table, locker=BO.locker, extinguisher=BO.extinguisher, sart=BO.sart, handhelds=BO.handhelds, aldis=BO.aldis, stairwell=BO.stairwell,
+    ac_indoor=BO.ac_indoor, sofa=BO.sofa, hooks=BO.hooks,
+    wing_console=wing_console, sidelight=sidelight, epirb=epirb, pelorus=pelorus, lifebuoy=lifebuoy, hydrant=hydrant, hosebox=hosebox, scupper=scupper,
+    wing_light=wing_light, talkback=talkback_station,
     nuc=nuc, navtex_ant=navtex_ant, gnss_small=gnss_small, wind_sensor=wind_sensor, ac_outdoor=ac_outdoor,
     pantry=pantry, cooler=cooler, coffee=coffee_maker, pantry_socket=pantry_socket,
 )
+# What is worked a notch at a time: its name, the fitting of the register it belongs to, its positions and what each means.
+LEVER_CONTROLS = [
+    dict(id='lever-engine-p', name='Port engine lever', fitting='PRP-01', home=3, steps=[dict(v=a, say=o) for a, o in zip(BC.lever_notches(), BC.ORDERS)]),
+    dict(id='lever-engine-s', name='Starboard engine lever', fitting='PRP-02', home=3, steps=[dict(v=a, say=o) for a, o in zip(BC.lever_notches(), BC.ORDERS)]),
+    dict(id='lever-thruster', name='Bow thruster lever', fitting='PRP-03', home=2, steps=[dict(v=a, say=o) for a, o in zip(BC.lever_notches(True), BC.THRUSTS)]),
+    dict(id='tiller', name='Tiller', fitting='STR-03', home=1,
+         steps=[dict(v=-24.0, say='held to port: the rudders go to port until it is let go'), dict(v=0.0, say='let go: the rudders stay where they are'),
+                dict(v=24.0, say='held to starboard: the rudders go to starboard until it is let go')]),
+]
 
 
 def build():
-    _parts.clear()
-    _extra.clear()
+    MADE.clear()
+    EXTRA.clear()
     MOTIONS.clear()
     LEVERS.clear()
+    LEVELS.clear()
+    SHARED.clear()
+    CONTROLS[:] = LEVER_CONTROLS
     for c in REG.COMPONENTS:
         g, kind = c['g'], c['g']['kind']
         if kind == 'none':
             continue
         x, yard, h = c['at']
-        _hung[0] = kind in HUNG
+        HANGS[0] = kind in HUNG
         with component(c['id']):
             if kind == 'envelope':
                 envelope()
+                BO.trunk()
             elif kind == 'ceiling':
                 ceiling()
             elif kind == 'floor':
@@ -1668,16 +1009,16 @@ def build():
             elif kind == 'door_corridor':
                 door_corridor(g, c['id'])
             elif kind == 'chair':
-                chair(g, c['id'], x, yard)
+                BO.chair(g, c['id'], x, yard)
             else:
                 KINDS[kind](g, c['id'], x, yard, h)
-    _hung[0] = False
+    HANGS[0] = False
     for eye in EYES:
         seen, blind, to = view_from_helm(eye=eye)
         print(f'glass seen from the helm, eye {eye:.2f} m: {seen:.0f} of 225 degrees, to {to:.0f} degrees each side; blind sectors wider than a mullion: {blind or "none"}')
         if seen < 220:
             raise SystemExit(f'the glass shows an eye at {eye:.2f} m {seen:.0f} of 225 degrees: a blind sector has opened at {blind}')
-    out = list(_parts.values()) + _extra
+    out = list(MADE.values()) + EXTRA
     for p in out:
         p.smooth = False
     return out
@@ -1685,16 +1026,36 @@ def build():
 
 def motion():
     """
-    Each door turns on its hinge and opens for whoever comes near on foot. Each lever turns on its shaft, a notch for a
-    tap, and the same lever at the console and on both wings moves as one. The wheel turns with the rudder order.
+    What moves on the bridge, as the file carries it (README: the file format). A door turns on its hinge and opens for
+    whoever comes near on foot. What is worked by a tap turns, slides or runs: a cabinet's door, a drawer, a lid, a
+    handset, a chair on its rail and on its pedestal, a sun blind, a wiper, a clear-view screen. A lever turns on its
+    shaft, a notch for a tap, and the same lever at the console and on both wings moves as one. The wheel turns with the
+    rudder order.
     """
     inputs, movers = [], []
     for m in MOTIONS:
-        inputs.append(dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit='°', below='', above='open', rest='shut', auto=m.get('auto', 'near'),
-                           at=m['at'], normal=m['normal'], reach=m.get('reach', 1.6)))
-        movers.append(dict(id=m['id'], kind='turn', input=m['id'], axis=[0, 1, 0], pivot=m['pivot'], ratio=m['ratio']))
+        auto = m.get('auto', 'near')
+        rec = dict(id=m['id'], name=m['name'], min=0, max=m['max'], step=1, unit=m.get('unit', '°'), below='', above=m.get('above', 'open'), rest=m.get('rest', 'shut'),
+                   auto=auto, at=[round(float(v), 4) for v in m['at']], reach=m.get('reach', 1.6))
+        if auto == 'near':
+            rec['normal'] = m['normal']
+        for key in ('run', 'period', 'rate', 'fitting', 'with'):
+            if m.get(key) is not None:
+                rec[key] = m[key]
+        inputs.append(rec)
+        mv = dict(id=m['id'], kind=m.get('kind', 'turn'), input=m['id'], axis=[round(float(v), 5) for v in m.get('axis', [0, 1, 0])], pivot=[round(float(v), 4) for v in m['pivot']], ratio=m['ratio'])
+        if m.get('on'):
+            mv['on'] = m['on']
+        movers.append(mv)
     for c in CONTROLS:
-        inputs.append(dict(id=c['id'], name=c['name'], fitting=c['fitting'], steps=c['steps'], home=c['home'], min=c['steps'][0]['v'], max=c['steps'][-1]['v'], unit='°'))
+        rec = dict(id=c['id'], name=c['name'], fitting=c['fitting'], steps=c['steps'], home=c['home'], min=min(s['v'] for s in c['steps']), max=max(s['v'] for s in c['steps']), unit=c.get('unit', '°'))
+        inputs.append(rec)
+    for c in LEVELS:
+        inputs.append(dict(c))
     for m in LEVERS:
-        movers.append(dict(id=m['id'], kind='turn', input=m['input'], axis=m['axis'], pivot=[round(float(v), 4) for v in m['pivot']], ratio=m.get('ratio', 1.0)))
+        mv = dict(id=m['id'], kind=m.get('kind', 'turn'), input=m['input'], axis=[round(float(v), 5) for v in m['axis']], pivot=[round(float(v), 4) for v in m['pivot']], ratio=m.get('ratio', 1.0))
+        for key in ('on', 'when', 'over'):
+            if m.get(key) is not None:
+                mv[key] = m[key]
+        movers.append(mv)
     return inputs, movers

@@ -218,31 +218,38 @@ def C(id, name, room, at, what, g=None, w=0, use=1.0, by=None, alt=None, node=No
 
 
 WH, WP, WS, CD = 'wheelhouse', 'wing-p', 'wing-s', 'compass-deck'
-TOP = 1.00             # the console's top
-FRONT, BACK = 22.39, 22.50   # the console's two rows: flush panels at the helmsman's hand, tilted displays behind them
+TOP = 1.00             # the console's level strip, where the control heads stand: its desk slopes up to it and its upstand rises from it
+# The console block (blender/bridge_console.py): on the sloping desk two rows of flush panels, the after one at the hand; then
+# the level strip; then the upstand, whose foot is BACK outboard and 22.72 in its low middle, ahead of the wheel.
+ROW1, ROW2, BACK = 22.225, 22.385, 22.52
+FRONT = ROW2
 
 # ---- Outfit: the room and its furniture.
-C('OUT-01', 'Console', WH, (0.0, 22.61, 0.0), 'The forward console, 5.5 m wide, in five bays with doors to the equipment inside; its top is at 1.0 m; nothing on it stands higher than 1.33 m, and nothing ahead of the wheel higher than 1.22 m, so the sea is seen over it from the helm (calculation JS4-402).',
+C('OUT-01', 'Console', WH, (0.0, 22.56, 0.0), 'The console block: 3.7 m wide on the centreline against the forward bulkhead, with a way to the forward corner windows each side of it. From aft: a stainless grab rail along its edge; a desk that slopes up 11° with two rows of flush panels on a dark field; a level strip where the control heads stand; an upstand leaning back 20° with the displays set into it under glass, lower in the middle so that the sea is seen over it ahead of the wheel (nothing ahead of the wheel over 1.225 m, nothing else over 1.315 m: calculation JS4-402 asked 1.22 and 1.33). Below the desk a cabinet of five bays, each with two doors on hinges, a quarter-turn lock and louvres: they open to a tap, and the units that are not seen stand behind them on shelves.',
   dict(kind='console'), survey='B080')
-C('OUT-02', "Master's chair", WH, (1.05, 21.55, 0.0), 'A high pedestal chair at the conning position, to port of the wheel.', dict(kind='chair'), survey='B089')
-C('OUT-03', "Watch officer's chair", WH, (-1.05, 21.55, 0.0), 'A second pedestal chair, at the radar.', dict(kind='chair'))
-C('OUT-04', 'Chart table', WH, (-1.475, 19.84, 0.0), 'The chart table against the aft wall, with three drawers for folded charts and the chart in use on its top. She navigates on paper charts; the chart system on the console is an aid.',
+C('OUT-02', "Master's chair", WH, (1.05, 21.55, 0.0), 'A high-backed pilot chair in black leather at the conning position, to port of the wheel: headrest, armrests, a footrest, on a pedestal that runs on a track let into the deck and turns. A tap on its pedestal runs it aft or forward; a tap on its seat turns it.', dict(kind='chair'), survey='B089')
+C('OUT-03', "Watch officer's chair", WH, (-1.05, 21.55, 0.0), 'The second pilot chair, at the radar: like the master\'s, on its own track.', dict(kind='chair'))
+C('OUT-04', 'Chart table', WH, (-1.475, 19.84, 0.0), 'The chart table against the aft wall, with three drawers for folded charts, which run out to a tap, and the chart in use on its top. She navigates on paper charts; the chart system on the console is an aid.',
   dict(kind='chart_table', w=0.95, d=0.60, H=0.95), survey='B087')
 C('OUT-05', 'Bookshelf, nautical publications', WH, (-1.62, 19.54, 1.58), 'Tide tables, the list of lights, the radio signals list, the signal code and the ship\'s own manuals, behind a fiddle rail.',
   dict(kind='bookshelf', w=0.66, d=0.20, H=0.26))
-C('OUT-07', 'Binoculars box', WH, (-2.64, 22.76, TOP), 'Two 7 × 50 binoculars in a varnished box at the console\'s starboard end.', dict(kind='binoculars'))
+C('OUT-07', 'Binoculars box', WH, (1.85, 22.50, 0.58), 'Two 7 × 50 binoculars in a varnished box on the console block\'s port end. Its lid lifts to a tap.', dict(kind='binoculars'))
 C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the crew stair from the saloon, railed on its inboard side, with a self-closing gate across the top where one comes up: it opens forward, away from the well.',
   dict(kind='stairwell'))
-C('OUT-09', 'Log desk', WH, (2.71, 21.70, 0.88), 'A fold-down desk under the port window for the deck log, with its own lamp.', dict(kind='log_desk', w=0.72, d=0.40),
-  w=10, use=0.2, by=('BD1', 1), survey='B102')
+C('OUT-09', "Watchkeeper's table", WH, (-2.62, 22.57, 0.76), 'A table in the starboard forward corner, beside the pantry: a top of light varnished wood with her profile engraved in it and a cup well in its corner, a drawer that runs out to a tap, the deck log under its own lamp. (It takes the place of the fold-down log desk that hung under the port window.)',
+  dict(kind='table', w=0.58, l=0.68, H=0.76), w=10, use=0.2, by=('BD1', 1), survey='B102')
+C('OUT-41', 'Settee', WH, (2.60, 22.07, 0.0), 'A settee in black leather along the port side under the windows, forward of the wing door, for the pilot and for whoever waits on the bridge.', dict(kind='sofa', l=1.30, d=0.60))
+C('OUT-42', 'Handrail under the sills, port', WH, (2.40, 22.86, 0.865), 'Stainless tube on brackets under the sills, from the console block to the port side and aft along it over the settee: something to hold in a seaway while looking out.', dict(kind='handrail', side=1))
+C('OUT-43', 'Handrail under the sills, starboard', WH, (-2.40, 22.86, 0.865), 'Stainless tube on brackets under the sills, from the console block to the starboard side and aft along it over the watchkeeper\'s table.', dict(kind='handrail', side=-1))
+C('OUT-44', 'Hook rail', WH, (2.92, 19.99, 1.03), 'A board of light wood with four brass hooks under the after port window, for oilskins and the watch\'s lifejackets.', dict(kind='hooks', l=0.56))
 C('OUT-10', 'Door, corridor to wheelhouse', WH, (0.0, 19.50, 0.0), 'The door from the crew corridor. It opens into the wheelhouse and is kept shut at night to keep the corridor\'s light off the glass.',
   dict(kind='door_corridor'))
-C('OUT-11', 'Deck covering', WH, (0.0, 21.2, 0.0), 'Sheet vinyl on the steel deck, with a ribbed rubber mat at the helm.', dict(kind='floor'), pick=False)
-C('OUT-14', 'Deckhead lining', WH, (0.0, 21.2, CEIL), 'Lining panels under the compass deck; the cable trays lie above them.', dict(kind='ceiling'), pick=False)
+C('OUT-11', 'Deck covering', WH, (0.0, 21.2, 0.0), 'Blue sheet vinyl on the steel deck, turned up every wall as a coved skirting; ribbed rubber mats at the helm and before the console; the two tracks the pilot chairs run on are let into it.', dict(kind='floor'), pick=False)
+C('OUT-14', 'Deckhead lining', WH, (0.0, 21.2, CEIL), 'Strips of off-white panel running athwartships under the compass deck, a shadow gap between each two; the cable trays lie above them.', dict(kind='ceiling'), pick=False)
 C('OUT-15', 'Overhead grab rail, port', WH, (0.75, 21.2, 1.98), 'A rail under the deckhead to hold on to in a seaway.', dict(kind='grabrails', side=1))
 C('OUT-23', 'Overhead grab rail, starboard', WH, (-0.75, 21.2, 1.98), 'A rail under the deckhead to hold on to in a seaway.', dict(kind='grabrails', side=-1))
-C('OUT-16', 'Overhead console', WH, (0.0, 22.52, 2.06), 'A sloped panel under the deckhead over the forward console, for what is read at a glance. It hangs above the windows\' head, so that it hides nothing the glass would show.', dict(kind='overhead'))
-C('OUT-17', 'Sun blinds', WH, (0.0, 22.98, 2.06), 'A roller blind of tinted film at the head of each forward window.', dict(kind='blinds'))
+C('OUT-16', 'Overhead console', WH, (0.0, 22.52, 2.06), 'Two sloped consoles under the deckhead over the block, either side of the instruments that hang between them: the camera monitor to port, the two VHF sets to starboard. They hang above the windows\' head, so that they hide nothing the glass would show.', dict(kind='overhead'))
+C('OUT-17', 'Sun blinds', WH, (0.0, 22.98, 2.06), 'A roller blind of tinted film in a cassette at the head of each forward window, on two guide wires. A tap draws one down, and lets it up again.', dict(kind='blinds'))
 C('OUT-18', 'Door to the port wing', WH, (2.96, 20.85, 0.0), 'A weathertight door, hinged on its forward edge, with a glazed upper half and a 0.15 m sill. It stands opposite the starboard one: the Minato Maru\'s stood in the aft corner, where the boards and their locker now have the wall to themselves.',
   dict(kind='door_wing', side=1, yd=(20.45, 21.25)), survey='B104')
 C('OUT-19', 'Door to the starboard wing', WH, (-2.96, 20.85, 0.0), 'A weathertight door, hinged on its forward edge, with a glazed upper half and a 0.15 m sill.',
@@ -253,32 +260,34 @@ C('OUT-21', 'Wing bulwarks, port', WP, (3.6, 21.2, 0.0), 'A plated bulwark 1.1 m
 C('OUT-22', 'Wing bulwarks, starboard', WS, (-3.6, 21.2, 0.0), 'A plated bulwark 1.1 m high round the wing, with a varnished cap rail.', dict(kind='wing', side=-1), pick=False)
 
 # ---- Navigation.
-C('NAV-01', 'Radar display', WH, (-1.05, BACK, TOP), 'The radar picture, with target tracking: the display and its keyboard at the watch officer\'s chair, under a hood against the daylight.',
+C('NAV-01', 'Radar display', WH, (-1.05, BACK, TOP), 'The radar picture, with target tracking: the display and its keyboard at the watch officer\'s chair, set in the console\'s upstand under a hood against the daylight.',
   dict(kind='display', w=0.50, d=0.30, H=0.30, tile='radar', hood=True, keys=('radar_kbd', 0.40)), w=80, by=('BD2', 1), node='CON-SS', survey='B081', kks='10CTA10 GS002')
-C('NAV-02', 'Radar processor', WH, (-1.05, 22.64, 0.30), 'The radar\'s processor unit: it takes the scanner\'s signal, the heading and the position, and gives the picture to the display and to the chart system.',
+C('NAV-02', 'Radar processor', WH, (-1.48, 22.64, 0.30), 'The radar\'s processor unit: it takes the scanner\'s signal, the heading and the position, and gives the picture to the display and to the chart system.',
   dict(kind='box', size=(0.40, 0.28, 0.18)), w=120, by=('BD2', 1), node='CON-SS', hid='inside the console, radar bay')
 C('NAV-30', 'Radar scanner', CD, (0.0, 20.80, 5.02), 'An X-band scanner on the mast platform: a turning unit and a 1.8 m array, 14.2 m above the waterline.',
   box=(-0.96, 0.96, 20.62, 20.98, 4.80, 5.20), w=100, by=('BD2', 1), node='MAST-PF', survey='B114')
-C('NAV-04', 'AIS transponder', WH, (-1.55, 22.55, TOP), 'Sends her name, position, course and speed on VHF and shows the ships that send theirs.',
+C('NAV-04', 'AIS transponder', WH, (-1.69, BACK, TOP), 'Sends her name, position, course and speed on VHF and shows the ships that send theirs.',
   dict(kind='display', w=0.22, d=0.22, H=0.18, tile='ais'), w=60, use=0.3, by=('DC1', 2), node='CON-SS')
-C('NAV-05', 'Electronic chart system', WH, (1.95, BACK, TOP), 'Her position on an electronic chart, with the radar\'s and the AIS\'s targets laid over it. An aid: the paper chart on the chart table is the chart she is navigated on.',
+C('NAV-05', 'Electronic chart system', WH, (1.56, BACK, TOP), 'Her position on an electronic chart, with the radar\'s and the AIS\'s targets laid over it. An aid: the paper chart on the chart table is the chart she is navigated on.',
   dict(kind='display', w=0.50, d=0.30, H=0.30, tile='ecdis', keys=('ecdis_kbd', 0.30)), w=120, by=('BD1', 6), node='CON-PP', survey='B082', kks='10CTA10 GS002')
-C('NAV-06', 'GPS navigator', WH, (-0.60, 22.55, TOP), 'Position, course and speed over the ground from the satellites; it gives them to every set that needs them, the radios among them.',
+C('NAV-06', 'GPS navigator', WH, (-0.60, 22.74, TOP), 'Position, course and speed over the ground from the satellites; it gives them to every set that needs them, the radios among them.',
   dict(kind='display', w=0.24, d=0.22, H=0.18, tile='gps'), w=10, by=('DC1', 1), alt=('DC2', 4), node='CON-S', survey='B096', kks='10CTA10 GS002')
-C('NAV-07', 'Echo sounder', WH, (1.49, 22.55, TOP), 'The depth under the keel, drawn as a trace, with a shallow-water alarm.',
+C('NAV-07', 'Echo sounder', WH, (-1.44, BACK, TOP), 'The depth under the keel, drawn as a trace, with a shallow-water alarm.',
   dict(kind='display', w=0.24, d=0.22, H=0.22, tile='echo'), w=40, by=('DC1', 4), node='CON-PP', survey='B082', kks='10CTA10 GS002')
-C('NAV-08', 'Speed log', WH, (0.80, 22.64, 0.62), 'The speed through the water from a sensor in the bottom; shown on the conning display.',
+C('NAV-08', 'Speed log', WH, (0.80, 22.64, 0.49), 'The speed through the water from a sensor in the bottom; shown on the conning display.',
   dict(kind='box', size=(0.22, 0.16, 0.08)), w=20, by=('DC1', 5), node='CON-P', hid='inside the console, conning bay')
-C('NAV-09', 'Navigation data distributor', WH, (-0.60, 22.64, 0.56), 'Takes each sensor\'s sentences once and gives a buffered copy to every listener, so that no set can pull another\'s line down.',
+C('NAV-09', 'Navigation data distributor', WH, (-0.60, 22.64, 0.49), 'Takes each sensor\'s sentences once and gives a buffered copy to every listener, so that no set can pull another\'s line down.',
   dict(kind='box', size=(0.26, 0.16, 0.08)), w=10, by=('DC1', 6), node='CON-S', hid='inside the console, radar bay')
 C('NAV-10', 'Conning display', WH, (1.05, BACK, TOP), 'Heading, rudder angle, both engines\' revolutions, speed, depth and wind on one screen in front of the master\'s chair.',
   dict(kind='display', w=0.46, d=0.30, H=0.30, tile='conning'), w=60, by=('DC1', 6), node='CON-P', survey='B083')
 C('NAV-11', 'Satellite compass processor', WH, (-0.60, 22.64, 0.30), 'Works out her true heading and rate of turn from the two antennas in the dome on the compass deck. It is the heading every set steers and plots by.',
   dict(kind='box', size=(0.26, 0.20, 0.10)), w=20, by=('DC1', 3), node='CON-S', hid='inside the console, radar bay')
 C('NAV-12', 'Autopilot control unit', WH, (0.12, 21.74, 0.98), 'Sets and holds a heading; it steers through the steering control unit like the wheel does.',
-  dict(kind='flush', w=0.20, l=0.20, tile='autopilot', rise=0.07), w=30, by=('DC1', 7), node='STAND', survey='B075', kks='10CTA10 GS002')
-C('NAV-13', 'Wind display', WH, (-0.42, 22.43, 2.18), 'Wind direction and speed relative to the ship, on the overhead console.', dict(kind='ovh_dial', r=0.085, tile='wind'), w=5, by=('DC1', 13), node='OVH')
-C('NAV-14', 'Navigation network switch', WH, (0.80, 22.64, 0.50), 'The Ethernet switch of the navigation network.', dict(kind='box', size=(0.24, 0.14, 0.05)), w=15, by=('DC1', 6), node='CON-P',
+  dict(kind='flush', w=0.20, l=0.20, tile='autopilot', rise=0.07, on='stand'), w=30, by=('DC1', 7), node='STAND', survey='B075', kks='10CTA10 GS002')
+C('NAV-13', 'Wind display', WH, (-0.46, 22.43, 2.18), 'Wind direction and speed relative to the ship: a round instrument hung under the deckhead ahead of the helm.', dict(kind='ovh_dial', r=0.085, tile='wind'), w=5, by=('DC1', 13), node='OVH')
+C('NAV-18', 'Heading repeater, overhead', WH, (0.22, 22.43, 2.18), 'Her true heading on a compass card, hung under the deckhead ahead of the helm where the whole bridge reads it.', dict(kind='ovh_dial', r=0.085, tile='card'), w=10, by=('DC1', 12), node='OVH')
+C('NAV-23', 'Bridge clock', WH, (-0.22, 22.43, 2.18), 'A quartz clock on ship\'s time, hung under the deckhead. Its own battery.', dict(kind='ovh_dial', r=0.075, tile='clock'))
+C('NAV-14', 'Navigation network switch', WH, (0.80, 22.64, 0.30), 'The Ethernet switch of the navigation network.', dict(kind='box', size=(0.24, 0.14, 0.05)), w=15, by=('DC1', 6), node='CON-P',
   hid='inside the console, conning bay')
 C('NAV-15', 'Compass periscope', WH, (0.0, 22.20, 1.97), 'The magnetic compass on the compass deck, read from the helm through a tube and a mirror: it stands directly under the binnacle.',
   dict(kind='periscope'), survey='B084')
@@ -306,10 +315,10 @@ C('STR-02', 'Steering control system No. 1', WH, (0.11, 21.75, 0.30), 'The first
 C('STR-07', 'Steering control system No. 2', WH, (-0.11, 21.75, 0.30), 'The second control system: the wheel\'s second transmitter, its own amplifier, the valves of power unit No. 2, a supply from that unit\'s circuit (which comes by the emergency switchboard), and cables down the starboard side. Either system steers her alone; the selector on the stand chooses.',
   dict(kind='box', size=(0.19, 0.30, 0.34)), w=50, by=('SG2', 'control'), node='STAND', hid='inside the steering stand, starboard half')
 C('STR-03', 'Steering mode selector and tiller', WH, (-0.14, 21.74, 0.98), 'Chooses the control system (No. 1 or No. 2) and hand steering, autopilot or the tiller. The tiller works the valves of the chosen power unit directly (non-follow-up): the rudders move while it is held over, and it needs neither amplifier. It stands in a gate, a slot across the ship; a tap holds it over or lets it go.',
-  dict(kind='flush', w=0.18, l=0.20, tile='steer_mode', lever=True), node='STAND', survey='B075')
+  dict(kind='flush', w=0.18, l=0.20, tile='steer_mode', lever=True, on='stand'), node='STAND', survey='B075')
 C('STR-04', 'Heading repeater', WH, (0.0, 21.515, 0.86), 'The heading in figures, low on the stand\'s face: read by looking down, not through it.',
   dict(kind='facepanel', w=0.20, H=0.12, tile='hdg'), w=10, by=('DC1', 12), node='STAND', survey='B075')
-C('STR-05', 'Rudder angle indicator, overhead', WH, (0.42, 22.43, 2.18), 'The rudders\' true angle, from the transmitter on the steering gear: read from anywhere in the wheelhouse.',
+C('STR-05', 'Rudder angle indicator, overhead', WH, (0.50, 22.43, 2.18), 'The rudders\' true angle, from the transmitter on the steering gear: a round instrument hung under the deckhead, read from anywhere in the wheelhouse.',
   dict(kind='ovh_dial', r=0.11, tile='rai'), w=10, by=('DC1', 12), node='OVH')
 C('STR-06', 'Rudder angle indicator, console', WH, (-0.13, 22.74, TOP), 'A second indicator among the propulsion instruments. It sits on the console, not on a stand-off, so that the sea is seen over it (calculation JS4-402).',
   dict(kind='display', w=0.22, d=0.12, H=0.22, tile='rai_panel', lit=True), w=5, by=('DC1', 12), node='CON-0')
@@ -319,12 +328,12 @@ C('PRP-01', 'Engine control lever, port', WH, (0.45, 22.60, TOP), 'One lever for
   dict(kind='lever', colour=0xc2412f), node='CON-P', survey='B076')
 C('PRP-02', 'Engine control lever, starboard', WH, (0.25, 22.60, TOP), 'One lever for the starboard engine, a control head like the port one\'s. A tap moves it a notch, and its fellow on each wing moves with it.', dict(kind='lever', colour=0x2f9e5a), node='CON-P', survey='B077')
 C('PRP-03', 'Bow thruster lever', WH, (-0.15, 22.60, TOP), 'Thrust to port or starboard from the tunnel thruster in the bow. A control head whose slot lies across the ship: the lever is pushed the way her bow is to go. A tap moves it a notch, with its fellow on each wing.', dict(kind='lever', colour=0x4a6a8a, across=True), w=30, use=0.1, by=('DC1', 9), node='CON-0', survey='B078')
-C('PRP-04', 'Propulsion control panel', WH, (0.35, FRONT, TOP), 'Which station has control (bridge, a wing, or the engine control room), engine start and stop, and an emergency stop for each engine under a flap.',
+C('PRP-04', 'Propulsion control panel', WH, (0.35, ROW2, TOP), 'Which station has control (bridge, a wing, or the engine control room), engine start and stop, and an emergency stop for each engine under a flap.',
   dict(kind='flush', w=0.46, l=0.12, tile='prop_panel'), node='CON-P')
-C('PRP-05', 'Bow thruster panel', WH, (-0.15, FRONT, TOP), 'Start, stop, running lamp and the motor\'s current.', dict(kind='flush', w=0.20, l=0.12, tile='thr_panel'), node='CON-0')
+C('PRP-05', 'Bow thruster panel', WH, (-0.15, ROW2, TOP), 'Start, stop, running lamp and the motor\'s current.', dict(kind='flush', w=0.20, l=0.12, tile='thr_panel'), node='CON-0')
 C('PRP-06', 'Engine instrument panel', WH, (0.37, 22.74, TOP), 'Revolutions of both engines, their oil pressure and cooling-water temperature. Low on the console, straight ahead of the wheel: the sea is seen over it (calculation JS4-402).',
   dict(kind='display', w=0.60, d=0.12, H=0.22, tile='engine_panel', lit=True), w=20, by=('DC1', 8), node='CON-P', survey='B083')
-C('PRP-07', 'Propulsion control unit, bridge', WH, (0.35, 22.64, 0.30), 'Reads the levers at the three stations, decides which one commands, and sends the orders to the engine room over two CAN lines.',
+C('PRP-07', 'Propulsion control unit, bridge', WH, (0.0, 22.64, 0.30), 'Reads the levers at the three stations, decides which one commands, and sends the orders to the engine room over two CAN lines.',
   dict(kind='box', size=(0.40, 0.25, 0.30)), w=80, by=('DC1', 8), alt=('BD2', 7), node='CON-P', hid='inside the console, propulsion bay',
   note='Two supplies from different sources: the general service battery, and the emergency board through a rectifier of its own in the same case; the loss of either gives an alarm. If both control lines are lost the engines hold the speed and direction last ordered, the alarm sounds on the bridge and in the engine control room, and control is taken at the engines.')
 C('PRP-10', 'Wing control station, port', WP, (3.715, 22.75, 0.0), 'Engine and thruster levers, a rudder angle indicator and a revolution indicator at the outboard forward corner of the wing, for berthing port side to. The levers are outboard: standing at them she is seen along her side, and across the bow past the house to 45° on the other side.',
@@ -333,12 +342,12 @@ C('PRP-11', 'Wing control station, starboard', WS, (-3.715, 22.75, 0.0), 'Engine
   dict(kind='wing_console', side=-1), node='WING-S', survey='B109')
 
 # ---- Radio.
-C('COM-01', 'VHF radiotelephone No. 1, with DSC', WH, (-1.95, 22.55, TOP), 'The distress and calling set: 25 W, digital selective calling on channel 70 with her position from the GPS, and a handset.',
-  dict(kind='display', w=0.30, d=0.22, H=0.18, tile='vhf1', lit=True, handset=-1), w=150, use=0.1, by=('DC2', 1), node='CON-SS', survey='B093')
-C('COM-02', 'VHF radiotelephone No. 2', WH, (-2.35, 22.55, TOP), 'The second set, for port and working channels, and the spare for the first.',
-  dict(kind='display', w=0.26, d=0.22, H=0.18, tile='vhf2', lit=True), w=150, use=0.1, by=('DC2', 2), node='CON-SS')
-C('COM-05', 'NAVTEX receiver', WH, (2.52, 22.55, TOP), 'Prints navigational and weather warnings broadcast on 518 kHz.',
-  dict(kind='navtex', w=0.26, d=0.24, H=0.18, tile='navtex'), w=10, by=('DC2', 3), node='CON-PP', survey='B095', kks='10CTA10 GS002')
+C('COM-01', 'VHF radiotelephone No. 1, with DSC', WH, (-0.92, 22.43, 2.18), 'The distress and calling set: 25 W, digital selective calling on channel 70 with her position from the GPS. In the starboard overhead console, with its handset in a cradle beside it on a coiled cord: the handset lifts to a tap.',
+  dict(kind='ovh_set', w=0.30, H=0.18, tile='vhf1', handset=-1), w=150, use=0.1, by=('DC2', 1), node='OVH', survey='B093')
+C('COM-02', 'VHF radiotelephone No. 2', WH, (-1.28, 22.43, 2.18), 'The second set, for port and working channels, and the spare for the first: in the starboard overhead console.',
+  dict(kind='ovh_set', w=0.26, H=0.18, tile='vhf2'), w=150, use=0.1, by=('DC2', 2), node='OVH')
+C('COM-05', 'NAVTEX receiver', WH, (-1.12, 19.54, 1.62), 'Prints navigational and weather warnings broadcast on 518 kHz: on a bracket on the after wall over the chart table, where the warnings are plotted.',
+  dict(kind='navtex', w=0.26, d=0.24, H=0.18, tile='navtex'), w=10, by=('DC2', 3), node='CHT', survey='B095', kks='10CTA10 GS002')
 C('COM-06', 'Portable VHF sets and charger', WH, (-1.12, 19.54, 1.28), 'Three waterproof two-way sets for the survival craft, kept charged in their rack.',
   dict(kind='handhelds'), w=30, use=0.3, by=('DC2', 5), node='CHT')
 C('COM-07', 'Radar transponder, port', WH, (2.90, 20.39, 1.45), 'A search and rescue transponder beside the port door, to be taken into a survival craft: it answers a searching radar. Its own battery.',
@@ -350,13 +359,14 @@ C('COM-12', 'VHF antenna No. 2', CD, (1.2, 19.60, DECK_H), 'A 3 m whip on the po
 C('COM-13', 'NAVTEX antenna', CD, (-0.35, 19.62, DECK_H), 'A short active antenna for 518 kHz.', dict(kind='navtex_ant'), node='ROOF-A', survey='B115')
 
 # ---- Internal communication.
-C('INT-01', 'Public address and general alarm amplifier', WH, (2.30, 22.64, 0.30), 'A 240 W amplifier with the general alarm\'s tone generator: seven short blasts and a long one on every loudspeaker aboard.',
+C('INT-01', 'Public address and general alarm amplifier', WH, (1.48, 22.64, 0.30), 'A 240 W amplifier with the general alarm\'s tone generator: seven short blasts and a long one on every loudspeaker aboard.',
   dict(kind='box', size=(0.45, 0.28, 0.18)), w=240, use=0.1, by=('BD2', 2), alt=('DC1', 14), node='CON-PP', hid='inside the console, port bay', survey='B097', kks='10CTA10 GS002',
   note='Two supplies: the emergency board, and the general service battery as the transitional source, taken over without a break when the board is dead.')
-C('INT-02', 'Public address and talkback panel', WH, (2.50, FRONT, TOP), 'The microphone, the zone keys (car deck, saloon, crew, open decks), the general alarm key, and the talkback keys for the two wings, the mooring stations, the ramp and the engine control room.',
+C('INT-02', 'Public address and talkback panel', WH, (1.60, ROW1, TOP), 'The microphone, the zone keys (car deck, saloon, crew, open decks), the general alarm key, and the talkback keys for the two wings, the mooring stations, the ramp and the engine control room.',
   dict(kind='flush', w=0.36, l=0.12, tile='pa_panel', mic=True), w=30, use=0.3, by=('DC1', 10), node='CON-PP', survey='B097')
-C('INT-04', 'Telephone', WH, (2.12, FRONT, TOP), 'The ship\'s automatic telephone: cabins, mess, galley, engine control room.', dict(kind='phone', w=0.22, l=0.12, tile='phone'), node='CON-PP', survey='B094')
-C('INT-05', 'Sound-powered telephone', WH, (-2.63, 22.42, TOP), 'Speaks to the engine control room and the steering-gear room with no supply at all: the voice makes the current, and a hand crank rings the other end.',
+C('INT-04', 'Telephone', WH, (1.15, ROW1, TOP), 'The ship\'s automatic telephone: cabins, mess, galley, engine control room. Its handset lies in a cradle beside it on a coiled cord, and lifts to a tap.',
+  dict(kind='flush', w=0.22, l=0.12, tile='phone', handset=(-0.16, 0.097), handset_id='handset-telephone', handset_name='Telephone handset'), node='CON-PP', survey='B094')
+C('INT-05', 'Sound-powered telephone', WH, (-1.85, 22.50, 0.62), 'Speaks to the engine control room and the steering-gear room with no supply at all: the voice makes the current, and a hand crank rings the other end. A cased wall set on the console block\'s starboard end; its handset lifts to a tap.',
   dict(kind='sp_phone'), node='CON-SS', survey='B094')
 C('INT-07', 'General alarm push button', WH, (0.56, 19.54, 1.52), 'Sounds the general alarm from the door.', dict(kind='callpoint', colour=0xe0b020, tile='ga_push'), node='BRD')
 C('INT-08', 'Loudspeaker, wheelhouse', WH, (0.6, 20.6, CEIL), 'A loudspeaker in the deckhead.', dict(kind='ceil', type='speaker', r=0.10), node='MAST-0')
@@ -366,16 +376,16 @@ C('INT-11', 'Loudhailer', CD, (0.5, 21.15, 4.80), 'A horn loudspeaker on the mas
   box=(0.36, 0.64, 21.06, 21.40, 4.80, 5.12), node='MAST-PF')
 
 # ---- Alarm and monitoring.
-C('ALM-01', 'Machinery alarm panel', WH, (1.30, FRONT, TOP), 'The engine room\'s alarms in groups, with a buzzer: the bridge sees that something is wrong below, and whether the engineer has accepted it.',
+C('ALM-01', 'Machinery alarm panel', WH, (1.05, ROW2, TOP), 'The engine room\'s alarms in groups, with a buzzer: the bridge sees that something is wrong below, and whether the engineer has accepted it.',
   dict(kind='flush', w=0.32, l=0.12, tile='alarm_panel'), w=25, by=('DC1', 11), node='CON-P', survey='B090')
-C('ALM-02', 'Bridge watch alarm', WH, (0.96, FRONT, TOP), 'Asks the watch to press a button every few minutes at night. Unanswered, it calls the master\'s cabin, then the general alarm.',
+C('ALM-02', 'Bridge watch alarm', WH, (0.88, ROW1, TOP), 'Asks the watch to press a button every few minutes at night. Unanswered, it calls the master\'s cabin, then the general alarm.',
   dict(kind='flush', w=0.26, l=0.12, tile='bnwas'), w=15, by=('DC1', 11), node='CON-P')
 C('ALM-04', 'Watch alarm reset, chart table', WH, (-1.05, 19.54, 1.18), 'A reset button at the chart table.', dict(kind='callpoint', colour=0x3a4244, tile='bnwas_reset'), node='CHT')
 C('ALM-05', 'Camera monitor', WH, (1.10, 22.43, 2.18), 'Four cameras on one screen: the bow ramp, the car deck, the stern and the engine room.',
   dict(kind='ovh_screen', w=0.42, H=0.19, tile='cctv'), w=40, by=('BD1', 6), node='OVH')
-C('ALM-06', 'Ramp, hatch and watertight door panel', WH, (-1.55, FRONT, TOP), 'A lamp for the bow ramp, each hatch and each of the five watertight doors: green when shut and secured, red when not.',
+C('ALM-06', 'Ramp, hatch and watertight door panel', WH, (-1.10, ROW1, TOP), 'A lamp for the bow ramp, each hatch and each of the five watertight doors: green when shut and secured, red when not.',
   dict(kind='flush', w=0.44, l=0.12, tile='ramp_panel'), w=20, by=('DC1', 11), node='CON-SS', survey='B098')
-C('ALM-07', 'Camera recorder', WH, (1.62, 22.64, 0.30), 'Records the cameras.', dict(kind='box', size=(0.40, 0.28, 0.09)), w=40, by=('BD1', 6), node='CON-PP', hid='inside the console, port bay')
+C('ALM-07', 'Camera recorder', WH, (1.48, 22.64, 0.49), 'Records the cameras.', dict(kind='box', size=(0.40, 0.28, 0.09)), w=40, by=('BD1', 6), node='CON-PP', hid='inside the console, port bay')
 
 # ---- Fire detection and fire-fighting.
 C('FIR-01', 'Fire detection panel', WH, (0.94, 19.54, 1.20), 'The addressable fire detection panel: it names the detector that has answered, sounds the bells, and after two minutes unaccepted, the general alarm. It has a standby battery of its own.',
@@ -384,12 +394,14 @@ C('FIR-01', 'Fire detection panel', WH, (0.94, 19.54, 1.20), 'The addressable fi
        'and a battery of its own that carries it for half an hour, through the 45 seconds before the emergency generator is on the board.')
 C('FIR-02', 'Manual call point', WH, (0.56, 19.54, 1.32), 'Break the glass to give the alarm.', dict(kind='callpoint', colour=0xc2412f, tile='callpoint'), node='BRD', survey='B022')
 C('FIR-03', 'Smoke detector', WH, (-0.5, 21.0, CEIL), 'An optical smoke detector on loop 1.', dict(kind='ceil', type='detector', r=0.055), node='MAST-0', survey='B022')
+C('FIR-08', 'Sprinkler head, port', WH, (1.2, 21.55, CEIL), 'A pendent sprinkler head in the deckhead: its glass bulb bursts at 68 °C and lets the water out. The sprinkler main it stands on is not registered yet.', dict(kind='ceil', type='sprinkler'))
+C('FIR-09', 'Sprinkler head, starboard', WH, (-1.2, 20.55, CEIL), 'A pendent sprinkler head in the deckhead. The sprinkler main it stands on is not registered yet.', dict(kind='ceil', type='sprinkler'))
 C('FIR-05', 'Fire extinguisher, CO₂ 5 kg', WH, (-0.70, 19.64, 0.04), 'For the electrical equipment: carbon dioxide leaves nothing behind.', dict(kind='extinguisher', colour=0xc2412f, horn=True), survey='B072')
-C('FIR-06', 'Fire extinguisher, powder 6 kg', WH, (2.82, 20.39, 0.10), 'Dry powder, beside the port door.', dict(kind='extinguisher', colour=0xc2412f, wall='port'), survey='B072')
+C('FIR-06', 'Fire extinguisher, powder 6 kg', WH, (2.82, 20.39, 0.12), 'Dry powder, beside the port door.', dict(kind='extinguisher', colour=0xc2412f, wall='port'), survey='B072')
 C('FIR-07', 'Fire hose box', WP, (3.11, 19.95, 0.10), 'A 15 m hose with a dual-purpose nozzle, coiled in its box beside the hydrant.', dict(kind='hosebox'), survey='B106')
 
 # ---- Navigation lights and signals.
-C('NLT-01', 'Navigation light panel', WH, (-1.55, 22.30, 0.63), 'A switch, a fuse and a lamp-failure indicator for each lantern, on a mimic of the ship; a change-over switch between its two supplies.',
+C('NLT-01', 'Navigation light panel', WH, (-1.25, 22.20, 0.615), 'A switch, a fuse and a lamp-failure indicator for each lantern, on a mimic of the ship; a change-over switch between its two supplies. On the console block\'s apron, under the desk.',
   dict(kind='facepanel', w=1.06, H=0.26, tile='navlight_panel', face='console'), node='CON-SS', survey='B085', kks='10CTA20 GS001', basis='town')
 C('NLT-02', 'Sidelight, port', WP, (4.13, 22.70, 1.20), 'Red, from right ahead to 22.5° abaft the port beam: on the bulwark\'s rail at the wing\'s outer end, with a screen board inboard of it.', dict(kind='sidelight', side=1), w=60, use=0.5, by=('NLP', 2), node='WING-P', survey='B108', basis='town')
 C('NLT-03', 'Sidelight, starboard', WS, (-4.13, 22.70, 1.20), 'Green, from right ahead to 22.5° abaft the starboard beam: on the bulwark\'s rail, with a screen board inboard of it.', dict(kind='sidelight', side=-1), w=60, use=0.5, by=('NLP', 3), node='WING-S', survey='B110', basis='town')
@@ -406,22 +418,26 @@ C('NLT-06', 'Stern light', 'stern', (_SL['x'], round(-_SL['aft'] - BP.SHIFT, 3),
 C('NLT-07', 'Not-under-command lights, upper pair', CD, (0.0, 20.80, 6.20), 'Red, all round: two heights of them in a vertical line, 2 m apart, say she cannot keep out of the way. Each height is a pair of lanterns, one either side of the mast, lit together: a single lantern beside the mast would be hidden by it over 35° of the horizon, and no more than 6° is allowed.', dict(kind='nuc', h=6.20), w=120, use=0.0, by=('NLP', 6), node='MAST-H', basis='town')
 C('NLT-08', 'Not-under-command lights, lower pair', CD, (0.0, 20.80, 4.20), 'Red, all round: the lower pair, 2 m under the upper.', dict(kind='nuc', h=4.20), w=120, use=0.0, by=('NLP', 7), node='MAST-D', basis='town')
 C('NLT-09', 'Whistle', CD, (0.0, 21.20, 5.88), 'Two air horns on the front of the mast, sounded by compressed air.', box=(-0.18, 0.18, 20.82, 21.44, 5.76, 6.02), node='MAST-H')
-C('NLT-10', 'Whistle panel', WH, (0.72, FRONT, TOP), 'A push button for the whistle and a timer for the fog signal (one long blast every two minutes when under way).',
+C('NLT-10', 'Whistle panel', WH, (0.62, ROW1, TOP), 'A push button for the whistle and a timer for the fog signal (one long blast every two minutes when under way).',
   dict(kind='flush', w=0.16, l=0.12, tile='whistle_panel', button=0xc2412f), w=10, by=('BD2', 6), node='CON-P', survey='B099')
-C('NLT-11', 'Searchlight control', WH, (-0.50, FRONT, TOP), 'A joystick that turns and tilts the searchlight, and its lamp switch.', dict(kind='flush', w=0.16, l=0.12, tile='sl_panel', stick=True), node='CON-S', survey='B100')
-C('NLT-12', 'Wiper and window wash panel', WH, (-2.02, FRONT, TOP), 'Each wiper on, off or intermittent, and the wash.', dict(kind='flush', w=0.30, l=0.12, tile='wiper_panel'), node='CON-SS')
-C('NLT-13', 'Window wiper, starboard', WH, (-1.164, 23.02, 1.00), 'A pantograph wiper on the outside of the glass; its motor is under the sill.', dict(kind='wiper'), w=60, use=0.2, by=('BD1', 3), node='CON-SS', survey='B086')
-C('NLT-14', 'Window wiper, centre', WH, (0.0, 23.02, 1.00), 'A pantograph wiper on the outside of the glass; its motor is under the sill.', dict(kind='wiper'), w=60, use=0.2, by=('BD1', 3), node='CON-0', survey='B086')
-C('NLT-15', 'Window wiper, port', WH, (1.164, 23.02, 1.00), 'A pantograph wiper on the outside of the glass; its motor is under the sill.', dict(kind='wiper'), w=60, use=0.2, by=('BD1', 3), node='CON-P', survey='B086')
+C('NLT-11', 'Searchlight control', WH, (-0.62, ROW1, TOP), 'A joystick that turns and tilts the searchlight, and its lamp switch.', dict(kind='flush', w=0.16, l=0.12, tile='sl_panel', stick=True), node='CON-S', survey='B100')
+C('NLT-12', 'Wiper and window wash panel', WH, (-0.30, ROW1, TOP), 'Each wiper on, off or intermittent, and the wash. A tap on a switch turns it a step, and its wiper runs.', dict(kind='flush', w=0.30, l=0.12, tile='wiper_panel', works=[(f'wiper-switch-{k}', f'Wiper switch, {k}', ((0, 'off'), (55, 'intermittent'), (110, 'on')), 0, -55.0) for k in ('starboard', 'centre', 'port')]), node='CON-SS')
+C('NLT-13', 'Window wiper, starboard', WH, (-2.328, 23.20, 2.165), 'A pendulum wiper on the outside of the glass, hung from its spindle in the window\'s head under the visor; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='starboard'), w=60, use=0.2, by=('BD1', 3), node='SS-F', survey='B086')
+C('NLT-14', 'Window wiper, centre', WH, (0.0, 23.20, 2.165), 'A pendulum wiper on the outside of the glass ahead of the wheel, hung from its spindle in the window\'s head under the visor; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='centre'), w=60, use=0.2, by=('BD1', 3), node='C-F', survey='B086')
+C('NLT-15', 'Window wiper, port', WH, (2.328, 23.20, 2.165), 'A pendulum wiper on the outside of the glass, hung from its spindle in the window\'s head under the visor; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='port'), w=60, use=0.2, by=('BD1', 3), node='PP-F', survey='B086')
+C('NLT-17', 'Clear-view screen, port', WH, (1.164, 22.99, 1.50), 'A glass disc spinning in a ring in the window ahead of the master\'s chair: spray and rain are thrown off it, and it is clear where the window is tinted. Its motor is at its middle, carried by a tube from the rail under the window. A tap starts and stops it.', dict(kind='cvs', name='port'), w=60, use=0.2, by=('BD1', 3), node='CON-P')
+C('NLT-18', 'Clear-view screen, starboard', WH, (-1.164, 22.99, 1.50), 'The second clear-view screen, in the window ahead of the watch officer\'s chair.', dict(kind='cvs', name='starboard'), w=60, use=0.2, by=('BD1', 3), node='CON-S')
+C('NLT-19', 'Window heating junction box', WH, (-2.12, 22.92, 0.56), 'Where the forward windows\' heated glass is fed and switched: a box let into the lining below the sill, with its lamp.', dict(kind='jbox'), w=300, use=0.2, by=('BD1', 8), node='CON-SS')
 C('NLT-16', 'Searchlight', CD, (-1.6, 22.0, DECK_H), 'A 1 kW searchlight on the compass deck, turned from the console.', box=(-1.82, -1.38, 21.75, 22.34, DECK_H, DECK_H + 0.95), w=1000, use=0.0,
   by=('LB', 'searchlight'), node='ROOF-F', survey='B112', kks='10CTA10 GS001', basis='town')
 C('NLT-20', 'Flag locker', WH, (-0.70, 19.54, 1.00), 'The signal flags of the international code, each rolled in its own pigeonhole.', dict(kind='wallbox', w=0.44, H=0.95, d=0.18, tile='flags', colour=0x765032, open=True))
 C('NLT-21', 'Daylight signalling lamp', WH, (-2.90, 20.39, 0.72), 'A hand lamp for Morse by day, on its hook beside the starboard door with its socket.', dict(kind='aldis'), w=60, use=0.0, by=('DC1', 16), node='WALL-S')
 
 # ---- Lighting.
-for i, (x, yd) in enumerate(((1.55, 21.20), (-1.55, 21.20), (1.20, 20.20), (-1.20, 20.20))):
-    C(f'LGT-0{i + 1}', 'Deckhead light', WH, (x, yd, CEIL), 'A white light in the deckhead, for work in harbour and by day.', dict(kind='ceil', type='light', w=0.60, l=0.30),
-      w=36, use=0.1, by=('BD1', 1), node='P-M' if x > 0 else 'S-M', survey='B103', kks='10BRB10 GS011')
+for tag, (x, yd) in zip(('LGT-01', 'LGT-02', 'LGT-03', 'LGT-04', 'LGT-15', 'LGT-16', 'LGT-17', 'LGT-18'),
+                        ((1.55, 21.10), (-1.55, 21.10), (1.55, 20.10), (-1.55, 20.10), (2.35, 21.75), (-2.35, 21.75), (0.0, 19.95), (0.0, 21.60))):
+    C(tag, 'Deckhead light', WH, (x, yd, CEIL), 'A round downlight in the deckhead, for work in harbour and by day.', dict(kind='ceil', type='light', r=0.055),
+      w=13, use=0.1, by=('BD1', 1), node='P-M' if x > 0 else 'S-M' if x < 0 else 'MAST-0', survey='B103', kks='10BRB10 GS011')
 C('LGT-05', 'Chart lamp', WH, (-1.90, 19.66, 0.95), 'A dimmed lamp on a stalk, red or white, that lights the chart and nothing else.', dict(kind='chart_lamp'), w=10, use=0.5, by=('BD1', 1), node='CHT', survey='B087')
 C('LGT-06', 'Night light, red, port', WH, (0.9, 22.15, CEIL), 'A red light over the console: enough to find a switch by, without spoiling the night vision.', dict(kind='ceil', type='red', r=0.035, xs=(0.9,)),
   w=5, use=0.5, by=('DC1', 15), node='C-F')
@@ -432,7 +448,7 @@ C('LGT-14', 'Transitional light', WH, (0.6, 21.9, CEIL), 'A 24 V lamp on the gen
   w=10, use=0.0, by=('DC1', 15), node='P-M')
 C('LGT-08', 'Wing light, port', WP, (3.05, 22.91, 1.90), 'A bulkhead light on the house side.', dict(kind='wing_light', side=1), w=40, use=0.1, by=('BD1', 2), node='WALL-P')
 C('LGT-09', 'Wing light, starboard', WS, (-3.05, 22.91, 1.90), 'A bulkhead light on the house side.', dict(kind='wing_light', side=-1), w=40, use=0.1, by=('BD1', 2), node='WALL-S')
-C('LGT-10', 'Dimmer panel', WH, (-2.38, FRONT, TOP), 'Dims the instruments and the console lighting for the night watch.', dict(kind='flush', w=0.24, l=0.12, tile='dimmer_panel', knobs=3), w=60, use=0.5, by=('BD1', 8), node='CON-SS')
+C('LGT-10', 'Dimmer panel', WH, (0.34, ROW1, TOP), 'Dims the instruments, the red night lights over the console and the chart lamp. A tap on a knob turns it a step: the night lights and the chart lamp go out and come on with it, and the displays darken when the instruments are turned down.', dict(kind='flush', w=0.24, l=0.12, tile='dimmer_panel', works=[('dimmer-console', 'Dimmer, console night lights', ((0, 'off'), (135, 'half'), (270, 'full')), 0, -135.0), ('dimmer-instruments', 'Dimmer, instruments', ((0, 'turned down for the night: the displays are darkened'), (135, 'half'), (270, 'full: by day')), 2, -135.0), ('dimmer-chart', 'Dimmer, chart lamp', ((0, 'off'), (135, 'half'), (270, 'full')), 1, -135.0)]), w=60, use=0.5, by=('BD1', 8), node='CON-SS')
 C('LGT-11', 'Foredeck floodlight, port', CD, (2.35, 22.66, DECK_H), 'Lights the car deck forward and the ramp.', box=(2.19, 2.51, 22.58, 22.78, DECK_H, DECK_H + 0.63), w=150, use=0.1, by=('BD1', 2), node='ROOF-F')
 C('LGT-12', 'Foredeck floodlight, starboard', CD, (-2.35, 22.66, DECK_H), 'Lights the car deck forward and the ramp.', box=(-2.51, -2.19, 22.58, 22.78, DECK_H, DECK_H + 0.63), w=150, use=0.1, by=('BD1', 2), node='ROOF-F')
 
@@ -444,16 +460,16 @@ C('ELD-02', 'Emergency distribution board BD2', WH, (2.11, 19.54, 1.05), '230 V,
 C('ELD-03', '24 V DC panel DC1, navigation and control', WH, (2.63, 19.54, 1.44), '24 V from the general service battery: fifteen fused ways, a voltmeter and an earth-fault lamp.',
   dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc1', colour=0x9aa3a2, handle=True), node='BRD')
 C('ELD-04', '24 V DC panel DC2, radio', WH, (2.63, 19.54, 1.05), '24 V from the radio battery: five fused ways, a voltmeter and the charger-failure alarm.',
-  dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc2', colour=0x9aa3a2, handle=True), node='BRD')
-C('ELD-11', 'Console socket, port', WH, (2.20, 22.30, 0.72), 'A 230 V socket on the console\'s after face.', dict(kind='sockets', xs=(2.20,)), w=150, use=0.1, by=('BD1', 4), node='CON-PP')
-C('ELD-13', 'Console socket, centre', WH, (-0.40, 22.30, 0.72), 'A 230 V socket on the console\'s after face.', dict(kind='sockets', xs=(-0.40,)), w=150, use=0.1, by=('BD1', 4), node='CON-S')
-C('ELD-12', 'Console heaters', WH, (0.0, 22.70, 0.14), 'Small heaters low in the console that keep the damp out of the electronics when she lies cold.', dict(kind='box', size=(0.60, 0.06, 0.06)),
+  dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc2', colour=0x9aa3a2, handle=True, tail=1.444), node='BRD')
+C('ELD-11', 'Sockets below the sill, port', WH, (2.42, 22.92, 0.56), 'A double 230 V socket in the lining below the forward sill, port side.', dict(kind='sockets', looks='aft', double=True), w=150, use=0.1, by=('BD1', 4), node='CON-PP')
+C('ELD-13', 'Console socket', WH, (-0.52, 22.20, 0.76), 'A 230 V socket on the console block\'s apron.', dict(kind='sockets', looks='aft'), w=150, use=0.1, by=('BD1', 4), node='CON-S')
+C('ELD-12', 'Console heaters', WH, (0.0, 22.70, 0.12), 'Small heaters low in the console that keep the damp out of the electronics when she lies cold.', dict(kind='box', size=(0.60, 0.06, 0.06)),
   w=100, use=0.2, by=('BD1', 8), node='CON-0', hid='inside the console, at its foot')
 # ---- The pantry (the owner, 11 November 2026: "we need a cooler and a coffee pot too"): on the starboard side forward of the
 # wing door, below the window's sill. Its two appliances are on a way of their own on BD1.
 C('OUT-38', 'Pantry unit', WH, (-2.69, 21.74, 0.0), 'A low unit under the starboard side window, wholly below its sill: the cooler in its after bay, the coffee maker in a niche with a rail across it for when she rolls, and under the niche a cupboard with the mugs, the coffee, the tea and the sugar. The cupboard opens to a tap.', dict(kind='pantry'))
 C('OUT-39', 'Cooler', WH, (-2.70, 21.56, 0.10), 'A 45-litre refrigerator for the watch: two wire shelves, a shelf in the door. It opens to a tap.', dict(kind='cooler'), w=70, use=0.35, by=('BD1', 7), node='WALL-S')
-C('OUT-40', 'Coffee maker', WH, (-2.67, 21.96, 0.47), 'A filter coffee maker with a glass jug on a hot plate: a litre and a quarter, a pot for the watch.', dict(kind='coffee'), w=900, use=0.08, by=('BD1', 7), node='WALL-S')
+C('OUT-40', 'Coffee maker', WH, (-2.67, 21.96, 0.47), 'A filter coffee maker with a glass jug on a hot plate: a litre and a quarter, a pot for the watch. A tap on its switch starts it, and the jug fills; a tap on the jug lifts and pours it, and it empties.', dict(kind='coffee'), w=900, use=0.08, by=('BD1', 7), node='WALL-S')
 C('ELD-23', 'Pantry sockets', WH, (-2.90, 21.96, 0.76), 'A double 230 V socket at the back of the pantry\'s niche, for the coffee maker and the cooler.', dict(kind='pantry_socket'), node='WALL-S')
 C('ELD-20', 'Cable transit at the mast', WH, (0.0, 20.80, CEIL), 'Where the cables to the mast and the compass deck pass the deck, sealed gastight and watertight.', dict(kind='ceil', type='transit', w=0.24, l=0.16), node='MAST-0')
 C('ELD-21', 'Cable duct on the port mullion', WH, (0.58, 22.90, 1.45), 'A covered duct down a forward mullion, from the trays over the deckhead to the console.', dict(kind='mullion_ducts', side=1), node='DUCT-P')
@@ -471,9 +487,9 @@ C('PIP-05', 'Scupper, port wing', WP, (3.92, 19.80, 0.0), 'The wing\'s deck drai
 C('PIP-06', 'Scupper, starboard wing', WS, (-3.92, 19.80, 0.0), 'The wing\'s deck drain, led overboard.', dict(kind='scupper', side=-1))
 C('PIP-10', 'Whistle valve', WH, (0.30, 20.95, 2.08), 'The valve that lets air to the whistle: opened by a solenoid from the push buttons and the fog timer, or by hand with the pull above the helm.',
   dict(kind='whistle_valve'), w=20, use=0.0, by=('BD2', 6), node='MAST-0')
-C('PIP-11', 'Window wash valve', WH, (2.62, 22.80, 0.30), 'A solenoid valve on the fresh-water line to the wash nozzles.', dict(kind='box', size=(0.10, 0.08, 0.10)), w=15, use=0.0, by=('BD1', 3), node='CON-PP',
+C('PIP-11', 'Window wash valve', WH, (1.76, 22.80, 0.49), 'A solenoid valve on the fresh-water line to the wash nozzles.', dict(kind='box', size=(0.10, 0.08, 0.10)), w=15, use=0.0, by=('BD1', 3), node='CON-PP',
   hid='inside the console, port end')
-C('PIP-12', 'Window wash nozzles', WH, (0.0, 23.03, 0.99), 'A nozzle at each wiper.', dict(kind='nozzles'))
+C('PIP-12', 'Window wash nozzles', WH, (0.0, 23.22, 2.25), 'A brass pipe along the windows\' head outside, under the visor, with a jet over each wiper\'s glass.', dict(kind='nozzles', xs=(-2.328, 0.0, 2.328)))
 
 # ---- Life-saving.
 C('LSA-01', 'Lifebuoy with light and smoke, port', WP, (4.02, 20.90, 0.62), 'A lifebuoy on a quick-release with a self-igniting light and a smoke float: thrown from the wing for a man overboard.', dict(kind='lifebuoy', side=1))
@@ -503,7 +519,7 @@ NETS = [
              ('NAV-12', 'listens', 'heading, course'), ('NAV-04', 'listens', 'heading, rate of turn'),
              ('COM-01', 'listens', 'position and time, for the distress call'), ('COM-02', 'listens', 'position and time'),
              ('COM-05', 'listens', 'position, to choose the stations'),
-             ('STR-04', 'listens', 'heading'), ('NAV-16', 'listens', 'heading'), ('NAV-17', 'listens', 'heading'),
+             ('STR-04', 'listens', 'heading'), ('NAV-16', 'listens', 'heading'), ('NAV-17', 'listens', 'heading'), ('NAV-18', 'listens', 'heading'),
              ('ALM-02', 'listens', 'whether the autopilot steers'),
          ]),
     dict(id='AIS', name='AIS targets', medium='IEC 61162-2, 38 400 baud', text='The ships the AIS hears, to the radar and the chart system.',

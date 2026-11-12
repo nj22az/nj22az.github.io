@@ -272,6 +272,19 @@ function moveParts(shadows = true) {
       const run = (input ? input.value : 0) * (def.ratio ?? 1);
       node.matrix.makeTranslation(AXIS.x * run, AXIS.y * run, AXIS.z * run);
     }
+    else if (def.kind === 'stretch') {
+      // The part grows along the axis from its pivot, by the input times `ratio` of its own length: a blind's film drawn out of
+      // its cassette, the coffee rising in its jug.
+      const k = (input ? input.value : 0) * (def.ratio ?? 1), x = AXIS.x, y = AXIS.y, z = AXIS.z;
+      TURN.set(1 + k * x * x, k * x * y, k * x * z, 0, k * y * x, 1 + k * y * y, k * y * z, 0, k * z * x, k * z * y, 1 + k * z * z, 0, 0, 0, 0, 1);
+      node.matrix.makeTranslation(PIVOT.x, PIVOT.y, PIVOT.z).multiply(TURN).multiply(SHIFT.makeTranslation(-PIVOT.x, -PIVOT.y, -PIVOT.z));
+    }
+    else if (def.kind === 'show') {
+      // The part is there only while its input is over `over` (a lamp's lit glass), or with `when: "off"` only while it is not
+      // (the film that darkens a display turned down).
+      node.matrix.identity();
+      node.visible = ((input ? input.value : 0) > (def.over ?? 0)) === (def.when !== 'off');
+    }
     else if (def.kind === 'carry') {
       // The part keeps its heading and goes with a point that turns about the pivot.
       ARM.fromArray(def.point).sub(PIVOT);
@@ -424,6 +437,28 @@ function workOrders(dt) {
   }
   if (moved) moveParts(!under);
 }
+/** Whether a worked thing is on: a switch away from its first position; a thing worked by a tap more than half way over. */
+function isOn(id) {
+  const it = id && inputs.get(id);
+  if (!it) return false;
+  return it.def.steps ? it.at !== 0 : it.def.auto ? it.value > it.def.min + (it.def.max - it.def.min) * 0.5 : it.value !== 0;
+}
+/**
+ * What is worked by a tap and belongs to a fitting of the register (a wiper, a clear-view screen, the coffee maker, a
+ * telephone's handset) answers a tap anywhere on that fitting: the nearest such thing to the place tapped.
+ */
+function tapFitting(id, point) {
+  let best = null, near = Infinity;
+  for (const it of inputs.values()) {
+    if (it.def.auto !== 'tap' || it.def.fitting !== id) continue;
+    const d = point.distanceToSquared(Q.fromArray(it.def.at));
+    if (d < near) { best = it; near = d; }
+  }
+  if (!best) return false;
+  best.open = !best.open;
+  readout.textContent = `${best.def.name}: ${best.open ? best.def.above || 'open' : best.def.rest || 'shut'}`;
+  return true;
+}
 /**
  * What the file says is worked by coming near (`auto`: her watertight doors): open to a walker within `reach` of `at`,
  * shut again behind; from outside, as a tap left it. It swings in 0.8 s.
@@ -432,7 +467,34 @@ function workAuto(dt) {
   let moved = false, under = false;
   for (const it of inputs.values()) {
     const def = it.def;
+    if (def.level) {
+      // What fills and empties (the coffee in its jug): it rises while what fills it is on, and falls while what drains it is worked.
+      let v = it.value;
+      if (isOn(def.level.fill)) v = Math.min(def.max, v + def.level.rate * dt);
+      if (isOn(def.level.drain)) v = Math.max(def.min, v - def.level.drainRate * dt);
+      if (v !== it.value) { it.value = v; moved = under = true; }
+      continue;
+    }
     if (!def.auto) continue;
+    if (def.run) {
+      // What runs while it is on: a wiper sweeps to its limit and back once in `period` seconds; a clear-view screen spins at
+      // `rate` degrees a second. It is on by a tap, or (`with`) while its own switch is turned on. Turned off, it goes on to
+      // where it is parked and stops there. Nothing runs for whoever asked for less motion.
+      const on = !still.matches && (it.open || isOn(def.with)), span = def.max - def.min;
+      if (def.run === 'spin') {
+        const step = (def.rate || 720) * dt;
+        if (on) it.value = def.min + (it.value - def.min + step) % span;
+        else if (it.value !== def.min) it.value = it.value + step >= def.max ? def.min : it.value + step;
+        else continue;
+      } else {
+        if (on) { it.phase = ((it.phase || 0) + dt / (def.period || 2)) % 1; it.value = def.min + span * (0.5 - 0.5 * Math.cos(it.phase * 2 * Math.PI)); }
+        else if (it.value !== def.min) { it.phase = 0; it.value = Math.max(def.min, it.value - span / 0.8 * dt); }
+        else continue;
+      }
+      moved = true;
+      if (on || it.value !== def.min) under = true;
+      continue;
+    }
     // `auto: "tap"` (a machine's service door, its coin return) is worked by a tap only, on foot too: nobody opens it by passing.
     const byTap = def.auto === 'tap';
     const near = !byTap && walk && Math.hypot(walk.pos.x - def.at[0], walk.pos.z - def.at[2]) < def.reach && Math.abs(walk.pos.y - def.at[1]) < (def.height ?? 1.5);
@@ -482,6 +544,8 @@ function controlAt(object, fittingId) {
 /** Keys on the desk for each thing the file says can be worked (showInput). */
 function buildInputs(header) {
   for (const def of header.inputs || []) {
+    // What fills and empties (`level`: the coffee in its jug) has no keys: it follows what fills it and what drains it (workAuto).
+    if (def.level) { inputs.set(def.id, { def, value: def.start ?? def.min }); continue; }
     // A door has no keys on the desk: it opens to whoever comes near on foot, and to a tap from outside (workAuto, identify).
     if (def.auto) {
       inputs.set(def.id, { def, value: def.min, open: false });
@@ -750,7 +814,7 @@ function identify(clientX, clientY) {
   const fitting = systems && systems.pick(deck.id, p);
   // A lever answers a tap by moving a notch; its card is shown with it.
   const control = controlAt(hit.object, fitting && fitting.id);
-  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); if (control) stepInput(control); return; }
+  if (fitting) { select(null); systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown }); if (control) stepInput(control); else tapFitting(fitting.id, p); return; }
   if (control) { stepInput(control); return; }
   if (systems) { systems.hideCard(); if (!systems.state.shown) systems.clear(); }
   // The smallest room of this deck that holds the point: a cabin wins over the deck house it stands in.
@@ -800,6 +864,7 @@ function nameOnFoot(clientX, clientY) {
   if (fitting) systems.showComponent(fitting.id, { fly: false, keep: !!systems.state.shown });
   else if (systems.state.shown) systems.hideCard(); else systems.clear();
   if (control) stepInput(control);
+  else if (fitting && hit.distance < 3) tapFitting(fitting.id, hit.point.clone().sub(deck.node.position));
 }
 // On foot: one finger (or the mouse) on the model looks round, and a tap names what it is on; two fingers zoom, by how far
 // apart they have come since the second went down. When one of the two lifts, the other goes on looking from where it is.
@@ -1674,7 +1739,7 @@ async function start() {
     hold: (code, on = true) => { on ? held.add(code) : held.delete(code); },
     /** For checks: the walk of so many seconds, gone at once (60 pictures a second), whatever this machine can draw. */
     walkFor: seconds => { for (let t = 0; walk && t < seconds - 1e-9; t += 1 / 60) stepWalk(1 / 60); },
-    roomFor, headroom, wallClear, workAuto, footing, climb, travelTo,
+    roomFor, headroom, wallClear, workAuto, workSteps, footing, climb, travelTo,
     /** For checks: what quick travel offers, as the list in the bar has it. */
     get travels() { return [...travel.querySelectorAll('option')].filter(o => o.value).map(o => ({ value: o.value, name: o.textContent })); },
     get ways() { return ways.map(w => ({ id: w.def.id, a: w.a.toArray(), b: w.b.toArray() })); },
@@ -1686,7 +1751,7 @@ async function start() {
     ship: doc.header.ship,
     step: id => stepInput(id),
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
-    movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray() })),
+    movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray(), shown: m.node.visible })),
     get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max, stand: sp.stand || null }))); },
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw, draw, drawing, lite, drawnBy },
     get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent, climbing: !!walk.climb, ladder: climbBtn.hidden ? null : climbBtn.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
