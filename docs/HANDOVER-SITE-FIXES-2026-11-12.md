@@ -31,6 +31,12 @@ Local server `python3 -m http.server 8765` on this branch. Headless Chrome at 14
 
 `johansson-town/` is not checked out here (it is a separate repository). Because of that, these 404s were already true before this change and are still true: the homepage's town portrait, Pocket Camera's `looks.js` and `face.js`, and `/mizuhama-1988/`'s redirect to `/johansson-town/`. `/maintenance-demo/` logs a missing `/favicon.ico`, which this change did not add. The Pocket Camera browser suite was not run; the brand test's heading assertion was updated and the heading was checked in Chrome as above. Not tried on a phone.
 
+## Follow-up on the same pull request
+
+The header shortcut in `assets/js/office-calendar.js` now goes to `/johansson-world/`. The homepage no-script list goes to `/johansson-world/#downloads` and `/johansson-world/sakura/`. The Linux install guide’s two links keep their hashes: `/johansson-world/#demo-guide` and `/johansson-world/#demo-limits`. The `/world/` redirect page is still there. `theme-bootstrap.js` still recognises that page so a visit to the stub keeps its palette. The frozen homepage baseline under `tools/office-home/baseline-0f13c23b/` was not changed.
+
+Checked in headless Chrome on the local server. The header link’s address is `/johansson-world/`; clicking it lands on `/johansson-world/` and the page does not request `/world/`. The install page’s header and the two guide links are the canonical addresses, and that page raises no console error. The homepage’s one console error is the missing town portrait, already true because `johansson-town/` is not checked out. Live, `https://nj22az.github.io/johansson-world/` and `/johansson-world/sakura/` answer 200, and the World page has `downloads`, `linux`, `demo-guide` and `demo-limits`.
+
 ## Left as they were
 
-`assets/js/office-calendar.js` still points its World shortcut at `/world/`, and the homepage `<noscript>` list still links `/world/#downloads` and `/world/sakura/`. Both stubs redirect to the canonical World and Sakura pages. They were outside this list of fixes.
+Nothing under `ferry/` was edited.

@@ -11,7 +11,7 @@
     };
     var shortcuts = [
       ['Projects',location.pathname==='/'||location.pathname==='/index.html'?'#projects':'/#projects','Projects',paths.projects],
-      ['Johansson World','/world/','World',paths.world],
+      ['Johansson World','/johansson-world/','World',paths.world],
       ['Blog','/blog/','Blog',CONFIG.icons.notebook],
       ['Hotels & Parking','/hotels/','Hotels',CONFIG.icons.bed]
     ];
