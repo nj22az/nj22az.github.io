@@ -31,7 +31,8 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const moved = id => { const m = f.movers().filter(m => m.input === id); return m.length ? Math.max(...m.map(m => m.matrix.reduce((s, v, i) => s + Math.abs(v - (i % 5 === 0 ? 1 : 0)), 0))) : null; };
     const out = [];
     window.__doorAt = id => (header.inputs.find(i => i.id === id) || {}).at;          // where the file says a door is, for the checks below
-    for (const def of header.inputs.filter(i => i.auto)) {
+    // (what only goes from 0 to 1 is a push-button, not a door: it moves a few millimetres, and the stand's own check below works it)
+    for (const def of header.inputs.filter(i => i.auto && i.max > 1)) {
       f.work(def.id, true); for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
       const open = moved(def.id);
       f.work(def.id, false); for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
@@ -77,7 +78,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const r = await fetch('data/ferry.bin.gz'); const ds = new DecompressionStream('gzip');
     const buf = await new Response(r.body.pipeThrough(ds)).arrayBuffer(); const n = new DataView(buf).getUint32(4, true);
     const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 8, n)));
-    const rods = header.movers.filter(m => m.kind === 'aim' && m.extend && m.input === 'stern-ramp');
+    const rods = header.movers.filter(m => m.kind === 'aim' && m.extend && /^stern-ramp-ram-/.test(m.id));
     const at = (id, p) => { const m = f.movers().find(m => m.id === id).matrix; return [0, 1, 2].map(i => m[i] * p[0] + m[4 + i] * p[1] + m[8 + i] * p[2] + m[12 + i]); };
     const lowest = header.inputs.find(i => i.id === 'stern-ramp').max;
     let off = 0, run = 0, closed = 0;
@@ -96,6 +97,59 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   // (A cylinder of one stage cannot run out farther than it is long when closed: that is the limit, whatever her size.)
   check(rams.rods === 2 && rams.off < 0.002 && rams.run > 0.5 && rams.run < rams.closed - 0.3,
     `two hydraulic cylinders work it: each rod's end stays on the ramp's lug from raised to ${rams.lowest}° (never more than ${(rams.off * 1000).toFixed(1)} mm off), and has run out ${rams.run.toFixed(2)} m when the ramp lies level (pin to pin ${rams.closed.toFixed(2)} m closed)`);
+  // Its order (the owner, 12 November 2026: "a simple system that could be animated much better"; "There needs to be a latch for the
+  // ramp too, so it doesnt become dangerous"; JS3-304): the two safety latches are lifted first, the ten cleats let go, and only
+  // then does the leaf turn; its end flaps fold out on the way down. Raised again, all of it is home.
+  const order = await page.evaluate(() => {
+    const f = window.__ferry;
+    const m = id => (f.movers().find(m => m.id === id) || {}).matrix;
+    const lean = id => { const k = m(id); return k ? Math.atan2(k[6], k[5]) * 180 / Math.PI : null; };
+    const slid = id => { const k = m(id); return k ? Math.hypot(k[12], k[13], k[14]) : null; };
+    const at = v => { f.setInput('stern-ramp', v); const leaf = lean('stern-ramp'), flap = lean('stern-ramp-flaps');
+      return { leaf: Math.abs(leaf), latch: Math.abs(lean('stern-ramp-latches')), hook: Math.abs(lean('stern-ramp-hooks')), bolt: slid('stern-ramp-bolts-p'), boltS: slid('stern-ramp-bolts-s'),
+        flap: (((flap - leaf) % 360) + 360) % 360 }; };
+    const out = { home: at(0), lifted: at(4), free: at(5), going: at(30), level: at(90), again: at(0) };
+    return out;
+  });
+  const flapDown = Math.min(order.level.flap, 360 - order.level.flap);
+  check(order.home.latch < 1e-6 && order.home.bolt < 1e-6 && order.home.hook < 1e-6 && order.lifted.latch > 20 && order.lifted.leaf < 1e-6
+    && order.free.bolt > 0.15 && order.free.boltS > 0.15 && order.free.hook > 25 && order.free.leaf < 1e-6
+    && order.going.leaf > 10 && Math.min(order.going.flap, 360 - order.going.flap) < 1 && flapDown > 160
+    && order.again.latch < 1e-6 && order.again.bolt < 1e-6 && order.again.leaf < 1e-6,
+    `it is worked in its order: the safety latches lift first (${order.lifted.latch.toFixed(0)}° while the leaf has not moved), the cleats let go (bolts drawn ${(order.free.bolt * 1000).toFixed(0)} mm, hooks dropped ${order.free.hook.toFixed(0)}°, the leaf still home), then the leaf turns (${order.going.leaf.toFixed(1)}° with its flaps still folded), and level its flaps are let down (${flapDown.toFixed(0)}° from stowed); raised again, latches and cleats are home`);
+  // The control stand beside the door (the owner: "a local control panel that is wired up"): its lever does nothing until a pump runs;
+  // with a pump running it lowers the ramp, stops it and raises it, and springs back to its middle when the ramp has arrived.
+  const stand = await page.evaluate(async () => {
+    const f = window.__ferry, wait = ms => new Promise(r => setTimeout(r, ms));
+    const comp = f.systems && f.systems.data.components.find(c => c.id === 'RMP-30');
+    if (!f.control('stern-ramp-lever')) return null;
+    f.setInput('stern-ramp', 0);
+    f.step('stern-ramp-lever');                                  // no pump runs: nothing
+    await wait(1200);
+    const idle = { ramp: f.state.inputs['stern-ramp'], at: f.control('stern-ramp-lever').at };
+    f.work('stern-ramp-pump-1', true);
+    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
+    const lamp = f.movers().find(m => m.id === 'stern-ramp-pump-1-lamp');
+    f.step('stern-ramp-lever');                                  // lower: wait until the cleats are free and the leaf is on its way
+    for (let t = 0; t < 240 && f.state.inputs['stern-ramp'] < 8; t++) await wait(500);
+    const lowering = f.state.inputs['stern-ramp'];
+    f.step('stern-ramp-lever');                                  // stop
+    await wait(1500);
+    const held = f.state.inputs['stern-ramp'];
+    await wait(2500);
+    const still = f.state.inputs['stern-ramp'];
+    f.step('stern-ramp-lever');                                  // raise
+    for (let t = 0; t < 360 && f.state.inputs['stern-ramp'] > 0; t++) await wait(500);
+    await wait(1500);
+    const home = { ramp: f.state.inputs['stern-ramp'], at: f.control('stern-ramp-lever').at };
+    f.work('stern-ramp-pump-1', false);
+    for (let t = 0; t < 1.2; t += 0.1) f.workAuto(0.1);
+    return { drawn: comp && comp.drawn, idle, lit: lamp && lamp.shown, lowering, held, still, home };
+  });
+  check(stand && stand.drawn === 'blender' && stand.idle.ramp === 0 && stand.idle.at === 1 && stand.lit && stand.lowering >= 8 && Math.abs(stand.still - stand.held) < 1e-6
+    && stand.home.ramp === 0 && stand.home.at === 1,
+    `the ramp is worked from its control stand: with no pump running its lever does nothing; with pump No. 1 running (its lamp lit) the lever lowers the ramp `
+    + `(to ${stand ? stand.lowering.toFixed(1) : '?'} of its control when it was stopped), stops it, raises it home, and springs back to its middle`);
   // The lights of the after end (the owner: "And lights"): the sternlight is the register's NLT-06 and has its place at the stern.
   const light = await page.evaluate(() => {
     const f = window.__ferry, c = f.systems ? f.systems.data.components.find(c => c.id === 'NLT-06') : null;

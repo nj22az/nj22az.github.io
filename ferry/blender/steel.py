@@ -2,7 +2,7 @@
 Her bare steel above the tank top, built from the general arrangement (ga.py, revision D): every deck's plating with the
 wells cut in it and the beams under it, the walls of every space with its doorways and windows, the side casings on the
 main deck, the fixed ramp to the upper deck, the cargo lift's platform, the house in its four tiers, the helicopter deck,
-the two funnels, the stern ramp on its hydraulic cylinders, the pilot doors, the engine room platform, the stair trunk's
+the two funnels, the pilot doors, the engine room platform, the stair trunk's
 landings, and the rails of the open decks.
 
 It is the ship before her outfit: steel walls in primer inside and white outside, door openings without doors, windows
@@ -23,8 +23,8 @@ measures"; JSY-STD-403). The rules this file is built on:
      and the bulwark beside it.
   9. What follows her side follows her lines: a wall across the vehicle deck ends on the topsides' own straight section
      (lines.topside_x), and the forecastle deck rises with lines.deck_y at the frames.
- 10. What moves is clear of what it passes: the stern ramp lies 20 mm abaft the transom's plating, a pilot door's leaf
-     4 mm off its frame.
+ 10. What moves is clear of what it passes: a pilot door's leaf 4 mm off its frame (the stern ramp, which lies 20 mm abaft
+     the transom's plating, is stern_gear.py's).
 zfight.py holds the whole ship to it after every build.
 
 Drawn in the ship's axes (lines.py): x to port, y up from the waterline, z forward from amidships.
@@ -1119,35 +1119,14 @@ def helideck():
 # =====================================================================================================================
 # The stern ramp, the pilot doors, the funnels, the wheelhouse's after wall
 # =====================================================================================================================
-# The stern ramp, its two hydraulic cylinders and the lights of the after end are specified in spec.py (STERN_DOOR,
-# STERN_RAMP, STERN_LIGHTS), where the yard's drawing of the after end reads them too. The model's z of a place given there
-# as metres inside the transom:
-STERN_RAMP = dict(S.STERN_RAMP)
-_IN = lambda inside: -L.HALF + inside
-STERN_RAMP['hinge3'] = (0.0, S.STERN_RAMP['hinge'][0], _IN(S.STERN_RAMP['hinge'][1]))
-STERN_RAMP['trunnion3'] = (S.STERN_RAMP['trunnion'][0], _IN(S.STERN_RAMP['trunnion'][1]))
-STERN_RAMP['pin3'] = (S.STERN_RAMP['pin'][0], _IN(S.STERN_RAMP['pin'][1]))
+# The stern ramp and everything that works it are built by stern_gear.py from stern_place.py (drawing JS3-304). Here: the
+# pilot doors, the lights of the after end (spec.STERN_LIGHTS), the funnels.
 PILOT = dict(S.PILOT_DOOR, open=100, leaf=0.03, frame=0.06, lap=0.07)
 
 
 def motion():
-    """What of her steel can be worked on the page: the stern ramp, by a control in the bar as the rudder is, and the two
-    pilot doors, each by a tap. The ramp turns on its hinges; each cylinder swings on its trunnion to follow its pin on the
-    ramp, and its rod runs out as far as the pin has gone (the page's `aim`, as the steering gear's rams are worked)."""
-    R = STERN_RAMP
-    # On the page's desk: Raise, Stop, Lower. Lowering, it stops by itself level with the main deck (90 degrees); Lower again
-    # takes it on to a low quay. Two degrees a second is the yard's figure for the page: three quarters of a minute to the
-    # quay. A real ramp of this size takes a minute or two (recalled, not read).
-    inputs = [dict(id=R['id'], name='Stern ramp', min=0, max=R['lowered'], step=1, unit='°', below='raised', above='lowered', rest='raised',
-                   keys=['Raise', 'Stop', 'Lower'], stops=[dict(v=90, say='level'), dict(v=R['lowered'], say='low quay')], rate=2)]
-    # about the athwartships axis through its hinges; its head goes aft and down
-    movers = [dict(id=R['id'], kind='turn', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge3']), ratio=-1.0)]
-    for sgn, tag in ((1, 'p'), (-1, 's')):
-        x = sgn * R['ram_x']
-        ram = dict(kind='aim', input=R['id'], axis=[1, 0, 0], pivot=list(R['hinge3']), ratio=-1.0,
-                   anchor=[x, R['trunnion3'][0], R['trunnion3'][1]], pin=[x, R['pin3'][0], R['pin3'][1]])
-        movers.append(dict(ram, id=f"{R['id']}-ram-{tag}"))
-        movers.append(dict(ram, id=f"{R['id']}-ram-{tag}-rod", extend=True))
+    """What of her steel can be worked on the page: the two pilot doors, each by a tap. (The stern ramp: stern_gear.py.)"""
+    inputs, movers = [], []
     # The pilot doors: each leaf turns inboard on its two hinges, on its forward edge. Shut at sea: a tap opens one, on
     # foot from within reach; nobody opens a door in her side by walking past it.
     (a, b), (y0, y1) = PILOT['yard'], PILOT['y']
@@ -1157,67 +1136,6 @@ def motion():
                            auto='tap', at=[sgn * (L.half_breadth(Z((a + b) / 2)) - 0.3), y0, Z((a + b) / 2)], normal=[sgn, 0, 0], reach=2.6))
         movers.append(dict(id=f'pilot-door-{tag}', kind='turn', input=f'pilot-door-{tag}', axis=[0, 1, 0], pivot=[hx, 0.0, hz], ratio=-1.0 * sgn))
     return inputs, movers
-
-
-def stern_ramp():
-    """The stern ramp, drawn raised: it is the stern door, and it lowers (motion). A box girder 11 m long and 0.42 m deep
-    that lies against the transom from outside: its roadway looks forward into the main deck; its outer skin, which looks
-    aft and is the weathertight door's face to the sea, is plated smooth over the girders inside it, and carries her name
-    and port whole (hull_markings.py). It turns on a hinge line at the sill, so placed that its roadway lies level with
-    the main deck when it is down. Two hydraulic cylinders work it, each from a pedestal on the main deck to a lug that
-    stands in through the door's opening."""
-    R = STERN_RAMP
-    ramp = part('main', 'Stern ramp', 'Topside paint', mover=R['id'])
-    road = part('main', 'Stern ramp, roadway', 'Deck paint', mover=R['id'])
-    lugs = part('main', 'Stern ramp, hinge lugs', 'Machinery paint')
-    z0 = -L.HALF
-    h = R['half']
-    y0, y1 = S.MAIN_DECK + R['foot'], S.MAIN_DECK + R['foot'] + R['length']
-    za, zb = z0 + R['thick'][0], z0 + R['thick'][1]
-    ramp.block((-h, y0, za), (h, y1, zb), tint(srgb(S.HULL), 1.0), 0.03)
-    # a rubbing bar down each side of its outer skin and one across its head: what meets the quay's fender first
-    for x in (-h + 0.25, h - 0.37):
-        ramp.box((x, y0 + 0.6, za - 0.05), (x + 0.12, y1 - 0.35, za + 0.01), tint(srgb(S.HULL), 0.9))
-    ramp.box((-h + 0.25, y1 - 0.35, za - 0.05), (h - 0.25, y1 - 0.23, za + 0.01), tint(srgb(S.HULL), 0.9))
-    road.box((-h + 0.05, y0 + 0.05, zb), (h - 0.05, y1 - 0.05, zb + 0.01), tint(GREEN, 0.95))
-    k = 1
-    while y0 + 0.4 * k < y1 - 0.3:                                               # the non-slip bars across its roadway
-        yy = y0 + 0.4 * k
-        k += 1
-        road.box((-h + 0.2, yy - 0.02, zb + 0.01), (h - 0.2, yy + 0.02, zb + 0.022), tint(GREEN, 0.8))
-    # its hinges, one each side at the sill: an arm on the ramp's side, a lug on the transom beside it (which stays when
-    # the ramp lowers), and the pin through both on the hinge line
-    hy, hz = R['hinge3'][1], R['hinge3'][2]
-    for sgn in (1, -1):
-        xa, xb, xc = sgn * (h - 0.005), sgn * (h + 0.05), sgn * (h + 0.06)
-        ramp.box((min(xa, xb), hy - 0.04, hz - 0.055), (max(xa, xb), hy + 0.32, hz + 0.012), tint(srgb(S.HULL), 0.9))      # (its corner turns 42 mm from the line: clear of the transom, 45 mm off)
-        lugs.box((min(xc, xc + sgn * R['lug']), hy - 0.19, z0 - 0.10), (max(xc, xc + sgn * R['lug']), hy + 0.10, z0), DARK)
-        lugs.tube((sgn * (h - 0.01), hy, hz), (sgn * (h + 0.07 + R['lug']), hy, hz), 0.03, colour=STEEL, sides=12)
-    # ---- its two hydraulic cylinders
-    (ty, tz), (py, pz) = R['trunnion3'], R['pin3']
-    length = hypot(py - ty, pz - tz)
-    along = lambda d: (ty + (py - ty) * d / length, tz + (pz - tz) * d / length)           # a point d metres from the trunnion toward the pin
-    for sgn, tag, label in ((1, 'p', 'port'), (-1, 's', 'starboard')):
-        x = sgn * R['ram_x']
-        # the lug on the ramp's roadway that the rod is pinned to: it goes with the ramp, and stands in through the opening
-        lug = part('main', 'Stern ramp, cylinder lugs', 'Machinery paint', mover=R['id'])
-        lug.box((x - 0.09, py - 0.14, zb + 0.01), (x + 0.09, py + 0.14, pz + 0.10), DARK)
-        # the pedestal on the main deck that carries the trunnion: a column on a foot plate, stayed aft and forward, painted to be seen
-        ped = part('main', 'Stern ramp, cylinder pedestals', 'Machinery paint')
-        fw, fl, c = R['footplate'][0] / 2, R['footplate'][1] / 2, R['column'] / 2
-        ped.box((x - fw, S.MAIN_DECK, tz - fl), (x + fw, S.MAIN_DECK + 0.03, tz + fl), DARK)
-        ped.box((x - c, S.MAIN_DECK + 0.03, tz - c), (x + c, ty + R['column_over'], tz + c), YELLOW)
-        for way in (-1, 1):                                                       # a stay each way, from the foot plate to the column's head
-            ped.tube((x, S.MAIN_DECK + 0.03, tz + way * 0.40), (x, ty - 0.5, tz + way * 0.10), 0.04, colour=YELLOW, sides=8)
-        # the cylinder: its barrel on the trunnion, and the rod that runs out of it to the lug
-        barrel = part('main', f'Stern ramp cylinder, {label}', 'Machinery paint', smooth=True, angle=40, mover=f"{R['id']}-ram-{tag}")
-        rod = part('main', f'Stern ramp cylinder rod, {label}', 'Shaft steel', smooth=True, angle=40, mover=f"{R['id']}-ram-{tag}-rod")
-        (ay, az), (by, bz) = along(0.0), along(R['barrel'])
-        barrel.tube((x, ay, az), (x, by, bz), R['barrel_d'] / 2, colour=LIGHT, sides=16)
-        (cy, cz), (dy, dz) = along(R['barrel'] - 0.03), along(R['barrel'] + 0.10)
-        barrel.tube((x, cy, cz), (x, dy, dz), R['barrel_d'] / 2 + 0.03, colour=DARK, sides=16)                  # its gland
-        (ey, ez), (fy, fz) = along(R['rod_from']), along(length)
-        rod.tube((x, ey, ez), (x, fy, fz), R['rod_d'] / 2, colour=STEEL, sides=12)
 
 
 def pilot_hinge(sgn):
@@ -1587,7 +1505,6 @@ def build():
     fixed_ramp()
     cargo_lift()
     helideck()
-    stern_ramp()
     pilot_doors()
     stern_lights()
     funnels()

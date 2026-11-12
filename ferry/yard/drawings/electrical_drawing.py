@@ -756,9 +756,11 @@ def main():
     all_cables = cables(d)
     one_line(d)
     per_board = {}
-    for n, b in enumerate(d['boards'], 1):
+    # (the bridge's boards: the stern ramp's starter panel, three-phase and of another size, is drawn on JS3-304 sheet 3)
+    boards = [b for b in d['boards'] if b['section'] == 'bridge']
+    for n, b in enumerate(boards, 1):
         mine = [c for c in all_cables if c['board'] == b['id'] and not c.get('direct')]
-        per_board[b['id']] = board_sheet(d, b, mine, n, len(d['boards']))
+        per_board[b['id']] = board_sheet(d, b, mine, n, len(boards))
     by_cable = schedule(d, all_cables)
     parts_list(d, per_board, by_cable, all_cables)
 

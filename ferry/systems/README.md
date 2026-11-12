@@ -9,11 +9,12 @@ important part is that it's a realistic vessel".
 This folder is the answer to the second half of that: every component she carries, written down once, with what it is, where it
 stands, what it draws and from which circuit, what it talks to and over what, and which pipe it is on. The model is drawn from it
 (`../blender/wheelhouse.py` puts each component where the register says), the page reads it (`../systems.js`: tap a fitting, or
-open *Systems*), and a tool checks that it holds together. **The first section registered is the navigation bridge.**
+open *Systems*), and a tool checks that it holds together. **The first section registered is the navigation bridge; the second, the stern ramp and its supply.**
 
 | File | What |
 |---|---|
 | `ship.py` | Ship-wide: her supply (the answer to "what is the main?"), the sources, the boards a section may be fed from, the subsystems, and the rule a circuit is sized by |
+| `stern.py` | The stern ramp and what works it, with its feed to the places marked in the machinery spaces (below) |
 | `bridge.py` | The navigation bridge: 147 components, 5 boards with 35 ways and 5 circuits direct from boards elsewhere, 31 nets, 7 pipes, and the cable ways (trays, trunks, ducts) all of it is laid along |
 | `register.py` | Puts them together, routes every cable, works out currents, lengths and voltage drops, checks the lot, and writes `../data/systems.json` and the tables in `out/` |
 | `out/bridge-components.csv`, `-circuits.csv`, `-nets.csv`, `-pipes.csv` | The register as tables, for people |
@@ -95,6 +96,36 @@ the car deck), that end is named as a place and a thing, and becomes a component
 Seven: compressed air to the whistle (DN 15, by the whistle valve over the helm, up the mast to the horns), fresh water to the
 window wash (DN 15, by a solenoid valve in the console to a nozzle at each wiper), the fire main's branch to the hydrant on the
 port wing (DN 50), a scupper from each wing (DN 50), and the air conditioner's refrigerant lines and condensate drain.
+
+## The second section: the stern ramp and its supply (`stern.py`)
+
+The owner, 12 November 2026: "make the ramp more realistic its a simple system that could be animated much better, and hydraulics
+and a local control panel that is wired up, with component list and proper wiring , as a place holder now, draw all feed to the
+engine room, but all ends need to be marked so we know where to instal the Generators and electrical cabinets"; and, while it was
+built: "There needs to be a latch for the ramp too, so it doesnt become dangerous".
+
+- **39 components**: the leaf, its hinges, cylinders, end flaps and seal (`RMP-01` to `06`); eight bolt cleats and two hook cleats
+  (`RMP-11` to `20`); the control stand, the switches' junction box, two door switches and the **two safety latches** (`RMP-30` to
+  `35`); the power pack, its pumps, cooler, filters, hand pump and valve stand (`HYD-01` to `10`); the starter panel (`ELD-51`); and
+  seven **places marked, not installed**: the main switchboard, its 440 V section, two transformers (`ELD-61` to `64`) and the three
+  generating sets (`GEN-01` to `03`).
+- **One board, RSP**, the stern ramp starter panel in the hydraulic pump room: 440 V three-phase, 86.7 kW connected, 126 A, a 160 A
+  breaker, 3 × 70 mm², fed from the main switchboard's 440 V section. **Its feeder is drawn the whole way**: the section's cable ways
+  run from the panel up the forward wall, forward through the casing under the upper deck's beams, down through the main deck in the
+  uptake's room and into the main switchboard room, to the place marked for the 440 V section. Five ways: two main pumps of 37 kW
+  (star-delta, 80 A, 3 × 25 mm²), the cleats' pump, the cooler's fan, the control transformer.
+- **Six nets**: the control circuit (stand, valve stand, junction box), the fourteen position switches (to the stand and to the
+  bridge's door and ramp panel), the power pack's alarms (to the control room), and, **as placeholders drawn in the X-ray as power**,
+  the three generators' feeders and the two transformers' feeders: so the feed is drawn from where the generating sets are to stand.
+- **Six pipes**, each as it is laid (`blender/stern_place.routes`): lines A and B to the cylinders, C and D to the cleats and
+  latches, pressure and return between the pack and the valve stand.
+- The register learnt two things for it: **three-phase** (`kind='AC3'`: a line's current, the drop between lines, three-core cable
+  ratings, breakers up to 630 A; `ship.py`), and **a section's own measure** (`xyz` in the section's module: this one gives places as
+  metres to port, from the transom, above the keel; the bridge keeps its own).
+- The measures are in `../blender/stern_place.py`, the builder is `../blender/stern_gear.py`, the drawing is JS3-304 (three sheets:
+  arrangement, hydraulic diagram, electrical installation with the stand's terminal list and the cable schedule).
+- **Placeholders, plainly**: the switchboards, transformers and generating sets are places and names from the machinery design basis;
+  their feeders are ways, not sized circuits. The three-core ratings are recalled, not read.
 
 ## Adding the next section
 

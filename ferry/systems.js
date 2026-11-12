@@ -18,6 +18,7 @@ const INK = { power: 0xe58a00, net: 0x2f7de1, pipe: 0x0a9c94 };
  * electrical wiring". A cable is coloured by the supply it comes from, since that is what tells one what dies with what.
  */
 const XRAY = [
+  ['power', '440 V and 690 V three-phase power', 0xff3b3b],
   ['main', '230 V from the main supply', 0xffd23f],
   ['emergency', '230 V from the emergency switchboard', 0xff7a3d],
   ['transitional', '230 V that the batteries carry (navigation lights)', 0xff5fd2],
@@ -201,6 +202,7 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
     const b = boards.get(bid) || data.elsewhere.find(x => x.id === bid);
     if (!b) return 'main';
     if (b.kind === 'DC') return 'dc';
+    if (b.volts >= 400) return 'power';
     const from = (b.fedBy && (b.fedBy.board || '')) || b.id;
     if (/^TSB/.test(from) || /^TSB/.test(b.id)) return 'transitional';
     if (/^ESB/.test(from) || /^ESB/.test(b.id)) return 'emergency';
@@ -215,7 +217,7 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
       for (const c of b.circuits) g[k].push(...Object.values(c.paths));
     }
     for (const c of data.outside) g[supplyOf(c.board)].push(...Object.values(c.paths));
-    for (const n of data.nets) g.signal.push(...n.paths);
+    for (const n of data.nets) g[n.kind === 'power' ? 'power' : 'signal'].push(...n.paths);
     for (const p of data.pipes) g.pipe.push(p.path);
     return g;
   }

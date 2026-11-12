@@ -226,6 +226,8 @@ function build(doc, atlases) {
     const box = new THREE.Box3();
     const moving = new Map();
     for (const rec of g.meshes) {
+      // Her maker's marks lie in her plating and are never drawn (blender/makers_mark.py): not aboard, not in the X-ray, not with her decks apart.
+      if (header.materials[rec.material].hidden) continue;
       const mesh = new THREE.Mesh(geometryOf(rec, doc), materials[rec.material]);
       // Glass and painted markings are drawn after the solid things they lie on, and throw no shadow of their own.
       const clear = header.materials[rec.material].transparent;
@@ -262,22 +264,34 @@ function turnAbout(out, pivot, angle) {
  * Put every moving part where its input says. The kinds of motion are the file's (README: `movers`). The shadows are
  * drawn again with it, unless told to wait (a door on its way: they are drawn once it has come to rest).
  */
+/** A mover's `map` read at its input's value: a table of [input, value] pairs with straight lengths between them. */
+function mapped(table, v) {
+  if (v <= table[0][0]) return table[0][1];
+  for (let i = 1; i < table.length; i++) {
+    const [a, fa] = table[i - 1], [b, fb] = table[i];
+    if (v <= b) return b > a ? fa + (fb - fa) * (v - a) / (b - a) : fb;
+  }
+  return table[table.length - 1][1];
+}
 function moveParts(shadows = true) {
   for (const { def, node } of movers) {
     const input = inputs.get(def.input);
-    const angle = THREE.MathUtils.degToRad(input ? input.value : 0) * (def.ratio ?? 1);
+    // What a mover answers to is its input's value, or that value read through the mover's own `map`: so one control works
+    // several things in their order (the stern ramp: its cleats let go first, then the leaf turns, its flaps fold out on the way down).
+    const value = def.map ? mapped(def.map, input ? input.value : 0) : input ? input.value : 0;
+    const angle = THREE.MathUtils.degToRad(value) * (def.ratio ?? 1);
     AXIS.fromArray(def.axis).normalize();
     PIVOT.fromArray(def.pivot);
     if (def.kind === 'turn') turnAbout(node.matrix, PIVOT, angle);
     else if (def.kind === 'slide') {
       // The part runs along the axis, as far as the input says (a sliding door: its input is in centimetres).
-      const run = (input ? input.value : 0) * (def.ratio ?? 1);
+      const run = value * (def.ratio ?? 1);
       node.matrix.makeTranslation(AXIS.x * run, AXIS.y * run, AXIS.z * run);
     }
     else if (def.kind === 'stretch') {
       // The part grows along the axis from its pivot, by the input times `ratio` of its own length: a blind's film drawn out of
       // its cassette, the coffee rising in its jug.
-      const k = (input ? input.value : 0) * (def.ratio ?? 1), x = AXIS.x, y = AXIS.y, z = AXIS.z;
+      const k = value * (def.ratio ?? 1), x = AXIS.x, y = AXIS.y, z = AXIS.z;
       TURN.set(1 + k * x * x, k * x * y, k * x * z, 0, k * y * x, 1 + k * y * y, k * y * z, 0, k * z * x, k * z * y, 1 + k * z * z, 0, 0, 0, 0, 1);
       node.matrix.makeTranslation(PIVOT.x, PIVOT.y, PIVOT.z).multiply(TURN).multiply(SHIFT.makeTranslation(-PIVOT.x, -PIVOT.y, -PIVOT.z));
     }
@@ -285,7 +299,7 @@ function moveParts(shadows = true) {
       // The part is there only while its input is over `over` (a lamp's lit glass), or with `when: "off"` only while it is not
       // (the film that darkens a display turned down).
       node.matrix.identity();
-      node.visible = ((input ? input.value : 0) > (def.over ?? 0)) === (def.when !== 'off');
+      node.visible = (value > (def.over ?? 0)) === (def.when !== 'off');
     }
     else if (def.kind === 'carry') {
       // The part keeps its heading and goes with a point that turns about the pivot.
@@ -389,7 +403,7 @@ function setXray(on) {
       const sw = el('i'); sw.style.background = '#' + r.colour.toString(16).padStart(6, '0');
       ul.append(el('li', {}, sw, el('span', {}, r.name), el('small', {}, `${r.metres} m`)));
     }
-    legend.append(el('h2', {}, 'X-ray: what runs through her'), ul, el('p', {}, 'Only what her register holds so far: the bridge and what feeds it. Tap a fitting to see what it is; pick a board or a circuit under Systems to see it alone.'));
+    legend.append(el('h2', {}, 'X-ray: what runs through her'), ul, el('p', {}, 'Only what her register holds so far: the bridge and what feeds it, and the stern ramp with its feed from where the switchboard and the generating sets are to stand. Tap a fitting to see what it is; pick a board or a circuit under Systems to see it alone.'));
   }
   legend.hidden = !xray;
   // through a ghost of her the sea and the sky only dazzle: she stands on a dark ground while it is on
@@ -436,6 +450,10 @@ function workOrders(dt) {
     showInput(it);
     moved = true;
     if (it.value !== it.order) under = true;
+    // arrived: a lever that gave the order springs back to its middle
+    else for (const lever of inputs.values()) {
+      if (lever.def.drives && lever.def.drives.input === it.def.id && lever.at !== (lever.def.home ?? 0)) { lever.at = lever.def.home ?? 0; lever.want = lever.def.steps[lever.at].v; lever.way = 1; }
+    }
   }
   if (moved) moveParts(!under);
 }
@@ -521,7 +539,27 @@ function stepInput(id) {
   it.at += it.way;
   it.want = it.def.steps[it.at].v;
   readout.textContent = `${it.def.name}: ${it.def.steps[it.at].say}`;
+  if (it.def.drives) drive(it);
   return it.def.steps[it.at];
+}
+/**
+ * A lever that works another thing (`drives`: the ramp's lever at its control stand, which gives the stern ramp its orders).
+ * Each of its positions says what it orders (`order`): `min` brings the thing home, `next` runs it on to its next stop,
+ * `hold` stops it where it is. It does nothing unless one of what it `needs` is on (a pump runs), and says so; it springs
+ * back to its middle when the thing has arrived (workOrders).
+ */
+function drive(it) {
+  const d = it.def.drives, target = inputs.get(d.input), step = it.def.steps[it.at];
+  if (!target || !target.keys) return;
+  if (step.order !== 'hold' && d.needs && !d.needs.some(isOn)) {
+    it.at = it.def.home ?? 0; it.want = it.def.steps[it.at].v; it.way = 1;
+    readout.textContent = `${it.def.name}: ${d.without || 'not ready'}`;
+    return;
+  }
+  const stops = target.stops;
+  if (step.order === 'min') orderInput(d.input, target.def.min);
+  else if (step.order === 'next') orderInput(d.input, (stops.find(st => st.v > target.value + 1e-6) || stops[stops.length - 1]).v);
+  else orderInput(d.input, target.value, target.value !== target.def.min && !stops.some(st => st.v === target.value));
 }
 function workSteps(dt) {
   let moved = false, under = false;
@@ -1752,8 +1790,10 @@ async function start() {
   measure(); applyLens();
   home(0);
   requestAnimationFrame(frame);
-  // For checks and pictures: the same moves the controls make.
-  window.__ferry = {
+  // For checks and pictures: the same moves the controls make. They are handed out only to a browser that a program is driving
+  // (the page checks, the picture tools) or when asked for by name (?hooks): a visitor's page gives no one a way to her model
+  // (the owner, 12 November 2026: "one shouldnt be able to download the 3d models, its just a demo").
+  const hooks = {
     setExplode, setCut, setInput, setXray, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
     lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt, showTab, nameOnFoot, get systems() { return systems; },
     zoomWalk, setWalkZoom, get walkZoom() { return zoomShown(); }, zoomLimits: [ZOOM_MIN, ZOOM_MAX],
@@ -1783,6 +1823,7 @@ async function start() {
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw, draw, drawing, lite, drawnBy },
     get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent, climbing: !!walk.climb, ladder: climbBtn.hidden ? null : climbBtn.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
   };
+  if (navigator.webdriver || /[?&]hooks\b/.test(location.search)) window.__ferry = hooks;
 }
 start().catch(err => {
   console.error(err);

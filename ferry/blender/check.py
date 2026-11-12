@@ -69,6 +69,21 @@ def main():
     check(hull and all(m.get('from') == 'blender' for m in hull), 'every mesh of the hull is built in Blender')
     check(all(m.get('from') == 'blender' for g in groups.values() for m in g['meshes']), 'every mesh of every part is built in Blender: nothing of another ship is in the file')
     check(any(b['part'] == 'hull' for b in header['ship'].get('built', [])), 'the header names the hull as her own')
+    # Whose she is (the owner, 12 November 2026: "I need you to water mark, models ... incase someone just steals them"): the
+    # file names its owner, and every corner carries her maker's mark (mark.py). A file without it is not to be published.
+    import mark as M
+    rights = header.get('rights') or {}
+    said = rights.get('mark') or {}
+    check(rights.get('owner') == M.OWNER and said.get('scheme') == M.SCHEME and said.get('id'), f"the file names its owner ({rights.get('owner')}) and says it carries her maker's mark (fingerprint {said.get('id')})")
+    k = M.key(required=False)
+    if k:
+        q = np.concatenate([np.frombuffer(block, dtype='<u2', count=m['vertices'] * 3, offset=m['pos']).reshape(-1, 3) for g in groups.values() for m in g['meshes']])
+        share, n, sd = M.read(q, k)
+        check(said.get('id') == M.fingerprint(k) and share == 1.0, f"read with this machine's key, {100 * share:.2f} % of her {n:,} different corners carry the mark")
+    else:
+        print("      (no key on this machine: the mark is said by the file, not read)")
+    hidden = [m for g in groups.values() for m in g['meshes'] if header['materials'][m['material']].get('hidden')]
+    check(len(hidden) >= 4, f"the studio's name and signs lie in her plating in {len(hidden)} meshes the page never draws")
     tri = sum(m['triangles'] for m in hull)
     total = sum(m['triangles'] for g in groups.values() for m in g['meshes'])
     size = os.path.getsize(a.file)

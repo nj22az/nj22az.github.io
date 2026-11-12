@@ -20,9 +20,10 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, '..', 'blender'))
 import ship as S
 import bridge
+import stern
 import bridge_place as BP
 
-SECTIONS = [bridge]
+SECTIONS = [bridge, stern]
 OUT_JSON = os.path.join(HERE, '..', 'data', 'systems.json')
 OUT_DIR = os.path.join(HERE, 'out')
 
@@ -30,6 +31,11 @@ OUT_DIR = os.path.join(HERE, 'out')
 def ship_xyz(p):
     """(x, yard, h over the bridge deck), in the bridge's own measures → the ship's axes, by its placing (blender/bridge_place.py)."""
     return [round(p[0], 3), round(BP.DECK + p[2], 3), round(BP.Z(p[1]), 3)]
+
+
+def xyz_of(mod):
+    """How a section's places are turned into the ship's axes: its own way (`xyz`), or the bridge's."""
+    return getattr(mod, 'xyz', ship_xyz)
 
 
 def manhattan(a, b):
@@ -114,6 +120,7 @@ def build(boxes=None):
     for mod in SECTIONS:
         sec = mod.SECTION
         ways = Ways(mod.NODES, mod.EDGES)
+        ship_xyz_ = xyz_of(mod)
 
         # ---- components
         for c in mod.COMPONENTS:
@@ -130,14 +137,14 @@ def build(boxes=None):
                 node = ways.nearest(c['at'])
             tail = c['tail'] if c['tail'] is not None else manhattan(mod.NODES[node], c['at'])
             rec = dict(id=c['id'], name=c['name'], sys=sysid, section=sec['id'], room=c['room'], roomName=sec['rooms'][c['room']], what=c['what'],
-                       at=ship_xyz(c['at']), w=c['w'], use=c['use'], by=list(c['by']) if c['by'] else None, alt=list(c['alt']) if c['alt'] else None,
+                       at=ship_xyz_(c['at']), w=c['w'], use=c['use'], by=list(c['by']) if c['by'] else None, alt=list(c['alt']) if c['alt'] else None,
                        basis=c['basis'], pick=c['pick'], nets=[], pipes=[])
             for key in ('hid', 'survey', 'kks', 'note'):
                 if c[key]:
                     rec[key] = c[key]
             if c['box']:
                 x0, x1, y0, y1, h0, h1 = c['box']
-                rec['box'] = [ship_xyz((x0, y0, h0)), ship_xyz((x1, y1, h1))]
+                rec['box'] = [ship_xyz_((x0, y0, h0)), ship_xyz_((x1, y1, h1))]
                 rec['drawn'] = 'elsewhere'
                 rec['part'] = 'top'
             elif c['id'] in boxes:
@@ -224,8 +231,8 @@ def build(boxes=None):
     for mod in SECTIONS:
         fire |= set(getattr(mod, 'FIRE_RESISTANT', ()))
 
-    def cable(mm2, resistant=False):
-        return f"2 × {mm2:g} mm² + earth" + (', fire-resistant' if resistant else '')
+    def cable(mm2, resistant=False, kind='AC'):
+        return f"{S.cores(kind)} × {mm2:g} mm² + earth" + (', fire-resistant' if resistant else '')
 
     out_boards = []
     drop_to = {}                                   # board → per cent lost from its source's bars to its own
@@ -257,12 +264,13 @@ def build(boxes=None):
             standby += sum(board_watts(k['feeds']) for (bb, no), k in circuits.items() if bb == bid and k['feeds'] and k.get('feeds_as') == 'alt')
             amps = S.amps(watts, volts, kind)
             amps_all = S.amps(watts + standby, volts, kind)
-            dv = S.drop_volts(length, amps, f['mm2'])
+            dv = S.drop_volts(length, amps, f['mm2'], kind)
             pct = 100 * dv / volts
             pts = ways.run(names) + legs(ways.nodes[comp['node']], comp['src']['at'])[1:]
+            ship_xyz_ = xyz_of(comp['mod'])
             rec['fedBy'] = dict(board=fed, name=src['name'], where=src['where'])
-            rec['feeder'] = dict(breaker=f['breaker'], mm2=f['mm2'], cable=cable(f['mm2'], ('feeder', bid) in fire), length=length, amps=round(amps, 1), drop=round(pct, 1),
-                                 standby=round(standby), path=[ship_xyz(p) for p in pts])
+            rec['feeder'] = dict(breaker=f['breaker'], mm2=f['mm2'], cable=cable(f['mm2'], ('feeder', bid) in fire, kind), length=length, amps=round(amps, 1), drop=round(pct, 1),
+                                 standby=round(standby), path=[ship_xyz_(p) for p in pts])
             drop_to[bid] = pct
             # a second feeder from another switchboard (the navigation lights): it carries the whole board when it is the one in use
             af = b.get('alt_feeder')
@@ -276,17 +284,17 @@ def build(boxes=None):
                 else:
                     names2, d2 = ways.between(entry(comp['mod'], af['board']), comp['node'])
                 length2 = round_up(src2.get('ext', 0.0) + (d2 + comp['tail']) * S.ALLOWANCE)
-                pct2 = 100 * S.drop_volts(length2, amps, af['mm2']) / volts
+                pct2 = 100 * S.drop_volts(length2, amps, af['mm2'], kind) / volts
                 pts2 = ways.run(names2) + legs(ways.nodes[comp['node']], comp['src']['at'])[1:]
                 rec['altFeeder'] = dict(board=af['board'], name=src2['name'], where=src2['where'], breaker=af['breaker'], mm2=af['mm2'],
-                                        cable=cable(af['mm2'], ('alt', bid) in fire), length=length2, amps=round(amps, 1), drop=round(pct2, 1), path=[ship_xyz(p) for p in pts2])
+                                        cable=cable(af['mm2'], ('alt', bid) in fire, kind), length=length2, amps=round(amps, 1), drop=round(pct2, 1), path=[ship_xyz_(p) for p in pts2])
                 drop_to[bid] = max(pct, pct2)
-                shared = len(set(map(tuple, map(ship_xyz, pts))) & set(map(tuple, map(ship_xyz, pts2))))
+                shared = len(set(map(tuple, map(ship_xyz_, pts))) & set(map(tuple, map(ship_xyz_, pts2))))
                 rec['altFeeder']['sharedPoints'] = shared
                 if af['breaker'] not in S.BREAKERS or af['breaker'] < S.MARGIN * amps - 1e-6:
                     problems.append(f"{bid} second feeder: {af['breaker']} A breaker for {amps:.1f} A")
-                if S.CABLE_RATING[af['mm2']] < af['breaker']:
-                    problems.append(f"{bid} second feeder: {af['mm2']:g} mm² is rated {S.CABLE_RATING[af['mm2']]} A, under its {af['breaker']} A breaker")
+                if S.rating(af['mm2'], kind) < af['breaker']:
+                    problems.append(f"{bid} second feeder: {af['mm2']:g} mm² is rated {S.rating(af['mm2'], kind)} A, under its {af['breaker']} A breaker")
                 if pct2 > S.DROP_ONE_CABLE + 1e-6:
                     problems.append(f"{bid} second feeder: {pct2:.1f} % voltage drop over {length2:g} m of {af['mm2']:g} mm²")
             if f['breaker'] not in S.BREAKERS:
@@ -295,8 +303,8 @@ def build(boxes=None):
                 problems.append(f"{bid} feeder: {f['breaker']} A breaker for {amps:.1f} A (needs {S.MARGIN * amps:.1f} A)")
             if f['breaker'] < amps_all - 1e-6:
                 problems.append(f"{bid} feeder: {f['breaker']} A breaker for {amps_all:.1f} A with the standby loads on")
-            if S.CABLE_RATING[f['mm2']] < f['breaker']:
-                problems.append(f"{bid} feeder: {f['mm2']:g} mm² is rated {S.CABLE_RATING[f['mm2']]} A, under its {f['breaker']} A breaker")
+            if S.rating(f['mm2'], kind) < f['breaker']:
+                problems.append(f"{bid} feeder: {f['mm2']:g} mm² is rated {S.rating(f['mm2'], kind)} A, under its {f['breaker']} A breaker")
             if pct > S.DROP_ONE_CABLE + 1e-6:
                 problems.append(f"{bid} feeder: {pct:.1f} % voltage drop over {length:g} m of {f['mm2']:g} mm²")
         out_boards.append(rec)
@@ -315,7 +323,7 @@ def build(boxes=None):
             standby = sum(by_id[c]['src']['w'] for c in k['standby'])
         amps = S.amps(watts, volts, kind, pf)
         amps_all = S.amps(watts + standby, volts, kind, pf)
-        rec = dict(no=k['no'], name=k['name'], breaker=k['breaker'], mm2=k['mm2'], cable=cable(k['mm2'], key in fire), watts=round(watts), amps=round(amps, 2),
+        rec = dict(no=k['no'], name=k['name'], breaker=k['breaker'], mm2=k['mm2'], cable=cable(k['mm2'], key in fire, kind), watts=round(watts), amps=round(amps, 2),
                    consumers=list(k['consumers']), standby=list(k['standby']), paths={})
         if standby:
             rec['standbyWatts'] = round(standby)
@@ -337,20 +345,20 @@ def build(boxes=None):
                 except KeyError as err:
                     problems.append(f'{bid} {k["no"]}: {err.args[0]}')
                     continue
-                rec['paths'][c] = [ship_xyz(p) for p in pts]
+                rec['paths'][c] = [xyz_of(by_id[c]['mod'])(p) for p in pts]
                 longest = max(longest, laid)
             else:
                 e = by_id[c]
                 names, d = e['ways'].between(entry(e['mod'], bid), e['node'])
                 pts = e['ways'].run(names) + legs(e['ways'].nodes[e['node']], e['src']['at'])[1:]
-                rec['paths'][c] = [ship_xyz(p) for p in pts]
+                rec['paths'][c] = [xyz_of(e['mod'])(p) for p in pts]
                 longest = max(longest, d + e['tail'])
         if 'given_length' in k and k['given_length'] is not None:
             length = k['given_length']
         else:
             length = round_up((0.0 if own else boards[bid].get('ext', 0.0)) + longest * S.ALLOWANCE)
         current = amps if watts else amps_all       # a standby-only way is sized for what it would carry
-        dv = S.drop_volts(length, current, k['mm2'])
+        dv = S.drop_volts(length, current, k['mm2'], kind)
         pct = 100 * dv / volts
         before = drop_to.get(bid) or 0.0
         rec.update(length=length, drop=round(pct, 1), total=round(before + pct, 1))
@@ -361,8 +369,8 @@ def build(boxes=None):
             problems.append(f'{tag}: {k["breaker"]} A breaker for {amps:.2f} A (needs {S.MARGIN * amps:.2f} A)')
         if k['breaker'] < amps_all - 1e-6:
             problems.append(f'{tag}: {k["breaker"]} A breaker for {amps_all:.2f} A with the standby load on')
-        if S.CABLE_RATING[k['mm2']] < k['breaker']:
-            problems.append(f'{tag}: {k["mm2"]:g} mm² is rated {S.CABLE_RATING[k["mm2"]]} A, under its {k["breaker"]} A breaker')
+        if S.rating(k['mm2'], kind) < k['breaker']:
+            problems.append(f'{tag}: {k["mm2"]:g} mm² is rated {S.rating(k["mm2"], kind)} A, under its {k["breaker"]} A breaker')
         if pct > S.DROP_ONE_CABLE + 1e-6:
             problems.append(f'{tag}: {pct:.1f} % voltage drop over {length:g} m of {k["mm2"]:g} mm²')
         if own and before + pct > S.DROP_TOTAL[kind] + 1e-6:
@@ -383,6 +391,7 @@ def build(boxes=None):
 
     # ---- nets
     for mod in SECTIONS:
+        ship_xyz_ = xyz_of(mod)
         for n in mod.NETS:
             members, paths = [], []
             ids = []
@@ -407,7 +416,7 @@ def build(boxes=None):
             for a, b in pairs:
                 try:
                     pts, _ = path_between(a, b)
-                    paths.append([ship_xyz(p) for p in pts])
+                    paths.append([ship_xyz_(p) for p in pts])
                 except KeyError as err:
                     problems.append(f"net {n['id']}: {err.args[0]}")
             if any('ext' in m for m in members) and ids:
@@ -415,8 +424,9 @@ def build(boxes=None):
                 first = by_id[hub or ids[0]]
                 names, _ = first['ways'].between(first['node'], n.get('out', 'COR'))
                 pts = legs(first['src']['at'], first['ways'].nodes[first['node']]) + first['ways'].run(names)[1:]
-                paths.append([ship_xyz(p) for p in pts])
-            nets.append(dict(id=n['id'], name=n['name'], medium=n['medium'], text=n.get('text', ''), hub=hub, section=mod.SECTION['id'], members=members, paths=paths))
+                paths.append([ship_xyz_(p) for p in pts])
+            nets.append(dict(id=n['id'], name=n['name'], medium=n['medium'], text=n.get('text', ''), hub=hub, section=mod.SECTION['id'], members=members, paths=paths,
+                             kind=n.get('kind', 'signal')))
 
         # ---- pipes
         for p in mod.PIPES:
@@ -436,7 +446,7 @@ def build(boxes=None):
                 problems.append(f"pipe {p['id']}: no run")
             length = sum(math.dist(a, b) for a, b in zip(p['path'], p['path'][1:]))
             pipes.append(dict(id=p['id'], system=p['system'], name=p['name'], dn=p['dn'], medium=p['medium'], material=p['material'], text=p['text'],
-                              section=mod.SECTION['id'], ends=ends, path=[ship_xyz(q) for q in p['path']], length=round(length, 1)))
+                              section=mod.SECTION['id'], ends=ends, path=[ship_xyz_(q) for q in p['path']], length=round(length, 1)))
 
     # ---- every component is somewhere: on a circuit, a net or a pipe, or it needs none
     for cid, e in by_id.items():

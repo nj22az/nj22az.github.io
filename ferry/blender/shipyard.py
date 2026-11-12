@@ -58,6 +58,8 @@ LOOKS = {
     'Lens': dict(metalness=0.0, roughness=0.12),
     # Marks painted on the plating: drawn a hair in front of it.
     'Marking': dict(metalness=0.0, roughness=0.5, offset=[-2, -4]),
+    # Her maker's marks (makers_mark.py): in the file, never drawn by the page.
+    'Maker mark': dict(metalness=0.0, roughness=0.5, hidden=True),
     # The wheelhouse: satin enamel on the consoles, varnished wood, leather, the dark glass of a display, window glass.
     'Console paint': dict(metalness=0.05, roughness=0.5),
     'Varnished wood': dict(metalness=0.0, roughness=0.38),
@@ -148,7 +150,7 @@ def material(name):
                 'offset': look.get('offset') or []}
     if name in SURFACES:
         m['jmf']['surface'] = SURFACES[name]
-    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear'):
+    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear', 'hidden'):
         if key in look:
             m['jmf'][key] = look[key]
     _materials[name] = m
