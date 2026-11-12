@@ -38,6 +38,7 @@ ROWS = [
     dict(kind='liferaft', x=HALF_B - 0.62, z=13.4, heading=270, name='LR3'),
     # the mooring deck, amidships along the bulwark
     dict(kind='windlass', x=-2.2, z=7.5, name='WL1'),
+    dict(kind='chain-stopper', x=-2.2, z=9.4, name='CS1'),
     dict(kind='mooring-winch', x=-2.6, z=-0.6, name='MW1'),
     dict(kind='capstan', x=1.6, z=-2.6, name='CP1'),
     dict(kind='bitts', x=STB + 0.75, z=4.2, name='B1'),

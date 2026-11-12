@@ -528,12 +528,15 @@ class Kit:
         sweep(part, points, r, colour)
         self.runs.append(dict(part=part.name, r=r, points=[tuple(q) for q in points]))
 
-    def cut(self, kind, lo, hi, round_=None):
+    def cut(self, kind, lo, hi, round_=None, outline=None):
         """An opening this fitting needs in what it stands on or against (the ship's builder cuts it; the fitting is drawn to
-        stand in it). `round_` = (centre, radius, axis) for a round one."""
+        stand in it). `round_` = (centre, radius, axis) for a round one; `outline` the opening's own outline, points on the
+        face it is cut in (the deck's top, the bulwark's inboard face), for one that is neither round nor square."""
         c = dict(kind=kind, lo=tuple(lo), hi=tuple(hi))
         if round_:
             c['round'] = round_
+        if outline:
+            c['outline'] = [tuple(q) for q in outline]
         self.cuts.append(c)
 
     def place(self, at, heading, mirror=False):
@@ -580,8 +583,17 @@ class Kit:
             # the opening's own outline on the deck (or the bulwark), for a fitting that is not placed square to the ship
             x0, y0, z0 = c['lo']
             x1, y1, z1 = c['hi']
-            if c['kind'] == 'deck':
+            if 'outline' in c:
+                out['outline'] = [point(q) for q in c['outline']]
+            elif 'round' in c:
+                centre, radius, axis = c['round']
+                a_, e1, e2 = frame_of(axis)
+                n = round_sides(radius)
+                out['outline'] = [point(Vector(centre) + (e1 * cos(2 * pi * i / n) + e2 * sin(2 * pi * i / n)) * radius) for i in range(n)]
+            elif c['kind'] == 'deck':
                 out['outline'] = [point(q) for q in ((x0, y1, z0), (x1, y1, z0), (x1, y1, z1), (x0, y1, z1))]
+            else:
+                out['outline'] = [point(q) for q in ((x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1))]
             if 'round' in c:
                 centre, radius, axis = c['round']
                 out['round'] = dict(centre=point(centre), radius=radius, axis=way(axis))
