@@ -112,8 +112,10 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(w.x < -3.2 && w.x > -WING && /wing|wheelhouse/i.test(w.room), `through the starboard door onto the wing (x ${w.x.toFixed(2)}, "${w.room}")`);
   w = await walk(4.7, 20.2, ASTERN, 2);           // the wing is closed in: the door in its after wall opens aft, onto the open bridge deck each side of the house
   check(w.z < Z(19.4), `from the port wing aft, through the door in its after wall and over its coaming onto the bridge deck (${B(w.z).toFixed(2)} m)`);
-  w = await walk(2.0, 21.7, PORT, 2);
-  check(w.x < 2.6, `the settee under the port windows stops one (x ${w.x.toFixed(2)}; its front is at 2.31)`);
+  w = await walk(2.0, 21.7, PORT, 2);            // the settee stood here, and closed this way to 0.46 m: it is in the port wing since 12 November 2026
+  check(w.x > 2.55 && w.x < 2.85, `the port side way is clear as far as the handrail under the windows (x ${w.x.toFixed(2)}; the lining is at 2.92)`);
+  w = await walk(5.9, 21.2, ASTERN, 2);
+  check(w.z > Z(20.25) && w.z < Z(20.6), `the settee against the port wing's after wall stops one (${B(w.z).toFixed(2)} m; its front is at 20.17)`);
   // the forward bay (the refit's stage 6): the console block stands free, and a way runs before it from one side to the other,
   // so that its back is reached for electrical work and maintenance
   w = await walk(-2.2, 22.2, AHEAD, 3);
@@ -122,6 +124,8 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(w.x > 1.95 && w.x < 2.92, `along the way before the block from starboard to port, past its whole back: the port cant stops one (x ${w.x.toFixed(2)}; the block ends at 1.85)`);
   w = await walk(-2.2, 23.1, ASTERN, 2);
   check(w.z < Z(21.9), `and aft again down the starboard side, between the block's end and the table: that way is 0.70 m (${B(w.z).toFixed(2)} m)`);
+  w = await walk(2.35, 23.1, ASTERN, 2);
+  check(w.z < Z(21.9), `and down the port side, which the settee no longer closes: round the block both ways (${B(w.z).toFixed(2)} m)`);
   // the doors to the deck outside the bridge (the owner, 12 November 2026): from each wing forward onto the gallery, and along it before the bay
   w = await walk(3.5, 22.2, AHEAD, 2.5);
   check(w.z > Z(23.25) && w.z < Z(24.5), `from the port wing forward, through the door in its forward wall and over its coaming, onto the gallery before the bridge (${B(w.z).toFixed(2)} m; the wall is at 23.00)`);

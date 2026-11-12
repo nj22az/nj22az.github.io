@@ -147,26 +147,43 @@ def stand(g, tag, *where):
 # The settee and the watchkeeper's table
 # ---------------------------------------------------------------------------------------------------------------------
 def sofa(g, tag, x, yard, h):
-    """A settee along the port side under the windows, forward of the wing door: black leather on a base with a recessed
-    plinth; two seat cushions, two back cushions that lean, an arm at each end; piping along the seat's front."""
+    """The settee: black leather on a base with a recessed plinth; two seat cushions, two back cushions that lean, an arm
+    at each end; piping along the seat's front; two flush pulls in the base for the lockers under the seat.
+
+    It stands in the port wing, against the wing's after wall, beside the door from the open deck and under the after
+    window, whose sill (1.15 m) is over its back (g: against='aft'). The owner, 12 November 2026: "Move it to port wing".
+    It stood along the port side of the wheelhouse under the windows, where it closed the way past the console block to
+    0.46 m; without `against` it is still drawn there. It is drawn once, in its own measures: u along its length, d out
+    from the wall it backs on, and `at` says where that is aboard."""
     L_, D = g['l'], g['d']
-    x1 = X_IN - 0.012                                   # its back stands just off the skirting
-    x0 = x1 - D                                         # its front, inboard
-    y0, y1 = yard - L_ / 2, yard + L_ / 2
-    box('dark', x0 + 0.05, x1 - 0.03, y0 + 0.04, y1 - 0.04, 0.012, 0.11, srgb(0x16181a), r=0.003)
-    box('seat', x0, x1, y0, y1, 0.11, 0.31, tint(LEATHER, 0.92), r=0.004)
+    if g.get('against') == 'aft':
+        back, u0 = BP.WING_AFT + 0.012, x - L_ / 2              # its back just off the wing's after wall; its length across her
+        at = lambda u, d: (u0 + u, back + d)
+        right, lean = PORT, (0.0, cos(radians(9)), -sin(radians(9)))
+    else:
+        back, u0 = X_IN - 0.012, yard - L_ / 2                  # its back just off the port side's skirting; its length along her
+        at = lambda u, d: (back - d, u0 + u)
+        right, lean = FWD, (sin(radians(9)), cos(radians(9)), 0.0)
+
+    def solid(draw, key, ua, ub, da, db, h0, h1, colour, r):
+        (xa, ya), (xb, yb) = at(ua, da), at(ub, db)
+        draw(key, xa, xb, ya, yb, h0, h1, colour, r=r)
+    solid(box, 'dark', 0.04, L_ - 0.04, 0.03, D - 0.05, 0.012, 0.11, srgb(0x16181a), 0.003)             # the plinth, set back for the feet
+    solid(box, 'seat', 0.0, L_, 0.0, D, 0.11, 0.31, tint(LEATHER, 0.92), 0.004)
     arm = 0.10
-    for a, b in ((y0, y0 + arm), (y1 - arm, y1)):                                     # the arms
-        pillow('seat', x0 - 0.005, x1, a, b, 0.29, 0.63, LEATHER, r=0.04)
+    for a, b in ((0.0, arm), (L_ - arm, L_)):                                                         # the arms
+        solid(pillow, 'seat', a, b, 0.0, D + 0.005, 0.29, 0.63, LEATHER, 0.04)
     half = (L_ - 2 * arm) / 2
     for k in range(2):
-        a = y0 + arm + k * half
-        pillow('seat', x0 - 0.012, x1 - 0.13, a + 0.004, a + half - 0.004, 0.305, 0.455, LEATHER, r=0.045)          # a seat cushion
-        with Frame((x1 - 0.185, a + half / 2, 0.44), FWD, (sin(radians(9)), cos(radians(9)), 0.0)) as F:             # a back cushion, leaning against the wall
+        a = arm + k * half
+        solid(pillow, 'seat', a + 0.004, a + half - 0.004, 0.13, D + 0.012, 0.305, 0.455, LEATHER, 0.045)          # a seat cushion
+        px, py = at(a + half / 2, 0.185)
+        with Frame((px, py, 0.44), right, lean) as F:                                                 # a back cushion, leaning against the wall
             F.pillow('seat', (-half / 2 + 0.004, 0.0, -0.115), (half / 2 - 0.004, 0.39, 0.01), LEATHER, r=0.045)
             F.line('seam', [(-half / 2 + 0.05, 0.20), (half / 2 - 0.05, 0.20)], 0.0025, 0.0106, srgb(0x0c0c0d))
-    sweep('rubber', [(x0 - 0.002, y0 + arm + 0.01, 0.307), (x0 - 0.002, y1 - arm - 0.01, 0.307)], 0.004, srgb(0x0e0e0f))   # the piping
-    with Frame((x0, yard, 0.20), FWD, UP) as F:                                       # the base's front: two flush pulls for the lockers under the seat
+    sweep('rubber', [at(arm + 0.01, D + 0.002) + (0.307,), at(L_ - arm - 0.01, D + 0.002) + (0.307,)], 0.004, srgb(0x0e0e0f))   # the piping
+    px, py = at(L_ / 2, D)
+    with Frame((px, py, 0.20), right, UP) as F:                                                       # the base's front: two flush pulls for the lockers under the seat
         for sx in (-1, 1):
             F.block('steel', (sx * half / 2 - 0.045, -0.012, 0.0), (sx * half / 2 + 0.045, 0.012, 0.003), STAINLESS, r=0.001)
             F.box('dark', (sx * half / 2 - 0.035, -0.006, 0.003), (sx * half / 2 + 0.035, 0.006, 0.0035), srgb(0x0c0c0d))

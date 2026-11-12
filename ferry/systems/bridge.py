@@ -222,8 +222,10 @@ def C(id, name, room, at, what, g=None, w=0, use=1.0, by=None, alt=None, node=No
     `box` places one that another module draws (x0, x1, yard0, yard1, h0, h1); `pick` False keeps it from answering a tap;
     `tail` is the cable's length beyond `node` where the component lies outside the section (its way there is not drawn).
     """
-    if room in ('wing-p', 'wing-s'):
-        at = (BP.wing_x(at[0]), at[1], at[2])          # the wings are carried to the ship's side: what stood at their outer end went with them
+    if room in ('wing-p', 'wing-s') and not (g or {}).get('wide'):
+        # the wings are carried to the ship's side: what stood at their outer end went with them. (`wide` in `g`: the place
+        # is given across the wing as it is now, for a thing put there since: the settee, 12 November 2026.)
+        at = (BP.wing_x(at[0]), at[1], at[2])
     COMPONENTS.append(dict(id=id, name=name, room=room, at=at, what=what, g=g or dict(kind='none'), w=w, use=use, by=by, alt=alt,
                            node=node, survey=survey, kks=kks, basis=basis, hid=hid, box=box, pick=pick, note=note, tail=tail))
 
@@ -257,8 +259,8 @@ C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the cre
   dict(kind='stairwell'))
 C('OUT-09', "Watchkeeper's table", WH, (-2.73, 22.57, 0.76), 'A table at the starboard side, forward of the pantry, 0.36 m broad so that the way past it to the front of the console block is 0.70 m: a top of light varnished wood with her profile engraved in it and a cup well in its corner, a drawer that runs out to a tap, the deck log under its own lamp. (It takes the place of the fold-down log desk that hung under the port window.)',
   dict(kind='table', w=0.36, l=0.68, H=0.76), w=10, use=0.2, by=('BD1', 1), survey='B102')
-C('OUT-41', 'Settee', WH, (2.60, 22.07, 0.0), 'A settee in black leather along the port side under the windows, forward of the wing door, for the pilot and for whoever waits on the bridge.', dict(kind='sofa', l=1.30, d=0.60))
-C('OUT-42', 'Handrail under the sills, port', WH, BP.on_wall('port', BP.CANT_LEN / 2, -0.062) + (0.865,), 'Stainless tube on brackets under the sills: from the middle of the bay round its port corner, along the cant and aft along the port side over the settee, in one length. Something to hold in a seaway while looking out. (It ended at the console block while the block stood against the front.)', dict(kind='handrail', side=1))
+C('OUT-41', 'Settee', WP, (5.90, round(BP.WING_AFT + 0.012 + 0.30, 3), 0.0), 'A settee in black leather in the port wing, against its after wall beside the door from the open deck and under the after window, for the pilot and for whoever waits on the bridge. (It stood along the port side of the wheelhouse, where it closed the way past the console block to 0.46 m; the owner, 12 November 2026: "Move it to port wing". It is not in the wing\'s inboard corner: the fire hose box and the hydrant are there.)', dict(kind='sofa', l=1.30, d=0.60, against='aft', wide=True))
+C('OUT-42', 'Handrail under the sills, port', WH, BP.on_wall('port', BP.CANT_LEN / 2, -0.062) + (0.865,), 'Stainless tube on brackets under the sills: from the middle of the bay round its port corner, along the cant and aft along the port side under the windows, in one length. Something to hold in a seaway while looking out. (It ended at the console block while the block stood against the front.)', dict(kind='handrail', side=1))
 C('OUT-43', 'Handrail under the sills, starboard', WH, BP.on_wall('starboard', BP.CANT_LEN / 2, -0.062) + (0.865,), 'Stainless tube on brackets under the sills: from the middle of the bay round its starboard corner, along the cant and aft along the starboard side over the watchkeeper\'s table. It meets the port rail in a sleeve on the centreline.', dict(kind='handrail', side=-1))
 C('OUT-44', 'Hook rail', WH, (2.92, 19.99, 1.03), 'A board of light wood with four brass hooks under the after port window, for oilskins and the watch\'s lifejackets.', dict(kind='hooks', l=0.56))
 C('OUT-10', 'Door, corridor to wheelhouse', WH, (0.0, 19.50, 0.0), 'The door from the crew corridor. It opens into the wheelhouse and is kept shut at night to keep the corridor\'s light off the glass.',

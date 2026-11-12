@@ -488,9 +488,19 @@ more cable. **The register's own check stopped the build for it**: at 24 V, way 
 panel) lost 6.0 % over 19.5 m of 1.5 mm² and way DC1 14 (public address, battery supply) 5.2 % over 17 m of 6 mm². Both
 are a size heavier (2.5 and 10 mm²).
 
-**The way in is to starboard.** The watchkeeper's table is 0.36 m broad (it was 0.58) and no longer cleated to a front
-lining that is gone: the way past it to the front of the block is **0.70 m**. To port the settee leaves 0.46 m, and 0.33
-at the binocular box: a walker does not pass. Nothing was moved there: where the settee stands is the owner's to say.
+**The ways in.** To starboard the watchkeeper's table is 0.36 m broad (it was 0.58) and no longer cleated to a front
+lining that is gone: the way past it to the front of the block is **0.70 m**. To port the settee left 0.46 m, and 0.33
+at the binocular box: a walker did not pass, and the page's check said so. Nothing was moved there at first: where the
+settee stands was the owner's to say. Asked, the owner said: **"Move it to port wing"**.
+
+**The settee stands in the port wing** (`bridge_outfit.py`: `sofa`, drawn once in its own measures and stood against
+either wall; the register's OUT-41, `against='aft'`), against the wing's after wall, 0.15 m from the door from the open
+deck and under the after window, whose sill (1.15 m) is over its back (0.83 m). **Drawn first** (JS2-211, view B, with
+what already stood in the wing): the inboard corner by the after wall, where it was first meant to go, holds the fire
+hose box and the hydrant, so it stands 2.03 m clear of them. The drawing also caught a fault before anything was built:
+the register carries a wing's fittings outboard by the old wing's measure, which would have stood the settee 1.8 m
+outside her side; a place given across the wing as it is now is marked `wide`. The port side way is **1.07 m** (0.87 m
+between the binocular box on the block's end and the handrail): one goes round the block both ways.
 
 **Under the bay** (`blender/steel.py`: `BRIDGE_OUTLINE`, `bay_gallery`, `bay_knees`) the bridge deck is carried forward of
 the house's front, 0.50 m under the bay and 1.10 m beyond it all round as a gallery with a three-course rail, from which
@@ -535,7 +545,7 @@ not put the knees beside them. Put right, in the order asked:
 
 `/Users/nilsjohansson/Developer/chisum-screens/2026-11-12/11-bay/`: `0-before/` (ten fixed views, the build of stage 5),
 `1-bay/` (the same and two more, the first build of this stage, with the faulty knees), `2-drawing/` (the sheet),
-`3-knees/` (the knees put right), `4-doors/` (the last build, with the doors to the gallery). Taken by `tools/shots-bridge.cjs` (thirteen views added for the bay, the way and the doors), drawn on this Mac's
+`3-knees/` (the knees put right), `4-doors/` (with the doors to the gallery), `5-settee/` (the last build, the settee in the port wing). Taken by `tools/shots-bridge.cjs` (thirteen views added for the bay, the way and the doors), drawn on this Mac's
 graphics card. Each named here was opened.
 
 | | Matches | Does not match yet |
@@ -543,7 +553,7 @@ graphics card. Each named here was opened.
 | The second photograph (the protruding part) | The middle of the front stands out forward of the wings as a bay with canted corners, glazed all round, on a base that overhangs the house's face, with a railed gallery under its windows; the roof's edge is one line with the wings' | Hers is 1.0 m; the *Finnarrow*'s looks nearer 2. The base is a flat gallery on knees, not a plated, sloped underside. The cants have one pane each; hers two or three |
 | T1, as the constructor asked | The block stands free with a way before it; its back opens, bay by bay, on its wiring | The upstand's back is one plain enamelled face with five vents. By day the way is in the block's shadow and its doors read dark |
 | T5 | The handrail under the sills is one length round the bay (it ended at the block) | |
-| T8 | | The table and the settee still stand beside the block, and the settee closes the port side way |
+| T8 | | The table still stands beside the block, not abaft it; the settee is in the port wing (the owner's word), not abaft the block either: there is no room abaft it |
 
 **Seen and not put right.** (1) In the way, looking down at the block's back with the glass in view, the picture is dark:
 the bay has no lamp of its own. (2) The page's deck plan and the general arrangement still draw the wheelhouse as a
@@ -568,8 +578,8 @@ Said plainly, in the order it would be seen:
 5. **The boards' insides**, and with them the owner's own next step (every electrical connection): not begun here.
 6. **Lettering on curved and small things**: the keys' legends are the sheet's, sharp at arm's length and soft at a hand's
    breadth.
-7. **The table and the settee stand beside the block**, where the photographs have them abaft it. The block itself stands
-   free since stage 6, with a way before it; the settee closes the port side way to 0.46 m.
+7. **The table stands beside the block and the settee in the port wing**, where the photographs have both abaft the
+   block. The block itself stands free since stage 6, with a way before it and a way past each of its ends.
 8. **Night.** The page has one day. The dimmers, the night lights and the chart lamp work, and are seen by daylight.
 9. **Sound.** Nothing on the bridge is heard.
 10. **Not measured again:** the yard's sight-line calculation (JS4-402, `yard/calc/bridge_calcs.py`, half an hour) was not
