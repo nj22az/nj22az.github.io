@@ -548,7 +548,7 @@ def thruster_room():
     return [gear]
 
 
-ANCHOR = dict(yard=113.4, y=L.Y(9.6))          # where each hawse pipe leaves her side: under the windlass, 4.0 m over the water
+ANCHOR = dict(yard=S.ANCHOR['yard'], y=L.Y(S.ANCHOR['height']))          # where each hawse pipe leaves her side (spec.ANCHOR): 4.0 m over the water
 
 
 def anchors():

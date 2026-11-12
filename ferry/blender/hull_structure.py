@@ -310,3 +310,14 @@ def build():
 
     plating(S.DOUBLE_BOTTOM[0] + 0.006, S.DOUBLE_BOTTOM[1], S.TANK_TOP, red)
     return [frames, floors, girders, bulkheads, tanks, stringers, topside, tank_top]
+
+
+def doorways():
+    """The doorways cut in her longitudinal bulkheads below the main deck (spec.TANK_SIDES), for the file and the check
+    that walks through each: the middle of its sill, the way through, its width and its head."""
+    out = []
+    for t in S.TANK_SIDES:
+        for a, b, sill, head in t.get('doors', ()):
+            out.append(dict(id=f"tank-side-{round((a + b) * 50)}", name='Lower hold: the doorway to the stair trunk in the port wing',
+                            at=[t['x'], round(S.TANK_TOP + sill, 4), round(L.Z((a + b) / 2), 4)], normal=[1, 0, 0], width=round(b - a, 3), head=round(head - sill, 3)))
+    return out

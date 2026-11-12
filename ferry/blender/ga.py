@@ -91,10 +91,10 @@ HELIDECK = dict(yard=10.5, across=19.0, over=1.0)             # an octagon 19 m 
 FUNNEL = dict(yard=(16.2, 23.2), x=(7.5, 9.5), top=22.4)      # each funnel's casing on the upper deck, and its top above the keel
 HOUSE = (80.0, 104.0)    # the house, on the upper deck
 HOUSE_HALF = 7.5         # the half breadth of its upper tiers (the boat deck's house and those over it)
-BOAT_RECESS = 6.2        # the boat deck's house is this narrow where the lifeboats stand beside it,
-BOAT_RECESS_TO = 91.0    # from its after end to here: 3.6 m of deck each side for a boat under gravity davits
+BOAT_RECESS = 5.9        # the boat deck's house is this narrow where the lifeboats stand beside it,
+BOAT_RECESS_TO = 91.0    # from its after end to here: 3.6 m of deck and more each side for a boat under gravity davits
 LIFEBOAT = (81.5, 90.5)  # each lifeboat's station along her side: 9.0 m (the rail has a gap there)
-LIFERAFTS = (93.0, 95.0, 97.0)                                # where a liferaft's cradle stands at the rail, each side
+LIFERAFTS = (93.0, 95.4, 97.8)                                # where a liferaft's cradle stands at the rail, each side (the rail has a gap of 1.7 m at each)
 TRUNK = dict(yard=(91.0, 95.0), half=1.2)                     # the house's stair trunk
 
 PARTICULARS = [
@@ -114,7 +114,7 @@ PARTICULARS = [
     ('Vehicles', f'Main deck: five lanes of {LANE:.1f} m, 5.0 m and more clear. Upper deck: trailers in the open, by a fixed ramp at 1 in 8. Lower hold: cars and trailers, by a lift of 16.0 x 3.6 m'),
     ('Drivers and passengers', f'{DRIVERS}: eight berths in four cabins on the boat deck, the others in the drivers\' lounge'),
     ('Crew', f'{CREW}: six officers on the officers\' deck; nineteen ratings in twelve cabins on the boat deck: six single cabins, six across the front with two berths, and one single cabin that takes a second'),
-    ('Life-saving', 'One lifeboat for 60 each side under gravity davits on the boat deck (the port one is also the rescue boat); liferafts for all on board'),
+    ('Life-saving', 'One lifeboat for 40 each side under gravity davits on the boat deck (the port one is also the rescue boat); three liferafts for 25 each side'),
     ('Frame spacing', f'{FRAME_SPACING:.1f} m, frames 0 (the transom) to {round(LENGTH / FRAME_SPACING)}'),
 ]
 
@@ -239,7 +239,7 @@ both('main', 'aft-mooring', 'After mooring station', 0.0, fr(12), 4.5, HB, 'crew
 S('main', 'hydraulic-room', 'Hydraulic pump room', fr(12), 12.6, C, HB, 'machinery', 'The power packs of the stern ramp and the cargo lift')
 S('main', 'deck-store-s', 'Deck store, starboard', fr(12), 12.6, -HB, -C, 'service')
 S('main', 'deck-store-p', 'Deck store, port', 12.6, 16.2, C, HB, 'service')
-S('main', 'er-escape', 'Engine room escape trunk', 12.6, 16.2, -HB, -C, 'safety', 'The second way out of the engine room, up to the upper deck')
+S('main', 'co2-room', 'CO2 room', 12.6, 16.2, -HB, -C, 'safety', 'The fixed fire-extinguishing gas for the engine rooms and the cargo decks: above the bulkhead deck, entered from the main deck at the foot of the fixed ramp')
 both('main', 'uptake', 'Engine uptake and air trunk', 16.2, 23.2, C, HB, 'machinery', 'The exhausts and the engine room\'s air, up to the funnel on that side')
 S('main', 'er-entrance', 'Engine room entrance', 23.2, 30.6, C, HB, 'crew', 'The stair down to the engine room platform')
 S('main', 'deck-workshop', 'Deck workshop', 30.6, 38.4, C, HB, 'service')
@@ -295,14 +295,14 @@ S('upper', 'forecastle', 'Forecastle: forward mooring deck', _H1, 124.0, -HB, HB
   'Before the house, within a bulwark that carries her flare; it rises 1.5 m to the stem. The windlasses, bitts and fairleads; the foremast', level='forecastle')
 
 # ---------------------------------------------------------------------------------------------------------------------
-# The boat deck. Its house is 12.4 m wide abaft 91 m, where a lifeboat stands on 3.6 m of deck each side, and 15.0 m wide
+# The boat deck. Its house is 11.8 m wide abaft 91 m, where a lifeboat stands on 3.6 m of deck and more each side, and 15.0 m wide
 # forward of it.
 # ---------------------------------------------------------------------------------------------------------------------
 HH, HR, REC = HOUSE_HALF, BOAT_RECESS, BOAT_RECESS_TO
 S('boat', 'boat-deck-p', 'Boat deck, port', _H0, _H1, HR, HB, 'safety', label=(86.0, 8.0),
-  why='Open. The lifeboat station: a boat for 60 under gravity davits, 81.5 to 90.5 m from the transom (it is also the rescue boat); forward of it three liferafts in cradles at the rail')
+  why='Open. The lifeboat station: a boat for 40 under gravity davits, 81.5 to 90.5 m from the transom (it is also the rescue boat); forward of it three liferafts in cradles at the rail')
 S('boat', 'boat-deck-s', 'Boat deck, starboard', _H0, _H1, -HB, -HR, 'safety', label=(86.0, -8.0),
-  why='Open. The lifeboat station: a boat for 60 under gravity davits, 81.5 to 90.5 m from the transom; forward of it three liferafts in cradles at the rail')
+  why='Open. The lifeboat station: a boat for 40 under gravity davits, 81.5 to 90.5 m from the transom; forward of it three liferafts in cradles at the rail')
 S('boat', 'boat-lobby-aft', 'After cross passage', _H0, 81.3, -HR, HR, 'crew', 'A door to the boat deck each side')
 S('boat', 'boat-lobby-fwd', 'Forward cross passage', 98.5, 99.8, -HH, HH, 'crew', 'A door to the boat deck each side, forward of the lifeboats')
 S('boat', 'boat-corridor-p', 'Corridor, port', 81.3, 98.5, TRUNK['half'], 2.5, 'crew')
@@ -311,8 +311,8 @@ S('boat', 'boat-locker', 'Lockers and air trunk', 81.3, _T0, -TRUNK['half'], TRU
 S('boat', 'house-stair-boat', 'Stair trunk', _T0, _T1, -TRUNK['half'], TRUNK['half'], 'crew')
 S('boat', 'crew-pantry', 'Crew pantry', _T1, 98.5, -TRUNK['half'], TRUNK['half'], 'crew')
 for _n, (_a, _b) in enumerate(((81.3, 86.15), (86.15, REC))):
-    S('boat', f'drivers-cabin-{_n + 1}', f"Drivers' cabin {_n + 1}", _a, _b, 2.5, HR, 'passenger', 'Two berths and a wet unit: 4.85 m by 3.7 m, beside the lifeboat')
-    S('boat', f'drivers-cabin-{_n + 3}', f"Drivers' cabin {_n + 3}", _a, _b, -HR, -2.5, 'passenger', 'Two berths and a wet unit: 4.85 m by 3.7 m, beside the lifeboat')
+    S('boat', f'drivers-cabin-{_n + 1}', f"Drivers' cabin {_n + 1}", _a, _b, 2.5, HR, 'passenger', 'Two berths and a wet unit: 4.85 m by 3.4 m, beside the lifeboat')
+    S('boat', f'drivers-cabin-{_n + 3}', f"Drivers' cabin {_n + 3}", _a, _b, -HR, -2.5, 'passenger', 'Two berths and a wet unit: 4.85 m by 3.4 m, beside the lifeboat')
 for _n in range(3):
     _a = REC + 2.5 * _n
     S('boat', f'crew-cabin-p{_n + 1}', f'Crew cabin {_n + 1}', _a, _a + 2.5, 2.5, HH, 'crew', 'A single cabin of 2.5 m by 5.0 m with its own wet unit')
@@ -389,7 +389,42 @@ QUESTIONS = [
     'Her watertight doors below the main deck are drawn hinged, as the first Chisum\'s were at the owner\'s word; a passenger ship\'s are to be sliding and power-operated (SOLAS II-1/13 as the yard recalls it; to be read).',
     'Her mast is the first Chisum\'s, 28.9 m above the keel (23.3 m over the water): a ship of her length carries her masthead light higher, and a second one forward. A foremast is in the arrangement and not yet built.',
     'The emergency generator\'s size: the owner\'s drawing names 500 kW, which is as much as one of her main sets. The room is drawn at the drawing\'s size.',
+    'The engine room has one stair up (to the port casing) and watertight doors forward and aft; a second way of escape to the deck, from its far end, is not yet in the arrangement. The room first drawn for it in the starboard casing stood over the fresh water tanks, not over the engine room: it is the CO2 room now.',
+    'The CO2 room is entered from the main deck, which is an enclosed vehicle deck; the rules ask for a way in from the open deck (as the yard recalls them; to be read).',
+    'The uptake and the three ventilation trunks in the starboard casing have no door: the fixed ramp runs along their only wall to the deck. They are trunks, opened by bolted plates.',
     'The stern ramp, raised, stands 3.4 m over the helicopter deck at its after edge: a helicopter comes in over her side, not over her stern. A ramp in two lengths that folds would end under the deck; it is drawn in one, as the pattern has it.',
+]
+
+# ---- Her stations: where the fittings of her decks stand, and why there. The fittings themselves come from the yard's
+# library of deck fittings (blender/fittings.py); the place of each one, to the centimetre, is in spec.OUTFIT, and steel.py
+# leaves the deck clear and shapes the rails and bulwarks for them. (Station, where, what stands there and why.)
+STATIONS = [
+    ('Lifeboat stations', 'boat deck, 81.5 to 90.5 m from the transom, each side',
+     'A 7.3 m boat for 40 under gravity davits. The house is 11.8 m wide here and the deck beside it 3.6 m and more: the boat stows inside her side and swings out '
+     'over it. The boat deck is the embarkation deck. The rail has a gap of 9.0 m at each boat. The two boats take 80, the six rafts 150: she carries 75.'),
+    ('Liferaft stations', 'boat deck, 93.0, 95.4 and 97.8 m, each side',
+     'Three rafts in cradles at the rail each side, forward of the boats and clear of the cross passage\'s door (98.75 m): thrown over, or floating free. '
+     'A metre of deck is left between a cradle and the house. The rail has a gap of 1.7 m at each.'),
+    ('Anchor gear', 'forecastle, 110.8 to 115.0 m, each side 2.6 m off the centre line',
+     'Each anchor hangs in its hawse pipe on the flare of the bow, 115.2 m from the transom and 4.0 m over the water. The pipe comes up through the forecastle deck '
+     'at 114.6 m; the chain runs aft over the chain stopper (113.7 m) to the windlass (112.0 m) and goes down its chain pipe at 112.5 m, forward of the collision '
+     'bulkhead (110.4 m), inboard to the chain locker under the fore store.'),
+    ('Forward mooring station', 'forecastle, 104.5 to 123.7 m',
+     'A mooring winch each side at 106.8 m, 2.8 m before the house, and the windlasses\' warping heads. Lines leave her at six chocks in the bulwark: head lines at '
+     '119.2 m, breast lines at 110.6 m, springs at 105.6 m, and one in the stem head on the centre line for a tug. Bitts stand beside each chock, a roller fairlead '
+     'where a line turns. The spare lines are on two reels under the lee of the house front. The foremast stands on the centre line at 116.9 m.'),
+    ('After mooring stations', 'main deck, 0 to 7.2 m, inside each casing; and the upper deck\'s after corners',
+     'As the pattern has them: her weather deck aft is the helicopter deck, so the stern lines are worked from a station inside each casing on the main deck, '
+     'through a mooring port in her side (2.4 to 4.8 m): a winch, bitts, a roller fairlead at the port\'s sill. On the upper deck a capstan and bitts stand in each '
+     'after corner, outside the helicopter deck\'s octagon, with a chock in her side bulwark and one in the stern bulwark beside the raised ramp.'),
+    ('Ventilators and air pipes', 'upper deck, at the bulwark, outboard of the walkways',
+     'The trunks of the engine room, the auxiliary engine room and the lower hold come up in the starboard casing, the main deck\'s exhaust in the port one: a '
+     'mushroom ventilator stands over each, hard against the bulwark, and 1.2 m of walkway is left inboard of it. The wing tanks\' air pipes stand between them.'),
+    ('Helicopter deck', 'upper deck aft, 1.0 to 20.0 m',
+     'A foam monitor each side on the upper deck at the helicopter deck\'s forward edge, beside its two stairs: it covers the whole deck from outside it.'),
+    ('Lashing', 'main deck, upper deck and lower hold',
+     'Pots flush in the deck along the lane edges, 2.4 m apart: four rows on the main and upper decks (three beside the fixed ramp and its opening, one beside the '
+     'cargo lift), three in the lower hold.'),
 ]
 
 

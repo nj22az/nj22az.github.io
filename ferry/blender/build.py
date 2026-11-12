@@ -164,7 +164,7 @@ def main():
     # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
     # spaces and to the car deck (part.group).
     parts_of = {gid: shipyard.collection(gid, ship) for gid in S.PARTS}
-    report, inputs, movers, ways = {}, [], [], []
+    report, inputs, movers, ways, doorways = {}, [], [], [], []
     modules = ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'steel', 'stairs', 'compass_deck', 'wheelhouse', 'livery', 'vending', 'eg_room', 'lighting')
     only = opt.get('--only')           # a trial of some sections: no checks, nothing the page reads is to be made from it
     for name in (only.split(',') if only else modules):
@@ -178,6 +178,8 @@ def main():
         made = mod.build()
         if hasattr(mod, 'ways'):
             ways += mod.ways()
+        if hasattr(mod, 'doorways'):
+            doorways += mod.doorways()
         if hasattr(mod, 'motion'):
             more_inputs, more_movers = mod.motion()
             inputs += more_inputs
@@ -201,7 +203,7 @@ def main():
     print(f'  {total:7d}  triangles')
     if '--part' in opt:
         import export_jmf
-        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS, shipyard.RUNS)
+        export_jmf.write(opt['--part'], tuple(parts_of), inputs, movers, ways, shipyard.COMPONENTS, shipyard.RUNS, doorways)
     if '--blend' in opt:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(opt['--blend']), compress=True)
         print('saved', opt['--blend'])

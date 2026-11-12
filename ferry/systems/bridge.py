@@ -21,7 +21,7 @@ import bridge_place as BP          # where the bridge stands in the 68 m ship: t
 import eg_place
 import spec as SH                   # the ship's own measures (the sternlight's place, at the stern)
 
-SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'eg-house': 'Emergency generator room', 'stern': 'Stern, over the ramp'}))
+SECTION = dict(id='bridge', name='Navigation bridge', rooms=dict(wheelhouse='Wheelhouse', **{'wing-p': 'Bridge wing, port', 'wing-s': 'Bridge wing, starboard', 'compass-deck': 'Compass deck', 'eg-house': 'Emergency generator room', 'stern': 'Stern bulwark, beside the ramp'}))
 # The wheelhouse's heights (the owner, 11 November 2026, on raising its roof: "Yes make it realistic"): 2.30 m clear under
 # the deckhead lining, a void over the lining for the cable trays, and the compass deck's top 2.70 m over the bridge deck.
 DECK_H = 2.70          # the compass deck's top, over the bridge deck

@@ -142,10 +142,10 @@ def windows(plan, room, side, starts, width=1.1, sill=0.95, head=1.75):
 CABIN = dict(width=0.9, sill=1.05, head=1.68)
 # ---- The main deck: each casing room is entered from the lanes; the stairs' rooms at their landings.
 for _room, _side, _a, _b in (
-        ('aft-mooring-p', 's', 5.6, 6.5), ('hydraulic-room', 's', 9.4, 10.3), ('deck-store-p', 's', 13.9, 14.8), ('uptake-p', 's', 21.9, 22.8),
+        ('aft-mooring-p', 's', 2.4, 3.3), ('hydraulic-room', 's', 9.4, 10.3), ('deck-store-p', 's', 13.9, 14.8), ('uptake-p', 's', 21.9, 22.8),
         ('er-entrance', 's', 29.85, 30.55), ('deck-workshop', 's', 33.9, 34.8), ('lashing-store', 's', 42.0, 42.9), ('hold-stair-head', 's', 53.65, 54.45),
         ('fan-room', 's', 59.7, 60.6), ('pilot-lobby-p', 's', 70.3, 71.2), ('main-stair-p', 's', 72.6, 73.6), ('bosun-store', 's', 86.9, 87.8),
-        ('aft-mooring-s', 'p', 5.6, 6.5), ('deck-store-s', 'p', 9.4, 10.3), ('pilot-lobby-s', 'p', 70.3, 71.2), ('main-stair-s', 'p', 72.6, 73.6),
+        ('aft-mooring-s', 'p', 2.4, 3.3), ('deck-store-s', 'p', 9.4, 10.3), ('co2-room', 'p', 12.75, 13.55), ('pilot-lobby-s', 'p', 70.3, 71.2), ('main-stair-s', 'p', 72.6, 73.6),
         ('paint-store', 'p', 86.9, 87.8), ('fore-store', 'a', -0.45, 0.45)):
     door('main', _room, _side, _a, _b)
 # ---- The upper deck: the house.
@@ -212,6 +212,30 @@ OUTLINE_OPENINGS = [
     ('boat', 'x', HH, 98.75, 99.55, 0.0, DOOR_HEAD, False), ('boat', 'x', -HH, 98.75, 99.55, 0.0, DOOR_HEAD, False),      # and the forward one's
     ('officers', 'yard', OFF, 1.65, 2.45, 0.0, DOOR_HEAD, False), ('officers', 'yard', OFF, -2.45, -1.65, 0.0, DOOR_HEAD, False),   # the corridors' after doors
 ]
+
+
+def doorways():
+    """Every doorway in her walls that one walks through, for the file (its `doorways`) and for the page's check that
+    walks through each (checks/doors.cjs): the middle of its sill, the way one goes through it, its width and its head."""
+    names = {s['id']: s['name'] for s in ga.SPACES}
+    out = []
+
+    def add(key, name, plan, axis, where, lo, hi, head):
+        mid = (lo + hi) / 2
+        at = [mid, PLANS[plan]['floor'], Z(where)] if axis == 'yard' else [where, PLANS[plan]['floor'], Z(mid)]
+        out.append(dict(id=key, name=name, at=[round(v, 4) for v in at], normal=[0, 0, 1] if axis == 'yard' else [1, 0, 0],
+                        width=round(hi - lo, 3), head=round(head, 3)))
+    for o in OPENINGS:
+        if o['glass'] or o['bottom'] > 0.01:
+            continue
+        _, y0, y1, x0, x1 = next(r for r in _spaces(o['plan']) if r[0] == o['room'])
+        axis, c = {'a': ('yard', y0), 'f': ('yard', y1), 'p': ('x', x1), 's': ('x', x0)}[o['side']]
+        way = {'a': 'its after end', 'f': 'its forward end', 'p': 'its port side', 's': 'its starboard side'}[o['side']]
+        add(f"{o['room']}-{o['side']}-{round((o['lo'] + o['hi']) * 50)}", f"{names[o['room']]}: the doorway in {way}", o['plan'], axis, c, o['lo'], o['hi'], o['top'])
+    for plan, axis, c, lo, hi, sill, head, glass in OUTLINE_OPENINGS:
+        if not glass and sill <= 0.01:
+            add(f"{plan}-house-{axis}-{round(c * 100)}-{round((lo + hi) * 50)}", f"{PLANS[plan]['name']}: a door of the house from the open deck", plan, axis, c, lo, hi, head)
+    return out
 
 
 # =====================================================================================================================
@@ -726,8 +750,10 @@ def forecastle(up):
 # =====================================================================================================================
 # Rails
 # =====================================================================================================================
-def rails(group, name, path, y, post_every=1.5, courses=((1.0, 0.019), (0.62, 0.012), (0.30, 0.012))):
-    """A three-course rail along a path of (x, yard) points, with a stanchion at each corner and about every 1.5 m between."""
+def rails(group, name, path, y, post_every=1.5, courses=((1.0, 0.019), (0.615, 0.012), (0.23, 0.012))):
+    """A three-course rail along a path of (x, yard) points, with a stanchion at each corner and about every 1.5 m between.
+    Its courses are the load line rule's as the yard's reference has it (comparable-ferries, section 2): 1.0 m high, the
+    lowest opening no more than 230 mm, the others no more than 380 mm."""
     r = part(group, name, 'Topside paint', smooth=True, angle=40)
     for (xa, ya), (xb, yb) in zip(path, path[1:]):
         length = hypot(xb - xa, yb - ya)
@@ -752,7 +778,7 @@ def open_deck_rails():
     # ---- the boat deck: along her side, with a gap where each lifeboat is swung out and at each liferaft's cradle
     up = lambda yd: L.upper_breadth(Z(yd)) - 0.09
     for sgn in (1, -1):
-        gaps = [ga.LIFEBOAT] + [(v - 0.55, v + 0.55) for v in ga.LIFERAFTS]
+        gaps = [ga.LIFEBOAT] + [(v - 0.85, v + 0.85) for v in ga.LIFERAFTS]
         at = H0 + i
         for ga_, gb in gaps + [(H1 - i, H1)]:
             if ga_ - at > 0.4:
@@ -810,22 +836,43 @@ def platform():
     dark, plate = srgb(S.DARK_GREY), srgb(S.FLOOR_PLATE)
     y = S.PLATFORM
     reach = lambda yd: L.hull_x(y - 0.2, Z(yd)) - 0.30          # as far as her frames, at the bearers' level
-    wells = [(_box_of(st)[0] - 0.03, _box_of(st)[1] + 0.03, st['top'][0], st['top'][0] + st['down'] * 2.4) for st in (_stair('er-floor-p'), _stair('er-floor-s'))]
+    # The wells the two stairs go down through: as wide as the stair and 30 mm each side, from 35 mm abaft its head to
+    # 35 mm beyond its foot. (x from, x to, yard from, yard to.)
+    wells = []
+    for st in (_stair('er-floor-p'), _stair('er-floor-s')):
+        ends = sorted((st['top'][0], st['top'][0] + st['down'] * sum(n for n in st['legs'] if isinstance(n, int)) * st['going']))
+        wells.append((_box_of(st)[0] - 0.03, _box_of(st)[1] + 0.03, ends[0] - 0.035, ends[1] + 0.035))
 
     def flat(x0, x1, a, b, pillar_x):
         x0, x1 = sorted((x0, x1))
+        mine = [w for w in wells if w[0] < x1 and x0 < w[1] and w[2] < b and a < w[3]]
         n, m = max(1, round((b - a) / 0.9)), max(1, round((x1 - x0) / 0.9))
-        for i in range(n):
-            ya, yb = a + (b - a) * i / n, a + (b - a) * (i + 1) / n
-            for j in range(m):
-                xa, xb = x0 + (x1 - x0) * j / m + 0.004, x0 + (x1 - x0) * (j + 1) / m - 0.004
-                if any(wx0 < xb and xa < wx1 and min(wa, wb) < yb and ya < max(wa, wb) for wx0, wx1, wa, wb in wells):
+
+        def cuts(lo, hi, count, extra):
+            """The plates' seams: evenly, and one at each edge of a well (an even one within 0.25 m of that gives way)."""
+            even = [lo + (hi - lo) * i / count for i in range(count + 1)]
+            keep = [v for k, v in enumerate(even) if k in (0, count) or all(abs(v - e) > 0.25 for e in extra)]
+            return sorted(keep + [e for e in extra if lo + 0.02 < e < hi - 0.02])
+        ys = cuts(a, b, n, [v for w in mine for v in w[2:]])
+        xs = cuts(x0, x1, m, [v for w in mine for v in w[:2]])
+        in_well = lambda x, yd: any(w[0] < x < w[1] and w[2] < yd < w[3] for w in mine)
+        for i, (ya, yb) in enumerate(zip(ys, ys[1:])):
+            for j, (xa, xb) in enumerate(zip(xs, xs[1:])):
+                if in_well((xa + xb) / 2, (ya + yb) / 2):
                     continue
-                plates.box((xa, y - 0.006, Z(ya) + 0.004), (xb, y, Z(yb) - 0.004), tint(plate, 1 + 0.03 * (((i * 7 + j * 13) % 5) - 2) / 2))      # 6 mm of plate
-        # a bearer under the plates' seams across the ship, an edge bearer along each side, pillars under them
-        for i in range(n + 1):
-            yd = a + (b - a) * i / n
-            steel.box((x0, y - 0.10, Z(yd) - 0.03), (x1, y - 0.006, Z(yd) + 0.03), dark)
+                plates.box((xa + 0.004, y - 0.006, Z(ya) + 0.004), (xb - 0.004, y, Z(yb) - 0.004), tint(plate, 1 + 0.03 * (((i * 7 + j * 13) % 5) - 2) / 2))      # 6 mm of plate
+        # a bearer under the plates' seams across the ship (in two lengths where a well is in its way; the ones at a well's
+        # ends are its trimmers), a trimmer along each side of a well, an edge bearer along each side, pillars under them
+        for yd in ys:
+            spans = [(x0, x1)]
+            for w in mine:
+                if w[2] + 0.01 < yd < w[3] - 0.01:
+                    spans = [s for p, q in spans for s in ((p, min(q, w[0])), (max(p, w[1]), q)) if s[1] - s[0] > 0.02]
+            for p, q in spans:
+                steel.box((p, y - 0.10, Z(yd) - 0.03), (q, y - 0.006, Z(yd) + 0.03), dark)
+        for w in mine:
+            for x in (w[0] - 0.03, w[1] + 0.03):
+                steel.box((x - 0.03, y - 0.10, Z(w[2]) + 0.03), (x + 0.03, y - 0.006, Z(w[3]) - 0.03), dark)
         for x in (x0, x1):
             steel.box((x - 0.03, y - 0.16, Z(a)), (x + 0.03, y - 0.10, Z(b)), dark)
         for px in pillar_x:
@@ -844,10 +891,12 @@ def platform():
     for sgn in (1, -1):
         out = min(reach(ga_), reach(gb))
         flat(sgn * g, sgn * out, ga_, gb - 0.02, [sgn * (g + 0.03)])
-        # the gallery's rail along its inboard edge, with a gap at the stair's head
-        st = _stair('er-floor-p')
-        s0, s1 = st['top'][0] - 0.05, st['top'][0] + 2.4
+        # the gallery's rail along its inboard edge, over the engines (the stair goes down inside it, entered from aft)
         rails('machinery', 'Engine room platform, rails', [(sgn * (g + 0.04), ga_ + 0.04), (sgn * (g + 0.04), gb - 0.06)], y, post_every=1.3)
+        # ... and a guard round the stair's well: along its outboard side and across its far end, where one walking the
+        # gallery would step into it
+        w = wells[0]
+        rails('machinery', 'Engine room platform, rails', [(sgn * (w[1] + 0.03), w[2] + 0.10), (sgn * (w[1] + 0.03), w[3] + 0.0), (sgn * (g + 0.04), w[3] + 0.0)], y, post_every=1.3)
     # the platform's forward edge, between the two galleries: a rail across, before the control room's windows
     rails('machinery', 'Engine room platform, rails', [(-g + 0.04, b + 0.04), (g - 0.04, b + 0.04)], y, post_every=1.3)
 
@@ -1007,9 +1056,12 @@ def motion():
 
 
 def stern_ramp():
-    """The stern ramp, drawn raised: it is the stern door, and it lowers (motion). A stiffened slab 11 m long that lies
-    against the transom from outside: its roadway looks forward into the main deck, its plating aft. Two hydraulic
-    cylinders work it, each from a pedestal on the main deck to a lug that stands in through the door's opening."""
+    """The stern ramp, drawn raised: it is the stern door, and it lowers (motion). A box girder 11 m long and 0.42 m deep
+    that lies against the transom from outside: its roadway looks forward into the main deck; its outer skin, which looks
+    aft and is the weathertight door's face to the sea, is plated smooth over the girders inside it, and carries her name
+    and port whole (hull_markings.py). It turns on a hinge line at the sill, so placed that its roadway lies level with
+    the main deck when it is down. Two hydraulic cylinders work it, each from a pedestal on the main deck to a lug that
+    stands in through the door's opening."""
     R = STERN_RAMP
     ramp = part('main', 'Stern ramp', 'Topside paint', mover=R['id'])
     road = part('main', 'Stern ramp, roadway', 'Deck paint', mover=R['id'])
@@ -1018,24 +1070,25 @@ def stern_ramp():
     h = R['half']
     y0, y1 = S.MAIN_DECK + R['foot'], S.MAIN_DECK + R['foot'] + R['length']
     za, zb = z0 + R['thick'][0], z0 + R['thick'][1]
-    ramp.box((-h, y0, za), (h, y1, zb), tint(srgb(S.HULL), 1.05))
-    # its side girders and cross girders, on its outer face: what a ramp of 11 m is stiffened with
-    for x in (-h, -h / 3, h / 3, h - 0.12):
-        ramp.box((x, y0 + 0.2, za - 0.16), (x + 0.12, y1 - 0.1, za), tint(srgb(S.HULL), 0.92))
-    k = 1
-    while y0 + 1.1 * k < y1 - 0.3:
-        yy = y0 + 1.1 * k
-        k += 1
-        for xa, xb in ((-h + 0.12, -h / 3), (-h / 3 + 0.12, h / 3), (h / 3 + 0.12, h - 0.12)):
-            ramp.box((xa, yy - 0.04, za - 0.10), (xb, yy + 0.04, za), tint(srgb(S.HULL), 0.88))
+    ramp.block((-h, y0, za), (h, y1, zb), tint(srgb(S.HULL), 1.0), 0.03)
+    # a rubbing bar down each side of its outer skin and one across its head: what meets the quay's fender first
+    for x in (-h + 0.25, h - 0.37):
+        ramp.box((x, y0 + 0.6, za - 0.05), (x + 0.12, y1 - 0.35, za + 0.01), tint(srgb(S.HULL), 0.9))
+    ramp.box((-h + 0.25, y1 - 0.35, za - 0.05), (h - 0.25, y1 - 0.23, za + 0.01), tint(srgb(S.HULL), 0.9))
     road.box((-h + 0.05, y0 + 0.05, zb), (h - 0.05, y1 - 0.05, zb + 0.01), tint(GREEN, 0.95))
     k = 1
     while y0 + 0.4 * k < y1 - 0.3:                                               # the non-slip bars across its roadway
         yy = y0 + 0.4 * k
         k += 1
         road.box((-h + 0.2, yy - 0.02, zb + 0.01), (h - 0.2, yy + 0.02, zb + 0.022), tint(GREEN, 0.8))
-    for x in (-h, h - R['lug']):                                                 # its hinge lugs on the transom at the sill: they stay when it lowers
-        lugs.box((x, S.MAIN_DECK - 0.30, za), (x + R['lug'], y0, z0), DARK)
+    # its hinges, one each side at the sill: an arm on the ramp's side, a lug on the transom beside it (which stays when
+    # the ramp lowers), and the pin through both on the hinge line
+    hy, hz = R['hinge3'][1], R['hinge3'][2]
+    for sgn in (1, -1):
+        xa, xb, xc = sgn * (h - 0.005), sgn * (h + 0.05), sgn * (h + 0.06)
+        ramp.box((min(xa, xb), hy - 0.04, hz - 0.055), (max(xa, xb), hy + 0.32, hz + 0.012), tint(srgb(S.HULL), 0.9))      # (its corner turns 42 mm from the line: clear of the transom, 45 mm off)
+        lugs.box((min(xc, xc + sgn * R['lug']), hy - 0.19, z0 - 0.10), (max(xc, xc + sgn * R['lug']), hy + 0.10, z0), DARK)
+        lugs.tube((sgn * (h - 0.01), hy, hz), (sgn * (h + 0.07 + R['lug']), hy, hz), 0.03, colour=STEEL, sides=12)
     # ---- its two hydraulic cylinders
     (ty, tz), (py, pz) = R['trunnion3'], R['pin3']
     length = hypot(py - ty, pz - tz)
@@ -1093,6 +1146,9 @@ def pilot_doors():
         # the leaf: against the frame's inboard face, lapping the opening
         d0, d1 = fr_ + 0.004, fr_ + 0.004 + PILOT['leaf']
         box(leaf, d0, d1, y0 + 0.02, y1 + lap, a - lap, b + lap, tint(srgb(S.WHITE), 0.97))
+        # its outer skin: a panel that fills the opening in her plating (6 mm clear all round, over the sill bar) and
+        # stands 3 mm inside her side's outer face, painted as her side is: shut, the door is one with her side
+        box(leaf, -S.SHELL + 0.003, d0 + 0.005, y0 + 0.056, y1 - 0.006, a + 0.006, b - 0.006, srgb(S.HULL))
         for yy in (y0 + 0.45, y0 + 1.15, y0 + 1.85):                   # three stiffeners across it, inboard
             box(leaf, d1, d1 + 0.05, yy - 0.03, yy + 0.03, a - lap + 0.06, b + lap - 0.06, tint(srgb(S.WHITE), 0.9))
         # six dogs: a lever over the frame at each, on a boss through the leaf

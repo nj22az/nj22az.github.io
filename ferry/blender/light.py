@@ -7,9 +7,15 @@ light comes in at the windows and from the lamps, falls off into the corners, an
 their own colours. This tool works that out once, when she is built, for every place aboard at a time:
 
   - a grid of points is laid through the whole ship, one every `cell` metres;
-  - from each point rays are sent out all round. A ray that gets out sees the sky; a ray that meets a lamp sees the lamp; a
-    ray that meets a surface sees what that surface throws back: the sun on it, if the sun reaches it, and the light the
-    grid itself has found there, which is worked round and round (`bounces`) until the rooms have filled;
+  - from each point rays are sent out all round. A ray that gets out sees the sky; a ray that meets a surface sees what
+    that surface throws back: the sun on it, if the sun reaches it, and the light the grid itself has found there, which
+    is worked round and round (`bounces`) until the rooms have filled;
+  - a lamp is small and bright, and of a hundred rays sent out all round perhaps one meets it: found that way a room's
+    light came out in blotches (the 124.8 m ship's 390 fittings, 12 November 2026). So each lamp's light is worked out by
+    itself: from each point a line is drawn to every lamp within `REACH`, and if nothing stands between, what that lamp
+    gives the point is added, by its size, the way it faces and the square of the distance. A lamp is a piece of a
+    light-giving look named in `AREA_LIGHTS` (a fitting's diffuser, a lit panel); small lit things (a button, a pilot
+    lamp) are still seen by the rays that happen to meet them;
   - what each point receives from each side is kept, small, in `data/light.bin.gz`. The page lights every surface from it
     (look.js): the sun itself and its sharp shadows stay the page's own.
 
@@ -34,6 +40,8 @@ HORIZON = np.array([0.66, 0.78, 0.95])          # and at the horizon
 BELOW = np.array([0.20, 0.24, 0.27])            # looking down past her: the sea, or the slip
 GLOW = np.array([1.0, 0.9, 0.75]) * 0.5         # the brightening of the sky toward the sun
 LAMP = 14.0                                     # a lit lamp's radiance, for each unit of its material's emissive intensity
+AREA_LIGHTS = ('Lamp diffuser', 'Lit panel')    # the looks whose pieces are lamps, each worked out by itself (see above)
+REACH = 9.0                                     # how far a lamp's own light is followed: beyond, it adds less than a thirtieth of the floor
 SCREEN = 0.45                                   # a lit screen's
 FLOOR = 0.10                                    # no place is left blacker than this (what the eye still makes out)
 SCALE = 8.0                                     # the largest light the file can say
@@ -68,11 +76,52 @@ def srgb(c):
     return (np.asarray(c, float) / 255.0) ** 2.2
 
 
+def lamps_of(tri, glow):
+    """The lamps among her triangles (`glow`: what each gives out, nothing for most). Triangles that share a corner are one
+    lamp. For each: its middle, how much of it faces each of the six sides (square metres), and its radiance; and for
+    every triangle, which lamp it is a piece of (-1: none)."""
+    owner = np.full(len(tri), -1, np.int32)
+    idx = np.nonzero(glow.sum(1) > 0)[0]
+    parent = list(range(len(idx)))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    seen = {}
+    corners = np.rint(tri[idx] * 1000).astype(np.int64)
+    for n in range(len(idx)):
+        for c in corners[n]:
+            k = (int(c[0]), int(c[1]), int(c[2]))
+            if k in seen:
+                a, b = find(n), find(seen[k])
+                if a != b:
+                    parent[a] = b
+            else:
+                seen[k] = n
+    groups = {}
+    for n in range(len(idx)):
+        groups.setdefault(find(n), []).append(int(idx[n]))
+    lamps = []
+    for g in groups.values():
+        t = tri[g]
+        vec = np.cross(t[:, 1] - t[:, 0], t[:, 2] - t[:, 0]) / 2            # each triangle's area, along the way it faces
+        area = np.linalg.norm(vec, axis=1)
+        if area.sum() < 1e-5:
+            continue
+        middle = (t.mean(1) * area[:, None]).sum(0) / area.sum()
+        owner[g] = len(lamps)
+        lamps.append((middle, np.maximum(vec @ AXES.T, 0.0).sum(0), glow[g[0]]))
+    return owner, lamps
+
+
 def load(part):
-    """Her triangles as the rays meet them: corners, what each throws back, what each gives out, and whether it has two faces."""
+    """Her triangles as the rays meet them: corners, what each throws back, what each gives out to a ray that meets it,
+    whether it has two faces; and what each piece of a lamp gives out (those are worked out by themselves: lamps_of)."""
     z = np.load(part)
     meta = json.loads(z['meta'].tobytes())
-    tri, alb, emi, two = [], [], [], []
+    tri, alb, emi, two, glow = [], [], [], [], []
     for m in meta['meshes']:
         look = m['look']
         if look.get('transparent') and look.get('opacity', 1) < 1:
@@ -81,17 +130,18 @@ def load(part):
         c = srgb(z[m['key'] + '|col'].reshape(-1, 3, 3)).mean(1)
         n = len(p)
         e = np.zeros((n, 3))
+        g = np.zeros((n, 3))
         hexa = look.get('emissive')
         if hexa and hexa != '#000000':
             rgb = srgb([int(hexa[i:i + 2], 16) for i in (1, 3, 5)])
-            e[:] = rgb * LAMP * float(look.get('emissiveIntensity', 1))
+            (g if m.get('material') in AREA_LIGHTS else e)[:] = rgb * LAMP * float(look.get('emissiveIntensity', 1))
         elif look.get('shading') == 'basic' and look.get('textured'):
             e[:] = SCREEN                                   # a screen that is lit
         if look.get('textured'):
             c = np.full((n, 3), 0.22)                       # a picture's own colours are on the sheet: taken as a mid grey
-        tri.append(p); alb.append(np.clip(c, 0.02, 0.92)); emi.append(e)
+        tri.append(p); alb.append(np.clip(c, 0.02, 0.92)); emi.append(e); glow.append(g)
         two.append(np.full(n, look.get('side') == 'double'))
-    return np.concatenate(tri), np.concatenate(alb), np.concatenate(emi), np.concatenate(two)
+    return np.concatenate(tri), np.concatenate(alb), np.concatenate(emi), np.concatenate(two), np.concatenate(glow)
 
 
 def grid_of(tri, cell):
@@ -108,10 +158,24 @@ def trace(a):
     from array import array
     from mathutils import Vector
     from mathutils.bvhtree import BVHTree
-    tri, alb, emi, two = load(a.part)
+    tri, alb, emi, two, glow = load(a.part)
     lo, n = grid_of(tri, a.cell)
     nx, ny, nz = (int(v) for v in n)
     t0 = time.time()
+    # the lamps, and for each cube of REACH a side the lamps that can reach into it (those of the cubes round it)
+    owner, lamps = lamps_of(tri, glow)
+    own = array('i', owner.tolist())
+    lamp = [(float(c[0]), float(c[1]), float(c[2]), tuple(float(v) for v in a6), tuple(float(v) for v in rad)) for c, a6, rad in lamps]
+    cube = {}
+    for i, (cx, cy, cz, _, _) in enumerate(lamp):
+        cube.setdefault((int(cx // REACH), int(cy // REACH), int(cz // REACH)), []).append(i)
+    round_about = {}
+
+    def within_reach(key):
+        if key not in round_about:
+            round_about[key] = [i for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1) for i in cube.get((key[0] + dx, key[1] + dy, key[2] + dz), ())]
+        return round_about[key]
+    R2 = REACH * REACH
     tree = BVHTree.FromPolygons(tri.reshape(-1, 3).tolist(), [(3 * i, 3 * i + 1, 3 * i + 2) for i in range(len(tri))], all_triangles=True)
     lit = array('b', (emi.sum(1) > 0).astype(np.int8).tolist())
     twof = array('b', two.astype(np.int8).tolist())
@@ -132,13 +196,45 @@ def trace(a):
     NJ = np.full((P, K), -1, np.int32)            # the grid point by that surface
     NN = np.zeros((P, K, 3), np.int8)             # and the way the surface faces
     back = np.zeros(P, np.float32)                # how much of what this point sees is the inside of a solid
+    LD = np.zeros((P, 6, 3), np.float32)          # what the lamps themselves give it, from each of the six sides
     ray = tree.ray_cast
+    sqrt = math.sqrt
     p = 0
     for iz in layers:
         for iy in range(ny):
             for ix in range(nx):
                 o = Vector((x0 + (ix + 0.5) * cell, y0 + (iy + 0.5) * cell, z0 + (iz + 0.5) * cell))
                 l0 = L0[p]; al = AL[p]; nj = NJ[p]; nn = NN[p]
+                # ---- the lamps within reach: a line to each one's middle, and what it gives if nothing stands between
+                ox, oy, oz = o.x, o.y, o.z
+                near = within_reach((int(ox // REACH), int(oy // REACH), int(oz // REACH)))
+                if near:
+                    ld = [0.0] * 18
+                    any_lamp = False
+                    for li in near:
+                        cx, cy, cz, a6, rad = lamp[li]
+                        wx, wy, wz = ox - cx, oy - cy, oz - cz                   # from the lamp to the point
+                        r2 = wx * wx + wy * wy + wz * wz
+                        if r2 > R2 or r2 < 1e-6:
+                            continue
+                        r = sqrt(r2)
+                        wx /= r; wy /= r; wz /= r
+                        # how much of the lamp faces the point
+                        face = (a6[0] * wx if wx > 0 else -a6[1] * wx) + (a6[2] * wy if wy > 0 else -a6[3] * wy) + (a6[4] * wz if wz > 0 else -a6[5] * wz)
+                        if face <= 1e-6:
+                            continue
+                        loc, nrm, idx, dist = ray(o, Vector((-wx, -wy, -wz)), r)
+                        if idx is not None and own[idx] != li and dist < r - 0.03:
+                            continue                                              # something stands between
+                        # (nearer than 0.3 m a lamp is no longer small beside its distance: held there. Toward its reach it fades out.)
+                        s = face / max(r2, 0.09) * (1.0 - r2 / R2)
+                        any_lamp = True
+                        for axis, w in ((0, -wx), (2, -wy), (4, -wz)):            # the side of the point the light comes from
+                            k = (axis if w > 0 else axis + 1) * 3
+                            w = s * abs(w)
+                            ld[k] += w * rad[0]; ld[k + 1] += w * rad[1]; ld[k + 2] += w * rad[2]
+                    if any_lamp:
+                        LD[p] = np.array(ld, np.float32).reshape(6, 3)
                 behind = 0
                 for k in range(K):
                     d = dirs[k]
@@ -166,7 +262,7 @@ def trace(a):
                         nn[k] = (int(nrm.x * 127), int(nrm.y * 127), int(nrm.z * 127))
                 back[p] = behind / K
                 p += 1
-    np.savez(os.path.join(a.tmp, f'share{a.share}.npz'), L0=L0, AL=AL, NJ=NJ, NN=NN, back=back, layers=np.array(layers))
+    np.savez(os.path.join(a.tmp, f'share{a.share}.npz'), L0=L0, AL=AL, NJ=NJ, NN=NN, LD=LD, back=back, layers=np.array(layers))
     print(f'share {a.share} of {a.of}: {P} points, {P * K} rays, {time.time() - t0:.0f} s')
 
 
@@ -175,10 +271,11 @@ def trace(a):
 # =====================================================================================================================
 def main(a):
     t0 = time.time()
-    tri, alb, emi, two = load(a.part)
+    tri, alb, emi, two, glow = load(a.part)
     lo, n = grid_of(tri, a.cell)
     nx, ny, nz = (int(v) for v in n)
     N = nx * ny * nz
+    lamps = len(lamps_of(tri, glow)[1])
     K = a.rays
     D, W = directions(K)
     blender = shutil.which('blender')
@@ -196,15 +293,16 @@ def main(a):
     # each share holds every `jobs`th layer along her length: put them in their places
     L0 = np.zeros((N, K, 3), np.float32); AL = np.zeros((N, K, 3), np.uint8); NJ = np.full((N, K), -1, np.int32); NN = np.zeros((N, K, 3), np.int8)
     back = np.zeros(N, np.float32)
+    LD = np.zeros((N, 6, 3), np.float32)
     for i in range(jobs):
         s = np.load(os.path.join(tmp, f'share{i}.npz'))
         layers = s['layers']
         at = (layers[:, None] * nx * ny + np.arange(nx * ny)[None, :]).ravel()
-        L0[at] = s['L0']; AL[at] = s['AL']; NJ[at] = s['NJ']; NN[at] = s['NN']; back[at] = s['back']
+        L0[at] = s['L0']; AL[at] = s['AL']; NJ[at] = s['NJ']; NN[at] = s['NN']; back[at] = s['back']; LD[at] = s['LD']
     shutil.rmtree(tmp, ignore_errors=True)
     traced = time.time() - t0
     Wf = W.astype(np.float32)
-    first = np.einsum('pkc,ka->pac', L0, Wf)                 # the light from each of six sides, before any is thrown back
+    first = np.einsum('pkc,ka->pac', L0, Wf) + LD            # the light from each of six sides, before any is thrown back: the sky's and the sun's by the rays, the lamps' own
     field = first.copy()
     step = 4096
     for b in range(a.bounces):
@@ -265,7 +363,7 @@ def main(a):
         with gzip.GzipFile(fileobj=fh, mode='wb', mtime=0, compresslevel=9) as z:
             z.write(raw)
     inside = (A[:, 3] < 40)
-    print(f'{a.out}: {os.path.getsize(a.out)} bytes; {nx} x {ny} x {nz} points every {a.cell} m, {K} rays each, {a.bounces} bounces; '
+    print(f'{a.out}: {os.path.getsize(a.out)} bytes; {nx} x {ny} x {nz} points every {a.cell} m, {K} rays each, {a.bounces} bounces, {lamps} lamps each by itself; '
           f'traced in {traced:.0f} s, {time.time() - t0:.0f} s in all')
     print(f'  open deck (a point that sees little steel): {lum(c0[A[:, 3] > 200]).mean():.2f}; enclosed points: {int(inside.sum())}, their light '
           f'{np.percentile(lum(c0[inside]), 10):.2f} to {np.percentile(lum(c0[inside]), 90):.2f} (10th to 90th in a hundred), {int((lift[inside] > 0).sum())} lifted to the floor')
@@ -279,11 +377,14 @@ def pictures(folder, c0, lo, cell):
     os.makedirs(folder, exist_ok=True)
     tone = lambda v: np.clip(255 * (1 - np.exp(-v * 0.9)) ** (1 / 2.2), 0, 255).astype(np.uint8)
     nz, ny, nx, _ = c0.shape
-    for name, y in (('car-deck', 2.1 + 1.6), ('passenger-deck', 6.5 + 1.6), ('bridge-deck', 9.3 + 1.6), ('tank-top', -0.7 + 1.6)):
+    sys.path.insert(0, HERE)
+    import spec as S                                                    # her decks, as the specification has them
+    for name, level in S.LEVELS.items():
+        y = level + 1.6                                                 # at the height of a standing person's eye
         iy = int((y - lo[1]) / cell)
         if 0 <= iy < ny:
             im = Image.fromarray(tone(c0[:, iy, ::-1, :]).transpose(1, 0, 2)).resize((nz * 8, nx * 8), Image.NEAREST)
-            im.save(os.path.join(folder, f'light-{name}.png'))
+            im.save(os.path.join(folder, f'light-{name}-deck.png'))
     ix = int((0.6 - lo[0]) / cell)
     Image.fromarray(tone(c0[:, ::-1, ix, :]).transpose(1, 0, 2)).resize((nz * 8, ny * 8), Image.NEAREST).save(os.path.join(folder, 'light-centreline.png'))
 

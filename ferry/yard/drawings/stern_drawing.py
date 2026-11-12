@@ -25,6 +25,13 @@ import ga as G
 import lines as L
 import spec as S
 
+# SUPERSEDED, 12 November 2026. Revision 0 of this sheet draws the after end of the 68.4 m ship (revision C of her general
+# arrangement). She is a ro-ro freight ferry of 124.8 m now (revision D): her stern ramp is a box girder 9.4 m wide and 11 m
+# long with its hinge line at the sill, her decks have other names and heights, and what follows reads figures that are no
+# longer in spec.py (CAR_DECK, PASSENGER_DECK, BAND). The sheet is to be redrawn for revision D; until then this stops
+# here, so that nobody takes a drawing of the old ship for the new one.
+raise SystemExit('JS3-304 is superseded: it draws the 68.4 m ship. Not yet redrawn for revision D (ferry/yard/document-register.csv).')
+
 NUMBER, TITLE, REVISION, DATE = 'JS3-304', 'Stern ramp and after end', '0', '11 November 2026'
 K = 32.0                         # pixels to a metre, in every view
 WIDTH = 1640

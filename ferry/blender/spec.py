@@ -7,7 +7,7 @@ space). This file is what the builders need beyond that: numbers first, so the b
 the page's notes and later sections read the same ship. Positions are in the ship's axes (lines.py): x to port, y up from
 the design waterline, z forward from amidships; `yard` means metres from the transom.
 """
-from math import pi, tan, radians
+from math import pi, tan, radians, atan2, degrees
 from lines import Y, FRAME_SPACING
 import lines as _L
 import ga
@@ -94,8 +94,12 @@ BULWARKS = ((0.0, ga.HOUSE[0]), (ga.HOUSE[1], _L.LENGTH))
 # `rod_from` where the rod's inner end lies with the ramp raised; `column` the pedestal's column, which ends `column_over`
 # above the foot pin, on a footplate.
 STERN_DOOR = dict(half=ga.STERN_DOOR['half'], height=ga.STERN_DOOR['height'])
-STERN_RAMP = dict(id='stern-ramp', lowered=100, half=ga.STERN_RAMP['half'], length=ga.STERN_RAMP['length'], thick=(-0.17, -0.03), foot=0.02,
-                  hinge=(MAIN_DECK + 0.02, -0.10), lug=0.14,
+# The stern ramp: a box girder 0.42 m deep (`thick`: its outer skin and its roadway, metres forward of the transom's plating
+# when it is raised). Its hinge line (`hinge`: height, metres forward of the transom) lies 45 mm abaft the transom and 15 mm
+# under the main deck, and the roadway's face 15 mm forward of that line: so the roadway comes down level with the main
+# deck, 45 mm from the sill.
+STERN_RAMP = dict(id='stern-ramp', lowered=100, half=ga.STERN_RAMP['half'], length=ga.STERN_RAMP['length'], thick=(-0.45, -0.03), foot=-0.015,
+                  hinge=(MAIN_DECK - 0.015, -0.045), lug=0.14,
                   ram_x=4.25, trunnion=(MAIN_DECK + 2.60, 6.00), pin=(MAIN_DECK + 2.22, 0.07), barrel=3.70, barrel_d=0.30, rod_d=0.16, rod_from=0.45,
                   column=0.30, column_over=0.16, footplate=(0.60, 0.90))
 # The lights of the after end. Each: what it is for, where (x off the centreline, height over the waterline, metres AFT of
@@ -378,3 +382,177 @@ NAME_YARD = 110.0           # her name on each bow
 LINE = 'JOHANSSON LINE'            # the owner, 11 November 2026: "Johansson Line not lines by the way"
 LINE_YARD = 52.0            # its middle: on the flat of her side, between the funnels and the pilot doors
 LINE_COLOUR = LETTERING
+
+# =====================================================================================================================
+# Outfit: the places of her deck fittings
+# =====================================================================================================================
+# The fittings themselves are drawn from the yard's library of deck fittings (blender/fittings.py): this list gives each
+# its place aboard, and nothing else is built there (the arrangement's STATIONS say what each station is and why; steel.py
+# shapes the rails and bulwarks for them). One dict to a fitting:
+#
+#   id        its own name
+#   kind      what it is, by the library's name for it (OUTFIT_KINDS)
+#   yard      metres from the transom to its middle
+#   x         metres to port of the centre line (negative: to starboard)
+#   deck      the deck it stands on: a key of ga.DECKS
+#   heading   the way its own front faces, in degrees: 0 forward, 90 to port, 180 aft, 270 to starboard
+#   note      why it stands there
+#
+# Lashing pots are given as grids, `grid=dict(yard=(from, to, pitch), x=(from, to, pitch))`, one pot at each crossing.
+# A fitting in a bulwark (a panama chock) has the x of the bulwark's plate 0.5 m over the deck, and `lean`, the degrees
+# the bulwark leans outboard there (her bow flares).
+#
+# What each kind takes up on the deck, for the check that no two stand in each other's way (outfit_wrong): (along its
+# front-to-back, across), metres. A lifeboat station is the boat in its davit: 9.0 m along her side and 3.6 m inboard.
+OUTFIT_KINDS = {
+    'lifeboat-station': (3.6, 9.0), 'liferaft': (0.8, 1.5), 'windlass': (2.4, 3.2), 'chain-stopper': (0.9, 0.6), 'mooring-winch': (1.6, 2.6),
+    'capstan': (0.9, 0.9), 'bitts': (1.4, 0.5), 'panama-chock': (0.3, 0.6), 'roller-fairlead': (0.5, 0.8), 'lashing-pot': (0.25, 0.25),
+    'ventilator-mushroom': (1.0, 1.0), 'ventilator-gooseneck': (0.5, 0.4), 'air-pipe': (0.3, 0.3), 'bench': (0.5, 1.8), 'floodlight': (0.4, 0.4),
+    'foam-monitor': (0.8, 0.8), 'rope-reel': (0.9, 1.2),
+}
+# Where each anchor's hawse pipe leaves her side (metres from the transom, metres above the keel): on the flare of her
+# bow, 9.6 m abaft her stem head. Its pipe comes up through the forecastle deck 0.6 m abaft that, before the windlass.
+ANCHOR = dict(yard=115.2, height=9.6)
+HAWSE = dict(deck_yard=114.6, deck_x=2.6, bore=0.45)             # the pipe's upper end, on the forecastle deck
+CHAIN_PIPE = dict(yard=112.5, x=2.6, foot_x=1.0, bore=0.32)      # from under the windlass's gypsy down and inboard to the chain locker
+
+
+def _edge(yard, deck='upper'):
+    """Her deck's edge at a yard: half her breadth there, on the upper deck (and the forecastle) or the main deck."""
+    z = _L.Z(yard)
+    return _L.upper_breadth(z) if deck != 'main' else _L.half_breadth(z)
+
+
+def _bulwark(yard, sgn):
+    """A place in the bulwark at a yard, 0.5 m over the deck: x, the heading of the bulwark's outer face, its lean."""
+    z = _L.Z(yard)
+    foot, head = _L.upper_breadth(z), _L.rail_breadth(z)
+    x = foot + (head - foot) * 0.5 / _L.BULWARK
+    slope = (_L.upper_breadth(_L.Z(yard + 0.3)) - _L.upper_breadth(_L.Z(yard - 0.3))) / 0.6       # how her side closes in, going forward
+    heading = degrees(atan2(1.0, -slope))                                                         # 90 where her side runs fore and aft
+    return dict(x=round(sgn * x, 3), heading=round(heading if sgn > 0 else 360 - heading, 1), lean=round(degrees(atan2(head - foot, _L.BULWARK)), 1))
+
+
+def _pair(kind, tag, yard, x, deck, heading, note, **more):
+    """A fitting each side: the port one as given, the starboard one its mirror image."""
+    return [dict(id=f'{tag}-p', kind=kind, yard=yard, x=x, deck=deck, heading=heading, note=note, **more),
+            dict(id=f'{tag}-s', kind=kind, yard=yard, x=-x, deck=deck, heading=(360 - heading) % 360, note=note, **more)]
+
+
+def _chocks(tag, yard, note):
+    return [dict(id=f'{tag}-{side}', kind='panama-chock', yard=yard, deck='upper', note=note, **_bulwark(yard, sgn)) for side, sgn in (('p', 1), ('s', -1))]
+
+
+_LB = (ga.LIFEBOAT[0] + ga.LIFEBOAT[1]) / 2
+OUTFIT = (
+    # ---- The boat deck: a lifeboat under gravity davits each side, in the recess of the house; three liferafts each side
+    # in cradles at the rail forward of them. (The rail has a gap at each: steel.open_deck_rails.)
+    _pair('lifeboat-station', 'lifeboat', _LB, round(_edge(ga.LIFEBOAT[1]) - 1.8, 2), 'boat', 90,
+          'the boat deck is 3.6 m wide and more here, beside the narrow part of the house: a 7.3 m boat for 40 under gravity davits, swung out over her side; the embarkation deck is the boat deck itself')
+    + [d for n, yard in enumerate(ga.LIFERAFTS) for d in _pair('liferaft', f'liferaft-{n + 1}', yard, round(_edge(yard) - 0.5, 2), 'boat', 90,
+                                                                'at the rail, where it is thrown or floats free; a metre of deck is left between it and the house\'s side')]
+    # ---- The forecastle: the anchor gear on the collision bulkhead's forward side, the mooring gear abaft and forward of it.
+    + _pair('windlass', 'windlass', 112.0, 2.6, 'upper', 0,
+            'in line with its hawse pipe, whose upper end is 2.6 m before it; its chain pipe goes down forward of the collision bulkhead (110.4 m) to the chain locker; a warping head on its outboard end')
+    + _pair('chain-stopper', 'chain-stopper', 113.7, 2.6, 'upper', 0, 'between the windlass and the hawse pipe: it holds the anchor at sea and the cable at anchor')
+    + _pair('mooring-winch', 'mooring-winch-forward', 106.8, 4.6, 'upper', 0, 'the head and breast lines\' winch, clear of the windlass and 2.8 m before the house; its line leads forward to the fairlead and out at a chock')
+    + _pair('bitts', 'bitts-forward-1', 117.4, 2.9, 'upper', 0, 'for the head line, abaft its chock in the bow')
+    + _pair('bitts', 'bitts-forward-2', 110.2, 5.7, 'upper', 0, 'for the breast line, beside its chock')
+    + _pair('bitts', 'bitts-forward-3', 105.4, 7.1, 'upper', 0, 'for the forward spring, beside its chock')
+    + _pair('roller-fairlead', 'fairlead-forward-1', 116.0, 1.3, 'upper', 0, 'turns a line from the windlass\'s warping head toward the bow chock')
+    + _pair('roller-fairlead', 'fairlead-forward-2', 109.2, 6.3, 'upper', 0, 'turns the mooring winch\'s line out to the breast chock')
+    + _chocks('chock-head', 119.2, 'where the head line leaves her')
+    + _chocks('chock-breast-forward', 110.6, 'where the forward breast line leaves her')
+    + _chocks('chock-spring-forward', 105.6, 'where the forward spring leaves her')
+    + [dict(id='chock-stem', kind='panama-chock', yard=round(_L.deck_end() - 0.25, 2), x=0.0, deck='upper', heading=0, lean=round(90 - _L.RAKE if hasattr(_L, 'RAKE') else 30.0, 1),
+            note='in the bulwark at her stem head, on the centre line: the tug\'s line, and a head line led right ahead')]
+    + _pair('rope-reel', 'rope-reel-forward', 105.0, 2.2, 'upper', 0, 'the spare mooring lines, under the lee of the house front')
+    + [dict(id='vent-fore-store', kind='ventilator-mushroom', yard=110.4, x=0.0, deck='upper', heading=0, dia=0.6, note='the fore store\'s ventilator, on the centre line between the windlasses')]
+    + _pair('ventilator-gooseneck', 'vent-chain-locker', 115.0, 0.9, 'upper', 0, 'the chain locker\'s and the fore peak\'s air')
+    + _pair('air-pipe', 'air-pipe-fore-peak', 118.3, 0.7, 'upper', 0, 'the fore peak tank\'s air pipe')
+    + _pair('air-pipe', 'air-pipe-deep-tank', 104.8, 8.1, 'upper', 0, 'the forward deep tanks\' air pipe, at the bulwark')
+    # ---- The after mooring stations: on the main deck inside the casings, each with a mooring port in her side (as the
+    # pattern has them: the weather deck aft is the helicopter deck), and at the upper deck's two after corners.
+    + _pair('mooring-winch', 'mooring-winch-aft', 5.6, 6.6, 'main', 90, 'in the after mooring station, its line led out through the mooring port in her side; the station\'s door is in its inboard wall at 2.4 to 3.3 m, abaft the stern ramp\'s cylinder pedestal')
+    + _pair('bitts', 'bitts-aft-main', 1.9, 8.2, 'main', 0, 'for the stern line, abaft the mooring port')
+    + _pair('roller-fairlead', 'fairlead-mooring-port', 3.6, round(_edge(3.6, 'main') - 0.45, 2), 'main', 90, 'at the mooring port\'s sill, where the line leaves her')
+    + _pair('capstan', 'capstan-aft', 1.7, 8.0, 'upper', 0, 'at the upper deck\'s after corner, outside the helicopter deck: for the tug\'s line and the after spring')
+    + _pair('bitts', 'bitts-aft-upper', 3.7, 8.75, 'upper', 0, 'beside the capstan, at the side chock')
+    + _chocks('chock-aft-side', 3.0, 'where a line from the upper deck\'s after corner leaves her side')
+    + _pair('panama-chock', 'chock-stern', 0.02, 7.4, 'upper', 180, 'in the stern bulwark beside the raised ramp: the stern line from the capstan', lean=0.0)
+    + _pair('ventilator-gooseneck', 'vent-steering-gear', 0.55, 5.6, 'upper', 0, 'the steering gear room\'s air, at the stern bulwark, abaft the helicopter deck\'s edge')
+    + _pair('air-pipe', 'air-pipe-fresh-water', 5.2, 9.1, 'upper', 0, 'the fresh water tanks\' air pipe, at the bulwark, outside the helicopter deck')
+    # ---- The upper deck's sides: the ventilators of the spaces below stand at the bulwark, outboard of the walkway (1.2 m
+    # of it is left clear); the wing tanks' air pipes between them.
+    + [dict(id=f'vent-{tag}', kind='ventilator-mushroom', yard=yard, x=x, deck='upper', heading=0, dia=0.9, note=note) for tag, yard, x, note in (
+        ('engine-room-1', 27.0, -9.2, 'over the engine room\'s ventilation trunk in the starboard casing: supply'),
+        ('engine-room-2', 34.2, -9.2, 'over the engine room\'s ventilation trunk: supply'),
+        ('auxiliary-engine-room', 42.6, -9.2, 'over the auxiliary engine room\'s trunk'),
+        ('lower-hold-1', 50.4, -9.2, 'over the lower hold\'s trunk: supply'),
+        ('lower-hold-2', 62.4, -9.2, 'over the lower hold\'s trunk: supply'),
+        ('fan-room', 60.0, 9.2, 'over the fan room in the port casing: the main deck\'s exhaust'),
+        ('main-deck-aft', 30.0, 9.2, 'the main deck\'s exhaust, aft: over the port casing'))]
+    + [d for yard in (49.2, 58.8, 68.4, 76.8) for d in _pair('air-pipe', f'air-pipe-wing-{round(yard)}', yard, 9.45, 'upper', 0, 'a wing tank\'s air pipe, at the bulwark')]
+    # ---- The helicopter deck's foam monitors, the deck's floodlights, a bench each side.
+    + _pair('foam-monitor', 'foam-monitor', 21.4, 5.6, 'upper', 180, 'at the helicopter deck\'s forward edge beside each of its stairs, on the upper deck: it throws foam over the whole deck from outside it')
+    + _pair('floodlight', 'floodlight-trailer-deck', 80.35, 4.0, 'boat', 180, 'on the boat deck\'s after rail, looking aft and down over the upper deck\'s trailers')
+    + _pair('floodlight', 'floodlight-forecastle', 103.7, 5.0, 'boat', 0, 'on the boat deck\'s forward rail, looking forward and down over the forecastle\'s mooring gear')
+    + _pair('bench', 'bench-boat-deck', 101.4, 7.85, 'boat', 90, 'against the house\'s side forward of the liferafts, in the lee of the bridge wing: where the watch below sits in the air')
+    # ---- Lashing pots, flush in the deck at the lanes\' edges (2.4 m apart along a lane): the main deck, the upper deck,
+    # the lower hold. Each grid keeps clear of the fixed ramp, the cargo lift, the hatch and the ramp's opening.
+    + [dict(id=f'lashing-{tag}', kind='lashing-pot', grid=dict(yard=yard, x=x), deck=deck, note=note) for tag, yard, x, deck, note in (
+        ('main-aft', (10.8, 46.8, 2.4), (-1.5, 4.5, 3.0), 'main', 'abaft the cargo lift: the three lane edges to port of the fixed ramp'),
+        ('main-beside-lift', (51.6, 63.6, 2.4), (4.5, 4.5, 3.0), 'main', 'beside the cargo lift, to port (the lift\'s own platform and the fixed ramp take the rest)'),
+        ('main-forward', (68.4, 97.2, 2.4), (-4.5, 4.5, 3.0), 'main', 'forward of the lift and the ramp: all four lane edges (it steps past the hatch to the lower hold at 84.0 m)'),
+        ('main-bow', (100.8, 105.6, 2.4), (-1.5, 1.5, 3.0), 'main', 'where she narrows forward: the two middle lane edges'),
+        ('upper-aft', (25.2, 63.6, 2.4), (-1.5, 4.5, 3.0), 'upper', 'beside the ramp\'s opening: the three lane edges to port of it'),
+        ('upper-forward', (67.2, 78.0, 2.4), (-4.5, 4.5, 3.0), 'upper', 'forward of the ramp\'s opening: all four lane edges'),
+        ('hold-sides', (48.0, 84.0, 2.4), (-2.95, 2.95, 5.9), 'tank_top', 'the lower hold: the lane edge each side of its middle two lanes'),
+        ('hold-middle', (67.2, 84.0, 2.4), (0.0, 0.0, 1.0), 'tank_top', 'the lower hold forward of the lift: its middle lane edge'))]
+)
+
+
+def outfit_wrong():
+    """What does not hold of the outfit's places: an unknown kind or deck, a fitting outside her, two in each other's way.
+    (Each is taken as a rectangle of its kind's measure, turned to its heading; a bulwark's fitting stands in the bulwark.)"""
+    from math import cos, sin
+    wrong, boxes = [], []
+    for o in OUTFIT:
+        if o['kind'] not in OUTFIT_KINDS:
+            wrong.append(f"{o['id']}: no such kind of fitting as {o['kind']}")
+            continue
+        if o['deck'] not in ga.DECKS:
+            wrong.append(f"{o['id']}: no such deck as {o['deck']}")
+            continue
+        if 'grid' in o:
+            (ya, yb, yp), (xa, xb, xp) = o['grid']['yard'], o['grid']['x']
+            pts = [(xa + i * xp, ya + j * yp) for i in range(int(round((xb - xa) / xp)) + 1) for j in range(int(round((yb - ya) / yp)) + 1)]
+            for x, yard in pts:
+                reach = _edge(yard, o['deck']) if o['deck'] != 'tank_top' else ga.HOLD_SIDE
+                if abs(x) > reach - 0.3:
+                    wrong.append(f"{o['id']}: a pot at {yard:.1f} m, {x:+.1f} m is not on her deck")
+                boxes.append((o['id'], o['deck'], x - 0.13, x + 0.13, yard - 0.13, yard + 0.13))
+            continue
+        along, across = OUTFIT_KINDS[o['kind']]
+        if o['kind'] == 'ventilator-mushroom':
+            along = across = o.get('dia', 1.0)
+        h = radians(o['heading'])
+        hx = (abs(sin(h)) * along + abs(cos(h)) * across) / 2          # half its measure across her, and along her
+        hz = (abs(cos(h)) * along + abs(sin(h)) * across) / 2
+        in_bulwark = o['kind'] == 'panama-chock'
+        edge = _edge(o['yard'], o['deck']) if o['deck'] in ('main', 'upper', 'boat') else ga.HOUSE_HALF
+        if o['deck'] == 'boat':
+            edge = _edge(o['yard'])
+        if not in_bulwark and abs(o['x']) + hx > edge + 0.02:
+            wrong.append(f"{o['id']}: stands {abs(o['x']) + hx - edge:.2f} m outside her deck's edge")
+        if not (0 <= o['yard'] <= _L.LENGTH):
+            wrong.append(f"{o['id']}: not within her length")
+        if not in_bulwark:
+            boxes.append((o['id'], o['deck'], o['x'] - hx, o['x'] + hx, o['yard'] - hz, o['yard'] + hz))
+    for i, a in enumerate(boxes):
+        for b in boxes[i + 1:]:
+            if a[0] != b[0] and a[1] == b[1] and min(a[3], b[3]) - max(a[2], b[2]) > 0.01 and min(a[5], b[5]) - max(a[4], b[4]) > 0.01:
+                wrong.append(f'{a[0]} and {b[0]} stand in each other\'s way')
+    ids = [o['id'] for o in OUTFIT]
+    wrong += [f'{i}: named twice' for i in sorted(set(ids)) if ids.count(i) > 1]
+    return wrong

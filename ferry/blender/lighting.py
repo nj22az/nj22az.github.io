@@ -57,7 +57,7 @@ NAMES = dict(main='main deck', upper='upper deck', boat='boat deck', officers="o
 WEATHER = {'aft-deck', 'helideck', 'funnel-p', 'funnel-s', 'trailer-deck', 'ramp-cover', 'walkway-p', 'walkway-s', 'forecastle', 'boat-deck-p', 'boat-deck-s',
            'officers-deck-aft', 'bridge-deck-open', 'compass-deck', 'house-top'}
 # Spaces that get no fittings from here (the head of this file says why), beside those and the tanks.
-NOT_LIT = WEATHER | {'wheelhouse', 'eg-room', 'wheelhouse-stair', 'uptake-s', 'er-vent', 'aux-vent', 'hold-vent', 'er-escape', 'cargo-lift', 'fixed-ramp', 'stern-ramp'}
+NOT_LIT = WEATHER | {'wheelhouse', 'eg-room', 'wheelhouse-stair', 'uptake-s', 'er-vent', 'aux-vent', 'hold-vent', 'cargo-lift', 'fixed-ramp', 'stern-ramp'}
 # Spaces whose lit part is not their whole box: (space, plan, floor, [(x from, x to, yard from, yard to), ...], lies).
 # `lies` 'across' or 'along', or None for the rule's own choice; a floor of None is the plan's.
 G = steel.GALLERY
@@ -85,14 +85,22 @@ def _keep_clear():
 
 
 def _stairs():
-    """Every stair as a box no fitting may hang in: (x from, x to, yard from, yard to, its foot's level, and a storey over
-    its top: nothing is hung from the next deck over a stair)."""
+    """Every stair as boxes no fitting may hang in: (x from, x to, yard from, yard to, from what level, to what level).
+    Two for each stair: its own storey over its whole run (a fitting under the deck it climbs to would hang where a head
+    passes), and the storey over that, over the stair's well only: the upper part of its run, where one on the stair
+    stands less than 2.3 m under the deck it climbs to and that deck is therefore open. (The storey over was first kept
+    clear over the whole run: that left the flag locker on the bridge deck, which stands on plating over the foot of the
+    wheelhouse stair, without a fitting.)"""
     out = []
     for st in S.STAIRS:
         _, (foot_yard, foot_y) = stair_rules.flights(st)
         x0, x1 = sorted(st['x'])
-        ya, yb = sorted((st['top'][0], foot_yard))
-        out.append((x0 - 0.2, x1 + 0.2, ya, yb, foot_y, st['top'][1] + 2.9))
+        top_yard, top_y = st['top']
+        ya, yb = sorted((top_yard, foot_yard))
+        out.append((x0 - 0.2, x1 + 0.2, ya, yb, foot_y, top_y + 0.05))
+        well = top_yard + (foot_yard - top_yard) * min(1.0, 2.3 / max(top_y - foot_y, 0.1))
+        wa, wb = sorted((top_yard, well))
+        out.append((x0 - 0.2, x1 + 0.2, wa, wb, top_y - 0.1, top_y + 2.9))
     return out
 
 

@@ -120,6 +120,10 @@ def main():
     # ---- Her lines.
     wrong = ga.check() + ga.check_lines()
     check(not wrong, f'the general arrangement (revision {ga.REVISION}) holds and agrees with her lines ({"; ".join(wrong) or "all"})')
+    # ---- Her outfit's places (spec.OUTFIT): each on a deck of hers, inside her, no two in each other's way; every doorway listed.
+    wrong = S.outfit_wrong()
+    check(not wrong, f'the {len(S.OUTFIT)} places of her deck fittings are each on clear deck inside her ({"; ".join(wrong[:6]) or "all"})')
+    check(len(header.get('doorways', [])) > 50, f"the model lists her doorways for the check that walks them ({len(header.get('doorways', []))})")
     v = L.displacement()
     check(abs(v * 1.025 - ga.DISPLACEMENT) < 0.01 * ga.DISPLACEMENT, f'her lines displace {v * 1.025:,.0f} t at {L.DRAFT} m (the arrangement: about {ga.DISPLACEMENT:,} t)')
     check(abs(L.half_breadth(0) * 2 - ga.BEAM) < 1e-9 and abs(L.keel_y(0) + ga.DRAFT) < 1e-9 and abs(L.above_keel(L.MAIN) - ga.DECKS['main']) < 1e-9

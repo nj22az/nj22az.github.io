@@ -64,7 +64,7 @@ STAND = {
     'fuel-tank-p': (5.0, TT, 66.6), 'fuel-tank-s': (-5.0, TT, 66.6), 'ballast-tank-p': (5.0, TT, 79.8), 'ballast-tank-s': (-5.0, TT, 79.8),
     'deep-tank-p': (1.0, TT, 92.4), 'deep-tank-s': (-1.0, TT, 92.4), 'fore-peak': (0.0, TT, 103.0), 'thruster-room': (0.0, TT, 99.4),
     'hold-stair': (7.0, TT, 47.6), 'er-platform': (0.0, S.PLATFORM, 22.0),
-    'er-escape': (-6.4, _ramp(14.4), 14.4), 'uptake-s': (-6.4, _ramp(19.7), 19.7), 'er-vent': (-6.4, _ramp(30.8), 30.8), 'aux-vent': (-6.4, _ramp(42.6), 42.6),
+    'uptake-s': (-6.4, _ramp(19.7), 19.7), 'er-vent': (-6.4, _ramp(30.8), 30.8), 'aux-vent': (-6.4, _ramp(42.6), 42.6),
     'hold-vent': (-6.4, _ramp(56.4), 56.4), 'fixed-ramp': (-5.7, _ramp(39.0), 39.0),
     'main-stair-p': (8.4, MD, 73.2), 'main-stair-s': (-8.4, MD, 73.2), 'er-entrance': (8.9, MD, 25.0), 'hold-stair-head': (8.9, MD, 49.0),
     'fore-store': (0.0, MD, 112.0),
@@ -325,6 +325,8 @@ def main():
         inputs=[dict(x, **{'from': 'blender'}) for meta, _ in parts for x in meta.get('inputs', [])],
         movers=[dict(x, **{'from': 'blender'}) for meta, _ in parts for x in meta.get('movers', [])],
         ways=[dict(x, **{'from': 'blender'}) for meta, _ in parts for x in meta.get('ways', [])],
+        # Every doorway in her steel that has no leaf yet: where it is and which way one goes through it (the check that walks them)
+        doorways=[x for meta, _ in parts for x in meta.get('doorways', [])],
         systems=dict(file='systems.json', components=len(systems['components'])),
         # Her stairs, as the yard's standard has them (spec.STAIRS): what each is, for the page and for the check that walks them.
         stairs=[dict(stair_rules.facts(st), className=S.STAIR_CLASS[st['cls']]['name'], limit=limit(S.STAIR_CLASS[st['cls']])) for st in S.STAIRS
