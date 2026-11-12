@@ -1,16 +1,22 @@
 name: Maintenance classification and pressure evidence
+# The program's tests also read the Chisum's own list and her power pack's instruction (tests/vessel.test.mjs): those are
+# checked out with the program, and the tests run again when they change.
 on:
   push:
-    paths: ['maintenance-demo/**', '.github/workflows/maintenance-pressure.yml']
+    paths: ['maintenance-demo/**', 'ferry/data/equipment.json', 'ferry/yard/manuals/**', '.github/workflows/maintenance-pressure.yml']
   pull_request:
-    paths: ['maintenance-demo/**', '.github/workflows/maintenance-pressure.yml']
+    paths: ['maintenance-demo/**', 'ferry/data/equipment.json', 'ferry/yard/manuals/**', '.github/workflows/maintenance-pressure.yml']
 jobs:
   classification-and-records:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: maintenance-demo
+          sparse-checkout: |
+            /maintenance-demo/
+            /ferry/data/equipment.json
+            /ferry/yard/manuals/
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
