@@ -7,7 +7,7 @@ import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
-import {lookIcon} from './look-icons.js?v=20261104fx1';
+import {lookIcon,kindIcon} from './look-icons.js?v=20261110green1';
 import {prepareOffline} from './offline.js?v=20261105games1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
 import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261110green1';
@@ -249,19 +249,6 @@ function stampOverlay(frame,on,date,frameId='none'){
 // ---------- The Look tray ----------
 const tray=$('tray'),strip=$('strip'),layersEl=$('layers');
 const tiles=new Map();
-const GROUP_GLYPHS={
- photo:'M4 6h4l2-2h4l2 2h4v14H4z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
- pop:'M22 12l-4 2.5 1.1 4.6-4.6-1.1L12 22l-2.5-4-4.6 1.1 1.1-4.6L2 12l4-2.5-1.1-4.6 4.6 1.1L12 2l2.5 4 4.6-1.1-1.1 4.6z',
- comic:'M3 4h18v12h-8l-5 4v-4H3z M8 10h.01M12 10h.01M16 10h.01',
- games:'M6 6h12l4 12-3 2-4-4H9l-4 4-3-2z M7 9v5M4.5 11.5h5M16 10h.01M18 13h.01',
- '80s':'M3 7h18v14H3z M7 2l5 5 5-5M7 11h7v6H7zM18 11h.01M18 16h.01',
- drawn:'m4 17 12-13 4 4L8 21H3z M13 7l4 4',
- painted:'m14 3 7 3-10 11-4-3z M7 15c-5-2-6 3-4 6 4 1 8-1 7-5',
- print:'M7 7V3h10v4M6 17H3V8h18v9h-3M7 14h10v7H7z',
- riso:'M14 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0 M20 15a5 5 0 1 1-10 0 5 5 0 0 1 10 0 M12 15a5 5 0 1 1-10 0 5 5 0 0 1 10 0',
- more:'M5 12h.01M12 12h.01M19 12h.01',
-};
-function groupIcon(id){return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="${GROUP_GLYPHS[id]||GROUP_GLYPHS.more}"/></svg>`;}
 function renderLookRail(ctx){
  const box=$(state.mode==='editor'?'editLookRail':'cameraLookRail');box.textContent='';
  ctx.recipe.layers.forEach((layer,i)=>{
@@ -277,7 +264,7 @@ function renderLookRail(ctx){
 function buildGroups(){
  const row=$('lookGroups');row.textContent='';
  for(const g of LOOK_GROUPS){
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${groupIcon(g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${kindIcon(g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
   b.setAttribute('aria-label',`${g.label}: ${g.looks.map(n=>LOOKS[n].label).join(', ')}`);
   b.addEventListener('click',()=>{sound('tick');shownGroup=g.id;renderStripSelection();refreshThumbs(true);});
   row.append(b);

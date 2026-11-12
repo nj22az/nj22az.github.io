@@ -1,0 +1,9 @@
+/* Pocket Camera, the round of 12 November 2026 (the owner: "I don't like the sliders or the icons … draw the icons, make
+   it really fun to use, and have many presets … sliders need to be accessed by a setting").
+
+   The icons are drawn by tools/draw-camera-icons.py: chunky, filled, in two tones of the text's own colour. Every part
+   of one carries its own fill or stroke, so the old rule for outline icons (camera.css) no longer decides how they
+   look; here they only get their sizes. */
+.editor .segmented button svg{width:26px;height:26px}
+.look-groups button>svg{width:24px;height:24px}
+.choice-symbol>svg{width:34px;height:34px}.arcade-entry-icon>svg,.door-cards>svg{width:26px;height:26px}
