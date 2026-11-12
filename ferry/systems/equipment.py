@@ -64,7 +64,30 @@ KINDS = {
     'ventilator-mushroom': ('Mushroom ventilator', 'VNT'), 'ventilator-gooseneck': ('Gooseneck ventilator', 'VNT'), 'air-pipe': ('Air pipe', 'VNT'),
     'foam-monitor': ('Foam monitor', 'FIR'), 'lashing-pot': ('Lashing pots', 'CGO'), 'floodlight': ('Floodlight', 'DLT'), 'bench': ('Bench', 'DKO'),
 }
-DECK_NAMES = dict(hold='Lower hold', main='Main deck', upper='Upper deck', boat='Boat deck', officers="Officers' deck", bridge='Bridge deck', top='House top')
+# Whose it is aboard. The owner, 12 November 2026: "We should be able to filter by department , deck, engine , galley".
+# By its system; the galley's by what it is (the pantry's unit and its coffee maker: its sockets are the electricians'); and the
+# furniture of the chief engineer's own room is the engine department's.
+DEPARTMENTS = dict(
+    deck=('Deck', 'The bridge and its equipment, the mooring and anchoring gear, the stern door, the cargo\'s securing, the life-saving and fire appliances, and what stands on her decks.'),
+    engine=('Engine', 'Her machinery, her hydraulics, her electrical installation and lighting, ventilation and piping, the alarm system, and the maintenance computer.'),
+    galley=('Galley', 'The galley, the pantries and the messes: their equipment. Little of it is built aboard yet.'),
+)
+ENGINE = {'PRP', 'ALM', 'ELD', 'EMG', 'GEN', 'HYD', 'HVC', 'PIP', 'LGT', 'DLT', 'ADM'}
+GALLEY = re.compile(r'pantry unit|coffee|kettle|refrigerator|fridge|cooker|oven|dishwasher|galley range', re.I)
+
+
+def department(item):
+    if item['system'] in ('OUT', 'DKO') and GALLEY.search(item['name']):
+        return 'galley'
+    if item['room'] in ('galley', 'pantry') and item['system'] not in ENGINE:
+        return 'galley'
+    if item['system'] in ENGINE or item['room'] == 'chief-engineer':
+        return 'engine'
+    return 'deck'
+
+
+DECK_NAMES = dict(hold='Lower hold', tank_top='Tank top', machinery='Machinery spaces', main='Main deck', upper='Upper deck', boat='Boat deck', officers="Officers' deck", bridge='Bridge deck',
+                  top='House top')
 SIDE = {'p': 'port', 's': 'starboard'}
 
 
@@ -132,6 +155,15 @@ def documents():
             out.append(dict(id=name.rsplit('.', 1)[0], number=number, sheet=(sheet or ('1' if kind == 'Drawing' else '')), kind=kind,
                             title=titles.get(number, words.capitalize()), shows=words[0].upper() + words[1:], format=ext, file=f'/ferry/yard/{folder}/{name}'))
     out.sort(key=lambda d: (d['number'], d['kind'] != 'Drawing', d['sheet'].lstrip('M').zfill(3)))
+    # The owner's own package for a chief engineer's suite (kept since 11 November 2026 in blender/assets/ce-suite/): its
+    # drawing, and its method statement, which is the installation documents. They are of a suite of 7.2 by 5.0 m on a 190 m
+    # ship and say so themselves ("Preliminary"): what is built aboard takes its arrangement from them, not its measures.
+    pack, note = '/ferry/blender/assets/ce-suite/', 'The owner\'s package for a chief engineer\'s suite of 7.2 by 5.0 m on a 190 m ship: preliminary, and not the Chisum\'s as built. What stands in her day room takes its arrangement from it (JS5-511).'
+    if os.path.exists(os.path.join(HERE, '..', 'blender', 'assets', 'ce-suite', 'CE-SUITE-GA-001.svg')):
+        out.append(dict(id='CE-SUITE-GA-001', number='CE-SUITE-GA-001', sheet='1', kind='Drawing', title='Chief engineer\'s suite: accommodation outfitting (the owner\'s package)',
+                        shows='Arrangement, electrical, plumbing and section', format='svg', file=pack + 'CE-SUITE-GA-001.svg', note=note))
+        out.append(dict(id='MS-CE-001', number='MS-CE-001', sheet='', kind='Instruction', title='Method statement and installation documents: chief engineer\'s suite (the owner\'s package)',
+                        shows='Installation: outfitting, electrical and plumbing', format='md', file=pack + 'MS-CE-001_Method_Statement_CE_Suite.md', note=note))
     return out
 
 
@@ -155,7 +187,7 @@ def papers_for(item, boards):
     if sys_ == 'OUT' and item['room'] == 'wheelhouse':
         want.append('JS2-211')                              # the wheelhouse's forward bay
     if item['room'] == 'chief-engineer':
-        want.append('JS5-511')                              # the chief engineer's day room: its desk, its computer, its outlets
+        want += ['JS5-511', 'CE-SUITE-GA-001', 'MS-CE-001']  # the chief engineer's day room: its sheet, and the owner's package (its drawing, its installation documents)
     if item['source'] != 'register':
         want.append('JS1-102')                              # a deck fitting: nothing is drawn of it but her general arrangement
     return want
@@ -184,6 +216,8 @@ def main():
     items = from_register(reg) + from_outfit(half)
     docs = documents()
     give_papers(items, docs, reg)
+    for i in items:
+        i['department'] = department(i)
     missing = []
     if a.inventory and os.path.exists(a.inventory):
         inv = json.load(open(a.inventory))
@@ -215,6 +249,7 @@ def main():
                made='ferry/systems/equipment.py, from ferry/data/systems.json, ferry/blender/spec.py (OUTFIT)' + (' and the build\'s inventory' if not missing else ''),
                counts=dict(items=len(items), documents=len(docs), **by_source), notYetListed=missing,
                notAboard='Below the main deck she has no main engine, gear, generator or pump yet; the main switchboard is one item of nine cubicles. What is not built is not listed.',
+               departments=[dict(id=k, name=v[0], text=v[1], count=sum(1 for i in items if i['department'] == k)) for k, v in DEPARTMENTS.items()],
                systems=systems, documents=docs, items=items)
     with open(OUT, 'w') as f:
         json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))

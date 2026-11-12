@@ -193,26 +193,51 @@ export function jobState(tasks, day) {
   const overdue = dated.filter(d => left(d) < 0).length, soon = dated.filter(d => left(d) >= 0 && left(d) <= 30).length;
   return { jobs: tasks.length, overdue, soon, next: dated.find(d => left(d) >= 0) || '', state: !tasks.length ? 'none' : overdue ? 'overdue' : soon ? 'soon' : 'planned' };
 }
-/** The register's rows for what is asked: a word to find, a system, a deck. Grouped by system, in the ship's own order. */
-export function registerGroups(db, vessel, { q = '', system = 'all', deck = 'all' } = {}) {
+/**
+ * Whose a thing is aboard. The owner, 12 November 2026: "We should be able to filter by department , deck, engine , galley".
+ * The ship's list names her departments and says which each item is of (ferry/systems/equipment.py); a list that names none
+ * gives none. It is read from the list each time, not kept in the workspace: a workspace filled before she had departments
+ * is narrowed like any other.
+ */
+export function departmentsOf(doc) {
+  const list = (doc && Array.isArray(doc.departments) ? doc.departments : []).filter(d => d && PLAIN_ID.test(d.id) && typeof d.name === 'string')
+    .map(d => ({ id: d.id, name: d.name, text: typeof d.text === 'string' ? d.text : '' }));
+  const known = new Set(list.map(d => d.id));
+  return { list, of: new Map((doc && Array.isArray(doc.items) ? doc.items : []).filter(i => i && known.has(i.department)).map(i => [i.id, i.department])) };
+}
+/**
+ * The register's rows for what is asked: a department, a word to find, a system, a deck. Grouped by system, in the ship's own
+ * order. A department comes first: the systems offered are those it has, with its own counts (`scope` is how many items it
+ * has); the departments and the decks offered do not shrink with what is asked.
+ */
+export function registerGroups(db, vessel, { q = '', system = 'all', deck = 'all', department = 'all' } = {}, dep = null) {
   const word = q.trim().toLowerCase();
   const mine = db.assets.filter(a => a.vessel === vessel.id);
+  const names = dep ? dep.list : [], of = a => (dep ? dep.of.get(a.tag) : undefined);
+  const within = names.some(d => d.id === department) ? mine.filter(a => of(a) === department) : mine;
   const hit = a => (system === 'all' || a.system === system) && (deck === 'all' || a.deck === deck)
     && (!word || [a.name, a.tag, a.type, a.location, a.notes].join(' ').toLowerCase().includes(word));
   const groups = [];
-  for (const a of mine) {
+  for (const a of within) {
     if (!hit(a)) continue;
     let g = groups.find(x => x.id === a.system);
     if (!g) groups.push(g = { id: a.system, name: a.systemName, items: [] });
     g.items.push(a);
   }
   const systems = [], decks = [];
-  for (const a of mine) {
+  for (const a of within) {
     const s = systems.find(x => x.id === a.system); if (s) s.count++; else systems.push({ id: a.system, name: a.systemName, count: 1 });
-    if (!decks.some(d => d.id === a.deck)) decks.push({ id: a.deck, name: a.deckName });
   }
-  return { groups, systems, decks, shown: groups.reduce((n, g) => n + g.items.length, 0), all: mine.length };
+  for (const a of mine) if (!decks.some(d => d.id === a.deck)) decks.push({ id: a.deck, name: a.deckName });
+  const departments = names.map(d => ({ ...d, count: mine.filter(a => of(a) === d.id).length }));
+  return { groups, systems, decks, departments, shown: groups.reduce((n, g) => n + g.items.length, 0), scope: within.length, all: mine.length };
 }
+/**
+ * A paper the program may show: a sheet or a page from the yard's own folders, or from the owner's package for the chief
+ * engineer's suite (ferry/blender/assets/ce-suite/), and from nowhere else.
+ */
+export const paperAllowed = p => !!p && PLAIN_ID.test(p.id) && typeof p.file === 'string' && !p.file.includes('..')
+  && /^\/ferry\/(yard\/[A-Za-z0-9._\/-]+|blender\/assets\/ce-suite\/[A-Za-z0-9._-]+)\.(svg|md)$/.test(p.file);
 
 /**
  * An instruction or a calculation of the yard's, written as plain text with marks (# headings, - lists, | tables, **bold**),
@@ -283,10 +308,11 @@ export function initVesselUI(api, vessel) {
     else location.href = `${vessel.ship}?show=${encodeURIComponent(tag)}`;
   };
 
-  // ---- The register: everything aboard, by system, close together. (Every word of the ship's list goes through `e`.)
-  const reg = { q: '', system: 'all', deck: 'all' };
+  // ---- The register: everything aboard, by department and by system, close together. (Every word of the ship's list goes through `e`.)
+  const reg = { q: '', system: 'all', deck: 'all', department: 'all' };
+  let dep = null;                                                // her departments, once her list has been read
   const rowsOf = () => {
-    const db = api.getDB(), day = today(), r = registerGroups(db, vessel, reg);
+    const db = api.getDB(), day = today(), r = registerGroups(db, vessel, reg, dep);
     const body = r.groups.map(g => `<tr class="v-group"><th colspan="4" scope="colgroup"><span>${shipIcon(SHIP_ICONS[g.id] ? g.id : 'ship')}${e(g.name)} <small>${g.items.length}</small></span></th></tr>`
       + g.items.map(a => {
         const st = jobState(db.tasks.filter(t => t.assetId === a.id), day);
@@ -295,17 +321,24 @@ export function initVesselUI(api, vessel) {
       }).join('')).join('');
     const count = `<p class="v-count" role="status">${r.shown === r.all ? `${r.all} items` : `${r.shown} of ${r.all} items`} · ${r.groups.length} ${r.groups.length === 1 ? 'system' : 'systems'}</p>`;
     return count + (r.shown ? `<table><thead><tr><th scope="col">Item</th><th scope="col">Where</th><th scope="col">Jobs</th><th scope="col">State</th></tr></thead><tbody>${body}</tbody></table>`
-      : '<div class="empty"><strong>Nothing aboard matches</strong><p>Try another word, or all systems.</p></div>');
+      : '<div class="empty"><strong>Nothing aboard matches</strong><p>Try another word, or all departments and systems.</p></div>');
+  };
+  const deptsOf = () => {
+    const r = registerGroups(api.getDB(), vessel, reg, dep);
+    if (!r.departments.length) return '';
+    return `<button type="button" class="v-chip v-dept" data-department="all" aria-pressed="${reg.department === 'all'}">${shipIcon('ship')}All departments <b>${r.all}</b></button>`
+      + r.departments.map(d => `<button type="button" class="v-chip v-dept" data-department="${e(d.id)}" aria-pressed="${reg.department === d.id}" title="${e(d.text)}">${shipIcon(SHIP_ICONS[d.id] ? d.id : 'ship')}${e(d.name)} <b>${d.count}</b></button>`).join('');
   };
   const chipsOf = () => {
-    const r = registerGroups(api.getDB(), vessel, reg);
-    return `<button type="button" class="v-chip" data-system="all" aria-pressed="${reg.system === 'all'}">${shipIcon('ship')}All systems <b>${r.all}</b></button>`
+    const r = registerGroups(api.getDB(), vessel, reg, dep);
+    return `<button type="button" class="v-chip" data-system="all" aria-pressed="${reg.system === 'all'}">${shipIcon('ship')}All systems <b>${r.scope}</b></button>`
       + r.systems.map(s => `<button type="button" class="v-chip" data-system="${e(s.id)}" aria-pressed="${reg.system === s.id}">${shipIcon(SHIP_ICONS[s.id] ? s.id : 'ship')}${e(s.name)} <b>${s.count}</b></button>`).join('');
   };
   pages.assets = () => {
-    const db = api.getDB(), r = registerGroups(db, vessel, reg);
-    return heading('EQUIPMENT REGISTER', 'Everything aboard', `${e(vessel.name)}: ${r.all} items in ${r.systems.length} systems, from the ship’s own lists.`, btn('＋ Add asset', 'assetForm()'))
-      + `<section class="card v-register"><div class="v-systems" id="v-systems" role="group" aria-label="Systems">${chipsOf()}</div>`
+    const db = api.getDB(), r = registerGroups(db, vessel, reg, dep), whole = registerGroups(db, vessel, {}, dep);
+    return heading('EQUIPMENT REGISTER', 'Everything aboard', `${e(vessel.name)}: ${whole.all} items in ${whole.systems.length} systems, from the ship’s own lists.`, btn('＋ Add asset', 'assetForm()'))
+      + `<section class="card v-register"><div class="v-depts" id="v-depts" role="group" aria-label="Department">${deptsOf()}</div>`
+      + `<div class="v-systems" id="v-systems" role="group" aria-label="Systems">${chipsOf()}</div>`
       + `<div class="v-tools"><input id="v-search" type="search" aria-label="Search the register" placeholder="Search name, tag, room or description" value="${e(reg.q)}">`
       + `<select id="v-deck" aria-label="Deck"><option value="all">All decks</option>${r.decks.map(d => `<option value="${e(d.id)}"${reg.deck === d.id ? ' selected' : ''}>${e(d.name)}</option>`).join('')}</select></div>`
       + `<div id="v-results">${rowsOf()}</div></section>`;
@@ -319,10 +352,25 @@ export function initVesselUI(api, vessel) {
   app.addEventListener('click', ev => {
     const chip = ev.target.closest && ev.target.closest('.v-chip');
     if (!chip) return;
-    reg.system = chip.dataset.system;
+    if (chip.dataset.department !== undefined) {                 // a department first: a system it does not have is let go
+      reg.department = chip.dataset.department;
+      if (reg.system !== 'all' && !registerGroups(api.getDB(), vessel, reg, dep).systems.some(s => s.id === reg.system)) reg.system = 'all';
+      draw('#v-depts', deptsOf());
+    } else reg.system = chip.dataset.system;
     draw('#v-systems', chipsOf());
     again();
   });
+
+  // ---- Its first page. Aboard, nothing in the program leads out to the site (the owner: "we are not going to a website we are
+  // still on the chisum"): the workshop's line about StepWise, a tool that is on the site, gives way to the ship's own.
+  const overview = pages.overview;
+  pages.overview = () => {
+    const page = document.createRange().createContextualFragment(overview()), line = page.querySelector('.page-head p');
+    if (line && line.querySelector('a[href]:not([href^="#"])')) line.textContent = `${vessel.name}: what is due aboard, from the ship’s own lists.`;
+    const box = document.createElement('div');
+    box.append(page);
+    return box.innerHTML;
+  };
 
   // ---- One item: where it is aboard, before its record; what it is made of, after it.
   const base = pages.detail;
@@ -333,7 +381,8 @@ export function initVesselUI(api, vessel) {
     const can = PLAIN_ID.test(a.tag);
     const strip = `<div class="v-strip">${shipIcon(iconKey(a))}<p><b>${e(a.systemName)}</b>${e(a.location)}${where ? ' · ' + e(where) : ''}</p>${can ? btn('Show on board', `showOnBoard('${a.tag}')`, 'primary') : ''}</div>`;
     const parts = a.parts && a.parts.length ? `<ul class="aboard-parts">${a.parts.map(p => `<li>${e(p)}</li>`).join('')}</ul>` : '<p class="aboard-note">Its parts are not listed yet: the ship’s build does not say them for this item.</p>';
-    const rows = [['Tag', a.tag], ['System', `${a.systemName} (${a.system})`], ['Deck', a.deckName], ['Room', a.roomName], ['Place', where], ['Listed from', a.source === 'register' ? 'her register of systems' : 'her deck fittings']]
+    const whose = dep && dep.list.find(d => d.id === dep.of.get(a.tag));
+    const rows = [['Tag', a.tag], ['Department', whose ? whose.name : ''], ['System', `${a.systemName} (${a.system})`], ['Deck', a.deckName], ['Room', a.roomName], ['Place', where], ['Listed from', a.source === 'register' ? 'her register of systems' : 'her deck fittings']]
       .filter(([, v]) => v).map(([l, v]) => `<div><label>${l}</label><b>${e(v)}</b></div>`).join('');
     return strip + base() + papersCard(a) + card('Aboard', 'Where it is in the ship, and what it is made of', `<div class="card-body"><div class="kv">${rows}</div><h3 style="margin-top:20px">Parts</h3>${parts}`
       + (a.noJobs ? `<p class="aboard-note">${e(a.noJobs)}</p>` : '') + '</div>');
@@ -402,7 +451,8 @@ export function initVesselUI(api, vessel) {
 
   fetch(vessel.list, { cache: 'no-cache' }).then(r => { if (!r.ok) throw Error(`The ship’s equipment list was not found (${r.status}).`); return r.json(); }).then(doc => {
     length = (doc.ship && doc.ship.length) || 0;
-    papers = Array.isArray(doc.documents) ? doc.documents.filter(p => p && PLAIN_ID.test(p.id) && /^\/ferry\/yard\/[A-Za-z0-9._\/-]+\.(svg|md)$/.test(p.file)) : [];
+    papers = Array.isArray(doc.documents) ? doc.documents.filter(paperAllowed) : [];
+    dep = departmentsOf(doc);
     itemPapers = new Map(doc.items.map(i => [i.id, i.docs || []]));
     const db = api.getDB();
     if (!db.assets.length && !db.vessel) {

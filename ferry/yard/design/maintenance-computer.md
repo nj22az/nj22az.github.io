@@ -1,7 +1,8 @@
 # The maintenance computer: the chief engineer's PC, and a maintenance program that knows the ship
 
-Johansson Shipyard · design record · revision 0 · 12 November 2026 · newbuilding No. 1, the Chisum · **a proposal: nothing of
-it is built**
+Johansson Shipyard · design record · revision 1 · 12 November 2026 · newbuilding No. 1, the Chisum · **built the same night, but
+for what section 7 lists** (revision 0 was the proposal; sections 1 to 6 stand as they were proposed, and section 7 says how
+it was built and where that differs)
 
 The owner, 12 November 2026, at night, in the order said. Of the site's own program at `/maintenance-demo/` (Maintenance
 Desk): "This could be used for the maintenance system onboard , if it needs enhancing add that , so we can update that
@@ -114,3 +115,30 @@ ends are marked**, as the generators' are. The rest of the suite (bedroom, wet u
   Chief Engineer; say if a name is to stand there.
 - **Running hours.** The program can plan by a meter. Her pumps and winches run on the page, and it could count their hours
   for the program while one is aboard; proposed for a later step, after the five above.
+
+## 7. As built, 12 November 2026 (revision 1)
+
+The five steps of section 5 are done. What was built, and where it is not as sections 3 and 4 proposed:
+
+- **The desk stands at her side, not against a wall without a window** (3.3). The owner's own package for a chief engineer's
+  suite, kept aboard since 11 November (`ferry/blender/assets/ce-suite/`: CE-SUITE-GA-001, MS-CE-001), has the day room's
+  desk at the ship's side beside a window, its sockets 0.30 m over the deck on circuit S1 of the suite's own board DB-CE, in
+  skirting trunking, and DB-CE by the door. The room is built so: the desk along her side at the after end, its forward half
+  metre under the first side window and 0.31 m under its sill, the screen 0.20 m clear of the pane; a twin socket and a data
+  outlet under the desk; 5.0 m of skirting trunking to the place of DB-CE beside the door. **DB-CE is not installed**: its
+  place is an outline and a sign, and both cables end in a box under it and say so. Sheet
+  [JS5-511](../drawings/JS5-511-chief-engineers-day-room.svg); numbers `ferry/blender/cabin_place.py`; builder
+  `ferry/blender/cabin_ce.py`; the register's third section `ferry/systems/accommodation.py` (seven components, the board
+  DB-CE with its one way, a new subsystem ADM).
+- **The screen's opening picture is built, not a picture laid on a surface** (4): a lit sheet, bars and lettering, as fine
+  work. The second sheet of pictures that section 4 foresaw is there all the same, for the calendar on the after wall
+  (`ferry/blender/cabin_pictures.py`, `ferry/data/chisum-cabins.webp`).
+- **The owner's package is among her papers** (3.2): its drawing and its method statement are read inside the program beside
+  the yard's own sheets, and the day room's items name them. They are of a suite of 7.2 by 5.0 m on a 190 m ship and say so.
+- **The register is narrowed by department** (not proposed; the owner, the same night: "We should be able to filter by
+  department , deck, engine , galley"): `equipment.py` says whose each item is, and the program offers the three over its
+  systems.
+
+Not done of what was proposed: the 392 light fittings and each fitting's parts are not in the list (3.1: `build.py` is to ask
+each section for an `inventory()`); doors and hatches are not in it; `check.py` does not count the list against the model;
+the program is not kept for use without a connection (4); the two questions of section 6 are still the owner's.

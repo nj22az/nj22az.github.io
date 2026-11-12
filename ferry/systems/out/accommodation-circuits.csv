@@ -1,0 +1,11 @@
+board,way,name,volts,watts,amps,breaker A,cable,length m,drop %,drop in all %,consumers,standby for
+DB-CE,feeder,from LB (Lighting and small-power board),230,180,0.9,20,2 × 2.5 mm² + earth,30.5,0.2,0.2,,
+DB-CE,1,S1: day-room sockets,230,180,0.87,16,2 × 2.5 mm² + earth,8.0,0.1,0.3,ADM-01,
+SG1,control,Steering control system No. 1,,50,0.22,2,"2 × 1.5 mm² + earth, fire-resistant",60.0,0.2,,STR-02,
+SG2,control,Steering control system No. 2,,50,0.22,2,"2 × 1.5 mm² + earth, fire-resistant",60.0,0.2,,STR-07,
+ESB,fire detection,"Fire detection panel, emergency feeder",,60,0.26,2,"2 × 1.5 mm² + earth, fire-resistant",24.5,0.1,,FIR-01,
+LB,fire detection,"Fire detection panel, main feeder",,0,0.0,2,"2 × 1.5 mm² + earth, fire-resistant",34.0,0.1,,,
+LB,bridge deck lighting,"Bridge deck lighting, corridor and after platform",,72,0.31,6,2 × 1.5 mm² + earth,55.5,0.2,,LGT-25 LGT-26,
+ESB,emergency lighting,"Emergency lighting, bridge deck",,72,0.31,6,2 × 1.5 mm² + earth,44.0,0.2,,LGT-27 LGT-28,
+ESB,emergency generator auxiliaries,Emergency generator: starting battery charger,,600,2.61,10,2 × 2.5 mm² + earth,40.5,0.8,,EMG-03,
+LB,searchlight,Searchlight,,1000,4.35,16,2 × 4 mm² + earth,37.0,0.8,,NLT-16,

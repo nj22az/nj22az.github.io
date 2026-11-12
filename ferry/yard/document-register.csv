@@ -42,6 +42,7 @@ JS5-501,"Accommodation plan: cabins with wet units, mess, galley",crew and passe
 JS5-502,Engine department day room and toilet,crew and passengers,to do,,Owner: a coffee and break room and a toilet below
 JS5-503,Passenger saloon arrangement and seating,crew and passengers,to do,,
 JS5-504,Ventilation and air conditioning plan,crew and passengers,partly,"ferry/systems/bridge.py (HVC, wheelhouse only)",
+JS5-511,"Chief engineer's day room: the desk and the maintenance computer",crew and passengers,exists,"ferry/yard/drawings/JS5-511-chief-engineers-day-room.svg (the room from above, her side as one sits at the desk, the after wall, how it is fed and worked, its parts; made by drawings/cabin_drawing.py from blender/cabin_place.py); ferry/blender/cabin_ce.py; ferry/systems/accommodation.py","Design record: yard/design/maintenance-computer.md. The rest of the suite is not fitted out; the socket's and the data outlet's cables end marked"
 JS5-505,"Sanitary plan: fresh water, hot water, drains, sewage",crew and passengers,to do,,"Survey findings BF-07, BF-16, BF-17"
 JS6-601,Machinery arrangement,machinery,to do,,"Her machinery spaces are bare: the shafting, the steering gear, the thruster and the ways on foot only"
 JS6-602,Engine control room arrangement,machinery,to do,,Owner: a proper control room

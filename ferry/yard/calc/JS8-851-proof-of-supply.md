@@ -6,13 +6,13 @@ The owner, 11 November 2026: "it needs to be a functional electrical installatio
 registered: every source on and off, every breaker opened once, and says what is alive each time. It is made again whenever
 the register changes, and the tool stops with an error if a consumer has no supply or a required service dies.
 
-**Scope.** 94 consumers with a supply, on 6 boards of the bridge and 8 circuits direct from boards
+**Scope.** 95 consumers with a supply, on 7 boards of the bridge and 8 circuits direct from boards
 elsewhere; 9 boards elsewhere; 7 sources. The register holds the navigation bridge and what feeds it:
 her machinery, lighting and galley are not registered yet, so nothing is proven of them.
 
 ## 1. Every consumer has a protected way back to a source
 
-With every source on, **94 of 94 consumers are alive**. None is without a supply.
+With every source on, **95 of 95 consumers are alive**. None is without a supply.
 
 Each way is protected by its own breaker and each board by its feeder's (the sizes are in the cable schedule, JS8-856:
 a breaker is at least 1.25 times the load, a cable is rated for its breaker, no cable loses more than
@@ -26,6 +26,7 @@ a breaker is at least 1.25 times the load, a cable is rated for its breaker, no 
 | **DC2** 24 V DC panel, radio | DCB-R | DCB-R ← BAT-R |
 | **NLP** Navigation light panel | TSB and LB | TSB ← ESB ← (PSB ← (MSB ← (G1 or G2 or G3) or SHORE) or EG) or BAT-G; LB ← PSB ← (MSB ← (G1 or G2 or G3) or SHORE) |
 | **RSP** Stern ramp starter panel | PSB | PSB ← MSB ← (G1 or G2 or G3) or SHORE |
+| **DB-CE** Chief engineer's suite distribution board | LB | LB ← PSB ← (MSB ← (G1 or G2 or G3) or SHORE) |
 
 ## 2. What each breaker takes with it
 
@@ -88,6 +89,8 @@ something on another way, the tool would say so.
 | RSP way 3 · Cleat pump, 4 kW | 10 | HYD-04 |  |
 | RSP way 4 · Oil cooler fan, 1.1 kW | 4 | HYD-05 |  |
 | RSP way 5 · Control transformer 440/24 V, 630 VA: stand, valves, switches | 2 | RMP-30, RMP-31, HYD-10 |  |
+| DB-CE: its feeder | 20 | ADM-01 |  |
+| DB-CE way 1 · S1: day-room sockets | 16 | ADM-01 |  |
 | SG1 · Steering control system No. 1 | 2 | STR-02 |  |
 | SG2 · Steering control system No. 2 | 2 | STR-07 |  |
 | ESB · Fire detection panel, emergency feeder | 2 | nothing | FIR-01 |
@@ -97,19 +100,19 @@ something on another way, the tool would say so.
 | ESB · Emergency generator: starting battery charger | 10 | EMG-03 |  |
 | LB · Searchlight | 16 | NLT-16 |  |
 
-61 breakers opened, one at a time. Each took its own way and nothing else.
+63 breakers opened, one at a time. Each took its own way and nothing else.
 
 ## 3. Losing a source
 
 | Condition | Sources on | Boards alive | Consumers alive | What is dark |
 |---|---|---|---|---|
-| At sea, normal | BAT-G, BAT-R, G1, G2, G3 | BD1, BD2, DC1, DC2, NLP, RSP, MSB, PSB, LB, ESB, TSB, DCB, DCB-R, SG1, SG2 | 94 of 94 | nothing |
-| Alongside, on the shore connection | BAT-G, BAT-R, SHORE | BD1, BD2, DC1, DC2, NLP, RSP, PSB, LB, ESB, TSB, DCB, DCB-R, SG1, SG2 | 94 of 94 | nothing |
-| Blackout, the first 45 seconds (before the emergency generator is on the board) | BAT-G, BAT-R | DC1, DC2, NLP, TSB, DCB, DCB-R | 40 of 94 | all or part of: Alarm and monitoring, Electrical distribution, Emergency power, Fire detection and fire-fighting, Air conditioning, Cargo access hydraulics, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Stern ramp and door, Steering |
-| Blackout, the emergency generator running | BAT-G, BAT-R, EG | BD2, DC1, DC2, NLP, ESB, TSB, DCB, DCB-R, SG2 | 51 of 94 | all or part of: Alarm and monitoring, Electrical distribution, Air conditioning, Cargo access hydraulics, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Stern ramp and door, Steering |
-| Blackout, and the general service battery lost | BAT-R, EG | BD2, DC2, NLP, ESB, TSB, DCB-R, SG2 | 25 of 94 | all or part of: Alarm and monitoring, Electrical distribution, Air conditioning, Cargo access hydraulics, Internal communication, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Propulsion control, Stern ramp and door, Steering |
-| Blackout, and the radio battery lost | BAT-G, EG | BD2, DC1, NLP, ESB, TSB, DCB, SG2 | 47 of 94 | all or part of: Alarm and monitoring, Radio, Electrical distribution, Air conditioning, Cargo access hydraulics, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Stern ramp and door, Steering |
-| Everything lost but the radio battery | BAT-R | DC2, DCB-R | 5 of 94 | all or part of: Alarm and monitoring, Electrical distribution, Emergency power, Fire detection and fire-fighting, Air conditioning, Cargo access hydraulics, Internal communication, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Propulsion control, Stern ramp and door, Steering |
+| At sea, normal | BAT-G, BAT-R, G1, G2, G3 | BD1, BD2, DC1, DC2, NLP, RSP, DB-CE, MSB, PSB, LB, ESB, TSB, DCB, DCB-R, SG1, SG2 | 95 of 95 | nothing |
+| Alongside, on the shore connection | BAT-G, BAT-R, SHORE | BD1, BD2, DC1, DC2, NLP, RSP, DB-CE, PSB, LB, ESB, TSB, DCB, DCB-R, SG1, SG2 | 95 of 95 | nothing |
+| Blackout, the first 45 seconds (before the emergency generator is on the board) | BAT-G, BAT-R | DC1, DC2, NLP, TSB, DCB, DCB-R | 40 of 95 | all or part of: Ship's office and data, Alarm and monitoring, Electrical distribution, Emergency power, Fire detection and fire-fighting, Air conditioning, Cargo access hydraulics, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Stern ramp and door, Steering |
+| Blackout, the emergency generator running | BAT-G, BAT-R, EG | BD2, DC1, DC2, NLP, ESB, TSB, DCB, DCB-R, SG2 | 51 of 95 | all or part of: Ship's office and data, Alarm and monitoring, Electrical distribution, Air conditioning, Cargo access hydraulics, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Stern ramp and door, Steering |
+| Blackout, and the general service battery lost | BAT-R, EG | BD2, DC2, NLP, ESB, TSB, DCB-R, SG2 | 25 of 95 | all or part of: Ship's office and data, Alarm and monitoring, Electrical distribution, Air conditioning, Cargo access hydraulics, Internal communication, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Propulsion control, Stern ramp and door, Steering |
+| Blackout, and the radio battery lost | BAT-G, EG | BD2, DC1, NLP, ESB, TSB, DCB, SG2 | 47 of 95 | all or part of: Ship's office and data, Alarm and monitoring, Radio, Electrical distribution, Air conditioning, Cargo access hydraulics, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Stern ramp and door, Steering |
+| Everything lost but the radio battery | BAT-R | DC2, DCB-R | 5 of 95 | all or part of: Ship's office and data, Alarm and monitoring, Electrical distribution, Emergency power, Fire detection and fire-fighting, Air conditioning, Cargo access hydraulics, Internal communication, Lighting, Navigation, Navigation lights and signals, Outfit, Piping, Propulsion control, Stern ramp and door, Steering |
 
 ## 4. What must not go dark
 

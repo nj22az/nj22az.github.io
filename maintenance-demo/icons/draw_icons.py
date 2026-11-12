@@ -203,10 +203,29 @@ def ship():      # the ship herself, from ahead: her bow, her house, her mast
     return ['M4.4 12.4L12 9.6l7.6 2.8-1.8 6.6q-5.8 2.4-11.6 0Z', line((C, 9.6), (C, 19.9)), box(8.8, 5.2, 6.4, 4.2, 0.6), line((C, 2.4), (C, 5.2))]
 
 
+# ---- Her departments (the owner, 12 November 2026: "We should be able to filter by department , deck, engine , galley") ----
+def deck():      # a pair of bitts on their base, a turn of rope between them
+    return [line((3.4, 19.8), (20.6, 19.8)), box(6.2, 8.4, 3.4, 11.4, 0.8), box(14.4, 8.4, 3.4, 11.4, 0.8), line((5, 8.4), (10.8, 8.4)), line((13.2, 8.4), (19, 8.4)),
+            line((9.6, 12.6), (14.4, 15.6)), line((9.6, 15.6), (14.4, 12.6))]
+
+
+def engine():    # a gear wheel: eight teeth by angle, round its hub
+    rim = []
+    for k in range(8):
+        a = 45 * k
+        rim += [at(6.6, a - 14), at(9.2, a - 8.5), at(9.2, a + 8.5), at(6.6, a + 14)]
+    return [shape(*rim), circle(2.7)]
+
+
+def galley():    # a pot on the range: its lid and knob, its two handles, the steam over it
+    return [box(5.4, 11, 13.2, 8.6, 1.6), line((4.2, 11), (19.8, 11)), line((C, 11), (C, 9.2)), line((10.6, 9.2), (13.4, 9.2)), line((5.4, 13.8), (3.2, 13.8)), line((18.6, 13.8), (20.8, 13.8)),
+            curve((8.6, 6.6), (7.4, 5), (8.6, 3.4)), curve((15.4, 6.6), (16.6, 5), (15.4, 3.4))]
+
+
 SYSTEMS = dict(NAV=NAV, STR=STR, PRP=PRP, COM=COM, INT=INT, ALM=ALM, FIR=FIR, NLT=NLT, LGT=LGT, DLT=DLT, ELD=ELD, EMG=EMG, GEN=GEN, HVC=HVC, PIP=PIP,
                LSA=LSA, RMP=RMP, HYD=HYD, MOR=MOR, VNT=VNT, CGO=CGO, DKO=DKO, OUT=OUT, ADM=ADM)
 KINDS = {'Mooring winch': winch, 'Anchor windlass and mooring winch': winch, 'Capstan': winch, 'Lifeboat and davits': lifeboat, 'Liferaft': liferaft}
-OTHER = dict(ship=ship, DOC=DOC)
+OTHER = dict(ship=ship, DOC=DOC, deck=deck, engine=engine, galley=galley)
 
 
 def paths(draw):

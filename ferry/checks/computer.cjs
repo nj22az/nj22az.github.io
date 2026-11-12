@@ -59,6 +59,15 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(reg.rows === list.items.length && reg.assets === list.items.length && reg.groups === list.systems.length && reg.drawn === reg.rows + reg.groups,
     `its register is her list: ${reg.rows} items in ${reg.groups} systems, each with its drawing`);
   check(reg.sample === 0 && !reg.offered && reg.workshop === null && reg.tasks > reg.assets * 0.8, `nothing of a sample workshop is in it or offered; ${reg.tasks} jobs are planned for what is aboard`);
+  // Whose it is aboard (the owner: "We should be able to filter by department , deck, engine , galley").
+  const want = list.departments.find(d => d.id === 'engine');
+  await frame.locator('.v-dept[data-department="engine"]').click();
+  const dept = await frame.locator('body').evaluate(() => ({ offered: [...document.querySelectorAll('.v-dept')].map(b => b.innerText.replace(/\s+/g, ' ').trim()), rows: document.querySelectorAll('#v-results tbody tr:not(.v-group)').length,
+    systems: document.querySelectorAll('#v-systems .v-chip').length - 1, pressed: document.querySelector('.v-dept[aria-pressed="true"]')?.dataset.department, drawn: document.querySelectorAll('.v-dept svg.v-icon').length }));
+  await frame.locator('.v-dept[data-department="all"]').click();
+  const whole = await frame.locator('#v-results tbody tr:not(.v-group)').count();
+  check(dept.offered.length === list.departments.length + 1 && dept.drawn === dept.offered.length && dept.rows === want.count && dept.pressed === 'engine' && dept.systems > 0 && dept.systems < list.systems.length && whole === list.items.length,
+    `it is narrowed by department (${dept.offered.join(', ')}): Engine shows ${dept.rows} items in ${dept.systems} systems, and all departments ${whole} again`);
   await frame.locator('#v-search').fill('winch');
   const found = await frame.locator('.v-count').innerText();
   check(/^\d+ of \d+ items/.test(found), `a word finds what is aboard ("winch": ${found})`);
@@ -106,10 +115,14 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const esc1 = await page.evaluate(() => window.__ferry.computerOpen);
   await page.evaluate(() => window.__ferry.openComputer());
   await frame.locator('#nav a[href="#overview"]').click();
+  await frame.locator('.page-head h1', { hasText: 'Overview' }).waitFor({ timeout: 15000 });      // (its first page itself, not the page that was open before it)
+  // (the owner: "we are not going to a website we are still on the chisum": what is in sight on its first page stays in the program)
+  const outs = await frame.locator('body').evaluate(() => [...document.querySelectorAll('a[href]')].filter(a => !a.getAttribute('href').startsWith('#') && a.getClientRects().length).map(a => a.getAttribute('href')));
   await page.keyboard.press('Escape');
   await page.waitForTimeout(400);
   const esc2 = await page.evaluate(() => window.__ferry.computerOpen);
   check(esc1 === false && esc2 === false, 'Escape goes back to her, pressed on her page or inside the program');
+  check(outs.length === 0, `on its overview nothing in sight leads out of the program to the site (${outs.length ? outs.join(', ') : 'no such link'})`);
 
   // Nobody walks while they sit at it, and they stand where they stood afterwards.
   const walk = await page.evaluate(async () => {

@@ -79,6 +79,10 @@ html[data-vessel] td { padding: 10px 16px; font-size: 14px; border-bottom-color:
 
 /* ---- The equipment register (vessel.mjs) ---- */
 .v-icon { width: 22px; height: 22px; flex: 0 0 22px; stroke-width: 1.6; }
+/* whose it is aboard: deck, engine, galley. Over the systems, which it narrows; nothing where her list names none */
+.v-depts { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 20px 0; }
+.v-depts:empty { display: none; }
+html[data-vessel] .v-dept { font-weight: 600; }
 .v-systems { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--v-line); }
 html[data-vessel] .v-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 12px 6px 10px; border: 1px solid var(--v-line); border-radius: 8px; background: var(--v-surface); color: var(--v-text); font-size: 13px; font-weight: 600; }
 html[data-vessel] .v-chip b { font-weight: 400; color: var(--v-muted); }
