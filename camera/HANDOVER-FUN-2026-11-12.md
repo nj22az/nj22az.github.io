@@ -112,4 +112,16 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
 
 ## Publication
 
-(Written after the push to main.)
+**Published on the owner's "Push to main", 12 November 2026**: main `fb9cef280` (the branch rebased onto main
+`b92478a03`, another session's /temp page, which touched nothing of the camera).
+
+- Before the push, on the commit that was published: the whole regression, 50 of 50 (22 Node tests; 28 browser suites,
+  among them camera, ui 82/82, crop 33/33, audit 59/59, retouch 40/40, integration 9/9, offline 13/13, brand 11/11,
+  stickers 9, fun 7).
+- After the push, as found live: 30 of 30 checked files of `https://nj22az.github.io/camera/` are byte for byte the
+  commit's (the page, app.js, stickers.js, sticker-sheet.js, cutout.js, frames.js, frames/cute.json, presets.js,
+  steppers.js, look-icons.js, looks-gl.js, unlocks.js, three stylesheets, offline.json, sw.js, sheets.json, seven
+  sheets and five sticker pictures); the page says v2026.11.12.1; `ball.js` answers 404.
+- Not in this publication: `tools/draw-cute-stickers.py`'s seasonal friends (written, not yet drawn or looked at; kept
+  aside in a stash named "seasonal friends, not drawn yet" in the session that wrote it, and described under *Not
+  done*).
