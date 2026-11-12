@@ -107,12 +107,16 @@ export const light = {
  *   sheen   how much its roughness swings with the grain
  *   tone    how much its colour swings with the grain
  *   patch   the size of the larger unevenness (wear, weather, the painter's hand) and how much colour and sheen swing with it
+ *   plate   for what is steel plate under its coat: how far the plate dishes between its stiffeners (metres). Welded plating is
+ *           never flat: it pulls in toward each frame and stiffener, its seams and butts stand a little proud, and water
+ *           leaves its streaks down it. That is what tells painted steel from plastic. Stiffeners are taken 0.6 m apart
+ *           along her and 0.68 m the other way, seams every third stiffener and butts every twelfth frame.
  */
 export const SURFACES = {
-  paint:    { grain: 0.0035, along: [1, 1, 1],    relief: 0.000030, sheen: 0.05, tone: 0.015, patch: 0.90, patchTone: 0.035 },
-  primer:   { grain: 0.0040, along: [1, 1, 1],    relief: 0.000040, sheen: 0.06, tone: 0.030, patch: 0.60, patchTone: 0.060 },
-  matt:     { grain: 0.0030, along: [1, 1, 1],    relief: 0.000060, sheen: 0.05, tone: 0.040, patch: 0.70, patchTone: 0.070 },
-  deck:     { grain: 0.0045, along: [1, 1, 1],    relief: 0.000350, sheen: 0.10, tone: 0.070, patch: 0.80, patchTone: 0.060 },
+  paint:    { grain: 0.0035, along: [1, 1, 1],    relief: 0.000030, sheen: 0.05, tone: 0.015, patch: 0.90, patchTone: 0.035, plate: 0.0032 },
+  primer:   { grain: 0.0040, along: [1, 1, 1],    relief: 0.000040, sheen: 0.06, tone: 0.030, patch: 0.60, patchTone: 0.060, plate: 0.0020 },
+  matt:     { grain: 0.0030, along: [1, 1, 1],    relief: 0.000060, sheen: 0.05, tone: 0.040, patch: 0.70, patchTone: 0.070, plate: 0.0024 },
+  deck:     { grain: 0.0045, along: [1, 1, 1],    relief: 0.000350, sheen: 0.10, tone: 0.070, patch: 0.80, patchTone: 0.060, plate: 0.0012 },
   metal:    { grain: 0.0010, along: [1, 1, 0.05], relief: 0.000010, sheen: 0.12, tone: 0.030, patch: 0.30, patchTone: 0.030 },
   wood:     { grain: 0.0060, along: [1, 1, 0.03], relief: 0.000060, sheen: 0.10, tone: 0.160, patch: 0.25, patchTone: 0.080 },
   leather:  { grain: 0.0022, along: [1, 1, 1],    relief: 0.000120, sheen: 0.08, tone: 0.050, patch: 0.30, patchTone: 0.050 },
@@ -182,13 +186,27 @@ export function surface(material, kind) {
         float sfShown = 1.0 - smoothstep(0.35, 1.3, sfDot / ${f(s.grain)});
         float sfG = sfGrain(vSurfaceAt * vec3(${s.along.map(f).join(', ')}) / ${f(s.grain)});
         float sfP = sfNoise(vSurfaceAt / ${f(s.patch)} + 3.7) * 0.65 + sfNoise(vSurfaceAt / ${f(s.patch * 0.31)} + 9.1) * 0.35;
-        diffuseColor.rgb *= 1.0 + ${f(s.tone)} * (sfG - 0.5) * 2.0 * sfShown + ${f(s.patchTone)} * (sfP - 0.5) * 2.0;`)
+        diffuseColor.rgb *= 1.0 + ${f(s.tone)} * (sfG - 0.5) * 2.0 * sfShown + ${f(s.patchTone)} * (sfP - 0.5) * 2.0;
+        ${s.plate ? `
+        // steel plate under its coat: along her and up a wall, along and across a deck
+        vec3 plN = abs(normalize(vSurfaceN));
+        vec2 plAt = plN.y > 0.6 ? vSurfaceAt.zx : (plN.x > plN.z ? vSurfaceAt.zy : vSurfaceAt.xy);
+        vec2 plCell = plAt / vec2(0.6, 0.68);
+        float plSeen = 1.0 - smoothstep(0.08, 0.35, sfDot / 0.6);
+        float plDish = cos(6.2832 * plCell.x) * cos(6.2832 * plCell.y);
+        // a seam every third stiffener, a butt every twelfth frame: a line no finer than the screen can draw
+        vec2 plTo = abs(fract(plCell / vec2(12.0, 3.0) + 0.5) - 0.5) * vec2(12.0 * 0.6, 3.0 * 0.68);
+        float plWide = max(0.007, 1.2 * sfDot), plLine = max(1.0 - plTo.x / plWide, 1.0 - plTo.y / plWide);
+        float plSeam = clamp(plLine, 0.0, 1.0) * min(1.0, 0.007 / plWide * 2.5);
+        // where water runs down a wall it leaves streaks, and a seam holds a little dirt
+        float plStreak = plN.y > 0.6 ? 0.0 : sfNoise(vec3(plAt.x * 7.0, plAt.y * 0.22, 3.3)) * sfNoise(vec3(plAt.x * 1.3, plAt.y * 0.05, 9.9));
+        diffuseColor.rgb *= 1.0 - 0.07 * plSeam - 0.08 * plStreak * plSeen;` : ''}`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
         roughnessFactor = clamp(roughnessFactor + ${f(s.sheen)} * (sfG - 0.5) * 2.0 * sfShown + ${f(s.patchTone)} * (sfP - 0.5), 0.04, 1.0);`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
         {
           // the grain's relief turns the face a little toward or away from the light (a height, in metres, differenced across the screen)
-          float sfH = sfG * ${f(s.relief)} * sfShown;
+          float sfH = sfG * ${f(s.relief)} * sfShown${s.plate ? ` + ${f(s.plate)} * plDish * plSeen + 0.0012 * plSeam` : ''};
           vec3 sfX = dFdx(-vViewPosition), sfY = dFdy(-vViewPosition);
           vec3 sfR1 = cross(sfY, normal), sfR2 = cross(normal, sfX);
           float sfDet = dot(sfX, sfR1);
@@ -278,10 +296,10 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
   geometry.computeVertexNormals();
   const material = new THREE.ShaderMaterial({
     fog: false, side: THREE.DoubleSide,
-    uniforms: { ...dayUniforms(), uWater: { value: new THREE.Color(0.012, 0.058, 0.085) }, uCalm: { value: 1 } },
-    vertexShader: 'varying vec3 vAt; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vAt = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+    uniforms: { ...dayUniforms(), uWater: { value: new THREE.Color(0.012, 0.058, 0.085) }, uCalm: { value: 1 }, uMirror: { value: null }, uMirrorAt: { value: new THREE.Matrix4() }, uMirrorOn: { value: 0 } },
+    vertexShader: 'varying vec3 vAt; varying vec4 vMirror; uniform mat4 uMirrorAt; void main() { vec4 w = modelMatrix * vec4(position, 1.0); vAt = w.xyz; vMirror = uMirrorAt * w; gl_Position = projectionMatrix * viewMatrix * w; }',
     fragmentShader: `${lite ? '#define LITE' : ''}
-      varying vec3 vAt; uniform vec3 uWater; uniform float uCalm; ${SKY}
+      varying vec3 vAt; varying vec4 vMirror; uniform vec3 uWater; uniform float uCalm, uMirrorOn; uniform sampler2D uMirror; ${SKY}
       vec2 wave(vec2 p, vec2 dir, float len, float height, float speed) {
         float k = 6.2832 / len;
         return dir * (k * height * cos(dot(p, dir) * k + uTime * speed * k));
@@ -305,6 +323,7 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
         g += wave(p + wander * 9.0, vec2(0.819, 0.574), 47.0, 0.34, 4.3) * SEEN(47.0);
         g += wave(p + wander * 7.0, vec2(0.530, 0.848), 29.0, 0.20, 3.4) * SEEN(29.0);
         g += wave(p + wander * 6.0, vec2(0.966, 0.259), 17.3, 0.11, 2.6) * SEEN(17.3) * gust;
+        vec2 swell = g;                                            // the long waves alone: what bends a mirror image
         g += wave(p + wander * 5.0, vec2(0.292, 0.956), 11.1, 0.075, 2.1) * SEEN(11.1) * gust;
         #ifndef LITE
         g += wave(p + wander * 4.0, vec2(0.743, -0.669), 6.7, 0.040, 1.6) * SEEN(6.7) * gust;
@@ -325,6 +344,17 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
         mirror = mix(mirror, mirror * 0.55 + 0.035, lost);
         vec3 R = reflect(-V, N); R.y = abs(R.y);
         vec3 seen = skyColour(R);
+        if (uMirrorOn > 0.5) {
+          // what stands over the water is mirrored in it, broken up by the waves
+          // (bent by the long waves, and drawn out by the short ones: three looks a little apart, taken together)
+          vec2 bend = swell * 0.42, ruffle = (g - swell) * 0.10;
+          vec4 at = vMirror; at.xy += bend * at.w;
+          vec4 hers = texture2DProj(uMirror, at + vec4(ruffle, 0.0, 0.0) * at.w)
+                    + texture2DProj(uMirror, at + vec4(ruffle * 2.2 + vec2(0.0, 0.012), 0.0, 0.0) * at.w)
+                    + texture2DProj(uMirror, at + vec4(ruffle * -1.4 - vec2(0.0, 0.010), 0.0, 0.0) * at.w);
+          hers /= 3.0;
+          seen = mix(seen, hers.rgb / max(hers.a, 0.001), hers.a * mix(1.0, 0.6, lost));
+        }
         // the water's own colour: darker looking down into it, greener where the sun gets into a wave's face
         vec3 body = uWater * (0.6 + 0.9 * max(uSun.y, 0.0)) + vec3(0.0, 0.035, 0.03) * pow(max(dot(N, uSun) - uSun.y + 0.25, 0.0), 2.0);
         body += (uZenith * 0.5 + uHorizon * 0.5) * 0.05 * lost;
@@ -341,7 +371,41 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
   mesh.frustumCulled = false; mesh.userData.sea = true;
   const shadow = new THREE.Mesh(geometry, new THREE.ShadowMaterial({ opacity: 0.38, depthWrite: false }));
   shadow.position.y = 0.012; shadow.receiveShadow = true; shadow.frustumCulled = false; shadow.renderOrder = 2;
-  return { mesh, shadow, material };
+  // Her mirror image: she is drawn once more as the sea sees her, from under the water looking up, and the sea shows that
+  // picture where its waves let it. Left out on the light way.
+  const mirror = lite ? null : new THREE.WebGLRenderTarget(1024, 640, { type: THREE.HalfFloatType });
+  const below = new THREE.PerspectiveCamera(), waterline0 = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const eye = new THREE.Vector3(), ahead = new THREE.Vector3(), up = new THREE.Vector3(), turn = new THREE.Matrix4(), was = new THREE.Color();
+  material.uniforms.uMirror.value = mirror ? mirror.texture : null;
+  /** Draw the mirror picture for this camera. `others` are things that are not hers and are left out (the sky, the slip). */
+  function reflect(renderer, scene, camera, others = []) {
+    const u = material.uniforms;
+    camera.updateMatrixWorld();
+    eye.setFromMatrixPosition(camera.matrixWorld);
+    if (!mirror || !mesh.visible || eye.y < 0.05) { u.uMirrorOn.value = 0; return; }
+    turn.extractRotation(camera.matrixWorld);
+    ahead.set(0, 0, -1).applyMatrix4(turn).add(eye);
+    up.set(0, 1, 0).applyMatrix4(turn);
+    below.position.set(eye.x, -eye.y, eye.z);
+    below.up.set(up.x, -up.y, up.z);
+    below.lookAt(ahead.x, -ahead.y, ahead.z);
+    below.updateMatrixWorld();
+    below.projectionMatrix.copy(camera.projectionMatrix); below.projectionMatrixInverse.copy(camera.projectionMatrixInverse);
+    u.uMirrorAt.value.set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1).multiply(below.projectionMatrix).multiply(below.matrixWorldInverse);
+    const hide = [mesh, shadow, ...others].filter(o => o.visible);
+    for (const o of hide) o.visible = false;
+    const target = renderer.getRenderTarget(), planes = renderer.clippingPlanes, alpha = renderer.getClearAlpha(), auto = renderer.shadowMap.autoUpdate, need = renderer.shadowMap.needsUpdate;
+    renderer.getClearColor(was);
+    renderer.clippingPlanes = [waterline0];                 // only what is above the water is mirrored
+    renderer.shadowMap.autoUpdate = false; renderer.shadowMap.needsUpdate = false;
+    renderer.setRenderTarget(mirror); renderer.setClearColor(0x000000, 0); renderer.clear();
+    renderer.render(scene, below);
+    renderer.setRenderTarget(target); renderer.setClearColor(was, alpha); renderer.clippingPlanes = planes;
+    renderer.shadowMap.autoUpdate = auto; renderer.shadowMap.needsUpdate = need;
+    for (const o of hide) o.visible = true;
+    u.uMirrorOn.value = 1;
+  }
+  return { mesh, shadow, material, reflect };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

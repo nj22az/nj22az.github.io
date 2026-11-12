@@ -149,7 +149,7 @@ const camera = new THREE.PerspectiveCamera(FOV, 1, 0.4, 700);
 // A frame is drawn with the shade where things meet (look.js). Glass is left out of that: what stands behind a pane is
 // shaded as if the pane were not there.
 const drawing = createLook(renderer, scene, camera, { lite, hidden: o => !!(o.userData.backdrop || (o.material && (o.material.transparent || (o.material.userData && o.material.userData.glass)))) });
-const draw = () => drawing.render();
+const draw = () => { if (sea) sea.reflect(renderer, scene, camera, [sky.dome, floor]); drawing.render(); };
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;

@@ -927,6 +927,14 @@ on photorealism and reality". What made her look like a toy was that every face 
   it is drawn and left out where they are finer than a dot of the screen. Lifted apart, cut open, or with the wave key
   off she stands in dock on the slip as before, so that her bottom can be seen.
 - **Glare**: what is brighter than the screen's white spills a little over what is beside it.
+- **Her mirror image** (`createSea`, `reflect`): before each frame she is drawn once more as the sea sees her, from under
+  the water looking up (only what is above the waterline), and the sea shows that picture bent by its long waves and drawn
+  out by its short ones. Left out on the light way.
+- **Steel that is steel** (`SURFACES`, `plate`): what is plate under its coat (paint, primer, antifouling, deck coating)
+  dishes a little between its stiffeners (taken 0.6 m apart along her and 0.68 m the other way), its seams and butts stand
+  a little proud and hold a line of dirt, and a wall carries the streaks water leaves. It is worked out where it is drawn,
+  from the place on the ship, like the grain. It is what tells painted steel from plastic; it does not yet follow her real
+  frames and seams (the hull's own frame spacing and plate rows are in `spec.py` and could feed it).
 - **The light way** (`lite` in `app.js`): where there is no graphics card (the page's own checks draw in software) or the
   address says `?lite`, the glare, the clouds and the sea's finer waves are left out and the sea stands still. The
   checks would otherwise be too slow to follow a pinch of two fingers.
