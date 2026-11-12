@@ -1,3 +1,5 @@
+/* Unused by the site while Elteknik och ellära is a book in progress.
+   Nothing on the pages loads this file or links the textbook as a purchase. */
 (function () {
   "use strict";
 

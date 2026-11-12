@@ -16,7 +16,7 @@
     if (p.preview === 'studio') return '<figure class="px-preview px-studio"><img src="/avatar-creator/docs/studio-desktop.png" width="1280" height="800" loading="lazy" decoding="async" alt="Johansson Studio character editor showing a braided character and facial expression options"><figcaption>From the character editor</figcaption></figure>';
     if (p.preview === 'maintenance') return '<div class="px-preview px-maintenance"><div class="px-mini-window"><div class="px-mini-title"><span class="px-mini-mark">M</span><b>Workshop programme</b><span class="px-mini-label">DEMO</span></div><div class="px-mini-metrics"><div><strong>04</strong><span>Assets</span></div><div><strong id="px-preview-due">02</strong><span>Checks due</span></div><div><strong>01</strong><span>Open action</span></div></div><div class="px-mini-task"><span><b>Cooling water pump</b><small>Visual inspection</small></span><button type="button" id="px-complete-preview" aria-label="Try the preview: mark the sample pump inspection complete">Mark complete</button></div><p class="px-preview-note" id="px-preview-feedback" role="status" aria-live="polite">Try one check here. This preview does not save a record.</p></div></div>';
     if (p.preview === 'course') return '<figure class="px-preview px-course"><div class="px-lesson-tag">SJÖSKOLAN / ELTEKNIK</div><svg viewBox="0 0 440 165" role="img" aria-label="Simple DC circuit illustration with a supply, resistor and current meter"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M62 73V34h110m94 0h108v96H62V95M48 73h28M54 85h16M48 95h28M172 34l8-10 12 20 12-20 12 20 12-20 12 20 12-20 8 10h6"/><circle cx="221" cy="130" r="22" fill="#e9f2ec"/><path d="M212 137l9-18 9 18m-14-6h10"/></g><text x="58" y="56" font-size="15" fill="currentColor">+</text><text x="207" y="75" font-size="16" fill="currentColor">R</text></svg><div class="px-lesson-topics"><span>01 · Understand</span><span>02 · Measure</span><span>03 · Apply</span></div><figcaption>Learn the principle. Practise the measurement.</figcaption></figure>';
-    if (p.preview === 'book') return '<figure class="px-preview px-book"><div class="px-book-copy"><span>FOR SHIP & SHORE</span><strong>24 chapters.<br>240 exercises.<br>One reference.</strong></div><img src="/elteknik/files/omslag.jpg?v=20261017" width="640" height="900" loading="lazy" decoding="async" alt="Cover of Elteknik och ellära för sjöfart och industri by Nils Johansson"><figcaption>Swedish textbook · Free sample chapter</figcaption></figure>';
+    if (p.preview === 'book') return '<figure class="px-preview px-book"><div class="px-book-copy"><span>FOR SHIP & SHORE</span><strong>A textbook<br>in progress.<br>Free to sample.</strong></div><img src="/elteknik/files/omslag.jpg?v=20261112" width="640" height="900" loading="lazy" decoding="async" alt="Cover of Elteknik och ellära för sjöfart och industri by Nils Johansson"><figcaption>Swedish textbook · preview, still being written</figcaption></figure>';
     return '<figure class="px-preview px-stepwise"><span class="px-calculation-label">FROM RANGE TO TEST POINTS</span><div class="px-calculation"><span>01 <b>The range</b><i>0 → 10 kN</i></span><span>02 <b>The points</b><i>5 points · 4 intervals</i></span><span>03 <b>The spacing</b><strong>2.5 kN</strong></span></div><figcaption>Test-point planning example</figcaption></figure>';
   }
   function projectMascot(p) {
@@ -44,9 +44,22 @@
       filters.forEach(function(other) { other.setAttribute('aria-pressed', String(other === button)); });
       document.querySelector('#project-count').textContent = count+' '+(count === 1?'project':'projects')+' to explore';
     });
-    var selected = button.dataset.projectFilter;
-    button.querySelector('span').textContent = selected === 'all' ? projects.length : projects.filter(function(p){ return pathway(p) === selected; }).length;
   });
+  function projectCount(selected) {
+    return selected === 'all' ? projects.length : projects.filter(function (p) { return pathway(p) === selected; }).length;
+  }
+  function writeFilterCounts() {
+    filters.forEach(function (button) {
+      var slot = button.querySelector('span');
+      if (slot) slot.textContent = projectCount(button.dataset.projectFilter);
+    });
+  }
+  writeFilterCounts();
+  (function () {
+    var status = document.querySelector('#project-count');
+    var n = projects.length;
+    if (status) status.textContent = n + ' ' + (n === 1 ? 'project' : 'projects') + ' to explore';
+  })();
   document.querySelectorAll('[data-town-light]').forEach(function(button) {
     button.addEventListener('click', function() {
       var night = button.dataset.townLight === 'night';

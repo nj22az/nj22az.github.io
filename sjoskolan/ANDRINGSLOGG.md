@@ -266,6 +266,8 @@ Målet för allt material: **det ska vara lätt att lära sig.**
 
 ## Ändringar
 
+- **2026-11-12** Webbplatsen presenterar *Elteknik och ellära* som under arbete. `innehall/bok/README.md` säger inte längre att boken säljs eller att kolofonen är en gällande utgåva. Kursens övningar, facit och genererade filer är orörda.
+
 - **2026-10-21** Vecka 43: elevinstruktionen, nedladdningsdelen och resultatrutan anger PDF plus separat foto av
   ritningen i inlämning 3. Ingen generell e-postreserv är beslutad i kursens instruktioner; vid Classroom-hinder ska
   eleven kontakta läraren före fredag 23 oktober för ett godkänt alternativ. Fredagens Google Docs-manus har samma
