@@ -31,7 +31,6 @@ import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js
 import {autoLevels} from './auto.js?v=20261104ui1';
 import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261105fun1';
 import {pocketFace,errorFace} from './pocket-faces.js?v=20261105fun1';
-import {createBall} from './ball.js?v=20261110green1';
 
 const $=id=>document.getElementById(id);
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -1076,37 +1075,13 @@ $('welcomeGames').addEventListener('click',()=>enterGames(true));
 function openCardGame(kind){
  activeCardGame?.destroy();
  const root=$('cardGameContent');root.replaceChildren();
- $('cardGameTitle').textContent={blackjack:'Blackjack',solitaire:'Solitaire',ball:'Ball'}[kind];
+ $('cardGameTitle').textContent={blackjack:'Blackjack',solitaire:'Solitaire'}[kind];
  show('cardGame');
- if(kind==='ball'){
-  // Ball (ball.js): the juggler wears a face found on one of the album's photos, or on a photo chosen now.
-  activeCardGame=createBall(root,{store,sound,reduceMotion,onLeave:openCardsHub,onWin:ballWon,
-   defaultFace:()=>pocketFace('wait').then(f=>f?.url||null),
-   // The booth's four faces come from the front camera (the main camera is stopped while the Game Room is open).
-   camera:()=>navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'user'},width:{ideal:960},height:{ideal:960}}}),
-   faces:async()=>state.shots.filter(s=>s.recipe?.faces?.length&&s.photo).map(s=>({id:s.id,label:s.sampleLabel||`Your photo of ${new Date(s.taken||s.created).toLocaleDateString(undefined,{day:'numeric',month:'long'})}`,blob:s.photo,thumb:s.thumb,face:s.recipe.faces[0]})),
-   pickFace:()=>new Promise(res=>{const input=$('ballFile');input.value='';input.onchange=async()=>{const f=input.files?.[0];input.value='';if(!f||!isPicture(f)){res(null);return;}
-    try{const p=await decode(f);const found=await findFaces(p.picture,{max:1});p.picture?.close?.();res(found.length?{blob:f,face:found[0]}:null);}catch{res(null);}};input.click();}),
-  });
-  return;
- }
  activeCardGame=(kind==='blackjack'?createBlackjack:createSolitaire)({root,cardView,shuffleDeck,onWin:()=>gameWon(kind)});
  activeCardGame.start();
 }
-$('chooseBall').addEventListener('click',()=>openCardGame('ball'));
-/** Five hundred in Ball: the secret sheet opens (unlocks.js), and the juggler, your face and all, becomes a sticker. */
-async function ballWon({juggler}){
- const before=isUnlocked(store.read(),'pocket-faces');gameWon('ball');
- const tag=store.read().gameFace?.from||'pocket',had=store.read().jugglerStickers||[];
- if(had.includes(tag))return;
- try{
-  const blob=await toBlob(juggler,'image/png');
-  const record=await addMine({blob,width:juggler.width,height:juggler.height,cut:'outline'});
-  mine.push(record);registerSticker({id:record.id,url:URL.createObjectURL(blob),width:juggler.width,height:juggler.height});
-  store.write({...store.read(),jugglerStickers:[...had,tag]});
-  setTimeout(()=>toast('Your juggler is a sticker now. Find it under Mine.',{face:'secret',ms:3600}),before?900:5400);
- }catch(err){console.error(err);}
-}
+// Ball, the juggle with your own face, was here from 5 to 12 November 2026 and was removed (the owner: "remove the ball
+// juggle game it didn't end up well"). A juggler saved as a sticker stays among the owner's own stickers.
 $('openCardGames').addEventListener('click',()=>enterGames(false));
 
 // ---------- Album backup (backup.js) ----------

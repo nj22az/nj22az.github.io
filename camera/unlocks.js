@@ -1,13 +1,14 @@
 /**
- * What a game opens. The Game Boy Camera unlocked its last stamps by a score in Ball; Pocket Camera opens its secret
+ * What a game opens. The Game Boy Camera unlocked its last stamps by a score in a game; Pocket Camera opens its secret
  * sticker sheet, the Pocket faces, by a win in the game room. Wins are counted per game in the settings store
  * (`wins`), and what is open is kept there too (`unlocked`), so an unlocked sheet stays unlocked.
  */
 export const UNLOCKS=Object.freeze([
- Object.freeze({id:'pocket-faces',label:'Pocket faces',by:Object.freeze(['memory','solitaire','ball']),hint:'Win a game of Memory or Solitaire, or score 500 in Ball, to open this sheet.'}),
+ Object.freeze({id:'pocket-faces',label:'Pocket faces',by:Object.freeze(['memory','solitaire']),hint:'Win a game of Memory or Solitaire to open this sheet.'}),
 ]);
-/** The games whose wins count: a Memory board cleared, a Solitaire finished, a Blackjack hand won, five hundred in Ball. */
-export const GAMES=Object.freeze(['memory','solitaire','blackjack','ball']);
+/** The games whose wins count: a Memory board cleared, a Solitaire finished, a Blackjack hand won. (Ball counted too until
+ * it was removed on 12 November 2026; a sheet it opened stays open, and its old wins stay in the store, uncounted.) */
+export const GAMES=Object.freeze(['memory','solitaire','blackjack']);
 const titled=s=>s[0].toUpperCase()+s.slice(1);
 
 /** The settings with this win counted, and the ids of what it opened that was not open before. */

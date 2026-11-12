@@ -244,15 +244,15 @@ try{
   const out=await cam.evaluate(async()=>{
    const m=await import('./social-share.js?v=20261110green1');
    let canvas=null;const orig=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(...a){canvas=this;return orig.apply(this,a);};
-   const el=m.createResultShare({game:'Ball',headline:'520 points!',detail:'52 catches'});document.body.append(el);
+   const el=m.createResultShare({game:'Memory',headline:'All 8 pairs!',detail:'14 turns'});document.body.append(el);
    await new Promise(r=>{const t=setInterval(()=>{if(!el.querySelectorAll('button')[1].disabled){clearInterval(t);r();}},20);});
    HTMLCanvasElement.prototype.toBlob=orig;
    const g=canvas.getContext('2d'),px=(x,y)=>[...g.getImageData(x,y,1,1).data].slice(0,3).join(',');
    el.remove();
-   return {size:[canvas.width,canvas.height],header:px(100,100),paper:px(10,10),cream:px(540,1000),text:m.resultText({game:'Ball',headline:'520 points!',detail:'52 catches'})};
+   return {size:[canvas.width,canvas.height],header:px(100,100),paper:px(10,10),cream:px(540,1000),text:m.resultText({game:'Memory',headline:'All 8 pairs!',detail:'14 turns'})};
   });
   assert.deepEqual(out.size,[1080,1080]);assert.equal(out.header,'38,61,57','the header band is the World’s ink');assert.equal(out.paper,'245,245,236','the card sits on the World’s cream');
-  assert.equal(out.text,'Ball · 520 points! · 52 catches — Pocket Camera · Johansson World');
+  assert.equal(out.text,'Memory · All 8 pairs! · 14 turns — Pocket Camera · Johansson World');
  });
 
  await check('the Home Screen icons: the World’s ink for a ground and its green for the lens ring',async()=>{

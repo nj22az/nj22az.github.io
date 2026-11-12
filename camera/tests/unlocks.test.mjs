@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import {recordWin,isUnlocked,unlockHint,UNLOCKS,GAMES} from '../unlocks.js';
 
-assert.deepEqual(GAMES,['memory','solitaire','blackjack','ball']);
+assert.deepEqual(GAMES,['memory','solitaire','blackjack']);
 assert.equal(UNLOCKS[0].id,'pocket-faces');
 assert.equal(isUnlocked({},'pocket-faces'),false);assert.equal(isUnlocked(null,'pocket-faces'),false);
 
@@ -20,6 +20,7 @@ r=recordWin({},'solitaire');assert.deepEqual(r.unlocked,['pocket-faces']);
 r=recordWin({wins:'x',unlocked:'y'},'tetris');assert.deepEqual(r.unlocked,[]);assert.deepEqual(r.saved,{wins:'x',unlocked:'y'});
 r=recordWin({wins:'x',unlocked:'y'},'memory');assert.deepEqual(r.saved.wins,{memory:1});assert.deepEqual(r.saved.unlocked,['pocket-faces']);
 r=recordWin({wins:{memory:2.5}},'memory');assert.equal(r.saved.wins.memory,1,'a broken count starts again');
-assert.equal(unlockHint('pocket-faces'),'Win a game of Memory or Solitaire, or score 500 in Ball, to open this sheet.');
-r=recordWin({},'ball');assert.deepEqual(r.unlocked,['pocket-faces'],'five hundred in Ball opens it too');assert.equal(unlockHint('nope'),'');
+assert.equal(unlockHint('pocket-faces'),'Win a game of Memory or Solitaire to open this sheet.');
+// Ball is gone (12 November 2026): its wins are no longer counted, and a sheet it once opened stays open.
+r=recordWin({unlocked:['pocket-faces'],wins:{ball:2}},'ball');assert.deepEqual(r.unlocked,[]);assert.deepEqual(r.saved,{unlocked:['pocket-faces'],wins:{ball:2}});assert.equal(unlockHint('nope'),'');
 console.log('unlocks: a win opens the Pocket faces once; wins counted; odd values tolerated');

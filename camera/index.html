@@ -137,7 +137,7 @@
     <!-- The two doors off the title screen, side by side: the album and the Game Room (the owner, 10 November 2026, on the recommendation to put the Game Room on the landing page: a phone shows this screen at every start unless its browser says the camera is already allowed, and the room was two taps behind the album). -->
     <div class="welcome-doors">
      <button type="button" class="welcome-album" id="welcomeAlbum"><img id="welcomeAlbumThumb" alt="" hidden><span class="door-icon" aria-hidden="true"><svg><use href="#i-photo"/></svg></span><span><strong>Your album</strong><small id="welcomeAlbumCount">No photos yet</small></span></button>
-     <button type="button" class="welcome-album welcome-games" id="welcomeGames"><span class="door-icon door-cards" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Four games</small></span></button>
+     <button type="button" class="welcome-album welcome-games" id="welcomeGames"><span class="door-icon door-cards" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Three games</small></span></button>
     </div>
    </div>
    <div class="count" id="count" aria-live="assertive"></div>
@@ -283,7 +283,7 @@
    <div class="bar-actions">
     <!-- Select (the owner, 4 November 2026: "there should be a way to manage, delete the photos too"): tap photos, then delete them together. -->
     <button type="button" class="text-button album-select" id="albumSelect" aria-pressed="false">Select</button>
-    <button type="button" class="round" id="openGames" aria-label="Game Room: Memory, Blackjack, Solitaire and Ball" title="Games"><svg><use href="#i-game"/></svg></button>
+    <button type="button" class="round" id="openGames" aria-label="Game Room: Memory, Blackjack and Solitaire" title="Games"><svg><use href="#i-game"/></svg></button>
     <button type="button" class="photos-button" id="albumImport" aria-label="Add your own photos"><svg><use href="#i-plus"/></svg><span>Add</span></button>
    </div>
   </header>
@@ -300,7 +300,7 @@
    </div>
    <p class="fine album-note" id="albumNote"></p>
    <button type="button" class="arcade-entry backup-entry" id="openBackup"><span class="arcade-entry-icon backup-icon" aria-hidden="true"><svg><use href="#i-backup"/></svg></span><span><strong>Album backup</strong><small id="backupSummary">Save every photo and sticker to one file, or restore one</small></span><span aria-hidden="true">›</span></button>
-   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack, Solitaire &amp; Ball</small></span><span aria-hidden="true">›</span></button>
+   <button type="button" class="arcade-entry" id="openCardGames"><span class="arcade-entry-icon" aria-hidden="true">♠ ♥</span><span><strong>Game Room</strong><small>Memory, Blackjack &amp; Solitaire</small></span><span aria-hidden="true">›</span></button>
   </div>
   <div class="album-actions" id="albumActions" hidden>
    <button type="button" class="text-button" id="albumSelectAll">Select all</button>
@@ -329,7 +329,7 @@
    <button class="game-choice" id="chooseMemory" type="button"><span class="choice-symbol memory-symbol" aria-hidden="true">✿</span><span><strong>Memory</strong><small>Find pairs of photos or residents.</small></span><span aria-hidden="true">›</span></button>
    <button class="game-choice" id="chooseBlackjack" type="button"><span class="choice-symbol" aria-hidden="true">21</span><span><strong>Blackjack</strong><small>Get close to 21 without going over.</small></span><span aria-hidden="true">›</span></button>
    <button class="game-choice" id="chooseSolitaire" type="button"><span class="choice-symbol" aria-hidden="true">♠</span><span><strong>Solitaire</strong><small>Build the four suits from ace to king.</small></span><span aria-hidden="true">›</span></button>
-   <button class="game-choice" id="chooseBall" type="button"><span class="choice-symbol" aria-hidden="true">●</span><span><strong>Ball</strong><small>Juggle, with your own face. Ten points a catch.</small></span><span aria-hidden="true">›</span></button>
+
   </div>
  </section>
  <section class="screen card-games" id="cardGame" aria-label="Card game" hidden>
@@ -434,7 +434,7 @@
 </dialog>
 
 <input type="file" id="picker" accept="image/*" multiple hidden>
-<input type="file" id="stickerFile" accept="image/*" hidden><input type="file" id="ballFile" accept="image/*" hidden>
+<input type="file" id="stickerFile" accept="image/*" hidden>
 <input type="file" id="backupFile" accept=".zip,application/zip" hidden>
 <video id="video" class="video-source" playsinline muted autoplay></video>
 <noscript><p class="noscript">Pocket Camera needs JavaScript and WebGL 2.</p></noscript>

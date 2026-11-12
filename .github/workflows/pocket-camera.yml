@@ -32,7 +32,7 @@ jobs:
           - job: camera-retouch
             suites: retouch screens
           - job: camera-face-backup
-            suites: face-stamps backup pop zoom album faces ball
+            suites: face-stamps backup pop zoom album faces
           - job: camera-face-auto
             suites: face-pack auto theme defaults background comic brand
     runs-on: ubuntu-24.04

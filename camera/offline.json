@@ -1,6 +1,6 @@
 {
   "version": "20261110green1",
-  "bytes": 40435065,
+  "bytes": 40406514,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "09241713270bce2d1c07b623cd063f997dd151f99f048fd095e1c34afef9c808",
-      "bytes": 157736
+      "sha256": "08a213629a01b655dc41bb7dbe10ed905194ab3f9a6e5b4c20e48ef97eea59a1",
+      "bytes": 155802
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -31,11 +31,6 @@
       "url": "/camera/backup.js",
       "sha256": "8458d6c47787e47ccb0a7660f97f68f7463fb3bea9d7096a895760f36618978e",
       "bytes": 6629
-    },
-    {
-      "url": "/camera/ball.js",
-      "sha256": "4897fa98e8c89a85d7995295430b1e0734480a3a9eace6a2f2c35c1c8e32f41f",
-      "bytes": 22836
     },
     {
       "url": "/camera/blackjack.css",
@@ -69,8 +64,8 @@
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "8fcdc77cdf56f8a702ea0fff4be50d0c8530e190f4b82523221b52be5dbb630c",
-      "bytes": 54601
+      "sha256": "59a370f1b70f7f7f19210480aedf4fe4b8190ce9ae8aae0d77ea89ad7b039c8a",
+      "bytes": 51062
     },
     {
       "url": "/camera/card-games.css",
@@ -244,8 +239,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "14bec7528a54f8f179eb7109c0eb118b60cc06cdbf867af6ba63c8ae2676c1e8",
-      "bytes": 53794
+      "sha256": "0445aa2184dd0d13dfb48a469fb16255b41489a2f7f8f0d7f87241c625dc3f24",
+      "bytes": 53468
     },
     {
       "url": "/camera/lettering.js",
@@ -1829,8 +1824,8 @@
     },
     {
       "url": "/camera/unlocks.js",
-      "sha256": "c59508bbd1899e623594648a9d74552622b91e58abe88e9ecc204d93f39effe2",
-      "bytes": 1799
+      "sha256": "7b01e8008e847635f0b1ef8b3e59b347e0f74c1517b626a6844ca1492c05047c",
+      "bytes": 1883
     },
     {
       "url": "/camera/vendor/mediapipe/MEDIAPIPE-LICENSE.txt",
