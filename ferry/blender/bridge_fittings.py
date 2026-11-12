@@ -215,16 +215,20 @@ BLIND_RUN = 1.03                    # how far a blind is drawn down: to the wood
 
 
 def blinds(g, tag, x, yard, h):
-    """A roller sun blind at the head of each forward window: a cassette on the head lining with its end caps; the tinted
-    film; the bottom bar with its pull; a guide wire down each side to the sill. A tap draws one down, and lets it up again."""
-    top = FRONT_IN + fwd(HEAD)                                                         # the head lining's face
-    for k, (x0, x1) in enumerate(PANES):
-        a, b = x0 + 0.012, x1 - 0.012
-        box('paint', a, b, top - 0.058, top - 0.001, HEAD + 0.006, HEAD + 0.062, tint(LINING, 0.94), r=0.006)
-        for xe in (a, b):
-            box('plastic', xe - 0.004, xe + 0.004, top - 0.060, top - 0.001, HEAD + 0.004, HEAD + 0.064, srgb(0xcfcdc4), r=0.002)
-        with Frame(((x0 + x1) / 2, FRONT_IN - 0.035 + fwd(HEAD), HEAD), STBD, RAKE_UP) as F:      # the blind's own plane, 35 mm inboard of the lining
-            half = (b - a) / 2
+    """A roller sun blind at the head of each window of the bay: a cassette on the head lining with its end caps; the tinted
+    film; the bottom bar with its pull; a guide wire down each side to the sill. A tap draws one down, and lets it up again.
+    A blind runs square to its roller. A cant's pane is a parallelogram (its edges lean forward with the front), so its
+    blind is that much narrower than the pane, and hangs clear of both edges all the way down."""
+    for k, (W, s0, s1) in enumerate(BAY_PANES):
+        a, b = s0 + 0.012, s1 - 0.012
+        with W.inside((a + b) / 2, HEAD + 0.034, upright=True) as F:                    # the cassette, on the head lining
+            F.block('paint', (-(b - a) / 2, -0.028, 0.001), ((b - a) / 2, 0.028, 0.058), tint(LINING, 0.94), r=0.006)
+            for xe in (-(b - a) / 2, (b - a) / 2):
+                F.block('plastic', (xe - 0.004, -0.030, 0.001), (xe + 0.004, 0.030, 0.060), srgb(0xcfcdc4), r=0.002)
+        drift = W.skew * BLIND_RUN                                                      # how far the pane's edges have gone along the wall at the blind's foot
+        lo, hi = a + max(0.0, -drift), b - max(0.0, drift)                              # going down, the edges go the other way
+        with W.inside((lo + hi) / 2, HEAD, off=0.035) as F:                              # the blind's own plane, 35 mm inboard of the lining
+            half = (hi - lo) / 2
             for sx in (-1, 1):                                                         # the guide wires, from the cassette to an eye on the lower rail
                 F.sweep('steel', [(sx * (half - 0.012), 0.008, 0.0), (sx * (half - 0.012), -BLIND_RUN - 0.03, 0.0)], 0.0011, STAINLESS)
                 F.lathe('steel', (sx * (half - 0.012), -BLIND_RUN - 0.03, -0.023), [(0.0, 0.006), (0.003, 0.006), (0.003, 0.0025), (0.022, 0.0025)], STAINLESS)
@@ -246,34 +250,51 @@ def blinds(g, tag, x, yard, h):
             LEVERS.append(dict(id=mover + '-film', input=mover, kind='stretch', axis=down, pivot=[float(v) for v in F.at((0.0, 0.006, 0.0))], ratio=0.01 / 0.018))
 
 
+# The cables that came down two window mullions straight into the console's back, when the block stood against the front,
+# come down the same two mullions of the bay and on down the lining below the sill to the deck, in a covered duct; there
+# they go through the deck in a cable transit, under it, and up through a transit in the block's own bottom (the refit's
+# stage 6: the block stands free, with a way before it, and a free-standing console is fed from below).
+RISER = 0.035                       # half the breadth of a duct's cover
+
+
 def mullion_ducts(g, tag, x, yard, h):
-    """A covered cable duct down a forward mullion, from the trays over the deckhead into the console: its cover's screws."""
+    """A covered cable duct down a forward mullion and the lining under it, from the trays over the deckhead to the deck:
+    its cover's screws; at its foot the frame of the cable transit through the deck, with its packing bolts."""
     sx = g['side']
-    x0, x1 = sx * MULLION_X - 0.035, sx * MULLION_X + 0.035
-    prism('paint', x0, x1, [(FRONT_IN - 0.03 + fwd(1.20), 1.20), (FRONT_IN + fwd(1.20), 1.20), (FRONT_IN + fwd(HEAD), HEAD), (FRONT_IN - 0.03 + fwd(HEAD), HEAD)], tint(LINING, 0.93))
-    box('paint', x0, x1, FRONT_IN + fwd(HEAD) - 0.03, FRONT_IN + fwd(HEAD), HEAD, CEIL, tint(LINING, 0.93))
+    s = WF.s_of(sx * MULLION_X)
+    member(WF, 'paint', s - RISER, s + RISER, -0.03 / TH, 0.0, SILL, CEIL, tint(LINING, 0.93))
+    with WF.inside(s, 0.10, upright=True) as F:                                         # below the sill: a cover that stands off the lining, down to the transit
+        F.block('paint', (-RISER, 0.045, 0.0), (RISER, SILL - 0.10 - 0.034, 0.030), tint(LINING, 0.93), r=0.004)
+        for yy in (0.16, 0.44, 0.72):
+            for sxx in (-1, 1):
+                screw(F, sxx * (RISER - 0.010), yy, 0.030, r=0.0026)
+        F.block('case', (-0.060, -0.088, 0.0), (0.060, 0.045, 0.060), CASE, r=0.004)    # the transit's frame, on the deck against the lining
+        nameplate(F, 'CABLE TRANSIT', 0.0, 0.020, 0.060, height=0.006, screws=False)
+        for sxx in (-1, 1):
+            for yy in (-0.060, -0.015):
+                bolt(F, sxx * 0.045, yy, 0.060, r=0.005, h=0.004)
     for hh in (1.35, 1.70, 2.02):
-        with Frame((sx * MULLION_X, FRONT_IN - 0.03 + fwd(hh), hh), STBD, RAKE_UP) as F:
+        with WF.inside(s, hh, off=0.03) as F:
             screw(F, 0.0, 0.0, 0.0, r=0.0026)
 
 
 WIPER_AT = 2.165                    # the wipers' spindles, over the deck: in the head, above the glass and under the visor
-WIPER_OFF = 0.42                    # and to one side of the pane's middle: parked, the wiper hangs upright beside the mullion
-WIPER_SWING = 62.0                  # how far it swings from there, toward the pane's middle
+WIPER_SWING = 62.0                  # how far it swings from where it is parked, toward the pane's middle
 
 
 def wiper(g, tag, x, yard, h):
-    """A pendulum wiper on the outside of the raked glass, hung from a spindle in the window's head under the visor: the
+    """A pendulum wiper on the outside of the leaning glass, hung from a spindle in the window's head under the eave: the
     spindle's boss, a cranked arm, the blade in its holder. Inside, over the blind, its motor in a case with its cable.
-    Parked it hangs upright at the side of the pane, out of the view; running, it swings across the glass and back."""
+    Parked it hangs at the side of the pane, out of the view; running, it swings across the glass and back. The middle
+    window has one, and each cant (bridge_place.WIPERS); the two windows between have the clear-view screens."""
     key = g['name']
-    off = WIPER_OFF if x >= 0 else -WIPER_OFF
-    n = Vector((0.0, -sin(radians(10.0)), cos(radians(10.0))))                          # out of the glass, outside
-    o = Vector(P(x + off, GLASS_AT(HEAD), HEAD))
-    yp = (WIPER_AT - HEAD) / cos(radians(10.0))                                         # the spindle, up the glass's plane from the head
-    pivot = o + Vector(RAKE_UP) * yp
+    pane, s = BP.WIPERS[key]
+    W, s0, s1 = BAY_PANES[pane]
+    n = W.glass_n                                                                       # out of the glass, outside
+    yp = (WIPER_AT - HEAD) / W.up.y                                                     # the spindle, up the glass's plane from the head
     M = moving(f'Window wiper, {key}', f'wiper-{key}', arm='Stainless', blade='Rubber')
-    with Frame(tuple(o), PORT, RAKE_UP, local=True) as F:                              # outside: across is to port
+    with W.outside(s, HEAD, q=GLASS_Q) as F:                                            # outside: across is to the left hand of one inside
+        pivot = F.at((0.0, yp, 0.0))
         F.lathe('steel', (0.0, yp, 0.020), [(0.0, 0.030), (0.006, 0.030), (0.010, 0.016), (0.030, 0.014)], STAINLESS)      # the boss on the head's plating
         for k in range(3):
             a = k * 2 * pi / 3
@@ -286,13 +307,13 @@ def wiper(g, tag, x, yard, h):
         F.block('rubber', (-0.003, yp - 0.92, 0.0005), (0.003, yp - 0.32, 0.008), RUBBER, r=0.0)
         F.into = None
     # which way round the glass's own direction it must turn for its lower end to go toward the pane's middle
-    turn = 1.0 if (_rot(-Vector(RAKE_UP), n, radians(10.0)).x > 0) == (off < 0) else -1.0
+    toward = 1.0 if (s0 + s1) / 2 > s else -1.0
+    turn = 1.0 if _rot(-W.up, n, radians(10.0)).dot(W.right) * toward > 0 else -1.0
     MOTIONS.append(dict(id=f'wiper-{key}', name=f'Window wiper, {key}', kind='turn', pivot=[float(v) for v in pivot], axis=[float(v) for v in n], ratio=turn, max=WIPER_SWING,
                         at=[float(v) for v in pivot], auto='tap', reach=2.6, rest='parked', above='running', run='sweep', period=1.6, fitting=tag,
                         **{'with': f'wiper-switch-{key}'}))
     # inside: the motor, on the head lining over the blind's cassette, its cable up through the deckhead
-    top = FRONT_IN + fwd(HEAD)
-    with Frame((x + off, top, 2.225), STBD, UP) as F:
+    with W.inside(s, 2.225, upright=True) as F:
         F.pillow('case', (-0.075, -0.05, 0.0), (0.075, 0.05, 0.085), CASE, r=0.010, segs=3)
         corner_screws(F, -0.075, -0.05, 0.075, 0.05, 0.085, inset=0.012, r=0.0026)
         nameplate(F, 'WIPER', 0.0, 0.0, 0.085, height=0.007, screws=False)
@@ -300,16 +321,22 @@ def wiper(g, tag, x, yard, h):
 
 
 def nozzles(g, tag, x, yard, h):
-    """The window wash: a brass pipe along the head outside, under the visor, in saddle clips, and a jet over each wiper's glass."""
-    yo, hh = FRONT_OUT + fwd(HEAD) + 0.012, 2.25
-    sweep('brass', [(-2.36, yo, hh), (2.36, yo, hh)], 0.006, BRASS)
-    for k in range(10):
-        xx = -2.25 + k * 0.5
-        box('brass', xx - 0.006, xx + 0.006, yo - 0.012, yo + 0.008, hh - 0.010, hh + 0.010, tint(BRASS, 0.85), r=0.002)
-    for xx in g['xs']:
-        xj = xx - 0.08 if xx > 0.1 else xx + 0.08                                      # beside the wiper's spindle, toward the middle
-        sweep('brass', [(xj, yo, hh), (xj, yo + 0.012, hh - 0.03), (xj, yo + 0.018, hh - 0.06)], 0.004, BRASS)
-        lathe('brass', (xj, yo + 0.018, hh - 0.06), (0.0, -1.0, 0.1), [(0.0, 0.0065), (0.012, 0.0065), (0.016, 0.003), (0.016, 0.0)], BRASS)
+    """The window wash: a brass pipe round the bay's head outside, under the eave, in saddle clips, and a jet over each
+    wiper's glass."""
+    q, hh = TH + 0.012, 2.25
+    run = [WP.xy(0.10, q, FH), corner(WP, WF, q, FH), corner(WF, WS, q, FH), WS.xy(WS.len - 0.10, q, FH)]
+    sweep('brass', [(px, py, hh) for px, py in run], 0.006, BRASS)
+    for W in (WP, WF, WS):
+        n = max(2, int(round(W.len / 0.5)))
+        for k in range(n):
+            with W.outside(W.len * (k + 0.5) / n, hh, q=TH) as F:                        # a saddle clip: over the head, where the wall is upright again
+                F.block('brass', (-0.006, -0.010, 0.0), (0.006, 0.010, 0.020), tint(BRASS, 0.85), r=0.002)
+    for key, (pane, s) in BP.WIPERS.items():
+        W, s0, s1 = BAY_PANES[pane]
+        sj = s + (0.08 if (s0 + s1) / 2 > s else -0.08)                                 # beside the wiper's spindle, toward the middle
+        a, b, c = W.xy(sj, q, FH), W.xy(sj, q + 0.012, FH), W.xy(sj, q + 0.018, FH)
+        sweep('brass', [(a[0], a[1], hh), (b[0], b[1], hh - 0.03), (c[0], c[1], hh - 0.06)], 0.004, BRASS)
+        lathe('brass', (c[0], c[1], hh - 0.06), tuple(Vector((0.0, -1.0, 0.0)) + W.out * 0.1), [(0.0, 0.0065), (0.012, 0.0065), (0.016, 0.003), (0.016, 0.0)], BRASS)
 
 
 CVS = dict(h=1.50, r=0.170, ring=0.200)        # a clear-view screen: its middle over the deck, its disc, its ring
@@ -384,26 +411,35 @@ def _fillet(points, radius, n=5):
 
 
 def handrail(g, tag, x, yard, h):
-    """The handrail under the sills: stainless tube 62 mm off the lining on brackets, along the front from the console block
-    to each side, round the corner and aft along the side; its ends turned in to the lining."""
-    f, s = FRONT_IN - RAIL_OFF, X_IN - RAIL_OFF
-    for side, aft in (((1, 21.36),) if g['side'] > 0 else ((-1, 22.24),)):
-        line = [(side * 1.99, FRONT_IN, RAIL_H), (side * 1.99, f, RAIL_H), (side * s, f, RAIL_H), (side * s, aft, RAIL_H), (side * X_IN, aft, RAIL_H)]
-        sweep('steel', _fillet([P(*q) for q in line], 0.045), 0.016, STAINLESS, local=True)
-        for q, way in ((line[0], AFTWARD), (line[-1], (-side, 0, 0))):                 # a rosette where each end meets the lining
-            lathe('steel', q, way, [(0.0, 0.030), (0.004, 0.030), (0.008, 0.018)], STAINLESS)
-        places = [((side * xx, FRONT_IN), (0, -1)) for xx in (2.30, 2.62)] + [((side * X_IN, yd), (-side, 0)) for yd in ([22.55, 22.10, 21.68] if side > 0 else [22.56])]
-        for (bx, by), (dx, dy) in places:                                             # the brackets: a rosette on the lining, an arm out and up under the tube
-            way = (dx, 0, dy)
-            lathe('steel', (bx, by, RAIL_H - 0.045), way, [(0.0, 0.022), (0.004, 0.022), (0.008, 0.010)], STAINLESS)
-            sweep('steel', [(bx, by, RAIL_H - 0.045), (bx + dx * (RAIL_OFF - 0.02), by + dy * (RAIL_OFF - 0.02), RAIL_H - 0.045),
-                            (bx + dx * RAIL_OFF, by + dy * RAIL_OFF, RAIL_H - 0.03), (bx + dx * RAIL_OFF, by + dy * RAIL_OFF, RAIL_H - 0.010)], 0.0075, STAINLESS)
+    """The handrail under the sills: stainless tube 62 mm off the lining on brackets. It goes round the whole bay, where it
+    ended at the console block each side while the block stood against the front: each side's rail runs from the middle of
+    the forward face round the corner, along the cant, round into the side and aft along it, its after end turned in to
+    the lining; the two meet in a sleeve on the centreline."""
+    side = g['side']
+    W, (A, B) = (WP, (WP, WF)) if side > 0 else (WS, (WF, WS))
+    aft = 21.36 if side > 0 else 22.24
+    mid = WF.xy(WF.len / 2, -RAIL_OFF)
+    line = [mid, corner(A, B, -RAIL_OFF), side_corner(W, -RAIL_OFF, RAIL_OFF), (side * (X_IN - RAIL_OFF), aft), (side * X_IN, aft)]
+    sweep('steel', _fillet([P(px, py, RAIL_H) for px, py in line], 0.045), 0.016, STAINLESS, local=True, ends=(False, True))
+    lathe('steel', (line[-1][0], line[-1][1], RAIL_H), (-side, 0, 0), [(0.0, 0.030), (0.004, 0.030), (0.008, 0.018)], STAINLESS)      # a rosette where its end meets the lining
+    if side > 0:                                                                       # the sleeve in which the two rails meet
+        tube('steel', (mid[0] - 0.035, mid[1], RAIL_H), (mid[0] + 0.035, mid[1], RAIL_H), 0.0185, tint(STAINLESS, 0.9))
+    # the brackets: a rosette on the lining, an arm out and up under the tube
+    half = WF.len / 2
+    places = [(WF.xy(half - side * d), tuple(-v for v in WF.n)) for d in (0.45, 1.35)] + [(W.xy(W.len * f), tuple(-v for v in W.n)) for f in (0.28, 0.72)] \
+        + [((side * X_IN, yd), (-side, 0)) for yd in ([22.55, 22.10, 21.68] if side > 0 else [22.56])]
+    for (bx, by), (dx, dy) in places:
+        way = (dx, 0, dy)
+        lathe('steel', (bx, by, RAIL_H - 0.045), way, [(0.0, 0.022), (0.004, 0.022), (0.008, 0.010)], STAINLESS)
+        sweep('steel', [(bx, by, RAIL_H - 0.045), (bx + dx * (RAIL_OFF - 0.02), by + dy * (RAIL_OFF - 0.02), RAIL_H - 0.045),
+                        (bx + dx * RAIL_OFF, by + dy * RAIL_OFF, RAIL_H - 0.03), (bx + dx * RAIL_OFF, by + dy * RAIL_OFF, RAIL_H - 0.010)], 0.0075, STAINLESS)
 
 
 def jbox(g, tag, x, yard, h):
-    """The junction box of the heated glass, let into the lining below the sill: a cover plate on a gasket with four screws,
-    its name, a switch, a lamp that is lit while the glass is heated."""
-    with Frame((x, FRONT_IN, h), STBD, UP) as F:
+    """The junction box of the heated glass, let into the lining below the sill of the starboard cant: a cover plate on a
+    gasket with four screws, its name, a switch, a lamp that is lit while the glass is heated."""
+    W, s = on_bay(x, yard)
+    with W.inside(s, h, upright=True) as F:
         F.box('rubber', (-0.092, -0.112, 0.0), (0.092, 0.112, 0.0015), RUBBER)
         F.block('case', (-0.09, -0.11, 0.0), (0.09, 0.11, 0.006), CASE, r=0.002)
         corner_screws(F, -0.09, -0.11, 0.09, 0.11, 0.006, inset=0.012, r=0.003)

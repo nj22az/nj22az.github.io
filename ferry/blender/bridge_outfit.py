@@ -187,9 +187,11 @@ _PROFILE = [
 
 
 def table(g, tag, x, yard, h):
-    """The watchkeeper's table in the starboard forward corner: a top of light varnished wood with her profile engraved in
-    it and a cup well in its inboard after corner; an apron with a drawer; two legs bolted to the deck, and cleats on the
-    side and the front linings. On it the deck log under its lamp."""
+    """The watchkeeper's table at the starboard side, forward of the pantry: a top of light varnished wood with her profile
+    engraved in it and a cup well in its inboard after corner; an apron with a drawer; two legs bolted to the deck, and a
+    cleat on the side lining. On it the deck log under its lamp. (It stood in the forward corner, cleated to the front
+    lining too; the bay is before it now, and it is 0.36 m broad where it was 0.58, so that the way past it to the front
+    of the console block is 0.70 m: the access to the block's back.)"""
     w, l, H = g['w'], g['l'], g['H']
     xa, xb = -X_IN + 0.006, -X_IN + 0.006 + w           # against the starboard lining, to inboard
     ya, yb = FRONT_IN - 0.006 - l, FRONT_IN - 0.006     # and against the front lining
@@ -234,7 +236,7 @@ def table(g, tag, x, yard, h):
             with Frame((xb - 0.06 + 0.043 * cos(k * pi / 2 + 0.7), yd + 0.043 * sin(k * pi / 2 + 0.7), 0.018), STBD, FWD) as F:
                 bolt(F, 0.0, 0.0, 0.0, r=0.0045, h=0.0035)
     box('lwood', xa - 0.006, xa + 0.03, ya + 0.04, yb - 0.04, H - t - 0.045, H - t, tint(WOODL, 0.9), r=0.002)       # a cleat on the side lining
-    box('lwood', xa + 0.03, xb - 0.04, yb - 0.04, yb + 0.006, H - t - 0.045, H - t, tint(WOODL, 0.9), r=0.002)       # and on the front lining
+    box('lwood', xa, xb - 0.03, yb - 0.008, yb + 0.004, H, H + 0.014, tint(WOODL, 0.92), r=0.003)                    # a fiddle along its forward edge, which is free since the bay was built out
     M = moving("Watchkeeper's table, drawer", 'table-drawer', wood='Light wood', brass='Bronze', paint='Deck paint')
     da, db = ya + 0.075, yb - 0.075
     box(M['wood'], xb - 0.058, xb - 0.040, da, db, H - t - 0.092, H - t - 0.008, WOODL, r=0.003)                   # its front

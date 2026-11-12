@@ -754,7 +754,16 @@ WING = BP.WING + 0.06          # the outer face of the bridge wings' bulwarks: t
 # The outlines of the house's upper decks, (x, yard): each is the roof of the tier under it, and caps its walls.
 E = T / 2
 OFFICERS_OUTLINE = [(HR + E, H0 - E), (HR + E, REC - E), (HH + E, REC - E), (HH + E, H1 + E), (-HH - E, H1 + E), (-HH - E, REC - E), (-HR - E, REC - E), (-HR - E, H0 - E)]
+# The bridge deck is carried forward of the house's front under the wheelhouse's forward bay (bridge_place.py: the bay
+# stands a metre forward of the wings' fronts, half of it beyond the house's face) and BAY_GALLERY beyond the bay all
+# round, as a gallery from which the bay's glass is washed and its wipers reached: its edge follows the bay's. A door in
+# each wing's forward wall opens onto it.
+BAY_GALLERY = BP.GALLERY           # wide enough that the leaf of each wing's forward door swings clear of the rail (bridge_place.py)
+_R2 = 2 ** 0.5
+BAY_FRONT = (BP.BAY_XO + BAY_GALLERY * (_R2 - 1), BP.yard(BP.BAY_OUT + BAY_GALLERY))        # the gallery's forward corner, to port: (x, yard)
+BAY_LINE = BAY_FRONT[0] + BAY_FRONT[1]                                                     # along its canted edge, to port, x + yard is this
 BRIDGE_OUTLINE = [(HH + E, OFF - E), (HH + E, 99.995), (WING, 99.995), (WING, 103.505), (HH + E, 103.505), (HH + E, H1 + E),
+                  (BAY_LINE - H1 - E, H1 + E), BAY_FRONT, (-BAY_FRONT[0], BAY_FRONT[1]), (-BAY_LINE + H1 + E, H1 + E),
                   (-HH - E, H1 + E), (-HH - E, 103.505), (-WING, 103.505), (-WING, 99.995), (-HH - E, 99.995), (-HH - E, OFF - E)]
 TOP_OUTLINE = [(3.10, 94.0 - E), (3.10, 100.0), (-3.10, 100.0), (-3.10, 94.0 - E)]
 
@@ -891,7 +900,10 @@ def open_deck_rails():
     rails('bridge', 'Bridge deck, rails', [(-lx[0] + i, OFF + i), (lx[0] - i, OFF + i)], y)
     for sgn in (1, -1):
         rails('bridge', 'Bridge deck, rails', [(sgn * (lx[1] + i), OFF + i), (sgn * (HH - i), OFF + i), (sgn * (HH - i), 99.9)], y)
-    rails('bridge', 'Bridge deck, rails', [(HH - i, 103.6), (HH - i, H1 - i), (-HH + i, H1 - i), (-HH + i, 103.6)], y)
+    # (the ledge's rail goes out round the gallery under the wheelhouse's bay, 8 cm inside its edge)
+    gx, gy = BAY_FRONT[0] - i * (_R2 - 1), BAY_FRONT[1] - i
+    kx = BAY_LINE - i * _R2 - (H1 - i)
+    rails('bridge', 'Bridge deck, rails', [(HH - i, 103.6), (HH - i, H1 - i), (kx, H1 - i), (gx, gy), (-gx, gy), (-kx, H1 - i), (-HH + i, H1 - i), (-HH + i, 103.6)], y)
     # ---- the house top: round its after end from one side of the ladder's head to the other, to the compass deck's own rail
     y = S.COMPASS_DECK
     l = next(l for l in S.LADDERS if l['id'] == 'ladder-house-top')
@@ -1469,15 +1481,100 @@ def wheelhouse_after_wall():
         lining.box((x0, y + h0, z1), (x1, y + h1, z2), cream)
 
 
+def side_windows(plan, sgn):
+    """The windows in the house's side on a deck, to port (sgn 1) or starboard: (yard from, yard to, sill, head)."""
+    rooms = {r[0] for r in _spaces(plan) if abs((r[4] if sgn > 0 else r[3]) - sgn * HH) < 0.01}
+    return sorted((o['lo'], o['hi'], o['bottom'], o['top']) for o in OPENINGS if o['plan'] == plan and o['side'] == ('p' if sgn > 0 else 's') and o['glass'] and o['room'] in rooms)
+
+
+def wing_knees(sgn):
+    """Where the knees under a bridge wing stand along her, clear of the windows in the house's side below: one in the
+    middle of each length of plating between or beyond those windows that is long enough for it. (They stood at 100.6,
+    101.8 and 103.0 m, set without looking at the wall: the middle one came down across a window of the officers' deck.
+    Found by windows.py on its first run, 12 November 2026.)"""
+    a, b = 99.995 + 0.25, 103.505 - 0.25                        # the wing's own length, less a knee's room at each end
+    wins = [w for w in side_windows('officers', sgn) if w[1] > a - KNEE_CLEAR and w[0] < b + KNEE_CLEAR]
+    edges = [a - KNEE_CLEAR] + [v for w in wins for v in (w[0], w[1])] + [b + KNEE_CLEAR]
+    out = []
+    for lo, hi in zip(edges[::2], edges[1::2]):
+        lo, hi = lo + KNEE_CLEAR, hi - KNEE_CLEAR
+        if hi - lo >= 0.0:
+            out.append(round((lo + hi) / 2, 3))
+    for yd in out:
+        near = [w for w in wins if w[0] - KNEE_CLEAR + 1e-6 < yd < w[1] + KNEE_CLEAR - 1e-6]
+        if near:
+            raise SystemExit(f'a knee of the bridge wing at {yd:.2f} m would stand over or beside the window from {near[0][0]:.2f} to {near[0][1]:.2f} m of the officers\' deck: nothing is built over a window')
+    return out
+
+
 def wing_brackets():
-    """What carries the wheelhouse's wings, which stand out 2.3 m beyond the officers' house to her full breadth: three
-    knees under each, from the house's side to the wing's edge."""
+    """What carries the wheelhouse's wings, which stand out 2.3 m beyond the officers' house to her full breadth: knees
+    under each, from the house's side to the wing's edge, where the side's windows leave room for one (wing_knees)."""
     knees = part('officers', 'Bridge wing knees', 'Topside paint')
     y = S.BRIDGE_DECK - PLATE
     for sgn in (1, -1):
-        for yd in (100.6, 101.8, 103.0):
+        for yd in wing_knees(sgn):
             ring = [(sgn * (HH + E), y), (sgn * (WING - 0.10), y), (sgn * (WING - 0.10), y - 0.12), (sgn * (HH + E), y - 1.5)]
             _prism(knees, ring, Z(yd) - 0.006, Z(yd) + 0.006, tint(WHITE, 0.95))
+
+
+KNEE_CLEAR = 0.30              # no knee stands nearer a window's opening than this, along the wall
+KNEE_OVER = 0.20               # and every knee's foot ends this far above the windows' heads, though none is over one
+
+
+def front_windows(plan):
+    """The windows in the house's front on a deck, from the same list the wall is cut from: (x from, x to, sill, head)."""
+    front = {r[0] for r in _spaces(plan) if abs(r[2] - H1) < 0.01}
+    return sorted((o['lo'], o['hi'], o['bottom'], o['top']) for o in OPENINGS if o['plan'] == plan and o['side'] == 'f' and o['glass'] and o['room'] in front)
+
+
+def bay_knees():
+    """
+    Where the knees under the bay's gallery stand, and how deep they are: (x, forward reach, depth) each.
+
+    The owner, 12 November 2026, of the first ones, which were set at round figures and came down over two cabin windows:
+    "you cant cover the windows like that", "make sure you dont build over a window". A knee is welded to the house's
+    front where there is something behind the plating to take it: in line with a bulkhead of the deck below. So the knees
+    stand at the bulkheads between the rooms of the officers' deck that reach the front, inside the gallery's breadth;
+    each is tried against every window of that front and the build stops if one is nearer than KNEE_CLEAR. Between two
+    knees more than 1.6 m apart the gallery has a beam under its plate instead, which goes no lower than the face bar.
+    """
+    tier = S.BRIDGE_DECK - S.OFFICERS_DECK
+    wins = front_windows('officers')
+    inset = 0.03
+    half = BAY_LINE - inset * _R2 - (H1 + E) - 0.25                     # the gallery's half breadth at the house's front, less a knee's own room
+    walls = sorted({round(v, 3) for r in _spaces('officers') if abs(r[2] - H1) < 0.01 for v in (r[3], r[4]) if abs(v) < half})
+    depth = round(tier - PLATE - max(w[3] for w in wins) - KNEE_OVER - 0.12, 2)        # 0.12: the eyebrow over a window and its turn-down
+    knees = []
+    for x in walls:
+        near = [w for w in wins if w[0] - KNEE_CLEAR < x < w[1] + KNEE_CLEAR]
+        if near:
+            raise SystemExit(f'a knee of the bay gallery at x {x:+.2f} m would stand over or beside the window from {near[0][0]:+.2f} to {near[0][1]:+.2f} m of the officers\' deck: nothing is built over a window')
+        reach = min(BAY_FRONT[1] - inset, BAY_LINE - inset * _R2 - abs(x)) - 0.01
+        knees.append((x, reach, depth))
+    beams = [round((a + b) / 2, 3) for a, b in zip(walls, walls[1:]) if b - a > 1.6]
+    return knees, beams
+
+
+def bay_gallery():
+    """What carries the gallery under the wheelhouse's forward bay, which stands out beyond the house's front: a face bar
+    under its edge all round; knees from the house's front to that bar, each in line with a bulkhead of the deck below
+    and clear of every window (bay_knees); between knees far apart, a beam under the plate."""
+    steel = part('officers', 'Bridge bay gallery, knees', 'Topside paint')
+    y = S.BRIDGE_DECK - PLATE
+    back = H1 + E + 0.02                                              # the face bar ends 2 cm before the house's front, not in it
+    inset = 0.03
+    fx, fy = BAY_FRONT[0] - inset * (_R2 - 1), BAY_FRONT[1] - inset
+    loop = [(BAY_LINE - inset * _R2 - back, back), (fx, fy), (-fx, fy), (-BAY_LINE + inset * _R2 + back, back)]
+    _edge(steel, loop, y - 0.14, y, tint(WHITE, 0.93), 1)
+    knees, beams = bay_knees()
+    for x, reach, depth in knees:
+        ring = [(Z(H1 + E), y), (Z(reach), y), (Z(reach), y - 0.14), (Z(H1 + E + 0.10), y - depth), (Z(H1 + E), y - depth)]
+        _prism(steel, ring, x - 0.006, x + 0.006, tint(WHITE, 0.95), axis='x')
+    for x in beams:
+        reach = min(BAY_FRONT[1] - inset, BAY_LINE - inset * _R2 - abs(x)) - 0.01
+        ring = [(Z(H1 + E), y), (Z(reach), y), (Z(reach), y - 0.14), (Z(H1 + E), y - 0.14)]
+        _prism(steel, ring, x - 0.005, x + 0.005, tint(WHITE, 0.95), axis='x')
 
 
 def build():
@@ -1496,5 +1593,6 @@ def build():
     funnels()
     wheelhouse_after_wall()
     wing_brackets()
+    bay_gallery()
     open_deck_rails()
     return [p for p in _parts.values() if p.f]

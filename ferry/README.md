@@ -334,6 +334,8 @@ python3 ferry/blender/assemble.py --part chisum-hull.npz                        
 python3 ferry/blender/check.py                                                              # check what the page will read
 node ferry/checks/bridge.cjs                                                                # check the page itself (the site served on port 8765)
 node ferry/checks/sight.cjs                                                                 # no lever stands before an instrument (JSY-STD-404, rule 13)
+python3 ferry/blender/windows.py --part chisum-hull.npz                                   # nothing is built over a window (JSY-STD-405); part of make.sh
+python3 ferry/yard/drawings/bay_drawing.py                                                  # JS2-211: the bridge's forward bay over the windows of the deck below
 node ferry/checks/map.cjs                                                                   # the deck plan on foot: it is there, follows, opens and goes to a room
 blender -b chisum.blend -P ferry/blender/render.py -- --view stern --out hull.png        # a Cycles still (stern, bow, inside)
 ```
@@ -1246,6 +1248,24 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, afternoon: the bridge's forward bay; the console block free; nothing is built over a window; doors to the gallery
+
+On the work branch in the main checkout; the site served from it on port 8766 by a threading server; each page check by
+itself, none beside a build. Five whole runs of `make.sh`.
+
+| Check | Result |
+|---|---|
+| `ferry/blender/make.sh`, the bay as first drawn | **stopped at the register** (`assemble.py`): at 24 V, way DC1 11 lost 6.0 % over 19.5 m of 1.5 mm² and DC1 14 5.2 % over 17 m of 6 mm²: the block's cables go down through the deck now, 4 m more. Both ways made a size heavier |
+| `make.sh`, again | **stopped at `zfight.py`**: 1 pair, 16 cm², the top band of each house side under the bay's new roof plate (they overlapped by a centimetre; the band ends where the roof begins now) |
+| `make.sh`, again | "built: every check passed" (3,055,651 triangles). **This build had the gallery's knees over two cabin windows**: no check looked. The owner saw it in the picture |
+| `python3 ferry/blender/windows.py` (new), run on that build | named the bay gallery's knees over the officers' deck's windows, **and the middle knee of each bridge wing over a side window** (drawn the night before). On its very first run it also named the table lamp before the starboard side window (allowed, with its reason) and the engine room platform's rail along the foot of the control room's two windows: the check was then made to leave the outermost 5 cm of a pane out (JSY-STD-405, section 3) |
+| `make.sh` with `windows.py` in it, the knees on the bulkheads | "built: every check passed": 87 panes of window glass, nothing over one |
+| `make.sh`, the build that is committed (with the doors to the gallery) | **"built: every check passed"**: 3,057,040 triangles in a file of 19.07 MB, 133 rooms, 17 stairs, 186 components, 170 motions; `zfight.py` 0 pairs among 1,144 pieces; `afloat.py` 0 afloat of 27,750 pieces; `windows.py` 85 panes, nothing built over one (4 kinds of thing stand before a pane and may); `spans.py` 437 runs, every one carried; the light traced. 11 minutes in all. From the wheel 224 of 225 degrees through the glass at both eye heights |
+| The nine page checks on the committed build | **bridge 35, doors 116, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5: all pass** (83 worked doors, gates and hatches; 88 doorways and 14 doors that open to whoever comes near; 32 files, 27.1 MB offline). `bridge.cjs` has seven checks more: into the bay by the starboard side way, along the way before the block past its whole back, back down the starboard side, a service door of the block opened and shut, out of the port wing's forward door onto the gallery, along the gallery before the bay's glass, and in again by the starboard wing's door |
+| Said as it happened | `bridge.cjs` on the first build of the bay: 31 of 32. The one failure was true: **the port side way is too narrow to walk** (0.46 m at the settee, 0.33 at the binocular box). The check was changed to go back down the starboard side, which is what the ship allows; the port way is listed as not settled, not hidden. `works.cjs` once 20 of 21: its tap on the starboard clear-view screen aimed where the screen was; it stands in the bay's glass now and is tapped from the way |
+| `python3 ferry/yard/drawings/bay_drawing.py` | writes JS2-211; it says each knee's bulkhead and its distance to the nearest window (0.60, 0.78, 0.80, 0.60 m), the ways past the block (starboard 0.70, port 0.46, before it 1.00 m) and the gallery doors' leaf clear of the rail by 0.20 m |
+| Pictures (`ferry/tools/shots-bridge.cjs`, sixteen views of the last build; ten of them also of the build before the bay) | no errors on the page, drawn on the Mac's graphics card; each named in the refit's record was opened. **Not done:** a phone or a tablet; a frame's time with the bay; the page walked by hand |
 
 ### 12 November 2026, late morning: the wings closed in, and every deck fitting aboard
 
