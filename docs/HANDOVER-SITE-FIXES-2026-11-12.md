@@ -1,6 +1,6 @@
 # Site fixes — sitemap, redirects, heading, README — 12 November 2026
 
-Small behaviour-preserving fixes on branch `cursor/site-audit-fixes-247f`. Not merged. Not pushed to `main`. The pull request is the delivery. Nothing under `ferry/` was edited.
+Small behaviour-preserving fixes on branch `cursor/site-audit-fixes-247f`, commit `d198937`. Pull request: https://github.com/nj22az/nj22az.github.io/pull/427. Not merged. Not pushed to `main`. Nothing under `ferry/` was edited.
 
 ## What changed
 
