@@ -58,6 +58,8 @@ LOOKS = {
     'Lens': dict(metalness=0.0, roughness=0.12),
     # Marks painted on the plating: drawn a hair in front of it.
     'Marking': dict(metalness=0.0, roughness=0.5, offset=[-2, -4]),
+    # Her maker's marks (makers_mark.py): in the file, never drawn by the page.
+    'Maker mark': dict(metalness=0.0, roughness=0.5, hidden=True),
     # The wheelhouse: satin enamel on the consoles, varnished wood, leather, the dark glass of a display, window glass.
     'Console paint': dict(metalness=0.05, roughness=0.5),
     'Varnished wood': dict(metalness=0.0, roughness=0.38),
@@ -113,6 +115,13 @@ LOOKS = {
     'Lit lamp': dict(metalness=0.0, roughness=0.4, emissive='#fff1dc', emissiveIntensity=2.4),
     'Lit amber': dict(metalness=0.0, roughness=0.4, emissive='#ffb020', emissiveIntensity=0.9),
     'Lit white': dict(metalness=0.0, roughness=0.4, emissive='#f4f6ff', emissiveIntensity=0.8),
+    # A signal lamp: a lamp window, a beacon. It shines on the page while it is lit, but it gives the place no light of its own:
+    # the light of each place is traced once, with everything as it stands at rest, and a lamp that comes and goes must not be
+    # left shining on the wall behind it (`bake`: light.py leaves it out).
+    'Signal white': dict(metalness=0.0, roughness=0.4, emissive='#f4f6ff', emissiveIntensity=0.8, bake=False),
+    'Signal green': dict(metalness=0.0, roughness=0.4, emissive='#3cf058', emissiveIntensity=0.7, bake=False),
+    'Signal amber': dict(metalness=0.0, roughness=0.4, emissive='#ffb020', emissiveIntensity=0.9, bake=False),
+    'Signal red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.9, bake=False),
     # a red night light: so dim that it spoils no night vision (and, being out by day, must not redden the deckhead in the traced light)
     'Lit night red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.15),
 }
@@ -148,7 +157,7 @@ def material(name):
                 'offset': look.get('offset') or []}
     if name in SURFACES:
         m['jmf']['surface'] = SURFACES[name]
-    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear'):
+    for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear', 'hidden', 'bake'):
         if key in look:
             m['jmf'][key] = look[key]
     _materials[name] = m
@@ -243,8 +252,13 @@ class Part:
 
     made = []          # every part made in this build, for `component`
 
-    def __init__(self, name, look, smooth=False, angle=35.0, mover=None):
+    def __init__(self, name, look, smooth=False, angle=35.0, mover=None, fine=False):
         self.name, self.look, self.smooth, self.angle = name, look, smooth, angle
+        # Fine work (engraved lettering, a dial's scale and needle, a push button): the file keeps each corner of hers in one
+        # of 65,535 steps across her whole breadth, height and length, and along her length a step is 1.9 mm, which is as
+        # wide as the upright of a 7 mm letter. On a face that runs fore and aft such letters lost their uprights. A fine
+        # part is kept in a small box of its own instead (assemble.py: `box`), a step of a few hundredths of a millimetre.
+        self.fine = fine
         self.v, self.n, self.f, self.c = [], [], [], []
         # Where each corner of a face lies on her sheet of pictures, for the faces that carry one (else None).
         self.t = []
@@ -653,6 +667,8 @@ class Part:
         ob = bpy.data.objects.new(self.name, me)
         if self.mover:
             ob['mover'] = self.mover
+        if self.fine:
+            ob['fine'] = True
         coll.objects.link(ob)
         return ob
 

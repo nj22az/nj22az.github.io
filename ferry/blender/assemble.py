@@ -12,7 +12,11 @@ own: the tool starts from nothing.
   - the rooms the page lists are the spaces of ga.py, each with its place, what it is for, and where a walk begun there
     starts when the room itself is not entered (a tank, a funnel, a stair);
   - her register is written beside the model with the places of the same build (systems.json), and her stairs as the
-    yard's standard has them.
+    yard's standard has them;
+  - every corner is kept as three whole numbers, 65,535 steps across her bounds: 0.3 mm across her breadth, 0.4 mm in
+    height, 1.9 mm along her length. Fine work (a part built `fine`: engraved lettering, a dial's scale and needle) is
+    kept in a box of its own instead (`box` in its record), so that a 7 mm letter on a face that runs fore and aft
+    keeps its uprights.
 
 The same parts give the same file, byte for byte. Needs numpy; no Blender.
 """
@@ -26,6 +30,7 @@ import spec as S
 import ga
 import eg_place
 import bridge_place as BP
+import mark as M
 
 DEFAULT = os.path.join(HERE, '..', 'data', 'ferry.bin.gz')
 BUILT = '12 November 2026'
@@ -85,9 +90,15 @@ FITTED = {
     'cargo-lift': 'The platform is built, raised: it is the hatch cover, flush with the deck. Its hoisting gear is not built, and it does not work yet.',
     'fixed-ramp': 'Built: the roadway on its girder and pillars, the guard along its open side. One walks up it to the upper deck. Its cover is not built: the opening stands open.',
     'ramp-cover': 'The opening and its rail. The hinged weathertight cover is not built yet.',
-    'stern-ramp': 'Fitted: the ramp, which raised is the stern door, on its two hydraulic cylinders (the Stern ramp control lowers it to the quay). '
-                  'Beside it on the bulwark the sternlight and two floodlights; beside the door, to starboard, the red and green signal for those who drive aboard. '
-                  'The hydraulic power unit, the securing and the seal are not built.',
+    'stern-ramp': 'Fitted (drawing JS3-304): the ramp, which raised is the stern door, on six hinges and two hydraulic cylinders hung from under the upper deck; eight end flaps; '
+                  'a safety latch on each door post that needs no oil to hold it, ten hydraulic cleats and a seal. It is worked from the control stand beside the door, port side '
+                  '(start a pump, then the lever), or by the Stern ramp control: the latches lift, the cleats let go, the leaf lowers, its flaps fold out. '
+                  'Beside it on the bulwark the sternlight and two floodlights; beside the door, to starboard, the red and green signal for those who drive aboard.',
+    'hydraulic-room': 'Fitted forward of its door: the stern ramp\'s power pack (a tank of 1,500 litres, two pumps of 37 kW, the cleats\' pump, cooler, filters, hand pump), its valve stand '
+                      'on the inboard wall and its starter panel on the forward wall, whose two leaves open. The after half is kept for the cargo lift\'s power pack.',
+    'switchboard-room': 'Bare, with the places marked where the main switchboard, its 440 V section and the two transformers are to stand: an outline on the floor, a sign, and the tagged '
+                        'ends of the cables that are to be landed there. Nothing of them is installed.',
+    'aux-engine-room': 'Bare, with the places of the three generating sets marked on the tank top: an outline, a sign, and the tagged end of each set\'s feeder. Nothing of them is installed.',
     'pilot-lobby-p': 'Fitted: the pilot door, a real door in her shell: frame, leaf, dogs, hinges. A tap opens it.',
     'pilot-lobby-s': 'Fitted: the pilot door, a real door in her shell: frame, leaf, dogs, hinges. A tap opens it.',
     'helideck': 'The deck on its girders and pillars, and its two stairs. Its marks, net, lights and foam monitors are not built yet.',
@@ -107,7 +118,7 @@ SECTIONS = [
     dict(part='hull', section='Hull', date=BUILT, what='her hull at 124.8 m from her own lines: a raked, flared bow over a bulb, sheer forward, a transom stern; plating, frames, floors, seven watertight bulkheads, the tank top, keel, skeg and bilge keels, two shafts with their screws and rudders, the bow thruster, anchors, marks'),
     dict(part='machinery', section='The spaces below the main deck', date=BUILT, what='the steering gear, the shafting inboard, five watertight doors, the engine room platform, the ways between them, the lower hold'),
     dict(part='main', section='Decks, casings and houses', date=BUILT, what='every deck, the side casings, the fixed ramp, the cargo lift\'s platform, the house in four tiers, the helicopter deck, the funnels, as bare steel, from the general arrangement'),
-    dict(part='main', section='Stern ramp and pilot doors', date=BUILT, what='the stern door, which lowers as a ramp of 11 m on two hydraulic cylinders; a pilot door in her shell each side, with its working leaf'),
+    dict(part='main', section='Stern ramp and pilot doors', date=BUILT, what='the stern door, which lowers as a ramp of 11 m on six hinges and two hydraulic cylinders, with its end flaps, its two safety latches, its ten cleats and its seal; its power pack, valve stand and starter panel in the hydraulic pump room, the pipes from there to the stern, and its control stand beside the door (drawing JS3-304); the places of the main switchboard, the transformers and the three generating sets marked in the machinery spaces; a pilot door in her shell each side, with its working leaf'),
     dict(part='main', section='Stairs', date=BUILT, what=f'{len(S.STAIRS)} stairs to the yard\'s standard: two main stairs from the trailers to the house, the house\'s stair trunk, the stair into the wheelhouse, the engine room\'s and the lower hold\'s, the ladders outside'),
     dict(part='upper', section='Light fittings', date=BUILT, what='a marine fluorescent fitting on two hangers for every 9 to 12 m² of every enclosed space: her rooms light themselves'),
     dict(part='bridge', section='Navigation bridge', date=BUILT, what='the wheelhouse, its wings carried to her full breadth, the compass deck and mast, landed whole from the first Chisum'),
@@ -163,9 +174,12 @@ def pieces_of(m):
     return np.split(order, cuts)
 
 
-def weld(pos, nor, col, lo, hi, uv=None):
-    """Triangle corners → shared vertices and indices, quantised as the file keeps them."""
+def weld(pos, nor, col, lo, hi, uv=None, key=None):
+    """Triangle corners → shared vertices and indices, quantised as the file keeps them. With a key, each corner carries her
+    maker's mark (mark.py): the last bit of its place across her breadth, 0.3 mm, is the bit the key gives for that place."""
     q = np.rint((pos - lo) / (hi - lo) * 65535).astype(np.uint16)
+    if key:
+        q = M.embed(q, key)
     n = np.clip(np.rint(nor * 127), -127, 127).astype(np.int8)
     cols = [q.astype(np.int32), n.astype(np.int32), col.astype(np.int32)]
     if uv is not None:
@@ -175,6 +189,19 @@ def weld(pos, nor, col, lo, hi, uv=None):
     tri = inverse.reshape(-1, 3).astype(np.uint32)
     tri = tri[(tri[:, 0] != tri[:, 1]) & (tri[:, 1] != tri[:, 2]) & (tri[:, 0] != tri[:, 2])]
     return uniq[:, :3].astype(np.uint16), uniq[:, 3:6].astype(np.int8), uniq[:, 6:9].astype(np.uint8), tri, (uniq[:, 9:11].astype(np.uint16) if uv is not None else None)
+
+
+FINE_CELL = 2.0            # metres: fine work is kept by the cell of this grid it lies in, each cell in a box of its own
+
+
+def cells(pos):
+    """The triangles of a fine mesh (corner rows, three to a triangle) by the cell their middle lies in: a list of arrays of
+    triangle numbers. One fine look on one deck may be the lettering of a stand at her stern and of a panel a hundred
+    metres forward: kept in one box they would be no finer than the ship is."""
+    mid = pos.reshape(-1, 3, 3).mean(1)
+    _, inverse = np.unique(np.floor(mid / FINE_CELL).astype(np.int64), axis=0, return_inverse=True)
+    inverse = inverse.reshape(-1)
+    return [np.nonzero(inverse == k)[0] for k in range(int(inverse.max()) + 1)] if len(inverse) else []
 
 
 def waterline():
@@ -223,7 +250,9 @@ def main():
     ap.add_argument('--part', action='append', required=True, help='a part file written by export_jmf.py (may be given more than once)')
     ap.add_argument('--out', default=DEFAULT)
     ap.add_argument('--report')
+    ap.add_argument('--unmarked', action='store_true', help="without her maker's mark: for a machine that has no key. Not to be published (check.py refuses the file)")
     a = ap.parse_args()
+    key = None if a.unmarked else M.key()
 
     parts = []
     for path in a.part:
@@ -236,21 +265,21 @@ def main():
         rec = dict(MATERIAL_DEFAULTS)
         rec.update(metalness=round(float(look['metalness']), 3), roughness=round(float(look['roughness']), 3), side=look.get('side', 'front'),
                    offset=[int(v) for v in look['offset']] if look.get('offset') else None)
-        for key in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear', 'surface'):
-            if key in look:
-                rec[key] = look[key]
-        key = json.dumps(rec, sort_keys=True)
-        if key not in look_index:
+        for name in ('transparent', 'opacity', 'depthWrite', 'shading', 'textured', 'atlas', 'emissive', 'emissiveIntensity', 'clear', 'surface', 'hidden'):
+            if name in look:
+                rec[name] = look[name]
+        index = json.dumps(rec, sort_keys=True)
+        if index not in look_index:
             materials.append(rec)
-            look_index[key] = len(materials) - 1
-        return look_index[key]
+            look_index[index] = len(materials) - 1
+        return look_index[index]
 
     fresh = []
     for meta, z in parts:
         for m in sorted(meta['meshes'], key=lambda m: m['key']):
             if m['group'] not in ids:
                 raise SystemExit(f'the part file brings "{m["group"]}", which is not one of the viewer\'s parts')
-            fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'], mover=m.get('mover') or None,
+            fresh.append(dict(group=m['group'], material=material_of(m['look']), name=m['material'], objects=m['objects'], mover=m.get('mover') or None, fine=bool(m.get('fine')),
                               pos=z[m['key'] + '|pos'].astype(np.float64), nor=z[m['key'] + '|nor'], col=z[m['key'] + '|col'],
                               uv=z[m['key'] + '|uv'].astype(np.float64) if m['key'] + '|uv' in z.files else None))
     lo = np.min([np.round(m['pos'].min(0) - 0.001, 4) for m in fresh], axis=0)
@@ -270,11 +299,13 @@ def main():
             offset += pad
         return at
 
-    def record(material, pos_q, nor, col, idx, uv=None, mover=None):
+    def record(material, pos_q, nor, col, idx, uv=None, mover=None, box=None):
         wide = len(pos_q) > 65535
         rec = dict(material=material, vertices=int(len(pos_q)), triangles=int(len(idx)), wide=wide)
         if mover:
             rec['mover'] = mover
+        if box is not None:             # fine work: its corners are numbers across this box, not across her bounds
+            rec['box'] = dict(min=[float(v) for v in box[0]], max=[float(v) for v in box[1]])
         rec['pos'] = chunk(pos_q.astype('<u2'))
         rec['nor'] = chunk(nor.astype('i1'))
         rec['col'] = chunk(col.astype('u1'))
@@ -290,9 +321,20 @@ def main():
     for g in GROUPS:
         out = []
         for m in (f for f in fresh if f['group'] == g['id']):
-            q, n, c, tri, uv = weld(m['pos'], m['nor'], m['col'], lo, hi, m['uv'])
-            out.append(record(m['material'], q, n, c, tri, uv, mover=m['mover']))
-            report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects']))
+            if not m['fine']:
+                q, n, c, tri, uv = weld(m['pos'], m['nor'], m['col'], lo, hi, m['uv'], key)
+                out.append(record(m['material'], q, n, c, tri, uv, mover=m['mover']))
+                report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects']))
+                continue
+            # Fine work: each cell's triangles in a box of their own, a little larger than they are (the mark is carried the same way:
+            # the last bit of the number across the box's breadth, which is a few thousandths of a millimetre here).
+            for which in cells(m['pos']):
+                rows = (which[:, None] * 3 + np.arange(3)).reshape(-1)
+                pos = m['pos'][rows]
+                box = np.round(pos.min(0) - 0.0005, 4), np.round(pos.max(0) + 0.0005, 4)
+                q, n, c, tri, uv = weld(pos, m['nor'][rows], m['col'][rows], box[0], box[1], m['uv'][rows] if m['uv'] is not None else None, key)
+                out.append(record(m['material'], q, n, c, tri, uv, mover=m['mover'], box=box))
+                report['added'].append(dict(part=g['id'], material=m['name'], vertices=int(len(q)), triangles=int(len(tri)), objects=m['objects'], fine=True))
         groups.append(dict(id=g['id'], name=g['name'], level=g['level'], explode=[0, g['lift'], 0], spaces=rooms[g['id']],
                            meshes=sorted(out, key=lambda r: (r['material'], r.get('mover', '')))))
 
@@ -317,6 +359,10 @@ def main():
                   displacement=ga.DISPLACEMENT, arrangement=ga.REVISION, built=SECTIONS, waterline=waterline(),
                   note=NOTE.format(name=S.SHIP_NAME, length=L.LENGTH, rev=ga.REVISION, date=BUILT)),
         axes='x to port, y up from the design waterline, z forward from amidships; metres',
+        # Whose she is. The notice, and which mark her corners carry (mark.py; only the key's fingerprint is said). Her plating
+        # also holds the studio's name and signs where the page never draws them (makers_mark.py).
+        rights=dict(owner=M.OWNER, holder='Nils Johansson', year=2026, notice=M.NOTICE,
+                    mark=dict(scheme=M.SCHEME, id=M.fingerprint(key)) if key else None),
         bounds=dict(min=[float(v) for v in lo], max=[float(v) for v in hi]),
         atlas=atlas, atlases=[atlas],
         materials=materials,
@@ -343,6 +389,7 @@ def main():
     report['bytes'] = os.path.getsize(a.out)
     if a.report:
         json.dump(report, open(a.report, 'w'), indent=1)
+    print("her maker's mark: " + (f"every corner carries it (key fingerprint {M.fingerprint(key)})" if key else 'NONE: this file is not to be published'))
     print(f"{a.out}: {report['bytes']} bytes, {sum(report['triangles'].values())} triangles, {sum(len(g['spaces']) for g in groups)} rooms, "
           f"{len(header['stairs'])} stairs, {len(systems['components'])} components")
     for gid, n in report['triangles'].items():

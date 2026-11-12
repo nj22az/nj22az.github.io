@@ -55,7 +55,9 @@ async function loadDocument(url) {
 const LINEAR = Float32Array.from({ length: 256 }, (_, i) => { const c = i / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
 
 function geometryOf(rec, doc) {
-  const { buffer, base, header: { bounds } } = doc, n = rec.vertices;
+  // Fine work (engraved lettering, a dial's scale and needle) is kept in a box of its own, `rec.box`: over her whole bounds
+  // one step along her length is 1.9 mm, as wide as the upright of a 7 mm letter (README, The file format).
+  const { buffer, base, header } = doc, bounds = rec.box || header.bounds, n = rec.vertices;
   const q = new Uint16Array(buffer, base + rec.pos, n * 3), pos = new Float32Array(n * 3);
   for (let a = 0; a < 3; a++) { const lo = bounds.min[a], k = (bounds.max[a] - lo) / 65535; for (let i = a; i < pos.length; i += 3) pos[i] = lo + q[i] * k; }
   const g = new THREE.BufferGeometry();
@@ -226,6 +228,8 @@ function build(doc, atlases) {
     const box = new THREE.Box3();
     const moving = new Map();
     for (const rec of g.meshes) {
+      // Her maker's marks lie in her plating and are never drawn (blender/makers_mark.py): not aboard, not in the X-ray, not with her decks apart.
+      if (header.materials[rec.material].hidden) continue;
       const mesh = new THREE.Mesh(geometryOf(rec, doc), materials[rec.material]);
       // Glass and painted markings are drawn after the solid things they lie on, and throw no shadow of their own.
       const clear = header.materials[rec.material].transparent;
@@ -262,22 +266,34 @@ function turnAbout(out, pivot, angle) {
  * Put every moving part where its input says. The kinds of motion are the file's (README: `movers`). The shadows are
  * drawn again with it, unless told to wait (a door on its way: they are drawn once it has come to rest).
  */
+/** A mover's `map` read at its input's value: a table of [input, value] pairs with straight lengths between them. */
+function mapped(table, v) {
+  if (v <= table[0][0]) return table[0][1];
+  for (let i = 1; i < table.length; i++) {
+    const [a, fa] = table[i - 1], [b, fb] = table[i];
+    if (v <= b) return b > a ? fa + (fb - fa) * (v - a) / (b - a) : fb;
+  }
+  return table[table.length - 1][1];
+}
 function moveParts(shadows = true) {
   for (const { def, node } of movers) {
     const input = inputs.get(def.input);
-    const angle = THREE.MathUtils.degToRad(input ? input.value : 0) * (def.ratio ?? 1);
+    // What a mover answers to is its input's value, or that value read through the mover's own `map`: so one control works
+    // several things in their order (the stern ramp: its cleats let go first, then the leaf turns, its flaps fold out on the way down).
+    const value = def.map ? mapped(def.map, input ? input.value : 0) : input ? input.value : 0;
+    const angle = THREE.MathUtils.degToRad(value) * (def.ratio ?? 1);
     AXIS.fromArray(def.axis).normalize();
     PIVOT.fromArray(def.pivot);
     if (def.kind === 'turn') turnAbout(node.matrix, PIVOT, angle);
     else if (def.kind === 'slide') {
       // The part runs along the axis, as far as the input says (a sliding door: its input is in centimetres).
-      const run = (input ? input.value : 0) * (def.ratio ?? 1);
+      const run = value * (def.ratio ?? 1);
       node.matrix.makeTranslation(AXIS.x * run, AXIS.y * run, AXIS.z * run);
     }
     else if (def.kind === 'stretch') {
       // The part grows along the axis from its pivot, by the input times `ratio` of its own length: a blind's film drawn out of
       // its cassette, the coffee rising in its jug.
-      const k = (input ? input.value : 0) * (def.ratio ?? 1), x = AXIS.x, y = AXIS.y, z = AXIS.z;
+      const k = value * (def.ratio ?? 1), x = AXIS.x, y = AXIS.y, z = AXIS.z;
       TURN.set(1 + k * x * x, k * x * y, k * x * z, 0, k * y * x, 1 + k * y * y, k * y * z, 0, k * z * x, k * z * y, 1 + k * z * z, 0, 0, 0, 0, 1);
       node.matrix.makeTranslation(PIVOT.x, PIVOT.y, PIVOT.z).multiply(TURN).multiply(SHIFT.makeTranslation(-PIVOT.x, -PIVOT.y, -PIVOT.z));
     }
@@ -285,7 +301,7 @@ function moveParts(shadows = true) {
       // The part is there only while its input is over `over` (a lamp's lit glass), or with `when: "off"` only while it is not
       // (the film that darkens a display turned down).
       node.matrix.identity();
-      node.visible = ((input ? input.value : 0) > (def.over ?? 0)) === (def.when !== 'off');
+      node.visible = (value > (def.over ?? 0)) === (def.when !== 'off');
     }
     else if (def.kind === 'carry') {
       // The part keeps its heading and goes with a point that turns about the pivot.
@@ -389,7 +405,7 @@ function setXray(on) {
       const sw = el('i'); sw.style.background = '#' + r.colour.toString(16).padStart(6, '0');
       ul.append(el('li', {}, sw, el('span', {}, r.name), el('small', {}, `${r.metres} m`)));
     }
-    legend.append(el('h2', {}, 'X-ray: what runs through her'), ul, el('p', {}, 'Only what her register holds so far: the bridge and what feeds it. Tap a fitting to see what it is; pick a board or a circuit under Systems to see it alone.'));
+    legend.append(el('h2', {}, 'X-ray: what runs through her'), ul, el('p', {}, 'Only what her register holds so far: the bridge and what feeds it, and the stern ramp with its feed from where the switchboard and the generating sets are to stand. Tap a fitting to see what it is; pick a board or a circuit under Systems to see it alone.'));
   }
   legend.hidden = !xray;
   // through a ghost of her the sea and the sky only dazzle: she stands on a dark ground while it is on
@@ -436,6 +452,11 @@ function workOrders(dt) {
     showInput(it);
     moved = true;
     if (it.value !== it.order) under = true;
+    // arrived: a lever that gave the order springs back to its middle
+    else for (const lever of inputs.values()) {
+      const home = lever.def.home ?? 0;
+      if (lever.def.drives && lever.def.drives.input === it.def.id && lever.at !== home) { lever.way = lever.at > home ? -1 : 1; lever.at = home; lever.want = lever.def.steps[home].v; }
+    }
   }
   if (moved) moveParts(!under);
 }
@@ -457,8 +478,24 @@ function tapFitting(id, point) {
     if (d < near) { best = it; near = d; }
   }
   if (!best) return false;
-  best.open = !best.open;
-  readout.textContent = `${best.def.name}: ${best.open ? best.def.above || 'open' : best.def.rest || 'shut'}`;
+  tapInput(best);
+  return true;
+}
+/**
+ * A thing worked by a tap is turned on, or off again, and says so. While what it names `unless` is on it stays as it is and says
+ * why (`refused`: a pump is not started while the emergency stop is pressed). Turned on, what it `trips` goes off with it and
+ * what it `holds` is stopped where it is (the ramp's emergency stop: both pumps, and the ramp).
+ */
+function tapInput(it) {
+  const d = it.def;
+  if (!it.open && d.unless && isOn(d.unless)) { readout.textContent = `${d.name}: ${d.refused || 'not now'}`; return false; }
+  it.open = !it.open;
+  if (it.open) {
+    for (const id of d.trips || []) { const t = inputs.get(id); if (t) t.open = false; }
+    const held = d.holds && inputs.get(d.holds);
+    if (held && held.keys) orderInput(d.holds, held.value, held.value !== held.def.min && !held.stops.some(st => st.v === held.value));
+  }
+  readout.textContent = `${d.name}: ${it.open ? d.above || 'open' : d.rest || 'shut'}`;
   return true;
 }
 /**
@@ -472,7 +509,9 @@ function workAuto(dt) {
     if (def.level) {
       // What fills and empties (the coffee in its jug): it rises while what fills it is on, and falls while what drains it is worked.
       let v = it.value;
-      if (isOn(def.level.fill)) v = Math.min(def.max, v + def.level.rate * dt);
+      // (`fill` may be several things, any of which fills it: either pump; with `fall` it sinks by itself while none of them is on: pressure)
+      if ([].concat(def.level.fill || []).some(isOn)) v = Math.min(def.max, v + def.level.rate * dt);
+      else if (def.level.fall) v = Math.max(def.min, v - def.level.fall * dt);
       if (isOn(def.level.drain)) v = Math.max(def.min, v - def.level.drainRate * dt);
       if (v !== it.value) { it.value = v; moved = under = true; }
       continue;
@@ -521,7 +560,32 @@ function stepInput(id) {
   it.at += it.way;
   it.want = it.def.steps[it.at].v;
   readout.textContent = `${it.def.name}: ${it.def.steps[it.at].say}`;
+  if (it.def.drives) drive(it);
   return it.def.steps[it.at];
+}
+/**
+ * A lever that works another thing (`drives`: the two levers at the stern ramp's control stand, which give the ramp its orders).
+ * Each of its positions says what it orders: `to` a place for the thing to go to, or `order`: `min` brings it home, `next` runs it
+ * on to its next stop, `hold` stops it where it is. It does nothing while what it names `unless` is on (the emergency stop), nor
+ * unless one of what it `needs` is on (a pump runs), nor while the thing is not `within` what the position asks (the ramp is not
+ * lowered with its cleats locked, the cleats are not locked with the ramp down): it springs back and says why. It springs back to
+ * its middle when the thing has arrived, and the next tap takes it the other way (workOrders).
+ */
+function drive(it) {
+  const d = it.def.drives, target = inputs.get(d.input), step = it.def.steps[it.at], home = it.def.home ?? 0;
+  if (!target || !target.keys) return;
+  const back = why => { it.way = it.at > home ? 1 : -1; it.at = home; it.want = it.def.steps[home].v; readout.textContent = `${it.def.name}: ${why}`; };
+  if (step.order !== 'hold') {
+    if (d.unless && isOn(d.unless)) return back(d.stopped || 'not now');
+    if (d.needs && !d.needs.some(isOn)) return back(d.without || 'not ready');
+    if (step.within && (target.value < step.within[0] || target.value > step.within[1])) return back(step.refused || 'not now');
+  }
+  const stops = target.stops;
+  if (typeof step.to === 'number') orderInput(d.input, step.to);
+  else if (step.order === 'min') orderInput(d.input, target.def.min);
+  else if (step.order === 'next') orderInput(d.input, (stops.find(st => st.v > target.value + 1e-6) || stops[stops.length - 1]).v);
+  else orderInput(d.input, target.value, target.value !== target.def.min && !stops.some(st => st.v === target.value));
+  readout.textContent = `${it.def.name}: ${step.say}`;
 }
 function workSteps(dt) {
   let moved = false, under = false;
@@ -804,7 +868,7 @@ function identify(clientX, clientY) {
   // A door answers a tap: it opens, or shuts again.
   for (let n = hit.object.parent; n; n = n.parent) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
-    if (it && it.def.auto) { it.open = !it.open; select(null); readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
+    if (it && it.def.auto) { tapInput(it); select(null); return; }
   }
   keysFor(hit.object);
   // The deck the thing belongs to: its parent, or its parent's parent when it is a moving part.
@@ -854,7 +918,7 @@ function nameOnFoot(clientX, clientY) {
   // What is worked by a tap answers one from within reach: it opens, or shuts again.
   if (hit && hit.distance < 3) for (let n = hit.object.parent; n; n = n.parent) {
     const mover = movers.find(m => m.node === n), it = mover && inputs.get(mover.def.input);
-    if (it && it.def.auto === 'tap') { it.open = !it.open; readout.textContent = `${it.def.name}: ${it.open ? it.def.above || 'open' : it.def.rest || 'shut'}`; return; }
+    if (it && it.def.auto === 'tap') { tapInput(it); return; }
   }
   if (hit && hit.distance < 8) keysFor(hit.object);
   if (!systems) return;
@@ -1752,8 +1816,10 @@ async function start() {
   measure(); applyLens();
   home(0);
   requestAnimationFrame(frame);
-  // For checks and pictures: the same moves the controls make.
-  window.__ferry = {
+  // For checks and pictures: the same moves the controls make. They are handed out only to a browser that a program is driving
+  // (the page checks, the picture tools) or when asked for by name (?hooks): a visitor's page gives no one a way to her model
+  // (the owner, 12 November 2026: "one shouldnt be able to download the 3d models, its just a demo").
+  const hooks = {
     setExplode, setCut, setInput, setXray, home, select, showDeck: (id, on) => showDeck(decks.find(d => d.id === id), on), setPanel, identify,
     lookFrom, focusAt, enterWalk, leaveWalk, hopDeck, floorAt, showTab, nameOnFoot, get systems() { return systems; },
     zoomWalk, setWalkZoom, get walkZoom() { return zoomShown(); }, zoomLimits: [ZOOM_MIN, ZOOM_MAX],
@@ -1777,12 +1843,15 @@ async function start() {
     /** For checks: her particulars, as the file says them (half her length turns metres from the transom into z). */
     ship: doc.header.ship,
     step: id => stepInput(id),
+    /** For checks: a tap on a thing that a tap works, with all that follows from it (what it trips, what it holds, what refuses it). */
+    tap: id => { const it = inputs.get(id); return it && it.def.auto ? tapInput(it) : false; },
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },
     movers: () => movers.map(m => ({ id: m.def.id, input: m.def.input, matrix: m.node.matrix.toArray(), shown: m.node.visible })),
     get spaces() { return decks.flatMap(d => d.spaces.map(sp => ({ deck: d.id, id: sp.id, name: sp.name, min: sp.min, max: sp.max, stand: sp.stand || null }))); },
     look: { renderer, scene, sun, floor, camera, controls, get materials() { return materials; }, fitSun, redraw, draw, drawing, lite, drawnBy },
     get state() { return { ...state, walk: walk && { x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, eye: walk.eye, yaw: walk.yaw, pitch: walk.pitch, room: readout.textContent, climbing: !!walk.climb, ladder: climbBtn.hidden ? null : climbBtn.textContent }, floors: floors.tris.length / 9, heads: heads.tris.length / 9, walls: walls.tris.length / 9, doorways: doorways.length, inputs: Object.fromEntries([...inputs].map(([id, it]) => [id, it.value])), decks: decks.map(d => ({ id: d.id, shown: d.node.visible, spaces: d.spaces.length })), moving: !!(move || explodeMove) }; },
   };
+  if (navigator.webdriver || /[?&]hooks\b/.test(location.search)) window.__ferry = hooks;
 }
 start().catch(err => {
   console.error(err);

@@ -83,6 +83,7 @@ ELSEWHERE = {
     'STG': 'Steering-gear room',
     'THR': 'Bow thruster room',
     'EGR': 'Emergency generator room',
+    'BRG': 'Navigation bridge',
     'ACC': 'Crew accommodation, bridge deck',
     'PAX': 'Passenger deck',
     'CAR': 'Car deck',
@@ -106,6 +107,9 @@ SUBSYSTEMS = [
     dict(id='PIP', name='Piping', text='Compressed air to the whistle, fresh water to the window wash, the fire main, the scuppers.'),
     dict(id='LSA', name='Life-saving', text='Lifebuoys, lifejackets for the watch, pyrotechnics, first aid.'),
     dict(id='EMG', name='Emergency power', text='The emergency generator set in its own room, with what starts it, feeds it, cools it and takes its exhaust away, and the emergency switchboard it supplies.'),
+    dict(id='RMP', name='Stern ramp and door', text='The leaf, its hinges and cylinders, its end flaps, the ten cleats that hold it shut, their switches, and the stand it is worked from.'),
+    dict(id='HYD', name='Cargo access hydraulics', text='The power pack in the hydraulic pump room, its pumps, valves, filters and cooler, and the pipes to the stern.'),
+    dict(id='GEN', name='Power generation', text='The three diesel generating sets in the auxiliary engine room. Not installed: their places are marked.'),
     dict(id='OUT', name='Outfit', text='The room itself and its furniture: console, stand, chairs, chart table, doors, windows, linings.'),
 ]
 
@@ -114,20 +118,33 @@ SUBSYSTEMS = [
 # Recalled from IEC 60092-352 practice and not checked against the text: 6 % in all from a switchboard to the last consumer
 # on alternating current, 10 % on a battery supply; the ratings below are for two-core rubber-insulated marine cable at 45 °C,
 # rounded down. The resistivity is the one the Minato Maru's feeder list works out to (copper, hot).
-BREAKERS = (2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100)
+BREAKERS = (2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 400, 630)
 CABLE_RATING = {1.0: 13, 1.5: 17, 2.5: 24, 4: 32, 6: 41, 10: 57, 16: 76, 25: 101, 35: 125}
+# Three-core cable on three-phase power (recalled likewise: rubber-insulated marine cable at 45 °C, rounded down).
+CABLE_RATING_3 = {1.5: 15, 2.5: 21, 4: 28, 6: 36, 10: 50, 16: 67, 25: 89, 35: 110, 50: 133, 70: 171, 95: 207, 120: 240, 150: 275, 185: 314, 240: 369}
 RHO = 0.0221                  # ohm mm² per metre
 DROP_ONE_CABLE = 5.0          # per cent
-DROP_TOTAL = {'AC': 6.0, 'DC': 10.0}
+DROP_TOTAL = {'AC': 6.0, 'AC3': 6.0, 'DC': 10.0}
 MARGIN = 1.25
 ALLOWANCE = 1.10              # a cable is a tenth longer than the way it is laid along (bends, making off)
 
 
 def amps(watts, volts, kind, pf=0.9):
-    """Full-load current of a single-phase or direct-current consumer."""
+    """Full-load current of a consumer: single-phase or direct current, or (`AC3`) a line of a three-phase supply."""
+    if kind == 'AC3':
+        return watts / (3 ** 0.5 * volts * pf)
     return watts / volts if kind == 'DC' else watts / (volts * pf)
 
 
-def drop_volts(length, current, mm2):
-    """Voltage lost along a two-wire cable (out and back)."""
-    return 2 * length * current * RHO / mm2
+def drop_volts(length, current, mm2, kind='AC'):
+    """Voltage lost along a cable: out and back on two wires; between lines on three-phase."""
+    return (3 ** 0.5 if kind == 'AC3' else 2) * length * current * RHO / mm2
+
+
+def rating(mm2, kind='AC'):
+    """What a cable of this copper may carry."""
+    return (CABLE_RATING_3 if kind == 'AC3' else CABLE_RATING)[mm2]
+
+
+def cores(kind='AC'):
+    return 3 if kind == 'AC3' else 2

@@ -88,26 +88,22 @@ CHOCK_EYE = 0.6            # the opening left in the bulwark for a panama chock 
 
 # ---- The stern door and its ramp (ga.py: an opening 9.0 m wide and 5.2 m high; a ramp of 11 m). The owner, 11 November
 # 2026: "How do you get on to cargo deck from this ship ? Aft ramp ?", "It needs a hydraulic ramp", "And lights , draw the
-# aft in cad".
+# aft in cad"; and 12 November, of the ramp as first built: "make the ramp more realistic its a simple system that could be
+# animated much better, and hydraulics and a local control panel that is wired up".
 # The ramp is how vehicles come aboard. Raised, it is the stern door: it lies against the transom from outside, covers the
 # opening and stands on over the upper deck, as the pattern's does. It turns on its hinges just abaft the main deck's sill
-# and lowers aft onto the quay: level with the deck at 90 degrees, and 10 degrees further for a quay that lies lower.
-# It is worked by two double-acting hydraulic cylinders, one at each side of the opening, each trunnioned on a pedestal on
-# the main deck 6.0 m inside the stern and pinned to a lug on the ramp's roadway 2.2 m over its hinges, which stands in
-# through the opening: 5.94 m between its pins with the ramp raised, 8.64 m with it level, a stroke of 2.70 m. `ram_x` is
-# where they stand off the centreline, inside the opening's width. Heights are over the waterline; the second of each pair
-# is metres inside the transom's plating (negative: abaft it). `barrel` is the cylinder's length from its foot pin,
-# `rod_from` where the rod's inner end lies with the ramp raised; `column` the pedestal's column, which ends `column_over`
-# above the foot pin, on a footplate.
+# and lowers aft onto the quay: level with the deck at 90 degrees, and 4 degrees further for a quay that lies lower (at 10,
+# as it first was, its end lay 0.9 m under water at her draught).
+# Here are the leaf's own measures only, which her markings and her shell read too. Everything that works it (its hinges,
+# cylinders, flaps, cleats, power pack, pipes, control stand, cables and where their feeds end) is in stern_place.py, which
+# the builder (stern_gear.py), the yard's drawing JS3-304 and the register (systems/stern.py) all read.
 STERN_DOOR = dict(half=ga.STERN_DOOR['half'], height=ga.STERN_DOOR['height'])
 # The stern ramp: a box girder 0.42 m deep (`thick`: its outer skin and its roadway, metres forward of the transom's plating
 # when it is raised). Its hinge line (`hinge`: height, metres forward of the transom) lies 45 mm abaft the transom and 15 mm
 # under the main deck, and the roadway's face 15 mm forward of that line: so the roadway comes down level with the main
 # deck, 45 mm from the sill.
-STERN_RAMP = dict(id='stern-ramp', lowered=100, half=ga.STERN_RAMP['half'], length=ga.STERN_RAMP['length'], thick=(-0.45, -0.03), foot=-0.015,
-                  hinge=(MAIN_DECK - 0.015, -0.045), lug=0.14,
-                  ram_x=4.25, trunnion=(MAIN_DECK + 2.60, 6.00), pin=(MAIN_DECK + 2.22, 0.07), barrel=3.70, barrel_d=0.30, rod_d=0.16, rod_from=0.45,
-                  column=0.30, column_over=0.16, footplate=(0.60, 0.90))
+STERN_RAMP = dict(id='stern-ramp', lowered=94, half=ga.STERN_RAMP['half'], length=ga.STERN_RAMP['length'], thick=(-0.45, -0.03), foot=-0.015,
+                  hinge=(MAIN_DECK - 0.015, -0.045))
 # The lights of the after end. Each: what it is for, where (x off the centreline, height over the waterline, metres AFT of
 # the transom's plating).
 #   the sternlight   white, over 135 degrees astern (COLREG rule 21, as the yard recalls it): at the stern on the

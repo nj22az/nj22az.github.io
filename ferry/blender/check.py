@@ -37,7 +37,9 @@ def read(path):
 
 
 def positions(header, block, rec):
-    lo, hi = np.array(header['bounds']['min']), np.array(header['bounds']['max'])
+    # (fine work is kept in a box of its own: assemble.py)
+    b = rec.get('box') or header['bounds']
+    lo, hi = np.array(b['min']), np.array(b['max'])
     return np.frombuffer(block, '<u2', rec['vertices'] * 3, rec['pos']).reshape(-1, 3) / 65535 * (hi - lo) + lo
 
 
@@ -69,6 +71,21 @@ def main():
     check(hull and all(m.get('from') == 'blender' for m in hull), 'every mesh of the hull is built in Blender')
     check(all(m.get('from') == 'blender' for g in groups.values() for m in g['meshes']), 'every mesh of every part is built in Blender: nothing of another ship is in the file')
     check(any(b['part'] == 'hull' for b in header['ship'].get('built', [])), 'the header names the hull as her own')
+    # Whose she is (the owner, 12 November 2026: "I need you to water mark, models ... incase someone just steals them"): the
+    # file names its owner, and every corner carries her maker's mark (mark.py). A file without it is not to be published.
+    import mark as M
+    rights = header.get('rights') or {}
+    said = rights.get('mark') or {}
+    check(rights.get('owner') == M.OWNER and said.get('scheme') == M.SCHEME and said.get('id'), f"the file names its owner ({rights.get('owner')}) and says it carries her maker's mark (fingerprint {said.get('id')})")
+    k = M.key(required=False)
+    if k:
+        q = np.concatenate([np.frombuffer(block, dtype='<u2', count=m['vertices'] * 3, offset=m['pos']).reshape(-1, 3) for g in groups.values() for m in g['meshes']])
+        share, n, sd = M.read(q, k)
+        check(said.get('id') == M.fingerprint(k) and share == 1.0, f"read with this machine's key, {100 * share:.2f} % of her {n:,} different corners carry the mark")
+    else:
+        print("      (no key on this machine: the mark is said by the file, not read)")
+    hidden = [m for g in groups.values() for m in g['meshes'] if header['materials'][m['material']].get('hidden')]
+    check(len(hidden) >= 4, f"the studio's name and signs lie in her plating in {len(hidden)} meshes the page never draws")
     tri = sum(m['triangles'] for m in hull)
     total = sum(m['triangles'] for g in groups.values() for m in g['meshes'])
     size = os.path.getsize(a.file)
@@ -78,6 +95,15 @@ def main():
     # draws it is for the page to solve, not for the drawing to pay for.
     check(tri > 80000, f'the hull has {tri:,} triangles (no upper limit)')
     print(f'      the file is {size / 1e6:.2f} MB with {total:,} triangles (said, not limited: JSY-STD-404)')
+    # Fine work (engraved lettering, a dial's scale and needle) is kept in a box of its own, where a step is a few hundredths of
+    # a millimetre: over her bounds a step along her length is 1.9 mm, and 7 mm letters on a fore-and-aft face lost their uprights.
+    fine = [m for g in groups.values() for m in g['meshes'] if m.get('box')]
+    if fine:
+        lo, hi = np.array(header['bounds']['min']), np.array(header['bounds']['max'])
+        within = all((np.array(m['box']['min']) >= lo - 1e-6).all() and (np.array(m['box']['max']) <= hi + 1e-6).all() for m in fine)
+        step = max(float((np.array(m['box']['max']) - np.array(m['box']['min'])).max()) for m in fine) / 65535 * 1000
+        check(within and step < 0.1, f'her fine work (lettering, instruments) is kept in {len(fine)} meshes with a box of their own, each within her bounds: '
+              f'a step of {step:.3f} mm at most there ({(hi - lo)[2] / 65535 * 1000:.1f} mm along her length elsewhere)')
     # ---- Her own pictures and her register travel with the model.
     here = os.path.dirname(os.path.abspath(a.file))
     sheets = header.get('atlases', [])

@@ -82,6 +82,84 @@ the first Chisum's, landed aboard as blocks.
 What is not in her yet is listed in the design basis (section 7) and in the audit's open list: her machinery, the fitting
 out of the rooms, the lift's hoisting gear, the ramp cover, the chain lockers, a second escape from the engine room.
 
+## The stern ramp and what works it (`blender/stern_place.py`, `blender/stern_gear.py`, `systems/stern.py`, JS3-304)
+
+The owner, 12 November 2026, with a picture of the ramp as first built (a slab on two long cylinders from yellow posts on the
+deck): "make the ramp more realistic its a simple system that could be animated much better, and hydraulics and a local control
+panel that is wired up, with component list and proper wiring , as a place holder now, draw all feed to the engine room, but all
+ends need to be marked so we know where to instal the Generators and electrical cabinets". And while it was built: "There needs to
+be a latch for the ramp too, so it doesnt become dangerous".
+
+**Drawn first** (the owner's rule: the drawing before the steel): [JS3-304](yard/drawings/JS3-304-stern-ramp-and-after-end.svg),
+revision 1, three sheets made by `yard/drawings/stern_drawing.py` from the same numbers the model is built from: the arrangement
+and the motion as a table; the [hydraulic diagram](yard/drawings/JS3-304-2-stern-ramp-hydraulics.svg) with its parts; the
+[electrical installation](yard/drawings/JS3-304-3-stern-ramp-electrical.svg): the one-line diagram from the generating sets'
+places to the last way of the starter panel, the control stand's sixteen terminals, the cable schedule, the marked ends.
+
+**What was wrong with the first ramp** (`stern_place.py` says it and `wrong()` works it out; `python3 ferry/blender/stern_place.py`
+prints the mechanism): its cylinders ran nearly level and passed 0.66 m from the hinge with the leaf down, so each would have had to
+pull about 2,200 kN, twice what a 300 mm cylinder gives; they crossed the after mooring stations' doors at breast height; it went
+10° under the level, 0.9 m under water at her draught; and it had no hinges but a pin each side, no flaps, no cleats, no latch, no
+seal, no pump, no pipe, no control.
+
+| | As built now |
+|---|---|
+| Leaf | A box girder 11.0 × 9.4 m, 0.42 m deep, tapered over its last 1.6 m, about 55 t (the design basis's estimate). Non-slip bars across the driveway; the part that meets the transom and the stern bulwark is left flat (the door's sealing face). Clear driveway 8.0 m between two yellow lines |
+| Hinges | Six at the sill: a lug of the ship in a slot of the leaf's foot, one 90 mm pin through all |
+| Cylinders | Two, bore 300, rod 170, stroke 3.40 m, each hung from a bracket under the upper deck's web beam at 3.6 m and pinned to a lug on the leaf 2.2 m from the hinge: 4.73 m between pins raised, 7.87 m level. They pull: at most 952 kN each, 198 bar. A load-holding valve on each: a burst hose does not drop the ramp |
+| End flaps | Eight of 1.1 × 1.2 m on one hinge rod, folded back over the roadway when stowed |
+| Safety latches | **One on each door post at 1.1 m: an arm whose tooth falls by its own weight behind a striker on the leaf. No oil holds it.** Lifted 30° by a small cylinder on the cleats' let-go line, or by its handle; a pin for the sea passage; a switch |
+| Cleats | Eight bolt cleats (a 70 mm bolt through the door post into a keeper on the leaf, four a side) and two hook cleats at the door's head, each with its cylinder, hoses and switch |
+| Seal | Rubber on the transom round the opening's sides and head |
+| Power pack HPU-R | In the hydraulic pump room: a tank of 1,500 l on a drip tray, two pumps of 37 kW and the cleats' pump on its lid, pressure block, cooler with fan, return filter, level glass, hand pump |
+| Valve stand, starter panel | Three lever valves with solenoids on the inboard wall; the starter panel RSP on the forward wall, **whose two leaves open** on the isolator, the starters, the transformer and the forty terminals JS3-304 lists |
+| Gauges | Three in the pump room, each standing on what it reads from as a real one does (the owner, of the first, on a bare bar: "Is this a floating gauge ?"): a hexagon nipple in a port in the block's top, a brass gauge cock with a red tee handle, a union nut, and the gauge's own socket into the underside of its case. PG1, the system's, on the pressure block; PG2 and PG3, lines A and B, on the valve stand (`stern_place.ROOM_GAUGES`, `stern_gear.gauge_mount`). The pumps' deliveries go into the block's outboard face, each through a non-return valve |
+| What one is looking at | [JS3-304 sheet 4](yard/drawings/JS3-304-4-hydraulic-power-pack.svg): the room from above, every part numbered, every pipe named, the oil and its level marks; and the operating instruction [JS3-304-M1](yard/manuals/JS3-304-M1-hydraulic-power-pack.md), which uses the sheet's numbers (the owner: "Make a drawing for the hydraulic pack I don't know what I'm looking at and how it's connected and what each pipe does etc , make an instruction for it as well") |
+| Pipes | 163 m: A and B to the cylinders, C and D to the cleats and latches, the conduit of the control stand, pressure and return; 200 clamps. Level runs lie in one layer on a wall, upright runs in a second, so no two lines cross in one plane (`stern_place.routes`) |
+| Control stand CS-R | **A real hydraulic control stand** (the owner, of the first one, a post with four lamps and a stick: "Control panel for the hydraulics need to be realistic"): a steel desk 0.62 m long against the mooring station's wall beside the door, port side, with two guard posts and a beacon. On the desk: the emergency stop, START and STOP for each pump, and two spring-centred levers, CLEATS (lock, open) and RAMP (raise, lower). On the upstand: two pressure indicators, 0 to 250 bar with a red mark from 210 (SYSTEM, RAMP LINE A), eight engraved lamp windows, the key switch, lamp test, horn, and the instructions on an engraved plate. Its faces are drawn on JS3-304 sheet 3. **It works, and it refuses what a real one refuses:** no lever does anything until a pump runs; the ramp is not lowered until the cleats are open; the cleats are not locked until the ramp is home; the emergency stop trips both pumps and holds the ramp. Started, a pump lights its window and the SYSTEM needle climbs to 195 bar (here and on the gauge in the pump room); as the ramp comes down the RAMP LINE A needle climbs with the leaf's weight: 68 bar at 30°, 189 bar level. Its door opens on the 28 terminals of X1 |
+| Marked places | In the main switchboard room and the auxiliary engine room: an outline on the floor, a sign and the tagged, coiled cable ends for the main switchboard, its 440 V section, the two transformers and the three generating sets. **None is installed.** The feeder and the placeholders' feeders are drawn through her in the X-ray (red: 440 V and 690 V) |
+
+**Its order of work.** One control (the Stern ramp keys in the bar, which work it in one go; or the stand's two levers, which work it in two steps: the cleats to 6, then the ramp) runs from 0 to 94. Each moving part reads it through
+its own table (`map`, *The file format*): the latches lift over the first 3, the cleats let go over the first 5, the leaf turns from
+6 and is level at exactly 90, the flaps fold out between 38 and 78; 4° more for a low quay. 1.5 of the control a second: a minute
+to level (a real ramp of this size takes two to four; with both pumps this one raises in 94 s by the diagram's figures).
+
+**Not settled, plainly.** No scantling is calculated (the leaf, the pins, the brackets' seating on the web beam). The quays and the
+tide are not known. The switchboards, transformers and generating sets are places from the machinery design basis, a proposal the
+owner has not yet approved; the question of rebuilding the engine room's platform is still open. The floodlights and the signal at
+the stern have no circuit. The ramp cover over the fixed ramp, which the same power pack is to work, is not built. The three-core
+cable ratings in `systems/ship.py` are recalled, not read.
+
+## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
+
+The owner, 12 November 2026: "I need you to water mark, models, with my logo and these icons, incase someone just steals them, these
+are invisible watermarks, one shouldnt be able to download the 3d models, its just a demo".
+
+**Three marks, none of them seen aboard.**
+
+1. **In the numbers** (`mark.py`). The file keeps each corner's place as whole numbers; across her breadth one step is 0.3 mm. The
+   last bit of that number is set, for every corner, to a bit worked out from the corner's own place and a secret key. Two corners at
+   one place move alike, so no seam opens. With the key, any copy can be read: `python3 ferry/tools/watermark.py --check <file>` (her
+   own file, an OBJ or an ASCII PLY) counts the corners that carry the right bit. Hers: all of them. Anything else: half. It survives
+   another format, another order of corners, being cut into pieces; it does not survive scaling without saying by how much, remeshing,
+   or snapping to a coarser grid.
+2. **In the steel** (`makers_mark.py`). JOHANSSON ANIMATION STUDIOS with its four signs (ship, gear, lightning bolt, film camera), the
+   owner's name and the year, as flat shapes in the middle of her plating: in her side amidships each side, in the transom beside the
+   stern door, in the main deck, in the upper deck, and inside the stern ramp's box girder. Their look is `hidden`: the page never
+   makes a mesh of them, so they are not seen aboard, in the X-ray or with her decks apart; whoever opens the file's geometry finds them.
+3. **In the header** (`assemble.py`: `rights`). The owner, the notice (a demonstration; not to be downloaded, copied or reused), the
+   mark's scheme and the key's fingerprint.
+
+**The key** is not in this repository (which is public). It is read from `CHISUM_MARK_KEY` or from `~/.config/chisum/watermark.key`;
+`python3 ferry/tools/watermark.py --new-key` makes one, once. **Keep a copy of it: without the key mark 1 cannot be proven.**
+`assemble.py` stops without a key (`--unmarked` builds a file that `check.py` refuses, for a machine that has none).
+
+**What keeps the model from being taken, and what does not.** The page offers no download. The file is in the yard's own format,
+which no other program reads. The page's test hooks (`window.__ferry`, through which a program can reach her scene) are handed out
+only to a browser a program is driving, or with `?hooks` on the address. Help carries one line of notice. **None of this makes
+taking her impossible:** what a browser can show, its user can keep, and this repository holds the programs she is built with. The
+marks are for proving whose a copy is. The studio's mascot is not in the stamps: its artwork is not in this repository.
+
 ## Superseded by revision D: the Chisum at 68 m, her bare ship (11 November 2026)
 
 *She is a ro-ro freight ferry of 124.8 m now (the section above). This is the record of the ship she was.*
@@ -937,7 +1015,19 @@ spaces to a multiple of four bytes), then one binary block.
 - A mesh record gives byte offsets into the block: `pos` (Uint16 × 3, quantised over `bounds`), `nor` (Int8 × 3), `col`
   (sRGB Uint8 × 3), `uv` (Uint16 × 2, into the atlas, only on textured meshes) and `idx` (Uint16, or Uint32 when `wide`).
   `from: "blender"` marks a mesh of her own build; the others are the Town's export.
+- **Fine work.** Over `bounds` one step of `pos` is 0.3 mm across her breadth, 0.44 mm in height and **1.9 mm along her
+  length**: as wide as the upright of a 7 mm letter. On a face that runs fore and aft (the ramp's control stand, the gauges
+  in the hydraulic pump room) engraved letters lost their uprights and a dial's scale its marks. A part built `fine`
+  (`Part(..., fine=True)` in `blender/shipyard.py`: lettering, a dial's face, scale and needle, a button, a lamp window) is
+  written as a mesh of its own (`export_jmf.py`), and `assemble.py` keeps it, by the cell of a 2 m grid it lies in, in a box
+  of its own: the record's `box` (`min`, `max`), over which its `pos` is quantised instead of over `bounds` (a step of about
+  0.03 mm). A record without `box` is read as before. Such a mesh carries her maker's mark in the same bit; in a stolen copy
+  written as plain numbers those few corners no longer read (they are read against her bounds), the rest of her does.
+  What is fine and stands on a part that is not must stand clear of it by more than that part can be out of place (0.45 mm
+  across her breadth, 0.95 mm along her length): painted straight onto a coarse face, lettering stands 1 mm off it.
 - `ship.built[]` lists the sections that are her own (`part`, `section`, `date`); `source.blender` names the builder.
+- `rights` says whose she is: `owner`, `holder`, `year`, `notice`, and `mark` (`scheme`, and `id`, the fingerprint of the key her
+  corners are marked with: *Whose she is*). A material with `hidden: true` is in the file and is never drawn: her maker's marks.
 - **Parts that move.** `inputs[]` are what can be worked on the page: `id`, `name`, `min`, `max`, `step`, `unit`, and
   how a setting is said (`below`, `above`, `rest`: "Rudder 20° to port", "Rudder amidships"). The page gives each an
   icon on its rail and three keys on its desk (no sliders since 11 November 2026: *The bar*, below): `keys` names them,
@@ -945,7 +1035,7 @@ spaces to a multiple of four bytes), then one binary block.
   one-way thing's run ends by itself (the ramp: level at 90°, then the low quay), and `rate` is how fast the part follows
   its order, in its unit a second. There are two exceptions. An input with `auto: "near"` is a door: it opens to whoever comes near on foot, and to a
   tap; with `auto: "tap"` it is worked by a tap only, on foot too (the drinks machine's door and coin return: nobody opens
-  them by walking past). An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
+  them by walking past); one that only goes from 0 to 1 is a push-button that is on or off (the ramp's two pump buttons). An input with `steps` is a lever: `steps[]` are its positions (`v`, the angle in degrees, and `say`, what the
   position means), `home` the one it rests in, `fitting` the component of the register it belongs to; a tap on the lever
   or on its fitting moves it to the next position, to the end of its travel and back, and it travels there in a moment
   (`stepInput`, `workSteps`). Several movers may answer one input: the same lever at three stations.
@@ -955,7 +1045,17 @@ spaces to a multiple of four bytes), then one binary block.
   that turns about the pivot: the tie bar), `aim` (it swings about `anchor` to keep pointing at `pin`, which turns about
   the pivot: a ram's cylinder; with `extend` it also runs along that line by as much as the distance has changed: the
   rod). A mover with `on` rides on another moving part and goes with it after its own motion (a flap in a door); one
-  deep. A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
+  deep. A mover with `map` (a table of [input, value] pairs, straight between them) answers to its input read through
+  that table instead of to the input itself: so one control works several things in their order (the stern ramp: its
+  safety latches lift and its cleats let go over the first 5 of its control, the leaf turns from 6 and is level at exactly
+  90, its end flaps fold out between 38 and 78). An input with `steps` and `drives` is a lever that gives another
+  thing its orders (the two levers at the ramp's control stand): each position says what it orders (`to`: a place to go
+  to; or `order`: `min`, `next` or `hold`) and what must be so for it (`within`: where the thing must stand; `refused`: what
+  is said otherwise); it does nothing while what it names `unless` is on (the emergency stop) nor unless one of what it
+  `needs` is on (a pump runs); it springs back to its middle when the thing has arrived, and the next tap takes it the
+  other way (`drive`, `workOrders`). An input worked by a tap may name what it `trips` and what it `holds` when it comes
+  on, and what keeps it off (`unless`, `refused`): the emergency stop and the two pumps (`tapInput`). A `level`'s `fill`
+  may be several things, any of which fills it, and with `fall` it sinks by itself when none is on: the pumps' pressure. A mesh record's `mover` names the motion it takes part in; the page puts the meshes of one motion in one group
   inside their deck and moves the group. The rudder's angle is negative to port and positive to starboard, as a helm
   indicator shows it; a positive angle turns about the upright axis so that the blade's after edge goes to starboard.
   In Blender a moving part is an object with the custom property `mover` (`Part(..., mover='rudder-p')`), and
@@ -1248,6 +1348,66 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, late evening: the control stand made a real one; fine work; the gauges on their mounts; legends that fit
+
+The same checkout, server and way of working as the note under this one. **Said as it happened:** the conversation the
+stand was built in was cleared after the fifth run of `make.sh`, before its page checks were on record (nothing of a
+conversation is kept on this Mac while `/Volumes/Development` is away: `HANDOVER.md`). The session after it found the build
+in the work tree, ran the checks, looked at the stand from arm's length and found its lettering broken. The owner then
+looked at the pictures and found two things more: "Is this a floating gauge ?" and "Labels need to be wrapped , it should
+behave like reality emergency stop can't have its text bleed like that". The seventh run is the one committed.
+
+| Check | Result |
+|---|---|
+| `make.sh`, fourth run (the stand rebuilt as a desk with indicators, lamp windows, levers and interlocks) | **"built: every check passed"** (3,291,737 triangles in the file, 21.91 MB). Four pictures of it (`4-stand/`): the light of the lamp windows and of the beacon lay on the wall behind the stand whether they were lit or not (the light of a place is traced once, with everything at rest), and the two dials showed as black discs |
+| `make.sh`, fifth run (a signal lamp gives its place no light: `bake: false` in `shipyard.LOOKS`, kept by `light.py`) | **"built: every check passed"**: 3,339,456 triangles built, 3,294,137 in the file, 21.94 MB, 197 motions. 12 min 11 s |
+| The nine page checks on the fifth build, each by itself | **all pass, each on its first run: doors 124, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5.** `doors.cjs` is six checks longer: the stand's one check is seven now (nothing without a pump; the pump's lamp and both pressure gauges, 195 bar; no lowering with the cleats locked; the cleats lever; the ramp lever, line A's needle and the beacon; the emergency stop; raise and lock) |
+| Seven pictures of the fifth build from arm's length (`5-close-as-found/`, at twice the size) | The wall is clean and the dials are white with their scales (what cured the black discs of the fourth run is not on record). **The lettering is broken: uprights are missing all over the stand** ("CONTRO_ STAND CS- ", "100" read as "ICO", "RAMP _INE A"), the needles and the red marks are jagged, the buttons lumpy. No check saw it, and Blender's quick look shows the lettering whole |
+| The same lettering drawn from the numbers the file keeps (the part file's corners put through `assemble.weld`) | Whole as built, broken as kept: over her bounds a step is 0.30 mm across her breadth, 0.44 mm in height and **1.91 mm along her length**, and the stand's faces run fore and aft |
+| A trial build of the stern gear with its fine parts, kept as `assemble.py` keeps them | 22 fine meshes in 32 boxes, the coarsest step 0.012 mm, no triangle lost to the weld; the lettering drawn from those numbers is whole |
+| `make.sh`, sixth run (fine work: *The file format*) | **"built: every check passed"**: 3,295,720 triangles in the file (1,583 more: none are lost to the weld in the fine meshes), 21.97 MB; fine work in 32 meshes, a step of 0.012 mm at most; the mark read at 100.00 %. The same seven pictures (`6-close-fine/`) and twenty-seven fixed views (`7-built-fine/`): every legend on the stand reads whole, the dials' figures and marks are sharp, the buttons and bezels round; the pump room's gauges likewise. Page checks on it: doors 124, bridge 37 and sight 24 passed; the run was stopped there, because the owner's remarks meant a seventh build |
+| The owner's two remarks, looked into | **The gauge** was held, by a bare 16 mm bar that came 3 cm out of the pressure block's face and turned up to it; the picture looked along the stub, so the bar seemed to end in the air; and no gauge is mounted so (no socket, nut, gauge cock, nor a body behind its dial). **Found beside it:** the two main pumps' delivery pipes ended in the air 0.15 m short of the pressure block each end (each is held by its pump, so `afloat.py` passed them), and lay 4 mm inside the cleat pump's pipe where they crossed. **The legend** of the emergency stop was two straight lines across a round ground |
+| Three trial builds of the stern gear and ten quick looks in Blender (`9-trial-mounts/`) | The mounts as built (`stern_place.ROOM_GAUGES`, `stern_gear.gauge_mount`); the system's gauge moved from 7 mm before the filter's bowl to clear air between the return line and the relief valve; the deliveries into the block's outboard face, each with its non-return valve, 40 mm over the cleat pump's pipe; the legend round its ring. `stern_gear.fits` measures every legend of the stand against what it is on and stops the build if one is too long: none is |
+| `make.sh`, seventh run (as committed) | **"built: every check passed"**: 3,344,269 triangles built, 3,300,537 in the file, 21.99 MB, 197 motions; the mark read at 100.00 % of 1,739,769 corners; fine work in 38 meshes, a step of 0.012 mm at most; 0 pairs of faces in one plane among 1,234 pieces; 0 afloat of 30,781; 85 panes, nothing built over one; 459 runs (332 m), every one carried; the light traced. 12 min 34 s |
+| The nine page checks on the seventh build, each by itself | **all pass, each on its first run: doors 124, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5** |
+| Pictures of the seventh build (`10-built-mounts/`: the twenty-eight fixed views and two from arm's length) | Drawn on the Mac's graphics card, no error on the page. The three gauges stand on their gauge cocks and read as at the control stand; the deliveries reach the block; the emergency stop's legend goes round its ring. Four opened and sent to the owner |
+| JS3-304 drawn again, four sheets (`stern_drawing.py`); looked at as pictures made by `rsvg-convert` | Sheet 2: a gauge cock under each gauge, and PG1 reads 0 to 250 bar (the sheet said 0 to 400; the dial that is built reads to 250). Sheet 3: the emergency stop's legend round its ring (first as a text on a path, which `rsvg-convert` does not draw: letter by letter now). **Sheet 4 is new**: the power pack as it stands in its room, every part numbered, every pipe named, the oil and its level marks; with the operating instruction `yard/manuals/JS3-304-M1-hydraulic-power-pack.md`. Sheet 4 opened whole; of sheets 2 and 3 the changed places |
+
+Not done: a phone or tablet; a frame's cost. Lettering elsewhere aboard was not gone through for the fault found on the stand
+(whatever is lettered in paint on a face that runs fore and aft: fittings on the bridge's side walls, the marked places' signs,
+the starter panel's insides). **The power pack does not yet work in full** (the owner, the same evening: "Also specify the oil
+and the level of oil etc , it needs to be fully functional"): the oil and its levels are specified (`stern_place.FLUID`,
+`TANK`; the instruction, section 4) and nothing of them is built: the level glass has no marks and does not move, the oil's
+temperature is not kept, the cooler's fan does not turn, the return line does not go through the cooler and the return filter,
+the cleat pump has no line of its own, the lines carry no markers, the valve stand's levers, the hand pump and the gauge cocks
+are not worked. Sheet 4 and the instruction say the same.
+
+### 12 November 2026, evening: the stern ramp and what works it; her maker's marks
+
+On the work branch in the main checkout; the site served from it on port 8766 by a threading server; each page check by
+itself, none beside a build. Three whole runs of `make.sh`; before them, the four slow checks were tried twice on a trial
+build of the whole ship (`build.py -- --part`), which is where most of the faults were found.
+
+| Check | Result |
+|---|---|
+| `python3 ferry/blender/stern_place.py` (the mechanism, before anything was drawn) | **holds**: cylinders 4.725 m between pins raised, 7.868 m level, run out 3.254 m of a 3.40 m stroke; at most 952 kN each, 198 bar; the flaps' ends 0.04 m over the water at the lowest. The first ramp's arrangement, put through the same sums: 0.66 m from the hinge, about 2,200 kN a cylinder |
+| The pipes' routes (`stern_place.routes`), every pair of lengths of different lines | none nearer than their radii and 8 mm |
+| `python3 ferry/systems/register.py` | holds: 225 components, 46 circuits on 6 boards, 37 nets, 13 pipes. RSP: 86.7 kW, 126.4 A, 160 A, 3 × 70 mm², 15 m, 0.2 %. Its first run **failed**: four of the new tags (`ELD-11` to `13`, `ELD-21`) were the bridge's already; renamed |
+| `python3 ferry/systems/prove.py` | proven: 94 consumers, 61 breakers, 7 conditions (the ramp's panel is dead in a blackout, as it should be) |
+| Trial build of the whole ship, `zfight.py` | **3 pairs**: a pump motor's terminal box on a rib of its motor; a trunnion pin's end in a cheek's face; a conduit's side against the tray's edge. Put right: 0 pairs |
+| The same, `afloat.py` | **20 things in the air**: the signs and tags of the marked places (1 mm from their posts, with no corner near: let 2 mm into them now), the cable coils, the end flaps' hinge (8 mm off the leaf), two gauges. Put right: 0 |
+| The same, `spans.py` | **5 runs not carried**: the clamps were drawn 12 mm clear of their pipes, which the check rightly does not count; and the pressure and return lines crossed the way 1.8 m without a hold. The clamps are snug and 60 mm long now, and the two lines are clipped to a bar on the pressure block: every run carried |
+| `make.sh`, first run | **stopped at `check.py`**: the mark in the numbers read back at 100 %, but the stamps in her plating had lost their `hidden` on the way from the look to the file (`shipyard.material` did not carry it) |
+| `make.sh`, second run | **"built: every check passed"**. Twenty pictures of it were taken and looked at; three things were not good enough: a slit of daylight under the door's sill at its ends, the cable coils hanging before the generators' signs, a conduit crossing the cooler aslant |
+| `make.sh`, third run (as committed) | **"built: every check passed"**: 3,313,212 triangles built, 3,269,409 in the file, 21.77 MB (it was 19.07 MB), 189 motions; 0 pairs of faces in one plane among 1,216 pieces; 0 afloat of 30,010 pieces; 85 panes, nothing built over one; 459 runs (332 m), every one carried; the light traced. 13 min 40 s |
+| `python3 ferry/tools/watermark.py --check ferry/data/ferry.bin.gz` | hers: 100.00 % of 1,719,817 different corners carry the mark, in every part |
+| The same on a made-up stolen copy (200,000 corners of the main deck's part, shuffled, written as an OBJ) | with 4 decimals: 100.00 %, hers. With 3 decimals (whole millimetres): 50.00 %, the mark is gone. Another mesh in her bounds: 49.94 %, no mark |
+| The nine page checks on the third build, each by itself | **all pass, each on its first run: doors 118, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5.** `doors.cjs` is four checks longer: the ramp's keys; its order of work (the latches lift 30° while the leaf has not moved, the bolts are drawn 200 mm and the hooks dropped 35°, then the leaf turns, level its flaps are down); its control stand (with no pump running the lever does nothing; with pump No. 1 running it lowers, stops and raises the ramp and springs back) |
+| Pictures: `ferry/tools/shots-stern.cjs`, twenty fixed views, before and of the second build | drawn on the Mac's graphics card, no error on the page; fourteen opened |
+
+Not done: a phone or tablet (the owner looks at her on an iPad); a frame's cost with the new gear; the bridge's electrical
+drawings (JS8-851, 856, 864) were not redrawn.
 
 ### 12 November 2026, afternoon: the bridge's forward bay; the console block free; nothing is built over a window; doors to the gallery
 

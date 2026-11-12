@@ -1,0 +1,7 @@
+pipe,system,name,DN,medium,material,length on the bridge m,joins,what it is
+HY-01A,Hydraulics,Line A: the cylinders' rod sides,25,"Oil, 210 bar","Seamless steel, 30 x 4",31.9,HYD-10 → RMP-03 → RMP-04,"From the valve stand along the hydraulic room's wall and the port mooring station's, up, across over the door's head and to both cylinders. Oil here raises the ramp and holds it."
+HY-01B,Hydraulics,Line B: the cylinders' piston sides,25,Oil,"Seamless steel, 30 x 4",32.2,HYD-10 → RMP-03 → RMP-04,"Beside line A. Oil here lowers the ramp, against the load-holding valves."
+HY-02C,Hydraulics,"Line C: cleats, lock",12,Oil,"Seamless steel, 18 x 2.5",32.8,HYD-10 → RMP-11 → RMP-12 → RMP-13 → RMP-14 → RMP-15 → RMP-16 → RMP-17 → RMP-18 → RMP-19 → RMP-20,To a header down each mooring station's wall and across over the door's head: every cleat is fed from it by a hose.
+HY-02D,Hydraulics,"Line D: cleats, let go",12,Oil,"Seamless steel, 18 x 2.5",33.0,HYD-10 → RMP-11 → RMP-12 → RMP-13 → RMP-14 → RMP-15 → RMP-16 → RMP-17 → RMP-18 → RMP-19 → RMP-20 → RMP-34 → RMP-35,Beside line C. The two safety latches' lifting cylinders are on it too.
+HY-03P,Hydraulics,"Pressure, pumps to valve stand",25,"Oil, 210 bar","Seamless steel, 30 x 4",2.5,HYD-06 → HYD-10,From the pressure block on the tank over the way to the valve stand.
+HY-03T,Hydraulics,"Return, valve stand to tank",32,Oil,"Seamless steel, 35 x 3",2.7,HYD-10 → HYD-01,"Back over the way, through the cooler and the return filter into the tank."

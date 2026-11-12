@@ -1,0 +1,36 @@
+net,name,medium,member,name or place,role,what it says
+RAMP-CTL,Stern ramp control,"24 V, one pair to each solenoid, button and lamp",ELD-51,Stern ramp starter panel (RSP),node,"starts the pumps, feeds the circuit"
+RAMP-CTL,Stern ramp control,"24 V, one pair to each solenoid, button and lamp",RMP-30,Ramp control stand,node,"orders: pump, raise, lower, stop"
+RAMP-CTL,Stern ramp control,"24 V, one pair to each solenoid, button and lamp",HYD-10,Valve stand,listens,its solenoids
+RAMP-CTL,Stern ramp control,"24 V, one pair to each solenoid, button and lamp",RMP-31,Junction box of the ramp's switches,node,the switches' states
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-31,Junction box of the ramp's switches,node,
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-11,"Bolt cleat, port, No. 1",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-12,"Bolt cleat, port, No. 2",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-13,"Bolt cleat, port, No. 3",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-14,"Bolt cleat, port, No. 4",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-15,"Bolt cleat, starboard, No. 1",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-16,"Bolt cleat, starboard, No. 2",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-17,"Bolt cleat, starboard, No. 3",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-18,"Bolt cleat, starboard, No. 4",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-19,"Hook cleat, port",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-20,"Hook cleat, starboard",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-32,"Door switch, port",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-33,"Door switch, starboard",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-34,"Safety latch, port",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",RMP-35,"Safety latch, starboard",talks,"home, or not"
+RAMP-IND,Ramp and cleat position,"24 V, one pair to each switch",elsewhere,"Navigation bridge: Ramp, hatch and watertight door panel (ALM-06)",listens,"closed and locked, or not"
+RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",ELD-51,Stern ramp starter panel (RSP),node,
+RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",HYD-01,Stern ramp power pack (HPU-R),talks,"oil level, oil temperature"
+RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",HYD-07,Return filter,talks,filter clogged
+RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",RMP-30,Ramp control stand,listens,the oil lamp
+RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",elsewhere,Engine control room: Alarm and monitoring system,listens,stern ramp power pack: group alarm
+GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",ELD-61,MSB: place marked,node,the bars
+GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",GEN-01,DG1: place marked,talks,320 kW
+GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",GEN-02,DG2: place marked,talks,320 kW
+GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",GEN-03,DG3: place marked,talks,320 kW
+TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-61,MSB: place marked,talks,690 V
+TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-63,T1: place marked,node,800 kVA
+TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-62,PSB: place marked,listens,440 V
+TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-61,MSB: place marked,talks,690 V
+TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-64,T2: place marked,node,800 kVA
+TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-62,PSB: place marked,listens,440 V
