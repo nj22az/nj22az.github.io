@@ -17,7 +17,7 @@ beforehand (`blender/make.sh`, below) and kept in `data/`.
 | `index.html` | The page and its own chrome: the title, the *Decks and rooms* panel, and the bar, which is a rail of icons (decks, cut, look from, rudder, stern ramp, walk aboard, reset view, how to move, on this device) with a desk over it that shows the keys of one function at a time (*The bar*, below) |
 | `app.js` | The viewer: reads the data, lights it, explodes, cuts, selects decks and rooms, moves the parts the data says can be worked, and carries the walker through her |
 | `systems.js` | Her systems on the page: the card that says what a fitting is, the *Systems* list, and what is drawn over the model for a board, a circuit, a net or a pipe |
-| `data/ferry.bin.gz` | The model: a JMF1 container (below), 6.98 MB, about 1,078,600 triangles, eight parts, 133 named rooms, 17 stairs, 45 moving parts. Everything in it is her own, built in Blender |
+| `data/ferry.bin.gz` | The model: a JMF1 container (below), 7.50 MB, about 1,162,100 triangles, eight parts, 133 named rooms, 17 stairs, 45 moving parts. Everything in it is her own, built in Blender |
 | `data/light.bin.gz` | The light of every place aboard, traced through her as built (`blender/light.py`; *Light, sky and sea*, below): 5.2 MB |
 | `data/chisum-atlas.webp` | Her pictures: what her screens show, her dial faces, panel faces, board doors, chart and flags (2048 × 3008, drawn by `blender/atlas.py`) |
 | `data/systems.json` | Her component register as the page reads it (171 components; written by `systems/register.py`) |
@@ -59,7 +59,17 @@ the first Chisum's, landed aboard as blocks.
   spaces. Two spaces are too low for 2.1 m under a fitting (the after passage and the steering gear room). `blender/light.py`
   works each lamp's light out by itself (a line from every point to every lamp within 9 m), because a lamp found by chance
   among a hundred rays lit a room in blotches.
-- **Her deck fittings have places, not yet shapes**: `blender/spec.py`, `OUTFIT`, is a list of 89 places (lifeboats under
+- **Her decks read as working decks** (`blender/deck_outfit.py`, new, and the bulwarks in `blender/hull_shell.py`): lane
+  lines on the main and upper decks, a walkway 1.1 m wide each side of the upper deck between two yellow lines, the
+  helicopter deck's edge line, circle and H; a hawse pipe and a chain pipe for each anchor; the foremast on the forecastle
+  with the anchor light and the bell; freeing ports in the bulwarks and an eye for each mooring chock.
+- **Each funnel is a casing round its uptakes** (`blender/steel.py`, `funnels`): three lagged pipes of their own bores
+  stand from the main deck up through the casing's room and the funnel and out of its head (a main engine's, and two
+  generating sets' or one's and the boiler's), with an exhaust gas economiser on each main engine's; louvres, a bar round
+  the head, a platform with a ladder, the whistle. Below the main deck the uptakes await the machinery.
+- **The house's outside**: every outside window has a frame and a rain eyebrow, every door to a weather deck a coaming of
+  0.20 m. Its shape is still square: no raked front, no rounded corners, no tiers set back (the audit's open list).
+- **Her deck fittings have places, not yet shapes**: `blender/spec.py`, `OUTFIT`, is a list of 88 places (lifeboats under
   davits, liferafts, windlasses, winches, bitts, chocks, ventilators, lashing pots and the rest), each with the deck it
   stands on, where, and which way it faces; `ga.STATIONS` says what each station is. The fittings themselves come from
   the yard's library of deck fittings (`blender/fittings.py`, built separately), and the deck is left clear for each.
@@ -1181,6 +1191,14 @@ Run on the owner's Mac in the worktree of the branch `claude/chisum-revision-d`,
 | `checks/bridge.cjs` | all passed (26): the register's 171 components at their places, the walk through the wheelhouse, onto a wing 9.71 m out, down the crew stair, onto the compass deck |
 | `python3 ferry/blender/light.py --part /tmp/chisum-d.npz --look <folder>` | run; the slices looked at: every room of the house, the main deck, the lower hold and the engine rooms are lit by their fittings; the darkest enclosed places are under the cargo lift's platform and under the fixed ramp, where no fitting hangs |
 | `node ferry/tools/shots.cjs <folder>` | 30 views, drawn on the Mac's graphics card (Apple M1 Pro), no errors on the page; every picture looked at (the audit) |
+
+Stage 2, each part through the same checks before its commit (the audit has what the pictures showed):
+
+| Stage 2 | `make.sh` | The six page checks | Pictures |
+|---|---|---|---|
+| Her decks (`deck_outfit.py`; the bulwarks' freeing ports and chock eyes; the helicopter deck 0.5 m farther aft) | "built: every check passed": 1,096,171 triangles, 7.09 MB; 0 pairs in 429 pieces; 0 of 13,314 afloat; 409 runs; 398 lamps. The first run stopped at `afloat.py`: 18 of the foremast's steps did not reach the pole where it tapers (they are bars through it now) | all passed: stairs 53, doors 112, travel 5, zoom 14, offline 5, bridge 26 | 30 views; the outside, deck and vehicle deck views looked at |
+| The funnels as casings round their uptakes; window frames, eyebrows, coamings | "built: every check passed": 1,162,103 triangles, 7.50 MB; 0 pairs in 440 pieces; 0 of 13,677 afloat; 409 runs; 398 lamps. Tried first in a copy of the builders, where `zfight.py` named a window's frame and the wall it stands on (a wall along her side bends between a window's ends; its corners and frame follow it now) | all passed: stairs 53, doors 112 (over each of the seven coamings, both ways), travel 5, zoom 14, offline 5, bridge 26 | 32 views (two close ones added: a funnel, the house's front); the outside and deck views looked at again |
+
 
 The page checks' constants are no longer a ship's: `bridge.cjs` reads where the bridge stands from the file's
 `ship.bridge`, `doors.cjs` walks the file's `doorways` and reads each door's place from its input, `zoom.cjs` stands on

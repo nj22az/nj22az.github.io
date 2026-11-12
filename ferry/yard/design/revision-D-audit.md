@@ -164,6 +164,8 @@ its frame) were set on a straight line between the window's ends, up to 5 mm ins
 windows of the upper deck's house (`zfight.py` named the frame and the wall). The corners and the frames follow the wall's
 own lengths now.
 
+Which pictures were opened after stage 2: the six outside views, the upper deck's, the helicopter deck's, the forecastle's, the boat deck's, the officers' deck's, the two vehicle deck views, the lower hold, the engine room from its platform, and the two added close views. The bridge's seven views and the rooms of the house were looked at on stage 1's build and not opened again: nothing in them was touched.
+
 Not matched: the funnels are still raked boxes in plan (their corners are square); the uptakes end at the main deck
 (their runs to the engines, the silencers and the boiler come with the machinery); there is no hinged rain cap on the
 rings; the platform is not reached on the page (its ladder is not one of the page's ways).

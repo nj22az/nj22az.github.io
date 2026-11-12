@@ -110,7 +110,7 @@ abaft the forward perpendicular: 6.8 % of her length). 133 spaces on seven plans
 11. **Every enclosed room has light** (`lighting.py`): a marine fluorescent fitting, one to about 10.5 m² of deck, hung to
     JSY-STD-402 between the beams. The light of her rooms is worked out with each lamp by itself (`light.py`): found by
     chance among a hundred rays, 390 small lamps gave blotches.
-12. **The places of her deck fittings are a list** (`spec.OUTFIT`, 89 places): the fittings themselves come from the yard's
+12. **The places of her deck fittings are a list** (`spec.OUTFIT`, 88 places): the fittings themselves come from the yard's
     library of deck fittings, and the deck is left clear for each. `ga.STATIONS` says what each station is.
 
 13. **Her decks' paint and her own outfit steel are `deck_outfit.py`**: lane lines on the main and upper decks, a walkway
