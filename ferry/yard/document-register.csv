@@ -61,12 +61,12 @@ JS8-803,Fixed fire-extinguishing system (CO₂) and calculation,ship systems,to 
 JS8-804,Fire detection and alarm system diagram,ship systems,partly,ferry/systems/bridge.py (net FIRE-1),"Loop 1, wheelhouse only. Two feeders direct from the switchboards: PA-001 Nos. 6 and 18 closed"
 JS8-805,"Air, sounding and overflow pipes",ship systems,to do,,
 JS8-806,Scuppers and drains,ship systems,partly,"ferry/systems/bridge.py (SCUP-P, SCUP-S)",The wings only
-JS8-851,Electrical one-line diagram,electrical,partly,"ferry/systems/ship.py, bridge.py","Sources, the transitional section and inverter, the bridge's five boards; no drawn sheet"
+JS8-851,Electrical one-line diagram,electrical,exists,ferry/yard/drawings/JS8-851-electrical-one-line-diagram.svg (made by drawings/electrical_drawing.py from the register); ferry/yard/calc/JS8-851-proof-of-supply.md (made by systems/prove.py),"Revision 0, 12 November 2026. The sources, the boards elsewhere, the bridge's five boards and every way. Proof of supply: 79 consumers, 55 breakers opened one at a time, seven conditions of lost sources. Her machinery and lighting are not registered yet, so not drawn"
 JS8-852,Electrical load balance,electrical,partly,ferry/systems/out/bridge-circuits.csv,The bridge's boards; the ship's balance is the other ship's
 JS8-853,Short-circuit calculation and breaker selectivity,electrical,to do,,PA-001 comment 13
 JS8-854,Emergency source of power: load list and capacity,electrical,to do,,PA-001 No. 13: waits for the machinery section. The emergency generator room is built to the owner's drawing with the drawing's set (500 kW) and day tank (about 200 L): the load list is to settle both (the 68 m ship's own emergency loads are near 200 kW)
 JS8-855,Battery capacity calculations,electrical,exists,ferry/yard/calc/JS8-855-battery-capacity.md (made by calc/bridge_calcs.py from the register),"Revision 1. Radio bank and general service (transitional) bank, chargers, inverter. The bridge only: reissued with each section (PA-001 No. 26)"
-JS8-856,Cable schedule and cable ways,electrical,partly,"ferry/systems/bridge.py (NODES, EDGES), out/bridge-circuits.csv","Lengths, sizes and types for the bridge; main and emergency supplies by separate ways: PA-001 No. 7 closed"
+JS8-856,Cable schedule and cable ways,electrical,exists,"ferry/yard/drawings/JS8-856-cable-schedule.md (made by drawings/electrical_drawing.py); ferry/systems/bridge.py (NODES, EDGES)","Revision 0, 12 November 2026: 55 cables, 920 m, with the cable to buy by type. Main and emergency supplies by separate ways: PA-001 No. 7 closed. The bridge only"
 JS8-857,"Lighting plan, normal and emergency",electrical,partly,ferry/systems/bridge.py (LGT),Bridge only
 JS8-858,Navigation light panel diagram,electrical,exists,ferry/systems/bridge.py (board NLP),"Two feeders of its own, one from the transitional section: PA-001 Nos. 2 and 17 closed"
 JS8-859,Internal communication diagrams,electrical,exists,ferry/systems/out/bridge-nets.csv,"Ends below are named, not yet registered"
@@ -74,6 +74,7 @@ JS8-860,Radio installation plan,electrical,partly,ferry/systems/bridge.py (COM),
 JS8-861,Propulsion remote control diagram,electrical,exists,"ferry/systems/bridge.py (nets PROP-CAN-A, PROP-CAN-B; component PRP-07)","Two supplies, two lines by separate ways: PA-001 No. 8 closed for the bridge"
 JS8-862,Alarm and monitoring system: alarm list,electrical,to do,,
 JS8-863,Emergency generator room arrangement,electrical,exists,"ferry/blender/eg_room.py, eg_place.py; ferry/systems/bridge.py (EMG); the page","Built to the owner's drawing of 11 November 2026 (7.80 x 4.50 x 3.20 m), in the house on the 68 m ship's top deck (ga.py). 20 components registered. Not checked against any rule text"
+JS8-864,"Distribution boards: layout, connections and parts list",electrical,exists,"ferry/yard/drawings/JS8-864-1-BD1 to -5-NLP-layout-and-connections.svg, JS8-864-parts-list.md (made by drawings/electrical_drawing.py)","Revision 0, 12 November 2026. The five boards of the bridge, each with its door open: incomer, a breaker a way, terminals, glands; the connections; the parts. The hardware is the yard's own choice, no maker named. The model's cabinets are to be built from these sheets (not yet built)"
 JS1-151,Inspection and test plan,general,to do,,"What is inspected, by whom, against what"
 JS1-152,Harbour acceptance test programme,general,to do,,
 JS1-153,Sea trial programme and report,general,to do,,"Speed, turning, stopping, steering gear timing, compass adjustment"
