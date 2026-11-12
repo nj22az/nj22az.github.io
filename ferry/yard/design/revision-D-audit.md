@@ -142,32 +142,75 @@ and are not drawn (the fittings library); the helicopter deck has no net and no 
 across them; no chock is shaped in the stern bulwark or at the stem head (two places were taken out of the list rather
 than left unshaped).
 
+## Stage 2b: the funnels, and the house's outside
+
+Pictures: `3-stage-2b-funnels-and-house/`. Commit: "stage 2: the funnels as casings round their uptakes; window frames,
+eyebrows and coamings".
+
+Compared: the coordinating session's points 1 and 2; the machinery design basis's figures as the coordinating session
+gave them (a main engine's exhaust about 0.7 m bore, a generating set's about 0.25 m, the boiler's about 0.4 m, an exhaust
+gas economiser in each main engine's uptake).
+
+| What | Built | Looked at in | Found |
+|---|---|---|---|
+| The uptakes | in each funnel three pipes of their own bores (0.70 m; 0.25 and 0.25 m to port, 0.25 and 0.40 m to starboard), lagged, upright from the main deck through the casing's room and the upper deck, up inside the funnel and out of its head; a ring for a rain cap on each | `upper-deck-looking-aft`, `outside-stern-quarter`, a look from above (Blender) | three pipes of their own bores stand out of each head, a large one and two smaller; the helicopter deck's edge passes clear of the funnels |
+| Economisers | a lagged drum 1.5 m across and 2.2 m high on each main engine's uptake, on four legs in the casing's room on the main deck, with an inspection door | not in the thirty views (the room is small; walked into on the page: not walked into on the page this night; seen in a look from Blender inside the port casing's room: the drum on the main engine's uptake, the two smaller pipes beside it) | |
+| Louvres, head bar, platform, ladder, whistle | a louvre panel low in each side of each funnel; a half-round bar round the head; a platform 2.65 m long on the inboard side 1.1 m under the head with a rail; an upright ladder to it with hoops from 2.4 m; the whistle on the port funnel's forward face | `funnel-port`, `upper-deck-looking-aft` | in `funnel-port` (a view added for this): the louvre panel low in the side, the ladder with its hoops, the platform and its rail under the black head, the whistle at the head's forward edge, the line's J |
+| Window frames and eyebrows | on the outer face of every outside window: a frame of flat bar following the rounded corners, and an eyebrow over it with its ends turned down | `boat-deck-lifeboat-station`, `outside-beam-low`, `outside-bow-quarter` | in `house-from-the-forecastle` (added for this) and at the lifeboat station: each window stands in its frame under its eyebrow, on all three tiers; from far off they read as a thin light edge round each window |
+| Coamings | 0.20 m under each of the house's seven doors to a weather deck; 0.25 m along the outboard side and across the after end of the fixed ramp's opening | `upper-deck-looking-forward`; `doors.cjs` walks over each door's | `doors.cjs` walked through all seven doors over their coamings, both ways; the opening's coaming is a low white strip under its rail |
+
+Found while building it: a wall along her side is built in lengths that follow her side, but a window's corners (and now
+its frame) were set on a straight line between the window's ends, up to 5 mm inside the wall's face at the forward
+windows of the upper deck's house (`zfight.py` named the frame and the wall). The corners and the frames follow the wall's
+own lengths now.
+
+Not matched: the funnels are still raked boxes in plan (their corners are square); the uptakes end at the main deck
+(their runs to the engines, the silencers and the boiler come with the machinery); there is no hinged rain cap on the
+rings; the platform is not reached on the page (its ladder is not one of the page's ways).
+
 ## The coordinating session's audit of 02:55 (four outside views), and what was done about each point
 
-1. **The house reads as boxes stacked on each other.** Done in stage 2: window frames with rain eyebrows on every outside
-   window; coamings under the house's doors to the open decks. **Not done**, and owed: the front raked aft with rounded
-   corners; each tier set back from the one below with a walkway and rail round it; the wheelhouse front as one band of
-   windows leaning outward (the wheelhouse is the first Chisum's block: its front is as it was built). These change the
-   wall builder (walls are straight lengths along and across her) and the arrangement's front cabins, and were not begun
-   rather than half done.
-2. **The funnels are plain raked boxes.** Stage 2: see below.
-3. **Masts.** Stage 2: a foremast on the forecastle. See the open list for the masthead lights.
+1. **The house reads as boxes stacked on each other.** Done (stage 2b): a frame and a rain eyebrow on every outside
+   window; coamings of 0.20 m under the house's seven doors to the weather decks. Already there: the wings carried to her
+   side on knees with their bulwarks, each tier's after end open as a deck with inclined ladders, windows with rounded
+   corners. **Not done, and owed**: the front raked aft with rounded corners; each tier set back from the one below with
+   a walkway and rail round it; the wheelhouse front as one band of windows leaning outward (the wheelhouse is the first
+   Chisum's block: its front is as it was built). Why not tonight: the wall builder draws straight lengths along and
+   across her, upright; a raked or rounded wall needs its windows, glass, corners, the deck's outline over it and the rail
+   on it drawn on that shape, and setting the tiers back moves the bridge block aft, where the arrangement's rooms abaft
+   it are still given as figures. It was not begun rather than half done. How to do it: give `steel.py` a wall kind that
+   follows a plan outline of straight lengths and arcs (as `_wall_point` now follows her side), lean it by a rake per
+   tier, and derive the bridge deck's rooms from `bridge_place.SHIFT`.
+2. **The funnels are plain raked boxes.** Done (stage 2b): each is a casing round three uptakes of their own bores,
+   lagged from the main deck up; an economiser on each main engine's; louvres, a head bar, a platform with a ladder, the
+   whistle. Not done: a rain gutter or cowl as a shaped head; the uptakes' runs below the main deck (the machinery).
+3. **Masts.** Done (stage 2a): a foremast on the forecastle with the anchor light and the bell. **Not done as asked**: the
+   foremast carries no masthead light and the bridge's mast was not raised. The rule as the yard recalls it wants the two
+   masthead lights at least half her length apart; her pattern's profile shows the forward one on the wheelhouse's mast
+   and the after one on a tall raked mast at the funnel. A second masthead light 16 m abaft a foremast's would not be
+   that. It is the open list's second point and a question on JS1-102.
 4. **The transom's lettering cut by the door's seam.** Done in stage 1: the ramp is a box girder with a smooth outer skin;
    her name and port are painted on it whole (`outside-stern-quarter.png`).
-5. **The weather deck is one flat green field.** Stage 2: see below.
+5. **The weather deck is one flat green field.** Done (stage 2a): lane lines, the walkways' lines, the helicopter deck's
+   marks, the foremast, the hawse pipes' bolsters, freeing ports and chock eyes in the bulwarks; (stage 2b) a coaming
+   along the ramp opening's outboard side and after end. The places of the lashing pots, the mooring gear, the
+   ventilators and the monitors are in `spec.OUTFIT` and on JS1-102; the fittings are the library's. Not done: the
+   opening's cover.
 
-## Open list after stage 1
+## Open list (after stage 2)
 
 - The house's shape (point 1 above).
-- **Masts and lights.** Her only mast is the first Chisum's, on the wheelhouse: its masthead light is her forward one (the
+- **Masts and lights.** Her mast on the wheelhouse is the first Chisum's: its masthead light is her forward one (the
   mast stands 23.5 m from the stem, within a quarter of her length). The rule as the yard recalls it (COLREG annex I; to
   be read) wants a second masthead light at least half her length abaft the first and 4.5 m higher; her pattern carries
   it on a tall raked mast at the funnel. With two funnels at her sides that light wants a mast on her centre line between
   them. Not built; for the owner to settle.
+- The deck fittings themselves (lifeboats and davits, liferafts, windlasses, winches, bitts, chocks, ventilators, lashing pots, monitors): places in `spec.OUTFIT`; the library is built separately.
+- The helicopter deck's net and lights; bars across the freeing ports; a chock in the stern bulwark and one at the stem head; hinged rain caps on the uptakes.
 - Her machinery; the uptakes below the main deck with it. The machinery design basis asks for main deck webs 0.70 m deep
   and 0.55 m over the engines: the model's webs are 0.90 m and the engine room is 4.09 m clear under them.
 - The cargo lift's hoisting gear: the platform is drawn raised and does not move.
-- The ramp cover over the fixed ramp's opening: the opening is railed.
+- The ramp cover over the fixed ramp's opening: the opening is railed and has its coaming.
 - The chain lockers under the fore store; a second escape from the engine room.
 - Four trunks in the starboard casing (the starboard uptake and three ventilation trunks) have no door: the fixed ramp runs
   along their only wall to the deck.

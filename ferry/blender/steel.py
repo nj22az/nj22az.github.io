@@ -206,11 +206,12 @@ for _room, _side, _a, _b in (('switchboard-room', 's', 18.4, 19.2), ('ecr', 's',
 window('platform', 'ecr', 'f', 1.6, 3.4, sill=1.0, head=1.9)
 window('platform', 'ecr', 'f', 4.2, 6.0, sill=1.0, head=1.9)
 # Openings in the houses' outlines, which are no room's own wall: (plan, 'x' or 'yard', where, from, to, sill, head, glass).
+COAMING = 0.20                 # under a door of the house that opens on a weather deck: it keeps the water on deck out of the house
 OUTLINE_OPENINGS = [
-    ('upper', 'yard', H0, -0.45, 0.45, 0.0, DOOR_HEAD, False),                     # from the open deck into the after lobby
-    ('boat', 'x', HR, 80.25, 81.05, 0.0, DOOR_HEAD, False), ('boat', 'x', -HR, 80.25, 81.05, 0.0, DOOR_HEAD, False),      # the after cross passage's doors to the boat deck
-    ('boat', 'x', HH, 98.75, 99.55, 0.0, DOOR_HEAD, False), ('boat', 'x', -HH, 98.75, 99.55, 0.0, DOOR_HEAD, False),      # and the forward one's
-    ('officers', 'yard', OFF, 1.65, 2.45, 0.0, DOOR_HEAD, False), ('officers', 'yard', OFF, -2.45, -1.65, 0.0, DOOR_HEAD, False),   # the corridors' after doors
+    ('upper', 'yard', H0, -0.45, 0.45, COAMING, DOOR_HEAD, False),                 # from the open deck into the after lobby
+    ('boat', 'x', HR, 80.25, 81.05, COAMING, DOOR_HEAD, False), ('boat', 'x', -HR, 80.25, 81.05, COAMING, DOOR_HEAD, False),      # the after cross passage's doors to the boat deck
+    ('boat', 'x', HH, 98.75, 99.55, COAMING, DOOR_HEAD, False), ('boat', 'x', -HH, 98.75, 99.55, COAMING, DOOR_HEAD, False),      # and the forward one's
+    ('officers', 'yard', OFF, 1.65, 2.45, COAMING, DOOR_HEAD, False), ('officers', 'yard', OFF, -2.45, -1.65, COAMING, DOOR_HEAD, False),   # the corridors' after doors
 ]
 
 
@@ -233,8 +234,8 @@ def doorways():
         way = {'a': 'its after end', 'f': 'its forward end', 'p': 'its port side', 's': 'its starboard side'}[o['side']]
         add(f"{o['room']}-{o['side']}-{round((o['lo'] + o['hi']) * 50)}", f"{names[o['room']]}: the doorway in {way}", o['plan'], axis, c, o['lo'], o['hi'], o['top'])
     for plan, axis, c, lo, hi, sill, head, glass in OUTLINE_OPENINGS:
-        if not glass and sill <= 0.01:
-            add(f"{plan}-house-{axis}-{round(c * 100)}-{round((lo + hi) * 50)}", f"{PLANS[plan]['name']}: a door of the house from the open deck", plan, axis, c, lo, hi, head)
+        if not glass and sill <= COAMING + 0.01:
+            add(f"{plan}-house-{axis}-{round(c * 100)}-{round((lo + hi) * 50)}", f"{PLANS[plan]['name']}: a door of the house from the open deck, over its coaming", plan, axis, c, lo, hi, head)
     return out
 
 
@@ -464,14 +465,21 @@ def _piece(walls, plan, axis, c, a, b, y0, y1, colour, hull_ends=(False, False))
 
 def _wall_point(plan, axis, c, lo, hi):
     """The two faces of a wall between lo and hi along it, as a function of (u along the wall, y): (the point on one
-    face, the point on the other). A wall along her side is taken as straight between lo and hi, as its glass is."""
+    face, the point on the other). A wall along her side follows her side between lo and hi in the lengths the wall itself
+    is built in, so that what is set on its faces (a window's corners, its frame) lies on them and not 5 mm inside them."""
     if axis == 'yard':
         return lambda u, y: ((u, y, Z(c) - T / 2), (u, y, Z(c) + T / 2))
     if not _is_side(c):
         return lambda u, y: ((c - T / 2, y, Z(u)), (c + T / 2, y, Z(u)))
     sgn = 1 if c > 0 else -1
-    xa, xb = _side_x(plan, lo), _side_x(plan, hi)
-    x = lambda u: xa + (xb - xa) * (u - lo) / (hi - lo)
+    # (in the same lengths as the wall over and under the opening is built in: _piece)
+    n = max(1, int(ceil((hi - lo) / 0.6))) if max(lo, hi) > 72.0 else 1
+    xs = [_side_x(plan, lo + (hi - lo) * i / n) for i in range(n + 1)]
+
+    def x(u):
+        t = min(max((u - lo) / (hi - lo) * n, 0.0), float(n))
+        i = min(int(t), n - 1)
+        return xs[i] + (xs[i + 1] - xs[i]) * (t - i)
     return lambda u, y: ((sgn * x(u), y, Z(u)), (sgn * (x(u) - T), y, Z(u)))
 
 
@@ -498,6 +506,81 @@ def _corners_of_window(walls, plan, axis, c, lo, hi, y0, y1, colour, r=CORNER, n
         walls.orient(start, lambda q: (q[0] - m[0], q[1] - m[1], q[2] - m[2]))
 
 
+# Spaces of the arrangement that lie under the open sky: a wall between one of them (or nothing at all) and a room is an
+# outside wall, and its outer face looks toward them.
+WEATHER = {'aft-deck', 'helideck', 'funnel-p', 'funnel-s', 'trailer-deck', 'ramp-cover', 'walkway-p', 'walkway-s', 'forecastle', 'boat-deck-p', 'boat-deck-s',
+           'officers-deck-aft', 'bridge-deck-open', 'compass-deck', 'house-top'}
+
+
+def _room_at(plan, x, yard):
+    return any(s['plan'] == plan and s['level'] is None and s['id'] not in WEATHER and s['yard'][0] <= yard <= s['yard'][1] and s['x'][0] <= x <= s['x'][1]
+               for s in ga.SPACES)
+
+
+def _outside_of(plan, axis, c, u):
+    """Which of a wall's two faces looks on the weather at u along it: +1 the face toward larger x (a wall along her) or
+    larger yard (a wall across her), -1 the other, 0 if neither side or both sides are a room."""
+    if axis == 'yard':
+        fore, aft = _room_at(plan, u, c + 0.4), _room_at(plan, u, c - 0.4)
+    else:
+        fore, aft = _room_at(plan, c + 0.4, u), _room_at(plan, c - 0.4, u)
+    return 0 if fore == aft else (-1 if fore else 1)
+
+
+def _window_frame(frames, plan, axis, c, lo, hi, y0, y1, r=CORNER, n=5):
+    """What a window in an outside wall has round it on its outer face: a frame of flat bar 45 mm wide standing 18 mm off
+    the plating, following the opening's rounded corners (the bolted frame of a ship's window), and over it a rain eyebrow,
+    a bar bent down at its ends that leads the water running down the house's side clear of the glass."""
+    out = _outside_of(plan, axis, c, (lo + hi) / 2)
+    if not out:
+        return
+    faces = _wall_point(plan, axis, c, lo, hi)
+    # the outer face's point at (u, y), and the way out from it. (One face of _wall_point is the lower in x or z, the other
+    # the higher, except on a wall along her side, whose first face is the outer one.)
+    if axis == 'x' and _is_side(c):
+        face, way = (lambda u, y: faces(u, y)[0]), ((1 if c > 0 else -1), 0.0, 0.0)
+    else:
+        face = lambda u, y: faces(u, y)[1 if out > 0 else 0]
+        way = (0.0, 0.0, float(out)) if axis == 'yard' else (float(out), 0.0, 0.0)
+    at = lambda u, y, d: tuple(face(u, y)[k] + way[k] * d for k in range(3))
+    grey = tint(WHITE, 0.92)
+
+    # where the wall along her side bends between lo and hi (it is built in lengths: _piece), the frame bends with it
+    bends = int(ceil((hi - lo) / 0.6)) if axis == 'x' and _is_side(c) and max(lo, hi) > 72.0 else 1
+    knots = [lo + (hi - lo) * i / bends for i in range(1, bends)]
+
+    def loop(grow):
+        """The opening's outline, grown outward by `grow`: (u, y) points, its corners quarter circles."""
+        pts = []
+        for cu, cy, su, sy, turn in ((lo, y0, 1, 1, 0), (hi, y0, -1, 1, 1), (hi, y1, -1, -1, 2), (lo, y1, 1, -1, 3)):
+            arc = [(cu + su * (r - (r + grow) * sin(pi / 2 * i / n)), cy + sy * (r - (r + grow) * cos(pi / 2 * i / n))) for i in range(n + 1)]
+            pts += arc[::-1] if turn % 2 == 0 else arc                   # (each arc runs from the level edge to the upright one: turned where the outline comes down an upright edge)
+            if turn == 0:
+                pts += [(k, y0 - grow) for k in knots]
+            elif turn == 2:
+                pts += [(k, y1 + grow) for k in reversed(knots)]
+        return pts
+    inner, outer = loop(0.0), loop(0.045)
+    middle = at((lo + hi) / 2, (y0 + y1) / 2, 0.0)
+    rows = [[at(u, y, 0.0) for u, y in inner], [at(u, y, 0.018) for u, y in inner], [at(u, y, 0.018) for u, y in outer], [at(u, y, 0.0) for u, y in outer]]
+    for a, b, look in ((0, 1, lambda q: tuple(middle[k] - q[k] for k in range(3))), (1, 2, way), (2, 3, lambda q: tuple(q[k] - middle[k] for k in range(3)))):
+        start = len(frames.f)
+        frames.grid([rows[a], rows[b]], grey, close=True)
+        frames.orient(start, look)
+    # the eyebrow: 70 mm over the opening, 60 mm proud, its ends turned down 80 mm
+    def slab(u0, u1, ya, yb):
+        start = len(frames.f)
+        p = [at(u, y, d) for d in (0.0, 0.06) for u, y in ((u0, ya), (u1, ya), (u1, yb), (u0, yb))]
+        m = tuple(sum(q[k] for q in p) / 8 for k in range(3))
+        for quad in ((4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)):
+            frames.face(tuple(frames.vert(p[i]) for i in quad), grey)
+        frames.orient(start, lambda q: tuple(q[k] - m[k] for k in range(3)))
+    e0, e1, ey = lo - 0.09, hi + 0.09, y1 + 0.115
+    slab(e0, e1, ey, ey + 0.012)
+    slab(e0, e0 + 0.012, ey - 0.08, ey)
+    slab(e1 - 0.012, e1, ey - 0.08, ey)
+
+
 def _glass(glass, plan, axis, c, a, b, y0, y1):
     if axis == 'yard':
         pts = [(a, y0, Z(c)), (b, y0, Z(c)), (b, y1, Z(c)), (a, y1, Z(c))]
@@ -516,6 +599,7 @@ def walls(plan):
     lines = _corners(_fit_to_hull(plan, lines))
     walls = part(P['group'], f"{P['name']}, walls", 'Bulkhead paint')
     glass = part(P['group'], f"{P['name']}, window glass", 'Window glass')
+    frames = part(P['group'], f"{P['name']}, window frames and eyebrows", 'Topside paint')
     floor, top = P['floor'], P['top']
     for (axis, c), iv in sorted(lines.items()):
         opens = sorted(openings.get((axis, c), []))
@@ -536,6 +620,8 @@ def walls(plan):
                 if glazed:
                     _glass(glass, plan, axis, c, lo, hi, floor + bottom, floor + head)
                     _corners_of_window(walls, plan, axis, c, lo, hi, floor + bottom, floor + head, colour)
+                    if ext:
+                        _window_frame(frames, plan, axis, c, lo, hi, floor + bottom, floor + head)
                 at = hi
             ext = _is_exterior(plan, axis, c, (at + b) / 2)
             _piece(walls, plan, axis, c, at, b, floor, top, WHITE if ext else PRIMER, (at_hull(at) and at < 0, at_hull(b) and b > 0))
@@ -775,6 +861,12 @@ def open_deck_rails():
     # ---- the upper deck: round the opening of the fixed ramp (its forward end is the way off the ramp)
     x0, x1, a, b = RAMP_WELL
     rails('upper', 'Upper deck, rails', [(x0 - i, b), (x0 - i, a - i), (x1 + i, a - i), (x1 + i, b)], S.UPPER_DECK)
+    # ... and a coaming 0.25 m high along its outboard side and across its after end, which keeps the water on deck out of
+    # the opening (on its inboard side the ramp's guard plate is the coaming; its forward end is the roadway). It stands a
+    # millimetre outside the plating's edge (rule 3). The cover that closes the opening at sea is not built.
+    coaming = part('upper', 'Upper deck, ramp opening coaming', 'Topside paint')
+    coaming.box((x0 - 0.011, S.UPPER_DECK, Z(a - 0.011)), (x0 - 0.001, S.UPPER_DECK + 0.25, Z(b)), tint(WHITE, 0.95))
+    coaming.box((x0 - 0.001, S.UPPER_DECK, Z(a - 0.011)), (x1 - 0.013, S.UPPER_DECK + 0.25, Z(a - 0.001)), tint(WHITE, 0.95))
     # ---- the boat deck: along her side, with a gap where each lifeboat is swung out and at each liferaft's cradle
     up = lambda yd: L.upper_breadth(Z(yd)) - 0.09
     for sgn in (1, -1):
@@ -1226,17 +1318,23 @@ def stern_lights():
 
 # A funnel: its casing's plan on the upper deck (ga.FUNNEL), its top, how far its ends rake aft, and its black top.
 FUNNEL = dict(yard=ga.FUNNEL['yard'], x=ga.FUNNEL['x'], foot=S.UPPER_DECK, top=L.Y(ga.FUNNEL['top']), rake_aft=1.2, rake_fwd=2.2, band=1.1)
-# The uptakes that stand through each funnel's top: (share of its length from its after end, radius, what it is). One pipe
-# for each main engine, each generating set and the boiler: the port funnel has the port engine and two sets, the
-# starboard one the starboard engine, the third set and the boiler.
-UPTAKES = {1: ((0.26, 0.34, 'main engine'), (0.55, 0.19, 'generator'), (0.78, 0.19, 'generator')),
-           -1: ((0.26, 0.34, 'main engine'), (0.55, 0.19, 'generator'), (0.78, 0.15, 'boiler'))}
+# The uptakes: one exhaust pipe for each main engine, each generating set and the boiler, each of its own bore (the
+# machinery design basis: a main engine's about 0.7 m, a generating set's about 0.25 m, the boiler's about 0.4 m). The port
+# funnel has the port engine's and two sets'; the starboard one the starboard engine's, the third set's and the boiler's.
+# Each stands upright from the main deck, through its casing's room there and through the upper deck, up inside the funnel
+# and out of its top: (metres from the transom, bore, what it is, whether an exhaust gas economiser stands on it in the
+# casing's room). They are inside both the funnel's foot and its raked head. Below the main deck they await the machinery.
+UPTAKES = {1: ((17.2, 0.70, "the port main engine's exhaust", True), (18.7, 0.25, "No. 1 generating set's exhaust", False), (19.6, 0.25, "No. 2 generating set's exhaust", False)),
+           -1: ((17.2, 0.70, "the starboard main engine's exhaust", True), (18.7, 0.25, "No. 3 generating set's exhaust", False), (19.7, 0.40, "the boiler's uptake", False))}
+LAGGING = 0.05                 # of insulation and cladding round a pipe below the funnel's top
 
 
 def funnels():
     """The two funnels, on the upper deck over their casings: plated in the line's teal with a black top, both ends raked
     aft, each closed by a plate set down in its top with its uptakes standing through it. The line's J is painted on their
-    sides (livery.py). Their louvres, platforms and the uptakes below the top are outfit: not here yet."""
+    sides (livery.py). Each is a casing round its uptakes (UPTAKES): the pipes stand from the main deck up through it and out
+    of its top. Louvres low in its sides, a half-round bar round its head, a platform with a ladder on its after face; the
+    whistle on the port one."""
     plating = part('upper', 'Funnels', 'Topside paint')
     pipes = part('upper', 'Funnels, uptakes', 'Machinery paint', smooth=True, angle=40)
     F = FUNNEL
@@ -1268,10 +1366,87 @@ def funnels():
         start = len(plating.f)
         plating.grid(inner, tint(srgb(S.BLACK), 0.8), close=True)
         plating.orient(start, lambda c: (cx - c[0], 0, mz - c[2]))
-        top_a, top_b = a - F['rake_aft'], b - F['rake_fwd']
-        for share, r, _ in UPTAKES[sgn]:
-            yd = top_a + (top_b - top_a) * share
-            pipes.tube((cx, height(f), Z(yd)), (cx, y1 + 0.45, Z(yd - 0.06)), r, colour=srgb(S.BLACK), sides=18)
+        # ---- the uptakes: lagged from the main deck to the plate in the funnel's head, bare and black above it, each with a
+        # rain cap's ring; an economiser on the main engine's, in the casing's room on the main deck
+        lagged = part('main', 'Uptakes, lagged', 'Machinery paint', smooth=True, angle=40)
+        silver, black = srgb(0xb9bdb6), srgb(S.BLACK)
+        for yd, bore, what, economiser in UPTAKES[sgn]:
+            r = bore / 2
+            lagged.tube((cx, S.MAIN_DECK, Z(yd)), (cx, S.UPPER_DECK - PLATE, Z(yd)), r + LAGGING, colour=silver, sides=20)
+            lagged.tube((cx, S.MAIN_DECK, Z(yd)), (cx, S.MAIN_DECK + 0.04, Z(yd)), r + LAGGING + 0.07, colour=tint(silver, 0.8), sides=20)       # its deck collar
+            pipes.tube((cx, S.UPPER_DECK, Z(yd)), (cx, height(f) + 0.002, Z(yd)), r + LAGGING, colour=silver, sides=20)
+            pipes.tube((cx, height(f), Z(yd)), (cx, y1 + 0.55, Z(yd)), r + 0.012, colour=black, sides=20)
+            pipes.tube((cx, y1 + 0.47, Z(yd)), (cx, y1 + 0.52, Z(yd)), r + 0.05, colour=black, sides=20)                                          # the ring its rain cap hinges on
+            if economiser:
+                # an exhaust gas economiser: a lagged drum 1.5 m across and 2.2 m high on the pipe, 1.4 m over the main deck, on
+                # four legs; an inspection door on its inboard side
+                e0, e1, er = S.MAIN_DECK + 1.4, S.MAIN_DECK + 3.6, 0.75
+                lagged.tube((cx, e0, Z(yd)), (cx, e1, Z(yd)), er, colour=tint(silver, 0.96), sides=28)
+                lagged.tube((cx, e0 - 0.35, Z(yd)), (cx, e0, Z(yd)), r + LAGGING + 0.02, er, colour=tint(silver, 0.9), sides=28)
+                lagged.tube((cx, e1, Z(yd)), (cx, e1 + 0.35, Z(yd)), er, r + LAGGING + 0.02, colour=tint(silver, 0.9), sides=28)
+                for dx, dz in ((0.55, 0.55), (-0.55, 0.55), (0.55, -0.55), (-0.55, -0.55)):
+                    lagged.box((cx + dx - 0.04, S.MAIN_DECK, Z(yd) + dz - 0.04), (cx + dx + 0.04, e0 + 0.25, Z(yd) + dz + 0.04), DARK)
+                lagged.box((cx - sgn * (er + 0.03), e0 + 0.5, Z(yd) - 0.25), (cx - sgn * (er - 0.06), e0 + 1.1, Z(yd) + 0.25), tint(silver, 0.8))
+        # ---- a half-round bar round the funnel's head, which sheds the rain clear of its sides
+        rim = part('upper', 'Funnels, head bars', 'Topside paint', smooth=True, angle=40)
+        top = rows[2]
+        for k in range(4):
+            p, q = top[k], top[(k + 1) % 4]
+            d = hypot(hypot(q[0] - p[0], q[1] - p[1]), q[2] - p[2])
+            u = tuple((q[i] - p[i]) / d * 0.035 for i in range(3))            # each runs its own radius past the corner: no end lies in a side's plane
+            rim.tube(tuple(p[i] - u[i] for i in range(3)), tuple(q[i] + u[i] for i in range(3)), 0.035, colour=black, sides=10)
+        # ---- louvres in its two sides, low: the engine room's air leaves the casing through them. A frame of flat bar on the
+        # plating, a dark panel within it, blades across it that shed the rain outward.
+        louvre = part('upper', 'Funnels, louvres', 'Topside paint')
+        la, lb, ly0, ly1 = a + 1.5, a + 3.9, y0 + 0.7, y0 + 1.9
+        for x, out in ((xs[0], -1), (xs[1], 1)):
+            louvre.box((min(x, x + out * 0.010), ly0, Z(la)), (max(x, x + out * 0.010), ly1, Z(lb)), tint(black, 1.6))
+            for ya, yb, za, zb in ((ly0 - 0.05, ly0, la - 0.05, lb + 0.05), (ly1, ly1 + 0.05, la - 0.05, lb + 0.05), (ly0, ly1, la - 0.05, la), (ly0, ly1, lb, lb + 0.05)):
+                louvre.box((min(x, x + out * 0.05), ya, Z(za)), (max(x, x + out * 0.05), yb, Z(zb)), tint(TEAL, 0.9))
+            yy = ly0 + 0.06
+            while yy < ly1 - 0.05:
+                _prism(louvre, [(x + out * 0.010, yy + 0.05), (x + out * 0.046, yy), (x + out * 0.046, yy + 0.006), (x + out * 0.010, yy + 0.056)], Z(la), Z(lb), tint(TEAL, 0.84))
+                yy += 0.085
+        # ---- a platform along its inboard side 1.1 m under its head (the head's own edge is its rail on that side), for the
+        # man who tends the uptakes' caps; a rail along its open side and across its forward end; and an upright ladder to it
+        # from the upper deck at its after end, with hoops from 2.4 m up. (Not on the after face: the helicopter deck lies
+        # under that.)
+        gear = part('upper', 'Funnels, platform and ladder', 'Topside paint', smooth=True, angle=40)
+        grey = tint(WHITE, 0.9)
+        xin = xs[0] if sgn < 0 else xs[0]                                # (set below: the side that looks inboard)
+        xin = sgn * F['x'][0]
+        inb = -sgn                                                        # the way inboard from that side
+        py = y1 - 1.1
+        pa, pb = a + 0.75, a + 3.4                                        # the platform, along her
+        lo, hi = sorted((xin + inb * 0.75, xin + inb * -0.01))
+        gear.box((lo, py - 0.03, Z(pa)), (hi, py, Z(pb)), grey)
+        for yd in (pa + 0.3, (pa + pb) / 2, pb - 0.3):                    # three brackets under it, on the side's plating
+            _prism(gear, [(xin + inb * -0.005, py - 0.65), (xin + inb * -0.005, py - 0.03), (xin + inb * 0.70, py - 0.03)], Z(yd) - 0.006, Z(yd) + 0.006, grey)
+        rails('upper', 'Funnels, platform rails', [(xin + inb * 0.70, pa + 0.04), (xin + inb * 0.70, pb - 0.04), (xin + inb * 0.04, pb - 0.04)], py, post_every=1.0)
+        # the ladder: two stringers 0.15 m off the plating and rungs every 0.3 m, upright, at the platform's after end
+        lx, lyd = xin + inb * 0.15, pa - 0.30
+        for s_ in (-0.2, 0.2):
+            gear.tube((lx, y0, Z(lyd + s_)), (lx, py + 1.0, Z(lyd + s_)), 0.02, colour=grey, sides=8)
+        rung = y0 + 0.3
+        while rung < py + 0.9:
+            gear.tube((lx, rung, Z(lyd - 0.2)), (lx, rung, Z(lyd + 0.2)), 0.011, colour=grey, sides=8)
+            rung += 0.3
+        for hy in (y0 + 0.9, y0 + 3.3, y0 + 5.7, py - 0.5):               # its stays to the funnel's side
+            for s_ in (-0.2, 0.2):
+                gear.tube((lx, hy, Z(lyd + s_)), (xin + inb * -0.005, hy, Z(lyd + s_)), 0.012, colour=grey, sides=8)
+        hoop = y0 + 2.4
+        while hoop < py + 0.8:                                            # the safety hoops, inboard of the ladder
+            pts = [(lx, hoop, Z(lyd - 0.2))] + [(lx + inb * (0.02 + 0.36 * sin(t)), hoop, Z(lyd - 0.36 * cos(t))) for t in (0.5, 1.0, pi / 2, pi - 1.0, pi - 0.5)] + [(lx, hoop, Z(lyd + 0.2))]
+            gear.rod(pts, 0.009, grey)
+            hoop += 0.9
+    # ---- the whistle, on the port funnel's forward face under its head: a horn on a bracket, looking forward
+    whistle = part('upper', 'Whistle', 'Machinery paint', smooth=True, angle=40)
+    fw = (y1 - 0.9 - y0) / (y1 - y0)
+    zf = Z(b - F['rake_fwd'] * fw)
+    wx = (x0 + x1) / 2
+    whistle.box((wx - 0.05, y1 - 0.95, zf - 0.01), (wx + 0.05, y1 - 0.85, zf + 0.22), DARK)
+    whistle.tube((wx, y1 - 0.90, zf + 0.16), (wx, y1 - 0.90, zf + 0.34), 0.06, colour=srgb(0xb9bdb6), sides=14)
+    whistle.tube((wx, y1 - 0.90, zf + 0.34), (wx, y1 - 0.90, zf + 0.78), 0.06, 0.19, colour=srgb(0xb9bdb6), sides=20)
 
 
 def wheelhouse_after_wall():

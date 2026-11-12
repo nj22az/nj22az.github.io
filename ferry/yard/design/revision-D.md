@@ -113,12 +113,33 @@ abaft the forward perpendicular: 6.8 % of her length). 133 spaces on seven plans
 12. **The places of her deck fittings are a list** (`spec.OUTFIT`, 89 places): the fittings themselves come from the yard's
     library of deck fittings, and the deck is left clear for each. `ga.STATIONS` says what each station is.
 
+13. **Her decks' paint and her own outfit steel are `deck_outfit.py`**: lane lines on the main and upper decks, a walkway
+    1.1 m wide each side of the upper deck between two yellow lines, the helicopter deck's edge line, circle and H; a hawse
+    pipe and a chain pipe for each anchor; the foremast. The fittings that stand on the decks stay the library's.
+14. **The helicopter deck's middle is 10.0 m from the transom** (it was 10.5 m): at 10.5 m its forward corners' edges cut
+    0.2 m into the funnels' after inboard corners.
+15. **The bulwarks are plated in five strakes**, so that openings can be left in them: a freeing port 0.6 m long every
+    3.6 m along the upper deck and every 2.4 m on the forecastle, and an eye for each panama chock.
+16. **The foremast carries the anchor light and the bell, and no masthead light.** Her forward masthead light is on the
+    bridge's mast, as her pattern's profile shows hers; the rule as the yard recalls it wants the second one half her
+    length abaft it and 4.5 m higher, which the pattern carries on a tall mast at its funnel. With a funnel at each side
+    hers wants a mast on her centre line between them: not built, and a question for the owner.
+17. **Each funnel is a casing round three uptakes of their own bores** (the machinery design basis: a main engine's 0.7 m,
+    a generating set's 0.25 m, the boiler's 0.4 m): lagged pipes standing from the main deck up through the casing's room
+    and the funnel and out of its head, an exhaust gas economiser on each main engine's in the casing's room; louvres low
+    in the funnel's sides, a bar round its head, a platform with a ladder on its inboard side (the helicopter deck lies
+    under its after face), the whistle on the port one.
+18. **Every outside window has a frame and a rain eyebrow; every door of the house to a weather deck stands over a coaming
+    of 0.20 m.** The fixed ramp's opening has a coaming of 0.25 m along its outboard side and across its after end.
+
 ## 7. What is not in her yet
 
-Her machinery (engines, gears, generators, boiler, switchboards), the fitting out of every room (linings, furniture, doors'
-leaves other than the watertight doors, the pilot doors and the wheelhouse's own), the cargo lift's hoisting gear (the
-platform is drawn raised and does not move), the ramp cover over the fixed ramp's opening (the opening is railed), the
-chain lockers, a second escape from the engine room, and everything on the audit's open list.
+Her machinery (engines, gears, generators, boiler, switchboards) and the uptakes' runs to it below the main deck; the
+fitting out of every room (linings, furniture, doors' leaves other than the watertight doors, the pilot doors and the
+wheelhouse's own); the cargo lift's hoisting gear (the platform is drawn raised and does not move); the ramp cover over the
+fixed ramp's opening (the opening is railed and has its coaming); the chain lockers; a second escape from the engine room;
+a mast for her after masthead light; the house's shape (a raked front, rounded corners, tiers set back); the deck fittings
+themselves (the library); and everything on the audit's open list.
 
 ## 8. For the owner
 

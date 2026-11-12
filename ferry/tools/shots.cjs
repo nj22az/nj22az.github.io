@@ -31,6 +31,8 @@ const ROOMS = [
   ['upper-deck-looking-aft', 'trailer-deck', 0.5, 0.78, ASTERN, -0.04],
   ['upper-deck-looking-forward', 'trailer-deck', 0.5, 0.25, AHEAD, -0.02],
   ['helideck', 'helideck', 0.5, 0.88, ASTERN, -0.16],
+  ['funnel-port', 'trailer-deck', 0.72, 0.09, ASTERN - 0.62, 0.42],
+  ['house-from-the-forecastle', 'forecastle', 0.72, 0.28, ASTERN - 0.25, 0.3],
   ['boat-deck-lifeboat-station', 'boat-deck-p', 0.45, 0.04, AHEAD, -0.10],
   ['officers-deck-generator-room', 'officers-deck-aft', 0.88, 0.06, AHEAD + 0.55, -0.05],
   ['forecastle', 'forecastle', 0.5, 0.12, AHEAD, -0.10],
