@@ -80,8 +80,17 @@
     var subtitle = cover.querySelector(".cover-sub");
     var startButton = cover.querySelector(".btn-primary");
 
-    if (kicker) kicker.textContent = "Six books · 1603–2019";
-    if (subtitle) subtitle.textContent = "Five centuries of the East India Company, observed from one Thames-side tavern.";
+    // The reader sets the tab title after this pass. Put the working title back
+    // once that effect has run, and leave a chapter title alone.
+    function titleInProgress() {
+      if (document.querySelector("article.reader")) return;
+      if (!document.querySelector("main.contents .cover")) return;
+      document.title = "The Front-Row Seat — a novel in progress";
+    }
+    titleInProgress();
+    setTimeout(titleInProgress, 0);
+    if (kicker) kicker.textContent = "A novel in progress · 1603–2019";
+    if (subtitle) subtitle.textContent = "Five centuries of the East India Company, observed from one Thames-side tavern. Still being written; the chapters are free to read.";
     if (startButton) startButton.textContent = "Begin with Book One";
   }
 
@@ -93,7 +102,7 @@
     stats.className = "toc-book-stats";
     stats.title = "Estimated at " + readingSpeed + " words per minute";
     stats.innerHTML =
-      "<span>" + displayWords(book.words) + " words</span>" +
+      "<span>" + displayWords(book.words) + " words so far</span>" +
       "<span aria-hidden=\"true\">·</span>" +
       "<span>≈ " + displayReadingTime(readingMinutes(book.words)) + "</span>";
     copy.appendChild(stats);
@@ -130,9 +139,7 @@
     link.classList.remove("toc-chapter-row");
     link.setAttribute("data-book", book.numeral);
     if (kicker) {
-      kicker.textContent = book.numeral === "V"
-        ? "Book " + book.word + " · Compact edition"
-        : "Book " + book.word;
+      kicker.textContent = "Book " + book.word;
     }
     if (title) title.textContent = book.title;
 
@@ -487,9 +494,7 @@
 
     if (book) {
       if (kicker) {
-        kicker.textContent = id === "12-1888-the-watchmans-daughter"
-          ? "Book Five · Compact Edition"
-          : "Book " + book.word;
+        kicker.textContent = "Book " + book.word;
       }
       if (title) title.textContent = book.title;
 
