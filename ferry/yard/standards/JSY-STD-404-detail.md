@@ -82,6 +82,16 @@ light. So this standard is to grow two more rules, which are not kept anywhere y
 rubber and deck coating each with its own grain and sheen, not one flat colour) and **light** (contact shadow where things
 meet, the room lit as a room). They are the next work, on the bridge first.
 
-Almost all of her. On 11 November 2026 rules 1 to 3 hold everywhere; rules 4 to 10 hold for the four fittings of section
+**Since 12 November 2026 the two rules are kept, for everything aboard at once:**
+
+| | Rule | How it is kept |
+|---|---|---|
+| 11 | **A place has the light of that place.** A room is lit by its windows and its lamps and by what its own deck and walls throw back; it is darker in its corners, and dark where it has neither window nor lamp. | `blender/light.py` traces it through her as built, at the end of `make.sh`; the page lights every surface from it (`look.js`). **So a lamp is a part like any other, and a room without one is a fault to be listed:** a fitting whose material gives out light lights its room. The sun, with its sharp shadows, is the page's own. |
+| 12 | **A surface is what it is made of.** Paint on plate shows the plate under it (it dishes between its stiffeners, its seams stand a little proud, water leaves its streaks); wood has its grain, metal its brush, a deck coating its grit. | `look.js` `SURFACES`, by the `surface` a look names in `shipyard.LOOKS`. A new material names its kind; a kind that does not exist yet is added there, not painted over with a neighbour's. |
+
+Not yet kept by them: pictures of real surfaces (the grain and the plating are worked out, not photographed); wear where hands and feet go;
+rust where water stands. They are next when her shapes are right.
+
+Almost all of her is still to be drawn to rules 4 to 10. On 11 November 2026 rules 1 to 3 hold everywhere; rules 4 to 10 hold for the four fittings of section
 3. The rest of the bridge is next, then each section as it is fitted. A fitting that is still a placeholder is to be said
 so in its register entry rather than passed over.
