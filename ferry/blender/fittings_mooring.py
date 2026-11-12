@@ -188,7 +188,7 @@ def gear_case(kit, x0, x1, ys, y0, colour, motor_z=0.50, motor_y=None):
     # two pipes: from the valve's sides down to flanges bolted on the deck
     for sz in (-1, 1):
         zp = motor_z + sz * 0.17
-        pts = [(mx - 0.17, my + 0.28, motor_z + sz * 0.10), (mx - 0.17, my + 0.28, zp + sz * 0.10), (mx - 0.17, 0.035, zp + sz * 0.10)]
+        pts = [(mx - 0.17, my + 0.28, motor_z + sz * 0.106), (mx - 0.17, my + 0.28, zp + sz * 0.10), (mx - 0.17, 0.035, zp + sz * 0.10)]   # from inside its flange
         kit.run('pipes', pts, 0.042, tint(colour, 0.85))
         plate_disc(galv, (mx - 0.17, 0.0, zp + sz * 0.10), UP, 0.095, 0.035, tint(colour, 0.8))
         bolt_circle(steel, (mx - 0.17, 0.035, zp + sz * 0.10), UP, 0.072, 6, 0.012)
@@ -393,8 +393,8 @@ def capstan(kit, **_):
     kit.p('plastic').ball((px, 1.275, 0.066), 0.028, BLACK)
     label(kit, mark, (px, 0.93, 0.10), PORT, UP, 0.16, 0.08, WHITE, ('HEAVE', 'STOP  VEER'), proud=0.0012)
     for z in (-0.04, 0.04):                                        # its two pipes go down through the deck beside it
-        kit.run('pipes', [(px + 0.07, 0.30, z), (px + 0.13, 0.30, z), (px + 0.13, 0.03, z)], 0.016, tint(g, 0.85))
-        plate_disc(galv, (px + 0.13, 0.0, z), UP, 0.034, 0.03, tint(g, 0.8))
+        kit.run('pipes', [(px + 0.07, 0.30, z), (px + 0.17, 0.30, z), (px + 0.17, 0.03, z)], 0.016, tint(g, 0.85))
+        plate_disc(galv, (px + 0.17, 0.0, z), UP, 0.034, 0.03, tint(g, 0.8))      # clear of the pedestal's foot
     ratio = _run_input(kit, 'Capstan', 360 / (2 * pi * 0.24))
     kit.movers.append(dict(id=kit.mid('run'), kind='turn', input=kit.mid('run'), axis=[0, 1, 0], pivot=[0.0, 0.0, 0.0], ratio=ratio))
     kit.clear = ((-1.5, 0.0, -1.0), (1.0, 1.4, 1.0))
@@ -531,12 +531,14 @@ def rope_reel(kit, **_):
             bar(R_('galv'), tuple(Vector((x, ys, 0)) + d * 0.165), tuple(Vector((x, ys, 0)) + d * 0.555), 0.008, 0.035, GALV, up=tuple(d.cross(Vector(PORT))))
     rope_on_drum(R_('rope'), -half + 0.035, half - 0.035, ys, 0.16, 2 * HAWSER, ROPE_BUFF, layers=3)
     handwheel(R_('steel'), (half + 0.19, ys, 0.0), PORT, 0.20, tint(GALV, 0.9), spokes=4)
-    kit.inputs.append(dict(id=kit.mid('turn'), name='Rope reel', min=0, max=360, step=1, unit='°', below='', above='turned', rest='stowed', auto='tap',
-                           at=[half + 0.19, ys, 0.0], reach=1.6))
+    # (a tap sets it turning, a turn a second, and another stops it where it began: a whole turn at a tap left it looking as
+    # it had, and the page's check of what is worked found nothing moved)
+    kit.inputs.append(dict(id=kit.mid('turn'), name='Rope reel', min=0, max=360, step=1, unit='°', below='', above='turning', rest='stowed', auto='tap',
+                           at=[half + 0.19, ys, 0.0], reach=1.6, run='spin', rate=360))
     kit.movers.append(dict(id=kit.mid('turn'), kind='turn', input=kit.mid('turn'), axis=[1, 0, 0], pivot=[0.0, ys, 0.0], ratio=1.0))
     kit.clear = ((-0.95, 0.0, -0.8), (1.0, 1.45, 0.8))
     kit.known_by = ('Two A-frames of flat bar on bolted feet with a tie; an axle in two bearings; the drum; two flanges, each a rim, eight spokes '
-                    'and a hub; the rope wound on in three layers; a handwheel on the axle. It turns to a tap')
+                    'and a hub; the rope wound on in three layers; a handwheel on the axle. It turns while it is on')
 
 
 @fitting('rope-coil', size=(1.5, 1.5, 0.4), front='either', title='Mooring rope on a grating',

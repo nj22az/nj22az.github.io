@@ -409,11 +409,11 @@ def lifeboat_station(kit, side=1, height=10.0, rescue=False, cover=None, number=
         paint.block((-0.02, -0.12, -0.15), (0.14, 0.12, 0.15), LIGHT, r=0.012)
         kit.p('lens').block((0.14, -0.10, -0.13), (0.146, 0.10, 0.13), srgb(0xf6f1e2), r=0.002)
         galv.tube((0.02, 0.12, 0.0), (0.02, 0.15, 0.0), 0.012, colour=BRASS)
-    cab = [(px + 0.325, 2.80, pz), (px + 0.20, 2.80, pz - 0.035), (px + 0.03, 2.60, pz - 0.035), (px, 2.30, pz - 0.038), (px, 0.10, pz - 0.038), (px, 0.04, pz - 0.075)]
+    cab = [(px + 0.325, 2.80, pz), (px + 0.20, 2.80, pz - 0.035), (px + 0.03, 2.60, pz - 0.035), (px, 2.30, pz - 0.038), (px, 0.10, pz - 0.038), (px, 0.04, pz - 0.095)]
     kit.run('cables', cab, 0.008, BLACK)
     for y in (0.35, 0.90, 1.45, 2.00, 2.42):
         galv.ring((px, y, pz - 0.019), UP, 0.034, 0.004, GALV)                                                          # a clip round post and cable
-    galv.tube((px, 0.0, pz - 0.075), (px, 0.045, pz - 0.075), 0.016, colour=BRASS)
+    galv.tube((px, 0.0, pz - 0.095), (px, 0.045, pz - 0.095), 0.016, colour=BRASS)      # its gland, clear of the post's foot
     galv.ring((px + 0.18, 2.745, pz - 0.018), (0.7, -0.5, 0), 0.034, 0.004, GALV)
 
     # ---- bowsing tackles, made up and hung on the forward and after frames; the placard on the forward frame

@@ -278,3 +278,40 @@ screen; the screen now stands only as high as the open head's rim.
 6. Sizes marked [M] read against their makers' sheets and standards.
 7. Each fitting's row copied into JSY-STD-404 section 3 by whoever owns that file (they are in section 3 above and in
    `parts_known_by`); the register entries for the working ones.
+
+## 8. Aboard the Chisum (12 November 2026, morning)
+
+The owner: "it needs life boats"; of the photograph of a ferry's forecastle with its mooring gear: "I want the bridge to
+look like this and the forecastle too". `blender/outfit.py` (written in the night, never built with the ship) stands every
+fitting of `spec.OUTFIT` in its place, and `build.py` calls it since this morning: **88 places fitted**, among them the two
+lifeboat stations with their gravity davits on the boat deck, six liferafts, on the forecastle two windlasses with their
+chain stoppers, the mooring winches, bitts, roller fairleads and panama chocks, aft the capstans and bitts, the
+ventilators, air pipes, benches, floodlights, foam monitors, and the lashing pots of the main and upper decks and the
+lower hold (14 air pipes, 2 benches, 10 bitts, 2 capstans, 2 chain stoppers, 4 floodlights, 2 foam monitors, 8 fields of
+lashing pots, 2 lifeboat stations, 6 liferafts, 4 mooring winches, 10 panama chocks, 6 roller fairleads, 2 rope reels, 12
+ventilators, 2 windlasses). Thirty of them are worked where they stand, by a tap on the fitting, with sixty motions
+(the davits, the falls, the winches and windlasses): she has 163 motions in all.
+
+**What it lacked, as the gate found it, and what was put right** (the library itself, so every ship that carries these):
+
+| Found by | What | Put right |
+|---|---|---|
+| `zfight.py`, 2 pairs | The lifeboat station's light: its cable's deck gland stood half under the post's foot, two faces in the deck's plane | The gland stands 2 cm clear of the foot (`fittings_boats.py`) |
+| `zfight.py`, 2 pairs | The capstan's control pedestal: its two pipes' deck flanges stood half under the pedestal's foot | The pipes come down 4 cm farther out (`fittings_mooring.py`) |
+| `zfight.py`, 4 pairs | A winch's hydraulic motor (windlass, mooring winch): each pipe began in the plane of its own flange's face on the valve | The pipe begins inside its flange (`gear_case`) |
+| `zfight.py`, 6 pairs (first met with the ship under them) | A lashing pot that stands on an uncut deck had a black floor 2 mm over the deck: in the plane of the lane lines painted there | Its floor is 12 mm over the deck, inside the pot's plate (`fittings_cargo.py`) |
+| `afloat.py`, 2 things | The forward end rail of each lifeboat station stood 12 mm outside the deck: the station was set to the deck's edge abreast its middle, and forward of amidships her side draws in | The station is set to the least breadth along its length (`outfit.py`) |
+
+**Said as it happened.** This session first wrote that the night's build with the fittings had "323 things in the air".
+That was wrong: the part file it checked was a trial of the fittings alone, with no ship in it, so everything in it was in
+the air. With the ship under them, two were.
+
+**What she weighs with them.** 2,958,658 triangles in a file of 18.45 MB (she was 1,414,352 and 9.0 MB with her wings
+closed in and no fittings): the fittings are more than half of her. JSY-STD-404 sets no limit; what a frame costs on
+foot with them was not measured, nor a phone tried.
+
+**Not done.** The openings the library asks for in what a fitting stands on (`cuts`) are still not cut: nothing of a
+ventilator or a windlass is seen from the room under it, and the lashing pots stand 18 mm proud of the deck instead of
+flush in it. No anchor, and no cable that runs. The forecastle's bulwark and deck are as revision D left them: the
+photograph's rounded, bulwarked forecastle was not compared item by item. No page check works a davit or a winch yet
+(owed, item 1 above).

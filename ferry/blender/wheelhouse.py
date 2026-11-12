@@ -266,16 +266,172 @@ def floor():
             box('rubber', x0 + 0.02, x1 - 0.02, a + 0.03 + k * 0.035, a + 0.048 + k * 0.035, 0.020, 0.0235, tint(MAT, 1.25), r=0.0012)
 
 
+WING_SILL = 1.15                      # the top of the outboard bulwark's rail: the sill of the glass over it
+WING_HEAD = HEAD_ROOM - 0.05          # the underside of the wing's roof: the wheelhouse's own eave, carried out to her side
+WALL_IN = 22.94                       # the inner face of the wing's forward wall: its bulwark was 60 mm thick, and so is the wall over it
+WING_POST = 0.10                      # a post between two panes
+WING_FRONT = 6                        # panes in the wing's forward wall, and in its outboard one
+WING_SIDE = 3
+WING_DOOR = (4.30, 5.10)              # the door in the wing's after wall, x from and to: it opens aft, onto the open bridge deck
+
+
+def _wraked(key, x0, x1, t0, t1, h0, h1, colour):
+    """A member of the wing's forward wall, which leans with the wheelhouse's glass: t0 and t1 are how far through the wall
+    it lies (0 inside, 1 outside), as _raked has them."""
+    th = FRONT_OUT - WALL_IN
+    prism(key, x0, x1, [(WALL_IN + th * t0 + fwd(h0), h0), (WALL_IN + th * t1 + fwd(h0), h0), (WALL_IN + th * t1 + fwd(h1), h1), (WALL_IN + th * t0 + fwd(h1), h1)], colour)
+
+
+def _wing_pane_fore(x0, x1):
+    """A pane of the wing's forward wall, between two posts: a steel rail under and over it, the glass in black rubber."""
+    a, b = sorted((x0, x1))
+    t, g = 0.04, 0.012
+    _wraked('wing', a, b, 0.0, 1.0, SILL, SILL + t, HOUSE)
+    _wraked('wing', a, b, 0.0, 1.0, HEAD - t, HEAD, HOUSE)
+    _wraked('rubber', a, b, 0.30, 0.70, SILL + t, SILL + t + g, RUBBER)
+    _wraked('rubber', a, b, 0.30, 0.70, HEAD - t - g, HEAD - t, RUBBER)
+    for c, e in ((a, a + g), (b - g, b)):
+        _wraked('rubber', c, e, 0.30, 0.70, SILL + t + g, HEAD - t - g, RUBBER)
+    yg = lambda h: WALL_IN + 0.03 + fwd(h)
+    lo, hi = SILL + t + g - 0.006, HEAD - t - g + 0.006
+    part('glass').polygon([P(a + g - 0.006, yg(lo), lo), P(b - g + 0.006, yg(lo), lo), P(b - g + 0.006, yg(hi), hi), P(a + g - 0.006, yg(hi), hi)], GLASS)
+
+
+def _wing_pane(key_x, yd0, yd1, h0, h1, along):
+    """A pane in an upright wall of the wing: `along` is 'yard' for the outboard wall (which stands from key_x[0] to
+    key_x[1] across her) or 'x' for the after wall (which stands from key_x[0] to key_x[1] along her; yd0 and yd1 are then
+    its x from and to)."""
+    t, g = 0.04, 0.012
+    u0, u1 = key_x                                                # the wall's two faces
+    w = u1 - u0
+    def bar(key, a, b, c, e, f0, f1, colour):                      # from a to b along the wall, c to e in height, f0 to f1 through it
+        if along == 'yard':
+            box(key, u0 + w * f0, u0 + w * f1, a, b, c, e, colour)
+        else:
+            box(key, a, b, u0 + w * f0, u0 + w * f1, c, e, colour)
+    bar('wing', yd0, yd1, h0, h0 + t, 0.0, 1.0, HOUSE)
+    bar('wing', yd0, yd1, h1 - t, h1, 0.0, 1.0, HOUSE)
+    bar('rubber', yd0, yd1, h0 + t, h0 + t + g, 0.30, 0.70, RUBBER)
+    bar('rubber', yd0, yd1, h1 - t - g, h1 - t, 0.30, 0.70, RUBBER)
+    for c, e in ((yd0, yd0 + g), (yd1 - g, yd1)):
+        bar('rubber', c, e, h0 + t + g, h1 - t - g, 0.30, 0.70, RUBBER)
+    m, lo, hi, c, e = u0 + w / 2, h0 + t + g - 0.006, h1 - t - g + 0.006, yd0 + g - 0.006, yd1 - g + 0.006
+    ring = [P(m, c, lo), P(m, e, lo), P(m, e, hi), P(m, c, hi)] if along == 'yard' else [P(c, m, lo), P(e, m, lo), P(e, m, hi), P(c, m, hi)]
+    part('glass').polygon(ring, GLASS)
+
+
 def wing(g):
+    """
+    A bridge wing, closed in. The owner, 12 November 2026, with a photograph of a ferry whose bridge reaches across her
+    whole breadth behind one band of windows: "I want the bridge to look like this". The wings were open decks behind a
+    bulwark 1.1 m high. They are closed in as a ship's open wings are when she is refitted: the bulwark stays, glass stands
+    on it between steel posts, and a roof is carried out over it from the wheelhouse's eave to her side.
+
+      - forward, the bulwark ends at the height of the wheelhouse's own sill, and the wall over it leans forward with the
+        wheelhouse's glass: six panes a side, so that one band of windows runs from one side of her to the other;
+      - outboard, three panes stand on the bulwark's rail, and the corner is a steel cheek carried into the rake;
+      - aft, a wall with a window and a weathertight door, which opens aft onto the open bridge deck;
+      - over it a roof at the height of the wheelhouse's eave, whose forward edge is that eave's own line.
+
+    The wheelhouse inside keeps its side walls and its two doors, which now open into the wings.
+    """
     side = g['side']
-    box('wingdeck', side * X_OUT, side * W, 19.50, 22.94, 0.0, 0.012, WINGDECK)
-    box('wing', side * W, side * (W + 0.06), 19.50, FRONT_OUT, 0.0, 1.10, HOUSE)                     # the bulwark outboard
-    box('wing', side * X_OUT, side * W, 22.94, FRONT_OUT, 0.0, 1.10, HOUSE)                    # and across the forward end
+    name = 'port' if side > 0 else 'starboard'
+    xo = W + 0.06                                                                                 # the outer face of the outboard bulwark
+    box('wingdeck', side * X_OUT, side * W, 19.56, 22.94, 0.0, 0.012, WINGDECK)
+    box('wing', side * W, side * xo, 19.56, FRONT_OUT, 0.0, 1.10, HOUSE)                         # the bulwark outboard, from the after wall (which takes the corner)
+    box('wing', side * X_OUT, side * W, 22.94, FRONT_OUT, 0.0, SILL, HOUSE)                      # and across the forward end, to the sill
     for yd in (20.1, 20.7, 21.3, 21.9, 22.5):                                                     # its stays
         prism('wing', side * (W - 0.01), side * W, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 1.10), (yd - 0.004, 1.10)], tint(HOUSE, 0.92))
         prism('wing', side * (W - 0.08), side * W, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 0.30), (yd - 0.004, 0.30)], tint(HOUSE, 0.92))
-    box('wood', side * (W - 0.06), side * (W + 0.09), 19.50, 23.03, 1.10, 1.15, WOOD)                         # the rail
-    box('wood', side * X_OUT, side * (W - 0.06), 22.91, 23.03, 1.10, 1.15, WOOD)
+    box('wood', side * (W - 0.06), side * (W + 0.09), 19.56, 22.80, 1.10, WING_SILL, WOOD)        # the rail: now the sill of the glass outboard
+    box('wood', side * X_OUT, side * 8.96, 22.88, WALL_IN + 0.001, SILL - 0.032, SILL, WOOD, r=0.006)        # and a sill board under the forward glass, as far as the wing station
+
+    # ---- the forward wall over the bulwark: posts and panes, leaning with the wheelhouse's glass; a head to the roof
+    first, last = X_OUT + WING_POST, W - WING_POST                                                # the panes stand between these
+    pane = (last - first - (WING_FRONT - 1) * WING_POST) / WING_FRONT
+    at = X_OUT
+    for k in range(WING_FRONT):
+        x0 = first + k * (pane + WING_POST)
+        _wraked('wing', side * at, side * x0, 0.0, 1.0, SILL, HEAD, HOUSE)                        # the post before this pane
+        _wing_pane_fore(side * x0, side * (x0 + pane))
+        at = x0 + pane
+    _wraked('wing', side * at, side * W, 0.0, 1.0, SILL, HEAD, HOUSE)                             # the last post, against the corner
+    head = [(WALL_IN + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), WING_HEAD), (WALL_IN + fwd(HEAD), WING_HEAD)]
+    prism('wing', side * X_OUT, side * W, head, HOUSE)
+
+    # ---- the outboard wall over the rail: an after post, three panes, and the corner's cheek carried into the rake
+    cheek = [(22.80, 1.10), (FRONT_OUT + fwd(1.10), 1.10), (FRONT_OUT + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), WING_HEAD), (22.80, WING_HEAD)]
+    prism('wing', side * W, side * xo, cheek, HOUSE)
+    faces = tuple(sorted((side * W, side * xo)))
+    span = (22.80 - 19.56 - WING_POST - (WING_SIDE - 1) * WING_POST) / WING_SIDE
+    at = 19.56
+    for k in range(WING_SIDE):
+        yd0 = 19.56 + WING_POST + k * (span + WING_POST)
+        box('wing', faces[0], faces[1], at, yd0, WING_SILL, HEAD, HOUSE)
+        _wing_pane(faces, yd0, yd0 + span, WING_SILL, HEAD, 'yard')
+        at = yd0 + span
+    box('wing', faces[0], faces[1], 19.56, 22.80, HEAD, WING_HEAD, HOUSE)
+
+    # ---- the after wall: from the house's side to her side, with a window, and a doorway with a coaming for its door
+    d0, d1 = WING_DOOR
+    aft = (19.50, 19.56)
+    def wall(x0, x1, h0, h1):
+        a_, b_ = sorted((side * x0, side * x1))
+        box('wing', a_, b_, aft[0], aft[1], h0, h1, HOUSE)
+    wall(X_OUT, d0, 0.0, WING_HEAD)
+    wall(d0, d1, 2.01, WING_HEAD)                                                                 # over the doorway
+    wall(d0, d1, 0.0, 0.15)                                                                       # its coaming
+    wall(d1, 6.20, 0.0, WING_HEAD)
+    wall(6.20, 7.40, 0.0, WING_SILL)                                                              # under and over the window
+    wall(6.20, 7.40, HEAD, WING_HEAD)
+    wall(7.40, xo, 0.0, WING_HEAD)
+    _wing_pane(aft, *sorted((side * 6.20, side * 7.40)), WING_SILL, HEAD, 'x')
+
+    # ---- an angle bar round the head of the walls inside, under the roof: it closes the joint, through which the light
+    # traced for the room showed as a bright line where wall and roof meet
+    c = 0.04
+    for x0, x1, yd0, yd1 in ((W - c, W, 19.56, 22.80), (X_OUT, X_OUT + c, 19.56, 22.94), (X_OUT + c, W - c, 19.56, 19.56 + c),
+                             (X_OUT + c, W - c, WALL_IN + fwd(HEAD) - c, WALL_IN + fwd(HEAD))):
+        a_, b_ = sorted((side * x0, side * x1))
+        box('wing', a_, b_, yd0, yd1, WING_HEAD - c, WING_HEAD, tint(HOUSE, 0.97))
+    # ---- the roof, which lifts away with the compass deck: from the house's side to her side, its forward edge the eave's own
+    HANGS[0] = True
+    for x0, yd0, yd1 in ((X_OUT, 19.47, 23.09), (3.08, 23.09, 23.46)):
+        a_, b_ = sorted((side * x0, side * (xo + 0.03)))
+        box('wing', a_, b_, yd0, yd1, WING_HEAD, HEAD_ROOM, HOUSE)
+    a_, b_ = sorted((side * 3.08, side * (xo + 0.03)))
+    prism('wing', a_, b_, [(23.40, WING_HEAD), (23.46, WING_HEAD), (23.46, WING_HEAD - 0.06), (23.44, WING_HEAD - 0.06)], tint(HOUSE, 0.94))
+    HANGS[0] = False
+
+    # ---- the door in the after wall: a weathertight leaf hinged on its inboard edge, glazed in its upper half; it opens aft
+    mover = f'door-wing-aft-{name[0]}'
+    leaf = Part(f'Wheelhouse, wing after door, {name}', 'Deck paint', mover=mover)
+    glass = Part(f'Wheelhouse, wing after door glass, {name}', 'Window glass', mover=mover)
+    fit = Part(f'Wheelhouse, wing after door hardware, {name}', 'Bronze', mover=mover)
+    def lbox(pt, x0, x1, yd0, yd1, h0, h1, colour):
+        a_, b_ = sorted((side * x0, side * x1))
+        box(pt, a_, b_, yd0, yd1, h0, h1, colour)
+    for x0, x1 in ((d0, d0 + 0.04), (d1 - 0.04, d1)):                                             # the frame's two jambs and its head
+        lbox('frame', x0, x1, aft[0], aft[1], 0.15, 2.01, FRAME)
+    lbox('frame', d0 + 0.04, d1 - 0.04, aft[0], aft[1], 1.97, 2.01, FRAME)
+    a, b = d0 + 0.04, d1 - 0.04
+    ya, yb = 19.51, 19.55
+    lbox(leaf, a, b, ya, yb, 0.15, 0.95, DOOR)
+    lbox(leaf, a, b, ya, yb, DOOR_GLASS[1], 1.97, DOOR)
+    lbox(leaf, a, a + STILE, ya, yb, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
+    lbox(leaf, b - STILE, b, ya, yb, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
+    glass.polygon([P(side * (a + STILE), 19.53, 0.95), P(side * (b - STILE), 19.53, 0.95), P(side * (b - STILE), 19.53, DOOR_GLASS[1]), P(side * (a + STILE), 19.53, DOOR_GLASS[1])], GLASS)
+    for yd, d in ((yb, 1), (ya, -1)):                                                             # a lever handle on both faces, at the free edge
+        lbox(fit, b - 0.07, b - 0.04, yd, yd + d * 0.045, 0.98, 1.08, BRASS)
+        lbox(fit, b - 0.14, b - 0.04, yd + d * 0.03, yd + d * 0.045, 1.03, 1.06, BRASS)
+    for hh in (0.35, 1.80):                                                                       # its hinges, on the inboard jamb
+        tube(fit, (side * a, 19.505, hh - 0.06), (side * a, 19.505, hh + 0.06), 0.016, BRASS, 10)
+    for q in (leaf, glass, fit):
+        q.group = 'bridge'
+        EXTRA.append(q)
+    MOTIONS.append(dict(id=mover, name=f'Door from the open bridge deck to the {name} wing', pivot=[side * a, 0.0, BP.Z(19.505)], ratio=1.0 * side, max=100,
+                        at=[side * (d0 + d1) / 2, DECK, BP.Z(19.53)], normal=[0, 0, 1]))
 
 
 # =====================================================================================================================
@@ -359,7 +515,8 @@ def wing_console(g, tag, x, yard, h):
     them). The three control heads stand in one row in the after part of the top, sunk until their plates are just over
     it; forward of them the top rises in an upright face that leans back 20 degrees to the eye, and the two dials are set
     in it, the rudder angle over the thruster's lever and the revolutions over the engines': each is read over the grips
-    from anywhere abaft the station. A low windscreen stands on the face's top.
+    from anywhere abaft the station. (It had a low windscreen of its own on the face's top while the wing was open; the
+    wing's own glass stands before it now.)
     """
     side = g['side']
     x0, x1, y0, y1 = abs(x) - 0.315, abs(x) + 0.315, yard - 0.17, yard + 0.17
@@ -391,28 +548,26 @@ def wing_console(g, tag, x, yard, h):
         c = Vector(P(at(u), ys, hs))
         part('brass').tube(tuple(c), tuple(c + nrm * 0.012), 0.072, colour=BRASS, sides=20)
         disc((at(u), ys, hs), tuple(nrm), tuple(upv), 0.062, name, proud=0.0135)
-    # the watch alarm's reset and the whistle push on the lip, between the thruster's head and the engines'; and a
-    # windscreen on the face's top
+    # the watch alarm's reset and the whistle push on the lip, between the thruster's head and the engines'
     lip = Vector((0.0, 1.0, -0.375)).normalized()
     for dy, col in ((0.06, BLUE), (0.125, RED)):
         c = Vector(P(at(0.33), y0 + dy, 0.82 + (dy + 0.02) * 0.375))
         part('plastic').tube(tuple(c), tuple(c + lip * 0.022), 0.016, colour=col, sides=12)
-    for xs in (xa + 0.03, xb - 0.03):
-        tube('steel', (xs, y1 - 0.02, ft), (xs, y1 - 0.02, ft + 0.34), 0.012, GREY, 8)
-    part('glass').polygon([P(xa + 0.03, y1 - 0.02, ft + 0.02), P(xb - 0.03, y1 - 0.02, ft + 0.02), P(xb - 0.03, y1 - 0.02, ft + 0.32), P(xa + 0.03, y1 - 0.02, ft + 0.32)], GLASS)
 
 
 def sidelight(g, tag, x, yard, h):
-    """A sidelight on the bulwark's rail at the wing's outer end: the lantern, and inboard of it the screen that cuts its light off across the bow."""
+    """A sidelight on the wing's roof at its outer end (it stood on the bulwark's rail while the wing was open): the lantern
+    on a short post, and inboard of it the screen that cuts its light off across the bow. `h` is the lantern's foot."""
     side = g['side']
     xo = side * (W + 0.03)
-    box('dark', xo - 0.035, xo + 0.035, yard - 0.035, yard + 0.035, 1.15, h + 0.02, STAND)
-    tube('dark', (xo, yard, h + 0.02), (xo, yard, h + 0.06), 0.07, DARK, 16)
-    tube('lens', (xo, yard, h + 0.06), (xo, yard, h + 0.19), 0.062, RED if side > 0 else GREENLENS, 16)
-    tube('dark', (xo, yard, h + 0.19), (xo, yard, h + 0.23), 0.072, DARK, 16)
+    foot = h - 0.05                                                    # the roof's top
+    box('top_dark', xo - 0.035, xo + 0.035, yard - 0.035, yard + 0.035, foot, h + 0.02, STAND)
+    tube('top_dark', (xo, yard, h + 0.02), (xo, yard, h + 0.06), 0.07, DARK, 16)
+    tube('top_lens', (xo, yard, h + 0.06), (xo, yard, h + 0.19), 0.062, RED if side > 0 else GREENLENS, 16)
+    tube('top_dark', (xo, yard, h + 0.19), (xo, yard, h + 0.23), 0.072, DARK, 16)
     # the screen: matt black, inboard of the lantern, 0.9 m long forward of it
-    box('dark', xo - side * 0.085, xo - side * 0.10, yard - 0.10, 23.02, 1.15, h + 0.26, BLACK)
-    box('dark', xo - side * 0.10, xo + side * 0.03, yard - 0.10, yard - 0.085, 1.15, h + 0.26, BLACK)
+    box('top_dark', xo - side * 0.085, xo - side * 0.10, yard - 0.10, yard + 0.72, foot, h + 0.26, BLACK)
+    box('top_dark', xo - side * 0.10, xo + side * 0.03, yard - 0.10, yard - 0.085, foot, h + 0.26, BLACK)
 
 
 def epirb(g, tag, x, yard, h):

@@ -405,6 +405,44 @@ the dials; from beside the stand the propulsion panel lies clear between the lev
 - The electrical drawings JS8-851, JS8-856 and JS8-864 were drawn before the refit and are not redrawn: the register's
   own tables are.
 
+## Stage 5. The wings closed in: one band of windows across her (12 November 2026, morning)
+
+The owner, with a photograph of a ferry's bridge front and forecastle (kept outside the repository as
+`chisum-reference/owner-photo-2026-11-12-bridge-front-and-forecastle.png`): **"I want the bridge to look like this and the
+forecastle too"**; "How about this bridge and forecastle can you implement it"; and, of the same picture: **"Do you see it
+has a outwaard build , that makes the bridge more roomy"**.
+
+**What the photograph shows** (looked at, not traced): a bridge that reaches across the ship's whole breadth; one band of
+large windows, leaning forward, carried from side to side and round the corners onto the wings' ends; the wings closed in,
+their ends standing outboard of the house below; the whole front built out forward of the house's face on a sloped
+underside; a roof whose edge is one line; an open forecastle below and ahead, behind a solid bulwark, with its windlasses,
+bitts and fairleads.
+
+**What was done in this stage** (`blender/wheelhouse.py`: `wing`, `sidelight`, `wing_console`; `systems/bridge.py`): the
+wings are closed in, as a ship's open wings are when she is refitted.
+
+| | Was | Is |
+|---|---|---|
+| A wing | An open deck 6.7 m long behind a bulwark 1.1 m high with a wooden rail | A room: the bulwark stays; **forward**, it ends at the wheelhouse's own sill and six panes of a metre lean over it with the wheelhouse's glass, between steel posts; **outboard**, three panes stand on the rail, and the corner is a steel cheek carried into the rake; **aft**, a wall with a window and a weathertight door that opens aft onto the open bridge deck (it opens to whoever comes near, like her other doors); **over it** a roof from the house's side to her side at the height of the wheelhouse's eave, whose forward edge is that eave's own line |
+| The band of windows | The wheelhouse's five panes, 5.8 m | **Seventeen panes across 19.5 m**: six, five and six |
+| The wheelhouse inside it | Side walls with two windows and a weathertight door each side | The same: its doors open into the wings now |
+| The sidelights | On the bulwark's rail at each wing's outer end | On the wing's roof at its outer end, 1.27 m higher, each with its screen |
+| The wing stations | A low windscreen of their own on the dials' face | None: the wing's glass stands before them |
+
+**Not done in this stage, plainly.** (1) **The protruding part forward on the bridge.** The owner, with a second
+photograph (the ro-pax *Finnarrow* from her bow): "I think we dont understand each other? I mean that protruding part
+forward on the bridge". The middle of that bridge's front stands out forward of its wings as a bay with canted corners,
+glazed all round, and the room is deeper there. Hers is flat: wheelhouse and wings in one line, and the wheelhouse 3.4 m
+deep. Building the middle out moves that part of the forward wall and everything on it (windows, wipers, clear-view
+screens, blinds, the handrail, the visor and roof over it, the steel under it) and gives the room the depth the console
+block was drawn for (stage 2: "the block is drawn so that it can be stood free there"). It is the next stage. (2) The wheelhouse's
+side walls still divide it from the wings: one room across is a matter for that stage too. (3) The wings' walls are bare
+painted steel inside, without lining. (4) The glass of the wings has no wipers. (5) Inside a wing a thin bright line
+runs where the walls meet the roof: the light traced for the open air over a roof 5 cm thick shows through at the joint
+(an angle bar was put round the walls' head for it and did not remove it).
+
+**Checks actually run** are in `ferry/README.md`, *Checks actually run*.
+
 ## What the bridge still lacks, compared with a real one
 
 Said plainly, in the order it would be seen:

@@ -35,9 +35,10 @@ def _pot(kit, x, z, sunk=True, colour=YELLOW):
         cast.tube((x - 0.098, -0.040, z), (x + 0.098, -0.040, z), 0.013, colour=tint(STEEL, 0.6), caps=(False, False))
         kit.cut('deck', (x - 0.110, -0.012, z - 0.110), (x + 0.110, 0.0, z + 0.110), round_=((x, 0.0, z), 0.110, UP))
     else:
-        # on a deck that is not to be cut: the plate stands on the deck, the deck under the opening painted black
+        # on a deck that is not to be cut: the plate stands on the deck, and the opening has a black floor 12 mm over the
+        # deck (2 mm over it, it lay in the plane of the lane lines painted there: JSY-STD-403)
         st = len(kit.p('mark').f)
-        kit.p('mark').polygon([(q[0], 0.002, q[2]) for q in clover], BLACK)
+        kit.p('mark').polygon([(q[0], 0.012, q[2]) for q in clover], BLACK)
         kit.p('mark').orient(st, UP)
 
 

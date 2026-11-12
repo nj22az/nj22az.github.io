@@ -1247,6 +1247,25 @@ Of the page and of what is still the Minato Maru's:
 
 ## Checks actually run
 
+### 12 November 2026, late morning: the wings closed in, and every deck fitting aboard
+
+On the work branch in the main checkout; the site served from it on port 8766 by a threading server; each page check by
+itself. Three whole builds: the wings alone, then with the fittings (stopped by `zfight.py`), then with the fittings put
+right, and once more after two last changes (the rope reels, an angle bar in the wings).
+
+| Check | Result |
+|---|---|
+| `ferry/blender/make.sh`, the wings closed in, no fittings | "built: every check passed": 1,414,352 triangles, 9.00 MB; 0 pairs among 587 pieces; 0 afloat of 17,357 |
+| `ferry/blender/make.sh`, with `outfit.py` called, first time | stopped at `zfight.py`: 6 pairs, each a field of lashing pots' black floors in the plane of the lane lines. `afloat.py` and `spans.py` run by hand on that part file: 2 things afloat (the lifeboat stations' forward end rails, 12 mm off the deck), 437 runs carried |
+| `ferry/blender/make.sh`, the build that is committed | **"built: every check passed"**: 2,958,754 triangles in a file of 18.45 MB, 133 rooms, 17 stairs, 186 components, 163 motions; `zfight.py` 0 pairs among 1,121 pieces; `afloat.py` 0 afloat of 25,461 pieces; `spans.py` 437 runs, every one carried; the light traced in 274 s. `zfight.py`'s second list, which does not stop the build, names 13 coverings (the seven of before, and the lane lines where they pass 16 mm under six fields of lashing pots' plates) |
+| `blender -b -P ferry/blender/build.py -- --only outfit` | "deck outfit: 88 of 88 places fitted"; 30 worked where they stand, 60 motions |
+| The nine page checks on the committed build | **bridge 28, doors 114, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5: all pass** (76 worked doors, gates and hatches; 88 doorways and 12 doors that open to whoever comes near; 32 files, 26.5 MB offline). Said as it happened: on the build before, `bridge.cjs` failed one check (it walked off the port wing's after end, where there is a wall and a door now: the check goes through the door) and `doors.cjs` one (a rope reel turned a whole turn at a tap and so looked unmoved: it turns while it is on now) |
+| What a frame costs with the fittings aboard (a script of this session's, not kept: a redraw asked every frame for four seconds, headless Chromium on the Mac's graphics card) | at 1600 x 1000: 9.6 ms in the wheelhouse, 8.6 on the forecastle, 8.9 on the boat deck; at a tablet's 820 x 1180 at twice: 21.3, 18.3 and 20.0 ms (47 to 55 frames a second). Not measured on a real phone or tablet |
+| Pictures (eight views of her from outside and aboard, a script of this session's; the homepage card by `card.cjs`) | no errors on the page; each opened. **Seen and not put right:** inside a closed-in wing a thin bright line runs where the walls meet the roof (an angle bar was added for it and did not remove it: it is the traced light of the open air over a roof only 5 cm thick, not a gap) |
+
+**Not run:** the yard's calculations and drawings; a phone or a tablet.
+
+
 ### 12 November 2026, later in the morning: the deck plan on foot, and the homepage card
 
 On the work branch in the main checkout, the site served from it on port 8766 by a threading server, each page check by
@@ -1294,7 +1313,9 @@ Said as it happened: the first run of `sight.cjs` timed out waiting for the page
 (six Blender processes); nothing was run beside a build after that. **Not run:** the yard's two calculations
 (`yard/calc`), the electrical drawings and the proof of supply (made on the 68 m ship, before the refit), a phone or a
 tablet. **Not in this build:** the deck fittings (`blender/outfit.py` is not called by `build.py`: the night's build
-with it fails `zfight.py` with 8 pairs and `afloat.py` with 323 things in the air).
+with it fails `zfight.py` with 8 pairs and `afloat.py` with 323 things in the air). **Corrected later the same morning:** the 323
+were a mistake: that part file was a trial of the fittings alone, with no ship under them. The entry above this one has
+what the fittings lacked in fact, and that they are aboard.
 
 
 ### 12 November 2026: revision D, the ro-ro freight ferry of 124.8 m
