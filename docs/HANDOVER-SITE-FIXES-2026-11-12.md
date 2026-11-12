@@ -26,10 +26,13 @@ Local server `python3 -m http.server 8765` on this branch. Headless Chrome at 14
 - Pages that returned 200 with no new page errors: `/`, `/blog/`, `/blog/the-torn-poster/`, `/blog/vietnam/`, `/blog/scandic-laajavuori-jyvaskyla/`, `/hotels/`, `/maintenance-demo/`, `/camera/`, `/linux-port/install/`.
 - `/linux-port/` with no hash landed on `https://nj22az.github.io/johansson-world/#linux`. With `#downloads` it landed on `https://nj22az.github.io/johansson-world/#downloads`. No console error on that navigation.
 - `node --check` on `assets/js/project-explorer.js` and `camera/tests/brand.browser.mjs`. Sitemap XML parses as 34 URLs.
+- After the first CI run, `node tools/build-camera-offline.mjs` regenerated `camera/offline.json` and the pin in `camera/sw.js`. `node camera/tests/offline.test.mjs` passed. The new entries are only the four Game Room stylesheets and `camera/index.html`.
 
 ## Limits
 
-`johansson-town/` is not checked out here (it is a separate repository). Because of that, these 404s were already true before this change and are still true: the homepage's town portrait, Pocket Camera's `looks.js` and `face.js`, and `/mizuhama-1988/`'s redirect to `/johansson-town/`. `/maintenance-demo/` logs a missing `/favicon.ico`, which this change did not add. The Pocket Camera browser suite was not run; the brand test's heading assertion was updated and the heading was checked in Chrome as above. Not tried on a phone.
+`johansson-town/` is not checked out in the published tree (it is a separate repository). Because of that, these 404s were already true before this change and are still true: the homepage's town portrait, Pocket Camera's `looks.js` and `face.js`, and `/mizuhama-1988/`'s redirect to `/johansson-town/`. `/maintenance-demo/` logs a missing `/favicon.ico`, which this change did not add. The Pocket Camera browser suite was not run locally; the brand test's heading assertion was updated and the heading was checked in Chrome as above. Not tried on a phone.
+
+The Pocket Camera MCP job compares `camera/app.js` import keys with `johansson-town/tools/camera/session.mjs`. This branch does not change `camera/app.js`. On `main` those keys are already `looks-gl.js?v=20261110green1` and `frames.js?v=20261110green1`, while the Town adapter still imports `looks-gl.js?v=20261103face1` and `frames.js?v=20261029f`. The job fails with “Adapter cache key differs: looks-gl” because any change under `camera/` runs it. Updating the adapter belongs in the Town repository.
 
 ## Follow-up on the same pull request
 
