@@ -371,6 +371,43 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
   mesh.frustumCulled = false; mesh.userData.sea = true;
   const shadow = new THREE.Mesh(geometry, new THREE.ShadowMaterial({ opacity: 0.38, depthWrite: false }));
   shadow.position.y = 0.012; shadow.receiveShadow = true; shadow.frustumCulled = false; shadow.renderOrder = 2;
+  // The lap of the water against her: a band of broken water round her waterline, widest where the swell lifts against her
+  // and thinning to nothing half a metre out. It is a ribbon laid on the sea, drawn from her own outline.
+  let lap = null;
+  if (waterline && waterline.length > 2) {
+    const ring = [...waterline.map(([z, x]) => [x, z]), ...waterline.slice().reverse().filter(([, x]) => x > 0).map(([z, x]) => [-x, z])];
+    const n = ring.length, pos = [], edge = [], idx = [];
+    for (let i = 0; i < n; i++) {
+      const a = ring[(i + n - 1) % n], b = ring[(i + 1) % n], q = ring[i];
+      let nx = b[1] - a[1], nz = -(b[0] - a[0]);
+      const m = Math.hypot(nx, nz) || 1; nx /= m; nz /= m;
+      if (nx * q[0] + nz * (q[1] - (ring[0][1] + ring[Math.floor(n / 4)][1]) / 2) < 0 && Math.abs(q[0]) > 0.2) { nx = -nx; nz = -nz; }
+      pos.push(q[0] - nx * 0.04, 0, q[1] - nz * 0.04, q[0] + nx * 0.55, 0, q[1] + nz * 0.55);
+      edge.push(0, 1);
+      const j = (i + 1) % n;
+      idx.push(2 * i, 2 * j, 2 * i + 1, 2 * j, 2 * j + 1, 2 * i + 1);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('edge', new THREE.Float32BufferAttribute(edge, 1));
+    g.setIndex(idx);
+    lap = new THREE.Mesh(g, new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false, uniforms: dayUniforms(),
+      vertexShader: 'attribute float edge; varying float vEdge; varying vec3 vAt; void main() { vEdge = edge; vec4 w = modelMatrix * vec4(position, 1.0); vAt = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+      fragmentShader: `varying float vEdge; varying vec3 vAt; ${SKY}
+        void main() {
+          vec2 p = vAt.xz;
+          float along = skFbm(p * 0.9 + uTime * vec2(0.21, 0.13));                       // where it is broken and where it is smooth
+          float fine = skFbm(p * 7.0 - uTime * vec2(0.5, 0.3));
+          float swell = 0.5 + 0.5 * sin(dot(p, vec2(0.819, 0.574)) * 0.1337 + uTime * 0.575);      // the long wave coming and going
+          float reach = mix(0.35, 1.0, swell) * (0.45 + 0.9 * along);
+          float a = smoothstep(reach, reach * 0.25, vEdge) * smoothstep(0.30, 0.62, fine + 0.35 * (1.0 - vEdge));
+          vec3 c = (uHorizon * 0.75 + uZenith * 0.25) * 0.9 + uSunLight * 0.07 * max(uSun.y, 0.0);
+          gl_FragColor = vec4(c, a * 0.85);
+        }`,
+    }));
+    lap.position.y = 0.02; lap.frustumCulled = false; lap.renderOrder = 3;
+  }
   // Her mirror image: she is drawn once more as the sea sees her, from under the water looking up, and the sea shows that
   // picture where its waves let it. Left out on the light way.
   const mirror = lite ? null : new THREE.WebGLRenderTarget(1024, 640, { type: THREE.HalfFloatType });
@@ -392,7 +429,7 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
     below.updateMatrixWorld();
     below.projectionMatrix.copy(camera.projectionMatrix); below.projectionMatrixInverse.copy(camera.projectionMatrixInverse);
     u.uMirrorAt.value.set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1).multiply(below.projectionMatrix).multiply(below.matrixWorldInverse);
-    const hide = [mesh, shadow, ...others].filter(o => o.visible);
+    const hide = [mesh, shadow, lap, ...others].filter(o => o && o.visible);
     for (const o of hide) o.visible = false;
     const target = renderer.getRenderTarget(), planes = renderer.clippingPlanes, alpha = renderer.getClearAlpha(), auto = renderer.shadowMap.autoUpdate, need = renderer.shadowMap.needsUpdate;
     renderer.getClearColor(was);
@@ -405,7 +442,7 @@ export function createSea(waterline, { lite = false, reach = 4000 } = {}) {
     for (const o of hide) o.visible = true;
     u.uMirrorOn.value = 1;
   }
-  return { mesh, shadow, material, reflect };
+  return { mesh, shadow, lap, material, reflect };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

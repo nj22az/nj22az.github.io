@@ -193,6 +193,7 @@ function showSea() {
   if (!sea) return;
   const on = afloat();
   sea.mesh.visible = sea.shadow.visible = sky.dome.visible = on;
+  if (sea.lap) sea.lap.visible = on;
   floor.visible = !on && !xray;
   camera.far = on ? 9000 : 700;
   camera.updateProjectionMatrix();
@@ -212,6 +213,7 @@ function build(doc, atlases) {
   // The sea, with her own outline cut out of it.
   sea = createSea(header.ship.waterline, { lite });
   scene.add(sea.mesh, sea.shadow);
+  if (sea.lap) scene.add(sea.lap);
   showSea();
   const motions = new Map((header.movers || []).map(m => [m.id, m]));
   movers = [];
