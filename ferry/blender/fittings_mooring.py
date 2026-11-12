@@ -532,7 +532,7 @@ def rope_reel(kit, **_):
     rope_on_drum(R_('rope'), -half + 0.035, half - 0.035, ys, 0.16, 2 * HAWSER, ROPE_BUFF, layers=3)
     handwheel(R_('steel'), (half + 0.19, ys, 0.0), PORT, 0.20, tint(GALV, 0.9), spokes=4)
     kit.inputs.append(dict(id=kit.mid('turn'), name='Rope reel', min=0, max=360, step=1, unit='°', below='', above='turned', rest='stowed', auto='tap',
-                           at=[half + 0.19, ys, 0.0], normal=[1, 0, 0], reach=1.6))
+                           at=[half + 0.19, ys, 0.0], reach=1.6))
     kit.movers.append(dict(id=kit.mid('turn'), kind='turn', input=kit.mid('turn'), axis=[1, 0, 0], pivot=[0.0, ys, 0.0], ratio=1.0))
     kit.clear = ((-0.95, 0.0, -0.8), (1.0, 1.45, 0.8))
     kit.known_by = ('Two A-frames of flat bar on bolted feet with a tie; an axle in two bearings; the drum; two flanges, each a rim, eight spokes '

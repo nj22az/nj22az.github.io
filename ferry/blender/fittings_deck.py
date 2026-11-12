@@ -20,8 +20,9 @@ VENT_WHITE = srgb(0xe9e7df)
 
 
 def _tap(kit, what, at, top=100, unit='%', reach=1.6, said='shut'):
+    # (no `normal`: the page takes that for the way through a doorway, and this is not one)
     kit.inputs.append(dict(id=kit.mid('work'), name=what, min=0, max=top, step=1, unit=unit, below='', above=said, rest='open' if said == 'shut' else 'shut', auto='tap',
-                           at=list(at), normal=[0, 0, 1], reach=reach))
+                           at=list(at), reach=reach))
 
 
 def _deck_flange(kit, r, colour, bolts=6, h=0.016, hollow=False):
@@ -68,25 +69,27 @@ def ventilator_mushroom(kit, dia=0.6, coaming=0.76, serves='E.R. SUPPLY', **_):
         bar(galv, tuple(d * 0.02 + Vector((0, coaming - 0.06, 0))), tuple(d * (r - 0.006) + Vector((0, coaming - 0.06, 0))), 0.008, 0.04, GALV, up=UP)
     lathe(galv, (0, coaming - 0.09, 0), UP, [(0.0, 0.0), (0.0, 0.03), (0.06, 0.03), (0.06, 0.0)], GALV)
     lift = 0.12                                                    # how far open the head stands over its seat
-    steel.tube((0, coaming - 0.03, 0), (0, coaming + lift + r * 0.42 + 0.10, 0), 0.014, colour=STEEL)
+    ht = 0.08 + r * 0.14                                           # the head's own height, rim to crown
+    steel.tube((0, coaming - 0.03, 0), (0, coaming + lift + ht + 0.10, 0), 0.014, colour=STEEL)
     # the wire screen round the opening between seat and head
     rs = r + 0.003                                                   # it stands round the coaming's head, its uprights lapped on the coaming
-    for k in range(5):
-        galv.ring((0, coaming + 0.014 + (lift - 0.02) * k / 4, 0), UP, rs, 0.0025, tint(GALV, 0.85))
+    top = coaming + lift - 0.035                                    # as high as the open head's rim: shut, the head comes down over it
+    for k in range(4):
+        galv.ring((0, coaming + 0.014 + (top - coaming - 0.016) * k / 3, 0), UP, rs, 0.0025, tint(GALV, 0.85))
     for k in range(24):
         a = 2 * pi * k / 24
-        galv.tube((rs * cos(a), coaming - 0.04, rs * sin(a)), (rs * cos(a), coaming + lift + 0.02, rs * sin(a)), 0.0025, colour=tint(GALV, 0.85), caps=(False, False))
+        galv.tube((rs * cos(a), coaming - 0.04, rs * sin(a)), (rs * cos(a), top, rs * sin(a)), 0.0025, colour=tint(GALV, 0.85), caps=(False, False))
     galv.ring((0, coaming - 0.035, 0), UP, rs + 0.001, 0.004, tint(GALV, 0.85))                                       # the band that clamps it to the coaming
     # the head: a dished cap with a turned-down rim, wider than the coaming; a boss on it for the spindle's nut; the handwheel
     H = lambda key: kit.p(key, 'head')
     R = r * 1.42
     y0 = coaming + lift
-    lathe(H('paint'), (0, y0, 0), UP, [(-0.035, R - 0.006), (-0.035, R), (0.02, R), (0.08, R * 0.86), (r * 0.30, R * 0.45), (r * 0.38, 0.05), (r * 0.38, 0.0),
-                                       (r * 0.38 - 0.006, 0.0), (r * 0.30 - 0.006, R * 0.44), (0.074, R * 0.85), (0.014, R - 0.006), (-0.035, R - 0.006)],
+    lathe(H('paint'), (0, y0, 0), UP, [(-0.035, R - 0.006), (-0.035, R), (0.02, R), (0.08, R * 0.86), (0.08 + r * 0.10, R * 0.45), (ht, 0.05), (ht, 0.0),
+                                       (ht - 0.006, 0.0), (0.074 + r * 0.10, R * 0.44), (0.074, R * 0.85), (0.014, R - 0.006), (-0.035, R - 0.006)],
           lambda i: c if i < 7 else tint(DARK, 0.85), caps=(False, False))
-    lathe(H('paint'), (0, y0 + r * 0.38 - 0.004, 0), UP, [(0.0, 0.0), (0.0, 0.05), (0.035, 0.035), (0.035, 0.0)], c)
+    lathe(H('paint'), (0, y0 + ht - 0.004, 0), UP, [(0.0, 0.0), (0.0, 0.05), (0.035, 0.035), (0.035, 0.0)], c)
     W = lambda key: kit.p(key, 'wheel')
-    handwheel(W('steel'), (0, y0 + r * 0.42 + 0.085, 0), UP, 0.13, RED, spokes=4, rim=0.010)
+    handwheel(W('steel'), (0, y0 + ht + 0.075, 0), UP, 0.13, RED, spokes=4, rim=0.010)
     _tally(kit, serves, (0, coaming * 0.62, r + 0.001), PORT, UP)
     for sx in (-1, 1):                                             # the tally stands on two studs welded to the coaming
         steel.tube((sx * 0.06, coaming * 0.62, (r * r - 0.0036) ** 0.5 - 0.003), (sx * 0.06, coaming * 0.62, r + 0.0015), 0.005, colour=BRASS)

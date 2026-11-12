@@ -7,7 +7,7 @@
 Eye and aim are in the SHIP's axes, as the fittings are drawn: x to port, y up, z forward (metres). `--set` puts the file's
 inputs at values and moves every part as the page would (the file format's movers: turn, slide, carry, aim, extend, `on`);
 the motions are read from the part file written beside the .blend. Several stills in one run: give --shots a file of lines
-`out.png | eye | aim | lens | set`, and the scene is set up once.
+`out.png | eye | aim | lens | set | sun`, and the scene is set up once (`sun` = azimuth,elevation for that still).
 """
 import sys, math, os, json
 import bpy
@@ -69,6 +69,12 @@ def pose(values):
     return moved
 
 
+def stand_sun(so, az, el):
+    """The sun at azimuth az (from forward toward port) and elevation el; its lamp looks the other way."""
+    d = Vector((math.cos(math.radians(el)) * math.cos(math.radians(az)), math.cos(math.radians(el)) * math.sin(math.radians(az)), math.sin(math.radians(el))))
+    so.rotation_euler = (-d).to_track_quat('-Z', 'Y').to_euler()
+
+
 def setup():
     scene.render.engine = 'CYCLES'
     scene.cycles.samples = int(opt.get('--samples', 48))
@@ -111,9 +117,7 @@ def setup():
     sun.energy, sun.angle = 4.2, math.radians(1.2)
     so = bpy.data.objects.new('sun', sun)
     scene.collection.objects.link(so)
-    # the sun stands at azimuth az (from forward toward port) and elevation el; its lamp looks the other way
-    d = Vector((math.cos(math.radians(el)) * math.cos(math.radians(az)), math.cos(math.radians(el)) * math.sin(math.radians(az)), math.sin(math.radians(el))))
-    so.rotation_euler = (-d).to_track_quat('-Z', 'Y').to_euler()
+    stand_sun(so, az, el)
     if opt.get('--sea', '1') == '1':
         bpy.ops.mesh.primitive_plane_add(size=900, location=(0, 0, 0))
         sea = bpy.context.active_object
@@ -142,7 +146,9 @@ def setup():
     return cam
 
 
-def shoot(cam, out, eye, aim, lens, sets):
+def shoot(cam, out, eye, aim, lens, sets, sun=''):
+    if sun:
+        stand_sun(bpy.data.objects['sun'], *(float(v) for v in sun.split(',')))
     values = {}
     for item in (sets or '').split(','):
         if '=' in item:
@@ -166,6 +172,6 @@ if '--shots' in opt:
         if not line or line.startswith('#'):
             continue
         f = [s.strip() for s in line.split('|')] + ['', '', '']
-        shoot(cam, f[0], f[1], f[2], f[3] or 35, f[4])
+        shoot(cam, f[0], f[1], f[2], f[3] or 35, f[4], f[5])
 else:
     shoot(cam, opt['--out'], opt['--eye'], opt['--aim'], opt.get('--lens', 35), opt.get('--set', ''))
