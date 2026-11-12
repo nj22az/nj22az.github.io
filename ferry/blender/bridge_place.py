@@ -3,13 +3,13 @@ Where the navigation bridge stands in the ship, as plain numbers.
 
 The bridge (wheelhouse.py, compass_deck.py and its register, ferry/systems/bridge.py) was designed aboard the first Chisum,
 34.5 m long, and is measured in that ship's terms: metres from her transom (her wheelhouse lay from 19.5 to 23.0 m) and
-heights over her bridge deck, which stood 9.1 m over her waterline. It is landed whole on the 68 m ship's bridge deck, as
-the general arrangement asks ("her navigation bridge, moved aboard with what is fitted in it"), and this file is the
+heights over her bridge deck, which stood 9.1 m over her waterline. It is landed whole on the 124.8 m ship's bridge deck,
+as the general arrangement asks ("her navigation bridge, landed whole with what is fitted in it"), and this file is the
 placing: every builder and the register turn the bridge's own measures into the ship's through it, so that none of the
 bridge's components had to be measured again.
 
-  - SHIFT: how far forward of its old place the block stands. Its after wall's outer face (19.495 m) lands on the forward
-    end of the accommodation, 50.0 m from the transom (ga.py).
+  - SHIFT: how far forward of its old place the block stands. Its after wall's outer face (19.495 m) lands 100.0 m from
+    the transom, where the chart room ends (ga.py); its front stands 0.5 m inside the front of the house.
   - DECK: the bridge deck it stands on, over the waterline. RISE: how much higher that is than the old one.
 
 No Blender here: plain Python.
@@ -19,14 +19,16 @@ import spec as S
 
 OLD_DECK = 9.1                       # the first Chisum's bridge deck over her waterline
 OLD_AFT = 19.495                     # her wheelhouse's after wall, outer face, from her transom
-SHIFT = S.BRIDGE_SHIFT               # 30.505 m: 50.0 less 19.495 (spec.py holds it, for the stair that comes up into the wheelhouse)
+SHIFT = S.BRIDGE_SHIFT               # 80.505 m: 100.0 less 19.495 (spec.py holds it, for the stair that comes up into the wheelhouse)
 DECK = S.BRIDGE_DECK
 RISE = round(DECK - OLD_DECK, 4)
-# The wings are carried out to the ship's side (ga.py: "the wings are carried out to the side so the berth is seen from the
-# wing console"). The first Chisum's wing ended in a bulwark whose inner face stood 4.10 m off the centreline; hers stands
-# at WING, and what stood at the wing's outer end went out with it by WING_OUT.
+# The wings are carried out to her full breadth (ga.py: "the wings are carried out to her full breadth so the berth is seen
+# from the wing console"): the wheelhouse is 6.0 m wide and she is 19.6 m, so each wing is 6.7 m long, and its outer 2.3 m
+# stands out beyond the officers' house on knees (steel.py). The first Chisum's wing ended in a bulwark whose inner face
+# stood 4.10 m off the centreline; hers stands at WING (its wooden rail's outer edge is then her moulded breadth), and
+# what stood at the wing's outer end went out with it by WING_OUT.
 WING_OLD = 4.10
-WING = 6.44
+WING = round(L.HB - 0.09, 3)
 WING_OUT = round(WING - WING_OLD, 3)
 
 

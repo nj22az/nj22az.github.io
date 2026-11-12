@@ -1,13 +1,13 @@
 """
 The compass deck: the wheelhouse's roof, her mast and what the mast carries.
 
-It is part of her bridge, designed aboard the first Chisum and landed whole on the 68 m ship (bridge_place.py): the roof
-slab over the wheelhouse, level with the top deck abaft it; a three-course rail round its forward end, which the top
-deck's own rail meets at each after corner; the mast on a gusseted foot with its flag yard, radar platform, radar,
+It is part of her bridge, designed aboard the first Chisum and landed whole on the 124.8 m ship (bridge_place.py): the roof
+slab over the wheelhouse, level with the house top abaft it; a three-course rail round its forward end, which the house
+top's own rail meets at each after corner; the mast on a gusseted foot with its flag yard, radar platform, radar,
 masthead and anchor lights, air horns and loudhailer; VHF and AIS whips, the GNSS and satellite-compass domes; the
 searchlight and two floodlights; the binnacle. What is on it follows M/V Ranger III's pilot-house roof (HAER MI-432).
 
-Measures are the bridge's own (spec.COMPASS_DECK, spec.MAST: metres from the first Chisum's transom, heights over her
+Measures are the bridge's own (spec.COMPASS, spec.MAST: metres from the first Chisum's transom, heights over her
 waterline); Z and the heights below carry them aboard.
 """
 from math import pi, cos, sin, ceil, hypot, radians
@@ -19,7 +19,7 @@ from shipyard import Part, srgb, tint
 from hull_fittings import _cyl, _revolve
 
 # The bridge's own measures, carried aboard: places along her by BP.Z, heights by the rise of the deck she stands on.
-C = dict(S.COMPASS_DECK, deck=BP.Y(S.COMPASS_DECK['deck']))
+C = dict(S.COMPASS, deck=BP.Y(S.COMPASS['deck']))
 M = {k: (v if k == 'yard' else BP.Y(v)) for k, v in S.MAST.items()}
 Z = BP.Z
 STEP = Z(C['step'])                    # the roof's after edge: the wheelhouse's after wall, where the top deck meets it

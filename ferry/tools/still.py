@@ -2,10 +2,12 @@
 Eye and aim in the SHIP's terms: (yard from transom, x to port, height above keel)."""
 import sys, math, os
 import bpy
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'blender'))
+import lines as _L          # her length and draught are her lines' own
 from mathutils import Vector
 argv = sys.argv[sys.argv.index('--') + 1:]
 opt = dict(zip(argv[::2], argv[1::2]))
-HALF, DRAFT = 34.2, 3.2
+HALF, DRAFT = _L.HALF, _L.DRAFT
 def P(s):
     yd, x, h = (float(v) for v in s.split(','))
     return Vector((yd - HALF, x, h - DRAFT))

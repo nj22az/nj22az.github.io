@@ -56,7 +56,10 @@ its own header.
 - `python3 ferry/blender/zfight.py --part <the part file>` goes through every triangle of the model, sorted by the plane
   it lies in (to 0.4 mm), and names every pair of different pieces whose faces overlap by more than a square centimetre in
   one plane, looking the same way, or opposite ways when either is drawn from both sides. Two kinds of pair pass: paint on
-  a surface (different `offset`), and two faces bedded on a third that covers them.
+  a surface (different `offset`), and two faces bedded on a third that covers them. Since 12 November 2026 a pair must
+  also be one plane measured face to face (each face's corners within 0.4 mm of the other's plane): a plane's distance is
+  taken from amidships, and on the 124.8 m ship two faces 16 mm apart whose directions differed by a fiftieth of a degree
+  had the same distance 55 m from amidships and were named as a pair (a deck's edge and the shell beside it).
 - The build is not called built while it names a pair. On the 68 m ship nothing is another ship's any longer, so there is
   no list of excused pairs.
 - `ferry/blender/build.py` stops by itself if the shell's inner face comes through the outer, or structure through the

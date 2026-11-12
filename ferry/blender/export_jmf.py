@@ -50,7 +50,7 @@ def _triangles(ob, dg):
     return pos[lv[tl]][:, order], nor[tl][:, order], c.reshape(-1, 4)[tl][:, :3], uv
 
 
-def write(path, groups, inputs=(), movers=(), ways=(), components=None, runs=()):
+def write(path, groups, inputs=(), movers=(), ways=(), components=None, runs=(), doorways=()):
     dg = bpy.context.evaluated_depsgraph_get()
     dg.update()
     arrays, meshes = {}, []
@@ -89,7 +89,7 @@ def write(path, groups, inputs=(), movers=(), ways=(), components=None, runs=())
             meshes.append(dict(key=key, group=gid, material=name, mover=mover, look=look, objects=rec['objects'],
                                triangles=len(arrays[key + '|pos']) // 3))
     meta = dict(generator='ferry/blender/build.py', blender=bpy.app.version_string, meshes=meshes,
-                inputs=list(inputs), movers=list(movers), ways=list(ways), runs=list(runs),
+                inputs=list(inputs), movers=list(movers), ways=list(ways), runs=list(runs), doorways=list(doorways),
                 # where each component of the register is: its box in the ship's axes, and the viewer's part it is drawn in
                 components={k: dict(box=[list(map(float, v[0])), list(map(float, v[1]))], part=v[2]) for k, v in sorted((components or {}).items())})
     np.savez_compressed(path, meta=np.frombuffer(json.dumps(meta).encode(), dtype=np.uint8), **arrays)

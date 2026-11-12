@@ -83,6 +83,9 @@ LOOKS = {
     'Clear plastic': dict(metalness=0.0, roughness=0.08, transparent=True, opacity=0.42, depthWrite=False, clear=True),
     'Smoked plastic': dict(metalness=0.0, roughness=0.1, transparent=True, opacity=0.72, depthWrite=False, clear=True),
     'Lit panel': dict(metalness=0.0, roughness=0.5, emissive='#fff4e2', emissiveIntensity=0.6),
+    # The opal diffuser of a light fitting (lighting.py): it gives out the light of its two tubes. The tracing of her light
+    # (light.py) takes it for a lamp, so a room with fittings lights itself.
+    'Lamp diffuser': dict(metalness=0.0, roughness=0.45, emissive='#fff1dc', emissiveIntensity=1.0),
     'Lit blue': dict(metalness=0.0, roughness=0.4, emissive='#1450ff', emissiveIntensity=0.9),
     'Lit red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.9),
     'Lit green': dict(metalness=0.0, roughness=0.4, emissive='#3cf058', emissiveIntensity=0.7),
@@ -438,10 +441,20 @@ class Part:
         for k in range(start, len(self.f)):
             f = self.f[k]
             pts = [Vector(self.v[i]) for i in f]
-            n = Vector((0, 0, 0))
-            for a, b in zip(pts, pts[1:] + pts[:1]):
-                n += a.cross(b)
-            if n.length_squared < 1e-18:
+            # The face's own direction, from its edges measured from its first corner, in Python's double precision. (It was
+            # summed from the corners' places as Blender's single-precision vectors: 60 m from amidships that lost a face of
+            # a few square centimetres in the rounding, and one stanchion's foot in seven was turned the wrong way up. Found
+            # on the 124.8 m ship by zfight.py, 12 November 2026.)
+            o = self.v[f[0]]
+            nx = ny = nz = 0.0
+            for i, j in zip(f[1:], f[2:]):
+                ax, ay, az = self.v[i][0] - o[0], self.v[i][1] - o[1], self.v[i][2] - o[2]
+                bx, by, bz = self.v[j][0] - o[0], self.v[j][1] - o[1], self.v[j][2] - o[2]
+                nx += ay * bz - az * by
+                ny += az * bx - ax * bz
+                nz += ax * by - ay * bx
+            n = Vector((nx, ny, nz))
+            if nx * nx + ny * ny + nz * nz < 1e-18:
                 continue
             if direction is None:
                 want = Vector((0, 0, 0))
@@ -452,7 +465,7 @@ class Part:
                 want = Vector(direction(sum(pts, Vector((0, 0, 0))) / len(pts)))
             else:
                 want = Vector(direction)
-            if n.dot(want) < 0:
+            if nx * want[0] + ny * want[1] + nz * want[2] < 0:
                 self.f[k] = tuple(reversed(f))
                 if self.t[k] is not None:
                     self.t[k] = list(reversed(self.t[k]))

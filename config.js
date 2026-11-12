@@ -101,7 +101,7 @@ const CONFIG = {
     {
       title: "Chisum",
       description:
-        "A 68 m car and passenger ferry as a 3D model, built as a yard builds a ship: turn her, lift her decks apart, cut her open, walk aboard, and see what every fitting on her bridge is and what feeds it.",
+        "A 125 m ro-ro freight ferry as a 3D model, built as a yard builds a ship: turn her, lift her decks apart, cut her open, walk aboard from the lower hold to the wheelhouse, and see what every fitting on her bridge is and what feeds it.",
       url: "/ferry/",
       icon: "anchor",
       tags: ["3D Model", "Ferry", "Engineering"],
@@ -281,7 +281,7 @@ CONFIG.projectExplorer = [
     "category": "explore",
     "title": "Chisum",
     "eyebrow": "A FERRY, DECK BY DECK",
-    "summary": "A 68 m car and passenger ferry in 3D. Turn her, lift her six decks apart, cut her open along her length, or walk aboard and work her bridge.",
+    "summary": "A 125 m ro-ro freight ferry in 3D. Turn her, lift her eight decks apart, cut her open along her length, or walk aboard and work her bridge.",
     "url": "/ferry/",
     "action": "Explore the ferry",
     "format": "3D model viewer",

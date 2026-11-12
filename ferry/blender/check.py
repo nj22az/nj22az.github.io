@@ -45,7 +45,7 @@ def outside(pos, slack):
     """How far each point below the upper deck stands outside the moulded shell (0 when inside)."""
     out = np.zeros(len(pos))
     for i, (x, y, z) in enumerate(pos):
-        if y > L.UPPER - 0.05 or abs(z) >= L.HALF or abs(x) < 3.0 and L.yard(z) < 60.0 and y > L.keel_y(float(z)) + 0.5:
+        if y > L.UPPER - 0.05 or abs(z) >= L.HALF or abs(x) < 4.0 and L.yard(z) < 100.0 and y > L.keel_y(float(z)) + 0.5:
             continue
         if abs(x) <= L.STEM_HALF + 0.005:
             continue                    # the keel plate and the stem's plate, between the two sides' plating
@@ -63,8 +63,8 @@ def main():
     magic, header, block = read(a.file)
     groups = {g['id']: g for g in header['views'][0]['groups']}
     check(magic == b'JMF1' and header['format'] == 'JMF1', 'the file is JMF1')
-    check([g['id'] for g in header['views'][0]['groups']] == ['hull', 'machinery', 'car', 'passenger', 'bridge', 'top'],
-          'six parts, bottom to top')
+    check([g['id'] for g in header['views'][0]['groups']] == list(S.PARTS),
+          f'{len(S.PARTS)} parts, bottom to top ({", ".join(S.PARTS)})')
     hull = groups['hull']['meshes']
     check(hull and all(m.get('from') == 'blender' for m in hull), 'every mesh of the hull is built in Blender')
     check(all(m.get('from') == 'blender' for g in groups.values() for m in g['meshes']), 'every mesh of every part is built in Blender: nothing of another ship is in the file')
@@ -120,11 +120,18 @@ def main():
     # ---- Her lines.
     wrong = ga.check() + ga.check_lines()
     check(not wrong, f'the general arrangement (revision {ga.REVISION}) holds and agrees with her lines ({"; ".join(wrong) or "all"})')
+    # ---- Her outfit's places (spec.OUTFIT): each on a deck of hers, inside her, no two in each other's way; every doorway listed.
+    wrong = S.outfit_wrong()
+    check(not wrong, f'the {len(S.OUTFIT)} places of her deck fittings are each on clear deck inside her ({"; ".join(wrong[:6]) or "all"})')
+    check(len(header.get('doorways', [])) > 50, f"the model lists her doorways for the check that walks them ({len(header.get('doorways', []))})")
     v = L.displacement()
     check(abs(v * 1.025 - ga.DISPLACEMENT) < 0.01 * ga.DISPLACEMENT, f'her lines displace {v * 1.025:,.0f} t at {L.DRAFT} m (the arrangement: about {ga.DISPLACEMENT:,} t)')
-    check(abs(L.half_breadth(0) * 2 - ga.BEAM) < 1e-9 and abs(L.keel_y(0) + ga.DRAFT) < 1e-9 and abs(L.above_keel(L.CAR) - ga.DECKS['car']) < 1e-9
-          and abs(L.above_keel(L.UPPER) - ga.DECKS['passenger']) < 1e-9 and abs(L.LENGTH - ga.LENGTH) < 1e-9,
-          f'length {L.LENGTH} m, beam {L.BEAM} m, draught {L.DRAFT} m, car deck {L.DEPTH} m and upper deck {L.above_keel(L.UPPER):.1f} m above the keel')
+    check(abs(L.half_breadth(0) * 2 - ga.BEAM) < 1e-9 and abs(L.keel_y(0) + ga.DRAFT) < 1e-9 and abs(L.above_keel(L.MAIN) - ga.DECKS['main']) < 1e-9
+          and abs(L.above_keel(L.UPPER) - ga.DECKS['upper']) < 1e-9 and abs(L.LENGTH - ga.LENGTH) < 1e-9,
+          f'length {L.LENGTH} m, beam {L.BEAM} m, draught {L.DRAFT} m, main deck {L.DEPTH} m and upper deck {L.above_keel(L.UPPER):.1f} m above the keel')
+    # ---- Her decks stand where the arrangement has them: each deck's rooms on the level it names.
+    levels = header['ship'].get('decks', {})
+    check(all(abs(levels.get(k, 1e9) - L.Y(v)) < 1e-3 for k, v in ga.DECKS.items()), f'the model says her decks as the arrangement has them ({len(ga.DECKS)} levels)')
     check(abs(header['ship']['length'] - L.LENGTH) < 1e-9 and all(os.path.exists(os.path.join(here, f)) for f in ('systems.json',)), 'the model says the same length')
 
     # ---- Structure inside the shell. Plates and the inner face are drawn in primer (roughness 0.74).
@@ -134,8 +141,8 @@ def main():
         mat = header['materials'][m['material']]
         pos = positions(header, block, m)
         out = outside(pos, 0.001)
-        # The stern tubes pass out through the shell inside their bossings: 0.3 m round each shaft line is theirs.
-        tubes = (np.abs(np.abs(pos[:, 0]) - S.SHAFT_X) < 0.3) & (pos[:, 2] < L.Z(S.STERN_TUBE_SEAL + 0.3))
+        # The stern tubes pass out through the shell inside their bossings: 0.5 m round each shaft line is theirs.
+        tubes = (np.abs(np.abs(pos[:, 0]) - S.SHAFT_X) < 0.5) & (pos[:, 2] < L.Z(S.STERN_TUBE_SEAL + 0.3))
         bad = int(((out > 0) & ~tubes).sum())
         check(bad == 0, f'primer ({mat["side"]}): {bad} of {len(pos)} points outside the shell' +
               (f' (worst {out[~tubes].max() * 1000:.0f} mm)' if bad else ''))
@@ -148,9 +155,9 @@ def main():
         pos = positions(header, block, m)
         idx = np.frombuffer(block, '<u4' if m.get('wide') else '<u2', m['triangles'] * 3, m['idx']).reshape(-1, 3)
         mid = pos[idx].mean(1)
-        mid = mid[(np.abs(mid[:, 2]) < L.HALF - 0.02) & (mid[:, 1] < L.CAR - 0.05) & (mid[:, 2] < L.Z(L.FOREFOOT))]
+        mid = mid[(np.abs(mid[:, 2]) < L.HALF - 0.02) & (mid[:, 1] < L.MAIN - 0.05) & (mid[:, 2] < L.Z(L.FOREFOOT))]
         # Not the stern tubes (they pass out through the shell) nor the tunnel (it is the opening).
-        mid = mid[~((np.abs(np.abs(mid[:, 0]) - S.SHAFT_X) < 0.3) & (mid[:, 2] < L.Z(S.STERN_TUBE_SEAL + 0.3)))]
+        mid = mid[~((np.abs(np.abs(mid[:, 0]) - S.SHAFT_X) < 0.5) & (mid[:, 2] < L.Z(S.STERN_TUBE_SEAL + 0.3)))]
         mid = mid[np.hypot(mid[:, 1] - S.THRUSTER['y'], mid[:, 2] - L.Z(S.THRUSTER['yard'])) > S.THRUSTER['radius'] + 0.15]
         thin = 0
         for x, y, z in mid[::3]:
@@ -165,7 +172,7 @@ def main():
     worst, bad, count = 0.0, 0, 0
     for m in groups['machinery']['meshes']:
         pos = positions(header, block, m)
-        out = outside(pos[pos[:, 1] < L.CAR - 0.05], 0.002)
+        out = outside(pos[pos[:, 1] < L.MAIN - 0.05], 0.002)
         count += len(pos)
         bad += int((out > 0).sum())
         worst = max(worst, float(out.max()) if len(out) else 0.0)

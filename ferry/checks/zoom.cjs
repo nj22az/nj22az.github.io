@@ -21,7 +21,8 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const lens = () => page.evaluate(() => ({ fov: window.__ferry.look.camera.fov, zoom: window.__ferry.walkZoom, yaw: window.__ferry.state.walk && window.__ferry.state.walk.yaw,
     said: document.querySelector('#what').textContent }));
   const outside = (await lens()).fov;
-  await page.evaluate(() => { const f = window.__ferry; f.enterWalk(); f.walkTo(0, 30.0 - f.ship.length / 2, Math.PI, 0, 6.5); });
+  // (on her main deck, on her centre line 30 m from the transom: the deck's height is the file's own)
+  await page.evaluate(() => { const f = window.__ferry; f.enterWalk(); f.walkTo(0, 30.0 - f.ship.length / 2, Math.PI, 0, f.ship.decks.main); });
   let a = await lens();
   check(Math.abs(a.fov - 68) < 0.01 && a.zoom === 1, `one sets out with the normal lens (${a.fov.toFixed(1)}°)`);
 
