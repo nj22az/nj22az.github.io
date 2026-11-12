@@ -506,7 +506,9 @@ function buildInputs(header) {
     icon.dataset.open = def.id;
     icon.setAttribute('aria-expanded', 'false');
     icon.style.setProperty('--i', `var(--i-${ICON[def.id] || 'lever'})`);
-    $('#worked').append(icon);
+    // What belongs to the whole ship (her rudders, her ramp) has its icon on the rail. A fitting that is worked where it stands
+    // (a davit, a windlass: the file's `local`) has none: its keys come up when the fitting itself is tapped (keysFor).
+    if (!def.local) $('#worked').append(icon);
     grp.setAttribute('role', 'group');
     grp.setAttribute('aria-label', `${def.name}: ${def.below} or ${def.above}, up to ${def.max}${def.unit || ''}`);
     // its stops, lowest first: where a run ends by itself (the ramp level with the quay, then at its lowest)

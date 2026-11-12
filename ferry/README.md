@@ -968,6 +968,8 @@ menus, and make it icon based, not all that text (for the viewer page)".
   and *on this device* (save offline, install). On foot: the worked things, ladder (only at one), go to, deck below, deck
   above, leave, how to move. Every icon has its name as a tooltip and for a screen reader; the icons are 24 × 24 line
   drawings kept as CSS variables in `index.html` (`--i-…`) and drawn as masks, so they take the colour of their key.
+- An input the file marks `local` (a fitting worked where it stands: a lifeboat's davit and falls, a windlass, a foam monitor) has no
+  icon on the rail, so that the rail does not fill up: its keys come up when the fitting itself is tapped, from outside or on foot.
 - **The desk** (`#desk`) stands over the rail and shows the keys of **one** function: the one whose icon was pressed (a
   second press puts them away), or the one whose part was tapped on the model (tap the ramp, the wheel or a rudder, and its
   keys are there: `keysFor`). Nothing else is shown.
