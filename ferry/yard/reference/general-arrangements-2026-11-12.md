@@ -19,6 +19,19 @@ their owners'. Nothing is traced, and no text is taken over.
 | G4 | An 8,500 dwt multipurpose container vessel: general arrangement plan R112-020-003 (Wantij). About 128.45 m over all, 123.00 m between perpendiculars, 15.87 m beam; one long hold under hatch covers, accommodation aft | wantij.nl/wp-content/uploads/2017/01/General-Arrangement.pdf | The most compact real example of a whole crew's world: 2nd deck, boat deck, officers' deck, bridge deck, top of wheelhouse; the engine room platform; the tank top's ballast tanks; a boat on a davit aft |
 | G5 | *Brizo*, a 29 m tug: general arrangement G1. 29.0 × 9.5 × 4.2 m, 2 × 1,220 kW, two generating sets of 110 kW | transhipmentservices.com.au/wp-content/uploads/2024/01/General-Arrangement-Brizo.pdf | How a small crew lives: captain, chief engineer, two double cabins, a gym, bookshelves, a television, a change room; a towing winch and a crane pedestal |
 
+**Sent later the same night**, and read in `owner-drawings-2026-11-12.md` and `roro-freight-ships.md`:
+
+| | What it is | Where | What it is good for |
+|---|---|---|---|
+| G6 | An unnamed drive-through ro-ro ferry, 106.43 m over all, 100.00 m on the main deck, 19.70 m beam, 5.00 m depth, 1:250 | ship-broker.eu/wp-content/uploads/2021/08/GENERAL-ARRANGEMENT-FERRY-RORO-REV-1.pdf | **The vehicle decks' logic**: six lanes, end ramps, a side door, a fixed ramp to the car deck above, the stairs at the sides, the tanks' grid in the bottom |
+| G7 | A ro-ro cargo ship's general arrangement, sent as a picture in the conversation (not a file): accommodation and bridge forward over a forecastle, engine room aft with a single screw, a lower hold and an upper hold, an upper deck of trailer lanes, stern ramps, decks named from the tank top and tween deck through main, upper tween, upper, forecastle and 1st to 3rd decks to the bridge and compass decks | (in the conversation only) | The deck stack of a deep-sea ro-ro freighter and where her house stands |
+| G8 | The profile of a small double-ended ro-ro ferry, about 40 m by its frame scale (frames 0 to 80 at 500 mm), sent as a picture: ramps on wires at both ends, lorries and cars on the main deck, two passenger decks, the wheelhouse forward on top, a boat under a davit aft, liferaft canisters, masts fore and aft, the engine and control room under the vehicle deck | (in the conversation only) | How ramps hang, where a boat and rafts sit on a small ferry |
+| G9 | Platform supply vessels *Arctic Tide* (vector, nearly every room labelled) and an anchor handler lettered Havila Venus (raster) | the owner's reference folder | **The only legible crew accommodation, wheelhouse, control room, workshops, mooring and rescue boat station** among the drawings |
+| G10 | Trinity House light vessel SLV 5, fire plan V05F01B1 | the owner's reference folder | How a fire control plan is drawn |
+| G11 | "Preliminary Design of a 90m Ro-Pax Ferry" (SUNY Maritime, the 2024 Lisnyk competition's winning design) | sname.org (the address is in `owner-drawings-2026-11-12.md`) | The method of a preliminary design, step by step: not her arrangement (it is a catamaran) |
+| G12 | **Mashala, later Riverdance (Rickmers Werft, 1977): the general arrangement at 1:200 printed as Figure 1 of the MAIB's report 18/2009** | assets.publishing.service.gov.uk/media/547c700b40f0b6024100006f/RiverdanceReport.pdf, page 13 of the file | **The pattern ship for the Chisum's revision D**: a real classic ro-ro freighter with every deck drawn and her machinery described |
+| G13 | A list of 2,194 ship drawing file names ("Ship GA files as of Nov 3 2026") | the owner's reference folder | Names worth asking the owner for: Bardic Ferry, Spero, Norland, the Coho's profiles |
+
 ## The guide, chapter by chapter (G1)
 
 Consult it before a section is drawn, and name the chapter in the section's record. Each fact taken from it is said in the
