@@ -130,6 +130,66 @@ owner has not yet approved; the question of rebuilding the engine room's platfor
 the stern have no circuit. The ramp cover over the fixed ramp, which the same power pack is to work, is not built. The three-core
 cable ratings in `systems/ship.py` are recalled, not read.
 
+### The power pack worked, and out on the ramp (12 November 2026, night)
+
+The owner: "Also specify the oil and the level of oil etc , it needs to be fully functional"; and "I want to be able to walk out
+on the ramp , and look at the sea and the ship". (Said as it happened: the conversation this was built in was cleared before any
+of it was on record or committed. What follows is read from the work tree, from the build's log and from the page's own checks,
+by the session that found it: *Checks actually run*.)
+
+| | As built |
+|---|---|
+| The oil's level | A level glass on the tank's inboard side with an engraved scale: FILL, RAMP DOWN, LOW (where OIL LEVEL is given) and STOP (under which no pump is run). The oil in it stands at FILL with the ramp raised, **falls 9 cm as the ramp is lowered**, because the cylinders' rods take their own volume out of the tank, and comes back (`stern_place.GLASS`, `glass_map`; the part is stretched by the ramp's own control) |
+| The oil's temperature | Kept by the page (`stern_place.TEMP`): 20 °C with the pumps stopped; with one running it rises 0.15 °C a second to 55 °C, where the cooler holds it; stopped, it falls 0.05 °C a second. Quicker than life, as the ramp is: three minutes from cold to the fan's start. A dial thermometer beside the glass follows it |
+| The cooler's fan | Turns from 45 °C until the oil is back at 40 °C, or to a tap |
+| OIL LEVEL, OIL TEMP | The two lamps at the control stand. Nothing aboard loses oil or overheats it, so they are seen lit only by the lamp test |
+| Lamp test | The stand's button lights every lamp and comes out by itself after 2.5 s |
+| The valve stand | The ramp's lever V1 and the cleats' lever V2 give the same orders as the control stand's, and refuse the same: nothing without a pump |
+| The lines | The return T no longer ends on the pressure block: it goes aft over the lid on two posts, down into the cooler, and from the cooler's other end through the return filter into the tank. The cleat pump delivers into a block of its own with its relief valve RV2 (160 bar), and a line S of its own goes to the cleat valve. A marker on each of the eight lines where it leaves the valve stand: its letter and one word (RAISE, LOWER, LOCK, OPEN, CLEATS, PRESSURE, RETURN, CABLES) |
+| What holds 195 bar | Settled on the drawing: the two main pumps are of variable delivery, each with a pressure compensator set to 195 bar. With every valve in its middle a pump holds the pressure and delivers nothing; the relief valve (210 bar) does not blow |
+| Drawn, and not worked | The spare valve's lever, the hand pump, the three gauge cocks, the stand's key switch and horn (JS3-304-M1, section 13, says the same) |
+
+**Out on the ramp.** What moves and yet carries is marked so in the file (`carries`: the leaf and its end flaps). Once it has come
+to rest its floors are stood on like any other, where it then lies (`app.js`: `indexCarried`, `floorAt`); while it moves it carries
+nobody. With the ramp raised one is stopped at the stern door's sill; with it level one walks out along it, 9.7 m abaft the
+transom, 1 cm over the deck's level.
+
+**It is not moved while somebody stands on it** (the owner's rule for the ramp: what is dangerous has a hold). **As first written
+this did not hold, and no check had been run on it.** The order was refused only as it was carried out, by asking whether the
+walker stood on the ramp's floor; but that floor is indexed anew whenever anything aboard moves, and an order already taken read
+there as "under way", for which the floor is dropped. So with a quiet ship the ramp was held, and with the cooler's fan turning or
+the oil cooling it rose under the walker (from 90° to 87° in 1.6 s when tried); and for whoever asked for less motion, where an
+order is carried out at once, it went from level to raised in one step. The order is now refused where it is given
+(`app.js`: `orderInput`), before anything else is asked, and says why: "Stern ramp: somebody stands on it. It is not moved".
+
+## The main switchboard, 690 V: begun (`blender/msb_place.py`, `blender/switchboard.py`, `yard/drawings/msb_drawing.py`, JS8-865)
+
+The owner, 12 November 2026: "start building the MSB , with all the right connections , so we can start hooking up the electrical
+wiring to every single component onboard , including for the lights and all equipment on the bridge and forecastle". (Found in the
+work tree like the section above; the same caution.)
+
+- **Its numbers** are in one plain file, `blender/msb_place.py`, from the machinery design basis (sections 1.2 and 4): the 690 V
+  board of nine cubicles on two bus sections with a tie and a separate thruster bus (bars of 1,600 A, 60 Hz), from outboard: SG2,
+  DG3, DG2, T2, TIE, T1, DG1, SG1 (with the thruster bus tie), BT; each with its breaker's frame and setting and its cables; and
+  the ways of the 440 V section (32) and of the 230 V section that are to face it. Breakers and cables are sized by her own rule
+  (`systems/ship.py`). `wrong()` holds. Not calculated, and owed: the short-circuit level of the bars and the voltage dip when the
+  thruster starts.
+- **Drawn first:** JS8-865 in two sheets (`msb_drawing.py`): the 690 V board's front, the room from above, its one-line diagram,
+  how it is run and its nine panels; and every way of the 440 V and 230 V sections with breaker and cable.
+- **Built** (`switchboard.py`, named in `build.py`): the nine cubicles on the place marked MSB in the main switchboard room, on the
+  platform, looking aft into the aisle. On each: its engraved name, the mimic of its bars painted across the row, its instruments
+  and lamps, its air circuit breaker with its rating plate, and the door of its cable compartment, **which opens to a tap** on the
+  three bars and the cables of the schedule, each up through its gland, cleated, landed and tagged. Lettering and instruments are
+  fine work. The marked place's outline, post, sign and coiled ends are gone from there (`stern_place.BUILT`); the generators' and
+  transformers' cables in the register now end "landed in the cubicle".
+- **Not done, plainly.** The board is dead: nothing is installed to feed it, its instruments do not move and its breakers are not
+  worked. The 440 V and 230 V sections are drawn and not built. `systems/ship.py` is not yet brought up to the design basis (it
+  still names three generators and a 68.4 m ship), and the board has no section of its own in the register: it is one component of
+  the stern's section. What is under the platform is not drawn, so each cable ends at its gland. On the page it has been looked at in
+  four fixed views (*Checks actually run*): its lettering reads whole from arm's length. Seen there and not looked into: the
+  joints between a cubicle's doors show as broken lines from the aisle; and where the open door's leaf of cubicle 7 lies was not
+  looked at from the side.
+
 ## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
 
 The owner, 12 November 2026: "I need you to water mark, models, with my logo and these icons, incase someone just steals them, these
@@ -1348,6 +1408,34 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, night: the power pack worked; out on the ramp; the main switchboard begun
+
+The same checkout and server as the notes under this one. **Said as it happened:** the conversation this was built in was
+cleared after its `make.sh` had passed and before a page check was run, a picture taken from the page, a word written or
+anything committed (nothing of a conversation is kept on this Mac while `/Volumes/Development` is away: `HANDOVER.md`). The
+session after it found the work in the tree, saw that no builder is newer than the model beside it, and ran what follows.
+
+| Check | Result |
+|---|---|
+| `make.sh`, as it stands in `/tmp/chisum-make.log` (ended 20:59; not seen run by the session that writes this) | **"built: every check passed"**: 3,463,670 triangles built, 3,419,936 in the file, 22.78 MB, 215 motions; the mark read at 100.00 % of 1,808,414 corners; fine work in 97 meshes, a step of 0.031 mm at most; 0 pairs of faces in one plane among 1,292 pieces; 0 afloat of 32,995; 85 panes, nothing built over one; 486 runs (343 m), every one carried; the light traced. The model the page is served is that build's (its sum compared with the file in the tree: the same) |
+| The nine page checks on it, each by itself | **`doors.cjs`: 3 FAILED** (127 passed), all three among the six checks written that evening. Bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5: all passed |
+| "the oil warms while a pump runs", looked into on a fresh page | Every part of it holds there: 20 °C at rest, 48.4 °C after 190 s, the needle turned 131°, the fan turning, neither oil lamp lit. In the check the oil was not cold when it began: the control stand's check before it runs a pump, and the three minutes started from 23.5 °C (52 °C was reached, 28.5 °C more). **The check's fault** |
+| "with the pump stopped the oil cools" | It was read 260 s after the pump stopped, which is enough from 52 °C and not from 55 °C, where the oil stood once the valve stand's levers had been worked: 42.0 °C and the fan still turning; under 40 °C and the fan stopped after 300 s. **The check's fault** |
+| "out on the ramp" | The check put its walker somewhere from the outside view, where nobody is on foot: it read "?". On foot the walk held (stopped at the sill with the ramp raised; 9.65 m out with it level, 1 cm over the deck's level), **and the page was at fault: the ramp rose under the walker** |
+| Whether the ramp is held under a walker: three cases, each on a fresh page | As found: a quiet ship, held at 90°; the oil warm and its fan turning, **87.4° after 1.6 s**; less motion asked for, **0° at once**. Why: *The power pack worked, and out on the ramp*. With the order refused where it is given (`orderInput`): 90°, 90° and 90° |
+| `doors.cjs` put right | The oil is let cool before it is read; the cooling is read when it is done, and the fan must turn until then; the walker is on foot; the hold is tried with the cooler's fan set turning and again with less motion asked for (a check of its own: 131 in all) |
+| The nine page checks again, each by itself, on the corrected page | **all pass, each on its first run: doors 131, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5** |
+| Nine fixed views from the page (`15-built-working/`; `shots-stern.cjs` has them), drawn on the Mac's graphics card, no error on the page; all nine opened | The oil in the glass stands at FILL with the ramp raised and at RAMP DOWN with it level; the thermometer at 20 °C; the eight markers over the valve stand read whole; the return goes over the lid on its posts; from out on the level ramp one looks back into her. The switchboard from the aisle, a generator panel and the synchronising panel from arm's length (names, ratings, instruments' letters, OPEN and CLOSED: whole), cubicle 7's cable compartment open on its three bars and two landed, tagged cables. Four sent to the owner |
+
+Not done: `make.sh` was not run again (no builder changed after the build that is recorded; `app.js` and `doors.cjs`, which
+changed, are not part of it). A phone or tablet; a frame's cost with the 120,000 triangles more. How each line marker is held on
+its pipe was not looked at from the side. The probes are not kept: what they found is in `doors.cjs` now.
+
+**Found the same night, from the owner's picture of the after mooring station ("Also what's this ? How can this equipment be
+used"), and not put right:** the roller fairlead at each mooring port cannot be used as it stands. Its throat is 0.56 to 0.76 m
+over the deck and the port's sill is 1.00 m over it (`fittings_mooring.roller_fairlead`; `spec.MOORING_PORT`): a line led
+through it meets the plating under the port. Its rollers do not turn and no rope is rove through it.
 
 ### 12 November 2026, late evening: the control stand made a real one; fine work; the gauges on their mounts; legends that fit
 

@@ -470,8 +470,36 @@ def power_pack():
             for xx in (x0 + 0.0, x1 + 0.0):
                 tube(bright, (xx, a + 0.08 + k * (b - a - 0.16) / 7, LID), (xx, a + 0.08 + k * (b - a - 0.16) / 7, LID + 0.008), 0.009, STEEL, 8)
         # the level glass on its inboard side, the breather and filler, the drain cock
-        box(dark, x0 - 0.03, x0, 12.10, 12.20, 0.32, 0.92, DARK)
-        tube(glass, (x0 - 0.035, 12.15, 0.36), (x0 - 0.035, 12.15, 0.88), 0.012, srgb(0xd8c58a), 12)
+        # (The owner, 12 November 2026: "Also specify the oil and the level of oil etc , it needs to be fully functional". The glass
+        # stands between a cock at its foot and one at its head on a back plate; the oil in it is a part of its own, drawn in from
+        # its foot as the ramp is lowered, because the cylinders' rods take their own volume out of the tank (stern_place.oil_level);
+        # beside it an engraved scale with the four marks of the instruction JS3-304-M1; and a dial thermometer.)
+        G_, T_ = P.GLASS, P.THERMO
+        gx, ga = x0 - 0.035, G_['at']
+        box(dark, x0 - 0.03, x0, ga - 0.05, ga + 0.05, G_['foot'] - 0.07, G_['head'] + 0.07, DARK)
+        for hh in (G_['foot'] - 0.022, G_['head'] + 0.022):
+            box(dark, x0 - 0.056, x0 - 0.03, ga - 0.022, ga + 0.022, hh - 0.022, hh + 0.022, srgb(0xb08a4a))
+        oil = part('Stern ramp power pack, oil in the level glass', 'Lens', smooth=True, angle=50, mover=f'{ID}-oil-level', fine=True)
+        tube(oil, (gx, ga, G_['foot'] + 0.001), (gx, ga, P.glass_height(0.0)), 0.0085, srgb(0xc98a2b), 12)
+        sight = part('Stern ramp power pack, level glass', 'Dial glass', smooth=True, angle=50, fine=True)
+        tube(sight, (gx, ga, G_['foot']), (gx, ga, G_['head']), G_['r'], srgb(0xdfe8ea), 14)
+        plate = part('Stern ramp power pack, engraved plates', 'Plastic', fine=True)
+        TS = Face((x0, 0.0), (x0, 1.0), ga)                         # the tank's inboard side, looked at from the way: u forward of the glass, v over the deck
+        bottom = HPU['tank'][4] + 0.01
+        marks = [('FILL', bottom + P.TANK['fill'], BLACK), ('RAMP DOWN', P.glass_height(P.LEVEL), BLACK), ('LOW', bottom + P.TANK['low'], RED), ('STOP', bottom + P.TANK['stop'], RED)]
+        slab(plate, TS, -0.215, -0.058, marks[-1][1] - 0.055, marks[0][1] + 0.045, 0.0, 0.002, WHITE)
+        for word, hv, colour in marks:
+            patch(paint, TS, [(-0.090, hv - 0.0013), (-0.058, hv - 0.0013), (-0.058, hv + 0.0013), (-0.090, hv + 0.0013)], 0.0026, colour)
+            fits(word, 0.010, 0.105, 'the level glass\'s scale')
+            words(paint, TS, word, 0.010, -0.152, hv + 0.003, 0.0026, colour)
+            words(paint, TS, f'{round(P.tank_litres(hv - bottom) / 10) * 10:,} L', 0.0065, -0.152, hv - 0.011, 0.0026, BLACK)
+        cases = part('Stern ramp power pack, instrument cases', 'Machinery paint', smooth=True, angle=40, fine=True)
+        tu = T_['at'] - ga
+        dial(TS, tu, T_['h'], T_['r'], 'TI1', cases, part('Stern ramp gauges, dial faces', 'Plastic', smooth=True, angle=40, fine=True), paint,
+             part('Stern ramp gauges, glasses', 'Dial glass', smooth=True, angle=50, fine=True),
+             part('Stern ramp power pack, thermometer needle', 'Plastic', mover=f'{ID}-thermo', fine=True),
+             scale=dict(full=T_['full'], red=float(P.FLUID['hot']), sweep=T_['sweep'], major=20, unit='C'))
+        legend(plate, paint, TS, ('OIL TEMP',), tu, T_['h'] - T_['r'] - 0.024, 0.0068)
         tube(dark, (HPU['breather'][0], HPU['breather'][1], LID), (HPU['breather'][0], HPU['breather'][1], LID + 0.10), 0.04, DARK, 16)
         tube(dark, (HPU['breather'][0], HPU['breather'][1], LID + 0.10), (HPU['breather'][0], HPU['breather'][1], LID + 0.15), 0.055, YELLOW, 16)
         tube(bright, (x0, a + 0.12, h0 + 0.06), (x0 - 0.07, a + 0.12, h0 + 0.06), 0.014, STEEL, 10)
@@ -513,15 +541,38 @@ def power_pack():
         tube(dark, (px, py, LID + 0.12 + ch), (px, py, LID + 0.17 + ch), cr + 0.004, DARK, 24)
         box(dark, px - cr - 0.07, px - cr + 0.02, py - 0.05, py + 0.05, LID + 0.22, LID + 0.34, DARK)
         tube(bright, (px - cr + 0.03, py, LID + 0.05), (HPU['block'][1] + 0.10, py, LID + 0.05), 0.009, STEEL, 10)
-        tube(bright, (HPU['block'][1] + 0.10, py, LID + 0.05), (HPU['block'][1] + 0.10, HPU['block'][2] + 0.04, LID + 0.05), 0.009, STEEL, 10)
-        tube(bright, (HPU['block'][1] + 0.10, HPU['block'][2] + 0.04, LID + 0.05), (HPU['block'][1] - 0.01, HPU['block'][2] + 0.04, LID + 0.05), 0.009, STEEL, 10)
+        # It delivers into a block of its own on the lid, abaft the pressure block, as the diagram has it (it went into the pressure
+        # block until 12 November 2026): on the block the cleats' relief valve RV2, 160 bar, under its red cap; from its top line S
+        # to the cleat valve V2 (stern_place.CLEAT_BLOCK, routes).
+        kb = P.CLEAT_BLOCK
+        kx0, kx1, ka, kc = kb['box']
+        ki = (ka + kc) / 2
+        tube(bright, (HPU['block'][1] + 0.10, py, LID + 0.05), (HPU['block'][1] + 0.10, ki, LID + 0.05), 0.009, STEEL, 10)
+        tube(bright, (HPU['block'][1] + 0.10, ki, LID + 0.05), (kx1 - 0.01, ki, LID + 0.05), 0.009, STEEL, 10)
+        pack.block(Q(kx0, ka, LID), Q(kx1, kc, LID + kb['high']), srgb(0x6f7778), 0.005)
+        rvx, rvi = kb['relief']
+        tube(bright, (rvx, rvi, LID + kb['high']), (rvx, rvi, LID + kb['high'] + 0.05), 0.014, STEEL, 12)
+        tube(dark, (rvx, rvi, LID + kb['high'] + 0.05), (rvx, rvi, LID + kb['high'] + 0.075), 0.020, RED, 12)
     with component('HYD-05'):
         cx0, cx1, ca, cb, ch0, ch1 = HPU['cooler']
         pack.block(Q(cx0, ca, ch0), Q(cx1, cb, ch1), DARK, 0.01)                                       # the matrix in its frame, against the tank's end
         for k in range(9):                                                                             # its tubes, seen from aft
             box(bright, cx0 + 0.05, cx1 - 0.05, ca - 0.006, ca, ch0 + 0.06 + k * 0.062, ch0 + 0.085 + k * 0.062, STEEL, soft=False)
         mx, mz = (cx0 + cx1) / 2, (ch0 + ch1) / 2
-        tube(dark, (mx, ca - 0.006, mz), (mx, ca - 0.05, mz), 0.20, DARK, 32)                           # the fan's ring
+        # the fan: a shroud ring on two arms from the cooler's frame, five blades on a hub on the motor's shaft. It turns while the oil
+        # is over 45 degrees (motion: the fan follows the oil's temperature), or to a tap.
+        dark.ring(Q(mx, ca - 0.028, mz), (0, 0, 1), 0.20, 0.014, DARK)
+        for sgn, edge in ((-1, cx0), (1, cx1)):
+            box(dark, mx + sgn * 0.19, edge - sgn * 0.005, ca - 0.036, ca - 0.020, mz - 0.012, mz + 0.012, DARK)
+            box(dark, edge - sgn * 0.045, edge - sgn * 0.005, ca - 0.020, ca, mz - 0.012, mz + 0.012, DARK)
+        for k in range(4):                                                                              # four struts carry the motor in the shroud
+            ak = radians(45 + 90 * k)
+            tube(dark, (mx + 0.080 * cos(ak), ca - 0.075, mz + 0.080 * sin(ak)), (mx + 0.198 * cos(ak), ca - 0.034, mz + 0.198 * sin(ak)), 0.006, DARK, 8)
+        blades = part('Stern ramp power pack, cooler fan', 'Machinery paint', smooth=True, angle=40, mover=f'{ID}-fan')
+        tube(blades, (mx, ca - 0.012, mz), (mx, ca - 0.05, mz), 0.05, DARK, 20)
+        for k in range(5):
+            a0 = radians(72 * k)
+            prism_i(blades, [(mx + r_ * cos(a0 + da), mz + r_ * sin(a0 + da)) for r_, da in ((0.045, -0.36), (0.182, -0.20), (0.182, 0.15), (0.045, 0.30))], ca - 0.036, ca - 0.022, srgb(0x9aa3a5))
         tube(pack, (mx, ca - 0.05, mz), (mx, ca - 0.20, mz), 0.085, LIGHT, 20)                          # and its motor
         box(dark, mx - 0.05, mx + 0.05, ca - 0.17, ca - 0.08, mz + 0.085, mz + 0.15, DARK)
         for sx in (cx0 + 0.02, cx1 - 0.06):                                                             # two feet to the drip tray
@@ -563,13 +614,30 @@ def valve_stand():
             stand.block(Q(x1, yy - 0.055, h0 + 0.07), Q(x1 + 0.085, yy + 0.055, h0 + 0.22), DARK, 0.004)                   # the valve
             for d in (-1, 1):                                                                         # a solenoid each end
                 tube(stand, (x1 + 0.045, yy + d * 0.055, h0 + 0.145), (x1 + 0.045, yy + d * 0.105, h0 + 0.145), 0.026, BLACK, 14)
-            rod(bright, [(x1 + 0.06, yy, h0 + 0.22), (x1 + 0.075, yy, h0 + 0.34), (x1 + 0.10, yy, h0 + 0.47)], 0.008, STEEL)   # its hand lever
-            stand.ball(Q(x1 + 0.10, yy, h0 + 0.48), 0.02, BLACK)
+            # its hand lever: the ramp's and the cleats' are worked here as at the control stand (motion); the spare's is not
+            key = {'RAMP': 'v1', 'CLEATS': 'v2'}.get(name)
+            lever = part(f'Stern ramp valve stand, {name.lower()} lever', 'Shaft steel', smooth=True, angle=40, mover=f'{ID}-{key}-lever') if key else bright
+            knob = part(f'Stern ramp valve stand, {name.lower()} lever knob', 'Plastic', smooth=True, angle=40, mover=f'{ID}-{key}-lever') if key else stand
+            rod(lever, [(x1 + 0.06, yy, h0 + 0.22), (x1 + 0.075, yy, h0 + 0.34), (x1 + 0.10, yy, h0 + 0.47)], 0.008, STEEL)
+            knob.ball(Q(x1 + 0.10, yy, h0 + 0.48), 0.02, BLACK)
             letter(paint, name, 0.022, Q(x1 + 0.0008, yy, h0 + 0.02), (0, 0, -1), (0, 1, 0), WHITE)
         # a gauge for each of the ramp's two lines, each on its gauge cock on the stand's top, looking into the way: A (its needle
         # shows what carries the leaf) and B
         room_gauge('pg2', part('Stern ramp gauges, line A needle', 'Plastic', mover=f'{ID}-gauge-pg2', fine=True))
         room_gauge('pg3')
+        # a marker on each line where it leaves the stand, over the gauges: its letter, and a word for what it does (the owner: "I
+        # don't know what I'm looking at and how it's connected and what each pipe does"). A plate on a strap round the line.
+        tags = part('Stern ramp hydraulics, line markers', 'Plastic', fine=True)
+        straps = part('Stern ramp hydraulics, marker straps', 'Stainless', smooth=True, angle=40, fine=True)
+        xr = P.CASING + P.T + P.BANK_OFF
+        for name, word in P.MARKERS.items():
+            at_, r_ = P.MANIFOLD_AT[name], P.line(name)[3]
+            tube(straps, (xr, at_, P.MARKER_H - 0.02), (xr, at_, P.MARKER_H + 0.02), r_ + 0.003, STEEL, 14)
+            MF = Face((xr + r_ + 0.003, P.MARKER_H - 0.03), (xr + r_ + 0.003, P.MARKER_H + 0.97), at_ + 0.03, flip=True)
+            slab(tags, MF, 0.0, 0.06, 0.0, 0.06, 0.0, 0.002, WHITE)
+            fits(word, 0.0062, 0.052, f'the marker of line {name}')
+            words(paint, MF, name, 0.022, 0.03, 0.028, 0.0026, RED if name == 'P' else BLACK)
+            words(paint, MF, word, 0.0062, 0.03, 0.009, 0.0026, BLACK)
         # the solenoids' junction box, where the conduit's branch comes down
         at = P.MANIFOLD_AT['E']
         box(stand, x0 + 0.01, x0 + 0.115, at - 0.045, at + 0.045, h1, h1 + 0.25, srgb(S.DOOR_GREY))
@@ -726,8 +794,14 @@ def pipes():
     # the pressure and return lines come down to the tank over the way: a flat bar on the pressure block, with both clipped to it
     blk = HPU['block']
     xt = (blk[0] + blk[1]) / 2
-    box(clamp, xt + 0.024, xt + 0.038, P.MANIFOLD_AT['P'] - 0.04, P.MANIFOLD_AT['T'] + 0.04, blk[5], 1.86, DARK)
-    for name in 'PT':
+    box(clamp, xt + 0.024, xt + 0.038, P.MANIFOLD_AT['S'] - 0.04, P.MANIFOLD_AT['T'] + 0.04, blk[5], 1.86, DARK)
+    # the return goes on aft over the lid to the cooler (stern_place.RETURN): two posts on the lid carry it
+    rt, gt = P.RETURN, P.line('T')[3] + 0.005
+    hr = blk[5] + rt['over']
+    for ii in rt['posts']:
+        box(clamp, rt['x'] - 0.0125, rt['x'] + 0.0125, ii - 0.0125, ii + 0.0125, LID, hr - gt, DARK)
+        box(clamp, rt['x'] - gt, rt['x'] + gt, ii - 0.03, ii + 0.03, hr - gt, hr + gt, DARK)
+    for name in 'SPT':
         g = P.line(name)[3] + 0.005
         for hh in (1.50, 1.80):
             box(clamp, xt - g, xt + 0.024, P.MANIFOLD_AT[name] - g, P.MANIFOLD_AT[name] + g, hh - 0.03, hh + 0.03, DARK)
@@ -835,10 +909,13 @@ def needle_angle(bar):
     return -P.GAUGE['sweep'] / 2 + P.GAUGE['sweep'] * bar / P.GAUGE['full']
 
 
-def dial(F, u, v, r, name, case, face, paint, glass, needle, title=None, bar=0.0, back=0.0):
+def dial(F, u, v, r, name, case, face, paint, glass, needle, title=None, bar=0.0, back=0.0, scale=None):
     """A pressure indicator on a face: its case and bezel, a white dial from 0 to 250 bar with a mark at every ten, a figure
     at every fifty and a red mark from the working pressure up, its needle (a part of its own, so that it can turn) and its glass."""
-    full, red = P.GAUGE['full'], P.GAUGE['red']
+    sc = dict(full=P.GAUGE['full'], red=P.GAUGE['red'], sweep=P.GAUGE['sweep'], major=50, unit='bar')        # (`scale`: a thermometer's is its own)
+    sc.update(scale or {})
+    full, red = sc['full'], sc['red']
+    needle_angle = lambda val: -sc['sweep'] / 2 + sc['sweep'] * val / full
     stud(case, F, u, v, -back, 0.010, r + 0.007, BLACK, 40)                # (its case ends under the dial: the bezel stands round it; `back`: the body of a gauge that stands free)
     case.ring(F.at(u, v, 0.0125), F.out, r + 0.0035, 0.0040, CHROME)
     stud(face, F, u, v, 0.0105, 0.0115, r, WHITE, 40)
@@ -853,14 +930,14 @@ def dial(F, u, v, r, name, case, face, paint, glass, needle, title=None, bar=0.0
         patch(paint, F, [(x0 - px, y0 - py), (x0 + px, y0 + py), (x1 + px, y1 + py), (x1 - px, y1 - py)], d, colour)
 
     for b10 in range(0, int(full) + 1, 10):
-        major = b10 % 50 == 0
+        major = b10 % sc['major'] == 0
         tick(needle_angle(b10), r * (0.76 if major else 0.84), r * 0.95, r * (0.035 if major else 0.018), RED if b10 >= red else BLACK)
         if major:
             x, y = at(needle_angle(b10), r * 0.60)
             words(paint, F, str(b10), r * 0.17, x, y - r * 0.085, d, BLACK)
     for k in range(8):                                                      # the red mark: from the working pressure to the end of the scale
         tick(needle_angle(red + (full - red) * (k + 0.5) / 8), r * 0.955, r * 0.995, r * 0.085, RED)
-    words(paint, F, 'bar', r * 0.16, u, v - r * 0.50, d, BLACK)
+    words(paint, F, sc['unit'], r * 0.16, u, v - r * 0.50, d, BLACK)
     if title:
         words(paint, F, title, r * 0.115, u, v + r * 0.26, d, BLACK)
     # the needle: at rest where `bar` says; a counterweight tail, a hub
@@ -960,9 +1037,11 @@ def stand():
                 look, lit, dim = LIT[q['colour']]
                 slab(dark, F, u - ww / 2 - 0.003, u + ww / 2 + 0.003, v - wh / 2 - 0.003, v + wh / 2 + 0.003, 0.0, 0.006, BLACK)
                 slab(lens, F, u - ww / 2, u + ww / 2, v - wh / 2, v + wh / 2, 0.006, 0.0085, srgb(dim))
-                glow = part(f"Ramp control stand, {q['id']} lamp", look, mover=None if q['id'] == 'power' else f"{ID}-lamp-{q['id']}", fine=True) if q['id'] not in ('oil-level', 'oil-temp') else None
-                if glow:
-                    slab(glow, F, u - ww / 2 + 0.001, u + ww / 2 - 0.001, v - wh / 2 + 0.001, v + wh / 2 - 0.001, 0.0087, 0.0093, srgb(lit))
+                glow = part(f"Ramp control stand, {q['id']} lamp", look, mover=None if q['id'] == 'power' else f"{ID}-lamp-{q['id']}", fine=True)
+                slab(glow, F, u - ww / 2 + 0.001, u + ww / 2 - 0.001, v - wh / 2 + 0.001, v + wh / 2 - 0.001, 0.0087, 0.0092, srgb(lit))
+                # (and lit by the lamp test, whatever it says otherwise: a second light before the first, shown while the test's button is in)
+                test = part(f"Ramp control stand, lamp test, {q['colour']}", look, mover=f'{ID}-lamp-test', fine=True)
+                slab(test, F, u - ww / 2 + 0.001, u + ww / 2 - 0.001, v - wh / 2 + 0.001, v + wh / 2 - 0.001, 0.00925, 0.00965, srgb(lit))
                 for k, text in enumerate(q['legend']):
                     fits(text, 0.0062, ww - 0.006, f"the lamp window {q['id']}")
                     words(paint, F, text, 0.0062, u, v + 0.0035 - k * 0.0115, 0.0098, BLACK)
@@ -973,7 +1052,8 @@ def stand():
                 legend(plate, paint, F, q['legend'], u, v - 0.036, 0.0062)
             elif q['kind'] == 'push':
                 stud(steel, F, u, v, 0.0, 0.006, 0.016, CHROME, 20)
-                stud(dark, F, u, v, 0.004, 0.012, 0.0115, BLACK, 16)
+                cap = part('Ramp control stand, lamp test button', 'Plastic', smooth=True, angle=40, mover=f'{ID}-lamp-test-button', fine=True) if q['legend'][0] == 'LAMP' else dark
+                stud(cap, F, u, v, 0.004, 0.012, 0.0115, BLACK, 16)
                 legend(plate, paint, F, q['legend'], u, v - 0.034, 0.0062)
             elif q['kind'] == 'plate':
                 slab(plate, F, u, u + q['w'], v, v + q['h'], 0.0, 0.0012, WHITE)
@@ -1071,6 +1151,8 @@ def marks():
     paint = part('Machinery places, outlines and lettering', 'Marking', group='machinery')
     amber, ink = srgb(0xe3b341), srgb(0x1c2022)
     for e in P.ENDS:
+        if e['tag'] in P.BUILT:
+            continue                                             # (the board itself stands there: switchboard.py)
         x0, x1, a, b = e['box']
         fy = L.Y(e['floor'])
         K = lambda x, yard, up: (x, fy + up, L.Z(yard))
@@ -1121,7 +1203,9 @@ def motion():
     hinge3 = list(Q(0.0, HINGE['inn'], HINGE['h']))
     inputs = [dict(id=ID, name='Stern ramp', min=0, max=P.LOWEST, step=1, unit='°', below='raised', above='lowered', rest='raised',
                    keys=['Raise', 'Stop', 'Lower'], stops=[dict(v=P.LEVEL, say='level'), dict(v=P.LOWEST, say='low quay')], rate=P.RATE)]
-    movers = [dict(id=ID, kind='turn', input=ID, axis=[1, 0, 0], pivot=hinge3, ratio=-1.0, map=P.LEAF_MAP)]
+    # (`carries`: at rest the leaf and its flaps are stood on where they lie, as a deck is. The owner, 12 November 2026: "I want to be
+    # able to walk out on the ramp , and look at the sea and the ship". The page does not move it while somebody stands on it.)
+    movers = [dict(id=ID, kind='turn', input=ID, axis=[1, 0, 0], pivot=hinge3, ratio=-1.0, map=P.LEAF_MAP, carries=True)]
     for sgn, tag in ((1, 'p'), (-1, 's')):
         x = sgn * RAM['x']
         ram = dict(kind='aim', input=ID, axis=[1, 0, 0], pivot=hinge3, ratio=-1.0, map=P.LEAF_MAP,
@@ -1130,7 +1214,7 @@ def motion():
         movers.append(dict(ram, id=f'{ID}-ram-{tag}-rod', extend=True))
         movers.append(dict(id=f'{ID}-bolts-{tag}', kind='slide', input=ID, axis=[sgn, 0, 0], pivot=[0, 0, 0], ratio=1.0, map=P.BOLT_MAP))
     s0, t0 = FLAP['axis']
-    movers.append(dict(id=f'{ID}-flaps', kind='turn', input=ID, axis=[1, 0, 0], pivot=list(Q(0.0, ROAD + t0, FOOT + s0)), ratio=-1.0, map=P.FLAP_MAP, on=ID))
+    movers.append(dict(id=f'{ID}-flaps', kind='turn', input=ID, axis=[1, 0, 0], pivot=list(Q(0.0, ROAD + t0, FOOT + s0)), ratio=-1.0, map=P.FLAP_MAP, on=ID, carries=True))
     pivot = list(Q(0.0, *HOOK['pivot']))
     movers.append(dict(id=f'{ID}-hooks', kind='turn', input=ID, axis=[1, 0, 0], pivot=pivot, ratio=-1.0, map=P.HOOK_MAP))
     hook_ram = dict(kind='aim', input=ID, axis=[1, 0, 0], pivot=pivot, ratio=-1.0, map=P.HOOK_MAP, anchor=list(Q(0.0, *HOOK['ram_anchor'])), pin=list(Q(0.0, *HOOK['ram_pin'])))
@@ -1193,6 +1277,42 @@ def motion():
     movers.append(dict(id=f'{ID}-lamp-closed', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, when='off', over=home + 0.01))
     movers.append(dict(id=f'{ID}-lamp-locked', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, when='off', over=0.01))
     movers.append(dict(id=f'{ID}-lamp-open', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=free - 0.01))
+    # ---- the oil (the owner: "Also specify the oil and the level of oil etc , it needs to be fully functional"). Its level in the
+    # glass follows the ramp: the cylinders' rods take their own volume out of the tank on the way down. Its temperature rises
+    # while a pump runs, to where the cooler holds it, and falls again; the thermometer shows it; the cooler's fan runs from 45
+    # degrees until it is back at 40 (the temperature is `on` between them), or to a tap.
+    x0t, G_, T_ = HPU['tank'][0], P.GLASS, P.THERMO
+    base = G_['foot'] + 0.001
+    movers.append(dict(id=f'{ID}-oil-level', kind='stretch', input=ID, axis=[0, 1, 0], pivot=list(Q(x0t - 0.035, G_['at'], base)), ratio=1.0, map=P.glass_map(base)))
+    temp = f'{ID}-oil-temp'
+    inputs.append(dict(id=temp, name='Ramp hydraulic oil temperature', min=P.TEMP['cold'], max=P.TEMP['warm'], step=1, unit=' °C', below='', above='', rest='cold', start=P.TEMP['cold'],
+                       level=dict(fill=pumps, rate=P.TEMP['rise'], fall=P.TEMP['fall'], on=float(P.FLUID['fan'][0]), off=float(P.FLUID['fan'][1]))))
+    movers.append(dict(id=f'{ID}-thermo', kind='turn', input=temp, axis=[-1, 0, 0], pivot=list(Q(x0t, T_['at'], T_['h'])), ratio=-T_['sweep'] / T_['full']))
+    cx0, cx1, ca, _, ch0, ch1 = HPU['cooler']
+    fan = f'{ID}-fan'
+    inputs.append(dict(id=fan, name='Oil cooler fan', min=0, max=360, step=1, unit='°', below='', above='running', rest='stopped', auto='tap', run='spin', rate=1100,
+                       fitting='HYD-05', at=list(Q((cx0 + cx1) / 2, ca - 0.10, (ch0 + ch1) / 2)), reach=2.0, **{'with': temp}))
+    movers.append(dict(id=fan, kind='turn', input=fan, axis=[0, 0, 1], pivot=list(Q((cx0 + cx1) / 2, ca - 0.03, (ch0 + ch1) / 2)), ratio=1.0))
+    # the two oil lamps. OIL TEMP is lit from 70 degrees, which the cooler does not let it reach. OIL LEVEL is lit under the LOW
+    # mark; with the ramp at its lowest the oil stands 7 cm over it, and nothing aboard loses oil. So both are seen lit only by the
+    # lamp test, as aboard: its button lights every lamp for as long as it is in, and comes out by itself.
+    movers.append(dict(id=f'{ID}-lamp-oil-temp', kind='show', input=temp, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=float(P.FLUID['hot']) - 0.01))
+    low = HPU['tank'][4] + 0.01 + P.TANK['low']
+    movers.append(dict(id=f'{ID}-lamp-oil-level', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=0.5,
+                       map=[[c, 1.0 if P.glass_height(c) < low else 0.0] for c in (0.0, P.LEVEL, P.LOWEST)]))
+    test = f'{ID}-lamp-test'
+    q = next(q for q in P.STAND_PANEL if q['kind'] == 'push' and q['legend'][0] == 'LAMP')
+    inputs.append(dict(id=test, name='Ramp control stand, lamp test', min=0, max=1, step=1, unit='', below='', above='pressed: every lamp is lit', rest='released', auto='tap', spring=2.5,
+                       fitting='RMP-30', at=list(UPST.at(q['u'], q['v'], 0.02)), reach=2.0))
+    movers.append(dict(id=f'{test}-button', kind='slide', input=test, axis=[-UPST.out[0], -UPST.out[1], -UPST.out[2]], pivot=[0, 0, 0], ratio=0.003))
+    movers.append(dict(id=test, kind='show', input=test, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=0.5))
+    # ---- the valve stand's two hand levers: the same orders as the control stand's, given by hand at the valve. A pump must run.
+    m_ = HPU['manifold']
+    for key, yy, name, words_, steps in (('v1', m_[2] + 0.11, 'Ramp valve V1, hand lever', ('raise', 'lower'), levers[1][2]), ('v2', m_[2] + 0.31, 'Cleat valve V2, hand lever', ('lock', 'open'), levers[0][2])):
+        lid = f'{ID}-{key}-lever'
+        inputs.append(dict(id=lid, name=name, min=-22, max=22, step=22, unit='°', below=words_[0], above=words_[1], rest='middle', steps=steps, home=1,
+                           drives=dict(input=ID, needs=pumps, without='no pump is running: start one at the control stand first')))
+        movers.append(dict(id=lid, kind='turn', input=lid, axis=[1, 0, 0], pivot=list(Q(m_[1] + 0.06, yy, m_[4] + 0.22)), ratio=1.0))
     # the beacon: lit while the ramp is neither locked, nor landed level, nor at its lowest
     movers.append(dict(id=f'{ID}-beacon', kind='show', input=ID, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, over=0.5,
                        map=[[0.0, 0.0], [0.4, 1.0], [P.LEVEL - 0.4, 1.0], [P.LEVEL, 0.0], [P.LEVEL + 0.4, 1.0], [P.LOWEST - 0.4, 1.0], [P.LOWEST, 0.0]]))

@@ -1,6 +1,6 @@
 # JS3-304-M1 · The stern ramp's hydraulic power pack HPU-R: what it is and how it is worked
 
-Johansson Shipyard · operating instruction · revision 0 · 12 November 2026 · newbuilding No. 1, the Chisum
+Johansson Shipyard · operating instruction · revision 1 · 12 November 2026 · newbuilding No. 1, the Chisum
 
 The owner, 12 November 2026, standing in the hydraulic pump room on the page: "Make a drawing for the hydraulic pack I don't
 know what I'm looking at and how it's connected and what each pipe does etc , make an instruction for it as well".
@@ -29,20 +29,25 @@ vehicle deck. Coming in, turn right (forward). You stand in **the way**, 0.69 m 
   block on the lid's edge beside the way is the pressure block (6): the dark bowl on it is the pressure filter (7), the red
   cap is the relief valve (8), and the dial that looks into the way is the system gauge (9). The black radiator on the
   tank's after end, the first thing you pass, is the oil cooler (10). The lever low on the tank's side is the hand pump (13).
+  Further along the tank's side, near its forward end: the **level glass** with its engraved scale, and a dial thermometer.
+  The small block on the lid just aft of the pressure block is the cleats' block (21), with their relief valve under its red cap.
+  The orange pipe that runs along the lid's near edge on two posts is the return (22), on its way to the cooler.
 - **On your right, on the inboard wall: the valve stand** (14). Three black valves, each with a lever: the ramp valve (15), the cleat
-  valve (16) and a spare (17). On its top stand two dials (18) and seven lines.
+  valve (16) and a spare (17). On its top stand two dials (18) and eight lines, each with a white marker: its letter and a word.
 - **Ahead, at the end of the way: the starter panel RSP** (19), a grey cabinet with two leaves.
-- **Overhead:** the cable tray (20) over the power pack, and two pipes that cross the way at head height from the valve
-  stand to the tank. Mind your head: the lower is 2.10 m over the deck.
+- **Overhead:** the cable tray (20) over the power pack, and three pipes that cross the way at head height from the valve
+  stand to the tank. Mind your head: the lowest is 2.01 m over the deck.
 
 ## 3. What each pipe does
 
-All the oil lines are painted the same orange. Each is known by where it lies.
+All the oil lines are painted the same orange. Each carries a marker where it leaves the valve stand, with its letter and a
+word for what it does; elsewhere it is known by where it lies.
 
 | Line | Where it lies | From and to | What it does |
 |---|---|---|---|
-| **P** pressure | across the way, the lower of the two, 2.10 m | pressure block (6) to the valve stand (14) | The pumps' oil at up to 210 bar, on its way to the valves |
-| **T** return | across the way, the upper, 2.19 m | valve stand (14) back to the tank (1) | The oil coming back. No pressure to speak of |
+| **P** pressure | across the way, the middle of the three, 2.10 m | pressure block (6) to the valve stand (14) | The pumps' oil at up to 210 bar, on its way to the valves |
+| **T** return | across the way, the upper and the thickest, 2.19 m; then along the lid on two posts (22) | valve stand (14) to the cooler (10), the return filter (11) and the tank (1) | The oil coming back. No pressure to speak of |
+| **S** cleats' pressure | across the way, the lowest and thinnest, 2.01 m | cleats' block (21) to the valve stand (14) | The cleat pump's oil at up to 160 bar, to the cleat valve |
 | **A** ramp, raise | lowest of the five on the wall, 2.30 m | valve stand to the rod side of both cylinders | Oil here pulls the cylinders in and **raises** the ramp. While the ramp is down it carries the leaf's weight |
 | **B** ramp, lower | second, 2.37 m | valve stand to the piston side of both cylinders | Oil here pushes the cylinders out and **lowers** the ramp |
 | **C** cleats, lock | third, thinner, 2.44 m | valve stand to the ten cleats | Oil here shoots the eight bolts and closes the two hooks: **locked** |
@@ -53,8 +58,11 @@ A, B, C, D and E go aft along the inboard wall, through the after mooring statio
 The last half metre to each cylinder, cleat and latch is a hose, because those move.
 
 **How the oil goes round.** Tank (1) → a main pump (2 or 3) → its non-return valve (5) → pressure block (6), through the
-filter (7), past the relief valve (8) and the gauge (9) → line P → valve stand (14) → line A or B to the cylinders, or C or D
-to the cleats → back through line T → cooler (10) → return filter (11) → tank.
+filter (7), past the relief valve (8) and the gauge (9) → line P → valve stand (14) → line A or B to the cylinders → back
+through line T → cooler (10) → return filter (11) → tank. The cleats have a small circuit of their own beside it: tank → cleat
+pump (4) → cleats' block (21), past its relief valve → line S → cleat valve (16) → line C or D to the cleats and latches → back
+through T. **The main pumps are of variable delivery:** each holds 195 bar and delivers what the valves ask for; with every valve
+in its middle it holds the pressure and delivers nothing, so the gauge reads 195 bar whenever a pump runs.
 
 ## 4. The oil, and how much of it
 
@@ -134,8 +142,9 @@ panel shows the same from the same switches.
 
 ## 10. With no power
 
-- **From the valve stand (14):** each valve has a lever. With a pump running the ramp and the cleats can be worked there by
-  hand if the control stand's circuit has failed.
+- **From the valve stand (14):** each valve has a lever. With a pump running the ramp and the cleats are worked there by hand
+  if the control stand's circuit has failed: V2's lever opens and locks the cleats, V1's lowers, stops and raises the ramp, in
+  the same order and with the same refusals as at the stand.
 - **With no electricity at all:** the hand pump (13). About 20 cm³ a stroke: enough to work the cleats in a few minutes; the
   ramp, through the change-over cock, slowly.
 
@@ -162,17 +171,14 @@ A yard's usual routine for a pack of this kind, not a maker's schedule.
 ## 13. What works on the page today, and what does not
 
 **Works:** the pumps' START and STOP buttons, the two levers and the emergency stop at the control stand, with the refusals
-of section 8; the eight lamps except the two oil lamps; the two pressure indicators at the stand and gauges (9) and (18, line
-A) in the pump room; the beacon; the starter panel's two leaves, which open on its insides; the ramp, its flaps, its latches
+of section 8; the eight lamps, and the lamp test, whose button lights every one of them and comes out by itself; the two
+pressure indicators at the stand and gauges (9) and (18, line A) in the pump room; the beacon; **the oil in the level glass,
+which falls 9 cm as the ramp is lowered and comes back; the oil's temperature, which rises while a pump runs to where the
+cooler holds it, on the thermometer; the cooler's fan, from 45 °C until the oil is back at 40 °C, or to a tap; the valve
+stand's ramp and cleat levers**; the starter panel's two leaves, which open on its insides; the ramp, its flaps, its latches
 and its ten cleats, in their order.
 
-**Drawn, and not worked:** the valve stand's own levers; the hand pump; the gauge cocks; the stand's key switch, lamp test and
-horn; the two oil lamps (nothing aboard makes the oil low or hot yet). **The level glass has no marks yet and its level does not
-move with the ramp; the oil's temperature is not kept; the cooler's fan does not turn.** Making the pack work in full, to this
-instruction, is the next piece of work on it.
-
-**Not yet as the diagram has it** (sheet 4 says the same): the return line T is drawn coming down onto the pressure block
-beside P, where the diagram takes it through the cooler and the return filter; the cleat pump is drawn delivering into the
-same block, where the diagram gives it a line and a relief valve of its own (160 bar); the lines carry no markers aboard.
+**Drawn, and not worked:** the spare valve's lever; the hand pump; the three gauge cocks; the stand's key switch and horn.
+Nothing aboard loses oil or overheats it, so OIL LEVEL and OIL TEMP are seen lit only by the lamp test.
 
 **Not designed:** the scantlings of the leaf, its pins and brackets; the quays and the tide she is to lie at.

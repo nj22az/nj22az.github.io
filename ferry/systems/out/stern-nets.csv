@@ -24,13 +24,13 @@ RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",HYD-01,Stern ramp pow
 RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",HYD-07,Return filter,talks,filter clogged
 RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",RMP-30,Ramp control stand,listens,the oil lamp
 RAMP-ALM,Power pack alarms,"24 V, one pair to each switch",elsewhere,Engine control room: Alarm and monitoring system,listens,stern ramp power pack: group alarm
-GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",ELD-61,MSB: place marked,node,the bars
+GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",ELD-61,"Main switchboard, 690 V",node,the bars
 GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",GEN-01,DG1: place marked,talks,320 kW
 GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",GEN-02,DG2: place marked,talks,320 kW
 GEN-FEED,Generators' feeders (placeholders),"690 V three-phase, 2 x (3 x 120 mm2) a set",GEN-03,DG3: place marked,talks,320 kW
-TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-61,MSB: place marked,talks,690 V
+TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-61,"Main switchboard, 690 V",talks,690 V
 TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-63,T1: place marked,node,800 kVA
 TX-FEED-1,Transformer No. 1 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-62,PSB: place marked,listens,440 V
-TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-61,MSB: place marked,talks,690 V
+TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-61,"Main switchboard, 690 V",talks,690 V
 TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-64,T2: place marked,node,800 kVA
 TX-FEED-2,Transformer No. 2 feeders (placeholders),"690 V in, 440 V out, three-phase",ELD-62,PSB: place marked,listens,440 V
