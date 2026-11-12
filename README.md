@@ -33,14 +33,14 @@ upstream repositories, authors and reuse details.
 | Layer | Technology |
 |-------|-----------|
 | Markup | Semantic HTML5, multi-page |
-| Styling | Modular CSS with ten switchable visual systems |
+| Styling | Shared CSS, plus Office homepage styles locked to Clarity |
 | Scripts | Vanilla JavaScript, no frameworks |
-| Typography | Theme-specific Google Fonts and system fallbacks |
-| Icons | Inline SVG paths (Lucide / SF Symbols aesthetic) |
-| Logo | Inline SVG rubber-stamp seal (theme-adaptive via `currentColor`) |
-| Hosting | GitHub Pages (auto-deploys on push) |
+| Typography | Nunito, Montserrat and Noto Sans JP, with system fallbacks |
+| Icons | Inline SVG |
+| Mark | Wordmark in the header; rubber-stamp seal in About |
+| Hosting | GitHub Pages (`.nojekyll`; auto-deploys on push to `main`) |
 
-**No build step.** No npm. No bundler. Just static files.
+**No build step.** The published site is the files in this repository.
 
 ## Run Locally
 
@@ -50,75 +50,86 @@ npx serve .
 python3 -m http.server 8000
 ```
 
+## The homepage
+
+`index.html` is the Office homepage. It is locked to the Clarity theme (`data-theme="clarity"` and `data-theme-lock="clarity"`) and does not pick a random palette on each visit. A sun/moon control in the header switches light and dark; the choice is stored as `nj-office-appearance` and follows the device until someone chooses. Dark surfaces are black.
+
+The page is, in order:
+
+1. **Hero** — introduction and the Minato harbour arrival
+2. **Projects** — the project explorer (`Explore`, `Create`, `Learn`)
+3. **Blog** — the same English-first feed as `/blog/`
+4. **About** — short biography and social links
+5. **Locations** — Sweden and Vietnam
+
+The header also has quick links and an availability calendar. Project cards are drawn by `assets/js/project-explorer.js` from `CONFIG.projectExplorer` in `config.js`. The blog list comes from `assets/js/blog-posts.js`. Navigation and the footer come from `shared.js`.
+
 ## Folder Structure
 
 ```
 .
-├── index.html              Main portal (hero, schedule, projects, journal, about, locations)
-├── blog/index.html         Blog page (WordPress API)
-├── config.js               All site data, projects, icons, logo, schedule
-├── shared.js               Shared nav, footer, expandable theme switcher
-├── subpage-theme.js       Carries the selected palette into same-origin apps
-├── subpage-theme.css      Palette bridge for internal project interfaces
-├── styles.css              CSS entry point — imports modular files from css/
-├── css/                    Modular CSS files (tokens, nav, hero, sections, bento, etc.)
-├── _posts/                 Markdown blog post archive
-├── assets/
-│   ├── images/             Photos, app icons, favicon
-│   └── video/              Video assets
-├── CLAUDE.md               AI assistant instructions
-├── .nojekyll               Tells GitHub Pages to skip Jekyll
+├── index.html                         Office homepage
+├── config.js                          Site data: author, navigation, projects, project explorer, icons, logo
+├── shared.js                          Shared navigation, footer and theme switcher
+├── assets/js/project-explorer.js      Homepage project cards
+├── assets/js/blog-posts.js            Public article catalogue
+├── assets/js/office-appearance.js     Homepage light/dark control
+├── assets/js/office-calendar.js       Header calendar
+├── css/office-home.css                Homepage layout
+├── css/project-explorer.css           Project cards
+├── styles.css                         Shared stylesheet (imports css/)
+├── blog/                              Articles
+├── hotels/                            Hotels & Parking register
+├── sitemap.xml                        Public pages
+├── .nojekyll                          Tells GitHub Pages to skip Jekyll
 └── .gitignore
 ```
 
-## How the Theme Works
+Project pages (Pocket Camera, the ferry, Sjöskolan, the book, the maintenance demo and others) live in their own folders. Johansson World’s pages are served from the separate `nj22az/johansson-world` repository at `/johansson-world/`. Johansson Town, the game, is `nj22az/johansson-town` at `/johansson-town/`.
 
-1. `<html data-theme="cobalt">` is the first-load default
-2. CSS uses custom properties scoped to each theme ID
-3. `theme-bootstrap.js` chooses a non-repeating random theme whenever the homepage loads
-4. The hamburger menu contains an expandable switcher with eleven brand-neutral options: Cobalt, Mossy, Cute, Colorgrid, Crimson, Inkcraft, Clarity, Horizon, Swift, Botanical, and Popwave
-5. Manual choices update the current page, and internal project pages inherit the latest choice through `subpage-theme.js`; external sites are unaffected
-6. The SVG logo uses `currentColor`, so it adapts automatically
+## How appearance works
 
-## How the Logo Works
+**Homepage.** Clarity stays put. `assets/js/office-appearance.js` sets `data-office-mode` to `light` or `dark` before the page paints.
 
-The logo is a rubber-stamp seal SVG generated by `CONFIG.logo(size)` in config.js. It uses `currentColor` for all strokes and text, so it automatically matches the current theme. It's rendered:
-- In the top navigation (32px) as the brand mark
-- In the hero section (120px) as the centerpiece
-- Hover interaction via the `.logo-seal` CSS class (subtle scale)
+**Shared pages.** The blog, the Linux pages and Johansson World take the palette saved by the header switcher in `shared.js`. `theme-bootstrap.js` stores it as `nj-theme`. The palettes are Cobalt, Mossy, Cute, Colorgrid, Crimson, Inkcraft, Clarity, Horizon, Swift, Botanical and Popwave. A page with `data-theme-lock` keeps the theme named there. Hotels & Parking is locked to Clarity, the same way the homepage is. Pocket Camera has its own light and dark setting.
 
-## How to Add a New Project
+## How the mark works
 
-Edit **`config.js`** → `CONFIG.projects`:
+- The header uses `CONFIG.navLogo()`, a wordmark, at 34px tall.
+- About uses the rubber-stamp seal from `CONFIG.logo()`, drawn at 140px. Strokes and lettering use `currentColor`, so they follow the page colour. Hover uses `.logo-seal`.
+
+## How to Add a Project
+
+The homepage grid is `CONFIG.projectExplorer` in `config.js`, not a bento of `CONFIG.projects`:
 
 ```js
 {
-  title: "Project Name",
-  description: "Short description.",
-  url: "https://example.com",
-  icon: "iconName",
-  tags: ["Tag1", "Tag2"],
-  bento: "wide",   // "wide", "normal", "large", or "tall"
-  featured: true,
+  id: "example",
+  category: "create", // "explore", "create" or "learn"
+  title: "Project name",
+  eyebrow: "SHORT LABEL",
+  summary: "One or two sentences.",
+  url: "/example/",
+  action: "Open the project",
+  format: "Browser tool",
+  language: "English",
+  status: "Browser tool",
+  firstTry: "What to try first.",
+  features: ["One thing you can do", "Another"],
+  preview: "maintenance" // world, camera, ferry, studio, maintenance, course, book
 }
 ```
 
-Need a new icon? Add to `CONFIG.icons`:
-```js
-iconName: "M... SVG path data ...",
-```
+`preview` selects the card’s picture. Links in `CONFIG.projects` whose address is on another site are listed under “Beyond the projects”. To take a project off that list without deleting the record, move it to `CONFIG.archivedProjects`.
 
-To remove a project from the public grid without deleting it, move its record from `CONFIG.projects` to `CONFIG.archivedProjects`.
+A new icon used by the shared chrome goes in `CONFIG.icons` as an SVG path for a 24×24 view.
 
-## How to Add a New Page
+## How to Add a Page
 
-1. Create `new-page/index.html`
-2. Use the same HTML shell as existing pages:
-   - `<html lang="en" data-theme="cobalt">`
-   - `<nav id="site-nav" class="site-nav"></nav>` in body
-   - `<footer id="site-footer" class="site-footer"></footer>`
-   - Load `config.js` then `shared.js`
-3. Navigation, footer, logo, and theme toggle are automatically injected
+1. Create `new-page/index.html`.
+2. Use the shared shell: `<nav id="site-nav" class="site-nav"></nav>`, `<footer id="site-footer" class="site-footer"></footer>`, then `config.js` and `shared.js`.
+3. Set `lang`. Lock the theme with `data-theme-lock` when the page should not follow the shared palette; otherwise `theme-bootstrap.js` applies the saved one.
+4. Add a `CONFIG.navigation` entry in `config.js` if the page belongs in the menu, and a `sitemap.xml` entry if it is a public page.
 
 ## Environment Variables
 

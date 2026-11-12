@@ -207,9 +207,9 @@ try{
  await check('the Game Room’s kicker is the eyebrow, on one line, readable on its paper and in the dark; the bar names the town',async()=>{
   await cam.evaluate(()=>document.getElementById('roll').click());await cam.waitForSelector('#album:not([hidden])');
   await cam.evaluate(()=>document.getElementById('openGames').click());await cam.waitForSelector('#cardsHub:not([hidden])');
-  const out=await cam.evaluate(()=>{const k=document.querySelector('.game-room-intro .cards-kicker');const r=k.getBoundingClientRect();return {text:k.textContent,lines:Math.round(r.height/parseFloat(getComputedStyle(k).lineHeight)),font:getComputedStyle(k).fontFamily,bar:document.querySelector('#cardsHub .bar h2').textContent,h1:document.querySelector('.game-room-intro h1').textContent};});
+  const out=await cam.evaluate(()=>{const k=document.querySelector('.game-room-intro .cards-kicker');const r=k.getBoundingClientRect();return {text:k.textContent,lines:Math.round(r.height/parseFloat(getComputedStyle(k).lineHeight)),font:getComputedStyle(k).fontFamily,bar:document.querySelector('#cardsHub .bar h2').textContent,heading:document.querySelector('.game-room-intro h2').textContent,level:document.querySelector('.game-room-intro h1, .game-room-intro h2').tagName};});
   assert.equal(out.text,'Johansson World');assert.equal(out.lines,1,'one line beside the greeter');assert.match(out.font,/LINE Seed JP/);
-  assert.equal(out.bar,'Minato Machi');assert.equal(out.h1,'Game Room');
+  assert.equal(out.bar,'Minato Machi');assert.equal(out.heading,'Game Room');assert.equal(out.level,'H2');
   await bothThemes(cam,async scheme=>{const c=await contrast(cam,'.game-room-intro .cards-kicker');assert.ok(c>=4.5,`${scheme}: the kicker reads (${c})`);});
  });
 

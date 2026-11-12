@@ -1,6 +1,6 @@
 {
   "version": "20261110green1",
-  "bytes": 40435065,
+  "bytes": 40435074,
   "files": [
     {
       "url": "/camera/album.js",
@@ -49,12 +49,12 @@
     },
     {
       "url": "/camera/camera-black.css",
-      "sha256": "b98ff6935c4eb4e045066f804da94b578c013afa7c42796149386e9667bc7bbb",
+      "sha256": "5cca6ceef73e5b8c641f7aa6008ead4c86d93c2134ae760197564f2071608dcf",
       "bytes": 6924
     },
     {
       "url": "/camera/camera-brand.css",
-      "sha256": "d85e01af116e28c885fc7b81bf050a705a2161aa55c61b6590ae8f13d66d47b5",
+      "sha256": "aee03ff413fbcf571df15d2fde21203f7bd707993316e0d38e1498281e07c1c5",
       "bytes": 5757
     },
     {
@@ -74,7 +74,7 @@
     },
     {
       "url": "/camera/card-games.css",
-      "sha256": "e63d539e1cda8b46fa73024a1fe64da5b4b0eb4278e32885196054930cf60017",
+      "sha256": "3214c6b330669cef8b24eeae174d372d6c0bec5e8f450fea810837bfe1eea6c0",
       "bytes": 2037
     },
     {
@@ -214,7 +214,7 @@
     },
     {
       "url": "/camera/game-room-refresh.css",
-      "sha256": "21f747557f4e49bc9f22467dce79c73492c8fc9ffea9d3b3c58048381e1600bc",
+      "sha256": "07587f1608d006992a686012b46f91b5fb3a6709ff77e633c8a22895f7d6e682",
       "bytes": 9396
     },
     {
@@ -244,8 +244,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "14bec7528a54f8f179eb7109c0eb118b60cc06cdbf867af6ba63c8ae2676c1e8",
-      "bytes": 53794
+      "sha256": "4e346b702de71ba04057d4e987d8c250775b3b06d67564bfabb933cbaeaebce2",
+      "bytes": 53803
     },
     {
       "url": "/camera/lettering.js",

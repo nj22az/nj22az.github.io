@@ -60,4 +60,4 @@
 
 /* The Game Room's kicker is the same eyebrow, in the World's green on its paper and in the dark (camera-black.css). */
 .game-room-intro .cards-kicker{font:700 .625rem/1.3 var(--font-brand);letter-spacing:.2em;text-transform:uppercase;color:var(--brand)}
-.game-room-intro h1{font-family:var(--font-brand);font-weight:800;letter-spacing:-.02em}
+.game-room-intro h2{font-family:var(--font-brand);font-weight:800;letter-spacing:-.02em}

@@ -96,7 +96,7 @@
           <button type="button" data-project-filter="learn" aria-pressed="false">Learn <span></span><small>Course &amp; book</small></button>
         </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true"></p></div>
         <div id="project-grid" class="px-grid" data-filter="all"></div>
-        <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-world/">Johansson World — discover the island</a> · <a href="/johansson-town/">Start the game</a> · <a href="/johansson-world/sakura/play/">Play Sakura Shōten demo</a></li><li><a href="/world/#downloads">Johansson World — Linux downloads and development</a></li><li><a href="/world/sakura/">Sakura Shōten — the shop on Minato’s harbour road</a></li><li><a href="/ferry/">Chisum — a ferry in 3D, deck by deck</a></li><li><a href="/camera/">Pocket Camera — every Look from Johansson World on your own photos</a></li><li><a href="/maintenance-demo/">Maintenance Desk — an equipment maintenance programme, including StepWise for test points</a> · <a href="/stepbuddy/">Open StepWise</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook in progress, with a free sample</a></li></ul></div></noscript>
+        <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-world/">Johansson World — discover the island</a> · <a href="/johansson-town/">Start the game</a> · <a href="/johansson-world/sakura/play/">Play Sakura Shōten demo</a></li><li><a href="/johansson-world/#downloads">Johansson World — Linux downloads and development</a></li><li><a href="/johansson-world/sakura/">Sakura Shōten — the shop on Minato’s harbour road</a></li><li><a href="/ferry/">Chisum — a ferry in 3D, deck by deck</a></li><li><a href="/camera/">Pocket Camera — every Look from Johansson World on your own photos</a></li><li><a href="/maintenance-demo/">Maintenance Desk — an equipment maintenance programme, including StepWise for test points</a> · <a href="/stepbuddy/">Open StepWise</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook in progress, with a free sample</a></li></ul></div></noscript>
 
         <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
       </div>
@@ -166,7 +166,7 @@
   <script src="/config.js?v=20261112-books-wip"></script>
   <script src="/assets/js/project-explorer.js?v=20261112-books-wip" defer></script>
   <script src="/shared.js?v=office-appearance-20261102"></script>
-  <script src="/assets/js/office-calendar.js?v=20261027-hotels" defer></script>
+  <script src="/assets/js/office-calendar.js?v=20261112-world" defer></script>
   <script>
     (function () {
       "use strict";
@@ -183,8 +183,9 @@
       $("#about-location").textContent = "Based in " + CONFIG.author.location;
       $("#about-bio").textContent = CONFIG.author.bio;
 
+      var socialLabel = { github: "GitHub", linkedin: "LinkedIn", store: "Shop" };
       $("#social-links").innerHTML = Object.keys(CONFIG.author.social).map(function (key) {
-        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + key + '">' +
+        return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener" class="social-link" data-icon="' + key + '" aria-label="' + (socialLabel[key] || key) + '">' +
           siteIcon(key) + '</a>';
       }).join("");
 
