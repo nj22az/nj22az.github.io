@@ -66,9 +66,18 @@ TABLE, SOFA = C['OUT-09'], C['OUT-41']
 # (as bridge_outfit.py stands them: the table against the starboard lining and the old front's line, the settee against the port lining)
 T_X = (-BP.SIDE_IN + 0.006, -BP.SIDE_IN + 0.006 + TABLE['g']['w'])
 T_Y = (BP.FRONT - BP.WALL - 0.006 - TABLE['g']['l'], BP.FRONT - BP.WALL - 0.006)
-S_X = (BP.SIDE_IN - 0.012 - SOFA['g']['d'], BP.SIDE_IN - 0.012)
-S_Y = (SOFA['at'][1] - SOFA['g']['l'] / 2, SOFA['at'][1] + SOFA['g']['l'] / 2)
-WAY_S, WAY_P = -B['half'] - T_X[1], S_X[0] - B['half']        # the two side ways past the block's ends
+if SOFA['g'].get('against') == 'aft':                 # in the port wing, against its after wall (the owner, 12 November 2026: "Move it to port wing")
+    S_X = (SOFA['at'][0] - SOFA['g']['l'] / 2, SOFA['at'][0] + SOFA['g']['l'] / 2)
+    S_Y = (BP.WING_AFT + 0.012, BP.WING_AFT + 0.012 + SOFA['g']['d'])
+    WAY_P = BP.SIDE_IN - B['half']
+else:                                                # along the port side of the wheelhouse, where it closed the way
+    S_X = (BP.SIDE_IN - 0.012 - SOFA['g']['d'], BP.SIDE_IN - 0.012)
+    S_Y = (SOFA['at'][1] - SOFA['g']['l'] / 2, SOFA['at'][1] + SOFA['g']['l'] / 2)
+    WAY_P = S_X[0] - B['half']
+WAY_S = -B['half'] - T_X[1]                           # the two side ways past the block's ends
+# (the binocular box stands 0.125 m out from the block's port end, bridge_console.binoculars; the handrail's tube 0.078 m in from the lining, bridge_fittings.RAIL_OFF)
+WAY_P_BOX = BP.SIDE_IN - 0.078 - (B['half'] + 0.125)
+HOSE, HYDRANT, WH_DOOR = C['FIR-07'], C['PIP-01'], C['OUT-18']
 # the doors from the wings onto the gallery: the doorway, the leaf, and how near its free edge comes to the rail as it swings
 D0, D1 = BP.FORE_DOOR
 LEAF = D1 - D0 - 2 * BP.DOOR_JAMB
@@ -360,10 +369,29 @@ note(XA(5.6), YB(H1 + 0.95), 'five service doors in the block\'s back (the middl
 rect(XA(T_X[0]), YB(ya(T_Y[0])), XA(T_X[1]), YB(ya(T_Y[1])), '#c49a5e', INK, 0.8, opacity=0.6)
 text(XA((T_X[0] + T_X[1]) / 2), YB(ya(T_Y[0])) - 5, 'table', 9, 'middle', fill=DIM)
 rect(XA(S_X[0]), YB(ya(S_Y[0])), XA(S_X[1]), YB(ya(S_Y[1])), '#3a3f45', INK, 0.8, opacity=0.55)
-text(XA((S_X[0] + S_X[1]) / 2), YB(ya(S_Y[0])) - 5, 'settee', 9, 'middle', fill=DIM)
+text(XA((S_X[0] + S_X[1]) / 2), YB(ya(S_Y[1])) + 12, 'settee', 9, 'middle', '700', fill=INK)
+# the port wing, where the settee stands: what was there first is drawn, so that it is seen to be clear of it. The door and
+# the window of the after wall; the fire hose box and the hydrant in the inboard corner; the wheelhouse's door and its swing.
+d0, d1 = BP.WING_AFT_DOOR
+w0, w1 = BP.WING_AFT_WINDOW
+line(XA(d0), YB(ya(BP.WING_AFT)) - 1.5, XA(d1), YB(ya(BP.WING_AFT)) - 1.5, 3.4, GREEN)
+text(XA((d0 + d1) / 2), YB(ya(BP.WING_AFT)) + 12, 'door', 8.5, 'middle', fill=GREEN)
+line(XA(w0), YB(ya(BP.WING_AFT)) - 1.5, XA(w1), YB(ya(BP.WING_AFT)) - 1.5, 3.4, GLASS)
+text(XA((S_X[1] + w1) / 2 + 0.25), YB(ya(BP.WING_AFT)) + 12, 'window, sill 1.15', 8.5, 'middle', fill=GLASS)
+hx, hy = HOSE['at'][0], HOSE['at'][1]
+rect(XA(BP.HOUSE_X), YB(ya(hy - 0.26)), XA(BP.HOUSE_X + 0.22), YB(ya(hy + 0.26)), RED, RED, 0.6, opacity=0.5)
+add(f'<circle cx="{XA(HYDRANT["at"][0] + 0.06):.1f}" cy="{YB(ya(HYDRANT["at"][1])):.1f}" r="{0.085 * K:.1f}" fill="{RED}" fill-opacity="0.5" stroke="{RED}" stroke-width="0.6"/>')
+note(XA(4.1), YB(ya(hy + 1.55)), 'fire hose box and hydrant: kept clear', XA(BP.HOUSE_X + 0.22), YB(ya(hy)), c=RED)
+yd0, yd1 = WH_DOOR['g']['yd']
+leaf = yd1 - yd0 - 2 * BP.DOOR_JAMB
+hinge = (BP.HOUSE_X - 0.03, yd1 - BP.DOOR_JAMB)
+arc = [(hinge[0] + leaf * sin(radians(t)), hinge[1] - leaf * cos(radians(t))) for t in range(0, 101, 5)]
+poly([(XA(x), YB(ya(v))) for x, v in arc], 'none', FAINT, 0.6, '3 2', close=False)
+dim(XA(d1), YB(ya(S_Y[1])) + 26, XA(S_X[0]), YB(ya(S_Y[1])) + 26, f'{S_X[0] - d1:.2f}', off=12)
+dim(XA(BP.HOUSE_X + 0.22), YB(ya(S_Y[1])) + 44, XA(S_X[0]), YB(ya(S_Y[1])) + 44, f'{S_X[0] - BP.HOUSE_X - 0.22:.2f}  from the hose box', off=12, c=RED)
 ym = YB(ya((B['nose'] + B['back']) / 2 + 0.16))
 dim(XA(T_X[1]), ym, XA(-B['half']), ym, f'{WAY_S:.2f}', off=-5, c=GREEN, weight='700')
-dim(XA(B['half']), ym, XA(S_X[0]), ym, f'{WAY_P:.2f}', off=-5, c=RED, weight='700')
+dim(XA(B['half']), ym, XA(B['half'] + WAY_P), ym, f'{WAY_P:.2f}', off=-5, c=GREEN if WAY_P >= 0.7 else RED, weight='700')
 dim(XA(1.2), YB(ya(B['back'])), XA(1.2), YB(ya(BP.BAY_IN)), f'{BP.BAY_IN - B["back"]:.2f}  the way', off=-6, c=GREEN, weight='700')
 # the cable ways under the deck, from each mullion's transit to the block's
 for tag in ('P', 'S'):
@@ -413,7 +441,9 @@ WHY = (
     f'The console block stood against the forward bulkhead. A chief constructor, of that: it must be reached from its other side for electrical work and maintenance. '
     f'The middle of the bridge front is built {BP.BAY:.2f} m forward as a bay with a canted corner each side (the owner\'s photograph of the Finnarrow: "that protruding part '
     f'forward on the bridge"); the block keeps its place and stands free, with a way {BP.BAY_IN - B["back"]:.2f} m wide before it.',
-    f'The way is entered from starboard, past the watchkeeper\'s table: {WAY_S:.2f} m. In the block\'s back a service door for each of its five bays opens into it.',
+    f'The way is entered from either side: to starboard past the watchkeeper\'s table, {WAY_S:.2f} m; to port {WAY_P:.2f} m ({WAY_P_BOX:.2f} m between the binocular box on the block\'s end and the handrail). '
+    f'The settee, which closed the port way to 0.46 m, stands in the port wing against its after wall, {S_X[0] - BP.WING_AFT_DOOR[1]:.2f} m from the door and {S_X[0] - BP.HOUSE_X - 0.22:.2f} m clear of the fire hose box. '
+    'In the block\'s back a service door for each of its five bays opens into the way.',
     'The block is fed from below now: its cables came down two window mullions into its back; they go down the same mullions to the deck, through it in a transit, '
     'under it, and up through a transit in the block\'s bottom. Two 24 V ways are a size heavier for the 4 m more (the register).',
     f'The bay stands {ya(BP.BAY_OUT) - H1:.2f} m beyond the house\'s front, and the bridge deck is carried {GAL_Y - ya(BP.BAY_OUT):.2f} m beyond the bay all round as a gallery, '
@@ -429,7 +459,6 @@ for s in WHY:
 text(col[2], py_, 'NOT SETTLED', 12, weight='700')
 y3 = py_
 OPEN = (
-    f'The port side way is {WAY_P:.2f} m, between the block\'s end and the settee: not a way. To go round the block both ways the settee has to stand somewhere else. The owner\'s to decide.',
     'No scantling is calculated: the gallery\'s plate, face bar, knees and beams are drawn at the sizes of the wings\' own, and their welds to the front are not designed.',
     'The sight-line calculation JS4-402 is not run again with the bay; the line in view C is this sheet\'s own.',
     'The doors to the gallery stand in a forward-facing wall: their coamings are 0.15 m as her other bridge doors\' are, and no rule was looked up for a door in that position.',
@@ -462,5 +491,6 @@ open(path, 'w').write(svg)
 print(f'wrote {path}')
 for s in rows:
     print(' ', s)
-print(f'  the ways past the block: starboard {WAY_S:.2f} m, port {WAY_P:.2f} m; before it {BP.BAY_IN - B["back"]:.2f} m')
+print(f'  the ways past the block: starboard {WAY_S:.2f} m, port {WAY_P:.2f} m ({WAY_P_BOX:.2f} at the binocular box); before it {BP.BAY_IN - B["back"]:.2f} m')
+print(f'  the settee: x {S_X[0]:.2f} to {S_X[1]:.2f} m, {ya(S_Y[0]):.2f} to {ya(S_Y[1]):.2f} m from the transom; {S_X[0] - BP.WING_AFT_DOOR[1]:.2f} m from the wing\'s after door, {S_X[0] - BP.HOUSE_X - 0.22:.2f} m from the hose box')
 print(f'  the doors to the gallery: leaf {LEAF:.2f} m, {SWING:.2f} m clear of the rail through its swing; the gallery {BP.GALLERY:.2f} m')

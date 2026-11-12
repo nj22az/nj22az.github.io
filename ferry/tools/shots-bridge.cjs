@@ -72,6 +72,9 @@ const VIEWS = [
   ['wing-fore-door', [5.2, 21.3, 1.60], [3.45, 23.0, 1.05], 1, {}],
   ['gallery-door', [2.3, 24.55, 1.60], [3.7, 23.0, 1.0], 1, { 'door-wing-fore-p': true }],
   ['gallery-along', [-2.2, 24.62, 1.60], [2.6, 24.3, 1.1], 1, {}],
+  // the settee in the port wing, against its after wall; and the port side way it left clear
+  ['wing-settee', [7.6, 21.9, 1.60], [5.5, 19.8, 0.55], 1, {}],
+  ['port-way', [2.38, 21.2, 1.60], [2.3, 23.6, 0.9], 1, {}],
   ['wing-port', [4.3, 20.3, 1.62], [5.9, 22.8, 0.9], 1, {}],
   ['wing-port-in', [5.9, 21.9, 1.62], [3.0, 21.2, 1.3], 1, {}],
   ['wing-starboard', [-4.3, 20.3, 1.62], [-5.9, 22.8, 0.9], 1, {}],

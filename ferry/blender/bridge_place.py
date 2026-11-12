@@ -105,6 +105,13 @@ FORE_POST = 4.10                     # the wing's first pane, which the door's b
 DOOR_JAMB = 0.04                     # a door frame's jamb: the leaf is the doorway less two of these
 GALLERY = 1.10                       # the gallery beyond the bay's front, all round (0.75 m before the doors were asked for): the leaf clears the rail by 0.2 m
 
+# A wing's after wall, which closes it from the open bridge deck: its inner face along her; the door in it (it opens aft,
+# outward) and the window, each x from and to. The settee stands against this wall in the port wing since 12 November 2026
+# (the owner: "Move it to port wing"): beside the door, under the window, whose sill is over its back.
+WING_AFT = 19.56
+WING_AFT_DOOR = (4.30, 5.10)
+WING_AFT_WINDOW = (6.20, 7.40)
+
 # The console block's outline, for whoever draws it without the builder (yard/drawings/bay_drawing.py); bridge_console.py
 # builds it from these: its half breadth; the desk's after edge and the cabinet's after face; its back, which is the old
 # front's inner face (it stood against it, and stands free of the bay's front now); the top of its doors; the sloping

@@ -363,7 +363,7 @@ WALL_IN = 22.94                       # the inner face of the wing's forward wal
 WING_POST = 0.10                      # a post between two panes
 WING_FRONT = 6                        # panes in the wing's forward wall, and in its outboard one
 WING_SIDE = 3
-WING_DOOR = (4.30, 5.10)              # the door in the wing's after wall, x from and to: it opens aft, onto the open bridge deck
+WING_DOOR = BP.WING_AFT_DOOR          # the door in the wing's after wall, x from and to: it opens aft, onto the open bridge deck
 
 
 def _wraked(key, x0, x1, t0, t1, h0, h1, colour):
@@ -524,18 +524,19 @@ def wing(g):
 
     # ---- the after wall: from the house's side to her side, with a window, and a doorway with a coaming for its door
     d0, d1 = WING_DOOR
-    aft = (19.50, 19.56)
+    aft = (BP.WING_AFT - 0.06, BP.WING_AFT)
+    w0, w1 = BP.WING_AFT_WINDOW                                                                   # the window in it
     def wall(x0, x1, h0, h1):
         a_, b_ = sorted((side * x0, side * x1))
         box('wing', a_, b_, aft[0], aft[1], h0, h1, HOUSE)
     wall(X_OUT, d0, 0.0, WING_HEAD)
     wall(d0, d1, 2.01, WING_HEAD)                                                                 # over the doorway
     wall(d0, d1, 0.0, 0.15)                                                                       # its coaming
-    wall(d1, 6.20, 0.0, WING_HEAD)
-    wall(6.20, 7.40, 0.0, WING_SILL)                                                              # under and over the window
-    wall(6.20, 7.40, HEAD, WING_HEAD)
-    wall(7.40, xo, 0.0, WING_HEAD)
-    _wing_pane(aft, *sorted((side * 6.20, side * 7.40)), WING_SILL, HEAD, 'x')
+    wall(d1, w0, 0.0, WING_HEAD)
+    wall(w0, w1, 0.0, WING_SILL)                                                                  # under and over the window
+    wall(w0, w1, HEAD, WING_HEAD)
+    wall(w1, xo, 0.0, WING_HEAD)
+    _wing_pane(aft, *sorted((side * w0, side * w1)), WING_SILL, HEAD, 'x')
 
     # ---- an angle bar round the head of the walls inside, under the roof: it closes the joint, through which the light
     # traced for the room showed as a bright line where wall and roof meet
