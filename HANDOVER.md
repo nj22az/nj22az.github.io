@@ -7,6 +7,20 @@
 - `8c7c847` **She becomes a ro-ro freight ferry of about 125 m**; Eyres and Bruce is the yard's permanent guide (AGENTS.md); the owner's drawings and the research are in `ferry/yard/reference/` (seven files: read `roro-freight-ships.md` and `owner-drawings-2026-11-12.md` before drawing her).
 - `2082d7c` the bar as a rail of icons; `51309d4` the homepage card.
 
+- `0777ecb` **Her mirror image in the sea, and plating that is steel** (it dishes between its stiffeners, seams, streaks); `3667056` the lap of the water against her hull.
+- `2ef37c0` **X-ray**: the lightning key ghosts her structure and draws every run of the register through it, coloured by supply, with a legend of metres (`ferry/README.md`, *X-ray*). `checks/bridge.cjs` now has 27 checks.
+- `a93fb56` **Her electrical installation drawn and proven** (the owner: "drawn in drawings in cad , with part lists , it needs to be a functional electrical installation"): `ferry/systems/prove.py` switches the register (79 consumers, 55 breakers opened once, seven conditions of lost sources) and writes `ferry/yard/calc/JS8-851-proof-of-supply.md`; `ferry/yard/drawings/electrical_drawing.py` draws JS8-851 (the one-line diagram), JS8-864 sheets 1 to 5 (each board with its door open, its connections and parts), JS8-856 (the cable schedule: 55 cables, 920 m) and the parts list. **The model's cabinets are not built from these sheets yet.**
+- Page checks on the work branch after the last of these: bridge 27, doors 17, zoom 14, offline 5 (stairs 50 and travel 5 last run on `2ef37c0`).
+
+*Four subagents were at work when this was written (01:50), none of their work checked by the coordinating session yet:*
+| Branch (worktree under `.claude/worktrees/`) | What | Its own record |
+|---|---|---|
+| `claude/chisum-revision-d` | The new ship: hull, decks, houses, steel, lighting builder; fittings' places in `spec.OUTFIT`; then funnels, helideck, rails, walkways | `ferry/yard/design/revision-D.md`, `revision-D-audit.md` |
+| `claude/chisum-wheelhouse` | The wheelhouse refit: materials, shapes, working parts | `ferry/yard/design/wheelhouse-refit.md` |
+| `claude/chisum-fittings` | A library of deck fittings (`ferry/blender/fittings.py`): lifeboat stations with working gravity davits, liferafts, windlass, winches, bitts, fairleads, lashing pots, ventilators, benches; tested on a demonstration quay | `ferry/yard/design/deck-fittings.md` |
+| (no branch: one file in the main checkout) | Her machinery's design basis, researched: real engines, gearboxes, pumps with real sizes, the arrangement, every system's connections, the load list | `ferry/yard/design/machinery-design-basis.md` |
+**To put them together:** merge `claude/chisum-revision-d` first (it changes the ship), then `claude/chisum-wheelhouse` (conflicts are likeliest in `wheelhouse.py` only if the hull session touched it, and in `look.js`/`app.js`, which the coordinating session changed after they branched at `02154d9`), then `claude/chisum-fittings`; write `ferry/blender/outfit.py` to read `spec.OUTFIT` and call `fittings.build` for each entry; run `make.sh` and the six page checks on the result; only then is any of it "built".
+
 *Known, honest.* Rooms without windows are dark until they have lamps (the hull subagent is to add a lighting builder). The present 68 m ship on the work branch is the old one: plain boxes. Nothing since `323354b` is published; **`7d13cb0` is the commit the owner was offered for "Publish now"**, and everything after it waits for the owner to have seen it. The session's own memory folder could not be written (it lives on the Development drive, which is not mounted): this file is the record.
 
 *For the morning.* Screenshots for the owner are in `/Users/nilsjohansson/Developer/chisum-screens/2026-11-12/` (and `/Users/nilsjohansson/Developer/chisum-screens/` holds the evening's seven). If a subagent has not finished, its worktree and branch hold its work as far as it got: finish it there or bring over what passes.
