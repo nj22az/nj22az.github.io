@@ -109,14 +109,22 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
    exactly where they began (a line cannot be simplified against a chord of no length); fixed, and the fun suite
    checks every cutout on four shapes of picture.
 3. **The whole interface in the playful style** ("Redraw the whole ui in the playful style, so it's fun to use the
-   app"), and the sliders' own look when Sliders is on. Nothing of it is in this release beyond the icons, the preset
-   row and the steppers. References studied: Sanrio (pills, 20–24 px cards, soft low shadows), YOHO Brewing
-   (thick-bordered pills, two colours), LINE (one clear action, 44 px targets), Nintendo (flat, calm).
-4. **A note on the four filter projects and a studio** (Filters4Processing, PhotoCraft, mIRO, XBImageFilters): studied;
-   almost nothing can be reused as code (licences), about twelve effects are worth writing ourselves (kaleidoscope,
-   fisheye, twirl, colour splash, tiny planet, prism fringe, solarize, melt, glass blocks, stained glass, Droste, ghost
-   trails), and a small studio (undo for everything, paint a Look on or off, a doodle layer). Not written up in the
-   repository yet and nothing of it built: the owner has not asked for it to be built.
+   app"): **a first pass only, on the branch, not published** (the foot of `camera-fun.css`): rounder tiles and cards,
+   a solid lower edge on the primary and pill buttons and the steppers that goes down under a finger, everything
+   pressable gives and springs back (not under reduced motion), and the sliders, when on, have a 10 px track and a
+   30 px ringed thumb. Colours and layout are untouched; ui 82/82, audit 59/59, theme, brand and screens pass with it.
+   **Still owed**: the rest of the redraw (the bars, the sheets, the album, the Game Room, the brand typeface on
+   controls, selected states), best done with the owner looking at screenshots: they have refused three drawings
+   this round before liking one, so show before going far. References studied: Sanrio (pills, 20–24 px cards, soft
+   low shadows), YOHO Brewing (thick-bordered pills, two colours), LINE (one clear action, 44 px targets), Nintendo
+   (flat, calm).
+4. **The four filter projects and a studio** (Filters4Processing, PhotoCraft, mIRO, XBImageFilters): the study is
+   [RESEARCH-FILTERS-STUDIO-2026-11-12.md](RESEARCH-FILTERS-STUDIO-2026-11-12.md). In short: almost nothing can be
+   reused as code (licences); about twelve effects are worth writing ourselves (kaleidoscope, fisheye, twirl, colour
+   splash, tiny planet, prism fringe, solarize, melt, glass blocks, stained glass, Droste, ghost trails); a small
+   studio would be undo for everything, painting a Look on or off, and a doodle layer. **Nothing of it is built**: the
+   owner asked whether it could be added ("Maybe we can add a studio function like photo craft and add those filters
+   too") and has not yet said to build it.
 5. **AI Comic Factory** and **obs-dlss5-nr** were looked at on the owner's links: neither can be part of a static,
    offline browser app (the first needs a model server, the second is a Windows plugin on NVIDIA's runtime).
 

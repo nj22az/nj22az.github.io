@@ -47,3 +47,34 @@
 .step-pips i.lit{background:var(--accent-fill)}
 .step-pips i.at{transform:scaleY(1.5)}
 .step-pips i.zero:not(.lit){background:var(--label-3)}
+
+/* ---------- The playful skin, a first pass (the owner, 12 November 2026: "Redraw the whole ui in the playful style, so
+   it's fun to use the app"). The colours stay the World's; what changes is shape, weight and movement: rounder
+   corners, a solid lower edge on the buttons that matter (it goes down under a finger), sliders and steppers you can
+   get hold of, and everything pressable gives a little and springs back. Nothing is added to look at. ---------- */
+
+/* What you press gives. */
+.tile .face,.sticker-choice,.frame-choice,.game-choice,.round,.layer,.look-groups button,.sticker-sets button,.memory-deck,.adjuster,.setting>i{transition:transform .24s var(--spring),background-color .2s,box-shadow .2s}
+.tile:active .face,.sticker-choice:active,.frame-choice:active,.game-choice:active,.round:active,.layer:active,.look-groups button:active,.sticker-sets button:active,.memory-deck:active,.adjuster:active,.setting:active>i{transform:scale(.92)}
+
+/* The buttons that matter stand on a solid edge, and go down when pressed. */
+.button.primary,.pill-button{box-shadow:0 3px 0 var(--toy-edge);transition:transform .14s ease-out,box-shadow .14s ease-out,background-color .2s}
+.button.primary:active,.pill-button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--toy-edge)}
+:root{--toy-edge:#0d5a41}
+.step-button{box-shadow:0 3px 0 var(--fill-strong)}
+.step-button:active{transform:translateY(2px) scale(.96);box-shadow:0 1px 0 var(--fill-strong)}
+
+/* Rounder. */
+.tile .face{border-radius:18px}.preset-tile .face{border-radius:16px}
+.sticker-choice{border-radius:18px}.game-choice{border-radius:24px}
+
+/* Sliders, when they are on: a track with some body and a thumb you can get hold of. */
+input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px}
+input[type=range]::-moz-range-track{height:10px;border-radius:5px}
+input[type=range]::-webkit-slider-thumb{width:30px;height:30px;margin-top:-10px;border:3px solid var(--accent-fill);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border:3px solid var(--accent-fill);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+
+@media(prefers-reduced-motion:reduce){
+ .tile .face,.sticker-choice,.frame-choice,.game-choice,.round,.layer,.look-groups button,.sticker-sets button,.memory-deck,.adjuster,.setting>i,.button.primary,.pill-button,.step-button{transition:none}
+ .tile:active .face,.sticker-choice:active,.frame-choice:active,.game-choice:active,.round:active,.layer:active,.look-groups button:active,.sticker-sets button:active,.memory-deck:active,.adjuster:active,.setting:active>i,.button.primary:active,.pill-button:active,.step-button:active{transform:none}
+}

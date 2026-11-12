@@ -1,6 +1,6 @@
 {
   "version": "20261112fun1",
-  "bytes": 46388745,
+  "bytes": 46391431,
   "files": [
     {
       "url": "/camera/album.js",
@@ -54,8 +54,8 @@
     },
     {
       "url": "/camera/camera-fun.css",
-      "sha256": "e510f8243c4f2aeceea37744a9c7b436927483747058a4f826bf0c5b06b2cd3b",
-      "bytes": 3930
+      "sha256": "d76a153bebf10c2031ad38d65ce166812f282da75ea2954c05252f639d56fe6e",
+      "bytes": 6616
     },
     {
       "url": "/camera/camera-refresh.css",
