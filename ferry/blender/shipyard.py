@@ -7,6 +7,7 @@ handed to Blender, which is Z-up: Blender's X is her length (forward), Y her bre
 Run inside Blender (bpy). The lines themselves (lines.py) need no Blender.
 """
 import math
+from math import pi
 import bpy
 from mathutils import Vector
 from mathutils.geometry import tessellate_polygon
@@ -86,6 +87,29 @@ LOOKS = {
     'Lit blue': dict(metalness=0.0, roughness=0.4, emissive='#1450ff', emissiveIntensity=0.9),
     'Lit red': dict(metalness=0.0, roughness=0.4, emissive='#ff2412', emissiveIntensity=0.9),
     'Lit green': dict(metalness=0.0, roughness=0.4, emissive='#3cf058', emissiveIntensity=0.7),
+    # The wheelhouse as refitted (12 November 2026; yard/design/wheelhouse-refit.md): a real bridge's materials, each its own.
+    # Gloss marine enamel on the consoles; matt black instrument fields and desk tops; hammer-finish and black anodised
+    # equipment cases; laminate linings and deckhead strips; a sheet vinyl deck, a little glossy; rubber (mats, window
+    # gaskets, cords); brushed stainless (rails, screws); light varnished wood (mullions, sills); leather and woven cloth;
+    # the glass over a dial; coffee; and lamps that are lit (a lit lamp is a lamp to the light that is traced through her).
+    'Marine enamel': dict(metalness=0.04, roughness=0.34),
+    'Matt black': dict(metalness=0.0, roughness=0.8),
+    'Hammer finish': dict(metalness=0.3, roughness=0.46),
+    'Black anodised': dict(metalness=0.55, roughness=0.42),
+    'Laminate': dict(metalness=0.0, roughness=0.4),
+    'Deckhead strip': dict(metalness=0.0, roughness=0.55),
+    'Vinyl deck': dict(metalness=0.0, roughness=0.3),
+    'Rubber': dict(metalness=0.0, roughness=0.93),
+    'Stainless': dict(metalness=0.95, roughness=0.27),
+    'Light wood': dict(metalness=0.0, roughness=0.3),
+    'Leather': dict(metalness=0.0, roughness=0.5),
+    'Cloth': dict(metalness=0.0, roughness=0.96),
+    'Dial glass': dict(metalness=0.0, roughness=0.03, transparent=True, opacity=0.1, depthWrite=False, clear=True),
+    'Blind film': dict(metalness=0.0, roughness=0.3, side='double', transparent=True, opacity=0.6, depthWrite=False, clear=True),
+    'Coffee': dict(metalness=0.0, roughness=0.06),
+    'Lit lamp': dict(metalness=0.0, roughness=0.4, emissive='#fff1dc', emissiveIntensity=2.4),
+    'Lit amber': dict(metalness=0.0, roughness=0.4, emissive='#ffb020', emissiveIntensity=0.9),
+    'Lit white': dict(metalness=0.0, roughness=0.4, emissive='#f4f6ff', emissiveIntensity=0.8),
 }
 # What each look's surface is: the page gives each kind its own grain, sheen and unevenness (ferry/look.js), so that paint,
 # deck coating, wood, metal, leather and laminate are told apart by more than their colour (JSY-STD-404, rule 11).
@@ -94,6 +118,9 @@ SURFACES = {
     'Vending enamel': 'paint', 'Antifouling': 'matt', 'Primer': 'primer', 'Primer plate': 'primer', 'Deck paint': 'deck', 'Floor plate': 'deck',
     'Bronze': 'metal', 'Shaft steel': 'metal', 'Zinc': 'metal', 'Chrome': 'metal', 'Drinks can': 'metal', 'Varnished wood': 'wood',
     'Upholstery': 'leather', 'Lining': 'laminate', 'Deck covering': 'vinyl', 'Plastic': 'plastic',
+    'Marine enamel': 'paint', 'Matt black': 'matt', 'Hammer finish': 'hammer', 'Black anodised': 'metal', 'Laminate': 'laminate',
+    'Deckhead strip': 'laminate', 'Vinyl deck': 'vinyl', 'Rubber': 'rubber', 'Stainless': 'metal', 'Light wood': 'wood', 'Leather': 'leather',
+    'Cloth': 'cloth',
 }
 _materials = {}
 
@@ -421,6 +448,86 @@ class Part:
                     sgn = (sx, sy, sz)
                     self.face((key(0, sx, sgn), key(1, sy, sgn), key(2, sz, sgn)), colour, smooth=True)
         self.orient(start, lambda q: q - mid)
+
+    def pillow(self, lo, hi, r, colour, segs=5):
+        """A box rounded all round by r: a cushion, a pad, a moulded case, a button's cap. Its flats are flat and its
+        rounds are lit smooth: every corner carries the direction of the ball it lies on. r is never more than half the
+        box's least measure."""
+        x0, y0, z0 = (min(a, b) for a, b in zip(lo, hi))
+        x1, y1, z1 = (max(a, b) for a, b in zip(lo, hi))
+        r = min(r, (x1 - x0) / 2, (y1 - y0) / 2, (z1 - z0) / 2)
+        if r < 0.0008:
+            return self.box((x0, y0, z0), (x1, y1, z1), colour)
+        c = Vector(((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2))
+        hx, hy, hz = (x1 - x0) / 2 - r, (y1 - y0) / 2 - r, (z1 - z0) / 2 - r
+        # a ball cut into eight and moved apart: rows of latitude in each half, columns of longitude in each quarter
+        lats = [(-pi / 2 + (pi / 2) * i / segs, -1) for i in range(segs + 1)] + [((pi / 2) * i / segs, 1) for i in range(segs + 1)]
+        lons = []
+        for q, (sx, sz) in enumerate(((1, 1), (-1, 1), (-1, -1), (1, -1))):
+            lons += [(q * pi / 2 + (pi / 2) * k / segs, sx, sz) for k in range(segs + 1)]
+        rows = []
+        for lat, sy in lats:
+            row = []
+            for lon, sx, sz in lons:
+                n = Vector((math.cos(lat) * math.cos(lon), math.sin(lat), math.cos(lat) * math.sin(lon)))
+                row.append(self.vert(tuple(c + Vector((sx * hx, sy * hy, sz * hz)) + n * r), tuple(n)))
+            rows.append(row)
+        start = len(self.f)
+        m = len(lons)
+        for i in range(len(rows) - 1):
+            for k in range(m):
+                j = (k + 1) % m
+                quad = (rows[i][k], rows[i][j], rows[i + 1][j], rows[i + 1][k])
+                if len({self.v[q] for q in quad}) >= 3:
+                    self.face(quad, colour, smooth=True)
+        for row, n in ((rows[0], (0.0, -1.0, 0.0)), (rows[-1], (0.0, 1.0, 0.0))):       # the two flats the poles opened into
+            corners = [row[0], row[segs + 1], row[2 * (segs + 1)], row[3 * (segs + 1)]]
+            self.face(tuple(self.vert(self.v[q], n) for q in corners), colour, smooth=True)
+        self.orient(start, lambda q: q - c)
+
+    def lathe(self, origin, axis, profile, colour, crease=40.0):
+        """A turned body: `profile` is a list of (distance along the axis, radius) from one end to the other. Round its axis
+        it is lit smooth; along the profile it is smooth where two lengths meet at less than `crease` degrees and sharp
+        where they meet at more (a knob's shoulder, a flange's edge). A radius of 0 closes an end."""
+        ax = Vector(axis).normalized()
+        e1 = ax.orthogonal().normalized()
+        e2 = ax.cross(e1)
+        o = Vector(origin)
+        n = round_sides(max(r for _, r in profile))
+        ring = [e1 * math.cos(2 * pi * k / n) + e2 * math.sin(2 * pi * k / n) for k in range(n)]
+        segs = [(a, b) for a, b in zip(profile, profile[1:]) if abs(a[0] - b[0]) + abs(a[1] - b[1]) > 1e-9]
+        # each length's own direction in the (along, out) plane, turned to look away from the axis
+        nrm = []
+        for (xa, ra), (xb, rb) in segs:
+            dx, dr = xb - xa, rb - ra
+            ln = math.hypot(dx, dr)
+            nrm.append((-dr / ln, dx / ln))
+        if profile[-1][0] < profile[0][0]:                       # a profile given from its far end back
+            nrm = [(-nx, -nr) for nx, nr in nrm]
+
+        def blend(i, j):
+            a, b = nrm[i], nrm[j]
+            if a[0] * b[0] + a[1] * b[1] < math.cos(math.radians(crease)):
+                return None
+            sx, sr = a[0] + b[0], a[1] + b[1]
+            ln = math.hypot(sx, sr) or 1.0
+            return (sx / ln, sr / ln)
+        start = len(self.f)
+        for i, ((xa, ra), (xb, rb)) in enumerate(segs):
+            na = (blend(i - 1, i) if i > 0 else None) or nrm[i]
+            nb = (blend(i, i + 1) if i + 1 < len(segs) else None) or nrm[i]
+            rows = []
+            for (x, r, nn) in ((xa, ra, na), (xb, rb, nb)):
+                rows.append([self.vert(tuple(o + ax * x + d * r), tuple((ax * nn[0] + d * nn[1]).normalized())) for d in ring])
+            for k in range(n):
+                j = (k + 1) % n
+                if ra < 1e-9:
+                    self.face((rows[0][k], rows[1][j], rows[1][k]), colour, smooth=True)
+                elif rb < 1e-9:
+                    self.face((rows[0][k], rows[0][j], rows[1][k]), colour, smooth=True)
+                else:
+                    self.face((rows[0][k], rows[0][j], rows[1][j], rows[1][k]), colour, smooth=True)
+        self.orient(start, None)
 
     def box(self, lo, hi, colour):
         x0, y0, z0 = lo

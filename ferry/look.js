@@ -119,6 +119,11 @@ export const SURFACES = {
   laminate: { grain: 0.0030, along: [1, 1, 1],    relief: 0.000012, sheen: 0.03, tone: 0.012, patch: 1.20, patchTone: 0.020 },
   vinyl:    { grain: 0.0018, along: [1, 1, 1],    relief: 0.000030, sheen: 0.05, tone: 0.060, patch: 0.90, patchTone: 0.040 },
   plastic:  { grain: 0.0012, along: [1, 1, 1],    relief: 0.000008, sheen: 0.03, tone: 0.010, patch: 0.50, patchTone: 0.015 },
+  // The wheelhouse's refit (12 November 2026): rubber (mats, gaskets, cords: a fine dull grain), woven cloth (a weave that
+  // runs two ways), and hammer-finish enamel (the dimpled paint of equipment cases).
+  rubber:   { grain: 0.0016, along: [1, 1, 1],    relief: 0.000050, sheen: 0.03, tone: 0.060, patch: 0.40, patchTone: 0.050 },
+  cloth:    { grain: 0.0014, along: [1, 0.35, 1], relief: 0.000110, sheen: 0.02, tone: 0.110, patch: 0.35, patchTone: 0.060 },
+  hammer:   { grain: 0.0050, along: [1, 1, 1],    relief: 0.000220, sheen: 0.14, tone: 0.050, patch: 0.60, patchTone: 0.030 },
 };
 
 const f = v => (Number.isInteger(v) ? v.toFixed(1) : String(v));

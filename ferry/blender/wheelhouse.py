@@ -52,22 +52,36 @@ X_IN, X_OUT = 2.92, 3.00              # the house side, inside and out
 AFT, FRONT_IN, FRONT_OUT = 19.545, 22.92, 23.00
 CORNER = 22.82                        # where the side wall's last window ends and the forward corner begins
 
-HOUSE, LINING, CEILING = srgb(0xeeeae0), srgb(0xe3dfd2), srgb(0xecebe4)
-GREEN, CREAM, DARK, BRASS, WOOD = srgb(0x52796f), srgb(0xd8d2c0), srgb(0x252e30), srgb(S.BRONZE), srgb(0x765032)
-STAND, LEATHER, STEEL = srgb(0x5c6466), srgb(0x3b3430), srgb(S.STEEL)
-FRAME, DOOR, SILLC = srgb(0x3a4244), srgb(0x5d6b6a), srgb(0x6b7472)
+# Her colours as refitted (12 November 2026, yard/design/wheelhouse-refit.md): a real bridge's, not the site's teal and cream.
+# The owner's two photographs of a ferry's wheelhouse (reference F3, F4) are the pattern: consoles in a strong marine blue
+# with dark instrument fields, off-white linings over a dark skirting, a blue vinyl deck, the windows between light
+# varnished wood with the glass in black rubber, stainless rails, black leather. What is the classic ship's own stays: the
+# mahogany wheel and chart table, brass where there is brass.
+HOUSE, LINING, CEILING = srgb(0xeeeae0), srgb(0xe8e6dd), srgb(0xefeee8)
+BLUEC, DESK, ANOD, CASE = srgb(0x2c517c), srgb(0x24282b), srgb(0x17191b), srgb(0x7a8387)     # console enamel, desk tops, black cases, hammer grey
+WOODL, SKIRT, RUBBER, JOINERY = srgb(0xc49a5e), srgb(0x2c3a4a), srgb(0x141516), srgb(0xeae8e0)  # light wood, skirting, rubber, white joinery
+GREEN, CREAM, DARK, BRASS, WOOD = BLUEC, DESK, srgb(0x1b1e20), srgb(S.BRONZE), srgb(0x6b4429)
+STAND, LEATHER, STEEL = srgb(0x6f787c), srgb(0x1d1d1f), srgb(S.STEEL)
+FRAME, DOOR, SILLC = srgb(0x596168), srgb(0xdddcd4), srgb(0x6b7472)
 RED, GREENLENS, WHITE_LAMP, BLUE = srgb(0xc2412f), srgb(0x2f9e5a), srgb(0xf6f1e2), srgb(0x4a6a8a)
 GREY, BLACK, WHITE = srgb(0x7d8586), srgb(0x1a1f20), srgb(0xf2f0e8)
-VINYL, MAT, WINGDECK, BOARD, ORANGE, YELLOW = srgb(0x6b6a60), srgb(0x26282a), srgb(0x6f7d6c), srgb(0x9aa3a2), srgb(0xe8742a), srgb(0xe4d83c)
+STAINLESS = srgb(0xc6ccce)
+VINYL, MAT, WINGDECK, BOARD, ORANGE, YELLOW = srgb(0x4a6c96), srgb(0x1e2124), srgb(0x6f7d6c), srgb(0x9aa3a2), srgb(0xe8742a), srgb(0xe4d83c)
 GLASS = srgb(0x2d4a55)
 
 PARTS = dict(
-    plating=('Wheelhouse, plating', 'Topside paint'), lining=('Wheelhouse, linings', 'Lining'), frame=('Wheelhouse, window frames', 'Console paint'),
-    glass=('Wheelhouse, window glass', 'Window glass'), floor=('Wheelhouse, deck covering', 'Deck covering'), seam=('Wheelhouse, panel seams', 'Marking'),
-    console=('Wheelhouse, console', 'Console paint'), dark=('Wheelhouse, instruments', 'Machinery paint'), plastic=('Wheelhouse, plastics', 'Plastic'),
-    steel=('Wheelhouse, steel', 'Shaft steel'), brass=('Wheelhouse, brass', 'Bronze'), wood=('Wheelhouse, wood', 'Varnished wood'),
-    seat=('Wheelhouse, upholstery', 'Upholstery'), lens=('Wheelhouse, lamps and lenses', 'Lens'), screen=('Wheelhouse, screens', 'Screen picture'),
+    plating=('Wheelhouse, plating', 'Topside paint'), lining=('Wheelhouse, linings', 'Laminate'), frame=('Wheelhouse, window frames', 'Console paint'),
+    glass=('Wheelhouse, window glass', 'Window glass'), floor=('Wheelhouse, deck covering', 'Vinyl deck'), seam=('Wheelhouse, panel seams', 'Marking'),
+    console=('Wheelhouse, console', 'Marine enamel'), dark=('Wheelhouse, instruments', 'Matt black'), plastic=('Wheelhouse, plastics', 'Plastic'),
+    steel=('Wheelhouse, steel', 'Stainless'), brass=('Wheelhouse, brass', 'Bronze'), wood=('Wheelhouse, wood', 'Varnished wood'),
+    seat=('Wheelhouse, upholstery', 'Leather'), lens=('Wheelhouse, lamps and lenses', 'Lens'), screen=('Wheelhouse, screens', 'Screen picture'),
     face=('Wheelhouse, panel faces', 'Panel face'), paint=('Wheelhouse, painted fittings', 'Deck paint'), wing=('Wheelhouse, wing plating', 'Topside paint'),
+    # the refit's own: desk tops, hammer-finish cases, black anodised cases, rubber, light wood, the deckhead's strips, the
+    # skirting, the wings' painted deck, lit lamps
+    desk=('Wheelhouse, desk tops', 'Matt black'), case=('Wheelhouse, equipment cases', 'Hammer finish'), anod=('Wheelhouse, black cases', 'Black anodised'),
+    rubber=('Wheelhouse, rubber', 'Rubber'), lwood=('Wheelhouse, light wood', 'Light wood'), strip=('Wheelhouse, strips', 'Deckhead strip'),
+    skirt=('Wheelhouse, skirting', 'Vinyl deck'), wingdeck=('Wheelhouse, wing deck', 'Deck paint'), lit=('Wheelhouse, lit lamps', 'Lit lamp'),
+    cloth=('Wheelhouse, cloth', 'Cloth'),
     top=('Compass deck, bridge fittings', 'Topside paint', 'top'), top_dark=('Compass deck, bridge fittings, dark', 'Machinery paint', 'top'),
     top_lens=('Compass deck, bridge fittings, lenses', 'Lens', 'top'), top_steel=('Compass deck, bridge fittings, steel', 'Shaft steel', 'top'),
 )
@@ -105,7 +119,7 @@ def fwd(h):
 
 # What the house itself is made of is plate with square edges; everything fitted in it is a made thing, whose edges are
 # chamfered and catch the light (JSY-STD-404, rule 2).
-PLATE_KEYS = {'plating', 'lining', 'glass', 'floor', 'seam', 'wing'}
+PLATE_KEYS = {'plating', 'lining', 'glass', 'floor', 'seam', 'wing', 'wingdeck'}
 
 
 def box(key, x0, x1, yd0, yd1, h0, h1, colour, r=0.003):
@@ -301,24 +315,72 @@ def _raked(key, x0, x1, t0, t1, h0, h1, colour):
     prism(key, x0, x1, prof, colour)
 
 
+AFT_FACE = 19.550                       # the face of the after wall's lining panels (the ship's own lining stands at 19.54: steel.py)
+
+
 def _side_window(side, yd0, yd1, h0, h1):
-    xa, xb = side * 2.94, side * 2.99
+    """A side window: the glass in black rubber; outside it a painted steel frame standing a little proud of the plating;
+    inside a casing of light varnished wood, proud of the lining, and under it a wooden sill board."""
     t = FRAME_T
-    box('frame', xa, xb, yd0, yd1, h0, h0 + t, FRAME)
-    box('frame', xa, xb, yd0, yd1, h1 - t, h1, FRAME)
-    for a, b in ((yd0, yd0 + t), (yd1 - t, yd1)):
-        box('frame', xa, xb, a, b, h0 + t, h1 - t, FRAME)
+    bars = [(yd0, yd1, h0, h0 + t, 'low'), (yd0, yd1, h1 - t, h1, 'high'), (yd0, yd0 + t, h0 + t, h1 - t, 'aft'), (yd1 - t, yd1, h0 + t, h1 - t, 'fore')]
+    for a, b, c, e, where in bars:
+        # the part of the bar's breadth that is wood and steel (toward the wall) and the part that is rubber (toward the glass)
+        if where in ('low', 'high'):
+            wood = (a, b, c, c + 0.034) if where == 'low' else (a, b, e - 0.034, e)
+            rub = (a + 0.034, b - 0.034, c + 0.034, e) if where == 'low' else (a + 0.034, b - 0.034, c, e - 0.034)
+        else:
+            wood = (a, a + 0.034, c, e) if where == 'aft' else (b - 0.034, b, c, e)
+            rub = (a + 0.034, b, c, e) if where == 'aft' else (a, b - 0.034, c, e)
+        box('lwood', side * 2.908, side * 2.952, wood[0], wood[1], wood[2], wood[3], WOODL, r=0.004)
+        box('plating', side * 2.952, side * 3.008, wood[0], wood[1], wood[2], wood[3], tint(HOUSE, 0.97))
+        box('rubber', side * 2.950, side * 2.980, rub[0], rub[1], rub[2], rub[3], RUBBER, r=0.004)
     x = side * 2.965
-    part('glass').polygon([P(x, yd0 + t, h0 + t), P(x, yd1 - t, h0 + t), P(x, yd1 - t, h1 - t), P(x, yd0 + t, h1 - t)], GLASS)
+    part('glass').polygon([P(x, yd0 + t - 0.006, h0 + t - 0.006), P(x, yd1 - t + 0.006, h0 + t - 0.006), P(x, yd1 - t + 0.006, h1 - t + 0.006), P(x, yd0 + t - 0.006, h1 - t + 0.006)], GLASS)
+    box('lwood', side * 2.862, side * 2.921, yd0 - 0.012, yd1 + 0.012, h0 - 0.030, h0, WOODL, r=0.006)             # the sill board
+
+
+def _skirting(a, b, wall, inward, along='x'):
+    """The vinyl of the deck turned up the wall as a coved skirting, 0.10 m high, between a and b along a wall: `wall` is
+    where the lining's face stands, `inward` the way into the room (+1 or -1) across it."""
+    arc = [(0.045 - 0.039 * cos(radians(q)), 0.051 - 0.039 * sin(radians(q))) for q in (90, 72, 54, 36, 18, 0)]
+    prof = [(0.0, 0.012), (0.045, 0.012)] + arc + [(0.006, 0.100), (0.0, 0.100)]
+    p = part('skirt')
+    start = len(p.f)
+    if along == 'x':
+        ring = lambda x: [P(x, wall + inward * d, h) for d, h in prof]
+    else:
+        ring = lambda yd: [P(wall + inward * d, yd, h) for d, h in prof]
+    p.grid([ring(a), ring(b)], SKIRT, close=True)
+    for q in (a, b):
+        p.polygon(ring(q), SKIRT)
+    mid = Vector([sum(c) / len(c) for c in zip(*(ring(a) + ring(b)))])
+    p.orient(start, lambda c: c - mid)
+
+
+def _joint(a, b, normal, width=0.003):
+    """A joint between two lining panels: a dark line from a to b on a face that looks along `normal`."""
+    p = part('seam')
+    A, B, n = Vector(P(*a)), Vector(P(*b)), Vector(normal)
+    side = (B - A).cross(n).normalized() * (width / 2)
+    start = len(p.f)
+    p.polygon([tuple(A - side + n * 0.0008), tuple(B - side + n * 0.0008), tuple(B + side + n * 0.0008), tuple(A + side + n * 0.0008)], tint(LINING, 0.62))
+    p.orient(start, tuple(n))
 
 
 def envelope():
-    # ---- the aft wall above the other ship's, which ends at the old deckhead: plating outside (the riser of the step in
+    # ---- the aft wall above the ship's own, which ends at the old deckhead: plating outside (the riser of the step in
     # the roof, where the lower house top meets it), lining inside up to the deckhead
     # (below 2.20 m the other ship's side walls stand at its ends: it stops 3 mm inside their faces, not in them)
     box('plating', -X_OUT + 0.003, X_OUT - 0.003, AFT - 0.05, AFT - 0.025, OLD_HEAD, 2.20, HOUSE)
     box('plating', -X_OUT, X_OUT, AFT - 0.05, AFT - 0.025, 2.20, HEAD_ROOM, HOUSE)
-    box('lining', -X_IN, X_IN, AFT - 0.025, AFT, OLD_HEAD, HEAD_ROOM, LINING)
+    box('lining', -X_IN, X_IN, AFT - 0.025, AFT_FACE, OLD_HEAD, HEAD_ROOM, LINING)
+    # Below it the wall is the ship's (steel.py), lined in her own cream. The refit lays the bridge's laminate over that
+    # lining, 10 mm thick (its face stands 10 mm before the ship's: JSY-STD-403, rule 5), round the corridor's doorway and
+    # the crew stair's opening.
+    for x0, x1, h0, h1 in ((0.40, X_IN, 0.012, OLD_HEAD), (-0.40, 0.40, 1.92, OLD_HEAD), (-2.12, -0.40, 0.012, OLD_HEAD), (-X_IN, -2.12, 1.50, OLD_HEAD)):
+        box('lining', x0, x1, 19.54, AFT_FACE, h0, h1, LINING)
+    for x in (-1.80, -1.20, -0.60, 0.60, 1.20, 1.80, 2.40):
+        _joint((x, AFT_FACE, 0.11), (x, AFT_FACE, CEIL), FWD)
     # ---- the two sides
     for side, openings in SIDES.items():
         at = AFT
@@ -336,58 +398,91 @@ def envelope():
         prism('plating', side * (X_IN + 0.04), side * X_OUT, cheek, HOUSE)
         prism('lining', side * X_IN, side * (X_IN + 0.04), cheek, LINING)
         box('plating', side * X_IN, side * X_OUT, CORNER, 23.10, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)
+        # the mullion between the two forward side windows, and the post between the door and the window forward of it,
+        # faced in the casings' wood; the panel joints below the sills
+        for a, b in ((22.10, 22.15), (21.25, 21.30)):
+            box('lwood', side * 2.908, side * 2.921, a, b, 0.97, 2.05, WOODL, r=0.0)
+        for yd in (19.60, 21.275, 21.70, 22.125, 22.55):
+            _joint((side * X_IN, yd, 0.11), (side * X_IN, yd, 0.94 if yd > 21.26 else 1.07), (-side, 0, 0))
+        # the skirting: from the after wall to the door, and from the door to the front (to starboard the crew stair's well
+        # takes the after corner)
+        _skirting(AFT_FACE if side > 0 else 20.16, 20.45, side * X_IN, -side, along='yard')
+        _skirting(21.25, FRONT_IN, side * X_IN, -side, along='yard')
+    _skirting(-X_IN, X_IN, FRONT_IN, -1)
+    _skirting(0.40, X_IN, AFT_FACE, 1)
+    _skirting(-2.07, -0.40, AFT_FACE, 1)
     # ---- the front: plating below the sill, then posts, mullions, frames and glass raked forward, then the head
     box('plating', -X_IN, X_IN, FRONT_IN + 0.04, FRONT_OUT, 0.0, SILL, HOUSE)
     box('lining', -X_IN, X_IN, FRONT_IN, FRONT_IN + 0.04, 0.0, SILL, LINING)
     posts = [(-X_IN, PANES[0][0])] + [(a[1], b[0]) for a, b in zip(PANES, PANES[1:])] + [(PANES[-1][1], X_IN)]
+    w = 0.031                                                   # how far a mullion's wood (and the frame's steel) reaches into the opening; then rubber
     for x0, x1 in posts:
         _raked('plating', x0, x1, 0.5, 1.0, SILL, HEAD, HOUSE)
-        _raked('lining', x0, x1, 0.0, 0.5, SILL, HEAD, LINING)
+        # the inner half of every post and mullion is light varnished wood, and stands 12 mm proud of the lining below it
+        _raked('lwood', max(x0 - w, -X_IN), min(x1 + w, X_IN), -0.15, 0.5, SILL, HEAD, WOODL)
+        _joint(((x0 + x1) / 2, FRONT_IN, 0.11), ((x0 + x1) / 2, FRONT_IN, SILL - 0.04), AFTWARD)
     head = [(FRONT_IN + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD_ROOM - 0.05), (FRONT_IN + fwd(HEAD), HEAD_ROOM - 0.05)]
     prism('plating', -X_IN, X_IN, [(y + 0.04 if i in (0, 3) else y, h) for i, (y, h) in enumerate(head)], HOUSE)
     prism('lining', -X_IN, X_IN, [(y if i in (0, 3) else y - 0.04, h) for i, (y, h) in enumerate(head)], LINING)
     t = 0.045
     for x0, x1 in PANES:
-        _raked('frame', x0, x1, 0.25, 0.85, SILL, SILL + t, FRAME)
-        _raked('frame', x0, x1, 0.25, 0.85, HEAD - t, HEAD, FRAME)
-        for a, b in ((x0, x0 + t), (x1 - t, x1)):
-            _raked('frame', a, b, 0.25, 0.85, SILL + t, HEAD - t, FRAME)
+        # the wooden rails under and over the glass, between the mullions; the steel frame outside; the rubber the glass sits in
+        _raked('lwood', x0 + w, x1 - w, -0.15, 0.5, SILL, SILL + w, WOODL)
+        _raked('lwood', x0 + w, x1 - w, -0.15, 0.5, HEAD - w, HEAD, WOODL)
+        _raked('plating', x0, x1, 0.62, 1.10, SILL, SILL + w + 0.002, tint(HOUSE, 0.97))
+        _raked('plating', x0, x1, 0.62, 1.10, HEAD - w - 0.002, HEAD, tint(HOUSE, 0.97))
+        for a, b in ((x0, x0 + w + 0.002), (x1 - w - 0.002, x1)):
+            _raked('plating', a, b, 0.62, 1.10, SILL + w + 0.002, HEAD - w - 0.002, tint(HOUSE, 0.97))
+        _raked('rubber', x0 + w - 0.002, x1 - w + 0.002, 0.42, 0.70, SILL + w - 0.002, SILL + t, RUBBER)
+        _raked('rubber', x0 + w - 0.002, x1 - w + 0.002, 0.42, 0.70, HEAD - t, HEAD - w + 0.002, RUBBER)
+        for a, b in ((x0 + w - 0.002, x0 + t), (x1 - t, x1 - w + 0.002)):
+            _raked('rubber', a, b, 0.42, 0.70, SILL + t, HEAD - t, RUBBER)
         yg = lambda h: FRONT_IN + 0.045 + fwd(h)
-        part('glass').polygon([P(x0 + t, yg(SILL + t), SILL + t), P(x1 - t, yg(SILL + t), SILL + t), P(x1 - t, yg(HEAD - t), HEAD - t), P(x0 + t, yg(HEAD - t), HEAD - t)], GLASS)
+        g = 0.006                                               # the glass goes this far into its rubber
+        part('glass').polygon([P(x0 + t - g, yg(SILL + t - g), SILL + t - g), P(x1 - t + g, yg(SILL + t - g), SILL + t - g),
+                               P(x1 - t + g, yg(HEAD - t + g), HEAD - t + g), P(x0 + t - g, yg(HEAD - t + g), HEAD - t + g)], GLASS)
+    # the sill board along the front, under the wooden rails: light wood, 60 mm into the room
+    box('lwood', -X_IN, X_IN, FRONT_IN - 0.060, FRONT_IN + 0.001, SILL - 0.032, SILL, WOODL, r=0.006)
     # the visor: the roof's eave carried forward over the glass
     box('plating', -3.08, 3.08, 23.09, 23.46, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)
     prism('plating', -3.08, 3.08, [(23.40, HEAD_ROOM - 0.05), (23.46, HEAD_ROOM - 0.05), (23.46, HEAD_ROOM - 0.11), (23.44, HEAD_ROOM - 0.11)], tint(HOUSE, 0.94))
 
 
+STRIP, STRIP_GAP = 0.185, 0.015         # the deckhead's strips: their breadth fore and aft, and the shadow gap between two
+
+
 def ceiling():
-    """The deckhead: lining panels 2.30 m over the deck, their seams every 0.6 m. Between them and the roof's structure is
-    the void the cable trays lie in."""
-    box('lining', -X_IN, X_IN, AFT, FRONT_IN + fwd(HEAD), CEIL, CEIL + LINING_T, CEILING)
-    p = part('seam')
-    ink = tint(CEILING, 0.72)
-    start = len(p.f)
-    y = CEIL - 0.0008
-    for k in range(-4, 5):
-        x = k * 0.6
-        p.polygon([P(x - 0.004, AFT, y), P(x + 0.004, AFT, y), P(x + 0.004, 23.05, y), P(x - 0.004, 23.05, y)], ink)
-    for k in range(6):
-        yd = 19.8 + k * 0.6
-        p.polygon([P(-X_IN, yd - 0.004, y), P(X_IN, yd - 0.004, y), P(X_IN, yd + 0.004, y), P(-X_IN, yd + 0.004, y)], ink)
-    p.orient(start, (0, -1, 0))
+    """The deckhead: long narrow strips of off-white panel running athwartships, 2.30 m over the deck, a shadow gap between
+    each two; over them a dark backing, and over that the void the cable trays lie in. (It was one slab with seams painted
+    on it.)"""
+    end = FRONT_IN + fwd(HEAD)
+    box('lining', -X_IN, X_IN, AFT, end, CEIL + 0.012, CEIL + LINING_T, srgb(0x2a2c2e))
+    yd = AFT_FACE
+    while yd < end - 0.02:
+        box('strip', -X_IN, X_IN, yd, min(yd + STRIP, end), CEIL, CEIL + 0.012, CEILING, r=0.004)
+        yd += STRIP + STRIP_GAP
 
 
 def floor():
+    """The deck covering: blue sheet vinyl, its sheets welded along two seams; rubber mats where one stands to conn her."""
     box('floor', -2.12, X_IN, AFT, FRONT_IN, 0.0, 0.012, VINYL)
     box('floor', -X_IN, -2.12, 20.15, FRONT_IN, 0.0, 0.012, VINYL)
-    box('floor', -0.55, 0.55, 20.55, 21.40, 0.012, 0.02, MAT)                 # the mat at the helm
-    for k in range(11):
-        box('floor', -0.53, 0.53, 20.59 + k * 0.075, 20.62 + k * 0.075, 0.02, 0.024, tint(MAT, 1.5))
+    p = part('seam')
+    start = len(p.f)
+    for x in (-1.0, 1.0):                                                     # the welds between the sheets
+        p.polygon([P(x - 0.002, AFT + 0.05, 0.0128), P(x + 0.002, AFT + 0.05, 0.0128), P(x + 0.002, FRONT_IN - 0.05, 0.0128), P(x - 0.002, FRONT_IN - 0.05, 0.0128)], tint(VINYL, 0.8))
+    p.orient(start, UP)
+    for x0, x1, a, b in ((-0.55, 0.55, 20.55, 21.40), (0.62, 1.48, 21.82, 22.24), (-1.48, -0.62, 21.82, 22.24)):
+        box('rubber', x0, x1, a, b, 0.012, 0.020, MAT, r=0.003)
+        n = int((b - a - 0.06) / 0.035)
+        for k in range(n):                                                    # the mat's ribs, athwartships
+            box('rubber', x0 + 0.02, x1 - 0.02, a + 0.03 + k * 0.035, a + 0.048 + k * 0.035, 0.020, 0.0235, tint(MAT, 1.25), r=0.0012)
     box('console', -0.05, 0.05, 21.98, 22.30, 0.012, 0.03, FRAME)             # the floor trunk from the console to the stand
 
 
 def wing(g):
     side = g['side']
-    box('floor', side * X_OUT, side * W, 19.50, 22.94, 0.0, 0.012, WINGDECK)
+    box('wingdeck', side * X_OUT, side * W, 19.50, 22.94, 0.0, 0.012, WINGDECK)
     box('wing', side * W, side * (W + 0.06), 19.50, FRONT_OUT, 0.0, 1.10, HOUSE)                     # the bulwark outboard
     box('wing', side * X_OUT, side * W, 22.94, FRONT_OUT, 0.0, 1.10, HOUSE)                    # and across the forward end
     for yd in (20.1, 20.7, 21.3, 21.9, 22.5):                                                     # its stays
@@ -446,7 +541,7 @@ def door_corridor(g, tag):
     leaf = Part('Wheelhouse, corridor door', 'Lining', mover=mover)
     fit = Part('Wheelhouse, corridor door hardware', 'Shaft steel', mover=mover)
     glass = Part('Wheelhouse, corridor door glass', 'Window glass', mover=mover)
-    cream = srgb(0xd9d2bf)
+    cream = JOINERY
     box(leaf, -0.355, 0.355, 19.50, 19.54, 0.02, 1.40, cream)
     box(leaf, -0.355, 0.355, 19.50, 19.54, 1.66, 1.875, cream)
     box(leaf, -0.355, -0.13, 19.50, 19.54, 1.40, 1.66, cream)
@@ -471,7 +566,7 @@ def door_corridor(g, tag):
 def console(g, tag, *where):
     box('console', -2.70, 2.70, 22.34, 22.92, 0.012, 0.08, FRAME)
     box('console', -2.75, 2.75, 22.30, 22.92, 0.08, 0.97, GREEN)
-    box('console', -2.76, 2.76, 22.29, 22.92, 0.97, 1.00, CREAM)
+    box('desk', -2.76, 2.76, 22.29, 22.92, 0.97, 1.00, DESK)
     # five bays, two doors each, with a pull; a ventilation grille low in each
     for x0, x1 in ((1.45, 2.75), (0.62, 1.45), (-0.38, 0.62), (-1.45, -0.38), (-2.75, -1.45)):
         w = (x1 - x0) / 2
@@ -484,7 +579,7 @@ def console(g, tag, *where):
         for k in range(4):
             box('dark', x0 + 0.10, x1 - 0.10, 22.296, 22.301, 0.10 + k * 0.012, 0.106 + k * 0.012, BLACK)
     # a grab rail along the after edge, on stand-offs, and a foot rail
-    tube('steel', (-2.65, 22.25, 1.02), (2.65, 22.25, 1.02), 0.014, srgb(0xc9cfcf), 10)
+    tube('steel', (-2.65, 22.25, 1.02), (2.65, 22.25, 1.02), 0.014, STAINLESS, 10)
     for x in (-2.6, -1.3, 0.0, 1.3, 2.6):
         tube('steel', (x, 22.25, 1.02), (x, 22.30, 0.985), 0.008, GREY, 6)
     tube('steel', (-2.6, 22.22, 0.20), (2.6, 22.22, 0.20), 0.016, GREY, 10)
@@ -493,9 +588,9 @@ def console(g, tag, *where):
 
 
 def stand(g, tag, *where):
-    box('console', -0.32, 0.32, 21.48, 22.02, 0.012, 0.10, STAND)
-    box('console', -0.28, 0.28, 21.52, 21.98, 0.10, 0.95, STAND)
-    box('console', -0.31, 0.31, 21.49, 22.01, 0.95, 0.98, tint(STAND, 0.55))
+    box('case', -0.32, 0.32, 21.48, 22.02, 0.012, 0.10, STAND)
+    box('case', -0.28, 0.28, 21.52, 21.98, 0.10, 0.95, STAND)
+    box('desk', -0.31, 0.31, 21.49, 22.01, 0.95, 0.98, DESK)
     # The wheel is one moving part on its shaft: it turns with the rudder order, four degrees for one of rudder, and its
     # king spoke (the one with the brass cap) stands upright when the rudders are amidships.
     c = (0.0, 21.42, 1.05)
@@ -507,8 +602,8 @@ def stand(g, tag, *where):
     # wheel and runs through a flanged bearing into the unit, where it turns the two transmitters (one for each control
     # system) and, through a reduction, the pointer under the glass on the unit's lid, which shows the rudder ordered.
     hx, ha, hb, h0, h1 = 0.11, 21.50, 21.63, 0.98, 1.135
-    box('console', -hx, hx, ha, hb, h0, h1 - 0.012, STAND)
-    box('console', -hx + 0.008, hx - 0.008, ha + 0.008, hb - 0.008, h1 - 0.012, h1, tint(STAND, 0.55))               # its lid
+    box('case', -hx, hx, ha, hb, h0, h1 - 0.012, STAND)
+    box('desk', -hx + 0.008, hx - 0.008, ha + 0.008, hb - 0.008, h1 - 0.012, h1, DESK)               # its lid
     for x in (-hx + 0.02, hx - 0.02):                                                                               # held down to the stand
         for yd in (ha + 0.02, hb - 0.02):
             tube('steel', (x, yd, h1), (x, yd, h1 + 0.004), 0.006, GREY, 8)
@@ -704,7 +799,7 @@ def phone(g, tag, x, yard, h):
 
 def sp_phone(g, tag, x, yard, h):
     """The sound-powered telephone: a grey box with its handset on top and a calling crank at its side."""
-    box('console', x - 0.08, x + 0.08, yard - 0.10, yard + 0.12, h, h + 0.10, srgb(0x8d9796))
+    box('case', x - 0.08, x + 0.08, yard - 0.10, yard + 0.12, h, h + 0.10, CASE)
     handset(x, yard - 0.09, h + 0.10)
     tube('steel', (x - 0.08, yard, h + 0.05), (x - 0.11, yard, h + 0.05), 0.008, GREY, 8)
     tube('steel', (x - 0.11, yard, h + 0.05), (x - 0.11, yard + 0.04, h + 0.05), 0.005, GREY, 6)
@@ -721,7 +816,7 @@ def navtex(g, tag, x, yard, h):
 def hidden(g, tag, x, yard, h):
     """A unit inside the console or the stand: a plain case with a connector strip."""
     w, d, H = g['size']
-    box('console', x - w / 2, x + w / 2, yard - d / 2, yard + d / 2, h, h + H, srgb(0x8a9392))
+    box('case', x - w / 2, x + w / 2, yard - d / 2, yard + d / 2, h, h + H, CASE)
     box('dark', x - w / 2 + 0.02, x + w / 2 - 0.02, yard - d / 2 - 0.004, yard - d / 2, h + H * 0.25, h + H * 0.55, BLACK)
 
 
@@ -780,7 +875,7 @@ def wallbox(g, tag, x, yard, h):
     """A box on the aft wall with its picture on the front: a panel, a board with a door, a locker of pigeonholes."""
     w, H, d = g['w'], g['H'], g['d']
     col = srgb(g['colour'])
-    box('console', x - w / 2, x + w / 2, yard + 0.001, yard + d, h, h + H, col)
+    box('case' if not g.get('open') else 'wood', x - w / 2, x + w / 2, yard + 0.001, yard + d, h, h + H, col)
     inset = 0.0 if g.get('open') else 0.006
     pic((x, yard + d, h + H / 2), FWD, UP, w - 2 * inset - 0.004, H - 2 * inset - 0.004, g['tile'])
     if g.get('handle'):
@@ -798,7 +893,7 @@ def dial(g, tag, x, yard, h):
 
 
 def callpoint(g, tag, x, yard, h):
-    box('console', x - 0.05, x + 0.05, yard + 0.001, yard + 0.04, h - 0.05, h + 0.05, srgb(g['colour']))
+    box('case', x - 0.05, x + 0.05, yard + 0.001, yard + 0.04, h - 0.05, h + 0.05, srgb(g['colour']))
     pic((x, yard + 0.04, h), FWD, UP, 0.088, 0.088, g['tile'])
 
 
@@ -850,7 +945,7 @@ def log_desk(g, tag, x, yard, h):
 
 def locker(g, tag, x, yard, h):
     w, d, H = g['w'], g['d'], g['H']
-    cream = srgb(0xd8d2c0)
+    cream = JOINERY
     box('console', x - w / 2, x + w / 2, yard + 0.001, yard + d, 0.012, 0.08, FRAME)
     box('console', x - w / 2, x + w / 2, yard + 0.001, yard + d, 0.08, H, cream)
     box('console', x - w / 2 - 0.01, x + w / 2 + 0.01, yard + 0.001, yard + d + 0.01, H, H + 0.025, tint(WOOD, 1.0))
@@ -926,7 +1021,7 @@ def stairwell(g, tag, x, yard, h):
     were walked, checks/stairs.cjs). The gate hangs on the outboard post and opens forward, away from the well.
     """
     x = -2.07
-    rail = srgb(0xc9cfcf)
+    rail = STAINLESS
     for yd in (19.60, 20.15):
         tube('steel', (x, yd, 0.012), (x, yd, 1.0), 0.016, rail, 8)
     for hh in (0.5, 1.0):
@@ -964,7 +1059,7 @@ def ceil(g, tag, x, yard, h):
     if kind == 'light':
         w, l = g['w'], g['l']
         box('paint', x - w / 2, x + w / 2, yard - l / 2, yard + l / 2, CEIL - 0.03, CEIL, WHITE)
-        box('lens', x - w / 2 + 0.02, x + w / 2 - 0.02, yard - l / 2 + 0.02, yard + l / 2 - 0.02, CEIL - 0.036, CEIL - 0.03, WHITE_LAMP)
+        box('lit', x - w / 2 + 0.02, x + w / 2 - 0.02, yard - l / 2 + 0.02, yard + l / 2 - 0.02, CEIL - 0.036, CEIL - 0.03, WHITE_LAMP)
     elif kind == 'red':
         for xx in g['xs']:
             tube('dark', (xx, yard, CEIL), (xx, yard, CEIL - 0.012), 0.05, DARK, 14)
@@ -991,7 +1086,7 @@ def ceil(g, tag, x, yard, h):
 
 def grabrails(g, tag, x, yard, h):
     sx = g['side']
-    tube('steel', (sx * 0.75, 20.30, h), (sx * 0.75, 22.05, h), 0.014, srgb(0xc9cfcf), 10)
+    tube('steel', (sx * 0.75, 20.30, h), (sx * 0.75, 22.05, h), 0.014, STAINLESS, 10)
     for yd in (20.35, 21.18, 22.0):
         tube('steel', (sx * 0.75, yd, h), (sx * 0.75, yd, CEIL), 0.008, GREY, 6)
 
@@ -1023,7 +1118,7 @@ def wiper(g, tag, x, yard, h):
     tube('brass', (x - 0.27, FRONT_OUT - 0.01, SILL + 0.03), (x - 0.27, yo + 0.02, SILL + 0.03), 0.02, BRASS, 12)
     tube('steel', (x - 0.27, yo + 0.02, SILL + 0.03), (x + 0.25, yo + 0.03, SILL + 0.075), 0.006, GREY, 8)
     box('plastic', x - 0.20, x + 0.28, yo + 0.01, yo + 0.03, SILL + 0.06, SILL + 0.08, BLACK)
-    box('console', x - 0.33, x - 0.21, FRONT_IN - 0.10, FRONT_IN, SILL - 0.13, SILL - 0.01, srgb(0x8a9392))       # the motor, under the sill inside the console
+    box('case', x - 0.33, x - 0.21, FRONT_IN - 0.10, FRONT_IN, SILL - 0.13, SILL - 0.01, CASE)       # the motor, under the sill inside the console
 
 
 def nozzles(g, tag, x, yard, h):
@@ -1418,7 +1513,7 @@ def pantry(g, tag, x, yard, h):
     """The unit itself: a carcass of panels on a plinth set back for the feet, a wooden top, the niche's shelf and its rail, and
     the cupboard under the niche with its door (it opens to a tap), its shelf, four mugs, the coffee tin, the tea and the sugar."""
     xb, xf, y0, y1, ys, T, t = _pantry()
-    cream = srgb(0xd8d2c0)
+    cream = JOINERY
     sh = PANTRY['shelf']
     box('console', xb + 0.02, xf - 0.035, y0 + 0.02, y1 - 0.02, 0.012, 0.08, FRAME)
     box('console', xb, xb + t, y0, y1, 0.08, T - t, cream)
