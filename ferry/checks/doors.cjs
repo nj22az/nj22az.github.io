@@ -187,6 +187,117 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(stand && sd.raised && Math.abs(sd.home.ramp - 6) < 1e-6 && sd.home.closed === true && sd.home.lever === 1 && sd.shut && sd.end.ramp === 0 && sd.end.locked === true && sd.end.open === false
     && sd.end.beacon === false && sd.end.lever === 1,
     'the ramp lever to RAISE brings the leaf home (RAMP CLOSED), and only then does the cleats lever to LOCK lock it: CLEATS LOCKED lights, the beacon goes out');
+  // The power pack itself (the owner: "Also specify the oil and the level of oil etc , it needs to be fully functional"; instruction
+  // JS3-304-M1). The oil in its level glass follows the ramp, because the cylinders' rods take their own volume out of the tank;
+  // the oil warms while a pump runs and the cooler's fan turns from 45 degrees until it is back at 40; the lamp test lights every
+  // lamp and comes out by itself; and the valve stand's two hand levers give the same orders as the control stand's.
+  const pack = await page.evaluate(async () => {
+    const f = window.__ferry, wait = ms => new Promise(r => setTimeout(r, ms));
+    if (!f.control('stern-ramp-v1-lever') || !f.tap) return null;
+    const run = s => { for (let t = 0; t < s - 1e-9; t += 0.1) f.workAuto(0.1); };
+    const val = id => f.state.inputs[id], ramp = () => val('stern-ramp');
+    const until = async (test, seconds) => { for (let t = 0; t < seconds * 2 && !test(); t++) await wait(500); return test(); };
+    const mover = id => f.movers().find(m => m.id === id);
+    const shown = id => { const m = mover(id); return m ? m.shown : null; };
+    const column = () => { const m = mover('stern-ramp-oil-level'); return m ? m.matrix[5] : null; };     // the oil's column, as a share of its length with the ramp raised
+    const turned = id => { const m = mover(id); return m ? Math.acos(Math.max(-1, Math.min(1, (m.matrix[0] + m.matrix[5] + m.matrix[10] - 1) / 2))) * 180 / Math.PI : null; };
+    const turning = id => { const a = val(id); run(0.3); return val(id) !== a; };
+    const PUMP = 'stern-ramp-pump-1', V1 = 'stern-ramp-v1-lever', V2 = 'stern-ramp-v2-lever', TEMP = 'stern-ramp-oil-temp', FAN = 'stern-ramp-fan', TEST = 'stern-ramp-lamp-test';
+    // (The control stand's check above ran a pump, and the oil keeps the warmth of it: it stood at 23.5 degrees here, and "at
+    // rest" was read as a fault. With the pumps stopped it is let cool until it is as cold as the room, however long that is.)
+    let cooled = 0; while (val(TEMP) > 20 && cooled < 1200) { run(5); cooled += 5; }
+    const out = { rest: { column: column(), temp: val(TEMP), fan: turning(FAN) } };
+    f.setInput('stern-ramp', 90); run(0.3);
+    out.down = column();
+    f.setInput('stern-ramp', 0); run(0.3);
+    out.up = column();
+    f.step(V1); await wait(600);                                // the ramp's hand lever with no pump running: nothing
+    out.idle = { ramp: ramp(), lever: f.control(V1).at };
+    f.tap(PUMP); run(190);                                      // a pump runs for three minutes: the oil warms
+    out.warm = { temp: val(TEMP), needle: turned('stern-ramp-thermo'), fan: turning(FAN), hot: shown('stern-ramp-lamp-oil-temp'), low: shown('stern-ramp-lamp-oil-level') };
+    f.tap(TEST); run(1.2);                                      // the lamp test: every lamp, and its button comes out by itself
+    out.test = shown(TEST);
+    run(3.0);
+    out.tested = shown(TEST);
+    f.step(V2);                                                 // at the valve stand: the cleats' lever to open
+    out.opened = await until(() => ramp() >= 6 - 1e-6, 120);
+    f.step(V1);                                                 // the ramp's to lower
+    out.going = await until(() => ramp() >= 11, 120);
+    f.step(V1); await wait(700);                                // to stop
+    const held = ramp();
+    await wait(900);
+    out.stopped = Math.abs(ramp() - held) < 1e-6;
+    f.step(V1);                                                 // to raise
+    out.raised = await until(() => ramp() <= 6 + 1e-6, 240);
+    await wait(1200);
+    f.step(V2);                                                 // the cleats' to lock
+    out.shut = await until(() => ramp() === 0, 120);
+    await wait(1200);
+    out.end = { ramp: ramp(), v1: f.control(V1).at, v2: f.control(V2).at };
+    f.tap(PUMP); run(1);                                        // the pump stopped: the oil cools, the fan turning on until it is back at 40 degrees
+    out.cool = { from: val(TEMP), above: turning(FAN), seconds: 1 };
+    // (How long that is depends on how hot the oil was: from its hottest, 55 degrees, five minutes. It was read after 260 s, which
+    // is enough from 52 degrees and not from 55, where the oil is once the valve stand's levers have been worked: 42 degrees, the fan turning.)
+    while (val(TEMP) >= 39.5 && out.cool.seconds < 900) { run(5); out.cool.seconds += 5; }
+    out.cool.temp = val(TEMP); out.cool.fan = turning(FAN);
+    return out;
+  });
+  const pk = pack || {};
+  check(pack && Math.abs(pk.rest.column - 1) < 1e-6 && pk.down > 0.78 && pk.down < 0.86 && Math.abs(pk.up - 1) < 1e-6,
+    `the oil in the power pack's level glass stands at FILL with the ramp raised, falls as the ramp is lowered (the cylinders' rods take their own volume out of the tank: to ${pack ? (100 * pk.down).toFixed(0) : '?'} % of its column with the ramp level) and comes back`);
+  check(pack && pk.rest.temp === 20 && pk.rest.fan === false && pk.warm.temp > 45 && pk.warm.temp <= 55 && pk.warm.needle > 110 && pk.warm.fan === true && pk.warm.hot === false && pk.warm.low === false,
+    `the oil warms while a pump runs (20 to ${pack ? pk.warm.temp.toFixed(0) : '?'} degrees in three minutes), the thermometer's needle follows, the cooler's fan turns from 45 degrees, and neither oil lamp is lit`);
+  check(pack && pk.cool.from > 45 && pk.cool.above === true && pk.cool.temp < 40 && pk.cool.fan === false && pk.cool.seconds < 400,
+    `with the pump stopped the oil cools (from ${pack ? pk.cool.from.toFixed(0) : '?'} to ${pack ? pk.cool.temp.toFixed(0) : '?'} degrees in ${pack ? pk.cool.seconds : '?'} s): the fan turns on while it is over 40 degrees and has stopped under that`);
+  check(pack && pk.test === true && pk.tested === false, 'the lamp test lights every lamp of the control stand, the two oil lamps with them, and its button comes out by itself');
+  check(pack && pk.idle.ramp === 0 && pk.idle.lever === 1 && pk.opened && pk.going && pk.stopped && pk.raised && pk.shut && pk.end.ramp === 0 && pk.end.v1 === 1 && pk.end.v2 === 1,
+    'at the valve stand the two hand levers give the same orders: nothing without a pump; with one running V2 opens the cleats, V1 lowers, stops and raises the ramp, V2 locks it');
+  // Out on the ramp (the owner, 12 November 2026: "I want to be able to walk out on the ramp , and look at the sea and the ship"):
+  // with the ramp raised nobody walks through the stern door; with it level one walks out along it, as on a deck; and it is not
+  // moved while somebody stands on it.
+  // (As first written this put the walker somewhere from the outside view, where nobody is on foot: walkTo gave nothing and the
+  // check read "?". On foot it found a fault: the ramp was held with a quiet ship, and rose under the walker as soon as anything
+  // else aboard moved by itself, or at once for whoever asked for less motion. So both are tried here: the oil cooler's fan is
+  // set turning before the order is given, and the order is given again with less motion asked for.)
+  const out = await page.evaluate(async () => {
+    const f = window.__ferry, wait = ms => new Promise(r => setTimeout(r, ms));
+    const half = f.ship.length / 2, x = 2.0;
+    f.enterWalk();
+    const level = f.walkTo(x, 4 - half, 0, 0, (f.ship.decks && f.ship.decks.main) ?? 1.0);       // on the main deck, 4 m inside the transom, looking aft
+    if (level === null) return null;
+    const walkAft = s => { f.hold('KeyW', true); for (let t = 0; t < s; t += 0.1) { f.workAuto(0.1); f.walkFor(0.1); } f.hold('KeyW', false); return f.state.walk; };
+    const shut = walkAft(6);                                    // the ramp raised: to the sill and no further
+    f.setInput('stern-ramp', 90);
+    f.walkTo(x, 4 - half, 0, 0, level);
+    const open = walkAft(9);                                    // the ramp level: out along it
+    const fan = f.tap('stern-ramp-fan');                        // something else aboard moving by itself
+    await wait(400);
+    f.order('stern-ramp', 0);                                   // Raise, with somebody standing on it
+    const said = f.state.walk.room;
+    await wait(1600);
+    return { level, shut: shut.z + half, open: open.z + half, y: open.y - level, held: f.state.inputs['stern-ramp'], said, fan };
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });         // for whoever asked for less motion an order is carried out at once
+  const calm = out && await page.evaluate(async () => {
+    const f = window.__ferry;
+    await new Promise(r => setTimeout(r, 300));
+    f.order('stern-ramp', 0);
+    return { less: matchMedia('(prefers-reduced-motion: reduce)').matches, held: f.state.inputs['stern-ramp'] };
+  });
+  await page.emulateMedia({ reducedMotion: null });
+  if (out) await page.evaluate(level => {                       // back aboard, the ramp raised, the fan stopped, and off foot again as the checks below begin
+    const f = window.__ferry, half = f.ship.length / 2;
+    f.tap('stern-ramp-fan');
+    f.walkTo(2.0, 6 - half, Math.PI, 0, level);
+    f.setInput('stern-ramp', 0);
+    f.leaveWalk();
+  }, out.level);
+  check(out && out.shut > -0.6 && out.open < -8 && Math.abs(out.y) < 0.35,
+    `with the ramp raised nobody walks out through the stern door (stopped ${out ? (-out.shut).toFixed(1) : '?'} m abaft the transom); with it level one walks out along it `
+    + `(${out ? (-out.open).toFixed(1) : '?'} m abaft the transom, ${out ? (out.y * 100).toFixed(0) : '?'} cm from the deck's level)`);
+  check(out && out.fan === true && out.held === 90 && /stands on it/.test(out.said || '') && calm && calm.less === true && calm.held === 90,
+    `the ramp is not raised while somebody stands on it, and says why ("${out ? out.said : '?'}"): with something else aboard moving by itself (at ${out ? out.held : '?'}°), `
+    + `and for whoever asked for less motion, where an order is carried out at once (at ${calm ? calm.held : '?'}°)`);
   // The lights of the after end (the owner: "And lights"): the sternlight is the register's NLT-06 and has its place at the stern.
   const light = await page.evaluate(() => {
     const f = window.__ferry, c = f.systems ? f.systems.data.components.find(c => c.id === 'NLT-06') : null;

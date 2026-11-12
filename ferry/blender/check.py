@@ -107,9 +107,9 @@ def main():
     # ---- Her own pictures and her register travel with the model.
     here = os.path.dirname(os.path.abspath(a.file))
     sheets = header.get('atlases', [])
-    check(len(sheets) == 1 and all(os.path.exists(os.path.join(here, s['file'])) for s in sheets), 'her one sheet of pictures is named and is there')
+    check(len(sheets) == 2 and all(os.path.exists(os.path.join(here, s['file'])) for s in sheets), 'her two sheets of pictures (her own, and her cabins\') are named and are there')
     used = {header['materials'][m['material']].get('atlas', 0) for g in groups.values() for m in g['meshes'] if header['materials'][m['material']].get('textured')}
-    check(used == {0}, 'her own sheet is drawn from')
+    check(used == {0, 1}, 'both sheets are drawn from, and no other')
     for g in groups.values():
         for m in g['meshes']:
             if header['materials'][m['material']].get('textured') and 'uv' not in m:

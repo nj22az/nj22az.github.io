@@ -204,34 +204,50 @@ for sgn, tag, side in ((1, 'RMP-34', 'port'), (-1, 'RMP-35', 'starboard')):
 # ---- the hydraulics
 _t = H['tank']
 C('HYD-01', 'Stern ramp power pack (HPU-R)', 'hydraulic-room', at((_t[0] + _t[1]) / 2, (_t[2] + _t[3]) / 2, 0.6),
-  'A tank of about 1,500 litres on a drip tray, with the two main pumps and the cleats\' pump on its lid, a level glass, a breather and filler, level and temperature switches. '
-  'It works the stern ramp and its cleats; the ramp cover over the fixed ramp is to be worked from it too.')
+  f'A tank of about 1,500 litres on a drip tray, with the two main pumps and the cleats\' pump on its lid, a breather and filler, level and temperature switches. '
+  f'Oil: {SP.FLUID["grade"]}, {SP.FLUID["kind"]}; filled to {round(SP.tank_litres(SP.TANK["fill"]) / 10) * 10:,.0f} litres with the ramp raised. On its inboard side a level glass with an engraved scale '
+  f'(FILL; RAMP DOWN; LOW, where OIL LEVEL is given; STOP, under which no pump is run): the oil in it falls {100 * (SP.oil_level(0) - SP.oil_level(SP.LEVEL)):.0f} cm as the ramp is lowered, because the cylinders\' rods '
+  f'take their own volume out of the tank, and comes back as it is raised. Beside it a dial thermometer: the oil works at {SP.FLUID["work"][0]} to {SP.FLUID["work"][1]} degrees, OIL TEMP is given at {SP.FLUID["hot"]}. '
+  'It works the stern ramp and its cleats; the ramp cover over the fixed ramp is to be worked from it too. Operating instruction: JS3-304-M1.')
 C('HYD-02', 'Main pump No. 1', 'hydraulic-room', at(_pump[0][0], _pump[0][1], 1.5),
-  'A pump of 100 l/min at 210 bar under a 37 kW motor on the tank\'s lid. One pump works the ramp at half speed.', w=40200, by=('RSP', 1), node='TRAY-M1')
+  'An axial piston pump of variable delivery under a 37 kW motor on the tank\'s lid: its pressure compensator holds 195 bar, and it delivers what the valves ask for, up to 100 l/min; '
+  'with every valve in its middle it holds the pressure and delivers nothing. One pump works the ramp at half speed. Its delivery goes through a non-return valve into the pressure block.', w=40200, by=('RSP', 1), node='TRAY-M1')
 C('HYD-03', 'Main pump No. 2', 'hydraulic-room', at(_pump[1][0], _pump[1][1], 1.5),
   'As No. 1. With both running the ramp is raised from its lowest in about a minute and a half.', w=40200, by=('RSP', 2), node='TRAY-M2')
 C('HYD-04', 'Cleat pump', 'hydraulic-room', at(H['cleat_pump'][0], H['cleat_pump'][1], 1.3),
-  'A small pump under a 4 kW motor: it works the ten cleats, so that they can be locked and let go with the main pumps stopped.', w=4700, by=('RSP', 3), node='TRAY-M3')
+  'A small pump under a 4 kW motor: it works the ten cleats, so that they can be locked and let go with the main pumps stopped. It delivers into a block of its own on the lid, '
+  'with the cleats\' relief valve RV2 (160 bar) on it; line S goes from there to the cleat valve.', w=4700, by=('RSP', 3), node='TRAY-M3')
 _c = H['cooler']
 C('HYD-05', 'Oil cooler', 'hydraulic-room', at((_c[0] + _c[1]) / 2, (_c[2] + _c[3]) / 2, 0.62),
-  'An air-blast cooler in the return line, on the tank\'s after end, with a 1.1 kW fan.', w=1400, by=('RSP', 4), node='TRAY-A')
+  f'An air-blast cooler on the tank\'s after end: the return line comes down into it and goes on from its other end to the return filter. Its 1.1 kW fan runs from {SP.FLUID["fan"][0]} degrees of oil until it is back at {SP.FLUID["fan"][1]}.', w=1400, by=('RSP', 4), node='TRAY-A')
 _b = H['block']
 C('HYD-06', 'Pressure block', 'hydraulic-room', at((_b[0] + _b[1]) / 2, (_b[2] + _b[3]) / 2, 1.15),
-  'On the tank\'s lid: a non-return valve after each pump, the pressure filter, the relief valve set to 210 bar and the pressure gauge.')
-C('HYD-07', 'Return filter', 'hydraulic-room', at(H['return_filter'][0], H['return_filter'][1], 1.15), 'In the return to the tank, with a clogging indicator.')
+  'On the tank\'s lid: the two main pumps\' deliveries come into it, each through its non-return valve; on it the pressure filter, the relief valve set to 210 bar, and the system\'s gauge on its gauge cock. Line P leaves its top for the valve stand.')
+C('HYD-07', 'Return filter', 'hydraulic-room', at(H['return_filter'][0], H['return_filter'][1], 1.15), 'On the lid: the return comes into it from the cooler and goes through it into the tank. 25 micron, with a clogging indicator.')
 C('HYD-08', 'Hand pump', 'hydraulic-room', at(H['hand_pump'][0] - 0.06, H['hand_pump'][1], 0.75),
   'On the tank\'s inboard side: with no power the cleats and, slowly, the ramp are worked by it through the same valves.')
 _m = H['manifold']
 C('HYD-10', 'Valve stand', 'hydraulic-room', at((_m[0] + _m[1]) / 2, (_m[2] + _m[3]) / 2, 1.2),
-  'On the inboard wall: three lever valves with solenoids (the ramp, the cleats, and one for the ramp cover), each worked from the control stand or here by hand; a gauge '
-  'for each of the ramp\'s two lines, and two pressure transmitters (PT1 the system, PT2 line A) for the control stand\'s indicators. The cleats must be free before the ramp\'s valve can lower it.', w=120, by=('RSP', 5), node='VS', basis='yard')
+  'On the inboard wall: three lever valves with solenoids (the ramp, the cleats, and one for the ramp cover), each worked from the control stand or here by hand (the ramp\'s and the cleats\' '
+  'levers work on the page: a pump must run); a gauge on a gauge cock for each of the ramp\'s two lines; a marker on each of the eight lines that leave its top, with its letter and what it does, and two pressure transmitters (PT1 the system, PT2 line A) for the control stand\'s indicators. The cleats must be free before the ramp\'s valve can lower it.', w=120, by=('RSP', 5), node='VS', basis='yard')
 C('ELD-51', 'Stern ramp starter panel (RSP)', 'hydraulic-room', at((_pb[0] + _pb[1]) / 2, (_pb[2] + _pb[3]) / 2, 1.2),
   'On the hydraulic pump room\'s forward wall. Its door opens on the isolator, the two star-delta starters, the two direct starters, the control transformer and the terminals.',
   node='RSP', basis='yard')
 # ---- the places marked in the machinery spaces
+import msb_place as MSB
 for e in SP.ENDS:
     x0, x1, a, b = e['box']
     tag = {'MSB': 'ELD-61', 'PSB': 'ELD-62', 'T1': 'ELD-63', 'T2': 'ELD-64', 'DG1': 'GEN-01', 'DG2': 'GEN-02', 'DG3': 'GEN-03'}[e['tag']]
+    if e['tag'] in SP.BUILT:
+        # the main switchboard, 690 V: built on its place (blender/switchboard.py, from msb_place.py; drawing JS8-865)
+        _panels = '; '.join(f"{p['no']} {p['tag']} ({p['breaker']} A)" for p in MSB.MSB_PANELS)
+        C(tag, 'Main switchboard, 690 V', e['room'], ((x0 + x1) / 2, (a + b) / 2, e['floor'] + 1.1),
+          f"Nine cubicles in a row {x1 - x0:.1f} m long, looking aft into the aisle: two bus sections with a tie and a separate thruster bus, {MSB.BARS['amps']} A bars, {MSB.BARS['volts']} V, {MSB.BARS['hz']} Hz. "
+          f"From outboard: {_panels}. Each has its instruments, its air circuit breaker and, behind the lower door (it opens to a tap), the three bars its cables are landed on: "
+          'every cable comes up through its gland in the platform, is cleated, and has its number on a tag. The generating sets, the shaft generators, the transformers and the thruster are not installed: '
+          'the board is dead, and its cables end at their glands. The 440 V and 230 V sections, which face it, are drawn (JS8-865 sheet 2) and not built.',
+          node=e['tag'], note='The plant is the machinery design basis\'s; panels and ways are the yard\'s (msb_place.py). Not class-approved.')
+        continue
     C(tag, f"{e['tag']}: place marked", e['room'], ((x0 + x1) / 2, (a + b) / 2, e['floor'] + 0.9),
       f"NOT INSTALLED. {e['what']} Its place is marked on the floor ({x1 - x0:.2f} by {b - a:.2f} m) with a sign, and the cables that are to be landed on it end here, tagged.",
       node=e['tag'], note='A placeholder: the machinery design basis\'s place and size.')
@@ -292,7 +308,10 @@ PIPES = [
     dict(id='HY-03P', system='Hydraulics', name='Pressure, pumps to valve stand', dn=25, medium='Oil, 210 bar', material='Seamless steel, 30 x 4',
          ends=['HYD-06', 'HYD-10'], path=_path('P'), text='From the pressure block on the tank over the way to the valve stand.'),
     dict(id='HY-03T', system='Hydraulics', name='Return, valve stand to tank', dn=32, medium='Oil', material='Seamless steel, 35 x 3',
-         ends=['HYD-10', 'HYD-01'], path=_path('T'), text='Back over the way, through the cooler and the return filter into the tank.'),
+         ends=['HYD-10', 'HYD-05', 'HYD-07', 'HYD-01'], path=_path('T'),
+         text='Back over the way, down beside the pressure line, aft over the lid on two posts and down into the cooler; from the cooler\'s other end up into the return filter, and through it into the tank.'),
+    dict(id='HY-04S', system='Hydraulics', name='Cleats\' pressure, cleat pump to cleat valve', dn=12, medium='Oil, 160 bar', material='Seamless steel, 18 x 2.5',
+         ends=['HYD-04', 'HYD-10'], path=_path('S'), text='From the cleats\' own block on the lid, with its relief valve, over the way to the cleat valve V2.'),
 ]
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -327,12 +346,15 @@ CABLES = [
     ('W-RMP-13', 'Junction box X2', 'Each cleat, latch and door switch (14)', '2 x 1.5 mm2 each', 'One pair a switch'),
     ('W-RMP-14', 'Junction box X2', 'Bridge, door and ramp panel ALM-06', '2 x 1.5 mm2', 'Closed and locked, to the bridge'),
     ('W-RMP-15', 'RSP X0', 'Engine control room, alarm system', '2 x 1.5 mm2', 'Group alarm'),
-    ('W-GEN-01', 'DG1 (place marked)', 'MSB (place marked)', '2 x (3 x 120 mm2) + earth', 'Placeholder: 690 V, 335 A'),
-    ('W-GEN-02', 'DG2 (place marked)', 'MSB (place marked)', '2 x (3 x 120 mm2) + earth', 'Placeholder: 690 V, 335 A'),
-    ('W-GEN-03', 'DG3 (place marked)', 'MSB (place marked)', '2 x (3 x 120 mm2) + earth', 'Placeholder: 690 V, 335 A'),
-    ('W-TX-01', 'MSB (place marked)', 'T1 (place marked)', '3 x (3 x 120 mm2) + earth', 'Placeholder: 690 V, 670 A'),
+    ('W-GEN-01', 'DG1 (place marked)', 'MSB cubicle 7', '2 x (3 x 120 mm2) + earth', '690 V, 335 A; breaker 400 A set 370 A. Landed in the cubicle'),
+    ('W-GEN-02', 'DG2 (place marked)', 'MSB cubicle 3', '2 x (3 x 120 mm2) + earth', '690 V, 335 A; breaker 400 A set 370 A. Landed in the cubicle'),
+    ('W-GEN-03', 'DG3 (place marked)', 'MSB cubicle 2', '2 x (3 x 120 mm2) + earth', '690 V, 335 A; breaker 400 A set 370 A. Landed in the cubicle'),
+    ('W-TX-01', 'MSB cubicle 6', 'T1 (place marked)', '4 x (3 x 120 mm2) + earth', '690 V, 669 A; breaker 800 A set 740 A. Landed in the cubicle; its way on is not drawn'),
     ('W-TX-02', 'T1 (place marked)', 'PSB (place marked)', '4 x (3 x 150 mm2) + earth', 'Placeholder: 440 V, 1,050 A'),
-    ('W-TX-03', 'MSB (place marked)', 'T2 (place marked)', '3 x (3 x 120 mm2) + earth', 'Placeholder: 690 V, 670 A'),
+    ('W-TX-03', 'MSB cubicle 4', 'T2 (place marked)', '4 x (3 x 120 mm2) + earth', '690 V, 669 A; breaker 800 A set 740 A. Landed in the cubicle; its way on is not drawn'),
+    ('W-SG-01', 'Shaft generator No. 1 (not installed)', 'MSB cubicle 8', '4 x (3 x 120 mm2) + earth', '690 V, 787 A; breaker 1000 A set 870 A. Landed in the cubicle; its way on is not drawn'),
+    ('W-SG-02', 'Shaft generator No. 2 (not installed)', 'MSB cubicle 1', '4 x (3 x 120 mm2) + earth', '690 V, 787 A; breaker 1000 A set 870 A. Landed in the cubicle; its way on is not drawn'),
+    ('W-BT-01', 'MSB cubicle 9', 'Bow thruster starter (not installed)', '3 x (3 x 120 mm2) + earth', '690 V, 626 A; breaker 800 A set 690 A. Landed in the cubicle; its way on is not drawn'),
     ('W-TX-04', 'T2 (place marked)', 'PSB (place marked)', '4 x (3 x 150 mm2) + earth', 'Placeholder: 440 V, 1,050 A'),
 ]
 # What is in the starter panel (tag, what, rating)

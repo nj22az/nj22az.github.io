@@ -1,0 +1,16 @@
+{
+ "file": "chisum-cabins.webp",
+ "size": [
+  1260,
+  1800
+ ],
+ "tiles": {
+  "calendar": [
+   0.0,
+   0.0,
+   1.0,
+   1.0
+  ]
+ },
+ "note": "the calendar of the chief engineer's day room, open at November 2026"
+}

@@ -27,7 +27,7 @@ const XRAY = [
   ['pipe', 'Pipes', 0xc3ccd0],
 ];
 
-export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir, redraw, accent, walking, onChange }) {
+export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir, redraw, accent, walking, onChange, onMaintain }) {
   const comps = new Map(data.components.map(c => [c.id, c]));
   const boards = new Map(data.boards.map(b => [b.id, b]));
   const nets = new Map(data.nets.map(n => [n.id, n]));
@@ -141,13 +141,21 @@ export function createSystems({ data, decks, list, card, readout, flyTo, eyeDir,
     card.replaceChildren(...[close, el('p', { className: 'tag' }, where), el('h3', {}, c.name), el('p', {}, c.what),
       c.hid ? el('p', { className: 'muted' }, `Not seen: ${c.hid}.`) : null, rows.childNodes.length ? rows : null,
       c.note ? el('p', { className: 'muted' }, c.note) : null,
-      c.w ? el('p', { className: 'muted small' }, c.basis === 'town' ? "The power figure is the Minato Maru's planning figure." : 'The power figure is typical for equipment of the kind, not a maker\'s.') : null].filter(Boolean));
+      c.w ? el('p', { className: 'muted small' }, c.basis === 'town' ? "The power figure is the Minato Maru's planning figure." : 'The power figure is typical for equipment of the kind, not a maker\'s.') : null,
+      maintain(c)].filter(Boolean));
     card.hidden = false;
     readout.textContent = `${c.name} · ${c.id}`;
     redraw(); onChange && onChange();
     return c;
   }
   const boardIdOf = compId => data.boards.find(b => b.comp === compId)?.id;
+  /** Its jobs and records are in the maintenance program, on the chief engineer's computer: the card opens it there, at this fitting. */
+  function maintain(c) {
+    if (!onMaintain) return null;
+    const b = el('button', { type: 'button', className: 'maintain' }, 'Maintenance');
+    b.addEventListener('click', () => onMaintain(c.id));
+    return b;
+  }
   function hideCard() { card.hidden = true; card.replaceChildren(); state.component = null; onChange && onChange(); }
 
   // ---------- a board, a circuit, a net, a pipe, a subsystem ----------

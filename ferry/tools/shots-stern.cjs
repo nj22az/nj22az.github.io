@@ -36,6 +36,17 @@ const VIEWS = [
   ['gauge-system', [8.00, 11.52, 7.94], [8.284, 11.52, 7.90], 1, { 'stern-ramp-pump-1': true }],     // the system's gauge on its gauge cock on the pressure block, a pump running
   ['gauge-system-side', [8.08, 11.24, 8.02], [8.30, 11.54, 7.86], 1, {}],                         // the same from forward of it: what it stands on
   ['gauges-lines', [7.93, 11.24, 8.07], [7.634, 11.12, 8.00], 1, { 'stern-ramp': 45 }],            // the two line gauges on the valve stand's top, the ramp half down
+  // the power pack's working parts (JS3-304-M1): the level glass and its scale, the thermometer; the markers; the return's way over the lid
+  ['level-glass', [7.72, 11.98, 7.42], [8.25, 11.98, 7.36], 1, {}],                                // the glass at FILL, the ramp raised
+  ['level-glass-down', [7.72, 11.98, 7.42], [8.25, 11.98, 7.36], 1, { 'stern-ramp': 90 }],          // and with the ramp level: the oil at RAMP DOWN
+  ['line-markers', [8.00, 11.30, 8.26], [7.58, 11.30, 8.20], 1, {}],                               // a marker on each line over the valve stand
+  ['pack-lid', [7.70, 11.75, 8.25], [8.50, 10.95, 7.75], 1, {}],                                   // the return over the lid on its posts, the cleats' block
+  ['ramp-out', [1.5, -9.0, 8.3], [0.0, 6.0, 10.5], 1, { 'stern-ramp': 90 }],                        // out on the level ramp, looking back at her
+  // the main switchboard, 690 V (JS8-865)
+  ['msb-row', [3.75, 17.9, 5.55], [3.75, 19.4, 5.15], 1, {}],                                      // the nine cubicles from the aisle
+  ['msb-dg1', [2.75, 18.75, 5.78], [2.75, 19.4, 5.74], 1, {}],                                     // a generator panel from arm's length
+  ['msb-tie', [3.75, 18.75, 5.78], [3.75, 19.4, 5.76], 1, {}],                                     // the synchronising panel
+  ['msb-cables', [2.75, 18.45, 4.75], [2.75, 19.6, 4.45], 1, { 'msb-door-7': true }],               // cubicle 7's cable compartment, its door open
   ['mooring-station-port', [5.2, 6.6, 8.2], [8.4, 0.6, 7.6], 1, {}],                            // in the port after mooring station, looking aft
   ['hydraulic-room', [7.9, 12.2, 8.2], [9.0, 8.0, 7.5], 1, {}],                                 // the hydraulic pump room, from its forward end
   ['hydraulic-room-inboard', [9.2, 7.7, 8.2], [7.6, 11.6, 7.4], 1, {}],                         // and from its after outboard corner, at the inboard wall

@@ -16,7 +16,7 @@ import { surface as surfaceOf, createLook, createSky, createSea, light, day } fr
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
-const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what'), card = $('#card');
+const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what'), card = $('#card'), computer = $('#computer'), screenFrame = $('#computer-screen');
 /** Her systems (systems.js): the component register, shown in the panel's second list and on the model. Null until read. */
 let systems = null;
 /** The deck plan on foot (map.js), when the arrangement is beside the model (data/plans.json). */
@@ -330,6 +330,7 @@ function moveParts(shadows = true) {
     const carrier = def.on && movers.find(m => m.def.id === def.on);
     if (carrier) node.matrix.premultiply(carrier.node.matrix);
   }
+  indexCarried();                                                // (what moves and carries is stood on where it now lies)
   if (shadows) renderer.shadowMap.needsUpdate = true;
   redraw();
 }
@@ -345,6 +346,60 @@ function setInput(id, value) {
   moveParts();
 }
 const cap = text => text ? text[0].toUpperCase() + text.slice(1) : '';
+
+// ---------- the chief engineer's computer ----------
+/**
+ * The maintenance program on the computer's display (yard/design/maintenance-computer.md). The owner, 12 November 2026: "It needs
+ * to have an ui, we are not going to a website we are still on the chisum , accessing the maintenance program is on the computer";
+ * "We can have full screen but needs a clear button to leave and go back to the chisum". The program (Maintenance Desk, in its own
+ * folder beside her) is drawn in a frame inside this page: the address does not change, she is not unloaded, and whoever walked to
+ * the computer stands where they stood when they come back. It is opened by a tap on what the file says `opens: "maintenance"`,
+ * or from a fitting's card ("Maintenance"), then at that fitting.
+ */
+const PROGRAM = new URL('../maintenance-demo/', location.href).pathname;
+let computerFrom = null;                                         // what had the keys before, to give them back
+function openComputer(id = '') {
+  if (!computer) return false;
+  const item = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(id) ? id : '';
+  if (!screenFrame.dataset.on) {                                 // the program is started the first time one sits down, and left running
+    screenFrame.src = `${PROGRAM}?vessel=chisum${item ? '#detail/v-' + item : '#overview'}`;
+    screenFrame.dataset.on = '1';
+  } else if (item) screenFrame.contentWindow.postMessage({ app: 'chisum', type: 'open-item', id: item }, location.origin);
+  held.clear();
+  computerFrom = document.activeElement;
+  computer.hidden = false;
+  $('#computer-back').focus();
+  readout.textContent = 'Chief engineer\u2019s computer: the maintenance program';
+  return true;
+}
+function closeComputer() {
+  if (!computer || computer.hidden) return;
+  computer.hidden = true;
+  if (computerFrom && computerFrom.focus) computerFrom.focus();
+  computerFrom = null;
+  redraw();
+}
+/** "Show on board", asked from the program: it is put away and she takes one to the thing, by its card where the register has it. */
+function showOnBoard(d) {
+  const id = String(d.id || '');
+  closeComputer();
+  if (walk) leaveWalk();
+  if (systems && systems.comps.has(id)) { systems.showComponent(id); return; }
+  if (Array.isArray(d.at) && d.at.length === 3 && d.at.every(Number.isFinite)) {
+    if (systems) systems.hideCard();
+    flyTo(new THREE.Vector3(d.at[0], d.at[1] + 0.6, d.at[2]), eyeDir(), 9, 420);
+    readout.textContent = String(d.name || id).slice(0, 120);
+  }
+}
+if (computer) {
+  $('#computer-back').addEventListener('click', closeComputer);
+  // Only the program in the frame is listened to, and only from this site.
+  addEventListener('message', ev => {
+    if (ev.origin !== location.origin || ev.source !== screenFrame.contentWindow || !ev.data || ev.data.app !== 'maintenance-desk') return;
+    if (ev.data.type === 'show-on-board') showOnBoard(ev.data);
+    else if (ev.data.type === 'leave') closeComputer();
+  });
+}
 /**
  * The rail and the desk (index.html says what each is for). `showFn` puts one function's keys on the desk: by its icon, where a
  * second press puts them away again, or because the part itself was tapped on the model (`toggle` false: they stay).
@@ -437,7 +492,18 @@ function showInput(it) {
 function orderInput(id, to, held = false) {
   const it = inputs.get(id);
   if (!it || !it.keys) return;
-  it.order = THREE.MathUtils.clamp(to, it.def.min, it.def.max);
+  const want = THREE.MathUtils.clamp(to, it.def.min, it.def.max);
+  // What carries somebody is not moved under them (the lowered ramp). It is refused here, where the order is given: so it
+  // holds whatever else aboard is moving by itself at that moment (anything that moves has the ramp's floor indexed anew, and
+  // an order already taken reads there as "under way": the floor was dropped before workOrders could refuse, and the ramp
+  // rose under the walker), and for whoever asked for less motion, where an order is carried out at once below.
+  if (want !== it.value && movers.some(m => m.def.carries && m.def.input === id) && riding()) {
+    it.order = it.value; it.held = true;
+    readout.textContent = `${it.def.name}: somebody stands on it. It is not moved`;
+    showInput(it);
+    return;
+  }
+  it.order = want;
   it.held = held;
   readout.textContent = said(it.def, Math.round(it.order));
   if (still.matches && it.value !== it.order) { it.value = it.order; moveParts(); }
@@ -447,6 +513,13 @@ function workOrders(dt) {
   let moved = false, under = false;
   for (const it of inputs.values()) {
     if (!it.keys || it.value === it.order) continue;
+    if (movers.some(m => m.def.carries && m.def.input === it.def.id) && riding()) {
+      // somebody stands on it: it stays where it is, and says why
+      it.order = it.value; it.held = true;
+      readout.textContent = `${it.def.name}: somebody stands on it. It is not moved`;
+      showInput(it);
+      continue;
+    }
     const step = it.rate * dt;
     it.value = it.order > it.value ? Math.min(it.order, it.value + step) : Math.max(it.order, it.value - step);
     showInput(it);
@@ -464,6 +537,8 @@ function workOrders(dt) {
 function isOn(id) {
   const it = id && inputs.get(id);
   if (!it) return false;
+  // (what fills and empties may say between which values it is on, `level.on` and `level.off`: the oil is warm enough for the cooler's fan from 45 degrees until it is back at 40)
+  if (it.def.level && it.def.level.on !== undefined) return !!it.on;
   return it.def.steps ? it.at !== 0 : it.def.auto ? it.value > it.def.min + (it.def.max - it.def.min) * 0.5 : it.value !== 0;
 }
 /**
@@ -488,6 +563,7 @@ function tapFitting(id, point) {
  */
 function tapInput(it) {
   const d = it.def;
+  if (d.opens === 'maintenance') { openComputer(); return true; }
   if (!it.open && d.unless && isOn(d.unless)) { readout.textContent = `${d.name}: ${d.refused || 'not now'}`; return false; }
   it.open = !it.open;
   if (it.open) {
@@ -513,10 +589,13 @@ function workAuto(dt) {
       if ([].concat(def.level.fill || []).some(isOn)) v = Math.min(def.max, v + def.level.rate * dt);
       else if (def.level.fall) v = Math.max(def.min, v - def.level.fall * dt);
       if (isOn(def.level.drain)) v = Math.max(def.min, v - def.level.drainRate * dt);
+      if (def.level.on !== undefined) { if (v >= def.level.on) it.on = true; else if (v <= (def.level.off ?? def.level.on)) it.on = false; }
       if (v !== it.value) { it.value = v; moved = under = true; }
       continue;
     }
     if (!def.auto) continue;
+    // A push button that is held for a moment and comes out by itself (`spring`, seconds: the lamp test at the ramp's control stand).
+    if (def.spring && it.open) { it.held = (it.held || 0) + dt; if (it.held >= def.spring) { it.open = false; it.held = 0; } }
     if (def.run) {
       // What runs while it is on: a wiper sweeps to its limit and back once in `period` seconds; a clear-view screen spins at
       // `rate` degrees a second. It is on by a tap, or (`with`) while its own switch is turned on. Turned off, it goes on to
@@ -1040,6 +1119,53 @@ const RING = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [Math.cos(k * Math.
 const CELL = 0.5;
 const surface = () => ({ tris: [], deck: [], map: new Map() });
 const floors = surface(), heads = surface(), walls = surface();
+/**
+ * What moves and yet carries (a mover the file marks `carries`: the stern ramp and its end flaps). The owner, 12 November 2026:
+ * "I want to be able to walk out on the ramp , and look at the sea and the ship". Once such a part has come to rest its floors
+ * are stood on like any other, where it then lies; while it moves it carries nobody, and it is not moved while somebody stands
+ * on it (workOrders). Indexed anew each time it comes to rest somewhere else.
+ */
+let carried = surface(), carriedKey = '';
+function indexCarried() {
+  const list = movers.filter(m => m.def.carries);
+  if (!list.length) return;
+  const under = list.some(m => { const it = inputs.get(m.def.input); return it && it.keys && it.value !== it.order; });
+  const key = under ? 'under way' : list.map(m => m.node.matrix.elements.map(v => v.toFixed(4)).join(',')).join('|');
+  if (key === carriedKey) return;
+  carriedKey = key;
+  const S = surface();
+  if (!under) {
+    const p = new Float64Array(9), V = new THREE.Vector3();
+    for (const m of list) {
+      const di = Math.max(0, decks.findIndex(d => d.node === m.node.parent));
+      for (const o of m.node.children) {
+        if (!o.isMesh || o.material.transparent) continue;
+        const pos = o.geometry.attributes.position.array, ix = o.geometry.index.array;
+        for (let i = 0; i < ix.length; i += 3) {
+          for (let k = 0; k < 3; k++) { const j = ix[i + k] * 3; V.set(pos[j], pos[j + 1], pos[j + 2]).applyMatrix4(m.node.matrix); p[k * 3] = V.x; p[k * 3 + 1] = V.y; p[k * 3 + 2] = V.z; }
+          const ux = p[3] - p[0], uy = p[4] - p[1], uz = p[5] - p[2], vx = p[6] - p[0], vy = p[7] - p[1], vz = p[8] - p[2];
+          const ny = uz * vx - ux * vz, len = Math.hypot(uy * vz - uz * vy, ny, ux * vy - uy * vx);
+          if (len < 1e-9 || ny / len < 0.6) continue;             // what faces up, and is no steeper than a floor
+          const n = S.tris.length / 9;
+          for (let k = 0; k < 9; k++) S.tris.push(p[k]);
+          S.deck.push(di);
+          const x0 = Math.floor(Math.min(p[0], p[3], p[6]) / CELL), x1 = Math.floor(Math.max(p[0], p[3], p[6]) / CELL);
+          const z0 = Math.floor(Math.min(p[2], p[5], p[8]) / CELL), z1 = Math.floor(Math.max(p[2], p[5], p[8]) / CELL);
+          for (let cx = x0; cx <= x1; cx++) for (let cz = z0; cz <= z1; cz++) {
+            const cell = cx * 4096 + cz;
+            let at = S.map.get(cell);
+            if (!at) S.map.set(cell, at = []);
+            at.push(n);
+          }
+        }
+      }
+    }
+  }
+  S.tris = Float32Array.from(S.tris); S.deck = Uint8Array.from(S.deck);
+  carried = S;
+}
+/** Whether the walker stands on something that moves (the lowered ramp): it is then not moved. */
+const riding = () => !!walk && carried.tris.length > 0 && levelAt(carried, walk.pos.x, walk.pos.z, walk.floor + 0.06, walk.floor - 0.06, false) !== null;
 /** Where a door of the drawing hangs: there one may go through the wall it hangs in (findDoors). */
 let doorways = [];
 /** Every way through a wall, the drawing's doors and her own: which way it lies (0 across x, 2 across z), its middle along the wall, where the wall stands, its floor. */
@@ -1199,7 +1325,12 @@ function levelAt(S, x, z, top, bottom, lowest) {
   return best;
 }
 /** The highest floor under (x, z) that is no higher than `top` and no lower than `bottom`; null when there is none. */
-const floorAt = (x, z, top, bottom) => levelAt(floors, x, z, top, bottom, false);
+const floorAt = (x, z, top, bottom) => {
+  const fixed = levelAt(floors, x, z, top, bottom, false);
+  if (!carried.tris.length) return fixed;
+  const moving = levelAt(carried, x, z, top, bottom, false);                  // (the stern ramp, where it now lies)
+  return fixed === null ? moving : moving === null ? fixed : Math.max(fixed, moving);
+};
 /** The headroom over a floor at y under (x, z): up to the lowest deckhead, beam or pipe over it; Infinity under the sky. */
 function headroom(x, z, y) {
   const over = levelAt(heads, x, z, y + 4, y + OVER, true);
@@ -1606,6 +1737,7 @@ const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.t
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   // While the whole plan is open the keys are its own: Esc or M puts it away, and nobody walks under it.
+  if (computer && !computer.hidden) { held.clear(); if (e.code === 'Escape') { closeComputer(); e.preventDefault(); } return; }
   if (map && map.isOpen()) { held.clear(); if (e.code === 'Escape' || (e.code === 'KeyM' && !typing(e))) { map.close(); e.preventDefault(); } return; }
   if (walk) {
     if (e.code === 'Escape') { leaveWalk(); return; }
@@ -1791,7 +1923,7 @@ async function start() {
       if (!res.ok) throw new Error(String(res.status));
       systems = createSystems({
         data: await res.json(), decks: () => decks, list: $('#systems'), card, readout, flyTo, eyeDir, redraw, accent,
-        walking: () => !!walk, onChange: () => requestAnimationFrame(placeCard),
+        walking: () => !!walk, onChange: () => requestAnimationFrame(placeCard), onMaintain: id => openComputer(id),
       });
     } catch (err) { console.error(err); $('#systems').append(el('p', { className: 'lede muted' }, 'Her systems could not be read.')); }
   } else $('#tab-systems').hidden = true;
@@ -1843,6 +1975,10 @@ async function start() {
     /** For checks: her particulars, as the file says them (half her length turns metres from the transom into z). */
     ship: doc.header.ship,
     step: id => stepInput(id),
+    /** For checks: an order as the bar's keys give it (the ramp to so many degrees, at its own speed). */
+    order: (id, to) => orderInput(id, to),
+    /** For checks: the chief engineer's computer (the maintenance program on its display), opened at an item or as it was left; and put away. */
+    openComputer, closeComputer, get computerOpen() { return !!computer && !computer.hidden; },
     /** For checks: a tap on a thing that a tap works, with all that follows from it (what it trips, what it holds, what refuses it). */
     tap: id => { const it = inputs.get(id); return it && it.def.auto ? tapInput(it) : false; },
     control: id => { const it = inputs.get(id); return it && { value: it.value, want: it.want, at: it.at, steps: it.def.steps, fitting: it.def.fitting }; },

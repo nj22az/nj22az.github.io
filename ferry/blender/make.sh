@@ -17,6 +17,8 @@ blender -b -P ferry/blender/build.py -- --part "$PART" --blend "$BLEND" | grep -
 test -f "$PART"
 python3 ferry/blender/assemble.py --part "$PART"
 python3 ferry/blender/check.py
+# everything aboard, once, with her papers: the list her maintenance program is filled from (the chief engineer's computer)
+python3 ferry/systems/equipment.py
 python3 ferry/blender/zfight.py --part "$PART"
 python3 ferry/blender/afloat.py --part "$PART" --allow ferry/blender/afloat-known.json
 # nothing is built over a window (JSY-STD-405): every pane aboard, and what stands before and behind it

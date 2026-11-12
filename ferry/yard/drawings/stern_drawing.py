@@ -42,7 +42,7 @@ NUMBER, REVISION, DATE = 'JS3-304', '1', '12 November 2026'
 K = 30.0                         # pixels to a metre, in every view of sheet 1
 WIDTH = 1640
 INK, PAPER, FAINT, WATER, DIM, AMBER, RED, GREEN, BLUE = '#22303a', '#fbfaf5', '#8b959b', '#2f6f74', '#5d6a72', '#b7791f', '#c2412f', '#2f9e5a', '#2f6fb7'
-OIL = {'A': '#c2412f', 'B': '#2f6fb7', 'C': '#b7791f', 'D': '#2f9e5a', 'E': '#7a5aa6', 'P': '#c2412f', 'T': '#2f6fb7'}
+OIL = {'A': '#c2412f', 'B': '#2f6fb7', 'C': '#b7791f', 'D': '#2f9e5a', 'E': '#7a5aa6', 'P': '#c2412f', 'T': '#2f6fb7', 'S': '#b7791f'}
 out = []
 
 
@@ -711,7 +711,7 @@ text(RX - 24, Y_VALVE - 135, 'INTERLOCK: V1 lowers only with both latches and al
 ty = Y_TANK + 46
 text(64, ty, 'PARTS OF THE DIAGRAM', 12, weight='700')
 HPARTS = [
-    ('P1, P2', 'Main pumps', 'Axial piston, fixed, 100 l/min at 210 bar, under M1, M2 of 37 kW on the tank\'s lid', 'HYD-02, HYD-03'),
+    ('P1, P2', 'Main pumps', 'Axial piston, variable delivery, each with a pressure compensator set to 195 bar: it holds that pressure and delivers what the valves ask for, up to 100 l/min. Under M1, M2 of 37 kW on the tank\'s lid', 'HYD-02, HYD-03'),
     ('P3', 'Cleat pump', 'Gear, 8 l/min at 160 bar, under M3 of 4 kW', 'HYD-04'),
     ('HP1', 'Hand pump', 'About 20 cm³ a stroke: the cleats; the ramp through the change-over cock', 'HYD-08'),
     ('RV1, RV2', 'Relief valves', '210 bar on the main line; 160 bar on the cleats\' line', 'HYD-06'),
@@ -1033,7 +1033,12 @@ for (px, py) in H['pumps']:
     mid = (py + into) / 2
     rect(X4(mid - 0.035), Y4(bx1 + 0.05 + 0.026), X4(mid + 0.035), Y4(bx1 + 0.05 - 0.026), '#3a3f41', INK, 0.7)
     nrv.append(mid)
-run4([(cpy, cpx - H['cleat_motor'][0] + 0.03), (cpy, bx1 + 0.10), (ba + 0.04, bx1 + 0.10), (ba + 0.04, bx1 - 0.01)], PRES, 1.5)
+# the cleat pump delivers into a block of its own, abaft the pressure block, with its relief valve on it
+kx0, kx1, ka, kc = P.CLEAT_BLOCK['box']
+ki = (ka + kc) / 2
+box4(kx0, kx1, ka, kc, '#8f9896', 1.0)
+circle(X4(P.CLEAT_BLOCK['relief'][1]), Y4(P.CLEAT_BLOCK['relief'][0]), 0.020 * S4, RED, INK, 0.7)
+run4([(cpy, cpx - H['cleat_motor'][0] + 0.03), (cpy, bx1 + 0.10), (ki, bx1 + 0.10), (ki, kx1 - 0.01)], OIL['S'], 1.5)
 # ---- the valve stand on the inboard wall: three valves, two gauges, and the seven lines that leave its top
 mx0, mx1, ma, mb, _, _ = H['manifold']
 box4(mx0, mx1, ma, mb, '#8f9896', 1.2)
@@ -1051,14 +1056,16 @@ for k, name in enumerate('ABCDE'):
     text(X4(RA) + 14 + k * 13, Y4(XR) - 14, name, 10, 'middle', '700', OIL[name])
 text(X4(RA) + 6, Y4(XR) - 28, 'aft, to the stern door', 9, fill=DIM)
 head(X4(RA) + 2, Y4(XR), -1, 0, DIM)
-# pressure and return: up from the stand, over the way at head height, and down onto the pressure block
+# pressure, return and the cleats' pressure: up from the stand, over the way at head height, and down. P onto the pressure block, S
+# onto the cleats' block; T goes on aft over the lid, down into the cooler, and from the cooler's other end into the return filter.
 xt = (bx0 + bx1) / 2
-for name in 'PT':
-    run4([(P.MANIFOLD_AT[name], XR), (P.MANIFOLD_AT[name], xt)], OIL[name], 2.6)
+for name, where in (('S', 8.06), ('P', 7.95), ('T', 7.84)):
+    for run in P.routes()[name]:
+        run4([(q[1], q[0]) for q in run], OIL[name], 1.6 if name == 'S' else 2.6)
     circle(X4(P.MANIFOLD_AT[name]), Y4(XR), 3.0, OIL[name], INK, 0.5)
     circle(X4(P.MANIFOLD_AT[name]), Y4(xt), 3.4, OIL[name], INK, 0.6)
-text(X4(P.MANIFOLD_AT['P']) - 6, Y4(8.16) + 3, 'P', 10.5, 'end', '700', PRES)
-text(X4(P.MANIFOLD_AT['T']) + 6, Y4(7.84) + 3, 'T', 10.5, 'start', '700', RET)
+    rect(X4(P.MANIFOLD_AT[name]) - 5.5, Y4(where) - 7, X4(P.MANIFOLD_AT[name]) + 5.5, Y4(where) + 6, '#f4f2ea', '#f4f2ea', 0.1)
+    text(X4(P.MANIFOLD_AT[name]), Y4(where) + 4, name, 10.5, 'middle', '700', OIL[name])
 # ---- the starter panel on the forward wall, and the tray the motors' cables lie in
 pb = P.PANEL['box']
 box4(pb[0], pb[1], pb[2], pb[3], PAPER, 1.3)
@@ -1068,16 +1075,16 @@ run4([(pb[2], H['pumps'][0][0]), (10.62, H['pumps'][0][0])], '#7a5aa6', 1.2, '7 
 no4(1, a + 0.05, x1 - 0.06, -22, -36)
 no4(2, H['pumps'][0][1], H['pumps'][0][0] + mr, 0, -32)
 no4(3, H['pumps'][1][1], H['pumps'][1][0] + mr, 0, -32)
-no4(4, cpy - 0.05, cpx - H['cleat_motor'][0] + 0.02, -30, 30)
-no4(5, nrv[0], bx1 + 0.05, -46, 12)
-no4(6, ba + 0.03, bx0 + 0.02, -42, 34)
-no4(7, bb - 0.09, bx0 + 0.09, 60, 16)
-no4(8, bb - 0.20, bx0 + 0.09, 54, 42)
-no4(9, g1[1], g1[0], 16, 58)
+no4(4, cpy - 0.06, cpx + 0.07, -34, -30)
+no4(5, nrv[1], bx1 + 0.05, 74, -2)
+no4(6, bb - 0.03, bx0 + 0.02, 34, 78)
+no4(7, bb - 0.09, bx0 + 0.09, 70, 26)
+no4(8, bb - 0.20, bx0 + 0.09, 70, 56)
+no4(9, g1[1], g1[0], 18, 70)
 no4(10, (ca + cb) / 2, cx1, -30, -30)
 no4(11, rfy, rfx, 28, -32)
 no4(12, bry, brx, 32, -28)
-no4(13, hpy + 0.04, hpx - 0.22, -40, 14)
+no4(13, hpy + 0.04, hpx - 0.22, -44, 10)
 no4(14, mb, (mx0 + mx1) / 2, 36, -4)
 no4(15, ma + 0.11, mx1 + 0.085, -50, -22)
 no4(16, ma + 0.31, mx1 + 0.085, -26, -50)
@@ -1085,12 +1092,15 @@ no4(17, ma + 0.51, mx1 + 0.085, 52, -28)
 no4(18, P.ROOM_GAUGES['pg2']['port'][1], P.ROOM_GAUGES['pg2']['port'][0], -58, -14)
 no4(19, pb[2], (pb[0] + pb[1]) / 2, -36, 26)
 no4(20, (H['pumps'][0][1] + H['pumps'][1][1]) / 2, H['pumps'][0][0], 0, -62)
+no4(21, ka + 0.01, kx1 - 0.02, -52, 26)
+no4(22, 10.95, P.RETURN['x'], -8, 40)
 # ---- beside the plan: the lines as they are met aboard, by their height
 ex, ey = X4(RB) + 86, PYT + 6
 text(ex, ey, 'HOW TO TELL THE LINES ABOARD', 12, weight='700')
-text(ex, ey + 15, 'All oil lines are painted the same orange. Each is known by where it lies:', 9.5, fill=DIM)
-text(ex, ey + 40, 'On the inboard wall, from the top of the bank down', 10, weight='700')
-yy = ey + 56
+text(ex, ey + 15, 'All oil lines are painted the same orange. Each carries a marker over the valve stand:', 9.5, fill=DIM)
+text(ex, ey + 27, 'its letter and a word. Elsewhere it is known by where it lies:', 9.5, fill=DIM)
+text(ex, ey + 50, 'On the inboard wall, from the top of the bank down', 10, weight='700')
+yy = ey + 66
 for name in 'EDCBA':
     l_ = P.line(name)
     line(ex, yy, ex + 150, yy, 4.2 if l_[2] >= 25 else 2.6, OIL[name], '6 3' if name == 'E' else '')
@@ -1099,9 +1109,9 @@ for name in 'EDCBA':
     yy += 34
 text(ex, yy + 6, 'Across the way at head height, to the tank', 10, weight='700')
 yy += 22
-for name in 'TP':
+for name in 'TPS':
     l_ = P.line(name)
-    line(ex, yy, ex + 150, yy, 4.6 if name == 'T' else 4.2, OIL[name])
+    line(ex, yy, ex + 150, yy, 4.6 if name == 'T' else 2.6 if name == 'S' else 4.2, OIL[name])
     text(ex + 160, yy + 4, f'{name}   {l_[4]:.2f} m over the deck', 10, weight='700')
     text(ex + 160, yy + 16, l_[1], 9, fill=DIM)
     yy += 34
@@ -1111,7 +1121,7 @@ text(ex, yy + 16, 'half metre between a fixed line and a part that moves.', 9, f
 fy = Y4(RX0) + 58
 text(64, fy, 'HOW THE OIL GOES ROUND', 12, weight='700')
 fy += 14
-steps = [('TANK (1)', '1,500 litres', TANKC), ('PUMPS (2, 3)', '100 l/min each', STEELC), ('NON-RETURN (5)', 'one a pump', GREY), ('PRESSURE BLOCK (6)', 'filter 7, relief 8, gauge 9', GREY),
+steps = [('TANK (1)', '1,500 litres', TANKC), ('PUMPS (2, 3)', 'hold 195 bar', STEELC), ('NON-RETURN (5)', 'one a pump', GREY), ('PRESSURE BLOCK (6)', 'filter 7, relief 8, gauge 9', GREY),
          ('LINE P', 'over the way', '#f3d2cb'), ('VALVE STAND (14)', 'V1 ramp, V2 cleats', GREY), ('LINES A, B / C, D', 'to the stern', '#f6e7c8'),
          ('CYLINDERS, CLEATS', 'the work is done', PAPER), ('LINE T', 'back over the way', '#cfdff2'), ('COOLER (10)', 'air-blast', GREY), ('RETURN FILTER (11)', '25 micron', GREY), ('TANK (1)', '', TANKC)]
 bw, bh, gap = 118, 40, 13.5
@@ -1130,26 +1140,28 @@ text(64, fy, 'With V1 in its middle both of the ramp\'s lines are open to the ta
 fy += 26
 text(64, fy, 'THE PARTS, BY THEIR NUMBERS ON THE PLAN', 12, weight='700')
 PARTS4 = [
-    (1, 'HYD-01', 'Tank', 'About 1,500 litres of oil, on a drip tray (the broken line). Everything of the power pack stands on its lid or its sides. The level glass is on its inboard side, toward the way.'),
-    (2, 'HYD-02  P1, M1', 'Main pump No. 1', '100 l/min at 210 bar, under a 37 kW motor that stands upright on the lid. One pump alone works the ramp at half speed.'),
+    (1, 'HYD-01', 'Tank', 'About 1,500 litres of oil, on a drip tray (the broken line). Everything of the power pack stands on its lid or its sides. On its inboard side, toward the way and near its forward end: the level glass with its engraved scale, and a dial thermometer.'),
+    (2, 'HYD-02  P1, M1', 'Main pump No. 1', 'Under a 37 kW motor that stands upright on the lid. Of variable delivery: it holds 195 bar and delivers what the valves ask for, up to 100 l/min; with every valve in its middle it delivers nothing. One pump alone works the ramp at half speed.'),
     (3, 'HYD-03  P2, M2', 'Main pump No. 2', 'As No. 1. With both running the ramp is raised from its lowest in about a minute and a half.'),
-    (4, 'HYD-04  P3, M3', 'Cleat pump', 'A small pump, 8 l/min at 160 bar, under a 4 kW motor: it works the ten cleats and lifts the two safety latches with the main pumps stopped.'),
+    (4, 'HYD-04  P3, M3', 'Cleat pump', 'A small pump, 8 l/min at 160 bar, under a 4 kW motor: it works the ten cleats and lifts the two safety latches with the main pumps stopped. It delivers into its own block (21).'),
     (5, 'HYD-06', 'Non-return valves', 'One in each main pump\'s delivery, the dark body with a union nut each end: a pump that is stopped is not driven backwards by the one that runs.'),
     (6, 'HYD-06', 'Pressure block', 'The grey block on the lid\'s edge beside the way, where the pumps\' deliveries meet. The pressure line P leaves its top; 7, 8 and 9 stand on it.'),
     (7, 'HYD-06  F1', 'Pressure filter', 'The dark bowl: 10 micron. Its clogging switch lights the alarm lamp on the starter panel (19) and gives the group alarm.'),
     (8, 'HYD-06  RV1', 'Relief valve', 'Under the red cap: it opens at 210 bar and lets oil back into the tank, so the pressure can never be more.'),
     (9, 'HYD-06  PG1', 'System gauge', 'On a gauge cock (the red tee handle shuts it off) on the block\'s inboard edge: the pumps\' pressure. 0 with the pumps stopped, about 195 bar with one running; red from 210.'),
-    (10, 'HYD-05  C1', 'Oil cooler', 'On the tank\'s after end, with its 1.1 kW fan: the oil coming back is cooled by air before it goes into the tank.'),
-    (11, 'HYD-07  F2', 'Return filter', '25 micron, in the return into the tank, with a switch that says when it is clogged.'),
+    (10, 'HYD-05  C1', 'Oil cooler', f'On the tank\'s after end: the return (22) comes down into its inboard end, and the oil leaves its outboard end for the return filter. Its 1.1 kW fan turns from {P.FLUID["fan"][0]} °C of oil until it is back at {P.FLUID["fan"][1]} °C.'),
+    (11, 'HYD-07  F2', 'Return filter', '25 micron: the oil comes into its side from the cooler and goes through it into the tank. A switch says when it is clogged.'),
     (12, 'HYD-01', 'Breather and filler', 'The yellow cap: where the tank breathes as its level goes up and down, and where it is filled.'),
     (13, 'HYD-08  HP1', 'Hand pump', 'On the tank\'s inboard side, with its lever: with no power the cleats are worked by it, and slowly the ramp.'),
-    (14, 'HYD-10', 'Valve stand', 'On the inboard wall across the way. The seven lines leave its top: A, B, C, D and the conduit E go aft along the wall; P and T cross to the tank.'),
-    (15, 'HYD-10  V1', 'Ramp valve', 'Lever to one side: oil to line A, the ramp is raised. To the other: oil to B, it is lowered. In the middle: both lines to the tank. Worked by its two solenoids from the control stand, or by the lever here.'),
-    (16, 'HYD-10  V2', 'Cleat valve', 'Oil to line C locks the ten cleats; to line D lets them go and lifts the two safety latches.'),
+    (14, 'HYD-10', 'Valve stand', 'On the inboard wall across the way. Eight lines leave its top, each with its marker: A, B, C, D and the conduit E go aft along the wall; S, P and T cross to the tank.'),
+    (15, 'HYD-10  V1', 'Ramp valve', 'Lever to one side: oil to line A, the ramp is raised. To the other: oil to B, it is lowered. In the middle: both lines to the tank. Worked by its two solenoids from the control stand, or by the lever here (a pump must run).'),
+    (16, 'HYD-10  V2', 'Cleat valve', 'Fed by line S. Oil to line C locks the ten cleats; to line D lets them go and lifts the two safety latches. Worked from the control stand, or by the lever here.'),
     (17, 'HYD-10  V3', 'Spare valve', 'For the ramp cover over the fixed ramp, which is not built. Its ports are plugged.'),
     (18, 'HYD-10  PG2, PG3', 'Line gauges', 'On the stand\'s top, each on its gauge cock: PG2 reads line A, which carries the leaf (189 bar with the ramp level); PG3 reads line B.'),
     (19, 'ELD-51  RSP', 'Starter panel', 'On the forward wall, at the end of the way: the isolator, a starter for each motor, the control transformer. Its two leaves open into the way.'),
     (20, '', 'Cable tray', 'On two posts over the power pack, 2.1 m up: the motors\' cables from the starter panel, each coming down to its motor in a conduit.'),
+    (21, 'HYD-04  RV2', 'Cleats\' block', 'A small block on the lid, abaft the pressure block: the cleat pump delivers into it; the red cap on it is the cleats\' relief valve, 160 bar; line S leaves its top.'),
+    (22, 'HY-03T', 'The return\'s way', 'Line T comes down beside P, turns just over the pressure block and runs aft over the lid on two posts, then down into the cooler (10).'),
 ]
 fy = table(64, fy + 10, ['No.', 'Tag', 'What it is', 'What it does, and how it is known'], [(str(n), t, w_, d) for n, t, w_, d in PARTS4], [36, 118, 132, 1226])
 # ---- the lines
@@ -1157,7 +1169,8 @@ fy += 26
 text(64, fy, 'THE LINES', 12, weight='700')
 LINES4 = [
     ('P', 'Pressure', '30 x 4 mm steel (25 mm bore)', 'Pressure block (6) to the valve stand (14)', 'The pumps\' oil, at up to 210 bar, on its way to the valves.'),
-    ('T', 'Return', '35 x 3 mm steel (32 mm bore)', 'Valve stand (14) to the tank (1)', 'The oil coming back from the valves. No pressure to speak of.'),
+    ('T', 'Return', '35 x 3 mm steel (32 mm bore)', 'Valve stand (14) to the cooler (10), the return filter (11) and the tank (1)', 'The oil coming back from the valves. No pressure to speak of.'),
+    ('S', 'Cleats\' pressure', '18 x 2.5 mm steel (12 mm bore)', 'Cleats\' block (21) to the valve stand (14)', 'The cleat pump\'s oil, at up to 160 bar, to the cleat valve V2.'),
     ('A', 'Ramp, raise', '30 x 4 mm steel', 'Valve stand to the rod side of both cylinders', 'Oil here pulls the cylinders in and RAISES the ramp. It also carries the leaf\'s weight while the ramp is down: gauge PG2 and the control stand\'s RAMP LINE A show it.'),
     ('B', 'Ramp, lower', '30 x 4 mm steel', 'Valve stand to the piston side of both cylinders', 'Oil here pushes the cylinders out and LOWERS the ramp, against the load-holding valves, which open only while B has pressure.'),
     ('C', 'Cleats, lock', '18 x 2.5 mm steel (12 mm bore)', 'Valve stand to the ten cleats', 'Oil here shoots the eight bolts and closes the two hooks: the door is LOCKED.'),
@@ -1184,12 +1197,10 @@ OIL4 = [
 fy = table(64, fy + 10, ['', 'The yard\'s choice (stern_place.FLUID, TANK): not a maker\'s figures'], OIL4, [190, 1322])
 # ---- said plainly
 fy += 26
-text(64, fy, 'WHERE THE MODEL IS SIMPLER THAN THE DIAGRAM (SHEET 2), SAID PLAINLY', 12, weight='700', fill=RED)
+text(64, fy, 'WHAT IS DRAWN AND NOT WORKED ON THE PAGE, SAID PLAINLY', 12, weight='700', fill=RED)
 PLAIN4 = [
-    'The return line T is drawn coming down beside P onto the pressure block. By the diagram it goes through the cooler (10) and the return filter (11) into the tank: that pipework on the lid is not drawn yet.',
-    'The cleat pump (4) is drawn delivering into the same pressure block. By the diagram it has a line and a relief valve of its own (RV2, 160 bar) to the cleat valve V2: not drawn yet.',
-    'The lines carry no markers aboard yet: they are told apart by where they lie (right). The valve stand\'s levers, the hand pump and the gauge cocks are drawn and are not worked on the page; the ramp is worked from its control stand.',
-    'The level glass carries no marks yet and its level does not move with the ramp; the oil\'s temperature is not kept and the cooler\'s fan does not turn. Making the pack work in full is the next piece of work on it.',
+    'The spare valve\'s lever, the hand pump and the three gauge cocks are drawn and are not worked. The control stand\'s horn and key switch are drawn and do not work.',
+    'Nothing aboard loses oil or overheats it, so OIL LEVEL and OIL TEMP are seen lit only by the lamp test, as aboard a ship in good order.',
 ]
 for k, t_ in enumerate(PLAIN4):
     for i, s_ in enumerate(wrap(t_, 250)):

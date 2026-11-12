@@ -165,7 +165,7 @@ def main():
     # spaces and to the car deck (part.group).
     parts_of = {gid: shipyard.collection(gid, ship) for gid in S.PARTS}
     report, inputs, movers, ways, doorways = {}, [], [], [], []
-    modules = ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'steel', 'stern_gear', 'stairs', 'compass_deck', 'wheelhouse', 'livery', 'vending', 'eg_room', 'lighting', 'deck_outfit', 'outfit', 'makers_mark')
+    modules = ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'steel', 'stern_gear', 'switchboard', 'cabin_ce', 'stairs', 'compass_deck', 'wheelhouse', 'livery', 'vending', 'eg_room', 'lighting', 'deck_outfit', 'outfit', 'makers_mark')
     only = opt.get('--only')           # a trial of some sections: no checks, nothing the page reads is to be made from it
     for name in (only.split(',') if only else modules):
         try:

@@ -364,7 +364,8 @@ def main():
         rights=dict(owner=M.OWNER, holder='Nils Johansson', year=2026, notice=M.NOTICE,
                     mark=dict(scheme=M.SCHEME, id=M.fingerprint(key)) if key else None),
         bounds=dict(min=[float(v) for v in lo], max=[float(v) for v in hi]),
-        atlas=atlas, atlases=[atlas],
+        # (her own sheet, and the sheet of her cabins' pictures: cabin_pictures.py)
+        atlas=atlas, atlases=[atlas] + [dict(file=c['file'], size=c['size']) for c in [json.load(open(os.path.join(HERE, 'cabin_pictures.json')))]],
         materials=materials,
         views=[dict(id='ship', name=S.SHIP_NAME, groups=groups)],
         source=dict(generator=parts[0][0]['generator'], blender=parts[0][0]['blender'], arrangement=f'ferry/blender/ga.py, revision {ga.REVISION}'),

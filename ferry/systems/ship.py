@@ -110,6 +110,7 @@ SUBSYSTEMS = [
     dict(id='RMP', name='Stern ramp and door', text='The leaf, its hinges and cylinders, its end flaps, the ten cleats that hold it shut, their switches, and the stand it is worked from.'),
     dict(id='HYD', name='Cargo access hydraulics', text='The power pack in the hydraulic pump room, its pumps, valves, filters and cooler, and the pipes to the stern.'),
     dict(id='GEN', name='Power generation', text='The three diesel generating sets in the auxiliary engine room. Not installed: their places are marked.'),
+    dict(id='ADM', name='Ship\'s office and data', text='The computers she is run from and what joins them: the maintenance program on the chief engineer\'s computer. No network is built yet.'),
     dict(id='OUT', name='Outfit', text='The room itself and its furniture: console, stand, chairs, chart table, doors, windows, linings.'),
 ]
 

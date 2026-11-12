@@ -70,6 +70,8 @@ LOOKS = {
     # dial or a chart takes the light like the thing it is printed on. Both lie on a surface and are drawn a hair in front of it.
     'Screen picture': dict(metalness=0.0, roughness=0.3, shading='basic', textured=True, atlas=0, offset=[-2, -4]),
     'Panel face': dict(metalness=0.0, roughness=0.55, textured=True, atlas=0, offset=[-2, -4]),
+    # a picture of her cabins' sheet (cabin_pictures.py: the model's second sheet): paper on a wall, lit by its room
+    'Cabin picture': dict(metalness=0.0, roughness=0.7, textured=True, atlas=1, offset=[-2, -4]),
     # Linings, deck coverings and deckhead panels: matt.
     'Lining': dict(metalness=0.0, roughness=0.8),
     # The other ship's walls and casings are drawn in this: what of hers stands in line with them takes the light the same way.

@@ -1,0 +1,131 @@
+/* Maintenance Desk aboard a vessel: its look. A Johansson Co program.
+ *
+ * The owner, 12 November 2026, of a gallery of design write-ups: "maybe use the best design that suits a maintenance
+ * program". Taken as its basis: the rules of an accessibility-first public-service design system (contrast of 4.5 to 1 for
+ * text and 3 to 1 for what is not text; a focus ring that cannot be missed; nothing told by colour alone; states of a
+ * form's fields spelt out; corners of 8 and 12), with the denser text of a business product (14 px on 1.5) for long lists.
+ * Its rules are used, not its name or its marks. Every rule here applies only while the page is opened for a vessel
+ * (html[data-vessel]): the workshop's look, under ./?workshop, is as it was.
+ */
+html[data-vessel] {
+  --v-ink: #1a1a1c; --v-text: #333333; --v-text2: #4d4d4d; --v-muted: #626264;
+  --v-line: #d8d8db; --v-line-strong: #666666; --v-bg: #f2f2f2; --v-surface: #ffffff;
+  --v-primary: #0017c1; --v-primary-hover: #00118f; --v-primary-active: #000060; --v-selected: #d9e6ff;
+  --v-focus: #ffd43d;
+  --v-ok: #197a4b; --v-ok-bg: #e6f5ec; --v-warn: #7a5f00; --v-warn-bg: #fbf3d5; --v-bad: #ce0000; --v-bad-bg: #fdecec;
+  /* the program's own names, given these values */
+  --green: var(--v-primary); --ink: var(--v-ink); --muted: var(--v-muted); --line: var(--v-line); --bg: var(--v-bg); --orange: var(--v-warn); --red: var(--v-bad);
+}
+html[data-vessel] body { background: var(--v-bg); color: var(--v-text); font-size: 14px; line-height: 1.5; letter-spacing: 0; }
+html[data-vessel] h1 { font-size: 24px; line-height: 1.3; font-weight: 700; letter-spacing: 0; color: var(--v-ink); margin-bottom: 8px; }
+html[data-vessel] h2, html[data-vessel] .card-heading h2 { font-size: 16px; line-height: 1.5; font-weight: 700; letter-spacing: 0; color: var(--v-ink); }
+html[data-vessel] h3 { font-size: 14px; line-height: 1.5; font-weight: 700; color: var(--v-ink); }
+html[data-vessel] .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--v-text2); margin-bottom: 6px; }
+html[data-vessel] .page-head { margin: 4px 0 20px; }
+html[data-vessel] .page-head p { color: var(--v-text2); }
+
+/* Links are told by more than their colour. */
+html[data-vessel] a, html[data-vessel] .link, html[data-vessel] .textbtn { color: var(--v-primary-hover); }
+html[data-vessel] main a:not(.btn), html[data-vessel] .link { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Buttons: corners of 8, the filled one for the one thing to do. */
+html[data-vessel] button, html[data-vessel] .btn { border-radius: 8px; border-color: var(--v-primary); color: var(--v-primary); font-weight: 600; }
+html[data-vessel] .primary { background: var(--v-primary); border-color: var(--v-primary); color: #fff; }
+html[data-vessel] .small { border-radius: 6px; min-height: 36px; padding: 6px 12px; }
+html[data-vessel] .link { border: 0; font-weight: 600; border-radius: 4px; }
+html[data-vessel] .settings-button { border-color: var(--v-line-strong); color: var(--v-ink); }
+@media (hover: hover) {
+  html[data-vessel] button:hover, html[data-vessel] .btn:hover { background: var(--v-selected); }
+  html[data-vessel] .primary:hover { background: var(--v-primary-hover); border-color: var(--v-primary-hover); }
+  html[data-vessel] .link:hover { background: transparent; color: var(--v-primary-active); }
+}
+html[data-vessel] button:focus-visible, html[data-vessel] a:focus-visible, html[data-vessel] input:focus-visible, html[data-vessel] select:focus-visible, html[data-vessel] textarea:focus-visible, html[data-vessel] summary:focus-visible {
+  outline: 4px solid #000; outline-offset: 2px; box-shadow: 0 0 0 2px var(--v-focus);
+}
+
+/* Fields: a border that is seen, and each state its own. */
+html[data-vessel] input, html[data-vessel] select, html[data-vessel] textarea { border: 1px solid var(--v-line-strong); border-radius: 8px; color: var(--v-text); }
+html[data-vessel] input::placeholder, html[data-vessel] textarea::placeholder { color: var(--v-muted); }
+html[data-vessel] input:disabled, html[data-vessel] select:disabled, html[data-vessel] textarea:disabled { border-color: #b3b3b3; background: #f2f2f2; color: #767676; }
+html[data-vessel] input[readonly], html[data-vessel] textarea[readonly] { border-style: dashed; }
+
+/* The frame. */
+html[data-vessel] .app-bar { background: var(--v-surface); border-bottom: 1px solid var(--v-line); backdrop-filter: none; }
+html[data-vessel] .brandmark { background: var(--v-primary); color: #fff; border-radius: 8px; }
+html[data-vessel] .brandmark svg { width: 24px; height: 24px; }
+html[data-vessel] .app-brand-copy strong { color: var(--v-ink); font-weight: 700; }
+html[data-vessel] .app-brand-copy small { color: var(--v-text2); font-size: 11px; }
+html[data-vessel] aside { background: var(--v-surface); backdrop-filter: none; }
+html[data-vessel] #nav a { color: var(--v-text); border-radius: 8px; }
+html[data-vessel] #nav a.active { background: var(--v-selected); border-color: transparent; color: var(--v-primary-hover); font-weight: 700; }
+html[data-vessel] .nav-count { background: var(--v-warn-bg); color: var(--v-warn); font-weight: 700; }
+html[data-vessel] .card, html[data-vessel] .stat { border-radius: 12px; border-color: var(--v-line); }
+html[data-vessel] .card-head { padding: 16px 20px; }
+html[data-vessel] .toolbar { padding: 12px 20px; }
+html[data-vessel] .kv label { font-size: 12px; font-weight: 600; color: var(--v-text2); margin-bottom: 2px; }
+html[data-vessel] .kv b { font-size: 14px; color: var(--v-ink); }
+html[data-vessel] footer { color: var(--v-text2); }
+
+/* What a thing's state is, in a word as well as a colour. */
+html[data-vessel] .badge { border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: 700; background: var(--v-ok-bg); color: var(--v-ok); white-space: nowrap; }
+html[data-vessel] .badge.overdue { background: var(--v-bad-bg); color: var(--v-bad); }
+html[data-vessel] .badge.review { background: var(--v-warn-bg); color: var(--v-warn); }
+html[data-vessel] .badge.blue { background: var(--v-selected); color: var(--v-primary-hover); }
+html[data-vessel] .badge.none { background: #ececee; color: var(--v-text2); }
+
+/* Long lists: 14 px rows, close together, a line between. */
+html[data-vessel] th { font-size: 12px; font-weight: 700; color: var(--v-text2); background: var(--v-bg); padding: 8px 16px; }
+html[data-vessel] td { padding: 10px 16px; font-size: 14px; border-bottom-color: #e6e6e9; }
+
+/* ---- The equipment register (vessel.mjs) ---- */
+.v-icon { width: 22px; height: 22px; flex: 0 0 22px; stroke-width: 1.6; }
+/* whose it is aboard: deck, engine, galley. Over the systems, which it narrows; nothing where her list names none */
+.v-depts { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 20px 0; }
+.v-depts:empty { display: none; }
+html[data-vessel] .v-dept { font-weight: 600; }
+.v-systems { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--v-line); }
+html[data-vessel] .v-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 12px 6px 10px; border: 1px solid var(--v-line); border-radius: 8px; background: var(--v-surface); color: var(--v-text); font-size: 13px; font-weight: 600; }
+html[data-vessel] .v-chip b { font-weight: 400; color: var(--v-muted); }
+html[data-vessel] .v-chip[aria-pressed="true"] { background: var(--v-primary); border-color: var(--v-primary); color: #fff; }
+html[data-vessel] .v-chip[aria-pressed="true"] b { color: #dfe6ff; }
+.v-tools { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 260px); gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--v-line); }
+.v-count { padding: 10px 20px; font-size: 13px; color: var(--v-text2); border-bottom: 1px solid var(--v-line); }
+.v-register table { min-width: 0; }
+.v-register .v-group th { background: var(--v-surface); border-top: 1px solid var(--v-line); border-bottom: 2px solid var(--v-ink); padding: 14px 16px 8px; font-size: 14px; color: var(--v-ink); }
+.v-register .v-group th span { display: inline-flex; align-items: center; gap: 10px; }
+.v-register .v-group th small { font-weight: 400; color: var(--v-muted); font-size: 13px; }
+.v-item { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.v-item .v-icon { color: var(--v-text2); margin-top: 1px; }
+.v-item a { font-weight: 600; }
+.v-item small { display: block; color: var(--v-muted); font-size: 12px; overflow-wrap: anywhere; }
+.v-where { color: var(--v-text2); }
+.v-strip { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 16px; margin: 0 0 20px; padding: 12px 16px; background: var(--v-surface); border: 1px solid var(--v-line); border-left: 4px solid var(--v-primary); border-radius: 8px; }
+.v-strip .v-icon { width: 28px; height: 28px; flex-basis: 28px; color: var(--v-primary); }
+.v-strip p { margin: 0; flex: 1 1 220px; min-width: 0; }
+.v-strip p b { display: block; color: var(--v-ink); }
+.aboard-parts { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+.aboard-note { font-size: 13px; margin-top: 12px; color: var(--v-text2); }
+@media (max-width: 700px) {
+  .v-tools { grid-template-columns: minmax(0, 1fr); }
+  .v-register thead { display: none; }
+  .v-register table, .v-register tbody, .v-register tr, .v-register td, .v-register th { display: block; width: 100%; }
+  .v-register tr { padding: 8px 0; border-bottom: 1px solid #e6e6e9; }
+  .v-register tr.v-group { padding: 0; border: 0; }
+  .v-register td { border: 0; padding: 2px 16px; }
+}
+/* Aboard, the site's ways out are the ship's page's to offer. */
+html[data-vessel] .main-page-button, html[data-vessel] .office-return { display: none !important; }
+
+/* ---- Her papers: a sheet is looked at whole, or two or three times as large and moved over; an instruction is read as a page. */
+.v-zoombar { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid var(--v-line); }
+html[data-vessel] .v-zoom[aria-pressed="true"] { background: var(--v-primary); border-color: var(--v-primary); color: #fff; }
+.v-sheet { overflow: auto; max-height: 76vh; background: #fbfaf5; -webkit-overflow-scrolling: touch; }
+.v-sheet img { display: block; width: 100%; height: auto; }
+.v-sheet[data-zoom="2"] img { width: 200%; }
+.v-sheet[data-zoom="3"] img { width: 300%; }
+.v-paper { max-width: 78ch; font-size: 15px; line-height: 1.6; color: var(--v-text); }
+.v-paper h2 { font-size: 20px; margin: 0 0 12px; } .v-paper h3 { font-size: 16px; margin: 24px 0 8px; } .v-paper h4 { font-size: 14px; margin: 18px 0 6px; }
+.v-paper p { margin: 0 0 12px; } .v-paper ul, .v-paper ol { margin: 0 0 12px; padding-left: 22px; } .v-paper li { margin: 4px 0; }
+.v-paper code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: #ececee; padding: 1px 5px; border-radius: 4px; }
+.v-paper .tablewrap { margin: 0 0 16px; border: 1px solid var(--v-line); border-radius: 8px; overflow-x: auto; }
+.v-paper table { min-width: 0; }

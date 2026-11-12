@@ -130,6 +130,101 @@ owner has not yet approved; the question of rebuilding the engine room's platfor
 the stern have no circuit. The ramp cover over the fixed ramp, which the same power pack is to work, is not built. The three-core
 cable ratings in `systems/ship.py` are recalled, not read.
 
+### The power pack worked, and out on the ramp (12 November 2026, night)
+
+The owner: "Also specify the oil and the level of oil etc , it needs to be fully functional"; and "I want to be able to walk out
+on the ramp , and look at the sea and the ship". (Said as it happened: the conversation this was built in was cleared before any
+of it was on record or committed. What follows is read from the work tree, from the build's log and from the page's own checks,
+by the session that found it: *Checks actually run*.)
+
+| | As built |
+|---|---|
+| The oil's level | A level glass on the tank's inboard side with an engraved scale: FILL, RAMP DOWN, LOW (where OIL LEVEL is given) and STOP (under which no pump is run). The oil in it stands at FILL with the ramp raised, **falls 9 cm as the ramp is lowered**, because the cylinders' rods take their own volume out of the tank, and comes back (`stern_place.GLASS`, `glass_map`; the part is stretched by the ramp's own control) |
+| The oil's temperature | Kept by the page (`stern_place.TEMP`): 20 °C with the pumps stopped; with one running it rises 0.15 °C a second to 55 °C, where the cooler holds it; stopped, it falls 0.05 °C a second. Quicker than life, as the ramp is: three minutes from cold to the fan's start. A dial thermometer beside the glass follows it |
+| The cooler's fan | Turns from 45 °C until the oil is back at 40 °C, or to a tap |
+| OIL LEVEL, OIL TEMP | The two lamps at the control stand. Nothing aboard loses oil or overheats it, so they are seen lit only by the lamp test |
+| Lamp test | The stand's button lights every lamp and comes out by itself after 2.5 s |
+| The valve stand | The ramp's lever V1 and the cleats' lever V2 give the same orders as the control stand's, and refuse the same: nothing without a pump |
+| The lines | The return T no longer ends on the pressure block: it goes aft over the lid on two posts, down into the cooler, and from the cooler's other end through the return filter into the tank. The cleat pump delivers into a block of its own with its relief valve RV2 (160 bar), and a line S of its own goes to the cleat valve. A marker on each of the eight lines where it leaves the valve stand: its letter and one word (RAISE, LOWER, LOCK, OPEN, CLEATS, PRESSURE, RETURN, CABLES) |
+| What holds 195 bar | Settled on the drawing: the two main pumps are of variable delivery, each with a pressure compensator set to 195 bar. With every valve in its middle a pump holds the pressure and delivers nothing; the relief valve (210 bar) does not blow |
+| Drawn, and not worked | The spare valve's lever, the hand pump, the three gauge cocks, the stand's key switch and horn (JS3-304-M1, section 13, says the same) |
+
+**Out on the ramp.** What moves and yet carries is marked so in the file (`carries`: the leaf and its end flaps). Once it has come
+to rest its floors are stood on like any other, where it then lies (`app.js`: `indexCarried`, `floorAt`); while it moves it carries
+nobody. With the ramp raised one is stopped at the stern door's sill; with it level one walks out along it, 9.7 m abaft the
+transom, 1 cm over the deck's level.
+
+**It is not moved while somebody stands on it** (the owner's rule for the ramp: what is dangerous has a hold). **As first written
+this did not hold, and no check had been run on it.** The order was refused only as it was carried out, by asking whether the
+walker stood on the ramp's floor; but that floor is indexed anew whenever anything aboard moves, and an order already taken read
+there as "under way", for which the floor is dropped. So with a quiet ship the ramp was held, and with the cooler's fan turning or
+the oil cooling it rose under the walker (from 90° to 87° in 1.6 s when tried); and for whoever asked for less motion, where an
+order is carried out at once, it went from level to raised in one step. The order is now refused where it is given
+(`app.js`: `orderInput`), before anything else is asked, and says why: "Stern ramp: somebody stands on it. It is not moved".
+
+## The main switchboard, 690 V: begun (`blender/msb_place.py`, `blender/switchboard.py`, `yard/drawings/msb_drawing.py`, JS8-865)
+
+The owner, 12 November 2026: "start building the MSB , with all the right connections , so we can start hooking up the electrical
+wiring to every single component onboard , including for the lights and all equipment on the bridge and forecastle". (Found in the
+work tree like the section above; the same caution.)
+
+- **Its numbers** are in one plain file, `blender/msb_place.py`, from the machinery design basis (sections 1.2 and 4): the 690 V
+  board of nine cubicles on two bus sections with a tie and a separate thruster bus (bars of 1,600 A, 60 Hz), from outboard: SG2,
+  DG3, DG2, T2, TIE, T1, DG1, SG1 (with the thruster bus tie), BT; each with its breaker's frame and setting and its cables; and
+  the ways of the 440 V section (32) and of the 230 V section that are to face it. Breakers and cables are sized by her own rule
+  (`systems/ship.py`). `wrong()` holds. Not calculated, and owed: the short-circuit level of the bars and the voltage dip when the
+  thruster starts.
+- **Drawn first:** JS8-865 in two sheets (`msb_drawing.py`): the 690 V board's front, the room from above, its one-line diagram,
+  how it is run and its nine panels; and every way of the 440 V and 230 V sections with breaker and cable.
+- **Built** (`switchboard.py`, named in `build.py`): the nine cubicles on the place marked MSB in the main switchboard room, on the
+  platform, looking aft into the aisle. On each: its engraved name, the mimic of its bars painted across the row, its instruments
+  and lamps, its air circuit breaker with its rating plate, and the door of its cable compartment, **which opens to a tap** on the
+  three bars and the cables of the schedule, each up through its gland, cleated, landed and tagged. Lettering and instruments are
+  fine work. The marked place's outline, post, sign and coiled ends are gone from there (`stern_place.BUILT`); the generators' and
+  transformers' cables in the register now end "landed in the cubicle".
+- **Not done, plainly.** The board is dead: nothing is installed to feed it, its instruments do not move and its breakers are not
+  worked. The 440 V and 230 V sections are drawn and not built. `systems/ship.py` is not yet brought up to the design basis (it
+  still names three generators and a 68.4 m ship), and the board has no section of its own in the register: it is one component of
+  the stern's section. What is under the platform is not drawn, so each cable ends at its gland. On the page it has been looked at in
+  four fixed views (*Checks actually run*): its lettering reads whole from arm's length. Seen there and not looked into: the
+  joints between a cubicle's doors show as broken lines from the aisle; and where the open door's leaf of cubicle 7 lies was not
+  looked at from the side.
+
+## The maintenance program aboard, and the computer it runs on (`../maintenance-demo/`, `systems/equipment.py`, `app.js`: `openComputer`, `blender/cabin_ce.py`, `checks/computer.cjs`)
+
+The owner, 12 November 2026, of the site's own program Maintenance Desk: "This could be used for the maintenance system onboard , if
+it needs enhancing add that , so we can update that program as well"; "Build a functional Maintenance PC and add it to the chief
+engineers cabin"; "Which has all parts and equipment onboard"; "It needs to have an ui, we are not going to a website we are still
+on the chisum , accessing the maintenance program is on the computer"; "We can have full screen but needs a clear button to leave
+and go back to the chisum"; "We don't need the demo data , we have chisums data , and that is what we will use on the web app
+too"; "Use Python to draw icons make the ui look less generic"; "The software (the maintenance) is a Johansson Co program"; "I
+want to be able to access drawings and installation instructions in the maintenance desk"; "We should be able to filter by
+department , deck, engine , galley"; "Use I create api to make a calendar in the chief engineers office with cute manga ladies".
+Design record: [`yard/design/maintenance-computer.md`](yard/design/maintenance-computer.md) (its section 7 is what was built).
+
+| | As built |
+|---|---|
+| Everything aboard, once | `systems/equipment.py` writes `data/equipment.json` from her own files: the register's components and the deck fittings of `spec.OUTFIT` (320 items in 24 systems), each with its department, system, deck, room and place, and the papers that are about it. `make.sh` writes it with every build. **Not in it yet:** the 392 light fittings and each fitting's parts (their builders run inside Blender: `build.py` is to ask each section for them) |
+| Whose it is | Every item is of a department, **deck, engine or galley** (`equipment.py`: `department`): by its system; the galley's by what it is (the pantry's unit and its coffee maker; their sockets are the electricians'); the chief engineer's own room is the engine department's. 223 deck, 95 engine, 2 galley: little of a galley is built yet. The program offers the three over its systems: a department first, then the systems it has, with its own counts (`vessel.mjs`: `departmentsOf`, `registerGroups`); an item's page says whose it is. Each has a drawing (`icons/draw_icons.py`: a pair of bitts, a gear wheel, a pot) |
+| Her papers | The same file lists every sheet the yard has drawn and every instruction, calculation and list it has written, as the files stand under `yard/`, **and the owner's own package for a chief engineer's suite** (`blender/assets/ce-suite/`: its drawing CE-SUITE-GA-001 and its method statement MS-CE-001, which is the installation documents; of a suite of 7.2 by 5.0 m on a 190 m ship, and marked so): 23 in all, 16 drawing sheets, 2 instructions, 3 calculations, 2 lists. Which of them an item is given is said once, in `equipment.py` (`papers_for`). The program shows a paper only from those two folders (`vessel.mjs`: `paperAllowed`) |
+| The program | Maintenance Desk, **a Johansson Co program**, in its own folder beside her (`maintenance-demo/`). It opens on the Chisum: a workspace of its own, filled from her list (`vessel.mjs`), with jobs by kind of thing. **The jobs are the yard's own routines, and say so**; the power pack's are its instruction's (JS3-304-M1, section 12); the statutory ones for life-saving and fire gear are as recalled, not read. Its register is close-set rows by system; an item says where it is aboard and lists its drawings and instructions; a sheet is looked at inside the program, an instruction read as a page. The sample workshop it was written for is under `?workshop` and is offered nowhere |
+| Its look and its drawings | `maintenance-demo/vessel.css`: the rules of an accessibility-first public-service design system (contrast, a focus ring that cannot be missed, nothing told by colour alone), with the denser text of a business product for long lists; its rules, not its name. `maintenance-demo/icons/draw_icons.py` draws its 29 icons from numbers: one for each of her systems, and for a winch, a lifeboat, a liferaft, a sheet |
+| On her own page | `app.js` (`openComputer`): the program fills the page inside a frame; the address does not change and she is not unloaded. **One button, top left, always in sight: "Back to the Chisum"**; Escape does the same, from her page or from inside the program. Nobody walks while they sit at it, and they stand where they stood afterwards |
+| Nothing leads out | Aboard, nothing in sight on the program's first page leads to the site: the workshop's line about StepWise (a tool that is on the site, `/stepbuddy/`) gives way to the ship's own (`vessel.mjs`: `pages.overview`); `checks/computer.cjs` asks for it. Opened as the workshop (`?workshop`) the program is as the site has it |
+| Both ways | A fitting's card aboard offers **Maintenance**, which opens the program at that fitting. **Show on board** on an item puts the program away and brings the thing up: by its card where the register has it, else by flying to its place |
+| The computer | **It stands in the chief engineer's day room** (officers' deck, port side, under the wheelhouse), drawn first: [JS5-511](yard/drawings/JS5-511-chief-engineers-day-room.svg) (`yard/drawings/cabin_drawing.py`), from `blender/cabin_place.py`, which the builder (`blender/cabin_ce.py`) and the register (`systems/accommodation.py`, its third section: seven components, a subsystem ADM) read too. A desk of 1.60 by 0.75 m along her side at the room's after end with three drawers, a chair on a five-star base, a screen on its stand, a keyboard, a mouse, the system unit on the deck under the desk, and their cables. **A tap on it sits one down at it** (`cabin_ce.motion`: an input that `opens: "maintenance"`; `app.js`: `tapInput`). While nobody sits at it the screen shows the program's opening picture, built as fine work (a lit sheet, bars, lettering), not laid on as a picture |
+| Where it stands, and what feeds it | **As the owner's own package has it** (CE-SUITE-GA-001, MS-CE-001: the desk at the ship's side beside a window, its sockets 0.30 m up on circuit S1 of the suite's own board DB-CE, in skirting trunking, the board by the door). It was first drawn against the after wall, without the package having been looked at; found before anything was built, and moved. The desk's forward half metre is under the first side window, 0.31 m under its sill; the screen is 0.20 m clear of the pane (`cabin_place.wrong()` stops the build otherwise, and the builder asks `steel.py` where the windows really are). A twin socket and a data outlet on her side under the desk; 5.0 m of skirting trunking aft along her side, along the after wall and up beside the door. **DB-CE is not installed: its place is a yellow outline and a sign, and both cables end in a box under it and say so.** In the register: the computer (180 W, typical, not a maker's) on DB-CE's way 1 (16 A, 2.5 mm²); DB-CE entered from the lighting and small-power board with the register's estimate for the way beyond the room. No network is built or registered |
+| Its cables | **None of them runs through the air** (JSY-STD-402). From the unit's back each crosses to her side under the desk's back panel, a free loop of 0.15 m (the panel is a modesty panel: it hangs from the top down to 0.45 m, `cabin_place.DESK['back']`). Along her side they lie against the wall under saddle clips (eleven of them, one part of their own), each at a height of its own over the outlets' plates, and step out to come down into their plugs from above: the unit's power and the screen's in the twin socket, the unit's data in the outlet. The keyboard's lies along the back of the desk's top to its after end, goes over the edge and down her side. The screen's two come out of its back beside the neck, down onto the stand's foot, over the desk to its back edge and down behind it; the picture's goes on along the back of the back panel to the unit. **Three faults found and put right before the build.** In the first trial's pictures: the screen's two cables went straight from the wall to the case through the air, one of them up the wall beside the screen, a frame of wire standing in the room. By `spans.py` on a trial of the whole ship: the unit's power and data ran 0.23 and 0.37 m level through the air before the outlets. And beside those, by looking: the keyboard's cable hung 0.6 m free behind the desk and ran 0.27 m level to the unit (`spans.py --list` does not name the keyboard's cable at all; why was not looked into) |
+| The calendar | On the after wall at the left hand of whoever sits, 42 by 60 cm, wire-bound across its middle, open at November 2026 with the day ringed: "The engine room watch", three engineers in boiler suits in a manga's manner. **The picture is not drawn by the yard**: it was made with an image service from a description (ElevenLabs' image generation; `blender/cabin_pictures.py` says how and keeps it in `blender/assets/calendar/`); the month is drawn from the calendar itself. It is on **a second sheet of pictures**, `data/chisum-cabins.webp` (her own sheet cannot be drawn again on this Mac): the file names two sheets now, a material says which it draws from (`shipyard.LOOKS`: `Cabin picture`, `atlas: 1`), `check.py` asks for both, and the offline store keeps it |
+
+**Not done, plainly.** The rest of the suite is not fitted out: no bedroom, wet unit, linings, settee or lamp over the desk; the
+chair does not turn; the keys carry no letters. DB-CE, the board that is to feed it, and any network are not installed. Without a
+connection the program does not open: it is outside the reach of her offline store (the worker that serves it is hers alone). What
+is recorded stays on the device it was recorded on. The yard has written no installation instruction of its own; the owner's method
+statement is what there is. The bridge's electrical sheets (JS8-851, 856, 864) are not redrawn and do not show DB-CE; the proof of
+supply was run again and holds with it. The site's own words about Maintenance Desk (`config.js`, the homepage) still speak of a
+fictional workshop: they are the owner's to change when this is published.
+
 ## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
 
 The owner, 12 November 2026: "I need you to water mark, models, with my logo and these icons, incase someone just steals them, these
@@ -1348,6 +1443,68 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 12 November 2026, towards midnight: the computer in the chief engineer's day room; the register by department
+
+Said as it happened. The session began after the conversation had been cleared, and found the work in the work tree: the room's
+numbers rewritten to the owner's package, the builder and the register following them, a trial of the cabin built, **the drawing
+still as first drawn** (its program no longer ran: it asked the numbers for a thing they no longer have), and the ship's list naming
+departments and the owner's package, **which the program did not read**.
+
+| Check | Result |
+|---|---|
+| `node --test maintenance-demo/tests/*.test.mjs`, as found | **339 of 340: one failed**, rightly: her list named two papers outside the yard's folders (the owner's package), which the test of her papers did not allow and the program would have left out |
+| The same, after | **344 of 344 pass**. Four new ones were written first and seen to fail (the program had no word for a department, nor for which folders a paper may come from): the register narrowed by department; a list that names none; her own list's three departments, their counts and their drawings; her papers only from her two folders |
+| The program in a browser, by itself (`/maintenance-demo/`) | All departments 320, Deck 223, Engine 95, Galley 2; Engine shows 95 items in 12 systems; a system the department does not have is let go when the department is chosen; an item's page says its department; the owner's drawing and JS5-511 are looked at inside it. At 1280 by 900 and at a phone's width (390), no error on the page |
+| `cabin_place.py`; `cabin_drawing.py` | The room holds; JS5-511 drawn again and looked at as a picture, twice (the first time: a note ran off the sheet's edge, the chair's back stood on nothing in the after wall's view) |
+| A trial of the cabin alone (`build.py --only steel,cabin_ce`, seconds) with pictures from Blender | **The screen's two cables stood in the air**: straight from the wall to the case, one up the wall beside the screen. Led down behind the stand and the desk instead; pictures again |
+| A trial of the whole ship, then the four slow checks on it | `zfight.py` 0 pairs; `afloat.py` 0 afloat; `windows.py` nothing over a pane; **`spans.py`: 2 runs through the air**, the unit's power and data under the desk (0.23 and 0.37 m, carried nowhere). Beside them, by looking, the keyboard's cable. All three led along her side under saddle clips, under a shorter back panel; on the cabin's trial again: 12 runs, every one carried, 0 pairs, nothing of the cabin afloat |
+| `ferry/blender/make.sh` | **Once: "built: every check passed"**. 3,489,569 triangles built, 22.93 MB, 215 motions, 232 components, 105 meshes of fine work, **two sheets of pictures, both drawn from**; the mark read in 100.00 % of 1,821,787 corners; `equipment.json` 320 items in 24 systems, 23 papers; 0 pairs among 1,321 pieces; 0 afloat of 33,383; 85 panes, nothing built over one; 498 runs (345 m), every one carried; the light traced (293 s). 13 minutes |
+| The register, by itself; the proof of supply | Holds with the third section: 232 components, the board DB-CE (230 V, 180 W connected, feeder 0.9 A on 20 A, 2 × 2.5 mm², 30.5 m with the estimate beyond the room, 0.2 %). `prove.py`: 95 consumers, 63 breakers, 7 conditions: proven |
+| `checks/computer.cjs` | **19 of 19 on its first run**: the line that failed until the computer was built passes ("the computer stands in the chief engineer's suite (Chief engineer's computer, the register's ADM-01), and a tap on it opens the program"), and a new one: narrowed by department. **Then a fault seen in the picture of the program open on her page:** its first page offered "Open StepWise", a link out to the site (it came with the site's own change of 12 November, after the program was put aboard). A line was written for it: **its first form passed wrongly** (it looked before the page had changed); put right, it **failed, rightly** ("/stepbuddy/"); aboard the overview's line is the ship's own now, and the check is **20 of 20, twice running** |
+| The nine other page checks, each by itself | **all pass, each on its first run: doors 131, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5.** They were run before the program's overview line was changed (the row above): that change is in the program alone (`vessel.mjs`), and nothing of her own page was touched after them |
+
+Not done: a phone or tablet (the program's look at a phone's width was looked at in Chromium only). The pictures of the room from the
+page are in `chisum-screens/2026-11-12/16-maintenance-computer/4-built/` (`tools/shots-cabin.cjs`, new).
+
+### 12 November 2026, late at night: the maintenance program aboard
+
+| Check | Result |
+|---|---|
+| `node --test maintenance-demo/tests/*.test.mjs` | **340 of 340 pass**: the 321 the program had, and 19 new ones of the vessel's workspace (`tests/vessel.test.mjs`). As first wired, 18 of the old ones failed: the test that loads the page's program did not know the new module's names; it does now, and opens the program as the workshop (`?workshop`), which is what those tests are of |
+| The program in a browser, by itself (`/maintenance-demo/`) | Opens on the Chisum: 313 items, 330 jobs, no sample workshop in it, the workshop's own storage untouched. A sheet is looked at whole and two and three times as large; the power pack's instruction is read as 13 sections and 6 tables with no link out |
+| `checks/computer.cjs` (new: the tenth page check) | **17 of 18**, twice running: the list, the card's Maintenance, the page's address unchanged, the button (229 by 48 px, top left, with the keys), the program Johansson Co's, the register her list, no sample, a word finds, her papers (20), a sheet looked at inside it, the instruction read, an item's own papers, Show on board, Escape from both sides, nobody walks, no error on the page. (Two of its own lines first read the wrong table: an item's card of papers is a table of the register's kind. They wait for the register itself now.) **FAIL, as it should: "the computer stands in the chief engineer's suite, and a tap on it opens the program": it is not built** |
+| The nine page checks, each by itself, on the page with the display added | **all pass, each on its first run: doors 131, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5** |
+
+Not done: a phone or tablet. The program's look was judged at 1280 by 900 only.
+
+### 12 November 2026, night: the power pack worked; out on the ramp; the main switchboard begun
+
+The same checkout and server as the notes under this one. **Said as it happened:** the conversation this was built in was
+cleared after its `make.sh` had passed and before a page check was run, a picture taken from the page, a word written or
+anything committed (nothing of a conversation is kept on this Mac while `/Volumes/Development` is away: `HANDOVER.md`). The
+session after it found the work in the tree, saw that no builder is newer than the model beside it, and ran what follows.
+
+| Check | Result |
+|---|---|
+| `make.sh`, as it stands in `/tmp/chisum-make.log` (ended 20:59; not seen run by the session that writes this) | **"built: every check passed"**: 3,463,670 triangles built, 3,419,936 in the file, 22.78 MB, 215 motions; the mark read at 100.00 % of 1,808,414 corners; fine work in 97 meshes, a step of 0.031 mm at most; 0 pairs of faces in one plane among 1,292 pieces; 0 afloat of 32,995; 85 panes, nothing built over one; 486 runs (343 m), every one carried; the light traced. The model the page is served is that build's (its sum compared with the file in the tree: the same) |
+| The nine page checks on it, each by itself | **`doors.cjs`: 3 FAILED** (127 passed), all three among the six checks written that evening. Bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5: all passed |
+| "the oil warms while a pump runs", looked into on a fresh page | Every part of it holds there: 20 °C at rest, 48.4 °C after 190 s, the needle turned 131°, the fan turning, neither oil lamp lit. In the check the oil was not cold when it began: the control stand's check before it runs a pump, and the three minutes started from 23.5 °C (52 °C was reached, 28.5 °C more). **The check's fault** |
+| "with the pump stopped the oil cools" | It was read 260 s after the pump stopped, which is enough from 52 °C and not from 55 °C, where the oil stood once the valve stand's levers had been worked: 42.0 °C and the fan still turning; under 40 °C and the fan stopped after 300 s. **The check's fault** |
+| "out on the ramp" | The check put its walker somewhere from the outside view, where nobody is on foot: it read "?". On foot the walk held (stopped at the sill with the ramp raised; 9.65 m out with it level, 1 cm over the deck's level), **and the page was at fault: the ramp rose under the walker** |
+| Whether the ramp is held under a walker: three cases, each on a fresh page | As found: a quiet ship, held at 90°; the oil warm and its fan turning, **87.4° after 1.6 s**; less motion asked for, **0° at once**. Why: *The power pack worked, and out on the ramp*. With the order refused where it is given (`orderInput`): 90°, 90° and 90° |
+| `doors.cjs` put right | The oil is let cool before it is read; the cooling is read when it is done, and the fan must turn until then; the walker is on foot; the hold is tried with the cooler's fan set turning and again with less motion asked for (a check of its own: 131 in all) |
+| The nine page checks again, each by itself, on the corrected page | **all pass, each on its first run: doors 131, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5** |
+| Nine fixed views from the page (`15-built-working/`; `shots-stern.cjs` has them), drawn on the Mac's graphics card, no error on the page; all nine opened | The oil in the glass stands at FILL with the ramp raised and at RAMP DOWN with it level; the thermometer at 20 °C; the eight markers over the valve stand read whole; the return goes over the lid on its posts; from out on the level ramp one looks back into her. The switchboard from the aisle, a generator panel and the synchronising panel from arm's length (names, ratings, instruments' letters, OPEN and CLOSED: whole), cubicle 7's cable compartment open on its three bars and two landed, tagged cables. Four sent to the owner |
+
+Not done: `make.sh` was not run again (no builder changed after the build that is recorded; `app.js` and `doors.cjs`, which
+changed, are not part of it). A phone or tablet; a frame's cost with the 120,000 triangles more. How each line marker is held on
+its pipe was not looked at from the side. The probes are not kept: what they found is in `doors.cjs` now.
+
+**Found the same night, from the owner's picture of the after mooring station ("Also what's this ? How can this equipment be
+used"), and not put right:** the roller fairlead at each mooring port cannot be used as it stands. Its throat is 0.56 to 0.76 m
+over the deck and the port's sill is 1.00 m over it (`fittings_mooring.roller_fairlead`; `spec.MOORING_PORT`): a line led
+through it meets the plating under the port. Its rollers do not turn and no rope is rove through it.
 
 ### 12 November 2026, late evening: the control stand made a real one; fine work; the gauges on their mounts; legends that fit
 

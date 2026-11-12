@@ -330,6 +330,31 @@ def first_fill():
     return tank_litres(TANK['fill']) + 2 * ANNULUS * RAM['stroke'] * 1000 + lines
 
 
+# The level glass on the tank's inboard side, toward its forward end, and the dial thermometer beside it (heights over the
+# main deck; `at` from the transom). The glass covers the four marks of TANK; the oil in it stands where oil_level says.
+GLASS = dict(at=12.15, foot=0.40, head=0.98, r=0.012)
+THERMO = dict(at=11.80, h=0.82, r=0.040, full=100.0, sweep=270.0)
+# The oil's temperature as the page keeps it: as cold as the room with the pumps stopped; with one running it warms to where the
+# cooler holds it. Degrees a second, quicker than life (as the ramp is): about three minutes from cold to the fan's start.
+TEMP = dict(cold=20.0, warm=55.0, rise=0.15, fall=0.05)
+# The marker on each line where it leaves the valve stand: its letter, and one word for what it does.
+MARKERS = dict(A='RAISE', B='LOWER', C='LOCK', D='OPEN', S='CLEATS', P='PRESSURE', T='RETURN', E='CABLES')
+MARKER_H = 1.62                 # over the deck: over the two gauges, clear of the clamps at 1.45 m and of the conduit's at 1.70 m
+
+
+def glass_height(control=0.0):
+    """Where the oil stands in the level glass, over the main deck (the tank's bottom plate is 10 mm thick)."""
+    return HPU['tank'][4] + 0.01 + oil_level(control)
+
+
+def glass_map(base=None):
+    """The oil in the glass as the ramp's control goes: (control, how much shorter the column is than with the ramp raised, as a
+    share of its length then). The column is drawn from `base` up, as long as it is with the ramp raised, and drawn in from there."""
+    base = GLASS['foot'] if base is None else base
+    full = glass_height(0.0) - base
+    return [[float(c), round((glass_height(c) - base) / full - 1.0, 5)] for c in [0.0, LEAF_FROM] + [float(v) for v in range(10, int(LEVEL) + 1, 10)] + [LOWEST]]
+
+
 # The three pressure gauges in the hydraulic pump room. Each stands on the block it reads from, as a real one does (the
 # owner, 12 November 2026, of the system's gauge, which hung before the pressure block's face on a bare bar that came out of
 # the face behind it: "Is this a floating gauge ?"): a hexagon nipple screwed into a port in the block's top, a gauge cock
@@ -376,8 +401,17 @@ UP = dict(C=0.30, D=0.37, A=0.44, B=0.51)
 CROSS = dict(C=5.500, D=5.545, A=5.600, B=5.655)
 HEADER_FOOT = 0.55                                  # the cleats' two lines go down the wall to here: every bolt cleat is fed from them by a hose
 RAM_FEED = dict(inn=dict(A=3.93, B=4.00), h=5.30, x=WALL - T - 0.075)      # where A and B come through the wall beside each bracket, to the hoses
-MANIFOLD_AT = dict(A=11.06, B=11.13, C=11.20, D=11.27, P=11.40, T=11.47, E=11.57)   # where each line leaves the valve stand's top, from the transom
-SUPPLY = [('P', 'pressure, from the pumps to the valve stand', 25, 0.0150, 2.10), ('T', 'return, from the valve stand to the tank', 32, 0.0175, 2.19)]
+MANIFOLD_AT = dict(A=11.06, B=11.13, C=11.20, D=11.27, S=11.335, P=11.40, T=11.47, E=11.57)   # where each line leaves the valve stand's top, from the transom
+SUPPLY = [('P', 'pressure, from the pumps to the valve stand', 25, 0.0150, 2.10), ('T', 'return, from the valve stand to the tank', 32, 0.0175, 2.19),
+          ('S', 'the cleats\' pressure, from the cleat pump to the cleat valve', 12, 0.0090, 2.01)]
+# How the return goes on from the bar it comes down by (it was drawn ending on the pressure block until 12 November 2026; the owner:
+# "it needs to be fully functional"): it turns inboard just over the block, clear of the pressure line and of the gauge, runs aft
+# over the lid's inboard edge on two posts, crosses to the oil cooler on the tank's after end and goes down into it; from the
+# cooler's outboard end it comes up and forward into the return filter, and through that into the tank.
+RETURN = dict(over=0.04, x=8.31, jog=10.60, into=(8.44, 10.425), out=9.02, filter=0.13, posts=(11.20, 10.80))
+# The cleats' own block on the lid, abaft the pressure block: the cleat pump delivers into it, its relief valve RV2 (160 bar)
+# stands on it, and line S leaves its top for the cleat valve V2. (x from, to; from the transom from, to; its height over the lid.)
+CLEAT_BLOCK = dict(box=(8.30, 8.43, 11.27, 11.35), high=0.10, relief=(8.405, 11.31))
 _SM = (STAND['inn'][0] + STAND['inn'][1]) / 2
 JB = dict(box=(4.505, 4.66, _SM - 0.14, _SM + 0.14, 1.45, 1.85))             # the junction box of the switches, on the station's wall behind the control stand
 
@@ -423,10 +457,22 @@ def routes():
                 [(x2, up, h), (x2, up, HEADER_FOOT)],
             ]
     blk = HPU['block']
+    lid = HPU['tank'][5] + 0.015
     for name, what, bore, r, h in SUPPLY:
         at = MANIFOLD_AT[name]
         xt = (blk[0] + blk[1]) / 2
-        out[name] = [[(x_room, at, top), (x_room, at, h), (xt, at, h), (xt, at, blk[5])]]
+        if name == 'T':
+            # the return: down the bar to just over the block, inboard, aft over the lid, across and down into the cooler; and from
+            # the cooler's other end up and forward into the return filter (RETURN)
+            rt, c = RETURN, HPU['cooler']
+            hr, hf = blk[5] + rt['over'], lid + rt['filter']
+            out[name] = [[(x_room, at, top), (x_room, at, h), (xt, at, h), (xt, at, hr), (rt['x'], at, hr), (rt['x'], rt['jog'], hr), (rt['into'][0], rt['jog'], hr),
+                          (rt['into'][0], rt['into'][1], hr), (rt['into'][0], rt['into'][1], c[5])],
+                         [(rt['out'], rt['into'][1], c[5]), (rt['out'], rt['into'][1], hf), (rt['out'], HPU['return_filter'][1] - 0.07, hf)]]
+        elif name == 'S':
+            out[name] = [[(x_room, at, top), (x_room, at, h), (xt, at, h), (xt, at, lid + CLEAT_BLOCK['high'])]]       # onto the cleats' own block
+        else:
+            out[name] = [[(x_room, at, top), (x_room, at, h), (xt, at, h), (xt, at, blk[5])]]
     return out
 
 
@@ -503,6 +549,9 @@ ENDS = [
          what='Diesel generating set No. 3: 320 kW, 400 kVA, 690 V, 60 Hz, 1,800 rpm. Alternator forward.'),
 ]
 END = {e['tag']: e for e in ENDS}
+# The places that are built on: no outline, post, sign or coiled cable ends are drawn there any more (stern_gear.marks). The main
+# switchboard, 690 V, stands on its place since 12 November 2026 (blender/switchboard.py, msb_place.py, JS8-865).
+BUILT = ('MSB',)
 
 
 def end_point(tag):

@@ -21,9 +21,10 @@ sys.path.insert(0, os.path.join(HERE, '..', 'blender'))
 import ship as S
 import bridge
 import stern
+import accommodation
 import bridge_place as BP
 
-SECTIONS = [bridge, stern]
+SECTIONS = [bridge, stern, accommodation]
 OUT_JSON = os.path.join(HERE, '..', 'data', 'systems.json')
 OUT_DIR = os.path.join(HERE, 'out')
 
