@@ -281,17 +281,17 @@ CONFIG.projectExplorer = [
     "category": "explore",
     "title": "Chisum",
     "eyebrow": "A FERRY, DECK BY DECK",
-    "summary": "A 125 m ro-ro freight ferry in 3D. Turn her, lift her eight decks apart, cut her open along her length, or walk aboard and work her bridge.",
+    "summary": "A 125 m ro-ro freight ferry in 3D. Turn her, lift her decks apart, cut her open along her length, or walk aboard with her deck plan in hand and work her bridge.",
     "url": "/ferry/",
     "action": "Explore the ferry",
     "format": "3D model viewer",
     "language": "English",
     "status": "Work in progress",
-    "firstTry": "Press the walking figure to go aboard, pick the wheelhouse from the pin, then tap a lever or a screen to see what it is and what feeds it.",
+    "firstTry": "Press the walking figure to go aboard, tap the deck plan and choose the wheelhouse on the bridge deck, then tap a lever or a screen to see what it is and what feeds it.",
     "features": [
-      "Lift her six decks apart, from the double bottom to the compass deck",
-      "Walk aboard: 93 named rooms, 16 stairs, doors that open as you come to them",
-      "Her navigation bridge fitted out: tap a fitting to see what it is, what feeds it and what it talks to"
+      "Lift her seven decks apart, from the lower hold to the compass deck",
+      "Walk aboard: 133 named rooms, 17 stairs, and a deck plan that shows where you are and takes you to any room",
+      "Her navigation bridge fitted out and working: tap a fitting to see what it is, what feeds it and what it talks to"
     ],
     "preview": "ferry"
   },

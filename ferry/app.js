@@ -19,6 +19,8 @@ const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.crea
 const view = $('#view'), statusLine = $('#status'), panel = $('#panel'), toggle = $('#panel-toggle'), bar = $('#bar'), readout = $('#what'), card = $('#card');
 /** Her systems (systems.js): the component register, shown in the panel's second list and on the model. Null until read. */
 let systems = null;
+/** The deck plan on foot (map.js), when the arrangement is beside the model (data/plans.json). */
+let map = null;
 const narrow = matchMedia('(max-width: 900px)');
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -1322,6 +1324,7 @@ function enterWalk() {
 }
 function leaveWalk() {
   if (!walk) return;
+  if (map) map.close();
   const s = walk.saved;
   walk = null; showWay(); held.clear(); stick.x = stick.y = 0; stick.id = null; stickEl.firstElementChild.style.transform = '';
   fingers.clear(); pinch = null; clearTimeout(zoomSaid);
@@ -1364,7 +1367,12 @@ const zoomWalk = factor => setWalkZoom(walkZoom * factor);
 function placeEye() {
   camera.position.set(walk.pos.x, walk.pos.y + walk.eye, walk.pos.z);
   camera.rotation.set(walk.pitch, walk.yaw, 0, 'YXZ');
+  tellMap();
   redraw();
+}
+/** The deck plan is told where one stands and which way one looks (it draws again only when that has changed). */
+function tellMap() {
+  if (map && walk && walk.deck) map.update({ x: walk.pos.x, y: walk.pos.y, z: walk.pos.z, yaw: walk.yaw, deck: walk.deck, room: walk.space });
 }
 /**
  * How high the eye is carried at the feet's place: its own height, less under a low deckhead (0.12 m is kept over it)
@@ -1443,8 +1451,11 @@ const WAIST = new THREE.Vector3();
 function sayWhere() {
   const at = roomAt(WAIST.set(walk.pos.x, walk.pos.y + 0.4, walk.pos.z)) || roomAt(camera.position);
   let text = at ? `${at.deck.name} · ${at.space.name}` : '';
+  let deck = at ? at.deck.id : null;
   // Outside every room, the deck one stands on is named.
-  if (!at) for (const l of deckLevels()) if (walk.pos.y >= l.y - 0.6) text = l.deck.name;
+  if (!at) for (const l of deckLevels()) if (walk.pos.y >= l.y - 0.6) { text = l.deck.name; deck = l.deck.id; }
+  walk.deck = deck; walk.space = at ? at.space.id : null;
+  tellMap();
   if (text !== walk.room) { walk.room = text; readout.textContent = text; }
 }
 /** Go to the deck above (+1) or below (-1), over the same spot if there is floor there, else into one of its rooms. */
@@ -1530,8 +1541,11 @@ $('#deck-down').addEventListener('click', () => hopDeck(-1));
 const typing = e => /^(INPUT|SELECT|TEXTAREA|BUTTON|SUMMARY|A)$/.test(e.target.tagName);
 addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
+  // While the whole plan is open the keys are its own: Esc or M puts it away, and nobody walks under it.
+  if (map && map.isOpen()) { held.clear(); if (e.code === 'Escape' || (e.code === 'KeyM' && !typing(e))) { map.close(); e.preventDefault(); } return; }
   if (walk) {
     if (e.code === 'Escape') { leaveWalk(); return; }
+    if (e.code === 'KeyM' && map && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) { held.clear(); map.open(); e.preventDefault(); return; }
     if (e.code === 'KeyE' || e.code === 'PageUp') { hopDeck(1); e.preventDefault(); return; }
     if (e.code === 'KeyQ' || e.code === 'PageDown') { hopDeck(-1); e.preventDefault(); return; }
     if (e.code === 'KeyF') { climb(); e.preventDefault(); return; }
@@ -1717,6 +1731,17 @@ async function start() {
       });
     } catch (err) { console.error(err); $('#systems').append(el('p', { className: 'lede muted' }, 'Her systems could not be read.')); }
   } else $('#tab-systems').hidden = true;
+  // The deck plan on foot: her arrangement as the drawing has it, when it is beside the model. Without it (or without
+  // map.js, on a copy saved offline before there was one) she is walked as before, with no plan.
+  try {
+    const res = await fetch('./data/plans.json');
+    if (!res.ok) throw new Error(String(res.status));
+    const { createMap } = await import('./map.js');
+    map = createMap({
+      mini: $('#map'), chart: $('#chart'), plans: await res.json(), stairs: stairList, doorways: doc.header.doorways || [], ways: doc.header.ways || [],
+      half: shipInfo.length / 2, go: (deck, room) => travelTo(`room:${deck}:${room}`) || readout.textContent,
+    });
+  } catch (err) { console.warn('Her deck plan could not be read: no plan on foot.', err); }
   tintMark();
   // On a phone the panel is a sheet over the lower half: she is shown whole first, the list a tap away.
   panel.classList.toggle('closed', narrow.matches);
@@ -1747,6 +1772,8 @@ async function start() {
     work: (id, open) => { const it = inputs.get(id); if (it && it.def.auto) it.open = open; },
     /** For checks: her stairs, as the file says them (README: `stairs`). */
     get stairs() { return stairList; },
+    /** For checks: the deck plan on foot (map.js): what it shows, and its two moves. */
+    get map() { return map && map.state; }, openMap: () => map && map.open(), closeMap: () => map && map.close(),
     /** For checks: her particulars, as the file says them (half her length turns metres from the transom into z). */
     ship: doc.header.ship,
     step: id => stepInput(id),
