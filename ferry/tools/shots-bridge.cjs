@@ -57,6 +57,21 @@ const VIEWS = [
   ['worked-aft', [0.6, 21.9, 1.6], [-0.9, 19.6, 0.8], 1, { 'chart-drawer-1': true, 'chart-drawer-3': true, 'locker-door-1': true, 'locker-door-3': true, 'table-drawer': true, 'binocular-box-lid': true }],
   ['worked-locker', [1.2, 21.3, 1.5], [2.0, 19.7, 0.5], 1, { 'locker-door-1': true, 'locker-door-2': true, 'locker-door-3': true, 'locker-door-4': true }],
   ['night-switches', [0.0, 20.75, 1.5], [0.0, 23.0, 1.2], 1, { 'dimmer-console': 1, 'dimmer-instruments': 2 }],
+  // the forward bay and the way before the block (stage 6): from the starboard way looking forward, along the way from each
+  // end, the block's back from the glass, its service doors open, and the bay from outside, ahead and from under it
+  ['way-from-starboard', [-2.45, 22.35, 1.60], [-0.4, 23.55, 0.85], 1, {}],
+  ['way-from-port', [2.05, 23.30, 1.60], [-1.6, 23.40, 0.75], 1, {}],
+  ['block-back', [0.0, 23.78, 1.55], [0.0, 22.95, 0.75], 1, {}],
+  ['block-back-open', [-0.55, 23.80, 1.45], [0.35, 22.95, 0.55], 1, { 'console-back-2': true, 'console-back-3': true, 'console-back-4': true }],
+  ['close-terminals', [0.0, 23.55, 0.80], [0.0, 22.90, 0.42], 1, { 'console-back-3': true }],
+  ['bay-inside-port', [-1.2, 22.0, 1.62], [2.3, 23.6, 1.40], 1, {}],
+  ['bay-outside-ahead', [0.0, 31.0, 2.4], [0.0, 23.6, 1.3], 1, {}],
+  ['bay-outside-port-bow', [9.5, 29.5, 3.2], [0.6, 23.4, 1.2], 1, {}],
+  ['bay-outside-under', [4.2, 27.6, -2.6], [0.0, 24.0, 0.4], 1, {}],
+  // the doors from the wings onto the gallery: from inside the port wing, and from the gallery looking aft at the door standing open
+  ['wing-fore-door', [5.2, 21.3, 1.60], [3.45, 23.0, 1.05], 1, {}],
+  ['gallery-door', [2.3, 24.55, 1.60], [3.7, 23.0, 1.0], 1, { 'door-wing-fore-p': true }],
+  ['gallery-along', [-2.2, 24.62, 1.60], [2.6, 24.3, 1.1], 1, {}],
   ['wing-port', [4.3, 20.3, 1.62], [5.9, 22.8, 0.9], 1, {}],
   ['wing-port-in', [5.9, 21.9, 1.62], [3.0, 21.2, 1.3], 1, {}],
   ['wing-starboard', [-4.3, 20.3, 1.62], [-5.9, 22.8, 0.9], 1, {}],
@@ -76,7 +91,7 @@ const VIEWS = [
   page.on('console', m => { if (m.type() === 'error' && !/404/.test(m.text())) errors.push(m.text()); });
   await page.goto((process.env.CHISUM_URL || 'http://localhost:8765/ferry/') + '?shots=' + Date.now());
   await page.waitForFunction(() => window.__ferry && document.body.classList.contains('ready'), null, { timeout: 180000 });
-  await page.addStyleTag({ content: 'header.title, #panel, #panel-toggle, #card, #bar, #stick, #status, #help { visibility: hidden !important; }' });
+  await page.addStyleTag({ content: 'header.title, #panel, #panel-toggle, #card, #bar, #stick, #status, #help, #map-mini { visibility: hidden !important; }' });
   const gpu = await page.evaluate(() => { const gl = window.__ferry.look.renderer.getContext(), d = gl.getExtension('WEBGL_debug_renderer_info'); return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : 'unknown'; });
   // On foot in the wheelhouse first: every deck in its place, the sea and the sky, the lens of the walk.
   const half = await page.evaluate(() => window.__ferry.ship.length / 2);

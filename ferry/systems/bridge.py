@@ -32,6 +32,7 @@ VOID = 2.37            # the void between the lining and the roof's structure, w
 # Cable ways: named points (x, yard, h) and the trays, trunks and ducts between them. A cable goes from its board to its
 # consumer along the shortest way through them; its length is that way, the tails at both ends, and a tenth more.
 # ---------------------------------------------------------------------------------------------------------------------
+MULLION = round(BP.BAY_XI - BP.POST_J - BP.PANE_F - BP.MULLION / 2, 4)      # the mullion each side of the bay's middle window
 NODES = {
     'COR': (0.0, 19.50, VOID),          # where the signal and communication cables arrive: the corridor's deckhead at the wheelhouse door
     'MAIN-IN': (2.70, 19.50, VOID),     # where the main supplies arrive, along the port side of the house
@@ -52,8 +53,16 @@ NODES = {
     'PP-F': (2.80, 22.60, VOID),        # the cross tray over the console
     'SS-F': (-2.80, 22.60, VOID),
     'OVH': (0.0, 22.52, 2.20),          # the overhead console
-    'DUCT-P': (0.58, 22.88, VOID),      # the cable ducts down two window mullions into the console
-    'DUCT-S': (-0.58, 22.88, VOID),
+    # The cable ducts down two mullions of the forward bay. While the block stood against the front they went into its back;
+    # since the bay was built out (the refit's stage 6) it stands free, and a block that stands free is fed from below: each
+    # duct goes on down the lining to a cable transit in the deck (FOOT), the cables cross under the deck, and come up
+    # through a transit in the block's own bottom (UP) to the terminals behind its service doors.
+    'DUCT-P': (MULLION, BP.BAY_IN + BP.LEAN - 0.015, VOID),
+    'DUCT-S': (-MULLION, BP.BAY_IN + BP.LEAN - 0.015, VOID),
+    'FOOT-P': (MULLION, BP.BAY_IN - 0.015, 0.0),
+    'FOOT-S': (-MULLION, BP.BAY_IN - 0.015, 0.0),
+    'UP-P': (0.58, 22.86, 0.0),
+    'UP-S': (-0.58, 22.86, 0.0),
     'CON-PP': (2.60, 22.84, 0.50),      # the console's cable duct along its forward side
     'CON-P': (0.58, 22.84, 0.50),
     'CON-0': (0.0, 22.84, 0.50),
@@ -78,7 +87,7 @@ EDGES = [
     ('AFT-P', 'P-M'), ('P-M', 'P-F'), ('AFT-S', 'S-M'), ('S-M', 'S-F'),
     ('AFT-C', 'MAST-0'), ('MAST-0', 'C-F'),
     ('PP-F', 'P-F'), ('P-F', 'C-F'), ('C-F', 'S-F'), ('S-F', 'SS-F'), ('C-F', 'OVH'),
-    ('P-F', 'DUCT-P'), ('S-F', 'DUCT-S'), ('DUCT-P', 'CON-P'), ('DUCT-S', 'CON-S'),
+    ('P-F', 'DUCT-P'), ('S-F', 'DUCT-S'), ('DUCT-P', 'FOOT-P'), ('DUCT-S', 'FOOT-S'), ('FOOT-P', 'UP-P'), ('FOOT-S', 'UP-S'), ('UP-P', 'CON-P'), ('UP-S', 'CON-S'),
     ('CON-PP', 'CON-P'), ('CON-P', 'CON-0'), ('CON-0', 'CON-S'), ('CON-S', 'CON-SS'),
     ('CON-0', 'STAND'), ('CON-PP', 'WING-P'), ('CON-SS', 'WING-S'),
     ('P-M', 'WALL-P'), ('S-M', 'WALL-S'),
@@ -172,10 +181,12 @@ CIRCUITS = [
     ('DC1', 8, 'Propulsion remote control', 10, 4, None),
     ('DC1', 9, 'Bow thruster control', 2, 1.5, None),
     ('DC1', 10, 'Talkback', 2, 1.5, None),
-    ('DC1', 11, 'Alarm panel, watch alarm, door and ramp panel', 4, 1.5, None),
+    # (ways 11 and 14 are a size heavier since the console block stands free, stage 6 of the refit: its cables go down to the
+    # deck, under it and up into the block, 4 m more than straight into its back, and at 24 V the lighter cable lost 6.0 and 5.2 %)
+    ('DC1', 11, 'Alarm panel, watch alarm, door and ramp panel', 4, 2.5, None),
     ('DC1', 12, 'Heading and bearing repeaters, rudder angle indicators', 4, 2.5, None),
     ('DC1', 13, 'Wind sensor and display', 2, 1.5, None),
-    ('DC1', 14, 'Public address and general alarm, battery supply', 16, 6, None),
+    ('DC1', 14, 'Public address and general alarm, battery supply', 16, 10, None),
     ('DC1', 15, 'Night and transitional lighting, binnacle light', 2, 1.5, None),
     ('DC1', 16, 'Signalling lamp socket', 4, 1.5, None),
     ('DC2', 1, 'VHF No. 1', 10, 4, None),
@@ -233,7 +244,7 @@ FRONT = ROW2
 HAND, HEAD, STRIP = 22.255, 0.980, 22.635
 
 # ---- Outfit: the room and its furniture.
-C('OUT-01', 'Console', WH, (0.0, 22.56, 0.0), 'The console block: 3.7 m wide on the centreline against the forward bulkhead, with a way to the forward corner windows each side of it. From aft: a stainless grab rail along its edge; a desk that slopes up 11° with two rows of flush panels on a dark field, and the three control heads in its after edge, at the hand; a level strip with the propulsion and thruster panels, each in line ahead of its levers; an upstand leaning back 20° with the displays set into it under glass, lower in the middle so that the sea is seen over it ahead of the wheel (nothing ahead of the wheel over 1.225 m, nothing else over 1.315 m: calculation JS4-402 asked 1.22 and 1.33). Below the desk a cabinet of five bays, each with two doors on hinges, a quarter-turn lock and louvres: they open to a tap, and the units that are not seen stand behind them on shelves.',
+C('OUT-01', 'Console', WH, (0.0, 22.56, 0.0), 'The console block: 3.7 m wide on the centreline, standing free: a way 1.0 m wide runs before it in the forward bay, from one side way to the other, so that its back is reached for electrical work and maintenance. In its back each of its five bays has a service door on hinges with two quarter-turn locks; it opens to a tap on the bay\'s terminals: a rail of terminal blocks, the earth bar, the ship\'s cables up from a transit in the block\'s bottom, and the slotted duct by which the bay\'s units are wired. Over the doors a louvred vent for each bay. From aft: a stainless grab rail along its edge; a desk that slopes up 11° with two rows of flush panels on a dark field, and the three control heads in its after edge, at the hand; a level strip with the propulsion and thruster panels, each in line ahead of its levers; an upstand leaning back 20° with the displays set into it under glass, lower in the middle so that the sea is seen over it ahead of the wheel (nothing ahead of the wheel over 1.225 m, nothing else over 1.315 m: calculation JS4-402 asked 1.22 and 1.33). Below the desk a cabinet of five bays, each with two doors on hinges, a quarter-turn lock and louvres: they open to a tap, and the units that are not seen stand behind them on shelves.',
   dict(kind='console'), survey='B080')
 C('OUT-02', "Master's chair", WH, (1.05, 21.55, 0.0), 'A high-backed pilot chair in black leather at the conning position, to port of the wheel: headrest, armrests, a footrest, on a pedestal that runs on a track let into the deck and turns. A tap on its pedestal runs it aft or forward; a tap on its seat turns it.', dict(kind='chair'), survey='B089')
 C('OUT-03', "Watch officer's chair", WH, (-1.05, 21.55, 0.0), 'The second pilot chair, at the radar: like the master\'s, on its own track.', dict(kind='chair'))
@@ -244,11 +255,11 @@ C('OUT-05', 'Bookshelf, nautical publications', WH, (-1.62, 19.54, 1.58), 'Tide 
 C('OUT-07', 'Binoculars box', WH, (1.85, 22.50, 0.58), 'Two 7 × 50 binoculars in a varnished box on the console block\'s port end. Its lid lifts to a tap.', dict(kind='binoculars'))
 C('OUT-08', 'Stair well and rail', WH, (-2.50, 19.85, 0.0), 'The head of the crew stair from the saloon, railed on its inboard side, with a self-closing gate across the top where one comes up: it opens forward, away from the well.',
   dict(kind='stairwell'))
-C('OUT-09', "Watchkeeper's table", WH, (-2.62, 22.57, 0.76), 'A table in the starboard forward corner, beside the pantry: a top of light varnished wood with her profile engraved in it and a cup well in its corner, a drawer that runs out to a tap, the deck log under its own lamp. (It takes the place of the fold-down log desk that hung under the port window.)',
-  dict(kind='table', w=0.58, l=0.68, H=0.76), w=10, use=0.2, by=('BD1', 1), survey='B102')
+C('OUT-09', "Watchkeeper's table", WH, (-2.73, 22.57, 0.76), 'A table at the starboard side, forward of the pantry, 0.36 m broad so that the way past it to the front of the console block is 0.70 m: a top of light varnished wood with her profile engraved in it and a cup well in its corner, a drawer that runs out to a tap, the deck log under its own lamp. (It takes the place of the fold-down log desk that hung under the port window.)',
+  dict(kind='table', w=0.36, l=0.68, H=0.76), w=10, use=0.2, by=('BD1', 1), survey='B102')
 C('OUT-41', 'Settee', WH, (2.60, 22.07, 0.0), 'A settee in black leather along the port side under the windows, forward of the wing door, for the pilot and for whoever waits on the bridge.', dict(kind='sofa', l=1.30, d=0.60))
-C('OUT-42', 'Handrail under the sills, port', WH, (2.40, 22.86, 0.865), 'Stainless tube on brackets under the sills, from the console block to the port side and aft along it over the settee: something to hold in a seaway while looking out.', dict(kind='handrail', side=1))
-C('OUT-43', 'Handrail under the sills, starboard', WH, (-2.40, 22.86, 0.865), 'Stainless tube on brackets under the sills, from the console block to the starboard side and aft along it over the watchkeeper\'s table.', dict(kind='handrail', side=-1))
+C('OUT-42', 'Handrail under the sills, port', WH, BP.on_wall('port', BP.CANT_LEN / 2, -0.062) + (0.865,), 'Stainless tube on brackets under the sills: from the middle of the bay round its port corner, along the cant and aft along the port side over the settee, in one length. Something to hold in a seaway while looking out. (It ended at the console block while the block stood against the front.)', dict(kind='handrail', side=1))
+C('OUT-43', 'Handrail under the sills, starboard', WH, BP.on_wall('starboard', BP.CANT_LEN / 2, -0.062) + (0.865,), 'Stainless tube on brackets under the sills: from the middle of the bay round its starboard corner, along the cant and aft along the starboard side over the watchkeeper\'s table. It meets the port rail in a sleeve on the centreline.', dict(kind='handrail', side=-1))
 C('OUT-44', 'Hook rail', WH, (2.92, 19.99, 1.03), 'A board of light wood with four brass hooks under the after port window, for oilskins and the watch\'s lifejackets.', dict(kind='hooks', l=0.56))
 C('OUT-10', 'Door, corridor to wheelhouse', WH, (0.0, 19.50, 0.0), 'The door from the crew corridor. It opens into the wheelhouse and is kept shut at night to keep the corridor\'s light off the glass.',
   dict(kind='door_corridor'))
@@ -257,14 +268,14 @@ C('OUT-14', 'Deckhead lining', WH, (0.0, 21.2, CEIL), 'Strips of off-white panel
 C('OUT-15', 'Overhead grab rail, port', WH, (0.75, 21.2, 1.98), 'A rail under the deckhead to hold on to in a seaway.', dict(kind='grabrails', side=1))
 C('OUT-23', 'Overhead grab rail, starboard', WH, (-0.75, 21.2, 1.98), 'A rail under the deckhead to hold on to in a seaway.', dict(kind='grabrails', side=-1))
 C('OUT-16', 'Overhead console', WH, (0.0, 22.52, 2.06), 'Two sloped consoles under the deckhead over the block, either side of the instruments that hang between them: the camera monitor to port, the two VHF sets to starboard. They hang above the windows\' head, so that they hide nothing the glass would show.', dict(kind='overhead'))
-C('OUT-17', 'Sun blinds', WH, (0.0, 22.98, 2.06), 'A roller blind of tinted film in a cassette at the head of each forward window, on two guide wires. A tap draws one down, and lets it up again.', dict(kind='blinds'))
+C('OUT-17', 'Sun blinds', WH, (0.0, round(BP.BAY_IN + BP.LEAN - 0.035, 3), 2.06), 'A roller blind of tinted film in a cassette at the head of each of the bay\'s five windows, on two guide wires. A tap draws one down, and lets it up again.', dict(kind='blinds'))
 C('OUT-18', 'Door to the port wing', WH, (2.96, 20.85, 0.0), 'A weathertight door, hinged on its forward edge, with a glazed upper half and a 0.15 m sill. It stands opposite the starboard one: the Minato Maru\'s stood in the aft corner, where the boards and their locker now have the wall to themselves.',
   dict(kind='door_wing', side=1, yd=(20.45, 21.25)), survey='B104')
 C('OUT-19', 'Door to the starboard wing', WH, (-2.96, 20.85, 0.0), 'A weathertight door, hinged on its forward edge, with a glazed upper half and a 0.15 m sill.',
   dict(kind='door_wing', side=-1, yd=(20.45, 21.25)), survey='B104')
-C('OUT-20', 'Wheelhouse plating, linings and windows', WH, (0.0, 21.2, 0.0), 'The house itself: plated outside, lined inside, five forward windows raked 10° under a visor, and windows down both sides: glass over 224° of the horizon from the helm.',
+C('OUT-20', 'Wheelhouse plating, linings and windows', WH, (0.0, 21.2, 0.0), 'The house itself: plated outside, lined inside, a forward bay with canted corners, its five windows raked 10° under an eave, and windows down both sides: glass over 224° of the horizon from the helm.',
   dict(kind='envelope'), pick=False, survey='B105')
-C('OUT-21', 'Bridge wing, port: closed in', WP, (3.6, 21.2, 0.0), 'The wing was an open deck behind a bulwark 1.1 m high. It is closed in, as open wings are when a ship is refitted: the bulwark stays, glass stands on it between steel posts (six panes forward, leaning with the wheelhouse\'s own, three outboard), a wall with a door closes its after end, and a roof is carried out from the wheelhouse\'s eave to her side. One band of windows runs across her whole breadth.', dict(kind='wing', side=1), pick=False)
+C('OUT-21', 'Bridge wing, port: closed in', WP, (3.6, 21.2, 0.0), 'The wing was an open deck behind a bulwark 1.1 m high. It is closed in, as open wings are when a ship is refitted: the bulwark stays, glass stands on it between steel posts (five panes forward, leaning with the wheelhouse\'s own, three outboard), beside the house\'s forward corner a weathertight door opens outward onto the gallery before the bridge, a wall with a door closes its after end, and a roof is carried out from the wheelhouse\'s eave to her side. One band of windows runs across her whole breadth.', dict(kind='wing', side=1), pick=False)
 C('OUT-22', 'Bridge wing, starboard: closed in', WS, (-3.6, 21.2, 0.0), 'Closed in like the port wing: glass on the bulwark between steel posts, a wall and a door aft, a roof from the wheelhouse\'s eave to her side.', dict(kind='wing', side=-1), pick=False)
 
 # ---- Navigation.
@@ -378,8 +389,8 @@ C('INT-05', 'Sound-powered telephone', WH, (-1.85, 22.50, 0.62), 'Speaks to the 
   dict(kind='sp_phone'), node='CON-SS', survey='B094')
 C('INT-07', 'General alarm push button', WH, (0.56, 19.54, 1.52), 'Sounds the general alarm from the door.', dict(kind='callpoint', colour=0xe0b020, tile='ga_push'), node='BRD')
 C('INT-08', 'Loudspeaker, wheelhouse', WH, (0.6, 20.6, CEIL), 'A loudspeaker in the deckhead.', dict(kind='ceil', type='speaker', r=0.10), node='MAST-0')
-C('INT-09', 'Talkback station, port wing', WP, (3.06, 22.91, 1.22), 'A weatherproof loudspeaking station on the house side.', dict(kind='talkback', side=1), node='WING-P')
-C('INT-10', 'Talkback station, starboard wing', WS, (-3.06, 22.91, 1.22), 'A weatherproof loudspeaking station on the house side.', dict(kind='talkback', side=-1), node='WING-S')
+C('INT-09', 'Talkback station, port wing', WP, (3.06, 22.80, 0.72), 'A weatherproof loudspeaking station on the house side, under the forward window\'s sill (the window was carried forward where it hung, and the door to the gallery stands at the corner).', dict(kind='talkback', side=1), node='WING-P')
+C('INT-10', 'Talkback station, starboard wing', WS, (-3.06, 22.80, 0.72), 'A weatherproof loudspeaking station on the house side.', dict(kind='talkback', side=-1), node='WING-S')
 C('INT-11', 'Loudhailer', CD, (0.5, 21.15, 4.80), 'A horn loudspeaker on the mast platform, for hailing and for the fog signal\'s listening watch.',
   box=(0.36, 0.64, 21.06, 21.40, 4.80, 5.12), node='MAST-PF')
 
@@ -430,12 +441,12 @@ C('NLT-10', 'Whistle panel', WH, (0.64, ROW1, TOP), 'A push button for the whist
   dict(kind='flush', w=0.16, l=0.12, tile='whistle_panel', button=0xc2412f), w=10, by=('BD2', 6), node='CON-P', survey='B099')
 C('NLT-11', 'Searchlight control', WH, (-0.62, ROW1, TOP), 'A joystick that turns and tilts the searchlight, and its lamp switch.', dict(kind='flush', w=0.16, l=0.12, tile='sl_panel', stick=True), node='CON-S', survey='B100')
 C('NLT-12', 'Wiper and window wash panel', WH, (-0.62, ROW2, TOP), 'Each wiper on, off or intermittent, and the wash. A tap on a switch turns it a step, and its wiper runs.', dict(kind='flush', w=0.30, l=0.12, tile='wiper_panel', works=[(f'wiper-switch-{k}', f'Wiper switch, {k}', ((0, 'off'), (55, 'intermittent'), (110, 'on')), 0, -55.0) for k in ('starboard', 'centre', 'port')]), node='CON-SS')
-C('NLT-13', 'Window wiper, starboard', WH, (-2.328, 23.20, 2.165), 'A pendulum wiper on the outside of the glass, hung from its spindle in the window\'s head under the visor; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='starboard'), w=60, use=0.2, by=('BD1', 3), node='SS-F', survey='B086')
-C('NLT-14', 'Window wiper, centre', WH, (0.0, 23.20, 2.165), 'A pendulum wiper on the outside of the glass ahead of the wheel, hung from its spindle in the window\'s head under the visor; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='centre'), w=60, use=0.2, by=('BD1', 3), node='C-F', survey='B086')
-C('NLT-15', 'Window wiper, port', WH, (2.328, 23.20, 2.165), 'A pendulum wiper on the outside of the glass, hung from its spindle in the window\'s head under the visor; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='port'), w=60, use=0.2, by=('BD1', 3), node='PP-F', survey='B086')
-C('NLT-17', 'Clear-view screen, port', WH, (1.164, 22.99, 1.50), 'A glass disc spinning in a ring in the window ahead of the master\'s chair: spray and rain are thrown off it, and it is clear where the window is tinted. Its motor is at its middle, carried by a tube from the rail under the window. A tap starts and stops it.', dict(kind='cvs', name='port'), w=60, use=0.2, by=('BD1', 3), node='CON-P')
-C('NLT-18', 'Clear-view screen, starboard', WH, (-1.164, 22.99, 1.50), 'The second clear-view screen, in the window ahead of the watch officer\'s chair.', dict(kind='cvs', name='starboard'), w=60, use=0.2, by=('BD1', 3), node='CON-S')
-C('NLT-19', 'Window heating junction box', WH, (-2.12, 22.92, 0.56), 'Where the forward windows\' heated glass is fed and switched: a box let into the lining below the sill, with its lamp.', dict(kind='jbox'), w=300, use=0.2, by=('BD1', 8), node='CON-SS')
+C('NLT-13', 'Window wiper, starboard', WH, BP.wiper_at('starboard') + (2.165,), 'A pendulum wiper on the outside of the starboard cant\'s glass, hung from its spindle in the window\'s head under the eave; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='starboard'), w=60, use=0.2, by=('BD1', 3), node='SS-F', survey='B086')
+C('NLT-14', 'Window wiper, centre', WH, BP.wiper_at('centre') + (2.165,), 'A pendulum wiper on the outside of the glass ahead of the wheel, hung from its spindle in the window\'s head under the eave; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='centre'), w=60, use=0.2, by=('BD1', 3), node='C-F', survey='B086')
+C('NLT-15', 'Window wiper, port', WH, BP.wiper_at('port') + (2.165,), 'A pendulum wiper on the outside of the port cant\'s glass, hung from its spindle in the window\'s head under the eave; its motor is inside, over the blind. A tap starts and stops it.', dict(kind='wiper', name='port'), w=60, use=0.2, by=('BD1', 3), node='PP-F', survey='B086')
+C('NLT-17', 'Clear-view screen, port', WH, (1.164, round(BP.BAY_IN + 0.045 + 0.55 * BP.RAKE_T, 3), 1.50), 'A glass disc spinning in a ring in the window ahead of the master\'s chair: spray and rain are thrown off it, and it is clear where the window is tinted. Its motor is at its middle, carried by a tube from the rail under the window. A tap starts and stops it.', dict(kind='cvs', name='port'), w=60, use=0.2, by=('BD1', 3), node='CON-P')
+C('NLT-18', 'Clear-view screen, starboard', WH, (-1.164, round(BP.BAY_IN + 0.045 + 0.55 * BP.RAKE_T, 3), 1.50), 'The second clear-view screen, in the window ahead of the watch officer\'s chair.', dict(kind='cvs', name='starboard'), w=60, use=0.2, by=('BD1', 3), node='CON-S')
+C('NLT-19', 'Window heating junction box', WH, BP.on_wall('starboard', BP.CANT_LEN / 2) + (0.56,), 'Where the forward windows\' heated glass is fed and switched: a box let into the lining below the sill of the starboard cant, with its lamp.', dict(kind='jbox'), w=300, use=0.2, by=('BD1', 8), node='CON-SS')
 C('NLT-16', 'Searchlight', CD, (-1.6, 22.0, DECK_H), 'A 1 kW searchlight on the compass deck, turned from the console.', box=(-1.82, -1.38, 21.75, 22.34, DECK_H, DECK_H + 0.95), w=1000, use=0.0,
   by=('LB', 'searchlight'), node='ROOF-F', survey='B112', kks='10CTA10 GS001', basis='town')
 C('NLT-20', 'Flag locker', WH, (-0.70, 19.54, 1.00), 'The signal flags of the international code, each rolled in its own pigeonhole.', dict(kind='wallbox', w=0.44, H=0.95, d=0.18, tile='flags', colour=0x765032, open=True))
@@ -454,8 +465,8 @@ C('LGT-13', 'Night light, red, starboard', WH, (-0.9, 22.15, CEIL), 'A red light
 C('LGT-07', 'Emergency light', WH, (0.0, 20.40, CEIL), 'Lights by itself when the main supply fails.', dict(kind='ceil', type='emergency', w=0.30, l=0.12), w=15, use=0.0, by=('BD2', 4), node='MAST-0', kks='10BRV20 GS011')
 C('LGT-14', 'Transitional light', WH, (0.6, 21.9, CEIL), 'A 24 V lamp on the general service battery: it lights at once when the supply fails, before the emergency generator has started.', dict(kind='ceil', type='emergency', w=0.20, l=0.10),
   w=10, use=0.0, by=('DC1', 15), node='P-M')
-C('LGT-08', 'Wing light, port', WP, (3.05, 22.91, 1.90), 'A bulkhead light on the house side.', dict(kind='wing_light', side=1), w=40, use=0.1, by=('BD1', 2), node='WALL-P')
-C('LGT-09', 'Wing light, starboard', WS, (-3.05, 22.91, 1.90), 'A bulkhead light on the house side.', dict(kind='wing_light', side=-1), w=40, use=0.1, by=('BD1', 2), node='WALL-S')
+C('LGT-08', 'Wing light, port', WP, (3.05, 22.80, 2.20), 'A bulkhead light on the house side, over the forward window (the window was carried forward under where it hung, and the door to the gallery stands at the corner: nothing is built over a window).', dict(kind='wing_light', side=1), w=40, use=0.1, by=('BD1', 2), node='WALL-P')
+C('LGT-09', 'Wing light, starboard', WS, (-3.05, 22.80, 2.20), 'A bulkhead light on the house side.', dict(kind='wing_light', side=-1), w=40, use=0.1, by=('BD1', 2), node='WALL-S')
 C('LGT-10', 'Dimmer panel', WH, (-0.39, ROW1, TOP), 'Dims the instruments, the red night lights over the console and the chart lamp. A tap on a knob turns it a step: the night lights and the chart lamp go out and come on with it, and the displays darken when the instruments are turned down.', dict(kind='flush', w=0.24, l=0.12, tile='dimmer_panel', works=[('dimmer-console', 'Dimmer, console night lights', ((0, 'off'), (135, 'half'), (270, 'full')), 0, -135.0), ('dimmer-instruments', 'Dimmer, instruments', ((0, 'turned down for the night: the displays are darkened'), (135, 'half'), (270, 'full: by day')), 2, -135.0), ('dimmer-chart', 'Dimmer, chart lamp', ((0, 'off'), (135, 'half'), (270, 'full')), 1, -135.0)]), w=60, use=0.5, by=('BD1', 8), node='CON-SS')
 C('LGT-11', 'Foredeck floodlight, port', CD, (2.35, 22.66, DECK_H), 'Lights the car deck forward and the ramp.', box=(2.19, 2.51, 22.58, 22.78, DECK_H, DECK_H + 0.63), w=150, use=0.1, by=('BD1', 2), node='ROOF-F')
 C('LGT-12', 'Foredeck floodlight, starboard', CD, (-2.35, 22.66, DECK_H), 'Lights the car deck forward and the ramp.', box=(-2.51, -2.19, 22.58, 22.78, DECK_H, DECK_H + 0.63), w=150, use=0.1, by=('BD1', 2), node='ROOF-F')
@@ -469,7 +480,7 @@ C('ELD-03', '24 V DC panel DC1, navigation and control', WH, (2.63, 19.54, 1.44)
   dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc1', colour=0x9aa3a2, handle=True), node='BRD')
 C('ELD-04', '24 V DC panel DC2, radio', WH, (2.63, 19.54, 1.05), '24 V from the radio battery: five fused ways, a voltmeter and the charger-failure alarm.',
   dict(kind='wallbox', w=0.44, H=0.36, d=0.14, tile='dc2', colour=0x9aa3a2, handle=True, tail=1.444), node='BRD')
-C('ELD-11', 'Sockets below the sill, port', WH, (2.42, 22.92, 0.56), 'A double 230 V socket in the lining below the forward sill, port side.', dict(kind='sockets', looks='aft', double=True), w=150, use=0.1, by=('BD1', 4), node='CON-PP')
+C('ELD-11', 'Sockets below the sill, port', WH, BP.on_wall('port', BP.CANT_LEN / 2) + (0.56,), 'A double 230 V socket in the lining below the sill of the port cant.', dict(kind='sockets', looks='bay', double=True), w=150, use=0.1, by=('BD1', 4), node='CON-PP')
 C('ELD-13', 'Console socket', WH, (-0.52, 22.20, 0.76), 'A 230 V socket on the console block\'s apron.', dict(kind='sockets', looks='aft'), w=150, use=0.1, by=('BD1', 4), node='CON-S')
 C('ELD-12', 'Console heaters', WH, (0.0, 22.70, 0.12), 'Small heaters low in the console that keep the damp out of the electronics when she lies cold.', dict(kind='box', size=(0.60, 0.06, 0.06)),
   w=100, use=0.2, by=('BD1', 8), node='CON-0', hid='inside the console, at its foot')
@@ -480,8 +491,8 @@ C('OUT-39', 'Cooler', WH, (-2.70, 21.56, 0.10), 'A 45-litre refrigerator for the
 C('OUT-40', 'Coffee maker', WH, (-2.67, 21.96, 0.47), 'A filter coffee maker with a glass jug on a hot plate: a litre and a quarter, a pot for the watch. A tap on its switch starts it, and the jug fills; a tap on the jug lifts and pours it, and it empties.', dict(kind='coffee'), w=900, use=0.08, by=('BD1', 7), node='WALL-S')
 C('ELD-23', 'Pantry sockets', WH, (-2.90, 21.96, 0.76), 'A double 230 V socket at the back of the pantry\'s niche, for the coffee maker and the cooler.', dict(kind='pantry_socket'), node='WALL-S')
 C('ELD-20', 'Cable transit at the mast', WH, (0.0, 20.80, CEIL), 'Where the cables to the mast and the compass deck pass the deck, sealed gastight and watertight.', dict(kind='ceil', type='transit', w=0.24, l=0.16), node='MAST-0')
-C('ELD-21', 'Cable duct on the port mullion', WH, (0.58, 22.90, 1.45), 'A covered duct down a forward mullion, from the trays over the deckhead to the console.', dict(kind='mullion_ducts', side=1), node='DUCT-P')
-C('ELD-22', 'Cable duct on the starboard mullion', WH, (-0.58, 22.90, 1.45), 'A covered duct down a forward mullion, from the trays over the deckhead to the console.', dict(kind='mullion_ducts', side=-1), node='DUCT-S')
+C('ELD-21', 'Cable duct on the port mullion', WH, (MULLION, round(BP.BAY_IN + 0.50 * BP.RAKE_T - 0.015, 3), 1.45), 'A covered duct down a mullion of the bay and the lining under it, from the trays over the deckhead to a cable transit in the deck at its foot: the cables cross under the deck and come up into the console block, which stands free, through a transit in its bottom.', dict(kind='mullion_ducts', side=1), node='DUCT-P')
+C('ELD-22', 'Cable duct on the starboard mullion', WH, (-MULLION, round(BP.BAY_IN + 0.50 * BP.RAKE_T - 0.015, 3), 1.45), 'A covered duct down a mullion of the bay and the lining under it, from the trays over the deckhead to a cable transit in the deck at its foot: the cables cross under the deck and come up into the console block, which stands free, through a transit in its bottom.', dict(kind='mullion_ducts', side=-1), node='DUCT-S')
 
 # ---- Air conditioning.
 C('HVC-01', 'Air conditioner, room unit', WH, (-2.52, 19.54, 1.95), 'The wheelhouse\'s cooling and dehumidifying unit, high on the aft wall over the stair.', dict(kind='ac_indoor', w=0.74, H=0.28, d=0.20),
@@ -497,7 +508,7 @@ C('PIP-10', 'Whistle valve', WH, (0.30, 20.95, 2.08), 'The valve that lets air t
   dict(kind='whistle_valve'), w=20, use=0.0, by=('BD2', 6), node='MAST-0')
 C('PIP-11', 'Window wash valve', WH, (1.76, 22.80, 0.49), 'A solenoid valve on the fresh-water line to the wash nozzles.', dict(kind='box', size=(0.10, 0.08, 0.10)), w=15, use=0.0, by=('BD1', 3), node='CON-PP',
   hid='inside the console, port end')
-C('PIP-12', 'Window wash nozzles', WH, (0.0, 23.22, 2.25), 'A brass pipe along the windows\' head outside, under the visor, with a jet over each wiper\'s glass.', dict(kind='nozzles', xs=(-2.328, 0.0, 2.328)))
+C('PIP-12', 'Window wash nozzles', WH, (0.0, round(BP.BAY_OUT + BP.LEAN + 0.012, 3), 2.25), 'A brass pipe round the bay\'s head outside, under the eave, with a jet over each wiper\'s glass.', dict(kind='nozzles'))
 
 # ---- Life-saving.
 C('LSA-01', 'Lifebuoy with light and smoke, port', WP, (4.02, 20.90, 0.62), 'A lifebuoy on a quick-release with a self-igniting light and a smoke float: thrown from the wing for a man overboard.', dict(kind='lifebuoy', side=1))
@@ -632,10 +643,10 @@ PIPES = [
          path=[(2.80, 19.62, 0.0), (2.80, 19.62, 2.16), (0.30, 19.62, 2.16), (0.30, 20.95, 2.16), (0.30, 20.95, 2.03), (0.30, 20.95, 2.16), (0.08, 20.95, 2.16),
                (0.08, 20.95, 5.55), (0.0, 21.0, 5.55)]),
     dict(id='FW-WASH', system='Fresh water', name='Window wash', dn=15, medium='fresh water from the pressure set', material='copper',
-         text='A branch of the cold fresh-water main to the valve in the console, and from there along the outside of the sill to a nozzle at each wiper.',
+         text='A branch of the cold fresh-water main to the valve in the console, and from there through the port cant and round the bay outside, under its sill, to a nozzle at each wiper.',
          ends=['ext:ACC:Cold fresh-water main, bridge deck', 'PIP-11', 'PIP-12'],
-         path=[(2.84, 19.62, 0.0), (2.84, 19.62, 0.10), (2.84, 22.80, 0.10), (2.62, 22.80, 0.10), (2.62, 22.80, 0.30), (2.62, 22.80, 0.90), (2.62, 23.04, 0.90),
-               (2.62, 23.04, 0.93), (-1.41, 23.04, 0.93)]),
+         path=[(2.84, 19.62, 0.0), (2.84, 19.62, 0.10), (2.84, 22.80, 0.10)] + [BP.on_wall('port', 0.113, q) + (hh,) for q, hh in ((-0.02, 0.10), (-0.02, 0.90), (0.12, 0.90), (0.12, 0.93))]
+              + [(round(BP.BAY_XI + 0.12 * (2 ** 0.5 - 1), 3), BP.BAY_IN + 0.12, 0.93), (-1.41, BP.BAY_IN + 0.12, 0.93)]),
     dict(id='FIRE-MAIN', system='Fire main', name='Fire main branch to the bridge deck', dn=50, medium='sea water, 0.7 MPa', material='galvanised steel',
          text='A branch of the fire main up the house side to the hydrant on the port wing.',
          ends=['ext:CAR:Fire main', 'PIP-01'],

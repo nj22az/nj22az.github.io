@@ -48,7 +48,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     const h = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 8, n)));
     return { inputs: h.inputs, movers: h.movers };
   });
-  const bridge = header.inputs.filter(i => /^(console-door|locker-door|chart-drawer|table-drawer|handset|blind|wiper|clear-view|chair|whistle|binocular|coffee|dimmer|pantry|cooler)/.test(i.id));
+  const bridge = header.inputs.filter(i => /^(console-door|console-back|locker-door|chart-drawer|table-drawer|handset|blind|wiper|clear-view|chair|whistle|binocular|coffee|dimmer|pantry|cooler)/.test(i.id));
   const taps = bridge.filter(i => i.auto === 'tap'), steps = bridge.filter(i => i.steps), levels = bridge.filter(i => i.level);
   check(taps.length >= 40 && steps.length === 6 && levels.length === 1,
     `the bridge has ${taps.length} things worked by a tap, ${steps.length} rotary switches and ${levels.length} thing that fills and empties (besides her levers, doors and gate)`);
@@ -58,7 +58,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     taps.filter(i => !i.run && !/^coffee/.test(i.id)).map(i => i.id));
   const stuck = opened.filter(d => !(d.open > 0.05) || !(d.shut < 1e-6));
   const count = re => opened.filter(d => re.test(d.id)).length;
-  check(stuck.length === 0, `each of them moves when it is worked and comes back: ${count(/^console-door/)} console doors, ${count(/^locker-door/)} locker doors, ` +
+  check(stuck.length === 0, `each of them moves when it is worked and comes back: ${count(/^console-door/)} console doors, ${count(/^console-back/)} service doors in the block's back, ${count(/^locker-door/)} locker doors, ` +
     `${count(/drawer/)} drawers, ${count(/^handset/)} handsets, ${count(/^blind-\d$/)} blinds, the binocular box, the whistle pull, the pantry (${stuck.map(d => d.id).join(', ') || 'none stuck'})`);
 
   // ---- the wipers: a tap starts one sweeping, another parks it; its switch on the console does the same
@@ -194,7 +194,7 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
     `on foot, a tap on a cabinet door of the console opens it ("${t.said}")`);
   t = await tap([1.15, 21.75], [1.19, 22.225, 0.955], -0.95);
   check(t.card === 'INT-04' && t.inputs['handset-telephone'] > 30, `on foot, a tap on the telephone shows its card and lifts its handset (${t.card}, "${t.said}")`);
-  t = await tap([-1.05, 21.9], [-1.164, 22.99, 1.512], -0.08);
+  t = await tap([-1.164, 23.30], [-1.164, 23.99, 1.512], -0.08);          // from the way before the block: the screen is in the bay's glass, a metre forward of where it was
   const spin = await page.evaluate(() => { const a = T.turned('clear-view-starboard'); T.run(0.1); return [a, T.turned('clear-view-starboard')]; });
   check(t.card === 'NLT-18' && /spinning/.test(t.said) && spin[0] !== spin[1], `on foot, a tap on the starboard clear-view screen's motor starts it ("${t.said}")`);
   await page.evaluate(() => { const f = window.__ferry; for (const id of ['console-door-4p', 'handset-telephone', 'clear-view-starboard']) f.work(id, false); T.run(1.5); f.systems.clear(); f.leaveWalk(); });

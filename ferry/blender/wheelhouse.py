@@ -51,9 +51,12 @@ def view_from_helm(limit=112.5, mullion=6.0, eye=None):
     from math import atan2, degrees
     ex, ey, eh = HELM
     eh = eye if eye is not None else eh
-    front = FRONT_IN + 0.045 + fwd(eh)
-    spans = [(degrees(atan2(a + FRAME_T - 0.005, front - ey)), degrees(atan2(b - FRAME_T + 0.005, front - ey))) for a, b in PANES if b > 0]
-    spans[0] = (0.0, spans[0][1])
+    spans = []
+    for W, s0, s1 in BAY_PANES:                                 # each pane of the bay: its glass's two edges at the eye's height
+        ends = [W.xy(v, GLASS_Q, fwd(eh)) for v in (s0 + FRAME_T - 0.005, s1 - FRAME_T + 0.005)]
+        lo, hi = sorted(degrees(atan2(px - ex, py - ey)) for px, py in ends)
+        if hi > 0:
+            spans.append((max(lo, 0.0), hi))
     for yd0, yd1, h0, h1, what in SIDES[1]:
         if what == 'window' and h0 + FRAME_T < eh < h1 - FRAME_T:
             a, b = yd0 + FRAME_T, yd1 - FRAME_T
@@ -164,60 +167,137 @@ def envelope():
         cheek = [(CORNER, 0.0), (FRONT_OUT, 0.0), (FRONT_OUT, SILL), (FRONT_OUT + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD_ROOM - 0.05), (CORNER, HEAD_ROOM - 0.05)]
         prism('plating', side * (X_IN + 0.04), side * X_OUT, cheek, HOUSE)
         prism('lining', side * X_IN, side * (X_IN + 0.04), cheek, LINING)
-        box('plating', side * X_IN, side * X_OUT, CORNER, 23.10, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)
+        box('plating', side * X_IN, side * X_OUT, CORNER, 23.09, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)      # to the roof over the bay, which begins there: not under it
         # the mullion between the two forward side windows, and the post between the door and the window forward of it,
         # faced in the casings' wood; the panel joints below the sills
         for a, b in ((22.10, 22.15), (21.25, 21.30)):
             box('lwood', side * 2.908, side * 2.921, a, b, 0.97, 2.05, WOODL, r=0.0)
         for yd in (19.60, 21.275, 21.70, 22.125, 22.55):
             _joint((side * X_IN, yd, 0.11), (side * X_IN, yd, 0.94 if yd > 21.26 else 1.07), (-side, 0, 0))
-        # the skirting: from the after wall to the door, and from the door to the front (to starboard the crew stair's well
-        # takes the after corner)
+        # the skirting: from the after wall to the door, and from the door to the cant, mitred into the cant's own
         _skirting(AFT_FACE if side > 0 else 20.16, 20.45, side * X_IN, -side, along='yard')
-        _skirting(21.25, FRONT_IN, side * X_IN, -side, along='yard')
-    _skirting(-X_IN, X_IN, FRONT_IN, -1)
+        W = WP if side > 0 else WS
+        _skirt_run(lambda d: (side * (X_IN - d), 21.25), lambda d: side_corner(W, -d, d), (-side, 0.0))
     _skirting(0.40, X_IN, AFT_FACE, 1)
     _skirting(-2.07, -0.40, AFT_FACE, 1)
-    # ---- the front: plating below the sill, then posts, mullions, frames and glass raked forward, then the head
-    box('plating', -X_IN, X_IN, FRONT_IN + 0.04, FRONT_OUT, 0.0, SILL, HOUSE)
-    box('lining', -X_IN, X_IN, FRONT_IN, FRONT_IN + 0.04, 0.0, SILL, LINING)
-    posts = [(-X_IN, PANES[0][0])] + [(a[1], b[0]) for a, b in zip(PANES, PANES[1:])] + [(PANES[-1][1], X_IN)]
-    w = 0.031                                                   # how far a mullion's wood (and the frame's steel) reaches into the opening; then rubber
-    for x0, x1 in posts:
-        _raked('plating', x0, x1, 0.5, 1.0, SILL, HEAD, HOUSE)
-        # the inner half of every post and mullion is light varnished wood, and stands 12 mm proud of the lining below it
-        _raked('lwood', max(x0 - w, -X_IN), min(x1 + w, X_IN), -0.15, 0.5, SILL, HEAD, WOODL)
-        _joint(((x0 + x1) / 2, FRONT_IN, 0.11), ((x0 + x1) / 2, FRONT_IN, SILL - 0.04), AFTWARD)
-    head = [(FRONT_IN + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD), (FRONT_OUT + fwd(HEAD), HEAD_ROOM - 0.05), (FRONT_IN + fwd(HEAD), HEAD_ROOM - 0.05)]
-    prism('plating', -X_IN, X_IN, [(y + 0.04 if i in (0, 3) else y, h) for i, (y, h) in enumerate(head)], HOUSE)
-    prism('lining', -X_IN, X_IN, [(y if i in (0, 3) else y - 0.04, h) for i, (y, h) in enumerate(head)], LINING)
-    t = 0.045
-    for x0, x1 in PANES:
-        # the wooden rails under and over the glass, between the mullions; the steel frame outside; the rubber the glass sits in
-        _raked('lwood', x0 + w, x1 - w, -0.15, 0.5, SILL, SILL + w, WOODL)
-        _raked('lwood', x0 + w, x1 - w, -0.15, 0.5, HEAD - w, HEAD, WOODL)
-        _raked('plating', x0, x1, 0.62, 1.10, SILL, SILL + w + 0.002, tint(HOUSE, 0.97))
-        _raked('plating', x0, x1, 0.62, 1.10, HEAD - w - 0.002, HEAD, tint(HOUSE, 0.97))
-        for a, b in ((x0, x0 + w + 0.002), (x1 - w - 0.002, x1)):
-            _raked('plating', a, b, 0.62, 1.10, SILL + w + 0.002, HEAD - w - 0.002, tint(HOUSE, 0.97))
-        _raked('rubber', x0 + w - 0.002, x1 - w + 0.002, 0.42, 0.70, SILL + w - 0.002, SILL + t, RUBBER)
-        _raked('rubber', x0 + w - 0.002, x1 - w + 0.002, 0.42, 0.70, HEAD - t, HEAD - w + 0.002, RUBBER)
-        for a, b in ((x0 + w - 0.002, x0 + t), (x1 - t, x1 - w + 0.002)):
-            _raked('rubber', a, b, 0.42, 0.70, SILL + t, HEAD - t, RUBBER)
-        yg = lambda h: FRONT_IN + 0.045 + fwd(h)
-        g = 0.006                                               # the glass goes this far into its rubber
-        holes = []
-        for cx, hc, rr in BF.cvs_holes():                       # a clear-view screen's ring stands in a round hole in the pane
-            if x0 < cx < x1:
-                rise = lambda k: hc + rr * sin(2 * pi * k / 48) * cos(radians(10.0))
-                holes.append([P(cx + rr * cos(2 * pi * k / 48), yg(rise(k)), rise(k)) for k in range(48)])
-        part('glass').polygon([P(x0 + t - g, yg(SILL + t - g), SILL + t - g), P(x1 - t + g, yg(SILL + t - g), SILL + t - g),
-                               P(x1 - t + g, yg(HEAD - t + g), HEAD - t + g), P(x0 + t - g, yg(HEAD - t + g), HEAD - t + g)], GLASS, holes=holes)
-    # the sill board along the front, under the wooden rails: light wood, 60 mm into the room
-    box('lwood', -X_IN, X_IN, FRONT_IN - 0.060, FRONT_IN + 0.001, SILL - 0.032, SILL, WOODL, r=0.006)
-    # the visor: the roof's eave carried forward over the glass
-    box('plating', -3.08, 3.08, 23.09, 23.46, HEAD_ROOM - 0.05, HEAD_ROOM, HOUSE)
-    prism('plating', -3.08, 3.08, [(23.40, HEAD_ROOM - 0.05), (23.46, HEAD_ROOM - 0.05), (23.46, HEAD_ROOM - 0.11), (23.44, HEAD_ROOM - 0.11)], tint(HOUSE, 0.94))
+    front()
+
+
+W_IN = 0.031                          # how far a mullion's wood (and a frame's steel) reaches into a window's opening; then rubber
+EAVE = 0.257                          # how far the roof's eave stands out beyond the plating at the head
+
+
+def _skirt_run(a, b, inward):
+    """A length of the coved skirting between two ends, each given as where a point d into the room from the wall stands
+    in plan (so that two lengths meet in a mitre); `inward` is the way into the room across it."""
+    arc = [(0.045 - 0.039 * cos(radians(q)), 0.051 - 0.039 * sin(radians(q))) for q in (90, 72, 54, 36, 18, 0)]
+    prof = [(0.0, 0.012), (0.045, 0.012)] + arc + [(0.006, 0.100), (0.0, 0.100)]
+    extrude(part('skirt'), prof, [P(*a(d), h) for d, h in prof], [P(*b(d), h) for d, h in prof], lambda d: (inward[0] * d[0], d[1], inward[1] * d[0]), SKIRT)
+
+
+def _pane(W, s0, s1, holes=()):
+    """A window of the bay between two posts: wooden rails under and over the glass inside, a painted steel frame outside
+    standing a little proud of the plating, the glass in black rubber. `holes` are (s, h, radius): a clear-view screen's
+    ring stands in a round hole in the pane."""
+    w, t, g = W_IN, 0.045, 0.006
+    member(W, 'lwood', s0 + w, s1 - w, -0.15, 0.5, SILL, SILL + w, WOODL)
+    member(W, 'lwood', s0 + w, s1 - w, -0.15, 0.5, HEAD - w, HEAD, WOODL)
+    member(W, 'plating', s0, s1, 0.62, 1.10, SILL, SILL + w + 0.002, tint(HOUSE, 0.97))
+    member(W, 'plating', s0, s1, 0.62, 1.10, HEAD - w - 0.002, HEAD, tint(HOUSE, 0.97))
+    for a, b in ((s0, s0 + w + 0.002), (s1 - w - 0.002, s1)):
+        member(W, 'plating', a, b, 0.62, 1.10, SILL + w + 0.002, HEAD - w - 0.002, tint(HOUSE, 0.97))
+    member(W, 'rubber', s0 + w - 0.002, s1 - w + 0.002, 0.42, 0.70, SILL + w - 0.002, SILL + t, RUBBER)
+    member(W, 'rubber', s0 + w - 0.002, s1 - w + 0.002, 0.42, 0.70, HEAD - t, HEAD - w + 0.002, RUBBER)
+    for a, b in ((s0 + w - 0.002, s0 + t), (s1 - t, s1 - w + 0.002)):
+        member(W, 'rubber', a, b, 0.42, 0.70, SILL + t, HEAD - t, RUBBER)
+    lo, hi = SILL + t - g, HEAD - t + g
+    cut = []
+    for sc, hc, rr in holes:
+        rise = lambda k: hc + rr * sin(2 * pi * k / 48) * cos(radians(10.0))
+        cut.append([W.pt(sc - rr * cos(2 * pi * k / 48), GLASS_Q, rise(k)) for k in range(48)])
+    part('glass').polygon([W.pt(s1 - t + g, GLASS_Q, lo), W.pt(s0 + t - g, GLASS_Q, lo), W.pt(s0 + t - g, GLASS_Q, hi), W.pt(s1 - t + g, GLASS_Q, hi)], GLASS, holes=cut)
+
+
+def _post(W, s0, s1):
+    """A mullion between two panes of one wall: steel outside; inside light varnished wood that stands 12 mm proud of the
+    lining below it and reaches into each opening."""
+    member(W, 'plating', s0, s1, 0.5, 1.0, SILL, HEAD, HOUSE)
+    member(W, 'lwood', s0 - W_IN, s1 + W_IN, -0.15, 0.5, SILL, HEAD, WOODL)
+
+
+def _corner_post(A, B, key, e, t0, t1, colour):
+    """The post in which two walls of the bay meet: e along each from the corner."""
+    q0, q1 = TH * t0, TH * t1
+    raked(key, [A.xy(A.len - e, q0), A.xy(A.len - e, q1), corner(A, B, q1), B.xy(e, q1), B.xy(e, q0), corner(A, B, q0)], SILL, HEAD, colour)
+
+
+def _side_post(W, key, e, t0, t1, colour):
+    """The post in which a cant meets the house side: e along the cant from the side's lining."""
+    q0, q1 = TH * t0, TH * t1
+    s = e if W is WP else W.len - e
+    raked(key, k_points(W, q0, q1) + [W.xy(s, q1), W.xy(s, q0)], SILL, HEAD, colour)
+
+
+def _eave(a, b, section, colour):
+    """A length of the eave's lip between two corners of the roof's edge: `a` and `b` say where a point d in from the
+    edge stands in plan at each end (so that two lengths meet in a mitre)."""
+    way = Vector((b(0.0)[0] - a(0.0)[0], 0.0, b(0.0)[1] - a(0.0)[1])).normalized()
+    inn = way.cross(Vector((0.0, 1.0, 0.0)))                    # into the roof from its edge, going round from port to starboard
+    extrude(part('plating'), section, [P(*a(d), h) for d, h in section], [P(*b(d), h) for d, h in section], lambda d: (inn.x * d[0], d[1], inn.z * d[0]), colour)
+
+
+def front():
+    """
+    The bridge front: the forward bay (bridge_kit.py). Below the sill plating outside and lining inside; then posts,
+    mullions, frames and glass leaning forward; then the head; over it the roof, level with the wings' roofs, its eave
+    carried forward over the glass as the visor was.
+    """
+    # ---- below the sill, and the head over the glass: plating and lining all round, mitred at the corners
+    band('plating', 0.04, TH, 0.0, SILL, HOUSE)
+    band('lining', 0.0, 0.04, 0.0, SILL, LINING)
+    band('plating', 0.04, TH, HEAD, HEAD_ROOM - 0.05, HOUSE)
+    band('lining', 0.0, 0.04, HEAD, HEAD_ROOM - 0.05, LINING)
+    # ---- the windows: five panes, their posts and mullions
+    holes = [(WF.s_of(cx), hc, rr) for cx, hc, rr in BF.cvs_holes()]
+    for W, s0, s1 in BAY_PANES:
+        _pane(W, s0, s1, [q for q in holes if W is WF and s0 < q[0] < s1])
+    for (_, _, s1), (_, s0, _) in zip(BAY_PANES[3:0:-1], BAY_PANES[2:0:-1]):       # the two mullions of the forward face
+        _post(WF, s1, s0)
+        mid = WF.xy((s0 + s1) / 2)
+        _joint((mid[0], mid[1], 0.11), (mid[0], mid[1], SILL - 0.04), AFTWARD)
+    for A, B in ((WP, WF), (WF, WS)):
+        _corner_post(A, B, 'plating', POST_J, 0.5, 1.0, HOUSE)
+        _corner_post(A, B, 'lwood', POST_J + W_IN, -0.15, 0.5, WOODL)
+    for W in (WP, WS):
+        _side_post(W, 'plating', POST_K, 0.5, 1.0, HOUSE)
+        _side_post(W, 'lwood', POST_K + W_IN, -0.15, 0.5, WOODL)
+        mid = W.xy(W.len / 2)
+        _joint((mid[0], mid[1], 0.11), (mid[0], mid[1], SILL - 0.04), tuple(-W.out))
+    # ---- the sill board under the wooden rails: light wood, 60 mm into the room, mitred at the two forward corners; a
+    # cant's ends 0.10 m short of the house side, where the side window's own sill board comes
+    j1 = [corner(WP, WF, 0.001), corner(WP, WF, -0.060)]
+    j2 = [corner(WF, WS, 0.001), corner(WF, WS, -0.060)]
+    for ring in ([WP.xy(0.10, 0.001), WP.xy(0.10, -0.060)] + j1[::-1], j1 + j2[::-1], j2 + [WS.xy(WS.len - 0.10, -0.060), WS.xy(WS.len - 0.10, 0.001)]):
+        raked('lwood', ring, SILL - 0.032, SILL, WOODL)
+    # ---- the skirting round the bay, mitred into the sides'
+    _skirt_run(lambda d: side_corner(WP, -d, d), lambda d: corner(WP, WF, -d), tuple(-v for v in WP.n))
+    _skirt_run(lambda d: corner(WP, WF, -d), lambda d: corner(WF, WS, -d), tuple(-v for v in WF.n))
+    _skirt_run(lambda d: corner(WF, WS, -d), lambda d: side_corner(WS, -d, d), tuple(-v for v in WS.n))
+    # ---- the roof over the bay: a plate at the height of the wings' roofs, from the old visor's line forward to an eave
+    # that stands EAVE beyond the plating at the head, all round; under the eave's edge a lip, as the visor had
+    q = TH + EAVE
+    e1, e2 = corner(WP, WF, q, FH), corner(WF, WS, q, FH)
+    line = e1[0] + e1[1]                                         # a cant's eave in plan, to port: x + yard is this much
+    wing = (line - 23.46, 23.46)                                 # where it meets the wing's own eave, which is 23.46 m along her
+    HANGS[0] = True
+    roof = [(3.08, 23.09), (3.08, 23.46), wing, e1, e2, (-wing[0], wing[1]), (-3.08, 23.46), (-3.08, 23.09)]
+    extrude(part('plating'), roof, [P(x, yd, HEAD_ROOM - 0.05) for x, yd in roof], [P(x, yd, HEAD_ROOM) for x, yd in roof], lambda d: (d[0], 0.0, d[1]), HOUSE)
+    lip = [(0.06, HEAD_ROOM - 0.05), (0.0, HEAD_ROOM - 0.05), (0.0, HEAD_ROOM - 0.11), (0.02, HEAD_ROOM - 0.11)]
+    r2 = 2 ** 0.5
+    ends = [lambda d: (wing[0] - d * r2, wing[1]), lambda d: corner(WP, WF, q - d, FH), lambda d: corner(WF, WS, q - d, FH), lambda d: (-wing[0] + d * r2, wing[1])]
+    for a, b in zip(ends, ends[1:]):
+        _eave(a, b, lip, tint(HOUSE, 0.94))
+    HANGS[0] = False
 
 
 STRIP, STRIP_GAP = 0.185, 0.015         # the deckhead's strips: their breadth fore and aft, and the shadow gap between two
@@ -226,12 +306,21 @@ STRIP, STRIP_GAP = 0.185, 0.015         # the deckhead's strips: their breadth f
 def ceiling():
     """The deckhead: long narrow strips of off-white panel running athwartships, 2.30 m over the deck, a shadow gap between
     each two; over them a dark backing, and over that the void the cable trays lie in. (It was one slab with seams painted
-    on it.)"""
-    end = FRONT_IN + fwd(HEAD)
-    box('lining', -X_IN, X_IN, AFT, end, CEIL + 0.012, CEIL + LINING_T, srgb(0x2a2c2e))
+    on it.) It is carried forward into the bay, where each strip ends on the cants' head linings."""
+    side = BP.CANT_AT + FH                                       # where a cant's head lining leaves the house side, along her
+    end = BAY_IN + FH                                            # the forward face's head lining
+    half = lambda yd: X_IN if yd <= side else X_IN - (yd - side)          # the room's half breadth at the deckhead
+    box('lining', -X_IN, X_IN, AFT, side, CEIL + 0.012, CEIL + LINING_T, srgb(0x2a2c2e))
+    back = [(X_IN, side), (half(end), end), (-half(end), end), (-X_IN, side)]
+    extrude(part('lining'), back, [P(x, yd, CEIL + 0.012) for x, yd in back], [P(x, yd, CEIL + LINING_T) for x, yd in back], lambda d: (d[0], 0.0, d[1]), srgb(0x2a2c2e))
     yd = AFT_FACE
     while yd < end - 0.02:
-        box('strip', -X_IN, X_IN, yd, min(yd + STRIP, end), CEIL, CEIL + 0.012, CEILING, r=0.004)
+        to = min(yd + STRIP, end)
+        if to <= side:
+            box('strip', -X_IN, X_IN, yd, to, CEIL, CEIL + 0.012, CEILING, r=0.004)
+        else:
+            ring = [(half(yd), yd)] + ([(X_IN, side)] if yd < side < to else []) + [(half(to), to), (-half(to), to)] + ([(-X_IN, side)] if yd < side < to else []) + [(-half(yd), yd)]
+            extrude(part('strip'), ring, [P(x, v, CEIL) for x, v in ring], [P(x, v, CEIL + 0.012) for x, v in ring], lambda d: (d[0], 0.0, d[1]), CEILING)
         yd += STRIP + STRIP_GAP
 
 
@@ -254,6 +343,8 @@ def floor():
     slots = BO.chair_slots()
     _covering(-2.12, X_IN, AFT, FRONT_IN, slots)
     _covering(-X_IN, -2.12, 20.15, FRONT_IN, slots)
+    bay = [(X_IN, FRONT_IN), (X_IN, BP.CANT_AT), (BAY_XI, BAY_IN), (-BAY_XI, BAY_IN), (-X_IN, BP.CANT_AT), (-X_IN, FRONT_IN)]       # the way before the block
+    extrude(part('floor'), bay, [P(x, yd, 0.0) for x, yd in bay], [P(x, yd, 0.012) for x, yd in bay], lambda d: (d[0], 0.0, d[1]), VINYL)
     p = part('seam')
     start = len(p.f)
     for x in (-1.45, 1.45):                                                   # the welds between the sheets
@@ -320,6 +411,56 @@ def _wing_pane(key_x, yd0, yd1, h0, h1, along):
     part('glass').polygon(ring, GLASS)
 
 
+def _fore_door(side, end):
+    """
+    The door from a wing out onto the gallery before the bridge, in the wing's forward wall beside the house's corner
+    (bridge_place.FORE_DOOR). The owner, 12 November 2026, of the gallery, which nothing led to: "Of course needs doors to
+    the deck outside the bridge". A door stands upright and the front leans, so the door's bay is a shallow porch: a post
+    each side whose inner face is upright and whose outer face leans with the front; between them, in the bulwark's own
+    plane, the frame on a coaming and a weathertight leaf glazed in its upper half; over it a lintel out to the leaning
+    front. The leaf is hinged on its inboard edge and opens outward, onto the gallery, to whoever comes near.
+    """
+    name = 'port' if side > 0 else 'starboard'
+    d0, d1 = BP.FORE_DOOR
+    j = BP.DOOR_JAMB
+    ya, yb = WALL_IN, FRONT_OUT
+    wedge = [(ya, SILL), (yb, SILL), (yb + FH, HEAD), (ya, HEAD)]
+    for x0, x1 in ((X_OUT, d0), (d1, end)):                                                       # the two posts of the porch
+        a_, b_ = sorted((side * x0, side * x1))
+        prism('wing', a_, b_, wedge, HOUSE)
+    a_, b_ = sorted((side * d0, side * d1))
+    prism('wing', a_, b_, [(ya, 2.01), (yb + fwd(2.01), 2.01), (yb + FH, HEAD), (ya, HEAD)], HOUSE)       # the lintel
+
+    def lbox(pt, x0, x1, yd0, yd1, h0, h1, colour):
+        u, v = sorted((side * x0, side * x1))
+        box(pt, u, v, yd0, yd1, h0, h1, colour)
+    for x0, x1 in ((d0, d0 + j), (d1 - j, d1)):                                                   # the frame's two jambs and its head
+        lbox('frame', x0, x1, ya, yb, 0.15, 2.01, FRAME)
+    lbox('frame', d0 + j, d1 - j, ya, yb, 1.97, 2.01, FRAME)
+    mover = f'door-wing-fore-{name[0]}'
+    leaf = Part(f'Wheelhouse, wing forward door, {name}', 'Deck paint', mover=mover)
+    glass = Part(f'Wheelhouse, wing forward door glass, {name}', 'Window glass', mover=mover)
+    fit = Part(f'Wheelhouse, wing forward door hardware, {name}', 'Bronze', mover=mover)
+    a, b = d0 + j, d1 - j
+    la, lb = ya + 0.01, yb - 0.01                                                                 # the leaf, 4 cm thick, a centimetre inside each face of its frame
+    lbox(leaf, a, b, la, lb, 0.15, 0.95, DOOR)
+    lbox(leaf, a, b, la, lb, DOOR_GLASS[1], 1.97, DOOR)
+    lbox(leaf, a, a + STILE, la, lb, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
+    lbox(leaf, b - STILE, b, la, lb, DOOR_GLASS[0], DOOR_GLASS[1], DOOR)
+    mid = (la + lb) / 2
+    glass.polygon([P(side * (a + STILE), mid, 0.95), P(side * (b - STILE), mid, 0.95), P(side * (b - STILE), mid, DOOR_GLASS[1]), P(side * (a + STILE), mid, DOOR_GLASS[1])], GLASS)
+    for yd, d in ((lb, 1), (la, -1)):                                                             # a lever handle on both faces, at the free edge
+        lbox(fit, b - 0.07, b - 0.04, yd, yd + d * 0.045, 0.98, 1.08, BRASS)
+        lbox(fit, b - 0.14, b - 0.04, yd + d * 0.03, yd + d * 0.045, 1.03, 1.06, BRASS)
+    for hh in (0.35, 1.80):                                                                       # its hinges, outside on the inboard jamb
+        tube(fit, (side * a, lb + 0.005, hh - 0.06), (side * a, lb + 0.005, hh + 0.06), 0.016, BRASS, 10)
+    for q in (leaf, glass, fit):
+        q.group = 'bridge'
+        EXTRA.append(q)
+    MOTIONS.append(dict(id=mover, name=f'Door from the {name} wing to the gallery before the bridge', pivot=[side * a, 0.0, BP.Z(lb + 0.005)], ratio=-1.0 * side, max=100,
+                        at=[side * (d0 + d1) / 2, DECK, BP.Z((ya + yb) / 2)], normal=[0, 0, 1]))
+
+
 def wing(g):
     """
     A bridge wing, closed in. The owner, 12 November 2026, with a photograph of a ferry whose bridge reaches across her
@@ -328,7 +469,8 @@ def wing(g):
     on it between steel posts, and a roof is carried out over it from the wheelhouse's eave to her side.
 
       - forward, the bulwark ends at the height of the wheelhouse's own sill, and the wall over it leans forward with the
-        wheelhouse's glass: six panes a side, so that one band of windows runs from one side of her to the other;
+        wheelhouse's glass: five panes a side, and beside the house's corner a door out onto the gallery before the
+        bridge (_fore_door), so that one band of windows runs from one side of her to the other;
       - outboard, three panes stand on the bulwark's rail, and the corner is a steel cheek carried into the rake;
       - aft, a wall with a window and a weathertight door, which opens aft onto the open bridge deck;
       - over it a roof at the height of the wheelhouse's eave, whose forward edge is that eave's own line.
@@ -340,12 +482,15 @@ def wing(g):
     xo = W + 0.06                                                                                 # the outer face of the outboard bulwark
     box('wingdeck', side * X_OUT, side * W, 19.56, 22.94, 0.0, 0.012, WINGDECK)
     box('wing', side * W, side * xo, 19.56, FRONT_OUT, 0.0, 1.10, HOUSE)                         # the bulwark outboard, from the after wall (which takes the corner)
-    box('wing', side * X_OUT, side * W, 22.94, FRONT_OUT, 0.0, SILL, HOUSE)                      # and across the forward end, to the sill
+    f0, f1 = BP.FORE_DOOR                                                                         # the doorway to the gallery before the bridge
+    for a_, b_ in ((X_OUT, f0), (f1, W)):
+        box('wing', side * a_, side * b_, 22.94, FRONT_OUT, 0.0, SILL, HOUSE)                      # and across the forward end, to the sill, each side of that doorway
+    box('wing', side * f0, side * f1, 22.94, FRONT_OUT, 0.0, 0.15, HOUSE)                         # the doorway's coaming
     for yd in (20.1, 20.7, 21.3, 21.9, 22.5):                                                     # its stays
         prism('wing', side * (W - 0.01), side * W, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 1.10), (yd - 0.004, 1.10)], tint(HOUSE, 0.92))
         prism('wing', side * (W - 0.08), side * W, [(yd - 0.004, 0.012), (yd + 0.004, 0.012), (yd + 0.004, 0.30), (yd - 0.004, 0.30)], tint(HOUSE, 0.92))
     box('wood', side * (W - 0.06), side * (W + 0.09), 19.56, 22.80, 1.10, WING_SILL, WOOD)        # the rail: now the sill of the glass outboard
-    box('wood', side * X_OUT, side * 8.96, 22.88, WALL_IN + 0.001, SILL - 0.032, SILL, WOOD, r=0.006)        # and a sill board under the forward glass, as far as the wing station
+    box('wood', side * BP.FORE_POST, side * 8.96, 22.88, WALL_IN + 0.001, SILL - 0.032, SILL, WOOD, r=0.006)  # and a sill board under the forward glass, from the door's bay to the wing station
 
     # ---- the forward wall over the bulwark: posts and panes, leaning with the wheelhouse's glass; a head to the roof
     first, last = X_OUT + WING_POST, W - WING_POST                                                # the panes stand between these
@@ -353,6 +498,10 @@ def wing(g):
     at = X_OUT
     for k in range(WING_FRONT):
         x0 = first + k * (pane + WING_POST)
+        if k == 0:                                                                                # the first pane's place is the door's bay
+            _fore_door(side, x0 + pane)
+            at = x0 + pane
+            continue
         _wraked('wing', side * at, side * x0, 0.0, 1.0, SILL, HEAD, HOUSE)                        # the post before this pane
         _wing_pane_fore(side * x0, side * (x0 + pane))
         at = x0 + pane

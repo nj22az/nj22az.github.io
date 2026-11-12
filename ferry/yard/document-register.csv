@@ -21,6 +21,7 @@ JS2-207,Welding table and procedures,hull,to do,,
 JS2-208,Structural fire protection plan,hull,to do,,"Divisions, insulation, doors"
 JS2-209,Painting specification,hull,partly,"ferry/blender/spec.py (paint lines), shipyard.py",Colours only
 JS2-210,Cathodic protection plan,hull,partly,ferry/blender/hull_appendages.py (anodes),Anodes drawn; no calculation
+JS2-211,"Wheelhouse forward bay and gallery: arrangement and structure",hull,exists,"ferry/yard/drawings/JS2-211-wheelhouse-forward-bay.svg (made by bay_drawing.py); ferry/blender/bridge_place.py, wheelhouse.py, steel.py (bay_gallery, bay_knees)","Revision 0, 12 November 2026. The house's front from ahead with the knees laid over the windows of the officers' deck, the plan at the bridge deck, the section on the centreline. Drawn after the owner found the first knees over two cabin windows: JSY-STD-405. Open: no scantlings; the port side way is 0.46 m; JS4-402 not run again"
 JS3-301,"Car deck arrangement: lanes, lashing, pillars",cargo equipment,partly,"ferry/blender/ga.py, steel.py","Four lanes of 2.6 m between the casings, bare: no lane marks, lashing points or pillars yet"
 JS3-302,"Bow ramp: arrangement, hydraulics, securing",cargo equipment,partly,ferry/blender/steel.py (the inner bow door),The inner bow door stands shut in the collision bulkhead and does not move; the visor is not cut in the bow
 JS3-303,Car deck drainage and scuppers,cargo equipment,to do,,

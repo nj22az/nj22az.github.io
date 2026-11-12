@@ -27,15 +27,16 @@ its picture, and each key, lamp, knob and screw as a shape.
 from bridge_kit import *
 import bridge_kit as K
 
-BX, NOSE, FACE = 1.85, 22.12, 22.20           # the block's half breadth; the desk's after edge; the cabinet's after face
-S0, S1 = (22.14, 0.932), (22.50, 1.000)       # the sloping desk, from its after edge to the level strip: (yard, h)
+_B = BP.BLOCK                                 # its outline is kept where the yard's drawings read it too (bridge_place.py)
+BX, NOSE, FACE = _B['half'], _B['nose'], _B['face']       # the block's half breadth; the desk's after edge; the cabinet's after face
+S0, S1 = _B['desk']                           # the sloping desk, from its after edge to the level strip: (yard, h)
 SLOPE = atan2(S1[1] - S0[1], S1[0] - S0[0])
-SADDLE = 0.78                                 # half the breadth of the upstand's low middle
-UP_FOOT, UP_TOP = 22.52, 1.315                # the upstand's foot and top, outboard of the middle
-MID_FOOT, MID_TOP = 22.72, 1.225              # and in the middle, ahead of the wheel
+SADDLE = _B['saddle']                         # half the breadth of the upstand's low middle
+UP_FOOT, UP_TOP = _B['up']                    # the upstand's foot and top, outboard of the middle
+MID_FOOT, MID_TOP = _B['mid']                 # and in the middle, ahead of the wheel
 T20, C20, S20 = tan(radians(20)), cos(radians(20)), sin(radians(20))
 FIELD = 0.005                                 # the dark instrument fields stand this far proud of the enamel
-APRON = 0.60                                  # the cabinet's doors end here; over them the apron under the desk
+APRON = _B['apron']                           # the cabinet's doors end here; over them the apron under the desk
 BAYS = [(1.11, 1.85), (0.37, 1.11), (-0.37, 0.37), (-1.11, -0.37), (-1.85, -1.11)]
 BAY_NAMES = ['PA  CCTV', 'NAVIGATION', 'PROPULSION', 'COMPASS  DATA', 'RADAR']
 DOOR = (0.135, 0.585)                         # a cabinet door, from and to
@@ -89,7 +90,14 @@ def console(g, tag, *where):
     # ---- the cabinet: a plinth set back for the feet, a bottom, a back, two ends, a partition and a stile between bays
     box('dark', -BX + 0.03, BX - 0.03, FACE + 0.08, FRONT_IN - 0.02, 0.012, 0.10, DARK)
     box('console', -BX, BX, FACE, FRONT_IN, 0.10, 0.12, BLUEC)
-    box('console', -BX, BX, FRONT_IN - 0.02, FRONT_IN, 0.12, APRON, BLUEC)
+    # The block stands free since the bay was built out (stage 6), with a way before it: its back is reached from there
+    # "for electrical work and maintenance", as a chief constructor asked of it. So the back is no longer one panel: a
+    # frame of stiles and rails, and in each bay a service door (back_door); over the doors the back of the upstand, with
+    # a louvred vent in each bay for the heat of the displays.
+    for a, b, c, e in ((-BX, BX, 0.12, BACK_DOOR[0] - 0.005), (-BX, BX, BACK_DOOR[1] + 0.005, APRON)):
+        box('console', a, b, FRONT_IN - 0.02, FRONT_IN, c, e, BLUEC)
+    for x in (-BX + 0.02, 1.11, 0.37, -0.37, -1.11, BX - 0.02):                     # the stiles between the doors
+        box('console', x - 0.02, x + 0.02, FRONT_IN - 0.02, FRONT_IN, BACK_DOOR[0] - 0.005, BACK_DOOR[1] + 0.005, BLUEC)
     for sx in (-1, 1):
         box('console', sx * (BX - 0.02), sx * BX, FACE, FRONT_IN - 0.02, 0.12, APRON, BLUEC)
     for x in (1.11, 0.37, -0.37, -1.11):
@@ -97,14 +105,18 @@ def console(g, tag, *where):
         box('console', x - 0.02, x + 0.02, FACE, FACE + 0.02, 0.12, APRON, BLUEC)
     for i, (lo, hi) in enumerate(BAYS):
         a, b = lo + (0.02 if lo < -BX + 0.001 else 0.01), hi - (0.02 if hi > BX - 0.001 else 0.01)
-        box('console', a, b, FACE + 0.03, FRONT_IN - 0.02, 0.285, 0.30, tint(BLUEC, 0.86))               # a shelf for the heavier units
+        box('console', a, b, FACE + 0.03, FRONT_IN - 0.078, 0.285, 0.30, tint(BLUEC, 0.86))              # a shelf for the heavier units; it ends short of the terminals
         if i in (0, 1, 3):
-            box('console', a, b, FACE + 0.10, FRONT_IN - 0.02, 0.475, 0.49, tint(BLUEC, 0.86))           # and one over it for the small ones
+            box('console', a, b, FACE + 0.10, FRONT_IN - 0.078, 0.475, 0.49, tint(BLUEC, 0.86))          # and one over it for the small ones
         # a slotted cable duct across the back of the bay, under the desk
         box('plastic', a, b, FRONT_IN - 0.065, FRONT_IN - 0.02, 0.535, 0.585, srgb(0x9aa0a2), r=0.002)
         for k in range(int((b - a) / 0.03) - 1):
             box('dark', a + 0.02 + k * 0.03, a + 0.028 + k * 0.03, FRONT_IN - 0.067, FRONT_IN - 0.064, 0.542, 0.578, srgb(0x2a2d2f), r=0.0)
         doors(i, lo, hi)
+        back_door(i, lo, hi)
+        terminals(i, a, b)
+        with Frame(((lo + hi) / 2, FRONT_IN, 0.80), PORT, UP) as F:                   # a vent in the upstand's back
+            louvres(F, -0.24, -0.06, 0.24, 0.06, 0.0, n=5)
     # ---- a blanking plate where a place in a row is not taken
     for row, x0, x1 in BLANKS:
         with desk_frame((x0 + x1) / 2, row) as F:
@@ -149,6 +161,90 @@ def doors(i, lo, hi):
         hinge_x = da if k == 0 else db
         hinged(mover, f'Console door, bay {i + 1} ({BAY_NAMES[i].lower()}), {side} leaf', (hinge_x, FACE - 0.004, 0.0), ratio=1.0 if k == 0 else -1.0, opens=105,
                at=(mid, FACE, 0.36), reach=1.9)
+
+
+BACK_DOOR = (0.135, 0.585)                    # a service door in the block's back, from and to
+
+
+def back_door(i, lo, hi):
+    """The service door of a bay, in the block's back: one pressed leaf on two hinges at its port edge, two quarter-turn
+    locks at the other, louvres low in it, the bay's name and what is behind it. A tap opens it into the way, and shuts it."""
+    da, db = lo + (0.043 if lo < -BX + 0.001 else 0.023), hi - (0.043 if hi > BX - 0.001 else 0.023)      # 3 mm clear of the stile each side
+    mover = f'console-back-{i + 1}'
+    M = moving(f'Console, bay {i + 1}, service door', mover, leaf='Marine enamel', fit='Stainless', mark='Marking')
+    box(M['leaf'], da, db, FRONT_IN - 0.014, FRONT_IN + 0.004, BACK_DOOR[0], BACK_DOOR[1], BLUEC, r=0.003)
+    wd, mid = db - da, (da + db) / 2
+    with Frame((mid, FRONT_IN + 0.004, (BACK_DOOR[0] + BACK_DOOR[1]) / 2), PORT, UP) as F:      # looked at from the way: across is to port
+        F.into = dict(console=M['leaf'], steel=M['fit'], seam=M['mark'], anod=M['leaf'])
+        louvres(F, -wd / 2 + 0.07, -0.195, wd / 2 - 0.07, -0.10, 0.0, n=4)
+        for yy in (-0.13, 0.13):
+            quarter_turn(F, -(wd / 2 - 0.030), yy, 0.0)                              # the locks, at its starboard edge
+            hinge(F, wd / 2 - 0.004, yy - 0.03, yy + 0.03, 0.0)                      # the hinges, at its port edge
+        nameplate(F, BAY_NAMES[i] + '  TERMINALS', 0.0, 0.175, 0.0, height=0.008)
+        nameplate(F, 'ISOLATE BEFORE OPENING', 0.0, 0.130, 0.0, height=0.005, colour=srgb(0xb8342a), screws=False)
+    hinged(mover, f'Console service door, bay {i + 1} ({BAY_NAMES[i].lower()}): its terminals, from the way before the block', (db, FRONT_IN + 0.004, 0.0), ratio=1.0, opens=105,
+           at=(mid, FRONT_IN, 0.36), reach=1.9)
+
+
+WIRES = (srgb(0x1c1e20), srgb(0x8a1f1a), srgb(0x24507a), srgb(0x7a5a2a), srgb(0xd9d6cc), srgb(0x2c6a3c))
+
+
+def terminals(i, a, b):
+    """What a bay's service door opens on, in the last 45 mm of the block behind it: a galvanised mounting plate with a
+    rail of terminal blocks, numbered on a marker strip, between two end clamps; under it the earth bar with its green
+    and yellow leads; in the block's bottom a cable transit, and the ship's cables coming up from it in two cleated
+    bundles to the terminals; from each terminal a core up into the slotted duct that runs across the bay under the
+    desk, by which every unit in the bay is wired. (The cables come from under the deck: a block that stands free is fed
+    from below. They came down two window mullions into its back while it stood against the front.)"""
+    galv, grey, copper = srgb(0xaab0b0), srgb(0xb9b6ab), srgb(0xb87333)
+    mid = (a + b) / 2
+    with Frame((mid, FRONT_IN - 0.040, 0.42), PORT, UP) as F:                        # on the terminals' plane, looked at from the way
+        w = (b - a) / 2
+        F.block('steel', (-w, -0.105, -0.030), (w, 0.085, -0.027), galv, r=0.0)      # the mounting plate, across the bay from partition to partition
+        for sx in (-1, 1):                                                           # an angle cleat at each end, bolted to the partition and to the plate
+            F.block('steel', (sx * w - (0.003 if sx > 0 else 0.0), -0.095, -0.027), (sx * w + (0.0 if sx > 0 else 0.003), 0.075, -0.002), galv, r=0.0)
+            bolt(F, sx * (w - 0.02), -0.090, -0.027, r=0.004, h=0.003)
+            bolt(F, sx * (w - 0.02), 0.070, -0.027, r=0.004, h=0.003)
+        F.block('steel', (-w + 0.03, 0.022, -0.027), (w - 0.03, 0.057, -0.0195), srgb(0xc9cdd0), r=0.0)      # the rail the blocks clip on
+        n = int((2 * w - 0.20) / 0.0082)
+        x0 = -n * 0.0082 / 2
+        for k in range(n):                                                           # the terminal blocks, 8 mm each, every sixth one an earth block
+            earth = k % 6 == 5
+            xx = x0 + k * 0.0082
+            F.block('plastic', (xx + 0.0005, 0.008, -0.0195), (xx + 0.0077, 0.071, 0.012), srgb(0x3e8a4a) if earth else grey, r=0.0)
+            for yy in (0.016, 0.063):                                                # its two clamp screws
+                F.lathe('steel', (xx + 0.0041, yy, 0.012), [(0.0, 0.0022), (0.0008, 0.0022), (0.0008, 0.0)], srgb(0x8d9496))
+            col = srgb(0xc8b72e) if earth else WIRES[(k + i) % len(WIRES)]
+            # a core up from the block into the duct's slots, and one down toward the transit's bundles
+            F.sweep('rubber', [(xx + 0.0041, 0.071, -0.004), (xx + 0.0041, 0.100, -0.004), (xx + 0.0041 + 0.004 * ((k % 3) - 1), 0.128, -0.012)], 0.0016, col, ends=(False, False))
+            side = -1 if xx < 0 else 1
+            F.sweep('rubber', [(xx + 0.0041, 0.008, -0.004), (xx + 0.0041, -0.022, -0.004), (xx + 0.0041 + side * 0.010, -0.050, -0.010), (side * (w - 0.12), -0.085, -0.014)], 0.0016, col, ends=(False, False))
+        for sx in (-1, 1):                                                           # an end clamp each side
+            F.block('plastic', (sx * (-x0 + 0.006) - 0.005, 0.014, -0.0195), (sx * (-x0 + 0.006) + 0.005, 0.065, 0.008), srgb(0x2c3033), r=0.001)
+        F.block('plastic', (x0, 0.0375, 0.012), (-x0, 0.0415, 0.0126), srgb(0xf2f0e8), r=0.0)    # the marker strip
+        for k in range(0, n, 5):
+            F.text(str(k + 1), x0 + (k + 0.5) * 0.0082, 0.0382, 0.0128, 0.0026, srgb(0x1a1c1e))
+        nameplate(F, f'X{i + 1}', -w + 0.015, 0.040, -0.027, height=0.007, screws=False)
+        # the earth bar: a copper bar on two stand-offs, with a row of screws and three green and yellow leads to the plate's stud
+        F.block('brass', (-w + 0.06, -0.070, -0.022), (w - 0.06, -0.052, -0.016), copper, r=0.001)
+        for sx in (-1, 1):
+            F.block('plastic', (sx * (w - 0.075) - 0.008, -0.068, -0.027), (sx * (w - 0.075) + 0.008, -0.054, -0.022), srgb(0x8a1f1a), r=0.0)
+        for k in range(8):
+            xx = -w + 0.09 + k * (2 * w - 0.18) / 7
+            F.lathe('steel', (xx, -0.061, -0.016), [(0.0, 0.004), (0.003, 0.004), (0.003, 0.0)], srgb(0xc9cdd0))
+        # the two bundles up from the transit, cleated to the plate, and the transit itself in the block's bottom
+        for sx in (-1, 1):
+            bx = sx * (w - 0.12)
+            F.sweep('rubber', [(bx, -0.292, -0.014), (bx, -0.200, -0.014), (bx, -0.085, -0.014)], 0.014, srgb(0x25282a), ends=(True, True))
+            F.block('steel', (bx - 0.022, -0.150, -0.027), (bx + 0.022, -0.136, 0.004), galv, r=0.002)       # a cleat over the bundle
+            for sxx in (-1, 1):
+                bolt(F, bx + sxx * 0.017, -0.143, 0.004, r=0.003, h=0.002)
+    for sx in (-1, 1):
+        bx = mid + sx * ((b - a) / 2 - 0.12)
+        box('case', bx - 0.045, bx + 0.045, FRONT_IN - 0.085, FRONT_IN - 0.022, 0.12, 0.146, CASE, r=0.003)      # the transit's frame, on the block's bottom
+        for sxx in (-1, 1):
+            with Frame((bx + sxx * 0.034, FRONT_IN - 0.036, 0.146), STBD, FWD) as F:
+                bolt(F, 0.0, 0.0, 0.0, r=0.004, h=0.003)
 
 
 # =====================================================================================================================
@@ -466,6 +562,11 @@ def facepanel(g, tag, x, yard, h):
 def sockets(g, tag, x, yard, h):
     """A 230 V socket outlet in a face: the console's apron (it looks aft), or the lining below a sill."""
     way = g.get('looks', 'aft')
+    if way == 'bay':                                                                 # in the lining of one of the bay's walls, below its sill
+        W, s = on_bay(x, yard)
+        with W.inside(s, h, upright=True) as F:
+            socket(F, 0.0, 0.0, 0.0, double=bool(g.get('double')))
+        return
     right = STBD if way == 'aft' else PORT if way == 'forward' else AFTWARD if way == 'port' else FWD
     with Frame((x, yard, h), right, UP) as F:
         socket(F, 0.0, 0.0, 0.0, double=bool(g.get('double')))

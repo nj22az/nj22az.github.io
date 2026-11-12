@@ -1,6 +1,6 @@
 #!/bin/bash
 # The whole build of the Chisum and every check on it, in order. It stops at the first that fails: she is not built until
-# all of them pass (JSY-STD-401, 402, 403).
+# all of them pass (JSY-STD-401, 402, 403, 405).
 #
 #   ferry/blender/make.sh [part file] [blend file]
 #
@@ -19,6 +19,8 @@ python3 ferry/blender/assemble.py --part "$PART"
 python3 ferry/blender/check.py
 python3 ferry/blender/zfight.py --part "$PART"
 python3 ferry/blender/afloat.py --part "$PART" --allow ferry/blender/afloat-known.json
+# nothing is built over a window (JSY-STD-405): every pane aboard, and what stands before and behind it
+python3 ferry/blender/windows.py --part "$PART"
 python3 ferry/blender/spans.py --part "$PART"
 # the light of every place aboard, traced through her as built (the page lights her from it)
 python3 ferry/blender/light.py --part "$PART"

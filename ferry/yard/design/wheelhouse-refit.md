@@ -443,6 +443,116 @@ runs where the walls meet the roof: the light traced for the open air over a roo
 
 **Checks actually run** are in `ferry/README.md`, *Checks actually run*.
 
+## Stage 6. The forward bay; the console block stands free (12 November 2026, midday)
+
+Three things were before this stage. The owner's second photograph (the ro-pax *Finnarrow* from her bow): **"I mean that
+protruding part forward on the bridge"**. A chief constructor's remark on the pictures of stage 5, passed on by the owner:
+the console block should not stand hard against the wall, **it must be reached from its other side for electrical work
+and maintenance**; otherwise it looks very fine. And a production directive the owner had from another assistant and
+gave as directions: each interior built as one complete, self-contained environment, exact at arm's length, audited from
+the running page, with screenshots that name what they show. The owner's word for this stage: "so proceed with building
+the bridge".
+
+### What was done
+
+**The bay** (`blender/bridge_place.py` holds its measures; `bridge_kit.py`: `Wall`, `raked`, `band`, `member`;
+`wheelhouse.py`: `front`). The middle of the bridge front stands **1.00 m forward** of the wings' fronts: a forward face
+4.00 m wide outside and a canted corner each side at 45 degrees, back to the house's forward corners. Five windows (three
+in the forward face, one in each cant; with the wings' the band across her is fifteen panes and two doors), each in black rubber between
+varnished wood inside and a painted steel frame outside; posts at the corners; the sill board, the coved skirting and the
+handrail go round the bay in mitres; the deckhead's strips are cut to its outline; a roof at the height of the wings'
+roofs with an eave and its lip all round. The blinds, the three wipers (the middle window's and one on each cant), the
+two clear-view screens (in the forward face's outer windows, ahead of the two pilot chairs), the wash pipe, the heating's
+junction box and the sockets stand on the new walls.
+
+*The whole front leans forward as one.* Every post and pane edge lies in a plane fore and aft and leans 10 degrees in
+it, so at any height the bay's outline in plan is its outline at the sill moved forward; a pane of a cant is a
+parallelogram. It was first drawn with each cant leaning about its own sill (rectangular panes): the line in which a cant
+then meets the upright house side runs 0.2 m along the cant between sill and head, the post that covers it is 0.3 m wide
+at the sill, and from the wheel it made a blind sector of 8.8 degrees where the survey's measure allows a mullion 6. The
+side window forward of each wing door is carried forward 0.12 m (to 22.94 m) for the same reason. As built: **224 of 225
+degrees** through the glass from the wheel at both eye heights, no blind sector wider than a mullion (`build.py`).
+
+**The block stands free.** It keeps its place; the wall went forward. Before it runs **a way 1.00 m wide**, from one side
+way to the other. Its back, which was one panel against the bulkhead, is a frame with **a service door for each of its
+five bays** (two hinges, two quarter-turn locks, louvres, the bay's name and a warning plate), and a louvred vent over
+each in the upstand's back. A door opens to a tap, 105 degrees into the way, on the bay's **terminals**: a rail of
+terminal blocks with their clamp screws, every sixth an earth block, numbered on a marker strip (X1 to X5); the earth
+bar; a core from each block up into the slotted duct by which the bay's units are wired; and the ship's cables coming up
+in two cleated bundles from a cable transit in the block's bottom.
+
+**The block is fed from below.** Its cables came down two window mullions straight into its back. They come down the
+same two mullions of the bay, on down the lining in a covered duct to a cable transit in the deck, cross under the deck,
+and come up through the transit in the block's bottom (`systems/bridge.py`: nodes `FOOT-P/S`, `UP-P/S`). That is 4 m
+more cable. **The register's own check stopped the build for it**: at 24 V, way DC1 11 (alarm, watch alarm, door and ramp
+panel) lost 6.0 % over 19.5 m of 1.5 mm² and way DC1 14 (public address, battery supply) 5.2 % over 17 m of 6 mm². Both
+are a size heavier (2.5 and 10 mm²).
+
+**The way in is to starboard.** The watchkeeper's table is 0.36 m broad (it was 0.58) and no longer cleated to a front
+lining that is gone: the way past it to the front of the block is **0.70 m**. To port the settee leaves 0.46 m, and 0.33
+at the binocular box: a walker does not pass. Nothing was moved there: where the settee stands is the owner's to say.
+
+**Under the bay** (`blender/steel.py`: `BRIDGE_OUTLINE`, `bay_gallery`, `bay_knees`) the bridge deck is carried forward of
+the house's front, 0.50 m under the bay and 1.10 m beyond it all round as a gallery with a three-course rail, from which
+the bay's glass is washed and its wipers reached; a face bar under its edge; knees to the house's front.
+
+**Doors to the gallery.** The gallery was first drawn with nothing leading to it, and the drawing listed that as not
+settled. The owner, shown the drawing: **"Of course needs doors to the deck outside the bridge"**. In each wing's forward
+wall, beside the house's corner where the gallery is widest, a weathertight door (`wheelhouse.py`: `_fore_door`;
+`bridge_place.FORE_DOOR`): a door stands upright and the front leans, so its bay is a shallow porch, a post each side
+upright within and leaning without, the frame on a 0.15 m coaming in the bulwark's own plane, a leaf glazed in its upper
+half, a lintel out to the leaning front. It takes the place of the wing's first pane. It is hinged on its inboard edge and
+opens outward, as a door in an exposed front does, to whoever comes near. **Drawn first this time** (JS2-211, view B): the
+leaf's swing was laid against the rail before anything was built, and the gallery made 1.10 m wide (it was 0.75) so that
+the leaf clears the rail by 0.20 m through its whole swing. The bulkhead light and the talkback station of each wing's
+house side stand 0.11 m further aft for the door's inboard post.
+
+### The knees over the windows: found by the owner, and what came of it
+
+The first gallery's four knees were set at round figures (0.65 and 1.9 m each side of the centreline, 1.25 m deep). Two
+came down across the windows of the ship's office and the pilot cabin on the officers' deck. The session had seen it in
+its own picture and was about to look into it when the owner, shown the same picture, said: **"check the quality please
+you cant cover the windows like that, you need make the drawing, and make sure you dont build over a window, do you have
+the specs of the hull ?"** The yard had them (the windows of that front are in `steel.py`, from the arrangement) and had
+not put the knees beside them. Put right, in the order asked:
+
+1. **The drawing**: [`../drawings/JS2-211-wheelhouse-forward-bay.svg`](../drawings/JS2-211-wheelhouse-forward-bay.svg)
+   (`bay_drawing.py`, from the builders' own numbers): the house's front from ahead with the knees laid over the six
+   windows of the officers' deck and the measure from each knee to the windows beside it; the plan at the bridge deck;
+   the section on the centreline.
+2. **The knees stand on the bulkheads of the deck below**, where there is something behind the plating to take them: at
+   -2.995, -2.085, +0.400 and +2.995 m (1.0 and 1.6 m long), 0.60 m and more from the nearest window, 0.79 m deep so that each foot ends
+   0.32 m above the windows' heads. Between knees more than 1.6 m apart a beam under the plate, no lower than the face
+   bar. The builder stops the build if a knee would stand within 0.30 m of a window.
+3. **A check for every window aboard**, in the gate: `blender/windows.py`, and the working instruction
+   [`../standards/JSY-STD-405-windows.md`](../standards/JSY-STD-405-windows.md). On its first run it named the bay's
+   knees, and **the middle knee of each bridge wing**, drawn in the night at 101.8 m across a side window of the
+   officers' deck, which nobody had seen. The wings have two knees a side now, where the side's windows leave room.
+4. The side window carried forward (above) had come under a bulkhead light and a talkback station on each wing's house
+   side: the light is over the window now, the station under its sill (0.72 m: low for speaking into).
+
+### Compared: the pictures against the pattern, and against stage 5
+
+`/Users/nilsjohansson/Developer/chisum-screens/2026-11-12/11-bay/`: `0-before/` (ten fixed views, the build of stage 5),
+`1-bay/` (the same and two more, the first build of this stage, with the faulty knees), `2-drawing/` (the sheet),
+`3-knees/` (the knees put right), `4-doors/` (the last build, with the doors to the gallery). Taken by `tools/shots-bridge.cjs` (thirteen views added for the bay, the way and the doors), drawn on this Mac's
+graphics card. Each named here was opened.
+
+| | Matches | Does not match yet |
+|---|---|---|
+| The second photograph (the protruding part) | The middle of the front stands out forward of the wings as a bay with canted corners, glazed all round, on a base that overhangs the house's face, with a railed gallery under its windows; the roof's edge is one line with the wings' | Hers is 1.0 m; the *Finnarrow*'s looks nearer 2. The base is a flat gallery on knees, not a plated, sloped underside. The cants have one pane each; hers two or three |
+| T1, as the constructor asked | The block stands free with a way before it; its back opens, bay by bay, on its wiring | The upstand's back is one plain enamelled face with five vents. By day the way is in the block's shadow and its doors read dark |
+| T5 | The handrail under the sills is one length round the bay (it ended at the block) | |
+| T8 | | The table and the settee still stand beside the block, and the settee closes the port side way |
+
+**Seen and not put right.** (1) In the way, looking down at the block's back with the glass in view, the picture is dark:
+the bay has no lamp of its own. (2) The page's deck plan and the general arrangement still draw the wheelhouse as a
+rectangle to 103.5 m: on foot in the bay the lamp on the plan stands outside the room's outline. (3) A cant's blind is
+0.13 m narrower than its pane (it runs square to its roller; the pane is a parallelogram). (4) The drawing's section has
+two notes that touch.
+
+**Checks actually run** are in `ferry/README.md`, *Checks actually run*, and in `HANDOVER.md`.
+
 ## What the bridge still lacks, compared with a real one
 
 Said plainly, in the order it would be seen:
@@ -458,9 +568,8 @@ Said plainly, in the order it would be seen:
 5. **The boards' insides**, and with them the owner's own next step (every electrical connection): not begun here.
 6. **Lettering on curved and small things**: the keys' legends are the sheet's, sharp at arm's length and soft at a hand's
    breadth.
-7. **The block stands against the bulkhead**, and the table and settee beside it, where the photographs have a way before
-   the consoles and the table and sofa abaft them. That is her wheelhouse's size (3.4 m deep), not an oversight; the 125 m
-   ship of revision D has a deeper house, and the block is drawn so that it can be stood free there (its back is a panel).
+7. **The table and the settee stand beside the block**, where the photographs have them abaft it. The block itself stands
+   free since stage 6, with a way before it; the settee closes the port side way to 0.46 m.
 8. **Night.** The page has one day. The dimmers, the night lights and the chart lamp work, and are seen by daylight.
 9. **Sound.** Nothing on the bridge is heard.
 10. **Not measured again:** the yard's sight-line calculation (JS4-402, `yard/calc/bridge_calcs.py`, half an hour) was not

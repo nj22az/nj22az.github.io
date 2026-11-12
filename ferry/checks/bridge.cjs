@@ -114,6 +114,29 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   check(w.z < Z(19.4), `from the port wing aft, through the door in its after wall and over its coaming onto the bridge deck (${B(w.z).toFixed(2)} m)`);
   w = await walk(2.0, 21.7, PORT, 2);
   check(w.x < 2.6, `the settee under the port windows stops one (x ${w.x.toFixed(2)}; its front is at 2.31)`);
+  // the forward bay (the refit's stage 6): the console block stands free, and a way runs before it from one side to the other,
+  // so that its back is reached for electrical work and maintenance
+  w = await walk(-2.2, 22.2, AHEAD, 3);
+  check(w.z > Z(23.3) && w.z < Z(23.92), `from the starboard side, past the watchkeeper's table and the block's end, forward into the bay: its front stops one (${B(w.z).toFixed(2)} m; the lining under its glass is at 23.92)`);
+  w = await walk(-1.5, 23.45, PORT, 3);
+  check(w.x > 1.95 && w.x < 2.92, `along the way before the block from starboard to port, past its whole back: the port cant stops one (x ${w.x.toFixed(2)}; the block ends at 1.85)`);
+  w = await walk(-2.2, 23.1, ASTERN, 2);
+  check(w.z < Z(21.9), `and aft again down the starboard side, between the block's end and the table: that way is 0.70 m (${B(w.z).toFixed(2)} m)`);
+  // the doors to the deck outside the bridge (the owner, 12 November 2026): from each wing forward onto the gallery, and along it before the bay
+  w = await walk(3.5, 22.2, AHEAD, 2.5);
+  check(w.z > Z(23.25) && w.z < Z(24.5), `from the port wing forward, through the door in its forward wall and over its coaming, onto the gallery before the bridge (${B(w.z).toFixed(2)} m; the wall is at 23.00)`);
+  w = await walk(2.0, 24.60, STBD, 3.5);
+  check(w.x < -1.8 && w.x > -3.2, `along the gallery before the bay's glass from port to starboard: its rail holds one in (x ${w.x.toFixed(2)})`);
+  w = await walk(-3.5, 23.6, ASTERN, 2.5);
+  check(w.z < Z(22.7), `and in again through the starboard wing's forward door (${B(w.z).toFixed(2)} m)`);
+  const back = await page.evaluate(() => {
+    const f = window.__ferry, id = 'console-back-3', turned = () => { const m = f.movers().find(m => m.id === id).matrix; return Math.acos(Math.max(-1, Math.min(1, (m[0] + m[5] + m[10] - 1) / 2))) * 180 / Math.PI; };
+    f.work(id, true); for (let t = 0; t < 1.5; t += 0.1) f.workAuto(0.1);
+    const open = turned();
+    f.work(id, false); for (let t = 0; t < 1.5; t += 0.1) f.workAuto(0.1);
+    return { open, shut: turned(), n: Object.keys(f.state.inputs).filter(k => /^console-back-/.test(k)).length };
+  });
+  check(back.n === 5 && back.open > 100 && back.shut < 0.01, `the block's back has ${back.n} service doors; the middle one opens ${back.open.toFixed(0)} degrees into the way and shuts again`);
   w = await walk(-2.5, 20.9, ASTERN, 3);
   check(w.y < DECK - 2.0 && w.z < Z(17.8), `through the gate at the head of the crew stair and down it to the deck below (${B(w.z).toFixed(2)} m, ${w.y.toFixed(2)} m up, "${w.room}")`);
   w = await walk(-1.5, 20.9, ASTERN, 3);

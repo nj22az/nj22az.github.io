@@ -40,7 +40,8 @@ OLD_HEAD = 2.08                       # where the other ship's aft wall ends: he
 SILL, HEAD, RAKE = 0.95, 2.10, tan(radians(10.0))
 X_IN, X_OUT = 2.92, 3.00              # the house side, inside and out
 AFT, FRONT_IN, FRONT_OUT = 19.545, 22.92, 23.00
-CORNER = 22.82                        # where the side wall's last window ends and the forward corner begins
+CORNER = 22.94                        # where the side wall's last window ends and the forward corner begins (it was 22.82: with the bay
+                                      # the window is carried forward, so that the corner is no wider than a mullion from the wheel)
 AFT_FACE = 19.550                     # the face of the after wall's lining panels (the ship's own lining stands at 19.54: steel.py)
 
 # Her colours as refitted (12 November 2026, yard/design/wheelhouse-refit.md): a real bridge's, not the site's teal and cream.
@@ -286,16 +287,152 @@ SIDES = {                                                  # openings in each si
     side: [(19.65, 20.33, 1.10, 2.05, 'window'), (20.45, 21.25, 0.0, 2.05, 'door'), (21.30, 22.10, 0.97, 2.05, 'window'), (22.15, CORNER, 0.97, 2.05, 'window')]
     for side in (1, -1)
 }
-# The forward windows, x from and to: five alike between two corner posts of 0.06 m and four mullions of 0.10 m.
-PANE = (2 * X_IN - 2 * 0.06 - 4 * 0.10) / 5
-PANES = [(-X_IN + 0.06 + k * (PANE + 0.10), -X_IN + 0.06 + k * (PANE + 0.10) + PANE) for k in range(5)]
-MULLION_X = PANES[2][1] + 0.05            # the mullion either side of the middle window, where the cable ducts come down
 FRAME_T, STILE = 0.05, 0.06               # a window's frame, and the stile of a door's leaf beside its glass
 HELM = (0.0, 20.9, 1.6)                   # the eye of a person standing at the wheel
 EYES = (1.5, 1.8)                         # a short helmsman's eye and a tall one's: the glass must serve both
 DOOR_GLASS = (0.95, 1.95)                 # the glazed part of a wing door's leaf
-GLASS_AT = lambda h: FRONT_IN + 0.045 + fwd(h)             # where the forward glass stands at a height
 RAKE_UP = (0.0, cos(radians(10.0)), sin(radians(10.0)))    # up the raked forward glass
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The forward bay (the refit's stage 6; bridge_place.py holds its measures and says why). The middle of the bridge front
+# stands BAY forward of the wings' fronts: a forward face and a canted corner each side. FRONT_IN and FRONT_OUT are still
+# the old front's two faces: the line the wings' fronts keep, and the console block's back.
+#
+# The whole front leans forward as one: every post, mullion and pane edge lies in a plane fore and aft and leans 10
+# degrees in it, as a bridge front's posts do (seen from abeam they are all parallel), so that at any height the bay's
+# outline in plan is its outline at the sill moved forward by `fwd`. A pane of the forward face is a rectangle; a pane of
+# a cant is a parallelogram. (Leaned about their own sills instead, the cants' panes are rectangles, but the line in
+# which a cant meets the upright house side then runs 0.2 m along the cant between sill and head, and the post that
+# covers it is 0.3 m wide at the sill: from the wheel it and the side wall's end made a blind sector of 8.8 degrees,
+# where the survey's measure allows a mullion 6.)
+#
+# A wall is a place to draw on: s metres along its inner face from its `a` end (to the right hand of one who stands
+# inside facing it), q metres out through it from the inner face, h over the deck. What stands between two heights is
+# drawn from its outline in plan (`raked`), in lengths: below the sill, up the glass, over the head.
+# ---------------------------------------------------------------------------------------------------------------------
+BAY, BAY_IN, BAY_OUT, BAY_XI, BAY_XO = BP.BAY, BP.BAY_IN, BP.BAY_OUT, BP.BAY_XI, BP.BAY_XO
+TH = BP.WALL                              # a wall of the front, lining to plating
+FH = (HEAD - SILL) * RAKE                 # how far the front has leaned forward at its head
+GLASS_Q = 0.045                           # the glass, this far out through its wall
+
+
+def meet(at, n1, q1, n2, q2):
+    """Where two lines in plan meet: each goes through `at` when its q is nothing, and lies q along its own direction n
+    (a unit, across the line) from there."""
+    c = n1[0] * n2[0] + n1[1] * n2[1]
+    a, b = (q1 - c * q2) / (1 - c * c), (q2 - c * q1) / (1 - c * c)
+    return (at[0] + n1[0] * a + n2[0] * b, at[1] + n1[1] * a + n2[1] * b)
+
+
+class Wall:
+    def __init__(self, name, a, b):
+        self.name, self.a, self.b = name, a, b
+        self.len = hypot(b[0] - a[0], b[1] - a[1])
+        self.u = ((b[0] - a[0]) / self.len, (b[1] - a[1]) / self.len)       # along it
+        self.n = (self.u[1], -self.u[0])                                    # out of it in plan, toward the sea
+        # in the ship's axes: to the right of one who faces it from inside; out of it at deck level; the way its leaning
+        # glass looks from outside; and up the glass square to its sill (a cant's pane edges lean 7 degrees from that)
+        self.right = Vector((self.u[0], 0.0, self.u[1]))
+        self.out = Vector((self.n[0], 0.0, self.n[1]))
+        self.glass_n = Vector(RAKE_UP).cross(self.right).normalized()
+        self.up = self.right.cross(self.glass_n)
+        self.skew = Vector(RAKE_UP).dot(self.right) / Vector(RAKE_UP).dot(self.up)      # how far along the wall a pane's edge goes for each metre up the glass
+
+    def xy(self, s, q=0.0, lean=0.0):
+        """A place in plan, (x, yard): `lean` is how far the front has leaned forward at the height meant."""
+        return (self.a[0] + self.u[0] * s + self.n[0] * q, self.a[1] + self.u[1] * s + self.n[1] * q + lean)
+
+    def pt(self, s, q, h):
+        """The same place in the ship's axes, at a height over the deck."""
+        x, yd = self.xy(s, q, fwd(h))
+        return P(x, yd, h)
+
+    def s_of(self, x):
+        """How far along the forward face a place x metres to port of the centreline is."""
+        return (x - self.a[0]) / self.u[0]
+
+    def inside(self, s, h, off=0.0, upright=False):
+        """A frame on the wall's inner face (or `off` into the room from it): across to the right, up the leaning wall
+        square to its sill (or upright: below the sill and over the head), out of it into the room."""
+        return Frame(self.pt(s, -off, h), tuple(self.right), UP if upright else tuple(self.up), local=True)
+
+    def outside(self, s, h, q=TH):
+        """A frame on its outer face (or on the glass, with q), looked at from the sea: across to the left hand of one inside."""
+        return Frame(self.pt(s, q, h), tuple(-self.right), tuple(self.up), local=True)
+
+
+WALLS = {name: Wall(name, a, b) for name, a, b in BP.bay_walls()}
+WP, WF, WS = WALLS['port'], WALLS['front'], WALLS['starboard']
+POST_J, POST_K, MULLION, PANE_F, PANE_C = BP.POST_J, BP.POST_K, BP.MULLION, BP.PANE_F, BP.PANE_C
+# The bay's five windows, numbered from starboard as the old front's five were (bridge_place.py): (its wall, s from, s to).
+BAY_PANES = [(WALLS[name], s0, s1) for name, s0, s1 in BP.PANES]
+MULLION_X = BAY_XI - POST_J - PANE_F - MULLION / 2      # the mullion either side of the middle window, where the cable ducts come down
+GLASS_AT = lambda h: BAY_IN + GLASS_Q + fwd(h)             # where the forward face's glass stands at a height
+
+
+def on_bay(x, yard):
+    """The bay's wall a place in plan lies on or nearest to, and how far along it: (wall, s)."""
+    best = None
+    for W in (WP, WF, WS):
+        s = (x - W.a[0]) * W.u[0] + (yard - W.a[1]) * W.u[1]
+        off = abs((x - W.a[0]) * W.n[0] + (yard - W.a[1]) * W.n[1]) + max(0.0, -s, s - W.len)
+        if best is None or off < best[0]:
+            best = (off, W, s)
+    return best[1], best[2]
+
+
+def corner(A, B, q=0.0, lean=0.0):
+    """Where two walls that follow one another meet, q out through them from their inner faces."""
+    x, yd = meet(A.b, A.n, q, B.n, q)
+    return (x, yd + lean)
+
+
+def side_corner(W, q=0.0, d=0.0):
+    """Where a cant, q out through it, meets the house side's lining moved d into the room."""
+    port = W is WP
+    return meet(W.a if port else W.b, W.n, q, (1.0 if port else -1.0, 0.0), -d)
+
+
+def k_points(W, q0, q1, lean=0.0):
+    """Where a band of a cant, from q0 to q1 out through it, ends on the house side: on the side's lining, round the
+    corner of the side wall's end, and on that end's face, which leans forward with the front."""
+    sgn = 1.0 if W is WP else -1.0
+    r2 = 2 ** 0.5
+
+    def at(q):
+        yd = BP.CANT_AT + r2 * q
+        return (sgn * X_IN, yd) if yd <= FRONT_OUT else (sgn * (X_IN + yd - FRONT_OUT), FRONT_OUT)
+    pts = [at(q0)]
+    if BP.CANT_AT + r2 * q0 < FRONT_OUT - 1e-9 and BP.CANT_AT + r2 * q1 > FRONT_OUT + 1e-9:
+        pts.append((sgn * X_IN, FRONT_OUT))
+    pts.append(at(q1))
+    return [(x, yd + lean) for x, yd in pts]
+
+
+def raked(key, ring, h0, h1, colour):
+    """A solid from its outline in plan at the sill ((x, yard) points), which leans forward with the front: drawn in
+    lengths, below the sill, up the glass and over the head, each straight."""
+    p = key if isinstance(key, Part) else part(key)
+    cuts = [h0] + [c for c in (SILL, HEAD) if h0 + 1e-9 < c < h1 - 1e-9] + [h1]
+    for a, b in zip(cuts, cuts[1:]):
+        extrude(p, ring, [P(x, yd + fwd(a), a) for x, yd in ring], [P(x, yd + fwd(b), b) for x, yd in ring], lambda d: (d[0], 0.0, d[1]), colour)
+
+
+def member(W, key, s0, s1, t0, t1, h0, h1, colour):
+    """A member of a bay wall: from s0 to s1 along it, between two heights; t0 and t1 are how far through the wall it
+    lies (0 inside, 1 outside), as wheelhouse._wraked has them for a wing's front."""
+    q0, q1 = TH * t0, TH * t1
+    raked(key, [W.xy(s0, q0), W.xy(s1, q0), W.xy(s1, q1), W.xy(s0, q1)], h0, h1, colour)
+
+
+def band(key, q0, q1, h0, h1, colour):
+    """A band of the bay's wall all round, between two depths through it: three lengths, mitred at the two forward
+    corners and ended on the house side at each end."""
+    j1 = [corner(WP, WF, q0), corner(WP, WF, q1)]
+    j2 = [corner(WF, WS, q0), corner(WF, WS, q1)]
+    for ring in (k_points(WP, q0, q1) + j1[::-1], j1 + j2[::-1], j2 + k_points(WS, q0, q1)[::-1]):
+        raked(key, ring, h0, h1, colour)
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 # What moves. A door, a lid, a drawer, a handset: a part with a hinge or a slide, worked by a tap (the file's `inputs` and
