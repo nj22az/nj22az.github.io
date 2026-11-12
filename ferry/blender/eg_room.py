@@ -13,10 +13,8 @@ along the starboard wall under the deckhead, the lagged exhaust riser between th
 switchboard against the starboard wall, the door at the after end of that wall, gratings beside and abaft the set, a
 yellow guard rail round the alternator, the escape route marked on the deck.
 
-Where it stands. She is to be rebuilt at 68 m (ga.py), and there this room is on the top deck. That hull is not built,
-so the block is landed on the present ship's house top, abaft the wheelhouse, where it can be walked today: PLACE below
-is the only thing that says where. On the present ship it stands as high as her mast's lower lights and would shade her
-radar aft: it is on her for looking at, not as her arrangement.
+Where it stands. On the officers' deck abaft the house (ga.py, revision D): above the bulkhead deck, entered from the
+open deck. eg_place.py is the only thing that says where.
 
 What is the yard's and not the drawing's: the set's rating is the drawing's (440 V, three-phase, 60 Hz, 500 kW), which is
 more than her arrangement gives her main generators and is one of the questions put to the owner with it; the exhaust
@@ -33,7 +31,7 @@ from mathutils import Vector
 import lines as L
 from shipyard import Part, srgb, tint, component, RUNS
 
-from eg_place import LENGTH, WIDTH, HEIGHT, PLACE, R          # where the block stands: eg_place.py
+from eg_place import LENGTH, WIDTH, HEIGHT, PLACE, R, GROUP   # where the block stands: eg_place.py
 
 WALL = 0.08
 QC = 2.05                                   # the set's centreline
@@ -71,7 +69,7 @@ class Shop:
         slot = (key, mover)
         if slot not in self.parts:
             p = Part(f'Emergency generator room, {key}', look, mover=mover, **kw)
-            p.group = 'top'
+            p.group = GROUP
             self.parts[slot] = p
         return self.parts[slot]
 

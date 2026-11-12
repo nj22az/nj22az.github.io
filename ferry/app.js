@@ -1,8 +1,8 @@
 /**
  * The ferry viewer: the Chisum, turned, taken apart deck by deck, cut open, and walked through on foot.
  *
- * She is the 68 m ship of her general arrangement (blender/ga.py), built in Blender (blender/): her hull, every deck and
- * every room's walls in bare steel, her navigation bridge and what else is fitted so far. Everything in the file is her
+ * She is the ship of her general arrangement (blender/ga.py: a ro-ro freight ferry of 124.8 m), built in Blender
+ * (blender/): her hull, every deck and every room's walls in bare steel, her navigation bridge and what else is fitted so far. Everything in the file is her
  * own. blender/assemble.py puts it into data/ferry.bin.gz beside her sheet of pictures (data/chisum-atlas.webp) and her
  * register (data/systems.json); this page only reads and shows them.
  * The file format (JMF1), and what this page changes in the look of what it reads, are described in README.md.
@@ -24,8 +24,7 @@ const still = matchMedia('(prefers-reduced-motion: reduce)');
 
 /** What can be shown. One document today; a second (the main engine, part by part) is planned. */
 const DOCS = [{ id: 'ship', name: 'Ship', file: './data/ferry.bin.gz' }];
-/** The order the decks are listed in: as she stands, top to bottom. */
-const TOP_DOWN = ['top', 'bridge', 'passenger', 'car', 'machinery', 'hull'];
+/** The decks are listed as she stands, top to bottom: the file gives them bottom to top (buildPanel). */
 
 // ---------- reading the file ----------
 /** One of her files, unpacked: four letters that say what it is, the length of a header, the header, then its block. */
@@ -139,7 +138,7 @@ sun.shadow.normalBias = 0.04;
 scene.add(sun, sun.target);
 
 /** The ground she stands on is not drawn: only her shadow on it, over the page's own backdrop. Set at her keel in build(). */
-const floor = new THREE.Mesh(new THREE.CircleGeometry(140, 72), new THREE.ShadowMaterial({ opacity: 0.3 }));
+const floor = new THREE.Mesh(new THREE.CircleGeometry(260, 96), new THREE.ShadowMaterial({ opacity: 0.3 }));
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
@@ -157,7 +156,7 @@ controls.dampingFactor = 0.08;
 controls.zoomToCursor = true;
 controls.zoomSpeed = 1.2;
 controls.minDistance = 0.6;
-controls.maxDistance = 300;
+controls.maxDistance = 600;
 controls.maxPolarAngle = Math.PI * 0.98;
 
 /** She is first seen from her starboard bow quarter, a little above: bow to the right. */
@@ -203,9 +202,12 @@ function showSea() {
   fitSun();
 }
 let stairList = [];
+/** The file's own account of her (its header's `ship`): her size, where a walk begins, where her bridge stands. */
+let shipInfo = {};
 function build(doc, atlases) {
   const { header } = doc, viewDef = header.views[0];
   stairList = header.stairs || [];
+  shipInfo = header.ship || {};
   materials = header.materials.map(m => materialOf(m, atlases));
   cutSpan = [header.bounds.min[0] - 0.05, header.bounds.max[0] - 1.0];
   floor.position.y = header.bounds.min[1] - 0.02;
@@ -1186,9 +1188,11 @@ function enterWalk() {
   if (state.explode) placeDecks(0);
   if (state.cut) setCut(0);
   showExplode(0); showCut(0);
-  // Begin in the room that is chosen, else at the after end of the vehicle lanes, looking forward along the car deck.
+  // Begin in the room that is chosen, else where the file says a walk begins (the after end of the vehicle lanes, looking
+  // forward along the main deck: the file's `ship.start`).
   const chosen = state.selected && decks.find(d => d.id === state.selected.deck)?.spaces.find(sp => sp.id === state.selected.space);
-  const car = decks.find(d => d.id === 'car'), lanes = car && car.spaces.find(sp => sp.id === 'car-deck');
+  const begin = shipInfo.start || {};
+  const car = decks.find(d => d.id === begin.deck) || decks.find(d => d.spaces.length && d.id !== 'hull'), lanes = car && car.spaces.find(sp => sp.id === begin.space);
   const start = (chosen && standIn(chosen)) || (lanes && standNear(0, lanes.min[2] + 1.5, lanes.min[1], 0.35, 0.9, lanes))
     || (car && car.spaces.map(standIn).find(Boolean)) || new THREE.Vector3(0, 2.1, 0);
   select(null);
@@ -1450,9 +1454,7 @@ addEventListener('blur', () => held.clear());
 function buildPanel(header) {
   const list = $('#decks');
   list.replaceChildren();
-  for (const id of TOP_DOWN) {
-    const deck = decks.find(d => d.id === id);
-    if (!deck) continue;
+  for (const deck of [...decks].reverse()) {
     const check = el('input', { type: 'checkbox', checked: true });
     check.setAttribute('aria-label', `Show the ${deck.name.toLowerCase()}`);
     check.addEventListener('change', () => showDeck(deck, check.checked));

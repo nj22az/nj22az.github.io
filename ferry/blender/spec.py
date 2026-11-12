@@ -2,16 +2,19 @@
 The Chisum's hull as specified: where her paint lines, bulkheads, shafts, screws, rudders, doors, stairs and marks are,
 and why.
 
-She is the 68 m ship of the general arrangement (ga.py: her decks, her bulkheads and every space). This file is what the
-builders need beyond that: numbers first, so the builder (hull_*.py, steel.py, stairs.py), the page's notes and later
-sections read the same ship. Positions are in the ship's axes (lines.py): x to port, y up from the design waterline, z
-forward from amidships; `yard` means metres from the transom.
+She is the 124.8 m ro-ro freight ferry of the general arrangement (ga.py, revision D: her decks, her bulkheads and every
+space). This file is what the builders need beyond that: numbers first, so the builder (hull_*.py, steel.py, stairs.py),
+the page's notes and later sections read the same ship. Positions are in the ship's axes (lines.py): x to port, y up from
+the design waterline, z forward from amidships; `yard` means metres from the transom.
 """
 from math import pi, tan, radians
 from lines import Y, FRAME_SPACING
+import lines as _L
 import ga
 
-BRIDGE_SHIFT = 30.505      # how far forward of its place on the first Chisum the bridge stands (bridge_place.py)
+# How far forward of its place on the first Chisum the bridge stands (bridge_place.py): its after wall's outer face
+# (19.495 m in its own measure) lands 100.0 m from the transom, its front 0.5 m inside the front of the house.
+BRIDGE_SHIFT = 80.505
 
 
 def fr(n):
@@ -19,156 +22,183 @@ def fr(n):
     return n * FRAME_SPACING
 
 
+# ---- The viewer's parts, bottom to top: each lifts away from the one under it when she is taken apart. A builder's
+# part names the one it belongs to (`part.group`); the hull is the default.
+PARTS = ('hull', 'machinery', 'main', 'upper', 'boat', 'officers', 'bridge', 'top')
+
 # ---- The decks, over the waterline (ga.DECKS is above the keel).
 TANK_TOP = Y(ga.DECKS['tank_top'])
-FLAT = Y(ga.DECKS['flat'])                 # the flat in the machinery spaces
-CAR_DECK = Y(ga.DECKS['car'])
-MOORING_DECK = Y(ga.DECKS['mooring'])
-PASSENGER_DECK = Y(ga.DECKS['passenger'])
+PLATFORM = Y(ga.DECKS['platform'])         # the engine room platform
+AFT_FLAT = Y(ga.DECKS['aft_flat'])         # the flat in the steering gear room and the after passage
+MAIN_DECK = Y(ga.DECKS['main'])
+UPPER_DECK = Y(ga.DECKS['upper'])
+HELIDECK = Y(ga.DECKS['helideck'])
+BOAT_DECK = Y(ga.DECKS['boat'])
+OFFICERS_DECK = Y(ga.DECKS['officers'])
 BRIDGE_DECK = Y(ga.DECKS['bridge'])
-TOP_DECK = Y(ga.DECKS['top'])
-TOP_HOUSE = Y(ga.DECKS['top_house'])
+COMPASS_DECK = Y(ga.DECKS['compass'])
+# Each plan of ga.py: the level its rooms stand on.
+LEVELS = dict(hold=TANK_TOP, main=MAIN_DECK, upper=UPPER_DECK, boat=BOAT_DECK, officers=OFFICERS_DECK, bridge=BRIDGE_DECK, top=COMPASS_DECK)
 
-# ---- Paint (sRGB): white over red-brown antifouling, a teal band under the upper deck's edge.
+# ---- Paint (sRGB): a classic freighter's. The line's deep teal from the boot top to the rail, red antifouling under the
+# water with a white line between, white houses, green decks.
 ANTIFOULING = 0x8e3a30
 WHITE = 0xeeeae0
-TEAL = 0x2f6f74
-LETTERING = 0x245c60       # her name, in the band's colour a shade deeper
+TEAL = 0x2f6f74            # the line's teal: the funnels, the lettering on white
+HULL = 0x1f5560            # the hull: the line's teal, deep
+LETTERING = 0xf1eee4       # her name and the line's, white on the hull
 MARK_DARK = 0x22282a       # draught marks on white plating
-MARK_LIGHT = 0xf2efe6      # draught marks on antifouling
+MARK_LIGHT = 0xf2efe6      # draught marks on antifouling and on the hull's teal
 PRIMER = 0xb7c0b2          # grey-green shop primer: the inside of the shell, frames, floors, girders, bulkheads
 BILGE_RED = 0x9a4b3d       # the tank top
 STEEL = 0x8a9092
 BRONZE = 0xb08a4a
 ZINC = 0xb9bcb8
 BLACK = 0x25292b
-DECK_GREEN = 0x4f6f5e      # the weather decks and the car deck: non-skid deck paint
+DECK_GREEN = 0x4f6f5e      # the weather decks and the vehicle decks: non-skid deck paint
 DECK_GREY = 0x8f9896       # steel decks inside, before any covering is laid
+BUFF = 0xd9b77a            # masts, davits, ventilators
 
-BOOT = 0.15                # the antifouling is carried 15 cm above the design waterline
-BAND = 0.50                # the teal band's depth under the upper deck's edge
-BAND_TOP = 0.03
+BOOT = 0.25                # the antifouling is carried 25 cm above the design waterline
+BOOT_LINE = 0.20           # the white line over it
 
-# ---- Plating. 12 mm is drawn (her shell would be 9 to 11 mm; a little more reads better where she is cut).
+# ---- Plating. 12 mm is drawn (her shell would be 11 to 14 mm; it reads where she is cut).
 SHELL = 0.012
 STATION = 0.3              # the shell is drawn at every half frame at her ends
-STATION_MID = (21.0, 29.4) # and at every frame where her section does not change
+STATION_MID = (46.2, 60.0) # and at every frame where her section does not change
 STRAKE_BUTT = 9.0          # a plate's length, metres; butts are shifted 3 m from strake to strake
 
-# ---- Openings in the topsides, each side: the after mooring stations (ga: "behind openings in the shell") and the shell
-# doors where foot passengers come aboard. (yards, heights over the waterline.)
-MOORING_PORT = dict(yard=(1.8, 4.2), y=(CAR_DECK + 1.0, CAR_DECK + 2.2))
-SHELL_DOOR = dict(yard=(31.5, 32.7), y=(CAR_DECK, CAR_DECK + 2.2))
-# The topsides' rows of plating run at these heights (the openings above lie between them).
-TOPSIDE_LEVELS = (CAR_DECK, CAR_DECK + 1.0, CAR_DECK + 2.2, PASSENGER_DECK - BAND, PASSENGER_DECK - BAND_TOP, PASSENGER_DECK)
+# ---- Openings in the topsides, each side: the after mooring stations' mooring ports (ga: "behind a mooring port in the
+# shell"), and the pilot doors: each a real door, its leaf hinged on the shell (steel.py), shut at sea. (yards, heights
+# over the waterline.)
+MOORING_PORT = dict(yard=(2.4, 4.8), y=(MAIN_DECK + 1.0, MAIN_DECK + 2.2))
+PILOT_DOOR = dict(yard=(68.7, 69.9), y=(MAIN_DECK, MAIN_DECK + 2.2))      # (between frames: a frame stands 0.3 m clear of each edge)
+# The topsides' rows of plating run at these heights as far as the upper deck (the openings above lie between them); the
+# upper deck's edge and the rail, which rise with the sheer forward, are the last two rows.
+TOPSIDE_LEVELS = (MAIN_DECK, MAIN_DECK + 1.0, MAIN_DECK + 2.2, MAIN_DECK + 4.4, UPPER_DECK - 0.5)
+# Where her side plating is carried up over the upper deck's edge as a bulwark, each side: (from, to, metres from the
+# transom). Between them the house stands at her side.
+BULWARKS = ((0.0, ga.HOUSE[0]), (ga.HOUSE[1], _L.LENGTH))
 
-# ---- The stern door and its ramp (ga.py: 6.4 m wide, 4.3 m clear). The owner, 11 November 2026: "How do you get on to cargo
-# deck from this ship ? Aft ramp ?", "It needs a hydraulic ramp", "And lights , draw the aft in cad".
-# The ramp is how vehicles come aboard. Raised, it is the stern door; it turns on its hinges at the car deck's sill and lowers
-# aft onto the quay: level with the deck at 90 degrees, and 10 degrees further for a quay that lies lower.
+# ---- The stern door and its ramp (ga.py: an opening 9.0 m wide and 5.2 m high; a ramp of 11 m). The owner, 11 November
+# 2026: "How do you get on to cargo deck from this ship ? Aft ramp ?", "It needs a hydraulic ramp", "And lights , draw the
+# aft in cad".
+# The ramp is how vehicles come aboard. Raised, it is the stern door: it lies against the transom from outside, covers the
+# opening and stands on over the upper deck, as the pattern's does. It turns on its hinges just abaft the main deck's sill
+# and lowers aft onto the quay: level with the deck at 90 degrees, and 10 degrees further for a quay that lies lower.
 # It is worked by two double-acting hydraulic cylinders, one at each side of the opening, each trunnioned on a pedestal on
-# the car deck 3.2 m inside the stern and pinned to a lug on the ramp 0.9 m over its hinges: 3.04 m between its pins with
-# the ramp raised, 4.26 m with it level, a stroke of 1.22 m. `ram_x` is where they stand off the centreline, inside the
-# opening's width, which the ramp and its lugs pass through. Heights are over the waterline; the second of each pair is
-# metres inside the transom's plating. `barrel` is the cylinder's length from its foot pin, `rod_from` where the rod's inner
-# end lies with the ramp raised; `column` the pedestal's column, which ends `column_over` above the foot pin, on a footplate.
-STERN_DOOR = dict(half=3.2, height=4.3)
-STERN_RAMP = dict(id='stern-ramp', lowered=100, half=3.18, thick=(0.04, 0.14), foot=0.02, head=4.28, hinge=(CAR_DECK + 0.01, 0.09), lug=0.12,
-                  ram_x=3.02, trunnion=(CAR_DECK + 1.60, 3.20), pin=(CAR_DECK + 0.91, 0.24), barrel=1.90, barrel_d=0.17, rod_d=0.09, rod_from=0.25,
-                  column=0.18, column_over=0.12, footplate=(0.40, 0.64))
+# the main deck 6.0 m inside the stern and pinned to a lug on the ramp's roadway 2.2 m over its hinges, which stands in
+# through the opening: 5.94 m between its pins with the ramp raised, 8.64 m with it level, a stroke of 2.70 m. `ram_x` is
+# where they stand off the centreline, inside the opening's width. Heights are over the waterline; the second of each pair
+# is metres inside the transom's plating (negative: abaft it). `barrel` is the cylinder's length from its foot pin,
+# `rod_from` where the rod's inner end lies with the ramp raised; `column` the pedestal's column, which ends `column_over`
+# above the foot pin, on a footplate.
+STERN_DOOR = dict(half=ga.STERN_DOOR['half'], height=ga.STERN_DOOR['height'])
+STERN_RAMP = dict(id='stern-ramp', lowered=100, half=ga.STERN_RAMP['half'], length=ga.STERN_RAMP['length'], thick=(-0.17, -0.03), foot=0.02,
+                  hinge=(MAIN_DECK + 0.02, -0.10), lug=0.14,
+                  ram_x=4.25, trunnion=(MAIN_DECK + 2.60, 6.00), pin=(MAIN_DECK + 2.22, 0.07), barrel=3.70, barrel_d=0.30, rod_d=0.16, rod_from=0.45,
+                  column=0.30, column_over=0.16, footplate=(0.60, 0.90))
 # The lights of the after end. Each: what it is for, where (x off the centreline, height over the waterline, metres AFT of
 # the transom's plating).
-#   the sternlight   white, over 135 degrees astern (COLREG rule 21, as the yard recalls it): on the centreline at the
-#                    stern, on the bulwark's rail over the stern door, with a screen forward of it. Component NLT-06.
-#   two floodlights  on posts on the bulwark's rail over the door's two corners, looking aft and `tilt` degrees down: they
+#   the sternlight   white, over 135 degrees astern (COLREG rule 21, as the yard recalls it): at the stern on the
+#                    bulwark's rail, to port of the raised ramp, which stands on the centreline. Component NLT-06.
+#   two floodlights  on posts on the bulwark's rail beside the door's two corners, looking aft and `tilt` degrees down: they
 #                    light the ramp and the quay for those who drive aboard at night and for the crew who work the ramp.
-#                    `y` is the middle of the lamp's head, 6.1 m over the lowered ramp. At 50 degrees down the middle of
-#                    the beam meets the quay 5.2 m aft of the transom, a metre beyond the ramp's end: where the ramp's
-#                    lip lies on the quay is what a driver has to see. (30 degrees would put it 10.6 m astern.)
 #   the signal       red over green on the transom to starboard of the door, where a driver coming aboard (who sits to
 #                    starboard: she sails in Japan) sees it: wait, or drive on.
+RAIL_AFT = UPPER_DECK + _L.BULWARK
 STERN_LIGHTS = dict(
-    sternlight=dict(x=0.0, y=PASSENGER_DECK + 1.10 + 0.02, aft=0.11),
-    floods=dict(x=3.6, y=PASSENGER_DECK + 1.10 + 0.40, aft=0.06, tilt=50, head=(0.32, 0.22, 0.16)),
-    signal=dict(x=-3.6, y=CAR_DECK + 2.45, size=(0.30, 0.58, 0.14)),
+    sternlight=dict(x=5.6, y=RAIL_AFT + 0.02, aft=0.11),
+    floods=dict(x=5.2, y=RAIL_AFT + 0.40, aft=0.06, tilt=50, head=(0.32, 0.22, 0.16)),
+    signal=dict(x=-5.4, y=MAIN_DECK + 2.45, size=(0.30, 0.58, 0.14)),
 )
 
-# ---- Structure. Frames stand at every 0.6 m (frame 0 at the transom): a 150 x 75 mm angle below the car deck and a
-# 100 x 65 mm one in the topsides. Every third frame is a web frame, 300 mm deep. Forward of the collision bulkhead, where
+# ---- Structure. Frames stand at every 0.6 m (frame 0 at the transom): a 200 x 90 mm angle below the main deck and a
+# 150 x 75 mm one in the topsides. Every third frame is a web frame, 400 mm deep. Forward of the collision bulkhead, where
 # the sea strikes her, a lighter frame stands between each pair.
-FRAME_WEB = 0.150
-FRAME_FLANGE = 0.075
-WEB_FRAME = 0.300
+FRAME_WEB = 0.200
+FRAME_FLANGE = 0.090
+WEB_FRAME = 0.400
 WEB_EVERY = 3
-TOPSIDE_FRAME = 0.100
-INTERMEDIATE_WEB = 0.100
-DECK_BEAM = 0.18                           # the depth of a deck's beams under its plating
-# Watertight bulkheads (ga.BULKHEADS, by frame), to the car deck.
+TOPSIDE_FRAME = 0.150
+INTERMEDIATE_WEB = 0.120
+DECK_BEAM = 0.25                           # the depth of a deck's beams under its plating
+DECK_WEB = 0.90                            # and of the web beams that carry the upper deck across the lanes, at every sixth frame
+# Watertight bulkheads (ga.BULKHEADS, by frame), to the main deck.
 BULKHEADS = tuple(dict(frame=n, yard=fr(n), name=name[0].upper() + name[1:] + f' (frame {n})') for n, name in ga.BULKHEADS)
-COLLISION = fr(103)
+COLLISION = fr(ga.COLLISION)
 INTERMEDIATE_FROM = COLLISION
-# The double bottom: from frame 24, where the run aft has risen 0.9 m and the bottom leaves no room under a tank top, to
-# frame 90, abaft the thruster's tunnel. Forward of it and aft of it the floors carry a face bar and no tank top.
-DOUBLE_BOTTOM = (fr(24), fr(90))
-TIGHT_FLOORS = tuple(fr(n) for n in (24, 41, 55, 70, 85, 90))
+# The double bottom: from frame 42, where the run aft has risen 1.06 m and the bottom leaves no room under a tank top, to
+# the collision bulkhead. Forward of it and aft of it the floors carry a face bar and no tank top.
+DOUBLE_BOTTOM = (fr(42), fr(ga.COLLISION))
+TIGHT_FLOORS = tuple(fr(n) for n in (42, 64, 78, 100, 122, 144, 164, 184))
 # Girders: the centre girder, one under each main engine (the engines sit on the shaft lines), one outboard.
-GIRDERS = (2.4, 4.6)
-# Longitudinal bulkheads below the car deck: the sides of the tanks (ga.py). (yard from, yard to, off the centreline.)
-TANK_SIDES = ((fr(8), fr(18), 3.0), (fr(55), fr(85), 2.2))
+GIRDERS = (3.4, 6.4)
+# Longitudinal bulkheads below the main deck: the sides of the tanks and of the lower hold (ga.py). Each: yard from, yard
+# to, off the centreline, and the doorways cut in the port one (yard from, yard to, sill and head over the tank top).
+TANK_SIDES = (
+    dict(yard=(fr(12), fr(28)), x=1.2),
+    dict(yard=(fr(78), fr(144)), x=ga.HOLD_SIDE, doors=((47.3, 48.2, 0.0, 2.05),)),
+    dict(yard=(fr(144), fr(164)), x=1.8),
+)
+# The lower hold stair's trunk in the port wing tank (ga: hold-stair): its forward end, a plate across from the hold's side
+# to the shell.
+TRUNK_END = dict(yard=54.6, x=ga.HOLD_SIDE)
 
-# ---- Shafts, screws, rudders. Twin screws turning outward, controllable-pitch. Each shaft runs straight from its
-# gearbox's output flange in the engine room (2.4 m off the centreline, 12.6 m from the transom) to its screw, falling
-# 8 degrees aft: steep enough that it stays inside her as far as the shaft space, where its stern tube begins.
-SHAFT_X = 2.4
-SHAFT_RISE = tan(radians(8.0))             # per metre going forward
-SCREW = dict(yard=3.8, y=Y(1.2), diameter=2.0, blades=4, pitch_ratio=0.9, hub=0.28)
-GEARBOX_FLANGE = dict(yard=12.6, y=SCREW['y'] + SHAFT_RISE * (12.6 - 3.8), radius=0.19)
-SHAFT_RADIUS = 0.09                # a 180 mm shaft
-SHAFT_COUPLING = 10.45             # where the intermediate shaft is coupled to the tail shaft
-STERN_TUBE_SEAL = 10.05            # the stern tube's inboard seal
-PLUMMER_BLOCK = 11.7               # the intermediate shaft's bearing, in the engine room
-BRACKETS = (4.75, 7.3)             # the shaft brackets: the main one ahead of the screw, and one halfway along the open shaft
-RUDDER = dict(yard_stock=2.4, top=Y(2.68), bottom=Y(0.25), chord_top=1.55, chord_bottom=1.30, balance=0.28, thickness=0.17)
+# ---- Shafts, screws, rudders. Twin screws turning outward, controllable-pitch, 3.0 m in diameter. Each shaft runs
+# straight from its gearbox's output flange in the engine room (3.4 m off the centreline, 25.6 m from the transom) to its
+# screw, falling 2 degrees aft; it leaves her about 19 m from the transom, under the engine room platform.
+SHAFT_X = 3.4
+SHAFT_RISE = tan(radians(2.0))             # per metre going forward
+SCREW = dict(yard=8.0, y=Y(1.7), diameter=3.0, blades=4, pitch_ratio=0.95, hub=0.42)
+GEARBOX_FLANGE = dict(yard=25.6, y=SCREW['y'] + SHAFT_RISE * (25.6 - 8.0), radius=0.30)
+SHAFT_RADIUS = 0.14                # a 280 mm shaft
+SHAFT_COUPLING = 22.6              # where the intermediate shaft is coupled to the tail shaft
+STERN_TUBE_SEAL = 21.4             # the stern tube's inboard seal
+PLUMMER_BLOCK = 24.2               # the intermediate shaft's bearing, in the engine room
+BRACKETS = (9.5, 14.2)             # the shaft brackets: the main one ahead of the screw, and one halfway along the open shaft
+RUDDER = dict(yard_stock=4.2, top=Y(3.82), bottom=Y(0.35), chord_top=2.30, chord_bottom=1.90, balance=0.28, thickness=0.17)
 
 # ---- The spaces the hull gives a floor to.
-STEERING_FLAT = Y(3.15)            # the flat in the steering gear room and the shaft space, just over the floors there
-ER_AFT_FLAT = Y(2.0)               # the engine room's after flat, frames 18 to 24, where the bottom is too high for the tank top
-FORE_STORE_FLAT = FLAT             # the flat in the fore store, between the chain lockers
+STEERING_FLAT = AFT_FLAT           # the flat in the steering gear room and the after passage, just over the floors there
+THRUSTER_FLAT = TANK_TOP           # the flat in the thruster room, level with the tank top abaft it
 # The steering gear. A tiller on each stock points forward; a tie bar joins their ends; a ram lies athwartships outboard
 # of each tiller, trunnioned on a stool and pinned to the tiller two thirds along it. 35 degrees each way.
-TILLER = dict(level=STEERING_FLAT + 0.40, reach=0.95, ram_at=0.64, ram_anchor=1.60, clevis=0.10, tie_bar=0.16)
+TILLER = dict(level=STEERING_FLAT + 0.45, reach=1.25, ram_at=0.84, ram_anchor=2.10, clevis=0.13, tie_bar=0.20)
 RUDDER_ANGLE = 35
 
-# ---- The ways on foot below the car deck. The first Chisum had hinged watertight doors on the centreline at the owner's
+# ---- The ways on foot below the main deck. The first Chisum had hinged watertight doors on the centreline at the owner's
 # word (10 November 2026: "There needs to be a water tight door that can open to the steering gear"; "all rooms need to be
 # accessible") and she has them the same way: a door 0.70 m by 1.60 m clear over a 0.20 m sill, corners rounded, six dogs
 # worked by a handwheel, hung to port and opening 90 degrees. `floor` is the level the sill stands on; `opens` +1 toward
-# the bow. The collision bulkhead has none.
+# the bow. The lower hold's after bulkhead has none (the hold is a cargo space, entered by its own stair and the lift), and
+# the collision bulkhead has none.
 # **To be settled with class:** a passenger ship's doors in her watertight bulkheads are to be sliding and power-operated
 # (SOLAS II-1, regulation 13, as the yard recalls it; not read). These are drawn hinged until the machinery spaces are built.
 WT_DOOR = dict(width=0.70, height=1.60, sill=0.20, corner=0.12, frame=0.07, leaf=0.02, open=90, reach=2.4)
 WT_DOORS = (
-    dict(id='door-steering-gear', name='Door to the steering gear', where='steering gear', yard=fr(8), floor=STEERING_FLAT, opens=1),
-    dict(id='door-shaft-space', name='Door to the shaft space', where='shaft space', yard=fr(18), floor=ER_AFT_FLAT, opens=1),
-    dict(id='door-aux-engine-room', name='Door between the engine rooms', where='engine rooms', yard=fr(41), floor=TANK_TOP, opens=1),
-    dict(id='door-pipe-passage', name='Door to the pipe passage', where='pipe passage', yard=fr(55), floor=TANK_TOP, opens=-1),
-    dict(id='door-stores', name='Door to the sewage plant and stores', where='stores', yard=fr(70), floor=TANK_TOP, opens=-1),
-    dict(id='door-thruster-room', name='Door to the thruster room', where='thruster room', yard=fr(85), floor=TANK_TOP, opens=-1),
+    dict(id='door-steering-gear', name='Door to the steering gear', where='steering gear', yard=fr(12), floor=STEERING_FLAT, opens=1),
+    dict(id='door-aft-passage', name='Door to the after passage', where='after passage', yard=fr(28), floor=PLATFORM, opens=1),
+    dict(id='door-aux-engine-room', name='Door between the engine rooms', where='engine rooms', yard=fr(64), floor=TANK_TOP, opens=1),
+    dict(id='door-pump-room', name='Door to the forward pump room', where='pump room', yard=fr(144), floor=TANK_TOP, opens=-1),
+    dict(id='door-thruster-room', name='Door to the thruster room', where='thruster room', yard=fr(164), floor=TANK_TOP, opens=-1),
 )
-# The steps in the shaft space, on the centreline: from the engine room's after flat up to the steering flat.
-WALKWAY = dict(half=0.45, platform=(9.9, 10.74), treads=5, going=0.25, flat=(4.86, 8.65), rail=0.95)
-# And the steps in the engine room from its after flat down to the tank top (frame 24).
-ER_STEPS = dict(half=0.45, treads=3, going=0.25, at=fr(24))
+# The way through the after passage, on the centreline: inside the engine room's door a platform at the engine room
+# platform's level, three treads up, and the flat at the steering gear's level as far as its door.
+WALKWAY = dict(half=0.45, platform=(15.9, 16.74), treads=3, going=0.25, flat=(7.26, 15.15), rail=0.95)
 
 # ---- Ladders, and the hatch over one. A ladder stands upright at (x, yard); `faces` is the way one looks while on it
 # (x, z); `foot` and `head` are the levels it joins. With a hatch, the opening is 0.65 m by 0.60 m in the deck over it, a
-# coaming round it and a cover hinged on the ladder's side. `group` is the part of the ship it is drawn with.
-#  - From the car deck down to the flat in the fore store, abaft the chain lockers: the collision bulkhead and the thruster
-#    room's forward bulkhead have no door, so the store is entered from above. The hatch is flush with the deck and lies on
-#    the line between the two middle lanes, where no wheel runs; the ladder hangs from its coaming and stands on the flat.
+# coaming round it and a cover hinged on the ladder's side. `group` is the part of the ship it is drawn with; `wall` how
+# far behind it the wall it is fastened to stands; `top` how far its stringers stand over its head.
+#  - The lower hold's second way out, at its forward end: a ladder to a flush hatch in the main deck, on the line between
+#    the two starboard lanes, where no wheel runs (the first way is the stair in the port wing tank).
+#  - From the bridge deck to the house top and the compass deck: up the after wall of the rooms abaft the wheelhouse.
 LADDERS = (
-    dict(id='ladder-fore-store', name='Ladder to the fore store', up='Ladder to the car deck', group='machinery',
-         x=0.0, yard=58.5, faces=(0, -1), foot=FORE_STORE_FLAT, head=CAR_DECK, hatch='hatch-fore-store', hatch_name='Hatch to the fore store'),
+    dict(id='ladder-lower-hold', name='Ladder to the lower hold', up='Ladder to the main deck', group='machinery',
+         x=-4.5, yard=84.0, faces=(0, -1), foot=TANK_TOP, head=MAIN_DECK, hatch='hatch-lower-hold', hatch_name='Hatch to the lower hold', hatch_group='main'),
+    dict(id='ladder-house-top', name='Ladder to the bridge deck', up='Ladder to the compass deck', group='bridge',
+         x=1.8, yard=93.78, faces=(0, 1), foot=BRIDGE_DECK, head=COMPASS_DECK, wall=0.21, top=1.0, head_at=(1.8, 94.9)),
 )
 
 
@@ -218,24 +248,23 @@ FLANGE = 0x9ea4a6
 RAIL_YELLOW = 0xe3c341
 DOOR_GREY = 0xc9cfcc
 
-# ---- The bow thruster: a 1.2 m tunnel through the forefoot at frame 92, of about 300 kW.
-THRUSTER = dict(yard=fr(92), y=Y(1.4), radius=0.6)
+# ---- The bow thruster: a 1.6 m tunnel through the forebody at frame 168, of about 600 kW.
+THRUSTER = dict(yard=fr(168), y=Y(2.4), radius=0.8)
 
 # ---- Keel, skeg, bilge keels.
 # The keel bar runs from under the skeg's forward end to the forefoot. The bilge keels stand at the middle of the turn
 # of the bilge (psi = pi/4) along her parallel body, where their tips stay inside her beam and above her keel.
-KEEL_BAR = dict(width=0.20, depth=0.06, yard=(20.4, 62.2))
-SKEG = dict(yard=(6.4, 21.4), thickness=0.24)
-BILGE_KEEL = dict(yard=(21.6, 40.2), depth=0.30, psi=pi / 4)
-SEA_CHEST = dict(yard=(17.4, 18.6), y=(Y(0.75), Y(1.25)))          # each side of the engine room, where the cooling water comes in
+KEEL_BAR = dict(width=0.26, depth=0.07, yard=(44.4, 112.2))
+SKEG = dict(yard=(11.0, 45.4), thickness=0.30)
+BILGE_KEEL = dict(yard=(46.2, 70.2), depth=0.40, psi=pi / 4)
+SEA_CHEST = dict(yard=(31.8, 33.6), y=(Y(0.9), Y(1.5)))            # each side of the engine room, where the cooling water comes in
 
-# ---- The top deck's forward end is the compass deck: the wheelhouse's roof, her mast and what it carries. The first
-# Chisum's compass deck (compass_deck.py) is landed here whole with her bridge (bridge_place.py); the numbers below are
-# that block's own, in its own measures (metres from the first ship's transom, heights over her waterline), and the
-# placing carries them aboard.
-COMPASS_DECK = dict(deck=11.5, slab=0.32, half=3.10, yards=(19.495, 23.16), corner=0.35,
-                    rail=1.0, rail_in=0.13, post_every=1.45,
-                    step=19.495, rise=0.30, slab_top=0.28)
+# ---- The compass deck: the wheelhouse's roof, her mast and what it carries. The first Chisum's compass deck
+# (compass_deck.py) is landed here whole with her bridge (bridge_place.py); the numbers below are that block's own, in its
+# own measures (metres from the first ship's transom, heights over her waterline), and the placing carries them aboard.
+COMPASS = dict(deck=11.5, slab=0.32, half=3.10, yards=(19.495, 23.16), corner=0.35,
+               rail=1.0, rail_in=0.13, post_every=1.45,
+               step=19.495, rise=0.30, slab_top=0.28)
 MAST = dict(yard=20.8, top=16.4, yardarm=13.8, platform=13.9, radar=14.12, masthead=14.7, horns=14.95)
 ROOF_DECK = 0xb4bab6        # the roof's paint: light grey, non-skid
 
@@ -251,7 +280,6 @@ ROOF_DECK = 0xb4bab6        # the roof's paint: light grey, non-skid
 #      a landing after 12 steps at most
 #   C  a stair for the crew inside the ship: the same, narrower, its steps 20 mm shorter
 #   L  an inclined ladder for the crew, on deck or in the machinery spaces: open grating treads, a handrail each side
-# The forecastle is level with the passenger deck, so no stair leads to it.
 # No step aboard is higher than 208 mm: two of them must come under the 0.42 m at which the page's walker (app.js, OVER)
 # takes a thing for an obstacle and not for the next step but one.
 # ---------------------------------------------------------------------------------------------------------------------
@@ -266,86 +294,87 @@ STAIR_CLASS = dict(
 # it reaches; `sides`, what stands at its lower-x and higher-x side ('wall': a rail on brackets, 'open': a rail on posts);
 # `gaps`, how far each wall stands from the stair's edge.
 #
-# The side casings on the car deck are 1.6 m wide between the lanes and the shell (ga.py): 1.45 m clear between the casing's
-# wall and the frames. A main stair is that wide. The crew's stair trunk has two lanes of 0.70 m in it, side by side.
-CASING_CLEAR = (5.225, 6.675)
-LANE_IN, LANE_OUT = (5.225, 5.925), (5.975, 6.675)
-_P = (PASSENGER_DECK - CAR_DECK) / 24          # 24 steps of 196 mm between the car deck and the passenger deck
-_MID = CAR_DECK + 12 * _P                      # the crew stair's half landing between them
+# The side casings on the main deck are 2.3 m wide between the lanes and the shell (ga.py). A stair in one stands against
+# the casing's wall: 1.2 m wide for the main stairs, 0.75 m for the crew's.
+C = ga.CASING
+MAIN_STAIR_X = (C + 0.025, C + 1.225)
+CREW_STAIR_X = (C + 0.25, C + 1.00)
+TRUNK = ga.TRUNK
+# The house's stair trunk: two lanes side by side that turn back on each other at a half landing aft; each deck is entered
+# at its forward landing.
+LANE_PORT, LANE_STBD = (0.10, 1.15), (-1.15, -0.10)
+TRUNK_AFT = (TRUNK['yard'][0], TRUNK['yard'][0] + 1.34)        # the half landing
+TRUNK_FWD = (TRUNK['yard'][1] - 1.34, TRUNK['yard'][1])        # each deck's own landing
+TRUNK_DECKS = (('upper', UPPER_DECK), ('boat', BOAT_DECK), ('officers', OFFICERS_DECK))
+DECK_NAME = dict(upper='upper deck', boat='boat deck', officers="officers' deck")
 
 
 def _mirror(st, id, name):
     return dict(st, id=id, name=name, x=(-st['x'][1], -st['x'][0]), sides=tuple(reversed(st['sides'])), gaps=tuple(reversed(st.get('gaps', (0.0, 0.0)))))
 
 
-# (A stair's inboard side is the casing's wall, 8 mm off its stringer: its rail is bracketed to it. Outboard are her frames,
+# (A stair's inboard side is the casing's wall, 20 mm off its stringer: its rail is bracketed to it. Outboard are her frames,
 # with nothing between them to fasten a bracket to: the rail stands on posts from the stringer there.)
-_main_aft = dict(id='main-aft-p', cls='P', name='after main stair, port', part='car', x=CASING_CLEAR, top=(25.2, PASSENGER_DECK), down=1,
-                 legs=[12, ('landing', 0.95), 12], rise=_P, going=0.220, foot=CAR_DECK, sides=('wall', 'open'), gaps=(0.020, 0.0))
-_main_fwd = dict(id='main-fwd-p', cls='P', name='forward main stair, port', part='car', x=CASING_CLEAR, top=(44.8, PASSENGER_DECK), down=-1,
-                 legs=[12, ('landing', 0.95), 12], rise=_P, going=0.220, foot=CAR_DECK, sides=('wall', 'open'), gaps=(0.020, 0.0))
+_main = dict(id='main-p', cls='P', name='main stair, port', part='main', x=MAIN_STAIR_X, top=(83.0, UPPER_DECK), down=-1,
+             legs=[11, ('landing', 0.95), 11, ('landing', 0.95), 11], rise=0.200, going=0.220, foot=MAIN_DECK, sides=('wall', 'open'), gaps=(0.020, 0.0))
 _L14 = dict(cls='L', legs=[14], rise=2.8 / 14, going=0.152, sides=('open', 'open'), paint=WHITE)
+_er_floor = dict(id='er-floor-p', cls='C', name='engine room, port gallery to tank top', part='machinery', x=(5.50, 6.20), top=(31.0, PLATFORM), down=1,
+                 legs=[12], rise=(PLATFORM - TANK_TOP) / 12, going=0.200, foot=TANK_TOP, sides=('open', 'open'), top_ext=0.10)
+_boat = dict(_L14, id='boat-p', name='boat deck, port', part='upper', x=(6.45, 7.05), top=(ga.HOUSE[0], BOAT_DECK), down=-1, foot=UPPER_DECK)
+_bridge = dict(_L14, id='bridge-p', name='bridge deck, port', part='officers', x=(4.90, 5.50), top=(ga.OFF, BRIDGE_DECK), down=-1, foot=OFFICERS_DECK)
+_heli = dict(id='heli-p', cls='L', name='helicopter deck, port', part='upper', x=(2.40, 3.00), top=(20.0, HELIDECK), down=1, legs=[5], rise=1.0 / 5, going=0.152,
+             foot=UPPER_DECK, sides=('open', 'open'), paint=WHITE)
 STAIRS = [
-    # ---- The four main stairs, car deck to passenger deck, in the side casings: 24 steps in two flights with a landing.
-    # The after ones come down going forward and end in the shell door lobbies, where foot passengers come aboard; the
-    # forward ones come down going aft and end in a foot lobby of their own.
-    _main_aft, _mirror(_main_aft, 'main-aft-s', 'after main stair, starboard'),
-    _main_fwd, _mirror(_main_fwd, 'main-fwd-s', 'forward main stair, starboard'),
-    # ---- The crew's stair trunk, port side, 20 to 24 m from the transom (the owner, of the first Chisum: "an internal stair case too so
-    # you can run all way from the bridge to the engine room"): one enclosed stair from the machinery flat to the bridge
-    # deck, in two lanes that turn back on each other at a landing at each end. Each deck is entered at the trunk's forward
-    # landing; the last flight arrives inside the accommodation.
-    dict(id='crew-machinery', cls='C', name='crew stair, machinery flat to car deck', part='machinery', x=LANE_IN, top=(23.2, CAR_DECK), down=-1,
-         legs=[11], rise=(CAR_DECK - FLAT) / 11, going=0.200, foot=FLAT, sides=('open', 'open'), top_ext=0.0, top_newel=False),
-    dict(id='crew-car-lower', cls='C', name='crew stair, car deck to half landing', part='car', x=LANE_OUT, top=(20.8, _MID), down=1,
-         legs=[12], rise=_P, going=0.200, foot=CAR_DECK, sides=('open', 'open'), top_ext=0.0),
-    dict(id='crew-car-upper', cls='C', name='crew stair, half landing to passenger deck', part='car', x=LANE_IN, top=(23.2, PASSENGER_DECK), down=-1,
-         legs=[12], rise=_P, going=0.200, foot=_MID, sides=('wall', 'open'), gaps=(0.020, 0.0), top_ext=0.0),
-    dict(id='crew-pax-lower', cls='C', name='crew stair, passenger deck to half landing', part='passenger', x=LANE_OUT, top=(21.8, PASSENGER_DECK + 1.4), down=1,
-         legs=[7], rise=0.200, going=0.200, foot=PASSENGER_DECK, sides=('open', 'wall'), gaps=(0.0, 0.111), top_ext=0.0),
-    dict(id='crew-pax-upper', cls='C', name='crew stair, half landing to bridge deck', part='passenger', x=LANE_IN, top=(22.2, BRIDGE_DECK), down=-1,
-         legs=[7], rise=0.200, going=0.200, foot=PASSENGER_DECK + 1.4, sides=('wall', 'open'), gaps=(0.020, 0.0), top_ext=0.0),
-    # ---- The crew's stair from the forward lounge up into the wheelhouse, as the first Chisum had one from her saloon: it
-    # keeps its place in the bridge (the gate at its head is the wheelhouse's), in an enclosure of its own in the lounge and
-    # a casing in the ship's office. The bridge's second way out.
-    dict(id='wheelhouse', cls='C', name='crew stair to the wheelhouse', part='passenger', x=(-2.90, -2.14), top=(20.15 + BRIDGE_SHIFT, BRIDGE_DECK), down=-1,
-         legs=[14], rise=0.200, going=0.200, foot=PASSENGER_DECK, sides=('wall', 'wall'), gaps=(0.050, 0.050), top_ext=0.0, top_newel=False),
-    # ---- In the machinery spaces: from the engine room's port platform (the foot of the crew stair) down to the tank top,
-    # and up to the engine control room and the workshop on their flats in the auxiliary engine room.
-    # (Crew stairs, not inclined ladders: the flat is 1.70 m over the tank top, which is nine steps of 189 mm or eight of
-    # 213 mm, and the standard's ladder has steps of 190 to 208 mm. Nine steps of a crew stair keep it.)
-    dict(id='engine-room', cls='C', name='engine room, platform to tank top', part='machinery', x=(4.20, 4.90), top=(19.4, FLAT), down=-1,
-         legs=[9], rise=(FLAT - TANK_TOP) / 9, going=0.200, foot=TANK_TOP, sides=('open', 'open'), top_ext=0.10),
-    dict(id='control-room', cls='C', name='engine control room', part='machinery', x=(2.70, 3.40), top=(27.6, FLAT), down=-1,
-         legs=[9], rise=(FLAT - TANK_TOP) / 9, going=0.200, foot=TANK_TOP, sides=('open', 'open'), top_ext=0.10),
-    dict(id='workshop', cls='C', name='workshop', part='machinery', x=(-3.40, -2.70), top=(27.6, FLAT), down=-1,
-         legs=[9], rise=(FLAT - TANK_TOP) / 9, going=0.200, foot=TANK_TOP, sides=('open', 'open'), top_ext=0.10),
-    # ---- Outside: from the open passenger deck aft up to the bridge deck's open deck, each side of the funnels; from the
-    # bridge deck's open deck up to the top deck, against the galley's after wall.
-    dict(_L14, id='aft-p', name='bridge deck, port', part='passenger', x=(5.95, 6.55), top=(13.0, BRIDGE_DECK), down=-1, foot=PASSENGER_DECK),
-    dict(_L14, id='aft-s', name='bridge deck, starboard', part='passenger', x=(-6.55, -5.95), top=(13.0, BRIDGE_DECK), down=-1, foot=PASSENGER_DECK),
-    dict(id='top-deck', cls='L', name='top deck', part='bridge', x=(-3.30, -2.70), top=(22.0, TOP_DECK), down=-1, legs=[14], rise=2.7 / 14,
-         going=0.152, foot=BRIDGE_DECK, sides=('open', 'open'), paint=WHITE),
+    # ---- The two main stairs, main deck to upper deck, in the side casings under the house's after end: 33 steps in three
+    # flights with two landings. They come down going aft; their heads are inside the house.
+    _main, _mirror(_main, 'main-s', 'main stair, starboard'),
+    # ---- The engine room: from the main deck's port casing down to the platform's port gallery, and from each gallery
+    # down to the tank top beside the engines.
+    dict(id='er-entrance', cls='C', name='engine room entrance', part='main', x=CREW_STAIR_X, top=(29.8, MAIN_DECK), down=-1,
+         legs=[13], rise=(MAIN_DECK - PLATFORM) / 13, going=0.200, foot=PLATFORM, sides=('open', 'open'), top_ext=0.0, top_newel=False),
+    _er_floor, _mirror(_er_floor, 'er-floor-s', 'engine room, starboard gallery to tank top'),
+    # ---- The lower hold: from the main deck's port casing down through the wing tank to the tank top, 25 steps in two
+    # flights with a landing.
+    dict(id='hold-stair', cls='C', name='lower hold stair', part='main', x=CREW_STAIR_X, top=(53.6, MAIN_DECK), down=-1,
+         legs=[13, ('landing', 0.80), 12], rise=(MAIN_DECK - TANK_TOP) / 25, going=0.200, foot=TANK_TOP, sides=('open', 'open'), top_ext=0.0, top_newel=False),
 ]
-# The crew stair trunk's own floors: its landings (yards, lanes, level), which steel.py lays between its walls.
-CREW_TRUNK = dict(yard=(20.0, 24.0), x=(5.2, 6.8), aft=(20.0, 20.8), fwd=(23.2, 24.0), mid=_MID, upper=PASSENGER_DECK + 1.4)
+# ---- The house's stair trunk, upper deck to officers' deck: two storeys, each of two flights of seven steps. Class P:
+# the drivers' cabins are on the boat deck.
+for (_name, _level), (_next, _) in zip(TRUNK_DECKS, TRUNK_DECKS[1:]):
+    STAIRS += [
+        dict(id=f'house-{_name}-lower', cls='P', name=f'house stair, {DECK_NAME[_name]} to half landing', part=_name, x=LANE_PORT, top=(TRUNK_AFT[1], _level + 1.4), down=1,
+             legs=[7], rise=0.200, going=0.220, foot=_level, sides=('open', 'wall'), gaps=(0.0, 0.045), top_ext=0.0),
+        dict(id=f'house-{_name}-upper', cls='P', name=f'house stair, half landing to {DECK_NAME[_next]}', part=_name, x=LANE_STBD,
+             top=(TRUNK_FWD[0], _level + 2.8), down=-1, legs=[7], rise=0.200, going=0.220, foot=_level + 1.4, sides=('wall', 'open'), gaps=(0.045, 0.0), top_ext=0.0),
+    ]
+STAIRS += [
+    # ---- The crew's stair from the officers' deck up into the wheelhouse, as the first Chisum had one from her saloon: it
+    # keeps its place in the bridge (the gate at its head is the wheelhouse's), in an enclosure of its own.
+    dict(id='wheelhouse', cls='C', name='crew stair to the wheelhouse', part='officers', x=(-2.90, -2.14), top=(20.15 + BRIDGE_SHIFT, BRIDGE_DECK), down=-1,
+         legs=[14], rise=0.200, going=0.200, foot=OFFICERS_DECK, sides=('wall', 'wall'), gaps=(0.050, 0.050), top_ext=0.0, top_newel=False),
+    # ---- Outside: from the upper deck up the house's after end to the boat deck, abaft each lifeboat; from the officers'
+    # deck abaft the house to the bridge deck; and the helicopter deck's two stairs. (The officers' deck abaft the house is
+    # reached through the house and from the bridge deck: a ladder up from the boat deck would stand in a lifeboat's station.)
+    _boat, _mirror(_boat, 'boat-s', 'boat deck, starboard'),
+    _bridge, _mirror(_bridge, 'bridge-s', 'bridge deck, starboard'),
+    _heli, _mirror(_heli, 'heli-s', 'helicopter deck, starboard'),
+]
 
 # ---- Marks.
-# Figures every 20 cm from `lowest` (metres above the keel) to 4.4 m, wherever the plating is upright enough to carry one.
+# Figures every 20 cm from `lowest` (metres above the keel) to 7.0 m, wherever the plating is upright enough to carry one.
 DRAUGHT_MARKS = (
-    dict(where='aft', yard=6.0, lowest=3.0),
-    dict(where='midships', yard=33.9, lowest=0.6),
-    dict(where='forward', yard=62.0, lowest=1.2),
+    dict(where='aft', yard=6.6, lowest=4.8),
+    dict(where='midships', yard=61.2, lowest=1.0),
+    dict(where='forward', yard=112.8, lowest=3.6),
 )
-DRAUGHT_TOP = 4.4
-LOAD_LINE_YARD = 35.4
+DRAUGHT_TOP = 7.0
+LOAD_LINE_YARD = 63.6
 NAME = 'CHISUM'             # as it is painted. The owner, 11 November 2026: "Maybe rename her to the Chisum", then "rename to Chisum"; she was the Christina from 9 November
 SHIP_NAME = NAME.title()    # as it is written
 PORT_OF_REGISTRY = 'MINATO'
-NAME_YARD = 58.6            # her name on each bow, in the band's height
-# The shipping line she sails for, lettered along each side of the hull, and its colour (the funnels' teal). Its mark, a J
-# in a ring, is on the funnels (blender/livery.py).
+NAME_YARD = 110.0           # her name on each bow
+# The shipping line she sails for, lettered along each side of the hull in white. Its mark, a J in a ring, is on the
+# funnels (blender/livery.py).
 LINE = 'JOHANSSON LINE'            # the owner, 11 November 2026: "Johansson Line not lines by the way"
-LINE_YARD = 38.7           # its middle: forward of the shell doors and on the flat of her side, abaft where she begins to narrow (lettering
-                           # 1 m high laid on curved plating dips under it between its own corners: zfight.py found 4.6 mm of it)
-LINE_COLOUR = 0x2f6f74
+LINE_YARD = 52.0            # its middle: on the flat of her side, between the funnels and the pilot doors
+LINE_COLOUR = LETTERING

@@ -7,7 +7,8 @@ on the chimneys". The mark is her own: a white J in a white ring on the funnels'
 also draws the page's icon from it). It is painted on the outboard and the inboard face of each funnel.
 
 Her funnels are her own (steel.py: FUNNEL): each side is a flat plate, upright, so the mark lies on it as it is drawn,
-four times the size it had on the first Chisum's funnels: the ring is 2.5 m across.
+four times the size it had on the first Chisum's funnels: the ring is 2.5 m across. Both ends of a funnel rake aft, so the
+mark stands abaft the middle of its foot, in the middle of the plate at its own height.
 """
 from math import cos, sin, pi
 import lines as L
@@ -18,7 +19,9 @@ import steel
 FUNNELS = ((1, 'port'), (-1, 'starboard'))
 F = steel.FUNNEL
 SCALE = 4.0
-MARK = dict(yard=(F['yard'][0] + F['yard'][1]) / 2 - 0.1, y=F['foot'] + 4.6, off=0.004)      # the mark's middle; how far it lies off the plating
+_H = 4.7                                                           # the mark's middle over the funnel's foot
+_F = _H / (F['top'] - F['foot'])                                   # as a share of its height
+MARK = dict(yard=(F['yard'][0] - F['rake_aft'] * _F + F['yard'][1] - F['rake_fwd'] * _F) / 2, y=F['foot'] + _H, off=0.004)      # the mark's middle; how far it lies off the plating
 WHITE = srgb(0xf4f4f0)
 
 
@@ -34,7 +37,7 @@ def build():
     shape = emblem.mark()
     for side, name in FUNNELS:
         part = Part(f'Funnel emblem, {name}', 'Marking')
-        part.group = 'bridge'
+        part.group = 'upper'
         for face in (1, -1):
             first = len(part.f)
             for quad in shape:

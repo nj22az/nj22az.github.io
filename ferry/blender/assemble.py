@@ -4,11 +4,11 @@ Puts the Chisum together for the viewer: the parts built in Blender into ferry/d
 
     python3 ferry/blender/assemble.py --part chisum.npz [--out ferry/data/ferry.bin.gz]
 
-She is the 68 m ship of the general arrangement (ga.py), and everything in the file is her own: the tool starts from
-nothing. (Until 11 November 2026 it started from the Minato Maru's drawing and replaced it section by section; that ship
-went when the owner chose "Rebuild the Chisum at 68 m".)
+She is the 124.8 m ro-ro freight ferry of the general arrangement (ga.py, revision D), and everything in the file is her
+own: the tool starts from nothing.
 
-  - every mesh of the part file goes into the viewer's part it was built for (hull, machinery, car, passenger, bridge, top);
+  - every mesh of the part file goes into the viewer's part it was built for (spec.PARTS: hull, machinery, main, upper,
+    boat, officers, bridge, top);
   - the rooms the page lists are the spaces of ga.py, each with its place, what it is for, and where a walk begun there
     starts when the room itself is not entered (a tank, a funnel, a stair);
   - her register is written beside the model with the places of the same build (systems.json), and her stairs as the
@@ -28,74 +28,95 @@ import eg_place
 import bridge_place as BP
 
 DEFAULT = os.path.join(HERE, '..', 'data', 'ferry.bin.gz')
-BUILT = '11 November 2026'
+BUILT = '12 November 2026'
+D = ga.DECKS
 
 # ---- The viewer's parts, bottom to top: what each is called, what the page says of its level, how far it lifts when she is
 # taken apart (each clear of the one under it).
 GROUPS = [
     dict(id='hull', name='Hull', lift=0.0,
-         level=f'{L.LENGTH:.1f} m long, {L.BEAM:.1f} m beam, {L.DEPTH:.1f} m to the car deck, {L.DRAFT:.1f} m draught'),
-    dict(id='machinery', name='Machinery spaces', lift=10.0, level=f"Tank top {ga.DECKS['tank_top']:.1f} m above the keel, the flat at {ga.DECKS['flat']:.1f} m"),
-    dict(id='car', name='Car deck', lift=13.5, level=f"{ga.DECKS['car']:.1f} m above the keel"),
-    dict(id='passenger', name='Passenger deck', lift=17.0, level=f"{ga.DECKS['passenger']:.1f} m above the keel"),
-    dict(id='bridge', name='Bridge deck', lift=20.5, level=f"{ga.DECKS['bridge']:.1f} m above the keel"),
-    dict(id='top', name='Top deck and compass deck', lift=24.0,
-         level=f"{ga.DECKS['top']:.1f} m above the keel, masthead light at {L.above_keel(BP.Y(S.MAST['masthead'])):.1f} m"),
+         level=f'{L.LENGTH:.1f} m long, {L.BEAM:.1f} m beam, {L.DEPTH:.1f} m to the main deck, {L.DRAFT:.1f} m draught'),
+    dict(id='machinery', name='Below the main deck', lift=15.0, level=f"Tank top {D['tank_top']:.1f} m above the keel, the engine room platform at {D['platform']:.1f} m"),
+    dict(id='main', name='Main deck', lift=22.0, level=f"{D['main']:.1f} m above the keel"),
+    dict(id='upper', name='Upper deck', lift=31.0, level=f"{D['upper']:.1f} m above the keel"),
+    dict(id='boat', name='Boat deck', lift=39.0, level=f"{D['boat']:.1f} m above the keel"),
+    dict(id='officers', name="Officers' deck", lift=44.0, level=f"{D['officers']:.1f} m above the keel"),
+    dict(id='bridge', name='Bridge deck', lift=49.0, level=f"{D['bridge']:.1f} m above the keel"),
+    dict(id='top', name='Compass deck', lift=54.0,
+         level=f"{D['compass']:.1f} m above the keel, masthead light at {L.above_keel(BP.Y(S.MAST['masthead'])):.1f} m"),
 ]
-PLAN_GROUP = dict(hold='machinery', car='car', passenger='passenger', bridge='bridge', top='top')
+assert tuple(g['id'] for g in GROUPS) == S.PARTS
+PLAN_GROUP = dict(hold='machinery', main='main', upper='upper', boat='boat', officers='officers', bridge='bridge', top='top')
 # The floor and the head of a plan's rooms, over the waterline.
-PLAN_LEVELS = dict(hold=(S.TANK_TOP, S.CAR_DECK - 0.03), car=(S.CAR_DECK, S.PASSENGER_DECK - 0.012), passenger=(S.PASSENGER_DECK, S.BRIDGE_DECK - 0.012),
-                   bridge=(S.BRIDGE_DECK, S.TOP_DECK - 0.012), top=(S.TOP_DECK, S.TOP_HOUSE))
-# Rooms whose floor is not their plan's: the flats aft and forward below the car deck.
-FLOORS = {'steering-gear': S.STEERING_FLAT, 'shaft-space': S.STEERING_FLAT, 'chain-lockers': S.FORE_STORE_FLAT}
-# Spaces that are not rooms one goes into (a tank, a funnel, a stair's own length): a walk begun there starts at `stand`,
-# beside it or at its landing, where one can walk on: (x, height over the waterline, metres from the transom).
+PLAN_LEVELS = dict(hold=(S.TANK_TOP, S.MAIN_DECK - 0.03), main=(S.MAIN_DECK, S.UPPER_DECK - 0.012), upper=(S.UPPER_DECK, S.BOAT_DECK - 0.012),
+                   boat=(S.BOAT_DECK, S.OFFICERS_DECK - 0.012), officers=(S.OFFICERS_DECK, S.BRIDGE_DECK - 0.012), bridge=(S.BRIDGE_DECK, S.COMPASS_DECK - 0.012),
+                   top=(S.COMPASS_DECK, S.COMPASS_DECK + 2.2))
+# Rooms whose floor is not their plan's (ga.py: a space's `level`).
+LEVEL_FLOOR = dict(platform=S.PLATFORM, aft=S.AFT_FLAT, helideck=S.HELIDECK, forecastle=S.UPPER_DECK)
+# Spaces that are not rooms one goes into (a tank, a trunk, a funnel, a stair's own length), or whose middle is no place to
+# stand: a walk begun there starts at `stand`, beside it or at its landing, where one can walk on:
+# (x, height over the waterline, metres from the transom).
+_ramp = lambda yd: S.MAIN_DECK + (yd - ga.FIXED_RAMP['yard'][0]) / ga.FIXED_RAMP['slope']       # the fixed ramp's roadway
+TT, MD, UD = S.TANK_TOP, S.MAIN_DECK, S.UPPER_DECK
 STAND = {
-    'fw-tank-p': (0.0, S.STEERING_FLAT, 7.2), 'fw-tank-s': (0.0, S.STEERING_FLAT, 6.4),
-    'fuel-tank-p': (0.6, S.TANK_TOP, 37.5), 'fuel-tank-s': (-0.6, S.TANK_TOP, 37.5),
-    'ballast-tank-p': (0.6, S.TANK_TOP, 46.5), 'ballast-tank-s': (-0.6, S.TANK_TOP, 46.5),
-    'fore-peak': (0.0, S.FORE_STORE_FLAT, 61.3),
-    'stair-aft-p': (6.0, S.CAR_DECK, 31.6), 'stair-aft-s': (-6.0, S.CAR_DECK, 31.6),
-    'stair-fwd-p': (6.0, S.CAR_DECK, 38.3), 'stair-fwd-s': (-6.0, S.CAR_DECK, 38.3),
-    'crew-stair': (6.0, S.CAR_DECK, 23.6), 'crew-stair-pax': (6.0, S.PASSENGER_DECK, 23.6), 'crew-stair-head': (5.6, S.BRIDGE_DECK, 23.6),
-    'stair-aft-head-p': (6.0, S.PASSENGER_DECK, 24.6), 'stair-aft-head-s': (-6.0, S.PASSENGER_DECK, 24.6),
-    'stair-fwd-head-p': (6.0, S.PASSENGER_DECK, 45.4), 'stair-fwd-head-s': (-6.0, S.PASSENGER_DECK, 45.4),
-    'funnel-p': (4.4, S.PASSENGER_DECK, 20.5), 'funnel-s': (-4.4, S.PASSENGER_DECK, 20.5),
-    'funnel-top-p': (2.4, S.BRIDGE_DECK, 16.6), 'funnel-top-s': (-2.4, S.BRIDGE_DECK, 16.6),
+    'fw-tank-p': (0.0, S.AFT_FLAT, 12.4), 'fw-tank-s': (0.0, S.AFT_FLAT, 11.4),
+    'heeling-tank-p': (5.0, TT, 57.4), 'heeling-tank-s': (-5.0, TT, 53.4),
+    'fuel-tank-p': (5.0, TT, 66.6), 'fuel-tank-s': (-5.0, TT, 66.6), 'ballast-tank-p': (5.0, TT, 79.8), 'ballast-tank-s': (-5.0, TT, 79.8),
+    'deep-tank-p': (1.0, TT, 92.4), 'deep-tank-s': (-1.0, TT, 92.4), 'fore-peak': (0.0, TT, 103.0), 'thruster-room': (0.0, TT, 99.4),
+    'hold-stair': (7.0, TT, 47.6), 'er-platform': (0.0, S.PLATFORM, 22.0),
+    'er-escape': (-6.4, _ramp(14.4), 14.4), 'uptake-s': (-6.4, _ramp(19.7), 19.7), 'er-vent': (-6.4, _ramp(30.8), 30.8), 'aux-vent': (-6.4, _ramp(42.6), 42.6),
+    'hold-vent': (-6.4, _ramp(56.4), 56.4), 'fixed-ramp': (-5.7, _ramp(39.0), 39.0),
+    'main-stair-p': (8.4, MD, 73.2), 'main-stair-s': (-8.4, MD, 73.2), 'er-entrance': (8.9, MD, 25.0), 'hold-stair-head': (8.9, MD, 49.0),
+    'fore-store': (0.0, MD, 112.0),
+    'aft-deck': (0.0, UD, 21.8), 'funnel-p': (6.6, UD, 19.7), 'funnel-s': (-6.6, UD, 19.7), 'ramp-cover': (-3.0, UD, 45.0),
+    'stair-head-p': (8.2, UD, 84.8), 'stair-head-s': (-8.2, UD, 84.8), 'forecastle': (0.0, UD + 0.05, 107.0),
+    'house-stair': (0.6, UD, 94.4), 'house-stair-boat': (0.6, S.BOAT_DECK, 94.4), 'house-stair-officers': (0.6, S.OFFICERS_DECK, 94.4),
+    'officers-deck-aft': (4.4, S.OFFICERS_DECK, 85.0), 'wheelhouse-stair': (-2.5, S.OFFICERS_DECK, 97.55),
+    'bridge-deck-open': (5.0, S.BRIDGE_DECK, 95.0),
 }
-# The funnels stand on the bridge deck and are listed with it (the arrangement draws them on the top deck's plan, where
-# they are seen from above).
-REGROUP = {'funnel-top-p': 'bridge', 'funnel-top-s': 'bridge'}
 # What stands in a room today, where it is more than bare steel.
 FITTED = {
     'steering-gear': 'Fitted: the flat, both rudder stocks in their carriers, the tillers and their tie bar, a ram on each, two hydraulic power units, the hand pump, the emergency fire pump. The Rudder control works them.',
-    'shaft-space': 'Fitted: the stern tubes and their seals, the couplings, the flat and its steps from the engine room\'s door to the steering gear\'s.',
-    'engine-room': 'Bare, but for the intermediate shafts from the flanges that wait for the gearboxes, their plummer blocks and the bulkhead glands, the after flat and its steps, and the port platform with the crew stair.',
+    'aft-passage': 'Fitted: the platform inside the engine room\'s door, the steps and the flat to the steering gear\'s door.',
+    'engine-room': 'Bare, but for the intermediate shafts from the flanges that wait for the gearboxes, their plummer blocks and the stern tubes\' seals under the platform.',
+    'er-platform': 'Fitted: floor plates on bearers and pillars, rails, the stairs down to the tank top. The rooms on it are bare.',
     'thruster-room': 'Bare, but for the tunnel and the thruster\'s motor standing on it.',
-    'chain-lockers': 'The flat, the two chain lockers, and the ladder up to the flush hatch in the car deck.',
+    'lower-hold': 'Bare steel. The stair in the port wing tank and a ladder to a flush hatch forward are its two ways on foot; the cargo lift\'s platform is its hatch cover.',
+    'cargo-lift': 'The platform is built, raised: it is the hatch cover, flush with the deck. Its hoisting gear is not built, and it does not work yet.',
+    'fixed-ramp': 'Built: the roadway on its girder and pillars, the guard along its open side. One walks up it to the upper deck. Its cover is not built: the opening stands open.',
+    'ramp-cover': 'The opening and its rail. The hinged weathertight cover is not built yet.',
+    'stern-ramp': 'Fitted: the ramp, which raised is the stern door, on its two hydraulic cylinders (the Stern ramp control lowers it to the quay). '
+                  'Beside it on the bulwark the sternlight and two floodlights; beside the door, to starboard, the red and green signal for those who drive aboard. '
+                  'The hydraulic power unit, the securing and the seal are not built.',
+    'pilot-lobby-p': 'Fitted: the pilot door, a real door in her shell: frame, leaf, dogs, hinges. A tap opens it.',
+    'pilot-lobby-s': 'Fitted: the pilot door, a real door in her shell: frame, leaf, dogs, hinges. A tap opens it.',
+    'helideck': 'The deck on its girders and pillars, and its two stairs. Its marks, net, lights and foam monitors are not built yet.',
+    'funnel-p': 'The casing, raked, in the line\'s teal with her J, and the heads of its three uptakes: the port main engine and two generators. The uptakes below, the louvres and the platform are not built yet.',
+    'funnel-s': 'The casing, raked, in the line\'s teal with her J, and the heads of its three uptakes: the starboard main engine, a generator and the boiler. The uptakes below, the louvres and the platform are not built yet.',
+    'drivers-lounge': "Bare steel, but for the owner's drinks machine, which stands against the front wall.",
+    'boat-deck-p': 'Bare deck and its rail, with the gap where the boat is swung out. The lifeboat, its davits and the liferafts are not aboard yet.',
+    'boat-deck-s': 'Bare deck and its rail, with the gap where the boat is swung out. The lifeboat, its davits and the liferafts are not aboard yet.',
     'wheelhouse': 'Fitted complete: her navigation bridge, designed aboard the first Chisum and landed whole: console, instruments, boards, both wings, every one a component of her register. Tap a fitting, or open Systems.',
     'compass-deck': 'Fitted: the mast with radar, lights and horns, the antennas, the searchlight and floodlights, the binnacle.',
     'eg-room': "Fitted complete, to the owner's drawing: the generator set on its skid, the exhaust, two air ducts with fire dampers, the day tank, the starting batteries, the control panel, the emergency switchboard, the weathertight door.",
-    'saloon': "Bare steel, but for the owner's drinks machine, which stands in the nook at its after end to port, against the toilets' wall.",
-    'stern-ramp': 'Fitted: the ramp, which raised is the stern door, on its two hydraulic cylinders (the Stern ramp control lowers it to the quay). '
-                  'Over it on the bulwark the sternlight and two floodlights that look down on the ramp; beside the door, to starboard, the red and green signal for those who drive aboard. '
-                  'The hydraulic power unit, the securing and the seal are not built (drawing JS3-304).',
-    'aft-mooring-deck': 'Bare steel and its bulwark. At the stern, on the bulwark\'s rail, the sternlight and the two floodlights of the ramp.',
+    'forecastle': 'Bare deck within its bulwark, rising to the stem. The windlasses, the mooring gear and the foremast are not aboard yet; the anchors are, on her bows.',
 }
-BARE = 'Bare steel: decks, walls, doorways and windows. Her outfit comes section by section.'
+BARE = 'Bare steel: decks, walls, doorways and windows, and a light fitting overhead. Her outfit comes section by section.'
+OPEN_DECK = 'Open deck.'
 SECTIONS = [
-    dict(part='hull', section='Hull', date=BUILT, what='her hull at 68.4 m from her own lines: plating, frames, floors, eight watertight bulkheads, the tank top, keel, skeg and bilge keels, two shafts with their screws and rudders, the bow thruster, anchors, marks'),
-    dict(part='machinery', section='The spaces below the car deck', date=BUILT, what='the steering gear, the shafting inboard, six watertight doors, the flats and the ways between them'),
-    dict(part='car', section='Decks, casings and houses', date=BUILT, what='every deck, the side casings, the passenger house, the accommodation and the top deck\'s houses as bare steel, from the general arrangement'),
-    dict(part='car', section='Stern ramp', date=BUILT, what='the stern door, which lowers as the ramp on two hydraulic cylinders; the sternlight, two floodlights and the drive-on signal over it (drawing JS3-304)'),
-    dict(part='car', section='Stairs', date=BUILT, what='sixteen stairs to the yard\'s standard: four main stairs, the crew\'s stair trunk from the machinery flat to the bridge deck, the stair into the wheelhouse, the ladders outside and in the machinery spaces'),
-    dict(part='bridge', section='Navigation bridge', date=BUILT, what='the wheelhouse, its wings carried to her side, the compass deck and mast, landed whole from the first Chisum'),
-    dict(part='top', section='Emergency generator room', date=BUILT, what="built to the owner's drawing, on the top deck"),
+    dict(part='hull', section='Hull', date=BUILT, what='her hull at 124.8 m from her own lines: a raked, flared bow over a bulb, sheer forward, a transom stern; plating, frames, floors, seven watertight bulkheads, the tank top, keel, skeg and bilge keels, two shafts with their screws and rudders, the bow thruster, anchors, marks'),
+    dict(part='machinery', section='The spaces below the main deck', date=BUILT, what='the steering gear, the shafting inboard, five watertight doors, the engine room platform, the ways between them, the lower hold'),
+    dict(part='main', section='Decks, casings and houses', date=BUILT, what='every deck, the side casings, the fixed ramp, the cargo lift\'s platform, the house in four tiers, the helicopter deck, the funnels, as bare steel, from the general arrangement'),
+    dict(part='main', section='Stern ramp and pilot doors', date=BUILT, what='the stern door, which lowers as a ramp of 11 m on two hydraulic cylinders; a pilot door in her shell each side, with its working leaf'),
+    dict(part='main', section='Stairs', date=BUILT, what=f'{len(S.STAIRS)} stairs to the yard\'s standard: two main stairs from the trailers to the house, the house\'s stair trunk, the stair into the wheelhouse, the engine room\'s and the lower hold\'s, the ladders outside'),
+    dict(part='upper', section='Light fittings', date=BUILT, what='a marine fluorescent fitting on two hangers for every 9 to 12 m² of every enclosed space: her rooms light themselves'),
+    dict(part='bridge', section='Navigation bridge', date=BUILT, what='the wheelhouse, its wings carried to her full breadth, the compass deck and mast, landed whole from the first Chisum'),
+    dict(part='officers', section='Emergency generator room', date=BUILT, what="built to the owner's drawing, on the officers' deck abaft the house"),
 ]
-NOTE = ("{name}, {length} m long: the ship of her general arrangement (revision {rev}), rebuilt at this size on {date} at the owner's word. "
-        "Her hull, every deck and every room's walls are built, in bare steel, and can be walked. Her navigation bridge, the emergency generator room and "
-        "the drinks machine are fitted; the rest of her outfit, the machinery first, comes section by section. Nothing of the first, 34.5 m Chisum's "
-        "borrowed interiors is left.")
+NOTE = ("{name}, {length} m long: a ro-ro freight ferry, the ship of her general arrangement (revision {rev}), rebuilt at this size on {date} at the owner's word. "
+        "Her hull, every deck and every room's walls are built, in bare steel, lit, and can be walked: the main trailer deck, the lower hold, the weather deck, "
+        "the house in four tiers. Her stern ramp, her pilot doors, her navigation bridge, the emergency generator room and the drinks machine are fitted; "
+        "the rest of her outfit, on deck first, comes section by section.")
 MATERIAL_DEFAULTS = dict(shading='standard', metalness=0, roughness=1, transparent=False, opacity=1, emissive='#000000',
                          emissiveIntensity=1, side='front', textured=False, depthWrite=True, alphaTest=0, offset=None, atlas=0, clear=False, surface=None)
 
@@ -169,22 +190,22 @@ def spaces():
     """The rooms the page lists, by the viewer's part: each space of the general arrangement with its box in the ship's axes."""
     out = {g['id']: [] for g in GROUPS}
     for s in ga.SPACES:
-        gid = REGROUP.get(s['id'], PLAN_GROUP[s['plan']])
+        gid = PLAN_GROUP[s['plan']]
         floor, head = PLAN_LEVELS[s['plan']]
-        if s['level'] == 'flat':
-            floor = S.FLAT
-        floor = FLOORS.get(s['id'], floor)
-        if s['id'].startswith('funnel-top'):
-            floor, head = S.BRIDGE_DECK, L.Y(ga.FUNNEL_TOP)
+        floor = LEVEL_FLOOR.get(s['level'], floor)
+        if s['level'] == 'helideck':
+            head = floor + 2.2
+        if s['id'].startswith('funnel-'):
+            head = L.Y(ga.FUNNEL_TOP)
         if s['id'] == 'eg-room':
             lo, hi = eg_place.BOX
         else:
             (a, b), (x0, x1) = s['yard'], s['x']
             # a room is no wider than she is there
-            hb = max(L.hull_x(min(max(floor + 0.5, L.keel_y(L.Z(v)) + 0.3), L.UPPER), L.Z(v)) for v in (a, (a + b) / 2, b))
+            hb = max(L.main_x(min(max(floor + 0.5, L.keel_y(L.Z(v)) + 0.3), L.UPPER), L.Z(v)) for v in (a, (a + b) / 2, b))
             x0, x1 = max(x0, -hb), min(x1, hb)
             lo, hi = [round(x0, 4), round(floor, 4), round(L.Z(a), 4)], [round(x1, 4), round(head, 4), round(L.Z(b), 4)]
-        text = FITTED.get(s['id'], BARE)
+        text = FITTED.get(s['id'], OPEN_DECK if s['kind'] == 'open' else BARE)
         if s['why']:
             text = s['why'] + '. ' + text
         rec = dict(id=s['id'], name=s['name'], text=text, why=ga.KINDS[s['kind']], min=lo, max=hi)
@@ -290,6 +311,9 @@ def main():
     header = dict(
         format='JMF1',
         ship=dict(name=S.SHIP_NAME, type=dict(ga.PARTICULARS)['Type'], length=L.LENGTH, beam=L.BEAM, depth=L.DEPTH, draft=L.DRAFT,
+                  # where the bridge stands (its own measures are the first Chisum's: bridge_place.py), and where a walk begins
+                  bridge=dict(shift=BP.SHIFT, deck=round(BP.DECK, 4), top=round(S.COMPASS_DECK, 4), wing=BP.WING),
+                  start=dict(deck='main', space='vehicle-deck'), decks={k: round(L.Y(v), 4) for k, v in ga.DECKS.items()},
                   displacement=ga.DISPLACEMENT, arrangement=ga.REVISION, built=SECTIONS, waterline=waterline(),
                   note=NOTE.format(name=S.SHIP_NAME, length=L.LENGTH, rev=ga.REVISION, date=BUILT)),
         axes='x to port, y up from the design waterline, z forward from amidships; metres',

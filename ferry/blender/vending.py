@@ -1,5 +1,5 @@
 """
-The owner's own drinks machine aboard: the JPVM-2R20, in the passenger deck's lobby.
+The owner's own drinks machine aboard: the JPVM-2R20, in the drivers' lounge.
 
 The owner, 11 November 2026, with the machine's files (assets/jpvm-2r20/: the model, its script, its parts list, its
 controller and wiring): "Use this vending machine instead"; and of what is lettered on it: "Use English so we can see what
@@ -35,9 +35,9 @@ What else is put right aboard, and why:
   what hangs free inside the cabinet is carried (mounts()): the file's inside parts are stand-ins without their mounts
   five pairs of surfaces that lay in one plane and flickered are moved apart by a millimetre or two (put_right())
 
-Aboard it stands just forward of the lobby, in the nook between the after main stair's head and the toilets, against the
-toilets' after wall and facing aft, 60 mm off the wall for the condenser's air, and is held to the ship: two angles from its
-top to the wall and a cleat on the deck at each side of its plinth.
+Aboard it stands in the drivers' lounge on the upper deck, against the front wall of the house and facing aft into the
+room, 60 mm off the wall for the condenser's air, and is held to the ship: two angles from its top to the wall and a cleat
+on the deck at each side of its plinth.
 """
 import numpy as np
 import lines as L
@@ -47,10 +47,13 @@ from shipyard import Part, srgb, tint
 
 import spec as S
 
-DECK, FLOOR = S.PASSENGER_DECK, 0.0  # the passenger deck: bare steel until the saloon is fitted out
-# The machine's middle off the centreline; the wall behind it (the toilets' after wall, 30 m from the transom: its after face);
-# the air gap. It stands in the nook between the after main stair's head and the toilets, facing the lobby (ga.py).
-XC, BACK, GAP = 4.40, 29.995, 0.06
+import ga
+DECK, FLOOR = S.UPPER_DECK, 0.0      # the upper deck: bare steel until the drivers' lounge is fitted out
+GROUP = 'upper'                      # the viewer's part it is drawn with
+# The machine's middle off the centreline; the wall behind it (the front of the house, 104 m from the transom: its after
+# face); the air gap. It stands in the drivers' lounge, against its forward wall beside the door from the corridor, facing
+# aft into the room (ga.py: "the owner's drinks machine").
+XC, BACK, GAP = 4.60, ga.HOUSE[1] - 0.005, 0.06
 DOOR_OPENS, FLAP_OPENS = 90, 55    # degrees aboard (the file: 100 and 75)
 Z = L.Z
 MOTIONS = {}
@@ -152,7 +155,7 @@ class Shop:
         key = (look, mover)
         if key not in self.parts:
             p = Part(f'Drinks machine, {ON[mover]}, {WHAT[look]}', look, smooth=smooth, angle=180, mover=MOVER.get(mover))
-            p.group = 'passenger'
+            p.group = GROUP
             self.parts[key] = p
         return self.parts[key]
 
@@ -228,7 +231,7 @@ def build():
 
     # ---- held to the ship: two angles from the cabinet's top to the wall, a cleat on the deck at each side of the plinth
     hold = Part('Drinks machine, securing', 'Machinery paint')
-    hold.group = 'passenger'
+    hold.group = GROUP
     grey = srgb(0x8f9698)
 
     def box(x0, x1, y0, y1, z0, z1, colour=grey):
@@ -256,7 +259,7 @@ def build():
         a, b = ship(lo), ship(hi)
         carry[rides].box(tuple(map(min, a, b)), tuple(map(max, a, b)), steel)
     for part in carry.values():
-        part.group = 'passenger'
+        part.group = GROUP
 
     # ---- how it moves
     front = BACK - GAP - jpvm.D - jpvm.DOOR

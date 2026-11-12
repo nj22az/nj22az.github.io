@@ -3,9 +3,10 @@ Builds the Chisum in Blender, section by section, and writes what the viewer nee
 
     blender -b -P ferry/blender/build.py -- [--blend chisum.blend] [--part chisum-hull.npz]
 
-Section 1 (10 November 2026): the hull. Her lines (lines.py), her shell, structure, appendages and marks (hull_*.py).
-Each collection in the file is one of the viewer's parts that lift apart (`hull`, `machinery`, `car`); export_jmf.py writes
-them for assemble.py, which puts them into ferry/data/ferry.bin.gz.
+Her lines (lines.py), her shell, structure, appendages and marks (hull_*.py), her steel (steel.py), her stairs, the blocks
+that are landed aboard (the bridge, the emergency generator room, the drinks machine) and her light fittings.
+Each collection in the file is one of the viewer's parts that lift apart (spec.PARTS: `hull`, `machinery`, `main`, ...);
+export_jmf.py writes them for assemble.py, which puts them into ferry/data/ferry.bin.gz.
 """
 import sys, os, time, importlib
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +60,7 @@ def behind_the_plating():
                     continue
                 # Nor at an opening in the topsides (a mooring port, a shell door), nor at the stern door.
                 yd = L.yard(p.x)
-                if any(o['yard'][0] - 0.35 < yd < o['yard'][1] + 0.35 and o['y'][0] - 0.1 < p.z < o['y'][1] + 0.1 for o in (S.MOORING_PORT, S.SHELL_DOOR)):
+                if any(o['yard'][0] - 0.35 < yd < o['yard'][1] + 0.35 and o['y'][0] - 0.1 < p.z < o['y'][1] + 0.1 for o in (S.MOORING_PORT, S.PILOT_DOOR)):
                     continue
                 out += 1
                 where.append(f'{L.yard(p.x):.2f} m from the transom, {abs(p.y):.2f} m off the centreline, {L.above_keel(p.z):.2f} m above the keel')
@@ -124,8 +125,10 @@ def looking_outward():
     bpy.data.collections.remove(trial)
     for name in ('Tail shafts', 'Rudder stock, port', 'Rudder stock, starboard', 'Rudder anodes, port', 'Intermediate shafts',
                  'Steering gear, bright steel', 'Rudder stock head, port', 'Ram cylinder, port', 'Ram rod, starboard', 'Tie bar',
-                 'Chain lockers', 'Zinc anodes', 'Stem bar', 'Car deck, walls', 'Passenger deck, walls', 'Bridge deck, walls', 'Top deck, walls',
-                 'Bridge deck, rails', 'Top deck, rails', 'Stern ramp', 'Inner bow door', 'Crew stair trunk, landings',
+                 'Zinc anodes', 'Stem bar', 'Main deck, walls', 'Upper deck, walls', 'Boat deck, walls', "Officers' deck, walls", 'Bridge deck, walls',
+                 'Engine room platform, walls', 'Boat deck, rails', "Officers' deck, rails", 'Bridge deck, rails', 'House top, rails', 'Upper deck, rails',
+                 'Stern ramp', 'Fixed ramp, roadway', 'Fixed ramp, structure', 'Cargo lift platform', 'Pilot door, port', 'Pilot door, starboard',
+                 'Stair trunk, half landing, upper deck', 'Stair trunk, half landing, boat deck', 'Bridge wing knees',
                  'Compass deck, slab', 'Compass deck, rails',
                  'Compass deck, mast and fittings', 'Compass deck, mast, steel fittings', 'Compass deck, dark fittings',
                  'Compass deck, antennas', 'Compass deck, antenna mounts',
@@ -138,7 +141,8 @@ def looking_outward():
                  'Wheelhouse deckhead, instruments', 'Wheelhouse deckhead, steel', 'Wheelhouse deckhead, lamps and lenses', 'Wheelhouse deckhead, plastics',
                  'Wheelhouse deckhead, painted fittings', 'Wheelhouse deckhead, brass', 'Wheelhouse deckhead, wood',
                  'Compass deck, bridge fittings', 'Compass deck, bridge fittings, dark',
-                 'Compass deck, bridge fittings, lenses', 'Compass deck, bridge fittings, steel'):
+                 'Compass deck, bridge fittings, lenses', 'Compass deck, bridge fittings, steel') + tuple(
+                     ob.name for ob in bpy.data.objects if ob.name.startswith('Light fittings') and ob.name.endswith(('bodies', 'hangers', 'diffusers'))):
         ob = bpy.data.objects.get(name)
         if ob is None:
             wrong.append(name + ' (not built)')
@@ -159,9 +163,9 @@ def main():
     ship = shipyard.collection('Chisum')
     # A part goes to the viewer's part of the same name: her hull, or what the hull's build gives to the machinery
     # spaces and to the car deck (part.group).
-    parts_of = {gid: shipyard.collection(gid, ship) for gid in ('hull', 'machinery', 'car', 'passenger', 'bridge', 'top')}
+    parts_of = {gid: shipyard.collection(gid, ship) for gid in S.PARTS}
     report, inputs, movers, ways = {}, [], [], []
-    modules = ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'steel', 'stairs', 'compass_deck', 'wheelhouse', 'livery', 'vending', 'eg_room')
+    modules = ('hull_shell', 'hull_structure', 'hull_appendages', 'hull_fittings', 'hull_markings', 'steel', 'stairs', 'compass_deck', 'wheelhouse', 'livery', 'vending', 'eg_room', 'lighting')
     only = opt.get('--only')           # a trial of some sections: no checks, nothing the page reads is to be made from it
     for name in (only.split(',') if only else modules):
         try:

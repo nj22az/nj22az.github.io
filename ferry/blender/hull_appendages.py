@@ -195,7 +195,7 @@ def build():
         yard = y0 + (y1 - y0) * i / n
         z = L.Z(yard)
         k = L.keel_y(z)
-        fade = min(1.0, (y1 - yard) / 1.2)                 # it runs out into the forefoot
+        fade = min(1.0, (y1 - yard) / 1.2, (yard - y0) / 1.2 + 0.05)      # it runs out into the forefoot, and aft under the skeg
         rows.append([(w, k + 0.01, z), (w, k - d * fade, z), (w * 0.6, k - d * fade - 0.012 * fade, z),
                      (-w * 0.6, k - d * fade - 0.012 * fade, z), (-w, k - d * fade, z), (-w, k + 0.01, z)])
     start = len(keel.f)
@@ -206,15 +206,15 @@ def build():
     a, b = S.SKEG['yard']
     foot = L.KEEL - d - 0.012
     rows = []
-    n = 36
+    n = 86
     for i in range(n + 1):
         yard = a + (b - a) * i / n
         z = L.Z(yard)
         top = L.keel_y(z) + 0.03
-        run = min(1.0, (yard - a) / 1.6)                   # the aft edge rakes up to the hull
+        run = min(1.0, (yard - a) / 3.6)                   # the aft edge rakes up to the hull
         bottom = top + (foot - top) * (run * run * (3 - 2 * run))
         bottom = min(bottom, top - 0.001)
-        h = (S.SKEG['thickness'] / 2) * (0.18 + 0.82 * min(1.0, (yard - a) / 2.4))
+        h = (S.SKEG['thickness'] / 2) * (0.18 + 0.82 * min(1.0, (yard - a) / 3.0))
         mid = top + (bottom - top) * 0.55
         rows.append([(h, top, z), (h, mid, z), (h * 0.7, bottom + (top - bottom) * 0.08, z), (0.0, bottom, z),
                      (-h * 0.7, bottom + (top - bottom) * 0.08, z), (-h, mid, z), (-h, top, z)])
@@ -246,9 +246,9 @@ def build():
     x = -S.SHAFT_X
     sc = S.SCREW
     at = lambda yard: Vector((x, shaft_y(yard), L.Z(yard)))
-    fwd = (at(8.0) - at(3.0)).normalized()
+    fwd = (at(18.0) - at(8.0)).normalized()
     centre = at(sc['yard'])
-    k = S.SHAFT_RADIUS / 0.055                         # the first Chisum's stern gear was drawn round a 110 mm shaft: hers is as much larger as her shaft is
+    k = S.SHAFT_RADIUS / 0.07                          # the first Chisum's stern gear was drawn round a 110 mm shaft: hers is larger as her shaft is (a 280 mm shaft: twice)
     side_gear = Part('gear', 'Antifouling')
     side_inboard = Part('inboard', 'Primer')
     side_shafts = Part('shafts', 'Shaft steel')
@@ -279,10 +279,10 @@ def build():
     for by in S.BRACKETS:
         _revolve(side_gear, at(0), fwd, [((at(yd) - at(0)).length, r) for yd, r in
                                          ((by + 0.42, S.SHAFT_RADIUS + 0.02), (by + 0.32, 0.115 * k), (by - 0.32, 0.115 * k), (by - 0.42, S.SHAFT_RADIUS + 0.02))], RED, sides=18)
-        for dx in (-0.9, 0.9):
+        for dx in (-1.3, 1.3):
             zz = L.Z(by + 0.08)
             hull = Vector((x + dx, L.hull_y(x + dx, zz) + 0.08, zz))
-            _beam(side_gear, at(by), hull, (0, 0, 1), 0.40, 0.09, RED)
+            _beam(side_gear, at(by), hull, (0, 0, 1), 0.62, 0.14, RED)
     # The screw: right-handed to starboard, so the pair turns outward.
     propeller(side_screw, centre, fwd, sc['diameter'] / 2, sc['hub'], sc['blades'], sc['pitch_ratio'], srgb(S.BRONZE), hand=1, bore=S.SHAFT_RADIUS, scale=k)
     # The rudder, its stock and the headbox that carries it under the counter.
@@ -301,14 +301,14 @@ def build():
     side_stock = Part('stock', 'Shaft steel')
     _foil(side_rudder, x, sections, RED, t=r['thickness'])
     hull_at = L.hull_y(x, zs)
-    _foil(side_gear, x, [(hull_at + 0.06, zs + 0.46, 1.25), (r['top'] + 0.04, zs + 0.40, 1.10)], RED, t=0.24)
-    side_stock.tube((x, r['top'] - 0.05, zs), (x, S.STEERING_FLAT, zs), 0.10, colour=steel, sides=16)
+    _foil(side_gear, x, [(hull_at + 0.06, zs + 0.66, 1.90), (r['top'] + 0.04, zs + 0.58, 1.70)], RED, t=0.24)
+    side_stock.tube((x, r['top'] - 0.05, zs), (x, S.STEERING_FLAT, zs), 0.16, colour=steel, sides=16)
     side_zinc = Part('rudder anodes', 'Zinc')
     mid = (r['top'] + r['bottom']) / 2
     for face in (1, -1):
-        xr = x + face * 0.105
-        for ya in (mid - 0.5, mid + 0.4):
-            side_zinc.box((xr - 0.02, ya, zs - 0.42), (xr + 0.02, ya + 0.10, zs - 0.10), srgb(S.ZINC))
+        xr = x + face * 0.175
+        for ya in (mid - 0.9, mid + 0.7):
+            side_zinc.box((xr - 0.02, ya, zs - 0.52), (xr + 0.02, ya + 0.12, zs - 0.12), srgb(S.ZINC))
     for part, whole in ((side_gear, gear), (side_inboard, inboard), (side_shafts, shafts), (side_screw, screws)):
         whole.add(part)
         whole.add(part.mirrored())
@@ -329,7 +329,7 @@ def build():
     propeller(thruster_screw, c + Vector((0.34 * m, 0, 0)), (1, 0, 0), t['radius'] - 0.06, 0.085 * m, 4, 0.75, srgb(S.BRONZE), hand=1, boss=False)
     _revolve(thruster_screw, c + Vector((0.34 * m, 0, 0)), (1, 0, 0), [(-0.1 * m, 0.085 * m), (0.08 * m, 0.085 * m), (0.16 * m, 0.0)], srgb(S.BRONZE), sides=16)
     for side in (1, -1):
-        for dy in (-0.32, 0.0, 0.32):
+        for dy in (-0.55, -0.18, 0.18, 0.55):
             y = t['y'] + dy
             half = sqrt(t['radius'] ** 2 - dy ** 2) + 0.01
             ends = []
@@ -366,29 +366,33 @@ def build():
 
     # ---- Zinc anodes: along the bottom and the side below the waterline, by the stern gear, on the rudders and skeg.
     for side in (1, -1):
-        for yard in (22.5, 27.3, 32.1, 36.9, 41.7, 46.5, 51.3):
-            _anode(anodes, L.Z(yard), 0.5, side, length=0.40, width=0.13, thick=0.045)
-        for yard in (19.5, 24.9, 30.3, 35.1, 39.9, 44.7, 49.5, 54.3):
-            _anode(anodes, L.Z(yard), L.psi_at(-0.9, L.Z(yard)), side, length=0.40, width=0.13, thick=0.045)
-        for yard, off in ((6.9, 3.7), (9.5, 3.9), (5.5, 1.2)):
-            _anode(anodes, L.Z(yard), L.psi_at_x(off, L.Z(yard)), side, length=0.40, width=0.13, thick=0.045)
-    for yard in (9.0, 12.0, 15.0):                                          # on the skeg, in its upper part, where its sides are flat and upright
+        for yard in (48.9, 54.3, 59.7, 65.1, 70.5, 75.9, 81.3, 86.7, 92.1, 97.5):
+            _anode(anodes, L.Z(yard), 0.5, side, length=0.50, width=0.15, thick=0.05)
+        for yard in (26.1, 32.1, 38.1, 44.1, 50.1, 56.1, 62.1, 68.1, 74.1, 80.1, 86.1, 92.1, 98.1, 104.1):
+            _anode(anodes, L.Z(yard), L.psi_at(-1.6, L.Z(yard)), side, length=0.50, width=0.15, thick=0.05)
+        for yard, off in ((11.1, 5.6), (15.3, 6.0), (6.9, 1.9), (3.3, 5.2)):
+            _anode(anodes, L.Z(yard), L.psi_at_x(off, L.Z(yard)), side, length=0.50, width=0.15, thick=0.05)
+    for yard in (16.0, 20.0, 24.0, 28.0):                                   # on the skeg, in its upper part, where it is deep and its sides are flat and upright
         top = L.keel_y(L.Z(yard)) + 0.03
         for face in (1, -1):
             xs = face * (S.SKEG['thickness'] / 2 + 0.016)
-            anodes.box((xs - 0.02, top - 0.42, L.Z(yard) - 0.2), (xs + 0.02, top - 0.32, L.Z(yard) + 0.2), srgb(S.ZINC))
+            anodes.box((xs - 0.02, top - 0.42, L.Z(yard) - 0.25), (xs + 0.02, top - 0.30, L.Z(yard) + 0.25), srgb(S.ZINC))
 
-    # ---- The stem bar: a round bar up the stem from the forefoot to the stem head, which the plating of both sides lands on.
+    # ---- The stem bar: a round bar up the stem from the forefoot to the stem head, which the plating of both sides lands
+    # on. Where the stem stands inside the bulb there is none.
     stem = Part('Stem bar', 'Topside paint', smooth=True, angle=60)
-    white = srgb(S.WHITE)
+    white, teal = srgb(S.WHITE), srgb(S.HULL)
     pts = []
     h = 0.35
-    while h < L.above_keel(L.UPPER) - 0.02:
+    while h < L.STEM_HEAD - 0.02:
         pts.append((0.0, L.Y(h), L.Z(L.stem_yard(h))))
         h += 0.25
-    pts.append((0.0, L.UPPER, L.HALF))
+    pts.append((0.0, L.Y(L.STEM_HEAD), L.HALF))
     for a, b in zip(pts, pts[1:]):
-        paint = RED if (a[1] + b[1]) / 2 < S.BOOT else white
+        mid = (a[1] + b[1]) / 2
+        if all(L.bulb_x(p[1], p[2]) > L.STEM_HALF + 0.03 for p in (a, b)):
+            continue
+        paint = RED if mid < S.BOOT else white if mid < S.BOOT + S.BOOT_LINE else teal
         stem.tube(a, b, L.STEM_HALF, colour=paint, sides=12)
     return [keel, bilge, gear, inboard, shafts, screws, thruster, thruster_screw, chests, chest_dark, anodes, stem] + turning
 
