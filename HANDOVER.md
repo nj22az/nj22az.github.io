@@ -14,6 +14,8 @@
 
 - **A correction, and what a frame costs.** The earlier notes say the page ran at "120 frames a second in the wheelhouse" on the M1 Pro. **That was wrong:** the measure counted the screen's refreshes while the page stood idle, not her drawing. Measured properly (a frame drawn and waited for, `window.__ferry.look.draw`, headless Chromium on the same graphics card, other jobs running), a frame on foot in the wheelhouse took **50 ms at 3200 x 2000 pixels**, of which 34 ms was the shade where things meet (the pass that was there before this night), 8 ms the ship herself. The shade is now worked out at half size each way (no difference to be seen in the picture, `compare/10-shade-full-vs-half.jpg`) with twelve looks, the glare at half size, and her mirror image only for an eye in the open: **27 ms a frame on foot at 3200 x 2000 (37 a second), 17 ms at a tablet's 820 x 1180 at twice (60 a second)**, about the same outside afloat. Not measured on a real phone or tablet.
 
+- **Said as it happened:** commit `12dc3b9` says "zoom 14" in its message; when it was written the zoom check had in fact just failed (the page was not ready within its two minutes: the Mac was carrying four agents' builds, load average 9). Run again alone it passed 14 of 14. The message was written before the result was read: the result is to be read first.
+
 *Four subagents were at work when this was written (01:50), none of their work checked by the coordinating session yet:*
 | Branch (worktree under `.claude/worktrees/`) | What | Its own record |
 |---|---|---|
