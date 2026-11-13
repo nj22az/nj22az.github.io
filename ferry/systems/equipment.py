@@ -188,8 +188,8 @@ def papers_for(item, boards):
         want.append('JS2-211')                              # the wheelhouse's forward bay
     if item['room'] == 'chief-engineer':
         want += ['JS5-511', 'CE-SUITE-GA-001', 'MS-CE-001']  # the chief engineer's day room: its sheet, and the owner's package (its drawing, its installation documents)
-    if item['id'].startswith('lifeboat-'):
-        want.append('JS4-413')                              # a lifeboat station: the folding guard at its open deck edge
+    if item['id'].startswith(('lifeboat-', 'liferaft-')):
+        want.append('JS4-413')                              # a lifeboat station's folding guard, a liferaft's chains across its gap in the rail
     if item['source'] != 'register':
         want.append('JS1-102')                              # a deck fitting: nothing else is drawn of it but her general arrangement
     return want

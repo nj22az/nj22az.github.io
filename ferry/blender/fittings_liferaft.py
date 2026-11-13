@@ -24,8 +24,8 @@ CY = 1.11                           # the canister's middle over the deck
 
 
 @fitting('liferaft', size=(1.6, 0.95, 1.55), front='+z (inboard); launched toward -z', title='Liferaft',
-         note='canister lying along x on a sloping cradle; origin on the deck under its middle; place with its back (-z) to the ship\'s side: heading 270 to port, 90 to starboard; options persons')
-def liferaft(kit, persons=25, **_):
+         note='canister lying along x on a sloping cradle; origin on the deck under its middle; place with its back (-z) to the ship\'s side: heading 270 to port, 90 to starboard; options persons, guard (chains are rigged across the rail\'s gap before it: the placard says to let them go)')
+def liferaft(kit, persons=25, guard=False, **_):
     """
     A white glass-fibre canister in two halves with a flange and a rubber seal between, four ribs, three packing bands, its
     painter coming out of one end; on a galvanised cradle of two saddles on four legs bolted to the deck, sloping to the
@@ -150,8 +150,10 @@ def liferaft(kit, persons=25, **_):
     zi = zs[1] + 0.022
     galv.block((-0.492, 0.46, zi), (0.492, 0.50, zi + 0.010), GALV, r=0.003)
     galv.block((-0.31, 0.30, zi + 0.010), (0.31, 0.66, zi + 0.014), tint(GALV, 1.05), r=0.001)
+    # (where chains are rigged across the rail's gap before the raft, `guard`, letting them go is a step of launching it)
+    steps = (['CHECK PAINTER IS MADE FAST'] + (['LET GO GUARD CHAINS'] if guard else []) + ['LET GO SLIP HOOK', 'ROLL RAFT OVER THE SIDE', 'PULL PAINTER TO INFLATE'])
     label(kit, mark, (0.0, 0.48, zi + 0.014), PORT, UP, 0.60, 0.34, WHITE,
-          ('LIFERAFT', f'{persons} PERSONS', 'TO LAUNCH', '1 CHECK PAINTER IS MADE FAST', '2 LET GO SLIP HOOK', '3 ROLL RAFT OVER THE SIDE', '4 PULL PAINTER TO INFLATE'),
+          ('LIFERAFT', f'{persons} PERSONS', 'TO LAUNCH') + tuple(f'{n + 1} {s}' for n, s in enumerate(steps)),
           ink=BLACK, proud=0.0015, border=0.008)
     kit.clear = ((-0.95, 0.0, -1.10), (0.95, 1.65, 0.80))
     kit.known_by = ('Canister of white glass fibre in two halves, domed ends, four moulded ribs, flange and rubber seal, three packing bands with '

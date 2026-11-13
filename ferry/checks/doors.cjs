@@ -406,6 +406,28 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   });
   check(eg.before.y > eg.door[1] - 0.15 && eg.x < eg.door[0] - 0.11, `from the emergency generator room's escape route one walks out through its door onto the open deck (from ${eg.before.x.toFixed(2)} to ${eg.x.toFixed(2)} m off the centreline; the door is at ${eg.door[0].toFixed(2)})`);
   check(eg.damper < 1e-6, `walking past, the fire damper's lever stays as it is`);
+  // The chains across the six liferafts' gaps in the rail (the owner, 13 November 2026, asked whether those should have chains
+  // too: "Yes, add them"; JS4-413 sheet 2): rigged; a tap lets a gap's two chains go, a tap rigs them again.
+  const rafts = await page.evaluate(() => {
+    const f = window.__ferry, run = s => { for (let t = 0; t < s - 1e-9; t += 0.1) f.workAuto(0.1); };
+    const shown = id => { const m = f.movers().find(m => m.id === id); return m ? m.shown : null; };
+    const out = [];
+    for (const side of ['p', 's']) for (const n of [1, 2, 3]) {
+      const id = `raft-chains-${n}-${side}`;
+      if (f.state.inputs[id] === undefined) { out.push(null); continue; }
+      const o = { id, rigged: [shown(id + '-rigged'), shown(id + '-let-go')] };
+      f.tap(id); run(1.2);
+      o.gone = [shown(id + '-rigged'), shown(id + '-let-go')];
+      o.said = document.querySelector('#what').textContent;
+      f.tap(id); run(1.2);
+      o.again = [shown(id + '-rigged'), shown(id + '-let-go')];
+      out.push(o);
+    }
+    return out;
+  });
+  check(rafts.length === 6 && rafts.every(o => o && o.rigged[0] === true && o.rigged[1] === false && o.gone[0] === false && o.gone[1] === true && /let go/.test(o.said) && o.again[0] === true && o.again[1] === false),
+    rafts.every(Boolean) ? `at each of the six liferafts the chains are rigged across the rail's gap; a tap lets them go ("${rafts[0].said}": they hang from the after post and lie on the deck), and a tap rigs them again`
+      : 'the six liferafts have chains across their gaps in the rail (the file names none: they are not built)');
   // The guard at each lifeboat station's open deck edge (the owner, 13 November 2026: "Need a chain here on both sides so we
   // don't fall down it needs to be removable"; JS4-413): it stands; the davits are not turned out while it stands; a tap folds
   // it down; then the davits go out, and the guard is not raised while they are; the boat home, a tap raises it again.

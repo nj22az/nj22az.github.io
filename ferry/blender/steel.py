@@ -1125,7 +1125,8 @@ PILOT = dict(S.PILOT_DOOR, open=100, leaf=0.03, frame=0.06, lap=0.07)
 
 
 def motion():
-    """What of her steel can be worked on the page: the two pilot doors, each by a tap. (The stern ramp: stern_gear.py.)"""
+    """What of her steel can be worked on the page: the two pilot doors and the chains across the six liferafts' gaps, each by a
+    tap. (The stern ramp: stern_gear.py.)"""
     inputs, movers = [], []
     # The pilot doors: each leaf turns inboard on its two hinges, on its forward edge. Shut at sea: a tap opens one, on
     # foot from within reach; nobody opens a door in her side by walking past it.
@@ -1135,7 +1136,76 @@ def motion():
         inputs.append(dict(id=f'pilot-door-{tag}', name=f'Pilot door, {label}', min=0, max=PILOT['open'], step=1, unit='°', below='', above='open', rest='shut',
                            auto='tap', at=[sgn * (L.half_breadth(Z((a + b) / 2)) - 0.3), y0, Z((a + b) / 2)], normal=[sgn, 0, 0], reach=2.6))
         movers.append(dict(id=f'pilot-door-{tag}', kind='turn', input=f'pilot-door-{tag}', axis=[0, 1, 0], pivot=[hx, 0.0, hz], ratio=-1.0 * sgn))
+    # The chains across the liferafts' gaps (raft_chains): a tap lets both of a gap's chains go, a tap rigs them again.
+    import guard_place as GP
+    for sgn, tag, label in ((1, 'p', 'port'), (-1, 's', 'starboard')):
+        for n, v in enumerate(ga.LIFERAFTS):
+            gid = f'raft-chains-{n + 1}-{tag}'
+            inputs.append(dict(id=gid, name=f'Liferaft {n + 1}, {label}: guard chains', min=0, max=1, step=1, unit='', below='', above='let go', rest='rigged',
+                               auto='tap', at=[sgn * (L.upper_breadth(Z(v)) - GP.RAFT['rail_in']), S.BOAT_DECK + 0.45, Z(v)], reach=GP.RAFT_REACH))
+            movers.append(dict(id=f'{gid}-rigged', kind='show', input=gid, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0, when='off'))
+            movers.append(dict(id=f'{gid}-let-go', kind='show', input=gid, axis=[0, 1, 0], pivot=[0, 0, 0], ratio=1.0))
     return inputs, movers
+
+
+def raft_chains():
+    """The chains across each liferaft's gap in the boat deck's rail (guard_place.py has their numbers and the reason for each;
+    JS4-413 sheet 2). The owner, 13 November 2026, asked whether the liferafts' gaps should have chains too: "Yes, add them".
+
+    At each of the six gaps: the rail's middle and bottom courses carried across in 8 mm chain, under the canister (which is
+    itself the guard where the top course would be), from an eye on the after post to a slip hook in an eye on the forward
+    one. A chain there stands in the raft's way when it is rolled over the side, so each lets go at a pull: a tap lets both
+    go, and they hang from the after post and lie along the deck under where they ran; a tap rigs them again. Two sets of
+    parts, shown one or the other (the file's `show`): a chain cannot be drawn slack and taut by turning it."""
+    import guard_place as GP
+    import fittings_liferaft as LR
+    from fittings_mooring import chain
+    from mathutils import Vector
+    R = GP.RAFT
+    bad = GP.wrong_rafts()
+    if (R['r'], R['high'], R['slope'], R['long']) != (LR.R, LR.CY, LR.SLOPE, LR.LEN):
+        bad.append('guard_place.py does not have the canister as fittings_liferaft.py builds it')
+    for o in S.OUTFIT:
+        if o['kind'] == 'liferaft' and abs(abs(o['x']) - (L.upper_breadth(Z(o['yard'])) - R['centre_in'])) > 0.011:
+            bad.append(f"{o['id']} does not stand {R['centre_in']} m inboard of the deck's edge, as guard_place.py has it")
+    if bad:
+        raise SystemExit('the liferafts\' chains are not built: ' + '; '.join(bad))
+    y0, GALV = S.BOAT_DECK, srgb(0xa7adaf)
+    up = lambda yd: L.upper_breadth(Z(yd)) - R['rail_in']
+    UPV = Vector((0.0, 1.0, 0.0))
+    eyes = part('boat', 'Liferaft gaps, chain eyes', 'Galvanised steel', smooth=True, angle=40)
+    for sgn, side in ((1, 'p'), (-1, 's')):
+        for n, v in enumerate(ga.LIFERAFTS):
+            tag = f'raft-chains-{n + 1}-{side}'
+            a, b = v - R['gap'], v + R['gap']
+            Pa, Pb = Vector((sgn * up(a), y0, Z(a))), Vector((sgn * up(b), y0, Z(b)))
+            along = (Pb - Pa).normalized()
+            across = along.cross(UPV).normalized()                                # level, square to the chain
+            out = across if across.x * sgn > 0 else -across                       # toward her side
+            rig = part('boat', f'Liferaft gap {n + 1} {side}, guard chains', 'Chain', mover=f'{tag}-rigged')
+            hook = part('boat', f'Liferaft gap {n + 1} {side}, slip hooks', 'Galvanised steel', smooth=True, angle=40, mover=f'{tag}-rigged')
+            gone = part('boat', f'Liferaft gap {n + 1} {side}, guard chains let go', 'Chain', mover=f'{tag}-let-go')
+            for k, h in enumerate(GP.RAFT_COURSES):
+                up_h = UPV * h
+                ea, eb = Pa + along * (R['post'] + 0.012) + up_h, Pb - along * (R['post'] + 0.012) + up_h
+                for e in (ea, eb):                                                # an eye on each post, on the gap's side
+                    eyes.ring(tuple(e), tuple(across), 0.014, 0.004, GALV, n=10, m=5)
+                A, B = Pa + along * (R['post'] + 0.030) + up_h, Pb - along * (R['post'] + 0.080) + up_h
+                path = [tuple(A + (B - A) * t - UPV * (GP.RAFT_SAG * 4 * t * (1 - t))) for t in (j / 8 for j in range(9))]
+                chain(rig, path, GP.CHAIN, GALV, phase=0.012, stud=False, n_end=3, sides=5, across=tuple(across))
+                # the slip hook: a shank from the chain's last link, its jaw round through the post's eye, a ring over the jaw's tip
+                hook.rod([tuple(B), tuple(eb - along * 0.022 + UPV * 0.004), tuple(eb + UPV * 0.012), tuple(eb + along * 0.010 + UPV * 0.002), tuple(eb - UPV * 0.012),
+                          tuple(eb - along * 0.024 - UPV * 0.010)], 0.0035, GALV)
+                hook.ring(tuple(eb - along * 0.034 - UPV * 0.003), tuple(along), 0.012, 0.003, GALV, n=10, m=5)
+                # let go: it hangs from the after post's eye and lies along the deck under where it ran (the lower one a
+                # little nearer her side, so that the two do not lie in one another), on the edge of the cradle's pads
+                rest = (B - A).length - h - 0.06
+                side_off = out * (0.035 * k)
+                lie = [A, A + along * 0.035 - UPV * (h * 0.55), A + along * 0.09 - UPV * (h - GP.RAFT_LIE) + side_off]
+                steps = max(3, int(rest / 0.18))
+                for j in range(1, steps + 1):
+                    lie.append(A + along * (0.09 + rest * j / steps) - UPV * (h - GP.RAFT_LIE) + side_off + out * (0.010 * (1 if j % 2 else -1)))
+                chain(gone, [tuple(q) for q in lie], GP.CHAIN, GALV, phase=0.012, stud=False, n_end=2, sides=4, across=tuple(across))
 
 
 def pilot_hinge(sgn):
@@ -1512,4 +1582,5 @@ def build():
     wing_brackets()
     bay_gallery()
     open_deck_rails()
+    raft_chains()
     return [p for p in _parts.values() if p.f]
