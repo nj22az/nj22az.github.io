@@ -292,7 +292,8 @@ def veils(t):
 
 def sing(t, amount=1.0):
     """The star's face at second t, and the breath and lift of the head that go with a sung note."""
-    o, w, p, b = lip('open', t) * amount, lip('wide', t) * amount, lip('pucker', t) * amount, lip('blink', t)
+    # a singer's mouth is bigger than a speaker's: the opening is half as large again as the words alone ask
+    o, w, p, b = min(1.0, lip('open', t) * 1.55 * amount), lip('wide', t) * amount, lip('pucker', t) * amount, lip('blink', t)
     for ob in STAR.parts:
         if not ob.data.shape_keys: continue
         for k in ob.data.shape_keys.key_blocks:
