@@ -3,21 +3,22 @@
 Version **v2026.11.12.1**, release key `20261112fun1`. Branch `claude/laughing-brahmagupta-ybyndm`.
 Publication: see the last section.
 
-## State when this was last written (12 November 2026, after the publication)
+## State when this was last written (13 November 2026, after the second publication)
 
-- **Live**: v2026.11.12.1, main `fb9cef280` (everything under *What is done and published*).
-- **On the branch, not live** (four commits after the publication): the friends through the year (28 stickers), five
-  frames for the year and five face cutouts, a first pass of the playful skin, the filter and studio study.
-- **Before the next "Push to main"**: a new release key and version in every place the old one stands (the bundle and
-  the stylesheets changed), `node tools/build-camera-offline.mjs`, then the whole regression (the runner's list is the
-  workflow's: 22 Node tests and 28 browser suites; about 25 minutes). After the post-publication work only stickers,
-  fun, ui, audit, theme, brand, screens and the offline test were rerun.
-- **Waiting on the owner**: whether the skin's first pass is the right direction (screenshots were sent); a try of the
-  Sticker box with the iPhone's keyboard stickers; whether to build any of the studio or the new filters.
-- **A cutout in the editor does not yet bring the face to the hole.** How: with the photo's face guide `f`
-  (`recipe.makeup.face`, in shares of the source) and the hole `win = frameWindow(id, pw, ph)` on the cropped picture
-  (as shares `hx, hy, hh` of it): the crop's height is `f.h / (0.86 * hh)` (at most the whole photo), its width from the
-  crop's own shape, its corner `(f.x + f.w / 2 - hx * w, f.y + f.h / 2 - hy * h)` kept inside the photo.
+- **Live**: **v2026.11.13.1**, main `e869d0153`, release key `20261113year1`: everything in this note that is marked
+  done, including what was drawn after the first publication (the friends through the year, the year's frames, the
+  face cutouts, the first pass of the playful skin).
+- **The branch holds nothing unpublished** but this note's own record of that.
+- **Waiting on the owner**: whether the skin's first pass is the right direction before the rest is redrawn
+  (screenshots were sent on 12 November); a try of the Sticker box with the iPhone's keyboard stickers; whether to
+  build any of the studio or the new filters; whether the seven sheet pictures should stay in the public repository
+  (`tools/sources/sticker-sheets/`).
+- **Still owed**: the rest of the interface in the playful style (*Not done* 3), and a cutout in the editor bringing
+  the photo's face to the hole. How: with the photo's face guide `f` (`recipe.makeup.face`, in shares of the source)
+  and the hole `win = frameWindow(id, pw, ph)` on the cropped picture (as shares `hx, hy, hh` of it): the crop's
+  height is `f.h / (0.86 * hh)` (at most the whole photo), its width from the crop's own shape, its corner
+  `(f.x + f.w / 2 - hx * w, f.y + f.h / 2 - hy * h)` kept inside the photo. Until then Crop does it by hand, and in
+  the viewfinder you put your face in the hole as at a real board.
 
 ## What the owner asked, in order
 
@@ -106,13 +107,12 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
 
 ## Not done (asked for, still owed)
 
-1. ~~Seasonal friends~~ **Drawn after the publication, on the branch, not published**: 28 stickers in six sheets under
+1. ~~Seasonal friends~~ **Drawn after the first publication; published in v2026.11.13.1**: 28 stickers in six sheets under
    Season, each with its months (`when`): Matsuri (4, the friends at the festival, beside the owner's sheet of its
    things), Tết (5: the cat and its lucky money, since in Vietnam the year is the cat's), Easter (4), Summer (5),
    Halloween (5, beside the Blender sheet) and Christmas (5). `seasons()` in `tools/draw-cute-stickers.py`. The sticker
-   suite passes with them (the Season tab runs the year from today: in November Christmas first). **Before the next
-   push to main**: a new release key and version (the bundle changed: 718 files, 46.3 MB), then the whole regression.
-2. ~~Seasonal frames and face cutouts~~ **Drawn after the publication, on the branch, not published**: five frames
+   suite passes with them (the Season tab runs the year from today: in November Christmas first).
+2. ~~Seasonal frames and face cutouts~~ **Drawn after the first publication; published in v2026.11.13.1**: five frames
    for the year (Tết, Summer, Halloween, Easter, Christmas; Festival was there) and five **face cutouts** (Frog at the
    pond, Sunflower, Astronaut, Daruma, Snowman): a painted board over the whole picture with a hole where a face goes,
    as stands at a festival. `cutouts()` in `tools/draw-camera-cute-frames.py` draws them with the stickers' kit and
@@ -125,7 +125,7 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
    exactly where they began (a line cannot be simplified against a chord of no length); fixed, and the fun suite
    checks every cutout on four shapes of picture.
 3. **The whole interface in the playful style** ("Redraw the whole ui in the playful style, so it's fun to use the
-   app"): **a first pass only, on the branch, not published** (the foot of `camera-fun.css`): rounder tiles and cards,
+   app"): **a first pass only, published in v2026.11.13.1** (the foot of `camera-fun.css`): rounder tiles and cards,
    a solid lower edge on the primary and pill buttons and the steppers that goes down under a finger, everything
    pressable gives and springs back (not under reduced motion), and the sliders, when on, have a 10 px track and a
    30 px ringed thumb. Colours and layout are untouched; ui 82/82, audit 59/59, theme, brand and screens pass with it.
@@ -159,3 +159,16 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
 - Not in this publication: `tools/draw-cute-stickers.py`'s seasonal friends (written, not yet drawn or looked at; kept
   aside in a stash named "seasonal friends, not drawn yet" in the session that wrote it, and described under *Not
   done*).
+
+**Published again on the owner's "Push to main", 13 November 2026**: main `e869d0153`, v2026.11.13.1, release key
+`20261113year1` (the branch rebased onto main `b8b93b60e`, other sessions' ferry and maintenance work, which touched
+nothing of the camera).
+
+- Before the push, on the tree that was published: the whole regression, 50 of 50 (22 Node tests; 28 browser suites,
+  among them camera, ui 82/82, crop 33/33, audit 59/59, retouch 40/40, integration 9/9, offline 13/13, brand 11/11,
+  stickers 9, fun 8).
+- After the push, as found live: 40 of 40 checked files of `https://nj22az.github.io/camera/` are byte for byte the
+  commit's (the 30 of the first publication's check, and the six seasonal sheets and four of their pictures); the page
+  says v2026.11.13.1; `ball.js` answers 404.
+- The Pocket Camera workflow runs on pull requests and by hand, not on a push to main, so there is no run of it for
+  either publication: the regression above was run here, with the workflow's own list of suites.
