@@ -190,12 +190,17 @@ const Ripple: React.FC<{t: number; at: number; x: number; y: number}> = ({t, at,
 // lies inside the frame is feathered, so shade thins away instead. A feather would thin a figure standing in it as
 // well (the crop is sometimes tight: skirts come within a few px of it), so the solid part of the picture, which is
 // figure and never shade, is laid again over the feathered band, whole.
-const FEATHER = 36;                                                             // px of the picture
+// The band is sized to the figures: a fourteenth of the crop's height, and never over 36 px. A band of 36 px on every
+// shot took the walkers' shadows away in the opening wide shot, where they are a hundred px tall and their whole
+// shadow lies within 45 px of the crop's lower edge: they stood on the stage without shade, floating (found by the
+// check of the first feather). There the band is now 12 px: the cut still ends softly and the shadow stays. Crops
+// of 504 px and taller (Jack walking off, the close shots) keep the 36 px they were judged with.
+const FEATHER = 36, FEATHER_PART = 1 / 14;                                      // px of the picture; part of the crop's height
 const Cast: React.FC<{src: string; box: number[]}> = ({src, box}) => {
   const [x0, x1, y0, y1] = box;                                                 // left, right, bottom, top, as parts of the frame
   const place: React.CSSProperties = {position: 'absolute', left: `${x0 * 100}%`, top: `${(1 - y1) * 100}%`, width: `${(x1 - x0) * 100}%`, height: `${(y1 - y0) * 100}%`};
   const full: React.CSSProperties = {position: 'absolute', width: '100%', height: '100%'};
-  const wide = Math.min(FEATHER, ((x1 - x0) * 1280) / 4), tall = Math.min(FEATHER, ((y1 - y0) * 720) / 4);
+  const tall = Math.min(FEATHER, (y1 - y0) * 720 * FEATHER_PART), wide = Math.min(tall, ((x1 - x0) * 1280) / 4);
   const l = x0 > 0.001 ? wide : 0, r = x1 < 0.999 ? wide : 0, top = y1 < 0.999 ? tall : 0, bot = y0 > 0.001 ? tall : 0;
   if (!l && !r && !top && !bot) return <Img src={src} style={place} />;
   // from nothing at the crop's edge to whole, on an S-curve, so the feather has no visible start or end
