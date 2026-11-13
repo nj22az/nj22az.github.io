@@ -6,27 +6,50 @@ from scipy import ndimage
 p=sys.argv[1]
 w,h=1096,1009
 gray=np.frombuffer(subprocess.check_output(['ffmpeg','-v','error','-i',p,'-f','rawvideo','-pix_fmt','gray','-']),np.uint8).reshape(h,w).astype(np.float32)
-before=ndimage.label(gray<128)[1]
+# the parts are told apart on the drawing as it came, before anything is redrawn
+lab,n=ndimage.label(gray<128)
 
-# ---- the hand on the anchor: four fingers drawn (three dividing lines); the fist has three. The three lines are
-# taken out and two are drawn, evenly spaced, in the same hand: thick where they leave the outline, fine at the end.
+# ---- the hand on the anchor, drawn again in the fist's own manner. As drawn it had four fingers (three dividing
+# lines, thick at the palm and fading towards the knuckles, never reaching the outline; four faint bumps on the
+# knuckle edge; a tick for the first finger's crease). The fist has three fingers: its outline bumps out once for each,
+# and each dividing line grows out of the notch between two bumps, thick where it joins, and curls in to a point.
+# So here: the old lines and the tick are taken out; the knuckle edge (the hand's right side) is drawn again with three
+# bumps; and two lines come in from the notches between them, thick at the join, curling to a point.
 yy,xx=np.mgrid[0:h,0:w]
-gray[(xx>=734.6)&(xx<=768)&(yy>=397.5)&(yy<=440.5)]=255
-def stroke(p0,pc,p1,r0,r1):
-    """A brush stroke along a gentle curve from p0 to p1 (pc pulls it), as heavy as the fist's own finger lines:
-    full weight for most of its length, rounding off to r1 at the tip."""
-    N=24; pts=[((1-u)**2*p0[0]+2*u*(1-u)*pc[0]+u*u*p1[0],(1-u)**2*p0[1]+2*u*(1-u)*pc[1]+u*u*p1[1]) for u in np.linspace(0,1,N+1)]
-    for k in range(N):
-        (xa,ya),(xb,yb)=pts[k],pts[k+1]; u=(k+0.5)/N
-        rad=r0 if u<0.6 else r0+(r1-r0)*((u-0.6)/0.4)**1.5
-        dx,dy=xb-xa,yb-ya; L2=dx*dx+dy*dy
+old=gray<128
+TOP,BOT=390.0,446.0; B1,B2=TOP+(BOT-TOP)/3,TOP+2*(BOT-TOP)/3                      # the fingers: three equal parts of the grip
+gray[(xx>=735.6)&(xx<=768)&(yy>=396.5)&(yy<=441)]=255                            # the three old lines
+gray[(xx>=745.5)&(xx<=750.5)&(yy>=387.6)&(yy<=397.5)]=255                        # the tick
+# the old knuckle edge: its middle and thickness, row by row
+rows=[]; 
+for y in range(393,446):
+    xs=np.nonzero(old[y,766:789])[0]+766
+    runs=np.split(xs,np.nonzero(np.diff(xs)>1)[0]+1)
+    r=[q for q in runs if len(q) and len(q)<=9][-1]
+    rows.append((y,r[0],r[-1]))
+ys=np.array([r[0] for r in rows],float); mid=np.array([(r[1]+r[2])/2 for r in rows])
+base=np.polyval(np.polyfit(ys,mid,3),ys)                                          # the edge without its old ripples
+for y,x0,x1 in rows: gray[y,x0-1:x1+4]=255
+def knuckle(y):
+    for a_,b_ in ((TOP,B1),(B1,B2),(B2,BOT)):
+        if a_<=y<=b_: return 2.1*math.sin(math.pi*(y-a_)/(b_-a_))**0.75-0.9        # out in the middle of a finger, in at its ends
+    return 0.0
+ends=np.clip(np.minimum(ys-ys[0],ys[-1]-ys)/3.0,0,1)                              # the new edge leaves and rejoins the old one smoothly
+edge=base+np.array([knuckle(y) for y in ys])*ends
+def brush(pts,rad):
+    for k in range(len(pts)-1):
+        (xa,ya),(xb,yb)=pts[k],pts[k+1]; r_=rad(k/(len(pts)-1))
+        dx,dy=xb-xa,yb-ya; L2=dx*dx+dy*dy+1e-9
         t=np.clip(((xx-xa)*dx+(yy-ya)*dy)/L2,0,1); d=np.hypot(xx-(xa+t*dx),yy-(ya+t*dy))
-        gray[:]=np.minimum(gray,255*(1-np.clip(rad-d+0.5,0,1)))
-# the fist's lines are about 3.6 px thick in the drawing: these are the same
-stroke((731.6,405.6),(748.0,406.0),(766.5,412.2),1.85,0.75)
-stroke((731.0,423.0),(747.0,423.6),(764.5,430.4),1.85,0.75)
-ink=gray<128; lab,n=ndimage.label(ink)
-assert n==before, ('the edit changed the number of parts',before,n)
+        gray[:]=np.minimum(gray,255*(1-np.clip(r_-d+0.5,0,1)))
+brush([(base[0],ys[0]-1.5)]+list(zip(edge,ys))+[(base[-1],ys[-1]+1.5)],lambda u:3.0)
+def finger_line(yk):
+    xk=float(np.interp(yk,ys,edge))                                               # from the notch on the knuckle edge
+    p0=(xk-0.5,yk); p1=(xk-29.0,yk-6.2); pc=(xk-17.0,yk+2.6)                       # in towards the palm, rising a little, in a slow curl
+    pts=[((1-u)**2*p0[0]+2*u*(1-u)*pc[0]+u*u*p1[0],(1-u)**2*p0[1]+2*u*(1-u)*pc[1]+u*u*p1[1]) for u in np.linspace(0,1,29)]
+    brush(pts,lambda u:2.6 if u<0.4 else 2.6-(2.6-0.35)*((u-0.4)/0.6)**1.2)
+finger_line(B1); finger_line(B2)
+redrawn=(gray<128)&(xx>=724)&(xx<=794)&(yy>=384)&(yy<=452)                        # the hand as it now is
 GROUPS={'title':[1,2,3,4],'prop_l':[13],'prop_r':[14],'anchor_l':[17],'anchor_r':[18],
         'bottom':[27,23,36,28,24,35,21,29,30,20,33,31,32,26,25,34],'copy_mark':[37,51],'copy_name':list(range(38,51))}
 used=set(sum(GROUPS.values(),[]))
@@ -58,6 +81,7 @@ for i,sz in enumerate(sizes):
     elif sz<700:                                                               # slivers of it left beside the lettering:
         py,px=np.nonzero(l2==i+1)                                              # small pieces wholly outside the inner ring
         if np.hypot(px-IN[0],py-IN[1]).min()>IN[2]+12: mk[l2==i+1]=False
+mk|=redrawn
 print('old outer ring: %d pixels taken out; mark keeps %d'%(gone.sum(),mk.sum()))
 json.dump({'cx':IN[0],'cy':IN[1],'r_in':IN[2],'ring_r':NEW_R-OLD[3]/2,'ring_w':OLD[3],'r':NEW_R},open('measure.json','w'))
 
