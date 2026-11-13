@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 
-const GUARD = 'lifeboat-p-guard', DAVIT = 'lifeboat-p-davit';
+const GUARD = 'lifeboat-p-guard', DAVIT = 'lifeboat-p-davit', RAFT = 'raft-chains-1-p';
 const VIEWS = [
   // name, eye, aim, what is worked
   ['starboard', [-17.5, 79.5, 20.5], [-9.6, 86.0, 16.6], {}],                               // as the owner's picture: No 1 from outboard and aft, the open edge under the boat
@@ -25,6 +25,11 @@ const VIEWS = [
   ['folded', [8.4, 82.4, 17.6], [9.6, 87.0, 16.6], { tap: [GUARD] }],                       // folded flat on the deck, each head on its pad
   ['folded-outside', [17.5, 79.5, 20.5], [9.6, 86.0, 16.6], { tap: [GUARD] }],
   ['boat-out', [17.5, 79.5, 20.5], [9.6, 86.0, 16.6], { tap: [GUARD], order: [[DAVIT, 46, 17]] }],     // and the boat turned out over the folded guard
+  // the first liferaft to port (93.0 m from the transom, the deck's edge 9.5 m to port): its two chains across the rail's gap
+  ['raft', [7.6, 92.2, 17.5], [9.3, 93.2, 16.5], {}],                                       // from inboard: the chains under the canister, the placard
+  ['raft-outside', [13.0, 91.6, 17.3], [9.3, 93.0, 16.5], {}],                              // from outboard
+  ['raft-hook', [8.95, 93.55, 16.75], [9.38, 93.85, 16.55], {}],                            // a slip hook in the forward post's eye
+  ['raft-let-go', [7.6, 92.2, 17.5], [9.3, 93.2, 16.5], { tap: [RAFT] }],                   // let go: they hang from the after post and lie on the deck
 ];
 
 (async () => {
@@ -49,7 +54,7 @@ const VIEWS = [
   const rest = async () => {
     await page.evaluate(D => window.__ferry.order(D, 0), DAVIT);
     await page.waitForFunction(D => window.__ferry.state.inputs[D] === 0, DAVIT, { timeout: 40000 });
-    await page.evaluate(G => { const f = window.__ferry; if (f.state.inputs[G] > 0) f.tap(G); for (let t = 0; t < 1.6; t += 0.1) f.workAuto(0.1); }, GUARD);
+    await page.evaluate(ids => { const f = window.__ferry; for (const id of ids) if (f.state.inputs[id] > 0) f.tap(id); for (let t = 0; t < 1.6; t += 0.1) f.workAuto(0.1); }, [GUARD, RAFT]);
   };
   for (const [name, eye, aim, worked] of VIEWS) {
     if (only && !only.has(name)) continue;

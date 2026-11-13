@@ -232,7 +232,7 @@ y += 14
 t(TX, y, 'NOT BUILT, PLAINLY', 12, INK, weight='bold')
 y += 20
 for s in (
-        "· The gaps in the rail at the liferafts' cradles (1.7 m each) have no guard: a raft in its cradle stands in each. Say if they are to have chains too.",
+        "· The gaps in the rail at the liferafts' cradles (1.7 m each) are sheet 2: chains under each canister, on slip hooks.",
         "· No scantling is calculated. Chain, hooks and pins are the yard's choice; the rule behind a guard's height and openings is as the yard's reference has it, not read again.",
         "· Folded, the chains lie as stiff as they hung: the model's parts are rigid."):
     y = wrapped(TX, y, s, width=92) + 3
@@ -266,6 +266,158 @@ t(WIDTH - 64, HEIGHT - 22, 'Not class-approved; not construction information.', 
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" width="{WIDTH}" height="{HEIGHT}" font-family="Verdana, Geneva, sans-serif">'
        f'<rect width="{WIDTH}" height="{HEIGHT}" fill="{PAPER}"/>' + ''.join(out) + '</svg>')
 dest = os.path.join(HERE, 'JS4-413-lifeboat-station-guard.svg')
+with open(dest, 'w') as f:
+    f.write(svg)
+print(f'{os.path.relpath(dest)}: {len(svg)} bytes')
+
+
+# =====================================================================================================================
+# Sheet 2: the chains across the liferafts' gaps in the rail
+# =====================================================================================================================
+bad = G.wrong_rafts()
+if bad:
+    raise SystemExit('JS4-413 sheet 2 is not drawn: the liferafts\' chains do not hold: ' + '; '.join(bad))
+out = []
+HEIGHT = 1200
+R = G.RAFT
+low, rolled = G.raft_passes()
+under = R['high'] - R['r']
+tan12 = sin(radians(R['slope'])) / cos(radians(R['slope']))
+t(64, 46, 'CHISUM', 28, INK, weight='bold')
+t(202, 46, f"Liferafts: the chains across their gaps in the rail · {NUMBER} · sheet 2 · revision {REVISION} · {DATE}", 15, INK, weight='bold')
+t(64, 66, "Boat deck, three rafts each side. Drawn before it is built. The rafts, their cradles and the rail are as built (blender/fittings_liferaft.py, steel.py); the chains are new.", 11, FAINT)
+
+# ---- across the deck's edge at a raft: inboard is to the left
+S3, CX, CY_, TOP3 = 300.0, 110, 150, 1.75
+XR = lambda x: CX + (x + 1.35) * S3                   # x: metres outboard of the deck's edge (inboard is negative)
+HR = lambda h: CY_ + (TOP3 - h) * S3
+t(64, 108, "ACROSS THE DECK'S EDGE AT A RAFT", 12, INK, weight='bold')
+t(64, 124, 'Looking forward on the port side: her side and the sea are to the right. Heights over the deck.', 11, FAINT)
+rect(XR(-1.35), HR(TOP3), 1.95 * S3, TOP3 * S3, '#f1f4f6', FAINT, 1)
+rect(XR(-1.35), HR(0), 1.35 * S3, 14, DECK, DECK, 1)
+line(XR(0), HR(0), XR(0), HR(0) + 50, INK, 2)
+t(XR(0) + 8, HR(0) + 30, 'her side', 10, FAINT)
+cxr = -R['centre_in']
+# the cradle: its slope under the canister, its legs and their pads
+for lx in (cxr + 0.35, cxr - 0.35):
+    topy = R['high'] - 0.17 + (lx - cxr) * -tan12
+    rect(XR(lx - 0.022), HR(topy), 0.044 * S3, topy * S3, STEEL, DIM, 0.8)
+    rect(XR(lx - 0.06), HR(R['pad_high']), 0.12 * S3, R['pad_high'] * S3, STEEL, DIM, 0.8)
+line(XR(cxr - 0.42), HR(R['high'] - 0.17 + 0.42 * tan12), XR(cxr + 0.42), HR(R['high'] - 0.17 - 0.42 * tan12), DIM, 3)
+t(XR(cxr - 0.60), HR(0.36), 'the cradle:', 10, DIM, 'middle')
+t(XR(cxr - 0.60), HR(0.36) + 13, f"a slope of {R['slope']:.0f}°", 10, DIM, 'middle')
+# the canister stowed, and on its way over the side
+circle(XR(cxr), HR(R['high']), R['r'] * S3, '#ffffff', INK, 1.6)
+t(XR(cxr), HR(R['high']) + 4, 'the canister', 11, INK, 'middle')
+for d in (0.25, rolled):
+    circle(XR(cxr + d), HR(R['high'] - d * tan12), R['flange'] * S3, 'none', RED, 0.9)
+out.append(f'<path d="M{XR(cxr):.1f} {HR(R["high"]):.1f} L{XR(cxr + rolled):.1f} {HR(R["high"] - rolled * tan12):.1f}" stroke="{RED}" stroke-width="1" stroke-dasharray="5 3" fill="none"/>')
+circle(XR(-R['rail_in']), HR(low), 4, RED, RED, 1)
+line(XR(-R['rail_in']) + 5, HR(low), XR(0.20), HR(0.47), RED, 0.8)
+t(XR(0.22), HR(0.46), 'let go, it rolls over', 10, RED)
+t(XR(0.22), HR(0.46) + 13, "the side: it crosses the", 10, RED)
+t(XR(0.22), HR(0.46) + 26, f"rail's line {low:.2f} m over", 10, RED)
+t(XR(0.22), HR(0.46) + 39, 'the deck and falls', 10, RED)
+t(XR(0.22), HR(0.46) + 52, 'from there', 10, RED)
+# the rail's line: no chain at its top course, a chain at each of the others
+line(XR(-R['rail_in']), HR(0), XR(-R['rail_in']), HR(1.04), FAINT, 0.8, '2 4')
+circle(XR(-R['rail_in']), HR(R['rail_courses'][0]), 5, 'none', FAINT, 1.2)
+line(XR(-R['rail_in']) + 6, HR(R['rail_courses'][0]) - 2, XR(0.20), HR(1.60), DIM, 0.8)
+t(XR(0.22), HR(1.66), "the rail's top course:", 10, DIM)
+t(XR(0.22), HR(1.66) + 13, 'no chain. The canister', 10, DIM)
+t(XR(0.22), HR(1.66) + 26, 'is the guard here', 10, DIM)
+for h in G.RAFT_COURSES:
+    circle(XR(-R['rail_in']), HR(h), 5, CHAIN, INK, 1)
+mark(XR(-R['rail_in']) + 34, HR(G.RAFT_COURSES[0]) + 2, 1, (XR(-R['rail_in']) + 6, HR(G.RAFT_COURSES[0])))
+mark(XR(-R['rail_in']) + 34, HR(G.RAFT_COURSES[1]) + 2, 1, (XR(-R['rail_in']) + 6, HR(G.RAFT_COURSES[1])))
+dim(XR(-1.35) - 16, HR(0), XR(-1.35) - 16, HR(under), f'{under:.2f}', off=8, side=-1)
+t(XR(-1.35) + 8, HR(under) + 15, "the canister's underside:", 10, DIM)
+t(XR(-1.35) + 8, HR(under) + 28, 'under it the edge was open', 10, DIM)
+line(XR(-1.35), HR(under), XR(cxr), HR(under), DIM, 0.6, '2 3')
+dim(XR(cxr), HR(0) + 34, XR(0), HR(0) + 34, f"{R['centre_in']:.2f}", side=-1)
+
+# ---- along the gap, from inboard
+S4, DX, TOP4 = 300.0, 830, 1.75
+ZR = lambda z: DX + (z + 1.15) * S4
+HR4 = lambda h: CY_ + (TOP4 - h) * S4
+t(DX - 40, 108, 'ALONG THE GAP', 12, INK, weight='bold')
+t(DX - 40, 124, f"Seen from inboard, the sea behind the sheet: forward is to the right (port side). The rail's gap is {2 * R['gap']:.1f} m; the canister is {R['long']:.2f} m long.", 11, FAINT)
+rect(ZR(-1.15), HR4(TOP4), 2.3 * S4, TOP4 * S4, '#f1f4f6', FAINT, 1)
+rect(ZR(-1.15), HR4(0), 2.3 * S4, 14, DECK, DECK, 1)
+# the canister and its cradle's legs, behind the chains
+rect(ZR(-R['long'] / 2), HR4(R['high'] + R['r']), R['long'] * S4, 2 * R['r'] * S4, '#ffffff', INK, 1.4, rx=70)
+t(ZR(0), HR4(R['high']) + 4, 'the canister on its cradle', 11, INK, 'middle')
+for lx in (-0.47, 0.47):
+    rect(ZR(lx - 0.022), HR4(under), 0.044 * S4, under * S4, STEEL, DIM, 0.8)
+    rect(ZR(lx - 0.075), HR4(R['pad_high']), 0.15 * S4, R['pad_high'] * S4, STEEL, DIM, 0.8)
+# the rail each side of the gap
+for end in (1, -1):
+    for h, w in zip(R['rail_courses'], (4, 2.6, 2.6)):
+        line(ZR(end * R['gap']), HR4(h), ZR(end * 1.15), HR4(h), INK, w)
+    line(ZR(end * R['gap']), HR4(0), ZR(end * R['gap']), HR4(R['rail_courses'][0]), INK, 3)
+t(ZR(-1.0), HR4(1.10), 'rail', 9, DIM, 'middle')
+t(ZR(1.0), HR4(1.10), 'rail', 9, DIM, 'middle')
+# the chains rigged; and let go (dashed): hanging from the after post, lying along the deck
+for k, h in enumerate(G.RAFT_COURSES):
+    a, b = -R['gap'] + 0.04, R['gap'] - 0.09
+    pts = [(ZR(a + (b - a) * j / 16), HR4(h - G.RAFT_SAG * 4 * (j / 16) * (1 - j / 16))) for j in range(17)]
+    path(pts, CHAIN, 2.6, dash='5 2')
+    circle(ZR(-R['gap'] + 0.026), HR4(h), 3.4, 'none', INK, 1.2)
+    circle(ZR(R['gap'] - 0.026), HR4(h), 3.4, 'none', INK, 1.2)
+    path([(ZR(b), HR4(h)), (ZR(R['gap'] - 0.05), HR4(h + 0.004)), (ZR(R['gap'] - 0.026), HR4(h + 0.012)), (ZR(R['gap'] - 0.016), HR4(h)), (ZR(R['gap'] - 0.026), HR4(h - 0.012)), (ZR(R['gap'] - 0.05), HR4(h - 0.010))], RED, 1.6)
+    rest = (b - a) - h - 0.06
+    path([(ZR(a), HR4(h)), (ZR(a + 0.035), HR4(h * 0.45)), (ZR(a + 0.09), HR4(G.RAFT_LIE + 0.012 * k)), (ZR(a + 0.09 + rest), HR4(G.RAFT_LIE + 0.012 * k))], DIM, 1.2, dash='3 3')
+mark(ZR(0.25), HR4(G.RAFT_COURSES[0]) - 20, 1, (ZR(0.25), HR4(G.RAFT_COURSES[0] - G.RAFT_SAG) - 2))
+mark(ZR(R['gap']) + 30, HR4(G.RAFT_COURSES[0]) + 24, 2, (ZR(R['gap'] - 0.03), HR4(G.RAFT_COURSES[0]) + 3))
+mark(ZR(-R['gap']) - 30, HR4(G.RAFT_COURSES[1]) - 24, 3, (ZR(-R['gap'] + 0.026), HR4(G.RAFT_COURSES[1]) - 3))
+t(ZR(0.30), HR4(0.11), 'let go (dashed): they hang from the after', 10, DIM, 'middle')
+t(ZR(0.30), HR4(0.11) + 13, 'post and lie on the deck', 10, DIM, 'middle')
+dim(ZR(-R['gap']), HR4(0) + 34, ZR(R['gap']), HR4(0) + 34, f"{2 * R['gap']:.1f} m", side=-1)
+dim(ZR(1.15) + 16, HR4(0), ZR(1.15) + 16, HR4(G.RAFT_COURSES[0]), f'{G.RAFT_COURSES[0]:.3f}', off=8)
+dim(ZR(1.15) + 62, HR4(0), ZR(1.15) + 62, HR4(G.RAFT_COURSES[1]), f'{G.RAFT_COURSES[1]:.2f}', off=8)
+t(ZR(-1.15) + 8, HR4(TOP4) + 16, 'aft', 10, FAINT)
+t(ZR(1.15) - 8, HR4(TOP4) + 16, 'forward', 10, FAINT, 'end')
+
+# ---- how it is worked; what is not built; its parts
+y = HR(0) + 96
+t(64, y, 'HOW IT IS WORKED, AND WHY IT IS SO', 12, INK, weight='bold')
+y += 20
+for s in (
+        f"· The canister fills its gap from {under:.2f} m up and is itself the guard there. Under it the deck's edge was open: {under:.2f} m high, {2 * R['gap']:.1f} m long. The rail's middle and bottom courses are carried across that opening in chain.",
+        f"· A CHAIN ACROSS THE GAP STANDS IN THE RAFT'S WAY when it is rolled over the side by hand: it crosses the rail's line {low:.2f} m over the deck and falls from there. So each chain is held at its forward end by a slip hook that lets go at a pull, and letting the chains go is a step of launching: the placard on each cradle has it as step 2.",
+        "· A raft set free by its hydrostatic release floats up, clear of the chains: they are beside it and lower. Nothing has to be let go for that.",
+        "· On the page: a tap on a gap's chains lets both go; a tap rigs them again. Six gaps, each by itself."):
+    y = wrapped(64, y, s, width=205) + 3
+y += 12
+t(64, y, 'NOT BUILT, PLAINLY', 12, INK, weight='bold')
+y += 20
+for s in (
+        "· The rafts are not launched on the page, so nothing refuses a launch with the chains up. No scantling is calculated; chain, hooks and eyes are the yard's choice.",
+        f"· Beside each end of the canister {R['gap'] - R['long'] / 2:.3f} m of the gap is open above the chains, wider at the canister's rounded ends: not closed.",
+        "· Whether a guard may stand before a float-free liferaft at all is a question for class: the rule was not read. The yard's own answer is the slip hooks and the placard."):
+    y = wrapped(64, y, s, width=205) + 3
+y += 18
+t(64, y, 'ITS PARTS, AT EACH GAP', 12, INK, weight='bold')
+cols = (64, 104, 330, 520)
+rect(64, y + 10, WIDTH - 128, 20, '#e9e6dc', INK, 0.8)
+for x, h in zip(cols, ('No.', 'What', 'How many', 'Note')):
+    t(x + 4, y + 24, h, 10, INK, weight='bold')
+rows = [
+    (1, 'Chain', f"2, each {2 * R['gap'] - 0.14:.2f} m", f"{G.CHAIN * 1000:.0f} mm galvanised chain at {G.RAFT_COURSES[0]:.3f} and {G.RAFT_COURSES[1]:.2f} m: the rail's middle and bottom courses. It runs {(R['leg_in'] - R['rail_in']) * 1000:.0f} mm outboard of the cradle's outboard legs"),
+    (2, 'Slip hook', '2', "At each chain's forward end, in an eye on the rail's forward post: its jaw is held shut by a ring; the ring pulled back, it lets go under load"),
+    (3, 'Eye', '4', "Welded to the two rail posts on the gap's side, at each chain's height. The chain is shackled to the after one"),
+]
+y += 30
+for n, what, many, note in rows:
+    y += 20
+    line(64, y + 5, WIDTH - 64, y + 5, '#ddd9cd', 0.8)
+    for x, s in zip(cols, (str(n), what, many, note)):
+        t(x + 4, y, s, 10, INK)
+t(64, HEIGHT - 22, 'Made by ferry/yard/drawings/guard_drawing.py from ferry/blender/guard_place.py: the numbers the chains are built from.', 10, FAINT)
+t(WIDTH - 64, HEIGHT - 22, 'Not class-approved; not construction information.', 10, FAINT, 'end')
+svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" width="{WIDTH}" height="{HEIGHT}" font-family="Verdana, Geneva, sans-serif">'
+       f'<rect width="{WIDTH}" height="{HEIGHT}" fill="{PAPER}"/>' + ''.join(out) + '</svg>')
+dest = os.path.join(HERE, 'JS4-413-2-liferaft-gap-chains.svg')
 with open(dest, 'w') as f:
     f.write(svg)
 print(f'{os.path.relpath(dest)}: {len(svg)} bytes')

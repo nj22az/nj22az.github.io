@@ -240,9 +240,25 @@ chain here on both sides so we don't fall down it needs to be removable".
 | Worked | **A tap on it folds it inboard flat on the deck, under the boat; a tap raises it again** (`lifeboat-p-guard`, `lifeboat-s-guard`: a mover of the file's `turn` kind, 90 degrees) |
 | What the page refuses | **The davits are not turned out while the guard stands** ("the guard chains stand in her way: fold them down first"): a keyed thing may name what it `needs` (`app.js`: `orderInput`). **The guard is not raised while the davits are out** ("the boat is turned out: the guard stays folded down"): a tapped thing may name what it `stays` for (`tapInput`). Both are new in the page and are the file's to say for anything else aboard |
 
-**Not done, plainly.** The gaps in the rail at the six liferafts' cradles (1.7 m each) have no guard: a raft in its cradle stands in
-each; asked of the owner. No scantling is calculated; chain, hooks and pins are the yard's choice. Folded, the chains lie as stiff as
-they hung: the file's parts are rigid. Nobody on the page can fall: a walker does not leave a floor; the guard is for her crew.
+**Not done, plainly.** No scantling is calculated; chain, hooks and pins are the yard's choice. Folded, the chains lie as stiff as
+they hung: the file's parts are rigid. Nobody on the page can fall: a walker does not leave a floor (`checks/doors.cjs` tries it); the
+guard is for her crew.
+
+### The chains across the liferafts' gaps (`blender/guard_place.py`: `RAFT`, `blender/steel.py`: `raft_chains`, JS4-413 sheet 2)
+
+The owner, 13 November 2026, asked whether the six liferafts' gaps in the rail should have chains too: "Yes, add them".
+
+| | As built |
+|---|---|
+| What was there | The boat deck's rail has a gap of 1.7 m at each liferaft; the canister lies along it on its cradle, 1.45 m long, its underside 0.76 m over the deck. **The canister fills the gap from there up; under it the deck's edge was open, 0.76 m high and 1.7 m long** |
+| What was found before anything was drawn | **A chain across that gap stands in the raft's way.** Let go, the canister rolls down its cradle's slope and over the side: it crosses the rail's line 0.64 m over the deck and falls from there (`guard_place.raft_passes()`). The question to the owner had been asked without that having been looked at |
+| The chains | Drawn first: [JS4-413 sheet 2](yard/drawings/JS4-413-2-liferaft-gap-chains.svg). **No chain at the rail's top course: the canister is the guard there.** The rail's **middle and bottom courses (0.615 and 0.23 m) carried across in 8 mm chain**, under the canister, 38 mm outboard of the cradle's outboard legs, from an eye on the after post to **a slip hook** in an eye on the forward one: it lets go at a pull, as the raft's own lashing does |
+| The placard | Each cradle's instruction now reads: 1 check painter is made fast, **2 let go guard chains**, 3 let go slip hook, 4 roll raft over the side, 5 pull painter to inflate (`fittings_liferaft.py`: the option `guard`). A raft set free by its hydrostatic release floats up clear of the chains: nothing is let go for that |
+| Worked | A tap on a gap's chains lets both go: they hang from the after post and lie along the deck; a tap rigs them again (`raft-chains-1-p` to `raft-chains-3-s`). Two sets of parts, one shown or the other (the file's `show`): a chain cannot be drawn slack and taut by turning it |
+
+**Not done, plainly.** The rafts are not launched on the page, so nothing refuses a launch with the chains up. Beside each end of a
+canister 0.125 m of the gap is open above the chains. **Whether a guard may stand before a float-free liferaft at all is a question for
+class: the rule was not read.** The yard's own answer is the slip hooks and the placard.
 
 ## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
 
@@ -1462,6 +1478,19 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 13 November 2026, midday: the chains across the liferafts' gaps
+
+| Check | Result |
+|---|---|
+| `guard_place.py` (`raft_passes`, `wrong_rafts`); `guard_drawing.py` | The chains hold: the canister's underside 0.76 m over the deck, chains at 0.615 and 0.23 m; rolled over the side the raft crosses the rail's line 0.64 m over the deck. JS4-413 sheet 2 drawn and looked at as a picture, twice (the first time four labels lay over what they named) |
+| A trial of the steel and the deck fittings | Built; pictures from Blender; `zfight.py` 0 pairs, `afloat.py` nothing of the gaps |
+| `ferry/blender/make.sh` | **Once: "built: every check passed"**. 24.17 MB, 3,620,758 triangles in the file (87,000 of them the six gaps' chains); `equipment.json` 320 items, 25 papers (the liferafts have JS4-413); 0 pairs among 1,346 pieces; 0 afloat of 35,805; 85 panes; 498 runs, every one carried; the light traced |
+| The program's tests; the proof of supply | 344 of 344; proven |
+| **The eleven page checks, one at a time, nothing beside them** (looked at before each run) | **All pass: doors 134, computer 20, bridge 37, sight 24, map 13, works 21, stairs 53, travel 5, zoom 14, offline 5, input 17.** `doors.cjs` has a new line: at each of the six liferafts the chains are rigged, a tap lets them go, a tap rigs them again. An hour in all |
+| Pictures from the page (`tools/shots-boatdeck.cjs`, four new views) | The three port rafts from outboard with their chains; one from inboard with the placard's step 2; a slip hook; the same gap with its chains let go. All opened |
+
+Not done: a phone or tablet; Safari's engine. **Not read: whether a guard may stand before a float-free liferaft.**
 
 ### 13 November 2026, morning: the guard at the lifeboat stations' open deck edge; her page worked with real input
 

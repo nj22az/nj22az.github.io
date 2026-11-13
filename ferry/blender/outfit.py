@@ -95,6 +95,8 @@ def _stand(o):
         edge = min(L.upper_breadth(L.Z(o['yard'] + d)) for d in (-4.45, -2.2, 0.0, 2.2, 4.45))
         x, heading = side * edge, 0
         more.update(side=side, height=y, rescue=side > 0, number=2 if side > 0 else 1, ship=S.SHIP_NAME.upper(), port=S.PORT_OF_REGISTRY)
+    elif kind == 'liferaft':
+        more.update(guard=True)             # chains are rigged across the rail's gap before each (steel.raft_chains): its placard says to let them go
     elif kind == 'panama-chock':
         # on the deck at the bulwark's inboard face; it leans with the bulwark
         x = side * (L.upper_breadth(z) - PLATE)
