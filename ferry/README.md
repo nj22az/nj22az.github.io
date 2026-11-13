@@ -222,8 +222,10 @@ chair does not turn; the keys carry no letters. DB-CE, the board that is to feed
 connection the program does not open: it is outside the reach of her offline store (the worker that serves it is hers alone). What
 is recorded stays on the device it was recorded on. The yard has written no installation instruction of its own; the owner's method
 statement is what there is. The bridge's electrical sheets (JS8-851, 856, 864) are not redrawn and do not show DB-CE; the proof of
-supply was run again and holds with it. The site's own words about Maintenance Desk (`config.js`, the homepage) still speak of a
-fictional workshop: they are the owner's to change when this is published.
+supply was run again and holds with it. The site's own words about Maintenance Desk spoke of a fictional workshop; **changed on 13 November on the owner's word ("Remove things like
+fictional")**: the homepage's card and its little preview speak of the Chisum now (`../config.js`; `../assets/js/project-explorer.js`: the
+preview is her stern ramp's power pack as her list has it, three jobs, two routine checks, four drawings). Opened as the workshop
+(`?workshop`, offered nowhere) the program still calls its own sample data fictional, which it is.
 
 ## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
 
@@ -1443,6 +1445,13 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 13 November 2026, after midnight: published; the homepage's words about Maintenance Desk
+
+| Check | Result |
+|---|---|
+| The publication `e78620a` (the owner: "Yea") | The Pages run succeeded; **65 of 65 live files are `main`'s by their sums**; on the live page `checks/computer.cjs` 20 of 20 and `checks/bridge.cjs` 37 of 37. **The workflow `maintenance-pressure.yml` failed on `main`**, as it had twice on the work branch unseen: it checked out the program's folder only, and the program's tests read her list. Given the files it reads (`b8b93b6`): green |
+| The homepage's words (the owner: "Remove things like fictional") | `config.js` and the card's preview no longer say fictional, demo or sample, nor name a cooling water pump the page does not have. Looked at on the page at 1440, 390 and 320 wide: no overflow, no error, the preview's check counts 02 to 01 and back. **The homepage's own review (`tools/office-home/review.browser.mjs`) cannot finish on this Mac as it stands, before the change or after**: one picture of its grid is the Town's, which is not cloned here. With a plain picture of the same size stood in for it, and taken away after: **passed, all six profiles** (the grid 1,957 px at 1440 wide; it must be under 0.8 of 3,328). On GitHub it runs only on a push to `main` or `development` |
 
 ### 12 November 2026, towards midnight: the computer in the chief engineer's day room; the register by department
 
