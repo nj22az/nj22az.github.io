@@ -187,3 +187,14 @@ the 5th when it's released".
   braids, made from a written description (the photograph was not sent to any service), and set pieces: Big Ben, a
   Wapping warehouse, Wapping Old Stairs, a riverside tavern, a Thames barge, a jetty, a railway arch, a hansom cab.
   In the scratch folder's `later/`; being generated when this was written.
+
+*Since then (13 November, about 18:05 UTC).* **The fifth cut is delivered** (`remotion/out/jack-the-ripper-v5-720p.mp4`,
+138.5 s): cast frames from `cast4.blend` with Jack in the fog (frozen scripts, `stage2.blend`), the 28 new plates from
+`stage3.blend`, the edit fixes. Reviewed on a contact sheet of stills only, not in motion. Its lip-sync is the OLD timing.
+- **For the sixth cut**: the rebuilt mouth timing (`lipsync.py`, `words.json`, `lipsync.json`; checked against the
+  recording, never rendered); the head lift in `sing()`; every animation fault in [REVIEW.md](REVIEW.md); the face rig
+  (round O, F and V, teeth, eyelids); crops too tight in `region()`; the follow-spot beam card. The set to use is
+  `stage3.blend` (scratch folder `v5fix/set/`), built by the present `stage.py`.
+- **Later-film pieces** (scratch `later/`): the girl is `limehouse_girl2/` (rigged, walk and run; the first try
+  `limehouse_girl/` is a child-proportioned miss). Of eight set pieces only the jetty and the tavern are usable; the
+  prompts ran past Meshy's 600-character limit. 320 credits spent; balance 1,443.
