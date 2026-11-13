@@ -69,18 +69,37 @@ cd remotion && npm install && ln -s <film> public/film && node prepare.mjs && np
 
 ## State
 
-*13 November 2026, 01:40 UTC: the first complete cut exists.* 2 min 15 s (the studio card 4.75 s, then the song),
-1280 x 720, 24 pictures a second, H.264 with AAC; 3,233 pictures encoded. It was delivered to the owner from the cloud
-session as a file; **the film and the song are not in the repository** (the site is public: the owner decides).
-Photographed: 21 plates and 1,296 cast frames, none failed; `blender/shadows.py` run on all of them.
+*13 November 2026, about 05:00 UTC: the second cut is being rendered; the first cut (above brief, items 1 to 8) was
+delivered at 01:40 and is superseded.* After seeing the first cut the owner asked, in this order:
 
-*Checked:* a contact sheet of the whole film (40 pictures), four full pictures, and a strip of 24 consecutive pictures
-of the chorus dance, looked at; one Jack throughout, his face under mist in every picture seen; the lyric lettering on
-its lines; sound measured on the encoded file at -14.6 LUFS integrated. *Not checked:* the film was not watched
-moving (the session can only look at stills); feet against the street over whole shots; true peak.
+9. "rig the face of one of the ladies, so she can be synced to the voice, she is the one singing"; "the fog should be
+   uniform, now it looks painted"; "tighten up the animation? use Disney quality control"
+10. "make normal people walking through white chapel, jack the rippers dance need to be funny and absurd but
+    elegantly animated"; "I want it to feel like a professional animation"
+11. "we should see the singer from dramatic angles, she is the star, Jack the Ripper and London is the backdrop";
+    "The singer let's call her Polly ... zoom in on the face etc and body, and lightning from the stage"
+12. "The characters except the singer needs to rigged too, and some of them should dance together with Jack the
+    rippers skeleton dance"
+13. "Make a story board so I can see the direction ... before you make it" (made; the owner: "I think it looks better
+    already", then "Proceed"); "Audit yourself you will decide when it's acceptable"
+14. "Animation needs to fit what she is singing, footsteps echo on the cobble stone, then it should zoom in one lone
+    feet walking naturally"; of Jack's walk: "make it look more dramatic in the opening now he sort of floats"
+15. "The lipstick looks wrong, simplify"
 
-*Known limits, said to the owner:* 720p and the cast on twos (a four-core machine without a graphics card);
-nobody's mouth moves (Meshy's skeletons have no face bones); the contact shadows are faint after the clean-up;
-clips from Meshy's library are used as they came in the verses.
+What was built for it (all in `blender/`):
+- `face_rig.py`: Polly's face on Meshy's closed surface: jaw (`open`), `wide`, `pucker`, a mouth interior decal, eyelids.
+  **Run it once on a fresh `cast.blend`**; `lipsync.py` turns the sung words (`words.json`, found by a speech model on
+  the recording) into `lipsync.json`, which `film.py` plays on her face.
+- `film.py` rewritten round Polly: 26 shots, each line of the song pictured by what it says; a hand-posed stance and
+  gestures for her (`polly`); Jack's dance pose to pose (`F_RATTLE`, `F_SNEAK`, `F_PIROUETTE`, `F_SOFTSHOE`, `F_CANCAN`,
+  `F_SHIMMY`), which any character can dance; his walk in the opening a heavy stalk with a heel on every beat
+  (`stalk`); three townsfolk from Meshy (flower seller, clerk, dock worker); shade under every foot; the fog banks
+  gone, the plates hazed by distance in the compositor; the set throws no shadow in the cast's pass, so
+  `shadows.py` is no longer needed.
+- `--pass qc` measures every shot without rendering (sliding feet, feet under the street, joints that jump, crowding).
+  Its last run: walking feet hold (0.1 to 0.6 m/s against 4 to 13 before); what it still names is running (feet in
+  the air), the soft-shoe slide and the pirouette (meant), and kicks (fast by nature).
+- The storyboard the owner approved: <https://claude.ai/artifact/2bmW1wgoUjfSk3ekPuqppG> (private to the owner).
 
-*Not yet answered by the owner:* whether the film may be committed or published anywhere.
+*Not yet done when this was written:* the second cut's frames (about 1,550), its edit render, and the review of it.
+Meshy balance about 1,815 credits.

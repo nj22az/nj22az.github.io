@@ -1,6 +1,7 @@
 """The cast: the four Meshy characters with their skeletons and every clip, in one library file.
 
     blender -b -P cast.py -- --rigs <dir with <name>_rigged.glb and <name>_<clip>.glb> --out cast.blend
+    blender -b cast.blend -P cast.py -- --rigs <dir> --out cast.blend --who flowerwoman,gent,workman     (the townsfolk)
 
 Each character becomes an armature named after it (jack, singer, dancer, constable) with its mesh as a child, standing
 at the origin, facing -Y, 1 unit = 1 m. Each clip becomes an action named "<character>:<clip>".
@@ -12,9 +13,11 @@ CLIPS = {'walking': 'walk', 'running': 'run', 'a0': 'idle', 'a559': 'sneak', 'a5
          'a408': 'jazzhands', 'a55': 'stagewalk', 'a56': 'chat', 'a595': 'jazz', 'a41': 'bow', 'a78': 'rhythm', 'a298': 'cheer',
          'a215': 'kick', 'a378': 'stepkick', 'a414': 'doublekick', 'a218': 'stepinkick', 'a337': 'torch', 'a333': 'dumbfounded',
          'a341': 'search', 'a273': 'grab'}
-bpy.ops.wm.read_factory_settings(use_empty=True)
+# `--who a,b` with a cast file already open adds those characters to it and saves it in place
+WHO = argv[argv.index('--who') + 1].split(',') if '--who' in argv else ('jack', 'singer', 'dancer', 'constable')
+if '--who' not in argv: bpy.ops.wm.read_factory_settings(use_empty=True)
 D = bpy.data
-for who in ('jack', 'singer', 'dancer', 'constable'):
+for who in WHO:
     before = set(D.objects)
     bpy.ops.import_scene.gltf(filepath=os.path.join(RIGS, who + '_rigged.glb'))
     new = [o for o in D.objects if o not in before]

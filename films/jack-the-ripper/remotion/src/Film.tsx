@@ -11,7 +11,8 @@ import '@fontsource/im-fell-english-sc/400.css';
    and a 12-a-second pass of the cast; here they are laid together, moved, fogged, lettered and cut to the song. */
 
 type Fg = {box: number[] | null; head: number[] | null; hand: number[] | null};
-type Shot = {name: string; t0: number; t1: number; frames: number; plates: number[]; bg: boolean; fg: Record<string, Fg>};
+type Step = {t: number; x: number; y: number};
+type Shot = {name: string; t0: number; t1: number; fps: number; frames: number; plates: number[]; bg: boolean; fg: Record<string, Fg>; steps: Step[]};
 const SHOTS = Object.fromEntries((data.shots as unknown as Shot[]).map((s) => [s.name, s]));
 const BEATS: number[] = beatsJson.beats;
 
@@ -23,40 +24,50 @@ const ease = (u: number) => u * u * (3 - 2 * u);
 const pulse = (t: number, a: number, b: number, fin = 0.4, fout = 0.4) => Math.min(span(t, a, a + fin), 1 - span(t, b - fout, b));
 
 /* ---------------------------------------------------------------- the cutting copy */
-type Cut = {shot: string; from: number; to: number; src?: number; mirror?: boolean; move?: [number, number, number, number, number, number]};
-// move: scale from → to, then the drift of the picture in per cent of its width and height, from → to
+type Cut = {shot: string; from: number; to: number; src?: number; mirror?: boolean; move?: [number, number, number, number, number, number]; soft?: number; tilt?: number; origin?: string};
+// move: scale from → to, then the drift of the picture in per cent of its width and height, from → to.
+// soft: how far the set behind is thrown out of focus (a long lens close on Polly). tilt: the horizon, in degrees.
 const CUTS: Cut[] = [
   {shot: 's00_pub', from: 0, to: 5.05, move: [1.0, 1.16, 0, -1.5, 0, 2.5]},
-  {shot: 's01_wide', from: 5.05, to: 8.3, src: 5.05, move: [1.0, 1.1, 0, 0, 0, 0]},
-  {shot: 's02_boots', from: 8.3, to: 12.29, move: [1.04, 1.04, 1.5, -1.5, 0, 0]},
-  {shot: 's03_shadow', from: 12.29, to: 18.75, move: [1.0, 1.07, 0, 1.5, 0, 0]},
-  {shot: 's04_moon', from: 18.75, to: 24.65, move: [1.08, 1.0, 0, 0, 2, 0]},
-  {shot: 's05_alone', from: 24.65, to: 27.6, move: [1.0, 1.08, 0, 0, 0, 0]},
-  {shot: 's06_scream', from: 27.6, to: 33.67, move: [1.0, 1.06, 0, -1, 0, 0]},
-  {shot: 's07_blade', from: 33.67, to: 41.73, move: [1.14, 1.0, 0, 0, 3, 0]},
-  {shot: 's08_dance', from: 41.73, to: 47.07, move: [1.0, 1.06, 0, 0, 0, 0]},
-  {shot: 's09_smoke', from: 47.07, to: 52.34, move: [1.05, 1.0, -1.5, 1.5, 0, 0]},
-  {shot: 's10_blood', from: 52.34, to: 57.85, move: [1.0, 1.08, 0, 0, 0, 0]},
-  {shot: 's11_grapple', from: 57.85, to: 63.59, move: [1.0, 1.05, 0, 0, 0, 0]},
+  {shot: 'a01_wide', from: 5.05, to: 8.3, move: [1.0, 1.22, 0, 0, 0, 1.5]},
+  {shot: 'a02_feet', from: 8.3, to: 10.3, move: [1.0, 1.12, 0, 2, 0, -2], origin: '45% 80%'},
+  {shot: 'a02b_cobblestone', from: 10.3, to: 12.29, move: [1.0, 1.22, 0, 0, 0, 4], origin: '50% 40%'},
+  {shot: 'a03_shadow', from: 12.29, to: 18.75, move: [1.0, 1.1, 0, 1.5, 0, 0], soft: 3},
+  {shot: 'a04_moon', from: 18.75, to: 24.65, move: [1.1, 1.0, 0, 0, 2, 0]},
+  {shot: 'a05_alone', from: 24.65, to: 27.6, move: [1.0, 1.12, 0, 0, 0, 0], soft: 5, origin: '50% 45%'},
+  {shot: 'a06_scream', from: 27.6, to: 33.67, move: [1.25, 1.0, 0, 0, 0, 0]},
+  {shot: 'a07_blade', from: 33.67, to: 36.5, move: [1.0, 1.12, 0, -2, 0, 0], origin: '62% 50%'},
+  {shot: 'a08_light', from: 36.5, to: 41.73, move: [1.0, 1.14, 0, 0, 0, 0], soft: 3, origin: '50% 38%'},
+  {shot: 'c1a_dance', from: 41.73, to: 44.0, move: [1.0, 1.05, 0, 0, 0, 0]},
+  {shot: 'c1b_demon', from: 44.0, to: 47.07, move: [1.0, 1.14, 0, 1, 0, 2], origin: '45% 35%'},
+  {shot: 'c1c_smoke', from: 47.07, to: 52.34, move: [1.12, 1.18, -1, 1, 0, 0], tilt: -5},
+  {shot: 'c1d_blood', from: 52.34, to: 57.85, move: [1.0, 1.1, 0, 0, 0, 0], origin: '50% 40%'},
+  {shot: 'c1e_grapple', from: 57.85, to: 60.0, move: [1.0, 1.05, 0, 0, 0, 0]},
+  {shot: 'c1f_noone', from: 60.0, to: 63.59, move: [1.0, 1.1, 0, 0, 0, 0], soft: 4, origin: '50% 40%'},
   {shot: 's12_skyline', from: 63.59, to: 68.3, move: [1.12, 1.0, 2, -2, 2, 0]},
-  {shot: 's13_stain', from: 68.3, to: 76.28, move: [1.0, 1.08, 0, 1, 0, 0]},
-  {shot: 's14_hats', from: 76.28, to: 84.5, move: [1.06, 1.0, 1.5, -1.5, 0, 0]},
-  {shot: 's15_knives', from: 84.5, to: 91.2, move: [1.0, 1.1, 0, 0, 0, 1]},
-  {shot: 's16_art', from: 91.2, to: 98.3, move: [1.06, 1.0, 0, 0, 0, 0]},
-  {shot: 's17_dance', from: 98.3, to: 103.95, move: [1.0, 1.06, 1, -1, 0, 0]},
-  {shot: 's18_smoke', from: 103.95, to: 109.15, move: [1.07, 1.0, 0, 0, 1, 0]},
-  {shot: 's10_blood', from: 109.15, to: 114.6, src: 52.34, mirror: true, move: [1.08, 1.0, 0, 0, 0, 0]},
-  {shot: 's20_grapple', from: 114.6, to: 130.0, move: [1.0, 1.1, 0, 0, 0, 0.5]},
+  {shot: 'v2a_city', from: 68.3, to: 76.28, move: [1.0, 1.1, 0, 0, 0, 0], origin: '50% 40%'},
+  {shot: 'v2b_hats', from: 76.28, to: 79.0, move: [1.06, 1.0, 1.5, -1.5, 0, 0]},
+  {shot: 'v2c_name', from: 79.0, to: 84.5, move: [1.0, 1.12, 0, 0, 0, 0], soft: 5, origin: '50% 45%'},
+  {shot: 'v2d_knives', from: 84.5, to: 91.2, move: [1.0, 1.1, 0, -1, 0, 0], origin: '55% 45%'},
+  {shot: 'v2e_art', from: 91.2, to: 98.3, move: [1.3, 1.0, 0, 0, 0, 0]},
+  {shot: 'c2a_dance', from: 98.3, to: 100.9, move: [1.0, 1.06, 1, -1, 0, 0]},
+  {shot: 'c2b_demon', from: 100.9, to: 103.95, move: [1.0, 1.12, 0, 0, 0, 0], soft: 2, origin: '45% 40%'},
+  {shot: 'c2c_smoke', from: 103.95, to: 109.15, move: [1.12, 1.17, 1, -1, 0, 0], tilt: 4},
+  {shot: 'c1d_blood', from: 109.15, to: 114.6, src: 52.34, mirror: true, move: [1.1, 1.0, 0, 0, 0, 0], origin: '50% 40%'},
+  {shot: 'c2e_finale', from: 114.6, to: 119.6, move: [1.18, 1.0, 0, 0, 0, 0], soft: 4, origin: '50% 40%'},
+  {shot: 'c2f_bow', from: 119.6, to: 130.0, move: [1.0, 1.1, 0, 0, 0, 0.5]},
 ];
-const CHORUS: [number, number][] = [[41.73, 63.59], [98.3, 123.3]];
+const CHORUS: [number, number][] = [[41.73, 63.59], [98.3, 119.6]];
 const inChorus = (t: number) => CHORUS.some(([a, b]) => t >= a && t < b);
 
 const pad = (n: number) => String(n).padStart(4, '0');
 
+const HAZE = 'rgba(96,116,148,';          // the one colour of the fog, everywhere
+
 const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
   const shot = SHOTS[cut.shot];
   const ts = t - cut.from + (cut.src ?? cut.from);                    // the shot's own second
-  const f = Math.max(0, Math.min(shot.frames - 1, Math.floor((ts - shot.t0) * 12 + 1e-4)));
+  const f = Math.max(0, Math.min(shot.frames - 1, Math.floor((ts - shot.t0) * shot.fps + 1e-4)));
   const fg = shot.fg[String(f)];
   const u = ease(span(t, cut.from, cut.to));
   const [s0, s1, x0, x1, y0, y1] = cut.move ?? [1, 1.04, 0, 0, 0, 0];
@@ -67,70 +78,55 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
     const g = span(ts, 16.2, 16.9);
     second = g <= 0 ? 0 : g >= 1 ? 1 : Math.min(1, g + 0.35 * (random(`gut${Math.floor(ts * 24)}`) - 0.5));
   }
+  const red = cut.shot === 'c1d_blood';
   return (
-    <AbsoluteFill style={{transform: `scale(${(cut.mirror ? -1 : 1) * sc}, ${sc}) translate(${x0 + (x1 - x0) * u}%, ${y0 + (y1 - y0) * u}%)`}}>
-      {shot.bg ? <Img src={staticFile(`film/${shot.name}/bg_0.png`)} style={{position: 'absolute', width: '100%', height: '100%'}} /> : null}
-      {shot.bg && shot.plates.length > 1 && second > 0 ? (
-        <Img src={staticFile(`film/${shot.name}/bg_1.png`)} style={{position: 'absolute', width: '100%', height: '100%', opacity: second}} />
-      ) : null}
-      <Fog t={t} level={inChorus(t) ? 0.28 : 0.14} speed={9} file="fog-b.png" top={30} />
+    <AbsoluteFill style={{transformOrigin: cut.origin ?? '50% 50%', transform: `rotate(${cut.tilt ?? 0}deg) scale(${(cut.mirror ? -1 : 1) * sc}, ${sc}) translate(${x0 + (x1 - x0) * u}%, ${y0 + (y1 - y0) * u}%)`}}>
+      <AbsoluteFill style={{filter: cut.soft ? `blur(${cut.soft}px)` : undefined, transform: cut.soft ? 'scale(1.03)' : undefined}}>
+        {shot.bg ? <Img src={staticFile(`film/${shot.name}/bg_0.png`)} style={{position: 'absolute', width: '100%', height: '100%'}} /> : null}
+        {shot.bg && shot.plates.length > 1 && second > 0 ? (
+          <Img src={staticFile(`film/${shot.name}/bg_1.png`)} style={{position: 'absolute', width: '100%', height: '100%', opacity: second}} />
+        ) : null}
+      </AbsoluteFill>
+      {/* the haze between the set and the cast: even, a little thicker towards the ground */}
+      {shot.name.startsWith('s') ? null : <AbsoluteFill style={{background: red ? 'linear-gradient(to bottom, rgba(150,40,40,0.05), rgba(150,40,40,0.2))' : `linear-gradient(to bottom, ${HAZE}0.07), ${HAZE}${inChorus(t) ? 0.3 : 0.2}))`}} />}
+      {(shot.name === 'a02_feet' ? shot.steps ?? [] : []).map((st, i) => <Ripple key={i} t={ts} at={st.t} x={st.x} y={st.y} />)}
       {fg && fg.box ? (
         <Img
-          src={staticFile(`film/${shot.name}/fgc_${pad(f)}.png`)}
+          src={staticFile(`film/${shot.name}/fg_${pad(f)}.png`)}
           style={{position: 'absolute', left: `${fg.box[0] * 100}%`, top: `${(1 - fg.box[3]) * 100}%`, width: `${(fg.box[1] - fg.box[0]) * 100}%`, height: `${(fg.box[3] - fg.box[2]) * 100}%`}}
         />
       ) : null}
-      {fg && fg.head && fg.box ? <FaceMist x={fg.head[0]} y={fg.head[1]} t={t} size={(fg.box[3] - fg.box[2]) * 0.3} /> : null}
-      {cut.shot === 's07_blade' && fg && fg.hand ? <Glint x={fg.hand[0]} y={fg.hand[1]} k={pulse(t, 35.0, 37.4, 0.25, 1.2)} t={t} /> : null}
-      {cut.shot === 's15_knives' && fg && fg.hand ? <Slashes t={t} x={fg.hand[0]} y={fg.hand[1]} /> : null}
+      {fg && fg.head && fg.box && cut.shot !== 'a02_feet' ? <FaceMist x={fg.head[0]} y={fg.head[1]} red={red} /> : null}
+      {cut.shot === 'a07_blade' && fg && fg.hand ? <Glint x={fg.hand[0]} y={fg.hand[1]} k={pulse(t, 34.9, 36.5, 0.2, 0.6)} t={t} /> : null}
+      {cut.shot === 'v2d_knives' && fg && fg.hand ? <Slashes t={t} x={fg.hand[0]} y={fg.hand[1]} /> : null}
     </AbsoluteFill>
   );
 };
 
-/* ---------------------------------------------------------------- weather */
-const Fog: React.FC<{t: number; level: number; speed: number; file: string; top: number; tint?: string}> = ({t, level, speed, file, top, tint}) => (
-  <AbsoluteFill
-    style={{
-      backgroundImage: `url(${staticFile(file)})`,
-      backgroundSize: '160% 120%',
-      backgroundPosition: `${-t * speed}px ${Math.sin(t * 0.21) * 14}px`,
-      opacity: level,
-      filter: tint ?? 'sepia(1) hue-rotate(175deg) saturate(1.6) brightness(0.9)',
-      WebkitMaskImage: `linear-gradient(to bottom, transparent ${top}%, black 82%)`,
-      maskImage: `linear-gradient(to bottom, transparent ${top}%, black 82%)`,
-      mixBlendMode: 'screen',
-    }}
-  />
+// "Footsteps echo": where a boot comes down on the wet stones a ring of light runs out from it, and a second after it
+const Ripple: React.FC<{t: number; at: number; x: number; y: number}> = ({t, at, x, y}) => (
+  <>
+    {[0, 0.16].map((d) => {
+      const u = span(t, at + d, at + d + 0.75);
+      if (u <= 0 || u >= 1) return null;
+      const w = 40 + u * 320;
+      return <div key={d} style={{position: 'absolute', left: `calc(${x * 100}% - ${w / 2}px)`, top: `calc(${y * 100}% - ${w * 0.11}px)`, width: w, height: w * 0.22, borderRadius: '50%', border: `${2.5 * (1 - u)}px solid rgba(190,215,245,${0.7 * (1 - u)})`, boxShadow: `0 0 ${10 * (1 - u)}px rgba(170,200,240,${0.5 * (1 - u)})`}} />;
+    })}
+  </>
 );
 
-// The owner: his face is never seen. Over the mist Blender hangs on him, the edit lays its own, turning slowly.
-const FaceMist: React.FC<{x: number; y: number; t: number; size: number}> = ({x, y, t, size}) => {
-  const s = Math.max(0.07, Math.min(0.42, size)) * 100;
-  return (
-    <div style={{position: 'absolute', left: `${x * 100}%`, top: `${y * 100}%`, width: 0, height: 0}}>
-      {[0, 1, 2].map((i) => {
-        const w = s * (0.95 + i * 0.4);
-        return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              width: `${w}vh`, height: `${w * 0.8}vh`, left: `${-w / 2}vh`, top: `${-w * 0.62}vh`,
-              backgroundImage: `radial-gradient(closest-side, rgba(${14 + i * 10},${19 + i * 12},${31 + i * 16},${0.96 - i * 0.3}) 40%, rgba(30,42,62,0) 100%), url(${staticFile('wisp.png')})`,
-              filter: 'brightness(0.42) sepia(1) hue-rotate(180deg) saturate(1.4)',
-              opacity: 0.95 - i * 0.22,
-              backgroundSize: '100% 100%, 180% 180%',
-              backgroundPosition: `0 0, ${t * (13 + i * 9)}px ${t * (5 - i * 6)}px`,
-              WebkitMaskImage: 'radial-gradient(closest-side, black 40%, transparent 100%)',
-              maskImage: 'radial-gradient(closest-side, black 40%, transparent 100%)',
-              transform: `rotate(${Math.sin(t * 0.7 + i * 2) * 14}deg) translate(${Math.sin(t * 1.3 + i) * 0.6}vh, ${Math.cos(t * 1.1 + i * 3) * 0.5}vh)`,
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
+/* ---------------------------------------------------------------- weather */
+// The owner: "the fog should be uniform, now it looks painted". One even haze: no cloud, no texture, nothing drifting.
+const Fog: React.FC<{level: number; red?: boolean}> = ({level, red}) => (
+  <AbsoluteFill style={{background: red ? `linear-gradient(to bottom, rgba(150,40,40,${level * 0.15}), rgba(150,40,40,${level * 0.5}))` : `linear-gradient(to bottom, ${HAZE}${level * 0.28}), ${HAZE}${level * 0.5}) 62%, ${HAZE}${level}))`}} />
+);
+
+// His face is never seen: where his head is, the same fog stands thicker. A smooth bank, no brushwork.
+const FaceMist: React.FC<{x: number; y: number; red?: boolean}> = ({x, y, red}) => (
+  <div style={{position: 'absolute', left: `${x * 100}%`, top: `${y * 100}%`, width: 0, height: 0}}>
+    <div style={{position: 'absolute', width: '34vh', height: '30vh', left: '-17vh', top: '-19vh', background: `radial-gradient(closest-side, ${red ? 'rgba(120,48,52,' : 'rgba(86,104,132,'}1) 30%, ${red ? 'rgba(120,48,52,' : 'rgba(86,104,132,'}0.85) 52%, ${red ? 'rgba(120,48,52,' : 'rgba(86,104,132,'}0) 100%)`}} />
+  </div>
+);
 
 const Rain: React.FC<{t: number; k: number}> = ({t, k}) => (
   <AbsoluteFill style={{opacity: 0.5 * k, transform: 'rotate(9deg) scale(1.4)'}}>
@@ -198,8 +194,8 @@ const Slashes: React.FC<{t: number; x: number; y: number}> = ({t, x, y}) => {
         if (t < t0 || fade <= 0) return null;
         const ang = [-32, 28, -14][i];
         return (
-          <div key={i} style={{position: 'absolute', left: `${50 + [-4, 5, 0][i]}%`, top: `${44 + i * 6}%`, width: 0, height: 0, transform: `rotate(${ang}deg)`, opacity: fade}}>
-            <div style={{position: 'absolute', left: -520, top: -2, width: 1040, height: 4, background: 'linear-gradient(90deg, transparent, #dff1ff 30%, #ffffff 50%, #dff1ff 70%, transparent)', clipPath: `inset(0 ${(1 - u) * 100}% 0 0)`, filter: 'drop-shadow(0 0 8px #bfe3ff)'}} />
+          <div key={i} style={{position: 'absolute', left: `${x * 100 + [-2, 2, 0][i]}%`, top: `${y * 100 - 4 + i * 2}%`, width: 0, height: 0, transform: `rotate(${ang}deg)`, opacity: fade}}>
+            <div style={{position: 'absolute', left: -260, top: -2, width: 520, height: 3, background: 'linear-gradient(90deg, transparent, #dff1ff 30%, #ffffff 50%, #dff1ff 70%, transparent)', clipPath: `inset(0 ${(1 - u) * 100}% 0 0)`, filter: 'drop-shadow(0 0 8px #bfe3ff)'}} />
           </div>
         );
       })}
@@ -362,13 +358,13 @@ export const Film: React.FC = () => {
   for (const b of BEATS) if (b <= t) since = t - b;
   const beat = inChorus(t) ? Math.exp(-since * 9) : 0;
   const flash = Math.max(...[41.73, 98.3, 52.34, 109.15].map((c) => (t >= c ? Math.exp(-(t - c) * 7) : 0)));
-  const scream = t >= 27.6 ? Math.exp(-(t - 27.6) * 5) : 0;                       // the scream: the stage blinks white, then dark
+  const scream = t >= 27.74 ? Math.exp(-(t - 27.74) * 5) : 0;                       // the scream: the stage blinks white, then dark
   const dark = pulse(t, 27.9, 29.6, 0.2, 1.2) * 0.45;
 
   const curtain = t < 5.05 ? 2 : t < 9 ? span(t, 5.5, 7.6) : t > 124 ? 1 - span(t, 124.6, 126.6) : 1;
-  const vanish = [SHOTS.s11_grapple, SHOTS.s20_grapple].map((s, i) => {
-    const at = i === 0 ? 57.85 + 2.65 : 123.3;
-    const f = Math.floor((at - 0.15 - s.t0) * 12);
+  const vanish = [SHOTS.c1e_grapple, SHOTS.c2f_bow].map((s, i) => {
+    const at = i === 0 ? 59.55 : 122.9;
+    const f = Math.floor((at - 0.15 - s.t0) * s.fps);
     const h = s.fg[String(f)]?.head;
     return {at, x: h ? h[0] : 0.5, y: h ? h[1] + 0.12 : 0.5};
   });
@@ -380,8 +376,9 @@ export const Film: React.FC = () => {
         {vanish.map((v) => (
           <Smoke key={v.at} t={t} at={v.at} x={v.x} y={v.y} />
         ))}
-        <Fog t={t} level={inChorus(t) ? 0.4 : 0.2} speed={22} file="fog-a.png" top={inChorus(t) ? 38 : 52} />
-        {inChorus(t) ? <Fog t={t + 40} level={0.22} speed={-14} file="fog-b.png" top={0} /> : null}
+        {/* stage light: the glow of the footlights from below, on every picture of the stage */}
+        {cut.shot.startsWith('s') ? null : <AbsoluteFill style={{background: 'radial-gradient(ellipse 80% 34% at 50% 108%, rgba(255,190,110,0.22), rgba(255,190,110,0) 70%)', mixBlendMode: 'screen'}} />}
+        <Fog level={cut.shot.startsWith('s') ? 0.12 : inChorus(t) ? 0.3 : 0.2} red={cut.shot === 'c1d_blood'} />
         <Rain t={t} k={pulse(t, 63.59, 84.5, 0.8, 1.2)} />
         <Petals t={t} t0={52.34} t1={57.85} />
         <Petals t={t} t0={109.15} t1={114.6} />
