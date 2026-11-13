@@ -40,7 +40,10 @@ class Cloak:
             rx, ry = (0.215 + 0.30 * v) * s, (0.165 + 0.27 * v) * s
             for i in range(NC):
                 ang = -SPREAD + 2 * SPREAD * i / (NC - 1)
-                rest[j, i] = (rx * math.sin(ang), ry * math.cos(ang), -LENGTH * s * v * 0.96)
+                # the cloth is cut fuller than the circle it hangs on: every other point stands out, more towards the
+                # hem, so that it falls in folds and not as a cone of card
+                full = 1.0 + 0.16 * v * (1 if i % 2 == 0 else -1)
+                rest[j, i] = (rx * full * math.sin(ang), ry * full * math.cos(ang), -LENGTH * s * v * 0.96)
         self.rest = rest.reshape(-1, 3)
         idx = lambda j, i: j * NC + i
         pairs = []
