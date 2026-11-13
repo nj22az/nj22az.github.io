@@ -33,7 +33,8 @@ when saving ? I want memory with our own photos or with the stickers".
 - **The year's frames and the face cutouts** (the owner, 12 November 2026: "And frames too, and cutouts, like a frog
   costume at the pond could have a cutout for the face, think extremely playful"): Tết, Summer, Halloween, Easter and
   Christmas frames, and five cutouts (Frog, Sunflower, Astronaut, Daruma, Snowman), each a painted board over the whole
-  picture with a hole where your face goes. Drawn after v2026.11.12.1 and **not yet published**.
+  picture with a hole where your face goes: in the viewfinder you put your face in it, as at a real board (in the
+  editor, Crop brings a face to it). Published in v2026.11.13.1.
 - **The pixel frames** of October (Pocket, Harbour, Sakura, Ticket, Matsuri, Hello, Island Post, Shop Day;
   `tools/draw-camera-frames.py`, four shades, a 16-pixel border) are no longer offered. They are still drawn, so a photo
   framed in one keeps it and shows it among the choices when edited. The Game Boy Looks themselves stay (the owner:
@@ -686,6 +687,11 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   control that was a slider is a stepper (`steppers.js`: minus, pips, plus; it drives the slider's own input, so
   everything that listened still hears each step) and the intensity slider is the preset row; on, the sliders return.
 - **Frames** redrawn (above). **Ball** removed (below).
+- **A first pass of the playful interface** (the owner: "Redraw the whole ui in the playful style, so it's fun to use
+  the app"; the foot of `camera-fun.css`, published in v2026.11.13.1): rounder tiles and cards, a solid lower edge on
+  the primary and pill buttons and the steppers that goes down under a finger, everything pressable gives and springs
+  back (not under reduced motion), and the sliders, when on, have a track with some body and a ringed thumb. Colours
+  and layout are as they were. The rest of the redraw is still to come.
 
 ### Sticker sheets and adding stickers
 
@@ -711,8 +717,7 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   animals are better". A Memory deck.
 - **The friends through the year** (the owner: "And Japanese matsuri festival and lunar Tet stickers", "And Christmas,
   and Halloween and Easter and summer"): 28 stickers in six sheets under Season, the same five dressed for the day
-  (the duck is a ghost, the frog is definitely an egg, the cat is in the tree). Drawn after v2026.11.12.1 and **not yet
-  published**.
+  (the duck is a ghost, the frog is definitely an egg, the cat is in the tree). Published in v2026.11.13.1.
 - **From a sheet**, in the app (`sticker-sheet.js`): the same reading as the tool, on the device; a photograph (no
   ground all round it) is not a sheet and becomes one sticker. Each piece gets its edge from `cutout.js`.
 - **The sticker box**: an iPhone or iPad offers its keyboard's stickers only in a field that takes pictures, so the

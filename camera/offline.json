@@ -1,6 +1,6 @@
 {
-  "version": "20261112fun1",
-  "bytes": 46391431,
+  "version": "20261113year1",
+  "bytes": 46391456,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "4d59d89927cb75486de02fd298fff150e4385de4d383d8ec89abef08b8aa6e64",
-      "bytes": 166925
+      "sha256": "1afeb4d6a81071779ce8a63f45da490ee7736abb38e9975801b7448b9ca0ce9a",
+      "bytes": 166938
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -39,8 +39,8 @@
     },
     {
       "url": "/camera/blackjack.js",
-      "sha256": "9102f39c479e4094f605fec6b111348b3ad4f8fc0797de8565425ed739d1ea00",
-      "bytes": 4607
+      "sha256": "10ca970f79521a0c396e2ff9b477eda298f026da6d1d83f859e9b29d3c88cc89",
+      "bytes": 4608
     },
     {
       "url": "/camera/camera-black.css",
@@ -134,8 +134,8 @@
     },
     {
       "url": "/camera/face-stamps.js",
-      "sha256": "64419298d8254b5a56fd575f09f0204941e3e1b34d8ee9a082eaccaf8e9a2c0d",
-      "bytes": 20375
+      "sha256": "ce0dc54c08dcbd6bf8cfc7f628d27aa816072603c69bc4f5c4378c039ebee707",
+      "bytes": 20376
     },
     {
       "url": "/camera/fonts/baloo2.woff2",
@@ -259,8 +259,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "95efca69a612da3138d8e6de9acba532d09d6e88acfcecf32079eab31a498e57",
-      "bytes": 74058
+      "sha256": "cae21fb5682e83c8f30aa5d5bf4f367519fd2a503024906b4ba6cde1e499ddf8",
+      "bytes": 74065
     },
     {
       "url": "/camera/lettering.js",
@@ -314,8 +314,8 @@
     },
     {
       "url": "/camera/memory.js",
-      "sha256": "8dbe1e750ba7a6d297764b0dc1e35de5f096e845eb73ee00f578a431b1a5e3a5",
-      "bytes": 12935
+      "sha256": "5fe310e3d583e1294b50afdfb467e4e0466ccdb20192cb568a91a2fb9deccdda",
+      "bytes": 12936
     },
     {
       "url": "/camera/minato.js",
@@ -339,8 +339,8 @@
     },
     {
       "url": "/camera/pocket-faces.js",
-      "sha256": "807f6f74c2c42ecd77399bcd0086d04875ca89efa5b132ef5914ac164925fe98",
-      "bytes": 1536
+      "sha256": "a851520db96c8235d431adcca89b22716cb1991153e7dc43fae6c02a7e28d077",
+      "bytes": 1537
     },
     {
       "url": "/camera/presets.js",
@@ -394,8 +394,8 @@
     },
     {
       "url": "/camera/solitaire.js",
-      "sha256": "fc36370cf2a43718ce4d58e5a8c4c22e2d7facabc6775438fb2885a520351ebf",
-      "bytes": 8467
+      "sha256": "f72285191cdcecb5cedb2b547441d97f3a3afe49c0888541a9fd5654baf5776e",
+      "bytes": 8468
     },
     {
       "url": "/camera/steppers.js",
