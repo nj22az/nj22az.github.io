@@ -167,3 +167,23 @@ too, its like Polly pops, but Jack doesnt pop, he is only there and we cant real
   scratch folder's `film5/`; then `--pass tracks`, `node prepare.mjs`, Remotion). Not yet delivered or reviewed.
 - Not asked of the owner yet answered: whether the film may be published anywhere. Song, renders and Meshy files are
   still outside the repository.
+
+*Since then (13 November, to about 16:15 UTC).* The owner: "this video will be published and sold"; "how is the
+lipsync ? is it correct?"; "Do Google drive and make another character we can use later that doesn't go in the film a
+Chinese girl and maybe more wapping scenes and London scenes Big Ben", "Use Meshy", with a photograph of the girl:
+"make her look like she fits in the doll world you made with Meshy"; "Backup the current 4th cut to google drive too and
+the 5th when it's released".
+- **Rights**: [RIGHTS.md](RIGHTS.md).
+- **The review of the fourth cut and the lip-sync audit**: [REVIEW.md](REVIEW.md). 95 confirmed faults; the lip-sync
+  is "partly" right. The edit and set faults are being fixed for the fifth cut (`remotion/src/Film.tsx`,
+  `blender/stage.py`: committed as work in progress, not yet verified); the animation faults and the rebuilt lip-sync
+  (`blender/lipsync.py`, in progress) are for a sixth cut.
+- **The fifth cut's cast frames** render from a frozen copy of the scripts as they were at commit `71c9745`
+  (`blender_v5/` in the scratch folder) with `cast4.blend`, so that work on the sixth cut does not change it midway.
+- **Drive**: the owner's Drive folder "Johansson Animation Studios - Jack the Ripper - source files" receives the
+  fourth cut, `cast4.blend`, `stage2.blend` and every Meshy model, rig and clip, cut into pieces under 10 MB (the
+  connector's limit) with a read-me and `join.sh`. Upload in progress when this was written.
+- **For later films** (not in this one): a doll-world character of a young Chinese woman of Limehouse with two long
+  braids, made from a written description (the photograph was not sent to any service), and set pieces: Big Ben, a
+  Wapping warehouse, Wapping Old Stairs, a riverside tavern, a Thames barge, a jetty, a railway arch, a hansom cab.
+  In the scratch folder's `later/`; being generated when this was written.

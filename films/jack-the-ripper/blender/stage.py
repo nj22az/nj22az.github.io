@@ -417,10 +417,12 @@ instance(dome, 'skyline-dome', (7.2, 13.4, 5.6), 0.0, (1.1, 1.1, 1.1))
 def drum(name, at, scale, c=SET):
     """The drum the dome stands on. The model is a dome on a ring of columns with nothing inside the ring and nothing
     under it, and it hangs above the roofs: from below, the night showed between and under the columns as a torn
-    pale hole in the middle of the building (the fourth cut's review, a04_moon). The drum is plain dark stone from
-    the ground to 1.6 of the model's measures up, where the dome is closed, and 2.2 in radius: 0.25 inside the
-    columns' inner faces (2.45 at the nearest), so no face of it lies in a face of theirs."""
-    r, top = 2.2 * scale, at[2] + 1.6 * scale
+    pale hole in the middle of the building (the fourth cut's review, a04_moon). The drum is plain dark stone, 2.2
+    of the model's measures in radius: 0.25 inside the columns' inner faces (2.45 at the nearest), so no face of it
+    lies in a face of theirs. It stands from the ground to 3.0 measures up the model: the columns end at 1.45 and
+    the dome's skin above them is nowhere nearer its middle than 2.5 before 3.7, so the drum's top is shut inside
+    the dome, and a line of sight that climbs between the columns from below meets the drum and not the night."""
+    r, top = 2.2 * scale, at[2] + 3.0 * scale
     bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=r, depth=top, location=(at[0], at[1], top / 2))
     ob = bpy.context.object; ob.name = name; ob.data.materials.append(M_DRUM)
     for p in ob.data.polygons: p.use_smooth = len(p.vertices) == 4

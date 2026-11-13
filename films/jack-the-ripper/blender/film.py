@@ -409,10 +409,12 @@ def camera(pos, look, lens=35):
 
 # The stage's moon is a disc of light hung in front of the painted night (stage.py), and like any piece of scenery it
 # is hung where the picture needs it. Its place is 3.6 m right of the middle and 9.6 m up; a shot may hang it
-# elsewhere for its own plate, and every other shot finds it back in its place. It is in no picture of the cast.
-MOON_HOME = (3.6, 9.6)
-def moon_at(x=MOON_HOME[0], z=MOON_HOME[1]):
+# elsewhere for its own plate, or hang a smaller disc, and every other shot finds it back as it was. It is in no
+# picture of the cast.
+MOON_HOME = (3.6, 9.6); MOON_SIZE = D.objects['moon'].scale.x
+def moon_at(x=MOON_HOME[0], z=MOON_HOME[1], size=1.0):
     for n in ('moon', 'moon-halo'): D.objects[n].location.x = x; D.objects[n].location.z = z      # each stays at its own depth in front of the sky
+    D.objects['moon'].scale = (MOON_SIZE * size,) * 3                                              # the disc only: the haze round it is as wide as ever
 
 
 # ------------------------------------------------------------------ the dance, pose to pose
@@ -654,8 +656,10 @@ def a04(t):   # "Fog whispers secrets to the moon": from her feet, the moon over
     camera((1.1, 3.2, 0.5), (1.7, 5.2, 1.7), 35)
     # From down here the moon in its usual place is behind the dormers of the tall house: the shot for "to the moon"
     # had no moon in it (the fourth cut's review). For this plate it hangs in the open sky up on the left, over the low
-    # roof, where she looks and where her lifted hand points: whole, clear of the roofs, and not behind her.
-    moon_at(-0.7, 9.25)
+    # roof, where she looks and where her lifted hand points: whole, clear of the roofs, and not behind her. This near
+    # and this low the full disc would fill the sky between that roof and the top of the picture, and the edit, which
+    # begins pushed in, would cut it: at 0.85 of its size there is room above it and below.
+    moon_at(-0.62, 9.15, 0.85)
     star_light(1.6, 5.0, key=26000, cone=12, foot=60, moon=2.4)
     k = bump(t, 20.2, 24.6, 1.4, 0.9)
     polly(t, 1.6, 5.0, to_lens(1.6, 5.0) + 14, r_up=118 * k, r_elbow=18 * k, r_hand=-20 * k, nod=-20 * k, look=-22 * k, lean=-6 * k)   # she lifts a hand to the moon
