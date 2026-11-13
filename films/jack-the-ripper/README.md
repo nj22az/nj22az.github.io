@@ -69,10 +69,18 @@ cd remotion && npm install && ln -s <film> public/film && node prepare.mjs && np
 
 ## State
 
-*12 November 2026, night, first commit.* Written and tried: the three Blender scripts and the Remotion edit. Built
-in the cloud session's scratch folder (not in the repository): `stage.blend`, `cast.blend`, preview pictures of every
-shot (looked at: staging, one Jack, his face under mist in each), four stills through Remotion (the studio card, the
-title, the curtain parting). **The full render was still running when this was committed; no finished film existed
-yet.** Not done: a watched moving draft, contact checks of feet on the street, loudness of the encoded sound.
-Known limits: 720p; the cast on twos; no mouths move; the cloud machine has four processor cores and no graphics
-card (a plate takes one to four minutes, a cast frame 4 to 15 seconds).
+*13 November 2026, 01:40 UTC: the first complete cut exists.* 2 min 15 s (the studio card 4.75 s, then the song),
+1280 x 720, 24 pictures a second, H.264 with AAC; 3,233 pictures encoded. It was delivered to the owner from the cloud
+session as a file; **the film and the song are not in the repository** (the site is public: the owner decides).
+Photographed: 21 plates and 1,296 cast frames, none failed; `blender/shadows.py` run on all of them.
+
+*Checked:* a contact sheet of the whole film (40 pictures), four full pictures, and a strip of 24 consecutive pictures
+of the chorus dance, looked at; one Jack throughout, his face under mist in every picture seen; the lyric lettering on
+its lines; sound measured on the encoded file at -14.6 LUFS integrated. *Not checked:* the film was not watched
+moving (the session can only look at stills); feet against the street over whole shots; true peak.
+
+*Known limits, said to the owner:* 720p and the cast on twos (a four-core machine without a graphics card);
+nobody's mouth moves (Meshy's skeletons have no face bones); the contact shadows are faint after the clean-up;
+clips from Meshy's library are used as they came in the verses.
+
+*Not yet answered by the owner:* whether the film may be committed or published anywhere.
