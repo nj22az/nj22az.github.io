@@ -227,6 +227,23 @@ fictional")**: the homepage's card and its little preview speak of the Chisum no
 preview is her stern ramp's power pack as her list has it, three jobs, two routine checks, four drawings). Opened as the workshop
 (`?workshop`, offered nowhere) the program still calls its own sample data fictional, which it is.
 
+## The guard at the lifeboat stations' open deck edge (`blender/guard_place.py`, `blender/fittings_boats.py`: `_guard`, JS4-413)
+
+The owner, 13 November 2026, with a picture from the tablet of the boat deck under No 1 lifeboat, the open edge ringed: "Need a
+chain here on both sides so we don't fall down it needs to be removable".
+
+| | As built |
+|---|---|
+| What was there | The ship's rail stops at each lifeboat station (`steel.open_deck_rails`: a gap of 9.0 m); the station has a short rail of its own at each end and a coaming bar 0.10 m high. **Between the end rails' inner posts 7.6 m of deck edge were open, about 10 m over the water**, under a boat whose keel hangs 1.40 m over the deck |
+| Why it folds | A fixed rail, or a chain between fixed posts, stands in the boat's way: turned out, her keel passes the edge **0.96 m over the deck** (`guard_place.keel_over_guard()`, 20 degrees out of 46), and a guard is a metre high. So it comes away before she is swung out |
+| The guard | Drawn first: [JS4-413](yard/drawings/JS4-413-lifeboat-station-guard.svg) (`yard/drawings/guard_drawing.py`), from `blender/guard_place.py`, which the station's builder reads too and stops by if the station is not as that file has it. **Three stanchions** (34 mm tube, 1.03 m), each hinged at its foot between two cheeks on a base plate and held upright by a red locking pin on a lanyard; **two courses of 8 mm chain** at 1.00 and 0.62 m, the heights of the rail's top and middle courses, in four bays of 1.90 m, each end on a snap hook in an eye on the end rail's post; a rubber pad on the deck for each folded head. At both stations (the starboard one is the mirror image) |
+| Worked | **A tap on it folds it inboard flat on the deck, under the boat; a tap raises it again** (`lifeboat-p-guard`, `lifeboat-s-guard`: a mover of the file's `turn` kind, 90 degrees) |
+| What the page refuses | **The davits are not turned out while the guard stands** ("the guard chains stand in her way: fold them down first"): a keyed thing may name what it `needs` (`app.js`: `orderInput`). **The guard is not raised while the davits are out** ("the boat is turned out: the guard stays folded down"): a tapped thing may name what it `stays` for (`tapInput`). Both are new in the page and are the file's to say for anything else aboard |
+
+**Not done, plainly.** The gaps in the rail at the six liferafts' cradles (1.7 m each) have no guard: a raft in its cradle stands in
+each; asked of the owner. No scantling is calculated; chain, hooks and pins are the yard's choice. Folded, the chains lie as stiff as
+they hung: the file's parts are rigid. Nobody on the page can fall: a walker does not leave a floor; the guard is for her crew.
+
 ## Whose she is: her maker's marks (`blender/mark.py`, `blender/makers_mark.py`, `tools/watermark.py`)
 
 The owner, 12 November 2026: "I need you to water mark, models, with my logo and these icons, incase someone just steals them, these
@@ -1445,6 +1462,25 @@ Of the page and of what is still the Minato Maru's:
   (above) are not in that list.
 
 ## Checks actually run
+
+### 13 November 2026, morning: the guard at the lifeboat stations' open deck edge; her page worked with real input
+
+Said as it happened.
+
+| Check | Result |
+|---|---|
+| The owner's report, "Camera controls and walking controls seems broken" | **Not reproduced.** On the live page in Chromium with a real mouse, real keys and a finger: everything answers, also after the maintenance program; with the saved copy's files mixed with the new ones the same; a frame on foot takes 16 ms on this Mac's graphics card in this publication and the one before. Safari's engine was not tried. **`checks/input.cjs` (new, the eleventh page check) keeps what was tried: 17 lines.** Two things were said to the owner on the way and taken back (HANDOVER) |
+| `guard_place.py`; `guard_drawing.py` | The guard holds; her keel passes its line 0.96 m over the deck. JS4-413 drawn and looked at as a picture, twice (the first time: the boat's section drawn wrong, a line of words over another, the parts' table off the sheet). **Its number was first JS4-411, the fire plan's**: found when it went into the document register, before anything was committed |
+| A trial of the steel and the deck fittings (`build.py --only steel,outfit`) | **The first two did not fit the stations at all**: the new helper had been written between the station's `@fitting` line and its function, and took its place. Then built; pictures from Blender; `zfight.py` 0 pairs, `spans.py` every run carried, `afloat.py` nothing of the stations |
+| `ferry/blender/make.sh` | **Once: "built: every check passed"**. 3,573,369 triangles built (73,000 of them the two guards' chains), 23.55 MB, 232 components; `equipment.json` 320 items, 24 papers (the lifeboats have JS4-413); 0 pairs among 1,327 pieces; 0 afloat of 34,407; 85 panes, nothing built over one; 498 runs, every one carried; the light traced |
+| The program's tests; the proof of supply | 344 of 344; proven (95 consumers, 63 breakers) |
+| `checks/doors.cjs`, two new lines | **133 of 133, run alone.** New: at each station the guard stands, the davits are not turned out through it and say why, a tap folds it, the davits go out, it is not raised while they are out, and the boat home a tap raises it; and with the guard folded a walker still does not leave the deck (no further than 0.09 m past the guard's line, never lower than the deck). **The second line was wrong twice before it was right**: its allowance was set by guess (0.05 m), and it took the walker's eye for its feet; and both lines first waited 8 and 30 s for davits that need minutes in this browser |
+| **A line of `doors.cjs` that failed twice with nothing wrong** | "its keys work it: Lower sets it going (0.0° when looked at)": the stern ramp's own line, not the guard's. Three causes were supposed and each was looked at and was not it (the page's new `needs` refusing the ramp: the ramp names none; browsers left behind by stopped runs: there were none; another program at work: none). **Then it was measured** (the key pressed in the same browser, the leaf's lean logged against the clock): the order is taken, a frame takes 2.9 s as it did before the guard, the ramp moves 0.4 degrees a frame, its first 6 degrees are latches and cleats, and the leaf passes 1 degree 55 to 58 s after the key. **The line allowed 60 s.** It had passed by a second or two each time before. It allows 180 s now; what it asks is unchanged |
+| The other page checks | **All pass: map 13 and input 17 each alone; computer 20, bridge 37, sight 24, works 21, stairs 53, travel 5, zoom 14, offline 5 with the doors check running beside them** (the row below). Another check beside one can make it fail and cannot make it pass, so these stand; they were not run again alone |
+| **Run two at once, against the rule** | To save time the checks were run in two streams. `map.cjs` stopped on a click that did not come within 30 s, and the ramp's line failed by more. Alone, on a machine with nothing else running (looked at, not assumed), `map.cjs` passes. One at a time, as section 4 of the handover says |
+| Pictures from the page (`tools/shots-boatdeck.cjs`, new; this Mac's graphics card) | Eight, all opened: the guard standing at No 1 (the owner's own view) and No 2, along the edge, a hinge, a hook, folded with each head on its pad, and the boat turned out over the folded guard: nothing passes through anything |
+
+Not done: a phone or tablet; Safari's engine.
 
 ### 13 November 2026, after midnight: published; the homepage's words about Maintenance Desk
 

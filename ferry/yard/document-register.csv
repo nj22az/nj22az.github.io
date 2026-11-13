@@ -38,6 +38,7 @@ JS4-409,"Anchoring and mooring arrangement, equipment number",ship equipment,to 
 JS4-410,Life-saving appliances plan,ship equipment,partly,"ferry/systems/bridge.py (LSA, bridge only)",
 JS4-411,Fire control and safety plan,ship equipment,to do,,The other ship's plan went with her interiors. To be drawn as hers
 JS4-412,Escape plan and evacuation analysis,ship equipment,to do,,
+JS4-413,"Lifeboat stations: the folding guard at the deck's open edge",ship equipment,exists,"ferry/yard/drawings/JS4-413-lifeboat-station-guard.svg (along the deck's edge, across it with the boat's way out, how it is worked, its parts; made by drawings/guard_drawing.py from blender/guard_place.py); ferry/blender/fittings_boats.py (_guard)","Owner, 13 November 2026: a chain at the open edge under each lifeboat, removable. The liferafts' gaps have none"
 JS5-501,"Accommodation plan: cabins with wet units, mess, galley",crew and passengers,to do,,Owner: a shower and toilet in each cabin
 JS5-502,Engine department day room and toilet,crew and passengers,to do,,Owner: a coffee and break room and a toilet below
 JS5-503,Passenger saloon arrangement and seating,crew and passengers,to do,,
