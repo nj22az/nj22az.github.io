@@ -693,7 +693,7 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   back (not under reduced motion), and the sliders, when on, have a track with some body and a ringed thumb. Colours
   and layout are as they were. The rest of the redraw is still to come.
 
-### Choosing, made easier — 13 November 2026 (on the branch, not yet published)
+### Choosing, made easier — 13 November 2026 (published in v2026.11.13.2)
 
 The owner: "Yes it's looking better, try to make the sticker sections more intelligent and choosing filter too, it's a
 bit overwhelming as it is now". Forty-three Looks and some four hundred stickers are too many to show at once, so each

@@ -196,12 +196,12 @@ try{
 
  await check('the Film frame’s edge print carries the stock and the World’s name',async()=>{
   const texts=await cam.evaluate(async()=>{
-   const m=await import('./frames.js?v=20261113year1');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');
+   const m=await import('./frames.js?v=20261113picks1');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');
    const seen=[];const orig=g.fillText.bind(g);g.fillText=(t,...a)=>{seen.push(t);return orig(t,...a);};
    m.drawFrame(g,'film',1200,900);return seen;
   });
   assert.ok(texts.includes('MINATO 400')&&texts.includes('JOHANSSON WORLD'),JSON.stringify(texts));
-  const print=await cam.evaluate(async()=>{const m=await import('./frames.js?v=20261113year1');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');const seen=[];g.fillText=t=>seen.push(t);m.drawFrame(g,'print',1200,900);return seen;});
+  const print=await cam.evaluate(async()=>{const m=await import('./frames.js?v=20261113picks1');const c=document.createElement('canvas');c.width=1200;c.height=900;const g=c.getContext('2d');const seen=[];g.fillText=t=>seen.push(t);m.drawFrame(g,'print',1200,900);return seen;});
   assert.deepEqual(print,[],'the instant print stays plain');
  });
 
@@ -243,7 +243,7 @@ try{
 
  await check('the share card is the World’s: ink header with the lockup, the camera’s name at the foot, the text signed by both',async()=>{
   const out=await cam.evaluate(async()=>{
-   const m=await import('./social-share.js?v=20261113year1');
+   const m=await import('./social-share.js?v=20261113picks1');
    let canvas=null;const orig=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(...a){canvas=this;return orig.apply(this,a);};
    const el=m.createResultShare({game:'Memory',headline:'All 8 pairs!',detail:'14 turns'});document.body.append(el);
    await new Promise(r=>{const t=setInterval(()=>{if(!el.querySelectorAll('button')[1].disabled){clearInterval(t);r();}},20);});

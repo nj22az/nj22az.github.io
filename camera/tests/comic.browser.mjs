@@ -97,13 +97,15 @@ try{
   console.log(`    spokes ${(r.corner*100).toFixed(1)}% / ${(r.corner2*100).toFixed(1)}% of the corners, none in the middle; heat ${r.face.toFixed(0)} on the face, ${r.far.toFixed(0)} far from it`);
  });
 
- await check('nine kinds in one row: Pop after Photo, Comic after Drawn; the row scrolls on a narrow phone with the open kind in view',async()=>{
+ await check('For you and nine kinds in one row: Pop after Photo, Comic after Drawn; the row scrolls on a phone with the open kind in view',async()=>{
   await page.click('#tabLooks');
   const row=()=>page.evaluate(()=>{const r=document.getElementById('lookGroups'),rr=r.getBoundingClientRect();return {kinds:[...r.children].map(b=>b.dataset.group),tops:[...new Set([...r.children].map(b=>Math.round(b.getBoundingClientRect().top)))].length,
    overflow:r.scrollWidth-r.clientWidth,open:[...r.children].find(b=>b.getAttribute('aria-selected')==='true')?.dataset.group,
    openVisible:(()=>{const b=[...r.children].find(b=>b.getAttribute('aria-selected')==='true');if(!b)return false;const br=b.getBoundingClientRect();return br.left>=rr.left-1&&br.right<=rr.right+1;})()};});
   let r=await row();
-  assert.deepEqual(r.kinds,['photo','pop','games','80s','drawn','comic','painted','print','riso']);assert.equal(r.tops,1,'one row');assert.ok(r.overflow<=0,`fits a 390 phone (overflow ${r.overflow})`);
+  // For you is first and says its name (13 November 2026), so on a 390 phone the row is a little wider than the
+  // screen and scrolls, as it always did on a 320 one; the open kind is brought into view.
+  assert.deepEqual(r.kinds,['picks','photo','pop','games','80s','drawn','comic','painted','print','riso']);assert.equal(r.tops,1,'one row');assert.equal(r.open,'picks','the Looks open on For you');assert.ok(r.openVisible,'For you is in view');assert.ok(r.overflow<=90,`at most a kind or two out of sight on a 390 phone (overflow ${r.overflow})`);
   await page.setViewportSize({width:320,height:700});await page.click('#lookGroups button[data-group="riso"]');await page.waitForTimeout(150);
   r=await row();assert.equal(r.tops,1,'still one row');assert.ok(r.overflow>0,'the row scrolls on a 320 phone');assert.equal(r.open,'riso');assert.ok(r.openVisible,'the open kind is in view');
   await page.click('#lookGroups button[data-group="photo"]');await page.waitForTimeout(150);r=await row();assert.equal(r.open,'photo');assert.ok(r.openVisible,'scrolled back to the first');

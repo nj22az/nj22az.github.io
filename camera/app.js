@@ -3,20 +3,20 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261113year1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261113picks1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
-import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261113year1';
-import {stepperFor,syncSteppers} from './steppers.js?v=20261113year1';
+import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261113picks1';
+import {stepperFor,syncSteppers} from './steppers.js?v=20261113picks1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
-import {lookIcon,kindIcon} from './look-icons.js?v=20261113year1';
+import {lookIcon,kindIcon} from './look-icons.js?v=20261113picks1';
 import {prepareOffline} from './offline.js?v=20261105games1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261113year1';
-import {makeSticker} from './cutout.js?v=20261113year1';
-import {cutSheet} from './sticker-sheet.js?v=20261113year1';
-import {lookPrior,lookPicks,lookCandidates,usedLately,stickerPicks,untilSeason} from './picks.js?v=20261113year1';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261113year1';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261113picks1';
+import {makeSticker} from './cutout.js?v=20261113picks1';
+import {cutSheet} from './sticker-sheet.js?v=20261113picks1';
+import {lookPrior,lookPicks,lookCandidates,usedLately,stickerPicks,untilSeason} from './picks.js?v=20261113picks1';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261113picks1';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261104ui1';
@@ -24,16 +24,16 @@ import {normaliseMakeup,applyMakeup,makeupActive,makeupPixels,makeupFaces,faceCr
 import {createMakeupGuide} from './makeup-guide.js?v=20261104ui1';
 import {createPrinter} from './printer.js?v=20261030share1';
 import {normaliseStamps,stampsActive,stampsLabel,characterOf,characterStamps,CHARACTERS,drawFaceStamps,loadStampImages,stampImages,hatChoices,partPreview,moodLabel,BROW_STYLES,BROW_LABELS,BROW_COLOURS,EYE_STYLES,EYE_COLOURS} from './face-stamps.js?v=20261104ui1';
-import {createMemory} from './memory.js?v=20261113year1';
+import {createMemory} from './memory.js?v=20261113picks1';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
-import {createBlackjack} from './blackjack.js?v=20261113year1';
-import {createSolitaire} from './solitaire.js?v=20261113year1';
+import {createBlackjack} from './blackjack.js?v=20261113picks1';
+import {createSolitaire} from './solitaire.js?v=20261113picks1';
 import {makeBackup,restoreBackup,albumStorage,formatBytes} from './backup.js?v=20261102fun1';
 import {createZoomView,viewZoom,viewDetail} from './zoom-view.js?v=20261104ui1';
 import {findFaces,findPerson,guideFromFace,syncFaceToGuide,warmFacePack} from './face-pack.js?v=20261104ui1';
-import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261113year1';
+import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261113picks1';
 import {autoLevels} from './auto.js?v=20261104ui1';
-import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261113year1';
+import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261113picks1';
 import {pocketFace,errorFace} from './pocket-faces.js?v=20261105fun1';
 
 const $=id=>document.getElementById(id);

@@ -1,4 +1,4 @@
-import {createResultShare} from './social-share.js?v=20261113year1';
+import {createResultShare} from './social-share.js?v=20261113picks1';
 /**
  * Memory, the camera's game (the owner, 29 October 2026: "Can you add the mini games … I want memory with our own
  * photos or with the stickers"), as the hand-held cameras had games inside them. Pairs of cards face down; turn two,
