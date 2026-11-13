@@ -59,7 +59,13 @@ cd remotion && npm install && ln -s <film> public/film && node prepare.mjs && np
 
 ## Assets and rights
 
+- **The film will be published and sold** (the owner, 13 November 2026: "this video will be published and sold, I hold
+  the rights to the music too"). Every ingredient must therefore be clear for commercial use; the check of each
+  against its vendor's own terms was begun the same day and its results belong in this section.
 - **The song and the studio mark** are the owner's own.
+- **Meshy plan**: the owner is on Meshy's Professional plan ("it says I can use it commercially").
+- The fog, wisp and grain pictures (`remotion/public/`) and the scream (`remotion/scream.py`) are made by code in this
+  folder; no third-party picture or recording is in the film. No AI lip-sync or voice model has touched it.
 - **Meshy** made the models under the owner's Meshy account (11 models, 4 rigs, 26 clips; the balance went from 2,353
   to about 1,900 credits). The GLB files are large and are **not in the repository**: they are in the owner's Meshy
   workspace (project `jack-mv`, 12 November 2026) and can be downloaded again from there.
