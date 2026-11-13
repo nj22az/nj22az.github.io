@@ -96,7 +96,9 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
           style={{position: 'absolute', left: `${fg.box[0] * 100}%`, top: `${(1 - fg.box[3]) * 100}%`, width: `${(fg.box[1] - fg.box[0]) * 100}%`, height: `${(fg.box[3] - fg.box[2]) * 100}%`}}
         />
       ) : null}
-      {fg && fg.head && fg.box && cut.shot !== 'a02_feet' ? <FaceMist x={fg.head[0]} y={fg.head[1]} red={red} /> : null}
+      {/* the edit's own bank over his face only where he is alone in the picture: where Polly or the dancers stand in
+          front of him, Blender's bank (which knows who is in front) is the one that hides him */}
+      {fg && fg.head && fg.box && ['c1a_dance', 'c1e_grapple', 'v2b_hats'].includes(cut.shot) ? <FaceMist x={fg.head[0]} y={fg.head[1]} red={red} /> : null}
       {cut.shot === 'a07_blade' && fg && fg.hand ? <Glint x={fg.hand[0]} y={fg.hand[1]} k={pulse(t, 34.9, 36.5, 0.2, 0.6)} t={t} /> : null}
       {cut.shot === 'v2d_knives' && fg && fg.hand ? <Slashes t={t} x={fg.hand[0]} y={fg.hand[1]} /> : null}
     </AbsoluteFill>
