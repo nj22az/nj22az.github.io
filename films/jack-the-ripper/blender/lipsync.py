@@ -54,6 +54,7 @@ FILM_GAIN = 1.55          # sing() in film.py: shown opening = min(1, open * 1.5
 LEAD = 0.075
 REST_GAP = 0.20           # a silence shorter than this inside a line is a stop consonant's hold, not a rest
 SHUT = 0.146              # M, B, P: lips shut for 7 values = 125 ms from first to last, so a 12-a-second picture always lands on it
+HOLD = 0.6                # a vowel sung longer than this is a held note and gets the slow life of one (see HELD NOTES below)
 RELEASE = 1.6             # a vowel's opening falls no faster than this a second with the level (a breathy "Knives" drops 15 dB in 0.1 s; a jaw does not)
 
 # ------------------------------------------------------------------ the sounds and their mouths
@@ -200,6 +201,7 @@ frame_t, level_db, seconds = voice_level(SONG)
 n = int(seconds * RATE) + 1
 heard = np.arange(n) / RATE + LEAD          # LEAD: value k is the mouth for the sound heard LEAD seconds after it is shown
 level = np.interp(heard, frame_t, smooth(level_db, 15))        # 0.15 s: the note's swell and fade, not its vibrato
+level_slow = np.interp(heard, frame_t, smooth(level_db, 41))   # 0.4 s: how a long note leans and eases (under 2 movements a second)
 
 
 def span(s):
@@ -226,11 +228,28 @@ for s in vowels:                             # the level at which this vowel cou
 def follows(lev, ref): return ease((lev - ref + 24.0) / 24.0)
 
 
+# HELD NOTES do not freeze. follows() is flat near the top on purpose (a loud note is simply open), so on a steady
+# note it stopped moving: the review of the rebuild still found 12 stretches (11.6 s; "grapple" 2.35 s at 0.84) where
+# nothing changed for 0.6 s or more. A singer's jaw is never that still. A vowel held longer than HOLD therefore
+# (1) settles 5 % after its attack and comes back before its release, and (2) leans with the note's own slow level:
+# 3 % less open for every dB under the note's loudest moment, up to 18 %. (3) A held diphthong ("light") is
+# already a fifth of the way to its second vowel when it turns, instead of waiting motionless for the turn. Both are slow (0.3 to 0.4 s), so they
+# read as breathing with the note, not as chatter, and the loudest moment keeps the vowel's whole shape.
+def held(t, a, b, t0, release):
+    slow = level_slow[a:b]
+    lean = 0.18 * np.clip((np.percentile(slow, 98) - slow) / 6.0, 0.0, 1.0)
+    settle = 0.05 * (1.0 - ease((t - (release - 0.35)) / 0.35))
+    return 1.0 - ease((t - t0 - 0.10) / 0.30) * (lean + settle)
+
+
 for s in vowels:
     a, b = span(s)
     if b <= a: continue
     t = heard[a:b]; dur = max(s['b'] - s['a'], 1e-3)
-    glide = ease((t - (s['b'] - np.clip(0.3 * dur, 0.08, 0.45))) / np.clip(0.3 * dur, 0.08, 0.45)) if s['p'] in GLIDE else np.zeros(b - a)
+    turn = float(np.clip(0.3 * dur, 0.08, 0.45))                              # a diphthong moves to its end over this last part
+    glide = ease((t - (s['b'] - turn)) / turn) if s['p'] in GLIDE else np.zeros(b - a)
+    if s['p'] in GLIDE and dur > HOLD:                                        # HELD NOTES (3): drifting there all through the hold
+        glide = np.maximum(glide, 0.2 * np.clip((t - s['a'] - 0.10) / max(dur - turn - 0.10, 1e-3), 0.0, 1.0))
     v0 = np.array(VOWEL[s['p']]); v1 = np.array(GLIDE.get(s['p'], VOWEL[s['p']]))
     shape = v0[None, :] + (v1 - v0)[None, :] * glide[:, None]
     if s['gain']: g = np.linspace(s['gain'][0], s['gain'][1], b - a)          # set by hand where the level cannot tell (words_measured.json)
@@ -238,6 +257,7 @@ for s in vowels:
         g = follows(level[a:b], s['ref'])
         g = np.array([g[k:k + 7].max() for k in range(b - a)])               # the mouth opens ahead of a rising voice; it closes with a falling one
         for k in range(1, b - a): g[k] = max(g[k], g[k - 1] - RELEASE / RATE)  # ... but a jaw is not a loudness meter
+        if dur > HOLD: g = g * held(t, a, b, s['a'], s['b'] - (turn if s['p'] in GLIDE else 0.0))
     open_[a:b] = shape[:, 0] * STRESS[s['stress'] or '1'] * g; wide[a:b] = shape[:, 1]; puck[a:b] = shape[:, 2]
     sung[a:b] = True; s['in'] = open_[a:min(a + 3, b)].max(); s['out'] = open_[max(a, b - 3):b].mean()
     s['top'] = float(shape[:, 0].max() * STRESS[s['stress'] or '1'])
