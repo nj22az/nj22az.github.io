@@ -1,0 +1,58 @@
+{
+ "id": "halloween-cute",
+ "name": "Halloween",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  10
+ ],
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "halloween-cute/frog-witch",
+   "src": "halloween-cute/frog-witch.webp?v=bff37696",
+   "thumb": "halloween-cute/frog-witch.thumb.webp?v=bff37696",
+   "width": 441,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog stirs something"
+  },
+  {
+   "id": "halloween-cute/duck-ghost",
+   "src": "halloween-cute/duck-ghost.webp?v=136e46c8",
+   "thumb": "halloween-cute/duck-ghost.thumb.webp?v=136e46c8",
+   "width": 351,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck is a ghost. Boo."
+  },
+  {
+   "id": "halloween-cute/rabbit-vampire",
+   "src": "halloween-cute/rabbit-vampire.webp?v=0b7b61bd",
+   "thumb": "halloween-cute/rabbit-vampire.thumb.webp?v=0b7b61bd",
+   "width": 327,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit wants your carrots"
+  },
+  {
+   "id": "halloween-cute/cat-pumpkin",
+   "src": "halloween-cute/cat-pumpkin.webp?v=5269b7f1",
+   "thumb": "halloween-cute/cat-pumpkin.thumb.webp?v=5269b7f1",
+   "width": 360,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat fits here too"
+  },
+  {
+   "id": "halloween-cute/bear-sweets",
+   "src": "halloween-cute/bear-sweets.webp?v=af0c5f81",
+   "thumb": "halloween-cute/bear-sweets.thumb.webp?v=af0c5f81",
+   "width": 290,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear did well tonight"
+  }
+ ]
+}

@@ -3,6 +3,27 @@
 Version **v2026.11.12.1**, release key `20261112fun1`. Branch `claude/laughing-brahmagupta-ybyndm`.
 Publication: see the last section.
 
+## State when this was last written (13 November 2026, after the second publication)
+
+- **Live**: **v2026.11.13.1**, main `e869d0153`, release key `20261113year1`: everything in this note that is marked
+  done, including what was drawn after the first publication (the friends through the year, the year's frames, the
+  face cutouts, the first pass of the playful skin).
+- **On the branch, not live**: *choosing made easier* (13 November 2026; its own section near the end of this note):
+  both pickers open on For you, the stickers are in six sections, a Look's styles are a second tap away. Before the
+  next "Push to main": a new release key and version, the offline bundle, the whole regression (only the suites the
+  pickers touch were rerun: fun, stickers, faces, sticker-contour, integration, ui, audit, camera, and the Node tests
+  picks, modules, offline).
+- **Waiting on the owner**: whether the skin's first pass is the right direction before the rest is redrawn
+  (screenshots were sent on 12 November); a try of the Sticker box with the iPhone's keyboard stickers; whether to
+  build any of the studio or the new filters; whether the seven sheet pictures should stay in the public repository
+  (`tools/sources/sticker-sheets/`).
+- **Still owed**: the rest of the interface in the playful style (*Not done* 3), and a cutout in the editor bringing
+  the photo's face to the hole. How: with the photo's face guide `f` (`recipe.makeup.face`, in shares of the source)
+  and the hole `win = frameWindow(id, pw, ph)` on the cropped picture (as shares `hx, hy, hh` of it): the crop's
+  height is `f.h / (0.86 * hh)` (at most the whole photo), its width from the crop's own shape, its corner
+  `(f.x + f.w / 2 - hx * w, f.y + f.h / 2 - hy * h)` kept inside the photo. Until then Crop does it by hand, and in
+  the viewfinder you put your face in the hole as at a real board.
+
 ## What the owner asked, in order
 
 - "I don't like the sliders or the icons, can you improve the user interface and remove the ball juggle game it didn't
@@ -90,26 +111,94 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
 
 ## Not done (asked for, still owed)
 
-1. **Seasonal friends**: Tết, Christmas, Halloween, Easter and summer (and the friends at the matsuri), the cast in
-   each season, in the hand above. Sheets go under Season with their months (`when`): add them to `SHEETS` in
-   `tools/draw-cute-stickers.py`.
-2. **Seasonal frames and face cutouts** ("like a frog costume at the pond could have a cutout for the face, think
-   extremely playful"). Plan: a frame of kind cutout in `frames/cute.json`, a painted board with a hole, drawn from
-   `cute_hand.Drawing.paths()` (path data the browser draws at any size; `cut` is the hole); live in the viewfinder
-   the face is put in the hole as at a real board; in the editor the photo's found face (`recipe.makeup.face`) is
-   brought to the hole by the crop.
+1. ~~Seasonal friends~~ **Drawn after the first publication; published in v2026.11.13.1**: 28 stickers in six sheets under
+   Season, each with its months (`when`): Matsuri (4, the friends at the festival, beside the owner's sheet of its
+   things), Tết (5: the cat and its lucky money, since in Vietnam the year is the cat's), Easter (4), Summer (5),
+   Halloween (5, beside the Blender sheet) and Christmas (5). `seasons()` in `tools/draw-cute-stickers.py`. The sticker
+   suite passes with them (the Season tab runs the year from today: in November Christmas first).
+2. ~~Seasonal frames and face cutouts~~ **Drawn after the first publication; published in v2026.11.13.1**: five frames
+   for the year (Tết, Summer, Halloween, Easter, Christmas; Festival was there) and five **face cutouts** (Frog at the
+   pond, Sunflower, Astronaut, Daruma, Snowman): a painted board over the whole picture with a hole where a face goes,
+   as stands at a festival. `cutouts()` in `tools/draw-camera-cute-frames.py` draws them with the stickers' kit and
+   writes them as path data into `frames/cute.json` (`cutouts`: `window`, `hole`, `shapes`); `frames.js drawCutout`
+   draws one in a square of 100 whose middle 72 is the picture's shorter side, so the somebody is whole on any shape
+   of picture. They are among the frames in the Frame sheet and the editor's Frame tab; in the viewfinder you put
+   your face in the hole as at a real board. **Still to do**: in the editor, bring the photo's found face
+   (`recipe.makeup.face`) to the hole by the crop (`frames.js frameWindow(id, w, h)` says where the hole is); until
+   then Crop does it by hand. A bug found on the way: `cute_hand.Drawing.paths()` lost closed outlines that ended
+   exactly where they began (a line cannot be simplified against a chord of no length); fixed, and the fun suite
+   checks every cutout on four shapes of picture.
 3. **The whole interface in the playful style** ("Redraw the whole ui in the playful style, so it's fun to use the
-   app"), and the sliders' own look when Sliders is on. Nothing of it is in this release beyond the icons, the preset
-   row and the steppers. References studied: Sanrio (pills, 20–24 px cards, soft low shadows), YOHO Brewing
-   (thick-bordered pills, two colours), LINE (one clear action, 44 px targets), Nintendo (flat, calm).
-4. **A note on the four filter projects and a studio** (Filters4Processing, PhotoCraft, mIRO, XBImageFilters): studied;
-   almost nothing can be reused as code (licences), about twelve effects are worth writing ourselves (kaleidoscope,
-   fisheye, twirl, colour splash, tiny planet, prism fringe, solarize, melt, glass blocks, stained glass, Droste, ghost
-   trails), and a small studio (undo for everything, paint a Look on or off, a doodle layer). Not written up in the
-   repository yet and nothing of it built: the owner has not asked for it to be built.
+   app"): **a first pass only, published in v2026.11.13.1** (the foot of `camera-fun.css`): rounder tiles and cards,
+   a solid lower edge on the primary and pill buttons and the steppers that goes down under a finger, everything
+   pressable gives and springs back (not under reduced motion), and the sliders, when on, have a 10 px track and a
+   30 px ringed thumb. Colours and layout are untouched; ui 82/82, audit 59/59, theme, brand and screens pass with it.
+   **Still owed**: the rest of the redraw (the bars, the sheets, the album, the Game Room, the brand typeface on
+   controls, selected states), best done with the owner looking at screenshots: they have refused three drawings
+   this round before liking one, so show before going far. References studied: Sanrio (pills, 20–24 px cards, soft
+   low shadows), YOHO Brewing (thick-bordered pills, two colours), LINE (one clear action, 44 px targets), Nintendo
+   (flat, calm).
+4. **The four filter projects and a studio** (Filters4Processing, PhotoCraft, mIRO, XBImageFilters): the study is
+   [RESEARCH-FILTERS-STUDIO-2026-11-12.md](RESEARCH-FILTERS-STUDIO-2026-11-12.md). In short: almost nothing can be
+   reused as code (licences); about twelve effects are worth writing ourselves (kaleidoscope, fisheye, twirl, colour
+   splash, tiny planet, prism fringe, solarize, melt, glass blocks, stained glass, Droste, ghost trails); a small
+   studio would be undo for everything, painting a Look on or off, and a doodle layer. **Nothing of it is built**: the
+   owner asked whether it could be added ("Maybe we can add a studio function like photo craft and add those filters
+   too") and has not yet said to build it.
 5. **AI Comic Factory** and **obs-dlss5-nr** were looked at on the owner's links: neither can be part of a static,
    offline browser app (the first needs a model server, the second is a Windows plugin on NVIDIA's runtime).
 
+## Choosing made easier — 13 November 2026 (on the branch, not published)
+
+The owner, after the second publication: **"Yes it's looking better, try to make the sticker sections more intelligent
+and choosing filter too, it's a bit overwhelming as it is now"**. ("Looking better" is the playful first pass.)
+
+| | Where |
+|---|---|
+| What to offer first, as plain tested functions: `lookPrior`, `lookPicks`, `lookCandidates`, `stickerPicks`, `usedLately`, `untilSeason` | `picks.js`, `tests/picks.test.mjs` |
+| Looks: the kind **For you** first and open; picks from the picture's measurements and, in the editor, from scored previews; the Looks used lately | `app.js` (`PICKS`, `KINDS`, `pickLooks`, `setPicks`, `noteLooks`, `pickable`) |
+| A Look's styles (presets) a second tap away in the editor too; the hint in the toast until they have been opened once | `app.js` (`toggleAmount`, `buildTrayFor`, `chooseLook`, `state.knowsStyles`) |
+| Every Look in the strip says its name; the chosen kind says its own | the foot of `camera-fun.css` |
+| Stickers: six sections, For you first; the residents and the town's things as chips with a face inside Minato | `app.js` (`stickerSections`, `renderStickerPicker`, `stickerTile`), `index.html` (`#stickerGroups`), `camera.css` |
+| The stickers used lately | `app.js` (the grid's click), settings `recentStickers` |
+
+Rules it set:
+- **A picker opens on a short page for you; everything else is one tap behind.** A new sheet or Look joins a section
+  or a kind; it does not add a tab.
+- **One row of choices at a time**: a Look's styles are not shown until that Look is tapped again.
+- **A name under a picture**: Looks in the strip are named. (Names had been hidden since the audit of 3 November to
+  save room; the owner's "overwhelming" outranks that.)
+- The picks are never random: a rule that weighs a Look says why (`NATURE` in `picks.js`), and today's handful of
+  stickers is a function of the day.
+
+Not done here: favourites; a search of the stickers by what they show (their `gloss` is there for it); the camera
+re-measuring the picture as it changes (it measures when it starts and when the strip opens).
+
 ## Publication
 
-(Written after the push to main.)
+**Published on the owner's "Push to main", 12 November 2026**: main `fb9cef280` (the branch rebased onto main
+`b92478a03`, another session's /temp page, which touched nothing of the camera).
+
+- Before the push, on the commit that was published: the whole regression, 50 of 50 (22 Node tests; 28 browser suites,
+  among them camera, ui 82/82, crop 33/33, audit 59/59, retouch 40/40, integration 9/9, offline 13/13, brand 11/11,
+  stickers 9, fun 7).
+- After the push, as found live: 30 of 30 checked files of `https://nj22az.github.io/camera/` are byte for byte the
+  commit's (the page, app.js, stickers.js, sticker-sheet.js, cutout.js, frames.js, frames/cute.json, presets.js,
+  steppers.js, look-icons.js, looks-gl.js, unlocks.js, three stylesheets, offline.json, sw.js, sheets.json, seven
+  sheets and five sticker pictures); the page says v2026.11.12.1; `ball.js` answers 404.
+- Not in this publication: `tools/draw-cute-stickers.py`'s seasonal friends (written, not yet drawn or looked at; kept
+  aside in a stash named "seasonal friends, not drawn yet" in the session that wrote it, and described under *Not
+  done*).
+
+**Published again on the owner's "Push to main", 13 November 2026**: main `e869d0153`, v2026.11.13.1, release key
+`20261113year1` (the branch rebased onto main `b8b93b60e`, other sessions' ferry and maintenance work, which touched
+nothing of the camera).
+
+- Before the push, on the tree that was published: the whole regression, 50 of 50 (22 Node tests; 28 browser suites,
+  among them camera, ui 82/82, crop 33/33, audit 59/59, retouch 40/40, integration 9/9, offline 13/13, brand 11/11,
+  stickers 9, fun 8).
+- After the push, as found live: 40 of 40 checked files of `https://nj22az.github.io/camera/` are byte for byte the
+  commit's (the 30 of the first publication's check, and the six seasonal sheets and four of their pictures); the page
+  says v2026.11.13.1; `ball.js` answers 404.
+- The Pocket Camera workflow runs on pull requests and by hand, not on a push to main, so there is no run of it for
+  either publication: the regression above was run here, with the workflow's own list of suites.

@@ -38,7 +38,7 @@ try{
  });
  await check('new cut-outs and photo stickers have a fine rim and transparent corners',async()=>{
   const rows=await page.evaluate(async()=>{
-   const {makeSticker}=await import('/camera/cutout.js?v=20261112fun1'),rows=[];
+   const {makeSticker}=await import('/camera/cutout.js?v=20261113picks1'),rows=[];
    for(const transparent of [true,false]){
     const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle='#285bb5';
     if(transparent){g.beginPath();g.arc(64,64,32,0,Math.PI*2);g.fill();}else g.fillRect(0,0,128,128);
@@ -53,7 +53,7 @@ try{
   for(const r of rows){assert.equal(r.cut,r.transparent?'outline':'photo');assert.ok(r.white<=4,JSON.stringify(r));assert.ok(r.width<=138&&r.height<=138);assert.equal(r.corner,0);}
  });
  await page.setInputFiles('#picker',join(root,'camera/samples/default-original.png'));await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
- await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Thuan")');
+ await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Minato")');
  await page.click('.sticker-choice[data-id="thuan-blender/wave"]');await page.waitForSelector('#editFrame .sticker img');
  await page.evaluate(()=>{const e=window.pocketCamera.state.edit;e.recipe.stickers[0].size=.8;e.recipe.stickers[0].angle=0;window.pocketCamera.editStickers.select(null);});
  await page.click('#tabAdjust');await page.waitForFunction(()=>getComputedStyle(document.querySelector('#toast')).opacity==='0');
@@ -62,7 +62,7 @@ try{
  if(shots)await page.screenshot({path:join(shots,'phone-sticker-contour.png')});
  await check('the actual picker places the recut asset and export uses those same sticker pixels',async()=>{
   const result=await page.evaluate(async()=>{
-   const {engine,state}=window.pocketCamera,e=state.edit,m=await import('/camera/stickers.js?v=20261112fun1');
+   const {engine,state}=window.pocketCamera,e=state.edit,m=await import('/camera/stickers.js?v=20261113picks1');
    const img=document.querySelector('#editFrame .sticker img');await img.decode();
    const selected=await m.stickerImage(e.recipe.stickers[0].id);
    const a=document.createElement('canvas');a.width=a.height=512;

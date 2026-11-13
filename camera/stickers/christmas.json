@@ -1,0 +1,58 @@
+{
+ "id": "christmas",
+ "name": "Christmas",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  12
+ ],
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "christmas/duck-santa",
+   "src": "christmas/duck-santa.webp?v=e2dddf53",
+   "thumb": "christmas/duck-santa.thumb.webp?v=e2dddf53",
+   "width": 268,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck delivers"
+  },
+  {
+   "id": "christmas/rabbit-reindeer",
+   "src": "christmas/rabbit-reindeer.webp?v=430ceb43",
+   "thumb": "christmas/rabbit-reindeer.thumb.webp?v=430ceb43",
+   "width": 295,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit is a reindeer today"
+  },
+  {
+   "id": "christmas/frog-lights",
+   "src": "christmas/frog-lights.webp?v=e60be48a",
+   "thumb": "christmas/frog-lights.thumb.webp?v=e60be48a",
+   "width": 364,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog helped with the lights"
+  },
+  {
+   "id": "christmas/bear-cocoa",
+   "src": "christmas/bear-cocoa.webp?v=6b1a8f6e",
+   "thumb": "christmas/bear-cocoa.thumb.webp?v=6b1a8f6e",
+   "width": 290,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear and its cocoa"
+  },
+  {
+   "id": "christmas/cat-tree",
+   "src": "christmas/cat-tree.webp?v=1da6233e",
+   "thumb": "christmas/cat-tree.thumb.webp?v=1da6233e",
+   "width": 393,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat is in the tree"
+  }
+ ]
+}

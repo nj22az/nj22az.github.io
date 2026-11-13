@@ -30,6 +30,11 @@ when saving ? I want memory with our own photos or with the stickers".
   the photo's own size, the same on a thumbnail and on sixteen megapixels, in the viewfinder and in the save alike.
   The date stays in the picture's own corner; stickers and balloons may cross the border. In the camera, **Frame** in
   the settings row opens a sheet with every frame on the picture as it is; the editor's Frame tab has the same row.
+- **The year's frames and the face cutouts** (the owner, 12 November 2026: "And frames too, and cutouts, like a frog
+  costume at the pond could have a cutout for the face, think extremely playful"): Tết, Summer, Halloween, Easter and
+  Christmas frames, and five cutouts (Frog, Sunflower, Astronaut, Daruma, Snowman), each a painted board over the whole
+  picture with a hole where your face goes: in the viewfinder you put your face in it, as at a real board (in the
+  editor, Crop brings a face to it). Published in v2026.11.13.1.
 - **The pixel frames** of October (Pocket, Harbour, Sakura, Ticket, Matsuri, Hello, Island Post, Shop Day;
   `tools/draw-camera-frames.py`, four shades, a 16-pixel border) are no longer offered. They are still drawn, so a photo
   framed in one keeps it and shows it among the choices when edited. The Game Boy Looks themselves stay (the owner:
@@ -116,8 +121,8 @@ when saving ? I want memory with our own photos or with the stickers".
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
   draws them), and under Thuan's tab her other sheets, each under its name: **World Thuan** (hers), **Cartoon Thuan** and
-  **Thuan & Nils**. One tab a resident, then the camera's own sheets (below): Text · Thuan · Johansson · Thao · Minato ·
-  Friends · Season · Faces · Manga · Mine, in one row that scrolls. On the viewfinder
+  **Thuan & Nils**. Six sections since 13 November 2026 (*Choosing, made easier*, below): For you · Minato · Friends ·
+  Seasons · Words · Mine; the residents are chips with their faces inside Minato. On the viewfinder
   or a photo: drag; pinch and turn with two fingers; a chosen sticker has remove and flip at its top and, if it has
   words of its own, Say below; the corner handle (a mouse only) turns and resizes; wheel resizes, Shift+wheel turns;
   arrows nudge, Delete removes.
@@ -682,15 +687,44 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   control that was a slider is a stepper (`steppers.js`: minus, pips, plus; it drives the slider's own input, so
   everything that listened still hears each step) and the intensity slider is the preset row; on, the sliders return.
 - **Frames** redrawn (above). **Ball** removed (below).
+- **A first pass of the playful interface** (the owner: "Redraw the whole ui in the playful style, so it's fun to use
+  the app"; the foot of `camera-fun.css`, published in v2026.11.13.1): rounder tiles and cards, a solid lower edge on
+  the primary and pill buttons and the steppers that goes down under a finger, everything pressable gives and springs
+  back (not under reduced motion), and the sliders, when on, have a track with some body and a ringed thumb. Colours
+  and layout are as they were. The rest of the redraw is still to come.
+
+### Choosing, made easier — 13 November 2026 (published in v2026.11.13.2)
+
+The owner: "Yes it's looking better, try to make the sticker sections more intelligent and choosing filter too, it's a
+bit overwhelming as it is now". Forty-three Looks and some four hundred stickers are too many to show at once, so each
+picker opens on a short page **For you** and keeps the rest one tap behind (`picks.js`, plain functions, tested in
+`tests/picks.test.mjs`).
+
+- **Looks.** The first kind is no kind: **For you** (a star, and the one kind whose name is written out; the chosen
+  kind always says its name, one name at a time). Its strip is the photo as it is, up to two Looks used lately (the
+  Looks of the photos last taken or saved, `recentLooks`), and six picked for this picture: from what it is (dark or
+  bright, pale or colourful, busy or plain, warm or cool, a face or none: `lookPrior`, on the measurements
+  `smart-shuffle.js` takes of a small copy that is not kept) and, in the editor, from how the twelve likeliest really
+  come out on it (each preview scored as Surprise scores a mix, for at most a second and a half); never more than two
+  of one kind. In the camera the picture is measured when the camera starts and when the strip is opened. For you
+  stays open while the chosen Look is one of its picks; a swipe to a Look that is not shows that Look's own kind.
+  **Every Look in the strip says its name.**
+- **Styles** (a Look's presets) open when the chosen Look is tapped again, in the editor as in the camera: one row of
+  choices at a time. The first times, the toast says so ("tap it again for its styles").
+- **Stickers.** Six sections where there were ten tabs: **For you** (what was used lately, `recentStickers`; the
+  season that is here or coming; things to wear when there is a face, found in the photo or the camera turned on
+  you; a handful that changes with the day, led by a balloon), **Minato** (the residents, the town's things and the
+  secret faces, each a chip with a face; the secret one a lock alone until a game opens it), **Friends**, **Seasons**,
+  **Words** (balloons, lines and marks) and **Mine**.
 
 ### Sticker sheets and adding stickers
 
 - **The camera's own sheets** are listed in `stickers/sheets.json` and loaded by `stickers.js` after the residents'
   manifest; a tool that draws or cuts a sheet adds it to the list, so a new sheet needs no code. A sheet says its `tab`,
   its `kind` (`marks`, `season` with its months `when`, `secret`, `cute`, `things`, `studio`) and whether it is one of
-  Memory's decks (`deck`). A sheet with a kind never greets. Tabs: the residents', then any other (Minato), Friends,
-  Season (the sheet in season first, then the next to come), Faces, Manga; a tab's own sheet first, every other under
-  its name.
+  Memory's decks (`deck`). A sheet with a kind never greets. A sheet's `tab` puts it in a section: Friends, Season and
+  Manga in theirs, any other tab (a resident's, Shōwa, Faces) a chip inside Minato; in Seasons the sheet in season
+  comes first, then the next to come; a group's own sheet first, every other under its name.
 - **The owner's sheets, cut by `tools/cut-sticker-sheet.py`** (the owner: "You can make stickers of my Johansson Assets
   too", "Here are more sticker sheets"): **Cartoon Johansson** (38, his sailor in his poses, under Johansson's tab, a
   Memory deck and a greeter), **Animation Studios** (8, the studio's marks), **Matsuri** (33, under Season) and
@@ -705,6 +739,9 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   **Bits**. The owner's notes on the way: a first sheet of plain things "a bit too generic"; a wobbly ink line "too
   ugly … I think you lost your art style?"; five round balls "too round, they lack personality"; of these builds "The
   animals are better". A Memory deck.
+- **The friends through the year** (the owner: "And Japanese matsuri festival and lunar Tet stickers", "And Christmas,
+  and Halloween and Easter and summer"): 28 stickers in six sheets under Season, the same five dressed for the day
+  (the duck is a ghost, the frog is definitely an egg, the cat is in the tree). Published in v2026.11.13.1.
 - **From a sheet**, in the app (`sticker-sheet.js`): the same reading as the tool, on the device; a photograph (no
   ground all round it) is not a sheet and becomes one sticker. Each piece gets its edge from `cutout.js`.
 - **The sticker box**: an iPhone or iPad offers its keyboard's stickers only in a field that takes pictures, so the
@@ -765,7 +802,8 @@ node camera/tests/crop.browser.mjs           # gestures, source contact, saved p
 node camera/tests/save-share-layout.browser.mjs # album-only saves, native-share mock, cancellation/failure and phone Solitaire sizing
 node camera/tests/enhance.browser.mjs         # reversible strength, crop/export, prior-engine parity
 node camera/tests/sticker-contour.browser.mjs # catalogue, pale shoes, thin own-sticker rims and preview/export
-node camera/tests/stickers.browser.mjs        # the sheets on the list, tabs and seasons, decks and greeters, a sheet cut in the app, the sticker box
+node camera/tests/stickers.browser.mjs        # the sheets on the list, six sections and For you, seasons, decks and greeters, a sheet cut in the app, the sticker box
+node camera/tests/picks.test.mjs              # what is offered first: Looks picked for a photo, the stickers' first page through the year
 node camera/tests/integration.browser.mjs     # full/LIGHT matrix, mixed thumbnails, exact JPEG/Share bytes, retained recipes
 node camera/tests/paper.browser.mjs           # paper preview/export agreement, colour/black retention, persistence and controls
 node camera/tests/zip.test.mjs                 # the backup ZIP: round trip, checksums, a standard reader, damage, foreign files

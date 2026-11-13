@@ -14,7 +14,7 @@ const NONE=Object.freeze({id:'none',label:'None'});
 async function loadDrawnFrames(){
  try{
   const data=await (await fetch(new URL('./frames/cute.json',import.meta.url))).json();
-  return data.frames.map(f=>({id:f.id,label:f.label,hint:f.hint,drawn:f}));
+  return [...data.frames.map(f=>({id:f.id,label:f.label,hint:f.hint,drawn:f})),...(data.cutouts||[]).map(f=>({id:f.id,label:f.label,hint:f.hint,cutout:f.cutout}))];
  }catch{return [];}
 }
 
@@ -41,6 +41,7 @@ const late=()=>new Promise(r=>setTimeout(()=>r([]),5000));
 const [drawnFrames,pixelFrames]=await Promise.all([Promise.race([loadDrawnFrames(),late()]),Promise.race([loadPixelFrames(),late()])]);
 export const FRAMES=Object.freeze([NONE,...drawnFrames,...pixelFrames]);
 const drawnOf=id=>drawnFrames.find(f=>f.id===id)?.drawn||null;
+const cutoutOf=id=>drawnFrames.find(f=>f.id===id)?.cutout||null;
 const pixelOf=id=>pixelFrames.find(f=>f.id===id)?.pixel||null;
 /** The frame's own grid for a picture of shape `aspect`: its short side 144 frame pixels. */
 function grid(meta,aspect){return aspect>=1?[Math.round(meta.short*aspect),meta.short]:[meta.short,Math.round(meta.short/aspect)];}
@@ -130,6 +131,26 @@ function drawDrawn(g,f,w,h){
  g.restore();
 }
 
+/**
+ * A face cutout (frames/cute.json `cutouts`; the owner, 12 November 2026: "and cutouts, like a frog costume at the pond
+ * could have a cutout for the face"): a painted board over the whole picture with a hole where a face goes, as stands
+ * at a festival. Drawn in a square of 100 whose middle 72 is the picture's shorter side, centred, so the somebody on the
+ * board is whole on any shape of picture and the board's grounds run out to its edges.
+ */
+function drawCutout(g,c,w,h){
+ const u=Math.min(w,h)/72;
+ g.save();g.translate(w/2-50*u,h/2-50*u);g.scale(u,u);
+ const board=new Path2D();board.rect(-400,-400,900,900);board.addPath(path(c.hole));g.clip(board,'evenodd');
+ for(const shape of c.shapes)paint(g,shape,u);
+ g.restore();
+}
+/** Where a cutout's hole is on a w×h picture: {x, y, w, h} in the picture's own pixels (null for any other frame). */
+export function frameWindow(id,w,h){
+ const c=cutoutOf(id);if(!c)return null;
+ const u=Math.min(w,h)/72,[cx,cy,rx,ry]=c.window;
+ return {x:w/2+(cx-50-rx)*u,y:h/2+(cy-50-ry)*u,w:2*rx*u,h:2*ry*u};
+}
+
 /** Draws a frame over a w×h picture. */
 export function drawFrame(g,id,w,h){
  if(!isFrame(id)||id==='none')return;
@@ -140,5 +161,6 @@ export function drawFrame(g,id,w,h){
   g.save();g.imageSmoothingEnabled=w<lw;g.imageSmoothingQuality='high';g.drawImage(compose(px,lw,lh),0,0,lw,lh,0,0,w,h);g.restore();
   return;
  }
+ const c=cutoutOf(id);if(c){drawCutout(g,c,w,h);return;}
  const f=drawnOf(id);if(f)drawDrawn(g,f,w,h);
 }

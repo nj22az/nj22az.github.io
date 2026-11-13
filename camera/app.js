@@ -3,19 +3,20 @@
  * three deep. Everything happens on this device: the camera picture never leaves it, and saved photos live in the
  * browser's own storage (album.js) until shared.
  */
-import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261112fun1';
+import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,MAX_SIDE} from './looks-gl.js?v=20261113picks1';
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
-import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261112fun1';
-import {stepperFor,syncSteppers} from './steppers.js?v=20261112fun1';
+import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261113picks1';
+import {stepperFor,syncSteppers} from './steppers.js?v=20261113picks1';
 import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
-import {lookIcon,kindIcon} from './look-icons.js?v=20261112fun1';
+import {lookIcon,kindIcon} from './look-icons.js?v=20261113picks1';
 import {prepareOffline} from './offline.js?v=20261105games1';
 import {MIXES,measureImage,photoCandidates,scorePhoto,choosePhotoCandidate} from './smart-shuffle.js?v=20261031retouch1';
-import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261112fun1';
-import {makeSticker} from './cutout.js?v=20261112fun1';
-import {cutSheet} from './sticker-sheet.js?v=20261112fun1';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261112fun1';
+import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,createStickerLayer,drawStickers} from './stickers.js?v=20261113picks1';
+import {makeSticker} from './cutout.js?v=20261113picks1';
+import {cutSheet} from './sticker-sheet.js?v=20261113picks1';
+import {lookPrior,lookPicks,lookCandidates,usedLately,stickerPicks,untilSeason} from './picks.js?v=20261113picks1';
+import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261113picks1';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261104ui1';
@@ -23,16 +24,16 @@ import {normaliseMakeup,applyMakeup,makeupActive,makeupPixels,makeupFaces,faceCr
 import {createMakeupGuide} from './makeup-guide.js?v=20261104ui1';
 import {createPrinter} from './printer.js?v=20261030share1';
 import {normaliseStamps,stampsActive,stampsLabel,characterOf,characterStamps,CHARACTERS,drawFaceStamps,loadStampImages,stampImages,hatChoices,partPreview,moodLabel,BROW_STYLES,BROW_LABELS,BROW_COLOURS,EYE_STYLES,EYE_COLOURS} from './face-stamps.js?v=20261104ui1';
-import {createMemory} from './memory.js?v=20261112fun1';
+import {createMemory} from './memory.js?v=20261113picks1';
 import {cardView,shuffleDeck} from './playing-cards.js?v=20261029b';
-import {createBlackjack} from './blackjack.js?v=20261112fun1';
-import {createSolitaire} from './solitaire.js?v=20261112fun1';
+import {createBlackjack} from './blackjack.js?v=20261113picks1';
+import {createSolitaire} from './solitaire.js?v=20261113picks1';
 import {makeBackup,restoreBackup,albumStorage,formatBytes} from './backup.js?v=20261102fun1';
 import {createZoomView,viewZoom,viewDetail} from './zoom-view.js?v=20261104ui1';
 import {findFaces,findPerson,guideFromFace,syncFaceToGuide,warmFacePack} from './face-pack.js?v=20261104ui1';
-import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261112fun1';
+import {findBackground,applyMask,maskDataURL,maskFromBlob} from './background.js?v=20261113picks1';
 import {autoLevels} from './auto.js?v=20261104ui1';
-import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261112fun1';
+import {recordWin,isUnlocked,unlockHint} from './unlocks.js?v=20261113picks1';
 import {pocketFace,errorFace} from './pocket-faces.js?v=20261105fun1';
 
 const $=id=>document.getElementById(id);
@@ -80,12 +81,13 @@ const state={
  // Sliders (the owner, 12 November 2026: "I don't like the sliders … sliders need to be accessed by a setting"): off,
  // every tool is taps, presets and steps; on, each tool also shows its fine control.
  sliders:saved.sliders===true,
+ knowsStyles:saved.knowsStyles===true,
 };
 state.camera.recipe.stamp=!!saved.stamp;
 const current=()=>state.mode==='editor'?state.edit:state.camera;
 function remember(){
  const c=state.camera,r=c.recipe;
- store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},kept:true,ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,auto:state.auto,printer:state.printer,theme:state.theme,sliders:state.sliders});
+ store.write({...store.read(),recipe:{layers:r.layers,stickers:r.stickers,adjust:{light:r.adjust.light},frame:r.frame,trick:r.trick,paper:r.paper},kept:true,ratio:c.ratio,timer:c.timer,stamp:r.stamp,facing:c.facing,sound:state.sound,auto:state.auto,printer:state.printer,theme:state.theme,sliders:state.sliders,recentLooks:lookRecent,recentStickers:stickerRecent,knowsStyles:!!state.knowsStyles});
 }
 
 // ---------- The engine and its canvas ----------
@@ -148,8 +150,16 @@ const LOOK_GROUPS=(()=>{
 const groupOf=name=>LOOK_GROUPS.find(g=>g.looks.includes(name))||LOOK_GROUPS[0];
 /** Every Look in the order of its kind: the strip's order and a swipe's. */
 const offered=()=>LOOK_GROUPS.flatMap(g=>g.looks).filter(n=>!engine?.failed(n));
-// The kind the strip shows: the chosen Look's, until another kind is tapped.
-let shownGroup=null;
+/**
+ * The first kind is no kind: "For you" (the owner, 13 November 2026: choosing a Look was "a bit overwhelming"), the
+ * photo as it is, the Looks used lately and a handful picked for this picture (picks.js). The strip opens on it; the
+ * kinds are beside it for whoever wants them all.
+ */
+const PICKS={id:'picks',label:'For you',looks:['none']},KINDS=[PICKS,...LOOK_GROUPS];
+let lookRecent=Array.isArray(saved.recentLooks)?saved.recentLooks.filter(n=>typeof n==='string'):[];
+let stickerRecent=Array.isArray(saved.recentStickers)?saved.recentStickers.filter(n=>typeof n==='string'):[];
+// The kind the strip shows: For you, or a kind that was tapped, or (null) the chosen Look's own.
+let shownGroup='picks';
 function icon(name){return `<svg aria-hidden="true"><use href="#i-${name}"/></svg>`;}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const nextFrame=()=>new Promise(r=>requestAnimationFrame(()=>r()));
@@ -223,7 +233,7 @@ const isCompact=()=>$('camera').classList.contains('compact');
 function showLooks(open){
  const cam=$('camera');if(cam.classList.contains('looks-open')===open)return;
  cam.classList.toggle('looks-open',open);
- if(open){showAmountRow(false);renderStripSelection();refreshThumbs(true);}
+ if(open){showAmountRow(false);renderStripSelection();refreshThumbs(true);pickLooks();}
 }
 function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}}
 function placeCanvas(frame){if(canvas.parentElement!==frame)frame.prepend(canvas);frameArt(frame).key='';}
@@ -269,10 +279,15 @@ function renderLookRail(ctx){
 }
 function buildGroups(){
  const row=$('lookGroups');row.textContent='';
- for(const g of LOOK_GROUPS){
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${kindIcon(g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
-  b.setAttribute('aria-label',`${g.label}: ${g.looks.map(n=>LOOKS[n].label).join(', ')}`);
-  b.addEventListener('click',()=>{sound('tick');shownGroup=g.id;renderStripSelection();refreshThumbs(true);});
+ for(const g of KINDS){
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.group=g.id;b.innerHTML=`${kindIcon(g===PICKS?'presets':g.id)}<span class="group-name">${g.label}</span>`;b.title=g.label;
+  b.setAttribute('aria-label',g===PICKS?'For you: Looks picked for this picture':`${g.label}: ${g.looks.map(n=>LOOKS[n].label).join(', ')}`);
+  b.addEventListener('click',()=>{
+   sound('tick');shownGroup=g.id;
+   // Asked for by name, For you shows the chosen Look too, whatever it is.
+   if(g===PICKS){const look=current().recipe.layers[current().active].look;if(!PICKS.looks.includes(look))PICKS.looks=[PICKS.looks[0],look,...PICKS.looks.slice(1)];}
+   renderStripSelection();refreshThumbs(true);
+  });
   row.append(b);
  }
 }
@@ -288,6 +303,49 @@ function buildStrip(){
   const s=document.createElement('span');s.className='name';s.textContent=lookLabel(name);
   b.append(face,s);strip.append(b);tiles.set(name,{button:b,canvas:c,drawn:false});
  }
+ PICKS.looks=lookPicks({prior:lookPrior(),recent:lookRecent,kindOf:name=>groupOf(name).id,available:pickable});
+}
+// (Of a family of models, Handheld or Game system, the one tile the strip shows: its models are in its styles.)
+const pickable=name=>tiles.has(name)&&!engine?.failed(name)&&familyTileVisible(name,'none');
+/** The picks, with the chosen Look kept among them, shown if For you is. */
+function setPicks(list){
+ const ctx=current(),look=ctx?.recipe.layers[ctx.active].look;
+ PICKS.looks=look&&!list.includes(look)&&shownGroup==='picks'?[list[0],look,...list.slice(1)]:list;
+ if(shownGroup==='picks')renderStripSelection({scroll:false});
+}
+let pickTask=null;
+/**
+ * Picks the Looks for the picture in hand: from what it is (measured on a small copy that is not kept) and, for a photo
+ * being edited, from how the likeliest really come out on it, a few each frame for at most a second and a half.
+ */
+async function pickLooks(){
+ const ctx=current(),e=engine;if(!ctx||!e||e.lost())return;
+ const task={};pickTask=task;
+ const editing=state.mode==='editor',kindOf=name=>groupOf(name).id;
+ const valid=()=>pickTask===task&&engine===e&&!e.lost()&&current()===ctx&&(state.mode==='editor')===editing;
+ try{
+  await nextFrame();if(!valid())return;
+  let options={source:'live',width:96,height:72};
+  if(editing){const crop=ctx.recipe.crop,aspect=crop.w*ctx.width/(crop.h*ctx.height);options={source:'edit',crop,width:Math.max(1,Math.round(Math.min(96,96*aspect))),height:Math.max(1,Math.round(Math.min(96,96/aspect)))};}
+  const sample=e.sample(normalRecipe({}),options);if(!sample)return;
+  const reference=measureImage(sample),face=editing?(ctx.recipe.faces?.length>0||!!ctx.recipe.makeup.face):state.camera.facing==='user';
+  const prior=lookPrior(reference,{face});
+  setPicks(lookPicks({prior,recent:lookRecent,kindOf,available:pickable}));
+  if(!editing)return;                                              // the live picture moves on: what it is now is enough
+  const scores={},started=performance.now();
+  for(const name of lookCandidates(prior,{available:pickable,count:12})){
+   if(performance.now()-started>1500)break;
+   await nextFrame();if(!valid())return;
+   const layers=[{look:name,amount:1}],pixels=e.sample(normalRecipe({layers}),options);
+   if(pixels)scores[name]=scorePhoto(reference,measureImage(pixels),layers);
+  }
+  if(valid())setPicks(lookPicks({prior,scores,recent:lookRecent,kindOf,available:pickable}));
+ }catch(error){console.warn('Picking Looks',error);}
+}
+/** The Looks of a photo just taken or saved are the ones used lately. */
+function noteLooks(recipe){
+ for(const layer of [...(recipe?.layers||[])].reverse())if(layer.look&&layer.look!=='none')lookRecent=usedLately(lookRecent,layer.look,6);
+ store.write({...store.read(),recentLooks:lookRecent});
 }
 function renderLayers(){
  const ctx=current(),{layers}=ctx.recipe;layersEl.textContent='';renderLookRail(ctx);
@@ -338,11 +396,11 @@ function renderLayers(){
  }
 }
 function renderStripSelection({scroll=true}={}){
- const ctx=current(),look=ctx.recipe.layers[ctx.active].look,group=LOOK_GROUPS.find(g=>g.id===shownGroup)||groupOf(look);
+ const ctx=current(),look=ctx.recipe.layers[ctx.active].look,group=KINDS.find(g=>g.id===shownGroup)||groupOf(look);
  for(const b of $('lookGroups').children){const on=b.dataset.group===group.id;b.setAttribute('aria-selected',String(on));b.classList.toggle('has-look',groupOf(look).id===b.dataset.group);
   // Nine kinds are wider than a phone: the row scrolls, and the open kind is brought into it (never the page).
   if(on&&scroll){const row=b.parentElement;if(row.scrollWidth>row.clientWidth+1){const left=b.offsetLeft-row.offsetLeft,target=Math.max(0,left-(row.clientWidth-b.offsetWidth)/2);row.scrollTo({left:target,behavior:reduceMotion?'auto':'smooth'});}}}
- for(const [name,t] of tiles){const on=name===look;t.button.setAttribute('aria-checked',String(on));t.button.tabIndex=on||(!group.looks.includes(look)&&name===group.looks[0])?0:-1;t.button.hidden=!group.looks.includes(name)||!familyTileVisible(name,look);
+ for(const [name,t] of tiles){const on=name===look;t.button.setAttribute('aria-checked',String(on));t.button.tabIndex=on||(!group.looks.includes(look)&&name===group.looks[0])?0:-1;t.button.hidden=!group.looks.includes(name)||!familyTileVisible(name,look);t.button.style.order=group===PICKS?String(Math.max(0,group.looks.indexOf(name))):'';
   const family=familyFor(name);if(family){t.button.querySelector('.name').textContent=family.label;t.button.setAttribute('aria-label',`${family.label}: ${LOOKS[name].label}`);}}
  if(group.id!==strip.dataset.group){strip.dataset.group=group.id;strip.scrollLeft=0;}
  if(scroll){const t=tiles.get(look)?.button;if(t)scrollTileIntoView(t);}
@@ -436,8 +494,8 @@ function drawPresetThumbs(){
  }
  presetsAt=t;presetsDue=live||missing;
 }
-// In the editor the presets sit under the mix; in the camera they take the strip's place when the chosen Look is
-// tapped again, so the viewfinder does not change size. The slider is under them when Sliders is on (the settings).
+// The presets open when the chosen Look is tapped again: under the strip in the editor; in the camera they take the
+// strip's place, so the viewfinder does not change size. The slider is under them when Sliders is on (the settings).
 const wide=matchMedia('(min-width:1000px) and (min-aspect-ratio:5/4)');
 function showAmountRow(show){
  // Beside the picture (a wide window) there is room for both.
@@ -446,11 +504,15 @@ function showAmountRow(show){
  strip.hidden=inCamera&&show;$('lookGroups').hidden=inCamera&&show;
  if(show){presetsDue=true;presetsAt=0;schedule();}
 }
-function toggleAmount(){if(state.mode==='camera')showAmountRow($('presetRow').hidden);}
+function toggleAmount(){
+ const open=$('presetRow').hidden;showAmountRow(open);
+ if(open&&!state.knowsStyles){state.knowsStyles=true;store.write({...store.read(),knowsStyles:true});}
+}
 $('amountDone').addEventListener('click',()=>{sound('tick');showAmountRow(false);});
 /** After any change to the mix: redraw the tray and the picture. */
 function trayChanged({thumbs=false,announce=false,scroll=true}={}){
- shownGroup=null;
+ // For you stays while the chosen Look is one of its picks; else the strip shows the Look's own kind.
+ if(shownGroup!=='picks'||!PICKS.looks.includes(current().recipe.layers[current().active].look))shownGroup=null;
  renderLayers();renderStripSelection({scroll});renderAmount();
  if(announce)toast(mixLabel(current().recipe),{look:true,ms:900});
  if(state.mode==='camera')remember();
@@ -462,7 +524,9 @@ function chooseLook(name,{announce=true}={}){
  if(layer.look===name){toggleAmount();return;}
  // The Look itself, by its first preset; a second Look the last preset laid over it goes with it.
  applyPreset(ctx.recipe.layers,ctx.active,name,presetsFor(name)[0],MAX_LAYERS);
- trayChanged({announce});
+ const hint=announce&&!state.knowsStyles&&presetsFor(name).length>1;
+ trayChanged({announce:announce&&!hint});
+ if(hint)toast(`${lookLabel(name)} · tap it again for its styles`,{look:true,ms:1900});
  // The Looks after this layer are drawn over it, so their thumbnails do not change; the ones before do not either.
 }
 function stepLook(dir){
@@ -668,7 +732,7 @@ async function startCamera(){
   c.stream=stream;video.srcObject=stream;await video.play().catch(()=>{});
   const settings=stream.getVideoTracks()[0]?.getSettings?.()||{};
   c.mirror=settings.facingMode?settings.facingMode==='user':c.facing==='user'||!coarse;
-  c.running=true;$('welcome').hidden=true;$('camera').classList.remove('idle');setShutter('shoot');$('zoom').hidden=false;
+  c.running=true;$('welcome').hidden=true;$('camera').classList.remove('idle');setShutter('shoot');$('zoom').hidden=false;setTimeout(pickLooks,1200);
   store.write({...store.read(),cameraAllowed:true});
   navigator.mediaDevices.enumerateDevices?.().then(d=>{$('flip').hidden=d.filter(x=>x.kind==='videoinput').length<2;}).catch(()=>{});
   refreshThumbs(true);schedule();
@@ -1047,7 +1111,7 @@ async function loadShots(){
  try{await ensureAlbumSamples();await refreshShots();}catch{/* The owner's photos remain usable offline. */}
 }
 async function keep(shot){
- const r=await addShot(shot);albumOK=true;albumRevision++;state.shots.unshift(r);renderRoll(true);keepAlbum();
+ const r=await addShot(shot);albumOK=true;albumRevision++;state.shots.unshift(r);renderRoll(true);keepAlbum();noteLooks(shot.recipe);
  // The thirtieth photo: a Game Boy Camera held thirty.
  if(state.shots.length===30)setTimeout(()=>sayFace('full',{ms:3600}),1600);
  return r;
@@ -1116,7 +1180,9 @@ function show(mode){
  invalidate();
 }
 function buildTrayFor(){
- showAmountRow(state.mode==='editor');
+ // A Look's styles (its presets) open when the chosen Look is tapped again, in the editor as in the camera: one row
+ // of choices at a time (the owner, 13 November 2026: "a bit overwhelming as it is now").
+ showAmountRow(false);shownGroup='picks';pickLooks();
  for(const t of tiles.values()){t.drawn=false;t.canvas.classList.remove('drawn');}
  trayChanged({thumbs:true,scroll:false});requestAnimationFrame(()=>renderStripSelection());
 }
@@ -1761,7 +1827,7 @@ function prepareFaces(e,{around=null}={}){
  const picture=e.picture;e.faceStatus='finding';e.faceTapWanted=false;renderFaceStatus();
  const task=findFaces(picture,{around}).then(faces=>{
   if(state.edit!==e||e.picture!==picture)return faces;
-  if(faces.length){e.recipe.faces=faces;e.faceStatus='found';adoptGuide(e);refreshThumbs(true);sound('pop');warmMakeup(e);remeasureAuto(e);}
+  if(faces.length){e.recipe.faces=faces;e.faceStatus='found';adoptGuide(e);refreshThumbs(true);sound('pop');warmMakeup(e);remeasureAuto(e);pickLooks();}
   else{e.faceStatus='none';e.faceTapWanted=true;}
   return faces;
  }).catch(error=>{console.warn('Face finder',error);if(state.edit===e&&e.picture===picture){e.faceStatus='failed';e.faceTapWanted=true;}return [];})
@@ -2023,8 +2089,8 @@ const editZoom=createZoomView($('editPictureArea'),$('editFrame'),{
 const viewerZoom=createZoomView($('viewerStage'),$('viewerImage'),{
  maxZoom:()=>{const img=$('viewerImage');return closest(img.naturalHeight,img.offsetHeight);},
 });
-// The sheets: Lettering first (balloons and captions), then the residents' sheets, then the photographer's own.
-let stickerSet=1,mine=[];
+// The photographer's own stickers (the sections are below, at stickerSections).
+let mine=[];
 async function loadMine(){
  try{
   mine=await listMine();
@@ -2129,8 +2195,6 @@ const deckSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind&&set.kind!=='
 /** The secret sheets that have been won (unlocks.js): a Memory deck too, never a greeter. */
 const secretSets=manifest=>(manifest?.sets||[]).filter(set=>set.kind==='secret'&&isUnlocked(store.read(),set.id));
 const tabLocked=tab=>tab.sets.length>0&&tab.sets.every(set=>set.locked&&!isUnlocked(store.read(),set.id));
-/** How many months until a season's sheet is in season (0 while it is; a sheet with no months comes last). */
-const untilSeason=(set,today)=>{const now=today.getMonth()+1,when=Array.isArray(set.when)?set.when:[];return when.length?Math.min(...when.map(m=>(m-now+12)%12)):12;};
 const LAST_TABS=['Friends','Season','Faces','Manga'];
 /**
  * The sheets by tab: one tab a resident, their other sheets under theirs (a sheet's `tab`), then any other tab (Minato,
@@ -2147,36 +2211,73 @@ function stickerTabs(manifest,today=new Date()){
  if(season)season.sets=season.sets.map((set,i)=>({set,i})).sort((a,b)=>untilSeason(a.set,today)-untilSeason(b.set,today)||a.i-b.i).map(x=>x.set);
  return ordered;
 }
+/** Which section of the stickers a sheet's tab belongs to. */
+const sectionOf=tab=>tab==='Friends'?'Friends':tab==='Season'?'Seasons':tab==='Manga'?'Words':'Minato';
+/**
+ * The stickers in six sections (the owner, 13 November 2026: "try to make the sticker sections more intelligent … it's a
+ * bit overwhelming as it is now"; there were ten tabs): For you (picks.js: what was used lately, the season, things to
+ * wear, a handful for today), Minato (the residents, the town's things and the secret faces, each a chip with a
+ * face), Friends, Seasons, Words (balloons, lines and marks) and Mine.
+ */
+function stickerSections(manifest,today=new Date()){
+ const tabs=stickerTabs(manifest,today),of=name=>tabs.filter(t=>sectionOf(t.name)===name);
+ return [{name:'For you',kind:'picks'},{name:'Minato',groups:of('Minato')},{name:'Friends',groups:of('Friends')},{name:'Seasons',groups:of('Seasons')},{name:'Words',kind:'words',groups:of('Words')},{name:'Mine',kind:'mine'}];
+}
+let stickerSection='For you';const stickerGroupAt={};
+function stickerTile(s){
+ const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
+ b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?(s.line?`${s.line} · ${s.gloss}`:s.gloss):s.line||'';
+ b.innerHTML=`<img src="${s.thumbUrl}" alt="" loading="lazy" decoding="async" width="${Math.round(256*s.width/Math.max(s.width,s.height))}" height="${Math.round(256*s.height/Math.max(s.width,s.height))}">`;
+ return b;
+}
+function letteringTile(style){
+ const button=document.createElement('button');button.type='button';button.className='sticker-choice lettering';button.dataset.id=style.id;
+ button.setAttribute('aria-label',`${style.label} balloon`);button.title=style.label;
+ const art=balloonCanvas(style.id,style.sample,false,160);art.setAttribute('aria-hidden','true');
+ const name=document.createElement('span');name.textContent=style.label;
+ button.append(art,name);return button;
+}
+const stickerHeading=text=>{const h=document.createElement('h3');h.className='sticker-heading';h.textContent=text;return h;};
 async function renderStickerPicker(){
- const grid=$('stickerGrid'),sets=$('stickerSets');
+ const grid=$('stickerGrid'),sets=$('stickerSets'),chips=$('stickerGroups');
  let manifest;
  try{manifest=await loadStickerSets();}catch{grid.innerHTML='<p class="fine">The stickers could not be loaded.</p>';return;}
- const tabs=stickerTabs(manifest);
+ const sections=stickerSections(manifest),section=sections.find(s=>s.name===stickerSection)||sections[0];
  sets.textContent='';
- // One scrollable category row; reveal the selected category without scrolling the photo.
- ['Text',...tabs.map(t=>t.name),'Mine'].forEach((name,i)=>{
-  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=name;
-  // A secret sheet shows its tab with a lock until a game opens it (unlocks.js).
-  // A secret sheet's tab is a lock alone until a game opens it (unlocks.js): eight named tabs would not fit a phone.
-  if(i>0&&i<=tabs.length&&tabLocked(tabs[i-1])){b.textContent='';b.classList.add('locked');b.innerHTML=icon('lock');b.title=name;b.setAttribute('aria-label',`${name} sheet, locked. ${unlockHint(tabs[i-1].sets[0].id)}`);}
-  b.setAttribute('aria-selected',String(i===stickerSet));b.addEventListener('click',()=>{sound('tick');stickerSet=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
+ for(const s of sections){
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=s.name;
+  b.setAttribute('aria-selected',String(s===section));b.addEventListener('click',()=>{sound('tick');stickerSection=s.name;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
   sets.append(b);
- });
- const selected=sets.children[stickerSet];
+ }
+ const selected=sets.querySelector('[aria-selected=true]');
  if(selected){const b=selected.getBoundingClientRect(),r=sets.getBoundingClientRect();sets.scrollLeft+=b.left<r.left?b.left-r.left:b.right>r.right?b.right-r.right:0;}
+ // Who, inside a section of several (Minato): a chip each, with a face. A secret sheet's chip is a lock alone until a
+ // game opens it (unlocks.js).
+ const groups=section.groups||[],several=groups.length>1&&section.kind!=='words';
+ const group=groups[Math.min(stickerGroupAt[section.name]||0,Math.max(0,groups.length-1))];
+ chips.textContent='';chips.hidden=!several;
+ if(several)groups.forEach((g,i)=>{
+  const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(g===group));
+  if(tabLocked(g)){b.classList.add('locked');b.innerHTML=icon('lock');b.title=g.name;b.setAttribute('aria-label',`${g.name} sheet, locked. ${unlockHint(g.sets[0].id)}`);}
+  else{const first=g.sets[0]?.stickers[0];b.innerHTML=`${first?`<img src="${first.thumbUrl}" alt="" decoding="async">`:''}<span></span>`;b.lastElementChild.textContent=g.name;}
+  b.addEventListener('click',()=>{sound('tick');stickerGroupAt[section.name]=i;renderStickerPicker();grid.scrollTo?.({left:0,top:0});});
+  chips.append(b);
+ });
  grid.textContent='';
- if(stickerSet===0){
+ if(section.kind==='picks'){
   await loadLetteringFont();
-  for(const b of BALLOONS){
-   const button=document.createElement('button');button.type='button';button.className='sticker-choice lettering';button.dataset.id=b.id;
-   button.setAttribute('aria-label',`${b.label} balloon`);button.title=b.label;
-   const art=balloonCanvas(b.id,b.sample,false,160);art.setAttribute('aria-hidden','true');
-   const name=document.createElement('span');name.textContent=b.label;
-   button.append(art,name);grid.append(button);
+  // A face to dress: one found in the photo being edited, or the camera turned on the photographer.
+  const face=state.mode==='editor'?(state.edit?.recipe.faces?.length>0||!!state.edit?.recipe.makeup.face):state.camera.facing==='user';
+  const open=manifest.sets.filter(set=>!(set.locked&&!isUnlocked(store.read(),set.id)));
+  for(const row of stickerPicks({sets:open,recent:stickerRecent,face})){
+   grid.append(stickerHeading(row.title));
+   // Something to say comes with today's handful: a balloon is what a picture most often wants.
+   if(row.title==='Today')grid.append(letteringTile(BALLOONS[0]));
+   for(const s of row.stickers)grid.append(stickerTile(s));
   }
   return;
  }
- if(stickerSet===tabs.length+1){
+ if(section.kind==='mine'){
   const make=(label,glyph,fn,aria)=>{const b=document.createElement('button');b.type='button';b.className='sticker-choice make';b.innerHTML=`${icon(glyph)}<span>${label}</span>`;b.setAttribute('aria-label',aria);b.addEventListener('click',fn);grid.append(b);};
   make('From a photo','photo',()=>$('stickerFile').click(),'Make a sticker from one of your photos');
   make('From a sheet','sheet',()=>$('sheetFile').click(),'Cut a picture of a sticker sheet into its stickers');
@@ -2195,27 +2296,26 @@ async function renderStickerPicker(){
   grid.append(note);
   return;
  }
- if(tabs[stickerSet-1]?.name==='Manga'){
+ if(section.kind==='words'){
+  await loadLetteringFont();
+  for(const style of BALLOONS)grid.append(letteringTile(style));
+  grid.append(stickerHeading('Lines'));
   for(const fx of EFFECTS){
    const b=document.createElement('button');b.type='button';b.className='sticker-choice effect';b.dataset.id=fx.id;b.title=fx.hint;b.setAttribute('aria-label',`${fx.label}: ${fx.hint}`);
    const name=document.createElement('span');name.textContent=fx.label;b.append(effectPreview(fx.id,96),name);grid.append(b);
   }
+  for(const g of groups)for(const set of g.sets){grid.append(stickerHeading(set.name));for(const s of set.stickers)grid.append(stickerTile(s));}
+  return;
  }
- if(tabs[stickerSet-1]&&tabLocked(tabs[stickerSet-1])){
-  const set=tabs[stickerSet-1].sets[0],note=document.createElement('div');note.className='sticker-locked';note.innerHTML=icon('lock');
+ if(group&&tabLocked(group)){
+  const set=group.sets[0],note=document.createElement('div');note.className='sticker-locked';note.innerHTML=icon('lock');
   const what=document.createElement('p');what.textContent=set.note||'';const how=document.createElement('p');how.className='sticker-locked-how';how.textContent=unlockHint(set.id);
   note.append(what,how);grid.append(note);return;
  }
- (tabs[stickerSet-1]?.sets||[]).forEach((set,k)=>{
-  // A tab's own sheet first, without a heading; every other sheet under its name (two sheets of one name share it).
-  const tab=tabs[stickerSet-1];
-  if((k>0||set.name!==tab.name)&&set.name!==tab.sets[k-1]?.name){const h=document.createElement('h3');h.className='sticker-heading';h.textContent=set.name;grid.append(h);}
-  for(const s of set.stickers){
-   const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.dataset.id=s.id;
-   b.setAttribute('aria-label',`${stickerLabel(s)}${s.line?` (${s.line})`:''}`);b.title=s.gloss?`${s.line} · ${s.gloss}`:s.line||'';
-   b.innerHTML=`<img src="${s.thumbUrl}" alt="" loading="lazy" decoding="async" width="${Math.round(256*s.width/Math.max(s.width,s.height))}" height="${Math.round(256*s.height/Math.max(s.width,s.height))}">`;
-   grid.append(b);
-  }
+ (group?.sets||[]).forEach((set,k)=>{
+  // A group's own sheet first, without a heading; every other sheet under its name (two sheets of one name share it).
+  if((k>0||set.name!==group.name)&&set.name!==group.sets[k-1]?.name)grid.append(stickerHeading(set.name));
+  for(const s of set.stickers)grid.append(stickerTile(s));
  });
 }
 $('stickerGrid').addEventListener('click',async e=>{
@@ -2227,7 +2327,10 @@ $('stickerGrid').addEventListener('click',async e=>{
   const answer=await askLettering({style:b.dataset.id});
   if(!answer)return;
   await loadLetteringFont();layer.add(answer.style,{text:answer.text});
- }else layer.add(b.dataset.id);
+ }else{
+  layer.add(b.dataset.id);
+  if(!b.classList.contains('effect')&&!b.classList.contains('mine')){stickerRecent=usedLately(stickerRecent,b.dataset.id,12);store.write({...store.read(),recentStickers:stickerRecent});}
+ }
  sound('pop');
 });
 function openStickerSheet(){
@@ -2398,4 +2501,4 @@ if(!startEngine()){
  if(state.camera.recipe.stickers.some(s=>s.id.startsWith('balloon:')))loadLetteringFont().then(()=>cameraStickers.render());
 }
 // For the browser checks (camera/tests/camera.browser.mjs).
-window.pocketCamera={state,editFile,useFiles,stickerFromPicture,stickersFromSheet,stickerTabs:async date=>stickerTabs(await loadStickerSets(),date).map(t=>({name:t.name,sheets:t.sets.map(s=>s.name)})),get mine(){return mine.length;},decks:async()=>(await memorySources()).map(d=>d.name),greeters:async()=>residentSets(await loadStickerSets()).map(set=>set.name),takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory,editZoom,viewerZoom,gameWon,setDance,get danceTempo(){return danceTempo;},openCardGame,get cardGame(){return activeCardGame;}};
+window.pocketCamera={state,editFile,useFiles,stickerFromPicture,stickersFromSheet,stickerTabs:async date=>stickerTabs(await loadStickerSets(),date).map(t=>({name:t.name,sheets:t.sets.map(s=>s.name)})),stickerSections:async date=>stickerSections(await loadStickerSets(),date).map(x=>({name:x.name,groups:(x.groups||[]).map(g=>g.name)})),pickLooks,get lookPicks(){return [...PICKS.looks];},get shownKind(){return shownGroup;},get mine(){return mine.length;},decks:async()=>(await memorySources()).map(d=>d.name),greeters:async()=>residentSets(await loadStickerSets()).map(set=>set.name),takePhoto,startCamera,get engine(){return engine;},chooseLook,addLayer,shuffle,cameraStickers,editStickers,memory,printer,openMemory,editZoom,viewerZoom,gameWon,setDance,get danceTempo(){return danceTempo;},openCardGame,get cardGame(){return activeCardGame;}};

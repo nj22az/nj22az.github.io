@@ -41,21 +41,27 @@ try{
    }
    return rows;
   });
-  for(const want of ['marks','halloween','pocket-faces','johansson-cartoon','johansson-studios','matsuri','showa','cute','bits'])assert.ok(report.some(r=>r.id===want),`${want} is on the list`);
+  for(const want of ['marks','halloween','pocket-faces','johansson-cartoon','johansson-studios','matsuri','showa','cute','bits','matsuri-friends','tet','easter','summer','halloween-cute','christmas'])assert.ok(report.some(r=>r.id===want),`${want} is on the list`);
   for(const r of report){assert.equal(r.file,r.id+'.json');assert.equal(r.missing,0,JSON.stringify(r));assert.ok(r.ids&&r.count>0,JSON.stringify(r));}
   for(const r of report.filter(r=>!['marks','halloween','pocket-faces'].includes(r.id)))assert.ok(r.sizes,`${r.id}: every sticker at most 512 px with a description`);
   const by=id=>report.find(r=>r.id===id);
   assert.equal(by('johansson-cartoon').count,38);assert.equal(by('matsuri').count,33);assert.equal(by('showa').count,21);assert.equal(by('cute').count,22);
  });
- await check('tabs: the residents, the town, Friends, Season by the calendar, Faces, Manga',async()=>{
+ await check('six sections; inside Minato the residents, the town’s things and the secret faces; the seasons by the calendar',async()=>{
   const tabs=await page.evaluate(async()=>({nov:await window.pocketCamera.stickerTabs(new Date(2026,10,12)),oct:await window.pocketCamera.stickerTabs(new Date(2026,9,3)),jul:await window.pocketCamera.stickerTabs(new Date(2026,6,20))}));
-  assert.deepEqual(tabs.nov.map(t=>t.name),['Thuan','Johansson','Thao','Minato','Friends','Season','Faces','Manga']);
+  assert.deepEqual(tabs.nov.map(t=>t.name),['Thuan','Johansson','Thao','Shōwa','Friends','Season','Faces','Manga']);
+  // Six sections hold them: who is a chip inside Minato.
+  const sections=await page.evaluate(()=>window.pocketCamera.stickerSections(new Date(2026,10,12)));
+  assert.deepEqual(sections.map(x=>x.name),['For you','Minato','Friends','Seasons','Words','Mine']);
+  assert.deepEqual(sections.find(x=>x.name==='Minato').groups,['Thuan','Johansson','Thao','Shōwa','Faces']);
+  assert.deepEqual(sections.find(x=>x.name==='Words').groups,['Manga']);
   const of=(set,name)=>set.find(t=>t.name===name).sheets;
   assert.deepEqual(of(tabs.nov,'Johansson'),['Johansson','Cartoon Johansson','Animation Studios']);
   assert.deepEqual(of(tabs.nov,'Friends'),['Friends','Bits']);
   assert.equal(of(tabs.oct,'Season')[0],'Halloween','in October Halloween comes first');
   assert.equal(of(tabs.jul,'Season')[0],'Matsuri','in July the festival comes first');
-  assert.equal(of(tabs.nov,'Season')[0],'Matsuri','in November the next season to come is first');
+  assert.equal(of(tabs.nov,'Season')[0],'Christmas','in November the next season to come is first');
+  assert.deepEqual([...new Set(of(tabs.nov,'Season'))],['Christmas','Tết','Easter','Summer','Matsuri','Halloween'],'the year from here');
  });
  await check('a sheet with a kind never greets; Memory deals the residents, the cartoon sailor and the friends',async()=>{
   const {greeters,decks}=await page.evaluate(async()=>({greeters:await window.pocketCamera.greeters(),decks:await window.pocketCamera.decks()}));
@@ -66,9 +72,16 @@ try{
  await check('the picker shows a tab\'s sheets under their names, and a cut sticker goes on the picture',async()=>{
   await page.click('#shutter');await page.waitForFunction(()=>document.querySelector('#shutter')?.dataset.kind==='shoot');
   await page.click('.sticker-button');await page.waitForSelector('#stickerSheet[open] .sticker-choice');
-  await page.click('#stickerSets button:text-is("Johansson")');await page.waitForSelector('.sticker-choice[data-id^="johansson-cartoon/"]');
+  assert.deepEqual(await page.$$eval('#stickerSets button',bs=>bs.map(b=>b.textContent)),['For you','Minato','Friends','Seasons','Words','Mine']);
+  assert.equal(await page.$eval('#stickerSets [aria-selected=true]',b=>b.textContent),'For you','the stickers open on For you');
+  assert.ok(await page.$eval('#stickerGroups',el=>el.hidden),'no chips where there is nobody to choose between');
+  await page.click('#stickerSets button:text-is("Minato")');await page.waitForSelector('#stickerGroups button img');
+  const chips=await page.$$eval('#stickerGroups button',bs=>bs.map(b=>({name:b.textContent,locked:b.classList.contains('locked'),h:b.getBoundingClientRect().height,face:!!b.querySelector('img')})));
+  assert.deepEqual(chips.map(c=>c.name),['Thuan','Johansson','Thao','Shōwa',''],'a chip each, the secret one a lock alone');
+  assert.ok(chips.every(c=>c.h>=44&&(c.locked||c.face)),JSON.stringify(chips));
+  await page.click('#stickerGroups button:has-text("Johansson")');await page.waitForSelector('.sticker-choice[data-id^="johansson-cartoon/"]');
   assert.deepEqual(await page.$$eval('#stickerGrid .sticker-heading',hs=>hs.map(h=>h.textContent)),['Cartoon Johansson','Animation Studios']);
-  await page.click('#stickerSets button:text-is("Season")');await page.waitForSelector('.sticker-choice[data-id^="matsuri/"]');
+  await page.click('#stickerSets button:text-is("Seasons")');await page.waitForSelector('.sticker-choice[data-id^="matsuri/"]');
   const season=await page.$$eval('#stickerGrid .sticker-heading',hs=>hs.map(h=>h.textContent));
   assert.ok(season.includes('Matsuri')&&season.includes('Halloween')&&new Set(season).size===season.length,`every season once: ${season}`);
   await page.click('#stickerSets button:text-is("Friends")');await page.waitForSelector('.sticker-choice[data-id="cute/frog-tea"]');
@@ -78,6 +91,17 @@ try{
   await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='cute/frog-tea'));
   await page.waitForFunction(()=>{const img=document.querySelector('#cameraFrame .sticker img');return img&&img.complete&&img.naturalWidth>0;});
   await page.evaluate(()=>{const c=window.pocketCamera;c.state.camera.recipe.stickers.length=0;c.cameraStickers.select(null);c.cameraStickers.render();});
+ });
+ await check('For you: what was used lately first, then the season, then today’s handful with something to say',async()=>{
+  await page.click('.sticker-button');await page.click('#stickerSets button:text-is("For you")');await page.waitForSelector('#stickerGrid .sticker-heading');
+  const rows=await page.evaluate(()=>{const out=[];for(const el of document.querySelector('#stickerGrid').children){if(el.classList.contains('sticker-heading'))out.push({title:el.textContent,ids:[]});else if(out.length)out.at(-1).ids.push(el.dataset.id);}return out;});
+  assert.equal(rows[0].title,'Lately');assert.deepEqual(rows[0].ids,['cute/frog-tea'],'the frog and its tea, just used');
+  assert.ok(['Christmas','Tết','Easter','Summer','Matsuri','Halloween'].includes(rows[1].title),`the season: ${rows[1].title}`);
+  assert.equal(rows.at(-1).title,'Today');assert.equal(rows.at(-1).ids[0],'balloon:speech','a balloon leads today’s handful');
+  const all=rows.flatMap(r=>r.ids);assert.equal(new Set(all).size,all.length,'nothing twice');assert.ok(all.length<=30,`a short page: ${all.length}`);
+  assert.equal(JSON.parse(await page.evaluate(()=>localStorage.getItem('office-pocket-camera'))).recentStickers[0],'cute/frog-tea');
+  if(shots)await page.screenshot({path:join(shots,'stickers-for-you.png')});
+  await page.evaluate(()=>document.querySelector('#stickerSheet').close());
  });
  await check('Mine offers a photo, a sheet, a paste and the sticker box',async()=>{
   await openMine();

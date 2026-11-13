@@ -75,11 +75,11 @@ try{
 
  await check('the secret sheet\'s tab is a lock with a hint, and holds no stickers yet',async()=>{
   await openPortrait(page);
-  await page.click('#tabStickers');
-  await page.waitForSelector('#stickerSets button.locked');
-  const r=await page.evaluate(()=>{const b=document.querySelector('#stickerSets button.locked');return {text:b.textContent,lock:!!b.querySelector('svg use[href="#i-lock"]'),aria:b.getAttribute('aria-label'),fits:b.scrollWidth<=b.clientWidth+1};});
+  await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Minato")');
+  await page.waitForSelector('#stickerGroups button.locked');
+  const r=await page.evaluate(()=>{const b=document.querySelector('#stickerGroups button.locked');return {text:b.textContent,lock:!!b.querySelector('svg use[href="#i-lock"]'),aria:b.getAttribute('aria-label'),fits:b.scrollWidth<=b.clientWidth+1};});
   assert.equal(r.text,'','the lock alone');assert.ok(r.lock&&r.fits);assert.match(r.aria,/^Faces sheet, locked\. Win a game of Memory or Solitaire to open this sheet\./);
-  await page.click('#stickerSets button.locked');
+  await page.click('#stickerGroups button.locked');
   await page.waitForSelector('.sticker-locked');
   const hint=await page.evaluate(()=>({how:document.querySelector('.sticker-locked-how').textContent,choices:document.querySelectorAll('#stickerGrid .sticker-choice').length,what:document.querySelector('.sticker-locked p').textContent}));
   assert.equal(hint.how,'Win a game of Memory or Solitaire to open this sheet.');assert.equal(hint.choices,0);assert.match(hint.what,/scribbled over/);
@@ -107,8 +107,9 @@ try{
   await page.click('#closeMemory');
   await openPortrait(page);
   await page.click('#tabStickers');await page.waitForSelector('#stickerSets button');
-  assert.equal(await page.locator('#stickerSets button.locked').count(),0,'no lock now');
-  await page.locator('#stickerSets button',{hasText:'Faces'}).click();
+  await page.click('#stickerSets button:text-is("Minato")');await page.waitForSelector('#stickerGroups button');
+  assert.equal(await page.locator('#stickerGroups button.locked').count(),0,'no lock now');
+  await page.locator('#stickerGroups button',{hasText:'Faces'}).click();
   await page.waitForSelector('#stickerGrid .sticker-choice[data-id^="pocket-faces/"]');
   const faces=await page.evaluate(()=>[...document.querySelectorAll('#stickerGrid .sticker-choice')].map(b=>b.dataset.id));
   assert.deepEqual(faces,['run','hide','oops','silly','full','secret','wait','nope'].map(k=>`pocket-faces/${k}`));

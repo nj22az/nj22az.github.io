@@ -1,0 +1,50 @@
+{
+ "id": "matsuri-friends",
+ "name": "Matsuri",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  7,
+  8
+ ],
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "matsuri-friends/frog-fan",
+   "src": "matsuri-friends/frog-fan.webp?v=e4c59bdb",
+   "thumb": "matsuri-friends/frog-fan.thumb.webp?v=e4c59bdb",
+   "width": 452,
+   "height": 512,
+   "line": "",
+   "gloss": "The frog cheers the shrine along"
+  },
+  {
+   "id": "matsuri-friends/duck-scoop",
+   "src": "matsuri-friends/duck-scoop.webp?v=87b7d513",
+   "thumb": "matsuri-friends/duck-scoop.thumb.webp?v=87b7d513",
+   "width": 511,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck nearly had it"
+  },
+  {
+   "id": "matsuri-friends/rabbit-apple",
+   "src": "matsuri-friends/rabbit-apple.webp?v=b4c4a30e",
+   "thumb": "matsuri-friends/rabbit-apple.thumb.webp?v=b4c4a30e",
+   "width": 304,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit at the fair"
+  },
+  {
+   "id": "matsuri-friends/cat-floss",
+   "src": "matsuri-friends/cat-floss.webp?v=0459da17",
+   "thumb": "matsuri-friends/cat-floss.thumb.webp?v=0459da17",
+   "width": 462,
+   "height": 512,
+   "line": "",
+   "gloss": "The cat and the cotton candy"
+  }
+ ]
+}

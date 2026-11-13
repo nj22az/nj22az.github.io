@@ -1,6 +1,6 @@
 {
-  "version": "20261112fun1",
-  "bytes": 45422144,
+  "version": "20261113picks1",
+  "bytes": 46408582,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "4d59d89927cb75486de02fd298fff150e4385de4d383d8ec89abef08b8aa6e64",
-      "bytes": 166925
+      "sha256": "7106406cb9c2e4ccba8f3709d67c96b079bbf9c074f751b8dd36691ceb292448",
+      "bytes": 174503
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -39,8 +39,8 @@
     },
     {
       "url": "/camera/blackjack.js",
-      "sha256": "9102f39c479e4094f605fec6b111348b3ad4f8fc0797de8565425ed739d1ea00",
-      "bytes": 4607
+      "sha256": "f58e5582b4b0573ab21d7097d075273ad3cf91aaf85715112a0a910c89c99c74",
+      "bytes": 4609
     },
     {
       "url": "/camera/camera-black.css",
@@ -54,8 +54,8 @@
     },
     {
       "url": "/camera/camera-fun.css",
-      "sha256": "e510f8243c4f2aeceea37744a9c7b436927483747058a4f826bf0c5b06b2cd3b",
-      "bytes": 3930
+      "sha256": "473bb174b431947d4262846518ad2ef450ffa8bb55384f87b75f8a4f58848ded",
+      "bytes": 7629
     },
     {
       "url": "/camera/camera-refresh.css",
@@ -69,8 +69,8 @@
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "23ca936b40619b2b818dedf1013df1cb997c8ad45485b627a6e8cbf72021d6ee",
-      "bytes": 52141
+      "sha256": "21e6e771160554792ce76ae38e39d2e79ec10f75eed881374b73f53dcfb6afac",
+      "bytes": 53335
     },
     {
       "url": "/camera/card-games.css",
@@ -134,8 +134,8 @@
     },
     {
       "url": "/camera/face-stamps.js",
-      "sha256": "64419298d8254b5a56fd575f09f0204941e3e1b34d8ee9a082eaccaf8e9a2c0d",
-      "bytes": 20375
+      "sha256": "b30b07ebf0072e8efa46ff5b9e1b704e68bd9141e2dc21044e9778651eb69a77",
+      "bytes": 20377
     },
     {
       "url": "/camera/fonts/baloo2.woff2",
@@ -159,8 +159,8 @@
     },
     {
       "url": "/camera/frames.js",
-      "sha256": "9e47b6247e9b6f73c7f8b05a1c9c769b33fc8c4df52262791d7d794179584e40",
-      "bytes": 8884
+      "sha256": "298c8e1c508b64c4cd5857b44317447b272ade03c3d164dc37759f05689b1aca",
+      "bytes": 10155
     },
     {
       "url": "/camera/frames/adventure.png",
@@ -169,8 +169,8 @@
     },
     {
       "url": "/camera/frames/cute.json",
-      "sha256": "6b7996f8f0afb61f394c9e064424c371794099ebc88f712def519d42ac097e1f",
-      "bytes": 26915
+      "sha256": "c4123847ceb71f7705bd1b1d479f7c4320bfeba5bc3282c2b87bfab0b5561b6e",
+      "bytes": 86713
     },
     {
       "url": "/camera/frames/frames.json",
@@ -259,8 +259,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "95efca69a612da3138d8e6de9acba532d09d6e88acfcecf32079eab31a498e57",
-      "bytes": 74058
+      "sha256": "e2267ba5cd88dce60f13ebe1bdec944c92870a08336a839529ff339ed8e2c7b7",
+      "bytes": 74179
     },
     {
       "url": "/camera/lettering.js",
@@ -314,8 +314,8 @@
     },
     {
       "url": "/camera/memory.js",
-      "sha256": "8dbe1e750ba7a6d297764b0dc1e35de5f096e845eb73ee00f578a431b1a5e3a5",
-      "bytes": 12935
+      "sha256": "e8973ab0cd64358466735bb68782ae2a65148a06b87e3a70d327864a07568689",
+      "bytes": 12937
     },
     {
       "url": "/camera/minato.js",
@@ -326,6 +326,11 @@
       "url": "/camera/offline.js",
       "sha256": "22ae0fd66ae7493a8c2efd3bcda97a770dd3758754946ac70afdf9ab87c13e3f",
       "bytes": 4403
+    },
+    {
+      "url": "/camera/picks.js",
+      "sha256": "cda2406303281f2590f5bcfb78c66fd431652d1efe29a3a02780be8df0cdf035",
+      "bytes": 7235
     },
     {
       "url": "/camera/playing-cards.js",
@@ -339,8 +344,8 @@
     },
     {
       "url": "/camera/pocket-faces.js",
-      "sha256": "807f6f74c2c42ecd77399bcd0086d04875ca89efa5b132ef5914ac164925fe98",
-      "bytes": 1536
+      "sha256": "3279f3f699a6ee0ff2879a25b1131153859f2ee6aa60df613a487477e915652e",
+      "bytes": 1538
     },
     {
       "url": "/camera/presets.js",
@@ -394,8 +399,8 @@
     },
     {
       "url": "/camera/solitaire.js",
-      "sha256": "fc36370cf2a43718ce4d58e5a8c4c22e2d7facabc6775438fb2885a520351ebf",
-      "bytes": 8467
+      "sha256": "fd9e921cb1a7dd2fc57e7df5d05cc06d91448988e592f11cab0e621d4870fa4b",
+      "bytes": 8469
     },
     {
       "url": "/camera/steppers.js",
@@ -516,6 +521,61 @@
       "url": "/camera/stickers/bits/star.webp",
       "sha256": "ea90b34528c8ed58fbea1c2b3fa5ed10258c14a2cd8e8ecf29b1c2087220e14c",
       "bytes": 21656
+    },
+    {
+      "url": "/camera/stickers/christmas.json",
+      "sha256": "1f65a68b0cc7d5002c18d41c5ab27690bff9a3754cfeb1fc0e97908ca679a52a",
+      "bytes": 1383
+    },
+    {
+      "url": "/camera/stickers/christmas/bear-cocoa.thumb.webp",
+      "sha256": "23ec047453dd528e761aed48e86e79ebf218fc35c408149cb30cc95017342ca4",
+      "bytes": 8564
+    },
+    {
+      "url": "/camera/stickers/christmas/bear-cocoa.webp",
+      "sha256": "6b1a8f6eb9c9d772d6c6293e01089c0c979bb07a879a261c7dae1b4dac87a93f",
+      "bytes": 18034
+    },
+    {
+      "url": "/camera/stickers/christmas/cat-tree.thumb.webp",
+      "sha256": "0aa7c2a46e9af6e28280219043fc6fbb6e1ded9c31bca26dc250a06306c13c3c",
+      "bytes": 9478
+    },
+    {
+      "url": "/camera/stickers/christmas/cat-tree.webp",
+      "sha256": "1da6233eb194fc5c111df81ac9c83a140b75078e6698d5c23535e2a03410f3b6",
+      "bytes": 20586
+    },
+    {
+      "url": "/camera/stickers/christmas/duck-santa.thumb.webp",
+      "sha256": "b80c82e0146a9d4295d05b026dd243629a1c6a7eea42582bacd1f29152674029",
+      "bytes": 7890
+    },
+    {
+      "url": "/camera/stickers/christmas/duck-santa.webp",
+      "sha256": "e2dddf5385b493f7bee949ef702e9a457748e10af684cee09ec9a116acda4b4f",
+      "bytes": 16720
+    },
+    {
+      "url": "/camera/stickers/christmas/frog-lights.thumb.webp",
+      "sha256": "8d40368b0c5f693ba2dae90aded76904741d38c2577557b755fca9ec9c20a7b5",
+      "bytes": 12114
+    },
+    {
+      "url": "/camera/stickers/christmas/frog-lights.webp",
+      "sha256": "e60be48af830de7123d82cb3f5c392c17b432c7a739552e3f1d778c471d0c437",
+      "bytes": 26602
+    },
+    {
+      "url": "/camera/stickers/christmas/rabbit-reindeer.thumb.webp",
+      "sha256": "4679452fd445fdf785e9ca850f5a33aa2884424e61bafba6172d4f49ff228d3b",
+      "bytes": 8714
+    },
+    {
+      "url": "/camera/stickers/christmas/rabbit-reindeer.webp",
+      "sha256": "430ceb433d121b55f1ded3e852c4d69d3dbbe7742fdcebb7efc7d3a3ba6b48f8",
+      "bytes": 19034
     },
     {
       "url": "/camera/stickers/cute.json",
@@ -741,6 +801,106 @@
       "url": "/camera/stickers/cute/together.webp",
       "sha256": "8262095ecea0f315781a3cd8e9853c94dd50d77c47f7d23a4c846d2b8ee78936",
       "bytes": 25964
+    },
+    {
+      "url": "/camera/stickers/easter.json",
+      "sha256": "9ce32cd9f33dbfad972b6fe6c4cbe8cb0b216ef75b133824dfe96b70f2883a50",
+      "bytes": 1109
+    },
+    {
+      "url": "/camera/stickers/easter/bear-basket.thumb.webp",
+      "sha256": "b46798facc2103b5e4b1a7e1163c9c603d1f728f11acd57444b8a8d70610351c",
+      "bytes": 8584
+    },
+    {
+      "url": "/camera/stickers/easter/bear-basket.webp",
+      "sha256": "a060ddfcdac4db64a6e36fc860e6a56def255969f5a62f858f1670be24af6257",
+      "bytes": 18506
+    },
+    {
+      "url": "/camera/stickers/easter/duck-hatch.thumb.webp",
+      "sha256": "1a98dba309bc31d4095d87f2c6bdbcf7342f80114b415975281033297ec18626",
+      "bytes": 8154
+    },
+    {
+      "url": "/camera/stickers/easter/duck-hatch.webp",
+      "sha256": "2b8c95c1021b225873c0d20144ba612968ccaad762a6029c3b7ae4adb7a2b16d",
+      "bytes": 18076
+    },
+    {
+      "url": "/camera/stickers/easter/frog-egg.thumb.webp",
+      "sha256": "0fd162fe5c2beefcfd52a61a33ac39da7a915fc1cd9f1cb12c7e0218e5d32a22",
+      "bytes": 11936
+    },
+    {
+      "url": "/camera/stickers/easter/frog-egg.webp",
+      "sha256": "563290919b0b14c071774c417e28a36a11d972517900d000b7303c367dc479d6",
+      "bytes": 26916
+    },
+    {
+      "url": "/camera/stickers/easter/rabbit-egg.thumb.webp",
+      "sha256": "d2f46daefd3e13f0a6b32b863f078b51b6d051df73465e74d10f93df6642c2b8",
+      "bytes": 7508
+    },
+    {
+      "url": "/camera/stickers/easter/rabbit-egg.webp",
+      "sha256": "dfe47ae8760dfc64177347c69862ffe412240d8045b75c6685c196e3cc5053e0",
+      "bytes": 16440
+    },
+    {
+      "url": "/camera/stickers/halloween-cute.json",
+      "sha256": "c2d73f0e15bff5f2d4923c98f8591febb36e3b9a95aab9bfb874acf5f091b755",
+      "bytes": 1471
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/bear-sweets.thumb.webp",
+      "sha256": "ab6a488866e44bdd26251d4f37cd8961422925122fab1aa87c6124945d363a91",
+      "bytes": 8654
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/bear-sweets.webp",
+      "sha256": "af0c5f813465c3222d64a9ab51a17b522ca53bf0700faff2e2185ed7dc833982",
+      "bytes": 18148
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/cat-pumpkin.thumb.webp",
+      "sha256": "dda34d9d7c6c7f60dc31dae95ddcb3efd648d1a5a0fadec3e7d34ee1e23b6e72",
+      "bytes": 10256
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/cat-pumpkin.webp",
+      "sha256": "5269b7f1cb6167296b9b4e758738743bc6d1f1472a04aca6ccc9082bac518f4f",
+      "bytes": 22448
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/duck-ghost.thumb.webp",
+      "sha256": "a9f82bd7743c4a8e330e21e06893b632916235e25a4dc4938cbe95676a0c0f8f",
+      "bytes": 5702
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/duck-ghost.webp",
+      "sha256": "136e46c81058794e94229bee573f9097f1347d2008db22054a6acf35e630207d",
+      "bytes": 12792
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/frog-witch.thumb.webp",
+      "sha256": "ee64354cf066df6cbe93bfdd1d4bec99ee4db3a98fc447a4c9599862fdb9662f",
+      "bytes": 11918
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/frog-witch.webp",
+      "sha256": "bff376968e5f2e27eb22765cf33d53dae818d6a696ac3138c6c21a9478421ab0",
+      "bytes": 25778
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/rabbit-vampire.thumb.webp",
+      "sha256": "da4a3c8babbd26bc4bfd9d5a71248f8bd6fed14183f41f509722247fdc582ed4",
+      "bytes": 8286
+    },
+    {
+      "url": "/camera/stickers/halloween-cute/rabbit-vampire.webp",
+      "sha256": "0b7b61bdbbffcaa8481466c9e682bacced2e0dfa7046e6c7cbaf4d897268416b",
+      "bytes": 18790
     },
     {
       "url": "/camera/stickers/halloween.json",
@@ -1648,6 +1808,51 @@
       "bytes": 13928
     },
     {
+      "url": "/camera/stickers/matsuri-friends.json",
+      "sha256": "7c1c1ebcc5d7faf9a72b51841d8bd0856b4b711b30dc3e9a1d27754c7bd385bd",
+      "bytes": 1215
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/cat-floss.thumb.webp",
+      "sha256": "423026c143ea6004229495e6c22374d069c1fbeb6134074808ab5b5dd8ee136d",
+      "bytes": 11454
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/cat-floss.webp",
+      "sha256": "0459da17c37c0610b8d27372a2da444ab08bdd4ce7d472ee16a9d37e61ce225a",
+      "bytes": 25200
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/duck-scoop.thumb.webp",
+      "sha256": "582c756cc69eddb5610a65d8780aa1ac428b6e23a76796d5c6e8204f01fb77fe",
+      "bytes": 13022
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/duck-scoop.webp",
+      "sha256": "87b7d5131d3b9cdcd87f581807e4d2179a4b5b0c9d17502799efdc116b2d9688",
+      "bytes": 28940
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/frog-fan.thumb.webp",
+      "sha256": "b8f7b086101915fa5edf033d63958eb6b3c35f97bf7d785b1b2965ef9d06f994",
+      "bytes": 11954
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/frog-fan.webp",
+      "sha256": "e4c59bdb98526e6a8fec6beec09d8bbab9b5d7c259aab24c980ce1afed0dd391",
+      "bytes": 26628
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/rabbit-apple.thumb.webp",
+      "sha256": "e7246c114583a7aaaa37f2ba879d0f5a1c87fbffe2ba22a5ef85607005cf683e",
+      "bytes": 8066
+    },
+    {
+      "url": "/camera/stickers/matsuri-friends/rabbit-apple.webp",
+      "sha256": "b4c4a30e42b10b232a0a069ca127cc8f355f9258080b0d5e51cf61025bea89f0",
+      "bytes": 17864
+    },
+    {
       "url": "/camera/stickers/matsuri.json",
       "sha256": "13ad7ed92ff30658bfd257d594fa91642f7ddba38f83108f7b583d143171641b",
       "bytes": 7386
@@ -2069,12 +2274,12 @@
     },
     {
       "url": "/camera/stickers/sheets.json",
-      "sha256": "e4ab4c7a1aff65782e1f2d21d13c6a82bc142c7d6551c844cf080e03eeb65b97",
-      "bytes": 198
+      "sha256": "8d453e18132482479a3d59d94c512aff2b4bffcd7b0bce2e0309f0c8a31af119",
+      "bytes": 317
     },
     {
       "url": "/camera/stickers/showa.json",
-      "sha256": "3ea32c013fc5e59bd99b119fb565de80b3e4a521a4ea49b83ad40f28d864b35a",
+      "sha256": "6a3e0c1c8549270fbf629a66a7b894c4f7d60bea4a7c9c3d3a7a8548bd5b5423",
       "bytes": 4610
     },
     {
@@ -2291,6 +2496,116 @@
       "url": "/camera/stickers/stickers.json",
       "sha256": "1f7790dc98e34daf860d1fc130655410de1d57bd2b03f3f5db334fc823649248",
       "bytes": 33720
+    },
+    {
+      "url": "/camera/stickers/summer.json",
+      "sha256": "6d4a90ece01ac0af7a37331704ac4109c6bbd430073dcbcbacd42e1d18ae9f6b",
+      "bytes": 1307
+    },
+    {
+      "url": "/camera/stickers/summer/bear-lolly.thumb.webp",
+      "sha256": "6e0387532d2d2511e57e192a9e4ff20c54bda914569a1dca393f112e5db57fd9",
+      "bytes": 9500
+    },
+    {
+      "url": "/camera/stickers/summer/bear-lolly.webp",
+      "sha256": "be99964c457a249dd25884c82189acb24ba76a55dfb190ad2b6c0e6b8b3d5de2",
+      "bytes": 20824
+    },
+    {
+      "url": "/camera/stickers/summer/cat-melt.thumb.webp",
+      "sha256": "2bdbf058e10bffb95072fb5eb9f65fed079f8f009545636116e38c0e0d79dae5",
+      "bytes": 13292
+    },
+    {
+      "url": "/camera/stickers/summer/cat-melt.webp",
+      "sha256": "065af4066e8efd33849b2609ee408b9775c0a96785bc8849764d34951f6ee2b9",
+      "bytes": 29064
+    },
+    {
+      "url": "/camera/stickers/summer/duck-snorkel.thumb.webp",
+      "sha256": "a5e32b25b5d8ad2261b76fb2ce93ec8194a0903de95714c50ba1d092d5210ae5",
+      "bytes": 9032
+    },
+    {
+      "url": "/camera/stickers/summer/duck-snorkel.webp",
+      "sha256": "ca789b62fad99d805670bce0fac04bf7c2fece04a85972ea1784a2d367c206d0",
+      "bytes": 19472
+    },
+    {
+      "url": "/camera/stickers/summer/frog-ring.thumb.webp",
+      "sha256": "49548197a840b42fb2e764ff838c2e9e13a18de300a541fd9a49e3bb51e53c41",
+      "bytes": 11712
+    },
+    {
+      "url": "/camera/stickers/summer/frog-ring.webp",
+      "sha256": "341f8bbc5c2349cc23e431f1983d5b6b19f61faab3851c8150cbb4d6b0bae019",
+      "bytes": 26176
+    },
+    {
+      "url": "/camera/stickers/summer/rabbit-melon.thumb.webp",
+      "sha256": "ff2eba1209f807aa85b0d04f180ef429e91609322c24665a5b838db7fb1882ee",
+      "bytes": 7532
+    },
+    {
+      "url": "/camera/stickers/summer/rabbit-melon.webp",
+      "sha256": "fb83b5162626c9f5799a357dba6cdf58481d182bdcd4e6ebf96fff2a46e8280f",
+      "bytes": 16616
+    },
+    {
+      "url": "/camera/stickers/tet.json",
+      "sha256": "78e372a0d35eccb3d520f57e9ddcecc7aedacf9f6ca6da27903453321905e034",
+      "bytes": 1354
+    },
+    {
+      "url": "/camera/stickers/tet/bear-rice-cake.thumb.webp",
+      "sha256": "2e9eb4c6705e5e3061c7f96f409e1f6f83d21c91ebb5e418c4941c6ea385bd4c",
+      "bytes": 8590
+    },
+    {
+      "url": "/camera/stickers/tet/bear-rice-cake.webp",
+      "sha256": "bceb7708292fd8bad7e4c31e315050b92c5766b6995798f9425c8c3a94084a41",
+      "bytes": 17894
+    },
+    {
+      "url": "/camera/stickers/tet/cat-envelope.thumb.webp",
+      "sha256": "b15977674e4a907c2e3aaaa393e433aed3bcce0ed47edb4162abfd77ee440fd7",
+      "bytes": 13242
+    },
+    {
+      "url": "/camera/stickers/tet/cat-envelope.webp",
+      "sha256": "a2b4bb9f47feab77fb4c176c00a61db3f83a36bf17b37021c1f66ec4eee7fa0a",
+      "bytes": 29854
+    },
+    {
+      "url": "/camera/stickers/tet/duck-firecrackers.thumb.webp",
+      "sha256": "d2df74ed73d6cc1ec799916dc6a227f2a4b0e6af22847d20c40689e2a3dc4eab",
+      "bytes": 15280
+    },
+    {
+      "url": "/camera/stickers/tet/duck-firecrackers.webp",
+      "sha256": "80aa1efb52ec07b1ca5c1e60e06bad735cfeb33b81e3807234b1372813a07249",
+      "bytes": 34240
+    },
+    {
+      "url": "/camera/stickers/tet/frog-blossom.thumb.webp",
+      "sha256": "8ce3b121b1ea76f656406ba11c86630b8f756899687f3209f99920a7a38a1729",
+      "bytes": 12054
+    },
+    {
+      "url": "/camera/stickers/tet/frog-blossom.webp",
+      "sha256": "279160946457349660ae0c180cfca55c1893c9b7db2578f5a7e005513f9e716c",
+      "bytes": 26470
+    },
+    {
+      "url": "/camera/stickers/tet/rabbit-lantern.thumb.webp",
+      "sha256": "a8a7f08b6cffeb3e107849f9ad917dc0c03d40be6ad0f733c1e77ffbc19b8e2b",
+      "bytes": 8210
+    },
+    {
+      "url": "/camera/stickers/tet/rabbit-lantern.webp",
+      "sha256": "fceb9a96310377e5febfea131ba98d28d4925ba71f88a91b50bd6fd20ca42035",
+      "bytes": 18764
     },
     {
       "url": "/camera/stickers/thao-pixar/CheekRest.thumb.webp",

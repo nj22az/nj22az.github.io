@@ -294,7 +294,17 @@ class Drawing:
         def num(v):
             text = f'{v:.{digits}f}'.rstrip('0').rstrip('.')
             return '0' if text in ('', '-0') else text
-        data = lambda p, closed: 'M' + 'L'.join(f'{num(x)} {num(y)}' for x, y in simplified(p, eps)) + ('Z' if closed else '')
+        def data(p, closed):
+            if closed and len(p) > 3:
+                # A closed outline ends where it began, and a line cannot be simplified against a chord of no length:
+                # it is taken in two halves, from its first point to the one farthest from it and back.
+                if math.dist(p[0], p[-1]) < 1e-6:
+                    p = p[:-1]
+                far = max(range(len(p)), key=lambda i: math.dist(p[0], p[i]))
+                p = simplified(p[:far + 1], eps)[:-1] + simplified(p[far:] + [p[0]], eps)[:-1]
+            else:
+                p = simplified(p, eps)
+            return 'M' + 'L'.join(f'{num(x)} {num(y)}' for x, y in p) + ('Z' if closed else '')
         out = []
         for op in self.ops:
             if op[0] == 'fill':

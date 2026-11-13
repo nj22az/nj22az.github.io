@@ -30,7 +30,7 @@ async function choose(page,name){
  const group=await page.locator('#lookGroups button').evaluateAll((bs,name)=>bs.find(b=>b.getAttribute('aria-label').split(': ').slice(1).join(': ').split(', ').includes(name))?.dataset.group,name.label);
  assert.ok(group,name.id);await page.click(`#lookGroups [data-group="${group}"]`);const tile=page.locator(`#strip .tile[data-look="${name.id}"]`);// (the Makeup strip's tiles carry data-look too)
  if(await tile.isVisible())await tile.click();
- else{const family=await page.evaluate(async id=>(await import('/camera/look-settings.js?v=20261101screen1')).familyFor(id).looks,name.id);const visible=page.locator(family.map(id=>`#strip .tile[data-look="${id}"]:visible`).join(',')).first();await visible.click();await page.click('.look-settings-button');await page.selectOption('#lookVariant',name.id);await page.click('#lookSettingsSheet .done');}if(name.id!=='none')await page.fill('#amount','100');
+ else{const family=await page.evaluate(async id=>(await import('/camera/look-settings.js?v=20261101screen1')).familyFor(id).looks,name.id);const visible=page.locator(family.map(id=>`#strip .tile[data-look="${id}"]:visible`).join(',')).first();await visible.click();await page.click('.look-settings-button');await page.selectOption('#lookVariant',name.id);await page.click('#lookSettingsSheet .done');}if(name.id!=='none'){if(!await page.isVisible('#amountRow'))await page.click('#strip .tile[aria-checked="true"]');await page.fill('#amount','100');}   // (its strength is with its styles, a second tap away)
  await page.waitForFunction(id=>window.auditDrawn?.length===1&&window.auditDrawn[0].look===id&&(id==='none'||window.auditDrawn[0].amount===1),name.id);
  await page.locator('#lookGroups').evaluate(el=>Promise.allSettled(el.getAnimations({subtree:true}).map(a=>a.finished)));
 }
@@ -95,6 +95,8 @@ try{
   const label=await page.locator('#editLookRail span').evaluate(e=>({overflow:e.scrollWidth-e.clientWidth,rect:e.getBoundingClientRect().toJSON()}));assert.ok(label.overflow<=1,name.label);
   await page.screenshot({path:join(shots,'shaders',`${String(index+1).padStart(2,'0')}-${name.id}.png`)});
   if(name.id==='none'){assert.equal(await page.locator('#amount').isDisabled(),true);return;}
+  // A Look's styles and its strength open when the chosen Look is tapped again.
+  if(!await page.isVisible('#amountRow'))await page.click('#strip .tile[aria-checked="true"]');await page.waitForSelector('#amountRow:not([hidden])');
   await page.fill('#amount','0');await page.waitForFunction(id=>window.auditDrawn?.[0]?.look===id&&window.auditDrawn[0].amount===0,name.id);
   assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.recipe.layers[0].amount),0);
   const zero=await page.evaluate(async()=>{const a=window.pocketCamera,m=await import('/camera/looks-gl.js?v=20261031offline1'),r=a.state.edit.recipe,opts={source:'edit',crop:r.crop,width:160,height:120},x=a.engine.render(r,opts).data,y=a.engine.render(m.normalRecipe({crop:r.crop}),opts).data;return x.every((v,i)=>v===y[i]);});assert.equal(zero,true,`${name.label}: 0% restores the original pixels`);await page.fill('#amount','100');

@@ -1,0 +1,50 @@
+{
+ "id": "easter",
+ "name": "Easter",
+ "tab": "Season",
+ "who": "",
+ "kind": "season",
+ "when": [
+  3,
+  4
+ ],
+ "source": "tools/draw-cute-stickers.py",
+ "stickers": [
+  {
+   "id": "easter/rabbit-egg",
+   "src": "easter/rabbit-egg.webp?v=dfe47ae8",
+   "thumb": "easter/rabbit-egg.thumb.webp?v=dfe47ae8",
+   "width": 233,
+   "height": 512,
+   "line": "",
+   "gloss": "The rabbit painted this one"
+  },
+  {
+   "id": "easter/duck-hatch",
+   "src": "easter/duck-hatch.webp?v=2b8c95c1",
+   "thumb": "easter/duck-hatch.thumb.webp?v=2b8c95c1",
+   "width": 291,
+   "height": 512,
+   "line": "",
+   "gloss": "The duck, just hatched, already cross"
+  },
+  {
+   "id": "easter/frog-egg",
+   "src": "easter/frog-egg.webp?v=56329091",
+   "thumb": "easter/frog-egg.thumb.webp?v=56329091",
+   "width": 512,
+   "height": 473,
+   "line": "",
+   "gloss": "The frog is definitely an egg"
+  },
+  {
+   "id": "easter/bear-basket",
+   "src": "easter/bear-basket.webp?v=a060ddfc",
+   "thumb": "easter/bear-basket.thumb.webp?v=a060ddfc",
+   "width": 290,
+   "height": 512,
+   "line": "",
+   "gloss": "The bear found them all"
+  }
+ ]
+}
