@@ -101,5 +101,18 @@ What was built for it (all in `blender/`):
   the air), the soft-shoe slide and the pirouette (meant), and kicks (fast by nature).
 - The storyboard the owner approved: <https://claude.ai/artifact/2bmW1wgoUjfSk3ekPuqppG> (private to the owner).
 
-*Not yet done when this was written:* the second cut's frames (about 1,550), its edit render, and the review of it.
-Meshy balance about 1,815 credits.
+*Since then (13 November, to about 10:45 UTC).* The second cut was delivered at 08:00. The owner: "This is really
+awesome I only see some physics errors and problems with them bleeding into the props"; then "Can't you redraw
+Jack and rig his cloak too".
+- **Props.** `--pass qc` now also tries every joint of every actor against every solid piece of the set, every
+  picture: 64 cases in the second cut. The street was widened in `stage.py` (the pub, the side house and the back
+  terrace moved out of the playing area) and every lane in `film.py` laid at least 0.6 m clear of the lamps and
+  the sign: 0 cases now, and no two actors in one place. The set built this way is `stage2.blend`.
+- **Polly's mouth** opens half as far again when she sings (`sing`).
+- **A second Jack** from Meshy with no cloak on his body (`rig2/` in the scratch folder; `cast2.blend`), and
+  `cloak.py`: his cloak as cloth of its own, simulated against his body and baked once a shot. Tried on the feet
+  shot and three others as pictures; **no cut with it exists yet**.
+- The third cut's frames and plates (1,463 and 28) are rendered; it was being assembled when this was written.
+- The cloud machine restarted twice in the day; the scratch folder survived both times. Background jobs there are
+  stopped after two hours: every long render here is resumable.
+Meshy balance about 1,760 credits.

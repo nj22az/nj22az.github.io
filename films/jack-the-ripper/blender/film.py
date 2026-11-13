@@ -20,6 +20,8 @@ the street, joints that jump and actors who stand in each other.
 import bpy, sys, os, math, json, time
 from mathutils import Vector, Quaternion, Matrix
 from bpy_extras.object_utils import world_to_camera_view
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cloak
 
 argv = sys.argv[sys.argv.index('--') + 1:]
 def arg(n, d=None): return argv[argv.index(n) + 1] if n in argv else d
@@ -217,6 +219,14 @@ FOLK = [ACT['flowerwoman'], ACT['gent'], ACT['workman']]
 JACKS = [JACK]
 
 cam = D.objects['camera']; aim = D.objects['aim']
+
+# Jack's cloak: cloth of its own, hung from his shoulders and simulated (cloak.py), black outside, crimson within.
+def cloth(name, color, rough, sheen):
+    m = D.materials.new(name); m.use_nodes = True; b = m.node_tree.nodes['Principled BSDF']
+    b.inputs['Base Color'].default_value = (*color, 1); b.inputs['Roughness'].default_value = rough; b.inputs['Sheen Weight'].default_value = sheen
+    return m
+CLOAK = cloak.Cloak(JACK, cast_coll, cloth('cloak-outside', (0.010, 0.010, 0.014), 0.62, 0.04), cloth('cloak-lining', (0.40, 0.010, 0.020), 0.45, 0.1))
+BAKING = [False]; NOW = [None]
 
 # Where a foot stands, the street is darker under it. The lamps here are many and soft and throw little shadow of
 # their own, and a figure with no dark under its feet floats (the owner: "now he sort of floats"); so every foot
@@ -819,7 +829,17 @@ def pose(sh, t):
     sh['fn'](t)
     bpy.context.view_layer.update()
     veils(t); foot_shade()
+    if not BAKING[0]: NOW[0] = CLOAK.apply(sh['name'], t)
     bpy.context.view_layer.update()
+
+
+def bake(sh):
+    """The shot's cloth, once, before any picture of it is made."""
+    if sh['name'] in EXTERIOR: return
+    BAKING[0] = True; tt = time.time()
+    CLOAK.bake(sh['name'], lambda t: pose(sh, t), sh['t0'], sh['t1'])
+    BAKING[0] = False
+    print(f'cloth {sh["name"]} {time.time() - tt:.1f}s', flush=True)
 
 
 def settings(kind):
@@ -873,6 +893,10 @@ def region():
         for dx, dy in ((0.8, 0.3), (-0.8, 0.3), (0, 1.2), (0, -0.3)):                       # where its shadow can fall
             q = world_to_camera_view(scene, cam, Vector((g.x + dx, g.y + dy, 0)))
             if q.z > 0: xs.append(q.x); ys.append(q.y)
+    if NOW[0] is not None and JACK.on:                                  # and his cloak, wherever it has swung
+        for p in NOW[0][::3]:
+            q = world_to_camera_view(scene, cam, Vector(p))
+            if q.z > 0: xs.append(q.x); ys.append(q.y)
     if not xs: return None
     x0, x1, y0, y1 = max(0, min(xs) - 0.02), min(1, max(xs) + 0.02), max(0, min(ys) - 0.02), min(1, max(ys) + 0.02)
     if x1 - x0 < 0.01 or y1 - y0 < 0.01: return None
@@ -915,7 +939,7 @@ def qc(todo):
     print('QC  shot           actor        slide m/s  under m  over m   jump deg  crowding', flush=True)
     for sh in todo:
         if sh['name'] in EXTERIOR: continue
-        n = int((sh['t1'] - sh['t0']) * 24); prev = {}; worst = {}
+        bake(sh); n = int((sh['t1'] - sh['t0']) * 24); prev = {}; worst = {}
         for f in range(n + 1):
             t = sh['t0'] + f / 24.0; pose(sh, t)
             here = {}
@@ -978,10 +1002,10 @@ def main():
                 for a in ACT.values():
                     a.hide()
                     for o in a.shade: o.hide_render = True
-                JACK.veil.hide_render = True
+                JACK.veil.hide_render = True; CLOAK.ob.hide_render = True
                 t = time.time(); bpy.ops.render.render(write_still=True); print(f'BG {sh["name"]} {k} {time.time() - t:.1f}s', flush=True)
             continue
-        tracks = []
+        bake(sh); tracks = []
         for f in range(n):
             t = sh['t0'] + f / fps
             if ONE is not None and f != int(ONE): continue
