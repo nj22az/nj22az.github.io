@@ -1,6 +1,6 @@
 {
   "version": "20261113picks1",
-  "bytes": 46412049,
+  "bytes": 46413705,
   "files": [
     {
       "url": "/camera/album.js",
@@ -54,8 +54,8 @@
     },
     {
       "url": "/camera/camera-fun.css",
-      "sha256": "473bb174b431947d4262846518ad2ef450ffa8bb55384f87b75f8a4f58848ded",
-      "bytes": 7629
+      "sha256": "cb73eebfbaab59f66cd67370a39eeaaad2a9b97b3c04ae3634aff048a43b1389",
+      "bytes": 9285
     },
     {
       "url": "/camera/camera-refresh.css",

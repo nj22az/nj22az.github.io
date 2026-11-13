@@ -87,3 +87,22 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:3px solid var(
 .look-groups button[aria-selected="true"]{padding-inline:10px}
 .strip .tile:not(.preset-tile):not(:focus-visible) .name{position:static;clip-path:none;width:auto;height:auto;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.6875rem;line-height:1.2;font-weight:650;text-align:center;color:var(--label-2)}
 .strip .tile[aria-checked="true"]:not(.preset-tile) .name{color:var(--accent)}
+
+/* ---------- The playful skin, a second pass (13 November 2026; of the first the owner said "Yes it's looking better").
+   Nothing is added to look at. Three things that were said in several ways are said in one.
+   1. Chosen. A chosen chip was Apple's black pill, a chosen segment a black block, a chosen switch Apple's green, a
+      chosen tab the World's soft green: now every one is the soft green with the deep green word (a switch: the
+      World's green). The green fill itself stays the one main button's (camera.css, "The highlight").
+   2. Voice. Titles, the buttons that matter and the bars' own words (Cancel, Done, Select) speak in the World's
+      typeface, as the wordmark and the Game Room's sign do. Labels and running text stay the system's, and so does
+      the way back: beside a title in the same face and weight, "Album" and "November 13" read as one phrase.
+   3. Roundness. Segments, sheets and the editor's boxes take the corners the tiles and cards have. ---------- */
+:root,:root[data-theme=light]{--chip-on:var(--accent-soft);--chip-on-label:var(--accent)}
+.frame-finish-choices button[aria-pressed=true],.frame-stamp[aria-checked=true]{background:var(--accent-soft);box-shadow:none}
+.switch[aria-checked="true"]{background:var(--accent-fill)}
+
+.bar h2,.sheet h2,.settings-heading h2,.button.primary,.pill-button,.text-button{font-family:var(--font-brand);font-weight:700}
+
+.segmented,.mini-seg{border-radius:14px}.segmented button,.mini-seg button{border-radius:12px}
+.editor .crop-shapes button,.editor .frame-finish-choices button,.editor .frame-stamp{border-radius:14px}
+.sticker-sheet,.text-sheet{border-radius:24px}

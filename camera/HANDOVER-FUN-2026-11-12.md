@@ -9,12 +9,12 @@ Publication: see the last section.
   done, *choosing made easier* too, including what was drawn after the first publication (the friends through the year, the year's frames, the
   face cutouts, the first pass of the playful skin).
 - **On the branch, not live**: in the editor a face cutout brings the photo's face to its hole (the section *The face
-  to the hole* below). Nothing else.
-- **Waiting on the owner**: (the skin's first pass: "Yes it's looking better", 13 November, so the rest of the redraw
-  may go on in that direction); a try of the Sticker box with the iPhone's keyboard stickers; whether to
+  to the hole* below), and a second pass of the playful skin (*Not done* 3). Nothing else.
+- **Waiting on the owner**: their eye on the skin's second pass (a before/after sheet of five screens was sent on
+  13 November; of the first pass they said "Yes it's looking better"); a try of the Sticker box with the iPhone's keyboard stickers; whether to
   build any of the studio or the new filters; whether the seven sheet pictures should stay in the public repository
   (`tools/sources/sticker-sheets/`).
-- **Still owed**: the rest of the interface in the playful style (*Not done* 3).
+- **Still owed**: what is left of the playful redraw after the second pass, if the owner wants more (*Not done* 3).
 
 ## What the owner asked, in order
 
@@ -124,11 +124,26 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
    a solid lower edge on the primary and pill buttons and the steppers that goes down under a finger, everything
    pressable gives and springs back (not under reduced motion), and the sliders, when on, have a 10 px track and a
    30 px ringed thumb. Colours and layout are untouched; ui 82/82, audit 59/59, theme, brand and screens pass with it.
-   **Still owed**: the rest of the redraw (the bars, the sheets, the album, the Game Room, the brand typeface on
-   controls, selected states), best done with the owner looking at screenshots: they have refused three drawings
-   this round before liking one, so show before going far. References studied: Sanrio (pills, 20–24 px cards, soft
-   low shadows), YOHO Brewing (thick-bordered pills, two colours), LINE (one clear action, 44 px targets), Nintendo
-   (flat, calm).
+   **A second pass, 13 November, on the branch** (the foot of `camera-fun.css`; CSS only, layout untouched): three
+   things that were said in several ways are said in one.
+   - *Chosen*: a chosen chip was a black pill, a chosen segment a black block, a chosen switch Apple's green, a
+     chosen tab the soft green. Now all are the soft green with the deep green word: `--chip-on: var(--accent-soft)`,
+     `--chip-on-label: var(--accent)` in both themes, the Frame tab's ringed chips the same, a switch
+     `--accent-fill`. Not the green fill for chosen chips: camera.css keeps that for the one main button of a screen
+     ("The highlight", the owner's decision of 10 November), and two green fills on the editor would break it.
+   - *Voice*: `.bar h2`, sheet and settings titles, `.button.primary`, `.pill-button` and `.text-button` are in
+     `--font-brand` (LINE Seed JP, 700). Not `.back`: tried, and in the viewer "Album" beside "November 13, 2026" in
+     one face and weight read as one phrase. Labels, chips and running text stay the system's (only 700 and 800 of
+     the brand face are shipped).
+   - *Roundness*: `.segmented`, `.mini-seg` 14 px (their buttons 12), the editor's crop shapes and frame chips 14,
+     `.sticker-sheet` and `.text-sheet` 24.
+   - Checked: ui 82/82, audit 59/59, theme 5, screens 5/5, brand 11/11, comic 4, stickers 10, fun 11, album 3,
+     save/share/layout 14/14, camera, with the offline bundle rebuilt first. Looked at: ten phone screens in light
+     and four in dark. The trade-off to tell the owner: a chosen chip is quieter than the black pill was.
+   - **Still owed, if the owner wants more**: the bars and the dock, the album, the Game Room. Show before going
+     far: they refused three drawings this round before liking one. References studied: Sanrio (pills, 20–24 px
+     cards, soft low shadows), YOHO Brewing (thick-bordered pills, two colours), LINE (one clear action, 44 px
+     targets), Nintendo (flat, calm).
 4. **The four filter projects and a studio** (Filters4Processing, PhotoCraft, mIRO, XBImageFilters): the study is
    [RESEARCH-FILTERS-STUDIO-2026-11-12.md](RESEARCH-FILTERS-STUDIO-2026-11-12.md). In short: almost nothing can be
    reused as code (licences); about twelve effects are worth writing ourselves (kaleidoscope, fisheye, twirl, colour

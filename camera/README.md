@@ -700,6 +700,15 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   the primary and pill buttons and the steppers that goes down under a finger, everything pressable gives and springs
   back (not under reduced motion), and the sliders, when on, have a track with some body and a ringed thumb. Colours
   and layout are as they were. The rest of the redraw is still to come.
+- **A second pass** (13 November 2026, on the branch, not published; of the first the owner said "Yes it's looking
+  better"; the foot of `camera-fun.css`): three things that were said in several ways are said in one. *Chosen*: a
+  chosen chip was Apple's black pill, a chosen segment a black block, a chosen switch Apple's green and a chosen tab
+  the World's soft green; now every one is the soft green with the deep green word (`--chip-on` is `--accent-soft`,
+  `--chip-on-label` is `--accent`; a switch is the World's green). The green fill stays the one main button's.
+  *Voice*: titles, the main buttons and the bars' words (Cancel, Done, Select) are in the World's typeface, LINE Seed
+  JP; labels, running text and the way back stay the system's. *Roundness*: segments, sheets and the editor's boxes
+  take the corners the tiles and cards have. Layout is as it was. Still to come, if the owner wants more: the bars
+  and the dock, the album, the Game Room.
 
 ### Choosing, made easier — 13 November 2026 (published in v2026.11.13.2)
 
