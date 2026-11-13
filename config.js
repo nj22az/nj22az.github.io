@@ -57,12 +57,12 @@ const CONFIG = {
 
   projects: [
     {
-      title: "Maintenance Programme Demo",
+      title: "Maintenance Desk",
       description:
-        "Try an English maintenance programme for technical equipment, including StepWise for planning test points. Explore sample assets, scheduled tasks, inspection checklists, risk assessments and service history. Demonstration data; changes stay in your browser.",
+        "An English maintenance programme for technical equipment, including StepWise for planning test points. It opens on the M/V Chisum: everything aboard, with its scheduled tasks, inspection checklists, risk assessments, service history, drawings and instructions. What you record stays in your browser.",
       url: "/maintenance-demo/",
       icon: "notebook",
-      tags: ["Demo", "Maintenance", "Engineering"],
+      tags: ["Maintenance", "Engineering", "Ship"],
       bento: "wide",
       featured: true,
     },
@@ -308,15 +308,15 @@ CONFIG.projectExplorer = [
     "category": "tools",
     "title": "Maintenance Desk",
     "eyebrow": "FROM THE ENGINEER’S WORKBENCH",
-    "summary": "Turn equipment care into a clear programme. Try scheduled tasks, inspection checklists and follow-up in a fictional workshop. StepWise, for planning test points, is one of its tools.",
+    "summary": "Turn equipment care into a clear programme: scheduled tasks, inspection checklists and follow-up for everything aboard the M/V Chisum, with her drawings and instructions. StepWise, for planning test points, is one of its tools.",
     "url": "/maintenance-demo/",
-    "action": "Try the maintenance demo",
+    "action": "Open Maintenance Desk",
     "secondaryUrl": "/stepbuddy/",
     "secondaryAction": "Open StepWise",
-    "format": "Interactive demo",
+    "format": "Maintenance programme",
     "language": "English",
-    "status": "Demo",
-    "firstTry": "Open the cooling water pump, choose a maintenance task and record a sample inspection. Your changes stay in your browser. For test points, open StepWise.",
+    "status": "Browser app",
+    "firstTry": "Open the register, choose a department (deck, engine or galley), open an item and perform one of its jobs. What you record stays in your browser. For test points, open StepWise.",
     "features": [
       "Calendar and operating-hour maintenance schedules",
       "Risk assessments, checklists and corrective actions",

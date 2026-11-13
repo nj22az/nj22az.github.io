@@ -34,7 +34,9 @@ from mathutils import Vector
 from shipyard import tint, srgb
 from fittings_kit import *          # noqa: F401,F403
 from fittings_kit import fitting
+from fittings_mooring import chain
 import fittings_lifeboat as LBT
+import guard_place as GP
 
 PX, PY = -2.15, 0.55                # the arms' pins: inboard of the deck's edge, over the deck
 ZA = LBT.HOOK_Z                     # the arms stand in line with the boat's lifting hooks
@@ -241,6 +243,72 @@ def _winch(kit):
     return ax
 
 
+def _guard(kit, name):
+    """The folding guard at the station's open deck edge (guard_place.py has its numbers and the reason for it; JS4-413).
+    The owner, 13 November 2026: "Need a chain here on both sides so we don't fall down it needs to be removable".
+
+    Fixed to the deck: for each of three stanchions a base plate, two cheeks with the hinge pin and the locking pin on its
+    lanyard, and a pad for the folded head; an eye for each chain on each of the station's end posts. Moving as one (`guard`,
+    a tap): the stanchions with their eyes, and two courses of chain in four bays, hooked into the end posts' eyes. It folds
+    inboard flat on the deck, under the boat."""
+    st = GP.STATION
+    bad = GP.wrong()
+    if (tuple(st['pin']), tuple(st['boat']), tuple(st['head']), st['turn']) != ((PX, PY), (CL0, YK0), tuple(S0), TURN):
+        bad.append('guard_place.py does not have the station as fittings_boats.py builds it')
+    if bad:
+        raise SystemExit('the lifeboat station\'s guard is not built: ' + '; '.join(bad))
+    white, steel, galv, rubber, red = kit.p('white'), kit.p('steel'), kit.p('galv'), kit.p('rubber'), kit.p('paint')
+    M = lambda key: kit.p(key, 'guard')
+    X, c = GP.X, DAVIT_WHITE
+    ck, bs, pad = GP.CHEEK, GP.BASE, GP.PAD
+    for z0 in GP.POSTS:
+        # ---- fixed: the base plate, the two cheeks, the hinge pin with its heads, the locking pin and its lanyard, the pad
+        white.block((bs['x'][0], 0.0, z0 - bs['half']), (bs['x'][1], bs['thick'], z0 + bs['half']), tint(c, 0.94), r=0.002)
+        for sz in (-1, 1):
+            zc = z0 + sz * ck['apart']
+            white.block((ck['x'][0], bs['thick'], zc - ck['thick'] / 2), (ck['x'][1], ck['high'], zc + ck['thick'] / 2), c, r=0.002)
+            steel.tube((X, GP.HINGE, zc + sz * ck['thick'] / 2), (X, GP.HINGE, zc + sz * (ck['thick'] / 2 + 0.006)), 0.012, colour=tint(STEEL, 0.9))      # the hinge pin's head
+        steel.tube((X, GP.HINGE, z0 - ck['apart']), (X, GP.HINGE, z0 + ck['apart']), 0.007, colour=STEEL, caps=(False, False))
+        za = z0 - ck['apart'] - ck['thick'] / 2
+        red.tube((X, GP.LOCK, za - 0.030), (X, GP.LOCK, z0 + ck['apart'] + ck['thick'] / 2 + 0.012), 0.005, colour=RED)
+        red.ring((X, GP.LOCK, za - 0.046), PORT, 0.016, 0.004, RED, n=10, m=5)
+        sweep(galv, [(X, GP.LOCK - 0.016, za - 0.046), (X - 0.02, 0.06, za - 0.06), (X - 0.05, 0.022, za - 0.045), (bs['x'][0] + 0.02, bs['thick'] + 0.002, z0 - bs['half'] + 0.012)], 0.002, GALV)
+        rubber.block((X - pad['at'] - pad['half'], 0.0, z0 - pad['half']), (X - pad['at'] + pad['half'], pad['high'], z0 + pad['half']), BLACK, r=0.003)
+        # ---- moving: the stanchion with its boss on the hinge pin, its cap, and an eye for each chain toward each neighbour
+        M('white').tube((X, GP.HINGE - GP.HEEL, z0), (X, GP.TALL, z0), GP.TUBE, colour=c)
+        M('white').tube((X, GP.HINGE, z0 - ck['apart'] + ck['thick'] / 2 + 0.001), (X, GP.HINGE, z0 + ck['apart'] - ck['thick'] / 2 - 0.001), 0.0125, colour=c, caps=(False, False))
+        M('white').tube((X, GP.TALL, z0), (X, GP.TALL + 0.006, z0), GP.TUBE + 0.004, colour=c)
+        for h in GP.COURSES:
+            for sz in (-1, 1):
+                M('galv').ring((X, h, z0 + sz * (GP.TUBE + 0.012)), PORT, 0.014, 0.004, GALV, n=10, m=5)
+    # ---- fixed: an eye for each chain on each end post
+    ez = st['end_posts']
+    for end in (1, -1):
+        for h in GP.COURSES:
+            galv.ring((X, h - 0.030, end * (ez - 0.0135 - 0.012)), PORT, 0.014, 0.004, GALV, n=10, m=5)
+    # ---- moving: the chains, each bay hanging a little between its two eyes; at an end post a snap hook in the post's eye
+    at = [(-ez, 'post')] + [(z, 'stanchion') for z in GP.POSTS] + [(ez, 'post')]
+    grab = {'post': 0.0135 + 0.030, 'stanchion': GP.TUBE + 0.024}
+    for (za, ka), (zb, kb) in zip(at, at[1:]):
+        for h in GP.COURSES:
+            a, b = za + grab[ka], zb - grab[kb]
+            ha, hb = h - (0.030 if ka == 'post' else 0.0), h - (0.030 if kb == 'post' else 0.0)       # a post's eye is under its rail course
+            path = [(X, ha + (hb - ha) * t - GP.SAG * 4 * t * (1 - t), a + (b - a) * t) for t in (k / 8 for k in range(9))]
+            chain(M('chain'), path, GP.CHAIN, GALV, phase=0.012, stud=False, n_end=3, sides=5, across=PORT)
+            for z_post, k in ((za, ka), (zb, kb)):
+                if k != 'post':
+                    continue
+                e = 1 if z_post < 0 else -1                           # toward the chain
+                zc = z_post + e * (0.0135 + 0.012)                    # the post's eye
+                hy = h - 0.030
+                # a snap hook: its shank from the chain's last link, round through the eye, and its tongue back
+                sweep(M('galv'), [(X, hy, zc + e * 0.030), (X, hy + 0.004, zc + e * 0.014), (X, hy + 0.012, zc), (X, hy + 0.004, zc - e * 0.010), (X, hy - 0.010, zc - e * 0.008),
+                                  (X, hy - 0.016, zc + e * 0.004), (X, hy - 0.012, zc + e * 0.018)], 0.003, GALV)
+    kit.inputs.append(dict(id=kit.mid('guard'), name=f'{name}: guard chains', min=0, max=GP.FOLD, step=1, unit='°', below='', above='folded down', rest='rigged', auto='tap',
+                           at=[X, 0.8, 0.0], reach=GP.REACH, stays=kit.mid('davit'), stuck='the boat is turned out: the guard stays folded down'))
+    kit.movers.append(dict(id=kit.mid('guard'), kind='turn', input=kit.mid('guard'), axis=[0, 0, 1], pivot=[X, GP.HINGE, 0.0], ratio=1.0))
+
+
 @fitting('lifeboat-station', size=(8.8, 3.85 + 2.95, 5.65), front='+z (the boat\'s bow)', handed=True, title='Lifeboat station',
          note='origin on the deck at the ship\'s side abreast the middle of the boat; x outboard; side=+1 port, -1 starboard (mirrored); '
               '3.85 m inboard, 2.95 m outboard when turned out; options side, height (deck over the water), rescue, cover, number, ship, port, label, embark')
@@ -366,12 +434,16 @@ def lifeboat_station(kit, side=1, height=10.0, rescue=False, cover=None, number=
         kit.movers.append(dict(id=kit.mid('gripe-f' if end > 0 else 'gripe-a'), kind='turn', input=kit.mid('davit'), axis=[-end, 0, 0], pivot=[ex, 0.040, zg], ratio=88.0 / TURN))
 
     # ---- the deck's edge: a coaming bar; a rail at each end of the station to meet the ship's; the embarkation ladder; the light
-    white.block((-0.035, 0.0, -4.35), (-0.005, 0.10, 4.35), tint(DAVIT_WHITE, 0.94), r=0.004)
+    st = GP.STATION
+    cx0, cx1, ch = st['coaming']
+    white.block((cx0, 0.0, -4.35), (cx1, ch, 4.35), tint(DAVIT_WHITE, 0.94), r=0.004)
+    rx, ez = st['rail_x'], st['end_posts']
     for end in (1, -1):
-        for h, r in ((1.0, 0.019), (0.62, 0.012), (0.30, 0.012)):
-            white.tube((-0.06, h, end * 3.80), (-0.06, h, end * 4.40), r, colour=DAVIT_WHITE)
-        for z in (3.80, 4.40):
-            white.tube((-0.06, 0.0, end * z), (-0.06, 1.0, end * z), 0.0135, colour=DAVIT_WHITE)
+        for h, r in zip(st['rail_courses'], (0.019, 0.012, 0.012)):
+            white.tube((rx, h, end * ez), (rx, h, end * 4.40), r, colour=DAVIT_WHITE)
+        for z in (ez, 4.40):
+            white.tube((rx, 0.0, end * z), (rx, st['rail_courses'][0], end * z), 0.0135, colour=DAVIT_WHITE)
+    _guard(kit, name)
     # the embarkation ladder, rolled in its cradle forward of the boat: rope sides, wooden steps, made fast to two deck eyes
     lz, lx = 4.05, -0.52
     for z in (lz - 0.26, lz + 0.26):
@@ -442,8 +514,10 @@ def lifeboat_station(kit, side=1, height=10.0, rescue=False, cover=None, number=
     if embark:
         stops.insert(0, dict(v=float(embark), say='at the embarkation deck'))
     kit.inputs += [
+        # (the guard chains stand in the boat's way: her keel passes the deck's edge 0.96 m over it. The davits `needs` them folded)
         dict(id=kit.mid('davit'), name=f'{name}: davits', min=0, max=TURN, step=1, unit='°', below='', above='turned out', rest='stowed',
-             keys=['In', 'Stop', 'Out'], stops=[dict(v=TURN, say='turned out')], rate=3),
+             keys=['In', 'Stop', 'Out'], stops=[dict(v=TURN, say='turned out')], rate=3,
+             needs=[kit.mid('guard')], without='the guard chains stand in her way: fold them down first'),
         dict(id=kit.mid('falls'), name=f'{name}: falls', min=0, max=round(run, 2), step=1, unit='m', below='', above='lowered', rest='hoisted',
              keys=['Hoist', 'Stop', 'Lower'], stops=stops, rate=0.6),
     ]
@@ -468,5 +542,7 @@ def lifeboat_station(kit, side=1, height=10.0, rescue=False, cover=None, number=
         'and level glass, flange motor with fins, terminal box, gland and cable to a deck gland, band brake with its band, link and '
         'weighted lever, the crank\'s square and the crank in its clips, push-button box on a post, guard bar. Gripes: eye plate, '
         'shackle, bottle screw, slip, pendant, gunwale hook. Span wire with two lifelines in hanks. Coaming bar, end rails, '
+        'a folding guard across the open deck edge: three hinged stanchions on base plates with cheeks, hinge pins and locking pins '
+        'on lanyards, two courses of 8 mm chain in four bays with snap hooks to eyes on the end posts, pads for the folded heads, '
         'embarkation ladder rolled in a cradle and lashed, the station\'s light on a post with its cable clipped down to a deck '
         'gland, two bowsing tackles, the instruction placard. The boat: see the lifeboat\'s own row.')

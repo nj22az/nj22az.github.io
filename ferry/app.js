@@ -493,6 +493,14 @@ function orderInput(id, to, held = false) {
   const it = inputs.get(id);
   if (!it || !it.keys) return;
   const want = THREE.MathUtils.clamp(to, it.def.min, it.def.max);
+  // What needs another thing first is not moved until one of those is on (`needs`: a lifeboat's davits are not turned out
+  // while the guard chains stand at the deck's edge, in her keel's way). Refused where the order is given, and it says why.
+  if (want !== it.value && it.def.needs && !it.def.needs.some(isOn)) {
+    it.order = it.value; it.held = true;
+    readout.textContent = `${it.def.name}: ${it.def.without || 'not ready'}`;
+    showInput(it);
+    return;
+  }
   // What carries somebody is not moved under them (the lowered ramp). It is refused here, where the order is given: so it
   // holds whatever else aboard is moving by itself at that moment (anything that moves has the ramp's floor indexed anew, and
   // an order already taken reads there as "under way": the floor was dropped before workOrders could refuse, and the ramp
@@ -558,13 +566,16 @@ function tapFitting(id, point) {
 }
 /**
  * A thing worked by a tap is turned on, or off again, and says so. While what it names `unless` is on it stays as it is and says
- * why (`refused`: a pump is not started while the emergency stop is pressed). Turned on, what it `trips` goes off with it and
+ * why (`refused`: a pump is not started while the emergency stop is pressed); turned on, it is not turned off while what it names
+ * `stays` is on (`stuck`). Turned on, what it `trips` goes off with it and
  * what it `holds` is stopped where it is (the ramp's emergency stop: both pumps, and the ramp).
  */
 function tapInput(it) {
   const d = it.def;
   if (d.opens === 'maintenance') { openComputer(); return true; }
   if (!it.open && d.unless && isOn(d.unless)) { readout.textContent = `${d.name}: ${d.refused || 'not now'}`; return false; }
+  // Worked, it stays so while what it names `stays` is on (the guard chains are not raised while the boat is turned out), and says why (`stuck`).
+  if (it.open && d.stays && isOn(d.stays)) { readout.textContent = `${d.name}: ${d.stuck || 'not now'}`; return false; }
   it.open = !it.open;
   if (it.open) {
     for (const id of d.trips || []) { const t = inputs.get(id); if (t) t.open = false; }

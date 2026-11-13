@@ -60,7 +60,10 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   const lean = () => page.evaluate(() => { const m = window.__ferry.movers().find(m => m.id === 'stern-ramp'); return Math.abs(Math.atan2(m.matrix[6], m.matrix[5]) * 180 / Math.PI); });
   const key = name => page.evaluate(name => { const k = [...document.querySelectorAll('#desk .grp[data-fn="stern-ramp"] .key')].find(k => k.textContent === name); if (k) k.click(); return !!k; }, name);
   const keyed = { has: await key('Lower') };
-  await page.waitForFunction(() => { const m = window.__ferry.movers().find(m => m.id === 'stern-ramp'); return Math.abs(Math.atan2(m.matrix[6], m.matrix[5])) > 0.02; }, null, { timeout: 60000 }).catch(() => {});
+  // (Three minutes for the leaf to begin to lean, not one: her first 6 degrees are the latches and the cleats, and drawn without
+  // a graphics card a frame takes 2.9 s and moves her 0.4 degrees, so the leaf passes 1 degree 55 to 58 s after the key. With
+  // 60 s allowed this line passed or failed by a second: measured on 13 November, when it failed twice and nothing was wrong.)
+  await page.waitForFunction(() => { const m = window.__ferry.movers().find(m => m.id === 'stern-ramp'); return Math.abs(Math.atan2(m.matrix[6], m.matrix[5])) > 0.02; }, null, { timeout: 180000 }).catch(() => {});
   keyed.lowering = await lean();
   await key('Stop');
   keyed.held = await lean();
@@ -403,6 +406,57 @@ const check = (ok, text) => { console.log((ok ? 'ok    ' : 'FAIL  ') + text); if
   });
   check(eg.before.y > eg.door[1] - 0.15 && eg.x < eg.door[0] - 0.11, `from the emergency generator room's escape route one walks out through its door onto the open deck (from ${eg.before.x.toFixed(2)} to ${eg.x.toFixed(2)} m off the centreline; the door is at ${eg.door[0].toFixed(2)})`);
   check(eg.damper < 1e-6, `walking past, the fire damper's lever stays as it is`);
+  // The guard at each lifeboat station's open deck edge (the owner, 13 November 2026: "Need a chain here on both sides so we
+  // don't fall down it needs to be removable"; JS4-413): it stands; the davits are not turned out while it stands; a tap folds
+  // it down; then the davits go out, and the guard is not raised while they are; the boat home, a tap raises it again.
+  const guards = await page.evaluate(async () => {
+    const f = window.__ferry, wait = ms => new Promise(r => setTimeout(r, ms));
+    const run = s => { for (let t = 0; t < s - 1e-9; t += 0.1) f.workAuto(0.1); };
+    const val = id => f.state.inputs[id], said = () => document.querySelector('#what').textContent;
+    const until = async (test, seconds) => { for (let t = 0; t < seconds * 2 && !test(); t++) await wait(500); return test(); };
+    const buf = await new Response((await fetch('data/ferry.bin.gz')).body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+    const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 8, new DataView(buf).getUint32(4, true))));
+    const out = [];
+    for (const side of ['p', 's']) {
+      const G = `lifeboat-${side}-guard`, D = `lifeboat-${side}-davit`;
+      if (val(G) === undefined || val(D) === undefined) { out.push(null); continue; }
+      const o = { stands: val(G), parts: f.movers().filter(m => m.id === G).length };
+      f.order(D, 46); await wait(1500);
+      o.refused = { davit: val(D), said: said() };
+      f.tap(G); run(1.5);
+      o.folded = val(G);
+      // (and with the guard down nobody walks off the open edge all the same: a walker does not leave a floor. Tried from
+      // 0.8 m inboard of the guard's middle, walking every way for three seconds.)
+      const def = header.inputs.find(i => i.id === G), sgn = Math.sign(def.at[0]), deck = def.at[1] - 0.8;
+      f.enterWalk();
+      o.walk = { edge: Math.abs(def.at[0]) + 0.06, deck, furthest: 0, lowest: Infinity, stood: true };
+      for (const yaw of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {
+        if (f.walkTo(def.at[0] - sgn * 0.8, def.at[2], yaw, 0, deck) === null) o.walk.stood = false;
+        f.hold('KeyW', true);
+        for (let t = 0; t < 3; t += 0.1) { f.walkFor(0.1); const w = f.state.walk; o.walk.furthest = Math.max(o.walk.furthest, Math.abs(w.x)); o.walk.lowest = Math.min(o.walk.lowest, w.y); }      // (a walker's y is where its feet are)
+        f.hold('KeyW', false);
+      }
+      f.leaveWalk();
+      f.order(D, 46); await until(() => val(D) > 8, 300);                 // (in real frames: drawn without a graphics card they are slow)
+      o.out = val(D);
+      const tapped = f.tap(G); run(1.5);
+      o.kept = { tapped, guard: val(G), said: said() };
+      f.order(D, 0); await until(() => val(D) === 0, 600);
+      o.home = val(D);
+      f.tap(G); run(1.5);
+      o.again = val(G);
+      out.push(o);
+    }
+    return out;
+  });
+  check(guards.length === 2 && guards.every(o => o && o.stands === 0 && o.parts === 1 && o.refused.davit === 0 && /guard chains/.test(o.refused.said) && o.folded === 90
+      && o.out > 8 && o.kept.tapped === false && o.kept.guard === 90 && /turned out/.test(o.kept.said) && o.home === 0 && o.again === 0),
+    guards.every(Boolean) ? `at each lifeboat station the guard chains stand at the open deck edge; the davits are not turned out through them ("${guards[0].refused.said}"); a tap folds them down, and the davits go out; `
+      + `they are not raised while the boat is out ("${guards[0].kept.said}"); the boat home, a tap raises them again` : 'the lifeboat stations have guard chains at their open deck edge (the file names none: they are not built)');
+  // (a walker's middle comes to the plating's own edge, which lies a little outside the guard's line: 0.09 m as measured)
+  check(guards.every(o => o && o.walk.stood && o.walk.furthest <= o.walk.edge + 0.25 && o.walk.lowest > o.walk.deck - 0.3),
+    guards.every(Boolean) ? `with the guard folded down a walker still does not leave the deck at the open edge (walking every way from 0.8 m inboard of it: no further out than ${Math.max(...guards.map(o => o.walk.furthest - o.walk.edge)).toFixed(2)} m from the edge, never lower than the deck)`
+      : 'a walker does not leave the deck at the lifeboat stations\' open edge (not tried: no guard in the file)');
   check(errors.length === 0, `no errors in the console (${errors.slice(0, 3).join(' | ') || 'none'})`);
   await browser.close();
   console.log(fails.length ? `\n${fails.length} FAILED` : '\nall passed');
