@@ -66,10 +66,14 @@ cd remotion && npm install && ln -s <film> public/film && node prepare.mjs && np
 - **Meshy plan**: the owner is on Meshy's Professional plan ("it says I can use it commercially").
 - The fog, wisp and grain pictures (`remotion/public/`) and the scream (`remotion/scream.py`) are made by code in this
   folder; no third-party picture or recording is in the film. No AI lip-sync or voice model has touched it.
-- **Meshy** made the models under the owner's Meshy account (11 models, 4 rigs, 26 clips; the balance went from 2,353
-  to about 1,900 credits). The GLB files are large and are **not in the repository**: they are in the owner's Meshy
-  workspace (project `jack-mv`, 12 November 2026) and can be downloaded again from there.
-- **Fonts**: Pirata One, IM Fell English (SIL Open Font License, through `@fontsource`); DejaVu Serif on the pub sign.
+- **Meshy** made the models under the owner's Meshy account, through Meshy's API (144 tasks: 11 models, rigs,
+  26 clips). The GLB files (61, 2.7 GB) are **not in the repository** and **not in the Meshy workspace** either: API
+  output never appears there and Meshy deletes it three days after it is made. The only copies are in the cloud
+  session's scratch folder (`meshy/`), which does not last: they must be copied to the owner's own storage.
+- **The whole rights record is [RIGHTS.md](RIGHTS.md)**: each ingredient checked against its vendor's own terms on
+  13 November 2026, what must be kept, and the one real caution (the sailor mascot beside Popeye's trade marks).
+- **Fonts**: Pirata One, IM Fell English and its small capitals, Limelight (SIL Open Font License, through
+  `@fontsource`); DejaVu Serif Bold on the pub sign.
 - **Remotion** is free for individuals and small teams; a company of more than three people needs its licence.
 - The pub's name, The Black Lantern, is invented. The clock tower and the dome are generic London silhouettes.
 
