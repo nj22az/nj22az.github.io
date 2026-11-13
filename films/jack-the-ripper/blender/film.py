@@ -331,7 +331,10 @@ def lights(foot=300, front=0, wash=0, moon=1.6, gas=(520, 520, 520), spots=(), w
         src = Vector((s.location.x * 0.75, 1.0, 12.8)); piv.location = src
         d = Vector(target) - src; b.scale = (1, d.length / 13.0 * 1.1, 1)
         piv.rotation_euler = (-d.normalized()).to_track_quat('Z', 'Y').to_euler()
-        b.data.materials[0].node_tree.nodes['level'].inputs[1].default_value = min(0.3, energy / 90000.0)
+        # a beam is a card: seen from far it is a shaft of light, but with the lens standing inside it it is a grey
+        # slab across the picture, so a beam that passes within 3.5 m of the lens is not drawn
+        c0 = Vector(cam.location); ax = d.normalized(); near = (c0 - src - ax * max(0.0, min(d.length, (c0 - src).dot(ax)))).length
+        b.data.materials[0].node_tree.nodes['level'].inputs[1].default_value = min(0.3, energy / 90000.0) if near > 3.5 else 0.0
     rim_l.energy = 0
     if back:                                   # a light from behind and above: the edge of light that lifts her off the street
         target, energy, *rest = back
@@ -574,7 +577,8 @@ def a02(t):   # "Footsteps echo...": the song says footsteps, so the picture is 
 def a02b(t):  # "...on the cobblestone": from the cobbles, looking up at her as she comes
     camera((0.8, -0.3, 0.32), (0.0, 3.4, 1.3), 30)
     star_light(0, 3.4, foot=120, moon=2.2)
-    walk(STAR, 'walk', t, 4.6, 0, 8.6, 0, 3.0, face=0); sing(t)
+    k = bump(t, 10.3, 12.29, 0.5, 0.4)
+    polly(t, 0, 3.0, to_lens(0, 3.0), l_fwd=26 * k, l_bend=40 * k, r_up=22 * k, look=4)        # she has come to her mark, and sings to us
     passer(FOLK[1], t, 0.0, 7.6, -1); passer(FOLK[2], t, 3.0, 9.4, 1)
 
 
