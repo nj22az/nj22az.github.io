@@ -102,9 +102,11 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
           style={{position: 'absolute', left: `${fg.box[0] * 100}%`, top: `${(1 - fg.box[3]) * 100}%`, width: `${(fg.box[1] - fg.box[0]) * 100}%`, height: `${(fg.box[3] - fg.box[2]) * 100}%`}}
         />
       ) : null}
-      {/* the edit's own bank over his face only where he is alone in the picture: where Polly or the dancers stand in
-          front of him, Blender's bank (which knows who is in front) is the one that hides him */}
-      {fg && fg.head && fg.box && ['c1a_dance', 'c1e_grapple', 'v2b_hats'].includes(cut.shot) ? <FaceMist x={fg.head[0]} y={fg.head[1]} red={red} /> : null}
+      {/* no bank of his own over Jack's face any more (the owner, on the fourth cut: "you dont have to put a fog dot on
+          his face, we should see he has a face but its obscured by the fog"): the street's fog below is what dims him.
+          Where he dances alone and large, the fog lies a little thicker in a level layer right across the street at the
+          height of his head (the shot's mean, so it does not follow him): his face is there, and is not quite read. */}
+      {!shot.name.startsWith('s') && JACK_ALONE.includes(cut.shot) ? <FogLayer y={headLevel(shot)} red={red} /> : null}
       {/* the fog in front of the cast, with a clear pocket that goes where Polly goes */}
       {shot.name.startsWith('s') ? null : <FrontFog level={cut.soft ? 0.16 : inChorus(t) ? 0.4 : 0.32} red={red} star={fg && fg.box ? fg.star : null} />}
       {cut.shot === 'a07_blade' && fg && fg.hand ? <Glint x={fg.hand[0]} y={fg.hand[1]} k={pulse(t, 34.9, 36.5, 0.2, 0.6)} t={t} /> : null}
@@ -152,12 +154,19 @@ const FrontFog: React.FC<{level: number; red?: boolean; star: {head: number[]; h
   return <AbsoluteFill style={style} />;
 };
 
-// His face is never seen: where his head is, the same fog stands thicker. A smooth bank, no brushwork.
-const FaceMist: React.FC<{x: number; y: number; red?: boolean}> = ({x, y, red}) => (
-  <div style={{position: 'absolute', left: `${x * 100}%`, top: `${y * 100}%`, width: 0, height: 0}}>
-    <div style={{position: 'absolute', width: '34vh', height: '30vh', left: '-17vh', top: '-19vh', background: `radial-gradient(closest-side, ${red ? 'rgba(120,48,52,' : 'rgba(86,104,132,'}1) 30%, ${red ? 'rgba(120,48,52,' : 'rgba(86,104,132,'}0.85) 52%, ${red ? 'rgba(120,48,52,' : 'rgba(86,104,132,'}0) 100%)`}} />
-  </div>
-);
+const JACK_ALONE = ['c1a_dance', 'c1e_grapple', 'v2b_hats', 'c2a_dance'];
+const LEVELS: Record<string, number> = {};
+const headLevel = (shot: {name: string; fg: Record<string, {head?: number[] | null} | undefined>}) => {
+  if (LEVELS[shot.name] === undefined) {
+    const ys = Object.values(shot.fg).filter((v) => v && v.head).map((v) => v!.head![1]);
+    LEVELS[shot.name] = ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : 0.4;
+  }
+  return LEVELS[shot.name];
+};
+const FogLayer: React.FC<{y: number; red?: boolean}> = ({y, red}) => {
+  const c = red ? 'rgba(150,40,40,' : HAZE; const p = (v: number) => `${Math.max(0, Math.min(100, v * 100))}%`;
+  return <AbsoluteFill style={{background: `linear-gradient(to bottom, ${c}0) ${p(y - 0.3)}, ${c}0.5) ${p(y - 0.06)}, ${c}0.5) ${p(y + 0.01)}, ${c}0) ${p(y + 0.2)})`}} />;
+};
 
 const Rain: React.FC<{t: number; k: number}> = ({t, k}) => (
   <AbsoluteFill style={{opacity: 0.5 * k, transform: 'rotate(9deg) scale(1.4)'}}>

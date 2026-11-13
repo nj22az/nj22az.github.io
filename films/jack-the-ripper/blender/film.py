@@ -26,7 +26,7 @@ import cloak
 argv = sys.argv[sys.argv.index('--') + 1:]
 def arg(n, d=None): return argv[argv.index(n) + 1] if n in argv else d
 CAST, OUT = arg('--cast'), arg('--out')
-PASS = arg('--pass', 'preview'); ONLY = arg('--shots'); EVERY = int(arg('--every', '1')); ONE = arg('--only-frame')
+PASS = arg('--pass', 'preview'); ONLY = arg('--shots'); EVERY = int(arg('--every', '1')); ONE = arg('--only-frame'); VEIL_ON = arg('--veil', 'off') == 'on'
 FRACS = [float(v) for v in arg('--fracs').split(',')] if arg('--fracs') else None
 SPAN = [float(v) for v in arg('--span').split(',')] if arg('--span') else None      # only pictures between these seconds
 D = bpy.data; scene = bpy.context.scene
@@ -289,11 +289,50 @@ cast_coll.objects.link(JACK.veil); JACK.veil.data.materials.append(VEIL)
 JACK.veil.visible_shadow = False; JACK.veil.visible_diffuse = False; JACK.veil.visible_glossy = False
 
 
+def in_fog(ob, where, base, head):
+    """Every material of the object goes over to plain fog: `base` of the way everywhere, `base + head` round the
+    head and hat, and all the way at the face. `where` is an empty at the face; one unit of it is the face's reach."""
+    for slot in ob.material_slots:
+        nt = slot.material.node_tree
+        out = next(n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL' and n.is_active_output)
+        surface = out.inputs['Surface'].links[0].from_socket
+        tc = nt.nodes.new('ShaderNodeTexCoord'); tc.object = where
+        ln = nt.nodes.new('ShaderNodeVectorMath'); ln.operation = 'LENGTH'
+        def fall(a_, b_):
+            r = nt.nodes.new('ShaderNodeMapRange'); r.interpolation_type = 'SMOOTHSTEP'
+            r.inputs['From Min'].default_value = a_; r.inputs['From Max'].default_value = b_
+            r.inputs['To Min'].default_value = 1.0; r.inputs['To Max'].default_value = 0.0
+            nt.links.new(ln.outputs['Value'], r.inputs['Value']); return r
+        face, wide = fall(0.55, 1.0), fall(1.2, 3.4)                       # the face itself; the head and the hat
+        m1 = nt.nodes.new('ShaderNodeMath'); m1.operation = 'MULTIPLY_ADD'; m1.inputs[1].default_value = head; m1.inputs[2].default_value = base
+        m2 = nt.nodes.new('ShaderNodeMath'); m2.operation = 'MULTIPLY_ADD'; m2.inputs[1].default_value = 1.0 - base - head; m2.use_clamp = True
+        em = nt.nodes.new('ShaderNodeEmission'); em.inputs['Color'].default_value = (*FOG, 1); em.inputs['Strength'].default_value = FOG_LIGHT
+        mix = nt.nodes.new('ShaderNodeMixShader'); L_ = nt.links.new
+        L_(tc.outputs['Object'], ln.inputs[0]); L_(wide.outputs['Result'], m1.inputs[0]); L_(face.outputs['Result'], m2.inputs[0]); L_(m1.outputs[0], m2.inputs[2])
+        L_(m2.outputs[0], mix.inputs['Fac']); L_(surface, mix.inputs[1]); L_(em.outputs[0], mix.inputs[2]); L_(mix.outputs[0], out.inputs['Surface'])
+
+
+# The owner, 13 November 2026, on the fourth cut: "you dont have to put a fog dot on his face"; then "we are never
+# supposed to see Jacks face, the normal fog should cover it always even though we see its a person"; then, of a
+# trial that fogged the face alone: "no the hat too, its like Polly pops, but Jack doesnt pop, he is only there and
+# we cant really see who he is". The bank that stood in front of his head hid the whole head and read as a blob.
+# Now nothing stands in front of him. He stands further into the fog than anyone: all of him, cloak included, is
+# taken part of the way to the fog's colour, his head and hat most of the way, and his face all the way. So he is a
+# figure in a top hat and cloak, there in the street, and nobody can say who. `--veil on` brings the old bank back.
+FOG_LIGHT = float(arg('--fog-light', '0.28')); JACK_FOG = float(arg('--jack-fog', '0.3')); HEAD_FOG = float(arg('--head-fog', '0.55'))
+FACE_AT = float(arg('--face-at', '0.05')); FACE_REACH = float(arg('--face-reach', '0.09'))
+JACK.fogpoint = D.objects.new('jack-face', None); cast_coll.objects.link(JACK.fogpoint)
+if not VEIL_ON:
+    in_fog(JACK.mesh, JACK.fogpoint, JACK_FOG, HEAD_FOG); in_fog(CLOAK.ob, JACK.fogpoint, JACK_FOG, HEAD_FOG)
+
+
 def veils(t):
-    j = JACK; v = j.veil; v.hide_render = not j.on
+    j = JACK; v = j.veil; v.hide_render = not (j.on and VEIL_ON)
     if not j.on: return
     head = j.world('Head'); top = j.world('head_end'); front = j.world('headfront')
     face = head.lerp(top, 0.30) + (front - head) * 0.6
+    j.fogpoint.location = head.lerp(top, FACE_AT) + (front - head) * 0.6; j.fogpoint.scale = (j.height * FACE_REACH,) * 3
+    if v.hide_render: return
     to_cam = (cam.matrix_world.translation - face).normalized()
     v.location = face + to_cam * 0.30
     v.rotation_euler = to_cam.to_track_quat('Z', 'Y').to_euler()

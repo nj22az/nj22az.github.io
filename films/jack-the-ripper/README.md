@@ -116,3 +116,37 @@ Jack and rig his cloak too".
 - The cloud machine restarted twice in the day; the scratch folder survived both times. Background jobs there are
   stopped after two hours: every long render here is resumable.
 Meshy balance about 1,760 credits.
+
+*Since then (13 November, to about 13:30 UTC).* The third cut (widened street, no prop collisions) and the fourth
+(the second Jack with his cloth cloak) were delivered. The owner on the fourth: "This is near perfect, can the London
+fog be a bit more prevalent and cover some of the bleeding into buildings? And ... could we add a scream? I think when
+she sings about the scream swallowed by the night"; "Polly needs to pop, right, even if the fog is heavier"; "the scene
+where polly raises her arm up to the moon looks like her body deforms ... her bustier expands with her arm raise";
+"the animated Logo intro can you improve it ... make it look like one of those old Credits Screens in old Disney
+Cartoons"; "make my Logo a SVG, and move around the text a bit"; of the scream: "no that is perfect"; and of the
+fourth cut's fog: "its much better ... the fog is awesome now you dont have to put a fog dot on his face"; "we are
+never supposed to see Jacks face, the normal fog should cover it always even though we see its a person"; "no the hat
+too, its like Polly pops, but Jack doesnt pop, he is only there and we cant really see who he is".
+- **Fog** (`remotion/src/Film.tsx`): thicker between the set and the cast where street meets house fronts; a front fog
+  with a clear pocket that follows Polly, and a soft light behind her (`StarHalo`, `FrontFog`).
+- **The scream** at 27.7 s: `remotion/scream.py` makes `public/scream.wav` (synthesised; no recording used).
+- **Polly's bodice** (`blender/fix_weights.py`, `cast3.blend`): Meshy had skinned part of her chest to her upper arms.
+  Arm weights now hold only close to the arm bone; the rest goes to the spine. The same for the dancer.
+- **Jack in the fog** (`film.py`, `in_fog`): the bank that stood in front of his head is gone (`--veil on` brings it
+  back). His own surface and his cloak's are taken part of the way to the fog's colour, his head and hat most of the
+  way, his face all the way. In the edit a level layer of fog lies at his head's height in his solo shots (`FogLayer`);
+  the edit's own dot (`FaceMist`) is removed.
+- **The studio card** (`remotion/src/Intro.tsx`, six seconds): a 1930s title card in manner (sunburst, ruled frame,
+  medallion, the parts of the mark coming on one by one, projector weave, flicker, dust, iris). No studio's card copied.
+- **The logo as vectors**: `remotion/logo_trace.py` (potrace, part by part) and `logo_build.py` write
+  `remotion/public/logo.svg`, `assets/images/johansson-animation-studios.svg` and `remotion/src/Logo.tsx`. The owner's
+  corrections: "© Nils Johansson" to the bottom right with the sign after the name; ink-stamp roughness (an SVG
+  filter); the outer ring made concentric with the inner ("make the circle around fit the logo better"); and the hand
+  on the anchor with three fingers and a thumb. Two redrawn hands were refused ("why the ugly redraw, cant you just
+  remove one of the lines for the finger"); what stands is his own drawing with the lowest dividing line taken out
+  and the other two moved down to even the fingers. The owner: "the hand looks good now".
+- `films/NEXT-VIDEO-PROMPT.md`: a prompt for a local session on the owner's Mac to start the next film.
+- **The fifth cut is rendering** (all Jack and Polly frames again with `cast3.blend` and Jack in the fog, into the
+  scratch folder's `film5/`; then `--pass tracks`, `node prepare.mjs`, Remotion). Not yet delivered or reviewed.
+- Not asked of the owner yet answered: whether the film may be published anywhere. Song, renders and Meshy files are
+  still outside the repository.
