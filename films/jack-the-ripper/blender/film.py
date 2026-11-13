@@ -352,7 +352,10 @@ def sing(t, amount=1.0):
             elif k.name == 'blink': k.value = 1.0 if b >= 0.5 else 0.0      # a blink is shut or open: no half-drawn lid
         if ob.name.startswith('singer-lid'): ob.hide_render = b < 0.5 or not STAR.on           # a lid exists only while it is closing
         if ob.name == 'singer-mouth': ob.hide_render = (o < 0.02 and p < 0.02 and w < 0.02) or not STAR.on
-    held = lip('open', t - 0.12)                                  # the body answers the voice a little late
+    # the body answers the voice a little late, and answers the phrase, not each lip closure: read raw, the head
+    # dipped up to 7.5 degrees between two pictures at every M, B and P (found when the mouth timing was rebuilt)
+    held = sum(max(lip('open', t - 0.12 + a + b) for b in (-0.1, -0.05, 0, 0.05, 0.1))
+               for a in (-0.15, -0.1, -0.05, 0, 0.05, 0.1, 0.15)) / 7
     STAR.turn('Head', X, -7 * held); STAR.turn('Spine02', X, -3.5 * held); STAR.turn('neck', X, -3 * held)
 
 
