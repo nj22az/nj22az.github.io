@@ -157,6 +157,80 @@ def soft_card(name, color, strength, radial=True, noise=0.0):
     return m
 
 
+def sight(n, l):
+    """How far the line of sight passes from the middle of the object, in the object's own measure (1 is the rim of
+    a ball built 1 in radius, or the middle of a side of a card built 2 across). Light measured this way is round
+    from wherever it is seen: a card measured across its own face is an oval to any camera not square in front of it."""
+    tc = n.new('ShaderNodeTexCoord'); geo = n.new('ShaderNodeNewGeometry')
+    vt = n.new('ShaderNodeVectorTransform'); vt.vector_type = 'VECTOR'; vt.convert_from = 'WORLD'; vt.convert_to = 'OBJECT'
+    nr = n.new('ShaderNodeVectorMath'); nr.operation = 'NORMALIZE'
+    cr = n.new('ShaderNodeVectorMath'); cr.operation = 'CROSS_PRODUCT'; ln = n.new('ShaderNodeVectorMath'); ln.operation = 'LENGTH'
+    l.new(geo.outputs['Incoming'], vt.inputs[0]); l.new(vt.outputs[0], nr.inputs[0])
+    l.new(tc.outputs['Object'], cr.inputs[0]); l.new(nr.outputs[0], cr.inputs[1]); l.new(cr.outputs[0], ln.inputs[0])
+    return ln.outputs['Value'], geo
+
+
+def glow(name, color, strength, power=3.0, ball=False, core=0.0, core_r=0.2):
+    """Light hanging in the haze round a flame or round the moon. It only ever ADDS its light to what is behind
+    it (a clear film that also shines), so it cannot paint over a lantern, a post or the moon's own disc, and the
+    haze of the plate, which is laid by distance, goes straight through it. It is brightest at its middle and
+    thins to nothing well inside its own border, with no level stretch and no step that could read as a rim.
+    The fourth cut's review found every glow a flat disc with an edge, and the moon a ring with a dark middle:
+    those were soft_card, which covers what is behind it at its centre.
+
+    It fades with how far the line of sight passes from its middle (sight()), on a ball (a lamp) or on a card (the
+    moon's halo, which must lie flat against the sky). Of a ball only the side towards the lens shines, or the
+    light would be counted twice. `core` is a second, small light on top of the haze's, `core_r` of the way out:
+    the flame itself, behind the lantern's glass."""
+    m, n, l = mat(name)
+    u, geo = sight(n, l)
+    # 1 at the middle, 0 at `reach` of the way out. A ball is drawn with flat faces, and its last tenth is theirs; a
+    # card seen from below or from the side is short in that direction, and three tenths cover any camera of the film
+    reach = 0.9 if ball else 0.7
+    fall = n.new('ShaderNodeMapRange'); fall.inputs['From Max'].default_value = reach; fall.inputs['To Min'].default_value = 1.0; fall.inputs['To Max'].default_value = 0.0
+    p = n.new('ShaderNodeMath'); p.operation = 'POWER'; p.inputs[1].default_value = power
+    l.new(u, fall.inputs['Value']); l.new(fall.outputs['Result'], p.inputs[0]); fac = p.outputs[0]
+    if core:
+        cf = n.new('ShaderNodeMapRange'); cf.interpolation_type = 'SMOOTHSTEP'; cf.inputs['From Max'].default_value = core_r
+        cf.inputs['To Min'].default_value = core / strength; cf.inputs['To Max'].default_value = 0.0
+        both_ = n.new('ShaderNodeMath'); both_.operation = 'ADD'
+        l.new(u, cf.inputs['Value']); l.new(fac, both_.inputs[0]); l.new(cf.outputs['Result'], both_.inputs[1]); fac = both_.outputs[0]
+    if ball:
+        front = n.new('ShaderNodeMath'); front.operation = 'SUBTRACT'; front.inputs[0].default_value = 1.0
+        side = n.new('ShaderNodeMath'); side.operation = 'MULTIPLY'
+        l.new(geo.outputs['Backfacing'], front.inputs[1]); l.new(fac, side.inputs[0]); l.new(front.outputs[0], side.inputs[1]); fac = side.outputs[0]
+    st = n.new('ShaderNodeMath'); st.operation = 'MULTIPLY'; st.name = 'level'; st.inputs[1].default_value = 1.0     # film.py turns a lamp down here
+    l.new(fac, st.inputs[0])
+    amt = n.new('ShaderNodeMath'); amt.operation = 'MULTIPLY'; amt.inputs[1].default_value = strength; l.new(st.outputs[0], amt.inputs[0])
+    em = n.new('ShaderNodeEmission'); em.name = 'glow'; em.inputs['Color'].default_value = (*color, 1); l.new(amt.outputs[0], em.inputs['Strength'])
+    tr = n.new('ShaderNodeBsdfTransparent'); add = n.new('ShaderNodeAddShader')
+    l.new(tr.outputs[0], add.inputs[0]); l.new(em.outputs[0], add.inputs[1]); l.new(add.outputs[0], n['Material Output'].inputs['Surface'])
+    m.blend_method = 'BLEND'
+    return m
+
+
+MOON_LIGHT, MOON_LIMB = 6.0, 0.55     # the disc's light at its middle, and the part of it left at the limb
+HALO_POWER = 1.6                      # how fast the moon's halo thins: the same for the stage's moon and the street's
+def moon_mat():
+    """The moon's own disc: brightest at its middle, a little dimmer towards its limb, and its edge soft over a
+    twentieth of its width, so that it sits in the haze and is not a cut-out. It is drawn by the line of sight
+    (sight()), so it is a round moon from under it as from in front of it. Its halo is a glow() in front of it."""
+    m, n, l = mat('moon-disc')
+    r, _ = sight(n, l)
+    edge = n.new('ShaderNodeMapRange'); edge.interpolation_type = 'SMOOTHSTEP'    # the disc reaches 0.42 of the way out, as it always did
+    edge.inputs['From Min'].default_value = 0.40; edge.inputs['From Max'].default_value = 0.44; edge.inputs['To Min'].default_value = 1.0; edge.inputs['To Max'].default_value = 0.0
+    sq = n.new('ShaderNodeMath'); sq.operation = 'POWER'; sq.inputs[1].default_value = 2.0
+    limb = n.new('ShaderNodeMapRange'); limb.inputs['From Max'].default_value = 0.42 ** 2          # from the middle to the limb, by the square
+    limb.inputs['To Min'].default_value = MOON_LIGHT; limb.inputs['To Max'].default_value = MOON_LIGHT * MOON_LIMB
+    l.new(r, edge.inputs['Value']); l.new(r, sq.inputs[0]); l.new(sq.outputs[0], limb.inputs['Value'])
+    em = n.new('ShaderNodeEmission'); em.inputs['Color'].default_value = (1.0, 0.93, 0.74, 1); l.new(limb.outputs['Result'], em.inputs['Strength'])
+    tr = n.new('ShaderNodeBsdfTransparent'); mix = n.new('ShaderNodeMixShader')
+    l.new(edge.outputs['Result'], mix.inputs['Fac']); l.new(tr.outputs[0], mix.inputs[1]); l.new(em.outputs[0], mix.inputs[2])
+    l.new(mix.outputs[0], n['Material Output'].inputs['Surface'])
+    m.blend_method = 'BLEND'
+    return m
+
+
 # ---------------------------------------------------------------- mesh helpers
 def box(name, size, loc, material, c=SET):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
@@ -170,6 +244,14 @@ def plane(name, w, h, loc, rot, material, c=SET):
     bpy.ops.mesh.primitive_plane_add(size=1, location=loc, rotation=rot)
     ob = bpy.context.object; ob.name = name; ob.scale = (w, h, 1)
     bpy.ops.object.transform_apply(scale=True)
+    ob.data.materials.append(material); return link(ob, c)
+
+
+def card(name, size, loc, material, c=SET):
+    """A square card `size` across, standing up to face the house, with its own middle as its origin and 1 as the
+    measure from there to the middle of a side: what sight() needs, and what lets film.py hang it elsewhere."""
+    bpy.ops.mesh.primitive_plane_add(size=2, location=loc, rotation=(math.radians(90), 0, 0))
+    ob = bpy.context.object; ob.name = name; ob.scale = (size / 2,) * 3
     ob.data.materials.append(material); return link(ob, c)
 
 
@@ -201,9 +283,16 @@ def drape(name, width, height, folds, depth, material, c=SET, origin_x=0.0, swag
     return ob
 
 
-def load_glb(name, height=None, c=SET, faces=120000):
+def load_glb(name, height=None, c=SET, faces=120000, weld=False):
     """Bring in one Meshy model as a single object standing on z = 0, `height` tall, thinned to about
-    `faces` triangles: the sculpts come with over half a million, which no shot here can show."""
+    `faces` triangles: the sculpts come with over half a million, which no shot here can show.
+
+    `weld` joins the model's faces to each other before it is thinned. Meshy's files give every patch of the
+    texture its own corners, so the surface is closed to the eye but not joined, and thinning it unjoined tears it
+    open along every such seam: the dome came out with 61 665 open edges and the night showed through it as white
+    slivers and a hole (the fourth cut's review, a04_moon). Welded first, it thins to a closed skin: no open edge.
+    Only the skyline's pieces are welded: the houses, the pub and the lamps stay exactly as the cast was
+    photographed among them."""
     before = set(D.objects)
     bpy.ops.import_scene.gltf(filepath=os.path.join(ASSETS, name + '.glb'))
     new = [o for o in D.objects if o not in before]
@@ -224,6 +313,8 @@ def load_glb(name, height=None, c=SET, faces=120000):
     for v in ob.data.vertices:
         v.co = Vector(((v.co.x - cx) * s, (v.co.y - cy) * s, (v.co.z - zmin) * s))
     ob.name = name
+    if weld:
+        bm = bmesh.new(); bm.from_mesh(ob.data); bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5); bm.to_mesh(ob.data); bm.free()
     if len(ob.data.polygons) > faces:
         md = ob.modifiers.new('thin', 'DECIMATE'); md.ratio = faces / len(ob.data.polygons)
         bpy.context.view_layer.objects.active = ob; bpy.ops.object.modifier_apply(modifier='thin')
@@ -256,11 +347,12 @@ sky = plane('sky', 48, 22, (0, 14.2, 9.5), (math.radians(90), 0, 0), M_SKY)
 box('mask-L', (0.3, 16, 20), (-14.8, 6.5, 9), M_BLACK); box('mask-R', (0.3, 16, 20), (14.8, 6.5, 9), M_BLACK)
 box('mask-top', (30, 16, 0.3), (0, 6.5, 13.5), M_BLACK)
 
-# the moon: a disc of light 0.15 m in front of the sky, and a soft halo 0.05 m in front of that
-moon = plane('moon', 3.4, 3.4, (3.6, 14.05, 9.6), (math.radians(90), 0, 0), soft_card('moon-disc', (1.0, 0.93, 0.74), 9.0), FX)
-m = moon.data.materials[0].node_tree
-m.nodes['level'].operation = 'GREATER_THAN'; m.nodes['level'].inputs[1].default_value = 0.42   # a hard-edged disc
-halo = plane('moon-halo', 11, 11, (3.6, 14.0, 9.6), (math.radians(90), 0, 0), soft_card('moon-halo', (0.55, 0.7, 1.0), 1.6), FX)
+# the moon: a disc of light 0.15 m in front of the sky, and its halo in the haze 0.05 m in front of that. The halo
+# only adds light, so the disc shines through it and the moon is brightest at its middle (it used to cover the
+# middle of the disc with its own dim blue: the "doughnut" of the fourth cut's review)
+# (the halo's card is 16 m for a halo that reaches 5.6 m: see glow())
+moon = card('moon', 3.4, (3.6, 14.05, 9.6), moon_mat(), FX)
+halo = card('moon-halo', 16, (3.6, 14.0, 9.6), glow('moon-halo', (0.55, 0.7, 1.0), 1.6, power=HALO_POWER), FX)
 no_shadow(moon); no_shadow(halo)
 
 # the proscenium: gilt frame with an opening 16 m wide and 8.6 m high, 0.6 m deep, standing at y = -1.2 .. -0.6
@@ -313,8 +405,8 @@ row = [(-11.0, 11.6, 1.05, 0.10, 0.03), (-6.3, 12.0, 0.92, -0.06, -0.04), (-1.6,
 for i, (x, y, s, rz, lean) in enumerate(row):
     instance(house, f'house-back-{i}', (x, y, 0), rz, (s, s, s * rnd.uniform(0.95, 1.12)), lean)
 pub = load_glb('pub', 9.5); pub.location = (0, -200, 0)
-clock = load_glb('clocktower', 14.0, faces=60000); clock.location = (0, -200, 0)
-dome = load_glb('dome', 7.0, faces=60000); dome.location = (0, -200, 0)
+clock = load_glb('clocktower', 14.0, faces=60000, weld=True); clock.location = (0, -200, 0)
+dome = load_glb('dome', 7.0, faces=60000, weld=True); dome.location = (0, -200, 0)
 PUB_TURN = math.radians(-40)
 instance(pub, 'pub-L', (-15.0, 9.0, 0), PUB_TURN, (1.0, 1.0, 1.0))
 # the skyline, between the terrace and the painted night: the clock tower and the cathedral's dome on its drum
@@ -322,14 +414,31 @@ instance(clock, 'skyline-clock', (-3.9, 13.3, 0), 0.0, (1.1, 1.1, 1.1))
 instance(dome, 'skyline-dome', (7.2, 13.4, 5.6), 0.0, (1.1, 1.1, 1.1))
 
 
-def sign(name, text, loc, rot_z, c=SET, width=3.0):
-    """A hanging pub sign lettered here, in English, on an iron post: board, gilt letters 6 mm proud of it."""
+def drum(name, at, scale, c=SET):
+    """The drum the dome stands on. The model is a dome on a ring of columns with nothing inside the ring and nothing
+    under it, and it hangs above the roofs: from below, the night showed between and under the columns as a torn
+    pale hole in the middle of the building (the fourth cut's review, a04_moon). The drum is plain dark stone from
+    the ground to 1.6 of the model's measures up, where the dome is closed, and 2.2 in radius: 0.25 inside the
+    columns' inner faces (2.45 at the nearest), so no face of it lies in a face of theirs."""
+    r, top = 2.2 * scale, at[2] + 1.6 * scale
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=r, depth=top, location=(at[0], at[1], top / 2))
+    ob = bpy.context.object; ob.name = name; ob.data.materials.append(M_DRUM)
+    for p in ob.data.polygons: p.use_smooth = len(p.vertices) == 4
+    return link(ob, c)
+M_DRUM = principled('drum', (0.045, 0.045, 0.05), rough=0.9)
+drum('skyline-dome-drum', (7.2, 13.4, 5.6), 1.1)
+
+
+def sign(name, text, loc, rot_z, c=SET, width=3.0, post=True):
+    """A hanging pub sign lettered here, in English, on an iron post: board, gilt letters 6 mm proud of it.
+    Without the post it is the same board to be fixed flat to a wall."""
     post_m = principled(name + '-iron', (0.01, 0.01, 0.012), rough=0.5, metal=1.0)
     board_m = principled(name + '-board', (0.02, 0.09, 0.05), rough=0.45)
     root = D.objects.new(name, None); c.objects.link(root); root.location = loc; root.rotation_euler.z = rot_z
     def part(ob): ob.parent = root; return ob
-    part(box(name + '-post', (0.12, 0.12, 4.4), (0, 0, 2.2), post_m, c))
-    part(box(name + '-arm', (width + 0.5, 0.08, 0.08), (width / 2 + 0.1, 0, 4.2), post_m, c))
+    if post:
+        part(box(name + '-post', (0.12, 0.12, 4.4), (0, 0, 2.2), post_m, c))
+        part(box(name + '-arm', (width + 0.5, 0.08, 0.08), (width / 2 + 0.1, 0, 4.2), post_m, c))
     part(box(name + '-board', (width, 0.08, 1.15), (width / 2 + 0.25, 0, 3.5), board_m, c))
     part(box(name + '-frame-t', (width + 0.1, 0.12, 0.07), (width / 2 + 0.25, 0, 4.09), M_GOLD, c))
     part(box(name + '-frame-b', (width + 0.1, 0.12, 0.07), (width / 2 + 0.25, 0, 2.91), M_GOLD, c))
@@ -344,13 +453,32 @@ SIGN = [('THE', 0.24, 3.84), ('BLACK LANTERN', 0.30, 3.50), ('ALES  &  STOUT', 0
 sign('sign', SIGN, (-9.9, 7.4, 0), math.radians(8))
 instance(house, 'house-R', (14.2, 8.4, 0), -0.6 + math.pi, (1.1, 1.1, 1.25), -0.05)
 
+# A gas lamp's glow in the fog: a ball of added light round the flame (glow()). The flame burns behind the lantern's
+# glass, which on this model is from 2.42 to 2.87 m up (measured on the mesh; above it are the hood, with a small
+# finial at each corner, and the cap), so the glow's middle is at 2.65 m and the glass is the brightest thing in it.
+# The fourth cut had a flat card here, 0.35 m in front of the lamp and centred on the hood at 3.0 m: it covered the
+# lantern, one of the hood's corner finials stood through it as a black speck, and a camera to the side saw an oval.
+FLAME_Z, GLOW_R, GLOW_LIGHT, GLOW_POWER = 2.65, 1.7, 0.55, 3.5
+FLAME, FLAME_R = 0.5, 0.3                                 # the flame's own light, and how far from its middle it reaches (m)
+def gas_glow(name, radius): return glow(name, (1.0, 0.6, 0.22), GLOW_LIGHT, GLOW_POWER, ball=True, core=FLAME, core_r=FLAME_R / radius)
+bpy.ops.mesh.primitive_uv_sphere_add(radius=1.0, segments=24, ring_count=12)
+ball0 = bpy.context.object; ball0.name = 'glow-ball'; link(ball0, FX); ball0.location = (0, -200, 0); no_shadow(ball0)
+ball0.data.materials.append(gas_glow('glow-ball', GLOW_R * 1.3))                  # the street lamps outside the pub share this one
+
+
+def lamp_glow(name, loc, radius, c, material=None):
+    """One lamp's glow; with its own material where film.py turns that lamp up and down by itself."""
+    g = instance(ball0, name, loc, scale=(radius,) * 3, c=c); no_shadow(g)
+    if material: g.data = ball0.data.copy(); g.data.materials[0] = material
+    return g
+
+
 LAMPS = [(-5.2, 6.4), (5.6, 7.2), (-1.4, 9.2)]            # the cast's lanes in film.py are laid to pass each by 0.6 m or more
 for i, (x, y) in enumerate(LAMPS):
     instance(lamp, f'lamp-{i}', (x, y, 0), rnd.uniform(0, 3))
     L = D.lights.new(f'gas-{i}', 'POINT'); L.energy = 520; L.color = (1.0, 0.62, 0.25); L.shadow_soft_size = 0.18
     lo = D.objects.new(f'gas-{i}', L); LIGHTS.objects.link(lo); lo.location = (x, y - 0.02, 3.02)
-    g = plane(f'gas-glow-{i}', 1.7, 1.7, (x, y - 0.35, 3.0), (math.radians(90), 0, 0), soft_card(f'gas-glow-{i}', (1.0, 0.6, 0.22), 1.1), FX)
-    no_shadow(g)
+    lamp_glow(f'gas-glow-{i}', (x, y, FLAME_Z), GLOW_R, FX, gas_glow(f'gas-glow-{i}', GLOW_R))
 
 # ---------------------------------------------------------------- fog and beams (cards; no volumes)
 for i, (y, z, s, lv) in enumerate([(9.4, 1.5, 0.050, 0.55), (7.4, 1.2, 0.07, 0.42), (5.0, 0.9, 0.09, 0.34), (2.6, 0.7, 0.12, 0.26), (0.8, 0.55, 0.15, 0.2)]):
@@ -398,21 +526,37 @@ for i in range(3):
 
 # ================================================================= the exterior, 60 m in front
 EX = Vector((0, -60, 0))
-instance(pub, 'ext-pub', EX + Vector((0, 0, 0)), math.radians(8), (1.3, 1.3, 1.3), c=EXT)
-instance(clock, 'ext-clock', EX + Vector((-17.5, 19, 0)), 0.2, (2.3, 2.3, 2.3), c=EXT)
+PUB_FACE = math.radians(8)
+instance(pub, 'ext-pub', EX + Vector((0, 0, 0)), PUB_FACE, (1.3, 1.3, 1.3), c=EXT)
+# The clock tower, 22.4 m (it was 32 m): from the pub's pavement its clock and spire were above the picture and only
+# its shaft was left, a dark slab with a ruler's edge down the left of s00_pub (the fourth cut's review). At this
+# height its top is inside that picture, even when the edit has pushed in, and it reads as a tower as the dome
+# reads as a dome; 1.2 m further right so that the push-in does not cut it.
+instance(clock, 'ext-clock', EX + Vector((-16.3, 19, 0)), 0.2, (1.6, 1.6, 1.6), c=EXT)
 instance(dome, 'ext-dome', EX + Vector((21, 21, 9)), 0.0, (2.6, 2.6, 2.6), c=EXT)
-sign('ext-sign', SIGN, EX + Vector((-9.4, -7.6, 0)), math.radians(4), EXT, width=3.4)
+drum('ext-dome-drum', EX + Vector((21, 21, 9)), 2.6, EXT)
+# The pub's name, on the pub: the board fixed flat over the shop front of its left house, over the door. It was on a
+# post 7.6 m out in the street, on the lens's line to the left lamp: the glow hid the post and the first letter, and
+# the board hung in the air beside the house ("LACK LANTERN", the fourth cut's review). There is no room for a post
+# sign to stand clear on that side inside the part of the picture the edit keeps.
+# Measured on the model: that front is 6 m wide, 1.0 to 7.0 m left of the pub's middle, and its foremost part between
+# 2.7 and 4.0 m up is the cornice over the shop front, 6.54 m in front of the pub's middle. The board's back is 0.06 m
+# in front of that cornice, its foot at 2.8 m, its middle 4.0 m left of the pub's middle.
+_along, _into = Vector((math.cos(PUB_FACE), math.sin(PUB_FACE), 0)), Vector((-math.sin(PUB_FACE), math.cos(PUB_FACE), 0))
+SIGN_W = 3.4
+sign('ext-sign', SIGN, EX + _along * (-4.0 - SIGN_W / 2 - 0.25) - _into * (6.54 + 0.06 + 0.04) + Vector((0, 0, -0.12)), PUB_FACE, EXT, width=SIGN_W, post=False)
 box('ext-street', (120, 60, 0.4), EX + Vector((0, -6, -0.2)), M_COB, EXT)
 esky = plane('ext-sky', 150, 60, EX + Vector((0, 26, 22)), (math.radians(90), 0, 0), M_SKY, EXT)
-emoon = plane('ext-moon', 9, 9, EX + Vector((7, 25.6, 21)), (math.radians(90), 0, 0), moon.data.materials[0], EXT); no_shadow(emoon)
-ehalo = plane('ext-moon-halo', 22, 22, EX + Vector((7, 25.5, 21)), (math.radians(90), 0, 0), soft_card('ext-halo', (0.55, 0.7, 1.0), 0.7), EXT); no_shadow(ehalo)
+# the same moon as the stage's, and its halo the same way: 0.1 m in front of the disc, adding light only
+emoon = card('ext-moon', 9, EX + Vector((7, 25.6, 21)), moon.data.materials[0], EXT); no_shadow(emoon)
+ehalo = card('ext-moon-halo', 32, EX + Vector((7, 25.5, 21)), glow('ext-halo', (0.55, 0.7, 1.0), 0.7, power=HALO_POWER), EXT); no_shadow(ehalo)
 for i, (x, y, s, rz) in enumerate([(-19, 6, 1.15, 0.2), (-28, 2, 1.3, 3.3), (17, 7, 1.1, 3.0), (26, 3, 1.35, -0.2), (-37, 8, 1.5, 0.1), (36, 9, 1.5, 3.2), (-10, 13, 1.0, 3.1), (10, 14, 1.0, 0.1)]):
     instance(house, f'ext-house-{i}', EX + Vector((x, y, 0)), rz, (s, s, s), c=EXT)
 for i, x in enumerate((-8.5, 8.5, -15, 15)):
     instance(lamp, f'ext-lamp-{i}', EX + Vector((x, -9.5 - (i // 2) * 3, 0)), c=EXT)
     L = D.lights.new(f'ext-gas-{i}', 'POINT'); L.energy = 700; L.color = (1.0, 0.62, 0.25); L.shadow_soft_size = 0.2
     lo = D.objects.new(f'ext-gas-{i}', L); EXT.objects.link(lo); lo.location = EX + Vector((x, -9.5 - (i // 2) * 3 - 0.02, 3.02))
-    g = plane(f'ext-gas-glow-{i}', 2.8, 2.8, EX + Vector((x, -9.9 - (i // 2) * 3, 3.0)), (math.radians(90), 0, 0), soft_card(f'ext-glow-{i}', (1.0, 0.6, 0.22), 2.2), EXT); no_shadow(g)
+    lamp_glow(f'ext-gas-glow-{i}', EX + Vector((x, -9.5 - (i // 2) * 3, FLAME_Z)), GLOW_R * 1.3, EXT)       # seen from further off, so a little wider
 for i, (y, z, lv) in enumerate([(14, 3, 0.5), (4, 2.2, 0.35), (-8, 1.4, 0.3)]):
     f = plane(f'ext-fog-{i}', 130, 9, EX + Vector((0, y, z)), (math.radians(90), 0, 0), soft_card(f'ext-fog-{i}', (0.42, 0.55, 0.72), 0.5, radial=False, noise=0.12), EXT)
     f.data.materials[0].node_tree.nodes['level'].inputs[1].default_value = lv

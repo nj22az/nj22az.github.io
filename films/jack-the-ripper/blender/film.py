@@ -407,6 +407,14 @@ def camera(pos, look, lens=35):
     cam.location = pos; aim.location = look; cam.data.lens = lens
 
 
+# The stage's moon is a disc of light hung in front of the painted night (stage.py), and like any piece of scenery it
+# is hung where the picture needs it. Its place is 3.6 m right of the middle and 9.6 m up; a shot may hang it
+# elsewhere for its own plate, and every other shot finds it back in its place. It is in no picture of the cast.
+MOON_HOME = (3.6, 9.6)
+def moon_at(x=MOON_HOME[0], z=MOON_HOME[1]):
+    for n in ('moon', 'moon-halo'): D.objects[n].location.x = x; D.objects[n].location.z = z      # each stays at its own depth in front of the sky
+
+
 # ------------------------------------------------------------------ the dance, pose to pose
 # Jack's dance is animated as a hand animator would: a few strong poses, each hit on the beat and held a moment,
 # a quick eased move to the next, the hands and the head arriving a little after the body, and a small breath of
@@ -644,6 +652,10 @@ def a03(t):   # "A shadow slips where the gaslight's blown": her face near, the 
 @shot('a04_moon', 18.75, 24.65)
 def a04(t):   # "Fog whispers secrets to the moon": from her feet, the moon over her shoulder
     camera((1.1, 3.2, 0.5), (1.7, 5.2, 1.7), 35)
+    # From down here the moon in its usual place is behind the dormers of the tall house: the shot for "to the moon"
+    # had no moon in it (the fourth cut's review). For this plate it hangs in the open sky up on the left, over the low
+    # roof, where she looks and where her lifted hand points: whole, clear of the roofs, and not behind her.
+    moon_at(-0.7, 9.25)
     star_light(1.6, 5.0, key=26000, cone=12, foot=60, moon=2.4)
     k = bump(t, 20.2, 24.6, 1.4, 0.9)
     polly(t, 1.6, 5.0, to_lens(1.6, 5.0) + 14, r_up=118 * k, r_elbow=18 * k, r_hand=-20 * k, nod=-20 * k, look=-22 * k, lean=-6 * k)   # she lifts a hand to the moon
@@ -864,7 +876,7 @@ def pose(sh, t):
     for o in D.collections['fx'].objects: o.hide_render = ext or scene.render.film_transparent or o.name.startswith('petal')
     for o in FOG_CARDS: o.hide_render = True
     for a in ACT.values(): a.hide()
-    curtains(1.0)
+    curtains(1.0); moon_at()
     sh['fn'](t)
     bpy.context.view_layer.update()
     veils(t); foot_shade()
