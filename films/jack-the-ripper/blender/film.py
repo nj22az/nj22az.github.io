@@ -408,13 +408,21 @@ def camera(pos, look, lens=35):
 
 
 # The stage's moon is a disc of light hung in front of the painted night (stage.py), and like any piece of scenery it
-# is hung where the picture needs it. Its place is 3.6 m right of the middle and 9.6 m up; a shot may hang it
-# elsewhere for its own plate, or hang a smaller disc, and every other shot finds it back as it was. It is in no
-# picture of the cast.
-MOON_HOME = (3.6, 9.6); MOON_SIZE = D.objects['moon'].scale.x
-def moon_at(x=MOON_HOME[0], z=MOON_HOME[1], size=1.0):
-    for n in ('moon', 'moon-halo'): D.objects[n].location.x = x; D.objects[n].location.z = z      # each stays at its own depth in front of the sky
-    D.objects['moon'].scale = (MOON_SIZE * size,) * 3                                              # the disc only: the haze round it is as wide as ever
+# is hung where the picture needs it. A shot may hang it elsewhere for its own plate, or hang a smaller disc, and
+# every other shot finds it back as it was. It is in no picture of the cast.
+# Its home is MEASURED from the set that is loaded (the middle of each card as it stands), never written here: an
+# older set keeps the moon's place inside its mesh with the object itself at zero, and a written home moved that
+# moon 3.6 m right and 9.6 m up in every plate without a word (the repair round's finding). Placing by the card's
+# middle is right on either kind of set.
+def _middle(o): return sum((Vector(c) for c in o.bound_box), Vector()) / 8                       # in the card's own space
+MOON = {n: (D.objects[n], _middle(D.objects[n]), D.objects[n].scale.x) for n in ('moon', 'moon-halo')}
+MOON_DEPTH = {n: (o.matrix_basis @ mid).y for n, (o, mid, s0) in MOON.items()}                     # how far back each card's middle hangs
+MOON_HOME = D.objects['moon'].matrix_basis @ MOON['moon'][1]                                      # where the disc's middle stands in this set
+def moon_at(x=MOON_HOME.x, z=MOON_HOME.z, size=1.0):
+    for n, (o, mid, s0) in MOON.items():
+        if n == 'moon': o.scale = (s0 * size,) * 3                                                # the disc only: the haze round it is as wide as ever
+        off = o.matrix_basis.to_3x3() @ mid                                                       # from the card's origin to its middle, as it is now turned and sized
+        o.location = (x - off.x, MOON_DEPTH[n] - off.y, z - off.z)                                # each stays at its own depth in front of the sky
 
 
 # ------------------------------------------------------------------ the dance, pose to pose
