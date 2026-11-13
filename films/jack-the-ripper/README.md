@@ -146,7 +146,14 @@ too, its like Polly pops, but Jack doesnt pop, he is only there and we cant real
   remove one of the lines for the finger"); what stands is his own drawing with the lowest dividing line taken out
   and the other two moved down to even the fingers. The owner: "the hand looks good now".
 - `films/NEXT-VIDEO-PROMPT.md`: a prompt for a local session on the owner's Mac to start the next film.
-- **The fifth cut is rendering** (all Jack and Polly frames again with `cast3.blend` and Jack in the fog, into the
+- **Polly's bodice, again** (`blender/fix_bodice.py`, `cast4.blend`). The owner, of the first half of the fifth cut
+  sent as a preview: "this is the only problem now, it doesnt seem as it was fixed" (the bodice's side still went up
+  into her armpit on the moon reach). Measured: her collar-bone joints held up to 0.95 of the weight of 9,000 points
+  of her chest, and the arm joint up to 0.75 of the bodice's side by the shoulder. The corset is now found by its
+  paint (8,047 dark points of her trunk) and follows the spine only; skin beside it is eased over 4.5 cm. Tried on
+  the moon frame, old against new; the owner: "oh much better proceed". Run after `fix_weights.py`:
+  `blender -b cast3.blend -P fix_bodice.py -- --out cast4.blend singer`. Not done for the dancers.
+- **The fifth cut is rendering** (all Jack and Polly frames again, Polly's with `cast4.blend`, and Jack in the fog, into the
   scratch folder's `film5/`; then `--pass tracks`, `node prepare.mjs`, Remotion). Not yet delivered or reviewed.
 - Not asked of the owner yet answered: whether the film may be published anywhere. Song, renders and Meshy files are
   still outside the repository.
