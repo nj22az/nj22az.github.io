@@ -73,10 +73,10 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
       {shot.bg && shot.plates.length > 1 && second > 0 ? (
         <Img src={staticFile(`film/${shot.name}/bg_1.png`)} style={{position: 'absolute', width: '100%', height: '100%', opacity: second}} />
       ) : null}
-      <Fog t={t} level={inChorus(t) ? 0.34 : 0.2} speed={9} file="fog-b.png" top={30} />
+      <Fog t={t} level={inChorus(t) ? 0.28 : 0.14} speed={9} file="fog-b.png" top={30} />
       {fg && fg.box ? (
         <Img
-          src={staticFile(`film/${shot.name}/fg_${pad(f)}.png`)}
+          src={staticFile(`film/${shot.name}/fgc_${pad(f)}.png`)}
           style={{position: 'absolute', left: `${fg.box[0] * 100}%`, top: `${(1 - fg.box[3]) * 100}%`, width: `${(fg.box[1] - fg.box[0]) * 100}%`, height: `${(fg.box[3] - fg.box[2]) * 100}%`}}
         />
       ) : null}
@@ -105,18 +105,20 @@ const Fog: React.FC<{t: number; level: number; speed: number; file: string; top:
 
 // The owner: his face is never seen. Over the mist Blender hangs on him, the edit lays its own, turning slowly.
 const FaceMist: React.FC<{x: number; y: number; t: number; size: number}> = ({x, y, t, size}) => {
-  const s = Math.max(0.09, Math.min(0.5, size)) * 100;
+  const s = Math.max(0.07, Math.min(0.42, size)) * 100;
   return (
     <div style={{position: 'absolute', left: `${x * 100}%`, top: `${y * 100}%`, width: 0, height: 0}}>
       {[0, 1, 2].map((i) => {
-        const w = s * (1.25 + i * 0.5);
+        const w = s * (0.95 + i * 0.4);
         return (
           <div
             key={i}
             style={{
               position: 'absolute',
               width: `${w}vh`, height: `${w * 0.8}vh`, left: `${-w / 2}vh`, top: `${-w * 0.62}vh`,
-              backgroundImage: `radial-gradient(closest-side, rgba(${22 + i * 18},${30 + i * 22},${48 + i * 26},${0.95 - i * 0.3}) 35%, rgba(40,55,80,0) 100%), url(${staticFile('wisp.png')})`,
+              backgroundImage: `radial-gradient(closest-side, rgba(${14 + i * 10},${19 + i * 12},${31 + i * 16},${0.96 - i * 0.3}) 40%, rgba(30,42,62,0) 100%), url(${staticFile('wisp.png')})`,
+              filter: 'brightness(0.42) sepia(1) hue-rotate(180deg) saturate(1.4)',
+              opacity: 0.95 - i * 0.22,
               backgroundSize: '100% 100%, 180% 180%',
               backgroundPosition: `0 0, ${t * (13 + i * 9)}px ${t * (5 - i * 6)}px`,
               WebkitMaskImage: 'radial-gradient(closest-side, black 40%, transparent 100%)',
@@ -311,7 +313,7 @@ const Lyric: React.FC<{t: number}> = ({t}) => {
     <AbsoluteFill style={{justifyContent: 'flex-end', alignItems: 'center', paddingBottom: name ? 34 : 44}}>
       <div
         style={{
-          fontFamily: '"Pirata One"', fontSize: name ? 116 : 68, lineHeight: 1, color: name ? BLOOD : CREAM, letterSpacing: name ? 3 : 1.5,
+          fontFamily: '"Pirata One"', fontSize: name ? 116 : 68, lineHeight: 1, color: name ? '#e3202c' : CREAM, letterSpacing: name ? 3 : 1.5,
           WebkitTextStroke: name ? `1.5px ${CREAM}` : undefined,
           textShadow: name ? '0 0 34px rgba(179,18,29,0.75), 0 4px 18px rgba(0,0,0,0.95)' : '0 3px 16px rgba(0,0,0,0.95), 0 0 26px rgba(179,18,29,0.55)',
           opacity: out * Math.min(1, hit * 1.4),
@@ -378,7 +380,7 @@ export const Film: React.FC = () => {
         {vanish.map((v) => (
           <Smoke key={v.at} t={t} at={v.at} x={v.x} y={v.y} />
         ))}
-        <Fog t={t} level={inChorus(t) ? 0.5 : 0.3} speed={22} file="fog-a.png" top={inChorus(t) ? 38 : 52} />
+        <Fog t={t} level={inChorus(t) ? 0.4 : 0.2} speed={22} file="fog-a.png" top={inChorus(t) ? 38 : 52} />
         {inChorus(t) ? <Fog t={t + 40} level={0.22} speed={-14} file="fog-b.png" top={0} /> : null}
         <Rain t={t} k={pulse(t, 63.59, 84.5, 0.8, 1.2)} />
         <Petals t={t} t0={52.34} t1={57.85} />

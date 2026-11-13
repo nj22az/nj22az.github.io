@@ -50,6 +50,7 @@ blender -b -P blender/stage.py -- --assets <assets> --out stage.blend
 blender -b -P blender/cast.py  -- --rigs <rigs> --out cast.blend
 blender -b stage.blend -P blender/film.py -- --cast cast.blend --out <film> --pass bg
 blender -b stage.blend -P blender/film.py -- --cast cast.blend --out <film> --pass fg      # resumable
+python3 blender/shadows.py <film>            # keeps only the cast's own shadows (fgc_*.png), needs numpy and scipy
 cd remotion && npm install && ln -s <film> public/film && node prepare.mjs && npm run render
 ```
 

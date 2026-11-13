@@ -11,7 +11,7 @@ for (const m of py.matchAll(/@shot\('(\w+)', ([\d.]+), ([\d.]+)(?:, plates=\[([\
   const rec = man.shots[name];
   const fg = {};
   if (rec) for (const tr of rec.tracks) {
-    const file = `public/film/${name}/fg_${String(tr.f).padStart(4, '0')}.png`;
+    const file = `public/film/${name}/fgc_${String(tr.f).padStart(4, '0')}.png`;   // the cast pass after blender/shadows.py
     fg[tr.f] = {box: tr.box && fs.existsSync(file) ? tr.box : null, head: tr.jacks[0]?.head ?? null, hand: tr.jacks[0]?.hand ?? null};
   }
   const nplates = plates ? plates.split(',').length : 1;
