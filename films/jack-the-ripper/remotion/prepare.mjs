@@ -15,7 +15,7 @@ for (const m of py.matchAll(/@shot\('(\w+)', ([\d.]+), ([\d.]+)(?:, plates=\[([\
     // a step: a toe that was up in the picture before and is down in this one
     (tr.jacks[0]?.feet ?? []).forEach((ft, k) => { if (ft[2] < 0.06 && was[k] >= 0.06 && was[k] < 9) steps.push({t: +t0 + tr.f / fps, x: ft[0], y: ft[1]}); was[k] = ft[2]; });
     const file = `public/film/${name}/fg_${String(tr.f).padStart(4, '0')}.png`;
-    fg[tr.f] = {box: tr.box && fs.existsSync(file) ? tr.box : null, head: tr.jacks[0]?.head ?? null, hand: tr.jacks[0]?.hand ?? null};
+    fg[tr.f] = {star: tr.star ?? null, box: tr.box && fs.existsSync(file) ? tr.box : null, head: tr.jacks[0]?.head ?? null, hand: tr.jacks[0]?.hand ?? null};
   }
   const nplates = plates ? plates.split(',').length : 1;
   const have = [...Array(nplates).keys()].every((k) => fs.existsSync(`public/film/${name}/bg_${k}.png`));

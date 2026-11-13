@@ -10,7 +10,7 @@ import '@fontsource/im-fell-english-sc/400.css';
 /* The edit. One clock: the song's seconds (t = frame / fps). Blender photographed each shot as a plate of the set
    and a 12-a-second pass of the cast; here they are laid together, moved, fogged, lettered and cut to the song. */
 
-type Fg = {box: number[] | null; head: number[] | null; hand: number[] | null};
+type Fg = {box: number[] | null; head: number[] | null; hand: number[] | null; star: {head: number[]; hips: number[]} | null};
 type Step = {t: number; x: number; y: number};
 type Shot = {name: string; t0: number; t1: number; fps: number; frames: number; plates: number[]; bg: boolean; fg: Record<string, Fg>; steps: Step[]};
 const SHOTS = Object.fromEntries((data.shots as unknown as Shot[]).map((s) => [s.name, s]));
@@ -92,6 +92,9 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
           thickest in a band where the street meets the house fronts, behind the cast, so that walls and figures do not
           meet on a hard line. */}
       {shot.name.startsWith('s') ? null : <AbsoluteFill style={{background: red ? 'linear-gradient(to bottom, rgba(150,40,40,0.1), rgba(150,40,40,0.34) 60%, rgba(150,40,40,0.3))' : `linear-gradient(to bottom, ${HAZE}0.2), ${HAZE}${cut.soft ? 0.34 : 0.58}) 58%, ${HAZE}${cut.soft ? 0.3 : 0.5}) 78%, ${HAZE}0.36))`}} />}
+      {/* The owner: "Polly needs to pop, right, even if the fog is heavier". Behind her, in the fog, a soft light:
+          her outline stands against it. */}
+      {fg && fg.star && fg.box ? <StarHalo star={fg.star} red={red} /> : null}
       {(shot.name === 'a02_feet' ? shot.steps ?? [] : []).map((st, i) => <Ripple key={i} t={ts} at={st.t} x={st.x} y={st.y} />)}
       {fg && fg.box ? (
         <Img
@@ -102,6 +105,8 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
       {/* the edit's own bank over his face only where he is alone in the picture: where Polly or the dancers stand in
           front of him, Blender's bank (which knows who is in front) is the one that hides him */}
       {fg && fg.head && fg.box && ['c1a_dance', 'c1e_grapple', 'v2b_hats'].includes(cut.shot) ? <FaceMist x={fg.head[0]} y={fg.head[1]} red={red} /> : null}
+      {/* the fog in front of the cast, with a clear pocket that goes where Polly goes */}
+      {shot.name.startsWith('s') ? null : <FrontFog level={cut.soft ? 0.16 : inChorus(t) ? 0.4 : 0.32} red={red} star={fg && fg.box ? fg.star : null} />}
       {cut.shot === 'a07_blade' && fg && fg.hand ? <Glint x={fg.hand[0]} y={fg.hand[1]} k={pulse(t, 34.9, 36.5, 0.2, 0.6)} t={t} /> : null}
       {cut.shot === 'v2d_knives' && fg && fg.hand ? <Slashes t={t} x={fg.hand[0]} y={fg.hand[1]} /> : null}
     </AbsoluteFill>
@@ -125,6 +130,27 @@ const Ripple: React.FC<{t: number; at: number; x: number; y: number}> = ({t, at,
 const Fog: React.FC<{level: number; red?: boolean}> = ({level, red}) => (
   <AbsoluteFill style={{background: red ? `linear-gradient(to bottom, rgba(150,40,40,${level * 0.2}), rgba(150,40,40,${level * 0.55}))` : `linear-gradient(to bottom, ${HAZE}${level * 0.35}), ${HAZE}${level * 0.62}) 60%, ${HAZE}${level}))`}} />
 );
+
+const starBox = (star: {head: number[]; hips: number[]}) => {
+  const h = Math.max(0.05, Math.hypot(star.hips[0] - star.head[0], star.hips[1] - star.head[1]));   // head to hips, as a part of the picture
+  return {cx: (star.head[0] + star.hips[0]) / 2, cy: star.head[1] + (star.hips[1] - star.head[1]) * 0.75, h};
+};
+
+const StarHalo: React.FC<{star: {head: number[]; hips: number[]}; red?: boolean}> = ({star, red}) => {
+  const {cx, cy, h} = starBox(star);
+  return <AbsoluteFill style={{background: `radial-gradient(ellipse ${h * 150}% ${h * 300}% at ${cx * 100}% ${cy * 100}%, ${red ? 'rgba(255,170,150,0.3)' : 'rgba(205,225,255,0.32)'}, transparent 70%)`, mixBlendMode: 'screen'}} />;
+};
+
+const FrontFog: React.FC<{level: number; red?: boolean; star: {head: number[]; hips: number[]} | null}> = ({level, red, star}) => {
+  const c = red ? 'rgba(150,40,40,' : HAZE;
+  const style: React.CSSProperties = {background: `linear-gradient(to bottom, ${c}${level * 0.35}), ${c}${level * 0.62}) 60%, ${c}${level}))`};
+  if (star) {
+    const {cx, cy, h} = starBox(star);
+    const m = `radial-gradient(ellipse ${h * 115}% ${h * 330}% at ${cx * 100}% ${cy * 100}%, transparent 0%, transparent 52%, black 100%)`;
+    style.WebkitMaskImage = m; style.maskImage = m;
+  }
+  return <AbsoluteFill style={style} />;
+};
 
 // His face is never seen: where his head is, the same fog stands thicker. A smooth bank, no brushwork.
 const FaceMist: React.FC<{x: number; y: number; red?: boolean}> = ({x, y, red}) => (
@@ -383,7 +409,7 @@ export const Film: React.FC = () => {
         ))}
         {/* stage light: the glow of the footlights from below, on every picture of the stage */}
         {cut.shot.startsWith('s') ? null : <AbsoluteFill style={{background: 'radial-gradient(ellipse 80% 34% at 50% 108%, rgba(255,190,110,0.22), rgba(255,190,110,0) 70%)', mixBlendMode: 'screen'}} />}
-        <Fog level={cut.shot.startsWith('s') ? 0.2 : cut.soft ? 0.2 : inChorus(t) ? 0.4 : 0.32} red={cut.shot === 'c1d_blood'} />
+        {cut.shot.startsWith('s') ? <Fog level={0.2} /> : null}
         <Rain t={t} k={pulse(t, 63.59, 84.5, 0.8, 1.2)} />
         <Petals t={t} t0={52.34} t1={57.85} />
         <Petals t={t} t0={109.15} t1={114.6} />

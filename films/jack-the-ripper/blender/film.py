@@ -986,7 +986,7 @@ def report_hits(hits):
 def main():
     os.makedirs(OUT, exist_ok=True)
     todo = [s for s in SHOTS if not ONLY or s['name'].split('_')[0] in ONLY.split(',') or s['name'] in ONLY.split(',')]
-    settings(PASS if PASS != 'qc' else 'preview')
+    settings('fg' if PASS == 'tracks' else PASS if PASS != 'qc' else 'preview')      # tracks: the cast's pass, measured and not rendered
     if PASS == 'qc': return qc(todo)
     man_path = os.path.join(OUT, 'manifest.json')
     man = json.load(open(man_path)) if os.path.exists(man_path) else {'shots': {}}
@@ -1016,16 +1016,17 @@ def main():
                 if f != n // 2: continue
             elif f % EVERY: continue
             pose(sh, t)
-            tracks.append({'f': f, 'jacks': [{'head': track(j, 'Head'), 'hand': track(j, 'RightHand'), 'feet': [track(j, 'LeftToeBase') + [round(j.world('LeftToeBase').z, 3)], track(j, 'RightToeBase') + [round(j.world('RightToeBase').z, 3)]]} for j in JACKS if j.on]})
+            star = {'head': track(STAR, 'Head'), 'hips': track(STAR, 'Hips')} if STAR.on else None
+            tracks.append({'f': f, 'star': star, 'jacks': [{'head': track(j, 'Head'), 'hand': track(j, 'RightHand'), 'feet': [track(j, 'LeftToeBase') + [round(j.world('LeftToeBase').z, 3)], track(j, 'RightToeBase') + [round(j.world('RightToeBase').z, 3)]]} for j in JACKS if j.on]})
             fp = os.path.join(d, f'{"fg" if PASS == "fg" else "pv"}_{f:04d}.png')
-            if PASS == 'fg':
+            if PASS in ('fg', 'tracks'):
                 rg = region(); tracks[-1]['box'] = [round(v, 5) for v in rg] if rg else None
-                if rg is None or (os.path.exists(fp) and ONE is None): continue          # resumable
+                if PASS == 'tracks' or rg is None or (os.path.exists(fp) and ONE is None): continue          # resumable
                 r = scene.render; r.use_border = True; r.use_crop_to_border = True
                 r.border_min_x, r.border_max_x, r.border_min_y, r.border_max_y = rg
             scene.render.filepath = fp
             tt = time.time(); bpy.ops.render.render(write_still=True); print(f'{PASS} {sh["name"]} {f}/{n} {time.time() - tt:.1f}s', flush=True)
-        if PASS == 'fg' and ONE is None and EVERY == 1:
+        if PASS in ('fg', 'tracks') and ONE is None and EVERY == 1:
             man['shots'][sh['name']] = {'t0': sh['t0'], 't1': sh['t1'], 'fps': fps, 'frames': n, 'plates': sh['plates'], 'tracks': tracks}
             json.dump(man, open(man_path, 'w'))
 
