@@ -3,18 +3,14 @@
 Version **v2026.11.12.1**, release key `20261112fun1`. Branch `claude/laughing-brahmagupta-ybyndm`.
 Publication: see the last section.
 
-## State when this was last written (13 November 2026, after the second publication)
+## State when this was last written (13 November 2026, after the third publication)
 
-- **Live**: **v2026.11.13.1**, main `e869d0153`, release key `20261113year1`: everything in this note that is marked
-  done, including what was drawn after the first publication (the friends through the year, the year's frames, the
+- **Live**: **v2026.11.13.2**, main `b1455d65b`, release key `20261113picks1`: everything in this note that is marked
+  done, *choosing made easier* too, including what was drawn after the first publication (the friends through the year, the year's frames, the
   face cutouts, the first pass of the playful skin).
-- **On the branch, not live**: *choosing made easier* (13 November 2026; its own section near the end of this note):
-  both pickers open on For you, the stickers are in six sections, a Look's styles are a second tap away. Before the
-  next "Push to main": a new release key and version, the offline bundle, the whole regression (only the suites the
-  pickers touch were rerun: fun, stickers, faces, sticker-contour, integration, ui, audit, camera, and the Node tests
-  picks, modules, offline).
-- **Waiting on the owner**: whether the skin's first pass is the right direction before the rest is redrawn
-  (screenshots were sent on 12 November); a try of the Sticker box with the iPhone's keyboard stickers; whether to
+- **The branch holds nothing unpublished** but this note's own record of that.
+- **Waiting on the owner**: (the skin's first pass: "Yes it's looking better", 13 November, so the rest of the redraw
+  may go on in that direction); a try of the Sticker box with the iPhone's keyboard stickers; whether to
   build any of the studio or the new filters; whether the seven sheet pictures should stay in the public repository
   (`tools/sources/sticker-sheets/`).
 - **Still owed**: the rest of the interface in the playful style (*Not done* 3), and a cutout in the editor bringing
@@ -148,7 +144,7 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
 5. **AI Comic Factory** and **obs-dlss5-nr** were looked at on the owner's links: neither can be part of a static,
    offline browser app (the first needs a model server, the second is a Windows plugin on NVIDIA's runtime).
 
-## Choosing made easier — 13 November 2026 (on the branch, not published)
+## Choosing made easier — 13 November 2026 (published in v2026.11.13.2)
 
 The owner, after the second publication: **"Yes it's looking better, try to make the sticker sections more intelligent
 and choosing filter too, it's a bit overwhelming as it is now"**. ("Looking better" is the playful first pass.)
@@ -202,3 +198,16 @@ nothing of the camera).
   says v2026.11.13.1; `ball.js` answers 404.
 - The Pocket Camera workflow runs on pull requests and by hand, not on a push to main, so there is no run of it for
   either publication: the regression above was run here, with the workflow's own list of suites.
+
+**Published a third time on the owner's "Push to main", 13 November 2026**: main `b1455d65b`, v2026.11.13.2, release
+key `20261113picks1` (main had not moved since the second publication): *choosing made easier*.
+
+- Before the push, on the tree that was published: the whole regression, 51 of 51 (23 Node tests, `picks` among them;
+  28 browser suites: camera, ui 82/82, crop 33/33, audit 59/59, retouch 40/40, integration 9/9, offline 13/13, brand
+  11/11, stickers 10, fun 9, comic 4 and the rest). The first full run failed one check, the comic suite's list of
+  kinds (nine, all across a 390 phone): For you is a tenth and says its name, so the row now scrolls a little on a
+  390 phone, as it did on a 320 one. The check was rewritten to say that; nothing in the app was changed for it.
+- After the push, as found live: 41 of 41 checked files are byte for byte the commit's (`picks.js` added to the list);
+  the page says v2026.11.13.2; `ball.js` answers 404.
+- A thing to watch on a phone: the row of kinds is a little wider than a 390 phone when For you is open (one or two
+  kinds out of sight, reached by a sideways swipe).
