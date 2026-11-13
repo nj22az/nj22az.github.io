@@ -1,0 +1,63 @@
+/* The Office's opening: one framed painting of the harbour road. Its labels are the page's sections; its brushes are
+   Pocket Camera's Looks (tools/office-painting/build.py). Colours come from the Office's tokens, so both modes follow. */
+body.office-home .office-hero{padding-bottom:16px}
+@media(min-width:850.02px){body.office-home .office-hero{padding-top:76px}}
+@media(max-width:850px){body.office-home .office-hero{padding-top:120px}}
+.office-home .office-opening{display:grid;grid-template-columns:minmax(0,1fr);gap:0;align-items:end;max-width:clamp(900px,calc((100svh - 190px)*1.6),1200px);padding:14px 14px 0;border-radius:24px}
+.office-painting{grid-area:1/1;min-width:0;margin:0}
+.office-canvas{position:relative;border-radius:12px;overflow:hidden;background:var(--surface-raised);isolation:isolate}
+.office-canvas img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
+.office-canvas-under{position:absolute;inset:0 0 auto;z-index:0}
+.office-canvas-top{position:relative;z-index:1;transition:opacity .3s ease}
+.office-painting[data-changing] .office-canvas-top{opacity:0}
+/* The pointer is a window through the paint to the town as the game draws it. */
+.office-painting[data-lens] .office-canvas-top{-webkit-mask-image:radial-gradient(circle 120px at var(--lens-x,50%) var(--lens-y,50%),transparent 62%,#000 100%);mask-image:radial-gradient(circle 120px at var(--lens-x,50%) var(--lens-y,50%),transparent 62%,#000 100%)}
+/* Paper tooth over the picture, so a screen render reads as a painted sheet. */
+.office-canvas::after{content:"";position:absolute;inset:0 0 auto;aspect-ratio:16/10;z-index:2;pointer-events:none;opacity:.22;mix-blend-mode:multiply;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* Section labels, pinned to the part of the street each belongs to. */
+.office-rooms a{display:flex;flex-direction:column;justify-content:center;min-height:48px;padding:8px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-card);color:var(--ink);text-decoration:none;font:400 12px/1.35 var(--font-body,system-ui,sans-serif);transition:transform .18s ease,background-color .18s ease}
+.office-rooms b{font:800 15px/1.25 var(--font-display,system-ui,sans-serif)}
+.office-rooms span{color:var(--ink-light)}
+.office-rooms a:hover{background:#ffe032;color:#202b36;transform:translateY(-2px)}
+.office-rooms a:hover span{color:#202b36}
+.office-rooms a:focus-visible,.office-brushes :is(button,a):focus-visible{outline:3px solid #0067c7;outline-offset:3px}
+@media(min-width:1000px){
+ .office-rooms a{position:absolute;z-index:3}
+ .office-rooms [data-room=harbour]{left:41%;top:7%}
+ .office-rooms [data-room=create]{right:3%;top:24%}
+ .office-rooms [data-room=learn]{left:3%;top:25%}
+ .office-rooms [data-room=journal]{left:40%;top:79%}
+ /* The wall label sits where a gallery hangs it: low on the right, over the pavement. */
+ .office-home .office-introduction{grid-area:1/1;justify-self:end;z-index:4;width:min(400px,38%);margin:0 26px 92px 0;padding:24px 26px;border:1px solid var(--border);border-radius:16px;background:var(--surface-card)}
+ .office-home .office-heading{font-size:clamp(24px,2.1vw,27px)}
+ .office-home .office-summary{margin-bottom:18px;font-size:15px}
+ .office-home .office-eyebrow{margin-bottom:12px}
+}
+@media(max-width:999.98px){
+ .office-home .office-opening{max-width:720px;padding:10px 10px 0;overflow:visible}
+ .office-rooms{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0 0;background:var(--surface-card)}
+ .office-canvas{background:none;border-radius:0;overflow:visible}
+ .office-canvas img,.office-canvas::after{border-radius:12px}
+ .office-home .office-introduction{grid-area:1/1;padding:18px 10px 22px}
+ .office-painting{grid-area:2/1}
+}
+
+/* The brushes: each repaints the same street. */
+.office-brushes{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;min-height:64px;padding:10px 4px;font:600 13px/1.4 var(--font-body,system-ui,sans-serif);color:var(--ink-light)}
+.office-brushes>div{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 auto}
+.office-brushes button{min-height:44px;padding:0 14px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--ink);font:700 13px/1 var(--font-body,system-ui,sans-serif);cursor:pointer}
+.office-brushes button:hover{background:var(--surface-hover)}
+.office-brushes button[aria-pressed=true]{background:#245e64;border-color:#245e64;color:#fff}
+.office-brushes>a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);text-underline-offset:4px;text-decoration-color:var(--border-hover);gap:6px}
+
+/* The harbour has a room of its own: words beside the arrival. */
+body.office-home .office-harbour{padding-block:40px 48px}
+.office-harbour-layout{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:40px}
+.office-harbour-copy h2{margin:6px 0 12px;font:800 clamp(28px,3vw,38px)/1.2 var(--font-display);letter-spacing:-.02em;color:var(--ink)}
+.office-harbour-copy p{max-width:44ch;margin:0 0 16px;font:400 16px/1.65 var(--font-body);color:var(--ink-light)}
+.office-harbour-layout>.office-port{width:100%;max-width:none;margin:0;padding:0;animation:none}
+.office-harbour-layout>.office-port[data-exploring]{aspect-ratio:4/3}
+@media(max-width:900px){.office-harbour-layout{grid-template-columns:minmax(0,1fr);gap:20px}body.office-home .office-harbour{padding-block:28px 36px}}
+@media(prefers-reduced-motion:reduce){.office-canvas-top,.office-rooms a{transition:none}.office-rooms a:hover{transform:none}}
+@media print{.office-brushes,.office-rooms{display:none}}

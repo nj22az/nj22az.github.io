@@ -30,6 +30,8 @@
   <script src="/assets/js/office-port.js?v=diorama-20261101a" defer></script>
   <script src="/assets/js/office-diorama.js?v=20261101a" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
+  <link rel="stylesheet" href="/css/office-painting.css?v=20261113">
+  <script src="/assets/js/office-painting.js?v=20261113" defer></script>
 
 </head>
 <body class="office-home">
@@ -40,9 +42,33 @@
 
   <main id="main-content">
 
-    <!-- A single opening: introduction and lightweight port arrival. -->
+    <!-- The opening is one painting: the street outside Sakura Shōten, repainted by Pocket Camera's Looks. Its labels are the page's sections. -->
     <section class="hero office-hero" id="home" aria-labelledby="hero-title">
       <div class="office-opening">
+        <figure class="office-painting" id="office-painting" data-look="watercolour">
+          <div class="office-canvas" data-painting-canvas>
+            <img class="office-canvas-under" data-painting-under alt="" width="1600" height="1000" decoding="async" hidden>
+            <img class="office-canvas-top" data-painting-top src="/assets/office-painting/street-watercolour-1600.webp" srcset="/assets/office-painting/street-watercolour-800.webp 800w, /assets/office-painting/street-watercolour-1600.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" alt="The harbour road in Johansson World: Sakura Shōten under its striped awning, a small white car at the kerb and the blue quay warehouse beyond, painted in watercolour" width="1600" height="1000" loading="eager" fetchpriority="high" decoding="async">
+            <nav class="office-rooms" aria-label="Sections of this page">
+              <a href="#harbour" data-room="harbour"><b>Explore</b><span>The island and the ferry</span></a>
+              <a href="#projects" data-room="create"><b>Create</b><span>Camera and tools</span></a>
+              <a href="#projects" data-room="learn"><b>Learn</b><span>Course and book</span></a>
+              <a href="#blog" data-room="journal"><b>Read</b><span>The journal</span></a>
+            </nav>
+          </div>
+          <figcaption class="office-brushes">
+            <span id="office-brushes-label">Paint it as</span>
+            <div role="group" aria-labelledby="office-brushes-label">
+              <button type="button" data-look="watercolour" data-name="watercolour" aria-pressed="true">Watercolour</button>
+              <button type="button" data-look="print" data-name="a woodblock print" aria-pressed="false">Woodblock</button>
+              <button type="button" data-look="sketchbook" data-name="an architect’s sketchbook" aria-pressed="false">Sketchbook</button>
+              <button type="button" data-look="manga" data-name="manga ink and screentone" aria-pressed="false">Manga</button>
+              <button type="button" data-look="cyanotype" data-name="a blueprint" aria-pressed="false">Blueprint</button>
+              <button type="button" data-look="natural" data-name="the game’s own colours" aria-pressed="false">As it is</button>
+            </div>
+            <a href="/camera/">Looks from Pocket Camera <span aria-hidden="true">↗</span></a>
+          </figcaption>
+        </figure>
         <div class="office-introduction">
           <p class="office-eyebrow">Field service engineer · Marine systems</p>
           <h1 class="office-heading" id="hero-title">Engineering in the field.<br>Ideas brought to life.</h1>
@@ -52,8 +78,20 @@
             <a href="#about" class="office-about">About Nils <span aria-hidden="true">↗</span></a>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- The harbour: an arrival at Minato port, and the port in 3D on request. -->
+    <section class="section office-harbour" id="harbour" aria-labelledby="harbour-heading">
+      <div class="container office-harbour-layout">
+        <div class="office-harbour-copy">
+          <div class="section-subtitle">At the harbour</div>
+          <h2 id="harbour-heading">Someone is always arriving.</h2>
+          <p>Minato port in Johansson World. Watch who comes ashore, or open the harbour in 3D and look around the quay and the ferry.</p>
+          <a class="office-about" href="/johansson-world/">Discover the island <span aria-hidden="true">↗</span></a>
+        </div>
       <figure class="office-port" id="office-port" aria-label="An arrival at Minato port in Johansson World">
-        <img src="/assets/office-port/harbour.webp" alt="The quay, boats and harbour buildings at Minato port in Johansson World" width="960" height="540" loading="eager" fetchpriority="high" decoding="async">
+        <img src="/assets/office-port/harbour.webp" alt="The quay, boats and harbour buildings at Minato port in Johansson World" width="960" height="540" loading="lazy" decoding="async">
         <div class="office-port-stage" id="office-port-stage" data-port-stage></div>
         <button class="harbour-open" type="button" data-diorama-open aria-expanded="false" aria-controls="harbour-diorama" hidden>Explore harbour</button>
         <div class="harbour-diorama" id="harbour-diorama" data-diorama hidden>
@@ -108,7 +146,7 @@
     <section class="section section-alt" id="blog">
       <span id="journal" aria-hidden="true"></span>
       <div class="container section-shell">
-        <div class="section-header"><div class="section-decor" id="decor-blog"></div><h2>Blog</h2><p>Articles on engineering, life abroad and everyday discoveries.</p></div>
+        <div class="section-header"><div class="section-decor" id="decor-blog"></div><div class="section-subtitle">From the journal</div><h2>Blog</h2><p>Articles on engineering, life abroad and everyday discoveries.</p></div>
         <div data-blog-feed data-limit="3"><div class="blog-feed-list" data-blog-list><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Article</span><time datetime="2026-10-09">9 Oct 2026</time></div><h3><a href="/blog/the-torn-poster/">The Torn Poster</a></h3><p>Tetsuo tears the corner off Thuận’s sale poster. A short film, a nine-page comic and a practical use for Pythagoras’ theorem.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/the-torn-poster/" hreflang="en">Read article →</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Article</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/lanternan-som-lyser-svagt/">The navigation light that glows dimly</a></h3><p>Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/lanternan-som-lyser-svagt/" hreflang="en">Read part 1 →</a><a class="blog-swedish" href="/blog/elteknik/lanternan-som-lyser-svagt/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Article</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/trefas-440-v-60-hz/">Three-phase power at 440 V and 60 Hz</a></h3><p>Line and phase voltage, star and delta connections, and a worked example of three-phase power in a shipboard pump motor.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/trefas-440-v-60-hz/" hreflang="en">Read part 2 →</a><a class="blog-swedish" href="/blog/elteknik/trefas-440-v-60-hz/sv/" hreflang="sv" lang="sv">Svenska</a></div></article></div></div>
         <div class="read-all"><a href="/blog/">Browse all articles →</a></div>
       </div>
@@ -134,7 +172,7 @@
             </div>
           </div>
           <div class="about-content">
-            <div class="section-label-bar">About</div>
+            <div class="section-subtitle">About</div>
             <h2 id="about-heading">Engineering with a wider field of view</h2>
             <p class="about-bio" id="about-bio"></p>
             <div class="social-links" id="social-links"></div>

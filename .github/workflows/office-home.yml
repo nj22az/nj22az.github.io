@@ -2,7 +2,7 @@ name: Office homepage design review
 on:
   push:
     branches: [development, main]
-    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
+    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'css/office-painting.css', 'assets/js/office-painting.js', 'assets/office-painting/**', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
 permissions:
   contents: read
 jobs:

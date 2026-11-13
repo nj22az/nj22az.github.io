@@ -1,3 +1,5 @@
+**The Office homepage as a painting, 13 November 2026:** on the branch, not published, awaiting the owner's word. Read [docs/HANDOVER-OFFICE-PAINTING-2026-11-13.md](docs/HANDOVER-OFFICE-PAINTING-2026-11-13.md). Nothing under `ferry/` or `sjoskolan/` was touched.
+
 **Tasks for Codex on the Chisum, 13 November 2026:** five tasks that do not build her model, at the owner's asking. Read [ferry/CODEX-TASKS-2026-11-13.md](ferry/CODEX-TASKS-2026-11-13.md). Her builders, her register and `ferry/app.js` stay Claude's while that list stands.
 
 **Site copy, 12 November 2026:** both books are works in progress, and StepWise sits inside Maintenance Desk. Read [docs/HANDOVER-BOOKS-WIP-2026-11-12.md](docs/HANDOVER-BOOKS-WIP-2026-11-12.md). The ferry notes below are unchanged. Nothing under `ferry/` was touched.
