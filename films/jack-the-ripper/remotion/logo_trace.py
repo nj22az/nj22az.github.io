@@ -1,5 +1,5 @@
 """Trace the owner's logo to vector paths, part by part, with the corrections he asked for on 13 November 2026:
-the hand on the anchor has three fingers and a thumb like the other hand, and the outer ring is a true circle on
+the hand on the anchor has three fingers and a thumb like the other hand (one dividing line taken out), and the outer ring is a true circle on
 the inner ring's centre, with an even gap all round."""
 import subprocess, numpy as np, re, math, json, sys
 from scipy import ndimage
@@ -9,46 +9,22 @@ gray=np.frombuffer(subprocess.check_output(['ffmpeg','-v','error','-i',p,'-f','r
 # the parts are told apart on the drawing as it came, before anything is redrawn
 lab,n=ndimage.label(gray<128)
 
-# ---- the hand on the anchor, drawn again in the fist's own manner. As drawn it had four fingers (three dividing
-# lines, thick at the palm and fading towards the knuckles, never reaching the outline; four faint bumps on the
-# knuckle edge; a tick for the first finger's crease). The fist has three fingers: its outline bumps out once for each,
-# and each dividing line grows out of the notch between two bumps, thick where it joins, and curls in to a point.
-# So here: the old lines and the tick are taken out; the knuckle edge (the hand's right side) is drawn again with three
-# bumps; and two lines come in from the notches between them, thick at the join, curling to a point.
+# ---- the hand on the anchor. As drawn it had four fingers (three dividing lines); the fist has three. The owner,
+# 13 November 2026, after a redrawn hand: "why the ugly redraw, cant you just remove one of the lines for the finger".
+# So the drawing is kept as he drew it: the lowest dividing line is taken out, and the other two, his own strokes
+# unaltered, are moved down so that the three fingers are of a height. Nothing is drawn by this script.
 yy,xx=np.mgrid[0:h,0:w]
-old=gray<128
-TOP,BOT=390.0,446.0; B1,B2=TOP+(BOT-TOP)/3,TOP+2*(BOT-TOP)/3                      # the fingers: three equal parts of the grip
-gray[(xx>=735.6)&(xx<=768)&(yy>=396.5)&(yy<=441)]=255                            # the three old lines
-gray[(xx>=745.5)&(xx<=750.5)&(yy>=387.6)&(yy<=397.5)]=255                        # the tick
-# the old knuckle edge: its middle and thickness, row by row
-rows=[]; 
-for y in range(393,446):
-    xs=np.nonzero(old[y,766:789])[0]+766
-    runs=np.split(xs,np.nonzero(np.diff(xs)>1)[0]+1)
-    r=[q for q in runs if len(q) and len(q)<=9][-1]
-    rows.append((y,r[0],r[-1]))
-ys=np.array([r[0] for r in rows],float); mid=np.array([(r[1]+r[2])/2 for r in rows])
-base=np.polyval(np.polyfit(ys,mid,3),ys)                                          # the edge without its old ripples
-for y,x0,x1 in rows: gray[y,x0-1:x1+4]=255
-def knuckle(y):
-    for a_,b_ in ((TOP,B1),(B1,B2),(B2,BOT)):
-        if a_<=y<=b_: return 2.1*math.sin(math.pi*(y-a_)/(b_-a_))**0.75-0.9        # out in the middle of a finger, in at its ends
-    return 0.0
-ends=np.clip(np.minimum(ys-ys[0],ys[-1]-ys)/3.0,0,1)                              # the new edge leaves and rejoins the old one smoothly
-edge=base+np.array([knuckle(y) for y in ys])*ends
-def brush(pts,rad):
-    for k in range(len(pts)-1):
-        (xa,ya),(xb,yb)=pts[k],pts[k+1]; r_=rad(k/(len(pts)-1))
-        dx,dy=xb-xa,yb-ya; L2=dx*dx+dy*dy+1e-9
-        t=np.clip(((xx-xa)*dx+(yy-ya)*dy)/L2,0,1); d=np.hypot(xx-(xa+t*dx),yy-(ya+t*dy))
-        gray[:]=np.minimum(gray,255*(1-np.clip(r_-d+0.5,0,1)))
-brush([(base[0],ys[0]-1.5)]+list(zip(edge,ys))+[(base[-1],ys[-1]+1.5)],lambda u:3.0)
-def finger_line(yk):
-    xk=float(np.interp(yk,ys,edge))                                               # from the notch on the knuckle edge
-    p0=(xk-0.5,yk); p1=(xk-29.0,yk-6.2); pc=(xk-17.0,yk+2.6)                       # in towards the palm, rising a little, in a slow curl
-    pts=[((1-u)**2*p0[0]+2*u*(1-u)*pc[0]+u*u*p1[0],(1-u)**2*p0[1]+2*u*(1-u)*pc[1]+u*u*p1[1]) for u in np.linspace(0,1,29)]
-    brush(pts,lambda u:2.6 if u<0.4 else 2.6-(2.6-0.35)*((u-0.4)/0.6)**1.2)
-finger_line(B1); finger_line(B2)
+orig=gray.copy()
+X0,X1=733,768                                                                    # from the palm-side outline to the lines' points
+LINES={'top':(396,409,5),'mid':(410,426,9),'low':(428,440,None)}                 # rows: a clean one above, a clean one below; and its move
+ink={}
+for k,(a_,b_,dy) in LINES.items():
+    f=((np.arange(a_,b_+1)-a_)/(b_-a_))[:,None]
+    clean=orig[a_,X0:X1][None,:]*(1-f)+orig[b_,X0:X1][None,:]*f                  # the hand here had no line been drawn
+    ink[k]=np.clip(clean-orig[a_:b_+1,X0:X1],0,255)                              # what the line added
+    gray[a_:b_+1,X0:X1]=clean
+for k,(a_,b_,dy) in LINES.items():
+    if dy is not None: gray[a_+dy:b_+1+dy,X0:X1]=np.clip(gray[a_+dy:b_+1+dy,X0:X1]-ink[k],0,255)
 redrawn=(gray<128)&(xx>=724)&(xx<=794)&(yy>=384)&(yy<=452)                        # the hand as it now is
 GROUPS={'title':[1,2,3,4],'prop_l':[13],'prop_r':[14],'anchor_l':[17],'anchor_r':[18],
         'bottom':[27,23,36,28,24,35,21,29,30,20,33,31,32,26,25,34],'copy_mark':[37,51],'copy_name':list(range(38,51))}
