@@ -33,8 +33,16 @@ when saving ? I want memory with our own photos or with the stickers".
 - **The year's frames and the face cutouts** (the owner, 12 November 2026: "And frames too, and cutouts, like a frog
   costume at the pond could have a cutout for the face, think extremely playful"): Tết, Summer, Halloween, Easter and
   Christmas frames, and five cutouts (Frog, Sunflower, Astronaut, Daruma, Snowman), each a painted board over the whole
-  picture with a hole where your face goes: in the viewfinder you put your face in it, as at a real board (in the
-  editor, Crop brings a face to it). Published in v2026.11.13.1.
+  picture with a hole where your face goes: in the viewfinder you put your face in it, as at a real board. Published
+  in v2026.11.13.1.
+- **In the editor a cutout brings the photo's face to its hole** (13 November 2026, on the branch, not published):
+  choosing a board in the Frame tab finds the face and moves the crop, which keeps its shape, so the face sits in the
+  hole (`crop.js cropFaceToWindow`, `app.js chooseEditFrame`). A face smaller than the hole is 86% of its height; a
+  close portrait, whose face is bigger than the hole even on the whole photo, is centred first, the crop coming in
+  only while brows, eyes and mouth still fit. Taking the board off puts the crop back as it was, unless it was moved
+  by hand since. No face seen (a dog, a teapot): "I can’t see a face here. Tap the face?", and a tap on the photo
+  brings that spot to the hole. In Crop the board stays on, so the photo can be moved under it by hand, and a change
+  of shape takes the face along.
 - **The pixel frames** of October (Pocket, Harbour, Sakura, Ticket, Matsuri, Hello, Island Post, Shop Day;
   `tools/draw-camera-frames.py`, four shades, a 16-pixel border) are no longer offered. They are still drawn, so a photo
   framed in one keeps it and shows it among the choices when edited. The Game Boy Looks themselves stay (the owner:

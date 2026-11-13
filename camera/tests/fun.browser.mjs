@@ -149,6 +149,64 @@ try{
   assert.equal(await page.$('#chooseBall'),null);assert.equal(await page.$('#ballFile'),null);
   assert.equal((await page.request.get(server.url+'camera/ball.js')).status(),404);
  });
+ // Where the photo's face is against the board's hole: its middle off the hole's (in shares of the hole) and its height.
+ const hole=()=>page.evaluate(async()=>{
+  const m=await import('./frames.js?v='+document.querySelector('script[src^="app.js"]').src.split('v=')[1]);
+  const e=window.pocketCamera.state.edit,c=e.recipe.crop,f=e.recipe.makeup.face,pw=c.w*e.width,ph=c.h*e.height,win=m.frameWindow(e.recipe.frame,pw,ph);
+  if(!f||!win)return {crop:c,frame:e.recipe.frame};
+  return {crop:c,frame:e.recipe.frame,shape:pw/ph,dx:((f.x+f.w/2-c.x)*e.width-win.x-win.w/2)/win.w,dy:((f.y+f.h/2-c.y)*e.height-win.y-win.h/2)/win.h,tall:f.h*e.height/win.h,
+   inside:c.x>=0&&c.y>=0&&c.x+c.w<=1.000001&&c.y+c.h<=1.000001};
+ });
+ const whole={x:0,y:0,w:1,h:1};
+ await check('in the editor a face cutout brings the photo’s face to its hole; taking it off puts the crop back',async()=>{
+  await page.evaluate(()=>{document.getElementById('picker').value='';});
+  await page.setInputFiles('#picker',join(root,'camera/tests/fixtures/portrait-braids.jpg'));
+  await page.waitForFunction(()=>window.pocketCamera.state.edit?.width===640);
+  await page.click('#tabFrame');
+  for(const id of ['frog-pond','sunflower','astronaut','daruma','snowman']){
+   await page.click(`#frameChoices [data-frame="${id}"]`);
+   // The first one waits for the face to be found; the photo is a close portrait, so the crop has to come in.
+   await page.waitForFunction(id=>{const e=window.pocketCamera.state.edit;return e.recipe.frame===id&&!!e.recipe.makeup.face&&e.recipe.crop.w<1;},id,{timeout:90000});
+   const at=await hole();
+   assert.ok(Math.abs(at.dx)<.12&&Math.abs(at.dy)<.12,`${id}: the face is at the hole's middle ${JSON.stringify(at)}`);
+   assert.ok(at.tall>.6&&at.tall<=1.51,`${id}: the face fills the hole, eyes and mouth inside: ${at.tall}`);
+   assert.ok(at.inside&&Math.abs(at.shape-640/960)<1e-6,`${id}: the crop keeps its shape, inside the photo`);
+   assert.equal(await page.$eval(`#frameChoices [data-frame="${id}"]`,b=>b.getAttribute('aria-checked')),'true');
+  }
+  if(shots)await page.screenshot({path:join(shots,'fun-face-in-hole.png')});
+  // A change of shape moves the hole: the face goes with it. In Crop the board stays on, to move the photo under it.
+  await page.click('#frameChoices [data-frame="frog-pond"]');
+  await page.click('#tabCrop');await page.click('#cropShapes [data-shape="1:1"]');
+  const square=await hole();
+  assert.ok(Math.abs(square.shape-1)<1e-6&&Math.abs(square.dx)<.12&&Math.abs(square.dy)<.12,JSON.stringify(square));
+  assert.equal(await page.$eval('#editFrame canvas.frame-art',c=>c.hidden),false,'the board stays on in Crop');
+  await page.click('#cropShapes [data-shape="Original"]');
+  await page.click('#tabFrame');
+  await page.click('#frameChoices [data-frame="peek"]');
+  assert.deepEqual((await hole()).crop,whole,'a frame that is no board: the crop from before the board is back');
+  // Moved by hand under the board, the crop is the photographer's own and stays when the board comes off.
+  await page.click('#frameChoices [data-frame="daruma"]');
+  const mine=await page.evaluate(()=>{const e=window.pocketCamera.state.edit;e.recipe.crop={...e.recipe.crop,x:e.recipe.crop.x*.5};return e.recipe.crop;});
+  await page.click('#frameChoices [data-frame="none"]');
+  assert.deepEqual((await hole()).crop,mine);
+  await page.click('#tabCrop');await page.click('#cropReset');await page.click('#tabFrame');
+  assert.equal(await page.$eval('#editFrame canvas.frame-art',c=>c.hidden),true,'no frame, nothing over the photo');
+ });
+ await check('a photo with no face: a tap says where the face is, and it goes to the hole',async()=>{
+  await page.evaluate(async()=>{const c=window.pocketCamera,shot=c.state.shots[0];await c.editFile(new File([shot.original||shot.photo],'sample.jpg',{type:'image/jpeg'}));});
+  await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor'&&!!window.pocketCamera.state.edit&&!window.pocketCamera.state.edit.recipe.makeup.face);
+  await page.click('#tabFrame');await page.click('#frameChoices [data-frame="frog-pond"]');
+  await page.waitForFunction(()=>window.pocketCamera.state.edit.faceTapWanted&&/Tap the face/.test(document.getElementById('toast').textContent),null,{timeout:90000});
+  assert.deepEqual((await hole()).crop,whole,'nothing is moved before the face is known');
+  // A tap a third of the way in from the left, two thirds down: the dog's nose, say.
+  const box=await page.$eval('#editFrame',el=>{const r=el.getBoundingClientRect();return {x:r.left,y:r.top,w:r.width,h:r.height};});
+  await page.touchscreen.tap(box.x+box.w*.33,box.y+box.h*.66);
+  await page.waitForFunction(()=>{const e=window.pocketCamera.state.edit;return !!e.recipe.makeup.face&&e.recipe.crop.w<1;},null,{timeout:90000});
+  const at=await hole();
+  assert.ok(Math.abs(at.dx)<.2&&Math.abs(at.dy)<.2&&at.inside,`the tapped face is in the hole: ${JSON.stringify(at)}`);
+  assert.equal(await page.evaluate(()=>window.pocketCamera.state.edit.aligning),false,'no makeup handles come on in the Frame tab');
+  if(shots)await page.screenshot({path:join(shots,'fun-tap-to-hole.png')});
+ });
  assert.deepEqual(errors,[]);
  console.log(`fun: ${checks} checks passed`);
 }finally{await browser.close();await server.close();}

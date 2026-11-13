@@ -8,17 +8,13 @@ Publication: see the last section.
 - **Live**: **v2026.11.13.2**, main `b1455d65b`, release key `20261113picks1`: everything in this note that is marked
   done, *choosing made easier* too, including what was drawn after the first publication (the friends through the year, the year's frames, the
   face cutouts, the first pass of the playful skin).
-- **The branch holds nothing unpublished** but this note's own record of that.
+- **On the branch, not live**: in the editor a face cutout brings the photo's face to its hole (the section *The face
+  to the hole* below). Nothing else.
 - **Waiting on the owner**: (the skin's first pass: "Yes it's looking better", 13 November, so the rest of the redraw
   may go on in that direction); a try of the Sticker box with the iPhone's keyboard stickers; whether to
   build any of the studio or the new filters; whether the seven sheet pictures should stay in the public repository
   (`tools/sources/sticker-sheets/`).
-- **Still owed**: the rest of the interface in the playful style (*Not done* 3), and a cutout in the editor bringing
-  the photo's face to the hole. How: with the photo's face guide `f` (`recipe.makeup.face`, in shares of the source)
-  and the hole `win = frameWindow(id, pw, ph)` on the cropped picture (as shares `hx, hy, hh` of it): the crop's
-  height is `f.h / (0.86 * hh)` (at most the whole photo), its width from the crop's own shape, its corner
-  `(f.x + f.w / 2 - hx * w, f.y + f.h / 2 - hy * h)` kept inside the photo. Until then Crop does it by hand, and in
-  the viewfinder you put your face in the hole as at a real board.
+- **Still owed**: the rest of the interface in the playful style (*Not done* 3).
 
 ## What the owner asked, in order
 
@@ -119,9 +115,8 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
    writes them as path data into `frames/cute.json` (`cutouts`: `window`, `hole`, `shapes`); `frames.js drawCutout`
    draws one in a square of 100 whose middle 72 is the picture's shorter side, so the somebody is whole on any shape
    of picture. They are among the frames in the Frame sheet and the editor's Frame tab; in the viewfinder you put
-   your face in the hole as at a real board. **Still to do**: in the editor, bring the photo's found face
-   (`recipe.makeup.face`) to the hole by the crop (`frames.js frameWindow(id, w, h)` says where the hole is); until
-   then Crop does it by hand. A bug found on the way: `cute_hand.Drawing.paths()` lost closed outlines that ended
+   your face in the hole as at a real board. In the editor the photo's face is brought to the hole: built on
+   13 November, on the branch (*The face to the hole*, below). A bug found on the way: `cute_hand.Drawing.paths()` lost closed outlines that ended
    exactly where they began (a line cannot be simplified against a chord of no length); fixed, and the fun suite
    checks every cutout on four shapes of picture.
 3. **The whole interface in the playful style** ("Redraw the whole ui in the playful style, so it's fun to use the
@@ -198,6 +193,45 @@ nothing of the camera).
   says v2026.11.13.1; `ball.js` answers 404.
 - The Pocket Camera workflow runs on pull requests and by hand, not on a push to main, so there is no run of it for
   either publication: the regression above was run here, with the workflow's own list of suites.
+
+## The face to the hole — 13 November 2026 (on the branch, not published)
+
+Owed since the cutouts were drawn ("a frog costume at the pond could have a cutout for the face"): in the editor a
+board lay over the photo wherever the face happened to be. Now choosing a cutout in the Frame tab brings the face to it.
+
+- **The geometry** is `crop.js cropFaceToWindow(width, height, crop, face, win, {measured})`, a plain function tested
+  in `tests/crop.test.mjs`: `face` is the face guide (`recipe.makeup.face`, the oval's box in shares of the photo),
+  `win` the hole in shares of the cropped picture (`frames.js frameWindow`). The crop keeps its shape. Three zooms:
+  *fit* (the face 86% of the hole's height, 94% of its width at most), *centred* (the least at which the photo reaches
+  far enough for the face to be at the hole's middle) and *most* (the face one and a half times the hole's height or
+  one and a quarter its width: brows to mouth still inside). The zoom is `max(fit, min(centred, most))`, between 1 and
+  the Crop tab's 4. A face nobody measured (a tap said where it is) has no *most*: it is centred whatever that takes.
+  The first version only fitted, and on the test portrait (a face of 45% by 36% of the photo, off to the right) the
+  face overflowed the hole off-centre; the second capped the overflow at 1.3 of the height, which left the Daruma's
+  low, wide hole 18% off. Do not go back to either.
+- **The editor** (`app.js chooseEditFrame`, `faceToHole`): a cutout chosen → the face is looked for if it was not
+  (`prepareFaces`), then the crop moves. `edit.hole = {before, set}` remembers the crop from before the first board and
+  the crop that was set; another frame or None puts `before` back only if the crop is still `set` (moved by hand, it
+  is the photographer's). A change of shape in Crop with a board on refits. The board is drawn in Crop too
+  (`paintFrame` hides other frames there, not a cutout).
+- **No face seen**: the toast "I can’t see a face here. Tap the face?", the app's sentence for it; `faceTap` in the
+  Frame tab with a board on brings the tapped spot to the hole and does not turn the makeup handles on (elsewhere the
+  tap still does). Not changed: after a face was looked for and not found, a tap on the photo in the Frame tab
+  *without* a board still turns the makeup handles on, as it did before this round.
+- **Checked**: `crop.test.mjs` (small faces, big faces, a speck, a corner, tapped faces, on four shapes of three
+  photos, and the test portrait against the frog's hole); the fun suite, 11 checks, two new: the portrait in all five
+  boards (the face within 12% of the hole's middle, its height at most 1.5 of the hole's, the crop's shape kept), the
+  square shape, the board on in Crop, the crop back after the board, a hand-moved crop kept; and a photo with no face,
+  the toast, a tap, the spot in the hole, no handles. Looked at: the five boards on the portrait.
+- **Suites run on it** (13 November, after the offline bundle was rebuilt: the worker refuses a bundle whose files are
+  not the tree's, so the camera suite fails at "the offline worker is registered" until it is): crop 33/33, faces 7,
+  face pack 4, face stamps 12, camera, ui 82/82, audit 59/59, integration 9/9, zoom 13, offline 13/13, fun 11; the
+  Node tests crop, modules, offline, picks and icons. The whole regression was not run again; it is owed before a
+  publication.
+- **Not checked**: a real phone; photos of several people (the first face found is the one brought to the hole);
+  a wide crop of a close portrait (16:9 of the test portrait: the face is twice the hole, nose and mouth show).
+- `crop.js` is at a new address, `?v=20261113hole1` (`app.js`, `looks-gl.js`); the release key is unchanged until the
+  next publication, which needs the key and version bumped, the offline bundle rebuilt and the whole regression.
 
 **Published a third time on the owner's "Push to main", 13 November 2026**: main `b1455d65b`, v2026.11.13.2, release
 key `20261113picks1` (main had not moved since the second publication): *choosing made easier*.

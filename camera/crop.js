@@ -17,6 +17,27 @@ export function cropZoom(width,height,crop){
  return base.w/c.w;
 }
 
+/**
+ * The crop of the same shape that brings a face to a window. `face` is a box in shares of the photo (the face's oval);
+ * `win` is a box in shares of the cropped picture (a face cutout's hole: frames.js frameWindow). The face is 86% of the
+ * window's height and no wider than the window. A face too big for that (a close portrait: the crop cannot be more
+ * than the whole photo) is centred first: the crop comes in as far as centring needs, while brows, eyes and mouth
+ * (the middle half of a face's height, three quarters of its width) still fit the window. A face that was not measured
+ * (a tap said where it is; its size is a guess) is centred whatever that takes. Within the zoom the Crop tab allows;
+ * where the photo ends, the crop stops.
+ */
+export function cropFaceToWindow(width,height,crop,face,win,{measured=true}={}){
+ const c=normalCrop(crop),base=cropAtAspect(width,height,c.w*width/(c.h*height));
+ const fx=face.x+face.w/2,fy=face.y+face.h/2,hx=win.x+win.w/2,hy=win.y+win.h/2;
+ // The zoom at which the face is a given share of the window: of its height, of its width.
+ const tall=share=>share*win.h*base.h/face.h,wide=share=>share*win.w*base.w/face.w;
+ const fit=Math.min(tall(.86),wide(.94)),most=measured?Math.min(tall(1.5),wide(1.25)):Infinity;
+ // The least zoom at which the photo reaches far enough on every side for the face to be at the window's middle.
+ const centred=Math.max(base.w/Math.min(fx/hx,(1-fx)/(1-hx)),base.h/Math.min(fy/hy,(1-fy)/(1-hy)));
+ const zoom=clamp(Math.max(fit,Math.min(centred,most)),1,4),w=base.w/zoom,h=base.h/zoom;
+ return normalCrop({x:fx-hx*w,y:fy-hy*h,w,h});
+}
+
 /** Mouse drag/wheel and touch drag/pinch share the same source rectangle. Only active in the Crop tab. */
 export function bindCropGestures(frame,{edit,changed}){
  const points=new Map();let start;

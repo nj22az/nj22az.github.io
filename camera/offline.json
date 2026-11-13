@@ -1,6 +1,6 @@
 {
   "version": "20261113picks1",
-  "bytes": 46408582,
+  "bytes": 46412049,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "7106406cb9c2e4ccba8f3709d67c96b079bbf9c074f751b8dd36691ceb292448",
-      "bytes": 174503
+      "sha256": "ec55995426c50a6229584542a1e7cd85f5cefdce26b2d1c030549d1d1d70ac2f",
+      "bytes": 176343
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -99,8 +99,8 @@
     },
     {
       "url": "/camera/crop.js",
-      "sha256": "4bb4f8a153815593515d0b26c6133fd2fdc8216953f29e2fcab10cd5e2536804",
-      "bytes": 3741
+      "sha256": "8027aa926655c0789453beb9fa46934bd8d8bb82980e70080039acef976f7fa1",
+      "bytes": 5368
     },
     {
       "url": "/camera/cutout.js",
@@ -279,7 +279,7 @@
     },
     {
       "url": "/camera/looks-gl.js",
-      "sha256": "1d30e2fe21de80241729b973aab322489f2bcb0f781121e8591aa45d70489128",
+      "sha256": "8313e0b87586dc91bc992225a2848b6c9cb1d46db726821a6672971440677535",
       "bytes": 121140
     },
     {

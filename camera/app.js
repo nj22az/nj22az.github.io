@@ -7,7 +7,7 @@ import {createLookEngine,LOOKS,LOOK_NAMES,TRICKS,PAPERS,normalRecipe,exportSize,
 import {familyFor,hasScreen,hasLookSettings,variantFor,selectVariant,normalScreen,screenDefaults,familyTileVisible} from './look-settings.js?v=20261101screen1';
 import {presetsFor,applyPreset,presetOf} from './presets.js?v=20261113picks1';
 import {stepperFor,syncSteppers} from './steppers.js?v=20261113picks1';
-import {normalCrop,cropAtAspect,cropZoom,bindCropGestures} from './crop.js?v=20261030crop1';
+import {normalCrop,cropAtAspect,cropZoom,cropFaceToWindow,bindCropGestures} from './crop.js?v=20261113hole1';
 import {listShots,getShot,addShot,deleteShot,keepAlbum,ensureAlbumSamples,listMine,addMine,deleteMine} from './album.js?v=20261102fun1';
 import {lookIcon,kindIcon} from './look-icons.js?v=20261113picks1';
 import {prepareOffline} from './offline.js?v=20261105games1';
@@ -16,7 +16,7 @@ import {loadStickerSets,stickerLabel,stickerById,registerSticker,forgetSticker,c
 import {makeSticker} from './cutout.js?v=20261113picks1';
 import {cutSheet} from './sticker-sheet.js?v=20261113picks1';
 import {lookPrior,lookPicks,lookCandidates,usedLately,stickerPicks,untilSeason} from './picks.js?v=20261113picks1';
-import {FRAMES,drawFrame,frameInner} from './frames.js?v=20261113picks1';
+import {FRAMES,drawFrame,frameInner,frameWindow} from './frames.js?v=20261113picks1';
 import {BALLOONS,SOUND_EFFECTS,balloonCanvas,loadLetteringFont} from './lettering.js?v=20261029t';
 import {EFFECTS,effectPreview} from './effects.js?v=20261029b';
 import {createEraser} from './erase.js?v=20261104ui1';
@@ -711,7 +711,7 @@ function drawEditor(){
  syncCutoutView(e,crop);
  makeupGuide.render();
  paintStamps();
- paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing||e.cropping);
+ paintFrame($('editFrame'),e.recipe.frame,e.comparing||e.erasing||(e.cropping&&!isCutout(e.recipe.frame)));
  stampOverlay($('editFrame'),e.recipe.stamp&&!e.comparing&&!e.erasing&&!e.cropping,e.taken,e.recipe.frame);
 }
 addEventListener('resize',invalidate);
@@ -1471,9 +1471,38 @@ function renderFrameChoices(box,current,preview,pick){
   b.append(c,label);b.addEventListener('click',()=>{sound('tick');pick(f.id);});box.append(b);
  }
 }
+/**
+ * A face cutout in the editor (the owner, 12 November 2026: "a frog costume at the pond could have a cutout for the
+ * face"): the photo's face is brought to the hole by the crop, which keeps its shape. Taking the board off puts the
+ * crop back as it was, unless it was moved by hand since. No face seen: a tap on the photo says where it is (a dog's
+ * face too), and in Crop the board stays on, so the photo can be moved under it by hand.
+ */
+function isCutout(id){return !!frameWindow(id,1,1);}
+const sameCrop=(a,b)=>!!a&&!!b&&['x','y','w','h'].every(k=>Math.abs(a[k]-b[k])<1e-6);
+function faceToHole(e){
+ const face=e.recipe.makeup.face,crop=e.recipe.crop,pw=crop.w*e.width,ph=crop.h*e.height,win=frameWindow(e.recipe.frame,pw,ph);
+ if(!face||!win||e.saving)return false;
+ const next=cropFaceToWindow(e.width,e.height,crop,face,{x:win.x/pw,y:win.y/ph,w:win.w/pw,h:win.h/ph},{measured:e.recipe.faces.length>0});
+ e.hole={before:e.hole?.before||{...crop},set:next};
+ setEditCrop(next);return true;
+}
+function chooseEditFrame(id){
+ const e=state.edit;if(!e||e.saving)return;
+ e.recipe.frame=id;
+ if(isCutout(id)){
+  if(!faceToHole(e))prepareFaces(e).then(()=>{
+   if(state.edit!==e||e.recipe.frame!==id)return;
+   if(faceToHole(e))renderFramePanel();else toast('I can’t see a face here. Tap the face?',{ms:2600});
+  });
+ }else if(e.hole){
+  if(sameCrop(e.recipe.crop,e.hole.set))setEditCrop(e.hole.before);
+  e.hole=null;
+ }
+ renderFramePanel();invalidate();
+}
 function renderFramePanel(){
  const e=state.edit;if(!e)return;
- renderFrameChoices($('frameChoices'),e.recipe.frame,$('panelFrame').hidden?null:editPreview(132),id=>{e.recipe.frame=id;renderFramePanel();invalidate();});
+ renderFrameChoices($('frameChoices'),e.recipe.frame,$('panelFrame').hidden?null:editPreview(132),chooseEditFrame);
  const seg=$('mirrorChoices');seg.textContent='';
  for(const t of TRICKS){
   const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(e.recipe.trick===t));b.dataset.trick=t;b.textContent=TRICK_LABELS[t];seg.append(b);
@@ -1575,7 +1604,7 @@ function renderCropPanel(){
   const [a,b]=shape.split(':').map(Number),ratio=shape==='Original'?e.width/e.height:a/b;
   const button=document.createElement('button');button.type='button';button.textContent=shape;button.dataset.shape=shape;button.setAttribute('role','radio');
   button.setAttribute('aria-checked',String(Math.abs(aspect-ratio)<.001&&(shape==='Original'||Math.abs(aspect-e.width/e.height)>=.001)));
-  button.addEventListener('click',()=>{if(e.saving)return;setEditCrop(cropAtAspect(e.width,e.height,ratio,cropZoom(e.width,e.height,e.recipe.crop),e.recipe.crop.x+e.recipe.crop.w/2,e.recipe.crop.y+e.recipe.crop.h/2));renderCropPanel();});
+  button.addEventListener('click',()=>{if(e.saving)return;setEditCrop(cropAtAspect(e.width,e.height,ratio,cropZoom(e.width,e.height,e.recipe.crop),e.recipe.crop.x+e.recipe.crop.w/2,e.recipe.crop.y+e.recipe.crop.h/2));if(isCutout(e.recipe.frame))faceToHole(e);renderCropPanel();});
   choices.append(button);
  }
  renderCropZoom();
@@ -1859,11 +1888,15 @@ async function faceTap(event){
  const c=e.recipe.crop,at={x:c.x+(event.clientX-r.left)/r.width*c.w,y:c.y+(event.clientY-r.top)/r.height*c.h};
  sound('tick');
  const faces=e.faceStatus==='failed'?[]:await prepareFaces(e,{around:at});
- if(state.edit!==e||faces.length)return true;
+ if(state.edit!==e)return true;
+ const board=!$('panelFrame').hidden&&isCutout(e.recipe.frame);
+ if(faces.length){if(board&&faceToHole(e))renderFramePanel();return true;}
  // Nothing seen round the tap: the guide goes there, as big as a face at a tap would be, and the handles come on.
  const w=c.w*.36,h=c.h*.3;
  e.recipe.makeup.face=normaliseMakeup({face:{x:at.x-w/2,y:at.y-h*.45,w,h}}).face;e.guideSynced=null;e.faceTapWanted=false;e.makeupDirty=true;
- setMakeupAlignment(true);return true;
+ // With a board on in the Frame tab the tap is for its hole; elsewhere it is for the makeup, whose handles come on.
+ if(board){faceToHole(e);renderFramePanel();renderFaceStatus();}else setMakeupAlignment(true);
+ return true;
 }
 const findMakeupFace=()=>prepareFaces(state.edit);
 $('makeupPhoto').addEventListener('click',()=>{

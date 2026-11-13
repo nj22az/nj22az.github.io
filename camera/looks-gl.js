@@ -13,7 +13,7 @@
  * detail (Detail sets how much).
  */
 import {LOOKS as WORLD_LOOKS,lookFragment,lookUsesDepth} from '../johansson-town/src/render/looks.js?v=20261029-camera';
-import {normalCrop} from './crop.js?v=20261030crop1';
+import {normalCrop} from './crop.js?v=20261113hole1';
 import {layerOptions,screenActive,normalScreen} from './look-settings.js?v=20261101screen1';
 import {normaliseMakeup} from './makeup.js?v=20261104ui1';
 import {normaliseStamps} from './face-stamps.js?v=20261104ui1';
