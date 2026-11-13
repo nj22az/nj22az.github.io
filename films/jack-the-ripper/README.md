@@ -71,7 +71,7 @@ cd remotion && npm install && ln -s <film> public/film && node prepare.mjs && np
   output never appears there and Meshy deletes it three days after it is made. The only copies are in the cloud
   session's scratch folder (`meshy/`), which does not last: they must be copied to the owner's own storage.
 - **The whole rights record is [RIGHTS.md](RIGHTS.md)**: each ingredient checked against its vendor's own terms on
-  13 November 2026, what must be kept, and the one real caution (the sailor mascot beside Popeye's trade marks).
+  13 November 2026, what must be kept, and one point to know about another company's trade marks on a cartoon sailor (Johansson, the studio's sailor, is the owner's own character).
 - **Fonts**: Pirata One, IM Fell English and its small capitals, Limelight (SIL Open Font License, through
   `@fontsource`); DejaVu Serif Bold on the pub sign.
 - **Remotion** is free for individuals and small teams; a company of more than three people needs its licence.

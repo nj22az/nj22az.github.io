@@ -21,7 +21,7 @@ matters, keep a dated copy of the page.
 | H.264 / AAC file format | Yes; no royalty for a title of 12 minutes or less | See "Format" |
 | Fog, grain, wisp pictures; the scream | Made by code in this folder | Nothing |
 | The dance, the title card, the subject | No licence needed | Keep to the conditions under "Resemblances" |
-| The sailor mascot as a brand | The owner's own drawing; **one real caution** | See "The mascot" |
+| Johansson, the sailor, as the studio's mark | The owner's own character and drawing; one point to know | See "The mascot: Johansson" |
 
 ## Meshy
 
@@ -103,15 +103,18 @@ matters, keep a dated copy of the page.
   wording, say in the description that it is animated fiction, and keep blood out of the thumbnail and title; consider
   the age restriction. On Vimeo rate it "Mature" if in doubt. Read the content rules of any store used.
 
-## The mascot
+## The mascot: Johansson
 
-The one finding that is more than housekeeping, and it is about the studio's mark, not this film alone.
+The owner, 13 November 2026: "The sailor is not Popeye it's my own drawing"; "The sailor is Johansson". That is the
+fact this section starts from: Johansson is the owner's own character, drawn by him, and nothing here says otherwise
+or asks for him to be changed. What follows is only what the check found on the registers about another company's
+sailor, recorded because the studio's films are to be sold; what to do with it is the owner's decision.
 
-- The sailor is the owner's own drawing. Copyright in the 1929 Popeye has lapsed in the US (2025) and in Segar's
+- Johansson is the owner's own drawing. Copyright in the 1929 Popeye has lapsed in the US (2025) and in Segar's
   drawings in the UK and EU (2009), so copyright is the smaller question.
 - Trade marks are the larger one. Hearst holds POPEYE word marks, picture marks in the EU, and has US picture-mark
   applications pending for films (serials 99701293 and 99701320, both under Office action on 13 October 2026) and
-  allowed for toys (99738602). Because the sailor is used as a brand, the ordinary test applies: would buyers think the
+  allowed for toys (99738602). Because Johansson is used as the studio's brand, the ordinary test applies: would buyers think the
   films come from, or are licensed by, the Popeye people.
 - **Shared** with Popeye: a 1930s rubber-hose cartoon sailor, a cap, an oversized flexed arm, an anchor.
   **Different**: a full beard, both eyes open, a striped shirt, the anchor held in the hand, no pipe, no tattoos, and
@@ -138,4 +141,4 @@ the recording session, if he has one, needs no separator at all.
 2. Choose where the 2.7 GB of Meshy files and the Blender cast and stage files are to be kept; they exist only in the
    cloud session.
 3. Where and how the film is sold (a platform, or his own site), and under which title and artist name.
-4. The clearance search on the mascot.
+4. Whether to have the clearance search done for Johansson as the studio's mark.
