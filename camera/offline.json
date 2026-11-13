@@ -1,6 +1,6 @@
 {
   "version": "20261113year1",
-  "bytes": 46391456,
+  "bytes": 46408556,
   "files": [
     {
       "url": "/camera/album.js",
@@ -9,8 +9,8 @@
     },
     {
       "url": "/camera/app.js",
-      "sha256": "1afeb4d6a81071779ce8a63f45da490ee7736abb38e9975801b7448b9ca0ce9a",
-      "bytes": 166938
+      "sha256": "eaefa01e63911c7cab0ec616732a38f7f12d80222400b8950ea2b8d28bd0cb66",
+      "bytes": 174489
     },
     {
       "url": "/camera/assets/memory-card-back.png",
@@ -54,8 +54,8 @@
     },
     {
       "url": "/camera/camera-fun.css",
-      "sha256": "d76a153bebf10c2031ad38d65ce166812f282da75ea2954c05252f639d56fe6e",
-      "bytes": 6616
+      "sha256": "473bb174b431947d4262846518ad2ef450ffa8bb55384f87b75f8a4f58848ded",
+      "bytes": 7629
     },
     {
       "url": "/camera/camera-refresh.css",
@@ -69,8 +69,8 @@
     },
     {
       "url": "/camera/camera.css",
-      "sha256": "23ca936b40619b2b818dedf1013df1cb997c8ad45485b627a6e8cbf72021d6ee",
-      "bytes": 52141
+      "sha256": "21e6e771160554792ce76ae38e39d2e79ec10f75eed881374b73f53dcfb6afac",
+      "bytes": 53335
     },
     {
       "url": "/camera/card-games.css",
@@ -259,8 +259,8 @@
     },
     {
       "url": "/camera/index.html",
-      "sha256": "cae21fb5682e83c8f30aa5d5bf4f367519fd2a503024906b4ba6cde1e499ddf8",
-      "bytes": 74065
+      "sha256": "8b31ff898a5482b68b8c5153c9991b796fd71258bd0b3e8c9beec71a5d3603be",
+      "bytes": 74172
     },
     {
       "url": "/camera/lettering.js",
@@ -326,6 +326,11 @@
       "url": "/camera/offline.js",
       "sha256": "22ae0fd66ae7493a8c2efd3bcda97a770dd3758754946ac70afdf9ab87c13e3f",
       "bytes": 4403
+    },
+    {
+      "url": "/camera/picks.js",
+      "sha256": "cda2406303281f2590f5bcfb78c66fd431652d1efe29a3a02780be8df0cdf035",
+      "bytes": 7235
     },
     {
       "url": "/camera/playing-cards.js",
@@ -2274,7 +2279,7 @@
     },
     {
       "url": "/camera/stickers/showa.json",
-      "sha256": "3ea32c013fc5e59bd99b119fb565de80b3e4a521a4ea49b83ad40f28d864b35a",
+      "sha256": "6a3e0c1c8549270fbf629a66a7b894c4f7d60bea4a7c9c3d3a7a8548bd5b5423",
       "bytes": 4610
     },
     {

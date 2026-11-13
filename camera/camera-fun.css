@@ -78,3 +78,12 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border:3px solid var(
  .tile .face,.sticker-choice,.frame-choice,.game-choice,.round,.layer,.look-groups button,.sticker-sets button,.memory-deck,.adjuster,.setting>i,.button.primary,.pill-button,.step-button{transition:none}
  .tile:active .face,.sticker-choice:active,.frame-choice:active,.game-choice:active,.round:active,.layer:active,.look-groups button:active,.sticker-sets button:active,.memory-deck:active,.adjuster:active,.setting:active>i,.button.primary:active,.pill-button:active,.step-button:active{transform:none}
 }
+
+/* ---------- Choosing, made easier (the owner, 13 November 2026: "try to make the sticker sections more intelligent and
+   choosing filter too, it's a bit overwhelming as it is now"). The strip opens on For you (app.js, picks.js). A picture
+   alone asks to be guessed at, so every Look in the strip says its name, and the chosen kind says its own (one kind's
+   name at a time). ---------- */
+.look-groups button[aria-selected="true"]:not(:focus-visible) .group-name{position:static;clip-path:none;width:auto;height:auto;overflow:visible;font-size:.8125rem;font-weight:650;white-space:nowrap}
+.look-groups button[aria-selected="true"]{padding-inline:10px}
+.strip .tile:not(.preset-tile):not(:focus-visible) .name{position:static;clip-path:none;width:auto;height:auto;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.6875rem;line-height:1.2;font-weight:650;text-align:center;color:var(--label-2)}
+.strip .tile[aria-checked="true"]:not(.preset-tile) .name{color:var(--accent)}

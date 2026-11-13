@@ -229,7 +229,19 @@ input[type=range].centred::-webkit-slider-runnable-track{background:linear-gradi
 /* More sheets than one row holds (the camera's own sheets, 12 November 2026): over the camera the tabs take a second
    row, so none is cut off or out of sight. (In the editor the row scrolls: camera-ui.css.) */
 .sticker-sets{flex-wrap:wrap;justify-content:center;row-gap:6px}
-.editor .sticker-sets{justify-content:flex-start}   /* a scrolling row starts at its first tab: centred, its head could not be reached */
+.editor .sticker-sets{justify-content:flex-start}
+/* Who, inside a section of several (Minato: the residents, the town's things): a chip each, with a face. */
+.sticker-groups{flex:none;display:flex;gap:6px;padding:0 16px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.sticker-groups[hidden]{display:none}
+.sticker-groups::-webkit-scrollbar{display:none}
+.sticker-groups button{flex:none;display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:4px 14px 4px 5px;border-radius:22px;background:var(--fill);font-size:13px;font-weight:600;white-space:nowrap;transition:transform .24s var(--spring),background-color .2s}
+.sticker-groups button:active{transform:scale(.94)}
+.sticker-groups button img{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:50% 8%;background:var(--surface)}
+.sticker-groups button[aria-selected="true"]{background:var(--chip-on);color:var(--chip-on-label)}
+.sticker-groups button.locked{justify-content:center;min-width:44px;padding:0 12px}
+.sticker-groups button.locked svg{width:16px;height:16px}
+.editor .sticker-groups{padding:0 0 4px}
+@media(prefers-reduced-motion:reduce){.sticker-groups button{transition:none}.sticker-groups button:active{transform:none}}   /* a scrolling row starts at its first tab: centred, its head could not be reached */
 .sticker-sets>:first-child,.sticker-sets>:last-child{margin-left:0;margin-right:0}
 .sticker-sets button.locked{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:34px;padding:0 10px}.sticker-sets button.locked svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* The secret sheet's tab, before it is won: what it is and how to open it. */

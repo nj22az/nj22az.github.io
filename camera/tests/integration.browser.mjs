@@ -107,7 +107,7 @@ try{
  await page.click('#tabAdjust');await page.evaluate(()=>{document.getElementById('adjustFine').open=true;});await page.click('#enhancePhoto');await page.click('#enhanceAmount');await page.fill('#enhanceStrength','57');
  await page.click('#tabFrame');await page.click('#paperChoices [data-paper="rough"]');
  await page.click('#tabLooks');await page.click('#lookGroups [data-group="drawn"]');await page.click('.tile[data-look="crayon"]');
- await page.click('.add-layer');await page.click('#lookGroups [data-group="riso"]');await page.click('.tile[data-look="riso"]');await page.click('.look-settings-button');await page.selectOption('#lookVariant','risoPinkBlue');await page.click('#lookSettingsSheet .done');await page.fill('#amount','25');
+ await page.click('.add-layer');await page.click('#lookGroups [data-group="riso"]');await page.click('.tile[data-look="riso"]');await page.click('.look-settings-button');await page.selectOption('#lookVariant','risoPinkBlue');await page.click('#lookSettingsSheet .done');await page.click('#strip .tile[aria-checked="true"]');await page.fill('#amount','25');   // its styles and strength open at a second tap
  await page.click('#tabFrame');
  // The face pack looks for faces as a photo opens and writes what it finds into the recipe (the makeup's face). It
  // must have finished before the recipe is taken as the one to expect: caught mid-search, the saved recipe had a face

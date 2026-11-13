@@ -121,8 +121,8 @@ when saving ? I want memory with our own photos or with the stickers".
   important for the camera app", "Use Johansson , Thuan and Thao"): **Thuan**, her Blender doll (the owner: "I was
   thinking blender Thuan the one that looks like a real doll"), **Johansson** and **Thao** in their Pixar bodies (as World
   draws them), and under Thuan's tab her other sheets, each under its name: **World Thuan** (hers), **Cartoon Thuan** and
-  **Thuan & Nils**. One tab a resident, then the camera's own sheets (below): Text · Thuan · Johansson · Thao · Minato ·
-  Friends · Season · Faces · Manga · Mine, in one row that scrolls. On the viewfinder
+  **Thuan & Nils**. Six sections since 13 November 2026 (*Choosing, made easier*, below): For you · Minato · Friends ·
+  Seasons · Words · Mine; the residents are chips with their faces inside Minato. On the viewfinder
   or a photo: drag; pinch and turn with two fingers; a chosen sticker has remove and flip at its top and, if it has
   words of its own, Say below; the corner handle (a mouse only) turns and resizes; wheel resizes, Shift+wheel turns;
   arrows nudge, Delete removes.
@@ -693,14 +693,38 @@ make the shaders to look awesome, sliders need to be accessed by a setting". Pub
   back (not under reduced motion), and the sliders, when on, have a track with some body and a ringed thumb. Colours
   and layout are as they were. The rest of the redraw is still to come.
 
+### Choosing, made easier — 13 November 2026 (on the branch, not yet published)
+
+The owner: "Yes it's looking better, try to make the sticker sections more intelligent and choosing filter too, it's a
+bit overwhelming as it is now". Forty-three Looks and some four hundred stickers are too many to show at once, so each
+picker opens on a short page **For you** and keeps the rest one tap behind (`picks.js`, plain functions, tested in
+`tests/picks.test.mjs`).
+
+- **Looks.** The first kind is no kind: **For you** (a star, and the one kind whose name is written out; the chosen
+  kind always says its name, one name at a time). Its strip is the photo as it is, up to two Looks used lately (the
+  Looks of the photos last taken or saved, `recentLooks`), and six picked for this picture: from what it is (dark or
+  bright, pale or colourful, busy or plain, warm or cool, a face or none: `lookPrior`, on the measurements
+  `smart-shuffle.js` takes of a small copy that is not kept) and, in the editor, from how the twelve likeliest really
+  come out on it (each preview scored as Surprise scores a mix, for at most a second and a half); never more than two
+  of one kind. In the camera the picture is measured when the camera starts and when the strip is opened. For you
+  stays open while the chosen Look is one of its picks; a swipe to a Look that is not shows that Look's own kind.
+  **Every Look in the strip says its name.**
+- **Styles** (a Look's presets) open when the chosen Look is tapped again, in the editor as in the camera: one row of
+  choices at a time. The first times, the toast says so ("tap it again for its styles").
+- **Stickers.** Six sections where there were ten tabs: **For you** (what was used lately, `recentStickers`; the
+  season that is here or coming; things to wear when there is a face, found in the photo or the camera turned on
+  you; a handful that changes with the day, led by a balloon), **Minato** (the residents, the town's things and the
+  secret faces, each a chip with a face; the secret one a lock alone until a game opens it), **Friends**, **Seasons**,
+  **Words** (balloons, lines and marks) and **Mine**.
+
 ### Sticker sheets and adding stickers
 
 - **The camera's own sheets** are listed in `stickers/sheets.json` and loaded by `stickers.js` after the residents'
   manifest; a tool that draws or cuts a sheet adds it to the list, so a new sheet needs no code. A sheet says its `tab`,
   its `kind` (`marks`, `season` with its months `when`, `secret`, `cute`, `things`, `studio`) and whether it is one of
-  Memory's decks (`deck`). A sheet with a kind never greets. Tabs: the residents', then any other (Minato), Friends,
-  Season (the sheet in season first, then the next to come), Faces, Manga; a tab's own sheet first, every other under
-  its name.
+  Memory's decks (`deck`). A sheet with a kind never greets. A sheet's `tab` puts it in a section: Friends, Season and
+  Manga in theirs, any other tab (a resident's, Shōwa, Faces) a chip inside Minato; in Seasons the sheet in season
+  comes first, then the next to come; a group's own sheet first, every other under its name.
 - **The owner's sheets, cut by `tools/cut-sticker-sheet.py`** (the owner: "You can make stickers of my Johansson Assets
   too", "Here are more sticker sheets"): **Cartoon Johansson** (38, his sailor in his poses, under Johansson's tab, a
   Memory deck and a greeter), **Animation Studios** (8, the studio's marks), **Matsuri** (33, under Season) and
@@ -778,7 +802,8 @@ node camera/tests/crop.browser.mjs           # gestures, source contact, saved p
 node camera/tests/save-share-layout.browser.mjs # album-only saves, native-share mock, cancellation/failure and phone Solitaire sizing
 node camera/tests/enhance.browser.mjs         # reversible strength, crop/export, prior-engine parity
 node camera/tests/sticker-contour.browser.mjs # catalogue, pale shoes, thin own-sticker rims and preview/export
-node camera/tests/stickers.browser.mjs        # the sheets on the list, tabs and seasons, decks and greeters, a sheet cut in the app, the sticker box
+node camera/tests/stickers.browser.mjs        # the sheets on the list, six sections and For you, seasons, decks and greeters, a sheet cut in the app, the sticker box
+node camera/tests/picks.test.mjs              # what is offered first: Looks picked for a photo, the stickers' first page through the year
 node camera/tests/integration.browser.mjs     # full/LIGHT matrix, mixed thumbnails, exact JPEG/Share bytes, retained recipes
 node camera/tests/paper.browser.mjs           # paper preview/export agreement, colour/black retention, persistence and controls
 node camera/tests/zip.test.mjs                 # the backup ZIP: round trip, checksums, a standard reader, damage, foreign files

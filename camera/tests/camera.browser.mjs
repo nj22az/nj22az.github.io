@@ -102,7 +102,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    // The Looks come in kinds; a kind shows only its own (the owner: "game consoles can stay with each other and vhs for
    // 80's"), and the kind of the chosen Look is the one open.
    const kinds=await app(()=>[...document.querySelectorAll('#lookGroups button')].map(b=>b.textContent));
-   assert.deepEqual(kinds,['Photo','Pop','Games','80s','Drawn','Comic','Painted','Print','Riso']);
+   assert.deepEqual(kinds,['For you','Photo','Pop','Games','80s','Drawn','Comic','Painted','Print','Riso']);
    await page.click('#lookGroups button[data-group="80s"]');
    assert.deepEqual(await app(()=>[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).map(t=>t.dataset.look)),['crt','camcorder'],'80s: Old TV and the VHS camcorder');
    await page.click('#lookGroups button[data-group="games"]');
@@ -160,7 +160,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
   });
   await check(`${label}: a die-cut sticker on the viewfinder, dragged into place`,async()=>{
    await page.click('.sticker-button');await page.waitForSelector('#stickerSheet[open] .sticker-choice');
-   await page.click('#stickerSets button:text-is("Johansson")');await page.waitForSelector('.sticker-choice[data-id^="johansson-pixar/"]');
+   await page.click('#stickerSets button:text-is("Minato")');await page.click('#stickerGroups button:has-text("Johansson")');await page.waitForSelector('.sticker-choice[data-id^="johansson-pixar/"]');
    await page.waitForTimeout(300);await shot('3b-sticker-sheet');
    await page.click('.sticker-choice >> nth=0');
    await page.waitForSelector('#cameraFrame .sticker.selected img[src*="johansson-pixar"]');
@@ -213,7 +213,7 @@ async function run({label,width,height,dpr,mobile,portrait}){
    await page.waitForSelector('#editFrame .sticker img[src*="johansson-pixar"]');
    await page.waitForSelector('#editFrame .sticker.balloon canvas');
    // Thuan's tab: her own sheet, then her other sheets under their names (the cartoon one among them).
-   await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Thuan")');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
+   await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Minato")');await page.click('#stickerGroups button:has-text("Thuan")');await page.waitForSelector('#panelStickers .sticker-choice[data-id^="thuan/"]');
    assert.deepEqual(await app(()=>[...document.querySelectorAll('#panelStickers .sticker-heading')].map(h=>h.textContent)),['World Thuan','Cartoon Thuan','Thuan & Nils'],'her other sheets under their names');
    await page.click('#panelStickers .sticker-choice[data-id^="thuan/"] >> nth=3');
    if(mobile){
@@ -455,7 +455,7 @@ async function playAndPrint({label,width,height}){
    await page.locator('.sticker-button').tap();await page.waitForSelector('#stickerSheet[open] .sticker-choice');
    assert.ok(await fits('#stickerSets'),'every sticker tab fits across');
    assert.ok(await page.$$eval('#stickerSets button',b=>b.every(x=>x.getBoundingClientRect().height>=28)),'the tabs keep their height');
-   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['Text','Thuan','Johansson','Thao','Minato','Friends','Season','','Manga','Mine'],'a tab a resident, the town’s things, the friends, the seasons’ sheets, the secret sheet’s lock (no name until it is won), and Manga');
+   assert.deepEqual(await page.$$eval('#stickerSets button',b=>b.map(x=>x.textContent)),['For you','Minato','Friends','Seasons','Words','Mine'],'six sections: For you, the town and its people, the friends, the seasons, words, and the photographer’s own');
    await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#stickerSheet').open);
    // A sheet puts the settings row away: one panel at a time.
    await page.locator('#settingsToggle').tap();await page.locator('#frameSetting').tap();await page.waitForSelector('#frameSheet[open]');
@@ -497,7 +497,7 @@ async function playAndPrint({label,width,height}){
   // without text and we can add any text as another sticker", "Or without the balloon too").
   await check(`${label}: words alone, a resident's own words, and lettering that changes its style`,async()=>{
    await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Text$/}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Words$/}).tap();
    await page.locator('.sticker-choice.lettering[data-id="balloon:words"]').tap();
    await page.waitForSelector('#textSheet[open]');
    assert.equal(await page.getAttribute('#letteringStyles [data-style="balloon:words"]','aria-checked'),'true','Words is chosen in the sheet');
@@ -506,7 +506,7 @@ async function playAndPrint({label,width,height}){
    let last=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
    assert.equal(last.id,'balloon:words');assert.equal(last.text,'Nankurunaisa!');assert.ok(last.y>.6,'words alone go low, as a caption');
    // A resident's sticker, chosen, offers their own line: as a speech balloon, or here as words alone under them.
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Thuan$/}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Minato$/}).tap();await page.locator('#stickerGroups button',{hasText:'Thuan'}).tap();
    await page.locator('.sticker-choice[data-id="thuan/Wave"]').tap();
    await page.waitForSelector('#cameraFrame .sticker.selected .sticker-say');
    const line=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.at(-1));
@@ -532,13 +532,13 @@ async function playAndPrint({label,width,height}){
    const pc=()=>window.pocketCamera;
    await page.evaluate(()=>{window.pocketCamera.state.camera.recipe.stickers.length=0;window.pocketCamera.cameraStickers.render();});
    // The Manga tab: the lines first, then the marks under their name; the tabs still fit across the phone.
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Manga$/}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Words$/}).tap();
    await page.waitForSelector('.sticker-choice.effect[data-id="effect:focus"]');await page.waitForSelector('.sticker-choice[data-id^="marks/"]');
    const sheet=await page.evaluate(()=>({tabs:[...document.querySelectorAll('#stickerSets button')].map(b=>b.textContent),
     effects:[...document.querySelectorAll('.sticker-choice.effect')].map(b=>b.dataset.id),marks:document.querySelectorAll('.sticker-choice[data-id^="marks/"]').length,
     heading:[...document.querySelectorAll('#stickerGrid .sticker-heading')].map(h=>h.textContent)}));
-   assert.deepEqual(sheet.tabs,['Text','Thuan','Johansson','Thao','Minato','Friends','Season','','Manga','Mine'],'the secret sheet’s tab is a lock without a name until it is won');
-   assert.deepEqual(sheet.effects,['effect:focus','effect:speed']);assert.equal(sheet.marks,10);assert.deepEqual(sheet.heading,['Marks']);
+   assert.deepEqual(sheet.tabs,['For you','Minato','Friends','Seasons','Words','Mine']);
+   assert.deepEqual(sheet.effects,['effect:focus','effect:speed']);assert.equal(sheet.marks,10);assert.deepEqual(sheet.heading,['Lines','Marks']);
    assert.ok(await page.evaluate(()=>{const e=document.querySelector('#stickerSets'),r=e.getBoundingClientRect();return [...e.children].every(k=>{const q=k.getBoundingClientRect();return q.left>=r.left-1&&q.right<=r.right+1;});}),'seven tabs fit across');
    await page.locator('.sticker-choice.effect[data-id="effect:focus"]').tap();
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='effect:focus'));
@@ -554,14 +554,14 @@ async function playAndPrint({label,width,height}){
    await page.mouse.move(ring.x+ring.width/2,ring.y+ring.height/2);await page.mouse.down();await page.mouse.move(ring.x+ring.width/2+40,ring.y+ring.height/2+30,{steps:5});await page.mouse.up();
    const moved=await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers[0]);assert.ok(moved.x>.52&&moved.y>.44,'the centre follows the finger');
    // A sound effect, from the ready-made words.
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Text$/}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Words$/}).tap();
    await page.locator('.sticker-choice.lettering[data-id="balloon:sfx"]').tap();await page.waitForSelector('#textSheet[open]');
    assert.equal(await page.isVisible('#soundPresets'),true,'the sound effects are offered');
    await page.locator('#soundPresets button',{hasText:'ゴゴゴ'}).tap();await page.locator('#textDone').tap();
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='balloon:sfx'));
    assert.equal(await page.evaluate(()=>window.pocketCamera.state.camera.recipe.stickers.find(s=>s.id==='balloon:sfx').text),'ゴゴゴ');
    // An emotion mark, and the marks are no deck for Memory.
-   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Manga$/}).tap();
+   await page.locator('.sticker-button').tap();await page.locator('#stickerSets button',{hasText:/^Words$/}).tap();
    await page.locator('.sticker-choice[data-id="marks/sweat"]').tap();
    await page.waitForFunction(()=>window.pocketCamera.state.camera.recipe.stickers.some(s=>s.id==='marks/sweat'));
    // Saved: the lines are in the photo, under the mark and the sound.

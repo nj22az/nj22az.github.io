@@ -98,12 +98,12 @@ try{
     await page.click('#framePaper');await settleEditor(page);
     assert.ok(await page.locator('#editStage').evaluate(e=>getComputedStyle(e).overflowY==='clip'));
    });
-   await check('sticker categories use one scrollable row and reveal Mine and Thuan',async()=>{
-    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===10);   // the secret sheet's lock among them
+   await check('sticker sections use one row and reveal Mine and Minato, whose people are chips with finger-sized targets',async()=>{
+    await page.click('#tabStickers');await page.waitForFunction(()=>document.querySelectorAll('#stickerSets button').length===6);   // six sections; who is a chip inside Minato
     const row=await page.locator('#stickerSets').evaluate(el=>{const rs=[...el.children].map(b=>b.getBoundingClientRect());return {tops:rs.map(r=>r.top),targets:rs.every(r=>r.width>=44&&r.height>=44),overflow:document.documentElement.scrollWidth-innerWidth,pan:getComputedStyle(document.querySelector('#panelStickers')).touchAction};});
     assert.ok(Math.max(...row.tops)-Math.min(...row.tops)<=1&&row.targets&&row.overflow<=1&&row.pan.includes('pan-x'),JSON.stringify(row));
     measurements.stickerCategories=row;
-    for(const name of ['Mine','Thuan']){
+    for(const name of ['Mine','Minato']){
      await page.getByRole('tab',{name,exact:true}).click();await page.waitForFunction(name=>document.querySelector('#stickerSets [aria-selected=true]')?.textContent===name,name);
      const inside=await page.locator('#stickerSets [aria-selected=true]').evaluate(b=>{const r=b.getBoundingClientRect(),p=b.parentElement.getBoundingClientRect();return r.left>=p.left-1&&r.right<=p.right+1;});assert.equal(inside,true,name);
     }

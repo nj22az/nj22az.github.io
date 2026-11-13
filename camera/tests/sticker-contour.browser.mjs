@@ -53,7 +53,7 @@ try{
   for(const r of rows){assert.equal(r.cut,r.transparent?'outline':'photo');assert.ok(r.white<=4,JSON.stringify(r));assert.ok(r.width<=138&&r.height<=138);assert.equal(r.corner,0);}
  });
  await page.setInputFiles('#picker',join(root,'camera/samples/default-original.png'));await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor');
- await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Thuan")');
+ await page.click('#tabStickers');await page.click('#stickerSets button:text-is("Minato")');
  await page.click('.sticker-choice[data-id="thuan-blender/wave"]');await page.waitForSelector('#editFrame .sticker img');
  await page.evaluate(()=>{const e=window.pocketCamera.state.edit;e.recipe.stickers[0].size=.8;e.recipe.stickers[0].angle=0;window.pocketCamera.editStickers.select(null);});
  await page.click('#tabAdjust');await page.waitForFunction(()=>getComputedStyle(document.querySelector('#toast')).opacity==='0');

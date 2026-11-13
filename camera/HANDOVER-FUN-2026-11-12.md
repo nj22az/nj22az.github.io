@@ -8,7 +8,11 @@ Publication: see the last section.
 - **Live**: **v2026.11.13.1**, main `e869d0153`, release key `20261113year1`: everything in this note that is marked
   done, including what was drawn after the first publication (the friends through the year, the year's frames, the
   face cutouts, the first pass of the playful skin).
-- **The branch holds nothing unpublished** but this note's own record of that.
+- **On the branch, not live**: *choosing made easier* (13 November 2026; its own section near the end of this note):
+  both pickers open on For you, the stickers are in six sections, a Look's styles are a second tap away. Before the
+  next "Push to main": a new release key and version, the offline bundle, the whole regression (only the suites the
+  pickers touch were rerun: fun, stickers, faces, sticker-contour, integration, ui, audit, camera, and the Node tests
+  picks, modules, offline).
 - **Waiting on the owner**: whether the skin's first pass is the right direction before the rest is redrawn
   (screenshots were sent on 12 November); a try of the Sticker box with the iPhone's keyboard stickers; whether to
   build any of the studio or the new filters; whether the seven sheet pictures should stay in the public repository
@@ -143,6 +147,32 @@ minutes). Its recipe's knobs are in its docstring: `mode` (ink, edge, cut), `gro
    too") and has not yet said to build it.
 5. **AI Comic Factory** and **obs-dlss5-nr** were looked at on the owner's links: neither can be part of a static,
    offline browser app (the first needs a model server, the second is a Windows plugin on NVIDIA's runtime).
+
+## Choosing made easier — 13 November 2026 (on the branch, not published)
+
+The owner, after the second publication: **"Yes it's looking better, try to make the sticker sections more intelligent
+and choosing filter too, it's a bit overwhelming as it is now"**. ("Looking better" is the playful first pass.)
+
+| | Where |
+|---|---|
+| What to offer first, as plain tested functions: `lookPrior`, `lookPicks`, `lookCandidates`, `stickerPicks`, `usedLately`, `untilSeason` | `picks.js`, `tests/picks.test.mjs` |
+| Looks: the kind **For you** first and open; picks from the picture's measurements and, in the editor, from scored previews; the Looks used lately | `app.js` (`PICKS`, `KINDS`, `pickLooks`, `setPicks`, `noteLooks`, `pickable`) |
+| A Look's styles (presets) a second tap away in the editor too; the hint in the toast until they have been opened once | `app.js` (`toggleAmount`, `buildTrayFor`, `chooseLook`, `state.knowsStyles`) |
+| Every Look in the strip says its name; the chosen kind says its own | the foot of `camera-fun.css` |
+| Stickers: six sections, For you first; the residents and the town's things as chips with a face inside Minato | `app.js` (`stickerSections`, `renderStickerPicker`, `stickerTile`), `index.html` (`#stickerGroups`), `camera.css` |
+| The stickers used lately | `app.js` (the grid's click), settings `recentStickers` |
+
+Rules it set:
+- **A picker opens on a short page for you; everything else is one tap behind.** A new sheet or Look joins a section
+  or a kind; it does not add a tab.
+- **One row of choices at a time**: a Look's styles are not shown until that Look is tapped again.
+- **A name under a picture**: Looks in the strip are named. (Names had been hidden since the audit of 3 November to
+  save room; the owner's "overwhelming" outranks that.)
+- The picks are never random: a rule that weighs a Look says why (`NATURE` in `picks.js`), and today's handful of
+  stickers is a function of the day.
+
+Not done here: favourites; a search of the stickers by what they show (their `gloss` is there for it); the camera
+re-measuring the picture as it changes (it measures when it starts and when the strip opens).
 
 ## Publication
 

@@ -32,6 +32,26 @@ try{
   assert.deepEqual(missing,[]);
   assert.ok(await page.$$eval('symbol[id^="i-"]',s=>s.length)>=55);
  });
+ await check('the Looks open on For you: the photo as it is, then a handful, each with its name; every kind is one tap away',async()=>{
+  await page.waitForFunction(()=>window.pocketCamera.lookPicks.length>=5);
+  const row=await page.evaluate(()=>{
+   const shown=el=>{const r=el.getBoundingClientRect();return r.width>1&&r.height>1;};
+   const tiles=[...document.querySelectorAll('#strip .tile')].filter(t=>!t.hidden).sort((a,b)=>Number(a.style.order||0)-Number(b.style.order||0));
+   const kind=document.querySelector('#lookGroups [aria-selected=true]');
+   return {kind:kind.dataset.group,kindName:shown(kind.querySelector('.group-name'))?kind.querySelector('.group-name').textContent:'',kinds:[...document.querySelectorAll('#lookGroups button')].map(b=>b.dataset.group),
+    otherNames:[...document.querySelectorAll('#lookGroups button:not([aria-selected=true]) .group-name')].filter(shown).length,
+    looks:tiles.map(t=>t.dataset.look),named:tiles.every(t=>shown(t.querySelector('.name'))&&t.querySelector('.name').textContent),picks:window.pocketCamera.lookPicks};
+  });
+  assert.equal(row.kind,'picks');assert.equal(row.kindName,'For you');assert.equal(row.otherNames,0,'one kind’s name at a time');
+  assert.deepEqual(row.kinds,['picks','photo','pop','games','80s','drawn','comic','painted','print','riso']);
+  assert.equal(row.looks[0],'none');assert.ok(row.looks.length>=5&&row.looks.length<=9,`a handful: ${row.looks}`);assert.deepEqual(row.looks,row.picks);
+  assert.ok(row.named,'every Look in the strip says its name');
+  await page.click('#lookGroups button[data-group="drawn"]');
+  assert.ok((await page.$$eval('#strip .tile',ts=>ts.filter(t=>!t.hidden).map(t=>t.dataset.look))).includes('manga'));
+  await page.click('#lookGroups button[data-group="picks"]');
+  assert.equal(await page.evaluate(()=>window.pocketCamera.shownKind),'picks');
+  if(shots)await page.screenshot({path:join(shots,'fun-for-you.png')});
+ });
  await check('a chosen Look shows its presets; one tap takes one, and it is kept on the layer',async()=>{
   await page.evaluate(()=>window.pocketCamera.chooseLook('popArt'));
   await page.evaluate(()=>window.pocketCamera.chooseLook('popArt'));                    // the chosen Look again opens its presets
@@ -96,6 +116,16 @@ try{
  await check('in the editor a stepper stands in for each slider: one tap is one step, and the slider hears it',async()=>{
   await page.evaluate(async()=>{const c=window.pocketCamera,shot=c.state.shots[0];await c.editFile(new File([shot.original||shot.photo],'sample.jpg',{type:'image/jpeg'}));});
   await page.waitForFunction(()=>window.pocketCamera.state.mode==='editor'&&!!window.pocketCamera.state.edit);
+  // The Looks tab: one row of Looks, picked for this photo; a Look's styles open when it is tapped again.
+  assert.ok(await page.$eval('#presetRow',el=>el.hidden),'no styles until a Look is tapped again');
+  await page.waitForFunction(()=>window.pocketCamera.lookPicks.length>=5&&window.pocketCamera.shownKind==='picks');
+  const pick=await page.evaluate(()=>window.pocketCamera.lookPicks.find(n=>n!=='none'));
+  await page.click(`#strip .tile[data-look="${pick}"]`);
+  assert.ok(await page.$eval('#presetRow',el=>el.hidden),'chosen once: still one row');
+  assert.equal(await page.evaluate(()=>window.pocketCamera.shownKind),'picks','For you stays while the chosen Look is one of its picks');
+  await page.click(`#strip .tile[data-look="${pick}"]`);await page.waitForSelector('#presetRow:not([hidden]) .preset-tile');
+  await page.click(`#strip .tile[data-look="${pick}"]`);await page.waitForSelector('#presetRow[hidden]',{state:'attached'});
+  await page.click('#strip .tile[data-look="none"]');
   await page.click('#tabAdjust');
   if(!await page.$eval('#adjustFine',d=>d.open))await page.click('#adjustFine > summary');
   assert.deepEqual(await shown('#panelAdjust input[type=range]'),[],'no slider shows');
