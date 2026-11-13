@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Audio, Img, interpolate, random, staticFile, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
+import {AbsoluteFill, Audio, Img, Sequence, interpolate, random, staticFile, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
 import data from './data.json';
 import beatsJson from './beats.json';
 import '@fontsource/pirata-one/400.css';
@@ -88,7 +88,10 @@ const Picture: React.FC<{cut: Cut; t: number}> = ({cut, t}) => {
         ) : null}
       </AbsoluteFill>
       {/* the haze between the set and the cast: even, a little thicker towards the ground */}
-      {shot.name.startsWith('s') ? null : <AbsoluteFill style={{background: red ? 'linear-gradient(to bottom, rgba(150,40,40,0.05), rgba(150,40,40,0.2))' : `linear-gradient(to bottom, ${HAZE}0.07), ${HAZE}${inChorus(t) ? 0.3 : 0.2}))`}} />}
+      {/* The owner: "can the London fog be a bit more prevalent and cover some of the bleeding into buildings". It is
+          thickest in a band where the street meets the house fronts, behind the cast, so that walls and figures do not
+          meet on a hard line. */}
+      {shot.name.startsWith('s') ? null : <AbsoluteFill style={{background: red ? 'linear-gradient(to bottom, rgba(150,40,40,0.1), rgba(150,40,40,0.34) 60%, rgba(150,40,40,0.3))' : `linear-gradient(to bottom, ${HAZE}0.2), ${HAZE}${cut.soft ? 0.34 : 0.58}) 58%, ${HAZE}${cut.soft ? 0.3 : 0.5}) 78%, ${HAZE}0.36))`}} />}
       {(shot.name === 'a02_feet' ? shot.steps ?? [] : []).map((st, i) => <Ripple key={i} t={ts} at={st.t} x={st.x} y={st.y} />)}
       {fg && fg.box ? (
         <Img
@@ -120,7 +123,7 @@ const Ripple: React.FC<{t: number; at: number; x: number; y: number}> = ({t, at,
 /* ---------------------------------------------------------------- weather */
 // The owner: "the fog should be uniform, now it looks painted". One even haze: no cloud, no texture, nothing drifting.
 const Fog: React.FC<{level: number; red?: boolean}> = ({level, red}) => (
-  <AbsoluteFill style={{background: red ? `linear-gradient(to bottom, rgba(150,40,40,${level * 0.15}), rgba(150,40,40,${level * 0.5}))` : `linear-gradient(to bottom, ${HAZE}${level * 0.28}), ${HAZE}${level * 0.5}) 62%, ${HAZE}${level}))`}} />
+  <AbsoluteFill style={{background: red ? `linear-gradient(to bottom, rgba(150,40,40,${level * 0.2}), rgba(150,40,40,${level * 0.55}))` : `linear-gradient(to bottom, ${HAZE}${level * 0.35}), ${HAZE}${level * 0.62}) 60%, ${HAZE}${level}))`}} />
 );
 
 // His face is never seen: where his head is, the same fog stands thicker. A smooth bank, no brushwork.
@@ -380,7 +383,7 @@ export const Film: React.FC = () => {
         ))}
         {/* stage light: the glow of the footlights from below, on every picture of the stage */}
         {cut.shot.startsWith('s') ? null : <AbsoluteFill style={{background: 'radial-gradient(ellipse 80% 34% at 50% 108%, rgba(255,190,110,0.22), rgba(255,190,110,0) 70%)', mixBlendMode: 'screen'}} />}
-        <Fog level={cut.shot.startsWith('s') ? 0.12 : inChorus(t) ? 0.3 : 0.2} red={cut.shot === 'c1d_blood'} />
+        <Fog level={cut.shot.startsWith('s') ? 0.2 : cut.soft ? 0.2 : inChorus(t) ? 0.4 : 0.32} red={cut.shot === 'c1d_blood'} />
         <Rain t={t} k={pulse(t, 63.59, 84.5, 0.8, 1.2)} />
         <Petals t={t} t0={52.34} t1={57.85} />
         <Petals t={t} t0={109.15} t1={114.6} />
@@ -394,6 +397,8 @@ export const Film: React.FC = () => {
       <EndCard t={t} />
       <AbsoluteFill style={{backgroundColor: '#000', opacity: Math.max(1 - span(t, 0, 0.9), span(t, 129.0, 129.9))}} />
       <Audio src={staticFile('song.mp3')} />
+      {/* "A scream gets swallowed by the night": the scream itself, on the word, and the night taking it */}
+      <Sequence from={Math.round(27.7 * fps)}><Audio src={staticFile('scream.wav')} volume={0.9} /></Sequence>
     </AbsoluteFill>
   );
 };
