@@ -533,7 +533,7 @@ def stalk(a, t, t_ref, x0, y0, x1, y1, lean=10.0):
     a.turn('LeftArm', Y, 12); a.turn('RightArm', Y, -12)                                            # the arms hang close, under the cloak
 
 
-def passer(a, t, t0, y, direction=1, x0=-10.5, rate=1.0):
+def passer(a, t, t0, y, direction=1, x0=-9.3, rate=1.0):       # the street is clear from -9.3 to 9.3 in the lanes below y = 6
     """One of the ordinary people of Whitechapel, crossing the street on their own business."""
     walk(a, 'walk', t, t0, x0 * direction, y, -x0 * direction, y + 0.3, rate=rate)
 
@@ -564,7 +564,7 @@ def a01(t):   # the curtain parts on Whitechapel: people about their evening, an
     camera((0, -15.5, 3.3), (0, 4, 3.9), 30)
     star_light(0, lerp(8.2, 5.2, span(t, 5.0, 8.3)), key=30000, cone=9, foot=260, moon=1.8)
     walk(STAR, 'walk', t, 4.6, 0, 8.6, 0, 3.0, face=0); sing(t)
-    passer(FOLK[0], t, 1.0, 6.4, 1); passer(FOLK[1], t, 0.0, 7.6, -1); passer(FOLK[2], t, 3.0, 9.4, 1)
+    passer(FOLK[0], t, 1.0, 5.3, 1); passer(FOLK[1], t, 0.0, 3.8, -1); passer(FOLK[2], t, 3.0, 4.5, 1)
 
 
 @shot('a02_feet', 8.3, 10.3, fps=24)
@@ -580,7 +580,7 @@ def a02b(t):  # "...on the cobblestone": from the cobbles, looking up at her as 
     star_light(0, 3.4, foot=120, moon=2.2)
     k = bump(t, 10.3, 12.29, 0.5, 0.4)
     polly(t, 0, 3.0, to_lens(0, 3.0), l_fwd=26 * k, l_bend=40 * k, r_up=22 * k, look=4)        # she has come to her mark, and sings to us
-    passer(FOLK[1], t, 0.0, 7.6, -1); passer(FOLK[2], t, 3.0, 9.4, 1)
+    passer(FOLK[1], t, 0.0, 3.8, -1); passer(FOLK[2], t, 3.0, 4.5, 1)
 
 
 @shot('a03_shadow', 12.29, 18.75, plates=[12.29, 18.0])
@@ -615,13 +615,13 @@ def a06(t):   # "A scream gets swallowed by the night": from high above; the str
     polly(t, 0, 3.4, 0, l_up=88 * k, r_up=88 * k, l_elbow=20 * k, r_elbow=20 * k, nod=-30 * k, lean=-8 * k)        # arms thrown wide, face to the flies
     for i, g in enumerate(GIRLS[:3]):                                              # the dancers scatter
         ang = math.radians(-50 + 100 * i / 2); x0, y0 = 2.2 * math.sin(ang), 5.6 + 1.0 * math.cos(ang)
+        ex, ey = ((-9.2, 5.0), (9.0, 6.4), (9.2, 5.2))[i]                           # each to a way out of the street, clear of walls and lamps
         if t < 28.4 + i * 0.15: g.place(x0, y0, 180 - math.degrees(ang)); g.clip('idle', t + i)
         else:
-            st = 28.4 + i * 0.15; walk(g, 'run', t, st, x0, y0, x0 + 12 * math.sin(ang), y0 + 7 * math.cos(ang))
+            st = 28.4 + i * 0.15; walk(g, 'run', t, st, x0, y0, ex, ey)
             if t < st + 0.35: g.clip('run', t - st, into=('idle', t + i), w=1 - ease(span(t, st, st + 0.35)))       # she starts from standing, not from mid-stride
     if walk(COP, 'run', t, 0, 9.5, 2.6, 3.0, 2.6, arrive=31.0) >= 1.0:
         COP.clip('run', 0.0, into=('torch', t - 31.0), w=ease(span(t, 31.0, 31.5)))
-    passer(FOLK[1], t, 21.0, 7.9, 1, rate=1.25)
 
 
 @shot('a07_blade', 33.67, 36.5)
@@ -710,16 +710,16 @@ def v2a(t):   # "The city hides its darkest stain": she walks through the people
     star_light(x, 3.2, key=22000, cone=12, foot=200, moon=2.0)
     cam.location.x = x + 0.4; aim.location.x = x                                   # the camera travels beside her
     STAR.place(x, 3.2, 90); STAR.clip('walk', (t - 68.0) * 0.8); sing(t); STAR.turn('Head', Z, -52); STAR.turn('Spine02', Z, -16)
-    passer(FOLK[0], t, 60.0, 5.4, -1); passer(FOLK[1], t, 62.5, 6.6, -1); passer(FOLK[2], t, 65.0, 7.7, 1)
-    walk(COP, 'search', t, 60.0, -9.5, 8.6, 9.5, 8.8)
+    passer(FOLK[0], t, 60.0, 4.2, -1); passer(FOLK[1], t, 62.5, 4.9, -1); passer(FOLK[2], t, 65.0, 5.7, 1)
+    walk(COP, 'search', t, 60.0, -7.0, 7.9, 8.6, 7.9)
 
 
 @shot('v2b_hats', 76.28, 79.0)
 def v2b(t):   # "Hats pulled low": they pass him in the street, and he lifts his hat to them
     camera((4.2, -0.4, 1.3), (0.3, 5.6, 1.35), 38)
     lights(foot=60, moon=2.6, gas=(520, 640, 520), spots=[((0.5, 5.4, 1.0), 9000, 30)], back=((0.5, 5.6, 1.2), 5000))
-    passer(FOLK[1], t, 70.6, 4.6, 1); passer(FOLK[2], t, 70.0, 5.6, 1); passer(FOLK[0], t, 69.5, 7.6, -1)
-    walk(JACK, 'strut', t, 72.6, 8.5, 6.5, -8.5, 6.6)
+    passer(FOLK[1], t, 70.6, 4.4, 1); passer(FOLK[2], t, 70.0, 5.1, 1); passer(FOLK[0], t, 69.5, 5.7, -1)
+    walk(JACK, 'strut', t, 72.6, 8.5, 6.5, -8.3, 7.3)
     k = bump(t, 76.9, 78.6, 0.5, 0.5)
     JACK.turn('RightArm', Y, 62 * k); JACK.turn('RightForeArm', Y, 96 * k); JACK.turn('Head', X, 14 * k)
 
@@ -775,7 +775,7 @@ def c2c(t):   # "He moves like smoke / his steps unravel": the street has joined
     camera((-1.3, -0.9, 1.05), (0.5, 3.6, 1.25), 34)
     star_light(0, 3.0, foot=90, moon=3.0, wash=2500, wash_col=(0.25, 0.5, 1.0), more=[((1.6, 5.4, 0.9), 14000, 30, (0.7, 0.85, 1.0))])
     k = bump(t, 105.6, 109.1, 0.6, 0.5); polly(t, 0, 3.0, to_lens(0, 3.0) + 6, groove=1.2, l_up=40 * k, r_up=40 * k, l_bend=40 * k, r_bend=40 * k)
-    backdrop_dance(t, T_CH2, where=((1.5, 5.2), (3.4, 6.2), (-0.4, 6.6), (5.0, 7.4)), who=[COP, FOLK[1], FOLK[0]])
+    backdrop_dance(t, T_CH2, where=((1.5, 5.2), (3.4, 6.2), (-0.4, 6.6), (4.6, 5.6)), who=[COP, FOLK[1], FOLK[0]])
 
 
 # 109.15 to 114.6, the second "Blood on the streets", is c1d's photography again, mirrored in the edit.
@@ -799,7 +799,7 @@ def c2f(t):   # he bows and goes out like smoke; the constable closes his arms o
     if t < 122.9: JACK.place(1.8, 6.4, 0); JACK.clip('idle', t, into=('bow', (t - 119.9) * 1.25, False), w=ease(span(t, 119.7, 120.2)))
     a0 = 120.6; grab = 123.1
     if True:
-        if walk(COP, 'run', t, 0, -9.5, 6.5, 0.75, 6.5, arrive=grab) >= 1.0:
+        if walk(COP, 'run', t, 0, -9.2, 5.4, 0.75, 6.3, arrive=grab) >= 1.0:
             end = grab + COP.length('grab') * 1.2
             COP.clip('run', 0.0, into=('grab', (t - grab) / 1.2, False), w=ease(span(t, grab, grab + 0.25)))
             if t > end - 0.3:                                                      # he straightens up where the grab left him, and looks about
@@ -883,7 +883,34 @@ def track(a, bone):
     p = world_to_camera_view(scene, cam, a.world(bone)); return [round(p.x, 4), round(1 - p.y, 4)]
 
 
+def props():
+    """Every solid thing on the set an actor could walk into, as a tree of its faces in the world's own measure."""
+    from mathutils.bvhtree import BVHTree
+    import bmesh
+    out = []
+    for o in D.collections['set'].objects:
+        if o.type != 'MESH' or o.name in ('street', 'apron', 'sky') or o.name.startswith(('mask', 'curtain', 'valance', 'leg-', 'skyline')): continue
+        bm = bmesh.new(); bm.from_mesh(o.data); bm.transform(o.matrix_world)
+        out.append((o.name, BVHTree.FromBMesh(bm))); bm.free()
+    return out
+
+
+def street_map(trees):
+    """Where the street is clear: for each metre across the stage, how far upstage one can go before a wall."""
+    print('MAP  x     first wall at y (0.3 to 1.6 m up)      lamps and posts are named by the collision check', flush=True)
+    for x in range(-10, 11):
+        best = (99, '')
+        for name, tr in trees:
+            if name.startswith(('lamp', 'sign', 'trough', 'pros')): continue
+            for z in (0.3, 0.9, 1.6):
+                hit = tr.ray_cast(Vector((x, 1.5, z)), Vector((0, 1, 0)))
+                if hit[0] is not None and hit[0].y < best[0]: best = (hit[0].y, name)
+        print(f'MAP {x:4d}   {best[0]:6.2f}  {best[1]}', flush=True)
+
+
 def qc(todo):
+    trees = props(); street_map(trees); hits = {}
+    JOINTS = ('Hips', 'Spine02', 'Head', 'LeftHand', 'RightHand', 'LeftLeg', 'RightLeg', 'LeftFoot', 'RightFoot')
     """Quality control without a render: every shot walked at 24 a second and measured."""
     print('QC  shot           actor        slide m/s  under m  over m   jump deg  crowding', flush=True)
     for sh in todo:
@@ -897,6 +924,12 @@ def qc(todo):
                 feet = [a.world('LeftToeBase').copy(), a.world('RightToeBase').copy(), a.world('LeftFoot').copy(), a.world('RightFoot').copy()]
                 rot = {b: (a.arm.matrix_world.to_quaternion() @ a.arm.pose.bones[b].matrix.to_quaternion()) for b in ('LeftForeArm', 'RightForeArm', 'Head', 'LeftLeg', 'RightLeg', 'Spine02')}
                 here[a.name] = (feet, rot, a.world('Hips').copy())
+                for jn in JOINTS:                                              # is any part of the actor in or against a prop?
+                    p = a.world(jn)
+                    for pname, tr in trees:
+                        near = tr.find_nearest(p, 0.16)
+                        if near[0] is not None:
+                            k = (sh['name'], a.name, pname); h = hits.setdefault(k, [t, t, 9.0]); h[1] = t; h[2] = min(h[2], near[3])
                 w = worst.setdefault(a.name, dict(slide=0.0, under=0.0, over=9.0, jump=0.0, near=9.0, at=0))
                 low = min(p.z for p in feet[:2]); w['under'] = min(w['under'], low - 0.04); w['over'] = min(w['over'], low - 0.04)
                 if a.name in prev:
@@ -916,6 +949,14 @@ def qc(todo):
         for nm, w in worst.items():
             flag = ' '.join(x for x, bad in (('SLIDE', w['slide'] > 0.45), ('UNDER', w['under'] < -0.05), ('FLOAT', w['over'] > 0.06), ('JUMP', w['jump'] > 38), ('CROWD', w['near'] < 0.38)) if bad)
             print(f"QC  {sh['name']:<14} {nm:<12} {w['slide']:8.2f}  {w['under']:7.3f}  {w['over']:6.3f}  {w['jump']:8.1f}  {w['near']:6.2f}  {flag}  {('@%.2f' % w['at']) if 'SLIDE' in flag else ''}", flush=True)
+    report_hits(hits)
+
+
+def report_hits(hits):
+    print('HIT  shot             actor        prop                 from     to    nearest m', flush=True)
+    for (shn, an, pn), (t0, t1, d) in sorted(hits.items()):
+        print(f'HIT  {shn:<16} {an:<12} {pn:<20} {t0:6.2f} {t1:6.2f}   {d:5.2f}', flush=True)
+    print('HITS', len(hits), flush=True)
 
 
 def main():

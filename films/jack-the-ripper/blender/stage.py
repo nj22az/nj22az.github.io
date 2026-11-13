@@ -247,20 +247,20 @@ M_BLACK = principled('masking', (0.004, 0.004, 0.006), rough=0.95)
 M_SKY = sky_mat()
 
 # the street the show is played on; one slab, its top at z = 0
-box('street', (26, 13.5, 0.4), (0, 5.25, -0.2), M_COB)
+box('street', (30, 15.5, 0.4), (0, 6.25, -0.2), M_COB)
 # the apron in front of the curtain line: boards, 12 mm proud of nothing: it is its own slab, in front of the street
 box('apron', (26, 3.0, 0.4), (0, -3.0, -0.2), M_WOOD)
 
 # the painted night behind everything, and black masking at the sides
-sky = plane('sky', 44, 20, (0, 12.4, 8.5), (math.radians(90), 0, 0), M_SKY)
-box('mask-L', (0.3, 14, 20), (-13.2, 5.5, 9), M_BLACK); box('mask-R', (0.3, 14, 20), (13.2, 5.5, 9), M_BLACK)
-box('mask-top', (27, 14, 0.3), (0, 5.5, 13.5), M_BLACK)
+sky = plane('sky', 48, 22, (0, 14.2, 9.5), (math.radians(90), 0, 0), M_SKY)
+box('mask-L', (0.3, 16, 20), (-14.8, 6.5, 9), M_BLACK); box('mask-R', (0.3, 16, 20), (14.8, 6.5, 9), M_BLACK)
+box('mask-top', (30, 16, 0.3), (0, 6.5, 13.5), M_BLACK)
 
 # the moon: a disc of light 0.15 m in front of the sky, and a soft halo 0.05 m in front of that
-moon = plane('moon', 3.4, 3.4, (3.6, 12.25, 9.6), (math.radians(90), 0, 0), soft_card('moon-disc', (1.0, 0.93, 0.74), 9.0), FX)
+moon = plane('moon', 3.4, 3.4, (3.6, 14.05, 9.6), (math.radians(90), 0, 0), soft_card('moon-disc', (1.0, 0.93, 0.74), 9.0), FX)
 m = moon.data.materials[0].node_tree
 m.nodes['level'].operation = 'GREATER_THAN'; m.nodes['level'].inputs[1].default_value = 0.42   # a hard-edged disc
-halo = plane('moon-halo', 11, 11, (3.6, 12.2, 9.6), (math.radians(90), 0, 0), soft_card('moon-halo', (0.55, 0.7, 1.0), 1.6), FX)
+halo = plane('moon-halo', 11, 11, (3.6, 14.0, 9.6), (math.radians(90), 0, 0), soft_card('moon-halo', (0.55, 0.7, 1.0), 1.6), FX)
 no_shadow(moon); no_shadow(halo)
 
 # the proscenium: gilt frame with an opening 16 m wide and 8.6 m high, 0.6 m deep, standing at y = -1.2 .. -0.6
@@ -305,18 +305,21 @@ house = load_glb('house', 9.0); house.location = (0, -200, 0)
 lamp = load_glb('lamp', 3.6); lamp.location = (0, -200, 0)
 # a crooked terrace along the back of the street, each house its own size and lean; then two nearer ones
 # at the sides to make an alley mouth at the centre, under the moon
-row = [(-11.0, 10.2, 1.05, 0.10, 0.03), (-6.3, 10.6, 0.92, -0.06, -0.04), (-1.6, 10.9, 0.80, 3.20, 0.02),
-       (3.2, 10.7, 0.88, 0.12, 0.05), (7.8, 10.4, 1.0, 3.05, -0.03), (12.0, 10.1, 1.1, -0.1, 0.04)]
+# The street must be clear to walk: the collision check of film.py (--pass qc) found the cast inside these houses
+# when the terrace stood 1.4 m nearer and the pub and the side house stood in the lanes. Nothing of the set now
+# stands nearer than y = 9.3 in the middle of the stage or inside x = -9.5 .. 9.5 below y = 6.
+row = [(-11.0, 11.6, 1.05, 0.10, 0.03), (-6.3, 12.0, 0.92, -0.06, -0.04), (-1.6, 12.3, 0.80, 3.20, 0.02),
+       (3.2, 12.1, 0.88, 0.12, 0.05), (7.8, 11.8, 1.0, 3.05, -0.03), (12.0, 11.5, 1.1, -0.1, 0.04)]
 for i, (x, y, s, rz, lean) in enumerate(row):
     instance(house, f'house-back-{i}', (x, y, 0), rz, (s, s, s * rnd.uniform(0.95, 1.12)), lean)
 pub = load_glb('pub', 9.5); pub.location = (0, -200, 0)
 clock = load_glb('clocktower', 14.0, faces=60000); clock.location = (0, -200, 0)
 dome = load_glb('dome', 7.0, faces=60000); dome.location = (0, -200, 0)
 PUB_TURN = math.radians(-40)
-instance(pub, 'pub-L', (-12.4, 6.6, 0), PUB_TURN, (1.0, 1.0, 1.0))
+instance(pub, 'pub-L', (-15.0, 9.0, 0), PUB_TURN, (1.0, 1.0, 1.0))
 # the skyline, between the terrace and the painted night: the clock tower and the cathedral's dome on its drum
-instance(clock, 'skyline-clock', (-3.9, 11.75, 0), 0.0, (1, 1, 1))
-instance(dome, 'skyline-dome', (7.2, 11.8, 5.2), 0.0, (1, 1, 1))
+instance(clock, 'skyline-clock', (-3.9, 13.3, 0), 0.0, (1.1, 1.1, 1.1))
+instance(dome, 'skyline-dome', (7.2, 13.4, 5.6), 0.0, (1.1, 1.1, 1.1))
 
 
 def sign(name, text, loc, rot_z, c=SET, width=3.0):
@@ -338,10 +341,10 @@ def sign(name, text, loc, rot_z, c=SET, width=3.0):
         t.parent = root; t.location = (width / 2 + 0.25, -0.046, z); t.rotation_euler = (math.radians(90), 0, 0)
     return root
 SIGN = [('THE', 0.24, 3.84), ('BLACK LANTERN', 0.30, 3.50), ('ALES  &  STOUT', 0.17, 3.14)]
-sign('sign', SIGN, (-8.6, 4.3, 0), math.radians(8))
-instance(house, 'house-R', (10.8, 5.9, 0), -0.6 + math.pi, (1.1, 1.1, 1.25), -0.05)
+sign('sign', SIGN, (-9.9, 7.4, 0), math.radians(8))
+instance(house, 'house-R', (14.2, 8.4, 0), -0.6 + math.pi, (1.1, 1.1, 1.25), -0.05)
 
-LAMPS = [(-5.2, 6.4), (5.6, 7.2), (-1.4, 9.2)]
+LAMPS = [(-5.2, 6.4), (5.6, 7.2), (-1.4, 9.2)]            # the cast's lanes in film.py are laid to pass each by 0.6 m or more
 for i, (x, y) in enumerate(LAMPS):
     instance(lamp, f'lamp-{i}', (x, y, 0), rnd.uniform(0, 3))
     L = D.lights.new(f'gas-{i}', 'POINT'); L.energy = 520; L.color = (1.0, 0.62, 0.25); L.shadow_soft_size = 0.18
