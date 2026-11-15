@@ -30,8 +30,8 @@
   <script src="/assets/js/office-port.js?v=diorama-20261101a" defer></script>
   <script src="/assets/js/office-diorama.js?v=20261101a" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
-  <link rel="stylesheet" href="/css/office-painting.css?v=20261113">
-  <script src="/assets/js/office-painting.js?v=20261113" defer></script>
+  <link rel="stylesheet" href="/css/office-painting.css?v=20261115">
+  <script src="/assets/js/office-painting.js?v=20261115" defer></script>
 
 </head>
 <body class="office-home">
@@ -42,43 +42,46 @@
 
   <main id="main-content">
 
-    <!-- The opening is one painting: the street outside Sakura Shōten, repainted by Pocket Camera's Looks. Its labels are the page's sections. -->
+    <!-- The opening is one painting: the harbour road outside Sakura Shōten at half past six in the morning, as the game
+         plays it (tools/office-painting/capture-street.mjs), painted live by Pocket Camera's Looks. The signs in the street
+         are the page's sections; the heading is the print's title slip. -->
     <section class="hero office-hero" id="home" aria-labelledby="hero-title">
-      <div class="office-opening">
-        <figure class="office-painting" id="office-painting" data-look="watercolour">
-          <div class="office-canvas" data-painting-canvas>
-            <img class="office-canvas-under" data-painting-under alt="" width="1600" height="1000" decoding="async" hidden>
-            <img class="office-canvas-top" data-painting-top src="/assets/office-painting/street-watercolour-1600.webp" srcset="/assets/office-painting/street-watercolour-800.webp 800w, /assets/office-painting/street-watercolour-1600.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" alt="The harbour road in Johansson World: Sakura Shōten under its striped awning, a small white car at the kerb and the blue quay warehouse beyond, painted in watercolour" width="1600" height="1000" loading="eager" fetchpriority="high" decoding="async">
-            <nav class="office-rooms" aria-label="Sections of this page">
-              <a href="#harbour" data-room="harbour"><b>Explore</b><span>The island and the ferry</span></a>
-              <a href="#projects" data-room="create"><b>Create</b><span>Camera and tools</span></a>
-              <a href="#projects" data-room="learn"><b>Learn</b><span>Course and book</span></a>
-              <a href="#blog" data-room="journal"><b>Read</b><span>The journal</span></a>
-            </nav>
+      <figure class="office-painting" id="office-painting" data-look="print">
+        <div class="office-canvas">
+          <div class="office-stage" data-painting-stage>
+            <img class="office-still" data-painting-still src="/assets/office-painting/street-print-1600.webp" srcset="/assets/office-painting/street-print-800.webp 800w, /assets/office-painting/street-print-1600.webp 1600w" sizes="(max-aspect-ratio:16/10) 160vh, 100vw" alt="The harbour road in Johansson World at half past six in the morning: Sakura Shōten under its striped awning, a small white car at the kerb and the blue quay warehouse beyond, as a woodblock print" width="1600" height="1000" fetchpriority="high" decoding="async">
+            <canvas class="office-live" data-painting-live aria-hidden="true"></canvas>
+            <canvas class="office-brushwork" data-painting-brushwork aria-hidden="true"></canvas>
           </div>
-          <figcaption class="office-brushes">
-            <span id="office-brushes-label">Paint it as</span>
-            <div role="group" aria-labelledby="office-brushes-label">
-              <button type="button" data-look="watercolour" data-name="watercolour" aria-pressed="true">Watercolour</button>
-              <button type="button" data-look="print" data-name="a woodblock print" aria-pressed="false">Woodblock</button>
-              <button type="button" data-look="sketchbook" data-name="an architect’s sketchbook" aria-pressed="false">Sketchbook</button>
-              <button type="button" data-look="manga" data-name="manga ink and screentone" aria-pressed="false">Manga</button>
-              <button type="button" data-look="cyanotype" data-name="a blueprint" aria-pressed="false">Blueprint</button>
-              <button type="button" data-look="natural" data-name="the game’s own colours" aria-pressed="false">As it is</button>
+          <nav class="office-signs" aria-label="Sections of this page">
+            <a class="sign-plate" href="#harbour" data-room="harbour"><b>Explore</b><span>The island and the ferry</span></a>
+            <a class="sign-poster" href="#projects" data-room="learn"><b>Learn</b><span>Course and book</span></a>
+            <a class="sign-board" href="#projects" data-room="create"><b>Create</b><span>Camera and tools</span></a>
+            <a class="sign-road" href="#blog" data-room="journal"><b>Read</b><span>The journal</span></a>
+          </nav>
+          <div class="office-slip">
+            <p class="office-eyebrow">Field service engineer · Marine systems</p>
+            <h1 class="office-heading" id="hero-title">Engineering in the field.<br>Ideas brought to life.</h1>
+            <p class="office-summary" id="hero-description">Practical engineering, useful tools and a small world to explore.</p>
+            <div class="office-actions">
+              <a href="#projects" class="office-explore">Explore projects <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+              <a href="#about" class="office-about">About Nils <span aria-hidden="true">↗</span></a>
             </div>
-            <a href="/camera/">Looks from Pocket Camera <span aria-hidden="true">↗</span></a>
-          </figcaption>
-        </figure>
-        <div class="office-introduction">
-          <p class="office-eyebrow">Field service engineer · Marine systems</p>
-          <h1 class="office-heading" id="hero-title">Engineering in the field.<br>Ideas brought to life.</h1>
-          <p class="office-summary" id="hero-description">Practical engineering, useful tools and a small world to explore.</p>
-          <div class="office-actions">
-            <a href="#projects" class="office-explore">Explore projects <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            <a href="#about" class="office-about">About Nils <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-      </div>
+        <figcaption class="office-palette">
+          <span id="office-palette-label">Paint it as</span>
+          <div role="group" aria-labelledby="office-palette-label">
+            <button type="button" data-look="print" data-name="a woodblock print" aria-pressed="true"><i aria-hidden="true"></i>Woodblock</button>
+            <button type="button" data-look="watercolour" data-name="watercolour" aria-pressed="false"><i aria-hidden="true"></i>Watercolour</button>
+            <button type="button" data-look="sketchbook" data-name="an architect’s sketchbook" aria-pressed="false"><i aria-hidden="true"></i>Sketchbook</button>
+            <button type="button" data-look="manga" data-name="manga ink and screentone" aria-pressed="false"><i aria-hidden="true"></i>Manga</button>
+            <button type="button" data-look="cyanotype" data-name="a blueprint" aria-pressed="false"><i aria-hidden="true"></i>Blueprint</button>
+            <button type="button" data-look="natural" data-name="the game’s own colours" aria-pressed="false"><i aria-hidden="true"></i>As it is</button>
+          </div>
+          <a href="/camera/">Looks from Pocket Camera <span aria-hidden="true">↗</span></a>
+        </figcaption>
+      </figure>
     </section>
 
     <!-- The harbour: an arrival at Minato port, and the port in 3D on request. -->
@@ -123,6 +126,7 @@
     <!-- Project explorer — useful tools, small worlds and practical learning -->
     <section class="section project-explorer" id="projects" aria-labelledby="project-heading">
       <div class="container">
+        <figure class="office-scene" data-scene="island"><img data-scene-still src="/assets/office-painting/island-print-1600.webp" srcset="/assets/office-painting/island-print-800.webp 800w, /assets/office-painting/island-print-1600.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" alt="Minato from above in Johansson World: the park’s cherry tree, the shops, the clock tower and the ferry at the quay by the sea" width="1600" height="560" loading="lazy" decoding="async" data-alt="Minato from above in Johansson World: the park’s cherry tree, the shops, the clock tower and the ferry at the quay by the sea"><canvas data-scene-brushwork aria-hidden="true"></canvas></figure>
         <div class="px-intro">
           <div><div class="section-subtitle">From the workshop</div><h2 id="project-heading">Explore. Create. Learn.</h2></div>
           <p>A harbour town to explore, useful tools to try and practical knowledge to take away.</p>
@@ -146,7 +150,7 @@
     <section class="section section-alt" id="blog">
       <span id="journal" aria-hidden="true"></span>
       <div class="container section-shell">
-        <div class="section-header"><div class="section-decor" id="decor-blog"></div><div class="section-subtitle">From the journal</div><h2>Blog</h2><p>Articles on engineering, life abroad and everyday discoveries.</p></div>
+        <figure class="office-scene" data-scene="night"><img data-scene-still src="/assets/office-painting/night-print-1600.webp" srcset="/assets/office-painting/night-print-800.webp 800w, /assets/office-painting/night-print-1600.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" alt="Minato at night in Johansson World: lit windows over the shops, a car’s headlights at the crossing and the ferry dark at the quay" width="1600" height="560" loading="lazy" decoding="async" data-alt="Minato at night in Johansson World: lit windows over the shops, a car’s headlights at the crossing and the ferry dark at the quay"><canvas data-scene-brushwork aria-hidden="true"></canvas></figure><div class="section-header"><div class="section-decor" id="decor-blog"></div><div class="section-subtitle">From the journal</div><h2>Blog</h2><p>Articles on engineering, life abroad and everyday discoveries.</p></div>
         <div data-blog-feed data-limit="3"><div class="blog-feed-list" data-blog-list><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Article</span><time datetime="2026-10-09">9 Oct 2026</time></div><h3><a href="/blog/the-torn-poster/">The Torn Poster</a></h3><p>Tetsuo tears the corner off Thuận’s sale poster. A short film, a nine-page comic and a practical use for Pythagoras’ theorem.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/the-torn-poster/" hreflang="en">Read article →</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Article</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/lanternan-som-lyser-svagt/">The navigation light that glows dimly</a></h3><p>Why does a lamp glow dimly when the battery reads 24 V? Cable resistance, a corroded terminal and the right way to measure.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/lanternan-som-lyser-svagt/" hreflang="en">Read part 1 →</a><a class="blog-swedish" href="/blog/elteknik/lanternan-som-lyser-svagt/sv/" hreflang="sv" lang="sv">Svenska</a></div></article><article class="blog-feed-item"><div class="blog-feed-meta"><span class="blog-feed-topic">Article</span><time datetime="2026-09-23">23 Sep 2026</time></div><h3><a href="/blog/elteknik/trefas-440-v-60-hz/">Three-phase power at 440 V and 60 Hz</a></h3><p>Line and phase voltage, star and delta connections, and a worked example of three-phase power in a shipboard pump motor.</p><div class="blog-feed-links"><a class="blog-read" href="/blog/elteknik/trefas-440-v-60-hz/" hreflang="en">Read part 2 →</a><a class="blog-swedish" href="/blog/elteknik/trefas-440-v-60-hz/sv/" hreflang="sv" lang="sv">Svenska</a></div></article></div></div>
         <div class="read-all"><a href="/blog/">Browse all articles →</a></div>
       </div>
@@ -162,6 +166,7 @@
           <div class="decor-blob decor-blob-lg decor-blob-tr"></div>
           <div class="decor-blob decor-blob-sm decor-blob-bl"></div>
         </div>
+        <figure class="office-scene" data-scene="garden"><img data-scene-still src="/assets/office-painting/garden-print-1600.webp" srcset="/assets/office-painting/garden-print-800.webp 800w, /assets/office-painting/garden-print-1600.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" alt="A tropical garden in sunlight: palms, a fig tree and flowering shrubs over a stone path" width="1600" height="560" loading="lazy" decoding="async" data-alt="A tropical garden in sunlight: palms, a fig tree and flowering shrubs over a stone path"><canvas data-scene-brushwork aria-hidden="true"></canvas></figure>
         <div class="about-layout">
           <div class="about-identity">
             <div id="about-logo" class="about-logo logo-seal"></div>

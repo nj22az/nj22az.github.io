@@ -5,7 +5,7 @@ import {resolve,extname,sep} from 'node:path';
 import assert from 'node:assert/strict';
 const require=createRequire(process.env.OFFICE_TEST_RUNTIME+'/package.json'),{chromium}=require('playwright');
 const root=resolve(process.env.OFFICE_SOURCE_ROOT),baseline=resolve(process.env.OFFICE_BASELINE_ROOT),out=resolve(process.env.OFFICE_OUTPUT);await mkdir(out,{recursive:true});
-const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.png':'image/png','.mp4':'video/mp4'};
+const types={'.webm':'video/webm','.json':'application/json','.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.png':'image/png','.mp4':'video/mp4'};
 function serve(before=false){const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new URL(req.url,'http://localhost').pathname),relative=path.endsWith('/')?path+'index.html':path,file=resolve(root,'.'+relative);if(!file.startsWith(root+sep))throw Error();let b;if(before)try{b=await readFile(resolve(baseline,'.'+relative));}catch{}b??=await readFile(file);res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream'});res.end(b);}catch{res.writeHead(404);res.end();}});return new Promise(r=>server.listen(0,'127.0.0.1',()=>r({server,url:'http://127.0.0.1:'+server.address().port})));}
 const old=await serve(true),current=await serve(),browser=await chromium.launch({headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});const results=[];
 async function pageFor(context,url){const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());return page;}
@@ -52,9 +52,10 @@ try{
   for(const [filter,count] of [['explore',2],['create',2],['learn',2],['all',6]]){await page.locator('[data-project-filter="'+filter+'"]').click();assert.equal(await page.locator('.px-card:visible').count(),count);assert.equal(await page.locator('[data-project-filter="'+filter+'"] span').innerText(),String(count));assert.equal(await page.locator('[data-project-filter="'+filter+'"]').getAttribute('aria-pressed'),'true');}
   await page.locator('[data-town-light="night"]').click();assert.match(await page.locator('#px-town-view').getAttribute('src'),/night/);await page.locator('[data-town-light="day"]').click();
   // The opening painting: a brush repaints it, and a section label opens the workshop on its shelf.
-  await page.locator('.office-brushes [data-look="print"]').click();await page.waitForFunction(()=>/street-print-/.test(document.querySelector('[data-painting-top]').currentSrc)&&document.querySelector('[data-painting-top]').naturalWidth>0);assert.equal(await page.locator('.office-brushes [aria-pressed="true"]').count(),1);
-  await page.locator('.office-rooms [data-room="learn"]').click();assert.equal(await page.locator('.px-card:visible').count(),2);await page.locator('[data-project-filter="all"]').click();
-  const painting=await page.evaluate(()=>[...document.querySelectorAll('.office-rooms a,.office-brushes button,.office-brushes>a')].map(e=>e.getBoundingClientRect()).every(r=>r.width>=44&&r.height>=44));assert(painting,'44px painting controls: '+profile);
+  await page.locator('.office-palette [data-look="watercolour"]').click();await page.waitForFunction(()=>/street-watercolour-/.test(document.querySelector('[data-painting-still]').currentSrc)&&document.querySelector('[data-painting-still]').naturalWidth>0);assert.equal(await page.locator('.office-palette [aria-pressed="true"]').count(),1);
+  await page.locator('.office-palette [data-look="print"]').click();await page.waitForFunction(()=>/street-print-/.test(document.querySelector('[data-painting-still]').currentSrc));
+  await page.locator('.office-signs [data-room="learn"]').click();assert.equal(await page.locator('.px-card:visible').count(),2);await page.locator('[data-project-filter="all"]').click();
+  const painting=await page.evaluate(()=>[...document.querySelectorAll('.office-signs a,.office-palette button,.office-palette>a')].map(e=>e.getBoundingClientRect()).every(r=>r.width>=44&&r.height>=44));assert(painting,'44px painting controls: '+profile);
   const task=page.locator('#px-complete-preview');await task.click();assert.equal(await task.getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#px-preview-due').innerText(),'01');await task.click();assert.equal(await page.locator('#px-preview-due').innerText(),'02');
   const details=page.locator('.px-card-camera summary');await details.focus();await page.keyboard.press('Enter');assert(await page.locator('.px-card-camera details').getAttribute('open')!==null);await page.keyboard.press('Enter');
   assert.equal(await page.locator('.px-private-course').getAttribute('href'),'https://sjoskolan-course-review.nils-johansson.chatgpt.site');assert.equal(await page.locator('.px-card-camera .px-mascot').getAttribute('src'),'/assets/mascots/tetsuo-teach.webp');
@@ -66,6 +67,13 @@ try{
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-home.png')});await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-projects.png')});
   assert.deepEqual(errors,[]);results.push({profile,width,height,zoom,result:'passed',layout});await context.close();
  }
+ // With motion welcome, the street is the game's own film, painted live by Pocket Camera's engine (office-painting-live.js).
+ {const context=await browser.newContext({viewport:{width:1440,height:900},colorScheme:'light'}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+  await page.goto(current.url);await page.waitForSelector('#office-painting[data-live]',{timeout:120000});
+  await page.locator('.office-palette [data-look="watercolour"]').click();await page.waitForFunction(()=>document.querySelector('#office-painting').dataset.look==='watercolour',null,{timeout:60000});await page.waitForTimeout(1600);
+  assert(await page.locator('#office-painting').getAttribute('data-live')!==null,'The film keeps playing after a change of brush');
+  assert(!requests.some(u=>/harbour.scene.gz|three.module|\/johansson-town\/runtime\//.test(u)),'The painted film loads no 3D engine');
+  await page.screenshot({path:resolve(out,'desktop-live.png')});assert.deepEqual(errors,[]);results.push({profile:'desktop-live',result:'passed'});await context.close();}
  const blocked=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark',reducedMotion:'reduce'});
  await blocked.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new Error('Storage unavailable');}}));
  const blockedPage=await pageFor(blocked,current.url);await blockedPage.goto(current.url);await blockedPage.locator('.office-appearance-toggle').click();assert.equal(await blockedPage.locator('html').getAttribute('data-office-mode'),'light','Toggle works when storage is unavailable');await blocked.close();
