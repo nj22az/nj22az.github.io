@@ -29,7 +29,7 @@ body.office-voyage .office-hero,body.office-voyage .hero{display:none}
 /* ── The bridge: her fittings are the way into the site ───────────────────────────────────────────────────────── */
 .voyage-room{position:absolute;inset:0;z-index:3;opacity:0;visibility:hidden;transition:opacity .8s ease .3s,visibility .8s}
 .voyage[data-chapter-on=bridge] .voyage-room{opacity:1;visibility:visible}
-.voyage-spot{position:absolute;left:var(--x);top:var(--y);display:flex;flex-direction:column;gap:2px;min-width:44px;min-height:44px;padding:10px 14px 10px 30px;transform:translate(-14px,-50%);border-radius:4px;background:#0b131bcc;color:var(--voyage-ink);text-decoration:none;font:500 13px/1.3 var(--voyage-font);border:1px solid #f3efe633;transition:background-color .2s ease,border-color .2s ease}
+.voyage-spot{position:absolute;left:var(--x);top:var(--y);display:flex;flex-direction:column;gap:2px;min-width:44px;min-height:44px;padding:10px 14px 10px 30px;transform:translate(-14px,-50%);border-radius:4px;background:#0b131be6;color:var(--voyage-ink);text-decoration:none;font:500 13px/1.3 var(--voyage-font);border:1px solid #f3efe633;transition:background-color .2s ease,border-color .2s ease}
 /* Where it is in the room: a ring on the fitting itself. */
 .voyage-spot::before{content:"";position:absolute;left:9px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;border:2px solid var(--voyage-ink)}
 .voyage-spot-left{padding:10px 30px 10px 14px;transform:translate(calc(-100% + 14px),-50%);text-align:right}
@@ -67,7 +67,10 @@ body.office-voyage .voyage .office-summary{max-width:40ch;margin:0 0 32px;font:4
 .voyage-kana{position:fixed;right:clamp(16px,3vw,48px);top:50%;margin:0;transform:translateY(-50%);writing-mode:vertical-rl;font:500 clamp(22px,2vw,30px)/1 "Noto Sans JP",sans-serif;letter-spacing:.3em;color:var(--voyage-ink);opacity:0;transition:opacity .8s ease;pointer-events:none}
 .voyage-chapter[data-current] .voyage-kana{opacity:.85}
 .voyage-bridge .voyage-kana{display:none}
-.voyage-bridge{min-height:150svh;justify-content:flex-start;padding-top:22svh}
+.voyage-bridge{min-height:150svh;justify-content:flex-start;padding-top:max(84px,9svh)}
+/* On the bridge the words stay above the room's fittings; the fittings say the rest. */
+.voyage-bridge h2{font-size:clamp(32px,3.4vw,52px);margin-bottom:10px}
+@media(min-width:760.02px){.voyage-bridge>p:not(.voyage-label){display:none}}
 
 /* ── The chapter rail ─────────────────────────────────────────────────────────────────────────────────────────── */
 .voyage-rail{position:fixed;z-index:2;left:clamp(20px,8vw,140px);bottom:44px;display:flex;gap:clamp(14px,2.4vw,40px);transition:opacity .6s ease}
@@ -103,3 +106,28 @@ body.office-voyage .voyage .office-summary{max-width:40ch;margin:0 0 32px;font:4
 body.office-voyage main>section{position:relative;z-index:1;background:var(--surface)}
 @media(prefers-reduced-motion:reduce){.voyage-plate,.voyage-under,.voyage-room,.voyage-stage,.voyage-kana{transition:none}.voyage-plate[data-on]{transform:none}}
 @media print{.voyage-stage,.voyage-rail{display:none}.voyage{color:#000;background:none}}
+
+/* ── The ship's screens: the Office's sections, each on a display aboard (office-voyage.js) ───────────────────── */
+/* Without the script the sections stay on the page; with it they live in their screens, and the voyage ends at the bridge. */
+.voyage-screen{position:fixed;inset:60px 0 0 0;z-index:40;width:auto;height:auto;max-width:none;max-height:none;margin:0;padding:clamp(10px,2.4vw,36px);border:0;background:#05090dcc;color:var(--ink)}
+.voyage-screen[open]{display:flex;align-items:stretch;justify-content:center;animation:voyage-screen-on .5s cubic-bezier(.2,.7,.2,1)}
+@keyframes voyage-screen-on{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+html.voyage-screen-open{overflow:hidden}
+/* The bezel: the display's own frame, as her consoles have it. */
+.voyage-bezel{display:flex;flex-direction:column;width:min(1240px,100%);padding:8px 10px 10px;border-radius:14px;background:linear-gradient(#232c34,#161d23);box-shadow:0 30px 90px #000c,inset 0 0 0 1px #ffffff17}
+.voyage-screen-bar{display:flex;align-items:center;gap:14px;min-height:48px;padding:0 4px 8px 10px;font:500 12px/1.3 var(--voyage-font,system-ui);letter-spacing:.16em;text-transform:uppercase;color:#9fb0ba}
+.voyage-screen-bar b{font-weight:500;letter-spacing:.02em;text-transform:none;font-size:16px;color:#f3efe6}
+.voyage-screen-close{margin-left:auto;min-width:44px;min-height:44px;padding:0 18px;border:1px solid #ffffff2e;border-radius:999px;background:transparent;color:#f3efe6;font:500 14px/1 var(--voyage-font,system-ui);cursor:pointer}
+.voyage-screen-close:hover{background:#c8432f;border-color:#c8432f}
+.voyage-screen-close:focus-visible{outline:2px solid #f3efe6;outline-offset:3px}
+.voyage-display{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;border-radius:6px;background:var(--surface);box-shadow:inset 0 0 0 1px #0000002e}
+body.office-voyage .voyage-display>section{min-height:100%;padding-block:clamp(24px,3vw,44px)}
+/* Behind an open screen the bridge leans in toward the fitting that shows it, and dims. */
+.voyage-frame{transition:scale .8s cubic-bezier(.4,0,.2,1),filter .8s ease}
+.voyage[data-screen] .voyage-frame{scale:1.45;transform-origin:var(--ox,50%) var(--oy,50%);filter:blur(2px) brightness(.55)}
+.voyage[data-screen] .voyage-room{opacity:0;visibility:hidden}
+@media(max-width:850px){.voyage-screen{inset:108px 0 0 0;padding:8px}.voyage-bezel{padding:4px 6px 6px;border-radius:10px}.voyage-screen-bar{min-height:44px;gap:10px}.voyage-screen-bar span{display:none}}
+@media(prefers-reduced-motion:reduce){.voyage-screen[open]{animation:none}.voyage-frame{transition:none}}
+/* A chapter's empty space lets the pointer through to the ship behind it (the bridge's fittings); its words and links do not. */
+.voyage-chapter{pointer-events:none}
+.voyage-chapter>*{pointer-events:auto}
