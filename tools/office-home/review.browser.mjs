@@ -42,20 +42,21 @@ try{
   await page.emulateMedia({colorScheme:'dark'});assert.equal(await page.locator('html').getAttribute('data-office-mode'),'light','Explicit choice overrides system');
   await page.evaluate(()=>localStorage.removeItem('nj-office-appearance'));await page.reload();await page.locator('.px-card').first().waitFor();
   assert.equal(await page.locator('html').getAttribute('data-office-mode'),'dark','System dark on first visit');
-  await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.officeMode==='light'&&getComputedStyle(document.querySelector('.office-heading')).color===getComputedStyle(document.querySelector('#project-heading')).color);
+  await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.officeMode==='light');
   assert.equal(await page.locator('.px-card').count(),6);assert.equal(await page.locator('.px-card-stepwise').count(),0);assert(!requests.some(u=>/harbour.scene.gz|three.module|\/johansson-town\/runtime\//.test(u)),'Apps and 3D remain deferred');
   // 200% desktop zoom equivalent: half the CSS viewport, double device pixel density.
   // Unlike CSS zoom, this also exercises the responsive media queries used by browser zoom.
   assert.equal(await page.locator('.px-card-sakura').count(),0);
   assert.equal(await page.locator('.px-card-world .px-secondary').getAttribute('href'),'/johansson-world/sakura/play/');
-  const headings=await page.locator('.office-heading,#project-heading').evaluateAll(els=>els.map(e=>getComputedStyle(e).color));assert.equal(headings[0],headings[1]);
+  
   for(const [filter,count] of [['explore',2],['create',2],['learn',2],['all',6]]){await page.locator('[data-project-filter="'+filter+'"]').click();assert.equal(await page.locator('.px-card:visible').count(),count);assert.equal(await page.locator('[data-project-filter="'+filter+'"] span').innerText(),String(count));assert.equal(await page.locator('[data-project-filter="'+filter+'"]').getAttribute('aria-pressed'),'true');}
   await page.locator('[data-town-light="night"]').click();assert.match(await page.locator('#px-town-view').getAttribute('src'),/night/);await page.locator('[data-town-light="day"]').click();
-  // The opening painting: a brush repaints it, and a section label opens the workshop on its shelf.
-  await page.locator('.office-palette [data-look="watercolour"]').click();await page.waitForFunction(()=>/street-watercolour-/.test(document.querySelector('[data-painting-still]').currentSrc)&&document.querySelector('[data-painting-still]').naturalWidth>0);assert.equal(await page.locator('.office-palette [aria-pressed="true"]').count(),1);
-  await page.locator('.office-palette [data-look="print"]').click();await page.waitForFunction(()=>/street-print-/.test(document.querySelector('[data-painting-still]').currentSrc));
-  await page.locator('.office-signs [data-room="learn"]').click();assert.equal(await page.locator('.px-card:visible').count(),2);await page.locator('[data-project-filter="all"]').click();
-  const painting=await page.evaluate(()=>[...document.querySelectorAll('.office-signs a,.office-palette button,.office-palette>a')].map(e=>e.getBoundingClientRect()).every(r=>r.width>=44&&r.height>=44));assert(painting,'44px painting controls: '+profile);
+  // The voyage: six chapters, each with its picture; the bridge's way into the site (its fittings, or their list on a phone).
+  assert.equal(await page.locator('.voyage-chapter').count(),6);
+  await page.locator('#bridge').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.voyage').dataset.chapterOn==='bridge');
+  const ways=await page.locator(width>760?'.voyage-spot':'.voyage-room-list a').evaluateAll(els=>els.filter(e=>e.getBoundingClientRect().width).map(e=>({href:e.getAttribute('href'),w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})));
+  assert.equal(ways.length,5,'The bridge shows its five ways: '+profile);assert(ways.every(w=>w.w>=44&&w.h>=44),'44px bridge targets: '+profile);
+  await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
   const task=page.locator('#px-complete-preview');await task.click();assert.equal(await task.getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#px-preview-due').innerText(),'01');await task.click();assert.equal(await page.locator('#px-preview-due').innerText(),'02');
   const details=page.locator('.px-card-camera summary');await details.focus();await page.keyboard.press('Enter');assert(await page.locator('.px-card-camera details').getAttribute('open')!==null);await page.keyboard.press('Enter');
   assert.equal(await page.locator('.px-private-course').getAttribute('href'),'https://sjoskolan-course-review.nils-johansson.chatgpt.site');assert.equal(await page.locator('.px-card-camera .px-mascot').getAttribute('src'),'/assets/mascots/tetsuo-teach.webp');
@@ -67,13 +68,16 @@ try{
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-home.png')});await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-projects.png')});
   assert.deepEqual(errors,[]);results.push({profile,width,height,zoom,result:'passed',layout});await context.close();
  }
- // With motion welcome, the street is the game's own film, painted live by Pocket Camera's engine (office-painting-live.js).
- {const context=await browser.newContext({viewport:{width:1440,height:900},colorScheme:'light'}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
-  await page.goto(current.url);await page.waitForSelector('#office-painting[data-live]',{timeout:120000});
-  await page.locator('.office-palette [data-look="watercolour"]').click();await page.waitForFunction(()=>document.querySelector('#office-painting').dataset.look==='watercolour',null,{timeout:60000});await page.waitForTimeout(1600);
-  assert(await page.locator('#office-painting').getAttribute('data-live')!==null,'The film keeps playing after a change of brush');
-  assert(!requests.some(u=>/harbour.scene.gz|three.module|\/johansson-town\/runtime\//.test(u)),'The painted film loads no 3D engine');
-  await page.screenshot({path:resolve(out,'desktop-live.png')});assert.deepEqual(errors,[]);results.push({profile:'desktop-live',result:'passed'});await context.close();}
+ // With motion welcome: below the waterline the water rises over the view and its light is drawn; it is gone again on the bridge.
+ {const context=await browser.newContext({viewport:{width:1440,height:900},colorScheme:'light'}),page=await pageFor(context,current.url),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(current.url);await page.locator('.voyage-chapter').first().waitFor();
+  await page.evaluate(()=>{const e=document.getElementById('below');scrollTo(0,e.offsetTop+e.offsetHeight/2-innerHeight/2);});
+  await page.waitForFunction(()=>document.querySelector('.voyage').hasAttribute('data-under'));await page.waitForTimeout(1600);
+  assert(await page.evaluate(()=>{const c=document.querySelector('[data-voyage-sea]'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<d.length;i+=4000)if(d[i])n++;return n>20;}),'The light under water is drawn');
+  await page.screenshot({path:resolve(out,'desktop-below.png')});
+  await page.locator('#bridge').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.voyage').dataset.chapterOn==='bridge'&&!document.querySelector('.voyage').hasAttribute('data-under'));
+  await page.waitForTimeout(1400);await page.screenshot({path:resolve(out,'desktop-bridge.png')});
+  assert.deepEqual(errors,[]);results.push({profile:'desktop-motion',result:'passed'});await context.close();}
  const blocked=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark',reducedMotion:'reduce'});
  await blocked.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new Error('Storage unavailable');}}));
  const blockedPage=await pageFor(blocked,current.url);await blockedPage.goto(current.url);await blockedPage.locator('.office-appearance-toggle').click();assert.equal(await blockedPage.locator('html').getAttribute('data-office-mode'),'light','Toggle works when storage is unavailable');await blocked.close();

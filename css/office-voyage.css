@@ -1,0 +1,105 @@
+/* The Office's opening: a voyage aboard the Chisum. Her pictures (assets/office-voyage/, rendered from her own model by
+   tools/office-voyage/) stand fixed behind the page; each chapter brings its own, and the last is her bridge, a room of
+   the site whose fittings lead into it. Dark and quiet: blue-black, bone white, her antifouling red for what is chosen. */
+
+body.office-voyage{--voyage-ink:#f3efe6;--voyage-dim:#c9cfd3;--voyage-night:#0b131b;--voyage-red:#c8432f;--voyage-font:"Inter Tight","Inter",system-ui,sans-serif}
+body.office-voyage .office-hero,body.office-voyage .hero{display:none}
+.voyage{position:relative;color:var(--voyage-ink);background:var(--voyage-night)}
+
+/* ── The stage: her pictures, fixed behind the chapters ───────────────────────────────────────────────────────── */
+.voyage-stage{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--voyage-night);container-type:size;transition:opacity .8s ease,visibility .8s}
+.voyage[data-past] .voyage-stage{opacity:0;visibility:hidden}
+/* Every picture is 16:9; the frame covers the screen and is cropped to it. */
+.voyage-frame{position:absolute;left:50%;top:50%;width:max(100cqw,177.78cqh);aspect-ratio:16/9;transform:translate(-50%,-50%)}
+.voyage-plate{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover;opacity:0;transform:scale(calc(1.06 - var(--settle,0) * .06));transition:opacity 1.1s ease,transform 1.6s cubic-bezier(.2,.7,.2,1)}
+.voyage-plate[data-on]{opacity:1}
+/* Within a chapter the camera keeps creeping in, as a slow dolly would. */
+.voyage-plate[data-on]{transform:scale(calc(1 + var(--progress,0) * .05))}
+.voyage-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#0b131bd9 0%,#0b131b8c 32%,#0b131b00 62%),linear-gradient(0deg,#0b131bb3 0%,#0b131b00 30%)}
+/* Film grain, so a render reads as a photograph rather than a screen. */
+.voyage-stage::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ── Below the waterline: the water rises over the view, and the light comes down through it ──────────────────── */
+.voyage-under{position:absolute;inset:0;clip-path:inset(100% 0 0 0);transition:clip-path 1.4s cubic-bezier(.6,0,.2,1)}
+.voyage[data-under] .voyage-under{clip-path:inset(0 0 0 0)}
+.voyage-under .voyage-plate{filter:saturate(.85) contrast(1.05)}
+.voyage-under::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,#3fa3b84d 0%,#0e3f5566 45%,#06192ab3 100%);mix-blend-mode:multiply}
+.voyage-sea{position:absolute;inset:0;z-index:2;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen}
+
+/* ── The bridge: her fittings are the way into the site ───────────────────────────────────────────────────────── */
+.voyage-room{position:absolute;inset:0;z-index:3;opacity:0;visibility:hidden;transition:opacity .8s ease .3s,visibility .8s}
+.voyage[data-chapter-on=bridge] .voyage-room{opacity:1;visibility:visible}
+.voyage-spot{position:absolute;left:var(--x);top:var(--y);display:flex;flex-direction:column;gap:2px;min-width:44px;min-height:44px;padding:10px 14px 10px 30px;transform:translate(-14px,-50%);border-radius:4px;background:#0b131bcc;color:var(--voyage-ink);text-decoration:none;font:500 13px/1.3 var(--voyage-font);border:1px solid #f3efe633;transition:background-color .2s ease,border-color .2s ease}
+/* Where it is in the room: a ring on the fitting itself. */
+.voyage-spot::before{content:"";position:absolute;left:9px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;border:2px solid var(--voyage-ink)}
+.voyage-spot-left{padding:10px 30px 10px 14px;transform:translate(calc(-100% + 14px),-50%);text-align:right}
+.voyage-spot-left::before{left:auto;right:9px}
+.voyage-spot span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--voyage-dim)}
+.voyage-spot b{font-weight:500;font-size:15px}
+.voyage-spot:hover,.voyage-spot:focus-visible{background:var(--voyage-red);border-color:var(--voyage-red)}
+.voyage-spot:hover span,.voyage-spot:focus-visible span{color:var(--voyage-ink)}
+.voyage-spot:focus-visible{outline:2px solid var(--voyage-ink);outline-offset:3px}
+
+/* ── The chapters ─────────────────────────────────────────────────────────────────────────────────────────────── */
+.voyage-chapter{position:relative;z-index:1;min-height:130svh;display:flex;flex-direction:column;justify-content:center;padding:96px clamp(20px,6vw,96px) 120px clamp(20px,8vw,140px);max-width:min(760px,62vw);box-sizing:content-box}
+.voyage-chapter:first-of-type{min-height:100svh}
+.voyage-label{margin:0 0 22px;display:flex;align-items:center;gap:14px;font:500 12px/1.4 var(--voyage-font);letter-spacing:.18em;text-transform:uppercase;color:var(--voyage-dim)}
+.voyage-label::before{content:"";width:36px;height:1px;background:var(--voyage-red)}
+body.office-voyage .voyage .office-heading,.voyage-chapter h2{margin:0 0 22px;font:300 clamp(40px,5.4vw,84px)/1.02 var(--voyage-font);letter-spacing:-.03em;color:var(--voyage-ink);text-wrap:balance}
+.voyage-chapter h2{font-size:clamp(36px,4.6vw,68px)}
+.voyage-chapter>p:not(.voyage-label):not(.voyage-kana):not(.voyage-cue){max-width:46ch;margin:0 0 30px;font:400 clamp(16px,1.25vw,19px)/1.6 var(--voyage-font);color:var(--voyage-dim)}
+body.office-voyage .voyage .office-summary{max-width:40ch;margin:0 0 32px;font:400 clamp(17px,1.35vw,20px)/1.55 var(--voyage-font);color:var(--voyage-dim)}
+.voyage-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px}
+.voyage-button{display:inline-flex;align-items:center;min-height:48px;padding:0 26px;border-radius:999px;background:var(--voyage-ink);color:#0b131b;text-decoration:none;font:600 15px/1 var(--voyage-font)}
+.voyage-button:hover{background:#fff}
+.voyage-link{display:inline-flex;align-items:center;min-height:48px;color:var(--voyage-ink);font:500 15px/1 var(--voyage-font);text-decoration:underline;text-underline-offset:6px;text-decoration-color:#f3efe666}
+.voyage-link:hover{text-decoration-color:var(--voyage-ink)}
+.voyage-cue{position:absolute;left:clamp(20px,8vw,140px);bottom:40px;margin:0;font:500 11px/1 var(--voyage-font);letter-spacing:.2em;text-transform:uppercase;color:var(--voyage-dim)}
+.voyage-cue::after{content:"";display:inline-block;width:64px;height:1px;margin-left:14px;vertical-align:middle;background:linear-gradient(90deg,var(--voyage-dim),transparent)}
+.voyage-links{list-style:none;margin:0;padding:0;border-top:1px solid #f3efe62e;max-width:520px}
+.voyage-links li{border-bottom:1px solid #f3efe62e}
+.voyage-links a{display:flex;flex-direction:column;gap:4px;min-height:44px;padding:16px 36px 16px 0;position:relative;color:var(--voyage-ink);text-decoration:none;font:500 clamp(18px,1.5vw,22px)/1.25 var(--voyage-font)}
+.voyage-links a span{font-size:14px;font-weight:400;color:var(--voyage-dim)}
+.voyage-links a::after{content:"→";position:absolute;right:4px;top:50%;transform:translateY(-50%);transition:transform .2s ease;color:var(--voyage-dim)}
+.voyage-links a:hover::after{transform:translate(6px,-50%);color:var(--voyage-ink)}
+.voyage :is(a,button):focus-visible{outline:2px solid var(--voyage-ink);outline-offset:4px}
+/* Her name and each chapter's, set vertically at the right, as a print's title is. */
+.voyage-kana{position:fixed;right:clamp(16px,3vw,48px);top:50%;margin:0;transform:translateY(-50%);writing-mode:vertical-rl;font:500 clamp(22px,2vw,30px)/1 "Noto Sans JP",sans-serif;letter-spacing:.3em;color:var(--voyage-ink);opacity:0;transition:opacity .8s ease;pointer-events:none}
+.voyage-chapter[data-current] .voyage-kana{opacity:.85}
+.voyage-bridge .voyage-kana{display:none}
+.voyage-bridge{min-height:150svh;justify-content:flex-start;padding-top:22svh}
+
+/* ── The chapter rail ─────────────────────────────────────────────────────────────────────────────────────────── */
+.voyage-rail{position:fixed;z-index:2;left:clamp(20px,8vw,140px);bottom:44px;display:flex;gap:clamp(14px,2.4vw,40px);transition:opacity .6s ease}
+.voyage[data-past] .voyage-rail{opacity:0;pointer-events:none}
+.voyage-rail a{position:relative;display:flex;flex-direction:column;gap:4px;min-width:44px;min-height:44px;color:#f3efe680;text-decoration:none;font:300 clamp(22px,2.4vw,36px)/1 var(--voyage-font);transition:color .3s ease}
+.voyage-rail a span{position:absolute;left:0;top:calc(100% + 6px);white-space:nowrap;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;opacity:0;transition:opacity .3s ease}
+.voyage-rail a:hover,.voyage-rail a[aria-current=step]{color:var(--voyage-ink)}
+.voyage-rail a:hover span,.voyage-rail a[aria-current=step] span{opacity:1}
+.voyage-chapter.voyage-hero .voyage-cue{bottom:120px}
+
+/* On any portrait screen the frame pans to each chapter's subject, which would otherwise fall off its side. */
+@media(max-aspect-ratio:1/1){.voyage-frame{transform:translate(calc(-1 * var(--focus,50%)),-50%);transition:transform 1.4s cubic-bezier(.4,0,.2,1)}}
+
+/* The bridge's fittings as a list, for screens too narrow to show the room's width. */
+.voyage-room-list{display:none}
+
+/* ── Narrow screens: the ship stays the picture, the words take the lower half ────────────────────────────────── */
+@media(max-width:760px){
+ .voyage-shade{background:linear-gradient(0deg,#0b131bf2 0%,#0b131bb3 45%,#0b131b26 75%,#0b131b00 100%)}
+ .voyage-chapter{max-width:none;justify-content:flex-end;padding:120px 20px 120px;box-sizing:border-box;min-height:120svh}
+ .voyage-chapter:first-of-type{min-height:100svh}
+ .voyage-kana{display:none}
+ /* The rail would sit over the links; on a phone the chapters speak for themselves. */
+ .voyage-rail{display:none}
+ .voyage-chapter.voyage-hero .voyage-cue{display:none}
+ .voyage-bridge{padding-top:120px;justify-content:flex-start}
+ /* In a portrait frame the room's fittings fall off its sides: they become a list under the words. */
+ .voyage-room{display:none}
+ .voyage-room-list{display:block}
+}
+
+/* ── After the voyage the Office's own sections follow, on its own ground ─────────────────────────────────────── */
+body.office-voyage main>section{position:relative;z-index:1;background:var(--surface)}
+@media(prefers-reduced-motion:reduce){.voyage-plate,.voyage-under,.voyage-room,.voyage-stage,.voyage-kana{transition:none}.voyage-plate[data-on]{transform:none}}
+@media print{.voyage-stage,.voyage-rail{display:none}.voyage{color:#000;background:none}}

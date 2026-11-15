@@ -1,4 +1,36 @@
-# Handover: the Office homepage as a painting · 13–15 November 2026
+# Handover: the Office homepage · 13–15 November 2026
+
+**Current state (15 November, evening): the homepage on the branch `claude/zealous-bell-teears` is the voyage aboard the
+Chisum, not the painted street.** The owner found the painted version still messy and asked for something like Kage
+(MengTo/kage), with the Chisum as the backdrop, the bridge as a room of the site ("I think the Bridge looks best at the
+moment") and a part of the page under water (like Noniv/abyssal-garden). Kage has no licence: its idea was studied, none of
+its code or art was taken. Abyssal Garden is MIT; only its mood was used (the underwater light here is new code).
+
+## The voyage
+
+- Six chapters over fixed pictures of the Chisum rendered from her own model in her own viewer
+  (`tools/office-voyage/render-plates.mjs`, the shot list in `PLATES`; `tools/office-voyage/build.py` writes
+  `assets/office-voyage/<name>-<1920|960>.webp`, 0.6 MB for all): 00 at sea (her bow), 01 Explore (her side), 02 Create
+  (from astern), 03 Learn (over her house), 04 Below the waterline (under her bow, then her screws: the water rises over
+  the view and light shafts, motes and the moving surface are drawn live, `assets/js/office-voyage.js`), 05 the bridge
+  (her wheelhouse; the wheel, the radar, the alarm panel, the wing and the chart are links into the site).
+- Editorial type (Inter Tight, from Google Fonts), a chapter rail on wide screens, her name and each chapter's in vertical
+  Japanese. On portrait screens the frame pans to each chapter's subject; on phones the bridge's fittings are a list and
+  the rail is left out. With reduced motion nothing moves but the pictures change.
+- The picture under her bow is mirrored so the bulb stands clear of the words (nothing to read on her below the waterline).
+- After the bridge the Office's own sections follow unchanged (projects, journal, about, locations).
+- **Removed from the homepage on this branch:** the painted street and its scenes (their files deleted on the branch; the
+  first preview of them stays on `main` under `/temp/office/painted/`) and the Minato harbour arrival with its 3D diorama.
+  **Before this replaces the live homepage, `.github/workflows/harbour-diorama.yml` and `tools/office-port/diorama.browser.mjs`
+  must be retired or the harbour put back: they test the harbour on the homepage and would fail.**
+- `tools/office-home/review.browser.mjs` checks the six chapters, the bridge's five ways (44 px), and (motion allowed) that
+  the water rises and its light is drawn. Passes locally on every profile.
+
+The earlier, painted version is recorded below.
+
+---
+
+## The painted street (superseded)
 
 **State: on branch `claude/zealous-bell-teears`. A preview is live at <https://nj22az.github.io/temp/office/> (main `66a8de0`, on the owner's yes of 15 November to "add /temp/office/": new files only, not indexed, the live homepage unchanged). The owner is deciding whether it replaces the homepage.**
 

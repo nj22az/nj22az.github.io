@@ -2,7 +2,7 @@ name: Office homepage design review
 on:
   push:
     branches: [development, main]
-    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'css/office-painting.css', 'assets/js/office-painting.js', 'assets/office-painting/**', 'assets/js/office-painting-live.js', 'camera/looks-gl.js', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
+    paths: ['index.html', 'css/project-explorer.css', 'css/office-home.css', 'css/office-voyage.css', 'assets/js/office-voyage.js', 'assets/office-voyage/**', 'assets/js/project-explorer.js', 'assets/js/office-appearance.js', 'shared.js', 'config.js', 'tools/office-home/**', '.github/workflows/office-home.yml']
 permissions:
   contents: read
 jobs:
@@ -18,8 +18,7 @@ jobs:
             camera
             elteknik/files
             tools/office-home
-      # Johansson Town has its own repository since 7 November 2026; the homepage's harbour uses its title art and renderer,
-      # and the painted street Pocket Camera's Looks (src/render) and the face helpers they import (src/avatars).
+      # Johansson Town has its own repository since 7 November 2026; the homepage's harbour uses its title art and renderer.
       - uses: actions/checkout@v4
         with:
           repository: nj22az/johansson-town
@@ -28,7 +27,6 @@ jobs:
             assets/images/title
             vendor
             src/render
-            src/avatars
       - uses: actions/setup-node@v4
         with:
           node-version: 24
