@@ -26,8 +26,10 @@ LOOP_AT = 114        # frame 114 (9.5 s): the shutter is up and the shop is open
 CROSSFADE = 18       # 1.5 s
 # The section scenes: source, and the height of the band's centre in it (0 top, 1 foot).
 SCENES = {
-    "island": ("johansson-town/assets/images/title/title-day-landscape.webp", .5),
-    "night": ("johansson-town/assets/images/title/title-night-landscape.webp", .52),
+    # Over the town to the pier at nine in the morning (capture-street.mjs --pos 22,14,-30 --at -4,0,-62).
+    "island": ("tools/office-painting/sources/island.webp", .52),
+    # The harbour from the water: the clock tower, a fishing boat and the quay (--pos 12,8,-70 --at 0,1,-42).
+    "harbour": ("tools/office-painting/sources/harbour.webp", .52),
     "garden": ("assets/images/nils-lake-hero.jpg", .56),
 }
 BAND = (1600, 560)

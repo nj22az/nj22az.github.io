@@ -1,42 +1,68 @@
-# Handover: the Office homepage as a painting · 13 November 2026
+# Handover: the Office homepage as a painting · 13–15 November 2026
 
 **State: on branch `claude/zealous-bell-teears`, not on `main`, not published. The owner has not yet seen or approved it.**
 
-The owner asked for an audit of the site and for the Office of Nils Johansson to "look like an interactive painting really
-with clear sections", populated with good assets from Johansson World, more modular, **without changing any Sjöskolan
-link**, and changing only the Office's layout. During the work they added that Pocket Camera's shaders could be used.
+The owner asked (13 November) for the Office of Nils Johansson to "look like an interactive painting really with clear
+sections", populated with good assets from Johansson World, more modular, **without changing any Sjöskolan link**, and
+changing only the Office's layout; then that Pocket Camera's shaders could be used. Asked whether the first version would
+sweep anyone off their feet, Claude said no and proposed a full version; the owner said "go for the full version" (15
+November). This is that version.
 
-## What changed (homepage only)
+## What the homepage is now
 
-- **The opening is one painting.** `assets/world/sakura-current.webp` (the harbour road outside Sakura Shōten), drawn
-  through Pocket Camera's own Looks by `tools/office-painting/build.py` into `assets/office-painting/street-<look>-<800|1600>.webp`
-  (watercolour, print, sketchbook, manga, cyanotype, natural). Watercolour is the default and the only one loaded at first.
-- **Brushes** ("Paint it as") swap the Look; the rest load on request. With a mouse, the pointer is a window through the
-  paint to the game's own picture.
-- **Section labels on the painting** (Explore, Create, Learn, Read) are the page's index: Explore goes to `#harbour`,
-  Create and Learn open `#projects` on that filter, Read goes to `#blog`. On narrow screens they are a 2×2 grid under it.
-- **The heading is the painting's wall label** (low right on desktop; first on phones). Its words and links are unchanged.
-- **The port arrival moved** out of the opening into its own section, `#harbour` ("Someone is always arriving."), with the
-  same `#office-port` markup, films and 3D harbour.
-- Blog and About open with the same small label as the other sections.
-- Modules: `css/office-painting.css`, `assets/js/office-painting.js`. No project card, link, filter or Sjöskolan URL changed.
+- **The opening fills the screen with the harbour road outside Sakura Shōten**, as the game plays it at 08:59:54: a film
+  of the real town (`tools/office-painting/capture-street.mjs`, the Town's own audit camera and simulation, stepped frame
+  by frame), in which **Sakura's shutter rolls up at nine** and seagulls cross; after that the open street loops. No
+  resident happens to walk through this view at that hour (the 06:30 sweep found residents in the area but none in
+  frame); the dog by the fruit trestle and the gulls are what move.
+- **It is painted live by Pocket Camera's own engine** (`assets/js/office-painting-live.js` imports `/camera/looks-gl.js`,
+  which imports `/johansson-town/src/render/looks.js` and `/johansson-town/src/avatars/face.js` from the published Town).
+  Woodblock is the default. The palette ("Paint it as") offers Woodblock, Watercolour, Sketchbook, Manga, Blueprint and
+  "As it is" (the game's colours).
+- **Before the film runs, and always with reduced motion, no WebGL2 or data saving**, the page shows the film's first
+  frame painted in the chosen Look (`street-<look>-<1600|800>.webp`), so nothing changes but the motion.
+- **Changing Look is a brush**: the old painting is scrubbed off in broad strokes (`scrub()`/`brush()` in
+  `assets/js/office-painting.js`), soft and streaked at the edges. Reduced motion swaps at once.
+- **With a mouse, the pointer wipes the paint** and shows the town in the game's own colours beneath; the paint flows
+  back in about two seconds. Not on touch.
+- **The page's sections are signs in the street**: Explore is an enamel plate on the quay warehouse door (to `#harbour`),
+  Learn a notice in the upstairs office window, Create the chalk A-board on the pavement (both open `#projects` on their
+  filter), Read is painted on the road (to `#blog`). A sign near a cropped edge is moved along just enough to be whole.
+  Under 860 px the signs are a 2×2 grid under the picture.
+- **The heading is the print's title slip** (a cartouche, top left, on the sky), not plain text on the sky as first
+  proposed: the sky is navy in Woodblock and pale in Watercolour, and no single ink reads on both. Its words and links are
+  unchanged. Under 860 px it sits under the picture.
+- **Each section opens on its own painted scene**, brushed in as it scrolls into view and repainted with the hero's Look:
+  the town and pier from above (projects), the harbour from the water (blog), the garden photograph (About). The two town
+  scenes are fresh game renders kept in `tools/office-painting/sources/`. The town at night was tried and dropped:
+  Woodblock and Manga break on it even with the exposure lifted.
+- The chosen Look is remembered in this browser only (`localStorage` `office-painting-look`).
+- Also fixed in passing: the section introductions were indented by an old centred rule.
+
+## Files
+
+- `index.html` (hero, scenes), `css/office-painting.css`, `assets/js/office-painting.js`, `assets/js/office-painting-live.js`.
+- `assets/office-painting/`: `street.json` (loop point), `street-1280|800.mp4|webm` (1.7 MB / 0.7 MB H.264; VP9 for
+  browsers without H.264), and every scene in every Look at 1600 and 800 wide (Manga is the heaviest, about 0.5 MB).
+- `tools/office-painting/capture-street.mjs`: the film and scene renders (`--time`, `--seconds`, `--fps`, `--pos`, `--at`,
+  `--sweep` to find who walks through the view). It stops the game's own render loop and reads each frame off the canvas;
+  at 1600×1000 about 5 s a frame in a 4-core cloud container, so the 24 s film took 25 minutes.
+- `tools/office-painting/build.py film <frames>` and `build.py scenes`: paint through `tools/render-camera-looks.mjs`,
+  encode the film with its last 1.5 s mixed into the frames before the loop point (9.5 s), so the jump back is not seen.
+- Both need `nj22az/johansson-town` cloned as `johansson-town/` (for the capture, the whole repository).
 
 ## Checked
 
-- `tools/office-home/review.browser.mjs` (now also clicks a brush and a section label, and measures their 44 px targets)
-  and `tools/office-port/diorama.browser.mjs`: both pass locally, all profiles, with `nj22az/johansson-town` cloned as
-  `johansson-town/`. Not run on GitHub: the workflows run on `development` and `main` only.
-- Looked at in Chromium at 1280×800, 1440×900 dark and 390×844. Not looked at in Safari or on a real phone.
+- `tools/office-home/review.browser.mjs`: passes locally on every profile; it now also changes Look, follows a sign, measures
+  the painting's 44 px targets, and (new `desktop-live` profile, motion allowed) waits for the live film, changes brush and
+  checks that no 3D engine loads. `.github/workflows/office-home.yml` checks out the Town's `src/avatars` for it.
+- `tools/office-port/diorama.browser.mjs` passes locally.
+- Looked at in Chromium at 1440×900, 1280×800, 1180×820, 1024×768, 768×1024, 390×844, light and dark. Not seen in Safari
+  or on a real phone; the live film has only run in software WebGL here, where it is far slower than on a real GPU.
 
-## Audit findings left alone (for the owner to decide)
+## Open, for the owner
 
-1. The homepage journal shows the three newest posts, at present three hotel-parking notes in a row.
-2. Locations is two Google Maps iframes: third-party, heavy, and the one part that is not in the house style.
-3. `styles.css` chains 13 `@import`s and two Google Fonts requests of nine families; the Office uses three.
-4. Section headers, About and Locations stay invisible until an IntersectionObserver fires (`.reveal`).
-5. No Meshy model is in this repository; the only GLBs are in `maintenance-demo/models`, `polivoks/3d` and `ferry/blender/assets`.
-
-## Next, if the owner likes the direction
-
-Give each section its own painted header from the same builder (Chisum for Explore, a café photo for Create), and paint
-the Locations as two small maps in place of the iframes.
+1. Whether the hero film should wait for a resident to walk past (a longer sweep for another hour, or another view).
+2. The homepage journal still shows the three newest posts, at present three hotel-parking notes in a row.
+3. Locations is still two Google Maps iframes, the one part not in the painting's style.
+4. No Meshy model is in this repository; nothing here uses one.

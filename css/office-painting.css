@@ -77,7 +77,7 @@ body.office-home .office-hero{padding:60px 0 0;min-height:0;background:var(--sur
  .office-canvas{display:flex;flex-direction:column;height:auto;overflow:visible;container-type:normal;background:var(--surface-card)}
  .office-canvas>.office-stage{position:relative;left:auto;top:auto;transform:none;width:100%;height:clamp(300px,56svh,560px);aspect-ratio:auto;overflow:hidden;background:#1d3557}
  /* The street keeps its shape and is cropped round the shop. */
- .office-canvas>.office-stage>*{left:50%;top:0;right:auto;bottom:auto;width:auto;height:100%;aspect-ratio:16/10;transform:translateX(-47%)}
+ .office-canvas>.office-stage>*{left:50%;top:0;right:auto;bottom:auto;width:auto;max-width:none;height:100%;aspect-ratio:16/10;transform:translateX(-47%)}
  .office-slip{position:static;order:2;width:auto;padding:22px 20px 18px;background:none;box-shadow:none}
  .office-home .office-slip .office-heading{font-size:clamp(26px,7.4vw,36px)}
  .office-signs{position:static;order:3;transform:none;width:auto;aspect-ratio:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 8px;container-type:normal}
@@ -113,3 +113,14 @@ body.office-home .office-harbour{padding-block:56px 48px}
 
 @media(prefers-reduced-motion:reduce){.office-live,.office-signs a{transition:none}.office-signs a:hover{transform:none}}
 @media print{.office-palette,.office-live,.office-brushwork{display:none}}
+
+/* Section introductions start where their headings do (an older centred rule indented them). */
+body.office-home .section-header p{margin-inline:0}
+/* Mid-width screens: the palette keeps to one line. */
+@media(min-width:860.02px) and (max-width:1240px){
+ .office-palette{gap:4px 8px;padding-left:10px}
+ .office-palette>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .office-palette button{padding:0 10px 0 6px;gap:6px}
+ .office-palette i{width:18px;height:18px}
+}
+@media(min-width:860.02px) and (max-width:1060px){.office-palette>a{font-size:0;gap:0;padding:0 12px}.office-palette>a::before{content:"Pocket Camera";font-size:13px}.office-palette>a span{font-size:13px;margin-left:6px}}

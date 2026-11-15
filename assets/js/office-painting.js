@@ -48,23 +48,42 @@
     }
     return list;
   }
-  // Draws each stroke from where it had reached to where it now reaches (t from 0 to 1).
+  // Draws each stroke from where it had reached to where it now reaches (t from 0 to 1). A stroke is a band of bristle
+  // tracks drawn as continuous lines: the middle ones take everything off, the outer ones only part, as a drying brush
+  // does, so its edges are soft and streaked rather than cut.
+  var TRACKS = 18;
   function brush(ctx, list, t) {
+    ctx.lineCap = 'round';
     for (var i = 0; i < list.length; i++) {
       var s = list[i], p = Math.max(0, Math.min(1, (t - s.start) / (s.end - s.start)));
       p = 1 - Math.pow(1 - p, 2.2);
       if (p <= s.done) continue;
-      var from = s.done, len = Math.hypot(s.x1 - s.x0, s.y1 - s.y0), step = Math.max(3, s.r * .12);
-      for (var d = from * len; d <= p * len; d += step) {
-        var k = d / len, x = s.x0 + (s.x1 - s.x0) * k, y = s.y0 + (s.y1 - s.y0) * k;
-        // The stroke's edge wanders as a loaded brush's does; it runs dry and splits into bristles at the very end.
-        var wave = Math.sin(k * 9 + s.seed) * .06 + Math.sin(k * 23 + s.seed * 2) * .03, r = s.r * (1 + wave);
-        ctx.beginPath(); ctx.ellipse(x, y, step * 1.4, r * .62, 0, 0, Math.PI * 2); ctx.fill();
-        for (var b = -3; b <= 3; b++) {
-          var off = r * (.62 + .1 * Math.abs(Math.sin(b * 7.1 + k * 31 + s.seed)));
-          ctx.fillRect(x - step, y + Math.sign(b || 1) * off * (.75 + .08 * Math.abs(b)) - 1, step * 2, 1.6 + Math.abs(b) * .3);
+      var dx = s.x1 - s.x0, dy = s.y1 - s.y0, len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len;
+      if (!s.tracks) s.tracks = [];
+      for (var k = 0; k < TRACKS; k++) {
+        var off = k / (TRACKS - 1) * 2 - 1, edge = Math.abs(off);
+        // Each bristle trails the middle of the brush a little, the outer ones most: the stroke's head is round and ragged.
+        var lag = s.r * (.9 * off * off + .3 * Math.abs(Math.sin(k * 7.3 + s.seed))) / len;
+        var from = s.tracks[k] || 0, to = Math.max(0, p - lag);
+        if (p >= 1) to = 1;
+        if (to <= from) continue;
+        var steps = Math.max(1, Math.ceil((to - from) * len / 8));
+        // Faint bristles are butt-ended: round ends would overlap from frame to frame and leave beads.
+        ctx.lineCap = edge > .78 ? 'butt' : 'round';
+        ctx.globalAlpha = edge > .78 ? .35 + .4 * Math.abs(Math.sin(k * 12.9898 + s.seed)) : 1;
+        ctx.lineWidth = s.r * 2 / TRACKS * (edge > .78 ? 1.1 : 2.2);
+        ctx.beginPath();
+        for (var j = 0; j <= steps; j++) {
+          var q = from + (to - from) * j / steps;
+          // The band breathes along its length, as pressure on a brush does.
+          var w = s.r * (1 + .07 * Math.sin(q * 8 + s.seed) + .04 * Math.sin(q * 21 + k + s.seed)) * off;
+          var x = s.x0 + dx * q + nx * w, y = s.y0 + dy * q + ny * w;
+          if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
+        ctx.stroke();
+        s.tracks[k] = to;
       }
+      ctx.globalAlpha = 1;
       s.done = p;
     }
   }
@@ -73,11 +92,12 @@
     var ctx = canvas.getContext('2d'), w = canvas.width, h = canvas.height;
     ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0, 0, w, h); cover(ctx, w, h);
     if (reduce.matches) { ctx.clearRect(0, 0, w, h); if (done) done(); return { cancel: function () {} }; }
-    var list = strokes(w, h, 1 + Math.floor(Math.random() * 9999)), t0 = performance.now(), duration = 1250, frame = 0;
-    ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = '#000';
+    var list = strokes(w, h, 1 + Math.floor(Math.random() * 9999)), t0 = performance.now(), duration = 1300, frame = 0;
+    ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = '#000'; ctx.strokeStyle = '#000';
     function tick(now) {
       var t = Math.min(1, (now - t0) / duration);
       brush(ctx, list, t);
+      if (t > .82) { ctx.globalAlpha = .3; ctx.fillRect(0, 0, w, h); ctx.globalAlpha = 1; }
       if (t < 1) frame = requestAnimationFrame(tick);
       else { ctx.clearRect(0, 0, w, h); ctx.globalCompositeOperation = 'source-over'; if (done) done(); }
     }
@@ -162,6 +182,24 @@
     hero.addEventListener('pointermove', onMove);
     hero.addEventListener('pointerleave', function () { wipe.last = null; });
   }
+
+  /* ── Signs stay inside the frame: where the street is cropped (narrow or tall screens), a sign near the cut is
+     moved along its wall just enough to be read whole. */
+  var frame = figure.querySelector('.office-canvas');
+  function keepSignsInFrame() {
+    var box = frame.getBoundingClientRect(), margin = 12;
+    figure.querySelectorAll('.office-signs a').forEach(function (sign) {
+      sign.style.translate = '';
+      if (getComputedStyle(sign).position !== 'absolute') return;
+      var r = sign.getBoundingClientRect(), dx = 0;
+      if (r.right > box.right - margin) dx = box.right - margin - r.right;
+      if (r.left + dx < box.left + margin) dx = box.left + margin - r.left;
+      if (dx) sign.style.translate = Math.round(dx) + 'px 0';
+    });
+  }
+  keepSignsInFrame();
+  if (window.ResizeObserver) new ResizeObserver(keepSignsInFrame).observe(frame);
+  else window.addEventListener('resize', keepSignsInFrame);
 
   /* ── Signs: Create and Learn share the workshop, so they open it on their own shelf ───────────────────────── */
   figure.querySelectorAll('[data-room]').forEach(function (link) {

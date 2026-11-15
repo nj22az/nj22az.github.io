@@ -1,4 +1,4 @@
-**The Office homepage as a painting, 13 November 2026:** on the branch, not published, awaiting the owner's word. Read [docs/HANDOVER-OFFICE-PAINTING-2026-11-13.md](docs/HANDOVER-OFFICE-PAINTING-2026-11-13.md). Nothing under `ferry/` or `sjoskolan/` was touched.
+**The Office homepage as a painting, 13–15 November 2026:** the full version (a live, painted film of Sakura opening at nine; signs in the street for the sections; painted section scenes) is on the branch, not published, awaiting the owner's word. Read [docs/HANDOVER-OFFICE-PAINTING-2026-11-13.md](docs/HANDOVER-OFFICE-PAINTING-2026-11-13.md). Nothing under `ferry/` or `sjoskolan/` was touched.
 
 **Tasks for Codex on the Chisum, 13 November 2026:** five tasks that do not build her model, at the owner's asking. Read [ferry/CODEX-TASKS-2026-11-13.md](ferry/CODEX-TASKS-2026-11-13.md). Her builders, her register and `ferry/app.js` stay Claude's while that list stands.
 
