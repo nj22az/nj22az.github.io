@@ -13,7 +13,8 @@ try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await pageFor(context,old.url);await page.goto(old.url);await page.locator('.px-card').first().waitFor();const beforeHeight=await page.locator('#project-grid').evaluate(el=>el.getBoundingClientRect().height);await context.close();
  for(const [profile,width,height,zoom] of [['desktop',1440,1000,1],['ipad-portrait',768,1024,1],['ipad-landscape',1024,768,1],['phone',390,844,1],['small-phone',320,844,1],['desktop-200pct',720,500,2]]){
   const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:zoom,reducedMotion:'reduce',colorScheme:'light',hasTouch:profile!=='desktop'&&zoom===1}),page=await pageFor(context,current.url),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
-  await page.goto(current.url);await page.locator('.px-card').first().waitFor();
+  // A link to the projects (/#projects) opens them on the bridge's radar screen; the reloads below keep it.
+  await page.goto(current.url+'#projects');await page.locator('.px-card').first().waitFor();
   assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity');
   await page.evaluate(()=>localStorage.setItem('nj-theme','popwave'));await page.reload();await page.locator('.px-card').first().waitFor();assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity','Homepage remains stable despite a saved alternate theme');assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave','Homepage preserves other-page preference');
   const appearance=page.locator('.office-appearance-toggle');
@@ -53,10 +54,13 @@ try{
   await page.locator('[data-town-light="night"]').click();assert.match(await page.locator('#px-town-view').getAttribute('src'),/night/);await page.locator('[data-town-light="day"]').click();
   // The voyage: six chapters, each with its picture; the bridge's way into the site (its fittings, or their list on a phone).
   assert.equal(await page.locator('.voyage-chapter').count(),6);
+  // The sections are screens aboard: Escape puts the radar's away, and the radar itself brings it back.
+  await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('dialog[open]')&&!location.hash);
   await page.locator('#bridge').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.voyage').dataset.chapterOn==='bridge');
   const ways=await page.locator(width>760?'.voyage-spot':'.voyage-room-list a').evaluateAll(els=>els.filter(e=>e.getBoundingClientRect().width).map(e=>({href:e.getAttribute('href'),w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})));
-  assert.equal(ways.length,5,'The bridge shows its five ways: '+profile);assert(ways.every(w=>w.w>=44&&w.h>=44),'44px bridge targets: '+profile);
-  await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+  assert.equal(ways.length,7,'The bridge shows its seven ways: '+profile);assert(ways.every(w=>w.w>=44&&w.h>=44),'44px bridge targets: '+profile);
+  await page.locator(width>760?'.voyage-spot[data-screen-for="projects"]':'.voyage-room-list a[href="#projects"]').click();
+  await page.waitForFunction(()=>document.querySelector('#screen-projects').open&&location.hash==='#projects');
   const task=page.locator('#px-complete-preview');await task.click();assert.equal(await task.getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#px-preview-due').innerText(),'01');await task.click();assert.equal(await page.locator('#px-preview-due').innerText(),'02');
   const details=page.locator('.px-card-camera summary');await details.focus();await page.keyboard.press('Enter');assert(await page.locator('.px-card-camera details').getAttribute('open')!==null);await page.keyboard.press('Enter');
   assert.equal(await page.locator('.px-private-course').getAttribute('href'),'https://sjoskolan-course-review.nils-johansson.chatgpt.site');assert.equal(await page.locator('.px-card-camera .px-mascot').getAttribute('src'),'/assets/mascots/tetsuo-teach.webp');
@@ -77,6 +81,11 @@ try{
   await page.screenshot({path:resolve(out,'desktop-below.png')});
   await page.locator('#bridge').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.voyage').dataset.chapterOn==='bridge'&&!document.querySelector('.voyage').hasAttribute('data-under'));
   await page.waitForTimeout(1400);await page.screenshot({path:resolve(out,'desktop-bridge.png')});
+  // A screen opens from its fitting, and Back and Close each put it away again.
+  await page.locator('.voyage-spot[data-screen-for="blog"]').click();await page.waitForFunction(()=>document.querySelector('#screen-blog').open);await page.waitForTimeout(900);await page.screenshot({path:resolve(out,'desktop-journal-screen.png')});
+  await page.goBack();await page.waitForFunction(()=>!document.querySelector('dialog[open]')&&!location.hash);
+  await page.locator('.voyage-spot[data-screen-for="about"]').click();await page.waitForFunction(()=>document.querySelector('#screen-about').open);
+  await page.locator('#screen-about .voyage-screen-close').click();await page.waitForFunction(()=>!document.querySelector('dialog[open]')&&!location.hash);
   assert.deepEqual(errors,[]);results.push({profile:'desktop-motion',result:'passed'});await context.close();}
  const blocked=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark',reducedMotion:'reduce'});
  await blocked.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new Error('Storage unavailable');}}));

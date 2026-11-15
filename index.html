@@ -55,15 +55,17 @@
             <canvas class="voyage-sea" data-voyage-sea aria-hidden="true"></canvas>
           </div>
           <img class="voyage-plate" data-plate="bridge" src="/assets/office-voyage/bridge-1920.webp" srcset="/assets/office-voyage/bridge-960.webp 960w, /assets/office-voyage/bridge-1920.webp 1920w" sizes="100vw" width="1920" height="1080" alt="The Chisum’s wheelhouse: the wooden wheel, the consoles and their screens, the gauges overhead and the sea through the windows" loading="lazy" decoding="async">
+          <div class="voyage-shade" aria-hidden="true"></div>
           <div class="voyage-room" data-voyage-room>
+            <a class="voyage-spot" style="--x:57.5%;--y:61%" href="#projects" data-screen-for="projects"><span>The radar</span><b>Every project</b></a>
+            <a class="voyage-spot" style="--x:13%;--y:62%" href="#blog" data-screen-for="blog"><span>The chart</span><b>The journal</b></a>
+            <a class="voyage-spot" style="--x:31%;--y:29%" href="#locations" data-screen-for="locations"><span>The ship’s clock</span><b>Where I work</b></a>
+            <a class="voyage-spot" style="--x:80%;--y:71%" href="#about" data-screen-for="about"><span>The chair</span><b>About Nils</b></a>
             <a class="voyage-spot" style="--x:40%;--y:78%" href="/johansson-world/"><span>The wheel</span><b>Johansson World</b></a>
-            <a class="voyage-spot" style="--x:57.5%;--y:61%" href="#projects"><span>The radar</span><b>Every project</b></a>
             <a class="voyage-spot" style="--x:60%;--y:29%" href="/maintenance-demo/"><span>The alarm panel</span><b>Maintenance Desk</b></a>
             <a class="voyage-spot voyage-spot-left" style="--x:91%;--y:52%" href="/ferry/"><span>The wing</span><b>Walk aboard her</b></a>
-            <a class="voyage-spot" style="--x:13%;--y:62%" href="#blog"><span>The chart</span><b>The journal</b></a>
           </div>
         </div>
-        <div class="voyage-shade" aria-hidden="true"></div>
       </div>
 
       <nav class="voyage-rail" aria-label="Chapters">
@@ -135,13 +137,15 @@
       <section class="voyage-chapter voyage-bridge" id="bridge" data-chapter="bridge" aria-labelledby="bridge-title">
         <p class="voyage-label">05 · The bridge</p>
         <h2 id="bridge-title">Take the bridge.</h2>
-        <p>Everything here is within reach of the wheel. Choose where to go.</p>
+        <p>Everything aboard is within reach of the wheel. Touch a screen, a dial or the chair.</p>
         <ul class="voyage-links voyage-room-list">
-          <li><a href="/johansson-world/">The wheel <span>Johansson World</span></a></li>
           <li><a href="#projects">The radar <span>Every project</span></a></li>
+          <li><a href="#blog">The chart <span>The journal</span></a></li>
+          <li><a href="#locations">The ship’s clock <span>Where I work</span></a></li>
+          <li><a href="#about">The chair <span>About Nils</span></a></li>
+          <li><a href="/johansson-world/">The wheel <span>Johansson World</span></a></li>
           <li><a href="/maintenance-demo/">The alarm panel <span>Maintenance Desk</span></a></li>
           <li><a href="/ferry/">The wing <span>Walk aboard her</span></a></li>
-          <li><a href="#blog">The chart <span>The journal</span></a></li>
         </ul>
         <p class="voyage-kana" lang="ja" aria-hidden="true">船橋</p>
       </section>
@@ -167,8 +171,6 @@
       </div>
     </section>
 
-    <hr class="section-divider">
-
     <!-- Blog — the same English-first feed as /blog/ -->
     <section class="section section-alt" id="blog">
       <span id="journal" aria-hidden="true"></span>
@@ -177,9 +179,6 @@
         <div class="read-all"><a href="/blog/">Browse all articles →</a></div>
       </div>
     </section>
-
-    <!-- Dashed divider -->
-    <hr class="section-divider">
 
     <!-- About — gradient + centered -->
     <section class="section section-mint" id="about">
@@ -206,9 +205,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Dashed divider -->
-    <hr class="section-divider">
 
     <!-- Locations — map cards -->
     <section class="section" id="locations">

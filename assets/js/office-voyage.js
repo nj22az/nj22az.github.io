@@ -128,5 +128,83 @@
     return { toggle: toggle };
   })();
 
+  /* ── The ship's screens: the Office's sections, each shown on a fitting of her bridge ─────────────────────────
+     Without this script the sections stay on the page as they were. With it each moves into a display aboard; a link
+     to it (from a fitting, the menu, the chapters) opens that display, the bridge leans in toward its fitting behind
+     it, Escape or Close puts it away, and the browser's Back does too. */
+  var SCREENS = {
+    projects: { fitting: 'The radar', title: 'Every project' },
+    blog: { fitting: 'The chart', title: 'The journal' },
+    about: { fitting: 'The chair', title: 'About Nils' },
+    locations: { fitting: 'The ship’s clock', title: 'Where I work' }
+  };
+  var ALIAS = { journal: 'blog' };
+  var screens = {}, openKey = null, opener = null;
+  var main = document.getElementById('main-content') || document.body;
+  Object.keys(SCREENS).forEach(function (key) {
+    var section = document.getElementById(key);
+    if (!section) return;
+    var d = document.createElement('dialog');
+    d.className = 'voyage-screen';
+    d.id = 'screen-' + key;
+    d.setAttribute('aria-label', SCREENS[key].fitting + ': ' + SCREENS[key].title);
+    d.innerHTML = '<div class="voyage-bezel"><div class="voyage-screen-bar"><span>' + SCREENS[key].fitting + '</span><b>' + SCREENS[key].title +
+      '</b><button type="button" class="voyage-screen-close" aria-label="Close ' + SCREENS[key].title + '">Close</button></div><div class="voyage-display"></div></div>';
+    d.querySelector('.voyage-display').appendChild(section);
+    d.querySelector('.voyage-screen-close').addEventListener('click', function () { closeScreen(true); });
+    main.appendChild(d);
+    screens[key] = d;
+  });
+  document.documentElement.classList.add('voyage-screens');
+
+  function keyFor(hash) { var id = (hash || '').replace(/^#/, ''); id = ALIAS[id] || id; return screens[id] ? id : null; }
+  function openScreen(key, push, from) {
+    if (!screens[key]) return;
+    if (openKey && openKey !== key) screens[openKey].close();
+    // The bridge leans in toward the fitting that shows it.
+    var spot = voyage.querySelector('[data-screen-for="' + key + '"]');
+    voyage.style.setProperty('--ox', spot ? spot.style.getPropertyValue('--x') : '50%');
+    voyage.style.setProperty('--oy', spot ? spot.style.getPropertyValue('--y') : '50%');
+    if (!openKey) opener = from || document.activeElement;
+    openKey = key;
+    voyage.setAttribute('data-screen', key);
+    document.documentElement.classList.add('voyage-screen-open');
+    if (!screens[key].open) screens[key].show();
+    screens[key].querySelector('.voyage-display').scrollTop = 0;
+    screens[key].querySelector('.voyage-screen-close').focus({ preventScroll: true });
+    if (push) history.pushState({ voyageScreen: key }, '', '#' + key);
+  }
+  function closeScreen(fromButton) {
+    if (!openKey) return;
+    // A screen opened by a click on this page was a step in the history: Back takes it away, and so does Close.
+    if (fromButton && history.state && history.state.voyageScreen === openKey) { history.back(); return; }
+    screens[openKey].close();
+    openKey = null;
+    voyage.removeAttribute('data-screen');
+    document.documentElement.classList.remove('voyage-screen-open');
+    if (keyFor(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+    if (opener && opener.focus) opener.focus({ preventScroll: true });
+    opener = null;
+  }
+  // Caught before the site's own smooth scrolling (shared.js), which would scroll to a section that is now on a screen.
+  window.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var key = keyFor(a.getAttribute('href'));
+    if (!key) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openScreen(key, true, a);
+  }, true);
+  // Escape belongs to whatever has the keyboard: the menu or the calendar in the header close themselves; the screen only when it is the one in use.
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && openKey && !(e.target.closest && e.target.closest('#site-nav, #menu-overlay'))) { e.preventDefault(); closeScreen(true); } });
+  window.addEventListener('popstate', function () {
+    var key = keyFor(location.hash);
+    if (key) openScreen(key, false); else if (openKey) closeScreen(false);
+  });
+  // A link from elsewhere to a section (/#projects) opens its screen.
+  var first = keyFor(location.hash);
+  if (first) openScreen(first, false);
+
   update();
 })();

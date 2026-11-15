@@ -26,6 +26,20 @@ its code or art was taken. Abyssal Garden is MIT; only its mood was used (the un
 - `tools/office-home/review.browser.mjs` checks the six chapters, the bridge's five ways (44 px), and (motion allowed) that
   the water rises and its light is drawn. Passes locally on every profile.
 
+## The ship's screens (15 November, later)
+
+The owner: "the feed that comes under should be worked into the ship, like if I click a computer on the bridge … I will
+come to the place I want". So nothing follows the voyage any more: the Office's sections are screens aboard
+(`assets/js/office-voyage.js`, *The ship's screens*). The radar shows the projects (`#projects`), the chart the journal
+(`#blog`, `#journal`), the ship's clock where Nils works (`#locations`), the chair About (`#about`). The wheel (Johansson
+World), the alarm panel (Maintenance Desk) and the wing (walk aboard, `/ferry/`) lead off the page. Every link to those
+anchors (the header's Projects, the chapters' links, `/#projects` from elsewhere) opens its screen; the bridge leans in
+toward the fitting behind it; Escape, Close and the browser's Back put it away. Without JavaScript the sections stay on
+the page as before. Fixed on the way: the bridge chapter's box lay over the fittings, so on a desktop they could not be
+clicked; empty chapter space now lets the pointer through. The review opens the projects from `/#projects`, closes them,
+finds the bridge's seven ways (44 px) and opens the radar from the bridge; with motion, opens the chart, goes Back, opens
+the chair and Closes it. Passes locally on every profile.
+
 The earlier, painted version is recorded below.
 
 ---
