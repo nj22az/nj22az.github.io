@@ -1,6 +1,8 @@
 # Handover: the Office homepage as a painting · 13–15 November 2026
 
-**State: on branch `claude/zealous-bell-teears`, not on `main`, not published. The owner has not yet seen or approved it.**
+**State: on branch `claude/zealous-bell-teears`. A preview is live at <https://nj22az.github.io/temp/office/> (main `66a8de0`, on the owner's yes of 15 November to "add /temp/office/": new files only, not indexed, the live homepage unchanged). The owner is deciding whether it replaces the homepage.**
+
+To replace the homepage, on the owner's word only: bring `index.html`, `tools/office-home/review.browser.mjs` and `.github/workflows/office-home.yml` from the branch to `main` (the other files are already there), then remove `temp/office/`. To drop it: remove `temp/office/`, `css/office-painting.css`, `assets/js/office-painting*.js` and `assets/office-painting/` from `main`.
 
 The owner asked (13 November) for the Office of Nils Johansson to "look like an interactive painting really with clear
 sections", populated with good assets from Johansson World, more modular, **without changing any Sjöskolan link**, and
