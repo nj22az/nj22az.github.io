@@ -9,6 +9,19 @@ const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.web
 function serve(before=false){const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new URL(req.url,'http://localhost').pathname),relative=path.endsWith('/')?path+'index.html':path,file=resolve(root,'.'+relative);if(!file.startsWith(root+sep))throw Error();let b;if(before)try{b=await readFile(resolve(baseline,'.'+relative));}catch{}b??=await readFile(file);res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream'});res.end(b);}catch{res.writeHead(404);res.end();}});return new Promise(r=>server.listen(0,'127.0.0.1',()=>r({server,url:'http://127.0.0.1:'+server.address().port})));}
 const old=await serve(true),current=await serve(),browser=await chromium.launch({headless:true,executablePath:process.env.OFFICE_CHROMIUM_PATH || undefined,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});const results=[];
 async function pageFor(context,url){const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());return page;}
+async function reviewFooter(page, profile) {
+  const footer = page.locator('#site-footer');
+  const nav = footer.getByRole('navigation', {name: 'Footer navigation'});
+  assert.deepEqual(await nav.locator('p').allTextContents(), ['Office', 'Explore', 'Resources']);
+  assert.equal(await nav.getByRole('link', {name: 'About Nils Johansson'}).getAttribute('href'), '/#about');
+  assert.equal(await nav.getByRole('link', {name: 'Digital downloads'}).getAttribute('href'), '/animation-studio/#digital-downloads');
+  assert(await footer.locator('a').evaluateAll(links => links.every(link => {
+    const rect = link.getBoundingClientRect();
+    return rect.width >= 44 && rect.height >= 44 && rect.left >= 0 && rect.right <= innerWidth;
+  })), 'Footer targets fit and meet the 44px minimum: '+profile);
+  await footer.getByRole('link', {name: 'Back to top'}).click();
+  await page.waitForFunction(() => scrollY === 0);
+}
 try{
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await pageFor(context,old.url);await page.goto(old.url);await page.locator('.px-card').first().waitFor();const beforeHeight=await page.locator('#project-grid').evaluate(el=>el.getBoundingClientRect().height);await context.close();
  for(const [profile,width,height,zoom] of [['desktop',1440,1000,1],['ipad-portrait',768,1024,1],['ipad-landscape',1024,768,1],['phone',390,844,1],['small-phone',320,844,1],['desktop-200pct',720,500,2]]){
@@ -61,7 +74,8 @@ try{
   assert(!layout.overflow,'No horizontal overflow: '+profile);assert(layout.targets.every(t=>t.width>=44&&t.height>=44),'44px controls: '+profile);
   if(profile==='desktop'){assert(layout.gridHeight<beforeHeight*.8,'Substantially shorter project grid');}
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-home.png')});await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-projects.png')});
-  const toolsLink=page.getByRole('link',{name:'Tools & Learning',exact:true}).filter({visible:true}).last();
+  await reviewFooter(page, profile);
+  const toolsLink=page.locator('.office-actions').getByRole('link',{name:'Tools & Learning',exact:true});
   assert.equal(await toolsLink.getAttribute('href'),'#projects');
   await page.getByRole('link',{name:'Enter the Studio'}).click();
   await page.waitForURL('**/animation-studio/');
@@ -71,7 +85,8 @@ try{
   await page.waitForFunction(()=>[...document.querySelectorAll('main img')].every(img=>img.complete&&img.naturalWidth>0));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Studio page fits the viewport: '+profile);
   assert(await page.locator('.studio-actions a').evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)),'Studio links have 44px targets: '+profile);
-  await page.getByRole('link',{name:'Digital downloads'}).click();
+  await reviewFooter(page, profile);
+  await page.locator('.studio-intro').getByRole('link',{name:'Digital downloads'}).click();
   await page.waitForURL('**/animation-studio/#digital-downloads');
   const downloads=page.locator('.studio-product a[download]');
   assert.equal(await downloads.count(),3);
@@ -98,7 +113,7 @@ try{
   await page.locator('.pswp--open').waitFor();
   await page.keyboard.press('Escape');
   await page.locator('.pswp--open').waitFor({state:'hidden'});
-  await page.getByRole('link',{name:'Digital downloads'}).click();
+  await page.locator('.studio-intro').getByRole('link',{name:'Digital downloads'}).click();
   assert(await downloads.evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)),'Downloads have 44px targets: '+profile);
   if(profile==='desktop'){
    for(const link of await downloads.all()){
@@ -117,6 +132,11 @@ try{
     assert.equal(await page.locator('.site-shortcuts [aria-current=page]').getAttribute('href'),section);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Content page fits the viewport: '+section+' '+profile);
     assert(await page.locator('.site-shortcuts a').evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)));
+    if(section==='/blog/'){
+      assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity');
+      assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave','Blog preserves the saved theme for other pages');
+    }
+    await reviewFooter(page, profile);
     if(profile==='desktop'||profile==='small-phone'){
       await page.screenshot({path:resolve(out,profile+(section==='/blog/'?'-blog.png':'-hotels.png'))});
     }

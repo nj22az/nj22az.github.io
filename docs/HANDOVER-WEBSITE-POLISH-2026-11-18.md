@@ -36,3 +36,13 @@ Studio projects and digital downloads share their section heading scale, divider
 Chromium verification covered 320, 390, 768, 820, 1024 and 1440 CSS pixels. Checks covered viewport fit, the porthole and original artwork, keyboard access to preview galleries, and the three published ZIP downloads. A physical Safari device was outside this review.
 
 The changes went live on `main` in [`7b26260`](https://github.com/nj22az/nj22az.github.io/commit/7b26260ba99de5054d2dffe6f6be6eee73c6b22e). The public Studio HTML and CSS matched that commit byte-for-byte. The same Studio files are carried into `development` with this release record.
+
+## Office layout and footer
+
+The homepage, Studio, Blog index and Hotels register share a compact footer with Office, Explore and Resources links, copyright and a Back to top control. About and Locations lead to the existing homepage sections. LinkedIn links to Nils Johansson's public professional profile. The site has no careers page.
+
+The homepage brings Tools & Learning forward by shortening the opening, the Studio panel and the section spacing. The Studio uses a one-sentence introduction and brings Chisum and the downloads closer to the top. The Blog index uses the Office palette and places the harbour stamp beside its heading on wide screens. Hotels uses the shared spacing and footer through its existing stylesheet and script references. The individual apps and article pages retain their existing layouts.
+
+The browser review covers all four pages, footer keyboard and touch targets, site navigation, the Office appearance preference, Studio previews and the three ZIP downloads. The comparison uses the public main baseline `7b26260ba99de5054d2dffe6f6be6eee73c6b22e`. Production and development updates use scoped commits. Browser checks use Chromium viewports, including a 200% zoom equivalent. Physical Safari remains unverified.
+
+[Production release `d8b0d1b`](https://github.com/nj22az/nj22az.github.io/commit/d8b0d1b07fe5629a9fa64e72f1de30aa514d73ea) is live. Seven served HTML, CSS and JavaScript files matched the release blobs. The Hotels HTML was verified against its tracked source and loads the verified shared assets. All six local Chromium profiles passed. At 390 CSS pixels, Tools & Learning and the first Studio project moved up by 74 and 86 pixels respectively. The Office and Studio footer routes to About and Digital downloads were followed in the browser.

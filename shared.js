@@ -350,6 +350,44 @@
     var footer = $("#site-footer");
     if (!footer) return;
 
+    if (document.body.classList.contains("site-family")) {
+      var groups = [
+        { title: "Office", links: [
+          ["About Nils Johansson", "/#about"],
+          ["Locations", "/#locations"],
+          ["LinkedIn", CONFIG.author.social.linkedin],
+          ["GitHub", CONFIG.author.social.github]
+        ] },
+        { title: "Explore", links: [
+          ["Tools &amp; Learning", "/#projects"],
+          ["Animation Studio", "/animation-studio/"],
+          ["Blog", "/blog/"],
+          ["Hotels &amp; Parking", "/hotels/"]
+        ] },
+        { title: "Resources", links: [
+          ["Digital downloads", "/animation-studio/#digital-downloads"],
+          ["Shop", CONFIG.author.social.store],
+          ["Rights &amp; credits", "https://github.com/nj22az/nj22az.github.io/blob/main/README.md#ownership-and-reuse"]
+        ] }
+      ];
+      var currentPath = location.pathname.replace(/index\.html$/, "");
+      var top = document.querySelector("main[id]");
+      footer.innerHTML =
+        '<div class="office-footer-inner">' +
+          '<a class="office-footer-brand" href="/">The Office of<br><strong>Nils Johansson</strong></a>' +
+          '<nav class="office-footer-nav" aria-label="Footer navigation">' + groups.map(function (group) {
+            return '<div><p>' + group.title + '</p><ul>' + group.links.map(function (entry) {
+              var current = currentPath === entry[1] ? ' aria-current="page"' : '';
+              return '<li><a href="' + entry[1] + '"' + current + '>' + entry[0] + '</a></li>';
+            }).join("") + '</ul></div>';
+          }).join("") + '</nav>' +
+          '<div class="office-footer-bottom"><span>' + CONFIG.site.copyright + '</span>' +
+            (top ? '<a href="#' + top.id + '">Back to top <span aria-hidden="true">&uarr;</span></a>' : '') +
+          '</div>' +
+        '</div>';
+      return;
+    }
+
     var socialLinks = Object.keys(CONFIG.author.social).map(function (key) {
       var label = key.charAt(0).toUpperCase() + key.slice(1);
       return '<a href="' + CONFIG.author.social[key] + '" target="_blank" rel="noopener">' + label + '</a>';
