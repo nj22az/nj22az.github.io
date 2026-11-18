@@ -18,3 +18,9 @@ Verification on the main-based candidate:
 The file-level licences are linked from [third-party notices](../THIRD_PARTY_NOTICES.md).
 
 The production candidate also corrects the mobile selector that reserves room for the fixed header. The browser review checks that the first line of the homepage clears the header across all six profiles. Publication applies the scoped changes to the public site's `main`, which already includes the download packs.
+
+## Studio porthole
+
+The Studio introduction displays the original black sailor artwork on an ivory field with a brass ring and four fasteners. The phone layout gives the heading a full row and places the porthole beside the description. The frame is CSS around the original SVG.
+
+The Chromium check at 320, 390, 768 and 1440 CSS pixels passed. It verified the round frame, the logo's original colours, the spacing beside the description, viewport fit and the Digital downloads link. The 390 and 1440 screenshots were reviewed. The production candidate is based on `ebb9b0ff884bd658f343f1c9f978ac4f3ab2c22f`.
