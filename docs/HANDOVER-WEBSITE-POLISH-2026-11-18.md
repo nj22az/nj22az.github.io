@@ -6,6 +6,8 @@ The Studio keeps its black background and sailor logo. Its three download cards 
 
 The work was built on main e696c800732fe0857c39cde7ac4e5834f6974e34 for review on development, starting at 22704852bdaa7b5954f01309ad71fac39664d820. Development also receives the three previously published download packs and their handover because its base predates that release. The development branch has separate work in progress. For a production release, apply the scoped website change to current main and verify Pages against that commit.
 
+Reviewed development commit: [`6fb7522`](https://github.com/nj22az/nj22az.github.io/commit/6fb752212542c9ee89bde3b3d6b300785c2e7bff). GitHub Actions passed the [six-profile browser review](https://github.com/nj22az/nj22az.github.io/actions/runs/44263236507) and the [four-profile harbour review](https://github.com/nj22az/nj22az.github.io/actions/runs/44263236439) on that commit. The browser run includes screenshots.
+
 Verification on the main-based candidate:
 
 - Chromium Office review passed all six profiles at 1440, 1024, 768, 720, 390 and 320 CSS pixels, including a 200% zoom equivalent. Checked homepage navigation and preferences, Blog and Hotels navigation, project links, preview galleries, three byte-identical ZIP downloads, 44-pixel controls and viewport fit.
