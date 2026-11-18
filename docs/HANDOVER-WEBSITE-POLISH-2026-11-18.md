@@ -24,3 +24,9 @@ The production candidate also corrects the mobile selector that reserves room fo
 The Studio introduction displays the original black sailor artwork on an ivory field with a brass ring and four fasteners. The phone layout gives the heading a full row and places the porthole beside the description. The frame is CSS around the original SVG.
 
 The Chromium check at 320, 390, 768 and 1440 CSS pixels passed. It verified the round frame, the logo's original colours, the spacing beside the description, viewport fit and the Digital downloads link. The 390 and 1440 screenshots were reviewed. The production candidate is based on `ebb9b0ff884bd658f343f1c9f978ac4f3ab2c22f`.
+
+## Studio detail pass
+
+Studio projects and digital downloads share their section heading scale, divider spacing and card treatments. Each project uses the same primary button. The Chisum button sits with its description. File formats and ZIP sizes appear together above each product title, with their layout adapting to the card width.
+
+Chromium verification covered 320, 390, 768, 820, 1024 and 1440 CSS pixels. Checks covered viewport fit, the porthole and original artwork, keyboard access to preview galleries, and the three published ZIP downloads. A physical Safari device was outside this review.
