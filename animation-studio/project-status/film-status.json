@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-18T20:46:22+01:00",
+  "updatedAt": "2026-11-18T20:59:53+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -127,7 +127,7 @@
         {
           "title": "Stage numbers and props",
           "state": "checking",
-          "detail": "The closing chorus arm fix is installed. All 37 pictures passed. The posy fit is being checked, and the hat grips and remaining stage contacts are open.",
+          "detail": "The closing chorus fix is installed. The posy trial cleared bouquet-to-body clipping in all 37 pictures. The remaining grip contact and the rest of the shot are being checked.",
           "steps": [
             {
               "title": "Install the checked closing chorus arm pose",
@@ -156,7 +156,7 @@
         {
           "title": "Right hand and wrist",
           "state": "needs-work",
-          "detail": "One trial cleared the clipping but introduced sharp wrist turns. A smoother route is in testing.",
+          "detail": "An agent is preparing a steadier wrist-and-elbow pose for Thuận’s hand during the turn.",
           "steps": [
             {
               "title": "Measure clipping and wrist turns in the kick",
@@ -295,7 +295,7 @@
         {
           "title": "Join hands to shoulders",
           "state": "needs-work",
-          "detail": "The last trial had hidden shoulder clipping. A fit against the posed shoulders is in testing.",
+          "detail": "An agent is fitting all four links against the posed shoulders. Earlier trials still had overlap or visible gaps.",
           "steps": [
             {
               "title": "Clear glove and sleeve overlaps",
