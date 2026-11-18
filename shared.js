@@ -185,6 +185,10 @@
     var compactOffice = family || isHome || document.body.classList.contains("world-pages");
     var journalArticle = location.pathname.startsWith("/blog/");
     if (!nav.hasAttribute("data-static-nav")) {
+      var statusUrl = "/animation-studio/project-status/";
+      var statusShortcut = family && location.pathname.startsWith("/animation-studio/")
+        ? '<a class="site-button" href="' + statusUrl + '" aria-label="Project status"' + currentNavLocation(statusUrl) + '>Status</a>'
+        : "";
       var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Field Notes", "Field Notes", "article"] };
       var navLinks = CONFIG.navigation.filter(function (item) {
         return family ? compactLinks[item.id] : item.id !== "home" && !(journalArticle && item.id === "hotels");
@@ -204,6 +208,7 @@
           '<a href="/" class="nav-brand logo-seal">' + brand + '</a>' +
           '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '">' + navLinks + '</div>' +
           '<div class="nav-actions">' +
+            statusShortcut +
             '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
               (compactOffice ? '<span>More</span>' : icon("menu")) +
             '</button>' +
