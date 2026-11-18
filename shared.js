@@ -132,7 +132,7 @@
       localStorage.setItem(THEME_KEY, selectedTheme.id);
     }
     var themeColor = $('meta[name="theme-color"]');
-    if (themeColor) themeColor.setAttribute("content", selectedTheme.browserColor);
+    if (themeColor && !document.body.classList.contains("journal-site")) themeColor.setAttribute("content", selectedTheme.browserColor);
     updateThemeControls(selectedTheme);
   }
 
@@ -438,14 +438,6 @@
   function init() {
     buildNav();
     buildFooter();
-    var hotelHeader = $(".hotel-site.site-family .hotel-page-head");
-    if (hotelHeader) {
-      hotelHeader.insertAdjacentHTML("beforebegin",
-        '<nav class="hotel-journal-nav" aria-label="Hotel journal">' +
-          '<a href="/blog/">Reviews &amp; stories</a>' +
-          '<a href="/hotels/" aria-current="page">Hotel finder</a>' +
-        '</nav>');
-    }
     initSmoothScroll();
   }
 

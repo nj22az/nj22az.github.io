@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cobalt">
+<html lang="en" data-theme="clarity" data-theme-lock="clarity">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://nj22az.github.io/blog/the-torn-poster/">
   <meta property="og:image" content="https://nj22az.github.io/assets/comics/the-torn-poster/cover.webp">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#343ec9">
+  <meta name="theme-color" content="#f8f7f2">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
   <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon.png">
@@ -36,14 +36,21 @@
     .downloads a { display: inline-block; padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 999px; color: var(--ink); text-decoration: none; font-weight: 700; }
     .downloads a:hover { border-color: var(--border-hover); background: var(--surface-hover); }
   </style>
+<link rel="stylesheet" href="/css/site-family.css?v=journal-shell-1">
 </head>
-<body>
+<body class="site-family journal-site journal-article">
 
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <nav id="site-nav" class="site-nav"></nav>
 
-  <main id="main-content">
+  <main id="main-content" class="journal-article-content">
+    <nav class="hotel-journal-nav" aria-label="Hotel journal">
+      <a href="/blog/" aria-current="location">Reviews &amp; stories</a>
+      <a href="/hotels/">Hotel finder</a>
+    </nav>
+    <div class="journal-reading">
+
     <section class="page-hero">
       <div class="page-eyebrow">Johansson Town &middot; Maths, simply</div>
       <h1>The Torn Poster</h1>
@@ -84,12 +91,14 @@
         <p>Johansson Town is a storytelling game in the browser: <a href="/johansson-town/">walk the island</a> and meet Thuan, Nhung and Tetsuo yourself.</p>
       </article>
     </div>
+
+    </div>
   </main>
 
   <footer id="site-footer" class="site-footer"></footer>
 
   <script src="/config.js?v=blog-1"></script>
-  <script src="/shared.js?v=blog-1"></script>
+  <script src="/shared.js?v=journal-shell-1"></script>
 </body>
 </html>
 
