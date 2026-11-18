@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-18T16:19:36+01:00",
+  "updatedAt": "2026-11-18T16:52:06+01:00",
   "groups": [
     {
       "id": "foundation",
@@ -17,8 +17,8 @@
         {"title":"Lizzie’s right glove","state":"verified","detail":"The cuff and forearm edge were corrected and checked."},
         {"title":"Lizzie’s apron arm clearance","state":"verified","detail":"No clipping above the 1 mm threshold in 2,075 pictures. Her wrists keep their marks."},
         {"title":"Heart, hip and collar gestures","state":"needs-work","detail":"The contact trial reached the intended marks but reintroduced forearm clipping."},
-        {"title":"Stage footing","state":"verified","detail":"Installed after all 1,114 sampled supporting soles met the 0–3 mm target. The 58-row comparison found no new visible fault over 5 mm. Motion review is in progress."},
-        {"title":"Stage numbers and props","state":"needs-work","detail":"The posy handover, hat grips and remaining stage contacts are under review."}
+        {"title":"Stage footing","state":"verified","detail":"Installed. All 1,114 sampled supporting soles meet 0–3 mm. The cut check found no new visible fault over 5 mm. Neither of the two previews that show the soles has an obvious foot pop."},
+        {"title":"Stage numbers and props","state":"checking","detail":"The closing arm pose cleared its shot check. Its full-cut comparison is running. The posy handover and hat grips remain open."}
       ]
     },
     {
@@ -26,7 +26,7 @@
       "title": "Thuận and the fight",
       "items": [
         {"title":"Right hand and wrist","state":"needs-work","detail":"One trial cleared the clipping but introduced sharp wrist turns. A smoother route is in testing."},
-        {"title":"Shoes and sole shape","state":"checking","detail":"The black finish is approved. The new sole reached 1 mm below the street in the first trial. The next test measures support from the actual sole."},
+        {"title":"Shoes and sole shape","state":"needs-work","detail":"The black finish is approved. The latest shaped shoe trial still showed toe and sole faults, so it is awaiting refinement."},
         {"title":"Folded arms","state":"needs-work","detail":"The new route reduced clipping. The forearms and hands still need to clear the jacket and sleeves."},
         {"title":"Head movement and gaze","state":"needs-work","detail":"The head turn during the kick still exceeds the motion limit."},
         {"title":"Fight contacts and planted steps","state":"needs-work","detail":"Check the blows, the cloak, and the shorter reach across the full fight."},
@@ -37,7 +37,7 @@
       "id": "finale",
       "title": "Finale",
       "items": [
-        {"title":"Make the chorus readable","state":"checking","detail":"All six faces read in the tighter row trial. This staging still needs its final contact proof."},
+        {"title":"Make the chorus readable","state":"needs-work","detail":"All six faces read in the tighter row trial. The shoulder contacts still fail their fit check."},
         {"title":"Join hands to shoulders","state":"needs-work","detail":"The last trial had hidden shoulder clipping. A fit against the posed shoulders is in testing."}
       ]
     },
