@@ -9,3 +9,11 @@ The changes were designed on `main` at `5285a7a4f5936c90380d8b5599f472057ecf6d76
 Live HTTP checks returned 200 for Chisum, World, the Town game, Sakura and the Sakura browser demo. The World page contains the `downloads` anchor. The office review now verifies the studio route from the homepage, the three cards, six destination links, image loading, viewport fit and minimum target heights. The [development browser review](https://github.com/nj22az/nj22az.github.io/actions/runs/44246606310) passed all six profiles and its desktop and small phone studio screenshots were inspected. The [development harbour review](https://github.com/nj22az/nj22az.github.io/actions/runs/44246606437) passed. No physical-device test was performed.
 
 The reviewed development commit is `f7141c55ae72f66099549b4072aa737fe0ef0684`. The release was prepared from `main` with that change scoped to the studio and homepage. See the [release verification](https://github.com/nj22az/nj22az.github.io/blob/development/docs/HANDOVER-ANIMATION-STUDIO-2026-11-18.md) for the production commit and live verification.
+
+## Project status
+
+The owner asked for a dedicated Project status page in the Studio and authorised publishing it. The landing page links to `/animation-studio/project-status/`. The checklist for *The Fog Never Gave Him Back* shows verified totals for the whole film and each group. The browser requests `film-status.json` every minute while the page is visible and immediately when it becomes visible again. Status changes preserve expanded sections.
+
+The site update is scoped to `main` from `949e3dfa5d839560e60cfd875b6f1566ee7345f8`. The checklist begins at five of nineteen verified items. Update the JSON and the Stockholm timestamp when production evidence changes. Reserve “Verified” for a passed check. The page publishes progress text only.
+
+Chromium verified the landing-page link, shared navigation, progress values, and viewport fit at 1280 × 900 and 390 × 844. A simulated status update advanced the bar without reloading and preserved a collapsed section. No physical-device check was performed.

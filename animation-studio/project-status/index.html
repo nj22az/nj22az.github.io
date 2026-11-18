@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project status · Johansson Animation Studios</title>
+  <meta name="description" content="Follow the production checklist for The Fog Never Gave Him Back.">
+  <link rel="canonical" href="https://nj22az.github.io/animation-studio/project-status/">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="../johansson-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="../studio.css?v=office-density-1">
+  <link rel="stylesheet" href="/css/site-family.css?v=office-density-1">
+  <link rel="stylesheet" href="status.css">
+</head>
+<body class="studio-page site-family">
+  <a class="studio-skip" href="#status-content">Skip to project status</a>
+  <nav id="site-nav" class="site-nav"></nav>
+  <main id="status-content" class="studio-width project-status">
+    <header class="status-heading">
+      <a class="status-back" href="../">Johansson Animation Studios</a>
+      <h1>Project status</h1>
+    </header>
+    <article class="status-film" aria-labelledby="film-heading">
+      <div class="status-overview">
+        <div class="status-overview-heading">
+          <h2 id="film-heading">The Fog Never Gave Him Back</h2>
+          <output id="status-count" role="status"></output>
+        </div>
+        <progress id="status-overall" max="1" value="0" aria-label="Verified production checklist items" hidden></progress>
+        <p id="status-update" class="status-update" role="status">Loading the production checklist…</p>
+        <noscript><p>The checklist updates with JavaScript. <a href="film-status.json">Read the current status data</a>.</p></noscript>
+      </div>
+      <div id="status-checklist" class="status-checklist" aria-label="Production checklist" aria-busy="true"></div>
+    </article>
+  </main>
+  <footer id="site-footer" class="site-footer"><a href="/">The Office of Nils Johansson</a></footer>
+  <script src="/config.js?v=20261118-animation-studio"></script>
+  <script src="/shared.js?v=office-density-1"></script>
+  <script src="status.js" defer></script>
+</body>
+</html>

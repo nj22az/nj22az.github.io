@@ -1,0 +1,120 @@
+.project-status {
+  max-width: 900px;
+  padding-block: clamp(24px, 5vw, 64px);
+}
+
+.status-heading {
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.status-back {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--studio-muted);
+}
+
+.status-heading h1 {
+  font-size: clamp(2rem, 6vw, 4rem);
+  letter-spacing: -.045em;
+  line-height: 1.08;
+}
+
+.status-overview,
+.status-group {
+  background: var(--surface-card);
+  border: 1px solid var(--studio-line);
+  border-radius: 12px;
+}
+
+.status-overview {
+  padding: clamp(16px, 4vw, 32px);
+  margin-bottom: 14px;
+}
+
+.status-overview-heading,
+.status-group-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.status-overview h2 {
+  font-size: clamp(1.5rem, 3.8vw, 2.3rem);
+  letter-spacing: -.025em;
+  line-height: 1.15;
+}
+
+.status-overview progress,
+.status-group progress {
+  display: block;
+  width: 100%;
+  height: .5rem;
+  margin-block: 10px;
+  appearance: none;
+  color: var(--accent);
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: 999px;
+  accent-color: var(--accent);
+}
+
+.status-overview progress[hidden] { display: none; }
+.status-film progress::-webkit-progress-bar { background: var(--surface-hover); border-radius: 999px; }
+.status-film progress::-webkit-progress-value { background: var(--accent); border-radius: 999px; }
+.status-film progress::-moz-progress-bar { background: var(--accent); border-radius: 999px; }
+
+.status-update,
+.status-item p { color: var(--studio-muted); font-size: .9rem; }
+
+.status-checklist {
+  display: grid;
+  gap: 12px;
+}
+
+.status-group {
+  padding-inline: clamp(14px, 4vw, 24px);
+}
+
+.status-group summary {
+  display: list-item;
+  min-height: 44px;
+  padding-block: 12px;
+  cursor: pointer;
+}
+
+.status-group summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.status-group-heading { display: inline-flex; width: calc(100% - 1.5rem); }
+.status-group-title { font-weight: 650; }
+.status-count { color: var(--studio-muted); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.status-group progress { height: .32rem; margin-block: 0 8px; }
+
+.status-items {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.status-item {
+  padding-block: 12px;
+  border-top: 1px solid var(--studio-line);
+}
+
+.status-item-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 12px;
+}
+
+.status-item-state { color: var(--studio-muted); font-size: .82rem; white-space: nowrap; }
+.status-item-state[data-state="verified"] { color: #a9d6b0; }
+.status-item-state[data-state="checking"] { color: var(--accent); }
+.status-item-state[data-state="needs-work"] { color: #efaa98; }
