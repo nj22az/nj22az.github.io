@@ -1,5 +1,7 @@
 # Website handover · 18 November 2026
 
+The [Chisum boarding shortcuts handover](ferry/HANDOVER-CODEX-BOARDING-2026-11-18.md) covers direct entry to the wheelhouse and the stern ramp.
+
 The [Animation Studio section and homepage audit](docs/HANDOVER-ANIMATION-STUDIO-2026-11-18.md) cover the studio landing page, homepage navigation, project links and publication status.
 
 The [Studio Digital Downloads handover](docs/HANDOVER-STUDIO-DOWNLOADS-2026-11-18.md) covers the public template packs and download checks.

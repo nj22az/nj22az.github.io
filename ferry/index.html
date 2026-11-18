@@ -39,6 +39,14 @@ header.title a { pointer-events: auto; color: var(--muted); font-size: 13px; tex
 header.title a:hover { color: var(--accent); }
 header.title h1 { margin: 4px 0 2px; font-size: clamp(20px, 3vw, 28px); letter-spacing: -0.01em; }
 header.title p { margin: 0; color: var(--muted); font-size: 14px; }
+.boarding { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+header.title .boarding a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); font-weight: 650;
+}
+header.title .boarding a:hover { border-color: var(--accent); color: var(--accent); }
+header.title .boarding a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+header.title .boarding-note { width: fit-content; padding: 4px 8px; border-radius: 6px; background: var(--panel); font-size: 12.5px; }
 
 #status { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100vw - 48px)); margin: 0; text-align: center; color: var(--muted); font-size: 15px; line-height: 1.45; }
 body.ready #status { display: none; }
@@ -275,6 +283,11 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
 <header class="title">
   <a href="/">← The Office of Nils Johansson</a>
   <h1>Chisum</h1>
+  <nav id="boarding" class="boarding orbit-only" aria-label="Boarding shortcuts">
+    <a href="?aboard=bridge" data-boarding="bridge" data-room="room:bridge:wheelhouse">Go to the bridge</a>
+    <a href="?aboard=ramp" data-boarding="ramp" data-room="room:main:stern-ramp" aria-describedby="boarding-note">Go to the stern ramp</a>
+  </nav>
+  <p id="boarding-note" class="boarding-note orbit-only">You can lower and raise the stern ramp.</p>
   <div id="help" hidden>
   <p class="orbit-only">A 125 m ro-ro freight ferry, taken apart deck by deck. Drag to turn her, scroll or pinch to zoom, double-click to look closer, tap a room or a fitting to name it, or walk aboard.</p>
   <p id="hint" class="walk-only"><span class="keys">W A S D or the arrow keys to walk, drag to look round, click a fitting to see what it is, Shift to go faster, the wheel or + and - to zoom (0 for the normal view), F at a ladder, Q and E for the deck below and above, 1 to 5 for a deck, M for the deck plan, Esc to leave.</span><span class="touch">Left thumb to walk, drag anywhere else to look round, two fingers to zoom in and out, tap a fitting to see what it is, tap the plan for the whole deck. At a ladder a button takes it.</span></p>
@@ -373,6 +386,44 @@ body.walking header.title h1, body.walking header.title a { color: #fff; text-sh
 </div>
 
 <script type="module" src="./app.js"></script>
+<script>
+(() => {
+  const boarding = document.getElementById('boarding');
+  const walk = document.getElementById('walk');
+  const travel = document.getElementById('travel');
+  const initial = new URLSearchParams(location.search).get('aboard');
+  let destination = [...boarding.querySelectorAll('[data-boarding]')].find(link => link.dataset.boarding === initial);
+
+  // Use the viewer's own Walk aboard and Go to controls once it has built the ship.
+  function board() {
+    if (!destination || !document.body.classList.contains('ready')) return;
+    const link = destination;
+    destination = null;
+    if (walk.getAttribute('aria-pressed') !== 'true') walk.click();
+    travel.value = link.dataset.room;
+    if (!travel.value) {
+      document.getElementById('what').textContent = 'This boarding location is unavailable.';
+      return;
+    }
+    travel.dispatchEvent(new Event('change', { bubbles: true }));
+    if (link.dataset.boarding === 'ramp') document.querySelector('#rail [data-open="stern-ramp"][aria-expanded="false"]')?.click();
+  }
+
+  const ready = new MutationObserver(() => {
+    if (!document.body.classList.contains('ready')) return;
+    ready.disconnect();
+    board();
+  });
+  ready.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  boarding.addEventListener('click', event => {
+    const link = event.target.closest('a[data-boarding]');
+    if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    destination = link;
+    board();
+  });
+})();
+</script>
 <script src="./offline-files.js"></script>
 <script src="./offline.js"></script>
 </body>
