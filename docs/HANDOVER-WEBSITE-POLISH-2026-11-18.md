@@ -28,3 +28,11 @@ The owner asked to implement the recommendations. The scoped design was publishe
 The owner requested the original black sailor logo in a round porthole. The [published update](https://github.com/nj22az/nj22az.github.io/commit/5d0aa74a68c1a19dc8081504f709d251a8ee469a) adds a brass rim and an ivory face in the Studio intro. On phones the title has a full row, with the porthole beside the description. The original SVG is used directly.
 
 Local Chromium passed at 320, 390, 768 and 1440 CSS pixels. The 390 and 1440 layouts were visually checked. [GitHub Pages deployed successfully](https://github.com/nj22az/nj22az.github.io/actions/runs/44268720139), and the live Studio HTML and CSS both matched the commit. No physical device was used for testing.
+
+## Studio detail pass
+
+Studio projects and digital downloads share their section heading scale, divider spacing and card treatments. Each project uses the same primary button. The Chisum button sits with its description. File formats and ZIP sizes appear together above each product title, with their layout adapting to the card width.
+
+Chromium verification covered 320, 390, 768, 820, 1024 and 1440 CSS pixels. Checks covered viewport fit, the porthole and original artwork, keyboard access to preview galleries, and the three published ZIP downloads. A physical Safari device was outside this review.
+
+The changes went live on `main` in [`7b26260`](https://github.com/nj22az/nj22az.github.io/commit/7b26260ba99de5054d2dffe6f6be6eee73c6b22e). The public Studio HTML and CSS matched that commit byte-for-byte. The same Studio files are carried into `development` with this release record.
