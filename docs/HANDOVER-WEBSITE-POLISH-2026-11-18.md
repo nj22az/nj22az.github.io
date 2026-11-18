@@ -46,3 +46,13 @@ The homepage brings Tools & Learning forward by shortening the opening, the Stud
 The browser review covers all four pages, footer keyboard and touch targets, site navigation, the Office appearance preference, Studio previews and the three ZIP downloads. The comparison uses the public main baseline `7b26260ba99de5054d2dffe6f6be6eee73c6b22e`. Production and development updates use scoped commits. Browser checks use Chromium viewports, including a 200% zoom equivalent. Physical Safari remains unverified.
 
 [Production release `d8b0d1b`](https://github.com/nj22az/nj22az.github.io/commit/d8b0d1b07fe5629a9fa64e72f1de30aa514d73ea) is live. Seven served HTML, CSS and JavaScript files matched the release blobs. The Hotels HTML was verified against its tracked source and loads the verified shared assets. All six local Chromium profiles passed. At 390 CSS pixels, Tools & Learning and the first Studio project moved up by 74 and 86 pixels respectively. The Office and Studio footer routes to About and Digital downloads were followed in the browser.
+
+## Hotel reviews and stories
+
+The Blog is the editorial landing page for hotel reviews and occasional stories. Latest, Hotel reviews and Other articles filter the shared chronological catalogue. The Office homepage uses the same entries. A review's Parking details link opens the matching record in the Hotels finder. The finder links to the editorial review where one exists.
+
+The primary navigation treats the finder as part of Blog. Both pages use the same palette and a section navigation row for Reviews & stories and Hotel finder. The existing finder and article URLs are preserved. The finder receives the changes through its existing shared CSS and JavaScript, leaving the generated register and its data in the normal build workflow. The static Blog feed has links to the five registered reviews and the existing stories and engineering articles.
+
+The browser review checks all six screen profiles, the review and article filters, the finder and Blog navigation, and the paid-parking Scandic Rosendahl round trip. It also checks the static Blog with JavaScript disabled. The catalogue test covers chronology, WordPress deduplication and links. This change is based on the published Office release `d8b0d1b07fe5629a9fa64e72f1de30aa514d73ea`. Physical Safari remains unverified.
+
+[Production release `14a99be`](https://github.com/nj22az/nj22az.github.io/commit/14a99be2f15a15189685166140ca16ec3c79f7ac) is live. The homepage, Blog and finder markup and the shared CSS and JavaScript matched the release, including the finder’s existing asset URLs. All six Chromium profiles and the JavaScript-disabled Blog passed. All five parking links match finder record IDs and the Scandic Rosendahl round trip passed.

@@ -126,25 +126,59 @@ try{
    }
   }
   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:resolve(out,profile+'-studio.png'),fullPage:true});
-  for(const [linkName, section] of [['Blog','/blog/'],['Hotels & Parking','/hotels/']]){
-    await page.getByRole('navigation',{name:'Primary navigation'}).getByRole('link',{name:linkName,exact:true}).click();
+  for(const section of ['/blog/','/hotels/']){
+    const journal = section==='/blog/';
+    const nav = journal ? 'Primary navigation' : 'Hotel journal';
+    await page.getByRole('navigation',{name:nav}).getByRole('link',{name:journal?'Blog':'Hotel finder',exact:true}).click();
     await page.waitForURL('**'+section);
-    assert.equal(await page.locator('.site-shortcuts [aria-current=page]').getAttribute('href'),section);
+    assert.equal(await page.locator('.site-shortcuts [aria-current]').getAttribute('href'),'/blog/');
+    assert.equal(await page.locator('.site-shortcuts a').count(),3);
+    assert.equal(await page.locator('.hotel-journal-nav [aria-current=page]').getAttribute('href'),section);
+    assert.equal(await page.locator('body').evaluate(body=>getComputedStyle(body).backgroundColor),'rgb(248, 247, 242)');
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Content page fits the viewport: '+section+' '+profile);
     assert(await page.locator('.site-shortcuts a').evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)));
-    if(section==='/blog/'){
+    if(journal){
       assert.equal(await page.locator('html').getAttribute('data-theme'),'clarity');
       assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave','Blog preserves the saved theme for other pages');
+      const filters=page.getByRole('group',{name:'Filter posts'});
+      assert.equal(await page.locator('.blog-feed-topic').first().textContent(),'Hotel review');
+      await filters.getByRole('button',{name:'Hotel reviews'}).click();
+      assert.equal(await page.locator('.blog-parking').count(),5);
+      assert((await page.locator('.blog-feed-topic').allTextContents()).every(topic=>topic==='Hotel review'));
+      await filters.getByRole('button',{name:'Other articles'}).focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await page.locator('.blog-parking').count(),0);
+      assert(await page.getByRole('heading',{name:'The Torn Poster'}).isVisible());
+      await filters.getByRole('button',{name:'Latest'}).click();
     }
     await reviewFooter(page, profile);
     if(profile==='desktop'||profile==='small-phone'){
       await page.screenshot({path:resolve(out,profile+(section==='/blog/'?'-blog.png':'-hotels.png'))});
     }
   }
+  if(profile==='desktop'){
+    await page.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Reviews & stories'}).click();
+    await page.getByRole('link',{name:'Parking details for Scandic Rosendahl, Tampere'}).click();
+    await page.waitForURL('**/hotels/#review-scandic-rosendahl-2026-10-25');
+    const record=page.locator('#review-scandic-rosendahl-2026-10-25');
+    assert(await record.isVisible());
+    assert(await record.locator('.hotel-post-more').evaluate(notes=>!notes.inert));
+    await record.getByRole('link',{name:'Scandic Rosendahl, Tampere: paid parking on one bill'}).click();
+    await page.waitForURL('**/blog/scandic-rosendahl-tampere/');
+    await page.getByRole('link',{name:/Back to the Blog/}).click();
+    await page.waitForURL('**/blog/');
+  }
   assert.deepEqual(errors,[]);results.push({profile,width,height,zoom,result:'passed',layout});await context.close();
  }
  const blocked=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark',reducedMotion:'reduce'});
  await blocked.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new Error('Storage unavailable');}}));
  const blockedPage=await pageFor(blocked,current.url);await blockedPage.goto(current.url);await blockedPage.locator('.office-appearance-toggle').click();assert.equal(await blockedPage.locator('html').getAttribute('data-office-mode'),'light','Toggle works when storage is unavailable');await blocked.close();
+ const plain=await browser.newContext({javaScriptEnabled:false});
+ const plainPage=await pageFor(plain,current.url);
+ await plainPage.goto(current.url+'/blog/');
+ assert.equal(await plainPage.locator('.blog-parking').count(),5,'Parking links remain in the static feed');
+ assert(await plainPage.getByRole('heading',{name:'The Torn Poster'}).isVisible());
+ assert.equal(await plainPage.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Hotel finder'}).getAttribute('href'),'/hotels/');
+ await plain.close();
  await writeFile(resolve(out,'results.json'),JSON.stringify({result:'passed',baselineDesktopGridHeight:beforeHeight,profiles:results},null,2));console.log(JSON.stringify({beforeHeight,profiles:results.map(x=>({profile:x.profile,gridHeight:x.layout.gridHeight}))}));
 }finally{await browser.close();for(const s of [old.server,current.server]){s.closeAllConnections();await new Promise(r=>s.close(r));}}
