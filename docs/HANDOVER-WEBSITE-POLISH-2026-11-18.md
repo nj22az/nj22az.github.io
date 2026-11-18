@@ -30,3 +30,11 @@ The Chromium check at 320, 390, 768 and 1440 CSS pixels passed. It verified the 
 Studio projects and digital downloads share their section heading scale, divider spacing and card treatments. Each project uses the same primary button. The Chisum button sits with its description. File formats and ZIP sizes appear together above each product title, with their layout adapting to the card width.
 
 Chromium verification covered 320, 390, 768, 820, 1024 and 1440 CSS pixels. Checks covered viewport fit, the porthole and original artwork, keyboard access to preview galleries, and the three published ZIP downloads. A physical Safari device was outside this review.
+
+## Office layout and footer
+
+The homepage, Studio, Blog index and Hotels register share a compact footer with Office, Explore and Resources links, copyright and a Back to top control. About and Locations lead to the existing homepage sections. LinkedIn links to Nils Johansson's public professional profile. The site has no careers page.
+
+The homepage brings Tools & Learning forward by shortening the opening, the Studio panel and the section spacing. The Studio uses a one-sentence introduction and brings Chisum and the downloads closer to the top. The Blog index uses the Office palette and places the harbour stamp beside its heading on wide screens. Hotels uses the shared spacing and footer through its existing stylesheet and script references. The individual apps and article pages retain their existing layouts.
+
+The browser review covers all four pages, footer keyboard and touch targets, site navigation, the Office appearance preference, Studio previews and the three ZIP downloads. The comparison uses the public main baseline `7b26260ba99de5054d2dffe6f6be6eee73c6b22e`. Production and development updates use scoped commits. Browser checks use Chromium viewports, including a 200% zoom equivalent. Physical Safari remains unverified.
