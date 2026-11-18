@@ -30,6 +30,7 @@
   <script src="/assets/js/office-port.js?v=diorama-20261101a" defer></script>
   <script src="/assets/js/office-diorama.js?v=20261101a" defer></script>
   <link rel="stylesheet" href="/css/office-blog.css?v=1">
+  <link rel="stylesheet" href="/animation-studio/studio.css">
 
 </head>
 <body class="office-home">
@@ -82,21 +83,33 @@
       </div>
     </section>
 
-    <!-- Project explorer — useful tools, small worlds and practical learning -->
+    <section class="studio-home-link" aria-labelledby="studio-home-heading">
+      <div class="container">
+        <div class="studio-home-content">
+          <img src="/animation-studio/johansson-logo.svg" width="120" height="120" alt="">
+          <div>
+            <h2 id="studio-home-heading">Johansson Animation Studios</h2>
+            <p>Chisum, Johansson World and Sakura Shōten.</p>
+          </div>
+          <a href="/animation-studio/">Visit the studio <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project explorer — tools and practical learning -->
     <section class="section project-explorer" id="projects" aria-labelledby="project-heading">
       <div class="container">
         <div class="px-intro">
-          <div><div class="section-subtitle">From the workshop</div><h2 id="project-heading">Explore. Create. Learn.</h2></div>
-          <p>A harbour town to explore, useful tools to try and practical knowledge to take away.</p>
+          <div><div class="section-subtitle">From the workshop</div><h2 id="project-heading">Tools and learning</h2></div>
+          <p>Browser tools, electrical engineering lessons and a textbook in progress.</p>
         </div>
         <div class="px-toolbar"><div class="px-filters" role="group" aria-label="Filter projects">
           <button type="button" data-project-filter="all" aria-pressed="true">All projects <span></span></button>
-          <button type="button" data-project-filter="explore" aria-pressed="false">Explore <span></span><small>Island life</small></button>
-          <button type="button" data-project-filter="create" aria-pressed="false">Create <span></span><small>Camera &amp; tools</small></button>
+          <button type="button" data-project-filter="create" aria-pressed="false">Tools <span></span><small>Camera &amp; maintenance</small></button>
           <button type="button" data-project-filter="learn" aria-pressed="false">Learn <span></span><small>Course &amp; book</small></button>
         </div><p id="project-count" role="status" aria-live="polite" aria-atomic="true"></p></div>
         <div id="project-grid" class="px-grid" data-filter="all"></div>
-        <noscript><div class="px-fallback"><p>Explore the projects:</p><ul><li><a href="/johansson-world/">Johansson World — discover the island</a> · <a href="/johansson-town/">Start the game</a> · <a href="/johansson-world/sakura/play/">Play Sakura Shōten demo</a></li><li><a href="/world/#downloads">Johansson World — Linux downloads and development</a></li><li><a href="/world/sakura/">Sakura Shōten — the shop on Minato’s harbour road</a></li><li><a href="/ferry/">Chisum — a ferry in 3D, deck by deck</a></li><li><a href="/camera/">Pocket Camera — every Look from Johansson World on your own photos</a></li><li><a href="/maintenance-demo/">Maintenance Desk — an equipment maintenance programme, including StepWise for test points</a> · <a href="/stepbuddy/">Open StepWise</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook in progress, with a free sample</a></li></ul></div></noscript>
+        <noscript><div class="px-fallback"><ul><li><a href="/camera/">Pocket Camera</a></li><li><a href="/maintenance-demo/">Maintenance Desk</a> · <a href="/stepbuddy/">Open StepWise</a></li><li><a href="/sjoskolan/">Sjöskolan — Swedish electrical engineering course</a></li><li><a href="/elteknik/">Elteknik och ellära — textbook in progress, with a free sample</a></li></ul></div></noscript>
 
         <div class="px-connections"><div><h3>Beyond the projects</h3><p>Source code and professional connections.</p></div><div id="project-channels" class="px-channel-links"></div></div>
       </div>
@@ -163,10 +176,10 @@
 
   <footer id="site-footer" class="site-footer"></footer>
 
-  <script src="/config.js?v=20261113-maintenance-desk"></script>
-  <script src="/assets/js/project-explorer.js?v=20261113-maintenance-desk" defer></script>
+  <script src="/config.js?v=20261118-animation-studio"></script>
+  <script src="/assets/js/project-explorer.js?v=20261118-animation-studio" defer></script>
   <script src="/shared.js?v=office-appearance-20261102"></script>
-  <script src="/assets/js/office-calendar.js?v=20261027-hotels" defer></script>
+  <script src="/assets/js/office-calendar.js?v=20261118-animation-studio" defer></script>
   <script>
     (function () {
       "use strict";

@@ -47,7 +47,7 @@ const CONFIG = {
   navigation: [
     { id: "home", label: "Home" },
     { id: "projects", label: "Projects" },
-    { id: "world", label: "Johansson World", url: "/johansson-world/" },
+    { id: "studio", label: "Animation Studio", url: "/animation-studio/" },
     { id: "shop", label: "Shop", url: "https://3va6hr-fw.myshopify.com/" },
     { id: "blog", label: "Blog", url: "/blog/" },
     { id: "hotels", label: "Hotels & Parking", url: "/hotels/" },

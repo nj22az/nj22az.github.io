@@ -1,3 +1,7 @@
+# Website handover · 18 November 2026
+
+The [Animation Studio section and homepage audit](docs/HANDOVER-ANIMATION-STUDIO-2026-11-18.md) cover the studio landing page, homepage navigation, project links and publication status.
+
 **Tasks for Codex on the Chisum, 13 November 2026:** five tasks that do not build her model, at the owner's asking. Read [ferry/CODEX-TASKS-2026-11-13.md](ferry/CODEX-TASKS-2026-11-13.md). Her builders, her register and `ferry/app.js` stay Claude's while that list stands.
 
 **Site copy, 12 November 2026:** both books are works in progress, and StepWise sits inside Maintenance Desk. Read [docs/HANDOVER-BOOKS-WIP-2026-11-12.md](docs/HANDOVER-BOOKS-WIP-2026-11-12.md). The ferry notes below are unchanged. Nothing under `ferry/` was touched.
