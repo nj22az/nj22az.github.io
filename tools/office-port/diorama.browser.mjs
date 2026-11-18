@@ -36,7 +36,7 @@ try{
   await page.getByRole('button',{name:'Zoom out',exact:true}).click();await page.getByRole('button',{name:'Reset',exact:true}).click();
   const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,buttons:[...document.querySelectorAll('[data-diorama] button')].map(b=>{const r=b.getBoundingClientRect();return {label:b.textContent,width:r.width,height:r.height};})}));
   assert(!layout.overflow,'No page overflow');assert(layout.buttons.every(b=>b.width>=44&&b.height>=44),'44px touch targets');
-  assert.equal(await page.locator('[data-diorama] a[href="/camera/"]').count(),1);
+  assert.deepEqual(await page.locator('[data-diorama] a').evaluateAll(links=>links.map(link=>link.getAttribute('href'))),['/johansson-world/']);
   await page.getByRole('button',{name:'Close',exact:true}).click();assert.equal(await canvas.count(),0,'Close releases canvas');
   await page.getByRole('button',{name:'Explore harbour',exact:true}).click();await page.getByText('Drag to look around · choose a view below',{exact:true}).waitFor({timeout:90000});
   await page.locator('[data-diorama-stage] canvas').focus();await page.keyboard.press('Escape');assert.equal(await canvas.count(),0);
