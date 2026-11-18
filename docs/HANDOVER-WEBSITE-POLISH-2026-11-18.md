@@ -22,3 +22,9 @@ The file-level licences are linked from [third-party notices](../THIRD_PARTY_NOT
 The owner asked to implement the recommendations. The scoped design was published to `main` in [`ebb9b0ff`](https://github.com/nj22az/nj22az.github.io/commit/ebb9b0ff884bd658f343f1c9f978ac4f3ab2c22f). The release fixes a mobile selector so the fixed header clears the opening text, with a matching regression assertion. That fix is carried back to `development` in the commit recording this release.
 
 [GitHub Pages deployed successfully](https://github.com/nj22az/nj22az.github.io/actions/runs/44265631045). Twelve public files matched the deployed commit, including the Office, Studio, Blog and Hotels HTML, the shared styles, the quay opening image and preview assets. The exact release candidate passed all six local Chromium profiles. The [production browser review](https://github.com/nj22az/nj22az.github.io/actions/runs/44265632031) and [production harbour review](https://github.com/nj22az/nj22az.github.io/actions/runs/44265632074) carry the hosted run results. The three public ZIPs are the same releases verified by the preview and download tests.
+
+## Studio porthole
+
+The owner requested the original black sailor logo in a round porthole. The [published update](https://github.com/nj22az/nj22az.github.io/commit/5d0aa74a68c1a19dc8081504f709d251a8ee469a) adds a brass rim and an ivory face in the Studio intro. On phones the title has a full row, with the porthole beside the description. The original SVG is used directly.
+
+Local Chromium passed at 320, 390, 768 and 1440 CSS pixels. The 390 and 1440 layouts were visually checked. [GitHub Pages deployed successfully](https://github.com/nj22az/nj22az.github.io/actions/runs/44268720139), and the live Studio HTML and CSS both matched the commit. No physical device was used for testing.
