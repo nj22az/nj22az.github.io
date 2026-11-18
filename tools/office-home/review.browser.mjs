@@ -5,7 +5,7 @@ import {resolve,extname,sep} from 'node:path';
 import assert from 'node:assert/strict';
 const require=createRequire(process.env.OFFICE_TEST_RUNTIME+'/package.json'),{chromium}=require('playwright');
 const root=resolve(process.env.OFFICE_SOURCE_ROOT),baseline=resolve(process.env.OFFICE_BASELINE_ROOT),out=resolve(process.env.OFFICE_OUTPUT);await mkdir(out,{recursive:true});
-const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.png':'image/png','.mp4':'video/mp4'};
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.jpg':'image/jpeg','.svg':'image/svg+xml','.png':'image/png','.mp4':'video/mp4','.woff2':'font/woff2'};
 function serve(before=false){const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new URL(req.url,'http://localhost').pathname),relative=path.endsWith('/')?path+'index.html':path,file=resolve(root,'.'+relative);if(!file.startsWith(root+sep))throw Error();let b;if(before)try{b=await readFile(resolve(baseline,'.'+relative));}catch{}b??=await readFile(file);res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream'});res.end(b);}catch{res.writeHead(404);res.end();}});return new Promise(r=>server.listen(0,'127.0.0.1',()=>r({server,url:'http://127.0.0.1:'+server.address().port})));}
 const old=await serve(true),current=await serve(),browser=await chromium.launch({headless:true,executablePath:process.env.OFFICE_CHROMIUM_PATH || undefined,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});const results=[];
 async function pageFor(context,url){const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());return page;}
@@ -26,6 +26,7 @@ try{
   await appearance.waitFor();
   assert.equal(await page.evaluate(()=>localStorage.getItem('nj-theme')),'popwave');
   assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#000000');
+  await page.waitForFunction(()=>{const still=document.querySelector('#office-port > img');return still.complete&&still.naturalWidth>0&&still.src.endsWith('/quay-opening.webp');});
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-home.png')});
   await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-dark-projects.png')});
   const contrasts=await page.evaluate(()=>{
@@ -35,6 +36,7 @@ try{
   const darkLayout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,background:getComputedStyle(document.body).backgroundColor,button:document.querySelector('.office-appearance-toggle').getBoundingClientRect().width}));
   assert.equal(darkLayout.background,'rgb(0, 0, 0)');assert(!darkLayout.overflow);assert(darkLayout.button>=44);
   const header=await page.locator('.nav-actions').evaluate(e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}));assert(header.left>=0&&header.right<=width,'Header controls fit');
+  assert(await page.evaluate(()=>window.scrollY+document.querySelector('.office-eyebrow').getBoundingClientRect().top>=document.querySelector('#site-nav').getBoundingClientRect().bottom),'Header does not cover the introduction: '+profile);
   await page.locator('.office-calendar-toggle').click();assert(await page.locator('.office-calendar-panel').isVisible());await page.locator('.office-calendar-toggle').click();
   await page.locator('#nav-hamburger').click();assert.equal(await page.locator('#menu-overlay').getAttribute('aria-hidden'),'false');await page.keyboard.press('Escape');
   await page.locator('[data-project-filter="create"]').click();assert.equal(await page.locator('.px-card:visible').count(),2);await page.locator('[data-project-filter="all"]').click();
@@ -59,7 +61,9 @@ try{
   assert(!layout.overflow,'No horizontal overflow: '+profile);assert(layout.targets.every(t=>t.width>=44&&t.height>=44),'44px controls: '+profile);
   if(profile==='desktop'){assert(layout.gridHeight<beforeHeight*.8,'Substantially shorter project grid');}
   await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-home.png')});await page.evaluate(()=>document.querySelector('#projects').scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:resolve(out,profile+'-projects.png')});
-  await page.getByRole('link',{name:'Visit the studio'}).click();
+  const toolsLink=page.getByRole('link',{name:'Tools & Learning',exact:true}).filter({visible:true}).last();
+  assert.equal(await toolsLink.getAttribute('href'),'#projects');
+  await page.getByRole('link',{name:'Enter the Studio'}).click();
   await page.waitForURL('**/animation-studio/');
   assert.deepEqual(await page.locator('.studio-project h3').allTextContents(),['Chisum','Johansson World','Sakura Shōten']);
   assert.deepEqual(await page.locator('.studio-actions a').evaluateAll(links=>links.map(link=>link.getAttribute('href'))),['/ferry/','/johansson-world/','/johansson-town/','/johansson-world/#downloads','/johansson-world/sakura/play/','/johansson-world/sakura/']);
@@ -71,6 +75,30 @@ try{
   await page.waitForURL('**/animation-studio/#digital-downloads');
   const downloads=page.locator('.studio-product a[download]');
   assert.equal(await downloads.count(),3);
+  assert.equal(await page.locator('.studio-product-size').count(),3);
+  assert.equal(await page.locator('.site-shortcuts [aria-current=page]').getAttribute('href'),'/animation-studio/');
+  assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(0, 0, 0)');
+  for(const preview of await page.getByRole('link',{name:/^Preview /}).all()){
+    await preview.click();
+    const gallery=page.locator('.pswp--open');
+    await gallery.waitFor();
+    await gallery.locator('.pswp__img').first().waitFor();
+    await page.waitForFunction(()=>document.querySelector('.pswp--open .pswp__img')?.naturalWidth>0);
+    assert.equal(await gallery.locator('.pswp__counter').textContent(),'1 / 3');
+    if(profile==='desktop'){
+      await gallery.getByRole('button',{name:'Next'}).click();
+      await page.waitForFunction(()=>document.querySelector('.pswp__counter')?.textContent==='2 / 3');
+      assert(await gallery.locator('.pswp__sample-caption').textContent());
+    }
+    await page.keyboard.press('Escape');
+    await gallery.waitFor({state:'hidden'});
+  }
+  const projectPreview = page.getByRole('link',{name:'Enlarge Chisum at sea'});
+  await projectPreview.click();
+  await page.locator('.pswp--open').waitFor();
+  await page.keyboard.press('Escape');
+  await page.locator('.pswp--open').waitFor({state:'hidden'});
+  await page.getByRole('link',{name:'Digital downloads'}).click();
   assert(await downloads.evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)),'Downloads have 44px targets: '+profile);
   if(profile==='desktop'){
    for(const link of await downloads.all()){
@@ -83,6 +111,16 @@ try{
    }
   }
   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:resolve(out,profile+'-studio.png'),fullPage:true});
+  for(const [linkName, section] of [['Blog','/blog/'],['Hotels & Parking','/hotels/']]){
+    await page.getByRole('navigation',{name:'Primary navigation'}).getByRole('link',{name:linkName,exact:true}).click();
+    await page.waitForURL('**'+section);
+    assert.equal(await page.locator('.site-shortcuts [aria-current=page]').getAttribute('href'),section);
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Content page fits the viewport: '+section+' '+profile);
+    assert(await page.locator('.site-shortcuts a').evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)));
+    if(profile==='desktop'||profile==='small-phone'){
+      await page.screenshot({path:resolve(out,profile+(section==='/blog/'?'-blog.png':'-hotels.png'))});
+    }
+  }
   assert.deepEqual(errors,[]);results.push({profile,width,height,zoom,result:'passed',layout});await context.close();
  }
  const blocked=await browser.newContext({viewport:{width:390,height:844},colorScheme:'dark',reducedMotion:'reduce'});

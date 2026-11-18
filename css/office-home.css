@@ -15,12 +15,6 @@ body.office-home .office-hero{padding:84px 24px 24px;min-height:0;background:var
 .office-home .office-heading{margin:0 0 18px;padding:0;font:800 clamp(28px,3.35vw,46px)/1.09 var(--font-display,system-ui,sans-serif);letter-spacing:-.035em;color:var(--ink);overflow-wrap:normal;text-wrap:balance}
 .office-home .office-summary{max-width:32ch;margin:0 0 24px;font:400 16px/1.6 var(--font-body,system-ui,sans-serif);color:var(--ink-light)}
 .office-home .office-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
-.office-home .office-explore,.office-home .office-about{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;font:700 14px/1.3 var(--font-body,system-ui,sans-serif);text-decoration:none}
-.office-home .office-explore{padding:12px 18px;border:1px solid var(--border);border-radius:999px;background:#ffe032;color:#202b36}
-.office-home .office-explore:hover{background:#f5d51c}
-.office-home .office-explore svg{width:18px;height:18px;flex:none}
-.office-home .office-about{color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--border-hover)}
-.office-home .office-about:hover{text-decoration-color:currentColor}
 .office-home .office-actions a:focus-visible{outline:3px solid #0067c7;outline-offset:4px}
 .office-home .office-opening>.office-port{width:100%;max-width:none;margin:0;padding:0;animation:none;align-self:center}
 @media(max-width:900px){
@@ -74,8 +68,6 @@ body.office-home .office-appearance-toggle svg{width:22px;height:22px}
 body.office-home .office-appearance-toggle:hover{background:var(--surface-hover)}
 body.office-home .office-appearance-toggle:focus-visible{outline:3px solid #559fe5;outline-offset:3px}
 /* Calendar CSS loads later; the page root provides sufficient specificity. */
-html[data-office-mode] body.office-home .office-quick-links a{color:var(--ink)}
-html[data-office-mode] body.office-home .office-quick-links a:hover{background:var(--surface-hover)}
 html[data-office-mode] body.office-home .office-calendar{color:var(--ink)}
 html[data-office-mode] body.office-home :is(.office-calendar-toggle,.office-calendar-panel){background:var(--surface-card);border-color:var(--border)}
 html[data-office-mode] body.office-home .office-calendar-toggle time{color:var(--ink-light);border-color:var(--border)}

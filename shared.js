@@ -151,7 +151,8 @@
     });
   }
 
-  applyTheme(getTheme());
+  var studioPage = document.body.classList.contains("studio-page");
+  if (!studioPage) applyTheme(getTheme());
 
   /* ── Navigation — theme-aware hamburger + overlay ── */
 
@@ -173,16 +174,26 @@
     nav.setAttribute("aria-label", "Primary navigation");
 
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
-    var compactOffice = isHome || document.body.classList.contains("world-pages");
-    var navLinks = CONFIG.navigation.filter(function (item) { return item.id !== "home"; }).map(function (item) {
+    var family = document.body.classList.contains("site-family");
+    var compactOffice = family || isHome || document.body.classList.contains("world-pages");
+    var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Blog", "Blog", "article"], hotels: ["Hotels &amp; Parking", "Hotels", "hotel"] };
+    var navLinks = CONFIG.navigation.filter(function (item) { return family ? compactLinks[item.id] : item.id !== "home"; }).map(function (item) {
       var link = navLink(item, isHome);
+      if (family) {
+        var labels = compactLinks[item.id];
+        var current = item.url && location.pathname.replace(/index\.html$/, "") === item.url;
+        return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' +
+          (current ? ' aria-current="page"' : '') + '><img src="/assets/vendor/site-icons/' +
+          labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>';
+      }
       return '<a class="nav-link" href="' + link.href + '"' + link.attrs + '>' + item.label + '</a>';
     }).join("");
 
+    var brand = family ? '<span class="site-wordmark">The Office of<strong>Nils Johansson</strong></span>' : CONFIG.navLogo(34);
     nav.innerHTML =
       '<div class="nav-inner">' +
-        '<a href="/" class="nav-brand logo-seal">' + CONFIG.navLogo(34) + '</a>' +
-        '<div class="nav-links">' + navLinks + '</div>' +
+        '<a href="/" class="nav-brand logo-seal">' + brand + '</a>' +
+        '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '">' + navLinks + '</div>' +
         '<div class="nav-actions">' +
           '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
             (compactOffice ? '<span>More</span>' : icon("menu")) +
@@ -245,7 +256,7 @@
       '</div>';
 
     document.body.appendChild(overlay);
-    if (lockedTheme) overlay.querySelector('.menu-theme').hidden = true;
+    if (lockedTheme || studioPage) overlay.querySelector('.menu-theme').hidden = true;
 
     // Backdrop for click-outside-to-close
     var backdrop = document.createElement("div");
@@ -270,8 +281,8 @@
         overlay.setAttribute("aria-hidden", "true");
         backdrop.classList.remove("open");
         document.body.classList.remove("menu-open");
-        hamburger.innerHTML = isHome ? "<span>More</span>" : icon("menu");
-        hamburger.setAttribute("aria-label", isHome ? "More options" : "Open menu");
+        hamburger.innerHTML = compactOffice ? "<span>More</span>" : icon("menu");
+        hamburger.setAttribute("aria-label", compactOffice ? "More options" : "Open menu");
         hamburger.setAttribute("aria-expanded", "false");
         closeThemeSwitcher();
       } else {
@@ -279,8 +290,8 @@
         overlay.setAttribute("aria-hidden", "false");
         backdrop.classList.add("open");
         document.body.classList.add("menu-open");
-        hamburger.innerHTML = isHome ? "<span>Close</span>" : icon("close");
-        hamburger.setAttribute("aria-label", isHome ? "Close more options" : "Close menu");
+        hamburger.innerHTML = compactOffice ? "<span>Close</span>" : icon("close");
+        hamburger.setAttribute("aria-label", compactOffice ? "Close more options" : "Close menu");
         hamburger.setAttribute("aria-expanded", "true");
       }
     }
@@ -289,20 +300,20 @@
       overlay.setAttribute("aria-hidden", "true");
       backdrop.classList.remove("open");
       document.body.classList.remove("menu-open");
-      hamburger.innerHTML = isHome ? "<span>More</span>" : icon("menu");
-      hamburger.setAttribute("aria-label", isHome ? "More options" : "Open menu");
+      hamburger.innerHTML = compactOffice ? "<span>More</span>" : icon("menu");
+      hamburger.setAttribute("aria-label", compactOffice ? "More options" : "Open menu");
       hamburger.setAttribute("aria-expanded", "false");
       closeThemeSwitcher();
     }
 
     hamburger.addEventListener("click", toggleMenu);
-    if (isHome) hamburger.addEventListener("keydown", function (event) {
+    if (compactOffice) hamburger.addEventListener("keydown", function (event) {
       if (overlay.classList.contains("open") && ((event.key === "Tab" && !event.shiftKey) || event.key === "ArrowDown")) {
         event.preventDefault();overlay.querySelector(".menu-row")?.focus();
       }
     });
     backdrop.addEventListener("click", closeMenu);
-    if (isHome) nav.querySelector(".nav-links")?.addEventListener("click", function (event) { if (event.target.closest("a")) closeMenu(); });
+    if (compactOffice) nav.querySelector(".nav-links")?.addEventListener("click", function (event) { if (event.target.closest("a")) closeMenu(); });
 
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && overlay.classList.contains("open")) {
@@ -326,7 +337,7 @@
       });
     });
 
-    updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) || THEMES[0]);
+    if (!studioPage) updateThemeControls(THEMES.find(function (theme) { return theme.id === getTheme(); }) || THEMES[0]);
 
     window.addEventListener("scroll", function () {
       nav.classList.toggle("scrolled", window.scrollY > 20);
@@ -372,7 +383,7 @@
       var target = document.querySelector(link.getAttribute("href"));
       if (target) {
         e.preventDefault();
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
         history.pushState(null, "", link.getAttribute("href"));
       }
     });

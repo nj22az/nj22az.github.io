@@ -492,8 +492,9 @@ def build(reviews, posts=None):
   <link rel="stylesheet" href="/css/hotels.css?v=13">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=4">
+  <link rel="stylesheet" href="/css/site-family.css?v=1">
 </head>
-<body class="hotel-site">
+<body class="hotel-site site-family">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav id="site-nav" class="site-nav"></nav>
   <main id="main-content" class="hotel-page">
@@ -580,7 +581,7 @@ def build(reviews, posts=None):
   </main>
   <footer id="site-footer" class="site-footer"></footer>
   <script src="/config.js?v=20261027-hotels"></script>
-  <script src="/shared.js?v=20261027-hotels"></script>
+  <script src="/shared.js?v=site-polish-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
   <script src="/hotels/hotels.js?v=11"></script>

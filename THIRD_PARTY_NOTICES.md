@@ -101,6 +101,14 @@ These support `camera/`, the camera and photo editor. Its Looks are Johansson Wo
 | --- | --- | --- |
 | [Baloo 2 — Ek Type](https://github.com/EkType/Baloo2) | `camera/fonts/baloo2.woff2` letters the speech balloons and captions, as the studio's sticker sheets are lettered. Subset to Latin and Vietnamese with fontTools; the outlines are unchanged. | SIL Open Font License 1.1. [Licence](camera/fonts/OFL-Baloo2.txt). |
 
+## Office and Animation Studio website
+
+| Component | Use | Licence |
+| --- | --- | --- |
+| [Lucide 0.468.0](https://github.com/lucide-icons/lucide) | Six SVG icons in the shared header and Studio controls. | [Lucide licence and copyright notice](assets/vendor/lucide-LICENSE). |
+| [Zen Maru Gothic](https://github.com/googlefonts/zen-marugothic) | Bold web font for headings, from Fontsource 5.3.1 Latin and Latin Extended subsets. | [SIL Open Font License 1.1](assets/fonts/zen-maru/OFL.txt). |
+| [PhotoSwipe 5.4.4](https://github.com/dimsemenov/PhotoSwipe) | Studio document and project image previews. | [MIT](assets/vendor/photoswipe/LICENSE). |
+
 ## References and discovery catalogues
 
 These acknowledgements distinguish research and inspiration from shipped code:
