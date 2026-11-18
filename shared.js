@@ -186,8 +186,10 @@
     var journalArticle = location.pathname.startsWith("/blog/");
     if (!nav.hasAttribute("data-static-nav")) {
       var statusUrl = "/animation-studio/project-status/";
-      var statusShortcut = family && location.pathname.startsWith("/animation-studio/")
-        ? '<a class="site-button" href="' + statusUrl + '" aria-label="Project status"' + currentNavLocation(statusUrl) + '>Status</a>'
+      var hasStatusShortcut = family && location.pathname.startsWith("/animation-studio/");
+      var statusShortcut = hasStatusShortcut
+        ? '<a href="' + statusUrl + '" aria-label="Project status"' + currentNavLocation(statusUrl) +
+          '><img src="/assets/vendor/site-icons/preview.svg" alt="" width="18" height="18"><span>Status</span></a>'
         : "";
       var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Field Notes", "Field Notes", "article"] };
       var navLinks = CONFIG.navigation.filter(function (item) {
@@ -197,7 +199,8 @@
         if (family) {
           var labels = compactLinks[item.id];
           return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' + currentNavLocation(link.href) + '<img src="/assets/vendor/site-icons/' +
-            labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>';
+            labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>' +
+            (item.id === 'studio' ? statusShortcut : '');
         }
         return '<a class="nav-link" href="' + link.href + '"' + link.attrs + (journalArticle ? currentNavLocation(link.href) : '') + '>' + item.label + '</a>';
       }).join("");
@@ -206,9 +209,9 @@
       nav.innerHTML =
         '<div class="nav-inner">' +
           '<a href="/" class="nav-brand logo-seal">' + brand + '</a>' +
-          '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '">' + navLinks + '</div>' +
+          '<div class="nav-links' + (family ? ' site-shortcuts' : '') + '"' +
+            (hasStatusShortcut ? ' data-status-shortcut' : '') + '>' + navLinks + '</div>' +
           '<div class="nav-actions">' +
-            statusShortcut +
             '<button id="nav-hamburger" class="nav-hamburger" aria-label="' + (compactOffice ? "More options" : "Open menu") + '" aria-expanded="false" aria-controls="menu-overlay">' +
               (compactOffice ? '<span>More</span>' : icon("menu")) +
             '</button>' +

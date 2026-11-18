@@ -4831,6 +4831,7 @@ body.office-home.site-family .office-hero { padding: calc(var(--family-header) +
     margin: 0;
     gap: 4px;
   }
+  body.site-family .site-shortcuts[data-status-shortcut] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .site-family .site-shortcuts a { flex-direction: column; gap: 2px; padding: 2px; font-size: 11px; }
 }
 
