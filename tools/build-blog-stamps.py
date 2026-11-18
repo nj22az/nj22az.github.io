@@ -104,18 +104,6 @@ def place(page, shot):
     return text
 
 
-def place_header(page, shot):
-    """The blog page's own header picture: the harbour, wide, under the title."""
-    text = page.read_text(encoding='utf-8')
-    text = re.sub(rf'<span class="blog-head-stamp" {MARK}="[^"]*"[^>]*></span>', '', text)
-    assert text.count('</header>') == 1, f'{page}: expected one page header'
-    src = f'/assets/images/blog/stamps/{shot["name"]}.webp'
-    text = text.replace('</header>', f'</header><span class="blog-head-stamp" {MARK}="{shot["name"]}" role="img" aria-label="{html.escape(shot["alt"])}" style="--stamp:url({src})"></span>', 1)
-    text = re.sub(r'<link rel="stylesheet" href="/css/blog-stamps\.css\?v=\d+">', '', text)
-    text = text.replace('</head>', f'<link rel="stylesheet" href="/css/blog-stamps.css?v={CSS_VERSION}"></head>', 1)
-    return text
-
-
 def catalogue(shots):
     source = CATALOGUE.read_text(encoding='utf-8')
     start = source.index('[')
@@ -134,15 +122,8 @@ def run(check):
     shots = json.loads(SHOTS.read_text(encoding='utf-8'))['shots']
     stale = []
     for shot in shots:
-        if not shot.get('article'):
-            continue
-        if shot['article'] == '/blog/':
-            page = ROOT / 'blog/index.html'
-            new = place_header(page, shot)
-            if page.read_text(encoding='utf-8') != new:
-                stale.append(page)
-                if not check:
-                    page.write_text(new, encoding='utf-8')
+        # The shared journal masthead uses the harbour stamp through CSS.
+        if shot.get('article') in (None, '/blog/'):
             continue
         # "place": false keeps a picture to the blog list (a page with pictures of its own, such as a comic).
         for page in (pages_for(shot) if shot.get('place', True) else []):

@@ -481,7 +481,7 @@ def build(reviews, posts=None):
   <meta property="og:image:height" content="800">
   <meta property="og:image:alt" content="Tetsuo drives his kei truck past Sakura Shōten, printed as a rubber stamp.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#333333">
+  <meta name="theme-color" content="#f8f7f2">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-hotels.svg">
   <link rel="icon" type="image/png" href="/assets/images/apple-touch-icon-hotels.png">
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon-hotels.png">
@@ -492,22 +492,24 @@ def build(reviews, posts=None):
   <link rel="stylesheet" href="/css/hotels.css?v=13">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="/css/hotels-map.css?v=4">
-  <link rel="stylesheet" href="/css/site-family.css?v=1">
+  <link rel="stylesheet" href="/css/site-family.css?v=journal-shell-1">
 </head>
-<body class="hotel-site site-family">
+<body class="hotel-site site-family journal-site">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav id="site-nav" class="site-nav"></nav>
   <main id="main-content" class="hotel-page">
-    <header class="hotel-page-head">
-      <h1 class="hotel-sr">Hotels &amp; Parking: free parking for field service trips</h1>
-      <picture class="hotel-banner">
-        <source media="(max-width: 600px)" type="image/webp" srcset="/hotels/banner/banner-phone.webp" width="1200" height="900">
-        <source media="(max-width: 600px)" srcset="/hotels/banner/banner-phone.jpg" width="1200" height="900">
-        <source type="image/webp" srcset="/hotels/banner/banner-desktop.webp">
-        <img src="/hotels/banner/banner-desktop.jpg" width="2400" height="800" fetchpriority="high" alt="Hotels &amp; Parking, free parking for field service trips: Tetsuo drives his kei truck past Sakura Shōten in Johansson World, printed as a rubber stamp.">
-      </picture>
-      <p class="hotel-intro">{count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
+    <nav class="hotel-journal-nav" aria-label="Hotel journal">
+      <a href="/blog/">Reviews &amp; stories</a>
+      <a href="/hotels/" aria-current="page">Hotel finder</a>
+    </nav>
+    <header class="journal-masthead" aria-label="Hotel reviews and stories">
+      <p class="journal-title">Hotel reviews &amp; stories</p>
+      <p>Hotel stays, parking and receipts from my field service trips, with the occasional story.</p>
     </header>
+    <div class="hotel-page-head journal-content-heading">
+      <h1>Hotel finder</h1>
+      <p class="hotel-intro">{count} {'hotel' if count == 1 else 'hotels'} checked · {codes}</p>
+    </div>
     <section class="hotel-trip" aria-labelledby="hotel-trip-title" data-hotel-trip hidden>
       <h2 id="hotel-trip-title" class="hotel-sr">Plan a stop</h2>
       <form class="hotel-trip-form" data-hotel-trip-form>
@@ -581,7 +583,7 @@ def build(reviews, posts=None):
   </main>
   <footer id="site-footer" class="site-footer"></footer>
   <script src="/config.js?v=20261027-hotels"></script>
-  <script src="/shared.js?v=site-polish-1"></script>
+  <script src="/shared.js?v=journal-shell-1"></script>
   <script id="hotel-map-data" type="application/json">{map_json}</script>
   <script id="hotel-places-data" type="application/json">{places_json}</script>
   <script src="/hotels/hotels.js?v=11"></script>

@@ -56,3 +56,11 @@ The primary navigation treats the finder as part of Blog. Both pages use the sam
 The browser review checks all six screen profiles, the review and article filters, the finder and Blog navigation, and the paid-parking Scandic Rosendahl round trip. It also checks the static Blog with JavaScript disabled. The catalogue test covers chronology, WordPress deduplication and links. This change is based on the published Office release `d8b0d1b07fe5629a9fa64e72f1de30aa514d73ea`. Physical Safari remains unverified.
 
 [Production release `14a99be`](https://github.com/nj22az/nj22az.github.io/commit/14a99be2f15a15189685166140ca16ec3c79f7ac) is live. The homepage, Blog and finder markup and the shared CSS and JavaScript matched the release, including the finder’s existing asset URLs. All six Chromium profiles and the JavaScript-disabled Blog passed. All five parking links match finder record IDs and the Scandic Rosendahl round trip passed.
+
+## Journal layout continuity
+
+The Blog and Hotel finder share the same navigation, masthead, Minato illustration and content width. The finder starts under that masthead with its own title, register count and tools. The tabs are present in the published HTML. The hotel page generator was updated and the register rebuilt from its existing 211 records.
+
+The English journal articles use the shared Office header and footer, the journal navigation and a reading column. The compact Office wordmark keeps its surname with the given name on narrow screens. Browser checks measure the journal navigation and masthead on six profiles, follow a paid-parking record to its editorial article and verify the static tabs with JavaScript disabled. The register, stamp and catalogue checks cover the source templates. Physical Safari remains unverified. The production baseline is `14a99be2f15a15189685166140ca16ec3c79f7ac`.
+
+[Release `9cb321f`](https://github.com/nj22az/nj22az.github.io/commit/9cb321f27662c9827b9163714eeeb66ae38b7e01) is live on `main`. The homepage, Blog, finder, sample review and story, and shared CSS and JavaScript matched the published blobs. All six Chromium profiles passed, with equal journal masthead and tab geometry across Blog and finder. The stamp, catalogue and generated register checks passed.

@@ -9,6 +9,13 @@ const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.web
 function serve(before=false){const server=createServer(async(req,res)=>{try{const path=decodeURIComponent(new URL(req.url,'http://localhost').pathname),relative=path.endsWith('/')?path+'index.html':path,file=resolve(root,'.'+relative);if(!file.startsWith(root+sep))throw Error();let b;if(before)try{b=await readFile(resolve(baseline,'.'+relative));}catch{}b??=await readFile(file);res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream'});res.end(b);}catch{res.writeHead(404);res.end();}});return new Promise(r=>server.listen(0,'127.0.0.1',()=>r({server,url:'http://127.0.0.1:'+server.address().port})));}
 const old=await serve(true),current=await serve(),browser=await chromium.launch({headless:true,executablePath:process.env.OFFICE_CHROMIUM_PATH || undefined,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});const results=[];
 async function pageFor(context,url){const page=await context.newPage();await page.route('**/*',r=>r.request().url().startsWith(url)?r.continue():r.abort());return page;}
+async function journalGeometry(page) {
+  await page.evaluate(() => document.fonts.ready);
+  return page.locator('.hotel-journal-nav, .journal-masthead').evaluateAll(nodes=>nodes.map(node=>{
+    const {x,y,width,height}=node.getBoundingClientRect();
+    return [x,y,width,height].map(Math.round);
+  }));
+}
 async function reviewFooter(page, profile) {
   const footer = page.locator('#site-footer');
   const nav = footer.getByRole('navigation', {name: 'Footer navigation'});
@@ -126,6 +133,7 @@ try{
    }
   }
   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:resolve(out,profile+'-studio.png'),fullPage:true});
+  let journalLayout;
   for(const section of ['/blog/','/hotels/']){
     const journal = section==='/blog/';
     const nav = journal ? 'Primary navigation' : 'Hotel journal';
@@ -135,6 +143,9 @@ try{
     assert.equal(await page.locator('.site-shortcuts a').count(),3);
     assert.equal(await page.locator('.hotel-journal-nav [aria-current=page]').getAttribute('href'),section);
     assert.equal(await page.locator('body').evaluate(body=>getComputedStyle(body).backgroundColor),'rgb(248, 247, 242)');
+    const geometry=await journalGeometry(page);
+    if(journal) journalLayout=geometry;
+    else assert.deepEqual(geometry,journalLayout,'Journal tabs and masthead stay in place: '+profile);
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Content page fits the viewport: '+section+' '+profile);
     assert(await page.locator('.site-shortcuts a').evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)));
     if(journal){
@@ -165,6 +176,9 @@ try{
     assert(await record.locator('.hotel-post-more').evaluate(notes=>!notes.inert));
     await record.getByRole('link',{name:'Scandic Rosendahl, Tampere: paid parking on one bill'}).click();
     await page.waitForURL('**/blog/scandic-rosendahl-tampere/');
+    assert.deepEqual((await journalGeometry(page))[0],journalLayout[0],'The review uses the same journal navigation');
+    assert.equal(await page.locator('.site-shortcuts [aria-current]').getAttribute('href'),'/blog/');
+    await reviewFooter(page, profile);
     await page.getByRole('link',{name:/Back to the Blog/}).click();
     await page.waitForURL('**/blog/');
   }
@@ -179,6 +193,9 @@ try{
  assert.equal(await plainPage.locator('.blog-parking').count(),5,'Parking links remain in the static feed');
  assert(await plainPage.getByRole('heading',{name:'The Torn Poster'}).isVisible());
  assert.equal(await plainPage.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Hotel finder'}).getAttribute('href'),'/hotels/');
+ await plainPage.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Hotel finder'}).click();
+ assert(await plainPage.getByRole('heading',{name:'Hotel finder',exact:true}).isVisible());
+ assert(await plainPage.getByRole('navigation',{name:'Hotel journal'}).getByRole('link',{name:'Reviews & stories'}).isVisible());
  await plain.close();
  await writeFile(resolve(out,'results.json'),JSON.stringify({result:'passed',baselineDesktopGridHeight:beforeHeight,profiles:results},null,2));console.log(JSON.stringify({beforeHeight,profiles:results.map(x=>({profile:x.profile,gridHeight:x.layout.gridHeight}))}));
 }finally{await browser.close();for(const s of [old.server,current.server]){s.closeAllConnections();await new Promise(r=>s.close(r));}}
