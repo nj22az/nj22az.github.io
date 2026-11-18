@@ -3,11 +3,13 @@
   'use strict';
   var root = document.querySelector('#project-grid');
   if (!root || typeof CONFIG === 'undefined') return;
-  var projects = CONFIG.projectExplorer || [];
+  var projects = (CONFIG.projectExplorer || []).filter(function (project) {
+    return project.id !== 'world' && project.id !== 'ferry';
+  });
   var escape = function (value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   var arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>';
-  var categories = {explore:'Explore', create:'Create', learn:'Learn'};
-  function pathway(p) { return p.id === 'world' || p.category === 'explore' ? 'explore' : p.category === 'learn' ? 'learn' : 'create'; }
+  var categories = {create:'Tools', learn:'Learn'};
+  function pathway(p) { return p.category === 'learn' ? 'learn' : 'create'; }
   function preview(p) {
     if (p.preview === 'world') return '<figure class="px-preview px-world"><img id="px-town-view" src="/johansson-town/assets/images/title/title-day-portrait.webp" width="540" height="960" loading="lazy" decoding="async" alt="Johansson World’s seaside street, shops and ferry in daylight"><div class="px-scene-title"><span>OKINAWA · 1997</span><b>A little island life.</b></div><div class="px-day-switch" role="group" aria-label="Town artwork lighting"><button type="button" data-town-light="day" aria-pressed="true">Day</button><button type="button" data-town-light="night" aria-pressed="false">Night</button></div><figcaption id="px-town-caption">Town artwork · day</figcaption></figure>';
     if (p.preview === 'sakura') return '<figure class="px-preview px-sakura"><img src="/sakura/images/hero-serving-800.webp" width="800" height="500" loading="lazy" decoding="async" alt="Thuận behind the till at Sakura Shōten, smiling at a customer across the counter"><figcaption>Screenshot from the game</figcaption></figure>';

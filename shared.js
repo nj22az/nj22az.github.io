@@ -197,7 +197,7 @@
     overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.filter(function (n) {
-      return !compactOffice || !["home", "projects", "world", "blog", "hotels", "linux-port", "course"].includes(n.id);
+      return !compactOffice || !["home", "projects", "studio", "blog", "hotels", "linux-port", "course"].includes(n.id);
     }).map(function (n) {
       var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";
