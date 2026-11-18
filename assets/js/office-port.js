@@ -24,7 +24,22 @@
  function permitted(){return intent==='play'||(!reduced.matches&&!(connection&&(connection.saveData||/(^|-)2g$/.test(connection.effectiveType||''))));}
  function shouldPlay(){return !exploring&&loaded&&visible&&!document.hidden&&permitted()&&intent!=='pause'&&!failed&&!disposed&&!finished;}
  function label(playing){root.toggleAttribute('data-playing',playing);button.setAttribute('aria-label',playing?'Pause arrival':finished?'Replay arrival':'Play arrival');button.title=playing?'Pause arrival':finished?'Replay arrival':'Play arrival';}
- function poster(){var version=revision,url='/assets/office-port/'+place.poster+'?v=wheelhouse-025';caption.textContent=place.title+' · Johansson World';if(posterRequested===url)return;posterRequested=url;var ready=new Image();ready.onload=function(){if(disposed||version!==revision)return;img.src=url;img.alt=place.id==='bridge'?'View from the ferry bridge wing over the port and vehicle loading deck':'A finished view of Minato port';window.requestAnimationFrame(function(){window.requestAnimationFrame(function(){if(disposed||version!==revision)return;posterReady=true;reconcile();});});};ready.onerror=function(){if(version===revision)posterRequested=null;};ready.src=url;}
+ function poster(){
+  var version=revision,opening=version===0;
+  var url=opening?'/assets/office-port/quay-opening.webp':'/assets/office-port/'+place.poster+'?v=wheelhouse-025';
+  caption.textContent=(opening?'Minato quay':place.title)+' · Johansson World';
+  if(posterRequested===url)return;
+  posterRequested=url;
+  var ready=new Image();
+  ready.onload=function(){
+   if(disposed||version!==revision)return;
+   img.src=url;
+   img.alt=opening?'The Minato Maru moored beside the harbour buildings and quay in Johansson World':place.id==='bridge'?'View from the ferry bridge wing over the port and vehicle loading deck':'A finished view of Minato port';
+   window.requestAnimationFrame(function(){window.requestAnimationFrame(function(){if(disposed||version!==revision)return;posterReady=true;reconcile();});});
+  };
+  ready.onerror=function(){if(version===revision)posterRequested=null;};
+  ready.src=url;
+ }
  function pause(){attempt++;starting=false;if(video)video.pause();label(false);}
  function clear(){pause();root.removeAttribute('data-motion');root.removeAttribute('aria-busy');if(video){var old=video;video=null;old.removeAttribute('src');old.load();old.remove();}}
  function fail(){failed=true;clear();button.hidden=true;poster();}

@@ -1,6 +1,10 @@
 # Website handover · 18 November 2026
 
+The [website polish handover](docs/HANDOVER-WEBSITE-POLISH-2026-11-18.md) covers the shared navigation, homepage entrances, quay image and document previews.
+
 The [Animation Studio section and homepage audit](docs/HANDOVER-ANIMATION-STUDIO-2026-11-18.md) cover the studio landing page, homepage navigation, project links and publication status.
+
+The [Studio Digital Downloads handover](docs/HANDOVER-STUDIO-DOWNLOADS-2026-11-18.md) covers the public template packs and download checks.
 
 **Site copy, 12 November 2026:** both books are works in progress, and StepWise sits inside Maintenance Desk. Read [docs/HANDOVER-BOOKS-WIP-2026-11-12.md](docs/HANDOVER-BOOKS-WIP-2026-11-12.md). The ferry notes below are unchanged. Nothing under `ferry/` was touched.
 

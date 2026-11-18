@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Johansson Animation Studios</title>
-  <meta name="description" content="Explore Chisum, Johansson World and Sakura Shōten. Three interactive 3D projects by Nils Johansson.">
+  <meta name="description" content="Explore Chisum, Johansson World and Sakura Shōten, or download office forms, personal templates and letterheads from Johansson Animation Studios.">
   <link rel="canonical" href="https://nj22az.github.io/animation-studio/">
   <meta property="og:title" content="Johansson Animation Studios">
   <meta property="og:description" content="An explorable ferry, an Okinawan harbour town and the shop on its waterfront.">
@@ -13,26 +13,28 @@
   <meta property="og:image" content="https://nj22az.github.io/assets/images/ferry/chisum-card.webp">
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="johansson-logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="studio.css">
+  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="stylesheet" href="studio.css?v=site-polish-1">
+  <link rel="stylesheet" href="/css/site-family.css?v=1">
+  <link rel="stylesheet" href="/assets/vendor/photoswipe/photoswipe.css">
 </head>
-<body class="studio-page">
+<body class="studio-page site-family">
   <a class="studio-skip" href="#studio-content">Skip to main content</a>
-  <header class="studio-nav studio-width">
-    <a href="/">&larr; The Office of Nils Johansson</a>
-    <a href="#studio-projects">Studio projects &darr;</a>
-  </header>
+  <nav id="site-nav" class="site-nav"></nav>
+  <noscript><nav class="studio-width studio-fallback" aria-label="Primary navigation"><a href="/">The Office of Nils Johansson</a> <a href="/#projects">Tools &amp; Learning</a> <a href="/blog/">Blog</a> <a href="/hotels/">Hotels &amp; Parking</a></nav></noscript>
   <main id="studio-content" class="studio-width">
     <section class="studio-intro" aria-labelledby="studio-heading">
       <div>
         <h1 id="studio-heading">Johansson<br>Animation Studios</h1>
         <p>An explorable ferry, an Okinawan harbour town and the shop on its waterfront. Three interactive 3D projects by Nils Johansson.</p>
+        <a class="site-button" href="#digital-downloads">Digital downloads <img src="/assets/vendor/site-icons/download.svg" width="16" height="16" alt=""></a>
       </div>
       <img class="studio-mark" src="johansson-logo.svg" width="240" height="240" alt="">
     </section>
-    <section id="studio-projects" class="studio-projects" aria-labelledby="studio-project-heading">
+    <section id="studio-projects" class="studio-projects" data-studio-gallery aria-labelledby="studio-project-heading">
       <h2 id="studio-project-heading">Studio projects</h2>
       <article class="studio-project studio-feature">
-        <img src="/assets/images/ferry/chisum-card.webp" width="1200" height="630" alt="Chisum at sea, seen from above her port bow" fetchpriority="high">
+        <a class="studio-image-preview" href="/assets/images/ferry/chisum-card.webp" data-pswp-width="1200" data-pswp-height="630" aria-label="Enlarge Chisum at sea"><img src="/assets/images/ferry/chisum-card.webp" width="1200" height="630" alt="Chisum at sea, seen from above her port bow" fetchpriority="high"><span class="studio-image-zoom" aria-hidden="true"></span></a>
         <div class="studio-project-copy">
           <p class="studio-kind">Interactive ferry model</p>
           <h3>Chisum</h3>
@@ -42,7 +44,7 @@
       </article>
       <div class="studio-pair">
         <article class="studio-project">
-          <img src="/assets/office-port/harbour.webp" width="960" height="540" alt="The quay and buildings of Minato harbour" loading="lazy" decoding="async">
+          <a class="studio-image-preview" href="/assets/office-port/harbour.webp" data-pswp-width="960" data-pswp-height="540" aria-label="Enlarge Minato harbour"><img src="/assets/office-port/harbour.webp" width="960" height="540" alt="The quay and buildings of Minato harbour" loading="lazy" decoding="async"><span class="studio-image-zoom" aria-hidden="true"></span></a>
           <div class="studio-project-copy">
             <p class="studio-kind">Walkable island town</p>
             <h3>Johansson World</h3>
@@ -55,7 +57,7 @@
           </div>
         </article>
         <article class="studio-project">
-          <img src="sakura.webp" width="1100" height="578" alt="Sakura Shōten, the neighbourhood shop in Minato" loading="lazy" decoding="async">
+          <a class="studio-image-preview" href="sakura.webp" data-pswp-width="1100" data-pswp-height="578" aria-label="Enlarge Sakura Shōten"><img src="sakura.webp" width="1100" height="578" alt="Sakura Shōten, the neighbourhood shop in Minato" loading="lazy" decoding="async"><span class="studio-image-zoom" aria-hidden="true"></span></a>
           <div class="studio-project-copy">
             <p class="studio-kind">Shop simulation</p>
             <h3>Sakura Shōten</h3>
@@ -68,7 +70,61 @@
         </article>
       </div>
     </section>
+    <section id="digital-downloads" class="studio-downloads" aria-labelledby="studio-download-heading">
+      <h2 id="studio-download-heading">Digital downloads</h2>
+      <p class="studio-download-intro">Free editable templates for work, home and job applications.</p>
+      <div class="studio-download-grid">
+        <article class="studio-product">
+          <img src="downloads/office-forms.webp" width="720" height="450" alt="The monthly timesheet and daily work report" loading="lazy" decoding="async">
+          <div class="studio-project-copy">
+            <p class="studio-kind">Word · Excel · Fillable PDF</p>
+            <h3>Office Forms</h3>
+            <p>Seven English forms covering timekeeping, daily reports, leave, expenses, business trips, internal approvals and meeting minutes.</p>
+            <div class="studio-product-actions" data-studio-gallery>
+              <a class="site-button" href="downloads/previews/timesheet.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Monthly timesheet" aria-label="Preview Office Forms"><img src="/assets/vendor/site-icons/preview.svg" width="16" height="16" alt="">Preview</a>
+              <a hidden href="downloads/previews/daily-report.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Daily work report">Daily work report</a>
+              <a hidden href="downloads/previews/expense-claim.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Expense reimbursement claim">Expense reimbursement claim</a>
+              <a class="site-button site-button-primary studio-download-button" href="downloads/office-forms.zip" download aria-label="Download Office Forms ZIP, 1.3 MB"><img src="/assets/vendor/site-icons/download.svg" width="16" height="16" alt="">Download ZIP</a>
+            </div>
+            <p class="studio-product-size">1.3 MB</p>
+          </div>
+        </article>
+        <article class="studio-product">
+          <img src="downloads/personal-templates.webp" width="720" height="450" alt="The CV and cover letter with editable name placeholders" loading="lazy" decoding="async">
+          <div class="studio-project-copy">
+            <p class="studio-kind">Word · Excel</p>
+            <h3>Personal Templates</h3>
+            <p>A matching CV and cover letter in both formats, plus a Kakeibo workbook for monthly household budgeting in SEK.</p>
+            <div class="studio-product-actions" data-studio-gallery>
+              <a class="site-button" href="downloads/previews/cv.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="CV template" aria-label="Preview Personal Templates"><img src="/assets/vendor/site-icons/preview.svg" width="16" height="16" alt="">Preview</a>
+              <a hidden href="downloads/previews/cover-letter.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Cover letter template">Cover letter template</a>
+              <a hidden href="downloads/previews/kakeibo.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Kakeibo monthly plan">Kakeibo monthly plan</a>
+              <a class="site-button site-button-primary studio-download-button" href="downloads/personal-templates.zip" download aria-label="Download Personal Templates ZIP, 444 kB"><img src="/assets/vendor/site-icons/download.svg" width="16" height="16" alt="">Download ZIP</a>
+            </div>
+            <p class="studio-product-size">444 kB</p>
+          </div>
+        </article>
+        <article class="studio-product">
+          <img src="downloads/studio-stationery.webp" width="720" height="450" alt="Two of the three Johansson studio letterhead layouts" loading="lazy" decoding="async">
+          <div class="studio-project-copy">
+            <p class="studio-kind">Word · Excel</p>
+            <h3>Studio Stationery</h3>
+            <p>Three A4 letterhead layouts with the Johansson sailor logo, ready for correspondence in Word or Excel.</p>
+            <div class="studio-product-actions" data-studio-gallery>
+              <a class="site-button" href="downloads/previews/studio.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Studio letterhead" aria-label="Preview Studio Stationery"><img src="/assets/vendor/site-icons/preview.svg" width="16" height="16" alt="">Preview</a>
+              <a hidden href="downloads/previews/editorial.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Editorial letterhead">Editorial letterhead</a>
+              <a hidden href="downloads/previews/centred.webp" data-pswp-width="1191" data-pswp-height="1684" data-caption="Centred letterhead">Centred letterhead</a>
+              <a class="site-button site-button-primary studio-download-button" href="downloads/studio-stationery.zip" download aria-label="Download Studio Stationery ZIP, 777 kB"><img src="/assets/vendor/site-icons/download.svg" width="16" height="16" alt="">Download ZIP</a>
+            </div>
+            <p class="studio-product-size">777 kB</p>
+          </div>
+        </article>
+      </div>
+    </section>
   </main>
   <footer class="studio-footer studio-width"><p>Johansson Animation Studios</p><a href="/">Back to the Office &rarr;</a></footer>
+  <script src="/config.js?v=20261118-animation-studio"></script>
+  <script src="/shared.js?v=site-polish-1"></script>
+  <script type="module" src="studio-gallery.js?v=1"></script>
 </body>
 </html>
