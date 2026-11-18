@@ -1,53 +1,379 @@
 {
-  "updatedAt": "2026-11-18T20:35:59+01:00",
+  "updatedAt": "2026-11-18T20:46:22+01:00",
   "groups": [
     {
       "id": "foundation",
       "title": "Cast and edit",
       "items": [
-        {"title":"Lock the film cast","state":"verified","detail":"The current cast includes the updated Lizzie and Thuận at 1.46 m."},
-        {"title":"Check the film’s look","state":"verified","detail":"The background and cast test passes and the edit comparisons are complete."},
-        {"title":"Measure the whole cut","state":"verified","detail":"The baseline visibility audit covered all 58 cut rows and 2,109 pictures."}
+        {
+          "title": "Lock the film cast",
+          "state": "verified",
+          "detail": "The current cast includes the updated Lizzie and Thuận at 1.46 m.",
+          "steps": [
+            {
+              "title": "Confirm Lizzie and Thuận in the new cast",
+              "verified": true
+            },
+            {
+              "title": "Use b6 for the film tests",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "title": "Check the film’s look",
+          "state": "verified",
+          "detail": "The background and cast test passes and the edit comparisons are complete.",
+          "steps": [
+            {
+              "title": "Render the background and cast test passes",
+              "verified": true
+            },
+            {
+              "title": "Compare the edited stills with the first film",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "title": "Measure the whole cut",
+          "state": "verified",
+          "detail": "The baseline visibility audit covered all 58 cut rows and 2,109 pictures.",
+          "steps": [
+            {
+              "title": "Check all 58 cut rows",
+              "verified": true
+            },
+            {
+              "title": "Rank faults by what shows on screen",
+              "verified": true
+            }
+          ]
+        }
       ]
     },
     {
       "id": "stage",
       "title": "Lizzie and the stage",
       "items": [
-        {"title":"Lizzie’s right glove","state":"verified","detail":"The cuff and forearm edge were corrected and checked."},
-        {"title":"Lizzie’s apron arm clearance","state":"verified","detail":"No clipping above the 1 mm threshold in 2,075 pictures. Her wrists keep their marks."},
-        {"title":"Heart, hip and collar gestures","state":"needs-work","detail":"The contact trial reached the intended marks but reintroduced forearm clipping."},
-        {"title":"Stage footing","state":"verified","detail":"Installed. All 1,114 sampled supporting soles meet 0–3 mm. The cut check found no new visible fault over 5 mm. Neither of the two previews that show the soles has an obvious foot pop."},
-        {"title":"Stage numbers and props","state":"needs-work","detail":"The closing chorus arm fix is installed. All 37 pictures passed, and the rest of the 58-row check matched the baseline. The hats, posy and other stage contacts remain open."}
+        {
+          "title": "Lizzie’s right glove",
+          "state": "verified",
+          "detail": "The cuff and forearm edge were corrected and checked.",
+          "steps": [
+            {
+              "title": "Correct the cuff and forearm edge",
+              "verified": true
+            },
+            {
+              "title": "Check the revised glove",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "title": "Lizzie’s apron arm clearance",
+          "state": "verified",
+          "detail": "No clipping above the 1 mm threshold in 2,075 pictures. Her wrists keep their marks.",
+          "steps": [
+            {
+              "title": "Keep the wrists on their marks",
+              "verified": true
+            },
+            {
+              "title": "Pass the 2,075-picture clearance check",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "title": "Heart, hip and collar gestures",
+          "state": "needs-work",
+          "detail": "The contact trial reached the intended marks but reintroduced forearm clipping.",
+          "steps": [
+            {
+              "title": "Measure where the three gestures miss",
+              "verified": true
+            },
+            {
+              "title": "Reach the heart, hip and collar without clipping",
+              "verified": false
+            },
+            {
+              "title": "Check the gestures in the edited shots",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Stage footing",
+          "state": "verified",
+          "detail": "Installed. All 1,114 sampled supporting soles meet 0–3 mm. The cut check found no new visible fault over 5 mm. Neither of the two previews that show the soles has an obvious foot pop.",
+          "steps": [
+            {
+              "title": "Measure the supporting soles",
+              "verified": true
+            },
+            {
+              "title": "Set the soles to 0–3 mm and clear the cut check",
+              "verified": true
+            },
+            {
+              "title": "Check the paired frames where the soles are visible",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "title": "Stage numbers and props",
+          "state": "checking",
+          "detail": "The closing chorus arm fix is installed. All 37 pictures passed. The posy fit is being checked, and the hat grips and remaining stage contacts are open.",
+          "steps": [
+            {
+              "title": "Install the checked closing chorus arm pose",
+              "verified": true
+            },
+            {
+              "title": "Clear the posy handover",
+              "verified": false
+            },
+            {
+              "title": "Fit both hat grips",
+              "verified": false
+            },
+            {
+              "title": "Clear the remaining visible stage overlaps",
+              "verified": false
+            }
+          ]
+        }
       ]
     },
     {
       "id": "fight",
       "title": "Thuận and the fight",
       "items": [
-        {"title":"Right hand and wrist","state":"needs-work","detail":"One trial cleared the clipping but introduced sharp wrist turns. A smoother route is in testing."},
-        {"title":"Shoes and sole shape","state":"needs-work","detail":"The black finish is approved. The latest shaped shoe trial still showed toe and sole faults, so it is awaiting refinement."},
-        {"title":"Folded arms","state":"needs-work","detail":"The new route reduced clipping. The forearms and hands still need to clear the jacket and sleeves."},
-        {"title":"Head movement and gaze","state":"needs-work","detail":"The head turn during the kick still exceeds the motion limit."},
-        {"title":"Fight contacts and planted steps","state":"needs-work","detail":"Check the blows, the cloak, and the shorter reach across the full fight."},
-        {"title":"Walk home","state":"queued","detail":"Pin the supporting feet across the opening turn and the walk."}
+        {
+          "title": "Right hand and wrist",
+          "state": "needs-work",
+          "detail": "One trial cleared the clipping but introduced sharp wrist turns. A smoother route is in testing.",
+          "steps": [
+            {
+              "title": "Measure clipping and wrist turns in the kick",
+              "verified": true
+            },
+            {
+              "title": "Clear the jacket and smooth the wrist together",
+              "verified": false
+            },
+            {
+              "title": "Verify every affected picture",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Shoes and sole shape",
+          "state": "needs-work",
+          "detail": "The black finish is approved. The latest shaped shoe trial still showed toe and sole faults, so it is awaiting refinement.",
+          "steps": [
+            {
+              "title": "Approve the black finish",
+              "verified": true
+            },
+            {
+              "title": "Finish a flat sole with a continuous toe shape",
+              "verified": false
+            },
+            {
+              "title": "Check planted and lifted feet in motion",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Folded arms",
+          "state": "needs-work",
+          "detail": "The new route reduced clipping. The forearms and hands still need to clear the jacket and sleeves.",
+          "steps": [
+            {
+              "title": "Measure the jacket and sleeve intersections",
+              "verified": true
+            },
+            {
+              "title": "Clear both forearms in the folded poses",
+              "verified": false
+            },
+            {
+              "title": "Check the revised poses in motion",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Head movement and gaze",
+          "state": "needs-work",
+          "detail": "The head turn during the kick still exceeds the motion limit.",
+          "steps": [
+            {
+              "title": "Measure the head turn during the kick",
+              "verified": true
+            },
+            {
+              "title": "Smooth the turn while keeping her gaze on Jack",
+              "verified": false
+            },
+            {
+              "title": "Check the head and braid motion",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Fight contacts and planted steps",
+          "state": "needs-work",
+          "detail": "Check the blows, the cloak, and the shorter reach across the full fight.",
+          "steps": [
+            {
+              "title": "Measure reach, contact and footing on b6",
+              "verified": true
+            },
+            {
+              "title": "Correct contact and clear the cloak",
+              "verified": false
+            },
+            {
+              "title": "Pin supporting feet",
+              "verified": false
+            },
+            {
+              "title": "Review the full sequence in motion",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Walk home",
+          "state": "queued",
+          "detail": "Pin the supporting feet across the opening turn and the walk.",
+          "steps": [
+            {
+              "title": "Measure the existing foot slide",
+              "verified": true
+            },
+            {
+              "title": "Pin the opening turn and walking steps",
+              "verified": false
+            },
+            {
+              "title": "Review the full walk in motion",
+              "verified": false
+            }
+          ]
+        }
       ]
     },
     {
       "id": "finale",
       "title": "Finale",
       "items": [
-        {"title":"Make the chorus readable","state":"needs-work","detail":"All six faces read in the tighter row trial. The shoulder contacts still fail their fit check."},
-        {"title":"Join hands to shoulders","state":"needs-work","detail":"The last trial had hidden shoulder clipping. A fit against the posed shoulders is in testing."}
+        {
+          "title": "Make the chorus readable",
+          "state": "needs-work",
+          "detail": "All six faces read in the tighter row trial. The shoulder contacts still fail their fit check.",
+          "steps": [
+            {
+              "title": "Confirm all six faces are visible in the row trial",
+              "verified": true
+            },
+            {
+              "title": "Check framing with the accepted shoulder links",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Join hands to shoulders",
+          "state": "needs-work",
+          "detail": "The last trial had hidden shoulder clipping. A fit against the posed shoulders is in testing.",
+          "steps": [
+            {
+              "title": "Clear glove and sleeve overlaps",
+              "verified": false
+            },
+            {
+              "title": "Close the shoulder gaps without stretching",
+              "verified": false
+            },
+            {
+              "title": "Check all finale pictures and watch the shot in motion",
+              "verified": false
+            }
+          ]
+        }
       ]
     },
     {
       "id": "release",
       "title": "Full film",
       "items": [
-        {"title":"Verify the fixes across the whole cut","state":"queued","detail":"Review the changed shots in motion and confirm the remaining faults are cleared."},
-        {"title":"Render and assemble the release candidate","state":"queued","detail":"The full 2:55 cut is prepared. Rendering starts after the fixes pass."},
-        {"title":"Review the finished movie","state":"queued","detail":"Check the final export for picture continuity, sound sync, and complete playback."}
+        {
+          "title": "Verify the fixes across the whole cut",
+          "state": "queued",
+          "detail": "Review the changed shots in motion and confirm the remaining faults are cleared.",
+          "steps": [
+            {
+              "title": "Pass the stage-footing regression",
+              "verified": true
+            },
+            {
+              "title": "Pass the closing-chorus regression",
+              "verified": true
+            },
+            {
+              "title": "Check the combined final revision",
+              "verified": false
+            },
+            {
+              "title": "Watch all changed shots in the edit",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Render and assemble the release candidate",
+          "state": "queued",
+          "detail": "The full 2:55 cut is prepared. Rendering starts after the fixes pass.",
+          "steps": [
+            {
+              "title": "Prepare the 4,208-frame render plan",
+              "verified": true
+            },
+            {
+              "title": "Lock the verified revision and render the full cut",
+              "verified": false
+            },
+            {
+              "title": "Assemble the cut with the song",
+              "verified": false
+            }
+          ]
+        },
+        {
+          "title": "Review the finished movie",
+          "state": "queued",
+          "detail": "Check the final export for picture continuity, sound sync, and complete playback.",
+          "steps": [
+            {
+              "title": "Verify the exported picture and audio streams",
+              "verified": false
+            },
+            {
+              "title": "Watch the finished movie and check sound sync",
+              "verified": false
+            }
+          ]
+        }
       ]
     }
   ]

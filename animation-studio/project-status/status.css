@@ -93,7 +93,7 @@
 .status-group-heading { display: inline-flex; width: calc(100% - 1.5rem); }
 .status-group-title { font-weight: 650; }
 .status-count { color: var(--studio-muted); font-size: .875rem; font-variant-numeric: tabular-nums; }
-.status-group progress { height: .32rem; margin-block: 0 8px; }
+.status-group > progress { height: .32rem; margin-block: 0 8px; }
 
 .status-items {
   padding: 0;
@@ -118,3 +118,28 @@
 .status-item-state[data-state="verified"] { color: #a9d6b0; }
 .status-item-state[data-state="checking"] { color: var(--accent); }
 .status-item-state[data-state="needs-work"] { color: #efaa98; }
+
+.status-item-progress { margin-top: 10px; }
+.status-item-progress > progress { height: .25rem; margin-block: 0; }
+.status-steps { font-size: .875rem; }
+.status-steps > summary {
+  padding-block: 12px;
+  color: var(--studio-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-step-list {
+  margin: 0 0 6px;
+  padding-inline: 16px 0;
+  list-style: none;
+  border-inline-start: 1px solid var(--studio-line);
+}
+
+.status-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+  padding-block: 3px;
+}
