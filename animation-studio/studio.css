@@ -19,6 +19,7 @@
 
 .studio-nav, .studio-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; column-gap: 1.25rem; }
 .studio-nav { border-bottom: 1px solid var(--studio-line); }
+.studio-nav-links { display: flex; flex-wrap: wrap; column-gap: 1.25rem; }
 .studio-nav a, .studio-footer a { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.88rem; }
 .studio-intro { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2rem; padding-block: clamp(38px, 7vw, 84px); }
 .studio-intro h1 { font-size: clamp(2.35rem, 6.6vw, 5.55rem); letter-spacing: -0.065em; line-height: 0.99; }
@@ -42,6 +43,26 @@
 .studio-actions a:first-child { background: var(--studio-ink); color: #16130e; font-weight: 700; padding-inline: 14px; border-radius: 4px; text-decoration: none; }
 .studio-actions a:first-child:hover { background: #edbc7d; }
 .studio-footer { border-top: 1px solid var(--studio-line); margin-top: 40px; padding-block: 12px; color: var(--studio-muted); font-size: 0.88rem; }
+
+.studio-downloads { margin-top: clamp(42px, 7vw, 86px); border-top: 1px solid var(--studio-line); padding-top: 22px; scroll-margin-top: 1rem; }
+.studio-downloads h2 { font-size: clamp(1.65rem, 3.3vw, 2.6rem); line-height: 1.15; letter-spacing: -0.035em; }
+.studio-downloads .studio-download-intro { color: var(--studio-muted); margin: 0.6rem 0 1.35rem; }
+.studio-download-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.studio-product { display: grid; grid-template-rows: auto 1fr; min-width: 0; border: 1px solid var(--studio-line); border-radius: 8px; overflow: hidden; background: #121211; }
+.studio-product img { display: block; width: 100%; height: auto; }
+.studio-product .studio-project-copy { padding: clamp(16px, 2.2vw, 26px); }
+.studio-product h3 { font-size: clamp(1.35rem, 2.5vw, 1.75rem); }
+.studio-product .studio-download-button { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; margin-top: auto; padding: 8px 0 4px; font-size: 0.9rem; font-weight: 700; }
+.studio-download-button:hover { color: #edbc7d; }
+.studio-download-button:focus-visible { outline-offset: 2px; }
+
+@media (max-width: 800px) {
+  .studio-download-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 530px) {
+  .studio-download-grid { grid-template-columns: minmax(0, 1fr); }
+}
 
 .studio-home-link { padding-block: clamp(24px, 4vw, 48px); }
 .studio-home-link .studio-home-content { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(12px, 3vw, 32px); align-items: center; border: 1px solid var(--border); padding: clamp(16px, 3vw, 30px); border-radius: 8px; }

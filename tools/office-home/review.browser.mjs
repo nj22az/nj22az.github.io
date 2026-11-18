@@ -67,6 +67,21 @@ try{
   await page.waitForFunction(()=>[...document.querySelectorAll('main img')].every(img=>img.complete&&img.naturalWidth>0));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Studio page fits the viewport: '+profile);
   assert(await page.locator('.studio-actions a').evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)),'Studio links have 44px targets: '+profile);
+  await page.getByRole('link',{name:'Digital downloads'}).click();
+  await page.waitForURL('**/animation-studio/#digital-downloads');
+  const downloads=page.locator('.studio-product a[download]');
+  assert.equal(await downloads.count(),3);
+  assert(await downloads.evaluateAll(links=>links.every(link=>link.getBoundingClientRect().height>=44)),'Downloads have 44px targets: '+profile);
+  if(profile==='desktop'){
+   for(const link of await downloads.all()){
+    const href=await link.getAttribute('href');
+    const downloaded=page.waitForEvent('download');
+    await link.click();
+    const file=await downloaded;
+    assert.equal(file.suggestedFilename(),href.split('/').pop());
+    assert((await readFile(await file.path())).equals(await readFile(resolve(root,'animation-studio',href))), 'Download bytes match archive');
+   }
+  }
   await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:resolve(out,profile+'-studio.png'),fullPage:true});
   assert.deepEqual(errors,[]);results.push({profile,width,height,zoom,result:'passed',layout});await context.close();
  }
