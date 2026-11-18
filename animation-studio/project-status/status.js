@@ -72,7 +72,7 @@ function render(data) {
   overall.max = allItems.length;
   overall.value = verified;
   overall.hidden = false;
-  count.textContent = progressText(verified, allItems.length);
+  count.textContent = `${verified} of ${allItems.length} milestones verified`;
   checklist.replaceChildren(...data.groups.map(group => renderGroup(group, expanded.get(group.id))));
   checklist.setAttribute("aria-busy", "false");
   if (focusedGroup) {
