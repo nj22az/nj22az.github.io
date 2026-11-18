@@ -167,6 +167,13 @@
     };
   }
 
+  function currentNavLocation(href) {
+    var path = location.pathname.replace(/index\.html$/, "");
+    if (path === href) return ' aria-current="page"';
+    if (href === "/blog/" && (path.startsWith("/blog/") || path.startsWith("/hotels/"))) return ' aria-current="location"';
+    return "";
+  }
+
   function buildNav() {
     var nav = $("#site-nav");
     if (!nav) return;
@@ -176,17 +183,18 @@
     var isHome = (location.pathname === "/" || location.pathname === "/index.html");
     var family = document.body.classList.contains("site-family");
     var compactOffice = family || isHome || document.body.classList.contains("world-pages");
-    var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Blog", "Blog", "article"], hotels: ["Hotels &amp; Parking", "Hotels", "hotel"] };
-    var navLinks = CONFIG.navigation.filter(function (item) { return family ? compactLinks[item.id] : item.id !== "home"; }).map(function (item) {
+    var journalArticle = location.pathname.startsWith("/blog/");
+    var compactLinks = { projects: ["Tools &amp; Learning", "Tools", "tools"], studio: ["Animation Studio", "Studio", "studio"], blog: ["Blog", "Blog", "article"] };
+    var navLinks = CONFIG.navigation.filter(function (item) {
+      return family ? compactLinks[item.id] : item.id !== "home" && !(journalArticle && item.id === "hotels");
+    }).map(function (item) {
       var link = navLink(item, isHome);
       if (family) {
         var labels = compactLinks[item.id];
-        var current = item.url && location.pathname.replace(/index\.html$/, "") === item.url;
-        return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' +
-          (current ? ' aria-current="page"' : '') + '><img src="/assets/vendor/site-icons/' +
+        return '<a href="' + link.href + '" aria-label="' + labels[0] + '"' + currentNavLocation(link.href) + '<img src="/assets/vendor/site-icons/' +
           labels[2] + '.svg" alt="" width="18" height="18"><span>' + labels[1] + '</span></a>';
       }
-      return '<a class="nav-link" href="' + link.href + '"' + link.attrs + '>' + item.label + '</a>';
+      return '<a class="nav-link" href="' + link.href + '"' + link.attrs + (journalArticle ? currentNavLocation(link.href) : '') + '>' + item.label + '</a>';
     }).join("");
 
     var brand = family ? '<span class="site-wordmark">The Office of<strong>Nils Johansson</strong></span>' : CONFIG.navLogo(34);
@@ -208,7 +216,7 @@
     overlay.setAttribute("aria-hidden", "true");
 
     var menuRows = CONFIG.navigation.filter(function (n) {
-      return !compactOffice || !["home", "projects", "studio", "blog", "hotels", "linux-port", "course"].includes(n.id);
+      return (!journalArticle || n.id !== "hotels") && (!compactOffice || !["home", "projects", "studio", "blog", "hotels", "linux-port", "course"].includes(n.id));
     }).map(function (n) {
       var link = navLink(n, isHome);
       var iconName = navIcons[n.id] || "arrow";
@@ -361,24 +369,22 @@
         { title: "Explore", links: [
           ["Tools &amp; Learning", "/#projects"],
           ["Animation Studio", "/animation-studio/"],
-          ["Blog", "/blog/"],
-          ["Hotels &amp; Parking", "/hotels/"]
+          ["Blog", "/blog/"]
         ] },
         { title: "Resources", links: [
+          ["Hotel finder", "/hotels/"],
           ["Digital downloads", "/animation-studio/#digital-downloads"],
           ["Shop", CONFIG.author.social.store],
           ["Rights &amp; credits", "https://github.com/nj22az/nj22az.github.io/blob/main/README.md#ownership-and-reuse"]
         ] }
       ];
-      var currentPath = location.pathname.replace(/index\.html$/, "");
       var top = document.querySelector("main[id]");
       footer.innerHTML =
         '<div class="office-footer-inner">' +
           '<a class="office-footer-brand" href="/">The Office of<br><strong>Nils Johansson</strong></a>' +
           '<nav class="office-footer-nav" aria-label="Footer navigation">' + groups.map(function (group) {
             return '<div><p>' + group.title + '</p><ul>' + group.links.map(function (entry) {
-              var current = currentPath === entry[1] ? ' aria-current="page"' : '';
-              return '<li><a href="' + entry[1] + '"' + current + '>' + entry[0] + '</a></li>';
+              return '<li><a href="' + entry[1] + '"' + currentNavLocation(entry[1]) + '>' + entry[0] + '</a></li>';
             }).join("") + '</ul></div>';
           }).join("") + '</nav>' +
           '<div class="office-footer-bottom"><span>' + CONFIG.site.copyright + '</span>' +
@@ -432,6 +438,14 @@
   function init() {
     buildNav();
     buildFooter();
+    var hotelHeader = $(".hotel-site.site-family .hotel-page-head");
+    if (hotelHeader) {
+      hotelHeader.insertAdjacentHTML("beforebegin",
+        '<nav class="hotel-journal-nav" aria-label="Hotel journal">' +
+          '<a href="/blog/">Reviews &amp; stories</a>' +
+          '<a href="/hotels/" aria-current="page">Hotel finder</a>' +
+        '</nav>');
+    }
     initSmoothScroll();
   }
 

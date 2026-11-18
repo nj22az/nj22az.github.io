@@ -38,3 +38,11 @@ The homepage, Studio, Blog index and Hotels register share a compact footer with
 The homepage brings Tools & Learning forward by shortening the opening, the Studio panel and the section spacing. The Studio uses a one-sentence introduction and brings Chisum and the downloads closer to the top. The Blog index uses the Office palette and places the harbour stamp beside its heading on wide screens. Hotels uses the shared spacing and footer through its existing stylesheet and script references. The individual apps and article pages retain their existing layouts.
 
 The browser review covers all four pages, footer keyboard and touch targets, site navigation, the Office appearance preference, Studio previews and the three ZIP downloads. The comparison uses the public main baseline `7b26260ba99de5054d2dffe6f6be6eee73c6b22e`. Production and development updates use scoped commits. Browser checks use Chromium viewports, including a 200% zoom equivalent. Physical Safari remains unverified.
+
+## Hotel reviews and stories
+
+The Blog is the editorial landing page for hotel reviews and occasional stories. Latest, Hotel reviews and Other articles filter the shared chronological catalogue. The Office homepage uses the same entries. A review's Parking details link opens the matching record in the Hotels finder. The finder links to the editorial review where one exists.
+
+The primary navigation treats the finder as part of Blog. Both pages use the same palette and a section navigation row for Reviews & stories and Hotel finder. The existing finder and article URLs are preserved. The finder receives the changes through its existing shared CSS and JavaScript, leaving the generated register and its data in the normal build workflow. The static Blog feed has links to the five registered reviews and the existing stories and engineering articles.
+
+The browser review checks all six screen profiles, the review and article filters, the finder and Blog navigation, and the paid-parking Scandic Rosendahl round trip. It also checks the static Blog with JavaScript disabled. The catalogue test covers chronology, WordPress deduplication and links. This change is based on the published Office release `d8b0d1b07fe5629a9fa64e72f1de30aa514d73ea`. Physical Safari remains unverified.
